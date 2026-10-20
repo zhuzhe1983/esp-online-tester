@@ -91,12 +91,16 @@ pub struct WifiMac { pub ram: RegRam, pub ram2: RegRam, pub log: bool,
                      pub tx_pending: Vec<(u8, u32)>,
                      /// RX descriptor ring: base written by the driver (0x088), the descriptor the hardware fills next, the last one filled
                      pub rx_base: u32, pub rx_next: u32, pub rx_last: u32,
+                     /// `BASE_RX_DSCR` was written since the last frame went in: the driver may have handed over a
+                     /// fresh list. A stopped receive DMA restarts there (`wifi_rx_deliver`); a running one keeps
+                     /// its pointer, because software rewrites the base on every recycle.
+                     pub rx_handover: bool,
                      /// the access point, the network and the counts, shared with the other chips
                      pub link: crate::wifi::StationLink }
 impl Default for WifiMac { fn default() -> Self { Self::new() } }
 
 impl WifiMac {
-    pub fn new() -> Self { WifiMac { ram: RegRam::new(), ram2: RegRam::new(), log: false, tsf_offset: 0, tsf_latched: 0, now_cycles: 0, rx_base: 0, rx_next: 0, rx_last: 0, events: 0, pwr_events: 0, txq_complete: 0, txq_error: 0, tx_pending: Vec::new(), link: Default::default() } }
+    pub fn new() -> Self { WifiMac { ram: RegRam::new(), ram2: RegRam::new(), log: false, tsf_offset: 0, tsf_latched: 0, now_cycles: 0, rx_base: 0, rx_next: 0, rx_last: 0, rx_handover: false, events: 0, pwr_events: 0, txq_complete: 0, txq_error: 0, tx_pending: Vec::new(), link: Default::default() } }
     pub fn irq(&self) -> bool { self.events != 0 || self.pwr_events != 0 }
     /// TX queue n has its PLCP0 register at 0xd08 - 8n (hal_mac_txq_enable: (0x0c0067a1 - n) << 3).
     fn txq_of(off: u32) -> Option<u8> { if off <= 0xd08 && (0xd08 - off).is_multiple_of(8) && (0xd08 - off) / 8 < 16 { Some(((0xd08 - off) / 8) as u8) } else { None } }
@@ -122,10 +126,14 @@ impl WifiMac {
         match (block, off) {
             (0x33, 0xc40) => { self.events &= !v; }
             (0x33, 0x088) => {
-                // BASE_RX_DSCR: where the hardware restarts when the ring runs dry. Software rewrites it
-                // every time it recycles descriptors, but that must NOT rewind the hardware's current
-                // pointer — doing so re-delivers into descriptors the stack has already moved past.
+                // BASE_RX_DSCR: the head of the receive list. Software rewrites it whenever it recycles
+                // descriptors, so this must not rewind a running DMA — doing so re-delivers into descriptors
+                // the stack has already moved past. It is also how software hands the DMA a fresh list, and
+                // `wifi_rx_deliver` takes it there only once the DMA has stopped, because the descriptor it
+                // wants is not usable (Arduino-ESP32 arms four at a time and writes the base of the
+                // next list while the last frame of the current one is still being processed).
                 self.rx_base = DMA_ADDR_BASE | (v & 0xf_ffff);
+                self.rx_handover = true;
                 if self.rx_next == 0 { self.rx_next = self.rx_base; }
                 self.ram.write(off, v);
             }
