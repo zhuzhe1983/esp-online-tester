@@ -95,10 +95,10 @@ unsafe fn text<'a>(ptr: *const u8, len: usize) -> &'a str {
 
 /// `board` is a CLI board name (atech14, waveshare-cam, waveshare-lcd4b,
 /// waveshare-amoled18-v2, none) for the ESP32-S3, `esp32` (the bare esp32dev module) or a classic
-/// board such as `ttgo-tdisplay` for the classic ESP32, `esp32c6` or `waveshare-c6-lcd147` for the
-/// C6, `esp32c3` for the C3, or `esp32p4` (rev < 3) or `esp32p4-rev3` for the P4, with `+c6` for its C6
-/// co-processor, which are console-only and take no board, or `waveshare-p4-lcd35` for that P4
-/// rev >= 3 board (its panel, touch and codec). Null on failure.
+/// board such as `ttgo-tdisplay` for the classic ESP32, `esp32c6`, `waveshare-c6-lcd147` or
+/// `xiao-esp32c6` for the C6, `esp32c3` for the C3, or `esp32p4` (rev < 3) or `esp32p4-rev3` for the
+/// P4, with `+c6` for its C6 co-processor, which are console-only and take no board, or
+/// `waveshare-p4-lcd35` for that P4 rev >= 3 board (its panel, touch and codec). Null on failure.
 /// Flash and PSRAM are each limited to 32 MiB, matching the browser configuration form.
 /// Classic ESP32 enables PSRAM only at 4 MiB; other sizes within the cap start without
 /// PSRAM (0 is the default), preserving existing callers' configurations.
