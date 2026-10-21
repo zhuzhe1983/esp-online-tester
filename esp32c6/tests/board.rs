@@ -1,7 +1,12 @@
 //! The Waveshare ESP32-C6-LCD-1.47 board model on its own: the ST7789 fed command and pixel bytes
 //! with the D/C line, and the WS2812 decoded from an RMT frame.
+//!
+//! And the Seeed Studio XIAO ESP32-C6: the low-active user LED on GPIO 15, the BOOT button on
+//! GPIO 9 and the RF switch on GPIO 3 and GPIO 14.
+use emu_core::Bus;
+use esp32c6::board::xiao::{XiaoEsp32C6, LED_COLOUR, PIN_BOOT, PIN_LED, PIN_RF_ANT, PIN_RF_POWER};
 use esp32c6::board::{WaveshareC6Lcd147, LCD_COL_OFFSET, LCD_VISIBLE_COLS, PIN_LCD_DC};
-use esp_soc::BoardModel;
+use esp_soc::{BoardModel, SocBus as _};
 
 fn cmd(b: &mut WaveshareC6Lcd147, c: u8, params: &[u8]) {
     b.gpio_changes(&[(PIN_LCD_DC, false)]); b.spi_tx(2, &[c]);
@@ -66,3 +71,61 @@ fn ws2812_from_rmt_bits() {
     assert_eq!(b.leds().unwrap().1, 1);
     assert_eq!(b.named_pin("boot"), Some(esp32c6::board::PIN_BOOT));
 }
+
+/// The XIAO's user LED is low active: it is lit while GPIO 15 is driven low, and off when the
+/// pin is driven high or released. The state follows the drive masks, not the edges.
+#[test]
+fn xiao_user_led_is_low_active() {
+    let mut b = XiaoEsp32C6::new();
+    assert_eq!(b.leds().unwrap().0[0], [0, 0, 0], "the LED is off at power-on");
+    assert_eq!(b.leds().unwrap().1, 0);
+    b.gpio_output_at(0, &[(PIN_LED, false)], 1 << PIN_LED, 0);           // GPIO 15 as an output, low
+    assert!(b.led_on);
+    assert_eq!(b.leds().unwrap().0[0], LED_COLOUR, "the orange LED");
+    assert_eq!(b.leds().unwrap().1, 1);
+    b.gpio_output_at(1, &[(PIN_LED, true)], 1 << PIN_LED, 1 << PIN_LED); // driven high: dark
+    assert!(!b.led_on);
+    assert_eq!(b.leds().unwrap().0[0], [0, 0, 0]);
+    assert_eq!(b.leds().unwrap().1, 2);
+    b.gpio_output_at(2, &[(PIN_LED, true)], 0, 0);                        // released: the pin is high
+    assert!(!b.led_on);
+    assert_eq!(b.leds().unwrap().1, 2, "no change, no update");
+}
+
+/// The BOOT button on GPIO 9 reads high while it is released (it is pulled up on the board), and
+/// the RF switch follows GPIO 3 (power, low active) and GPIO 14 (the antenna).
+#[test]
+fn xiao_boot_button_and_rf_switch() {
+    let mut b = XiaoEsp32C6::new();
+    assert_eq!((b.named_pin("boot"), b.named_pin("btn"), b.named_pin("btn1")), (Some(PIN_BOOT), Some(PIN_BOOT), Some(PIN_BOOT)));
+    assert_eq!(b.named_pin("sw"), None);
+    assert_eq!(b.input_levels(), vec![(PIN_BOOT, true)], "the button is pulled up");
+    assert!(!b.rf_powered && !b.rf_external, "nothing drives the RF switch at power-on");
+    b.gpio_output_at(0, &[], 1 << PIN_RF_POWER, 0);                      // GPIO 3 low: the switch is powered
+    assert!(b.rf_powered);
+    assert!(!b.rf_external, "the onboard ceramic antenna is the default");
+    b.gpio_output_at(1, &[(PIN_RF_ANT, true)], 1 << PIN_RF_ANT, 1 << PIN_RF_ANT); // GPIO 14 high: the external U.FL
+    assert!(b.rf_external);
+    b.gpio_output_at(2, &[(PIN_RF_POWER, true)], (1 << PIN_RF_POWER) | (1 << PIN_RF_ANT), (1 << PIN_RF_POWER) | (1 << PIN_RF_ANT));
+    assert!(!b.rf_powered, "the power enable is low active: high switches the RF off");
+    assert!(b.rf_external, "the port select keeps its level");
+}
+
+/// The same LED, through the C6's GPIO registers: the bus hands the board the drive masks with
+/// every output write.
+#[test]
+fn xiao_led_follows_gpio15_through_the_bus() {
+    let mut m = esp32c6::machine([0; 6], 4 << 20);
+    m.bus.board = Box::new(XiaoEsp32C6::new());
+    m.bus.attach_board_devices();
+    // IDF v5.5.4 components/soc/esp32c6/register/soc/gpio_reg.h: the GPIO block is at 0x6009_1000,
+    // OUT_W1TS 0x08, OUT_W1TC 0x0c, ENABLE_W1TS 0x24.
+    m.bus.write32(0x6009_1024, 1 << PIN_LED).unwrap();                    // GPIO 15 an output, low
+    assert_eq!(m.bus.board_ref().leds().unwrap().0[0], LED_COLOUR);
+    m.bus.write32(0x6009_1008, 1 << PIN_LED).unwrap();                    // drive it high
+    assert_eq!(m.bus.board_ref().leds().unwrap().0[0], [0, 0, 0]);
+    m.bus.write32(0x6009_100c, 1 << PIN_LED).unwrap();                    // and low again
+    assert_eq!(m.bus.board_ref().leds().unwrap().0[0], LED_COLOUR);
+    assert!(m.bus.board_ref().report().starts_with("[emu] xiao-esp32c6: led on"));
+}
+

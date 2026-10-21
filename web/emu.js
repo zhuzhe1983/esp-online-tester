@@ -76,7 +76,7 @@
     <div class="row"><b>WebAssembly build</b><span class="note">everything runs in this tab — nothing is uploaded; firmware is read from your disk</span><span id="pace" class="note"></span></div>
     <div class="row" id="fw_demos" style="display:none"><span>Demos:</span></div>
     <div class="row">
-      <label>board <select id="fw_board"><option>waveshare-lcd4b</option><option>waveshare-amoled18-v2</option><option>stopwatch</option><option>atech14</option><option>waveshare-cam</option><option>none</option><option>esp32</option><option>ttgo-tdisplay</option><option>esp32c3</option><option>esp32c6</option><option>waveshare-c6-lcd147</option><option>esp32p4</option></select></label>
+      <label>board <select id="fw_board"><option>waveshare-lcd4b</option><option>waveshare-amoled18-v2</option><option>stopwatch</option><option>atech14</option><option>waveshare-cam</option><option>none</option><option>esp32</option><option>ttgo-tdisplay</option><option>esp32c3</option><option>esp32c6</option><option>waveshare-c6-lcd147</option><option>xiao-esp32c6</option><option>esp32p4</option></select></label>
       <label>flash MB <input id="fw_flash" type="number" value="16" min="1" max="32" style="width:52px"></label>
       <label>PSRAM MB <input id="fw_psram" type="number" value="8" min="0" max="32" style="width:52px"></label>
       <label>WiFi <input id="fw_wifi" placeholder="ssid=…,psk=… (optional)" style="width:190px"></label>

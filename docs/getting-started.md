@@ -154,6 +154,8 @@ H=examples/hello_world-c6/build
 
 - `--board waveshare-c6-lcd147` adds the Waveshare ESP32-C6-LCD-1.47: the ST7789 over SPI2 and the
   GDMA, the WS2812 and the BOOT button.
+- `--board xiao-esp32c6` adds the Seeed Studio XIAO ESP32-C6: the low-active user LED on GPIO 15,
+  the BOOT button on GPIO 9 and the RF switch (`examples/xiao-esp32c6/`).
 - The C6's 802.15.4 MAC answers energy scans, so the board's LVGL spectrum-scanner firmware runs end
   to end (`examples/waveshare-c6-lcd147/`). The MAC also sends and receives frames with the timing
   of the air.

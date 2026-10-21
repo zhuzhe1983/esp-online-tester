@@ -229,6 +229,22 @@ not that firmware's boot or relay connection.
 
 The energy-scan firmware and the run recipe: `examples/waveshare-c6-lcd147/`, [esp32c6.md](esp32c6.md).
 
+## `xiao-esp32c6` — Seeed Studio XIAO ESP32-C6 (ESP32-C6)
+
+| Device | Bus | Model |
+| --- | --- | --- |
+| User LED | GPIO 15, low active (the anode goes to 3V3 through a resistor, the cathode to the pin) | lit while the pin is driven low; the state follows the drive masks, not the edges, so a released pin is dark. Shown in the UI as a one-LED strip |
+| BOOT button | GPIO 9, active low, pulled up on the board | `press boot 150`; the page's BOOT button drives it low |
+| RF switch | GPIO 3 (power, low active) and GPIO 14 (port: low = the onboard ceramic antenna, high = the external U.FL) | tracked and reported; nothing is behind it |
+
+The board is an ESP32-C6FH4: 4 MB of flash and no PSRAM, which is the C6's default
+(`--flash-mb 4`; the C6 has no PSRAM at all, so `--psram-mb` is refused). The pin map is the
+Seeed one: D0–D10 and A0–A2 on GPIO 0, 1, 2, 21, 22, 23, 16, 17, 19, 20, 18, the back pads
+MTMS/MTDI/MTCK/MTDO on GPIO 4, 5, 6, 7, and `EN` as the chip's reset rather than a GPIO. Only
+the LED, the button and the RF switch are wired to anything, so only they are modelled.
+
+The blink firmware and the run recipe: `examples/xiao-esp32c6/`, [esp32c6.md](esp32c6.md).
+
 ## `ttgo-tdisplay` — LilyGO TTGO T-Display (classic ESP32)
 
 | Device | Bus | Model |

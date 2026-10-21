@@ -345,6 +345,41 @@ ENERGY_SCAN_DIR=~/work/esp32/energy_scan examples/waveshare-c6-lcd147/run.sh --m
 `--stub` and `--trace-fn` are exact on the RISC-V chips now: the core stops at the addresses the
 machine wants to see, as the Xtensa block interpreter always did.
 
+## The board: `--board xiao-esp32c6`
+
+The Seeed Studio XIAO ESP32-C6 is a small board around the same chip: an ESP32-C6FH4 with 4 MB of
+flash and no PSRAM, a user LED on GPIO 15, the BOOT button on GPIO 9 and the RF switch on GPIO 3
+(power, low active) and GPIO 14 (the antenna). `esp32c6/src/board/xiao.rs` is the board model.
+
+The LED is **low active**: the anode goes to 3V3 through a resistor, the cathode to GPIO 15, so a
+low pin is a lit LED. The model reads the GPIO drive masks (`ENABLE` and `OUT`) with every output
+write instead of the edges, because an edge says what the pin did and the masks say what the pin
+is doing now: a released pin is high, whatever the last edge was. A firmware that blinks the pin
+the usual way lights the LED here exactly as it does on the board.
+
+```sh
+cd examples/xiao-esp32c6 && idf.py set-target esp32c6 build && cd ../..
+examples/xiao-esp32c6/run.sh --max-seconds 10
+```
+
+The blink firmware in `examples/xiao-esp32c6/` prints one line per half second and the LED
+blinks with it:
+
+```
+LED on, BOOT button released
+```
+
+The BOOT button is pulled up on the board, so it reads high while it is released; a script
+presses it with `press boot 150` and the browser's BOOT button drives GPIO 9 low. The RF switch
+is tracked and reported (`[emu] xiao-esp32c6: ... rf switch powered, antenna onboard ceramic`)
+but nothing is behind it: the radio is the C6's own 802.15.4 and WiFi MAC, which the emulator
+models on the chip, not on the board.
+
+The pin map is the Seeed one (D0–D10 and A0–A2 on GPIO 0, 1, 2, 21, 22, 23, 16, 17, 19, 20, 18;
+the back pads MTMS/MTDI/MTCK/MTDO on GPIO 4, 5, 6, 7; `EN` is the chip's reset, not a GPIO).
+Nothing is wired to those pins on this board, so they are left alone: no ADC, no I2C, no TWAI,
+no display.
+
 ## Not there yet
 
 - **TF card, backlight rendering.** The SD slot on SPI2 has nothing behind it. LEDC frequency and duty
