@@ -375,6 +375,12 @@ is tracked and reported (`[emu] xiao-esp32c6: ... rf switch powered, antenna onb
 but nothing is behind it: the radio is the C6's own 802.15.4 and WiFi MAC, which the emulator
 models on the chip, not on the board.
 
+In the browser the same firmware is a demo: `?wasm&fw=c6-xiao` boots the images under
+`web/wasm/fw/public/c6-xiao-*.bin` (the bootloader, the partition table and the app, built with
+ESP-IDF 5.5.4 for the C6) and the script `public/c6-xiao-script.txt` presses the BOOT button at
+2 s, so the console shows the button held down while the LED keeps blinking. The page draws the
+LED as a dot, orange while it is lit.
+
 The pin map is the Seeed one (D0–D10 and A0–A2 on GPIO 0, 1, 2, 21, 22, 23, 16, 17, 19, 20, 18;
 the back pads MTMS/MTDI/MTCK/MTDO on GPIO 4, 5, 6, 7; `EN` is the chip's reset, not a GPIO).
 Nothing is wired to those pins on this board, so they are left alone: no ADC, no I2C, no TWAI,

@@ -237,7 +237,8 @@ Seeed one: D0–D10 and A0–A2 on GPIO 0, 1, 2, 21, 22, 23, 16, 17, 19, 20, 18,
 MTMS/MTDI/MTCK/MTDO on GPIO 4, 5, 6, 7, and `EN` as the chip's reset rather than a GPIO. Only
 the LED, the button and the RF switch are wired to anything, so only they are modelled.
 
-The blink firmware and the run recipe: `examples/xiao-esp32c6/`, [esp32c6.md](esp32c6.md).
+The blink firmware and the run recipe: `examples/xiao-esp32c6/`, [esp32c6.md](esp32c6.md). The
+firmware is also a browser demo (`?wasm&fw=c6-xiao`).
 
 ## `ttgo-tdisplay` — LilyGO TTGO T-Display (classic ESP32)
 
