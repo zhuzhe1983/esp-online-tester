@@ -72,7 +72,7 @@ fn factory_devices_and_active_low_button_inputs() {
         assert_eq!(board.name(), "stopwatch");
         let devices = board.i2c_devices();
         assert_eq!(devices.iter().map(|(bus, addr, _)| (*bus, *addr)).collect::<Vec<_>>(),
-            [(0, 0x6e), (0, 0x4f), (0, 0x15)]);
+            [(0, 0x6e), (0, 0x4f), (0, 0x15), (0, 0x68)]);
         assert_eq!(board.named_pin("a"), Some(2));
         assert_eq!(board.named_pin("btn_b"), Some(1));
         assert_eq!(board.named_pin("missing"), None);
@@ -201,4 +201,39 @@ fn synthetic_scan_uses_cpu_cycles_and_drives_gpio38_interrupts() {
     assert_eq!(bus.read32(0x6000_4040).unwrap() & (1 << 6), 0);
     assert_eq!(bus.read32(0x6000_4068).unwrap(), 1 << 6);
     assert_eq!(bus.gpio_events.as_deref(), Some(&[(9_600 * us, 38, true), (9_720 * us, 38, false)][..]));
+}
+
+#[test]
+fn software_cs_delimits_split_m5gfx_headers_and_command_like_pixel_data() {
+    // M5GFX 0.2.19 Panel_AMOLED::write_cmd sends four individual bytes under
+    // one software CS assertion; framebuffer DMA then sends one row per transfer.
+    let mut board = StopWatch::new();
+    let mut devices = board.i2c_devices();
+    power_up(&mut devices);
+    let cs_command = |board: &mut StopWatch, cmd: u8, args: &[u8]| {
+        board.gpio_changes(&[(39, true), (39, false)]);
+        for byte in [0x02, 0, cmd, 0] { board.spi_transfer(2, &[byte], 0); }
+        for byte in args { board.spi_transfer(2, &[*byte], 0); }
+        board.gpio_changes(&[(39, true)]);
+    };
+    cs_command(&mut board, 0x2a, &[0, 6, 0, 9]);
+    cs_command(&mut board, 0x2b, &[0, 0, 0, 1]);
+    cs_command(&mut board, 0x44, &[1, 0xd2]);
+    cs_command(&mut board, 0x35, &[0x80]);
+    assert!(board.next_deadline().is_some(), "split TE enable was not decoded");
+    board.gpio_changes(&[(39, false)]);
+    board.spi_transfer(2, &[0x32, 0, 0x2c, 0], 0);
+    board.spi_transfer(2, &[0x02, 0, 0x01, 0, 0x32, 0, 0x2c, 0], 0);
+    board.spi_transfer(2, &[0xf8, 0, 0x07, 0xe0, 0, 0x1f, 0xff, 0xff], 0);
+    board.gpio_changes(&[(39, true)]);
+    let (_, _, frame, version) = board.display().unwrap();
+    assert_eq!(&frame[..4], &[0x0200, 0x0100, 0x3200, 0x2c00]);
+    assert_eq!(&frame[468..472], &[0xf800, 0x07e0, 0x001f, 0xffff]);
+    board.spi_transfer(2, &[0, 0, 0, 0], 0);
+    assert_eq!(board.display_version(), version, "deasserted CS must ignore data");
+    board.gpio_changes(&[(39, false)]);
+    board.spi_transfer(2, &[0x02, 0], 0);
+    board.gpio_changes(&[(39, true)]);
+    cs_command(&mut board, 0x34, &[]);
+    assert!(board.next_deadline().is_none(), "an abandoned header must not corrupt the next command");
 }

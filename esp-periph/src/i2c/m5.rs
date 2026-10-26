@@ -67,6 +67,8 @@ impl I2cDevice for M5pm1 {
 /// external pulls and electrical behavior are not modeled.
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct M5ioe1State {
+    /// IO1..IO14 driven-high mask; lets each board apply its own wiring.
+    pub driven_high: u16,
     pub oled_rail: bool,
     pub oled_reset_high: bool,
     pub touch_reset_high: bool,
@@ -97,7 +99,7 @@ impl I2cDevice for M5ioe1 {
     fn start(&mut self, read: bool) -> bool { self.registers.start(read) }
 
     fn write(&mut self, byte: u8) -> bool {
-        if !self.registers.first && self.registers.ptr <= 0x02 {
+        if !self.registers.first && matches!(self.registers.ptr, 0x00..=0x02 | 0x07..=0x08) {
             self.registers.ptr += 1;
             return true;
         }
@@ -105,6 +107,7 @@ impl I2cDevice for M5ioe1 {
         let regs = &self.registers.regs;
         let high = regs[0x03] & regs[0x05] & !regs[0x13];
         *self.state.lock().expect("M5IOE1 state mutex poisoned") = M5ioe1State {
+            driven_high: u16::from(high) | (u16::from(regs[0x04] & regs[0x06] & !regs[0x14] & 0x3f) << 8),
             oled_rail: high & 0x80 != 0,
             oled_reset_high: high & 0x10 != 0,
             touch_reset_high: high & 0x08 != 0,
@@ -112,5 +115,14 @@ impl I2cDevice for M5ioe1 {
         ack
     }
 
-    fn read(&mut self) -> u8 { self.registers.read() }
+    fn read(&mut self) -> u8 {
+        // M5IOE1 1.0.8 (37db0486), M5IOE1.h GPIO_IN_L/H and digitalRead:
+        // GPIO_IN reflects the driven pin, not the output latch alone. Model
+        // push-pull outputs in both banks; external/input/open-drain pulls remain
+        // unmodeled. Bank H has only IO9..IO14 (bits 0..5).
+        let regs = &mut self.registers.regs;
+        regs[0x07] = regs[0x03] & regs[0x05] & !regs[0x13];
+        regs[0x08] = regs[0x04] & regs[0x06] & !regs[0x14] & 0x3f;
+        self.registers.read()
+    }
 }

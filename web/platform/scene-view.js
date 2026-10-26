@@ -1,5 +1,11 @@
 import * as THREE from './vendor/three.module.min.js';
 import {createStopwatchModel} from './stopwatch-model.js';
+import {createPapermonoModel} from './papermono-model.js';
+import {createManufacturerModel} from './manufacturer-model.js';
+import {pickVisibleSurface, createScenePointerRouter, createSurfaceHalo} from './scene-interaction.js';
+import {createIllustrativeAccessory, createGroveCable} from './accessory-view.js';
+import {normalizeShellAppearance, applyShellAppearance, DEFAULT_STOPWATCH_APPEARANCE} from './shell-appearance.js';
+import {normalizeOrientation} from './imu.js';
 
 // Uploaded WebGL textures have fixed storage dimensions. A resized canvas needs a fresh
 // texture, even though the canvas object itself is unchanged (e.g. StopWatch -> PaperMono).
@@ -70,23 +76,42 @@ export function createHumanButtonController({send, isRunning, onVisual = () => {
   return {input, releaseAll, invalidate, suspend};
 }
 
-// StopWatch uses manufacturer CAD; other products retain explicitly illustrative previews.
-export function createSceneView(mount, {onInput = () => {}, onModeChange = () => {}} = {}) {
+// Product-specific CAD stays separate from runtime support; missing models stay empty.
+export function createSceneView(mount, {onInput = () => {}, onModeChange = () => {}, onUnsupported = () => {}, onOrientation = () => {}, onModelReady = () => {}} = {}) {
   const display = document.createElement('canvas');
   display.className = 'flat-display';
   display.setAttribute('aria-label', '设备实际帧缓冲；按住或拖动以发送触摸');
   display.width = 466; display.height = 466;
   const context = display.getContext('2d');
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(32, 1, .1, 1000);
+  const camera = new THREE.PerspectiveCamera(32, 1, 2, 3000); camera.layers.enable(1);
   const group = new THREE.Group(); scene.add(group);
   scene.add(new THREE.HemisphereLight(0xffffff, 0x64775b, 2.5));
   const light = new THREE.DirectionalLight(0xffffff, 3.1); light.position.set(-55, 95, 140); scene.add(light);
   const rim = new THREE.DirectionalLight(0xc6dece, 1.3); rim.position.set(80, -20, -80); scene.add(rim);
   let texture = new THREE.CanvasTexture(display);
   texture.colorSpace = THREE.SRGBColorSpace; texture.minFilter = THREE.LinearFilter; texture.magFilter = THREE.NearestFilter;
-  let renderer, mode = '3d', product, screen, buttons = [], accessoryGroup, accessoryCount = 0, pressed, gesture, zoom = 1, frameWidth = 466, frameHeight = 466;
-  let paintPending = false, disposed = false, modelCleanup = null, productGeneration = 0;
+  let renderer, mode = '3d', product, screen, buttons = [], accessoryGroup, accessoryCount = 0, zoom = 1, frameWidth = 466, frameHeight = 466;
+  let paintPending = false, disposed = false, modelCleanup = null, productGeneration = 0, accessoryGeneration = 0, accessoryCleanups = [];
+  let orientationTimer = null, orientationIdle = null, lastOrientationAt = -Infinity;
+  const getOrientation = () => group.quaternion.toArray();
+  function clearOrientationTimers() { clearTimeout(orientationTimer); clearTimeout(orientationIdle); orientationTimer = orientationIdle = null; }
+  function publishOrientation(rotating = false) {
+    if (disposed) return;
+    lastOrientationAt = performance.now();
+    Promise.resolve(onOrientation({quaternion: getOrientation(), rotating})).catch(error => console.error('Scene orientation failed:', error));
+  }
+  function orientationChanged() {
+    clearTimeout(orientationIdle);
+    if (orientationTimer === null) orientationTimer = setTimeout(() => { orientationTimer = null; publishOrientation(true); }, Math.max(0, 1000 / 30 - (performance.now() - lastOrientationAt)));
+    orientationIdle = setTimeout(() => { clearTimeout(orientationTimer); orientationTimer = null; publishOrientation(false); }, 100);
+  }
+  function setOrientation(value, {notify = true} = {}) {
+    const normalized = normalizeOrientation(value); clearOrientationTimers(); group.quaternion.fromArray(normalized);
+    if (notify) publishOrientation(false); if (accessoryCount) frameCamera(); draw(); return getOrientation();
+  }
+  let parts = {}, connectors = {}, shellMeshes = [], customizedAppearance = false, appearanceDefaults = DEFAULT_STOPWATCH_APPEARANCE, appearance = normalizeShellAppearance(null), accessoryDefinitions = [];
+  const halo = createSurfaceHalo();
   try {
     renderer = new THREE.WebGLRenderer({alpha: true, antialias: true, powerPreference: 'low-power'});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -103,11 +128,11 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     requestAnimationFrame(() => { paintPending = false; if (!disposed && renderer && mode === '3d') renderer.render(scene, camera); });
   }
   function frameCamera() {
-    if (accessoryCount) {
+    if (accessoryCount || product?.model && product.id !== 'm5stack-papermono') {
       group.updateMatrixWorld(true);
       const bounds = new THREE.Box3().setFromObject(group), size = bounds.getSize(new THREE.Vector3()), center = bounds.getCenter(new THREE.Vector3());
       const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-      const distance = (Math.max(size.y / (2 * tangent), size.x / (2 * tangent * camera.aspect)) * 1.32 + size.z / 2) * zoom;
+      const distance = Math.max(20, (Math.max(size.y / (2 * tangent), size.x / (2 * tangent * camera.aspect)) * 1.32 + size.z / 2) * zoom);
       camera.position.set(center.x, center.y, center.z + distance); camera.lookAt(center);
     } else {
       const distance = (product?.id?.includes('paper') ? 205 : 158) * Math.max(1, 1 / camera.aspect) * zoom;
@@ -121,60 +146,48 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     renderer?.setSize(width, height); draw();
   }
   const resizeObserver = new ResizeObserver(resize); resizeObserver.observe(mount);
-  function box(width, height, depth, radius, color, x = 0, y = 0, z = 0) {
-    const w = width / 2, h = height / 2, r = Math.min(radius, w, h), shape = new THREE.Shape();
-    shape.moveTo(-w + r, -h); shape.lineTo(w - r, -h); shape.quadraticCurveTo(w, -h, w, -h + r);
-    shape.lineTo(w, h - r); shape.quadraticCurveTo(w, h, w - r, h); shape.lineTo(-w + r, h);
-    shape.quadraticCurveTo(-w, h, -w, h - r); shape.lineTo(-w, -h + r); shape.quadraticCurveTo(-w, -h, -w + r, -h);
-    const geometry = new THREE.ExtrudeGeometry(shape, {depth, bevelEnabled: true, bevelThickness: .5, bevelSize: .5, bevelSegments: 2, steps: 1, curveSegments: 10});
-    geometry.translate(0, 0, -depth / 2);
-    const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({color, roughness: .45, metalness: .15}));
-    mesh.position.set(x, y, z); group.add(mesh); return mesh;
-  }
   function clearGroup() {
+    accessoryGeneration++; for (const cleanup of accessoryCleanups) cleanup(); accessoryCleanups = [];
+    clearOrientationTimers();
     productGeneration++; modelCleanup?.(); modelCleanup = null;
     group.traverse(object => {
       object.geometry?.dispose();
       if (object.material) for (const material of [].concat(object.material)) material.dispose();
     });
-    group.clear(); buttons = []; screen = null; accessoryGroup = null; accessoryCount = 0;
+    group.clear(); buttons = []; screen = null; parts = {}; connectors = {}; shellMeshes = []; accessoryGroup = null; accessoryCount = 0;
   }
   function clearDisplay() {
     frameWidth = product?.display?.framebufferWidth || product?.display?.width || 320;
     frameHeight = product?.display?.framebufferHeight || product?.display?.height || 240;
     texture = resizeFramebufferTexture(display, texture, frameWidth, frameHeight, screen?.material);
-    context.fillStyle = product?.id?.includes('paper') ? '#d2d5c6' : '#111a18';
+    context.fillStyle = /paper|ink/i.test(product?.display?.type || '') ? '#d2d5c6' : '#111a18';
     context.fillRect(0, 0, frameWidth, frameHeight); texture.needsUpdate = true; draw();
   }
   function setProduct(value) {
-    product = value; clearGroup(); clearDisplay();
+    releaseInputs(); product = value; clearGroup(); clearDisplay();
+    accessoryDefinitions = [];
+    appearanceDefaults = product.id === 'm5stack-papermono' ? {shell: {color: '#888d8e', opacity: 1, finish: 'plastic'}} : DEFAULT_STOPWATCH_APPEARANCE;
+    appearance = normalizeShellAppearance(null, appearanceDefaults); customizedAppearance = false;
     mount.dataset.modelStatus = 'illustrative';
-    const paper = product.id.includes('paper'), generic = !product.display;
+    const generic = !product.display;
     display.classList.toggle('round', product.display?.shape === 'round');
     display.hidden = mode !== '2d' || generic;
-    if (generic) {
-      box(44, 64, 2, 2, 0x2f6451);
-      box(23, 29, 2, 1, 0xb7bcb5, 0, 7, 2);
-      box(13, 13, 1, 1, 0x252d29, 0, -15, 2);
-      box(10, 7, 4, 1, 0xb7bcb5, 0, -32, 1);
-      for (const x of [-18, 18]) for (let y = -24; y <= 24; y += 6) box(3, 2, 2, .2, 0xd2bb71, x, y, 2);
-    } else if (paper) {
-      box(62, 101, 8, 5, 0xe5e5d9);
-      box(55, 91, .8, 2, 0x363b35, 0, 1, 4.5);
-      screen = new THREE.Mesh(new THREE.PlaneGeometry(49, 81.7), new THREE.MeshBasicMaterial({map: texture}));
-      screen.position.set(0, 2, 5.1); group.add(screen);
-      const a = box(11, 3, 3, 1, 0x7a7e70, -14, -48, 4), b = box(11, 3, 3, 1, 0x7a7e70, 14, -48, 4);
-      a.userData.control = 'button-a'; b.userData.control = 'button-b'; buttons.push(a, b);
+    if (!product.model && !['m5stack-stopwatch','m5stack-papermono'].includes(product.id)) {
+      mount.dataset.modelStatus = 'unavailable'; display.hidden = true; onModelReady();
     } else {
-      const token = productGeneration, model = createStopwatchModel(texture);
-      modelCleanup = model.dispose; group.add(model.group); screen = model.screen; buttons = model.buttons;
+      const token = productGeneration, model = product.id === 'm5stack-papermono' ? createPapermonoModel(texture) : product.id === 'm5stack-stopwatch' ? createStopwatchModel(texture) : createManufacturerModel(product, texture);
+      modelCleanup = model.dispose; group.add(model.group); screen = model.screen; buttons = model.buttons; parts = model.parts; connectors = model.connectors;
       mount.dataset.modelStatus = 'loading';
       model.ready.then(() => {
         if (disposed || productGeneration !== token) return;
-        mount.dataset.modelStatus = 'ready'; frameCamera(); draw();
+        screen = model.screen; if(screen)screen.userData.screen=true;
+        shellMeshes = model.group.userData.shellMeshes || [parts.shell].filter(Boolean);
+        for(const mesh of shellMeshes)mesh.userData.originalAppearance ||= {shell:{color:`#${mesh.material.color.getHexString()}`,opacity:1,finish:'plastic'}};
+        if(product.model && product.id !== 'm5stack-papermono') { appearanceDefaults = shellMeshes[0]?.userData.originalAppearance || DEFAULT_STOPWATCH_APPEARANCE; if(!customizedAppearance)appearance=normalizeShellAppearance(null,appearanceDefaults); }
+        mount.dataset.modelStatus = 'ready'; onModelReady(); applyAppearance(); setAccessories(accessoryDefinitions); frameCamera(); draw();
       }).catch(error => {
         if (disposed || productGeneration !== token) return;
-        mount.dataset.modelStatus = 'error'; console.error('StopWatch CAD loading failed:', error);
+        mount.dataset.modelStatus = 'error'; console.error(`${product.name} CAD loading failed:`, error);
         setMode('2d');
       });
     }
@@ -182,29 +195,38 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     resetView();
   }
   function setAccessories(accessories = []) {
+    const token = ++accessoryGeneration;
+    for (const cleanup of accessoryCleanups) cleanup(); accessoryCleanups = [];
+    clearHover(); accessoryDefinitions = accessories;
     if (accessoryGroup) {
-      accessoryGroup.traverse(object => { object.geometry?.dispose(); object.material?.dispose(); });
+      accessoryGroup.traverse(object => { object.geometry?.dispose(); if (object.material) for (const material of [].concat(object.material)) material.dispose(); });
       group.remove(accessoryGroup);
     }
     accessoryCount = Math.min(accessories.length, 3);
-    accessoryGroup = new THREE.Group(); group.add(accessoryGroup);
+    accessoryGroup = new THREE.Group(); accessoryGroup.name = 'accessory-assembly'; group.add(accessoryGroup);
+    let groveOccupied = false;
     for (let i = 0; i < accessoryCount; i++) {
-      const x = 45 + i * 12, y = -14 - i * 18;
-      const shell = new THREE.Mesh(new THREE.BoxGeometry(16, 23, 6), new THREE.MeshStandardMaterial({color: 0xe5e7d9, roughness: .8}));
-      shell.position.set(x, y, 0); accessoryGroup.add(shell);
-      const chip = new THREE.Mesh(new THREE.BoxGeometry(9, 10, 1), new THREE.MeshStandardMaterial({color: accessories[i].type === 'gps' ? 0xbfc497 : 0x4d715b, roughness: .7}));
-      chip.position.set(x, y + 2, 3.7); accessoryGroup.add(chip);
-      const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(0, -27, 0), new THREE.Vector3(15, -45 - i * 5, -3), new THREE.Vector3(x, y - 14, 0)]);
-      const cable = new THREE.Mesh(new THREE.TubeGeometry(curve, 20, .6, 6, false), new THREE.MeshStandardMaterial({color: 0x71866b}));
-      accessoryGroup.add(cable);
+      const definition = accessories[i], accessory = createIllustrativeAccessory(definition, i); accessoryGroup.add(accessory.group);
+      if (accessory.dispose) accessoryCleanups.push(() => accessory.dispose());
+      accessory.ready?.then(() => { if (!disposed && token === accessoryGeneration) { frameCamera(); draw(); } }).catch(error => { if (!disposed && token === accessoryGeneration) { console.error('Accessory model loading failed:', error); draw(); } });
+      const connectorMatches = definition.connector?.type === 'HY2.0-4P' && (!definition.wiring || definition.wiring.mode === 'logical' || definition.wiring.connectorId === 'grove');
+      if (connectors.grove && connectorMatches && !groveOccupied) {
+        const cable = createGroveCable(connectors.grove, accessory.connector, group);
+        if (cable) { accessoryGroup.add(cable.group); groveOccupied = true; accessory.group.userData.connection = 'grove-visual-only'; }
+        else accessory.group.userData.connection = 'unverified-connector-preview';
+      } else accessory.group.userData.connection = 'unconnected-preview';
     }
     frameCamera(); draw();
   }
-  function resetView() { group.rotation.set(-.13, -.25, .025); zoom = 1; resize(); }
+  function applyAppearance() { for(const mesh of shellMeshes.length?shellMeshes:[parts.shell].filter(Boolean))applyShellAppearance(mesh, customizedAppearance?appearance:mesh.userData.originalAppearance || appearance, {occluder: parts.occluder}); draw(); }
+  function setAppearance(value) { customizedAppearance = value != null; appearance = normalizeShellAppearance(value, appearanceDefaults); applyAppearance(); return getAppearance(); }
+  function getAppearance() { return {shell: {...appearance.shell}}; }
+  function resetView() { releaseInputs(); group.rotation.set(-.13, -.25, .025); zoom = 1; publishOrientation(false); resize(); }
   function setMode(next) {
+    releaseInputs();
     mode = next === '3d' && renderer ? '3d' : '2d';
     if (renderer) renderer.domElement.hidden = mode !== '3d';
-    display.hidden = mode !== '2d' || !product?.display;
+    display.hidden = mode !== '2d' || !product?.display || (!product.model && !product.runtime.board);
     onModeChange(mode, !renderer); draw(); return mode;
   }
   function updateFrame({width, height, pixels}) {
@@ -214,60 +236,81 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     context.putImageData(new ImageData(new Uint8ClampedArray(pixels), width, height), 0, 0);
     texture.needsUpdate = true; draw();
   }
-  function hit(event) {
-    const rect = mount.getBoundingClientRect();
+  function setRay(event) {
+    const rect = renderer.domElement.getBoundingClientRect();
     pointer.set(((event.clientX - rect.left) / rect.width) * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1);
-    raycaster.setFromCamera(pointer, camera);
-    return raycaster.intersectObjects([...buttons, ...(screen ? [screen] : [])], false)[0];
+    camera.updateMatrixWorld(); group.updateMatrixWorld(true); raycaster.setFromCamera(pointer, camera);
   }
-  function touch(hitPoint, down) {
-    if (!hitPoint?.uv) return;
-    const x = Math.max(0, Math.min(frameWidth - 1, Math.floor(hitPoint.uv.x * frameWidth)));
-    const y = Math.max(0, Math.min(frameHeight - 1, Math.floor((1 - hitPoint.uv.y) * frameHeight)));
-    gesture.lastTouch = {type: 'touch', x, y, down}; onInput(gesture.lastTouch);
+  function hit(event) { setRay(event); return pickVisibleSurface(raycaster, group); }
+  function nativePoint(u, v) { return {x: Math.max(0, Math.min(frameWidth - 1, Math.floor(u * frameWidth))), y: Math.max(0, Math.min(frameHeight - 1, Math.floor(v * frameHeight)))}; }
+  function flatPoint(event) {
+    const rect = display.getBoundingClientRect(), style = getComputedStyle(display), xBorder = parseFloat(style.borderLeftWidth) || 0, yBorder = parseFloat(style.borderTopWidth) || 0;
+    const u = (event.clientX - rect.left - xBorder) / Math.max(1, rect.width - xBorder * 2), v = (event.clientY - rect.top - yBorder) / Math.max(1, rect.height - yBorder * 2);
+    return {u, v, ...nativePoint(u, v)};
   }
+  function screenPoint(event, intersection) {
+    if (event.currentTarget === display) return flatPoint(event);
+    if (intersection?.object === screen && intersection.uv) return nativePoint(intersection.uv.x, 1 - intersection.uv.y);
+    if (!screen) return null;
+    // Continue a captured screen gesture on its plane, even beyond its outline. It cannot become orbit.
+    setRay(event); screen.updateWorldMatrix(true, false);
+    const normal = new THREE.Vector3(0, 0, 1).transformDirection(screen.matrixWorld);
+    const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(normal, screen.getWorldPosition(new THREE.Vector3()));
+    const point = raycaster.ray.intersectPlane(plane, new THREE.Vector3()); if (!point) return null;
+    screen.worldToLocal(point); screen.geometry.computeBoundingBox(); const bounds = screen.geometry.boundingBox;
+    return nativePoint((point.x - bounds.min.x) / (bounds.max.x - bounds.min.x), (bounds.max.y - point.y) / (bounds.max.y - bounds.min.y));
+  }
+  function surface(intersection) {
+    const object = intersection?.object;
+    if (object?.userData.control) return {kind: 'button', id: object.userData.control};
+    if (object?.userData.unsupported) return {kind: 'unsupported', message: object.userData.unsupported};
+    if (object?.userData.screen) return product?.runtime?.touch ? {kind: 'touch'} : {kind: 'unsupported', message: '此设备尚未实现触摸输入。'};
+    return {kind: 'orbit'};
+  }
+  function clearHover() {
+    halo.clear(); delete mount.dataset.hover; mount.style.cursor = ''; mount.removeAttribute('title'); display.style.outline = ''; draw();
+  }
+  function hover(event) {
+    if (router.activeCount) return;
+    if (event.currentTarget === display) {
+      const point = flatPoint(event), inside = point.u >= 0 && point.u <= 1 && point.v >= 0 && point.v <= 1 && (product?.display?.shape !== 'round' || (point.u - .5) ** 2 + (point.v - .5) ** 2 <= .25);
+      clearHover(); if (inside && product?.runtime?.touch) { display.style.outline = '2px solid #ee857f55'; mount.dataset.hover = 'touch'; mount.style.cursor = 'crosshair'; } return;
+    }
+    const intersection = hit(event), role = surface(intersection);
+    if (!intersection) { clearHover(); return; }
+    halo.show(intersection.object, role.kind); mount.dataset.hover = role.kind;
+    mount.style.cursor = {button: 'pointer', touch: 'crosshair', unsupported: 'not-allowed', orbit: 'grab'}[role.kind];
+    if (role.message) mount.title = role.message; else mount.removeAttribute('title'); draw();
+  }
+  const router = createScenePointerRouter({onInput, onUnsupported, onError: error => console.error('Scene input failed:', error), onOrbit(dx, dy) {
+    group.rotation.y += dx * .01; group.rotation.x += dy * .01;
+    orientationChanged();
+    if (accessoryCount) frameCamera(); draw();
+  }});
   function down(event) {
     if (event.button !== 0) return;
-    const target = event.currentTarget; target.setPointerCapture(event.pointerId);
-    gesture = {x: event.clientX, y: event.clientY, pointerId: event.pointerId, type: 'orbit'};
-    if (target === display) { gesture.type = 'touch'; flatTouch(event, true); return; }
-    const intersection = hit(event);
-    if (intersection?.object.userData.control) {
-      gesture.type = 'button'; pressed = intersection.object.userData.control;
-      onInput({type: 'button', id: pressed, pressed: true});
-    } else if (intersection?.object.userData.screen) { gesture.type = 'touch'; touch(intersection, true); }
-  }
-  function flatTouch(event, isDown) {
-    const rect = display.getBoundingClientRect(), border = 10;
-    const x = Math.round(((event.clientX - rect.left - border) / Math.max(1, rect.width - border * 2)) * frameWidth);
-    const y = Math.round(((event.clientY - rect.top - border) / Math.max(1, rect.height - border * 2)) * frameHeight);
-    gesture.lastTouch = {type: 'touch', x: Math.max(0, Math.min(frameWidth - 1, x)), y: Math.max(0, Math.min(frameHeight - 1, y)), down: isDown};
-    onInput(gesture.lastTouch);
+    const flat = event.currentTarget === display, intersection = flat ? {object: screen} : hit(event), role = surface(intersection);
+    const point = role.kind === 'touch' ? screenPoint(event, intersection) : null;
+    if (flat && point && product?.display?.shape === 'round' && (point.u - .5) ** 2 + (point.v - .5) ** 2 > .25) return;
+    clearHover(); event.preventDefault(); event.currentTarget.focus?.({preventScroll: true});
+    const kind = router.down({pointerId: event.pointerId, x: event.clientX, y: event.clientY, surface: role, point});
+    if (!['ignored', 'unsupported'].includes(kind)) { event.currentTarget.setPointerCapture(event.pointerId); mount.style.cursor = kind === 'orbit' ? 'grabbing' : 'pointer'; }
   }
   function move(event) {
-    if (!gesture || gesture.pointerId !== event.pointerId) return;
-    if (gesture.type === 'orbit') {
-      group.rotation.y += (event.clientX - gesture.x) * .01;
-      group.rotation.x = Math.max(-1.3, Math.min(1.3, group.rotation.x + (event.clientY - gesture.y) * .01));
-      gesture.x = event.clientX; gesture.y = event.clientY; if (accessoryCount) frameCamera(); draw();
-    } else if (gesture.type === 'touch') {
-      if (event.currentTarget === display) flatTouch(event, true);
-      else { const intersection = hit(event); if (intersection?.object.userData.screen) touch(intersection, true); }
-    }
+    const kind = router.kind(event.pointerId);
+    if (!kind) { hover(event); return; }
+    router.move({pointerId: event.pointerId, x: event.clientX, y: event.clientY, point: kind === 'touch' ? screenPoint(event) : null});
   }
-  function up() {
-    if (pressed) onInput({type: 'button', id: pressed, pressed: false});
-    if (gesture?.lastTouch) onInput({...gesture.lastTouch, down: false});
-    gesture = null; pressed = null;
-  }
+  function up(event) { const orbit = router.kind(event.pointerId) === 'orbit'; router.up(event.pointerId); if (orbit) { clearOrientationTimers(); publishOrientation(false); } if (!router.activeCount) clearHover(); }
+  function releaseInputs() { const hadMotion = orientationTimer !== null || orientationIdle !== null; clearOrientationTimers(); router.releaseAll(); if (hadMotion) publishOrientation(false); clearHover(); }
   for (const canvas of [display, renderer?.domElement].filter(Boolean)) {
-    canvas.addEventListener('pointerdown', down); canvas.addEventListener('pointermove', move);
+    canvas.addEventListener('pointerdown', down); canvas.addEventListener('pointermove', move); canvas.addEventListener('pointerleave', clearHover); canvas.addEventListener('blur', releaseInputs);
     canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up); canvas.addEventListener('lostpointercapture', up);
   }
-  window.addEventListener('blur', up);
-  function wheel(event) { if (mode !== '3d') return; event.preventDefault(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
+  window.addEventListener('blur', releaseInputs);
+  function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {setProduct, setAccessories, setMode, resetView, updateFrame, clearDisplay, releaseInputs: up, get mode() { return mode; },
-    dispose() { disposed = true; up(); resizeObserver.disconnect(); window.removeEventListener('blur', up); mount.removeEventListener('wheel', wheel); clearGroup(); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
+  return {setProduct, setAccessories, setMode, resetView, updateFrame, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+    dispose() { disposed = true; releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup(); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }

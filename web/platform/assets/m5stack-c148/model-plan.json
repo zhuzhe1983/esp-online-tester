@@ -1,0 +1,1233 @@
+{
+  "title": "M5Stack PowerHub · C148",
+  "summary": "ESP32-S3 与 STM32G031 组成的多路电源与总线控制主机，支持 RS485、CAN、USB、电流监测和 NP-F 系列电池。",
+  "sourceId": "manufacturer-cad-43eef7d7d5",
+  "matrixRows": [
+    [
+      -1,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      -1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1,
+      -16.4
+    ],
+    [
+      0,
+      0,
+      0,
+      1
+    ]
+  ],
+  "parts": [
+    {
+      "sourceComponent": 0,
+      "name": "main-shell",
+      "color": "#ddddda",
+      "role": "shell"
+    },
+    {
+      "sourceComponent": 2,
+      "name": "battery-latch",
+      "color": "#f2bd2c",
+      "role": "button"
+    },
+    {
+      "sourceComponent": 4,
+      "name": "back-shell",
+      "color": "#d5d7d1",
+      "role": "shell"
+    },
+    {
+      "sourceComponent": 8,
+      "name": "rgb-light-guide",
+      "color": "#d9dedb",
+      "role": "component"
+    },
+    {
+      "sourceComponent": 10,
+      "name": "user-button-carrier",
+      "color": "#f2bd2c",
+      "role": "button"
+    },
+    {
+      "sourceComponent": 12,
+      "name": "top-translucent-button",
+      "color": "#d9dedb",
+      "role": "component"
+    }
+  ],
+  "assemblyNotes": "Native shell assembly rotated180degrees about Z so antenna at top left, USB output at left, buttons at right as official front. Optional source battery envelope6 omitted for C148 without battery. All selected CAD triangles retain millimetres/relative placement. External connector and antenna estimates separately marked.",
+  "omittedComponents": [
+    {
+      "index": 1,
+      "reason": "Separate manufacturer print-layout duplicate or disconnected tiny export fragment outside selected assembly; source bounds retained in component audit."
+    },
+    {
+      "index": 3,
+      "reason": "Separate manufacturer print-layout duplicate or disconnected tiny export fragment outside selected assembly; source bounds retained in component audit."
+    },
+    {
+      "index": 5,
+      "reason": "Separate manufacturer print-layout duplicate or disconnected tiny export fragment outside selected assembly; source bounds retained in component audit."
+    },
+    {
+      "index": 7,
+      "reason": "Separate manufacturer print-layout duplicate or disconnected tiny export fragment outside selected assembly; source bounds retained in component audit."
+    },
+    {
+      "index": 9,
+      "reason": "Separate manufacturer print-layout duplicate or disconnected tiny export fragment outside selected assembly; source bounds retained in component audit."
+    },
+    {
+      "index": 11,
+      "reason": "Separate manufacturer print-layout duplicate or disconnected tiny export fragment outside selected assembly; source bounds retained in component audit."
+    },
+    {
+      "index": 13,
+      "reason": "Separate manufacturer print-layout duplicate or disconnected tiny export fragment outside selected assembly; source bounds retained in component audit."
+    },
+    {
+      "index": 6,
+      "reason": "Optional NP-F battery-shaped model shown in source assembly. This entry is C148 PowerHub without battery, not the battery kit; removed instead of recoloring battery as shell."
+    }
+  ],
+  "targets": [
+    {
+      "name": "width",
+      "axis": 0,
+      "valueMm": 56,
+      "toleranceMm": 0.1,
+      "sourceId": "official-docs"
+    },
+    {
+      "name": "height",
+      "axis": 1,
+      "valueMm": 88,
+      "toleranceMm": 0.1,
+      "sourceId": "official-docs"
+    },
+    {
+      "name": "depth",
+      "axis": 2,
+      "valueMm": 38.5,
+      "toleranceMm": 0.1,
+      "sourceId": "official-docs"
+    }
+  ],
+  "dimensions": {
+    "officialOrientedEnvelopeMm": [
+      56,
+      88,
+      38.5
+    ]
+  },
+  "presentation": {
+    "bodySizeMm": [
+      56,
+      88,
+      38.5
+    ]
+  },
+  "derivedParts": [
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "label": "UNKNOWN",
+      "basis": "estimated",
+      "geometry": {
+        "sizeMm": [
+          50,
+          81,
+          1.6
+        ],
+        "centerMm": [
+          0,
+          0,
+          -10
+        ]
+      },
+      "notes": "Only an enclosure-space placeholder, no inferred component placement; excluded from accuracy certification.",
+      "sourceIds": []
+    },
+    {
+      "id": "antenna-cap",
+      "kind": "cylinder",
+      "geometry": {
+        "radiusMm": 7.5,
+        "depthMm": 14,
+        "centerMm": [
+          -8,
+          33,
+          15.1
+        ]
+      },
+      "color": "#202524",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "product-photo-1d3cdcce15",
+        "product-photo-f476cbb9f1"
+      ],
+      "notes": "Official antenna15x14mm; approximate cylindrical external envelope and seating from photographs. Exact cap profile/hidden SMA geometry unknown."
+    },
+    {
+      "id": "grove-a",
+      "kind": "connector-visual",
+      "connectorType": "HY2.0-4P",
+      "geometry": {
+        "centerMm": [
+          24,
+          22,
+          -0.2
+        ],
+        "rotation": [
+          0,
+          0,
+          1.5707963267948966
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-1d3cdcce15"
+      ],
+      "allowConnections": false,
+      "notes": "Photo/CAD-cutout mouth estimate. Hidden depth/contacts not mechanically verified. Cable disabled until exact transformed pin order is checked.",
+      "housingColor": "#9f2635",
+      "housingColorEvidence": {
+        "basis": "image-measurement",
+        "sourceIds": [
+          "product-photo-1d3cdcce15"
+        ],
+        "notes": "Socket plastic color category checked against the exact product source photograph; hex is an approximate display value, not a calibrated optical measurement. Contacts/inner shading independent from shell appearance."
+      }
+    },
+    {
+      "id": "grove-c",
+      "kind": "connector-visual",
+      "connectorType": "HY2.0-4P",
+      "geometry": {
+        "centerMm": [
+          -24,
+          22,
+          -0.2
+        ],
+        "rotation": [
+          0,
+          0,
+          1.5707963267948966
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-1d3cdcce15"
+      ],
+      "allowConnections": false,
+      "notes": "Photo/CAD-cutout mouth estimate. Hidden depth/contacts not mechanically verified. Cable disabled until exact transformed pin order is checked.",
+      "housingColor": "#167e9c",
+      "housingColorEvidence": {
+        "basis": "image-measurement",
+        "sourceIds": [
+          "product-photo-1d3cdcce15"
+        ],
+        "notes": "Socket plastic color category checked against the exact product source photograph; hex is an approximate display value, not a calibrated optical measurement. Contacts/inner shading independent from shell appearance."
+      }
+    },
+    {
+      "id": "usb-c-output",
+      "kind": "connector-visual",
+      "connectorType": "USB-C",
+      "geometry": {
+        "centerMm": [
+          -24,
+          -17,
+          -0.2
+        ],
+        "rotation": [
+          0,
+          0,
+          1.5707963267948966
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-1d3cdcce15"
+      ],
+      "allowConnections": false,
+      "notes": "Photo/CAD-cutout mouth estimate. Hidden depth/contacts not mechanically verified. Cable disabled until exact transformed pin order is checked."
+    },
+    {
+      "id": "usb-c-input",
+      "kind": "connector-visual",
+      "connectorType": "USB-C",
+      "geometry": {
+        "centerMm": [
+          0,
+          -44,
+          -10.7
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-f476cbb9f1"
+      ],
+      "allowConnections": false,
+      "notes": "Photo/CAD-cutout mouth estimate. Hidden depth/contacts not mechanically verified. Cable disabled until exact transformed pin order is checked."
+    },
+    {
+      "id": "usb-a-rim-left",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.45,
+          13,
+          2.5
+        ],
+        "centerMm": [
+          -26.6,
+          2.8,
+          -1.45
+        ]
+      },
+      "color": "#a9adaa",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-1d3cdcce15"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "usb-a-rim-right",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.45,
+          13,
+          2.5
+        ],
+        "centerMm": [
+          -21.4,
+          2.8,
+          -1.45
+        ]
+      },
+      "color": "#a9adaa",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-1d3cdcce15"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "usb-a-rim-top",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          4.8,
+          0.45,
+          2.5
+        ],
+        "centerMm": [
+          -24,
+          9.3,
+          -1.45
+        ]
+      },
+      "color": "#a9adaa",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-1d3cdcce15"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "usb-a-rim-bottom",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          4.8,
+          0.45,
+          2.5
+        ],
+        "centerMm": [
+          -24,
+          -3.7,
+          -1.45
+        ]
+      },
+      "color": "#a9adaa",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-1d3cdcce15"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "usb-a-cavity",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          4.8,
+          12.5,
+          0.2
+        ],
+        "centerMm": [
+          -24,
+          2.8,
+          -2.7
+        ]
+      },
+      "color": "#141818",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-1d3cdcce15"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "usb-a-tongue",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          1.7,
+          10,
+          0.6
+        ],
+        "centerMm": [
+          -22.7,
+          2.8,
+          -0.7
+        ]
+      },
+      "color": "#dfdfd5",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-1d3cdcce15"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "dc-rim",
+      "kind": "torus",
+      "geometry": {
+        "radiusMm": 3.2,
+        "tubeMm": 0.9,
+        "centerMm": [
+          16,
+          -44.05,
+          -10.7
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "color": "#242a28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-f476cbb9f1"
+      ],
+      "notes": "Visible DC5.5x2.1mm input rim; envelope estimated from photo, no physical mating claim."
+    },
+    {
+      "id": "dc-body",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          8,
+          2.5,
+          8
+        ],
+        "centerMm": [
+          16,
+          -42.5,
+          -10.7
+        ]
+      },
+      "color": "#222724",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-f476cbb9f1"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "rs485-housing",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          16,
+          3.5,
+          7
+        ],
+        "centerMm": [
+          9,
+          42.25,
+          4.5
+        ]
+      },
+      "color": "#d07723",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-b3bae8f2ea"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "can-housing",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          12,
+          3.5,
+          7
+        ],
+        "centerMm": [
+          -10,
+          42.25,
+          -9
+        ]
+      },
+      "color": "#242827",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-b3bae8f2ea"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "rs485-visible-recess-0",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          0.3,
+          2.6
+        ],
+        "centerMm": [
+          3.05,
+          44.05,
+          4.5
+        ]
+      },
+      "color": "#372a1f",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-b3bae8f2ea"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "rs485-visible-recess-1",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          0.3,
+          2.6
+        ],
+        "centerMm": [
+          7.01,
+          44.05,
+          4.5
+        ]
+      },
+      "color": "#372a1f",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-b3bae8f2ea"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "rs485-visible-recess-2",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          0.3,
+          2.6
+        ],
+        "centerMm": [
+          10.969999999999999,
+          44.05,
+          4.5
+        ]
+      },
+      "color": "#372a1f",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-b3bae8f2ea"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "rs485-visible-recess-3",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          0.3,
+          2.6
+        ],
+        "centerMm": [
+          14.93,
+          44.05,
+          4.5
+        ]
+      },
+      "color": "#372a1f",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-b3bae8f2ea"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "can-visible-recess-0",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          3,
+          0.3,
+          3
+        ],
+        "centerMm": [
+          -12.5,
+          44.05,
+          -9
+        ]
+      },
+      "color": "#0d1210",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-b3bae8f2ea"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "can-visible-recess-1",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          3,
+          0.3,
+          3
+        ],
+        "centerMm": [
+          -7.5,
+          44.05,
+          -9
+        ]
+      },
+      "color": "#0d1210",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-b3bae8f2ea"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-0-0",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          -8.89,
+          25.73,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-0-1",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          -6.35,
+          25.73,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-0-2",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          -3.81,
+          25.73,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-0-3",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          -1.27,
+          25.73,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-0-4",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          1.27,
+          25.73,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-0-5",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          3.81,
+          25.73,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-0-6",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          6.35,
+          25.73,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-0-7",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          8.89,
+          25.73,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-1-0",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          -8.89,
+          28.27,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-1-1",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          -6.35,
+          28.27,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-1-2",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          -3.81,
+          28.27,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-1-3",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          -1.27,
+          28.27,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-1-4",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          1.27,
+          28.27,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-1-5",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          3.81,
+          28.27,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-1-6",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          6.35,
+          28.27,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "ext-header-1-7",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          2.4,
+          2.4,
+          1.2
+        ],
+        "centerMm": [
+          8.89,
+          28.27,
+          -16.2
+        ]
+      },
+      "color": "#252b28",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c8fad993ac"
+      ],
+      "notes": "Visible exterior detail from exact product photo; dimensions/placement estimated, not connector manufacturer CAD."
+    },
+    {
+      "id": "front-paper",
+      "kind": "label",
+      "texture": "front-paper.png",
+      "geometry": {
+        "sizeMm": [
+          56,
+          88
+        ],
+        "centerMm": [
+          0,
+          0,
+          -4.37
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-1d3cdcce15"
+      ],
+      "notes": "Independent masked label on recessed tray plane; source paper position/lighting approximate."
+    }
+  ],
+  "photos": [
+    {
+      "sourceId": "product-photo-1d3cdcce15",
+      "view": "front",
+      "originalView": "front"
+    },
+    {
+      "sourceId": "product-photo-c8fad993ac",
+      "view": "back",
+      "originalView": "back"
+    },
+    {
+      "sourceId": "product-photo-b3bae8f2ea",
+      "view": "side",
+      "originalView": "RS485-CAN-side"
+    }
+  ],
+  "limitations": [
+    "Official gallery asset filenames use C124/K124 legacy names; they are linked by the current C148 document. They do not establish another SKU equivalence.",
+    "Manufacturer shell/source inserts have 32.8 mm depth versus official 38.5 mm with protrusions; antenna/terminal complete geometry is not supplied and the failure is retained.",
+    "NP-F battery is optional and is not silently added to the base product model.",
+    "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
+    "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+    "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+    "Source CAD without optional battery is32.8mm deep, while specified product38.5mm includes the antenna; no CAD scaling used. The external antenna envelope is photo-derived, exact hidden SMA connection unknown.",
+    "Grove, USB, DC, CAN/RS485 and expansion contacts are explicit exterior estimates. No cable is enabled without an independently verified transformed wire order; no STM32 power-management behavior is simulated.",
+    "Rear and side printed labels are not reconstructed from oblique photographs; missing text remains a limitation."
+  ],
+  "hardwareRevision": "unspecified",
+  "catalog": {
+    "display": null,
+    "dimensions": {
+      "width": 56,
+      "height": 88,
+      "depth": 38.5,
+      "unit": "mm",
+      "sourceId": "official-docs"
+    },
+    "controls": [
+      {
+        "id": "button-user",
+        "type": "button",
+        "name": "Yellow user button",
+        "pin": 11
+      },
+      {
+        "id": "power-top",
+        "type": "button",
+        "name": "STM32 top power button"
+      },
+      {
+        "id": "power-side",
+        "type": "button",
+        "name": "STM32 side power button"
+      }
+    ],
+    "interfaces": [
+      {
+        "id": "grove-a",
+        "type": "HY2.0-4P",
+        "name": "PORT.A",
+        "external": true,
+        "pins": [
+          {
+            "name": "GND"
+          },
+          {
+            "name": "5V"
+          },
+          {
+            "name": "G15",
+            "gpio": 15
+          },
+          {
+            "name": "G16",
+            "gpio": 16
+          }
+        ]
+      },
+      {
+        "id": "grove-c",
+        "type": "HY2.0-4P",
+        "name": "PORT.C",
+        "external": true,
+        "pins": [
+          {
+            "name": "GND"
+          },
+          {
+            "name": "5V"
+          },
+          {
+            "name": "G1",
+            "gpio": 1
+          },
+          {
+            "name": "G2",
+            "gpio": 2
+          }
+        ]
+      },
+      {
+        "id": "usb-c-input",
+        "type": "USB-C",
+        "name": "USB power / serial input",
+        "external": true,
+        "pins": []
+      },
+      {
+        "id": "usb-c-output",
+        "type": "USB-C",
+        "name": "USB output",
+        "external": true,
+        "pins": []
+      },
+      {
+        "id": "usb-a-output",
+        "type": "USB-A",
+        "name": "USB output",
+        "external": true,
+        "pins": []
+      },
+      {
+        "id": "dc",
+        "type": "DC5.5x2.1",
+        "name": "DC9–20V input",
+        "external": true,
+        "pins": []
+      },
+      {
+        "id": "rs485",
+        "type": "HT3.96-4P",
+        "name": "RS485 / power",
+        "external": true,
+        "pins": []
+      },
+      {
+        "id": "can",
+        "type": "XT30-2+2",
+        "name": "CAN / power",
+        "external": true,
+        "pins": []
+      },
+      {
+        "id": "ext",
+        "type": "2x8-2.54mm",
+        "name": "EXT2.54-16P",
+        "external": true,
+        "pins": []
+      }
+    ]
+  },
+  "reviewViews": {
+    "front": {
+      "span": 131
+    },
+    "back": {
+      "span": 131,
+      "position": [
+        110,
+        150,
+        -300
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ]
+    },
+    "side": {
+      "span": 100,
+      "position": [
+        0,
+        250,
+        20
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ]
+    }
+  },
+  "textureSources": [
+    {
+      "file": "front-paper.png",
+      "sourceId": "product-photo-1d3cdcce15",
+      "cropXYXY": [
+        350,
+        196,
+        852,
+        999
+      ],
+      "alphaMask": {
+        "includeRoundedRects": [
+          {
+            "xyxy": [
+              468,
+              383,
+              731,
+              974
+            ],
+            "radiusPx": 4
+          }
+        ]
+      },
+      "notes": "Only large paper label in battery tray, explicit mask; case, terminals, antenna, screws excluded."
+    }
+  ]
+}

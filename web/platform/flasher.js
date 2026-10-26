@@ -2,6 +2,8 @@
 import { fetchBytes, resolveFirmwareUrl, sha256, validateMergedImage } from './runtime.js';
 import { validateScene } from './catalog.js';
 import { loadWatchlist } from './watchlist.js';
+import { firmwareCache } from './firmware-cache.js';
+import { assembleLocalFirmware } from './local-firmware.js';
 
 const MIB = 1024 * 1024, MAX_FILE = 32 * MIB;
 const problem = (code, message, details) => Object.assign(new Error(message), { code, details });
@@ -14,7 +16,7 @@ export function flasherCapabilities({ navigator: nav = globalThis.navigator, doc
   const policy = doc?.permissionsPolicy || doc?.featurePolicy;
   const allowed = !policy?.allowsFeature || policy.allowsFeature('serial');
   const supported = secureContext === true && !!nav?.serial?.requestPort && allowed;
-  return { supported, requiresUserGesture: true, iframePolicy: 'serial', reason: secureContext !== true ? 'HTTPS 或 localhost 才能使用 Web Serial。' : !nav?.serial?.requestPort ? '此浏览器没有 Web Serial；请在支持该接口的桌面浏览器中打开。' : !allowed ? '嵌入页未获 serial 权限；宿主页需允许 serial Permissions Policy，iframe 需 allow="serial"。' : '', eraseAll: false, persistentFirmwareCache: false };
+  return { supported, requiresUserGesture: true, iframePolicy: 'serial', reason: secureContext !== true ? 'HTTPS 或 localhost 才能使用 Web Serial。' : !nav?.serial?.requestPort ? '此浏览器没有 Web Serial；请在支持该接口的桌面浏览器中打开。' : !allowed ? '嵌入页未获 serial 权限；宿主页需允许 serial Permissions Policy，iframe 需 allow="serial"。' : '', eraseAll: false, persistentFirmwareCache: true };
 }
 
 function selectedProduct(scene, catalog) {
@@ -38,7 +40,7 @@ function appPartition(table, flashBytes) {
   return factory[0] || apps[0];
 }
 
-export function validateFlashLayout(files, product) {
+export function validateFlashLayout(files, product, {partitionTableOffset = 0x8000} = {}) {
   const flashBytes = product.runtime.flashMb * MIB;
   check(Number.isSafeInteger(flashBytes) && flashBytes > 0 && flashBytes <= MAX_FILE, 'FLASH_LAYOUT', 'Invalid product flash capacity.');
   check(files.length > 0 && files.length <= 32, 'FLASH_LAYOUT', 'Flash plan needs 1–32 images.');
@@ -53,7 +55,7 @@ export function validateFlashLayout(files, product) {
   const merged = new Uint8Array(length).fill(255);
   for (const file of sorted) merged.set(file.data, file.address);
   // Hardware image IDs follow the chip, independent of an emulator board alias.
-  validateMergedImage(merged, normalizedChip(product.chip), flashBytes);
+  validateMergedImage(merged, normalizedChip(product.chip), flashBytes, {partitionTableOffset});
   return sorted;
 }
 
@@ -71,17 +73,28 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
     const value = typeof entry === 'string' ? { url: entry } : entry;
     check(value && typeof value.url === 'string', 'INVALID_MANIFEST', 'Firmware file requires a URL.');
     const url = resolveFirmwareUrl(value.url, base);
-    const watched = watchlist?.entries.find(entry => entry.assets.some(asset => asset.url === url));
+    const watched = watchlist?.entries.find(entry => entry.assets.some(asset => asset.url === url || asset.upstreamUrl === url));
+    const watchedAsset = watched?.assets.find(asset => asset.url === url || asset.upstreamUrl === url);
+    const catalogArtifact = catalog.firmwares.find(item => item.source && [item.source.url, item.source.manifestUrl].includes(url));
     check(!watched || watched.compatibility.status === 'product-verified' && watched.compatibility.productIds.includes(product.id), 'REFERENCE_ONLY', 'This known remote asset is reference-only for the selected product; it cannot be flashed through a custom manifest either.');
-    const data = await fetchBytes(url, { fetchImpl, signal, maxBytes });
+    const pin = value.sha256 || watchedAsset?.sha256 || catalogArtifact?.source.sha256;
+    let cached = await firmwareCache.get(url, pin, maxBytes);
+    if (cached && await sha256(cached.data) !== pin.toLowerCase()) { await firmwareCache.remove(url, pin); cached = null; }
+    if (signal?.aborted) throw cancelled();
+    const data = cached?.data || await fetchBytes(url, { fetchImpl, signal, maxBytes });
     total += data.length; check(data.length > 0 && total <= 64 * MIB, 'FLASH_SIZE', 'Firmware bundle is empty or exceeds 64 MiB.');
     const actual = await sha256(data);
-    check(!value.sha256 || /^[a-f0-9]{64}$/i.test(value.sha256) && actual === value.sha256.toLowerCase(), 'HASH_MISMATCH', 'Firmware SHA-256 does not match.', { url, actual, expected: value.sha256 });
+    // A reviewed catalog/watchlist URL remains pinned even when a caller omits
+    // or substitutes its hash. Updating a remote release requires a new review.
+    for (const expected of [value.sha256, watchedAsset?.sha256, catalogArtifact?.source.sha256].filter(Boolean)) {
+      check(/^[a-f0-9]{64}$/i.test(expected) && actual === expected.toLowerCase(), 'HASH_MISMATCH', 'Firmware SHA-256 does not match.', { url, actual, expected });
+    }
+    if (!cached && pin && !signal?.aborted) await firmwareCache.putVerified(url, actual, data);
     return { data, url, sha256: actual };
   };
   const files = [], receipt = [];
   const add = (artifact, address, kind) => { files.push({ data: artifact.data, address }); receipt.push({ kind, address, bytes: artifact.data.length, url: artifact.url || null, sha256: artifact.sha256 }); };
-  let manifestHash = null;
+  let manifestHash = null, partitionTableOffset = 0x8000;
   if (source.manifestUrl) {
     const url = resolveFirmwareUrl(source.manifestUrl, baseUrl), artifact = await read({ url, sha256: source.sha256 }, baseUrl, 256 * 1024);
     manifestHash = artifact.sha256;
@@ -116,6 +129,12 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
         add(await read(pin(entry), url), Number(offset), 'flash_at');
       }
     }
+  } else if (['build','segments'].includes(source.format)) {
+    const local = await assembleLocalFirmware(source, {board:normalizedChip(product.chip), flashBytes:product.runtime.flashMb*MIB, signal});
+    partitionTableOffset = local.partitionTableOffset;
+    if (source.sha256) check(await sha256(local.data) === source.sha256.toLowerCase(), 'HASH_MISMATCH', 'Local firmware SHA-256 does not match.');
+    // Write only supplied segments: never erase the 0xff gaps used by simulation.
+    for (const entry of local.segments) add({data:entry.data,url:null,sha256:await sha256(entry.data)},entry.offset,'flash_at');
   } else {
     let artifact;
     if (source.file) {
@@ -126,7 +145,7 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
     } else artifact = await read(source, baseUrl);
     add(artifact, 0, 'flash');
   }
-  return { product: clone(product), files: validateFlashLayout(files, product), receipt: { productId: product.id, chip: product.chip, flashBytes: product.runtime.flashMb * MIB, manifestHash, artifacts: receipt, hardwareValidated: false, persistence: 'memory-only' } };
+  return { product: clone(product), files: validateFlashLayout(files, product, {partitionTableOffset}), receipt: { productId: product.id, chip: product.chip, flashBytes: product.runtime.flashMb * MIB, manifestHash, partitionTableOffset, artifacts: receipt, hardwareValidated: false, persistence: 'user-browser-cache-for-pinned-remote-artifacts' } };
 }
 
 export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, document: doc = globalThis.document, secureContext = globalThis.isSecureContext, fetchImpl = globalThis.fetch, baseUrl = globalThis.location?.href,
@@ -172,7 +191,7 @@ export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, 
         const detected = await loader.detectFlashSize(); guard();
         const flashBytes = loader.flashSizeBytes(detected || 'unknown');
         check(flashBytes === plan.receipt.flashBytes, 'FLASH_SIZE_MISMATCH', 'Detected flash capacity does not match the selected product.', { detectedBytes: flashBytes, expectedBytes: plan.receipt.flashBytes });
-        validateFlashLayout(plan.files, plan.product);
+        validateFlashLayout(plan.files, plan.product, {partitionTableOffset:plan.receipt.partitionTableOffset});
         const totalBytes = plan.files.reduce((sum, file) => sum + file.data.length, 0);
         setState('writing', '正在写入并逐镜像校验 MD5；仅擦除对应写入范围。', { flashBytes, receipt: plan.receipt });
         guard(); beganWrite = true;

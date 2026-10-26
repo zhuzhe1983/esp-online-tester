@@ -110,9 +110,17 @@ impl PinRoutes<'_> {
             }
         }
         if user & (1 << 28) != 0 {
-            pins.miso = self.matrix_input(signals[1] as usize);
-            if self.gpio.func_in_sel[signals[1] as usize] & self.chip.input_select == 0 {
-                pins.miso = native.iter().find_map(|&(f, _, _, pin, _)| {
+            // IDF v5.4.2 (Cardputer-Adv factory) and v5.5.1 S3 spi_reg.h:
+            // v4.4.6 S3 (original Cardputer) and v5.4.2 C3/C6 also use bit 17.
+            // USER.SIO reads on D/MOSI, not Q/MISO. gpio_sig_map.h gives
+            // D_IN the same index as D_OUT (SPI2 103, SPI3 68); spi_common.c
+            // routes both directions when initializing a three-wire bus.
+            let sio = user & (1 << 17) != 0;
+            let signal = signals[if sio { 2 } else { 1 }] as usize;
+            pins.miso = self.matrix_input(signal);
+            if self.gpio.func_in_sel[signal] & self.chip.input_select == 0 {
+                pins.miso = native.iter().find_map(|&(f, _, mosi, miso, _)| {
+                    let pin = if sio { mosi } else { miso };
                     self.input_function(pin, f).then_some(pin as u8)
                 });
             }

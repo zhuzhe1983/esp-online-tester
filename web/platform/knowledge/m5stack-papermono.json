@@ -1,0 +1,664 @@
+{
+  "schemaVersion": "1",
+  "id": "m5stack-papermono",
+  "kind": "product",
+  "catalogId": "m5stack-papermono",
+  "title": "M5Stack PaperMono · C153",
+  "summary": "集成四级灰度墨水屏、触摸、前光、NFC 与 LoRa 的 ESP32-S3 设备，支持阅读及低功耗交互。C153 与 Lite 版本分别维护。",
+  "summarySourceIds": [
+    "official-docs"
+  ],
+  "updatedAt": "2026-10-26T17:15:26Z",
+  "hardwareRevision": "unspecified",
+  "identity": {
+    "manufacturer": "M5Stack",
+    "sku": "C153",
+    "name": "PaperMono"
+  },
+  "facts": [
+    {
+      "id": "product-envelope",
+      "label": "产品尺寸",
+      "value": {
+        "width": 62,
+        "height": 101,
+        "depth": 8
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical",
+      "unit": "mm"
+    },
+    {
+      "id": "weight",
+      "label": "重量",
+      "value": 74.7,
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical",
+      "unit": "g"
+    },
+    {
+      "id": "soc",
+      "label": "主控",
+      "value": {
+        "model": "ESP32-S3R8",
+        "cpu": "Xtensa LX7 dual-core",
+        "maxFrequencyMHz": 240
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "memory",
+      "label": "存储",
+      "value": {
+        "flashMiB": 16,
+        "psramMiB": 8,
+        "psramBus": "Octal"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "display",
+      "label": "屏幕",
+      "value": {
+        "diagonalInch": 3.97,
+        "width": 480,
+        "height": 800,
+        "grayLevels": 4,
+        "controller": "SSD1677",
+        "frontlight": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "touch",
+      "label": "触摸",
+      "value": {
+        "controller": "FT6336G",
+        "address": 56,
+        "effectiveX": [
+          5,
+          475
+        ],
+        "effectiveY": [
+          5,
+          795
+        ],
+        "interruptGpio": 4
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "battery",
+      "label": "电池",
+      "value": 1150,
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical",
+      "unit": "mAh"
+    },
+    {
+      "id": "usb-input",
+      "label": "输入电源",
+      "value": {
+        "connector": "USB Type-C",
+        "voltageV": 5
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "wireless",
+      "label": "无线",
+      "value": {
+        "wifi": "2.4 GHz",
+        "lora": "SX1262 (Stamp LoRa-1262), 868–923 MHz FPC antenna",
+        "nfc": "ST25R3916, ISO14443A/B, FeliCa, ISO15693"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "sensors",
+      "label": "传感器与外设",
+      "value": {
+        "imu": "BMI270",
+        "rtc": "RX8130CE",
+        "microphone": "LMD4737T261-AC02 PDM",
+        "audio": "buzzer",
+        "storage": "microSD",
+        "indicator": "RGB LED"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "power",
+      "label": "电源控制",
+      "value": {
+        "pmic": "M5PM1 0x6E",
+        "expander": "M5IOE1 0x4F",
+        "charger": "IP2315 0x75, switched through M5IOE1"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "buttons",
+      "label": "侧边按键",
+      "value": {
+        "buttonA": {
+          "gpio": 2,
+          "label": "UP"
+        },
+        "buttonB": {
+          "gpio": 3,
+          "label": "DOWN"
+        },
+        "power": "single short press on/reset; double press off; hold about2sec until red LED blink then release enters download mode"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "display-pins",
+      "label": "显示连接",
+      "value": {
+        "MOSI": 14,
+        "CLK": 15,
+        "CS": 16,
+        "DC": 17,
+        "BUSY": 18,
+        "reset": "M5IOE1 PYG5_ADC3",
+        "powerEnable": "M5IOE1 PYG3"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "system-i2c",
+      "label": "系统I2C",
+      "value": {
+        "SDA": 47,
+        "SCL": 48,
+        "devices": {
+          "FT6336G": "0x38",
+          "BMI270": "0x68",
+          "RX8130CE": "0x32",
+          "ST25R3916": "0x50",
+          "M5PM1": "0x6E",
+          "M5IOE1": "0x4F"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "lora-pins",
+      "label": "LoRa连接",
+      "value": {
+        "MOSI": 38,
+        "MISO": 40,
+        "CLK": 39,
+        "CS": 41,
+        "BUSY": 21,
+        "IRQ": 5,
+        "reset": "M5IOE1 PYG10_PWM4",
+        "antennaSwitch": "M5IOE1 PYG2_ADC1",
+        "enable": "M5PM1 G2"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "sd-pins",
+      "label": "microSD连接",
+      "value": {
+        "CMD": 12,
+        "CLK": 13,
+        "DAT0": 11,
+        "DAT1": 10,
+        "DAT2": 9,
+        "DAT3": 8,
+        "enable": "M5IOE1 PYG14",
+        "detect": "M5IOE1 PYG1"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "audio-pins",
+      "label": "音频连接",
+      "value": {
+        "PDM_DAT": 46,
+        "PDM_CLK": 45,
+        "BUZZER": 42,
+        "PDM_POWER": "M5IOE1 PYG12"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "technical"
+    },
+    {
+      "id": "drawing-window",
+      "label": "前窗尺寸",
+      "value": {
+        "width": 50.84,
+        "height": 86.4,
+        "topInset": 4.89
+      },
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing"
+      ],
+      "group": "technical",
+      "unit": "mm"
+    },
+    {
+      "id": "drawing-shell",
+      "label": "壳体尺寸",
+      "value": {
+        "bodyWidth": 61,
+        "overallWidth": 62,
+        "height": 101,
+        "depth": 8
+      },
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing"
+      ],
+      "group": "technical",
+      "unit": "mm"
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "official-docs",
+      "archiveName": "official-docs.html",
+      "url": "https://docs.m5stack.com/en/core/PaperMono",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/PaperMono",
+      "fetchedAt": "2026-10-26T16:53:20Z",
+      "sha256": "275146bb6308c01eac8354e0e9805fc4a9566c345b6ee4ba10cc4fc3f651a6fb",
+      "bytes": 156248,
+      "mediaType": "text/html; charset=UTF-8",
+      "status": "fetched",
+      "title": "M5Stack PaperMono C153 documentation",
+      "kind": "product-page"
+    },
+    {
+      "id": "official-cad-stl",
+      "archiveName": "official-cad-stl.stl",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/C153_PaperMono/Structures/PaperMono.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/C153_PaperMono/Structures/PaperMono.stl",
+      "fetchedAt": "2026-10-26T16:53:21Z",
+      "sha256": "23201352f9c4074e0cb610311b585e8e5080df99884701607039ff7fe06784f5",
+      "bytes": 371284,
+      "mediaType": "application/octet-stream",
+      "status": "fetched",
+      "title": "Manufacturer PaperMono STL at pinned M5_Hardware commit",
+      "kind": "cad"
+    },
+    {
+      "id": "cad-license",
+      "archiveName": "cad-license.txt",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+      "fetchedAt": "2026-10-26T16:53:20Z",
+      "sha256": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+      "bytes": 1063,
+      "mediaType": "text/plain; charset=utf-8",
+      "status": "fetched",
+      "title": "M5_Hardware MIT license",
+      "kind": "technical-document"
+    },
+    {
+      "id": "dimension-drawing",
+      "archiveName": "dimension-drawing.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_model_size.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_model_size.pdf",
+      "fetchedAt": "2026-10-26T16:53:20Z",
+      "sha256": "b833a3e52594a3175bc131006d41a3eb5662be5936d0b2f25030180033a6703b",
+      "bytes": 21346,
+      "mediaType": "application/pdf",
+      "status": "fetched",
+      "title": "PaperMono official mechanical dimensions",
+      "kind": "technical-document"
+    },
+    {
+      "id": "photo-01",
+      "archiveName": "photo-01.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_01.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_01.webp",
+      "fetchedAt": "2026-10-26T16:53:20Z",
+      "sha256": "f3919ac7b8c6f1ec40abc140b05c5c73ca7505ec91fe8a96cd93a633d568d8d5",
+      "bytes": 257540,
+      "mediaType": "image/webp",
+      "status": "fetched",
+      "title": "M5Stack PaperMono product photograph photo-01",
+      "kind": "product-photo"
+    },
+    {
+      "id": "photo-02",
+      "archiveName": "photo-02.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_02.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_02.webp",
+      "fetchedAt": "2026-10-26T16:53:20Z",
+      "sha256": "8befc436823611fd9b66f7b42766d531b31760a25137aca9f56b263a6e88c657",
+      "bytes": 43552,
+      "mediaType": "image/webp",
+      "status": "fetched",
+      "title": "M5Stack PaperMono product photograph photo-02",
+      "kind": "product-photo"
+    },
+    {
+      "id": "photo-03",
+      "archiveName": "photo-03.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_03.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_03.webp",
+      "fetchedAt": "2026-10-26T16:53:20Z",
+      "sha256": "a948c124dd7d48cde97341025cfa21ef6d5e04db28ebde4b15b9d0c1a4c7498b",
+      "bytes": 77914,
+      "mediaType": "image/webp",
+      "status": "fetched",
+      "title": "M5Stack PaperMono product photograph photo-03",
+      "kind": "product-photo"
+    },
+    {
+      "id": "photo-04",
+      "archiveName": "photo-04.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_04.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_04.webp",
+      "fetchedAt": "2026-10-26T16:53:20Z",
+      "sha256": "0c970f9c40b548fe26320a5aa4658814afa2b4716230ebdade1f45dbf37b3d10",
+      "bytes": 136476,
+      "mediaType": "image/webp",
+      "status": "fetched",
+      "title": "M5Stack PaperMono product photograph photo-04",
+      "kind": "product-photo"
+    },
+    {
+      "id": "photo-05",
+      "archiveName": "photo-05.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_05.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_05.webp",
+      "fetchedAt": "2026-10-26T16:53:20Z",
+      "sha256": "17071d112026d59c1ce024e7a09ca74c44ac397dfba9d3ebf86270b9a18a4f56",
+      "bytes": 170632,
+      "mediaType": "image/webp",
+      "status": "fetched",
+      "title": "M5Stack PaperMono product photograph photo-05",
+      "kind": "product-photo"
+    },
+    {
+      "id": "photo-06",
+      "archiveName": "photo-06.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_06.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_06.webp",
+      "fetchedAt": "2026-10-26T16:53:20Z",
+      "sha256": "44fa09120f6b74364058a243090527c7138d48cb5d5fdb651504cfd9eea0802e",
+      "bytes": 27710,
+      "mediaType": "image/webp",
+      "status": "fetched",
+      "title": "M5Stack PaperMono product photograph photo-06",
+      "kind": "product-photo"
+    },
+    {
+      "id": "photo-07",
+      "archiveName": "photo-07.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_07.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_07.webp",
+      "fetchedAt": "2026-10-26T16:53:21Z",
+      "sha256": "d99cde8a26129dfb487746c6979d83ca809a20e52017509776d79fab6be10897",
+      "bytes": 38568,
+      "mediaType": "image/webp",
+      "status": "fetched",
+      "title": "M5Stack PaperMono product photograph photo-07",
+      "kind": "product-photo"
+    },
+    {
+      "id": "photo-08",
+      "archiveName": "photo-08.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_08.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_08.webp",
+      "fetchedAt": "2026-10-26T16:53:21Z",
+      "sha256": "f5ef27d8704514f83279e843f27bb1a7bfe3d8a7973b5b2054be95674d3bf525",
+      "bytes": 141220,
+      "mediaType": "image/webp",
+      "status": "fetched",
+      "title": "M5Stack PaperMono product photograph photo-08",
+      "kind": "product-photo"
+    },
+    {
+      "id": "photo-09",
+      "archiveName": "photo-09.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_09.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_09.webp",
+      "fetchedAt": "2026-10-26T16:53:21Z",
+      "sha256": "393f0b9c7e98b74d658af121ef34b3fd3acb9bd099acf2a65fe38961366a2c1d",
+      "bytes": 16566,
+      "mediaType": "image/webp",
+      "status": "fetched",
+      "title": "M5Stack PaperMono product photograph photo-09",
+      "kind": "product-photo"
+    },
+    {
+      "id": "photo-10",
+      "archiveName": "photo-10.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_10.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_10.webp",
+      "fetchedAt": "2026-10-26T16:53:21Z",
+      "sha256": "123566cac050fbb47a28bb2c4de402d395461fc02e17b41302a9bdc1164f6733",
+      "bytes": 22480,
+      "mediaType": "image/webp",
+      "status": "fetched",
+      "title": "M5Stack PaperMono product photograph photo-10",
+      "kind": "product-photo"
+    },
+    {
+      "id": "photo-11",
+      "archiveName": "photo-11.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_11.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_11.webp",
+      "fetchedAt": "2026-10-26T16:53:21Z",
+      "sha256": "8f3442b140e68b71764930993d3aeb03e6b3496f407f7f8bafb91994f97862a6",
+      "bytes": 41090,
+      "mediaType": "image/webp",
+      "status": "fetched",
+      "title": "M5Stack PaperMono product photograph photo-11",
+      "kind": "product-photo"
+    },
+    {
+      "id": "photo-12",
+      "archiveName": "photo-12.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_12.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/C153_PaperMono_main_pictures_12.webp",
+      "fetchedAt": "2026-10-26T16:53:21Z",
+      "sha256": "11b6e11b1b0077afbcef5575eaa1002b27871cebe800126a321838913416abd8",
+      "bytes": 146810,
+      "mediaType": "image/webp",
+      "status": "fetched",
+      "title": "M5Stack PaperMono product photograph photo-12",
+      "kind": "product-photo"
+    },
+    {
+      "id": "display-module",
+      "archiveName": "display-module.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/EPD_Module_User_Manual.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/EPD_Module_User_Manual.pdf",
+      "fetchedAt": "2026-10-26T16:59:47Z",
+      "sha256": "6b65f56d5d549a132e5c807eef329fb3e997feab04ac06e8a107f01591618130",
+      "bytes": 8666208,
+      "mediaType": "application/pdf",
+      "status": "fetched",
+      "title": "3.97-inch e-paper module manual",
+      "kind": "technical-document"
+    },
+    {
+      "id": "schematic",
+      "archiveName": "schematic.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/PaperMono_SCH_V0.6.2_20260522.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/PaperMono_SCH_V0.6.2_20260522.pdf",
+      "fetchedAt": "2026-10-26T16:59:47Z",
+      "sha256": "b5abecac97cb043a6d1af7a673f2111d40d9254b0b5108635cb924d9b37ad6fa",
+      "bytes": 1462039,
+      "mediaType": "application/pdf",
+      "status": "fetched",
+      "title": "PaperMono schematic V0.6.2 2026-05-22",
+      "kind": "technical-document"
+    },
+    {
+      "id": "display-controller",
+      "archiveName": "display-controller.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/SSD1677.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1267/SSD1677.pdf",
+      "fetchedAt": "2026-10-26T16:59:47Z",
+      "sha256": "daf8b726f822f6907529386b8af6fbea6ec5e8ecc7b7af361340be911d632544",
+      "bytes": 3602487,
+      "mediaType": "application/pdf",
+      "status": "fetched",
+      "title": "SSD1677 datasheet",
+      "kind": "technical-document"
+    },
+    {
+      "id": "datasheet-link-0",
+      "title": "RX8130CE_cn-Register-Datasheet.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1132/RX8130CE_cn-Register-Datasheet.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "datasheet-link-1",
+      "title": "DS_SX1261_2_V2-2.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1177/DS_SX1261_2_V2-2.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "datasheet-link-2",
+      "title": "ST25R3916_EN.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/ST25R3916_EN.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "datasheet-link-3",
+      "title": "M5PM1_Datasheet_EN.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1207/M5PM1_Datasheet_EN.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "datasheet-link-4",
+      "title": "IO_Expander_Datasheet_EN.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1210/IO_Expander_Datasheet_EN.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "datasheet-link-9",
+      "title": "esp32-s3_datasheet_en.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/472/esp32-s3_datasheet_en.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "datasheet-link-10",
+      "title": "PaperMono.pdf",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/static/pdf/static/en/core/PaperMono.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs"
+    }
+  ],
+  "assets": [
+    {
+      "id": "case-cad",
+      "sourceId": "official-cad-stl",
+      "role": "manufacturer-exterior-cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/C153_PaperMono/Structures/PaperMono.stl",
+      "localUrl": "../assets/m5stack-papermono/source.stl"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "pcb-layout",
+      "label": "PCB 外形、铜层与元件坐标",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [],
+      "notes": "固定 M5_Hardware Products/C153_PaperMono 目录仅结构STL；官网原理图不是板级布局。用标有UNKNOWN的空板占位，不填猜测元件。"
+    },
+    {
+      "id": "hardware-revision",
+      "label": "用户实物硬件修订版",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [],
+      "notes": "原理图V0.6.2不等同用户实物版本。"
+    }
+  ],
+  "collectionNotes": [
+    "抓取时间逐来源记录。产品规格与原理图版本保留，不等同模拟能力。",
+    "PaperMono 仍无可运行板级模型；本条只建立资料与外观。",
+    "照片版权归M5Stack；CAD为厂商仓库MIT。没有把宣传屏幕作为真实固件画面。"
+  ]
+}

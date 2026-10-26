@@ -21,7 +21,7 @@ for(const part of model.parts){
 }
 assert.equal(byteLength,geometry.byteLength);assert.deepEqual(model.parts.map(p=>p.name),['shell','power-button','button-b','button-a']);
 const report=JSON.parse(await readFile(new URL('docs/platform/evidence/stopwatch-model/verification.json',root)));
-for(const [key,file] of [['rendererSha256','web/platform/stopwatch-model.js'],['modelReviewSha256','web/platform/model-review.js'],['verificationScriptSha256','tools/verify-stopwatch-model.py']])assert.equal(report[key],digest(await readFile(new URL(file,root))),`Re-run model verification for changed ${file}`);
+for(const [key,file] of [['connectorRendererSha256','web/platform/grove-geometry.js'],['rendererSha256','web/platform/stopwatch-model.js'],['modelReviewSha256','web/platform/model-review.js'],['verificationScriptSha256','tools/verify-stopwatch-model.py']])assert.equal(report[key],digest(await readFile(new URL(file,root))),`Re-run model verification for changed ${file}`);
 assert.equal(report.modelSha256,digest(modelBytes));assert.equal(report.geometrySha256,digest(geometry));
 assert.ok(report.dimensions.every(v=>v.pass));assert.equal(report.photos.length,4);assert.ok(report.photos.every(v=>v.pass));
 console.log('ok pinned manufacturer CAD, component bounds in mm, binary integrity, drawing dimensions and current four-view verification receipt');

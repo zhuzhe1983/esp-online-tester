@@ -1,6 +1,10 @@
 // Browser-only adapter for the upstream ESP32 WASM worker. No server or mock device state.
 import { loadCatalog, validateScene } from './catalog.js';
 import { buildFirmwareIssueUrl } from './watchlist.js';
+import { orientationSample } from './imu.js';
+import { firmwareCache } from './firmware-cache.js';
+import { assembleLocalFirmware } from './local-firmware.js';
+import { createDeviceStorage, deviceStorageScope } from './device-storage.js';
 
 export const API_VERSION = '1.0.0';
 const MIB = 1024 * 1024;
@@ -34,33 +38,54 @@ async function checkedHash(data, expected) {
   return actual;
 }
 
-export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes = MAX_FILE, signal } = {}) {
+export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes = MAX_FILE, signal, onProgress } = {}) {
   const controller = new AbortController();
   const abort = () => controller.abort();
+  const checkAbort = () => requireValue(!controller.signal.aborted, 'FETCH_ABORTED', 'Firmware download was cancelled or timed out.', { url });
   signal?.addEventListener('abort', abort, { once: true });
   if (signal?.aborted) controller.abort();
   const timeout = setTimeout(abort, 60000);
   try {
+    checkAbort();
     const response = await fetchImpl(url, { mode: 'cors', cache: 'no-store', credentials: 'omit', signal: controller.signal });
+    checkAbort();
     requireValue(response.ok, 'HTTP_ERROR', `Firmware request failed: HTTP ${response.status}. Please report this source using the issue link.`, { url, status: response.status, issueUrl: buildFirmwareIssueUrl({ url, status: response.status, reason: 'Firmware request failed.' }) });
     const length = Number(response.headers.get('content-length'));
     requireValue(!length || length <= maxBytes, 'FILE_TOO_LARGE', `File exceeds ${maxBytes / MIB} MiB limit.`, { url });
+    // Fetch exposes decoded bytes. A compressed Content-Length is not a usable
+    // denominator for those bytes, and absent/invalid lengths remain unknown.
+    const encoding = response.headers.get('content-encoding');
+    let totalBytes = Number.isSafeInteger(length) && length > 0 && (!encoding || encoding.toLowerCase() === 'identity') ? length : null;
+    const progress = (loadedBytes, done = false) => {
+      checkAbort();
+      if (totalBytes !== null && (loadedBytes > totalBytes || done && loadedBytes !== totalBytes)) totalBytes = null;
+      onProgress?.({ url, loadedBytes, totalBytes, done });
+      checkAbort();
+    };
+    progress(0);
     if (!response.body?.getReader) {
       const bytes = new Uint8Array(await response.arrayBuffer());
+      checkAbort();
       requireValue(bytes.byteLength <= maxBytes, 'FILE_TOO_LARGE', 'Downloaded file exceeds its size limit.', { url });
+      progress(bytes.byteLength, true);
       return bytes;
     }
     const reader = response.body.getReader(), chunks = [];
+    const cancelReader = () => { void reader.cancel().catch(() => {}); };
+    controller.signal.addEventListener('abort', cancelReader, { once: true });
     let total = 0;
     try {
       while (true) {
         const { done, value } = await reader.read();
+        checkAbort();
         if (done) break;
         total += value.byteLength;
         requireValue(total <= maxBytes, 'FILE_TOO_LARGE', 'Downloaded file exceeds its size limit.', { url });
-        chunks.push(value);
+        chunks.push(value); progress(total);
       }
+      progress(total, true);
     } catch (e) { await reader.cancel().catch(() => {}); throw e; }
+    finally { controller.signal.removeEventListener('abort', cancelReader); reader.releaseLock(); }
     const bytes = new Uint8Array(total);
     let offset = 0;
     for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
@@ -90,10 +115,11 @@ export function decodeFramebuffer(data) {
 }
 
 // A URL ending in .bin does not establish that it contains a bootable flash image.
-export function validateMergedImage(data, board, flashBytes) {
+export function validateMergedImage(data, board, flashBytes, {partitionTableOffset = 0x8000} = {}) {
   const bytes = bytesOf(data), bootOffset = /^(esp32|ttgo-tdisplay)$/.test(board) ? 0x1000 : 0;
+  requireValue(Number.isSafeInteger(partitionTableOffset) && partitionTableOffset >= 0x8000 && partitionTableOffset % 0x1000 === 0 && partitionTableOffset + 0x1000 <= flashBytes, 'INVALID_PARTITION_TABLE', 'Partition-table offset is outside flash or not sector aligned.');
   requireValue(bytes.length <= flashBytes, 'FLASH_OVERFLOW', 'Merged firmware exceeds the selected product flash size.');
-  requireValue(bytes.length > 0x8020 && bytes[bootOffset] === 0xe9 && bytes[0x8000] === 0xaa && bytes[0x8001] === 0x50,
+  requireValue(bytes.length > partitionTableOffset + 32 && bytes[bootOffset] === 0xe9 && bytes[partitionTableOffset] === 0xaa && bytes[partitionTableOffset + 1] === 0x50,
     'INCOMPLETE_IMAGE', 'A raw BIN must be a merged flash image starting at offset 0, containing a bootloader and partition table at 0x8000. Use a manifest for separate app, bootloader and partition images.');
   // ESP-IDF image header chip IDs: ESP32=0, S3=9, C3=5, C6=13, P4=18.
   const chipId = bytes[bootOffset + 12] | bytes[bootOffset + 13] << 8;
@@ -111,12 +137,12 @@ export function validateMergedImage(data, board, flashBytes) {
       requireValue(offset <= end, 'INCOMPLETE_IMAGE', 'Merged firmware contains a truncated image segment.');
     }
   };
-  completeImage(bootOffset, Math.min(bytes.length, 0x8000));
+  completeImage(bootOffset, Math.min(bytes.length, partitionTableOffset));
   let apps = 0;
-  for (let offset = 0x8000; offset + 32 <= Math.min(bytes.length, 0x9000); offset += 32) {
+  for (let offset = partitionTableOffset; offset + 32 <= Math.min(bytes.length, partitionTableOffset + 0x1000); offset += 32) {
     if (view.getUint16(offset, true) !== 0x50aa) break;
     const at = view.getUint32(offset + 4, true), size = view.getUint32(offset + 8, true);
-    requireValue(size > 0 && at >= 0x9000 && at + size <= flashBytes, 'FLASH_OVERFLOW', 'Partition table contains a partition outside product flash.');
+    requireValue(size > 0 && at >= partitionTableOffset + 0x1000 && at + size <= flashBytes, 'FLASH_OVERFLOW', 'Partition table contains a partition outside product flash.');
     if (bytes[offset + 2] === 0 && at < bytes.length && bytes[at] === 0xe9) { completeImage(at, Math.min(bytes.length, at + size)); apps++; }
   }
   requireValue(apps > 0, 'INCOMPLETE_IMAGE', 'Merged firmware contains no complete app image at a declared partition offset.');
@@ -125,13 +151,31 @@ export function validateMergedImage(data, board, flashBytes) {
 
 const romFor = board => board === 'esp32c3' ? 'esp32c3_rev3_rom.elf' : board === 'esp32p4' ? 'esp32p4_rev0_rom.elf' : board.includes('c6') ? 'esp32c6_rev0_rom.elf' : /^(esp32|ttgo-tdisplay)$/.test(board) ? 'esp32_rev300_rom.elf' : 'esp32s3_rev0_rom.elf';
 
-export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000 } = {}) {
+export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000, deviceStorage = createDeviceStorage() } = {}) {
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;
   let lastError = null, firmware = null, loaded = null, frame = null, frameNumber = 0, serial = '', serialByPort = {}, stats = {}, queue = Promise.resolve();
-  let booted = false, inputSequence = 0, loadCancelled = false;
+  const emptyStorage = () => ({status:'unloaded', scope:null, backend:null, restored:false, pristine:true, revision:0, epoch:0, lastSavedAt:null, changedPages:0, error:null});
+  let storage = emptyStorage(), storageSession = null, storageSequence = 0;
+  let booted = false, inputSequence = 0, loadCancelled = false, progressGeneration = 0;
+  const defaultImu = () => ({enabled: true, source: 'scene', ...orientationSample([0,0,0,1]), delivery: 'configured', guestTime: null});
+  let imu = defaultImu(), imuPreviousAt = null, imuGeneration = 0;
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
-  const snapshot = () => ({ version: API_VERSION, status, scene: clone(scene), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
+  const snapshot = () => ({ version: API_VERSION, status, scene: clone(scene), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), imu: product?.runtime?.board === 'stopwatch' ? clone(imu) : null, frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
   const emit = event => { for (const listener of listeners) { try { listener(event); } catch (e) { console.error('ESP tester event handler:', e); } } };
+  const loadReporter = (loadId, signal) => {
+    let fileIndex = 0;
+    const send = event => {
+      if (loadId === progressGeneration && status === 'loading' && !signal.aborted) emit({ type: 'load-progress', loadId, ...event });
+    };
+    return {
+      file(kind, url) {
+        const index = ++fileIndex;
+        return progress => send({ phase: 'download', kind, fileIndex: index, ...progress, url });
+      },
+      prepare(stage, kind = null, url = null) { send({ phase: 'prepare', stage, kind, url, fileIndex: null, loadedBytes: null, totalBytes: null, done: false }); },
+      cache(kind, url, bytes, storage) { send({ phase: 'cache', kind, url, storage, fileIndex: ++fileIndex, loadedBytes: bytes, totalBytes: bytes, done: true }); },
+    };
+  };
   const setStatus = value => { status = value; emit({ type: 'state', state: snapshot() }); };
   const report = e => { lastError = failure(e); emit({ type: 'error', error: clone(lastError) }); };
   const alive = () => requireValue(status !== 'disposed', 'DISPOSED', 'This emulator session has been disposed.');
@@ -142,7 +186,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   };
   const resolve = (key, value) => { const item = pending.get(key); if (!item) return; pending.delete(key); clearTimeout(item.timeout); item.resolve(value); };
   const rejectPending = e => { for (const item of pending.values()) { clearTimeout(item.timeout); item.reject(e); } pending.clear(); };
-  const stopWorker = () => { worker?.terminate(); worker = null; rejectPending(error('SESSION_REPLACED', 'The emulator session was replaced.')); booted = false; };
+  const stopWorker = () => { worker?.terminate(); worker = null; rejectPending(error('SESSION_REPLACED', 'The emulator session was replaced.')); booted = false; imuPreviousAt = null; imu.gyroDps = [0,0,0]; imu.delivery = 'configured'; imu.guestTime = null; };
   const ask = (key, message, transfer = []) => new Promise((resolveRequest, reject) => {
     requireValue(worker, 'NOT_READY', 'The emulator worker is not ready.');
     requireValue(!pending.has(key), 'BUSY', 'A worker command is already pending.');
@@ -175,12 +219,15 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     }
     if (message.log !== undefined) appendSerial('emulator', `${message.log}\n`);
     if (message.pace) { stats = { ...stats, ...message.pace }; emit({ type: 'stats', stats: clone(stats) }); }
+    if (message.flashReply !== undefined) resolve(`flash:${message.flashReply}`, message);
+    if (message.flashDelta) { try { receiveFlash(message.flashDelta); } catch(e) { storageFailure(storageSession,e); } }
     if (message.ready) resolve('ready', message);
     if (message.created !== undefined) resolve('created', message);
     if (message.loaded !== undefined) resolve(`loaded:${message.loaded}`, message);
     if (message.started !== undefined) resolve('started', message);
     if (message.resumed !== undefined) resolve('resumed', message);
     if (message.inputQueued !== undefined) resolve(`input:${message.inputQueued}`, message);
+    if (message.imuApplied !== undefined) resolve(`imu:${message.imuApplied}`, message);
     if (message.stopped !== undefined) {
       const requested = pending.has('stopped');
       resolve('stopped', message);
@@ -190,19 +237,114 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       }
     }
   };
+  const storageEvent = () => emit({type:'storage', storage:clone(storage)});
+  const detachStorage = () => { if (storageSession) storageSession.closed = true; storageSession = null; storage = emptyStorage(); storageEvent(); };
+  const flashAsk = async (op, fields = {}, transfer = []) => {
+    const requestId = ++storageSequence, result = await ask(`flash:${requestId}`, {op, requestId, ...fields}, transfer);
+    requireValue(result.ok !== false, 'STORAGE_WORKER_ERROR', result.error || 'Cannot access emulator Flash.');
+    return {...result, requestId};
+  };
+  const storageFailure = (session, e) => {
+    if (session !== storageSession || session.closed) return;
+    storage.status = e.code === 'STORAGE_CONFLICT' ? 'conflict' : 'error'; storage.error = failure(e); storageEvent(); report(e);
+    if (['STORAGE_CONFLICT','STORAGE_WORKER_ERROR'].includes(e.code)) { session.closed=true; stopWorker(); setStatus('error'); }
+  };
+  const persistFlash = session => {
+    if (session.saving) return session.saving;
+    session.saving = (async () => {
+      while (!session.closed && session.savedVersion < session.version) {
+        const version = session.version;
+        storage.status = 'saving'; storageEvent();
+        const result = await deviceStorage.save(session.scope, {epoch:storage.epoch, revision:storage.revision, pages:[...session.pages].map(([offset,data])=>({offset,data}))});
+        if (session.closed || session !== storageSession) return;
+        session.savedVersion = version;
+        Object.assign(storage, {status:result.persistent?'saved':'memory-only', backend:result.backend, epoch:result.row.epoch, revision:result.row.revision, lastSavedAt:result.row.savedAt, error:result.warning?{code:'STORAGE_MEMORY_ONLY',message:result.warning}:null});
+        storageEvent();
+      }
+    })().catch(e=>{storageFailure(session,e); throw e;}).finally(()=>{session.saving=null;});
+    // Automatic saves are observable through storage/error events; callers of flush
+    // also receive the rejection. No unhandled promise hides a failed transaction.
+    session.saving.catch(()=>{});
+    return session.saving;
+  };
+  const receiveFlash = ({watchId,pages}) => {
+    const session = storageSession;
+    if (!session || session.closed || session.watchId !== watchId) return;
+    for (const {offset,data} of pages) {
+      requireValue(Number.isInteger(offset) && offset>=0 && offset%4096===0 && offset+4096<=session.baseline.length && data instanceof ArrayBuffer && data.byteLength===4096, 'STORAGE_WORKER_ERROR', 'Worker sent invalid Flash page bounds.');
+      const bytes = new Uint8Array(data); let differs = false;
+      for (let i=0;i<4096;i++) if (bytes[i]!==session.baseline[offset+i]) {differs=true;break;}
+      if (differs) session.pages.set(offset,data); else session.pages.delete(offset);
+    }
+    session.version++;
+    storage.pristine = session.pages.size===0; storage.changedPages = session.pages.size;
+    void persistFlash(session);
+  };
+  const flushStorage = async () => {
+    const session = storageSession;
+    requireValue(session && storage.scope, 'STORAGE_NOT_LOADED', 'Load firmware before accessing its device storage.');
+    requireValue(storage.status !== 'conflict', 'STORAGE_CONFLICT', storage.error?.message || 'Device storage changed in another tab.');
+    if (worker) await flashAsk('flash-flush');
+    await persistFlash(session);
+    return clone(storage);
+  };
+  const preserveStorage = async () => {
+    if (storageSession && storage.status !== 'conflict') await flushStorage();
+  };
+  const initializeStorage = async (bundle, supported, progress) => {
+    detachStorage();
+    if (!supported) { storage.status='error'; storage.pristine=null; storage.error={code:'STORAGE_UNSUPPORTED',message:'This emulator build does not expose writable Flash snapshots.'}; storageEvent(); return; }
+    storage.status='loading'; storageEvent(); progress.prepare('device-storage');
+    const snapshot = await flashAsk('flash-snapshot'), baseline = new Uint8Array(snapshot.data);
+    requireValue(baseline.length===bundle.cfg.flash_mb*MIB, 'STORAGE_WORKER_ERROR', 'Emulator Flash capacity does not match the device.');
+    const scope = deviceStorageScope({productId:product.id, board:bundle.cfg.board, chip:product.chip || 'esp32s3', flashBytes:baseline.length, firmwareSha256:await sha256(baseline)});
+    const result = await deviceStorage.read(scope);
+    requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
+    const pages = new Map(result.row.pages.map(page=>[page.offset,page.data]));
+    const session = {scope,baseline,pages,version:0,savedVersion:0,saving:null,closed:false,watchId:null};
+    storageSession=session;
+    storage={status:result.persistent?'clean':'memory-only', scope, backend:result.backend, restored:pages.size>0, pristine:pages.size===0, revision:result.row.revision, epoch:result.row.epoch, lastSavedAt:result.row.savedAt, changedPages:pages.size, error:result.warning?{code:'STORAGE_MEMORY_ONLY',message:result.warning}:null};
+    if (pages.size) {
+      const restore=[...pages].map(([offset,data])=>({offset,data:data.slice(0)}));
+      await flashAsk('flash-restore',{pages:restore},restore.map(page=>page.data));
+    }
+    const watching=await flashAsk('flash-watch'); session.watchId=watching.requestId;
+    storageEvent();
+  };
+  const unsubscribeStorage = deviceStorage.subscribe(change => {
+    const session=storageSession;
+    if (!session || session.closed || change.key!==session.scope.key || change.epoch<storage.epoch || change.epoch===storage.epoch && change.revision<=storage.revision) return;
+    storageFailure(session,error('STORAGE_CONFLICT','Another tab saved or cleared this device storage. Reload the same firmware to restore its latest state.'));
+  });
+  const pageHide = () => { if (storageSession && worker) void flushStorage().catch(report); };
+  globalThis.addEventListener?.('pagehide',pageHide);
   const runtimeConfig = () => {
     const runtime = product?.runtime || {};
     requireValue(runtime.board, 'UNSUPPORTED_PRODUCT', 'This product has catalog metadata but no executable board model yet.');
-    return { board: runtime.board, flash_mb: runtime.flashMb ?? 8, psram_mb: runtime.psramMb ?? 2 };
+    // Official StopWatch V0.5 enters a non-responsive JIT path in its IMU page.
+    // The same unmodified firmware passes through the WASM CPU interpreter.
+    return { board: runtime.board, flash_mb: runtime.flashMb ?? 8, psram_mb: runtime.psramMb ?? 2, ...(runtime.board === 'stopwatch' ? {jit: false} : {}) };
   };
-  const readArtifact = async (entry, root, maxBytes = MAX_FILE) => {
+  const readArtifact = async (entry, root, progress, kind, maxBytes = MAX_FILE) => {
     const item = typeof entry === 'string' ? { url: entry } : entry;
     requireValue(item && typeof item.url === 'string', 'INVALID_MANIFEST', 'Each firmware file needs a URL.');
-    const url = resolveFirmwareUrl(item.url, root), data = await fetchBytes(url, { fetchImpl, maxBytes, signal: aborter.signal });
+    const url = resolveFirmwareUrl(item.url, root);
+    let cached = await firmwareCache.get(url, item.sha256, maxBytes);
+    requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
+    if (cached) {
+      try { await checkedHash(cached.data, item.sha256); }
+      catch { await firmwareCache.remove(url, item.sha256); cached = null; }
+    }
+    const data = cached?.data || await fetchBytes(url, { fetchImpl, maxBytes, signal: aborter.signal, onProgress: progress.file(kind, url) });
+    if (cached) progress.cache(kind, url, data.byteLength, cached.storage);
+    progress.prepare('verify', kind, url);
     requireValue(data.length > 0, 'EMPTY_FILE', 'Firmware file is empty.', { url });
-    return { data, url, sha256: await checkedHash(data, item.sha256) };
+    const digest = await checkedHash(data, item.sha256);
+    requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
+    if (!cached && item.sha256) await firmwareCache.putVerified(url, digest, data);
+    return { data, url, sha256: digest };
   };
-  const prepare = async source => {
+  const prepare = async (source, progress) => {
     requireValue(source && typeof source === 'object', 'FIRMWARE_REQUIRED', 'Select a firmware manifest or merged flash image first.');
     const cfg = runtimeConfig(), files = [], receipts = [];
     let total = 0;
@@ -212,10 +354,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       files.push({ kind, data: artifact.data, ...(at === undefined ? {} : { at }) });
       receipts.push({ kind, url: artifact.url, sha256: artifact.sha256, bytes: artifact.data.length, ...(at === undefined ? {} : { at }) });
     };
-    let manifest = null, manifestUrl = null, manifestHash = null;
+    let manifest = null, manifestUrl = null, manifestHash = null, localLayout = null;
     if (source.manifestUrl) {
       manifestUrl = resolveFirmwareUrl(source.manifestUrl, baseUrl);
-      const artifact = await readArtifact({ url: manifestUrl, sha256: source.sha256 }, baseUrl, MAX_MANIFEST);
+      const artifact = await readArtifact({ url: manifestUrl, sha256: source.sha256 }, baseUrl, progress, 'manifest', MAX_MANIFEST);
       manifestHash = artifact.sha256;
       try { manifest = JSON.parse(new TextDecoder().decode(artifact.data)); } catch { throw error('INVALID_MANIFEST', 'Firmware manifest is not valid JSON.'); }
       requireValue(manifest && !Array.isArray(manifest) && typeof manifest === 'object', 'INVALID_MANIFEST', 'Firmware manifest must be an object.');
@@ -228,12 +370,12 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         requireValue(Object.hasOwn(KINDS, kind), 'INVALID_MANIFEST', `Unsupported firmware file kind: ${kind}.`);
         for (const entry of [].concat(entries)) {
           requireValue(files.length < 32, 'INVALID_MANIFEST', 'A manifest may contain at most 32 files.');
-          add(kind, await readArtifact(pinned(entry), manifestUrl));
+          add(kind, await readArtifact(pinned(entry), manifestUrl, progress, kind));
         }
       }
       for (const [offset, entry] of Object.entries(manifest.flash_at || {})) {
         requireValue(/^0x[0-9a-f]+$/i.test(offset), 'INVALID_MANIFEST', 'flash_at offsets must be hexadecimal strings beginning with 0x.');
-        const at = Number(offset), artifact = await readArtifact(pinned(entry), manifestUrl);
+        const at = Number(offset), artifact = await readArtifact(pinned(entry), manifestUrl, progress, 'flash_at');
         requireValue(Number.isSafeInteger(at) && at >= 0 && at + artifact.data.length <= cfg.flash_mb * MIB, 'FLASH_OVERFLOW', 'Flash segment is outside product flash.');
         requireValue(files.length < 32, 'INVALID_MANIFEST', 'A manifest may contain at most 32 files.');
         add('flash', artifact, at);
@@ -246,23 +388,37 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       cfg.stubs = cfg.stubs.map(spec => { const [name] = spec.split('='); return String(manifest.symbols?.[name] || name) + spec.slice(name.length); });
       cfg.wifi = manifest.wifi || '';
       requireValue(typeof cfg.wifi === 'string' && cfg.wifi.length <= 1024, 'INVALID_MANIFEST', 'Invalid WiFi emulation configuration.');
+    } else if (['build','segments'].includes(source.format)) {
+      const local = await assembleLocalFirmware(source, {board:cfg.board, flashBytes:cfg.flash_mb * MIB, signal:aborter.signal,
+        onRead:event => progress.prepare(event.stage, event.name)});
+      progress.prepare('verify', 'local-layout');
+      validateMergedImage(local.data, cfg.board, cfg.flash_mb * MIB, {partitionTableOffset:local.partitionTableOffset});
+      const segments = [];
+      for (const entry of local.segments) segments.push({name:entry.path.split('/').at(-1), offset:entry.offset, bytes:entry.data.length, sha256:await checkedHash(entry.data)});
+      requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Local firmware load was cancelled.');
+      localLayout = {format:source.format, partitionTableOffset:local.partitionTableOffset, segments};
+      add('flash', {data:local.data, url:null, sha256:await checkedHash(local.data, source.sha256)});
     } else {
       requireValue(!source.format || source.format === 'merged', 'UNSUPPORTED_FORMAT', 'Raw firmware must be a merged flash image.');
       let artifact;
       if (source.file) {
         requireValue(typeof source.file.arrayBuffer === 'function' && source.file.size > 0 && source.file.size <= MAX_FILE, 'INVALID_FILE', 'Choose a nonempty local file no larger than 32 MiB.');
+        progress.prepare('local', 'flash');
         const data = new Uint8Array(await source.file.arrayBuffer());
+        progress.prepare('verify', 'flash');
         artifact = { data, url: null, sha256: await checkedHash(data, source.sha256) };
-      } else artifact = await readArtifact(source, baseUrl);
+      } else artifact = await readArtifact(source, baseUrl, progress, 'flash');
       validateMergedImage(artifact.data, cfg.board, cfg.flash_mb * MIB);
       add('flash', artifact);
     }
-    if (!cfg.appDirect && !files.some(f => f.kind === 'rom')) add('rom', await readArtifact(new URL(`wasm/fw/${romFor(cfg.board)}`, assetBaseUrl).href, baseUrl));
-    return { cfg, files, receipt: { manifestUrl, manifestHash, source: source.file ? 'local' : 'remote', artifacts: receipts, appDirect: !!cfg.appDirect, stubs: cfg.stubs || [] } };
+    if (!cfg.appDirect && !files.some(f => f.kind === 'rom')) add('rom', await readArtifact(new URL(`wasm/fw/${romFor(cfg.board)}`, assetBaseUrl).href, baseUrl, progress, 'rom'));
+    return { cfg, files, receipt: { manifestUrl, manifestHash, source: source.file || localLayout ? 'local' : 'remote', ...(localLayout ? {localLayout} : {}), artifacts: receipts, appDirect: !!cfg.appDirect, stubs: cfg.stubs || [], executionMode: cfg.jit === false ? 'wasm-interpreter' : 'wasm-jit' } };
   };
-  const initialize = async bundle => {
+  const initialize = async (bundle, progress) => {
     stopWorker();
-    const wasm = await fetchBytes(new URL('wasm/esp32sim.wasm', assetBaseUrl).href, { fetchImpl, maxBytes: MAX_FILE, signal: aborter.signal });
+    const wasmUrl = new URL('wasm/esp32sim.wasm', assetBaseUrl).href;
+    const wasm = await fetchBytes(wasmUrl, { fetchImpl, maxBytes: MAX_FILE, signal: aborter.signal, onProgress: progress.file('wasm', wasmUrl) });
+    progress.prepare('worker');
     alive();
     requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
     const current = workerFactory(new URL('wasm/worker.js', assetBaseUrl)); worker = current;
@@ -277,8 +433,17 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       const result = await ask(`loaded:${file.at === undefined ? KINDS[file.kind] : `at${file.at}`}`, { op: 'load', ...(file.at === undefined ? { kind: KINDS[file.kind] } : { at: file.at }), data }, [data]);
       requireValue(result.ok, 'LOAD_FAILED', `Emulator rejected ${file.kind}.`);
     }
+    await initializeStorage(bundle, result.flashStorage, progress);
     for (const spec of bundle.cfg.stubs || []) worker.postMessage({ op: 'stub', spec });
     if (bundle.cfg.wifi) worker.postMessage({ op: 'wifi', spec: bundle.cfg.wifi });
+    if (product.runtime.board === 'stopwatch') await applyImu();
+  };
+  const applyImu = async () => {
+    if (!worker) return;
+    const inputId = ++inputSequence;
+    const receipt = await ask(`imu:${inputId}`, {op: 'imu', inputId, accelG: imu.accelG, gyroDps: imu.gyroDps});
+    requireValue(receipt.ok && Number.isFinite(receipt.time), 'IMU_UNSUPPORTED', 'The loaded emulator does not support this IMU input.');
+    imu.delivery = 'register-state'; imu.guestTime = receipt.time;
   };
   const start = async () => {
     requireValue(loaded && ['ready', 'paused', 'running'].includes(status), 'NOT_READY', 'Load firmware before starting the emulator.');
@@ -289,7 +454,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   };
   const controls = () => Array.isArray(product?.controls) ? product.controls : product?.controls?.buttons || [];
   const input = async event => {
-    const releaseWhilePaused = status === 'paused' && ((event?.type === 'button' && event.pressed === false) || (event?.type === 'touch' && event.down === false));
+    const releaseWhilePaused = status === 'paused' && ((['button','matrix-key'].includes(event?.type) && event.pressed === false) || (event?.type === 'touch' && event.down === false));
     requireValue(status === 'running' || releaseWhilePaused, 'NOT_RUNNING', 'Start the emulator before sending input.');
     requireValue(event && typeof event === 'object', 'INVALID_INPUT', 'Input must be an object.');
     let message;
@@ -299,6 +464,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(Number.isInteger(pin) && pin >= 0 && pin < 64, 'UNSUPPORTED_CONTROL', 'This product does not expose that GPIO button.');
       requireValue(typeof event.pressed === 'boolean', 'INVALID_INPUT', 'Button pressed must be a boolean.');
       message = { t: 'btn', pin, v: event.pressed ? 1 : 0 };
+    } else if (event.type === 'matrix-key') {
+      requireValue(['cardputer','cardputer-adv'].includes(product.runtime?.board), 'UNSUPPORTED_CONTROL', 'This product does not expose a matrix keyboard.');
+      requireValue(Number.isInteger(event.row) && event.row >= 0 && event.row < 4 && Number.isInteger(event.column) && event.column >= 0 && event.column < 14 && typeof event.pressed === 'boolean', 'INVALID_INPUT', 'Keyboard row/column must be within the physical 4×14 layout and pressed must be a boolean.');
+      message = { t:'matrix-key', row:event.row, column:event.column, pressed:event.pressed?1:0 };
     } else if (event.type === 'touch') {
       const display = product.display || product.hardware?.display;
       requireValue(product.runtime?.touch === true || display?.touch === true || display?.touch?.supported === true, 'UNSUPPORTED_CONTROL', 'Touch input is not supported for this product.');
@@ -333,23 +502,43 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   });
   const api = {
     version: API_VERSION,
+    async clearFirmwareCache() { return firmwareCache.clear(); },
+    flushDeviceStorage() { return exclusive(flushStorage); },
+    clearDeviceStorage() { const loadId=++progressGeneration; return exclusive(async () => {
+      requireValue(loaded && storageSession, 'STORAGE_NOT_LOADED', 'Load firmware before clearing its device storage.');
+      const bundle=loaded, session=storageSession, scope=session.scope;
+      // Freeze first; pending writes finish before the tombstone transaction. A new
+      // epoch invalidates every other tab, including tabs suspended during this clear.
+      stopWorker(); session.closed=true;
+      await session.saving?.catch(()=>{});
+      try { await deviceStorage.clear(scope); }
+      catch(e) { session.closed=false; storageFailure(session,e); setStatus('error'); throw e; }
+      loadCancelled=false; aborter=new AbortController(); serial=''; serialByPort={}; stats={}; frame=null; frameNumber=0; lastError=null; setStatus('loading');
+      try { await initialize(bundle,loadReporter(loadId,aborter.signal)); setStatus('ready'); return snapshot(); }
+      catch(e) { stopWorker(); if(status!=='disposed')setStatus('error'); throw e; }
+    }); },
     subscribe(listener) { requireValue(typeof listener === 'function', 'INVALID_LISTENER', 'Event listener must be a function.'); listeners.add(listener); return () => listeners.delete(listener); },
     async observe() { return snapshot(); },
     async capabilities() {
       return { version: API_VERSION, backend: 'esp32sim-wasm', static: true, executable: !!product?.runtime?.board,
+        execution: {mode: product?.runtime?.board === 'stopwatch' ? 'wasm-interpreter' : 'wasm-jit', reason: product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null},
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
-        firmware: { manifest: true, mergedImage: true, localFile: true, sha256: true, maxFileBytes: MAX_FILE, corsRequired: true },
-        input: { buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), serialPorts: ['usb', 'uart0', 'uart1'] },
+        deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
+        firmware: { manifest: true, mergedImage: true, localFile: true, localSegments: true, localBuild: true, sha256: true, maxFileBytes: MAX_FILE, corsRequired: true },
+        input: { buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv'].includes(product?.runtime?.board)?{rows:4,columns:14,model:product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: ['usb', 'uart0', 'uart1'] },
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { mode: 'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },
+        imu: { available: product?.runtime?.board === 'stopwatch', model: 'bmi270-register-subset', orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: 'host-input', physicalMountingVerified: false },
         unsupported: ['dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input'] };
     },
-    configure(nextScene) { return exclusive(async () => {
+    configure(nextScene) { progressGeneration++; imuGeneration++; return exclusive(async () => {
       catalog ||= await loadCatalog();
       const validation = validateScene(nextScene, catalog);
       requireValue(validation.valid, 'INVALID_SCENE', 'Scene configuration is invalid.', validation);
-      aborter?.abort(); stopWorker(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
+      if (worker && status==='running') await ask('stopped',{op:'stop'});
+      await preserveStorage(); alive(); aborter?.abort(); stopWorker(); detachStorage(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
       scene = clone(nextScene); product = catalog.products.find(item => item.id === scene.productId);
+      imu = defaultImu(); imuPreviousAt = null;
       setStatus('configured'); return { ...snapshot(), warnings: validation.warnings };
     }); },
     updateSceneMetadata(changes) { return exclusive(async () => {
@@ -359,14 +548,16 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(validation.valid, 'INVALID_SCENE', 'Scene configuration is invalid.', validation);
       scene = next; emit({ type: 'state', state: snapshot() }); return snapshot();
     }); },
-    loadFirmware(source) { return exclusive(async () => {
+    loadFirmware(source) { const loadId = ++progressGeneration; return exclusive(async () => {
       requireValue(scene, 'NOT_CONFIGURED', 'Configure a product before loading firmware.');
-      stopWorker(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
+      if (worker && status==='running') await ask('stopped',{op:'stop'});
+      await preserveStorage(); alive(); stopWorker(); detachStorage(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
       loadCancelled = false; aborter = new AbortController(); setStatus('loading');
+      const progress = loadReporter(loadId, aborter.signal);
       try {
-        const selected = source || scene.firmware, bundle = await prepare(selected);
-        await initialize(bundle); loaded = bundle; firmware = bundle.receipt;
-        if (!selected.file) scene.firmware = bundle.receipt.manifestUrl
+        const selected = source || scene.firmware, bundle = await prepare(selected, progress);
+        await initialize(bundle, progress); loaded = bundle; firmware = bundle.receipt;
+        if (bundle.receipt.source === 'remote') scene.firmware = bundle.receipt.manifestUrl
           ? { manifestUrl: bundle.receipt.manifestUrl, sha256: bundle.receipt.manifestHash }
           : { url: bundle.receipt.artifacts[0].url, sha256: bundle.receipt.artifacts[0].sha256 };
         setStatus('ready'); return snapshot();
@@ -375,7 +566,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     }); },
     async cancelPendingLoad() {
       if (status !== 'loading') return snapshot();
-      loadCancelled = true; aborter?.abort(); stopWorker(); loaded = null; firmware = null;
+      progressGeneration++;
+      loadCancelled = true; aborter?.abort(); stopWorker(); detachStorage(); loaded = null; firmware = null;
       await queue;
       if (status !== 'disposed') setStatus('configured');
       return snapshot();
@@ -383,16 +575,61 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     start() { return exclusive(start); },
     pause() { return exclusive(async () => {
       requireValue(['running', 'paused'].includes(status), 'NOT_RUNNING', 'Only a running emulator can be paused.');
+      if (product.runtime.board === 'stopwatch') { imu.gyroDps = [0,0,0]; imuPreviousAt = null; await applyImu(); }
       if (status === 'running') await ask('stopped', { op: 'stop' });
-      setStatus('paused'); return snapshot();
+      await preserveStorage(); setStatus('paused'); return snapshot();
     }); },
-    reset() { return exclusive(async () => {
+    reset() { const loadId = ++progressGeneration; return exclusive(async () => {
       requireValue(loaded, 'NOT_READY', 'Load firmware before resetting.');
+      if (worker && status==='running') await ask('stopped',{op:'stop'});
+      await preserveStorage();
       loadCancelled = false; aborter = new AbortController(); serial = ''; serialByPort = {}; stats = {}; frame = null; frameNumber = 0; lastError = null; setStatus('loading');
-      try { await initialize(loaded); setStatus('ready'); return await start(); }
+      try { await initialize(loaded, loadReporter(loadId, aborter.signal)); setStatus('ready'); return await start(); }
       catch (e) { stopWorker(); if (status !== 'disposed') setStatus(loadCancelled ? 'configured' : 'error'); if (loadCancelled) throw error('FETCH_ABORTED', 'Firmware load was cancelled.'); throw e; }
     }); },
     input(event) { return exclusive(() => input(event)); },
+    setImu(options = {}) { const generation = imuGeneration, requestedAt = performance.now(); return exclusive(async () => {
+      requireValue(product?.runtime?.board === 'stopwatch', 'IMU_UNSUPPORTED', 'This product does not have a host-fed IMU model.');
+      requireValue(generation === imuGeneration, 'SESSION_REPLACED', 'The device changed before its orientation was applied.');
+      requireValue(options && typeof options === 'object' && !Array.isArray(options) && Object.keys(options).every(key => ['enabled','quaternion','source','angularVelocityDps'].includes(key)), 'INVALID_IMU', 'IMU options contain unknown fields.');
+      requireValue(options.enabled === undefined || typeof options.enabled === 'boolean', 'INVALID_IMU', 'IMU enabled must be a boolean.');
+      const source = options.source || 'agent';
+      requireValue(['agent', 'scene'].includes(source), 'INVALID_IMU', 'IMU source must be agent or scene.');
+      if (source === 'scene' && !imu.enabled && options.enabled !== true) return clone(imu);
+      const now = requestedAt;
+      const sample = orientationSample(options.quaternion || imu.quaternion, {previous: imu.quaternion,
+        elapsedSeconds: imuPreviousAt === null ? 0 : (now - imuPreviousAt) / 1000,
+        angularVelocityDps: options.enabled === false || status !== 'running' || source === 'agent' && options.angularVelocityDps === undefined ? [0,0,0] : options.angularVelocityDps});
+      imu = {...imu, ...sample, enabled: options.enabled ?? imu.enabled, source}; imuPreviousAt = now;
+      await applyImu(); emit({type: 'imu', imu: clone(imu)}); return clone(imu);
+    }); },
+    setGpsFix(options) { return exclusive(async () => {
+      requireValue(options && typeof options === 'object' && Object.keys(options).every(key => ['accessoryId','latitude','longitude','altitude','speedKnots','course','satellites','positionSource'].includes(key)), 'INVALID_INPUT', 'GPS fix contains unknown fields.');
+      const attached = scene?.accessories.find(item => item.id === options?.accessoryId);
+      const definition = scene?.localAccessories?.find(item => item.id === attached?.catalogId) || catalog?.accessories.find(item => item.id === attached?.catalogId);
+      requireValue(attached && definition?.model?.id === 'uart-nmea', 'ACCESSORY_NOT_ATTACHED', 'Attach a GPS accessory before setting its fix.');
+      const parameters = { ...definition.parameters, ...attached.parameters };
+      for (const key of ['latitude', 'longitude', 'altitude', 'speedKnots', 'course', 'satellites']) if (options[key] !== undefined) parameters[key] = options[key];
+      createGpsNmea(parameters);
+      requireValue(parameters.altitude === undefined || parameters.altitude >= -10000 && parameters.altitude <= 100000, 'INVALID_GPS_FIX', 'Altitude must be -10000…100000 meters.');
+      requireValue(parameters.speedKnots === undefined || parameters.speedKnots <= 10000, 'INVALID_GPS_FIX', 'Speed must be 0…10000 knots.');
+      if (options.positionSource !== undefined) {
+        const source = options.positionSource;
+        requireValue(source && ['manual', 'ip-estimate'].includes(source.kind), 'INVALID_INPUT', 'Position source must be manual or ip-estimate.');
+        requireValue(Object.keys(source).every(key => ['kind','provider','fetchedAt','city','region','country'].includes(key)), 'INVALID_INPUT', 'Position source contains unknown fields; IP addresses are not stored.');
+        parameters.positionSource = { kind: source.kind };
+        for (const key of ['provider', 'fetchedAt', 'city', 'region', 'country']) if (source[key] !== undefined) {
+          requireValue(typeof source[key] === 'string' && source[key].length <= 160, 'INVALID_INPUT', `Position source ${key} must be a short string.`);
+          parameters.positionSource[key] = source[key];
+        }
+        requireValue(source.fetchedAt === undefined || /^\d{4}-\d{2}-\d{2}T.*Z$/.test(source.fetchedAt) && Number.isFinite(Date.parse(source.fetchedAt)), 'INVALID_INPUT', 'Position source fetchedAt must be an ISO UTC date-time ending in Z.');
+      }
+      const next = clone(scene); next.accessories.find(item => item.id === attached.id).parameters = parameters;
+      const validation = validateScene(next, catalog);
+      requireValue(validation.valid, 'INVALID_GPS_FIX', 'GPS fix would create an invalid scene.', validation); scene = next;
+      emit({ type: 'state', state: snapshot() });
+      return { accessoryId: attached.id, parameters: clone(parameters) };
+    }); },
     injectGps(options) { return exclusive(async () => {
       const attached = scene?.accessories.find(item => item.id === options?.accessoryId);
       const definition = scene?.localAccessories?.find(item => item.id === attached?.catalogId) || catalog?.accessories.find(item => item.id === attached?.catalogId);
@@ -416,7 +653,15 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       canvas.getContext('2d').putImageData(new ImageData(captured.pixels, captured.width, captured.height), 0, 0);
       return { format, width: captured.width, height: captured.height, frameNumber: number, dataUrl: canvas.toDataURL('image/png') };
     },
-    async dispose() { if (status !== 'disposed') { aborter?.abort(); stopWorker(); loaded = null; setStatus('disposed'); listeners.clear(); } return snapshot(); },
+    async dispose() {
+      if (status !== 'disposed') {
+        progressGeneration++; imuGeneration++; aborter?.abort();
+        try { if (storageSession && status!=='loading') { if (worker && status==='running') await ask('stopped',{op:'stop'}); await preserveStorage(); } }
+        catch(e) { report(e); }
+        finally { stopWorker(); if(storageSession)storageSession.closed=true; loaded=null; unsubscribeStorage(); deviceStorage.close(); globalThis.removeEventListener?.('pagehide',pageHide); setStatus('disposed'); listeners.clear(); }
+      }
+      return snapshot();
+    },
   };
   return api;
 }

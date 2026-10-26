@@ -1,0 +1,80 @@
+{
+  "checkedAt": "2026-10-26T17:15:45.572445+00:00",
+  "repositoryRevision": "9e48897cf6d043b04cbf243e6d71993a69961675",
+  "workingChanges": true,
+  "checks": {
+    "nativeClippy": "passed",
+    "wasmClippyJitTests": "passed",
+    "workspaceReleaseIncludeIgnoredSkipExternal": {
+      "passed": 1328,
+      "ROMDirectory": "absolute web/wasm/fw"
+    },
+    "runtimeRealWorker": "passed",
+    "recordingRealWorker": "passed, 18 events and frame comparison equal",
+    "imuMath": "2 passed",
+    "bmi270RegisterModel": "2 passed",
+    "wasmDemos": "passed: hello, c3-hello, c6-hello, c6-energy-scan, c6-contiki, c6-contiki-net, c6-rpl-net, panel",
+    "runtimeDefaultInterpreter": "passed"
+  },
+  "visualChecks": {
+    "method": "Opened actual emulator framebuffer PNG files",
+    "upright": "X 1.0, Y 0.0, Z 0.0",
+    "tiltX90": "X 0.0, Y 0.0, Z -1.0",
+    "tiltZ90": "X 0.0, Y 1.0, Z 0.0",
+    "invertedX180": "X -1.0, Y 0.0, Z 0.0",
+    "gyroZ90": "outer dot rotated; center ball enlarged"
+  },
+  "limitations": [
+    "No physical hardware validation",
+    "Virtual model-to-sensor mounting registration, physical PCB orientation unverified",
+    "Host-fed samples, no sensor ODR/FIFO/feature-engine timing",
+    "JIT non-response unresolved; StopWatch defaults to tested WASM interpreter",
+    "Short host-timed GPIO pulse overran firmware hold threshold in one probe"
+  ],
+  "files": [
+    {
+      "path": "esp-periph/src/i2c/bmi270.rs",
+      "sha256": "907f5c38b2fd0605b25cc4f24b3fc19055f6e73cba2503802b9154842a0f7b43"
+    },
+    {
+      "path": "esp-soc/src/board.rs",
+      "sha256": "ad3bf3b22e550458b3574ca0a60b941dac927513a61b783865dd9308cc6c8879"
+    },
+    {
+      "path": "esp32s3/src/board/stopwatch.rs",
+      "sha256": "8de7e4d8551245dbcec65148523826d15325c32820b4d407b9faa4480a2355d5"
+    },
+    {
+      "path": "wasm/src/s3.rs",
+      "sha256": "f1dc3b0609f26f34eb1a279092ad6bcbea16a98c03762b4b440a4b8a5490f5b0"
+    },
+    {
+      "path": "web/wasm/worker.js",
+      "sha256": "477db9f747cb7f268ff5dbb61a04e413e0b2c7593f7d6560466d38b3e12d7799"
+    },
+    {
+      "path": "web/wasm/esp32sim.wasm",
+      "sha256": "ba0f15757e22f78869aca1ab53ce3ab3fc4ffa8f910664ab147e574225f32912"
+    },
+    {
+      "path": "web/platform/imu.js",
+      "sha256": "028de59bcfec1c157961a8f69e0180b4c6104447fc3f022d5fe8fc5b8adfe67a"
+    },
+    {
+      "path": "web/platform/runtime.js",
+      "sha256": "64f8d018490c1b878bbd7f9d65b6d33916b5c612ec1797e9a8c6f7e1e95b795e"
+    },
+    {
+      "path": "web/platform/scene-view.js",
+      "sha256": "68b604b7d6eca8d2bea535105192d02e83e5570304b83d217a6673b93113e9df"
+    },
+    {
+      "path": "tools/probe-official-stopwatch.mjs",
+      "sha256": "a6a29eae911d45d5ec5a4152bfb566513e39abd32c3d2ba54cf23de619353ebf"
+    }
+  ],
+  "environment": {
+    "node": "v22.23.1",
+    "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)"
+  }
+}

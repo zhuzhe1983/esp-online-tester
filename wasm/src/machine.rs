@@ -86,6 +86,10 @@ pub(super) enum MachineKind {
 }
 
 impl MachineKind {
+    /// Read-only host storage export; no guest instruction, tick or cache state changes.
+    pub fn flash(&self) -> &[u8] {
+        match self { Self::S3(m) => &m.bus.flash, Self::C3(m) => &m.bus.flash, Self::C6(m) => &m.bus.flash, Self::Esp32(m) => &m.bus.flash, Self::P4(m) => &m.bus.flash }
+    }
     pub fn s3_mut(&mut self) -> Option<&mut esp32s3::Machine> {
         match self { Self::S3(m) => Some(m), _ => None }
     }

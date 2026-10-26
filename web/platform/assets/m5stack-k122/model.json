@@ -1,0 +1,494 @@
+{
+  "schemaVersion": "1",
+  "id": "m5stack-k122",
+  "unit": "mm",
+  "binary": "geometry.bin",
+  "strideFloats": 6,
+  "parts": [
+    {
+      "sourceComponent": 0,
+      "name": "shell-cover",
+      "color": "#ede9d0",
+      "role": "shell",
+      "byteOffset": 0,
+      "vertexCount": 12516,
+      "boundsMm": [
+        [
+          -10.0,
+          -17.0,
+          -2.25
+        ],
+        [
+          10.0,
+          17.0,
+          2.25
+        ]
+      ]
+    }
+  ],
+  "sourceTransform": {
+    "matrixRows": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        -0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "scale": 1,
+    "note": "Retained source assembled cluster; only the recorded rigid rotation and translation are applied. Original millimetres and relative positions preserved."
+  },
+  "omittedComponents": [],
+  "dimensions": {
+    "officialOrientedEnvelopeMm": [
+      20,
+      34,
+      4.6
+    ]
+  },
+  "presentation": {
+    "bodySizeMm": [
+      20,
+      34,
+      4.6
+    ]
+  },
+  "derivedParts": [
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "label": "UNKNOWN",
+      "basis": "estimated",
+      "geometry": {
+        "sizeMm": [
+          20,
+          34,
+          0.8
+        ],
+        "centerMm": [
+          0,
+          0,
+          -1.8
+        ]
+      },
+      "notes": "STL is the heat-resistant shield, not a populated PCB. Only a neutral board-space placeholder is added; no components inferred.",
+      "sourceIds": []
+    },
+    {
+      "id": "usb-body",
+      "kind": "box",
+      "basis": "image-measurement",
+      "color": "#aab0b1",
+      "geometry": {
+        "sizeMm": [
+          8.9,
+          5.7,
+          3.2
+        ],
+        "centerMm": [
+          0,
+          -13.85,
+          0
+        ]
+      },
+      "sourceIds": [
+        "product-photo-8bf32cc503"
+      ],
+      "notes": "Visible USB metal body estimated from photos and shell opening, ±0.5 mm; not connector manufacturing CAD. Body stops0.3mm behind mouth to avoid coplanar metal across the dark opening."
+    },
+    {
+      "id": "usb-c",
+      "kind": "connector-visual",
+      "connectorType": "USB-C",
+      "basis": "image-measurement",
+      "geometry": {
+        "centerMm": [
+          0,
+          -17.0,
+          0
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "sourceIds": [
+        "product-photo-8bf32cc503"
+      ],
+      "notes": "Visual-only USB-C mouth at photo/CAD opening; no pin routing or precise connector body certification."
+    },
+    {
+      "id": "front-paper-label",
+      "kind": "label",
+      "texture": "front-paper-label.png",
+      "geometry": {
+        "sizeMm": [
+          20,
+          34
+        ],
+        "centerMm": [
+          0,
+          0,
+          2.275
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-3d7c1bc531"
+      ],
+      "notes": "Independent masked paper label; no shell photograph or internal-board photograph applied."
+    }
+  ],
+  "derivedSurfaces": [],
+  "referencePhotos": [
+    {
+      "sourceId": "product-photo-3d7c1bc531",
+      "view": "front",
+      "originalView": "label-front",
+      "file": "reference-product-photo-3d7c1bc531.jpg",
+      "sourceSha256": "90500df38c3609d620f7bb72a754f01ee56ec930d22314fc48aa304e548b8a11"
+    },
+    {
+      "sourceId": "product-photo-8bf32cc503",
+      "view": "back",
+      "originalView": "board-back",
+      "file": "reference-product-photo-8bf32cc503.jpg",
+      "sourceSha256": "d7956f83b71be63a48e8f4e54976ffa248f52f7fc60cdc9e0a8ac336d77eb2af"
+    },
+    {
+      "sourceId": "product-photo-5d40c72384",
+      "view": "side",
+      "originalView": "USB-end",
+      "file": "reference-product-photo-5d40c72384.jpg",
+      "sourceSha256": "f391714707a7c4dbc063df2a07b4d529bffaf4ded2afc201880bb457a7b8c4fb"
+    }
+  ],
+  "textures": [
+    {
+      "file": "front-paper-label.png",
+      "sourceId": "product-photo-3d7c1bc531",
+      "cropXYXY": [
+        247,
+        140,
+        549,
+        657
+      ],
+      "alphaMask": {
+        "includeRoundedRects": [
+          {
+            "xyxy": [
+              255,
+              150,
+              541,
+              645
+            ],
+            "radiusPx": 2
+          }
+        ],
+        "excludeEllipses": [
+          [
+            368,
+            340,
+            427,
+            399
+          ]
+        ]
+      },
+      "notes": "Exact Mate label photo, paper only with physical screw excluded. No sibling-SKU labels/headers used.",
+      "sourceSha256": "90500df38c3609d620f7bb72a754f01ee56ec930d22314fc48aa304e548b8a11",
+      "outputPixels": [
+        302,
+        517
+      ],
+      "method": "Fixed axis-aligned crop; original-coordinate explicit alpha ROI at4x supersampling when alphaMask supplied; exclusions remove fasteners/holes/shell. No generated pixels or perspective warp."
+    }
+  ],
+  "reviewViews": {
+    "front": {
+      "span": 53
+    },
+    "back": {
+      "span": 53
+    },
+    "side": {
+      "span": 45,
+      "position": [
+        0,
+        -250,
+        60
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ]
+    }
+  },
+  "provenance": {
+    "repository": "https://github.com/m5stack/M5_Hardware",
+    "commit": "e29c139cbc7c80b5ccc5557e5ab8025a7a19a109",
+    "sourceUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K122_Stamp-C3U_Mate/Structures/Stamp-C3U_Mate.stl",
+    "sourceSha256": "c5dcd01a4cf647dedc0cdd2e32994c7306f89d9a0730f7b8a7ee47bcd2fa03d9",
+    "tessellation": {
+      "step": "OpenCascade 7.8.1.1; absolute deflection0.05mm, angle0.2rad, native solids plus orphan shells/faces; units converted by STEP reader to millimetres",
+      "stl": "Original triangles"
+    },
+    "sourceLicense": "MIT; Copyright (c) 2021 M5Stack; see LICENSE-M5Stack.txt",
+    "photoRights": "Official product photographs copyright M5Stack / named manufacturer. No separate open photo license verified; retained for product reference, not relicensed under project MIT.",
+    "sources": [
+      {
+        "id": "official-docs",
+        "title": "Stamp-C3U Mate",
+        "url": "https://docs.m5stack.com/en/core/Stamp-C3U_Mate",
+        "resolvedUrl": "https://docs.m5stack.com/en/core/Stamp-C3U_Mate",
+        "kind": "official-product-document",
+        "status": "fetched",
+        "fetchedAt": "2026-10-26T15:19:23Z",
+        "sha256": "ff3a23f27b0898ff705f2fcebb56053726cc95f0d2718d76a7164c66327549b3",
+        "bytes": 132577,
+        "mediaType": "text/html",
+        "archiveName": "official-docs.html",
+        "notes": "Reused actual corpus receipt 2026-10-26T15:19:23.334654Z; no new fetch timestamp invented."
+      },
+      {
+        "id": "manufacturer-source-ed68ce2dd4",
+        "title": "Stamp-C3U Mate Structure Files",
+        "url": "https://github.com/m5stack/M5_Hardware/tree/master/Products/K122_Stamp-C3U_Mate/Structures",
+        "kind": "manufacturer-source",
+        "status": "linked",
+        "discoveredFrom": "official-docs"
+      },
+      {
+        "id": "software-source-49b03ce450",
+        "title": "Stamp-C3U RGB LED Example",
+        "url": "https://github.com/m5stack/STAMP-C3/tree/master/idf/RGB_LED_Control",
+        "kind": "software-source",
+        "status": "linked",
+        "discoveredFrom": "official-docs"
+      },
+      {
+        "id": "manufacturer-cad-f1af79c9d9",
+        "title": "Products/K122_Stamp-C3U_Mate/Structures/Stamp-C3U_Mate.stl",
+        "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K122_Stamp-C3U_Mate/Structures/Stamp-C3U_Mate.stl",
+        "kind": "manufacturer-cad",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "manufacturer-cad-f1af79c9d9.stl",
+        "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K122_Stamp-C3U_Mate/Structures/Stamp-C3U_Mate.stl",
+        "fetchedAt": "2026-10-26T17:24:33Z",
+        "bytes": 208684,
+        "mediaType": "application/octet-stream",
+        "sha256": "c5dcd01a4cf647dedc0cdd2e32994c7306f89d9a0730f7b8a7ee47bcd2fa03d9"
+      },
+      {
+        "id": "product-photo-41a5af610d",
+        "title": "Stamp-C3U Mate official photo",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_01.jpg",
+        "kind": "product-photo",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "product-photo-41a5af610d.jpg",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_01.jpg",
+        "fetchedAt": "2026-10-26T17:24:33Z",
+        "bytes": 313855,
+        "mediaType": "image/jpg",
+        "sha256": "544c92120d6e6969a0e0ae77576e7ac908619932b230f1247933e519a9842a9c"
+      },
+      {
+        "id": "product-photo-3d7c1bc531",
+        "title": "Stamp-C3U Mate official photo",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_02.jpg",
+        "kind": "product-photo",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "product-photo-3d7c1bc531.jpg",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_02.jpg",
+        "fetchedAt": "2026-10-26T17:24:33Z",
+        "bytes": 159755,
+        "mediaType": "image/jpg",
+        "sha256": "90500df38c3609d620f7bb72a754f01ee56ec930d22314fc48aa304e548b8a11"
+      },
+      {
+        "id": "product-photo-1b3b34488a",
+        "title": "Stamp-C3U Mate official photo",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_03.jpg",
+        "kind": "product-photo",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "product-photo-1b3b34488a.jpg",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_03.jpg",
+        "fetchedAt": "2026-10-26T17:24:33Z",
+        "bytes": 125128,
+        "mediaType": "image/jpg",
+        "sha256": "3be1ebbdaafa58a402d85601bff41f850ac9e2a16822bb7bc15a83000f9dec71"
+      },
+      {
+        "id": "product-photo-f7c2c1429f",
+        "title": "Stamp-C3U Mate official photo",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_04.jpg",
+        "kind": "product-photo",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "product-photo-f7c2c1429f.jpg",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_04.jpg",
+        "fetchedAt": "2026-10-26T17:24:33Z",
+        "bytes": 173998,
+        "mediaType": "image/jpg",
+        "sha256": "b5210bdef50a5ce006da8a21d886702be94c4ec0ba509cc55fc039a27feca6b9"
+      },
+      {
+        "id": "product-photo-d260c9505d",
+        "title": "Stamp-C3U Mate official photo",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_05.jpg",
+        "kind": "product-photo",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "product-photo-d260c9505d.jpg",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_05.jpg",
+        "fetchedAt": "2026-10-26T17:24:33Z",
+        "bytes": 134366,
+        "mediaType": "image/jpg",
+        "sha256": "e6ade957dabfa55b47ae12a3fecd9d6babf0b81b1c7e93c636c75d19724540d4"
+      },
+      {
+        "id": "product-photo-5d40c72384",
+        "title": "Stamp-C3U Mate official photo",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_06.jpg",
+        "kind": "product-photo",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "product-photo-5d40c72384.jpg",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_06.jpg",
+        "fetchedAt": "2026-10-26T17:24:33Z",
+        "bytes": 137982,
+        "mediaType": "image/jpg",
+        "sha256": "f391714707a7c4dbc063df2a07b4d529bffaf4ded2afc201880bb457a7b8c4fb"
+      },
+      {
+        "id": "product-photo-ae0ed0a97e",
+        "title": "Stamp-C3U Mate official photo",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_07.jpg",
+        "kind": "product-photo",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "product-photo-ae0ed0a97e.jpg",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_07.jpg",
+        "fetchedAt": "2026-10-26T17:24:33Z",
+        "bytes": 181672,
+        "mediaType": "image/jpg",
+        "sha256": "6053331f8e9b95ef1aa920b29ac0ab352d832401f77b88af54d0439a6e5a0652"
+      },
+      {
+        "id": "product-photo-8bf32cc503",
+        "title": "Stamp-C3U Mate official photo",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_08.jpg",
+        "kind": "product-photo",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "product-photo-8bf32cc503.jpg",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_08.jpg",
+        "fetchedAt": "2026-10-26T17:24:33Z",
+        "bytes": 162527,
+        "mediaType": "image/jpg",
+        "sha256": "d7956f83b71be63a48e8f4e54976ffa248f52f7fc60cdc9e0a8ac336d77eb2af"
+      },
+      {
+        "id": "product-photo-317c46c613",
+        "title": "Stamp-C3U Mate official photo",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_09.jpg",
+        "kind": "product-photo",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "product-photo-317c46c613.jpg",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/526/K122_09.jpg",
+        "fetchedAt": "2026-10-26T17:24:33Z",
+        "bytes": 142636,
+        "mediaType": "image/jpg",
+        "sha256": "4be92afa95677a47a8e70d5f7213f654df69d96ec34cd83eba7dbf3529e165b3"
+      },
+      {
+        "id": "dimension-drawing-9fce13bc60",
+        "title": "Stamp-C3U Mate dimension drawing",
+        "url": "https://static-cdn.m5stack.com/resource/docs/products/core/stamp_c3u/stamp_c3&c3u_size_01.webp",
+        "kind": "dimension-drawing",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "dimension-drawing-9fce13bc60.webp",
+        "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/core/stamp_c3u/stamp_c3&c3u_size_01.webp",
+        "fetchedAt": "2026-10-26T17:24:34Z",
+        "bytes": 51234,
+        "mediaType": "image/webp",
+        "sha256": "63b4d2b16fa855c2aaddfd5b828096d4de1f3a03b366b16cccb9d7bf0fa4ccf4"
+      },
+      {
+        "id": "datasheet-96dcbba919",
+        "title": "ESP32-C3",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/525/esp32-c3_datasheet_en.pdf",
+        "kind": "datasheet",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "datasheet-96dcbba919.pdf",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/525/esp32-c3_datasheet_en.pdf",
+        "fetchedAt": "2026-10-26T17:24:33Z",
+        "bytes": 908877,
+        "mediaType": "application/pdf",
+        "sha256": "fe4f3eaf5ead3bb1dbc63fa7872a4bdee717236edfe88f87f68614960d1ef722"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+        "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+        "mediaType": "text/plain; charset=utf-8",
+        "fetchedAt": "2026-10-26T16:50:07Z",
+        "bytes": 1063,
+        "sha256": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+        "id": "cad-license",
+        "title": "M5_Hardware MIT license",
+        "kind": "license",
+        "status": "fetched",
+        "archiveName": "license.txt"
+      }
+    ]
+  },
+  "limitations": [
+    "Single connected manufacturer STL provides source geometry only; no separately certified PCB/component placement.",
+    "4.5 mm CAD thickness differs from 4.6 mm documented envelope. Optional loose headers/connector kit are not assembled by inference.",
+    "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
+    "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+    "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+    "Browser inspection identifies the connected STL as a heat-resistant shield; actual populated PCB geometry and edge pad assignments remain unknown."
+  ],
+  "artifacts": {
+    "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+    "reference-product-photo-3d7c1bc531.jpg": "90500df38c3609d620f7bb72a754f01ee56ec930d22314fc48aa304e548b8a11",
+    "reference-product-photo-5d40c72384.jpg": "f391714707a7c4dbc063df2a07b4d529bffaf4ded2afc201880bb457a7b8c4fb",
+    "reference-product-photo-ae0ed0a97e.jpg": "6053331f8e9b95ef1aa920b29ac0ab352d832401f77b88af54d0439a6e5a0652",
+    "front-paper-label.png": "b31155b687d86acb9f1612eced15310e7d18fbd3e086c21ef2a56e1f002a3e02",
+    "reference-product-photo-8bf32cc503.jpg": "d7956f83b71be63a48e8f4e54976ffa248f52f7fc60cdc9e0a8ac336d77eb2af",
+    "geometry.bin": "4df34a06138cfee709dd793ca19ab9841489f3cf9d1df28e9d6af925f2495ee7",
+    "source.stl": "c5dcd01a4cf647dedc0cdd2e32994c7306f89d9a0730f7b8a7ee47bcd2fa03d9"
+  }
+}

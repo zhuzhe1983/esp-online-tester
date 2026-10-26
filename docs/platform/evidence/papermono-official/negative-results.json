@@ -1,0 +1,136 @@
+[
+  {
+    "name": "official-papermono-first",
+    "originalReceiptSha256": "d0370a9dc27373b81f4b3d69ee47205752b4cd5836b640b67b3b42f9212c0796",
+    "failure": {
+      "message": "No frame at boot"
+    },
+    "elapsedMs": 9573,
+    "stats": {
+      "t": "stat",
+      "time": 8,
+      "insns": 202918200,
+      "frames": 0,
+      "behind": 0,
+      "resyncs": 0,
+      "speed": null,
+      "cam": 0,
+      "gpio_in": "1fffffffbfffe",
+      "mips": 2.7501898873661665
+    },
+    "frame": null,
+    "stages": [],
+    "explanation": "Before software I2C edge decoding: auto detection selected PowerHub (146), zero display; no mock frame substituted."
+  },
+  {
+    "name": "official-papermono-bitbang",
+    "originalReceiptSha256": "3746fa9d32a045737aa07d1e46a303e8c61e4011fb360741ca012062d791cb84",
+    "failure": {
+      "message": "No frame at boot"
+    },
+    "elapsedMs": 10049,
+    "stats": {
+      "t": "stat",
+      "time": 8,
+      "insns": 340960381,
+      "frames": 0,
+      "behind": 0,
+      "resyncs": 0,
+      "speed": null,
+      "cam": 0,
+      "gpio_in": "1fffffffbfffe",
+      "mips": 2.7503717862800108
+    },
+    "frame": null,
+    "stages": [],
+    "explanation": "Software detection added but devices only attached to I2C0: actual M5GFX path uses I2C1; zero display."
+  },
+  {
+    "name": "official-papermono-routed",
+    "originalReceiptSha256": "05ffd0e676c8b1cb11007512024375f8760b35e732b5ac7101ed85158f33f179",
+    "failure": {
+      "message": "Probe clock query timeout (10000 ms)"
+    },
+    "elapsedMs": 16336,
+    "stats": {
+      "t": "stat",
+      "time": 8.78,
+      "insns": 1390840030,
+      "frames": 1,
+      "behind": 0,
+      "resyncs": 0,
+      "speed": null,
+      "cam": 0,
+      "gpio_in": "1dbfffffb3ffe",
+      "mips": 98.30408629645056
+    },
+    "frame": {
+      "width": 480,
+      "height": 800,
+      "frameNumber": 1,
+      "sha256": "8770788ed07159b6e2600d119afd1fc6a9ab49a16e36283445624ac761380da6"
+    },
+    "stages": [],
+    "explanation": "Shared I2C0/I2C1 fixed board detection; 10 s host receipt timeout during first heavy paint. Later 60 s measurement window completed without CPU/guest-clock change."
+  },
+  {
+    "name": "official-papermono-controls",
+    "originalReceiptSha256": "abe139b4945a422c0cd1c9a2c68cce39082071e3b9778479180e5f6ee8249387",
+    "failure": {
+      "message": "B must change the actual brightness label",
+      "code": "ERR_ASSERTION"
+    },
+    "elapsedMs": 26731,
+    "stats": {
+      "t": "stat",
+      "time": 18.38,
+      "insns": 2015013755,
+      "frames": 6,
+      "behind": 0,
+      "resyncs": 0,
+      "speed": null,
+      "cam": 0,
+      "gpio_in": "1dbfffffb3ffe",
+      "mips": 44.29249877816542
+    },
+    "frame": {
+      "width": 480,
+      "height": 800,
+      "frameNumber": 6,
+      "sha256": "0a18b1b752a115b050eb1898103fc3f0c403bbf41e81db22082467022c0d3d2b"
+    },
+    "stages": [
+      {
+        "name": "boot",
+        "guestSeconds": 15.026878204166668,
+        "lastStatSeconds": 15,
+        "frameNumber": 4,
+        "nonBlackChannels": 1076682,
+        "sha256": "0a18b1b752a115b050eb1898103fc3f0c403bbf41e81db22082467022c0d3d2b",
+        "brightness": "bfa7b286431a81acafc449c7477ae606baa5c21604f7270b74049ab3f675787d",
+        "mute": "73c288fe35a75add30668bad2d98ea0f5babd2ebb7761ab27e0beed1bbd6f9d4"
+      },
+      {
+        "name": "button-b",
+        "guestSeconds": 16.7170367875,
+        "lastStatSeconds": 16.7,
+        "frameNumber": 5,
+        "nonBlackChannels": 1076676,
+        "sha256": "866fb7bd71ea1a765f749cc964ad4033a9788beb9b51b78812d17473b02b9f66",
+        "brightness": "bfa7b286431a81acafc449c7477ae606baa5c21604f7270b74049ab3f675787d",
+        "mute": "73c288fe35a75add30668bad2d98ea0f5babd2ebb7761ab27e0beed1bbd6f9d4"
+      },
+      {
+        "name": "button-a",
+        "guestSeconds": 18.388336241666668,
+        "lastStatSeconds": 18.36,
+        "frameNumber": 6,
+        "nonBlackChannels": 1076682,
+        "sha256": "0a18b1b752a115b050eb1898103fc3f0c403bbf41e81db22082467022c0d3d2b",
+        "brightness": "bfa7b286431a81acafc449c7477ae606baa5c21604f7270b74049ab3f675787d",
+        "mute": "73c288fe35a75add30668bad2d98ea0f5babd2ebb7761ab27e0beed1bbd6f9d4"
+      }
+    ],
+    "explanation": "Input reached firmware (B 30 to 20, A restored 30), but probe compared wrong brightness crop at y=0. Corrected to documented/rendered label y=118..145; later run verifies both inputs."
+  }
+]

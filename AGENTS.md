@@ -5,7 +5,7 @@
 - To configure or operate the system, read `skills/esp-online-tester/SKILL.md`. It documents the implemented API; `docs/platform/research/` contains historical drafts.
 - To add or refresh products, modules, 3D assets or remote firmware, read `skills/esp-product-onboarding/SKILL.md`. Prefer manufacturer CAD, retain source timestamps and verify dimensions plus photo overlays.
 - Humans, embedded parents and agents use the same runtime. Verify firmware output after inputs; a 3D preview or queued input is not evidence of execution.
-- Keep product-specific support truthful. PaperMono is currently preview-only; StopWatch is partial; GPS injection bypasses physical routing and timing.
+- Keep product-specific support truthful. PaperMono/Lite and StopWatch are partial; other catalog entries need individual runtime verification; GPS injection bypasses physical routing and timing.
 - Public catalogs accept PRs; private DIY definitions stay local unless exported or shared. See `docs/platform/contributing.md`.
 - Preserve buildless static deployment under a GitHub Pages repository subpath. Runtime dependencies and assets must be local or explicitly declared user firmware sources.
 - Platform checks: `node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs` and a real browser check for UI changes. Build WASM and fetch ROMs first as documented.

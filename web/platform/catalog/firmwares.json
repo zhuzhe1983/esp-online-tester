@@ -1,29 +1,2231 @@
 {
   "schemaVersion": "1",
-  "revision": "2026-10-26",
+  "revision": "2026-10-27",
   "items": [
     {
-      "id": "platform-stopwatch-diagnostic", "name": "StopWatch 平台诊断 · 显示与输入", "productIds": ["m5stack-stopwatch"], "status": "available",
-      "source": {"manifestUrl": "../wasm/fw/demo-stopwatch.json", "sha256": "c97ad1d6d29c14464c0917e1e2d903f15c375e5261f717419838895eaa4549d1"}, "revision": "1.0.0", "sdk": "ESP-IDF 5.5.1", "license": "MIT",
-      "limitations": ["本平台的公开诊断程序，用于测试屏幕、按键、触摸和逻辑 UART1；不是 M5Stack 官方固件。", "已通过 WASM ROM 启动并观察到 PLATFORM_READY 与屏幕帧；未在真实硬件上验证。", "GPIO10/GPIO11 的 UART 配置仅供后续实机测试；逻辑注入不会验证电气接线。"],
-      "sources": [{"title": "ESP Online Tester StopWatch diagnostic source", "url": "https://github.com/zhuzhe1983/esp-online-tester/tree/platform/foundation/examples/platform-stopwatch", "checkedAt": "2026-10-26"}]
+      "id": "m5stack-stopwatch-official",
+      "name": "StopWatch 官方 User Demo · V0.5",
+      "productIds": [
+        "m5stack-stopwatch"
+      ],
+      "status": "available",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/6ea670900726398df06ab72c2915db3e.bin",
+        "sha256": "6395799089341e0ae96072c2a3418d469d6797b2ab8ee0cab1c9ed24a42acbbe"
+      },
+      "limitations": [
+        "M5Stack 官方完整镜像；浏览器直连官方 CDN，SHA-256 与 GitHub V0.5 发布版一致。可缓存在当前浏览器，本站服务器和仓库不保存。",
+        "已验证 ROM 启动、官方引导页、A+B 长按主菜单、A/B 翻页、触屏进入功能与顶部下滑电量；并非全部功能均可模拟。",
+        "BMI270 已支持虚拟姿态输入；RX8130 实时时钟、音频播放及物理电源按键尚未模拟；电量来自模型的合成电压，不代表真实电池。",
+        "浏览器输入时序存在偏差；自动化短按测试曾超过固件的 500 ms 长按阈值，录制回放不保证逐帧一致。",
+        "未连接真实硬件或执行刷机；实机启动与操作仍需验证。",
+        "官方 IMU 页面已在 WASM 解释器验证；目前禁用此板 JIT 以避免卡住，速度较慢。模型坐标为虚拟轴约定，未与实物对轴。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack StopWatch User Demo V0.5 release",
+          "url": "https://github.com/m5stack/M5StopWatch-UserDemo/releases/tag/V0.5",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "M5Burner official firmware catalog (StopWatch User Demo, fid 02f082a61479570df0a2063c9bce7b57)",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "M5Stack StopWatch operation guide",
+          "url": "https://docs.m5stack.com/en/guide/stopwatch/usage",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "revision": "V0.5",
+      "sdk": "ESP-IDF 5.5.4",
+      "license": "MIT",
+      "simulationVerified": true,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "watchlistId": "m5stack-stopwatch-official",
+      "role": "factory",
+      "publisher": "M5Stack"
     },
     {
-      "id": "esp32sim-s3-hello", "name": "ESP32-S3 Hello · 公开执行基准", "productIds": ["generic-esp32s3"], "status": "available",
-      "source": {"manifestUrl": "../wasm/fw/hello.json", "sha256": "effb7f5d7fb33dcbabbe8ef8310c2b32ae875594553c056cde09c3fa762e5412"},
-      "revision": "ddf753a5c400ff79d3aa6a88a007eccd044e838d",
-      "limitations": ["需要部署 ROM 与 WASM 资源；运行结果是串口 Hello 输出，没有屏幕。", "目录的 available 表示存在可加载清单；测试结果须由当前运行记录证明。"],
-      "sources": [{"title": "esp32sim public hello manifest", "url": "https://github.com/mikroverk/esp32sim/blob/ddf753a5c400ff79d3aa6a88a007eccd044e838d/web/wasm/fw/hello.json", "checkedAt": "2026-10-26"}]
+      "id": "papermono-crosspoint",
+      "name": "PaperMono CrossPoint E-Reader",
+      "productIds": [
+        "m5stack-papermono"
+      ],
+      "status": "reference",
+      "source": null,
+      "limitations": [
+        "已发现 PaperMono 适配版本；尚未在新的板级模型上验证此固件，仍只提供版本与来源信息。"
+      ],
+      "sources": [
+        {
+          "title": "PaperMono official CrossPoint firmware link",
+          "url": "https://docs.m5stack.com/en/core/PaperMono",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "CrossPoint Reader releases",
+          "url": "https://github.com/crosspoint-reader/crosspoint-reader/releases",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "watchlistId": "crosspoint-reader",
+      "role": "third-party",
+      "publisher": "CrossPoint Reader contributors"
     },
     {
-      "id": "m5stack-stopwatch-official", "name": "StopWatch 官方固件与示例", "productIds": ["m5stack-stopwatch"], "status": "reference", "source": null,
-      "limitations": ["仅提供官方入口；尚未固定、校验并验证可在本平台执行的固件镜像。"],
-      "sources": [{"title": "M5Stack StopWatch software and tutorials", "url": "https://docs.m5stack.com/en/core/StopWatch", "checkedAt": "2026-10-26"}]
+      "id": "papermono-uiflow2",
+      "name": "PaperMono UIFlow2 · v2.5.3",
+      "productIds": [
+        "m5stack-papermono"
+      ],
+      "status": "reference",
+      "source": null,
+      "watchlistId": "uiflow2",
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "revision": "2.5.3",
+      "limitations": [
+        "M5Stack 已为 PaperMono 发布 UIFlow2 固件；尚未在新的板级模型验证此固件，当前只提供版本与官方下载信息。",
+        "GitHub 发布版与 M5Burner 官方构建的 SHA-256 不同，已分别记录；不能将同版本名称视为同一镜像。",
+        "未验证本平台运行或实机刷写，暂不提供下载并运行。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack UIFlow2 v2.5.3 release",
+          "url": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.3",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "M5Stack PaperMono official software links",
+          "url": "https://docs.m5stack.com/en/core/PaperMono",
+          "checkedAt": "2026-10-26"
+        }
+      ]
     },
     {
-      "id": "papermono-crosspoint", "name": "PaperMono CrossPoint E-Reader", "productIds": ["m5stack-papermono"], "status": "reference", "source": null,
-      "limitations": ["官方产品页提供固件入口；当前尚无 PaperMono 板级模型，未验证运行兼容性或固定二进制版本。"],
-      "sources": [{"title": "PaperMono official CrossPoint firmware link", "url": "https://docs.m5stack.com/en/core/PaperMono", "checkedAt": "2026-10-26"}, {"title": "CrossPoint Reader releases", "url": "https://github.com/crosspoint-reader/crosspoint-reader/releases", "checkedAt": "2026-10-26"}]
+      "id": "m5stack-k132-adv-official",
+      "name": "Cardputer-Adv 官方 User Demo · v0.3",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k132-adv"
+      ],
+      "status": "available",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/4ed4ab3a388a74e805971f37d6adcc9f.bin",
+        "sha256": "7bb1532427c875445b16186b6139afa371f67ddbdc83ae5bfe4a9089c7883b74"
+      },
+      "publicationUrl": "https://github.com/m5stack/M5Cardputer-UserDemo/tree/CardputerADV",
+      "version": "v0.3",
+      "compatibility": "partial",
+      "limitations": [
+        "官方 M5Burner 标注 v0.3；镜像内版本 ADV-V0.2-5-g452db44，ESP-IDF v5.4.2，保留两种标识。",
+        "已验证真实显示、Enter 退出开机页和左右菜单导航。菜单中的录音、无线等应用并不代表相应硬件均已模拟。",
+        "音频、麦克风、SD、IR、无线应用、持续 IMU、供电和睡眠未验收；未实机验证。"
+      ],
+      "sources": [
+        {
+          "title": "Cardputer-Adv official factory firmware source",
+          "url": "https://github.com/m5stack/M5Cardputer-UserDemo/tree/CardputerADV",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        },
+        {
+          "title": "M5Stack 官方 M5Burner 固件目录",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "watchlistId": "m5stack-cardputer-adv-official",
+      "verification": {
+        "simulationVerified": true,
+        "hardwareValidated": false,
+        "evidence": "docs/platform/evidence/cardputer-adv-official/README.md"
+      }
+    },
+    {
+      "id": "m5stack-c145-official-reference",
+      "name": "Tab5 official factory firmware source",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-c145"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/M5Tab5-UserDemo",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "Tab5 official factory firmware source",
+          "url": "https://github.com/m5stack/M5Tab5-UserDemo",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-c153-lite-crosspoint",
+      "name": "PaperMono-Lite CrossPoint E-Reader",
+      "productIds": [
+        "m5stack-c153-lite"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "third-party",
+      "publisher": "CrossPoint Reader contributors",
+      "sources": [
+        {
+          "title": "PaperMono-Lite CrossPoint E-Reader — 官方产品页入口",
+          "url": "https://burner.m5stack.com/firmware/2091144466157694978/",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "PaperMono-Lite",
+          "url": "https://docs.m5stack.com/en/core/PaperMono-Lite",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方产品页明确提供此型号入口；尚未固定远程镜像版本/hash或验证浏览器运行，故不提供下载并运行。"
+      ]
+    },
+    {
+      "id": "m5stack-c153-lite-uiflow2-reference",
+      "name": "PaperMono-Lite UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-c153-lite"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "PaperMono-Lite UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/papermono/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/PaperMono-Lite",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k124-b-uiflow1-reference",
+      "name": "Station-Bat UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k124-b"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Station-Bat UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/m5station/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Station-Bat",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k124-b-uiflow2-reference",
+      "name": "Station-Bat UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k124-b"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Station-Bat UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5station/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Station-Bat",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k159-b-factory-reference",
+      "name": "M5Stack PaperDIY Complete Kit · K159-B 官方出厂固件入口",
+      "productIds": [
+        "m5stack-k159-b"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "factory",
+      "publisher": "M5Stack",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "PaperDIY Factory Firmware Source Code",
+          "url": "https://github.com/m5stack/M5PaperDIY-UserDemo",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "PaperDIY Factory Firmware WebBurner",
+          "url": "https://burner.m5stack.com/share/firmware/UVVZ26",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方产品资料提供的固件入口；尚未核对固定镜像、分区、校验值及模拟运行兼容性。"
+      ]
+    },
+    {
+      "id": "m5stack-k123-factory-reference",
+      "name": "M5Stack Station-485 · K123 官方出厂固件入口",
+      "productIds": [
+        "m5stack-k123"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "factory",
+      "publisher": "M5Stack",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "Download",
+          "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/EasyLoader/Windows/CORE/M5Staion.exe",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方产品资料提供的固件入口；尚未核对固定镜像、分区、校验值及模拟运行兼容性。"
+      ]
+    },
+    {
+      "id": "m5stack-papermono-official",
+      "name": "PaperMono 官方 User Demo · 1.2.0",
+      "productIds": [
+        "m5stack-papermono",
+        "m5stack-c153-lite"
+      ],
+      "status": "available",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/376080df0d31b0026e9a67a75d02d571.bin",
+        "sha256": "72c290bc2ffa216041b276660277369bd17ecef92315e367d98bb2c96c8428fa"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "simulationVerified": true,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "sources": [
+        {
+          "title": "PaperMono 官方产品页：出厂固件与源码入口",
+          "url": "https://docs.m5stack.com/en/core/PaperMono",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "PaperMono Factory Reset Firmware",
+          "url": "https://burner.m5stack.com/firmware/2089640807996628993/",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "PaperMono Factory Firmware Source Code",
+          "url": "https://github.com/m5stack/M5PaperMono-UserDemo",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "M5Stack 官方完整镜像；从官方 CDN 直接加载，可缓存到当前浏览器，本站服务器与仓库不保存二进制。",
+        "已在官方 User Demo 1.2.0 验证 ROM 启动、480×800 墨水屏、A/B 调节亮度、触摸加亮与静音按钮切换。",
+        "SSD1677、FT6336G、M5PM1/M5IOE1 为所需寄存器子集；不代表任意固件或完整时序兼容。",
+        "未模拟 NFC，官方固件当前自行进入 Lite 界面；LoRa、microSD、Wi-Fi 网络、音频输出及深睡唤醒未验证。",
+        "RTC 目前仅寄存器存储，没有真实计时；BMI270 官方初始化尚未通过，不能据仪表盘默认数值认定传感器正常。",
+        "未连接真实硬件或执行刷机；实机行为仍需验证。"
+      ],
+      "revision": "1.2.0",
+      "sdk": "ESP-IDF 5.5.1",
+      "watchlistId": "m5stack-papermono-official"
+    },
+    {
+      "id": "m5stack-s007-pin127-uiflow2-reference",
+      "name": "Stamp-S3 PIN1.27 UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-s007-pin127"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Stamp-S3 PIN1.27 UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/stamps3/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Stamp-S3_PIN1.27",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k049-b-factory-reference",
+      "name": "Paper v1.1 Arduino FactoryTest",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k049-b"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Paper v1.1 Arduino FactoryTest",
+          "url": "https://github.com/m5stack/M5Paper_FactoryTest",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Paper_v1.1",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k049-b-uiflow1-reference",
+      "name": "Paper v1.1 UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k049-b"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Paper v1.1 UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/m5paper/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Paper_v1.1",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k049-b-uiflow2-reference",
+      "name": "Paper v1.1 UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k049-b"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Paper v1.1 UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5paper/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Paper_v1.1",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c139-uiflow2-reference",
+      "name": "PaperS3 UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-c139"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "PaperS3 UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5papers3/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/PaperS3",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c139-factory-reference",
+      "name": "PaperS3 Factory Firmware",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-c139"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "PaperS3 Factory Firmware",
+          "url": "https://github.com/m5stack/M5PaperS3-UserDemo",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/PaperS3",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-s007-pin254-v033-uiflow2-reference",
+      "name": "Stamp-S3A PIN2.54 UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-s007-pin254-v033"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Stamp-S3A PIN2.54 UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/stamps3/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Stamp-S3A_PIN2.54",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k051-uiflow1-reference",
+      "name": "Stamp-Pico UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k051"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Stamp-Pico UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/stamppico/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Stamp-Pico_Mate",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k051-uiflow2-reference",
+      "name": "Stamp-Pico UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k051"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Stamp-Pico UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/stamppico/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Stamp-Pico_Mate",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k131-uiflow2-reference",
+      "name": "Air Quality UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k131"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Air Quality UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/airq/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Air_Quality",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k131-factory-reference",
+      "name": "Air Quality Factory Firmware",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k131"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Air Quality Factory Firmware",
+          "url": "https://github.com/m5stack/AirQUserDemo",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Air_Quality",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k130-v11-uiflow2-reference",
+      "name": "Dial v1.1 UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k130-v11"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Dial v1.1 UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5dial/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Dial_v1.1",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k152-uiflow2-reference",
+      "name": "Cardputer-Adv UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k152"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Cardputer-Adv UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/cardputer-adv/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Cardputer_Mesh_Kit",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k132-uiflow2-reference",
+      "name": "Cardputer UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k132"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Cardputer UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/cardputer/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Cardputer",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c126-m12-uiflow2-reference",
+      "name": "AtomS3R-M12 UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-c126-m12"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "AtomS3R-M12 UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/atoms3r-cam/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/AtomS3R-M12",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c126-uiflow2-reference",
+      "name": "AtomS3R UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-c126"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "AtomS3R UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/atoms3r/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/AtomS3R",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c126-factory-reference",
+      "name": "AtomS3R Factory Firmware",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-c126"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "AtomS3R Factory Firmware",
+          "url": "https://github.com/m5stack/M5AtomS3-UserDemo/tree/atoms3r",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/AtomS3R",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c124-uiflow2-reference",
+      "name": "AtomS3-Lite UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-c124"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "AtomS3-Lite UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/atoms3lite/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/AtomS3-Lite",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c008-c-factory-reference",
+      "name": "Factory Bluetooth Speaker Firmware",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-c008-c"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Factory Bluetooth Speaker Firmware",
+          "url": "https://github.com/m5stack/M5-ProductExampleCodes/tree/master/Core/Atom/AtomEcho/Factory_BT_SPEAKER_Firmware",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/atom/Atom_Voice",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k034-uiflow1-reference",
+      "name": "Tough UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k034"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Tough UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/m5tough/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Tough",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k034-uiflow2-reference",
+      "name": "Tough UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k034"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Tough UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5tough/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Tough",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-p-factory-reference",
+      "name": "StickC-Plus Factory Test Example",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k016-p"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "StickC-Plus Factory Test Example",
+          "url": "https://github.com/m5stack/M5StickC-Plus/tree/master/examples/FactoryTest",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/StickC-Plus",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-p-uiflow1-reference",
+      "name": "StickC-Plus UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k016-p"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "StickC-Plus UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/m5stickc_plus/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/StickC-Plus",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-p-uiflow2-reference",
+      "name": "StickC-Plus UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k016-p"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "StickC-Plus UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5stickcplus/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/StickC-Plus",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k010-aws-uiflow1-reference",
+      "name": "Core2 For AWS UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k010-aws"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Core2 For AWS UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/m5core2/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Core2_For_AWS",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k010-aws-uiflow2-reference",
+      "name": "Core2 For AWS UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k010-aws"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Core2 For AWS UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5core2/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Core2_For_AWS",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k010-aws-factory-reference",
+      "name": "Core2 For AWS ESP-IDF Factory Firmware",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k010-aws"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Core2 For AWS ESP-IDF Factory Firmware",
+          "url": "https://github.com/m5stack/Core2-for-AWS-IoT-Kit/tree/master/Factory-Firmware",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Core2_For_AWS",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k006-v27-uiflow1-reference",
+      "name": "M5GO UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k006-v27"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "M5GO UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/m5core/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/M5GO_IoT_Kit_v2.7",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k006-v27-uiflow2-reference",
+      "name": "M5GO UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k006-v27"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "M5GO UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5core/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/M5GO_IoT_Kit_v2.7",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k128-uiflow2-reference",
+      "name": "CoreS3 UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k128"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "CoreS3 UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5cores3/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/CoreS3",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k128-factory-reference",
+      "name": "CoreS3 Factory Firmware",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k128"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "CoreS3 Factory Firmware",
+          "url": "https://github.com/m5stack/CoreS3-UserDemo/tree/main/firmware",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/CoreS3",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k010-v13-uiflow1-reference",
+      "name": "Core2 v1.3 UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k010-v13"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Core2 v1.3 UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/m5core2/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Core2_v1.3",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k010-v13-uiflow2-reference",
+      "name": "Core2 v1.3 UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k010-v13"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Core2 v1.3 UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5core2/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Core2_v1.3",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k151-uiflow2-reference",
+      "name": "StackChan UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k151"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "StackChan UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/stackchan/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/StackChan",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k138-firmware-reference",
+      "name": "StampFly Firmware",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k138"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "StampFly Firmware",
+          "url": "https://github.com/m5stack/M5StampFly",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/app/StampFly",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k001-v27-uiflow1-reference",
+      "name": "Basic v2.7 UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k001-v27"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Basic v2.7 UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/m5core/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Basic_v2.7",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k001-v27-uiflow2-reference",
+      "name": "Basic v2.7 UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k001-v27"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Basic v2.7 UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5core/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Basic_v2.7",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k048-factory-reference",
+      "name": "CoreInk Factory Test",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k048"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "CoreInk Factory Test",
+          "url": "https://github.com/m5stack/M5Core-Ink/tree/master/examples/Basics/FactoryTest",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/CoreInk",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k048-uiflow1-reference",
+      "name": "CoreInk UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k048"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "CoreInk UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/m5coreink/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/CoreInk",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k048-uiflow2-reference",
+      "name": "CoreInk UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k048"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "CoreInk UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5coreink/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/CoreInk",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k134-factory-reference",
+      "name": "DinMeter Factory Firmware",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k134"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "DinMeter Factory Firmware",
+          "url": "https://github.com/m5stack/M5DinMeter-UserDemo",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/DinMeter",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k134-uiflow2-reference",
+      "name": "DinMeter UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k134"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "DinMeter UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5dinmeter/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/DinMeter",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k141-official-reference",
+      "name": "StamPLC Factory Firmware",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k141"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/M5StamPLC-UserDemo",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "StamPLC Factory Firmware",
+          "url": "https://github.com/m5stack/M5StamPLC-UserDemo",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-c151-official-reference",
+      "name": "PaperColor Factory Firmware Source Code",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-c151"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/M5PaperColor-UserDemo",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "PaperColor Factory Firmware Source Code",
+          "url": "https://github.com/m5stack/M5PaperColor-UserDemo",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k005-official-examples-reference",
+      "name": "M5Stack Faces Arduino examples",
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k005"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/FACES-Firmware",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official Arduino example sources only; no reproducible executable image/hash/layout verified. Not assumed factory firmware."
+      ],
+      "sources": [
+        {
+          "title": "Official product software links",
+          "url": "https://docs.m5stack.com/en/core/Faces_Kit",
+          "checkedAt": "2026-10-26",
+          "status": "fetched"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k134-v11-official-reference",
+      "name": "DinMeter v1.1 Factory Firmware",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k134-v11"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/M5DinMeter-UserDemo",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "DinMeter v1.1 Factory Firmware",
+          "url": "https://github.com/m5stack/M5DinMeter-UserDemo",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k130-official-reference",
+      "name": "Dial User Demo",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k130"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/M5Dial-UserDemo",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "Dial User Demo",
+          "url": "https://github.com/m5stack/M5Dial-UserDemo",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k136-official-reference",
+      "name": "VAMeter Factory Firmware",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k136"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/VAMeter-Firmware",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "VAMeter Factory Firmware",
+          "url": "https://github.com/m5stack/VAMeter-Firmware",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k128-lite-official-reference",
+      "name": "CoreS3-Lite Factory Firmware",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k128-lite"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/CoreS3-UserDemo/tree/main/firmware",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "CoreS3-Lite Factory Firmware",
+          "url": "https://github.com/m5stack/CoreS3-UserDemo/tree/main/firmware",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k129-uiflow2-reference",
+      "name": "Capsule UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k129"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Capsule UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5capsule/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Capsule",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k132-v11-uiflow2-reference",
+      "name": "Cardputer v1.1 UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k132-v11"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Cardputer v1.1 UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/cardputer/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Cardputer_v1.1",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c126-echo-uiflow2-reference",
+      "name": "Atom VoiceS3R UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-c126-echo"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Atom VoiceS3R UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/atom_echos3r/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Atom_VoiceS3R",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c008-b-uiflow1-reference",
+      "name": "Atom-Matrix UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-c008-b"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Atom-Matrix UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/m5atom_matrix/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Atom-Matrix",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c008-b-uiflow2-reference",
+      "name": "Atom-Matrix UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-c008-b"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Atom-Matrix UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/atommatrix/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Atom-Matrix",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k010-uiflow1-reference",
+      "name": "Core2 UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k010"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Core2 UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/m5core2/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Core2",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k010-uiflow2-reference",
+      "name": "Core2 UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k010"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Core2 UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5core2/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Core2",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c148-uiflow2-reference",
+      "name": "PowerHub UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-c148"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "PowerHub UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/powerhub/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/PowerHub",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c148-factory-reference",
+      "name": "PowerHub Factory Firmware Source Code",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-c148"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "PowerHub Factory Firmware Source Code",
+          "url": "https://github.com/m5stack/M5PowerHub-UserDemo",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/PowerHub",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-c148-firmware-reference",
+      "name": "PowerHub Internal Firmware",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-c148"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "PowerHub Internal Firmware",
+          "url": "https://github.com/m5stack/M5PowerHub-Internal-FW",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/PowerHub",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-s013-uiflow2-reference",
+      "name": "Stamp-P4 UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-s013"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Stamp-P4 UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/stamp_p4/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Stamp-P4",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k001-uiflow1-reference",
+      "name": "Basic UiFlow1 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k001"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Basic UiFlow1 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow/m5core/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Basic",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k001-uiflow2-reference",
+      "name": "Basic UiFlow2 Quick Start",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k001"
+      ],
+      "status": "reference",
+      "source": null,
+      "sources": [
+        {
+          "title": "Basic UiFlow2 Quick Start",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5core/program",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Basic",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+      ]
+    },
+    {
+      "id": "m5stack-k146-official-reference",
+      "name": "Xiaozhi Card Kit Factory Firmware",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k146"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/xiaozhi-card",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "Xiaozhi Card Kit Factory Firmware",
+          "url": "https://github.com/m5stack/xiaozhi-card",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-s007-official-reference",
+      "name": "Stamp-S3 Arduino Demo",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-s007"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/STAMP-S3/blob/main/examples/Led/Led.ino",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "Stamp-S3 Arduino Demo",
+          "url": "https://github.com/m5stack/STAMP-S3/blob/main/examples/Led/Led.ino",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k131-v11-official-reference",
+      "name": "Air Quality v1.1 Factory Firmware",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k131-v11"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/AirQUserDemo",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "Air Quality v1.1 Factory Firmware",
+          "url": "https://github.com/m5stack/AirQUserDemo",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-c123-official-reference",
+      "name": "AtomS3 Factory Firmware",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-c123"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/M5AtomS3-UserDemo",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "AtomS3 Factory Firmware",
+          "url": "https://github.com/m5stack/M5AtomS3-UserDemo",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k010-aws-v13-official-reference",
+      "name": "Core2 For AWS ESP-IDF Factory Firmware",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k010-aws-v13"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/Core2-for-AWS-IoT-Kit/tree/master/Factory-Firmware",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "Core2 For AWS ESP-IDF Factory Firmware",
+          "url": "https://github.com/m5stack/Core2-for-AWS-IoT-Kit/tree/master/Factory-Firmware",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k128-se-official-reference",
+      "name": "CoreS3-SE Factory Firmware (pio)",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k128-se"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/CoreS3-UserDemo",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "CoreS3-SE Factory Firmware (pio)",
+          "url": "https://github.com/m5stack/CoreS3-UserDemo",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-cardputer-official",
+      "name": "Cardputer 官方 User Demo · v1.1",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k132",
+        "m5stack-k132-v11"
+      ],
+      "status": "available",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/7c269fa466d3b5069e891ba6dce8fe8f.bin",
+        "sha256": "66576b6f670a2a1a75c181948aaadad89c4f1be61747acff8a5031187d043b27"
+      },
+      "publicationUrl": "https://github.com/m5stack/M5Cardputer-UserDemo",
+      "version": "v1.1",
+      "compatibility": "partial",
+      "limitations": [
+        "已验证官方 v1.1 的真实 ROM 启动、240×135 显示、Enter 与左右菜单操作；74HC138 键盘与 Adv 的 TCA8418 分开实现。",
+        "音频、SD、无线/HID、红外应用、电池与电源开关尚未完成适配；菜单存在不代表所有功能可用。",
+        "未做实体设备对照；3D 模型仍保留尺寸与照片对照偏差。",
+        "M5Burner 发布标识 v1.1；镜像内部 f0b37ae-dirty、ESP-IDF v4.4.6，不能声称可由公共提交精确重现。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack 官方 M5Burner 固件目录",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Cardputer 官方厂测源码",
+          "url": "https://github.com/m5stack/M5Cardputer-UserDemo",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "watchlistId": "m5stack-cardputer-official",
+      "verification": {
+        "simulationVerified": true,
+        "hardwareValidated": false,
+        "evidence": "docs/platform/evidence/cardputer-original-official/README.md"
+      }
     }
   ]
 }

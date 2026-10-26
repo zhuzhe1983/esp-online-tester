@@ -1,16 +1,17 @@
 import assert from 'node:assert/strict';
 import {encodeRecording,decodeRecording,validateRecording,MAX_RECORDING_BYTES} from '../web/platform/recording.js';
 import {installAutomation} from '../web/platform/automation.js';
+import {withPlatformTestFixtures,DIAGNOSTIC_FIRMWARE_ID} from './fixtures/platform-catalog.mjs';
 
 // Deterministic transport harness: these tests validate recorder boundaries, lifecycle
 // and ordering. They do not claim to execute or verify ESP32 firmware.
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const scene={schemaVersion:'1',productId:'m5stack-stopwatch',firmware:{manifestUrl:'https://example.org/demo.json',sha256:'a'.repeat(64)},accessories:[],keyMapping:{KeyA:'button-a'},view:{mode:'studio',deviceView:'3d'}};
 const firmware={source:'remote',manifestUrl:scene.firmware.manifestUrl,manifestHash:'a'.repeat(64),artifacts:[{kind:'app',url:'https://example.org/app.bin',sha256:'b'.repeat(64),bytes:1024}],appDirect:false,stubs:[]};
-function harness(){
+function harness(extraControls=[]){
   const listeners=new Set();let time=0,status='ready',configured=structuredClone(scene),loaded=structuredClone(firmware),blocked=null;
-  const calls=[], counters={resets:0,loads:0},product={id:scene.productId,controls:[{id:'button-a',type:'button',pin:2}],display:{width:466,height:466,framebufferWidth:468,framebufferHeight:466}};
-  const snapshot=()=>structuredClone({status,scene:configured,firmware:loaded,product,stats:{time},serialByPort:{},frame:{width:468,height:466}});
+  const calls=[], counters={resets:0,loads:0},product={id:scene.productId,controls:[{id:'button-a',type:'button',pin:2},...extraControls],display:{width:466,height:466,framebufferWidth:468,framebufferHeight:466}};
+  const snapshot=()=>structuredClone({status,scene:configured,firmware:loaded,product,storage:runtime.storage,stats:{time},serialByPort:{},frame:{width:468,height:466}});
   const emit=e=>{for(const listener of [...listeners])listener(e);};
   const setStatus=s=>{status=s;emit({type:'state',state:snapshot()});};
   const timer=setInterval(()=>{if(status==='running'){time+=0.01;emit({type:'stats',stats:{time}});}},2);
@@ -62,6 +63,16 @@ try{
   assert.equal(replay.frameComparison,'equal');
   console.log('ok replay: reset, ordered guest-clock scheduling, actual timestamp receipts and final-frame comparison');
 
+  runtime.storage={pristine:false,status:'saved'};
+  const resetsBeforeStorageGuard=runtime.counters.resets;
+  await assert.rejects(()=>api.recordingStart(),{code:'RECORDING_STORAGE_NOT_PRISTINE'});
+  await assert.rejects(()=>api.recordingPlay(recording),{code:'RECORDING_STORAGE_NOT_PRISTINE'});
+  assert.equal(runtime.counters.resets,resetsBeforeStorageGuard,'Persisted private data must not be reset or silently used as a shareable recording initial state');
+  runtime.storage={pristine:true,status:'clean'};
+  await api.recordingPlay(recording,{timeoutMs:2000});
+  console.log('ok recording storage boundary: changed device data rejects before reboot; pristine data remains replayable');
+
+
   for(const modify of [r=>{r.events[0].type='serial';},r=>{r.events[1].x=2;},r=>{r.duration=121;},r=>{r.events[1].at=-1;},r=>{r.execute='code';},r=>{r.display.width=100000;},r=>{r.events.at(-1).down=true;},r=>{r.firmware.artifacts[0].sha256='bad';},r=>{r.scene.firmware.sha256='';},r=>{r.events=Array.from({length:501},()=>({at:0,type:'button',id:'button-a',pressed:false}));},r=>{r.scene.keyMapping.KeyA='x'.repeat(40000);}]){
     const invalid=structuredClone(recording);modify(invalid);
     const before=runtime.counters.loads;await assert.rejects(()=>api.recordingPlay(invalid));assert.equal(runtime.counters.loads,before,'Untrusted recordings reject before downloads');
@@ -111,14 +122,29 @@ try{
 }finally{await api.dispose();}
 assert.equal((await runtime.observe()).status,'disposed');
 
+{
+ const matrixRuntime=harness([{id:'key-r0-c0',type:'matrix-key',row:0,column:0},{id:'key-r1-c2',type:'matrix-key',row:1,column:2}]);
+ const matrixApi=installAutomation(matrixRuntime,{target:{location:{href:'https://example.org/platform/'}}});
+ try {
+  await matrixApi.recordingStart();await matrixApi.press('key-r0-c0',{durationMs:0});await matrixApi.input({type:'matrix-key',row:1,column:2,pressed:true});
+  const keys=await matrixApi.recordingStop();assert.equal(keys.events.length,4);assert.ok(keys.events.every(e=>e.type==='matrix-key'));assert.equal(keys.events.at(-1).pressed,false);
+  assert.deepEqual(decodeRecording(encodeRecording(keys)),keys);
+  await matrixApi.recordingPlay(keys,{timeoutMs:2000});assert.ok(matrixRuntime.calls.every(e=>e.type==='matrix-key'),'Matrix keys never become serial bytes or GPIO buttons');
+  const absent=structuredClone(keys);absent.events.forEach(e=>e.column=3);await assert.rejects(()=>matrixApi.recordingPlay(absent),{code:'RECORDING_CONTROL'});
+  const invalid=structuredClone(keys);invalid.events[0].row=4;assert.equal(validateRecording(invalid).valid,false);
+  console.log('ok matrix keyboard recording: control-ID press translation, hold cleanup, roundtrip/replay, absent-key and coordinate bounds');
+ } finally {await matrixApi.dispose();}
+}
+
 if(process.argv.includes('--real')){
   const {readFile,writeFile}=await import('node:fs/promises');
   const {createHash}=await import('node:crypto');
   const {Worker}=await import('node:worker_threads');
   const {createPlatformRuntime}=await import('../web/platform/runtime.js');
   const {createDefaultScene}=await import('../web/platform/catalog.js');
-  const root=new URL('../',import.meta.url),catalog={};
-  for(const name of ['products','accessories','firmwares'])catalog[name]=JSON.parse(await readFile(new URL(`web/platform/catalog/${name}.json`,root),'utf8')).items;
+  const root=new URL('../',import.meta.url),publicCatalog={};
+  for(const name of ['products','accessories','firmwares'])publicCatalog[name]=JSON.parse(await readFile(new URL(`web/platform/catalog/${name}.json`,root),'utf8')).items;
+  const catalog=await withPlatformTestFixtures(publicCatalog,'https://platform.example/platform/index.html');
   const fileFetch=async value=>{
     const url=new URL(value),path=url.protocol==='file:'?url:new URL(`web${url.pathname}`,root);
     try{return new Response(await readFile(path));}catch(error){
@@ -141,7 +167,7 @@ if(process.argv.includes('--real')){
   };
   try{
     const selected=createDefaultScene(catalog,'m5stack-stopwatch');
-    selected.firmware=structuredClone(catalog.firmwares.find(item=>item.id==='platform-stopwatch-diagnostic').source);
+    selected.firmware=structuredClone(catalog.firmwares.find(item=>item.id===DIAGNOSTIC_FIRMWARE_ID).source);
     selected.firmware.manifestUrl=new URL(selected.firmware.manifestUrl,'https://platform.example/platform/recording.js').href;
     await real.configure(selected);await real.loadFirmware();await real.recordingStart();
     await real.waitFor({port:'uart0',serialIncludes:'PLATFORM_READY stopwatch',timeoutMs:30000});

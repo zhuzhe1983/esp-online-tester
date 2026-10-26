@@ -8,6 +8,9 @@ use std::collections::VecDeque;
 use emu_core::ClockDomain;
 
 pub mod m5;
+pub mod ft6336;
+pub mod tca8418;
+pub mod bmi270;
 
 pub trait I2cDevice {
     /// Current 7-bit address, sampled after each data write. Defaults to the attached address.

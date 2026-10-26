@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use esp_periph::i2c::m5::{M5ioe1, M5ioe1State, M5pm1, M5pm1State};
+use esp_periph::i2c::bmi270::{Bmi270, Bmi270Sample};
 use esp_soc::board::{BoardEdge, BoardModel, VirtualCycle};
 use esp_soc::devices::co5300::{Co5300, Co5300Scan};
 
@@ -59,6 +60,8 @@ impl I2cDevice for PowerDevice {
 pub struct StopWatch {
     wiring: Arc<PowerWiring>,
     gpio_events: u64,
+    cs: Option<bool>,
+    imu: Arc<Mutex<Bmi270Sample>>,
 }
 
 impl StopWatch {
@@ -82,6 +85,8 @@ impl StopWatch {
                 touch: Default::default(),
             }),
             gpio_events: 0,
+            cs: None,
+            imu: Default::default(),
         }
     }
 }
@@ -90,15 +95,24 @@ impl Default for StopWatch { fn default() -> Self { Self::new() } }
 
 impl BoardModel for StopWatch {
     fn name(&self) -> &'static str { "stopwatch" }
-    fn gpio_changes(&mut self, changes: &[(u8, bool)]) { self.gpio_events += changes.len() as u64; }
+    fn gpio_changes(&mut self, changes: &[(u8, bool)]) {
+        self.gpio_events += changes.len() as u64;
+        // Official StopWatch HAL / M5GFX 0.2.19: GPIO39 is software-controlled CS.
+        for &(pin, level) in changes {
+            if pin == 39 {
+                if !level { self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").panel.begin_transaction(); }
+                self.cs = Some(level);
+            }
+        }
+    }
     fn gpio_events(&self) -> u64 { self.gpio_events }
     fn spi_transfer(&mut self, host: u8, tx: &[u8], rx_len: usize) -> Vec<u8> {
         if host == 2 {
             self.wiring.sync();
             let mut state = self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");
-            if state.active {
+            if state.active && self.cs != Some(true) {
                 let before = state.panel.pixels_written;
-                state.panel.transaction(tx);
+                if self.cs.is_some() { state.panel.transaction_stream(tx); } else { state.panel.transaction(tx); }
                 if state.panel.pixels_written != before || tx.get(..4) == Some(&[0x02, 0, 0x01, 0]) {
                     state.version += 1;
                 }
@@ -115,7 +129,15 @@ impl BoardModel for StopWatch {
                 device: Box::new(M5ioe1::new(self.wiring.expander.clone(), 0)), wiring: self.wiring.clone(),
             })),
             (0, 0x15, Box::new(Cst820::new(self.wiring.touch.clone()))),
+            (0, Bmi270::ADDRESS, Box::new(Bmi270::new(self.imu.clone()))),
         ]
+    }
+    fn set_imu_sample(&mut self, accel_g: [f64; 3], gyro_dps: [f64; 3]) -> bool {
+        if accel_g.iter().chain(gyro_dps.iter()).any(|v| !v.is_finite()) { return false; }
+        let mut sample = self.imu.lock().expect("StopWatch IMU sample mutex poisoned");
+        sample.accel_g = accel_g.map(|v| v.clamp(-16.0, 16.0));
+        sample.gyro_dps = gyro_dps.map(|v| v.clamp(-2000.0, 2000.0));
+        sample.version = sample.version.wrapping_add(1); true
     }
     fn display(&self) -> Option<(u32, u32, Vec<u16>, u64)> {
         let state = self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");

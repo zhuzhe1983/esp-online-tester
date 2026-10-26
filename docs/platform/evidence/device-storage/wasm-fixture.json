@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-10-26T18:40:33.718Z",
+  "command": "node tools/probe-device-storage.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "checks": [
+    "guest-nvs-fat-software-restart",
+    "host-reset-restores",
+    "new-runtime-and-content-equivalent-source",
+    "other-runtime-stopped-on-clear",
+    "clear-ready-original-image",
+    "cleared-guest-reinitializes"
+  ],
+  "changedPages": 13,
+  "scope": {
+    "productId": "test-esp32s3-hello",
+    "board": "none",
+    "chip": "esp32s3",
+    "flashBytes": 8388608,
+    "firmwareSha256": "920da6ee99b4b006abc86b9b252261100068422bc3f3354af9209c875b82a5ac",
+    "key": "v1:test-esp32s3-hello:none:esp32s3:8388608:920da6ee99b4b006abc86b9b252261100068422bc3f3354af9209c875b82a5ac"
+  },
+  "guestSeconds": 0.1,
+  "elapsedSeconds": 2.4577318339999996,
+  "status": "pass",
+  "storageEvents": 32,
+  "firmware": {
+    "sdk": "ESP-IDF v5.5.1",
+    "source": "tools/fixtures/device-storage-firmware",
+    "artifacts": [
+      {
+        "path": "bootloader/bootloader.bin",
+        "sha256": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+        "bytes": 20832
+      },
+      {
+        "path": "partition_table/partition-table.bin",
+        "sha256": "f6992f2eded46b7b73dccaf32c0702dd50c683bf834222916c5cddf7b85dac74",
+        "bytes": 3072
+      },
+      {
+        "path": "device_storage.bin",
+        "sha256": "2b3dcbf6f427c751d0ff272fe0dbdfa6e1aca40773e8f9fcd4817e7b64255327",
+        "bytes": 241424
+      }
+    ]
+  },
+  "wasmSha256": "c4d87983569b284c776a041d862cb1c42b1f10e1128800e8aaca391608a5863f"
+}

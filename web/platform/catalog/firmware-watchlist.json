@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1",
-  "policy": "Metadata and remote links only; no third-party product firmware is stored or persistently cached.",
+  "policy": "Metadata and remote links only on our server/repository. Hash-verified firmware may be persistently cached in the user browser, with explicit clearing.",
   "categories": [
     {
       "id": "factory",
@@ -32,36 +32,85 @@
       "id": "m5stack-stopwatch-official",
       "name": "M5Stack StopWatch 官方演示",
       "category": "factory",
-      "description": "由 StopWatch 官方产品文档链接的 UserDemo。上游公开完整镜像；本平台尚未完成该版本的运行与实机验证。",
+      "description": "M5Stack 官方 V0.5 整机演示；已验证原版固件的模拟启动与基本交互，未测试实机。",
       "upstreamRepo": "m5stack/M5StopWatch-UserDemo",
       "metadataUrl": "https://api.github.com/repos/m5stack/M5StopWatch-UserDemo/releases/latest",
       "releaseUrl": "https://github.com/m5stack/M5StopWatch-UserDemo/releases/tag/V0.5",
       "version": "V0.5",
       "publishedAt": "2026-05-28T09:29:52Z",
-      "checkedAt": "2026-10-26T11:07:53.399Z",
+      "checkedAt": "2026-10-26T15:29:31.718Z",
       "assets": [
         {
           "name": "C152-StopWatch-UserDemo-V0.5-20260528_0x0.bin",
-          "url": "https://github.com/m5stack/M5StopWatch-UserDemo/releases/download/V0.5/C152-StopWatch-UserDemo-V0.5-20260528_0x0.bin",
+          "url": "https://m5burner-cdn.m5stack.com/firmware/6ea670900726398df06ab72c2915db3e.bin",
           "bytes": 3854192,
           "sha256": "6395799089341e0ae96072c2a3418d469d6797b2ab8ee0cab1c9ed24a42acbbe",
           "lastProbe": {
-            "checkedAt": "2026-10-26T11:07:53.398Z",
+            "checkedAt": "2026-10-26T15:29:31.718Z",
             "status": 200,
             "state": "reachable",
-            "bodyBytesRead": 0
-          }
+            "bodyBytesRead": 3854192,
+            "method": "browser-GET",
+            "cors": "*",
+            "sha256Verified": true,
+            "persistence": "memory-only"
+          },
+          "upstreamUrl": "https://github.com/m5stack/M5StopWatch-UserDemo/releases/download/V0.5/C152-StopWatch-UserDemo-V0.5-20260528_0x0.bin",
+          "sourceMetadataUrl": "https://m5burner-api.m5stack.com/api/firmware",
+          "format": "merged"
         }
       ],
       "compatibility": {
-        "status": "reference-only",
+        "status": "product-verified",
         "productIds": [
           "m5stack-stopwatch"
         ],
-        "note": "官方目标产品已明确；当前仅发现与版本跟踪，模拟运行/实机写入与启动尚未验证，不自动继承诊断固件兼容性。"
+        "note": "官方发布目标为 StopWatch，已通过 SHA-256、完整镜像布局和真实模拟基本交互验证；未刷写或测试真实硬件。BMI270已支持虚拟姿态输入；RTC、音频和物理电源按键尚未模拟。",
+        "simulationVerified": true,
+        "hardwareValidated": false
       },
       "documentationUrl": "https://docs.m5stack.com/en/core/StopWatch",
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
+      "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
+      "browserNote": "官方 CDN 可供本站直接读取；固定 V0.5 和 SHA-256。"
+    },
+    {
+      "id": "m5stack-papermono-official",
+      "name": "M5Stack PaperMono 官方演示",
+      "category": "factory",
+      "description": "官方1.2.0，已验证PaperMono/Lite的部分显示与输入行为。",
+      "upstreamRepo": "m5stack/M5PaperMono-UserDemo",
+      "metadataProvider": "m5burner",
+      "firmwareId": "bc489d32157db39ec4797079bdbc9410",
+      "metadataUrl": "https://m5burner-api.m5stack.com/api/firmware",
+      "releaseUrl": "https://burner.m5stack.com/firmware/2089640807996628993/",
+      "version": "1.2.0",
+      "publishedAt": "2026-08-24",
+      "checkedAt": "2026-10-26T18:39:22Z",
+      "assets": [
+        {
+          "name": "PaperMono-UserDemo-1.2.0.bin",
+          "url": "https://m5burner-cdn.m5stack.com/firmware/376080df0d31b0026e9a67a75d02d571.bin",
+          "sha256": "72c290bc2ffa216041b276660277369bd17ecef92315e367d98bb2c96c8428fa",
+          "bytes": 2868208,
+          "format": "merged",
+          "sourceMetadataUrl": "https://m5burner-api.m5stack.com/api/firmware"
+        }
+      ],
+      "compatibility": {
+        "status": "product-verified",
+        "productIds": [
+          "m5stack-papermono",
+          "m5stack-c153-lite"
+        ],
+        "simulationVerified": true,
+        "hardwareValidated": false,
+        "note": "官方原版ROM启动、A/B亮度与触摸已验证；缺少NFC使官方固件自行选择Lite界面，其余缺失外设不代表兼容。"
+      },
+      "documentationUrl": "https://docs.m5stack.com/en/core/PaperMono",
+      "storage": "remote-links-only",
+      "browserNote": "直连官方CDN，可使用浏览器持久缓存；按实际内容hash校验。"
     },
     {
       "id": "crosspoint-reader",
@@ -77,15 +126,21 @@
       "assets": [
         {
           "name": "crosspoint-1.6.5-papermono.bin",
-          "url": "https://github.com/crosspoint-reader/crosspoint-reader/releases/download/1.6.5/crosspoint-1.6.5-papermono.bin",
+          "url": "https://crosspointreader.com/api/release/firmware?device=papermono",
           "bytes": 5639376,
           "sha256": "9bae73edef15acc53566a1b4b466361846d4b2e5202d466ab890ec610cb3a0ab",
           "lastProbe": {
-            "checkedAt": "2026-10-26T11:03:20.764Z",
+            "checkedAt": "2026-10-26T15:47:59.449Z",
             "status": 200,
             "state": "reachable",
-            "bodyBytesRead": 0
-          }
+            "method": "browser-GET",
+            "bodyBytesRead": 5639376,
+            "sha256Verified": true,
+            "persistence": "memory-only"
+          },
+          "upstreamUrl": "https://github.com/crosspoint-reader/crosspoint-reader/releases/download/1.6.5/crosspoint-1.6.5-papermono.bin",
+          "format": "app",
+          "sourcePolicy": "mutable-pinned"
         }
       ],
       "compatibility": {
@@ -95,7 +150,11 @@
         ],
         "note": "仅关注上游版本。未验证模拟运行、物理硬件与完整刷写布局；禁止由此条目一键刷机。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
+      "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
+      "browserInstallUrl": "https://crosspointreader.com/#flash-tools",
+      "browserNote": "已验证可跨域的官方入口，下载须核对收录 SHA-256。此地址会随上游更新变化，hash 不符时必须拒绝，不能自动改版本。该资源是 app 镜像，不能直接从地址 0 烧录或作为完整镜像启动。"
     },
     {
       "id": "uiflow2",
@@ -120,6 +179,27 @@
             "state": "reachable",
             "bodyBytesRead": 0
           }
+        },
+        {
+          "name": "UIFlow2 PaperMono v2.5.3 · M5Burner 官方构建",
+          "url": "https://m5burner-cdn.m5stack.com/firmware/4f78f660c97149036ed9a19966775a83.bin",
+          "bytes": 16773120,
+          "sha256": "f3da049b65b5a3899d3484594e3bede92a0928e5217fa260925951a777447b05",
+          "format": "merged",
+          "sourcePolicy": "versioned",
+          "sourceMetadataUrl": "https://m5burner-api.m5stack.com/api/firmware",
+          "buildIdentity": "M5Burner fid 99f8186afdcd3404618a3f80ef6abe22; differs from GitHub release bytes",
+          "lastProbe": {
+            "checkedAt": "2026-10-26T15:47:37.640Z",
+            "status": 200,
+            "state": "reachable",
+            "method": "browser-GET",
+            "bodyBytesRead": 16773120,
+            "sha256Verified": false,
+            "matchesGithubRelease": false,
+            "persistence": "memory-only",
+            "sha256Computed": true
+          }
         }
       ],
       "compatibility": {
@@ -129,7 +209,11 @@
         ],
         "note": "仅关注上游版本。未验证模拟运行、物理硬件与完整刷写布局；禁止由此条目一键刷机。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
+      "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
+      "browserInstallUrl": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.3",
+      "browserNote": "GitHub 版尚不能由本站直载；另收录可跨域的 M5Burner 官方构建。两者同为 v2.5.3，但 SHA-256 不同，不能互相替代。PaperMono 板级模型已有部分支持，此固件仍待单独验证。"
     },
     {
       "id": "wled",
@@ -145,15 +229,21 @@
       "assets": [
         {
           "name": "WLED_16.0.1_ESP32.bin",
-          "url": "https://github.com/wled/WLED/releases/download/v16.0.1/WLED_16.0.1_ESP32.bin",
+          "url": "https://download.wled.me/wled/WLED/releases/download/v16.0.1/WLED_16.0.1_ESP32.bin",
           "bytes": 1304720,
           "sha256": "628917b0753edcfc9a8408e6387c6d1ace6a360d315441e9563d60299fef8594",
           "lastProbe": {
-            "checkedAt": "2026-10-26T11:03:23.872Z",
+            "checkedAt": "2026-10-26T15:48:02.517Z",
             "status": 200,
             "state": "reachable",
-            "bodyBytesRead": 0
-          }
+            "method": "browser-GET",
+            "bodyBytesRead": 1304720,
+            "sha256Verified": true,
+            "persistence": "memory-only"
+          },
+          "upstreamUrl": "https://github.com/wled/WLED/releases/download/v16.0.1/WLED_16.0.1_ESP32.bin",
+          "format": "app",
+          "sourcePolicy": "versioned"
         }
       ],
       "compatibility": {
@@ -161,7 +251,11 @@
         "productIds": [],
         "note": "仅关注上游版本。未验证模拟运行、物理硬件与完整刷写布局；禁止由此条目一键刷机。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
+      "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
+      "browserInstallUrl": "https://install.wled.me/",
+      "browserNote": "已验证可跨域的官方入口，下载须核对收录 SHA-256。该资源是 app 镜像，不能直接从地址 0 烧录或作为完整镜像启动。"
     },
     {
       "id": "tasmota",
@@ -177,15 +271,21 @@
       "assets": [
         {
           "name": "tasmota32s3.factory.bin",
-          "url": "https://github.com/arendst/Tasmota/releases/download/v16.0.0/tasmota32s3.factory.bin",
+          "url": "https://tasmota.github.io/install/firmware/release/tasmota32s3.factory.bin",
           "bytes": 3074224,
           "sha256": "b336f8933e720cf00b25296c0b54845c652248386773f4768b2bddceaefee91b",
           "lastProbe": {
-            "checkedAt": "2026-10-26T11:03:25.272Z",
+            "checkedAt": "2026-10-26T15:48:05.264Z",
             "status": 200,
             "state": "reachable",
-            "bodyBytesRead": 0
-          }
+            "method": "browser-GET",
+            "bodyBytesRead": 3074224,
+            "sha256Verified": true,
+            "persistence": "memory-only"
+          },
+          "upstreamUrl": "https://github.com/arendst/Tasmota/releases/download/v16.0.0/tasmota32s3.factory.bin",
+          "format": "merged",
+          "sourcePolicy": "mutable-pinned"
         }
       ],
       "compatibility": {
@@ -193,7 +293,11 @@
         "productIds": [],
         "note": "仅关注上游版本。未验证模拟运行、物理硬件与完整刷写布局；禁止由此条目一键刷机。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
+      "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
+      "browserInstallUrl": "https://tasmota.github.io/install/",
+      "browserNote": "已验证可跨域的官方入口，下载须核对收录 SHA-256。此地址会随上游更新变化，hash 不符时必须拒绝，不能自动改版本。完整镜像结构已检查，产品适配仍未验证。"
     },
     {
       "id": "meshtastic",
@@ -225,7 +329,11 @@
         "productIds": [],
         "note": "仅关注上游版本。未验证模拟运行、物理硬件与完整刷写布局；禁止由此条目一键刷机。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
+      "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
+      "browserInstallUrl": "https://flasher.meshtastic.org/",
+      "browserNote": "官方固件源目前只允许其官方刷机站跨域读取，未允许本站。请使用官方刷机页；原始收录资源还是多设备 ZIP，不是可直接刷入的 BIN。"
     },
     {
       "id": "micropython",
@@ -256,7 +364,84 @@
         "note": "仅关注上游版本。未验证模拟运行、物理硬件与完整刷写布局；禁止由此条目一键刷机。"
       },
       "storage": "remote-links-only",
-      "documentationUrl": "https://micropython.org/download/ESP32_GENERIC_S3/"
+      "documentationUrl": "https://micropython.org/download/ESP32_GENERIC_S3/",
+      "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
+      "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
+      "browserInstallUrl": "https://micropython.org/download/ESP32_GENERIC_S3/",
+      "browserNote": "当前官方二进制未开放本站所需的跨域读取，暂不能网页直载。可到官方页面下载后手动选择文件；这不代表已适配 StopWatch 或 PaperMono。"
+    },
+    {
+      "id": "m5stack-cardputer-adv-official",
+      "name": "M5Stack Cardputer-Adv 官方演示",
+      "category": "factory",
+      "description": "固定 v0.3，部分显示与矩阵键盘已验证。",
+      "upstreamRepo": "m5stack/M5Cardputer-UserDemo",
+      "metadataProvider": "m5burner",
+      "firmwareId": "9ec7cfec63ca57dd65fd7ad412bcf7eb",
+      "metadataUrl": "https://m5burner-api.m5stack.com/api/firmware",
+      "releaseUrl": "https://docs.m5stack.com/en/core/Cardputer-Adv",
+      "version": "v0.3",
+      "publishedAt": null,
+      "checkedAt": "2026-10-26T19:27:09Z",
+      "assets": [
+        {
+          "name": "Cardputer-Adv-UserDemo-v0.3.bin",
+          "url": "https://m5burner-cdn.m5stack.com/firmware/4ed4ab3a388a74e805971f37d6adcc9f.bin",
+          "sha256": "7bb1532427c875445b16186b6139afa371f67ddbdc83ae5bfe4a9089c7883b74",
+          "bytes": 2690480,
+          "format": "merged",
+          "sourceMetadataUrl": "https://m5burner-api.m5stack.com/api/firmware"
+        }
+      ],
+      "compatibility": {
+        "status": "product-verified",
+        "productIds": [
+          "m5stack-k132-adv"
+        ],
+        "simulationVerified": true,
+        "hardwareValidated": false,
+        "note": "真实 ROM 启动、显示与 Enter/左右菜单已验证；菜单中其他应用硬件尚未全部模拟。"
+      },
+      "documentationUrl": "https://docs.m5stack.com/en/core/Cardputer-Adv",
+      "storage": "remote-links-only",
+      "browserNote": "直连官方CDN，允许用户浏览器持久缓存并复核hash。"
+    },
+    {
+      "id": "m5stack-cardputer-official",
+      "name": "M5Stack Cardputer 官方演示",
+      "category": "factory",
+      "description": "原版与 v1.1 固定官方 v1.1，部分显示与 GPIO 矩阵键盘已验证。",
+      "upstreamRepo": "m5stack/M5Cardputer-UserDemo",
+      "metadataProvider": "m5burner",
+      "firmwareId": "d7ffe780b6414ca0135b2052494a6e2d",
+      "metadataUrl": "https://m5burner-api.m5stack.com/api/firmware",
+      "releaseUrl": "https://docs.m5stack.com/en/core/Cardputer",
+      "version": "v1.1",
+      "publishedAt": "2025-01-11",
+      "checkedAt": "2026-10-26T20:55:07.535580Z",
+      "assets": [
+        {
+          "name": "Cardputer-UserDemo-v1.1.bin",
+          "url": "https://m5burner-cdn.m5stack.com/firmware/7c269fa466d3b5069e891ba6dce8fe8f.bin",
+          "sha256": "66576b6f670a2a1a75c181948aaadad89c4f1be61747acff8a5031187d043b27",
+          "bytes": 3020384,
+          "format": "merged",
+          "sourceMetadataUrl": "https://m5burner-api.m5stack.com/api/firmware"
+        }
+      ],
+      "compatibility": {
+        "status": "product-verified",
+        "productIds": [
+          "m5stack-k132",
+          "m5stack-k132-v11"
+        ],
+        "simulationVerified": true,
+        "hardwareValidated": false,
+        "note": "已验证官方 v1.1 的真实 ROM 启动、240×135 显示、Enter 与左右菜单操作；74HC138 键盘与 Adv 的 TCA8418 分开实现。"
+      },
+      "documentationUrl": "https://docs.m5stack.com/en/core/Cardputer",
+      "storage": "remote-links-only",
+      "browserNote": "直连官方CDN，允许用户浏览器持久缓存并复核hash。"
     }
   ]
 }

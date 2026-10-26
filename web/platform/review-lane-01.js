@@ -1,0 +1,28 @@
+import * as THREE from './vendor/three.module.min.js';
+import {createManufacturerModel} from './manufacturer-model.js';
+import {applyShellAppearance} from './shell-appearance.js';
+const ids = ['m5stack-k132-adv', 'm5stack-c145', 'm5stack-dk001'];
+const scene = new THREE.Scene(); scene.background = new THREE.Color('white'); scene.add(new THREE.HemisphereLight(0xffffff, 0x64775b, 2.5)); const light = new THREE.DirectionalLight(0xffffff, 3.1); scene.add(light);
+const camera = new THREE.OrthographicCamera(-60, 60, 60, -60, 2, 3000); const renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true}); renderer.setPixelRatio(1); renderer.setSize(800, 800, false); renderer.outputColorSpace = THREE.SRGBColorSpace; document.querySelector('#render').append(renderer.domElement);
+const overlay = document.createElement('canvas'); overlay.width = overlay.height = 800; document.querySelector('#overlay').append(overlay);
+let current, token = 0, view = 'front', hidden = false;
+function dispose() { if (!current) return; current.model?.dispose(); current.group.traverse(o => { o.geometry?.dispose(); for (const m of [].concat(o.material || [])) m.dispose(); }); for (const t of current.textures.values()) t.dispose(); scene.remove(current.group); current = null; }
+async function load(id) {
+ if (!/^m5stack-[a-z0-9-]+$/.test(id)) throw new Error('Invalid product id'); const mine = ++token; dispose(); hidden = false; document.body.dataset.ready = 'false';
+ const base = new URL(`./assets/${id}/`, import.meta.url), response = await fetch(new URL('model.json', base),{cache:'no-store'}); if (!response.ok) throw new Error(`Model HTTP${response.status}`); const meta = await response.json();
+ const planResponse=await fetch(new URL('model-plan.json',base),{cache:'no-store'}),plan=planResponse.ok?await planResponse.json():{};
+ const display=plan.catalog?.display || (meta.presentation?.screen?{width:1,height:1}:null);
+ const canvas = document.createElement('canvas'); canvas.width = canvas.height = 2; const context = canvas.getContext('2d'); context.fillStyle = /e-?paper|eink/i.test(display?.type || display?.technology || '') ? '#deded4' : '#111719'; context.fillRect(0,0,2,2); const screenTexture = new THREE.CanvasTexture(canvas); screenTexture.colorSpace = THREE.SRGBColorSpace;
+ const product = {id, model: {url: `./assets/${id}/model.json`}, display};
+ const model = createManufacturerModel(product, screenTexture), group = model.group, textures = new Map([['screen', screenTexture]]); current = {id, group, meta, textures, base, model}; scene.add(group); await model.ready;
+ for (const object of group.children) if (object.name !== 'pcb-main') object.userData.exterior = true;
+ if (mine !== token) return; document.body.dataset.ready = 'true'; document.querySelector('#status').textContent = `${id} · 实际通用渲染器 / 厂家 CAD / 板级模拟未实现`; show('front'); return meta;
+}
+function show(id, options = {}) {
+ if (!current) return; view = id; const {meta, base} = current, def = meta.reviewViews?.[id] || {}, body = meta.presentation?.bodySizeMm || [50, 50, 20], span = options.span || def.span || Math.max(...body) * 1.45, target = options.target || def.target || [0, 0, 0]; const position = options.position || def.position || (id === 'front' ? [0, 0, 250] : id === 'back' ? [0, 0, -250] : [250, 0, 0]), up = options.up || def.up || (id === 'side' ? [0, 0, 1] : [0, 1, 0]);
+ camera.left = -span / 2; camera.right = span / 2; camera.top = span / 2; camera.bottom = -span / 2; camera.position.set(...position); camera.up.set(...up); camera.lookAt(...target); camera.updateProjectionMatrix(); light.position.copy(camera.position).add(new THREE.Vector3(-90, 100, 60)); renderer.render(scene, camera); overlay.getContext('2d').clearRect(0, 0, 800, 800); overlay.getContext('2d').drawImage(renderer.domElement, 0, 0);
+ const reference = meta.referencePhotos.find(p => p.view === id); if (reference) document.querySelector('#reference').src = document.querySelector('#overlay-reference').src = new URL(reference.file, base).href;
+ const receipt = {id: current.id, view, span, position, target, up}; document.querySelector('#details').textContent = JSON.stringify(receipt, null, 2); return receipt;
+}
+for (const id of ids) document.querySelector('#product').add(new Option(id, id)); document.querySelector('#product').onchange = e => load(e.target.value).catch(e => document.querySelector('#status').textContent = e.message); document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => show(b.dataset.view)); document.querySelector('#unknown').onclick = () => { hidden = !hidden; current.group.traverse(o => { if (o.userData.exterior) o.visible = !hidden; }); show(view); };
+window.laneReview = {load, show, appearance(value) { for (const shell of current.group.userData.shellMeshes || []) applyShellAppearance(shell,value); return show(view); }, mask() { const saved=[]; current.group.traverse(o=>{if(!o.material)return;const originals=[].concat(o.material),black=originals.map(m=>new THREE.MeshBasicMaterial({color:0x000000,map:m.map||null,transparent:m.transparent,alphaTest:m.alphaTest||0,side:m.side,depthWrite:m.depthWrite,polygonOffset:m.polygonOffset,polygonOffsetFactor:m.polygonOffsetFactor,polygonOffsetUnits:m.polygonOffsetUnits}));saved.push([o,o.material,black]);o.material=Array.isArray(o.material)?black:black[0];});renderer.render(scene,camera);for(const[o,original,black]of saved){o.material=original;for(const m of black)m.dispose();} }, get current() { return current; }, renderer}; window.addEventListener('pagehide', () => { dispose(); renderer.dispose(); }); load(new URL(location.href).searchParams.get('id') || ids[0]).catch(e => { document.querySelector('#status').textContent = e.message; });

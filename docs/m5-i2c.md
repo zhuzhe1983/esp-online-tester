@@ -5,9 +5,11 @@ Both wrap `Reg8Device`: one-byte register pointers, repeated-start reads and
 auto-incrementing transfers. They ACK immediately, so the firmware's wake retry
 loop succeeds on its first attempt. No sleep delay or watchdog countdown runs.
 
-The implemented access sequence follows private StopWatch firmware revision
-`85c991d`; that source is not publicly reproducible. Public hardware sources
-for the address and wiring are listed below.
+The original access sequence followed private StopWatch revision `85c991d`.
+The public [StopWatch UserDemo V0.5 source](https://github.com/m5stack/M5StopWatch-UserDemo/tree/6b4aa125288b6fe9dca661f10159f6e1e5ee785c/main/hal)
+and [M5IOE1 1.0.8](https://github.com/m5stack/M5IOE1/tree/37db04861687858b6748f5dbd1a84439a6635c46)
+now reproduce the power sequence and GPIO input-read polling used by the
+released official binary. Public hardware sources follow.
 Register definitions come from M5Stack, not Espressif/ESP-IDF:
 
 - [M5PM1 Chip User Manual v1.9](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1207/M5PM1_Datasheet_EN.pdf),
@@ -65,6 +67,11 @@ The constructor takes a synthetic UID supplied by the board, returned
 little-endian at `0x00/01`. This is a per-device UID, not a fixed chip ID.
 Direction (`0x03`), output (`0x05`), drive (`0x13`, default `0xff`) and I2C
 config (`0x23`) retain writes. Identity registers are read-only on both chips.
+GPIO input registers (`0x07/08`) are also read-only and reflect driven
+push-pull output levels from direction/output/drive in both banks; the high
+bank masks unused bits 6/7. In particular, the official HAL waits until
+`digitalRead(IO8)` observes the enabled OLED rail. Inputs and released
+open-drain pins remain low because external levels are not modeled.
 
 `Arc<Mutex<M5ioe1State>>` exposes three StopWatch signals after each write:
 

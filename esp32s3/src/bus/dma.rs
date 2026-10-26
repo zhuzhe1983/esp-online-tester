@@ -240,7 +240,12 @@ impl SocBus {
                     address,
                     fault,
                 })?;
-                channel.buf_pos += remaining as u32;                     // GDMA drains the descriptor
+                // A GP-SPI USR data phase can end inside a descriptor. Keep the
+                // unread bytes for the next USR without restarting OUT_LINK.
+                // M5GFX 0.2.15 execDMAQueue uses this for >32768-byte S3 writes
+                // (IDF v5.4.2 spi_reg.h MS_DATA_BITLEN is 18 bits).
+                channel.buf_pos += count as u32;
+                if count < remaining { break; }
             }
             if channel.conf0 & (1 << 2) != 0 {
                 let writable = current.desc.checked_add(4).is_some_and(|end| {

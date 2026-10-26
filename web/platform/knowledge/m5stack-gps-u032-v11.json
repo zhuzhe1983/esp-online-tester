@@ -1,0 +1,633 @@
+{
+  "schemaVersion": "1",
+  "id": "m5stack-gps-u032-v11",
+  "kind": "accessory",
+  "catalogId": "m5stack-gps-u032-v11",
+  "title": "M5Stack Unit GPS v1.1 · U032-V11",
+  "summary": "采用 AT6668 的 UART GNSS 定位配件，内置陶瓷天线，Grove 接口输出 NMEA 数据；与旧款 U032（AT6558）分开维护。",
+  "summarySourceIds": [
+    "official-docs"
+  ],
+  "updatedAt": "2026-10-26T16:53:39Z",
+  "hardwareRevision": "U032-V11 product v1.1; user hardware unconfirmed",
+  "identity": {
+    "manufacturer": "M5Stack",
+    "sku": "U032-V11",
+    "family": "Unit GPS",
+    "controller": "AT6668"
+  },
+  "facts": [
+    {
+      "id": "identity",
+      "label": "型号与版本",
+      "value": {
+        "sku": "U032-V11",
+        "productRevision": "v1.1",
+        "controller": "AT6668",
+        "module": "ATGM336H-6N"
+      },
+      "group": "identity",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "description",
+      "label": "用途",
+      "value": "内置陶瓷天线的 UART GNSS 定位配件，用于导航及位置数据采集。",
+      "group": "overview",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "legacy-distinction",
+      "label": "与 U032 区别",
+      "value": {
+        "U032": "AT6558",
+        "U032-V11": "AT6668"
+      },
+      "group": "identity",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "product-envelope",
+      "label": "外形尺寸",
+      "value": {
+        "width": 24,
+        "height": 48,
+        "depth": 8
+      },
+      "group": "mechanical",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs",
+        "dimension-drawing"
+      ],
+      "unit": "mm"
+    },
+    {
+      "id": "weight",
+      "label": "净重",
+      "value": 12.3,
+      "group": "mechanical",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "unit": "g"
+    },
+    {
+      "id": "mounting-holes",
+      "label": "两安装孔",
+      "value": {
+        "diameter": 5,
+        "centerSpacing": 16,
+        "centerFromBottom": 12
+      },
+      "group": "mechanical",
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing"
+      ],
+      "unit": "mm"
+    },
+    {
+      "id": "case-radius",
+      "label": "外壳圆角",
+      "value": {
+        "planViewRadius": 4,
+        "edgeRadius": 1
+      },
+      "group": "mechanical",
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing"
+      ],
+      "unit": "mm"
+    },
+    {
+      "id": "connector-opening",
+      "label": "连接器开口尺寸",
+      "value": {
+        "width": 10,
+        "height": 5.2
+      },
+      "group": "mechanical",
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing"
+      ],
+      "unit": "mm"
+    },
+    {
+      "id": "serial",
+      "label": "串口",
+      "value": {
+        "baudRate": 115200,
+        "dataBits": 8,
+        "parity": "none",
+        "stopBits": 1,
+        "protocol": "NMEA0183 4.1"
+      },
+      "group": "interface",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "grove-pinmap",
+      "label": "Grove 引脚",
+      "value": {
+        "type": "HY2.0-4P",
+        "black": "GND",
+        "red": "5V",
+        "yellow": "UART_RX",
+        "white": "UART_TX"
+      },
+      "group": "interface",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "名称按厂商表格保留；这不是主机GPIO映射，UART方向须结合实物和主机固件确认。"
+    },
+    {
+      "id": "power",
+      "label": "官方供电与工作电流",
+      "value": {
+        "voltage": 5,
+        "currentMa": 31.64
+      },
+      "group": "power",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "整机规格；不能套用 GNSS 裸模块 3.3V 电源规格。"
+    },
+    {
+      "id": "systems",
+      "label": "支持卫星系统",
+      "value": [
+        "GPS",
+        "QZSS",
+        "BD2",
+        "BD3",
+        "GAL",
+        "GLO"
+      ],
+      "group": "gnss",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "frequencies",
+      "label": "接收频点",
+      "value": {
+        "BDS": [
+          "B1I",
+          "B1C"
+        ],
+        "GPS/QZSS/SBAS": "L1",
+        "GALILEO": "E1",
+        "GLONASS": "R1"
+      },
+      "group": "gnss",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "receiver",
+      "label": "通道、精度与更新率",
+      "value": {
+        "channels": 50,
+        "positionAccuracy": "<1.5 m (CEP50)",
+        "maximumUpdateHz": 10
+      },
+      "group": "gnss",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "startup",
+      "label": "官方启动时间",
+      "value": {
+        "coldSeconds": 23,
+        "hotSeconds": 1
+      },
+      "group": "gnss",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "sensitivity",
+      "label": "灵敏度",
+      "value": {
+        "tracking": -162,
+        "acquisition": -160,
+        "coldStart": -148
+      },
+      "group": "gnss",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "unit": "dBm"
+    },
+    {
+      "id": "included-cable",
+      "label": "随附电缆",
+      "value": {
+        "connector": "HY2.0-4P",
+        "lengthCm": 20
+      },
+      "group": "accessory",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "module-only-specification",
+      "label": "裸 GNSS 模块数据",
+      "value": {
+        "dimensionsMm": [
+          10.1,
+          9.7,
+          2.4
+        ],
+        "supplyV": [
+          2.7,
+          3.3,
+          3.6
+        ],
+        "defaultUpdateHz": 1
+      },
+      "group": "module",
+      "basis": "official",
+      "sourceIds": [
+        "module-datasheet"
+      ],
+      "notes": "裸模块资料不代表完整 Unit PCB 的布局、供电接口或具体模块子型号。"
+    },
+    {
+      "id": "cad-assembly",
+      "label": "厂家外壳 CAD 装配",
+      "value": {
+        "componentsUsed": [
+          0,
+          3
+        ],
+        "omittedDuplicates": [
+          1,
+          2
+        ],
+        "translationMm": [
+          40,
+          0,
+          -1.2
+        ],
+        "assembledDimensionsMm": [
+          24,
+          48,
+          8
+        ]
+      },
+      "group": "mechanical",
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "official-cad"
+      ],
+      "method": "trimesh 5.2.0 split(only_watertight=False); preserve component 0+3 assembly, common translation only; see tools/build-gps-model.py."
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "url": "https://docs.m5stack.com/en/unit/Unit_GPS_v1.1",
+      "resolvedUrl": "https://docs.m5stack.com/en/unit/Unit_GPS_v1.1",
+      "mediaType": "text/html; charset=UTF-8",
+      "fetchedAt": "2026-10-26T16:50:07Z",
+      "bytes": 135521,
+      "sha256": "82fd73e384607f45e00320ecf99ce005f5610c83f2b52e04a607555c470ed17b",
+      "id": "official-docs",
+      "title": "M5Stack Unit GPS v1.1 official documentation",
+      "kind": "documentation",
+      "status": "fetched",
+      "archiveName": "official-docs.html"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U032_V11_Unit_GPS_v1_1/Structures/Unit_GPS_v1.1.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U032_V11_Unit_GPS_v1_1/Structures/Unit_GPS_v1.1.stl",
+      "mediaType": "application/octet-stream",
+      "fetchedAt": "2026-10-26T16:50:08Z",
+      "bytes": 358084,
+      "sha256": "cfb75ed7e65c36ab005d88beb4a81c293a2f07edffd2a9dd13ec14ce8b1a9b0b",
+      "id": "official-cad",
+      "title": "U032-V11 manufacturer shell STL, pinned revision",
+      "kind": "cad-stl",
+      "status": "fetched",
+      "archiveName": "source.stl",
+      "discoveredFrom": "official-docs",
+      "revision": {
+        "repository": "m5stack/M5_Hardware",
+        "commit": "e29c139cbc7c80b5ccc5557e5ab8025a7a19a109",
+        "path": "Products/U032_V11_Unit_GPS_v1_1/Structures/Unit_GPS_v1.1.stl"
+      },
+      "license": "MIT; Copyright (c) 2021 M5Stack",
+      "licenseUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+      "mediaType": "text/plain; charset=utf-8",
+      "fetchedAt": "2026-10-26T16:50:07Z",
+      "bytes": 1063,
+      "sha256": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+      "id": "cad-license",
+      "title": "M5_Hardware MIT license",
+      "kind": "license",
+      "status": "fetched",
+      "archiveName": "license.txt"
+    },
+    {
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/module_size.jpg",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/module_size.jpg",
+      "mediaType": "image/jpeg",
+      "fetchedAt": "2026-10-26T16:50:07Z",
+      "bytes": 454704,
+      "sha256": "807c99afe25bd183b39a698b6f54cc4b6f3611f0d7a4357bdc57b04faac9efb9",
+      "id": "dimension-drawing",
+      "title": "Unit GPS v1.1 dimension drawing",
+      "kind": "dimension-drawing",
+      "status": "fetched",
+      "archiveName": "drawing.jpg",
+      "discoveredFrom": "official-docs",
+      "license": "© M5Stack; no separate open photo/drawing license verified; not relicensed under project MIT."
+    },
+    {
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/ATGM336H-6N.pdf",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/ATGM336H-6N.pdf",
+      "mediaType": "application/pdf",
+      "fetchedAt": "2026-10-26T16:50:07Z",
+      "bytes": 752259,
+      "sha256": "7b1c10193709d7600e0234445a1c15603bf3443e14780ecde4818091ec2eda32",
+      "id": "module-datasheet",
+      "title": "ATGM336H-6N GNSS module user manual",
+      "kind": "datasheet",
+      "status": "fetched",
+      "archiveName": "module.pdf",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/849/U032-V11-UNIT_GPS_SCHE.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/849/U032-V11-UNIT_GPS_SCHE.pdf",
+      "mediaType": "application/pdf",
+      "fetchedAt": "2026-10-26T16:50:07Z",
+      "bytes": 165456,
+      "sha256": "477281e0749e004f402adb19403e3ea8dee5ff724f6eedf7bc3d73a6b4737982",
+      "id": "linked-schematic",
+      "title": "PDF linked by GPS v1.1 page (internal title V1.0, 2018)",
+      "kind": "schematic",
+      "status": "fetched",
+      "archiveName": "schematic.pdf",
+      "discoveredFrom": "official-docs",
+      "notes": "Fetched from the U032-V11 page, but title block says Revised V1.0, Date 10/16/2018 and GP-02. This conflict prevents treating it as verified AT6668 board layout/BOM."
+    },
+    {
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/4.webp",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/4.webp",
+      "mediaType": "image/webp",
+      "fetchedAt": "2026-10-26T16:50:07Z",
+      "bytes": 63300,
+      "sha256": "f4dac0a1e0d2d439e8a9fabd70fe99697de812091efd4fc33b4b9409ce493fda",
+      "id": "photo-4",
+      "title": "M5Stack GPS v1.1 official product photograph photo-4",
+      "kind": "product-photo",
+      "status": "fetched",
+      "archiveName": "photo-4.webp",
+      "discoveredFrom": "official-docs",
+      "license": "© M5Stack; no separate open photo/drawing license verified; not relicensed under project MIT."
+    },
+    {
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/5.webp",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/5.webp",
+      "mediaType": "image/webp",
+      "fetchedAt": "2026-10-26T16:50:07Z",
+      "bytes": 20246,
+      "sha256": "0085fac6f7d4ba727ca9eb8f5b9fbbcd9f7e73481fda0d698853f2bbf5297abb",
+      "id": "photo-5",
+      "title": "M5Stack GPS v1.1 official product photograph photo-5",
+      "kind": "product-photo",
+      "status": "fetched",
+      "archiveName": "photo-5.webp",
+      "discoveredFrom": "official-docs",
+      "license": "© M5Stack; no separate open photo/drawing license verified; not relicensed under project MIT."
+    },
+    {
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/6.webp",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/6.webp",
+      "mediaType": "image/webp",
+      "fetchedAt": "2026-10-26T16:50:07Z",
+      "bytes": 11000,
+      "sha256": "1f35e8fa0feb1807e0e3bd2655f30dbb1b19de6458685533a83b7db43908938e",
+      "id": "photo-6",
+      "title": "M5Stack GPS v1.1 official product photograph photo-6",
+      "kind": "product-photo",
+      "status": "fetched",
+      "archiveName": "photo-6.webp",
+      "discoveredFrom": "official-docs",
+      "license": "© M5Stack; no separate open photo/drawing license verified; not relicensed under project MIT."
+    },
+    {
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/7.webp",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/7.webp",
+      "mediaType": "image/webp",
+      "fetchedAt": "2026-10-26T16:50:07Z",
+      "bytes": 11592,
+      "sha256": "030d0063ddf60e702ddab5bc9fa6e8f0e8ad88d33397f1bff48d92d1bc81dcea",
+      "id": "photo-7",
+      "title": "M5Stack GPS v1.1 official product photograph photo-7",
+      "kind": "product-photo",
+      "status": "fetched",
+      "archiveName": "photo-7.webp",
+      "discoveredFrom": "official-docs",
+      "license": "© M5Stack; no separate open photo/drawing license verified; not relicensed under project MIT."
+    },
+    {
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/8.webp",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/8.webp",
+      "mediaType": "image/webp",
+      "fetchedAt": "2026-10-26T16:50:07Z",
+      "bytes": 16642,
+      "sha256": "f3a15d342121bd6b29688568d399b65de45b2e4c962a1421402e30ef4f5e7f5c",
+      "id": "photo-8",
+      "title": "M5Stack GPS v1.1 official product photograph photo-8",
+      "kind": "product-photo",
+      "status": "fetched",
+      "archiveName": "photo-8.webp",
+      "discoveredFrom": "official-docs",
+      "license": "© M5Stack; no separate open photo/drawing license verified; not relicensed under project MIT."
+    },
+    {
+      "id": "max2659-datasheet",
+      "title": "MAX2659 datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/unit/MAX2659_en.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "receiver-protocol",
+      "title": "CASIC receiver protocol specification",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1173/CASIC_Multi-mode_Satellite_Navigation_Receiver_Protocol_Specification.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs"
+    }
+  ],
+  "assets": [
+    {
+      "id": "official-cad",
+      "sourceId": "official-cad",
+      "role": "cad-stl",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U032_V11_Unit_GPS_v1_1/Structures/Unit_GPS_v1.1.stl",
+      "localUrl": "./assets/m5stack-gps-u032-v11/source.stl"
+    },
+    {
+      "id": "dimension-drawing",
+      "sourceId": "dimension-drawing",
+      "role": "dimension-drawing",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/module_size.jpg"
+    },
+    {
+      "id": "module-datasheet",
+      "sourceId": "module-datasheet",
+      "role": "datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/ATGM336H-6N.pdf"
+    },
+    {
+      "id": "linked-schematic",
+      "sourceId": "linked-schematic",
+      "role": "schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/849/U032-V11-UNIT_GPS_SCHE.pdf"
+    },
+    {
+      "id": "photo-4",
+      "sourceId": "photo-4",
+      "role": "product-photo",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/4.webp"
+    },
+    {
+      "id": "photo-5",
+      "sourceId": "photo-5",
+      "role": "product-photo",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/5.webp"
+    },
+    {
+      "id": "photo-6",
+      "sourceId": "photo-6",
+      "role": "product-photo",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/6.webp"
+    },
+    {
+      "id": "photo-7",
+      "sourceId": "photo-7",
+      "role": "product-photo",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/7.webp"
+    },
+    {
+      "id": "photo-8",
+      "sourceId": "photo-8",
+      "role": "product-photo",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/8.webp"
+    },
+    {
+      "id": "max2659-datasheet",
+      "sourceId": "max2659-datasheet",
+      "role": "datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/unit/MAX2659_en.pdf"
+    },
+    {
+      "id": "receiver-protocol",
+      "sourceId": "receiver-protocol",
+      "role": "datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1173/CASIC_Multi-mode_Satellite_Navigation_Receiver_Protocol_Specification.pdf"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "user-hardware-version",
+      "label": "用户实物版本",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "选择公开 U032-V11 型号不证明用户拥有的 GPS Unit 也是该版本。"
+    },
+    {
+      "id": "pcb-layout",
+      "label": "PCB 轮廓、厚度及元件位置",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-cad",
+        "linked-schematic"
+      ],
+      "notes": "厂家产品目录仅有外壳 STL，未获得板级 CAD/Gerber；原理图也不能证明物理布局。模型 pcb-main 明确 UNKNOWN。"
+    },
+    {
+      "id": "schematic-revision",
+      "label": "链接原理图是否适用于 AT6668 版本",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "linked-schematic"
+      ],
+      "notes": "文件名 U032-V11 与内部 V1.0/2018/GP-02 标题冲突；未用其确认 v1.1 电路或板上坐标。"
+    },
+    {
+      "id": "uart-logic-level",
+      "label": "完整 Unit UART 电平与容限",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-docs",
+        "module-datasheet"
+      ],
+      "notes": "5V 是 Unit 供电规格；仅裸模块数据不足以确认整板 UART 电平容限。"
+    },
+    {
+      "id": "specific-module-suffix",
+      "label": "ATGM336H-6N 具体后缀",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "module-datasheet"
+      ],
+      "notes": "手册含不同卫星组合后缀，官网未明确出厂料号后缀。"
+    }
+  ],
+  "collectionNotes": [
+    "仅摘要事实，不镜像官网正文。完整临时下载在 output/source/gps-u032-v11，已记录逐文件哈希和UTC。",
+    "旧款 U032 继续独立存在，不套用本条 CAD 或 115200 配置。",
+    "模拟器当前只将合成 NMEA 排队进入逻辑 UART1；不模拟射频、搜星、供电、GPIO 路由、波特率或模块命令。",
+    "照片标签与外露插座用于外观参考；厂商未提供完整电子装配，内部1:1未经验证。"
+  ]
+}

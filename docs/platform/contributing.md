@@ -16,13 +16,15 @@ Give each revision its own ID, connector signals, voltage requirements, protocol
 
 ## Firmware
 
-Include compatible product IDs, a version/revision, license/source links and limitations. A catalog reference to a project is distinct from a verified executable artifact. Prefer a manifest with pinned SHA-256 hashes and explicit bootloader, partition table and app files. Files must be redistributable and accessible to browsers through HTTPS and CORS. Third-party firmware binaries remain remote: do not mirror them in the repository or browser persistent storage. Categorize known projects in `firmware-watchlist.json`, retain official release metadata and check URLs. New releases do not inherit a prior compatibility claim. Broken links get a user-facing issue draft, never an automatically submitted issue.
+Include compatible product IDs, a version/revision, license/source links and limitations. A catalog reference to a project is distinct from a verified executable artifact. Prefer a manifest with pinned SHA-256 hashes and explicit bootloader, partition table and app files. Files must be accessible to browsers through HTTPS and CORS. Third-party firmware binaries remain remote: do not mirror them on this site's server or in the repository. Hash-verified copies may persist in the user's own browser cache, with explicit clearing. Categorize known projects in `firmware-watchlist.json`, retain official release metadata and check URLs. New releases do not inherit a prior compatibility claim. Broken links get a user-facing issue draft, never an automatically submitted issue.
 
 Do not publish credentials, device identifiers or personalized flash dumps. A full flash image may contain these even when the app source does not.
 
 ## Validate
 
 ```sh
+python -m pip install -r tools/requirements-catalog.txt
+python tools/validate-platform-catalog.py
 node --test tools/platform-*-test.mjs
 node tools/check-evidence-privacy.mjs
 ```

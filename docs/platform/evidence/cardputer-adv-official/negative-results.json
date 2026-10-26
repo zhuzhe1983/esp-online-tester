@@ -1,0 +1,225 @@
+[
+  {
+    "reason": "Initial route model: initialized black frame, no successful official UI.",
+    "wasmSha256": "1a376956ec3863cee4583cb822250a94fcdf568249951516e5fcf4c577c8b335",
+    "firmwareSha256": "7bb1532427c875445b16186b6139afa371f67ddbdc83ae5bfe4a9089c7883b74",
+    "failure": {
+      "message": "Real key release must leave the factory boot page",
+      "code": "ERR_ASSERTION"
+    },
+    "frame": {
+      "width": 240,
+      "height": 135,
+      "frameNumber": 3,
+      "sha256": "17687967283c6d29f77b4b523eef2b8f3efc466e1100e2eb987f636a05ed9d46"
+    },
+    "stages": [
+      {
+        "name": "boot",
+        "guestSeconds": 8.002162679166666,
+        "lastStatSeconds": 8,
+        "frameNumber": 3,
+        "nonBlackChannels": 0,
+        "sha256": "17687967283c6d29f77b4b523eef2b8f3efc466e1100e2eb987f636a05ed9d46"
+      },
+      {
+        "name": "launcher",
+        "guestSeconds": 9.1207631,
+        "lastStatSeconds": 9.1,
+        "frameNumber": 3,
+        "nonBlackChannels": 0,
+        "sha256": "17687967283c6d29f77b4b523eef2b8f3efc466e1100e2eb987f636a05ed9d46"
+      }
+    ],
+    "elapsedMs": 10291
+  },
+  {
+    "reason": "SIO fix made real boot pixels, but GPIO open-drain release was missing. Official firmware detected ordinary Cardputer and TCA8418 initialization failed.",
+    "wasmSha256": "8fc65e056db10ae17585e1b6fcc4a18696300131a39c767429495b7bc50a9aca",
+    "firmwareSha256": "7bb1532427c875445b16186b6139afa371f67ddbdc83ae5bfe4a9089c7883b74",
+    "failure": {
+      "message": "Real key release must leave the factory boot page",
+      "code": "ERR_ASSERTION"
+    },
+    "frame": {
+      "width": 240,
+      "height": 135,
+      "frameNumber": 4,
+      "sha256": "bd41b493536f87a8ce36fdebc242c21bbb77a38d1eabfc1507db0e5f58c4f5c7"
+    },
+    "stages": [
+      {
+        "name": "boot",
+        "guestSeconds": 8.009044958333334,
+        "lastStatSeconds": 8,
+        "frameNumber": 4,
+        "nonBlackChannels": 96257,
+        "sha256": "bd41b493536f87a8ce36fdebc242c21bbb77a38d1eabfc1507db0e5f58c4f5c7"
+      },
+      {
+        "name": "launcher",
+        "guestSeconds": 9.118418708333333,
+        "lastStatSeconds": 9.1,
+        "frameNumber": 4,
+        "nonBlackChannels": 96257,
+        "sha256": "bd41b493536f87a8ce36fdebc242c21bbb77a38d1eabfc1507db0e5f58c4f5c7"
+      }
+    ],
+    "elapsedMs": 10241
+  },
+  {
+    "reason": "Inputs moved the official menu, but visual inspection rejected the apparent hash success: the lower canvas retained the boot image because GDMA discarded the unread descriptor suffix.",
+    "wasmSha256": "cc4abcc0c654972cfe7e2a22125b23d4afbf339b9c2777faba3b27ccb86dcf86",
+    "firmwareSha256": "7bb1532427c875445b16186b6139afa371f67ddbdc83ae5bfe4a9089c7883b74",
+    "failure": null,
+    "frame": {
+      "width": 240,
+      "height": 135,
+      "frameNumber": 130,
+      "sha256": "491e35c4dd30ddc9677df1008c4d5120c49c9d28427f47c82c2131efc10dd70d"
+    },
+    "stages": [
+      {
+        "name": "boot",
+        "guestSeconds": 8.012147379166667,
+        "lastStatSeconds": 8,
+        "frameNumber": 4,
+        "nonBlackChannels": 96257,
+        "sha256": "bd41b493536f87a8ce36fdebc242c21bbb77a38d1eabfc1507db0e5f58c4f5c7"
+      },
+      {
+        "name": "launcher",
+        "guestSeconds": 9.2878084625,
+        "lastStatSeconds": 9.28,
+        "frameNumber": 18,
+        "nonBlackChannels": 92781,
+        "sha256": "491e35c4dd30ddc9677df1008c4d5120c49c9d28427f47c82c2131efc10dd70d"
+      },
+      {
+        "name": "right",
+        "guestSeconds": 10.403292541666668,
+        "lastStatSeconds": 10.4,
+        "frameNumber": 74,
+        "nonBlackChannels": 92506,
+        "sha256": "35ba5ec535e8e4c154cc25d1f9d1d10568217403b4bcc14eb2f8abf070f7f666"
+      },
+      {
+        "name": "left",
+        "guestSeconds": 11.528003295833333,
+        "lastStatSeconds": 11.52,
+        "frameNumber": 130,
+        "nonBlackChannels": 92781,
+        "sha256": "491e35c4dd30ddc9677df1008c4d5120c49c9d28427f47c82c2131efc10dd70d"
+      }
+    ],
+    "elapsedMs": 12555
+  },
+  {
+    "reason": "Full pixels restored. Exact menu-return hash assertion failed: the settled official spring positions differ by one pixel horizontally.",
+    "wasmSha256": "a33d1ca6d5624cafccc96bfb60378bfe0fe912002e7a8cd0a0a45b3602ba52a8",
+    "firmwareSha256": "7bb1532427c875445b16186b6139afa371f67ddbdc83ae5bfe4a9089c7883b74",
+    "failure": {
+      "message": "Left returns to the original official menu selection\n+ actual - expected\n\n+ '23ea86cd5dd5155cdcb3176bfcafdb7871b9d296e19ca3b09e02389351ed675b'\n- 'b05632ebd47cdebfd3f59487f513394492787485e05e5fcbb47344a10d663969'\n",
+      "code": "ERR_ASSERTION"
+    },
+    "frame": {
+      "width": 240,
+      "height": 135,
+      "frameNumber": 120,
+      "sha256": "dbe9e703d87cfddf329c7a63d3bbf553bc291875f487a3a98e940d183d26a369"
+    },
+    "stages": [
+      {
+        "name": "boot",
+        "guestSeconds": 8.006232554166667,
+        "lastStatSeconds": 8,
+        "frameNumber": 4,
+        "nonBlackChannels": 96257,
+        "sha256": "bd41b493536f87a8ce36fdebc242c21bbb77a38d1eabfc1507db0e5f58c4f5c7",
+        "lowerCanvasSha256": "905889ae58f404d5f954c0e1b60eebf00e206c1e0381fffb791f640e6561fa0e"
+      },
+      {
+        "name": "launcher",
+        "guestSeconds": 9.44844295,
+        "lastStatSeconds": 9.42,
+        "frameNumber": 11,
+        "nonBlackChannels": 91932,
+        "sha256": "35cce469f91812115fd2c106620f3c05271b32ec8ffb1058940dcfc2227345e9",
+        "lowerCanvasSha256": "b05632ebd47cdebfd3f59487f513394492787485e05e5fcbb47344a10d663969"
+      },
+      {
+        "name": "right",
+        "guestSeconds": 10.78222845,
+        "lastStatSeconds": 10.76,
+        "frameNumber": 64,
+        "nonBlackChannels": 90688,
+        "sha256": "b84afcc1427b67504ff5aae278a9c2d87169cba3efaef1f45f90984dd57e80f1",
+        "lowerCanvasSha256": "ce7a0ad09eda7f671118aba6cf63f26f7c9d199f9a4331a9d66d724f75c742b4"
+      },
+      {
+        "name": "left",
+        "guestSeconds": 11.973461658333333,
+        "lastStatSeconds": 11.96,
+        "frameNumber": 120,
+        "nonBlackChannels": 91932,
+        "sha256": "dbe9e703d87cfddf329c7a63d3bbf553bc291875f487a3a98e940d183d26a369",
+        "lowerCanvasSha256": "23ea86cd5dd5155cdcb3176bfcafdb7871b9d296e19ca3b09e02389351ed675b"
+      }
+    ],
+    "elapsedMs": 14110
+  },
+  {
+    "reason": "Waiting for a stable image did not remove the one-pixel difference. Retained whole-frame and lower-canvas hash failure; final test compares every pixel of a 160x75 interior after at most one-pixel integer translation.",
+    "wasmSha256": "a33d1ca6d5624cafccc96bfb60378bfe0fe912002e7a8cd0a0a45b3602ba52a8",
+    "firmwareSha256": "7bb1532427c875445b16186b6139afa371f67ddbdc83ae5bfe4a9089c7883b74",
+    "failure": {
+      "message": "Left returns to the original official menu selection\n+ actual - expected\n\n+ '23ea86cd5dd5155cdcb3176bfcafdb7871b9d296e19ca3b09e02389351ed675b'\n- 'b05632ebd47cdebfd3f59487f513394492787485e05e5fcbb47344a10d663969'\n",
+      "code": "ERR_ASSERTION"
+    },
+    "frame": {
+      "width": 240,
+      "height": 135,
+      "frameNumber": 248,
+      "sha256": "dbe9e703d87cfddf329c7a63d3bbf553bc291875f487a3a98e940d183d26a369"
+    },
+    "stages": [
+      {
+        "name": "boot",
+        "guestSeconds": 8.014320258333333,
+        "lastStatSeconds": 8,
+        "frameNumber": 4,
+        "nonBlackChannels": 96257,
+        "sha256": "bd41b493536f87a8ce36fdebc242c21bbb77a38d1eabfc1507db0e5f58c4f5c7",
+        "lowerCanvasSha256": "905889ae58f404d5f954c0e1b60eebf00e206c1e0381fffb791f640e6561fa0e"
+      },
+      {
+        "name": "launcher",
+        "guestSeconds": 10.155750845833333,
+        "lastStatSeconds": 10.14,
+        "frameNumber": 60,
+        "nonBlackChannels": 91932,
+        "sha256": "758cdebb223ef2c03d0c61b343b2c1a2527249f5116d3c416b6206477c3b4d78",
+        "lowerCanvasSha256": "b05632ebd47cdebfd3f59487f513394492787485e05e5fcbb47344a10d663969"
+      },
+      {
+        "name": "right",
+        "guestSeconds": 12.028956220833333,
+        "lastStatSeconds": 12.02,
+        "frameNumber": 154,
+        "nonBlackChannels": 90688,
+        "sha256": "b84afcc1427b67504ff5aae278a9c2d87169cba3efaef1f45f90984dd57e80f1",
+        "lowerCanvasSha256": "ce7a0ad09eda7f671118aba6cf63f26f7c9d199f9a4331a9d66d724f75c742b4"
+      },
+      {
+        "name": "left",
+        "guestSeconds": 13.897338595833334,
+        "lastStatSeconds": 13.88,
+        "frameNumber": 247,
+        "nonBlackChannels": 91932,
+        "sha256": "dbe9e703d87cfddf329c7a63d3bbf553bc291875f487a3a98e940d183d26a369",
+        "lowerCanvasSha256": "23ea86cd5dd5155cdcb3176bfcafdb7871b9d296e19ca3b09e02389351ed675b"
+      }
+    ],
+    "elapsedMs": 17086
+  }
+]

@@ -143,6 +143,26 @@ Waveshare does not opt into this scan. Its existing GPIO13 oscillator remains
 unchanged, including its optional measured 16,773 us period / 578 us high variant;
 STE and TE commands do not change that legacy waveform.
 
+## `papermono` — M5Stack PaperMono / PaperMono Lite (ESP32-S3)
+
+Selected with `--board papermono` (alias `m5stack-papermono`), 16 MB Flash and
+8 MB PSRAM. The official UserDemo 1.2.0 boots to its real portrait dashboard;
+buttons A/B change brightness and FT6336G touches change brightness and mute.
+
+| Device | Wiring | Scope |
+| --- | --- | --- |
+| SSD1677 | SPI2: MOSI14/CLK15/CS16/DC17, BUSY18 | Dual RAM planes, address windows, refresh commands, M5GFX absolute/differential gray endpoints; native 800×480 rotated to 480×800 |
+| FT6336G | I2C 0x38, IRQ4 | One contact, stable driver double-read, power/reset gates |
+| M5IOE1 / M5PM1 | I2C 0x4F / 0x6E | EPD IO3 power / IO5 reset; touch IO6 reset / IO13 power |
+| Physical I2C | SDA47/SCL48 | Software address detection and both hardware controllers share device state |
+| Buttons | A GPIO2 / B GPIO3 | Active low |
+| RX8130 / BMI270 | I2C 0x32 / 0x68 | Register subsets only; RTC does not tick, BMI270's continuous-ready initialization fails |
+
+NFC, LoRa, TF/SD, audio, sleep/wake and networking are unverified or absent.
+The official firmware detects Lite because NFC is absent. Digital BUSY durations
+are compatibility intervals, not measured EPD physics. No optical ghosting or
+arbitrary custom-LUT compatibility claim. [Detailed boundary and evidence](platform/papermono-runtime.md).
+
 ## `stopwatch` — M5Stack StopWatch (ESP32-S3)
 
 Selected with `--board stopwatch` (alias `m5stack-stopwatch`). The native CLI
@@ -153,7 +173,7 @@ explicit browser configuration values.
 
 | Device | Bus | Model |
 | --- | --- | --- |
-| CO5300 | SPI2 QSPI | 468×466 RGB565 RAM, column offset 6; CASET 6..473, RASET 0..465; split RAMWR/RAMWRC transfers |
+| CO5300 | SPI2 QSPI | 468×466 RGB565 RAM, column offset 6; CASET 6..473, RASET 0..465; split RAMWR/RAMWRC transfers and GPIO39 CS-delimited M5GFX command streams |
 | TE | GPIO38 | STE-aware synthetic scan: 500 lines, 15,000 µs period, 120 µs high pulse; 3,600,000 / 28,800 cycles at 240 MHz |
 | M5PM1 at `0x6e` | I2C0, SDA47/SCL48 | ID `0x2050`, retained power configuration, battery input and latched shutdown request |
 | M5IOE1 at `0x4f` | I2C0 | OLED rail, OLED reset and touch reset through shared state; synthetic UID `0x0000` |
@@ -174,6 +194,12 @@ PMIC `SYS_CMD=0xa1` blanks the panel and is reported as
 `power_off_requested=true`; it does not halt the CPU. Battery input defaults to
 3900 mV, not charging. These values and the expander UID are synthetic.
 Touch input is ignored while touch reset is asserted or after shutdown.
+
+The official [UserDemo V0.5](https://github.com/m5stack/M5StopWatch-UserDemo/releases/tag/V0.5)
+now boots through the real ROM in the WASM worker and renders its guide,
+launcher and stopwatch UI. The [remote-source and interaction receipt](platform/evidence/stopwatch-official-v05/README.md)
+records the exact firmware hash, negative runs and tested A/B/touch behavior.
+This does not add IMU, RTC, audio playback or physical power-button emulation.
 
 The directed `esp32s3 --test stopwatch` tests cover factory selection, bus-0
 attachments, firmware register initialization, reset/rail/shutdown gating,
@@ -237,3 +263,13 @@ The worked example is in [adding.md](adding.md#a-board-a-device-with-things-wire
 named pins, encoder, report out), I2C devices as `I2cDevice`, one arm in `make_board`, a run script
 under `examples/<board>/` and a row in this file. The page switches its layout on the `board`
 message (`web/run.html`).
+
+### M5Stack Cardputer-Adv
+
+`--board cardputer-adv` selects the K132-Adv ST7789V2 display and TCA8418 keyboard on ESP32-S3 (8 MB Flash, no PSRAM). The fixed official User Demo uses the real 4×14 physical matrix input, 7×8 scan FIFO and IRQ11; ordinary Cardputer uses a different keyboard and is not covered. Audio, SD, RF/HID and other applications remain unverified. See [runtime scope and evidence](platform/cardputer-adv-runtime.md).
+
+### M5Stack Cardputer K132 / K132-V11
+
+`--board cardputer` selects the original 8 MB ESP32-S3 Cardputer. Both official product pages link byte-identical baseboard schematics for the verified ST7789V2 LCD, 74HC138 GPIO-scanned 4×14 keyboard and GPIO44 IR detection load. Their Stamp revisions remain separate product metadata. GPIO8/9/11 select the decoder row; GPIO13/15/3/4/5/6/7 read switch columns. Inputs use actual GPIO routing, enable and mux state and do not force instruction-sized scheduling. The original keyboard is distinct from `cardputer-adv`'s TCA8418.
+
+Official M5Burner User Demo v1.1 boots through the ROM and displays its real UI. Matrix Enter/left/right are checked against firmware frames. This does not establish microphone, speaker, SD, radio/HID, IR optical transmission, power switch or battery compatibility; no physical device was flashed. [Scope, source differences and probe](platform/cardputer-runtime.md).

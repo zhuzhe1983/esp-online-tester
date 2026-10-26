@@ -1,0 +1,418 @@
+{
+  "sourceId": "manufacturer-cad-b29f5a0d10",
+  "title": "M5Stack Stamp-S3A · S007-V033",
+  "summary": "ESP32-S3FN8 模块的 S3A 修订，改进天线和启动按钮，并调整 RGB LED 供电逻辑。",
+  "parts": [
+    {
+      "sourceComponent": 0,
+      "name": "shell",
+      "color": "#292e2c",
+      "role": "shell"
+    }
+  ],
+  "matrixRows": [
+    [
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1,
+      -1.3
+    ],
+    [
+      0,
+      0,
+      0,
+      1
+    ]
+  ],
+  "targets": [
+    {
+      "name": "width",
+      "axis": 0,
+      "valueMm": 18,
+      "toleranceMm": 0.1,
+      "sourceId": "dimension-drawing-512f8cd158"
+    },
+    {
+      "name": "height",
+      "axis": 1,
+      "valueMm": 26,
+      "toleranceMm": 0.1,
+      "sourceId": "dimension-drawing-512f8cd158"
+    },
+    {
+      "name": "depth",
+      "axis": 2,
+      "valueMm": 4.7,
+      "toleranceMm": 0.1,
+      "sourceId": "dimension-drawing-512f8cd158"
+    }
+  ],
+  "photos": [
+    {
+      "sourceId": "product-photo-c93c2f723a",
+      "view": "front"
+    },
+    {
+      "sourceId": "product-photo-df0d4848c4",
+      "view": "back"
+    },
+    {
+      "sourceId": "product-photo-3a174620e6",
+      "view": "side"
+    }
+  ],
+  "limitations": [
+    "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
+    "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+    "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+    "Exact SKU source STL is a24mm cover, not the26mm USB-inclusive module. The unmodeled board and connectors must not be confused with full mechanical coverage.",
+    "Old Stamp-S3 KiCad PCB STEP not adopted: S3A explicitly changes antenna and boot switch.",
+    "USB mouth is a generic dimension/photo-informed visual connector; body, solder joints and PCB routing unknown.",
+    "Visible USB body/antenna face are separately marked photo-informed estimates. PCB remains neutral UNKNOWN, with no invented components/traces."
+  ],
+  "assemblyNotes": "Original manufacturer components selected from assembled cluster; other components excluded with reasons. One rigid global transform, no scaling.",
+  "omittedComponents": [],
+  "dimensions": {
+    "width": 18,
+    "height": 26,
+    "depth": 4.7,
+    "unit": "mm",
+    "sourceId": "dimension-drawing-512f8cd158"
+  },
+  "presentation": {
+    "bodySizeMm": [
+      18,
+      26,
+      4.7
+    ]
+  },
+  "derivedParts": [
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "label": "UNKNOWN",
+      "basis": "estimated",
+      "dimensionsMm": [
+        18,
+        24,
+        0.8
+      ],
+      "centerMm": [
+        0,
+        0,
+        -1.95
+      ],
+      "sourceIds": [],
+      "notes": "Neutral UNKNOWN placeholder; no verified PCB placement/layout geometry. Exterior shape is not an assertion of PCB detail."
+    },
+    {
+      "id": "usb-c",
+      "kind": "connector-visual",
+      "connectorType": "USB-C",
+      "basis": "image-measurement",
+      "geometry": {
+        "centerMm": [
+          0,
+          -13.96,
+          -0.5
+        ],
+        "rotation": [
+          1.57079632679,
+          0,
+          0
+        ]
+      },
+      "sourceIds": [
+        "dimension-drawing-512f8cd158",
+        "product-photo-c93c2f723a"
+      ],
+      "notes": "USB protrusion1.96mm documented in drawing. Mouth8.9×3.2mm is common visual approximation +/-0.5mm, not a calibrated connector model."
+    },
+    {
+      "id": "usb-body",
+      "kind": "box",
+      "color": "#a4ada8",
+      "geometry": {
+        "sizeMm": [
+          8.9,
+          6.4,
+          3.2
+        ],
+        "centerMm": [
+          0,
+          -9.8,
+          -0.5
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing-512f8cd158",
+        "product-photo-c93c2f723a"
+      ],
+      "notes": "USB-C visual body positioned behind photographed mouth; standard shape estimate +/-0.6mm, no claim of exact connector manufacturer."
+    },
+    {
+      "id": "antenna-visible-surface",
+      "kind": "box",
+      "color": "#b7bdb7",
+      "geometry": {
+        "sizeMm": [
+          12.5,
+          4.4,
+          0.4
+        ],
+        "centerMm": [
+          0,
+          8.8,
+          1.7
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing-512f8cd158",
+        "product-photo-c93c2f723a"
+      ],
+      "notes": "Only visible metallic antenna face from official photo; antenna conductive geometry and RF properties unknown, dimensions +/-0.6mm."
+    }
+  ],
+  "revisions": [
+    {
+      "id": "s3a-versus-s3",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "basis": "official",
+      "changes": "S3A revises antenna, boot button4.0×3.0×2.0mm and RGB power/backlight multiplexing; earlier S3 has2.6×1.6×0.55mm switch."
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "psram-unconfirmed",
+      "label": "PSRAM capacity",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "Explicit capacity not stated in audited specification; null does not mean zero."
+    },
+    {
+      "id": "default-firmware-artifact",
+      "label": "Pinned default firmware artifact",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "No pinned binary/layout/hash verified. Software documentation remains linked in source records."
+    }
+  ],
+  "facts": [
+    {
+      "id": "product-envelope-drawing",
+      "label": "Documented product envelope",
+      "value": {
+        "width": 18,
+        "height": 26,
+        "depth": 4.7
+      },
+      "unit": "mm",
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing-512f8cd158"
+      ]
+    }
+  ],
+  "reviewViews": {
+    "front": {
+      "span": 47.344461305007584,
+      "target": [
+        -0.059180576631259474,
+        0.13808801213960545,
+        0
+      ],
+      "position": [
+        -0.059180576631259474,
+        0.13808801213960545,
+        250
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "sourceMask": {
+        "thresholdMinRgb": 245,
+        "bboxPixels": [
+          371,
+          274,
+          461,
+          659
+        ],
+        "sourcePixels": [
+          1200,
+          1200
+        ]
+      },
+      "basis": "Independent official silhouette sets camera scale/center only; source geometry unchanged."
+    },
+    "back": {
+      "span": 47.20121028744327,
+      "target": [
+        -0.019667170953101363,
+        0.019667170953101363,
+        0
+      ],
+      "position": [
+        -0.019667170953101363,
+        0.019667170953101363,
+        -250
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "sourceMask": {
+        "thresholdMinRgb": 245,
+        "bboxPixels": [
+          367,
+          270,
+          465,
+          661
+        ],
+        "sourcePixels": [
+          1200,
+          1200
+        ]
+      },
+      "basis": "Independent official silhouette sets camera scale/center only; source geometry unchanged."
+    }
+  },
+  "catalog": {
+    "chip": "esp32s3",
+    "flashMb": 8,
+    "psramMb": null,
+    "display": null,
+    "controls": [],
+    "interfaces": [
+      {
+        "id": "gpio",
+        "type": "castellated",
+        "external": true,
+        "pins": [
+          {
+            "name": "G0",
+            "gpio": 0
+          },
+          {
+            "name": "G1",
+            "gpio": 1
+          },
+          {
+            "name": "G2",
+            "gpio": 2
+          },
+          {
+            "name": "G3",
+            "gpio": 3
+          },
+          {
+            "name": "G4",
+            "gpio": 4
+          },
+          {
+            "name": "G5",
+            "gpio": 5
+          },
+          {
+            "name": "G6",
+            "gpio": 6
+          },
+          {
+            "name": "G7",
+            "gpio": 7
+          },
+          {
+            "name": "G8",
+            "gpio": 8
+          },
+          {
+            "name": "G9",
+            "gpio": 9
+          },
+          {
+            "name": "G10",
+            "gpio": 10
+          },
+          {
+            "name": "G11",
+            "gpio": 11
+          },
+          {
+            "name": "G12",
+            "gpio": 12
+          },
+          {
+            "name": "G13",
+            "gpio": 13
+          },
+          {
+            "name": "G14",
+            "gpio": 14
+          },
+          {
+            "name": "G15",
+            "gpio": 15
+          },
+          {
+            "name": "G39",
+            "gpio": 39
+          },
+          {
+            "name": "G40",
+            "gpio": 40
+          },
+          {
+            "name": "G41",
+            "gpio": 41
+          },
+          {
+            "name": "G42",
+            "gpio": 42
+          },
+          {
+            "name": "G43",
+            "gpio": 43
+          },
+          {
+            "name": "G44",
+            "gpio": 44
+          },
+          {
+            "name": "G46",
+            "gpio": 46
+          }
+        ]
+      },
+      {
+        "id": "usb-c",
+        "type": "USB-C",
+        "external": true,
+        "pins": []
+      }
+    ]
+  }
+}

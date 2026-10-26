@@ -1,0 +1,89 @@
+{
+  "checkedAt": "2026-10-26T20:10:16.232871Z",
+  "toolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "checks": [
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "result": "passed, including the final added lifecycle tests"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<complete-rom-directory> cargo test --release --workspace -- --include-ignored --skip external_",
+      "result": "passed",
+      "passedTests": 1343,
+      "successfulTestBinaries": 128,
+      "note": "Full workspace after semantic test correction; the additional partial-descriptor lifecycle test was then run independently and passed."
+    },
+    {
+      "command": "cargo test --release -p esp32s3 partial_gpspi_descriptor_cannot_leak_through_stop_reset_or_fresh_link",
+      "result": "passed, SPI2/SPI3 STOP/OUT_RST/fresh START/RESTART cases"
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "passed"
+    },
+    {
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel",
+      "result": "passed, eight manifests"
+    },
+    {
+      "command": "node --test tools/platform-runtime-test.mjs tools/worker-channel-test.mjs",
+      "result": "passed, includes real StopWatch fixture input/GPS and worker resume/acks"
+    },
+    {
+      "command": "ESP32SIM_PROBE_CLOCK_TIMEOUT_MS=60000 node tools/probe-official-papermono.mjs <official-url> <pinned-sha256> <output> 15 controls",
+      "result": "passed, official dashboard A/B/touch input regression on final Cardputer WASM"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "negativeCheck": "The first full workspace run failed its old short_ms_dlen_retires_an_overlong_eof_descriptor expectation. The changed consumption contract and prior commit are explained in README; the replacement checks both partial retention and later EOF. No golden regenerated.",
+  "sourceSha256": {
+    "esp-periph/src/gpio.rs": "ad1073c98768c300df73f5089cbd410e683c0c55f0070fe820f7126b49b6674b",
+    "esp-periph/tests/gpio_release.rs": "568df4e2ff4103dd26dd7d41be13dc9c54682945b51fea59f46ffd7ddfe22976",
+    "esp-periph/src/i2c/tca8418.rs": "76566334f6807bbbe91e397ab4131e803f6b06925d51d1b9f6643bc1a533474a",
+    "esp-soc/src/pins.rs": "9b56206353cda9dda6f72e52812f7b903f46bcc890cb1800f798ffb3db50d8ed",
+    "esp-soc/src/board.rs": "e81e33cb3436ef38d5388108ecbc94fc9894c12952e9665f0cbcbadd0447f876",
+    "esp-soc/src/machine/web.rs": "9297af4a02786883af77f7cdab5412acb8c18616b3b8dfe1a7b26f049665318a",
+    "esp32s3/src/board/cardputer_adv.rs": "4711c39fcb168bee26373a92b8c18f9087cd36f977f6189078f3e4fd51ad3f10",
+    "esp32s3/src/bus/dma.rs": "269d3ab4b070c3bac8510e5edb9691f80f52cb44e5fb0451196fb05827f02a4e",
+    "esp32s3/src/bus/tests.rs": "ab9056008019bc4688857d33f762494f78b98d039c8547a0ad0ae4203fc9f05a",
+    "web/platform/runtime.js": "68a75f349402b19ed0171e57137aca242dcce2e17adcbe082154f5599b93105b",
+    "tools/probe-official-cardputer-adv.mjs": "33044c248534b221c5f554da740c75fa7c08acd1e75d1358b40abfcea4c8358c"
+  },
+  "wasmSha256": "a33d1ca6d5624cafccc96bfb60378bfe0fe912002e7a8cd0a0a45b3602ba52a8",
+  "performance": {
+    "receipt": "native-regression.json",
+    "baselineCommit": "9e48897cf6d043b04cbf243e6d71993a69961675",
+    "pairsPerWorkload": 3,
+    "allInstructionCycleAndStdoutChecksIdentical": true,
+    "medianUserSeconds": {
+      "hello": [
+        0.25,
+        0.25
+      ],
+      "c3-hello": [
+        2.31,
+        2.27
+      ],
+      "c6-hello": [
+        1.5,
+        1.5
+      ],
+      "pocket-tank": [
+        38.5,
+        38.48
+      ]
+    },
+    "interpretation": "No measured regression in these samples; small differences do not establish a speedup. CPU time and instruction/output parity are separate checks."
+  }
+}

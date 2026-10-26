@@ -1,0 +1,627 @@
+{
+  "baseRevision": "9e48897cf6d043b04cbf243e6d71993a69961675",
+  "checkedAt": "2026-10-26",
+  "firmware": {
+    "url": "https://m5burner-cdn.m5stack.com/firmware/6ea670900726398df06ab72c2915db3e.bin",
+    "sha256": "6395799089341e0ae96072c2a3418d469d6797b2ab8ee0cab1c9ed24a42acbbe",
+    "bytes": 3854192,
+    "persistence": "memory-only"
+  },
+  "sourceFiles": [
+    {
+      "path": "esp-periph/src/i2c/m5.rs",
+      "bytes": 4346,
+      "sha256": "78ef69e932c68e27bc83390614160e147f72b4a23ee9df8da2b852be6e7d1e02"
+    },
+    {
+      "path": "esp-periph/tests/m5_i2c.rs",
+      "bytes": 7781,
+      "sha256": "4d3ac7d8af3735ca0c2db0f1ac87c83ecc093e1d08753870b9f6843a38816477"
+    },
+    {
+      "path": "esp-soc/src/devices/co5300.rs",
+      "bytes": 23855,
+      "sha256": "d6e7e235b36bc2e7f50caa0796ece71902e2d2cdcdac9c52dca777d8f3bd715a"
+    },
+    {
+      "path": "esp32s3/src/board/stopwatch.rs",
+      "bytes": 6735,
+      "sha256": "6299064c70bc3b382124dc8cb7e183edf7cf54c72f806e660f7de0c696216e76"
+    },
+    {
+      "path": "esp32s3/src/bus.rs",
+      "bytes": 57327,
+      "sha256": "11a44fdf4868eed0d7e8dc9493c83c19ac33cc4fc14f4efc13f14b77db1ff304"
+    },
+    {
+      "path": "esp32s3/src/bus/tests.rs",
+      "bytes": 83933,
+      "sha256": "61a4756fe50e31e760a6ba245596b13f199d666b254a1bf59a5d1d694e8401f2"
+    },
+    {
+      "path": "esp32s3/tests/stopwatch.rs",
+      "bytes": 9984,
+      "sha256": "97c138a4a09709093afd81d3977dfa7265e2e07be7586fdd950f664020deeb60"
+    },
+    {
+      "path": "tools/probe-official-stopwatch.mjs",
+      "bytes": 10117,
+      "sha256": "adf0bdc1c72e8fd3eb6ee5d7c41c0db476c743825a3165a6b381ae1f1e3d92a2"
+    },
+    {
+      "path": "web/wasm/esp32sim.wasm",
+      "bytes": 3865242,
+      "sha256": "71142010234b67d15136fb1594bd4ed116ef673b7e5aeeb3219bb6f56ca4a0e7"
+    }
+  ],
+  "runs": [
+    {
+      "id": "initial",
+      "receipt": {
+        "path": "output/official-stopwatch/initial/receipt.json",
+        "bytes": 1193,
+        "sha256": "4628038873669e7e4e84a306c1455d1115f4d368d0cec5bd3242fa86d581fe80"
+      },
+      "stats": {
+        "t": "stat",
+        "time": 30.06,
+        "insns": 159402166,
+        "frames": 0,
+        "behind": 0,
+        "resyncs": 0,
+        "speed": null,
+        "cam": 0,
+        "gpio_in": "1ffbfffffbefe",
+        "mips": 3.946816610562374
+      },
+      "failure": null,
+      "stages": [],
+      "appDirect": false,
+      "stubs": []
+    },
+    {
+      "id": "gpio-readback",
+      "receipt": {
+        "path": "output/official-stopwatch/gpio-readback/receipt.json",
+        "bytes": 1529,
+        "sha256": "1bae44a09d3fd5076c5a60fa5f574d6fc8a3aaae122c126eb0c4293c15178243"
+      },
+      "stats": {
+        "t": "stat",
+        "time": 7.56,
+        "insns": 504972505,
+        "frames": 0,
+        "behind": 0,
+        "resyncs": 0,
+        "speed": null,
+        "cam": 0,
+        "gpio_in": "1ffbffffffefe",
+        "mips": 22.49997993942235
+      },
+      "failure": {
+        "message": "Runtime entered error: {\"code\":\"WORKER_ERROR\",\"message\":\"Worker terminated due to reaching memory limit: JS heap out of memory\"}"
+      },
+      "stages": [],
+      "appDirect": false,
+      "stubs": []
+    },
+    {
+      "id": "interpreter",
+      "receipt": {
+        "path": "output/official-stopwatch/interpreter/receipt.json",
+        "bytes": 1285,
+        "sha256": "4ef520b3bbbb058f5a1afde35572015333a9d730cbd1aea950f58d8197745b28"
+      },
+      "stats": {
+        "t": "stat",
+        "time": 0.74,
+        "insns": 46723981,
+        "frames": 0,
+        "behind": 0,
+        "resyncs": 0,
+        "speed": null,
+        "cam": 0,
+        "gpio_in": "1ffbffffffefe"
+      },
+      "failure": {
+        "message": "Official firmware panicked; see serial.log"
+      },
+      "stages": [],
+      "appDirect": false,
+      "stubs": []
+    },
+    {
+      "id": "mask-drom",
+      "receipt": {
+        "path": "output/official-stopwatch/mask-drom/receipt.json",
+        "bytes": 1259,
+        "sha256": "863b50d94abb56d39d4cce0fd4a6b7e1506505ae35b4170f6ee3cdeb659ceec0"
+      },
+      "stats": {
+        "t": "stat",
+        "time": 8.04,
+        "insns": 104627610,
+        "frames": 17,
+        "behind": 0,
+        "resyncs": 0,
+        "speed": null,
+        "cam": 0,
+        "gpio_in": "1983fffd97efe",
+        "mips": 3.8856887031327263
+      },
+      "failure": null,
+      "stages": [],
+      "appDirect": false,
+      "stubs": []
+    },
+    {
+      "id": "qspi-stream",
+      "receipt": {
+        "path": "output/official-stopwatch/qspi-stream/receipt.json",
+        "bytes": 2726,
+        "sha256": "4e7472373b3fceecbdb67240207f66c077b091364cb94c5c69985326aaddcb97"
+      },
+      "stats": {
+        "t": "stat",
+        "time": 14.5,
+        "insns": 568879835,
+        "frames": 470,
+        "behind": 0,
+        "resyncs": 0,
+        "speed": null,
+        "cam": 0,
+        "gpio_in": "1983fffd97efe",
+        "mips": 34.746539929316384
+      },
+      "failure": null,
+      "stages": [
+        {
+          "name": "boot",
+          "guestSeconds": 4.02,
+          "frameNumber": 5,
+          "nonBlackChannels": 262147,
+          "sha256": "d91784701a1010682c219f6b3f9f068dc3beb89e7d4a1bbf0baad1d63de97d37"
+        },
+        {
+          "name": "menu",
+          "guestSeconds": 6.4,
+          "frameNumber": 27,
+          "nonBlackChannels": 102822,
+          "sha256": "c0799fe2a4baec3a376e8a295e629d34f5100e6cdd203cd4ea3c338c60780582"
+        },
+        {
+          "name": "next",
+          "guestSeconds": 7.54,
+          "frameNumber": 42,
+          "nonBlackChannels": 79864,
+          "sha256": "fdfc850d0a82262864b9fbe01018c6474157551b43f510db471eeab904ec9ace"
+        },
+        {
+          "name": "previous",
+          "guestSeconds": 8.56,
+          "frameNumber": 48,
+          "nonBlackChannels": 79864,
+          "sha256": "db93ac735c2d0df17157968f7e9b8b7e1125b295e41444dc94d4a1bb0521a666"
+        },
+        {
+          "name": "app",
+          "guestSeconds": 10.16,
+          "frameNumber": 56,
+          "nonBlackChannels": 127092,
+          "sha256": "41d8e5813cf94015cb0966edcef714ba7e221fac1c31e25d69fcea5de560b9f3"
+        },
+        {
+          "name": "return-menu",
+          "guestSeconds": 12.54,
+          "frameNumber": 92,
+          "nonBlackChannels": 82434,
+          "sha256": "923e780a0a63fb570db8ce48684432c27ea28754321757042bc2827d07e88bca"
+        },
+        {
+          "name": "battery",
+          "guestSeconds": 14.4,
+          "frameNumber": 136,
+          "nonBlackChannels": 102822,
+          "sha256": "c0799fe2a4baec3a376e8a295e629d34f5100e6cdd203cd4ea3c338c60780582"
+        }
+      ],
+      "appDirect": false,
+      "stubs": [],
+      "visualReview": "Real PNGs inspected: official guide/menus/app/battery; controls additionally Stopwatch start, lap, pause, reset."
+    },
+    {
+      "id": "controls",
+      "receipt": {
+        "path": "output/official-stopwatch/controls/receipt.json",
+        "bytes": 4038,
+        "sha256": "dc8c149afbd7f1b72cdfa0ed6922f7dfbe50cb000e3b8446947be379e382d078"
+      },
+      "stats": {
+        "t": "stat",
+        "time": 30.86,
+        "insns": 1216575528,
+        "frames": 1058,
+        "behind": 0,
+        "resyncs": 0,
+        "speed": null,
+        "cam": 0,
+        "gpio_in": "1983fffd97efe",
+        "mips": 23.470568456598524
+      },
+      "failure": null,
+      "stages": [
+        {
+          "name": "boot",
+          "guestSeconds": 4.04,
+          "frameNumber": 5,
+          "nonBlackChannels": 262147,
+          "sha256": "d91784701a1010682c219f6b3f9f068dc3beb89e7d4a1bbf0baad1d63de97d37"
+        },
+        {
+          "name": "menu",
+          "guestSeconds": 7.2,
+          "frameNumber": 35,
+          "nonBlackChannels": 102822,
+          "sha256": "c0799fe2a4baec3a376e8a295e629d34f5100e6cdd203cd4ea3c338c60780582"
+        },
+        {
+          "name": "next",
+          "guestSeconds": 9.02,
+          "frameNumber": 42,
+          "nonBlackChannels": 79864,
+          "sha256": "db93ac735c2d0df17157968f7e9b8b7e1125b295e41444dc94d4a1bb0521a666"
+        },
+        {
+          "name": "previous",
+          "guestSeconds": 10.76,
+          "frameNumber": 72,
+          "nonBlackChannels": 82434,
+          "sha256": "923e780a0a63fb570db8ce48684432c27ea28754321757042bc2827d07e88bca"
+        },
+        {
+          "name": "app",
+          "guestSeconds": 11.98,
+          "frameNumber": 79,
+          "nonBlackChannels": 127092,
+          "sha256": "41d8e5813cf94015cb0966edcef714ba7e221fac1c31e25d69fcea5de560b9f3"
+        },
+        {
+          "name": "return-menu",
+          "guestSeconds": 15.02,
+          "frameNumber": 138,
+          "nonBlackChannels": 82434,
+          "sha256": "923e780a0a63fb570db8ce48684432c27ea28754321757042bc2827d07e88bca"
+        },
+        {
+          "name": "battery",
+          "guestSeconds": 17.52,
+          "frameNumber": 198,
+          "nonBlackChannels": 102822,
+          "sha256": "c0799fe2a4baec3a376e8a295e629d34f5100e6cdd203cd4ea3c338c60780582"
+        },
+        {
+          "name": "stopwatch-menu",
+          "guestSeconds": 21.02,
+          "frameNumber": 242,
+          "nonBlackChannels": 95127,
+          "sha256": "6263639f45e513ea9190854b9b378002b638028a4959de596eb97e5969f558d9"
+        },
+        {
+          "name": "stopwatch-idle",
+          "guestSeconds": 22.26,
+          "frameNumber": 251,
+          "nonBlackChannels": 481262,
+          "sha256": "2e1837df7764a8b62ca7273535bb43275f75f23aa690e520f286a1b828f47ccd"
+        },
+        {
+          "name": "stopwatch-running",
+          "guestSeconds": 25.32,
+          "frameNumber": 292,
+          "nonBlackChannels": 481262,
+          "sha256": "d9fff905c8dda647c9af63e851a8b55e69519abf8a2287dff9dcfdfe62c46efb"
+        },
+        {
+          "name": "stopwatch-lap",
+          "guestSeconds": 27.34,
+          "frameNumber": 324,
+          "nonBlackChannels": 481262,
+          "sha256": "eabf8fb48f104ce960eb7175a360b3f7ac77e284f432b01b6986602f854ec8c6"
+        },
+        {
+          "name": "stopwatch-paused",
+          "guestSeconds": 29.12,
+          "frameNumber": 337,
+          "nonBlackChannels": 481262,
+          "sha256": "a51d1b4705ab44f7f0f9ec1b3be2ef447bf69376c774667531e837824bd27575"
+        },
+        {
+          "name": "stopwatch-reset",
+          "guestSeconds": 30.86,
+          "frameNumber": 352,
+          "nonBlackChannels": 481262,
+          "sha256": "2e1837df7764a8b62ca7273535bb43275f75f23aa690e520f286a1b828f47ccd"
+        }
+      ],
+      "appDirect": false,
+      "stubs": [],
+      "visualReview": "Real PNGs inspected: official guide/menus/app/battery; controls additionally Stopwatch start, lap, pause, reset.",
+      "resetMatchesInitialFrame": true
+    },
+    {
+      "id": "final",
+      "receipt": {
+        "path": "output/official-stopwatch/final/receipt.json",
+        "bytes": 14092,
+        "sha256": "6d76667b54542a54290ff76e160d2f0617a8a6520e6a7b666bccbd257a4caee6"
+      },
+      "stats": {
+        "t": "stat",
+        "time": 49.98,
+        "insns": 1626902894,
+        "frames": 1302,
+        "behind": 0,
+        "resyncs": 0,
+        "speed": null,
+        "cam": 0,
+        "gpio_in": "1983fffd97efe",
+        "mips": 12.583704096492905
+      },
+      "failure": {
+        "message": "Touch did not enter the official Stopwatch application"
+      },
+      "stages": [
+        {
+          "name": "boot",
+          "guestSeconds": 4.02,
+          "frameNumber": 3,
+          "nonBlackChannels": 262147,
+          "sha256": "d91784701a1010682c219f6b3f9f068dc3beb89e7d4a1bbf0baad1d63de97d37",
+          "timerHash": "ef4b95ebd8723e774a89c38df17a05c14830a41dfe35a0727ab8799d67075ba5",
+          "menuIconHash": "61460c689ad349b93d988b5237b47d4d56fda69ce3720883ff45caaf3b6e2fa8",
+          "lapsHash": "9107ea7d00a5e3eeae86d5f664aba6169d756ba6ad78f94b2a37209a719f679e"
+        },
+        {
+          "name": "menu",
+          "guestSeconds": 7.38,
+          "frameNumber": 29,
+          "nonBlackChannels": 102822,
+          "sha256": "c0799fe2a4baec3a376e8a295e629d34f5100e6cdd203cd4ea3c338c60780582",
+          "timerHash": "a074574a176a91845a88e9b633986f774135ee30f61af448498e631d5366d68c",
+          "menuIconHash": "80159fcbff31625a3f0fa3fd78bfa511614cf9c0d84315b822451abe8d7fb86b",
+          "lapsHash": "4087c4a91581af680d620b47a7c47cf764443a901e8623495f20f358f8d66b77"
+        },
+        {
+          "name": "next",
+          "guestSeconds": 10.26,
+          "frameNumber": 56,
+          "nonBlackChannels": 82434,
+          "sha256": "923e780a0a63fb570db8ce48684432c27ea28754321757042bc2827d07e88bca",
+          "timerHash": "a074574a176a91845a88e9b633986f774135ee30f61af448498e631d5366d68c",
+          "menuIconHash": "80159fcbff31625a3f0fa3fd78bfa511614cf9c0d84315b822451abe8d7fb86b",
+          "lapsHash": "4087c4a91581af680d620b47a7c47cf764443a901e8623495f20f358f8d66b77"
+        },
+        {
+          "name": "previous",
+          "guestSeconds": 18.18,
+          "frameNumber": 81,
+          "nonBlackChannels": 82434,
+          "sha256": "923e780a0a63fb570db8ce48684432c27ea28754321757042bc2827d07e88bca",
+          "timerHash": "a074574a176a91845a88e9b633986f774135ee30f61af448498e631d5366d68c",
+          "menuIconHash": "80159fcbff31625a3f0fa3fd78bfa511614cf9c0d84315b822451abe8d7fb86b",
+          "lapsHash": "4087c4a91581af680d620b47a7c47cf764443a901e8623495f20f358f8d66b77"
+        },
+        {
+          "name": "app",
+          "guestSeconds": 37.04,
+          "frameNumber": 87,
+          "nonBlackChannels": 127092,
+          "sha256": "41d8e5813cf94015cb0966edcef714ba7e221fac1c31e25d69fcea5de560b9f3",
+          "timerHash": "15ad572b190f25b7f4e255ba2d0620a0cfb81187fe3e131a5aaf499283bdce5c",
+          "menuIconHash": "5c0d491435c161c0529fdfe5d0276b38cf9616f222c1a85661968accebd693eb",
+          "lapsHash": "b22685e840b735302ad8690006da492404433d422a2b369cd70b6d4ed2e2f6da"
+        },
+        {
+          "name": "return-menu",
+          "guestSeconds": 41.7,
+          "frameNumber": 130,
+          "nonBlackChannels": 82434,
+          "sha256": "923e780a0a63fb570db8ce48684432c27ea28754321757042bc2827d07e88bca",
+          "timerHash": "a074574a176a91845a88e9b633986f774135ee30f61af448498e631d5366d68c",
+          "menuIconHash": "80159fcbff31625a3f0fa3fd78bfa511614cf9c0d84315b822451abe8d7fb86b",
+          "lapsHash": "4087c4a91581af680d620b47a7c47cf764443a901e8623495f20f358f8d66b77"
+        },
+        {
+          "name": "battery",
+          "guestSeconds": 44.5,
+          "frameNumber": 176,
+          "nonBlackChannels": 102822,
+          "sha256": "c0799fe2a4baec3a376e8a295e629d34f5100e6cdd203cd4ea3c338c60780582",
+          "timerHash": "a074574a176a91845a88e9b633986f774135ee30f61af448498e631d5366d68c",
+          "menuIconHash": "80159fcbff31625a3f0fa3fd78bfa511614cf9c0d84315b822451abe8d7fb86b",
+          "lapsHash": "4087c4a91581af680d620b47a7c47cf764443a901e8623495f20f358f8d66b77"
+        },
+        {
+          "name": "stopwatch-menu",
+          "guestSeconds": 48.68,
+          "frameNumber": 237,
+          "nonBlackChannels": 100252,
+          "sha256": "d76868d8d86352dd5e47b08cea4805ffeed11e8e8ba9eb72347c2ef64f710280",
+          "timerHash": "652dbaa7414f61b518f802cf224e9520a3490f47dfe4d20f60859ffe9b1e82c5",
+          "menuIconHash": "d79689ae2aa453ebec38869df17c83a393aef5b26bcfe33ade55e50d1d0b6ebd",
+          "lapsHash": "9b591757b342d84abe972224b89859eaedc6a519cb73bd9d04601726f7d144b3"
+        },
+        {
+          "name": "stopwatch-idle",
+          "guestSeconds": 49.96,
+          "frameNumber": 248,
+          "nonBlackChannels": 311309,
+          "sha256": "221ad4704330422d40b8d133f74d6412b2cd740633fde4c95fbb70fdd6424ef5",
+          "timerHash": "e548de9379eda16d444cc2b975d27806508193cdfebd2a7c003c5e2a3ef2807c",
+          "menuIconHash": "88eca562fc5802197b1241230ef3c620de2ded37f71b7bcd315143aa54267f7b",
+          "lapsHash": "8a5284b12fadcfea77313fc40852a1befedd25480a722784f8681b7aab6f7151"
+        }
+      ],
+      "appDirect": false,
+      "stubs": []
+    },
+    {
+      "id": "verified-controls",
+      "receipt": {
+        "path": "output/official-stopwatch/verified-controls/receipt.json",
+        "bytes": 4328,
+        "sha256": "fe7c40f84f227468408b1484171f37dc2abcbec337cbd4186cc1860347edbdb1"
+      },
+      "stats": {
+        "t": "stat",
+        "time": 8,
+        "insns": 244901885,
+        "frames": 139,
+        "behind": 0,
+        "resyncs": 0,
+        "speed": null,
+        "cam": 0,
+        "gpio_in": "1983fffd97efc",
+        "mips": 31.76246496084032
+      },
+      "failure": {
+        "message": "Host overloaded: short press lasted 0.826 guest seconds"
+      },
+      "stages": [
+        {
+          "name": "boot",
+          "guestSeconds": 4,
+          "frameNumber": 4,
+          "nonBlackChannels": 262147,
+          "sha256": "d91784701a1010682c219f6b3f9f068dc3beb89e7d4a1bbf0baad1d63de97d37",
+          "bodyHash": "2a2bdf5b579ab77a7c7ff92ed2c87a489e7950b5cb2efb3a64d35eee7c3a8987",
+          "timerHash": "ef4b95ebd8723e774a89c38df17a05c14830a41dfe35a0727ab8799d67075ba5",
+          "menuIconHash": "61460c689ad349b93d988b5237b47d4d56fda69ce3720883ff45caaf3b6e2fa8",
+          "lapsHash": "9107ea7d00a5e3eeae86d5f664aba6169d756ba6ad78f94b2a37209a719f679e"
+        },
+        {
+          "name": "menu",
+          "guestSeconds": 7.14,
+          "frameNumber": 41,
+          "nonBlackChannels": 102822,
+          "sha256": "c0799fe2a4baec3a376e8a295e629d34f5100e6cdd203cd4ea3c338c60780582",
+          "bodyHash": "cb7ca100a5f1753a21b257d94ca1a6a4224760e43c23d31b2dff8bc5d779453c",
+          "timerHash": "a074574a176a91845a88e9b633986f774135ee30f61af448498e631d5366d68c",
+          "menuIconHash": "80159fcbff31625a3f0fa3fd78bfa511614cf9c0d84315b822451abe8d7fb86b",
+          "lapsHash": "4087c4a91581af680d620b47a7c47cf764443a901e8623495f20f358f8d66b77"
+        }
+      ],
+      "appDirect": false,
+      "stubs": [],
+      "buttonIntervals": [
+        {
+          "id": "button-a",
+          "down": 4.0271098,
+          "up": 5.6337195875
+        },
+        {
+          "id": "button-b",
+          "down": 4.027792008333333,
+          "up": 5.635359104166667
+        },
+        {
+          "id": "button-b",
+          "down": 7.186780679166667,
+          "up": 8.0132437625
+        }
+      ]
+    },
+    {
+      "id": "clock-controls",
+      "receipt": {
+        "path": "output/official-stopwatch/clock-controls/receipt.json",
+        "bytes": 4311,
+        "sha256": "e4e11a61b00c58d141c9e0dc0fa2daf1b88c7ce426a481be7da527817cc76437"
+      },
+      "stats": {
+        "t": "stat",
+        "time": 7.82,
+        "insns": 241190791,
+        "frames": 136,
+        "behind": 0,
+        "resyncs": 0,
+        "speed": null,
+        "cam": 0,
+        "gpio_in": "1983fffd97efc",
+        "mips": 34.023480761204496
+      },
+      "failure": {
+        "message": "Host overloaded: short press lasted 0.693 guest seconds"
+      },
+      "stages": [
+        {
+          "name": "boot",
+          "guestSeconds": 4,
+          "frameNumber": 4,
+          "nonBlackChannels": 262147,
+          "sha256": "d91784701a1010682c219f6b3f9f068dc3beb89e7d4a1bbf0baad1d63de97d37",
+          "bodyHash": "2a2bdf5b579ab77a7c7ff92ed2c87a489e7950b5cb2efb3a64d35eee7c3a8987",
+          "timerHash": "ef4b95ebd8723e774a89c38df17a05c14830a41dfe35a0727ab8799d67075ba5",
+          "menuIconHash": "61460c689ad349b93d988b5237b47d4d56fda69ce3720883ff45caaf3b6e2fa8",
+          "lapsHash": "9107ea7d00a5e3eeae86d5f664aba6169d756ba6ad78f94b2a37209a719f679e"
+        },
+        {
+          "name": "menu",
+          "guestSeconds": 7.1,
+          "frameNumber": 28,
+          "nonBlackChannels": 102822,
+          "sha256": "c0799fe2a4baec3a376e8a295e629d34f5100e6cdd203cd4ea3c338c60780582",
+          "bodyHash": "cb7ca100a5f1753a21b257d94ca1a6a4224760e43c23d31b2dff8bc5d779453c",
+          "timerHash": "a074574a176a91845a88e9b633986f774135ee30f61af448498e631d5366d68c",
+          "menuIconHash": "80159fcbff31625a3f0fa3fd78bfa511614cf9c0d84315b822451abe8d7fb86b",
+          "lapsHash": "4087c4a91581af680d620b47a7c47cf764443a901e8623495f20f358f8d66b77"
+        }
+      ],
+      "appDirect": false,
+      "stubs": [],
+      "buttonIntervals": [
+        {
+          "id": "button-a",
+          "down": 4.01624445,
+          "up": 5.6161362
+        },
+        {
+          "id": "button-b",
+          "down": 4.01624445,
+          "up": 5.6161362
+        },
+        {
+          "id": "button-b",
+          "down": 7.1337447,
+          "up": 7.827066120833333
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "rustc": "1.99.1 (58cf8f9c3 2026-10-13)",
+    "clippyWorkspace": "passed -D warnings",
+    "clippyWasmJitTests": "passed -D warnings",
+    "workspaceTests": {
+      "passed": 1325,
+      "failed": 0,
+      "ignored": 0,
+      "flags": "--release --workspace -- --include-ignored --skip external_",
+      "rawLog": {
+        "path": "output/official-stopwatch/workspace-tests.log",
+        "bytes": 147791,
+        "sha256": "d422e6edc95dce0a85d660ecccc9592556bb6e3495253dbaf8a31bdc4dac984c"
+      }
+    },
+    "runtimeSuite": "passed real WASM: framebuffer/buttons/touch/GPS/lifecycle/cancellation/delayed stats",
+    "flasherWatchlistSuites": "passed; hardware mocked only",
+    "officialVisualSequence": "passed controls run",
+    "strictShortPressProbe": "failed: observed release overrun beyond official 500 ms hold threshold; exact host-input timing remains unsupported",
+    "hardwareValidated": false,
+    "goldensRegenerated": false,
+    "inputOverrunCause": "Not established; isolated run also failed. Receipts measure queue clocks, not firmware consumption."
+  },
+  "curation": {
+    "omitted": "Raw serial, full input arrays, frame pixels/screenshots remain in ignored output; compact stage hashes and failed input intervals retained.",
+    "privacy": "No physical hardware, personal identifiers or remote firmware file retained; local user paths omitted."
+  }
+}

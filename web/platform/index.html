@@ -16,33 +16,34 @@
   </header>
   <main class="workbench">
     <aside class="configuration panel" aria-label="设备与固件配置">
-      <div class="panel-heading"><span class="eyebrow">01 / CONFIGURE</span><h1>搭建你的设备</h1></div>
+      <div class="panel-heading"><span class="eyebrow">01 / CONFIGURE</span><h1>选择你的设备</h1></div>
       <section class="panel-section">
         <label class="field-label" for="product-select">产品 <span id="product-count" class="muted"></span></label>
         <select id="product-select" disabled><option>正在读取产品库…</option></select>
         <div class="product-identity"><div id="product-symbol" class="product-symbol" aria-hidden="true">◉</div><div><strong id="product-name">加载中</strong><span id="product-model" class="muted"></span></div></div>
         <dl id="product-specs" class="spec-list"></dl>
-        <div id="compatibility" class="notice" role="status"></div>
-        <a id="product-source" class="text-link" target="_blank" rel="noopener noreferrer" hidden>查看产品资料 ↗</a>
+        <div id="compatibility" class="hint-list" role="group" aria-label="设备模拟说明"></div>
+        <a id="product-source" class="text-link" target="_blank" rel="noopener noreferrer" hidden>官网网址 ↗</a>
         <div id="product-knowledge"></div>
       </section>
       <section class="panel-section firmware-section">
         <div class="section-label"><h2>固件</h2><span class="small-label">在浏览器中加载</span></div>
         <div class="segmented" role="group" aria-label="固件来源"><button class="active" data-firmware-tab="library" aria-pressed="true">固件库</button><button data-firmware-tab="remote" aria-pressed="false">远程地址</button><button data-firmware-tab="local" aria-pressed="false">本地文件</button></div>
-        <div id="firmware-library" class="firmware-tab"><label class="sr-only" for="firmware-select">选择固件</label><select id="firmware-select"><option value="">选择适配固件</option></select><p id="firmware-note" class="helper"></p><button id="run-demo" class="button inline-button">运行 ESP32-S3 Hello World <span aria-hidden="true">↗</span></button></div>
+        <div id="firmware-library" class="firmware-tab"><label class="sr-only" for="firmware-select">选择固件</label><select id="firmware-select"><option value="">选择适配固件</option></select><div id="firmware-note" class="hint-list" role="group" aria-label="固件验证说明"></div><div id="firmware-updates"></div></div>
         <div id="firmware-remote" class="firmware-tab" hidden><label class="field-label" for="firmware-kind">地址类型</label><select id="firmware-kind"><option value="manifest">固件清单（JSON manifest）</option><option value="merged">完整 Flash 镜像（merged .bin）</option></select><label class="field-label" for="firmware-url">HTTPS 地址</label><input id="firmware-url" type="url" placeholder="https://example.com/firmware.json" spellcheck="false"><label class="field-label" for="firmware-sha">SHA-256 <span class="muted">可选</span></label><input id="firmware-sha" placeholder="校验下载内容" spellcheck="false"><p class="helper">远程服务器需允许 CORS。单独的 app.bin 请通过包含启动镜像的清单加载。</p></div>
-        <div id="firmware-local" class="firmware-tab" hidden><label class="upload-area" for="firmware-file"><span aria-hidden="true">↑</span><strong>选择完整 Flash 镜像</strong><span id="local-file-name">merged .bin · 文件留在本机</span><input id="firmware-file" type="file" accept=".bin,application/octet-stream"></label><p class="helper">本地文件不会上传。分享链接仅包含配置，接收者需要自行选择相同文件。</p></div>
-        <button id="load-firmware" class="button primary wide">加载固件</button>
-        <p id="load-status" class="helper" aria-live="polite">先选择产品与固件，再启动模拟。</p>
+        <div id="firmware-local" class="firmware-tab" hidden><label class="upload-area" for="firmware-file"><span aria-hidden="true">↑</span><strong>选择镜像或构建文件</strong><span id="local-file-name">merged .bin、应用 .bin 或 flasher_args.json</span><input id="firmware-file" type="file" accept=".bin,.json,application/octet-stream" multiple></label><label class="button quiet" for="firmware-folder">选择整个构建目录<input id="firmware-folder" class="sr-only" type="file" webkitdirectory multiple></label><button id="clear-local-files" type="button" class="button quiet tiny">清空文件</button><p id="local-build-status" class="helper" role="status">完整镜像可直接加载；应用镜像需要 flasher_args.json 和其中列出的文件。</p><p class="helper">所有文件仅在当前浏览器读取，不会上传。分享时接收者需自行选择相同文件。</p></div>
+        <div id="firmware-run-boundary" class="notice firmware-run-boundary" role="status" hidden></div>
+        <button id="load-firmware" class="button primary wide">下载并运行</button>
+        <button id="clear-firmware-cache" type="button" class="button quiet tiny cache-clear">清除固件缓存</button>
+        <p id="load-status" class="sr-only" aria-live="polite" aria-atomic="true">先选择产品与固件，再启动模拟。</p>
         <a id="firmware-issue" class="text-link" target="_blank" rel="noopener noreferrer" hidden>打开 issue 草稿 ↗</a>
-        <div id="firmware-watchlist"></div>
       </section>
       <section class="panel-section keyboard-section"><div class="section-label"><h2>键盘映射</h2><label class="switch-label"><input id="keyboard-enabled" type="checkbox" checked> 启用</label></div><div id="key-bindings" class="key-bindings"></div><p class="helper">点击映射框后按下键盘按键。输入文字时不会触发设备。短按至少保持 150ms 宿主机时间，不代表周期精确输入。</p></section>
       <footer class="panel-footer"><a href="https://github.com/zhuzhe1983/esp-online-tester" target="_blank" rel="noopener noreferrer">GitHub ↗</a><span>Powered by esp32sim</span></footer>
     </aside>
     <section class="workspace" aria-label="设备模拟器">
       <div class="workspace-toolbar"><div class="workspace-title"><span class="eyebrow">02 / PLAY</span><strong id="stage-title">设备预览</strong></div><div class="view-controls"><div class="segmented compact" role="group" aria-label="显示模式"><button id="view-3d" class="active" aria-pressed="true">3D</button><button id="view-2d" aria-pressed="false">2D</button></div><button id="reset-view" class="icon-button" title="恢复视角" aria-label="恢复视角">⌖</button><button id="fullscreen" class="icon-button" title="全屏" aria-label="全屏显示模拟器">⛶</button></div></div>
-      <div id="device-stage" class="device-stage"><div class="stage-grid" aria-hidden="true"></div><div id="scene-mount" class="scene-mount"></div><div class="stage-topline"><span id="runtime-badge" class="runtime-badge"><span></span>未启动</span><span id="runtime-speed" class="small-label"></span></div><div id="screen-empty" class="screen-empty"><strong id="empty-title">让真实固件点亮屏幕</strong><span id="empty-description">选择固件后，在本地 WebAssembly 中运行。</span></div><div class="stage-caption"><span id="stage-gesture">拖动外壳旋转 · 滚轮缩放 · 点击屏幕交互</span><span id="model-origin" class="small-label">示意外壳 · 实际帧缓冲</span></div></div>
+      <div id="device-stage" class="device-stage"><div class="stage-grid" aria-hidden="true"></div><div id="scene-mount" class="scene-mount"></div><div class="stage-topline"><span id="runtime-badge" class="runtime-badge"><span></span>未启动</span><span id="runtime-speed" class="small-label"></span></div><div id="screen-empty" class="screen-empty"><strong id="empty-title">让真实固件点亮屏幕</strong><span id="empty-description">选择固件后，在本地 WebAssembly 中运行。</span></div><div class="stage-caption"><span id="stage-gesture">拖动模型旋转 · 滚轮缩放</span><span id="model-origin" class="small-label">示意外壳 · 实际帧缓冲</span></div></div>
       <div class="transport"><div class="transport-main"><button id="start-runtime" class="button primary" disabled><span aria-hidden="true">▶</span> 启动</button><button id="pause-runtime" class="button" disabled><span aria-hidden="true">Ⅱ</span> 暂停</button><button id="reset-runtime" class="button quiet" disabled>↻ 重启</button></div><div id="device-buttons" class="device-buttons"></div><button id="capture-frame" class="icon-button" title="保存真实屏幕截图" aria-label="保存真实屏幕截图" disabled>▣</button></div>
       <div id="session-tools-mount"></div>
       <section class="console-panel" aria-label="运行输出"><div class="console-header"><h2><span class="console-indicator"></span>串口与事件</h2><div><span id="frame-count" class="small-label">0 帧</span><button id="clear-console" class="button quiet tiny">清空</button></div></div><pre id="serial-output" class="serial-output" tabindex="0" aria-label="串口日志">ESP Workbench 已准备好。固件在当前浏览器中执行。

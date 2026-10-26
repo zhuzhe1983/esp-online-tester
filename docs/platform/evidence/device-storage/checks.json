@@ -1,0 +1,58 @@
+{
+  "checkedAt": "2026-10-26T18:45:10.726668+00:00",
+  "baseRevision": "9e48897cf6d043b04cbf243e6d71993a69961675",
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13), rustup update stable unchanged",
+  "checks": [
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<rom-directory> cargo test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "passed": 1329
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/platform-runtime-test.mjs",
+      "result": "pass"
+    },
+    {
+      "command": "node --test tools/platform-device-storage-test.mjs tools/worker-channel-test.mjs tools/platform-local-firmware-test.mjs tools/platform-flasher-test.mjs tools/platform-recording-test.mjs",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass; tracked docs/evidence scope only, new device-storage receipts also manually reviewed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    }
+  ],
+  "files": {
+    "wasm/src/storage.rs": "49fed766ff52b6997fc1e7c4af0d7b127e139b297bdd424a1ab55d6f5525e2d9",
+    "wasm/src/machine.rs": "ec18467c7f02756ba593aef53434a19a4132a750322c8b94506ac71e0cfc324c",
+    "wasm/src/lib.rs": "14fc4ce2e8289b73decec4e0aebd69723c4c7f6e2a363a7d120b5fb75d163359",
+    "web/wasm/worker.js": "0a94fd6f9c245191846924835d4b1009bbeb7941dedf72c127bd2cb0330a1add",
+    "web/platform/device-storage.js": "672ca6716c70001ecf40d215b33e2881b62c32a275e7d7ffcb2ce4f6ad9ae7d9",
+    "web/platform/runtime.js": "b7a9d6809dbad3e6009d779406c993c84bc546cb5ce18177496e9fb67abbd577",
+    "web/platform/automation.js": "8689c4525d7375a00508ee5d7d5a439204a70399d59421875e6f5b2a4742c917"
+  },
+  "limits": [
+    "No changes to native guest instruction/tick paths; native throughput comparison not required for the read-only host ABI.",
+    "Private application pause timeout retained as a separate compatibility limitation.",
+    "Browser data durability still depends on IndexedDB availability, browser storage policy and successful flush."
+  ]
+}

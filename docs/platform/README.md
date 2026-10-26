@@ -8,21 +8,25 @@ The product is the unit of configuration: chip, memory, display, controls, conne
 
 [Workbench](https://zhuzhe1983.github.io/esp-online-tester/platform/) · [Standalone player](https://zhuzhe1983.github.io/esp-online-tester/platform/embed.html) · [Parent-page integration example](https://zhuzhe1983.github.io/esp-online-tester/platform/integration.html)
 
-The default StopWatch diagnostic can be started immediately. A starts/pauses its clock, B resets it, and a touch is reported on the serial console. Add either GPS Unit revision and inject a position; the firmware echoes the generated NMEA and increments its received-line counter. This demonstrates a complete browser→UART→firmware→framebuffer path. It is not M5Stack's factory firmware or a satellite receiver model.
+StopWatch defaults to M5Stack's official User Demo V0.5, downloaded directly from its CORS-enabled M5Burner CDN with a pinned SHA-256. Hold A+B together to open the menu, use A/B to choose a feature, then tap its icon. In Stopwatch, B starts/stops and A records a lap while running or resets while stopped. The original official binary runs through ROM and bootloader without app-direct mode or stubs; RTC, IMU, full audio and physical power behavior remain limited, and no hardware flash validation is claimed.
+
+The public catalog contains all 83 ESP32 controller SKU/revision entries from the audited M5_Hardware Products inventory, ordered by each directory's latest commit, not product release date. Source-backed models retain measured deviations; Faces Kit has metadata only because no usable manufacturer 3D source was found. Imported products remain unavailable for execution until individually verified. StopWatch offers its official firmware only. GPS injection is covered by internal repository test firmware, not by the official demo. Hello and StopWatch diagnostics are test fixtures rather than public product entries. The StopWatch diagnostic manifest and binary files are explicitly excluded from the Pages artifact.
 
 ## Current scope
 
 | Area | Implemented | Boundary |
 | --- | --- | --- |
 | StopWatch | ESP32-S3 execution, CO5300 display, power controllers, buttons, CST820 touch | Partial upstream board model; arbitrary product firmware is not guaranteed |
-| PaperMono | Product metadata, interfaces, simple 3D preview, scene configuration | SSD1677/FT6336G board model not implemented; execution rejected |
+| PaperMono / Lite | Official 1.2.0 boots to real 480×800 EPD framebuffer; A/B brightness and FT6336G touch verified; manufacturer CAD | Partial: official app currently identifies Lite; NFC/LoRa/TF, RTC timekeeping, IMU initialization, audio and deep sleep remain unsupported or unverified |
+| Cardputer-Adv | Official v0.3 ROM boot, ST7789 display and TCA8418 keyboard; 56 individual CAD keys, host mapping and menu navigation | Partial: menu entries do not establish audio, storage, radio or other app compatibility; no physical hardware comparison |
+| Cardputer / v1.1 | Official v1.1 ROM boot, ST7789 display and 74HC138 GPIO keyboard; Enter and launcher navigation | Separate original board implementation; audio, SD, radios/HID, IR applications and power remain unverified |
 | GPS U032 / U032-V11 | Separate revision records, parameter configuration, checksummed RMC/GGA into UART1 | Logical input; bypasses physical pins, power, baud timing and RF |
-| Firmware | Manifest, remote merged BIN, local merged BIN, SHA-256 receipts | Remote server must allow CORS; separate app binaries need a complete manifest |
-| Playback | 3D/2D display, rotate/zoom, buttons/touch, keyboard mapping, pause/resume/reset, frame capture | StopWatch uses manufacturer CAD with a sourced photo texture; other cases are illustrative; host input is not cycle-exact |
+| Firmware | Manifest, remote/local merged BIN, local flasher_args.json build segments, SHA-256 receipts | Remote server must allow CORS; local app binaries need their build layout and companion files |
+| Playback | 3D/2D display, rotate/zoom, buttons/touch, keyboard mapping, pause/resume/reset, frame capture | Source-backed models retain per-product partial status and verification reports; host input is not cycle-exact |
 | Catalogs / DIY | Product/accessory/firmware JSON, schemas, semantic validation, private local definitions, import/export | Arbitrary new electrical models require Rust implementation; custom JSON does not execute scripts |
 | Sharing / embedding | Portable URL fragment, independent player, fullscreen, origin/session-bound RPC | Local firmware bytes must be supplied separately; very large scenes should use JSON export |
 | Product knowledge | Source-linked facts, datasheets, revisions and per-source UTC/hash records; static JSON index | Unknown hardware revision remains explicit; metadata does not imply runtime support |
-| Recordings | Reset-based button/touch capture, share URL, manual replay/takeover, artifact hash and timing/frame receipts | 120 guest seconds / 500 events / 32 KiB; no camera, serial, GPS or hardware flashing; replay is not cycle-exact |
+| Recordings | Reset-based button/matrix-key/touch capture, share URL, manual replay/takeover, artifact hash and timing/frame receipts | Pristine device storage required; 120 guest seconds / 500 events / 32 KiB; no camera, serial, GPS or hardware flashing; replay is not cycle-exact |
 | Watchlist / flashing | Categorized official release sources, remote-only downloads, broken-link issue drafts, Web Serial in workbench and mini | User gesture and port selection required; secured devices and unverified watchlist artifacts rejected; no physical flash test yet |
 | Agents | `window.espTester` v1, observable state, per-port logs, bounded waits and a skill | A queued input is not proof of firmware consumption |
 
@@ -59,7 +63,7 @@ python3 -m http.server 8080 --directory web
 
 Open `http://localhost:8080/platform/`. Use HTTP serving rather than `file://`; modules, workers and resource loading need a normal web origin. There is no frontend dependency installation or bundler.
 
-The checked-in StopWatch binaries come from [the public diagnostic source](../../examples/platform-stopwatch/README.md). ROM files are fetched from Espressif by the existing asset script and checked against pinned hashes. CI builds the emulator, checks the platform and publishes `web/` to Pages. The root redirects to `platform/`; deployment works under the repository's Pages subpath.
+The repository-only StopWatch test binaries come from [the diagnostic source](../../examples/platform-stopwatch/README.md). ROM files are fetched from Espressif by the existing asset script and checked against pinned hashes. CI builds the emulator, checks the platform, then stages a public copy of `web/` with `tools/stage-platform-pages.mjs`, excluding the internal StopWatch diagnostic manifest and binaries before publishing to Pages. The root redirects to `platform/`; deployment works under the repository's Pages subpath.
 
 ## Firmware manifests
 
@@ -103,12 +107,24 @@ node tools/check-evidence-privacy.mjs
 
 The platform runtime test boots the actual worker/WASM with both Hello and StopWatch firmware. It checks pause/resume, stale callbacks, reset, display pixels, GPIO buttons, touch, complete GPS sentences, hash mismatches, local merged image loading and disposal. It does not replace browser rendering or physical hardware testing. Core changes also require the full Rust checks in `CONTRIBUTING.md`.
 
-See [catalog contributions](contributing.md), the [onboarding skill](../../skills/esp-product-onboarding/SKILL.md), and [StopWatch model provenance and measured comparisons](stopwatch-model.md). Next hardware work is a PaperMono board implementation and comparison against the owner's actual StopWatch, PaperMono and GPS hardware. The original research is preserved under `research/` as historical planning; it is not the current API contract.
+See [catalog contributions](contributing.md), the [onboarding skill](../../skills/esp-product-onboarding/SKILL.md), and [StopWatch model provenance and measured comparisons](stopwatch-model.md). See [PaperMono runtime evidence](papermono-runtime.md) and [Cardputer-Adv runtime evidence](cardputer-adv-runtime.md) for their verified subsets. Other imported products still need their own board/peripheral adaptation and comparison with physical hardware. The original research is preserved under `research/` as historical planning; it is not the current API contract.
+
+The **外壳** menu changes shell color, opacity and eight material finishes without resetting firmware. Black/purple translucent and gold presets work in the standalone player and share links. The blank `pcb-main` model marked `UNKNOWN` is an estimated placeholder; manufacturer PCB geometry has not been located in the audited sources. See the [exploded-view plan and PCB source audit](exploded-view-plan.md) and [M5_Hardware inventory](research/m5-hardware-inventory-2026-10-26.md). Exploded animation is planned, not yet exposed by the viewer.
 
 ## Recording, remote updates and hardware flashing
 
 Click **重启并录制**, operate the buttons or touchscreen, then **停止** and **分享场景**. The URL carries the scene and a semantic recording. The receiver explicitly starts replay; manual input takes over. Long links can be exported as a JSON bundle. Local firmware bytes cannot be recorded into a shareable URL; use a remotely readable, pinned source. Replay checks artifact hashes, preserves input intervals in guest time, and reports timing deviations and final framebuffer equality. Equal pixels alone are not proof that every intended behavior occurred.
 
-The firmware watchlist is metadata-only: `node tools/check-firmware-watchlist.mjs --output target/firmware-watchlist-check.json` checks official releases and link status without mirroring binaries. The website distinguishes HTTP 404/410 from CORS/network errors and opens an issue draft for the user. Third-party artifacts are fetched into memory with `cache: no-store`. Existing upstream and first-party diagnostic fixtures retain their original purposes.
+The firmware watchlist is metadata-only: `tools/sync-firmware-release-metadata.mjs` updates the static release snapshot using an authenticated daily Action. Browser checks read that snapshot and probe asset links without calling GitHub’s anonymous release API. `node tools/check-firmware-watchlist.mjs --output target/firmware-watchlist-check.json` audits the snapshot and link status without mirroring binaries. The website distinguishes HTTP 404/410 from CORS/network errors and opens an issue draft for the user. Third-party artifacts are fetched directly from the publisher with `cache: no-store`; hash-pinned bytes may be cached in the user's IndexedDB (64 MiB LRU) and are rehashed on reuse. Clear the browser cache with the firmware panel action or `clearFirmwareCache()`. The server and Git repository never mirror these binaries. Existing upstream and first-party diagnostic fixtures retain their original purposes.
+
+Official firmware published through M5Burner can use its metadata adapter with a fixed firmware ID. The sync keeps only published version/date/CDN fields, excludes unrelated author details, and sends no GitHub token to M5Burner. A new release is a discovery result; it does not replace the pinned default or establish runtime compatibility. PaperMono's official 1.2.0 entry uses this source.
+
+Before submitting catalog changes, install `tools/requirements-catalog.txt` in a development environment and run `python tools/validate-platform-catalog.py`. This resolves schemas locally and checks each catalog's intended entry type. Follow it with `node tools/platform-knowledge-test.mjs` for source and knowledge references. Pages runs both validations before deployment.
 
 Both the workbench and mini player expose **刷到设备**. Use a Web Serial-capable browser on HTTPS or localhost. Cross-origin embeds need `allow="serial; fullscreen"` and permission from the parent Permissions Policy, or open the standalone player. The physical writer is deliberately absent from the recording/iframe RPC methods. It checks chip family, flash capacity, security state, image hashes and write offsets; only the affected sectors are written. Cancelling after writing starts can leave a partial image. Protocol tests use injected serial/loader doubles; no user hardware has been flashed by the development tests.
+
+## Local build files and execution availability
+
+Select a complete merged BIN directly, or select an app BIN followed by `flasher_args.json` and every file it references. Selecting the whole build directory preserves relative paths. The loader validates offsets, chip, flash size, bootloader and application partition before initializing the emulator. Files stay in the browser; no private firmware is uploaded. See [local firmware layouts](local-firmware.md).
+
+**下载并运行** loads into the emulator and starts it, without saving a file into the computer's Downloads folder. For a preview-only product such as NanoH2, the action remains disabled with a visible explanation, even when a remote release has been found. The mini player follows the same execution boundary.

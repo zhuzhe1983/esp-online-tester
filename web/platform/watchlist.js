@@ -25,10 +25,18 @@ export function validateWatchlist(document) {
     ids.add(entry.id);
     if (!/^[\w.-]+\/[\w.-]+$/.test(entry.upstreamRepo)) throw new Error('Invalid upstream repository.');
     safeUrl(entry.releaseUrl); safeUrl(entry.metadataUrl);
-    if (entry.metadataUrl !== `https://api.github.com/repos/${entry.upstreamRepo}/releases/latest`) throw new Error('Release checks must target the upstream GitHub metadata API.');
+    if (entry.browserInstallUrl) safeUrl(entry.browserInstallUrl);
+    if (entry.browserAuditUrl) safeUrl(entry.browserAuditUrl);
+    if(entry.metadataProvider==='m5burner') {
+      if(entry.metadataUrl!=='https://m5burner-api.m5stack.com/api/firmware'||!/^\w{16,64}$/.test(entry.firmwareId))throw new Error('Invalid official M5Burner source.');
+    } else if(entry.metadataProvider && entry.metadataProvider!=='github' || entry.metadataUrl!==`https://api.github.com/repos/${entry.upstreamRepo}/releases/latest`)throw new Error('Invalid GitHub metadata source.');
     if (!['reference-only', 'product-verified'].includes(entry.compatibility?.status)) throw new Error('Declare a compatibility status.');
     if (!Array.isArray(entry.compatibility.productIds) || !Array.isArray(entry.assets) || entry.assets.length > 8) throw new Error('Invalid watchlist compatibility or assets.');
-    for (const asset of entry.assets) { safeUrl(asset.url); if (asset.sha256 && !/^[a-f0-9]{64}$/i.test(asset.sha256)) throw new Error('Invalid artifact hash.'); }
+    for (const asset of entry.assets) {
+      safeUrl(asset.url); if (asset.upstreamUrl) safeUrl(asset.upstreamUrl); if (asset.sourceMetadataUrl) safeUrl(asset.sourceMetadataUrl);
+      if (asset.sha256 && !/^[a-f0-9]{64}$/i.test(asset.sha256)) throw new Error('Invalid artifact hash.');
+      if (asset.sourcePolicy === 'mutable-pinned' && !asset.sha256) throw new Error('Mutable official download endpoints require a fixed artifact hash.');
+    }
     if (!Number.isFinite(Date.parse(entry.checkedAt))) throw new Error('Watchlist needs a check timestamp.');
   }
   return document;
@@ -78,14 +86,23 @@ export async function checkWatchEntry(entry, { fetchImpl = globalThis.fetch, tim
   signal?.addEventListener('abort', abort, { once: true }); if (signal?.aborted) abort();
   const timer = setTimeout(abort, timeoutMs), checkedAt = new Date().toISOString();
   try {
-    const latest = await metadataJson(safeUrl(entry.metadataUrl), { fetchImpl, signal: controller.signal });
+    // Visitors share anonymous GitHub API quotas (often a proxy's single IP).
+    // Actions queries authenticated metadata; clients read only this static snapshot.
+    const snapshot = await metadataJson(new URL('./catalog/firmware-release-snapshot.json', import.meta.url).href, { fetchImpl, signal: controller.signal });
+    if (snapshot?.schemaVersion !== '1' || !Array.isArray(snapshot.entries)) throw new Error('Invalid release metadata snapshot.');
+    const saved = snapshot.entries.find(item => item.id === entry.id && item.upstreamRepo === entry.upstreamRepo);
+    const latest = saved?.release || {tag_name: entry.version, html_url: entry.releaseUrl, assets: []};
+    const metadata = {source: 'site-snapshot', checkedAt: saved?.checkedAt || null,
+      stale: !saved?.release || !Number.isFinite(Date.parse(saved.checkedAt)) || Date.now() - Date.parse(saved.checkedAt) > 48 * 3600000,
+      refreshError: saved?.error?.message || (!saved?.release ? '尚无最近发布信息；保留已收录版本。' : null)};
     const candidates = Array.isArray(latest.assets) ? latest.assets : [];
-    const assets = await Promise.all(entry.assets.map(asset => probeFirmwareUrl(asset.url, { fetchImpl, signal: controller.signal })));
-    const problems = assets.filter(asset => asset.available !== true);
+    const assets = await Promise.all(entry.assets.map(async asset => ({...await probeFirmwareUrl(asset.url, { fetchImpl, signal: controller.signal }), name: asset.name, format: asset.format, sourcePolicy: asset.sourcePolicy})));
+    const problems = assets.filter(asset => asset.available !== true), missing = assets.find(asset => asset.state === 'missing');
     return { id: entry.id, checkedAt, previousVersion: entry.version, latestVersion: latest.tag_name || null, updateAvailable: !!latest.tag_name && latest.tag_name !== entry.version,
+      metadata,
       releaseUrl: safeUrl(latest.html_url || entry.releaseUrl), upstreamAssets: candidates.slice(0, 400).map(asset => ({ name: asset.name, url: safeUrl(asset.browser_download_url), bytes: asset.size, sha256: asset.digest?.startsWith('sha256:') ? asset.digest.slice(7) : null })),
-      assets, state: problems.length ? 'attention' : 'ok', issueUrl: problems.length ? buildFirmwareIssueUrl({ entryId: entry.id, url: problems[0].url, status: problems[0].status, reason: problems[0].state === 'network-or-cors' ? 'Browser cannot distinguish a network error from blocked CORS; please check the remote source.' : 'Remote firmware link is unavailable.' }) : null };
+      assets, state: problems.length || metadata.stale || metadata.refreshError ? 'attention' : 'ok', issueUrl: missing ? buildFirmwareIssueUrl({ entryId: entry.id, url: missing.url, status: missing.status, reason: 'Remote firmware link returned HTTP 404/410.' }) : null };
   } catch (error) {
-    return { id: entry.id, checkedAt, state: 'attention', error: { code: error.code || 'WATCH_METADATA_FETCH', message: error.message, status: error.status || null }, assets: [], issueUrl: buildFirmwareIssueUrl({ entryId: entry.id, url: entry.metadataUrl, reason: error.message, status: error.status }) };
+    return { id: entry.id, checkedAt, state: 'attention', previousVersion: entry.version, latestVersion: entry.version, metadata: {source: 'site-snapshot', checkedAt: null, stale: true, refreshError: '站点发布信息暂不可用；保留已收录版本，可查看上游发布页。'}, error: { code: error.code || 'WATCH_METADATA_FETCH', message: error.message, status: error.status || null }, assets: [], issueUrl: null };
   } finally { clearTimeout(timer); signal?.removeEventListener('abort', abort); }
 }

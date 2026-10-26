@@ -2,6 +2,7 @@
 // Deterministic host-time input checks; these make no claim about guest CPU-cycle timing.
 import assert from 'node:assert/strict';
 import { createHumanButtonController } from '../web/platform/scene-view.js';
+import {shouldCaptureMappedKey} from '../web/platform/control-input.js';
 
 function fixture({ send } = {}) {
   let time = 0, sequence = 0, running = true;
@@ -93,5 +94,14 @@ const tests = [
   }],
 ];
 
+tests.push(['matrix modifiers are playable while GPIO shortcuts and unmapped host keys stay protected',async()=>{
+  const matrix={controls:[{id:'fn',type:'matrix-key',row:2,column:0},{id:'a',type:'matrix-key',row:2,column:2}]}, mapping={AltRight:'fn',KeyA:'a'};
+  assert.equal(shouldCaptureMappedKey({code:'AltRight',altKey:true},matrix,mapping),true);
+  assert.equal(shouldCaptureMappedKey({code:'KeyA',ctrlKey:true,altKey:true},matrix,mapping),true);
+  assert.equal(shouldCaptureMappedKey({code:'KeyL',metaKey:true},matrix,mapping),false);
+  const gpio={controls:[{id:'a',type:'button',pin:2}]};
+  assert.equal(shouldCaptureMappedKey({code:'KeyA'},gpio,mapping),true);
+  assert.equal(shouldCaptureMappedKey({code:'KeyA',ctrlKey:true},gpio,mapping),false);
+}]);
 for (const [name, test] of tests) { await test(); console.log(`ok ${name}`); }
 console.log(`Passed ${tests.length} human UI input checks (injected host clock; no browser or firmware assets required).`);

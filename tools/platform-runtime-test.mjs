@@ -10,10 +10,13 @@ import { fileURLToPath } from 'node:url';
 import { createPlatformRuntime, decodeFramebuffer, createGpsNmea, fetchBytes, resolveFirmwareUrl, sha256, validateMergedImage } from '../web/platform/runtime.js';
 import { createDefaultScene, decodeScene } from '../web/platform/catalog.js';
 import { installAutomation } from '../web/platform/automation.js';
+import { withPlatformTestFixtures, HELLO_PRODUCT_ID, UNAVAILABLE_PRODUCT_ID } from './fixtures/platform-catalog.mjs';
 
-const root = new URL('../', import.meta.url), catalog = {};
-for (const name of ['products', 'accessories', 'firmwares']) catalog[name] = JSON.parse(await readFile(new URL(`web/platform/catalog/${name}.json`, root), 'utf8')).items;
+const root = new URL('../', import.meta.url), publicCatalog = {};
+for (const name of ['products', 'accessories', 'firmwares']) publicCatalog[name] = JSON.parse(await readFile(new URL(`web/platform/catalog/${name}.json`, root), 'utf8')).items;
 const baseUrl = 'https://platform.example/platform/index.html';
+assert.equal(publicCatalog.products.some(product => product.id === HELLO_PRODUCT_ID || product.id === 'generic-esp32s3'), false);
+const catalog = await withPlatformTestFixtures(publicCatalog, baseUrl);
 const workerInputDelay = Number(process.env.ESP32SIM_TEST_WORKER_DELAY_MS || 0);
 assert.ok(Number.isFinite(workerInputDelay) && workerInputDelay >= 0 && workerInputDelay <= 5000, 'ESP32SIM_TEST_WORKER_DELAY_MS must be 0…5000');
 const responseOverrides = new Map();
@@ -71,6 +74,32 @@ await expectCode(() => fetchBytes('https://example.com/large.bin', { maxBytes: 3
 await expectCode(() => fetchBytes('https://example.com/absent.bin', { fetchImpl: async () => new Response('', { status: 404 }) }), 'HTTP_ERROR');
 assert.equal(await sha256(new TextEncoder().encode('abc')), 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
 
+// Actual ReadableStream chunks, without network buffering or fabricated percentages.
+const streamed = (headers = {}) => new Response(new ReadableStream({
+  start(controller) { controller.enqueue(new Uint8Array([1, 2])); controller.enqueue(new Uint8Array([3, 4, 5])); controller.close(); },
+}), { headers });
+for (const [headers, expectedTotal] of [[{'content-length':'5'},5], [{},null], [{'content-length':'2','content-encoding':'gzip'},null]]) {
+  const events = [];
+  assert.deepEqual([...await fetchBytes('https://example.com/chunks.bin', { fetchImpl: async () => streamed(headers), onProgress: event => events.push(event) })], [1,2,3,4,5]);
+  assert.deepEqual(events.map(event => event.loadedBytes), [0,2,5,5]);
+  assert.ok(events.every(event => event.totalBytes === expectedTotal));
+  assert.deepEqual(events.map(event => event.done), [false,false,false,true]);
+}
+const abortedEvents = [], streamAbort = new AbortController(); let streamCancelled = false;
+await expectCode(() => fetchBytes('https://example.com/cancel.bin', {
+  signal: streamAbort.signal,
+  fetchImpl: async () => new Response(new ReadableStream({ start(controller) { controller.enqueue(new Uint8Array([1,2])); }, cancel() { streamCancelled = true; } })),
+  onProgress(event) { abortedEvents.push(event); if (event.loadedBytes === 2) streamAbort.abort(); },
+}), 'FETCH_ABORTED');
+assert.equal(streamCancelled, true); assert.equal(abortedEvents.some(event => event.done), false);
+const failedEvents = []; let pulls = 0;
+await expectCode(() => fetchBytes('https://example.com/broken.bin', {
+  fetchImpl: async () => new Response(new ReadableStream({ pull(controller) { if (pulls++ === 0) controller.enqueue(new Uint8Array([1])); else controller.error(new Error('Transport disconnected')); } })),
+  onProgress: event => failedEvents.push(event),
+}), 'FETCH_FAILED');
+assert.equal(failedEvents.some(event => event.done), false);
+console.log('ok streaming download progress: known/unknown/encoded totals, chunk bytes, completion, abort cancellation and transport failure');
+
 const wireFrame = new Uint8Array([1, 2, 0, 1, 0, 0, 248, 224, 7]);
 const decoded = decodeFramebuffer(wireFrame);
 assert.deepEqual([decoded.width, decoded.height], [2, 1]);
@@ -96,7 +125,8 @@ assert.match(createGpsNmea({ latitude: 89.9999999999, longitude: -179.9999999999
 assert.throws(() => createGpsNmea({ latitude: NaN, longitude: 0 }), { code: 'INVALID_GPS_FIX' });
 console.log('ok platform boundaries: URL/CORS/size/hash, RGB565, merged-image rejection, GPS checksums');
 
-const runtime = createPlatformRuntime({ catalog, fetchImpl: fileFetch, workerFactory, baseUrl, assetBaseUrl: 'https://platform.example/' });
+const loadEvents = [];
+const runtime = createPlatformRuntime({ catalog, fetchImpl: fileFetch, workerFactory, baseUrl, assetBaseUrl: 'https://platform.example/', onEvent: event => { if (event.type === 'load-progress') loadEvents.push(event); } });
 const target = { location: { href: baseUrl } }, api = installAutomation(runtime, { target });
 assert.equal(target.espTester.version, '1.0.0');
 let currentStep = 'initial validation';
@@ -121,14 +151,23 @@ const holdUntilSerial = async (down, up, serialIncludes) => {
 };
 try {
   await expectCode(() => runtime.start(), 'NOT_READY');
-  await runtime.configure(createDefaultScene(catalog, 'm5stack-papermono'));
+  await runtime.configure(createDefaultScene(catalog, UNAVAILABLE_PRODUCT_ID));
   assert.equal((await runtime.capabilities()).executable, false);
   await expectCode(() => runtime.loadFirmware({ manifestUrl: 'https://platform.example/wasm/fw/hello.json' }), 'UNSUPPORTED_PRODUCT');
-  await runtime.configure(createDefaultScene(catalog, 'generic-esp32s3'));
+  await runtime.configure(createDefaultScene(catalog, HELLO_PRODUCT_ID));
   await expectCode(() => runtime.capture(), 'NO_FRAME');
   await expectCode(() => runtime.loadFirmware({ manifestUrl: 'https://platform.example/wasm/fw/hello.json', sha256: '0'.repeat(64) }), 'HASH_MISMATCH');
+  const firstLoadProgress = loadEvents.length;
   await runtime.loadFirmware({ manifestUrl: 'https://platform.example/wasm/fw/hello.json' });
   assert.equal((await runtime.observe()).status, 'ready');
+  const progress = loadEvents.slice(firstLoadProgress);
+  assert.equal(new Set(progress.map(event => event.loadId)).size, 1);
+  for (const kind of ['manifest','rom','bootloader','ptable','app','wasm']) assert.ok(progress.some(event => event.phase === 'download' && event.kind === kind && event.done), `Missing completed download for ${kind}`);
+  const preparation = progress.at(-1);
+  assert.equal(preparation.phase, 'prepare'); assert.ok(progress.some(event=>event.stage==='worker')); assert.equal(preparation.stage, 'device-storage');
+  assert.equal(preparation.totalBytes, null); assert.equal(preparation.loadedBytes, null);
+  assert.equal(new Set(progress.filter(event => event.phase === 'download').map(event => event.fileIndex)).size, 6);
+  const readyProgressCount = loadEvents.length; await delay(5); assert.equal(loadEvents.length, readyProgressCount, 'A ready load must not emit late progress');
   await runtime.start();
   const running = await api.waitFor({ serialIncludes: 'Hello world!', port: 'uart0', timeoutMs: 30000 });
   assert.equal(running.status, 'running');
@@ -161,6 +200,15 @@ try {
   const stopwatchScene = createDefaultScene(catalog, 'm5stack-stopwatch');
   stopwatchScene.accessories.push({ id: 'gps-test', catalogId: 'm5stack-gps-u032', parameters: { latitude: 31.2304, longitude: 121.4737 }, wiring: { mode: 'logical', port: 'uart1' } });
   await runtime.configure(stopwatchScene);
+  await expectCode(() => api.setGpsFix({accessoryId: 'gps-test', latitude: 0, longitude: 0, positionSource: {kind: 'ip-estimate', ip: 'must-not-retain'}}), 'INVALID_INPUT');
+  const gpsUpdated = await api.setGpsFix({accessoryId: 'gps-test', latitude: 0, longitude: 0, positionSource: {kind: 'ip-estimate', provider: 'test', city: 'Example'}});
+  assert.equal(gpsUpdated.parameters.latitude, 0); assert.equal(gpsUpdated.parameters.positionSource.ip, undefined);
+  assert.equal((await runtime.observe()).status, 'configured');
+  await expectCode(() => api.setGpsFix({accessoryId: 'gps-test', latitude: 91}), 'INVALID_GPS_FIX');
+  await runtime.setGpsFix({accessoryId: 'gps-test', latitude: 31.2304, longitude: 121.4737, positionSource: {kind: 'manual'}});
+  await runtime.setImu({quaternion: [Math.SQRT1_2,0,0,Math.SQRT1_2]});
+  assert.ok(Math.abs((await runtime.observe()).imu.accelG[2] + 1) < 1e-9);
+  await expectCode(() => runtime.setImu({quaternion:[0,0,0,0]}), 'INVALID_IMU');
   await expectCode(() => runtime.loadFirmware({ manifestUrl: 'https://platform.example/wasm/fw/hello.json' }), 'BOARD_MISMATCH');
   const badPins = JSON.parse(await readFile(new URL('web/wasm/fw/demo-stopwatch.json', root), 'utf8'));
   badPins.artifact_sha256 = { ...badPins.artifact_sha256, [badPins.files.app]: '0'.repeat(64) };
@@ -168,10 +216,20 @@ try {
   await expectCode(() => runtime.loadFirmware({ manifestUrl: 'https://platform.example/wasm/fw/bad-pins.json' }), 'HASH_MISMATCH');
   await step('StopWatch boot and firmware readiness', async () => {
     await runtime.loadFirmware({ manifestUrl: 'https://platform.example/wasm/fw/demo-stopwatch.json' });
+    assert.equal((await runtime.observe()).firmware.executionMode, 'wasm-interpreter');
+    assert.equal((await runtime.capabilities()).execution.mode, 'wasm-interpreter');
     await runtime.start();
     await api.waitFor({ serialIncludes: 'PLATFORM_READY stopwatch', port: 'uart0', timeoutMs: 30000 });
   });
   const display = await runtime.capture({ format: 'rgba' });
+  const imuReceipt = await runtime.setImu({quaternion:[0,0,0,1], angularVelocityDps:[12,0,0]});
+  assert.equal(imuReceipt.delivery, 'register-state'); assert.ok(imuReceipt.guestTime >= 0);
+  assert.deepEqual(imuReceipt.accelG, [0,1,0]); assert.deepEqual(imuReceipt.gyroDps, [12,0,0]);
+  await runtime.setImu({enabled:false});
+  await runtime.setImu({source:'scene',quaternion:[1,0,0,0]});
+  assert.deepEqual((await runtime.observe()).imu.quaternion,[0,0,0,1]);
+  assert.deepEqual((await runtime.observe()).imu.gyroDps,[0,0,0]);
+  await runtime.setImu({enabled:true});
   assert.deepEqual([display.width, display.height], [468, 466]);
   assert.ok(display.pixels.some((value, index) => index % 4 !== 3 && value > 80), 'Firmware must draw actual bright pixels');
   await step('StopWatch button A guest acknowledgement', () => holdUntilSerial(
@@ -216,6 +274,28 @@ try {
   });
   await expectCode(() => api.share(), 'LOCAL_FIRMWARE_NOT_SHAREABLE');
   console.log('ok local merged StopWatch flash: complete app validation, SHA-256, automatic ROM load, real boot; file URLs excluded from share');
+  const localFiles = [new File([boot], 'bootloader.bin'), new File([table], 'partition-table.bin'), new File([app], 'app.bin')];
+  await step('local split StopWatch firmware ROM boot', async () => {
+    await runtime.loadFirmware({format:'segments', files:localFiles.map((file,i)=>({file,offset:[0,0x8000,0x10000][i]}))});
+    const ready = await runtime.observe();
+    assert.equal(ready.firmware.source,'local'); assert.equal(ready.firmware.appDirect,false);
+    assert.deepEqual(ready.firmware.localLayout.segments.map(x=>x.offset),[0,0x8000,0x10000]);
+    assert.equal(ready.firmware.artifacts[0].url,null);
+    await runtime.start(); await api.waitFor({serialIncludes:'PLATFORM_READY stopwatch',port:'uart0',timeoutMs:30000});
+    const deadline=Date.now()+30000;
+    while (!(await runtime.observe()).frame && Date.now()<deadline) await delay(50);
+    assert.ok((await runtime.observe()).frame?.frameNumber > 0, 'Split build must produce a real framebuffer');
+    await expectCode(()=>api.share(),'LOCAL_FIRMWARE_NOT_SHAREABLE');
+  });
+  const argsFile = new File([JSON.stringify({flash_files:{'0x0':'bootloader/bootloader.bin','0x8000':'partition_table/partition-table.bin','0x10000':'app.bin'},extra_esptool_args:{chip:'esp32s3'},flash_settings:{flash_size:'16MB'}})],'flasher_args.json');
+  await step('local ESP-IDF build layout ROM boot', async () => {
+    await runtime.loadFirmware({format:'build',files:[argsFile,...localFiles]});
+    assert.equal((await runtime.observe()).firmware.source,'local');
+    await runtime.start(); await api.waitFor({serialIncludes:'PLATFORM_READY stopwatch',port:'uart0',timeoutMs:30000});
+    await expectCode(()=>api.share(),'LOCAL_FIRMWARE_NOT_SHAREABLE');
+  });
+  console.log('ok local split/build flash: actual ROM+bootloader+ptable+app execution, real framebuffer and nonshareable local receipts');
+
 } catch (error) {
   const state = await runtime.observe();
   console.error(`FAIL ${currentStep}: ${error.code || 'ASSERTION'} ${error.message}`);
@@ -248,6 +328,26 @@ try {
 } finally { await cancellingRuntime.dispose(); }
 console.log('ok real runtime download cancellation: aborted fetch, no worker/receipt, session remains reusable');
 
+// A queued scene replacement invalidates progress immediately, even if a custom
+// fetch implementation finishes the old stream later. No worker is needed here.
+let finishOldStream, sawOldChunk;
+const firstChunk = new Promise(resolve => { sawOldChunk = resolve; }), staleEvents = [];
+const staleRuntime = createPlatformRuntime({ catalog, baseUrl, fetchImpl: async () => new Response(new ReadableStream({
+  start(controller) { controller.enqueue(new TextEncoder().encode('{')); finishOldStream = () => { controller.enqueue(new TextEncoder().encode('invalid}')); controller.close(); }; },
+})), onEvent(event) { if (event.type === 'load-progress') { staleEvents.push(event); if (event.loadedBytes > 0) sawOldChunk(); } } });
+try {
+  await staleRuntime.configure(createDefaultScene(catalog,'m5stack-stopwatch'));
+  const oldLoad = staleRuntime.loadFirmware({manifestUrl:'https://example.com/old.json'});
+  const rejected = expectCode(() => oldLoad, 'INVALID_MANIFEST');
+  await firstChunk;
+  const count = staleEvents.length;
+  const replacement = staleRuntime.configure(createDefaultScene(catalog,'m5stack-papermono'));
+  finishOldStream(); await rejected; await replacement;
+  assert.equal(staleEvents.length,count,'Scene replacement must suppress old stream and verification progress');
+  assert.equal((await staleRuntime.observe()).scene.productId,'m5stack-papermono');
+} finally { await staleRuntime.dispose(); }
+console.log('ok load progress identity: real manifest/artifact/WASM stages, ready boundary and stale scene-replacement suppression');
+
 // Transport regression only: deliberately deliver old stat messages before a matching
 // input receipt. These controlled messages are not firmware execution evidence.
 const transport = {
@@ -257,6 +357,7 @@ const transport = {
     else if (message.op === 'create') queueMicrotask(() => this.emit({ created: true }));
     else if (message.op === 'load') queueMicrotask(() => this.emit({ loaded: message.kind, ok: true }));
     else if (message.op === 'start') queueMicrotask(() => this.emit({ started: true }));
+    else if (message.op === 'imu') queueMicrotask(() => this.emit({ imuApplied: message.inputId, ok: true, time: 0 }));
     else if (message.op === 'text') this.inputs.push(message);
   },
   emit(data) { this.onmessage?.({ data }); },
@@ -293,3 +394,29 @@ try {
   assert.equal(transport.inputs.map(message => JSON.parse(message.data).data).join(''), result.value.data, 'NMEA chunks must reconstruct every byte in order');
   console.log('ok delayed-stat transport regression: matching worker receipt anchors each GPS chunk; unrelated receipts and stale stats cannot advance it');
 } finally { await transportRuntime.dispose(); }
+
+// Input contract only: hardware FIFO/scan/IRQ is tested in Rust and the opt-in
+// official Cardputer probe. This transport stand-in is not firmware evidence.
+for(const matrixBoard of ['cardputer-adv','cardputer']){
+const matrixCatalog=structuredClone(catalog),matrixProduct=matrixCatalog.products.find(p=>p.id==='m5stack-k132-adv');
+matrixProduct.runtime={...matrixProduct.runtime,board:matrixBoard,flashMb:8,psramMb:0,status:'partial'};
+const matrixManifest=JSON.parse(await readFile(new URL('web/wasm/fw/hello.json',root),'utf8'));matrixManifest.board=matrixBoard;matrixManifest.psram_mb=0;
+responseOverrides.set('https://platform.example/wasm/fw/cardputer-contract.json',JSON.stringify(matrixManifest));
+const matrixMessages=[],matrixTransport={
+  postMessage(m){let reply;if(m.op==='init')reply={ready:true};else if(m.op==='create')reply={created:true};else if(m.op==='load')reply={loaded:m.kind,ok:true};else if(m.op==='start')reply={started:true};else if(m.op==='stop')reply={stopped:true};else if(m.op==='text'){matrixMessages.push(JSON.parse(m.data));reply={inputQueued:m.inputId,time:0.25};}if(reply)queueMicrotask(()=>this.onmessage?.({data:reply}));},terminate(){},
+};
+const matrixRuntime=createPlatformRuntime({catalog:matrixCatalog,fetchImpl:fileFetch,workerFactory:()=>matrixTransport,baseUrl,assetBaseUrl:'https://platform.example/'});
+try{
+  await matrixRuntime.configure(createDefaultScene(matrixCatalog,matrixProduct.id));
+  assert.deepEqual((await matrixRuntime.capabilities()).input.keyboard,{rows:4,columns:14,model:matrixBoard==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:matrixBoard});
+  await matrixRuntime.loadFirmware({manifestUrl:'https://platform.example/wasm/fw/cardputer-contract.json'});await matrixRuntime.start();
+  for(const event of [{row:-1,column:0,pressed:true},{row:4,column:0,pressed:true},{row:0,column:14,pressed:true},{row:0.5,column:0,pressed:true},{row:0,column:0,pressed:1}])await expectCode(()=>matrixRuntime.input({type:'matrix-key',...event}),'INVALID_INPUT');
+  await matrixRuntime.input({type:'matrix-key',row:2,column:13,pressed:true});
+  assert.deepEqual(matrixMessages,[{t:'matrix-key',row:2,column:13,pressed:1}]);
+  await matrixRuntime.pause();await matrixRuntime.input({type:'matrix-key',row:2,column:13,pressed:false});
+  await expectCode(()=>matrixRuntime.input({type:'matrix-key',row:2,column:13,pressed:true}),'NOT_RUNNING');
+  assert.deepEqual(matrixMessages.at(-1),{t:'matrix-key',row:2,column:13,pressed:0});
+}finally{await matrixRuntime.dispose();}
+console.log('ok matrix-key contract: physical 4×14 bounds, independent hardware event, matching receipt and paused release');
+
+}

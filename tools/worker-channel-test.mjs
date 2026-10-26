@@ -256,3 +256,23 @@ for (const setter of [undefined, () => 1, () => { throw Error('unsupported'); }]
   } finally { h.close(); }
 }
 console.log('worker smooth display configuration tests passed');
+
+// The host snapshot API never steps the guest, and opt-in watching only transfers
+// changed 4 KiB pages. A stop forces the final delta before its acknowledgement.
+{
+  const memory=new WebAssembly.Memory({initial:1}),bytes=new Uint8Array(memory.buffer);bytes.fill(255,4096,12288);
+  const h=await harness(0,[],[],{memory,esp32sim_flash_ptr:()=>4096,esp32sim_flash_len:()=>8192});
+  try {
+    await h.send({op:'flash-snapshot',requestId:1});
+    const snapshot=h.messages.at(-1);assert.equal(snapshot.flashReply,1);assert.equal(new Uint8Array(snapshot.data)[0],255);assert.equal(h.runs.length,0);
+    await h.send({op:'flash-watch',requestId:2});bytes[4096+5000]=17;
+    await h.send({op:'flash-flush',requestId:3});
+    let deltas=h.messages.filter(m=>m.flashDelta);assert.equal(deltas.length,1);assert.equal(deltas[0].flashDelta.watchId,2);
+    assert.equal(deltas[0].flashDelta.pages.length,1);assert.equal(deltas[0].flashDelta.pages[0].offset,4096);assert.equal(new Uint8Array(deltas[0].flashDelta.pages[0].data)[904],17);
+    assert.equal(h.messages.at(-1).flashReply,3);assert.equal(h.runs.length,0);
+    await h.send({op:'flash-flush',requestId:4});assert.equal(h.messages.filter(m=>m.flashDelta).length,1,'unchanged pages are not resent');
+    bytes[4100]=42;await h.send({op:'stop'});assert.equal(h.messages.at(-2).flashDelta.pages[0].offset,0);assert.equal(h.messages.at(-1).stopped,0);
+    await h.send({op:'net-create',nodes:[]});bytes[4200]=9;await h.send({op:'stop'});deltas=h.messages.filter(m=>m.flashDelta);assert.equal(deltas.length,2,'switching to a network drops the old single-device watcher');
+  } finally {h.close();}
+}
+console.log('worker flash snapshot, page deltas, forced flush order and replacement tests passed');

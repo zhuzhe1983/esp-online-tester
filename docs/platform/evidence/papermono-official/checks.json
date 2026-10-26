@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-26T19:24:34.746572Z",
+  "toolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "checks": [
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<complete-rom-directory> cargo test --release --workspace -- --include-ignored --skip external_",
+      "result": "passed",
+      "passedTests": 1336,
+      "successfulTestBinaries": 128
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "passed"
+    },
+    {
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel",
+      "result": "passed, eight manifests"
+    },
+    {
+      "command": "node --test tools/platform-runtime-test.mjs tools/platform-device-storage-test.mjs tools/platform-local-firmware-test.mjs tools/worker-channel-test.mjs",
+      "result": "passed, four scripts"
+    }
+  ],
+  "negativeCheck": "The first full workspace run used a ROM directory without the classic ESP32 ROM and failed in camera_fixture; repeated with the complete pinned ROM set. No test was skipped or weakened.",
+  "sourceSha256": {
+    "esp32s3/src/board/papermono.rs": "577f411edfb02877cbb21f0502b31498f2733a237f7a8ebe2baaba09fd26c139",
+    "esp32s3/src/board/mod.rs": "f105e4950a8b3d4f88053667a7780333cf205a77e9f07ae366685e288f8d79ed",
+    "esp-soc/src/devices/ssd1677.rs": "37d5aa5858bdd56b8f2085d0c53942d5b3804d9a19a14c811b7f350d51173a90",
+    "esp-soc/src/devices/i2c_bitbang.rs": "d11691f1fce8aae53a676d6bc83812ef7caeaa0b724446e61c644b61a395ac26",
+    "esp-soc/src/devices/mod.rs": "d0282e0eac4b52d148724f9c32ca5fe5517f07b97b46f1aae63ccf9e9f09c9d5",
+    "esp-periph/src/i2c/ft6336.rs": "193122ec865efbdf5e81abc2cace6a6692b4290a2f15f66f5e262ff395685eca",
+    "esp-periph/src/i2c/m5.rs": "9b4a3a3ec431d24aa6bd3fe7ca3662f6c407611ce1804ace75a55a016f01f5a1",
+    "esp-periph/tests/m5_i2c.rs": "fa6d95a47f375c149f29bc379361b84942dbcb2250f349bac4bd9735db0a441b",
+    "tools/probe-official-papermono.mjs": "f823488ec1250296ad7b445ccc3c3b4a34be6d744e94991758d5ed8c9266be5b"
+  },
+  "performanceScope": "No shared bus, device_set, interrupt route, CPU/JIT or common per-tick modification for PaperMono. New board callback work is selected only by the papermono board. No speedup or hardware timing claim; existing native/guest goldens unchanged."
+}

@@ -114,19 +114,19 @@ fn stopwatch_expander_rmw_and_reset_pulse_leave_rail_on() {
     update(&mut *device, 0x13, 0, 0x9d);
     update(&mut *device, 0x03, 0x9d, 0);
     update(&mut *device, 0x05, 0x99, 0);
-    let ready = M5ioe1State { oled_rail: true, oled_reset_high: true, touch_reset_high: true };
+    let ready = M5ioe1State { driven_high: 0x99, oled_rail: true, oled_reset_high: true, touch_reset_high: true };
     assert_eq!(*state.lock().unwrap(), ready);
     assert_eq!(read(&mut *device, 0x13, 1), [0x62]);
     assert_eq!(read(&mut *device, 0x03, 1), [0x9d]);
     assert_eq!(read(&mut *device, 0x05, 1), [0x99]);
     assert_eq!(read(&mut *device, 0x23, 1), [0]);
     update(&mut *device, 0x05, 0, 0x18);
-    assert_eq!(*state.lock().unwrap(), M5ioe1State { oled_rail: true, ..Default::default() });
+    assert_eq!(*state.lock().unwrap(), M5ioe1State { driven_high: 0x81, oled_rail: true, ..Default::default() });
     assert_eq!(read(&mut *device, 0x05, 1), [0x81]);
     update(&mut *device, 0x05, 0x18, 0);
     assert_eq!(*state.lock().unwrap(), ready);
     update(&mut *device, 0x05, 0, 0x80);
-    assert_eq!(*state.lock().unwrap(), M5ioe1State { oled_rail: false, ..ready });
+    assert_eq!(*state.lock().unwrap(), M5ioe1State { driven_high: 0x19, oled_rail: false, ..ready });
 }
 
 #[test]
@@ -138,12 +138,32 @@ fn expander_levels_require_output_mode_and_push_pull_drive() {
     write(&mut device, 0x03, &[0x98]);
     assert_eq!(*state.lock().unwrap(), M5ioe1State::default());
     write(&mut device, 0x13, &[0x67]);
-    assert_eq!(*state.lock().unwrap(), M5ioe1State { oled_rail: true, oled_reset_high: true, touch_reset_high: true });
+    assert_eq!(*state.lock().unwrap(), M5ioe1State { driven_high: 0x98, oled_rail: true, oled_reset_high: true, touch_reset_high: true });
     update(&mut device, 0x03, 0, 0x10);
     assert!(!state.lock().unwrap().oled_reset_high);
     update(&mut device, 0x13, 0x80, 0);
     assert!(!state.lock().unwrap().oled_rail);
     assert!(state.lock().unwrap().touch_reset_high);
+}
+
+#[test]
+fn expander_gpio_input_reads_driven_outputs_in_both_banks() {
+    // Official UserDemo V0.5 polls IO8 via M5IOE1 1.0.8 digitalRead after
+    // writing L3B_EN. The input registers must observe the driven output.
+    let mut device = M5ioe1::new(Default::default(), 0);
+    write(&mut device, 0x03, &[0x98, 0xff]);
+    write(&mut device, 0x05, &[0x98, 0xff]);
+    assert_eq!(read(&mut device, 0x07, 2), [0, 0]); // default open drain
+    write(&mut device, 0x13, &[0x67, 0]);
+    assert_eq!(read(&mut device, 0x07, 2), [0x98, 0x3f]);
+    write(&mut device, 0x07, &[0, 0]); // GPIO_IN is read-only
+    assert_eq!(read(&mut device, 0x07, 2), [0x98, 0x3f]);
+    write(&mut device, 0x05, &[0x18, 0x15]);
+    assert_eq!(read(&mut device, 0x07, 2), [0x18, 0x15]);
+    write(&mut device, 0x03, &[0, 0]); // inputs have no supplied external level
+    assert_eq!(read(&mut device, 0x07, 2), [0, 0]);
+    write(&mut device, 0x07, &[0xff, 0xff]);
+    assert_eq!(read(&mut device, 0x07, 2), [0, 0]);
 }
 
 #[test]

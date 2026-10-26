@@ -11,6 +11,24 @@ const traceNow = () => performance.timeOrigin + performance.now();
 let CPU_HZ = 240e6;   // replaced from the module once an emulator exists: the C3 runs at 160 MHz
 let wasm = null, emu = 0, running = false, t0 = 0, resyncs = 0, lastStat = { wall: 0, insns: 0, cycles: 0 };
 let loopGeneration = 0, booted = false;
+let flashShadow = null, flashWatchId = null, flashScanAt = 0;
+const FLASH_PAGE = 4096;
+function flashBytes() {
+  if (!emu || !wasm.esp32sim_flash_ptr || !wasm.esp32sim_flash_len) throw new Error('Flash snapshots are unsupported by this WASM build');
+  return mem().subarray(wasm.esp32sim_flash_ptr(emu), wasm.esp32sim_flash_ptr(emu) + wasm.esp32sim_flash_len(emu));
+}
+function collectFlash(force = false) {
+  if (!flashShadow || !force && performance.now() - flashScanAt < 500) return;
+  flashScanAt = performance.now();
+  const bytes = flashBytes(), words = new Uint32Array(bytes.buffer, bytes.byteOffset, bytes.length / 4), old = new Uint32Array(flashShadow.buffer);
+  const pages = [];
+  for (let offset = 0; offset < bytes.length; offset += FLASH_PAGE) {
+    let changed = false;
+    for (let i = offset / 4; i < (offset + FLASH_PAGE) / 4; i++) if (words[i] !== old[i]) { changed = true; break; }
+    if (changed) { const data = bytes.slice(offset, offset + FLASH_PAGE).buffer; flashShadow.set(new Uint8Array(data), offset); pages.push({offset, data}); }
+  }
+  if (pages.length) postMessage({flashDelta: {watchId: flashWatchId, pages}}, pages.map(page => page.data));
+}
 let net = 0, netNodes = 0, netT0 = 0;   // a network of motes: several emulators on one medium
 const enc = new TextEncoder(), dec = new TextDecoder();
 const mem = () => new Uint8Array(wasm.memory.buffer);
@@ -59,6 +77,7 @@ function loop(generation = loopGeneration) {
     if (inputTraceIds.length) postMessage({ touchTrace: { stage: 'run-exit', ids: inputTraceIds, atMs: traceNow(), cycles: cur } });
     pacing.observe(cur - previous, performance.now() - before);
     drain();
+    collectFlash();
     if (rc !== 0) { running = false; postMessage({ stopped: rc }); return; }
     if (performance.now() - now >= turnMs) break;                       // let messages flow, come back
   }
@@ -125,6 +144,7 @@ onmessage = async (ev) => {
     if (m.op === 'init') { frameAck = m.frameAck === true; traceEnabled = !!m.touchTrace; const r = await WebAssembly.instantiate(m.wasm, imports); wasm = r.instance.exports;  postMessage({ ready: true }); }
     else if (m.op === 'create') {
       running = false; loopGeneration++; booted = false;
+      flashShadow = null; flashWatchId = null;
       // Keep credits for already posted frames until their ACKs arrive, but never send
       // a retained frame from the emulator being replaced.
       pendingFrame = null;
@@ -137,7 +157,21 @@ onmessage = async (ev) => {
       experiments = m.experiments === undefined ? [] : m.experiments;
       smoothDisplay = m.smoothDisplay === true;
       if (emu !== 0 && wasm.esp32sim_cpu_hz) CPU_HZ = wasm.esp32sim_cpu_hz(emu);
-      postMessage({ created: emu !== 0 });
+      postMessage({ created: emu !== 0, flashStorage: !!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
+    }
+    else if (m.op === 'flash-snapshot') { const data = flashBytes().slice().buffer; postMessage({flashReply: m.requestId, data}, [data]); }
+    else if (m.op === 'flash-watch') { flashShadow = flashBytes().slice(); flashWatchId = m.requestId; flashScanAt = performance.now(); postMessage({flashReply: m.requestId, ok: true}); }
+    else if (m.op === 'flash-flush') { collectFlash(true); postMessage({flashReply: m.requestId, ok: true}); }
+    else if (m.op === 'flash-restore') {
+      if (running || booted) throw new Error('Restore Flash only before boot');
+      const size = flashBytes().length, seen = new Set();
+      if (!Array.isArray(m.pages) || m.pages.length > size / FLASH_PAGE) throw new Error('Invalid Flash restore pages');
+      for (const {offset, data} of m.pages) {
+        if (!Number.isInteger(offset) || offset < 0 || offset % FLASH_PAGE || offset + FLASH_PAGE > size || seen.has(offset) || !(data instanceof ArrayBuffer) || data.byteLength !== FLASH_PAGE) throw new Error('Invalid Flash restore page');
+        seen.add(offset);
+      }
+      for (const {offset, data} of m.pages) if (withBytes(new Uint8Array(data), (p, n) => wasm.esp32sim_load_at(emu, offset, p, n)) !== 0) throw new Error('Flash restore failed');
+      postMessage({flashReply: m.requestId, ok: true});
     }
     else if (m.op === 'load') { const rc = withBytes(new Uint8Array(m.data), (p, n) => m.at !== undefined ? wasm.esp32sim_load_at(emu, m.at >>> 0, p, n) : wasm.esp32sim_load(emu, m.kind, p, n)); postMessage({ loaded: m.at !== undefined ? 'at' + m.at : m.kind, ok: rc === 0 }); }
     else if (m.op === 'stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_stub_spec(emu, p, n)) !== 0) setupError ||= 'invalid stub: ' + m.spec; }
@@ -162,6 +196,7 @@ onmessage = async (ev) => {
       postMessage({ resumed: true });
     }
     else if (m.op === 'net-create') {
+      flashShadow = null; flashWatchId = null;
       setupError = null;
       running = false; loopGeneration++; booted = false;
       pendingFrame = null;
@@ -184,7 +219,13 @@ onmessage = async (ev) => {
     else if (m.op === 'net-load') { const rc = withBytes(new Uint8Array(m.data), (p, n) => wasm.esp32sim_net_load(net, m.node, m.kind, p, n)); postMessage({ loaded: 'n' + m.node + ':' + m.kind, ok: rc === 0 }); }
     else if (m.op === 'net-stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_net_stub_spec(net, m.node, p, n)) !== 0) setupError ||= 'invalid stub for node ' + m.node + ': ' + m.spec; }
     else if (m.op === 'net-start') { if (setupError) throw new Error(setupError); const rc = wasm.esp32sim_net_boot(net); if (rc === 0) { running = true; netT0 = performance.now(); netLoop(); } postMessage({ started: rc === 0 }); }
-    else if (m.op === 'stop') { running = false; loopGeneration++; postMessage({ stopped: 0 }); }
+    else if (m.op === 'stop') { running = false; loopGeneration++; collectFlash(true); postMessage({ stopped: 0 }); }
+    else if (m.op === 'imu') {
+      const values = [...(m.accelG || []), ...(m.gyroDps || [])];
+      const ok = !!emu && values.length === 6 && values.every(Number.isFinite) && !!wasm.esp32sim_set_imu_sample
+        && wasm.esp32sim_set_imu_sample(emu, ...values) === 0;
+      postMessage({ imuApplied: m.inputId, ok, time: emu ? wasm.esp32sim_cycles(emu) / CPU_HZ : 0 });
+    }
     else if (m.op === 'text') {
       if (traceEnabled && m.touchTrace) {
         postMessage({ touchTrace: { stage: 'worker-receive', ...m.touchTrace, atMs: traceNow(), cycles: wasm.esp32sim_cycles(emu) } });
@@ -205,5 +246,5 @@ onmessage = async (ev) => {
       }
       withBytes(data, (p, n) => wasm.esp32sim_in_bin(emu, p, n));
     }
-  } catch (err) { postMessage({ log: '[worker] ' + (err && err.stack || err) }); running = false; loopGeneration++; if (m.op === 'start' || m.op === 'net-start') postMessage({ started: false, error: err.message || String(err) }); else if (m.op === 'resume') postMessage({ resumed: false, error: err.message || String(err) }); else postMessage({ stopped: 1 }); }
+  } catch (err) { postMessage({ log: '[worker] ' + (err && err.stack || err) }); running = false; loopGeneration++; if (m.op === 'start' || m.op === 'net-start') postMessage({ started: false, error: err.message || String(err) }); else if (m.op === 'resume') postMessage({ resumed: false, error: err.message || String(err) }); else if (m.op.startsWith('flash-')) postMessage({flashReply: m.requestId, ok: false, error: err.message || String(err)}); else postMessage({ stopped: 1 }); }
 };

@@ -13,8 +13,10 @@ const json = value => JSON.stringify(canonical(value));
 const config = scene => ({schemaVersion:scene.schemaVersion,productId:scene.productId,firmware:scene.firmware,accessories:scene.accessories,localAccessories:scene.localAccessories || []});
 const sameScene = (a,b) => !!a && !!b && json(config(a)) === json(config(b));
 const hashPattern = /^[a-f0-9]{64}$/i;
+const pressInput=event=>event.type==='matrix-key'?{type:'matrix-key',row:event.row,column:event.column,pressed:event.pressed}:{type:'button',id:event.id,pressed:event.pressed};
+const pressId=event=>event.type==='matrix-key'?`matrix:${event.row}:${event.column}`:`button:${event.id}`;
 const sourceUrl=value=>{try{const url=new URL(value);return typeof value==='string'&&value.length<=4096&&!url.username&&!url.password&&(url.protocol==='https:'||(url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)));}catch{return false;}};
-const fingerprint = firmware => json({manifestHash:firmware.manifestHash ?? null,appDirect:!!firmware.appDirect,stubs:firmware.stubs || [],artifacts:firmware.artifacts.map(({kind,sha256,bytes,at}) => ({kind,sha256,bytes,...(at === undefined ? {} : {at})}))});
+const fingerprint = firmware => json({manifestHash:firmware.manifestHash ?? null,appDirect:!!firmware.appDirect,executionMode:firmware.executionMode || 'wasm-jit',stubs:firmware.stubs || [],artifacts:firmware.artifacts.map(({kind,sha256,bytes,at}) => ({kind,sha256,bytes,...(at === undefined ? {} : {at})}))});
 
 export function validateRecording(recording, {scene} = {}) {
   const errors = [], add = (code,path,message) => errors.push({code,path,message});
@@ -44,7 +46,8 @@ export function validateRecording(recording, {scene} = {}) {
   const fw = recording.firmware;
   if (!object(fw) || fw.source !== 'remote' || !Array.isArray(fw.artifacts) || !fw.artifacts.length || fw.artifacts.length > 32) add('RECORDING_FIRMWARE','/firmware','A remote firmware receipt with 1–32 artifacts is required.');
   else {
-    keys(fw,['source','manifestUrl','manifestHash','artifacts','appDirect','stubs'],'/firmware');
+    keys(fw,['source','manifestUrl','manifestHash','artifacts','appDirect','stubs','executionMode'],'/firmware');
+    if(fw.executionMode!==undefined&&!['wasm-jit','wasm-interpreter'].includes(fw.executionMode))add('RECORDING_FIRMWARE','/firmware/executionMode','Invalid WASM execution mode.');
     if(fw.manifestUrl!==null&&!sourceUrl(fw.manifestUrl))add('RECORDING_SOURCE','/firmware/manifestUrl','Invalid manifest receipt URL.');
     if(typeof fw.appDirect!=='boolean'||!Array.isArray(fw.stubs)||fw.stubs.length>64||fw.stubs.some(s=>typeof s!=='string'||s.length>255))add('RECORDING_FIRMWARE','/firmware','Invalid execution-mode receipt.');
     if (fw.manifestHash !== null && !hashPattern.test(fw.manifestHash)) add('RECORDING_HASH','/firmware/manifestHash','Invalid manifest hash.');
@@ -67,11 +70,15 @@ export function validateRecording(recording, {scene} = {}) {
       keys(event,['at','type','id','pressed'],path);
       if (typeof event.id !== 'string' || !/^[a-z0-9][a-z0-9-]{0,79}$/.test(event.id) || typeof event.pressed !== 'boolean') add('RECORDING_BUTTON',path,'Invalid semantic button input.');
       if (event.pressed) held.add(event.id); else held.delete(event.id);
+    } else if(event.type==='matrix-key') {
+      keys(event,['at','type','row','column','pressed'],path);
+      if(!Number.isInteger(event.row)||event.row<0||event.row>3||!Number.isInteger(event.column)||event.column<0||event.column>13||typeof event.pressed!=='boolean')add('RECORDING_MATRIX_KEY',path,'Invalid matrix key coordinates.');
+      if(event.pressed)held.add(pressId(event));else held.delete(pressId(event));
     } else if (event.type === 'touch') {
       keys(event,['at','type','x','y','down'],path);
       if (!recording.display || ![event.x,event.y].every(n => Number.isFinite(n) && n >= 0 && n <= 1) || typeof event.down !== 'boolean') add('RECORDING_TOUCH',path,'Touch needs a display and normalized coordinates in 0–1.');
       touch = event.down;
-    } else add('RECORDING_EVENT',path,'Only semantic button and touch inputs may be replayed.');
+    } else add('RECORDING_EVENT',path,'Only semantic button, matrix key and touch inputs may be replayed.');
   }
   if (held.size || touch) add('RECORDING_HELD','/events','Recording must end with every button and touch released.');
   if (recording.expectedFrame !== undefined) {
@@ -96,18 +103,19 @@ export function decodeRecording(encoded) {
 export function createRecordingController(runtime) {
   let status='idle', recording=null, receipt=null, error=null, progress={index:0,total:0,elapsedGuestSeconds:0};
   let token=null, ownLifecycle=false, sending=false, closing=false, lastGuest=0, heldTouch=null;
-  const held=new Set(), listeners=new Set();
+  const held=new Map(), listeners=new Set();
   const observe=()=>clone({status,recording,progress,receipt,error});
   const emit=()=>{const event={type:'recording',state:observe()};for(const listener of listeners){try{listener(event);}catch{}}};
   const newToken=()=>{let finish;const done=new Promise(resolve=>{finish=resolve;});return {cancelled:false,done,finish};};
   const change=next=>{status=next;emit();};
   const failure=e=>{error={code:e.code||'RECORDING_ERROR',message:e.message};change('error');};
   const check=t=>{if(t.cancelled)throw err('RECORDING_CANCELLED','Recording operation cancelled.');};
-  const tracked=event=>{if(event.type==='button'){if(event.pressed)held.add(event.id);else held.delete(event.id);}else if(event.type==='touch')heldTouch=event.down?clone(event):null;};
+  const requirePristineStorage=state=>{if(state.storage?.pristine===false)throw err('RECORDING_STORAGE_NOT_PRISTINE','当前设备已有持久化数据，分享录制无法携带这些内容。请先在设备存储中手动清空，再开始录制或回放。');};
+  const tracked=event=>{if(['button','matrix-key'].includes(event.type)){if(event.pressed)held.set(pressId(event),pressInput(event));else held.delete(pressId(event));}else if(event.type==='touch')heldTouch=event.down?clone(event):null;};
   const release=async()=>{
     const current=await runtime.observe();
     if(['running','paused'].includes(current.status)) {
-      for(const id of [...held]){try{sending=true;await runtime.input({type:'button',id,pressed:false});}catch{}finally{sending=false;}}
+      for(const action of [...held.values()]){try{sending=true;await runtime.input({...action,pressed:false});}catch{}finally{sending=false;}}
       if(heldTouch){try{sending=true;await runtime.input({...heldTouch,down:false});}catch{}finally{sending=false;}}
     }
     held.clear();heldTouch=null;
@@ -139,11 +147,11 @@ export function createRecordingController(runtime) {
     receipt={...(receipt||{}),kind:'replay',result:'cancelled',reason,bitExact:false};emit();return observe();
   };
   const onEvent=event=>{
-    if(event.type==='input'&&['button','touch'].includes(event.event.type)) {
+    if(event.type==='input'&&['button','matrix-key','touch'].includes(event.event.type)) {
       if(status==='recording') {
         tracked(event.event);
         if(event.receipt?.delivery!=='queued'||!Number.isFinite(event.receipt.guestTime)){void cancel('missing-acknowledgement');return;}
-        const action=event.event.type==='button'?{at:event.receipt.guestTime,type:'button',id:event.event.id,pressed:event.event.pressed}:{at:event.receipt.guestTime,type:'touch',x:event.event.x,y:event.event.y,down:event.event.down};
+        const action=event.event.type!=='touch'?{at:event.receipt.guestTime,...pressInput(event.event)}:{at:event.receipt.guestTime,type:'touch',x:event.event.x,y:event.event.y,down:event.event.down};
         if(action.type==='touch'){
           const display=recording.display;
           if(!display){void cancel('no-display');return;}
@@ -174,7 +182,9 @@ export function createRecordingController(runtime) {
       async recordingObserve(){return observe();},
       async recordingStart(){
         await cancel('replaced');
-        const state=await runtime.observe();
+        let state=await runtime.observe();
+        if(state.storage?.scope && runtime.flushDeviceStorage){await runtime.flushDeviceStorage();state=await runtime.observe();}
+        requirePristineStorage(state);
         if(!state.firmware||state.firmware.source!=='remote'||!state.scene?.firmware)throw err('RECORDING_NOT_READY','Load a remote firmware source before recording. Local firmware cannot be shared in a recording URL.');
         token=newToken();const active=token;recording=null;receipt=null;error=null;held.clear();heldTouch=null;lastGuest=0;
         change('preparing');ownLifecycle=true;
@@ -191,18 +201,23 @@ export function createRecordingController(runtime) {
       recordingTakeOver(){return cancel();},
       async recordingClear(){await cancel('cleared');recording=null;receipt=null;error=null;progress={index:0,total:0,elapsedGuestSeconds:0};change('idle');return observe();},
       async recordingPlay(input,{timeoutMs=180000}={}){
-        const current=await runtime.observe();requireValid(input,{scene:current.scene});
+        let current=await runtime.observe();
+        if(current.storage?.scope && runtime.flushDeviceStorage){await runtime.flushDeviceStorage();current=await runtime.observe();}
+        requireValid(input,{scene:current.scene});
         if(!Number.isFinite(timeoutMs)||timeoutMs<100||timeoutMs>300000)throw err('RECORDING_TIMEOUT','Replay timeout must be 100–300000 ms.');
         if(['preparing','recording','playing'].includes(status))throw err('RECORDING_BUSY','Stop the current recording or playback first.');
         const controls=new Set(current.product?.controls.filter(item=>item.type==='button').map(item=>item.id));
-        for(const event of input.events)if(event.type==='button'&&!controls.has(event.id))throw err('RECORDING_CONTROL','Recording names a button absent from this product.');
+        for(const event of input.events) {
+          if(event.type==='button'&&!controls.has(event.id))throw err('RECORDING_CONTROL','Recording names a button absent from this product.');
+          if(event.type==='matrix-key'&&!current.product?.controls.some(control=>control.type==='matrix-key'&&control.row===event.row&&control.column===event.column))throw err('RECORDING_CONTROL','Recording names a matrix key absent from this product.');
+        }
         const display=current.product?.display;
         if(input.display&&(!display||input.display.width!==(display.framebufferWidth||display.width)||input.display.height!==(display.framebufferHeight||display.height)))throw err('RECORDING_DISPLAY','Recording display dimensions do not match this product.');
         recording=clone(input);token=newToken();const active=token;receipt={kind:'replay',result:'running',bitExact:false,clock:'stats-observed guest time',events:[],timingDifferences:[]};error=null;held.clear();heldTouch=null;
         progress={index:0,total:recording.events.length,elapsedGuestSeconds:0};change('preparing');ownLifecycle=true;
         try{
           if(!current.firmware||fingerprint(current.firmware)!==fingerprint(recording.firmware))await runtime.loadFirmware(recording.scene.firmware);
-          check(active);const loaded=await runtime.observe();
+          check(active);const loaded=await runtime.observe();requirePristineStorage(loaded);
           if(fingerprint(loaded.firmware)!==fingerprint(recording.firmware))throw err('RECORDING_FIRMWARE_MISMATCH','Downloaded artifact hashes differ from the recording.');
           await runtime.reset();check(active);ownLifecycle=false;change('playing');
           let previousActual=0,previousOriginal=0;
@@ -211,7 +226,7 @@ export function createRecordingController(runtime) {
             // otherwise a delayed down/up pair could collapse into one guest tick.
             const target=Math.max(event.at,previousActual+event.at-previousOriginal);
             await waitUntil(target,active,timeoutMs);check(active);
-            const action=event.type==='button'?{type:'button',id:event.id,pressed:event.pressed}:{type:'touch',x:Math.round(event.x*(recording.display.width-1)),y:Math.round(event.y*(recording.display.height-1)),down:event.down};
+            const action=event.type!=='touch'?pressInput(event):{type:'touch',x:Math.round(event.x*(recording.display.width-1)),y:Math.round(event.y*(recording.display.height-1)),down:event.down};
             sending=true;let result;try{result=await runtime.input(action);tracked(action);}finally{sending=false;}
             check(active);const actual=Number(result.guestTime);if(!Number.isFinite(actual))throw err('RECORDING_ACK','Input acknowledgement has no guest timestamp.');
             const delivery={index,originalGuestSeconds:event.at,scheduledGuestSeconds:target,actualGuestSeconds:actual,lateBySeconds:actual-event.at};receipt.events.push(delivery);

@@ -3,10 +3,12 @@ import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {resolve, basename} from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {withPlatformTestFixtures,DIAGNOSTIC_FIRMWARE_ID} from './fixtures/platform-catalog.mjs';
+import {SHELL_FINISHES, SHELL_PRESETS} from '../web/platform/appearance.js';
 import {
   loadCatalog, createDefaultScene, validateScene, encodeScene, decodeScene,
   createLocalAccessory, validateLocalAccessory, importLocalAccessory, exportLocalAccessory,
-  listLocalAccessories, saveLocalAccessory, removeLocalAccessory, MAX_SCENE_BYTES,
+  listLocalAccessories, saveLocalAccessory, removeLocalAccessory, MAX_SCENE_BYTES, firmwareSourceMatches,
 } from '../web/platform/catalog.js';
 
 // Use repository catalog bytes while retaining fetch's URL/error semantics.
@@ -14,6 +16,7 @@ const originalFetch = globalThis.fetch;
 globalThis.fetch = async url => new Response(await readFile(url, 'utf8'));
 let catalog;
 try { catalog = await loadCatalog(); } finally { globalThis.fetch = originalFetch; }
+const sceneSchema = JSON.parse(await readFile(new URL('../web/platform/schemas/scene.schema.json', import.meta.url), 'utf8'));
 const checks = [];
 function test(name, run) { run(); checks.push(name); }
 function has(result, code, kind = 'errors') { return result[kind].some(item => item.code === code); }
@@ -29,7 +32,8 @@ test('catalogs retain provenance, distinct GPS defaults and truthful support', (
       for (const source of item.sources) { assert.match(source.url, /^https:\/\//); assert.match(source.checkedAt, /^\d{4}-\d{2}-\d{2}$/); }
     }
   }
-  assert.equal(catalog.products.find(item => item.id === 'm5stack-papermono').runtime.board, null);
+  for(const id of ['m5stack-papermono','m5stack-c153-lite']) { const paper=catalog.products.find(item=>item.id===id);assert.equal(paper.runtime.board,'papermono');assert.equal(paper.runtime.status,'partial');assert.equal(paper.runtime.touch,true);const factory=catalog.firmwares.find(item=>item.id===paper.defaultFirmwareId);assert.ok(factory.productIds.includes(id)&&factory.source?.sha256); }
+  assert.equal(catalog.products.find(item=>item.id==='m5stack-c149').runtime.board,null);
   const watch = catalog.products.find(item => item.id === 'm5stack-stopwatch');
   assert.equal(watch.runtime.status, 'partial');
   assert.deepEqual(watch.interfaces.find(item => item.id === 'grove').pins.filter(item => item.gpio !== undefined).map(item => item.gpio), [10, 11]);
@@ -40,7 +44,12 @@ test('catalogs retain provenance, distinct GPS defaults and truthful support', (
     assert.ok(firmware.productIds.every(id => catalog.products.some(item => item.id === id)));
     if (firmware.status === 'reference') assert.equal(firmware.source, null);
   }
-  assert.ok(catalog.firmwares.find(item => item.id === 'esp32sim-s3-hello').source.manifestUrl.endsWith('/web/wasm/fw/hello.json'));
+  assert.ok(['m5stack-papermono', 'm5stack-stopwatch'].every(id => catalog.products.some(item => item.id === id)));
+  assert.ok(catalog.products.every(item => !item.id.includes('hello') && !item.id.startsWith('test-')), 'Diagnostic devices stay out of the public catalog');
+  assert.ok(catalog.firmwares.every(item => !['platform-stopwatch-diagnostic', 'esp32sim-s3-hello'].includes(item.id)), 'Internal firmware fixtures must not return to the public catalog');
+  assert.deepEqual(catalog.firmwares.filter(item => item.productIds.includes('m5stack-stopwatch')).map(item => item.id), ['m5stack-stopwatch-official']);
+  assert.equal(catalog.firmwares.some(item => item.id.startsWith('test-')), false);
+  assert.ok(catalog.firmwares.find(item => item.id === 'm5stack-stopwatch-official').source.url.startsWith('https://m5burner-cdn.m5stack.com/'));
 });
 
 test('configuration validity is separate from execution readiness', () => {
@@ -49,7 +58,8 @@ test('configuration validity is separate from execution readiness', () => {
   assert.ok(has(result, 'FIRMWARE_MISSING', 'warnings'));
   assert.ok(has(result, 'PARTIAL_MODEL', 'warnings'));
   const paper = validateScene(createDefaultScene(catalog, 'm5stack-papermono'), catalog);
-  assert.equal(paper.valid, true); assert.ok(has(paper, 'MODEL_UNAVAILABLE', 'warnings'));
+  assert.equal(paper.valid, true); assert.ok(has(paper, 'PARTIAL_MODEL', 'warnings'));
+  assert.ok(has(validateScene(createDefaultScene(catalog,'m5stack-c149'),catalog),'MODEL_UNAVAILABLE','warnings'));
   assert.throws(() => createDefaultScene(catalog, 'invented'), {code: 'UNKNOWN_PRODUCT'});
 });
 
@@ -63,6 +73,52 @@ test('canonical Unicode URL roundtrip and object order independence', () => {
   assert.deepEqual(decodeScene(encoded), scene);
   assert.equal(encodeScene(Object.fromEntries(Object.entries(scene).reverse())), encoded);
   assert.equal(validateScene(decodeScene(encoded), catalog).valid, true);
+});
+
+test('shell presentation survives sharing while legacy scenes remain valid', () => {
+  const original = base(); assert.equal(validateScene(original, catalog).valid, true);
+  const scene = base(); scene.view.appearance = {shell: {color: '#8456cf', opacity: 0.36, finish: 'plastic'}};
+  const restored = decodeScene(encodeScene(scene));
+  assert.equal(validateScene(restored, catalog).valid, true);
+  assert.deepEqual(restored.view.appearance, scene.view.appearance);
+  for (const patch of [{opacity: -0.1}, {opacity: 1.1}, {opacity: '0.5'}, {color: 'red'}, {color: '#123'}, {finish: 'script'}, {src: 'https://example.test/texture'}]) {
+    const invalid = structuredClone(scene); Object.assign(invalid.view.appearance.shell, patch);
+    assert.equal(validateScene(invalid, catalog).valid, false);
+  }
+  delete restored.view.appearance; assert.deepEqual(restored, original);
+});
+
+test('all shell finishes share through schema v1 without changing independent color or opacity', () => {
+  const ids = SHELL_FINISHES.map(item => item.id);
+  assert.equal(ids.length, 8); assert.equal(new Set(ids).size, 8);
+  assert.ok(SHELL_FINISHES.every(item => typeof item.label === 'string' && item.label.length));
+  assert.deepEqual(sceneSchema.$defs.appearance.properties.shell.properties.finish.enum, ids);
+  for (const finish of ids) for (const opacity of [0, .37, 1]) {
+    const scene = base(); scene.view.appearance = {shell: {color: '#a376ca', opacity, finish}};
+    const restored = decodeScene(encodeScene(scene));
+    assert.equal(restored.schemaVersion, '1'); assert.deepEqual(restored, scene);
+    assert.equal(validateScene(restored, catalog).valid, true, `${finish} / ${opacity}`);
+  }
+  for (const finish of ['glass', 'Plastic', '', null, {}, ['metal']]) {
+    const scene = base(); scene.view.appearance = {shell: {color: '#a376ca', opacity: .37, finish}};
+    assert.ok(has(validateScene(scene, catalog), 'SHELL_FINISH'));
+  }
+  assert.deepEqual(SHELL_PRESETS, {
+    original: {color: '#080a0b', opacity: 1, finish: 'plastic'},
+    'black-clear': {color: '#171923', opacity: .32, finish: 'plastic'},
+    'purple-clear': {color: '#8456cf', opacity: .36, finish: 'plastic'},
+    gold: {color: '#d7ab52', opacity: 1, finish: 'metal'},
+  });
+});
+
+test('firmware matching does not mistake raw URLs or empty references for manifests', () => {
+  const a = {url: 'https://example.test/a.bin', sha256: 'a'.repeat(64)};
+  assert.equal(firmwareSourceMatches(null, null), false);
+  assert.equal(firmwareSourceMatches(a, {url: 'https://example.test/b.bin'}), false);
+  assert.equal(firmwareSourceMatches(a, {manifestUrl: a.url}), false);
+  assert.equal(firmwareSourceMatches(a, {...a, sha256: 'b'.repeat(64)}), false);
+  assert.equal(firmwareSourceMatches(a, {...a, sha256: 'A'.repeat(64)}), true);
+  assert.equal(firmwareSourceMatches(a, {url: a.url}), true);
 });
 
 test('malformed, unsafe, oversized, cyclic and nonfinite payloads reject', () => {
@@ -162,11 +218,13 @@ for (const name of ['scene', 'local-accessory', 'catalog']) {
   assert.equal(schema.$schema, 'https://json-schema.org/draft/2020-12/schema');
 }
 let pinnedArtifacts = 0;
-for (const firmware of catalog.firmwares.filter(item => item.status === 'available' && item.source?.manifestUrl?.startsWith('file:'))) {
+// Artifact pin checks deliberately use private fixtures, independently of public entries.
+const fixtureCatalog = await withPlatformTestFixtures(catalog, new URL('../web/platform/index.html', import.meta.url));
+for (const firmware of fixtureCatalog.firmwares.filter(item => item.status === 'available' && item.source?.manifestUrl?.startsWith('file:'))) {
   const bytes = await readFile(new URL(firmware.source.manifestUrl));
   assert.equal(createHash('sha256').update(bytes).digest('hex'), firmware.source.sha256, `${firmware.id} manifest hash must match its catalog pin`);
   const manifest = JSON.parse(bytes);
-  if (firmware.id === 'platform-stopwatch-diagnostic') {
+  if (firmware.id === DIAGNOSTIC_FIRMWARE_ID) {
     for (const entry of Object.values(manifest.files).flat()) assert.match(manifest.artifact_sha256[entry], /^[a-f0-9]{64}$/, 'Every diagnostic artifact must have a hash pin');
   }
   for (const [entry, expected] of Object.entries(manifest.artifact_sha256 || {})) {

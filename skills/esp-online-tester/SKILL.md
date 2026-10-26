@@ -13,9 +13,11 @@ Read [the API reference](references/api.md) for commands and [configuration and 
 
 Use the page's `window.espTester`, wait until it exists, then read `version`, `capabilities()` and `observe()`. Version `1.0.0` is implemented. Methods are asynchronous except `subscribe`; failures reject with `error.code`, `error.message` and sometimes `error.details`.
 
-Preserve the user's selected model, accessory revision and firmware. StopWatch has a partial executable board model. PaperMono currently has metadata and a visual preview but no executable board model. The generic ESP32-S3 Hello fixture has serial output and no display. `configure()` success establishes configuration validity; it does not establish firmware compatibility.
+Preserve the user's selected model, accessory revision and firmware. StopWatch, PaperMono/Lite and Cardputer-Adv have partial executable board models. PaperMono official 1.2.0 display, brightness buttons and touch controls are verified; NFC absence makes the official app use its Lite branch. Cardputer-Adv official v0.3 boots with a real display and TCA8418 matrix keyboard; Enter leaves the boot screen, physical comma/slash keys navigate its launcher. Its menu entries do not establish complete app compatibility. Other products must be checked through capabilities, never inferred from the ESP32 family. `configure()` success establishes configuration validity; it does not establish firmware compatibility.
 
-For a user-provided firmware, use `{manifestUrl, sha256?}` or `{url, sha256?}`. A raw BIN must be a merged flash image starting at address 0, with a bootloader and the partition table at `0x8000`; app-only binaries need a manifest with their other segments. Cross-origin downloads require CORS. A GitHub repository page is not a binary URL. Do not silently substitute a demo when the requested firmware fails.
+For a user-provided remote firmware, use `{manifestUrl, sha256?}` or `{url, sha256?}`. A single raw BIN must be a complete merged image. For a local ESP-IDF app, load `{format:'build',files}` with browser Files for `flasher_args.json` and every referenced image; preserve directory paths if names collide. The loader validates chip, offsets, overlaps and partition layout rather than guessing an app address. Cross-origin downloads require CORS. A GitHub repository page is not a binary URL. Do not silently substitute a demo when the requested firmware fails.
+
+Writable Flash persists separately for each device and initial firmware content hash. Inspect `observe().storage`; `reset()` retains it. `clearDeviceStorage()` is an explicit destructive action on that scope, restores the original image and leaves the machine ready. Do not clear user data as automatic troubleshooting or test cleanup. Firmware download cache has its own clear action. For tests, use an isolated browser context; portable recording requires pristine storage and never includes private Flash pages.
 
 ## Configure, operate, verify
 
@@ -25,20 +27,26 @@ For a user-provided firmware, use `{manifestUrl, sha256?}` or `{url, sha256?}`. 
 4. Use `capture({format:'png'})` for actual device pixels. `NO_FRAME` means there is no firmware framebuffer; do not substitute the 3D case or a mock screenshot as device output.
 5. Record the scene, `(await api.observe()).firmware` artifact receipt, assertions, errors and support limitations. `await api.share({mode:'embed'})` produces a portable scene URL. After local file loading, this API rejects sharing until the firmware is published at a browser-readable URL. The UI can export or share a configuration without local firmware bytes and labels that omission. Pause or dispose task-owned sessions when finished; close task-owned browser resources according to the repository's lifecycle instructions.
 
+For a matrix keyboard, inspect `capabilities().input.keyboard` and the product's `controls`; use `api.press(control.id)` for the same keys exposed by the 3D model. The low-level event is `{type:'matrix-key', row, column, pressed}` with the product's physical row/column coordinates. Do not send typed text through UART to imitate key switches, or infer matrix coordinates from GPIO numbers. Check modifier combinations and release on blur; verify the resulting firmware UI. Catalog key geometry may be available before the corresponding runtime is ready.
+
+Original Cardputer K132 and K132-V11 use board `cardputer` with keyboard model `gpio-matrix-74hc138`; Adv uses `cardputer-adv` and `tca8418`. Original official v1.1 is partially verified through boot, Enter and launcher navigation. Both share physical 4×14 input coordinates, but never substitute one board for the other.
+
 Use explicit timestamps and values for reproducible GPS tests. Choose `m5stack-gps-u032` (AT6558, default 9600) or `m5stack-gps-u032-v11` (AT6668, default 115200) from the actual hardware revision. The implemented GPS path requires StopWatch and `{mode:'logical',port:'uart1'}`. It injects checksummed NMEA into the emulator's UART1 input and bypasses physical pin routing, baud timing and external power. It does not certify wiring or physical GPS behavior.
 
-The bundled `platform-stopwatch-diagnostic` is our public diagnostic firmware, not M5Stack's factory firmware. It reports `PLATFORM_READY stopwatch`, `BUTTON_A`, `BUTTON_B`, `TOUCH down` and `GPS_RX`. The metadata distinguishes simulated tests from hardware validation.
+Hello and StopWatch diagnostic firmware are internal automated-test fixtures. They are absent from the public catalogs, and the StopWatch diagnostic manifest/binaries are excluded from Pages. Do not offer them as user devices or selectable production firmware. Local repository tests can use `tools/fixtures/platform-catalog.mjs`; diagnostic serial assertions do not apply to official firmware.
+
+The workbench now selects `m5stack-stopwatch-official` (official User Demo V0.5) by default. When constructing a fresh scene programmatically, resolve the product's `defaultFirmwareId` from the firmware catalog and assign its pinned source; `createDefaultScene` itself leaves firmware null. Simultaneously hold A+B to open/return to the launcher; A/B select a feature, touch opens it. Inside Stopwatch, B starts/stops and A adds a lap while running or resets while stopped. Use guest time when testing holds; a short host delay is unreliable under CPU load. RTC/IMU/audio/power behavior remains partial and no physical hardware validation is implied.
+
+To change only presentation, preserve `observe().scene.view` and call `updateSceneMetadata({view:{...view,appearance:{shell:{color:'#8456cf',opacity:0.36,finish:'plastic'}}}})`. This preserves running firmware and is portable through sharing/embedding. Color is six-digit hex, opacity is 0–1; read `SHELL_FINISHES` from `appearance.js` for the eight supported finish IDs. Omit `appearance` to restore the product's original shell. `UNKNOWN` PCB is a replaceable blank placeholder, not verified internal CAD. Exploded animation remains planned, not an implemented API.
 
 ## Record and share interactions
 
-Load a remote firmware source first. `await api.recordingStart()` resets and boots it, then captures only successfully acknowledged button/touch inputs. A keyboard press records its mapped semantic button; screen taps and left/right drags record normalized down/move/up coordinates. Camera selection/frames, serial/GPS injection, flashing and scripts are excluded. The limits are 120 guest seconds, 500 events and 32 KiB per recording. Local firmware files cannot supply a portable recording source.
+Load a remote firmware source first. `await api.recordingStart()` resets and boots it, then captures only successfully acknowledged button, matrix-key and touch inputs. A keyboard press records its mapped device button or matrix coordinate; screen taps and left/right drags record normalized down/move/up coordinates. Camera selection/frames, serial/GPS injection, flashing and scripts are excluded. The limits are 120 guest seconds, 500 events and 32 KiB per recording. Local firmware files cannot supply a portable recording source.
 
 ```js
 await api.recordingStart();
-await api.waitFor({port:'uart0', serialIncludes:'PLATFORM_READY stopwatch', timeoutMs:30000});
-const observed = api.waitFor({port:'uart0', serialIncludes:'BUTTON_A', fromNow:true});
-await api.press('button-a', {durationMs:100});
-await observed;
+await api.waitFor({port:'uart0', serialIncludes:'[Launcher] on open', timeoutMs:120000});
+await api.press('button-a', {durationMs:150}); // Sample input; separately verify its firmware-specific effect.
 const recording = await api.recordingStop(); // Releases any remaining held inputs.
 const link = await api.share({mode:'embed'}); // Includes scene= and recording=.
 const receipt = await api.recordingPlay(recording); // Resets again; compare the receipt.

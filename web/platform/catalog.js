@@ -1,4 +1,6 @@
+import {isPressControl} from './control-input.js';
 // Static catalog and portable scene contract. No application server is required.
+import {isShellFinish} from './appearance.js';
 export const SCHEMA_VERSION = '1';
 export const MAX_SCENE_BYTES = 64 * 1024;
 const STORAGE_KEY = 'esp-online-tester:accessories:v1';
@@ -61,7 +63,7 @@ function remoteUrl(value) {
 
 export async function loadCatalog() {
   const entries = await Promise.all(['products', 'accessories', 'firmwares'].map(async name => {
-    const response = await fetch(new URL(`./catalog/${name}.json`, import.meta.url));
+    const response = await fetch(new URL(`./catalog/${name}.json`, import.meta.url), {cache: 'no-store'});
     if (!response.ok) fail('CATALOG_FETCH', `Cannot load ${name}: HTTP ${response.status}.`);
     const document = parseJson(await response.text(), 512 * 1024);
     if (document.schemaVersion !== SCHEMA_VERSION || !Array.isArray(document.items)) fail('CATALOG_SCHEMA', `Invalid ${name} catalog.`);
@@ -79,12 +81,20 @@ export async function loadCatalog() {
 export function createDefaultScene(catalog, productId = 'm5stack-stopwatch') {
   const product = catalog.products.find(item => item.id === productId);
   if (!product) fail('UNKNOWN_PRODUCT', `Unknown product: ${productId}`);
-  const buttons = product.controls.filter(control => control.type === 'button');
+  const buttons = product.controls.filter(isPressControl), explicit=buttons.filter(control=>control.defaultKeyCode);
+  const keyMapping=explicit.length?Object.fromEntries(explicit.map(control=>[control.defaultKeyCode,control.id])):Object.fromEntries(buttons.filter(control=>control.type==='button').slice(0,26).map((button,i)=>[`Key${String.fromCharCode(65+i)}`,button.id]));
   return {
     schemaVersion: SCHEMA_VERSION, productId, firmware: null, accessories: [],
-    keyMapping: Object.fromEntries(buttons.slice(0, 26).map((button, i) => [`Key${String.fromCharCode(65 + i)}`, button.id])),
+    keyMapping,
     view: {mode: 'studio', deviceView: '3d'},
   };
+}
+
+export function firmwareSourceMatches(left, right) {
+  if (!left || !right) return false;
+  const kind = left.manifestUrl ? 'manifestUrl' : 'url';
+  return typeof left[kind] === 'string' && left[kind].length > 0 && left[kind] === right[kind]
+    && (!left.sha256 || !right.sha256 || left.sha256.toLowerCase() === right.sha256.toLowerCase());
 }
 
 function allowedKeys(value, allowed, path, errors) {
@@ -93,11 +103,19 @@ function allowedKeys(value, allowed, path, errors) {
 
 function validateParameters(parameters, path, errors) {
   if (!record(parameters)) { errors.push(issue('PARAMETERS', path, 'Parameters must be an object.')); return; }
-  const ranges = {baudRate: [1, 4_000_000], latitude: [-90, 90], longitude: [-180, 180], altitude: [-10000, 100000]};
+  const ranges = {baudRate: [1, 4_000_000], latitude: [-90, 90], longitude: [-180, 180], altitude: [-10000, 100000], speedKnots: [0, 10000], course: [0, 360], satellites: [1, 99]};
   for (const [key, [low, high]] of Object.entries(ranges)) {
-    if (parameters[key] !== undefined && (typeof parameters[key] !== 'number' || !Number.isFinite(parameters[key]) || parameters[key] < low || parameters[key] > high || (key === 'baudRate' && !Number.isInteger(parameters[key])))) {
+    if (parameters[key] !== undefined && (typeof parameters[key] !== 'number' || !Number.isFinite(parameters[key]) || parameters[key] < low || parameters[key] > high || (key === 'course' && parameters[key] === 360) || (['baudRate', 'satellites'].includes(key) && !Number.isInteger(parameters[key])))) {
       errors.push(issue('PARAMETER_RANGE', `${path}/${key}`, `${key} must be between ${low} and ${high}.`));
     }
+  }
+  if (parameters.positionSource !== undefined) {
+    const value = parameters.positionSource, location = `${path}/positionSource`;
+    if (!record(value)) { errors.push(issue('POSITION_SOURCE', location, 'Position source must be an object.')); return; }
+    allowedKeys(value, ['kind', 'provider', 'fetchedAt', 'city', 'region', 'country'], location, errors);
+    if (!['manual', 'ip-estimate'].includes(value.kind)) errors.push(issue('POSITION_SOURCE', location, 'Position source must be manual or ip-estimate.'));
+    for (const field of ['provider', 'city', 'region', 'country']) if (value[field] !== undefined && (typeof value[field] !== 'string' || value[field].length > 160)) errors.push(issue('POSITION_SOURCE', `${location}/${field}`, 'Source description must be a short string.'));
+    if (value.fetchedAt !== undefined && (typeof value.fetchedAt !== 'string' || !/^\d{4}-\d\d-\d\dT.*Z$/.test(value.fetchedAt) || !Number.isFinite(Date.parse(value.fetchedAt)))) errors.push(issue('POSITION_SOURCE', `${location}/fetchedAt`, 'Fetch time must be an ISO UTC timestamp.'));
   }
 }
 
@@ -169,13 +187,28 @@ export function validateScene(scene, catalog) {
   if (!record(scene.keyMapping) || Object.keys(scene.keyMapping).length > 64) errors.push(issue('KEY_MAPPING', '/keyMapping', 'Key mapping must be an object with at most 64 bindings.'));
   else for (const [key, control] of Object.entries(scene.keyMapping)) {
     if (!/^[A-Za-z][A-Za-z0-9]{0,39}$/.test(key)) errors.push(issue('KEY_CODE', `/keyMapping/${key}`, 'Use a KeyboardEvent.code such as KeyA or Space.'));
-    if (product && !product.controls.some(item => item.id === control && item.type === 'button')) errors.push(issue('UNKNOWN_CONTROL', `/keyMapping/${key}`, `Unknown button: ${control}`));
+    if (product && !product.controls.some(item => item.id === control && isPressControl(item))) errors.push(issue('UNKNOWN_CONTROL', `/keyMapping/${key}`, `Unknown button: ${control}`));
   }
   if (!record(scene.view)) errors.push(issue('VIEW', '/view', 'View must be an object.'));
   else {
-    allowedKeys(scene.view, ['mode', 'deviceView'], '/view', errors);
+    allowedKeys(scene.view, ['mode', 'deviceView', 'appearance'], '/view', errors);
     if (!['studio', 'embed'].includes(scene.view.mode)) errors.push(issue('VIEW_MODE', '/view/mode', 'Choose studio or embed.'));
     if (!['2d', '3d'].includes(scene.view.deviceView)) errors.push(issue('DEVICE_VIEW', '/view/deviceView', 'Choose 2d or 3d.'));
+    if (scene.view.appearance !== undefined) {
+      const appearance = scene.view.appearance, path = '/view/appearance';
+      if (!record(appearance)) errors.push(issue('APPEARANCE', path, 'Appearance must be an object.'));
+      else {
+        allowedKeys(appearance, ['shell'], path, errors);
+        if (!record(appearance.shell)) errors.push(issue('APPEARANCE', `${path}/shell`, 'Shell appearance is required.'));
+        else {
+          const shell = appearance.shell;
+          allowedKeys(shell, ['color', 'opacity', 'finish'], `${path}/shell`, errors);
+          if (typeof shell.color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(shell.color)) errors.push(issue('SHELL_COLOR', `${path}/shell/color`, 'Use a six-digit hex color.'));
+          if (typeof shell.opacity !== 'number' || !Number.isFinite(shell.opacity) || shell.opacity < 0 || shell.opacity > 1) errors.push(issue('SHELL_OPACITY', `${path}/shell/opacity`, 'Opacity must be between 0 and 1.'));
+          if (!isShellFinish(shell.finish)) errors.push(issue('SHELL_FINISH', `${path}/shell/finish`, 'Choose a supported shell finish.'));
+        }
+      }
+    }
   }
   return {valid: errors.length === 0, errors, warnings};
 }

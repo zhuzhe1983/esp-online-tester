@@ -11,7 +11,7 @@ pub struct Gpio {
     /// (pin, level) changes of enabled outputs since last drain
     pub changes: Vec<(u8, bool)>,
     pub strap: u32,
-    pull_up: u64, pull_down: u64,
+    pull_up: u64, pull_down: u64, open_drain: u64,
     external_mask: u64, external_levels: u64,
     pub int_ena_pins: u64,
     matrix_input_pins: u64,
@@ -19,7 +19,7 @@ pub struct Gpio {
     pub input_select: u32,
 }
 impl Gpio {
-    pub fn new() -> Self { Gpio { out: 0, enable: 0, input: (1u64 << 49) - 1, status: 0, pin: [0; 49], func_in_sel: [0x3c; 256], func_out_sel: [0x100; 49], ram: RegRam::new(), changes: Vec::new(), strap: 0x0f, input_changes: Vec::new(), pull_up: 0, pull_down: 0, external_mask: 0, external_levels: 0, int_ena_pins: 0, matrix_input_pins: 0, input_select: 0x80 } }
+    pub fn new() -> Self { Gpio { out: 0, enable: 0, input: (1u64 << 49) - 1, status: 0, pin: [0; 49], func_in_sel: [0x3c; 256], func_out_sel: [0x100; 49], ram: RegRam::new(), changes: Vec::new(), strap: 0x0f, input_changes: Vec::new(), pull_up: 0, pull_down: 0, open_drain: 0, external_mask: 0, external_levels: 0, int_ena_pins: 0, matrix_input_pins: 0, input_select: 0x80 } }
     /// Report every pin whose driven level changed: `out & enable` before against after. Both
     /// words matter — a driver that toggles the output *enable* to produce a level (IDF 5.5's
     /// esp_lcd releases the D/C line after each colour transfer and re-enables it before the
@@ -73,7 +73,11 @@ impl Gpio {
         // Host-driven levels are ideal digital sources; opposing output drivers do not
         // model electrical contention. Floating and simultaneous pulls retain HIGH.
         let passive = self.pull_up | !self.pull_down;
-        let driven = (self.out & self.enable) | (passive & !self.enable);
+        // IDF v5.4.2 (Cardputer-Adv) and v5.5.1 components/soc/esp32s3/register/
+        // soc/gpio_reg.h: GPIO_PINn_PAD_DRIVER bit 2. An enabled open-drain HIGH
+        // releases the pad, so the pulls apply just as when the output is disabled.
+        let enabled = self.enable & !(self.open_drain & self.out);
+        let driven = (self.out & enabled) | (passive & !enabled);
         let levels = (self.external_levels & self.external_mask) | (driven & !self.external_mask);
         let mut changed = (self.input ^ levels) & mask;
         self.input = (self.input & !mask) | (levels & mask);
@@ -150,6 +154,10 @@ impl Gpio {
             0x74..=0x134 => {
                 let pin = ((off - 0x74) / 4) as usize;
                 self.pin[pin] = v;
+                let mask = 1u64 << pin;
+                let old_drain = self.open_drain;
+                self.open_drain = (self.open_drain & !mask) | if v & 4 != 0 { mask } else { 0 };
+                if old_drain != self.open_drain { self.resolve(mask, u64::MAX); }
                 let enabled = v & (1 << 13) != 0 && matches!((v >> 7) & 7, 1..=5);
                 self.int_ena_pins = (self.int_ena_pins & !(1 << pin)) | (u64::from(enabled) << pin);
             },

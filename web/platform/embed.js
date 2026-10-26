@@ -1,6 +1,6 @@
 const CHANNEL = 'esp-workbench';
 const VERSION = '1';
-const METHODS = new Set(['observe', 'capabilities', 'configure', 'updateSceneMetadata', 'loadFirmware', 'start', 'pause', 'reset', 'input', 'injectGps', 'capture', 'waitFor', 'press', 'share', 'recordingStart', 'recordingStop', 'recordingPlay', 'recordingTakeOver', 'recordingObserve', 'recordingClear']);
+const METHODS = new Set(['observe', 'capabilities', 'configure', 'updateSceneMetadata', 'loadFirmware', 'clearFirmwareCache', 'flushDeviceStorage', 'clearDeviceStorage', 'start', 'pause', 'reset', 'input', 'setGpsFix', 'injectGps', 'setImu', 'capture', 'waitFor', 'press', 'share', 'recordingStart', 'recordingStop', 'recordingPlay', 'recordingTakeOver', 'recordingObserve', 'recordingClear']);
 
 // Only the direct embedding parent may establish one origin/session-bound connection.
 // No broad window message listener is exposed as an unchecked runtime command endpoint.

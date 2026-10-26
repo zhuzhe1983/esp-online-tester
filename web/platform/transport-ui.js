@@ -1,5 +1,6 @@
 import {createFlasher} from './flasher.js';
 import {loadWatchlist, checkWatchEntry, buildFirmwareIssueUrl} from './watchlist.js';
+import {renderHintList} from './hints.js';
 
 const node = (tag, className, text) => { const result = document.createElement(tag); if (className) result.className = className; if (text !== undefined) result.textContent = text; return result; };
 const button = (label, className = 'button quiet tiny') => { const result = node('button', className, label); result.type = 'button'; return result; };
@@ -16,10 +17,11 @@ const describe = value => {
 export function createTransportUi({mount, catalog, getScene, getSource, getApi, prepareRecording, releaseInputs, recordingMatchesScene, onRecordingState, onRecordingChange, onError, onLog}) {
   const root = node('section', 'session-tools'); root.setAttribute('aria-label', '操作录制与实体刷机');
   const row = node('div', 'session-tool-row');
+  const storageButton = button('设备存储'); storageButton.dataset.action = 'device-storage';
   const record = button('● 重启并录制'), stop = button('■ 停止'), play = button('▷ 回放'), takeOver = button('接管', 'button tiny'), options = button('详情', 'button quiet tiny'), flash = button('刷到设备 ↗', 'button tiny');
   const recordingStatus = node('span', 'session-status', '未录制'); recordingStatus.setAttribute('aria-live', 'polite');
-  row.append(record, stop, play, takeOver, recordingStatus, options, flash); root.append(row);
-  const details = node('details', 'session-details'), summary = node('summary', '', '录制、回放与刷机说明'); details.append(summary);
+  row.append(record, stop, play, takeOver, recordingStatus, options, storageButton, flash); root.append(row);
+  const details = node('details', 'session-details'), summary = node('summary', '', '录制、存储与刷机说明'); details.append(summary);
   const recordingNote = node('p', 'helper', '录制从重启开始，保存按键、点击与滑动。共享录制需要接收者主动点击回放。串口、GPS 与刷机不会录入。');
   const recordingReceipt = node('p', 'helper'); recordingReceipt.hidden = true;
   const clearRecording = button('清除录制'), flashHeading = node('h3', '', '连接真实设备'), flashHint = node('p', 'helper', '实机刷写通路尚未完成硬件验收。选择串口后会写入当前固件，请先备份设备数据；写入前会检查芯片与容量。');
@@ -28,6 +30,16 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
   const cancelFlash = button('取消刷写'), flashIssue = link('检查失败：打开 GitHub issue 草稿 ↗', '#'), flashLog = node('pre', 'flash-log');
   cancelFlash.hidden = true; flashIssue.hidden = true; flashLog.hidden = true;
   details.append(flashHeading, flashStatus, progress, cancelFlash, flashHint, flashIssue, flashLog, recordingNote, recordingReceipt, clearRecording); root.append(details); mount.append(root);
+  const storageSection = node('section', 'device-storage-details'), storageHeading = node('h3', '', '模拟设备存储');
+  const storageIdentity = node('p', 'helper'), storageStatus = node('p', 'helper'); storageStatus.setAttribute('role', 'status');
+  const storageNote = node('p', 'helper', '运行中写入的数据按设备型号和固件内容分别保存在当前浏览器。清空只影响这里显示的设备与固件，固件下载缓存单独管理。');
+  const clearStorage = button('清空当前设备数据'), confirmStorage = node('div', 'storage-confirm'); confirmStorage.hidden = true;
+  clearStorage.dataset.action = 'clear-device-storage';
+  const confirmNote = node('p', 'helper', '将删除此固件写入的配置和文件，并停止模拟器。再次启动会从原始固件状态开始。'), confirmClearStorage = button('确认清空', 'button tiny'), cancelClearStorage = button('取消');
+  confirmClearStorage.dataset.action = 'confirm-clear-device-storage';
+  confirmStorage.append(confirmNote, confirmClearStorage, cancelClearStorage);
+  storageSection.append(storageHeading, storageIdentity, storageStatus, storageNote, clearStorage, confirmStorage); details.prepend(storageSection);
+  let deviceStorage = null, storageOperation = false, storageScope = null;
   let recording = null, recordingState = {status: 'idle', recording: null, progress: {index: 0, total: 0}}, localSelection = false, recordingBusy = false, replayRequested = false, takeoverPending = null, active = true, flashState = {status: 'idle'}, flashTarget = null;
   const flashActive = () => ['choosing', 'preparing', 'connecting', 'validating', 'writing', 'resetting', 'cancelling'].includes(flashState.status);
   const recordingActive = () => ['preparing', 'recording', 'playing'].includes(recordingState.status);
@@ -52,6 +64,19 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
       const comparison = {equal: '最终屏幕一致', different: '最终屏幕不同', unavailable: '暂无屏幕对比'}[recordingState.receipt.frameComparison] || '尚未完成屏幕对比';
       recordingReceipt.textContent = `${comparison} · ${recordingState.receipt.timingDifferences?.length || 0} 项时序偏差。回放依据虚拟时钟观察值，不保证逐周期一致。`;
     }
+    const scope = deviceStorage?.scope;
+    const supportedStorage = typeof api()?.clearDeviceStorage === 'function';
+    storageButton.disabled = !supportedStorage;
+    if (storageScope !== scope?.key) { storageScope = scope?.key; confirmStorage.hidden = true; }
+    const storageProduct = catalog.products.find(product => product.id === scope?.productId);
+    storageIdentity.textContent = scope ? `${storageProduct?.name || scope.productId} · 固件 ${scope.firmwareSha256.slice(0, 12)}` : '加载固件后显示对应的设备存储。';
+    const storageLabels = {unloaded:'尚未加载固件',loading:'正在恢复设备数据…',clean:deviceStorage?.restored?'已恢复此前的设备数据':'使用原始固件数据',saving:'正在保存设备数据…',saved:'设备数据已保存到此浏览器', 'memory-only':'浏览器持久化不可用，当前数据仅在本次页面中保留',conflict:'另一页面已修改此设备数据，模拟已停止，请重新加载固件',error:'设备数据保存失败，请勿关闭页面'};
+    storageStatus.textContent = storageLabels[deviceStorage?.status] || (supportedStorage ? '正在读取存储状态…' : '此运行时尚未提供设备存储管理');
+    storageStatus.classList.toggle('storage-warning', ['memory-only','conflict','error'].includes(deviceStorage?.status));
+    clearStorage.disabled = !supportedStorage || !scope || storageOperation || recordingBusy || recordingActive() || flashActive() || ['loading','saving','conflict'].includes(deviceStorage?.status);
+    confirmClearStorage.disabled = clearStorage.disabled;
+    cancelClearStorage.disabled = storageOperation;
+    if (storageOperation) storageStatus.textContent = '正在清空设备数据…';
     const capability = flasher.capabilities();
     flash.disabled = !capability.supported || flashActive();
     flash.title = capability.supported ? '选择串口并将当前固件写入真实设备' : capability.reason;
@@ -96,6 +121,20 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
     catch (error) { onError(error); }
   });
   options.addEventListener('click', () => { details.open = !details.open; });
+  storageButton.addEventListener('click', async () => {
+    details.open = true;
+    try { deviceStorage = (await api().observe()).storage || null; render(); storageSection.scrollIntoView({block:'nearest'}); }
+    catch (error) { onError(error); }
+  });
+  clearStorage.addEventListener('click', () => { confirmStorage.hidden = false; });
+  cancelClearStorage.addEventListener('click', () => { confirmStorage.hidden = true; });
+  confirmClearStorage.addEventListener('click', async () => {
+    if (storageOperation) return;
+    storageOperation = true; render();
+    try { await releaseInputs(); const cleared = await api().clearDeviceStorage(); deviceStorage = cleared.storage; confirmStorage.hidden = true; onLog?.('[设备存储] 已还原当前设备与固件的初始数据。\n'); }
+    catch (error) { onError(error); }
+    finally { storageOperation = false; render(); }
+  });
   const flasher = createFlasher({onEvent(event) {
     if (!active) return;
     if (event.type === 'log') { flashLog.hidden = false; flashLog.textContent = (flashLog.textContent + event.message + '\n').slice(-12000); return; }
@@ -122,7 +161,8 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
     } catch (error) { onError(error); }
   });
   cancelFlash.addEventListener('click', () => { flasher.cancel(); });
-  const unsubscribe = api()?.subscribe?.(event => { if (event.type === 'recording') acceptRecordingState(event.state); });
+  const unsubscribe = api()?.subscribe?.(event => { if (event.type === 'recording') acceptRecordingState(event.state); if (event.type === 'storage') { deviceStorage = event.storage; render(); } });
+  Promise.resolve(api()?.observe?.()).then(state => { if (active) { deviceStorage = state?.storage || null; render(); } }).catch(() => {});
   render();
   return {
     refresh: render,
@@ -201,49 +241,56 @@ export function createKnowledgePanel(mount) {
   };
 }
 
-export async function mountWatchlist(mount, {getProductId, onError} = {}) {
-  if (!mount) return () => {};
-  const details = node('details', 'watchlist-details'), summary = node('summary', '', '知名固件 · 远程版本关注'); details.append(summary); mount.append(details);
-  const body = node('div', 'watchlist-body'); body.append(node('p', 'helper', '读取关注列表…')); details.append(body);
-  let active = true, checkSequence = 0, checkController;
-  try {
-    const list = await loadWatchlist(); if (!active) return () => {};
-    body.replaceChildren(node('p', 'helper', '仅查询上游版本与资源状态，不下载或保存固件二进制。关注条目不代表已适配当前产品。'));
-    const select = node('select'); select.setAttribute('aria-label', '选择关注的知名固件');
-    for (const category of list.categories) {
-      const group = node('optgroup'); group.label = category.name;
-      for (const entry of list.entries.filter(item => item.category === category.id)) group.append(new Option(entry.name, entry.id));
-      select.append(group);
-    }
-    const info = node('div', 'watch-entry'), check = button('检查远程版本', 'button wide'), result = node('div', 'watch-result'); result.setAttribute('aria-live', 'polite');
-    body.append(select, info, check, result);
-    function selectedEntry() { return list.entries.find(entry => entry.id === select.value); }
-    function renderEntry() {
-      checkSequence++; checkController?.abort(); const entry = selectedEntry(); info.replaceChildren(); result.replaceChildren(); check.disabled = false;
-      if (!entry) return;
-      info.append(node('p', 'helper', entry.description || entry.name), node('p', 'watch-compatibility', entry.compatibility?.note || '仅作资料关注，尚未验证产品适配。'));
-      info.append(node('p', 'helper', `收录版本：${entry.version || '未固定'}${entry.checkedAt ? ` · 核对于 ${entry.checkedAt}` : ''}`));
-      if (entry.releaseUrl) info.append(link('打开上游发布页 ↗', entry.releaseUrl));
-    }
-    select.addEventListener('change', renderEntry); renderEntry();
-    check.addEventListener('click', async () => {
-      const entry = selectedEntry(); if (!entry) return; const token = ++checkSequence; checkController?.abort(); checkController = new AbortController();
-      check.disabled = true; result.replaceChildren(node('p', 'helper', '正在查询上游元信息…'));
-      try {
-        const report = await checkWatchEntry(entry, {signal: checkController.signal}); if (!active || token !== checkSequence) return;
-        result.replaceChildren(node('p', 'watch-version', report.latestVersion ? `${report.updateAvailable ? '发现新版本' : '上游版本'}：${report.latestVersion}` : '暂时无法确认最新版本'));
-        if (report.checkedAt) result.append(node('p', 'helper', `本次查询：${report.checkedAt}`));
-        if (report.error) result.append(node('p', 'helper', report.error.message));
-        for (const asset of report.assets || []) {
-          const labels = {reachable: '可访问', missing: '404/410，资源已失效', 'http-error': `HTTP ${asset.status}，需要检查`, 'network-or-cors': '网络或 CORS 阻止核对，不能据此认定失效', cancelled: '已取消'};
-          result.append(node('p', 'watch-asset', `${labels[asset.state] || asset.state} · ${new URL(asset.url).pathname.split('/').pop() || asset.url}`));
-        }
-        if (report.releaseUrl) result.append(link('查看当前发布页 ↗', report.releaseUrl));
-        if (report.issueUrl) result.append(link('带上检查结果，打开 issue 草稿 ↗', report.issueUrl));
-      } catch (error) {
-        if (active && token === checkSequence) { result.replaceChildren(node('p', 'helper', error.message), link('打开 issue 草稿 ↗', buildFirmwareIssueUrl({entryId: entry.id, url: entry.metadataUrl, reason: error.message, productId: getProductId?.()}))); onError?.(error); }
-      } finally { if (active && token === checkSequence) check.disabled = false; }
-    });
-  } catch (error) { body.replaceChildren(node('p', 'helper', error.message)); }
-  return () => { active = false; checkSequence++; checkController?.abort(); details.remove(); };
+// Version metadata belongs to the selected, product-filtered firmware entry.
+export async function mountFirmwareUpdates(mount, {getProductId} = {}) {
+  if (!mount) return {show() {}, dispose() {}};
+  const body = node('div', 'firmware-updates'), identity = node('p', 'firmware-update-identity'), hints = node('div', 'hint-list'), actions = node('div', 'firmware-update-actions');
+  hints.setAttribute('role', 'group'); hints.setAttribute('aria-label', '固件来源与版本说明');
+  const check = button('检查版本'), result = node('div', 'watch-result'); result.setAttribute('aria-live', 'polite');
+  body.append(identity, hints, actions, result); mount.append(body); body.hidden = true;
+  let active = true, checkSequence = 0, checkController, selected = null, entry = null, list = null, listError = null;
+  try { list = await loadWatchlist(); } catch (error) { listError = error; }
+  function show(firmware) {
+    if (!active) return;
+    if (selected?.id === firmware?.id && selected?.productIds.includes(getProductId?.())) return;
+    selected = firmware || null; entry = null; checkSequence++; checkController?.abort(); result.replaceChildren(); actions.replaceChildren(); renderHintList(hints, []);
+    body.hidden = !firmware || !firmware.productIds.includes(getProductId?.()); if (body.hidden) return;
+    entry = list?.entries.find(item => item.id === firmware.watchlistId) || null;
+    const runnable = firmware.status === 'available' && firmware.source;
+    const role = firmware.role === 'factory' ? '官方出厂' : firmware.role === 'third-party' ? '第三方项目' : '已收录项目';
+    identity.textContent = `${runnable ? '可运行' : '待验证'} · ${role}${firmware.revision || entry?.version ? ` · ${firmware.revision || entry.version}` : ''}`;
+    const facts = [firmware.publisher ? `发布者：${firmware.publisher}` : null, entry?.description, entry?.compatibility?.note, entry?.browserNote, entry?.checkedAt ? `元信息核对于 ${entry.checkedAt}` : null].filter(Boolean);
+    const hintItems = facts.length ? [{id: 'source-detail', icon: 'cloud', label: '来源说明', title: '发布来源与访问条件', paragraphs: facts}] : [];
+    if (entry) hintItems.push({id: 'update-check', icon: 'clock', label: '版本核对', title: '发布版本与同步时间', paragraphs: ['发布信息由本站定时同步；检查版本读取本站快照，不直接调用 GitHub API，也不下载固件正文。运行所需固件可缓存在当前浏览器，服务器不保存；新版本不会自动替换已校验镜像。', '资源链接核对可能受上游 CORS 设置限制。版本快照过期或同步失败不代表固件链接已经失效。']});
+    renderHintList(hints, hintItems);
+    const releaseUrl = entry?.releaseUrl || firmware.sources?.find(source => /releases/.test(source.url))?.url || firmware.sources?.[0]?.url;
+    if (releaseUrl) actions.append(link('上游发布页 ↗', releaseUrl));
+    if (entry?.browserInstallUrl && entry.browserInstallUrl !== releaseUrl) actions.append(link('下载入口 ↗', entry.browserInstallUrl));
+    check.hidden = !entry; check.disabled = false; actions.append(check);
+    if (listError) result.append(node('p', 'helper', '版本元信息暂时无法读取，仍可打开上游发布页。'));
+  }
+  check.addEventListener('click', async () => {
+    if (!entry) return; const requested = entry, token = ++checkSequence; checkController?.abort(); checkController = new AbortController();
+    check.disabled = true; result.replaceChildren(node('p', 'helper', '正在读取发布信息…'));
+    try {
+      const report = await checkWatchEntry(requested, {signal: checkController.signal}); if (!active || token !== checkSequence) return;
+      result.replaceChildren(node('p', 'watch-version', report.latestVersion ? `${report.updateAvailable ? '发现新版本' : report.metadata?.source === 'site-snapshot' ? '已同步版本' : '上游版本'}：${report.latestVersion}` : '暂时无法确认最新版本'));
+      if (report.metadata?.source === 'site-snapshot') {
+        result.append(node('p', 'helper', report.metadata.checkedAt ? `发布信息同步：${report.metadata.checkedAt}` : '本站暂无成功同步记录。'));
+        if (report.metadata.stale) result.append(node('p', 'helper', '当前为较早快照，最新发布信息请查看上游发布页。'));
+        if (report.metadata.refreshError) result.append(node('p', 'helper', `上游同步暂未更新：${report.metadata.refreshError.message || String(report.metadata.refreshError)}。这不代表固件链接失效。`));
+      }
+      if (report.checkedAt) result.append(node('p', 'helper', `本次查询：${report.checkedAt}`));
+      if (report.error) result.append(node('p', 'helper', report.error.message));
+      for (const asset of report.assets || []) {
+        const labels = {reachable: '可访问', missing: '404/410，资源已失效', 'http-error': `HTTP ${asset.status}，需要检查`, 'network-or-cors': '网络或 CORS 阻止核对，不能据此认定失效', cancelled: '已取消'};
+        result.append(node('p', 'watch-asset', `${labels[asset.state] || asset.state} · ${asset.name || new URL(asset.url).pathname.split('/').pop() || asset.url}`));
+      }
+      if (report.releaseUrl) result.append(link('查看当前发布页 ↗', report.releaseUrl));
+      if (report.issueUrl && report.assets?.some(asset => [404, 410].includes(asset.status))) result.append(link('固件资源失效：打开 issue 草稿 ↗', report.issueUrl));
+    } catch (error) {
+      if (active && token === checkSequence) result.replaceChildren(node('p', 'helper', `发布信息暂时无法读取：${error.message}`), node('p', 'helper', '可稍后重试，或打开上游发布页。查询失败不代表固件失效。'));
+    } finally { if (active && token === checkSequence) check.disabled = false; }
+  });
+  return {show, dispose() { active = false; checkSequence++; checkController?.abort(); renderHintList(hints, []); body.remove(); }};
 }

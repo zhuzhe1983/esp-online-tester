@@ -26,6 +26,8 @@ pub struct Co5300 {
     y: u16,
     pending: Option<u8>,
     args: [u8; 4],
+    stream_header: [u8; 4],
+    stream_count: usize,
     arg_count: usize,
     pixel_hi: Option<u8>,
     tear_row: u16,
@@ -57,6 +59,8 @@ impl Co5300 {
             y: 0,
             pending: None,
             args: [0; 4],
+            stream_header: [0; 4],
+            stream_count: 0,
             arg_count: 0,
             pixel_hi: None,
             tear_row: 0,
@@ -161,6 +165,34 @@ impl Co5300 {
             if command == 0x2c { self.x = self.x0; self.y = self.y0; self.frames += 1; }
             &tx[4..]
         } else { tx };
+        self.transaction_data(data);
+    }
+
+    /// Begin a CS-delimited QSPI command. M5GFX 0.2.19 Panel_AMOLED::write_cmd
+    /// sends its four header bytes in separate SPI transfers while CS stays low.
+    pub fn begin_transaction(&mut self) {
+        self.stream_count = 0;
+        self.pending = None;
+        self.pixel_hi = None;
+    }
+
+    /// Bytes under one asserted CS, including split headers and DMA chunks whose
+    /// first pixel may look like a command. Existing transaction() callers keep
+    /// their legacy complete-header convention.
+    pub fn transaction_stream(&mut self, mut data: &[u8]) {
+        if self.stream_count < 4 {
+            let n = data.len().min(4 - self.stream_count);
+            self.stream_header[self.stream_count..self.stream_count + n].copy_from_slice(&data[..n]);
+            self.stream_count += n;
+            data = &data[n..];
+            if self.stream_count < 4 { return; }
+            let header = self.stream_header;
+            if matches!(header[0], 0x02 | 0x32) { self.transaction(&header); }
+        }
+        self.transaction_data(data);
+    }
+
+    fn transaction_data(&mut self, data: &[u8]) {
         match self.pending {
             Some(command @ (0x2a | 0x2b | 0x44)) => {
                 let needed = if command == 0x44 { 2 } else { 4 };

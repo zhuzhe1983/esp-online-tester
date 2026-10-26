@@ -5,6 +5,32 @@ const SPI2: u32 = 0x6002_4000;
 const GDMA: u32 = 0x6003_f000;
 const FIRST_DESC: u32 = 0x3fc9_0100;
 
+#[test]
+fn mask_drom_discards_cpu_stores_without_writable_dma_or_code_invalidation() {
+    let mut bus = SocBus::new(0x20000, 0x20000, [0; 6]);
+    // IDF v5.5.4 esp32s3.rom.ld's dsps_fft2r_w_table_fc32_1024 pointer
+    // resolves into mask DROM. ESP-DSP 1.8.0 initializes through that pointer.
+    let at = DROM_MASK_LOW + 0x1c050;
+    let offset = (at - DROM_MASK_LOW) as usize;
+    bus.drom[offset..offset + 4].copy_from_slice(&0x3f80_0000u32.to_le_bytes());
+    let versions = bus.page_ver.clone();
+    bus.write8(at, 0xff).unwrap();
+    bus.write16(at, 0xffff).unwrap();
+    bus.write32(at, 0xffff_ffff).unwrap();
+    assert_eq!(bus.read32(at).unwrap(), 0x3f80_0000);
+    assert_eq!(bus.page_ver, versions);
+    assert!(bus.last_fault.is_none());
+    assert_eq!(bus.lookup(at).unwrap().writable, 0, "compiled/DMA stores must not mutate ROM");
+    assert_eq!(bus.write8_access::<false>(at, 1), Err(Fault::Prohibited));
+    assert_eq!(bus.write16_access::<false>(at, 1), Err(Fault::Prohibited));
+    assert_eq!(bus.write32_access::<false>(at, 1), Err(Fault::Prohibited));
+    bus.write8(DROM_MASK_HIGH - 1, 1).unwrap();
+    assert_eq!(bus.write16(DROM_MASK_HIGH - 1, 1), Err(Fault::Prohibited));
+    assert_eq!(bus.write32(DROM_MASK_HIGH - 3, 1), Err(Fault::Prohibited));
+    assert_eq!(bus.write8(DROM_MASK_HIGH, 1), Err(Fault::Prohibited));
+    assert_eq!(bus.write32(IROM_MASK_LOW, 1), Err(Fault::Prohibited), "other readonly regions are unchanged");
+}
+
 struct ProbeBoard {
     events: Arc<Mutex<Vec<String>>>,
 }
@@ -446,6 +472,81 @@ fn spi2_data_phase_comes_from_gdma_descriptor() {
 }
 
 #[test]
+fn gpspi_usr_boundaries_keep_partial_descriptors_and_delay_eof() {
+    const DATA: u32 = 0x3fc9_0200;
+    const SECOND: u32 = FIRST_DESC + 16;
+    for (host, timed) in [(2u8, false), (2, true), (3, false)] {
+        let events = Arc::new(Mutex::new(Vec::new()));
+        let mut bus = dma_bus(); bus.spi2_timing = timed;
+        bus.board = Box::new(ProbeBoard { events: events.clone() });
+        bus.periph.gdma.out[0].peri_sel = u32::from(host - 2);
+        bus.periph.gdma.out[0].conf0 = 1 << 2; // AUTO_WRBACK
+        for i in 0..10 { bus.write8(DATA + i, i as u8).unwrap(); }
+        for (desc, length, buffer, next, eof) in [(FIRST_DESC, 6, DATA, SECOND, false), (SECOND, 4, DATA + 6, 0, true)] {
+            bus.write32(desc, length | (length << 12) | (u32::from(eof) << 30) | (1 << 31)).unwrap();
+            bus.write32(desc + 4, buffer).unwrap(); bus.write32(desc + 8, next).unwrap();
+        }
+        let spi = if host == 2 { SPI2 } else { SPI3 };
+        let transfer = |bus: &mut SocBus, bytes: u32| {
+            bus.write32(spi + 0x30, 1 << 28).unwrap(); bus.write32(spi + 0x10, 1 << 27).unwrap();
+            bus.write32(spi + 0x1c, bytes * 8 - 1).unwrap(); bus.write32(spi, 1 << 24).unwrap();
+            if timed { bus.tick(256); }
+        };
+        transfer(&mut bus, 4);
+        let ch = bus.periph.gdma.out[0];
+        assert_eq!((ch.desc, ch.buf_pos, ch.running, ch.int_raw), (FIRST_DESC, 4, true, 0));
+        assert_eq!(bus.read32(FIRST_DESC).unwrap() >> 31, 1, "partly consumed descriptor remains DMA-owned");
+        transfer(&mut bus, 4);
+        let ch = bus.periph.gdma.out[0];
+        assert_eq!((ch.desc, ch.buf_pos, ch.running, ch.int_raw), (SECOND, 2, true, 1));
+        assert_eq!(bus.read32(FIRST_DESC).unwrap() >> 31, 0);
+        assert_eq!(bus.read32(SECOND).unwrap() >> 31, 1, "EOF is not reached mid-descriptor");
+        transfer(&mut bus, 2);
+        let ch = bus.periph.gdma.out[0];
+        assert_eq!((ch.desc, ch.running, ch.int_raw & 0xb, ch.eof_desc), (0, false, 0xb, SECOND));
+        assert_eq!(bus.read32(SECOND).unwrap() >> 31, 0);
+        assert_eq!(&*events.lock().unwrap(), &[format!("spi:{host}:[00, 01, 02, 03]:0"),format!("spi:{host}:[04, 05, 06, 07]:0"),format!("spi:{host}:[08, 09]:0")]);
+        assert_eq!((bus.spi2_dma_fault, bus.spi3_dma_fault), (None, None));
+        transfer(&mut bus, 1);
+        assert_eq!(events.lock().unwrap().len(), 3, "EOF leaves no bytes for another USR");
+    }
+}
+
+#[test]
+fn partial_gpspi_descriptor_cannot_leak_through_stop_reset_or_fresh_link() {
+    const DATA: u32 = 0x3fc9_0200;
+    const SECOND: u32 = FIRST_DESC + 16;
+    for host in [2u8, 3] { for action in ["stop", "reset", "restart"] {
+        let events = Arc::new(Mutex::new(Vec::new())); let mut bus = dma_bus();
+        bus.board = Box::new(ProbeBoard { events: events.clone() });
+        bus.periph.gdma.out[0].peri_sel = u32::from(host - 2);
+        bus.write32(DATA, 0x4433_2211).unwrap(); bus.write32(DATA + 4, 0x8877_6655).unwrap();
+        for (desc, length, buffer) in [(FIRST_DESC, 4, DATA), (SECOND, 2, DATA + 4)] {
+            bus.write32(desc, length | (length << 12) | (1 << 30) | (1 << 31)).unwrap();
+            bus.write32(desc + 4, buffer).unwrap(); bus.write32(desc + 8, 0).unwrap();
+        }
+        let spi = if host == 2 { SPI2 } else { SPI3 };
+        bus.write32(spi + 0x30, 1 << 28).unwrap(); bus.write32(spi + 0x10, 1 << 27).unwrap();
+        bus.write32(spi + 0x1c, 15).unwrap(); bus.write32(spi, 1 << 24).unwrap();
+        assert_eq!(bus.periph.gdma.out[0].buf_pos, 2);
+        match action {
+            "stop" => {
+                bus.write32(GDMA + 0x80, 1 << 20).unwrap(); bus.write32(spi, 1 << 24).unwrap(); bus.tick(512);
+                assert_eq!(events.lock().unwrap().len(), 1, "STOP blocks unread data");
+                bus.write32(GDMA + 0x80, (SECOND & 0xf_ffff) | (1 << 21)).unwrap(); // pending USR resumes on fresh START
+            }
+            "reset" => {
+                bus.write32(GDMA + 0x60, 1).unwrap();
+                assert_eq!((bus.periph.gdma.out[0].desc, bus.periph.gdma.out[0].buf_pos), (0, 0));
+                bus.write32(GDMA + 0x80, (SECOND & 0xf_ffff) | (1 << 21)).unwrap(); bus.write32(spi, 1 << 24).unwrap();
+            }
+            _ => { bus.write32(GDMA + 0x80, (SECOND & 0xf_ffff) | (1 << 22)).unwrap(); bus.write32(spi, 1 << 24).unwrap(); }
+        }
+        assert_eq!(&*events.lock().unwrap(), &[format!("spi:{host}:[11, 22]:0"),format!("spi:{host}:[55, 66]:0")], "{action}");
+    } }
+}
+
+#[test]
 fn dma_payload_crosses_a_tlb_mapping_boundary() {
     const DATA: u32 = 0x3fc8_fffe;
     let events = Arc::new(Mutex::new(Vec::new()));
@@ -600,7 +701,7 @@ fn descriptor_step_budget_is_typed() {
 }
 
 #[test]
-fn short_ms_dlen_retires_an_overlong_eof_descriptor() {
+fn short_ms_dlen_keeps_an_overlong_eof_descriptor_for_the_next_usr() {
     const DATA: u32 = 0x3fc9_0200;
     let mut bus = dma_bus();
     bus.write32(DATA, 0x4433_2211).expect("test data write failed");
@@ -611,10 +712,18 @@ fn short_ms_dlen_retires_an_overlong_eof_descriptor() {
     start_dma(&mut bus, 16);
 
     assert_eq!(bus.spi2_dma_fault, None);
+    assert_eq!(bus.periph.gdma.out[0].int_raw & 0xb, 0, "partial consumption is not descriptor completion");
+    assert_eq!((bus.periph.gdma.out[0].desc, bus.periph.gdma.out[0].buf_pos), (FIRST_DESC, 2));
+    assert!(bus.periph.gdma.out[0].running);
+    assert_eq!(bus.periph.spi2.transfers, 1);
+    // The older test intentionally retired the whole descriptor. That discarded
+    // bytes needed by M5GFX's next USR; this digital model now defers EOF until
+    // consumption, without claiming silicon's internal FIFO prefetch timing.
+    start_dma(&mut bus, 16);
     assert_eq!(bus.periph.gdma.out[0].int_raw & 0xb, 0xb);
     assert_eq!(bus.periph.gdma.out[0].eof_desc, FIRST_DESC);
     assert!(!bus.periph.gdma.out[0].running);
-    assert_eq!(bus.periph.spi2.transfers, 1);
+    assert_eq!(bus.periph.spi2.transfers, 2);
 }
 
 #[test]
@@ -1689,6 +1798,34 @@ fn spi3_routes_come_from_its_matrix_signals() {
     assert_eq!(bus.periph.spi2_pins().sclk, 0, "SPI2 is routed nowhere");
 }
 
+/// IDF v5.4.2 S3 spi_reg.h SPI_SIO bit 17 and gpio_sig_map.h D/Q inputs:
+/// three-wire reads use the D input route, including native IO_MUX and FUN_IE.
+#[test]
+fn spi_sio_reads_d_input_without_bypassing_matrix_or_mux() {
+    let mut bus = SocBus::new(1024, 1024, [0; 6]);
+    for pin in [4, 35] { bus.write32(0x6000_9004 + 4 * pin, (1 << 12) | (1 << 9)).unwrap(); }
+    bus.write32(0x6000_4154 + 4 * 67, 0x80 | 4).unwrap();
+    bus.write32(0x6000_4154 + 4 * 68, 0x80 | 35).unwrap();
+    bus.write32(SPI3 + 0x10, 1 << 28).unwrap();
+    assert_eq!(bus.periph.spi3_pins().miso, Some(4), "four-wire reads Q");
+    bus.write32(SPI3 + 0x10, (1 << 28) | (1 << 17)).unwrap();
+    assert_eq!(bus.periph.spi3_pins().miso, Some(35), "SIO reads D without requiring a TX phase");
+    assert_eq!(bus.periph.spi3_pins().mosi, 0);
+    bus.write32(0x6000_4154 + 4 * 68, 0xc0 | 35).unwrap();
+    assert_eq!(bus.periph.spi3_pins().miso, None, "inverted input is not a supported route");
+    bus.write32(0x6000_4154 + 4 * 68, 0x80 | 35).unwrap();
+    bus.write32(0x6000_9004 + 4 * 35, 1 << 12).unwrap();
+    assert_eq!(bus.periph.spi3_pins().miso, None, "input buffer must be enabled");
+    bus.write32(0x6000_9004 + 4 * 35, (2 << 12) | (1 << 9)).unwrap();
+    assert_eq!(bus.periph.spi3_pins().miso, None, "matrix input requires GPIO mux function");
+    bus.write32(SPI2 + 0x10, (1 << 28) | (1 << 17)).unwrap();
+    assert_eq!(bus.periph.spi2_pins().miso, Some(35), "native SPI2 D pad function 2");
+    bus.write32(SPI2 + 0x10, 1 << 28).unwrap();
+    assert_eq!(bus.periph.spi2_pins().miso, None, "native Q pad is not enabled");
+    bus.write32(0x6000_9004 + 4 * 37, (2 << 12) | (1 << 9)).unwrap();
+    assert_eq!(bus.periph.spi2_pins().miso, Some(37));
+}
+
 /// A descriptor fault on SPI3's DMA is recorded in `spi3_dma_fault` and cleared by the next USR
 /// write, as SPI2's is (`assert_dma_fault_and_recovery`): a CPU-FIFO retry reaches the board as host 3.
 #[test]
@@ -1747,4 +1884,38 @@ fn wifi_rx_ctrl_carries_a_nearby_networks_channel_and_rssi() {
         assert_eq!(bus.read32(BUF).unwrap() & 0xff, u32::from(rssi as u8), "RSSI of {from:02x?}");
         assert_eq!(bus.read32(BUF + 8).unwrap(), (chan << 16) | (chan << 20), "channel of {from:02x?}");
     }
+}
+
+#[test]
+fn cardputer_decoder_observes_routes_and_releases_at_the_same_read_horizon() {
+    let mut bus=SocBus::new(1024,1024,[0;6]);bus.board=Box::new(crate::board::Cardputer::new());bus.attach_board_devices();
+    // ESP-IDF v4.4.6 (official original Cardputer) S3 GPIO/IO_MUX headers: FUNC_OUT_SEL GPIO=256;
+    // MCU_SEL bits12..14, FUN_IE bit9, FUN_PU bit8, FUN_PD bit7.
+    for pin in [8u32,9,11] {bus.write32(0x6000_9004+4*pin,1<<12).unwrap();bus.write32(0x6000_4554+4*pin,256).unwrap();}
+    bus.write32(0x6000_9004+4*7,(1<<12)|(1<<9)|(1<<8)).unwrap();
+    bus.write32(0x6000_4020,(1<<8)|(1<<9)|(1<<11)).unwrap();
+    bus.write32(0x6000_4004,1<<8).unwrap(); // Y1: Enter, GPIO7.
+    assert!(bus.board.matrix_key_at(0,2,13,true));assert_eq!(bus.read32(0x6000_403c).unwrap()&(1<<7),0);
+    bus.write32(0x6000_4004,0).unwrap();assert_ne!(bus.read32(0x6000_403c).unwrap()&(1<<7),0,"unselected Y output is HIGH");
+    bus.write32(0x6000_4004,1<<8).unwrap();assert_eq!(bus.read32(0x6000_403c).unwrap()&(1<<7),0);
+    bus.write32(0x6000_9004+4*7,(1<<12)|(1<<9)|(1<<7)).unwrap();
+    bus.write32(0x6000_4554+4*8,0).unwrap();assert_eq!(bus.read32(0x6000_403c).unwrap()&(1<<7),0,"invalid selector route releases to pulldown");
+    bus.write32(0x6000_9004+4*7,(1<<12)|(1<<9)|(1<<8)).unwrap();assert_ne!(bus.read32(0x6000_403c).unwrap()&(1<<7),0,"released input follows changed pull, not a forced HIGH");
+    bus.write32(0x6000_4554+4*8,256).unwrap();assert_eq!(bus.read32(0x6000_403c).unwrap()&(1<<7),0);
+    bus.write32(0x6000_9004+4*8,0).unwrap();assert_ne!(bus.read32(0x6000_403c).unwrap()&(1<<7),0,"IO_MUX disconnect releases selector");
+    bus.write32(0x6000_9004+4*8,1<<12).unwrap();assert_eq!(bus.read32(0x6000_403c).unwrap()&(1<<7),0);
+    bus.write32(0x6000_4028,1<<8).unwrap();assert_ne!(bus.read32(0x6000_403c).unwrap()&(1<<7),0,"output disable releases selector");
+    bus.write32(0x6000_4024,1<<8).unwrap();assert_eq!(bus.read32(0x6000_403c).unwrap()&(1<<7),0);
+    assert!(bus.board.matrix_key_at(0,2,13,false));assert_ne!(bus.read32(0x6000_403c).unwrap()&(1<<7),0);
+    assert_eq!(bus.cycles,0,"no tick or instruction-sized scheduling is needed for combinational feedback");
+}
+
+#[test]
+fn cardputer_ir_diode_load_matches_input_probe_but_releases_for_gpio_output() {
+    let mut bus=SocBus::new(1024,1024,[0;6]);bus.board=Box::new(crate::board::Cardputer::new());bus.attach_board_devices();
+    bus.write32(0x6000_9004+4*44,(1<<12)|(1<<9)|(1<<8)).unwrap();
+    assert_eq!(bus.read32(0x6000_4040).unwrap()&(1<<12),0,"IR load holds input probe LOW despite weak pullup");
+    bus.write32(0x6000_4554+4*44,256).unwrap();bus.write32(0x6000_4010,1<<12).unwrap();bus.write32(0x6000_402c,1<<12).unwrap();
+    assert_ne!(bus.read32(0x6000_4040).unwrap()&(1<<12),0,"push-pull GPIO output is not forced LOW by a fake permanent input");
+    bus.write32(0x6000_4034,1<<12).unwrap();assert_eq!(bus.read32(0x6000_4040).unwrap()&(1<<12),0);
 }

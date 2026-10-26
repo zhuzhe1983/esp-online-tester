@@ -296,7 +296,7 @@ impl SocBus {
 
     /// Attach fresh peripheral-side devices and restore the levels driven by the persistent board.
     pub fn attach_board_devices(&mut self) {
-        if self.board.uses_gpio_waveform() {
+        if self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, esp_soc::pins::ChipPins::S3.routes(&self.periph.gpio, &self.periph.io_mux));
         }
         self.uart_pins = self.board.uses_uart_pins();
@@ -530,7 +530,7 @@ impl SocBus {
             self.spi3_pins = self.board.uses_spi_pins().then(|| self.periph.spi3_pins());
         }
         self.periph.write32(a, v);
-        if matches!(a & !0xfff, 0x6000_4000 | 0x6000_9000) && self.board.uses_gpio_waveform() {
+        if matches!(a & !0xfff, 0x6000_4000 | 0x6000_9000) && self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, esp_soc::pins::ChipPins::S3.routes(&self.periph.gpio, &self.periph.io_mux));
         }
         if old_gpio_out != self.periph.gpio.out || old_gpio_enable != self.periph.gpio.enable {
@@ -708,6 +708,10 @@ impl SocBus {
         if Self::is_periph(addr) { self.last_fault = Some((addr, true)); return Err(Fault::Prohibited); }
         match self.lookup(addr) {
             Some(e) if e.writable != 0 => { if CPU { self.price_cached_data(e, addr, 1, true); } let rel = (addr - e.lo) as usize; self.buf_mut(e.src as u8)[e.off as usize + rel] = v; if e.code != 0 { self.bump(e.vbase, rel, 1); } Ok(()) }
+            // Mask DROM drops CPU stores, as Espressif QEMU's ROM mapping and
+            // TLB_DISCARD_WRITE do (febae182). ESP-DSP 1.8.0 writes its fixed
+            // S3 ROM FFT table during init; this must not alter ROM or trap.
+            Some(e) if CPU && e.src as u8 == SRC_DROM => Ok(()),
             _ => { self.last_fault = Some((addr, true)); Err(Fault::Prohibited) }
         }
     }
@@ -722,6 +726,7 @@ impl SocBus {
         match self.lookup(addr) {
             Some(e) if e.writable != 0 && e.hi - addr >= 2 => { if CPU { self.price_cached_data(e, addr, 2, true); } let rel = (addr - e.lo) as usize; let o = e.off as usize + rel; self.buf_mut(e.src as u8)[o..o + 2].copy_from_slice(&v.to_le_bytes()); if e.code != 0 { self.bump(e.vbase, rel, 2); } Ok(()) }
             Some(e) if e.writable != 0 => { let b = v.to_le_bytes(); self.write8_access::<CPU>(addr, b[0])?; self.write8_access::<CPU>(addr + 1, b[1]) }
+            Some(e) if CPU && e.src as u8 == SRC_DROM && e.hi - addr >= 2 => Ok(()),
             _ => { self.last_fault = Some((addr, true)); Err(Fault::Prohibited) }
         }
     }
@@ -733,6 +738,7 @@ impl SocBus {
         match self.lookup(addr) {
             Some(e) if e.writable != 0 && e.hi - addr >= 4 => { if CPU { self.price_cached_data(e, addr, 4, true); } let rel = (addr - e.lo) as usize; let o = e.off as usize + rel; self.buf_mut(e.src as u8)[o..o + 4].copy_from_slice(&v.to_le_bytes()); if e.code != 0 { self.bump(e.vbase, rel, 4); } Ok(()) }
             Some(e) if e.writable != 0 => { let b = v.to_le_bytes(); for i in 0..4 { self.write8_access::<CPU>(addr + i, b[i as usize])?; } Ok(()) }
+            Some(e) if CPU && e.src as u8 == SRC_DROM && e.hi - addr >= 4 => Ok(()),
             _ => { self.last_fault = Some((addr, true)); Err(Fault::Prohibited) }
         }
     }

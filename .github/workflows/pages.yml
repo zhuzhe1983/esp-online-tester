@@ -8,6 +8,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '23 3 * * *'
 permissions:
   contents: read
   pages: write
@@ -23,6 +25,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate public catalog schemas
+        run: |
+          python -m pip install -r tools/requirements-catalog.txt
+          python tools/validate-platform-catalog.py
+      - name: Sync public release metadata (no firmware binaries)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node tools/sync-firmware-release-metadata.mjs
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
@@ -54,9 +67,11 @@ jobs:
           sed -i "s|'wasm/worker.js'|'wasm/worker.js?v=$v'|; s|fetch('wasm/esp32sim.wasm')|fetch('wasm/esp32sim.wasm?v=$v')|" web/emu.js
           test "$(grep -o "v=$v" web/run.html | wc -l)" -eq 3
           grep -c "v=$v" web/run.html web/emu.js
+      - name: Stage public site without internal diagnostic firmware
+        run: node tools/stage-platform-pages.mjs web target/pages
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: web
+          path: target/pages
   deploy:
     needs: build
     runs-on: ubuntu-latest

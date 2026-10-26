@@ -5,11 +5,13 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { createFlasher, prepareFlashPlan, validateFlashLayout, flasherCapabilities } from '../web/platform/flasher.js';
 import { createDefaultScene } from '../web/platform/catalog.js';
+import { withPlatformTestFixtures } from './fixtures/platform-catalog.mjs';
 import SparkMD5 from '../web/platform/vendor/spark-md5-3.0.2/spark-md5.js';
 import { ESPLoader, Transport } from '../web/platform/vendor/esptool-js-0.7.0/bundle.js';
 
-const root = new URL('../', import.meta.url), baseUrl = 'https://platform.example/platform/index.html', catalog = {};
-for (const name of ['products', 'accessories', 'firmwares']) catalog[name] = JSON.parse(await readFile(new URL(`web/platform/catalog/${name}.json`, root))).items;
+const root = new URL('../', import.meta.url), baseUrl = 'https://platform.example/platform/index.html', publicCatalog = {};
+for (const name of ['products', 'accessories', 'firmwares']) publicCatalog[name] = JSON.parse(await readFile(new URL(`web/platform/catalog/${name}.json`, root))).items;
+const catalog = await withPlatformTestFixtures(publicCatalog, baseUrl);
 const scene = createDefaultScene(catalog, 'm5stack-stopwatch');
 const watchlist = JSON.parse(await readFile(new URL('web/platform/catalog/firmware-watchlist.json', root)));
 scene.firmware = { manifestUrl: 'https://platform.example/wasm/fw/demo-stopwatch.json' };
@@ -32,12 +34,25 @@ console.log('ok vendored official esptool/MD5 exports, known MD5 vector and pinn
 const plan = await prepareFlashPlan({ scene, catalog, fetchImpl, baseUrl });
 assert.deepEqual(plan.files.map(file => file.address), [0, 0x8000, 0x10000]);
 assert.equal(requests.some(request => request.url.endsWith('_rom.elf')), false, 'ROM ELF must never be downloaded for hardware flashing');
-assert.equal(plan.receipt.persistence, 'memory-only');
+assert.equal(plan.receipt.persistence, 'user-browser-cache-for-pinned-remote-artifacts');
 assert.throws(() => validateFlashLayout([plan.files[0], { ...plan.files[1], address: 0 }], plan.product), { code: 'FLASH_LAYOUT' });
 await assert.rejects(() => prepareFlashPlan({ scene, catalog, fetchImpl, baseUrl, source: { ...scene.firmware, sha256: '0'.repeat(64) } }), { code: 'HASH_MISMATCH' });
 await assert.rejects(() => prepareFlashPlan({ scene, catalog, fetchImpl, baseUrl, watchEntry: { compatibility: { status: 'reference-only', productIds: [scene.productId] } } }), { code: 'REFERENCE_ONLY' });
-await assert.rejects(() => prepareFlashPlan({ scene, catalog, fetchImpl, baseUrl, watchlist, source: { url: watchlist.entries[0].assets[0].url } }), { code: 'REFERENCE_ONLY' });
+await assert.rejects(() => prepareFlashPlan({ scene, catalog, fetchImpl, baseUrl, watchlist, source: { url: watchlist.entries.find(entry => entry.compatibility.status === 'reference-only').assets[0].url } }), { code: 'REFERENCE_ONLY' });
+const official = watchlist.entries.find(entry => entry.id === 'm5stack-stopwatch-official');
+for (const url of [official.assets[0].url, official.assets[0].upstreamUrl]) {
+  const changed = new Uint8Array([1, 2, 3]), chosenHash = createHash('sha256').update(changed).digest('hex');
+  await assert.rejects(() => prepareFlashPlan({ scene, catalog, watchlist, baseUrl, source: { url, sha256: chosenHash }, fetchImpl: async () => new Response(changed) }), { code: 'HASH_MISMATCH' });
+}
 console.log('ok flash plan: complete pinned images, verified offsets and sector overlap rejection; reference-only entries blocked');
+const localSource={format:'segments',files:plan.files.map((entry,i)=>({file:new File([entry.data],['bootloader.bin','partition-table.bin','app.bin'][i]),offset:entry.address}))};
+const localPlan=await prepareFlashPlan({scene,catalog,source:localSource,fetchImpl:()=>{throw Error('Local hardware plan must not fetch remote bytes');},baseUrl});
+assert.deepEqual(localPlan.files.map(x=>x.address),[0,0x8000,0x10000]);
+assert.deepEqual(localPlan.files.map(x=>x.data.length),plan.files.map(x=>x.data.length));
+assert.ok(localPlan.receipt.artifacts.every(x=>x.url===null));
+assert.equal(localPlan.files.reduce((n,x)=>n+x.data.length,0),plan.files.reduce((n,x)=>n+x.data.length,0),'Unspecified flash gaps must not become hardware writes');
+console.log('ok local split hardware plan: original segments only, no gap erasure or remote fetch; no hardware connected');
+
 
 function fixture({ chip = 'ESP32-S3', size = '16MB', secured = false, activated = true, denied = false, cancelAtBlock = false } = {}) {
   const calls = { chooser: 0, main: 0, writes: 0, blocks: 0, disconnect: 0, reset: 0 }, events = [];

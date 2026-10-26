@@ -13,12 +13,19 @@ pub use esp_soc::board::{Board, BoardEdge, BoardModel, NoBoard, VirtualCycle};
 
 pub mod atech14;
 pub mod stopwatch;
+pub mod papermono;
+pub mod cardputer_adv;
+pub mod cardputer;
+mod cardputer_lcd;
 pub mod waveshare_amoled18;
 pub mod waveshare_cam;
 pub mod waveshare_lcd4b;
 
 pub use atech14::*;
 pub use stopwatch::*;
+pub use papermono::*;
+pub use cardputer_adv::*;
+pub use cardputer::*;
 pub use waveshare_amoled18::*;
 pub use waveshare_cam::*;
 pub use waveshare_lcd4b::*;
@@ -28,6 +35,9 @@ pub fn make_board(name: &str) -> Option<Board> {
     match name {
         "atech14" | "atech" => Some(Box::new(Atech14::new())),
         "none" | "bare" => Some(Box::new(NoBoard)),
+        "papermono" | "m5stack-papermono" => Some(Box::new(PaperMono::new())),
+        "cardputer" | "m5stack-cardputer" => Some(Box::new(Cardputer::new())),
+        "cardputer-adv" | "m5stack-cardputer-adv" => Some(Box::new(CardputerAdv::new())),
         "stopwatch" | "m5stack-stopwatch" => Some(Box::new(StopWatch::new())),
         "waveshare-cam" | "waveshare" => Some(Box::new(WaveshareCam::new())),
         "waveshare-lcd4b" | "lcd4b" => Some(Box::new(WaveshareLcd4b::new())),

@@ -1,3 +1,4 @@
+import {controlInput} from './control-input.js';
 // Stable automation surface shared by coding agents and the human interface.
 import { encodeScene } from './catalog.js';
 import { createRecordingController, encodeRecording, validateRecording } from './recording.js';
@@ -13,16 +14,21 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
       return () => { stopRuntime(); stopRecorder(); };
     },
     async input(event) { await recorder.beforeInput(); return runtime.input(event); },
+    async setGpsFix(options) { await recorder.beforeLifecycle('gps-fix'); return runtime.setGpsFix(options); },
+    async injectGps(options) { await recorder.beforeLifecycle('gps-input'); return runtime.injectGps(options); },
+    async setImu(options) { await recorder.beforeLifecycle('imu-input'); return runtime.setImu(options); },
     async configure(scene) { await recorder.beforeLifecycle('configure'); return runtime.configure(scene); },
     async loadFirmware(source) { await recorder.beforeLifecycle('load-firmware'); return runtime.loadFirmware(source); },
     async pause() { await recorder.beforeLifecycle('pause'); return runtime.pause(); },
     async reset() { await recorder.beforeLifecycle('reset'); return runtime.reset(); },
+    async clearDeviceStorage() { await recorder.beforeLifecycle('clear-device-storage'); return runtime.clearDeviceStorage(); },
     async dispose() { await recorder.dispose(); return runtime.dispose(); },
     async press(id, { durationMs = 100 } = {}) {
       if (!Number.isFinite(durationMs) || durationMs < 0 || durationMs > 10000) throw Object.assign(new Error('Press duration must be 0…10000 ms.'), { code: 'INVALID_INPUT' });
-      await api.input({ type: 'button', id, pressed: true });
+      const product=(await runtime.observe()).product;
+      await api.input(controlInput({type:'button',id,pressed:true},product));
       try { await new Promise(resolve => setTimeout(resolve, durationMs)); }
-      finally { await api.input({ type: 'button', id, pressed: false }); }
+      finally { await api.input(controlInput({type:'button',id,pressed:false},product)); }
       return { accepted: true, id, durationMs };
     },
     async waitFor({ status, serialIncludes, port, fromNow = false, timeoutMs = 10000 } = {}) {

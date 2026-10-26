@@ -1,0 +1,367 @@
+{
+  "schemaVersion": "1",
+  "id": "m5stack-gps-u032-v11",
+  "unit": "mm",
+  "binary": "geometry.bin",
+  "strideFloats": 6,
+  "parts": [
+    {
+      "name": "shell-front",
+      "sourceComponent": 0,
+      "byteOffset": 0,
+      "vertexCount": 5124,
+      "color": "#c5c5c1",
+      "boundsMm": [
+        [
+          -12.0,
+          -24.0,
+          -2.000000011920929
+        ],
+        [
+          12.0,
+          24.0,
+          3.9999998092651365
+        ]
+      ]
+    },
+    {
+      "name": "shell-back",
+      "sourceComponent": 3,
+      "byteOffset": 122976,
+      "vertexCount": 5616,
+      "color": "#c5c5c1",
+      "boundsMm": [
+        [
+          -12.0,
+          -24.0,
+          -3.9999999523162844
+        ],
+        [
+          12.0,
+          24.0,
+          0.8
+        ]
+      ]
+    }
+  ],
+  "sourceTransform": {
+    "matrixRows": [
+      [
+        1,
+        0,
+        0,
+        40
+      ],
+      [
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        -1.2
+      ],
+      [
+        0,
+        0,
+        0,
+        1
+      ]
+    ],
+    "scale": 1,
+    "note": "One common translation only; original assembly retained. Front +Z, connector -Y."
+  },
+  "omittedComponents": [
+    {
+      "index": 1,
+      "duplicateOf": 0,
+      "translationMm": [
+        84.38406372070312,
+        0,
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "duplicateOf": 3,
+      "translationMm": [
+        43.16054916381836,
+        0,
+        0
+      ]
+    }
+  ],
+  "dimensions": {
+    "width": 24,
+    "height": 48,
+    "depth": 8,
+    "mountingHoleDiameter": 5,
+    "mountingHoleSpacing": 16,
+    "mountingHoleCenterFromBottom": 12,
+    "sourceId": "dimension-drawing"
+  },
+  "textures": [
+    {
+      "name": "front-label",
+      "file": "front-label.webp",
+      "sourceId": "photo-7",
+      "sourceSha256": "030d0063ddf60e702ddab5bc9fa6e8f0e8ad88d33397f1bff48d92d1bc81dcea",
+      "cropXYXY": [
+        298,
+        159,
+        499,
+        473
+      ],
+      "outputPixels": [
+        201,
+        314
+      ],
+      "dimensionsMm": [
+        18,
+        28
+      ],
+      "centerMm": [
+        0,
+        7.353,
+        3.815
+      ],
+      "transform": "Axis-aligned crop, no warp. u increases left-to-right in corresponding face view; v increases bottom-to-top.",
+      "uncertainty": "Near-frontal public photo; no lens calibration. Label area follows source CAD recess; photo brightness retained, not material calibration."
+    },
+    {
+      "name": "back-label",
+      "file": "back-label.webp",
+      "sourceId": "photo-8",
+      "sourceSha256": "f3a15d342121bd6b29688568d399b65de45b2e4c962a1421402e30ef4f5e7f5c",
+      "cropXYXY": [
+        311,
+        164,
+        491,
+        478
+      ],
+      "outputPixels": [
+        180,
+        314
+      ],
+      "dimensionsMm": [
+        16.2,
+        28.2
+      ],
+      "centerMm": [
+        0,
+        7,
+        -3.815
+      ],
+      "transform": "Axis-aligned crop, no warp. u increases left-to-right in corresponding face view; v increases bottom-to-top.",
+      "uncertainty": "Near-frontal public photo; no lens calibration. Label area follows source CAD recess; photo brightness retained, not material calibration."
+    }
+  ],
+  "connectors": {
+    "grove": {
+      "type": "HY2.0-4P",
+      "anchorMm": [
+        0,
+        -24,
+        1.4
+      ],
+      "outwardNormal": [
+        0,
+        -1,
+        0
+      ],
+      "openingMm": [
+        10,
+        5.2
+      ],
+      "sourceIds": [
+        "dimension-drawing",
+        "photo-6"
+      ],
+      "basis": "Opening from drawing and CAD. Mating plane is the case opening; insertion depth 3 mm is estimated; detailed insert and pins are photo-informed estimates, not connector manufacturing CAD.",
+      "pinOrder": [
+        "gnd",
+        "vcc",
+        "signal1",
+        "signal2"
+      ],
+      "allowConnections": true
+    }
+  },
+  "derivedParts": [
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "label": "UNKNOWN",
+      "basis": "estimated",
+      "dimensionsMm": [
+        20,
+        28,
+        1
+      ],
+      "centerMm": [
+        0,
+        6,
+        0
+      ],
+      "sourceIds": [],
+      "notes": "Empty neutral rectangular board constrained to case space. Outline, thickness, location and all components unknown; not an electronics model."
+    },
+    {
+      "id": "grove-insert",
+      "basis": "photo-measurement",
+      "sourceIds": [
+        "photo-6",
+        "dimension-drawing"
+      ],
+      "notes": "Cyan housing and four visible contacts only. Hidden dimensions are estimates."
+    },
+    {
+      "id": "rear-fastener",
+      "basis": "photo-measurement",
+      "sourceIds": [
+        "photo-8"
+      ],
+      "notes": "Visible screw represented at CAD hole center; head and socket approximate."
+    }
+  ],
+  "provenance": {
+    "repository": "https://github.com/m5stack/M5_Hardware",
+    "commit": "e29c139cbc7c80b5ccc5557e5ab8025a7a19a109",
+    "sourceUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U032_V11_Unit_GPS_v1_1/Structures/Unit_GPS_v1.1.stl",
+    "sourceSha256": "cfb75ed7e65c36ab005d88beb4a81c293a2f07edffd2a9dd13ec14ce8b1a9b0b",
+    "sourceLicense": "MIT; Copyright (c) 2021 M5Stack; see LICENSE-M5Stack.txt",
+    "photoRights": "Product photographs © M5Stack. Reference photos and derived label crops are retained for requested product visualization and verification. No separate open photo license verified; not relicensed under project MIT.",
+    "sources": [
+      {
+        "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U032_V11_Unit_GPS_v1_1/Structures/Unit_GPS_v1.1.stl",
+        "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U032_V11_Unit_GPS_v1_1/Structures/Unit_GPS_v1.1.stl",
+        "mediaType": "application/octet-stream",
+        "fetchedAt": "2026-10-26T16:50:08Z",
+        "bytes": 358084,
+        "sha256": "cfb75ed7e65c36ab005d88beb4a81c293a2f07edffd2a9dd13ec14ce8b1a9b0b",
+        "id": "official-cad",
+        "title": "U032-V11 manufacturer shell STL, pinned revision",
+        "kind": "cad-stl",
+        "status": "fetched",
+        "archiveName": "source.stl",
+        "discoveredFrom": "official-docs",
+        "revision": {
+          "repository": "m5stack/M5_Hardware",
+          "commit": "e29c139cbc7c80b5ccc5557e5ab8025a7a19a109",
+          "path": "Products/U032_V11_Unit_GPS_v1_1/Structures/Unit_GPS_v1.1.stl"
+        },
+        "license": "MIT; Copyright (c) 2021 M5Stack",
+        "licenseUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+        "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+        "mediaType": "text/plain; charset=utf-8",
+        "fetchedAt": "2026-10-26T16:50:07Z",
+        "bytes": 1063,
+        "sha256": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+        "id": "cad-license",
+        "title": "M5_Hardware MIT license",
+        "kind": "license",
+        "status": "fetched",
+        "archiveName": "license.txt"
+      },
+      {
+        "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/module_size.jpg",
+        "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/module_size.jpg",
+        "mediaType": "image/jpeg",
+        "fetchedAt": "2026-10-26T16:50:07Z",
+        "bytes": 454704,
+        "sha256": "807c99afe25bd183b39a698b6f54cc4b6f3611f0d7a4357bdc57b04faac9efb9",
+        "id": "dimension-drawing",
+        "title": "Unit GPS v1.1 dimension drawing",
+        "kind": "dimension-drawing",
+        "status": "fetched",
+        "archiveName": "drawing.jpg",
+        "discoveredFrom": "official-docs",
+        "license": "© M5Stack; no separate open photo/drawing license verified; not relicensed under project MIT."
+      },
+      {
+        "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/5.webp",
+        "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/5.webp",
+        "mediaType": "image/webp",
+        "fetchedAt": "2026-10-26T16:50:07Z",
+        "bytes": 20246,
+        "sha256": "0085fac6f7d4ba727ca9eb8f5b9fbbcd9f7e73481fda0d698853f2bbf5297abb",
+        "id": "photo-5",
+        "title": "M5Stack GPS v1.1 official product photograph photo-5",
+        "kind": "product-photo",
+        "status": "fetched",
+        "archiveName": "photo-5.webp",
+        "discoveredFrom": "official-docs",
+        "license": "© M5Stack; no separate open photo/drawing license verified; not relicensed under project MIT."
+      },
+      {
+        "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/6.webp",
+        "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/6.webp",
+        "mediaType": "image/webp",
+        "fetchedAt": "2026-10-26T16:50:07Z",
+        "bytes": 11000,
+        "sha256": "1f35e8fa0feb1807e0e3bd2655f30dbb1b19de6458685533a83b7db43908938e",
+        "id": "photo-6",
+        "title": "M5Stack GPS v1.1 official product photograph photo-6",
+        "kind": "product-photo",
+        "status": "fetched",
+        "archiveName": "photo-6.webp",
+        "discoveredFrom": "official-docs",
+        "license": "© M5Stack; no separate open photo/drawing license verified; not relicensed under project MIT."
+      },
+      {
+        "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/7.webp",
+        "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/7.webp",
+        "mediaType": "image/webp",
+        "fetchedAt": "2026-10-26T16:50:07Z",
+        "bytes": 11592,
+        "sha256": "030d0063ddf60e702ddab5bc9fa6e8f0e8ad88d33397f1bff48d92d1bc81dcea",
+        "id": "photo-7",
+        "title": "M5Stack GPS v1.1 official product photograph photo-7",
+        "kind": "product-photo",
+        "status": "fetched",
+        "archiveName": "photo-7.webp",
+        "discoveredFrom": "official-docs",
+        "license": "© M5Stack; no separate open photo/drawing license verified; not relicensed under project MIT."
+      },
+      {
+        "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/8.webp",
+        "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/Unit-GPS%20v1.1/8.webp",
+        "mediaType": "image/webp",
+        "fetchedAt": "2026-10-26T16:50:07Z",
+        "bytes": 16642,
+        "sha256": "f3a15d342121bd6b29688568d399b65de45b2e4c962a1421402e30ef4f5e7f5c",
+        "id": "photo-8",
+        "title": "M5Stack GPS v1.1 official product photograph photo-8",
+        "kind": "product-photo",
+        "status": "fetched",
+        "archiveName": "photo-8.webp",
+        "discoveredFrom": "official-docs",
+        "license": "© M5Stack; no separate open photo/drawing license verified; not relicensed under project MIT."
+      }
+    ]
+  },
+  "limitations": [
+    "Only U032-V11 v1.1. Do not apply to U032/AT6558.",
+    "Shell only is manufacturer CAD; connectors, fastener and photo labels are separate visual additions.",
+    "PCB UNKNOWN is an estimated blank placeholder; no components, traces or manufacturing claims.",
+    "Official linked schematic title conflicts with v1.1 identity; not used for PCB layout.",
+    "UART simulation remains logical NMEA input, independent of external appearance."
+  ],
+  "artifacts": {
+    "source.stl": "cfb75ed7e65c36ab005d88beb4a81c293a2f07edffd2a9dd13ec14ce8b1a9b0b",
+    "geometry.bin": "99b9a061f94bdbad3a9c824aee5ad9233c343577c02398dcb21f1e52e111ec35",
+    "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+    "front-label.webp": "2283c9dadf8f673f41a403fd40ea2b0ad729b50c684b4d5c12a6c319c9e2725e",
+    "back-label.webp": "9e65673e2a1e62f39c5612aa171f4bfea75248f243764f282a26a129503fbaf5",
+    "reference-photo-5.webp": "0085fac6f7d4ba727ca9eb8f5b9fbbcd9f7e73481fda0d698853f2bbf5297abb",
+    "reference-photo-6.webp": "1f35e8fa0feb1807e0e3bd2655f30dbb1b19de6458685533a83b7db43908938e",
+    "reference-photo-7.webp": "030d0063ddf60e702ddab5bc9fa6e8f0e8ad88d33397f1bff48d92d1bc81dcea",
+    "reference-photo-8.webp": "f3a15d342121bd6b29688568d399b65de45b2e4c962a1421402e30ef4f5e7f5c"
+  }
+}

@@ -91,6 +91,9 @@ pub trait BoardModel {
     fn set_imu_motion(&mut self, _mode: u32) -> bool { false }
     /// The scripted IMU motion selected by `set_imu_motion` (0 when unsupported).
     fn imu_motion(&self) -> u32 { 0 }
+    /// External IMU sample in the sensor frame (g and degrees/second), without advancing time.
+    /// Returns false on boards without a host-fed sensor.
+    fn set_imu_sample(&mut self, _accel_g: [f64; 3], _gyro_dps: [f64; 3]) -> bool { false }
     /// Raw display memory for a debug PNG: (pixels, columns, rows).
     fn gram(&self) -> Option<(Vec<u16>, usize, usize)> { None }
     /// LED ring / strip: colours and a change counter.
@@ -102,6 +105,9 @@ pub trait BoardModel {
     fn touch(&mut self, _x: u16, _y: u16, _down: bool) {}
     /// Touch input observed at a specific bus horizon. Untimed boards use the ordinary input path.
     fn touch_at(&mut self, _cycle: VirtualCycle, x: u16, y: u16, down: bool) { self.touch(x, y, down); }
+    /// Physical keyboard position, independent of UART text or host key symbols.
+    /// Board mapping and scan hardware determine which guest key event is produced.
+    fn matrix_key_at(&mut self, _cycle: VirtualCycle, _row: u8, _column: u8, _pressed: bool) -> bool { false }
     /// Current board-driven GPIO input levels, used to reconnect a persistent board after reset.
     fn input_levels(&self) -> Vec<(u8, bool)> { Vec::new() }
     /// Whether GPIO edge polling is needed. Cached by `attach_board_devices`.
@@ -125,7 +131,8 @@ pub trait BoardModel {
     fn report(&self) -> String { String::new() }
     /// Opt-in software drive after GPIO/IO_MUX writes and board attachment (including reset).
     /// Unlike raw latch changes, this observes route, mux and enable-only transitions.
-    /// `uses_gpio_waveform` enables this callback as well as instruction-sized scheduling.
+    /// `uses_gpio_routes` enables this callback; `uses_gpio_waveform` additionally
+    /// requires instruction-sized scheduling for pulse-width protocols.
     /// Peripheral-generated waveforms remain on their existing callbacks.
     fn gpio_waveform_at(&mut self, _cycle: VirtualCycle, _routes: crate::pins::PinRoutes<'_>) {}
     /// Lazy physical clock query; called by the capture adapter, never polled per tick.
@@ -142,6 +149,9 @@ pub trait BoardModel {
     fn camera_frame_start(&mut self, _claim: bool) -> Option<VirtualCycle> { None }
     /// Physical route changes invalidate the fresh-frame opportunity.
     fn invalidate_camera_frame_start(&mut self) {}
+    /// Observe routed GPIO writes without requiring pulse-width/instruction-sized scheduling.
+    /// Appended to preserve existing vtable slots. Waveform boards keep their old behavior.
+    fn uses_gpio_routes(&self) -> bool { self.uses_gpio_waveform() }
 }
 
 pub type Board = Box<dyn BoardModel>;

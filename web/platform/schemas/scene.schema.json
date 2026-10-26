@@ -5,34 +5,314 @@
   "description": "Structural contract. validateScene additionally checks catalog references, controls, physical connectors and support warnings. The UTF-8 JSON payload is limited to 65536 bytes.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "productId", "firmware", "accessories", "keyMapping", "view"],
+  "required": [
+    "schemaVersion",
+    "productId",
+    "firmware",
+    "accessories",
+    "keyMapping",
+    "view"
+  ],
   "properties": {
-    "schemaVersion": {"const": "1"},
-    "productId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9:-]{0,79}$"},
+    "schemaVersion": {
+      "const": "1"
+    },
+    "productId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9:-]{0,79}$"
+    },
     "firmware": {
       "oneOf": [
-        {"type": "null"},
-        {"type": "object", "additionalProperties": false, "properties": {"manifestUrl": {"$ref": "#/$defs/url"}, "url": {"$ref": "#/$defs/url"}, "sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"}}, "oneOf": [{"required": ["manifestUrl"], "not": {"required": ["url"]}}, {"required": ["url"], "not": {"required": ["manifestUrl"]}}]}
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "manifestUrl": {
+              "$ref": "#/$defs/url"
+            },
+            "url": {
+              "$ref": "#/$defs/url"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "manifestUrl"
+              ],
+              "not": {
+                "required": [
+                  "url"
+                ]
+              }
+            },
+            {
+              "required": [
+                "url"
+              ],
+              "not": {
+                "required": [
+                  "manifestUrl"
+                ]
+              }
+            }
+          ]
+        }
       ]
     },
-    "accessories": {"type": "array", "maxItems": 32, "items": {
-      "type": "object", "additionalProperties": false, "required": ["id", "catalogId", "parameters", "wiring"],
-      "properties": {
-        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9:-]{0,79}$"},
-        "catalogId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9:-]{0,79}$"},
-        "parameters": {"$ref": "#/$defs/parameters"},
-        "wiring": {"oneOf": [
-          {"type": "object", "additionalProperties": false, "required": ["mode", "port"], "properties": {"mode": {"const": "logical"}, "port": {"const": "uart1"}}},
-          {"type": "object", "additionalProperties": false, "required": ["mode", "port", "connectorId", "rx", "tx"], "properties": {"mode": {"const": "physical"}, "port": {"enum": ["uart0", "uart1", "uart2"]}, "connectorId": {"type": "string"}, "rx": {"type": "integer", "minimum": 0}, "tx": {"type": "integer", "minimum": 0}}}
-        ]}
+    "accessories": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "catalogId",
+          "parameters",
+          "wiring"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9:-]{0,79}$"
+          },
+          "catalogId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9:-]{0,79}$"
+          },
+          "parameters": {
+            "$ref": "#/$defs/parameters"
+          },
+          "wiring": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "mode",
+                  "port"
+                ],
+                "properties": {
+                  "mode": {
+                    "const": "logical"
+                  },
+                  "port": {
+                    "const": "uart1"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "mode",
+                  "port",
+                  "connectorId",
+                  "rx",
+                  "tx"
+                ],
+                "properties": {
+                  "mode": {
+                    "const": "physical"
+                  },
+                  "port": {
+                    "enum": [
+                      "uart0",
+                      "uart1",
+                      "uart2"
+                    ]
+                  },
+                  "connectorId": {
+                    "type": "string"
+                  },
+                  "rx": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "tx": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            ]
+          }
+        }
       }
-    }},
-    "localAccessories": {"type": "array", "maxItems": 32, "items": {"$ref": "local-accessory.schema.json"}},
-    "keyMapping": {"type": "object", "maxProperties": 64, "propertyNames": {"pattern": "^[A-Za-z][A-Za-z0-9]{0,39}$"}, "additionalProperties": {"type": "string"}},
-    "view": {"type": "object", "additionalProperties": false, "required": ["mode", "deviceView"], "properties": {"mode": {"enum": ["studio", "embed"]}, "deviceView": {"enum": ["2d", "3d"]}}}
+    },
+    "localAccessories": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "$ref": "local-accessory.schema.json"
+      }
+    },
+    "keyMapping": {
+      "type": "object",
+      "maxProperties": 64,
+      "propertyNames": {
+        "pattern": "^[A-Za-z][A-Za-z0-9]{0,39}$"
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "deviceView"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "studio",
+            "embed"
+          ]
+        },
+        "deviceView": {
+          "enum": [
+            "2d",
+            "3d"
+          ]
+        },
+        "appearance": {
+          "$ref": "#/$defs/appearance"
+        }
+      }
+    }
   },
   "$defs": {
-    "url": {"type": "string", "format": "uri", "maxLength": 4096, "pattern": "^(https://|http://(localhost|127\\.0\\.0\\.1|\\[::1\\])(:[0-9]+)?/)"},
-    "parameters": {"type": "object", "properties": {"baudRate": {"type": "integer", "minimum": 1, "maximum": 4000000}, "latitude": {"type": "number", "minimum": -90, "maximum": 90}, "longitude": {"type": "number", "minimum": -180, "maximum": 180}, "altitude": {"type": "number", "minimum": -10000, "maximum": 100000}}}
+    "appearance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shell"
+      ],
+      "properties": {
+        "shell": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "color",
+            "opacity",
+            "finish"
+          ],
+          "properties": {
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            },
+            "opacity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "finish": {
+              "enum": [
+                "plastic",
+                "glossy-plastic",
+                "frosted-plastic",
+                "clear-resin",
+                "rubber",
+                "metal",
+                "brushed-metal",
+                "ceramic"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 4096,
+      "pattern": "^(https://|http://(localhost|127\\.0\\.0\\.1|\\[::1\\])(:[0-9]+)?/)"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "baudRate": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4000000
+        },
+        "latitude": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "altitude": {
+          "type": "number",
+          "minimum": -10000,
+          "maximum": 100000
+        },
+        "speedKnots": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "course": {
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 360
+        },
+        "satellites": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99
+        },
+        "positionSource": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "manual",
+                "ip-estimate"
+              ]
+            },
+            "provider": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "city": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "region": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "country": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "fetchedAt": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "Z$"
+            }
+          }
+        }
+      }
+    }
   }
 }

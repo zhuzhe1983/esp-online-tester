@@ -159,6 +159,10 @@ impl<S: Soc> Machine<S> {
                 "reset" if self.web_restart => { self.button_reset = true; self.bus.request_reset(esp_periph::RST_POWERON); *self.bus.irq_dirty() = true; }
                 "touch" => { let x: u16 = field("x").and_then(|v| v.parse().ok()).unwrap_or(0); let y: u16 = field("y").and_then(|v| v.parse().ok()).unwrap_or(0);
                              let down = field("down").unwrap_or_default() == "1"; self.bus.touch_input(x, y, down); }
+                "matrix-key" => {
+                    let (Some(row),Some(column))=(field("row").and_then(|v|v.parse::<u8>().ok()),field("column").and_then(|v|v.parse::<u8>().ok())) else {continue};
+                    let cycle=self.bus.cycles();self.bus.board().matrix_key_at(cycle,row,column,field("pressed").as_deref()==Some("1"));
+                }
                 _ => {}
             }
         }

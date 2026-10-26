@@ -1,0 +1,142 @@
+{
+  "checkedAt": "2026-10-26T20:54:30.026970Z",
+  "toolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "checks": [
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<complete-rom-directory> cargo test --release --workspace -- --include-ignored --skip external_",
+      "result": "passed",
+      "passedTests": 1348,
+      "successfulTestBinaries": 128,
+      "goldens": "No golden outputs regenerated."
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "passed"
+    },
+    {
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel",
+      "result": "passed, 8 manifests"
+    },
+    {
+      "command": "node --test tools/platform-runtime-test.mjs tools/worker-channel-test.mjs",
+      "result": "passed; actual StopWatch input/GPS plus both keyboard transport contracts"
+    },
+    {
+      "command": "node tools/probe-official-cardputer.mjs <official-url> <pinned-sha256> <output> 8 controls",
+      "result": "passed; K132 official boot/Enter/right/left",
+      "receipt": "k132-interaction.json"
+    },
+    {
+      "command": "ESP32SIM_PROBE_CLOCK_TIMEOUT_MS=60000 ESP32SIM_PROBE_PRODUCT_ID=m5stack-k132-v11 node tools/probe-official-cardputer.mjs <official-url> <pinned-sha256> <output> 8 controls",
+      "result": "passed; separate K132-V11 product/storage scope",
+      "receipt": "k132-v11-interaction.json"
+    },
+    {
+      "command": "ESP32SIM_PROBE_CLOCK_TIMEOUT_MS=60000 node tools/probe-official-cardputer-adv.mjs <official-url> <pinned-sha256> <output> 8 controls",
+      "result": "passed",
+      "receipt": "adv-regression.json"
+    },
+    {
+      "command": "ESP32SIM_PROBE_CLOCK_TIMEOUT_MS=60000 node tools/probe-official-papermono.mjs <official-url> <pinned-sha256> <output> 15 controls",
+      "result": "passed, dashboard A/B/touch",
+      "receipt": "papermono-regression.json"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "passed, 2118 tracked files; new evidence additionally manually reviewed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "cargo build --release --bins",
+      "result": "passed"
+    }
+  ],
+  "sourceSha256": {
+    "esp32s3/src/board/cardputer.rs": "2bd2e93307be0f1e100244d7d67683f3a9c93eb41474112265c8d33ce0976c16",
+    "esp32s3/src/board/cardputer_lcd.rs": "15cf269e02231cee257861e1e44995b0c0ce86c5bcccaf077421d215f25d6fa5",
+    "esp32s3/src/board/cardputer_adv.rs": "ca6bbb166b77eef38cc9455f99159ab41ddf6326a581e9601fa2716233891c0b",
+    "esp32s3/src/board/mod.rs": "2673de6eb3905a578e3efc1783e0b74028989d3ea620839c7f7bacaa8c26a345",
+    "esp-soc/src/board.rs": "9c295f9f5bab9217bae52be3fb357cae233f9df1d971dbe52cab4e99cacfa236",
+    "esp-soc/src/pins.rs": "053cdc895dbc2387f5c7c721fa50cef430018a5eb8999e72c097e3d5e5645aa6",
+    "esp32s3/src/bus.rs": "f8adf7c2923a4e0bbd2cd5b4b5c1cff717a035f4f6ab42544ca80e23c104e033",
+    "esp32s3/src/bus/tests.rs": "1a231ccd14fd0985045c05bbf7f1f19f80080e5580d502554547c66ddf8ba46b",
+    "web/platform/runtime.js": "40ae1a93add43fb7260ba302f3eb238743580132d493f4e8a6762191d74edf24",
+    "tools/platform-runtime-test.mjs": "47c2de243b6e0b19c6a07048f68ba2a230206a2d47afd9134062378d54e29285",
+    "tools/probe-official-cardputer.mjs": "ac13f1be70e9dd9f01ac06a142894e858879929666ef385e42b3c23cd53fb5a5"
+  },
+  "wasmSha256": "5f4fde1e960cee53fcd36c41819bb43019a230050641fdfaddb25ec4d3faa681",
+  "performance": {
+    "status": "passed",
+    "receipt": "native-regression.json",
+    "method": "3 alternating baseline/candidate pairs per workload; /usr/bin/time -p user CPU seconds; identical 30 guest second limits; no concurrent task-owned probes/builds",
+    "workloads": [
+      {
+        "name": "hello",
+        "medianUserSeconds": {
+          "baseline": 0.25,
+          "candidate": 0.25
+        },
+        "candidateChangePercent": 0.0,
+        "identicalInstructions": true,
+        "identicalCycles": true,
+        "identicalStdout": true
+      },
+      {
+        "name": "c3-hello",
+        "medianUserSeconds": {
+          "baseline": 2.33,
+          "candidate": 2.34
+        },
+        "candidateChangePercent": 0.42918454935620964,
+        "identicalInstructions": true,
+        "identicalCycles": true,
+        "identicalStdout": true
+      },
+      {
+        "name": "c6-hello",
+        "medianUserSeconds": {
+          "baseline": 1.51,
+          "candidate": 1.52
+        },
+        "candidateChangePercent": 0.6622516556291425,
+        "identicalInstructions": true,
+        "identicalCycles": true,
+        "identicalStdout": true
+      },
+      {
+        "name": "pocket-tank",
+        "medianUserSeconds": {
+          "baseline": 38.47,
+          "candidate": 38.66
+        },
+        "candidateChangePercent": 0.4938913439043402,
+        "identicalInstructions": true,
+        "identicalCycles": true,
+        "identicalStdout": true
+      }
+    ],
+    "interpretation": "Same instructions/cycles/stdout for all six runs of each workload. Three CPU-time pairs provide a smoke regression check, not a statistical speedup claim."
+  },
+  "limitations": [
+    "No physical hardware validation or flashing.",
+    "Neither analog 74HC138 contention/ghosting/bounce nor IR optical transmission is modeled.",
+    "Speaker/microphone/SD/wireless/HID/battery/power-switch functionality is outside this verification.",
+    "Initial V1.1 10-second clock receipt timeout under concurrent workspace compilation retained; 60-second host limit rerun passed, guest assertions unchanged."
+  ],
+  "nativeSha256": {
+    "target/release/esp32sim": "afba63cc0de0a863ee135edadcc4aba21f1fe345db59470483113a909d861037",
+    "target/release/esp32sim-c3": "6a4f0f8dc8d8751b941aa1f3a67b1d42eadf10845c8b6224ab8f728227edf3d6",
+    "target/release/esp32sim-c6": "757280efb0466c7ff84748acb22816871c736b0da897a6758f9b6aec29b5e0cd"
+  }
+}
