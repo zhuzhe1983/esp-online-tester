@@ -16,6 +16,9 @@
     }},
     "product": {"allOf": [{"$ref": "#/$defs/entry"}, {"type": "object", "required": ["manufacturer", "sku", "chip", "hardwareRevision", "runtime", "display", "controls", "interfaces"], "properties": {
       "manufacturer": {"type": "string"}, "sku": {"type": "string"}, "chip": {"type": "string"}, "hardwareRevision": {"type": "string"},
+      "summary": {"type": "string", "maxLength": 1200},
+      "knowledgeUrl": {"type": "string", "pattern": "^\\./knowledge/[a-z0-9-]+\\.json$"},
+      "dimensions": {"type": "object", "required": ["width", "height", "depth", "unit", "basis", "sourceId"], "properties": {"width": {"type": "number", "exclusiveMinimum": 0}, "height": {"type": "number", "exclusiveMinimum": 0}, "depth": {"type": "number", "exclusiveMinimum": 0}, "unit": {"const": "mm"}, "basis": {"enum": ["official", "image-measurement", "cad-measurement"]}, "sourceId": {"type": "string"}}},
       "runtime": {"type": "object", "required": ["board", "flashMb", "psramMb", "status"], "properties": {"board": {"type": ["string", "null"]}, "flashMb": {"type": "integer", "minimum": 1}, "psramMb": {"type": "integer", "minimum": 0}, "status": {"enum": ["partial", "unavailable", "diagnostic", "verified"]}, "touch": {"type": "boolean"}}},
       "display": {"type": ["object", "null"], "properties": {"width": {"type": "integer", "minimum": 1}, "height": {"type": "integer", "minimum": 1}}},
       "controls": {"type": "array", "items": {"type": "object", "required": ["id", "type"], "properties": {"id": {"type": "string"}, "type": {"enum": ["button", "touch"]}, "pin": {"type": "integer", "minimum": 0}, "activeLow": {"type": "boolean"}}}},

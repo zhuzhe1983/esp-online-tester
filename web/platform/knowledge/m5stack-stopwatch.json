@@ -1,0 +1,1410 @@
+{
+  "schemaVersion": "1",
+  "id": "m5stack-stopwatch",
+  "kind": "product",
+  "catalogId": "m5stack-stopwatch",
+  "title": "M5Stack StopWatch C152",
+  "summary": "面向便携交互的圆屏 ESP32-S3 开发设备，集成触摸、可编程按键、音频、运动感知、时钟及电池供电，并提供 Grove 与后部扩展接口。",
+  "summarySourceIds": [
+    "official-docs"
+  ],
+  "updatedAt": "2026-10-26T11:16:27Z",
+  "hardwareRevision": "unspecified",
+  "identity": {
+    "manufacturer": "M5Stack",
+    "sku": "C152",
+    "family": "StopWatch"
+  },
+  "facts": [
+    {
+      "id": "soc",
+      "group": "compute",
+      "label": "主控",
+      "value": "ESP32-S3R8",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "cpu",
+      "group": "compute",
+      "label": "处理器",
+      "value": {
+        "architecture": "Xtensa LX7",
+        "cores": 2,
+        "wordBits": 32,
+        "clockMHz": 240
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "flash",
+      "group": "compute",
+      "label": "Flash 容量",
+      "value": 16,
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "unit": "MB"
+    },
+    {
+      "id": "psram",
+      "group": "compute",
+      "label": "PSRAM 容量",
+      "value": 8,
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "unit": "MB"
+    },
+    {
+      "id": "wireless",
+      "group": "compute",
+      "label": "无线连接",
+      "value": {
+        "standard": "Wi-Fi",
+        "bandGHz": 2.4
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "display",
+      "group": "display",
+      "label": "显示屏",
+      "value": {
+        "type": "AMOLED",
+        "shape": "round",
+        "sizeInches": 1.75,
+        "widthPixels": 466,
+        "heightPixels": 466,
+        "controller": "CO5300",
+        "bus": "QSPI"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "touch",
+      "group": "display",
+      "label": "触摸控制器",
+      "value": "CST820B",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "display-pins",
+      "group": "display",
+      "label": "AMOLED 信号映射",
+      "value": {
+        "CS": 39,
+        "SCK": 40,
+        "TE": 38,
+        "D0": 41,
+        "D1": 42,
+        "D2": 46,
+        "D3": 45
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "display-reset",
+      "group": "display",
+      "label": "显示屏复位",
+      "value": {
+        "device": "M5IOE1",
+        "pin": "PYG5",
+        "signal": "PYB_OLED_RST"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "touch-pins",
+      "group": "display",
+      "label": "触摸信号映射",
+      "value": {
+        "SDA": 47,
+        "SCL": 48,
+        "INT": 13,
+        "reset": {
+          "device": "M5IOE1",
+          "pin": "PYG4",
+          "signal": "PYB_TP_RST"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "buttons",
+      "group": "interaction",
+      "label": "按键",
+      "value": {
+        "programmable": [
+          {
+            "id": "button-a",
+            "color": "yellow",
+            "gpio": 2
+          },
+          {
+            "id": "button-b",
+            "color": "blue",
+            "gpio": 1
+          }
+        ],
+        "powerButtonCount": 1
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "vibration",
+      "group": "interaction",
+      "label": "振动反馈",
+      "value": {
+        "motor": true,
+        "controlDevice": "M5IOE1",
+        "controlPin": "PYG9",
+        "signal": "PYB_MT_PWM"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "power-operations",
+      "group": "interaction",
+      "label": "电源按键操作",
+      "value": {
+        "singlePress": "power on / reset",
+        "doublePress": "power off",
+        "downloadMode": "USB connected; hold power about 2 seconds until green LED, then release"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "audio",
+      "group": "audio",
+      "label": "音频器件",
+      "value": {
+        "codec": "ES8311",
+        "microphone": "MEMS MIC",
+        "amplifier": "AW8737A",
+        "speaker": {
+          "powerW": 1,
+          "impedanceOhm": 8,
+          "cavityType": "1318"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "audio-pins",
+      "group": "audio",
+      "label": "音频信号映射",
+      "value": {
+        "i2c": {
+          "SDA": 47,
+          "SCL": 48,
+          "address": "0x18"
+        },
+        "i2s": {
+          "MCLK": 18,
+          "BCLK": 17,
+          "ASDOUT": 16,
+          "LRCK": 15,
+          "DSDIN": 21
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "audio-power",
+      "group": "audio",
+      "label": "音频供电与功放使能",
+      "value": {
+        "controlDevice": "M5IOE1",
+        "audioRail": {
+          "pin": "PYG3",
+          "signal": "PYB_AU_EN"
+        },
+        "amplifier": {
+          "pin": "PYG10",
+          "signal": "PYB_SPK_EN"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "imu",
+      "group": "sensors",
+      "label": "惯性测量单元",
+      "value": {
+        "model": "BMI270",
+        "axes": 6,
+        "address": "0x68",
+        "SDA": 47,
+        "SCL": 48
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "rtc",
+      "group": "sensors",
+      "label": "实时时钟",
+      "value": {
+        "model": "RX8130CE",
+        "address": "0x32",
+        "SDA": 47,
+        "SCL": 48
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "pmic",
+      "group": "power",
+      "label": "电源管理",
+      "value": {
+        "model": "M5PM1",
+        "SDA": 47,
+        "SCL": 48,
+        "espInterruptGpio": 12
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "battery",
+      "group": "power",
+      "label": "内置电池容量",
+      "value": 450,
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "unit": "mAh"
+    },
+    {
+      "id": "input-power",
+      "group": "power",
+      "label": "USB 输入",
+      "value": {
+        "connector": "USB Type-C",
+        "voltageV": 5,
+        "type": "DC"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "charging-current",
+      "group": "power",
+      "label": "充电电流选择",
+      "value": {
+        "control": "M5PM1 PMG3_CHG_PROG",
+        "lowMA": 425,
+        "highMA": 185,
+        "default": "high"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "io-expander",
+      "group": "power",
+      "label": "IO 扩展器",
+      "value": {
+        "model": "M5IOE1",
+        "address": "0x4f",
+        "SDA": 47,
+        "SCL": 48
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "oled-power",
+      "group": "power",
+      "label": "AMOLED 供电控制",
+      "value": {
+        "device": "M5IOE1",
+        "pin": "PYG8",
+        "signal": "PYB_L3B_EN"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "grove",
+      "group": "expansion",
+      "label": "HY2.0-4P 接口",
+      "value": {
+        "label": "PORT.A",
+        "contacts": [
+          {
+            "color": "black",
+            "signal": "GND"
+          },
+          {
+            "color": "red",
+            "signal": "5V"
+          },
+          {
+            "color": "yellow",
+            "signal": "G10",
+            "gpio": 10
+          },
+          {
+            "color": "white",
+            "signal": "G11",
+            "gpio": 11
+          }
+        ],
+        "externalPowerEnable": "M5PM1 BOOST5V_EN_PP / PM_EXT_5V_EN"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "Port A is the product label. UART controller and RX/TX direction remain firmware-specific."
+    },
+    {
+      "id": "rear-connector",
+      "group": "expansion",
+      "label": "后部扩展排针",
+      "value": {
+        "pitchMm": 2.54,
+        "rows": [
+          7,
+          6
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "rear-pinmap",
+      "group": "expansion",
+      "label": "后部扩展总线表",
+      "value": [
+        {
+          "position": 1,
+          "signal": "3V3_L2"
+        },
+        {
+          "position": 2,
+          "signal": "G3",
+          "gpio": 3
+        },
+        {
+          "position": 3,
+          "signal": "MUX_IO_1",
+          "functions": [
+            "G43 UART0_TX",
+            "G20 USB_DP"
+          ]
+        },
+        {
+          "position": 4,
+          "signal": "G4",
+          "gpio": 4
+        },
+        {
+          "position": 5,
+          "signal": "MUX_IO_2",
+          "functions": [
+            "G44 UART0_RX",
+            "G19 USB_DM"
+          ]
+        },
+        {
+          "position": 6,
+          "signal": "G5",
+          "gpio": 5
+        },
+        {
+          "position": 7,
+          "signal": "G9",
+          "gpio": 9
+        },
+        {
+          "position": 8,
+          "signal": "G6",
+          "gpio": 6
+        },
+        {
+          "position": 9,
+          "signal": "G0 BOOT",
+          "gpio": 0
+        },
+        {
+          "position": 10,
+          "signal": "G7",
+          "gpio": 7
+        },
+        {
+          "position": 11,
+          "signal": "GND"
+        },
+        {
+          "position": 12,
+          "signal": "G8",
+          "gpio": 8
+        },
+        {
+          "position": 13,
+          "signal": "not populated"
+        },
+        {
+          "position": 14,
+          "signal": "revision-dependent power contact",
+          "revisionIds": [
+            "v1.0",
+            "v1.0.1"
+          ]
+        }
+      ],
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "Preserves the official table positions. Contact 14 must be interpreted using the hardware-revision notice, not the generic BAT label alone."
+    },
+    {
+      "id": "rear-multiplexer",
+      "group": "expansion",
+      "label": "后部 USB/UART 复用控制",
+      "value": {
+        "device": "M5IOE1",
+        "pin": "PYG1",
+        "signal": "PYB_MUX_CTR",
+        "default": "UART",
+        "low": [
+          "G43 UART0_TX",
+          "G44 UART0_RX"
+        ],
+        "high": [
+          "G20 USB_DP",
+          "G19 USB_DM"
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "product-envelope",
+      "group": "mechanical",
+      "label": "产品外形规格",
+      "value": {
+        "width": 52,
+        "height": 52,
+        "depth": 15.5
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "unit": "mm"
+    },
+    {
+      "id": "body-diameter-drawing",
+      "group": "mechanical",
+      "label": "尺寸图圆形外壳直径",
+      "value": 51.95,
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing-pdf",
+        "dimension-drawing-image"
+      ],
+      "unit": "mm",
+      "notes": "An explicit dimension on the manufacturer drawing; not a pixel measurement. The product specification rounds the envelope to 52.0 mm."
+    },
+    {
+      "id": "depth-drawing",
+      "group": "mechanical",
+      "label": "尺寸图厚度",
+      "value": 15.5,
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing-pdf",
+        "dimension-drawing-image"
+      ],
+      "unit": "mm"
+    },
+    {
+      "id": "rear-four-hole-drawing",
+      "group": "mechanical",
+      "label": "尺寸图背面四个圆形特征",
+      "value": {
+        "count": 4,
+        "diameter": 5,
+        "horizontalCenterSpacing": 25.46,
+        "verticalCenterSpacing": 25.46
+      },
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing-pdf",
+        "dimension-drawing-image"
+      ],
+      "unit": "mm",
+      "notes": "Records the drawing labels without inferring fastener threads or magnetic material."
+    },
+    {
+      "id": "rear-two-hole-drawing",
+      "group": "mechanical",
+      "label": "尺寸图背面两处同心圆特征",
+      "value": {
+        "count": 2,
+        "outerDiameter": 4,
+        "innerDiameter": 2.2,
+        "horizontalCenterSpacing": 40
+      },
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing-pdf",
+        "dimension-drawing-image"
+      ],
+      "unit": "mm",
+      "notes": "No thread specification is given by these diameter labels."
+    },
+    {
+      "id": "case-edge-radii",
+      "group": "mechanical",
+      "label": "尺寸图外壳边缘圆角标注",
+      "value": {
+        "callouts": [
+          1,
+          2
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing-pdf",
+        "dimension-drawing-image"
+      ],
+      "unit": "mm",
+      "notes": "R1 and R2 are localized drawing callouts. This record does not infer that either radius applies to every edge."
+    },
+    {
+      "id": "product-mass",
+      "group": "mechanical",
+      "label": "产品质量",
+      "value": 39,
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "unit": "g"
+    },
+    {
+      "id": "package-envelope",
+      "group": "packaging",
+      "label": "包装尺寸",
+      "value": {
+        "width": 70,
+        "height": 70,
+        "depth": 23.6
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "unit": "mm"
+    },
+    {
+      "id": "gross-mass",
+      "group": "packaging",
+      "label": "含包装质量",
+      "value": 49.5,
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "unit": "g"
+    },
+    {
+      "id": "body-features",
+      "group": "mechanical",
+      "label": "外壳功能",
+      "value": {
+        "lanyardHole": true,
+        "rearMagneticAttachment": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "cad-mesh",
+      "group": "geometry-evidence",
+      "label": "STL 文件测量",
+      "value": {
+        "format": "binary STL",
+        "triangles": 17068,
+        "bounds": {
+          "min": [
+            -5.293543381412746e-13,
+            -25.97289276123047,
+            -208.32891845703125
+          ],
+          "max": [
+            15,
+            25.97289276123047,
+            25.97347068786621
+          ]
+        },
+        "extent": [
+          15.00000000000053,
+          51.94578552246094,
+          234.30238914489746
+        ]
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "official-cad-stl"
+      ],
+      "unit": "source-coordinate-units",
+      "notes": "STL does not declare units. These are raw mesh coordinates, not product dimensions. The 234.302... extent shows that the whole file must not be uniformly normalized as a single assembled device; isolate the intended geometry first.",
+      "method": "Read little-endian uint32 facet count at byte 80; for each 50-byte binary STL facet, reduce the three float32 vertices to per-axis minima/maxima. No geometry scaling or component selection was applied."
+    },
+    {
+      "id": "cad-components-and-units",
+      "group": "mechanical",
+      "label": "公开 STL 的组件、尺寸与场景坐标",
+      "value": {
+        "sourceComponents": 8,
+        "assembledComponents": [
+          0,
+          2,
+          5,
+          7
+        ],
+        "translatedDuplicatesOmitted": [
+          1,
+          3,
+          4,
+          6
+        ],
+        "modelUnit": "mm",
+        "transform": "world=(-sourceZ,sourceY,sourceX-7.75)",
+        "sourceShellDepth": 15,
+        "sourceOuterDiameterXY": [
+          51.94694,
+          51.94579
+        ]
+      },
+      "unit": "mm",
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "official-cad-stl",
+        "dimension-drawing-pdf",
+        "photo-06",
+        "photo-07"
+      ],
+      "method": "按网格连通分量分离；选取已装配外壳及三键，删去平移重复件；刚体旋转，不缩放。源外径与官方φ51.95mm图纸核对。",
+      "notes": "STL本身不携带单位；毫米由官方尺寸图校准。玻璃/连接器内芯是补建外观件，照片背贴显示v1.0.1，不代表用户实物版本。"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "v1.0",
+      "releaseDate": "2026-05-22",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs",
+        "revision-warning-image"
+      ],
+      "changes": "首发硬件。部分贴纸把后部电源触点误标为 BAT；真实功能为外部 5V IN。",
+      "powerContact": {
+        "actualFunction": "5V IN",
+        "stickerLabels": [
+          "BAT",
+          "5V IN"
+        ],
+        "batteryConnection": false
+      }
+    },
+    {
+      "id": "v1.0-sticker-correction",
+      "releaseDate": "2026-08-10",
+      "hardwareRevision": "v1.0",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs",
+        "revision-warning-image"
+      ],
+      "changes": "更正 v1.0 贴纸电源标记，硬件触点仍为 5V IN。"
+    },
+    {
+      "id": "v1.0.1",
+      "releaseDate": "2026-08-27",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs",
+        "revision-warning-image"
+      ],
+      "changes": "硬件改版，原 5V IN 触点改为电池 BAT。",
+      "powerContact": {
+        "actualFunction": "BAT",
+        "stickerLabels": [
+          "*BAT"
+        ],
+        "batteryConnection": true
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "official-docs",
+      "title": "M5Stack StopWatch official product documentation",
+      "url": "https://docs.m5stack.com/en/core/StopWatch",
+      "kind": "product-page",
+      "status": "fetched",
+      "fetchedAt": "2026-10-26T10:45:14Z",
+      "sha256": "b6310dc498add1b38db0b512f47f9b8dcc8dfecaf0c879b263ec000bfbd855b2",
+      "bytes": 153626,
+      "mediaType": "text/html; charset=UTF-8",
+      "archiveName": "official-docs.html"
+    },
+    {
+      "id": "structure-index",
+      "title": "M5Stack hardware repository: StopWatch structure file listing",
+      "url": "https://api.github.com/repos/m5stack/M5_Hardware/contents/Products/C152_StopWatch/Structures",
+      "kind": "repository-index",
+      "status": "fetched",
+      "fetchedAt": "2026-10-26T10:45:49Z",
+      "sha256": "5da563b995ec7787446121e935e03cb7e465433be3dcccfb4d0b3fa53ec3cf78",
+      "bytes": 1091,
+      "mediaType": "application/json",
+      "archiveName": "structure-index.json",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "schematic-pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf",
+      "status": "fetched",
+      "bytes": 1480402,
+      "sha256": "8d4755c341f966a6191f9f16a7a45c558a99749a5e39a30d0513f86a5e10ef80",
+      "mediaType": "application/pdf",
+      "title": "StopWatch official schematic (4 pages; drawing filename dated 2026-04-24)",
+      "kind": "schematic",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "schematic-pdf.pdf",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "dimension-drawing-pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-StopWatch-model-size.pdf",
+      "status": "fetched",
+      "bytes": 22103,
+      "sha256": "070dd39ce1ec49afc7e8315605571a97e0774a5452cbdeb91aa05542425efc2c",
+      "mediaType": "application/pdf",
+      "title": "StopWatch official dimension drawing (PDF)",
+      "kind": "dimension-drawing",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "dimension-drawing-pdf.pdf",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "dimension-drawing-image",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-StopWatch-model-size_page_01.png",
+      "status": "fetched",
+      "bytes": 510444,
+      "sha256": "9954430989a47b5968087eae2f05e26231d103e0c5a62e817fa7a2c04a5350ea",
+      "mediaType": "image/jpg",
+      "title": "StopWatch official dimension drawing (image)",
+      "kind": "dimension-drawing",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "dimension-drawing-image.png",
+      "discoveredFrom": "official-docs",
+      "notes": "mediaType records the HTTP response header; the URL ends in .png."
+    },
+    {
+      "id": "revision-warning-image",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_StopWatch_Note_01.png",
+      "status": "fetched",
+      "bytes": 2916333,
+      "sha256": "a2841dad65945fa39091d4fb86ffb38565c2f3fe7245c3b8e33b57168da822f9",
+      "mediaType": "image/jpg",
+      "title": "StopWatch v1.0 / v1.0.1 contact-label notice",
+      "kind": "revision-notice",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "revision-warning-image.png",
+      "discoveredFrom": "official-docs",
+      "notes": "mediaType records the HTTP response header; the URL ends in .png."
+    },
+    {
+      "id": "photo-01",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_01.webp",
+      "status": "fetched",
+      "bytes": 239158,
+      "sha256": "91c464a497541344dd956a022c606995a433be537b2b511ef26f17f4b81e6ede",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 01",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-01.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "photo-02",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_02.webp",
+      "status": "fetched",
+      "bytes": 43782,
+      "sha256": "2b0a5048817bec422ae3cfef3818a9589bd97f393e5e69dfd8842d99cff23c08",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 02",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-02.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "photo-03",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_03.webp",
+      "status": "fetched",
+      "bytes": 84580,
+      "sha256": "02509d9a4f82d04640a373229add40adebadb43338b3b37a4f8c900787f09d08",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 03",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-03.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "photo-04",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_04.webp",
+      "status": "fetched",
+      "bytes": 215740,
+      "sha256": "a62ec6d5b75a1157e1cc3789fa61ff1e91f43698c73a5fb4e01ef17fec34a305",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 04",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-04.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "photo-05",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_05.webp",
+      "status": "fetched",
+      "bytes": 62544,
+      "sha256": "2a9456482b5b7a2bcb4ad9e604ae4de80c7321e0bee4db02969d21958d65d407",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 05",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-05.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "photo-06",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_06.webp",
+      "status": "fetched",
+      "bytes": 47208,
+      "sha256": "0ece84a39f3ff6e696db65118c380ed0c4af011d2574d3c2e832e10fe12ee7fc",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 06",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-06.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "photo-07",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_07.webp",
+      "status": "fetched",
+      "bytes": 189482,
+      "sha256": "679e0cd5397e6877ef676e8ae8710fe1149f053d2ce30dad90626f0bc51ff9cd",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 07",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-07.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "photo-08",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_08.webp",
+      "status": "fetched",
+      "bytes": 37748,
+      "sha256": "4d73b0b82c3f98a77bfe049a034729d3d7e6f644c229da187e2fe781b401a1a9",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 08",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-08.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "photo-09",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_09.webp",
+      "status": "fetched",
+      "bytes": 34694,
+      "sha256": "dbc9d90f243436904fb9da02f7052dd0f9431c7c1d5effc271ea63866ab554e8",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 09",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-09.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "photo-10",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_10.webp",
+      "status": "fetched",
+      "bytes": 32952,
+      "sha256": "9f4880cfd68cfb8fa41a978f353b077f1f07afcfcffe07ea4d184950c51662f8",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 10",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-10.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "photo-11",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_11.webp",
+      "status": "fetched",
+      "bytes": 35028,
+      "sha256": "ca9b9c623c5fac246965dd0af3b9fb26dc7ad55716937be12fb53268de539844",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 11",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-11.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "photo-12",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_12.webp",
+      "status": "fetched",
+      "bytes": 52314,
+      "sha256": "848b969a24e2d27e5c3da91284bc0ddf77dce0ba0af7b7cb87cf5cc99324dc5e",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 12",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-12.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "photo-13",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_13.webp",
+      "status": "fetched",
+      "bytes": 184040,
+      "sha256": "87df7e76176f52c0f9f0fd776395f82032652bd76275e5ff4fe7084ef2ec7ca3",
+      "mediaType": "image/webp",
+      "title": "M5Stack StopWatch official product image 13",
+      "kind": "photo",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "photo-13.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "official-cad-stl",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/master/Products/C152_StopWatch/Structures/StopWatch.stl",
+      "status": "fetched",
+      "bytes": 853484,
+      "sha256": "48b292c76f929acb75868cba47ccda86800fbff7cfff172161df64ff87f220d5",
+      "mediaType": "application/octet-stream",
+      "title": "StopWatch official STL structure file",
+      "kind": "cad",
+      "fetchedAt": "2026-10-26T10:46:29Z",
+      "archiveName": "official-cad-stl.stl",
+      "discoveredFrom": "structure-index",
+      "revision": {
+        "gitBlobSha1": "e4ff3f7febe0116d817950ee3effbeba5005dd00",
+        "ref": "master"
+      },
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE"
+    },
+    {
+      "id": "structure-page",
+      "title": "StopWatch structure files",
+      "url": "https://github.com/m5stack/M5_Hardware/tree/master/Products/C152_StopWatch/Structures",
+      "kind": "repository",
+      "status": "linked",
+      "discoveredFrom": "official-docs",
+      "notes": "Linked by the downloaded official product page; this target was not downloaded in this collection."
+    },
+    {
+      "id": "datasheet-esp32s3",
+      "title": "ESP32-S3 datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/472/esp32-s3_datasheet_en.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs",
+      "notes": "Linked by the downloaded official product page; this target was not downloaded in this collection."
+    },
+    {
+      "id": "datasheet-es8311",
+      "title": "ES8311 audio codec datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/atom/Atomic%20Echo%20Base/ES8311.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs",
+      "notes": "Linked by the downloaded official product page; this target was not downloaded in this collection."
+    },
+    {
+      "id": "datasheet-rx8130ce",
+      "title": "RX8130CE datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1132/RX8130CE_cn.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs",
+      "notes": "Linked by the downloaded official product page; this target was not downloaded in this collection."
+    },
+    {
+      "id": "register-rx8130ce",
+      "title": "RX8130CE register manual",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1132/RX8130CE_cn-Register-Datasheet.pdf",
+      "kind": "register-manual",
+      "status": "linked",
+      "discoveredFrom": "official-docs",
+      "notes": "Linked by the downloaded official product page; this target was not downloaded in this collection."
+    },
+    {
+      "id": "datasheet-co5300",
+      "title": "CO5300 display driver datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/CO5300_Datasheet.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs",
+      "notes": "Linked by the downloaded official product page; this target was not downloaded in this collection."
+    },
+    {
+      "id": "datasheet-cst820b",
+      "title": "CST820B touch controller datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/CST820B_datasheet.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs",
+      "notes": "Linked by the downloaded official product page; this target was not downloaded in this collection."
+    },
+    {
+      "id": "datasheet-m5pm1",
+      "title": "M5PM1 power-management datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1207/M5PM1_Datasheet_EN.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs",
+      "notes": "Linked by the downloaded official product page; this target was not downloaded in this collection."
+    },
+    {
+      "id": "datasheet-m5ioe1",
+      "title": "M5IOE1 IO-expander datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1210/IO_Expander_Datasheet_EN.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "official-docs",
+      "notes": "Linked by the downloaded official product page; this target was not downloaded in this collection."
+    },
+    {
+      "id": "firmware-official",
+      "title": "M5Stack StopWatch factory firmware source",
+      "url": "https://github.com/m5stack/M5StopWatch-UserDemo",
+      "kind": "firmware-source",
+      "status": "linked",
+      "discoveredFrom": "official-docs",
+      "notes": "Linked by the downloaded official product page; this target was not downloaded in this collection."
+    },
+    {
+      "id": "firmware-low-power",
+      "title": "M5Stack StopWatch low-power example",
+      "url": "https://github.com/m5stack/M5StopWatch-PowerDemo",
+      "kind": "firmware-source",
+      "status": "linked",
+      "discoveredFrom": "official-docs",
+      "notes": "Linked by the downloaded official product page; this target was not downloaded in this collection."
+    },
+    {
+      "id": "manufacturer-cad-license",
+      "title": "M5_Hardware MIT license at pinned source commit",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+      "kind": "license",
+      "status": "fetched",
+      "fetchedAt": "2026-10-26T11:16:27Z",
+      "sha256": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+      "bytes": 1063,
+      "mediaType": "text/plain",
+      "archiveName": "LICENSE-M5Stack.txt",
+      "license": "MIT",
+      "notes": "Repository license for the manufacturer STL; does not grant a separately verified license to website photographs."
+    }
+  ],
+  "assets": [
+    {
+      "id": "schematic-pdf",
+      "sourceId": "schematic-pdf",
+      "role": "schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf"
+    },
+    {
+      "id": "dimension-drawing-pdf",
+      "sourceId": "dimension-drawing-pdf",
+      "role": "dimension-drawing",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-StopWatch-model-size.pdf"
+    },
+    {
+      "id": "dimension-drawing-image",
+      "sourceId": "dimension-drawing-image",
+      "role": "dimension-drawing",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-StopWatch-model-size_page_01.png"
+    },
+    {
+      "id": "revision-warning-image",
+      "sourceId": "revision-warning-image",
+      "role": "revision-notice",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_StopWatch_Note_01.png"
+    },
+    {
+      "id": "photo-01",
+      "sourceId": "photo-01",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_01.webp"
+    },
+    {
+      "id": "photo-02",
+      "sourceId": "photo-02",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_02.webp"
+    },
+    {
+      "id": "photo-03",
+      "sourceId": "photo-03",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_03.webp"
+    },
+    {
+      "id": "photo-04",
+      "sourceId": "photo-04",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_04.webp"
+    },
+    {
+      "id": "photo-05",
+      "sourceId": "photo-05",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_05.webp"
+    },
+    {
+      "id": "photo-06",
+      "sourceId": "photo-06",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_06.webp"
+    },
+    {
+      "id": "photo-07",
+      "sourceId": "photo-07",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_07.webp"
+    },
+    {
+      "id": "photo-08",
+      "sourceId": "photo-08",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_08.webp"
+    },
+    {
+      "id": "photo-09",
+      "sourceId": "photo-09",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_09.webp"
+    },
+    {
+      "id": "photo-10",
+      "sourceId": "photo-10",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_10.webp"
+    },
+    {
+      "id": "photo-11",
+      "sourceId": "photo-11",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_11.webp"
+    },
+    {
+      "id": "photo-12",
+      "sourceId": "photo-12",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_12.webp"
+    },
+    {
+      "id": "photo-13",
+      "sourceId": "photo-13",
+      "role": "photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_13.webp"
+    },
+    {
+      "id": "official-cad-stl",
+      "sourceId": "official-cad-stl",
+      "role": "cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/master/Products/C152_StopWatch/Structures/StopWatch.stl"
+    },
+    {
+      "id": "datasheet-esp32s3",
+      "sourceId": "datasheet-esp32s3",
+      "role": "datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/472/esp32-s3_datasheet_en.pdf"
+    },
+    {
+      "id": "datasheet-es8311",
+      "sourceId": "datasheet-es8311",
+      "role": "datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/atom/Atomic%20Echo%20Base/ES8311.pdf"
+    },
+    {
+      "id": "datasheet-rx8130ce",
+      "sourceId": "datasheet-rx8130ce",
+      "role": "datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1132/RX8130CE_cn.pdf"
+    },
+    {
+      "id": "register-rx8130ce",
+      "sourceId": "register-rx8130ce",
+      "role": "register-manual",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1132/RX8130CE_cn-Register-Datasheet.pdf"
+    },
+    {
+      "id": "datasheet-co5300",
+      "sourceId": "datasheet-co5300",
+      "role": "datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/CO5300_Datasheet.pdf"
+    },
+    {
+      "id": "datasheet-cst820b",
+      "sourceId": "datasheet-cst820b",
+      "role": "datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/CST820B_datasheet.pdf"
+    },
+    {
+      "id": "datasheet-m5pm1",
+      "sourceId": "datasheet-m5pm1",
+      "role": "datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1207/M5PM1_Datasheet_EN.pdf"
+    },
+    {
+      "id": "datasheet-m5ioe1",
+      "sourceId": "datasheet-m5ioe1",
+      "role": "datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1210/IO_Expander_Datasheet_EN.pdf"
+    },
+    {
+      "id": "derived-web-model",
+      "sourceId": "official-cad-stl",
+      "role": "derived-model-provenance",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/master/Products/C152_StopWatch/Structures/StopWatch.stl",
+      "localUrl": "./assets/m5stack-stopwatch/model.json"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "user-hardware-revision",
+      "label": "用户实物硬件修订版",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [],
+      "notes": "用户仅确认持有 StopWatch；尚未核对机身版本，禁止默认采用 v1.0.1。"
+    },
+    {
+      "id": "surface-finish",
+      "label": "外壳材质、色号及表面工艺",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-docs",
+        "photo-01"
+      ],
+      "notes": "照片可帮助外观比对，但本次读取的官方文字没有给出材料牌号、色号或粗糙度数值。"
+    },
+    {
+      "id": "gps-physical-compatibility",
+      "label": "GPS 实机 UART 路由与兼容性",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "官网明确 G10/G11 的触点，但不定义任意用户固件的 UART 控制器与 RX/TX 方向。"
+    },
+    {
+      "id": "schematic-revision-coverage",
+      "label": "所链接原理图与 v1.0.1 的对应关系",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "schematic-pdf",
+        "official-docs"
+      ],
+      "notes": "链接的原理图文件名早于 2026-08-27 的 v1.0.1 发布；未确认其是否包含该版电源触点修改。不能用这份图覆盖新版声明。"
+    }
+  ],
+  "collectionNotes": [
+    "Facts are concise transcriptions or summaries of technical data, not a copy of the product page.",
+    "fetchedAt is the UTC completion timestamp read from clock.curr_time immediately after each download group.",
+    "Downloaded original files are temporary verification inputs; this record retains external links, byte counts and SHA-256 values. No redistribution license for third-party documents or photographs is inferred.",
+    "Datasheets with status linked were discovered on the fetched official page; their contents were not downloaded or reviewed in this collection.",
+    "Runtime support is maintained in the catalog. Hardware presence does not imply that the emulator implements the corresponding component.",
+    "A source STL, license and selected product photos are retained as model inputs and visual comparison evidence. See assets/m5stack-stopwatch/model.json for derivative texture processing and distinct photo-rights status."
+  ]
+}

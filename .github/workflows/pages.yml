@@ -40,10 +40,13 @@ jobs:
         run: tools/fetch-pocket-tank.sh
       - name: Validate product platform and real StopWatch execution
         run: |
-          node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs
+          node --test tools/platform-*-test.mjs
+          node tools/platform-recording-test.mjs --real
           node tools/wasm-test.mjs demo-stopwatch
-      - name: Publish the coding-agent skill
-        run: cp -R skills/esp-online-tester web/platform/skill
+      - name: Publish the coding-agent skills
+        run: |
+          cp -R skills/esp-online-tester web/platform/skill
+          cp -R skills/esp-product-onboarding web/platform/onboarding-skill
       - name: Version-stamp the script and module URLs (Pages caches for 10 minutes)
         run: |
           v=${GITHUB_SHA::8}

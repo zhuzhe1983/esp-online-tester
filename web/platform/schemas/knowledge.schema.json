@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "knowledge.schema.json",
+  "title": "Source-backed product, accessory or firmware knowledge record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "kind", "catalogId", "title", "summary", "summarySourceIds", "updatedAt", "hardwareRevision", "facts", "revisions", "sources", "assets", "unknowns", "collectionNotes"],
+  "properties": {
+    "schemaVersion": {"const": "1"}, "id": {"$ref": "#/$defs/id"}, "kind": {"enum": ["product", "accessory", "firmware"]}, "catalogId": {"$ref": "#/$defs/id"},
+    "title": {"type": "string", "minLength": 1}, "summary": {"type": "string", "minLength": 1, "maxLength": 1200}, "summarySourceIds": {"$ref": "#/$defs/refs"},
+    "updatedAt": {"$ref": "#/$defs/utc"}, "hardwareRevision": {"type": "string"}, "identity": {"type": "object"},
+    "facts": {"type": "array", "items": {"$ref": "#/$defs/fact"}},
+    "unknowns": {"type": "array", "items": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"basis": {"const": "unknown"}, "value": {"type": "null"}}}]}},
+    "revisions": {"type": "array", "items": {"type": "object", "required": ["id", "releaseDate", "basis", "sourceIds", "changes"], "properties": {"id": {"type": "string"}, "releaseDate": {"type": "string", "format": "date"}, "basis": {"const": "official"}, "sourceIds": {"$ref": "#/$defs/refs"}, "changes": {"type": "string"}, "hardwareRevision": {"type": "string"}, "powerContact": {"type": "object"}}}},
+    "sources": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/source"}},
+    "assets": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "sourceId", "role", "url"], "properties": {"id": {"$ref": "#/$defs/id"}, "sourceId": {"$ref": "#/$defs/id"}, "role": {"type": "string"}, "url": {"$ref": "#/$defs/url"}, "localUrl": {"type": "string"}}}},
+    "collectionNotes": {"type": "array", "items": {"type": "string"}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,100}$"},
+    "utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "url": {"type": "string", "format": "uri", "pattern": "^https://"},
+    "refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "fact": {"type": "object", "additionalProperties": false, "required": ["id", "label", "value", "basis", "sourceIds"], "properties": {"id": {"$ref": "#/$defs/id"}, "group": {"type": "string"}, "label": {"type": "string"}, "value": {}, "unit": {"type": "string"}, "basis": {"enum": ["official", "image-measurement", "cad-measurement", "unknown"]}, "sourceIds": {"$ref": "#/$defs/refs"}, "notes": {"type": "string"}, "method": {"type": "string"}, "uncertainty": {"type": "string"}}, "allOf": [
+      {"if": {"properties": {"basis": {"const": "unknown"}}}, "then": {"properties": {"value": {"type": "null"}}}, "else": {"properties": {"sourceIds": {"minItems": 1}}}},
+      {"if": {"properties": {"basis": {"enum": ["image-measurement", "cad-measurement"]}}}, "then": {"required": ["method"]}},
+      {"if": {"properties": {"basis": {"const": "image-measurement"}}}, "then": {"required": ["uncertainty"]}}
+    ]},
+    "source": {"type": "object", "additionalProperties": false, "required": ["id", "title", "url", "kind", "status"], "properties": {
+      "id": {"$ref": "#/$defs/id"}, "title": {"type": "string", "minLength": 1}, "url": {"$ref": "#/$defs/url"}, "kind": {"type": "string", "minLength": 1}, "status": {"enum": ["fetched", "linked", "failed"]},
+      "fetchedAt": {"$ref": "#/$defs/utc"}, "attemptedAt": {"$ref": "#/$defs/utc"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "bytes": {"type": "integer", "minimum": 1}, "mediaType": {"type": "string"},
+      "archiveName": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"}, "discoveredFrom": {"$ref": "#/$defs/id"}, "resolvedUrl": {"$ref": "#/$defs/url"}, "revision": {"type": "object"}, "notes": {"type": "string"}, "error": {"type": "string"}, "license": {"type": "string"}, "licenseUrl": {"$ref": "#/$defs/url"}
+    }, "allOf": [
+      {"if": {"properties": {"status": {"const": "fetched"}}}, "then": {"required": ["fetchedAt", "sha256", "bytes", "archiveName"]}, "else": {"not": {"anyOf": [{"required": ["fetchedAt"]}, {"required": ["sha256"]}, {"required": ["bytes"]}, {"required": ["archiveName"]}]}}},
+      {"if": {"properties": {"status": {"const": "failed"}}}, "then": {"required": ["attemptedAt", "error"]}}
+    ]}
+  }
+}

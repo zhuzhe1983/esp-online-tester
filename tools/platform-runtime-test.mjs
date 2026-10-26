@@ -180,6 +180,21 @@ try {
     { type: 'button', id: 'button-b', pressed: true }, { type: 'button', id: 'button-b', pressed: false }, 'BUTTON_B reset'));
   await step('StopWatch CST820 touch guest acknowledgement', () => holdUntilSerial(
     { type: 'touch', x: 234, y: 233, down: true }, { type: 'touch', x: 234, y: 233, down: false }, 'TOUCH down'));
+  await step('paused input cleanup and recordable receipt', async () => {
+    await runtime.pause();
+    await expectCode(() => runtime.input({ type: 'button', id: 'button-a', pressed: true }), 'NOT_RUNNING');
+    const events = [], unsubscribe = runtime.subscribe(event => { if (event.type === 'input') events.push(event); });
+    try {
+      const release = { type: 'button', id: 'button-a', pressed: false };
+      const receipt = await runtime.input(release);
+      assert.deepEqual(events[0].event, release);
+      assert.equal(events[0].receipt.guestTime, receipt.guestTime);
+      assert.equal(events[0].receipt.delivery, 'queued');
+      assert.deepEqual(events[0].receipt.frame, { width: 468, height: 466 });
+      assert.equal((await runtime.observe()).status, 'paused');
+    } finally { unsubscribe(); }
+    await runtime.start();
+  });
   await expectCode(() => runtime.input({ type: 'touch', x: 468, y: 0, down: true }), 'INVALID_INPUT');
   const injected = await step('StopWatch GPS RMC and GGA reception', async () => {
     const gps = api.waitFor({ serialIncludes: 'GPS_RX $GPGGA', port: 'uart0', fromNow: true });
@@ -211,6 +226,27 @@ try {
 assert.equal((await runtime.observe()).status, 'disposed');
 await expectCode(() => runtime.start(), 'DISPOSED');
 console.log('ok platform session disposal');
+
+// Exercise the real runtime cancellation path rather than the recording test's
+// stand-in. Cancellation must leave a reusable configured session and no worker.
+let releaseFetch, workersCreated = 0;
+const beganFetch = new Promise(resolve => { releaseFetch = resolve; });
+const cancellingRuntime = createPlatformRuntime({ catalog, baseUrl, fetchImpl: (url, options) => new Promise((resolve, reject) => {
+  releaseFetch();
+  options.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), { once: true });
+}), workerFactory() { workersCreated++; throw new Error('Cancelled load must not create a worker'); } });
+try {
+  await cancellingRuntime.configure(createDefaultScene(catalog, 'm5stack-stopwatch'));
+  const load = cancellingRuntime.loadFirmware({ manifestUrl: 'https://platform.example/wasm/fw/demo-stopwatch.json' });
+  const rejected = expectCode(() => load, 'FETCH_ABORTED');
+  await beganFetch;
+  await cancellingRuntime.cancelPendingLoad(); await rejected;
+  const cancelled = await cancellingRuntime.observe();
+  assert.equal(cancelled.status, 'configured'); assert.equal(cancelled.firmware, null); assert.equal(workersCreated, 0);
+  await cancellingRuntime.updateSceneMetadata({ view: { mode: 'embed', deviceView: '2d' } });
+  assert.equal((await cancellingRuntime.observe()).scene.view.mode, 'embed');
+} finally { await cancellingRuntime.dispose(); }
+console.log('ok real runtime download cancellation: aborted fetch, no worker/receipt, session remains reusable');
 
 // Transport regression only: deliberately deliver old stat messages before a matching
 // input receipt. These controlled messages are not firmware execution evidence.

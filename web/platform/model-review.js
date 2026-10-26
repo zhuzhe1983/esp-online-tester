@@ -1,0 +1,30 @@
+import * as THREE from './vendor/three.module.min.js';
+import {createStopwatchModel} from './stopwatch-model.js';
+const assetBase=new URL('./assets/m5stack-stopwatch/',import.meta.url);
+const views={front:{label:'正面',photo:'06',position:[0,0,180],up:[0,1,0],span:84.78},back:{label:'背面',photo:'07',position:[0,0,-180],up:[0,1,0],span:85.246},right:{label:'右侧',photo:'08',position:[180,0,0],up:[0,0,1],span:73.24},bottom:{label:'底部',photo:'09',position:[0,-180,0],up:[0,0,1],span:73.24}};
+const scene=new THREE.Scene();
+scene.add(new THREE.HemisphereLight(0xffffff,0xa6aaa6,2.5));
+const light=new THREE.DirectionalLight(0xffffff,3.1);scene.add(light);
+const rim=new THREE.DirectionalLight(0xffffff,1.3);scene.add(rim);
+const camera=new THREE.OrthographicCamera(-40,40,40,-40,.1,1000);
+const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(1);renderer.setSize(800,800,false);renderer.outputColorSpace=THREE.SRGBColorSpace;
+document.querySelector('#render').append(renderer.domElement);
+const overlay=document.createElement('canvas');overlay.width=overlay.height=800;document.querySelector('#overlay').append(overlay);
+const screenCanvas=document.createElement('canvas');screenCanvas.width=screenCanvas.height=4;screenCanvas.getContext('2d').fillRect(0,0,4,4);
+const texture=new THREE.CanvasTexture(screenCanvas);texture.colorSpace=THREE.SRGBColorSpace;
+const model=createStopwatchModel(texture);scene.add(model.group);
+function showView(id){const v=views[id];if(!v)throw new Error('Unknown view');
+ camera.left=-v.span/2;camera.right=v.span/2;camera.top=v.span/2;camera.bottom=-v.span/2;camera.up.set(...v.up);camera.position.set(...v.position);camera.lookAt(0,0,0);camera.updateProjectionMatrix();
+ light.position.copy(camera.position).add(new THREE.Vector3(-60,90,30));rim.position.copy(camera.position).negate().add(new THREE.Vector3(60,40,30));
+ const url=new URL(`reference-photo-${v.photo}.webp`,assetBase).href;document.querySelector('#reference').src=document.querySelector('#overlay-reference').src=url;
+ document.querySelector('#source').href=`https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152_stopwatch_mainpictures_${v.photo}.webp`;
+ document.querySelector('#camera').textContent=JSON.stringify({view:id,...v,alignment:'Near-frontal circle/body silhouette fit; no geometry deformation; no lens correction.'},null,2);
+ document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===id)));
+ renderer.render(scene,camera);overlay.getContext('2d').clearRect(0,0,800,800);overlay.getContext('2d').drawImage(renderer.domElement,0,0);document.body.dataset.view=id;
+ return {id,...v};
+}
+for(const [id,v] of Object.entries(views)){const b=document.createElement('button');b.textContent=v.label;b.dataset.view=id;b.onclick=()=>showView(id);document.querySelector('#views').append(b);}
+document.querySelector('#opacity').oninput=e=>{overlay.style.opacity=e.target.value;};
+window.modelReview={showView,capture:()=>renderer.domElement.toDataURL('image/png')};
+model.ready.then(()=>{showView('front');document.querySelector('#status').textContent='CAD 已加载 · 4 个原始组件';document.body.dataset.ready='true';}).catch(e=>{document.querySelector('#status').textContent=e.message;});
+window.addEventListener('pagehide',()=>{model.dispose();model.group.traverse(o=>{o.geometry?.dispose();if(o.material)for(const m of [].concat(o.material))m.dispose();});texture.dispose();renderer.dispose();});

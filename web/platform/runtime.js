@@ -1,5 +1,6 @@
 // Browser-only adapter for the upstream ESP32 WASM worker. No server or mock device state.
 import { loadCatalog, validateScene } from './catalog.js';
+import { buildFirmwareIssueUrl } from './watchlist.js';
 
 export const API_VERSION = '1.0.0';
 const MIB = 1024 * 1024;
@@ -40,8 +41,8 @@ export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes =
   if (signal?.aborted) controller.abort();
   const timeout = setTimeout(abort, 60000);
   try {
-    const response = await fetchImpl(url, { mode: 'cors', credentials: 'omit', signal: controller.signal });
-    requireValue(response.ok, 'HTTP_ERROR', `Firmware request failed: HTTP ${response.status}.`, { url, status: response.status });
+    const response = await fetchImpl(url, { mode: 'cors', cache: 'no-store', credentials: 'omit', signal: controller.signal });
+    requireValue(response.ok, 'HTTP_ERROR', `Firmware request failed: HTTP ${response.status}. Please report this source using the issue link.`, { url, status: response.status, issueUrl: buildFirmwareIssueUrl({ url, status: response.status, reason: 'Firmware request failed.' }) });
     const length = Number(response.headers.get('content-length'));
     requireValue(!length || length <= maxBytes, 'FILE_TOO_LARGE', `File exceeds ${maxBytes / MIB} MiB limit.`, { url });
     if (!response.body?.getReader) {
@@ -67,7 +68,7 @@ export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes =
   } catch (e) {
     if (e.code) throw e;
     if (e.name === 'AbortError') throw error('FETCH_ABORTED', 'Firmware download was cancelled or timed out.', { url });
-    throw error('FETCH_FAILED', 'Firmware download failed. Check the URL, network and Access-Control-Allow-Origin header; a static site cannot bypass CORS.', { url });
+    throw error('FETCH_FAILED', 'Firmware download failed. Check the URL, network and Access-Control-Allow-Origin header; a static site cannot bypass CORS.', { url, issueUrl: buildFirmwareIssueUrl({ url, reason: 'Network or CORS failure; source availability is not confirmed.' }) });
   } finally { clearTimeout(timeout); signal?.removeEventListener('abort', abort); }
 }
 
@@ -127,7 +128,7 @@ const romFor = board => board === 'esp32c3' ? 'esp32c3_rev3_rom.elf' : board ===
 export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000 } = {}) {
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;
   let lastError = null, firmware = null, loaded = null, frame = null, frameNumber = 0, serial = '', serialByPort = {}, stats = {}, queue = Promise.resolve();
-  let booted = false, inputSequence = 0;
+  let booted = false, inputSequence = 0, loadCancelled = false;
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
   const snapshot = () => ({ version: API_VERSION, status, scene: clone(scene), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
   const emit = event => { for (const listener of listeners) { try { listener(event); } catch (e) { console.error('ESP tester event handler:', e); } } };
@@ -263,6 +264,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     stopWorker();
     const wasm = await fetchBytes(new URL('wasm/esp32sim.wasm', assetBaseUrl).href, { fetchImpl, maxBytes: MAX_FILE, signal: aborter.signal });
     alive();
+    requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
     const current = workerFactory(new URL('wasm/worker.js', assetBaseUrl)); worker = current;
     current.onmessage = event => { if (worker === current) receive(event.data); };
     current.onerror = event => { const e = error('WORKER_ERROR', event.message || 'WebAssembly worker failed.'); rejectPending(e); report(e); setStatus('error'); };
@@ -287,7 +289,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   };
   const controls = () => Array.isArray(product?.controls) ? product.controls : product?.controls?.buttons || [];
   const input = async event => {
-    requireValue(status === 'running', 'NOT_RUNNING', 'Start the emulator before sending input.');
+    const releaseWhilePaused = status === 'paused' && ((event?.type === 'button' && event.pressed === false) || (event?.type === 'touch' && event.down === false));
+    requireValue(status === 'running' || releaseWhilePaused, 'NOT_RUNNING', 'Start the emulator before sending input.');
     requireValue(event && typeof event === 'object', 'INVALID_INPUT', 'Input must be an object.');
     let message;
     if (event.type === 'button') {
@@ -311,6 +314,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     const inputId = ++inputSequence;
     const receipt = await ask(`input:${inputId}`, { op: 'text', inputId, data: JSON.stringify(message) });
     requireValue(Number.isFinite(receipt.time) && receipt.time >= 0, 'INVALID_INPUT_RECEIPT', 'Worker did not return a valid guest input clock.');
+    emit({ type: 'input', event: clone(event), receipt: { delivery: 'queued', guestTime: receipt.time, frame: { width: frame?.width, height: frame?.height } } });
     return { accepted: true, delivery: 'queued', message, guestTime: receipt.time };
   };
   const advance = fromTime => new Promise((resolveAdvance, reject) => {
@@ -358,7 +362,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     loadFirmware(source) { return exclusive(async () => {
       requireValue(scene, 'NOT_CONFIGURED', 'Configure a product before loading firmware.');
       stopWorker(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
-      aborter = new AbortController(); setStatus('loading');
+      loadCancelled = false; aborter = new AbortController(); setStatus('loading');
       try {
         const selected = source || scene.firmware, bundle = await prepare(selected);
         await initialize(bundle); loaded = bundle; firmware = bundle.receipt;
@@ -367,8 +371,15 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
           : { url: bundle.receipt.artifacts[0].url, sha256: bundle.receipt.artifacts[0].sha256 };
         setStatus('ready'); return snapshot();
       }
-      catch (e) { stopWorker(); if (status !== 'disposed') setStatus('error'); throw e; }
+      catch (e) { stopWorker(); if (status !== 'disposed') setStatus(loadCancelled ? 'configured' : 'error'); if (loadCancelled) throw error('FETCH_ABORTED', 'Firmware load was cancelled.'); throw e; }
     }); },
+    async cancelPendingLoad() {
+      if (status !== 'loading') return snapshot();
+      loadCancelled = true; aborter?.abort(); stopWorker(); loaded = null; firmware = null;
+      await queue;
+      if (status !== 'disposed') setStatus('configured');
+      return snapshot();
+    },
     start() { return exclusive(start); },
     pause() { return exclusive(async () => {
       requireValue(['running', 'paused'].includes(status), 'NOT_RUNNING', 'Only a running emulator can be paused.');
@@ -377,9 +388,9 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     }); },
     reset() { return exclusive(async () => {
       requireValue(loaded, 'NOT_READY', 'Load firmware before resetting.');
-      aborter = new AbortController(); serial = ''; serialByPort = {}; stats = {}; frame = null; frameNumber = 0; lastError = null; setStatus('loading');
+      loadCancelled = false; aborter = new AbortController(); serial = ''; serialByPort = {}; stats = {}; frame = null; frameNumber = 0; lastError = null; setStatus('loading');
       try { await initialize(loaded); setStatus('ready'); return await start(); }
-      catch (e) { stopWorker(); if (status !== 'disposed') setStatus('error'); throw e; }
+      catch (e) { stopWorker(); if (status !== 'disposed') setStatus(loadCancelled ? 'configured' : 'error'); if (loadCancelled) throw error('FETCH_ABORTED', 'Firmware load was cancelled.'); throw e; }
     }); },
     input(event) { return exclusive(() => input(event)); },
     injectGps(options) { return exclusive(async () => {

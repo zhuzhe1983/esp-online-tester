@@ -3,12 +3,16 @@ import {createPlatformRuntime} from './runtime.js';
 import {installAutomation} from './automation.js';
 import {createSceneView, createHumanButtonController} from './scene-view.js';
 import {installEmbedBridge} from './embed.js';
+import {createTransportUi, createKnowledgePanel, mountWatchlist} from './transport-ui.js';
+import {encodeRecording, decodeRecording, validateRecording} from './recording.js';
+import {buildFirmwareIssueUrl} from './watchlist.js';
 
 const $ = id => document.getElementById(id);
 const clone = value => structuredClone(value);
 const embedded = document.body.dataset.mode === 'embed';
 let catalog, scene, runtime, sceneView, humanButtons, api, detachBridge, localDefinitions = [], status = 'idle', firmwareTab = 'library';
 let busy = false, frameCount = 0, renderedProduct = '', renderedScene = '', recordingControl = null, toastTimer, localFile = null, editingAccessoryId = null, uiConfiguring = false;
+let transportUi, knowledgePanel, removeWatchlist, recordingDocument = null, recordingState = {status: 'idle'};
 const heldKeys = new Map();
 const consoleBuffers = {usb: '', uart0: '', uart1: ''};
 const statuses = {idle: '未启动', configured: '配置就绪', loading: '加载中', ready: '固件就绪', running: '运行中', paused: '已暂停', error: '运行失败', disposed: '已结束'};
@@ -41,7 +45,17 @@ function log(message) { for (const port of Object.keys(consoleBuffers)) consoleB
 function report(error) {
   const message = errorMessages[error.code] || error.message || String(error);
   toast(message, true); text('load-status', message);
+  showFirmwareIssue(error);
   log(`\n[${error.code || 'ERROR'}] ${error.message || message}\n`);
+}
+function showFirmwareIssue(error) {
+  const issueLink = $('firmware-issue');
+  if (!issueLink || !['HTTP_ERROR', 'FETCH_FAILED', 'FETCH_ABORTED'].includes(error.code)) return;
+  const url = error.details?.url || $('firmware-url')?.value.trim() || scene?.firmware?.manifestUrl || scene?.firmware?.url;
+  if (!url) return;
+  issueLink.href = buildFirmwareIssueUrl({entryId: 'custom-source', url, reason: error.message, status: error.details?.status, productId: scene?.productId});
+  issueLink.textContent = [404, 410].includes(error.details?.status) ? '远程资源失效：打开 issue 草稿 ↗' : '网络或 CORS 无法确认：打开 issue 草稿 ↗';
+  issueLink.hidden = false;
 }
 async function action(work) {
   if (busy) return;
@@ -92,7 +106,7 @@ function onRuntimeEvent(event) {
       if (event.source === ($('serial-port')?.value || 'uart0')) appendConsole(event.data);
     } else log(event.data);
   }
-  else if (event.type === 'error') { text('load-status', errorMessages[event.error.code] || event.error.message); }
+  else if (event.type === 'error') { text('load-status', errorMessages[event.error.code] || event.error.message); showFirmwareIssue(event.error); }
   else if (event.type === 'stats') {
     text('runtime-speed', event.stats.mips ? `${event.stats.mips.toFixed(1)} MIPS${event.stats.speed == null ? '' : ` · ${Math.round(event.stats.speed * 100)}% 实时`}` : '');
   }
@@ -101,17 +115,19 @@ function onRuntimeEvent(event) {
 function renderTransport() {
   const executable = Boolean(product()?.runtime.board);
   const canLoad = Boolean(scene?.firmware || localFile);
+  const sessionBusy = ['preparing', 'recording', 'playing'].includes(recordingState.status);
   if ($('start-runtime')) {
-    $('start-runtime').disabled = busy || !executable || status === 'running' || status === 'loading' || !(['ready', 'paused'].includes(status) || canLoad);
+    $('start-runtime').disabled = busy || sessionBusy || !executable || status === 'running' || status === 'loading' || !(['ready', 'paused'].includes(status) || canLoad);
     $('start-runtime').textContent = status === 'paused' ? '▶ 继续' : status === 'loading' ? '加载中…' : '▶ 启动';
   }
-  if ($('pause-runtime')) $('pause-runtime').disabled = busy || status !== 'running';
-  if ($('reset-runtime')) $('reset-runtime').disabled = busy || !['running', 'paused', 'ready'].includes(status);
+  if ($('pause-runtime')) $('pause-runtime').disabled = busy || sessionBusy || status !== 'running';
+  if ($('reset-runtime')) $('reset-runtime').disabled = busy || sessionBusy || !['running', 'paused', 'ready'].includes(status);
   if ($('load-firmware')) $('load-firmware').disabled = busy || !executable;
   if ($('capture-frame')) $('capture-frame').disabled = frameCount === 0;
   const badge = $('runtime-badge');
   if (badge) { badge.className = `runtime-badge ${status}`; badge.replaceChildren(element('span'), document.createTextNode(statuses[status] || status)); }
   document.querySelectorAll('.device-button').forEach(button => { button.disabled = status !== 'running'; });
+  transportUi?.refresh();
 }
 function renderEmpty() {
   if (!$('screen-empty') || !product()) return;
@@ -133,6 +149,7 @@ function renderEmpty() {
 function renderProduct() {
   const selected = product(); if (!selected) return;
   text('stage-title', selected.name); text('product-name', selected.name.replace(/^M5Stack /, ''));
+  text('model-origin', selected.id === 'm5stack-stopwatch' ? '官方 CAD 外壳 · 实际帧缓冲' : '示意外壳 · 实际帧缓冲');
   text('product-model', `${selected.manufacturer} / ${selected.sku}`);
   text('product-symbol', selected.display?.shape === 'round' ? '◉' : selected.display ? '▤' : '▧');
   if ($('product-select')) $('product-select').value = selected.id;
@@ -156,6 +173,7 @@ function renderProduct() {
   if ($('product-source')) { $('product-source').hidden = !source; if (source) $('product-source').href = source.url; }
   if (renderedProduct !== selected.id) {
     renderedProduct = selected.id; sceneView?.setProduct(selected); frameCount = 0; text('frame-count', '0 帧'); renderFirmwareLibrary();
+    void knowledgePanel?.show(selected);
   }
   renderControls(); renderEmpty();
 }
@@ -243,6 +261,7 @@ function renderControls() {
   }
 }
 async function sendInput(event, source = 'scene') {
+  await transportUi?.beforeHumanInput();
   if (status !== 'running') return;
   if (event.type === 'button') return humanButtons.input(event, source);
   try { await runtime.input(event); } catch (error) { report(error); }
@@ -258,16 +277,18 @@ function renderScene() {
   if (!scene || !catalog) return;
   renderProduct(); renderAccessories(); renderValidation(); renderTransport();
   sceneView?.setMode(scene.view.deviceView);
-  if ($('edit-scene')) $('edit-scene').href = shareUrl('studio');
+  if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false});
 }
 function reflectMode(mode, unavailable = false) {
   for (const candidate of ['2d', '3d']) { const button = $(`view-${candidate}`); if (button) { button.classList.toggle('active', mode === candidate); button.setAttribute('aria-pressed', String(mode === candidate)); } }
   if ($('view-3d')) $('view-3d').disabled = unavailable;
-  text('stage-gesture', mode === '3d' ? '拖动外壳旋转 · 滚轮缩放 · 点击屏幕交互' : '点击或拖动屏幕交互 · 按键支持键盘映射');
+  text('stage-gesture', mode === '3d' ? '拖动外壳旋转 · 滚轮缩放 · 屏幕支持点击与滑动' : '点击或左右滑动屏幕 · 按键支持键盘映射');
 }
 async function configure(next, {reflectSource = false} = {}) {
   const validation = validateScene(next, catalog);
   if (!validation.valid) throw Object.assign(new Error(validation.errors.map(item => `${item.path}: ${item.message}`).join('\n')), {code: 'INVALID_SCENE'});
+  if ($('firmware-issue')) $('firmware-issue').hidden = true;
+  await transportUi?.settleForConfiguration();
   await releaseHumanInputs();
   uiConfiguring = true;
   try { await runtime.configure(next); } finally { uiConfiguring = false; }
@@ -275,6 +296,7 @@ async function configure(next, {reflectSource = false} = {}) {
   text('load-status', '配置已更新，启动时会重新加载固件。');
 }
 async function loadSelected() {
+  if ($('firmware-issue')) $('firmware-issue').hidden = true;
   const source = sourceFromInputs();
   const next = clone(scene); next.firmware = source.file ? null : source;
   await configure(next); await runtime.loadFirmware(source); return source;
@@ -369,10 +391,25 @@ function portableScene() {
   }
   return next;
 }
-function shareUrl(mode = 'studio') {
+function recordingForScene(candidate, {strict = true} = {}) {
+  if (!recordingDocument) return null;
+  if (['preparing', 'recording', 'playing'].includes(recordingState.status)) {
+    if (strict) throw new Error('请先停止录制或接管回放，再分享完整操作。');
+    return null;
+  }
+  const validation = validateRecording(recordingDocument, {scene: candidate});
+  if (!validation.valid) {
+    if (strict) throw new Error('当前设备、固件或配件与录制不一致。请恢复原场景，或清除旧录制后分享。');
+    return null;
+  }
+  return recordingDocument;
+}
+function shareUrl(mode = 'studio', {strictRecording = true} = {}) {
   const shared = portableScene(); shared.view.mode = mode;
   const url = new URL(mode === 'embed' ? './embed.html' : './index.html', import.meta.url);
-  url.hash = `scene=${encodeScene(shared)}`; return url.href;
+  const params = new URLSearchParams({scene: encodeScene(shared)}), recorded = recordingForScene(shared, {strict: strictRecording});
+  if (recorded) params.set('recording', encodeRecording(recorded));
+  url.hash = params.toString(); return url.href;
 }
 function validatePortable(next) {
   const validation = validateScene(next, catalog); if (!validation.valid) throw new Error(validation.errors.map(item => item.message).join(' '));
@@ -424,10 +461,23 @@ function setupEvents() {
   });
   bind('export-diy-draft', 'click', () => { try { const item = makeDiy(); download(`${item.id.replace(':', '-')}.json`, exportLocalAccessory(item)); } catch (error) { text('diy-error', error.message); } });
   bind('import-diy', 'change', () => action(async () => { const input = $('import-diy'), file = input.files[0]; if (!file) return; if (file.size > 16384) throw new Error('配件定义不能超过 16 KiB。'); const item = importLocalAccessory(await file.text()); saveLocalAccessory(item); localDefinitions = listLocalAccessories(); renderLocalAccessories(); renderAccessories(); input.value = ''; toast('配件定义已导入本地库。'); }));
-  bind('export-scene', 'click', () => action(async () => { const shared = portableScene(); validatePortable(shared); download(`${scene.productId}-scene.json`, JSON.stringify(shared, null, 2) + '\n'); if (localFile) toast('配置已导出；本地固件文件需单独提供。'); }));
-  bind('import-scene', 'change', () => action(async () => { const input = $('import-scene'), file = input.files[0]; if (!file) return; if (file.size > 65536) throw new Error('场景配置不能超过 64 KiB。'); const imported = JSON.parse(await file.text()); validatePortable(imported); localFile = null; await configure(imported, {reflectSource: true}); input.value = ''; toast('场景已导入。'); }));
-  bind('share-scene', 'click', () => action(async () => { validatePortable(portableScene()); const url = shareUrl('studio'); await copy(url, localFile ? '分享链接已复制；本地固件需接收者自行选择。' : '场景链接已复制。'); history.replaceState(null, '', url); }));
-  bind('copy-embed', 'click', () => action(async () => { validatePortable(portableScene()); const url = shareUrl('embed'); await copy(`<iframe src="${url}" title="${product().name.replaceAll('"', '&quot;')} · ESP Player" width="800" height="640" allow="fullscreen" loading="lazy"></iframe>`, 'iframe 代码已复制。'); }));
+  bind('export-scene', 'click', () => action(async () => {
+    await transportUi?.syncRecording(); const shared = portableScene(); validatePortable(shared); const recorded = recordingForScene(shared);
+    const document = recorded ? {schemaVersion: '1', scene: shared, recording: recorded} : shared;
+    download(`${scene.productId}-${recorded ? 'session' : 'scene'}.json`, JSON.stringify(document, null, 2) + '\n');
+    if (localFile) toast('配置已导出；本地固件文件需单独提供。');
+  }));
+  bind('import-scene', 'change', () => action(async () => {
+    const input = $('import-scene'), file = input.files[0]; if (!file) return;
+    if (file.size > 131072) throw new Error('场景与录制包不能超过 128 KiB。');
+    const document = JSON.parse(await file.text()), bundle = document.scene !== undefined;
+    if (bundle && (document.schemaVersion !== '1' || Object.keys(document).some(key => !['schemaVersion', 'scene', 'recording'].includes(key)))) throw new Error('录制包格式无效。');
+    const imported = bundle ? document.scene : document, recorded = bundle ? document.recording || null : null; validatePortable(imported);
+    if (recorded) { const validation = validateRecording(recorded, {scene: imported}); if (!validation.valid) throw new Error(validation.errors.map(item => item.message).join(' ')); }
+    localFile = null; await configure(imported, {reflectSource: true}); transportUi?.setRecording(recorded); input.value = ''; toast(recorded ? '场景与录制已导入，点击回放即可重现操作。' : '场景已导入。');
+  }));
+  bind('share-scene', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene()); const url = shareUrl('studio'); await copy(url, localFile ? '分享链接已复制；本地固件需接收者自行选择。' : recordingDocument ? '场景与录制链接已复制；接收者需主动点击回放。' : '场景链接已复制。'); history.replaceState(null, '', url); }));
+  bind('copy-embed', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene()); const url = shareUrl('embed'); await copy(`<iframe src="${url}" title="${product().name.replaceAll('"', '&quot;')} · ESP Player" width="800" height="640" allow="serial; fullscreen" loading="lazy"></iframe>`, 'iframe 代码已复制。'); }));
   bind('open-player', 'click', () => { try { validatePortable(portableScene()); window.open(shareUrl('embed'), '_blank', 'noopener'); } catch (error) { report(error); } });
   bind('keyboard-enabled', 'change', () => { if (!$('keyboard-enabled').checked) releaseKeys(); });
   document.addEventListener('keydown', event => {
@@ -445,7 +495,7 @@ function setupEvents() {
   document.addEventListener('keyup', event => { const id = heldKeys.get(event.code); if (!id) return; event.preventDefault(); heldKeys.delete(event.code); sendInput({type: 'button', id, pressed: false}, `key:${event.code}`); });
   window.addEventListener('blur', releaseHumanInputs);
   document.addEventListener('visibilitychange', () => { if (document.hidden) releaseHumanInputs(); });
-  window.addEventListener('pagehide', () => { humanButtons?.invalidate(); detachBridge?.(); sceneView?.dispose(); runtime?.dispose(); }, {once: true});
+  window.addEventListener('pagehide', () => { humanButtons?.invalidate(); transportUi?.dispose(); knowledgePanel?.dispose(); removeWatchlist?.(); detachBridge?.(); sceneView?.dispose(); runtime?.dispose(); }, {once: true});
 }
 
 async function init() {
@@ -458,6 +508,12 @@ async function init() {
     catch (error) { restored = null; report(error); log('[SCENE] 无法加载共享配置，已回到默认设备。\n'); }
   }
   scene = restored || defaultFirmware(createDefaultScene(catalog));
+  if (params.has('recording')) {
+    try {
+      const recorded = decodeRecording(params.get('recording')), validation = validateRecording(recorded, {scene});
+      if (!validation.valid) throw new Error(validation.errors.map(item => item.message).join(' ')); recordingDocument = recorded;
+    } catch (error) { report(error); log('[RECORDING] 共享录制无效，设备仍可手动操作。\n'); }
+  }
   sceneView = createSceneView($('scene-mount'), {onInput: sendInput, onModeChange: reflectMode});
   runtime = createPlatformRuntime({catalog, onEvent: onRuntimeEvent});
   humanButtons = createHumanButtonController({send: event => runtime.input(event), isRunning: () => status === 'running', onError: report,
@@ -465,9 +521,19 @@ async function init() {
   });
   api = installAutomation(runtime, {target: window});
   detachBridge = installEmbedBridge(api);
+  knowledgePanel = createKnowledgePanel($('product-knowledge'));
+  transportUi = createTransportUi({mount: $('session-tools-mount'), catalog, getScene: () => clone(scene), getSource: sourceFromInputs, getApi: () => api,
+    prepareRecording: async () => { await releaseHumanInputs(); if (!['ready', 'running', 'paused'].includes(status)) await loadSelected(); },
+    releaseInputs: releaseHumanInputs,
+    recordingMatchesScene: recorded => validateRecording(recorded, {scene}).valid,
+    onRecordingState: state => { recordingState = state; renderTransport(); },
+    onRecordingChange: value => { recordingDocument = value; if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false}); },
+    onError: report, onLog: log,
+  });
   if ($('product-select')) { $('product-select').replaceChildren(...catalog.products.map(item => new Option(item.name, item.id))); $('product-select').disabled = false; }
   text('product-count', `${catalog.products.length} 款`);
-  setupEvents(); await runtime.configure(scene); renderLocalAccessories(); reflectFirmwareSource();
+  setupEvents(); await runtime.configure(scene); renderLocalAccessories(); reflectFirmwareSource(); transportUi.setRecording(recordingDocument);
+  removeWatchlist = await mountWatchlist($('firmware-watchlist'), {getProductId: () => scene.productId, onError: report});
   if (embedded) {
     text('empty-description', scene.firmware ? '点击启动，执行此场景中的固件。' : '此场景未指定固件，可点击“编辑”进行配置。');
     // Playback requires an explicit user action; embedding a URL never starts untrusted firmware silently.

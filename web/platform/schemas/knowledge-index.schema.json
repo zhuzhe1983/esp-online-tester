@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "knowledge-index.schema.json",
+  "title": "Static knowledge index v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "updatedAt", "entries"],
+  "properties": {
+    "schemaVersion": {"const": "1"}, "updatedAt": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "entries": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "kind", "catalogId", "name", "url", "updatedAt"], "properties": {"id": {"type": "string"}, "kind": {"enum": ["product", "accessory", "firmware"]}, "catalogId": {"type": "string"}, "name": {"type": "string"}, "url": {"type": "string", "pattern": "^\\./[a-z0-9-]+\\.json$"}, "updatedAt": {"type": "string", "format": "date-time", "pattern": "Z$"}}}}
+  }
+}

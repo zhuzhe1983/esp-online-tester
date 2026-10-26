@@ -1,15 +1,28 @@
 // Stable automation surface shared by coding agents and the human interface.
 import { encodeScene } from './catalog.js';
+import { createRecordingController, encodeRecording, validateRecording } from './recording.js';
 
 export function installAutomation(runtime, { target = globalThis.window } = {}) {
   if (!target) throw new Error('Automation installation requires a window target.');
+  const recorder = createRecordingController(runtime);
   const api = Object.freeze({
     ...runtime,
+    ...recorder.api,
+    subscribe(listener) {
+      const stopRuntime = runtime.subscribe(listener), stopRecorder = recorder.subscribe(listener);
+      return () => { stopRuntime(); stopRecorder(); };
+    },
+    async input(event) { await recorder.beforeInput(); return runtime.input(event); },
+    async configure(scene) { await recorder.beforeLifecycle('configure'); return runtime.configure(scene); },
+    async loadFirmware(source) { await recorder.beforeLifecycle('load-firmware'); return runtime.loadFirmware(source); },
+    async pause() { await recorder.beforeLifecycle('pause'); return runtime.pause(); },
+    async reset() { await recorder.beforeLifecycle('reset'); return runtime.reset(); },
+    async dispose() { await recorder.dispose(); return runtime.dispose(); },
     async press(id, { durationMs = 100 } = {}) {
       if (!Number.isFinite(durationMs) || durationMs < 0 || durationMs > 10000) throw Object.assign(new Error('Press duration must be 0…10000 ms.'), { code: 'INVALID_INPUT' });
-      await runtime.input({ type: 'button', id, pressed: true });
+      await api.input({ type: 'button', id, pressed: true });
       try { await new Promise(resolve => setTimeout(resolve, durationMs)); }
-      finally { await runtime.input({ type: 'button', id, pressed: false }); }
+      finally { await api.input({ type: 'button', id, pressed: false }); }
       return { accepted: true, id, durationMs };
     },
     async waitFor({ status, serialIncludes, port, fromNow = false, timeoutMs = 10000 } = {}) {
@@ -41,7 +54,7 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
         void check();
       });
     },
-    async share({ mode, baseUrl = target.location?.href } = {}) {
+    async share({ mode, baseUrl = target.location?.href, includeRecording = true } = {}) {
       const state = await runtime.observe();
       if (!state.scene) throw Object.assign(new Error('Configure a scene before sharing.'), { code: 'NOT_CONFIGURED' });
       if (state.firmware?.source === 'local') throw Object.assign(new Error('Local firmware bytes cannot be included in a URL. Publish the firmware at a CORS-enabled URL or share its manifest first.'), { code: 'LOCAL_FIRMWARE_NOT_SHAREABLE' });
@@ -50,6 +63,13 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
       if (mode) scene.view.mode = mode;
       const url = new URL(mode === 'embed' ? 'embed.html' : mode === 'studio' ? 'index.html' : baseUrl, baseUrl);
       url.hash = `scene=${encodeScene(scene)}`;
+      const recordingState = await recorder.api.recordingObserve(), recorded = recordingState.recording;
+      if (includeRecording && ['preparing','recording','playing'].includes(recordingState.status)) throw Object.assign(new Error('Stop recording or playback before sharing its replay payload.'), {code:'RECORDING_NOT_SHAREABLE'});
+      if (includeRecording && recorded) {
+        const validation = validateRecording(recorded, {scene});
+        if (!validation.valid) throw Object.assign(new Error('Stop recording and match its product, firmware and accessories before sharing.'), {code:'RECORDING_NOT_SHAREABLE',details:validation});
+        url.hash += `&recording=${encodeRecording(recorded)}`;
+      }
       return url.href;
     },
   });

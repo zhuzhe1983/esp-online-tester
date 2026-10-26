@@ -1,0 +1,231 @@
+// Portable semantic input recordings. Guest acknowledgements are evidence of delivery,
+// not cycle-exact scheduling or a guarantee of identical firmware behavior.
+import {encodeScene, decodeScene} from './catalog.js';
+
+export const MAX_RECORDING_BYTES = 32768;
+export const MAX_RECORDING_EVENTS = 500;
+export const MAX_RECORDING_SECONDS = 120;
+const clone = value => value == null ? value : structuredClone(value);
+const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+const err = (code, message, details) => Object.assign(new Error(message), {code, details});
+const canonical = value => Array.isArray(value) ? value.map(canonical) : object(value) ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
+const json = value => JSON.stringify(canonical(value));
+const config = scene => ({schemaVersion:scene.schemaVersion,productId:scene.productId,firmware:scene.firmware,accessories:scene.accessories,localAccessories:scene.localAccessories || []});
+const sameScene = (a,b) => !!a && !!b && json(config(a)) === json(config(b));
+const hashPattern = /^[a-f0-9]{64}$/i;
+const sourceUrl=value=>{try{const url=new URL(value);return typeof value==='string'&&value.length<=4096&&!url.username&&!url.password&&(url.protocol==='https:'||(url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)));}catch{return false;}};
+const fingerprint = firmware => json({manifestHash:firmware.manifestHash ?? null,appDirect:!!firmware.appDirect,stubs:firmware.stubs || [],artifacts:firmware.artifacts.map(({kind,sha256,bytes,at}) => ({kind,sha256,bytes,...(at === undefined ? {} : {at})}))});
+
+export function validateRecording(recording, {scene} = {}) {
+  const errors = [], add = (code,path,message) => errors.push({code,path,message});
+  const keys = (value, allowed, path) => { for (const key of Object.keys(value)) if (!allowed.includes(key)) add('RECORDING_FIELD', `${path}/${key}`, `Unsupported field: ${key}`); };
+  try {
+    // Reuse the scene encoder's bounded plain-JSON/prototype-key checks.
+    encodeScene({schemaVersion:'1', recording});
+    if (new TextEncoder().encode(json(recording)).length > MAX_RECORDING_BYTES) add('RECORDING_SIZE','/','Recording exceeds 32 KiB.');
+  } catch (error) { return {valid:false,errors:[{code:'RECORDING_JSON',path:'/',message:error.message}],warnings:[]}; }
+  if (!object(recording)) return {valid:false,errors:[{code:'RECORDING_FORMAT',path:'/',message:'Recording must be an object.'}],warnings:[]};
+  keys(recording,['schemaVersion','scene','firmware','clock','display','duration','events','expectedFrame'],'');
+  if (recording.schemaVersion !== '1') add('RECORDING_VERSION','/schemaVersion','Unsupported recording version.');
+  if (!object(recording.scene) || recording.scene.schemaVersion !== '1' || typeof recording.scene.productId !== 'string' || !object(recording.scene.firmware)) add('RECORDING_SCENE','/scene','Recording needs its configured scene and remote firmware source.');
+  else {
+    keys(recording.scene,['schemaVersion','productId','firmware','accessories','keyMapping','view','localAccessories'],'/scene');
+    keys(recording.scene.firmware,['manifestUrl','url','sha256'],'/scene/firmware');
+    const source=recording.scene.firmware;
+    if(Boolean(source.url)===Boolean(source.manifestUrl)||!sourceUrl(source.url||source.manifestUrl)||!hashPattern.test(source.sha256))add('RECORDING_SOURCE','/scene/firmware','A recording requires an absolute remote source with its SHA-256 pinned.');
+    if(!Array.isArray(recording.scene.accessories)||!object(recording.scene.keyMapping)||!object(recording.scene.view))add('RECORDING_SCENE','/scene','Scene accessories, keyMapping and view are required.');
+  }
+  if (scene && !sameScene(recording.scene,scene)) add('RECORDING_SCENE_MISMATCH','/scene','Product, firmware and accessories must match the recording.');
+  if (!object(recording.clock) || recording.clock.unit !== 'guest-seconds' || recording.clock.origin !== 'reset' || recording.clock.delivery !== 'worker-acknowledgement') add('RECORDING_CLOCK','/clock','Use reset-relative guest time and worker acknowledgements.');
+  else keys(recording.clock,['unit','origin','delivery'],'/clock');
+  if (!Number.isFinite(recording.duration) || recording.duration < 0 || recording.duration > MAX_RECORDING_SECONDS) add('RECORDING_DURATION','/duration','Duration must be 0–120 guest seconds.');
+  if (recording.display !== null && (!object(recording.display) || ![recording.display.width,recording.display.height].every(n => Number.isInteger(n) && n > 0 && n <= 2048))) add('RECORDING_DISPLAY','/display','Display dimensions must be null or 1–2048 pixels.');
+  else if (recording.display) keys(recording.display,['width','height'],'/display');
+  const fw = recording.firmware;
+  if (!object(fw) || fw.source !== 'remote' || !Array.isArray(fw.artifacts) || !fw.artifacts.length || fw.artifacts.length > 32) add('RECORDING_FIRMWARE','/firmware','A remote firmware receipt with 1–32 artifacts is required.');
+  else {
+    keys(fw,['source','manifestUrl','manifestHash','artifacts','appDirect','stubs'],'/firmware');
+    if(fw.manifestUrl!==null&&!sourceUrl(fw.manifestUrl))add('RECORDING_SOURCE','/firmware/manifestUrl','Invalid manifest receipt URL.');
+    if(typeof fw.appDirect!=='boolean'||!Array.isArray(fw.stubs)||fw.stubs.length>64||fw.stubs.some(s=>typeof s!=='string'||s.length>255))add('RECORDING_FIRMWARE','/firmware','Invalid execution-mode receipt.');
+    if (fw.manifestHash !== null && !hashPattern.test(fw.manifestHash)) add('RECORDING_HASH','/firmware/manifestHash','Invalid manifest hash.');
+    for (const [i,item] of fw.artifacts.entries()) {
+      if (!object(item)) {add('RECORDING_FIRMWARE',`/firmware/artifacts/${i}`,'Invalid artifact.');continue;}
+      keys(item,['kind','url','sha256','bytes','at'],`/firmware/artifacts/${i}`);
+      if (!['rom','bootloader','ptable','app','elf','flash','script','picture'].includes(item.kind) || !hashPattern.test(item.sha256) || !Number.isInteger(item.bytes) || item.bytes < 1 || item.bytes > 32*1024*1024) add('RECORDING_FIRMWARE',`/firmware/artifacts/${i}`,'Invalid artifact kind, hash or size.');
+      if(!sourceUrl(item.url))add('RECORDING_SOURCE',`/firmware/artifacts/${i}/url`,'Invalid artifact receipt URL.');
+      if (item.at !== undefined && (!Number.isInteger(item.at) || item.at < 0 || item.at > 32*1024*1024)) add('RECORDING_FIRMWARE',`/firmware/artifacts/${i}/at`,'Invalid artifact offset.');
+    }
+  }
+  const held = new Set(); let touch = false, previous = 0;
+  if (!Array.isArray(recording.events) || recording.events.length > MAX_RECORDING_EVENTS) add('RECORDING_EVENTS','/events','At most 500 input events are allowed.');
+  else for (const [i,event] of recording.events.entries()) {
+    const path=`/events/${i}`;
+    if (!object(event)) {add('RECORDING_EVENT',path,'Input event must be an object.');continue;}
+    if (!Number.isFinite(event.at) || event.at < previous || event.at < 0 || event.at > recording.duration) add('RECORDING_TIME',`${path}/at`,'Input times must be ordered and within duration.');
+    previous = event.at;
+    if (event.type === 'button') {
+      keys(event,['at','type','id','pressed'],path);
+      if (typeof event.id !== 'string' || !/^[a-z0-9][a-z0-9-]{0,79}$/.test(event.id) || typeof event.pressed !== 'boolean') add('RECORDING_BUTTON',path,'Invalid semantic button input.');
+      if (event.pressed) held.add(event.id); else held.delete(event.id);
+    } else if (event.type === 'touch') {
+      keys(event,['at','type','x','y','down'],path);
+      if (!recording.display || ![event.x,event.y].every(n => Number.isFinite(n) && n >= 0 && n <= 1) || typeof event.down !== 'boolean') add('RECORDING_TOUCH',path,'Touch needs a display and normalized coordinates in 0–1.');
+      touch = event.down;
+    } else add('RECORDING_EVENT',path,'Only semantic button and touch inputs may be replayed.');
+  }
+  if (held.size || touch) add('RECORDING_HELD','/events','Recording must end with every button and touch released.');
+  if (recording.expectedFrame !== undefined) {
+    if (!object(recording.expectedFrame) || !hashPattern.test(recording.expectedFrame.sha256) || ![recording.expectedFrame.width,recording.expectedFrame.height].every(n=>Number.isInteger(n)&&n>0&&n<=2048)) add('RECORDING_FRAME','/expectedFrame','Invalid final framebuffer hash or dimensions.');
+    else keys(recording.expectedFrame,['sha256','width','height'],'/expectedFrame');
+  }
+  return {valid:errors.length===0,errors,warnings:[]};
+}
+function requireValid(recording, options) { const result=validateRecording(recording,options); if(!result.valid) throw err(result.errors[0].code,result.errors.map(item=>item.message).join(' '),result); }
+export function encodeRecording(recording) {
+  requireValid(recording);
+  const bytes=new TextEncoder().encode(json(recording)); let binary=''; for(const byte of bytes)binary+=String.fromCharCode(byte);
+  return btoa(binary).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
+}
+export function decodeRecording(encoded) {
+  if(typeof encoded!=='string'||encoded.length>Math.ceil(MAX_RECORDING_BYTES*4/3)||!/^[A-Za-z0-9_-]+$/.test(encoded)||encoded.length%4===1)throw err('RECORDING_ENCODING','Invalid or oversized recording encoding.');
+  let recording;try{const raw=atob(encoded.replaceAll('-','+').replaceAll('_','/'));recording=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Uint8Array.from(raw,c=>c.charCodeAt(0))));}catch{throw err('RECORDING_ENCODING','Recording must be UTF-8 base64url JSON.');}
+  // decodeScene performs the same prototype-key check even for parsed JSON.
+  decodeScene(encodeScene({schemaVersion:'1',recording})); requireValid(recording); return recording;
+}
+
+export function createRecordingController(runtime) {
+  let status='idle', recording=null, receipt=null, error=null, progress={index:0,total:0,elapsedGuestSeconds:0};
+  let token=null, ownLifecycle=false, sending=false, closing=false, lastGuest=0, heldTouch=null;
+  const held=new Set(), listeners=new Set();
+  const observe=()=>clone({status,recording,progress,receipt,error});
+  const emit=()=>{const event={type:'recording',state:observe()};for(const listener of listeners){try{listener(event);}catch{}}};
+  const newToken=()=>{let finish;const done=new Promise(resolve=>{finish=resolve;});return {cancelled:false,done,finish};};
+  const change=next=>{status=next;emit();};
+  const failure=e=>{error={code:e.code||'RECORDING_ERROR',message:e.message};change('error');};
+  const check=t=>{if(t.cancelled)throw err('RECORDING_CANCELLED','Recording operation cancelled.');};
+  const tracked=event=>{if(event.type==='button'){if(event.pressed)held.add(event.id);else held.delete(event.id);}else if(event.type==='touch')heldTouch=event.down?clone(event):null;};
+  const release=async()=>{
+    const current=await runtime.observe();
+    if(['running','paused'].includes(current.status)) {
+      for(const id of [...held]){try{sending=true;await runtime.input({type:'button',id,pressed:false});}catch{}finally{sending=false;}}
+      if(heldTouch){try{sending=true;await runtime.input({...heldTouch,down:false});}catch{}finally{sending=false;}}
+    }
+    held.clear();heldTouch=null;
+  };
+  const frameHash=async()=>{
+    try{const frame=await runtime.capture({format:'rgba'});const bytes=new Uint8Array(frame.pixels.buffer,frame.pixels.byteOffset,frame.pixels.byteLength);const hash=await crypto.subtle.digest('SHA-256',bytes);return {sha256:Array.from(new Uint8Array(hash),n=>n.toString(16).padStart(2,'0')).join(''),width:frame.width,height:frame.height};}catch{return null;}
+  };
+  const stop=async(reason='stopped')=>{
+    if(status!=='recording'||closing)throw err('RECORDING_NOT_ACTIVE','No active recording to stop.');
+    closing=true;
+    try {
+      await release();
+      const current=await runtime.observe();
+      recording.duration=Math.max(lastGuest,Number(current.stats?.time)||0);
+      status='completed'; // End the input capture window before asynchronous frame hashing.
+      const expected=await frameHash();if(expected)recording.expectedFrame=expected;
+      requireValid(recording);
+      progress={index:recording.events.length,total:recording.events.length,elapsedGuestSeconds:recording.duration};
+      receipt={kind:'recording',reason,eventCount:recording.events.length,bitExact:false};change('completed');return clone(recording);
+    } catch(e){failure(e);throw e;} finally{closing=false;}
+  };
+  const cancel=async(reason='takeover')=>{
+    const active=token;if(active)active.cancelled=true;
+    if(!['preparing','recording','playing'].includes(status))return observe();
+    const wasRecording=status==='recording';
+    if(wasRecording&&!closing){try{await stop(reason);return observe();}catch{recording=null;}}
+    change('cancelled');
+    await runtime.cancelPendingLoad?.();await release();await active?.done;
+    receipt={...(receipt||{}),kind:'replay',result:'cancelled',reason,bitExact:false};emit();return observe();
+  };
+  const onEvent=event=>{
+    if(event.type==='input'&&['button','touch'].includes(event.event.type)) {
+      if(status==='recording') {
+        tracked(event.event);
+        if(event.receipt?.delivery!=='queued'||!Number.isFinite(event.receipt.guestTime)){void cancel('missing-acknowledgement');return;}
+        const action=event.event.type==='button'?{at:event.receipt.guestTime,type:'button',id:event.event.id,pressed:event.event.pressed}:{at:event.receipt.guestTime,type:'touch',x:event.event.x,y:event.event.y,down:event.event.down};
+        if(action.type==='touch'){
+          const display=recording.display;
+          if(!display){void cancel('no-display');return;}
+          action.x/=Math.max(1,display.width-1);action.y/=Math.max(1,display.height-1);
+        }
+        recording.events.push(action);lastGuest=action.at;recording.duration=lastGuest;
+        progress={index:recording.events.length,total:recording.events.length,elapsedGuestSeconds:lastGuest};emit();
+        if(!closing&&(recording.events.length+held.size+(heldTouch?1:0)>=MAX_RECORDING_EVENTS||new TextEncoder().encode(json(recording)).length>MAX_RECORDING_BYTES-2048))void stop('limit').catch(()=>{});
+      } else if(status==='playing'&&!sending)void cancel('human-input');
+    }
+    if(event.type==='stats'&&status==='recording'&&!closing&&Number(event.stats.time)>=MAX_RECORDING_SECONDS-1)void stop('duration-limit').catch(()=>{});
+    if(event.type==='state'&&!ownLifecycle&&['recording','playing','preparing'].includes(status)&&['configured','loading','ready','paused','error','disposed'].includes(event.state.status)) {
+      if(status==='recording'&&event.state.status==='paused'){void stop('paused').catch(()=>{});return;}
+      if(status==='recording'){recording=null;held.clear();heldTouch=null;if(token)token.cancelled=true;receipt={kind:'recording',result:'cancelled',reason:`runtime-${event.state.status}`,bitExact:false};change('cancelled');return;}
+      void cancel(`runtime-${event.state.status}`);
+    }
+  };
+  const unsubscribe=runtime.subscribe(onEvent);
+  const waitUntil=async(target,t,timeoutMs)=>{
+    const start=Date.now();
+    while(true){check(t);const state=await runtime.observe();if(!sameScene(state.scene,recording.scene))throw err('RECORDING_SCENE_MISMATCH','Scene changed during playback.');if(state.status!=='running')throw err('RECORDING_INTERRUPTED',`Runtime is ${state.status}.`);const time=Number(state.stats?.time)||0;progress.elapsedGuestSeconds=time;if(time>=target)return time;if(Date.now()-start>timeoutMs)throw err('RECORDING_TIMEOUT','Guest clock did not reach the next input before the wall-time limit.');await new Promise(resolve=>setTimeout(resolve,20));}
+  };
+  return {
+    subscribe(listener){listeners.add(listener);return()=>listeners.delete(listener);},
+    async beforeInput(){if(['playing','preparing'].includes(status))await cancel('human-input');},
+    async beforeLifecycle(reason){await cancel(reason);},
+    api:{
+      async recordingObserve(){return observe();},
+      async recordingStart(){
+        await cancel('replaced');
+        const state=await runtime.observe();
+        if(!state.firmware||state.firmware.source!=='remote'||!state.scene?.firmware)throw err('RECORDING_NOT_READY','Load a remote firmware source before recording. Local firmware cannot be shared in a recording URL.');
+        token=newToken();const active=token;recording=null;receipt=null;error=null;held.clear();heldTouch=null;lastGuest=0;
+        change('preparing');ownLifecycle=true;
+        try{
+          await runtime.reset();check(active);
+          const current=await runtime.observe(),display=current.product.display;
+          if(!current.firmware||!sameScene(current.scene,state.scene))throw err('RECORDING_SCENE_MISMATCH','Scene changed while preparing the recording.');
+          recording={schemaVersion:'1',scene:clone(current.scene),firmware:clone(current.firmware),clock:{unit:'guest-seconds',origin:'reset',delivery:'worker-acknowledgement'},display:display?{width:display.framebufferWidth||display.width,height:display.framebufferHeight||display.height}:null,duration:0,events:[]};
+          requireValid(recording);
+          progress={index:0,total:0,elapsedGuestSeconds:0};change('recording');return observe();
+        }catch(e){if(active.cancelled){change('cancelled');return observe();}failure(e);throw e;}finally{ownLifecycle=false;active.finish();}
+      },
+      recordingStop(){return stop();},
+      recordingTakeOver(){return cancel();},
+      async recordingClear(){await cancel('cleared');recording=null;receipt=null;error=null;progress={index:0,total:0,elapsedGuestSeconds:0};change('idle');return observe();},
+      async recordingPlay(input,{timeoutMs=180000}={}){
+        const current=await runtime.observe();requireValid(input,{scene:current.scene});
+        if(!Number.isFinite(timeoutMs)||timeoutMs<100||timeoutMs>300000)throw err('RECORDING_TIMEOUT','Replay timeout must be 100–300000 ms.');
+        if(['preparing','recording','playing'].includes(status))throw err('RECORDING_BUSY','Stop the current recording or playback first.');
+        const controls=new Set(current.product?.controls.filter(item=>item.type==='button').map(item=>item.id));
+        for(const event of input.events)if(event.type==='button'&&!controls.has(event.id))throw err('RECORDING_CONTROL','Recording names a button absent from this product.');
+        const display=current.product?.display;
+        if(input.display&&(!display||input.display.width!==(display.framebufferWidth||display.width)||input.display.height!==(display.framebufferHeight||display.height)))throw err('RECORDING_DISPLAY','Recording display dimensions do not match this product.');
+        recording=clone(input);token=newToken();const active=token;receipt={kind:'replay',result:'running',bitExact:false,clock:'stats-observed guest time',events:[],timingDifferences:[]};error=null;held.clear();heldTouch=null;
+        progress={index:0,total:recording.events.length,elapsedGuestSeconds:0};change('preparing');ownLifecycle=true;
+        try{
+          if(!current.firmware||fingerprint(current.firmware)!==fingerprint(recording.firmware))await runtime.loadFirmware(recording.scene.firmware);
+          check(active);const loaded=await runtime.observe();
+          if(fingerprint(loaded.firmware)!==fingerprint(recording.firmware))throw err('RECORDING_FIRMWARE_MISMATCH','Downloaded artifact hashes differ from the recording.');
+          await runtime.reset();check(active);ownLifecycle=false;change('playing');
+          let previousActual=0,previousOriginal=0;
+          for(const [index,event]of recording.events.entries()){
+            // Preserve guest-time spacing when an earlier host delivery was late;
+            // otherwise a delayed down/up pair could collapse into one guest tick.
+            const target=Math.max(event.at,previousActual+event.at-previousOriginal);
+            await waitUntil(target,active,timeoutMs);check(active);
+            const action=event.type==='button'?{type:'button',id:event.id,pressed:event.pressed}:{type:'touch',x:Math.round(event.x*(recording.display.width-1)),y:Math.round(event.y*(recording.display.height-1)),down:event.down};
+            sending=true;let result;try{result=await runtime.input(action);tracked(action);}finally{sending=false;}
+            check(active);const actual=Number(result.guestTime);if(!Number.isFinite(actual))throw err('RECORDING_ACK','Input acknowledgement has no guest timestamp.');
+            const delivery={index,originalGuestSeconds:event.at,scheduledGuestSeconds:target,actualGuestSeconds:actual,lateBySeconds:actual-event.at};receipt.events.push(delivery);
+            previousActual=actual;previousOriginal=event.at;
+            if(Math.abs(delivery.lateBySeconds)>0.05)receipt.timingDifferences.push(delivery);
+            progress.index=index+1;progress.elapsedGuestSeconds=actual;emit();
+          }
+          await waitUntil(Math.max(recording.duration,previousActual+recording.duration-previousOriginal),active,timeoutMs);await release();check(active);
+          const actualFrame=await frameHash();receipt.finalFrame=actualFrame;
+          receipt.frameComparison=recording.expectedFrame&&actualFrame?(json(recording.expectedFrame)===json(actualFrame)?'equal':'different'):'unavailable';
+          receipt.result='completed';change('completed');return clone(receipt);
+        }catch(e){await release();if(active.cancelled){receipt.result='cancelled';change('cancelled');return clone(receipt);}receipt.result='error';failure(e);throw e;}finally{ownLifecycle=false;sending=false;active.finish();}
+      },
+    },
+    async dispose(){await cancel('disposed');unsubscribe();listeners.clear();},
+  };
+}

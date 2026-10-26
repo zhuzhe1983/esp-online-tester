@@ -1,6 +1,6 @@
 ---
 name: esp-online-tester
-description: Configure, operate and test ESP32 product scenes in ESP Online Tester through its browser automation API or embedded iframe bridge. Use for device/firmware/accessory selection, reproducible input checks, framebuffer capture and share links; also for declarative catalog contributions and private DIY accessories.
+description: Configure, operate and test ESP32 product scenes in ESP Online Tester through its browser automation API or embedded iframe bridge. Use for device/firmware/accessory selection, input recording and replay, framebuffer capture and share links; also for declarative catalog contributions and private DIY accessories.
 ---
 
 # ESP Online Tester
@@ -29,8 +29,27 @@ Use explicit timestamps and values for reproducible GPS tests. Choose `m5stack-g
 
 The bundled `platform-stopwatch-diagnostic` is our public diagnostic firmware, not M5Stack's factory firmware. It reports `PLATFORM_READY stopwatch`, `BUTTON_A`, `BUTTON_B`, `TOUCH down` and `GPS_RX`. The metadata distinguishes simulated tests from hardware validation.
 
+## Record and share interactions
+
+Load a remote firmware source first. `await api.recordingStart()` resets and boots it, then captures only successfully acknowledged button/touch inputs. A keyboard press records its mapped semantic button; screen taps and left/right drags record normalized down/move/up coordinates. Camera selection/frames, serial/GPS injection, flashing and scripts are excluded. The limits are 120 guest seconds, 500 events and 32 KiB per recording. Local firmware files cannot supply a portable recording source.
+
+```js
+await api.recordingStart();
+await api.waitFor({port:'uart0', serialIncludes:'PLATFORM_READY stopwatch', timeoutMs:30000});
+const observed = api.waitFor({port:'uart0', serialIncludes:'BUTTON_A', fromNow:true});
+await api.press('button-a', {durationMs:100});
+await observed;
+const recording = await api.recordingStop(); // Releases any remaining held inputs.
+const link = await api.share({mode:'embed'}); // Includes scene= and recording=.
+const receipt = await api.recordingPlay(recording); // Resets again; compare the receipt.
+```
+
+Replay requires the same product, firmware source/hash, accessories and embedded local definitions. It verifies artifact hashes before running. Presentation and keyboard remapping can differ because recorded buttons are semantic. A shared URL never starts replay automatically. Use `recordingTakeOver()` to cancel and release held inputs before human control; `recordingObserve()` and `subscribe` expose progress. See [recording details](references/api.md#recording-and-replay) for bundle format and timing limits.
+
+Guest-time intervals are preserved using actual worker input acknowledgements. Scheduling still observes the guest clock from the host; this is not cycle-exact or bit-exact replay. Receipts report original/scheduled/actual times, accumulated lateness and a final framebuffer hash comparison. The diagnostic firmware validates touch delivery, not left/right navigation semantics; assert the latter only with firmware that implements them.
+
 ## Verification commands
 
-In a local checkout, run `node tools/platform-config-test.mjs` after changing scene, catalog or private accessory handling. Runtime and browser tests are listed in the repository's platform documentation. Follow `AGENTS.md` before a pull request; do not infer that this config check replaces Rust or browser checks.
+In a local checkout, run `node tools/platform-config-test.mjs` after changing scene, catalog or private accessory handling. Run `node tools/platform-recording-test.mjs` for recording boundaries and lifecycle; with built WASM/demo assets, `node tools/platform-recording-test.mjs --real --receipt <output.json>` also exercises real firmware A/B short presses, a tap and left/right touch trajectories. The receipt does not claim gesture navigation. Runtime and browser tests are listed in the repository's platform documentation. Follow `AGENTS.md` before a pull request; these checks do not replace required Rust or browser checks.
 
 For third-party embedding, use the origin/session-bound `postMessage` protocol in [the API reference](references/api.md#embedded-parent-control). A cross-origin parent cannot read `iframe.contentWindow.espTester` directly.

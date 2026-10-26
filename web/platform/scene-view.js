@@ -1,4 +1,5 @@
 import * as THREE from './vendor/three.module.min.js';
+import {createStopwatchModel} from './stopwatch-model.js';
 
 // Uploaded WebGL textures have fixed storage dimensions. A resized canvas needs a fresh
 // texture, even though the canvas object itself is unchanged (e.g. StopWatch -> PaperMono).
@@ -69,7 +70,7 @@ export function createHumanButtonController({send, isRunning, onVisual = () => {
   return {input, releaseAll, invalidate, suspend};
 }
 
-// Product geometry is an interactive illustration. Only emulator frames enter its screen texture.
+// StopWatch uses manufacturer CAD; other products retain explicitly illustrative previews.
 export function createSceneView(mount, {onInput = () => {}, onModeChange = () => {}} = {}) {
   const display = document.createElement('canvas');
   display.className = 'flat-display';
@@ -85,7 +86,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   let texture = new THREE.CanvasTexture(display);
   texture.colorSpace = THREE.SRGBColorSpace; texture.minFilter = THREE.LinearFilter; texture.magFilter = THREE.NearestFilter;
   let renderer, mode = '3d', product, screen, buttons = [], accessoryGroup, accessoryCount = 0, pressed, gesture, zoom = 1, frameWidth = 466, frameHeight = 466;
-  let paintPending = false, disposed = false;
+  let paintPending = false, disposed = false, modelCleanup = null, productGeneration = 0;
   try {
     renderer = new THREE.WebGLRenderer({alpha: true, antialias: true, powerPreference: 'low-power'});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -131,6 +132,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     mesh.position.set(x, y, z); group.add(mesh); return mesh;
   }
   function clearGroup() {
+    productGeneration++; modelCleanup?.(); modelCleanup = null;
     group.traverse(object => {
       object.geometry?.dispose();
       if (object.material) for (const material of [].concat(object.material)) material.dispose();
@@ -146,6 +148,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   }
   function setProduct(value) {
     product = value; clearGroup(); clearDisplay();
+    mount.dataset.modelStatus = 'illustrative';
     const paper = product.id.includes('paper'), generic = !product.display;
     display.classList.toggle('round', product.display?.shape === 'round');
     display.hidden = mode !== '2d' || generic;
@@ -163,14 +166,17 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       const a = box(11, 3, 3, 1, 0x7a7e70, -14, -48, 4), b = box(11, 3, 3, 1, 0x7a7e70, 14, -48, 4);
       a.userData.control = 'button-a'; b.userData.control = 'button-b'; buttons.push(a, b);
     } else {
-      box(52, 52, 15.5, 11, 0x303b36);
-      const bezel = new THREE.Mesh(new THREE.CylinderGeometry(24, 24, 1.3, 96), new THREE.MeshStandardMaterial({color: 0x151d19, metalness: .3, roughness: .38}));
-      bezel.rotation.x = Math.PI / 2; bezel.position.z = 8.2; group.add(bezel);
-      screen = new THREE.Mesh(new THREE.CircleGeometry(22.3, 96), new THREE.MeshBasicMaterial({map: texture}));
-      screen.position.z = 9; group.add(screen);
-      const a = box(12, 6, 8, 2, 0xddba55, -16, 26.5, 0), b = box(12, 6, 8, 2, 0x708b99, 16, 26.5, 0);
-      a.userData.control = 'button-a'; b.userData.control = 'button-b'; buttons.push(a, b);
-      box(9, 4, 2, 1, 0x1a211d, 0, -26.2, 0);
+      const token = productGeneration, model = createStopwatchModel(texture);
+      modelCleanup = model.dispose; group.add(model.group); screen = model.screen; buttons = model.buttons;
+      mount.dataset.modelStatus = 'loading';
+      model.ready.then(() => {
+        if (disposed || productGeneration !== token) return;
+        mount.dataset.modelStatus = 'ready'; frameCamera(); draw();
+      }).catch(error => {
+        if (disposed || productGeneration !== token) return;
+        mount.dataset.modelStatus = 'error'; console.error('StopWatch CAD loading failed:', error);
+        setMode('2d');
+      });
     }
     if (screen) screen.userData.screen = true;
     resetView();

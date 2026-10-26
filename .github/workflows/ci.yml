@@ -64,7 +64,8 @@ jobs:
         run: ESP32SIM_ROM_DIR=$PWD/roms node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices
       - name: Product platform contracts and real worker execution
         run: |
-          ESP32SIM_ROM_DIR=$PWD/roms node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs
+          ESP32SIM_ROM_DIR=$PWD/roms node --test tools/platform-*-test.mjs
+          ESP32SIM_ROM_DIR=$PWD/roms node tools/platform-recording-test.mjs --real
           ESP32SIM_ROM_DIR=$PWD/roms node tools/wasm-test.mjs demo-stopwatch
       - name: Timing and BLE observation ABI (real wasm exports)
         run: |
