@@ -14,6 +14,8 @@ import { installAutomation } from '../web/platform/automation.js';
 const root = new URL('../', import.meta.url), catalog = {};
 for (const name of ['products', 'accessories', 'firmwares']) catalog[name] = JSON.parse(await readFile(new URL(`web/platform/catalog/${name}.json`, root), 'utf8')).items;
 const baseUrl = 'https://platform.example/platform/index.html';
+const workerInputDelay = Number(process.env.ESP32SIM_TEST_WORKER_DELAY_MS || 0);
+assert.ok(Number.isFinite(workerInputDelay) && workerInputDelay >= 0 && workerInputDelay <= 5000, 'ESP32SIM_TEST_WORKER_DELAY_MS must be 0…5000');
 const responseOverrides = new Map();
 const readArtifactFile = async (path, romDir = process.env.ESP32SIM_ROM_DIR) => {
   try { return await readFile(path); }
@@ -35,7 +37,12 @@ const workerFactory = url => {
     globalThis.onmessage = null;
     globalThis.postMessage = (message, transfer) => parentPort.postMessage(message, transfer);
     await import(${JSON.stringify(String(url))});
-    parentPort.on('message', data => globalThis.onmessage({data}));`;
+    const inputDelay = ${workerInputDelay};
+    const sleeper = new Int32Array(new SharedArrayBuffer(4));
+    parentPort.on('message', data => {
+      if (data.op === 'text' && inputDelay > 0) Atomics.wait(sleeper, 0, 0, inputDelay);
+      globalThis.onmessage({data});
+    });`;
   const thread = new Worker(new URL(`data:text/javascript,${encodeURIComponent(script)}`));
   const adapter = { postMessage: (...args) => thread.postMessage(...args), terminate: () => thread.terminate() };
   thread.on('message', data => adapter.onmessage?.({ data }));
@@ -92,6 +99,26 @@ console.log('ok platform boundaries: URL/CORS/size/hash, RGB565, merged-image re
 const runtime = createPlatformRuntime({ catalog, fetchImpl: fileFetch, workerFactory, baseUrl, assetBaseUrl: 'https://platform.example/' });
 const target = { location: { href: baseUrl } }, api = installAutomation(runtime, { target });
 assert.equal(target.espTester.version, '1.0.0');
+let currentStep = 'initial validation';
+const step = async (name, work) => {
+  currentStep = name; console.log(`check ${name}`);
+  const result = await work(); console.log(`ok ${name}`); return result;
+};
+const waitForStats = (predicate, timeoutMs = 30000) => new Promise((resolve, reject) => {
+  let unsubscribe = () => {};
+  const finish = (error, state) => { clearTimeout(timer); unsubscribe(); error ? reject(error) : resolve(state); };
+  const timer = setTimeout(() => finish(new Error('Timed out waiting for guest execution to advance.')), timeoutMs);
+  const check = async () => { const state = await runtime.observe(); if (predicate(state.stats)) finish(null, state); };
+  unsubscribe = runtime.subscribe(event => { if (event.type === 'stats') void check(); });
+  void check();
+});
+const holdUntilSerial = async (down, up, serialIncludes) => {
+  // Observe before injecting, then keep the input down until firmware confirms it.
+  // A fixed host duration is not evidence that a slow guest sampled the input.
+  const confirmation = api.waitFor({ serialIncludes, port: 'uart0', fromNow: true });
+  try { await Promise.all([runtime.input(down), confirmation]); }
+  finally { await runtime.input(up); }
+};
 try {
   await expectCode(() => runtime.start(), 'NOT_READY');
   await runtime.configure(createDefaultScene(catalog, 'm5stack-papermono'));
@@ -121,8 +148,8 @@ try {
   const afterRapid = await runtime.observe();
   await delay(150);
   assert.equal((await runtime.observe()).stats.insns, afterRapid.stats.insns);
-  await runtime.start(); await delay(300);
-  const resumed = await runtime.observe();
+  await runtime.start();
+  const resumed = await waitForStats(stats => stats.insns > pausedInsns);
   assert.ok(resumed.stats.insns > pausedInsns, 'Resume must continue the existing instruction stream');
   assert.equal((resumed.serialByPort.uart0.match(/Hello world!/g) || []).length, 1, 'Resume must not boot a fresh firmware');
   await runtime.reset(); await api.waitFor({ serialIncludes: 'Hello world!', port: 'uart0', timeoutMs: 30000 });
@@ -139,23 +166,26 @@ try {
   badPins.artifact_sha256 = { ...badPins.artifact_sha256, [badPins.files.app]: '0'.repeat(64) };
   responseOverrides.set('https://platform.example/wasm/fw/bad-pins.json', JSON.stringify(badPins));
   await expectCode(() => runtime.loadFirmware({ manifestUrl: 'https://platform.example/wasm/fw/bad-pins.json' }), 'HASH_MISMATCH');
-  await runtime.loadFirmware({ manifestUrl: 'https://platform.example/wasm/fw/demo-stopwatch.json' });
-  await runtime.start();
-  await api.waitFor({ serialIncludes: 'PLATFORM_READY stopwatch', timeoutMs: 30000 });
+  await step('StopWatch boot and firmware readiness', async () => {
+    await runtime.loadFirmware({ manifestUrl: 'https://platform.example/wasm/fw/demo-stopwatch.json' });
+    await runtime.start();
+    await api.waitFor({ serialIncludes: 'PLATFORM_READY stopwatch', port: 'uart0', timeoutMs: 30000 });
+  });
   const display = await runtime.capture({ format: 'rgba' });
   assert.deepEqual([display.width, display.height], [468, 466]);
   assert.ok(display.pixels.some((value, index) => index % 4 !== 3 && value > 80), 'Firmware must draw actual bright pixels');
-  const buttonA = api.waitFor({ serialIncludes: 'BUTTON_A running', fromNow: true });
-  await api.press('button-a', { durationMs: 150 }); await buttonA;
-  const buttonB = api.waitFor({ serialIncludes: 'BUTTON_B reset', fromNow: true });
-  await api.press('button-b', { durationMs: 150 }); await buttonB;
-  const touch = api.waitFor({ serialIncludes: 'TOUCH down', fromNow: true });
-  await runtime.input({ type: 'touch', x: 234, y: 233, down: true }); await touch;
-  await runtime.input({ type: 'touch', x: 234, y: 233, down: false });
+  await step('StopWatch button A guest acknowledgement', () => holdUntilSerial(
+    { type: 'button', id: 'button-a', pressed: true }, { type: 'button', id: 'button-a', pressed: false }, 'BUTTON_A running'));
+  await step('StopWatch button B guest acknowledgement', () => holdUntilSerial(
+    { type: 'button', id: 'button-b', pressed: true }, { type: 'button', id: 'button-b', pressed: false }, 'BUTTON_B reset'));
+  await step('StopWatch CST820 touch guest acknowledgement', () => holdUntilSerial(
+    { type: 'touch', x: 234, y: 233, down: true }, { type: 'touch', x: 234, y: 233, down: false }, 'TOUCH down'));
   await expectCode(() => runtime.input({ type: 'touch', x: 468, y: 0, down: true }), 'INVALID_INPUT');
-  const gps = api.waitFor({ serialIncludes: 'GPS_RX $GPGGA', fromNow: true });
-  const injected = await runtime.injectGps({ accessoryId: 'gps-test', timestamp: '2026-01-02T03:04:05Z' });
-  await gps;
+  const injected = await step('StopWatch GPS RMC and GGA reception', async () => {
+    const gps = api.waitFor({ serialIncludes: 'GPS_RX $GPGGA', port: 'uart0', fromNow: true });
+    const [result] = await Promise.all([runtime.injectGps({ accessoryId: 'gps-test', timestamp: '2026-01-02T03:04:05Z' }), gps]);
+    return result;
+  });
   assert.equal(injected.delivery, 'logical-uart-rx');
   const gpsState = await runtime.observe();
   assert.ok(Object.values(gpsState.serialByPort).some(text => text.includes('GPS_RX $GPRMC,030405.00,A,3113.82400,N,12128.42200,E')));
@@ -165,11 +195,65 @@ try {
   const [boot, table, app] = await Promise.all(['platform-stopwatch-bootloader.bin', 'platform-stopwatch-ptable.bin', 'platform-stopwatch.bin'].map(name => readFile(new URL(`web/wasm/fw/public/${name}`, root))));
   const localImage = new Uint8Array(0x10000 + app.length).fill(255);
   localImage.set(boot, 0); localImage.set(table, 0x8000); localImage.set(app, 0x10000);
-  await runtime.loadFirmware({ file: new Blob([localImage]), sha256: await sha256(localImage) });
-  await runtime.start(); await api.waitFor({ serialIncludes: 'PLATFORM_READY stopwatch', timeoutMs: 30000 });
+  await step('local merged StopWatch firmware readiness', async () => {
+    await runtime.loadFirmware({ file: new Blob([localImage]), sha256: await sha256(localImage) });
+    await runtime.start(); await api.waitFor({ serialIncludes: 'PLATFORM_READY stopwatch', port: 'uart0', timeoutMs: 30000 });
+  });
   await expectCode(() => api.share(), 'LOCAL_FIRMWARE_NOT_SHAREABLE');
   console.log('ok local merged StopWatch flash: complete app validation, SHA-256, automatic ROM load, real boot; file URLs excluded from share');
+} catch (error) {
+  const state = await runtime.observe();
+  console.error(`FAIL ${currentStep}: ${error.code || 'ASSERTION'} ${error.message}`);
+  console.error(JSON.stringify({ status: state.status, stats: state.stats, frame: state.frame, lastError: state.lastError,
+    serialTail: Object.fromEntries(Object.entries(state.serialByPort).map(([port, text]) => [port, text.slice(-2500)])) }, null, 2));
+  throw error;
 } finally { await runtime.dispose(); }
 assert.equal((await runtime.observe()).status, 'disposed');
 await expectCode(() => runtime.start(), 'DISPOSED');
 console.log('ok platform session disposal');
+
+// Transport regression only: deliberately deliver old stat messages before a matching
+// input receipt. These controlled messages are not firmware execution evidence.
+const transport = {
+  inputs: [],
+  postMessage(message) {
+    if (message.op === 'init') queueMicrotask(() => this.emit({ ready: true }));
+    else if (message.op === 'create') queueMicrotask(() => this.emit({ created: true }));
+    else if (message.op === 'load') queueMicrotask(() => this.emit({ loaded: message.kind, ok: true }));
+    else if (message.op === 'start') queueMicrotask(() => this.emit({ started: true }));
+    else if (message.op === 'text') this.inputs.push(message);
+  },
+  emit(data) { this.onmessage?.({ data }); },
+  terminate() {},
+};
+const transportRuntime = createPlatformRuntime({ catalog, fetchImpl: fileFetch, workerFactory: () => transport, baseUrl, assetBaseUrl: 'https://platform.example/' });
+const flush = () => new Promise(resolve => setImmediate(resolve));
+try {
+  const scene = createDefaultScene(catalog, 'm5stack-stopwatch');
+  scene.accessories.push({ id: 'gps-contract', catalogId: 'm5stack-gps-u032', parameters: {}, wiring: { mode: 'logical', port: 'uart1' } });
+  await transportRuntime.configure(scene);
+  await transportRuntime.loadFirmware({ manifestUrl: 'https://platform.example/wasm/fw/demo-stopwatch.json' });
+  await transportRuntime.start();
+  const pending = transportRuntime.injectGps({ accessoryId: 'gps-contract', latitude: 31.2304, longitude: 121.4737, timestamp: '2026-01-02T03:04:05Z' });
+  // Attach a rejection handler immediately so a regression cannot escape the final cleanup.
+  const outcome = pending.then(value => ({ value }), error => ({ error }));
+  await flush();
+  const count = Math.ceil(nmea.length / 64);
+  for (let index = 0; index < count; index++) {
+    assert.equal(transport.inputs.length, index + 1, 'Only one unacknowledged NMEA chunk may be in flight');
+    const inputId = transport.inputs[index].inputId, time = (index + 1) * 10;
+    transport.emit({ text: JSON.stringify({ t: 'stat', time }) });
+    transport.emit({ inputQueued: inputId + 1000, time });
+    await flush();
+    assert.equal(transport.inputs.length, index + 1, 'Old stats and unrelated receipts must not send another chunk');
+    transport.emit({ inputQueued: inputId, time }); await flush();
+    if (index + 1 === count) break;
+    transport.emit({ text: JSON.stringify({ t: 'stat', time: time + 0.02 }) }); await flush();
+    assert.equal(transport.inputs.length, index + 1, 'Guest must advance 40 ms after the matching input receipt');
+    transport.emit({ text: JSON.stringify({ t: 'stat', time: time + 0.041 }) }); await flush();
+  }
+  const result = await outcome;
+  if (result.error) throw result.error;
+  assert.equal(transport.inputs.map(message => JSON.parse(message.data).data).join(''), result.value.data, 'NMEA chunks must reconstruct every byte in order');
+  console.log('ok delayed-stat transport regression: matching worker receipt anchors each GPS chunk; unrelated receipts and stale stats cannot advance it');
+} finally { await transportRuntime.dispose(); }

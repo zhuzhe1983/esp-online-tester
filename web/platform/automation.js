@@ -20,11 +20,12 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
         return (!status || state.status === status) && (typeof serialIncludes !== 'string' || (port ? (streams[port] || '').includes(serialIncludes) : Object.values(streams).some(text => text.includes(serialIncludes))));
       };
       return new Promise((resolve, reject) => {
-        let done = false, timer, unsubscribe = () => {};
+        let done = false, timer, lastState, unsubscribe = () => {};
         const finish = (err, value) => { if (done) return; done = true; clearTimeout(timer); unsubscribe(); err ? reject(err) : resolve(value); };
         const check = async () => {
           try {
             const state = await runtime.observe();
+            lastState = state;
             if (matches(state)) finish(null, state);
             else if (['disposed', 'error'].includes(state.status)) finish(Object.assign(new Error(`Session entered ${state.status} before the expected condition.`), { code: 'WAIT_INTERRUPTED', details: state.lastError }));
           } catch (e) { finish(e); }
@@ -33,7 +34,10 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
           if (event.type === 'serial') freshSerial[event.source] = ((freshSerial[event.source] || '') + event.data).slice(-65536);
           if (['serial', 'state', 'error'].includes(event.type)) void check();
         });
-        timer = setTimeout(() => finish(Object.assign(new Error('Timed out waiting for the emulator condition.'), { code: 'WAIT_TIMEOUT' })), timeoutMs);
+        timer = setTimeout(() => finish(Object.assign(new Error(`Timed out waiting for ${JSON.stringify({ status, serialIncludes, port, fromNow })}.`), {
+          code: 'WAIT_TIMEOUT', details: { expected: { status, serialIncludes, port, fromNow }, status: lastState?.status, stats: lastState?.stats,
+            serialTail: Object.fromEntries(Object.entries(lastState?.serialByPort || {}).map(([source, text]) => [source, text.slice(-1500)])) },
+        })), timeoutMs);
         void check();
       });
     },

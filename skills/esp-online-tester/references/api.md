@@ -10,7 +10,7 @@ The platform page installs `window.espTester`. Await its presence before use. Ru
 | `start()` | Boots loaded firmware or resumes a paused session. |
 | `pause()` | Pauses an executing session without resetting it. |
 | `reset()` | Reloads already downloaded artifacts and boots a fresh session. |
-| `input(event)` | Queues an input; it does not certify firmware consumption. Shapes below. |
+| `input(event)` | Waits for a matching worker queue receipt and returns `guestTime` in simulated seconds; it does not certify firmware consumption. Shapes below. |
 | `press(id,{durationMs=100}={})` | Presses then releases a button using host wall time (0–10000 ms), not cycle-exact guest time. |
 | `injectGps(options)` | Constructs RMC/GGA sentences with checksums and queues them on logical UART1. Requires an attached `uart-nmea` accessory, logical UART1 wiring and StopWatch. |
 | `observe()` | Returns `{version,status,scene,product,firmware,serial,serialByPort,stats,frame,lastError}`. Each serial string retains its last 65,536 JavaScript string code units; this is not an unbounded event log. |

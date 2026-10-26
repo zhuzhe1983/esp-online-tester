@@ -192,6 +192,9 @@ onmessage = async (ev) => {
       }
       pacing.input(performance.now());
       withBytes(enc.encode(m.data), (p, n) => wasm.esp32sim_in_text(emu, p, n));
+      // Opt-in queue receipt: the command is in the emulator inbox, not yet observed
+      // by firmware. Its current guest clock anchors paced input on a slow host.
+      if (m.inputId !== undefined) postMessage({ inputQueued: m.inputId, time: wasm.esp32sim_cycles(emu) / CPU_HZ });
     }
     else if (m.op === 'bin') {
       pacing.input(performance.now());

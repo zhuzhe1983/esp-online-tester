@@ -127,7 +127,7 @@ const romFor = board => board === 'esp32c3' ? 'esp32c3_rev3_rom.elf' : board ===
 export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000 } = {}) {
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;
   let lastError = null, firmware = null, loaded = null, frame = null, frameNumber = 0, serial = '', serialByPort = {}, stats = {}, queue = Promise.resolve();
-  let booted = false;
+  let booted = false, inputSequence = 0;
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
   const snapshot = () => ({ version: API_VERSION, status, scene: clone(scene), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
   const emit = event => { for (const listener of listeners) { try { listener(event); } catch (e) { console.error('ESP tester event handler:', e); } } };
@@ -179,6 +179,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     if (message.loaded !== undefined) resolve(`loaded:${message.loaded}`, message);
     if (message.started !== undefined) resolve('started', message);
     if (message.resumed !== undefined) resolve('resumed', message);
+    if (message.inputQueued !== undefined) resolve(`input:${message.inputQueued}`, message);
     if (message.stopped !== undefined) {
       const requested = pending.has('stopped');
       resolve('stopped', message);
@@ -307,13 +308,16 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(typeof event.data === 'string' && new TextEncoder().encode(event.data).length <= maxBytes, 'INVALID_INPUT', `Serial input must be a string of at most ${maxBytes} UTF-8 bytes; UART RX has a 128-byte FIFO.`);
       message = { t: 'key', src: event.port, data: event.data };
     } else throw error('UNSUPPORTED_INPUT', 'Unsupported input type.');
-    worker.postMessage({ op: 'text', data: JSON.stringify(message) });
-    return { accepted: true, delivery: 'queued', message };
+    const inputId = ++inputSequence;
+    const receipt = await ask(`input:${inputId}`, { op: 'text', inputId, data: JSON.stringify(message) });
+    requireValue(Number.isFinite(receipt.time) && receipt.time >= 0, 'INVALID_INPUT_RECEIPT', 'Worker did not return a valid guest input clock.');
+    return { accepted: true, delivery: 'queued', message, guestTime: receipt.time };
   };
-  const advance = () => new Promise((resolveAdvance, reject) => {
+  const advance = fromTime => new Promise((resolveAdvance, reject) => {
     // Let the guest drain its 128-byte RX FIFO before the next NMEA chunk. This is
     // deliberately separate from electrical baud timing: upstream injects bytes directly.
-    const targetTime = (Number(stats.time) || 0) + 0.04;
+    // Use the matching worker receipt, never a possibly stale main-thread stat.
+    const targetTime = fromTime + 0.04;
     const finish = e => { clearTimeout(timer); listeners.delete(listener); e ? reject(e) : resolveAdvance(); };
     const listener = event => {
       if (event.type === 'stats' && Number(event.stats.time) >= targetTime) finish();
@@ -321,6 +325,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     };
     const timer = setTimeout(() => finish(error('INPUT_TIMEOUT', 'The emulator did not advance while sending GPS data.')), 10000);
     listeners.add(listener);
+    if (Number(stats.time) >= targetTime) finish();
   });
   const api = {
     version: API_VERSION,
@@ -385,8 +390,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(attached.wiring?.mode === 'logical' && attached.wiring?.port === 'uart1', 'UNSUPPORTED_WIRING', 'GPS injection requires explicit logical UART1 wiring; physical routing is not simulated.');
       const sentences = createGpsNmea({ ...definition.parameters, ...attached.parameters, ...options });
       for (let offset = 0; offset < sentences.length; offset += 64) {
-        await input({ type: 'serial', port: 'uart1', data: sentences.slice(offset, offset + 64) });
-        if (offset + 64 < sentences.length) await advance();
+        const receipt = await input({ type: 'serial', port: 'uart1', data: sentences.slice(offset, offset + 64) });
+        if (offset + 64 < sentences.length) await advance(receipt.guestTime);
       }
       return { accepted: true, port: 'uart1', data: sentences, delivery: 'logical-uart-rx', limitations: ['GPIO routing and baud rate are bypassed.', 'Firmware must read UART1; output has not been compared with physical GPS hardware.'] };
     }); },
