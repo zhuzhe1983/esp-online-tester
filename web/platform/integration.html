@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ESP Online Tester · Embed example</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 40 40%27%3E%3Ctext x=%278%27 y=%2730%27 font-size=%2730%27%3EE%3C/text%3E%3C/svg%3E">
+<style>body{margin:0;padding:24px;background:#f4f5f4;color:#162925;font:16px system-ui}main{max-width:1080px;margin:auto}h1{font-size:24px}p{line-height:1.6}iframe{width:100%;height:640px;border:1px solid #d8dfdb;border-radius:16px;background:white}button{padding:10px 16px;margin:0 8px 16px 0;border:1px solid #bbc9c1;border-radius:8px;cursor:pointer;background:white}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#162925;color:#c5f5d5;padding:16px;border-radius:8px}a{color:#166b50}</style></head>
+<body><main><h1>A playable device inside another page</h1><p>This parent page controls the player through versioned <code>postMessage</code> RPC. The same protocol works across origins. The player checks the parent window, origin, session and request ID. <a href="./">Open the workbench</a>.</p><div><button id="boot" disabled>Load &amp; start diagnostic</button><button id="press" disabled>Press A</button><button id="pause" disabled>Pause</button><button id="observe" disabled>Observe</button></div><iframe id="player" title="Embedded StopWatch" allow="fullscreen"></iframe><pre id="result" aria-live="polite">Connecting…</pre></main>
+<script type="module">
+import {loadCatalog, createDefaultScene, encodeScene} from './catalog.js';
+const frame=document.querySelector('#player'), output=document.querySelector('#result');
+const playerUrl=new URL('./embed.html',location.href), session=crypto.randomUUID();
+const pending=new Map(); let sequence=0;
+const show=value=>output.textContent=JSON.stringify(value,null,2);
+window.addEventListener('message',event=>{
+  if(event.source!==frame.contentWindow || event.origin!==playerUrl.origin) return;
+  const m=event.data;
+  if(m?.channel!=='esp-workbench'||m.version!=='1'||m.session!==session||!['ready','result'].includes(m.type))return;
+  const request=pending.get(m.requestId);if(!request)return;
+  clearTimeout(request.timer);pending.delete(m.requestId);
+  m.error?request.reject(Object.assign(new Error(m.error.message),m.error)):request.resolve(m.result);
+});
+function request(type,method,args=[]){
+  const requestId='request-'+(++sequence);
+  return new Promise((resolve,reject)=>{
+    const timer=setTimeout(()=>{pending.delete(requestId);reject(new Error('Player request timed out'));},20000);
+    pending.set(requestId,{resolve,reject,timer});
+    frame.contentWindow.postMessage({channel:'esp-workbench',version:'1',type,session,requestId,method,args},playerUrl.origin);
+  });
+}
+const call=(method,...args)=>request('call',method,args);
+window.espEmbed=Object.freeze({call});
+frame.addEventListener('load',async()=>{
+  // App setup fetches its catalogs asynchronously after the iframe load event.
+  const deadline=Date.now()+20000;
+  let connected=false;
+  const timer=setInterval(()=>{
+    if(connected||Date.now()>deadline){clearInterval(timer);return;}
+    request('hello').then(result=>{if(connected)return;connected=true;clearInterval(timer);show(result);document.querySelectorAll('button').forEach(b=>b.disabled=false);}).catch(error=>{if(!connected)show({error:error.message});});
+  },500);
+});
+document.querySelector('#boot').onclick=async()=>{try{await call('loadFirmware');await call('start');show(await call('waitFor',{serialIncludes:'PLATFORM_READY stopwatch'}));}catch(e){show({error:e.message});}};
+document.querySelector('#press').onclick=async()=>{try{show(await call('press','button-a'));}catch(e){show({error:e.message});}};
+document.querySelector('#pause').onclick=async()=>{try{show(await call('pause'));}catch(e){show({error:e.message});}};
+document.querySelector('#observe').onclick=async()=>{try{show(await call('observe'));}catch(e){show({error:e.message});}};
+try{
+  const catalog=await loadCatalog(), scene=createDefaultScene(catalog,'m5stack-stopwatch');
+  scene.firmware=catalog.firmwares.find(f=>f.id==='platform-stopwatch-diagnostic').source;
+  scene.view.mode='embed';playerUrl.hash='scene='+encodeScene(scene);frame.src=playerUrl.href;
+}catch(error){show({error:error.message});}
+</script></body></html>

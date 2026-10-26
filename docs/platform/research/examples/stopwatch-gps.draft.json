@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1-draft",
+  "status": "draft-not-runnable",
+  "description": "StopWatch + GPS Unit 的配置草案；版本、固件、GPS 代次和 UART 接线均须在实现阶段解析。",
+  "device": {"instanceId": "dut", "productId": "m5stack.stopwatch.c152", "revision": null},
+  "engine": {"id": "esp32sim-wasm", "revision": "ddf753a5c400ff79d3aa6a88a007eccd044e838d", "adapterVersion": null},
+  "firmware": null,
+  "accessories": [
+    {"instanceId": "gps", "catalogCandidates": ["m5stack.gps.u032", "m5stack.gps.u032-v11"], "selectedId": null, "modelVersion": null}
+  ],
+  "wiring": [],
+  "pendingConnection": {"hostContacts": ["grove.gpio10", "grove.gpio11", "grove.5v", "grove.gnd"], "uartController": null, "rxPin": null, "txPin": null, "baudRate": null},
+  "inputMapping": {"KeyA": "dut.button-a", "KeyB": "dut.button-b"},
+  "environment": {"network": "offline", "clockEpoch": "2026-01-01T00:00:00Z", "seed": 1},
+  "requestedCapabilities": ["display.framebuffer", "uart.rx.by-controller", "uart.tx.by-controller", "gpio.input"],
+  "validationTasks": ["select-gps-revision", "confirm-wiring-and-power", "implement-gps-model", "resolve-firmware-and-hash", "verify-clock-and-seed-support"],
+  "scenarioPlan": ["boot-no-fix", "acquire-fix", "moving-track", "disconnect", "reconnect", "invalid-checksum"],
+  "view": {"mode": "standalone", "deviceView": "3d"}
+}

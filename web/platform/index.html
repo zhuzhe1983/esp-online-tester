@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5f4">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2326765c'/%3E%3Cpath d='M19 15h28v7H27v8h17v7H27v8h20v7H19z' fill='white'/%3E%3C/svg%3E">
+  <title>ESP Workbench · 产品实验台</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body data-mode="studio">
+  <header class="topbar">
+    <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">E<span>·</span></span><span>ESP <strong>WORKBENCH</strong><small>产品实验台</small></span></a>
+    <div class="topbar-note"><span class="status-dot"></span>本地执行 <span> / </span> 自由组合 <span> / </span> 可嵌入</div>
+    <nav class="topbar-actions" aria-label="场景操作"><button id="export-scene" class="button quiet">导出配置</button><label class="button quiet file-button">导入<input id="import-scene" type="file" accept="application/json,.json" aria-label="导入场景配置"></label><button id="share-scene" class="button primary">分享场景 <span aria-hidden="true">↗</span></button></nav>
+  </header>
+  <main class="workbench">
+    <aside class="configuration panel" aria-label="设备与固件配置">
+      <div class="panel-heading"><span class="eyebrow">01 / CONFIGURE</span><h1>搭建你的设备</h1></div>
+      <section class="panel-section">
+        <label class="field-label" for="product-select">产品 <span id="product-count" class="muted"></span></label>
+        <select id="product-select" disabled><option>正在读取产品库…</option></select>
+        <div class="product-identity"><div id="product-symbol" class="product-symbol" aria-hidden="true">◉</div><div><strong id="product-name">加载中</strong><span id="product-model" class="muted"></span></div></div>
+        <dl id="product-specs" class="spec-list"></dl>
+        <div id="compatibility" class="notice" role="status"></div>
+        <a id="product-source" class="text-link" target="_blank" rel="noopener noreferrer" hidden>查看产品资料 ↗</a>
+      </section>
+      <section class="panel-section firmware-section">
+        <div class="section-label"><h2>固件</h2><span class="small-label">在浏览器中加载</span></div>
+        <div class="segmented" role="group" aria-label="固件来源"><button class="active" data-firmware-tab="library" aria-pressed="true">固件库</button><button data-firmware-tab="remote" aria-pressed="false">远程地址</button><button data-firmware-tab="local" aria-pressed="false">本地文件</button></div>
+        <div id="firmware-library" class="firmware-tab"><label class="sr-only" for="firmware-select">选择固件</label><select id="firmware-select"><option value="">选择适配固件</option></select><p id="firmware-note" class="helper"></p><button id="run-demo" class="button inline-button">运行 ESP32-S3 Hello World <span aria-hidden="true">↗</span></button></div>
+        <div id="firmware-remote" class="firmware-tab" hidden><label class="field-label" for="firmware-kind">地址类型</label><select id="firmware-kind"><option value="manifest">固件清单（JSON manifest）</option><option value="merged">完整 Flash 镜像（merged .bin）</option></select><label class="field-label" for="firmware-url">HTTPS 地址</label><input id="firmware-url" type="url" placeholder="https://example.com/firmware.json" spellcheck="false"><label class="field-label" for="firmware-sha">SHA-256 <span class="muted">可选</span></label><input id="firmware-sha" placeholder="校验下载内容" spellcheck="false"><p class="helper">远程服务器需允许 CORS。单独的 app.bin 请通过包含启动镜像的清单加载。</p></div>
+        <div id="firmware-local" class="firmware-tab" hidden><label class="upload-area" for="firmware-file"><span aria-hidden="true">↑</span><strong>选择完整 Flash 镜像</strong><span id="local-file-name">merged .bin · 文件留在本机</span><input id="firmware-file" type="file" accept=".bin,application/octet-stream"></label><p class="helper">本地文件不会上传。分享链接仅包含配置，接收者需要自行选择相同文件。</p></div>
+        <button id="load-firmware" class="button primary wide">加载固件</button>
+        <p id="load-status" class="helper" aria-live="polite">先选择产品与固件，再启动模拟。</p>
+      </section>
+      <section class="panel-section keyboard-section"><div class="section-label"><h2>键盘映射</h2><label class="switch-label"><input id="keyboard-enabled" type="checkbox" checked> 启用</label></div><div id="key-bindings" class="key-bindings"></div><p class="helper">点击映射框后按下键盘按键。输入文字时不会触发设备。短按至少保持 150ms 宿主机时间，不代表周期精确输入。</p></section>
+      <footer class="panel-footer"><a href="https://github.com/zhuzhe1983/esp-online-tester" target="_blank" rel="noopener noreferrer">GitHub ↗</a><span>Powered by esp32sim</span></footer>
+    </aside>
+    <section class="workspace" aria-label="设备模拟器">
+      <div class="workspace-toolbar"><div class="workspace-title"><span class="eyebrow">02 / PLAY</span><strong id="stage-title">设备预览</strong></div><div class="view-controls"><div class="segmented compact" role="group" aria-label="显示模式"><button id="view-3d" class="active" aria-pressed="true">3D</button><button id="view-2d" aria-pressed="false">2D</button></div><button id="reset-view" class="icon-button" title="恢复视角" aria-label="恢复视角">⌖</button><button id="fullscreen" class="icon-button" title="全屏" aria-label="全屏显示模拟器">⛶</button></div></div>
+      <div id="device-stage" class="device-stage"><div class="stage-grid" aria-hidden="true"></div><div id="scene-mount" class="scene-mount"></div><div class="stage-topline"><span id="runtime-badge" class="runtime-badge"><span></span>未启动</span><span id="runtime-speed" class="small-label"></span></div><div id="screen-empty" class="screen-empty"><strong id="empty-title">让真实固件点亮屏幕</strong><span id="empty-description">选择固件后，在本地 WebAssembly 中运行。</span></div><div class="stage-caption"><span id="stage-gesture">拖动外壳旋转 · 滚轮缩放 · 点击屏幕交互</span><span class="small-label">示意外壳 · 实际帧缓冲</span></div></div>
+      <div class="transport"><div class="transport-main"><button id="start-runtime" class="button primary" disabled><span aria-hidden="true">▶</span> 启动</button><button id="pause-runtime" class="button" disabled><span aria-hidden="true">Ⅱ</span> 暂停</button><button id="reset-runtime" class="button quiet" disabled>↻ 重启</button></div><div id="device-buttons" class="device-buttons"></div><button id="capture-frame" class="icon-button" title="保存真实屏幕截图" aria-label="保存真实屏幕截图" disabled>▣</button></div>
+      <section class="console-panel" aria-label="运行输出"><div class="console-header"><h2><span class="console-indicator"></span>串口与事件</h2><div><span id="frame-count" class="small-label">0 帧</span><button id="clear-console" class="button quiet tiny">清空</button></div></div><pre id="serial-output" class="serial-output" tabindex="0" aria-label="串口日志">ESP Workbench 已准备好。固件在当前浏览器中执行。
+</pre><form id="serial-form" class="serial-form"><label for="serial-port" class="sr-only">查看和发送的串口</label><select id="serial-port"><option value="usb">USB</option><option value="uart0" selected>UART0</option><option value="uart1">UART1</option></select><label class="sr-only" for="serial-input">发送文本至串口</label><input id="serial-input" placeholder="发送到设备…" autocomplete="off"><button class="button quiet" type="submit">发送 ↵</button></form></section>
+    </section>
+    <aside class="inspector panel" aria-label="配件与场景"><div class="panel-heading"><span class="eyebrow">03 / EXTEND</span><h2>连接与扩展</h2></div><section class="panel-section"><div class="section-label"><h2>配件</h2><span id="accessory-count" class="count">0</span></div><label class="sr-only" for="accessory-select">选择配件</label><div class="input-row"><select id="accessory-select"><option value="">选择配件…</option></select><button id="add-accessory" class="button" aria-label="添加所选配件">＋</button></div><div id="accessory-list" class="accessory-list"><p class="empty-list">连接 GPS、传感器，或设计自己的配件。</p></div></section><section class="panel-section"><div class="section-label"><h2>DIY 配件</h2><span class="small-label">仅保存在本机</span></div><p class="helper">设计接口和参数，导出独立定义。模型是否可运行由模拟引擎决定。</p><button id="open-diy" class="button wide">＋ 设计一个配件</button><label class="text-link file-link">导入配件 JSON<input id="import-diy" type="file" accept="application/json,.json" aria-label="导入自定义配件 JSON"></label><div id="local-accessories" class="local-accessories"></div></section><section class="panel-section"><div class="section-label"><h2>嵌入与自动化</h2><span class="small-label">API v1</span></div><p class="helper">同一份场景，可分享、嵌入网页，也可让 coding agent 操作。</p><button id="copy-embed" class="button wide">复制 iframe 代码 <span aria-hidden="true">↗</span></button><button id="open-player" class="button quiet wide">在独立窗口打开</button><details class="api-details"><summary>Agent 调用示例</summary><pre>await espTester.observe()
+await espTester.press('button-a', {durationMs:150})
+await espTester.capture({format:'png'})</pre><a class="text-link" href="https://github.com/zhuzhe1983/esp-online-tester/blob/platform/foundation/skills/esp-online-tester/SKILL.md" target="_blank" rel="noopener noreferrer">查看 skill 与调用约定 ↗</a></details></section><div id="validation-notes" class="validation-notes"></div></aside>
+  </main>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <dialog id="diy-dialog"><form id="diy-form"><div class="dialog-heading"><div><span class="eyebrow">LOCAL ACCESSORY</span><h2>设计自己的配件</h2></div><button type="button" id="close-diy" class="icon-button" aria-label="关闭">×</button></div><p class="helper">保存配件元信息与接线定义。自定义硬件模型需要另外实现，不会自动模拟电路。</p><label class="field-label" for="diy-name">配件名称</label><input id="diy-name" required maxlength="80" placeholder="我的 GPS 接收器"><label class="field-label" for="diy-description">说明</label><input id="diy-description" maxlength="240" placeholder="它有什么用？"><label class="field-label" for="diy-protocol">接口协议</label><select id="diy-protocol"><option value="uart">UART</option><option value="i2c">I²C</option><option value="gpio">GPIO</option><option value="spi">SPI</option></select><label class="field-label" for="diy-pins">引脚定义 <span class="muted">JSON</span></label><textarea id="diy-pins" rows="5" spellcheck="false">[{"name":"TX","direction":"output"},{"name":"RX","direction":"input"},{"name":"VCC","direction":"power"},{"name":"GND","direction":"ground"}]</textarea><p id="diy-error" class="form-error" role="alert"></p><div class="dialog-actions"><button id="export-diy-draft" type="button" class="button">导出 JSON</button><button class="button primary" type="submit">保存在本机</button></div></form></dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

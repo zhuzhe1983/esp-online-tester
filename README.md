@@ -1,3 +1,33 @@
+# ESP Online Tester
+
+**Agent-configurable. Human-playable. Embeddable.**
+
+A static platform for complete ESP32 products: select a device, attach accessories, load real firmware, play with its controls, and automate the same session. Forked from [mikroverk/esp32sim](https://github.com/mikroverk/esp32sim); the MIT-licensed Rust emulator runs locally in a browser through WebAssembly.
+
+- [Open the platform](https://zhuzhe1983.github.io/esp-online-tester/platform/)
+- [Platform guide and capability boundaries](docs/platform/README.md)
+- [Coding-agent skill](skills/esp-online-tester/SKILL.md)
+- [Contribute products, accessories and firmware](docs/platform/contributing.md)
+
+The initial product set is M5Stack StopWatch, PaperMono and two GPS Unit revisions. **StopWatch has a partial executable board model; PaperMono currently provides catalog metadata and a 3D preview.** GPS exercises logical UART1 input. Capability labels are explicit; a preview or successful configuration is not evidence that firmware ran.
+
+The platform lives under `web/platform/`, shares the upstream emulator in `web/wasm/`, and needs no application server. Private DIY accessory definitions stay in the browser unless explicitly exported or shared. Public catalogs accept pull requests.
+
+## Run locally
+
+```sh
+tools/wasm-build.sh
+tools/fetch-demo-assets.sh --no-linux
+python3 -m http.server 8080 --directory web
+# Open http://localhost:8080/platform/
+```
+
+See the platform guide for remote firmware manifests, iframe integration, tests, and limitations. The original emulator interface remains available at `run.html`, and its demo gallery at `emulator.html`.
+
+---
+
+## Upstream emulator documentation
+
 <p align="center">
   <img src="docs/assets/esp32sim-logo-icon.png" alt="esp32sim logo: a smiling chip in an emulator window" width="240">
 </p>

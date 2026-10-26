@@ -10,6 +10,7 @@ const traceNow = () => performance.timeOrigin + performance.now();
 // protocol (docs/web-ui.md) to the page as postMessage — text as strings, binary as ArrayBuffers.
 let CPU_HZ = 240e6;   // replaced from the module once an emulator exists: the C3 runs at 160 MHz
 let wasm = null, emu = 0, running = false, t0 = 0, resyncs = 0, lastStat = { wall: 0, insns: 0, cycles: 0 };
+let loopGeneration = 0, booted = false;
 let net = 0, netNodes = 0, netT0 = 0;   // a network of motes: several emulators on one medium
 const enc = new TextEncoder(), dec = new TextDecoder();
 const mem = () => new Uint8Array(wasm.memory.buffer);
@@ -40,8 +41,8 @@ function drain() {
   }
 }
 
-function loop() {
-  if (!running) return;
+function loop(generation = loopGeneration) {
+  if (!running || generation !== loopGeneration) return;
   const now = performance.now();
   let cur = wasm.esp32sim_cycles(emu);
   let target = (now - t0) / 1000 * CPU_HZ;
@@ -73,18 +74,18 @@ function loop() {
   // Only yield immediately when this turn left catch-up work unfinished. Once we reach
   // its target, sleep even if running the guest has put us slightly behind wall time.
   // MessageChannel avoids the nested timer clamp during expensive interactive turns.
-  if (cur < target) yieldPort.postMessage(0);
-  else setTimeout(loop, Math.max(1, Math.min(20, aheadMs)));
+  if (cur < target) yieldPort.postMessage(generation);
+  else setTimeout(() => loop(generation), Math.max(1, Math.min(20, aheadMs)));
 }
 const yieldChannel = typeof MessageChannel === 'function' ? new MessageChannel() : null;
-const yieldPort = yieldChannel ? yieldChannel.port2 : { postMessage: () => setTimeout(loop, 0) };
-if (yieldChannel) yieldChannel.port1.onmessage = loop;
+const yieldPort = yieldChannel ? yieldChannel.port2 : { postMessage: generation => setTimeout(() => loop(generation), 0) };
+if (yieldChannel) yieldChannel.port1.onmessage = event => loop(event.data);
 
 // A network runs on its own clock: network time in nanoseconds paced to the wall clock, with
 // each node's console and LED drained per turn. The medium and the stepping are in the module
 // (esp32c6::net) — this only says how far to run and relays what came out.
-function netLoop() {
-  if (!running) return;
+function netLoop(generation = loopGeneration) {
+  if (!running || generation !== loopGeneration) return;
   const now = performance.now();
   const targetNs = (now - netT0) * 1e6;
   const curNs = wasm.esp32sim_net_now_ns(net);
@@ -109,7 +110,7 @@ function netLoop() {
                              behind: Math.max(0, (targetNs - wasm.esp32sim_net_now_ns(net)) / 1e9) } });
     lastStat = { wall, insns: 0 };
   }
-  setTimeout(netLoop, 5);
+  setTimeout(() => netLoop(generation), 5);
 }
 
 onmessage = async (ev) => {
@@ -123,7 +124,7 @@ onmessage = async (ev) => {
     }
     if (m.op === 'init') { frameAck = m.frameAck === true; traceEnabled = !!m.touchTrace; const r = await WebAssembly.instantiate(m.wasm, imports); wasm = r.instance.exports;  postMessage({ ready: true }); }
     else if (m.op === 'create') {
-      running = false;
+      running = false; loopGeneration++; booted = false;
       // Keep credits for already posted frames until their ACKs arrive, but never send
       // a retained frame from the emulator being replaced.
       pendingFrame = null;
@@ -143,15 +144,26 @@ onmessage = async (ev) => {
     else if (m.op === 'wifi') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_wifi(emu, p, n)) !== 0) setupError ||= 'invalid WiFi configuration (see console)'; }
     else if (m.op === 'start') {
       // Optional timing-model exports (`?timing=hw`), applied after the loads and before the first instruction.
-      running = false;
+      running = false; loopGeneration++; booted = false;
       if (!emu) throw new Error('no emulator to start');
       if (setupError) throw new Error(setupError);
       applyExperiments(wasm, emu, experiments);
       if (smoothDisplay && (!wasm.esp32sim_set_smooth_display || wasm.esp32sim_set_smooth_display(emu, 1) !== 0)) throw new Error('smooth display publication is unsupported');
-      const rc = wasm.esp32sim_boot(emu, m.appDirect ? 1 : 0); if (rc === 0) { running = true; t0 = performance.now(); lastStat = { wall: t0, insns: wasm.esp32sim_insns(emu), cycles: wasm.esp32sim_cycles(emu) }; loop(); } postMessage({ started: rc === 0 }); }
+      const rc = wasm.esp32sim_boot(emu, m.appDirect ? 1 : 0); if (rc === 0) { running = true; booted = true; t0 = performance.now(); lastStat = { wall: t0, insns: wasm.esp32sim_insns(emu), cycles: wasm.esp32sim_cycles(emu) }; loop(); } postMessage({ started: rc === 0 }); }
+    else if (m.op === 'resume') {
+      if (!emu || !booted) throw new Error('no booted emulator to resume');
+      if (!running) {
+        loopGeneration++; pacing = createPacing();
+        const wall = performance.now(), cycles = wasm.esp32sim_cycles(emu);
+        t0 = wall - cycles / CPU_HZ * 1000;
+        lastStat = { wall, insns: wasm.esp32sim_insns(emu), cycles };
+        running = true; loop();
+      }
+      postMessage({ resumed: true });
+    }
     else if (m.op === 'net-create') {
       setupError = null;
-      running = false;
+      running = false; loopGeneration++; booted = false;
       pendingFrame = null;
       if (net) { wasm.esp32sim_net_delete(net); net = 0; }
       if (emu) { wasm.esp32sim_delete(emu); emu = 0; }
@@ -172,7 +184,7 @@ onmessage = async (ev) => {
     else if (m.op === 'net-load') { const rc = withBytes(new Uint8Array(m.data), (p, n) => wasm.esp32sim_net_load(net, m.node, m.kind, p, n)); postMessage({ loaded: 'n' + m.node + ':' + m.kind, ok: rc === 0 }); }
     else if (m.op === 'net-stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_net_stub_spec(net, m.node, p, n)) !== 0) setupError ||= 'invalid stub for node ' + m.node + ': ' + m.spec; }
     else if (m.op === 'net-start') { if (setupError) throw new Error(setupError); const rc = wasm.esp32sim_net_boot(net); if (rc === 0) { running = true; netT0 = performance.now(); netLoop(); } postMessage({ started: rc === 0 }); }
-    else if (m.op === 'stop') { running = false; postMessage({ stopped: 0 }); }
+    else if (m.op === 'stop') { running = false; loopGeneration++; postMessage({ stopped: 0 }); }
     else if (m.op === 'text') {
       if (traceEnabled && m.touchTrace) {
         postMessage({ touchTrace: { stage: 'worker-receive', ...m.touchTrace, atMs: traceNow(), cycles: wasm.esp32sim_cycles(emu) } });
@@ -190,5 +202,5 @@ onmessage = async (ev) => {
       }
       withBytes(data, (p, n) => wasm.esp32sim_in_bin(emu, p, n));
     }
-  } catch (err) { postMessage({ log: '[worker] ' + (err && err.stack || err) }); running = false; if (m.op === 'start' || m.op === 'net-start') postMessage({ started: false, error: err.message || String(err) }); else postMessage({ stopped: 1 }); }
+  } catch (err) { postMessage({ log: '[worker] ' + (err && err.stack || err) }); running = false; loopGeneration++; if (m.op === 'start' || m.op === 'net-start') postMessage({ started: false, error: err.message || String(err) }); else if (m.op === 'resume') postMessage({ resumed: false, error: err.message || String(err) }); else postMessage({ stopped: 1 }); }
 };

@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- Older links open the emulator here: ?wasm and ?fw= belong to run.html now -->
+<script>if(/[?&](wasm|fw)(=|&|$)/.test(location.search))location.replace('run.html'+location.search+location.hash)</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{const t=localStorage.getItem('esp32sim-theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}</script>
+<title>esp32sim — real ESP32 firmware in your browser, and a test bench for coding agents</title>
+<meta name="description" content="An instruction-level emulator for the ESP32, S3, C3 and C6 in Rust. Boots the real mask ROM, the real bootloader and unmodified firmware — in this browser tab, or on the command line as a deterministic hardware test bench for coding agents.">
+<meta property="og:title" content="esp32sim — real ESP32 firmware in your browser">
+<meta property="og:description" content="Boot unmodified ESP32, S3, C3 and C6 firmware in a browser tab, or give a coding agent a deterministic board on the command line.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mikroverk.github.io/esp32sim/">
+<meta property="og:image" content="https://mikroverk.github.io/esp32sim/assets/social-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="esp32sim: real ESP32 firmware in your browser, an emulated touch panel and Linux booting on an ESP32-S3">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/esp32sim-logo-icon.png">
+<style>
+  :root {
+    --paper: #f7f5ef; --card: #ffffff; --ink: #171a24; --text: #353a4a; --text-2: #3f4454; --dim: #5b6070; --line: #e3e0d6; --line-2: #cfccc2;
+    --navy: #1c2a6b; --link: #2a3d95; --gold: #f2b21b; --code-bg: #ecebe4;
+    --btn-bg: #1c2a6b; --btn-fg: #ffffff; --nav-bg: rgba(247,245,239,.9);
+    --agents-bg: #1c2a6b; --byo-bg: #fff1c9; --byo-line: #f0d98a; --byo-ink: #4a4322;
+    --stage: #15171d; --term: #0b0d10;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #111318; --card: #1a1d25; --ink: #eceef5; --text: #c5cad8; --text-2: #b8bece; --dim: #9aa1b4; --line: #2a2f3c; --line-2: #3a4050;
+      --link: #9fb0ff; --code-bg: #262a36;
+      --btn-bg: #f2b21b; --btn-fg: #171a24; --nav-bg: rgba(17,19,24,.9);
+      --agents-bg: #182352; --byo-bg: #26220f; --byo-line: #4a3f14; --byo-ink: #e8dfb8;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #111318; --card: #1a1d25; --ink: #eceef5; --text: #c5cad8; --text-2: #b8bece; --dim: #9aa1b4; --line: #2a2f3c; --line-2: #3a4050;
+    --link: #9fb0ff; --code-bg: #262a36;
+    --btn-bg: #f2b21b; --btn-fg: #171a24; --nav-bg: rgba(17,19,24,.9);
+    --agents-bg: #182352; --byo-bg: #26220f; --byo-line: #4a3f14; --byo-ink: #e8dfb8;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  a { color: var(--link); }
+  a:hover { color: var(--ink); }
+  :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  code, pre, .mono { font-family: var(--mono); }
+  code { font-size: .92em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  .wrap { width: min(1140px, 100% - 40px); margin-inline: auto; }
+  h1, h2, h3 { line-height: 1.12; letter-spacing: -.02em; margin: 0; }
+  h2 { font-size: clamp(26px, 3.2vw, 34px); }
+  h3 { font-size: 18px; }
+  p { margin: 0; }
+  .dim { color: var(--dim); }
+  .kicker { display: inline-block; color: var(--link); font: 700 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
+  .button { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 20px; border-radius: 10px; font-weight: 650; text-decoration: none; border: 1px solid transparent; transition: transform .12s ease, background .12s ease; }
+  .button:hover { transform: translateY(-1px); }
+  .button.primary { background: var(--btn-bg); color: var(--btn-fg); }
+  .button.primary:hover { filter: brightness(1.12); color: var(--btn-fg); }
+  .button.secondary { background: var(--card); color: var(--ink); border-color: var(--line-2); }
+  .button.secondary:hover { border-color: var(--link); color: var(--link); }
+  .button.gold { background: var(--gold); color: var(--ink); }
+
+  /* ----- header ----- */
+  header { position: sticky; top: 0; z-index: 10; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  nav { display: flex; align-items: center; gap: 22px; min-height: 64px; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.03em; font-size: 19px; color: var(--ink); text-decoration: none; }
+  .brand img { width: 34px; height: 34px; }
+  .links { display: flex; align-items: center; gap: 20px; margin-left: auto; font-size: 15px; }
+  .links a { color: var(--dim); text-decoration: none; }
+  .links a:hover { color: var(--ink); }
+  .links .gh { color: var(--ink); border: 1px solid var(--line-2); border-radius: 100px; padding: 6px 13px; }
+  .theme { width: 36px; height: 36px; margin-left: 4px; border: 1px solid var(--line-2); border-radius: 100px; background: var(--card); color: var(--ink); cursor: pointer; font-size: 15px; }
+  .theme::before { content: "☾"; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .theme::before { content: "☀"; } }
+  :root[data-theme="dark"] .theme::before { content: "☀"; }
+
+  /* ----- hero ----- */
+  .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; padding: 64px 0 40px; }
+  .hero h1 { font-size: clamp(38px, 5.2vw, 62px); font-weight: 800; letter-spacing: -.035em; }
+  .hero h1 span { color: var(--link); }
+  .lede { margin-top: 20px; font-size: clamp(17px, 1.6vw, 20px); color: var(--text); max-width: 560px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 26px; color: var(--dim); font: 13px/1.5 var(--mono); }
+  .facts span::before { content: "◆"; color: var(--gold); margin-right: 7px; font-size: 10px; vertical-align: 1px; }
+  .stage { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 20px 16px; padding: 34px; border-radius: 26px; background: radial-gradient(circle at 50% 30%, #2b2f3a, var(--stage) 70%); box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 30px 60px -30px rgba(23,26,36,.55); }
+  .device { grid-column: 1 / -1; justify-self: center; display: block; width: min(400px, 100%); border-radius: 22px; border: 14px solid #262a33; box-shadow: 0 25px 50px rgba(0,0,0,.5), inset 0 0 0 1px #000; background: #000; }
+  .device img { display: block; width: 100%; height: auto; border-radius: 9px; }
+  .stage .run { grid-column: 2; background: var(--gold); color: var(--ink); min-height: 40px; padding: 0 16px; border-radius: 10px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+  .stage .run:hover { background: #ffc43d; }
+  .stage figcaption { color: #aeb3c2; font: 12px/1.4 var(--mono); }
+
+  /* ----- sections ----- */
+  section { padding: 56px 0; }
+  section + section { border-top: 1px solid var(--line); }
+  .sec-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 26px; }
+  .sec-head p { max-width: 520px; color: var(--dim); }
+
+  /* ----- demos ----- */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; transition: transform .12s ease, box-shadow .12s ease; }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 16px 34px -18px rgba(23,26,36,.4); }
+  .shot { display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: center; aspect-ratio: 4 / 3; background: radial-gradient(circle at 50% 40%, #2a2e39, var(--stage) 75%); padding: 18px; text-decoration: none; overflow: hidden; }
+  .shot img { min-width: 0; min-height: 0; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; border: 6px solid #262a33; box-shadow: 0 14px 30px rgba(0,0,0,.45); background: #000; }
+  .shot pre { margin: 0; width: 100%; height: 100%; overflow: hidden; color: #d5d9e3; background: var(--term); border-radius: 8px; border: 1px solid #2a2e39; padding: 12px 14px; font-size: 11.5px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .shot pre b { color: #7ee2b8; font-weight: 600; }
+  .shot pre i { color: #f2b21b; font-style: normal; }
+  .shot .net { display: flex; align-items: center; gap: 12px; width: 100%; }
+  .shot .mote { flex: 0 0 auto; width: 58px; height: 58px; border-radius: 12px; background: #262a33; display: grid; place-items: center; color: #fff; font: 700 11px var(--mono); border: 1px solid #3b404c; }
+  .shot .mote i { width: 10px; height: 10px; border-radius: 50%; background: #7ee2b8; box-shadow: 0 0 10px #7ee2b8; margin-bottom: 4px; }
+  .shot .air { flex: 1; border-top: 2px dashed #4b5160; position: relative; text-align: center; }
+  .shot .air span { position: absolute; left: 50%; top: -22px; transform: translateX(-50%); color: #aeb3c2; font: 11px var(--mono); white-space: nowrap; }
+  .body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .meta { display: flex; justify-content: space-between; gap: 10px; color: var(--dim); font: 600 11px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+  .body p { color: var(--text-2); font-size: 14.5px; }
+  .body .go { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px 16px; padding-top: 8px; font-size: 14px; }
+  .body .go a:first-child { font-weight: 700; text-decoration: none; }
+  .body .go .src { flex-basis: 100%; color: var(--dim); }
+  .all { margin-top: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+  .all h3 { font-size: 13px; color: var(--dim); font-family: var(--mono); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; }
+  .all ul { list-style: none; margin: 0; padding: 0; }
+  .all li { padding: 7px 0; border-top: 1px solid var(--line); font-size: 14.5px; }
+  .all li a { text-decoration: none; }
+  .all li .sub { color: var(--dim); }
+  .all li:hover a { text-decoration: underline; }
+
+  /* ----- agents ----- */
+  .agents { background: var(--agents-bg); color: #e9ecf6; border-top: 0 !important; }
+  .agents .kicker { color: var(--gold); }
+  .agents h2 { color: #fff; }
+  .agents .lede { color: #c9d0e6; }
+  .agents .split { display: grid; grid-template-columns: 1fr 1.1fr; gap: 44px; align-items: start; }
+  .agents .split > div, .card, .all > div, .chip { min-width: 0; }
+  .agents ol { margin: 26px 0 0; padding: 0; list-style: none; display: grid; gap: 14px; counter-reset: step; }
+  .agents li { display: grid; grid-template-columns: 34px 1fr; column-gap: 12px; counter-increment: step; }
+  .agents li::before { content: counter(step, decimal-leading-zero); grid-row: 1 / 3; color: var(--gold); font: 700 13px/28px var(--mono); }
+  .agents li b, .agents li span { grid-column: 2; }
+  .agents li b { display: block; color: #fff; }
+  .agents li span { color: #c9d0e6; font-size: 14.5px; }
+  .term { min-width: 0; background: var(--term); border: 1px solid #2c3552; border-radius: 14px; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(0,0,0,.7); }
+  .term .bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: #131722; color: #8b93ad; font: 12px var(--mono); border-bottom: 1px solid #2c3552; }
+  .term .bar i { width: 10px; height: 10px; border-radius: 50%; background: #3a4160; }
+  .term .bar i:nth-child(1) { background: #ff5f57; } .term .bar i:nth-child(2) { background: #febc2e; } .term .bar i:nth-child(3) { background: #28c840; }
+  .term pre { margin: 0; padding: 16px 18px; color: #dfe4f2; font-size: 12.5px; line-height: 1.6; overflow-x: auto; }
+  .term pre b { color: #f2b21b; font-weight: 600; }
+  .term pre em { color: #7ee2b8; font-style: normal; }
+  .term pre .c { color: #7d859f; }
+  .agents .links2 { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .agents .links2 a { color: #fff; text-decoration: none; border: 1px solid #4a5a9a; border-radius: 8px; padding: 6px 11px; font: 13px var(--mono); }
+  .agents .links2 a:hover { border-color: var(--gold); }
+
+  /* ----- inside ----- */
+  .chips { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .chip { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
+  .chip h3 { display: flex; justify-content: space-between; align-items: baseline; }
+  .chip h3 small { color: var(--dim); font: 600 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+  .chip dl { margin: 12px 0 0; display: grid; grid-template-columns: 86px 1fr; gap: 6px 10px; font-size: 13.5px; }
+  .chip dt { color: var(--dim); font: 600 11px/1.6 var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+  .chip dd { margin: 0; }
+  .doclinks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .doclinks a { text-decoration: none; color: var(--ink); border: 1px solid var(--line-2); background: var(--card); border-radius: 8px; padding: 6px 12px; font: 13px var(--mono); }
+  .doclinks a:hover { border-color: var(--link); color: var(--link); }
+
+  /* ----- byo ----- */
+  .byo { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; background: var(--byo-bg); border: 1px solid var(--byo-line); border-radius: 18px; padding: 26px 28px; }
+  .byo p { color: var(--byo-ink); max-width: 640px; margin-top: 6px; }
+
+  footer { border-top: 1px solid var(--line); padding: 26px 0 40px; color: var(--dim); font-size: 13.5px; }
+  footer .row { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+  footer a { color: var(--dim); }
+  footer p { margin-top: 12px; }
+
+  @media (max-width: 960px) {
+    .hero { grid-template-columns: 1fr; gap: 34px; padding-top: 40px; }
+    .grid, .all, .chips { grid-template-columns: 1fr 1fr; }
+    .agents .split { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .links a:not(.gh) { display: none; }
+    .grid, .all, .chips { grid-template-columns: 1fr; }
+    .byo { grid-template-columns: 1fr; }
+    .stage { padding: 20px; }
+    .stage figcaption { display: none; }
+    section { padding: 40px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<header><nav class="wrap">
+  <a class="brand" href="index.html"><img src="assets/esp32sim-logo-icon.png" alt="">esp32sim</a>
+  <div class="links">
+    <a href="#demos">Demos</a>
+    <a href="#agents">For coding agents</a>
+    <a href="#inside">What's inside</a>
+    <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/quick-start.md">Quick start</a>
+    <a href="https://github.com/mikroverk/esp32sim#readme">Docs</a>
+    <a class="gh" href="https://github.com/mikroverk/esp32sim">GitHub ↗</a>
+    <button class="theme" type="button" title="Light or dark" aria-label="Switch between light and dark" onclick="toggleTheme()"></button>
+  </div>
+</nav></header>
+
+<main>
+<section class="wrap hero" style="border-top:0">
+  <div>
+    <span class="kicker">ESP32 · S3 · C3 · C6 — Xtensa and RISC-V</span>
+    <h1>Real ESP32 firmware.<br><span>In your browser.</span></h1>
+    <p class="lede">esp32sim is an instruction-level emulator for Espressif's ESP32-S3, C3, C6 and the classic ESP32, written in Rust. It boots the real mask ROM, the real bootloader and an unmodified application image — here in this tab, or on your command line as a hardware test bench that a coding agent can drive.</p>
+    <div class="actions">
+      <a class="button primary" href="run.html?wasm&amp;fw=panel">Run the touch panel →</a>
+      <a class="button secondary" href="#demos">All demos</a>
+      <a class="button secondary" href="#agents">Use it with an agent</a>
+    </div>
+    <div class="facts"><span>ROM → bootloader → app</span><span>no patched firmware</span><span>no cloud, no accounts</span><span>MIT</span></div>
+  </div>
+  <figure class="stage" style="margin:0">
+    <a class="device" href="run.html?wasm&amp;fw=panel" title="Run the Touch-LCD-4B energy panel"><img src="assets/demo-panel.webp" width="480" height="480" alt="The energy panel firmware's first page: a price histogram for the day and four tiles"></a>
+    <figcaption>the frame the emulator wrote with --tft-png, 5 s after power-on</figcaption>
+    <a class="run" href="run.html?wasm&amp;fw=panel">▶ Run it</a>
+  </figure>
+</section>
+
+<section id="demos"><div class="wrap">
+  <div class="sec-head">
+    <div><span class="kicker">Demos</span><h2>Pick something to boot.</h2></div>
+    <p>Every demo is a real firmware image booting through the real ROM inside this tab. Nothing runs on a server. The first load fetches the emulator (about 8 MB); firmware after that is small, except Linux's 16 MB flash.</p>
+  </div>
+  <div class="grid">
+    <article class="card">
+      <a class="shot" href="run.html?wasm&amp;fw=panel"><img src="assets/demo-panel.webp" width="480" height="480" alt=""></a>
+      <div class="body"><div class="meta"><span>ESP32-S3</span><span>LVGL · touch · audio</span></div>
+        <h3>Touch-LCD-4B energy panel</h3>
+        <p>An LVGL home-energy panel on a 480×480 RGB display with GT911 touch. Swipe between pages, toggle tiles, then enable audio and play a SID tune from the last page.</p>
+        <div class="go"><a href="run.html?wasm&amp;fw=panel">Run →</a><a href="run.html?wasm&amp;fw=panel-sid">…with the SID player</a><span class="src">firmware: Joakim's esp32-screen</span></div></div>
+    </article>
+    <article class="card">
+      <a class="shot" href="run.html?wasm&amp;fw=pocket-tank"><img src="assets/demo-pocket-tank.webp" width="448" height="368" alt=""></a>
+      <div class="body"><div class="meta"><span>ESP32-S3</span><span>4-bit LLM · PIE SIMD</span></div>
+        <h3>Pocket Tank, an LLM aquarium</h3>
+        <p>A 14.3M-parameter transformer decides what each fish does, running from flash on the S3's PIE vector unit while the other core draws the tank. Slower than real time in a browser.</p>
+        <div class="go"><a href="run.html?wasm&amp;fw=pocket-tank">Run →</a><a class="src" href="https://github.com/mediacutlet/pocket-tank">source · MIT ↗</a></div></div>
+    </article>
+    <article class="card">
+      <a class="shot" href="run.html?wasm&amp;fw=linux-term"><pre>Starting network (background): OK
+Starting inetd: OK
+Starting cron: OK
+
+Welcome to Buildroot
+buildroot login: <i>root</i>
+Password:
+# <i>uname -a</i>
+<b>Linux buildroot 6.11.0 #1 PREEMPT xtensa GNU/Linux</b>
+# █</pre></a>
+      <div class="body"><div class="meta"><span>ESP32-S3</span><span>Linux 6.11 · xterm.js</span></div>
+        <h3>Linux in a real terminal</h3>
+        <p>Linux-on-esp32-S3: the network adapter on core 0, Linux executing in place from flash on core 1. Log in as root, run top, edit in vi, start MicroPython.</p>
+        <div class="go"><a href="run.html?wasm&amp;fw=linux-term">Open terminal →</a><a href="run.html?wasm&amp;fw=linux">raw console</a><a class="src" href="https://github.com/svermigo/Linux-on-esp32-S3">source · GPL-3.0 ↗</a></div></div>
+    </article>
+    <article class="card">
+      <a class="shot" href="run.html?wasm&amp;fw=atech"><img src="assets/demo-atech.webp" width="480" height="240" alt=""></a>
+      <div class="body"><div class="meta"><span>ESP32-S3</span><span>encoder · LEDs · SID</span></div>
+        <h3>Pocket Synth on the Atech 14-port board</h3>
+        <p>Arduino firmware with an ST7735 display, a WS2812 ring, an encoder and buttons. Turn the knob, press the buttons, hear the SID voice. The jukebox variant plays real C64 tunes.</p>
+        <div class="go"><a href="run.html?wasm&amp;fw=atech">Play →</a><a href="run.html?wasm&amp;fw=atech-sid">C64 jukebox</a><a class="src" href="https://github.com/joakimeriksson/atech-firmware">source ↗</a></div></div>
+    </article>
+    <article class="card">
+      <a class="shot" href="run.html?wasm&amp;fw=tdisplay-prices"><img src="assets/demo-tdisplay.webp" width="720" height="405" alt=""></a>
+      <div class="body"><div class="meta"><span>ESP32 (classic)</span><span>MicroPython · ST7789 · LX6</span></div>
+        <h3>Spot prices on a TTGO T-Display</h3>
+        <p>Stock MicroPython v1.29.0 booted by the mask ROM on the original dual-core ESP32, running a pure-Python spot-price app on the LilyGO T-Display's ST7789 over VSPI. Demo data from its own filesystem, since the browser has no sockets; the two buttons are below the panel.</p>
+        <div class="go"><a href="run.html?wasm&amp;fw=tdisplay-prices">Run →</a><a class="src" href="https://github.com/mikroverk/esp32sim/tree/main/examples/ttgo-tdisplay">source · MIT ↗</a></div></div>
+    </article>
+    <article class="card">
+      <a class="shot" href="run.html?wasm&amp;fw=c6-energy-scan"><img src="assets/demo-c6-energy-scan.webp" width="960" height="516" alt=""></a>
+      <div class="body"><div class="meta"><span>ESP32-C6</span><span>802.15.4 · ST7789 · RISC-V</span></div>
+        <h3>802.15.4 energy scanner</h3>
+        <p>The Waveshare C6-LCD-1.47 scanning channels 11–26 with energy detect from the emulated radio, LVGL over SPI and DMA, the WS2812 blinking per scan. Press BOOT for single-channel mode.</p>
+        <div class="go"><a href="run.html?wasm&amp;fw=c6-energy-scan">Run →</a><a class="src" href="https://github.com/joakimeriksson/esp32">source ↗</a></div></div>
+    </article>
+    <article class="card">
+      <a class="shot" href="run.html?wasm&amp;fw=c6-rpl-net"><div style="width:100%"><div class="net"><div class="mote"><i></i>node 1</div><div class="air"><span>UDP over 6LoWPAN · RPL</span></div><div class="mote"><i></i>node 2</div></div>
+        <pre style="height:auto;margin-top:16px">[I] RPL: created DAG with instance ID 0, DAG ID fd00::ff:fe00:1, rank 128
+[I] RPL: sending a multicast-DIO with rank 128 to ff02::1a
+[I] RPL: received a unicast-DIO from fe80::ff:fe00:2, instance_id 0 …</pre></div></a>
+      <div class="body"><div class="meta"><span>2 × ESP32-C6</span><span>Contiki-NG · IPv6</span></div>
+        <h3>A radio network in one tab</h3>
+        <p>Two emulated C6 motes on one 802.15.4 medium: Contiki-NG's rpl-udp server as the DAG root and a client that joins, then sends a UDP request every 10 s and gets a reply. Hardware ACKs included.</p>
+        <div class="go"><a href="run.html?wasm&amp;fw=c6-rpl-net">Start network →</a><a href="run.html?wasm&amp;fw=c6-contiki-net">two broadcasters</a><a class="src" href="https://github.com/joakimeriksson/contiki-ng-esp32">source ↗</a></div></div>
+    </article>
+  </div>
+  <div class="all" id="alldemos"><noscript><p><a href="run.html?wasm">Every demo is listed on the emulator page.</a></p></noscript></div>
+</div></section>
+
+<section class="agents" id="agents"><div class="wrap">
+  <div class="split">
+    <div>
+      <span class="kicker">For coding agents</span>
+      <h2>A board the agent can run a thousand times.</h2>
+      <p class="lede">Agents write embedded code well and test it badly: a board on a desk cannot be scripted, read back or reset from a shell. esp32sim can. It is the same emulator as the demos above, as a command-line tool any agent with shell access already knows how to use.</p>
+      <ol>
+        <li><b>Build the firmware as usual.</b><span>ESP-IDF, PlatformIO or Arduino, unmodified. The emulator boots the real ROM and bootloader, so the app is the one that would go on the board.</span></li>
+        <li><b>Run it with a script.</b><span>Touches, button presses, encoder turns, GPIO levels and serial input at exact emulated times, with a run limit so the command always returns.</span></li>
+        <li><b>Read the evidence.</b><span>Console text on stdout, the display as PNG, audio as WAV, GPIO and interrupts as VCD, block coverage, profiles, interrupt latency — files a program can check.</span></li>
+        <li><b>Fix, run again.</b><span>The same input gives the same run, down to the instruction count, so a failing check stays failing until the fix is real. The project's own golden tests pin console text, WAV hashes and instruction counts.</span></li>
+      </ol>
+      <div class="links2">
+        <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/cli.md">CLI reference</a>
+        <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/cli.md#action-scripts">action scripts</a>
+        <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/boards.md">boards</a>
+        <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/peripherals.md">peripherals</a>
+        <a href="https://github.com/mikroverk/esp32sim/releases">releases</a>
+      </div>
+    </div>
+    <div>
+      <div class="term"><div class="bar"><i></i><i></i><i></i><span>the loop, from a shell</span></div>
+<pre><span class="c"># build as always</span>
+$ idf.py build
+
+<span class="c"># run it 8 emulated seconds with a script of touches, keep the display</span>
+$ esp32sim <b>--board</b> waveshare-lcd4b <b>--boot</b> rom \
+    <b>--bootloader</b> build/bootloader/bootloader.bin \
+    <b>--ptable</b> build/partition_table/partition-table.bin \
+    <b>--app</b> build/app.bin <b>--elf</b> build/app.elf \
+    <b>--script</b> test/swipe.txt <b>--max-seconds</b> 8 \
+    <b>--tft-png</b> panel.png <b>--vcd</b> gpio.vcd <b>--coverage-file</b> cov.txt
+
+<span class="c"># test/swipe.txt — one action per line, at emulated seconds</span>
+3.0  touch 450 240 1      <span class="c"># press near the right edge</span>
+3.1  touch 300 240 1      <span class="c"># drag left …</span>
+3.2  touch 100 240 1
+3.3  touch 100 240 0      <span class="c"># release: the panel swipes to its next page</span>
+8.0  stop
+
+<span class="c"># what the agent reads back (this run, verbatim)</span>
+<em>I (725) main: up</em>
+<em>[emu] stop: Halted — core0 231572900 + core1 66167543 insns in 3.0s wall</em>
+<em>      = 100.5 Minsn/s; emulated 8.000s (1920000000 cycles)</em>
+<em>[emu] wrote panel.png</em>        <span class="c"># the second page, as the firmware drew it</span></pre></div>
+      <p style="margin-top:14px;color:#c9d0e6;font-size:14px">Point an agent at <a style="color:#fff" href="https://github.com/mikroverk/esp32sim/blob/main/docs/cli.md">docs/cli.md</a> and a board name. Runs are single-process with no daemon and no device, so they parallelise like unit tests, and <code style="background:#1e2a5c;color:#fff">--no-jit</code> is the oracle when a result looks wrong.</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="inside"><div class="wrap">
+  <div class="sec-head">
+    <div><span class="kicker">What's inside</span><h2>Software that behaves like the chip.</h2></div>
+    <p>Four SoCs across both of Espressif's CPU architectures. Most of the SoC model is shared; only the CPU crates are separate. The numbers are from the README and its tests.</p>
+  </div>
+  <div class="chips">
+    <div class="chip"><h3>ESP32-S3 <small>mature</small></h3><dl>
+      <dt>CPU</dt><dd>2 × Xtensa LX7 @ 240 MHz, PIE SIMD</dd>
+      <dt>Boots</dt><dd>ROM → bootloader → FreeRTOS → app</dd>
+      <dt>Boards</dt><dd>ST7735, ST7701S 480×480 + touch, AMOLED 1.8, WS2812, camera, I²S audio</dd>
+      <dt>Wi-Fi</dt><dd>virtual AP, WPA2, DHCP/DNS/NTP, NAT to the real network, HTTPS</dd>
+      <dt>Speed</dt><dd>block interpreter + AArch64 JIT, ~150–240 Minsn/s</dd>
+      <dt>vs silicon</dt><dd>JTAG lock-step, 8000 steps, 0 PC divergences</dd>
+    </dl></div>
+    <div class="chip"><h3>ESP32 (classic) <small>early</small></h3><dl>
+      <dt>CPU</dt><dd>2 × Xtensa LX6 @ 240 MHz, on the S3's Xtensa core crate</dd>
+      <dt>Boots</dt><dd>ECO3 ROM → bootloader → FreeRTOS → app; stock MicroPython</dd>
+      <dt>Boards</dt><dd>LilyGO TTGO T-Display: ST7789 135×240 over VSPI, two buttons</dd>
+      <dt>Wi-Fi</dt><dd>the same virtual AP: WPA2, DHCP, NAT — one station; MicroPython joins and fetches over HTTPS</dd>
+      <dt>Inside</dt><dd>UART, I²C, LEDC, SPI + DMA, RMT, AES/SHA/RSA, ADC/DAC/touch pads, I²S RX, BLE</dd>
+      <dt>Not yet</dt><dd>PSRAM, double-precision FPU arithmetic, a recorded comparison with a board</dd>
+    </dl></div>
+    <div class="chip"><h3>ESP32-C3 <small>draft</small></h3><dl>
+      <dt>CPU</dt><dd>1 × RISC-V RV32IMC @ 160 MHz</dd>
+      <dt>Boots</dt><dd>ROM → bootloader → FreeRTOS → app</dd>
+      <dt>Boards</dt><dd>console only</dd>
+      <dt>Wi-Fi</dt><dd>the same virtual AP: scan, WPA2, DHCP, NAT — one station</dd>
+      <dt>Decoder</dt><dd>161 k instructions vs objdump, 0 mismatches</dd>
+      <dt>vs silicon</dt><dd>console diff, 205/208 lines identical</dd>
+    </dl></div>
+    <div class="chip"><h3>ESP32-C6 <small>draft</small></h3><dl>
+      <dt>CPU</dt><dd>1 × RISC-V RV32IMAC @ 160 MHz</dd>
+      <dt>Boots</dt><dd>ROM → bootloader → FreeRTOS → app</dd>
+      <dt>Boards</dt><dd>ST7789 172×320 over SPI + DMA, WS2812, an 802.15.4 MAC with a shared medium</dd>
+      <dt>Wi-Fi</dt><dd>the same virtual AP: scan, WPA2, DHCP, NAT — one station</dd>
+      <dt>Decoder</dt><dd>126 k instructions vs objdump, 0 mismatches</dd>
+      <dt>vs silicon</dt><dd>console diff, 203/204 lines identical</dd>
+    </dl></div>
+  </div>
+  <div class="doclinks">
+    <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/architecture.md">architecture</a>
+    <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/peripherals.md">peripheral matrix</a>
+    <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/boards.md">board models</a>
+    <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/wasm.md">WebAssembly build</a>
+    <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/esp32.md">classic ESP32 status</a>
+    <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/esp32c3.md">C3 status</a>
+    <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/esp32c6.md">C6 status</a>
+    <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/decisions.md">decisions</a>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="byo">
+    <div><span class="kicker">Your own firmware</span><h2 style="font-size:26px">Boot your build in this tab.</h2>
+      <p>Choose the chip and board, pick your bootloader, partition table and app (or a whole flash image), add ELF symbols and a script if you like, and boot. The mask ROM comes from this site; files stay in the browser; nothing is uploaded. On your own machine, the <a href="https://github.com/mikroverk/esp32sim/blob/main/docs/quick-start.md">quick start</a> does the same from a release tarball in three steps.</p></div>
+    <a class="button primary" href="run.html?wasm">Configure a machine →</a>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <div class="row"><a href="https://github.com/mikroverk/esp32sim">source</a><a href="https://github.com/mikroverk/esp32sim#readme">README</a><a href="https://github.com/mikroverk/esp32sim/blob/main/LICENSE">MIT license</a><a href="https://github.com/mikroverk/esp32sim/releases">releases</a></div>
+  <p>Third-party pieces on this site: the mask ROM ELFs (Apache-2.0, espressif/esp-rom-elfs), the Linux flash image (GPL-3.0, svermigo/Linux-on-esp32-S3), Pocket Tank (MIT, mediacutlet/pocket-tank), the MicroPython ESP32_GENERIC image (MIT, micropython.org) with Russ Hughes's st7789py driver and fonts (MIT, russhughes/st7789py_mpy), xterm.js (MIT). The demos run entirely in your browser.</p>
+</div></footer>
+
+<script>
+function toggleTheme() {
+  const root = document.documentElement;
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('esp32sim-theme', root.dataset.theme); } catch (_) {}
+}
+// The complete demo list, from the same catalogue the emulator page uses, grouped by chip.
+fetch('wasm/fw/demos.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : []).then(demos => {
+  const groups = { esp32: ['ESP32', []], s3: ['ESP32-S3', []], c3: ['ESP32-C3', []], c6: ['ESP32-C6', []] };
+  let parent = null;
+  for (const d of demos) {
+    const chip = /^c3-/.test(d.fw) ? 'c3' : /^c6-/.test(d.fw) ? 'c6' : /^(tdisplay|classic)-/.test(d.fw) ? 'esp32' : 's3';
+    const cont = d.title.startsWith('…');
+    const li = document.createElement('li');
+    const a = document.createElement('a'); a.href = 'run.html?wasm&fw=' + encodeURIComponent(d.fw); a.title = d.note || '';
+    if (cont && parent) { const sub = document.createElement('span'); sub.className = 'sub'; sub.textContent = parent + ' '; li.append(sub); a.textContent = d.title; }
+    else { a.textContent = d.title; parent = d.title; }
+    li.append(a); groups[chip][1].push(li);
+  }
+  const root = document.getElementById('alldemos');
+  for (const [name, items] of Object.values(groups)) {
+    if (!items.length) continue;
+    const col = document.createElement('div'); const h = document.createElement('h3'); h.textContent = name + ' · all demos'; const ul = document.createElement('ul'); ul.append(...items); col.append(h, ul); root.append(col);
+  }
+}).catch(() => {});
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "catalog.schema.json",
+  "title": "Public product, accessory or firmware catalog v1",
+  "description": "PR contributions must identify their primary sources and distinguish available models from references. All items in one document use the same category.",
+  "type": "object", "additionalProperties": false, "required": ["schemaVersion", "revision", "items"],
+  "properties": {
+    "schemaVersion": {"const": "1"}, "revision": {"type": "string", "minLength": 1},
+    "items": {"type": "array", "items": {"oneOf": [{"$ref": "#/$defs/product"}, {"$ref": "#/$defs/accessory"}, {"$ref": "#/$defs/firmware"}]}}
+  },
+  "$defs": {
+    "entry": {"type": "object", "required": ["id", "name", "sources", "limitations"], "properties": {
+      "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9:-]{0,79}$"}, "name": {"type": "string", "minLength": 1},
+      "sources": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["title", "url", "checkedAt"], "properties": {"title": {"type": "string"}, "url": {"type": "string", "format": "uri", "pattern": "^https://"}, "checkedAt": {"type": "string", "format": "date"}}}},
+      "limitations": {"type": "array", "items": {"type": "string"}}
+    }},
+    "product": {"allOf": [{"$ref": "#/$defs/entry"}, {"type": "object", "required": ["manufacturer", "sku", "chip", "hardwareRevision", "runtime", "display", "controls", "interfaces"], "properties": {
+      "manufacturer": {"type": "string"}, "sku": {"type": "string"}, "chip": {"type": "string"}, "hardwareRevision": {"type": "string"},
+      "runtime": {"type": "object", "required": ["board", "flashMb", "psramMb", "status"], "properties": {"board": {"type": ["string", "null"]}, "flashMb": {"type": "integer", "minimum": 1}, "psramMb": {"type": "integer", "minimum": 0}, "status": {"enum": ["partial", "unavailable", "diagnostic", "verified"]}, "touch": {"type": "boolean"}}},
+      "display": {"type": ["object", "null"], "properties": {"width": {"type": "integer", "minimum": 1}, "height": {"type": "integer", "minimum": 1}}},
+      "controls": {"type": "array", "items": {"type": "object", "required": ["id", "type"], "properties": {"id": {"type": "string"}, "type": {"enum": ["button", "touch"]}, "pin": {"type": "integer", "minimum": 0}, "activeLow": {"type": "boolean"}}}},
+      "interfaces": {"type": "array", "items": {"type": "object", "required": ["id", "type", "external", "pins"], "properties": {"id": {"type": "string"}, "type": {"type": "string"}, "external": {"type": "boolean"}, "pins": {"type": "array"}}}}
+    }}]},
+    "accessory": {"allOf": [{"$ref": "#/$defs/entry"}, {"type": "object", "required": ["schemaVersion", "manufacturer", "sku", "type", "model", "parameters", "connector"], "properties": {
+      "schemaVersion": {"const": "1"}, "manufacturer": {"type": "string"}, "sku": {"type": "string"}, "type": {"type": "string"},
+      "model": {"type": "object", "required": ["id", "status"], "properties": {"id": {"type": "string"}, "status": {"enum": ["logical-input", "unavailable", "verified"]}}},
+      "parameters": {"$ref": "scene.schema.json#/$defs/parameters"}, "connector": {"type": "object", "required": ["type", "voltage"], "properties": {"type": {"type": "string"}, "voltage": {"type": "number", "exclusiveMinimum": 0}}}
+    }}]},
+    "firmware": {"allOf": [{"$ref": "#/$defs/entry"}, {"type": "object", "required": ["productIds", "status", "source"], "properties": {
+      "productIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}, "status": {"enum": ["available", "reference"]},
+      "source": {"type": ["object", "null"], "properties": {"manifestUrl": {"type": "string"}, "url": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"}}}
+    }, "allOf": [{"if": {"properties": {"status": {"const": "reference"}}}, "then": {"properties": {"source": {"type": "null"}}}, "else": {"properties": {"source": {"type": "object", "oneOf": [{"required": ["manifestUrl"]}, {"required": ["url"]}]}}}}]}]}
+  }
+}

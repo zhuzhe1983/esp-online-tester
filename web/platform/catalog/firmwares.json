@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1",
+  "revision": "2026-10-26",
+  "items": [
+    {
+      "id": "platform-stopwatch-diagnostic", "name": "StopWatch 平台诊断 · 显示与输入", "productIds": ["m5stack-stopwatch"], "status": "available",
+      "source": {"manifestUrl": "../wasm/fw/demo-stopwatch.json", "sha256": "c97ad1d6d29c14464c0917e1e2d903f15c375e5261f717419838895eaa4549d1"}, "revision": "1.0.0", "sdk": "ESP-IDF 5.5.1", "license": "MIT",
+      "limitations": ["本平台的公开诊断程序，用于测试屏幕、按键、触摸和逻辑 UART1；不是 M5Stack 官方固件。", "已通过 WASM ROM 启动并观察到 PLATFORM_READY 与屏幕帧；未在真实硬件上验证。", "GPIO10/GPIO11 的 UART 配置仅供后续实机测试；逻辑注入不会验证电气接线。"],
+      "sources": [{"title": "ESP Online Tester StopWatch diagnostic source", "url": "https://github.com/zhuzhe1983/esp-online-tester/tree/platform/foundation/examples/platform-stopwatch", "checkedAt": "2026-10-26"}]
+    },
+    {
+      "id": "esp32sim-s3-hello", "name": "ESP32-S3 Hello · 公开执行基准", "productIds": ["generic-esp32s3"], "status": "available",
+      "source": {"manifestUrl": "../wasm/fw/hello.json", "sha256": "effb7f5d7fb33dcbabbe8ef8310c2b32ae875594553c056cde09c3fa762e5412"},
+      "revision": "ddf753a5c400ff79d3aa6a88a007eccd044e838d",
+      "limitations": ["需要部署 ROM 与 WASM 资源；运行结果是串口 Hello 输出，没有屏幕。", "目录的 available 表示存在可加载清单；测试结果须由当前运行记录证明。"],
+      "sources": [{"title": "esp32sim public hello manifest", "url": "https://github.com/mikroverk/esp32sim/blob/ddf753a5c400ff79d3aa6a88a007eccd044e838d/web/wasm/fw/hello.json", "checkedAt": "2026-10-26"}]
+    },
+    {
+      "id": "m5stack-stopwatch-official", "name": "StopWatch 官方固件与示例", "productIds": ["m5stack-stopwatch"], "status": "reference", "source": null,
+      "limitations": ["仅提供官方入口；尚未固定、校验并验证可在本平台执行的固件镜像。"],
+      "sources": [{"title": "M5Stack StopWatch software and tutorials", "url": "https://docs.m5stack.com/en/core/StopWatch", "checkedAt": "2026-10-26"}]
+    },
+    {
+      "id": "papermono-crosspoint", "name": "PaperMono CrossPoint E-Reader", "productIds": ["m5stack-papermono"], "status": "reference", "source": null,
+      "limitations": ["官方产品页提供固件入口；当前尚无 PaperMono 板级模型，未验证运行兼容性或固定二进制版本。"],
+      "sources": [{"title": "PaperMono official CrossPoint firmware link", "url": "https://docs.m5stack.com/en/core/PaperMono", "checkedAt": "2026-10-26"}, {"title": "CrossPoint Reader releases", "url": "https://github.com/crosspoint-reader/crosspoint-reader/releases", "checkedAt": "2026-10-26"}]
+    }
+  ]
+}

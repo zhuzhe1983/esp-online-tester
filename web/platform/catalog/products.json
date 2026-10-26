@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1",
+  "revision": "2026-10-26",
+  "items": [
+    {
+      "id": "m5stack-stopwatch",
+      "name": "M5Stack StopWatch",
+      "manufacturer": "M5Stack",
+      "sku": "C152",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s3",
+      "module": "ESP32-S3R8",
+      "runtime": {"board": "stopwatch", "flashMb": 16, "psramMb": 8, "status": "partial", "touch": true},
+      "display": {"width": 466, "height": 466, "type": "AMOLED", "shape": "round", "controller": "CO5300", "bus": "QSPI", "framebufferWidth": 468, "framebufferHeight": 466, "columnOffset": 6},
+      "controls": [
+        {"id": "button-a", "name": "Button A", "type": "button", "pin": 2, "activeLow": true},
+        {"id": "button-b", "name": "Button B", "type": "button", "pin": 1, "activeLow": true},
+        {"id": "touch", "name": "Touch", "type": "touch", "controller": "CST820B", "address": 21}
+      ],
+      "interfaces": [
+        {"id": "grove", "type": "HY2.0-4P", "name": "Port A", "external": true, "voltage": 5, "power": "PMIC-controlled", "pins": [{"name": "GND"}, {"name": "5V"}, {"name": "G10", "gpio": 10}, {"name": "G11", "gpio": 11}], "uartRouting": "firmware-defined; not verified"},
+        {"id": "internal-display", "type": "QSPI", "name": "CO5300 (internal)", "external": false, "pins": [{"name": "CS", "gpio": 39}, {"name": "CLK", "gpio": 40}, {"name": "D0", "gpio": 41}, {"name": "D1", "gpio": 42}, {"name": "D2", "gpio": 46}, {"name": "D3", "gpio": 45}, {"name": "TE", "gpio": 38}]},
+        {"id": "internal-i2c", "type": "I2C", "name": "Internal I2C", "external": false, "pins": [{"name": "SDA", "gpio": 47}, {"name": "SCL", "gpio": 48}], "devices": [{"name": "M5PM1", "address": 110}, {"name": "M5IOE1", "address": 79}, {"name": "CST820B", "address": 21}]}
+      ],
+      "limitations": [
+        "现有模型覆盖屏幕、触摸、M5PM1、M5IOE1 和 A/B 按键；不代表任意整机固件兼容。",
+        "可视屏幕为 466×466；上游模型帧缓冲为 468×466，列偏移为 6。",
+        "TE 为合成时序；RTC、IMU、完整音频和触摸中断未建模；关机请求不会停止 CPU。",
+        "G10/G11 为官方 Grove 信号引脚，UART 控制器与 RX/TX 方向须按固件确认。",
+        "硬件 v1.0 与 v1.0.1 的外部电源触点定义不同；当前未选择硬件修订版。"
+      ],
+      "sources": [
+        {"title": "M5Stack StopWatch hardware documentation", "url": "https://docs.m5stack.com/en/core/StopWatch", "checkedAt": "2026-10-26"},
+        {"title": "esp32sim StopWatch board model", "url": "https://github.com/mikroverk/esp32sim/blob/ddf753a5c400ff79d3aa6a88a007eccd044e838d/esp32s3/src/board/stopwatch.rs", "checkedAt": "2026-10-26"}
+      ]
+    },
+    {
+      "id": "m5stack-papermono",
+      "name": "M5Stack PaperMono",
+      "manufacturer": "M5Stack",
+      "sku": "C153",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s3",
+      "module": "ESP32-S3R8",
+      "runtime": {"board": null, "flashMb": 16, "psramMb": 8, "status": "unavailable"},
+      "display": {"width": 480, "height": 800, "type": "e-paper", "shape": "rectangle", "controller": "SSD1677", "bus": "SPI2", "grayLevels": 4},
+      "controls": [
+        {"id": "button-a", "name": "Button A", "type": "button", "pin": 2, "activeLow": true},
+        {"id": "button-b", "name": "Button B", "type": "button", "pin": 3, "activeLow": true},
+        {"id": "touch", "name": "Touch", "type": "touch", "controller": "FT6336G", "address": 56, "interruptPin": 4}
+      ],
+      "interfaces": [
+        {"id": "internal-display", "type": "SPI", "name": "SSD1677 (internal)", "external": false, "pins": [{"name": "MOSI", "gpio": 14}, {"name": "CLK", "gpio": 15}, {"name": "CS", "gpio": 16}, {"name": "DC", "gpio": 17}, {"name": "BUSY", "gpio": 18}]},
+        {"id": "internal-i2c", "type": "I2C", "name": "Internal I2C", "external": false, "pins": [{"name": "SDA", "gpio": 47}, {"name": "SCL", "gpio": 48}], "devices": [{"name": "FT6336G", "address": 56}, {"name": "M5PM1", "address": 110}, {"name": "M5IOE1", "address": 79}]}
+      ],
+      "limitations": [
+        "当前只有产品元信息和外观预览；尚无可运行的 PaperMono 板级模型。",
+        "SSD1677、FT6336G、供电、复位和 BUSY 行为需要独立实现，不能复用 Paper 或 PaperS3 作为兼容声明。",
+        "尚未确认可供 GPS 使用的外部接口；内部显示/I2C 引脚不是已验证的外接 GPS 接口。",
+        "NFC、LoRa、RTC、IMU、microSD 和音频行为未实现。"
+      ],
+      "sources": [{"title": "M5Stack PaperMono hardware documentation", "url": "https://docs.m5stack.com/en/core/PaperMono", "checkedAt": "2026-10-26"}]
+    },
+    {
+      "id": "generic-esp32s3",
+      "name": "ESP32-S3 · Hello diagnostic",
+      "manufacturer": "esp32sim fixture",
+      "sku": "virtual-s3-hello",
+      "hardwareRevision": "virtual",
+      "chip": "esp32s3",
+      "module": "ESP32-S3",
+      "runtime": {"board": "none", "flashMb": 8, "psramMb": 2, "status": "diagnostic"},
+      "display": null,
+      "controls": [],
+      "interfaces": [],
+      "limitations": ["用于验证真实 WASM 执行与串口输出的通用板；没有产品屏幕或按键，也不证明 StopWatch/PaperMono 固件兼容。"],
+      "sources": [{"title": "esp32sim ESP32-S3 hello manifest", "url": "https://github.com/mikroverk/esp32sim/blob/ddf753a5c400ff79d3aa6a88a007eccd044e838d/web/wasm/fw/hello.json", "checkedAt": "2026-10-26"}]
+    }
+  ]
+}

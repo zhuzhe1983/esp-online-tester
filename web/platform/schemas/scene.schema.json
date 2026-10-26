@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "scene.schema.json",
+  "title": "ESP Online Tester portable scene v1",
+  "description": "Structural contract. validateScene additionally checks catalog references, controls, physical connectors and support warnings. The UTF-8 JSON payload is limited to 65536 bytes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "productId", "firmware", "accessories", "keyMapping", "view"],
+  "properties": {
+    "schemaVersion": {"const": "1"},
+    "productId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9:-]{0,79}$"},
+    "firmware": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "additionalProperties": false, "properties": {"manifestUrl": {"$ref": "#/$defs/url"}, "url": {"$ref": "#/$defs/url"}, "sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"}}, "oneOf": [{"required": ["manifestUrl"], "not": {"required": ["url"]}}, {"required": ["url"], "not": {"required": ["manifestUrl"]}}]}
+      ]
+    },
+    "accessories": {"type": "array", "maxItems": 32, "items": {
+      "type": "object", "additionalProperties": false, "required": ["id", "catalogId", "parameters", "wiring"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9:-]{0,79}$"},
+        "catalogId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9:-]{0,79}$"},
+        "parameters": {"$ref": "#/$defs/parameters"},
+        "wiring": {"oneOf": [
+          {"type": "object", "additionalProperties": false, "required": ["mode", "port"], "properties": {"mode": {"const": "logical"}, "port": {"const": "uart1"}}},
+          {"type": "object", "additionalProperties": false, "required": ["mode", "port", "connectorId", "rx", "tx"], "properties": {"mode": {"const": "physical"}, "port": {"enum": ["uart0", "uart1", "uart2"]}, "connectorId": {"type": "string"}, "rx": {"type": "integer", "minimum": 0}, "tx": {"type": "integer", "minimum": 0}}}
+        ]}
+      }
+    }},
+    "localAccessories": {"type": "array", "maxItems": 32, "items": {"$ref": "local-accessory.schema.json"}},
+    "keyMapping": {"type": "object", "maxProperties": 64, "propertyNames": {"pattern": "^[A-Za-z][A-Za-z0-9]{0,39}$"}, "additionalProperties": {"type": "string"}},
+    "view": {"type": "object", "additionalProperties": false, "required": ["mode", "deviceView"], "properties": {"mode": {"enum": ["studio", "embed"]}, "deviceView": {"enum": ["2d", "3d"]}}}
+  },
+  "$defs": {
+    "url": {"type": "string", "format": "uri", "maxLength": 4096, "pattern": "^(https://|http://(localhost|127\\.0\\.0\\.1|\\[::1\\])(:[0-9]+)?/)"},
+    "parameters": {"type": "object", "properties": {"baudRate": {"type": "integer", "minimum": 1, "maximum": 4000000}, "latitude": {"type": "number", "minimum": -90, "maximum": 90}, "longitude": {"type": "number", "minimum": -180, "maximum": 180}, "altitude": {"type": "number", "minimum": -10000, "maximum": 100000}}}
+  }
+}

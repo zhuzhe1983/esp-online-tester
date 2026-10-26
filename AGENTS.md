@@ -1,3 +1,14 @@
+# Product platform in this fork
+
+- Mission: an agent-configurable, human-playable and website-embeddable platform for product-level ESP32 devices.
+- Platform UI and API: `web/platform/`; current scope and setup: `docs/platform/README.md`.
+- To configure or operate the system, read `skills/esp-online-tester/SKILL.md`. It documents the implemented API; `docs/platform/research/` contains historical drafts.
+- Humans, embedded parents and agents use the same runtime. Verify firmware output after inputs; a 3D preview or queued input is not evidence of execution.
+- Keep product-specific support truthful. PaperMono is currently preview-only; StopWatch is partial; GPS injection bypasses physical routing and timing.
+- Public catalogs accept PRs; private DIY definitions stay local unless exported or shared. See `docs/platform/contributing.md`.
+- Preserve buildless static deployment under a GitHub Pages repository subpath. Runtime dependencies and assets must be local or explicitly declared user firmware sources.
+- Platform checks: `node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs` and a real browser check for UI changes. Build WASM and fetch ROMs first as documented.
+
 # Checks before a pull request
 
 - Run what CI runs, with the newest stable Rust (`rustup update stable`): CI lints and tests with it, so an older local toolchain can pass where CI fails. [CONTRIBUTING.md](CONTRIBUTING.md) lists the commands; [.github/workflows/ci.yml](.github/workflows/ci.yml) is the full set.
