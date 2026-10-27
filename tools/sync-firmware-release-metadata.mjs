@@ -5,6 +5,7 @@ import {pathToFileURL,fileURLToPath} from 'node:url';
 import {releaseRequest,publicReleases,releaseMatchesChannel} from './firmware-release-source.mjs';
 import {validateWatchlist} from '../web/platform/watchlist.js';
 import {enrichMeshtasticReleases} from './meshtastic-release-metadata.mjs';
+import {m5burnerV1Request,validateM5BurnerV1Project} from './firmware-source-m5burner-v1.mjs';
 const DAY=24*3600*1000;
 export function githubToken(args=process.argv) {
   let token=process.env.GITHUB_TOKEN||process.env.GH_TOKEN;
@@ -32,7 +33,13 @@ export async function syncReleaseMetadata(list,{previous={entries:[]},token,fetc
     const saved=previous.entries?.find(item=>item.id===entry.id&&item.upstreamRepo===entry.upstreamRepo);let result;
     try{
       const request=releaseRequest(entry,token);if(!cache.has(request.url))cache.set(request.url,metadata(request));
-      const upstream=await enrichMeshtasticReleases(entry,publicReleases(entry,await cache.get(request.url)),{fetchImpl});
+      let data=await cache.get(request.url);
+      if(entry.metadataProvider==='m5burner-v1'){
+        validateM5BurnerV1Project(entry,data);
+        const versions=m5burnerV1Request(entry,true);if(!cache.has(versions.url))cache.set(versions.url,metadata(versions));
+        data={project:data,versions:await cache.get(versions.url)};
+      }
+      const upstream=await enrichMeshtasticReleases(entry,publicReleases(entry,data),{fetchImpl});
       const releases=compactReleaseHistory(entry,upstream);const release=releases.find(value=>releaseMatchesChannel(value,entry.releaseChannel));
       if(!release)throw Error('No published release for configured channel');
       result={id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:now,sourceUrl:request.url,release,releases,error:null};

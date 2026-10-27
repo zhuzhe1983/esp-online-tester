@@ -41,7 +41,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Check release selection rules
-        run: node --test tools/platform-firmware-sync-test.mjs tools/platform-watchlist-test.mjs
+        run: node --test tools/platform-firmware-sync-test.mjs tools/platform-m5burner-v1-sync-test.mjs tools/platform-watchlist-test.mjs
       - name: Sync device firmware metadata without downloading firmware
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -50,7 +50,7 @@ jobs:
         run: |
           python -m pip install -r tools/requirements-catalog.txt
           python tools/validate-platform-catalog.py
-          node --test tools/platform-firmware-sync-test.mjs tools/platform-watchlist-test.mjs
+          node --test tools/platform-firmware-sync-test.mjs tools/platform-m5burner-v1-sync-test.mjs tools/platform-watchlist-test.mjs
       - name: Save checked metadata to main
         id: save
         run: |

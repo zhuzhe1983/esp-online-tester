@@ -1,0 +1,29 @@
+{
+  "initialLiveSync": {
+    "entries": 58,
+    "failed": 20,
+    "reason": "M5Burner historical 2.0.4 metadata uses legacy names ending file without .bin. Initial adapter rejected entire project history.",
+    "resolution": "Retain safe basename metadata; target selector still requires .bin. Old unselected artifacts no longer block newer exact versions.",
+    "firmwareBodiesDownloaded": 0
+  },
+  "queryFilter": {
+    "request": "https://burner.m5stack.com/api/v1/firmwares?sourceType=OFFICIAL&pageNum=1&pageSize=100&sort=LATEST",
+    "returnedSourceTypes": [
+      "COMMUNITY",
+      "OFFICIAL"
+    ],
+    "projects": 1804,
+    "officialSelectedProjects": 71,
+    "resolution": "Do not rely on query filtering. Detail sourceType is verified on every sync."
+  },
+  "initialTests": [
+    {
+      "result": "config assertion expected only one StopWatch option",
+      "resolution": "Update expected public list to factory + newly requested UIFlow2/Xiaozhi, preserve factory first."
+    },
+    {
+      "result": "isolated worktree lacked ignored ROM/WASM inputs",
+      "resolution": "Reuse local ROM directory and copy baseline WASM for mocked runtime tests; no firmware execution or rebuild."
+    }
+  ]
+}

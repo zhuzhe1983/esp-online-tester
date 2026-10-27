@@ -47,7 +47,7 @@ test('catalogs retain provenance, distinct GPS defaults and truthful support', (
   assert.ok(['m5stack-papermono', 'm5stack-stopwatch'].every(id => catalog.products.some(item => item.id === id)));
   assert.ok(catalog.products.every(item => !item.id.includes('hello') && !item.id.startsWith('test-')), 'Diagnostic devices stay out of the public catalog');
   assert.ok(catalog.firmwares.every(item => !['platform-stopwatch-diagnostic', 'esp32sim-s3-hello'].includes(item.id)), 'Internal firmware fixtures must not return to the public catalog');
-  assert.deepEqual(catalog.firmwares.filter(item => item.productIds.includes('m5stack-stopwatch')).map(item => item.id), ['m5stack-stopwatch-official']);
+  assert.deepEqual(catalog.firmwares.filter(item => item.productIds.includes('m5stack-stopwatch')).map(item => item.id), ['m5stack-stopwatch-official', 'm5stack-stopwatch-uiflow2', 'm5stack-stopwatch-xiaozhi']);
   assert.equal(catalog.firmwares.some(item => item.id.startsWith('test-')), false);
   assert.ok(catalog.firmwares.find(item => item.id === 'm5stack-stopwatch-official').source.url.startsWith('https://m5burner-cdn.m5stack.com/'));
 });

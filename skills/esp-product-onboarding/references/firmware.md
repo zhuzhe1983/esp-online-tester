@@ -26,7 +26,7 @@ UIFlow、MicroPython、第三方项目，以及厂商分发的第三方适配镜
 
 为每个可更新固件在 watchlist 声明 `catalogTargets`：固件 ID、明确的 `productIds`、stable/prerelease 渠道、merged/app/manifest 格式、发布资产文件名规则、来源类型及依据。Schema 位于 `web/platform/schemas/firmware-watchlist.schema.json`。查阅有限历史发布，为每个设备找到最新的唯一匹配资产，不能把项目最新版本强行套给没有新资产的设备。跨型号共用条目必须确实共用同一资产；若各设备版本不同，先拆分固件条目和规则。
 
-只有唯一匹配且发布元信息提供 SHA-256 时才自动推进版本；缺少 hash、匹配歧义、格式不符、接口失败、无新适配版本时保留已有镜像，原因写入 `web/platform/catalog/firmware-catalog-sync-report.json`。相同版本/hash 保留已核验 CDN 和验证状态；新版本设 `status: trial`、`simulationVerified: false`、`hardwareValidated: false`，旧证据归档至 `artifactHistory`，不得继续展示旧版“已验证”结论。实验 app_direct 清单只更新 app，不自动变成 merged 或可刷硬件镜像。元信息检查不执行固件，也不把第三方 BIN 保存到本站服务器。
+通常只有唯一匹配且发布元信息提供 SHA-256 时才自动推进版本；新版官方 M5Burner 固定版本例外见下文。其他 provider 缺少 hash、匹配歧义、格式不符、接口失败、无新适配版本时保留已有镜像，原因写入 `web/platform/catalog/firmware-catalog-sync-report.json`。相同版本/hash 保留已核验 CDN 和验证状态；新版本设 `status: trial`、`simulationVerified: false`、`hardwareValidated: false`，旧证据归档至 `artifactHistory`，不得继续展示旧版“已验证”结论。实验 app_direct 清单只更新 app，不自动变成 merged 或可刷硬件镜像。元信息检查不执行固件，也不把第三方 BIN 保存到本站服务器。
 
 ## 目录、版本发现与镜像来源
 
@@ -36,7 +36,13 @@ UIFlow、MicroPython、第三方项目，以及厂商分发的第三方适配镜
 
 定时 Action 使用认证后的官方 release API 同步发布元信息；浏览器读取本站的版本快照，显示同步时间、过期和失败状态，避免共享出口 IP 的匿名 API 限流。此流程只保存元信息，不镜像二进制。更新程序支持限流、超时；检查远程 URL，HEAD 被拒绝时有限 GET，不下载完整固件入库。区分新版本、有效、404/410、限流、服务器异常与暂时未知。CORS 不能伪装成 404，GitHub API 可读也不意味二进制允许浏览器跨域。
 
-没有 GitHub Release、但已收录于官方 M5Burner 的固件可使用 `metadataProvider: 'm5burner'`。固定官方元信息接口和该固件的 `firmwareId`，仅从已发布版本中按发布时间选择最新项；保存版本、日期与官方 CDN 链接，不能保留作者账号等无关资料。GitHub 令牌只发给 GitHub，不传给 M5Burner。`tools/sync-firmware-catalog.mjs` 同时更新静态快照和明确匹配的设备条目。发布源没有 SHA-256 时保留原镜像，只记录候选及原因；有 hash 也只代表发布元信息，布局和内容在用户加载时检查。实际运行验证单独记录，自动更新标为 trial，不能继承旧版兼容性。
+入库时同时调查该型号的官方 UIFlow1、UIFlow2 与小智项目，不因已有出厂固件就省略其他官方选项。先检查明确项目说明及硬件版本；未找到适配项要记录，不能认定每个型号都有这些固件。
+
+新版官方 M5Burner 使用 `metadataProvider: m5burner-v1`。固定字符串 `firmwareId`、`deviceId`，分别读取项目详情和公开版本列表；每次同步都须验证项目 `sourceType: OFFICIAL`、项目和版本的设备 ID、版本 `PUBLIC/PUBLISHED`，再生成 HTTPS `/firmwares/{firmwareId}/versions/{versionId}/download`。列表的 `sourceType=OFFICIAL` 参数可能不生效，不能信任查询筛选。设备分类也可能容纳不同硬件，必须以人工核对的项目→SKU 合同为依据；必要时加 `versionNamePattern` 区分容量、硬件和唤醒词，例如 AtomS3 与 AtomS3R 不同后缀、Core 的 4MB/16MB。
+
+用户授权新版官方 provider 自动更新固定版本地址，即使发布方没有 SHA-256。此例外只用于上面完整身份验证通过、唯一匹配的官方固定版本：新版本设为未验证 `trial`，不虚构 hash，`digestSource: publisher-hash-unavailable`，保留旧版本来源和验证历史。浏览器加载时计算实际摘要并执行芯片、容量与布局检查；元信息入库不下载 BIN，不宣称镜像内容已经核验。相同版本不得覆盖已有 pinned URL/hash；社区项目、其他 provider、可变地址、身份不匹配和格式歧义仍保留原项。固定版本 ID 是发布方版本标识，并非内容不可变的密码学保证；无预期 hash 不能承诺检测同 URL 的内容漂移，也不启用长期 hash 缓存。
+
+没有 GitHub Release、但已收录于旧版官方 M5Burner 的固件可使用 `metadataProvider: 'm5burner'`。固定官方元信息接口和该固件的 `firmwareId`，仅从已发布版本中按发布时间选择最新项；保存版本、日期与官方 CDN 链接，不能保留作者账号等无关资料。GitHub 令牌只发给 GitHub，不传给 M5Burner。`tools/sync-firmware-catalog.mjs` 同时更新静态快照和明确匹配的设备条目。此旧版 provider 的发布源没有 SHA-256 时保留原镜像，只记录候选及原因；有 hash 也只代表发布元信息，布局和内容在用户加载时检查。实际运行验证单独记录，自动更新标为 trial，不能继承旧版兼容性。
 
 产品提供有依据的官方出厂固件时，按上面的第一项与默认字段规则选择。浏览器直载失败先检查发布者提供的官方 CDN 或安装器使用的官方源；平台白名单、`no-cors`、Service Worker 或 Action 都不能赋予浏览器跨域读取权限。Action 可检查发布元信息，不能下载镜像后转存为本站固件。未找到允许跨域的官方源时展示官方下载/刷机页，并明确本站暂不可直载。
 

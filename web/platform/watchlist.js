@@ -23,11 +23,14 @@ export function validateWatchlist(document) {
   for (const entry of document.entries) {
     if (!/^[a-z0-9-]+$/.test(entry.id) || ids.has(entry.id) || !categories.has(entry.category)) throw new Error('Invalid watchlist ID or category.');
     ids.add(entry.id);
-    if (!/^[\w.-]+\/[\w.-]+$/.test(entry.upstreamRepo)) throw new Error('Invalid upstream repository.');
+    if (!(entry.metadataProvider==='m5burner-v1'&&entry.upstreamRepo===null) && !/^[\w.-]+\/[\w.-]+$/.test(entry.upstreamRepo)) throw new Error('Invalid upstream repository.');
     safeUrl(entry.releaseUrl); safeUrl(entry.metadataUrl);
     if (entry.browserInstallUrl) safeUrl(entry.browserInstallUrl);
     if (entry.browserAuditUrl) safeUrl(entry.browserAuditUrl);
-    if(entry.metadataProvider==='m5burner') {
+    if(entry.metadataProvider==='m5burner-v1') {
+      if(typeof entry.firmwareId!=='string'||typeof entry.deviceId!=='string'||!/^[1-9][0-9]{0,29}$/.test(entry.firmwareId)||!/^[1-9][0-9]{0,29}$/.test(entry.deviceId)||entry.metadataUrl!==`https://burner.m5stack.com/api/v1/firmwares/${entry.firmwareId}`||entry.releaseUrl!==`https://burner.m5stack.com/firmware/${entry.firmwareId}`)throw new Error('Invalid official M5Burner v1 source.');
+      if(entry.versionNamePattern!==undefined){const pattern=entry.versionNamePattern;if(typeof pattern!=='string'||pattern.length>160||!pattern.startsWith('^')||!pattern.endsWith('$'))throw new Error('Invalid version edition selector.');new RegExp(pattern);}
+    } else if(entry.metadataProvider==='m5burner') {
       if(entry.metadataUrl!=='https://m5burner-api.m5stack.com/api/firmware'||!/^\w{16,64}$/.test(entry.firmwareId))throw new Error('Invalid official M5Burner source.');
     } else if(entry.metadataProvider==='cloudzao') {
       if(!/^[1-9][0-9]{0,8}$/.test(entry.hardwareModelId||'')||!/^\w{28,64}$/.test(entry.firmwareId||'')||!['esp32s3','esp32s31'].includes(entry.targetChip)||entry.metadataUrl!==`https://admin.metalio.world/xiaozhi/api/firmwares?page=1&limit=1&hardwareModelId=${entry.hardwareModelId}&sourceType=official`)throw new Error('Invalid official CloudZao source.');
