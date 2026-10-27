@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-27T06:40:34Z",
+  "updatedAt": "2026-10-27T07:33:45Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -415,6 +415,24 @@
         "runtime-m5unified-inl",
         "runtime-m5dial-h"
       ]
+    },
+    {
+      "id": "enclosure-clearance-for-unknown-pcb",
+      "label": "CAD empty-cylinder bound for an UNKNOWN proxy",
+      "value": {
+        "slabZMm": [
+          -4.66,
+          -3.66
+        ],
+        "minimumAssemblyRadiusMm": 15.678608894348145,
+        "carrierBottomZMm": -3.160004053115845
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "manufacturer-cad-c5c55c4bec"
+      ],
+      "notes": "CAD-constrained placeholder only; actual board outline, thickness, layout and mounting remain unknown. Blank UNKNOWN retained; official plastic/nut geometry unchanged.",
+      "method": "Clip each exported native assembly triangle to the1mm slab and calculate minimum XY distance to the resulting convex polygon. Reproduce: node --test tools/platform-dial-model-test.mjs. The chosen proxy diameter30mm and thickness1mm are display estimates, not real PCB dimensions."
     }
   ],
   "revisions": [],

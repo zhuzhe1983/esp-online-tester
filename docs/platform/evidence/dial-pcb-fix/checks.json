@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-10-27T07:40:19Z",
+  "scope": "Only procedural placeholder geometry, per-SKU metadata and model renderer. No Rust, bus, interrupt or per-tick implementation changed in this branch; no new execution/timing experiment.",
+  "results": [
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "pass"
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "result": "60 passed,0 failed; includes real worker/WASM runtime test"
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "pass:83products,5accessories,106firmwares,44watchlist"
+    },
+    {
+      "command": "python tools/test-rebuild-product-model.py",
+      "result": "10passed"
+    },
+    {
+      "command": "python tools/rebuild-product-model.py build <m5stack-k130|m5stack-k130-v11> --scratch output/<dedicated-directory>",
+      "result": "both pass;7artifacts each;modelJsonByteIdentical=true"
+    },
+    {
+      "command": "Playwright wrapper run-code --filename tools/fixtures/dial-pcb-browser-review.js",
+      "result": "72views;0outside-envelope pixels;2UNKNOWN labels each"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass; new files additionally manually reviewed"
+    }
+  ],
+  "initialFailures": [
+    {
+      "check": "platform tests before local WASM/ROM assets prepared",
+      "cause": "Missing task-worktree ROM",
+      "resolution": "Copied public test ROM/fixture assets from existing local checkout; built current WASM; runtime test passed"
+    },
+    {
+      "check": "new knowledge record validation",
+      "cause": "Estimated numeric proxy size is not an allowed knowledge fact; record/index timestamps must match",
+      "resolution": "Record reproducible CAD cavity measurement as cad-measurement, keep PCB estimate/unknown scope in notes, synchronize only these two index entries"
+    }
+  ],
+  "notRepeated": [
+    "Rust/Clippy unchanged-code suite;parent Dial runtime receipt covers base implementation."
+  ],
+  "cleanup": {
+    "browserSession": "closed and wrapper list verified no session remains",
+    "httpPort": 8092,
+    "server": "task-owned process terminated;listener absent",
+    "worktree": "retained unmerged for parent integration;no push"
+  },
+  "artifacts": {
+    "before-after.webp": "ff97581dc905e9f31935f164f6d0f66c0d765b61a840ff399a0302885c5ce886",
+    "views.webp": "95387dec42a39fd017d97a8db6d32159475f689a63afa036068633bdbcd9b159"
+  }
+}
