@@ -3,11 +3,13 @@ pub mod bus;
 pub mod interrupts;
 pub mod trng;
 pub mod rtc_wdt;
+pub mod cache;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};
 
 /// This executes the RV32IMAFC subset, not S31's complete custom ISA. No
-/// second hart, flash MMU, PSRAM, clock tree or board devices are installed. Unlike a P4 alias, its
+/// second hart, SPI flash command engine, clock tree or board devices are installed. Functional
+/// MMU mappings use explicitly supplied flash/PSRAM buffers. Unlike a P4 alias, its
 /// bus uses the S31 addresses and reports the first unsupported access with the guest PC.
 pub struct Bringup { pub cpu: Cpu, pub bus: S31Bus }
 #[derive(Debug, PartialEq, Eq)]

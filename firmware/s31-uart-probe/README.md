@@ -24,6 +24,13 @@ no ISR, the eighth prints `S31 WDT IRQ PASS` through a real guest handler, and t
 more produce a typed reset request. This does not prove a CPU-to-RTC clock tree or
 complete reset-domain execution; the development runner stops at that request.
 
+`mmu-probe.S` writes the S31 Flash/PSRAM MMU index and content ports, then calls
+`flash-worker.S` at a mapped Flash virtual address. That code writes PSRAM and
+returns a value; the SRAM caller remaps the same virtual address to a different
+physical page, checks it is initially empty, restores the mapping and checks the
+first page's data. The host supplies this source-built worker and 16 KiB of model
+PSRAM explicitly. This is not a product memory-capacity claim or a flash boot test.
+
 ```sh
 RISCV_TOOLCHAIN_PREFIX=/path/to/riscv32-esp-elf- \
   bash firmware/s31-uart-probe/build.sh output/s31-uart-probe
@@ -31,6 +38,8 @@ S31_UART_ELF="$PWD/output/s31-uart-probe/probe.elf" \
 S31_UART_IRQ_ELF="$PWD/output/s31-uart-probe/irq-probe.elf" \
 S31_TRNG_ELF="$PWD/output/s31-uart-probe/trng-probe.elf" \
 S31_WDT_ELF="$PWD/output/s31-uart-probe/wdt-probe.elf" \
+S31_MMU_ELF="$PWD/output/s31-uart-probe/mmu-probe.elf" \
+S31_FLASH_WORKER_BIN="$PWD/output/s31-uart-probe/flash-worker.bin" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/probe.elf A
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/irq-probe.elf A

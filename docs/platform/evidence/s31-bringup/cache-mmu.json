@@ -1,0 +1,177 @@
+{
+  "date": "2026-10-27",
+  "base": "5f78c318",
+  "scope": "Standalone S31 hart0 functional MMU/cache-bus gates; not a product runtime or flash boot implementation",
+  "sources": "sources.json; ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643 cache_reg.h, spi_mem_c/s_reg.h, ext_mem_defs.h, cache_ll.h, mmu_ll.h; pmu_reg.h identifies next fault",
+  "model": {
+    "cacheBase": "0x2c000000",
+    "flashMmuPorts": [
+      "0x2050037c",
+      "0x20500380",
+      "0x20500384"
+    ],
+    "psramMmuPorts": [
+      "0x2050237c",
+      "0x20502380",
+      "0x20502384"
+    ],
+    "entriesPerTable": 1024,
+    "flashPageKiB": [
+      256,
+      128,
+      64,
+      32
+    ],
+    "psramPageKiB": [
+      64,
+      32,
+      16,
+      8
+    ],
+    "initialTable": "All invalid; deliberate deterministic model input, not a claim about power-on MMU SRAM contents",
+    "limits": [
+      "Functional coherent access without cache lines, timing, maintenance, encryption or cache-error IRQs",
+      "Only hart0 external instruction/data gates execute; ROM-cache aliases, second hart and DMA excluded",
+      "Flash/PSRAM bytes and capacities are explicit host inputs; 256/64 MiB ceilings are software allocation limits",
+      "Invalid/sensitive mappings and unavailable backing memory fault; mapped flash writes prohibited without SPI program engine",
+      "No product catalog changes or production S31 WASM export"
+    ]
+  },
+  "fixture": {
+    "artifacts": [
+      {
+        "path": "firmware/s31-uart-probe/mmu-probe.S",
+        "bytes": 1670,
+        "sha256": "72197b8b6a9ebd2e38ecf091a8c8055067cdfa5ef73e50beca7d7f294b4095eb"
+      },
+      {
+        "path": "firmware/s31-uart-probe/flash-worker.S",
+        "bytes": 144,
+        "sha256": "970966cbde1ccc4cf13f3805b39f1de5333d9d472c8e247254f5fbff852d4b06"
+      },
+      {
+        "path": "firmware/s31-uart-probe/flash-worker.ld",
+        "bytes": 190,
+        "sha256": "584d9c6164d4a0d0fb8a021d85d3e23df60f5ede948482c411bde66d8e365e7a"
+      },
+      {
+        "path": "output/s31-uart-probe/mmu-probe.elf",
+        "bytes": 5004,
+        "sha256": "cd188d1c423887ca1896be5f60c34cd12cda07354d66f405b6eff86c0e69b015"
+      },
+      {
+        "path": "output/s31-uart-probe/flash-worker.elf",
+        "bytes": 4700,
+        "sha256": "6c34af2d26b509e161e2b8720fc62d221ec7bb3f87df0140176281276b8932a7"
+      },
+      {
+        "path": "output/s31-uart-probe/flash-worker.bin",
+        "bytes": 18,
+        "sha256": "e4ef26572472cfde3eaad58dadf604560ae62c3ac90e31b961654cdbd904b720"
+      }
+    ],
+    "compiler": "riscv32-esp-elf-gcc 15.2.0 (esp-15.2.0_20251204)",
+    "build": "RISCV_TOOLCHAIN_PREFIX=<toolchain>/riscv32-esp-elf- bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "steps": 175,
+    "pc": "0x2f000096",
+    "stop": "Waiting",
+    "uart": "S31 MMU FLASH PSRAM PASS\n",
+    "busFault": null,
+    "psramFixtureBytes": 16384,
+    "execution": "SRAM guest writes MMU ports, calls Flash-mapped worker, worker writes PSRAM and returns; guest changes mapping to an empty physical page then restores original data",
+    "negativeRuns": [
+      {
+        "missing": "Flash backing",
+        "exception": 1,
+        "address": "0x40000000",
+        "access": "fetch",
+        "reason": "Unmapped",
+        "uart": ""
+      },
+      {
+        "missing": "PSRAM physical page1 with only8192bytes allocated",
+        "exception": 7,
+        "address": "0x50000000",
+        "access": "write32",
+        "reason": "Unmapped",
+        "uart": ""
+      }
+    ],
+    "generatedArtifactsPublished": false,
+    "testCommand": "S31_UART_ELF=<probe.elf> S31_UART_IRQ_ELF=<irq-probe.elf> S31_TRNG_ELF=<trng-probe.elf> S31_WDT_ELF=<wdt-probe.elf> S31_MMU_ELF=<mmu-probe.elf> S31_FLASH_WORKER_BIN=<flash-worker.bin> cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored --nocapture (all paths absolute)"
+  },
+  "rom": {
+    "input": "esp32s31_rev0_rom.elf release20260528",
+    "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+    "command": "cargo run --release -p esp32s31 --example bringup -- --rom <roms>/esp32s31_rev0_rom.elf",
+    "previousFirstFault": {
+      "steps": 7245,
+      "pc": "0x2f80207a",
+      "address": "0x2c000000"
+    },
+    "currentFirstFault": {
+      "steps": 7255,
+      "pc": "0x2f805a5c",
+      "address": "0x2070410c",
+      "access": "read32",
+      "mcause": 5,
+      "symbol": "pmu_enable_unhold_pads",
+      "register": "PMU_IMM_PAD_HOLD_ALL",
+      "instruction": "0x4398: lw a4,0(a5)"
+    },
+    "romInstructionPatches": false,
+    "fullBoot": false
+  },
+  "checks": {
+    "rust": "1381 passed,0 failed,131 groups; --release --workspace -- --include-ignored --skip external_",
+    "clippyNative": "pass --workspace --all-targets -- -D warnings",
+    "clippyWasm": "pass --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "sourceFixtures": "5 passed: UART/FPU, UART IRQ, TRNG gates, RTC WDT IRQ/reset, MMU flash/PSRAM plus negative runs",
+    "platform": "4 required files pass",
+    "wasm": "9 existing workloads pass, including P4 hello; production sections check passed",
+    "s31WasmCompile": "passed",
+    "goldens": "unchanged",
+    "browser": "No UI changes or browser sessions"
+  },
+  "productionCodeEquality": {
+    "native": [
+      {
+        "binary": "esp32sim",
+        "matches5f78c318": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "c7a56e344138282e6c4c5b4903a547b6e88a1ab6b8f01d4c37d42aa7e22128be"
+        }
+      },
+      {
+        "binary": "esp32sim-c3",
+        "matches5f78c318": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "68dc7d7430af36b87d9c6c1f37d8d13d5c98a74d872281e50ddeb41093792e86"
+        }
+      },
+      {
+        "binary": "esp32sim-c6",
+        "matches5f78c318": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "757541708ed5de127937a92898cf6ebabc9891265fffffc633c437419a3c8047"
+        }
+      }
+    ],
+    "wasmSha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31"
+  },
+  "privacy": "Curated hashes, outcomes and relative commands. Raw logs and personal paths omitted; no private firmware/captures retained.",
+  "performance": {
+    "receipt": "cache-mmu-perf.json",
+    "sha256": "82e37dde246468e2544dfdec8bc19e338204765ee744798ecf773efb0cc81d30",
+    "medianUserPercent": {
+      "s3-hello": -1.4720821424020203,
+      "c3-hello": -1.9070235655854195,
+      "c6-hello": -0.23888589988044773
+    },
+    "outputChecks": "All UART SHA-256 and instruction/cycle/stat fields exact across both sides and all samples",
+    "interpretation": "Not an attributed speedup: existing production code is byte-identical to preceding stage; standalone new S31 code is not reached by these workloads."
+  }
+}

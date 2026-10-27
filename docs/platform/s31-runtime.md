@@ -275,3 +275,48 @@ WASM and native S3/C3/C6 code sections match `d4310c9c` byte for byte. This stag
 therefore cites that stage's existing CPU samples for the unchanged production
 paths; it does not claim a new timing run or a performance result for the new S31
 counter. [Functional evidence and code hashes](evidence/s31-bringup/rtc-wdt.json).
+
+### Cache bus gates and external-memory MMU
+
+The next standalone subset implements hart 0's instruction/data cache bus gates
+and the separate Flash/PSRAM MMU index/content ports at MSPI0. There are 1,024
+entries per table. The fixed v6.1 `mmu_ll.h` selects Flash pages of 256/128/64/32
+KiB and PSRAM pages of 64/32/16/8 KiB. Valid, target and physical-page fields follow
+`ext_mem_defs.h`; the two entry formats are different. Invalid entries, backing
+memory bounds, unsupported sensitive/encrypted mappings and invalid table indices
+produce explicit faults. Mapped Flash writes are prohibited while no SPI program
+command engine exists. Reads and writes can cross noncontiguous mapped pages;
+writes validate the full access before changing memory.
+
+The host explicitly supplies development Flash bytes and PSRAM capacity. The
+256 MiB/64 MiB allocation ceilings are software limits, not measured INK4 Plus
+capacities. MMU table SRAM starts deterministically invalid; the register header's
+CONTENT-port reset value of 892 does not establish the power-on contents of all
+entries. This models coherent functional access, not cache lines, stalls, encryption,
+cache-error interrupts or maintenance/lock operations. Debug/ECO control storage
+does not emulate the corresponding tests. Only hart 0's external buses execute;
+ROM-cache aliases, the second hart and DMA remain outside this stage. The direct
+TCM ROM and SRAM windows do not pass through these external-memory gates.
+
+The source-built SRAM fixture programs the MMU ports and executes a separate
+Flash-mapped worker, which writes PSRAM and returns. The caller remaps the virtual
+page, checks the other physical page is empty, restores the mapping and reads the
+original value. It prints `S31 MMU FLASH PSRAM PASS` after 175 instructions.
+Running the same program without Flash backing faults on instruction fetch;
+insufficient PSRAM faults on the worker's store. Additional tests cover all page
+sizes, closed instruction/data gates, encryption rejection, invalid indices,
+discontiguous page boundaries and incomplete 32-bit instructions at a mapping edge.
+
+The unpatched public ROM now reaches 7,255 steps. The next first fault is
+`pmu_enable_unhold_pads`, PC `0x2f805a5c`, reading `PMU_IMM_PAD_HOLD_ALL`
+at `0x2070410c`. PMU pad control remains unimplemented in this stage; this advance
+does not establish Flash boot, execution of the Plus image, or display readiness.
+
+Both Clippy targets, 1,381 Rust tests, five source fixtures, four platform test files
+and nine existing WASM workloads pass. Goldens are unchanged. The five-pair CPU
+guard observes S3 −1.47%, C3 −1.91%, C6 −0.24%, with exact guest statistics and UART
+hashes. Existing production WASM and CLI code remain byte-identical to the prior
+stage, so those timings are not an attributed speedup. The baseline binaries retain
+their prior hashes; main's intervening changes contain no native CLI/core changes.
+[Functional receipt](evidence/s31-bringup/cache-mmu.json),
+[CPU samples](evidence/s31-bringup/cache-mmu-perf.json).

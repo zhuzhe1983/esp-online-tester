@@ -1,5 +1,31 @@
 //! Real source-built SRAM fixture; no generated ELF/BIN is published.
 #[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_MMU_ELF and S31_FLASH_WORKER_BIN"]
+fn external_s31_mmu_fixture() {
+    let path = std::env::var("S31_MMU_ELF").expect("build firmware/s31-uart-probe and set S31_MMU_ELF");
+    let flash = std::env::var("S31_FLASH_WORKER_BIN").expect("build firmware/s31-uart-probe and set S31_FLASH_WORKER_BIN");
+    let elf = std::fs::read(path).expect("read S31_MMU_ELF");
+    let flash = std::fs::read(flash).expect("read S31_FLASH_WORKER_BIN");
+    let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+    m.bus.cache.set_flash(&flash).unwrap();
+    m.bus.cache.set_psram_size(16384).unwrap();
+    let run = m.run(10_000); assert_eq!(run.stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 MMU FLASH PSRAM PASS\n"); assert!(m.bus.first_fault.is_none());
+    eprintln!("S31 MMU fixture steps={} pc={:#010x}", run.steps, m.cpu.pc);
+    // The same guest must fail at the real Flash fetch or PSRAM store when backing memory
+    // is absent/too small; mapped addresses alone must not produce a successful fixture.
+    for missing_flash in [false, true] {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        if !missing_flash { m.bus.cache.set_flash(&flash).unwrap(); }
+        m.bus.cache.set_psram_size(8192).unwrap();
+        assert_eq!(m.run(10_000).stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(if missing_flash { 1 } else { 7 })));
+        let f = m.bus.first_fault.as_ref().unwrap();
+        assert_eq!(f.address, if missing_flash { 0x40000000 } else { 0x50000000 });
+        assert_eq!(f.fetch, missing_flash); assert_eq!(f.write, !missing_flash);
+        assert_eq!(f.reason, emu_core::Fault::Unmapped); assert!(m.bus.uart0.tx_out.is_empty());
+    }
+}
+#[test]
 #[ignore = "build firmware/s31-uart-probe and set S31_UART_ELF to its ELF"]
 fn external_s31_uart_fixture() {
     let path = std::env::var("S31_UART_ELF").expect("build firmware/s31-uart-probe and set S31_UART_ELF");

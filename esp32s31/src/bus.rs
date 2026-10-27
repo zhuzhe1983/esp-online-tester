@@ -1,9 +1,10 @@
-//! S31 memory, UART0, reset causes and CLIC/matrix windows; other MMIO faults explicitly.
+//! S31 memory/MMU, UART0, reset causes and CLIC/matrix windows; other MMIO faults explicitly.
 use emu_core::{Bus, Fault};
 use esp_periph::uart::{Uart, UartLayout};
 use crate::interrupts::{Interrupts, MATRIX_BASE, CLIC_BASE, RESET_CAUSE0, RESET_CAUSE1};
 use crate::trng::{Trng, TRNG_BASE, RNG_CTRL};
 use crate::rtc_wdt::{RtcWdt, BASE as RTC_WDT_BASE};
+use crate::cache::Cache;
 
 // ESP-IDF v6.1 (fff9895c82d744c7237be8847347bdd1b07c6643),
 // components/soc/esp32s31/include/soc/soc.h and register/soc/reg_base.h.
@@ -23,6 +24,7 @@ pub struct S31Bus {
     pub interrupts: Interrupts,
     pub trng: Trng,
     pub rtc_wdt: RtcWdt,
+    pub cache: Cache,
     pc: u32, pub first_fault: Option<AccessFault>,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
@@ -37,7 +39,7 @@ impl S31Bus {
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         let layout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff };
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE],
-            uart0: Uart::new(layout), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), pc: 0, first_fault: None }
+            uart0: Uart::new(layout), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -77,6 +79,19 @@ impl S31Bus {
         if let Some(data) = self.memory(address, bytes) {
             let mut value = [0; 4]; value[..bytes].copy_from_slice(data); return Ok(u32::from_le_bytes(value));
         }
+        if Cache::is_memory(address) {
+            let mut value = [0; 4];
+            for (i, byte) in value.iter_mut().take(bytes).enumerate() {
+                match address.checked_add(i as u32).ok_or(Fault::Unmapped).and_then(|a| self.cache.read_byte(a, false)) {
+                    Ok(v) => *byte = v, Err(e) => return self.fault(address, bytes, false, false, e),
+                }
+            }
+            return Ok(u32::from_le_bytes(value));
+        }
+        if Cache::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.cache.read_register(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
         if let Some(off) = offset(address, RTC_WDT_BASE, bytes, 0x400) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             if let Some(value) = self.rtc_wdt.read(off as u32) { return Ok(value); }
@@ -114,6 +129,13 @@ impl S31Bus {
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         if let Some(dest) = self.memory_mut(address, bytes, false) { dest.copy_from_slice(&value.to_le_bytes()[..bytes]); return Ok(()); }
+        if Cache::is_memory(address) {
+            return match self.cache.write(address, value, bytes) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if Cache::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.cache.write_register(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
         if let Some(off) = offset(address, RTC_WDT_BASE, bytes, 0x400) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             if self.rtc_wdt.write(off as u32, value) { return Ok(()); }
@@ -161,9 +183,17 @@ impl Bus for S31Bus {
     fn write16(&mut self, a: u32, v: u16) -> Result<(), Fault> { self.write(a, v as u32, 2) }
     fn write32(&mut self, a: u32, v: u32) -> Result<(), Fault> { self.write(a, v, 4) }
     fn fetch(&mut self, pc: u32) -> Result<[u8; 4], Fault> {
-        if self.memory(pc, 2).is_none() { return self.fault(pc, 4, false, true, Fault::Unmapped); }
         let mut data = [0; 4];
-        for (i, b) in data.iter_mut().enumerate() { if let Some(src) = self.memory(pc.wrapping_add(i as u32), 1) { *b = src[0]; } }
+        for i in 0..4 {
+            if i == 2 && data[0] & 3 != 3 { break; } // A compressed instruction needs only two bytes.
+            let Some(address) = pc.checked_add(i as u32) else { return self.fault(pc, 4, false, true, Fault::Unmapped); };
+            if let Some(src) = self.memory(address, 1) { data[i] = src[0]; }
+            else if Cache::is_memory(address) {
+                match self.cache.read_byte(address, true) {
+                    Ok(v) => data[i] = v, Err(e) => return self.fault(pc, 4, false, true, e),
+                }
+            } else { return self.fault(pc, 4, false, true, Fault::Unmapped); }
+        }
         Ok(data)
     }
 }
@@ -171,6 +201,25 @@ impl Bus for S31Bus {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn instruction_fetch_requires_the_real_length_across_mmu_boundaries() {
+        use crate::cache::{FLASH_MMU, FLASH_VADDR};
+        let mut b = S31Bus::new(); let page = 32768;
+        let mut flash = vec![0; page]; flash[page - 2..].copy_from_slice(&[1, 0]);
+        b.cache.set_flash(&flash).unwrap(); b.write32(FLASH_MMU + 0x384, 3 << 3).unwrap();
+        b.write32(FLASH_MMU + 0x37c, 0x1000).unwrap();
+        assert_eq!(b.fetch(FLASH_VADDR + page as u32 - 2), Ok([1, 0, 0, 0]));
+        flash[page - 2] = 0x13; b.cache.set_flash(&flash).unwrap();
+        assert_eq!(b.fetch(FLASH_VADDR + page as u32 - 2), Err(Fault::Unmapped));
+        assert!(b.first_fault.as_ref().unwrap().fetch);
+        flash.resize(page * 3, 0); flash[page * 2] = 0x50;
+        b.cache.set_flash(&flash).unwrap(); b.write32(FLASH_MMU + 0x380, 1).unwrap(); b.write32(FLASH_MMU + 0x37c, 0x1002).unwrap();
+        assert_eq!(b.fetch(FLASH_VADDR + page as u32 - 2), Ok([0x13, 0, 0x50, 0]));
+        b.write16(SRAM_BASE + SRAM_SIZE as u32 - 2, 0x13).unwrap();
+        assert_eq!(b.fetch(SRAM_BASE + SRAM_SIZE as u32 - 2), Err(Fault::Unmapped));
+        b.write16(SRAM_BASE + SRAM_SIZE as u32 - 2, 1).unwrap();
+        assert_eq!(b.fetch(SRAM_BASE + SRAM_SIZE as u32 - 2), Ok([1, 0, 0, 0]));
+    }
     #[test]
     fn s31_windows_have_exact_bounds_and_rom_is_read_only() {
         let mut b = S31Bus::new();
