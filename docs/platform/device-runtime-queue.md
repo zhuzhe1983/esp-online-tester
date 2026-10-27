@@ -8,9 +8,9 @@
 
 总共三条工作线：主线程和两个子代理。主线程没有额外任务时，主线程也参与适配，形成两路控制器、一路配件；主线程处理产品功能、修复或用户问题时，两个子代理分别负责控制器和配件。每路逐项交付，先保存检查点再换任务，不额外增加第四条工作线。
 
-本轮控制器线先补 PaperMono 完整版 NFC 通信与板型识别，再补 LoRa 收发；之后接续已保存工作的 AtomS3-Lite C124、DinMeter K134。AtomS3R 官方 v0.3 的 CPU1 启动异常已完成三种执行路径的复现与源码定位，尚缺 S3 实机行为依据；保持已知失败和试运行入口，不以猜测修改底层行为。
+PaperMono 完整版 NFC 通信、板型识别与 LoRa 数字收发已合入主线；控制器线按用户最新需求进行 ESP32-S31 启动验证，之后接续已保存工作的 AtomS3-Lite C124、DinMeter K134。AtomS3R 官方 v0.3 的 CPU1 启动异常已完成三种执行路径的复现与源码定位，尚缺 S3 实机行为依据；保持已知失败和试运行入口，不以猜测修改底层行为。
 
-配件线依次适配 Unit RGB U003、Unit Angle U005，先逐项核对实际电路、供电与主机路由，再实现客体输出或输入。Unit Button U027 → StopWatch Port A 已实现实际 GPIO 行为并合并；功能回归通过，C6 hello 本机 CPU 中位数约 +1.875% 的偏差保留记录。Dial K130 运行时与两版 PCB 占位修复已合并；K130-V11 尚无板级模型。
+Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已合入主线；配件线继续 Unit ENV-IV U001-D（SHT40 / BMP280），按实际引脚、供电和 I²C 命令实现温湿度与气压。Unit Button U027 → StopWatch Port A 已实现实际 GPIO 行为并合并；功能回归通过，C6 hello 本机 CPU 中位数约 +1.875% 的偏差保留记录。Dial K130 运行时与两版 PCB 占位修复已合并；K130-V11 尚无板级模型。
 
 每项按可独立验收的阶段提交，主线程审查、整合并更新本表；子任务交付阶段后接续下一阶段或下一项资料核对，遇到外部依赖时保留检查点并报告。未完成的研究工作树保留，不能把排队、已抓资料或菜单出现算作已适配。
 
@@ -19,7 +19,7 @@
 - AtomS3 C123：本轮 GC9107、GPIO41 按键、MPU6886 轮询子集。证据见 [AtomS3 记录](atoms3-runtime.md)。
 - AtomS3R C126：本轮 ST7735 批次、LP5562白光直控、GPIO41、BMI270轮询子集与8MB Octal PSRAM。BMM150 AUX、RGB/IR、旧GC9107批次及物理姿态校准暂缺。证据见 [AtomS3R记录](atoms3r-runtime.md)。
 - AtomS3R 官方 v0.3：已复现屏幕初始化前 CPU1 启动异常；内部定向固件通过不代表官方固件通过，修复前保持 trial。
-- PaperMono 完整版：NFC 探测缺失导致 UserDemo 自动选择 Lite 界面，隐藏 NFC/LoRa 测试；后续先补板型识别所依赖的 NFC 通信，再验证 LoRa 收发。见 [实际判断依据](papermono-runtime.md#为什么完整版没有显示-lora-测试)。
+- PaperMono 完整版：已合入 ST25R3916 与 SX1262 数字子集，UserDemo 1.2.0 识别为 Pro、显示 NFC/LoRa；已验证无卡扫描、发送 Hello! 和显式虚拟对端 PEER 接收。Lite 使用独立板型，不接入这两个器件。没有真实 RF 或 NFC 卡片模拟。见 [范围与证据](papermono-runtime.md)。
 - 下一台 AtomS3-Lite C124：复用 S3 执行、GPIO 和 RMT 解码；按官方图补 GPIO41 按键、WS2812C-2020 灯（当前 C124 官方资料，G35）以及 IR/电源约束。先检查软件 GPIO 与 RMT 两种灯驱动，3D 灯颜色必须来自客体输出。
 - Dial K130 / v1.1：GC9A01 可复用 DCS 框架；FT3267 触摸、旋转编码器、RTC/RFID 各自按来源建模，版本引脚分别核对。先交付屏幕/触摸/编码器，RTC/RFID 明示阶段缺项。
 - DinMeter K134 / v1.1：ST7789 复用可行，接续电源管理、编码器和 RTC；不同屏幕批次与引脚分别核对。

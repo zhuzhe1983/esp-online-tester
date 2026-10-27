@@ -4,6 +4,8 @@
 
 这是一条已验证的部分兼容路径，未做实机对照。PaperMono 使用 `papermono`，Lite 使用 `papermono-lite`；二者共用显示、按键、触摸及 SD/RGB 路径。完整版新增 ST25R3916 读卡器数字子集，官方程序检测为 Pro，实际无卡扫描结束显示 `NO CARD`。SX1262 数字报文子集已能初始化、发送 `Hello!`，并在显式输入匹配的虚拟对端报文后显示 `Rx PEER`；没有对端时不生成收包。Lite 不接入 NFC/LoRa 器件，保持 Lite 布局。
 
+主线合并后的官方固件、Lite 区分、配件路由与真实网页复核见 [整合记录](evidence/papermono-integration/README.md)。旧页面中的 Worker 不会自动替换；刷新页面后重新启动即可，无需换固件或清空 Flash/TF 存储。
+
 ### NFC 与完整版识别
 
 UserDemo 的 `Hal::detectBoardVariant()` 从 I2C `0x50` 读取身份寄存器（读命令 `0x7F`）；类型 `0x05` 且 revision 非零时选择 Pro，否则选择 Lite。新增模型包含 A/B/test 寄存器空间、512 字节有界 FIFO、复位、振荡器、数字发送、TX 完成和无应答计时器、GPIO6 中断及屏蔽/读清。固定官方程序实际发出 A/B/F/V 模式命令；没有 RF peer 时，不产生 RX 数据或虚构卡片 UID。
