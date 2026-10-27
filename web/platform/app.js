@@ -221,7 +221,7 @@ function onRuntimeEvent(event) {
   }
   else if (event.type === 'error') { text('load-status', errorMessages[event.error.code] || event.error.message); showFirmwareIssue(event.error); }
   else if (event.type === 'stats') {
-    text('runtime-speed', event.stats.mips ? `${event.stats.mips.toFixed(1)} MIPS${event.stats.speed == null ? '' : ` · ${Math.round(event.stats.speed * 100)}% 实时`}` : '');
+    text('runtime-speed', Number.isFinite(event.stats.mips) ? `${event.stats.mips.toFixed(2)} MIPS${event.stats.speed == null ? '' : ` · ${Math.round(event.stats.speed * 100)}% 实时`}` : '');
   }
 }
 
