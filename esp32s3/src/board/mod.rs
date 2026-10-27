@@ -13,6 +13,7 @@ pub use esp_soc::board::{Board, BoardEdge, BoardModel, NoBoard, VirtualCycle};
 
 pub mod atech14;
 pub mod atoms3;
+pub mod atoms3_lite;
 pub mod atoms3r;
 pub mod dial;
 pub mod dinmeter;
@@ -28,6 +29,7 @@ pub mod waveshare_lcd4b;
 
 pub use atech14::*;
 pub use atoms3::*;
+pub use atoms3_lite::*;
 pub use atoms3r::*;
 pub use dial::*;
 pub use dinmeter::*;
@@ -50,6 +52,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "dial" | "m5stack-dial" => Some(Box::new(Dial::new())),
         "dinmeter" | "m5stack-dinmeter" => Some(Box::new(DinMeter::new())),
         "dial-v11" | "m5stack-dial-v11" => Some(Box::new(Dial::v11())),
+        "atoms3-lite" | "m5stack-atoms3-lite" => Some(Box::new(AtomS3Lite::new())),
         "papermono" | "m5stack-papermono" => Some(Box::new(PaperMono::new())),
         "papermono-lite" | "m5stack-c153-lite" => Some(Box::new(PaperMono::lite())),
         "metalio-ink4" => Some(Box::new(MetalioInk4::new())),
