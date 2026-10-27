@@ -177,7 +177,7 @@ try {
   assert.equal((await runtime.observe()).status, 'running');
   const shared = new URL(await api.share({ mode: 'embed' }));
   assert.equal(shared.pathname, '/platform/embed.html');
-  assert.equal(decodeScene(shared.hash.slice('#scene='.length)).firmware.manifestUrl, 'https://platform.example/wasm/fw/hello.json');
+  assert.equal(decodeScene(new URLSearchParams(shared.hash.slice(1)).get('scene')).firmware.manifestUrl, 'https://platform.example/wasm/fw/hello.json');
   const paused = await runtime.pause(), pausedInsns = paused.stats.insns;
   assert.ok(pausedInsns > 0, 'Real guest instructions must execute before pause');
   await delay(150);

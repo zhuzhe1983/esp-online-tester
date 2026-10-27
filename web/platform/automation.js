@@ -1,6 +1,7 @@
 import {controlInput} from './control-input.js';
 // Stable automation surface shared by coding agents and the human interface.
 import { encodeScene } from './catalog.js';
+import { setSharedPlayback } from './shared-startup.js';
 import { createRecordingController, encodeRecording, validateRecording } from './recording.js';
 
 export function installAutomation(runtime, { target = globalThis.window } = {}) {
@@ -62,7 +63,7 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
         void check();
       });
     },
-    async share({ mode, baseUrl = target.location?.href, includeRecording = true } = {}) {
+    async share({ mode, baseUrl = target.location?.href, includeRecording = true, autostart = true, autoplay = true } = {}) {
       const state = await runtime.observe();
       if (!state.scene) throw Object.assign(new Error('Configure a scene before sharing.'), { code: 'NOT_CONFIGURED' });
       if (state.firmware?.source === 'local') throw Object.assign(new Error('Local firmware bytes cannot be included in a URL. Publish the firmware at a CORS-enabled URL or share its manifest first.'), { code: 'LOCAL_FIRMWARE_NOT_SHAREABLE' });
@@ -70,14 +71,15 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
       const scene = structuredClone(state.scene);
       if (mode) scene.view.mode = mode;
       const url = new URL(mode === 'embed' ? 'embed.html' : mode === 'studio' ? 'index.html' : baseUrl, baseUrl);
-      url.hash = `scene=${encodeScene(scene)}`;
+      const params = setSharedPlayback(new URLSearchParams({scene: encodeScene(scene)}), {autostart, autoplay});
       const recordingState = await recorder.api.recordingObserve(), recorded = recordingState.recording;
       if (includeRecording && ['preparing','recording','playing'].includes(recordingState.status)) throw Object.assign(new Error('Stop recording or playback before sharing its replay payload.'), {code:'RECORDING_NOT_SHAREABLE'});
       if (includeRecording && recorded) {
         const validation = validateRecording(recorded, {scene});
         if (!validation.valid) throw Object.assign(new Error('Stop recording and match its product, firmware and accessories before sharing.'), {code:'RECORDING_NOT_SHAREABLE',details:validation});
-        url.hash += `&recording=${encodeRecording(recorded)}`;
+        params.set('recording', encodeRecording(recorded));
       }
+      url.hash = params.toString();
       return url.href;
     },
   });

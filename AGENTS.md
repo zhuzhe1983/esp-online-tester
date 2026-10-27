@@ -1,6 +1,7 @@
 # Product platform in this fork
 
 - Mission: an agent-configurable, human-playable and website-embeddable platform for product-level ESP32 devices.
+- Product adaptation uses at most three active agent workstreams: the primary agent plus two subagents. When the primary handles another user task, keep one controller lane and one accessory lane. Otherwise the primary also adapts controllers, for two controller lanes and one accessory lane. Save unfinished work before switching assignments; continue each queue one product at a time.
 - Platform UI and API: `web/platform/`; current scope and setup: `docs/platform/README.md`.
 - To configure or operate the system, read `skills/esp-online-tester/SKILL.md`. It documents the implemented API; `docs/platform/research/` contains historical drafts.
 - To add or refresh products, modules, 3D assets or remote firmware, read `skills/esp-product-onboarding/SKILL.md`. Prefer manufacturer CAD, retain source timestamps and verify dimensions plus photo overlays.

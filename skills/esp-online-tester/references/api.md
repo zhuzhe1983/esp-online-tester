@@ -25,7 +25,7 @@ The platform page installs `window.espTester`. Await its presence before use. Ru
 | `capabilities()` | Reports actual product inputs, backend, firmware limits and unsupported features. |
 | `capture({format='png'}={})` | Real framebuffer: PNG `{dataUrl,width,height,frameNumber}` or RGBA `{pixels,width,height,frameNumber}`. Rejects `NO_FRAME` before a frame exists. |
 | `waitFor({status?,serialIncludes?,port?,fromNow=false,timeoutMs=10000})` | Waits for state and/or serial substring; at least one condition required. Timeout 0–120000 ms. `fromNow:true` ignores old buffered serial. |
-| `share({mode?,baseUrl?,includeRecording=true}={})` | Returns a scene URL, plus `recording=` when a stopped matching recording exists. Uses observed source hashes; an old mismatched recording is kept separately and omitted from ordinary scene sharing. `includeRecording:false` explicitly shares the scene alone. Local firmware bytes cannot be encoded. |
+| `share({mode?,baseUrl?,includeRecording=true,autostart=true,autoplay=true}={})` | Returns a scene URL, plus `recording=` when a stopped matching recording exists. Uses observed source hashes; an old mismatched recording is kept separately and omitted from ordinary scene sharing. `includeRecording:false` explicitly shares the scene alone. Local firmware bytes cannot be encoded. |
 | `recordingStart()` | Requires loaded remote firmware; resets and boots it, then starts input capture. |
 | `recordingStop()` | Releases held inputs, closes capture and returns a portable recording. |
 | `recordingPlay(recording,{timeoutMs=180000}={})` | Validates scene/receipt/event limits, loads pinned firmware if needed, resets and replays. Resolves with the final receipt; cancellation returns `result:'cancelled'`. The per-wait wall timeout is 100–300000 ms. |
@@ -117,6 +117,8 @@ const shareUrl = await api.share({mode:'embed'});
 A host delay is not an exact guest-time pulse. Retain actual input receipts and verify the resulting official UI; strict short-pulse timing remains a documented limitation. The repository's diagnostic/GPS tests use internal fixtures and their own serial assertions; those firmware files are not part of the public Pages site.
 
 ## Recording and replay
+
+Share links default to `autostart=1&autoplay=1`: a valid restored scene loads/starts, then its recording plays. `{autostart:false}` disables both; `{autoplay:false}` starts without replay. Legacy scene links without these flags use the same default. Ordinary visits without a scene remain idle. Trial catalog firmware needs one human confirmation before download; no-board products, missing firmware, invalid scenes and invalid recordings do not silently fall back. Edit links explicitly disable autostart. Hardware flashing and storage clearing remain separate user actions.
 
 Writable Flash is isolated by product ID, board, chip, Flash capacity and SHA-256 of the original full Flash contents. File names and remote URLs alone are not identities. `observe().storage` reports backend (`indexeddb` or `memory`), status, scope, `changedPages`, `pristine`, and errors. Memory fallback does not survive a page reload. Browser clear of device data is distinct from download-cache clear. Cross-tab conflicts stop stale sessions rather than silently overwriting newer data.
 

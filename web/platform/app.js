@@ -16,6 +16,7 @@ import {buildFirmwareIssueUrl} from './watchlist.js';
 import {SHELL_DEFAULT, SHELL_PRESETS, SHELL_FINISHES, shellPreset} from './appearance.js';
 import {renderHintList, productHints, firmwareHints} from './hints.js';
 import {lookupIpLocation, IP_LOCATION_PROVIDER} from './ip-geolocation.js';
+import {sharedStartup, setSharedPlayback} from './shared-startup.js';
 
 const $ = id => document.getElementById(id);
 const clone = value => structuredClone(value);
@@ -129,10 +130,11 @@ function renderDownloadProgress() {
   if (fraction === null) bar.removeAttribute('value'); else bar.value = fraction;
 }
 async function downloadAndRun() {
-  if (!await confirmSelectedRun()) return;
+  if (!await confirmSelectedRun()) return false;
   runAfterLoad = true;
   try { await loadSelected(); await runtime.start(); }
   finally { runAfterLoad = false; renderDownloadProgress(); }
+  return true;
 }
 function currentCatalogFirmware() {
   if (!embedded && firmwareTab === 'local') return null;
@@ -426,7 +428,7 @@ function renderScene() {
   sceneView?.setMode(scene.view.deviceView);
   sceneView?.setAppearance(scene.view.appearance);
   renderAppearance();
-  if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false});
+  if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false, autostart: false});
 }
 function renderAppearance() {
   if ($('shell-settings')) $('shell-settings').hidden = scene.view.deviceView !== '3d' || sceneView?.hasShell === false || (!product()?.display && !product()?.model);
@@ -678,16 +680,16 @@ function recordingForScene(candidate, {strict = true} = {}) {
   }
   return recordingDocument;
 }
-function shareUrl(mode = 'studio', {strictRecording = true} = {}) {
+function shareUrl(mode = 'studio', {strictRecording = true, autostart = true} = {}) {
   const shared = portableScene(); shared.view.mode = mode;
   const url = new URL(mode === 'embed' ? './embed.html' : './index.html', import.meta.url);
-  const params = new URLSearchParams({scene: encodeScene(shared)}), recorded = recordingForScene(shared, {strict: strictRecording});
+  const params = setSharedPlayback(new URLSearchParams({scene: encodeScene(shared)}), {autostart}), recorded = recordingForScene(shared, {strict: strictRecording});
   if (recorded) params.set('recording', encodeRecording(recorded));
   url.hash = params.toString(); return url.href;
 }
 function shareNotice(url, confirmation) {
   const included = new URLSearchParams(new URL(url).hash.slice(1)).has('recording');
-  return [confirmation, localFile && '本地固件需接收者自行选择', included ? '已包含录制，接收者需主动点击回放' : recordingDocument && '旧录制与当前配置不匹配，未包含在链接中'].filter(Boolean).join('；')+'。';
+  return [confirmation, localFile ? '本地固件需接收者自行选择' : '打开后自动启动，未验证固件需确认一次', included ? '启动后自动回放，可随时接管' : recordingDocument && '旧录制与当前配置不匹配，未包含在链接中'].filter(Boolean).join('；')+'。';
 }
 function validatePortable(next) {
   const validation = validateScene(next, catalog); if (!validation.valid) throw new Error(validation.errors.map(item => item.message).join(' '));
@@ -797,7 +799,7 @@ function setupEvents() {
 async function init() {
   catalog = await loadCatalog();
   try { localDefinitions = listLocalAccessories(); } catch (error) { report(error); }
-  let restored;
+  let restored, invalidRecording = false;
   const params = new URLSearchParams(location.hash.slice(1));
   if (params.has('scene')) {
     try { restored = decodeScene(params.get('scene')); validatePortable(restored); }
@@ -809,7 +811,7 @@ async function init() {
     try {
       const recorded = decodeRecording(params.get('recording')), validation = validateRecording(recorded, {scene});
       if (!validation.valid) throw new Error(validation.errors.map(item => item.message).join(' ')); recordingDocument = recorded;
-    } catch (error) { report(error); log('[RECORDING] 共享录制无效，设备仍可手动操作。\n'); }
+    } catch (error) { invalidRecording = true; report(error); log('[RECORDING] 共享录制无效，设备仍可手动操作。\n'); }
   }
   sceneView = createSceneView($('scene-mount'), {onInput: sendInput, onModeChange: reflectMode, onUnsupported: message => toast(message), onOrientation: sendOrientation, onModelReady: renderAppearance});
   runtime = createPlatformRuntime({catalog, onEvent: onRuntimeEvent});
@@ -824,7 +826,7 @@ async function init() {
     releaseInputs: releaseHumanInputs,
     recordingMatchesScene: recorded => validateRecording(recorded, {scene}).valid,
     onRecordingState: state => { recordingState = state; renderTransport(); },
-    onRecordingChange: value => { recordingDocument = value; if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false}); },
+    onRecordingChange: value => { recordingDocument = value; if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false, autostart: false}); },
     onError: report, onLog: log,
   });
   if ($('manufacturer-select')) { $('manufacturer-select').replaceChildren(...manufacturerNames(catalog.products).map(name => new Option(name,name))); $('manufacturer-select').disabled = false; }
@@ -833,7 +835,24 @@ async function init() {
   firmwareUpdates.show(catalog.firmwares.find(item => item.id === $('firmware-select')?.value));
   if (embedded) {
     if (product().runtime.status !== 'unavailable') text('empty-description', scene.firmware ? '点击启动，执行此场景中的固件。' : '此场景未指定固件，可点击“编辑”进行配置。');
-    // Playback requires an explicit user action; embedding a URL never starts untrusted firmware silently.
   }
+  const startup = sharedStartup(params, {restored, product: product(), recording: recordingDocument, invalidRecording});
+  const describeStartup = message => { text('empty-description', message); text('load-status', message); };
+  if (startup === 'unavailable') describeStartup('尚未完成适配，当前只能预览设备。');
+  else if (startup === 'missing-firmware') describeStartup('分享链接未包含可加载的固件，请选择远程固件或本地文件。');
+  else if (startup === 'invalid-recording') describeStartup('共享录制无效，自动启动已停止。可手动启动设备或重新获取链接。');
+  else if (startup === 'run' || startup === 'replay') await action(async () => {
+    try {
+      if (startup === 'replay') {
+        if (!await confirmSelectedRun()) { describeStartup('已取消自动回放，可点击“回放操作”重新开始。'); return; }
+        runAfterLoad = true;
+        try { await transportUi.playRecording(); }
+        finally { runAfterLoad = false; renderDownloadProgress(); }
+      } else if (!await downloadAndRun()) describeStartup('已取消自动启动，可点击“启动”重新开始。');
+    } catch (error) {
+      describeStartup(`自动${startup === 'replay' ? '回放' : '启动'}失败：${errorMessages[error.code] || error.message}。可重试或报告问题。`);
+      throw error;
+    }
+  });
 }
 init().catch(error => { report(error); text('empty-title', '工作台初始化失败'); text('empty-description', error.message); });

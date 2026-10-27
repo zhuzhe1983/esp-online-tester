@@ -113,12 +113,12 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
     try { await releaseInputs(); recording = await api().recordingStop(); onRecordingChange?.(recording); await syncRecording(); }
     catch (error) { onError(error); }
   });
-  play.addEventListener('click', async () => {
+  async function playRecording() {
     if (!recording || recordingBusy) return; recordingBusy = true; replayRequested = true; render();
     try { await releaseInputs(); await api().recordingPlay(recording); await syncRecording(); }
-    catch (error) { onError(error); }
     finally { recordingBusy = false; replayRequested = false; render(); }
-  });
+  }
+  play.addEventListener('click', () => { void playRecording().catch(onError); });
   takeOver.addEventListener('click', () => { void takeControl().catch(onError); });
   clearRecording.addEventListener('click', async () => {
     try { localSelection = false; await api().recordingClear(); await syncRecording(); }
@@ -171,6 +171,7 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
   return {
     refresh: render,
     syncRecording,
+    playRecording,
     getRecording: () => recording,
     getRecordingState: () => recordingState,
     setRecording(value) { localSelection = true; recording = value; recordingState = {status: 'idle', recording: value, progress: {index: 0, total: value?.events?.length || 0}}; onRecordingChange?.(value); onRecordingState?.(recordingState); render(); },
