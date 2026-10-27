@@ -21,6 +21,7 @@ pub mod stopwatch;
 pub mod papermono;
 pub mod paperdiy;
 pub mod papercolor;
+mod papers3;
 pub mod metalio_ink4;
 pub mod cardputer_adv;
 pub mod cardputer;
@@ -61,6 +62,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "papercolor" | "m5stack-c151" => Some(Box::new(PaperColor::new())),
         "papermono-lite" | "m5stack-c153-lite" => Some(Box::new(PaperMono::lite())),
         "paperdiy" | "m5stack-k159-b" => Some(Box::new(PaperDiy::new())),
+        "papers3" | "m5stack-c139" => Some(Box::new(papers3::PaperS3::new())),
         "metalio-ink4" => Some(Box::new(MetalioInk4::new())),
         "cardputer" | "m5stack-cardputer" => Some(Box::new(Cardputer::new())),
         "cardputer-adv" | "m5stack-cardputer-adv" => Some(Box::new(CardputerAdv::new())),

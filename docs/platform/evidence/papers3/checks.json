@@ -1,0 +1,209 @@
+{
+  "checkedAt": "2026-10-27T18:05:40.181226+00:00",
+  "base": "9a920c17",
+  "environment": {
+    "os": "Darwin",
+    "architecture": "arm64",
+    "rust": "1.99.1 stable",
+    "node": "26.8.2"
+  },
+  "sourceFiles": {
+    "esp-periph/src/i2c.rs": "fdfbc100a4ec1b6574a01073f2f70d839950efcb77ac95f24b6662c04045725a",
+    "esp-periph/src/i2c/gt911.rs": "603ecdd517b0b834c937ca9822cc23b8d195f860d4b03914f6912e450df1696e",
+    "esp-soc/src/devices/mod.rs": "996c496d0c236f878c1522b4e80ff32ab37aabee7aa6d7487a15689f51cfcb25",
+    "esp-soc/src/devices/et047tc1.rs": "e5e961483fd9d703a823d5d33e8abf2e5626d22710551e16a9f543d68348e95d",
+    "esp32s3/src/board/mod.rs": "a7916a8ca3c901558f0b30f63b96b42bb4fdc81c846b90081a4c5171c0de0f61",
+    "esp32s3/src/board/paperdiy.rs": "a04120d36a2d50c2c064d64a6392ee31872f22eb376e7aa0f832ebf377d42298",
+    "esp32s3/src/board/papers3.rs": "f0bb731de4545665b9c4ee98c89899d9e0bf8cf2ce0b9e1ccf58b1a40b64b449",
+    "web/platform/runtime.js": "d5d5f5c3e831c868bbd505c8ecbba7dbae4d85c8c3ff61692e0f7029ee7848e6",
+    "web/platform/catalog/products.json": "e9d31c79a122a25106bd83fb4028de93bcb59a1ece57646cdb5a43d4f0132c2b",
+    "web/platform/catalog/firmwares.json": "9cdce6e8bb1ae8a42989e8fe0ba4fb33704d74169582868cfcc9a2cd23546ddb",
+    "tools/probe-papers3-factory.mjs": "13c127ceb7791e37de3d0cdf0c551aed4aaeabf24605fd37b989049fa6359542"
+  },
+  "productionWasmSha256": "fa99bc5efd208b4e2c2d6bad7e001de3b0d4de060fa79ee6632c767438e42ff6",
+  "goldensChanged": false,
+  "firmwarePatched": false,
+  "checks": [
+    {
+      "name": "build",
+      "command": "cargo build --release --workspace",
+      "exitCode": 0,
+      "seconds": 22.599
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "seconds": 1.076
+    },
+    {
+      "name": "clippy-wasm",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "seconds": 1.45
+    },
+    {
+      "name": "rust",
+      "command": "cargo test --release --workspace -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "seconds": 128.635
+    },
+    {
+      "name": "vq",
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "exitCode": 0,
+      "seconds": 13.532
+    },
+    {
+      "name": "wasm-build",
+      "command": "tools/wasm-build.sh",
+      "exitCode": 0,
+      "seconds": 15.152
+    },
+    {
+      "name": "wasm-sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "seconds": 0.035
+    },
+    {
+      "name": "wasm",
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "exitCode": 0,
+      "seconds": 30.912
+    },
+    {
+      "name": "platform",
+      "command": "node --test tools/platform-*-test.mjs",
+      "exitCode": 0,
+      "seconds": 26.81
+    },
+    {
+      "name": "recording",
+      "command": "node tools/platform-recording-test.mjs --real",
+      "exitCode": 0,
+      "seconds": 3.589
+    },
+    {
+      "name": "timing",
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "seconds": 0.041
+    },
+    {
+      "name": "ble",
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "seconds": 0.604
+    },
+    {
+      "name": "ble-connection",
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "seconds": 2.125
+    },
+    {
+      "name": "pacing",
+      "command": "node tools/worker-pacing-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.035
+    },
+    {
+      "name": "channel",
+      "command": "node tools/worker-channel-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.054
+    },
+    {
+      "name": "input",
+      "command": "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.076
+    },
+    {
+      "name": "bench",
+      "command": "node --test tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.098
+    },
+    {
+      "name": "bench-python",
+      "command": "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "exitCode": 0,
+      "seconds": 0.076
+    },
+    {
+      "name": "jit",
+      "command": "tools/wasm-jit-test.sh",
+      "exitCode": 0,
+      "seconds": 32.391
+    },
+    {
+      "name": "profile",
+      "command": ". ./tools/wasm-rustflags.sh; cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "exitCode": 0,
+      "seconds": 14.782
+    },
+    {
+      "name": "schema",
+      "command": "uv run --with-requirements tools/requirements-catalog.txt python tools/validate-platform-catalog.py",
+      "exitCode": 0,
+      "seconds": 0.512
+    },
+    {
+      "name": "x5",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.091
+    },
+    {
+      "name": "x5verify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+      "exitCode": 0,
+      "seconds": 0.036
+    },
+    {
+      "name": "m1",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.085
+    },
+    {
+      "name": "m1verify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+      "exitCode": 0,
+      "seconds": 0.032
+    },
+    {
+      "name": "historical",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.087
+    },
+    {
+      "name": "historicalverify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "exitCode": 0,
+      "seconds": 0.033
+    }
+  ],
+  "counts": {
+    "rust": 1435,
+    "rustGroups": 132,
+    "wasmScenarios": 11,
+    "platformTests": 100,
+    "jitCases": 111126,
+    "jitGroups": 78,
+    "gpioWaveforms": 24
+  },
+  "recording": "18 real inputs and replay lifecycle passed; final frame different. Does not claim bit-exact replay or PaperS3-specific recording coverage.",
+  "negativeResults": [
+    "Knowledge receipt initial draft used ISO fractional UTC and lacked archiveName/index synchronization; normalized to established contract and full platform tests rerun successfully.",
+    "Initial complete-icon equality assertion failed despite mute state restored: partial-refresh edge differences remain uncalibrated. Interior slash and actual subsequent actions pass.",
+    "Unverified GT911 config-version and trigger defaults removed; unknown bytes remain zero. All Rust/Clippy/CI and official probe rerun on final source."
+  ],
+  "limitations": [
+    "Full AArch64 CI host tests covered by local arm64 workspace. No physical ESP device validation.",
+    "Aggregate test times overlap ordinary task workloads and are not CPU performance measurements; separate cpu.json uses coordinated idle window."
+  ]
+}

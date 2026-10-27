@@ -339,3 +339,5 @@ mod classic_tests {
         assert_ne!(modern.int_raw & INT_TRANS_COMPLETE, 0);
     }
 }
+
+pub mod gt911;

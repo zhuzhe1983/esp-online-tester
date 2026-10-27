@@ -2739,28 +2739,31 @@
       "chip": "esp32s3",
       "module": "ESP32-S3R8",
       "runtime": {
-        "board": null,
+        "board": "papers3",
         "flashMb": 16,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial",
+        "touch": true
       },
       "display": {
-        "width": 960,
-        "height": 540,
+        "width": 540,
+        "height": 960,
         "type": "E-Paper",
         "controller": "ET047TC1",
-        "touchController": "GT911"
+        "touchController": "GT911",
+        "touch": true,
+        "bus": "parallel"
       },
       "controls": [
         {
           "id": "power",
-          "name": "Power / reset / download control",
+          "name": "电源",
           "type": "button",
           "controller": "PMS150G"
         },
         {
           "id": "touch",
-          "name": "Two-point capacitive touch",
+          "name": "触摸屏",
           "type": "touch",
           "controller": "GT911"
         }
@@ -2804,7 +2807,10 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "ET047TC1 数字黑白更新、单触点 GT911 与 BMI270 轮询子集；不代表 16 灰阶光学波形、双触点或完整整机兼容。",
+        "RTC、TF、蜂鸣器音频、PMS150G 实体电源键、真实电源与网络连接尚未模拟；官方测试页对应状态可能无卡、无时钟或默认电压。",
+        "屏幕实体竖向帧为 540×960，原生行扫描为 960×540；官方 v0.5 测试界面采用横向布局。",
+        "IMU 为显式虚拟传感器轴；尚未校准 PCB 到 3D 模型的安装变换，不跟随旋转。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-c139.json",

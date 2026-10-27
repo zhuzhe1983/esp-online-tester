@@ -1,0 +1,156 @@
+{
+  "checkedAt": "2026-10-27T18:03:33.259Z",
+  "command": "node tools/probe-papers3-factory.mjs --url <catalog-c139-factory-url> --sha256 <catalog-sha256>",
+  "source": {
+    "url": "https://m5burner-cdn.m5stack.com/firmware/16287f6984f8ec7fe8058a6c3497b3b4.bin",
+    "resolvedUrl": "https://m5burner-cdn.m5stack.com/firmware/16287f6984f8ec7fe8058a6c3497b3b4.bin",
+    "bytes": 1439168,
+    "sha256": "d6733a0ca378f95335fa5fba4d4d992fb1dd97c17557b20e9aebfca08ba6d624"
+  },
+  "backend": "actual-page-worker-wasm-jit",
+  "firmwarePatched": false,
+  "wasmSha256": "fa99bc5efd208b4e2c2d6bad7e001de3b0d4de060fa79ee6632c767438e42ff6",
+  "checks": [
+    "rom-boot-real-factory-test-ui",
+    "GT911-read-clear-press-release-toggles-official-buzzer-icon-no-audio-claim",
+    "second-GT911-tap-restores-official-icon",
+    "explicit-virtual-BMI270-sample-changes-official-text",
+    "physical-GT911-scan-touch-starts-fresh-guest-WiFi-task"
+  ],
+  "first": {
+    "width": 540,
+    "height": 960,
+    "sha256": "102cae8a5553fbb1dae479db14213d781a832610742644a49d96f9886030c66b"
+  },
+  "buzzerInput": {
+    "down": {
+      "accepted": true,
+      "delivery": "queued",
+      "message": {
+        "t": "touch",
+        "x": 116,
+        "y": 330,
+        "down": 1
+      },
+      "guestTime": 14.0677988375
+    },
+    "up": {
+      "accepted": true,
+      "delivery": "queued",
+      "message": {
+        "t": "touch",
+        "x": 116,
+        "y": 330,
+        "down": 0
+      },
+      "guestTime": 14.222515504166667
+    }
+  },
+  "buzzer": {
+    "width": 540,
+    "height": 960,
+    "sha256": "51ea88eda99e920253d7ce874d88175dc625e105451112365deb2f75949dc18b"
+  },
+  "buzzerReturnInput": {
+    "down": {
+      "accepted": true,
+      "delivery": "queued",
+      "message": {
+        "t": "touch",
+        "x": 116,
+        "y": 330,
+        "down": 1
+      },
+      "guestTime": 18.733129925
+    },
+    "up": {
+      "accepted": true,
+      "delivery": "queued",
+      "message": {
+        "t": "touch",
+        "x": 116,
+        "y": 330,
+        "down": 0
+      },
+      "guestTime": 18.8863532125
+    }
+  },
+  "returned": {
+    "width": 540,
+    "height": 960,
+    "sha256": "2a672cd265ebfa2b7d47f57cc8dd823bcce19b54f874e47418306323119db80e"
+  },
+  "muteSlash": {
+    "region": [
+      112,
+      326,
+      10,
+      10
+    ],
+    "first": 63,
+    "on": 0,
+    "returned": 49
+  },
+  "imu": {
+    "width": 540,
+    "height": 960,
+    "sha256": "5b4099d2aad154c4e4fd0b0a40e6244f304df35aca7e7386e2d52c5efa94e28b"
+  },
+  "scanInput": {
+    "down": {
+      "accepted": true,
+      "delivery": "queued",
+      "message": {
+        "t": "touch",
+        "x": 225,
+        "y": 640,
+        "down": 1
+      },
+      "guestTime": 25.408014595833333
+    },
+    "up": {
+      "accepted": true,
+      "delivery": "queued",
+      "message": {
+        "t": "touch",
+        "x": 225,
+        "y": 640,
+        "down": 0
+      },
+      "guestTime": 25.613942220833334
+    }
+  },
+  "scan": {
+    "width": 540,
+    "height": 960,
+    "sha256": "580722a8b9cdbd7e36ed4795cb72d79a4d783e35ceec7a95bcbaa6a6990996ca"
+  },
+  "status": "pass",
+  "guestSeconds": 33.16,
+  "artifacts": [
+    {
+      "kind": "flash",
+      "sha256": "d6733a0ca378f95335fa5fba4d4d992fb1dd97c17557b20e9aebfca08ba6d624",
+      "bytes": 1439168
+    },
+    {
+      "kind": "rom",
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+      "bytes": 949552
+    }
+  ],
+  "serialEvidence": [
+    "I (254) M5GFX: [Autodetect] board_M5PaperS3",
+    "[9] [info] [AppBuzzer] onCreate",
+    "[9] [info] [AppImu] onCreate",
+    "[9] [info] [AppWifi] onCreate",
+    "[25] [info] start wifi scan task",
+    "[28] [info] [HAL] wifi scan completed, found 0 APs"
+  ],
+  "limitations": [
+    "Digital black/white endpoint, not calibrated 16-gray optical pulse integration.",
+    "One contact; only default GT911 scan/ready/clear and polling input are covered, not multi-touch/config/gesture firmware.",
+    "RTC, TF, audio, PMS150G physical power key and host networking are absent. Buzzer icon change does not claim sound; empty Wi-Fi scan does not claim RF.",
+    "Explicit BMI270 samples use virtual axes; physical mounting/scene rotation not calibrated. No physical hardware used."
+  ]
+}

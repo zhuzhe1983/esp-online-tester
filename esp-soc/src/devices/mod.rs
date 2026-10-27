@@ -14,3 +14,5 @@ pub mod sx1262;
 pub use dcs_panel::DcsPanel;
 pub use spi_bitbang::SpiBitBang;
 pub use ws2812::Ws2812Chain;
+
+pub mod et047tc1;

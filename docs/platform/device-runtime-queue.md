@@ -78,7 +78,7 @@ Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已合入主线；配件
 | 44 | [M5Stack Paper v1.1](https://docs.m5stack.com/en/core/Paper_v1.1) · `m5stack-k049-b` | esp32 / IT8951E | 待实现 | IT8951E 刷新通道、存储、触摸/按键、电源 |
 | 45 | [M5Stack PaperColor · C151](https://docs.m5stack.com/en/core/PaperColor) · `m5stack-c151` | esp32s3 / ED2208-DOA / EL040EF1 | 待实现 | ED2208-DOA / EL040EF1 刷新通道、存储、触摸/按键、电源 |
 | 46 | [M5Stack PaperDIY Complete Kit · K159-B](https://docs.m5stack.com/en/core/PaperDIY_Complete_Kit) · `m5stack-k159-b` | esp32s3 / ET047TC1 | partial：官方 v1.0、并行黑白纸屏、NVS 与 A/B | 16 灰阶、SPI TF、FPC、电源睡眠与无线；本机无触摸 |
-| 47 | [M5Stack PaperS3](https://docs.m5stack.com/en/core/PaperS3) · `m5stack-c139` | esp32s3 / ET047TC1 | 待实现 | ET047TC1 刷新通道、存储、触摸/按键、电源 |
+| 47 | [M5Stack PaperS3](https://docs.m5stack.com/en/core/PaperS3) · `m5stack-c139` | esp32s3 / ET047TC1 | partial：官方 v0.5、并行黑白纸屏、GT911 单点与显式 IMU | 16 灰阶、RTC、SPI TF、音频、PMS150G 电源与无线 |
 | 48 | [M5Stack PowerHub](https://docs.m5stack.com/en/core/PowerHub) · `m5stack-c148` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
 | 49 | [M5Stack StackChan](https://docs.m5stack.com/en/StackChan) · `m5stack-k151` | esp32s3 / ILI9342C / ILI9342E | 待实现 | ILI9342C / ILI9342E 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 50 | [M5Stack Stamp-C3](https://docs.m5stack.com/en/core/Stamp-C3) · `m5stack-c056-b` | esp32c3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
