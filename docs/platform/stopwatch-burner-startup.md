@@ -41,7 +41,7 @@ The board regression checks GPIO ACK/NACK, physical pin gating, shared writes
 across both controllers and reset defaults. Official StopWatch UserDemo V0.5
 also still reaches its real guide screen in browser WASM.
 
-## Kaleidoscope v0.0.2: separate failure, unresolved
+## Kaleidoscope 0.0.1 and v0.0.2: separate failure, unresolved
 
 The Burner image downloads successfully but faults before producing a frame.
 With the I2C fix above, native and browser execution still report a coprocessor
@@ -53,3 +53,13 @@ This establishes the first observed failure, not whether real hardware behaves
 the same or which startup component is responsible. No forced coprocessor
 enable, instruction skipping or synthetic success has been applied. The
 downloaded binary and its provenance are recorded separately in the receipt.
+
+The older public `0.0.1` image also downloads and fails in both native and browser
+WASM before producing a frame. Its corresponding `FloatS` is at `0x42013475`,
+again with `CPENABLE=0`, `PS=0x60120`. The app descriptor calls itself
+`1.0.0-kaleidoscope`; retain the distinction from the Burner release name.
+Disassembly of v0.0.2 shows the caller at `0x42003348` iterating the global
+constructor table, before the scheduler starts. ESP-IDF v5.5.4's
+[coprocessor handler](https://github.com/espressif/esp-idf/blob/v5.5.4/components/xtensa/xtensa_vectors.S)
+has an explicit invalid-thread panic path; this is consistent with the observed
+startup stage but does not establish the real-hardware root cause.
