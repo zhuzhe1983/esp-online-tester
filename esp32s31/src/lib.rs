@@ -15,6 +15,7 @@ pub mod analog;
 pub mod power;
 mod pmu_policy;
 mod mpll;
+mod mspi_pads;
 pub mod pms;
 pub mod reset;
 pub mod mwdt;

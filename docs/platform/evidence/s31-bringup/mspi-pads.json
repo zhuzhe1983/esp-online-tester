@@ -1,0 +1,287 @@
+{
+  "date": "2026-10-28",
+  "base": "5451f7ff8cdf497befc024e227e4e0d3c3c5f530",
+  "scope": "Private S31 dedicated MSPI pad configuration and conservative HOLD gating of actual PSRAM accesses; no product/UI integration.",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/iomux_mspi_pin_reg.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/iomux_mspi_pin_reg.h",
+      "fetchedAt": "2026-10-27T20:44:14Z",
+      "mediaType": "text/plain",
+      "bytes": 35909,
+      "sha256": "9b3f1521b862d738893b8af97627b2e40c784f788466933c5f528a94649cd084"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/iomux_mspi_pin_struct.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/iomux_mspi_pin_struct.h",
+      "fetchedAt": "2026-10-27T20:44:15Z",
+      "mediaType": "text/plain",
+      "bytes": 4289,
+      "sha256": "a1c8d5a110ad108475517772a2024763a33b2b16441b55e2b142a7cff4173c3f"
+    },
+    {
+      "name": "s31-mspi_ll.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/esp_hal_mspi/esp32s31/include/hal/mspi_ll.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/esp_hal_mspi/esp32s31/include/hal/mspi_ll.h",
+      "fetchedAt": "2026-10-27T18:26:44Z",
+      "mediaType": "text/plain",
+      "bytes": 10837,
+      "sha256": "dca7e0f7b3940bc9f65708587307c46434c1859ddb6de91e60771d00ef4dc795",
+      "status": 200
+    }
+  ],
+  "firmwareSourceVersion": "Released image reports ESP-IDF v6.1-dirty; exact private build revision is not established. Public source comparison pinned to fff9895c82d744c7237be8847347bdd1b07c6643.",
+  "semantics": {
+    "layout": "Dedicated IOMUX_MSPI_PIN at0x20584000. Eleven pad registers0x1c..0x44; ordinary reset0x4000/mask0xffff,HOLD15. DQS0x3c reset0x20000/mask0x7fffff,HOLD22 and power-request0. Clock register0 reset1/mask1 is automatic gating policy,not a clock-off switch.",
+    "hold": "RW register configuration remains readable/writable. Any held pad refuses real backing-memory store,load or instruction fetch. No frozen pin waveform or simultaneous-write sampling order is inferred. Release permits existing clock,PHY,MMU and backing-memory checks.",
+    "dqs": "Configuration request only. Future DDR transaction checks additionally require it; current generic backing-memory path is not a DDR protocol. No attached die or inferred capacity.",
+    "analog": "Drive,pull,hysteresis,phase and delay values are retained configuration,not verified signal timing,analog behavior or silicon tolerance."
+  },
+  "fixture": {
+    "path": "firmware/s31-uart-probe/mspi-pads-probe.S",
+    "runs": [
+      "test external_s31_dedicated_mspi_pad_hold_and_release_control_real_memory_execution ... S31 MSPI pads mode=0 steps=199 stop=Waiting held=false retired=1",
+      "S31 MSPI pads mode=1 steps=34 stop=Trap(Exception(7)) held=true retired=0",
+      "S31 MSPI pads mode=2 steps=56 stop=Trap(Exception(1)) held=true retired=0",
+      "S31 MSPI pads mode=3 steps=48 stop=Trap(Exception(5)) held=true retired=0"
+    ],
+    "positive": "Guest powers PHY,sets an MMU page,checks reset configuration,changes CS configuration while held,releases it,requests DQS,then writes/reads/fetches real instructions in caller-supplied64KiB memory. Code returns42 and emitsPASS; PC observer retires entry once.",
+    "negative": "Held CS traps store7; held DQS traps fetch1; held data pin traps load5. Every negative has no UART or retired memory entry."
+  },
+  "artifacts": [
+    {
+      "path": "esp32s31/src/mspi_pads.rs",
+      "bytes": 3972,
+      "sha256": "0c8de6a1fb338606242a9e64b6d0606e93b3689d3dd75dfa486e992fbbb662ad"
+    },
+    {
+      "path": "firmware/s31-uart-probe/mspi-pads-probe.S",
+      "bytes": 1897,
+      "sha256": "31af241fdc8f1be00e06929cf4225d16535ca01d80054496b5f0e3cd46649ca6"
+    },
+    {
+      "path": "output/s31-uart-probe/mspi-pads-probe.elf",
+      "bytes": 5156,
+      "sha256": "2934c605fe4d58d8a92dff8eab760f5fca99421c741a9902bd09ba92c96eae15"
+    },
+    {
+      "path": "output/s31-sources/roms/esp32s31_rev0_rom.elf",
+      "bytes": 513396,
+      "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87"
+    },
+    {
+      "path": "output/next-mspi-pin-registers.json",
+      "bytes": 14892,
+      "sha256": "09ae56d22ef44ea865ff75b83165ccb763b6bef1a8b50a8f56dfbc359c5de360"
+    }
+  ],
+  "officialProbe": "mspi-pads-plus-2.0.68.json",
+  "validation": {
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "workspaceRust": 1439,
+    "testGroups": 131,
+    "s31UnitTests": 75,
+    "sourceRomFixtures": 29,
+    "logs": [
+      {
+        "group": "arm",
+        "sha256": "d09c1ce266c7604332131809b2bd322164f9fe865c1ef8f52ee81b6f474dfcfb"
+      },
+      {
+        "group": "ble-api",
+        "sha256": "56f7b531026607ec2ff0e80fd4ad5ac392cc1ce24834d9f43b39fbec9d406cb5"
+      },
+      {
+        "group": "ble-connection",
+        "sha256": "57cbc65214667e93e03ac82a235612b8b34cf8f08ce07e234d7cd7dea085d0dd"
+      },
+      {
+        "group": "bringup-build",
+        "sha256": "087fcc95dbcd41f42e59840ec46185a7f28ec395743128e64144cd986cd9be16"
+      },
+      {
+        "group": "browser-contract",
+        "sha256": "9244c9d5a2e292c24abab0fd1be2f71714f7cc2655f90947516f343d63a3fe19"
+      },
+      {
+        "group": "browser-python",
+        "sha256": "36e632bbf6589bac8037ace7030ead9f8c8947bdb0f34d0e4b025484e5464ee7"
+      },
+      {
+        "group": "clippy-native",
+        "sha256": "a149937a5c23b66ace7fd4ca7198169c8bb5050d7ae603fb9fb1c93692cb8dea"
+      },
+      {
+        "group": "clippy-wasm",
+        "sha256": "09f7af2ff9cdcadfac512d53f8eff6ba3b902c54886e613afaa350a783e834bb"
+      },
+      {
+        "group": "fixtures",
+        "sha256": "e11d717e8c5f69fd9ed54cbbf3fa23d0dfaed57f2d0b71ebd8d129082a42a7da"
+      },
+      {
+        "group": "jit",
+        "sha256": "8afafd8f0b88282e10d9a300a8684a517907470e0fe65e54910b7ee40765660e"
+      },
+      {
+        "group": "micropython-input",
+        "sha256": "bb88433fff443ad84157cee70804bf90ec633d9e23f6361be3ac7027ad1fd7e0"
+      },
+      {
+        "group": "native",
+        "sha256": "382df0124645e617d3f83bda157b76a79cb3d1aa2e394bc5a38a955373d2a479"
+      },
+      {
+        "group": "p4-inputs",
+        "sha256": "77cb9ff45e829f41d298ba93f72b90868a59becebd8a485c2c48abe16fd6eca3"
+      },
+      {
+        "group": "perf-main",
+        "sha256": "82a4b472e06647354682b28a85b3f55f7cf6c956543e6cafb7ab1f639b7a41db"
+      },
+      {
+        "group": "perf-same-source",
+        "sha256": "bf9f9cf6b9c28ad60b09924f5bc8105497e0ac55e6d65018b311cd6bc2258ab5"
+      },
+      {
+        "group": "platform-all",
+        "sha256": "9e7ea68fa91e83fd944698f15f979c376fbb2e58ad482ac815bc57e435c65f1d"
+      },
+      {
+        "group": "platform",
+        "sha256": "38978c2069920a4bd1c517a43b3efe71df180fe9619bd30197af2981a457b0b0"
+      },
+      {
+        "group": "profiling",
+        "sha256": "76eaea10c4e48f2e68fda400b482596e592234ea401bd8fc14cbb70601994c2f"
+      },
+      {
+        "group": "receipt-historical",
+        "sha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4"
+      },
+      {
+        "group": "receipt-m1",
+        "sha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a"
+      },
+      {
+        "group": "receipt-test",
+        "sha256": "7b707287ed1745c1162bb5255c85f949f751db819c5c4c02ff576cd67b497809"
+      },
+      {
+        "group": "receipt-verify",
+        "sha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b"
+      },
+      {
+        "group": "recording",
+        "sha256": "399fddbf88243d83ab600a3563adbf729fd9d8df9ec282e4b76cef835734f284"
+      },
+      {
+        "group": "rom",
+        "sha256": "8aee7d78ba055090c6d40bc82bbda7bdd15698bb2fbcc5ca95547895b1d84d5d"
+      },
+      {
+        "group": "rust",
+        "sha256": "e33386ce4541c06cb6f7f7afcc23c17c3383079210c1b9da6571fa76d02c814e"
+      },
+      {
+        "group": "s31-wasm",
+        "sha256": "83b6f4d6768ae0df7097402dc3b2a841d71e2cb80b2b263e91881d737d6df546"
+      },
+      {
+        "group": "stable",
+        "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+      },
+      {
+        "group": "stopwatch",
+        "sha256": "7672c3af747d72e337cef6d6a04eb54c950f59ff63d69457b443a4b0ccbeb3d0"
+      },
+      {
+        "group": "timing-api",
+        "sha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3"
+      },
+      {
+        "group": "vq",
+        "sha256": "83440a90ba717732e6f3053454bee314b48242a4d69637625d68d539a9ce813d"
+      },
+      {
+        "group": "wasm-build",
+        "sha256": "28bf75880b997fa5b2ac57115a320b77eac0edaa0d6e2b01bfa91e242047e7f3"
+      },
+      {
+        "group": "wasm-sections",
+        "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b"
+      },
+      {
+        "group": "wasm-tdisplay",
+        "sha256": "3f7d8e5bcb6c856c058b8847f06f1dc38be116e53b503a0449054f1b714f368f"
+      },
+      {
+        "group": "wasm",
+        "sha256": "a06a022808f0016b72a02263163d8d96548f247866faaceeb18653bbdd933e8a"
+      },
+      {
+        "group": "worker-channel",
+        "sha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6"
+      },
+      {
+        "group": "worker-pacing",
+        "sha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158"
+      },
+      {
+        "group": "worker-touch",
+        "sha256": "03de1ff058ff4b890fceeaf375c0377a106b7b92b4a7a5ec3e60181f66c8b9a3"
+      }
+    ],
+    "uiChanged": false,
+    "goldensChanged": false,
+    "hardwareVerified": false,
+    "bothClippy": true,
+    "localCi": "Every command group in .github/workflows/ci.yml ran on arm64 macOS; not a Linux CI claim. Warnings-denied native/WASM Clippy,ignored Rust,source/ROM fixtures,WASM demos,platform/recording,JIT,worker/timing/BLE,receipt/browser contracts,profiling and AArch64.",
+    "cpuEvidence": "mspi-pads-same-source-perf.json",
+    "mainGuard": "mspi-pads-perf.json",
+    "baselineQualification": "baseline-qualification.json"
+  },
+  "reviewRevision": {
+    "change": "Removed an unproven effective-configuration snapshot for held pads before final validation; conservative functional refusal remains. Added actual load-negative fixture.",
+    "initialLogs": [
+      {
+        "path": "output/mspi-pads-initial-clippy-native.log",
+        "bytes": 1417,
+        "sha256": "cd4511d3debe3bdef70040d5b3f714e22e33cd2624e20ee4f663b20cf343b8f9"
+      },
+      {
+        "path": "output/mspi-pads-initial-clippy-wasm.log",
+        "bytes": 1232,
+        "sha256": "3b7dc85a1eebf2f09b013a7b22033698c24dab4519421e8b7ef3f233ff2721e5"
+      },
+      {
+        "path": "output/mspi-pads-initial-rust.log",
+        "bytes": 159261,
+        "sha256": "d9f98ef0273733bb97e768aebbbec09ddacdb267c90a8fe1261b55d0327caa06"
+      }
+    ],
+    "initialFixture": {
+      "path": "output/mspi-pads-fixture-first.log",
+      "bytes": 674,
+      "sha256": "8a108a9ef10e1a71f7c3559eedace88b4249efdca199a94f3309a2ac3d7ef15f"
+    },
+    "finalValidation": "Both warnings-denied Clippy targets and full workspace ignored-test run repeated after final source revision. Final fixture run includes all four modes. No golden outputs regenerated."
+  },
+  "productionIsolation": "All behavior changes private esp32s31 crate. No shared CPU/peripheral or production chip/worker change. Same-source and qualified main cross-branch guards are separate.",
+  "productionSourceCheck": {
+    "reference": "59a912115da36bd84e2e69032182421fdb4389ca",
+    "scope": "All tracked Rust/manifests in workspace member crates except private esp32s31,plus root Cargo.toml/lock.",
+    "files": 372,
+    "differences": [],
+    "fullLocalReceiptSha256": "fe7dff15862b437324c0cfbd29f7bdeae64a03eefb3547cf236ef7cb62e90d2a"
+  },
+  "commands": [
+    "RISCV_TOOLCHAIN_PREFIX=<riscv32-esp-elf-prefix> bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "cargo clippy --workspace --all-targets -- -D warnings",
+    "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_",
+    "S31_MSPI_PADS_ELF=<mspi-pads-probe.elf> cargo test --release -p esp32s31 --test uart_fixture external_s31_dedicated_mspi_pad -- --include-ignored --nocapture",
+    "python3 tools/s31-native-firmware-probe.py --firmware-url <official-URL> --sha256 <expected-SHA> --rom <S31-ROM> --rom-spi0-shadow --nor-jedec ef4018 --nor-sfdp 10:ef --bbpll-hz 480000000 --analog-bias 0000 --analog-perif-glitch ff --analog-dig ffffffff --rtc-timer-from-cpu --peripheral-pad 32:0 --peripheral-pad 59:1 --steps 100000000 --output <receipt>"
+  ],
+  "privacy": "Public-source receipts,artifact hashes,counts and guest outcomes only. No host identities,process inventories or unrelated command lines. Generated fixture binaries ignored local output only."
+}

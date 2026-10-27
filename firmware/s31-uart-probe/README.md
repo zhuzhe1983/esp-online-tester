@@ -258,3 +258,13 @@ or attempt to write RO completion with calibration stopped. Each fails before
 retiring the PSRAM entry. Set `S31_MPLL_ELF` to its generated ELF. The calibration
 uses sixteen private runner quanta; it is not a physical settling-time model and
 does not identify a RAM die or replace the original product firmware.
+
+`mspi-pads-probe.S` reads dedicated PSRAM pad reset values, changes drive/delay
+configuration while HOLD is set, then releases it and writes/executes code from
+caller-supplied memory. Real data readback precedes execution. Three negative
+modes keep CS, DQS or a data pin held and fault respectively on an external store,
+instruction fetch or data read, with no retired PSRAM entry. Set
+`S31_MSPI_PADS_ELF` to the generated ELF. The conservative HOLD subset preserves
+RW configuration but refuses transfers: it does not invent a frozen physical
+waveform or simultaneous-write sampling order. DQS power is a requested field;
+the generic backing-memory path does not claim a DDR serial protocol or RAM die.

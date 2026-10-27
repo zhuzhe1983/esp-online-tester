@@ -1220,3 +1220,37 @@ cycle results; median changes are S3 -1.405%, C3 +1.541%, C6 -0.249%.
 All 372 production Rust/manifest/lock files match that fixed reference. These
 small noisy differences are not an S31 speed claim; the main84 cross-branch
 guard remains separately qualified. No UI, product status or goldens changed.
+
+### Dedicated MSPI pad configuration
+
+The S31 PSRAM pins have their own IO_MUX block at0x20584000, separate from GPIO.
+Documented reset values and writable masks are retained for the eleven pad
+registers, including the distinct DQS layout. The register auto-clock-gating bit
+is stored as a policy; disabling automatic gating is not treated as turning the
+register clock off. Drive, pull, hysteresis, phase and delay values are retained
+configuration, not verified analog waveforms or a signal-integrity model.
+
+HOLD uses a conservative functional subset: configuration is still readable and
+writable, but held pads cannot perform dynamic external memory reads, writes or
+instruction fetches. No frozen physical pin value or simultaneous-write sampling
+order is inferred. Releasing HOLD applies the current configuration and permits
+the ordinary clock/PHY/MMU/backing checks. DQS power is a requested configuration
+field; this stage does not implement a DDR serial protocol or attach a memory die.
+
+The source-only fixture verifies real pad reads and writes, then writes, reads and
+executes code in caller-supplied PSRAM. CS/DQS/data-pin HOLD negatives fail on the
+actual store/fetch/load before the PSRAM entry is retired. The same unmodified
+Plus2.0.68 full image proceeds through pad setup to the still unimplemented
+SPI_SMEM_S_AC register **0x205021a0**, app PC **0x2f00faca**, after **30,183,992
+instructions**. There is still no physical PSRAM identity, complete product startup
+or framebuffer. Plus remains unavailable. See [source/functional evidence](evidence/s31-bringup/mspi-pads.json)
+and [official-image probe](evidence/s31-bringup/mspi-pads-plus-2.0.68.json).
+
+MSPI-pad validation passes 1,439 workspace Rust tests,75 private S31 unit tests,
+29 source/ROM fixtures,both Clippy targets and all local CI command groups.
+The final source was rerun after removing an unproven HOLD snapshot; the earlier
+probe and initial validation hashes are retained. Five-pair same-production-source
+CPU medians change S3 +0.144%,C3 +0.611%,C6 +1.205%,with exact UART,instruction and
+cycle results. All372 production Rust/manifest/lock files match the fixed reference.
+These small differences are not an S31 speed claim; the main84 cross-branch guard
+is separately qualified. No product status,UI or golden output changed.

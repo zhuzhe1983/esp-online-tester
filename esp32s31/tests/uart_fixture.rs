@@ -663,3 +663,26 @@ fn external_s31_mpll_real_psram_code_with_power_clock_and_calibration_negatives(
         eprintln!("S31 MPLL mode={mode} steps={} stop={:?} mpll={:?} psram={:?} retired={}", run.steps, run.stop, m.bus.clocks.mpll.output_hz(), m.bus.clocks.psram_core_hz(), m.pc_watch.as_ref().unwrap().retired);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_MSPI_PADS_ELF to mspi-pads-probe.elf"]
+fn external_s31_dedicated_mspi_pad_hold_and_release_control_real_memory_execution() {
+    let path = std::env::var("S31_MSPI_PADS_ELF").expect("build firmware/s31-uart-probe and set S31_MSPI_PADS_ELF");
+    let elf = std::fs::read(path).expect("read S31_MSPI_PADS_ELF");
+    for mode in 0u32..4 {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap(); m.bus.cache.set_psram_size(65536).unwrap();
+        m.bus.load(0x2f070000, &mode.to_le_bytes(), 4).unwrap();
+        m.pc_watch = Some(esp32s31::PcWatch { address: 0x50000000, ..Default::default() });
+        let run = m.run(2000);
+        if mode == 0 {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 MSPI PADS EXECUTE PASS\n");
+            assert_eq!(m.cpu.x[10], 42); assert_eq!(m.pc_watch.as_ref().unwrap().retired, 1);
+            assert!(!m.bus.mspi_pads.held()); assert!(m.bus.mspi_pads.dqs_requested());
+        } else {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(if mode == 1 { 7 } else if mode == 2 { 1 } else { 5 })));
+            let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!((f.address, f.reason), (0x50000000, emu_core::Fault::Prohibited));
+            assert!(m.bus.uart0.tx_out.is_empty()); assert_eq!(m.pc_watch.as_ref().unwrap().retired, 0);
+        }
+        eprintln!("S31 MSPI pads mode={mode} steps={} stop={:?} held={} retired={}", run.steps, run.stop, m.bus.mspi_pads.held(), m.pc_watch.as_ref().unwrap().retired);
+    }
+}
