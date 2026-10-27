@@ -99,6 +99,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("analog-transactions={} bias={:?} mpll-shutdown={}", m.bus.analog.transactions, m.bus.analog.bias(), m.bus.power.mpll_disabled());
     eprintln!("analog-dig={:?}", m.bus.analog.dig_reg());
     eprintln!("clock-rates={:?} rtc-fast-hz={} rtc-slow-hz={} cpll-control={:?}", m.bus.clocks.rates(), m.bus.clocks.rtc_fast_hz(), m.bus.clocks.rtc_slow_hz(), m.bus.clocks.read(0x174));
+    eprintln!("mpll-divider={:#x} mpll-hz={:?} psram-core-hz={:?}", m.bus.clocks.mpll.divider(), m.bus.clocks.mpll.output_hz(), m.bus.clocks.psram_core_hz());
     eprintln!("pmu-updates={} dbias-requests={} readonly-write-attempts={}", m.bus.power.policy.updates, m.bus.power.policy.dbias_requests, m.bus.power.policy.readonly_write_attempts);
     eprintln!("permission-writes={}", m.bus.permissions.writes);
     eprintln!("rtc-timer-counter={}", m.bus.rtc_timer.counter());

@@ -21,6 +21,7 @@ impl Default for Analog {
         select: [0xe408, 0x2d, 4], timing: [0x42; 3], date: 0x2411290, bias: None, perif: None, perif_power: 1 << 30, dig: None, transactions: 0 } }
 }
 impl Analog {
+    pub fn master_enabled(&self) -> bool { self.lp_clock & 4 != 0 }
     pub fn is_mmio(address: u32) -> bool {
         (BASE..BASE + 0x40).contains(&address) || matches!(address & !3, LP_CLK | LP_FORCE | LP_RESET | SYS_CLK | PERIF_POWER)
     }

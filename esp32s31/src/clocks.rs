@@ -9,16 +9,16 @@ pub const UART0_CTRL: u32 = BASE + 0x88;
 pub const UART0_MEM: u32 = 0x2058_628c;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Rates { pub cpu_hz: u64, pub mem_hz: u64, pub sys_hz: u64, pub apb_hz: u64 }
-pub struct Clocks { pending: [u32; 5], active: [u32; 5], uart0: u32, uart_mem: u32, modem: u32, psram: u32, lp_root: u32, fosc: bool, cpll_div: u32, cpll_powered: bool, cal_stop: bool, cal_done: bool, cal_left: Option<u8> }
+pub struct Clocks { pub mpll: crate::mpll::Mpll, pending: [u32; 5], active: [u32; 5], uart0: u32, uart_mem: u32, modem: u32, psram: u32, lp_root: u32, fosc: bool, cpll_div: u32, cpll_powered: bool, cal_stop: bool, cal_done: bool, cal_left: Option<u8> }
 impl Default for Clocks {
-    fn default() -> Self { Self { pending: [0, 0, 1, 2, 1], active: [0, 0, 1, 2, 1], uart0: 0x83, uart_mem: 0, modem: 1, psram: 0x181, lp_root: 1 << 26, fosc: true, cpll_div: 0xf2, cpll_powered: false, cal_stop: false, cal_done: false, cal_left: None } }
+    fn default() -> Self { Self { mpll: crate::mpll::Mpll::default(), pending: [0, 0, 1, 2, 1], active: [0, 0, 1, 2, 1], uart0: 0x83, uart_mem: 0, modem: 1, psram: 0x181, lp_root: 1 << 26, fosc: true, cpll_div: 0xf2, cpll_powered: false, cal_stop: false, cal_done: false, cal_left: None } }
 }
 impl Clocks {
     // lp_clkrst_reg.h: reset source selectors and RO XTAL40MHz field. Selecting
     // unsupported clocks is rejected until their power/rate model is connected.
-    pub fn is_lp_mmio(address: u32) -> bool { matches!((address & !3).wrapping_sub(LP_BASE), 0 | 0x48 | 0x4c) }
+    pub fn is_lp_mmio(address: u32) -> bool { matches!((address & !3).wrapping_sub(LP_BASE), 0 | 0x48 | 0x4c | 0x54) }
     pub fn lp_read(&self, address: u32) -> Result<u32, Fault> {
-        match address.wrapping_sub(LP_BASE) { 0 => Ok(self.lp_root), 0x48 => Ok(40), 0x4c => Ok(self.cpll_div), _ => Err(Fault::Unmapped) }
+        match address.wrapping_sub(LP_BASE) { 0 => Ok(self.lp_root), 0x48 => Ok(40), 0x4c => Ok(self.cpll_div), 0x54 => Ok(self.mpll.divider()), _ => Err(Fault::Unmapped) }
     }
     pub fn lp_write(&mut self, address: u32, value: u32) -> Result<(), Fault> {
         match address.wrapping_sub(LP_BASE) {
@@ -27,6 +27,7 @@ impl Clocks {
                 if value & 0xf380_0000 != 0 || (value >> 26) & 3 > 1 { return Err(Fault::Prohibited); }
                 self.lp_root = value & 0x0c00_0000;
             }
+            0x54 => self.mpll.write_divider(value)?,
             0x48 => {}, // documented RO, firmware cannot change the physical XTAL field
             0x4c => { if self.using_cpll() { return Err(Fault::Prohibited); } self.cpll_div = value & 0xfff; self.cal_done = false; self.cal_left = None; }
             _ => return Err(Fault::Unmapped),
@@ -51,7 +52,17 @@ impl Clocks {
         }
         Ok(())
     }
-    pub fn psram_on(&self) -> bool { self.psram & 0x167 == 0x101 }
+    pub fn psram_on(&self) -> bool { self.psram_core_hz().is_some() }
+    pub fn psram_core_hz(&self) -> Option<u64> {
+        if self.psram & 0x107 != 0x101 { return None; }
+        // psram_ctrlr_ll.h: 0=XTAL,1=MPLL,2=CPLL. PLL gate is independent.
+        let pll = self.psram & 0x80 != 0;
+        let root = match (self.psram >> 5) & 3 {
+            0 => 40_000_000, 1 if pll => self.mpll.output_hz()?,
+            2 if pll && self.cpll_powered && self.cal_done => self.cpll_hz()?, _ => return None,
+        };
+        Some(root / u64::from(((self.psram >> 9) & 255) + 1))
+    }
     pub fn modem_on(&self) -> bool { self.modem != 0 }
     pub fn uart_bus_on(&self) -> bool { self.uart0 & 0xb == 3 }
     pub fn uart_core_on(&self) -> bool { self.uart0 & 0x87 == 0x83 }
@@ -113,7 +124,7 @@ impl Clocks {
     pub fn rates(&self) -> Rates { self.rates_of(&self.active).unwrap_or(Rates { cpu_hz: 0, mem_hz: 0, sys_hz: 0, apb_hz: 0 }) }
     pub fn read(&self, off: u32) -> Result<u32, Fault> {
         if off & 3 != 0 { return Err(Fault::Misaligned); }
-        match off { 0..=0x10 => Ok(self.pending[off as usize / 4]), 0x14 => Ok(0), 0x40 => Ok(self.modem), 0x68 => Ok(self.psram), 0x174 => Ok(u32::from(self.cal_done) << 2 | u32::from(self.cal_stop) << 3), _ => Err(Fault::Unmapped) }
+        match off { 0..=0x10 => Ok(self.pending[off as usize / 4]), 0x14 => Ok(0), 0x40 => Ok(self.modem), 0x68 => Ok(self.psram), 0x174 => Ok(u32::from(self.cal_done) << 2 | u32::from(self.cal_stop) << 3 | self.mpll.control()), _ => Err(Fault::Unmapped) }
     }
     pub fn write(&mut self, off: u32, value: u32) -> Result<(), Fault> {
         if off & 3 != 0 { return Err(Fault::Misaligned); }
@@ -130,17 +141,18 @@ impl Clocks {
             // not implement RF or wireless operation.
             0x174 => {
                 // Other PLL controls still unsupported; RO END bits never become host data.
-                if value & 0x2a2 != 0 { return Err(Fault::Prohibited); }
+                if value & 0xa2 != 0 { return Err(Fault::Prohibited); }
                 if self.using_cpll() && value & 8 == 0 { return Err(Fault::Prohibited); }
+                self.mpll.write_control(value);
                 self.cal_stop = value & 8 != 0;
                 if self.cal_stop { self.cal_left = None; }
                 else { self.cal_done = false; self.cal_left = Some(16); }
             }
             0x40 => self.modem = value & 1,
             0x68 => {
-                // Functional XTAL PSRAM gate; PLL selection and force-reset override
-                // require the unimplemented external-memory power/PLL sequencing.
-                if value & 0x78 != 0 { return Err(Fault::Prohibited); }
+                // Selectors use actual powered/calibrated roots; selecting a stopped
+                // source is legal but blocks access. Force-reset overrides remain absent.
+                if value & 0x18 != 0 || (value >> 5) & 3 == 3 { return Err(Fault::Prohibited); }
                 self.psram = value & 0x1ffff;
             },
             _ => return Err(Fault::Unmapped),

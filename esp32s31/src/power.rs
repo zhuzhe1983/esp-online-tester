@@ -16,10 +16,11 @@ pub const BOD_BASE: u32 = 0x2070_2000;
 pub enum ResetCause { Brownout } // reset_reasons.h: RESET_REASON_SYS_BROWN_OUT=15.
 const CPLL_LOW: u32 = 0x111;
 const CPLL_HIGH: u32 = (1 << 19) | (1 << 23) | (1 << 27);
+const MPLL_HIGH: u32 = (1 << 22) | (1 << 26) | (1 << 30);
 const MPLL_LOW: u32 = (1 << 3) | (1 << 7) | (1 << 11);
-pub struct Power { pub policy: PmuPolicy, cpll: u32, sleep_lp: u32, active: u32, alive: u32, mpll_low: u32, fib: u32, bod1: u32, glitch: u32, pub reset_request: Option<ResetCause> }
+pub struct Power { pub policy: PmuPolicy, cpll: u32, sleep_lp: u32, active: u32, alive: u32, mpll_high: u32, mpll_low: u32, fib: u32, bod1: u32, glitch: u32, pub reset_request: Option<ResetCause> }
 impl Default for Power {
-    fn default() -> Self { Self { policy: PmuPolicy::default(), cpll: 0, sleep_lp: 1 << 30, active: 0, alive: 0xfffe_0000, mpll_low: 0, fib: u32::MAX, bod1: 0, glitch: 0, reset_request: None } }
+    fn default() -> Self { Self { policy: PmuPolicy::default(), cpll: 0, sleep_lp: 1 << 30, active: 0, alive: 0xfffe_0000, mpll_high: 0, mpll_low: 0, fib: u32::MAX, bod1: 0, glitch: 0, reset_request: None } }
 }
 
 impl Power {
@@ -28,6 +29,7 @@ impl Power {
     pub fn bbpll_output_enabled(&self) -> bool { self.alive & (1 << 30) != 0 }
     pub fn fosc_enabled(&self) -> bool { self.sleep_lp & (1 << 30) != 0 }
     pub fn cpll_enabled(&self) -> bool { self.cpll == CPLL_LOW && self.alive & (1 << 29) != 0 }
+    pub fn mpll_enabled(&self) -> bool { self.mpll_high == MPLL_LOW && self.alive & (1 << 31) != 0 && self.active & 0x4400_0000 == 0x4400_0000 }
     pub fn mpll_disabled(&self) -> bool { self.mpll_low == MPLL_LOW && self.alive & (1 << 31) == 0 && self.active & 0x4400_0000 == 0 }
     /// A caller-supplied already-qualified BOD comparator event, not a measured voltage
     /// or an analog threshold model. FIB/eFuse-controlled policy is still unknown.
@@ -63,12 +65,13 @@ impl Power {
                 // Group field definitions and the driver use tie-high/low commands.
                 // Some generated per-CPLL aliases say RW instead of WT; model the group
                 // WT protocol, not latched command bits or an analog PLL waveform.
-                if value & !(MPLL_LOW | CPLL_LOW | CPLL_HIGH) != 0 { return Err(Fault::Prohibited); }
-                let high = ((value >> 23) & 1) | ((value >> 23) & 0x10) | ((value >> 11) & 0x100);
-                let low = value & CPLL_LOW;
+                if value & !(MPLL_LOW | MPLL_HIGH | CPLL_LOW | CPLL_HIGH) != 0 { return Err(Fault::Prohibited); }
+                let high = ((value >> 23) & 0xf) | ((value >> 23) & 0xf0) | ((value >> 11) & 0xf00);
+                let low = value & (CPLL_LOW | MPLL_LOW);
                 if high & low != 0 { return Err(Fault::Prohibited); }
-                self.cpll = (self.cpll | high) & !low;
-                self.mpll_low |= value & MPLL_LOW;
+                self.cpll = (self.cpll | (high & CPLL_LOW)) & !low;
+                self.mpll_high = (self.mpll_high | (high & MPLL_LOW)) & !low;
+                self.mpll_low = (self.mpll_low | (low & MPLL_LOW)) & !high;
             }
             ALIVE_CK => {
                 // Preserve other domain enables. Turning off CPU/root clocks cannot be
@@ -113,6 +116,18 @@ mod tests {
         assert_eq!(p.read(HP_INT_CLR), Ok(0)); assert_eq!(p.read(BOD_BASE + 0x3c), Ok(0)); assert_eq!(p.reset_request, None);
     }
     #[test]
+    fn mpll_tie_commands_and_active_gate_are_independent_from_cpll() {
+        let mut p = Power::default(); p.write(IMMEDIATE_CK, CPLL_HIGH).unwrap(); assert!(p.cpll_enabled());
+        p.write(IMMEDIATE_CK, 1 << 22).unwrap(); assert!(!p.mpll_enabled());
+        p.write(IMMEDIATE_CK, (1 << 26) | (1 << 30)).unwrap(); assert!(!p.mpll_enabled());
+        p.write(ACTIVE_CK, 0x4400_0000).unwrap(); assert!(p.mpll_enabled()); assert!(p.cpll_enabled());
+        assert_eq!(p.write(IMMEDIATE_CK, (1 << 22) | (1 << 11)), Err(Fault::Prohibited)); assert!(p.mpll_enabled());
+        p.write(ALIVE_CK, 0x7ffe_0000).unwrap(); assert!(!p.mpll_enabled());
+        p.write(ALIVE_CK, 0xfffe_0000).unwrap(); assert!(p.mpll_enabled());
+        p.write(IMMEDIATE_CK, MPLL_LOW).unwrap(); assert!(!p.mpll_enabled()); assert!(p.cpll_enabled());
+        p.write(ALIVE_CK, 0x7ffe_0000).unwrap(); p.write(ACTIVE_CK, 0).unwrap(); assert!(p.mpll_disabled());
+    }
+    #[test]
     fn brownout_requires_known_software_policy_and_actual_comparator_event() {
         let mut p = Power::default();
         assert_eq!(p.brownout_input(true), Err(Fault::Prohibited));
@@ -136,7 +151,7 @@ mod tests {
         p.write(IMMEDIATE_CK, 0x88).unwrap(); assert!(p.mpll_disabled());
         p.write(ACTIVE_CK, 0x4400_0000).unwrap(); assert!(!p.mpll_disabled());
         p.write(ACTIVE_CK, 0).unwrap(); assert!(p.mpll_disabled());
-        assert_eq!(p.write(IMMEDIATE_CK, 1 << 30), Err(Fault::Prohibited));
+        assert_eq!(p.write(IMMEDIATE_CK, 1 << 29), Err(Fault::Prohibited)); // APLL remains absent.
         assert_eq!(p.write(ALIVE_CK, 0), Err(Fault::Prohibited));
         p.write(ACTIVE_CK, 1 << 27).unwrap(); assert_eq!(p.read(ACTIVE_CK), Ok(1 << 27));
         assert!(p.mpll_disabled()); assert_eq!(p.read(ALIVE_CK), Ok(0x7ffe_0000));

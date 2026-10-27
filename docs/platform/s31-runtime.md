@@ -1179,3 +1179,44 @@ The same-production-source five-pair medians changed S3 -0.464%, C3 +1.208%, C6
 tracked Rust/manifest/lock files in the production workspace members match the
 independently built fixed-source reference. The separate main84 comparison remains
 a qualified cross-branch guard. No UI, product status or goldens changed.
+
+### MPLL and PSRAM source clocks
+
+The fixed IDF clock LL supplies the MPLL tie-high/low sequence, the active-policy
+and alive-root gates, MSPI divider and calibration fields. The private model now
+tracks these independently of CPLL. The functional process requires an explicit
+start, enabled power and analog-master clock. It completes after sixteen private
+runner quanta; this is a software scheduling contract, not measured analog lock
+time. Writing the read-only completion bit cannot manufacture completion. Stop
+cancels pending work while retaining an already completed result; power loss or
+a changed divider invalidates that result.
+
+The supported REF1 divider follows the LL formula `40 MHz * (FB + 1) / 2`.
+Charge-pump/filter tuning and other reference divisors are explicitly unsupported.
+PSRAM source selectors0/1/2 route the actual XTAL/MPLL/CPLL rate and integer divider.
+Selecting an unavailable source is permitted as register configuration, but real
+reads/writes/instruction fetches are denied until both the clock and PHY power
+are available. No chip identity, memory size or MMU map is inferred.
+
+With the same full official Plus2.0.68 image and declared development inputs,
+the original app programs divider0x99 and selects a 400 MHz PSRAM core clock.
+It then faults after **30,183,925 instructions** on the unimplemented dedicated
+MSPI pad-register read **0x2058401c**, app PC **0x2f00fa2a**. The source identifies
+this as IOMUX_MSPI_PIN_PSRAM_D_PIN0. This still precedes a working PSRAM device,
+complete product initialization or framebuffer. INK4 Plus remains unavailable.
+See [functional/source evidence](evidence/s31-bringup/mpll.json) and
+[two retained original-firmware observations](evidence/s31-bringup/mpll-plus-2.0.68.json).
+
+The source-only fixture actually writes and executes code in caller-supplied
+PSRAM, returns42 and emits PASS. Missing analog clock takes its own timeout/FAIL;
+missing PHY power, a gated PLL path, a changed divider and written RO completion
+all fail before retiring the memory entry. These are functional hardware-model
+checks, not claims of physical PSRAM timing or product compatibility.
+
+MPLL-stage validation passes 1,437 workspace Rust tests, 73 private S31 unit tests,
+28 source/ROM fixtures, both Clippy targets and all local CI command groups.
+The five-pair same-production-source CPU guard preserves exact UART/instruction/
+cycle results; median changes are S3 -1.405%, C3 +1.541%, C6 -0.249%.
+All 372 production Rust/manifest/lock files match that fixed reference. These
+small noisy differences are not an S31 speed claim; the main84 cross-branch
+guard remains separately qualified. No UI, product status or goldens changed.

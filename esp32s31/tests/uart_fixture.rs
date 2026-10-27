@@ -636,3 +636,30 @@ fn external_s31_pmu_policy_storage_command_and_active_power_guards() {
         eprintln!("S31 PMU policy mode={mode} steps={} stop={:?} updates={} dbias-requests={}", run.steps, run.stop, m.bus.power.policy.updates, m.bus.power.policy.dbias_requests);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_MPLL_ELF to mpll-probe.elf"]
+fn external_s31_mpll_real_psram_code_with_power_clock_and_calibration_negatives() {
+    let path = std::env::var("S31_MPLL_ELF").expect("build firmware/s31-uart-probe and set S31_MPLL_ELF");
+    let elf = std::fs::read(path).expect("read S31_MPLL_ELF");
+    for mode in 0u32..6 {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap(); m.bus.cache.set_psram_size(65536).unwrap();
+        m.bus.load(0x2f070000, &mode.to_le_bytes(), 4).unwrap();
+        m.pc_watch = Some(esp32s31::PcWatch { address: 0x50000000, ..Default::default() });
+        let run = m.run(10_000);
+        if mode == 0 {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 MPLL PSRAM EXECUTE PASS\n");
+            assert_eq!(m.cpu.x[10], 42); assert_eq!(m.pc_watch.as_ref().unwrap().retired, 1);
+            assert_eq!(m.bus.clocks.mpll.output_hz(), Some(400_000_000)); assert_eq!(m.bus.clocks.psram_core_hz(), Some(200_000_000));
+        } else if mode == 1 {
+            assert!(matches!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_))));
+            assert_eq!(m.bus.uart0.tx_out, b"S31 MPLL FAIL\n"); assert_eq!(m.bus.clocks.mpll.output_hz(), None);
+        } else {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(if mode == 3 || mode == 4 { 1 } else { 7 })));
+            let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!((f.address, f.reason), (0x50000000, emu_core::Fault::Prohibited));
+            assert!(m.bus.uart0.tx_out.is_empty());
+        }
+        if mode != 0 { assert_eq!(m.pc_watch.as_ref().unwrap().retired, 0); }
+        eprintln!("S31 MPLL mode={mode} steps={} stop={:?} mpll={:?} psram={:?} retired={}", run.steps, run.stop, m.bus.clocks.mpll.output_hz(), m.bus.clocks.psram_core_hz(), m.pc_watch.as_ref().unwrap().retired);
+    }
+}

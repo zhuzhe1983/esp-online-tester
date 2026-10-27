@@ -248,3 +248,13 @@ supplied PSRAM backing. The bus checks this PHY power gate as well as the PSRAM
 clock for reads, writes and instruction fetches. Enabling power does not create
 or identify a memory chip. PHY gating preserves the caller's backing bytes;
 external RAM rail loss, decay and retention are not modeled.
+
+`mpll-probe.S` enables the real MPLL power sequence and analog master, configures
+400 MHz, polls functional calibration and routes MPLL/2 to the PSRAM core. It
+writes executable instructions into caller-supplied PSRAM, fetches them through
+the real MMU and checks the returned42 before UART PASS. Negative modes omit the
+analog clock or PHY power, gate the PLL path, change the divider after calibration,
+or attempt to write RO completion with calibration stopped. Each fails before
+retiring the PSRAM entry. Set `S31_MPLL_ELF` to its generated ELF. The calibration
+uses sixteen private runner quanta; it is not a physical settling-time model and
+does not identify a RAM die or replace the original product firmware.

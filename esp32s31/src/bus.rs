@@ -357,7 +357,7 @@ impl S31Bus {
                 return self.fault(address, bytes, true, false, Fault::Prohibited); // CPU-clock loss/suspend not modeled.
             }
             return match self.power.write(address, value) {
-                Ok(()) => { self.clocks.set_cpll_power(self.power.cpll_enabled()); self.clocks.set_fosc_power(self.power.fosc_enabled()); self.mspi.set_bbpll_gate(self.power.bbpll_output_enabled()); Ok(()) }
+                Ok(()) => { self.clocks.set_cpll_power(self.power.cpll_enabled()); self.clocks.mpll.set_power(self.power.mpll_enabled()); self.clocks.set_fosc_power(self.power.fosc_enabled()); self.mspi.set_bbpll_gate(self.power.bbpll_output_enabled()); Ok(()) }
                 Err(e) => self.fault(address, bytes, true, false, e),
             };
         }
@@ -491,8 +491,10 @@ mod tests {
             assert_eq!(b.fetch(PSRAM_VADDR), Err(Fault::Prohibited));
         }
         b.write32(crate::clocks::BASE + 0x68, 0x181).unwrap(); assert_eq!(b.read32(PSRAM_VADDR), Ok(0x00500013));
-        assert_eq!(b.write32(crate::clocks::BASE + 0x68, 0x1a1), Err(Fault::Prohibited)); // No fabricated MPLL rate.
-        assert_eq!(b.read32(crate::clocks::BASE + 0x68), Ok(0x181));
+        b.write32(crate::clocks::BASE + 0x68, 0x1a1).unwrap(); // No powered/calibrated MPLL input.
+        assert_eq!(b.read32(PSRAM_VADDR), Err(Fault::Prohibited)); assert_eq!(b.fetch(PSRAM_VADDR), Err(Fault::Prohibited));
+        assert_eq!(b.write32(PSRAM_VADDR, 0), Err(Fault::Prohibited));
+        b.write32(crate::clocks::BASE + 0x68, 0x181).unwrap();
         b.write32(0x207041e8, 0).unwrap();
         assert_eq!(b.read32(PSRAM_VADDR), Err(Fault::Prohibited)); assert_eq!(b.fetch(PSRAM_VADDR), Err(Fault::Prohibited));
         assert_eq!(b.write32(PSRAM_VADDR, 0), Err(Fault::Prohibited));

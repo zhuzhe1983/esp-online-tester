@@ -14,6 +14,7 @@ pub mod sha;
 pub mod analog;
 pub mod power;
 mod pmu_policy;
+mod mpll;
 pub mod pms;
 pub mod reset;
 pub mod mwdt;
@@ -88,6 +89,7 @@ impl Bringup {
             for (group, wdt) in self.bus.mwdt.iter().enumerate() { if let Some(action) = wdt.reset { return Run { steps, stop: Stop::MwdtReset { group, action } }; } }
             if let Some(reset) = self.bus.power.reset_request { return Run { steps, stop: Stop::PowerReset(reset) }; }
             if let Some(reset) = self.bus.rtc_wdt.reset_request { return Run { steps, stop: Stop::Reset(reset) }; }
+            self.bus.clocks.mpll.advance(1, self.bus.analog.master_enabled() && self.bus.clocks.modem_on());
             self.bus.clocks.advance_calibration(1); // private functional model quantum, not physical PLL cycles
             self.bus.bus_monitor.observe(self.cpu.pc, self.cpu.x[2]);
             self.cpu.irq = self.bus.refresh_irq(self.cpu.mintthresh);
