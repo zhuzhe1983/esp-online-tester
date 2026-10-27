@@ -1,0 +1,64 @@
+{
+  "checkedAt": "2026-10-27T16:07:57.211072+00:00",
+  "baseRevision": "e9f5e7ea",
+  "mechanismHistory": "EX117",
+  "changes": [
+    "Bound self-posted catch-up continuation chains with a timer after eight turns; guest cycle budgets unchanged.",
+    "Render serial console at most once per animation frame, keeping the existing 65536-character per-port tail."
+  ],
+  "artifacts": {
+    "web/wasm/worker.js": {
+      "sha256": "eb26ea86778dfcb7edb15f75787643c9b9796c43905d57968c80cdea27b49dc9",
+      "bytes": 20284
+    },
+    "web/platform/app.js": {
+      "sha256": "7468bea517fb13e0a48adeb72b5c272d9b3a28325519c6346f9eee04407ba721",
+      "bytes": 85375
+    },
+    "tools/worker-channel-test.mjs": {
+      "sha256": "0a0db2a1b22afd9d5b24e3c0d1175d5424a6c973eceafdec9a1d7314edd471ef",
+      "bytes": 17905
+    },
+    "web/wasm/esp32sim.wasm": {
+      "sha256": "dd680ae9a32bccbc16ca715861dd53bd535a6bc7810b0ee4f875227882ec7edc",
+      "bytes": 4086531
+    }
+  },
+  "priorFailures": {
+    "ciRuns": [
+      40532197812,
+      40532644758,
+      40533890269
+    ],
+    "reason": "Linux Pages runtime test timed out waiting for stop after 30 seconds in raw application Hello invalid-header loop.",
+    "browser": "First candidate bounded only the worker chain; browser run/stop command still did not return promptly. Console DOM batching was then added; task-owned session was closed."
+  },
+  "checks": {
+    "nodePlatform": {
+      "passed": 100,
+      "failed": 0
+    },
+    "workerChannel": "passed, including sustained lag and real competing parent control MessagePort",
+    "workerPacing": "passed",
+    "realWasmRecording": {
+      "events": 18,
+      "frameComparison": "equal"
+    },
+    "browser": {
+      "headless": true,
+      "board": "stopwatch",
+      "image": "web/wasm/fw/public/hello_world.bin",
+      "mode": "app-direct",
+      "guestInstructionsBeforePause": 2960991185,
+      "guestSecondsBeforePause": 12.34,
+      "invalidHeadersInTail": 2340,
+      "pauseElapsedMs": 83.10000014305115,
+      "finalStatus": "paused"
+    }
+  },
+  "limitations": [
+    "No throughput improvement or universal pause deadline claimed; a synchronous WASM slice remains uninterruptible.",
+    "The Hello application still fails to boot without its bootloader environment. This is a control responsiveness test, not firmware compatibility validation.",
+    "Linux CI verification remains pending at this receipt revision."
+  ]
+}

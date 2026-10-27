@@ -10,7 +10,7 @@ const traceNow = () => performance.timeOrigin + performance.now();
 // protocol (docs/web-ui.md) to the page as postMessage — text as strings, binary as ArrayBuffers.
 let CPU_HZ = 240e6;   // replaced from the module once an emulator exists: the C3 runs at 160 MHz
 let wasm = null, emu = 0, running = false, t0 = 0, resyncs = 0, lastStat = { wall: 0, insns: 0, cycles: 0 };
-let loopGeneration = 0, booted = false;
+let loopGeneration = 0, booted = false, catchupTurns = 0;
 let flashShadow = null, flashWatchId = null, flashScanAt = 0;
 const FLASH_PAGE = 4096;
 let sdShadow=null,sdWatchId=null,sdScanAt=0;
@@ -102,8 +102,14 @@ function loop(generation = loopGeneration) {
   // Only yield immediately when this turn left catch-up work unfinished. Once we reach
   // its target, sleep even if running the guest has put us slightly behind wall time.
   // MessageChannel avoids the nested timer clamp during expensive interactive turns.
-  if (cur < target) yieldPort.postMessage(generation);
-  else setTimeout(() => loop(generation), Math.max(1, Math.min(20, aheadMs)));
+  // A self-posting MessagePort can keep draining on some hosts before another
+  // port (including stop/input commands) gets serviced. Bound that chain without
+  // reintroducing a clamped timer on every interactive turn (EX117).
+  if (cur < target && ++catchupTurns < 8) yieldPort.postMessage(generation);
+  else {
+    catchupTurns = 0;
+    setTimeout(() => loop(generation), Math.max(1, Math.min(20, aheadMs)));
+  }
 }
 const yieldChannel = typeof MessageChannel === 'function' ? new MessageChannel() : null;
 const yieldPort = yieldChannel ? yieldChannel.port2 : { postMessage: generation => setTimeout(() => loop(generation), 0) };
@@ -157,7 +163,7 @@ onmessage = async (ev) => {
       // Keep credits for already posted frames until their ACKs arrive, but never send
       // a retained frame from the emulator being replaced.
       pendingFrame = null;sdShadow=null;sdWatchId=null;
-      pacing = createPacing();
+      pacing = createPacing(); catchupTurns = 0;
       pendingInputTrace = [];
       if (emu) { wasm.esp32sim_delete(emu); emu = 0; }
       emu = withBytes(enc.encode(m.board), (p, n) => wasm.esp32sim_new(p, n, m.flash_mb | 0, m.psram_mb | 0));
@@ -200,7 +206,7 @@ onmessage = async (ev) => {
     else if (m.op === 'resume') {
       if (!emu || !booted) throw new Error('no booted emulator to resume');
       if (!running) {
-        loopGeneration++; pacing = createPacing();
+        loopGeneration++; pacing = createPacing(); catchupTurns = 0;
         const wall = performance.now(), cycles = wasm.esp32sim_cycles(emu);
         t0 = wall - cycles / CPU_HZ * 1000;
         lastStat = { wall, insns: wasm.esp32sim_insns(emu), cycles };

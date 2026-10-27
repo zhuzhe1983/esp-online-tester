@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { MessageChannel } from 'node:worker_threads';
+import { MessageChannel, Worker } from 'node:worker_threads';
 import { runInNewContext } from 'node:vm';
 import { applyExperiments, HW } from '../web/wasm/experiments.mjs';
 import { createPacing } from '../web/wasm/pacing.mjs';
@@ -89,6 +89,71 @@ for (const cost of [0, 1 / 24_000_000]) {
     await h.nextMessage();
     assert.equal(h.runs.length, stopped, 'queued immediate yield respects stop');
   } finally { h.close(); }
+}
+
+// A continuously lagging guest must periodically end its self-posted port chain.
+// Hosts are allowed to drain one port before servicing the parent control port;
+// exercising more than one short turn is essential to catch this starvation.
+{
+  const h = await harness(1 / 16_000);
+  try {
+    await h.send({op:'start'}); h.setWall(100);
+    let delivered = h.nextMessage(); h.timers.shift().callback();
+    while (!h.timers.length) { await delivered; delivered = h.nextMessage(); }
+    assert.ok(h.runs.length > 1, 'regression executes sustained catch-up work');
+    assert.ok(h.immediate <= 8, 'self-posted continuation chain stays bounded');
+    assert.equal(h.timers.length,1,'catch-up gives other event sources a timer boundary');
+    const boundary = h.runs.length;
+    await h.send({op:'stop'});
+    h.timers.shift().callback();
+    assert.equal(h.runs.length,boundary,'stop remains effective across the fairness timer');
+    assert.equal(h.messages.at(-1).stopped,0);
+  } finally { h.close(); }
+}
+
+// Exercise a real parent control port competing with the worker's self-posting
+// continuation port. A deliberately slow guest keeps catch-up work outstanding.
+{
+  const script = `
+    import {parentPort, workerData, MessageChannel} from 'node:worker_threads';
+    import {runInNewContext} from 'node:vm';
+    const {createPacing} = await import(workerData.pacing);
+    let cycles = 0, first = true;
+    const sleeper = new Int32Array(new SharedArrayBuffer(4));
+    const wasm = {
+      memory: new WebAssembly.Memory({initial:1}), esp32sim_alloc:()=>128,
+      esp32sim_free(){}, esp32sim_new:()=>1, esp32sim_set_jit(){}, esp32sim_boot:()=>0,
+      esp32sim_cpu_hz:()=>240e6, esp32sim_cycles:()=>cycles, esp32sim_insns:()=>cycles,
+      esp32sim_run(_emu,amount){
+        Atomics.wait(sleeper,0,0,30); cycles+=Math.min(amount,64000);
+        if(first){first=false;parentPort.postMessage({firstSlice:true});} return 0;
+      }, esp32sim_out_take:()=>0,
+    };
+    const context = {createPacing,createJitHost:()=>({imports:{}}),applyExperiments(){},
+      TextEncoder,TextDecoder,MessageChannel,performance,Date,setTimeout,
+      postMessage:m=>parentPort.postMessage(m),
+      WebAssembly:{instantiate:async()=>({instance:{exports:wasm}})}};
+    runInNewContext(workerData.source,context);
+    parentPort.on('message',data=>context.onmessage({data}));
+    parentPort.postMessage({testReady:true});
+  `;
+  const thread = new Worker(new URL(`data:text/javascript,${encodeURIComponent(script)}`), {
+    workerData:{source,pacing:new URL('../web/wasm/pacing.mjs',import.meta.url).href},
+  });
+  let deadline;
+  try {
+    await new Promise((resolve,reject)=>{
+      deadline=setTimeout(()=>reject(new Error('Continuous catch-up starved the real stop control port')),5000);
+      thread.on('error',reject);
+      thread.on('message',m=>{
+        if(m.testReady)thread.postMessage({op:'init'});
+        else if(m.ready)thread.postMessage({op:'create',board:'test'});
+        else if(m.created)thread.postMessage({op:'start'});
+        else if(m.firstSlice)thread.postMessage({op:'stop'});
+        else if(m.stopped!==undefined){assert.equal(m.stopped,0);resolve();}
+      });
+    });
+  } finally { clearTimeout(deadline); await thread.terminate(); }
 }
 
 // Execute each supported consumer's real handler against the real worker drain/ACK

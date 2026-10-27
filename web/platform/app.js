@@ -60,13 +60,19 @@ function toast(message, isError = false) {
   const node = $('toast'); clearTimeout(toastTimer); node.textContent = message; node.classList.toggle('error', isError); node.hidden = false;
   toastTimer = setTimeout(() => { node.hidden = true; }, isError ? 7000 : 3500);
 }
-function appendConsole(message) {
-  const output = $('serial-output'); if (!output) return;
-  const atBottom = output.scrollTop + output.clientHeight >= output.scrollHeight - 30;
-  output.textContent = (output.textContent + message).slice(-65536);
-  if (atBottom) output.scrollTop = output.scrollHeight;
+let consoleRenderPending = false;
+function appendConsole() {
+  if (consoleRenderPending) return;
+  consoleRenderPending = true;
+  requestAnimationFrame(() => {
+    consoleRenderPending = false;
+    const output = $('serial-output'); if (!output) return;
+    const atBottom = output.scrollTop + output.clientHeight >= output.scrollHeight - 30;
+    output.textContent = consoleBuffers[$('serial-port')?.value || 'uart0'] || '';
+    if (atBottom) output.scrollTop = output.scrollHeight;
+  });
 }
-function log(message) { for (const port of Object.keys(consoleBuffers)) consoleBuffers[port] = (consoleBuffers[port] + message).slice(-65536); appendConsole(message); }
+function log(message) { for (const port of Object.keys(consoleBuffers)) consoleBuffers[port] = (consoleBuffers[port] + message).slice(-65536); appendConsole(); }
 function report(error) {
   const message = errorMessages[error.code] || error.message || String(error);
   toast(message, true); text('load-status', message);
@@ -219,7 +225,7 @@ function onRuntimeEvent(event) {
   } else if (event.type === 'serial') {
     if (Object.hasOwn(consoleBuffers, event.source)) {
       consoleBuffers[event.source] = (consoleBuffers[event.source] + event.data).slice(-65536);
-      if (event.source === ($('serial-port')?.value || 'uart0')) appendConsole(event.data);
+      if (event.source === ($('serial-port')?.value || 'uart0')) appendConsole();
     } else log(event.data);
   }
   else if (event.type === 'error') { text('load-status', errorMessages[event.error.code] || event.error.message); showFirmwareIssue(event.error); }
