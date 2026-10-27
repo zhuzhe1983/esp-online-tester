@@ -8,6 +8,7 @@ import {withPlatformTestFixtures,DIAGNOSTIC_FIRMWARE_ID} from './fixtures/platfo
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const scene={schemaVersion:'1',productId:'m5stack-stopwatch',firmware:{manifestUrl:'https://example.org/demo.json',sha256:'a'.repeat(64)},accessories:[],keyMapping:{KeyA:'button-a'},view:{mode:'studio',deviceView:'3d'}};
 const firmware={source:'remote',manifestUrl:scene.firmware.manifestUrl,manifestHash:'a'.repeat(64),artifacts:[{kind:'app',url:'https://example.org/app.bin',sha256:'b'.repeat(64),bytes:1024}],appDirect:false,stubs:[]};
+firmware.metadata={name:'Runtime firmware label',version:'1.2.3',source:'esp-app-description'};
 function harness(extraControls=[]){
   const listeners=new Set();let time=0,status='ready',configured=structuredClone(scene),loaded=structuredClone(firmware),blocked=null;
   const calls=[], counters={resets:0,loads:0},product={id:scene.productId,controls:[{id:'button-a',type:'button',pin:2},...extraControls],runtime:{encoder:extraControls.some(c=>c.type==='encoder')},display:{width:466,height:466,framebufferWidth:468,framebufferHeight:466}};
@@ -45,6 +46,7 @@ try{
   await api.input({type:'touch',x:467,y:465,down:true});
   await api.input({type:'touch',x:20,y:50,down:true});
   recording=await api.recordingStop();
+  assert.equal(Object.hasOwn(recording.firmware,'metadata'),false,'Descriptive metadata must not break or leak into portable recordings');
   assert.equal(recording.events.length,5,'Only delivered button/touch actions and successful cleanup releases are recorded');
   assert.equal(recording.events[1].x,1);assert.equal(recording.events[1].y,1);
   assert.ok(!JSON.stringify(recording).includes('ignoredScript'));

@@ -17,6 +17,8 @@ const pressInput=event=>event.type==='accessory-angle'?{type:event.type,accessor
 const pressId=event=>event.type==='accessory-button'?`accessory:${event.accessoryId}:${event.id}`:event.type==='matrix-key'?`matrix:${event.row}:${event.column}`:`button:${event.id}`;
 const sourceUrl=value=>{try{const url=new URL(value);return typeof value==='string'&&value.length<=4096&&!url.username&&!url.password&&(url.protocol==='https:'||(url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)));}catch{return false;}};
 const fingerprint = firmware => json({manifestHash:firmware.manifestHash ?? null,appDirect:!!firmware.appDirect,executionMode:firmware.executionMode || 'wasm-jit',stubs:firmware.stubs || [],artifacts:firmware.artifacts.map(({kind,sha256,bytes,at}) => ({kind,sha256,bytes,...(at === undefined ? {} : {at})}))});
+// Descriptive browser metadata is not part of the portable execution receipt.
+const recordingFirmware = firmware => clone(Object.fromEntries(['source','manifestUrl','manifestHash','artifacts','appDirect','stubs','executionMode'].filter(key=>firmware[key]!==undefined).map(key=>[key,firmware[key]])));
 
 export function validateRecording(recording, {scene} = {}) {
   const errors = [], add = (code,path,message) => errors.push({code,path,message});
@@ -215,7 +217,7 @@ export function createRecordingController(runtime) {
           await runtime.reset();check(active);
           const current=await runtime.observe(),display=current.product.display;
           if(!current.firmware||!sameScene(current.scene,state.scene))throw err('RECORDING_SCENE_MISMATCH','Scene changed while preparing the recording.');
-          recording={schemaVersion:'1',scene:clone(current.scene),firmware:clone(current.firmware),clock:{unit:'guest-seconds',origin:'reset',delivery:'worker-acknowledgement'},display:display?{width:display.framebufferWidth||display.width,height:display.framebufferHeight||display.height}:null,duration:0,events:[]};
+          recording={schemaVersion:'1',scene:clone(current.scene),firmware:recordingFirmware(current.firmware),clock:{unit:'guest-seconds',origin:'reset',delivery:'worker-acknowledgement'},display:display?{width:display.framebufferWidth||display.width,height:display.framebufferHeight||display.height}:null,duration:0,events:[]};
           requireValid(recording);
           progress={index:0,total:0,elapsedGuestSeconds:0};change('recording');return observe();
         }catch(e){if(active.cancelled){change('cancelled');return observe();}failure(e);throw e;}finally{ownLifecycle=false;active.finish();}
