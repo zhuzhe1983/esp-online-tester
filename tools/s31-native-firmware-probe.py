@@ -61,6 +61,8 @@ def main():
     parser.add_argument("--analog-dig", help="explicit eight-hex-digit DIG registers5,7,13,14 seed")
     parser.add_argument("--analog-perif-glitch", help="explicit two-hex-digit PERIF register10 seed; no voltage/glitch reset claim")
     parser.add_argument("--peripheral-pad", action="append", default=[], help="explicit unresolved peripheral pad sample pin:0|1; repeat for each pin, not measured board wiring")
+    parser.add_argument("--psram-mr", help="explicit AP-compatible MR0,1,2,3,4,8 responses,12hex; not identified product die")
+    parser.add_argument("--psram-bytes", type=int, help="explicit separate PSRAM backing bytes; no inferred density")
     parser.add_argument("--steps", type=int, default=200000, help="bounded instruction budget, maximum 100000000")
     args = parser.parse_args()
     if not 1 <= args.steps <= 100000000:
@@ -94,6 +96,10 @@ def main():
         command.append("--rtc-timer-from-cpu")
     if args.bbpll_hz is not None:
         command.append("--bbpll-hz=" + str(args.bbpll_hz))
+    if args.psram_mr is not None:
+        command.append("--psram-mr=" + args.psram_mr)
+    if args.psram_bytes is not None:
+        command.append("--psram-bytes=" + str(args.psram_bytes))
     if args.nor_sfdp:
         command.append("--nor-sfdp=" + args.nor_sfdp)
     if args.nor_jedec:
@@ -112,7 +118,7 @@ def main():
     result = subprocess.run(command, input=data, capture_output=True, timeout=120, check=True)
     report = {"stepBudget": args.steps, "source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
               "partitions": partitions, "images": images,
-              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "sfdpInterval": args.nor_sfdp, "bbpllInputHz": args.bbpll_hz, "rtcTimerFromCpuCycles": args.rtc_timer_from_cpu, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig, "unresolvedPeripheralPads": args.peripheral_pad},
+              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "sfdpInterval": args.nor_sfdp, "bbpllInputHz": args.bbpll_hz, "rtcTimerFromCpuCycles": args.rtc_timer_from_cpu, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig, "unresolvedPeripheralPads": args.peripheral_pad, "psramModeResponses": args.psram_mr, "psramBackingBytes": args.psram_bytes},
               "uart": result.stdout.decode("utf-8", errors="replace"),
               "diagnostic": result.stderr.decode("utf-8", errors="replace"),
               "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk"}

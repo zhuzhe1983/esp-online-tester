@@ -686,3 +686,31 @@ fn external_s31_dedicated_mspi_pad_hold_and_release_control_real_memory_executio
         eprintln!("S31 MSPI pads mode={mode} steps={} stop={:?} held={} retired={}", run.steps, run.stop, m.bus.mspi_pads.held(), m.pc_watch.as_ref().unwrap().retired);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_PSRAM_CONTROLLER_ELF to psram-controller-probe.elf"]
+fn external_s31_psram_serial_reads_writes_and_executes_with_device_power_clock_and_axi_negatives() {
+    let path = std::env::var("S31_PSRAM_CONTROLLER_ELF").expect("build firmware/s31-uart-probe and set S31_PSRAM_CONTROLLER_ELF");
+    let elf = std::fs::read(path).expect("read S31_PSRAM_CONTROLLER_ELF");
+    for mode in 0u32..10 {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        if mode != 9 { m.bus.cache.set_psram_size(65536).unwrap(); }
+        if mode != 1 { m.bus.psram_controller.attach_mode([0x0c, 0x0d, 0xdf, 0x80, 0x20, 5]).unwrap(); }
+        m.bus.load(0x2f070000, &mode.to_le_bytes(), 4).unwrap();
+        m.pc_watch = Some(esp32s31::PcWatch { address: 0x50000000, ..Default::default() });
+        let run = m.run(3000);
+        if mode == 0 {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 PSRAM SERIAL EXECUTE PASS\n");
+            assert_eq!(m.cpu.x[10], 42); assert_eq!(m.pc_watch.as_ref().unwrap().retired, 1);
+            assert_eq!(m.bus.psram_controller.command_counts, [2, 1, 1, 1]);
+        } else {
+            let fetch = matches!(mode, 5 | 6);
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(if fetch { 1 } else { 7 })));
+            let f = m.bus.first_fault.as_ref().unwrap();
+            assert_eq!(f.address, if fetch { 0x50000000 } else { 0x20503000 });
+            assert_eq!(f.reason, if mode == 9 { emu_core::Fault::Unmapped } else { emu_core::Fault::Prohibited });
+            assert!(m.bus.uart0.tx_out.is_empty()); assert_eq!(m.pc_watch.as_ref().unwrap().retired, 0);
+        }
+        eprintln!("S31 PSRAM serial mode={mode} steps={} stop={:?} commands={:?} retired={}", run.steps, run.stop, m.bus.psram_controller.command_counts, m.pc_watch.as_ref().unwrap().retired);
+    }
+}

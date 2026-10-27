@@ -1,7 +1,7 @@
 //! Run a caller-supplied SRAM/ROM ELF and report the first unimplemented access.
 use std::io::Write;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut sfdp = None; let mut bbpll = None; let mut rtc_timer_from_cpu = false; let mut watch_pc = None; let mut peripheral_pads = Vec::new();
+    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut sfdp = None; let mut bbpll = None; let mut rtc_timer_from_cpu = false; let mut watch_pc = None; let mut peripheral_pads = Vec::new(); let mut psram_mode = None; let mut psram_bytes = None;
     while let Some(arg) = args.peek() {
         match arg.as_str() {
             "--rom" => rom = true, "--usb-host" => usb_host = true,
@@ -12,6 +12,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 if peripheral_pads.iter().any(|&(n, _)| n == pin) { return Err("duplicate peripheral-pad input".into()); }
                 peripheral_pads.push((pin, level));
             }
+            value if value.starts_with("--psram-mr=") => {
+                let text = &value["--psram-mr=".len()..]; if !text.is_ascii() || text.len() != 12 { return Err("PSRAM MR0,1,2,3,4,8 requires twelve hex digits".into()); }
+                let mut mode = [0u8; 6]; for (i, byte) in mode.iter_mut().enumerate() { *byte = u8::from_str_radix(&text[i * 2..i * 2 + 2], 16)?; }
+                psram_mode = Some(mode);
+            }
+            value if value.starts_with("--psram-bytes=") => psram_bytes = Some(value["--psram-bytes=".len()..].parse::<usize>()?),
             "--rtc-timer-from-cpu" => rtc_timer_from_cpu = true,
             "--rom-spi0-shadow" => spi0_shadow = true,
             value if value.starts_with("--bbpll-hz=") => bbpll = Some(value["--bbpll-hz=".len()..].parse::<u64>()?),
@@ -44,7 +50,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         args.next();
     }
-    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--rtc-timer-from-cpu] [--watch-pc=0xADDRESS] [--peripheral-pad=pin:0|1] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
+    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--rtc-timer-from-cpu] [--watch-pc=0xADDRESS] [--peripheral-pad=pin:0|1] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] [--psram-mr=12hex --psram-bytes=N] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
     let input = args.next().unwrap_or_default();
     let budget = args.next().map(|s| s.parse::<u64>()).transpose()?.unwrap_or(100_000).min(100_000_000);
     if args.next().is_some() { return Err("too many bringup arguments".into()); }
@@ -64,6 +70,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if let Some(id) = nor {
         m.bus.mspi.attach_flash(id, 0).map_err(|e| format!("invalid NOR descriptor: {e:?}"))?;
         eprintln!("development NOR JEDEC={id:02x?} status=0 (caller input, not identified product hardware)");
+    }
+    match (psram_mode, psram_bytes) {
+        (Some(mode), Some(size)) if size > 0 => {
+            m.bus.psram_controller.attach_mode(mode).map_err(|e| format!("invalid PSRAM MR configuration: {e:?}"))?;
+            m.bus.cache.set_psram_size(size)?;
+            eprintln!("development AP-compatible PSRAM MR0,1,2,3,4,8={mode:02x?} bytes={size} (caller input, not identified product die)");
+        }
+        (None, None) => (),
+        _ => return Err("PSRAM requires both explicit MR responses and nonzero backing bytes".into()),
     }
     if let Some(hz) = bbpll {
         m.bus.mspi.set_bbpll_input(Some(hz)).map_err(|e| format!("unsupported BBPLL input: {e:?}"))?;
@@ -100,6 +115,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("analog-dig={:?}", m.bus.analog.dig_reg());
     eprintln!("clock-rates={:?} rtc-fast-hz={} rtc-slow-hz={} cpll-control={:?}", m.bus.clocks.rates(), m.bus.clocks.rtc_fast_hz(), m.bus.clocks.rtc_slow_hz(), m.bus.clocks.read(0x174));
     eprintln!("mpll-divider={:#x} mpll-hz={:?} psram-core-hz={:?}", m.bus.clocks.mpll.divider(), m.bus.clocks.mpll.output_hz(), m.bus.clocks.psram_core_hz());
+    eprintln!("psram-command-counts-mr-read-write-array-read-write={:?}", m.bus.psram_controller.command_counts);
+    eprintln!("psram-commands={} mode={:02x?} ddr={:?} mosi={:?} miso={:?}", m.bus.psram_controller.commands, m.bus.psram_controller.mode(), m.bus.psram_controller.read(1, 0xd4), m.bus.psram_controller.read(1, 0x24), m.bus.psram_controller.read(1, 0x28));
+    eprintln!("psram-last-command={:?} ctrl={:?} user={:?} user1={:?} user2={:?} address={:?} misc={:?}", m.bus.psram_controller.last_command, m.bus.psram_controller.read(1, 8), m.bus.psram_controller.read(1, 0x18), m.bus.psram_controller.read(1, 0x1c), m.bus.psram_controller.read(1, 0x20), m.bus.psram_controller.read(1, 4), m.bus.psram_controller.read(1, 0x34));
     eprintln!("mspi-pads-held={} dqs-requested={} pin-d={:?} pin-dqs={:?}", m.bus.mspi_pads.held(), m.bus.mspi_pads.dqs_requested(), m.bus.mspi_pads.read(0x2058401c), m.bus.mspi_pads.read(0x2058403c));
     eprintln!("pmu-updates={} dbias-requests={} readonly-write-attempts={}", m.bus.power.policy.updates, m.bus.power.policy.dbias_requests, m.bus.power.policy.readonly_write_attempts);
     eprintln!("permission-writes={}", m.bus.permissions.writes);

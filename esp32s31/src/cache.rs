@@ -126,6 +126,7 @@ impl Cache {
         data.extend_from_slice(bytes); self.flash = data; Ok(())
     }
     pub(crate) fn flash_bytes_mut(&mut self) -> &mut [u8] { &mut self.flash }
+    pub(crate) fn psram_bytes_mut(&mut self) -> &mut [u8] { &mut self.psram }
     pub fn set_psram_size(&mut self, bytes: usize) -> Result<(), String> {
         if bytes > 64 * 1024 * 1024 { return Err("S31 development PSRAM input exceeds 64 MiB".into()); }
         let mut data = Vec::new(); data.try_reserve_exact(bytes).map_err(|e| e.to_string())?;

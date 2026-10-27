@@ -1254,3 +1254,59 @@ CPU medians change S3 +0.144%,C3 +0.611%,C6 +1.205%,with exact UART,instruction 
 cycle results. All372 production Rust/manifest/lock files match the fixed reference.
 These small differences are not an S31 speed claim; the main84 cross-branch guard
 is separately qualified. No product status,UI or golden output changed.
+
+### PSRAM serial controller and explicit test device
+
+S31 MSPI2/3 is modeled separately from the Flash controller. The private subset
+retains documented controller reset values and configuration masks, checks APB,
+core clock, PHY power and DQS before a serial operation, and applies real command,
+address, chip-select, FIFO-length and DDR-phase checks. Unsupported protocols and
+unknown registers fail explicitly. Interrupt enable/routing, ECC, sleep/reset
+commands and physical signal timing remain unsupported.
+
+The optional `--psram-mr=<12hex>` argument supplies six AP-compatible mode bytes in
+MR0,MR1,MR2,MR3,MR4,MR8 order; `--psram-bytes=N` separately allocates backing memory.
+Both are required together. There is no default die,identity,density,good-die flag
+or memory allocation. Controller reset preserves external mode state and contents.
+The older isolated raw-MMU fixtures retain their explicit backing-memory path;
+attaching a serial die requires configured MSPI2 AXI and read/write commands before
+CPU memory access. Serial reads/writes and CPU accesses share the same byte array.
+
+AP Memory's APS256XXN-OBRx Rev1.00 datasheet section6.7 supplies the non-linear mode
+read pairs: address4 returns MR4/MR8,address8 returns MR8/MR0,and reads repeat that
+pair. A mode write changes only the addressed byte,not the following read-only
+register. Array transactions implement x8/x16 addressing,wrap/hybrid/linear burst
+selection and bounded row crossing. Wrong phases,missing devices,invalid addresses
+or out-of-bounds writes cannot create success/data. Completed peripheral commands
+raise real raw end status; this is synchronous functional behavior,not a serial
+waveform or contention/timing guarantee.
+
+With the same unmodified full Plus2.0.68 image and the explicitly supplied reference
+test-device responses `0c0ddf802005` plus33,554,432 backing bytes,the firmware performs
+6,222 PSRAM commands and prints `Found 32MB PSRAM`, `Speed: 200MHz` and `Multicore app`.
+These identity/capacity messages reflect the caller's reference test device; they
+are **not identification of the Plus physical die**. Timing-tuning reads return
+actual previously written data at every represented delay setting; analog signal
+margin,thermal variation and real calibration success are not modeled.
+
+The next observed fault is the original application's write to **LP_APM_FUNC_CTRL
+0x20706cbc**, PC **0x401e8666**, after **38,340,198 instructions**. Full multicore
+startup,product peripherals and the framebuffer are not ready; Plus stays unavailable.
+The source-only fixture independently writes code through real SPI transactions,
+reads it back,then fetches it through the configured MMU/AXI path and returns42.
+Its negative cases cover absent die,DQS,PHY and core clocks; invalid MR/commands;
+missing backing; and closed AXI or removed DQS before instruction fetch.
+
+See [source and fixture evidence](evidence/s31-bringup/psram-controller.json) and
+[original-image controls](evidence/s31-bringup/psram-controller-plus-2.0.68.json).
+Final validation passes 1,443 workspace Rust tests,79 private S31 unit tests,
+30 source/ROM fixtures,both Clippy targets,the private WASM compile and all local
+CI command groups. Final-source checks repeat the two narrowed unsupported
+boundaries; initial logs and the failed relative-fixture-path invocation are
+retained separately. No product status,UI or golden outputs change.
+
+Five-pair CPU guards preserve exact UART, instruction and cycle results. The
+same-production-source medians change S3 -0.980%, C3 -0.140%, C6 -1.153%; all 372
+production Rust/manifest/lock files match the fixed reference. These small noisy
+changes are not an S31 speed claim. The separate main84 cross-branch guard remains
+qualified by [baseline provenance](evidence/s31-bringup/baseline-qualification.json).

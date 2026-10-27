@@ -268,3 +268,12 @@ instruction fetch or data read, with no retired PSRAM entry. Set
 RW configuration but refuses transfers: it does not invent a frozen physical
 waveform or simultaneous-write sampling order. DQS power is a requested field;
 the generic backing-memory path does not claim a DDR serial protocol or RAM die.
+
+`psram-controller-probe.S` reads the documented AP mode-register pairs,modifies
+MR8 while preserving MR0 despite an extra bus byte,writes instructions through
+MSPI3,reads actual data back,then configures MSPI2/MMU and executes from that same
+backing array. Set `S31_PSRAM_CONTROLLER_ELF` to an absolute ELF path. The ten modes
+include a PASS/return42 and nine negatives: missing device,DQS,PHY/core clock,
+closed AXI,DQS removed before fetch,invalid MR/command and absent backing.
+The test supplies reference MR0,1,2,3,4,8 bytes explicitly; this does not identify a
+physical Plus die. DDR transactions are functional,with no analog timing margin.

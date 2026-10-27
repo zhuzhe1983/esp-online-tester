@@ -11,6 +11,7 @@ use crate::usb_console::UsbConsole;
 use crate::bus_monitor::BusMonitor;
 use crate::mspi::Mspi;
 use crate::mspi_pads::MspiPads;
+use crate::psram_controller::PsramController;
 use crate::sha::ShaEngine;
 use crate::analog::Analog;
 use crate::power::Power;
@@ -57,6 +58,7 @@ pub struct S31Bus {
     pub bus_monitor: BusMonitor,
     pub mspi: Mspi,
     pub mspi_pads: MspiPads,
+    pub psram_controller: PsramController,
     pub sha: ShaEngine,
     pub analog: Analog,
     pub power: Power,
@@ -77,7 +79,7 @@ impl S31Bus {
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16],
-            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), sha: ShaEngine::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), reset: ResetControl::default(), mwdt: std::array::from_fn(|_| Mwdt::default()), rtc_timer: RtcTimer::default(), pc: 0, first_fault: None }
+            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), reset: ResetControl::default(), mwdt: std::array::from_fn(|_| Mwdt::default()), rtc_timer: RtcTimer::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -222,7 +224,7 @@ impl S31Bus {
             return match self.pads.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if Cache::is_memory(address) {
-            if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(false).is_err()) { return self.fault(address, bytes, false, false, Fault::Prohibited); }
+            if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(self.psram_controller.mode().is_some()).is_err() || self.psram_controller.memory_ready(false).is_err()) { return self.fault(address, bytes, false, false, Fault::Prohibited); }
             if address < crate::cache::PSRAM_VADDR && !self.mspi.flash_accessible() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
             let mut value = [0; 4];
             for (i, byte) in value.iter_mut().take(bytes).enumerate() {
@@ -239,6 +241,11 @@ impl S31Bus {
         if let Some(off) = offset(address, crate::mspi::BASE, bytes, 0x1400) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return match self.mspi.read(off / 0x1000, (off & 0xfff) as u32) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
+        if let Some(off) = offset(address, crate::psram_controller::BASE, bytes, 0x1400) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            if !self.clocks.psram_bus_on() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
+            return match self.psram_controller.read(off / 0x1000, (off & 0xfff) as u32) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if let Some(off) = offset(address, RTC_WDT_BASE, bytes, 0x400) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -377,7 +384,7 @@ impl S31Bus {
         }
         if Clocks::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
-            return match self.clocks.write(address - crate::clocks::BASE, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+            return match self.clocks.write(address - crate::clocks::BASE, value) { Ok(()) => { if address == crate::clocks::BASE + 0x68 && value & 4 != 0 { self.psram_controller.reset(); } Ok(()) }, Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if MspiPads::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
@@ -388,7 +395,7 @@ impl S31Bus {
             return match self.pads.write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if Cache::is_memory(address) {
-            if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(false).is_err()) { return self.fault(address, bytes, true, false, Fault::Prohibited); }
+            if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(self.psram_controller.mode().is_some()).is_err() || self.psram_controller.memory_ready(true).is_err()) { return self.fault(address, bytes, true, false, Fault::Prohibited); }
             return match self.cache.write(address, value, bytes) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if Cache::is_mmio(address) {
@@ -398,6 +405,12 @@ impl S31Bus {
         if let Some(off) = offset(address, crate::mspi::BASE, bytes, 0x1400) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             return match self.mspi.write(off / 0x1000, (off & 0xfff) as u32, value, self.cache.flash_bytes_mut()) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if let Some(off) = offset(address, crate::psram_controller::BASE, bytes, 0x1400) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if !self.clocks.psram_bus_on() { return self.fault(address, bytes, true, false, Fault::Prohibited); }
+            if off & 0xfff == 0 && value != 0 && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(true).is_err()) { return self.fault(address, bytes, true, false, Fault::Prohibited); }
+            return match self.psram_controller.write(off / 0x1000, (off & 0xfff) as u32, value, self.cache.psram_bytes_mut()) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if let Some(off) = offset(address, RTC_WDT_BASE, bytes, 0x400) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
@@ -456,7 +469,7 @@ impl Bus for S31Bus {
             let Some(address) = pc.checked_add(i as u32) else { return self.fault(pc, 4, false, true, Fault::Unmapped); };
             if let Some(src) = self.memory(address, 1) { data[i] = src[0]; }
             else if Cache::is_memory(address) {
-                if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(false).is_err()) { return self.fault(pc, 4, false, true, Fault::Prohibited); }
+                if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(self.psram_controller.mode().is_some()).is_err() || self.psram_controller.memory_ready(false).is_err()) { return self.fault(pc, 4, false, true, Fault::Prohibited); }
                 if address < crate::cache::PSRAM_VADDR && !self.mspi.flash_accessible() { return self.fault(pc, 4, false, true, Fault::Prohibited); }
                 match self.cache.read_byte(address, true) {
                     Ok(v) => data[i] = v, Err(e) => return self.fault(pc, 4, false, true, e),

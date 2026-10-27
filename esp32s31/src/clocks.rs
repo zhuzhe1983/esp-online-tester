@@ -52,6 +52,7 @@ impl Clocks {
         }
         Ok(())
     }
+    pub fn psram_bus_on(&self) -> bool { self.psram & 5 == 1 }
     pub fn psram_on(&self) -> bool { self.psram_core_hz().is_some() }
     pub fn psram_core_hz(&self) -> Option<u64> {
         if self.psram & 0x107 != 0x101 { return None; }
