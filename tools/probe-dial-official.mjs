@@ -31,9 +31,13 @@ try {
  const api=installAutomation(runtime,{target:{location:{href:baseUrl}}});
  if(mode==='uiflow') {
   // UIFlow 2.5.3 samples the physical quadrature into its three-page selector.
-  // This fixed image routes -1 to WIFI & SERVER SETTING; touch selects PASS.
+  // This fixed image routes -1 to WIFI & SERVER SETTING. Its dropdown cycles
+  // SSID/PASS/SERVER each >150 ms (uiflow-micropython 50e44078 framework.py:71),
+  // so host-polled holds must assert the selected field, not a fixed repeat count.
   await runtime.input({type:'encoder',id:'encoder',steps:-1});await advance(.8);const settings=await capture('turned');assert.notDeepEqual(settings,start);receipt.checks.push('physical-encoder-changes-official-app-page');
-  await runtime.input({type:'touch',x:180,y:74,down:true});await advance(.2);await runtime.input({type:'touch',x:180,y:74,down:false});await advance(.5);const changed=await capture('touched');assert.notDeepEqual(changed,settings);assert.deepEqual([...settings.subarray((130*240+100)*4,(130*240+100)*4+4)],[255,255,255,255]);assert.deepEqual([...changed.subarray((130*240+100)*4,(130*240+100)*4+4)],[222,223,222,255]);receipt.checks.push('ft3267-touch-selects-official-password-field');
+  receipt.touchDown=await runtime.input({type:'touch',x:180,y:74,down:true});await advance(.2);receipt.touchUp=await runtime.input({type:'touch',x:180,y:74,down:false});await advance(.5);const changed=await capture('touched');assert.notDeepEqual(changed,settings);
+  const rows=[100,130,172],pixel=(image,y)=>[...image.subarray((y*240+60)*4,(y*240+60)*4+4)];for(const y of rows)assert.deepEqual(pixel(settings,y),[255,255,255,255]);
+  const selected=rows.map(y=>pixel(changed,y)),gray=[222,223,222,255];assert.equal(selected.filter(p=>p.every((v,i)=>v===gray[i])).length,1,'Exactly one official option label must be selected');for(const p of selected)assert(p.every((v,i)=>v===gray[i])||p.every(v=>v===255),'Other option labels must remain white');receipt.selectedOption=['ssid','password','server'][selected.findIndex(p=>p[0]===222)];receipt.checks.push('ft3267-touch-cycles-official-option-selector');
  } else {
   const before=(await runtime.observe()).serial.length;await api.press('button',{durationMs:150});await advance(.5);const lcd=await capture('pressed');assert.notDeepEqual(lcd,start);receipt.checks.push('gpio42-enters-official-lcd-test');
   await runtime.input({type:'encoder',id:'encoder',steps:1});await advance(.5);const page=await capture('turned');assert.notDeepEqual(page,lcd);receipt.checks.push('pcnt-encoder-changes-official-lcd-test-page');

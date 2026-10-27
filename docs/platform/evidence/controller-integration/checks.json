@@ -1,0 +1,240 @@
+{
+  "checkedAt": "2026-10-27T15:36:33.559910Z",
+  "baseRevision": "106164f8",
+  "integrationCommits": [
+    "e60fc654",
+    "9fdb574f",
+    "f2e10509"
+  ],
+  "rust": "1.99.1 stable",
+  "wasmSha256": "f311bf1436dbaae1c400630cfd68ceb35f1feeaaea816f689f98140255eb90e0",
+  "checks": [
+    {
+      "command": "rustup update stable",
+      "result": "pass",
+      "ignoredLog": "output/rustup-integration.log",
+      "logSha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+    },
+    {
+      "command": "cargo +stable clippy --workspace --all-targets -- -D warnings",
+      "result": "pass",
+      "ignoredLog": "output/clippy-native-integration.log",
+      "logSha256": "719984c411a6343a5a03a13fde72fde1b240f463524dc61ccff96633d608aa40"
+    },
+    {
+      "command": "cargo +stable clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass",
+      "ignoredLog": "output/clippy-wasm-integration.log",
+      "logSha256": "a1a61b480391a64004e2854e9e70e4456b9488d1887eed00d210e3b960b74c9e"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=web/wasm/fw cargo +stable test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "ignoredLog": "output/rust-integration.log",
+      "logSha256": "ee1cfaaeb40196cfbfbdcbbcfc0834b09798b258184cc761d8682bb2a9dd5037"
+    },
+    {
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo +stable test --release -p esp32s3 --test machine --test virtual_stops",
+      "result": "pass",
+      "ignoredLog": "output/vq-integration.log",
+      "logSha256": "5ffed0c6dc836601a0b120343fe8c607b596d28d98d6244f3e325e57db537726"
+    },
+    {
+      "command": "cargo +stable build --release --workspace",
+      "result": "pass",
+      "ignoredLog": "output/build-integration.log",
+      "logSha256": "8891688152b3682ac33cac049b7f47af9e151be35242f35d1894ba784331e3a7"
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "pass",
+      "ignoredLog": "output/wasm-build-integration.log",
+      "logSha256": "ebbb2879a7962a1caa9a3d7064b7b5e79baf03366bd7e6dccd865b983de8cd30"
+    },
+    {
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "result": "pass",
+      "ignoredLog": "output/wasm-sections-integration.log",
+      "logSha256": "7d4cb9b102050be5fc5677bc018e568ffc5a32be53c1478084322109443c221a"
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "result": "pass",
+      "ignoredLog": "output/platform-integration.log",
+      "logSha256": "a30b7e972167b1a514a41ac0f1ea1e395cada3a7ae506275e3ebfcc9fa7a9116"
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "pass",
+      "ignoredLog": "output/catalog-integration.log",
+      "logSha256": "703ca3a99233f1f78444b6b2337d16201d5a59504136b880e0fca8b0eace695b"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass",
+      "ignoredLog": "output/privacy-integration.log",
+      "logSha256": "988f57138521dd6c0e592386c93fd048d3781c92e580cf5c465a04e7fc266b51"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=web/wasm/fw node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "result": "pass",
+      "ignoredLog": "output/wasm-regression-integration.log",
+      "logSha256": "74be5b68f11f448978b9026aad5afe7cee24110735a79507f55bc83180b27673"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=web/wasm/fw node tools/platform-recording-test.mjs --real",
+      "result": "pass",
+      "ignoredLog": "output/recording-integration.log",
+      "logSha256": "399fddbf88243d83ab600a3563adbf729fd9d8df9ec282e4b76cef835734f284"
+    },
+    {
+      "command": "tools/wasm-jit-test.sh",
+      "result": "pass",
+      "ignoredLog": "output/jit-integration.log",
+      "logSha256": "085ffec708a569bbd966086c11a5ff1fbda76fa90912c6c9daba33106e98f1f9"
+    },
+    {
+      "command": ". ./tools/wasm-rustflags.sh; cargo +stable build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "result": "pass",
+      "ignoredLog": "output/profile-integration.log",
+      "logSha256": "35e3b3ef2676189cfd23c44fab394c6a6e6f177fbc86b4cc0015d4f8da03ec3e"
+    },
+    {
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+      "result": "pass",
+      "ignoredLog": "output/retained-tests-integration.log",
+      "logSha256": "9310b1365ea2ef7202cffb845ca8eff98677022a1f1e95a492a587cc082b54df"
+    },
+    {
+      "command": "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+      "result": "pass",
+      "ignoredLog": "output/retained-x5-integration.log",
+      "logSha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b"
+    },
+    {
+      "command": "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+      "result": "pass",
+      "ignoredLog": "output/retained-m1-integration.log",
+      "logSha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a"
+    },
+    {
+      "command": "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "result": "pass",
+      "ignoredLog": "output/retained-historical-integration.log",
+      "logSha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4"
+    },
+    {
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "result": "pass",
+      "ignoredLog": "output/timing-integration.log",
+      "logSha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3"
+    },
+    {
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "result": "pass",
+      "ignoredLog": "output/ble-api-integration.log",
+      "logSha256": "e0ad24d86a7625015b78ca9764200c679cc0aeb4e8b6ee9f6d21e62dcd478bc7"
+    },
+    {
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "result": "pass",
+      "ignoredLog": "output/ble-connection-integration.log",
+      "logSha256": "a2196bdfd0c5c7bcc37690ca002e0d869a3d61c4eadfa8fad44b6c9485dc1874"
+    },
+    {
+      "command": "node tools/worker-pacing-test.mjs",
+      "result": "pass",
+      "ignoredLog": "output/pacing-integration.log",
+      "logSha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158"
+    },
+    {
+      "command": "node tools/worker-channel-test.mjs",
+      "result": "pass",
+      "ignoredLog": "output/channel-integration.log",
+      "logSha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6"
+    },
+    {
+      "command": "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+      "result": "pass",
+      "ignoredLog": "output/browser-unit-integration.log",
+      "logSha256": "eaa6f17a90424e9f25cf3c0bf3968789cbd011b310bfeb3c49575d97f6465137"
+    },
+    {
+      "command": "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "result": "pass",
+      "ignoredLog": "output/browser-python-integration.log",
+      "logSha256": "afae4b31062ee74e07f3c0b1281ae5546eec16e0ba38cbbda9b5433ba14598aa"
+    }
+  ],
+  "counts": {
+    "rustWorkspace": 1397,
+    "platformNode": 99,
+    "wasmScenarios": 11,
+    "wasmDifferentialCases": 111126,
+    "wasmDifferentialGroups": 78,
+    "gpioWaveformCases": 24,
+    "retainedEvidenceTests": 83,
+    "browserContractTests": 27,
+    "browserPythonTests": 15
+  },
+  "goldensRegenerated": false,
+  "browser": {
+    "engine": "Headless Chrome via tracked Playwright wrapper",
+    "result": "pass",
+    "checks": [
+      "Dial v1.1 UIFlow2 boots, encoder selects WIFI & SERVER SETTING; pointer click on 3D dropdown at CSS (654,255), 100 ms host hold, selects SSID with visible grey highlight.",
+      "DinMeter official v0.1 boots DISPLAY TEST menu; physical CAD knob center at CSS (696,272), 200 ms host hold, enters changing solid-fill display test.",
+      "Firmware output retained when paused; both task-owned browser and server closed."
+    ],
+    "captures": [
+      {
+        "ignoredPath": "output/playwright/dial-integrated-boot.png",
+        "sha256": "d3a9c21cf669b2f77c9bf76da751520961f7143061c65811edd2b95bea4340d1"
+      },
+      {
+        "ignoredPath": "output/playwright/dial-integrated-settings.png",
+        "sha256": "4328b346c9688769f3688e9c4d3014d33ad44ecec819dd9e9f4c11a9f760c08f"
+      },
+      {
+        "ignoredPath": "output/playwright/dial-integrated-touch.png",
+        "sha256": "122f0d59077a256c2ceb1cb8dbbc7c07ba7d0a4c0d9297b92cb73b3a18585710"
+      },
+      {
+        "ignoredPath": "output/playwright/dinmeter-integrated-menu.png",
+        "sha256": "d52ae29cb496c234d086a31b80d6fd6dc63ae1a440b5e6117cd4a01eb88958f2"
+      },
+      {
+        "ignoredPath": "output/playwright/dinmeter-integrated-press.png",
+        "sha256": "0ea67a6de40c74481948dbc3233486b7a7f1c4e593ab60da61ee0e6462ce4841"
+      }
+    ]
+  },
+  "negativeResults": [
+    {
+      "check": "First platform Node run",
+      "result": "missing ignored ROM/WASM in new checkout",
+      "resolution": "hydrated pinned public inputs and rebuilt production WASM; final 99 tests pass"
+    },
+    {
+      "check": "Original Dial UIFlow single-password-field assertion",
+      "result": "touch selected SERVER instead of PASS in two current-build runs; both started from the same blank labels",
+      "cause": "Upstream framework.py calls the dropdown every >150 ms while contact is held. Actual acknowledged down/up were 6.825604758333333/7.355294008333333 guest seconds, enough for three steps.",
+      "resolution": "Probe checks exactly one firmware-rendered SSID/PASS/SERVER highlight, records which and input acknowledgements, and rejects unknown colors. No production touch or guest firmware was changed.",
+      "source": "https://github.com/m5stack/uiflow-micropython/blob/50e440780492aa847378c7d3477ab912f7063bac/m5stack/modules/startup/dial/framework.py",
+      "failureLogSha256": "d281f53fc870f680bda2924b0e866a683963c3756aafd141071e5db523ff3d01"
+    }
+  ],
+  "recording": {
+    "result": "pass",
+    "events": 18,
+    "finalFramebuffer": "different",
+    "note": "Generic recording regression preserves scheduled guest intervals and acknowledged inputs; it does not guarantee bit-identical final frames. No claim of exact reproduction."
+  },
+  "performance": "Only product-specific board identity/registration and CAD input binding changed; no generic SoC bus/device_set/interrupt/per-tick edits, no new performance claim.",
+  "retention": "No guest firmware bytes or raw private logs committed; captures retained as ignored local files with hashes. Historical stage receipts remain unchanged.",
+  "limitations": [
+    "No physical hardware validation. Dial RTC/RFID/audio/power/PWM and DinMeter RTC/battery/audio/power/Grove/networking remain outside verified scope.",
+    "Dial factory EasyLoader firmware is tested after documented local resource extraction; public factory entry remains reference because the browser loader does not unpack EXE.",
+    "No new 1:1 CAD/photo verification claim; earlier geometry uncertainty is preserved."
+  ]
+}

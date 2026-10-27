@@ -42,3 +42,5 @@ node tools/probe-dial.mjs --build output/dial-build --product m5stack-k130-v11
 厂家 CAD 的 `front-ring` 绑定前部按压，`rotating-ring` 绑定编码器，圆屏显示客体 framebuffer。它们分别使用绿色、蓝色、红色悬停提示。几何、贴图、装配变换和 UNKNOWN PCB 位置不改变；每个 Grove 插口仍保留尚未核实方位的限制，不凭猜测显示连接线。
 
 公开重建工具核对固定原始 CAD 与照片，保留原有尺寸和照片对照偏差，不将本次输入适配写成 1:1 还原验收。截图和完整日志留在忽略的 `output/`，提交 compact JSON、输入 hash 和复现命令。双 Clippy、黄金输出、平台回归与浏览器结果见本目录证据收据；不修改通用 SoC bus、中断路由或 per-tick 路径，没有新增 CPU 性能主张。
+
+整合到 `106164f8` 后重跑的官方固件、完整回归和真实浏览器结果见 [整合收据](evidence/controller-integration/checks.json)。Dial UIFlow 下拉按钮会按住重复切换；验证唯一选项高亮，不承诺主机短按的固定重复次数。

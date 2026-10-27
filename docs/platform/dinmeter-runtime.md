@@ -41,3 +41,5 @@ uv run --with-requirements tools/requirements-model.txt python tools/rebuild-pro
 [原生运行收据](evidence/dinmeter/factory-native.json) 与 [浏览器收据](evidence/dinmeter/factory-browser.json) 列出固定镜像、ROM/WASM hash、操作和截图；固件的 RTC NACK 与 Bat 0.0V 保留为已知缺项。未连接实物，未测试 Web Serial 刷机。回归清单见 [checks.json](evidence/dinmeter/checks.json)，没有更新任何 golden。
 
 [官方 WASM 可复现探针](evidence/dinmeter/factory-wasm.json) 通过四步选项导航、进入编码器测试、正向改变/反向逐像素恢复及按压退出；分享的 mini 页面无需手动启动即可运行。首次浏览器等待脚本过早调用 pause，改为明确轮询 running 与客体时间后通过；没有为此修改产品代码。截图只留在忽略的 output/，提交收据中的 hash、大小和操作步骤，不上传固件或原始捕获。
+
+整合到 `106164f8` 后重跑的官方固件、完整回归和真实浏览器结果见 [整合收据](evidence/controller-integration/checks.json)。Dial UIFlow 下拉按钮会按住重复切换；验证唯一选项高亮，不承诺主机短按的固定重复次数。

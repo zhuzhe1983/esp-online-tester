@@ -1,0 +1,53 @@
+{
+  "checkedAt": "2026-10-27T15:33:39.819Z",
+  "command": "node tools/probe-dial-official.mjs --mode factory --url/--file <caller-selected-image> --sha256 <explicit-sha256>",
+  "mode": "factory",
+  "source": {
+    "url": null,
+    "resolvedUrl": null,
+    "localInput": true,
+    "bytes": 3170128,
+    "sha256": "a61edfd7c2f6ece2e1570968b931b809545372b8bdac20864f03093a57b1276e"
+  },
+  "backend": "actual-page-worker-wasm-jit",
+  "firmwarePatched": false,
+  "wasmSha256": "f311bf1436dbaae1c400630cfd68ceb35f1feeaaea816f689f98140255eb90e0",
+  "checks": [
+    "rom-boot-real-nonblank-240x240-frame",
+    "gpio42-enters-official-lcd-test",
+    "pcnt-encoder-changes-official-lcd-test-page",
+    "ft3267-touch-renders-blue-point-at-exact-guest-coordinate",
+    "gpio42-exits-official-lcd-test"
+  ],
+  "bootSha256": "02fe6b5bc8314dce5a056d0d0581780007c096e52dac7f093dbc1c115a0e5147",
+  "pressedSha256": "ac1fbc8ba3f07e9a3ccabb4e4ea285d7979e29d28102258a30f50285778b9727",
+  "turnedSha256": "d8fa4730d1d137c8c742a8d5e2fae6417fba37c5c81ab0aa504fafa45a3808d6",
+  "touchedSha256": "e09ea04d1c86cd02b4af801f0ab107e5a5314f46e026b0972bbc69d7baf57271",
+  "exitedSha256": "02fe6b5bc8314dce5a056d0d0581780007c096e52dac7f093dbc1c115a0e5147",
+  "serialMarkers": [
+    "I (3332) launcher: selected 0",
+    "I (3332) launcher: selected 0",
+    "I (3342) launcher: free mem: 133780",
+    "I (3342) launcher: free mem: 133780",
+    "I (4910) launcher: free mem: 133780",
+    "I (4910) launcher: free mem: 133780"
+  ],
+  "status": "pass",
+  "guestSeconds": 5.34,
+  "artifacts": [
+    {
+      "kind": "flash",
+      "sha256": "a61edfd7c2f6ece2e1570968b931b809545372b8bdac20864f03093a57b1276e",
+      "bytes": 3170128
+    },
+    {
+      "kind": "rom",
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+      "bytes": 949552
+    }
+  ],
+  "limitations": [
+    "No real hardware test; no wireless connection, RTC/RFID, PWM brightness, audio or power/sleep validation.",
+    "Pixel changes are interpreted alongside retained screenshots and fixed upstream source; no OCR or complete firmware compatibility claim."
+  ]
+}
