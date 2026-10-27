@@ -618,3 +618,10 @@ python3 tools/s31-native-firmware-probe.py \
 
 [Full-image result](evidence/s31-bringup/flash-cache-plus-2.0.68.json),
 [functional/source evidence](evidence/s31-bringup/flash-cache.json).
+
+Flash/cache validation:1402 workspace Rust tests (131 groups),39 S31 unit tests,
+15 source/ROM tests, both Clippy targets, four platform Node files and nine WASM
+workloads pass. Production WASM/native code sections match7d7c229f byte for byte.
+[Five-pair CPU samples](evidence/s31-bringup/flash-cache-perf.json) versus fixed
+main84e67571 show S3+1.4504%, C3+0.2474%, C6+0.7295%, with identical UART/statistics;
+these are regression guards, not attributed S31 runtime overhead or speed claims.
