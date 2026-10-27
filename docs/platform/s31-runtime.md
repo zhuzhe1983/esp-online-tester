@@ -99,3 +99,53 @@ ROM/MMIO faults, S31 reset/clock/CLIC/flash/PSRAM bring-up, and finally the prod
 TCA9555/TPS65185/parallel EPD/touch/SD path. A serial fixture alone must not enable
 the catalog's product runtime. Preserve the default official firmware and its remote
 source while these stages remain incomplete.
+
+### Initial in-tree subset
+
+`esp32s31::Bringup` is a separate, interpreter-only development entry point. It has
+one HP hart, the S31 SRAM/LP SRAM/ROM windows, and polled UART0 using the common
+FIFO implementation with fields checked against S31 `uart_reg.h`. The shared CPU
+is configured for the RV32IMAFC subset and counter reads. Existing P4/S3/C3/C6
+constructors and execution code are unchanged; no product board or platform chip
+selector is enabled by adding this crate.
+
+`firmware/s31-uart-probe` contains source for a SRAM-linked fixture that waits for
+UART RX, echoes it and checks SRAM plus an FPU operation before reporting success.
+Generated ELF/BIN files belong only in ignored output. The fixture assumes an
+already usable UART clock; it does not prove clock/pin-mux setup or physical timing.
+The ROM inspection loader accepts the S31 reset entry and preserves ROM instructions;
+it omits the ELF's address-zero `.eh_frame` debugger metadata. ROM-side initializer
+table reconstruction is still outstanding, so it is not a full ROM boot loader.
+
+S31 v6.1 `interrupt_reg.h` sets `INTTHRESH_STANDARD = 1`: `mintstatus = 0xfb1` and
+`mintthresh = 0x347` through `csr_clic.h`. The existing P4 rev < 3 path uses
+`mintstatus = 0x346` and a mapped threshold register. Consequently the initial S31
+subset deliberately leaves interrupt delivery unimplemented; enabling the P4 flag
+unchanged would give S31 the wrong CSR contract. The same discipline applies to
+MSPI/cache and clock/reset integration in the next stage.
+
+Validation: the source-built fixture emits `S31 UART READY`, waits for host input,
+then echoes `A` and emits `S31 SRAM FPU PASS`; a fresh run with `B` reaches its
+failure/ebreak branch. The positive run retires 206 steps before WFI. The independent
+public S31 ROM ELF from release 20260528 (SHA-256
+`a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87`)
+runs seven instructions before the first unmapped read: PC `0x2f801724`, address
+`0x20701030`, `LP_AONCLKRST_HPCORE0_RESET_CAUSE_REG`. This ELF is not claimed
+byte-identical to the official emulator's embedded ROM. These are starting points
+for reset/CLIC bring-up, not evidence of full ROM or application startup.
+
+Both Clippy targets passed, including denied warnings; 1,366 Rust tests passed with
+the CI ignored-test policy, the separate source fixture passed, and the four required
+platform test files and eight existing WASM workloads passed. The new crate also
+checks for `wasm32-unknown-unknown`, although it is not exported through the platform
+runtime. [Detailed receipt](evidence/s31-bringup/uart-subset.json).
+
+The CPU guard compared the new workspace with main-at-branch
+`20e75f722d41a8f95308ea18abc4457bc2dde345`, five alternating pairs after warmups.
+Median child user CPU changed by S3 hello +0.49%, C3 +0.08%, C6 −1.79%; instruction,
+cycle and exception/interrupt statistics and UART hashes were identical. These
+small changes are not attributed to S31: the existing executable dependency graphs
+are unchanged and the new crate is unused by them. No S3-core code changed, so
+Pocket Tank was not required by CONTRIBUTING's S3-specific condition. A rejected
+C3 command in the first harness attempt is retained separately; the corrected run
+covered all three workloads. [Samples and commands](evidence/s31-bringup/uart-perf.json).

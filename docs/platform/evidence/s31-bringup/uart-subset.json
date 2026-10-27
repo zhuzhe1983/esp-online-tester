@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-27",
+  "base": "20e75f722d41a8f95308ea18abc4457bc2dde345",
+  "scope": "One-hart SRAM/ROM/UART0 bring-up subset; no full S31 platform chip or board runtime",
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "fixture": {
+    "compiler": "riscv32-esp-elf-gcc 15.2.0 (esp-15.2.0_20251204)",
+    "buildCommand": "RISCV_TOOLCHAIN_PREFIX=<toolchain>/riscv32-esp-elf- bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "elfSha256": "787f8b1930046a6046371be8aff2182c8581cfe61ab3dd921e80a0828a56b5e3",
+    "elfBytes": 5004,
+    "input": "A",
+    "uart": "S31 UART READY\nA\nS31 SRAM FPU PASS\n",
+    "uartSha256": "ccbcdb9714fc702e8bfe803d817d3a46e6b768b993e6c1e2144c059d7198f2e5",
+    "steps": 206,
+    "pc": "0x2f00007e",
+    "stop": "Waiting",
+    "busFault": null,
+    "negativeInput": "B",
+    "negativeUart": "S31 UART READY\nBS31 FAIL\n",
+    "negativeSteps": 145,
+    "negativeStop": "Ebreak at 0x2f00008c",
+    "externalTest": "Passed: first run waits without RX, second run injects A and observes guest output"
+  },
+  "romProbe": {
+    "release": "20260528",
+    "file": "esp32s31_rev0_rom.elf",
+    "bytes": 513396,
+    "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+    "entry": "0x2f800000",
+    "steps": 7,
+    "mepc": "0x2f801724",
+    "mcause": 5,
+    "mtval": "0x20701030",
+    "access": "read32",
+    "register": "LP_AONCLKRST_HPCORE0_RESET_CAUSE_REG",
+    "result": "Explicit unmapped fault; ROM instruction stream unpatched; no complete ROM boot claimed",
+    "embeddedRomIdentity": "This public ELF is not claimed byte-identical to the official emulator embedded ROM."
+  },
+  "checks": {
+    "rustupStable": "updated; unchanged 1.99.1",
+    "clippyNative": "pass: cargo clippy --workspace --all-targets -- -D warnings",
+    "clippyWasm": "pass: cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "workspaceRust": {
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_",
+      "passed": 1366,
+      "failed": 0,
+      "logSha256": "8c84bf4a01d7c26a24f733816552fc56d0822a53d885704799496355bbc77d17"
+    },
+    "platform": "4 files passed: platform-config, platform-runtime, platform-input, platform-view",
+    "wasm": "8 groups passed: hello,c3-hello,c6-hello,c6-energy-scan,c6-contiki,c6-contiki-net,c6-rpl-net,panel",
+    "ownCrateWasm": "cargo check --release --target wasm32-unknown-unknown -p esp32s31 passed; not a platform runtime export",
+    "wasmSections": "DWARF absent; name section retained",
+    "perf": "3 hello workloads, 5 pairs plus warmups; instruction/cycle/stat lines and UART hashes equal"
+  },
+  "setupFailuresRetained": [
+    "First external fixture invocation used a workspace-relative ELF path but Cargo ran the test from the crate directory; rerun used an absolute S31_UART_ELF and the documented command was corrected.",
+    "First platform-runtime invocation lacked its ignored ROM/WASM inputs; after building WASM and supplying ESP32SIM_ROM_DIR, all four files passed."
+  ],
+  "limitations": [
+    "UART clock/pin mux and baud timing not modeled",
+    "No interrupt delivery, second hart, flash MMU/cache, PSRAM or board peripherals",
+    "No full S31 product firmware run in this own-core subset",
+    "No physical S31 comparison"
+  ],
+  "privacy": "No firmware binary, raw capture, host path, process inventory or browser session metadata committed. Generated fixture ELF remains ignored; logs retained only by hash and scoped facts.",
+  "implementationSha256": {
+    "Cargo.toml": "746ae51f5f5b10b5358c578aca7bc08a91c92ae4889c162ce4ec61abf0e0f2e8",
+    "esp32s31/Cargo.toml": "e3d28ed21dc3a272ed5b8fe48142db88afa0c48d2fd33eab43f4ed7772f63a02",
+    "esp32s31/src/lib.rs": "2c4cca8d02485a1ee475c8a957c96d1f7313707eaf376890247ae2e545a4ce77",
+    "esp32s31/src/bus.rs": "f29d63bd92d9d35834f30f25d8755fbff3cb777db6095744a1ee25d95e578ee5",
+    "esp32s31/examples/bringup.rs": "3af8eff978e8eb65f1a05e844712a51c4d22e1cd3d6f8cf42983b1de6c32006e",
+    "firmware/s31-uart-probe/probe.S": "cc90b4b29830ffabba316b9d7f5d7dde4e44de3509fbd2d0d1c06078f9ffee68",
+    "firmware/s31-uart-probe/probe.ld": "29902f3c3edf09951a8bf5fc59a8cc71e5eec18782e1f090edc6f7a87740a35c",
+    "firmware/s31-uart-probe/build.sh": "3726d4008ee66666c5a0489aca60760d2a452543e294d7387ba25cd6830948b6"
+  }
+}
