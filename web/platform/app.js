@@ -1,5 +1,6 @@
 import {illuminanceParameter} from './illuminance-input.js';
 import {ENVIRONMENT_FIELDS,environmentParameters} from './environment-input.js';
+import {motionParameter} from './motion-input.js';
 import {unitButtonRoute,unitButtonControl,physicalAccessoryRoute} from './accessory-routing.js';
 import {MAX_FIRMWARE_FILE_BYTES} from './firmware-limits.js';
 import {isPressControl,controlInput,shouldCaptureMappedKey} from './control-input.js';
@@ -622,15 +623,15 @@ function renderAccessories() {
   if (!scene.accessories.length) list.append(element('p', 'empty-list', '连接 GPS、传感器，或设计自己的配件。'));
   for (const instance of scene.accessories) {
     const item = definition(instance.catalogId); if (!item) continue;
-    const route=physicalAccessoryRoute(product(),instance,item,scene,catalog),hub=route?.hub,rgb=route?.model==='sk6812-u003',angle=route?.control==='knob',environment=route?.control==='environment',light=route?.control==='illuminance';
+    const route=physicalAccessoryRoute(product(),instance,item,scene,catalog),hub=route?.hub,rgb=route?.model==='sk6812-u003',angle=route?.control==='knob',environment=route?.control==='environment',light=route?.control==='illuminance',motion=route?.control==='motion';
     const card = element('article', 'accessory-card');
     const heading = element('div', 'accessory-card-header'), identity = element('div');
     identity.append(element('h3', '', item.name), element('span', 'small-label', route ? (hub?'四线并联分线 · StopWatch Port A':environment||light?'真实 I²C · StopWatch Port A · SDA G10 / SCL G11':rgb?'客体 RMT · StopWatch Port A · 黄线 G10':angle?'模拟电压 · StopWatch Port A · 白线 G11 / ADC2_CH0':'物理 GPIO · StopWatch Port A · 白线 G11') : item.model.id === 'uart-nmea' ? `${item.controller || 'NMEA'} · ${instance.parameters.baudRate || item.parameters.baudRate} baud · 逻辑 UART1` : `${item.visual?.modelUrl ? '3D 外观与接线资料' : '仅元信息'} · 行为模型未实现`));
     const remove = element('button', 'icon-button', '×'); remove.setAttribute('aria-label', `移除 ${item.name}`);
     remove.addEventListener('click', () => action(async () => { const next = clone(scene); next.accessories = next.accessories.filter(other => other.id !== instance.id).map(other=>other.wiring?.viaAccessoryId===instance.id?{...other,wiring:{mode:'visual'}}:other); pruneDefinitions(next); await configure(next); }));
     heading.append(identity, remove); card.append(heading);
-    card.append(element('p', 'helper', route ? (hub?'三个出口共用原来的两根信号线；不增加 GPIO，也不切换 I²C 地址。当前支持单层 Hub；同信号争用会拒绝。出口线缆暂未显示：逐针方位待核对。':light?'设置传感器接收到的照度，由固件通过 BH1750 读取；需开启 Grove 5V。曝光时间、分辨率和饱和由客体命令决定；未模拟光谱或壳体遮光。':environment?'设置外界温湿度和气压，由固件通过 SHT40 / BMP280 协议读取；需开启 Grove 5V。加热、实物噪声和热响应尚未模拟。':rgb?'需固件开启 Grove 5V，通过 G10 RMT 发送 3 颗 GRB 数据；软件 GPIO 波形与串级出口尚未支持。':angle?'采用官方 10k 标称曲线，需固件开启 Grove 5V 并读取 ADC2_CH0；实物版次、方向和转角尚未校准。':'需固件开启 Grove 5V；按下为低电平，释放电平由供电决定。') : item.model.id === 'uart-nmea' ? '向 UART1 注入 NMEA 数据；未模拟物理接线、供电或无线信号。' : '此配件可导出和分享；不会自动执行电路或协议行为。'));
-    if(['gpio-button-u027','sk6812-u003','potentiometer-u005-10k-curve','sht40-bmp280-u001d','bh1750fvi-u136'].includes(item.model.id)) {
+    card.append(element('p', 'helper', route ? (hub?'三个出口共用原来的两根信号线；不增加 GPIO，也不切换 I²C 地址。当前支持单层 Hub；同信号争用会拒绝。出口线缆暂未显示：逐针方位待核对。':motion?'模拟视场内持续的红外变化；需固件开启 Grove 5V。停止变化后保持高电平 2 个客体秒，期间可再次触发。采用 M5 标称时序，未模拟预热、锁定窗口或真实光学响应。':light?'设置传感器接收到的照度，由固件通过 BH1750 读取；需开启 Grove 5V。曝光时间、分辨率和饱和由客体命令决定；未模拟光谱或壳体遮光。':environment?'设置外界温湿度和气压，由固件通过 SHT40 / BMP280 协议读取；需开启 Grove 5V。加热、实物噪声和热响应尚未模拟。':rgb?'需固件开启 Grove 5V，通过 G10 RMT 发送 3 颗 GRB 数据；软件 GPIO 波形与串级出口尚未支持。':angle?'采用官方 10k 标称曲线，需固件开启 Grove 5V 并读取 ADC2_CH0；实物版次、方向和转角尚未校准。':'需固件开启 Grove 5V；按下为低电平，释放电平由供电决定。') : item.model.id === 'uart-nmea' ? '向 UART1 注入 NMEA 数据；未模拟物理接线、供电或无线信号。' : '此配件可导出和分享；不会自动执行电路或协议行为。'));
+    if(['gpio-button-u027','sk6812-u003','potentiometer-u005-10k-curve','sht40-bmp280-u001d','bh1750fvi-u136','pir-u004-m5-2s'].includes(item.model.id)) {
       const label=element('label','','连接位置'),select=element('select');select.setAttribute('aria-label',`${item.name} 连接位置`);
       const choices=[{label:'仅外观',wiring:{mode:'visual'}},{label:'StopWatch Port A',wiring:{mode:'physical',interfaceId:'grove'}}];
       for(const parent of scene.accessories.filter(other=>definition(other.catalogId)?.model.id==='passive-hub-u006'))for(const portId of ['port-1','port-2','port-3'])choices.push({label:`Unit Hub ${parent.id} · ${portId}`,wiring:{mode:'physical',viaAccessoryId:parent.id,portId}});
@@ -654,6 +655,8 @@ function renderAccessories() {
         const values=environmentParameters(state||instance.parameters),fields={};
         for(const [key,title,min,max] of ENVIRONMENT_FIELDS){const label=element('label','',title),input=element('input');input.type='number';input.min=String(min);input.max=String(max);input.step='0.01';input.value=String(values[key]);input.setAttribute('aria-label',`ENV-IV ${title}`);fields[key]=input;label.append(input);card.append(label);}
         const apply=element('button','button secondary','设置环境');apply.addEventListener('click',()=>void sendInput({type:'accessory-environment',accessoryId:instance.id,...Object.fromEntries(Object.entries(fields).map(([key,node])=>[key,Number.parseFloat(node.value)]))},'unit-env4-panel'));card.append(apply);
+      } else if(motion) {
+        const active=motionParameter(state||instance.parameters),toggle=element('button','button secondary',active?'停止模拟移动':'模拟持续移动');toggle.setAttribute('aria-label','Unit PIR 模拟移动');toggle.setAttribute('aria-pressed',String(active));toggle.addEventListener('click',()=>void sendInput({type:'accessory-motion',accessoryId:instance.id,motion:!active},'unit-pir-panel'));card.append(toggle,element('p','helper',active?'环境输入：持续移动。传感器输出请以固件读取为准。':'环境输入：无移动。传感器可能仍在保持高电平，请以固件读取为准。'));
       } else if(!rgb&&!angle&&!hub) {
       const press=element('button','button device-button','按住 Unit Button');press.dataset.control=unitButtonControl(instance.id);press.disabled=!connected||state?.effectiveConnected===false;
       press.addEventListener('pointerdown',event=>{if(event.button!==0)return;event.preventDefault();press.setPointerCapture(event.pointerId);void sendInput({type:'button',id:press.dataset.control,pressed:true},`unit:${event.pointerId}`);});

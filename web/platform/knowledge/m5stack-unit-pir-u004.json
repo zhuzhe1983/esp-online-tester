@@ -1,0 +1,457 @@
+{
+  "schemaVersion": "1",
+  "id": "m5stack-unit-pir-u004",
+  "kind": "accessory",
+  "catalogId": "m5stack-unit-pir-u004",
+  "title": "M5Stack Unit PIR · U004",
+  "summary": "AS312 被动红外移动传感器，白线输出接主机 GPIO，采用 M5 标称 2 秒保持时序。",
+  "summarySourceIds": [
+    "product"
+  ],
+  "updatedAt": "2026-10-27T13:52:30Z",
+  "hardwareRevision": "U004 AS312 schematic; user hardware revision unknown",
+  "identity": {
+    "manufacturer": "M5Stack",
+    "sku": "U004",
+    "family": "Unit PIR"
+  },
+  "facts": [
+    {
+      "id": "dimensions",
+      "label": "外形尺寸",
+      "value": {
+        "width": 24,
+        "height": 32,
+        "depth": 12.5,
+        "shellDepth": 8
+      },
+      "basis": "official",
+      "sourceIds": [
+        "dimensions",
+        "product"
+      ],
+      "unit": "mm"
+    },
+    {
+      "id": "weight",
+      "label": "重量",
+      "value": 5.1,
+      "basis": "official",
+      "sourceIds": [
+        "product"
+      ],
+      "unit": "g"
+    },
+    {
+      "id": "sensor",
+      "label": "感应器",
+      "value": "AS312",
+      "basis": "official",
+      "sourceIds": [
+        "product",
+        "schematic"
+      ]
+    },
+    {
+      "id": "power",
+      "label": "供电与逻辑",
+      "value": {
+        "supplyV": 5,
+        "logicV": 3.3,
+        "regulator": "HT7533",
+        "outputSeriesOhm": 1000
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic"
+      ]
+    },
+    {
+      "id": "pinmap",
+      "label": "针脚",
+      "value": {
+        "1": "white sensorOUT / hostIN",
+        "2": "yellow NC / hostOUT label",
+        "3": "red5V",
+        "4": "blackGND"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "product",
+        "photo-2"
+      ]
+    },
+    {
+      "id": "range",
+      "label": "检测范围",
+      "value": {
+        "distanceMaxM": 5,
+        "fieldOfViewDegreesLessThan": 100,
+        "quiescentCurrentMaxMicroA": 60,
+        "temperatureMinC": -20,
+        "temperatureMaxC": 80
+      },
+      "basis": "official",
+      "sourceIds": [
+        "product"
+      ]
+    },
+    {
+      "id": "timing",
+      "label": "官方标称时序",
+      "value": {
+        "holdSeconds": 2,
+        "retriggerable": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "product"
+      ]
+    },
+    {
+      "id": "host-route",
+      "label": "主机与模块已核对接线",
+      "value": {
+        "product": "m5stack-stopwatch",
+        "port": "grove",
+        "signalPin": 11,
+        "supply": "M5PM1 Grove5V"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "host-schematic"
+      ],
+      "notes": "Official schematics establish physical wiring only; implemented runtime support is separately described in collectionNotes."
+    },
+    {
+      "id": "timing-conflict",
+      "label": "手册时序差异",
+      "value": {
+        "m5Seconds": 2,
+        "senbaProseSeconds": 2,
+        "senbaTableOnSeconds": 2.3,
+        "senbaTableLockSeconds": 2.3
+      },
+      "basis": "official",
+      "sourceIds": [
+        "product",
+        "as312-manual-mirror",
+        "as312-legacy-mirror"
+      ],
+      "notes": "Two manufacturer-authored mirror PDFs have unknown revision; version compatibility is unconfirmed. Profile follows M5 nominal2s and omits lock time. No calibration claim."
+    }
+  ],
+  "sources": [
+    {
+      "id": "product",
+      "url": "https://docs.m5stack.com/en/unit/Unit_PIR",
+      "resolvedUrl": "https://docs.m5stack.com/en/unit/Unit_PIR",
+      "fetchedAt": "2026-10-27T13:10:15Z",
+      "mediaType": "text/html",
+      "bytes": 132375,
+      "sha256": "6db41866f96b16ec87660436604862eff21af7acbeaed7d55138d4eeb95953f1",
+      "archiveName": "product.html",
+      "kind": "product-page",
+      "title": "Unit PIR U004 官方资料",
+      "status": "fetched",
+      "checkedAt": "2026-10-27"
+    },
+    {
+      "id": "schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/701/UNIT_PIR.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/701/UNIT_PIR.pdf",
+      "fetchedAt": "2026-10-27T13:10:14Z",
+      "mediaType": "application/pdf",
+      "bytes": 60618,
+      "sha256": "fbcbc5ca83588d48afab0a1bf4bdaab2740b43044f28ece8f7ddcff9bddb095e",
+      "archiveName": "schematic.pdf",
+      "kind": "schematic",
+      "title": "U004 官方原理图",
+      "status": "fetched",
+      "checkedAt": "2026-10-27"
+    },
+    {
+      "id": "cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U004_Unit_PIR/Structures/Unit_PIR.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U004_Unit_PIR/Structures/Unit_PIR.stl",
+      "fetchedAt": "2026-10-27T13:10:15Z",
+      "mediaType": "application/octet-stream",
+      "bytes": 338484,
+      "sha256": "95b1cb80204076552c3927dca648fb82df24ff3e71fa9402681fbcdb6f2b16b1",
+      "archiveName": "Unit_PIR.stl",
+      "kind": "manufacturer-cad",
+      "title": "U004 官方结构 STL",
+      "status": "fetched",
+      "checkedAt": "2026-10-27"
+    },
+    {
+      "id": "cad-license",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+      "fetchedAt": "2026-10-27T13:10:15Z",
+      "mediaType": "text/plain",
+      "bytes": 1063,
+      "sha256": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+      "archiveName": "LICENSE.txt",
+      "kind": "license",
+      "title": "M5_Hardware MIT 授权",
+      "status": "fetched",
+      "checkedAt": "2026-10-27"
+    },
+    {
+      "id": "as312-manual-mirror",
+      "url": "https://evelta.com/content/datasheets/361-AS312.pdf",
+      "resolvedUrl": "https://evelta.com/content/datasheets/361-AS312.pdf",
+      "fetchedAt": "2026-10-27T13:10:16Z",
+      "mediaType": "application/pdf",
+      "bytes": 445922,
+      "sha256": "922d5a11741d7920d6bc706507965db5acedfe04c6f4638bb06716fffdd406ab",
+      "archiveName": "as312-7pages.pdf",
+      "kind": "datasheet",
+      "title": "Senba AS312 手册（第三方镜像，版次未知）",
+      "status": "fetched",
+      "checkedAt": "2026-10-27",
+      "notes": "Manufacturer-authored manual on third-party mirror; hardware/version match not established. Prose says2s, typical on/lock table2.3s. This is not an M5Stack-linked datasheet."
+    },
+    {
+      "id": "as312-legacy-mirror",
+      "url": "https://forum.mysensors.org/assets/uploads/files/1494013712469-pir-as312.pdf",
+      "resolvedUrl": "https://forum.mysensors.org/assets/uploads/files/1494013712469-pir-as312.pdf",
+      "fetchedAt": "2026-10-27T13:10:17Z",
+      "mediaType": "application/pdf",
+      "bytes": 448986,
+      "sha256": "f8d9a23271a114bc86c691c2a7a09acaec56d80701c3c4933fafd27aa2af214a",
+      "archiveName": "as312-5pages.pdf",
+      "kind": "datasheet",
+      "title": "Senba AS312 手册（第三方镜像，版次未知）",
+      "status": "fetched",
+      "checkedAt": "2026-10-27",
+      "notes": "Manufacturer-authored manual on third-party mirror; hardware/version match not established. Prose says2s, typical on/lock table2.3s. This is not an M5Stack-linked datasheet."
+    },
+    {
+      "id": "photo-1",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-4647c010-1e57-4cc9-85e3-cbd450882074.webp",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-4647c010-1e57-4cc9-85e3-cbd450882074.webp",
+      "fetchedAt": "2026-10-27T13:39:15Z",
+      "mediaType": "image/webp",
+      "bytes": 93688,
+      "sha256": "81c1d2e18361af933c6340d99927aa03014e67be11ab1756910bb23b997d97f0",
+      "archiveName": "photo-1.webp",
+      "kind": "product-photo",
+      "title": "U004 官方产品照片",
+      "status": "fetched",
+      "checkedAt": "2026-10-27"
+    },
+    {
+      "id": "photo-2",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-625b76c4-caf0-42c9-bc2d-8081d7a77e5e.webp",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-625b76c4-caf0-42c9-bc2d-8081d7a77e5e.webp",
+      "fetchedAt": "2026-10-27T13:39:15Z",
+      "mediaType": "image/webp",
+      "bytes": 51426,
+      "sha256": "b96d06e5dd2227f96771ff7a2b7434a9828ed051f7ed6aa6acb9342fa6b80eb0",
+      "archiveName": "photo-2.webp",
+      "kind": "product-photo",
+      "title": "U004 官方产品照片",
+      "status": "fetched",
+      "checkedAt": "2026-10-27"
+    },
+    {
+      "id": "photo-3",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/701/U004_main_pictures_01.jpg",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/701/U004_main_pictures_01.jpg",
+      "fetchedAt": "2026-10-27T13:39:13Z",
+      "mediaType": "image/jpg",
+      "bytes": 84999,
+      "sha256": "8f9e228346d6524a424a91d61c5978d487a50685ad2d7c474c57bfac76821376",
+      "archiveName": "photo-3.jpg",
+      "kind": "product-photo",
+      "title": "U004 官方产品照片",
+      "status": "fetched",
+      "checkedAt": "2026-10-27"
+    },
+    {
+      "id": "photo-4",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-958951eb-482b-443b-9e98-fb752819607b.webp",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-958951eb-482b-443b-9e98-fb752819607b.webp",
+      "fetchedAt": "2026-10-27T13:39:15Z",
+      "mediaType": "image/webp",
+      "bytes": 31348,
+      "sha256": "5ee974e19963dd66c4d4aff2c56cf7c5f08761a921d1ae322931388945121ed7",
+      "archiveName": "photo-4.webp",
+      "kind": "product-photo",
+      "title": "U004 官方产品照片",
+      "status": "fetched",
+      "checkedAt": "2026-10-27"
+    },
+    {
+      "id": "photo-5",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-d3d367ff-4aa0-43f5-bff0-c32d9fe9e45c.webp",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-d3d367ff-4aa0-43f5-bff0-c32d9fe9e45c.webp",
+      "fetchedAt": "2026-10-27T13:39:17Z",
+      "mediaType": "image/webp",
+      "bytes": 61646,
+      "sha256": "99edb4737b3c1972d5321986af0bf1f7fa3f56d1dc01f5ad30e67fa3b337c8f2",
+      "archiveName": "photo-5.webp",
+      "kind": "product-photo",
+      "title": "U004 官方产品照片",
+      "status": "fetched",
+      "checkedAt": "2026-10-27"
+    },
+    {
+      "id": "dimensions",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/PIR/%E5%B0%BA%E5%AF%B8%E5%9B%BE.jpg",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/PIR/%E5%B0%BA%E5%AF%B8%E5%9B%BE.jpg",
+      "fetchedAt": "2026-10-27T13:39:15Z",
+      "mediaType": "image/jpeg",
+      "bytes": 509396,
+      "sha256": "2e08d240d1840669c25fa9a141f639fada0b9f1b3aa09d596c4b32dc1729dc77",
+      "archiveName": "dimensions.jpg",
+      "kind": "dimension-drawing",
+      "title": "U004 尺寸图",
+      "status": "fetched",
+      "checkedAt": "2026-10-27"
+    },
+    {
+      "id": "arduino-example",
+      "url": "https://docs.m5stack.com/en/arduino/m5go_kit/sensor",
+      "resolvedUrl": "https://docs.m5stack.com/en/arduino/m5go_kit/sensor",
+      "mediaType": "text/html",
+      "bytes": 393755,
+      "sha256": "786a16607a2cbddbe8026dfcb2ec92184e5a91dc01e9690c9febbb59b83b8c8b",
+      "fetchedAt": "2026-10-27T13:52:18Z",
+      "archiveName": "arduino.html",
+      "kind": "source-code",
+      "title": "M5GO Kit 官方 PIR 主机示例",
+      "status": "fetched",
+      "checkedAt": "2026-10-27"
+    },
+    {
+      "id": "host-schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf",
+      "title": "StopWatch official Port A schematic",
+      "kind": "schematic",
+      "fetchedAt": "2026-10-27T11:01:40Z",
+      "mediaType": "application/pdf",
+      "bytes": 1480402,
+      "sha256": "8d4755c341f966a6191f9f16a7a45c558a99749a5e39a30d0513f86a5e10ef80",
+      "archiveName": "host-schematic.pdf",
+      "status": "fetched",
+      "checkedAt": "2026-10-27"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "pcb-layout",
+      "label": "完整PCB布局",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "schematic",
+        "cad"
+      ],
+      "notes": "Official electrical schematic and plastic shell only; no layout/Gerber/board CAD found."
+    },
+    {
+      "id": "user-revision",
+      "label": "用户硬件版次",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "product"
+      ]
+    }
+  ],
+  "collectionNotes": [
+    "首轮仅 StopWatch Port A 白线 G11，需客体启用 Grove 5V；黄线在 U004 内部未连接。可经一层 U006 与不争用 G11 的 U003 共存。",
+    "采用 pir-u004-m5-2s：持续红外变化时保持高电平，停止后延时2个客体秒，可再次触发。M5资料标2s，AS312镜像手册表格标2.3s；未模拟锁定窗口、预热、光学、温度或噪声，未实机校准。",
+    "断电时释放外部驱动为平台理想接口策略；不代表已验证AS312掉电漏电或反向供电。",
+    "官方U004外壳CAD原始三角形保留；镜片为尺寸/照片推算的平滑球冠，未还原菲涅尔细分面；内部PCB为UNKNOWN占位，螺丝未还原。",
+    "纸贴与外壳分开；背贴IN/OUT是主机方向，不是模块两个输出。插口针序已核对，隐藏插合尺寸为估算。",
+    "AS312专用感应模块，无用户可刷写MCU。官方M5GO PIR示例在外部主机执行，不作为配件独立出厂固件。"
+  ],
+  "assets": [
+    {
+      "id": "product",
+      "sourceId": "product",
+      "role": "product-page",
+      "url": "https://docs.m5stack.com/en/unit/Unit_PIR"
+    },
+    {
+      "id": "schematic",
+      "sourceId": "schematic",
+      "role": "schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/701/UNIT_PIR.pdf"
+    },
+    {
+      "id": "cad",
+      "sourceId": "cad",
+      "role": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U004_Unit_PIR/Structures/Unit_PIR.stl"
+    },
+    {
+      "id": "as312-manual-mirror",
+      "sourceId": "as312-manual-mirror",
+      "role": "datasheet",
+      "url": "https://evelta.com/content/datasheets/361-AS312.pdf"
+    },
+    {
+      "id": "as312-legacy-mirror",
+      "sourceId": "as312-legacy-mirror",
+      "role": "datasheet",
+      "url": "https://forum.mysensors.org/assets/uploads/files/1494013712469-pir-as312.pdf"
+    },
+    {
+      "id": "photo-1",
+      "sourceId": "photo-1",
+      "role": "product-photo",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-4647c010-1e57-4cc9-85e3-cbd450882074.webp"
+    },
+    {
+      "id": "photo-2",
+      "sourceId": "photo-2",
+      "role": "product-photo",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-625b76c4-caf0-42c9-bc2d-8081d7a77e5e.webp"
+    },
+    {
+      "id": "photo-3",
+      "sourceId": "photo-3",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/701/U004_main_pictures_01.jpg"
+    },
+    {
+      "id": "photo-4",
+      "sourceId": "photo-4",
+      "role": "product-photo",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-958951eb-482b-443b-9e98-fb752819607b.webp"
+    },
+    {
+      "id": "photo-5",
+      "sourceId": "photo-5",
+      "role": "product-photo",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-d3d367ff-4aa0-43f5-bff0-c32d9fe9e45c.webp"
+    },
+    {
+      "id": "dimensions",
+      "sourceId": "dimensions",
+      "role": "dimension-drawing",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/PIR/%E5%B0%BA%E5%AF%B8%E5%9B%BE.jpg"
+    },
+    {
+      "id": "arduino-example",
+      "sourceId": "arduino-example",
+      "role": "source-code",
+      "url": "https://docs.m5stack.com/en/arduino/m5go_kit/sensor"
+    },
+    {
+      "id": "host-schematic",
+      "sourceId": "host-schematic",
+      "role": "schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf"
+    }
+  ],
+  "revisions": []
+}

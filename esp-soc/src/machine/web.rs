@@ -71,6 +71,14 @@ fn accessory_illuminance_input(board:&mut dyn crate::BoardModel,cycle:crate::boa
     if matches!(connected.as_str(),"0"|"1")&&esp_periph::i2c::bh1750::Bh1750::valid(lux) {board.accessory_illuminance_at(cycle,&model,&port,connected=="1",lux);}
 }
 
+#[cold]
+#[inline(never)]
+fn accessory_motion_input(board:&mut dyn crate::BoardModel,cycle:crate::board::VirtualCycle,message:&crate::json::Json) {
+    let field=|key|message.get(key).and_then(crate::json::Json::scalar_text);
+    let (Some(model),Some(port),Some(connected),Some(motion))=(field("model"),field("port"),field("connected"),field("motion")) else{return};
+    if matches!(connected.as_str(),"0"|"1")&&matches!(motion.as_str(),"0"|"1") {board.accessory_motion_at(cycle,&model,&port,connected=="1",motion=="1");}
+}
+
 impl<S: Soc> Machine<S> {
     // ------------------------------------------------------------------ web UI
     /// Send display / audio / ring updates to the browser (called ~50x per emulated second).
@@ -201,6 +209,9 @@ impl<S: Soc> Machine<S> {
                 }
                 "accessory-illuminance" if S::NAME=="esp32s3" => {
                     let cycle=self.bus.cycles();accessory_illuminance_input(self.bus.board(),cycle,&message);
+                }
+                "accessory-motion" if S::NAME=="esp32s3" => {
+                    let cycle=self.bus.cycles();accessory_motion_input(self.bus.board(),cycle,&message);
                 }
                 "knobpress" => { let v = field("v").unwrap_or_default() == "1"; if let Some(sw) = self.bus.board_ref().named_pin("sw") { self.bus.gpio_set_input(sw, !v); *self.bus.irq_dirty() = true; } }
                 "knob" => {

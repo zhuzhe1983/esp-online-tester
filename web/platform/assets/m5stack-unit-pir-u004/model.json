@@ -1,0 +1,713 @@
+{
+  "schemaVersion": "1",
+  "id": "m5stack-unit-pir-u004",
+  "unit": "mm",
+  "binary": "geometry.bin",
+  "strideFloats": 6,
+  "parts": [
+    {
+      "sourceComponent": 0,
+      "name": "shell-front",
+      "role": "shell",
+      "color": "#e8e9e2",
+      "byteOffset": 0,
+      "vertexCount": 5172,
+      "boundsMm": [
+        [
+          -12.0,
+          -16.0,
+          -1.9999989749978795
+        ],
+        [
+          12.0,
+          16.0,
+          4.000000953674316
+        ]
+      ]
+    },
+    {
+      "sourceComponent": 3,
+      "name": "shell-back",
+      "role": "shell",
+      "color": "#e8e9e2",
+      "byteOffset": 124128,
+      "vertexCount": 4980,
+      "boundsMm": [
+        [
+          -12.0,
+          -16.0,
+          -3.999998927116394
+        ],
+        [
+          12.0,
+          16.0,
+          -0.3999990224838257
+        ]
+      ]
+    },
+    {
+      "name": "back-paper",
+      "sourceComponent": null,
+      "role": "label",
+      "texture": {
+        "file": "label.webp",
+        "projection": "xy",
+        "side": "back",
+        "boundsMm": [
+          -8,
+          1,
+          8,
+          13
+        ],
+        "mode": "decal"
+      },
+      "color": "#ffffff",
+      "byteOffset": 243648,
+      "vertexCount": 156,
+      "boundsMm": [
+        [
+          -8.0,
+          1.0,
+          -3.825000047683716
+        ],
+        [
+          8.0,
+          13.0,
+          -3.825000047683716
+        ]
+      ],
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-2",
+        "dimensions",
+        "cad"
+      ],
+      "notes": "Only white paper within CAD16.2x12.2mm recess;16x12mm paper estimate. Back IN/OUT denote host PortB direction: white host IN receives sensor OUT; yellow host OUT is NC inside U004."
+    }
+  ],
+  "sourceTransform": {
+    "matrixRows": [
+      [
+        1,
+        0,
+        0,
+        -221.26882934570312
+      ],
+      [
+        0,
+        1,
+        0,
+        -269.2234802246094
+      ],
+      [
+        0,
+        0,
+        1,
+        -2
+      ],
+      [
+        0,
+        0,
+        0,
+        1
+      ]
+    ],
+    "scale": 1,
+    "note": "Exact U004 STL: assembled components0 and3; omit translated print copies1 and2. Rigid centering only, no scale. +Z front, Grove opens-Y; shell z=-4..4mm. Separate dimension-based lens cap extends to z8.5mm; optical facets not reconstructed."
+  },
+  "omittedComponents": [
+    {
+      "index": 1,
+      "reason": "Translated duplicate front shell"
+    },
+    {
+      "index": 2,
+      "reason": "Translated duplicate back shell"
+    }
+  ],
+  "dimensions": {
+    "width": 24,
+    "height": 32,
+    "depth": 12.5,
+    "unit": "mm"
+  },
+  "presentation": {
+    "bodySizeMm": [
+      24,
+      32,
+      8
+    ]
+  },
+  "derivedParts": [
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "geometry": {
+        "sizeMm": [
+          20,
+          16,
+          1
+        ],
+        "centerMm": [
+          0,
+          7,
+          0
+        ],
+        "labelOffsetMm": [
+          0,
+          -5
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimensions",
+        "photo-5"
+      ],
+      "notes": "UNKNOWN internal board estimated from shell cavity; actual PCB outline, components and routing unavailable. Label shifted down to keep visible optical window unobstructed."
+    },
+    {
+      "id": "grove",
+      "kind": "connector-visual",
+      "connectorType": "HY2.0-4P",
+      "housingColor": "#202525",
+      "geometry": {
+        "centerMm": [
+          0,
+          -16,
+          0.85
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-1",
+        "photo-2",
+        "photo-3",
+        "photo-4",
+        "photo-5",
+        "dimensions",
+        "schematic"
+      ],
+      "allowConnections": true,
+      "pinOrder": [
+        "gnd",
+        "vcc",
+        "signal1",
+        "signal2"
+      ],
+      "notes": "Front socket left→right black GND/red5V/yellowNC/white sensorOUT; back PortB label is mirrored IN/OUT/5V/GND, using host direction. Schematic J1.1 I=white output, J1.2 O=NC. Hollow open roof visible in official photos; mouth y=-16, pin height z.85 and hidden mating depth estimated.",
+      "housingVariant": "open-roof"
+    },
+    {
+      "id": "pir-visible-lens",
+      "kind": "lathe",
+      "color": "#f1f0ed",
+      "material": {
+        "roughness": 0.75,
+        "metalness": 0
+      },
+      "geometry": {
+        "centerMm": [
+          0,
+          8,
+          4
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ],
+        "profileMm": [
+          [
+            5.1,
+            0.0
+          ],
+          [
+            5.072952,
+            0.1875
+          ],
+          [
+            5.038787,
+            0.375
+          ],
+          [
+            4.997359,
+            0.5625
+          ],
+          [
+            4.948485,
+            0.75
+          ],
+          [
+            4.891942,
+            0.9375
+          ],
+          [
+            4.827461,
+            1.125
+          ],
+          [
+            4.754718,
+            1.3125
+          ],
+          [
+            4.673329,
+            1.5
+          ],
+          [
+            4.582831,
+            1.6875
+          ],
+          [
+            4.482675,
+            1.875
+          ],
+          [
+            4.372196,
+            2.0625
+          ],
+          [
+            4.250588,
+            2.25
+          ],
+          [
+            4.116867,
+            2.4375
+          ],
+          [
+            3.969808,
+            2.625
+          ],
+          [
+            3.807866,
+            2.8125
+          ],
+          [
+            3.629049,
+            3.0
+          ],
+          [
+            3.430721,
+            3.1875
+          ],
+          [
+            3.209264,
+            3.375
+          ],
+          [
+            2.959492,
+            3.5625
+          ],
+          [
+            2.673481,
+            3.75
+          ],
+          [
+            2.337968,
+            3.9375
+          ],
+          [
+            1.927271,
+            4.125
+          ],
+          [
+            1.375625,
+            4.3125
+          ],
+          [
+            0,
+            4.5
+          ]
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimensions",
+        "photo-4",
+        "photo-5"
+      ],
+      "notes": "Smooth spherical-cap approximation to visible lens:10.2mm diameter,4.5mm above8mm shell for12.5mm total. Shape inferred from dimension drawing and photographs; Fresnel facets, optical transfer and internals not reconstructed."
+    }
+  ],
+  "derivedSurfaces": [
+    {
+      "name": "back-paper",
+      "sizeMm": [
+        16,
+        12
+      ],
+      "radiusMm": 0.12,
+      "positionMm": [
+        0,
+        7,
+        -3.825
+      ],
+      "side": "back",
+      "role": "label",
+      "sourceIds": [
+        "photo-2",
+        "dimensions",
+        "cad"
+      ],
+      "color": "#ffffff",
+      "notes": "Only white paper within CAD16.2x12.2mm recess;16x12mm paper estimate. Back IN/OUT denote host PortB direction: white host IN receives sensor OUT; yellow host OUT is NC inside U004.",
+      "texture": {
+        "file": "label.webp",
+        "projection": "xy",
+        "side": "back",
+        "boundsMm": [
+          -8,
+          1,
+          8,
+          13
+        ],
+        "mode": "decal"
+      }
+    }
+  ],
+  "referencePhotos": [
+    {
+      "sourceId": "photo-5",
+      "view": "front",
+      "file": "reference-photo-5.webp",
+      "sourceSha256": "99edb4737b3c1972d5321986af0bf1f7fa3f56d1dc01f5ad30e67fa3b337c8f2"
+    },
+    {
+      "sourceId": "photo-2",
+      "view": "back",
+      "file": "reference-photo-2.webp",
+      "sourceSha256": "b96d06e5dd2227f96771ff7a2b7434a9828ed051f7ed6aa6acb9342fa6b80eb0"
+    },
+    {
+      "sourceId": "photo-4",
+      "view": "connector",
+      "file": "reference-photo-4.webp",
+      "sourceSha256": "5ee974e19963dd66c4d4aff2c56cf7c5f08761a921d1ae322931388945121ed7"
+    }
+  ],
+  "textures": [
+    {
+      "sourceId": "photo-2",
+      "file": "label.webp",
+      "perspectiveQuad": [
+        [
+          281,
+          207
+        ],
+        [
+          517,
+          207
+        ],
+        [
+          517,
+          383
+        ],
+        [
+          281,
+          383
+        ]
+      ],
+      "rectifiedPixels": [
+        640,
+        480
+      ],
+      "notes": "White paper corners in original800x800 back photo, excluding casing, screw and recess border.",
+      "sourceSha256": "b96d06e5dd2227f96771ff7a2b7434a9828ed051f7ed6aa6acb9342fa6b80eb0",
+      "outputPixels": [
+        640,
+        480
+      ],
+      "method": "Four explicit original-image film corners rectified by OpenCV getPerspectiveTransform/warpPerspective (Lanczos4); original-coordinate alpha ROI and hardware exclusions applied before warp. Original pixels only; projection uncertainty recorded, not independent geometry verification."
+    }
+  ],
+  "reviewViews": {
+    "front": {
+      "position": [
+        17,
+        0,
+        250
+      ],
+      "target": [
+        17,
+        0,
+        0
+      ],
+      "span": 78.05,
+      "calibration": "Fixed official photo5 body x102..350,y237..565, height328px. Coin excluded by product ROI; no shape warp."
+    },
+    "back": {
+      "position": [
+        0,
+        0,
+        -250
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "span": 55.2
+    },
+    "connector": {
+      "position": [
+        -120,
+        -140,
+        220
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "span": 51
+    },
+    "oblique": {
+      "position": [
+        -110,
+        -120,
+        250
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "span": 48
+    }
+  },
+  "provenance": {
+    "repository": "https://github.com/m5stack/M5_Hardware",
+    "commit": "e29c139cbc7c80b5ccc5557e5ab8025a7a19a109",
+    "sourceUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U004_Unit_PIR/Structures/Unit_PIR.stl",
+    "sourceSha256": "95b1cb80204076552c3927dca648fb82df24ff3e71fa9402681fbcdb6f2b16b1",
+    "tessellation": {
+      "step": "OpenCascade 7.8.1.1; absolute deflection0.05mm, angle0.2rad, native solids plus orphan shells/faces; units converted by STEP reader to millimetres",
+      "stl": "Original triangles"
+    },
+    "sourceLicense": "MIT; Copyright (c) 2021 M5Stack; see LICENSE-M5Stack.txt",
+    "photoRights": "Official product photographs copyright M5Stack / named manufacturer. No separate open photo license verified; retained for product reference, not relicensed under project MIT.",
+    "sources": [
+      {
+        "id": "product",
+        "url": "https://docs.m5stack.com/en/unit/Unit_PIR",
+        "resolvedUrl": "https://docs.m5stack.com/en/unit/Unit_PIR",
+        "fetchedAt": "2026-10-27T13:10:15Z",
+        "mediaType": "text/html",
+        "bytes": 132375,
+        "sha256": "6db41866f96b16ec87660436604862eff21af7acbeaed7d55138d4eeb95953f1",
+        "archiveName": "product.html",
+        "kind": "product-page",
+        "title": "Unit PIR U004 官方资料",
+        "status": "fetched",
+        "checkedAt": "2026-10-27"
+      },
+      {
+        "id": "schematic",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/701/UNIT_PIR.pdf",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/701/UNIT_PIR.pdf",
+        "fetchedAt": "2026-10-27T13:10:14Z",
+        "mediaType": "application/pdf",
+        "bytes": 60618,
+        "sha256": "fbcbc5ca83588d48afab0a1bf4bdaab2740b43044f28ece8f7ddcff9bddb095e",
+        "archiveName": "schematic.pdf",
+        "kind": "schematic",
+        "title": "U004 官方原理图",
+        "status": "fetched",
+        "checkedAt": "2026-10-27"
+      },
+      {
+        "id": "cad",
+        "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U004_Unit_PIR/Structures/Unit_PIR.stl",
+        "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U004_Unit_PIR/Structures/Unit_PIR.stl",
+        "fetchedAt": "2026-10-27T13:10:15Z",
+        "mediaType": "application/octet-stream",
+        "bytes": 338484,
+        "sha256": "95b1cb80204076552c3927dca648fb82df24ff3e71fa9402681fbcdb6f2b16b1",
+        "archiveName": "Unit_PIR.stl",
+        "kind": "manufacturer-cad",
+        "title": "U004 官方结构 STL",
+        "status": "fetched",
+        "checkedAt": "2026-10-27"
+      },
+      {
+        "id": "cad-license",
+        "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+        "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+        "fetchedAt": "2026-10-27T13:10:15Z",
+        "mediaType": "text/plain",
+        "bytes": 1063,
+        "sha256": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+        "archiveName": "LICENSE.txt",
+        "kind": "license",
+        "title": "M5_Hardware MIT 授权",
+        "status": "fetched",
+        "checkedAt": "2026-10-27"
+      },
+      {
+        "id": "as312-manual-mirror",
+        "url": "https://evelta.com/content/datasheets/361-AS312.pdf",
+        "resolvedUrl": "https://evelta.com/content/datasheets/361-AS312.pdf",
+        "fetchedAt": "2026-10-27T13:10:16Z",
+        "mediaType": "application/pdf",
+        "bytes": 445922,
+        "sha256": "922d5a11741d7920d6bc706507965db5acedfe04c6f4638bb06716fffdd406ab",
+        "archiveName": "as312-7pages.pdf",
+        "kind": "datasheet",
+        "title": "Senba AS312 手册（第三方镜像，版次未知）",
+        "status": "fetched",
+        "checkedAt": "2026-10-27",
+        "notes": "Manufacturer-authored manual on third-party mirror; hardware/version match not established. Prose says2s, typical on/lock table2.3s. This is not an M5Stack-linked datasheet."
+      },
+      {
+        "id": "as312-legacy-mirror",
+        "url": "https://forum.mysensors.org/assets/uploads/files/1494013712469-pir-as312.pdf",
+        "resolvedUrl": "https://forum.mysensors.org/assets/uploads/files/1494013712469-pir-as312.pdf",
+        "fetchedAt": "2026-10-27T13:10:17Z",
+        "mediaType": "application/pdf",
+        "bytes": 448986,
+        "sha256": "f8d9a23271a114bc86c691c2a7a09acaec56d80701c3c4933fafd27aa2af214a",
+        "archiveName": "as312-5pages.pdf",
+        "kind": "datasheet",
+        "title": "Senba AS312 手册（第三方镜像，版次未知）",
+        "status": "fetched",
+        "checkedAt": "2026-10-27",
+        "notes": "Manufacturer-authored manual on third-party mirror; hardware/version match not established. Prose says2s, typical on/lock table2.3s. This is not an M5Stack-linked datasheet."
+      },
+      {
+        "id": "photo-1",
+        "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-4647c010-1e57-4cc9-85e3-cbd450882074.webp",
+        "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-4647c010-1e57-4cc9-85e3-cbd450882074.webp",
+        "fetchedAt": "2026-10-27T13:39:15Z",
+        "mediaType": "image/webp",
+        "bytes": 93688,
+        "sha256": "81c1d2e18361af933c6340d99927aa03014e67be11ab1756910bb23b997d97f0",
+        "archiveName": "photo-1.webp",
+        "kind": "product-photo",
+        "title": "U004 官方产品照片",
+        "status": "fetched",
+        "checkedAt": "2026-10-27"
+      },
+      {
+        "id": "photo-2",
+        "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-625b76c4-caf0-42c9-bc2d-8081d7a77e5e.webp",
+        "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-625b76c4-caf0-42c9-bc2d-8081d7a77e5e.webp",
+        "fetchedAt": "2026-10-27T13:39:15Z",
+        "mediaType": "image/webp",
+        "bytes": 51426,
+        "sha256": "b96d06e5dd2227f96771ff7a2b7434a9828ed051f7ed6aa6acb9342fa6b80eb0",
+        "archiveName": "photo-2.webp",
+        "kind": "product-photo",
+        "title": "U004 官方产品照片",
+        "status": "fetched",
+        "checkedAt": "2026-10-27"
+      },
+      {
+        "id": "photo-3",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/701/U004_main_pictures_01.jpg",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/701/U004_main_pictures_01.jpg",
+        "fetchedAt": "2026-10-27T13:39:13Z",
+        "mediaType": "image/jpg",
+        "bytes": 84999,
+        "sha256": "8f9e228346d6524a424a91d61c5978d487a50685ad2d7c474c57bfac76821376",
+        "archiveName": "photo-3.jpg",
+        "kind": "product-photo",
+        "title": "U004 官方产品照片",
+        "status": "fetched",
+        "checkedAt": "2026-10-27"
+      },
+      {
+        "id": "photo-4",
+        "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-958951eb-482b-443b-9e98-fb752819607b.webp",
+        "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-958951eb-482b-443b-9e98-fb752819607b.webp",
+        "fetchedAt": "2026-10-27T13:39:15Z",
+        "mediaType": "image/webp",
+        "bytes": 31348,
+        "sha256": "5ee974e19963dd66c4d4aff2c56cf7c5f08761a921d1ae322931388945121ed7",
+        "archiveName": "photo-4.webp",
+        "kind": "product-photo",
+        "title": "U004 官方产品照片",
+        "status": "fetched",
+        "checkedAt": "2026-10-27"
+      },
+      {
+        "id": "photo-5",
+        "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-d3d367ff-4aa0-43f5-bff0-c32d9fe9e45c.webp",
+        "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/PIR/img-d3d367ff-4aa0-43f5-bff0-c32d9fe9e45c.webp",
+        "fetchedAt": "2026-10-27T13:39:17Z",
+        "mediaType": "image/webp",
+        "bytes": 61646,
+        "sha256": "99edb4737b3c1972d5321986af0bf1f7fa3f56d1dc01f5ad30e67fa3b337c8f2",
+        "archiveName": "photo-5.webp",
+        "kind": "product-photo",
+        "title": "U004 官方产品照片",
+        "status": "fetched",
+        "checkedAt": "2026-10-27"
+      },
+      {
+        "id": "dimensions",
+        "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/PIR/%E5%B0%BA%E5%AF%B8%E5%9B%BE.jpg",
+        "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/unit/PIR/%E5%B0%BA%E5%AF%B8%E5%9B%BE.jpg",
+        "fetchedAt": "2026-10-27T13:39:15Z",
+        "mediaType": "image/jpeg",
+        "bytes": 509396,
+        "sha256": "2e08d240d1840669c25fa9a141f639fada0b9f1b3aa09d596c4b32dc1729dc77",
+        "archiveName": "dimensions.jpg",
+        "kind": "dimension-drawing",
+        "title": "U004 尺寸图",
+        "status": "fetched",
+        "checkedAt": "2026-10-27"
+      },
+      {
+        "id": "arduino-example",
+        "url": "https://docs.m5stack.com/en/arduino/m5go_kit/sensor",
+        "resolvedUrl": "https://docs.m5stack.com/en/arduino/m5go_kit/sensor",
+        "mediaType": "text/html",
+        "bytes": 393755,
+        "sha256": "786a16607a2cbddbe8026dfcb2ec92184e5a91dc01e9690c9febbb59b83b8c8b",
+        "fetchedAt": "2026-10-27T13:52:18Z",
+        "archiveName": "arduino.html",
+        "kind": "source-code",
+        "title": "M5GO Kit 官方 PIR 主机示例",
+        "status": "fetched",
+        "checkedAt": "2026-10-27"
+      },
+      {
+        "id": "host-schematic",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf",
+        "title": "StopWatch official Port A schematic",
+        "kind": "schematic",
+        "fetchedAt": "2026-10-27T11:01:40Z",
+        "mediaType": "application/pdf",
+        "bytes": 1480402,
+        "sha256": "8d4755c341f966a6191f9f16a7a45c558a99749a5e39a30d0513f86a5e10ef80",
+        "archiveName": "host-schematic.pdf",
+        "status": "fetched",
+        "checkedAt": "2026-10-27"
+      }
+    ]
+  },
+  "limitations": [
+    "首轮仅 StopWatch Port A 白线 G11，需客体启用 Grove 5V；黄线在 U004 内部未连接。可经一层 U006 与不争用 G11 的 U003 共存。",
+    "采用 pir-u004-m5-2s：持续红外变化时保持高电平，停止后延时2个客体秒，可再次触发。M5资料标2s，AS312镜像手册表格标2.3s；未模拟锁定窗口、预热、光学、温度或噪声，未实机校准。",
+    "断电时释放外部驱动为平台理想接口策略；不代表已验证AS312掉电漏电或反向供电。",
+    "官方U004外壳CAD原始三角形保留；镜片为尺寸/照片推算的平滑球冠，未还原菲涅尔细分面；内部PCB为UNKNOWN占位，螺丝未还原。",
+    "纸贴与外壳分开；背贴IN/OUT是主机方向，不是模块两个输出。插口针序已核对，隐藏插合尺寸为估算。"
+  ],
+  "artifacts": {
+    "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+    "label.webp": "1033b4c81981b68d9f9546f77aa5daa1659ebc264580d33cf2ba077cd36fbfd4",
+    "reference-dimensions.jpg": "2e08d240d1840669c25fa9a141f639fada0b9f1b3aa09d596c4b32dc1729dc77",
+    "reference-photo-1.webp": "81c1d2e18361af933c6340d99927aa03014e67be11ab1756910bb23b997d97f0",
+    "reference-photo-3.jpg": "8f9e228346d6524a424a91d61c5978d487a50685ad2d7c474c57bfac76821376",
+    "geometry.bin": "11b8ddf45e4ded3c6714c763cdd85ef1a6f273a5ae61b0e02c0cd87a00c8942b",
+    "reference-photo-4.webp": "5ee974e19963dd66c4d4aff2c56cf7c5f08761a921d1ae322931388945121ed7",
+    "reference-photo-5.webp": "99edb4737b3c1972d5321986af0bf1f7fa3f56d1dc01f5ad30e67fa3b337c8f2",
+    "source.stl": "95b1cb80204076552c3927dca648fb82df24ff3e71fa9402681fbcdb6f2b16b1",
+    "reference-photo-2.webp": "b96d06e5dd2227f96771ff7a2b7434a9828ed051f7ed6aa6acb9342fa6b80eb0"
+  }
+}

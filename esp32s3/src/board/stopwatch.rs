@@ -1,4 +1,5 @@
 use std::sync::{Arc, Mutex};
+use super::unit_pir::UnitPir;
 
 use esp_periph::i2c::m5::{M5ioe1, M5ioe1State, M5pm1, M5pm1State};
 use esp_periph::i2c::bmi270::{Bmi270, Bmi270Sample};
@@ -29,6 +30,7 @@ struct PanelState {
     unit_angle: Option<Box<UnitAngle>>,
     unit_env4: Option<Box<Env4>>,
     unit_dlight: Option<Box<Bh1750>>,
+    unit_pir: Option<Box<UnitPir>>,
 }
 
 struct PowerWiring {
@@ -63,6 +65,7 @@ impl PowerWiring {
         }
         if let Some(env)=&mut panel.unit_env4 {env.set_power(grove_power);}
         if let Some(light)=&mut panel.unit_dlight {light.set_power(grove_power);}
+        if let Some(pir)=&mut panel.unit_pir {pir.set_power(grove_power);}
         if off || !expander.touch_reset_high {
             *self.touch.lock().expect("StopWatch touch mutex poisoned") = TouchState::default();
         }
@@ -139,6 +142,7 @@ impl StopWatch {
                     unit_angle: None,
                     unit_env4: None,
                     unit_dlight: None,
+                    unit_pir: None,
                 }),
                 pmic: Default::default(),
                 expander: Default::default(),
@@ -245,7 +249,8 @@ impl BoardModel for StopWatch {
         let state = self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");
         let mut levels=vec![state.panel.tear_input().expect("StopWatch scan must be configured"),
             (PIN_STOPWATCH_BUTTON_A, true), (PIN_STOPWATCH_BUTTON_B, true), (47,self.i2c_levels[0]), (48,self.i2c_levels[1])];
-        if let Some(button)=&state.unit_button {levels.push((11,button.level));}levels
+        if let Some(button)=&state.unit_button {levels.push((11,button.level));}
+        if let Some(pir)=&state.unit_pir {if let Some(level)=pir.level() {levels.push((11,level));}}levels
     }
     fn touch(&mut self, x: u16, y: u16, down: bool) {
         self.wiring.sync();
@@ -255,7 +260,7 @@ impl BoardModel for StopWatch {
             .update(x.min(Self::WIDTH as u16 - 1), y.min(Self::HEIGHT as u16 - 1), down);
     }
     fn next_deadline(&self) -> Option<VirtualCycle> {
-        self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").panel.next_deadline()
+        let state=self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");state.panel.next_deadline().into_iter().chain(state.unit_pir.as_ref().and_then(|pir|pir.deadline())).min()
     }
     fn advance_to(&mut self, cycle: VirtualCycle) {
         self.wiring.sync();self.sync_rgb_power();
@@ -263,11 +268,19 @@ impl BoardModel for StopWatch {
         state.panel.advance_to(cycle);if let Some(button)=&mut state.unit_button {button.cycle=cycle;}
         if let Some(env)=&mut state.unit_env4 {env.advance_to(cycle);}
         if let Some(light)=&mut state.unit_dlight {light.advance_to(cycle);}
+        if let Some(pir)=&mut state.unit_pir {pir.advance_to(cycle);}
     }
     fn take_edges(&mut self) -> Vec<BoardEdge> {
         let mut state=self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");let mut edges=state.panel.take_edges();
         edges.append(&mut self.i2c_edges);
-        if let Some(button)=&mut state.unit_button {if button.dirty {button.dirty=false;edges.push(BoardEdge{cycle:button.cycle,pin:11,level:button.level});}}edges
+        if let Some(button)=&mut state.unit_button {if button.dirty {button.dirty=false;edges.push(BoardEdge{cycle:button.cycle,pin:11,level:button.level});}}
+        if let Some(pir)=&mut state.unit_pir {edges.extend(pir.take_edges());}edges
+    }
+    fn released_inputs(&mut self)->Vec<u8> {self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").unit_pir.as_mut().map_or_else(Vec::new,|pir|pir.released_inputs())}
+    fn accessory_motion_at(&mut self,cycle:VirtualCycle,model:&str,port:&str,connected:bool,motion:bool)->bool {
+        if model!="pir-u004-m5-2s"||port!="grove" {return false;}
+        {let mut state=self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");let pir=state.unit_pir.get_or_insert_with(||Box::new(UnitPir::new(crate::periph::CPU_HZ)));pir.input_at(cycle,connected,motion);}
+        self.wiring.sync();true
     }
     fn accessory_button_at(&mut self,cycle:VirtualCycle,model:&str,port:&str,connected:bool,pressed:bool)->Option<(u8,Option<bool>)> {
         if model!="gpio-button-u027" || port!="grove" {return None;}
@@ -446,5 +459,21 @@ mod unit_dlight_tests {
         assert!(board.accessory_illuminance_at(crate::periph::CPU_HZ/5,"bh1750fvi-u136","grove",false,1000.0));
         assert!(!devices.iter_mut().find(|(_,a,_)|*a==0x23).unwrap().2.start(false));
         assert!(devices.iter_mut().find(|(_,a,_)|*a==0x76).unwrap().2.start(false));
+    }
+}
+
+#[cfg(test)]
+mod unit_pir_tests {
+    use super::*;
+    fn write(device:&mut dyn I2cDevice,reg:u8,value:u8){assert!(device.start(false));assert!(device.write(reg));assert!(device.write(value));device.stop();}
+    #[test] fn u004_deadline_pin_power_hold_and_disconnected_edges() {
+        let mut b=StopWatch::new();let mut devices=b.i2c_devices();let pmic=devices.iter_mut().find(|(_,a,_)|*a==0x6e).unwrap().2.as_mut();
+        assert!(!b.accessory_motion_at(0,"arbitrary","grove",true,true));assert!(!b.accessory_motion_at(0,"pir-u004-m5-2s","internal-i2c",true,true));
+        assert!(b.accessory_motion_at(0,"pir-u004-m5-2s","grove",true,true));assert!(!b.input_levels().iter().any(|(pin,_)|*pin==11));
+        write(pmic,6,0x1f);b.advance_to(10);assert_eq!(b.take_edges(),[BoardEdge{cycle:0,pin:11,level:true}]);assert!(!b.input_levels().iter().any(|(pin,_)|*pin==10));
+        b.accessory_motion_at(10,"pir-u004-m5-2s","grove",true,false);let due=10+crate::periph::CPU_HZ*2;assert_eq!(b.next_deadline(),Some(due));b.advance_to(due);assert!(b.take_edges().contains(&BoardEdge{cycle:due,pin:11,level:false}));
+        b.accessory_motion_at(due,"pir-u004-m5-2s","grove",true,true);b.take_edges();write(pmic,7,0x40);write(pmic,0x0c,0xa1);assert!(b.input_levels().contains(&(11,true)));
+        write(pmic,7,0);assert_eq!(b.released_inputs(),[11]);assert!(!b.input_levels().iter().any(|(pin,_)|*pin==11));
+        b.accessory_motion_at(due,"pir-u004-m5-2s","grove",false,true);write(pmic,7,0x40);assert!(b.take_edges().is_empty());assert!(!b.input_levels().iter().any(|(pin,_)|*pin==11));
     }
 }

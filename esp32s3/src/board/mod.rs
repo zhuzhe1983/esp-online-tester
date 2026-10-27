@@ -29,6 +29,7 @@ pub mod metalio_ink4;
 pub mod cardputer_adv;
 pub mod cardputer;
 mod cardputer_lcd;
+mod unit_pir;
 pub mod waveshare_amoled18;
 pub mod waveshare_cam;
 pub mod waveshare_lcd4b;

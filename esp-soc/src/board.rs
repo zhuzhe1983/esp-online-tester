@@ -180,6 +180,8 @@ pub trait BoardModel {
     /// Cold completed i80 phase, in wire word order; not a framebuffer or a tick callback.
     /// Appended to preserve hot vtable offsets. No callback on a failed DMA gather.
     fn lcd_i80(&mut self, _pins: LcdI80Pins, _data_phase: bool, _words: &[u16]) {}
+    /// Cold motion stimulus; board owns its physical GPIO, power and autonomous deadlines.
+    fn accessory_motion_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _motion: bool) -> bool { false }
 
     /// Cold ambient input; the board owns powered, physically routed I2C sensor devices.
     fn accessory_environment_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _sample: esp_periph::i2c::env4::Environment) -> bool { false }
