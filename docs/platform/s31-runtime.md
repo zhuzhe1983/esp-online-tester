@@ -886,3 +886,62 @@ alternating CPU pairs against fixed main84e67571 gave S3 +0.026%, C3 +1.042%,
 C6 −1.805%, with identical output hashes and instruction/cycle statistics. This
 is a regression guard, not an S31 speed claim. No golden, UI or product
 availability changed; no browser or physical-hardware verification is claimed.
+
+### Flash parameter read, clock selection and idle Resume
+
+The same complete Plus 2.0.68 image now prints its actual bootloader Flash
+configuration: 80 MHz, DIO and 16 MB. It stops after 362,095 instructions at
+PC `0x2f06a378`, read32 `0x2070103c`, the unimplemented HPCORE0 reset-control
+register. The app and display have not started; Plus remains unavailable.
+
+The previous SPI1 stop is the bootloader's SFDP read at address `0x10`, used by
+the pinned IDF driver to select its XMC startup path. The private model accepts
+the real command8/address24/dummy8 read and returns only a caller-supplied byte
+interval. Missing data, reads outside that interval and malformed transfers
+fault without changing the receive buffer. SFDP is independent of NOR array
+contents and JEDEC identity, and survives a digital-controller reset. No
+complete manufacturer table or Plus BOM is inferred. The development probe
+supplies `--nor-sfdp=10:ef`; this is an explicit non-XMC test input, not a physical
+measurement of the product.
+
+The guest then selects the actual Flash clock mux and divider. The pinned S31
+MSPI LL assumes SPLL480 MHz and divides it by six for the supported 80 MHz
+core. `--bbpll-hz=480000000` supplies that stable source explicitly; default
+construction has no BBPLL input. The MSPI PLL enable, core enable, APB/reset
+controls and HP_ALIVE BBPLL output gate determine access. Removing the source
+or gate blocks commands and mapped Flash access. This digital clock model does
+not establish analog PLL startup, settling or hardware timing. The functional
+XTAL path applies the documented divider field, but its resulting rate has not
+been compared with physical S31 hardware; no timing claim uses it.
+
+The explicit Winbond `ef4018` descriptor accepts Resume `0x7a` only for the
+modeled idle, unsuspended state. Winbond-authored W25Q128JV RevF/RevI section
+8.2.20 specifies that idle Resume is ignored. It leaves array bytes, receive
+buffer, WEL and QE unchanged; it does not manufacture completion of an erase or
+program. Unsupported suspend states, another manufacturer, malformed phases or
+a missing clock remain failures. The manufacturer-hosted latest PDF returned
+403; the fixed older manufacturer-authored PDFs were fetched from public
+distributor mirrors, with that provenance retained in `sources.json`.
+
+`flash-params-probe.S` validates two distinct SFDP reads, Flash80 selection and
+idle Resume through actual guest instructions. It emits `S31 SFDP FLASH80 IDLE
+PASS`; wrong bytes execute its own failure branch. Missing SFDP, missing BBPLL,
+ALIVE gate removal and an unsupported manufacturer trap at their guest
+operations. This fixture is source-only in Git; generated binaries remain in
+ignored output. It is not substituted for the official image.
+
+The final `SFDP[0x10]=0x20` negative control enters the guest's XMC-specific startup
+and stops on its unsupported `0xb9` command after 296,610 instructions. The
+standard input reaches the reset-register stop above; both outcomes are
+retained in the [official-image receipt](evidence/s31-bringup/flash-parameters-plus-2.0.68.json).
+See the [stage receipt](evidence/s31-bringup/flash-parameters.json) and
+[CPU guard](evidence/s31-bringup/flash-parameters-perf.json).
+
+Validation passes 1,420 workspace Rust tests, 56 S31 unit tests and 21 source/ROM
+fixtures, both warnings-denied Clippy targets, and the local CI commands for
+WASM/JIT, platform/recording, VQ, worker/timing/BLE and receipt contracts. This was
+an arm64 macOS host, not the Linux CI runner. Five alternating pairs against
+fixed main84e67571 yielded S3 −0.126%, C3 −0.293%, C6 −0.979%, with identical
+UART hashes and instruction/cycle statistics. These small differences are not
+a speedup claim. No UI, golden or product-availability change is included, and
+no browser or physical-hardware validation is claimed for S31.

@@ -1,11 +1,18 @@
 //! Run a caller-supplied SRAM/ROM ELF and report the first unimplemented access.
 use std::io::Write;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None;
+    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut sfdp = None; let mut bbpll = None;
     while let Some(arg) = args.peek() {
         match arg.as_str() {
             "--rom" => rom = true, "--usb-host" => usb_host = true,
             "--rom-spi0-shadow" => spi0_shadow = true,
+            value if value.starts_with("--bbpll-hz=") => bbpll = Some(value["--bbpll-hz=".len()..].parse::<u64>()?),
+            value if value.starts_with("--nor-sfdp=") => {
+                let text = &value["--nor-sfdp=".len()..]; let (offset, hex) = text.split_once(':').ok_or("SFDP needs hex-offset:hex-bytes")?;
+                if !hex.is_ascii() || hex.is_empty() || hex.len() > 131072 || !hex.len().is_multiple_of(2) { return Err("invalid SFDP byte interval".into()); }
+                let bytes: Result<Vec<_>, _> = (0..hex.len()).step_by(2).map(|i| u8::from_str_radix(&hex[i..i + 2], 16)).collect();
+                sfdp = Some((u32::from_str_radix(offset.trim_start_matches("0x"), 16)?, bytes?));
+            }
             value if value.starts_with("--analog-dig=") => {
                 let text = &value["--analog-dig=".len()..]; if text.len() != 8 { return Err("analog DIG registers5,7,13,14 require eight hex digits".into()); }
                 dig = Some(u32::from_str_radix(text, 16)?.to_be_bytes());
@@ -29,7 +36,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         args.next();
     }
-    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
+    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
     let input = args.next().unwrap_or_default();
     let budget = args.next().map(|s| s.parse::<u64>()).transpose()?.unwrap_or(100_000).min(10_000_000);
     if args.next().is_some() { return Err("too many bringup arguments".into()); }
@@ -42,6 +49,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if let Some(id) = nor {
         m.bus.mspi.attach_flash(id, 0).map_err(|e| format!("invalid NOR descriptor: {e:?}"))?;
         eprintln!("development NOR JEDEC={id:02x?} status=0 (caller input, not identified product hardware)");
+    }
+    if let Some(hz) = bbpll {
+        m.bus.mspi.set_bbpll_input(Some(hz)).map_err(|e| format!("unsupported BBPLL input: {e:?}"))?;
+        eprintln!("development BBPLL stable input={hz}Hz (caller input, not a modeled analog PLL lock)");
+    }
+    if let Some((offset, bytes)) = sfdp {
+        m.bus.mspi.attach_sfdp(offset, &bytes).map_err(|e| format!("invalid SFDP interval: {e:?}"))?;
+        eprintln!("development SFDP interval offset={offset:#x} bytes={:02x?} (caller input, not identified product parameters)", bytes);
     }
     if let Some(bytes) = bias { m.bus.analog.set_bias(bytes); eprintln!("development analog BIAS seed={bytes:02x?} (caller input, no public reset value or voltage calibration)"); }
     if let Some(byte) = perif { m.bus.analog.set_perif_glitch(byte); eprintln!("development analog PERIF reg10 seed={byte:02x} (caller input, not a measured voltage/glitch profile)"); }
@@ -62,6 +77,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("stop={stop:?} steps={steps} pc={:#010x} mepc={:#010x} mcause={:#x} mtval={:#010x} fault={:?}",
         m.cpu.pc, m.cpu.mepc, m.cpu.mcause, m.cpu.mtval, m.bus.first_fault);
     eprintln!("mspi-commands={} cache-maintenance={} sha-blocks={}", m.bus.mspi.commands, m.bus.cache.maintenance_operations, m.bus.sha.blocks());
+    eprintln!("flash-core-hz={:?}", m.bus.mspi.core_hz());
+    eprintln!("mspi-last-command={:?} user={:?} user1={:?} user2={:?} ctrl={:?} status={:?} w0={:?}", m.bus.mspi.last_command, m.bus.mspi.read(1, 0x18), m.bus.mspi.read(1, 0x1c), m.bus.mspi.read(1, 0x20), m.bus.mspi.read(1, 8), m.bus.mspi.read(1, 0x2c), m.bus.mspi.read(1, 0x58));
     eprintln!("analog-transactions={} bias={:?} mpll-shutdown={}", m.bus.analog.transactions, m.bus.analog.bias(), m.bus.power.mpll_disabled());
     eprintln!("analog-dig={:?}", m.bus.analog.dig_reg());
     eprintln!("clock-rates={:?} rtc-fast-hz={} rtc-slow-hz={} cpll-control={:?}", m.bus.clocks.rates(), m.bus.clocks.rtc_fast_hz(), m.bus.clocks.rtc_slow_hz(), m.bus.clocks.read(0x174));

@@ -83,6 +83,7 @@ S31_ANALOG_ELF="$PWD/output/s31-uart-probe/analog-probe.elf" \
 S31_POWER_ELF="$PWD/output/s31-uart-probe/power-probe.elf" \
 S31_PMS_ELF="$PWD/output/s31-uart-probe/pms-probe.elf" \
 S31_CPLL_ELF="$PWD/output/s31-uart-probe/cpll-probe.elf" \
+S31_FLASH_PARAMS_ELF="$PWD/output/s31-uart-probe/flash-params-probe.elf" \
 S31_BOOT_IMAGE="$PWD/output/s31-uart-probe/spi0-observation.bin" \
 S31_ROM_ELF="$PWD/output/s31-sources/roms/esp32s31_rev0_rom.elf" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
@@ -172,3 +173,13 @@ clock trap. Calibration takes16 functional model quanta, not measured physical
 settling time. The explicit `--analog-dig=hhhhhhhh` seed orders registers5,7,13,14;
 headers do not establish their analog reset bytes. The fixture does not identify
 product hardware or validate a physical PLL, RTC timing or voltage.
+
+`flash-params-probe.S` reads caller-supplied SFDP bytes at two actual SPI1
+addresses, selects an explicit stable BBPLL480 MHz input divided by six, then
+sends an idle Winbond Resume command. Set `S31_FLASH_PARAMS_ELF`. The valid guest
+prints `S31 SFDP FLASH80 IDLE PASS`; wrong bytes take its own failure branch.
+Absent SFDP, absent BBPLL, removal of the actual ALIVE clock gate and another
+manufacturer fail at the corresponding guest access. This does not fabricate a
+complete SFDP table, program/erase completion, oscillator lock or product BOM.
+The private runner accepts `--nor-sfdp=hex-offset:hex-bytes` and
+`--bbpll-hz=480000000` as explicit development inputs; both are absent by default.

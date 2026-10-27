@@ -448,3 +448,40 @@ fn external_s31_cpll_dig_data_and_real_rom_frequency() {
         eprintln!("S31 CPLL control={control} steps={} stop={:?} rates={:?} transactions={}", run.steps, run.stop, m.bus.clocks.rates(), m.bus.analog.transactions);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_FLASH_PARAMS_ELF to flash-params-probe.elf"]
+fn external_s31_flash_parameters_clock_and_idle_resume() {
+    let path = std::env::var("S31_FLASH_PARAMS_ELF").expect("build firmware/s31-uart-probe and set S31_FLASH_PARAMS_ELF");
+    let elf = std::fs::read(path).expect("read S31_FLASH_PARAMS_ELF");
+    for control in ["valid", "wrong-data", "no-sfdp", "no-bbpll", "clock-gated", "other-manufacturer"] {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        m.bus.cache.set_flash(&[0xa5; 128]).unwrap();
+        m.bus.mspi.attach_flash([if control == "other-manufacturer" { 0x20 } else { 0xef }, 0x40, 0x18], 2).unwrap();
+        if control != "no-sfdp" { m.bus.mspi.attach_sfdp(0x10, &[if control == "wrong-data" { 0 } else { 0x12 }, 0x34, 0x56, 0x78]).unwrap(); }
+        if control != "no-bbpll" { m.bus.mspi.set_bbpll_input(Some(480_000_000)).unwrap(); }
+        m.bus.load(0x2f070000, &u32::from(control == "clock-gated").to_le_bytes(), 4).unwrap();
+        let run = m.run(10_000);
+        match control {
+            "valid" => {
+                assert_eq!(run.stop, esp32s31::Stop::Waiting); assert!(m.bus.first_fault.is_none());
+                assert_eq!(m.bus.uart0.tx_out, b"S31 SFDP FLASH80 IDLE PASS\n");
+                assert_eq!(m.bus.mspi.commands, 3); assert_eq!(m.bus.mspi.core_hz(), Some(80_000_000));
+                assert_eq!(m.bus.mspi.read(1, 0x58), Ok(0x7856));
+            }
+            "wrong-data" => {
+                assert!(matches!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_))));
+                assert_eq!(m.bus.uart0.tx_out, b"S31 FLASH PARAMS FAIL\n"); assert_eq!(m.bus.mspi.commands, 1);
+            }
+            _ => {
+                assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7)));
+                let fault = m.bus.first_fault.as_ref().unwrap(); assert_eq!(fault.reason, emu_core::Fault::Prohibited);
+                assert_eq!(fault.address, if control == "no-bbpll" { 0x20587064 } else { 0x20501000 });
+                assert_eq!(m.bus.mspi.commands, if control == "no-sfdp" { 0 } else { 2 });
+                assert!(m.bus.uart0.tx_out.is_empty());
+                if control == "clock-gated" { assert_eq!(m.bus.mspi.core_hz(), None); assert!(!m.bus.power.bbpll_output_enabled()); }
+            }
+        }
+        eprintln!("S31 flash-params control={control} steps={} stop={:?} commands={} core-hz={:?}", run.steps, run.stop, m.bus.mspi.commands, m.bus.mspi.core_hz());
+    }
+}

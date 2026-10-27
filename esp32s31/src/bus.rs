@@ -317,7 +317,7 @@ impl S31Bus {
                 return self.fault(address, bytes, true, false, Fault::Prohibited); // CPU-clock loss/suspend not modeled.
             }
             return match self.power.write(address, value) {
-                Ok(()) => { self.clocks.set_cpll_power(self.power.cpll_enabled()); self.clocks.set_fosc_power(self.power.fosc_enabled()); Ok(()) }
+                Ok(()) => { self.clocks.set_cpll_power(self.power.cpll_enabled()); self.clocks.set_fosc_power(self.power.fosc_enabled()); self.mspi.set_bbpll_gate(self.power.bbpll_output_enabled()); Ok(()) }
                 Err(e) => self.fault(address, bytes, true, false, e),
             };
         }

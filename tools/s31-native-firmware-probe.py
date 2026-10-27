@@ -53,6 +53,8 @@ def main():
     parser.add_argument("--runner", default="target/release/examples/bringup")
     parser.add_argument("--output", required=True)
     parser.add_argument("--rom-spi0-shadow", action="store_true", help="explicit inferred legacy SPI0 config shadows; strict mode remains default")
+    parser.add_argument("--bbpll-hz", type=int, help="explicit stable BBPLL output frequency; no modeled analog lock")
+    parser.add_argument("--nor-sfdp", help="explicit hex-offset:hex-bytes SFDP interval; no inferred device parameters")
     parser.add_argument("--nor-jedec", help="explicit six-hex-digit development NOR identity; not product hardware identification")
     parser.add_argument("--analog-bias", help="explicit four-hex-digit BIAS register0/register1 seed; no silicon reset claim")
     parser.add_argument("--analog-dig", help="explicit eight-hex-digit DIG registers5,7,13,14 seed")
@@ -86,6 +88,10 @@ def main():
     command = [args.runner, "--rom", "--usb-host", "--strap=0x12", "--flash=/dev/stdin"]
     if args.rom_spi0_shadow:
         command.append("--rom-spi0-shadow")
+    if args.bbpll_hz is not None:
+        command.append("--bbpll-hz=" + str(args.bbpll_hz))
+    if args.nor_sfdp:
+        command.append("--nor-sfdp=" + args.nor_sfdp)
     if args.nor_jedec:
         command.append("--nor-jedec=" + args.nor_jedec)
     if args.analog_bias:
@@ -98,7 +104,7 @@ def main():
     result = subprocess.run(command, input=data, capture_output=True, timeout=120, check=True)
     report = {"stepBudget": args.steps, "source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
               "partitions": partitions, "images": images,
-              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig},
+              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "sfdpInterval": args.nor_sfdp, "bbpllInputHz": args.bbpll_hz, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig},
               "uart": result.stdout.decode("utf-8", errors="replace"),
               "diagnostic": result.stderr.decode("utf-8", errors="replace"),
               "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk"}

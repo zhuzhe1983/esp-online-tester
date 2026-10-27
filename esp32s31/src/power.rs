@@ -24,6 +24,7 @@ impl Default for Power {
 impl Power {
     pub fn is_mmio(address: u32) -> bool { matches!(address & !3, ACTIVE_CK | IMMEDIATE_CK | ALIVE_CK | SLEEP_LP_CK | HP_INT_ENA | HP_INT_CLR) || matches!((address & !3).wrapping_sub(BOD_BASE), 4 | 0x18 | 0x1c | 0x38 | 0x3c) }
     /// Explicit software shutdown requests, not a measured oscillator state.
+    pub fn bbpll_output_enabled(&self) -> bool { self.alive & (1 << 30) != 0 }
     pub fn fosc_enabled(&self) -> bool { self.sleep_lp & (1 << 30) != 0 }
     pub fn cpll_enabled(&self) -> bool { self.cpll == CPLL_LOW && self.alive & (1 << 29) != 0 }
     pub fn mpll_disabled(&self) -> bool { self.mpll_low == MPLL_LOW && self.alive & (1 << 31) == 0 && self.active & 0x4400_0000 == 0 }
@@ -69,7 +70,7 @@ impl Power {
             ALIVE_CK => {
                 // Preserve other domain enables. Turning off CPU/root clocks cannot be
                 // represented by continuing execution, so such writes fail explicitly.
-                if (value ^ self.alive) & !((1 << 31) | (1 << 29)) != 0 { return Err(Fault::Prohibited); }
+                if (value ^ self.alive) & !((1 << 31) | (1 << 30) | (1 << 29)) != 0 { return Err(Fault::Prohibited); }
                 self.alive = value;
             }
             ACTIVE_CK => {
