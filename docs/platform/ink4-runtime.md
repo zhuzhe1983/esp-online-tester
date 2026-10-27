@@ -24,4 +24,6 @@ node tools/probe-official-ink4.mjs \
 
 探针要求调用者显式提供远程地址与 hash，固件在内存中使用，不写入公开资产。产出仅在 ignored output/；提交的收据不保留原始串口、设备标识或截图。首次运行发现错误灰阶分类造成反色，按固定LUT修正后黑白主页/设置页可用；设置页标题仍有叠字，未断言光学完全一致。
 
-本阶段双 Clippy、1393项 Rust CI 测试（include-ignored / skip external）、90项平台 Node 测试、11个真实WASM demo、既有真实录制回归通过，黄金输出未更新。浏览器从实际运行按钮加载远程官方镜像，30.12客体秒、1,206,711,719指令、4帧，无runtime错误。详见 [检查](evidence/ink4-runtime/checks.json) 和 [官方WASM](evidence/ink4-runtime/official-wasm.json)。新控制器完整录制、性能对照、3D盖板命中与SD继续交付，未计为此阶段通过。
+本阶段双 Clippy、1393项 Rust CI 测试（include-ignored / skip external）、90项平台 Node 测试、11个真实WASM demo、既有真实录制回归通过，黄金输出未更新。浏览器从实际运行按钮加载远程官方镜像，30.12客体秒、1,206,711,719指令、4帧，无runtime错误。详见 [检查](evidence/ink4-runtime/checks.json) 和 [官方WASM](evidence/ink4-runtime/official-wasm.json)。新控制器完整录制、3D盖板命中与SD继续交付，未计为此阶段通过。
+
+CPU 对照：相对 df198a74 同机 release 二进制，S3/C3/C6 hello各交替五对，客体30秒；user中位数分别0.281033→0.285103秒（+1.448%）、2.598123→2.627946秒（+1.148%）、1.833083→1.820878秒（−0.666%）。各组指令数和stdout SHA完全一致；样本较短，不据此宣称加速或零成本。基线/候选二进制与输入hash、命令和全部样本见 [CPU收据](evidence/ink4-runtime/cpu.json)。测量时所有协作任务无编译/客体/浏览器负载，保留用户静态服务器。未修改S3核心，无Pocket对照。最初解析器误将wall时间纳入指令串、C3命令误带不支持的PSRAM选项；两次未形成完整组的尝试丢弃，仅保留修正后完整五对。

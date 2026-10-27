@@ -1,0 +1,400 @@
+{
+  "baseCommit": "df198a74",
+  "candidateCommit": "c0b6e133",
+  "date": "2026-10-27",
+  "method": "Five alternating before/after pairs; resource.RUSAGE_CHILDREN user CPU deltas, exact instruction count and stdout hashes. No concurrent agent guest/build/browser. No speedup claim; main user server remained available but guest paused.",
+  "compiler": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "workloads": [
+    {
+      "name": "hello",
+      "binaries": {
+        "before": "836c63aa63190ceb2d661b1810d6d1a79d2a120e1793f25d3e7bb56e25e853c7",
+        "after": "f2de76a5aa4349f02837014f6ef13902cf46a1138d41b05652858d070f2268e6"
+      },
+      "args": [
+        "--boot",
+        "rom",
+        "--flash-mb",
+        "8",
+        "--psram-mb",
+        "2",
+        "--max-seconds",
+        "30",
+        "--no-dump",
+        "--chip",
+        "s3",
+        "--rom",
+        "$CHECKOUT/web/wasm/fw/esp32s3_rev0_rom.elf",
+        "--bootloader",
+        "$CHECKOUT/web/wasm/fw/public/hello-bootloader.bin",
+        "--ptable",
+        "$CHECKOUT/web/wasm/fw/public/hello-ptable.bin",
+        "--app",
+        "$CHECKOUT/web/wasm/fw/public/hello_world.bin"
+      ],
+      "inputs": {
+        "rom": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+        "bootloader": "7efecb4df4463ece11ab286068a505ecd174f66fd4aacc53d887fcb9c18f0579",
+        "ptable": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+        "app": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9"
+      },
+      "samples": [
+        {
+          "side": "before",
+          "pair": 1,
+          "userSeconds": 0.274379,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "instructionLines": [
+            "core0 11990305 + core1 6798164 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 1,
+          "userSeconds": 0.269223,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "instructionLines": [
+            "core0 11990305 + core1 6798164 insns"
+          ]
+        },
+        {
+          "side": "before",
+          "pair": 2,
+          "userSeconds": 0.271784,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "instructionLines": [
+            "core0 11990305 + core1 6798164 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 2,
+          "userSeconds": 0.2936310000000001,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "instructionLines": [
+            "core0 11990305 + core1 6798164 insns"
+          ]
+        },
+        {
+          "side": "before",
+          "pair": 3,
+          "userSeconds": 0.294527,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "instructionLines": [
+            "core0 11990305 + core1 6798164 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 3,
+          "userSeconds": 0.2638529999999999,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "instructionLines": [
+            "core0 11990305 + core1 6798164 insns"
+          ]
+        },
+        {
+          "side": "before",
+          "pair": 4,
+          "userSeconds": 0.2810330000000001,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "instructionLines": [
+            "core0 11990305 + core1 6798164 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 4,
+          "userSeconds": 0.2851030000000001,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "instructionLines": [
+            "core0 11990305 + core1 6798164 insns"
+          ]
+        },
+        {
+          "side": "before",
+          "pair": 5,
+          "userSeconds": 0.31087599999999993,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "instructionLines": [
+            "core0 11990305 + core1 6798164 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 5,
+          "userSeconds": 0.3108749999999998,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "instructionLines": [
+            "core0 11990305 + core1 6798164 insns"
+          ]
+        }
+      ],
+      "medianUserSeconds": {
+        "before": 0.2810330000000001,
+        "after": 0.2851030000000001
+      },
+      "deltaPercent": 1.4482284998558859,
+      "stdoutIdentical": true,
+      "instructionCountsIdentical": true
+    },
+    {
+      "name": "c3-hello",
+      "binaries": {
+        "before": "b639826f8d603f8d610647b11c89ea86e59431383797486de8de7e53142ed179",
+        "after": "4bb72c68301166305eb15e45d9b6e457e0a0f41a134572b71d77fe65a608ea9e"
+      },
+      "args": [
+        "--boot",
+        "rom",
+        "--flash-mb",
+        "4",
+        "--max-seconds",
+        "30",
+        "--no-dump",
+        "--rom",
+        "$CHECKOUT/web/wasm/fw/esp32c3_rev3_rom.elf",
+        "--bootloader",
+        "$CHECKOUT/web/wasm/fw/public/c3-hello-bootloader.bin",
+        "--ptable",
+        "$CHECKOUT/web/wasm/fw/public/c3-hello-ptable.bin",
+        "--app",
+        "$CHECKOUT/web/wasm/fw/public/c3-hello_world.bin"
+      ],
+      "inputs": {
+        "rom": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c",
+        "bootloader": "3eaeaa5fb91d462a6ce6dbd8f8d488c8dc059216bc5841e50b784aea8348eb7b",
+        "ptable": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+        "app": "3fd8606fd2fb10d2387ed4d238e16e7f80cd4832f380da02f0128f7bf4e0e8be"
+      },
+      "samples": [
+        {
+          "side": "before",
+          "pair": 1,
+          "userSeconds": 2.521979,
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 1,
+          "userSeconds": 2.5433959999999995,
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "before",
+          "pair": 2,
+          "userSeconds": 2.512416,
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 2,
+          "userSeconds": 2.5414149999999998,
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "before",
+          "pair": 3,
+          "userSeconds": 2.6097289999999997,
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 3,
+          "userSeconds": 2.6279460000000014,
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "before",
+          "pair": 4,
+          "userSeconds": 2.5981229999999993,
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 4,
+          "userSeconds": 2.682079999999999,
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "before",
+          "pair": 5,
+          "userSeconds": 2.666577,
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 5,
+          "userSeconds": 2.6849620000000023,
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        }
+      ],
+      "medianUserSeconds": {
+        "before": 2.5981229999999993,
+        "after": 2.6279460000000014
+      },
+      "deltaPercent": 1.14786713331132,
+      "stdoutIdentical": true,
+      "instructionCountsIdentical": true
+    },
+    {
+      "name": "c6-hello",
+      "binaries": {
+        "before": "a6893e0a5c8be13f38d93877ec5624621a02c7b3d9fa2989c34583b8308e5a9d",
+        "after": "a8e3a7959dcfeaaa3eda169544833e92bce36264249023583bbb2a65e06c1383"
+      },
+      "args": [
+        "--boot",
+        "rom",
+        "--flash-mb",
+        "4",
+        "--max-seconds",
+        "30",
+        "--no-dump",
+        "--rom",
+        "$CHECKOUT/web/wasm/fw/esp32c6_rev0_rom.elf",
+        "--bootloader",
+        "$CHECKOUT/web/wasm/fw/public/c6-hello-bootloader.bin",
+        "--ptable",
+        "$CHECKOUT/web/wasm/fw/public/c6-hello-ptable.bin",
+        "--app",
+        "$CHECKOUT/web/wasm/fw/public/c6-hello_world.bin"
+      ],
+      "inputs": {
+        "rom": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551",
+        "bootloader": "88fd358b406ebc874cda1f4d14c1fd50d37cd064a1826192ee275ce67741ff75",
+        "ptable": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+        "app": "e302a3769d3122759ea85ed6caff857da36f558f83f9bf0eb652276657de0131"
+      },
+      "samples": [
+        {
+          "side": "before",
+          "pair": 1,
+          "userSeconds": 1.822108,
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 1,
+          "userSeconds": 1.7627799999999993,
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "before",
+          "pair": 2,
+          "userSeconds": 1.847574999999999,
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 2,
+          "userSeconds": 1.849929999999997,
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "before",
+          "pair": 3,
+          "userSeconds": 1.8793430000000058,
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 3,
+          "userSeconds": 1.8208780000000004,
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "before",
+          "pair": 4,
+          "userSeconds": 1.833082999999995,
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 4,
+          "userSeconds": 1.8773510000000044,
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "before",
+          "pair": 5,
+          "userSeconds": 1.8166930000000008,
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        },
+        {
+          "side": "after",
+          "pair": 5,
+          "userSeconds": 1.813558999999998,
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "instructionLines": [
+            "4800000000 insns"
+          ]
+        }
+      ],
+      "medianUserSeconds": {
+        "before": 1.833082999999995,
+        "after": 1.8208780000000004
+      },
+      "deltaPercent": -0.6658181871739832,
+      "stdoutIdentical": true,
+      "instructionCountsIdentical": true
+    }
+  ]
+}
