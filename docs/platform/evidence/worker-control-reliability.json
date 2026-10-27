@@ -61,12 +61,23 @@
       "passed": 100,
       "failed": 0,
       "stopTimeoutResolved": true
+    },
+    "pagesDeployment": {
+      "revision": "030a6b1b2c33cae9897f72dab510061b5c333e28",
+      "run": 40538888849,
+      "build": "success",
+      "deploy": "success",
+      "includes": [
+        "100 platform tests",
+        "real WASM recording/replay",
+        "demo-stopwatch WASM execution"
+      ]
     }
   },
   "limitations": [
     "No throughput improvement or universal pause deadline claimed; a synchronous WASM slice remains uninterruptible.",
     "The Hello application still fails to boot without its bootloader environment. This is a control responsiveness test, not firmware compatibility validation.",
-    "Linux full-pipeline verification of the recording follow-up remains pending; the 100 platform tests, including stop, passed on Linux."
+    "Full Pages build/deploy passed on Linux at 030a6b1b; separate full CI was still running when deployment was checked."
   ],
   "recordingFollowup": {
     "change": "Hold each button until the real diagnostic confirms it, release, and allow 0.06 guest seconds before the next press. No synthetic serial confirmation or production input behavior change.",
