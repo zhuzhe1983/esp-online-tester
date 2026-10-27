@@ -72,12 +72,12 @@ impl Mmu {
 
 pub struct Cache {
     icache: u32, dcache: u32, bypass: u32, atomic: u32,
-    clock: u32, sync: [u32; 4], fail_check: u32, freeze: u32, pub maintenance_operations: u64,
+    clock: u32, sync: [u32; 4], fail_check: u32, trace: u32, error_raw: u32, error_ena: u32, freeze: u32, pub maintenance_operations: u64,
     flash_mmu: Mmu, psram_mmu: Mmu, flash: Vec<u8>, psram: Vec<u8>,
 }
 impl Default for Cache {
     fn default() -> Self { Self { icache: 0, dcache: 0, bypass: 0, atomic: 1,
-        clock: 0x15249, sync: [16, 31, 0, 0], fail_check: 0, freeze: 0, maintenance_operations: 1,
+        clock: 0x15249, sync: [16, 31, 0, 0], fail_check: 0, trace: 0, error_raw: 0, error_ena: 0, freeze: 0, maintenance_operations: 1,
         flash_mmu: Mmu::default(), psram_mmu: Mmu::default(), flash: Vec::new(), psram: Vec::new() } }
 }
 impl Cache {
@@ -86,6 +86,21 @@ impl Cache {
     // therefore finish synchronously once the selected domains are usable.
     // Reset's INVALIDATE_ENA=1 completes over the initially empty cache at time0.
     fn domain_on(&self, clock_bit: u32, reset_bit: u32) -> bool { self.clock & (1 << clock_bit | 1 << reset_bit) == 1 << clock_bit }
+    /// Fixed S31 cache_err_int.c and cache_ll.h: source69 reflects latched
+    /// L1 failure bits masked by ENA. Turning the tracer off does not clear them.
+    pub fn irq(&self) -> bool { self.error_raw & self.error_ena != 0 }
+    fn failed_access(&mut self, address: u32, fetch: bool, hart: usize) {
+        // Bounded, documented event: an actual request through a closed cache bus.
+        // Missing host backing, freeze, power, encryption and unmodeled MMU errors
+        // remain diagnostic faults; they are not mislabeled as hardware events.
+        let shut = if fetch { self.icache >> hart } else { self.dcache } & 1 != 0;
+        let clock = if fetch { 14 + hart as u32 * 2 } else { 12 };
+        let frozen = self.freeze & (if fetch { 1 << (hart * 4) } else { 1 << 16 }) != 0;
+        if (FLASH_VADDR..0x54000000).contains(&address) && self.trace & 1 != 0 && shut && !frozen
+            && self.domain_on(9, 11) && self.domain_on(6, 8) && self.domain_on(clock, clock + 1) {
+            self.error_raw |= if fetch { 1 << hart } else { 16 };
+        }
+    }
     pub fn clock_read(&self) -> u32 { self.clock }
     pub fn clock_write(&mut self, value: u32) {
         self.clock = value & 0x3ffff;
@@ -146,6 +161,9 @@ impl Cache {
         match address.checked_sub(CACHE_BASE) {
             Some(0) => return Ok(self.icache), Some(4) => return Ok(self.dcache),
             Some(8) => return Ok(self.bypass), Some(12) => return Ok(self.atomic),
+            Some(0x170) => return Ok(self.error_ena), Some(0x174) => return Ok(0),
+            Some(0x178) => return Ok(self.error_raw), Some(0x17c) => return Ok(self.error_raw & self.error_ena),
+            Some(0x3d8) => return Ok(self.trace),
             // Autoload is disabled at reset; no speculative fills are modeled.
             Some(0xac | 0xb8 | 0xdc | 0xe8 | 0xfc | 0x138) => return Ok(2),
             Some(0x8c) => return Ok(4), Some(0x30) => return Ok(self.freeze), _ => {}
@@ -164,6 +182,12 @@ impl Cache {
             Some(4) => { self.dcache = value & 0xff1f; return Ok(()); }
             Some(8) => { self.bypass = value & 0x13; return Ok(()); }
             Some(12) => { self.atomic = value & 1; return Ok(()); }
+            Some(0x170) => { self.error_ena = value & 0x1f; return Ok(()); }
+            Some(0x174) => { self.error_raw &= !(value & 0x1f); return Ok(()); } // WT clears the corresponding WTC field.
+            Some(0x178) => return Ok(()), // R/WTC/SS is not directly writable; TRM access-type glossary.
+            Some(0x17c) => return Ok(()), // RO, cannot create an interrupt.
+            Some(0x3d8) => { self.trace = value & 1; return Ok(()); } // L2 bit1 is HRO; no L2 events.
+
             Some(0x30) => return self.freeze_write(value),
             Some(0x8c) => return if value & !4 == 0 { Ok(()) } else { Err(Fault::Prohibited) },
             Some(0xac | 0xb8 | 0xdc | 0xe8 | 0xfc | 0x138) => return if value & !2 == 0 { Ok(()) } else { Err(Fault::Prohibited) },
@@ -173,7 +197,7 @@ impl Cache {
             Some(0xa8) => { self.sync[3] = value & 0x0fffffff; return Ok(()); }
             // ROM enables propagation on its two I-caches and D-cache. This diagnostic
             // runner still stops on unsupported accesses even before propagation is
-            // enabled; recovery through a cache-error interrupt is not modeled.
+            // enabled. Trace/IRQ reporting never supplies fabricated data on failure.
             Some(0x16c) => { self.fail_check = value & 0x13; return Ok(()); }
             _ => {}
         }
@@ -194,9 +218,11 @@ impl Cache {
             self.psram_mmu.translate((address - PSRAM_VADDR) as usize, true, self.psram.len()).map(|o| (true, o))
         } else { Err(Fault::Unmapped) }
     }
-    pub fn read_byte(&self, address: u32, fetch: bool) -> Result<u8, Fault> { self.read_byte_core(address, fetch, 0) }
-    pub fn read_byte_core(&self, address: u32, fetch: bool, hart: usize) -> Result<u8, Fault> {
-        let (psram, off) = self.physical(address, fetch, false, hart)?;
+    pub fn read_byte(&mut self, address: u32, fetch: bool) -> Result<u8, Fault> { self.read_byte_core(address, fetch, 0) }
+    pub fn read_byte_core(&mut self, address: u32, fetch: bool, hart: usize) -> Result<u8, Fault> {
+        let (psram, off) = match self.physical(address, fetch, false, hart) {
+            Ok(v) => v, Err(e) => { if hart < 2 { self.failed_access(address, fetch, hart); } return Err(e); }
+        };
         Ok(if psram { self.psram[off] } else { self.flash[off] })
     }
     pub fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
@@ -204,7 +230,9 @@ impl Cache {
         // Validate the entire access before changing any bytes, including discontiguous pages.
         let mut offsets = [0; 4];
         for (i, off) in offsets.iter_mut().take(bytes).enumerate() {
-            *off = self.physical(address.checked_add(i as u32).ok_or(Fault::Unmapped)?, false, true, 0)?.1;
+            *off = match self.physical(address.checked_add(i as u32).ok_or(Fault::Unmapped)?, false, true, 0) {
+                Ok(v) => v.1, Err(e) => { self.failed_access(address + i as u32, false, 0); return Err(e); }
+            };
         }
         for (i, &off) in offsets.iter().take(bytes).enumerate() { self.psram[off] = value.to_le_bytes()[i]; }
         Ok(())
@@ -314,6 +342,40 @@ mod tests {
         assert_eq!(c.read_byte_core(FLASH_VADDR, true, 1), Err(Fault::Prohibited));
         c.write_register(CACHE_BASE + 4, 1).unwrap();
         for core in 0..2 { assert_eq!(c.read_byte_core(FLASH_VADDR, false, core), Err(Fault::Prohibited)); }
+    }
+
+    #[test]
+    fn fail_tracer_latches_real_closed_bus_requests_and_wtc_cannot_forge_events() {
+        let mut c = Cache::default(); c.set_flash(&[1, 0, 0, 0]).unwrap(); map(&mut c, false, 0, 0x1000);
+        c.write_register(CACHE_BASE + 0x170, 31).unwrap(); c.write_register(CACHE_BASE, 3).unwrap();
+        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 1), Err(Fault::Prohibited)); assert!(!c.irq());
+        c.write_register(CACHE_BASE + 0x3d8, 3).unwrap(); assert_eq!(c.read_register(CACHE_BASE + 0x3d8), Ok(1));
+        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 1), Err(Fault::Prohibited));
+        assert_eq!(c.read_register(CACHE_BASE + 0x178), Ok(2)); assert!(c.irq());
+        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 0), Err(Fault::Prohibited));
+        c.write_register(CACHE_BASE + 4, 1).unwrap(); assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Prohibited));
+        assert_eq!(c.read_register(CACHE_BASE + 0x17c), Ok(19));
+        c.write_register(CACHE_BASE + 0x170, 0).unwrap(); assert!(!c.irq());
+        assert_eq!(c.read_register(CACHE_BASE + 0x178), Ok(19));
+        c.write_register(CACHE_BASE + 0x170, 31).unwrap(); assert!(c.irq());
+        c.write_register(CACHE_BASE + 0x3d8, 0).unwrap(); assert!(c.irq());
+        c.write_register(CACHE_BASE + 0x174, 2).unwrap(); assert_eq!(c.read_register(CACHE_BASE + 0x178), Ok(17));
+        c.write_register(CACHE_BASE + 0x178, 17).unwrap(); assert_eq!(c.read_register(CACHE_BASE + 0x178), Ok(17));
+        c.write_register(CACHE_BASE + 0x174, 17).unwrap(); assert!(!c.irq());
+        c.write_register(CACHE_BASE + 0x17c, 31).unwrap(); assert_eq!(c.read_register(CACHE_BASE + 0x178), Ok(0));
+        assert_eq!(c.read_register(CACHE_BASE + 0x214), Err(Fault::Unmapped)); // Requester ID/ATTR not guessed.
+    }
+    #[test]
+    fn missing_backing_or_frozen_cache_does_not_invent_closed_bus_error() {
+        let mut c = Cache::default(); c.write_register(CACHE_BASE + 0x3d8, 1).unwrap();
+        c.write_register(CACHE_BASE + 0x170, 31).unwrap(); map(&mut c, false, 0, 0x1000);
+        assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Unmapped)); assert!(!c.irq());
+        c.set_flash(&[1]).unwrap(); c.write_register(CACHE_BASE + 0x30, 1 << 16).unwrap();
+        assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Prohibited)); assert!(!c.irq());
+        c.write_register(CACHE_BASE + 4, 1).unwrap();
+        assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Prohibited)); assert!(!c.irq());
+        c.write_register(CACHE_BASE + 0x30, 0).unwrap(); c.clock_write(c.clock_read() & !(1 << 12));
+        assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Prohibited)); assert!(!c.irq());
     }
 
 }

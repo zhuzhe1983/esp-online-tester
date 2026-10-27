@@ -777,3 +777,24 @@ fn external_s31_two_real_rom_harts_share_atomics_and_honor_stall_reset() {
     assert_eq!(m.pc_watch1.as_ref().unwrap().retired, 2);
     assert_eq!(m.bus.cores.resets, [0, 1]); assert!(m.cpu1.retired_count > 0); assert!(m.bus.first_fault.is_none());
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_CACHE_ERROR_ELF and S31_ROM_ELF"]
+fn external_s31_real_guest_cache_error_isr_and_wtc_clear() {
+    use emu_core::Bus;
+    let path = std::env::var("S31_CACHE_ERROR_ELF").expect("build firmware/s31-uart-probe and set S31_CACHE_ERROR_ELF");
+    let rom = std::env::var("S31_ROM_ELF").expect("set S31_ROM_ELF to Espressif 20260528 S31 ROM");
+    let mut m = esp32s31::Bringup::new(); m.load_rom_elf(&std::fs::read(rom).unwrap()).unwrap();
+    while m.cpu.pc != 0x2f801852 { assert_eq!(m.run(1).stop, esp32s31::Stop::Budget); assert!(m.cpu.insn_count < 10000); }
+    m.load_elf(&std::fs::read(path).unwrap()).unwrap(); m.bus.cache.set_flash(&[0x5a, 0, 0, 0]).unwrap();
+    let first = m.run(10000); assert_eq!(first.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(5)));
+    let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!((f.hart, f.address, f.write), (1, 0x40000000, false));
+    assert_eq!(m.bus.cache.read_register(0x2c000178), Ok(16)); assert!(m.bus.cache.irq());
+    // No state/register repair: resume execution at the real guest exception vector.
+    let second = m.run(10000);
+    eprintln!("cache-error steps={}/{} stop={:?} pcs={:x}/{:x} uart={:?}", first.steps, second.steps, second.stop, m.cpu.pc, m.cpu1.pc, String::from_utf8_lossy(&m.bus.uart0.tx_out));
+    assert_eq!(second.stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 CACHE ERROR REAL ISR PASS\n");
+    assert_eq!(m.bus.read32(0x2f060000), Ok(1)); assert!(!m.bus.cache.irq());
+    assert_eq!(m.bus.cache.read_register(0x2c000178), Ok(0)); assert_eq!(m.bus.read32(0x40000000), Ok(0x5a));
+}

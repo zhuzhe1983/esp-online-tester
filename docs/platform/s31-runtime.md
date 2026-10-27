@@ -1401,3 +1401,33 @@ Rust tests, 90 private S31 unit tests, 32 source/ROM fixtures, both warnings-den
 Clippy checks and every local CI group. The [official image receipt](evidence/s31-bringup/multicore-plus-2.0.68-final.json)
 records CPU1 entry `2f000882` retiring once at its own cycle1,008. Earlier single-hart statements above describe
 their historical checkpoints, not the scope of this new private runner.
+
+## Cache failure tracing and first PSRAM self-test (2026-10-28)
+
+The private S31 runner now models the L1 fail-trace gate and its enable, raw,
+status and clear words. An actual request through a closed, powered and clocked
+cache bus latches the corresponding I0/I1/shared-D error; source69 is asserted
+only while a latched bit is enabled. Disabling trace does not clear an old event.
+The S31 TRM access glossary distinguishes the raw register's **WTC** field from a
+direct write-one-to-clear register: writing the paired **WT** clear word clears
+the latch; writing RAW or the read-only masked status cannot clear or forge it.
+Frozen/unclocked cache domains, missing host backing and unmodeled MMU failures
+still produce strict diagnostic faults rather than invented cache-error causes.
+Physical requester-ID/attribute capture and complete fail-propagation behavior
+remain unsupported; no failed access is replaced with fabricated data.
+
+The source fixture causes the fault on the second hart and runs the real first
+hart CLIC handler after the runner is resumed normally. It verifies a pending
+error, failed direct RAW clearing, successful WT clearing and restored Flash
+access. All result words and UART PASS text are written by executed instructions.
+
+The same unmodified full INK4 Plus 2.0.68 image passes its own PSRAM memory test,
+printing `SPI SRAM memory test OK`. Its next unsupported access is TIMG0
+`RTCCALICFG` at `20580068`, read by hart0 at `2f00df70`. The next stage must
+implement clock-calibration counting; this result is not a board/display test.
+**INK4 Plus remains unavailable and has no framebuffer output.**
+
+The [cache stage receipt](evidence/s31-bringup/cache-errors.json) retains source
+versions, functional fixtures, checks and performance guards. The [final official
+image observation](evidence/s31-bringup/cache-errors-plus-2.0.68-final.json) fixes
+the original image hash and explicit development inputs.

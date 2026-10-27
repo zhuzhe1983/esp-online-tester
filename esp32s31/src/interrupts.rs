@@ -9,16 +9,17 @@ pub const CLIC_BASE: u32 = 0x1080_0000;
 pub const RESET_CAUSE0: u32 = 0x2070_1030;
 pub const RESET_CAUSE1: u32 = 0x2070_1034;
 pub const UART0_SOURCE: usize = 9;
+pub const CACHE_SOURCE: usize = 69; // Fixed S31 interrupt_core0_reg.h CACHE_INTR_MAP0x114 /4.
 pub const USB_SERIAL_SOURCE: usize = 2; // v6.1 interrupts.h / interrupt_core0_reg.h offset8.
 pub const MONITOR_SOURCE: usize = 119; // v6.1 interrupts.h: ETS_ASSIST_DEBUG_INTR_SOURCE.
 pub const RTC_WDT_SOURCE: usize = 136; // interrupt_core0_reg.h: LP_WDT_INTR_MAP at 0x220.
 pub const EFUSE_SOURCE: usize = 152; // interrupt_core0_reg.h: LP_EFUSE_INTR_MAP at 0x260.
 const SOURCES: usize = 169;
 #[derive(Clone, Copy, Default)]
-pub struct Irqs { pub uart: bool, pub wdt: bool, pub efuse: bool, pub usb: bool, pub monitor: bool, pub mwdt: [bool; 2] }
+pub struct Irqs { pub uart: bool, pub wdt: bool, pub efuse: bool, pub usb: bool, pub monitor: bool, pub cache: bool, pub mwdt: [bool; 2] }
 impl Irqs {
     // Fixed S31 interrupts.h: TIMERGRP0_WDT27, TIMERGRP1_WDT30.
-    fn sources(self) -> [(usize, bool); 7] { [(UART0_SOURCE, self.uart), (RTC_WDT_SOURCE, self.wdt), (EFUSE_SOURCE, self.efuse), (USB_SERIAL_SOURCE, self.usb), (MONITOR_SOURCE, self.monitor), (27, self.mwdt[0]), (30, self.mwdt[1])] }
+    fn sources(self) -> [(usize, bool); 8] { [(UART0_SOURCE, self.uart), (RTC_WDT_SOURCE, self.wdt), (EFUSE_SOURCE, self.efuse), (USB_SERIAL_SOURCE, self.usb), (MONITOR_SOURCE, self.monitor), (CACHE_SOURCE, self.cache), (27, self.mwdt[0]), (30, self.mwdt[1])] }
 }
 
 pub struct Interrupts {

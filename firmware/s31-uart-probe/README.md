@@ -294,3 +294,13 @@ SC conflict retries, software stall/resume, and a second ROM boot to a changed
 entry. Shared result words come only from executed guest stores. The fixture does
 not validate an INK4 Plus board or physical dual-core timing. All generated ELFs,
 BINs and objdump listings stay in the ignored output directory.
+
+`cache-error-probe.S` starts hart1 through the same real ROM path, then closes
+the shared D-cache bus and executes a real load from mapped Flash. Set
+`S31_CACHE_ERROR_ELF` and `S31_ROM_ELF`. The runner first reports the load fault;
+the test resumes at the guest exception vector without changing guest registers.
+Hart0's real source69 CLIC handler observes the latched status, proves direct RAW
+writes cannot clear it, clears it through the documented WT register and reopens
+the bus. The guest writes its own completion word and prints PASS. This exercises
+functional tracing and interrupt delivery, not cache-line timing or physical
+requester-ID capture.
