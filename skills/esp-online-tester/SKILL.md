@@ -23,6 +23,8 @@ PaperMono/Lite also have a virtual TF card: firmware load creates a default 64 M
 
 The workbench and mini player share these SD controls and API, including iframe RPC. SD autosave scans every 1.5 seconds (`crashSafe:false`); IndexedDB persistence survives normal reload, while memory fallback and uncommitted writes do not. Same-origin cross-page changes stop stale sessions rather than silently merge cards. Private SD content stays out of URLs and recordings; imported or modified cards are not pristine. Read [the SD/RGB API details](references/api.md#virtual-tfsd-cards-and-rgb-output) before handling images or testing storage. Observe `leds` events or `observe().leds` for real firmware RGB output; do not simulate it by manually coloring the mesh.
 
+Full PaperMono exposes a digital SX1262 LoRa subset; Lite does not. Check `capabilities().lora`, inspect `readLoRa()`, and supply an explicit peer with `receiveLoRa(packet)` only when intended. It has no automatic echo, real RF propagation or remote relay. Match the peer's actual channel settings; do not silently copy receiver settings to hide a mismatch. A scheduled-input receipt is not guest consumption: verify FIFO/IRQ-driven firmware output. LoRa inputs are not portable recording events. Read [the LoRa API](references/api.md#virtual-lora-packets) before use.
+
 ## Configure, operate, verify
 
 1. Obtain the catalog via `import('./catalog.js')` relative to the platform page. Use `loadCatalog()` and `createDefaultScene(catalog, productId)`; validate with `validateScene(scene,catalog)` before `espTester.configure(scene)`. Inspect warnings, not just `valid`.

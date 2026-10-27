@@ -94,6 +94,11 @@ pub trait BoardModel {
     /// External IMU sample in the sensor frame (g and degrees/second), without advancing time.
     /// Returns false on boards without a host-fed sensor.
     fn set_imu_sample(&mut self, _accel_g: [f64; 3], _gyro_dps: [f64; 3]) -> bool { false }
+    /// Explicit digital LoRa peer input. A supporting radio must match its guest
+    /// configuration, receive state and physical power/reset/antenna gates.
+    fn lora_receive_at(&mut self, _cycle: VirtualCycle, _packet: &crate::devices::sx1262::LoRaInput) -> bool { false }
+    /// Cold observation, not a per-tick or RF/network callback.
+    fn lora_snapshot(&self) -> Option<String> { None }
     /// Raw display memory for a debug PNG: (pixels, columns, rows).
     fn gram(&self) -> Option<(Vec<u16>, usize, usize)> { None }
     /// LED ring / strip: colours and a change counter.

@@ -7,6 +7,7 @@ import {createSdCardStorage} from './sd-card-storage.js';
 import { loadCatalog, validateScene } from './catalog.js';
 import { buildFirmwareIssueUrl } from './watchlist.js';
 import { orientationSample } from './imu.js';
+import { validateLoRaPacket } from './lora-input.js';
 import { firmwareCache } from './firmware-cache.js';
 import { assembleLocalFirmware } from './local-firmware.js';
 import { createDeviceStorage, deviceStorageScope } from './device-storage.js';
@@ -243,6 +244,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     if (message.resumed !== undefined) resolve('resumed', message);
     if (message.inputQueued !== undefined) resolve(`input:${message.inputQueued}`, message);
     if (message.imuApplied !== undefined) resolve(`imu:${message.imuApplied}`, message);
+    if (message.loraResult !== undefined) resolve(`lora:${message.loraResult}`, message);
     if (message.stopped !== undefined) {
       const requested = pending.has('stopped');
       resolve('stopped', message);
@@ -592,6 +594,18 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   });
   const api = {
     version: API_VERSION,
+    readLoRa() {return exclusive(async()=>{
+      requireValue(product?.runtime?.board==='papermono'&&worker,'LORA_UNSUPPORTED','Load full PaperMono firmware before inspecting its LoRa radio.');
+      const requestId=++inputSequence,result=await ask(`lora:${requestId}`,{op:'lora-read',requestId});
+      requireValue(result.ok,'LORA_UNSUPPORTED','This runtime does not expose a LoRa radio.');return {...result.state,guestTime:result.time};
+    });},
+    receiveLoRa(packet) {return exclusive(async()=>{
+      requireValue(product?.runtime?.board==='papermono'&&worker,'LORA_UNSUPPORTED','This device does not have the SX1262 digital LoRa model.');
+      requireValue(['running','paused'].includes(status),'NOT_RUNNING','Start the firmware before supplying a LoRa peer packet.');
+      const input=validateLoRaPacket(packet),requestId=++inputSequence,result=await ask(`lora:${requestId}`,{op:'lora-receive',requestId,packet:input});
+      requireValue(result.ok,'LORA_PACKET_REJECTED','Radio power, receive state or channel configuration rejected this packet.');
+      const receipt={accepted:true,delivery:'scheduled-digital-packet',guestTime:result.time,physicalRf:false};emit({type:'lora-input',packet:input,receipt});return receipt;
+    });},
     attachSdCard({bytes,format='fat32'}={}) {return exclusive(async()=>{requireValue(bytes!==undefined||format==='fat32','INVALID_SD_IMAGE','Only FAT32 formatting is available.');return replaceSd(bytes===undefined?null:validateSdImage(bytes));});},
     clearSdCard() {return exclusive(()=>replaceSd(null));},
     exportSdCard() {return exclusive(async()=>{await flushSd();const result=await sdAsk('sd-export');return {bytes:new Uint8Array(result.data),filename:`${product.id}-sd.img`};});},
@@ -624,6 +638,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin})=>({accessoryId,model,port,pin,controls:['button']})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv'].includes(product?.runtime?.board)?{rows:4,columns:14,model:product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: ['usb', 'uart0', 'uart1'] },
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { mode: 'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },
+        lora:{available:product?.runtime?.board==='papermono',model:'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
         imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: product?.runtime?.board === 'stopwatch', orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: 'host-input', physicalMountingVerified: false },
         unsupported: ['arbitrary-dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input'] };
     },

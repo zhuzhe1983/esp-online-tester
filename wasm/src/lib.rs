@@ -18,6 +18,7 @@ mod ble;
 pub use ble::*;
 pub use ethernet::*;
 mod s3;
+mod lora;
 #[cfg(target_arch = "wasm32")]
 mod browser_jit;
 use machine::MachineKind;

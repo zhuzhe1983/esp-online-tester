@@ -1,0 +1,103 @@
+{
+  "checkedAt": "2026-10-27T10:29:43.349Z",
+  "command": "node tools/probe-papermono-lora.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+    "papermono_lora_fixture.bin": "0fdf359d98a0dd6bfd648ebefbb7edb6a5c35cbb5beb32858d1b076d46b66296",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "wasmSha256": "2bb7664706bd062dbb4cd6bf1235dce3e600dadceadf42b8e88c9b174caf5e65",
+  "checks": [
+    {
+      "productId": "m5stack-papermono",
+      "board": "papermono",
+      "serial": [
+        "LORA_FIXTURE POWER_OFF_NO_RESPONSE",
+        "LORA_FIXTURE SPI3_DMA_VERSION",
+        "LORA_FIXTURE TX_DONE_IRQ",
+        "LORA_FIXTURE NO_PEER_TIMEOUT",
+        "LORA_FIXTURE WAIT_RX",
+        "LORA_FIXTURE RX_BUFFER PEER RSSI=-70 SNR=6",
+        "LORA_FIXTURE RESET_POWER_GATES",
+        "LORA_FIXTURE PASS_FULL"
+      ],
+      "guestSeconds": 0.42
+    },
+    {
+      "productId": "m5stack-c153-lite",
+      "board": "papermono-lite",
+      "serial": [
+        "LORA_FIXTURE POWER_OFF_NO_RESPONSE",
+        "LORA_FIXTURE LITE_ABSENT"
+      ],
+      "guestSeconds": 0.16
+    }
+  ],
+  "peerInput": {
+    "config": {
+      "frequency": 910163968,
+      "sf": 7,
+      "bandwidth": 4,
+      "codingRate": 1,
+      "syncWord": 13380,
+      "implicitHeader": false,
+      "crc": true,
+      "invertIq": false
+    },
+    "payloadHex": "50454552",
+    "rssiDbm": -70,
+    "snrQuarterDb": 24,
+    "crcError": false,
+    "receipt": {
+      "accepted": true,
+      "delivery": "scheduled-digital-packet",
+      "guestTime": 0.273270625,
+      "physicalRf": false
+    }
+  },
+  "beforeReceive": {
+    "model": "sx1262-lora-digital",
+    "physicalRf": false,
+    "powered": true,
+    "resetHigh": true,
+    "antennaEnabled": true,
+    "busy": false,
+    "mode": 80,
+    "irq": 0,
+    "config": {
+      "frequency": 910163968,
+      "sf": 7,
+      "bandwidth": 4,
+      "codingRate": 1,
+      "syncWord": 13380,
+      "implicitHeader": false,
+      "crc": true,
+      "invertIq": false
+    },
+    "transmitted": [
+      {
+        "config": {
+          "frequency": 910163968,
+          "sf": 7,
+          "bandwidth": 4,
+          "codingRate": 1,
+          "syncWord": 13380,
+          "implicitHeader": false,
+          "crc": true,
+          "invertIq": false
+        },
+        "payloadHex": "48454c4c4f",
+        "cycle": 41336897
+      }
+    ],
+    "txCount": 1,
+    "rxCount": 0,
+    "timeoutCount": 1,
+    "rejectedCommands": 0,
+    "droppedTx": 0,
+    "guestTime": 0.27216025
+  },
+  "status": "pass"
+}

@@ -55,7 +55,7 @@ const checkpoint=async name=>{
   const nonBlack=latestFrame.pixels.reduce((n,v,i)=>n+(i%4!==3&&v!==0?1:0),0);
   const state=await runtime.observe(),sha256=createHash('sha256').update(latestFrame.pixels).digest('hex');
   await writeFile(`${output}/${name}.png`,png(latestFrame));
-  stages.push({name,guestSeconds:await queryClock(),lastStatSeconds:state.stats.time,frameNumber:latestFrame.frameNumber,nonBlackChannels:nonBlack,sha256,leds:state.leds,sdCard:state.sdCard,nfc:regionHash(latestFrame,122,361,230,49),brightness:regionHash(latestFrame,0,118,94,28),mute:regionHash(latestFrame,366,480,107,42)});
+  stages.push({name,guestSeconds:await queryClock(),lastStatSeconds:state.stats.time,frameNumber:latestFrame.frameNumber,nonBlackChannels:nonBlack,sha256,leds:state.leds,sdCard:state.sdCard,nfc:regionHash(latestFrame,122,361,230,49),loraRx:regionHash(latestFrame,140,45,330,50),brightness:regionHash(latestFrame,0,118,94,28),mute:regionHash(latestFrame,366,480,107,42)});
   console.log('CHECKPOINT',JSON.stringify(stages.at(-1)));
 };
 const waitGuest=async target=>{
@@ -85,6 +85,17 @@ try{
   }
   await runtime.start();
   await waitGuest(seconds);await checkpoint('boot');
+  if(scenario==='lora') {
+    assert.equal(productId,'m5stack-papermono');console.log('LORA_BOOT',JSON.stringify(await runtime.readLoRa()));assert.match(serial,/LoRa init OK rx_state=0/);
+    const boot=await runtime.readLoRa();assert.equal(boot.rxCount,0);assert.equal(boot.txCount,0);
+    await tap(423,157);await waitGuest((await queryClock())+8);await checkpoint('lora-sent');
+    const tx=await runtime.readLoRa();assert.equal(tx.txCount,1);assert.equal(tx.transmitted[0].payloadHex,'48656c6c6f21');assert.equal(tx.rxCount,0);
+    const packet={config:{frequency:0x36400000,sf:12,bandwidth:3,codingRate:4,syncWord:0x3444,implicitHeader:false,crc:true,invertIq:false},payloadHex:'50454552',rssiDbm:-70,snrQuarterDb:24,crcError:false};
+    assert.deepEqual(tx.config,packet.config);
+    const input=await runtime.receiveLoRa(packet);await waitGuest((await queryClock())+8);await checkpoint('lora-received');
+    const rx=await runtime.readLoRa();assert.equal(rx.rxCount,1);assert.equal(stages.at(-1).loraRx,'6b6cadc313042a506d2d5b94f0af47656ddd78a8b5f539fe1ef0739e5a55aef4','Fixed UserDemo must render the visually verified Rx PEER glyph region');
+    await writeFile(`${output}/lora.json`,JSON.stringify({boot,tx,packet,input,rx},null,2)+'\n');
+  }
   if(scenario==='nfc'){
     assert.equal(productId,'m5stack-papermono');assert.match(serial,/Board variant detected: Pro/);
     await tap(423,385);await checkpoint('nfc-started');await waitGuest((await queryClock())+12);await checkpoint('nfc-finished');
