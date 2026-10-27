@@ -1,0 +1,262 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-10-27T10:15:55Z",
+  "scope": "Metalio catalog / metadata / manufacturer CAD; no firmware execution",
+  "checks": {
+    "platformNodeTests": {
+      "passed": 76,
+      "failed": 0,
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms node --test tools/platform-*-test.mjs"
+    },
+    "catalog": {
+      "products": 86,
+      "accessories": 6,
+      "firmwares": 114,
+      "watchlist": 46
+    },
+    "knowledge": 90,
+    "modelRebuild": "Both products: geometry.bin, model.json, cover-marks.svg and geometry-checks.json byte-identical in scratch",
+    "browser": {
+      "headless": true,
+      "workbench": [
+        "manufacturer filter",
+        "first official stable selected",
+        "INK4 test option",
+        "both models ready",
+        "run hidden with 尚未完成适配",
+        "CloudZao alias search finds both"
+      ],
+      "mini": [
+        "Plus product/source preserved",
+        "model ready",
+        "executable false",
+        "start hidden",
+        "no firmware body requested"
+      ],
+      "cdnHead": {
+        "product": "metalio-ink4-plus",
+        "status": 200,
+        "readable": true,
+        "bodyBytesRead": 0
+      },
+      "modelViews": [
+        "front",
+        "back",
+        "side",
+        "original oblique",
+        "gold oblique",
+        "purple translucent oblique",
+        "UNKNOWN PCB"
+      ]
+    },
+    "strictKnowledgeSchema": "Both Metalio records pass JSON Schema with format checking",
+    "modelConversion": {
+      "preservedComponents": {
+        "metalio-ink4": 8,
+        "metalio-ink4-plus": 12
+      },
+      "scale": 1,
+      "maxFloat32ErrorMm": 1.9073486328125e-06
+    },
+    "photoComparison": [
+      {
+        "id": "metalio-ink4",
+        "sourceCadSha256": "0b3048cbd8b71bd357f7d7529b1094d4f9e27272cb087e72e57571e69edca501",
+        "sourcePhotoSha256": "5b02faab17ac0a082164ae08b5d91cd7b9864a4d62af1fa6ff952c4a9f9c74f6",
+        "frontCamera": {
+          "spanMm": 155.12953069210053,
+          "positionMm": [
+            0,
+            0,
+            250
+          ],
+          "targetMm": [
+            0,
+            0,
+            0
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ]
+        },
+        "renderPixels": [
+          600,
+          601
+        ],
+        "homography": [
+          [
+            1.2139590090662886,
+            -3.21717503560229e-19,
+            -2.794672962647465
+          ],
+          [
+            2.4976384133237575e-16,
+            1.2209234114958747,
+            117.42487075908988
+          ],
+          [
+            6.914664000048492e-19,
+            -2.716536300558601e-21,
+            1.0
+          ]
+        ],
+        "enclosureCornerErrorPixels": [
+          3.2088582515716553,
+          1.7373578548431396,
+          2.3557348251342773,
+          3.5815982818603516
+        ],
+        "maxErrorPixels": 3.5815982818603516,
+        "method": "Official CAD front render reprojected to the source photo by 4 estimated display corners; comparison residual only. Corners are virtual rectangle corners (rounded silhouette not segmented).",
+        "cadConversionStatus": "PASS: original scale, components and assembly retained",
+        "oneToOneStatus": "NOT PASSED",
+        "limitations": [
+          "Body geometry comes from independent manufacturer CAD; display plane and cover-print calibration still use this photo.",
+          "CAD dimensions measured; no independent dimension drawing or physical sample verification. STL unit interpretation is millimeters, not explicit source metadata.",
+          "No orthogonal side/reference for thickness; Plus back photo missing.",
+          "Inset/virtual corners selected manually; marketing distortion and camera uncertainty retained."
+        ]
+      },
+      {
+        "id": "metalio-ink4-plus",
+        "sourceCadSha256": "1b7de09079b4cffdfac438181294385935ff89cfe45c200c1c3aca3ff05fd2d5",
+        "sourcePhotoSha256": "def2e7fea9de1a810eb214416ed6b410d4c788be1cdb596000c84de0e55da16b",
+        "frontCamera": {
+          "spanMm": 177.17549662218377,
+          "positionMm": [
+            0,
+            0,
+            250
+          ],
+          "targetMm": [
+            0,
+            0,
+            0
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ]
+        },
+        "renderPixels": [
+          600,
+          601
+        ],
+        "homography": [
+          [
+            1.15174001097722,
+            -0.576794463469096,
+            514.5769675216073
+          ],
+          [
+            0.0385992840054219,
+            1.9271971629164424,
+            -63.67862376971539
+          ],
+          [
+            -0.00036571782822185714,
+            3.1290356853805674e-05,
+            1.0
+          ]
+        ],
+        "enclosureCornerErrorPixels": [
+          21.563434600830078,
+          10.974437713623047,
+          20.323829650878906,
+          13.900168418884277
+        ],
+        "maxErrorPixels": 21.563434600830078,
+        "method": "Official CAD front render reprojected to the source photo by 4 estimated display corners; comparison residual only. Corners are virtual rectangle corners (rounded silhouette not segmented).",
+        "cadConversionStatus": "PASS: original scale, components and assembly retained",
+        "oneToOneStatus": "NOT PASSED",
+        "limitations": [
+          "Body geometry comes from independent manufacturer CAD; display plane and cover-print calibration still use this photo.",
+          "CAD dimensions measured; no independent dimension drawing or physical sample verification. STL unit interpretation is millimeters, not explicit source metadata.",
+          "No orthogonal side/reference for thickness; Plus back photo missing.",
+          "Inset/virtual corners selected manually; marketing distortion and camera uncertainty retained."
+        ]
+      }
+    ]
+  },
+  "limitations": [
+    "No guest execution or hardware flashing",
+    "CAD conversion fidelity passed; complete independent physical 1:1 verification not passed",
+    "Approximate display/cover printing; UNKNOWN PCB; Plus back photo unavailable",
+    "Initial headless MakerWorld HTTP403, followed by successful logged-in browser downloads",
+    "One missing favicon.ico on review page; no product/model load errors",
+    "Review harness initially used invalid original appearance enum and synchronous observe; fixed harness without changing production behavior"
+  ],
+  "artifacts": {
+    "web/platform/assets/metalio-ink4-plus/NOTICE.md": {
+      "bytes": 818,
+      "sha256": "f5b979f5283456b977e3bf40f7926b324205f9f3a8f471d8179504c1a20a32ec"
+    },
+    "web/platform/assets/metalio-ink4-plus/cover-marks.svg": {
+      "bytes": 427,
+      "sha256": "affc266858d521c0597f5a956bb11efbde4b4255e8754f4784fead4301ccfad6"
+    },
+    "web/platform/assets/metalio-ink4-plus/geometry-checks.json": {
+      "bytes": 1671,
+      "sha256": "9e44ae25694ba466c147f0864a2f0ea19026034f0d4fee14f02099e2d1ea679f"
+    },
+    "web/platform/assets/metalio-ink4-plus/geometry.bin": {
+      "bytes": 3230712,
+      "sha256": "50ae04a79f2b0c4d90a84635b67f17fb8175e51d65dafddbf1c9609015012330"
+    },
+    "web/platform/assets/metalio-ink4-plus/model-plan.json": {
+      "bytes": 7208,
+      "sha256": "d6a0ffae8919a61735211e39cf4fb9fd1ebe985b5769bb4c23baa99077635fe2"
+    },
+    "web/platform/assets/metalio-ink4-plus/model.json": {
+      "bytes": 10660,
+      "sha256": "1d1b9e6d541fb6eafff73ee362d4c91c13c14af8dfe3464717cade98f9132497"
+    },
+    "web/platform/assets/metalio-ink4-plus/reference-front.png": {
+      "bytes": 469128,
+      "sha256": "def2e7fea9de1a810eb214416ed6b410d4c788be1cdb596000c84de0e55da16b"
+    },
+    "web/platform/assets/metalio-ink4-plus/source.step": {
+      "bytes": 2085461,
+      "sha256": "1b7de09079b4cffdfac438181294385935ff89cfe45c200c1c3aca3ff05fd2d5"
+    },
+    "web/platform/assets/metalio-ink4/NOTICE.md": {
+      "bytes": 811,
+      "sha256": "9b1114f08587845babd34d3fe01463422a81056aa11476a334c7f06a17b1bee9"
+    },
+    "web/platform/assets/metalio-ink4/cover-marks.svg": {
+      "bytes": 424,
+      "sha256": "93dd03273fbe8f60156fa84e33dc54223db93d8a9fb9c07b8eb63d540abc8190"
+    },
+    "web/platform/assets/metalio-ink4/geometry-checks.json": {
+      "bytes": 1166,
+      "sha256": "8db3d4beb372ceb22752c2cbc6dcd6505f6fa94822cee6688df2317f6bba412b"
+    },
+    "web/platform/assets/metalio-ink4/geometry.bin": {
+      "bytes": 11189232,
+      "sha256": "5cf0143016ab987794ac29fcf582860b7288f61f3569fc4cd1233ed25213a626"
+    },
+    "web/platform/assets/metalio-ink4/model-plan.json": {
+      "bytes": 7238,
+      "sha256": "0f6518ef3f490e85024671e2addc3c810c82bcf9d25a79ed8de2aa5c47f10aa3"
+    },
+    "web/platform/assets/metalio-ink4/model.json": {
+      "bytes": 9672,
+      "sha256": "3a51b1d5eb73166a523ab793f5be3778423c4bf747db69707d36b05a44ea8cba"
+    },
+    "web/platform/assets/metalio-ink4/reference-front-back.png": {
+      "bytes": 33392,
+      "sha256": "b9f39effc7ad46533e4faadac754dbbea77b4e4afc7ba8f516003c9f94f63e08"
+    },
+    "web/platform/assets/metalio-ink4/reference-front.png": {
+      "bytes": 59677,
+      "sha256": "5b02faab17ac0a082164ae08b5d91cd7b9864a4d62af1fa6ff952c4a9f9c74f6"
+    },
+    "web/platform/assets/metalio-ink4/source.stl": {
+      "bytes": 7770384,
+      "sha256": "0b3048cbd8b71bd357f7d7529b1094d4f9e27272cb087e72e57571e69edca501"
+    }
+  }
+}

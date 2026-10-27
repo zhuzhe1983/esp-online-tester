@@ -1,0 +1,582 @@
+{
+  "schemaVersion": "1",
+  "id": "metalio-ink4",
+  "kind": "product",
+  "catalogId": "metalio-ink4",
+  "title": "Metalio INK4",
+  "summary": "ESP32-S3 驱动的 3.97 英寸电子纸阅读/语音设备，带电容触摸、microSD 与三轴加速度计。",
+  "summarySourceIds": [
+    "readme"
+  ],
+  "updatedAt": "2026-10-27T10:08:24Z",
+  "hardwareRevision": "unspecified",
+  "identity": {
+    "manufacturer": "无名科技（Metalio）",
+    "sku": "INK4",
+    "aliases": [
+      "CloudZao",
+      "无名",
+      "Nologo",
+      "E-INK4"
+    ]
+  },
+  "facts": [
+    {
+      "id": "soc",
+      "label": "主控",
+      "value": "ESP32-S3",
+      "basis": "official",
+      "sourceIds": [
+        "readme"
+      ]
+    },
+    {
+      "id": "flash",
+      "label": "Flash",
+      "value": 16,
+      "basis": "official",
+      "sourceIds": [
+        "readme"
+      ],
+      "unit": "MB"
+    },
+    {
+      "id": "psram",
+      "label": "PSRAM 接口",
+      "value": {
+        "mode": "Octal",
+        "clockMHz": 80,
+        "capacityMB": null
+      },
+      "basis": "official",
+      "sourceIds": [
+        "readme"
+      ]
+    },
+    {
+      "id": "screen",
+      "label": "电子纸",
+      "value": {
+        "diagonalInch": 3.97,
+        "controller": "SSD1677",
+        "nativeResolution": [
+          800,
+          480
+        ],
+        "uiResolution": [
+          480,
+          800
+        ],
+        "bus": "SPI3 10MHz"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "readme"
+      ]
+    },
+    {
+      "id": "touch",
+      "label": "触摸",
+      "value": {
+        "chip": "CST816S",
+        "i2cAddress": "0x15",
+        "interruptGpio": 1,
+        "reset": "TCA9555 P1.1"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "readme",
+        "config"
+      ]
+    },
+    {
+      "id": "i2c",
+      "label": "I2C 总线",
+      "value": {
+        "sda": 41,
+        "scl": 42,
+        "expander": "TCA9555 0x20",
+        "interruptGpio": 2
+      },
+      "basis": "official",
+      "sourceIds": [
+        "readme",
+        "config"
+      ]
+    },
+    {
+      "id": "sd",
+      "label": "microSD",
+      "value": {
+        "id": "microsd",
+        "type": "SDMMC",
+        "name": "microSD · 1-bit",
+        "external": true,
+        "pins": [
+          {
+            "name": "CLK",
+            "gpio": 38
+          },
+          {
+            "name": "CMD",
+            "gpio": 40
+          },
+          {
+            "name": "D0",
+            "gpio": 39
+          },
+          {
+            "name": "DAT3/CD",
+            "gpio": 46
+          }
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "readme",
+        "config"
+      ]
+    },
+    {
+      "id": "buttons",
+      "label": "按键与虚拟触摸键",
+      "value": {
+        "controls": [
+          {
+            "id": "power",
+            "name": "Power · GPIO 3",
+            "type": "button",
+            "pin": 3
+          },
+          {
+            "id": "volume-up",
+            "name": "Volume + · TCA9555 P1.0",
+            "type": "button"
+          },
+          {
+            "id": "volume-down",
+            "name": "Volume − · TCA9555 P0.7",
+            "type": "button"
+          },
+          {
+            "id": "touch",
+            "name": "CST816S touch + cover virtual keys",
+            "type": "touch"
+          }
+        ],
+        "homeRaw": [
+          80,
+          900
+        ],
+        "previousRaw": [
+          400,
+          900
+        ],
+        "nextRaw": [
+          240,
+          900
+        ],
+        "note": "Cover keys are beyond the visible display coordinates; not standalone GPIOs."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "readme",
+        "config"
+      ]
+    },
+    {
+      "id": "screen-pins",
+      "label": "屏幕引脚",
+      "value": {
+        "MOSI": 8,
+        "SCLK": 14,
+        "CS": 45,
+        "DC": 13,
+        "RST": 18,
+        "BUSY": 9
+      },
+      "basis": "official",
+      "sourceIds": [
+        "config"
+      ]
+    },
+    {
+      "id": "audio",
+      "label": "I2S 音频",
+      "value": {
+        "sampleRateHz": 16000,
+        "BCLK": 6,
+        "WS": 43,
+        "DOUT": 7,
+        "DIN": 17
+      },
+      "basis": "official",
+      "sourceIds": [
+        "config"
+      ]
+    },
+    {
+      "id": "bt-audio",
+      "label": "外置蓝牙音频 UART",
+      "value": {
+        "TX": 48,
+        "RX": 47,
+        "baud": 115200,
+        "note": "External audio chip; not native Bluetooth Classic support."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "readme"
+      ]
+    },
+    {
+      "id": "sensors",
+      "label": "I2C 传感器与电源",
+      "value": {
+        "accelerometer": "SC7A20H 0x19",
+        "rtc": "PCF8563 0x51",
+        "fuelGauge": "BQ27220 0x55",
+        "charger": "CX25601N 0x6B",
+        "chargerDefaultmA": 500
+      },
+      "basis": "official",
+      "sourceIds": [
+        "readme"
+      ]
+    },
+    {
+      "id": "usb",
+      "label": "USB 路由",
+      "value": "D− GPIO19 / D+ GPIO20; FSUSB42UMX via TCA9555 P0.0 switches camera / flash-debug",
+      "basis": "official",
+      "sourceIds": [
+        "readme",
+        "config"
+      ]
+    },
+    {
+      "id": "frontlight",
+      "label": "前光",
+      "value": "当前文档未声明前光（不继承 Plus 前光）",
+      "basis": "official",
+      "sourceIds": [
+        "readme",
+        "config"
+      ]
+    },
+    {
+      "id": "firmware-source",
+      "label": "官方固件发布",
+      "value": {
+        "hardwareModelId": "38",
+        "firmwareId": "64795eef17390ae50771ef0e564baac0",
+        "sourceType": "official",
+        "chipName": "esp32s3",
+        "stableVersion": "2.0.53",
+        "testVersion": "2.0.63"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "burner"
+      ]
+    },
+    {
+      "id": "cad-body-dimensions",
+      "label": "厂家 CAD 主壳尺寸",
+      "value": {
+        "width": 63.66572433710098,
+        "height": 106.9858832359314,
+        "depth": 6.800000175833702,
+        "scope": "Main shell only; protruding buttons/covers excluded",
+        "scaleApplied": 1
+      },
+      "unit": "mm",
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "manufacturer-cad"
+      ],
+      "method": "Bounds of native main-shell component after rigid +90° X rotation and centering; scale 1; excludes protruding buttons and covers."
+    }
+  ],
+  "sources": [
+    {
+      "id": "readme",
+      "title": "Metalio INK4 · readme",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/README_zn.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/README_zn.md",
+      "kind": "source-code",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T09:12:35Z",
+      "bytes": 30252,
+      "sha256": "5e0afb8ea99e5d1e98b3247e5ed0c85ad13e62a29372f3f5ba52986388c8ec6d",
+      "archiveName": "ink4-readme.md",
+      "mediaType": "text/plain",
+      "revision": {
+        "kind": "git-commit",
+        "value": "d12f481f4a42420634bb56a928f3959a977367d4",
+        "note": "Pinned firmware source is a board definition, not proof of all production revisions."
+      }
+    },
+    {
+      "id": "config",
+      "title": "Metalio INK4 · config",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/main/boards/metalio-e-ink-4/config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/main/boards/metalio-e-ink-4/config.h",
+      "kind": "source-code",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T09:12:35Z",
+      "bytes": 3041,
+      "sha256": "ff3a59c09748ac282c92937467df0c0a77431c1c600553827516ff022f7aaac4",
+      "archiveName": "ink4-config.h",
+      "mediaType": "text/plain",
+      "revision": {
+        "kind": "git-commit",
+        "value": "d12f481f4a42420634bb56a928f3959a977367d4",
+        "note": "Pinned firmware source is a board definition, not proof of all production revisions."
+      }
+    },
+    {
+      "id": "sdkconfig",
+      "title": "Metalio INK4 · sdkconfig",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/sdkconfig",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/sdkconfig",
+      "kind": "source-code",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T09:12:35Z",
+      "bytes": 100536,
+      "sha256": "b9a49b01d0ad72dd91aa02755c800be2e1641e086d8646c0907c5d667dc0f002",
+      "archiveName": "ink4-sdkconfig",
+      "mediaType": "text/plain",
+      "revision": {
+        "kind": "git-commit",
+        "value": "d12f481f4a42420634bb56a928f3959a977367d4",
+        "note": "Pinned firmware source is a board definition, not proof of all production revisions."
+      }
+    },
+    {
+      "id": "photo",
+      "title": "Metalio INK4 · photo",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/images/product.png",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/images/product.png",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T09:12:35Z",
+      "bytes": 397479,
+      "sha256": "30665cf80bffb34c8156e9d756f0304453aa0cd2c6c9be692064a2185df5f238",
+      "archiveName": "ink4-photo.png",
+      "mediaType": "image/png"
+    },
+    {
+      "id": "license",
+      "title": "Metalio INK4 · license",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/LICENSE",
+      "kind": "license",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T09:12:36Z",
+      "bytes": 1065,
+      "sha256": "5e3ce24278baba736538433ddbfd2e430e9148b39ab918cbaf487aa33f1ddc11",
+      "archiveName": "ink4-license",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "partitions",
+      "title": "Metalio INK4 · partitions",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/partitions/v1/16m.csv",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/partitions/v1/16m.csv",
+      "kind": "source-code",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T09:12:36Z",
+      "bytes": 450,
+      "sha256": "8bb7e37c1bb6d9810c2e68ea05ddaa7ef5f75083442049efb6036a449f7872e4",
+      "archiveName": "ink4-partitions.csv",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "burner",
+      "title": "Metalio INK4 · burner",
+      "url": "https://admin.metalio.world/xiaozhi/api/firmwares?page=1&limit=1&hardwareModelId=38&sourceType=official",
+      "resolvedUrl": "https://admin.metalio.world/xiaozhi/api/firmwares?page=1&limit=1&hardwareModelId=38&sourceType=official",
+      "kind": "firmware-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T09:12:35Z",
+      "bytes": 13931,
+      "sha256": "8ae890a719bdce878d8a4d597985366fa5f4d7fdc5383c5c1cb3f73c19899b0e",
+      "archiveName": "ink4-burner.json",
+      "mediaType": "application/json"
+    },
+    {
+      "id": "burner-photo",
+      "title": "Metalio INK4 · burner-photo",
+      "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/metalio/2026/09/03/be36c768a8c64cf3857b9f632c28137d.png",
+      "resolvedUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/metalio/2026/09/03/be36c768a8c64cf3857b9f632c28137d.png",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T09:14:53Z",
+      "bytes": 59677,
+      "sha256": "5b02faab17ac0a082164ae08b5d91cd7b9864a4d62af1fa6ff952c4a9f9c74f6",
+      "archiveName": "ink4-burner-photo.png",
+      "mediaType": "image/png"
+    },
+    {
+      "id": "front-back",
+      "title": "Metalio INK4 · front-back",
+      "url": "https://metalio.cloudzao.com/assets/DNt68DjK.png",
+      "resolvedUrl": "https://metalio.cloudzao.com/assets/DNt68DjK.png",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T09:17:11Z",
+      "bytes": 33392,
+      "sha256": "b9f39effc7ad46533e4faadac754dbbea77b4e4afc7ba8f516003c9f94f63e08",
+      "archiveName": "ink4-front-back.png",
+      "mediaType": "image/png"
+    },
+    {
+      "id": "makerworld",
+      "title": "无名科技 MakerWorld 公开模型入口",
+      "url": "https://makerworld.com.cn/zh/@WMNologo",
+      "kind": "manufacturer-cad-search",
+      "status": "failed",
+      "attemptedAt": "2026-10-27T09:29:52Z",
+      "error": "Initial unauthenticated request received HTTP 403; later official files were obtained through the logged-in browser (see manufacturer-cad source)."
+    },
+    {
+      "id": "datasheet-tca9555",
+      "title": "TCA9555 datasheet",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/datasheet/tca9555.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "readme"
+    },
+    {
+      "id": "datasheet-panel-alternate",
+      "title": "Repository panel datasheet DEPG0397BBS77AF11HP (different part name from configured GDEM0397T81)",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/datasheet/DEPG0397BBS77AF11HP-2.1-GY.pdf",
+      "kind": "datasheet",
+      "status": "linked",
+      "discoveredFrom": "readme"
+    },
+    {
+      "id": "manufacturer-cad",
+      "title": "无名科技Nologo · 官方外观模型",
+      "url": "https://makerworld.com.cn/zh/models/2978913-metalio-e-lnk4-aimo-shui-ping-yue-du-qi-mo-xing",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "archiveName": "source.stl",
+      "fetchedAt": "2026-10-27T09:53:12Z",
+      "mediaType": "model/stl",
+      "bytes": 7770384,
+      "sha256": "0b3048cbd8b71bd357f7d7529b1094d4f9e27272cb087e72e57571e69edca501",
+      "license": "CC-BY-NC-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "notes": "无名科技Nologo；通过已登录浏览器下载。公开模型页是下载入口，临时下载URL及账户信息不留存。原始文件名、文件hash和获取方法见模型计划。"
+    }
+  ],
+  "assets": [
+    {
+      "id": "photo",
+      "sourceId": "photo",
+      "role": "product-photo",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/images/product.png"
+    },
+    {
+      "id": "burner-photo",
+      "sourceId": "burner-photo",
+      "role": "product-photo",
+      "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/metalio/2026/09/03/be36c768a8c64cf3857b9f632c28137d.png"
+    },
+    {
+      "id": "front-back",
+      "sourceId": "front-back",
+      "role": "product-photo",
+      "url": "https://metalio.cloudzao.com/assets/DNt68DjK.png"
+    },
+    {
+      "id": "datasheet-tca9555",
+      "sourceId": "datasheet-tca9555",
+      "role": "datasheet",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/datasheet/tca9555.pdf"
+    },
+    {
+      "id": "datasheet-panel-alternate",
+      "sourceId": "datasheet-panel-alternate",
+      "role": "datasheet",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/datasheet/DEPG0397BBS77AF11HP-2.1-GY.pdf"
+    },
+    {
+      "id": "manufacturer-cad",
+      "sourceId": "manufacturer-cad",
+      "role": "cad",
+      "url": "https://makerworld.com.cn/zh/models/2978913-metalio-e-lnk4-aimo-shui-ping-yue-du-qi-mo-xing"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "body-dimensions",
+      "label": "整机精确尺寸",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "manufacturer-cad"
+      ],
+      "notes": "已测得厂家 CAD 主壳尺寸；缺少独立官方尺寸图/实物量测，不能据此外推全部硬件版次及制造公差。"
+    },
+    {
+      "id": "battery-capacity",
+      "label": "电池容量",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "readme"
+      ],
+      "notes": "不从充电电流或营销图推算。"
+    },
+    {
+      "id": "psram-capacity",
+      "label": "PSRAM 容量",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "readme"
+      ],
+      "notes": "公开配置确认接口/频率，尚未确认实际容量。"
+    },
+    {
+      "id": "pcb-layout",
+      "label": "PCB 布局",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "readme",
+        "manufacturer-cad"
+      ],
+      "notes": "厂家外观模型不证明PCB板形/电子器件布局；保留UNKNOWN空白占位。"
+    },
+    {
+      "id": "factory-image",
+      "label": "实际出厂镜像版本",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "readme"
+      ],
+      "notes": "官方发布渠道已确认；不能证明每个实机出厂时使用同一版本。"
+    },
+    {
+      "id": "sku-revisions",
+      "label": "4G/Wi-Fi 与硬件版次",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "readme"
+      ],
+      "notes": "先保留两个产品系列；不虚构独立 SKU、4G 引脚或等效关系。"
+    }
+  ],
+  "revisions": [],
+  "collectionNotes": [
+    "仅收集公开型号与固件信息；无私有账户字段。",
+    "官方发布渠道已确认，尚未证明实机出厂使用的具体版本；默认官方稳定版。",
+    "MakerWorld外观CAD与派生几何遵循CC BY-NC 4.0；代码仓库MIT许可证不覆盖这些CAD。"
+  ]
+}

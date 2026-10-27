@@ -62,7 +62,7 @@ export function updateFirmwareCatalog({products,firmwares,watchlist,snapshot,man
       const currentRelease=releases.find(r=>norm(r.tag_name)===norm(current)),currentDate=currentRelease?.published_at||firmware.catalogUpdate?.publishedAt;
       if(older(release.tag_name,current)||currentDate&&Date.parse(release.published_at)<=Date.parse(currentDate)){report.reason='no-newer-matching-release';continue;}
       if(!digest){report.reason='candidate-missing-sha256';continue;}
-      if(target.sourceType==='manufacturer-distribution'&&entry.metadataProvider!=='m5burner'){report.reason='distribution-source-mismatch';continue;}
+      if(target.sourceType==='manufacturer-distribution'&&!['m5burner','cloudzao'].includes(entry.metadataProvider)){report.reason='distribution-source-mismatch';continue;}
       const url=target.downloadUrl||asset.browser_download_url;const parsed=new URL(url);if(parsed.protocol!=='https:'||parsed.username||parsed.password)throw Error('Unsafe target source URL');
       firmware.artifactHistory=[...(firmware.artifactHistory||[]),{revision:current,source:copy(firmware.source),status:firmware.status,simulationVerified:firmware.simulationVerified===true,hardwareValidated:firmware.hardwareValidated===true,limitations:copy(firmware.limitations||[]),...Object.fromEntries(['integrityNotes','sdk','verification','validation','evidence','verificationStatus','description','sources'].filter(key=>firmware[key]!==undefined).map(key=>[key,copy(firmware[key])]))}].slice(-12);
       if(target.updateMode==='manifest-app'){

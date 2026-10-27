@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1",
-  "revision": "2026-10-27-unit-c6l-dual-role",
+  "revision": "2026-10-27-metalio",
   "items": [
     {
       "id": "m5stack-k132-adv",
@@ -10865,6 +10865,288 @@
         "厂家STL的装配件原尺寸保留，排版副本已剔除。SMA、Grove、USB和贴纸位置依据尺寸图/照片估算，非连接器厂家CAD。",
         "未公开PCB布局，内部为UNKNOWN空白占位；SMA螺纹、螺钉及鞭状天线未完整建模。",
         "贴纸仅取白色纸面，OLED保持空白，不能将产品照片当成固件画面。"
+      ]
+    },
+    {
+      "id": "metalio-ink4",
+      "name": "Metalio INK4",
+      "manufacturer": "无名科技（Metalio）",
+      "sku": "INK4",
+      "aliases": [
+        "CloudZao",
+        "无名",
+        "Nologo",
+        "E-INK4"
+      ],
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s3",
+      "module": "ESP32-S3",
+      "summary": "ESP32-S3 驱动的 3.97 英寸电子纸阅读/语音设备，带电容触摸、microSD 与三轴加速度计。",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "display": {
+        "width": 480,
+        "height": 800,
+        "type": "e-paper",
+        "controller": "SSD1677"
+      },
+      "controls": [
+        {
+          "id": "power",
+          "name": "Power",
+          "type": "button",
+          "pin": 3
+        },
+        {
+          "id": "volume-up",
+          "name": "Volume + · TCA9555 P1.0",
+          "type": "button"
+        },
+        {
+          "id": "volume-down",
+          "name": "Volume − · TCA9555 P0.7",
+          "type": "button"
+        },
+        {
+          "id": "touch",
+          "name": "CST816S touch + cover virtual keys",
+          "type": "touch"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C / power / USB MSC",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "microsd",
+          "type": "SDMMC",
+          "name": "microSD · 1-bit",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 38
+            },
+            {
+              "name": "CMD",
+              "gpio": 40
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "DAT3/CD",
+              "gpio": 46
+            }
+          ]
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/metalio-ink4/model.json",
+        "status": "partial"
+      },
+      "knowledgeUrl": "./knowledge/metalio-ink4.json",
+      "defaultFirmwareId": "metalio-ink4-official",
+      "sources": [
+        {
+          "id": "readme",
+          "title": "Metalio INK4 · readme",
+          "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/README_zn.md",
+          "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4/d12f481f4a42420634bb56a928f3959a977367d4/README_zn.md",
+          "kind": "source-code",
+          "status": "fetched",
+          "fetchedAt": "2026-10-27T09:12:35Z",
+          "bytes": 30252,
+          "sha256": "5e0afb8ea99e5d1e98b3247e5ed0c85ad13e62a29372f3f5ba52986388c8ec6d",
+          "archiveName": "ink4-readme.md",
+          "mediaType": "text/plain",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "id": "manufacturer-cad",
+          "productId": "metalio-ink4",
+          "title": "无名科技Nologo · 官方外观模型",
+          "url": "https://makerworld.com.cn/zh/models/2978913-metalio-e-lnk4-aimo-shui-ping-yue-du-qi-mo-xing",
+          "kind": "manufacturer-cad",
+          "status": "fetched",
+          "archiveName": "source.stl",
+          "downloadFileName": "Metalio+E-lNK4+AI墨水屏阅读器模型.stl",
+          "fetchedAt": "2026-10-27T09:53:12Z",
+          "mediaType": "model/stl",
+          "bytes": 7770384,
+          "sha256": "0b3048cbd8b71bd357f7d7529b1094d4f9e27272cb087e72e57571e69edca501",
+          "acquisition": {
+            "method": "download button in authenticated browser",
+            "note": "Public model page is the download locator; temporary download URLs and account data are not retained."
+          },
+          "license": "CC-BY-NC-4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+          "publisher": "无名科技Nologo",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "本型号板级模拟器尚未完成适配；当前提供外观预览与产品/固件资料。",
+        "厂家 STL 的全部原始三角形与组件装配保留；STL 无显式单位，按与标称屏幕及产品图相符的毫米解释。",
+        "显示有效区及盖板印刷标记依据官方照片/屏幕标称对角线推算，不代表内部器件或触摸坐标已校准。",
+        "厂家外观模型不含可核验的完整PCB布局；内部为UNKNOWN空白占位，不将不明CAD细节冒称具体电子器件。",
+        "尚未与实物/独立尺寸图完成完整1:1验收；侧键物理顺序未绑定电气控制。",
+        "照片含 4G 标识，源码主要描述 Wi-Fi 板型；未核实 4G SKU、模组与所有硬件版次，不合并为已确认配置。"
+      ]
+    },
+    {
+      "id": "metalio-ink4-plus",
+      "name": "Metalio INK4 Plus",
+      "manufacturer": "无名科技（Metalio）",
+      "sku": "INK4 Plus",
+      "aliases": [
+        "CloudZao",
+        "无名",
+        "Nologo",
+        "E-INK4 Plus"
+      ],
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "module": "ESP32-S31",
+      "summary": "ESP32-S31 驱动的 4.7 英寸并行电子纸阅读/语音设备，带电容触摸、冷暖前光与 microSD。",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "display": {
+        "width": 684,
+        "height": 1216,
+        "type": "e-paper",
+        "controller": "ED047TC2_1216 / EPDiy / TPS65185"
+      },
+      "controls": [
+        {
+          "id": "power",
+          "name": "Power · TCA9555 P1.7",
+          "type": "button"
+        },
+        {
+          "id": "volume-up",
+          "name": "Volume + · TCA9555 P1.0",
+          "type": "button"
+        },
+        {
+          "id": "volume-down",
+          "name": "Volume − · TCA9555 P1.1",
+          "type": "button"
+        },
+        {
+          "id": "touch",
+          "name": "FT6336U touch + cover virtual keys",
+          "type": "touch"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C / power / USB MSC",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "microsd",
+          "type": "SDMMC",
+          "name": "microSD · 4-bit",
+          "external": true,
+          "pins": [
+            {
+              "name": "D0",
+              "gpio": 20
+            },
+            {
+              "name": "D1",
+              "gpio": 21
+            },
+            {
+              "name": "D2",
+              "gpio": 22
+            },
+            {
+              "name": "D3",
+              "gpio": 23
+            },
+            {
+              "name": "CLK",
+              "gpio": 24
+            },
+            {
+              "name": "CMD",
+              "gpio": 25
+            }
+          ]
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/metalio-ink4-plus/model.json",
+        "status": "partial"
+      },
+      "knowledgeUrl": "./knowledge/metalio-ink4-plus.json",
+      "defaultFirmwareId": "metalio-ink4-plus-official",
+      "sources": [
+        {
+          "id": "readme",
+          "title": "Metalio INK4 Plus · readme",
+          "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4-Plus/ad8edf4150a688737c0d7c00cae4413079b262ef/README_zn.md",
+          "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4-Plus/ad8edf4150a688737c0d7c00cae4413079b262ef/README_zn.md",
+          "kind": "source-code",
+          "status": "fetched",
+          "fetchedAt": "2026-10-27T09:12:36Z",
+          "bytes": 30234,
+          "sha256": "12b81443693f9897bdd1c7d9cdfce6159d8e871bdbcde32e6ae9ba4696108d03",
+          "archiveName": "ink4-plus-readme.md",
+          "mediaType": "text/plain",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "id": "manufacturer-cad",
+          "productId": "metalio-ink4-plus",
+          "title": "无名科技Nologo · 官方外观模型",
+          "url": "https://makerworld.com.cn/zh/models/3093684-metalio-e-ink4-plus47ying-cun-mo-shui-ping-yue-du",
+          "kind": "manufacturer-cad",
+          "status": "fetched",
+          "archiveName": "source.step",
+          "downloadFileName": "Metalio+E-INK4+Plus47英寸墨水屏阅读器外观.step",
+          "fetchedAt": "2026-10-27T09:53:12Z",
+          "mediaType": "model/step",
+          "bytes": 2085461,
+          "sha256": "1b7de09079b4cffdfac438181294385935ff89cfe45c200c1c3aca3ff05fd2d5",
+          "acquisition": {
+            "method": "download button in authenticated browser",
+            "note": "Public model page is the download locator; temporary download URLs and account data are not retained."
+          },
+          "license": "CC-BY-NC-4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+          "publisher": "无名科技Nologo",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "本型号板级模拟器尚未完成适配；当前提供外观预览与产品/固件资料。",
+        "厂家 STEP 的原尺寸与全部组件装配保留；原生读取器以毫米输出。",
+        "显示有效区及盖板印刷标记依据官方照片/屏幕标称对角线推算，不代表内部器件或触摸坐标已校准。",
+        "厂家外观模型不含可核验的完整PCB布局；内部为UNKNOWN空白占位，不将不明CAD细节冒称具体电子器件。",
+        "尚未与实物/独立尺寸图完成完整1:1验收；侧键物理顺序未绑定电气控制。",
+        "照片含 4G 标识，源码主要描述 Wi-Fi 板型；未核实 4G SKU、模组与所有硬件版次，不合并为已确认配置。",
+        "ESP32-S31 是独立的 RISC-V 平台，当前执行内核尚未支持；不能选择 ESP32-S3 代替。Plus 背面缺少对应照片，本轮不复用 INK4 背面镜头或标记。"
       ]
     }
   ]

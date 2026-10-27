@@ -4,7 +4,7 @@ export const manufacturerNames = products => [...new Set(products.map(item => it
 export const productsForManufacturer = (products, manufacturer) => products.filter(item => item.manufacturer === manufacturer).sort((a,b) => collator.compare(a.name.replace(/^M5Stack /,''),b.name.replace(/^M5Stack /,'')) || collator.compare(a.id,b.id));
 export function searchProducts(products, query) {
   const words = String(query).normalize('NFKC').toLowerCase().trim().split(/\s+/).filter(Boolean);
-  return products.filter(item => { const text = [item.name,item.manufacturer,item.sku,item.id,item.module,item.chip].filter(Boolean).join(' ').normalize('NFKC').toLowerCase(); return words.every(word => text.includes(word)); }).sort((a,b) => collator.compare(a.name,b.name));
+  return products.filter(item => { const text = [item.name,item.manufacturer,item.sku,item.id,item.module,item.chip,...(Array.isArray(item.aliases)?item.aliases:[])].filter(Boolean).join(' ').normalize('NFKC').toLowerCase(); return words.every(word => text.includes(word)); }).sort((a,b) => collator.compare(a.name,b.name));
 }
 export const accessoryBrand = item => item.manufacturer || 'DIY';
 export const accessoryInterface = item => item.connector?.type || '未标注';

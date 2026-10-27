@@ -29,6 +29,8 @@ export function validateWatchlist(document) {
     if (entry.browserAuditUrl) safeUrl(entry.browserAuditUrl);
     if(entry.metadataProvider==='m5burner') {
       if(entry.metadataUrl!=='https://m5burner-api.m5stack.com/api/firmware'||!/^\w{16,64}$/.test(entry.firmwareId))throw new Error('Invalid official M5Burner source.');
+    } else if(entry.metadataProvider==='cloudzao') {
+      if(!/^[1-9][0-9]{0,8}$/.test(entry.hardwareModelId||'')||!/^\w{28,64}$/.test(entry.firmwareId||'')||!['esp32s3','esp32s31'].includes(entry.targetChip)||entry.metadataUrl!==`https://admin.metalio.world/xiaozhi/api/firmwares?page=1&limit=1&hardwareModelId=${entry.hardwareModelId}&sourceType=official`)throw new Error('Invalid official CloudZao source.');
     } else if(entry.metadataProvider && entry.metadataProvider!=='github' || entry.metadataUrl!==`https://api.github.com/repos/${entry.upstreamRepo}/releases/latest`)throw new Error('Invalid GitHub metadata source.');
     if (!['reference-only', 'product-verified'].includes(entry.compatibility?.status)) throw new Error('Declare a compatibility status.');
     if (!Array.isArray(entry.compatibility.productIds) || !Array.isArray(entry.assets) || entry.assets.length > 8) throw new Error('Invalid watchlist compatibility or assets.');

@@ -1,4 +1,5 @@
 // Build-time metadata adapters. Never request firmware payloads or retain authors.
+import {cloudzaoMetadataUrl, cloudzaoReleases} from './firmware-source-cloudzao.mjs';
 const safe=value=>{const url=new URL(value);if(url.protocol!=='https:'||url.username||url.password)throw Error('Unexpected release URL');return url.href;};
 const digest=value=>/^sha256:[a-f0-9]{64}$/i.test(value||'')?value.toLowerCase():null;
 export const releaseIsPrerelease=release=>release.prerelease===true||/(?:^|[.\d-])(?:rc|pre|alpha|beta|nightly)(?:[.\d-]|$)/i.test(release.tag_name||'');
@@ -8,6 +9,7 @@ export function releaseMatchesChannel(release,channel='stable') {
   return channel==='prerelease'?releaseIsPrerelease(release):!releaseIsPrerelease(release);
 }
 export function releaseRequest(entry,token) {
+  if(entry.metadataProvider==='cloudzao') return {url:cloudzaoMetadataUrl(entry),headers:{Accept:'application/json'},maxBytes:2*1024*1024};
   if(entry.metadataProvider==='m5burner') {
     if(entry.metadataUrl!=='https://m5burner-api.m5stack.com/api/firmware')throw Error('Unexpected M5Burner metadata URL');
     return {url:entry.metadataUrl,headers:{Accept:'application/json'},maxBytes:16*1024*1024};
@@ -18,6 +20,7 @@ export function releaseRequest(entry,token) {
   return {url:limit?`https://api.github.com/repos/${entry.upstreamRepo}/releases?per_page=${limit}`:entry.metadataUrl,headers:{Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(token?{Authorization:`Bearer ${token}`}:{})},maxBytes:32*1024*1024};
 }
 export function publicReleases(entry,data) {
+  if(entry.metadataProvider==='cloudzao') return cloudzaoReleases(entry,data);
   if(entry.metadataProvider==='m5burner') {
     if(!Array.isArray(data))throw Error('Invalid M5Burner catalog');
     const matches=data.filter(item=>item.fid===entry.firmwareId);if(matches.length!==1)throw Error('Firmware identity missing or ambiguous');
