@@ -46,7 +46,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     std::io::stdout().write_all(&m.bus.uart0.tx_out)?;
     eprintln!("stop={stop:?} steps={steps} pc={:#010x} mepc={:#010x} mcause={:#x} mtval={:#010x} fault={:?}",
         m.cpu.pc, m.cpu.mepc, m.cpu.mcause, m.cpu.mtval, m.bus.first_fault);
-    eprintln!("mspi-commands={} cache-maintenance={}", m.bus.mspi.commands, m.bus.cache.maintenance_operations);
+    eprintln!("mspi-commands={} cache-maintenance={} sha-blocks={}", m.bus.mspi.commands, m.bus.cache.maintenance_operations, m.bus.sha.blocks());
     if usb_host { eprintln!("usb-host packets={packets} bytes={} data={:?}", usb.len(), String::from_utf8_lossy(&usb)); }
     Ok(())
 }

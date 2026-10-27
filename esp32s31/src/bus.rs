@@ -10,6 +10,7 @@ use crate::clocks::Clocks;
 use crate::usb_console::UsbConsole;
 use crate::bus_monitor::BusMonitor;
 use crate::mspi::Mspi;
+use crate::sha::ShaEngine;
 use crate::efuse::{Efuse, BASE as EFUSE_BASE};
 
 // ESP-IDF v6.1 (fff9895c82d744c7237be8847347bdd1b07c6643),
@@ -48,6 +49,7 @@ pub struct S31Bus {
     pub usb_console: UsbConsole,
     pub bus_monitor: BusMonitor,
     pub mspi: Mspi,
+    pub sha: ShaEngine,
     pc: u32, pub first_fault: Option<AccessFault>,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
@@ -61,7 +63,7 @@ impl S31Bus {
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16],
-            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), pc: 0, first_fault: None }
+            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), sha: ShaEngine::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -118,6 +120,14 @@ impl S31Bus {
         if address & !3 == crate::mspi::CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(self.mspi.clock_read());
+        }
+        if address & !3 == crate::sha::CLOCK {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(self.sha.clock_read());
+        }
+        if let Some(off) = offset(address, crate::sha::BASE, bytes, 0x300) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.sha.read(off as u32) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if address & !3 == crate::cache::CLOCK_CTRL {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -220,6 +230,14 @@ impl S31Bus {
         if address & !3 == crate::mspi::CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             return match self.mspi.clock_write(value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if address & !3 == crate::sha::CLOCK {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.sha.clock_write(value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if let Some(off) = offset(address, crate::sha::BASE, bytes, 0x300) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.sha.write(off as u32, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if address & !3 == crate::cache::CLOCK_CTRL {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }

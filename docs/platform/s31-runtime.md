@@ -625,3 +625,44 @@ workloads pass. Production WASM/native code sections match7d7c229f byte for byte
 [Five-pair CPU samples](evidence/s31-bringup/flash-cache-perf.json) versus fixed
 main84e67571 show S3+1.4504%, C3+0.2474%, C6+0.7295%, with identical UART/statistics;
 these are regression guards, not attributed S31 runtime overhead or speed claims.
+
+## SHA block engine and first official bootloader entry
+
+The standalone S31 bus now reuses the shared SHA compression routines behind the
+S31 register map at0x20509000 and CRYPTO_CTRL0 at0x20587058. Fixed v6.1 `sha_reg.h`
+and `esp_hal_security/esp32s31/include/hal/sha_ll.h` define the message/digest word
+ordering and the parent/DS/HMAC/ECDSA resets that hold SHA in reset. This subset
+supports synchronous register-driven SHA1/SHA224/SHA256/SHA384/SHA512 blocks,
+with clock/reset gates and S31's16-bit DMA count field. Unsupported algorithm
+modes, DMA transfers/interrupt enable, SHA3/SHAKE/SM3 and alternate clock roots
+fault instead of falling into older shared-model defaults. There is no SHA timing
+or DMA model. The enclosing security clock/reset gate follows the register grouping;
+it has no independent silicon validation. Other crypto blocks remain absent.
+
+The unchanged official INK4 Plus2.0.68 merged image now loads all three bootloader
+segments through the real ROM. The guest computes347 SHA blocks, emits
+`entry 0x2f06a2ba`, and executes bootloader code. The first missing access is then
+PC`0x2f06a476`, read32`0x20587040` (HP_SYS MODEM clock gate), after199409 instructions.
+This is the first actual bootloader entry in this core; it is not application entry,
+board initialization or a working display. It still requires the explicit SPI0
+shadow/test NOR/strap/USB development inputs above. Plus remains unavailable.
+
+SHA mismatch behavior is deliberately not strengthened by the host. A source-built
+ROM boot fixture prints its expected output and reaches WFI with five real SHA
+blocks. Flipping only one appended-digest bit makes the ROM print its independently
+calculated digest, the changed expected digest and `Attempting to boot anyway...`,
+then execute that fixture. This is the public ROM's unsecured-boot behavior, **not**
+a host bypass or an assertion that a mismatched image is rejected. Flipping a payload
+byte instead produces the real XOR-checksum error and ROM assertion; no guest entry
+or fixture output occurs. The official image has neither warning nor mismatch.
+No third-party BIN, ROM opcode or requested boot entry was altered to obtain success.
+
+[Official full-image result](evidence/s31-bringup/sha-plus-2.0.68.json),
+[SHA vectors, source ROM controls and checks](evidence/s31-bringup/sha-boot.json).
+
+SHA-stage validation:1404 workspace Rust tests (131 groups),41 S31 unit tests,
+16 source/ROM fixtures, both Clippy targets, four platform Node files, nine WASM
+workloads and both native/WASM builds pass. All three production native binaries
+and the production WASM match the just-timed Flash/cache build byte for byte;
+that hash-linked CPU comparison applies to the identical binaries. No golden or
+platform UI changed, and no separate browser or hardware success is claimed.

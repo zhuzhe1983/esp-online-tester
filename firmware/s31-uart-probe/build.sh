@@ -15,3 +15,7 @@ done
   "$task_dir/flash-worker.S" -o "$task_output/flash-worker.elf"
 "${task_prefix}objcopy" -O binary --only-section=.text "$task_output/flash-worker.elf" "$task_output/flash-worker.bin"
 "${task_prefix}objdump" -d "$task_output/flash-worker.elf" > "$task_output/flash-worker.disassembly.txt"
+if [[ ${S31_BUILD_ROM_IMAGE:-0} == 1 ]]; then
+  "${ESPTOOL_BIN:-esptool}" --chip esp32s31 elf2image --flash-mode dio --flash-size 16MB \
+    --flash-freq 40m --output "$task_output/spi0-observation.bin" "$task_output/spi0-observation.elf"
+fi

@@ -116,3 +116,14 @@ Bound the subprocess from the host and close it after `SPI0 OBSERVATION DONE`;
 the emulator's own `--timeout` does not promptly end this guest's WFI loop. Retain
 only public UART values and relevant interception counts, not host-network logs.
 Upstream compatibility is distinct from hardware verification and our strict map.
+
+To exercise actual ROM SHA loading, build with `S31_BUILD_ROM_IMAGE=1` and
+`ESPTOOL_BIN=/path/to/esptool` (esptool5.4.0). Set `S31_BOOT_IMAGE` to the generated
+`spi0-observation.bin`, in addition to the existing source/ROM fixture variables.
+The host test places only this source-built input at0x2000 in an explicit erased
+64KiB development Flash array. ROM performs its own loading and SHA work. The
+valid case reaches `SPI0 OBSERVATION DONE`; a one-bit appended-digest change emits
+the ROM's SHA mismatch warning and still boots, while a one-bit payload change
+emits the XOR-checksum assertion and never enters the source guest. The warning-only
+SHA result is observed behavior without secure boot, not a security guarantee or
+host-made decision. These negative controls do not modify any official product BIN.

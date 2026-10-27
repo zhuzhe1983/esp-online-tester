@@ -291,3 +291,42 @@ fn external_s31_rom_legacy_opt_in_still_requires_flash_input() {
     assert_eq!(m.bus.cache.maintenance_operations, 2);
     eprintln!("S31 ROM explicit shadow without NOR/array steps={steps} commands=0");
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe with S31_BUILD_ROM_IMAGE=1; set S31_ROM_ELF and S31_BOOT_IMAGE"]
+fn external_s31_real_rom_sha_boot_and_corruption_controls() {
+    let path = std::env::var("S31_ROM_ELF").expect("set S31_ROM_ELF to public20260528 ROM ELF");
+    let rom = std::fs::read(path).expect("read S31_ROM_ELF");
+    let path = std::env::var("S31_BOOT_IMAGE").expect("set S31_BOOT_IMAGE to source-built spi0-observation.bin");
+    let image = std::fs::read(path).expect("read S31_BOOT_IMAGE");
+    assert!(image.len() > 64 && image.len() < 0xe000 && image[0] == 0xe9 && image[23] == 1);
+    let digest = image[image.len() - 32..].iter().map(|b| format!("{b:02x}")).collect::<String>();
+    for control in ["valid", "digest-flip", "payload-flip"] {
+        let mut m = esp32s31::Bringup::new(); m.load_rom_elf(&rom).unwrap();
+        m.bus.pads.strap = 0x12; m.bus.usb_console.attach_host(true); m.bus.mspi.enable_legacy_rom_lengths();
+        m.bus.mspi.attach_flash([0xef, 0x40, 0x18], 0).unwrap();
+        let mut flash = vec![0xff; 65536]; flash[0x2000..0x2000 + image.len()].copy_from_slice(&image);
+        if control == "digest-flip" { flash[0x2000 + image.len() - 1] ^= 1; }
+        if control == "payload-flip" { flash[0x2020] ^= 1; }
+        m.bus.cache.set_flash(&flash).unwrap(); let mut steps = 0;
+        let stop = loop {
+            let run = m.run(1000); steps += run.steps; m.bus.usb_console.host_receive();
+            if run.stop != esp32s31::Stop::Budget || steps >= 200_000 { break run.stop; }
+        };
+        let uart = String::from_utf8(m.bus.uart0.tx_out.clone()).unwrap();
+        assert!(m.bus.first_fault.is_none());
+        if control == "payload-flip" {
+            assert_eq!(stop, esp32s31::Stop::Budget); assert!(uart.contains("Checksum failure."));
+            assert!(!uart.contains("entry 0x2f000000")); assert!(!uart.contains("SPI0 OBSERVATION DONE"));
+        } else {
+            assert_eq!(stop, esp32s31::Stop::Waiting); assert!(uart.contains("entry 0x2f000000"));
+            assert!(uart.contains("SPI0 AFTER\na55a03ff\na55a03ff\nSPI0 OBSERVATION DONE\n"));
+            assert_eq!(m.bus.sha.blocks(), 5);
+            if control == "digest-flip" {
+                assert!(uart.contains("SHA-256 comparison failed:")); assert!(uart.contains(&format!("Calculated: {digest}")));
+                assert!(uart.contains("Attempting to boot anyway...")); // Actual unsecured ROM behavior, not a host override.
+            } else { assert!(!uart.contains("failed")); }
+        }
+        eprintln!("S31 ROM SHA control={control} steps={steps} stop={stop:?} blocks={}", m.bus.sha.blocks());
+    }
+}
