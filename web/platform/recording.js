@@ -102,7 +102,7 @@ export function decodeRecording(encoded) {
 
 export function createRecordingController(runtime) {
   let status='idle', recording=null, receipt=null, error=null, progress={index:0,total:0,elapsedGuestSeconds:0};
-  let token=null, ownLifecycle=false, sending=false, closing=false, lastGuest=0, heldTouch=null;
+  let token=null, ownLifecycle=false, sending=false, closing=false, stopPending=null, lastGuest=0, heldTouch=null;
   const held=new Map(), listeners=new Set();
   const observe=()=>clone({status,recording,progress,receipt,error});
   const emit=()=>{const event={type:'recording',state:observe()};for(const listener of listeners){try{listener(event);}catch{}}};
@@ -126,6 +126,7 @@ export function createRecordingController(runtime) {
   const stop=async(reason='stopped')=>{
     if(status!=='recording'||closing)throw err('RECORDING_NOT_ACTIVE','No active recording to stop.');
     closing=true;
+    let finishStop;stopPending=new Promise(resolve=>{finishStop=resolve;});
     try {
       await release();
       const current=await runtime.observe();
@@ -135,9 +136,10 @@ export function createRecordingController(runtime) {
       requireValid(recording);
       progress={index:recording.events.length,total:recording.events.length,elapsedGuestSeconds:recording.duration};
       receipt={kind:'recording',reason,eventCount:recording.events.length,bitExact:false};change('completed');return clone(recording);
-    } catch(e){failure(e);throw e;} finally{closing=false;}
+    } catch(e){failure(e);throw e;} finally{closing=false;stopPending=null;finishStop();}
   };
   const cancel=async(reason='takeover')=>{
+    if(stopPending)await stopPending;
     const active=token;if(active)active.cancelled=true;
     if(!['preparing','recording','playing'].includes(status))return observe();
     const wasRecording=status==='recording';
@@ -201,6 +203,7 @@ export function createRecordingController(runtime) {
       recordingTakeOver(){return cancel();},
       async recordingClear(){await cancel('cleared');recording=null;receipt=null;error=null;progress={index:0,total:0,elapsedGuestSeconds:0};change('idle');return observe();},
       async recordingPlay(input,{timeoutMs=180000}={}){
+        if(stopPending)await stopPending;
         let current=await runtime.observe();
         if(current.storage?.scope && runtime.flushDeviceStorage){await runtime.flushDeviceStorage();current=await runtime.observe();}
         requireValid(input,{scene:current.scene});

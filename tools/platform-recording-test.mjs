@@ -105,6 +105,21 @@ try{
   assert.equal(runtime.calls.at(-1).pressed,false,'Direct runtime pause cleans up held input');
   assert.equal((await api.recordingObserve()).status,'completed');
 
+  // A completed capture window can still be hashing its final frame. Starting
+  // another operation must wait, so that late stop cannot overwrite its receipt.
+  const capture=runtime.capture;let finishCapture,enteredCapture;
+  const captureEntered=new Promise(resolve=>{enteredCapture=resolve;});
+  const captureGate=new Promise(resolve=>{finishCapture=resolve;});
+  runtime.capture=async()=>{enteredCapture();await captureGate;return capture();};
+  await api.recordingStart();await api.input({type:'button',id:'button-a',pressed:true});
+  await runtime.pause();await captureEntered;
+  const beforePendingReset=runtime.counters.resets;
+  const nextReplay=api.recordingPlay(recording,{timeoutMs:2000});
+  try{await sleep(10);assert.equal(runtime.counters.resets,beforePendingReset,'Replay must wait for the prior stop/frame hash');}
+  finally{finishCapture();runtime.capture=capture;await nextReplay;}
+  assert.equal((await api.recordingObserve()).receipt.kind,'replay');
+  console.log('ok recording stop/hash completion cannot overwrite the next replay receipt');
+
   await api.configure(scene);runtime.blockLoad=true;
   const preparing=api.recordingPlay(recording,{timeoutMs:1000});
   while((await runtime.observe()).status!=='loading')await sleep(2);
