@@ -1,0 +1,143 @@
+{
+  "checkedAt": "2026-10-27T08:05:09.782240+00:00",
+  "results": [
+    {
+      "name": "clippy-native",
+      "command": [
+        "cargo",
+        "+stable",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "clippy-wasm",
+      "command": [
+        "cargo",
+        "+stable",
+        "clippy",
+        "--release",
+        "--target",
+        "wasm32-unknown-unknown",
+        "-p",
+        "esp32sim-wasm",
+        "--features",
+        "jit-tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "rust",
+      "command": [
+        "cargo",
+        "+stable",
+        "test",
+        "--release",
+        "--workspace",
+        "--",
+        "--include-ignored",
+        "--skip",
+        "external_"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "wasm-build",
+      "command": [
+        "sh",
+        "tools/wasm-build.sh"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "integrationCommit": "d69df26ed1aa6cf5e1ea9b3bde6faf671e6bf8c3",
+  "wasmSha256": "d4c1744482343882ed4f6c5128ab1c93e6d1bca12089896324be7e32f8bb254a",
+  "rustPassed": 1363,
+  "platformPassed": 66,
+  "fixtures": {
+    "dial": {
+      "checks": [
+        "rom-boot-gpio42-idle-ft3267-vendor",
+        "every-guest-spi-pixel-red128-green112",
+        "gpio42-press-release-observed-by-guest",
+        "ft3267-registers-and-gpio14-touch-down-up",
+        "real-gpio-interrupt-quadrature-plus1-minus2-plus1",
+        "encoder-boundary-rejection",
+        "real-wasm-record-replay-encoder-detents"
+      ],
+      "inputHashes": {
+        "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+        "dial_fixture.bin": "f89aea644e35a7aa2b27e0abad2b0fdd50949ba9c6008d83d12e96f22749b3b4",
+        "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+      },
+      "frameSha256": "4194d7b769a219e84f13f3a0a5c20e17c79c7f7995be0826e16fa1a7140e3020",
+      "wasmSha256": "d4c1744482343882ed4f6c5128ab1c93e6d1bca12089896324be7e32f8bb254a"
+    },
+    "unit-button": {
+      "checks": [
+        "ROM boot; Grove power off reads low, enabled reads high; yellow G10 unaffected",
+        "button press/release observed as actual G11 0/1",
+        "PWR_CFG bit3 gates released switch voltage",
+        "detach releases external input: guest pull-down=0, pull-up=1; reconnect=1",
+        "release accepted while paused and consumed after resume",
+        "guest esp_restart retains physically held switch",
+        "host reset restores scene connection and releases switch",
+        "HOLD_CFG bit6 retains Grove5V after shutdown, clearing hold removes it",
+        "record/replay reproduces guest-observed press, release, disconnect and reconnect"
+      ],
+      "inputHashes": {
+        "bootloader/bootloader.bin": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+        "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+        "unit_button_fixture.bin": "7b58173c48c9f1e539457bf3e44b1babdc5d3e238532a50a48a122e0d5017ca3"
+      },
+      "wasmSha256": "d4c1744482343882ed4f6c5128ab1c93e6d1bca12089896324be7e32f8bb254a"
+    }
+  },
+  "wasmSmoke": {
+    "command": "node tools/wasm-test.mjs hello c3-hello c6-hello panel demo-stopwatch",
+    "passed": 5
+  },
+  "catalog": {
+    "products": 83,
+    "accessories": 5,
+    "firmwares": 106,
+    "watchlist": 44,
+    "result": "pass"
+  },
+  "browser": {
+    "browser": "Chromium headless",
+    "viewport": [
+      1600,
+      1000
+    ],
+    "checks": [
+      "Dial local flasher_args + 3 segments load-and-run generates real 240x240 frame",
+      "Dial encoder +1 produces fresh guest DIAL_ENCODER -4",
+      "Dial flat touch produces fresh down/up IRQ output",
+      "U027 panel press/release produces fresh GPIO11 low/high with GPIO10 unchanged",
+      "U027 detach/reconnect releases/restores guest GPIO11 drive"
+    ],
+    "cleanup": "task-owned browser closed; local user preview retained",
+    "initialHarnessFailures": [
+      "Reload verification observed previous run state before asynchronous loading; fixed by fresh-page setup and awaiting the selected configured product, then polling fresh guest output.",
+      "At 1280x720, raw mouse coordinates targeted a button scrolled behind the sticky header; corrected to center the control visibly and use a 1600x1000 viewport. No production change was required."
+    ]
+  },
+  "limitations": [
+    "Internal source-built test images, not official Dial firmware validation. No physical hardware test.",
+    "U027 C6 CPU measurement retains unexplained +1.875% candidate median; see ../m5stack-unit-button-u027/runtime/cpu-cold.json. Accepted as a bounded measured cost of this integration, not a no-regression claim.",
+    "Original model photo/CAD evidence remains separately versioned; integration screenshots are UI evidence, not new 1:1 photo verification."
+  ],
+  "artifacts": {
+    "dial-browser.png": "06f44b296ce6980addb8e1a1d807570db7cd5cd1c01f1bba2b4b7c45e6d4daf3",
+    "unit-browser.png": "c7c2213e91197d84867b760215e19b9e53453335468237d70b8a2d3eed1ec646"
+  }
+}

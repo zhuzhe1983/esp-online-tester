@@ -40,3 +40,5 @@ await espTester.input({type:'encoder', id:'encoder', steps:1});
 本板新增实现不修改 SoC bus、`device_set!`、中断路由或通用 per-tick 路径；没有新增 CPU 性能实验。未做物理硬件测试。
 
 浏览器的 UI、悬停、材质和 mini RPC 证据见 [browser.json](evidence/dial/browser.json)。最终检查见 [checks.json](evidence/dial/checks.json)：双 Clippy、1361 个 Rust 测试、58 个 Node 测试、目录 schema、五个既有 WASM 场景及本板真实 fixture 均通过。
+
+合并 U027 后的 1,363 项 Rust、66 项平台测试、两个真实客体 fixture 与浏览器输入复核见 [整合收据](evidence/dial-unit-integration/checks.json)。PCB 占位穿壳另见 [两版模型修复](dial-pcb-model.md)。
