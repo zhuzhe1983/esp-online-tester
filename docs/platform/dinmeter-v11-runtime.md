@@ -1,0 +1,7 @@
+# DinMeter v1.1 K134-V11 source checkpoint
+
+This identity is distinct from the original K134 runtime. The official v1.1 page and schematic identify Stamp-S3A and ST7789P3, with LCD CS7/SCK6/DC4/MOSI5/RESET8/BL9, encoder A41/B40 and press42. RGB on Stamp-S3A requires GPIO38 HIGH; power/RTC/RF, RGB and analog brightness require explicit support, not inference from original K134.
+
+The P3 panel cannot inherit the original V2 identification bytes. The Sitronix ST7789P3 Version 0.1, March 2022, PDF supplied by Waveshare documents RDDID / RDID1/2/3 defaults `81 81 B3` on page 126; original V2 uses `85 85 52`. Current fixed M5GFX `65c816a38386062d2c3dc47d41237a9083acbc75` explicitly accepts first byte 0x81 or 0x85 and defines a 135×240 glass at GRAM offset (52,40). That source comparison does not prove the older distributed factory binary uses the identical library revision.
+
+The official catalog's shared v0.1 factory image remains unchanged: 2,090,144 bytes, SHA-256 `b0d8d63fa9a8e30f712de37cf58c340328690f61c90f94ce7a32da3050589d40`. Fetch receipts are in [sources.json](evidence/dinmeter-v11/sources.json). Runtime is still unavailable at this source-only checkpoint; the next slice must select P3 identity, verify real official output and encoder interaction, and audit the exact v1.1 knob/CAD/model before enabling it. Raw firmware and full source/PDF downloads remain ignored local inputs.
