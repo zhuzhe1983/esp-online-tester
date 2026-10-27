@@ -3,6 +3,52 @@
 独立的 `atoms3r` 板级模型支持 **2026-05-14 起的 ST7735 批次**，目录状态为 `partial`。
 它执行 ESP32-S3 客体指令，通过真实 SPI/I2C/GPIO 通道产生画面、背光和输入结果。
 没有遍历官方固件库；目录固件可尝试运行，不代表整机兼容认证。
+2026-10-27 单独复现了默认官方 v0.3 的启动失败，见下文；内部协议测试通过不代表这份官方镜像通过。
+
+## 官方 v0.3 黑屏诊断
+
+默认 `m5stack-c126-factory-reference` 的完整镜像 SHA-256 为
+`d3242a0ba536024c735fe9ca4b1670e629f0f97435a06da8f2979c06ebbfe805`。
+在 `77e70b32` 上重新构建原生和 WASM 后，原生 JIT、原生解释器、WASM JIT 均在 CPU1
+启动日志期间发生 `LoadProhibited`：`PC=0x40048839`、`EXCVADDR=0x60ffe01c`、串口号255。
+原生板级报告的 ST7735 写像素数和帧数均为0；WASM 的初始黑屏快照不代表固件输出了画面。
+这解释了这份镜像的当前黑屏，不能据此判断屏幕、背光或 IMU 初始化本身是否兼容。
+
+客体在 `0x40375817` 执行 `movi a10,255`，随后调用 ROM 的控制台切换函数。
+CPU1 日志调用前的断点确认 `ets_printf_uart=255`，`g_uart_print=g_usb_print=1`。
+ROM 对编号3/4分别走 USB OTG/Serial-JTAG，255则进入 UART 地址计算，最终读取上述地址。
+[ESP-IDF v5.1.6 启动代码](https://github.com/espressif/esp-idf/blob/v5.1.6/components/esp_system/port/cpu_start.c)
+使用 `CONFIG_ESP_CONSOLE_UART_NUM`；
+[厂家公开 sdkconfig](https://github.com/m5stack/M5AtomS3-UserDemo/blob/36d5ca8981a9fd49ac59a5c77a1dc346149381eb/platforms/atoms3r/sdkconfig)
+选择 USB Serial/JTAG、该数值为-1且启用双核。公开源码是佐证，实际镜像中的255已独立确认。
+
+Espressif 的[修复提交 6768805d](https://github.com/espressif/esp-idf/commit/6768805d20cbd026b7fccf9d7adb49991d6b66a2)
+将同一 CPU1 调用改为 `CONFIG_ESP_CONSOLE_ROM_SERIAL_PORT_NUM`，为 USB Serial/JTAG 选择编号4。
+关联[问题12958](https://github.com/espressif/esp-idf/issues/12958)记录了 C3 实机访问
+`0x60ffe01c` 的故障，但 **C3 记录不能代替 S3 实机验证**。
+[S3 TRM v1.8](https://documentation.espressif.com/esp32-s3_technical_reference_manual_en.pdf)
+§4.3.5（印刷页408）列出的外设范围是 `0x60000000..0x600d0fff`，未定义该非法地址的实际响应。
+因此当前结论是“官方镜像在当前模型确定失败，并存在对应上游 SDK 缺陷证据”，不是“官方固件在实机必然失败”。
+
+未修改官方镜像、ROM、eFuse、外设地址范围或异常处理；仍保留默认官方固件与 trial 入口。
+该诊断查过[EX090](../experiments.md#ex090)的 MMIO 策略边界，没有引入新的执行或性能机制。
+后续需要同 SHA 镜像在 AtomS3R 的启动记录，以及 ESP32-S3/PICO-1 对 `0x60ffe01c`
+单次只读访问的返回值或异常记录（记录芯片 revision、是否连接 USB、原生 SDK 版本）。
+已有文件需先备份，诊断程序应独立构建；本轮未连接、刷写或操作真实硬件。
+
+可复现脚本仅把远程镜像保留在内存，调用原生 stdin 和实际 WASM 导出函数；原始日志写入忽略的 `output/`：
+
+```sh
+cargo build --release -p esp32sim --bin esp32sim
+tools/wasm-build.sh
+node tools/probe-atoms3r-factory.mjs \
+  --url https://m5burner-cdn.m5stack.com/firmware/dc58e57a732c92030d3502db407ddb81.bin \
+  --sha256 d3242a0ba536024c735fe9ca4b1670e629f0f97435a06da8f2979c06ebbfe805
+```
+
+[复现结果](evidence/atoms3r-factory-boot/reproduction.json)、
+[断点、ROM 地址计算与上游精确替换](evidence/atoms3r-factory-boot/diagnosis.json)、
+[实际 GET 来源、时间和 hash](evidence/atoms3r-factory-boot/sources.json)保留了结论边界。
 
 ## 依据与范围
 
