@@ -21,6 +21,18 @@ fn camera_message(rgb: &[u8]) -> Vec<u8> {
     message
 }
 
+// Only the S3 currently has a source-backed accessory input endpoint. Keep
+// decoding out of the monomorphized poll/push bodies: idle C3/C6 machines must
+// not gain copies of this product-only JSON path (EX212/EX220 layout review).
+#[cold]
+#[inline(never)]
+fn accessory_button_input(board: &mut dyn crate::BoardModel, cycle: crate::board::VirtualCycle, message: &crate::json::Json) -> Option<(u8, Option<bool>)> {
+    let field=|key|message.get(key).and_then(crate::json::Json::scalar_text);
+    let (Some(model),Some(port),Some(connected),Some(pressed))=(field("model"),field("port"),field("connected"),field("pressed")) else {return None};
+    if !matches!(connected.as_str(),"0"|"1") || !matches!(pressed.as_str(),"0"|"1") {return None;}
+    board.accessory_button_at(cycle,&model,&port,connected=="1",pressed=="1")
+}
+
 impl<S: Soc> Machine<S> {
     // ------------------------------------------------------------------ web UI
     /// Send display / audio / ring updates to the browser (called ~50x per emulated second).
@@ -133,11 +145,9 @@ impl<S: Soc> Machine<S> {
             match t.as_str() {
                 "btn" => { let pin: u8 = field("pin").and_then(|x| x.parse().ok()).unwrap_or(0); let v = field("v").unwrap_or_default() == "1";
                            self.bus.gpio_set_input(pin, !v); *self.bus.irq_dirty() = true; }
-                "accessory-button" => {
-                    let (Some(model),Some(port),Some(connected),Some(pressed))=(field("model"),field("port"),field("connected"),field("pressed")) else { continue };
-                    if !matches!(connected.as_str(),"0"|"1") || !matches!(pressed.as_str(),"0"|"1") { continue; }
+                "accessory-button" if S::NAME=="esp32s3" => {
                     let cycle=self.bus.cycles();
-                    if let Some((pin,drive))=self.bus.board().accessory_button_at(cycle,&model,&port,connected=="1",pressed=="1") {
+                    if let Some((pin,drive))=accessory_button_input(self.bus.board(),cycle,&message) {
                         if let Some(level)=drive {self.bus.gpio_set_input(pin,level);} else {self.bus.gpio_release_input(pin);}
                         *self.bus.irq_dirty()=true;
                     }

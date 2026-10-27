@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-10-27T07:46:58Z",
+  "parent": "ee3d47d087276db896839a751e47f59f536b8d8f",
+  "change": "S3-only accessory host-message dispatch and an out-of-line cold parser; no change to physical wiring, board state, GPIO timing or PMIC behavior.",
+  "sourceSha256": {
+    "esp-soc/src/machine/web.rs": "763967e1c4a922a5c5e1a71dcd426d107215bf3e004a1f789f651b46f5e0c4f6"
+  },
+  "checks": [
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "passedTests": 1361,
+      "failedTests": 0,
+      "ignoredTests": 0,
+      "goldensChanged": false
+    },
+    {
+      "command": "cargo build --release --bins",
+      "result": "pass"
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "pass",
+      "wasmSha256": "4fac43e556b610c89c3ed527955861fa127f531f4d91ad681cfcc8602652bb27"
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "result": "pass",
+      "nodeTestUnits": 60
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "result": "pass",
+      "manifests": 11
+    },
+    {
+      "command": "node tools/probe-unit-button.mjs --build output/unit-button-build",
+      "result": "pass",
+      "fixtureChecks": 9,
+      "receipt": "fixture-cold.json"
+    },
+    {
+      "command": "Native C6 layout probe and normalized release disassembly comparison",
+      "result": "pass",
+      "receipts": [
+        "layout.json",
+        "codegen.json"
+      ],
+      "note": "All 54 selected C6-specific function shapes match base. Broader hot selector matches 130 shared/multi-chip functions in the C6 executable. Public layout probe has 78 equal output lines. These do not prove CPU parity."
+    },
+    {
+      "command": "One warmup pair plus seven C6 CPU pairs, alternating order, 30 guest seconds",
+      "result": "same work/output; unexplained +1.875% median CPU",
+      "receipt": "cpu-cold.json"
+    }
+  ],
+  "retainedEvidence": "ee3 model/browser/catalog evidence remains applicable: no UI, CAD, catalog or protocol behavior changed. Its old WASM/source hashes are preserved; fixture-cold.json identifies the new WASM and source hashes.",
+  "limitations": [
+    "No claim of zero unused CPU cost or fixed performance regression.",
+    "Final performance review is C6 only after the narrow cold-path change; previous four-workload samples remain historical ee3 measurements, not new-code results.",
+    "No speculative removal of hardware behavior to improve timing."
+  ]
+}

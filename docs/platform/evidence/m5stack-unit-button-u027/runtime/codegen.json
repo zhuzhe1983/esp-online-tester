@@ -1,0 +1,735 @@
+{
+  "comparatorSha256": "13547167454288caa39fd8590f8ab0acf5eb4e59162c8d260902041786b12a2e",
+  "normalization": "Compare every function present in two disassemblies after normalising addresses.\n\nUsage: asmcmp.py MAIN.dis BRANCH.dis [skip-regex] [function names to print diffs for...]\n\nNormalised away: instruction addresses, branch/call target addresses and +offsets, `nop`\nalignment padding, `udf` traps after no-return calls, and the page offsets that pair with an\n`adrp` (constant-pool / data addresses). Call targets may carry different linker-chosen names\n(identical-code folding picks one alias, LTO adds `(.N)` suffixes); two call lines match when\nthe targets' bodies have the same shape (their own call names replaced). Everything else\n(opcodes, registers, stack and field offsets, immediates, instruction order) must match.\n",
+  "selected": [
+    {
+      "function": "<esp32c6::board::WaveshareC6Lcd147 as esp_soc::board::BoardModel>::next_deadline",
+      "baseInstructions": 2,
+      "originalInstructions": 2,
+      "coldInstructions": 2,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10004fdd0",
+        "original": "0x100050090",
+        "cold": "0x10004fdd0"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus as emu_core::bus::Bus>::fetch",
+      "baseInstructions": 106,
+      "originalInstructions": 106,
+      "coldInstructions": 106,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10005450c",
+        "original": "0x1000547cc",
+        "cold": "0x10005450c"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus as emu_core::bus::Bus>::read16",
+      "baseInstructions": 96,
+      "originalInstructions": 96,
+      "coldInstructions": 96,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100054804",
+        "original": "0x100054ac4",
+        "cold": "0x100054804"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus as emu_core::bus::Bus>::read32",
+      "baseInstructions": 96,
+      "originalInstructions": 96,
+      "coldInstructions": 96,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10003c3c4",
+        "original": "0x10003c4c4",
+        "cold": "0x10003c3c4"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus as emu_core::bus::Bus>::read8",
+      "baseInstructions": 84,
+      "originalInstructions": 84,
+      "coldInstructions": 84,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x1000546b4",
+        "original": "0x100054974",
+        "cold": "0x1000546b4"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus as emu_core::bus::Bus>::tick",
+      "baseInstructions": 2152,
+      "originalInstructions": 2152,
+      "coldInstructions": 2152,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100050b00",
+        "original": "0x100050dc0",
+        "cold": "0x100050b00"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus as emu_core::bus::Bus>::write16",
+      "baseInstructions": 49,
+      "originalInstructions": 49,
+      "coldInstructions": 49,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100054a40",
+        "original": "0x100054d00",
+        "cold": "0x100054a40"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus as emu_core::bus::Bus>::write32",
+      "baseInstructions": 48,
+      "originalInstructions": 48,
+      "coldInstructions": 48,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100054b04",
+        "original": "0x100054dc4",
+        "cold": "0x100054b04"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus as emu_core::bus::Bus>::write8",
+      "baseInstructions": 47,
+      "originalInstructions": 47,
+      "coldInstructions": 47,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100054984",
+        "original": "0x100054c44",
+        "cold": "0x100054984"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus as esp_soc::soc::SocBus>::next_deadline",
+      "baseInstructions": 304,
+      "originalInstructions": 304,
+      "coldInstructions": 304,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100058934",
+        "original": "0x100058bf4",
+        "cold": "0x100058934"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus as esp_soc::soc::SocBus>::refresh_irq",
+      "baseInstructions": 445,
+      "originalInstructions": 445,
+      "coldInstructions": 445,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100058240",
+        "original": "0x100058500",
+        "cold": "0x100058240"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus>::parlio_dma_write",
+      "baseInstructions": 966,
+      "originalInstructions": 966,
+      "coldInstructions": 966,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10023a840",
+        "original": "0x10023c380",
+        "cold": "0x10023adc0"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus>::pending_work",
+      "baseInstructions": 731,
+      "originalInstructions": 731,
+      "coldInstructions": 731,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x1000555c0",
+        "original": "0x100055880",
+        "cold": "0x1000555c0"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus>::periph_read",
+      "baseInstructions": 233,
+      "originalInstructions": 233,
+      "coldInstructions": 233,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x1000444c0",
+        "original": "0x1000445c0",
+        "cold": "0x1000444c0"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus>::periph_write",
+      "baseInstructions": 1939,
+      "originalInstructions": 1939,
+      "coldInstructions": 1939,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10003c580",
+        "original": "0x10003c680",
+        "cold": "0x10003c580"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus>::sdio_slc_write",
+      "baseInstructions": 97,
+      "originalInstructions": 97,
+      "coldInstructions": 97,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10023b75c",
+        "original": "0x10023d29c",
+        "cold": "0x10023bcdc"
+      }
+    },
+    {
+      "function": "<esp32c6::bus::SocBus>::sha_dma_write",
+      "baseInstructions": 160,
+      "originalInstructions": 160,
+      "coldInstructions": 160,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10023a5a8",
+        "original": "0x10023c0e8",
+        "cold": "0x10023ab28"
+      }
+    },
+    {
+      "function": "<esp32c6::ecc::Ecc as esp_periph::device::Device>::write",
+      "baseInstructions": 1372,
+      "originalInstructions": 1372,
+      "coldInstructions": 1372,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x1000408dc",
+        "original": "0x1000409dc",
+        "cold": "0x1000408dc"
+      }
+    },
+    {
+      "function": "<esp32c6::parlio::Parlio as esp_periph::device::Device>::read",
+      "baseInstructions": 93,
+      "originalInstructions": 93,
+      "coldInstructions": 93,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x1000439e0",
+        "original": "0x100043ae0",
+        "cold": "0x1000439e0"
+      }
+    },
+    {
+      "function": "<esp32c6::parlio::Parlio as esp_periph::device::Device>::write",
+      "baseInstructions": 98,
+      "originalInstructions": 98,
+      "coldInstructions": 98,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10003fcf4",
+        "original": "0x10003fdf4",
+        "cold": "0x10003fcf4"
+      }
+    },
+    {
+      "function": "<esp32c6::periph::AnaMst as esp_periph::device::Device>::read",
+      "baseInstructions": 106,
+      "originalInstructions": 106,
+      "coldInstructions": 106,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x1000440e0",
+        "original": "0x1000441e0",
+        "cold": "0x1000440e0"
+      }
+    },
+    {
+      "function": "<esp32c6::periph::AnaMst as esp_periph::device::Device>::write",
+      "baseInstructions": 118,
+      "originalInstructions": 118,
+      "coldInstructions": 118,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100042054",
+        "original": "0x100042154",
+        "cold": "0x100042054"
+      }
+    },
+    {
+      "function": "<esp32c6::periph::GdmaC6 as esp_periph::device::Device>::read",
+      "baseInstructions": 61,
+      "originalInstructions": 61,
+      "coldInstructions": 61,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100043d04",
+        "original": "0x100043e04",
+        "cold": "0x100043d04"
+      }
+    },
+    {
+      "function": "<esp32c6::periph::GdmaC6 as esp_periph::device::Device>::write",
+      "baseInstructions": 61,
+      "originalInstructions": 61,
+      "coldInstructions": 61,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x1000407e8",
+        "original": "0x1000408e8",
+        "cold": "0x1000407e8"
+      }
+    },
+    {
+      "function": "<esp32c6::periph::Intc>::plic_read",
+      "baseInstructions": 74,
+      "originalInstructions": 74,
+      "coldInstructions": 74,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10003e3fc",
+        "original": "0x10003e4fc",
+        "cold": "0x10003e3fc"
+      }
+    },
+    {
+      "function": "<esp32c6::periph::LpSys as esp_periph::device::Device>::read",
+      "baseInstructions": 68,
+      "originalInstructions": 68,
+      "coldInstructions": 68,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100044288",
+        "original": "0x100044388",
+        "cold": "0x100044288"
+      }
+    },
+    {
+      "function": "<esp32c6::periph::LpSys as esp_periph::device::Device>::write",
+      "baseInstructions": 65,
+      "originalInstructions": 65,
+      "coldInstructions": 65,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10004222c",
+        "original": "0x10004232c",
+        "cold": "0x10004222c"
+      }
+    },
+    {
+      "function": "<esp32c6::periph::Peripherals as esp_periph::mmio::Dispatch>::refresh_optional",
+      "baseInstructions": 378,
+      "originalInstructions": 378,
+      "coldInstructions": 378,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100040200",
+        "original": "0x100040300",
+        "cold": "0x100040200"
+      }
+    },
+    {
+      "function": "<esp32c6::periph::Peripherals as esp_periph::mmio::Dispatch>::tick_optional",
+      "baseInstructions": 326,
+      "originalInstructions": 326,
+      "coldInstructions": 326,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10005612c",
+        "original": "0x1000563ec",
+        "cold": "0x10005612c"
+      }
+    },
+    {
+      "function": "<esp32c6::periph::Peripherals>::read32",
+      "baseInstructions": 730,
+      "originalInstructions": 730,
+      "coldInstructions": 730,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10003e540",
+        "original": "0x10003e640",
+        "cold": "0x10003e540"
+      }
+    },
+    {
+      "function": "<esp32c6::sdio::SdioSlave as esp_periph::device::Device>::read",
+      "baseInstructions": 108,
+      "originalInstructions": 108,
+      "coldInstructions": 108,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100043b54",
+        "original": "0x100043c54",
+        "cold": "0x100043b54"
+      }
+    },
+    {
+      "function": "<esp32c6::sdio::SdioSlave as esp_periph::device::Device>::write",
+      "baseInstructions": 215,
+      "originalInstructions": 215,
+      "coldInstructions": 215,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10003fe7c",
+        "original": "0x10003ff7c",
+        "cold": "0x10003fe7c"
+      }
+    },
+    {
+      "function": "<esp32c6::sdio::SdioSlave>::host_read",
+      "baseInstructions": 153,
+      "originalInstructions": 153,
+      "coldInstructions": 153,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x1000570ac",
+        "original": "0x10005736c",
+        "cold": "0x1000570ac"
+      }
+    },
+    {
+      "function": "<esp32c6::sdio::SdioSlave>::io_write",
+      "baseInstructions": 190,
+      "originalInstructions": 190,
+      "coldInstructions": 190,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100056b6c",
+        "original": "0x100056e2c",
+        "cold": "0x100056b6c"
+      }
+    },
+    {
+      "function": "<esp32c6::wifi::ModemBb as esp_periph::device::Device>::read",
+      "baseInstructions": 74,
+      "originalInstructions": 74,
+      "coldInstructions": 74,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100043df8",
+        "original": "0x100043ef8",
+        "cold": "0x100043df8"
+      }
+    },
+    {
+      "function": "<esp32c6::wifi::WifiMac as esp_periph::device::Device>::read",
+      "baseInstructions": 104,
+      "originalInstructions": 104,
+      "coldInstructions": 104,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100043f40",
+        "original": "0x100044040",
+        "cold": "0x100043f40"
+      }
+    },
+    {
+      "function": "<esp32c6::wifi::WifiMac as esp_periph::device::Device>::write",
+      "baseInstructions": 130,
+      "originalInstructions": 130,
+      "coldInstructions": 130,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100041e4c",
+        "original": "0x100041f4c",
+        "cold": "0x100041e4c"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::Machine<esp32c6::soc::C6>>::after_round",
+      "baseInstructions": 100,
+      "originalInstructions": 100,
+      "coldInstructions": 100,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10017a8a4",
+        "original": "0x10017c024",
+        "cold": "0x10017ade4"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::Machine<esp32c6::soc::C6>>::refresh_modeled_core_states",
+      "baseInstructions": 152,
+      "originalInstructions": 152,
+      "coldInstructions": 152,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100176a68",
+        "original": "0x1001781d8",
+        "cold": "0x100176fa8"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::Machine<esp32c6::soc::C6>>::run",
+      "baseInstructions": 4356,
+      "originalInstructions": 4356,
+      "coldInstructions": 4356,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10016f600",
+        "original": "0x100170940",
+        "cold": "0x10016fb40"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::Machine<esp32c6::soc::C6>>::run_unmodeled::<false>",
+      "baseInstructions": 1065,
+      "originalInstructions": 1065,
+      "coldInstructions": 1065,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100179800",
+        "original": "0x10017af80",
+        "cold": "0x100179d40"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::Machine<esp32c6::soc::C6>>::run_until_cycle",
+      "baseInstructions": 974,
+      "originalInstructions": 974,
+      "coldInstructions": 974,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10018a8f8",
+        "original": "0x10018c478",
+        "cold": "0x10018ae38"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::Machine<esp32c6::soc::C6>>::step_core",
+      "baseInstructions": 465,
+      "originalInstructions": 465,
+      "coldInstructions": 465,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x1001790a4",
+        "original": "0x10017a824",
+        "cold": "0x1001795e4"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::Machine<esp32c6::soc::C6>>::web_poll_input",
+      "baseInstructions": 1730,
+      "originalInstructions": 1998,
+      "coldInstructions": 1730,
+      "originalMatchesBase": false,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100174d80",
+        "original": "0x1001760c0",
+        "cold": "0x1001752c0"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::Machine<esp32c6::soc::C6>>::web_push_due",
+      "baseInstructions": 2832,
+      "originalInstructions": 3092,
+      "coldInstructions": 2832,
+      "originalMatchesBase": false,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x10023c180",
+        "original": "0x10023dcc0",
+        "cold": "0x10023c700"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::modeled::RecordingBus<esp32c6::bus::SocBus> as emu_core::bus::Bus>::read16",
+      "baseInstructions": 37,
+      "originalInstructions": 37,
+      "coldInstructions": 37,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100177b84",
+        "original": "0x1001792f4",
+        "cold": "0x1001780c4"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::modeled::RecordingBus<esp32c6::bus::SocBus> as emu_core::bus::Bus>::read32",
+      "baseInstructions": 37,
+      "originalInstructions": 37,
+      "coldInstructions": 37,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100177c18",
+        "original": "0x100179388",
+        "cold": "0x100178158"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::modeled::RecordingBus<esp32c6::bus::SocBus> as emu_core::bus::Bus>::read8",
+      "baseInstructions": 39,
+      "originalInstructions": 39,
+      "coldInstructions": 39,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100177ae8",
+        "original": "0x100179258",
+        "cold": "0x100178028"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::modeled::RecordingBus<esp32c6::bus::SocBus> as emu_core::bus::Bus>::write16",
+      "baseInstructions": 87,
+      "originalInstructions": 87,
+      "coldInstructions": 87,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100177de8",
+        "original": "0x100179558",
+        "cold": "0x100178328"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::modeled::RecordingBus<esp32c6::bus::SocBus> as emu_core::bus::Bus>::write32",
+      "baseInstructions": 87,
+      "originalInstructions": 87,
+      "coldInstructions": 87,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100177f44",
+        "original": "0x1001796b4",
+        "cold": "0x100178484"
+      }
+    },
+    {
+      "function": "<esp_soc::machine::modeled::RecordingBus<esp32c6::bus::SocBus> as emu_core::bus::Bus>::write8",
+      "baseInstructions": 79,
+      "originalInstructions": 79,
+      "coldInstructions": 79,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100177cac",
+        "original": "0x10017941c",
+        "cold": "0x1001781ec"
+      }
+    },
+    {
+      "function": "core::slice::sort::stable::drift::sort::<(u64, esp_soc::machine::ScriptAction), <[(u64, esp_soc::machine::ScriptAction)]>::sort_by_key<u64, <esp_soc::machine::Machine<esp32c6::soc::C6>>::web_poll_input::{closure#3}>::{closure#0}>",
+      "baseInstructions": 332,
+      "originalInstructions": 332,
+      "coldInstructions": 332,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x1000449ac",
+        "original": "0x100044aac",
+        "cold": "0x1000449ac"
+      }
+    },
+    {
+      "function": "core::slice::sort::stable::driftsort_main::<(u64, esp_soc::machine::ScriptAction), <[(u64, esp_soc::machine::ScriptAction)]>::sort_by_key<u64, <esp_soc::machine::Machine<esp32c6::soc::C6>>::web_poll_input::{closure#3}>::{closure#0}, alloc::vec::Vec<(u64, esp_soc::machine::ScriptAction)>>",
+      "baseInstructions": 75,
+      "originalInstructions": 75,
+      "coldInstructions": 75,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100044880",
+        "original": "0x100044980",
+        "cold": "0x100044880"
+      }
+    },
+    {
+      "function": "core::slice::sort::stable::quicksort::quicksort::<(u64, esp_soc::machine::ScriptAction), <[(u64, esp_soc::machine::ScriptAction)]>::sort_by_key<u64, <esp_soc::machine::Machine<esp32c6::soc::C6>>::web_poll_input::{closure#3}>::{closure#0}>",
+      "baseInstructions": 565,
+      "originalInstructions": 565,
+      "coldInstructions": 565,
+      "originalMatchesBase": true,
+      "coldMatchesBase": true,
+      "entryAddresses": {
+        "base": "0x100045028",
+        "original": "0x100045128",
+        "cold": "0x100045028"
+      }
+    }
+  ],
+  "originalDifferences": [
+    "<esp_soc::machine::Machine<esp32c6::soc::C6>>::web_poll_input",
+    "<esp_soc::machine::Machine<esp32c6::soc::C6>>::web_push_due"
+  ],
+  "coldDifferences": [],
+  "broadHotSelector": {
+    "command": "python docs/evidence/classic-core/hot.py BASE.dis CANDIDATE.dis",
+    "note": "130 selected shared/S3/C3/C6 execution and bus functions present in the C6 executable; this is not 130 C6-only functions.",
+    "original": {
+      "identical": 130,
+      "different": 0,
+      "missing": 0
+    },
+    "cold": {
+      "identical": 130,
+      "different": 0,
+      "missing": 0
+    }
+  },
+  "scope": "54 selected C6-specific functions, including poll/push. Absolute function placement is retained separately; normalized equality does not remove possible code-placement effects.",
+  "build": "cargo build --release --bins, rustc 1.99.1, fat LTO, aarch64-apple-darwin",
+  "base": "7d03d2409912516030412d715454da8dd8e4bc93",
+  "original": "ee3d47d087276db896839a751e47f59f536b8d8f",
+  "candidateSourceSha256": "763967e1c4a922a5c5e1a71dcd426d107215bf3e004a1f789f651b46f5e0c4f6",
+  "candidateBinarySha256": "9c77ae98bbb03d384c80aaad34d38144848a4bfa5a5e7c7cdabf88da411dc45b",
+  "originalBinarySha256": "1645e6f9b7da36beae1e831e8c8763a3d97455d83155b924f48c2c4951509a54",
+  "baseBinarySha256": "9f9872f70ef9842d517cce760fcc969b0ea5c3086d44974357363117c7540265"
+}
