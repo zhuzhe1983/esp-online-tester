@@ -1,6 +1,7 @@
-//! S31 memory windows and UART0; every other MMIO access remains an explicit fault.
+//! S31 memory, UART0, reset causes and CLIC/matrix windows; other MMIO faults explicitly.
 use emu_core::{Bus, Fault};
 use esp_periph::uart::{Uart, UartLayout};
+use crate::interrupts::{Interrupts, MATRIX_BASE, CLIC_BASE, RESET_CAUSE0, RESET_CAUSE1};
 
 // ESP-IDF v6.1 (fff9895c82d744c7237be8847347bdd1b07c6643),
 // components/soc/esp32s31/include/soc/soc.h and register/soc/reg_base.h.
@@ -17,6 +18,7 @@ const UART_SIZE: usize = 0xa0;
 pub struct AccessFault { pub pc: u32, pub address: u32, pub bytes: usize, pub write: bool, pub fetch: bool, pub reason: Fault }
 pub struct S31Bus {
     sram: Vec<u8>, lp: Vec<u8>, rom: Vec<u8>, pub uart0: Uart,
+    pub interrupts: Interrupts,
     pc: u32, pub first_fault: Option<AccessFault>,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
@@ -31,7 +33,7 @@ impl S31Bus {
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         let layout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff };
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE],
-            uart0: Uart::new(layout), pc: 0, first_fault: None }
+            uart0: Uart::new(layout), interrupts: Interrupts::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -58,9 +60,33 @@ impl S31Bus {
         if self.first_fault.is_none() { self.first_fault = Some(AccessFault { pc: self.pc, address, bytes, write, fetch, reason }); }
         Err(reason)
     }
+    pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> { self.interrupts.refresh(self.uart0.irq(), threshold) }
+    pub fn interrupt_taken(&mut self, line: u32) { if line < 32 { self.interrupts.clic[0].taken(line as usize + 16); } }
+    fn clic_offset(address: u32, bytes: usize) -> Option<(usize, u32)> {
+        let off = address.checked_sub(CLIC_BASE)?;
+        let core = (off >> 16) as usize;
+        let local = off & 0xffff;
+        if core < 2 && local.checked_add(bytes as u32).is_some_and(|end| end <= 0x2000) { Some((core, local)) } else { None }
+    }
+    fn clic_register(off: u32) -> bool { matches!(off & !3, 0 | 4 | 0x1000..=0x10bc) }
     fn read(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
         if let Some(data) = self.memory(address, bytes) {
             let mut value = [0; 4]; value[..bytes].copy_from_slice(data); return Ok(u32::from_le_bytes(value));
+        }
+        if matches!(address & !3, RESET_CAUSE0 | RESET_CAUSE1) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(self.interrupts.reset_read(((address - RESET_CAUSE0) / 4) as usize));
+        }
+        if let Some(off) = offset(address, MATRIX_BASE, bytes, 0x1000) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            if let Some(value) = self.interrupts.matrix_read(off >> 11, (off & 0x7ff) as u32, self.uart0.irq()) { return Ok(value); }
+            return self.fault(address, bytes, false, false, Fault::Unmapped);
+        }
+        if let Some((core, off)) = Self::clic_offset(address, bytes) {
+            if !address.is_multiple_of(bytes as u32) { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            if !Self::clic_register(off) { return self.fault(address, bytes, false, false, Fault::Unmapped); }
+            let word = self.interrupts.clic[core].read(off & !3);
+            return Ok((word >> ((off & 3) * 8)) & ((1u64 << (bytes * 8)) - 1) as u32);
         }
         if let Some(o) = offset(address, UART0_BASE, bytes, UART_SIZE) {
             if bytes == 4 && o.is_multiple_of(4) { return Ok(self.uart0.read(o as u32)); }
@@ -70,6 +96,21 @@ impl S31Bus {
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         if let Some(dest) = self.memory_mut(address, bytes, false) { dest.copy_from_slice(&value.to_le_bytes()[..bytes]); return Ok(()); }
+        if matches!(address & !3, RESET_CAUSE0 | RESET_CAUSE1) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            self.interrupts.reset_write(((address - RESET_CAUSE0) / 4) as usize, value); return Ok(());
+        }
+        if let Some(off) = offset(address, MATRIX_BASE, bytes, 0x1000) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if self.interrupts.matrix_write(off >> 11, (off & 0x7ff) as u32, value) { return Ok(()); }
+            return self.fault(address, bytes, true, false, Fault::Unmapped);
+        }
+        if let Some((core, off)) = Self::clic_offset(address, bytes) {
+            if !address.is_multiple_of(bytes as u32) { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if !Self::clic_register(off) { return self.fault(address, bytes, true, false, Fault::Unmapped); }
+            let lane = off & 3;
+            self.interrupts.clic[core].write(off & !3, value << (lane * 8), ((1u32 << bytes) - 1) << lane); return Ok(());
+        }
         if let Some(o) = offset(address, UART0_BASE, bytes, UART_SIZE) {
             if bytes == 4 && o.is_multiple_of(4) { self.uart0.write(o as u32, value); return Ok(()); }
             return self.fault(address, bytes, true, false, Fault::Misaligned);
@@ -122,5 +163,28 @@ mod tests {
         b.write32(UART0_BASE + 0x20, 1 << 22).unwrap();
         assert_eq!(b.read32(UART0_BASE + 0x1c).unwrap() & 0xff, 0);
         assert_eq!(b.fetch(UART0_BASE), Err(Fault::Unmapped));
+    }
+    #[test]
+    fn clic_byte_lanes_and_core_windows_are_independent() {
+        let mut b = S31Bus::new(); let ctrl = CLIC_BASE + 0x1044;
+        b.write8(ctrl + 1, 1).unwrap(); b.write8(ctrl + 2, 1).unwrap(); b.write8(ctrl + 3, 0x3f).unwrap();
+        assert_eq!(b.read32(ctrl), Ok(0x3fc1_0100));
+        assert_eq!(b.read8(ctrl + 1), Ok(1)); assert_eq!(b.read16(ctrl + 2), Ok(0x3fc1));
+        assert_eq!(b.read32(ctrl + 0x1_0000), Ok(0x1fc0_0000));
+        assert_eq!(b.write16(ctrl + 1, 0), Err(Fault::Misaligned));
+        assert_eq!(b.read32(CLIC_BASE + 8), Err(Fault::Unmapped)); // S31 threshold lives in CSR 0x347.
+        assert_eq!(b.read32(CLIC_BASE + 0x10c0), Err(Fault::Unmapped));
+        assert_eq!(b.read32(CLIC_BASE + 0x2_0000), Err(Fault::Unmapped));
+    }
+    #[test]
+    fn matrix_source_status_and_reset_cause_use_documented_addresses() {
+        let mut b = S31Bus::new();
+        b.write32(UART0_BASE + 0x24, 1).unwrap(); b.write32(UART0_BASE + 0xc, 1).unwrap(); b.uart0.host_input(b"A");
+        assert_eq!(b.read32(MATRIX_BASE + 0x2a8), Ok(1 << 9));
+        b.write32(MATRIX_BASE + 0x24, 0x211).unwrap();
+        assert_eq!(b.read32(MATRIX_BASE + 0x24), Ok(0x211)); assert_eq!(b.read32(MATRIX_BASE + 0x824), Ok(0));
+        assert_eq!(b.read8(MATRIX_BASE), Err(Fault::Misaligned)); assert_eq!(b.read32(MATRIX_BASE + 0x2a4), Err(Fault::Unmapped));
+        assert_eq!(b.read32(RESET_CAUSE0), Ok(2)); b.write32(RESET_CAUSE0, 1 << 30).unwrap();
+        assert_eq!(b.read32(RESET_CAUSE0), Ok(0)); assert_eq!(b.read32(RESET_CAUSE1), Ok(2));
     }
 }

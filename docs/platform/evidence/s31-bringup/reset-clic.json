@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-27",
+  "base": "5850cb30",
+  "scope": "S31 POR cause, UART0 matrix routing and standard-CSR CLIC; standalone development subset, not an INK4 Plus runtime",
+  "sources": "sources.json; fixed ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643",
+  "implementation": {
+    "sharedClic": "Original P4 ClicCore extracted without logic changes; only read/write visibility made public. P4 old CSR/MMIO threshold unchanged.",
+    "s31": "CSR mintstatus 0xfb1/mintthresh 0x347; UART0 source9 at 0x20585024 requires M-mode PASS_LEVEL2/3; CLIC 0x10800000; HP reset causes 0x20701030/34",
+    "limits": [
+      "only hart0 executes",
+      "only UART0 matrix source modeled",
+      "fixture validates 3 level bits; other partitions and S-mode not validated",
+      "POR state and clear triggers only; no reset/power/clock state machine",
+      "no flash MMU, PSRAM, board peripherals or production S31 WASM export"
+    ]
+  },
+  "fixture": {
+    "source": "firmware/s31-uart-probe/irq-probe.S",
+    "build": "RISCV_TOOLCHAIN_PREFIX=<toolchain>/riscv32-esp-elf- bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "compiler": "riscv32-esp-elf-gcc 15.2.0 (esp-15.2.0_20251204)",
+    "sourceSha256": "9868cb8ca6501f7ba810106c54b350d4a6ab6925a3888db3fe30e749520491b6",
+    "elfSha256": "4850e231e87476aaf40f4f1d764074ad88936a6f6fc7745444a826fda1dadfd1",
+    "elfBytes": 5564,
+    "input": "A",
+    "uart": "S31 IRQ READY\nA\nS31 IRQ MRET PASS\n",
+    "uartSha256": "d1d0abb50858227bd8b5970d6a26fc1536bc08e082e5d6026c6a3eefe77edf6a",
+    "steps": 232,
+    "pc": "0x2f0000ba",
+    "stop": "Waiting",
+    "mepc": "0x2f000088",
+    "mcause": "0x80000011",
+    "fault": null,
+    "negative": {
+      "input": "B",
+      "uart": "S31 IRQ READY\nS31 IRQ FAIL\n",
+      "steps": 191,
+      "stop": "Ebreak",
+      "address": "0x2f00010c",
+      "fault": null
+    },
+    "externalTests": "Both polled and IRQ fixtures pass. IRQ test pauses at WFI, masks threshold, injects A, observes no handler output, unmasks and observes ISR echo plus mret pass.",
+    "linkWarning": "IRQ ELF has a LOAD segment with RWX permissions: intentional debugger-style code/data in on-chip SRAM, no operating-system process loader.",
+    "testCommand": "S31_UART_ELF=<absolute-probe.elf> S31_UART_IRQ_ELF=<absolute-irq-probe.elf> cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored"
+  },
+  "rom": {
+    "input": "esp32s31_rev0_rom.elf release20260528",
+    "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+    "previousFirstFault": {
+      "steps": 7,
+      "pc": "0x2f801724",
+      "address": "0x20701030"
+    },
+    "currentFirstFault": {
+      "steps": 6978,
+      "pc": "0x2f80cfea",
+      "access": "read32",
+      "address": "0x208140fc",
+      "mcause": 5,
+      "register": "TRNG_DATE_REG, includes TRNG_CLK_EN bit28",
+      "symbol": "ets_stack_guard_setup",
+      "instruction": "0x431c: lw a5,0(a4)"
+    },
+    "limits": "No ROM instruction patches. ELF initializer-table reconstruction still outstanding; no complete ROM boot claimed.",
+    "command": "cargo run --release -p esp32s31 --example bringup -- --rom <roms>/esp32s31_rev0_rom.elf"
+  },
+  "checks": {
+    "rustupStable": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "clippyNative": "pass; --workspace --all-targets -- -D warnings",
+    "clippyWasm": "pass; --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "workspace": "1371 passed, 0 failed, 131 result groups; --release --workspace -- --include-ignored --skip external_",
+    "sourceFixtures": "2 passed with caller-built ELF inputs and --include-ignored",
+    "platform": "4 required platform-config/runtime/input/view test files passed",
+    "wasm": "built production artifact, no DWARF; hello,c3-hello,c6-hello,p4-hello,c6-energy-scan,c6-contiki,c6-contiki-net,c6-rpl-net,panel passed",
+    "s31WasmCompile": "cargo check --release --target wasm32-unknown-unknown -p esp32s31 passed; not a platform export",
+    "goldens": "unchanged",
+    "browser": "no UI changes or browser session in this stage",
+    "wasmArtifact": {
+      "bytes": 3988256,
+      "sha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31"
+    }
+  },
+  "negativeResults": [
+    {
+      "stage": "first native Clippy",
+      "reason": "identity_op in reset-cause unit test; simplified test expression, then both Clippy checks passed"
+    },
+    {
+      "stage": "first workspace tests",
+      "reason": "10 cosim tests lacked ignored public p4-hosted-bootloader.bin; restored SHA-checked public fixture cache, verified fetch-p4-firmware/fetch-micropython pinned hashes, reran full suite successfully"
+    }
+  ],
+  "privacy": "Compact commands, numeric results and artifact hashes retained. Raw compiler/test logs are local ignored outputs, not published; personal absolute paths omitted. No private firmware or captures retained."
+}

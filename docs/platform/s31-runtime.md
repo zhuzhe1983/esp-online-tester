@@ -100,7 +100,7 @@ TCA9555/TPS65185/parallel EPD/touch/SD path. A serial fixture alone must not ena
 the catalog's product runtime. Preserve the default official firmware and its remote
 source while these stages remain incomplete.
 
-### Initial in-tree subset
+### Initial in-tree subset (5850cb30)
 
 `esp32s31::Bringup` is a separate, interpreter-only development entry point. It has
 one HP hart, the S31 SRAM/LP SRAM/ROM windows, and polled UART0 using the common
@@ -149,3 +149,51 @@ are unchanged and the new crate is unused by them. No S3-core code changed, so
 Pocket Tank was not required by CONTRIBUTING's S3-specific condition. A rejected
 C3 command in the first harness attempt is retained separately; the corrected run
 covered all three workloads. [Samples and commands](evidence/s31-bringup/uart-perf.json).
+
+### POR state and standard CLIC
+
+The next stage adds the two HP reset-cause registers, with the documented power-on
+cause and write-triggered clear bits. This is a power-on state, not a watchdog,
+software-reset or power-domain model. The old P4 `ClicCore` register/arbitration
+implementation has moved unchanged into `esp-periph::clic`; P4 retains its existing
+CSR addresses, threshold mapping and tests. S31 has a separate CPU constructor,
+standard `mintstatus`/`mintthresh` CSRs, its own CLIC address windows and its own
+interrupt matrix. S31's matrix requires a nonzero PASS_LEVEL: values 2/3 route to
+machine mode; simply copying P4's ID-only mapping would leave routing disabled.
+
+The modeled source is UART0 (source 9). The executing hart is still hart 0; hart 1's
+control registers can be addressed but there is no second running CPU. The acceptance
+fixture explicitly configures three interrupt level bits. Other priority partition
+modes, supervisor-mode delivery and the rest of the source fabric are not validated.
+The S31 bus does not invent P4's threshold-register alias at CLIC offset 8.
+
+The real SRAM-linked IRQ fixture waits at WFI, receives `A`, takes hardware-vectored
+CLIC ID 17, checks `mintstatus` inside its handler, drains and echoes UART RX, then
+returns via `mret`. Main code checks that the interrupt level was restored before
+printing `S31 IRQ MRET PASS`. A separate host-controlled threshold test leaves RX
+pending while masked, observes no handler output, and then unmasks the same guest.
+With RX preloaded, the complete positive run takes 232 steps. Generated fixture
+ELFs remain local ignored test artifacts.
+
+The same unmodified public S31 ROM now executes 6,978 steps before faulting at
+`ets_stack_guard_setup`: PC `0x2f80cfea`, read32 `0x208140fc` (TRNG base
+`0x20814000` plus `0xfc`). The exact ROM instruction is `lw a5,0(a4)`; it is followed
+by a read-modify-write setting bit 28. IDF v6.1 `trng_reg.h` identifies this as
+`TRNG_DATE_REG` and bit 28 as `TRNG_CLK_EN`. The next stage must implement the
+documented TRNG and reset/clock sequence rather than return arbitrary values.
+This advances the previous reset-cause fault; it does not establish full ROM boot,
+flash execution, entropy quality, peripheral readiness or INK4 Plus compatibility.
+
+Both Clippy targets pass; 1,371 Rust tests pass under CI's ignored-test policy,
+along with both source fixtures, the four required platform test files and nine
+existing WASM workloads, including P4 hello. Existing goldens are unchanged. The
+first Clippy attempt found a test-only identity operation; the first full test run
+lacked public P4 co-simulation fixture inputs. Both failures and their corrections
+are retained in the [stage receipt](evidence/s31-bringup/reset-clic.json).
+
+Five alternating CPU pairs against main `3c1737de` gave median user-time changes
+of S3 hello −0.79%, C3 −2.68%, C6 +0.80%, with identical instruction/cycle/trap
+statistics and UART hashes. These observations are not a speedup claim; code
+layout and host load are not controlled beyond isolated timing and alternating
+order. No S3-core code changed, so CONTRIBUTING's Pocket Tank condition does not
+apply. [CPU samples](evidence/s31-bringup/reset-clic-perf.json).

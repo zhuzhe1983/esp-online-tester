@@ -31,6 +31,7 @@ pub mod rmt_compact;
 pub mod gpspi;
 pub mod rng;
 pub mod intmtx;
+pub mod clic;
 pub mod sdmmc;
 pub mod usb_otg;
 

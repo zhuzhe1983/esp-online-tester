@@ -1,6 +1,7 @@
 //! RV32IMC / RV32IMAC: the core in the ESP32-C3 and, with the A extension, the ESP32-C6. With F
 //! in `misa` (`Cpu::new_esp32p4`) it is RV32IMAFC, with `mstatus.FS` and the P4's EXT_ILL CSR,
-//! the Zicntr counters, CLIC mode and a hart ID.
+//! the Zicntr counters, CLIC mode and a hart ID. `Cpu::new_esp32s31` selects the
+//! same base ISA subset with the standard CLIC CSR placement used by S31 IDF v6.1.
 //!
 //! Machine mode only, no MMU, no D extension. The C3 and C6 have no F, and decode its encodings
 //! as illegal.

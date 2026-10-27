@@ -1,10 +1,11 @@
-//! S31 bring-up subset: one HP hart, SRAM/ROM and polled UART0; not a product runtime.
+//! S31 bring-up subset: one HP hart, SRAM/ROM, UART0 and CLIC; not a product runtime.
 pub mod bus;
+pub mod interrupts;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};
 
-/// This executes the RV32IMAFC subset, not S31's complete custom ISA. No interrupt controller,
-/// second hart, flash MMU, PSRAM, clocks or board devices are installed. Unlike a P4 alias, its
+/// This executes the RV32IMAFC subset, not S31's complete custom ISA. No
+/// second hart, flash MMU, PSRAM, clock tree or board devices are installed. Unlike a P4 alias, its
 /// bus uses the S31 addresses and reports the first unsupported access with the guest PC.
 pub struct Bringup { pub cpu: Cpu, pub bus: S31Bus }
 #[derive(Debug, PartialEq, Eq)]
@@ -14,11 +15,7 @@ pub struct Run { pub steps: u64, pub stop: Stop }
 impl Default for Bringup { fn default() -> Self { Self::new() } }
 impl Bringup {
     pub fn new() -> Self {
-        let mut cpu = Cpu::new_rv32imac();
-        // ESP-IDF v6.1 soc/esp32s31/include/soc/soc_caps.h: FPU, HWLOOP and PIE.
-        // Only the shared F executor is enabled here. HWLOOP/PIE and S31 CLIC are not implemented.
-        cpu.misa |= riscv_rv32::state::MISA_F;
-        cpu.has_ext_ill = true; cpu.user_counters = true;
+        let mut cpu = Cpu::new_esp32s31();
         cpu.pc = bus::ROM_BASE;
         Self { cpu, bus: S31Bus::new() }
     }
@@ -65,8 +62,10 @@ impl Bringup {
 
     pub fn run(&mut self, budget: u64) -> Run {
         for steps in 0..budget {
-            if self.cpu.waiting { return Run { steps, stop: Stop::Waiting }; }
+            self.cpu.irq = self.bus.refresh_irq(self.cpu.mintthresh);
+            if self.cpu.waiting && self.cpu.irq.is_none() { return Run { steps, stop: Stop::Waiting }; }
             if let Err(trap) = riscv_rv32::step(&mut self.cpu, &mut self.bus) {
+                if let Trap::Interrupt(line) = trap { self.bus.interrupt_taken(line); continue; }
                 return Run { steps: steps + 1, stop: Stop::Trap(trap) };
             }
         }
