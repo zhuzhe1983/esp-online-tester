@@ -1,0 +1,85 @@
+{
+  "checkedAt": "2026-10-27T12:56:30Z",
+  "product": "m5stack-k134",
+  "firmwareId": "m5stack-k134-factory-reference",
+  "firmware": {
+    "url": "https://m5burner-cdn.m5stack.com/firmware/fc3c7b0f51aa57c5ec0b04b7f4ce8084.bin",
+    "sha256": "b0d8d63fa9a8e30f712de37cf58c340328690f61c90f94ce7a32da3050589d40",
+    "bytes": 2090144
+  },
+  "romSha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "wasmSha256": "1bd6ef97a0b7d4d101b3271f3233b6f6f16f3c1b18f8eacac4cc4463777abdfb",
+  "browser": "headless Chromium, Playwright wrapper, 1280×720 viewport",
+  "steps": [
+    {
+      "action": "Configure original K134 with fixed official v0.1 source, load and start",
+      "observed": "Actual 240×135 DISPLAY TEST menu; RTC NACK and Bat0.0V retained."
+    },
+    {
+      "action": "Pointer at (696,272), hold500ms then release",
+      "observed": "CAD knob center hover=button, green halo; factory color bands appeared."
+    },
+    {
+      "action": "Keyboard A exits display test; reset; API encoder +1",
+      "observed": "BRIGHTNESS menu appeared."
+    },
+    {
+      "action": "Drag CAD rim (721,271) via (713,252) to (696,246)",
+      "observed": "Rim hover=encoder, blue halo; selected menu changed to SLEEP&WAKEUP."
+    },
+    {
+      "action": "Reset, wait2 guest seconds, four separate encoder +1 events with0.8 guest second intervals, press encoder-button150ms",
+      "observed": "UART0 encoder test and visible Encoder Test0."
+    },
+    {
+      "action": "encoder+1, advance0.4 guest seconds, pause",
+      "observed": "Visible Encoder Test2, matching factory PCNT half quadrature."
+    },
+    {
+      "action": "Open api.share({mode:embed}) result in new page and poll status/guestTime; no manual start",
+      "observed": "loading → running at0.82 guest seconds/29frames → running at1.66seconds/69frames; 240×135 factory DISPLAY TEST menu, then explicit pause."
+    }
+  ],
+  "screenshots": {
+    "output/playwright/dinmeter-menu.png": {
+      "sha256": "1ebdd40f2863513c9caf9b96755e029f68850f674fb45def1eee050c9c8130cf",
+      "bytes": 211467
+    },
+    "output/playwright/dinmeter-press-hover.png": {
+      "sha256": "aacebc87e969ef9ee70297bd22246f812bda18cce593abcb97d15e48025dbbd5",
+      "bytes": 211982
+    },
+    "output/playwright/dinmeter-display-test.png": {
+      "sha256": "982d38b10cc4583d132abaab21b829013c66b2b0e15f2a9e5fe9913afc55c2ae",
+      "bytes": 209063
+    },
+    "output/playwright/dinmeter-rim-hover.png": {
+      "sha256": "0b5a3ea106057ea27fd3ea26fb40cea260e9ebb35a01c7baf2144b6167b9bd44",
+      "bytes": 209854
+    },
+    "output/playwright/dinmeter-drag-menu.png": {
+      "sha256": "a3a59eeda4546492b510594d06c61adb7b3a83bff55c5ca78a0307e0304309c6",
+      "bytes": 211720
+    },
+    "output/playwright/dinmeter-encoder-zero.png": {
+      "sha256": "6d2558e89b4acc4bcd202b7136612b875954e79384355b6f425c555afb2015ac",
+      "bytes": 207935
+    },
+    "output/playwright/dinmeter-encoder-plus2.png": {
+      "sha256": "28f70ea7cfba6cad05fd57abd5d5a0496dec535361117bff80fa9116d1ba8eb5",
+      "bytes": 208863
+    },
+    "output/playwright/dinmeter-mini.png": {
+      "sha256": "6a96661e471263e8c9668cac7e555bc4527fc239018948dcd13a929c9db69b1f",
+      "bytes": 191153
+    }
+  },
+  "hardwareValidated": false,
+  "scope": "Original K134 only; screenshots contain emulator pixels, not replacement UI. Mouse holds are host-timed and not cycle exact. No raw private captures retained; source code and firmware URLs are public.",
+  "captureRetention": "Screenshots retained in ignored output/playwright, not committed or published. Reproduce actions above with the fixed public inputs; no externally hosted capture is claimed.",
+  "browserConsole": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "cleanup": "Task-owned browser closed and wrapper inventory verified; task-owned static server stopped. Unrelated sessions and servers preserved."
+}

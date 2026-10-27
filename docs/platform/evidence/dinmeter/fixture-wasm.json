@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-10-27T12:40:29.897Z",
+  "command": "node tools/probe-dinmeter.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+    "dinmeter_fixture.bin": "89bafc18ce5a15fb65223a132393accfaa537e3233ce98ca4de9398ec22f8bb7",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "wasmSha256": "1bd6ef97a0b7d4d101b3271f3233b6f6f16f3c1b18f8eacac4cc4463777abdfb",
+  "checks": [
+    "rom-boot-gpio42-idle-pcnt-zero",
+    "every-guest-spi-pixel-four-quadrants-fixed-glass-orientation",
+    "gpio42-press-release-observed-by-guest",
+    "real-gpio-interrupt-full-quad-and-factory-half-quad-pcnt-plus1-minus2-plus1",
+    "encoder-boundary-rejection",
+    "real-wasm-record-replay-encoder-detents"
+  ],
+  "frameSha256": "863f414c933968ec49026f1839faf3b588fc0e5c5ea0033d2549b1352fd14b1a",
+  "serialEvidence": [
+    "DINMETER_LCD_READY 240x135 TL=red TR=green BL=blue BR=white",
+    "DINMETER_BUTTON 1",
+    "DINMETER_ENCODER 0",
+    "DINMETER_PCNT 0",
+    "DINMETER_BUTTON 0",
+    "DINMETER_ENCODER -4",
+    "DINMETER_PCNT 2",
+    "DINMETER_ENCODER 4",
+    "DINMETER_PCNT -2",
+    "DINMETER_ENCODER 1",
+    "DINMETER_PCNT -1"
+  ],
+  "replay": {
+    "events": [
+      {
+        "at": 0.218477625,
+        "type": "encoder",
+        "id": "encoder",
+        "steps": 2
+      },
+      {
+        "at": 0.27086504166666664,
+        "type": "encoder",
+        "id": "encoder",
+        "steps": -1
+      }
+    ],
+    "result": "completed",
+    "frameComparison": "equal",
+    "bitExact": false,
+    "guestSerial": [
+      "DINMETER_ENCODER 0",
+      "DINMETER_ENCODER -2",
+      "DINMETER_ENCODER -8",
+      "DINMETER_ENCODER -7",
+      "DINMETER_ENCODER -4"
+    ]
+  },
+  "status": "pass",
+  "guestSeconds": 0.34,
+  "serialPort": "uart0"
+}

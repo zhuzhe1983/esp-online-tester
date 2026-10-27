@@ -1,6 +1,6 @@
 # DinMeter K134 runtime research checkpoint
 
-Status: **research only; no runtime implemented or verified by this checkpoint**.
+Historical checkpoint: **research only when recorded**. The subsequent implementation and actual firmware evidence are now in [dinmeter-runtime.md](../dinmeter-runtime.md); the original research findings and unresolved physical limits below are preserved.
 Base: `7d03d2409912516030412d715454da8dd8e4bc93`.
 Scope: original **K134**, excluding **K134-V11**. The catalog's unavailable status is unchanged.
 

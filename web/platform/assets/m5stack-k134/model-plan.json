@@ -45,7 +45,17 @@
       "sourceComponent": 4,
       "name": "encoder-knob",
       "color": "#ed951a",
-      "role": "button"
+      "role": "button",
+      "controlId": "encoder-button",
+      "encoderId": "encoder",
+      "encoderPress": {
+        "centerMm": [
+          14.25,
+          0,
+          15.7
+        ],
+        "radiusMm": 4.5
+      }
     }
   ],
   "assemblyNotes": "Retained source assembled cluster; only the recorded rigid rotation and translation are applied. Original millimetres and relative positions preserved.",
@@ -383,13 +393,13 @@
   ],
   "limitations": [
     "Orange mounting bracket extends beyond the main panel; official 53×30×32 mm does not state bracket-envelope convention. Unmatched overall dimensions remain failed.",
-    "No encoder pulses or front-button behavior is implemented.",
-    "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
     "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
     "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
     "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
     "Default assembly includes the documented supplied back bracket; independent rear photo shows it removed, so silhouette comparison is not a like-for-like bracket configuration. No bracket/case scaling performed.",
-    "Earlier draft showed one rear Grove and used a mirrored rear orientation. Rechecked exact rear photo: two white sockets, shown using camera up=-Y; prior single-port placement is rejected. No wire order inferred from this camera correction."
+    "Earlier draft showed one rear Grove and used a mirrored rear orientation. Rechecked exact rear photo: two white sockets, shown using camera up=-Y; prior single-port placement is rejected. No wire order inferred from this camera correction.",
+    "Original K134 runtime implements ST7789V2, GPIO42 press and A41/B40 quadrature only. RTC, PWM brightness, battery, audio, power and wireless remain unverified/unmodeled.",
+    "Knob center is a press target and outer rim a drag target; radius 4.5 mm and 16 UI detents per turn are interaction conventions, not measured mechanical boundaries."
   ],
   "display": {
     "width": 240,
@@ -436,9 +446,21 @@
     "controls": [
       {
         "id": "encoder-button",
-        "name": "Encoder button",
+        "name": "Encoder press · GPIO42",
         "type": "button",
-        "pin": 42
+        "pin": 42,
+        "activeLow": true,
+        "defaultKeyCode": "KeyA"
+      },
+      {
+        "id": "encoder",
+        "name": "Rotary encoder",
+        "type": "encoder",
+        "pins": {
+          "a": 41,
+          "b": 40
+        },
+        "detents": 16
       }
     ],
     "interfaces": [
@@ -510,9 +532,16 @@
           "A": 41,
           "B": 40
         },
-        "simulation": "unavailable"
+        "simulation": "gpio-quadrature"
       }
-    ]
+    ],
+    "runtime": {
+      "board": "dinmeter",
+      "flashMb": 8,
+      "psramMb": 0,
+      "status": "partial",
+      "encoder": true
+    }
   },
   "reviewViews": {
     "front": {

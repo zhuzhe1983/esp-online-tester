@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-10-27T13:04:50.304Z",
+  "command": "node tools/probe-dinmeter-factory.mjs --url <catalog-original-k134-factory-url> --sha256 <catalog-sha256>",
+  "source": {
+    "url": "https://m5burner-cdn.m5stack.com/firmware/fc3c7b0f51aa57c5ec0b04b7f4ce8084.bin",
+    "resolvedUrl": "https://m5burner-cdn.m5stack.com/firmware/fc3c7b0f51aa57c5ec0b04b7f4ce8084.bin",
+    "bytes": 2090144,
+    "sha256": "b0d8d63fa9a8e30f712de37cf58c340328690f61c90f94ce7a32da3050589d40"
+  },
+  "backend": "actual-page-worker-wasm-jit",
+  "firmwarePatched": false,
+  "wasmSha256": "1bd6ef97a0b7d4d101b3271f3233b6f6f16f3c1b18f8eacac4cc4463777abdfb",
+  "checks": [
+    "rom-boot-nonblank-240x135-menu",
+    "four-real-pcnt-detents-and-gpio42-enter-encoder-test",
+    "encoder-plus1-changes-frame-minus1-restores-every-pixel",
+    "gpio42-exits-encoder-test"
+  ],
+  "menuFrameSha256": "e43b381f8f3c95e36740e65ae7c747f9c54719bec6c2e933fc9d3e0368cb5545",
+  "zeroFrameSha256": "dd6d2ef09b228f649dc4fe21283fca0b57f725b9d6f459d27cd24d01e745ea34",
+  "plusOneFrameSha256": "62b55a934ad46b1c2b6c6a1d21ff7174a00c1a25072d31f7573456da6a03ab9c",
+  "status": "pass",
+  "guestSeconds": 7.86,
+  "artifacts": [
+    {
+      "kind": "flash",
+      "sha256": "b0d8d63fa9a8e30f712de37cf58c340328690f61c90f94ce7a32da3050589d40",
+      "bytes": 2090144
+    },
+    {
+      "kind": "rom",
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+      "bytes": 949552
+    }
+  ],
+  "serialEvidence": [
+    "[    55][E][Wire.cpp:499] requestFrom(): i2cWriteReadNonStop returned Error -1",
+    "[    56][E][Wire.cpp:499] requestFrom(): i2cWriteReadNonStop returned Error -1",
+    "encoder test",
+    "not long pressed",
+    "quit encoder test"
+  ],
+  "limitations": [
+    "RTC NACK is retained. Brightness PWM, battery, audio, power/sleep, Grove and networking are not validated.",
+    "Frame text was separately reviewed in browser screenshots; this script asserts guest menu serial and reversible pixel changes, not OCR or physical hardware behavior."
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "checkedAt": "2026-10-27T13:09:27Z",
+  "rustToolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "checks": [
+    {
+      "command": "rustup update stable",
+      "result": "already latest 1.99.1"
+    },
+    {
+      "command": "cargo +stable clippy --workspace --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "cargo +stable clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo +stable test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "passed": 1390,
+      "goldensChanged": false
+    },
+    {
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo +stable test --release -p esp32s3 --test machine --test virtual_stops",
+      "result": "pass",
+      "passed": 43
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "result": "pass",
+      "passed": 88
+    },
+    {
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "result": "pass",
+      "scenarios": 11
+    },
+    {
+      "command": "node tools/platform-recording-test.mjs --real",
+      "result": "pass",
+      "events": 18,
+      "frameComparison": "equal"
+    },
+    {
+      "command": "uv run --with jsonschema --with referencing python tools/validate-platform-catalog.py",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/probe-dinmeter.mjs --build <fixture-build-directory>",
+      "result": "pass",
+      "checks": 6
+    },
+    {
+      "command": "node tools/probe-dinmeter-factory.mjs --url <explicit-catalog-url> --sha256 <explicit-catalog-sha256>",
+      "result": "pass",
+      "checks": 4,
+      "guestSeconds": 7.86
+    },
+    {
+      "command": "cargo +stable build --release --workspace",
+      "result": "pass"
+    },
+    {
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs; node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+      "result": "pass",
+      "tests": 21
+    },
+    {
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs; node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+      "result": "pass",
+      "tests": 32
+    },
+    {
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs; node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "result": "pass",
+      "tests": 30
+    },
+    {
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm; node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public <roms>/esp32c3_rev3_rom.elf; node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public <roms>/esp32c3_rev3_rom.elf",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/worker-pacing-test.mjs; node tools/worker-channel-test.mjs; node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+      "result": "pass"
+    },
+    {
+      "command": "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "result": "pass",
+      "tests": 15
+    },
+    {
+      "command": "tools/wasm-jit-test.sh",
+      "result": "pass",
+      "differentialCases": 111126,
+      "groups": 78,
+      "gpioWaveformCases": 24
+    },
+    {
+      "command": ". ./tools/wasm-rustflags.sh; cargo +stable build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs; manual review of new DinMeter JSON and screenshots",
+      "result": "pass"
+    }
+  ],
+  "initialNegativeResult": {
+    "command": "full Rust workspace regression",
+    "result": "10 cosim tests failed because scratch checkout lacked p4-hosted-bootloader.bin",
+    "resolution": "Hydrated fixed public test inputs and verified with fetch-p4-firmware.sh/fetch-micropython.sh; complete workspace rerun passed."
+  },
+  "scope": "New product-specific board and explicit CAD input metadata only. No SoC bus/device_set/interrupt-routing/per-tick edits; no CPU performance claim. RTC/power/wireless remain incomplete.",
+  "metadataCorrections": "Post-documentation platform checks caught noncanonical UTC source timestamps and a stale knowledge index. Knowledge receipts now use seconds/Z while the source evidence preserves original precision; index synchronized; final88 platform tests and catalog validation pass."
+}

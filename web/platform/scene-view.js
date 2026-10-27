@@ -292,6 +292,10 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     const object = intersection?.object;
     if(object?.userData.potentiometer){const knob=object.userData.potentiometer;return {kind:'potentiometer',id:knob.id,accessoryId:knob.accessoryId,value:knob.pivot.userData.value,sweep:knob.pivot.userData.visualSweepRadians,message:'拖动旋钮调整官方标称曲线；显示转角未按实物校准。'};}
     if (object?.userData.encoder) {
+      // A push encoder can use the same CAD component for both actions. Only
+      // the visible front-center is a press; the outer rim remains draggable.
+      const press=object.userData.encoderPress;
+      if(press && object.userData.control && intersection.face?.normal.z>.7){const local=object.worldToLocal(intersection.point.clone());if(Math.hypot(local.x-press.centerMm[0],local.y-press.centerMm[1])<=press.radiusMm)return {kind:'button',id:object.userData.control};}
       const control = product?.controls?.find(c => c.id === object.userData.encoder && c.type === 'encoder');
       return product?.runtime?.encoder && control ? {kind:'encoder',id:control.id,detents:control.detents,message:'沿旋钮圆周拖动；每格发送一个编码器步进。'} : {kind:'unsupported',message:'此设备尚未实现旋钮输入。'};
     }

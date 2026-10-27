@@ -3617,23 +3617,38 @@
       "chip": "esp32s3",
       "module": "ESP32-S3FN8",
       "runtime": {
-        "board": null,
+        "board": "dinmeter",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial",
+        "encoder": true
       },
       "display": {
         "width": 240,
         "height": 135,
         "type": "IPS LCD",
-        "controller": "ST7789V2"
+        "controller": "ST7789V2",
+        "bus": "SPI",
+        "touch": false
       },
       "controls": [
         {
           "id": "encoder-button",
-          "name": "Encoder button",
+          "name": "Encoder press · GPIO42",
           "type": "button",
-          "pin": 42
+          "pin": 42,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "encoder",
+          "name": "Rotary encoder",
+          "type": "encoder",
+          "pins": {
+            "a": 41,
+            "b": 40
+          },
+          "detents": 16
         }
       ],
       "interfaces": [
@@ -3704,7 +3719,9 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "原版 K134 板型：ST7789V2 屏幕、GPIO42 按压和 A41/B40 四相编码器；不代表 K134-V11 或任意固件完整兼容。",
+        "PWM 背光亮度、RTC、蜂鸣器、充放电/锁存/睡眠及无线功能尚未做本板适配。",
+        "正数旋钮步数为 A 先下降；3D 每圈 16 个操作步进及顺时针方向是平台约定，未实机校准机械方向或卡点数。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k134.json",
@@ -3731,7 +3748,7 @@
             "A": 41,
             "B": 40
           },
-          "simulation": "unavailable"
+          "simulation": "gpio-quadrature"
         }
       ]
     },
