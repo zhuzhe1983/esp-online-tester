@@ -206,10 +206,17 @@ if(process.argv.includes('--real')){
     selected.firmware.manifestUrl=new URL(selected.firmware.manifestUrl,'https://platform.example/platform/recording.js').href;
     await real.configure(selected);await real.loadFirmware();await real.recordingStart();
     await real.waitFor({port:'uart0',serialIncludes:'PLATFORM_READY stopwatch',timeoutMs:30000});
-    const button=real.waitFor({port:'uart0',serialIncludes:'BUTTON_A',fromNow:true,timeoutMs:10000});
-    await real.press('button-a',{durationMs:30});await button;
-    const buttonB=real.waitFor({port:'uart0',serialIncludes:'BUTTON_B',fromNow:true,timeoutMs:10000});
-    await real.press('button-b',{durationMs:30});await buttonB;
+    // Thirty host milliseconds can elapse before a loaded CI guest samples a GPIO.
+    // Record real input acknowledgements, hold until the diagnostic observes each
+    // press, then give the guest a release interval before the next button.
+    const confirmedPress=async(id,serialIncludes)=>{
+      const observed=real.waitFor({port:'uart0',serialIncludes,fromNow:true,timeoutMs:30000});
+      try {await Promise.all([real.input({type:'button',id,pressed:true}),observed]);}
+      finally {await real.input({type:'button',id,pressed:false});}
+      await advance(0.06);
+    };
+    await confirmedPress('button-a','BUTTON_A');
+    await confirmedPress('button-b','BUTTON_B');
     const tap=async points=>{
       const observed=real.waitFor({port:'uart0',serialIncludes:'TOUCH down',fromNow:true,timeoutMs:10000});
       for(const [x,y]of points){await real.input({type:'touch',x,y,down:true});await advance(0.06);}
@@ -220,19 +227,19 @@ if(process.argv.includes('--real')){
     await tap([[60,233],[160,233],[240,233],[320,233],[400,233]]);
     const captured=await real.recordingStop();
     const originalSerial=(await real.observe()).serialByPort.uart0||'';
-    assert.ok(originalSerial.includes('BUTTON_A')&&originalSerial.includes('BUTTON_B'),'Original short presses must both reach firmware');
+    assert.ok(originalSerial.includes('BUTTON_A')&&originalSerial.includes('BUTTON_B'),'Original button presses must both reach firmware');
     assert.equal(captured.events.filter(item=>item.type==='touch'&&item.down).length,11);
     const encoded=encodeRecording(captured);assert.deepEqual(decodeRecording(encoded),captured);
     const played=await real.recordingPlay(decodeRecording(encoded),{timeoutMs:30000});
     assert.equal(played.result,'completed');assert.equal(played.events.length,captured.events.length);
     for(let i=1;i<captured.events.length;i++)assert.ok(played.events[i].actualGuestSeconds-played.events[i-1].actualGuestSeconds+1e-8>=captured.events[i].at-captured.events[i-1].at,'Late delivery must not collapse the original guest-time interval');
     const final=await real.observe(),serial=final.serialByPort.uart0||'';
-    assert.ok(serial.includes('BUTTON_A')&&serial.includes('BUTTON_B'),'Both replayed short presses must reach the actual diagnostic firmware');
+    assert.ok(serial.includes('BUTTON_A')&&serial.includes('BUTTON_B'),'Both replayed button presses must reach the actual diagnostic firmware');
     assert.ok((serial.match(/TOUCH down/g)||[]).length>=3,'Tap and both trajectories must reach the real touch peripheral');
     const checksum=data=>createHash('sha256').update(data).digest('hex');
     const sourceSha256=Object.fromEntries(await Promise.all(['web/platform/recording.js','web/platform/automation.js','tools/platform-recording-test.mjs'].map(async path=>[path,checksum(await readFile(new URL(path,root)))])));
-    const evidence={schemaVersion:'1',command:'node tools/platform-recording-test.mjs --real --receipt <output.json>',backend:'actual esp32sim WASM worker',sourceSha256,firmware:final.firmware,wasmSha256:checksum(await readFile(new URL('web/wasm/esp32sim.wasm',root))),recording:captured,recordingSha256:checksum(JSON.stringify(captured)),eventCount:captured.events.length,gestureEvidence:{tap:true,leftwardTrajectory:true,rightwardTrajectory:true,originalFirmwareTouchDownCount:(originalSerial.match(/TOUCH down/g)||[]).length,firmwareTouchDownCount:(serial.match(/TOUCH down/g)||[]).length,firmwareNavigationSemantics:'not implemented by diagnostic; not claimed'},replay:played,originalSerialSha256:checksum(originalSerial),serialSha256:checksum(serial),assertions:['Actual firmware received original and replayed BUTTON_A and BUTTON_B short presses','Actual firmware reported touch-down for tap and both trajectories','Every nonzero original guest interval was preserved or extended, never collapsed','All replay inputs have worker-acknowledged guest timestamps']};
+    const evidence={schemaVersion:'1',command:'node tools/platform-recording-test.mjs --real --receipt <output.json>',backend:'actual esp32sim WASM worker',sourceSha256,firmware:final.firmware,wasmSha256:checksum(await readFile(new URL('web/wasm/esp32sim.wasm',root))),recording:captured,recordingSha256:checksum(JSON.stringify(captured)),eventCount:captured.events.length,gestureEvidence:{tap:true,leftwardTrajectory:true,rightwardTrajectory:true,originalFirmwareTouchDownCount:(originalSerial.match(/TOUCH down/g)||[]).length,firmwareTouchDownCount:(serial.match(/TOUCH down/g)||[]).length,firmwareNavigationSemantics:'not implemented by diagnostic; not claimed'},replay:played,originalSerialSha256:checksum(originalSerial),serialSha256:checksum(serial),assertions:['Actual firmware received original and replayed BUTTON_A and BUTTON_B presses','Actual firmware reported touch-down for tap and both trajectories','Every nonzero original guest interval was preserved or extended, never collapsed','All replay inputs have worker-acknowledged guest timestamps']};
     const receiptArg=process.argv.indexOf('--receipt');if(receiptArg!==-1){assert.ok(process.argv[receiptArg+1]);await writeFile(process.argv[receiptArg+1],JSON.stringify(evidence,null,2)+'\n');}
-    console.log(`ok REAL WASM recording/replay: ${captured.events.length} events; BUTTON_A/B short presses + tap + left/right touch trajectories; guest intervals preserved; navigation semantics not claimed; frame=${played.frameComparison}`);
+    console.log(`ok REAL WASM recording/replay: ${captured.events.length} events; BUTTON_A/B confirmed presses + tap + left/right touch trajectories; guest intervals preserved; navigation semantics not claimed; frame=${played.frameComparison}`);
   }finally{await real.dispose();}
 }

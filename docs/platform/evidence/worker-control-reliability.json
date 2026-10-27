@@ -31,7 +31,8 @@
       40533890269
     ],
     "reason": "Linux Pages runtime test timed out waiting for stop after 30 seconds in raw application Hello invalid-header loop.",
-    "browser": "First candidate bounded only the worker chain; browser run/stop command still did not return promptly. Console DOM batching was then added; task-owned session was closed."
+    "browser": "First candidate bounded only the worker chain; browser run/stop command still did not return promptly. Console DOM batching was then added; task-owned session was closed.",
+    "nextPipelineFailure": "After the worker fix, all 100 Linux platform checks passed. Real recording then missed BUTTON_B: a 30 ms host press was shorter than guest polling under load."
   },
   "checks": {
     "nodePlatform": {
@@ -54,11 +55,23 @@
       "invalidHeadersInTail": 2340,
       "pauseElapsedMs": 83.10000014305115,
       "finalStatus": "paused"
+    },
+    "linuxPlatform": {
+      "run": 40537984211,
+      "passed": 100,
+      "failed": 0,
+      "stopTimeoutResolved": true
     }
   },
   "limitations": [
     "No throughput improvement or universal pause deadline claimed; a synchronous WASM slice remains uninterruptible.",
     "The Hello application still fails to boot without its bootloader environment. This is a control responsiveness test, not firmware compatibility validation.",
-    "Linux CI verification remains pending at this receipt revision."
-  ]
+    "Linux full-pipeline verification of the recording follow-up remains pending; the 100 platform tests, including stop, passed on Linux."
+  ],
+  "recordingFollowup": {
+    "change": "Hold each button until the real diagnostic confirms it, release, and allow 0.06 guest seconds before the next press. No synthetic serial confirmation or production input behavior change.",
+    "localEvents": 18,
+    "frameComparison": "equal",
+    "testSha256": "dbd0901e18f734a732e20fdc8728dec36be23524c667d9f079bea4f0f6fd1a21"
+  }
 }
