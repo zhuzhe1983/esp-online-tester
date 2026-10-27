@@ -358,3 +358,34 @@ fn external_s31_analog_data_route_reset_and_missing_seed() {
         eprintln!("S31 analog control={control} steps={} stop={:?} transactions={}", run.steps, run.stop, m.bus.analog.transactions);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_POWER_ELF to power-probe.elf"]
+fn external_s31_perif_reset_and_qualified_brownout_input() {
+    let path = std::env::var("S31_POWER_ELF").expect("build firmware/s31-uart-probe and set S31_POWER_ELF");
+    let elf = std::fs::read(path).expect("read S31_POWER_ELF");
+    for control in ["enabled", "disabled", "wrong-data", "no-seed"] {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        let enable = if control == "disabled" { 0u32 } else { 1 << 31 };
+        m.bus.load(0x2f070000, &enable.to_le_bytes(), 4).unwrap();
+        if control != "no-seed" { m.bus.analog.set_perif_glitch(if control == "wrong-data" { 0 } else { 0xf7 }); }
+        let run = m.run(10_000);
+        if control == "enabled" || control == "disabled" {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting); assert!(m.bus.first_fault.is_none());
+            assert_eq!(m.bus.uart0.tx_out, b"S31 PERIF RESET BOD ARMED\n");
+            assert_eq!(m.bus.analog.perif_glitch(), Some(0xf7)); assert_eq!(m.bus.analog.transactions, 4);
+            m.bus.power.brownout_input(false).unwrap(); assert_eq!(m.run(10).stop, esp32s31::Stop::Waiting);
+            let pc = m.cpu.pc; m.bus.power.brownout_input(true).unwrap(); let after = m.run(10);
+            assert_eq!(after.steps, 0); assert_eq!(m.cpu.pc, pc);
+            assert_eq!(after.stop, if control == "enabled" { esp32s31::Stop::PowerReset(esp32s31::power::ResetCause::Brownout) } else { esp32s31::Stop::Waiting });
+        } else if control == "wrong-data" {
+            assert!(matches!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_))));
+            assert_eq!(m.bus.uart0.tx_out, b"S31 POWER FAIL\n"); assert_eq!(m.bus.analog.transactions, 1);
+        } else {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7)));
+            let fault = m.bus.first_fault.as_ref().unwrap(); assert_eq!(fault.address, 0x2010f804);
+            assert_eq!(fault.reason, emu_core::Fault::Prohibited); assert_eq!(m.bus.analog.transactions, 0);
+        }
+        eprintln!("S31 power control={control} steps={} stop={:?} transactions={} reset={:?}", run.steps, run.stop, m.bus.analog.transactions, m.bus.power.reset_request);
+    }
+}

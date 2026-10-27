@@ -1,0 +1,182 @@
+{
+  "date": "2026-10-27",
+  "base": "d266abad",
+  "scope": "Private S31 bootloader BOD mode1 and internal PERIF power/reset; no board/application/display readiness.",
+  "sources": "sources.json: fixed ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643 pmu_reg.h, lp_analog_peri_reg.h, brownout_ll.h, regi2c_saradc.h, reset_reasons.h and bootloader_soc.c.",
+  "semantics": {
+    "perif": "Internal slave0x69 register10, requires explicit initial byte, PMU XPD30/reset-release31 and existing master clock/route. Reads and writes access target byte; no detector voltage or ADC behavior.",
+    "reset": "Power loss/reset returns PERIF byte to caller-supplied profile; digital-master reset preserves byte. Explicit functional assumption; physical analog retention unknown.",
+    "bod": "LP_ANA FIB, mode1-enable and glitch-enable configuration words. Caller already-qualified BOD comparator event emits typed Brownout reset only with FIB bit1 clear and mode1 enabled. Runner stops before next instruction; no reset-domain reinitialization/voltage waveform.",
+    "strict": "No PERIF seed installed by default. Unknown FIB/eFuse-controlled comparator policy rejected. Glitch detection and BOD mode0 IRQ behavior remain absent; stored configuration is not claimed as analog behavior."
+  },
+  "sourceFixture": {
+    "path": "firmware/s31-uart-probe/power-probe.S",
+    "hostSeed": 247,
+    "guestReads": "f7 -> masked write f2 -> PMU reset -> f7",
+    "positive": {
+      "steps": 193,
+      "transactions": 4,
+      "stop": "Waiting",
+      "uart": "S31 PERIF RESET BOD ARMED\n",
+      "qualifiedEvent": "PowerReset(Brownout), zero additional instructions, PC unchanged"
+    },
+    "negative": [
+      {
+        "control": "BOD disabled",
+        "steps": 193,
+        "eventResult": "Waiting, no reset"
+      },
+      {
+        "control": "no comparator event",
+        "result": "Waiting, no reset"
+      },
+      {
+        "control": "wrong-data",
+        "steps": 105,
+        "transactions": 1,
+        "stop": "Ebreak",
+        "uart": "S31 POWER FAIL\n"
+      },
+      {
+        "control": "no-seed",
+        "steps": 18,
+        "transactions": 0,
+        "stop": "Exception7",
+        "address": "0x2010f804"
+      }
+    ]
+  },
+  "notImplemented": [
+    "LP/HP peripheral permission controllers (next actual bootloader fault)",
+    "BOD mode0 IRQs and comparator voltage/threshold qualification",
+    "Physical power-glitch detection and calibration",
+    "Full reset/reboot retention semantics",
+    "Other SARADC registers and ADC conversions",
+    "PLL lock/clock calibration and remaining application/display prerequisites",
+    "Physical device verification"
+  ],
+  "artifacts": [
+    {
+      "path": "firmware/s31-uart-probe/power-probe.S",
+      "bytes": 1534,
+      "sha256": "9cf2c2f6ccf50efc3fb652f3e8479a6a5b22e64bec5ac10a7db86dba904f71d8"
+    },
+    {
+      "path": "output/s31-uart-probe/power-probe.elf",
+      "bytes": 5076,
+      "sha256": "cb6128b9817009ec163ea90b858a84b6823f91ee8ded92f30efc773f9c6b0d52"
+    },
+    {
+      "path": "output/s31-sources/roms/esp32s31_rev0_rom.elf",
+      "bytes": 513396,
+      "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87"
+    }
+  ],
+  "officialProbe": "bootloader-power-plus-2.0.68.json",
+  "validation": {
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "workspaceRust": 1411,
+    "testGroups": 131,
+    "s31UnitTests": 47,
+    "sourceRomFixtures": 18,
+    "bothClippy": true,
+    "platformNodeFiles": 4,
+    "wasmScenarios": [
+      "hello",
+      "c3-hello",
+      "c6-hello",
+      "p4-hello",
+      "c6-energy-scan",
+      "c6-contiki",
+      "c6-contiki-net",
+      "c6-rpl-net",
+      "panel"
+    ],
+    "additional": [
+      "stable update",
+      "production WASM build/section check",
+      "standalone S31 wasm32 compile",
+      "native bins build"
+    ],
+    "goldensChanged": false,
+    "uiChanged": false,
+    "hardwareVerified": false,
+    "cpuEvidence": "bootloader-power-perf.json",
+    "logHashes": [
+      {
+        "group": "stable",
+        "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+      },
+      {
+        "group": "clippy-native",
+        "sha256": "2c7adb6a980be3aea6868c00a62e392dddadd7e670b5b00a226fe3c8700f2286"
+      },
+      {
+        "group": "clippy-wasm",
+        "sha256": "940c8855b020a6598e7db0f519dd1b29ea3dd9b225187a8e7697520e72f0da5f"
+      },
+      {
+        "group": "rust",
+        "sha256": "0a858b5405a9c4208304215f89e577aa669b418971be9a59c4d9d1a46bb08119"
+      },
+      {
+        "group": "fixtures",
+        "sha256": "60381c36213084a13f0b224daed965270fb05d1a431054676868fa9d844a0150"
+      },
+      {
+        "group": "wasm-build",
+        "sha256": "c6a3954a934e43fb2f1eb71aac14ddc83fc11811fe19b80c7ffabfd6a78f2dbf"
+      },
+      {
+        "group": "wasm-sections",
+        "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b"
+      },
+      {
+        "group": "platform",
+        "sha256": "5560d73ace732b129afb7048788dafffecc612a2235241126c60d4327edae452"
+      },
+      {
+        "group": "wasm",
+        "sha256": "daf961dffd0adc6198c140772465bc02ef4ff783bfd66b640812fd31b90d5164"
+      },
+      {
+        "group": "s31-wasm",
+        "sha256": "add8c9f0ec699cb38df2eb656d790c102de2159e416059e5b988e46f83e24874"
+      },
+      {
+        "group": "native",
+        "sha256": "3c99bd5a49af5b958868c46039161f635debb3c8fa5c2f4a7a066e955b1eb1ee"
+      },
+      {
+        "group": "rom",
+        "sha256": "1e1005178fbf12c9a90bf43aa0842f11b245d3485eb316cc7c6e94d89ebbc01a"
+      }
+    ],
+    "productionArtifacts": {
+      "esp32sim": {
+        "bytes": 3665112,
+        "sha256": "c528c4de1de1715f84066a5bb7f30930f4d10220b8339287adb8be0d78e53301"
+      },
+      "esp32sim-c3": {
+        "bytes": 3665152,
+        "sha256": "6fc1e065281b29cc34ad67e8238798109378ca260c208356ada8c15125422a15"
+      },
+      "esp32sim-c6": {
+        "bytes": 3665152,
+        "sha256": "0e868631654188a6f40aa2542f0c499c8eaec3a55ab031f5bbde158a30b03c1e"
+      },
+      "wasm": {
+        "bytes": 3988256,
+        "sha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31"
+      }
+    },
+    "productionScope": "No production native/WASM source path changes; S31 remains a separate crate absent from CLI/WASM dependencies. Actual binary comparison and CPU/output samples retained; no native byte-identity or S31 performance claim."
+  },
+  "reproduce": {
+    "fixtureBuild": "S31_BUILD_ROM_IMAGE=1 ESPTOOL_BIN=<esptool5.4.0> RISCV_TOOLCHAIN_PREFIX=<riscv32-esp-elf15.2.0-prefix> bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "fixture": "S31_POWER_ELF=<absolute-output>/power-probe.elf cargo test --release -p esp32s31 external_s31_perif_reset_and_qualified_brownout_input -- --include-ignored --nocapture",
+    "officialProbe": "cargo build --release -p esp32s31 --example bringup; python3 tools/s31-native-firmware-probe.py --firmware-url <caller-URL> --sha256 <caller-SHA256> --rom <public20260528-S31-ROM-ELF> --rom-spi0-shadow --nor-jedec ef4018 --analog-bias 0000 --analog-perif-glitch ff --steps 2000000 --output <receipt.json>",
+    "defaults": "Omit PERIF seed for strict target-missing rejection; preceding explicit development inputs retain their documented unknown-hardware limitations."
+  },
+  "privacy": "Only public source URLs, firmware/ROM hashes, bounded guest output, test assertions and aggregate benchmark data retained. Official firmware bytes are never written to disk by the probe. Raw local build paths remain only in ignored logs; committed receipts retain log hashes, not host paths."
+}

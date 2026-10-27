@@ -138,3 +138,13 @@ The private `bringup` example accepts `--analog-bias=hhhh` (register0 then
 register1) as an explicit development input. Public headers do not establish
 these analog reset values; no seed is installed by default, and no voltage,
 settling, PLL-lock or product-hardware claim follows from byte readback.
+
+`power-probe.S` reads caller PERIF register10 seed `f7`, clears detector bits to
+`f2`, resets the target through the PMU control and checks restored `f7`. Its BOD
+mode1 enable comes from the host mailbox at `0x2f070000`. After the guest reaches
+WFI, a qualified comparator event produces a typed Brownout reset request only
+when enabled; no voltage or physical glitch model is implied. Set the absolute
+`S31_POWER_ELF` path for this test. The private example accepts
+`--analog-perif-glitch=hh` as an explicit target input; missing seed, closed power,
+asserted reset and incorrect route fail. Product firmware is never altered by
+these source-built positive/negative controls.

@@ -729,3 +729,54 @@ Five alternating CPU pairs against fixed main `84e67571` (production source path
 unchanged through main `f14d5634`) gave S3 −0.842%, C3 +0.474%, C6 +2.062%, with
 identical guest instruction/cycle statistics and UART hashes. This is a regression
 guard, not an attributed S31 speed result; see [samples](evidence/s31-bringup/bootloader-analog-perf.json).
+
+### Bootloader BOD and PERIF power/reset subset
+
+The same unmodified Plus 2.0.68 full image now executes its BOD mode1 enable,
+internal PERIF detector configuration and super-watchdog auto-feed, then stops at
+PC `0x2f06a6f8` writing `0x20706000` (`LP_PERI_PMS_LP_SYSREG_CTRL_REG`). This is
+permission-controller initialization, not an application or display entry. INK4
+Plus remains unavailable in the product platform.
+
+This stage adds the fixed v6.1 LP_ANA FIB, mode1 reset-enable and glitch-reset
+configuration words. BOD mode1 accepts an explicit **already-qualified comparator
+event**, requires software control (FIB bit1 clear), and emits a typed Brownout
+reset request only when enabled. The runner stops before executing another
+instruction; it does not invent a physical voltage, comparator threshold, reset
+pulse, reset-domain retention or automatic reboot. Unknown eFuse/FIB-controlled
+policy is rejected. Mode0 interrupts and physical glitch detection remain absent;
+retaining their configuration fields is not evidence of analog behavior.
+
+PERIF/SARADC slave `0x69` register10 is separately routed through the real internal
+I²C byte-transaction path. Access requires PMU XPD30 and reset release31 plus the
+existing master/parent clocks and slave route. The explicit
+`--analog-perif-glitch=hh` input supplies its unknown analog initial byte. Power
+loss or reset returns this byte to that caller-supplied profile; a master-only
+reset preserves it. This is a functional reset-domain assumption, not measured
+silicon retention. Other SARADC registers, ADC conversion and detector calibration
+remain unsupported.
+
+Without a PERIF seed, the official image stops at its first target access after
+199,720 instructions, four BIAS transactions and no PERIF transaction. With `ff`,
+the real driver clears register10 bits0,2,3 and preserves the other bits, producing
+`f2`; with `00`, the same writes leave `00`. Both perform ten total analog
+transactions and reach the same permission-controller fault after 199,980
+instructions. All earlier explicit NOR/BIAS/SPI0 development inputs remain
+required and do not identify the actual Plus hardware profile.
+
+The source-built `power-probe.S` independently checks PERIF `f7 → f2 → reset → f7`
+through guest commands, configures BOD, prints `S31 PERIF RESET BOD ARMED`, and
+waits after 193 instructions. A qualified host event then produces Brownout only
+for the enabled case; disabled/no-event controls stay waiting. Wrong target data
+executes the guest's failure branch; a missing seed traps before any transaction.
+See [stage receipt](evidence/s31-bringup/bootloader-power.json) and
+[official probes](evidence/s31-bringup/bootloader-power-plus-2.0.68.json).
+
+Power-stage validation passes both warnings-denied Clippy targets, 1,411 workspace
+Rust tests under CI's ignored-test policy, 47 S31 unit tests, 18 actual source/ROM
+fixtures, the four platform Node files, nine existing WASM scenarios, production
+native/WASM builds and the private S31 wasm32 check. No golden, UI, product model
+or availability changed. Five alternating CPU pairs versus fixed main84e67571
+(production paths unchanged through f14d5634) gave S3 +0.588%, C3 −0.050%, C6
++1.633%, with identical UART hashes and instruction/cycle statistics. This is a
+production regression guard; no S31 speed or silicon claim is inferred.

@@ -24,7 +24,7 @@ use riscv_rv32::{Cpu, Trap};
 /// bus uses the S31 addresses and reports the first unsupported access with the guest PC.
 pub struct Bringup { pub cpu: Cpu, pub bus: S31Bus }
 #[derive(Debug, PartialEq, Eq)]
-pub enum Stop { Budget, Waiting, Trap(Trap), Reset(rtc_wdt::ResetRequest) }
+pub enum Stop { Budget, Waiting, Trap(Trap), Reset(rtc_wdt::ResetRequest), PowerReset(power::ResetCause) }
 pub struct Run { pub steps: u64, pub stop: Stop }
 
 impl Default for Bringup { fn default() -> Self { Self::new() } }
@@ -68,6 +68,7 @@ impl Bringup {
 
     pub fn run(&mut self, budget: u64) -> Run {
         for steps in 0..budget {
+            if let Some(reset) = self.bus.power.reset_request { return Run { steps, stop: Stop::PowerReset(reset) }; }
             if let Some(reset) = self.bus.rtc_wdt.reset_request { return Run { steps, stop: Stop::Reset(reset) }; }
             self.bus.bus_monitor.observe(self.cpu.pc, self.cpu.x[2]);
             self.cpu.irq = self.bus.refresh_irq(self.cpu.mintthresh);

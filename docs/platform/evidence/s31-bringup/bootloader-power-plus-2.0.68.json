@@ -1,0 +1,469 @@
+{
+  "scope": "Unmodified full Plus2.0.68 image through real ROM and bootloader; application/display not entered. Explicit development inputs, not identified silicon profile.",
+  "runs": [
+    {
+      "stepBudget": 2000000,
+      "source": {
+        "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "finalUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "status": 200,
+        "fetchedAt": "2026-10-27T17:30:18Z",
+        "mediaType": "application/octet-stream",
+        "bytes": 16405079,
+        "sha256": "265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80"
+      },
+      "romSha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+      "partitions": [
+        {
+          "type": 1,
+          "subtype": 2,
+          "offset": "0x9000",
+          "bytes": 16384,
+          "label": "nvs",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 0,
+          "offset": "0xd000",
+          "bytes": 8192,
+          "label": "otadata",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 1,
+          "offset": "0xf000",
+          "bytes": 4096,
+          "label": "phy_init",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 130,
+          "offset": "0x10000",
+          "bytes": 409600,
+          "label": "model",
+          "flags": 0
+        },
+        {
+          "type": 0,
+          "subtype": 16,
+          "offset": "0x80000",
+          "bytes": 5242880,
+          "label": "ota_0",
+          "flags": 0
+        },
+        {
+          "type": 0,
+          "subtype": 17,
+          "offset": "0x580000",
+          "bytes": 5242880,
+          "label": "ota_1",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 130,
+          "offset": "0xa80000",
+          "bytes": 409600,
+          "label": "resources",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 64,
+          "offset": "0xae4000",
+          "bytes": 5242880,
+          "label": "font_data",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 3,
+          "offset": "0xfe4000",
+          "bytes": 65536,
+          "label": "coredump",
+          "flags": 0
+        }
+      ],
+      "images": [
+        {
+          "offset": "0x2000",
+          "entry": "0x2f06a2ba",
+          "chipId": 32,
+          "segments": [
+            {
+              "address": "0x2f0740c0",
+              "bytes": 5772
+            },
+            {
+              "address": "0x2f06a2b0",
+              "bytes": 3196
+            },
+            {
+              "address": "0x2f06cfb0",
+              "bytes": 13160
+            }
+          ],
+          "checksumValid": true,
+          "appendedDigestValid": true
+        },
+        {
+          "offset": "0x80000",
+          "entry": "0x2f0009b6",
+          "chipId": 32,
+          "segments": [
+            {
+              "address": "0x402d0020",
+              "bytes": 1780080
+            },
+            {
+              "address": "0x2e000020",
+              "bytes": 36
+            },
+            {
+              "address": "0x2f000000",
+              "bytes": 54868
+            },
+            {
+              "address": "0x40000020",
+              "bytes": 2890828
+            },
+            {
+              "address": "0x2f00d654",
+              "bytes": 48808
+            },
+            {
+              "address": "0x2f019500",
+              "bytes": 41800
+            }
+          ],
+          "checksumValid": true,
+          "appendedDigestValid": true
+        }
+      ],
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000"
+      },
+      "uart": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:1\r\nload:0x2f0740c0,len:0x168c\r\nload:0x2f06a2b0,len:0xc7c\r\nload:0x2f06cfb0,len:0x3368\r\nentry 0x2f06a2ba\r\n",
+      "diagnostic": "flash bytes=16405079 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment analog BIAS seed=[00, 00] (caller input, no public reset value or voltage calibration)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Trap(Exception(7)) steps=199720 pc=0x2f801700 mepc=0x2f0702a0 mcause=0x7 mtval=0x2010f804 fault=Some(AccessFault { pc: 788988576, address: 537982980, bytes: 4, write: true, fetch: false, reason: Prohibited })\nmspi-commands=6 cache-maintenance=4 sha-blocks=347\nanalog-transactions=4 bias=Some([160, 10]) mpll-shutdown=true\nusb-host packets=8 bytes=225 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:1\\r\\nload:0x2f0740c0,len:0x168c\\r\\nload:0x2f06a2b0,len:0xc7c\\r\\nload:0x2f06cfb0,len:0x3368\\r\\nentry 0x2f06a2ba\\r\\n\"\n",
+      "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk"
+    },
+    {
+      "stepBudget": 2000000,
+      "source": {
+        "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "finalUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "status": 200,
+        "fetchedAt": "2026-10-27T17:30:46Z",
+        "mediaType": "application/octet-stream",
+        "bytes": 16405079,
+        "sha256": "265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80"
+      },
+      "romSha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+      "partitions": [
+        {
+          "type": 1,
+          "subtype": 2,
+          "offset": "0x9000",
+          "bytes": 16384,
+          "label": "nvs",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 0,
+          "offset": "0xd000",
+          "bytes": 8192,
+          "label": "otadata",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 1,
+          "offset": "0xf000",
+          "bytes": 4096,
+          "label": "phy_init",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 130,
+          "offset": "0x10000",
+          "bytes": 409600,
+          "label": "model",
+          "flags": 0
+        },
+        {
+          "type": 0,
+          "subtype": 16,
+          "offset": "0x80000",
+          "bytes": 5242880,
+          "label": "ota_0",
+          "flags": 0
+        },
+        {
+          "type": 0,
+          "subtype": 17,
+          "offset": "0x580000",
+          "bytes": 5242880,
+          "label": "ota_1",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 130,
+          "offset": "0xa80000",
+          "bytes": 409600,
+          "label": "resources",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 64,
+          "offset": "0xae4000",
+          "bytes": 5242880,
+          "label": "font_data",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 3,
+          "offset": "0xfe4000",
+          "bytes": 65536,
+          "label": "coredump",
+          "flags": 0
+        }
+      ],
+      "images": [
+        {
+          "offset": "0x2000",
+          "entry": "0x2f06a2ba",
+          "chipId": 32,
+          "segments": [
+            {
+              "address": "0x2f0740c0",
+              "bytes": 5772
+            },
+            {
+              "address": "0x2f06a2b0",
+              "bytes": 3196
+            },
+            {
+              "address": "0x2f06cfb0",
+              "bytes": 13160
+            }
+          ],
+          "checksumValid": true,
+          "appendedDigestValid": true
+        },
+        {
+          "offset": "0x80000",
+          "entry": "0x2f0009b6",
+          "chipId": 32,
+          "segments": [
+            {
+              "address": "0x402d0020",
+              "bytes": 1780080
+            },
+            {
+              "address": "0x2e000020",
+              "bytes": 36
+            },
+            {
+              "address": "0x2f000000",
+              "bytes": 54868
+            },
+            {
+              "address": "0x40000020",
+              "bytes": 2890828
+            },
+            {
+              "address": "0x2f00d654",
+              "bytes": 48808
+            },
+            {
+              "address": "0x2f019500",
+              "bytes": 41800
+            }
+          ],
+          "checksumValid": true,
+          "appendedDigestValid": true
+        }
+      ],
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "ff"
+      },
+      "uart": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:1\r\nload:0x2f0740c0,len:0x168c\r\nload:0x2f06a2b0,len:0xc7c\r\nload:0x2f06cfb0,len:0x3368\r\nentry 0x2f06a2ba\r\n",
+      "diagnostic": "flash bytes=16405079 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment analog BIAS seed=[00, 00] (caller input, no public reset value or voltage calibration)\ndevelopment analog PERIF reg10 seed=ff (caller input, not a measured voltage/glitch profile)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Trap(Exception(7)) steps=199980 pc=0x2f801700 mepc=0x2f06a6f8 mcause=0x7 mtval=0x20706000 fault=Some(AccessFault { pc: 788965112, address: 544235520, bytes: 4, write: true, fetch: false, reason: Unmapped })\nmspi-commands=6 cache-maintenance=4 sha-blocks=347\nanalog-transactions=10 bias=Some([160, 10]) mpll-shutdown=true\nanalog-perif-glitch=Some(242)\nusb-host packets=8 bytes=225 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:1\\r\\nload:0x2f0740c0,len:0x168c\\r\\nload:0x2f06a2b0,len:0xc7c\\r\\nload:0x2f06cfb0,len:0x3368\\r\\nentry 0x2f06a2ba\\r\\n\"\n",
+      "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk"
+    },
+    {
+      "stepBudget": 2000000,
+      "source": {
+        "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "finalUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "status": 200,
+        "fetchedAt": "2026-10-27T17:37:21Z",
+        "mediaType": "application/octet-stream",
+        "bytes": 16405079,
+        "sha256": "265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80"
+      },
+      "romSha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+      "partitions": [
+        {
+          "type": 1,
+          "subtype": 2,
+          "offset": "0x9000",
+          "bytes": 16384,
+          "label": "nvs",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 0,
+          "offset": "0xd000",
+          "bytes": 8192,
+          "label": "otadata",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 1,
+          "offset": "0xf000",
+          "bytes": 4096,
+          "label": "phy_init",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 130,
+          "offset": "0x10000",
+          "bytes": 409600,
+          "label": "model",
+          "flags": 0
+        },
+        {
+          "type": 0,
+          "subtype": 16,
+          "offset": "0x80000",
+          "bytes": 5242880,
+          "label": "ota_0",
+          "flags": 0
+        },
+        {
+          "type": 0,
+          "subtype": 17,
+          "offset": "0x580000",
+          "bytes": 5242880,
+          "label": "ota_1",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 130,
+          "offset": "0xa80000",
+          "bytes": 409600,
+          "label": "resources",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 64,
+          "offset": "0xae4000",
+          "bytes": 5242880,
+          "label": "font_data",
+          "flags": 0
+        },
+        {
+          "type": 1,
+          "subtype": 3,
+          "offset": "0xfe4000",
+          "bytes": 65536,
+          "label": "coredump",
+          "flags": 0
+        }
+      ],
+      "images": [
+        {
+          "offset": "0x2000",
+          "entry": "0x2f06a2ba",
+          "chipId": 32,
+          "segments": [
+            {
+              "address": "0x2f0740c0",
+              "bytes": 5772
+            },
+            {
+              "address": "0x2f06a2b0",
+              "bytes": 3196
+            },
+            {
+              "address": "0x2f06cfb0",
+              "bytes": 13160
+            }
+          ],
+          "checksumValid": true,
+          "appendedDigestValid": true
+        },
+        {
+          "offset": "0x80000",
+          "entry": "0x2f0009b6",
+          "chipId": 32,
+          "segments": [
+            {
+              "address": "0x402d0020",
+              "bytes": 1780080
+            },
+            {
+              "address": "0x2e000020",
+              "bytes": 36
+            },
+            {
+              "address": "0x2f000000",
+              "bytes": 54868
+            },
+            {
+              "address": "0x40000020",
+              "bytes": 2890828
+            },
+            {
+              "address": "0x2f00d654",
+              "bytes": 48808
+            },
+            {
+              "address": "0x2f019500",
+              "bytes": 41800
+            }
+          ],
+          "checksumValid": true,
+          "appendedDigestValid": true
+        }
+      ],
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "00"
+      },
+      "uart": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:1\r\nload:0x2f0740c0,len:0x168c\r\nload:0x2f06a2b0,len:0xc7c\r\nload:0x2f06cfb0,len:0x3368\r\nentry 0x2f06a2ba\r\n",
+      "diagnostic": "flash bytes=16405079 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment analog BIAS seed=[00, 00] (caller input, no public reset value or voltage calibration)\ndevelopment analog PERIF reg10 seed=00 (caller input, not a measured voltage/glitch profile)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Trap(Exception(7)) steps=199980 pc=0x2f801700 mepc=0x2f06a6f8 mcause=0x7 mtval=0x20706000 fault=Some(AccessFault { pc: 788965112, address: 544235520, bytes: 4, write: true, fetch: false, reason: Unmapped })\nmspi-commands=6 cache-maintenance=4 sha-blocks=347\nanalog-transactions=10 bias=Some([160, 10]) mpll-shutdown=true\nanalog-perif-glitch=Some(0)\nusb-host packets=8 bytes=225 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:1\\r\\nload:0x2f0740c0,len:0x168c\\r\\nload:0x2f06a2b0,len:0xc7c\\r\\nload:0x2f06cfb0,len:0x3368\\r\\nentry 0x2f06a2ba\\r\\n\"\n",
+      "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk"
+    }
+  ]
+}

@@ -1,47 +1,59 @@
 //! S31 internal analog-I2C register transactions; no analog voltage, PLL lock or RF simulation.
 //! ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643:
 //! soc/esp32s31/include/modem/{reg_base,i2c_ana_mst_reg,modem_lpcon_reg,modem_syscon_reg}.h,
-//! esp_hal_regi2c/esp32s31/{regi2c_impl.c,include/hal/regi2c_ctrl_ll.h}.
+//! esp_hal_regi2c/esp32s31/{regi2c_impl.c,include/hal/regi2c_ctrl_ll.h},
+//! soc/esp32s31/{include/soc/regi2c_saradc.h,register/soc/pmu_reg.h}.
 use emu_core::Fault;
 pub const BASE: u32 = 0x2010_f800;
 const LP_CLK: u32 = 0x2010_f018;
 const LP_FORCE: u32 = 0x2010_f01c;
 const LP_RESET: u32 = 0x2010_f024;
+const PERIF_POWER: u32 = 0x2070_4208;
 const SYS_CLK: u32 = 0x2010_9c04;
 
 pub struct Analog {
     lp_clock: u32, force: u32, source: u32, ctrl: [u32; 2], config: [u32; 2],
-    select: [u32; 3], timing: [u32; 3], date: u32, bias: Option<[u8; 2]>, pub transactions: u64,
+    select: [u32; 3], timing: [u32; 3], date: u32, bias: Option<[u8; 2]>, perif: Option<[u8; 2]>, perif_power: u32, pub transactions: u64,
 }
 
 impl Default for Analog {
     fn default() -> Self { Self { lp_clock: 0, force: 0, source: (1 << 21) | 2, ctrl: [0; 2], config: [0; 2],
-        select: [0xe408, 0x2d, 4], timing: [0x42; 3], date: 0x2411290, bias: None, transactions: 0 } }
+        select: [0xe408, 0x2d, 4], timing: [0x42; 3], date: 0x2411290, bias: None, perif: None, perif_power: 1 << 30, transactions: 0 } }
 }
 impl Analog {
     pub fn is_mmio(address: u32) -> bool {
-        (BASE..BASE + 0x40).contains(&address) || matches!(address & !3, LP_CLK | LP_FORCE | LP_RESET | SYS_CLK)
+        (BASE..BASE + 0x40).contains(&address) || matches!(address & !3, LP_CLK | LP_FORCE | LP_RESET | SYS_CLK | PERIF_POWER)
     }
     /// The public BIAS field header specifies two data bytes but no silicon reset values.
     /// An explicit host seed is therefore required; zero is never assumed for an absent die.
     pub fn set_bias(&mut self, bytes: [u8; 2]) { self.bias = Some(bytes); }
     pub fn bias(&self) -> Option<[u8; 2]> { self.bias }
+    /// Explicit register10 initial value from the caller, not an inferred analog reset.
+    pub fn set_perif_glitch(&mut self, value: u8) { self.perif = Some([value, value]); }
+    pub fn perif_glitch(&self) -> Option<u8> { self.perif.map(|pair| pair[1]) }
     fn transaction(&mut self, host: usize, value: u32) -> Result<(), Fault> {
         // EN is mandatory in the official LL; FO prevents automatic idle gating, it
         // does not substitute for a disabled master. Only synchronous byte transactions
         // are modeled, not a 160 MHz waveform or an analog settling delay.
         if self.lp_clock & 4 == 0 { return Err(Fault::Prohibited); }
         let slave = value & 255; let reg = ((value >> 8) & 255) as usize;
-        // regi2c_bias.h: 0x6a, register0 (1P6/1P1), register1 (1P1/2P2 PVT).
-        if slave != 0x6a || reg > 1 { return Err(Fault::Unmapped); }
-        if self.select[1] & (1 << 6) != 0 || host != usize::from(self.select[2] & (1 << 8) == 0) { return Err(Fault::Prohibited); }
-        let bias = self.bias.as_mut().ok_or(Fault::Prohibited)?;
-        if value & (1 << 24) != 0 { bias[reg] = (value >> 16) as u8; }
-        self.ctrl[host] = (value & 0x0100_ffff) | u32::from(bias[reg]) << 16;
+        // Internal BIAS and PERIF are separate targets. Public headers specify fields,
+        // not their analog reset bytes; both require explicit host inputs.
+        let slave_bit = match (slave, reg) { (0x6a, 0 | 1) => 4, (0x69, 10) => 9, _ => return Err(Fault::Unmapped) };
+        if self.select[1] & (1 << (slave_bit + 2)) != 0 || host != usize::from(self.select[2] & (1 << (slave_bit + 4)) == 0) { return Err(Fault::Prohibited); }
+        let byte = if slave == 0x6a { &mut self.bias.as_mut().ok_or(Fault::Prohibited)?[reg] }
+            else {
+                // PMU_ANA_PERI_PWR_CTRL: XPD30 and active-low reset release31.
+                if self.perif_power != 0xc000_0000 { return Err(Fault::Prohibited); }
+                &mut self.perif.as_mut().ok_or(Fault::Prohibited)?[1]
+            };
+        if value & (1 << 24) != 0 { *byte = (value >> 16) as u8; }
+        self.ctrl[host] = (value & 0x0100_ffff) | u32::from(*byte) << 16;
         // BUSY is low only after the requested read/write above really completes.
         self.transactions += 1; Ok(())
     }
     pub fn read(&self, address: u32, parent_clock: bool) -> Result<u32, Fault> {
+        if address == PERIF_POWER { return Ok(self.perif_power); }
         if !parent_clock { return Err(Fault::Prohibited); }
         match address {
             LP_CLK => Ok(self.lp_clock), LP_FORCE => Ok(self.force), LP_RESET => Ok(0), SYS_CLK => Ok(self.source),
@@ -56,6 +68,15 @@ impl Analog {
         }
     }
     pub fn write(&mut self, address: u32, value: u32, parent_clock: bool) -> Result<(), Fault> {
+        if address == PERIF_POWER {
+            self.perif_power = value & 0xc000_0000;
+            if self.perif_power != 0xc000_0000 {
+                // Model reset/power loss returns the target to the caller's explicit
+                // initialization profile; physical analog retention is not characterized.
+                if let Some(pair) = self.perif.as_mut() { pair[1] = pair[0]; }
+            }
+            return Ok(());
+        }
         if !parent_clock { return Err(Fault::Prohibited); }
         match address {
             LP_CLK => { if value & 0xb != 0 { return Err(Fault::Prohibited); } self.lp_clock = value & 4; }
@@ -87,6 +108,27 @@ impl Analog {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn perif_target_requires_power_release_seed_and_route_and_retains_master_reset_data() {
+        let mut a = Analog::default(); a.write(LP_CLK, 4, true).unwrap();
+        assert_eq!(a.read(PERIF_POWER, false), Ok(1 << 30));
+        assert_eq!(a.write(BASE + 4, 0xa69, true), Err(Fault::Prohibited));
+        a.write(PERIF_POWER, 0xc000_0000, false).unwrap();
+        assert_eq!(a.write(BASE + 4, 0xa69, true), Err(Fault::Prohibited));
+        a.set_perif_glitch(0xf7); a.write(BASE + 4, 0xa69, true).unwrap();
+        assert_eq!(a.read(BASE + 4, true), Ok(0xf70a69));
+        a.write(BASE + 4, 0x01f20a69, true).unwrap();
+        a.write(LP_RESET, 4, true).unwrap(); assert_eq!(a.perif_glitch(), Some(0xf2));
+        a.write(BASE + 0x20, 0x2004, true).unwrap();
+        assert_eq!(a.write(BASE + 4, 0xa69, true), Err(Fault::Prohibited));
+        a.write(BASE, 0xa69, true).unwrap(); assert_eq!(a.read(BASE, true), Ok(0xf20a69));
+        a.write(BASE + 0x1c, 0x800, true).unwrap();
+        assert_eq!(a.write(BASE, 0xa69, true), Err(Fault::Prohibited));
+        a.write(PERIF_POWER, 0x4000_0000, false).unwrap(); assert_eq!(a.perif_glitch(), Some(0xf7));
+        a.write(BASE + 0x1c, 0, true).unwrap(); assert_eq!(a.write(BASE, 0xa69, true), Err(Fault::Prohibited));
+        a.write(PERIF_POWER, 0x8000_0000, false).unwrap(); assert_eq!(a.write(BASE, 0xa69, true), Err(Fault::Prohibited));
+        assert_eq!(a.transactions, 3); assert_eq!(a.write(BASE, 0xb69, true), Err(Fault::Unmapped));
+    }
     #[test]
     fn forced_clock_and_routes_cannot_substitute_for_the_master_or_missing_data() {
         let mut a = Analog::default(); assert_eq!(a.read(SYS_CLK, true), Ok(0x200002)); a.set_bias([0x53, 0x27]);
