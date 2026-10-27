@@ -72,11 +72,13 @@ fn factory_devices_and_active_low_button_inputs() {
         assert_eq!(board.name(), "stopwatch");
         let devices = board.i2c_devices();
         assert_eq!(devices.iter().map(|(bus, addr, _)| (*bus, *addr)).collect::<Vec<_>>(),
-            [(0, 0x6e), (0, 0x4f), (0, 0x15), (0, 0x68)]);
+            [(0, 0x6e), (0, 0x4f), (0, 0x15), (0, 0x68), (0, 0x32),
+             (1, 0x6e), (1, 0x4f), (1, 0x15), (1, 0x68), (1, 0x32)]);
+        assert!(devices.iter().all(|(_,_,device)|device.pins()==Some((47,48))));
         assert_eq!(board.named_pin("a"), Some(2));
         assert_eq!(board.named_pin("btn_b"), Some(1));
         assert_eq!(board.named_pin("missing"), None);
-        assert_eq!(board.input_levels(), [(38, false), (2, true), (1, true)]);
+        assert_eq!(board.input_levels(), [(38, false), (2, true), (1, true), (47,true), (48,true)]);
         assert_eq!(board.display().map(|(w, h, _, _)| (w, h)), Some((468, 466)));
     }
 }

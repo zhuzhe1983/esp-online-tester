@@ -5,6 +5,8 @@ use esp_periph::i2c::bmi270::{Bmi270, Bmi270Sample};
 use esp_soc::board::{BoardEdge, BoardModel, VirtualCycle};
 use esp_soc::devices::Ws2812Chain;
 use esp_soc::devices::co5300::{Co5300, Co5300Scan};
+use esp_soc::devices::i2c_bitbang::I2cBitBang;
+use esp_periph::i2c::Reg8Device;
 
 use crate::i2c::{Cst820, I2cDevice, TouchState};
 
@@ -83,6 +85,9 @@ pub struct StopWatch {
     cs: Option<bool>,
     imu: Arc<Mutex<Bmi270Sample>>,
     unit_rgb: Option<Box<UnitRgb>>,
+    i2c: I2cBitBang,
+    i2c_levels: [bool; 2],
+    i2c_edges: Vec<BoardEdge>,
 }
 
 impl StopWatch {
@@ -111,6 +116,9 @@ impl StopWatch {
             cs: None,
             imu: Default::default(),
             unit_rgb: None,
+            i2c: I2cBitBang::new(),
+            i2c_levels: [true, true],
+            i2c_edges: Vec::new(),
         }
     }
     fn sync_rgb_power(&mut self) {
@@ -160,7 +168,8 @@ impl BoardModel for StopWatch {
         vec![0xff; rx_len]
     }
     fn i2c_devices(&mut self) -> Vec<(u8, u8, Box<dyn I2cDevice>)> {
-        vec![
+        self.i2c.clear();
+        let devices:Vec<(u8,u8,Box<dyn I2cDevice>)>=vec![
             (0, M5pm1::ADDRESS, Box::new(PowerDevice {
                 device: Box::new(M5pm1::new(self.wiring.pmic.clone())), wiring: self.wiring.clone(),
             })),
@@ -169,7 +178,22 @@ impl BoardModel for StopWatch {
             })),
             (0, 0x15, Box::new(Cst820::new(self.wiring.touch.clone()))),
             (0, Bmi270::ADDRESS, Box::new(Bmi270::new(self.imu.clone()))),
-        ]
+            // RX8130 register RAM for board probing/settings, as on PaperMono.
+            // Calendar progression, alarms and battery-domain retention are not modeled.
+            (0, 0x32, Box::new(Reg8Device::new("rx8130-register-ram", &[]))),
+        ];
+        for (_,address,device) in devices {self.i2c.attach(address,device);}
+        // StopWatch schematic: internal SDA47/SCL48. M5GFX probes with GPIO,
+        // then uses either controller; all paths access the same physical chips.
+        (0..2).flat_map(|bus|self.i2c.controller_devices(Some((47,48))).into_iter().map(move |(address,device)|(bus,address,device))).collect()
+    }
+    fn gpio_output_at(&mut self,cycle:VirtualCycle,changes:&[(u8,bool)],enabled:u64,output:u64) {
+        self.gpio_changes(changes);
+        let released=|pin:u8|enabled&(1u64<<pin)==0 || output&(1u64<<pin)!=0;
+        let scl=released(48);let sda=self.i2c.drive(scl,released(47));
+        for (index,(pin,level)) in [(47,sda),(48,scl)].into_iter().enumerate() {
+            if self.i2c_levels[index]!=level {self.i2c_levels[index]=level;self.i2c_edges.push(BoardEdge{cycle,pin,level});}
+        }
     }
     fn set_imu_sample(&mut self, accel_g: [f64; 3], gyro_dps: [f64; 3]) -> bool {
         if accel_g.iter().chain(gyro_dps.iter()).any(|v| !v.is_finite()) { return false; }
@@ -187,7 +211,7 @@ impl BoardModel for StopWatch {
     fn input_levels(&self) -> Vec<(u8, bool)> {
         let state = self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");
         let mut levels=vec![state.panel.tear_input().expect("StopWatch scan must be configured"),
-            (PIN_STOPWATCH_BUTTON_A, true), (PIN_STOPWATCH_BUTTON_B, true)];
+            (PIN_STOPWATCH_BUTTON_A, true), (PIN_STOPWATCH_BUTTON_B, true), (47,self.i2c_levels[0]), (48,self.i2c_levels[1])];
         if let Some(button)=&state.unit_button {levels.push((11,button.level));}levels
     }
     fn touch(&mut self, x: u16, y: u16, down: bool) {
@@ -207,6 +231,7 @@ impl BoardModel for StopWatch {
     }
     fn take_edges(&mut self) -> Vec<BoardEdge> {
         let mut state=self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");let mut edges=state.panel.take_edges();
+        edges.append(&mut self.i2c_edges);
         if let Some(button)=&mut state.unit_button {if button.dirty {button.dirty=false;edges.push(BoardEdge{cycle:button.cycle,pin:11,level:button.level});}}edges
     }
     fn accessory_button_at(&mut self,cycle:VirtualCycle,model:&str,port:&str,connected:bool,pressed:bool)->Option<(u8,Option<bool>)> {
@@ -245,6 +270,26 @@ impl BoardModel for StopWatch {
 mod unit_button_tests {
     use super::*;
     fn write(device:&mut dyn I2cDevice,reg:u8,value:u8) {assert!(device.start(false));assert!(device.write(reg));assert!(device.write(value));device.stop();}
+    #[test]
+    fn internal_i2c_gpio_probe_and_both_controllers_share_state() {
+        fn drive(b:&mut StopWatch,scl:bool,sda:bool)->bool {
+            b.gpio_output_at(1,&[],(1<<47)|(1<<48),(u64::from(scl)<<48)|(u64::from(sda)<<47));
+            b.input_levels().into_iter().find(|(pin,_)|*pin==47).unwrap().1
+        }
+        fn start(b:&mut StopWatch) {drive(b,false,true);drive(b,true,true);drive(b,true,false);}
+        fn stop(b:&mut StopWatch) {drive(b,false,false);drive(b,true,false);assert!(drive(b,true,true));}
+        fn send(b:&mut StopWatch,value:u8)->bool {for bit in (0..8).rev() {drive(b,false,value&(1<<bit)!=0);drive(b,true,value&(1<<bit)!=0);}drive(b,false,true);let ack=!drive(b,true,true);drive(b,false,true);ack}
+        let mut b=StopWatch::new();let mut devices=b.i2c_devices();
+        for address in [0x6e,0x4f,0x68,0x15,0x32] {start(&mut b);assert!(send(&mut b,address<<1));stop(&mut b);}
+        start(&mut b);assert!(!send(&mut b,0x50<<1));stop(&mut b); // StopWatch has no PaperMono NFC.
+        start(&mut b);assert!(send(&mut b,0x6e<<1));assert!(send(&mut b,6));assert!(send(&mut b,0x1f));stop(&mut b);
+        for bus in 0..2 {let d=devices.iter_mut().find(|(port,a,_)|*port==bus&&*a==0x6e).unwrap().2.as_mut();assert_eq!(d.pins(),Some((47,48)));assert!(d.start(false));assert!(d.write(6));assert!(d.start(true));assert_eq!(d.read(),0x1f);d.stop();}
+        assert!(b.wiring.pmic.lock().unwrap().grove_5v_enabled);
+        assert!(b.take_edges().iter().all(|e|e.pin==47||e.pin==48));
+        assert!(b.take_edges().is_empty());
+        // Reinitializing the board restores real device reset state, not the prior probe.
+        let mut reset=b.i2c_devices();let d=reset.iter_mut().find(|(bus,a,_)|*bus==1&&*a==0x6e).unwrap().2.as_mut();d.start(false);d.write(6);d.start(true);assert_eq!(d.read(),0x17);
+    }
     #[test]
     fn u027_routes_only_white_pin_and_follows_grove_power_and_hold() {
         let mut board=StopWatch::new();let mut devices=board.i2c_devices();let pmic=devices.iter_mut().find(|(_,a,_)|*a==0x6e).unwrap().2.as_mut();

@@ -100,5 +100,9 @@ reads, the reset pulse with uninterrupted rail power and shutdown ordering.
 
 Unmodeled registers are zero-initialized register RAM, not implementations of
 ADC conversion, PWM, IRQs or timers. The [`stopwatch` board](boards.md#stopwatch--m5stack-stopwatch-esp32-s3)
-attaches these devices on bus 0 and retains both state handles for panel
-power/reset gating and shutdown handling. BMI270 and RX8130 are not modeled.
+attaches shared devices to both controllers, gated by physical SDA47/SCL48,
+and to the GPIO bit-banged bus used by M5GFX detection. Both state handles
+remain shared for panel power/reset gating and shutdown handling. BMI270 has
+a virtual-input register subset; RX8130 at `0x32` has register RAM only,
+without calendar progression, alarms or battery-domain retention. Absent
+addresses still NACK. See the [M5Guruguru boot investigation](platform/stopwatch-burner-startup.md).

@@ -1,0 +1,180 @@
+{
+  "checkedAt": "2026-10-27",
+  "scope": "StopWatch internal I2C startup paths; no physical hardware validation",
+  "artifacts": [
+    {
+      "name": "M5Guruguru-Starter",
+      "version": "v4",
+      "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000540/versions/1897300000000000944/download",
+      "bytes": 16711680,
+      "sha256": "f380f9d9adbade2254668dad5faad71e1046aff7504f6cbfc9bc66b63037dea5",
+      "baseline": "Repeated LGFX I2C ack wait, no frame",
+      "patchedNative": "Original firmware AP Started and After Setup End; QR setup framebuffer",
+      "patchedBrowser": {
+        "width": 468,
+        "height": 466,
+        "frameNumber": 8,
+        "setupQrVisuallyInspected": true,
+        "apStartedLog": true,
+        "afterSetupEndLog": true
+      },
+      "unverified": [
+        "SoftAP HTTP bridge / avatar upload",
+        "Complete app behavior",
+        "Physical hardware"
+      ]
+    },
+    {
+      "name": "Kaleidoscope 万花筒",
+      "version": "v0.0.2",
+      "url": "https://burner.m5stack.com/api/v1/firmwares/2112569732558573569/versions/2112902748262715393/download",
+      "bytes": 16777216,
+      "sha256": "5c2f82985134faeae4731252f3afc1d6514b7b7d0802903866e0d7cc8b5af7af",
+      "outcome": "Unresolved coprocessor exception before any frame, native and WASM",
+      "nativeBreakpoint": {
+        "pc": "0x420137c5",
+        "instruction": "FloatS",
+        "raw": "0xca0600",
+        "cpenable": 0,
+        "ps": "0x60120",
+        "core0Instructions": 17028569,
+        "core1Instructions": 7839744
+      },
+      "guestPatches": false
+    }
+  ],
+  "checks": {
+    "rustStable": "1.99.1 (58cf8f9c3 2026-10-13)",
+    "clippy": [
+      "workspace all-targets -D warnings PASS",
+      "release wasm32 jit-tests -D warnings PASS"
+    ],
+    "rustIncludeIgnoredSkipExternal": {
+      "passed": 1389,
+      "failed": 0
+    },
+    "platformNode": {
+      "passed": 90,
+      "failed": 0
+    },
+    "realWasm": [
+      "hello",
+      "c3-hello",
+      "c6-hello",
+      "c6-energy-scan",
+      "c6-contiki",
+      "c6-contiki-net",
+      "c6-rpl-net",
+      "panel",
+      "demo-stopwatch"
+    ],
+    "officialV05Browser": {
+      "frameNumber": 5,
+      "width": 468,
+      "height": 466,
+      "launcherOnOpen": true,
+      "showGuide": true
+    },
+    "goldensChanged": false
+  },
+  "wasm": {
+    "bytes": 4057053,
+    "sha256": "9567404acf00fab36bb771a7f71894064b163a9b7476115403e861a91c4b246f"
+  },
+  "performance": {
+    "baseline": "55674b76-equivalent runtime (df198a74 UI only)",
+    "work": "StopWatch internal I2C board route",
+    "guestSeconds": 30,
+    "pairs": 5,
+    "clocks": "resource.RUSAGE_CHILDREN user CPU",
+    "cases": [
+      {
+        "demo": "hello",
+        "samples": {
+          "baseline": [
+            0.294144,
+            0.295898,
+            0.286621,
+            0.286694,
+            0.284658
+          ],
+          "patched": [
+            0.292212,
+            0.302238,
+            0.278576,
+            0.284492,
+            0.276187
+          ]
+        },
+        "medianUserSeconds": {
+          "baseline": 0.286694,
+          "patched": 0.284492
+        },
+        "changePercent": -0.768,
+        "guestOutputAndCountsEqual": true,
+        "guestStats": [
+          "[emu] stop: Halted — core0 11990305 + core1 6798164 insns; emulated 30.000s (7200000000 cycles); 27229 exceptions, 6031 interrupts"
+        ],
+        "outputSha256": "b94067b76397c8d5c82d9b978ca1fa734da3fae73d8cf800a1a9ea2ee15ef0a8"
+      },
+      {
+        "demo": "c3-hello",
+        "samples": {
+          "baseline": [
+            2.569389,
+            2.528404,
+            2.560556,
+            2.517113,
+            2.556036
+          ],
+          "patched": [
+            2.568067,
+            2.554917,
+            2.49838,
+            2.489789,
+            2.462855
+          ]
+        },
+        "medianUserSeconds": {
+          "baseline": 2.556036,
+          "patched": 2.49838
+        },
+        "changePercent": -2.256,
+        "guestOutputAndCountsEqual": true,
+        "guestStats": [
+          "[emu] stop: Halted — 4800000000 insns; emulated 30.000s (4800000000 cycles); 0 exceptions, 3028 interrupts"
+        ],
+        "outputSha256": "562a5e584cede4197e69947439b04fab8156fa12d9ad06ffbf81f98a8223fb0f"
+      },
+      {
+        "demo": "c6-hello",
+        "samples": {
+          "baseline": [
+            1.66864,
+            1.679173,
+            1.662756,
+            1.657492,
+            1.646718
+          ],
+          "patched": [
+            1.663876,
+            1.595043,
+            1.622974,
+            1.67201,
+            1.679568
+          ]
+        },
+        "medianUserSeconds": {
+          "baseline": 1.662756,
+          "patched": 1.663876
+        },
+        "changePercent": 0.067,
+        "guestOutputAndCountsEqual": true,
+        "guestStats": [
+          "[emu] stop: Halted — 4800000000 insns; emulated 30.000s (4800000000 cycles); 0 exceptions, 3029 interrupts"
+        ],
+        "outputSha256": "18a97097a08f0a8808bbd637eaaac23312ec5587f5c15ad8b55d1ca3c0dccaf1"
+      }
+    ]
+  }
+}
