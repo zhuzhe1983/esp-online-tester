@@ -4,6 +4,7 @@ pub mod interrupts;
 pub mod trng;
 pub mod rtc_wdt;
 pub mod cache;
+pub mod pads;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};
 

@@ -1,0 +1,159 @@
+{
+  "date": "2026-10-27",
+  "base": "d294e8f0",
+  "scope": "Standalone S31 software GPIO and PMU global pad hold, not whole power/sleep domains or a product runtime",
+  "sources": "sources.json; fixed ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643 gpio/io_mux/pmu_reg.h, soc_caps.h, gpio_ll.h, pmu_ll.h, driver/gpio.h; efuse_reg.h labels next fault",
+  "model": {
+    "GPIO": "0x20583000",
+    "IO_MUX": "0x20582000",
+    "PMU_IMM_PAD_HOLD_ALL": "0x2070410c",
+    "validPins": "GPIO0..61 except unbonded29/41, per soc_caps.h and driver; generated register descriptions reaching66 do not override capability mask",
+    "lpPads": "0..7",
+    "hpPads": "8..61",
+    "hold": "Capture output drive/input enable/pulls, keep underlying registers writable, keep enabled external input live; independent HP/LP release applies current config",
+    "notImplemented": [
+      "Peripheral signal routing, GPIO IRQ/wakeup, input filtering and analog drive strength",
+      "Per-pin LP_SYSTEM hold registers, sleep/power domains and reset retention",
+      "UART pin routing/baud timing; existing development UART interface remains in use"
+    ],
+    "initialConditions": [
+      "IO_MUX unconfigured zero is a development model, not a measured reset-function/pull profile",
+      "Boot strap is explicit caller input,initial0; no boot-mode forcing",
+      "Floating disconnected input resolves low deterministically"
+    ],
+    "explicitFaults": [
+      "Unbonded/out-of-range pins, unsupported registers",
+      "Contradictory simultaneous PMU set/clear strobes",
+      "Attempted GPIO IRQ/wakeup configuration",
+      "Sampling unsupported peripheral output, push-pull contention or opposite pulls"
+    ]
+  },
+  "fixture": {
+    "artifacts": [
+      {
+        "path": "firmware/s31-uart-probe/pads-probe.S",
+        "bytes": 1867,
+        "sha256": "f674735e01de4fc8c0c1b9ed840b7b73497c8f6208cbf28c5aeee7099c789c8c"
+      },
+      {
+        "path": "output/s31-uart-probe/pads-probe.elf",
+        "bytes": 5064,
+        "sha256": "78bb3249fd050a95b8e4c30682b22ad56f1af72102a01da7c50784a67d414035"
+      }
+    ],
+    "compiler": "riscv32-esp-elf-gcc15.2.0 esp-15.2.0_20251204",
+    "build": "RISCV_TOOLCHAIN_PREFIX=<toolchain>/riscv32-esp-elf- bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "test": "S31_PADS_ELF=<absolute-pads-probe.elf> cargo test --release -p esp32s31 --test uart_fixture external_s31_pads_fixture -- --include-ignored --nocapture",
+    "positive": {
+      "initialRunSteps": 10000,
+      "initialStop": "Budget",
+      "initialUart": "S31 PAD HOLD READY\n",
+      "initialGpio10Drive": "Low",
+      "hostInput": "GPIO2=true then UART A",
+      "afterInputSteps": 147,
+      "stop": "Waiting",
+      "pc": "0x2f0000ac",
+      "uart": "S31 PAD HOLD READY\nS31 PAD HOLD INPUT PASS\n",
+      "gpio10Drive": "High",
+      "firstBusFault": null
+    },
+    "negative": {
+      "hostInput": "UART A without GPIO2 change",
+      "stop": "Trap(Ebreak)",
+      "pc": "0x2f0000ba",
+      "uart": "S31 PAD HOLD READY\nS31 PAD FAIL\n"
+    },
+    "generatedArtifactsPublished": false
+  },
+  "rom": {
+    "input": "esp32s31_rev0_rom.elf release20260528",
+    "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+    "command": "cargo run --release -p esp32s31 --example bringup -- --rom <roms>/esp32s31_rev0_rom.elf",
+    "previousFirstFault": {
+      "steps": 7255,
+      "pc": "0x2f805a5c",
+      "address": "0x2070410c"
+    },
+    "currentFirstFault": {
+      "steps": 7267,
+      "pc": "0x2f80818a",
+      "address": "0x207151f8",
+      "access": "read32",
+      "mcause": 5,
+      "symbol": "ets_efuse_config_wr_tim",
+      "register": "EFUSE_WR_TIM_CONF2",
+      "instruction": "0x1f872783 lw a5,504(a4)"
+    },
+    "eFuseValuesChanged": false,
+    "romInstructionPatches": false,
+    "fullBoot": false
+  },
+  "checks": {
+    "rust": "1384 passed,0 failed,131 groups; --release --workspace -- --include-ignored --skip external_",
+    "clippyNative": "pass --workspace --all-targets -- -D warnings",
+    "clippyWasm": "pass --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "sourceFixtures": "6 passed, including actual GPIO hold/release input and negative guest branch",
+    "platform": "4 required files pass",
+    "wasm": "9 existing workloads pass; sections check passed",
+    "s31WasmCompile": "pass",
+    "goldens": "unchanged",
+    "browser": "No UI changes or browser sessions"
+  },
+  "earlierFailures": [
+    {
+      "check": "negative pads fixture host expectation",
+      "actual": "Trap(Ebreak(0x2f0000ba))",
+      "expectedIncorrectly": "Trap(Exception(3))",
+      "resolution": "Host assertion now checks explicit Ebreak stop and exact guest failure output; guest assembly unchanged"
+    },
+    {
+      "check": "first native Clippy",
+      "errors": [
+        "if_same_then_else for two HighZ branches",
+        "identity_op in test u32::MAX mask"
+      ],
+      "resolution": "Combine equivalent conditions and remove redundant test mask; final full Clippy and fixtures pass"
+    }
+  ],
+  "productionCodeEquality": {
+    "native": [
+      {
+        "binary": "esp32sim",
+        "matchesD294e8f0": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "c7a56e344138282e6c4c5b4903a547b6e88a1ab6b8f01d4c37d42aa7e22128be"
+        }
+      },
+      {
+        "binary": "esp32sim-c3",
+        "matchesD294e8f0": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "68dc7d7430af36b87d9c6c1f37d8d13d5c98a74d872281e50ddeb41093792e86"
+        }
+      },
+      {
+        "binary": "esp32sim-c6",
+        "matchesD294e8f0": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "757541708ed5de127937a92898cf6ebabc9891265fffffc633c437419a3c8047"
+        }
+      }
+    ],
+    "wasmSha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31"
+  },
+  "privacy": "Curated facts/hashes/relative commands only; raw logs, personal paths and identifiers omitted. No private firmware.",
+  "performance": {
+    "receipt": "pmu-gpio-perf.json",
+    "sha256": "d25b5c0f2058408b0f8a4eebd50554c85a8020e6b882b8a1391f2cf784d3d84e",
+    "medianUserPercent": {
+      "s3-hello": 0.6475247013905561,
+      "c3-hello": -1.8472072013842045,
+      "c6-hello": -0.811153198918313
+    },
+    "outputs": "All UART hashes and instruction/cycle/stat fields identical",
+    "interpretation": "Existing production code is unchanged; no attributed speedup/slowdown for new standalone S31 pad code."
+  }
+}

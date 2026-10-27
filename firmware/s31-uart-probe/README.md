@@ -31,6 +31,13 @@ physical page, checks it is initially empty, restores the mapping and checks the
 first page's data. The host supplies this source-built worker and 16 KiB of model
 PSRAM explicitly. This is not a product memory-capacity claim or a flash boot test.
 
+`pads-probe.S` configures GPIO10 as a low output and GPIO2 as an input, holds both
+PMU domains, then changes output/input-enable registers. The host confirms GPIO10
+remains low, changes GPIO2's external input to high, and sends UART `A`. The guest
+checks that input is still live, releases HP and LP holds separately and verifies
+the newly configured output/input states before printing `S31 PAD HOLD INPUT PASS`.
+Without the external high input it takes its explicit failure branch.
+
 ```sh
 RISCV_TOOLCHAIN_PREFIX=/path/to/riscv32-esp-elf- \
   bash firmware/s31-uart-probe/build.sh output/s31-uart-probe
@@ -40,6 +47,7 @@ S31_TRNG_ELF="$PWD/output/s31-uart-probe/trng-probe.elf" \
 S31_WDT_ELF="$PWD/output/s31-uart-probe/wdt-probe.elf" \
 S31_MMU_ELF="$PWD/output/s31-uart-probe/mmu-probe.elf" \
 S31_FLASH_WORKER_BIN="$PWD/output/s31-uart-probe/flash-worker.bin" \
+S31_PADS_ELF="$PWD/output/s31-uart-probe/pads-probe.elf" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/probe.elf A
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/irq-probe.elf A

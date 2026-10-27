@@ -320,3 +320,51 @@ stage, so those timings are not an attributed speedup. The baseline binaries ret
 their prior hashes; main's intervening changes contain no native CLI/core changes.
 [Functional receipt](evidence/s31-bringup/cache-mmu.json),
 [CPU samples](evidence/s31-bringup/cache-mmu-perf.json).
+
+### Software GPIO and PMU global pad hold
+
+The standalone S31 pad model adds the software GPIO output/enable banks, input
+sampling, IO_MUX function/input/pull configuration, output inversion/open drain,
+and the PMU's separate HP/LP hold/unhold strobes. The fixed v6.1 generated GPIO
+header describes some banks up to GPIO66, but `soc_caps.h` and the driver support
+GPIO0–61 and exclude unbonded GPIO29/41. This model follows that explicit capability
+mask; it does not turn template register bits into extra accessible package pins.
+GPIO0–7 form the LP pad group and GPIO8–61 the HP group.
+
+Hold captures the output drive and input/pull configuration. Register writes while
+held remain visible in the registers but do not change the held electrical state.
+External input still changes while input is enabled, as documented by IDF's GPIO
+driver API. Releasing one PMU group applies its current configuration without
+releasing the other group. Contradictory simultaneous hold/unhold commands have no
+documented priority and fault explicitly. Individual-pad LP_SYSTEM hold registers,
+sleep/wakeup transitions, power domains and complete reset retention are not modeled.
+
+Peripheral output routing is reported as unsupported instead of generating a fake
+signal. GPIO interrupts/wakeup configuration is rejected in this subset; analog
+behavior, drive strength and filtering are absent. Push-pull contention and
+unresolved opposite pulls produce explicit faults. A disconnected floating input
+resolves low as a deterministic model convention. The initial IO_MUX state is an
+unconfigured development state, not a claim about the package's reset pulls or
+functions. Sampled strap bits are a caller-supplied input, initially zero; they are
+not changed to force a desired ROM boot mode. UART fixture output still uses the
+existing UART development interface, without claiming routed TX pad timing.
+
+The real source fixture verifies held GPIO10 output and held GPIO2 input-enable,
+then accepts a host input change and UART `A`. Guest reads confirm live input and
+the separately released HP/LP groups before `S31 PAD HOLD INPUT PASS`. Omitting
+the input change reaches the guest's `S31 PAD FAIL`/`ebreak` branch. The initial
+negative-test expectation incorrectly used `Exception(3)` rather than the
+interpreter's explicit `Ebreak` stop; only that host assertion was corrected.
+
+The unpatched ROM advances to 7,267 instructions. Its first unsupported access is
+now `ets_efuse_config_wr_tim`, PC `0x2f80818a`, reading eFuse-controller
+`EFUSE_WR_TIM_CONF2` at `0x207151f8`. No eFuse values, ROM instructions or official firmware bytes were
+changed to pass the pad stage. Plus boot and display remain unavailable.
+
+Both Clippy targets, 1,384 Rust tests, six source fixtures, four platform test files
+and nine existing WASM workloads pass. Goldens stay unchanged. Five-pair CPU guards
+observe S3 +0.65%, C3 −1.85%, C6 −0.81%, with exact guest statistics and UART hashes.
+Existing production WASM/CLI code is byte-identical to the preceding stage; these
+are guard measurements, not an attributed speed change for the new pad model.
+[Functional receipt](evidence/s31-bringup/pmu-gpio.json),
+[CPU samples](evidence/s31-bringup/pmu-gpio-perf.json).

@@ -5,6 +5,7 @@ use crate::interrupts::{Interrupts, MATRIX_BASE, CLIC_BASE, RESET_CAUSE0, RESET_
 use crate::trng::{Trng, TRNG_BASE, RNG_CTRL};
 use crate::rtc_wdt::{RtcWdt, BASE as RTC_WDT_BASE};
 use crate::cache::Cache;
+use crate::pads::Pads;
 
 // ESP-IDF v6.1 (fff9895c82d744c7237be8847347bdd1b07c6643),
 // components/soc/esp32s31/include/soc/soc.h and register/soc/reg_base.h.
@@ -25,6 +26,7 @@ pub struct S31Bus {
     pub trng: Trng,
     pub rtc_wdt: RtcWdt,
     pub cache: Cache,
+    pub pads: Pads,
     pc: u32, pub first_fault: Option<AccessFault>,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
@@ -39,7 +41,7 @@ impl S31Bus {
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         let layout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff };
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE],
-            uart0: Uart::new(layout), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pc: 0, first_fault: None }
+            uart0: Uart::new(layout), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -78,6 +80,10 @@ impl S31Bus {
     fn read(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
         if let Some(data) = self.memory(address, bytes) {
             let mut value = [0; 4]; value[..bytes].copy_from_slice(data); return Ok(u32::from_le_bytes(value));
+        }
+        if Pads::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.pads.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if Cache::is_memory(address) {
             let mut value = [0; 4];
@@ -129,6 +135,10 @@ impl S31Bus {
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         if let Some(dest) = self.memory_mut(address, bytes, false) { dest.copy_from_slice(&value.to_le_bytes()[..bytes]); return Ok(()); }
+        if Pads::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.pads.write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
         if Cache::is_memory(address) {
             return match self.cache.write(address, value, bytes) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }

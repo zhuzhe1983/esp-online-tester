@@ -1,5 +1,26 @@
 //! Real source-built SRAM fixture; no generated ELF/BIN is published.
 #[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_PADS_ELF to pads-probe.elf"]
+fn external_s31_pads_fixture() {
+    use esp32s31::pads::Drive;
+    let path = std::env::var("S31_PADS_ELF").expect("build firmware/s31-uart-probe and set S31_PADS_ELF");
+    let elf = std::fs::read(path).expect("read S31_PADS_ELF");
+    let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+    assert_eq!(m.run(10_000).stop, esp32s31::Stop::Budget);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 PAD HOLD READY\n");
+    assert_eq!(m.bus.pads.drive(10), Ok(Drive::Low));
+    m.bus.pads.set_input(2, Some(true)).unwrap(); m.bus.uart0.host_input(b"A");
+    let run = m.run(10_000); assert_eq!(run.stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 PAD HOLD READY\nS31 PAD HOLD INPUT PASS\n");
+    assert_eq!(m.bus.pads.drive(10), Ok(Drive::High)); assert!(m.bus.first_fault.is_none());
+    eprintln!("S31 pad release steps={} pc={:#010x}", run.steps, m.cpu.pc);
+    // Without the actual injected input, the guest takes its failure branch.
+    let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+    assert_eq!(m.run(10_000).stop, esp32s31::Stop::Budget); m.bus.uart0.host_input(b"A");
+    assert!(matches!(m.run(10_000).stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_))));
+    assert_eq!(m.bus.uart0.tx_out, b"S31 PAD HOLD READY\nS31 PAD FAIL\n");
+}
+#[test]
 #[ignore = "build firmware/s31-uart-probe and set S31_MMU_ELF and S31_FLASH_WORKER_BIN"]
 fn external_s31_mmu_fixture() {
     let path = std::env::var("S31_MMU_ELF").expect("build firmware/s31-uart-probe and set S31_MMU_ELF");
