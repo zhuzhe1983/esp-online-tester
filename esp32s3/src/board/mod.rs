@@ -62,6 +62,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "stamps3" | "m5stack-s007" => Some(Box::new(stamps3::StampS3::new())),
         "stamps3a" | "m5stack-s007-v033" => Some(Box::new(stamps3::StampS3::s3a())),
         "dinmeter" | "m5stack-dinmeter" => Some(Box::new(DinMeter::new())),
+        "dinmeter-v11" | "m5stack-k134-v11" => Some(Box::new(DinMeter::v11())),
         "dial-v11" | "m5stack-dial-v11" => Some(Box::new(Dial::v11())),
         "atoms3-lite" | "m5stack-atoms3-lite" => Some(Box::new(AtomS3Lite::new())),
         "papermono" | "m5stack-papermono" => Some(Box::new(PaperMono::new())),

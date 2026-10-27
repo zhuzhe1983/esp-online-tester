@@ -3826,29 +3826,44 @@
       "name": "M5Stack DinMeter v1.1 · K134-V11",
       "manufacturer": "M5Stack",
       "sku": "K134-V11",
-      "hardwareRevision": "unspecified",
+      "hardwareRevision": "1.1",
       "chip": "esp32s3",
       "module": "ESP32-S3FN8",
       "summary": "Stamp-S3A 驱动的 1/32 DIN 面板控制器，配 1.14 英寸彩屏、旋钮编码器、RTC 和两路 Grove 扩展。",
       "knowledgeUrl": "./knowledge/m5stack-k134-v11.json",
       "runtime": {
-        "board": null,
+        "board": "dinmeter-v11",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial",
+        "encoder": true
       },
       "display": {
         "width": 240,
         "height": 135,
         "type": "LCD",
         "controller": "ST7789P3",
-        "bus": "SPI"
+        "bus": "SPI",
+        "touch": false
       },
       "controls": [
         {
           "id": "encoder-press",
+          "name": "旋钮按压",
           "type": "button",
-          "pin": 42
+          "pin": 42,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "encoder",
+          "name": "旋钮",
+          "type": "encoder",
+          "pins": {
+            "a": 41,
+            "b": 40
+          },
+          "detents": 16
         }
       ],
       "interfaces": [
@@ -3913,9 +3928,10 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "K134-V11 独立板型：ST7789P3 屏幕、GPIO42 按压和 A41/B40 四相编码器；尚不代表所有固件完整兼容。",
+        "RTC、PWM 背光、电池 ADC、蜂鸣器、供电锁存/睡眠、Stamp-S3A RGB 供电与无线功能尚未做本板适配。",
+        "正数旋钮步数为 A 先下降；每圈 16 个操作步进是界面约定，未实机校准方向或卡点数。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
         "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
         "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
         "Bare panel configuration excludes the separate orange mounting clamp; its source component0 extends to38.5mm beyond the30mm panel and is not present in chosen photos.",
@@ -3941,12 +3957,14 @@
       ],
       "inputDevices": [
         {
+          "id": "encoder",
+          "name": "旋钮",
           "type": "rotary-encoder",
-          "pins": {
-            "a": 41,
-            "b": 40
+          "channels": {
+            "A": 41,
+            "B": 40
           },
-          "modeled": false
+          "simulation": "gpio-quadrature"
         }
       ],
       "firmwareReferenceIds": [

@@ -25,7 +25,7 @@ Source component2 is main panel shell at x0..53,z-30..0; component4 is orange kn
 
 正反视图只有照片确属近正投影且原始型号一致时才用0.95轮廓门槛。侧视/斜视保留为定性检查，不以轮廓掩盖标签、组件或装配差异。引用照片的纹理不是独立验证依据；未通过/缺失项不会改写成通过。
 
-厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 unavailable，官方固件入口仅参考，未验证版本/hash/镜像不填猜测值。
+厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。本次模型交互修订与实际官方固件的有限适配见 [运行记录](../dinmeter-v11-runtime.md)；不改变原有几何误差和未知内部件结论。
 
 重生成：
 
@@ -43,7 +43,7 @@ python tools/onboard-lane-01.py publish --ids m5stack-k134-v11
 
 当前限制：
 
-- Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.
+- Manufacturer exterior CAD only; runtime now has a separately verified ST7789P3/encoder subset. Unsupported electronics remain explicit in the runtime report.
 - No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.
 - PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.
 - Bare panel configuration excludes the separate orange mounting clamp; its source component0 extends to38.5mm beyond the30mm panel and is not present in chosen photos.

@@ -38,7 +38,7 @@ Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已合入主线；配件
 | 4 | [M5Stack Dial · K130](https://docs.m5stack.com/en/core/Dial) · `m5stack-k130` | esp32s3 / GC9A01 | 本轮已完成 partial：GC9A01 / 触摸 / 按压 / 编码器 | RTC/RFID、音频、电源与背光尚未实现 |
 | 5 | [M5Stack Dial v1.1](https://docs.m5stack.com/en/core/Dial_v1.1) · `m5stack-k130-v11` | esp32s3 / GC9A01 | 待实现 | GC9A01 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 6 | [M5Stack DinMeter](https://docs.m5stack.com/en/core/DinMeter) · `m5stack-k134` | esp32s3 / ST7789V2 | 待实现 | ST7789V2 引脚/窗口/批次，按键/触摸，供电及板载外设 |
-| 7 | [M5Stack DinMeter v1.1 · K134-V11](https://docs.m5stack.com/en/core/DinMeter_v1.1) · `m5stack-k134-v11` | esp32s3 / ST7789P3 | 待实现 | ST7789P3 引脚/窗口/批次，按键/触摸，供电及板载外设 |
+| 7 | [M5Stack DinMeter v1.1 · K134-V11](https://docs.m5stack.com/en/core/DinMeter_v1.1) · `m5stack-k134-v11` | esp32s3 / ST7789P3 | 部分适配 | 独立 P3 身份、官方 v0.1 菜单/旋钮/按压；RTC、PWM、电池、音频、供电与无线未实现，见 [收据](dinmeter-v11-runtime.md) |
 | 8 | [M5Stack Stamp-S3 · S007](https://docs.m5stack.com/en/core/Stamp-S3) · `m5stack-s007` | esp32s3 / 无屏幕 | 已交付 partial：G0 / G21 RMT | [UIFlow2 启动蓝灯、源码 fixture 输入](stamps3-runtime.md)；联网、软件波形灯、FPC 屏幕及真实电源缺失 |
 | 9 | [M5Stack Stamp-S3A · S007-V033](https://docs.m5stack.com/en/core/Stamp-S3A) · `m5stack-s007-v033` | esp32s3 / 无屏幕 | 已交付 partial：G0 / G21 RMT / G38 灯电源 | [官方 UIFlow2 启动与供电/按键 fixture](stamps3a-runtime.md)；模拟电源、FPC、网络未实现 |
 | 10 | [M5Stack Atom-Lite · C008](https://docs.m5stack.com/en/core/Atom-Lite) · `m5stack-c008` | esp32 / 无屏幕 | 已交付 partial：G39 / G27 RMT | [官方出厂真实启动与按键红灯](atom-lite-runtime.md)；Grove 测试夹具、红外、网络和模拟电源未验证 |

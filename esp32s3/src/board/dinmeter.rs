@@ -1,14 +1,14 @@
-//! Original M5Stack DinMeter K134, not K134-V11. DIN_Meter_v1.0 schematic,
+//! M5Stack DinMeter K134 and K134-V11. DIN_Meter_v1.0 carrier schematics,
 //! M5DinMeter-UserDemo d2fdfe44 and M5GFX 65c816a3: LCD DC4/MOSI5/CLK6/CS7/RST8,
 //! encoder A41/B40 and press42. USB-powered digital subset; PWM/RTC/audio omitted.
 use esp_soc::board::{BoardModel,SpiPins};
 use esp_soc::devices::DcsPanel;
 
-pub struct DinMeter {panel:DcsPanel,command:u8,read_at:usize,reset_high:bool,display_changes:u64,gpio_events:u64}
-impl DinMeter {pub fn new()->Self {Self{panel:DcsPanel::st7789(),command:0,read_at:0,reset_high:true,display_changes:0,gpio_events:0}}}
+pub struct DinMeter {p3:bool,panel:DcsPanel,command:u8,read_at:usize,reset_high:bool,display_changes:u64,gpio_events:u64}
+impl DinMeter {pub fn new()->Self {Self::with_panel(false)} pub fn v11()->Self {Self::with_panel(true)} fn with_panel(p3:bool)->Self {Self{p3,panel:DcsPanel::st7789(),command:0,read_at:0,reset_high:true,display_changes:0,gpio_events:0}}}
 impl Default for DinMeter {fn default()->Self {Self::new()}}
 impl BoardModel for DinMeter {
-    fn name(&self)->&'static str {"dinmeter"}
+    fn name(&self)->&'static str {if self.p3 {"dinmeter-v11"}else{"dinmeter"}}
     fn gpio_changes(&mut self,changes:&[(u8,bool)]) {
         self.gpio_events+=changes.len() as u64;
         for &(pin,high) in changes {match pin {4=>self.panel.dc=high,8=>{if self.reset_high && !high {self.panel.reset();self.command=0;self.read_at=0;self.display_changes+=1;}self.reset_high=high;},_=>{}}}
@@ -18,13 +18,13 @@ impl BoardModel for DinMeter {
     fn spi_transfer_pins(&mut self,_host:u8,pins:SpiPins,tx:&[u8],rx_len:usize)->Vec<u8> {
         if !self.reset_high || pins.sclk&(1<<6)==0 || pins.cs&(1<<7)==0 || (pins.mosi&(1<<5)==0 && pins.miso!=Some(5)) {return vec![0xff;rx_len];}
         for &b in tx {if !self.panel.dc {self.command=b;self.read_at=0;self.display_changes+=1;}self.panel.byte(b);}
-        // ST7789V2 v1.0 RDDID/ID1/ID2/ID3 default bytes; SPI dummy phase is
-        // consumed by GP-SPI. These identify the panel, never the board revision.
-        let data:&[u8]=match self.command {0x04=>&[0x85,0x85,0x52],0xda|0xdb=>&[0x85],0xdc=>&[0x52],_=>&[]};
+        // ST7789V2 v1.0 and ST7789P3 v0.1 (2022/03 p126) have distinct
+        // RDDID/RDID defaults. GP-SPI consumes the serial dummy phase.
+        let data:&[u8]=match (self.command,self.p3) {(0x04,true)=>&[0x81,0x81,0xb3],(0xda|0xdb,true)=>&[0x81],(0xdc,true)=>&[0xb3],(0x04,false)=>&[0x85,0x85,0x52],(0xda|0xdb,false)=>&[0x85],(0xdc,false)=>&[0x52],_=>&[]};
         (0..rx_len).map(|_|{let value=data.get(self.read_at).copied().unwrap_or(0);self.read_at=self.read_at.saturating_add(1);value}).collect()
     }
     fn input_levels(&self)->Vec<(u8,bool)> {vec![(0,true),(42,true),(40,true),(41,true)]}
-    fn named_pin(&self,name:&str)->Option<u8> {match name {"btnA"|"button"|"sw"|"encoder-button"=>Some(42),"boot"=>Some(0),"clk"=>Some(41),"dt"=>Some(40),_=>None}}
+    fn named_pin(&self,name:&str)->Option<u8> {match name {"btnA"|"button"|"sw"|"encoder-button"|"encoder-press"=>Some(42),"boot"=>Some(0),"clk"=>Some(41),"dt"=>Some(40),_=>None}}
     fn encoder(&self)->Option<(u8,u8)> {Some((41,40))}
     fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {
         // Fixed glass orientation, independent of guest MADCTL. Official factory
@@ -37,7 +37,7 @@ impl BoardModel for DinMeter {
     fn display_version(&self)->u64 {self.panel.pixels_written+self.panel.resets+self.display_changes}
     fn display_frames(&self)->u64 {self.panel.frames}
     fn gram(&self)->Option<(Vec<u16>,usize,usize)> {Some((self.panel.gram.clone(),240,320))}
-    fn report(&self)->String {format!("[dinmeter] ST7789V2 frames={} pixels={} madctl={:#x} encoder=A41/B40; PWM/RTC/audio/power unmodeled",self.panel.frames,self.panel.pixels_written,self.panel.madctl)}
+    fn report(&self)->String {format!("[{}] {} frames={} pixels={} madctl={:#x} encoder=A41/B40; PWM/RTC/audio/power unmodeled",self.name(),if self.p3{"ST7789P3"}else{"ST7789V2"},self.panel.frames,self.panel.pixels_written,self.panel.madctl)}
 }
 
 #[cfg(test)]
@@ -45,6 +45,12 @@ mod tests {
     use super::*;
     fn pins()->SpiPins {SpiPins{sclk:1<<6,mosi:1<<5,cs:1<<7,..Default::default()}}
     fn cmd(b:&mut DinMeter,c:u8,data:&[u8]) {b.gpio_changes(&[(4,false)]);b.spi_transfer_pins(2,pins(),&[c],0);b.gpio_changes(&[(4,true)]);b.spi_transfer_pins(2,pins(),data,0);}
+    #[test]
+    fn p3_identification_survives_reset_without_impersonating_v2() {
+        let mut b=DinMeter::v11();assert_eq!(b.name(),"dinmeter-v11");assert_eq!(b.named_pin("encoder-press"),Some(42));
+        for (c,bytes) in [(4,vec![0x81,0x81,0xb3]),(0xda,vec![0x81]),(0xdb,vec![0x81]),(0xdc,vec![0xb3])] {b.gpio_changes(&[(4,false)]);assert_eq!(b.spi_transfer_pins(2,pins(),&[c],bytes.len()),bytes);}
+        b.gpio_changes(&[(8,false),(8,true),(4,false)]);assert_eq!(b.spi_transfer_pins(2,pins(),&[4],3),[0x81,0x81,0xb3]);assert_eq!(DinMeter::new().spi_transfer_pins(2,pins(),&[4],3),[0x85,0x85,0x52]);
+    }
     #[test]
     fn source_routed_id_and_input_pins() {
         let mut b=DinMeter::new();assert_eq!(b.spi_transfer_pins(2,pins(),&[4],3),[0x85,0x85,0x52]);

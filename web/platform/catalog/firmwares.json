@@ -726,18 +726,18 @@
       "productIds": [
         "m5stack-k134-v11"
       ],
-      "status": "trial",
+      "status": "available",
       "source": {
         "url": "https://m5burner-cdn.m5stack.com/firmware/fc3c7b0f51aa57c5ec0b04b7f4ce8084.bin",
         "sha256": "b0d8d63fa9a8e30f712de37cf58c340328690f61c90f94ce7a32da3050589d40"
       },
       "publicationUrl": "https://docs.m5stack.com/en/core/DinMeter_v1.1",
       "version": "v0.1",
-      "compatibility": "unverified",
+      "compatibility": "partial",
       "limitations": [
-        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
-        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+        "固定官方 v0.1 在 K134-V11 独立 ST7789P3 板型上真实 ROM/WASM 启动，菜单、按压、PCNT 旋钮正反转及退出已核验。",
+        "RTC 返回 NACK；PWM 背光、电池 ADC、蜂鸣器、供电锁存/睡眠、RGB 供电与无线功能未实现或未验证。",
+        "未连接真实设备；浏览器输入与旋钮每圈步数未做物理时序和机械方向校准。"
       ],
       "sources": [
         {
@@ -754,7 +754,7 @@
       "publisherGroup": "官方",
       "revision": "v0.1",
       "watchlistId": "factory-6846a9ac4fd546ad9b48baf9b374e52d",
-      "simulationVerified": false,
+      "simulationVerified": true,
       "hardwareValidated": false,
       "storage": "remote-links-only"
     },
@@ -3783,7 +3783,8 @@
       "publisher": "M5Stack",
       "role": "alternative",
       "productIds": [
-        "m5stack-k134"
+        "m5stack-k134",
+        "m5stack-k134-v11"
       ],
       "status": "trial",
       "source": {
@@ -3808,6 +3809,11 @@
         {
           "title": "M5Burner 已发布版本元信息",
           "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000874/versions?scope=PUBLIC",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "DinMeter v1.1 official page explicitly links the same DinMeter UiFlow2 tutorial",
+          "url": "https://docs.m5stack.com/en/core/DinMeter_v1.1",
           "checkedAt": "2026-10-27"
         }
       ],

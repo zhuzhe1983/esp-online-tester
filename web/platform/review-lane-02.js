@@ -12,9 +12,9 @@ async function load(id) {
  if (!/^m5stack-[a-z0-9-]+$/.test(id)) throw new Error('Invalid product id'); const mine = ++token; dispose(); hidden = false; document.body.dataset.ready = 'false'; document.querySelector('#product').value = id;
  const base = new URL(`./assets/${id}/`, import.meta.url), response = await fetch(new URL('model.json', base)); if (!response.ok) throw new Error(`Model HTTP${response.status}`); const meta = await response.json();
  const pixels = new Uint8Array([17,23,25,255]), blank = new THREE.DataTexture(pixels,1,1); blank.colorSpace = THREE.SRGBColorSpace; blank.needsUpdate = true;
- const catalog = await fetch(new URL('./catalog/products.json',import.meta.url)).then(r=>r.json());
- const product = catalog.items.find(p=>p.id===id);
- const model = createManufacturerModel(product || {id, model:{url:`./assets/${id}/model.json`}, display:meta.presentation?.screen ? {width:1,height:1} : null}, blank);
+ const catalog=await (await fetch(new URL('./catalog/products.json',import.meta.url))).json(),product=catalog.items.find(p=>p.id===id);
+ if(!product)throw Error('Missing catalog product');
+ const model = createManufacturerModel(product, blank);
  current = {id,group:model.group,meta,textures:new Map([['blank',blank]]),base,model}; scene.add(model.group); await model.ready;
  for (const child of model.group.children) if (child.name !== 'pcb-main') child.traverse(object => { if(object.isMesh)object.userData.exterior=true; });
  if (mine !== token) return; document.body.dataset.ready = 'true'; document.querySelector('#status').textContent = `${id} · 厂家 CAD / ${product?.runtime?.board ? "板级模型范围见产品目录" : "板级模拟未实现"}`; show('front'); return meta;
