@@ -39,7 +39,7 @@ pub(super) fn floating_point_guard_proof() -> u32 {
     tests
 }
 
-pub(super) fn floating_point() -> u32 {
+pub(super) fn floating_point_part(part: usize) -> u32 {
     use Op::*;
     let ops = [AddS, SubS, MulS, MaddS, MsubS, MovS, AbsS, NegS, Rfr, Wfr, ConstS,
         FloatS, UfloatS, RoundS, TruncS, FloorS, CeilS, UtruncS, UnS, OeqS, UeqS, OltS,
@@ -51,7 +51,8 @@ pub(super) fn floating_point() -> u32 {
         0x4f7f_ffff, 0x4f80_0000, 0xcf00_0000, 0x7f7f_ffff, 0x7f80_0000,
         0xff80_0000, 0x7fc1_2345, 0xffc5_4321, 0x7f81_2345];
     let mut tests = 0;
-    for op in ops {
+    for (index, op) in ops.into_iter().enumerate() {
+        if index % 4 != part { continue; }
         assert!(super::emitter::supported_opcode(op, true));
         for (n, &bits) in values.iter().enumerate() {
             for entry in 0..3 {
@@ -70,6 +71,7 @@ pub(super) fn floating_point() -> u32 {
             }
         }
     }
+    if part != 0 { return tests; }
     // A drawing-like bundle connects float, boolean and integer state through a
     // conversion/coverage decision, including partial execution and aliased operands.
     let raster_ops = [Wfr, FloatS, SubS, MulS, MaddS, OltS, MovtS, TruncS, Movf, Bt];

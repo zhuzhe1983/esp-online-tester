@@ -1,0 +1,758 @@
+{
+  "checkedAt": "2026-10-27T00:35:46.126Z",
+  "baseCommit": "86cf258dff067c6eb6327474c774a189541eb43f",
+  "scope": "JIT test harness isolation only; no production JIT changes, no golden updates, no firmware validation or speedup claim",
+  "environment": {
+    "node": "v22.23.1",
+    "v8": "12.4.254.21-node.56",
+    "platform": "darwin",
+    "arch": "arm64",
+    "wasmSha256": "514ab02e1fe2ba4b3fedc269eb2fec8dd0570c47a7cb40b89d1768595ef684e8",
+    "every": 0
+  },
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "sourceSha256": {
+    "tools/wasm-jit-test.mjs": "90a72e2db189de156b7f2ef394c6f728629246a113d9790b353a97e1927652b4",
+    "xtensa-lx7/src/jit/wasm_tests.rs": "6a98cafff59529157e0da649d04f03bd9d60b769ba5610f0e1e4f08df47f5ac3",
+    "xtensa-lx7/src/jit/wasm_tests/arithmetic.rs": "8527e2c52aa7c81d759a11e1d2d39529181e0cc9e71ac34f018163d8dcbf8496",
+    "xtensa-lx7/src/jit/wasm_tests/float.rs": "089e4c29988c96d23bc8e32e55b9523e3bf51a0035b002283a6aac4ae6695d5f",
+    "xtensa-lx7/src/jit/wasm_tests/control.rs": "0ce5f679cb5ba208404cc699e7340125bbf0aeaf4dd7a25312084f0e58ab4367",
+    "xtensa-lx7/src/jit/wasm_tests/timing.rs": "31967a9fc055354d3e96c3822798bd210432373077fdc5f35e122407cf811011",
+    "wasm/src/lib.rs": "01a2f4979fba2210372163cc39f00a2236bb4d34e4ccdf47726c6b8838711809",
+    "web/wasm/jit.mjs": "a759ae4a3d1ca6ddd91259ede39e34ebda45ff7ccb9c4ceeff0d1423f44ac294",
+    "tools/wasm-rustflags.sh": "4efde895b6681de70c855e65afc23c0727eecf845e342c8ae2a0492f7264826c"
+  },
+  "legacyArtifactSha256": "514ab02e1fe2ba4b3fedc269eb2fec8dd0570c47a7cb40b89d1768595ef684e8",
+  "groupedArtifactSha256": "1f5d4be3d9aef16c4f0f411d4bc606bfa5bf9581369b4ac6bda01eca046c27dd",
+  "ciFailure": {
+    "url": "https://github.com/zhuzhe1983/esp-online-tester/actions/runs/40402594341",
+    "heapMiBNearFailure": 3520.5,
+    "message": "Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory",
+    "exitCode": 134
+  },
+  "negativeGcAttempts": [
+    {
+      "gcEveryReleasedModules": 0,
+      "maxOldSpaceMiB": 512,
+      "outcome": "OOM, exit 134",
+      "environment": {
+        "node": "v22.23.1",
+        "v8": "12.4.254.21-node.56",
+        "platform": "darwin",
+        "arch": "arm64",
+        "wasmSha256": "514ab02e1fe2ba4b3fedc269eb2fec8dd0570c47a7cb40b89d1768595ef684e8",
+        "every": 0
+      },
+      "lastProgressSample": {
+        "label": "progress",
+        "seconds": 1.1281805,
+        "compiled": 4864,
+        "released": 4864,
+        "heap": 206468736,
+        "rss": 409976832,
+        "external": 21250909,
+        "peakHeap": 206468736,
+        "gcs": 0,
+        "liveModules": 0
+      }
+    },
+    {
+      "gcEveryReleasedModules": 256,
+      "maxOldSpaceMiB": 512,
+      "outcome": "OOM, exit 134",
+      "environment": {
+        "node": "v22.23.1",
+        "v8": "12.4.254.21-node.56",
+        "platform": "darwin",
+        "arch": "arm64",
+        "wasmSha256": "514ab02e1fe2ba4b3fedc269eb2fec8dd0570c47a7cb40b89d1768595ef684e8",
+        "every": 256
+      },
+      "lastProgressSample": {
+        "label": "progress",
+        "seconds": 1.249503667,
+        "compiled": 4864,
+        "released": 4864,
+        "heap": 200240024,
+        "rss": 402849792,
+        "external": 21072386,
+        "peakHeap": 202362528,
+        "gcs": 19,
+        "liveModules": 0
+      }
+    },
+    {
+      "gcEveryReleasedModules": 256,
+      "maxOldSpaceMiB": 4096,
+      "outcome": "Stopped intentionally, exit 143; not an OOM observation",
+      "environment": {
+        "node": "v22.23.1",
+        "v8": "12.4.254.21-node.56",
+        "platform": "darwin",
+        "arch": "arm64",
+        "wasmSha256": "514ab02e1fe2ba4b3fedc269eb2fec8dd0570c47a7cb40b89d1768595ef684e8",
+        "every": 256
+      },
+      "lastProgressSample": {
+        "label": "progress",
+        "seconds": 149.90787179199998,
+        "compiled": 66240,
+        "released": 66240,
+        "heap": 2847792112,
+        "rss": 3313516544,
+        "external": 51631535,
+        "peakHeap": 2847792112,
+        "gcs": 258,
+        "liveModules": 0
+      }
+    }
+  ],
+  "grouped": {
+    "command": "node --max-old-space-size=512 tools/wasm-jit-test.mjs",
+    "enabledFeature": "default wasm-cache-inline plus jit-tests",
+    "groupCount": 78,
+    "cases": 111126,
+    "compiled": 99679,
+    "released": 99679,
+    "largestChildRssKiB": 623968,
+    "groups": [
+      {
+        "group": 0,
+        "function": "memory::inline_cache_hits",
+        "cases": 18,
+        "compiled": 18,
+        "released": 18,
+        "maxRssKiB": 65456
+      },
+      {
+        "group": 1,
+        "function": "memory::page_boundary_stores",
+        "cases": 96,
+        "compiled": 96,
+        "released": 96,
+        "maxRssKiB": 89648
+      },
+      {
+        "group": 2,
+        "function": "memory::straddling_instruction_rewrite",
+        "cases": 1,
+        "compiled": 10,
+        "released": 10,
+        "maxRssKiB": 73984
+      },
+      {
+        "group": 3,
+        "function": "arithmetic::basic_ops",
+        "cases": 3024,
+        "compiled": 3024,
+        "released": 3024,
+        "maxRssKiB": 237120
+      },
+      {
+        "group": 4,
+        "function": "arithmetic::division",
+        "cases": 96,
+        "compiled": 96,
+        "released": 96,
+        "maxRssKiB": 90592
+      },
+      {
+        "group": 5,
+        "function": "memory::loads_and_stores",
+        "cases": 160,
+        "compiled": 160,
+        "released": 160,
+        "maxRssKiB": 102784
+      },
+      {
+        "group": 6,
+        "function": "memory::probe_boundaries",
+        "cases": 1480,
+        "compiled": 1480,
+        "released": 1480,
+        "maxRssKiB": 166224
+      },
+      {
+        "group": 7,
+        "function": "control::helper_continuation",
+        "cases": 6,
+        "compiled": 12,
+        "released": 12,
+        "maxRssKiB": 69552
+      },
+      {
+        "group": 8,
+        "function": "control::interpreted_bridges",
+        "cases": 22,
+        "compiled": 0,
+        "released": 0,
+        "maxRssKiB": 65216
+      },
+      {
+        "group": 9,
+        "function": "control::bridge_classes",
+        "cases": 22,
+        "compiled": 0,
+        "released": 0,
+        "maxRssKiB": 59568
+      },
+      {
+        "group": 10,
+        "function": "|| { scheduler::wrapper_bridge_guards(); scheduler::scheduler(); scheduler::wrapper_chain(); 1 }",
+        "cases": 1,
+        "compiled": 15,
+        "released": 15,
+        "maxRssKiB": 84688
+      },
+      {
+        "group": 11,
+        "function": "|| { scheduler::interior_alias(); scheduler::interior_alias_deferred(); scheduler::interior_alias_instruction_bytes(); scheduler::ps_terminal_chain(); scheduler::event_writers(); 5 }",
+        "cases": 5,
+        "compiled": 24,
+        "released": 24,
+        "maxRssKiB": 87648
+      },
+      {
+        "group": 12,
+        "function": "|| reboot::esp32sim_test_region_ownership()",
+        "cases": 1,
+        "compiled": 2,
+        "released": 2,
+        "maxRssKiB": 62880
+      },
+      {
+        "group": 13,
+        "function": "memory::extension_deferral",
+        "cases": 231,
+        "compiled": 0,
+        "released": 0,
+        "maxRssKiB": 59712
+      },
+      {
+        "group": 14,
+        "function": "memory::flat_ram_bounds",
+        "cases": 8,
+        "compiled": 0,
+        "released": 0,
+        "maxRssKiB": 57600
+      },
+      {
+        "group": 15,
+        "function": "regions::regions",
+        "cases": 15443,
+        "compiled": 587,
+        "released": 587,
+        "maxRssKiB": 205280
+      },
+      {
+        "group": 16,
+        "function": "pie_accx::run_tests",
+        "cases": 176,
+        "compiled": 4,
+        "released": 4,
+        "maxRssKiB": 78720
+      },
+      {
+        "group": 17,
+        "function": "pie_accx::held_and_coalesced",
+        "cases": 38,
+        "compiled": 38,
+        "released": 38,
+        "maxRssKiB": 123552
+      },
+      {
+        "group": 18,
+        "function": "memory::code_page_flag",
+        "cases": 37,
+        "compiled": 35,
+        "released": 35,
+        "maxRssKiB": 85440
+      },
+      {
+        "group": 19,
+        "function": "|| { scheduler::retention(); 1 }",
+        "cases": 1,
+        "compiled": 1,
+        "released": 1,
+        "maxRssKiB": 90224
+      },
+      {
+        "group": 20,
+        "function": "|| { loops::hardware_loop_scheduler(); 1 }",
+        "cases": 1,
+        "compiled": 6,
+        "released": 6,
+        "maxRssKiB": 75760
+      },
+      {
+        "group": 21,
+        "function": "|| { crate::block::ownership_tests::compiled_helpers_follow_the_current_bus_type(); 1 }",
+        "cases": 1,
+        "compiled": 2,
+        "released": 2,
+        "maxRssKiB": 63344
+      },
+      {
+        "group": 22,
+        "function": "|| arithmetic::integer_ops_part(0)",
+        "cases": 654,
+        "compiled": 750,
+        "released": 750,
+        "maxRssKiB": 129360
+      },
+      {
+        "group": 23,
+        "function": "|| arithmetic::integer_ops_part(1)",
+        "cases": 2040,
+        "compiled": 2136,
+        "released": 2136,
+        "maxRssKiB": 198272
+      },
+      {
+        "group": 24,
+        "function": "|| arithmetic::integer_ops_part(2)",
+        "cases": 1845,
+        "compiled": 1917,
+        "released": 1917,
+        "maxRssKiB": 186288
+      },
+      {
+        "group": 25,
+        "function": "|| float::floating_point_part(0)",
+        "cases": 1520,
+        "compiled": 2024,
+        "released": 2024,
+        "maxRssKiB": 196896
+      },
+      {
+        "group": 26,
+        "function": "|| float::floating_point_part(1)",
+        "cases": 1440,
+        "compiled": 1944,
+        "released": 1944,
+        "maxRssKiB": 192096
+      },
+      {
+        "group": 27,
+        "function": "|| float::floating_point_part(2)",
+        "cases": 1320,
+        "compiled": 1782,
+        "released": 1782,
+        "maxRssKiB": 183312
+      },
+      {
+        "group": 28,
+        "function": "|| float::floating_point_part(3)",
+        "cases": 1320,
+        "compiled": 1782,
+        "released": 1782,
+        "maxRssKiB": 184624
+      },
+      {
+        "group": 29,
+        "function": "float::floating_point_guard_proof",
+        "cases": 72,
+        "compiled": 72,
+        "released": 72,
+        "maxRssKiB": 90384
+      },
+      {
+        "group": 30,
+        "function": "float::fma_halfway_fallback",
+        "cases": 2,
+        "compiled": 2,
+        "released": 2,
+        "maxRssKiB": 62800
+      },
+      {
+        "group": 31,
+        "function": "loops::hardware_loops",
+        "cases": 723,
+        "compiled": 836,
+        "released": 836,
+        "maxRssKiB": 207488
+      },
+      {
+        "group": 32,
+        "function": "loops::store_runs",
+        "cases": 6084,
+        "compiled": 6085,
+        "released": 6085,
+        "maxRssKiB": 380704
+      },
+      {
+        "group": 33,
+        "function": "control::window_masks",
+        "cases": 2304,
+        "compiled": 4,
+        "released": 4,
+        "maxRssKiB": 70128
+      },
+      {
+        "group": 34,
+        "function": "control::window_quads",
+        "cases": 192,
+        "compiled": 192,
+        "released": 192,
+        "maxRssKiB": 103312
+      },
+      {
+        "group": 35,
+        "function": "control::terminal_helpers",
+        "cases": 11664,
+        "compiled": 11664,
+        "released": 11664,
+        "maxRssKiB": 623968
+      },
+      {
+        "group": 36,
+        "function": "control::special_register_blocks",
+        "cases": 915,
+        "compiled": 1521,
+        "released": 1521,
+        "maxRssKiB": 166480
+      },
+      {
+        "group": 37,
+        "function": "control::ps_terminals",
+        "cases": 900,
+        "compiled": 900,
+        "released": 900,
+        "maxRssKiB": 135104
+      },
+      {
+        "group": 38,
+        "function": "control::windowed_return",
+        "cases": 2592,
+        "compiled": 2592,
+        "released": 2592,
+        "maxRssKiB": 216448
+      },
+      {
+        "group": 39,
+        "function": "control::whole_block_guards",
+        "cases": 1458,
+        "compiled": 1458,
+        "released": 1458,
+        "maxRssKiB": 158848
+      },
+      {
+        "group": 40,
+        "function": "|| control::entry_and_shifts_part(0)",
+        "cases": 670,
+        "compiled": 670,
+        "released": 670,
+        "maxRssKiB": 125664
+      },
+      {
+        "group": 41,
+        "function": "|| control::entry_and_shifts_part(1)",
+        "cases": 670,
+        "compiled": 670,
+        "released": 670,
+        "maxRssKiB": 125744
+      },
+      {
+        "group": 42,
+        "function": "|| control::entry_and_shifts_part(2)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 162736
+      },
+      {
+        "group": 43,
+        "function": "|| control::entry_and_shifts_part(3)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 163280
+      },
+      {
+        "group": 44,
+        "function": "|| control::entry_and_shifts_part(4)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 162784
+      },
+      {
+        "group": 45,
+        "function": "|| control::entry_and_shifts_part(5)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 163152
+      },
+      {
+        "group": 46,
+        "function": "|| control::entry_and_shifts_part(6)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 162912
+      },
+      {
+        "group": 47,
+        "function": "|| control::entry_and_shifts_part(7)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 164112
+      },
+      {
+        "group": 48,
+        "function": "|| control::entry_and_shifts_part(8)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 162880
+      },
+      {
+        "group": 49,
+        "function": "|| control::entry_and_shifts_part(9)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 162720
+      },
+      {
+        "group": 50,
+        "function": "|| control::entry_and_shifts_part(10)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 162928
+      },
+      {
+        "group": 51,
+        "function": "control::guarded_loop_sites",
+        "cases": 72,
+        "compiled": 72,
+        "released": 72,
+        "maxRssKiB": 87648
+      },
+      {
+        "group": 52,
+        "function": "control::pie_wide_shifts",
+        "cases": 248,
+        "compiled": 248,
+        "released": 248,
+        "maxRssKiB": 114240
+      },
+      {
+        "group": 53,
+        "function": "|| timing::priced_cases_part(0)",
+        "cases": 147,
+        "compiled": 165,
+        "released": 165,
+        "maxRssKiB": 111040
+      },
+      {
+        "group": 54,
+        "function": "|| timing::priced_cases_part(1)",
+        "cases": 654,
+        "compiled": 750,
+        "released": 750,
+        "maxRssKiB": 129152
+      },
+      {
+        "group": 55,
+        "function": "|| timing::priced_cases_part(2)",
+        "cases": 2040,
+        "compiled": 2136,
+        "released": 2136,
+        "maxRssKiB": 198000
+      },
+      {
+        "group": 56,
+        "function": "|| timing::priced_cases_part(3)",
+        "cases": 1845,
+        "compiled": 1917,
+        "released": 1917,
+        "maxRssKiB": 185760
+      },
+      {
+        "group": 57,
+        "function": "|| timing::priced_cases_part(4)",
+        "cases": 1520,
+        "compiled": 2024,
+        "released": 2024,
+        "maxRssKiB": 196368
+      },
+      {
+        "group": 58,
+        "function": "|| timing::priced_cases_part(5)",
+        "cases": 1440,
+        "compiled": 1944,
+        "released": 1944,
+        "maxRssKiB": 191968
+      },
+      {
+        "group": 59,
+        "function": "|| timing::priced_cases_part(6)",
+        "cases": 1320,
+        "compiled": 1782,
+        "released": 1782,
+        "maxRssKiB": 183632
+      },
+      {
+        "group": 60,
+        "function": "|| timing::priced_cases_part(7)",
+        "cases": 1320,
+        "compiled": 1782,
+        "released": 1782,
+        "maxRssKiB": 184816
+      },
+      {
+        "group": 61,
+        "function": "|| timing::priced_cases_part(8)",
+        "cases": 72,
+        "compiled": 72,
+        "released": 72,
+        "maxRssKiB": 93888
+      },
+      {
+        "group": 62,
+        "function": "|| timing::priced_cases_part(9)",
+        "cases": 670,
+        "compiled": 670,
+        "released": 670,
+        "maxRssKiB": 125792
+      },
+      {
+        "group": 63,
+        "function": "|| timing::priced_cases_part(10)",
+        "cases": 670,
+        "compiled": 670,
+        "released": 670,
+        "maxRssKiB": 125872
+      },
+      {
+        "group": 64,
+        "function": "|| timing::priced_cases_part(11)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 162768
+      },
+      {
+        "group": 65,
+        "function": "|| timing::priced_cases_part(12)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 162992
+      },
+      {
+        "group": 66,
+        "function": "|| timing::priced_cases_part(13)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 162816
+      },
+      {
+        "group": 67,
+        "function": "|| timing::priced_cases_part(14)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 164336
+      },
+      {
+        "group": 68,
+        "function": "|| timing::priced_cases_part(15)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 162928
+      },
+      {
+        "group": 69,
+        "function": "|| timing::priced_cases_part(16)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 164864
+      },
+      {
+        "group": 70,
+        "function": "|| timing::priced_cases_part(17)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 163888
+      },
+      {
+        "group": 71,
+        "function": "|| timing::priced_cases_part(18)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 163184
+      },
+      {
+        "group": 72,
+        "function": "|| timing::priced_cases_part(19)",
+        "cases": 1440,
+        "compiled": 1440,
+        "released": 1440,
+        "maxRssKiB": 164112
+      },
+      {
+        "group": 73,
+        "function": "|| timing::priced_cases_part(20)",
+        "cases": 11664,
+        "compiled": 11664,
+        "released": 11664,
+        "maxRssKiB": 618912
+      },
+      {
+        "group": 74,
+        "function": "|| timing::priced_cases_part(21)",
+        "cases": 915,
+        "compiled": 1521,
+        "released": 1521,
+        "maxRssKiB": 166560
+      },
+      {
+        "group": 75,
+        "function": "|| timing::priced_cases_part(22)",
+        "cases": 900,
+        "compiled": 900,
+        "released": 900,
+        "maxRssKiB": 134736
+      },
+      {
+        "group": 76,
+        "function": "jit_tests::run",
+        "cases": 452,
+        "compiled": 823,
+        "released": 823,
+        "maxRssKiB": 318496
+      },
+      {
+        "group": 77,
+        "function": "jit_memory_tests::run",
+        "cases": 4,
+        "compiled": 8,
+        "released": 8,
+        "maxRssKiB": 68896
+      }
+    ]
+  },
+  "waveform": {
+    "command": "node --max-old-space-size=512 tools/wasm-jit-test.mjs gpio-waveform",
+    "cases": 24,
+    "compiled": 738,
+    "released": 738,
+    "passed": true
+  },
+  "checks": {
+    "build": true,
+    "wasmJitClippyWarningsDenied": true,
+    "nodeSyntax": true
+  },
+  "privacy": "Curated measurements omit absolute local paths, process identifiers and raw abort stacks. No numeric sample values were changed. Raw local logs were not added."
+}

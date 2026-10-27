@@ -1,0 +1,551 @@
+{
+  "schemaVersion": "1",
+  "id": "m5stack-unit-rgb-u003",
+  "unit": "mm",
+  "binary": "geometry.bin",
+  "strideFloats": 6,
+  "parts": [
+    {
+      "sourceComponent": 3,
+      "name": "shell-front",
+      "role": "shell",
+      "color": "#e8e9e2",
+      "byteOffset": 0,
+      "vertexCount": 5718,
+      "boundsMm": [
+        [
+          -12.00000000429688,
+          -15.999999995390624,
+          -1.9999989749978795
+        ],
+        [
+          11.99999999570312,
+          16.000000004609376,
+          4.000000953674316
+        ]
+      ]
+    },
+    {
+      "sourceComponent": 4,
+      "name": "shell-back",
+      "role": "shell",
+      "color": "#e8e9e2",
+      "byteOffset": 137232,
+      "vertexCount": 4980,
+      "boundsMm": [
+        [
+          -12.00000000429688,
+          -15.999999995390624,
+          -3.999998927116394
+        ],
+        [
+          11.99999999570312,
+          16.000000004609376,
+          -0.3999990224838257
+        ]
+      ]
+    },
+    {
+      "sourceComponent": 0,
+      "name": "led-diffuser",
+      "role": "diffuser",
+      "color": "#cdd0c8",
+      "byteOffset": 256752,
+      "vertexCount": 2508,
+      "boundsMm": [
+        [
+          -10.556121830468754,
+          -1.800018305937499,
+          9.5367431640625e-07
+        ],
+        [
+          10.556121821874996,
+          6.994720463593751,
+          4.000000953674316
+        ]
+      ]
+    }
+  ],
+  "sourceTransform": {
+    "matrixRows": [
+      [
+        1,
+        0,
+        0,
+        -177.26882935
+      ],
+      [
+        0,
+        1,
+        0,
+        -269.22348022
+      ],
+      [
+        0,
+        0,
+        1,
+        -2
+      ],
+      [
+        0,
+        0,
+        0,
+        1
+      ]
+    ],
+    "scale": 1,
+    "note": "Keep already assembled CAD components [3, 4, 0]; rigid center translation and original orientation. Omit spatially separated print-layout duplicates. No scaling. +Z front, +Y top, inlet at -Y."
+  },
+  "omittedComponents": [
+    {
+      "index": 1,
+      "reason": "duplicate print-layout part; retain assembled counterpart"
+    },
+    {
+      "index": 2,
+      "reason": "duplicate print-layout part; retain assembled counterpart"
+    },
+    {
+      "index": 5,
+      "reason": "duplicate print-layout part; retain assembled counterpart"
+    }
+  ],
+  "dimensions": {
+    "width": 24,
+    "height": 32,
+    "depth": 8,
+    "unit": "mm",
+    "sourceId": "official-docs"
+  },
+  "presentation": {
+    "bodySizeMm": [
+      24,
+      32,
+      8
+    ]
+  },
+  "derivedParts": [
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "geometry": {
+        "sizeMm": [
+          10,
+          23,
+          1
+        ],
+        "centerMm": [
+          0,
+          1,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ],
+      "notes": "Neutral UNKNOWN blank; 10×23×1 mm internal fit estimate avoids known mounting holes. The narrow estimate is not the actual PCB outline; no component layout is claimed."
+    },
+    {
+      "id": "grove",
+      "kind": "connector-visual",
+      "geometry": {
+        "centerMm": [
+          0,
+          -16,
+          0.6
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-1",
+        "photo-14"
+      ],
+      "connectorType": "HY2.0-4P",
+      "housingColor": "#202626",
+      "allowConnections": true,
+      "pinOrder": [
+        "gnd",
+        "vcc",
+        "signal1",
+        "signal2"
+      ],
+      "notes": "Front view: bottom inlet, x left-to-right black/red/yellow/white. Back photo is mirrored: white/yellow/red/black. Mouth at y=-16 from CAD envelope; hidden moulding depth and center z are photo estimates, not socket CAD."
+    },
+    {
+      "id": "rear-sticker",
+      "kind": "label",
+      "geometry": {
+        "sizeMm": [
+          16,
+          12
+        ],
+        "centerMm": [
+          0,
+          7,
+          -4.025
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-1"
+      ],
+      "texture": "back-label.webp",
+      "notes": "Only paper rectangle; holes, plastic M5 logo and screw remain geometry."
+    },
+    {
+      "id": "rear-screw",
+      "kind": "cylinder",
+      "geometry": {
+        "radiusMm": 1.55,
+        "depthMm": 0.25,
+        "centerMm": [
+          0,
+          -4,
+          -4.12
+        ]
+      },
+      "color": "#989b98",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ],
+      "material": {
+        "metalness": 0.8,
+        "roughness": 0.4
+      },
+      "notes": "Visible screw location from dimension drawing; screw head is approximate."
+    },
+    {
+      "id": "grove-output",
+      "kind": "connector-visual",
+      "geometry": {
+        "centerMm": [
+          0,
+          16,
+          0.6
+        ],
+        "rotation": [
+          -1.5707963267948966,
+          0,
+          3.141592653589793
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-12"
+      ],
+      "connectorType": "HY2.0-4P",
+      "housingColor": "#202626",
+      "allowConnections": false,
+      "pinOrder": [
+        "gnd",
+        "vcc",
+        "signal1",
+        "signal2"
+      ],
+      "notes": "Upper output socket is visible but mirrored pin assignment was not independently established; cable connections disabled."
+    }
+  ],
+  "derivedSurfaces": [],
+  "referencePhotos": [
+    {
+      "sourceId": "photo-4",
+      "view": "front",
+      "cropXYXY": [
+        58,
+        224,
+        408,
+        574
+      ],
+      "originalFile": "reference-photo-4.webp",
+      "cropNotes": "Fixed documented ROI excludes unrelated cable/coin/packaging; original source is retained.",
+      "file": "reference-crop-front.webp",
+      "sourceSha256": "1cb920a4cf4fbb8e8c6b9ed78a07d6451894be8c4a9a5c3151f5f598405cc18a"
+    },
+    {
+      "sourceId": "photo-1",
+      "view": "back",
+      "file": "reference-photo-1.webp",
+      "sourceSha256": "b08f866a6add31e7365f8a14fde214ce1fa3efb14bb53986d78274da26447115"
+    },
+    {
+      "sourceId": "photo-3",
+      "view": "oblique",
+      "file": "reference-photo-3.webp",
+      "sourceSha256": "7823ff01f3a5f9d40b169a31f2baf0aaaf11807c9d36e0890853aa0ddf74f45a"
+    }
+  ],
+  "textures": [
+    {
+      "sourceId": "photo-1",
+      "file": "back-label.webp",
+      "cropXYXY": [
+        291,
+        220,
+        510,
+        390
+      ],
+      "alphaMask": {
+        "includeRoundedRects": [
+          {
+            "xyxy": [
+              294,
+              223,
+              507,
+              387
+            ],
+            "radiusPx": 5
+          }
+        ]
+      },
+      "notes": "Paper only, independent plane; body plastic, screw, holes and M5 emboss are excluded.",
+      "sourceSha256": "b08f866a6add31e7365f8a14fde214ce1fa3efb14bb53986d78274da26447115",
+      "outputPixels": [
+        219,
+        170
+      ],
+      "method": "Fixed axis-aligned crop; original-coordinate explicit alpha ROI at4x supersampling when alphaMask supplied; exclusions remove fasteners/holes/shell. No generated pixels or perspective warp."
+    }
+  ],
+  "reviewViews": {
+    "front": {
+      "position": [
+        0,
+        0,
+        250
+      ],
+      "span": 35.44303797468354,
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "calibration": "Uniform scale from independent photo body height versus documented 32 mm; no mesh scaling. Front view is approximate; photographic perspective remains."
+    },
+    "back": {
+      "position": [
+        0,
+        0,
+        -250
+      ],
+      "span": 61,
+      "target": [
+        0,
+        0,
+        0
+      ]
+    },
+    "oblique": {
+      "position": [
+        70,
+        -95,
+        130
+      ],
+      "span": 48,
+      "target": [
+        0,
+        0,
+        3
+      ]
+    },
+    "connector": {
+      "position": [
+        0,
+        -80,
+        35
+      ],
+      "span": 24,
+      "target": [
+        0,
+        -12,
+        0
+      ]
+    }
+  },
+  "provenance": {
+    "repository": "https://github.com/m5stack/M5_Hardware",
+    "commit": "e29c139cbc7c80b5ccc5557e5ab8025a7a19a109",
+    "sourceUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U003_Unit_RGB/Structures/Unit_RGB.stl",
+    "sourceSha256": "a0babc26f6d915fc15ff9c7683873d8c9c3d911c65fd367897c566e6a3203bcd",
+    "tessellation": {
+      "step": "OpenCascade 7.8.1.1; absolute deflection0.05mm, angle0.2rad, native solids plus orphan shells/faces; units converted by STEP reader to millimetres",
+      "stl": "Original triangles"
+    },
+    "sourceLicense": "MIT; Copyright (c) 2021 M5Stack; see LICENSE-M5Stack.txt",
+    "photoRights": "Official product photographs copyright M5Stack / named manufacturer. No separate open photo license verified; retained for product reference, not relicensed under project MIT.",
+    "sources": [
+      {
+        "id": "official-docs",
+        "kind": "product-page",
+        "title": "Official Unit Rgb",
+        "url": "https://docs.m5stack.com/en/unit/Unit_RGB",
+        "archiveName": "official-docs.html",
+        "status": "fetched",
+        "resolvedUrl": "https://docs.m5stack.com/en/unit/Unit_RGB",
+        "fetchedAt": "2026-10-26T23:50:52Z",
+        "bytes": 132171,
+        "mediaType": "text/html; charset=UTF-8",
+        "sha256": "76e454b33548ba6cdcd2c8edd86714bb8bb6a9dc240bf209bd6ac03505fbda2c"
+      },
+      {
+        "id": "photo-0",
+        "kind": "product-photo",
+        "title": "Unit RGB image 0",
+        "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/rgb/rgb_01.webp",
+        "archiveName": "photo-0.webp",
+        "status": "fetched",
+        "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/rgb/rgb_01.webp",
+        "fetchedAt": "2026-10-26T23:50:53Z",
+        "bytes": 88126,
+        "mediaType": "image/webp",
+        "sha256": "ec1d8c4127965ae9909459bc6661892c74e7d9233e6e273822102816498602c3"
+      },
+      {
+        "id": "photo-1",
+        "kind": "product-photo",
+        "title": "Unit RGB image 1",
+        "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/rgb/rgb_02.webp",
+        "archiveName": "photo-1.webp",
+        "status": "fetched",
+        "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/rgb/rgb_02.webp",
+        "fetchedAt": "2026-10-26T23:50:53Z",
+        "bytes": 35986,
+        "mediaType": "image/webp",
+        "sha256": "b08f866a6add31e7365f8a14fde214ce1fa3efb14bb53986d78274da26447115"
+      },
+      {
+        "id": "photo-3",
+        "kind": "product-photo",
+        "title": "Unit RGB image 3",
+        "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/rgb/rgb_05.webp",
+        "archiveName": "photo-3.webp",
+        "status": "fetched",
+        "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/rgb/rgb_05.webp",
+        "fetchedAt": "2026-10-26T23:50:53Z",
+        "bytes": 28116,
+        "mediaType": "image/webp",
+        "sha256": "7823ff01f3a5f9d40b169a31f2baf0aaaf11807c9d36e0890853aa0ddf74f45a"
+      },
+      {
+        "id": "photo-4",
+        "kind": "product-photo",
+        "title": "Unit RGB image 4",
+        "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/rgb/rgb_06.webp",
+        "archiveName": "photo-4.webp",
+        "status": "fetched",
+        "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/rgb/rgb_06.webp",
+        "fetchedAt": "2026-10-26T23:50:53Z",
+        "bytes": 49560,
+        "mediaType": "image/webp",
+        "sha256": "1cb920a4cf4fbb8e8c6b9ed78a07d6451894be8c4a9a5c3151f5f598405cc18a"
+      },
+      {
+        "id": "photo-12",
+        "kind": "schematic",
+        "title": "Schematics image 12",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/760/U003-UNIT_RGB-SCHE_page_01.png",
+        "archiveName": "photo-12.png",
+        "status": "fetched",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/760/U003-UNIT_RGB-SCHE_page_01.png",
+        "fetchedAt": "2026-10-26T23:50:54Z",
+        "bytes": 366737,
+        "mediaType": "image/jpg",
+        "sha256": "e295890e167567c6eafc62f1e2fec8199d7c5a70f958ee20a3d318a713cdca81"
+      },
+      {
+        "id": "photo-13",
+        "kind": "schematic",
+        "title": "Schematics image 13",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/760/U003-UNIT_RGB-SCHE_page_01.png",
+        "archiveName": "photo-13.png",
+        "status": "fetched",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/760/U003-UNIT_RGB-SCHE_page_01.png",
+        "fetchedAt": "2026-10-26T23:50:54Z",
+        "bytes": 366737,
+        "mediaType": "image/jpg",
+        "sha256": "e295890e167567c6eafc62f1e2fec8199d7c5a70f958ee20a3d318a713cdca81"
+      },
+      {
+        "id": "photo-14",
+        "kind": "dimension-drawing",
+        "title": "Model Size image 14",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/760/U003_Model_Size_sch_01.png",
+        "archiveName": "photo-14.png",
+        "status": "fetched",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/760/U003_Model_Size_sch_01.png",
+        "fetchedAt": "2026-10-26T23:50:54Z",
+        "bytes": 326552,
+        "mediaType": "image/jpg",
+        "sha256": "9da7e3710688ba87336fc01942c86f91ce24ae56c58f1b11865acb28e7a6e7ae"
+      },
+      {
+        "id": "manufacturer-cad",
+        "kind": "manufacturer-cad",
+        "title": "Official U003 STL",
+        "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U003_Unit_RGB/Structures/Unit_RGB.stl",
+        "archiveName": "source.stl",
+        "status": "fetched",
+        "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U003_Unit_RGB/Structures/Unit_RGB.stl",
+        "fetchedAt": "2026-10-26T23:50:54Z",
+        "bytes": 440284,
+        "mediaType": "application/octet-stream",
+        "sha256": "a0babc26f6d915fc15ff9c7683873d8c9c3d911c65fd367897c566e6a3203bcd"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+        "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/LICENSE",
+        "mediaType": "text/plain; charset=utf-8",
+        "fetchedAt": "2026-10-26T16:50:07Z",
+        "bytes": 1063,
+        "sha256": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+        "id": "cad-license",
+        "title": "M5_Hardware MIT license",
+        "kind": "license",
+        "status": "fetched",
+        "archiveName": "license.txt"
+      }
+    ]
+  },
+  "limitations": [
+    "仅外观、尺寸和接线资料已入库；GPIO/ADC/SK6812 行为尚未实现，不能证明主机固件可使用该模块。",
+    "厂家 STL 保留原始尺寸，打印排版重复件已剔除；插座、螺钉及无 CAD 的外露部件为照片近似。",
+    "未公开 PCB 布局，内部采用 UNKNOWN 占位；贴纸使用官方照片真实印刷区域。",
+    "官方 pinmap 把白线标为 NC；串级原理图白线 DI 连通两端，本轮不模拟串级、不启用输出端连线。",
+    "螺钉头纹和无厂家 CAD 的旋钮为简化，照片视角存在透视误差，不声称完整 1:1 通过。"
+  ],
+  "artifacts": {
+    "reference-photo-0.webp": "ec1d8c4127965ae9909459bc6661892c74e7d9233e6e273822102816498602c3",
+    "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+    "back-label.webp": "cda568663f6f1df43e11731c5400830b99e26f80c6ae69bf9de1634c3a650d9e",
+    "reference-photo-1.webp": "b08f866a6add31e7365f8a14fde214ce1fa3efb14bb53986d78274da26447115",
+    "geometry.bin": "9ee99e0ae0e9b36c68f410b107ed7e67cbac29cca7b444e5d92b37aca5ae42b0",
+    "reference-photo-4.webp": "1cb920a4cf4fbb8e8c6b9ed78a07d6451894be8c4a9a5c3151f5f598405cc18a",
+    "reference-photo-13.png": "e295890e167567c6eafc62f1e2fec8199d7c5a70f958ee20a3d318a713cdca81",
+    "reference-photo-12.png": "e295890e167567c6eafc62f1e2fec8199d7c5a70f958ee20a3d318a713cdca81",
+    "source.stl": "a0babc26f6d915fc15ff9c7683873d8c9c3d911c65fd367897c566e6a3203bcd",
+    "reference-crop-front.webp": "5002f43ff804c3e67be56f6202308fdb534c8108368483dee8c872f732fb3556",
+    "reference-photo-14.png": "9da7e3710688ba87336fc01942c86f91ce24ae56c58f1b11865acb28e7a6e7ae",
+    "reference-photo-3.webp": "7823ff01f3a5f9d40b169a31f2baf0aaaf11807c9d36e0890853aa0ddf74f45a"
+  }
+}

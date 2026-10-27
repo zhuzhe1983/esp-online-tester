@@ -21,7 +21,10 @@ export function createPapermonoModel(screenTexture) {
   usb.add(new THREE.Mesh(new THREE.ShapeGeometry(rim,32),material(0xa3a9ac,{metalness:.8,roughness:.3})),cube(7.8,2.2,.2,material(0x080a0a),0,0,-.12),cube(6.4,.55,.2,material(0x24292a),0,0,.04));group.add(usb);parts.usb=usb;
   const anchor=new THREE.Object3D();anchor.name='connector:usb-c:mouth';anchor.userData={kind:'connector-anchor',type:'USB-C',visualOnly:true};usb.add(anchor);connectors.usb={type:'USB-C',anchor,normal:new THREE.Vector3(0,0,1)};
   const sd=cube(.35,10.8,1.7,material(0x111415),-30.38,-34.2,-.6);sd.name='microsd-visible-slot';group.add(sd);parts.sd=sd;
-  const led=cube(.25,8.4,1.7,material(0xc0c3bd),-30.42,9.5,-.3);led.name='rgb-led-diffuser';group.add(led);
+  // CAD side opening: Y=5.9618..14.0382, Z=±1.0384 mm; photo-10 shows a flush capsule.
+  // The optical inset/depth is photo-derived, not an electronics/LED-package CAD model.
+  const ledGeometry=new THREE.ExtrudeGeometry(capsule(8,2),{depth:.35,bevelEnabled:false,curveSegments:24});ledGeometry.rotateZ(Math.PI/2);ledGeometry.rotateY(Math.PI/2);
+  const led=new THREE.Mesh(ledGeometry,material(0x858a85,{roughness:.55,emissive:0x000000,emissiveIntensity:1}));led.position.set(-30.515,10,0);led.name='rgb-led-diffuser';led.userData={kind:'rgb-led',ledIndex:0,sourceIds:['official-cad-stl','photo-10'],unlitColor:0x858a85};group.add(led);parts['rgb-led-diffuser']=led;const rgbLeds=[led];group.userData.rgbLedMeshes=rgbLeds;
   const ready=(async()=>{
     const r=await fetch(new URL('model.json',base),{signal:aborter.signal});if(!r.ok)throw Error(`PaperMono model HTTP ${r.status}`);const metadata=await r.json();
     const b=await fetch(new URL(metadata.binary,base),{signal:aborter.signal});if(!b.ok)throw Error(`PaperMono geometry HTTP ${b.status}`);const binary=await b.arrayBuffer();if(disposed)return;
@@ -35,5 +38,5 @@ export function createPapermonoModel(screenTexture) {
     const loaded=await new THREE.TextureLoader().loadAsync(new URL('rear-label.webp',base).href);if(disposed){loaded.dispose();return;}labelTexture=loaded;loaded.colorSpace=THREE.SRGBColorSpace;loaded.anisotropy=4;
     const label=new THREE.Mesh(new THREE.PlaneGeometry(58.9,99),new THREE.MeshBasicMaterial({map:loaded}));label.name='rear-product-label';label.position.z=-4.015;label.rotation.y=Math.PI;group.add(label);group.userData.provenance=metadata;return metadata;
   })();
-  return {group,screen,buttons,parts,connectors,ready,dispose(){disposed=true;aborter.abort();labelTexture?.dispose();pcbTexture?.dispose();}};
+  return {group,screen,buttons,parts,connectors,rgbLeds,ready,dispose(){disposed=true;aborter.abort();labelTexture?.dispose();pcbTexture?.dispose();}};
 }

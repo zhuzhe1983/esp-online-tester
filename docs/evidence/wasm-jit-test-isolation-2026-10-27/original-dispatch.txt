@@ -1,0 +1,34 @@
+pub fn run_tests() -> u32 {
+    let mut tests = 0;
+    #[cfg(feature = "wasm-cache-inline")]
+    { tests += memory::inline_cache_hits(); }
+    // EX180 first: the cheapest proof that a fast store records the pages the bus records.
+    tests += memory::page_boundary_stores() + memory::straddling_instruction_rewrite();
+    tests += arithmetic::basic_ops() + arithmetic::division()
+        + memory::loads_and_stores() + memory::probe_boundaries() + control::helper_continuation();
+    tests += control::interpreted_bridges();
+    tests += control::bridge_classes();
+    scheduler::wrapper_bridge_guards();
+    scheduler::scheduler();
+    scheduler::wrapper_chain();
+    tests += 1;
+    scheduler::interior_alias();
+    scheduler::interior_alias_deferred();
+    scheduler::interior_alias_instruction_bytes();
+    scheduler::ps_terminal_chain();
+    scheduler::event_writers();
+    tests += 5;
+    tests += reboot::esp32sim_test_region_ownership();
+    tests += memory::extension_deferral() + memory::flat_ram_bounds() + regions::regions() + pie_accx::run_tests() + pie_accx::held_and_coalesced();
+    tests += memory::code_page_flag();
+    scheduler::retention();
+    tests += 1;
+    loops::hardware_loop_scheduler();
+    tests += 1;
+    crate::block::ownership_tests::compiled_helpers_follow_the_current_bus_type();
+    tests += 1;
+    tests + arithmetic::integer_ops() + float::floating_point() + float::floating_point_guard_proof() + float::fma_halfway_fallback()
+        + loops::hardware_loops() + loops::store_runs() + control::window_masks() + control::window_quads() + control::terminal_helpers()
+        + control::special_register_blocks() + control::ps_terminals() + control::windowed_return() + control::whole_block_guards()
+        + control::entry_and_shifts() + control::guarded_loop_sites() + control::pie_wide_shifts() + timing::priced_cases()
+}

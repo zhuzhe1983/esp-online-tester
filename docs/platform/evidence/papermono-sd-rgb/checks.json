@@ -1,0 +1,51 @@
+{
+  "checkedAt": "2026-10-27T00:25:25.024608+00:00",
+  "rust": "1.99.1 (58cf8f9c3 2026-10-13)",
+  "finalWasmSha256": "e879ccae3b60cfbff8a5e956387d1c98580edaa6bcc6a2dad00631ea9e99f7c0",
+  "checks": [
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=web/wasm/fw cargo test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "testsPassed": 1352,
+      "testBinaries": 128
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass tracked evidence pattern scan; new receipts additionally reviewed manually"
+    },
+    {
+      "command": "node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs tools/platform-sd-card-test.mjs tools/platform-recording-test.mjs tools/platform-device-storage-test.mjs",
+      "result": "pass",
+      "sdStructuralTests": 6
+    }
+  ],
+  "sourceFiles": {
+    "esp-periph/src/i2c/m5.rs": "f2902a65972a4ba6d679e8a776047b7281b1b5564d90f3581e3585ac94682cad",
+    "esp-periph/tests/m5_i2c.rs": "aded028b3e96890a620f7fc48e2c763b1886bd5e1569268e1b20907cbc14e9b7",
+    "esp-soc/src/board.rs": "cad6d4d8e9aba59b7e2317553fe5256005159d678252f792210d408d120eac3c",
+    "esp32s3/src/board/papermono.rs": "5f0cec483701f4bd768ade0f293bef482fa67dc2f811aa691bcc2de10bc0c760",
+    "esp32s3/src/bus/sdmmc.rs": "9823f9d6dadb11d47e417f6166517a352d80137cd54a8b25e0c4cb4b2af0647f",
+    "esp32s3/src/bus.rs": "fa480c86508a722c7a6f3e4a08274971bdca91f02d98056cc39f4334c0523370",
+    "esp32s3/src/periph.rs": "34657ea92b1326898981521cce5ae3f3e13728cd96ba7ade47b1a575f9302e49",
+    "esp32s3/src/soc.rs": "94083aed69502dad5413f4c3bc7abed8d0ade84de445476c59f94e1bbab72899",
+    "wasm/src/lib.rs": "7b3dd593476e39a21db8f96f0c529341719d9912c5d2519b580706ef7ebc065a",
+    "wasm/src/storage.rs": "12fcf63a1c35f1937b77eceaf09f06fa8ab08bc698899b340fc6c5fb83ecd284",
+    "web/platform/runtime.js": "f4ea88611741b58d09f0de53648a55017e0c5af5321505554aa2d6449a53167d",
+    "web/platform/sd-card-image.js": "d5df4f5fcfe79aba2861bc6e7e7bdcfa06e9da9ff5dee7d497075c83e14b40ee",
+    "web/platform/sd-card-storage.js": "3bd40af6c228616b552a03fa88d552af3ef991203667c57333c18fb8102e80f8",
+    "web/wasm/worker.js": "e98cb75f8b5997ce93e404058ac4a0a77435a4274ad54dc0a8dcbdf068daebe5",
+    "tools/platform-sd-card-test.mjs": "ef1a85a83dbaedc3d0e83a72b05ed1e8bf8bf11f3522310166ce4cc0ac2e57b4"
+  },
+  "notes": [
+    "Golden outputs unchanged. Native performance and final UI browser checks are separate integration receipts.",
+    "Positive firmware interactions precede the final PMIC constructor reset-state refinement and native test additions; interaction.json retains the measured artifact hash."
+  ]
+}

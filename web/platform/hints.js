@@ -34,7 +34,7 @@ export function firmwareHints(firmware) {
     {id: 'verified', icon: 'check', label: '已验证操作', title: '已验证的模拟操作', test: /^已验证|^已通过/},
     {id: 'timing', icon: 'clock', label: '输入时序', title: '输入与回放时序', test: /主机输入|客户机时序|逐帧一致/},
     {id: 'hardware', icon: 'hardware', label: '未实机验证', title: '实体硬件验证范围', test: /未连接真实硬件|实机.*仍需验证/},
-  ], {id: 'limits', icon: 'chip', label: firmware.status === 'reference' ? '资料入口' : '模拟限制', title: '固件兼容范围'});
+  ], {id: 'limits', icon: 'chip', label: !firmware.source ? '资料入口' : firmware.simulationVerified === true ? '模拟限制' : '可尝试运行', title: '固件兼容范围'});
 }
 
 export function placeHint(anchor, size, viewport, {padding = 12, gap = 8} = {}) {

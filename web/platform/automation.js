@@ -22,6 +22,8 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
     async pause() { await recorder.beforeLifecycle('pause'); return runtime.pause(); },
     async reset() { await recorder.beforeLifecycle('reset'); return runtime.reset(); },
     async clearDeviceStorage() { await recorder.beforeLifecycle('clear-device-storage'); return runtime.clearDeviceStorage(); },
+    async attachSdCard(options) { await recorder.beforeLifecycle('attach-sd-card'); return runtime.attachSdCard(options); },
+    async clearSdCard() { await recorder.beforeLifecycle('clear-sd-card'); return runtime.clearSdCard(); },
     async dispose() { await recorder.dispose(); return runtime.dispose(); },
     async press(id, { durationMs = 100 } = {}) {
       if (!Number.isFinite(durationMs) || durationMs < 0 || durationMs > 10000) throw Object.assign(new Error('Press duration must be 0…10000 ms.'), { code: 'INVALID_INPUT' });

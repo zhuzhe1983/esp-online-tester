@@ -16,6 +16,14 @@ checked-in oracle or is `#[ignore]`d with the reason in its name.
 | whole runs | `cli/tests/goldens.rs`, `wasm/tests/abi.rs` | the goldens below; the wasm C ABI driven natively for both chips, checking the web protocol's `board`, `serial`, `stat`, frame, audio and ring messages |
 | the wasm build itself | `tools/wasm-test.mjs` | the real `esp32sim.wasm` under Node, driven through the page's firmware manifests (`web/wasm/fw/*.json`): boot, run, drain the outbox, expect the board message and the console line, no panic — the only layer that sees a wasm-only abort (a std that panics where it used to return nothing took every demo down once) |
 
+The generated WASM JIT differential suite runs with `tools/wasm-jit-test.sh`.
+Its Node driver uses a fresh child process for each test-only group so that V8's
+generated-module memory cannot accumulate over the entire synchronous suite.
+The groups and the monolithic Rust entry share one case list; each child must
+release every compiled module. Node heap flags are forwarded to children, so
+`node --max-old-space-size=512 tools/wasm-jit-test.mjs` checks the bounded-heap run.
+[Case preservation and rejected explicit-GC attempt](../docs/evidence/wasm-jit-test-isolation-2026-10-27/README.md).
+
 GPIO routed-drive checks live in `cli/tests/routed_waveform.rs` and
 `esp-soc/tests/routed_waveform.rs`: four chips, classic APB/AHB aliases,
 route/mux/enable inversion, opt-out, reset and invalid/high pins. The shared

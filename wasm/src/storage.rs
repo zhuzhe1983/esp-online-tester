@@ -24,6 +24,38 @@ pub unsafe extern "C" fn esp32sim_flash_ptr(e: *const Emu) -> *const u8 {
     unsafe { &*e }.m.flash().as_ptr()
 }
 
+
+
+struct SharedSd(std::sync::Arc<std::sync::Mutex<Vec<u8>>>);
+impl esp_periph::sdmmc::SdStore for SharedSd {
+    fn len(&self)->u64 {self.0.lock().expect("SD image mutex poisoned").len() as u64}
+    fn read(&mut self,lba:u64,buf:&mut [u8;512])->std::io::Result<()> {let bytes=self.0.lock().expect("SD image mutex poisoned");let at=usize::try_from(lba).ok().and_then(|v|v.checked_mul(512)).ok_or(std::io::ErrorKind::UnexpectedEof)?;let end=at.checked_add(512).ok_or(std::io::ErrorKind::UnexpectedEof)?;buf.copy_from_slice(bytes.get(at..end).ok_or(std::io::ErrorKind::UnexpectedEof)?);Ok(())}
+    fn write(&mut self,lba:u64,data:&[u8;512])->std::io::Result<()> {let mut bytes=self.0.lock().expect("SD image mutex poisoned");let at=usize::try_from(lba).ok().and_then(|v|v.checked_mul(512)).ok_or(std::io::ErrorKind::UnexpectedEof)?;let end=at.checked_add(512).ok_or(std::io::ErrorKind::UnexpectedEof)?;bytes.get_mut(at..end).ok_or(std::io::ErrorKind::UnexpectedEof)?.copy_from_slice(data);Ok(())}
+}
+pub(crate) fn load_sd(e:&mut Emu,data:&[u8])->u32 {
+    if e.booted || data.len()>128<<20 || data.len()<1<<20 || !data.len().is_multiple_of(512<<10) {crate::log("[emu] SD image must be 1..128 MiB, a multiple of 512 KiB, and loaded before boot");return 1;}
+    let bytes=std::sync::Arc::new(std::sync::Mutex::new(data.to_vec()));
+    match e.m.bus().attach_sd_card(Box::new(SharedSd(bytes.clone())),Default::default()) {
+        Ok(_)=>{e.sd_image=Some(bytes);0},Err(error)=>{crate::log(&format!("[emu] SD card: {error}"));1}
+    }
+}
+/// Current SD image length. No card returns zero.
+/// # Safety
+/// `e` must be a live emulator with no overlapping mutable access.
+#[no_mangle]
+pub unsafe extern "C" fn esp32sim_sd_len(e:*const Emu)->usize {
+    // SAFETY: Caller supplies a live shared emulator.
+    unsafe {&*e}.sd_image.as_ref().map_or(0,|s|s.lock().expect("SD image mutex poisoned").len())
+}
+/// Read-only SD image pointer, valid until the next mutable emulator call. Do not free it.
+/// # Safety
+/// `e` must be a live emulator with no overlapping access; copy before running the guest.
+#[no_mangle]
+pub unsafe extern "C" fn esp32sim_sd_ptr(e:*const Emu)->*const u8 {
+    // SAFETY: Caller supplies a live shared emulator; media buffers never resize during a run.
+    unsafe {&*e}.sd_image.as_ref().map_or(std::ptr::null(),|s|s.lock().expect("SD image mutex poisoned").as_ptr())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -49,4 +81,20 @@ mod tests {
             }
         }
     }
+    #[test]
+    fn sd_export_retains_written_blocks_across_reset_and_checks_attachment() {
+        use esp_periph::sdmmc::SdStore;
+        // SAFETY: This test owns the emulator and every buffer for their full lifetime.
+        unsafe {
+            let name="papermono";let e=esp32sim_new(name.as_ptr(),name.len(),16,8);let image=vec![0;1<<20];
+            assert_eq!(esp32sim_sd_len(e),0);assert_eq!(load_sd(&mut *e,&image),0);
+            let mut media=SharedSd((*e).sd_image.as_ref().unwrap().clone());media.write(7,&[0x5a;512]).unwrap();
+            let before=(esp32sim_cycles(e),esp32sim_insns(e));assert_eq!(esp32sim_sd_len(e),1<<20);
+            assert_eq!(std::slice::from_raw_parts(esp32sim_sd_ptr(e).add(7*512),512),[0x5a;512]);
+            assert_eq!((esp32sim_cycles(e),esp32sim_insns(e)),before);
+            (*e).m.s3_mut().unwrap().reboot();assert_eq!(std::slice::from_raw_parts(esp32sim_sd_ptr(e).add(7*512),512),[0x5a;512]);
+            (*e).booted=true;assert_eq!(load_sd(&mut *e,&image),1);esp32sim_delete(e);
+        }
+    }
+
 }

@@ -404,37 +404,91 @@ mod regions;
 mod asm;
 
 pub use float::fma_sweep;
-pub fn run_tests() -> u32 {
-    let mut tests = 0;
+// One canonical list is used by both the monolithic entry point and the
+// process-isolated Node runner. Large Cartesian products are partitioned only
+// along their existing outer loop; every operand/budget case still runs once.
+const TEST_GROUPS: &[fn() -> u32] = &[
     #[cfg(feature = "wasm-cache-inline")]
-    { tests += memory::inline_cache_hits(); }
-    // EX180 first: the cheapest proof that a fast store records the pages the bus records.
-    tests += memory::page_boundary_stores() + memory::straddling_instruction_rewrite();
-    tests += arithmetic::basic_ops() + arithmetic::division()
-        + memory::loads_and_stores() + memory::probe_boundaries() + control::helper_continuation();
-    tests += control::interpreted_bridges();
-    tests += control::bridge_classes();
-    scheduler::wrapper_bridge_guards();
-    scheduler::scheduler();
-    scheduler::wrapper_chain();
-    tests += 1;
-    scheduler::interior_alias();
-    scheduler::interior_alias_deferred();
-    scheduler::interior_alias_instruction_bytes();
-    scheduler::ps_terminal_chain();
-    scheduler::event_writers();
-    tests += 5;
-    tests += reboot::esp32sim_test_region_ownership();
-    tests += memory::extension_deferral() + memory::flat_ram_bounds() + regions::regions() + pie_accx::run_tests() + pie_accx::held_and_coalesced();
-    tests += memory::code_page_flag();
-    scheduler::retention();
-    tests += 1;
-    loops::hardware_loop_scheduler();
-    tests += 1;
-    crate::block::ownership_tests::compiled_helpers_follow_the_current_bus_type();
-    tests += 1;
-    tests + arithmetic::integer_ops() + float::floating_point() + float::floating_point_guard_proof() + float::fma_halfway_fallback()
-        + loops::hardware_loops() + loops::store_runs() + control::window_masks() + control::window_quads() + control::terminal_helpers()
-        + control::special_register_blocks() + control::ps_terminals() + control::windowed_return() + control::whole_block_guards()
-        + control::entry_and_shifts() + control::guarded_loop_sites() + control::pie_wide_shifts() + timing::priced_cases()
+    memory::inline_cache_hits,
+    memory::page_boundary_stores,
+    memory::straddling_instruction_rewrite,
+    arithmetic::basic_ops,
+    arithmetic::division,
+    memory::loads_and_stores,
+    memory::probe_boundaries,
+    control::helper_continuation,
+    control::interpreted_bridges,
+    control::bridge_classes,
+    || { scheduler::wrapper_bridge_guards(); scheduler::scheduler(); scheduler::wrapper_chain(); 1 },
+    || { scheduler::interior_alias(); scheduler::interior_alias_deferred(); scheduler::interior_alias_instruction_bytes(); scheduler::ps_terminal_chain(); scheduler::event_writers(); 5 },
+    || reboot::esp32sim_test_region_ownership(),
+    memory::extension_deferral,
+    memory::flat_ram_bounds,
+    regions::regions,
+    pie_accx::run_tests,
+    pie_accx::held_and_coalesced,
+    memory::code_page_flag,
+    || { scheduler::retention(); 1 },
+    || { loops::hardware_loop_scheduler(); 1 },
+    || { crate::block::ownership_tests::compiled_helpers_follow_the_current_bus_type(); 1 },
+    || arithmetic::integer_ops_part(0),
+    || arithmetic::integer_ops_part(1),
+    || arithmetic::integer_ops_part(2),
+    || float::floating_point_part(0),
+    || float::floating_point_part(1),
+    || float::floating_point_part(2),
+    || float::floating_point_part(3),
+    float::floating_point_guard_proof,
+    float::fma_halfway_fallback,
+    loops::hardware_loops,
+    loops::store_runs,
+    control::window_masks,
+    control::window_quads,
+    control::terminal_helpers,
+    control::special_register_blocks,
+    control::ps_terminals,
+    control::windowed_return,
+    control::whole_block_guards,
+    || control::entry_and_shifts_part(0),
+    || control::entry_and_shifts_part(1),
+    || control::entry_and_shifts_part(2),
+    || control::entry_and_shifts_part(3),
+    || control::entry_and_shifts_part(4),
+    || control::entry_and_shifts_part(5),
+    || control::entry_and_shifts_part(6),
+    || control::entry_and_shifts_part(7),
+    || control::entry_and_shifts_part(8),
+    || control::entry_and_shifts_part(9),
+    || control::entry_and_shifts_part(10),
+    control::guarded_loop_sites,
+    control::pie_wide_shifts,
+    || timing::priced_cases_part(0),
+    || timing::priced_cases_part(1),
+    || timing::priced_cases_part(2),
+    || timing::priced_cases_part(3),
+    || timing::priced_cases_part(4),
+    || timing::priced_cases_part(5),
+    || timing::priced_cases_part(6),
+    || timing::priced_cases_part(7),
+    || timing::priced_cases_part(8),
+    || timing::priced_cases_part(9),
+    || timing::priced_cases_part(10),
+    || timing::priced_cases_part(11),
+    || timing::priced_cases_part(12),
+    || timing::priced_cases_part(13),
+    || timing::priced_cases_part(14),
+    || timing::priced_cases_part(15),
+    || timing::priced_cases_part(16),
+    || timing::priced_cases_part(17),
+    || timing::priced_cases_part(18),
+    || timing::priced_cases_part(19),
+    || timing::priced_cases_part(20),
+    || timing::priced_cases_part(21),
+    || timing::priced_cases_part(22),
+];
+
+pub fn test_group_count() -> u32 { TEST_GROUPS.len() as u32 }
+pub fn run_test_group(group: u32) -> u32 {
+    TEST_GROUPS.get(group as usize).expect("invalid JIT test group")()
 }
+pub fn run_tests() -> u32 { TEST_GROUPS.iter().map(|run| run()).sum() }

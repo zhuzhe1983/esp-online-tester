@@ -91,7 +91,7 @@ fn stopwatch_shutdown_is_observable_only_after_system_command() {
 #[test]
 fn reattaching_pmic_clears_shutdown_without_changing_host_inputs() {
     let state = Arc::new(Mutex::new(M5pm1State {
-        battery_mv: 4150, charging: true, power_off_requested: false,
+        battery_mv: 4150, charging: true, power_off_requested: false, led_enabled: true,
     }));
     let mut device = M5pm1::new(state.clone());
     write(&mut device, 0x0c, &[0xa1]);
@@ -114,7 +114,7 @@ fn stopwatch_expander_rmw_and_reset_pulse_leave_rail_on() {
     update(&mut *device, 0x13, 0, 0x9d);
     update(&mut *device, 0x03, 0x9d, 0);
     update(&mut *device, 0x05, 0x99, 0);
-    let ready = M5ioe1State { driven_high: 0x99, oled_rail: true, oled_reset_high: true, touch_reset_high: true };
+    let ready = M5ioe1State { driven_high: 0x99, oled_rail: true, oled_reset_high: true, touch_reset_high: true, ..Default::default() };
     assert_eq!(*state.lock().unwrap(), ready);
     assert_eq!(read(&mut *device, 0x13, 1), [0x62]);
     assert_eq!(read(&mut *device, 0x03, 1), [0x9d]);
@@ -138,7 +138,7 @@ fn expander_levels_require_output_mode_and_push_pull_drive() {
     write(&mut device, 0x03, &[0x98]);
     assert_eq!(*state.lock().unwrap(), M5ioe1State::default());
     write(&mut device, 0x13, &[0x67]);
-    assert_eq!(*state.lock().unwrap(), M5ioe1State { driven_high: 0x98, oled_rail: true, oled_reset_high: true, touch_reset_high: true });
+    assert_eq!(*state.lock().unwrap(), M5ioe1State { driven_high: 0x98, oled_rail: true, oled_reset_high: true, touch_reset_high: true, ..Default::default() });
     update(&mut device, 0x03, 0, 0x10);
     assert!(!state.lock().unwrap().oled_reset_high);
     update(&mut device, 0x13, 0x80, 0);

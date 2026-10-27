@@ -1,4 +1,4 @@
-//! M5Stack PaperMono: digital EPD/touch/power wiring, no RF/NFC/SD/audio model.
+//! M5Stack PaperMono: digital EPD/touch/power wiring, no RF/NFC/audio model.
 //! Pin and reset sources: M5 PaperMono schematic; M5GFX 02107b82 M5GFX.cpp.
 use std::sync::{Arc,Mutex};
 use esp_periph::i2c::{I2cDevice,Reg8Device};
@@ -30,10 +30,13 @@ impl I2cDevice for PowerDevice {
     fn read(&mut self)->u8 {self.device.read()}
     fn stop(&mut self) {self.device.stop();}
 }
-pub struct PaperMono {i2c:I2cBitBang, i2c_levels:[bool;2], wiring:Arc<Wiring>,dc:bool,cs:Option<bool>,cycle:u64,touch_irq_high:bool,edges:Vec<BoardEdge>,gpio_events:u64,imu:Arc<Mutex<Bmi270Sample>>}
+pub struct PaperMono {i2c:I2cBitBang, i2c_levels:[bool;2], wiring:Arc<Wiring>,dc:bool,cs:Option<bool>,cycle:u64,touch_irq_high:bool,edges:Vec<BoardEdge>,gpio_events:u64,leds:[[u8;3];1],led_updates:u64,imu:Arc<Mutex<Bmi270Sample>>}
 impl PaperMono {
     pub const WIDTH:usize=480;pub const HEIGHT:usize=800;
-    pub fn new()->Self {Self {i2c:I2cBitBang::new(),i2c_levels:[true,true],wiring:Arc::new(Wiring{panel:Mutex::new(Ssd1677::new(800,480,18,crate::periph::CPU_HZ/1000)),pmic:Default::default(),expander:Default::default(),touch:Default::default(),active:Mutex::new(false)}),dc:false,cs:None,cycle:0,touch_irq_high:true,edges:Vec::new(),gpio_events:0,imu:Default::default()}}
+    pub fn new()->Self {Self {i2c:I2cBitBang::new(),i2c_levels:[true,true],wiring:Arc::new(Wiring{panel:Mutex::new(Ssd1677::new(800,480,18,crate::periph::CPU_HZ/1000)),pmic:Default::default(),expander:Default::default(),touch:Default::default(),active:Mutex::new(false)}),dc:false,cs:None,cycle:0,touch_irq_high:true,edges:Vec::new(),gpio_events:0,leds:[[0;3]],led_updates:0,imu:Default::default()}}
+    fn sync_leds(&mut self) {let pm=self.wiring.pmic.lock().expect("PaperMono PMIC mutex poisoned");let ioe=self.wiring.expander.lock().expect("PaperMono IOE mutex poisoned");
+        let rgb=if pm.power_off_requested {[0;3]} else {[if pm.led_enabled {255}else{0},((u32::from(ioe.pwm[1])*255+2047)/4095) as u8,((u32::from(ioe.pwm[0])*255+2047)/4095) as u8]};
+        if self.leds[0]!=rgb {self.leds[0]=rgb;self.led_updates+=1;}}
     fn sync_touch_irq(&mut self) {let state=self.wiring.touch.lock().expect("PaperMono touch mutex poisoned");let high=!state.powered || !state.down;if high!=self.touch_irq_high {self.touch_irq_high=high;self.edges.push(BoardEdge{cycle:self.cycle,pin:4,level:high});}}
 }
 impl Default for PaperMono {fn default()->Self {Self::new()}}
@@ -51,7 +54,7 @@ impl BoardModel for PaperMono {
         if host==2 {self.wiring.sync();if *self.wiring.active.lock().expect("PaperMono power mutex poisoned") && self.cs!=Some(true) {self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").write(self.dc,tx);}}
         vec![0xff;rx_len]
     }
-    fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)> {self.i2c.clear();let devices:Vec<(u8,u8,Box<dyn I2cDevice>)>=vec![
+    fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)> {if self.wiring.expander.lock().unwrap().input_mask&1==0 {self.set_sd_card_present(false);}self.i2c.clear();let devices:Vec<(u8,u8,Box<dyn I2cDevice>)>=vec![
         (0,0x6e,Box::new(PowerDevice{device:Box::new(M5pm1::new(self.wiring.pmic.clone())),wiring:self.wiring.clone()})),
         (0,0x4f,Box::new(PowerDevice{device:Box::new(M5ioe1::new(self.wiring.expander.clone(),0)),wiring:self.wiring.clone()})),
         (0,0x38,Box::new(Ft6336g::new(self.wiring.touch.clone()))),
@@ -73,9 +76,12 @@ impl BoardModel for PaperMono {
     fn display_frames(&self)->u64 {self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").frames}
     fn input_levels(&self)->Vec<(u8,bool)> {vec![(18,self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").busy()),(4,self.touch_irq_high),(2,true),(3,true),(47,self.i2c_levels[0]),(48,self.i2c_levels[1])]}
     fn touch(&mut self,x:u16,y:u16,down:bool) {self.wiring.sync();let mut state=self.wiring.touch.lock().expect("PaperMono touch mutex poisoned");if state.powered {state.update(x.min(479),y.min(799),down);}drop(state);self.sync_touch_irq();}
-    fn advance_to(&mut self,cycle:VirtualCycle) {self.cycle=cycle;self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").advance_to(cycle);self.sync_touch_irq();}
+    fn advance_to(&mut self,cycle:VirtualCycle) {self.cycle=cycle;self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").advance_to(cycle);self.sync_touch_irq();self.sync_leds();}
     fn next_deadline(&self)->Option<VirtualCycle> {self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").next_deadline()}
     fn take_edges(&mut self)->Vec<BoardEdge> {self.sync_touch_irq();let mut edges=std::mem::take(&mut self.edges);edges.extend(self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").take_edges());edges.sort_by_key(|e|e.cycle);edges}
+    fn leds(&self)->Option<(&[[u8;3]],u64)> {Some((&self.leds,self.led_updates))}
+    fn sd_card_slot(&self)->Option<([u8;6],bool)> {let pm=self.wiring.pmic.lock().expect("PaperMono PMIC mutex poisoned");let ioe=self.wiring.expander.lock().expect("PaperMono IOE mutex poisoned");Some(([13,12,11,10,9,8],!pm.power_off_requested && ioe.driven_high & (1<<13)!=0))}
+    fn set_sd_card_present(&mut self,present:bool) {let mut ioe=self.wiring.expander.lock().expect("PaperMono IOE mutex poisoned");ioe.input_mask|=1;ioe.input_high=(ioe.input_high & !1)|u16::from(!present);}
     fn named_pin(&self,name:&str)->Option<u8> {match name {"a"|"btn_a"=>Some(2),"b"|"btn_b"=>Some(3),_=>None}}
     fn report(&self)->String {let panel=self.wiring.panel.lock().expect("PaperMono panel mutex poisoned");format!("[papermono] frames={} ram_bytes={} busy={} rtc=register-ram nfc=unimplemented",panel.frames,panel.ram_bytes_written,panel.busy())}
 }
@@ -113,4 +119,18 @@ mod tests {
         assert_eq!(frame[479],0);assert_eq!(frame[478],0xffff);assert_eq!(frame[480+479],0xffff);
         write(ioe.2.as_mut(),5,0);assert_eq!(board.display().unwrap().2[479],0,"power loss retains the bistable image");
     }
+    #[test]
+    fn rgb_uses_pmic_and_expander_pwm_and_sd_detect_is_not_output_latch() {
+        let mut board=PaperMono::new();let mut devices=board.i2c_devices();
+        let ioe=devices.iter().position(|(bus,address,_)|*bus==1&&*address==0x4f).unwrap();
+        let pm=devices.iter().position(|(bus,address,_)|*bus==1&&*address==0x6e).unwrap();
+        assert_eq!(read(devices[ioe].2.as_mut(),7,1)[0]&1,1);board.set_sd_card_present(true);assert_eq!(read(devices[ioe].2.as_mut(),7,1)[0]&1,0);
+        assert!(!board.sd_card_slot().unwrap().1);
+        for (reg,value) in [(3,0x80),(4,0x21),(5,0x80),(6,0x20),(0x13,0),(0x14,0),(0x25,0x88),(0x26,0x13),(0x1b,0xff),(0x1c,0x8f),(0x1d,0),(0x1e,0x88)] {write(devices[ioe].2.as_mut(),reg,value);}
+        board.advance_to(1);assert_eq!(board.leds().unwrap().0,[[255,128,255]]);assert!(board.sd_card_slot().unwrap().1);
+        write(devices[pm].2.as_mut(),6,7);write(devices[ioe].2.as_mut(),0x1c,0xcf);board.advance_to(2);assert_eq!(board.leds().unwrap().0,[[0,128,0]]);
+        write(devices[ioe].2.as_mut(),0x1e,8);board.advance_to(3);assert_eq!(board.leds().unwrap().0,[[0,0,0]]);
+        write(devices[pm].2.as_mut(),0x0c,0xa1);board.advance_to(4);assert!(!board.sd_card_slot().unwrap().1);
+    }
+
 }

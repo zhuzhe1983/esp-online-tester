@@ -64,6 +64,13 @@ export function createManufacturerModel(product, screenTexture) {
     parts.shell=shells[0];group.userData.shellMeshes=shells;
     for(const part of metadata.derivedParts || []) {
       const size=vector(part.geometry?.sizeMm || part.dimensionsMm,[20,20,1]),center=vector(part.geometry?.centerMm || part.centerMm);
+      if(part.kind==='lathe') {
+        // Radius/height profile in mm, revolved around local +Y; explicit product rotation follows.
+        const points=part.geometry?.profileMm,surface=part.material || {};
+        if(!Array.isArray(points)||points.length<2||points.length>128||points.some((p,i)=>!Array.isArray(p)||p.length!==2||!p.every(Number.isFinite)||p[0]<0||p[0]>5000||Math.abs(p[1])>5000||(i&&p[1]<points[i-1][1]))||!points.some(p=>p[0]>0)||points.at(-1)[1]<=points[0][1])throw Error('Invalid lathe profile');
+        if(Object.keys(surface).some(key=>!['metalness','roughness'].includes(key))||Object.values(surface).some(v=>!Number.isFinite(v)||v<0||v>1))throw Error('Invalid derived material');
+        const mesh=new THREE.Mesh(new THREE.LatheGeometry(points.map(p=>new THREE.Vector2(...p)),64),new THREE.MeshStandardMaterial({color:part.color || '#666d69',roughness:surface.roughness??.7,metalness:surface.metalness??0}));mesh.name=part.id;mesh.position.set(...center);mesh.rotation.set(...vector(part.geometry?.rotation));mesh.userData.inputOccluder=true;parts[part.id]=mesh;group.add(mesh);continue;
+      }
       if(['box','cylinder','torus'].includes(part.kind)) {const g=part.geometry || {},surface=part.material || {};if(Object.keys(surface).some(key=>!['metalness','roughness'].includes(key))||Object.values(surface).some(v=>!Number.isFinite(v)||v<0||v>1))throw Error('Invalid derived material');const dimensions=part.kind==='box'?size:part.kind==='cylinder'?[g.radiusMm,g.depthMm]:[g.radiusMm,g.tubeMm];if(!dimensions.every(v=>Number.isFinite(v)&&v>0&&v<=5000))throw Error('Invalid derived part dimensions');const shape=part.kind==='torus'?new THREE.TorusGeometry(g.radiusMm,g.tubeMm,16,64):part.kind==='cylinder'?new THREE.CylinderGeometry(g.radiusMm,g.radiusMm,g.depthMm,48).rotateX(Math.PI/2):new THREE.BoxGeometry(...size);const mesh=new THREE.Mesh(shape,new THREE.MeshStandardMaterial({color:part.color || '#666d69',roughness:surface.roughness??.7,metalness:surface.metalness??0}));mesh.name=part.id;mesh.position.set(...center);mesh.rotation.set(...vector(part.geometry?.rotation));mesh.userData.inputOccluder=true;parts[part.id]=mesh;group.add(mesh);continue;}
       if(part.kind==='label') {
         if(!Array.isArray(part.geometry?.sizeMm)||part.geometry.sizeMm.length!==2||!part.geometry.sizeMm.every(v=>Number.isFinite(v)&&v>0&&v<=5000))throw Error('Invalid label dimensions');

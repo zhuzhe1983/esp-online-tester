@@ -154,6 +154,8 @@ impl esp_soc::SocBus for SocBus {
         let p = &mut self.periph;
         // The host AP and network survive a guest reboot; only the MAC and relay queues reset.
         p.wifi.link = old.wifi.link.surviving_reboot();
+        // The card media and protocol survive a chip reset; firmware sends CMD0 on remount.
+        p.sdmmc.devices=old.sdmmc.devices;p.sdmmc.stats=old.sdmmc.stats;
         // Host camera cadence and logging survive; guest capture state resets.
         p.lcd_cam.frame_cycles = old.lcd_cam.frame_cycles;
         p.efuse = old.efuse;
@@ -235,9 +237,16 @@ impl esp_soc::SocBus for SocBus {
     }
     fn set_strap(&mut self, v: u32) { self.periph.gpio.strap = v; }
     fn set_reset_cause(&mut self, c: u32) { self.periph.rtc.ram.write(0x38, c | (c << 6)); }
+    fn attach_sd_card(&mut self,image:Box<dyn esp_periph::sdmmc::SdStore>,config:esp_periph::sdmmc::SdCardConfig)->Result<String,String> {
+        if self.board.sd_card_slot().is_none() {return Err("this S3 board has no modeled native SD socket".into());}
+        if config.timed_bus || config.prg_ns!=0 {return Err("S3 SDMMC currently models immediate digital transfers, not wire timing".into());}
+        let card=esp_periph::sdmmc::SdCard::with_config(image,config)?;let info=card.describe();
+        self.periph.sdmmc.devices.clear();self.periph.sdmmc.attach(Box::new(card));self.board.set_sd_card_present(true);Ok(info)
+    }
     fn report(&self) -> String {
         let p = &self.periph;
         let mut s = format!("[emu] i2s frames out: {} (i2s0 @ {} Hz) {} (i2s1 @ {} Hz)\n", p.i2s0.frames_out, p.i2s0.sample_rate, p.i2s1.frames_out, p.i2s1.sample_rate);
+        if !p.sdmmc.devices.is_empty() {let d=&p.sdmmc.stats;s+=&format!("[sdmmc] commands={} timeouts={} read={} written={}\n",d.commands,d.timeouts,d.bytes_read,d.bytes_written);}
         { let r = self.board.report(); if !r.is_empty() { s += &r; s += "\n"; } }
         { let w = p.wifi.link.report(); if !w.is_empty() { s += &w; s += "\n"; } }
         { let (a, sh, r) = (&p.aes, &p.sha, &p.rsa);

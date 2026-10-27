@@ -110,7 +110,7 @@ export function createRecordingController(runtime) {
   const change=next=>{status=next;emit();};
   const failure=e=>{error={code:e.code||'RECORDING_ERROR',message:e.message};change('error');};
   const check=t=>{if(t.cancelled)throw err('RECORDING_CANCELLED','Recording operation cancelled.');};
-  const requirePristineStorage=state=>{if(state.storage?.pristine===false)throw err('RECORDING_STORAGE_NOT_PRISTINE','当前设备已有持久化数据，分享录制无法携带这些内容。请先在设备存储中手动清空，再开始录制或回放。');};
+  const requirePristineStorage=state=>{if(state.sdCard?.pristine===false)throw err('RECORDING_STORAGE_NOT_PRISTINE','当前虚拟 SD 卡含有导入文件或持久化改动，分享录制不会携带这些私人内容。请先导出备份，并手动清空 SD 卡后再录制或回放。');if(state.storage?.pristine===false)throw err('RECORDING_STORAGE_NOT_PRISTINE','当前设备已有持久化数据，分享录制无法携带这些内容。请先在设备存储中手动清空，再开始录制或回放。');};
   const tracked=event=>{if(['button','matrix-key'].includes(event.type)){if(event.pressed)held.set(pressId(event),pressInput(event));else held.delete(pressId(event));}else if(event.type==='touch')heldTouch=event.down?clone(event):null;};
   const release=async()=>{
     const current=await runtime.observe();

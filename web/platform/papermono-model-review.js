@@ -1,5 +1,6 @@
 import * as THREE from './vendor/three.module.min.js';
 import {createPapermonoModel} from './papermono-model.js';
+import {applyShellAppearance} from './shell-appearance.js';
 const assetBase=new URL('./assets/m5stack-papermono/',import.meta.url);
 const views={front:{label:'正面',photo:'07',position:[-.575,.29,180],target:[-.575,.29,0],up:[0,1,0],span:153.32},back:{label:'背面',photo:'08',position:[-.28,.38,-180],target:[-.28,.38,0],up:[0,1,0],span:153.32},left:{label:'按键侧',photo:'10',position:[-180,0,0],target:[0,0,0],up:[0,0,1],span:121.75},bottom:{label:'USB底部',photo:'09',position:[-.18,-180,.06],target:[-.18,0,.06],up:[0,0,1],span:94.76}};
 const scene=new THREE.Scene();
@@ -13,7 +14,7 @@ const overlay=document.createElement('canvas');overlay.width=overlay.height=800;
 const screenCanvas=document.createElement('canvas');screenCanvas.width=screenCanvas.height=4;(screenCanvas.getContext('2d').fillStyle='#c7c9c5',screenCanvas.getContext('2d').fillRect(0,0,4,4));
 const texture=new THREE.CanvasTexture(screenCanvas);texture.colorSpace=THREE.SRGBColorSpace;
 const model=createPapermonoModel(texture);scene.add(model.group);
-function showView(id){const v=views[id];if(!v)throw new Error('Unknown view');
+function showView(id,options={}){const v={...views[id],...options};if(!views[id])throw new Error('Unknown view');
  camera.left=-v.span/2;camera.right=v.span/2;camera.top=v.span/2;camera.bottom=-v.span/2;camera.up.set(...v.up);camera.position.set(...v.position);camera.lookAt(...v.target);camera.updateProjectionMatrix();
  light.position.copy(camera.position).add(new THREE.Vector3(-60,90,30));rim.position.copy(camera.position).negate().add(new THREE.Vector3(60,40,30));
  const url=new URL(`reference-photo-${v.photo}.webp`,assetBase).href;document.querySelector('#reference').src=document.querySelector('#overlay-reference').src=url;
@@ -25,6 +26,6 @@ function showView(id){const v=views[id];if(!v)throw new Error('Unknown view');
 }
 for(const [id,v] of Object.entries(views)){const b=document.createElement('button');b.textContent=v.label;b.dataset.view=id;b.onclick=()=>showView(id);document.querySelector('#views').append(b);}
 document.querySelector('#opacity').oninput=e=>{overlay.style.opacity=e.target.value;};
-window.modelReview={showView,capture:()=>renderer.domElement.toDataURL('image/png')};
+window.modelReview={showView,model,renderer,appearance(value){applyShellAppearance(model.parts.shell,value);return showView(document.body.dataset.view||'front');},capture:()=>renderer.domElement.toDataURL('image/png')};
 model.ready.then(()=>{showView('front');document.querySelector('#status').textContent='CAD 已加载 · 4 个原始组件';document.body.dataset.ready='true';}).catch(e=>{document.querySelector('#status').textContent=e.message;});
 window.addEventListener('pagehide',()=>{model.dispose();model.group.traverse(o=>{o.geometry?.dispose();if(o.material)for(const m of [].concat(o.material))m.dispose();});texture.dispose();renderer.dispose();});

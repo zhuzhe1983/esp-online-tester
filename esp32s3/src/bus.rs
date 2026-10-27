@@ -3,6 +3,7 @@
 use crate::periph::{Peripherals, PERIPH_BASE, PERIPH_END};
 use crate::board::Board;
 mod dma;
+mod sdmmc;
 pub use dma::{DmaDescriptorFault, DmaDescriptorWord};
 use dma::Spi2DmaCompletion;
 #[cfg(test)]
@@ -465,7 +466,9 @@ impl SocBus {
             self.irq_dirty |= esp_soc::gpio::deliver_board_inputs(&mut *self.board, &mut self.periph.gpio, &mut self.gpio_events, self.cycles);
             self.refresh_tick_budget();
         }
-        self.periph.read32(addr)
+        let value=self.periph.read32(addr);
+        if addr>>12==0x60028 && self.periph.sdmmc.take_read_irq() {self.irq_dirty=true;esp_periph::Dispatch::refresh_optional(&mut self.periph,0x28);}
+        value
     }
     /// EX133: every device-register access must have been deferred out of a multi-quantum run.
     /// One that was not (a PIE or MAC16 word access; nothing real does this) saw early time.
@@ -530,6 +533,7 @@ impl SocBus {
             self.spi3_pins = self.board.uses_spi_pins().then(|| self.periph.spi3_pins());
         }
         self.periph.write32(a, v);
+        if a>>12==0x60028 || a==0x600c0024 {self.sdmmc_write(a,v);}
         if matches!(a & !0xfff, 0x6000_4000 | 0x6000_9000) && self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, esp_soc::pins::ChipPins::S3.routes(&self.periph.gpio, &self.periph.io_mux));
         }

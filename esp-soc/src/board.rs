@@ -152,6 +152,11 @@ pub trait BoardModel {
     /// Observe routed GPIO writes without requiring pulse-width/instruction-sized scheduling.
     /// Appended to preserve existing vtable slots. Waveform boards keep their old behavior.
     fn uses_gpio_routes(&self) -> bool { self.uses_gpio_waveform() }
+    /// Native SD socket: CLK,CMD,D0..D3 and current supply state. No socket by default.
+    /// Appended host-only query: not polled in the CPU/tick hot path.
+    fn sd_card_slot(&self) -> Option<([u8; 6], bool)> { None }
+    /// Physical card insertion switch, independent of the host controller's card detect signal.
+    fn set_sd_card_present(&mut self, _present: bool) {}
 }
 
 pub type Board = Box<dyn BoardModel>;

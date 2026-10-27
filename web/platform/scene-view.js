@@ -4,6 +4,7 @@ import {createPapermonoModel} from './papermono-model.js';
 import {createManufacturerModel} from './manufacturer-model.js';
 import {pickVisibleSurface, createScenePointerRouter, createSurfaceHalo} from './scene-interaction.js';
 import {createIllustrativeAccessory, createGroveCable} from './accessory-view.js';
+import {applyRgbLedValues} from './rgb-led-view.js';
 import {normalizeShellAppearance, applyShellAppearance, DEFAULT_STOPWATCH_APPEARANCE} from './shell-appearance.js';
 import {normalizeOrientation} from './imu.js';
 
@@ -111,6 +112,8 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     if (notify) publishOrientation(false); if (accessoryCount) frameCamera(); draw(); return getOrientation();
   }
   let parts = {}, connectors = {}, shellMeshes = [], customizedAppearance = false, appearanceDefaults = DEFAULT_STOPWATCH_APPEARANCE, appearance = normalizeShellAppearance(null), accessoryDefinitions = [];
+  let rgbLedMeshes = [], rgbValues = [];
+  function updateLeds(values) { rgbValues = values || []; applyRgbLedValues(rgbLedMeshes, rgbValues); draw(); }
   const halo = createSurfaceHalo();
   try {
     renderer = new THREE.WebGLRenderer({alpha: true, antialias: true, powerPreference: 'low-power'});
@@ -155,6 +158,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       if (object.material) for (const material of [].concat(object.material)) material.dispose();
     });
     group.clear(); buttons = []; screen = null; parts = {}; connectors = {}; shellMeshes = []; accessoryGroup = null; accessoryCount = 0;
+    rgbLedMeshes = []; rgbValues = [];
   }
   function clearDisplay() {
     frameWidth = product?.display?.framebufferWidth || product?.display?.width || 320;
@@ -182,6 +186,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
         if (disposed || productGeneration !== token) return;
         screen = model.screen; if(screen)screen.userData.screen=true;
         shellMeshes = model.group.userData.shellMeshes || [parts.shell].filter(Boolean);
+        rgbLedMeshes = model.group.userData.rgbLedMeshes || []; applyRgbLedValues(rgbLedMeshes, rgbValues);
         for(const mesh of shellMeshes)mesh.userData.originalAppearance ||= {shell:{color:`#${mesh.material.color.getHexString()}`,opacity:1,finish:'plastic'}};
         if(product.model && product.id !== 'm5stack-papermono') { appearanceDefaults = shellMeshes[0]?.userData.originalAppearance || DEFAULT_STOPWATCH_APPEARANCE; if(!customizedAppearance)appearance=normalizeShellAppearance(null,appearanceDefaults); }
         mount.dataset.modelStatus = 'ready'; onModelReady(); applyAppearance(); setAccessories(accessoryDefinitions); frameCamera(); draw();
@@ -205,18 +210,32 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     accessoryCount = Math.min(accessories.length, 3);
     accessoryGroup = new THREE.Group(); accessoryGroup.name = 'accessory-assembly'; group.add(accessoryGroup);
     let groveOccupied = false;
+    const loadedAccessories = [];
+    const attachCables = () => {
+      // Rebuild in scene order, never in network completion order. The socket
+      // anchors of manufacturer assets exist only after their CAD has loaded.
+      if (disposed || token !== accessoryGeneration) return;
+      for (const child of [...accessoryGroup.children]) if (child.name === 'grove-cable-visual-only') {
+        child.traverse(object => { object.geometry?.dispose(); object.material?.dispose(); }); accessoryGroup.remove(child);
+      }
+      groveOccupied = false;
+      for (const {definition, accessory} of loadedAccessories) {
+        const connectorMatches = definition.connector?.type === 'HY2.0-4P' && (!definition.wiring || ['logical','visual'].includes(definition.wiring.mode) || definition.wiring.connectorId === 'grove');
+        if (connectors.grove && connectorMatches && !groveOccupied) {
+          const cable = createGroveCable(connectors.grove, accessory.connector, group);
+          if (cable) { accessoryGroup.add(cable.group); groveOccupied = true; accessory.group.userData.connection = 'grove-visual-only'; }
+          else accessory.group.userData.connection = 'unverified-connector-preview';
+        } else accessory.group.userData.connection = 'unconnected-preview';
+      }
+      frameCamera(); draw();
+    };
     for (let i = 0; i < accessoryCount; i++) {
       const definition = accessories[i], accessory = createIllustrativeAccessory(definition, i); accessoryGroup.add(accessory.group);
+      loadedAccessories.push({definition, accessory});
       if (accessory.dispose) accessoryCleanups.push(() => accessory.dispose());
-      accessory.ready?.then(() => { if (!disposed && token === accessoryGeneration) { frameCamera(); draw(); } }).catch(error => { if (!disposed && token === accessoryGeneration) { console.error('Accessory model loading failed:', error); draw(); } });
-      const connectorMatches = definition.connector?.type === 'HY2.0-4P' && (!definition.wiring || definition.wiring.mode === 'logical' || definition.wiring.connectorId === 'grove');
-      if (connectors.grove && connectorMatches && !groveOccupied) {
-        const cable = createGroveCable(connectors.grove, accessory.connector, group);
-        if (cable) { accessoryGroup.add(cable.group); groveOccupied = true; accessory.group.userData.connection = 'grove-visual-only'; }
-        else accessory.group.userData.connection = 'unverified-connector-preview';
-      } else accessory.group.userData.connection = 'unconnected-preview';
+      accessory.ready?.then(attachCables).catch(error => { if (!disposed && token === accessoryGeneration) { console.error('Accessory model loading failed:', error); draw(); } });
     }
-    frameCamera(); draw();
+    attachCables();
   }
   function applyAppearance() { for(const mesh of shellMeshes.length?shellMeshes:[parts.shell].filter(Boolean))applyShellAppearance(mesh, customizedAppearance?appearance:mesh.userData.originalAppearance || appearance, {occluder: parts.occluder}); draw(); }
   function setAppearance(value) { customizedAppearance = value != null; appearance = normalizeShellAppearance(value, appearanceDefaults); applyAppearance(); return getAppearance(); }
@@ -310,7 +329,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   window.addEventListener('blur', releaseInputs);
   function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {setProduct, setAccessories, setMode, resetView, updateFrame, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
     dispose() { disposed = true; releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup(); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }

@@ -13,6 +13,15 @@ let wasm = null, emu = 0, running = false, t0 = 0, resyncs = 0, lastStat = { wal
 let loopGeneration = 0, booted = false;
 let flashShadow = null, flashWatchId = null, flashScanAt = 0;
 const FLASH_PAGE = 4096;
+let sdShadow=null,sdWatchId=null,sdScanAt=0;
+function sdBytes() {if(!emu||!wasm.esp32sim_sd_len)throw new Error('SD images unsupported by this WASM');return mem().subarray(wasm.esp32sim_sd_ptr(emu),wasm.esp32sim_sd_ptr(emu)+wasm.esp32sim_sd_len(emu));}
+function collectSd(force=false) {
+  if(!sdShadow||!force&&performance.now()-sdScanAt<1500)return;sdScanAt=performance.now();
+  const bytes=sdBytes(),words=new Uint32Array(bytes.buffer,bytes.byteOffset,bytes.length/4),old=new Uint32Array(sdShadow.buffer),pages=[];
+  for(let offset=0;offset<bytes.length;offset+=FLASH_PAGE){let changed=false;for(let i=offset/4;i<(offset+FLASH_PAGE)/4;i++)if(words[i]!==old[i]){changed=true;break;}
+    if(changed){const data=bytes.slice(offset,offset+FLASH_PAGE).buffer;sdShadow.set(new Uint8Array(data),offset);pages.push({offset,data});}}
+  if(pages.length)postMessage({sdDelta:{watchId:sdWatchId,pages}},pages.map(p=>p.data));
+}
 function flashBytes() {
   if (!emu || !wasm.esp32sim_flash_ptr || !wasm.esp32sim_flash_len) throw new Error('Flash snapshots are unsupported by this WASM build');
   return mem().subarray(wasm.esp32sim_flash_ptr(emu), wasm.esp32sim_flash_ptr(emu) + wasm.esp32sim_flash_len(emu));
@@ -77,7 +86,7 @@ function loop(generation = loopGeneration) {
     if (inputTraceIds.length) postMessage({ touchTrace: { stage: 'run-exit', ids: inputTraceIds, atMs: traceNow(), cycles: cur } });
     pacing.observe(cur - previous, performance.now() - before);
     drain();
-    collectFlash();
+    collectFlash();collectSd();
     if (rc !== 0) { running = false; postMessage({ stopped: rc }); return; }
     if (performance.now() - now >= turnMs) break;                       // let messages flow, come back
   }
@@ -147,7 +156,7 @@ onmessage = async (ev) => {
       flashShadow = null; flashWatchId = null;
       // Keep credits for already posted frames until their ACKs arrive, but never send
       // a retained frame from the emulator being replaced.
-      pendingFrame = null;
+      pendingFrame = null;sdShadow=null;sdWatchId=null;
       pacing = createPacing();
       pendingInputTrace = [];
       if (emu) { wasm.esp32sim_delete(emu); emu = 0; }
@@ -159,6 +168,10 @@ onmessage = async (ev) => {
       if (emu !== 0 && wasm.esp32sim_cpu_hz) CPU_HZ = wasm.esp32sim_cpu_hz(emu);
       postMessage({ created: emu !== 0, flashStorage: !!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
     }
+    else if (m.op === 'sd-attach') {if(booted||running)throw new Error('Attach SD only before boot');if(withBytes(new Uint8Array(m.data),(p,n)=>wasm.esp32sim_load(emu,8,p,n))!==0)throw new Error('SD attach rejected');postMessage({sdReply:m.requestId,ok:true});}
+    else if (m.op === 'sd-export') {const data=sdBytes().slice().buffer;postMessage({sdReply:m.requestId,data},[data]);}
+    else if (m.op === 'sd-watch') {sdShadow=sdBytes().slice();sdWatchId=m.requestId;sdScanAt=performance.now();postMessage({sdReply:m.requestId,ok:true});}
+    else if (m.op === 'sd-flush') {collectSd(true);postMessage({sdReply:m.requestId,ok:true});}
     else if (m.op === 'flash-snapshot') { const data = flashBytes().slice().buffer; postMessage({flashReply: m.requestId, data}, [data]); }
     else if (m.op === 'flash-watch') { flashShadow = flashBytes().slice(); flashWatchId = m.requestId; flashScanAt = performance.now(); postMessage({flashReply: m.requestId, ok: true}); }
     else if (m.op === 'flash-flush') { collectFlash(true); postMessage({flashReply: m.requestId, ok: true}); }
@@ -196,7 +209,7 @@ onmessage = async (ev) => {
       postMessage({ resumed: true });
     }
     else if (m.op === 'net-create') {
-      flashShadow = null; flashWatchId = null;
+      flashShadow = null; flashWatchId = null;sdShadow=null;sdWatchId=null;
       setupError = null;
       running = false; loopGeneration++; booted = false;
       pendingFrame = null;
@@ -219,7 +232,7 @@ onmessage = async (ev) => {
     else if (m.op === 'net-load') { const rc = withBytes(new Uint8Array(m.data), (p, n) => wasm.esp32sim_net_load(net, m.node, m.kind, p, n)); postMessage({ loaded: 'n' + m.node + ':' + m.kind, ok: rc === 0 }); }
     else if (m.op === 'net-stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_net_stub_spec(net, m.node, p, n)) !== 0) setupError ||= 'invalid stub for node ' + m.node + ': ' + m.spec; }
     else if (m.op === 'net-start') { if (setupError) throw new Error(setupError); const rc = wasm.esp32sim_net_boot(net); if (rc === 0) { running = true; netT0 = performance.now(); netLoop(); } postMessage({ started: rc === 0 }); }
-    else if (m.op === 'stop') { running = false; loopGeneration++; collectFlash(true); postMessage({ stopped: 0 }); }
+    else if (m.op === 'stop') { running = false; loopGeneration++; collectFlash(true);collectSd(true); postMessage({ stopped: 0 }); }
     else if (m.op === 'imu') {
       const values = [...(m.accelG || []), ...(m.gyroDps || [])];
       const ok = !!emu && values.length === 6 && values.every(Number.isFinite) && !!wasm.esp32sim_set_imu_sample
@@ -246,5 +259,5 @@ onmessage = async (ev) => {
       }
       withBytes(data, (p, n) => wasm.esp32sim_in_bin(emu, p, n));
     }
-  } catch (err) { postMessage({ log: '[worker] ' + (err && err.stack || err) }); running = false; loopGeneration++; if (m.op === 'start' || m.op === 'net-start') postMessage({ started: false, error: err.message || String(err) }); else if (m.op === 'resume') postMessage({ resumed: false, error: err.message || String(err) }); else if (m.op.startsWith('flash-')) postMessage({flashReply: m.requestId, ok: false, error: err.message || String(err)}); else postMessage({ stopped: 1 }); }
+  } catch (err) { postMessage({ log: '[worker] ' + (err && err.stack || err) }); running = false; loopGeneration++; if (m.op === 'start' || m.op === 'net-start') postMessage({ started: false, error: err.message || String(err) }); else if (m.op === 'resume') postMessage({ resumed: false, error: err.message || String(err) }); else if (m.op.startsWith('sd-')) postMessage({sdReply:m.requestId,ok:false,error:err.message||String(err)}); else if (m.op.startsWith('flash-')) postMessage({flashReply: m.requestId, ok: false, error: err.message || String(err)}); else postMessage({ stopped: 1 }); }
 };

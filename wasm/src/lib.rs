@@ -49,6 +49,7 @@ pub struct Emu {
     out: Vec<(u8, Vec<u8>)>,
     ethernet_out: Vec<Vec<u8>>,
     ble_out: String,
+    sd_image: Option<std::sync::Arc<std::sync::Mutex<Vec<u8>>>>,
     booted: bool,
     /// a mask ROM ELF was loaded: a ROM boot without one would run from empty memory and print nothing
     rom_loaded: bool,
@@ -182,7 +183,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     Box::into_raw(Box::new(Emu {
         m,
         out: Vec::new(), ethernet_out: Vec::new(), ble_out: String::new(),
-        booted: false, rom_loaded: false,
+        booted: false, rom_loaded: false, sd_image: None,
         #[cfg(target_arch = "wasm32")]
         jit: BrowserJit::default(),
     }))
@@ -222,6 +223,7 @@ pub unsafe extern "C" fn esp32sim_load(e: *mut Emu, kind: u32, ptr: *const u8, l
     let e = unsafe { &mut *e };
     // SAFETY: The caller provides a readable input buffer for this call.
     let data = unsafe { bytes(ptr, len) };
+    if kind==8 {return storage::load_sd(e,data);}
     match e.m.load(kind, data) { Ok(()) => { if kind == 0 { e.rom_loaded = true; } 0 } Err(msg) => { log(&format!("[emu] load kind {}: {}", kind, msg)); 1 } }
 }
 
@@ -465,6 +467,26 @@ pub extern "C" fn esp32sim_test_fma_sweep(seed: f64, n: u32) -> u32 {
 pub extern "C" fn esp32sim_test_block_jit() -> u32 {
     std::panic::set_hook(Box::new(|info| log(&format!("[jit test] {info}"))));
     xtensa_lx7::jit::tests::run_tests() + jit_tests::run() + jit_memory_tests::run()
+}
+
+/// Test-only groups let Node release V8's generated-module metadata between processes.
+#[cfg(all(target_arch = "wasm32", feature = "jit-tests"))]
+#[no_mangle]
+pub extern "C" fn esp32sim_test_block_jit_group_count() -> u32 {
+    xtensa_lx7::jit::tests::test_group_count() + 2
+}
+
+#[cfg(all(target_arch = "wasm32", feature = "jit-tests"))]
+#[no_mangle]
+pub extern "C" fn esp32sim_test_block_jit_group(group: u32) -> u32 {
+    std::panic::set_hook(Box::new(move |info| log(&format!("[jit test group {group}] {info}"))));
+    let core_groups = xtensa_lx7::jit::tests::test_group_count();
+    match group.checked_sub(core_groups) {
+        None => xtensa_lx7::jit::tests::run_test_group(group),
+        Some(0) => jit_tests::run(),
+        Some(1) => jit_memory_tests::run(),
+        _ => panic!("invalid JIT test group"),
+    }
 }
 
 #[cfg(all(target_arch = "wasm32", feature = "jit-tests"))]

@@ -1,11 +1,12 @@
 use super::*;
 
-pub(super) fn integer_ops() -> u32 {
+pub(super) fn integer_ops_part(part: usize) -> u32 {
     use Op::*;
     let mut tests = 0;
     let values = [0, 1, 0xffff_ffff, 0x8000_0000, 0x7fff_ffff, 0xa5a5_5a5a, 0x0001_8000];
     // coverage-s3: MUL16 sign/zero extension and all four mask-branch outcomes need operand pairs.
-    for op in [Abs, Sra, Src, Muluh, Mulsh, Mul16u, Mul16s, Bany, Bnone, Ball, Bnall] {
+    for (index, op) in [Abs, Sra, Src, Muluh, Mulsh, Mul16u, Mul16s, Bany, Bnone, Ball, Bnall].into_iter().enumerate() {
+        if index % 3 != part { continue; }
         // Production admission is separate from queue(), used by the differential harness.
         let mut admitted = [insn(Nop), insn(op), insn(Xor)];
         let mut cc = CodeCache::new(0).unwrap();
@@ -54,6 +55,7 @@ pub(super) fn integer_ops() -> u32 {
             }
         }
     }
+    if part != 0 { return tests; }
     // This opcode remains deliberately outside production admission.
     let mut cc = CodeCache::new(0).unwrap();
     assert!(compile(&mut cc, &mut [insn(Add), insn(Nsa), insn(Xor)], BASE, false).is_none());

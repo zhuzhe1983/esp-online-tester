@@ -7,6 +7,7 @@ import {Worker} from 'node:worker_threads';
 import {createHash} from 'node:crypto';
 import {deflateSync} from 'node:zlib';
 import {createPlatformRuntime} from '../web/platform/runtime.js';
+import {createFat32Image} from '../web/platform/sd-card-image.js';
 import {createDefaultScene} from '../web/platform/catalog.js';
 
 const [url, expectedHash, output = 'output/official-papermono', duration = '30', scenario] = process.argv.slice(2);
@@ -52,7 +53,7 @@ const checkpoint=async name=>{
   const nonBlack=latestFrame.pixels.reduce((n,v,i)=>n+(i%4!==3&&v!==0?1:0),0);
   const state=await runtime.observe(),sha256=createHash('sha256').update(latestFrame.pixels).digest('hex');
   await writeFile(`${output}/${name}.png`,png(latestFrame));
-  stages.push({name,guestSeconds:await queryClock(),lastStatSeconds:state.stats.time,frameNumber:latestFrame.frameNumber,nonBlackChannels:nonBlack,sha256,brightness:regionHash(latestFrame,0,118,94,28),mute:regionHash(latestFrame,366,480,107,42)});
+  stages.push({name,guestSeconds:await queryClock(),lastStatSeconds:state.stats.time,frameNumber:latestFrame.frameNumber,nonBlackChannels:nonBlack,sha256,leds:state.leds,sdCard:state.sdCard,brightness:regionHash(latestFrame,0,118,94,28),mute:regionHash(latestFrame,366,480,107,42)});
   console.log('CHECKPOINT',JSON.stringify(stages.at(-1)));
 };
 const waitGuest=async target=>{
@@ -72,7 +73,15 @@ const tap=async(x,y)=>{
 };
 try{
   const scene=createDefaultScene(catalog,'m5stack-papermono');scene.firmware=null;
-  await runtime.configure(scene);await runtime.loadFirmware({url,sha256:expectedHash});await runtime.start();
+  await runtime.configure(scene);await runtime.loadFirmware({url,sha256:expectedHash});
+  if(scenario==='sd-rgb') {
+    // Public generated data only: a short root-directory file proves guest directory reads.
+    const bytes=createFat32Image(),v=new DataView(bytes.buffer),start=v.getUint32(454,true),b=start*512,reserved=v.getUint16(b+14,true),fat=v.getUint32(b+36,true),root=(start+reserved+2*fat)*512;
+    bytes.set(new TextEncoder().encode('HELLO   TXT'),root+32);bytes[root+43]=0x20;v.setUint16(root+58,3,true);v.setUint32(root+60,17,true);bytes.set(new TextEncoder().encode('ESP SD read test\n'),root+512);
+    for(let i=0;i<2;i++)v.setUint32((start+reserved+i*fat)*512+12,0x0fffffff,true);
+    await runtime.attachSdCard({bytes});
+  }
+  await runtime.start();
   await waitGuest(seconds);await checkpoint('boot');
   if(scenario==='controls'){
     await button(['button-b'],0.15);await checkpoint('button-b');
@@ -86,12 +95,22 @@ try{
     await tap(412,500);await checkpoint('touch-unmute');
     assert.equal(stages[5].mute,stages[3].mute,'Second touch must restore the actual firmware mute icon');
   }
+  if(scenario==='sd-rgb') {
+    const before=(await runtime.observe()).leds[0];assert.deepEqual(before,[255,0,0]);
+    await tap(65,300);await checkpoint('rgb-red-off');assert.deepEqual((await runtime.observe()).leds[0],[0,0,0]);
+    await tap(65,332);await checkpoint('rgb-green-on');assert.deepEqual((await runtime.observe()).leds[0],[0,255,0]);
+    await tap(65,364);await checkpoint('rgb-blue-on');assert.deepEqual((await runtime.observe()).leds[0],[0,255,255]);
+    await tap(100,700);await checkpoint('sd-directory');assert.notEqual(stages.at(-1).sha256,stages.at(-2).sha256);
+    const exported=await runtime.exportSdCard();assert.equal(exported.bytes.length,64*1024*1024);assert.ok(new TextDecoder().decode(exported.bytes).includes('HELLO   TXT'));
+    await runtime.pause();await runtime.reset();assert.equal((await runtime.observe()).sdCard.restored,true);await runtime.start();await waitGuest(seconds);await checkpoint('sd-after-reset');
+  }
+  if(scenario==='crosspoint') {await runtime.flushSdCard();assert.ok((await runtime.observe()).sdCard.changedPages>0,'CrossPoint must write real card sectors');const bytes=(await runtime.exportSdCard()).bytes;await writeFile(`${output}/sd-write-summary.json`,JSON.stringify({bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex'),changedPages:(await runtime.observe()).sdCard.changedPages},null,2));}
   await runtime.pause();
 }catch(e){failure={message:e.message,code:e.code};process.exitCode=1;}
 finally{
   const state=await runtime.observe();
   await writeFile(`${output}/serial.log`,serial);
   if(latestFrame)await writeFile(`${output}/frame.png`,png(latestFrame));
-  await writeFile(`${output}/receipt.json`,JSON.stringify({url,expectedHash,wasmSha256:createHash('sha256').update(await readFile(new URL('web/wasm/esp32sim.wasm',root))).digest('hex'),firmware:state.firmware,storage:state.storage,stats:state.stats,frame:latestFrame?{width:latestFrame.width,height:latestFrame.height,frameNumber:latestFrame.frameNumber,sha256:createHash('sha256').update(latestFrame.pixels).digest('hex')}:null,lastError:state.lastError,inputs,stages,failure,elapsedMs:Date.now()-started},null,2)+'\n');
+  await writeFile(`${output}/receipt.json`,JSON.stringify({url,expectedHash,wasmSha256:createHash('sha256').update(await readFile(new URL('web/wasm/esp32sim.wasm',root))).digest('hex'),firmware:state.firmware,storage:state.storage,sdCard:state.sdCard,leds:state.leds,stats:state.stats,frame:latestFrame?{width:latestFrame.width,height:latestFrame.height,frameNumber:latestFrame.frameNumber,sha256:createHash('sha256').update(latestFrame.pixels).digest('hex')}:null,lastError:state.lastError,inputs,stages,failure,elapsedMs:Date.now()-started},null,2)+'\n');
   await runtime.dispose();
 }

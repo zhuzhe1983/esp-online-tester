@@ -10,11 +10,12 @@ pub struct M5pm1State {
     pub battery_mv: u16,
     pub charging: bool,
     pub power_off_requested: bool,
+    pub led_enabled: bool,
 }
 
 impl Default for M5pm1State {
     fn default() -> Self {
-        Self { battery_mv: 3900, charging: false, power_off_requested: false }
+        Self { battery_mv: 3900, charging: false, power_off_requested: false, led_enabled: true }
     }
 }
 
@@ -27,7 +28,7 @@ impl M5pm1 {
     pub const ADDRESS: u8 = 0x6e;
 
     pub fn new(state: Arc<Mutex<M5pm1State>>) -> Self {
-        state.lock().expect("M5PM1 state mutex poisoned").power_off_requested = false;
+        {let mut state=state.lock().expect("M5PM1 state mutex poisoned");state.power_off_requested=false;state.led_enabled=true;}
         Self {
             registers: Reg8Device::new("m5pm1", &[
                 (0x00, 0x50), (0x01, 0x20), (0x02, 0x05), (0x03, 0x06),
@@ -52,7 +53,9 @@ impl I2cDevice for M5pm1 {
                 self.state.lock().expect("M5PM1 state mutex poisoned").power_off_requested = true;
             }
         }
-        self.registers.write(byte)
+        let ack = self.registers.write(byte);
+        self.state.lock().expect("M5PM1 state mutex poisoned").led_enabled = self.registers.regs[0x06] & 0x10 != 0;
+        ack
     }
 
     fn read(&mut self) -> u8 {
@@ -69,6 +72,11 @@ impl I2cDevice for M5pm1 {
 pub struct M5ioe1State {
     /// IO1..IO14 driven-high mask; lets each board apply its own wiring.
     pub driven_high: u16,
+    /// Board-provided input pins; other inputs retain the existing conservative low behavior.
+    pub input_mask: u16,
+    pub input_high: u16,
+    /// PWM1..4 effective high duty, 0..4095, after direction/drive/enable/polarity.
+    pub pwm: [u16; 4],
     pub oled_rail: bool,
     pub oled_reset_high: bool,
     pub touch_reset_high: bool,
@@ -85,7 +93,7 @@ impl M5ioe1 {
     /// UID is a board-supplied synthetic identity, not a fixed M5IOE1 chip ID.
     pub fn new(state: Arc<Mutex<M5ioe1State>>, uid: u16) -> Self {
         let [lo, hi] = uid.to_le_bytes();
-        *state.lock().expect("M5IOE1 state mutex poisoned") = M5ioe1State::default();
+        {let mut state=state.lock().expect("M5IOE1 state mutex poisoned");let (input_mask,input_high)=(state.input_mask,state.input_high);*state=M5ioe1State{input_mask,input_high,..Default::default()};}
         Self {
             registers: Reg8Device::new("m5ioe1", &[
                 (0x00, lo), (0x01, hi), (0x02, b'A'), (0x13, 0xff), (0x14, 0x3f),
@@ -106,7 +114,13 @@ impl I2cDevice for M5ioe1 {
         let ack = self.registers.write(byte);
         let regs = &self.registers.regs;
         let high = regs[0x03] & regs[0x05] & !regs[0x13];
-        *self.state.lock().expect("M5IOE1 state mutex poisoned") = M5ioe1State {
+        let mut state=self.state.lock().expect("M5IOE1 state mutex poisoned");
+        let output=u16::from_le_bytes([regs[3],regs[4]]) & !u16::from_le_bytes([regs[0x13],regs[0x14]]);
+        // M5IOE1 1.0.8 M5IOE1.h PWM duty 0x1B..0x22, enable bit7, polarity bit6; PWM1=IO9, PWM2=IO8.
+        let pwm=std::array::from_fn(|ch| {let lo=0x1b+ch*2;let duty=u16::from_le_bytes([regs[lo],regs[lo+1]&15]);
+            if regs[lo+1]&0x80==0 || output & (1 << [8,7,10,9][ch])==0 || regs[0x25]==0 && regs[0x26]==0 {0} else if regs[lo+1]&0x40!=0 {4095-duty} else {duty}});
+        *state = M5ioe1State {
+            input_mask:state.input_mask,input_high:state.input_high,pwm,
             driven_high: u16::from(high) | (u16::from(regs[0x04] & regs[0x06] & !regs[0x14] & 0x3f) << 8),
             oled_rail: high & 0x80 != 0,
             oled_reset_high: high & 0x10 != 0,
@@ -123,6 +137,10 @@ impl I2cDevice for M5ioe1 {
         let regs = &mut self.registers.regs;
         regs[0x07] = regs[0x03] & regs[0x05] & !regs[0x13];
         regs[0x08] = regs[0x04] & regs[0x06] & !regs[0x14] & 0x3f;
+        let state=self.state.lock().expect("M5IOE1 state mutex poisoned");
+        let inputs=state.input_mask & !u16::from_le_bytes([regs[3],regs[4]]);
+        let value=(u16::from_le_bytes([regs[7],regs[8]]) & !inputs) | (state.input_high & inputs);
+        [regs[7],regs[8]]=value.to_le_bytes();
         self.registers.read()
     }
 }

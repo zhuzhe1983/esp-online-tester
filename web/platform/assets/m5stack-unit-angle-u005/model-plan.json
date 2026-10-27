@@ -1,0 +1,960 @@
+{
+  "sourceId": "manufacturer-cad",
+  "title": "M5Stack Unit Angle · U005",
+  "summary": "10kΩ 电位器旋钮模块，将角度转换为模拟电压。",
+  "hardwareRevision": "U005; manufacturer page does not identify hardware revision",
+  "parts": [
+    {
+      "sourceComponent": 0,
+      "name": "shell-front",
+      "role": "shell",
+      "color": "#e8e9e2"
+    },
+    {
+      "sourceComponent": 3,
+      "name": "shell-back",
+      "role": "shell",
+      "color": "#e8e9e2"
+    }
+  ],
+  "matrixRows": [
+    [
+      1,
+      0,
+      0,
+      -353.26882935
+    ],
+    [
+      0,
+      1,
+      0,
+      -269.22348022
+    ],
+    [
+      0,
+      0,
+      1,
+      -2
+    ],
+    [
+      0,
+      0,
+      0,
+      1
+    ]
+  ],
+  "assemblyNotes": "Keep already assembled CAD components [0, 3]; rigid center translation and original orientation. Omit spatially separated print-layout duplicates. No scaling. +Z front, +Y top, inlet at -Y.",
+  "omittedComponents": [
+    {
+      "index": 1,
+      "reason": "duplicate print-layout part; retain assembled counterpart"
+    },
+    {
+      "index": 2,
+      "reason": "duplicate print-layout part; retain assembled counterpart"
+    }
+  ],
+  "dimensions": {
+    "width": 24,
+    "height": 32,
+    "depth": 22,
+    "unit": "mm",
+    "sourceId": "official-docs"
+  },
+  "targets": [
+    {
+      "name": "shell-width",
+      "axis": 0,
+      "valueMm": 24,
+      "toleranceMm": 0.05,
+      "sourceId": "photo-14"
+    },
+    {
+      "name": "shell-height",
+      "axis": 1,
+      "valueMm": 32,
+      "toleranceMm": 0.05,
+      "sourceId": "photo-14"
+    },
+    {
+      "name": "shell-depth",
+      "axis": 2,
+      "valueMm": 8,
+      "toleranceMm": 0.05,
+      "sourceId": "photo-14"
+    }
+  ],
+  "derivedParts": [
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "geometry": {
+        "sizeMm": [
+          10,
+          23,
+          1
+        ],
+        "centerMm": [
+          0,
+          1,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ],
+      "notes": "Neutral UNKNOWN blank; 10×23×1 mm internal fit estimate avoids known mounting holes. The narrow estimate is not the actual PCB outline; no component layout is claimed."
+    },
+    {
+      "id": "grove",
+      "kind": "connector-visual",
+      "geometry": {
+        "centerMm": [
+          0,
+          -16,
+          0.6
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-1",
+        "photo-14"
+      ],
+      "connectorType": "HY2.0-4P",
+      "housingColor": "#202626",
+      "allowConnections": true,
+      "pinOrder": [
+        "gnd",
+        "vcc",
+        "signal1",
+        "signal2"
+      ],
+      "notes": "Front view: bottom inlet, x left-to-right black/red/yellow/white. Back photo is mirrored: white/yellow/red/black. Mouth at y=-16 from CAD envelope; hidden moulding depth and center z are photo estimates, not socket CAD."
+    },
+    {
+      "id": "rear-sticker",
+      "kind": "label",
+      "geometry": {
+        "sizeMm": [
+          16,
+          12
+        ],
+        "centerMm": [
+          0,
+          7,
+          -4.025
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-1"
+      ],
+      "texture": "back-label.webp",
+      "notes": "Only paper rectangle; holes, plastic M5 logo and screw remain geometry."
+    },
+    {
+      "id": "rear-screw",
+      "kind": "cylinder",
+      "geometry": {
+        "radiusMm": 1.55,
+        "depthMm": 0.25,
+        "centerMm": [
+          0,
+          -4,
+          -4.12
+        ]
+      },
+      "color": "#989b98",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ],
+      "material": {
+        "metalness": 0.8,
+        "roughness": 0.4
+      },
+      "notes": "Visible screw location from dimension drawing; screw head is approximate."
+    },
+    {
+      "id": "knob-base",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          10,
+          10,
+          0.6
+        ],
+        "centerMm": [
+          0,
+          8,
+          4.3
+        ]
+      },
+      "color": "#a6a7a0",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-grip",
+      "kind": "cylinder",
+      "geometry": {
+        "radiusMm": 4.7,
+        "depthMm": 12.8,
+        "centerMm": [
+          0,
+          8,
+          11.4
+        ]
+      },
+      "color": "#282c2e",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-blue-cap",
+      "kind": "cylinder",
+      "geometry": {
+        "radiusMm": 3.75,
+        "depthMm": 0.3,
+        "centerMm": [
+          0,
+          8,
+          17.85
+        ]
+      },
+      "color": "#168ccc",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-pointer",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.8,
+          1.2,
+          0.45
+        ],
+        "centerMm": [
+          0,
+          11.25,
+          18
+        ]
+      },
+      "color": "#232629",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-0",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          0.0,
+          12.7,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -0.0
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-1",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          1.4523798735622528,
+          12.469965626587221,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -0.3141592653589793
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-2",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          2.7625906857746236,
+          11.802379873562254,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -0.6283185307179586
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-3",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          3.8023798735622534,
+          10.762590685774624,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -0.9424777960769379
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-4",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          4.469965626587221,
+          9.452379873562252,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -1.2566370614359172
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-5",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          4.7,
+          8.0,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -1.5707963267948966
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-6",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          4.469965626587222,
+          6.547620126437748,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -1.8849555921538759
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-7",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          3.8023798735622534,
+          5.237409314225377,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -2.199114857512855
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-8",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          2.7625906857746245,
+          4.197620126437748,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -2.5132741228718345
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-9",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          1.4523798735622533,
+          3.5300343734127786,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -2.827433388230814
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-10",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          5.755839955992561e-16,
+          3.3,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -3.141592653589793
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-11",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          -1.4523798735622504,
+          3.530034373412777,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -3.455751918948772
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-12",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          -2.762590685774623,
+          4.197620126437746,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -3.7699111843077517
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-13",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          -3.8023798735622525,
+          5.237409314225376,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -4.084070449666731
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-14",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          -4.469965626587221,
+          6.547620126437747,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -4.39822971502571
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-15",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          -4.7,
+          7.999999999999999,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -4.71238898038469
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-16",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          -4.469965626587222,
+          9.452379873562252,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -5.026548245743669
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-17",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          -3.802379873562254,
+          10.762590685774622,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -5.340707511102648
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-18",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          -2.762590685774625,
+          11.802379873562252,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -5.654866776461628
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    },
+    {
+      "id": "knob-flute-19",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          0.42,
+          0.7,
+          10.3
+        ],
+        "centerMm": [
+          -1.4523798735622542,
+          12.469965626587221,
+          11.4
+        ],
+        "rotation": [
+          0,
+          0,
+          -5.969026041820607
+        ]
+      },
+      "color": "#333638",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ]
+    }
+  ],
+  "textureSources": [
+    {
+      "sourceId": "photo-1",
+      "file": "back-label.webp",
+      "cropXYXY": [
+        289,
+        220,
+        510,
+        390
+      ],
+      "alphaMask": {
+        "includeRoundedRects": [
+          {
+            "xyxy": [
+              292,
+              223,
+              507,
+              387
+            ],
+            "radiusPx": 5
+          }
+        ]
+      },
+      "notes": "Paper only, independent plane; body plastic, screw, holes and M5 emboss are excluded."
+    }
+  ],
+  "photos": [
+    {
+      "sourceId": "photo-4",
+      "view": "front",
+      "cropXYXY": [
+        40,
+        225,
+        390,
+        575
+      ]
+    },
+    {
+      "sourceId": "photo-1",
+      "view": "back"
+    },
+    {
+      "sourceId": "photo-3",
+      "view": "oblique"
+    }
+  ],
+  "presentation": {
+    "bodySizeMm": [
+      24,
+      32,
+      22
+    ]
+  },
+  "reviewViews": {
+    "front": {
+      "position": [
+        0,
+        0,
+        250
+      ],
+      "span": 34.25076452599389,
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "calibration": "Uniform scale from independent photo body height versus documented 32 mm; no mesh scaling. Front view is approximate; photographic perspective remains."
+    },
+    "back": {
+      "position": [
+        0,
+        0,
+        -250
+      ],
+      "span": 61,
+      "target": [
+        0,
+        0,
+        0
+      ]
+    },
+    "oblique": {
+      "position": [
+        70,
+        -95,
+        130
+      ],
+      "span": 48,
+      "target": [
+        0,
+        0,
+        3
+      ]
+    },
+    "connector": {
+      "position": [
+        0,
+        -80,
+        35
+      ],
+      "span": 24,
+      "target": [
+        0,
+        -12,
+        0
+      ]
+    }
+  },
+  "limitations": [
+    "仅外观、尺寸和接线资料已入库；GPIO/ADC/SK6812 行为尚未实现，不能证明主机固件可使用该模块。",
+    "厂家 STL 保留原始尺寸，打印排版重复件已剔除；插座、螺钉及无 CAD 的外露部件为照片近似。",
+    "未公开 PCB 布局，内部采用 UNKNOWN 占位；贴纸使用官方照片真实印刷区域。",
+    "官方页面两张电路图分别标 R1=4.7kΩ 和 10kΩ；资料未标硬件版次，输出电压规格保留官网 0–2500mV，不推定所有实物一致。",
+    "螺钉头纹和无厂家 CAD 的旋钮为简化，照片视角存在透视误差，不声称完整 1:1 通过。"
+  ],
+  "facts": []
+}

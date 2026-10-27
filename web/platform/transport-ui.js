@@ -1,6 +1,8 @@
 import {createFlasher} from './flasher.js';
 import {loadWatchlist, checkWatchEntry, buildFirmwareIssueUrl} from './watchlist.js';
 import {renderHintList} from './hints.js';
+import {firmwareRunPolicy} from './firmware-policy.js';
+import {createSdCardUi} from './sd-card-ui.js';
 
 const node = (tag, className, text) => { const result = document.createElement(tag); if (className) result.className = className; if (text !== undefined) result.textContent = text; return result; };
 const button = (label, className = 'button quiet tiny') => { const result = node('button', className, label); result.type = 'button'; return result; };
@@ -44,6 +46,7 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
   const flashActive = () => ['choosing', 'preparing', 'connecting', 'validating', 'writing', 'resetting', 'cancelling'].includes(flashState.status);
   const recordingActive = () => ['preparing', 'recording', 'playing'].includes(recordingState.status);
   const api = () => getApi();
+  const sdUi = createSdCardUi({mount: storageSection, getApi, blocked: () => storageOperation || recordingBusy || recordingActive() || flashActive(), releaseInputs, onError});
   function render() {
     if (!active) return;
     const supported = typeof api()?.recordingStart === 'function';
@@ -77,6 +80,7 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
     confirmClearStorage.disabled = clearStorage.disabled;
     cancelClearStorage.disabled = storageOperation;
     if (storageOperation) storageStatus.textContent = '正在清空设备数据…';
+    sdUi.refresh();
     const capability = flasher.capabilities();
     flash.disabled = !capability.supported || flashActive();
     flash.title = capability.supported ? '选择串口并将当前固件写入真实设备' : capability.reason;
@@ -175,7 +179,7 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
       if (replayRequested || ['preparing', 'playing'].includes(recordingState.status)) await takeControl();
       if (recordingState.status === 'recording') { await releaseInputs(); recording = await api().recordingStop(); onRecordingChange?.(recording); await syncRecording(); }
     },
-    dispose() { active = false; unsubscribe?.(); if (flashActive()) flasher.cancel(); root.remove(); },
+    dispose() { active = false; unsubscribe?.(); sdUi.dispose(); if (flashActive()) flasher.cancel(); root.remove(); },
   };
 }
 
@@ -256,9 +260,8 @@ export async function mountFirmwareUpdates(mount, {getProductId} = {}) {
     selected = firmware || null; entry = null; checkSequence++; checkController?.abort(); result.replaceChildren(); actions.replaceChildren(); renderHintList(hints, []);
     body.hidden = !firmware || !firmware.productIds.includes(getProductId?.()); if (body.hidden) return;
     entry = list?.entries.find(item => item.id === firmware.watchlistId) || null;
-    const runnable = firmware.status === 'available' && firmware.source;
     const role = firmware.role === 'factory' ? '官方出厂' : firmware.role === 'third-party' ? '第三方项目' : '已收录项目';
-    identity.textContent = `${runnable ? '可运行' : '待验证'} · ${role}${firmware.revision || entry?.version ? ` · ${firmware.revision || entry.version}` : ''}`;
+    identity.textContent = `${firmwareRunPolicy(null, firmware).label} · ${role}${firmware.revision || entry?.version ? ` · ${firmware.revision || entry.version}` : ''}`;
     const facts = [firmware.publisher ? `发布者：${firmware.publisher}` : null, entry?.description, entry?.compatibility?.note, entry?.browserNote, entry?.checkedAt ? `元信息核对于 ${entry.checkedAt}` : null].filter(Boolean);
     const hintItems = facts.length ? [{id: 'source-detail', icon: 'cloud', label: '来源说明', title: '发布来源与访问条件', paragraphs: facts}] : [];
     if (entry) hintItems.push({id: 'update-check', icon: 'clock', label: '版本核对', title: '发布版本与同步时间', paragraphs: ['发布信息由本站定时同步；检查版本读取本站快照，不直接调用 GitHub API，也不下载固件正文。运行所需固件可缓存在当前浏览器，服务器不保存；新版本不会自动替换已校验镜像。', '资源链接核对可能受上游 CORS 设置限制。版本快照过期或同步失败不代表固件链接已经失效。']});

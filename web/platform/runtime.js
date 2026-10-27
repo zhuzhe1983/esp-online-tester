@@ -1,3 +1,5 @@
+import {createFat32Image,validateSdImage,MAX_SD_BYTES} from './sd-card-image.js';
+import {createSdCardStorage} from './sd-card-storage.js';
 // Browser-only adapter for the upstream ESP32 WASM worker. No server or mock device state.
 import { loadCatalog, validateScene } from './catalog.js';
 import { buildFirmwareIssueUrl } from './watchlist.js';
@@ -151,16 +153,18 @@ export function validateMergedImage(data, board, flashBytes, {partitionTableOffs
 
 const romFor = board => board === 'esp32c3' ? 'esp32c3_rev3_rom.elf' : board === 'esp32p4' ? 'esp32p4_rev0_rom.elf' : board.includes('c6') ? 'esp32c6_rev0_rom.elf' : /^(esp32|ttgo-tdisplay)$/.test(board) ? 'esp32_rev300_rom.elf' : 'esp32s3_rev0_rom.elf';
 
-export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000, deviceStorage = createDeviceStorage() } = {}) {
+export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000, deviceStorage = createDeviceStorage(), sdStorage = createSdCardStorage() } = {}) {
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;
   let lastError = null, firmware = null, loaded = null, frame = null, frameNumber = 0, serial = '', serialByPort = {}, stats = {}, queue = Promise.resolve();
   const emptyStorage = () => ({status:'unloaded', scope:null, backend:null, restored:false, pristine:true, revision:0, epoch:0, lastSavedAt:null, changedPages:0, error:null});
+  const emptySd=()=>({supported:false,present:false,bytes:0,format:null,status:'unloaded',backend:null,restored:false,pristine:true,changedPages:0,error:null});
+  let sdCard=emptySd(),sdSession=null,leds=[];
   let storage = emptyStorage(), storageSession = null, storageSequence = 0;
-  let booted = false, inputSequence = 0, loadCancelled = false, progressGeneration = 0;
+  let booted = false, inputSequence = 0, loadCancelled = false, progressGeneration = 0, disposing = false;
   const defaultImu = () => ({enabled: true, source: 'scene', ...orientationSample([0,0,0,1]), delivery: 'configured', guestTime: null});
   let imu = defaultImu(), imuPreviousAt = null, imuGeneration = 0;
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
-  const snapshot = () => ({ version: API_VERSION, status, scene: clone(scene), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), imu: product?.runtime?.board === 'stopwatch' ? clone(imu) : null, frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
+  const snapshot = () => ({ version: API_VERSION, status, scene: clone(scene), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), sdCard:clone(sdCard),leds:clone(leds), imu: product?.runtime?.board === 'stopwatch' ? clone(imu) : null, frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
   const emit = event => { for (const listener of listeners) { try { listener(event); } catch (e) { console.error('ESP tester event handler:', e); } } };
   const loadReporter = (loadId, signal) => {
     let fileIndex = 0;
@@ -178,7 +182,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   };
   const setStatus = value => { status = value; emit({ type: 'state', state: snapshot() }); };
   const report = e => { lastError = failure(e); emit({ type: 'error', error: clone(lastError) }); };
-  const alive = () => requireValue(status !== 'disposed', 'DISPOSED', 'This emulator session has been disposed.');
+  const alive = () => requireValue(!disposing && status !== 'disposed', 'DISPOSED', 'This emulator session has been disposed.');
   const exclusive = fn => {
     const next = queue.then(() => { alive(); return fn(); });
     queue = next.catch(() => {});
@@ -206,6 +210,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       if (text.t === 'serial') appendSerial(text.src || 'usb', text.data || '');
       else if (text.t === 'emu') appendSerial('emulator', `${text.msg}\n`);
       else if (text.t === 'stat') { stats = { ...stats, ...text }; emit({ type: 'stats', stats: clone(stats) }); }
+      else if (text.t === 'ring') {leds=clone(text.leds);emit({type:'leds',leds:clone(leds)});}
       else if (text.t === 'board') emit({ type: 'board', board: text });
     }
     if (message.bin !== undefined) {
@@ -222,6 +227,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     if (message.flashReply !== undefined) resolve(`flash:${message.flashReply}`, message);
     if (message.flashDelta) { try { receiveFlash(message.flashDelta); } catch(e) { storageFailure(storageSession,e); } }
     if (message.ready) resolve('ready', message);
+    if (message.sdDelta) {try{receiveSd(message.sdDelta);}catch(e){sdFailure(e);}}
+    if (message.sdReply !== undefined) resolve(`sd:${message.sdReply}`,message);
     if (message.created !== undefined) resolve('created', message);
     if (message.loaded !== undefined) resolve(`loaded:${message.loaded}`, message);
     if (message.started !== undefined) resolve('started', message);
@@ -289,7 +296,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     return clone(storage);
   };
   const preserveStorage = async () => {
-    if (storageSession && storage.status !== 'conflict') await flushStorage();
+    await Promise.all([storageSession&&storage.status!=='conflict'?flushStorage():null,sdSession&&!sdSession.closed&&sdCard.status!=='conflict'?flushSd():null]);
   };
   const initializeStorage = async (bundle, supported, progress) => {
     detachStorage();
@@ -316,8 +323,60 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     if (!session || session.closed || change.key!==session.scope.key || change.epoch<storage.epoch || change.epoch===storage.epoch && change.revision<=storage.revision) return;
     storageFailure(session,error('STORAGE_CONFLICT','Another tab saved or cleared this device storage. Reload the same firmware to restore its latest state.'));
   });
-  const pageHide = () => { if (storageSession && worker) void flushStorage().catch(report); };
+  const sdEvent=()=>emit({type:'sd-card',sdCard:clone(sdCard)});
+  const sdAsk=async(op,fields={},transfer=[])=>{const requestId=++storageSequence;const result=await ask(`sd:${requestId}`,{op,requestId,...fields},transfer);requireValue(result.ok!==false,'STORAGE_WORKER_ERROR',result.error||'Cannot access virtual SD card.');return {...result,requestId};};
+  const sdFailure=(e,session=sdSession)=>{if(!session||session.closed||session!==sdSession||disposing||status==='disposed')return;sdCard.status=e.code==='STORAGE_CONFLICT'?'conflict':'error';sdCard.error=failure(e);sdEvent();report(e);if(e.code==='STORAGE_CONFLICT'){if(sdSession)sdSession.closed=true;stopWorker();setStatus('error');}};
+  const persistSd=session=>{
+    if(session.saving)return session.saving;
+    session.saving=(async()=>{while(!session.closed&&session.savedVersion<session.version){const version=session.version;
+      const r=await sdStorage.save(session.key,{epoch:session.epoch,revision:session.revision,pages:[...session.pages].map(([offset,data])=>({offset,data}))});
+      if(session.closed||session!==sdSession)return;session.epoch=r.row.epoch;session.revision=r.row.revision;session.savedVersion=version;
+      sdCard.backend=r.backend;sdCard.status=r.persistent?'saved':'memory-only';sdEvent();}
+    })().catch(e=>{sdFailure(e,session);throw e;}).finally(()=>{session.saving=null;});session.saving.catch(()=>{});return session.saving;
+  };
+  const receiveSd=({watchId,pages})=>{const session=sdSession;if(!session||session.closed||session.watchId!==watchId)return;
+    for(const {offset,data} of pages){requireValue(Number.isSafeInteger(offset)&&offset>=0&&offset%4096===0&&offset+4096<=session.baseline.length&&data instanceof ArrayBuffer&&data.byteLength===4096,'STORAGE_WORKER_ERROR','Invalid SD page bounds.');
+      const bytes=new Uint8Array(data);if(bytes.some((b,i)=>b!==session.baseline[offset+i]))session.pages.set(offset,data);else session.pages.delete(offset);}
+    session.version++;sdCard.changedPages=session.pages.size;sdCard.pristine=session.isDefault&&!session.pages.size;void persistSd(session);
+  };
+  const flushSd=async()=>{requireValue(sdSession&&!sdSession.closed,'SD_NOT_LOADED','Load a PaperMono firmware before using its SD card.');if(worker)await sdAsk('sd-flush');await persistSd(sdSession);return clone(sdCard);};
+  const initializeSd=async bundle=>{
+    alive();
+    if(sdSession)sdSession.closed=true;sdSession=null;sdCard=emptySd();leds=[];
+    if(bundle.cfg.board!=='papermono'){sdEvent();return;}
+    requireValue(storage.scope,'SD_STORAGE_SCOPE','SD requires a loaded firmware identity.');
+    const key=`v1:${product.id}:${bundle.cfg.board}:${storage.scope.firmwareSha256}`;
+    // Subscribe to this identity before reading or hashing its base image. A clear
+    // from another tab must invalidate even a read-only firmware's pending mount.
+    const session={key,baseline:null,pages:new Map(),epoch:-1,revision:-1,version:0,savedVersion:0,saving:null,closed:false,isDefault:true};sdSession=session;
+    const current=worker,signal=aborter.signal;
+    const active=()=>{alive();requireValue(!signal.aborted,'FETCH_ABORTED','Firmware load was cancelled.');requireValue(session===sdSession&&!session.closed&&worker===current,'STORAGE_CONFLICT','The SD card changed while it was being loaded. Reload the firmware.');};
+    sdCard={...emptySd(),supported:true,status:'loading'};sdEvent();
+    const r=await sdStorage.read(key);active();requireValue(!!r.image===!!r.row.media,'STORAGE_CORRUPT','Saved SD base image is missing.');
+    session.epoch=r.row.epoch;session.revision=r.row.revision;session.isDefault=!r.row.media;
+    const baseline=r.image?validateSdImage(r.image):createFat32Image(),pages=session.pages,bytes=baseline.slice();session.baseline=baseline;
+    if(r.image){const hash=await sha256(baseline);active();requireValue(r.row.media.bytes===baseline.length&&r.row.media.sha256===hash,'STORAGE_CORRUPT','Saved SD base image failed its checksum.');}
+    for(const {offset,data} of r.row.pages){requireValue(Number.isSafeInteger(offset)&&offset>=0&&offset%4096===0&&offset+4096<=bytes.length&&data instanceof ArrayBuffer&&data.byteLength===4096&&!pages.has(offset),'STORAGE_CORRUPT','Saved SD image has invalid page bounds.');pages.set(offset,data);bytes.set(new Uint8Array(data),offset);}
+    await sdAsk('sd-attach',{data:bytes.buffer},[bytes.buffer]);active();
+    const watching=await sdAsk('sd-watch');active();session.watchId=watching.requestId;
+    sdCard={supported:true,present:true,bytes:baseline.length,format:r.row.media?.format||'fat32',status:r.persistent?'clean':'memory-only',backend:r.backend,restored:pages.size>0||!!r.row.media,pristine:session.isDefault&&!pages.size,changedPages:pages.size,error:null};sdEvent();
+  };
+  const unsubscribeSd=sdStorage.subscribe(change=>{const session=sdSession;if(!session||session.closed||change.key!==session.key||change.epoch<session.epoch||change.epoch===session.epoch&&change.revision<=session.revision)return;sdFailure(error('STORAGE_CONFLICT','Another tab replaced or saved this SD card. Reload the firmware.'));});
+  const replaceSd=async bytes=>{
+    requireValue(loaded&&sdSession&&!sdSession.closed,'SD_NOT_LOADED','Load a PaperMono firmware before replacing its SD card.');
+    const session=sdSession,bundle=loaded,signal=aborter.signal;
+    const active=()=>{alive();requireValue(!signal.aborted,'FETCH_ABORTED','SD replacement was cancelled.');requireValue(session===sdSession&&!session.closed,'STORAGE_CONFLICT','The SD card changed while it was being replaced. Reload the firmware.');};
+    if(worker&&status==='running'){await ask('stopped',{op:'stop'});active();setStatus('paused');}
+    await preserveStorage();active();
+    const image=bytes?.slice().buffer||null,hash=image?await sha256(new Uint8Array(image)):null;active();
+    await sdStorage.replace(session.key,{image,media:image?{format:'image',sha256:hash,bytes:image.byteLength}:null});active();session.closed=true;
+    loadCancelled=false;aborter=new AbortController();serial='';serialByPort={};stats={};frame=null;frameNumber=0;lastError=null;setStatus('loading');
+    try{await initialize(bundle,loadReporter(++progressGeneration,aborter.signal));alive();setStatus('ready');return snapshot();}catch(e){stopWorker();if(!disposing&&status!=='disposed')setStatus('error');throw e;}
+  };
+  const pageHide=()=>{if(worker)void preserveStorage().catch(report);};
   globalThis.addEventListener?.('pagehide',pageHide);
+  const visibilitySave=()=>{if(globalThis.document?.visibilityState==='hidden')pageHide();};
+  globalThis.document?.addEventListener('visibilitychange',visibilitySave);
   const runtimeConfig = () => {
     const runtime = product?.runtime || {};
     requireValue(runtime.board, 'UNSUPPORTED_PRODUCT', 'This product has catalog metadata but no executable board model yet.');
@@ -434,6 +493,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(result.ok, 'LOAD_FAILED', `Emulator rejected ${file.kind}.`);
     }
     await initializeStorage(bundle, result.flashStorage, progress);
+    await initializeSd(bundle);
     for (const spec of bundle.cfg.stubs || []) worker.postMessage({ op: 'stub', spec });
     if (bundle.cfg.wifi) worker.postMessage({ op: 'wifi', spec: bundle.cfg.wifi });
     if (product.runtime.board === 'stopwatch') await applyImu();
@@ -502,6 +562,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   });
   const api = {
     version: API_VERSION,
+    attachSdCard({bytes,format='fat32'}={}) {return exclusive(async()=>{requireValue(bytes!==undefined||format==='fat32','INVALID_SD_IMAGE','Only FAT32 formatting is available.');return replaceSd(bytes===undefined?null:validateSdImage(bytes));});},
+    clearSdCard() {return exclusive(()=>replaceSd(null));},
+    exportSdCard() {return exclusive(async()=>{await flushSd();const result=await sdAsk('sd-export');return {bytes:new Uint8Array(result.data),filename:`${product.id}-sd.img`};});},
+    flushSdCard() {return exclusive(flushSd);},
     async clearFirmwareCache() { return firmwareCache.clear(); },
     flushDeviceStorage() { return exclusive(flushStorage); },
     clearDeviceStorage() { const loadId=++progressGeneration; return exclusive(async () => {
@@ -509,6 +573,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       const bundle=loaded, session=storageSession, scope=session.scope;
       // Freeze first; pending writes finish before the tombstone transaction. A new
       // epoch invalidates every other tab, including tabs suspended during this clear.
+      if(sdSession&&!sdSession.closed)await flushSd();
       stopWorker(); session.closed=true;
       await session.saving?.catch(()=>{});
       try { await deviceStorage.clear(scope); }
@@ -522,6 +587,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     async capabilities() {
       return { version: API_VERSION, backend: 'esp32sim-wasm', static: true, executable: !!product?.runtime?.board,
         execution: {mode: product?.runtime?.board === 'stopwatch' ? 'wasm-interpreter' : 'wasm-jit', reason: product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null},
+        sdCard:{available:product?.runtime?.board==='papermono',defaultBytes:64*MIB,maxBytes:MAX_SD_BYTES,formats:['fat32','raw-image'],scope:'product-board-canonical-flash-sha256',autoSaveIntervalMs:1500,crashSafe:false},
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
         firmware: { manifest: true, mergedImage: true, localFile: true, localSegments: true, localBuild: true, sha256: true, maxFileBytes: MAX_FILE, corsRequired: true },
@@ -537,7 +603,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(validation.valid, 'INVALID_SCENE', 'Scene configuration is invalid.', validation);
       if (worker && status==='running') await ask('stopped',{op:'stop'});
       await preserveStorage(); alive(); aborter?.abort(); stopWorker(); detachStorage(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
-      scene = clone(nextScene); product = catalog.products.find(item => item.id === scene.productId);
+      if(sdSession)sdSession.closed=true;sdSession=null;sdCard=emptySd();leds=[];
+      scene = clone(nextScene); product = catalog.products.find(item => item.id === scene.productId);sdCard.supported=product.runtime?.board==='papermono';sdEvent();emit({type:'leds',leds:[]});
       imu = defaultImu(); imuPreviousAt = null;
       setStatus('configured'); return { ...snapshot(), warnings: validation.warnings };
     }); },
@@ -551,7 +618,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     loadFirmware(source) { const loadId = ++progressGeneration; return exclusive(async () => {
       requireValue(scene, 'NOT_CONFIGURED', 'Configure a product before loading firmware.');
       if (worker && status==='running') await ask('stopped',{op:'stop'});
-      await preserveStorage(); alive(); stopWorker(); detachStorage(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
+      await preserveStorage(); alive(); stopWorker(); detachStorage();if(sdSession)sdSession.closed=true;sdSession=null;sdCard={...emptySd(),supported:product?.runtime?.board==='papermono'};leds=[]; loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
       loadCancelled = false; aborter = new AbortController(); setStatus('loading');
       const progress = loadReporter(loadId, aborter.signal);
       try {
@@ -655,10 +722,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     },
     async dispose() {
       if (status !== 'disposed') {
-        progressGeneration++; imuGeneration++; aborter?.abort();
+        disposing=true; progressGeneration++; imuGeneration++; aborter?.abort();
         try { if (storageSession && status!=='loading') { if (worker && status==='running') await ask('stopped',{op:'stop'}); await preserveStorage(); } }
         catch(e) { report(e); }
-        finally { stopWorker(); if(storageSession)storageSession.closed=true; loaded=null; unsubscribeStorage(); deviceStorage.close(); globalThis.removeEventListener?.('pagehide',pageHide); setStatus('disposed'); listeners.clear(); }
+        finally { stopWorker(); if(storageSession)storageSession.closed=true; loaded=null; unsubscribeStorage(); deviceStorage.close();if(sdSession)sdSession.closed=true;unsubscribeSd();sdStorage.close(); globalThis.removeEventListener?.('pagehide',pageHide);globalThis.document?.removeEventListener('visibilitychange',visibilitySave); setStatus('disposed'); listeners.clear(); }
       }
       return snapshot();
     },

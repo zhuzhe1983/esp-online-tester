@@ -1,9 +1,25 @@
 use super::*;
 
-pub(super) fn priced_cases() -> u32 {
-    use Op::*;
+pub(super) fn priced_cases_part(part: usize) -> u32 {
     use std::sync::atomic::Ordering::Relaxed;
     assert!(!PRICED.swap(true, Relaxed));
+    let cases = match part {
+        0 => directed_cases(),
+        1..=3 => arithmetic::integer_ops_part(part - 1),
+        4..=7 => float::floating_point_part(part - 4),
+        8 => float::floating_point_guard_proof(),
+        9..=19 => control::entry_and_shifts_part(part - 9),
+        20 => control::terminal_helpers(),
+        21 => control::special_register_blocks(),
+        22 => control::ps_terminals(),
+        _ => panic!("invalid priced test group"),
+    };
+    PRICED.store(false, Relaxed);
+    cases
+}
+
+fn directed_cases() -> u32 {
+    use Op::*;
     let mut cases = 0;
     // Shared-table goldens are needed in addition to backend parity: both backends
     // could otherwise agree on the same incorrect readiness calculation.
@@ -69,10 +85,7 @@ pub(super) fn priced_cases() -> u32 {
     store.max_ar = crate::exec::max_ar(&store.insn);
     compare(&mut [producer, store], Case { budget: 2, fast: true, readonly: true, ..Case::default() }, |c| { c.set_ar(4, BASE + 0x1000); c.cpenable = 1; });
     cases += 1;
-    cases += arithmetic::integer_ops() + float::floating_point() + float::floating_point_guard_proof()
-        + control::entry_and_shifts() + control::terminal_helpers() + control::special_register_blocks()
-        + control::ps_terminals();
-    PRICED.store(false, Relaxed);
+
     cases
 }
 

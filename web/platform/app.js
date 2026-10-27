@@ -6,6 +6,9 @@ import {installAutomation} from './automation.js';
 import {createSceneView, createHumanButtonController} from './scene-view.js';
 import {installEmbedBridge} from './embed.js';
 import {createTransportUi, createKnowledgePanel, mountFirmwareUpdates} from './transport-ui.js';
+import {firmwareRunPolicy} from './firmware-policy.js';
+import {manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
+import {mountDeviceSearch, mountAccessorySearch} from './device-search.js';
 import {encodeRecording, decodeRecording, validateRecording} from './recording.js';
 import {buildFirmwareIssueUrl} from './watchlist.js';
 import {SHELL_DEFAULT, SHELL_PRESETS, SHELL_FINISHES, shellPreset} from './appearance.js';
@@ -19,6 +22,7 @@ let catalog, scene, runtime, sceneView, humanButtons, api, detachBridge, localDe
 let busy = false, frameCount = 0, renderedProduct = '', renderedScene = '', recordingControl = null, toastTimer, localFile = null, editingAccessoryId = null, uiConfiguring = false;
 let transportUi, knowledgePanel, firmwareUpdates, recordingDocument = null, recordingState = {status: 'idle'};
 let downloadView = null, loadProgress = null, runAfterLoad = false;
+let preserveUnspecifiedFirmware = false;
 let orientationSettlement = null;
 let localFiles = [], localSource = null, localSelectionToken = 0;
 const gpsLookups = new Map(), gpsMessages = new Map();
@@ -157,6 +161,7 @@ function onRuntimeEvent(event) {
     else if (status === 'running' && previousStatus === 'paused') void humanButtons?.releaseAll();
     if (event.state.scene) {
       const previousFirmware = JSON.stringify(scene?.firmware);
+      if (!uiConfiguring && (scene?.productId !== event.state.scene.productId || previousFirmware !== JSON.stringify(event.state.scene.firmware))) preserveUnspecifiedFirmware = !event.state.scene.firmware;
       scene = clone(event.state.scene);
       const signature = JSON.stringify(scene);
       if (signature !== renderedScene) { renderedScene = signature; renderScene(); }
@@ -164,6 +169,7 @@ function onRuntimeEvent(event) {
     }
     if (status === 'loading' && previousStatus !== 'loading') loadProgress = null;
     if (['configured', 'loading'].includes(status) && status !== previousStatus) {
+      sceneView?.updateLeds([]);
       frameCount = 0; sceneView?.clearDisplay(); text('frame-count', '0 帧');
     }
     if (['configured', 'loading', 'error', 'disposed'].includes(status)) text('runtime-speed', '');
@@ -171,6 +177,8 @@ function onRuntimeEvent(event) {
     if (status === 'ready') text('load-status', '固件已加载并校验，可以启动。');
     else if (status === 'running') text('load-status', '固件正在本地 WebAssembly 中执行。');
     else if (status === 'loading') text('load-status', '正在读取固件并初始化 WebAssembly…');
+  } else if (event.type === 'leds') {
+    sceneView?.updateLeds(event.leds);
   } else if (event.type === 'imu') {
     if (event.imu?.source === 'agent') sceneView?.setOrientation?.(event.imu.quaternion, {notify: false});
   } else if (event.type === 'load-progress') {
@@ -195,6 +203,10 @@ function renderTransport() {
   const executable = Boolean(product()?.runtime.board);
   const canLoad = Boolean(scene?.firmware || localSource);
   const sessionBusy = ['preparing', 'recording', 'playing'].includes(recordingState.status);
+  const configurationBusy = busy || status === 'loading';
+  for (const id of ['manufacturer-select','product-select','search-devices','firmware-select','accessory-brand','accessory-interface','accessory-select','search-accessories']) if ($(id)) $(id).disabled = configurationBusy;
+  if ($('add-accessory')) $('add-accessory').disabled = configurationBusy || !$('accessory-select')?.value;
+  if ($('clear-accessories')) $('clear-accessories').disabled = configurationBusy || !scene?.accessories.length;
   if ($('start-runtime')) {
     $('start-runtime').disabled = busy || sessionBusy || !executable || status === 'running' || status === 'loading' || !(['ready', 'paused'].includes(status) || canLoad);
     $('start-runtime').textContent = status === 'paused' ? '▶ 继续' : status === 'loading' ? '加载中…' : '▶ 启动';
@@ -205,21 +217,25 @@ function renderTransport() {
   if ($('load-firmware')) {
     $('load-firmware').hidden = false;
     $('load-firmware').textContent = firmwareTab === 'local' ? '加载并运行' : '下载并运行';
+    if (firmwareTab === 'library' && firmwareRunPolicy(product(), catalog.firmwares.find(item => item.id === $('firmware-select')?.value)).trial) $('load-firmware').textContent = '下载并尝试运行';
     if (firmwareTab === 'local' && !localSource) $('load-firmware').disabled = true;
   }
   const boundary = $('firmware-run-boundary');
   if (boundary) {
     const selected = firmwareTab === 'library' && catalog?.firmwares.find(item => item.id === $('firmware-select')?.value);
+    const policy = firmwareRunPolicy(product(), selected);
     const unavailable = !executable || (selected && !selected.source);
-    boundary.hidden = !unavailable;
+    boundary.hidden = !unavailable && !policy.trial;
     boundary.replaceChildren();
     if (!executable) {
       boundary.append(element('strong', '', `${product()?.name.replace(/^M5Stack /, '') || '此设备'} 模拟器尚未就绪`), document.createTextNode(`目前仅提供${product()?.model ? '外观与配置预览' : '资料与配置'}，暂不能下载并运行固件。找到固件版本不代表模拟器已支持运行。`));
     } else if (unavailable) {
-      boundary.append(element('strong', '', '此固件尚未完成模拟适配'), document.createTextNode('目前仅提供固件资料，暂不能下载并运行。'));
+      boundary.append(element('strong', '', '尚缺可启动镜像'), document.createTextNode('目前只有发布资料，或仅有 app.bin。补齐完整镜像或 flasher_args.json 所列文件即可尝试；无需先通过兼容性验证。'));
+    } else if (policy.trial) {
+      boundary.append(element('strong', '', '此固件尚未验证，可尝试运行'), document.createTextNode('将直接在当前板级模型执行。若无法启动或部分功能无响应，可查看串口日志；可尝试运行不代表全部功能兼容。'));
     }
     for (const id of ['load-firmware', 'start-runtime']) {
-      if (unavailable) $(id)?.setAttribute('aria-describedby', boundary.id);
+      if (!boundary.hidden) $(id)?.setAttribute('aria-describedby', boundary.id);
       else $(id)?.removeAttribute('aria-describedby');
     }
   }
@@ -245,13 +261,20 @@ function renderEmpty() {
   } else if (status === 'running') {
     text('empty-title', '固件运行中，等待屏幕帧'); text('empty-description', '屏幕仅显示模拟器的实际输出。更多状态请查看串口。');
   } else {
-    const selected = catalog.firmwares.find(item => firmwareSourceMatches(item.source, scene.firmware));
+    const selected = catalog.firmwares.find(item => item.productIds.includes(scene.productId) && firmwareSourceMatches(item.source, scene.firmware));
     text('empty-title', '按下启动，让固件点亮屏幕');
     text('empty-description', selected?.id === 'm5stack-stopwatch-official' ? '官方固件：同时长按 A+B 进入菜单，A/B 切换，点击图标进入。' : '加载所选固件；操作行为以该固件的说明为准。');
   }
 }
+function renderProductChoices(manufacturer) {
+  const choices = productsForManufacturer(catalog.products, manufacturer);
+  if ($('product-select')) { $('product-select').replaceChildren(...choices.map(item => new Option(item.name, item.id))); $('product-select').disabled = !choices.length; }
+  text('product-count', `${choices.length} 款`);
+  return choices;
+}
 function renderProduct() {
   const selected = product(); if (!selected) return;
+  if ($('manufacturer-select')) { $('manufacturer-select').value = selected.manufacturer; renderProductChoices(selected.manufacturer); }
   text('stage-title', selected.name); text('product-name', selected.name.replace(/^M5Stack /, ''));
   text('model-origin', selected.model?.type === 'source-derived' ? '照片与尺寸建模 · 内部结构有未知项' : selected.model || selected.id === 'm5stack-stopwatch' ? '官方 CAD · 外观来源可查' : '模型待建 · 来源资料可查');
   text('product-model', `${selected.manufacturer} / ${selected.sku}`);
@@ -282,13 +305,18 @@ function setFirmwareTab(tab) {
 }
 function renderFirmwareLibrary() {
   const select = $('firmware-select'); if (!select) return;
-  select.replaceChildren(new Option('选择适配固件', ''));
-  for (const firmware of catalog.firmwares.filter(item => item.productIds.includes(scene.productId))) {
-    select.append(new Option(`${firmware.name} · ${firmware.status === 'available' && firmware.source ? '可运行' : '待验证'}`, firmware.id));
+  select.replaceChildren();
+  for (const [label, firmwares] of firmwareGroups(catalog.firmwares, scene.productId, product()?.defaultFirmwareId)) {
+    const group = element('optgroup'); group.label = label;
+    for (const firmware of firmwares) group.append(new Option(firmware.name, firmware.id));
+    select.append(group);
   }
-  const current = catalog.firmwares.find(item => firmwareSourceMatches(item.source, scene.firmware));
-  select.value = current?.id || '';
-  renderFirmwareNote(current);
+  const current = catalog.firmwares.find(item => item.productIds.includes(scene.productId) && firmwareSourceMatches(item.source, scene.firmware));
+  if (current) select.value = current.id;
+  else if (scene.firmware) { select.prepend(new Option('当前使用自定义固件', '')); select.value = ''; }
+  else if (preserveUnspecifiedFirmware) { select.prepend(new Option('此配置未指定固件', '')); select.value = ''; }
+  if (!select.options.length) select.append(new Option('暂无收录固件', ''));
+  renderFirmwareNote(catalog.firmwares.find(item => item.id === select.value));
 }
 function renderFirmwareNote(firmware) {
   const node = $('firmware-note'); if (!node) return;
@@ -297,16 +325,15 @@ function renderFirmwareNote(firmware) {
 }
 function reflectFirmwareSource({preserveLocal = false} = {}) {
   if (!scene.firmware) {
-    if ($('firmware-select')) $('firmware-select').value = '';
+    renderFirmwareLibrary();
     if ($('firmware-url')) $('firmware-url').value = '';
     if ($('firmware-sha')) $('firmware-sha').value = '';
-    renderFirmwareNote(null);
     if (preserveLocal && localFile && firmwareTab === 'local') return;
     clearLocalFiles();
     if ($('firmware-file')) $('firmware-file').value = '';
     text('local-file-name', 'merged .bin · 文件留在本机'); setFirmwareTab('library'); return;
   }
-  const known = catalog.firmwares.find(item => firmwareSourceMatches(item.source, scene.firmware));
+  const known = catalog.firmwares.find(item => item.productIds.includes(scene.productId) && firmwareSourceMatches(item.source, scene.firmware));
   if (known && $('firmware-select')) { $('firmware-select').value = known.id; renderFirmwareNote(known); setFirmwareTab('library'); }
   else if ($('firmware-url')) {
     $('firmware-url').value = scene.firmware.manifestUrl || scene.firmware.url || '';
@@ -325,7 +352,7 @@ function sourceFromInputs() {
     const hash = $('firmware-sha').value.trim(); if (hash) result.sha256 = hash; return result;
   }
   const selected = catalog.firmwares.find(item => item.id === $('firmware-select')?.value);
-  if (!selected?.source) throw new Error('请选择可加载固件；“资料入口”尚不包含已验证的镜像。');
+  if (!selected?.source) throw new Error('此资料入口尚缺可启动镜像；可从远程地址或本地文件加载完整镜像，或补齐 flasher_args.json 所列文件。');
   const source = clone(selected.source);
   if (firmwareSourceMatches(scene.firmware, source) && scene.firmware.sha256) source.sha256 = scene.firmware.sha256;
   return source;
@@ -459,19 +486,34 @@ async function loadSelected() {
   await configure(next); await runtime.loadFirmware(source); return source;
 }
 function defaultFirmware(next) {
-  const defaultId = catalog.products.find(item => item.id === next.productId)?.defaultFirmwareId;
-  const firmware = defaultId ? catalog.firmwares.find(item => item.id === defaultId && item.productIds.includes(next.productId))
-    : catalog.firmwares.find(item => item.productIds.includes(next.productId) && item.status === 'available' && item.source);
-  if (firmware) next.firmware = clone(firmware.source); return next;
+  preserveUnspecifiedFirmware = false;
+  const selected = catalog.products.find(item => item.id === next.productId);
+  const firmware = firstFirmware(catalog.firmwares, selected);
+  if (firmware?.source) next.firmware = clone(firmware.source); return next;
 }
 
 function allDefinitions() {
   const items = new Map([...catalog.accessories, ...localDefinitions, ...(scene.localAccessories || [])].map(item => [item.id, item])); return [...items.values()];
 }
-function renderAccessories() {
+function renderAccessoryChoices() {
+  const items = allDefinitions();
+  for (const [id, values, label] of [['accessory-brand',accessoryBrands(items),'全部品牌'],['accessory-interface',accessoryInterfaces(items),'全部接口']]) {
+    const select=$(id); if (!select) continue;
+    const previous=select.value;select.replaceChildren(new Option(label,''),...values.map(value=>new Option(value,value)));select.value=values.includes(previous)?previous:'';
+  }
   const selector = $('accessory-select');
-  if (selector) { const previous = selector.value; selector.replaceChildren(new Option('选择配件…', '')); for (const item of allDefinitions()) selector.append(new Option(item.name, item.id)); selector.value = previous; }
+  if (selector) {
+    const previous=selector.value,items=filterAccessories(allDefinitions(),{brand:$('accessory-brand')?.value,connector:$('accessory-interface')?.value});
+    selector.replaceChildren(...items.map(item=>new Option(item.name,item.id)));
+    if (items.some(item=>item.id===previous)) selector.value=previous;
+    if (!items.length) selector.append(new Option('没有符合条件的配件',''));
+    $('add-accessory').disabled=!items.length;
+  }
+}
+function renderAccessories() {
+  renderAccessoryChoices();
   text('accessory-count', String(scene.accessories.length));
+  if ($('clear-accessories')) $('clear-accessories').disabled=!scene.accessories.length;
   sceneView?.setAccessories(scene.accessories.map(item => { const value = definition(item.catalogId); return value && {...value, instanceId: item.id, wiring: item.wiring}; }).filter(Boolean));
   if (embedded && !$('accessory-list')) {
     const details = element('details', 'embed-accessories'); details.id = 'embed-accessories';
@@ -485,7 +527,7 @@ function renderAccessories() {
     const item = definition(instance.catalogId); if (!item) continue;
     const card = element('article', 'accessory-card');
     const heading = element('div', 'accessory-card-header'), identity = element('div');
-    identity.append(element('h3', '', item.name), element('span', 'small-label', item.model.id === 'uart-nmea' ? `${item.controller || 'NMEA'} · ${instance.parameters.baudRate || item.parameters.baudRate} baud · 逻辑 UART1` : '仅元信息 · 行为模型未实现'));
+    identity.append(element('h3', '', item.name), element('span', 'small-label', item.model.id === 'uart-nmea' ? `${item.controller || 'NMEA'} · ${instance.parameters.baudRate || item.parameters.baudRate} baud · 逻辑 UART1` : `${item.visual?.modelUrl ? '3D 外观与接线资料' : '仅元信息'} · 行为模型未实现`));
     const remove = element('button', 'icon-button', '×'); remove.setAttribute('aria-label', `移除 ${item.name}`);
     remove.addEventListener('click', () => action(async () => { const next = clone(scene); next.accessories = next.accessories.filter(other => other.id !== instance.id); pruneDefinitions(next); await configure(next); }));
     heading.append(identity, remove); card.append(heading);
@@ -493,7 +535,7 @@ function renderAccessories() {
     const details = element('details'); details.append(element('summary', '', '接线与参数'));
     const wiring = element('textarea'); wiring.rows = 3; wiring.value = JSON.stringify(instance.wiring, null, 2); wiring.setAttribute('aria-label', `${item.name} 接线 JSON`);
     const parameters = element('textarea'); parameters.rows = 3; parameters.value = JSON.stringify(instance.parameters, null, 2); parameters.setAttribute('aria-label', `${item.name} 参数 JSON`);
-    details.append(element('label', '', '接线定义（logical 或 physical）'), wiring, element('label', '', '配件参数'), parameters);
+    details.append(element('label', '', '接线定义（logical、physical 或 visual）'), wiring, element('label', '', '配件参数'), parameters);
     const save = element('button', 'button', '应用配置');
     save.addEventListener('click', () => action(async () => { const next = clone(scene), current = next.accessories.find(other => other.id === instance.id); current.wiring = JSON.parse(wiring.value); current.parameters = JSON.parse(parameters.value); await configure(next); toast('接线与参数已保存，需重新启动固件。'); }));
     details.append(save); card.append(details);
@@ -571,7 +613,7 @@ function pruneDefinitions(next) { if (next.localAccessories) next.localAccessori
 async function addAccessory(id) {
   const item = allDefinitions().find(entry => entry.id === id); if (!item) throw new Error('请先选择配件。');
   const next = clone(scene);
-  next.accessories.push({id: `accessory-${Date.now().toString(36)}`, catalogId: id, parameters: clone(item.parameters || {}), wiring: {mode: 'logical', port: 'uart1'}});
+  next.accessories.push({id: `accessory-${Date.now().toString(36)}`, catalogId: id, parameters: clone(item.parameters || {}), wiring: item.model.id === 'uart-nmea' ? {mode: 'logical', port: 'uart1'} : {mode: 'visual'}});
   if (id.startsWith('local:') && !next.localAccessories?.some(entry => entry.id === id)) { next.localAccessories ||= []; next.localAccessories.push(clone(item)); }
   await configure(next); toast('配件已加入场景，启动时应用配置。');
 }
@@ -603,6 +645,7 @@ function portableScene() {
   if (!embedded) {
     if (firmwareTab === 'local') next.firmware = null;
     else if (firmwareTab === 'remote' && !$('firmware-url').value.trim()) next.firmware = null;
+    else if (firmwareTab === 'library' && preserveUnspecifiedFirmware && !scene.firmware) next.firmware = null;
     else if (firmwareTab === 'library' && !catalog.firmwares.find(item => item.id === $('firmware-select').value)?.source) next.firmware = null;
     else next.firmware = sourceFromInputs();
   }
@@ -616,7 +659,6 @@ function recordingForScene(candidate, {strict = true} = {}) {
   }
   const validation = validateRecording(recordingDocument, {scene: candidate});
   if (!validation.valid) {
-    if (strict) throw new Error('当前设备、固件或配件与录制不一致。请恢复原场景，或清除旧录制后分享。');
     return null;
   }
   return recordingDocument;
@@ -627,6 +669,10 @@ function shareUrl(mode = 'studio', {strictRecording = true} = {}) {
   const params = new URLSearchParams({scene: encodeScene(shared)}), recorded = recordingForScene(shared, {strict: strictRecording});
   if (recorded) params.set('recording', encodeRecording(recorded));
   url.hash = params.toString(); return url.href;
+}
+function shareNotice(url, confirmation) {
+  const included = new URLSearchParams(new URL(url).hash.slice(1)).has('recording');
+  return [confirmation, localFile && '本地固件需接收者自行选择', included ? '已包含录制，接收者需主动点击回放' : recordingDocument && '旧录制与当前配置不匹配，未包含在链接中'].filter(Boolean).join('；')+'。';
 }
 function validatePortable(next) {
   const validation = validateScene(next, catalog); if (!validation.valid) throw new Error(validation.errors.map(item => item.message).join(' '));
@@ -640,9 +686,13 @@ async function releaseHumanInputs() {
 }
 
 function setupEvents() {
-  bind('product-select', 'change', () => action(async () => { clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, $('product-select').value)); await configure(next, {reflectSource: true}); if (!next.firmware) { $('firmware-select').value = ''; setFirmwareTab('library'); } }));
+  const chooseProduct = async id => { clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, id)); await configure(next, {reflectSource: true}); };
+  mountDeviceSearch({button:$('search-devices'),products:catalog.products,onSelect:id=>action(()=>chooseProduct(id)),onError:error=>toast(error.message,true)});
+  mountAccessorySearch({button:$('search-accessories'),getItems:allDefinitions,onSelect:id=>{const item=definition(id);if(!item)return;$('accessory-brand').value=accessoryBrand(item);$('accessory-interface').value=accessoryInterface(item);renderAccessoryChoices();$('accessory-select').value=id;$('add-accessory').focus();},onError:error=>toast(error.message,true)});
+  bind('manufacturer-select', 'change', () => action(async () => { const choices = renderProductChoices($('manufacturer-select').value); if (choices.length) await chooseProduct(choices[0].id); }));
+  bind('product-select', 'change', () => action(() => chooseProduct($('product-select').value)));
   document.querySelectorAll('[data-firmware-tab]').forEach(button => button.addEventListener('click', () => setFirmwareTab(button.dataset.firmwareTab)));
-  bind('firmware-select', 'change', () => action(async () => { const selected = catalog.firmwares.find(item => item.id === $('firmware-select').value); const next = clone(scene); next.firmware = selected?.source ? clone(selected.source) : null; await configure(next); $('firmware-select').value = selected?.id || ''; renderFirmwareNote(selected); }));
+  bind('firmware-select', 'change', () => action(async () => { preserveUnspecifiedFirmware = false; const selected = catalog.firmwares.find(item => item.id === $('firmware-select').value); const next = clone(scene); next.firmware = selected?.source ? clone(selected.source) : null; await configure(next); $('firmware-select').value = selected?.id || ''; renderFirmwareNote(selected); }));
   bind('firmware-file', 'change', () => { void selectLocalFiles($('firmware-file').files); });
   bind('firmware-folder', 'change', () => { void selectLocalFiles($('firmware-folder').files,{replace:true}); });
   bind('clear-local-files', 'click', clearLocalFiles);
@@ -663,6 +713,9 @@ function setupEvents() {
   bind('serial-port', 'change', () => { text('serial-output', consoleBuffers[$('serial-port').value] || ''); $('serial-output').scrollTop = $('serial-output').scrollHeight; });
   bind('serial-form', 'submit', event => { event.preventDefault(); action(async () => { const input = $('serial-input'); if (!input.value) return; await runtime.input({type: 'serial', port: $('serial-port').value, data: input.value + '\n'}); input.value = ''; }); });
   bind('add-accessory', 'click', () => action(() => addAccessory($('accessory-select').value)));
+  bind('accessory-brand','change',renderAccessoryChoices);
+  bind('accessory-interface','change',renderAccessoryChoices);
+  bind('clear-accessories','click',()=>action(async()=>{const next=clone(scene);next.accessories=[];pruneDefinitions(next);await configure(next);toast('已移除当前场景的全部配件。');}));
   bind('open-diy', 'click', () => { editingAccessoryId = null; $('diy-form').reset(); text('diy-error', ''); $('diy-dialog').showModal(); });
   bind('close-diy', 'click', () => $('diy-dialog').close());
   bind('diy-form', 'submit', async event => {
@@ -681,7 +734,7 @@ function setupEvents() {
     await transportUi?.syncRecording(); const shared = portableScene(); validatePortable(shared); const recorded = recordingForScene(shared);
     const document = recorded ? {schemaVersion: '1', scene: shared, recording: recorded} : shared;
     download(`${scene.productId}-${recorded ? 'session' : 'scene'}.json`, JSON.stringify(document, null, 2) + '\n');
-    if (localFile) toast('配置已导出；本地固件文件需单独提供。');
+    if (localFile || (recordingDocument && !recorded)) toast(['配置已导出',localFile && '本地固件文件需单独提供',recordingDocument && !recorded && '旧录制与当前配置不匹配，未包含在文件中'].filter(Boolean).join('；')+'。');
   }));
   bind('import-scene', 'change', () => action(async () => {
     const input = $('import-scene'), file = input.files[0]; if (!file) return;
@@ -690,13 +743,14 @@ function setupEvents() {
     if (bundle && (document.schemaVersion !== '1' || Object.keys(document).some(key => !['schemaVersion', 'scene', 'recording'].includes(key)))) throw new Error('录制包格式无效。');
     const imported = bundle ? document.scene : document, recorded = bundle ? document.recording || null : null; validatePortable(imported);
     if (recorded) { const validation = validateRecording(recorded, {scene: imported}); if (!validation.valid) throw new Error(validation.errors.map(item => item.message).join(' ')); }
-    clearLocalFiles(); await configure(imported, {reflectSource: true}); transportUi?.setRecording(recorded); input.value = ''; toast(recorded ? '场景与录制已导入，点击回放即可重现操作。' : '场景已导入。');
+    clearLocalFiles(); preserveUnspecifiedFirmware = !imported.firmware; await configure(imported, {reflectSource: true}); transportUi?.setRecording(recorded); input.value = ''; toast(recorded ? '场景与录制已导入，点击回放即可重现操作。' : '场景已导入。');
   }));
-  bind('share-scene', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene()); const url = shareUrl('studio'); await copy(url, localFile ? '分享链接已复制；本地固件需接收者自行选择。' : recordingDocument ? '场景与录制链接已复制；接收者需主动点击回放。' : '场景链接已复制。'); history.replaceState(null, '', url); }));
-  bind('copy-embed', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene()); const url = shareUrl('embed'); await copy(`<iframe src="${url}" title="${product().name.replaceAll('"', '&quot;')} · ESP Player" width="800" height="640" allow="serial; fullscreen" loading="lazy"></iframe>`, 'iframe 代码已复制。'); }));
-  bind('open-player', 'click', () => { try { validatePortable(portableScene()); window.open(shareUrl('embed'), '_blank', 'noopener'); } catch (error) { report(error); } });
+  bind('share-scene', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene()); const url = shareUrl('studio'); await copy(url, shareNotice(url,'场景链接已复制')); history.replaceState(null, '', url); }));
+  bind('copy-embed', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene()); const url = shareUrl('embed'); await copy(`<iframe src="${url}" title="${product().name.replaceAll('"', '&quot;')} · ESP Player" width="800" height="640" allow="serial; fullscreen" loading="lazy"></iframe>`, shareNotice(url,'iframe 代码已复制')); }));
+  bind('open-player', 'click', () => { try { validatePortable(portableScene()); const url=shareUrl('embed');window.open(url, '_blank', 'noopener');if(recordingDocument&&!new URLSearchParams(new URL(url).hash.slice(1)).has('recording'))toast('已打开当前场景；旧录制未包含在独立窗口中。'); } catch (error) { report(error); } });
   bind('keyboard-enabled', 'change', () => { if (!$('keyboard-enabled').checked) releaseKeys(); });
   document.addEventListener('keydown', event => {
+    if (document.querySelector('dialog[open]')) return;
     if (recordingControl) {
       event.preventDefault();
       if (!event.code || (/^(Control|Alt|Meta)/.test(event.code)&&product()?.controls.find(item=>item.id===recordingControl)?.type!=='matrix-key')) { toast('请选择普通按键，例如 A、空格或方向键。'); return; }
@@ -704,7 +758,7 @@ function setupEvents() {
       if (event.code === 'Escape') { renderControls(); return; }
       action(async () => { const keyMapping = Object.fromEntries(Object.entries(scene.keyMapping).filter(([, value]) => value !== control)); keyMapping[event.code] = control; try { await runtime.updateSceneMetadata({keyMapping}); } finally { renderControls(); } }); return;
     }
-    if (event.repeat || !shouldCaptureMappedKey(event,product(),scene?.keyMapping) || event.target.closest('input,select,textarea,[contenteditable="true"]') || $('diy-dialog')?.open || ($('keyboard-enabled') && !$('keyboard-enabled').checked)) return;
+    if (event.repeat || !shouldCaptureMappedKey(event,product(),scene?.keyMapping) || event.target.closest('input,select,textarea,[contenteditable="true"]') || ($('keyboard-enabled') && !$('keyboard-enabled').checked)) return;
     const id = scene?.keyMapping[event.code]; if (!id || status !== 'running') return;
     event.preventDefault(); heldKeys.set(event.code, id); sendInput({type: 'button', id, pressed: true}, `key:${event.code}`);
   });
@@ -724,6 +778,7 @@ async function init() {
     catch (error) { restored = null; report(error); log('[SCENE] 无法加载共享配置，已回到默认设备。\n'); }
   }
   scene = restored || defaultFirmware(createDefaultScene(catalog));
+  if (restored) preserveUnspecifiedFirmware = !restored.firmware;
   if (params.has('recording')) {
     try {
       const recorded = decodeRecording(params.get('recording')), validation = validateRecording(recorded, {scene});
@@ -746,8 +801,7 @@ async function init() {
     onRecordingChange: value => { recordingDocument = value; if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false}); },
     onError: report, onLog: log,
   });
-  if ($('product-select')) { $('product-select').replaceChildren(...catalog.products.map(item => new Option(item.name, item.id))); $('product-select').disabled = false; }
-  text('product-count', `${catalog.products.length} 款`);
+  if ($('manufacturer-select')) { $('manufacturer-select').replaceChildren(...manufacturerNames(catalog.products).map(name => new Option(name,name))); $('manufacturer-select').disabled = false; }
   mountAppearance(); setupEvents(); await runtime.configure(scene); renderLocalAccessories(); reflectFirmwareSource(); transportUi.setRecording(recordingDocument);
   firmwareUpdates = await mountFirmwareUpdates($('firmware-updates'), {getProductId: () => scene.productId, onError: report});
   firmwareUpdates.show(catalog.firmwares.find(item => item.id === $('firmware-select')?.value));

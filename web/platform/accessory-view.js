@@ -1,5 +1,6 @@
 import * as THREE from './vendor/three.module.min.js';
 import {createGpsUnitModel} from './gps-model.js';
+import {createManufacturerModel} from './manufacturer-model.js';
 import {createGrovePlug, verifiedGrove, GROVE_PITCH, GROVE_WIRE_EXIT, GROVE_SIGNALS} from './grove-geometry.js';
 
 const material = (color, options = {}) => new THREE.MeshStandardMaterial({color, roughness: .72, ...options});
@@ -15,6 +16,12 @@ export function createIllustrativeAccessory(definition, index = 0) {
   if (definition.id === 'm5stack-gps-u032-v11' || definition.catalogId === 'm5stack-gps-u032-v11') {
     const model = createGpsUnitModel(); model.group.name = `accessory:${definition.instanceId || definition.id || index}`;
     model.group.position.set(64 + index * 34, -9 - index * 5, 0); model.group.rotation.z = -Math.PI / 4; return model;
+  }
+  if (definition.visual?.modelUrl) {
+    const model = createManufacturerModel({id: definition.id, model: {url: definition.visual.modelUrl}});
+    model.group.name = `accessory:${definition.instanceId || definition.id || index}`;
+    model.group.position.set(64 + index * 36, -9 - index * 5, 0); model.group.rotation.z = -Math.PI / 4;
+    return {...model, get connector() { return model.connectors.grove || null; }};
   }
   const group = new THREE.Group(); group.name = `accessory:${definition.instanceId || definition.id || index}`;
   group.userData.description = 'GPS/配件为示意外观；逻辑 UART 输入不模拟物理接线、供电或波特率。';

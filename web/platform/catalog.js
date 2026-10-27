@@ -170,6 +170,9 @@ export function validateScene(scene, catalog) {
         if (wiring.port !== 'uart1') errors.push(issue('UART_PORT', `${path}/wiring/port`, 'Logical accessory input currently supports UART1 only.'));
         if (wiring.connectorId !== undefined || wiring.rx !== undefined || wiring.tx !== undefined) errors.push(issue('LOGICAL_WIRING', `${path}/wiring`, 'Logical UART input does not declare physical pins.'));
         warnings.push(issue('LOGICAL_UART', `${path}/wiring`, 'Logical UART injection bypasses GPIO routing, baud timing and external power. It does not verify physical wiring.'));
+      } else if (wiring.mode === 'visual') {
+        if (Object.keys(wiring).some(key => key !== 'mode')) errors.push(issue('VISUAL_WIRING', `${path}/wiring`, 'Visual placement does not declare electrical routing.'));
+        warnings.push(issue('VISUAL_ACCESSORY', `${path}/wiring`, 'The accessory is shown in 3D; no electrical or peripheral behavior is connected.'));
       } else if (wiring.mode === 'physical') {
         const connector = product?.interfaces.find(item => item.id === wiring.connectorId && item.external === true);
         if (!connector) errors.push(issue('CONNECTOR', `${path}/wiring/connectorId`, 'Connector is not in this product’s verified pin map.'));
@@ -181,7 +184,7 @@ export function validateScene(scene, catalog) {
         }
         if (!['uart0', 'uart1', 'uart2'].includes(wiring.port)) errors.push(issue('UART_PORT', `${path}/wiring/port`, 'Declare the firmware UART controller.'));
         warnings.push(issue('PHYSICAL_WIRING_UNSUPPORTED', `${path}/wiring`, 'Physical UART routing is recorded for review but is not executed by this platform adapter.'));
-      } else errors.push(issue('WIRING_MODE', `${path}/wiring/mode`, 'Wiring mode must be logical or physical.'));
+      } else errors.push(issue('WIRING_MODE', `${path}/wiring/mode`, 'Wiring mode must be logical, physical or visual.'));
     }
   }
   if (!record(scene.keyMapping) || Object.keys(scene.keyMapping).length > 64) errors.push(issue('KEY_MAPPING', '/keyMapping', 'Key mapping must be an object with at most 64 bindings.'));

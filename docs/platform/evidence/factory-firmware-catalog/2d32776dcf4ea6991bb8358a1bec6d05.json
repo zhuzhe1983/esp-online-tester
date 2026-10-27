@@ -1,0 +1,115 @@
+{
+  "firmwareId": "2d32776dcf4ea6991bb8358a1bec6d05",
+  "name": "Core2_For_AWS",
+  "description": "Core2_For_AWS factory test firmware",
+  "productIds": [
+    "m5stack-k010-aws"
+  ],
+  "upstreamRepo": "m5stack/Core2-for-AWS-IoT-Kit",
+  "version": "v0.0.1",
+  "publishedAt": "2021.03.18",
+  "metadataSource": "https://m5burner-api.m5stack.com/api/firmware",
+  "url": "https://m5burner-cdn.m5stack.com/firmware/xodrou5fx5e3p5himv8ioqgokmsctkfl.bin",
+  "fetchedAt": "2026-10-27T00:41:39.829597+00:00",
+  "method": "GET; response body held in memory; firmware not executed",
+  "status": "fetched",
+  "bytes": 1301984,
+  "sha256": "83a92cd153ed483752b460a24cd269e353f06e2f0250bc234872d7a32409726a",
+  "layout": {
+    "kind": "merged",
+    "bootHeaders": [
+      {
+        "offset": 4096,
+        "chipId": 0,
+        "segments": 4,
+        "dataEnd": 30876,
+        "checksumBytePresent": true
+      }
+    ],
+    "partitionTables": [
+      {
+        "offset": 32768,
+        "partitions": [
+          {
+            "type": 1,
+            "subtype": 2,
+            "offset": 36864,
+            "size": 24576,
+            "label": "nvs"
+          },
+          {
+            "type": 1,
+            "subtype": 1,
+            "offset": 61440,
+            "size": 4096,
+            "label": "phy_init"
+          },
+          {
+            "type": 0,
+            "subtype": 0,
+            "offset": 65536,
+            "size": 4160000,
+            "label": "factory",
+            "image": {
+              "offset": 65536,
+              "chipId": 0,
+              "segments": 6,
+              "dataEnd": 1301936,
+              "checksumBytePresent": true
+            }
+          },
+          {
+            "type": 0,
+            "subtype": 16,
+            "offset": 4259840,
+            "size": 65536,
+            "label": "ota_0",
+            "image": null
+          },
+          {
+            "type": 0,
+            "subtype": 17,
+            "offset": 4325376,
+            "size": 6553600,
+            "label": "ota_1",
+            "image": null
+          },
+          {
+            "type": 1,
+            "subtype": 130,
+            "offset": 10878976,
+            "size": 5000192,
+            "label": "spiffs"
+          }
+        ]
+      }
+    ]
+  },
+  "responseHeaders": {
+    "content-type": "application/octet-stream",
+    "content-length": "1301984",
+    "etag": "\"469998544E3037502391CF81E15B6C35\"",
+    "last-modified": "Mon, 18 Apr 2022 10:19:45 GMT",
+    "access-control-allow-origin": "*"
+  },
+  "publisherBasis": "M5Burner publisher matches the already verified StopWatch and Cardputer official entries; account identifiers omitted.",
+  "validation": {
+    "executed": false,
+    "hardwareFlashed": false,
+    "checks": [
+      "actual SHA-256",
+      "complete bootloader/app segments",
+      "ESP chip ID",
+      "partition end within product Flash capacity"
+    ],
+    "products": [
+      {
+        "productId": "m5stack-k010-aws",
+        "chipId": 0,
+        "flashBytes": 16777216,
+        "partitionEnd": 15879168,
+        "pass": true
+      }
+    ]
+  }
+}

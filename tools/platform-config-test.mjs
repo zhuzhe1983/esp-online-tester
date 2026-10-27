@@ -63,6 +63,17 @@ test('configuration validity is separate from execution readiness', () => {
   assert.throws(() => createDefaultScene(catalog, 'invented'), {code: 'UNKNOWN_PRODUCT'});
 });
 
+test('visual Units share their exact SKU without pretending to inject UART data', () => {
+  for (const id of ['m5stack-unit-button-u027','m5stack-unit-angle-u005','m5stack-unit-rgb-u003']) {
+    const scene=base();scene.accessories=[{id:'unit-1',catalogId:id,parameters:{},wiring:{mode:'visual'}}];
+    const validation=validateScene(scene,catalog);assert.equal(validation.valid,true);
+    assert.ok(has(validation,'VISUAL_ACCESSORY','warnings'));
+    assert.equal(has(validation,'LOGICAL_UART','warnings'),false);
+    assert.equal(decodeScene(encodeScene(scene,catalog),catalog).accessories[0].catalogId,id);
+    scene.accessories[0].wiring.port='uart1';assert.equal(validateScene(scene,catalog).valid,false);
+  }
+});
+
 test('canonical Unicode URL roundtrip and object order independence', () => {
   const scene = base();
   const accessory = createLocalAccessory({id: 'local:test', name: '自制定位 🛰️', description: '自己的配置', modelId: 'uart-nmea'});

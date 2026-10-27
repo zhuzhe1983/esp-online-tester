@@ -1,0 +1,356 @@
+{
+  "sourceId": "manufacturer-cad",
+  "title": "M5Stack Unit RGB · U003",
+  "summary": "包含三个 SK6812 RGB LED 的灯光模块，可用串行数据控制。",
+  "hardwareRevision": "U003; manufacturer page does not identify hardware revision",
+  "parts": [
+    {
+      "sourceComponent": 3,
+      "name": "shell-front",
+      "role": "shell",
+      "color": "#e8e9e2"
+    },
+    {
+      "sourceComponent": 4,
+      "name": "shell-back",
+      "role": "shell",
+      "color": "#e8e9e2"
+    },
+    {
+      "sourceComponent": 0,
+      "name": "led-diffuser",
+      "role": "diffuser",
+      "color": "#cdd0c8"
+    }
+  ],
+  "matrixRows": [
+    [
+      1,
+      0,
+      0,
+      -177.26882935
+    ],
+    [
+      0,
+      1,
+      0,
+      -269.22348022
+    ],
+    [
+      0,
+      0,
+      1,
+      -2
+    ],
+    [
+      0,
+      0,
+      0,
+      1
+    ]
+  ],
+  "assemblyNotes": "Keep already assembled CAD components [3, 4, 0]; rigid center translation and original orientation. Omit spatially separated print-layout duplicates. No scaling. +Z front, +Y top, inlet at -Y.",
+  "omittedComponents": [
+    {
+      "index": 1,
+      "reason": "duplicate print-layout part; retain assembled counterpart"
+    },
+    {
+      "index": 2,
+      "reason": "duplicate print-layout part; retain assembled counterpart"
+    },
+    {
+      "index": 5,
+      "reason": "duplicate print-layout part; retain assembled counterpart"
+    }
+  ],
+  "dimensions": {
+    "width": 24,
+    "height": 32,
+    "depth": 8,
+    "unit": "mm",
+    "sourceId": "official-docs"
+  },
+  "targets": [
+    {
+      "name": "shell-width",
+      "axis": 0,
+      "valueMm": 24,
+      "toleranceMm": 0.05,
+      "sourceId": "photo-14"
+    },
+    {
+      "name": "shell-height",
+      "axis": 1,
+      "valueMm": 32,
+      "toleranceMm": 0.05,
+      "sourceId": "photo-14"
+    },
+    {
+      "name": "shell-depth",
+      "axis": 2,
+      "valueMm": 8,
+      "toleranceMm": 0.05,
+      "sourceId": "photo-14"
+    }
+  ],
+  "derivedParts": [
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "geometry": {
+        "sizeMm": [
+          10,
+          23,
+          1
+        ],
+        "centerMm": [
+          0,
+          1,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ],
+      "notes": "Neutral UNKNOWN blank; 10×23×1 mm internal fit estimate avoids known mounting holes. The narrow estimate is not the actual PCB outline; no component layout is claimed."
+    },
+    {
+      "id": "grove",
+      "kind": "connector-visual",
+      "geometry": {
+        "centerMm": [
+          0,
+          -16,
+          0.6
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-1",
+        "photo-14"
+      ],
+      "connectorType": "HY2.0-4P",
+      "housingColor": "#202626",
+      "allowConnections": true,
+      "pinOrder": [
+        "gnd",
+        "vcc",
+        "signal1",
+        "signal2"
+      ],
+      "notes": "Front view: bottom inlet, x left-to-right black/red/yellow/white. Back photo is mirrored: white/yellow/red/black. Mouth at y=-16 from CAD envelope; hidden moulding depth and center z are photo estimates, not socket CAD."
+    },
+    {
+      "id": "rear-sticker",
+      "kind": "label",
+      "geometry": {
+        "sizeMm": [
+          16,
+          12
+        ],
+        "centerMm": [
+          0,
+          7,
+          -4.025
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-1"
+      ],
+      "texture": "back-label.webp",
+      "notes": "Only paper rectangle; holes, plastic M5 logo and screw remain geometry."
+    },
+    {
+      "id": "rear-screw",
+      "kind": "cylinder",
+      "geometry": {
+        "radiusMm": 1.55,
+        "depthMm": 0.25,
+        "centerMm": [
+          0,
+          -4,
+          -4.12
+        ]
+      },
+      "color": "#989b98",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-3",
+        "photo-4"
+      ],
+      "material": {
+        "metalness": 0.8,
+        "roughness": 0.4
+      },
+      "notes": "Visible screw location from dimension drawing; screw head is approximate."
+    },
+    {
+      "id": "grove-output",
+      "kind": "connector-visual",
+      "geometry": {
+        "centerMm": [
+          0,
+          16,
+          0.6
+        ],
+        "rotation": [
+          -1.5707963267948966,
+          0,
+          3.141592653589793
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-0",
+        "photo-12"
+      ],
+      "connectorType": "HY2.0-4P",
+      "housingColor": "#202626",
+      "allowConnections": false,
+      "pinOrder": [
+        "gnd",
+        "vcc",
+        "signal1",
+        "signal2"
+      ],
+      "notes": "Upper output socket is visible but mirrored pin assignment was not independently established; cable connections disabled."
+    }
+  ],
+  "textureSources": [
+    {
+      "sourceId": "photo-1",
+      "file": "back-label.webp",
+      "cropXYXY": [
+        291,
+        220,
+        510,
+        390
+      ],
+      "alphaMask": {
+        "includeRoundedRects": [
+          {
+            "xyxy": [
+              294,
+              223,
+              507,
+              387
+            ],
+            "radiusPx": 5
+          }
+        ]
+      },
+      "notes": "Paper only, independent plane; body plastic, screw, holes and M5 emboss are excluded."
+    }
+  ],
+  "photos": [
+    {
+      "sourceId": "photo-4",
+      "view": "front",
+      "cropXYXY": [
+        58,
+        224,
+        408,
+        574
+      ]
+    },
+    {
+      "sourceId": "photo-1",
+      "view": "back"
+    },
+    {
+      "sourceId": "photo-3",
+      "view": "oblique"
+    }
+  ],
+  "presentation": {
+    "bodySizeMm": [
+      24,
+      32,
+      8
+    ]
+  },
+  "reviewViews": {
+    "front": {
+      "position": [
+        0,
+        0,
+        250
+      ],
+      "span": 35.44303797468354,
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "calibration": "Uniform scale from independent photo body height versus documented 32 mm; no mesh scaling. Front view is approximate; photographic perspective remains."
+    },
+    "back": {
+      "position": [
+        0,
+        0,
+        -250
+      ],
+      "span": 61,
+      "target": [
+        0,
+        0,
+        0
+      ]
+    },
+    "oblique": {
+      "position": [
+        70,
+        -95,
+        130
+      ],
+      "span": 48,
+      "target": [
+        0,
+        0,
+        3
+      ]
+    },
+    "connector": {
+      "position": [
+        0,
+        -80,
+        35
+      ],
+      "span": 24,
+      "target": [
+        0,
+        -12,
+        0
+      ]
+    }
+  },
+  "limitations": [
+    "仅外观、尺寸和接线资料已入库；GPIO/ADC/SK6812 行为尚未实现，不能证明主机固件可使用该模块。",
+    "厂家 STL 保留原始尺寸，打印排版重复件已剔除；插座、螺钉及无 CAD 的外露部件为照片近似。",
+    "未公开 PCB 布局，内部采用 UNKNOWN 占位；贴纸使用官方照片真实印刷区域。",
+    "官方 pinmap 把白线标为 NC；串级原理图白线 DI 连通两端，本轮不模拟串级、不启用输出端连线。",
+    "螺钉头纹和无厂家 CAD 的旋钮为简化，照片视角存在透视误差，不声称完整 1:1 通过。"
+  ],
+  "facts": []
+}

@@ -285,10 +285,11 @@ pub(super) fn window_masks() -> u32 {
     cases
 }
 
-pub(super) fn entry_and_shifts() -> u32 {
+pub(super) fn entry_and_shifts_part(part: usize) -> u32 {
     use Op::*;
     let mut tests = 0;
-    for op in [Sll, Srl] {
+    for (index, op) in [Sll, Srl].into_iter().enumerate() {
+        if index != part { continue; }
         for sar in (0..=64).chain([127, u32::MAX]) {
             for value in [0, 1, 0x8000_0000, 0xffff_ffff, 0xa5a5_5a5a] {
                 for alias in [false, true] {
@@ -308,8 +309,9 @@ pub(super) fn entry_and_shifts() -> u32 {
             }
         }
     }
-    for wb in [0, 14, 15] {
-        for flags in [0, ps::WOE, ps::WOE | ps::EXCM] {
+    for (wi, wb) in [0, 14, 15].into_iter().enumerate() {
+        for (fi, flags) in [0, ps::WOE, ps::WOE | ps::EXCM].into_iter().enumerate() {
+            if 2 + wi * 3 + fi != part { continue; }
             // The +4 frame is outside the initial a15 guard, but can collide
             // after ENTRY rotates. This catches reuse of the whole-block proof.
             for windows in [0, 1 << ((wb + 4) & 15), 0xffff] {

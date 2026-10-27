@@ -48,9 +48,21 @@ ESP32SIM_PROBE_CLOCK_TIMEOUT_MS=60000 node tools/probe-official-papermono.mjs \
 
 - RX8130 仅提供寄存器 RAM，供板型探测和本次会话的固件设置使用。日期/时钟、闹钟、掉电保持和唤醒未实现；启动画面可见无效日期，不校正为主机时间。
 - BMI270 的识别、配置和寄存器子集存在，但 PaperMono 没有持续采样时钟或姿态 API；UserDemo 的三次初始化检测失败。画面上的默认向量不是已验证传感器采样。
-- TF/SD、NFC、LoRa、音频、睡眠唤醒、Wi-Fi 扫描/NTP 和外接附件尚未在此板上验收。官方页面的 INIT FAIL 或 NO DATA 保留，不伪造成功。
-- M5IOE1 未实现输入上拉的电气网络；软件 I2C 使用理想上拉，不模拟总线争用、时钟拉伸或模拟电气特性。
+- NFC、LoRa、音频、睡眠唤醒、Wi-Fi 扫描/NTP 和外接附件尚未在此板上验收。TF/SD 与 RGB 的新增范围见下方补充。官方页面的 INIT FAIL 或 NO DATA 保留，不伪造成功。
+- M5IOE1 只对已接线的 TF 插卡检测提供数字输入，未实现通用输入上拉的电气网络；软件 I2C 使用理想上拉，不模拟总线争用、时钟拉伸或模拟电气特性。
 - FT6336G 只支持单点报告；手势、第二触点、精确扫描节奏和面板固件版本未知。芯片/固件版本寄存器不伪造实测值。
 - 远程二进制不进入本站服务器或 Git；浏览器可按既有策略本地缓存并复核 hash。此运行验收不代表刷机或实机验证。
 
 来源版本、负面结果、最终截图及检查记录见 [证据目录](evidence/papermono-official/README.md)。来源依据为 [官方仓库](https://github.com/m5stack/M5PaperMono-UserDemo/tree/e55877dc04b89e13a8519cee5435dc326499e1ca)、[固定版 M5GFX](https://github.com/m5stack/M5GFX/tree/02107b828acb3eb782fccd747863638d64c876d7)、[官方产品资料](https://docs.m5stack.com/en/core/PaperMono)、Solomon Systech SSD1677 rev1.0、FocalTech FT6x06 Application Note 和 [NXP I2C 规范 rev7](https://www.nxp.com/docs/en/user-guide/UM10204.pdf)。
+
+## TF 卡与 RGB 补充（2026-10-27）
+
+TF 卡已接入 ESP32-S3 原生 SDMMC 主机，复用现有 SD 卡协议与 IDMAC 模型。接线按官方 `hal_tf_card.cpp`：CLK13、CMD12、D0/D1/D2/D3 为 11/10/9/8，IOE14 供电、IOE1 插卡低有效；没有把它误接为 SPI CS。主机核对 GPIO 矩阵、IO_MUX 输入使能、SYSTEM 时钟与复位、板上供电；错误路由不响应。DMA 只访问内部可 DMA SRAM，越界和 MMIO 地址产生主机错误，不能递归写设备或使模拟器 panic。卡媒体在 guest 芯片复位时保留，主机寄存器重置。
+
+网站加载 PaperMono/Lite 固件时自动生成空白 64 MiB FAT32 卡；用户可导入 1–128 MiB、512 KiB 整数倍的完整磁盘镜像，也可导出或清空为默认 FAT32。导入和清空会先保存当前 Flash/SD、重新建立模拟器并停在 ready。SD 在浏览器 IndexedDB 单独存储，按产品、板型、初始完整 Flash SHA-256 隔离；导入镜像另保留初始 hash。自动保存变更的 4 KiB 页，基础镜像单独保存；软件重启、页面刷新和重新加载同一固件不清空。其他页面保存/清空后以版本和 epoch 防止旧写者覆盖。持久化不可用时显示仅本页内存；不能承诺关页保存成功。
+
+接口：`attachSdCard({bytes?,format:'fat32'})`、`exportSdCard()`、`clearSdCard()`、`flushSdCard()`；状态在 `observe().sdCard`，事件为 `sd-card`。导出返回 `{bytes:Uint8Array,filename}`；上传字节和卡内容不进入分享 URL，非空白 SD 拒绝录制分享。关闭页面只做尽力保存，强杀进程/掉电前最后一批未提交写入可能丢失。
+
+RGB 是三个独立通道：PM1 `PWR_CFG` bit4 驱动红光，IOE PWM2/IO8 驱动绿光，PWM1/IO9 驱动蓝光。PWM duty 为 12 bit，遵守输出模式、push-pull、使能与极性，向 viewer 发布 0–255 RGB；红光为开关值。固件驱动的 `leds` 事件和 `observe().leds` 是同一板级输出，前端不得根据点击动画伪造颜色。
+
+CrossPoint 的 PaperMono 适配分支使用 native SDMMC + SdFat `FsVolume`。FAT32 是本平台默认且已由官方 UserDemo 实际挂载验证的格式；不能据此说该分支只支持 FAT32，也不能把其他 e-reader 的格式要求混用。该固定源码是当前适配分支，不声称可复现已发布二进制。当前收录的完整 CrossPoint 1.5.0 在 SD 挂载前发生启动异常，保留试运行入口与真实失败，尚未验证阅读、建库或卡内配置写入。细节及输入/截图/来源见 [SD/RGB 证据](evidence/papermono-sd-rgb/README.md)。

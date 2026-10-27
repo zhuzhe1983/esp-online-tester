@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1",
-  "revision": "2026-10-27",
+  "revision": "2026-10-27-factory-firmware-audit",
   "items": [
     {
       "id": "m5stack-stopwatch-official",
@@ -46,64 +46,8 @@
       "storage": "remote-links-only",
       "watchlistId": "m5stack-stopwatch-official",
       "role": "factory",
-      "publisher": "M5Stack"
-    },
-    {
-      "id": "papermono-crosspoint",
-      "name": "PaperMono CrossPoint E-Reader",
-      "productIds": [
-        "m5stack-papermono"
-      ],
-      "status": "reference",
-      "source": null,
-      "limitations": [
-        "已发现 PaperMono 适配版本；尚未在新的板级模型上验证此固件，仍只提供版本与来源信息。"
-      ],
-      "sources": [
-        {
-          "title": "PaperMono official CrossPoint firmware link",
-          "url": "https://docs.m5stack.com/en/core/PaperMono",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "CrossPoint Reader releases",
-          "url": "https://github.com/crosspoint-reader/crosspoint-reader/releases",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "watchlistId": "crosspoint-reader",
-      "role": "third-party",
-      "publisher": "CrossPoint Reader contributors"
-    },
-    {
-      "id": "papermono-uiflow2",
-      "name": "PaperMono UIFlow2 · v2.5.3",
-      "productIds": [
-        "m5stack-papermono"
-      ],
-      "status": "reference",
-      "source": null,
-      "watchlistId": "uiflow2",
-      "role": "alternative",
       "publisher": "M5Stack",
-      "revision": "2.5.3",
-      "limitations": [
-        "M5Stack 已为 PaperMono 发布 UIFlow2 固件；尚未在新的板级模型验证此固件，当前只提供版本与官方下载信息。",
-        "GitHub 发布版与 M5Burner 官方构建的 SHA-256 不同，已分别记录；不能将同版本名称视为同一镜像。",
-        "未验证本平台运行或实机刷写，暂不提供下载并运行。"
-      ],
-      "sources": [
-        {
-          "title": "M5Stack UIFlow2 v2.5.3 release",
-          "url": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.3",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "M5Stack PaperMono official software links",
-          "url": "https://docs.m5stack.com/en/core/PaperMono",
-          "checkedAt": "2026-10-26"
-        }
-      ]
+      "publisherGroup": "官方"
     },
     {
       "id": "m5stack-k132-adv-official",
@@ -144,19 +88,671 @@
         "simulationVerified": true,
         "hardwareValidated": false,
         "evidence": "docs/platform/evidence/cardputer-adv-official/README.md"
-      }
+      },
+      "publisherGroup": "官方"
     },
     {
       "id": "m5stack-c145-official-reference",
-      "name": "Tab5 official factory firmware source",
+      "name": "Tab5 · C145 官方出厂固件 · v0.4",
       "role": "factory",
       "publisher": "M5Stack",
       "productIds": [
         "m5stack-c145"
       ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/608b6b248c443db5d050882724c8a090.bin",
+        "sha256": "2d30fa8918bac1e8d09b59eb2fc72ea40500d097efa4812e241ac875ee86e781"
+      },
+      "publicationUrl": "https://docs.m5stack.com/en/core/Tab5",
+      "version": "v0.4",
+      "compatibility": "unverified",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "ESP32-P4 bootloader 位于 0x2000；当前没有 Tab5 板级模拟器，不能运行。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack Tab5 · C145 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Tab5",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 7887d6b1e61cd18e2d6e2d92526b5f29",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.4",
+      "watchlistId": "factory-7887d6b1e61cd18e2d6e2d92526b5f29",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-k159-b-factory-reference",
+      "name": "M5Stack PaperDIY Complete Kit · K159-B 官方出厂固件入口",
+      "productIds": [
+        "m5stack-k159-b"
+      ],
       "status": "reference",
       "source": null,
-      "publicationUrl": "https://github.com/m5stack/M5Tab5-UserDemo",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "PaperDIY Factory Firmware Source Code",
+          "url": "https://github.com/m5stack/M5PaperDIY-UserDemo",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "PaperDIY Factory Firmware WebBurner",
+          "url": "https://burner.m5stack.com/share/firmware/UVVZ26",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方产品资料提供的固件入口；尚未核对固定镜像、分区、校验值及模拟运行兼容性。"
+      ],
+      "publisherGroup": "官方"
+    },
+    {
+      "id": "m5stack-k123-factory-reference",
+      "name": "M5Stack Station-485 · K123 官方出厂固件入口",
+      "productIds": [
+        "m5stack-k123"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "factory",
+      "publisher": "M5Stack",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "Download",
+          "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/EasyLoader/Windows/CORE/M5Staion.exe",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "官方产品资料提供的固件入口；尚未核对固定镜像、分区、校验值及模拟运行兼容性。"
+      ],
+      "publisherGroup": "官方"
+    },
+    {
+      "id": "m5stack-papermono-official",
+      "name": "User Demo · 1.2.0",
+      "productIds": [
+        "m5stack-papermono",
+        "m5stack-c153-lite"
+      ],
+      "status": "available",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/376080df0d31b0026e9a67a75d02d571.bin",
+        "sha256": "72c290bc2ffa216041b276660277369bd17ecef92315e367d98bb2c96c8428fa"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "simulationVerified": true,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "sources": [
+        {
+          "title": "PaperMono 官方产品页：出厂固件与源码入口",
+          "url": "https://docs.m5stack.com/en/core/PaperMono",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "PaperMono Factory Reset Firmware",
+          "url": "https://burner.m5stack.com/firmware/2089640807996628993/",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "PaperMono Factory Firmware Source Code",
+          "url": "https://github.com/m5stack/M5PaperMono-UserDemo",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "limitations": [
+        "M5Stack 官方完整镜像；从官方 CDN 直接加载，可缓存到当前浏览器，本站服务器与仓库不保存二进制。",
+        "已在官方 User Demo 1.2.0 验证 ROM 启动、480×800 墨水屏、A/B 调节亮度、触摸加亮与静音按钮切换。",
+        "SSD1677、FT6336G、M5PM1/M5IOE1 为所需寄存器子集；不代表任意固件或完整时序兼容。",
+        "未模拟 NFC，官方固件当前自行进入 Lite 界面；LoRa、microSD、Wi-Fi 网络、音频输出及深睡唤醒未验证。",
+        "RTC 目前仅寄存器存储，没有真实计时；BMI270 官方初始化尚未通过，不能据仪表盘默认数值认定传感器正常。",
+        "未连接真实硬件或执行刷机；实机行为仍需验证。"
+      ],
+      "revision": "1.2.0",
+      "sdk": "ESP-IDF 5.5.1",
+      "watchlistId": "m5stack-papermono-official",
+      "publisherGroup": "官方"
+    },
+    {
+      "id": "m5stack-k049-b-factory-reference",
+      "name": "Paper v1.1 官方出厂固件 · v2.1",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k049-b"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/3cefb67da1256e6b7e41b560a84b6353.bin",
+        "sha256": "9c9f0d3644f4faf86ab1e132674e860e5360f1ca7623632a4211dfceaf0ec5e3"
+      },
+      "sources": [
+        {
+          "title": "M5Stack Paper v1.1 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Paper_v1.1",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 89c292ee5d61635f2f259ed90acb71d7",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "publisherGroup": "官方",
+      "revision": "v2.1",
+      "version": "v2.1",
+      "watchlistId": "factory-89c292ee5d61635f2f259ed90acb71d7",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Paper_v1.1"
+    },
+    {
+      "id": "m5stack-c139-factory-reference",
+      "name": "PaperS3 官方出厂固件 · v0.5",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-c139"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/16287f6984f8ec7fe8058a6c3497b3b4.bin",
+        "sha256": "d6733a0ca378f95335fa5fba4d4d992fb1dd97c17557b20e9aebfca08ba6d624"
+      },
+      "sources": [
+        {
+          "title": "M5Stack PaperS3 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/PaperS3",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId bbb47b2c310a17a21815fded729482e1",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.5",
+      "version": "v0.5",
+      "watchlistId": "factory-bbb47b2c310a17a21815fded729482e1",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/PaperS3"
+    },
+    {
+      "id": "m5stack-k131-factory-reference",
+      "name": "Air Quality 官方出厂固件 · v0.2.0",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k131"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/a9499d06eab7cfbe2789905eed454d85.bin",
+        "sha256": "ac47e80ba0b0e6c304e90ba10aa978f367d4369a2e449c1f4a58813a671b3216"
+      },
+      "sources": [
+        {
+          "title": "M5Stack Air Quality official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Air_Quality",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId c4dce0a2fbb839e71a7e1ce44108d41a",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.2.0",
+      "version": "v0.2.0",
+      "watchlistId": "factory-c4dce0a2fbb839e71a7e1ce44108d41a",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Air_Quality"
+    },
+    {
+      "id": "m5stack-c126-factory-reference",
+      "name": "AtomS3R 官方出厂固件 · v0.3",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-c126"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/dc58e57a732c92030d3502db407ddb81.bin",
+        "sha256": "d3242a0ba536024c735fe9ca4b1670e629f0f97435a06da8f2979c06ebbfe805"
+      },
+      "sources": [
+        {
+          "title": "M5Stack AtomS3R official product documentation",
+          "url": "https://docs.m5stack.com/en/core/AtomS3R",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 7f6c7acb9cfd3d0aa051ba3830a75fd5",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.3",
+      "version": "v0.3",
+      "watchlistId": "factory-7f6c7acb9cfd3d0aa051ba3830a75fd5",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/AtomS3R"
+    },
+    {
+      "id": "m5stack-c008-c-factory-reference",
+      "name": "Atom Voice 官方出厂固件 · v1.0.0",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-c008-c"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/776bd8c3e6b5b3ca14ea7ef8c0da304a.bin",
+        "sha256": "fa9a4c4491a83fa5b60310ee35b14e3cef71bfeac5e1cd0883b84448f6923951"
+      },
+      "sources": [
+        {
+          "title": "M5Stack Atom Voice official product documentation",
+          "url": "https://docs.m5stack.com/en/atom/Atom_Voice",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 5fc0406f725cf94d240e7c3ade99078a",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "publisherGroup": "官方",
+      "revision": "v1.0.0",
+      "version": "v1.0.0",
+      "watchlistId": "factory-5fc0406f725cf94d240e7c3ade99078a",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/atom/Atom_Voice"
+    },
+    {
+      "id": "m5stack-k016-p-factory-reference",
+      "name": "StickC-Plus 官方出厂固件 · v1.0",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k016-p"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/4c032a3757ed3cf2419f4bd7623afd2c.bin",
+        "sha256": "fcbf94c10c4dc93a2cdb395db185a63628869c9bba981c5b930f3899d3e0c9f5"
+      },
+      "sources": [
+        {
+          "title": "M5Stack StickC-Plus official product documentation",
+          "url": "https://docs.m5stack.com/en/core/StickC-Plus",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 0605437981c9f061b88bf6e6516b7d33",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "publisherGroup": "官方",
+      "revision": "v1.0",
+      "version": "v1.0",
+      "watchlistId": "factory-0605437981c9f061b88bf6e6516b7d33",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/StickC-Plus"
+    },
+    {
+      "id": "m5stack-k010-aws-factory-reference",
+      "name": "Core2 For AWS 官方出厂固件 · v0.0.1",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k010-aws"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/xodrou5fx5e3p5himv8ioqgokmsctkfl.bin",
+        "sha256": "83a92cd153ed483752b460a24cd269e353f06e2f0250bc234872d7a32409726a"
+      },
+      "sources": [
+        {
+          "title": "M5Stack Core2 For AWS official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Core2_For_AWS",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 2d32776dcf4ea6991bb8358a1bec6d05",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.0.1",
+      "version": "v0.0.1",
+      "watchlistId": "factory-2d32776dcf4ea6991bb8358a1bec6d05",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Core2_For_AWS"
+    },
+    {
+      "id": "m5stack-k128-factory-reference",
+      "name": "CoreS3 官方出厂固件 · v0.12",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k128"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/814dba58deaf2918cc19b8088e3f602f.bin",
+        "sha256": "b85af8bd116897ee71e00b5111b8b5643754f18990fcf322bd15638f98a6c5ea"
+      },
+      "sources": [
+        {
+          "title": "M5Stack CoreS3 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/CoreS3",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId e5e989a848b75a1e6f04f6412cad36db",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.12",
+      "version": "v0.12",
+      "watchlistId": "factory-e5e989a848b75a1e6f04f6412cad36db",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/CoreS3"
+    },
+    {
+      "id": "m5stack-k048-factory-reference",
+      "name": "CoreInk 官方出厂固件 · v1.0.1",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k048"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/c95323ca0f145cb15b98d4f87ceb078d.bin",
+        "sha256": "6da3668ac2f528493a1122699b8c380b1e370ff45e269ff758c2a22e738ddbc7"
+      },
+      "sources": [
+        {
+          "title": "M5Stack CoreInk official product documentation",
+          "url": "https://docs.m5stack.com/en/core/CoreInk",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 65b098b5cf443956c6475a727f7b14a8",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "publisherGroup": "官方",
+      "revision": "v1.0.1",
+      "version": "v1.0.1",
+      "watchlistId": "factory-65b098b5cf443956c6475a727f7b14a8",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/CoreInk"
+    },
+    {
+      "id": "m5stack-k134-factory-reference",
+      "name": "DinMeter 官方出厂固件 · v0.1",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k134"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/fc3c7b0f51aa57c5ec0b04b7f4ce8084.bin",
+        "sha256": "b0d8d63fa9a8e30f712de37cf58c340328690f61c90f94ce7a32da3050589d40"
+      },
+      "sources": [
+        {
+          "title": "M5Stack DinMeter official product documentation",
+          "url": "https://docs.m5stack.com/en/core/DinMeter",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 6846a9ac4fd546ad9b48baf9b374e52d",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.1",
+      "version": "v0.1",
+      "watchlistId": "factory-6846a9ac4fd546ad9b48baf9b374e52d",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/DinMeter"
+    },
+    {
+      "id": "m5stack-k141-official-reference",
+      "name": "StamPLC · K141 官方出厂固件 · v0.2",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k141"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/714fd486771a7a4aec72e54cb6031570.bin",
+        "sha256": "abd1a4345353ce0c166fbed6b89c3feb7d65ca2a5f37a05a34d1271405aabf2e"
+      },
+      "publicationUrl": "https://docs.m5stack.com/en/core/StamPLC",
+      "version": "v0.2",
+      "compatibility": "unverified",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack StamPLC · K141 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/StamPLC",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId d7437f47285e12c397377fb53ff9f96e",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.2",
+      "watchlistId": "factory-d7437f47285e12c397377fb53ff9f96e",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-c151-official-reference",
+      "name": "PaperColor · C151 官方出厂固件 · v1.0.1",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-c151"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/5177aa6732f01298583509e9ac07c7cc.bin",
+        "sha256": "0f9c9c0f429cfae2c4ab39ca842bbddf7b1e6f8eb29bbfd2826cb9903f7ee37e"
+      },
+      "publicationUrl": "https://docs.m5stack.com/en/core/PaperColor",
+      "version": "v1.0.1",
+      "compatibility": "unverified",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack PaperColor · C151 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/PaperColor",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 8bd6c4700f806c806b98e9c8ec716c00",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "publisherGroup": "官方",
+      "revision": "v1.0.1",
+      "watchlistId": "factory-8bd6c4700f806c806b98e9c8ec716c00",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-k134-v11-official-reference",
+      "name": "DinMeter v1.1 · K134-V11 官方出厂固件 · v0.1",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k134-v11"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/fc3c7b0f51aa57c5ec0b04b7f4ce8084.bin",
+        "sha256": "b0d8d63fa9a8e30f712de37cf58c340328690f61c90f94ce7a32da3050589d40"
+      },
+      "publicationUrl": "https://docs.m5stack.com/en/core/DinMeter_v1.1",
+      "version": "v0.1",
+      "compatibility": "unverified",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack DinMeter v1.1 · K134-V11 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/DinMeter_v1.1",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 6846a9ac4fd546ad9b48baf9b374e52d",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.1",
+      "watchlistId": "factory-6846a9ac4fd546ad9b48baf9b374e52d",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-k130-official-reference",
+      "name": "Dial User Demo",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k130"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/M5Dial-UserDemo",
       "version": null,
       "compatibility": "unavailable",
       "limitations": [
@@ -164,38 +760,1241 @@
       ],
       "sources": [
         {
-          "title": "Tab5 official factory firmware source",
-          "url": "https://github.com/m5stack/M5Tab5-UserDemo",
+          "title": "Dial User Demo",
+          "url": "https://github.com/m5stack/M5Dial-UserDemo",
           "checkedAt": "2026-10-26",
           "status": "linked"
+        }
+      ],
+      "publisherGroup": "官方"
+    },
+    {
+      "id": "m5stack-k136-official-reference",
+      "name": "VAMeter 官方出厂固件 · v1.2.2-pre",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k136"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/b8fb2d74c1ae39637d2b27a72c211597.bin",
+        "sha256": "8104124842b5e861b6e830e9332cb9a1f09976069e69997bd2cc001f7d3d37a7"
+      },
+      "publicationUrl": "https://docs.m5stack.com/en/core/VAMeter",
+      "version": "v1.2.2-pre",
+      "compatibility": "unverified",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "当前官方分发最新条目带 pre 后缀，按预发布版本保留原名。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack VAMeter official product documentation",
+          "url": "https://docs.m5stack.com/en/core/VAMeter",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId b181a9558bf3e36e53ce79018cb11805",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "publisherGroup": "官方",
+      "revision": "v1.2.2-pre",
+      "watchlistId": "factory-b181a9558bf3e36e53ce79018cb11805",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-k128-lite-official-reference",
+      "name": "CoreS3-Lite 官方出厂固件 · v0.12",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k128-lite"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/814dba58deaf2918cc19b8088e3f602f.bin",
+        "sha256": "b85af8bd116897ee71e00b5111b8b5643754f18990fcf322bd15638f98a6c5ea"
+      },
+      "publicationUrl": "https://docs.m5stack.com/en/core/CoreS3-Lite",
+      "version": "v0.12",
+      "compatibility": "unverified",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack CoreS3-Lite official product documentation",
+          "url": "https://docs.m5stack.com/en/core/CoreS3-Lite",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId e5e989a848b75a1e6f04f6412cad36db",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.12",
+      "watchlistId": "factory-e5e989a848b75a1e6f04f6412cad36db",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-c148-factory-reference",
+      "name": "PowerHub 官方出厂固件 · v0.2",
+      "publisher": "M5Stack",
+      "role": "factory",
+      "productIds": [
+        "m5stack-c148"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/007dcd59e96960235a507f1476add8de.bin",
+        "sha256": "83f87a7bd3fa09f4f13c2b372aabb3b73295e063d6879f6d8538478648c27daa"
+      },
+      "sources": [
+        {
+          "title": "M5Stack PowerHub official product documentation",
+          "url": "https://docs.m5stack.com/en/core/PowerHub",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId ec3017841bbecce55be14023f4ba8c2e",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.2",
+      "version": "v0.2",
+      "watchlistId": "factory-ec3017841bbecce55be14023f4ba8c2e",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/PowerHub"
+    },
+    {
+      "id": "m5stack-k146-official-reference",
+      "name": "Xiaozhi Card Kit Factory Firmware",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k146"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/xiaozhi-card",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "Xiaozhi Card Kit Factory Firmware",
+          "url": "https://github.com/m5stack/xiaozhi-card",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ],
+      "publisherGroup": "官方"
+    },
+    {
+      "id": "m5stack-k131-v11-official-reference",
+      "name": "Air Quality v1.1 · K131-V11 官方出厂固件 · v0.2.0",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k131-v11"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/a9499d06eab7cfbe2789905eed454d85.bin",
+        "sha256": "ac47e80ba0b0e6c304e90ba10aa978f367d4369a2e449c1f4a58813a671b3216"
+      },
+      "publicationUrl": "https://docs.m5stack.com/en/core/Air_Quality_v1.1",
+      "version": "v0.2.0",
+      "compatibility": "unverified",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack Air Quality v1.1 · K131-V11 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Air_Quality_v1.1",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId c4dce0a2fbb839e71a7e1ce44108d41a",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.2.0",
+      "watchlistId": "factory-c4dce0a2fbb839e71a7e1ce44108d41a",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-c123-official-reference",
+      "name": "AtomS3 · C123 官方出厂固件 · v0.1",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-c123"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/ffd26b8ba73aefa2a964e2f56d39f1e6.bin",
+        "sha256": "2d78c3d8874eee0f6d91eb9c8fe6ad482488dad05e5a42adc1dde09977800b06"
+      },
+      "publicationUrl": "https://docs.m5stack.com/en/core/AtomS3",
+      "version": "v0.1",
+      "compatibility": "unverified",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack AtomS3 · C123 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/AtomS3",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 476a75ab7404402c4651606d80686a17",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.1",
+      "watchlistId": "factory-476a75ab7404402c4651606d80686a17",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-k010-aws-v13-official-reference",
+      "name": "Core2 For AWS ESP-IDF Factory Firmware",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k010-aws-v13"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/Core2-for-AWS-IoT-Kit/tree/master/Factory-Firmware",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+      ],
+      "sources": [
+        {
+          "title": "Core2 For AWS ESP-IDF Factory Firmware",
+          "url": "https://github.com/m5stack/Core2-for-AWS-IoT-Kit/tree/master/Factory-Firmware",
+          "checkedAt": "2026-10-26",
+          "status": "linked"
+        }
+      ],
+      "publisherGroup": "官方"
+    },
+    {
+      "id": "m5stack-k128-se-official-reference",
+      "name": "CoreS3-SE · K128-SE 官方出厂固件 · v0.6",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k128-se"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/fed93812db65b5347b706d1f237021b9.bin",
+        "sha256": "c6990a38bd3c42ab85ad77d377ebf47118b43a126c7623022e102f9f4d60063a"
+      },
+      "publicationUrl": "https://docs.m5stack.com/en/core/CoreS3-SE",
+      "version": "v0.6",
+      "compatibility": "unverified",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack CoreS3-SE · K128-SE official product documentation",
+          "url": "https://docs.m5stack.com/en/core/CoreS3-SE",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 5a2a93e0dc74bbb244708ea64d9631a4",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "publisherGroup": "官方",
+      "revision": "v0.6",
+      "watchlistId": "factory-5a2a93e0dc74bbb244708ea64d9631a4",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-cardputer-official",
+      "name": "Cardputer 官方 User Demo · v1.1",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-k132",
+        "m5stack-k132-v11"
+      ],
+      "status": "available",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/7c269fa466d3b5069e891ba6dce8fe8f.bin",
+        "sha256": "66576b6f670a2a1a75c181948aaadad89c4f1be61747acff8a5031187d043b27"
+      },
+      "publicationUrl": "https://github.com/m5stack/M5Cardputer-UserDemo",
+      "version": "v1.1",
+      "compatibility": "partial",
+      "limitations": [
+        "已验证官方 v1.1 的真实 ROM 启动、240×135 显示、Enter 与左右菜单操作；74HC138 键盘与 Adv 的 TCA8418 分开实现。",
+        "音频、SD、无线/HID、红外应用、电池与电源开关尚未完成适配；菜单存在不代表所有功能可用。",
+        "未做实体设备对照；3D 模型仍保留尺寸与照片对照偏差。",
+        "M5Burner 发布标识 v1.1；镜像内部 f0b37ae-dirty、ESP-IDF v4.4.6，不能声称可由公共提交精确重现。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack 官方 M5Burner 固件目录",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Cardputer 官方厂测源码",
+          "url": "https://github.com/m5stack/M5Cardputer-UserDemo",
+          "checkedAt": "2026-10-26"
+        }
+      ],
+      "watchlistId": "m5stack-cardputer-official",
+      "verification": {
+        "simulationVerified": true,
+        "hardwareValidated": false,
+        "evidence": "docs/platform/evidence/cardputer-original-official/README.md"
+      },
+      "publisherGroup": "官方"
+    },
+    {
+      "id": "m5stack-k152-official-factory",
+      "productIds": [
+        "m5stack-k152"
+      ],
+      "name": "Cardputer Mesh Kit 官方出厂固件 · v2.7.22",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/356178f5b7eff8f4114c462bf2203bd8.bin",
+        "sha256": "f8d4b6ec5783dc4be5814d2b37f170b99e39ff872140ea11d3322d67a145cac9"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v2.7.22",
+      "version": "v2.7.22",
+      "watchlistId": "factory-2108b3f2a532a5547eeaab4c60054de2",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Cardputer_Mesh_Kit",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack Cardputer Mesh Kit official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Cardputer_Mesh_Kit",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 2108b3f2a532a5547eeaab4c60054de2",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
         }
       ]
     },
     {
-      "id": "m5stack-c153-lite-crosspoint",
-      "name": "PaperMono-Lite CrossPoint E-Reader",
+      "id": "m5stack-c126-cam-official-factory",
       "productIds": [
-        "m5stack-c153-lite"
+        "m5stack-c126-cam"
       ],
-      "status": "reference",
-      "source": null,
-      "role": "third-party",
-      "publisher": "CrossPoint Reader contributors",
+      "name": "AtomS3R-CAM · C126-CAM 官方出厂固件 · v0.1",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/11e8034ac701333027baf3b01f46bb09.bin",
+        "sha256": "6dd3aea6d6764fe51efddcf8923204d24c9ba10b974f467b75ab9baea14ab84e"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v0.1",
+      "version": "v0.1",
+      "watchlistId": "factory-78b1ffce115a35308b558323d323778b",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/AtomS3R-CAM",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
       "sources": [
         {
-          "title": "PaperMono-Lite CrossPoint E-Reader — 官方产品页入口",
-          "url": "https://burner.m5stack.com/firmware/2091144466157694978/",
-          "checkedAt": "2026-10-26"
+          "title": "M5Stack AtomS3R-CAM · C126-CAM official product documentation",
+          "url": "https://docs.m5stack.com/en/core/AtomS3R-CAM",
+          "checkedAt": "2026-10-27"
         },
         {
-          "title": "PaperMono-Lite",
-          "url": "https://docs.m5stack.com/en/core/PaperMono-Lite",
-          "checkedAt": "2026-10-26"
+          "title": "Official M5Burner metadata; firmwareId 78b1ffce115a35308b558323d323778b",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-c126-m12-official-factory",
+      "productIds": [
+        "m5stack-c126-m12"
+      ],
+      "name": "AtomS3R-M12 官方出厂固件 · v0.1",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/1b10ef1ebf96562ab98113bec1f4158b.bin",
+        "sha256": "96b9acc65047e05dc1b37797896e8297691c3fbf2355eb035c5f8d2db15a0bd0"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v0.1",
+      "version": "v0.1",
+      "watchlistId": "factory-0facba8295ac5547acc9dbc8b326f447",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/AtomS3R-M12",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack AtomS3R-M12 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/AtomS3R-M12",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 0facba8295ac5547acc9dbc8b326f447",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-c008-official-factory",
+      "productIds": [
+        "m5stack-c008"
+      ],
+      "name": "Atom-Lite · C008 官方出厂固件 · v1.0",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/863975d5491b3e07aec72d90518afd6e.bin",
+        "sha256": "1c8fa292e31819c4a3ca36c714e93d08f7a8a58f16918f8fdf1df0210e546ce4"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v1.0",
+      "version": "v1.0",
+      "watchlistId": "factory-ad32239e5b8177b358b1488168e02b58",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Atom-Lite",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack Atom-Lite · C008 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Atom-Lite",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId ad32239e5b8177b358b1488168e02b58",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-c008-b-official-factory",
+      "productIds": [
+        "m5stack-c008-b"
+      ],
+      "name": "Atom-Matrix 官方出厂固件 · v1.0",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/100dd8d63b862f38d8c9c1b96a4706ce.bin",
+        "sha256": "24892fcf5d5f8c97ee30a5ffb4fec166dca1c254cc6f54861af28abc8732ba2f"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v1.0",
+      "version": "v1.0",
+      "watchlistId": "factory-c496984bd4f905e2fe45d2f3a7fe1cae",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Atom-Matrix",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack Atom-Matrix official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Atom-Matrix",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId c496984bd4f905e2fe45d2f3a7fe1cae",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k016-t2-official-factory",
+      "productIds": [
+        "m5stack-k016-t2"
+      ],
+      "name": "StickT2 官方出厂固件 · v1.0",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/8babd7ac4c0a36ae63b4d0127e2c2e63.bin",
+        "sha256": "bb33ffd41f9c6f9235b2fb44eac893b7ce6f70879f48eed9cb1ff75ef9419cd7"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v1.0",
+      "version": "v1.0",
+      "watchlistId": "factory-8f339a3d2b3a9bdb1b693eddecb756c1",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/StickT2",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "官方 StickT2 V1.0 原文件的 bootloader 附加摘要与 SPI mode=3 的头部不一致；仅将该字节改为 2 时与已存摘要匹配。保留原始下载和固定文件 hash，不自动改写；运行/实机兼容性未验证。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack StickT2 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/StickT2",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 8f339a3d2b3a9bdb1b693eddecb756c1",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "integrityNotes": {
+        "embeddedBootloaderDigest": "mismatch",
+        "evidence": "docs/platform/evidence/factory-firmware-catalog/strict-check-negative.json"
+      }
+    },
+    {
+      "id": "m5stack-k010-official-factory",
+      "productIds": [
+        "m5stack-k010"
+      ],
+      "name": "Core2 官方出厂固件 · v2.2",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/050cf382ce10e7ab39b6a7489a8531dc.bin",
+        "sha256": "4dbddb210d382ed3ca536fc07c962521b238c025016213c947fb4ff7a1bbd4ef"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v2.2",
+      "version": "v2.2",
+      "watchlistId": "factory-46ecde582ec690c2945c61870fa8af9f",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Core2",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack Core2 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Core2",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 46ecde582ec690c2945c61870fa8af9f",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k010-v11-official-factory",
+      "productIds": [
+        "m5stack-k010-v11"
+      ],
+      "name": "Core2 v1.1 官方出厂固件 · v2.2",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/050cf382ce10e7ab39b6a7489a8531dc.bin",
+        "sha256": "4dbddb210d382ed3ca536fc07c962521b238c025016213c947fb4ff7a1bbd4ef"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v2.2",
+      "version": "v2.2",
+      "watchlistId": "factory-46ecde582ec690c2945c61870fa8af9f",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Core2_v1.1",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack Core2 v1.1 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Core2_v1.1",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 46ecde582ec690c2945c61870fa8af9f",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k149-official-factory",
+      "productIds": [
+        "m5stack-k149"
+      ],
+      "name": "CoreS3 Thread BR 官方出厂固件 · v1.0",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/38d8476af0d7cc3a212f251df4c7bc57.bin",
+        "sha256": "1abb39eec2381bc6685fe352a12b39816d21b2b9b4f43eaf182ab0d3b4224c2f"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v1.0",
+      "version": "v1.0",
+      "watchlistId": "factory-0b0a084640694dc159305d082e4bac89",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/CoreS3_Thread_BR",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack CoreS3 Thread BR official product documentation",
+          "url": "https://docs.m5stack.com/en/core/CoreS3_Thread_BR",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 0b0a084640694dc159305d082e4bac89",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-c125-official-factory",
+      "productIds": [
+        "m5stack-c125"
+      ],
+      "name": "NanoC6 · C125 官方出厂固件 · v1.1",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/33240c7c06126409d439ef7ff7c41f3f.bin",
+        "sha256": "6ad2a3d3714b29ab9456f07d937e99065d2cb453afca2646d66325d6fc9c7178"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v1.1",
+      "version": "v1.1",
+      "watchlistId": "factory-0d0d044eae3b505164c4072658cfb62c",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/NanoC6",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack NanoC6 · C125 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/NanoC6",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 0d0d044eae3b505164c4072658cfb62c",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k151-official-factory",
+      "productIds": [
+        "m5stack-k151"
+      ],
+      "name": "StackChan 官方出厂固件 · V1.5.1",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/746f9662f48ac465cccf49bcad941414.bin",
+        "sha256": "411578a2ebca2cfe3541fdc32aeddbc4703cf912a5daa7e1253f69306d6e1d87"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "V1.5.1",
+      "version": "V1.5.1",
+      "watchlistId": "factory-a0873b3516e945f28d39a0870736a017",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/StackChan",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack StackChan official product documentation",
+          "url": "https://docs.m5stack.com/en/StackChan",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId a0873b3516e945f28d39a0870736a017",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k138-official-factory",
+      "productIds": [
+        "m5stack-k138"
+      ],
+      "name": "StampFly 官方出厂固件 · v1.1.0",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/f62f9d3a62b18d530e8a5a1281312aac.bin",
+        "sha256": "0138cc333d05790f8804fabae223f4c7eb40d162ad1d23d8c8daead6412d4359"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v1.1.0",
+      "version": "v1.1.0",
+      "watchlistId": "factory-8dfe576c365e8b6a4510f1cb4ffa7594",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/app/StampFly",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack StampFly official product documentation",
+          "url": "https://docs.m5stack.com/en/app/StampFly",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 8dfe576c365e8b6a4510f1cb4ffa7594",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k016-c-official-factory",
+      "productIds": [
+        "m5stack-k016-c"
+      ],
+      "name": "StickC · K016-C 官方出厂固件 · V0.0.1",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/691fd90c716a33efe43b85d61c8e89a4.bin",
+        "sha256": "8bd01902abdc0f0f6bfbf36a563de027d01cc9640e59c30756cc7315b06ccb03"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "V0.0.1",
+      "version": "V0.0.1",
+      "watchlistId": "factory-a02a71fc4c86f8dfa0bf73f928b3f44b",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/StickC",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack StickC · K016-C official product documentation",
+          "url": "https://docs.m5stack.com/en/core/StickC",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId a02a71fc4c86f8dfa0bf73f928b3f44b",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k001-official-factory",
+      "productIds": [
+        "m5stack-k001"
+      ],
+      "name": "Basic 官方出厂固件 · v0.4",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/151beb97001ecb71090320eb514d43c6.bin",
+        "sha256": "fe8fb0305384e6b4b5c4b8ff497bf12323a7f8ed68ef218966886e5ab85a1d05"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v0.4",
+      "version": "v0.4",
+      "watchlistId": "factory-55b2ee0f3f573f8f4a0b6043d22ffe4e",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Basic",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack Basic official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Basic",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 55b2ee0f3f573f8f4a0b6043d22ffe4e",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k001-v27-official-factory",
+      "productIds": [
+        "m5stack-k001-v27"
+      ],
+      "name": "Basic v2.7 官方出厂固件 · v0.4",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/151beb97001ecb71090320eb514d43c6.bin",
+        "sha256": "fe8fb0305384e6b4b5c4b8ff497bf12323a7f8ed68ef218966886e5ab85a1d05"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v0.4",
+      "version": "v0.4",
+      "watchlistId": "factory-55b2ee0f3f573f8f4a0b6043d22ffe4e",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Basic_v2.7",
+      "limitations": [
+        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack Basic v2.7 official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Basic_v2.7",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Official M5Burner metadata; firmwareId 55b2ee0f3f573f8f4a0b6043d22ffe4e",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k124-b-factory-reference",
+      "name": "Station-Bat 官方出厂恢复入口",
+      "productIds": [
+        "m5stack-k124-b"
+      ],
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/Station-Bat",
+      "sources": [
+        {
+          "title": "Download",
+          "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/EasyLoader/Windows/CORE/M5Staion.exe",
+          "checkedAt": "2026-10-27"
         }
       ],
       "limitations": [
-        "官方产品页明确提供此型号入口；尚未固定远程镜像版本/hash或验证浏览器运行，故不提供下载并运行。"
+        "已找到官方出厂源码或 EasyLoader 恢复入口，但本轮未定位并固定该型号可供浏览器直载的完整 BIN；不能把 EXE 当作固件运行。"
       ]
+    },
+    {
+      "id": "m5stack-k130-v11-factory-reference",
+      "name": "Dial v1.1 官方出厂恢复入口",
+      "productIds": [
+        "m5stack-k130-v11"
+      ],
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/Dial_v1.1",
+      "sources": [
+        {
+          "title": "download",
+          "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5Dial/M5dial%20Factory%20Demo.exe",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Dial v1.1 User Demo",
+          "url": "https://github.com/m5stack/M5Dial-UserDemo",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "download",
+          "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5Dial/M5dial%20Smart%20Home%20GUI.exe",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "已找到官方出厂源码或 EasyLoader 恢复入口，但本轮未定位并固定该型号可供浏览器直载的完整 BIN；不能把 EXE 当作固件运行。"
+      ]
+    },
+    {
+      "id": "m5stack-c124-factory-reference",
+      "name": "AtomS3-Lite 官方出厂恢复入口",
+      "productIds": [
+        "m5stack-c124"
+      ],
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/AtomS3-Lite",
+      "sources": [
+        {
+          "title": "download",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/471/AtomS3-Lite-Factory-Firmware.exe",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "已找到官方出厂源码或 EasyLoader 恢复入口，但本轮未定位并固定该型号可供浏览器直载的完整 BIN；不能把 EXE 当作固件运行。"
+      ]
+    },
+    {
+      "id": "m5stack-k007-v27-factory-reference",
+      "name": "FIRE v2.7 官方出厂恢复入口",
+      "productIds": [
+        "m5stack-k007-v27"
+      ],
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/Fire_v2.7",
+      "sources": [
+        {
+          "title": "download",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/656/Fire_Factory_Firmware.exe",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "已找到官方出厂源码或 EasyLoader 恢复入口，但本轮未定位并固定该型号可供浏览器直载的完整 BIN；不能把 EXE 当作固件运行。"
+      ]
+    },
+    {
+      "id": "m5stack-k006-v27-factory-reference",
+      "name": "M5GO IoT Kit v2.7 官方出厂恢复入口",
+      "productIds": [
+        "m5stack-k006-v27"
+      ],
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/M5GO_IoT_Kit_v2.7",
+      "sources": [
+        {
+          "title": "download",
+          "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/m5go_v2.7/M5GO%20IoT%20Starter%20Kit%20v2.7.exe",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "已找到官方出厂源码或 EasyLoader 恢复入口，但本轮未定位并固定该型号可供浏览器直载的完整 BIN；不能把 EXE 当作固件运行。"
+      ]
+    },
+    {
+      "id": "m5stack-k010-v13-factory-reference",
+      "name": "Core2 v1.3 官方出厂恢复入口",
+      "productIds": [
+        "m5stack-k010-v13"
+      ],
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/Core2_v1.3",
+      "sources": [
+        {
+          "title": "Download",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1231/Core2_Factory_FirmWare.exe",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "已找到官方出厂源码或 EasyLoader 恢复入口，但本轮未定位并固定该型号可供浏览器直载的完整 BIN；不能把 EXE 当作固件运行。"
+      ]
+    },
+    {
+      "id": "m5stack-k005-factory-reference",
+      "name": "Faces Kit 官方出厂恢复入口",
+      "productIds": [
+        "m5stack-k005"
+      ],
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/Faces_Kit",
+      "sources": [
+        {
+          "title": "GameBoy Arduino Test Program",
+          "url": "https://github.com/m5stack/FACES-Firmware/blob/master/GameBoy.ino",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "KeyBoard Arduino Test Program",
+          "url": "https://github.com/m5stack/FACES-Firmware/blob/master/KeyBoard.ino",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Calculator Arduino Test Program",
+          "url": "https://github.com/m5stack/FACES-Firmware/blob/master/Calculator.ino",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "download",
+          "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/EasyLoader/Windows/CORE/EasyLoader_FACES_FactoryTest.exe",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Click here to flash a sample game with one click",
+          "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/EasyLoader/M5Core/Faces_kit/Faces_GameBoy_BladeBuster.exe",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "已找到官方出厂源码或 EasyLoader 恢复入口，但本轮未定位并固定该型号可供浏览器直载的完整 BIN；不能把 EXE 当作固件运行。"
+      ]
+    },
+    {
+      "id": "papermono-crosspoint",
+      "name": "CrossPoint Reader · 1.5.0（M5Stack 适配版）",
+      "productIds": [
+        "m5stack-papermono"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/868fe0ed4ada7f4e3dcf7b39013f54a1.bin",
+        "sha256": "dc4787eb4a0fbb0145bd7069f187defe514dc9dbd5a126917d840618d1ea386f"
+      },
+      "limitations": [
+        "M5Stack 发布的 PaperMono / PaperMono-Lite 专用完整镜像，源项目为 MarsTechHAN/crosspoint-reader-mono；不同于通用项目的 1.6.5 app 镜像。",
+        "已核对 SHA-256、ESP32-S3 芯片、启动程序和分区表；尚未验证完整模拟行为，可尝试运行并查看串口结果。",
+        "远程下载并允许当前浏览器缓存；本站服务器不保留固件二进制。"
+      ],
+      "sources": [
+        {
+          "title": "M5Burner 官方目录 · fid 443b9911dec92e1b7a52ea9ad40f2757",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "PaperMono 适配源码",
+          "url": "https://github.com/MarsTechHAN/crosspoint-reader-mono",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "watchlistId": "crosspoint-reader",
+      "role": "third-party",
+      "publisher": "CrossPoint contributors / M5Stack distribution",
+      "revision": "1.5.0",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "publisherGroup": "官方"
+    },
+    {
+      "id": "papermono-uiflow2",
+      "name": "PaperMono UIFlow2 · v2.5.3",
+      "productIds": [
+        "m5stack-papermono"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/4f78f660c97149036ed9a19966775a83.bin",
+        "sha256": "f3da049b65b5a3899d3484594e3bede92a0928e5217fa260925951a777447b05"
+      },
+      "watchlistId": "papermono-uiflow2",
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "revision": "2.5.3",
+      "limitations": [
+        "M5Burner 官方 PaperMono v2.5.3 完整镜像；与同版本 GitHub 文件 hash 不同，独立记录此分发内容。",
+        "已核对芯片、启动程序、分区与 SHA-256；尚未验证模拟兼容性，可尝试运行，网络及缺失外设可能使部分功能不可用。"
+      ],
+      "sources": [
+        {
+          "title": "M5Stack UIFlow2 v2.5.3 release",
+          "url": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.3",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "M5Stack PaperMono official software links",
+          "url": "https://docs.m5stack.com/en/core/PaperMono",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "M5Burner 官方目录 · fid 99f8186afdcd3404618a3f80ef6abe22",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "simulationVerified": false,
+      "hardwareValidated": false
+    },
+    {
+      "id": "m5stack-c153-lite-crosspoint",
+      "name": "PaperMono-Lite CrossPoint Reader · 1.5.0",
+      "productIds": [
+        "m5stack-c153-lite"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/868fe0ed4ada7f4e3dcf7b39013f54a1.bin",
+        "sha256": "dc4787eb4a0fbb0145bd7069f187defe514dc9dbd5a126917d840618d1ea386f"
+      },
+      "role": "third-party",
+      "publisher": "CrossPoint contributors / M5Stack distribution",
+      "sources": [
+        {
+          "title": "M5Burner 官方目录 · fid 443b9911dec92e1b7a52ea9ad40f2757",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "PaperMono 适配源码",
+          "url": "https://github.com/MarsTechHAN/crosspoint-reader-mono",
+          "checkedAt": "2026-10-27"
+        }
+      ],
+      "limitations": [
+        "M5Stack 发布的 PaperMono / PaperMono-Lite 专用完整镜像，源项目为 MarsTechHAN/crosspoint-reader-mono；不同于通用项目的 1.6.5 app 镜像。",
+        "已核对 SHA-256、ESP32-S3 芯片、启动程序和分区表；尚未验证完整模拟行为，可尝试运行并查看串口结果。",
+        "远程下载并允许当前浏览器缓存；本站服务器不保留固件二进制。"
+      ],
+      "revision": "1.5.0",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "watchlistId": "crosspoint-reader",
+      "publisherGroup": "官方"
     },
     {
       "id": "m5stack-c153-lite-uiflow2-reference",
@@ -279,103 +2078,6 @@
       ]
     },
     {
-      "id": "m5stack-k159-b-factory-reference",
-      "name": "M5Stack PaperDIY Complete Kit · K159-B 官方出厂固件入口",
-      "productIds": [
-        "m5stack-k159-b"
-      ],
-      "status": "reference",
-      "source": null,
-      "role": "factory",
-      "publisher": "M5Stack",
-      "simulationVerified": false,
-      "hardwareValidated": false,
-      "sources": [
-        {
-          "title": "PaperDIY Factory Firmware Source Code",
-          "url": "https://github.com/m5stack/M5PaperDIY-UserDemo",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "PaperDIY Factory Firmware WebBurner",
-          "url": "https://burner.m5stack.com/share/firmware/UVVZ26",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方产品资料提供的固件入口；尚未核对固定镜像、分区、校验值及模拟运行兼容性。"
-      ]
-    },
-    {
-      "id": "m5stack-k123-factory-reference",
-      "name": "M5Stack Station-485 · K123 官方出厂固件入口",
-      "productIds": [
-        "m5stack-k123"
-      ],
-      "status": "reference",
-      "source": null,
-      "role": "factory",
-      "publisher": "M5Stack",
-      "simulationVerified": false,
-      "hardwareValidated": false,
-      "sources": [
-        {
-          "title": "Download",
-          "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/EasyLoader/Windows/CORE/M5Staion.exe",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方产品资料提供的固件入口；尚未核对固定镜像、分区、校验值及模拟运行兼容性。"
-      ]
-    },
-    {
-      "id": "m5stack-papermono-official",
-      "name": "PaperMono 官方 User Demo · 1.2.0",
-      "productIds": [
-        "m5stack-papermono",
-        "m5stack-c153-lite"
-      ],
-      "status": "available",
-      "source": {
-        "url": "https://m5burner-cdn.m5stack.com/firmware/376080df0d31b0026e9a67a75d02d571.bin",
-        "sha256": "72c290bc2ffa216041b276660277369bd17ecef92315e367d98bb2c96c8428fa"
-      },
-      "role": "factory",
-      "publisher": "M5Stack",
-      "simulationVerified": true,
-      "hardwareValidated": false,
-      "storage": "remote-links-only",
-      "sources": [
-        {
-          "title": "PaperMono 官方产品页：出厂固件与源码入口",
-          "url": "https://docs.m5stack.com/en/core/PaperMono",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "PaperMono Factory Reset Firmware",
-          "url": "https://burner.m5stack.com/firmware/2089640807996628993/",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "PaperMono Factory Firmware Source Code",
-          "url": "https://github.com/m5stack/M5PaperMono-UserDemo",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "M5Stack 官方完整镜像；从官方 CDN 直接加载，可缓存到当前浏览器，本站服务器与仓库不保存二进制。",
-        "已在官方 User Demo 1.2.0 验证 ROM 启动、480×800 墨水屏、A/B 调节亮度、触摸加亮与静音按钮切换。",
-        "SSD1677、FT6336G、M5PM1/M5IOE1 为所需寄存器子集；不代表任意固件或完整时序兼容。",
-        "未模拟 NFC，官方固件当前自行进入 Lite 界面；LoRa、microSD、Wi-Fi 网络、音频输出及深睡唤醒未验证。",
-        "RTC 目前仅寄存器存储，没有真实计时；BMI270 官方初始化尚未通过，不能据仪表盘默认数值认定传感器正常。",
-        "未连接真实硬件或执行刷机；实机行为仍需验证。"
-      ],
-      "revision": "1.2.0",
-      "sdk": "ESP-IDF 5.5.1",
-      "watchlistId": "m5stack-papermono-official"
-    },
-    {
       "id": "m5stack-s007-pin127-uiflow2-reference",
       "name": "Stamp-S3 PIN1.27 UiFlow2 Quick Start",
       "publisher": "M5Stack",
@@ -394,33 +2096,6 @@
         {
           "title": "Official product documentation",
           "url": "https://docs.m5stack.com/en/core/Stamp-S3_PIN1.27",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
-    },
-    {
-      "id": "m5stack-k049-b-factory-reference",
-      "name": "Paper v1.1 Arduino FactoryTest",
-      "publisher": "M5Stack",
-      "role": "factory",
-      "productIds": [
-        "m5stack-k049-b"
-      ],
-      "status": "reference",
-      "source": null,
-      "sources": [
-        {
-          "title": "Paper v1.1 Arduino FactoryTest",
-          "url": "https://github.com/m5stack/M5Paper_FactoryTest",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "Official product documentation",
-          "url": "https://docs.m5stack.com/en/core/Paper_v1.1",
           "checkedAt": "2026-10-26"
         }
       ],
@@ -497,33 +2172,6 @@
         {
           "title": "PaperS3 UiFlow2 Quick Start",
           "url": "https://docs.m5stack.com/en/uiflow2/m5papers3/program",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "Official product documentation",
-          "url": "https://docs.m5stack.com/en/core/PaperS3",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
-    },
-    {
-      "id": "m5stack-c139-factory-reference",
-      "name": "PaperS3 Factory Firmware",
-      "publisher": "M5Stack",
-      "role": "factory",
-      "productIds": [
-        "m5stack-c139"
-      ],
-      "status": "reference",
-      "source": null,
-      "sources": [
-        {
-          "title": "PaperS3 Factory Firmware",
-          "url": "https://github.com/m5stack/M5PaperS3-UserDemo",
           "checkedAt": "2026-10-26"
         },
         {
@@ -632,33 +2280,6 @@
         {
           "title": "Air Quality UiFlow2 Quick Start",
           "url": "https://docs.m5stack.com/en/uiflow2/airq/program",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "Official product documentation",
-          "url": "https://docs.m5stack.com/en/core/Air_Quality",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
-    },
-    {
-      "id": "m5stack-k131-factory-reference",
-      "name": "Air Quality Factory Firmware",
-      "publisher": "M5Stack",
-      "role": "factory",
-      "productIds": [
-        "m5stack-k131"
-      ],
-      "status": "reference",
-      "source": null,
-      "sources": [
-        {
-          "title": "Air Quality Factory Firmware",
-          "url": "https://github.com/m5stack/AirQUserDemo",
           "checkedAt": "2026-10-26"
         },
         {
@@ -808,33 +2429,6 @@
       ]
     },
     {
-      "id": "m5stack-c126-factory-reference",
-      "name": "AtomS3R Factory Firmware",
-      "publisher": "M5Stack",
-      "role": "factory",
-      "productIds": [
-        "m5stack-c126"
-      ],
-      "status": "reference",
-      "source": null,
-      "sources": [
-        {
-          "title": "AtomS3R Factory Firmware",
-          "url": "https://github.com/m5stack/M5AtomS3-UserDemo/tree/atoms3r",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "Official product documentation",
-          "url": "https://docs.m5stack.com/en/core/AtomS3R",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
-    },
-    {
       "id": "m5stack-c124-uiflow2-reference",
       "name": "AtomS3-Lite UiFlow2 Quick Start",
       "publisher": "M5Stack",
@@ -853,33 +2447,6 @@
         {
           "title": "Official product documentation",
           "url": "https://docs.m5stack.com/en/core/AtomS3-Lite",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
-    },
-    {
-      "id": "m5stack-c008-c-factory-reference",
-      "name": "Factory Bluetooth Speaker Firmware",
-      "publisher": "M5Stack",
-      "role": "factory",
-      "productIds": [
-        "m5stack-c008-c"
-      ],
-      "status": "reference",
-      "source": null,
-      "sources": [
-        {
-          "title": "Factory Bluetooth Speaker Firmware",
-          "url": "https://github.com/m5stack/M5-ProductExampleCodes/tree/master/Core/Atom/AtomEcho/Factory_BT_SPEAKER_Firmware",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "Official product documentation",
-          "url": "https://docs.m5stack.com/en/atom/Atom_Voice",
           "checkedAt": "2026-10-26"
         }
       ],
@@ -934,33 +2501,6 @@
         {
           "title": "Official product documentation",
           "url": "https://docs.m5stack.com/en/core/Tough",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
-    },
-    {
-      "id": "m5stack-k016-p-factory-reference",
-      "name": "StickC-Plus Factory Test Example",
-      "publisher": "M5Stack",
-      "role": "factory",
-      "productIds": [
-        "m5stack-k016-p"
-      ],
-      "status": "reference",
-      "source": null,
-      "sources": [
-        {
-          "title": "StickC-Plus Factory Test Example",
-          "url": "https://github.com/m5stack/M5StickC-Plus/tree/master/examples/FactoryTest",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "Official product documentation",
-          "url": "https://docs.m5stack.com/en/core/StickC-Plus",
           "checkedAt": "2026-10-26"
         }
       ],
@@ -1078,33 +2618,6 @@
       ]
     },
     {
-      "id": "m5stack-k010-aws-factory-reference",
-      "name": "Core2 For AWS ESP-IDF Factory Firmware",
-      "publisher": "M5Stack",
-      "role": "factory",
-      "productIds": [
-        "m5stack-k010-aws"
-      ],
-      "status": "reference",
-      "source": null,
-      "sources": [
-        {
-          "title": "Core2 For AWS ESP-IDF Factory Firmware",
-          "url": "https://github.com/m5stack/Core2-for-AWS-IoT-Kit/tree/master/Factory-Firmware",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "Official product documentation",
-          "url": "https://docs.m5stack.com/en/core/Core2_For_AWS",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
-    },
-    {
       "id": "m5stack-k006-v27-uiflow1-reference",
       "name": "M5GO UiFlow1 Quick Start",
       "publisher": "M5Stack",
@@ -1172,33 +2685,6 @@
         {
           "title": "CoreS3 UiFlow2 Quick Start",
           "url": "https://docs.m5stack.com/en/uiflow2/m5cores3/program",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "Official product documentation",
-          "url": "https://docs.m5stack.com/en/core/CoreS3",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
-    },
-    {
-      "id": "m5stack-k128-factory-reference",
-      "name": "CoreS3 Factory Firmware",
-      "publisher": "M5Stack",
-      "role": "factory",
-      "productIds": [
-        "m5stack-k128"
-      ],
-      "status": "reference",
-      "source": null,
-      "sources": [
-        {
-          "title": "CoreS3 Factory Firmware",
-          "url": "https://github.com/m5stack/CoreS3-UserDemo/tree/main/firmware",
           "checkedAt": "2026-10-26"
         },
         {
@@ -1375,33 +2861,6 @@
       ]
     },
     {
-      "id": "m5stack-k048-factory-reference",
-      "name": "CoreInk Factory Test",
-      "publisher": "M5Stack",
-      "role": "factory",
-      "productIds": [
-        "m5stack-k048"
-      ],
-      "status": "reference",
-      "source": null,
-      "sources": [
-        {
-          "title": "CoreInk Factory Test",
-          "url": "https://github.com/m5stack/M5Core-Ink/tree/master/examples/Basics/FactoryTest",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "Official product documentation",
-          "url": "https://docs.m5stack.com/en/core/CoreInk",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
-    },
-    {
       "id": "m5stack-k048-uiflow1-reference",
       "name": "CoreInk UiFlow1 Quick Start",
       "publisher": "M5Stack",
@@ -1456,33 +2915,6 @@
       ]
     },
     {
-      "id": "m5stack-k134-factory-reference",
-      "name": "DinMeter Factory Firmware",
-      "publisher": "M5Stack",
-      "role": "factory",
-      "productIds": [
-        "m5stack-k134"
-      ],
-      "status": "reference",
-      "source": null,
-      "sources": [
-        {
-          "title": "DinMeter Factory Firmware",
-          "url": "https://github.com/m5stack/M5DinMeter-UserDemo",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "Official product documentation",
-          "url": "https://docs.m5stack.com/en/core/DinMeter",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
-    },
-    {
       "id": "m5stack-k134-uiflow2-reference",
       "name": "DinMeter UiFlow2 Quick Start",
       "publisher": "M5Stack",
@@ -1510,56 +2942,6 @@
       ]
     },
     {
-      "id": "m5stack-k141-official-reference",
-      "name": "StamPLC Factory Firmware",
-      "role": "factory",
-      "publisher": "M5Stack",
-      "productIds": [
-        "m5stack-k141"
-      ],
-      "status": "reference",
-      "source": null,
-      "publicationUrl": "https://github.com/m5stack/M5StamPLC-UserDemo",
-      "version": null,
-      "compatibility": "unavailable",
-      "limitations": [
-        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
-      ],
-      "sources": [
-        {
-          "title": "StamPLC Factory Firmware",
-          "url": "https://github.com/m5stack/M5StamPLC-UserDemo",
-          "checkedAt": "2026-10-26",
-          "status": "linked"
-        }
-      ]
-    },
-    {
-      "id": "m5stack-c151-official-reference",
-      "name": "PaperColor Factory Firmware Source Code",
-      "role": "factory",
-      "publisher": "M5Stack",
-      "productIds": [
-        "m5stack-c151"
-      ],
-      "status": "reference",
-      "source": null,
-      "publicationUrl": "https://github.com/m5stack/M5PaperColor-UserDemo",
-      "version": null,
-      "compatibility": "unavailable",
-      "limitations": [
-        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
-      ],
-      "sources": [
-        {
-          "title": "PaperColor Factory Firmware Source Code",
-          "url": "https://github.com/m5stack/M5PaperColor-UserDemo",
-          "checkedAt": "2026-10-26",
-          "status": "linked"
-        }
-      ]
-    },
-    {
       "id": "m5stack-k005-official-examples-reference",
       "name": "M5Stack Faces Arduino examples",
       "role": "alternative",
@@ -1581,106 +2963,6 @@
           "url": "https://docs.m5stack.com/en/core/Faces_Kit",
           "checkedAt": "2026-10-26",
           "status": "fetched"
-        }
-      ]
-    },
-    {
-      "id": "m5stack-k134-v11-official-reference",
-      "name": "DinMeter v1.1 Factory Firmware",
-      "role": "factory",
-      "publisher": "M5Stack",
-      "productIds": [
-        "m5stack-k134-v11"
-      ],
-      "status": "reference",
-      "source": null,
-      "publicationUrl": "https://github.com/m5stack/M5DinMeter-UserDemo",
-      "version": null,
-      "compatibility": "unavailable",
-      "limitations": [
-        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
-      ],
-      "sources": [
-        {
-          "title": "DinMeter v1.1 Factory Firmware",
-          "url": "https://github.com/m5stack/M5DinMeter-UserDemo",
-          "checkedAt": "2026-10-26",
-          "status": "linked"
-        }
-      ]
-    },
-    {
-      "id": "m5stack-k130-official-reference",
-      "name": "Dial User Demo",
-      "role": "factory",
-      "publisher": "M5Stack",
-      "productIds": [
-        "m5stack-k130"
-      ],
-      "status": "reference",
-      "source": null,
-      "publicationUrl": "https://github.com/m5stack/M5Dial-UserDemo",
-      "version": null,
-      "compatibility": "unavailable",
-      "limitations": [
-        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
-      ],
-      "sources": [
-        {
-          "title": "Dial User Demo",
-          "url": "https://github.com/m5stack/M5Dial-UserDemo",
-          "checkedAt": "2026-10-26",
-          "status": "linked"
-        }
-      ]
-    },
-    {
-      "id": "m5stack-k136-official-reference",
-      "name": "VAMeter Factory Firmware",
-      "role": "factory",
-      "publisher": "M5Stack",
-      "productIds": [
-        "m5stack-k136"
-      ],
-      "status": "reference",
-      "source": null,
-      "publicationUrl": "https://github.com/m5stack/VAMeter-Firmware",
-      "version": null,
-      "compatibility": "unavailable",
-      "limitations": [
-        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
-      ],
-      "sources": [
-        {
-          "title": "VAMeter Factory Firmware",
-          "url": "https://github.com/m5stack/VAMeter-Firmware",
-          "checkedAt": "2026-10-26",
-          "status": "linked"
-        }
-      ]
-    },
-    {
-      "id": "m5stack-k128-lite-official-reference",
-      "name": "CoreS3-Lite Factory Firmware",
-      "role": "factory",
-      "publisher": "M5Stack",
-      "productIds": [
-        "m5stack-k128-lite"
-      ],
-      "status": "reference",
-      "source": null,
-      "publicationUrl": "https://github.com/m5stack/CoreS3-UserDemo/tree/main/firmware",
-      "version": null,
-      "compatibility": "unavailable",
-      "limitations": [
-        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
-      ],
-      "sources": [
-        {
-          "title": "CoreS3-Lite Factory Firmware",
-          "url": "https://github.com/m5stack/CoreS3-UserDemo/tree/main/firmware",
-          "checkedAt": "2026-10-26",
-          "status": "linked"
         }
       ]
     },
@@ -1901,33 +3183,6 @@
       ]
     },
     {
-      "id": "m5stack-c148-factory-reference",
-      "name": "PowerHub Factory Firmware Source Code",
-      "publisher": "M5Stack",
-      "role": "factory",
-      "productIds": [
-        "m5stack-c148"
-      ],
-      "status": "reference",
-      "source": null,
-      "sources": [
-        {
-          "title": "PowerHub Factory Firmware Source Code",
-          "url": "https://github.com/m5stack/M5PowerHub-UserDemo",
-          "checkedAt": "2026-10-26"
-        },
-        {
-          "title": "Official product documentation",
-          "url": "https://docs.m5stack.com/en/core/PowerHub",
-          "checkedAt": "2026-10-26"
-        }
-      ],
-      "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
-    },
-    {
       "id": "m5stack-c148-firmware-reference",
       "name": "PowerHub Internal Firmware",
       "publisher": "M5Stack",
@@ -2036,34 +3291,9 @@
       ]
     },
     {
-      "id": "m5stack-k146-official-reference",
-      "name": "Xiaozhi Card Kit Factory Firmware",
-      "role": "factory",
-      "publisher": "M5Stack",
-      "productIds": [
-        "m5stack-k146"
-      ],
-      "status": "reference",
-      "source": null,
-      "publicationUrl": "https://github.com/m5stack/xiaozhi-card",
-      "version": null,
-      "compatibility": "unavailable",
-      "limitations": [
-        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
-      ],
-      "sources": [
-        {
-          "title": "Xiaozhi Card Kit Factory Firmware",
-          "url": "https://github.com/m5stack/xiaozhi-card",
-          "checkedAt": "2026-10-26",
-          "status": "linked"
-        }
-      ]
-    },
-    {
       "id": "m5stack-s007-official-reference",
-      "name": "Stamp-S3 Arduino Demo",
-      "role": "factory",
+      "name": "Stamp-S3 官方 LED 源码示例",
+      "role": "alternative",
       "publisher": "M5Stack",
       "productIds": [
         "m5stack-s007"
@@ -2074,7 +3304,7 @@
       "version": null,
       "compatibility": "unavailable",
       "limitations": [
-        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
+        "官方 Arduino LED 示例；没有证据证明它是出厂固件，未找到固定完整出厂镜像。"
       ],
       "sources": [
         {
@@ -2086,146 +3316,111 @@
       ]
     },
     {
-      "id": "m5stack-k131-v11-official-reference",
-      "name": "Air Quality v1.1 Factory Firmware",
-      "role": "factory",
-      "publisher": "M5Stack",
+      "id": "m5stack-k132-adv-uiflow2",
+      "name": "Cardputer-Adv UIFlow2 · v2.5.3",
       "productIds": [
-        "m5stack-k131-v11"
+        "m5stack-k132-adv"
       ],
-      "status": "reference",
-      "source": null,
-      "publicationUrl": "https://github.com/m5stack/AirQUserDemo",
-      "version": null,
-      "compatibility": "unavailable",
-      "limitations": [
-        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
-      ],
-      "sources": [
-        {
-          "title": "Air Quality v1.1 Factory Firmware",
-          "url": "https://github.com/m5stack/AirQUserDemo",
-          "checkedAt": "2026-10-26",
-          "status": "linked"
-        }
-      ]
-    },
-    {
-      "id": "m5stack-c123-official-reference",
-      "name": "AtomS3 Factory Firmware",
-      "role": "factory",
-      "publisher": "M5Stack",
-      "productIds": [
-        "m5stack-c123"
-      ],
-      "status": "reference",
-      "source": null,
-      "publicationUrl": "https://github.com/m5stack/M5AtomS3-UserDemo",
-      "version": null,
-      "compatibility": "unavailable",
-      "limitations": [
-        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
-      ],
-      "sources": [
-        {
-          "title": "AtomS3 Factory Firmware",
-          "url": "https://github.com/m5stack/M5AtomS3-UserDemo",
-          "checkedAt": "2026-10-26",
-          "status": "linked"
-        }
-      ]
-    },
-    {
-      "id": "m5stack-k010-aws-v13-official-reference",
-      "name": "Core2 For AWS ESP-IDF Factory Firmware",
-      "role": "factory",
-      "publisher": "M5Stack",
-      "productIds": [
-        "m5stack-k010-aws-v13"
-      ],
-      "status": "reference",
-      "source": null,
-      "publicationUrl": "https://github.com/m5stack/Core2-for-AWS-IoT-Kit/tree/master/Factory-Firmware",
-      "version": null,
-      "compatibility": "unavailable",
-      "limitations": [
-        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
-      ],
-      "sources": [
-        {
-          "title": "Core2 For AWS ESP-IDF Factory Firmware",
-          "url": "https://github.com/m5stack/Core2-for-AWS-IoT-Kit/tree/master/Factory-Firmware",
-          "checkedAt": "2026-10-26",
-          "status": "linked"
-        }
-      ]
-    },
-    {
-      "id": "m5stack-k128-se-official-reference",
-      "name": "CoreS3-SE Factory Firmware (pio)",
-      "role": "factory",
-      "publisher": "M5Stack",
-      "productIds": [
-        "m5stack-k128-se"
-      ],
-      "status": "reference",
-      "source": null,
-      "publicationUrl": "https://github.com/m5stack/CoreS3-UserDemo",
-      "version": null,
-      "compatibility": "unavailable",
-      "limitations": [
-        "Official source/reference only. No pinned executable image, layout, checksum, browser CORS or board boot verified."
-      ],
-      "sources": [
-        {
-          "title": "CoreS3-SE Factory Firmware (pio)",
-          "url": "https://github.com/m5stack/CoreS3-UserDemo",
-          "checkedAt": "2026-10-26",
-          "status": "linked"
-        }
-      ]
-    },
-    {
-      "id": "m5stack-cardputer-official",
-      "name": "Cardputer 官方 User Demo · v1.1",
-      "role": "factory",
-      "publisher": "M5Stack",
-      "productIds": [
-        "m5stack-k132",
-        "m5stack-k132-v11"
-      ],
-      "status": "available",
+      "status": "trial",
       "source": {
-        "url": "https://m5burner-cdn.m5stack.com/firmware/7c269fa466d3b5069e891ba6dce8fe8f.bin",
-        "sha256": "66576b6f670a2a1a75c181948aaadad89c4f1be61747acff8a5031187d043b27"
+        "url": "https://m5burner-cdn.m5stack.com/firmware/175975e8730e1abccdd1fed154a65d4f.bin",
+        "sha256": "38b308769e35fe3393bde711e67d27403c32166cf62c10951c19d684fdb38631"
       },
-      "publicationUrl": "https://github.com/m5stack/M5Cardputer-UserDemo",
-      "version": "v1.1",
-      "compatibility": "partial",
+      "revision": "2.5.3",
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "watchlistId": "cardputer-adv-uiflow2",
       "limitations": [
-        "已验证官方 v1.1 的真实 ROM 启动、240×135 显示、Enter 与左右菜单操作；74HC138 键盘与 Adv 的 TCA8418 分开实现。",
-        "音频、SD、无线/HID、红外应用、电池与电源开关尚未完成适配；菜单存在不代表所有功能可用。",
-        "未做实体设备对照；3D 模型仍保留尺寸与照片对照偏差。",
-        "M5Burner 发布标识 v1.1；镜像内部 f0b37ae-dirty、ESP-IDF v4.4.6，不能声称可由公共提交精确重现。"
+        "M5Burner 官方 Cardputer-Adv v2.5.3 完整镜像；已核对芯片、分区与 SHA-256，可尝试运行。",
+        "尚未验证模拟兼容性，网络及缺失外设可能使部分功能不可用。"
       ],
       "sources": [
         {
-          "title": "M5Stack 官方 M5Burner 固件目录",
+          "title": "M5Burner 官方目录 · fid 47585dfa97e54aa061ec636a82a4f1aa",
           "url": "https://m5burner-api.m5stack.com/api/firmware",
-          "checkedAt": "2026-10-26"
+          "checkedAt": "2026-10-27"
+        }
+      ]
+    },
+    {
+      "id": "papermono-crosspoint-1-6-5",
+      "name": "CrossPoint Reader · 1.6.5（实验直启）",
+      "productIds": [
+        "m5stack-papermono",
+        "m5stack-c153-lite"
+      ],
+      "status": "trial",
+      "source": {
+        "manifestUrl": "./firmware-plans/papermono-crosspoint-1-6-5.json",
+        "sha256": "7064c5259d616b35ff370dfbffcf65a09665f4c5ad28e011d2f4080807d9ecd1"
+      },
+      "role": "third-party",
+      "publisher": "CrossPoint contributors",
+      "publisherGroup": "CrossPoint",
+      "revision": "1.6.5",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://github.com/crosspoint-reader/crosspoint-reader/releases/tag/1.6.5",
+      "limitations": [
+        "官方 Web Flasher 为 PaperMono 提供的 app-only 镜像；固定 SHA-256，地址内容变更时拒绝使用。",
+        "实验直启跳过 ROM 启动、bootloader 和分区初始化，不是完整 merged 镜像；可能缺少分区或初始化数据而无法进入系统，尚未执行验证。",
+        "仅供模拟尝试，不能通过此清单一键刷写硬件；实机使用 CrossPoint 官方安装器。"
+      ],
+      "sources": [
+        {
+          "title": "CrossPoint PaperMono web flasher",
+          "url": "https://crosspointreader.com/",
+          "checkedAt": "2026-10-27"
         },
         {
-          "title": "Cardputer 官方厂测源码",
-          "url": "https://github.com/m5stack/M5Cardputer-UserDemo",
-          "checkedAt": "2026-10-26"
+          "title": "CrossPoint 1.6.5 release",
+          "url": "https://github.com/crosspoint-reader/crosspoint-reader/releases/tag/1.6.5",
+          "checkedAt": "2026-10-27"
         }
       ],
-      "watchlistId": "m5stack-cardputer-official",
-      "verification": {
-        "simulationVerified": true,
-        "hardwareValidated": false,
-        "evidence": "docs/platform/evidence/cardputer-original-official/README.md"
-      }
+      "watchlistId": "crosspoint-reader-upstream"
+    },
+    {
+      "id": "papermono-crosspoint-2-0-0rc",
+      "name": "CrossPoint Reader · 2.0.0rc（实验直启）",
+      "productIds": [
+        "m5stack-papermono",
+        "m5stack-c153-lite"
+      ],
+      "status": "trial",
+      "source": {
+        "manifestUrl": "./firmware-plans/papermono-crosspoint-2-0-0rc.json",
+        "sha256": "708f0bb3a9fa652d228b04729a556ac71a5f96f72150017f663415eeb01747cf"
+      },
+      "role": "third-party",
+      "publisher": "CrossPoint contributors",
+      "publisherGroup": "CrossPoint",
+      "revision": "2.0.0rc",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://github.com/crosspoint-reader/crosspoint-reader/releases/tag/2.0.0rc",
+      "limitations": [
+        "官方 Web Flasher 为 PaperMono 提供的 app-only 镜像；固定 SHA-256，地址内容变更时拒绝使用。",
+        "实验直启跳过 ROM 启动、bootloader 和分区初始化，不是完整 merged 镜像；可能缺少分区或初始化数据而无法进入系统，尚未执行验证。",
+        "仅供模拟尝试，不能通过此清单一键刷写硬件；实机使用 CrossPoint 官方安装器。",
+        "RC 固定版本暂不自动跟踪；当前 watchlist 的 GitHub latest 只用于稳定版，不能拿稳定版结果覆盖 RC。"
+      ],
+      "sources": [
+        {
+          "title": "CrossPoint PaperMono web flasher",
+          "url": "https://crosspointreader.com/",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "CrossPoint 2.0.0rc release",
+          "url": "https://github.com/crosspoint-reader/crosspoint-reader/releases/tag/2.0.0rc",
+          "checkedAt": "2026-10-27"
+        }
+      ]
     }
   ]
 }
