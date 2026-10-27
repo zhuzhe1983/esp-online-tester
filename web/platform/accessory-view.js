@@ -1,3 +1,4 @@
+import {UNIT_BUTTON_ID,unitButtonControl} from './accessory-routing.js';
 import * as THREE from './vendor/three.module.min.js';
 import {createGpsUnitModel} from './gps-model.js';
 import {createManufacturerModel} from './manufacturer-model.js';
@@ -21,7 +22,11 @@ export function createIllustrativeAccessory(definition, index = 0) {
     const model = createManufacturerModel({id: definition.id, model: {url: definition.visual.modelUrl}});
     model.group.name = `accessory:${definition.instanceId || definition.id || index}`;
     model.group.position.set(64 + index * 36, -9 - index * 5, 0); model.group.rotation.z = -Math.PI / 4;
-    return {...model, get connector() { return model.connectors.grove || null; }};
+    const ready=model.ready.then(value=>{if(definition.id===UNIT_BUTTON_ID)for(const mesh of model.buttons){
+      if(definition.physicalButtonSupported && definition.connected!==false){mesh.userData.control=unitButtonControl(definition.instanceId);}
+      else {delete mesh.userData.control;mesh.userData.unsupported=definition.connected===false?'配件已拔出，请先连接。':'Unit Button 仅支持 StopWatch Port A 的物理接线。';}
+    }return value;});
+    return {...model, ready, get connector() { return model.connectors.grove || null; }};
   }
   const group = new THREE.Group(); group.name = `accessory:${definition.instanceId || definition.id || index}`;
   group.userData.description = 'GPS/配件为示意外观；逻辑 UART 输入不模拟物理接线、供电或波特率。';

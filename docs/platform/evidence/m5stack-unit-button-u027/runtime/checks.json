@@ -1,0 +1,113 @@
+{
+  "checkedAt": "2026-10-27T07:28:15Z",
+  "base": "7d03d2409912516030412d715454da8dd8e4bc93",
+  "rust": "rustc 1.99.1 (stable updated)",
+  "checks": [
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "passedTests": 1361,
+      "failedTests": 0,
+      "ignoredTests": 0,
+      "goldensChanged": false
+    },
+    {
+      "command": "cargo build --release --bins",
+      "result": "pass"
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "pass",
+      "wasmSha256": "5c46de12a590cc75062af0409b7ef9009a849844c7a08281bf3933878312b5f2"
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "result": "pass",
+      "nodeTestUnits": 60
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "pass",
+      "products": 83,
+      "accessories": 5,
+      "firmwares": 106,
+      "watchlist": 44
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "result": "pass",
+      "manifests": 11
+    },
+    {
+      "command": "node tools/probe-unit-button.mjs --build output/unit-button-build",
+      "result": "pass",
+      "receipt": "fixture.json"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> node tools/platform-recording-test.mjs --real --receipt <output.json>",
+      "result": "pass",
+      "eventCount": 18,
+      "frameComparison": "different",
+      "note": "Actual buttons, tap and both trajectories consumed; host-timed replay is not cycle-exact and framebuffer equality is not required. This run reported different frames."
+    },
+    {
+      "command": "Headless Playwright wrapper: studio + embed.html",
+      "result": "pass",
+      "receipt": "browser.json",
+      "browserConsole": {
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    {
+      "command": "python tools/rebuild-unit-library.py m5stack-unit-button-u027 --scratch output/unit-button-model",
+      "result": "pass",
+      "receipt": "model-rebuild.json"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass",
+      "trackedFiles": 2122,
+      "compressedFiles": 20,
+      "note": "Checker scans docs/evidence only; new docs/platform evidence and screenshots also manually reviewed, with no personal paths, hostnames or process inventories retained."
+    },
+    {
+      "command": "Five alternating /usr/bin/time -p samples per build per workload; one C6 seven-pair reverse-order repeat",
+      "result": "instruction/output contract pass; C6 CPU regression flag",
+      "receipt": "cpu.json",
+      "repeatReceipt": "cpu-c6-repeat.json",
+      "note": "C6 +1.30% and +2.48%; cause not established. No assertion of unchanged CPU cost."
+    }
+  ],
+  "negativeAttempts": [
+    {
+      "check": "First host Clippy",
+      "cause": "Existing test initializer required the new M5pm1State field; updated it and reran successfully."
+    },
+    {
+      "check": "Initial actual-WASM probe",
+      "cause": "Pause/resume assertion matched old serial before a new held input; corrected to fresh serial offsets and reran successfully."
+    },
+    {
+      "check": "Catalog invocation",
+      "cause": "Wrong Node entrypoint, then system Python lacked jsonschema. The existing model virtualenv ran the actual Python catalog validator successfully."
+    },
+    {
+      "check": "Initial native CPU comparison",
+      "cause": "cargo test --release --workspace and cargo build --release --bins produced different candidate hashes. Superseded samples remain in cpu-initial.json; final gate rebuilds both with the same --bins command."
+    }
+  ],
+  "limitations": [
+    "No hardware validation or full official firmware compatibility sweep.",
+    "Browser/source-built fixture has no display renderer; black screen is expected.",
+    "Only U027 V1.0 on StopWatch Port A enabled; no general electrical graph or analog timing claim."
+  ]
+}

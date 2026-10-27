@@ -8,8 +8,8 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-27T00:08:52Z",
-  "hardwareRevision": "U027; manufacturer page does not identify hardware revision",
+  "updatedAt": "2026-10-27T06:55:38Z",
+  "hardwareRevision": "U027; behavior follows official schematic V1.0 dated 2018-07-18",
   "identity": {
     "manufacturer": "M5Stack",
     "sku": "U027",
@@ -113,7 +113,7 @@
       "sourceIds": [
         "official-docs"
       ],
-      "notes": "颜色对应逻辑端子；背面照片由左到右为白/黄/红/黑，转换到模型正视为黑/红/黄/白。RGB 的串级原理图与表格见冲突记录。"
+      "notes": "颜色对应逻辑端子；背面照片由左到右为白/黄/红/黑，转换到模型正视为黑/红/黄/白。"
     },
     {
       "id": "mounting-holes",
@@ -181,9 +181,69 @@
         "photo-14"
       ],
       "notes": "白线为输出，按下为低电平；这是一项资料事实，目前尚未实现模块 GPIO 行为。"
+    },
+    {
+      "id": "button-network",
+      "label": "按钮与分压网络",
+      "value": {
+        "signal": "white / J1.1",
+        "nc": "yellow / J1.2",
+        "pullupOhm": 10000,
+        "pulldownOhm": 20000,
+        "capacitorFarad": 1e-07,
+        "pressed": "signal short to GND"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "button-v1-schematic"
+      ],
+      "group": "electrical"
+    },
+    {
+      "id": "host-grove-route",
+      "label": "StopWatch Port A 接线",
+      "value": {
+        "black": "GND",
+        "red": "GROVE_5V",
+        "yellow": "G10 (U027 NC)",
+        "white": "G11"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "stopwatch-runtime-docs",
+        "stopwatch-grove-schematic"
+      ],
+      "group": "electrical"
+    },
+    {
+      "id": "grove-power-control",
+      "label": "Grove 电源控制",
+      "value": {
+        "i2cAddress": "0x6e",
+        "register": "PWR_CFG 0x06",
+        "enableBit": 3,
+        "shutdownHoldRegister": "0x07",
+        "holdBit": 6
+      },
+      "basis": "official",
+      "sourceIds": [
+        "m5pm1-v19",
+        "stopwatch-grove-schematic"
+      ],
+      "group": "electrical"
     }
   ],
-  "revisions": [],
+  "revisions": [
+    {
+      "id": "schematic-v1-20180718",
+      "releaseDate": "2018-07-18",
+      "basis": "official",
+      "sourceIds": [
+        "button-v1-schematic"
+      ],
+      "changes": "原理图标注 V1.0；这是资料日期，不是所有在售硬件的版本确认。"
+    }
+  ],
   "sources": [
     {
       "id": "official-docs",
@@ -327,6 +387,71 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "url": "https://docs.m5stack.com/en/unit/Unit_Button",
+      "resolvedUrl": "https://docs.m5stack.com/en/unit/Unit_Button",
+      "mediaType": "text/html",
+      "fetchedAt": "2026-10-27T06:39:28Z",
+      "bytes": 132352,
+      "sha256": "d867ffb62e2edcb9048a5fc0dfbaf704143da320745db12bd559d3fe2ed18cfe",
+      "archiveName": "unit-button.html",
+      "id": "button-runtime-docs",
+      "title": "Unit Button 官方资料",
+      "kind": "product-page",
+      "status": "fetched"
+    },
+    {
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/804/U027_UNIT_BUTTON_SCHE.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/804/U027_UNIT_BUTTON_SCHE.pdf",
+      "mediaType": "application/pdf",
+      "fetchedAt": "2026-10-27T06:39:28Z",
+      "bytes": 97785,
+      "sha256": "36ca23cb05aca9250c308fc3a8540e7aa7e8f74b160c6c055ddb126d82f76c7f",
+      "archiveName": "unit-button-schematic.pdf",
+      "id": "button-v1-schematic",
+      "title": "Unit Button V1.0 原理图",
+      "kind": "datasheet",
+      "status": "fetched"
+    },
+    {
+      "url": "https://docs.m5stack.com/en/core/StopWatch",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/StopWatch",
+      "mediaType": "text/html",
+      "fetchedAt": "2026-10-27T06:39:28Z",
+      "bytes": 153626,
+      "sha256": "b6310dc498add1b38db0b512f47f9b8dcc8dfecaf0c879b263ec000bfbd855b2",
+      "archiveName": "stopwatch.html",
+      "id": "stopwatch-runtime-docs",
+      "title": "StopWatch 官方资料",
+      "kind": "product-page",
+      "status": "fetched"
+    },
+    {
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf",
+      "mediaType": "application/pdf",
+      "fetchedAt": "2026-10-27T06:39:28Z",
+      "bytes": 1480402,
+      "sha256": "8d4755c341f966a6191f9f16a7a45c558a99749a5e39a30d0513f86a5e10ef80",
+      "archiveName": "stopwatch-schematic.pdf",
+      "id": "stopwatch-grove-schematic",
+      "title": "StopWatch Grove 原理图",
+      "kind": "datasheet",
+      "status": "fetched"
+    },
+    {
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1207/M5PM1_Datasheet_EN.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1207/M5PM1_Datasheet_EN.pdf",
+      "mediaType": "application/pdf",
+      "fetchedAt": "2026-10-27T06:47:20Z",
+      "bytes": 814731,
+      "sha256": "c6daffd0ab89d8de50c0a19f35f94321bc6c9511ad017dd242a3e765d88a96b6",
+      "archiveName": "m5pm1.pdf",
+      "id": "m5pm1-v19",
+      "title": "M5PM1 v1.9 寄存器手册",
+      "kind": "datasheet",
+      "status": "fetched"
     }
   ],
   "assets": [
@@ -406,16 +531,6 @@
         "manufacturer-cad"
       ],
       "notes": "No complete populated PCB layout or Gerber verified in the audited files. A manufacturer mechanical board outline, when present, does not establish every component or copper trace. Unknown internals remain a neutral UNKNOWN placeholder."
-    },
-    {
-      "id": "runtime",
-      "label": "Behavior support",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "official-docs"
-      ],
-      "notes": "GPIO/ADC/SK6812 module behavior not implemented."
     }
   ],
   "collectionNotes": [
@@ -423,7 +538,7 @@
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
     "Model import does not establish CPU/board/peripheral firmware support.",
     "The official M5_Hardware product directory publishes shell STL only; searched files are recorded in the source audit. No PCB layout or Gerber was found there.",
-    "Current runtime support is visual-only, separately from these manufacturer facts.",
-    "A separate component datasheet was not linked by the audited product page; schematic and dimension-image links are retained."
+    "A separate component datasheet was not linked by the audited product page; schematic and dimension-image links are retained.",
+    "本次按官方V1.0原理图接入StopWatch Port A数字稳态模型；RC、电压容差和触点抖动未实现，未实机验证。运行证据见 docs/platform/unit-button-runtime.md。"
   ]
 }

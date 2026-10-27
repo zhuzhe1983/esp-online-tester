@@ -91,7 +91,7 @@ fn stopwatch_shutdown_is_observable_only_after_system_command() {
 #[test]
 fn reattaching_pmic_clears_shutdown_without_changing_host_inputs() {
     let state = Arc::new(Mutex::new(M5pm1State {
-        battery_mv: 4150, charging: true, power_off_requested: false, led_enabled: true,
+        battery_mv: 4150, charging: true, power_off_requested: false, led_enabled: true, grove_5v_enabled: false,
     }));
     let mut device = M5pm1::new(state.clone());
     write(&mut device, 0x0c, &[0xa1]);

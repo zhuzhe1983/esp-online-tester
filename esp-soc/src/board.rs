@@ -157,6 +157,9 @@ pub trait BoardModel {
     fn sd_card_slot(&self) -> Option<([u8; 6], bool)> { None }
     /// Physical card insertion switch, independent of the host controller's card detect signal.
     fn set_sd_card_present(&mut self, _present: bool) {}
+    /// Cold host input for a source-backed button unit on a board-owned physical connector.
+    /// Returns the routed pin and its digital drive; None drive disconnects it.
+    fn accessory_button_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _pressed: bool) -> Option<(u8, Option<bool>)> { None }
 }
 
 pub type Board = Box<dyn BoardModel>;

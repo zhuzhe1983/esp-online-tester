@@ -1,3 +1,4 @@
+import {unitButtonRoute,unitButtonControl} from './accessory-routing.js';
 import {MAX_FIRMWARE_FILE_BYTES} from './firmware-limits.js';
 import {isPressControl,controlInput,shouldCaptureMappedKey} from './control-input.js';
 import {loadCatalog, createDefaultScene, validateScene, encodeScene, decodeScene, createLocalAccessory, importLocalAccessory, exportLocalAccessory, saveLocalAccessory, listLocalAccessories, removeLocalAccessory, firmwareSourceMatches} from './catalog.js';
@@ -20,6 +21,7 @@ import {lookupIpLocation, IP_LOCATION_PROVIDER} from './ip-geolocation.js';
 const $ = id => document.getElementById(id);
 const clone = value => structuredClone(value);
 const embedded = document.body.dataset.mode === 'embed';
+let accessoryInputState = [];
 let catalog, scene, runtime, sceneView, humanButtons, api, detachBridge, localDefinitions = [], status = 'idle', firmwareTab = 'library';
 let busy = false, frameCount = 0, renderedProduct = '', renderedScene = '', recordingControl = null, toastTimer, localFile = null, editingAccessoryId = null, uiConfiguring = false;
 let transportUi, knowledgePanel, firmwareUpdates, recordingDocument = null, recordingState = {status: 'idle'};
@@ -165,8 +167,11 @@ async function selectLocalFiles(incoming, {replace=false}={}) {
 }
 
 function onRuntimeEvent(event) {
+  if(event.type==='accessories'){accessoryInputState=event.accessoryInputs;renderAccessories();}
+
   if (event.type === 'state') {
     const previousStatus = status; status = event.state.status;
+    accessoryInputState=event.state.accessoryInputs || [];
     if (['configured', 'loading', 'error', 'disposed'].includes(status)) humanButtons?.invalidate();
     else if (status === 'paused') humanButtons?.suspend();
     else if (status === 'running' && previousStatus === 'paused') void humanButtons?.releaseAll();
@@ -529,7 +534,7 @@ function renderAccessories() {
   renderAccessoryChoices();
   text('accessory-count', String(scene.accessories.length));
   if ($('clear-accessories')) $('clear-accessories').disabled=!scene.accessories.length;
-  sceneView?.setAccessories(scene.accessories.map(item => { const value = definition(item.catalogId); return value && {...value, instanceId: item.id, wiring: item.wiring}; }).filter(Boolean));
+  sceneView?.setAccessories(scene.accessories.map(item => { const value = definition(item.catalogId); return value && {...value, instanceId: item.id, wiring: item.wiring, physicalButtonSupported:!!unitButtonRoute(product(),item,value), connected:accessoryInputState.find(state=>state.accessoryId===item.id)?.connected ?? true}; }).filter(Boolean));
   if (embedded && !$('accessory-list')) {
     const details = element('details', 'embed-accessories'); details.id = 'embed-accessories';
     const summary = element('summary', '', '配件与 GPS 数据'), content = element('div'); content.id = 'accessory-list'; details.append(summary, content); $('session-tools-mount').after(details);
@@ -540,13 +545,14 @@ function renderAccessories() {
   if (!scene.accessories.length) list.append(element('p', 'empty-list', '连接 GPS、传感器，或设计自己的配件。'));
   for (const instance of scene.accessories) {
     const item = definition(instance.catalogId); if (!item) continue;
+    const route=unitButtonRoute(product(),instance,item);
     const card = element('article', 'accessory-card');
     const heading = element('div', 'accessory-card-header'), identity = element('div');
-    identity.append(element('h3', '', item.name), element('span', 'small-label', item.model.id === 'uart-nmea' ? `${item.controller || 'NMEA'} · ${instance.parameters.baudRate || item.parameters.baudRate} baud · 逻辑 UART1` : `${item.visual?.modelUrl ? '3D 外观与接线资料' : '仅元信息'} · 行为模型未实现`));
+    identity.append(element('h3', '', item.name), element('span', 'small-label', route ? '物理 GPIO · StopWatch Port A · 白线 G11' : item.model.id === 'uart-nmea' ? `${item.controller || 'NMEA'} · ${instance.parameters.baudRate || item.parameters.baudRate} baud · 逻辑 UART1` : `${item.visual?.modelUrl ? '3D 外观与接线资料' : '仅元信息'} · 行为模型未实现`));
     const remove = element('button', 'icon-button', '×'); remove.setAttribute('aria-label', `移除 ${item.name}`);
     remove.addEventListener('click', () => action(async () => { const next = clone(scene); next.accessories = next.accessories.filter(other => other.id !== instance.id); pruneDefinitions(next); await configure(next); }));
     heading.append(identity, remove); card.append(heading);
-    card.append(element('p', 'helper', item.model.id === 'uart-nmea' ? '向 UART1 注入 NMEA 数据；未模拟物理接线、供电或无线信号。' : '此配件可导出和分享；不会自动执行电路或协议行为。'));
+    card.append(element('p', 'helper', route ? '需固件开启 Grove 5V；按下为低电平，释放电平由供电决定。' : item.model.id === 'uart-nmea' ? '向 UART1 注入 NMEA 数据；未模拟物理接线、供电或无线信号。' : '此配件可导出和分享；不会自动执行电路或协议行为。'));
     const details = element('details'); details.append(element('summary', '', '接线与参数'));
     const wiring = element('textarea'); wiring.rows = 3; wiring.value = JSON.stringify(instance.wiring, null, 2); wiring.setAttribute('aria-label', `${item.name} 接线 JSON`);
     const parameters = element('textarea'); parameters.rows = 3; parameters.value = JSON.stringify(instance.parameters, null, 2); parameters.setAttribute('aria-label', `${item.name} 参数 JSON`);
@@ -555,6 +561,15 @@ function renderAccessories() {
     save.addEventListener('click', () => action(async () => { const next = clone(scene), current = next.accessories.find(other => other.id === instance.id); current.wiring = JSON.parse(wiring.value); current.parameters = JSON.parse(parameters.value); await configure(next); toast('接线与参数已保存，需重新启动固件。'); }));
     details.append(save); card.append(details);
     if (item.model.id === 'uart-nmea') card.append(createGpsControls(instance, item));
+    if(route) {
+      const state=accessoryInputState.find(value=>value.accessoryId===instance.id),connected=state?.connected!==false;
+      const press=element('button','button device-button','按住 Unit Button');press.dataset.control=unitButtonControl(instance.id);press.disabled=!connected;
+      press.addEventListener('pointerdown',event=>{if(event.button!==0)return;event.preventDefault();press.setPointerCapture(event.pointerId);void sendInput({type:'button',id:press.dataset.control,pressed:true},`unit:${event.pointerId}`);});
+      for(const type of ['pointerup','pointercancel','lostpointercapture'])press.addEventListener(type,event=>void sendInput({type:'button',id:press.dataset.control,pressed:false},`unit:${event.pointerId}`));
+      press.addEventListener('click',event=>{if(event.detail===0){void sendInput({type:'button',id:press.dataset.control,pressed:true},'unit-activation');void sendInput({type:'button',id:press.dataset.control,pressed:false},'unit-activation');}});
+      const toggle=element('button','button secondary',connected?'拔出配件':'连接配件');toggle.addEventListener('click',()=>action(async()=>{await releaseHumanInputs();await api.input({type:'accessory-connection',accessoryId:instance.id,connected:!connected});}));
+      card.append(press,toggle);
+    }
     list.append(card);
   }
 }
@@ -628,7 +643,7 @@ function pruneDefinitions(next) { if (next.localAccessories) next.localAccessori
 async function addAccessory(id) {
   const item = allDefinitions().find(entry => entry.id === id); if (!item) throw new Error('请先选择配件。');
   const next = clone(scene);
-  next.accessories.push({id: `accessory-${Date.now().toString(36)}`, catalogId: id, parameters: clone(item.parameters || {}), wiring: item.model.id === 'uart-nmea' ? {mode: 'logical', port: 'uart1'} : {mode: 'visual'}});
+  next.accessories.push({id: `accessory-${Date.now().toString(36)}`, catalogId: id, parameters: clone(item.parameters || {}), wiring: item.model.id === 'uart-nmea' ? {mode: 'logical', port: 'uart1'} : unitButtonRoute(product(),{wiring:{mode:'physical',interfaceId:'grove'}},item) ? {mode:'physical',interfaceId:'grove'} : {mode: 'visual'}});
   if (id.startsWith('local:') && !next.localAccessories?.some(entry => entry.id === id)) { next.localAccessories ||= []; next.localAccessories.push(clone(item)); }
   await configure(next); toast('配件已加入场景，启动时应用配置。');
 }

@@ -1,3 +1,4 @@
+import {unitButtonRoute} from './accessory-routing.js';
 import {isPressControl} from './control-input.js';
 // Static catalog and portable scene contract. No application server is required.
 import {isShellFinish} from './appearance.js';
@@ -165,14 +166,18 @@ export function validateScene(scene, catalog) {
       validateParameters(accessory.parameters, `${path}/parameters`, errors);
       if (!record(accessory.wiring)) { errors.push(issue('WIRING', `${path}/wiring`, 'Declare logical or physical wiring.')); continue; }
       const wiring = accessory.wiring;
-      allowedKeys(wiring, ['mode', 'port', 'connectorId', 'rx', 'tx'], `${path}/wiring`, errors);
+      allowedKeys(wiring, ['mode', 'port', 'connectorId', 'rx', 'tx', 'interfaceId'], `${path}/wiring`, errors);
       if (wiring.mode === 'logical') {
         if (wiring.port !== 'uart1') errors.push(issue('UART_PORT', `${path}/wiring/port`, 'Logical accessory input currently supports UART1 only.'));
-        if (wiring.connectorId !== undefined || wiring.rx !== undefined || wiring.tx !== undefined) errors.push(issue('LOGICAL_WIRING', `${path}/wiring`, 'Logical UART input does not declare physical pins.'));
+        if (wiring.interfaceId !== undefined || wiring.connectorId !== undefined || wiring.rx !== undefined || wiring.tx !== undefined) errors.push(issue('LOGICAL_WIRING', `${path}/wiring`, 'Logical UART input does not declare physical pins.'));
         warnings.push(issue('LOGICAL_UART', `${path}/wiring`, 'Logical UART injection bypasses GPIO routing, baud timing and external power. It does not verify physical wiring.'));
       } else if (wiring.mode === 'visual') {
         if (Object.keys(wiring).some(key => key !== 'mode')) errors.push(issue('VISUAL_WIRING', `${path}/wiring`, 'Visual placement does not declare electrical routing.'));
         warnings.push(issue('VISUAL_ACCESSORY', `${path}/wiring`, 'The accessory is shown in 3D; no electrical or peripheral behavior is connected.'));
+      } else if (wiring.mode === 'physical' && (wiring.interfaceId !== undefined || definition?.model.id === 'gpio-button-u027')) {
+        const route=unitButtonRoute(product,accessory,definition);
+        if(Object.keys(wiring).some(key=>!['mode','interfaceId'].includes(key)) || !route) errors.push(issue('ACCESSORY_ROUTE',`${path}/wiring`,'Unit Button currently supports only StopWatch Port A, with interfaceId grove.'));
+        if(route){if(usedPins.has(route.pin))errors.push(issue('PIN_CONFLICT',`${path}/wiring`,'A physical GPIO is assigned more than once.'));usedPins.add(route.pin);}
       } else if (wiring.mode === 'physical') {
         const connector = product?.interfaces.find(item => item.id === wiring.connectorId && item.external === true);
         if (!connector) errors.push(issue('CONNECTOR', `${path}/wiring/connectorId`, 'Connector is not in this product’s verified pin map.'));

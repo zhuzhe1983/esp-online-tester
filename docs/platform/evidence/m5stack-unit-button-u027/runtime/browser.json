@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-10-27T07:17:29Z",
+  "browser": "Headless Chromium via tracked Playwright wrapper",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "input": "local source-built ESP-IDF 5.5.1 fixture from tools/fixtures/unit-button-firmware",
+  "studio": {
+    "拔出配件": {
+      "serial": "U027_READ G11=0 G10=1\r\n",
+      "connected": false
+    },
+    "连接配件": {
+      "serial": "U027_READ G11=1 G10=1\r\n",
+      "connected": true
+    },
+    "panel2d": {
+      "serial": "U027_READ G11=0 G10=1\r\nU027_READ G11=1 G10=1\r\n"
+    },
+    "model3d": {
+      "serial": "U027_READ G11=0 G10=1\r\nU027_READ G11=1 G10=1\r\n",
+      "hover": "button"
+    }
+  },
+  "mini": {
+    "serial": "U027_READ G11=0 G10=1\r\nU027_READ G11=1 G10=1\r\n",
+    "mode": "embed",
+    "route": "StopWatch Port A white G11"
+  },
+  "scope": [
+    "3D cap ray hit + guest pressed/released G11",
+    "2D accessory panel + guest pressed/released G11",
+    "UI unplug/reconnect + guest pull-down and powered release",
+    "Standalone mini scene URL restored physical route; local build files supplied via documented API; panel input consumed by guest"
+  ],
+  "negativeAttempts": [
+    "An early browser wait used an async waitForFunction predicate and captured stale state; replaced by explicit awaited observation polling and fresh serial offsets. Those early observations are excluded.",
+    "A first 2D-to-3D hover assertion ran before model loading; the final check waits for the actual cap ray hit."
+  ],
+  "cleanup": "Task browser session closed and wrapper list showed no open task sessions.",
+  "screenshots": {
+    "studio.png": "bc722c9f4734fc527177dadaa3b7eeac88a576f1f6d3abde46265438a9f440ee",
+    "hover.png": "16b926f00ef83ec90f364b3c6bd0d500b4a09873bd339f1ed3f1c53bec324dd9",
+    "mini.png": "d0f47441c9f0f9fe8839b240c860572f455a390459471fcc92f20597c5503420"
+  }
+}

@@ -21,7 +21,7 @@ The platform page installs `window.espTester`. Await its presence before use. Ru
 | `press(id,{durationMs=100}={})` | Presses then releases a button using host wall time (0–10000 ms), not cycle-exact guest time. |
 | `injectGps(options)` | Constructs RMC/GGA sentences with checksums and queues them on logical UART1. Requires an attached `uart-nmea` accessory, logical UART1 wiring and StopWatch. |
 | `setImu({quaternion,angularVelocityDps?,source='agent',enabled?})` | Sets a virtual sensor sample on boards reporting IMU capability. Quaternion is `[x,y,z,w]`; explicit angular velocity is degrees/second. Returns the sample and, with a loaded worker, its register-delivery receipt. See the axis limitations below. |
-| `observe()` | Returns `{version,status,scene,product,firmware,serial,serialByPort,stats,frame,storage,sdCard,leds,imu,lastError}`. Each serial string retains its last 65,536 JavaScript string code units; this is not an unbounded event log. |
+| `observe()` | Returns `{version,status,scene,product,firmware,serial,serialByPort,stats,frame,storage,sdCard,leds,imu,accessoryInputs,lastError}`. Each serial string retains its last 65,536 JavaScript string code units; this is not an unbounded event log. |
 | `capabilities()` | Reports actual product inputs, backend, firmware limits and unsupported features. |
 | `capture({format='png'}={})` | Real framebuffer: PNG `{dataUrl,width,height,frameNumber}` or RGBA `{pixels,width,height,frameNumber}`. Rejects `NO_FRAME` before a frame exists. |
 | `waitFor({status?,serialIncludes?,port?,fromNow=false,timeoutMs=10000})` | Waits for state and/or serial substring; at least one condition required. Timeout 0–120000 ms. `fromNow:true` ignores old buffered serial. |
@@ -32,17 +32,23 @@ The platform page installs `window.espTester`. Await its presence before use. Ru
 | `recordingTakeOver()` | Cancels preparing/playback (including a pending download) and releases held inputs. If recording, stops it. |
 | `recordingClear()` | Cancels/releases an active operation, then clears the retained recording and receipt for both UI and automation sharing. |
 | `recordingObserve()` | Returns `{status,recording,progress,receipt,error}`; progress contains `{index,total,elapsedGuestSeconds}`. |
-| `subscribe(listener)` | Synchronous subscription; returns an unsubscribe function. Events include `state`, `serial`, `frame`, `stats`, `board`, `error`, acknowledged `input`, `{type:'recording',state}`, `{type:'storage',storage}`, `{type:'sd-card',sdCard}`, and `{type:'leds',leds}`. |
+| `subscribe(listener)` | Synchronous subscription; returns an unsubscribe function. Events include `state`, `serial`, `frame`, `stats`, `board`, `error`, acknowledged `input`, `{type:'recording',state}`, `{type:'storage',storage}`, `{type:'sd-card',sdCard}`, `{type:'leds',leds}`, and `{type:'accessories',accessoryInputs}`. |
 | `dispose()` | Ends this session and releases its worker. Create a new runtime/page session to run again. |
 
 Input shapes:
 
 ```js
 {type: 'button', id: 'button-a', pressed: true}
+{type: 'accessory-button', accessoryId: 'button-unit', id: 'button', pressed: true}
+{type: 'accessory-connection', accessoryId: 'button-unit', connected: false}
 {type: 'matrix-key', row: 0, column: 0, pressed: true} // Only products reporting keyboard capability
 {type: 'touch', x: 100, y: 120, down: true}
 {type: 'serial', port: 'uart1', data: '$GPRMC,...\r\n'}
 ```
+
+Unit Button U027 uses an audited physical route, unlike logical GPS injection. On StopWatch only, configure `{id:'button-unit',catalogId:'m5stack-unit-button-u027',parameters:{},wiring:{mode:'physical',interfaceId:'grove'}}` in `scene.accessories`. Check `capabilities().input.accessories` and `observe().accessoryInputs` for the resolved instance/port/pin and current connection/press state. Its white signal drives G11; the yellow G10 wire is NC on the unit. Firmware must enable Grove 5V (M5PM1 PWR_CFG 0x06 bit 3). Press reads low; release reads high only with power. A disconnect releases the external drive so the guest's GPIO pull configuration applies. This is a steady digital model; it does not calculate RC, bounce, analog voltage/current or output contention.
+
+Both events are recordable; use the scene instance ID, not the catalog ID. Detached button input is rejected. Host `reset()` restores scene-connected/released state; guest `esp_restart()` retains the held physical switch. Pause retains state; release/disconnect are accepted while paused, and guest observations resume with execution. Reconfigure removes the old worker and routes. The 3D cap and panel use these same events. `press('accessory:button-unit:button')` is a convenience pulse; assert a fresh firmware response using `waitFor({fromNow:true,...})` rather than treating a queue receipt as consumption. Only the catalog U027 + StopWatch Port A pair is enabled; arbitrary pin overrides and other hosts are rejected for physical routing. Session unplugging is an input, not an edit to the saved scene. Replay resets and reproduces it.
 
 Matrix keys use the device’s physical row/column, not UART text. Cardputer-Adv uses 4 rows × 14 columns; check `capabilities().input.keyboard` before sending. `press(controlId)` translates declared matrix controls to this protocol.
 
