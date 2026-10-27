@@ -456,7 +456,7 @@ async function sendInput(event, source = 'scene') {
   try { await runtime.input(event); } catch (error) { report(error); }
 }
 async function sendOrientation({quaternion, rotating}) {
-  if (!runtime || product()?.runtime.board !== 'stopwatch') return;
+  if (!runtime || !['stopwatch','atom-matrix'].includes(product()?.runtime.board)) return;
   const productId = scene.productId;
   try {
     // Pose changes are not part of button/touch recordings. Initial model setup is harmless.

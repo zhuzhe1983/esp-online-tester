@@ -42,7 +42,7 @@ Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已合入主线；配件
 | 8 | [M5Stack Stamp-S3 · S007](https://docs.m5stack.com/en/core/Stamp-S3) · `m5stack-s007` | esp32s3 / 无屏幕 | 已交付 partial：G0 / G21 RMT | [UIFlow2 启动蓝灯、源码 fixture 输入](stamps3-runtime.md)；联网、软件波形灯、FPC 屏幕及真实电源缺失 |
 | 9 | [M5Stack Stamp-S3A · S007-V033](https://docs.m5stack.com/en/core/Stamp-S3A) · `m5stack-s007-v033` | esp32s3 / 无屏幕 | 已交付 partial：G0 / G21 RMT / G38 灯电源 | [官方 UIFlow2 启动与供电/按键 fixture](stamps3a-runtime.md)；模拟电源、FPC、网络未实现 |
 | 10 | [M5Stack Atom-Lite · C008](https://docs.m5stack.com/en/core/Atom-Lite) · `m5stack-c008` | esp32 / 无屏幕 | 已交付 partial：G39 / G27 RMT | [官方出厂真实启动与按键红灯](atom-lite-runtime.md)；Grove 测试夹具、红外、网络和模拟电源未验证 |
-| 11 | [M5Stack Atom-Matrix](https://docs.m5stack.com/en/core/Atom-Matrix) · `m5stack-c008-b` | esp32 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
+| 11 | [M5Stack Atom-Matrix](https://docs.m5stack.com/en/core/Atom-Matrix) · `m5stack-c008-b` | esp32 / 无屏幕 | 已交付 partial：G39 / G27×25 / MPU6886 | [官方动画与独立输入/IMU测试](atom-matrix-runtime.md)；Wi-Fi扫描和完整出厂流程未完成 |
 | 12 | [M5Stack NanoC6 · C125](https://docs.m5stack.com/en/core/NanoC6) · `m5stack-c125` | esp32c6 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
 | 13 | [Arduino Nesso N1 · DK001](https://docs.m5stack.com/en/core/Arduino_Nesso_N1) · `m5stack-dk001` | esp32c6 / ST7789 | 待实现 | ST7789 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 14 | [M5Stack Air Quality](https://docs.m5stack.com/en/core/Air_Quality) · `m5stack-k131` | esp32s3 / GDEY0154D67 | 待实现 | GDEY0154D67 刷新通道、存储、触摸/按键、电源 |

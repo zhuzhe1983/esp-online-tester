@@ -328,8 +328,12 @@ pub unsafe extern "C" fn esp32sim_set_imu_motion(e: *mut Emu, mode: u32) -> u32 
 #[no_mangle]
 pub unsafe extern "C" fn esp32sim_set_imu_sample(e: *mut Emu, ax: f64, ay: f64, az: f64, gx: f64, gy: f64, gz: f64) -> u32 {
     let e = unsafe { &mut *e };
-    let Some(m) = e.m.s3_mut() else { return 1 };
-    if m.bus.board.set_imu_sample([ax, ay, az], [gx, gy, gz]) { 0 } else { 1 }
+    let supported = match &mut e.m {
+        super::MachineKind::S3(m) => m.bus.board.set_imu_sample([ax, ay, az], [gx, gy, gz]),
+        super::MachineKind::Esp32(m) => m.bus.board.set_imu_sample([ax, ay, az], [gx, gy, gz]),
+        _ => false,
+    };
+    if supported { 0 } else { 1 }
 }
 
 /// Opt in to interactive host display publication for a supporting S3 board, before execution.
@@ -351,12 +355,12 @@ mod imu_motion_tests {
 
     #[test]
     fn host_sample_is_validated_without_advancing_the_machine() {
-        for board in ["stopwatch", "none"] {
+        for board in ["stopwatch", "atom-matrix", "atom-lite", "none", "esp32c3"] {
             // SAFETY: the emulator is exclusively owned by this test and deleted below.
             unsafe {
                 let e = esp32sim_new(board.as_ptr(), board.len(), 16, 8);
                 let before = ((*e).m.cycles(), (*e).m.insns());
-                assert_eq!(esp32sim_set_imu_sample(e, 0.0, 1.0, 0.0, 0.0, 0.0, 90.0), u32::from(board != "stopwatch"));
+                assert_eq!(esp32sim_set_imu_sample(e, 0.0, 1.0, 0.0, 0.0, 0.0, 90.0), u32::from(!["stopwatch", "atom-matrix"].contains(&board)));
                 assert_eq!(esp32sim_set_imu_sample(e, f64::NAN, 0.0, 0.0, 0.0, 0.0, 0.0), 1);
                 assert_eq!(((*e).m.cycles(), (*e).m.insns()), before);
                 esp32sim_delete(e);

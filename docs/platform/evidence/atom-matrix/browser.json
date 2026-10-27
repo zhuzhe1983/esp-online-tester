@@ -1,0 +1,113 @@
+{
+  "checkedAt": "2026-10-27T19:49:18Z",
+  "browser": "Headless Chrome using task-owned Playwright wrapper; closed after checks",
+  "productId": "m5stack-c008-b",
+  "official": {
+    "sha256": "24892fcf5d5f8c97ee30a5ffb4fec166dca1c254cc6f54861af28abc8732ba2f",
+    "workbenchGuestSeconds": 41.62,
+    "workbenchFirstLast": [
+      [
+        0,
+        0,
+        10
+      ],
+      [
+        0,
+        0,
+        10
+      ]
+    ],
+    "miniGuestSeconds": 18.6,
+    "miniFirstLast": [
+      [
+        0,
+        0,
+        10
+      ],
+      [
+        0,
+        0,
+        5
+      ]
+    ],
+    "miniAutostart": true,
+    "trialConfirmation": true,
+    "serial": [
+      "Atom Matrix Factory test",
+      "Wifi scan start"
+    ],
+    "error": null,
+    "scope": "Actual boot and 25-pixel RMT animation; button and IMU inside factory flow not verified while Wi-Fi scan is pending."
+  },
+  "sourceFixture": {
+    "path": "tools/fixtures/atom-matrix-firmware",
+    "idf": "5.5.1",
+    "mousePixel": [
+      630,
+      270
+    ],
+    "heldHostMs": 600,
+    "mouseAndKeyboard": "Actual mouse cap and KeyA press emit ATOM_MATRIX_BUTTON 0, first green; release emits 1 and first red. Last LED remains blue.",
+    "rotation": {
+      "dragPixels": [
+        [
+          800,
+          280
+        ],
+        [
+          860,
+          355
+        ]
+      ],
+      "guestSeconds": 27.7,
+      "source": "scene",
+      "quaternion": [
+        0.3024484256644145,
+        0.1620411766544416,
+        0.06483108811875321,
+        0.9370509788132659
+      ],
+      "accelG": [
+        0.21951826670230384,
+        0.8086437596529112,
+        -0.5458085750136407
+      ],
+      "guestRawAccel": [
+        3597,
+        13249,
+        -8943
+      ],
+      "error": null
+    }
+  },
+  "modelChecks": [
+    "Green button hover covers documented whole matrix diffuser, not touchscreen.",
+    "Real G27 RGB chain drives 25 independent optical spots. Pitch/shape are photo estimates; row-major x+y*5 comes from M5Atom. Hardware pixel orientation not measured.",
+    "Gold and purple change exterior shell while diffuser/label retain own materials.",
+    "2D exposes serial for this screenless board; no fabricated LCD framebuffer.",
+    "Existing rear connector/UNKNOWN PCB retained; reproducible model export verifies source geometry unchanged. Grove cable remains disabled pending physical pin orientation."
+  ],
+  "failuresRetained": [
+    "Initial WASM call rejected classic-chip IMU because ABI only dispatched S3; extended cold-path export to classic ESP32 and tests verify unsupported chips and zero guest-time advance.",
+    "Scene orientation initially rejected by a second runtime source guard; final real mouse drag changed guest I2C data after fix.",
+    "First model rebuild caught missing referencePhotos entry after adding official lit axes photo; adopted rebuilt metadata and reran byte-identical verification.",
+    "Default IDF Python3.14 environment failed dependency constraints; selected pre-existing IDF5.5 Python3.11 environment, no global package changes.",
+    "Browser role selectors for tab/shell summary were incorrect; corrected against actual DOM and reran screenshots after closing material popup.",
+    "No official full-flow success inferred from source fixture; native factory remains at Wi-Fi scan after60guestsec."
+  ],
+  "artifacts": {
+    "official.png": "eeadf9dd11ea7ac860729fef48bd017a2d577b1e7537b4e97f4755146259ea74",
+    "hover.png": "aec4ab76be6f405f783716918f2dffcaa9ac2242bd50ede4f1631833fb5850ba",
+    "pressed.png": "ce4ba0972aaf3f9c69f849e33e7a792bc572a66046a6b2a53d0cdf9e7c81e91e",
+    "keyboard.png": "35b2c823b05186073866df14a2262ae3f4f4a1428bddc7fbc34a1c38c9f0f0d7",
+    "rotated.png": "133dfb02253b2f8f24bc4506c02ec38e3d1c70fda1dff90586b34a423ac36de2",
+    "gold.png": "5dcf2cb4d4fa411303c89b8a46d099811208b677d112eb2e4d9ab76fc6207b38",
+    "purple.png": "bfb924574e25eccff996e228a3a86651108e07a3b9a2e1eb7cc0c879f415a623",
+    "2d.png": "9fd98c68a74431c84f7f4b8f3feedf9889ed83fdad45b04a415548dfe5fd86e3",
+    "mini.png": "efad237560d47afdba260ab9dbd07d9de00356e084dbc1eb7e4be0a28f368efb"
+  },
+  "lifecycle": {
+    "taskBrowserClosed": true,
+    "taskServerStopped": true
+  }
+}

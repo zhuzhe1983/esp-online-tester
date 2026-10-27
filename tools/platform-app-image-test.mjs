@@ -9,7 +9,7 @@ import {prepareFlashPlan} from '../web/platform/flasher.js';
 const app=new Uint8Array(await readFile(new URL('../web/wasm/fw/public/hello_world.bin',import.meta.url)));
 const good=await validateAppImage(app,'stopwatch',16*1024*1024);assert.equal(good.chipId,9);
 const reject=(bytes,code,board='stopwatch',size=16*1024*1024)=>assert.rejects(()=>validateAppImage(bytes,board,size),{code});
-await reject(app,'CHIP_MISMATCH','esp32c3');await reject(app,'CHIP_MISMATCH','atom-lite');await reject(app,'FLASH_OVERFLOW','stopwatch',65536);
+await reject(app,'CHIP_MISMATCH','esp32c3');await reject(app,'CHIP_MISMATCH','atom-lite');await reject(app,'CHIP_MISMATCH','atom-matrix');await reject(app,'FLASH_OVERFLOW','stopwatch',65536);
 await reject(app.subarray(0,app.length-40),'APP_IMAGE_INVALID');
 const damaged=app.slice();damaged[300]^=1;await reject(damaged,'APP_IMAGE_CHECKSUM');
 const digest=app.slice();digest[good.imageBytes-1]^=1;await reject(digest,'APP_IMAGE_DIGEST');
