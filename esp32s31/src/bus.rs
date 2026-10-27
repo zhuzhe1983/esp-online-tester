@@ -119,6 +119,10 @@ impl S31Bus {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(self.mspi.clock_read());
         }
+        if address & !3 == crate::cache::CLOCK_CTRL {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(self.cache.clock_read());
+        }
         if address & !3 == crate::bus_monitor::CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(self.bus_monitor.clock_read());
@@ -216,6 +220,10 @@ impl S31Bus {
         if address & !3 == crate::mspi::CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             return match self.mspi.clock_write(value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if address & !3 == crate::cache::CLOCK_CTRL {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            self.cache.clock_write(value); return Ok(());
         }
         if address & !3 == crate::bus_monitor::CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }

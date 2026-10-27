@@ -78,6 +78,7 @@ S31_CLOCKS_ELF="$PWD/output/s31-uart-probe/clocks-probe.elf" \
 S31_USB_ELF="$PWD/output/s31-uart-probe/usb-probe.elf" \
 S31_MONITOR_ELF="$PWD/output/s31-uart-probe/monitor-probe.elf" \
 S31_MSPI_ELF="$PWD/output/s31-uart-probe/mspi-probe.elf" \
+S31_CACHE_ELF="$PWD/output/s31-uart-probe/cache-probe.elf" \
 S31_ROM_ELF="$PWD/output/s31-sources/roms/esp32s31_rev0_rom.elf" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/probe.elf A
@@ -96,3 +97,22 @@ verify both exception records. `mspi-probe.S` checks an explicitly supplied test
 NOR ID/status and two Flash reads. Its negative controls change the data, omit
 identity/array, or close the clock; none may produce PASS. These inputs do not
 identify INK4 Plus hardware. The MMU fixture explicitly opens/enables SPI0 AXI.
+
+`cache-probe.S` configures Flash MMU mapping, exercises explicit light-retention,
+invalidates an actual selected cache set, freezes/releases D-cache and checks the
+same independently supplied Flash word before and after. Changed bytes must take
+its failure branch; no Flash array or closed cache clock must fault before PASS.
+Set `S31_CACHE_ELF` to its source-built ELF when running the full fixture suite.
+This checks the functional direct-memory contract, not cache lines or their timing.
+
+`spi0-observation.S` is an **emulator-only** observation fixture for the documented
+ROM/header discrepancy; do not flash it to hardware. Its reads and full-word writes
+target SPI0 reserved offsets0x24/0x28. Rebuild with the script above, convert using
+esptool5.4.0 `--chip esp32s31 elf2image --flash-mode dio --flash-size 16MB
+--flash-freq 40m`, and put the result at0x2000 in an erased-byte merged input. Run
+Espressif esp-emulator0.51.0 with the fixed public ROM, `--chip esp32s31 --rom
+<rom> --firmware <generated-merged-input> --net user,restrict=yes --log-color never`.
+Bound the subprocess from the host and close it after `SPI0 OBSERVATION DONE`;
+the emulator's own `--timeout` does not promptly end this guest's WFI loop. Retain
+only public UART values and relevant interception counts, not host-network logs.
+Upstream compatibility is distinct from hardware verification and our strict map.

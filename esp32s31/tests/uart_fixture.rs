@@ -247,3 +247,47 @@ fn external_s31_mspi_real_array_and_missing_input_controls() {
         eprintln!("S31 MSPI control={control} steps={} stop={:?}", run.steps, run.stop);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_CACHE_ELF to cache-probe.elf"]
+fn external_s31_cache_power_sync_freeze_and_missing_input() {
+    let path = std::env::var("S31_CACHE_ELF").expect("build firmware/s31-uart-probe and set S31_CACHE_ELF");
+    let elf = std::fs::read(path).expect("read S31_CACHE_ELF");
+    for control in ["valid", "wrong-data", "no-array", "clock-off"] {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        if control != "no-array" { m.bus.cache.set_flash(&[if control == "wrong-data" { 0 } else { 0x5a }, 0x3c, 0x29, 0x17]).unwrap(); }
+        if control == "clock-off" { m.bus.cache.clock_write(0x14249); }
+        let run = m.run(10_000);
+        if control == "valid" {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 CACHE POWER SYNC FREEZE PASS\n");
+            assert_eq!(m.bus.cache.maintenance_operations, 2); assert!(m.bus.first_fault.is_none());
+        } else if control == "wrong-data" {
+            assert!(matches!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_))));
+            assert_eq!(m.bus.uart0.tx_out, b"S31 CACHE FAIL\n");
+        } else {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(5)));
+            assert_eq!(m.bus.first_fault.as_ref().unwrap().address, 0x40000000); assert!(m.bus.uart0.tx_out.is_empty());
+        }
+        eprintln!("S31 CACHE control={control} steps={} stop={:?}", run.steps, run.stop);
+    }
+}
+
+#[test]
+#[ignore = "set S31_ROM_ELF to the fixed public 20260528 ROM ELF"]
+fn external_s31_rom_legacy_opt_in_still_requires_flash_input() {
+    let path = std::env::var("S31_ROM_ELF").expect("set S31_ROM_ELF to the fixed public 20260528 ROM ELF");
+    let mut m = esp32s31::Bringup::new(); m.load_rom_elf(&std::fs::read(path).expect("read S31_ROM_ELF")).unwrap();
+    m.bus.pads.strap = 0x12; m.bus.usb_console.attach_host(true); m.bus.mspi.enable_legacy_rom_lengths();
+    let mut steps = 0;
+    loop {
+        let run = m.run(1000); steps += run.steps; m.bus.usb_console.host_receive();
+        if run.stop != esp32s31::Stop::Budget {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7))); break;
+        }
+        assert!(steps < 100_000);
+    }
+    let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!((f.pc, f.address), (0x2f80e43a, 0x20501000));
+    assert_eq!(f.reason, emu_core::Fault::Prohibited); assert_eq!(m.bus.mspi.commands, 0);
+    assert_eq!(m.bus.cache.maintenance_operations, 2);
+    eprintln!("S31 ROM explicit shadow without NOR/array steps={steps} commands=0");
+}

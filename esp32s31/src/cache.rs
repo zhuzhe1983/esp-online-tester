@@ -9,27 +9,41 @@ pub const FLASH_MMU: u32 = 0x2050_0000;
 pub const PSRAM_MMU: u32 = 0x2050_2000;
 pub const FLASH_VADDR: u32 = 0x4000_0000;
 pub const PSRAM_VADDR: u32 = 0x5000_0000;
+pub const CLOCK_CTRL: u32 = 0x2058_7038;
+pub const MMU_LP_CTRL: u32 = 0x2058_902c;
 const ENTRIES: usize = 1024;
 
-struct Mmu { entries: [u32; ENTRIES], index: u32, power: u32 }
+struct Mmu { entries: [u32; ENTRIES], index: u32, power: u32, lp_ctrl: u32 }
 impl Default for Mmu {
     fn default() -> Self {
         // Deterministic invalid table, not a claim about uninitialized physical MMU SRAM.
         // The header's CONTENT port reset value 892 does not specify all SRAM entries.
-        Self { entries: [0; ENTRIES], index: 0, power: 4896 << 16 }
+        Self { entries: [0; ENTRIES], index: 0, power: 4896 << 16, lp_ctrl: 0 }
     }
 }
 
 impl Mmu {
+    // v6.1 hp_alive_sys_reg.h: LP_EN bit2, MODE[1:0], FORCE_CTRL bit3.
+    // No PMU transition is synthesized. Explicit software power-down blocks table
+    // access/translation; retention after deep sleep is outside this active-run subset.
+    fn lp_write(&mut self, value: u32) -> Result<(), Fault> {
+        // Only active/light-retention/disabled-low-power states are specified here.
+        // Deep sleep and shutdown retention/content are not invented.
+        if matches!(value & 7, 4 | 6) { return Err(Fault::Prohibited); }
+        self.lp_ctrl = value & 15; Ok(())
+    }
+    fn powered(&self) -> bool { self.lp_ctrl & 4 == 0 || self.lp_ctrl & 3 == 3 }
     fn page_size(&self, psram: bool) -> usize { (if psram { 65536 } else { 262144 }) >> ((self.power >> 3) & 3) }
     fn read(&self, off: u32) -> Result<u32, Fault> {
         match off {
+            0x37c if !self.powered() => Err(Fault::Prohibited),
             0x37c => self.entries.get(self.index as usize).copied().ok_or(Fault::Unmapped),
             0x380 => Ok(self.index), 0x384 => Ok(self.power), _ => Err(Fault::Unmapped),
         }
     }
     fn write(&mut self, off: u32, value: u32, psram: bool) -> Result<(), Fault> {
         match off {
+            0x37c if !self.powered() => return Err(Fault::Prohibited),
             0x37c => *self.entries.get_mut(self.index as usize).ok_or(Fault::Unmapped)? = value,
             0x380 => self.index = value,
             0x384 => {
@@ -42,6 +56,7 @@ impl Mmu {
         Ok(())
     }
     fn translate(&self, relative: usize, psram: bool, size: usize) -> Result<usize, Fault> {
+        if !self.powered() { return Err(Fault::Prohibited); }
         let page = self.page_size(psram);
         let entry = *self.entries.get(relative / page).ok_or(Fault::Unmapped)?;
         let (valid, sensitive, mask) = if psram { (1 << 11, 1 << 12, 0x3ff) } else { (1 << 12, 1 << 13, 0x7ff) };
@@ -56,13 +71,53 @@ impl Mmu {
 
 pub struct Cache {
     icache: u32, dcache: u32, bypass: u32, atomic: u32,
+    clock: u32, sync: [u32; 4], fail_check: u32, freeze: u32, pub maintenance_operations: u64,
     flash_mmu: Mmu, psram_mmu: Mmu, flash: Vec<u8>, psram: Vec<u8>,
 }
 impl Default for Cache {
     fn default() -> Self { Self { icache: 0, dcache: 0, bypass: 0, atomic: 1,
+        clock: 0x15249, sync: [16, 31, 0, 0], fail_check: 0, freeze: 0, maintenance_operations: 1,
         flash_mmu: Mmu::default(), psram_mmu: Mmu::default(), flash: Vec::new(), psram: Vec::new() } }
 }
 impl Cache {
+    // Fixed v6.1 HP_SYS_CLKRST_CACHE_CTRL0. The functional memory path is
+    // write-through with no retained cache lines; invalidation/clean/writeback
+    // therefore finish synchronously once the selected domains are usable.
+    // Reset's INVALIDATE_ENA=1 completes over the initially empty cache at time0.
+    fn domain_on(&self, clock_bit: u32, reset_bit: u32) -> bool { self.clock & (1 << clock_bit | 1 << reset_bit) == 1 << clock_bit }
+    pub fn clock_read(&self) -> u32 { self.clock }
+    pub fn clock_write(&mut self, value: u32) {
+        self.clock = value & 0x3ffff;
+        if value & (1 << 15) != 0 { self.icache = 0; self.freeze &= !7; }
+        if value & (1 << 17) != 0 { self.freeze &= !(7 << 4); }
+        if value & (1 << 13) != 0 { self.dcache = 0; self.freeze &= !(7 << 16); }
+    }
+    fn freeze_write(&mut self, value: u32) -> Result<(), Fault> {
+        let mut next = value & 0x30033;
+        for (shift, clock_bit, reset_bit) in [(0, 14, 15), (4, 16, 17), (16, 12, 13)] {
+            if next & (1 << shift) != 0 {
+                // No retained cache lines exist. Mode0 freezes all further misses;
+                // mode1's forced cache hit requires unavailable cache SRAM contents.
+                if next & (2 << shift) != 0 || !self.domain_on(clock_bit, reset_bit) { return Err(Fault::Prohibited); }
+                next |= 4 << shift; // No pending memory transactions in this synchronous model.
+            }
+        }
+        self.freeze = next; Ok(())
+    }
+    fn sync_write(&mut self, value: u32) -> Result<(), Fault> {
+        let operation = value & 15;
+        if operation.count_ones() > 1 { return Err(Fault::Prohibited); }
+        if operation != 0 {
+            // Only the two actual instruction caches and data cache exist on S31.
+            if self.sync[1] & !0x13 != 0 || self.sync[1] == 0 { return Err(Fault::Prohibited); }
+            for (map_bit, clock_bit, reset_bit) in [(0, 14, 15), (1, 16, 17), (4, 12, 13)] {
+                if self.sync[1] & (1 << map_bit) != 0 && !self.domain_on(clock_bit, reset_bit) { return Err(Fault::Prohibited); }
+            }
+            self.maintenance_operations = self.maintenance_operations.wrapping_add(1);
+            self.sync[0] = (value & 0x1e0) | 16;
+        } else { self.sync[0] = (self.sync[0] & 16) | (value & 0x1e0); }
+        Ok(())
+    }
     /// Explicit development input, not a ROM boot shortcut or an assertion of product capacity.
     /// Allocation limits are host software bounds. The SPI1 command subset uses this same backing array.
     pub fn set_flash(&mut self, bytes: &[u8]) -> Result<(), String> {
@@ -78,25 +133,46 @@ impl Cache {
     }
     pub fn is_memory(address: u32) -> bool { (FLASH_VADDR..0x5400_0000).contains(&address) }
     pub fn is_mmio(address: u32) -> bool {
-        (CACHE_BASE..CACHE_BASE + 0x1000).contains(&address)
+        (MMU_LP_CTRL..MMU_LP_CTRL + 8).contains(&address)
+            || (CACHE_BASE..CACHE_BASE + 0x1000).contains(&address)
             || (FLASH_MMU + 0x37c..FLASH_MMU + 0x388).contains(&address)
             || (PSRAM_MMU + 0x37c..PSRAM_MMU + 0x388).contains(&address)
     }
     pub fn read_register(&self, address: u32) -> Result<u32, Fault> {
+        if address == MMU_LP_CTRL { return Ok(self.flash_mmu.lp_ctrl); }
+        if address == MMU_LP_CTRL + 4 { return Ok(self.psram_mmu.lp_ctrl); }
         match address.checked_sub(CACHE_BASE) {
             Some(0) => return Ok(self.icache), Some(4) => return Ok(self.dcache),
-            Some(8) => return Ok(self.bypass), Some(12) => return Ok(self.atomic), _ => {}
+            Some(8) => return Ok(self.bypass), Some(12) => return Ok(self.atomic),
+            // Autoload is disabled at reset; no speculative fills are modeled.
+            Some(0xac | 0xb8 | 0xdc | 0xe8 | 0xfc | 0x138) => return Ok(2),
+            Some(0x8c) => return Ok(4), Some(0x30) => return Ok(self.freeze), _ => {}
         }
+        if (CACHE_BASE + 0x9c..=CACHE_BASE + 0xa8).contains(&address) { return Ok(self.sync[((address - CACHE_BASE - 0x9c) / 4) as usize]); }
+        if address == CACHE_BASE + 0x16c { return Ok(self.fail_check); }
         if (FLASH_MMU..FLASH_MMU + 0x1000).contains(&address) { return self.flash_mmu.read(address - FLASH_MMU); }
         if (PSRAM_MMU..PSRAM_MMU + 0x1000).contains(&address) { return self.psram_mmu.read(address - PSRAM_MMU); }
         Err(Fault::Unmapped)
     }
     pub fn write_register(&mut self, address: u32, value: u32) -> Result<(), Fault> {
+        if address == MMU_LP_CTRL { return self.flash_mmu.lp_write(value); }
+        if address == MMU_LP_CTRL + 4 { return self.psram_mmu.lp_write(value); }
         match address.checked_sub(CACHE_BASE) {
             Some(0) => { self.icache = value & 0xff0f; return Ok(()); }
             Some(4) => { self.dcache = value & 0xff1f; return Ok(()); }
             Some(8) => { self.bypass = value & 0x13; return Ok(()); }
             Some(12) => { self.atomic = value & 1; return Ok(()); }
+            Some(0x30) => return self.freeze_write(value),
+            Some(0x8c) => return if value & !4 == 0 { Ok(()) } else { Err(Fault::Prohibited) },
+            Some(0xac | 0xb8 | 0xdc | 0xe8 | 0xfc | 0x138) => return if value & !2 == 0 { Ok(()) } else { Err(Fault::Prohibited) },
+            Some(0x9c) => return self.sync_write(value),
+            Some(0xa0) => { self.sync[1] = value & 63; return Ok(()); }
+            Some(0xa4) => { self.sync[2] = value; return Ok(()); }
+            Some(0xa8) => { self.sync[3] = value & 0x0fffffff; return Ok(()); }
+            // ROM enables propagation on its two I-caches and D-cache. This diagnostic
+            // runner still stops on unsupported accesses even before propagation is
+            // enabled; recovery through a cache-error interrupt is not modeled.
+            Some(0x16c) => { self.fail_check = value & 0x13; return Ok(()); }
             _ => {}
         }
         if (FLASH_MMU..FLASH_MMU + 0x1000).contains(&address) { return self.flash_mmu.write(address - FLASH_MMU, value, false); }
@@ -104,6 +180,8 @@ impl Cache {
         Err(Fault::Unmapped)
     }
     fn physical(&self, address: u32, fetch: bool, write: bool) -> Result<(bool, usize), Fault> {
+        if !self.domain_on(9, 11) || !self.domain_on(6, 8) || !self.domain_on(if fetch { 14 } else { 12 }, if fetch { 15 } else { 13 }) { return Err(Fault::Prohibited); }
+        if self.freeze & (if fetch { 1 } else { 1 << 16 }) != 0 { return Err(Fault::Prohibited); }
         if (if fetch { self.icache } else { self.dcache }) & 1 != 0 { return Err(Fault::Prohibited); }
         if (FLASH_VADDR..PSRAM_VADDR).contains(&address) {
             if write { return Err(Fault::Prohibited); }
@@ -170,6 +248,37 @@ mod tests {
         c.write_register(CACHE_BASE + 4, 0).unwrap();
         assert_eq!(c.write(FLASH_VADDR, 0, 4), Err(Fault::Prohibited)); assert_eq!(c.read_byte(FLASH_VADDR, false), Ok(1));
         assert_eq!(c.read_register(CACHE_BASE + 0x10), Err(Fault::Unmapped));
+    }
+    #[test]
+    fn functional_maintenance_obeys_domains_freeze_and_mmu_power() {
+        let mut c = Cache::default(); c.set_flash(&[0xa7]).unwrap(); map(&mut c, false, 0, 0x1000);
+        c.write_register(CACHE_BASE + 0xa0, 0x13).unwrap();
+        c.write_register(CACHE_BASE + 0xa4, FLASH_VADDR).unwrap(); c.write_register(CACHE_BASE + 0xa8, 1).unwrap();
+        for op in [1, 2, 4, 8] {
+            c.write_register(CACHE_BASE + 0x9c, op).unwrap();
+            assert_eq!(c.read_register(CACHE_BASE + 0x9c), Ok(16)); assert_eq!(c.read_byte(FLASH_VADDR, false), Ok(0xa7));
+        }
+        assert_eq!(c.maintenance_operations, 5);
+        assert_eq!(c.write_register(CACHE_BASE + 0x9c, 3), Err(Fault::Prohibited));
+        c.clock_write(c.clock & !(1 << 12));
+        assert_eq!(c.write_register(CACHE_BASE + 0x9c, 1), Err(Fault::Prohibited));
+        assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Prohibited)); assert_eq!(c.read_byte(FLASH_VADDR, true), Ok(0xa7));
+        c.clock_write(0x15249); c.write_register(CACHE_BASE + 0x30, 1 << 16).unwrap();
+        assert_eq!(c.read_register(CACHE_BASE + 0x30), Ok(5 << 16));
+        assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Prohibited)); assert_eq!(c.read_byte(FLASH_VADDR, true), Ok(0xa7));
+        assert_eq!(c.write_register(CACHE_BASE + 0x30, 3 << 16), Err(Fault::Prohibited));
+        assert_eq!(c.read_register(CACHE_BASE + 0x30), Ok(5 << 16));
+        c.write_register(CACHE_BASE + 0x30, 4 << 16).unwrap(); // RO DONE cannot keep freeze enabled.
+        assert_eq!(c.read_register(CACHE_BASE + 0x30), Ok(0)); assert_eq!(c.read_byte(FLASH_VADDR, false), Ok(0xa7));
+        c.write_register(MMU_LP_CTRL, 0xd).unwrap(); // Explicit light sleep, retain table but deny accesses.
+        assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Prohibited));
+        assert_eq!(c.read_register(FLASH_MMU + 0x37c), Err(Fault::Prohibited));
+        c.write_register(MMU_LP_CTRL, 9).unwrap(); assert_eq!(c.read_byte(FLASH_VADDR, false), Ok(0xa7));
+        for off in [0xac, 0xb8, 0xdc, 0xe8, 0xfc, 0x138] {
+            assert_eq!(c.read_register(CACHE_BASE + off), Ok(2));
+            assert_eq!(c.write_register(CACHE_BASE + off, 1), Err(Fault::Prohibited));
+        }
+        assert_eq!(c.write_register(CACHE_BASE + 0x8c, 1), Err(Fault::Prohibited));
     }
     #[test]
     fn a_cross_page_write_is_atomic_at_bus_boundary_and_can_be_discontiguous() {

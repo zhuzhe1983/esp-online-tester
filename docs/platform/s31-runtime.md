@@ -565,3 +565,56 @@ S3 +0.142%, C3 +0.023%, C6 −0.603%, with exact guest statistics and UART hashe
 Main contains independent changes; these are regression guards, not S31 speed claims.
 [Functional receipt](evidence/s31-bringup/monitor-mspi.json),
 [CPU samples](evidence/s31-bringup/monitor-mspi-perf.json).
+
+## Flash/cache ROM bring-up (explicit development inputs)
+
+This stage keeps the strict default failure above. `--rom-spi0-shadow` explicitly
+allows two stateful full-word shadows at SPI0+0x24/+0x28. The public ROM uses their
+low ten bits; both the initial and current public IDF SPI0 struct mark them reserved.
+A source-built guest on Espressif emulator0.51.0, with the same public ROM ELF,
+reads `0xff` after ROM startup and round-trips `0xa55a03ff`. Reset-time GDB reads
+return zero for these words **and for the documented nonzero SPI0 CTRL reset**.
+That is upstream compatibility evidence, not silicon reset evidence. There are
+22 upstream ROM interception patches. Our opt-in adds no opcode patch, ready flag,
+transfer data or automatic product identity. With it off, these addresses still fault.
+
+The documented v6.1 subset now handles cache-domain clock/reset gates, synchronous
+invalidate/clean/writeback over the existing direct-memory model, mode0 freeze,
+Flash/PSRAM MMU software light-retention controls and SPI0 read-mode configuration.
+There are no retained dirty cache lines or speculative fills: maintenance finishes
+only for valid selected domains, freeze blocks further memory misses, and disabling
+it restores translation. Preload, autoload and lock remain at their documented
+idle reset states; attempts to enable these unsupported operations fault. Freeze
+mode1 (forcing a cache hit), deep/shutdown retention, cache-error interrupt recovery
+and physical cache timing are not claimed. For MMU low-power mode the header field
+reset is0 while its prose calls2 the default; this stage follows the field declaration
+and does not infer a physical power-down sequence from that conflicting annotation.
+
+SPI1 now has functional NOR deep-power-down/release state. APB reset preserves the
+external die's state; a sleeping die cannot supply reads or cached Flash access.
+The controller RD_STATUS latch is independently writable and RDSR replaces only
+its status field; writing the latch does not modify external NOR status. Electronic
+ID through RESANDRES, status writes, erase/program and wire/wakeup latency remain
+unsupported. `--nor-jedec=ef4018` is an explicit development input matching the
+existing source fixture, with status0. It is **not an identified INK4 Plus NOR** and
+is never installed by the product catalog or normal runtime.
+
+Using both explicit options with the unchanged official Plus2.0.68 full image,
+the real ROM initializes its Flash MMU table, performs6 MSPI commands and reads the
+boot header. Its actual output now includes `SPI mode:DIO, clock div:1`.
+It next fails at `ets_sha_enable`, PC`0x2f80c288`, read32`0x20587058` after58978
+instructions. This is the unimplemented crypto clock/reset block before bootloader
+SHA verification; neither bootloader entry, app entry nor display is reached.
+The same complete image remains in RAM only. The next stage must implement actual
+SHA register/block computation and clock/reset behavior, not bypass image verification.
+
+```sh
+python3 tools/s31-native-firmware-probe.py \
+  --firmware-url "$S31_FIRMWARE_URL" --sha256 "$S31_FIRMWARE_SHA256" \
+  --rom output/s31-sources/roms/esp32s31_rev0_rom.elf \
+  --rom-spi0-shadow --nor-jedec ef4018 \
+  --output output/s31-plus-flash-cache.json
+```
+
+[Full-image result](evidence/s31-bringup/flash-cache-plus-2.0.68.json),
+[functional/source evidence](evidence/s31-bringup/flash-cache.json).

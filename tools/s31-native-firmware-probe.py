@@ -52,6 +52,8 @@ def main():
     parser.add_argument("--rom", required=True)
     parser.add_argument("--runner", default="target/release/examples/bringup")
     parser.add_argument("--output", required=True)
+    parser.add_argument("--rom-spi0-shadow", action="store_true", help="explicit inferred legacy SPI0 config shadows; strict mode remains default")
+    parser.add_argument("--nor-jedec", help="explicit six-hex-digit development NOR identity; not product hardware identification")
     args = parser.parse_args()
     with urllib.request.urlopen(args.firmware_url, timeout=60) as response:
         data = response.read(256 * 1024 * 1024 + 1)
@@ -75,11 +77,16 @@ def main():
                   if p["type"] == 0 and data[int(p["offset"], 16)] == 0xE9)
     if not partitions or any(x["chipId"] != 32 for x in images):
         raise ValueError("input does not contain the expected S31 merged image layout")
-    command = [args.runner, "--rom", "--usb-host", "--strap=0x12", "--flash=/dev/stdin", args.rom, "", "200000"]
+    command = [args.runner, "--rom", "--usb-host", "--strap=0x12", "--flash=/dev/stdin"]
+    if args.rom_spi0_shadow:
+        command.append("--rom-spi0-shadow")
+    if args.nor_jedec:
+        command.append("--nor-jedec=" + args.nor_jedec)
+    command.extend([args.rom, "", "200000"])
     result = subprocess.run(command, input=data, capture_output=True, timeout=120, check=True)
     report = {"source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
               "partitions": partitions, "images": images,
-              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": None, "otpImage": None},
+              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow},
               "uart": result.stdout.decode("utf-8", errors="replace"),
               "diagnostic": result.stderr.decode("utf-8", errors="replace"),
               "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk"}
