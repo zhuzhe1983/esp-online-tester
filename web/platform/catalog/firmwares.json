@@ -4949,13 +4949,15 @@
       "revision": "v2.5.3",
       "status": "trial",
       "source": {
-        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002172/versions/2113079049317601281/download"
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002172/versions/2113079049317601281/download",
+        "sha256": "ef5e81b6da17ba04a0356b3bde782e9f0f8f93b217701a4414a52a8d8d8532c0"
       },
       "simulationVerified": false,
       "hardwareValidated": false,
       "limitations": [
-        "官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256，尚未核验镜像布局或执行兼容性。",
-        "浏览器加载时计算实际摘要并检查芯片、容量、启动布局；不完整镜像会要求补齐启动文件。不同外设和网络功能的模拟范围仍取决于板级模型。"
+        "已核验完整镜像与 ROM 启动，浏览器显示 OFFLINE / DEVELOP；Button B 翻到设置页，触摸改变选项高亮。仍保留试运行，不能代表全部功能适配。",
+        "UIFlow 云端连接、程序部署及完整外设 API 尚未验证；有一次 I2C 端口初始化警告，未阻止本轮界面操作。",
+        "SHA-256 来自本次实际下载，并非发布者签名；本站不镜像固件，允许用户浏览器缓存。未实机验证。"
       ],
       "sources": [
         {
@@ -4966,6 +4968,16 @@
         {
           "title": "M5Burner 已发布版本元信息",
           "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002172/versions?scope=PUBLIC",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "本轮核验的官方固定版本镜像",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002172/versions/2113079049317601281/download",
+          "resolvedUrl": "https://m5burner-cdn.m5stack.com/community/1/1897200000000002172/2113079049317601281/bin/2113079049317601282.bin",
+          "fetchedAt": "2026-10-27T15:20:12Z",
+          "mediaType": "application/octet-stream",
+          "bytes": 16773120,
+          "sha256": "ef5e81b6da17ba04a0356b3bde782e9f0f8f93b217701a4414a52a8d8d8532c0",
           "checkedAt": "2026-10-27"
         }
       ],
@@ -4979,7 +4991,7 @@
         "assetName": "uiflow-21928ff1-esp32s3-spiram-16mb-stopwatch-v2.5.3-20261021.bin",
         "upstreamUrl": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002172/versions/2113079049317601281/download",
         "digestSource": "publisher-hash-unavailable",
-        "layoutVerified": false,
+        "layoutVerified": true,
         "checkedAt": "2026-10-27T14:29:06Z",
         "publisherIdentity": {
           "provider": "m5burner-v1",
@@ -4991,7 +5003,17 @@
           "status": "PUBLISHED"
         }
       },
-      "watchlistId": "m5-official-uiflow2-stopwatch"
+      "watchlistId": "m5-official-uiflow2-stopwatch",
+      "verification": {
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "scope": "ROM boot and listed UI behavior only",
+        "evidence": "docs/platform/evidence/stopwatch-official-alternatives/verification.json",
+        "checkedAt": "2026-10-27T15:32:20Z",
+        "sha256": "ef5e81b6da17ba04a0356b3bde782e9f0f8f93b217701a4414a52a8d8d8532c0",
+        "digestSource": "observed-download",
+        "bootVerified": true
+      }
     },
     {
       "id": "m5stack-k150-uiflow2",
@@ -6434,13 +6456,15 @@
       "revision": "v2.2.6",
       "status": "trial",
       "source": {
-        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000855/versions/1897300000000001856/download"
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000855/versions/1897300000000001856/download",
+        "sha256": "6ed1ed429c275504c1cc32a1535f8f961b16509e87b231fd1dfd15fcff1fc21a"
       },
       "simulationVerified": false,
       "hardwareValidated": false,
       "limitations": [
-        "官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256，尚未核验镜像布局或执行兼容性。",
-        "浏览器加载时计算实际摘要并检查芯片、容量、启动布局；不完整镜像会要求补齐启动文件。网络、麦克风、音频及云服务尚未保证可用。"
+        "已核验完整镜像与 ROM 启动，浏览器进入配网模式并持续运行；仍保留试运行，不能代表全部功能适配。",
+        "ES8311 音频初始化失败；麦克风、播放、唤醒词和云端对话尚不可据此认定可用。浏览器缺少 SoftAP HTTP 桥，屏幕上的配网地址不能直接从电脑访问。",
+        "SHA-256 来自本次实际下载，并非发布者签名；本站不镜像固件，允许用户浏览器缓存。未实机验证。"
       ],
       "sources": [
         {
@@ -6451,6 +6475,16 @@
         {
           "title": "M5Burner 已发布版本元信息",
           "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000855/versions?scope=PUBLIC",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "本轮核验的官方固定版本镜像",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000855/versions/1897300000000001856/download",
+          "resolvedUrl": "https://m5burner-cdn.m5stack.com/firmware/05a2cf9f8c71e46dbd0dca65137ad0c1.bin",
+          "fetchedAt": "2026-10-27T15:21:03Z",
+          "mediaType": "application/octet-stream",
+          "bytes": 11240285,
+          "sha256": "6ed1ed429c275504c1cc32a1535f8f961b16509e87b231fd1dfd15fcff1fc21a",
           "checkedAt": "2026-10-27"
         }
       ],
@@ -6464,7 +6498,7 @@
         "assetName": "05a2cf9f8c71e46dbd0dca65137ad0c1.bin",
         "upstreamUrl": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000855/versions/1897300000000001856/download",
         "digestSource": "publisher-hash-unavailable",
-        "layoutVerified": false,
+        "layoutVerified": true,
         "checkedAt": "2026-10-27T14:29:06Z",
         "publisherIdentity": {
           "provider": "m5burner-v1",
@@ -6476,7 +6510,17 @@
           "status": "PUBLISHED"
         }
       },
-      "watchlistId": "m5-official-xiaozhi-stopwatch"
+      "watchlistId": "m5-official-xiaozhi-stopwatch",
+      "verification": {
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "scope": "ROM boot and listed UI behavior only",
+        "evidence": "docs/platform/evidence/stopwatch-official-alternatives/verification.json",
+        "checkedAt": "2026-10-27T15:32:20Z",
+        "sha256": "6ed1ed429c275504c1cc32a1535f8f961b16509e87b231fd1dfd15fcff1fc21a",
+        "digestSource": "observed-download",
+        "bootVerified": true
+      }
     },
     {
       "id": "m5stack-c126-cam-xiaozhi",
