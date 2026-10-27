@@ -118,7 +118,20 @@ impl Ssd1677 {
         let mode2=self.control2 & 8 != 0;
         // Differential LUTs have field-free hold groups 0 and 3. Decode the
         // supplied waveform rows, rather than identifying a firmware/file hash.
-        let differential=self.lut_written && self.lut[..10].iter().all(|b|*b==0) && self.lut[30..40].iter().all(|b|*b==0);
+        // CloudZao d12f481f epd_lut_partial.h additionally drives VSH2 in
+        // LUT0 to maintain black. SSD1677 Table 6-6 calls code 11 VSH2, not
+        // field-free. Recognize this bounded digital transition class; do not
+        // infer arbitrary optical endpoints from unmodelled voltage registers.
+        let ink4_partial=self.lut[0]==0 && self.lut[1]==0xcc && self.lut[2..10].iter().all(|b|*b==0)
+            && self.lut[10]==0x80 && self.lut[11..20].iter().all(|b|*b==0)
+            && self.lut[20]==0x40 && self.lut[21..40].iter().all(|b|*b==0);
+        let differential=self.lut_written && (self.lut[..10].iter().all(|b|*b==0) || ink4_partial) && self.lut[30..40].iter().all(|b|*b==0);
+        // SSD1677 rev1.0 Table 6-5: a monochrome waveform repeats LUT0 as
+        // LUT2 and LUT1 as LUT3. CloudZao INK4 d12f481f fast-update LUT uses
+        // this arrangement; treating it as M5GFX's four-gray mapping inverts it.
+        // Require distinct black/white rows, so an unknown all-equal LUT is not
+        // silently promoted to a known two-endpoint waveform.
+        let monochrome=self.lut_written && self.lut[..10]==self.lut[20..30] && self.lut[10..20]==self.lut[30..40] && self.lut[..10]!=self.lut[10..20];
         for gate in 0..self.height { for source in 0..self.width {
             let index=gate*(RAM_WIDTH/8)+source/8; let mask=0x80 >> (source&7);
             let mut bw=u8::from(self.planes[0][index]&mask!=0);let mut red=u8::from(self.planes[1][index]&mask!=0);
@@ -128,6 +141,7 @@ impl Ssd1677 {
             let group=usize::from((red<<1)|bw);
             let pixel=&mut self.frame[(self.height-1-gate)*self.width+source];
             let level=if differential {match group {1=>Some(255),2=>Some(0),_=>None}}
+                else if monochrome {Some(if bw!=0 {255}else{0})}
                 else if self.lut_written {Some([255,170,85,0][group])}
                 else {Some(if bw!=0 {255} else {0})};
             if let Some(gray)=level {let g=gray as u16;*pixel=((g>>3)<<11)|((g>>2)<<5)|(g>>3);}
@@ -167,5 +181,18 @@ mod tests {
         let mut panel=Ssd1677::new(800,480,18,1);for command in 0..=255 {send(&mut panel,command,&[0xff;256]);}
         panel.reset();send(&mut panel,0x4e,&[0xff,0xff]);send(&mut panel,0x4f,&[0xff,0xff]);send(&mut panel,0x24,&[0;4096]);
         assert_eq!(panel.frame.len(),800*480);
+    }
+    #[test]
+    fn monochrome_lut_uses_bw_bit_independent_of_previous_red_plane() {
+        let mut panel=Ssd1677::new(8,1,9,1);send(&mut panel,0x44,&[0,0,7,0]);send(&mut panel,0x45,&[0,0,0,0]);
+        send(&mut panel,0x24,&[0x50]);send(&mut panel,0x26,&[0x30]);
+        let mut lut=[0;105];lut[0]=0x90;lut[10]=0x60;lut[20]=0x90;lut[30]=0x60;lut[50]=20;lut[51]=20;
+        send(&mut panel,0x32,&lut);send(&mut panel,0x22,&[0xc7]);send(&mut panel,0x20,&[]);panel.advance_to(20);
+        assert_eq!(&panel.frame[..4],&[0,0xffff,0,0xffff]);
+        // Transition from prior 0101 to 1010 using the shipped partial class.
+        let mut partial=[0;105];partial[1]=0xcc;partial[10]=0x80;partial[20]=0x40;
+        send(&mut panel,0x24,&[0xa0]);send(&mut panel,0x26,&[0x50]);send(&mut panel,0x32,&partial);
+        send(&mut panel,0x22,&[0xcf]);send(&mut panel,0x20,&[]);panel.advance_to(40);
+        assert_eq!(&panel.frame[..4],&[0xffff,0,0xffff,0]);
     }
 }

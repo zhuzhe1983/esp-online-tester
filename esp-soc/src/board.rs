@@ -169,6 +169,10 @@ pub trait BoardModel {
     fn accessory_connection_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool) -> bool { false }
     /// Cold physical potentiometer input. Board owns the pin, transfer curve and power gate.
     fn accessory_analog_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _value: f32) -> Option<(u8, esp_periph::AnalogSource)> { None }
+    /// Cold semantic input for board-owned controls behind expanders or a touch
+    /// controller. The board owns physical wiring; no caller-selected pin/register.
+    /// Appended to preserve existing hot-call vtable offsets.
+    fn button_at(&mut self, _cycle: VirtualCycle, _id: &str, _pressed: bool) -> bool { false }
 }
 
 pub type Board = Box<dyn BoardModel>;

@@ -29,7 +29,7 @@ test('disabled/deleted/unknown-channel versions are not published; no GitHub tok
 test('new CloudZao version without SHA retains audited image, including unsupported boards',async()=>{
  const snapshot={entries:entries.map(e=>({id:e.id,upstreamRepo:e.upstreamRepo,releases:publicReleases(e,fixture(e)),error:null}))},firmwares=await read('firmwares');
  const result=updateFirmwareCatalog({products:await read('products'),firmwares,watchlist:list,snapshot});assert.deepEqual(result.firmwares,firmwares);assert.ok(result.report.entries.every(e=>e.reason==='candidate-missing-sha256'));
- const products=(await read('products')).items;for(const e of entries){const p=products.find(p=>e.compatibility.productIds.includes(p.id));assert.equal(p.runtime.board,null);assert.equal(p.runtime.status,'unavailable');assert.equal(p.chip,e.targetChip);assert.equal(firmwares.items.find(f=>f.id===p.defaultFirmwareId).publisherGroup,'官方');}
+ const products=(await read('products')).items;for(const e of entries){const p=products.find(p=>e.compatibility.productIds.includes(p.id));assert.equal(p.runtime.board,p.id==='metalio-ink4'?'metalio-ink4':null);assert.equal(p.runtime.status,p.id==='metalio-ink4'?'partial':'unavailable');assert.equal(p.chip,e.targetChip);assert.equal(firmwares.items.find(f=>f.id===p.defaultFirmwareId).publisherGroup,'官方');}
 });
 
 test('manufacturer aliases are searchable and official stable is selected first',async()=>{

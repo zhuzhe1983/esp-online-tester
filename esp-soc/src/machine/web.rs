@@ -206,6 +206,10 @@ impl<S: Soc> Machine<S> {
                     let (Some(row),Some(column))=(field("row").and_then(|v|v.parse::<u8>().ok()),field("column").and_then(|v|v.parse::<u8>().ok())) else {continue};
                     let cycle=self.bus.cycles();self.bus.board().matrix_key_at(cycle,row,column,field("pressed").as_deref()==Some("1"));
                 }
+                "board-button" => {
+                    let (Some(id),Some(pressed))=(field("id"),field("pressed").filter(|v|v=="0" || v=="1")) else {continue};
+                    if id.len()<=64 {let cycle=self.bus.cycles();self.bus.board().button_at(cycle,&id,pressed=="1");}
+                }
                 _ => {}
             }
         }

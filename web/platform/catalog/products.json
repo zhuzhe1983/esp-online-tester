@@ -10885,16 +10885,17 @@
       "module": "ESP32-S3",
       "summary": "ESP32-S3 驱动的 3.97 英寸电子纸阅读/语音设备，带电容触摸、microSD 与三轴加速度计。",
       "runtime": {
-        "board": null,
+        "board": "metalio-ink4",
         "flashMb": 16,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 8,
+        "status": "partial"
       },
       "display": {
         "width": 480,
         "height": 800,
         "type": "e-paper",
-        "controller": "SSD1677"
+        "controller": "SSD1677",
+        "touch": true
       },
       "controls": [
         {
@@ -10906,17 +10907,37 @@
         {
           "id": "volume-up",
           "name": "Volume + · TCA9555 P1.0",
-          "type": "button"
+          "type": "button",
+          "transport": "board"
         },
         {
           "id": "volume-down",
           "name": "Volume − · TCA9555 P0.7",
-          "type": "button"
+          "type": "button",
+          "transport": "board"
         },
         {
           "id": "touch",
           "name": "CST816S touch + cover virtual keys",
           "type": "touch"
+        },
+        {
+          "id": "home",
+          "name": "Home · CST816S cover",
+          "type": "button",
+          "transport": "board"
+        },
+        {
+          "id": "previous",
+          "name": "Previous · CST816S cover",
+          "type": "button",
+          "transport": "board"
+        },
+        {
+          "id": "next",
+          "name": "Next · CST816S cover",
+          "type": "button",
+          "transport": "board"
         }
       ],
       "interfaces": [
@@ -10998,12 +11019,15 @@
         }
       ],
       "limitations": [
-        "本型号板级模拟器尚未完成适配；当前提供外观预览与产品/固件资料。",
+        "已实现普通 INK4 的 SSD1677、CST816S 与 TCA9555 数字模型；官方 2.0.53 已启动至主页，其他版本可尝试运行。",
         "厂家 STL 的全部原始三角形与组件装配保留；STL 无显式单位，按与标称屏幕及产品图相符的毫米解释。",
         "显示有效区及盖板印刷标记依据官方照片/屏幕标称对角线推算，不代表内部器件或触摸坐标已校准。",
         "厂家外观模型不含可核验的完整PCB布局；内部为UNKNOWN空白占位，不将不明CAD细节冒称具体电子器件。",
         "尚未与实物/独立尺寸图完成完整1:1验收；侧键物理顺序未绑定电气控制。",
-        "照片含 4G 标识，源码主要描述 Wi-Fi 板型；未核实 4G SKU、模组与所有硬件版次，不合并为已确认配置。"
+        "照片含 4G 标识，源码主要描述 Wi-Fi 板型；未核实 4G SKU、模组与所有硬件版次，不合并为已确认配置。",
+        "当前使用 8 MiB PSRAM 测试配置，未据此认定实机容量；官方源码仅确认 Octal PSRAM。",
+        "电量计、RTC、IMU、音频、Wi-Fi/蓝牙与 4G 尚未实现；电子纸波形和触摸扫描时序未按实物校准。",
+        "microSD 已有物理路由，网页接卡及此固件存储功能仍在验证。"
       ]
     },
     {
