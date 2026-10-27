@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-10-27T15:30:00Z",
+  "surface": "headless Chromium workbench; existing task-owned isolated profile",
+  "source": {
+    "url": "https://raw.githubusercontent.com/zhuzhe1983/esp-online-tester/main/web/wasm/fw/public/hello_world.bin",
+    "sha256": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9"
+  },
+  "steps": [
+    "Select remote BIN automatic detection",
+    "Download and run original remote bytes",
+    "Reload the workbench",
+    "Select the stored hello_world history entry",
+    "Download and run from restored history; pause"
+  ],
+  "observed": {
+    "historyName": "hello_world",
+    "historyVersion": "1",
+    "historyBootMode": "app-direct",
+    "historyEntriesForUrl": 1,
+    "restoredSceneBootMode": "app-direct",
+    "loadedReceiptAppDirect": true,
+    "finalState": "paused",
+    "lastError": null,
+    "noCompleteImageValidationError": true
+  },
+  "limits": [
+    "Tests loader/history behavior, not successful firmware startup.",
+    "S3 hello app through application-direct does not reach Hello world; guest startup diagnostics remain visible.",
+    "Initial delayed pause evaluation did not return promptly during rapid serial output; task command was stopped and page reloaded. Immediate-pause observer on the history reload subsequently reached paused.",
+    "A first read during the reload probe hit null firmware; final stable state was read again and is recorded above.",
+    "No physical hardware was flashed; no private firmware or browser data was cleared."
+  ]
+}

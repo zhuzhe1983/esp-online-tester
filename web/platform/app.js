@@ -30,7 +30,7 @@ let catalog, scene, runtime, sceneView, humanButtons, api, detachBridge, localDe
 let busy = false, frameCount = 0, renderedProduct = '', renderedScene = '', recordingControl = null, toastTimer, localFile = null, editingAccessoryId = null, uiConfiguring = false;
 let transportUi, knowledgePanel, firmwareUpdates, recordingDocument = null, recordingState = {status: 'idle'};
 let downloadView = null, loadProgress = null, runAfterLoad = false;
-let firmwareHistory, burnerUi, pendingRemoteHistory;
+let firmwareHistory, burnerUi, pendingRemoteHistory, remoteModeSelection;
 let preserveUnspecifiedFirmware = false;
 let orientationSettlement = null;
 let localFiles = [], localSource = null, localSelectionToken = 0;
@@ -46,6 +46,9 @@ const errorMessages = {
   FETCH_FAILED: '固件下载失败，请检查地址与远程服务器的 CORS 设置。',
   INCOMPLETE_IMAGE: '需要从地址 0 开始的完整 Flash 镜像。单独 app.bin 请改用包含启动镜像的清单。',
   HASH_MISMATCH: '下载内容与 SHA-256 校验值不一致。',
+  APP_IMAGE_CHECKSUM: '应用镜像校验失败，不能切换启动模式。',
+  APP_IMAGE_DIGEST: '应用镜像内置 SHA-256 校验失败。',
+  APP_IMAGE_INVALID: '这不是完整的应用镜像，请检查固件文件或提供烧录清单。',
 };
 
 function text(id, value) { const node = $(id); if (node) node.textContent = value; }
@@ -200,8 +203,8 @@ function onRuntimeEvent(event) {
     }
     if (['configured', 'loading', 'error', 'disposed'].includes(status)) text('runtime-speed', '');
     renderTransport(); renderEmpty(); renderDownloadProgress();
-    if (status === 'ready') text('load-status', '固件已加载并校验，可以启动。');
-    else if (status === 'running') text('load-status', '固件正在本地 WebAssembly 中执行。');
+    if (status === 'ready') text('load-status', event.state.firmware?.appDirect?'应用镜像已校验，将跳过 bootloader 直接启动。':'固件已加载并校验，可以启动。');
+    else if (status === 'running') text('load-status', event.state.firmware?.appDirect?'应用直启运行中；未提供 bootloader 和分区表，存储初始化与重启可能失败。':'固件正在本地 WebAssembly 中执行。');
     else if (status === 'loading') text('load-status', '正在读取固件并初始化 WebAssembly…');
   } else if (event.type === 'leds') {
     sceneView?.updateLeds(event.leds);
@@ -378,6 +381,7 @@ function reflectFirmwareSource({preserveLocal = false} = {}) {
   const known = catalog.firmwares.find(item => item.productIds.includes(scene.productId) && firmwareSourceMatches(item.source, scene.firmware));
   if (known && $('firmware-select')) { $('firmware-select').value = known.id; renderFirmwareNote(known); setFirmwareTab('library'); }
   else if ($('firmware-url')) {
+    remoteModeSelection=scene.firmware.bootMode?{url:scene.firmware.url,sha256:scene.firmware.sha256||'',bootMode:scene.firmware.bootMode}:null;
     $('firmware-url').value = scene.firmware.manifestUrl || scene.firmware.url || '';
     const burner=burnerUi?.current()?.source.url===scene.firmware.url&&isM5Stack(product());
     $('firmware-kind').value = burner?'m5burner':scene.firmware.manifestUrl ? 'manifest' : 'merged'; $('firmware-sha').value = scene.firmware.sha256 || ''; setFirmwareTab('remote');
@@ -395,7 +399,9 @@ function sourceFromInputs() {
     }
     const url = $('firmware-url').value.trim(); if (!url) throw new Error('请输入固件地址。');
     const result = {[ $('firmware-kind').value === 'manifest' ? 'manifestUrl' : 'url' ]: url};
-    const hash = $('firmware-sha').value.trim(); if (hash) result.sha256 = hash; return result;
+    const hash = $('firmware-sha').value.trim(); if (hash) result.sha256 = hash;
+    if(result.url&&remoteModeSelection?.url===url&&remoteModeSelection.sha256===hash)result.bootMode=remoteModeSelection.bootMode;
+    return result;
   }
   const selected = catalog.firmwares.find(item => item.id === $('firmware-select')?.value);
   if (!selected?.source) throw new Error('此资料入口尚缺可启动镜像；可从远程地址或本地文件加载完整镜像，或补齐 flasher_args.json 所列文件。');
@@ -535,6 +541,7 @@ async function loadSelected() {
   const known = currentCatalogFirmware();
   const history = !embedded && firmwareTab === 'remote' ? {
     url:source.manifestUrl || source.url, kind:source.manifestUrl ? 'manifest' : 'merged', sha256:source.sha256 || '',
+    ...(source.bootMode?{bootMode:source.bootMode}:{}),
     productId:scene.productId, lastUsedAt:Date.now(), name:known?.name || firmwareHistoryName(source.manifestUrl || source.url), version:known?.version || known?.revision || '',
     ...(known?.provider==='m5burner'?{provider:'m5burner',deviceId:known.deviceId}:{}),
   } : null;
@@ -544,11 +551,13 @@ async function loadSelected() {
   if (history) {
     const metadata = state.firmware?.metadata;
     const digest = state.firmware?.manifestHash || state.firmware?.artifacts[0]?.sha256;
+    if(!source.manifestUrl)history.bootMode=state.firmware?.appDirect?'app-direct':'rom';
     const catalogMatch = known?.source?.sha256 && known.source.sha256.toLowerCase() === digest;
     if(history.provider==='m5burner'){
-      pendingRemoteHistory={...history,sha256:digest};burnerUi?.pin(digest);
+      pendingRemoteHistory={...history,sha256:digest};burnerUi?.pin(digest,history.bootMode);
     }else firmwareHistory?.remember({...history, name:catalogMatch ? history.name : metadata?.name || firmwareHistoryName(history.url), version:catalogMatch ? history.version || metadata?.version : metadata?.version || ''});
   }
+  if(state.firmware?.appDirect)toast('已识别为应用镜像，采用应用直启；未提供 bootloader 和分区表，部分功能可能不可用。');
   return source;
 }
 function defaultFirmware(next) {
@@ -797,6 +806,7 @@ async function releaseHumanInputs() {
 function setupEvents() {
   burnerUi=mountM5Burner({mount:$('firmware-burner'),onChange:renderTransport});burnerUi?.setProduct(product());
   firmwareHistory = mountFirmwareHistory({input:$('firmware-url'),kindInput:$('firmware-kind'),shaInput:$('firmware-sha'),mount:$('firmware-history-mount'),productId:()=>scene.productId,onSelect:entry=>{
+    remoteModeSelection=entry.bootMode?{url:entry.url,sha256:entry.sha256,bootMode:entry.bootMode}:null;
     if(isM5Stack(product())&&burnerUi?.restore(entry))$('firmware-kind').value='m5burner';
     updateRemoteMode();renderTransport();text('load-status','已选取历史地址，点击“下载并运行”加载。');
   }});

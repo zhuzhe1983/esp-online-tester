@@ -75,7 +75,7 @@ export function mountM5Burner({mount,onChange,client=createM5BurnerClient()}) {
   return {
     setProduct,activate(){if(product&&!loading&&!versionLoading&&!selected){if(rows.length)void chooseFirmware();else void runSearch();}},deactivate(){cancel();controls();},
     current:()=>selected, setDisabled(value){locked=value;controls();},
-    pin(hash){if(selected)selected.source.sha256=hash;},
+    pin(hash,bootMode){if(selected){selected.source.sha256=hash;if(bootMode)selected.source.bootMode=bootMode;}},
     restore(entry){const firmware=burnerHistoryFirmware(entry);if(!firmware||entry.productId!==product?.id)return false;cancel();selected=firmware;device=null;rows=[];versions=[];next.hidden=true;
       firmwareSelect.replaceChildren(new Option(firmware.name,firmware.firmwareId));versionSelect.replaceChildren(new Option(firmware.revision,firmware.versionId));identity.textContent=`M5Burner · ${product.name}`;message.textContent='已恢复历史版本，可直接运行，也可重新搜索。';controls();notify();return true;},
   };

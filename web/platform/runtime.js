@@ -11,6 +11,7 @@ import { validateLoRaPacket } from './lora-input.js';
 import { firmwareCache } from './firmware-cache.js';
 import { assembleLocalFirmware } from './local-firmware.js';
 import {firmwareMetadata} from './firmware-metadata.js';
+import {chipIdForBoard,validateAppImage} from './app-image.js';
 import { createDeviceStorage, deviceStorageScope } from './device-storage.js';
 
 export const API_VERSION = '1.0.0';
@@ -132,7 +133,7 @@ export function validateMergedImage(data, board, flashBytes, {partitionTableOffs
     'INCOMPLETE_IMAGE', 'A raw BIN must be a merged flash image starting at offset 0, containing a bootloader and partition table at 0x8000. Use a manifest for separate app, bootloader and partition images.');
   // ESP-IDF image header chip IDs: ESP32=0, S3=9, C3=5, C6=13, P4=18.
   const chipId = bytes[bootOffset + 12] | bytes[bootOffset + 13] << 8;
-  const expected = /^(esp32|ttgo-tdisplay)$/.test(board) ? 0 : board === 'esp32c3' ? 5 : board.includes('c6') ? 13 : board === 'esp32p4' ? 18 : 9;
+  const expected = chipIdForBoard(board);
   requireValue(chipId === expected, 'CHIP_MISMATCH', 'Firmware image targets a different ESP32 chip.', { expected, actual: chipId });
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const completeImage = (at, end) => {
@@ -425,6 +426,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   };
   const prepare = async (source, progress) => {
     requireValue(source && typeof source === 'object', 'FIRMWARE_REQUIRED', 'Select a firmware manifest or merged flash image first.');
+    requireValue(source.bootMode===undefined||['rom','app-direct'].includes(source.bootMode),'INVALID_BOOT_MODE','Unknown firmware boot mode.');
+    requireValue(!source.bootMode||source.url&&!source.manifestUrl&&!source.file&&!source.files,'INVALID_BOOT_MODE','Explicit boot mode is only supported for a remote raw image.');
     const cfg = runtimeConfig(), files = [], receipts = [];
     let total = 0;
     const add = (kind, artifact, at) => {
@@ -487,10 +490,22 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         progress.prepare('verify', 'flash');
         artifact = { data, url: null, sha256: await checkedHash(data, source.sha256) };
       } else artifact = await readArtifact(source, baseUrl, progress, 'flash');
-      validateMergedImage(artifact.data, cfg.board, cfg.flash_mb * MIB);
-      add('flash', artifact);
+      if(source.bootMode==='app-direct') {
+        await validateAppImage(artifact.data,cfg.board,cfg.flash_mb*MIB);cfg.appDirect=true;
+      } else {
+        try {validateMergedImage(artifact.data,cfg.board,cfg.flash_mb*MIB);}
+        catch(cause) {
+          if(cause.code!=='INCOMPLETE_IMAGE'||source.file||source.format==='merged'||source.bootMode==='rom')throw cause;
+          // Inspect the same downloaded bytes before initializing any worker.
+          // Never reinterpret a failed download/hash check or a bootloader as an app.
+          try {await validateAppImage(artifact.data,cfg.board,cfg.flash_mb*MIB);}
+          catch(appError){if(appError.code==='APP_IMAGE_INVALID')throw cause;throw appError;}
+          cfg.appDirect=true;
+        }
+      }
+      add(cfg.appDirect?'app':'flash', artifact);
     }
-    if (!cfg.appDirect && !files.some(f => f.kind === 'rom')) add('rom', await readArtifact(new URL(`wasm/fw/${romFor(cfg.board)}`, assetBaseUrl).href, baseUrl, progress, 'rom'));
+    if ((!cfg.appDirect || !manifest) && !files.some(f => f.kind === 'rom')) add('rom', await readArtifact(new URL(`wasm/fw/${romFor(cfg.board)}`, assetBaseUrl).href, baseUrl, progress, 'rom'));
     return { cfg, files, receipt: { manifestUrl, manifestHash, metadata:firmwareMetadata(files,manifest), source: source.file || localLayout ? 'local' : 'remote', ...(localLayout ? {localLayout} : {}), artifacts: receipts, appDirect: !!cfg.appDirect, stubs: cfg.stubs || [], executionMode: cfg.jit === false ? 'wasm-interpreter' : 'wasm-jit' } };
   };
   const initialize = async (bundle, progress) => {
@@ -692,7 +707,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         await initialize(bundle, progress); loaded = bundle; firmware = bundle.receipt;
         if (bundle.receipt.source === 'remote') scene.firmware = bundle.receipt.manifestUrl
           ? { manifestUrl: bundle.receipt.manifestUrl, sha256: bundle.receipt.manifestHash }
-          : { url: bundle.receipt.artifacts[0].url, sha256: bundle.receipt.artifacts[0].sha256 };
+          : { url: bundle.receipt.artifacts[0].url, sha256: bundle.receipt.artifacts[0].sha256, ...(bundle.receipt.appDirect?{bootMode:'app-direct'}:selected.bootMode?{bootMode:'rom'}:{}) };
         setStatus('ready'); return snapshot();
       }
       catch (e) { stopWorker(); if (status !== 'disposed') setStatus(loadCancelled ? 'configured' : 'error'); if (loadCancelled) throw error('FETCH_ABORTED', 'Firmware load was cancelled.'); throw e; }

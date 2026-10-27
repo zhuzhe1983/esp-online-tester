@@ -32,7 +32,7 @@ export function burnerFirmware(project,version,deviceId) {
 }
 export function burnerHistoryFirmware(entry) {
   const ids=parseBurnerDownload(entry?.url);if(entry?.provider!=='m5burner'||!ids)return null;
-  return {...burnerFirmware({firmwareId:ids.firmwareId,firmwareName:entry.name||'M5Burner 固件'}, {versionId:ids.versionId,versionName:entry.version||'版本未知'},entry.deviceId),source:{url:entry.url,...(entry.sha256?{sha256:entry.sha256}:{})}};
+  return {...burnerFirmware({firmwareId:ids.firmwareId,firmwareName:entry.name||'M5Burner 固件'}, {versionId:ids.versionId,versionName:entry.version||'版本未知'},entry.deviceId),source:{url:entry.url,...(entry.sha256?{sha256:entry.sha256}:{}),...(['rom','app-direct'].includes(entry.bootMode)?{bootMode:entry.bootMode}:{})}};
 }
 export function createM5BurnerClient(fetchImpl=globalThis.fetch) {
   let devicesCache=null;

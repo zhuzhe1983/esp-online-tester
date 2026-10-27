@@ -19,7 +19,7 @@ assert.equal(publicCatalog.products.some(product => product.id === HELLO_PRODUCT
 const catalog = await withPlatformTestFixtures(publicCatalog, baseUrl);
 const workerInputDelay = Number(process.env.ESP32SIM_TEST_WORKER_DELAY_MS || 0);
 assert.ok(Number.isFinite(workerInputDelay) && workerInputDelay >= 0 && workerInputDelay <= 5000, 'ESP32SIM_TEST_WORKER_DELAY_MS must be 0…5000');
-const responseOverrides = new Map();
+const responseOverrides = new Map(), fetchCounts = new Map(), workerStarts = [];
 const readArtifactFile = async (path, romDir = process.env.ESP32SIM_ROM_DIR) => {
   try { return await readFile(path); }
   catch (e) {
@@ -29,6 +29,7 @@ const readArtifactFile = async (path, romDir = process.env.ESP32SIM_ROM_DIR) => 
   }
 };
 const fileFetch = async value => {
+  fetchCounts.set(String(value),(fetchCounts.get(String(value))||0)+1);
   if (responseOverrides.has(String(value))) return new Response(responseOverrides.get(String(value)));
   const url = new URL(value), path = url.protocol === 'file:' ? url : new URL(`web${url.pathname}`, root);
   try { const bytes = await readArtifactFile(path); return new Response(bytes, { headers: { 'content-length': String(bytes.length) } }); }
@@ -47,7 +48,7 @@ const workerFactory = url => {
       globalThis.onmessage({data});
     });`;
   const thread = new Worker(new URL(`data:text/javascript,${encodeURIComponent(script)}`));
-  const adapter = { postMessage: (...args) => thread.postMessage(...args), terminate: () => thread.terminate() };
+  const adapter = { postMessage: (...args) => {if(args[0].op==='start')workerStarts.push(args[0].appDirect);thread.postMessage(...args);}, terminate: () => thread.terminate() };
   thread.on('message', data => adapter.onmessage?.({ data }));
   thread.on('error', event => adapter.onerror?.(event));
   return adapter;
@@ -196,6 +197,25 @@ try {
   await runtime.pause();
   await expectCode(() => api.waitFor({ serialIncludes: 'Hello world!', fromNow: true, timeoutMs: 25 }), 'WAIT_TIMEOUT');
   console.log('ok real worker/WASM: hello boot, pause freezes instructions, resume preserves machine, reset reboots, share pins hash');
+
+  await step('remote app-only detection, direct dispatch and pinned mode reload', async () => {
+    const url='https://platform.example/wasm/fw/public/hello_world.bin?app-only-test';
+    const loaded=await runtime.loadFirmware({url});
+    assert.equal(loaded.firmware.appDirect,true);assert.equal(loaded.scene.firmware.bootMode,'app-direct');
+    assert.deepEqual(loaded.firmware.artifacts.map(f=>f.kind),['app','rom']);
+    assert.equal(fetchCounts.get(url),1,'Format detection reuses the download instead of retrying the URL');
+    await runtime.start();await waitForStats(stats=>stats.insns>0);await runtime.pause();
+    assert.equal(workerStarts.at(-1),true,'Worker must receive the selected app-direct boot mode');
+    // This IDF image requires its bootloader environment: application-direct can
+    // execute but does not promise Hello, storage initialization or reset support.
+    const saved=structuredClone((await runtime.observe()).scene);
+    await runtime.configure(saved);await runtime.loadFirmware();await runtime.start();
+    await waitForStats(stats=>stats.insns>0);await runtime.pause();assert.equal(workerStarts.at(-1),true);
+    await expectCode(()=>runtime.loadFirmware({url,bootMode:'rom'}),'INCOMPLETE_IMAGE');
+    await expectCode(()=>runtime.loadFirmware({url,bootMode:'app-direct',sha256:'0'.repeat(64)}),'HASH_MISMATCH');
+    const bootUrl='https://platform.example/wasm/fw/public/hello-bootloader.bin';
+    await expectCode(()=>runtime.loadFirmware({url:bootUrl}),'INCOMPLETE_IMAGE');
+  });
 
   const stopwatchScene = createDefaultScene(catalog, 'm5stack-stopwatch');
   stopwatchScene.accessories.push({ id: 'gps-test', catalogId: 'm5stack-gps-u032', parameters: { latitude: 31.2304, longitude: 121.4737 }, wiring: { mode: 'logical', port: 'uart1' } });

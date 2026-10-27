@@ -34,7 +34,7 @@ After a Burner selection is downloaded and execution starts, its fixed-version U
 | GPS U032 / U032-V11 | Separate revision records, parameter configuration, checksummed RMC/GGA into UART1 | Logical input; bypasses physical pins, power, baud timing and RF |
 | Unit Button U027 V1.0 | 3D/panel/API press and detach events drive StopWatch Port A GPIO11; Grove 5V gating and guest pull behavior verified in real WASM | Partial: only this SKU/host/port; steady digital levels, no RC/bounce/analog contention or hardware comparison. [Evidence](unit-button-runtime.md) |
 | Angle U005 / RGB U003 | Manufacturer-derived 3D assets, sourced dimensions, connector records and separate knowledge entries | Visual configuration only; ADC and SK6812 behavior is not implemented |
-| Firmware | Manifest, remote/local merged BIN, local flasher_args.json build segments, SHA-256 receipts | Remote server must allow CORS; local app binaries need their build layout and companion files |
+| Firmware | Manifest, remote merged/app-only BIN, local merged BIN or flasher_args.json build segments, SHA-256 receipts | Remote server must allow CORS; local app binaries need their build layout and companion files |
 | Playback | 3D/2D display, rotate/zoom, buttons/touch, keyboard mapping, pause/resume/reset, frame capture | Source-backed models retain per-product partial status and verification reports; host input is not cycle-exact |
 | Catalogs / DIY | Product/accessory/firmware JSON, schemas, semantic validation, private local definitions, import/export | Arbitrary new electrical models require Rust implementation; custom JSON does not execute scripts |
 | Sharing / embedding | Portable URL fragment, independent player, fullscreen, origin/session-bound RPC; incompatible old recordings are omitted with a notice rather than blocking UI sharing | Local firmware bytes must be supplied separately; very large scenes should use JSON export |
@@ -99,7 +99,7 @@ Upstream string file entries remain supported. A manifest can pin every referenc
 }
 ```
 
-The hash string above is explanatory; use real hashes for a runnable manifest. The platform also accepts `{ "url": "application.bin", "sha256": "…" }` file entries. File URLs resolve relative to the manifest. Pin the manifest itself with `scene.firmware.sha256`; pin its files to prevent mutable paths from changing the executed image. Loading records the actual manifest and artifact hashes in `observe().firmware`. Mismatched chip, board, memory, incomplete merged images and oversized inputs are rejected.
+The hash string above is explanatory; use real hashes for a runnable manifest. The platform also accepts `{ "url": "application.bin", "sha256": "…" }` file entries. File URLs resolve relative to the manifest. Pin the manifest itself with `scene.firmware.sha256`; pin its files to prevent mutable paths from changing the executed image. Loading records the actual manifest and artifact hashes in `observe().firmware`. Mismatched chip, board, memory, incomplete merged images and oversized inputs are rejected. Remote raw BINs also accept a structurally validated standalone application using experimental application-direct startup; this does not supply a bootloader or partition layout. The source records `bootMode` and SHA-256, including in browser history and portable scenes. See [remote BIN startup](remote-firmware-boot.md) for the detection checks and limits.
 
 ## Agent and embedding contract
 

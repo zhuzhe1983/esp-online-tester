@@ -34,8 +34,9 @@ export function validateRecording(recording, {scene} = {}) {
   if (!object(recording.scene) || recording.scene.schemaVersion !== '1' || typeof recording.scene.productId !== 'string' || !object(recording.scene.firmware)) add('RECORDING_SCENE','/scene','Recording needs its configured scene and remote firmware source.');
   else {
     keys(recording.scene,['schemaVersion','productId','firmware','accessories','keyMapping','view','localAccessories'],'/scene');
-    keys(recording.scene.firmware,['manifestUrl','url','sha256'],'/scene/firmware');
+    keys(recording.scene.firmware,['manifestUrl','url','sha256','bootMode'],'/scene/firmware');
     const source=recording.scene.firmware;
+    if(source.bootMode!==undefined&&(!source.url||!['rom','app-direct'].includes(source.bootMode)))add('RECORDING_SOURCE','/scene/firmware/bootMode','Invalid raw-image boot mode.');
     if(Boolean(source.url)===Boolean(source.manifestUrl)||!sourceUrl(source.url||source.manifestUrl)||!hashPattern.test(source.sha256))add('RECORDING_SOURCE','/scene/firmware','A recording requires an absolute remote source with its SHA-256 pinned.');
     if(!Array.isArray(recording.scene.accessories)||!object(recording.scene.keyMapping)||!object(recording.scene.view))add('RECORDING_SCENE','/scene','Scene accessories, keyMapping and view are required.');
   }

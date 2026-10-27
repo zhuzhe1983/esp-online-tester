@@ -53,6 +53,12 @@ try{
   assert.equal(recording.events.at(-1).down,false);assert.equal(recording.events.at(-2).pressed,false);
   assert.equal(validateRecording(recording).valid,true);
   assert.deepEqual(decodeRecording(encodeRecording(recording)),recording);
+  const direct=structuredClone(recording);
+  direct.scene.firmware={url:'https://example.org/app.bin',sha256:'b'.repeat(64),bootMode:'app-direct'};
+  direct.firmware={...direct.firmware,manifestUrl:null,manifestHash:null,appDirect:true};
+  assert.equal(validateRecording(direct).valid,true);
+  assert.equal(decodeRecording(encodeRecording(direct)).scene.firmware.bootMode,'app-direct');
+  assert.equal(validateRecording(direct,{scene:{...direct.scene,firmware:{...direct.scene.firmware,bootMode:'rom'}}}).valid,false,'Different boot modes cannot silently replay as the same scene');
   const shared=new URL(await api.share({mode:'embed'}));
   assert.ok(new URLSearchParams(shared.hash.slice(1)).has('recording'));
   console.log('ok recording: reset, successful acknowledgements only, button semantics, normalized drag and cleanup releases');

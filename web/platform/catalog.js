@@ -133,7 +133,8 @@ export function validateScene(scene, catalog) {
   if (scene.firmware === null) warnings.push(issue('FIRMWARE_MISSING', '/firmware', 'Choose a firmware artifact before running.'));
   else if (!record(scene.firmware)) errors.push(issue('FIRMWARE', '/firmware', 'Firmware must be null or a source object.'));
   else {
-    allowedKeys(scene.firmware, ['manifestUrl', 'url', 'sha256'], '/firmware', errors);
+    allowedKeys(scene.firmware, ['manifestUrl', 'url', 'sha256', 'bootMode'], '/firmware', errors);
+    if(scene.firmware.bootMode!==undefined&&(!scene.firmware.url||!['rom','app-direct'].includes(scene.firmware.bootMode)))errors.push(issue('FIRMWARE_BOOT_MODE','/firmware/bootMode','Boot mode requires a raw URL and must be rom or app-direct.'));
     if (Boolean(scene.firmware.manifestUrl) === Boolean(scene.firmware.url)) errors.push(issue('FIRMWARE_SOURCE', '/firmware', 'Specify exactly one manifestUrl or merged image url.'));
     for (const key of ['manifestUrl', 'url']) if (scene.firmware[key] !== undefined && !remoteUrl(scene.firmware[key])) errors.push(issue('FIRMWARE_URL', `/firmware/${key}`, 'Use an absolute HTTPS URL, or loopback HTTP for local development.'));
     if (scene.firmware.sha256 !== undefined && !/^[a-f0-9]{64}$/i.test(scene.firmware.sha256)) errors.push(issue('FIRMWARE_HASH', '/firmware/sha256', 'SHA-256 must contain 64 hexadecimal digits.'));

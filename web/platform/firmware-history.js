@@ -9,10 +9,11 @@ function normalized(entry) {
   if (url.protocol !== 'https:' || url.username || url.password || !Number.isFinite(entry.lastUsedAt) || entry.lastUsedAt <= 0) return null;
   const sha256 = typeof entry.sha256 === 'string' ? entry.sha256.trim().toLowerCase() : '';
   if (sha256 && !/^[a-f0-9]{64}$/.test(sha256)) return null;
+  if(entry.bootMode!==undefined&&(entry.kind!=='merged'||!['rom','app-direct'].includes(entry.bootMode)))return null;
   url.hash = '';
   const burner=entry.provider==='m5burner'&&parseBurnerDownload(url.href);
   return {url:url.href, kind:entry.kind, sha256, productId:clean(entry.productId), name:clean(entry.name), version:clean(entry.version), lastUsedAt:entry.lastUsedAt,
-    ...(burner?{provider:'m5burner',deviceId:typeof entry.deviceId==='string'&&/^\d{1,30}$/.test(entry.deviceId)?entry.deviceId:''}:{})};
+    ...(entry.bootMode?{bootMode:entry.bootMode}:{}),...(burner?{provider:'m5burner',deviceId:typeof entry.deviceId==='string'&&/^\d{1,30}$/.test(entry.deviceId)?entry.deviceId:''}:{})};
 }
 const key = entry => JSON.stringify([entry.productId, entry.kind, entry.url, entry.provider==='m5burner'?'':entry.sha256]);
 export function createFirmwareHistory(getStorage = () => globalThis.localStorage) {
@@ -68,7 +69,7 @@ export function mountFirmwareHistory({input, kindInput, shaInput, productId, onS
     entries = store.list(productId()); region.hidden = !entries.length;
     select.replaceChildren(new Option('选择历史地址…', ''));
     entries.forEach((entry,index) => {
-      const option = new Option(`${entry.name || firmwareHistoryName(entry.url)} · ${entry.version || '版本未知'} · ${firmwareHistoryAge(entry.lastUsedAt)}`, String(index));
+      const option = new Option(`${entry.name || firmwareHistoryName(entry.url)} · ${entry.version || '版本未知'}${entry.bootMode==='app-direct'?' · 应用直启':''} · ${firmwareHistoryAge(entry.lastUsedAt)}`, String(index));
       option.title = `${entry.url}\n${new Date(entry.lastUsedAt).toLocaleString('zh-CN')}`; select.append(option);
     });
     detail.textContent = store.persistent ? '地址记录仅保存在此浏览器；清空记录不影响固件缓存。' : '浏览器不允许保存记录，本次历史仅在当前页面有效。';
@@ -77,7 +78,7 @@ export function mountFirmwareHistory({input, kindInput, shaInput, productId, onS
     if (select.value === '') return;
     const entry = entries[Number(select.value)]; if (!entry) return;
     input.value = entry.url; kindInput.value = entry.kind; shaInput.value = entry.sha256;
-    detail.textContent = `${entry.name || firmwareHistoryName(entry.url)} · ${entry.version || '版本未知'} · ${entry.kind === 'manifest' ? '固件清单' : '完整镜像'} · ${new Date(entry.lastUsedAt).toLocaleString('zh-CN')}`;
+    detail.textContent = `${entry.name || firmwareHistoryName(entry.url)} · ${entry.version || '版本未知'} · ${entry.kind === 'manifest' ? '固件清单' : entry.bootMode==='app-direct'?'应用直启':'Flash 镜像'} · ${new Date(entry.lastUsedAt).toLocaleString('zh-CN')}`;
     input.title = entry.url; onSelect?.(entry);
   });
   clear.addEventListener('click', () => { store.clear(productId()); render(); });

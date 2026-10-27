@@ -39,6 +39,12 @@
             "sha256": {
               "type": "string",
               "pattern": "^[a-fA-F0-9]{64}$"
+            },
+            "bootMode": {
+              "enum": [
+                "rom",
+                "app-direct"
+              ]
             }
           },
           "oneOf": [
@@ -62,7 +68,12 @@
                 ]
               }
             }
-          ]
+          ],
+          "dependentRequired": {
+            "bootMode": [
+              "url"
+            ]
+          }
         }
       ]
     },
