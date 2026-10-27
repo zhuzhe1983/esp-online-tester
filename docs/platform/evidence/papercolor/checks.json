@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-27T17:16:00.566454+00:00",
+  "baseCommit": "f14d5634",
+  "rust": "1.99.1 (58cf8f9c3 2026-10-13)",
+  "passed": {
+    "nativeClippyWarningsDenied": true,
+    "wasmJitClippyWarningsDenied": true,
+    "workspaceReleaseTests": 1439,
+    "workspaceResultGroups": 132,
+    "goldensRegenerated": false,
+    "wasmManifestRuns": 11,
+    "platformTests": 100,
+    "catalogSchema": true,
+    "actualRecordingEvents": 18,
+    "recordingFramebufferEqual": true,
+    "wasmSections": true,
+    "nativeVirtualScheduler": true,
+    "wasmTimingAndBle": true,
+    "workerAndTouchTests": true,
+    "benchmarkReceiptTests": true,
+    "jitDifferentialCases": 111126,
+    "jitGpioCases": 24,
+    "wasmProfileBuild": true,
+    "retainedX5Contracts": true,
+    "manufacturerModelAssetsBitIdentical": 7,
+    "browserAndMini": true
+  },
+  "commands": [
+    "rustup update stable",
+    "cargo build --release --workspace",
+    "cargo clippy --workspace --all-targets -- -D warnings",
+    "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "ESP32SIM_ROM_DIR=$PWD/web/wasm/fw cargo test --release --workspace -- --include-ignored --skip external_",
+    "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+    "tools/wasm-build.sh",
+    "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+    "ESP32SIM_ROM_DIR=$PWD/web/wasm/fw node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+    "node --test tools/platform-*-test.mjs",
+    "node tools/platform-recording-test.mjs --real",
+    "tools/wasm-jit-test.sh",
+    "python3 tools/validate-platform-catalog.py",
+    "python3 tools/rebuild-product-model.py build m5stack-c151 --scratch output/papercolor-model-final"
+  ],
+  "notes": [
+    "Relative ROM directory initially failed classic-camera test lookup; rerun with absolute ESP32SIM_ROM_DIR passed every group.",
+    "Python catalog/model validation used an environment with jsonschema/numpy/trimesh installed.",
+    "No Xtensa core/JIT or CPU acceleration changes; three unchanged hello workloads compare in cpu.json.",
+    "Profiling build does not replace production web/wasm/esp32sim.wasm."
+  ],
+  "artifacts": {
+    "web/wasm/esp32sim.wasm": "a20d52e4083534b3fbd2f9a0584521a53a01c713e48826ea4f85ad18087e75a6",
+    "web/platform/assets/m5stack-c151/geometry.bin": "a6cdbddc9062f9fa46ca0b05deb58ba640b154290679d7195fc33acabe56e9cf",
+    "esp32s3/src/board/papercolor.rs": "aff600b2de4c2bc6e5daf041dd58aabddedd23de7492eb31aa0ecbb869e4a4b3",
+    "esp-soc/src/devices/ed2208.rs": "f25d821623f9e58dd98f1a8885e5bd3cdf28c86deb0e813c1678ef94ced2060b",
+    "esp-periph/src/i2c/sht4x.rs": "2bb19851c417250297f919b17d57a7d918504757f0731527c11996fc06ef2b6a"
+  }
+}

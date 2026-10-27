@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T19:15:42Z",
+  "updatedAt": "2026-10-27T17:07:23Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -673,6 +673,88 @@
       ],
       "method": "Fixed original-pixel masks and independent mm planes; source images are unmodified except alpha and crop. Recess plane selected from manufacturer CAD planar-face audit.",
       "uncertainty": "Paper boundary +/-0.3mm; optical cover diameter +/-0.5mm. Printed-paper images do not establish calibrated optics or firmware output."
+    },
+    {
+      "id": "runtime-display-route",
+      "label": "屏幕物理通信",
+      "value": {
+        "clock": 15,
+        "mosi": 13,
+        "cs": 44,
+        "dc": 43,
+        "busy": 11,
+        "reset": 12,
+        "power": "M5PM1 PYG0",
+        "nativePalette": {
+          "black": 0,
+          "white": 1,
+          "yellow": 2,
+          "red": 3,
+          "blue": 5,
+          "green": 6
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "runtime-schematic-pdf",
+        "runtime-m5gfx-tar-gz"
+      ]
+    },
+    {
+      "id": "runtime-button-positions",
+      "label": "物理按键与当前公开库映射",
+      "value": {
+        "upper": {
+          "gpio": 10,
+          "controlId": "button-b"
+        },
+        "lower": {
+          "gpio": 9,
+          "controlId": "button-a"
+        },
+        "top": {
+          "gpio": 1,
+          "controlId": "button-c"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "runtime-schematic-pdf",
+        "runtime-m5unified-tar-gz"
+      ],
+      "notes": "按 M5Unified 46aa9ede 的当前 BtnA/B/C 映射；官方使用指南及已执行 v1.0.1 镜像通过长按顶部 C 重新配网。该镜像自报48a1057-dirty，不能认为逐字节对应当前公开源码。"
+    },
+    {
+      "id": "runtime-internal-i2c",
+      "label": "内部 I2C",
+      "value": {
+        "sda": 3,
+        "scl": 2,
+        "addresses": {
+          "m5pm1": "0x6e",
+          "rx8130": "0x32",
+          "sht40": "0x44"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "runtime-schematic-pdf"
+      ]
+    },
+    {
+      "id": "runtime-rgb",
+      "label": "数字灯链",
+      "value": {
+        "gpio": 21,
+        "count": 2,
+        "power": "M5PM1 PWR_CFG bit2 (LDO3V3_EN)"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "runtime-schematic-pdf",
+        "runtime-m5pm1-pdf"
+      ],
+      "notes": "电气链序已建模；左右光窗到链序的关系未以 PCB 布局或实物逐灯校准。"
     }
   ],
   "revisions": [],
@@ -1037,6 +1119,90 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "runtime-usage-html",
+      "title": "usage.html",
+      "url": "https://docs.m5stack.com/en/guide/papercolor/usage",
+      "resolvedUrl": "https://docs.m5stack.com/en/guide/papercolor/usage",
+      "status": "fetched",
+      "kind": "official-source",
+      "fetchedAt": "2026-10-27T16:30:52Z",
+      "sha256": "1a2975950cbbf5909b2ccb035f1f161e3157c1f80d9d75c709ff878e2eb2e729",
+      "bytes": 178528,
+      "mediaType": "text/html; charset=UTF-8"
+    },
+    {
+      "id": "runtime-schematic-pdf",
+      "title": "schematic.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1239/C151-SCH_PaperColor_V0.5_SCH_PDF_20260424_EN_2026_04_24_11_01_17.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1239/C151-SCH_PaperColor_V0.5_SCH_PDF_20260424_EN_2026_04_24_11_01_17.pdf",
+      "status": "fetched",
+      "kind": "official-datasheet",
+      "fetchedAt": "2026-10-27T16:30:52Z",
+      "sha256": "9f274d721209b2336e51407853b90f5423807538a6231d2044a6702234b0dd9e",
+      "bytes": 900183,
+      "mediaType": "application/pdf"
+    },
+    {
+      "id": "runtime-userdemo-tar-gz",
+      "title": "userdemo.tar.gz",
+      "url": "https://codeload.github.com/m5stack/M5PaperColor-UserDemo/tar.gz/1ff998e0cf3b9ce916f2e0319561d043db21cc4a",
+      "resolvedUrl": "https://codeload.github.com/m5stack/M5PaperColor-UserDemo/tar.gz/1ff998e0cf3b9ce916f2e0319561d043db21cc4a",
+      "status": "fetched",
+      "kind": "official-source",
+      "fetchedAt": "2026-10-27T16:30:54Z",
+      "sha256": "d4625b68b996ff2ea3e3f6c666a4af1804e53d54adda6da70e0c03ef4b079846",
+      "bytes": 1448326,
+      "mediaType": "application/x-gzip"
+    },
+    {
+      "id": "runtime-m5gfx-tar-gz",
+      "title": "m5gfx.tar.gz",
+      "url": "https://codeload.github.com/m5stack/M5GFX/tar.gz/5268353cffabd2925b87ed9bcc05ded4e22cc3d1",
+      "resolvedUrl": "https://codeload.github.com/m5stack/M5GFX/tar.gz/5268353cffabd2925b87ed9bcc05ded4e22cc3d1",
+      "status": "fetched",
+      "kind": "official-source",
+      "fetchedAt": "2026-10-27T16:32:00Z",
+      "sha256": "6b76ee3ee420a8de1c767f76284a8381c5b9462f01858a12aa860cb40baf9b2c",
+      "bytes": 50100846,
+      "mediaType": "application/x-gzip"
+    },
+    {
+      "id": "runtime-m5unified-tar-gz",
+      "title": "m5unified.tar.gz",
+      "url": "https://codeload.github.com/m5stack/M5Unified/tar.gz/46aa9ede24016a70f397884e8fb3c0ccc3a05269",
+      "resolvedUrl": "https://codeload.github.com/m5stack/M5Unified/tar.gz/46aa9ede24016a70f397884e8fb3c0ccc3a05269",
+      "status": "fetched",
+      "kind": "official-source",
+      "fetchedAt": "2026-10-27T16:31:40Z",
+      "sha256": "829c3cf8a0eb23e2e97bf3f0b5621112760978e9c0045c36397b8a9f2ee4082f",
+      "bytes": 548565,
+      "mediaType": "application/x-gzip"
+    },
+    {
+      "id": "runtime-m5pm1-pdf",
+      "title": "m5pm1.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1207/M5PM1_Datasheet_EN.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1207/M5PM1_Datasheet_EN.pdf",
+      "status": "fetched",
+      "kind": "official-datasheet",
+      "fetchedAt": "2026-10-27T16:35:07Z",
+      "sha256": "c6daffd0ab89d8de50c0a19f35f94321bc6c9511ad017dd242a3e765d88a96b6",
+      "bytes": 814731,
+      "mediaType": "application/pdf"
+    },
+    {
+      "id": "runtime-sht4x-pdf",
+      "title": "sht4x.pdf",
+      "url": "https://sensirion.com/resource/datasheet/sht4x",
+      "resolvedUrl": "https://sensirion.com/media/documents/33FD6951/6A7C10A0/HT_DS_Datasheet_SHT4x_V7.3.pdf",
+      "status": "fetched",
+      "kind": "official-datasheet",
+      "fetchedAt": "2026-10-27T16:38:56Z",
+      "sha256": "8db4a43f17149b76811cfb504caaeca4ef844ddc710cb9b45905c51c7ddfe3c2",
+      "bytes": 1049911,
+      "mediaType": "application/pdf"
     }
   ],
   "assets": [
@@ -1193,6 +1359,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-10-28: PaperColor 板级数字子集、固定官方 v1.0.1 ROM/WASM、NVS重启、顶部键/RMT已验证；详情 docs/platform/papercolor-runtime.md。不代表网络桥、TF、音频或任意固件兼容。"
   ]
 }

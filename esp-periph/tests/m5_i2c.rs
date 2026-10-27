@@ -91,7 +91,7 @@ fn stopwatch_shutdown_is_observable_only_after_system_command() {
 #[test]
 fn reattaching_pmic_clears_shutdown_without_changing_host_inputs() {
     let state = Arc::new(Mutex::new(M5pm1State {
-        battery_mv: 4150, charging: true, power_off_requested: false, led_enabled: true, grove_5v_enabled: false, driven_high: 0,
+        battery_mv: 4150, charging: true, ..Default::default()
     }));
     let mut device = M5pm1::new(state.clone());
     write(&mut device, 0x0c, &[0xa1]);
@@ -178,4 +178,16 @@ fn identity_and_battery_registers_are_read_only_and_bursts_increment() {
     let mut expander = M5ioe1::new(Default::default(), 0x1234);
     write(&mut expander, 0x00, &[0, 0, 0, 0x9d]);
     assert_eq!(read(&mut expander, 0x00, 4), [0x34, 0x12, b'A', 0x9d]);
+}
+
+#[test]
+fn pmic_board_input_and_ldo_hold_do_not_override_output_direction() {
+    let state=Arc::new(Mutex::new(M5pm1State{input_mask:2,input_high:2,..Default::default()}));
+    let mut device=M5pm1::new(state.clone());assert_eq!(read(&mut device,0x12,1)[0]&2,2);
+    write(&mut device,0x10,&[2]);write(&mut device,0x13,&[0]);assert_eq!(read(&mut device,0x12,1)[0]&2,0);
+    write(&mut device,0x11,&[2]);assert_eq!(read(&mut device,0x12,1)[0]&2,2);
+    assert!(state.lock().unwrap().ldo3v3_enabled);write(&mut device,0x06,&[0x13]);assert!(!state.lock().unwrap().ldo3v3_enabled);
+    write(&mut device,0x06,&[0x17]);write(&mut device,0x07,&[0x20]);write(&mut device,0x0c,&[0xa1]);assert!(state.lock().unwrap().ldo3v3_enabled);
+    write(&mut device,0x07,&[0]);assert!(!state.lock().unwrap().ldo3v3_enabled);
+    let mut device=M5pm1::new(state.clone());assert_eq!(read(&mut device,0x12,1)[0]&2,2);assert!(state.lock().unwrap().ldo3v3_enabled);
 }

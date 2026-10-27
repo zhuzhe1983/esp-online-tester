@@ -684,17 +684,19 @@
       "productIds": [
         "m5stack-c151"
       ],
-      "status": "trial",
+      "status": "available",
       "source": {
         "url": "https://m5burner-cdn.m5stack.com/firmware/5177aa6732f01298583509e9ac07c7cc.bin",
         "sha256": "0f9c9c0f429cfae2c4ab39ca842bbddf7b1e6f8eb29bbfd2826cb9903f7ee37e"
       },
       "publicationUrl": "https://docs.m5stack.com/en/core/PaperColor",
       "version": "v1.0.1",
-      "compatibility": "unverified",
       "limitations": [
-        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+        "官方 v1.0.1 完整镜像；已验证 ROM 启动、六色引导图、保留 NVS 后重启进入配网二维码，以及长按顶部键重新配网、实际 RGB 提示。",
+        "首次启动按官方程序写入首次启动标志后请求关机，请点击平台“重启”进入主界面；物理电源键与真实电源域尚未模拟。",
+        "客体 AP/HTTP 服务可以初始化；尚无宿主 Wi-Fi 桥，不能用真实手机连接此虚拟 AP 或直接打开其配置门户。",
+        "ED2208 是六色数字刷新子集，颜色为厂家驱动理想值，BUSY 为有限模拟时长，不代表 15–30 秒光学刷新。SHT40 为合成温湿度，RTC 仅寄存器存储，TF 报告无卡。",
+        "音频、可选 Stamp1262 LoRa、定时唤醒及完整电源行为未验证；上下键在默认无图片页面未观察到可验证动作。尚未实机验证。"
       ],
       "sources": [
         {
@@ -711,9 +713,10 @@
       "publisherGroup": "官方",
       "revision": "v1.0.1",
       "watchlistId": "factory-8bd6c4700f806c806b98e9c8ec716c00",
-      "simulationVerified": false,
+      "simulationVerified": true,
       "hardwareValidated": false,
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "sdk": "ESP-IDF 5.5.1"
     },
     {
       "id": "m5stack-k134-v11-official-reference",

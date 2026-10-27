@@ -4,6 +4,7 @@
 //! each LED of a chain sits physically.
 pub mod co5300;
 pub mod ssd1677;
+pub mod ed2208;
 pub mod i2c_bitbang;
 pub mod dcs_panel;
 pub mod spi_bitbang;

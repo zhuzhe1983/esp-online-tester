@@ -20,6 +20,7 @@ pub mod dinmeter;
 pub mod stopwatch;
 pub mod papermono;
 pub mod paperdiy;
+pub mod papercolor;
 pub mod metalio_ink4;
 pub mod cardputer_adv;
 pub mod cardputer;
@@ -37,6 +38,7 @@ pub use dinmeter::*;
 pub use stopwatch::*;
 pub use papermono::*;
 pub use paperdiy::*;
+pub use papercolor::*;
 pub use metalio_ink4::*;
 pub use cardputer_adv::*;
 pub use cardputer::*;
@@ -56,6 +58,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "dial-v11" | "m5stack-dial-v11" => Some(Box::new(Dial::v11())),
         "atoms3-lite" | "m5stack-atoms3-lite" => Some(Box::new(AtomS3Lite::new())),
         "papermono" | "m5stack-papermono" => Some(Box::new(PaperMono::new())),
+        "papercolor" | "m5stack-c151" => Some(Box::new(PaperColor::new())),
         "papermono-lite" | "m5stack-c153-lite" => Some(Box::new(PaperMono::lite())),
         "paperdiy" | "m5stack-k159-b" => Some(Box::new(PaperDiy::new())),
         "metalio-ink4" => Some(Box::new(MetalioInk4::new())),

@@ -13,13 +13,18 @@ pub struct M5pm1State {
     pub led_enabled: bool,
     /// PWR_CFG bit3, retaining output after shutdown only with HOLD_CFG bit6.
     pub grove_5v_enabled: bool,
+    /// PWR_CFG bit2; HOLD_CFG bit5 retains this output after shutdown.
+    pub ldo3v3_enabled: bool,
+    /// Board-wired GPIO inputs. Zero mask preserves legacy board behavior.
+    pub input_mask: u8,
+    pub input_high: u8,
     /// Standard GPIO0..4 driven high in push-pull mode (not open-drain release).
     pub driven_high: u8,
 }
 
 impl Default for M5pm1State {
     fn default() -> Self {
-        Self { battery_mv: 3900, charging: false, power_off_requested: false, led_enabled: true, grove_5v_enabled: false, driven_high: 0 }
+        Self { battery_mv: 3900, charging: false, power_off_requested: false, led_enabled: true, grove_5v_enabled: false, ldo3v3_enabled:true, input_mask:0, input_high:0, driven_high: 0 }
     }
 }
 
@@ -32,7 +37,7 @@ impl M5pm1 {
     pub const ADDRESS: u8 = 0x6e;
 
     pub fn new(state: Arc<Mutex<M5pm1State>>) -> Self {
-        {let mut state=state.lock().expect("M5PM1 state mutex poisoned");state.power_off_requested=false;state.led_enabled=true;state.grove_5v_enabled=false;state.driven_high=0;}
+        {let mut state=state.lock().expect("M5PM1 state mutex poisoned");state.power_off_requested=false;state.led_enabled=true;state.grove_5v_enabled=false;state.ldo3v3_enabled=true;state.driven_high=0;}
         Self {
             registers: Reg8Device::new("m5pm1", &[
                 (0x00, 0x50), (0x01, 0x20), (0x02, 0x05), (0x03, 0x06),
@@ -62,6 +67,7 @@ impl I2cDevice for M5pm1 {
         state.led_enabled = self.registers.regs[0x06] & 0x10 != 0;
         // M5PM1 v1.9 pp.13-14: PWR_CFG[3] boost, HOLD_CFG[6] keeps it at shutdown.
         state.grove_5v_enabled = self.registers.regs[0x06] & 8 != 0 && (!state.power_off_requested || self.registers.regs[0x07] & 0x40 != 0);
+        state.ldo3v3_enabled = self.registers.regs[0x06] & 4 != 0 && (!state.power_off_requested || self.registers.regs[0x07] & 0x20 != 0);
         // M5PM1 manual pp.15–17: MODE/OUT/DRV and two-bit FUNC fields.
         let r=&self.registers.regs;let funcs=u16::from_le_bytes([r[0x16],r[0x17]]);
         let mut high=r[0x10]&r[0x11]&!r[0x13]&0x1f;
@@ -74,6 +80,10 @@ impl I2cDevice for M5pm1 {
     fn read(&mut self) -> u8 {
         let state = self.state.lock().expect("M5PM1 state mutex poisoned");
         self.registers.regs[0x12] = (self.registers.regs[0x12] & !4) | (u8::from(!state.charging) << 2);
+        // M5PM1 v1.9 pp.15–16 GPIO_IN: board inputs override only input-mode GPIOs.
+        // A configured push-pull output overrides the external input observation.
+        let pins=state.input_mask&0x1f;let input=pins&!self.registers.regs[0x10];
+        self.registers.regs[0x12]=(self.registers.regs[0x12]&!pins)|(state.input_high&input)|(state.driven_high&pins);
         [self.registers.regs[0x22], self.registers.regs[0x23]] = state.battery_mv.to_le_bytes();
         self.registers.read()
     }

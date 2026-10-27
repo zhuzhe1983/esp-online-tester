@@ -2628,33 +2628,37 @@
       "summary": "ESP32-S3R8 全彩电子纸终端，采用 4 英寸 400×600 屏幕，内置音频、温湿度、RTC、存储和 1250mAh 电池。",
       "knowledgeUrl": "./knowledge/m5stack-c151.json",
       "runtime": {
-        "board": null,
+        "board": "papercolor",
         "flashMb": 16,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial"
       },
       "display": {
         "width": 400,
         "height": 600,
         "type": "E6 full-color e-paper",
         "controller": "ED2208-DOA / EL040EF1",
-        "bus": "SPI"
+        "bus": "SPI",
+        "touch": false
       },
       "controls": [
         {
           "id": "button-a",
           "type": "button",
-          "pin": 10
+          "pin": 9,
+          "name": "下键"
         },
         {
           "id": "button-b",
           "type": "button",
-          "pin": 9
+          "pin": 10,
+          "name": "上键"
         },
         {
           "id": "button-c",
           "type": "button",
-          "pin": 1
+          "pin": 1,
+          "name": "顶键"
         }
       ],
       "interfaces": [
@@ -2696,9 +2700,8 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "ED2208 六色数字刷新、A/B/C、M5PM1 和两颗 RGB 已建模；SHT40 使用合成环境值。TF 目前报告无卡，网络、音频和 RTC 走时未适配。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
         "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
         "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
         "Front e-paper cover is absent from shell STL; a dimension-drawing-based planar cover is explicit derived geometry, with optical stack/thickness unknown.",
