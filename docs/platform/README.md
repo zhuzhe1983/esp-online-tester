@@ -16,6 +16,8 @@ The workbench filters devices by manufacturer and sorts names naturally without 
 
 ## Current scope
 
+Remote HTTPS firmware loads retain up to 40 recent address records in this browser's localStorage, grouped by device. The history dropdown shows name, version and last-use age; selecting one restores the source type and optional SHA without starting the device. Names/versions come from a hash-matched catalog entry, an ESP-IDF app descriptor, or manifest metadata; unknown versions stay unknown. Attempts with network errors remain reusable. History is separate from firmware-byte caching, is never included in scene/share exports, and can be cleared per device. If browser storage is unavailable it falls back to this page's memory.
+
 | Area | Implemented | Boundary |
 | --- | --- | --- |
 | StopWatch | ESP32-S3 execution, CO5300 display, power controllers, buttons, CST820 touch | Partial upstream board model; arbitrary product firmware is not guaranteed |

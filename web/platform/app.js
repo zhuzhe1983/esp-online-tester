@@ -18,6 +18,7 @@ import {SHELL_DEFAULT, SHELL_PRESETS, SHELL_FINISHES, shellPreset} from './appea
 import {renderHintList, productHints, firmwareHints} from './hints.js';
 import {lookupIpLocation, IP_LOCATION_PROVIDER} from './ip-geolocation.js';
 import {sharedStartup, setSharedPlayback} from './shared-startup.js';
+import {mountFirmwareHistory, firmwareHistoryName} from './firmware-history.js';
 
 const $ = id => document.getElementById(id);
 const clone = value => structuredClone(value);
@@ -27,6 +28,7 @@ let catalog, scene, runtime, sceneView, humanButtons, api, detachBridge, localDe
 let busy = false, frameCount = 0, renderedProduct = '', renderedScene = '', recordingControl = null, toastTimer, localFile = null, editingAccessoryId = null, uiConfiguring = false;
 let transportUi, knowledgePanel, firmwareUpdates, recordingDocument = null, recordingState = {status: 'idle'};
 let downloadView = null, loadProgress = null, runAfterLoad = false;
+let firmwareHistory;
 let preserveUnspecifiedFirmware = false;
 let orientationSettlement = null;
 let localFiles = [], localSource = null, localSelectionToken = 0;
@@ -321,6 +323,7 @@ function setFirmwareTab(tab) {
   document.querySelectorAll('[data-firmware-tab]').forEach(button => { const active = button.dataset.firmwareTab === tab; button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active)); });
   for (const name of ['library', 'remote', 'local']) if ($(`firmware-${name}`)) $(`firmware-${name}`).hidden = name !== tab;
   renderTransport();
+  if (tab === 'remote') firmwareHistory?.render();
 }
 function renderFirmwareLibrary() {
   const select = $('firmware-select'); if (!select) return;
@@ -501,8 +504,21 @@ async function loadSelected() {
   if ($('toast')?.classList.contains('error')) { clearTimeout(toastTimer); $('toast').hidden = true; }
   if ($('firmware-issue')) $('firmware-issue').hidden = true;
   const source = sourceFromInputs();
+  const known = currentCatalogFirmware();
+  const history = !embedded && firmwareTab === 'remote' ? {
+    url:source.manifestUrl || source.url, kind:source.manifestUrl ? 'manifest' : 'merged', sha256:source.sha256 || '',
+    productId:scene.productId, lastUsedAt:Date.now(), name:known?.name || firmwareHistoryName(source.manifestUrl || source.url), version:known?.version || known?.revision || '',
+  } : null;
+  if (history) firmwareHistory?.remember(history);
   const next = clone(scene); next.firmware = source.file || source.files ? null : source;
-  await configure(next); await runtime.loadFirmware(source); return source;
+  await configure(next); const state = await runtime.loadFirmware(source);
+  if (history) {
+    const metadata = state.firmware?.metadata;
+    const digest = state.firmware?.manifestHash || state.firmware?.artifacts[0]?.sha256;
+    const catalogMatch = known?.source?.sha256 && known.source.sha256.toLowerCase() === digest;
+    firmwareHistory?.remember({...history, name:catalogMatch ? history.name : metadata?.name || firmwareHistoryName(history.url), version:catalogMatch ? history.version || metadata?.version : metadata?.version || ''});
+  }
+  return source;
 }
 function defaultFirmware(next) {
   preserveUnspecifiedFirmware = false;
@@ -748,6 +764,7 @@ async function releaseHumanInputs() {
 }
 
 function setupEvents() {
+  firmwareHistory = mountFirmwareHistory({input:$('firmware-url'),kindInput:$('firmware-kind'),shaInput:$('firmware-sha'),productId:()=>scene.productId,onSelect:()=>{renderTransport();text('load-status','已选取历史地址，点击“下载并运行”加载。');}});
   const chooseProduct = async id => { clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, id)); await configure(next, {reflectSource: true}); };
   mountDeviceSearch({button:$('search-devices'),products:catalog.products,onSelect:id=>action(()=>chooseProduct(id)),onError:error=>toast(error.message,true)});
   mountAccessorySearch({button:$('search-accessories'),getItems:allDefinitions,onSelect:id=>{const item=definition(id);if(!item)return;renderAccessoryChoices({brand:accessoryBrand(item),connector:accessoryInterface(item),id});$('add-accessory').focus();},onError:error=>toast(error.message,true)});

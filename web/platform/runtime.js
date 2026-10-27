@@ -10,6 +10,7 @@ import { orientationSample } from './imu.js';
 import { validateLoRaPacket } from './lora-input.js';
 import { firmwareCache } from './firmware-cache.js';
 import { assembleLocalFirmware } from './local-firmware.js';
+import {firmwareMetadata} from './firmware-metadata.js';
 import { createDeviceStorage, deviceStorageScope } from './device-storage.js';
 
 export const API_VERSION = '1.0.0';
@@ -488,7 +489,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       add('flash', artifact);
     }
     if (!cfg.appDirect && !files.some(f => f.kind === 'rom')) add('rom', await readArtifact(new URL(`wasm/fw/${romFor(cfg.board)}`, assetBaseUrl).href, baseUrl, progress, 'rom'));
-    return { cfg, files, receipt: { manifestUrl, manifestHash, source: source.file || localLayout ? 'local' : 'remote', ...(localLayout ? {localLayout} : {}), artifacts: receipts, appDirect: !!cfg.appDirect, stubs: cfg.stubs || [], executionMode: cfg.jit === false ? 'wasm-interpreter' : 'wasm-jit' } };
+    return { cfg, files, receipt: { manifestUrl, manifestHash, metadata:firmwareMetadata(files,manifest), source: source.file || localLayout ? 'local' : 'remote', ...(localLayout ? {localLayout} : {}), artifacts: receipts, appDirect: !!cfg.appDirect, stubs: cfg.stubs || [], executionMode: cfg.jit === false ? 'wasm-interpreter' : 'wasm-jit' } };
   };
   const initialize = async (bundle, progress) => {
     stopWorker();
