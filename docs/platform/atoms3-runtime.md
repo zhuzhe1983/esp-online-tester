@@ -3,7 +3,9 @@
 AtomS3 的 GC9107 版本已有独立 `atoms3` 板级模型。它执行真正的 ESP32-S3
 指令，屏幕由客体 SPI 写入，按键走 GPIO41，IMU 由客体通过 I2C 读取。
 目录状态为 `partial`；可以尝试匹配的固件，当前证据只覆盖下面列出的接口。
-本轮没有遍历或认证官方/第三方固件库。
+初次适配仅使用内部源码 fixture；后续已核验
+[官方 v0.1 出厂镜像的启动、按钮和 IMU 页面](atoms3-official-firmware.md)，
+没有遍历或认证整个官方/第三方固件库。
 
 ## 来源与边界
 
@@ -78,5 +80,5 @@ node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools
 未修改 SoC bus、寄存器地址、`device_set!`、中断路由或通用 per-tick 路径；新增器件只由
 `atoms3` 板调用。未进行或声称 CPU 性能优化，因此没有新性能实验条目。
 
-其余产品按 [逐台适配队列](device-runtime-queue.md) 继续处理；下一台 AtomS3R 必须先核对
-自己的 SPI 引脚、I2C背光控制和 BMI270/BMM150，不能借用 C123 连接定义。
+其余产品按 [逐台适配队列](device-runtime-queue.md) 继续处理。AtomS3R 使用独立的
+SPI 引脚、I2C背光控制和 BMI270/BMM150，不能借用 C123 连接定义。

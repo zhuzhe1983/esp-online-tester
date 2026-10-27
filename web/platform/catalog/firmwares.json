@@ -1007,10 +1007,11 @@
       },
       "publicationUrl": "https://docs.m5stack.com/en/core/AtomS3",
       "version": "v0.1",
-      "compatibility": "unverified",
+      "compatibility": "partial",
       "limitations": [
-        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+        "已验证官方 v0.1 原始镜像从 ROM 启动到真实菜单，3D 屏幕按压、键盘 A、agent 短按/长按和 MPU6886 虚拟姿态驱动 IMU 小球；mini 分享确认后同样启动。",
+        "仍保留试运行；Wi-Fi/I2C 外接扫描、UART、PWM、ADC、IR 应用未做功能验收，菜单可见不代表这些功能全部可用。",
+        "IMU 使用未与实物校准的虚拟轴，暂不自动跟随 3D 旋转；其他板级限制保持，未实机验证。"
       ],
       "sources": [
         {
@@ -1022,6 +1023,16 @@
           "title": "Official M5Burner metadata; firmwareId 476a75ab7404402c4651606d80686a17",
           "url": "https://m5burner-api.m5stack.com/api/firmware",
           "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "本轮核验的官方固定镜像",
+          "url": "https://m5burner-cdn.m5stack.com/firmware/ffd26b8ba73aefa2a964e2f56d39f1e6.bin",
+          "resolvedUrl": "https://m5burner-cdn.m5stack.com/firmware/ffd26b8ba73aefa2a964e2f56d39f1e6.bin",
+          "fetchedAt": "2026-10-27T15:35:36Z",
+          "checkedAt": "2026-10-27",
+          "mediaType": "application/octet-stream",
+          "bytes": 2653696,
+          "sha256": "2d78c3d8874eee0f6d91eb9c8fe6ad482488dad05e5a42adc1dde09977800b06"
         }
       ],
       "publisherGroup": "官方",
@@ -1029,7 +1040,16 @@
       "watchlistId": "factory-476a75ab7404402c4651606d80686a17",
       "simulationVerified": false,
       "hardwareValidated": false,
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "verification": {
+        "bootVerified": true,
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "scope": "ROM startup, GPIO41 menu inputs, virtual MPU6886 motion and mini startup only",
+        "checkedAt": "2026-10-27T15:46:42Z",
+        "sha256": "2d78c3d8874eee0f6d91eb9c8fe6ad482488dad05e5a42adc1dde09977800b06",
+        "evidence": "docs/platform/evidence/atoms3-official-firmware/verification.json"
+      }
     },
     {
       "id": "m5stack-k010-aws-v13-official-reference",
