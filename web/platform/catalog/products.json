@@ -4250,22 +4250,45 @@
       "chip": "esp32s3",
       "module": "ESP32-S3FN8",
       "runtime": {
-        "board": null,
+        "board": "dial-v11",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial",
+        "touch": true,
+        "encoder": true
       },
       "display": {
         "width": 240,
         "height": 240,
-        "type": "LCD",
-        "controller": "GC9A01"
+        "type": "round LCD",
+        "controller": "GC9A01",
+        "bus": "SPI",
+        "touchController": "FT3267",
+        "shape": "round",
+        "touch": true
       },
       "controls": [
         {
+          "id": "button",
+          "type": "button",
+          "name": "Front press · GPIO42",
+          "gpio": 42,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "encoder",
+          "type": "encoder",
+          "name": "Rotary ring",
+          "pins": {
+            "a": 41,
+            "b": 40
+          },
+          "detents": 16
+        },
+        {
           "id": "touch",
           "type": "touch",
-          "name": "Capacitive touch",
           "controller": "FT3267"
         }
       ],
@@ -4330,8 +4353,10 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "已实现 GC9A01 SPI、FT3267 单点触摸、GPIO42 按压和 A41/B40 四相编码器；按固件分别验证。",
+        "RTC、WS1850S RFID、PWM 背光、蜂鸣器、电源保持/睡眠、Stamp-S3A GPIO38 供电的 RGB 及无线网络尚未完整模拟。",
+        "USB 供电状态下运行；电池电量、待机电流、射频和机械旋转方向未经实机校准。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告；Grove 插合方向尚未核实，不显示已连接线缆。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k130-v11.json",
       "model": {

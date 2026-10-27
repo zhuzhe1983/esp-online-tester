@@ -1,0 +1,175 @@
+{
+  "checkedAt": "2026-10-27T14:14:35Z",
+  "baseRevision": "a89ef6b3",
+  "sharedPrerequisite": "1741814d (recording receipt metadata projection; locally cherry-picked as 2427e71d)",
+  "rust": "1.99.1 stable",
+  "result": "pass",
+  "checks": [
+    {
+      "command": "rustup update stable",
+      "result": "pass",
+      "ignoredLog": "output/stable-update.log",
+      "logSha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+    },
+    {
+      "command": "cargo build --release --workspace",
+      "result": "pass",
+      "ignoredLog": "output/release-build.log",
+      "logSha256": "5688afa5d639b0fef20b1081e3b6c00b92284127a8d7c234f0710a9ee0f10638"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "result": "pass",
+      "ignoredLog": "output/clippy-native.log",
+      "logSha256": "db80ab179bd370a6e7bece8a665a08de4fdd60a0f9ab604d0b799ccc5804c744"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass",
+      "ignoredLog": "output/clippy-wasm.log",
+      "logSha256": "8ed7ec6b39610cca9ac0c94758fdf632dfbdcaedbd8dee35be7249c7f09bd424"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms cargo test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "ignoredLog": "output/rust-workspace-tests.log",
+      "logSha256": "1129cf34a2e102b06fc75088e50db68ad388d6805986f6cbb747c22c08cc4294"
+    },
+    {
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "result": "pass",
+      "ignoredLog": "output/vq-tests.log",
+      "logSha256": "2b2dcbea5eb85b5edf36feec8b7f35d4e07a56b22e9068a49a0dbd933b31bfa0"
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "pass",
+      "ignoredLog": "output/wasm-build.log",
+      "logSha256": "a95fad9926d4ff813dba6855e8f5bbe98bfc404ddc7362f08d55a9a88dea95fa"
+    },
+    {
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "result": "pass",
+      "ignoredLog": "output/wasm-sections.log",
+      "logSha256": "65926eb35b993bec7f11f649d96bc3390ce808c16c7ae9f730cf634ff3c1e766"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "result": "pass",
+      "ignoredLog": "output/wasm-regression.log",
+      "logSha256": "613a31427e16e3761d0dbdb9d5006ecbc31f2ef307d9e1702ad641573e300c90"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms node --test tools/platform-*-test.mjs",
+      "result": "pass",
+      "ignoredLog": "output/platform-node-final.log",
+      "logSha256": "74680af86b9009fe71c55807024a17f610be2fb1b7e2780a572e2b96a86bc2b3"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms node tools/platform-recording-test.mjs --real",
+      "result": "pass",
+      "ignoredLog": "output/recording-real.log",
+      "logSha256": "85d52fbfb586369d1d3c0c67da0622de2fd02f584067f87ebacd24ff3e11816c"
+    },
+    {
+      "command": "tools/wasm-jit-test.sh",
+      "result": "pass",
+      "ignoredLog": "output/wasm-jit-tests.log",
+      "logSha256": "c5d0d5b6224825a4a947a28f195625103ed39071a02e0875af3c90108277c857"
+    },
+    {
+      "command": ". ./tools/wasm-rustflags.sh; cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "result": "pass",
+      "ignoredLog": "output/profile-build.log",
+      "logSha256": "d26d85c1789e57b5785393324518ebc113940fb5605d6103a002119c3e765347"
+    },
+    {
+      "command": "node tools/worker-pacing-test.mjs",
+      "result": "pass",
+      "ignoredLog": "output/worker-pacing.log",
+      "logSha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158"
+    },
+    {
+      "command": "node tools/worker-channel-test.mjs",
+      "result": "pass",
+      "ignoredLog": "output/worker-channel.log",
+      "logSha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6"
+    },
+    {
+      "command": "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+      "result": "pass",
+      "ignoredLog": "output/browser-tests.log",
+      "logSha256": "de6c9534426beb110e7c0baeffaa37a33aaf0fe3de819a717d9e139ac67da4d3"
+    },
+    {
+      "command": "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "result": "pass",
+      "ignoredLog": "output/browser-python.log",
+      "logSha256": "b27c38acb2171e17d5c7bb4b5add1feb22e2f1893e9d3dbb949cbfb2655b7b7d"
+    },
+    {
+      "command": "python3 tools/validate-platform-catalog.py",
+      "result": "pass",
+      "ignoredLog": "output/catalog-validation.log",
+      "logSha256": "bcd7438fb4c33aec239593cb14f3baf832da3e994645d187c9c5d4112a218bea"
+    },
+    {
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs; node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+      "result": "pass",
+      "ignoredLog": "output/retained-x5.log",
+      "logSha256": "0a53ef761d74b0d5e4976c4fc192e888cb07f31959ffe134fd84597ffa958b66"
+    },
+    {
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs; node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+      "result": "pass",
+      "ignoredLog": "output/retained-m1.log",
+      "logSha256": "77c7ea6a832430c19816ba564cdea0a969775bd9f69818a16dc33c0351ab7be1"
+    },
+    {
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs; node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "result": "pass",
+      "ignoredLog": "output/retained-historical.log",
+      "logSha256": "e230a9e8d61aa8838a211516cc6f3bc1cc9503c2133de6e17158ef195f17b182"
+    },
+    {
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf",
+      "result": "pass",
+      "ignoredLog": "output/ble-api.log",
+      "logSha256": "36533ddb2a174fea3e2276bb4cd8d55868785c99d5392464963293b60f358656"
+    },
+    {
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf",
+      "result": "pass",
+      "ignoredLog": "output/ble-connection.log",
+      "logSha256": "46c9231150d39036db93d149bce56a81b61315d3c28606ccd80732a81434d70b"
+    },
+    {
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "result": "pass",
+      "ignoredLog": "output/timing-api.log",
+      "logSha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3"
+    }
+  ],
+  "counts": {
+    "rustWorkspacePassed": 1389,
+    "platformNodePassed": 89,
+    "wasmManifests": 11,
+    "wasmJitDifferentialCases": 111126,
+    "wasmJitGroups": 78,
+    "gpioWaveformCases": 24,
+    "realRecordingEvents": 18,
+    "dialFixtureChecksPerBoard": 7,
+    "officialFactoryChecks": 5,
+    "officialUIFlowChecks": 3
+  },
+  "goldensRegenerated": false,
+  "performance": "No generic bus/device_set/interrupt/per-tick path changed; no CPU performance claim. No additional benchmark was required for a board identity and catalog/input binding change.",
+  "retention": "Raw logs and captures remain ignored. Hashes refer to original local logs, which may contain checkout paths; only hashes and aggregate results are published.",
+  "resolvedFailures": [
+    "Initial recording export included descriptive firmware metadata; the already-integrated shared fix 1741814d restored the strict recording schema, and real replay passed.",
+    "New knowledge source records initially omitted archiveName; corrected and catalog/schema regression passed."
+  ],
+  "limits": [
+    "No real hardware flash/test. Manufacturer CAD dimensions and prior photo uncertainty are preserved; this revision does not claim a new 1:1 metric."
+  ]
+}

@@ -1,16 +1,23 @@
-//! M5Stack Dial K130 (not K130-V11). Official Sch_M5Dial.pdf and M5GFX
+//! M5Stack Dial K130 / K130-V11. Official Sch_M5Dial.pdf and M5GFX
 //! 65c816a3 / M5Unified 368ad608: SPI DC4/MOSI5/CLK6/CS7/RST8, I2C11/12,
-//! touch IRQ14, press42, encoder A41/B40. Scope: docs/platform/dial-runtime.md.
+//! touch IRQ14, press42, encoder A41/B40. V1.1's official pin table confirms
+//! these routes; its Stamp-S3A GPIO38 RGB supply is not modeled. Scope:
+//! docs/platform/dial-runtime.md and docs/platform/dial-v11-runtime.md.
 use std::sync::{Arc,Mutex};
 use esp_periph::i2c::{I2cDevice,ft6336::{Ft6336g,Ft6336State}};
 use esp_soc::board::{BoardModel,BoardEdge,VirtualCycle,SpiPins};
 use esp_soc::devices::{DcsPanel,i2c_bitbang::I2cBitBang};
 
-pub struct Dial {panel:DcsPanel,command:u8,read_at:usize,reset_high:bool,display_changes:u64,i2c:I2cBitBang,levels:[bool;2],edges:Vec<BoardEdge>,touch:Arc<Mutex<Ft6336State>>,touch_irq:bool,cycle:VirtualCycle,gpio_events:u64}
-impl Dial {pub fn new()->Self {let mut touch=Ft6336State::default();touch.powered=true;Self{panel:DcsPanel::new(240,240),command:0,read_at:0,reset_high:true,display_changes:0,i2c:I2cBitBang::new(),levels:[true,true],edges:Vec::new(),touch:Arc::new(Mutex::new(touch)),touch_irq:true,cycle:0,gpio_events:0}}}
+pub struct Dial {name:&'static str,panel:DcsPanel,command:u8,read_at:usize,reset_high:bool,display_changes:u64,i2c:I2cBitBang,levels:[bool;2],edges:Vec<BoardEdge>,touch:Arc<Mutex<Ft6336State>>,touch_irq:bool,cycle:VirtualCycle,gpio_events:u64}
+impl Dial {
+    pub fn new()->Self {let mut touch=Ft6336State::default();touch.powered=true;Self{name:"dial",panel:DcsPanel::new(240,240),command:0,read_at:0,reset_high:true,display_changes:0,i2c:I2cBitBang::new(),levels:[true,true],edges:Vec::new(),touch:Arc::new(Mutex::new(touch)),touch_irq:true,cycle:0,gpio_events:0}}
+    /// K130-V11 replaces Stamp-S3 with S3A; the modeled LCD/touch/encoder pins
+    /// remain identical. Keep a separate identity for revision-specific scope.
+    pub fn v11()->Self {Self{name:"dial-v11",..Self::new()}}
+}
 impl Default for Dial {fn default()->Self {Self::new()}}
 impl BoardModel for Dial {
-    fn name(&self)->&'static str {"dial"}
+    fn name(&self)->&'static str {self.name}
     fn gpio_changes(&mut self,changes:&[(u8,bool)]) {
         self.gpio_events+=changes.len() as u64;
         for &(pin,high) in changes {match pin {4=>self.panel.dc=high,8=>{if self.reset_high && !high {self.panel.reset();self.command=0;self.read_at=0;self.display_changes+=1;self.touch.lock().expect("Dial touch mutex poisoned").reset();if !self.touch_irq {self.touch_irq=true;self.edges.push(BoardEdge{cycle:self.cycle,pin:14,level:true});}}self.reset_high=high;self.touch.lock().expect("Dial touch mutex poisoned").powered=high;},_=>{}}}
@@ -43,7 +50,7 @@ impl BoardModel for Dial {
     fn display_version(&self)->u64 {self.panel.pixels_written+self.panel.resets+self.display_changes}
     fn display_frames(&self)->u64 {self.panel.frames}
     fn gram(&self)->Option<(Vec<u16>,usize,usize)> {Some((self.panel.gram.clone(),240,240))}
-    fn report(&self)->String {format!("[dial] GC9A01 frames={} pixels={} FT3267=single-contact encoder=A41/B40",self.panel.frames,self.panel.pixels_written)}
+    fn report(&self)->String {format!("[{}] GC9A01 frames={} pixels={} FT3267=single-contact encoder=A41/B40",self.name,self.panel.frames,self.panel.pixels_written)}
 }
 #[cfg(test)]
 mod tests {
@@ -61,5 +68,16 @@ mod tests {
         let mut b=Dial::new();assert_eq!(b.encoder(),Some((41,40)));assert_eq!(b.named_pin("sw"),Some(42));let mut devices=b.i2c_devices();assert!(devices.iter().all(|(_,a,d)|*a==0x38 && d.pins()==Some((11,12))));
         b.touch(100,200,true);assert!(b.input_levels().contains(&(14,false)));let d=devices[0].2.as_mut();assert!(d.start(false));d.write(2);d.start(true);assert_eq!((0..5).map(|_|d.read()).collect::<Vec<_>>(),[1,0x80,100,0,200]);b.touch(100,200,false);assert!(b.input_levels().contains(&(14,true)));
         b.touch(1,2,true);b.gpio_changes(&[(8,false)]);assert!(!d.start(false));assert!(b.input_levels().contains(&(14,true)));assert!(b.take_edges().iter().any(|e|e.pin==14 && !e.level));
+    }
+    #[test]
+    fn v11_registered_identity_preserves_physical_routes_and_missing_devices() {
+        let mut b=super::super::make_board("dial-v11").expect("K130-V11 board");
+        assert_eq!(b.name(),"dial-v11");assert_eq!(b.encoder(),Some((41,40)));assert_eq!(b.named_pin("button"),Some(42));
+        assert_eq!(b.spi_transfer_pins(2,pins(),&[4],3),[0,0x9a,1]);
+        assert_eq!(b.spi_transfer_pins(2,SpiPins{cs:1<<10,..pins()},&[4],3),[0xff;3]);
+        let devices=b.i2c_devices();assert!(devices.iter().all(|(_,a,d)|*a==0x38 && d.pins()==Some((11,12))));
+        assert!(!devices.iter().any(|(_,a,_)|*a==0x51 || *a==0x28),"RTC and RFID remain absent, not fake successful devices");
+        b.touch(239,239,true);assert!(b.input_levels().contains(&(14,false)));assert_eq!(b.display().unwrap().2.len(),240*240);
+        assert!(b.leds().is_none(),"S3A GPIO38-switched RGB is outside this profile's current scope");
     }
 }

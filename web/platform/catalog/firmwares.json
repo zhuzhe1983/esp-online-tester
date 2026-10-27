@@ -1786,7 +1786,8 @@
         }
       ],
       "limitations": [
-        "已找到官方出厂源码或 EasyLoader 恢复入口，但本轮未定位并固定该型号可供浏览器直载的完整 BIN；不能把 EXE 当作固件运行。"
+        "官方 EasyLoader EXE 内的 firmware 资源已核对为 0x0 完整镜像，并验证真实 WASM 屏幕、按压、旋钮和触摸。当前网页加载器尚不支持 EXE 资源容器，故仍为恢复资料入口；不把 EXE 当作 BIN。",
+        "官方 EXE 中镜像 SHA-256 a61edfd7c2f6ece2e1570968b931b809545372b8bdac20864f03093a57b1276e，与 M5Burner 社区转载 UserDemo 不同，不可互认。"
       ]
     },
     {
@@ -2448,14 +2449,17 @@
     },
     {
       "id": "m5stack-k130-v11-uiflow2-reference",
-      "name": "Dial v1.1 UiFlow2 Quick Start",
+      "name": "Dial v1.1 官方 UIFlow2 · v2.5.3",
       "publisher": "M5Stack",
       "role": "alternative",
       "productIds": [
         "m5stack-k130-v11"
       ],
-      "status": "reference",
-      "source": null,
+      "status": "available",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/b9b74d37d8fefa8ec70a77234011fe42.bin",
+        "sha256": "6a0187dad13c491129e9228ca36b9e04adb46ebf9d8d51fca8eca5f9b7332a53"
+      },
       "sources": [
         {
           "title": "Dial v1.1 UiFlow2 Quick Start",
@@ -2466,12 +2470,31 @@
           "title": "Official product documentation",
           "url": "https://docs.m5stack.com/en/core/Dial_v1.1",
           "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Official M5Burner v1 metadata: sourceType OFFICIAL, Dial target",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000879",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "Legacy distribution metadata: exact firmwareId 431644329f5431d5ea36bec9ab94f664",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-10-27"
         }
       ],
       "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
+        "官方 UIFlow2 完整镜像，已通过真实 ROM/WASM 启动、240×240 显示、旋钮切换页面和触摸选择设置项。",
+        "网络保持离线；RTC/RFID、PWM 背光、音频、电源/睡眠及 Stamp-S3A RGB 尚未验证。不是出厂 UserDemo，也不代表任意程序完整兼容。"
+      ],
+      "publisherGroup": "官方",
+      "version": "v2.5.3",
+      "revision": "v2.5.3",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000000879",
+      "compatibility": "partial",
+      "simulationVerified": true,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "watchlistId": "m5stack-dial-v11-uiflow2"
     },
     {
       "id": "m5stack-k152-uiflow2-reference",

@@ -1,0 +1,67 @@
+{
+  "checkedAt": "2026-10-27T13:50:00.001Z",
+  "command": "node tools/probe-dial.mjs --build <fixture-build-directory> --product m5stack-k130-v11",
+  "productId": "m5stack-k130-v11",
+  "board": "dial-v11",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+    "dial_fixture.bin": "039e3aae3ae25e9703acefcbfd854232b2e75a99e898bcaab9ecfd8cb7a5019f",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "wasmSha256": "0683ec118812256e553cb571b04eb8d1cd5cc28591f9fcfaba62148b1f2ad79d",
+  "checks": [
+    "rom-boot-gpio42-idle-ft3267-vendor",
+    "every-guest-spi-pixel-red128-green112",
+    "gpio42-press-release-observed-by-guest",
+    "ft3267-registers-and-gpio14-touch-down-up",
+    "real-gpio-interrupt-quadrature-plus1-minus2-plus1",
+    "encoder-boundary-rejection",
+    "real-wasm-record-replay-encoder-detents"
+  ],
+  "frameSha256": "4194d7b769a219e84f13f3a0a5c20e17c79c7f7995be0826e16fa1a7140e3020",
+  "serialEvidence": [
+    "DIAL_LCD_READY 240x240 red128 green112",
+    "DIAL_TOUCH_VENDOR 11",
+    "DIAL_BUTTON 1",
+    "DIAL_ENCODER 0",
+    "DIAL_TOUCH 0 0 0 IRQ=1",
+    "DIAL_BUTTON 0",
+    "DIAL_TOUCH 1 100 200 IRQ=0",
+    "DIAL_TOUCH 0 100 200 IRQ=1",
+    "DIAL_ENCODER -3",
+    "DIAL_ENCODER -4",
+    "DIAL_ENCODER 4",
+    "DIAL_ENCODER 2"
+  ],
+  "replay": {
+    "events": [
+      {
+        "at": 0.4276799625,
+        "type": "encoder",
+        "id": "encoder",
+        "steps": 2
+      },
+      {
+        "at": 0.4998707125,
+        "type": "encoder",
+        "id": "encoder",
+        "steps": -1
+      }
+    ],
+    "result": "completed",
+    "frameComparison": "equal",
+    "bitExact": false,
+    "guestSerial": [
+      "DIAL_ENCODER 0",
+      "DIAL_ENCODER -4",
+      "DIAL_ENCODER -8",
+      "DIAL_ENCODER -4"
+    ]
+  },
+  "status": "pass",
+  "guestSeconds": 0.58,
+  "serialPort": "uart0",
+  "captureRetention": "Optional raw RGBA frames and screenshots stay in ignored output, not published; no firmware bytes committed."
+}

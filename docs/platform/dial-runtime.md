@@ -1,6 +1,6 @@
 # Dial K130 板级模拟
 
-原版 M5Stack Dial K130 使用独立 `dial` 板。当前实现屏幕、单点触摸、前部按压和旋转编码器，目录为 `partial`。K130-V11 没有借用本板，仍须单独适配。
+原版 M5Stack Dial K130 使用独立 `dial` 板。当前实现屏幕、单点触摸、前部按压和旋转编码器，目录为 `partial`。K130-V11 经逐项核对后另以 `dial-v11` 身份接入相同外设子集，修订差异和真实固件结果见 [v1.1 记录](dial-v11-runtime.md)。
 
 官方 [Dial 资料](https://docs.m5stack.com/en/core/Dial)、[原理图](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/499/Sch_M5Dial.pdf)、固定版本 [M5GFX](https://github.com/m5stack/M5GFX/blob/65c816a38386062d2c3dc47d41237a9083acbc75/src/M5GFX.cpp)、[M5Unified](https://github.com/m5stack/M5Unified/blob/368ad60807161625aa65baad37a4a3af2a7eccea/src/M5Unified.inl) 及 [M5Dial](https://github.com/m5stack/M5Dial/blob/533c9d0198e72621d55a4d35f726d3d53a7e1431/src/M5Dial.h) 是引脚依据。
 每次抓取的完整 URL、重定向地址、实际 UTC 秒时间、类型、字节数、SHA-256 见 [来源收据](evidence/dial/sources.json)，知识 JSON 保留相同记录。

@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-27T07:33:45Z",
+  "updatedAt": "2026-10-27T13:54:06Z",
   "hardwareRevision": "1.1",
   "identity": {
     "manufacturer": "M5Stack",
@@ -388,6 +388,58 @@
       ],
       "notes": "CAD-constrained placeholder only; actual board outline, thickness, layout and mounting remain unknown. Blank UNKNOWN retained; official plastic/nut geometry unchanged.",
       "method": "Clip each exported native assembly triangle to the1mm slab and calculate minimum XY distance to the resulting convex polygon. Reproduce: node --test tools/platform-dial-model-test.mjs. The chosen proxy diameter30mm and thickness1mm are display estimates, not real PCB dimensions."
+    },
+    {
+      "id": "runtime-v11-pinmap",
+      "label": "K130-V11 documented display and input pin map",
+      "value": {
+        "coreModule": "Stamp-S3A",
+        "lcd": {
+          "dc": 4,
+          "mosi": 5,
+          "sclk": 6,
+          "cs": 7,
+          "reset": 8,
+          "backlight": 9
+        },
+        "touch": {
+          "address": 56,
+          "sda": 11,
+          "scl": 12,
+          "irq": 14
+        },
+        "press": 42,
+        "encoder": {
+          "a": 41,
+          "b": 40,
+          "positions": 16,
+          "pulsesPerRevolution": 64
+        },
+        "powerHold": 46,
+        "rgbSupplyEnable": 38
+      },
+      "basis": "official",
+      "sourceIds": [
+        "runtime-v11-dial-v11-html",
+        "runtime-v11-dial-schematic-pdf",
+        "runtime-v11-M5Dial-h"
+      ]
+    },
+    {
+      "id": "factory-image-resource",
+      "label": "Official factory image resource inside EasyLoader",
+      "value": {
+        "container": "M5dial Factory Demo.exe",
+        "resourceSet": "MiniBurner.Resource1.resources",
+        "entry": "firmware",
+        "startAddress": "0x0",
+        "bytes": 3170128,
+        "sha256": "a61edfd7c2f6ece2e1570968b931b809545372b8bdac20864f03093a57b1276e"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "runtime-v11-factory-easyloader-exe"
+      ]
     }
   ],
   "revisions": [],
@@ -724,6 +776,84 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "runtime-v11-dial-v11-html",
+      "url": "https://docs.m5stack.com/en/core/Dial_v1.1",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Dial_v1.1",
+      "fetchedAt": "2026-10-27T13:40:30Z",
+      "mediaType": "text/html",
+      "bytes": 142281,
+      "sha256": "c23f42ba2d9805bd2758fc470d123f09ace6c8b714b5bca2af4e152446b9b980",
+      "status": "fetched",
+      "title": "Dial v1.1 runtime: dial-v11.html",
+      "kind": "software-source",
+      "archiveName": "dial-v11.html"
+    },
+    {
+      "id": "runtime-v11-dial-schematic-pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/499/Sch_M5Dial.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/499/Sch_M5Dial.pdf",
+      "fetchedAt": "2026-10-27T13:40:30Z",
+      "mediaType": "application/pdf",
+      "bytes": 669195,
+      "sha256": "66be81ef2255363bbac105bffb959c33daad6239a0caa6e17f68660d1f6cd99d",
+      "status": "fetched",
+      "title": "Dial v1.1 runtime: dial-schematic.pdf",
+      "kind": "software-source",
+      "archiveName": "dial-schematic.pdf"
+    },
+    {
+      "id": "runtime-v11-uiflow-detail-json",
+      "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000879",
+      "resolvedUrl": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000879",
+      "fetchedAt": "2026-10-27T13:41:28Z",
+      "mediaType": "application/json",
+      "bytes": 1237,
+      "sha256": "04e60256250fc585fc564d672b2efe03b486a0b7cc12ef7b6746a32e8fb6e2fb",
+      "status": "fetched",
+      "title": "Dial v1.1 runtime: uiflow-detail.json",
+      "kind": "software-source",
+      "archiveName": "uiflow-detail.json"
+    },
+    {
+      "id": "runtime-v11-M5Dial-h",
+      "url": "https://raw.githubusercontent.com/m5stack/M5Dial/533c9d0198e72621d55a4d35f726d3d53a7e1431/src/M5Dial.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5Dial/533c9d0198e72621d55a4d35f726d3d53a7e1431/src/M5Dial.h",
+      "fetchedAt": "2026-10-27T13:41:50Z",
+      "mediaType": "text/plain",
+      "bytes": 1042,
+      "sha256": "c39bffdaef22972946da9071bab19d7b3654c51c3987476c08a88964b952a331",
+      "status": "fetched",
+      "title": "Dial v1.1 runtime: M5Dial.h",
+      "kind": "software-source",
+      "archiveName": "M5Dial.h"
+    },
+    {
+      "id": "runtime-v11-uiflow-quickstart-html",
+      "url": "https://docs.m5stack.com/en/uiflow2/m5dial/program",
+      "resolvedUrl": "https://docs.m5stack.com/en/uiflow2/m5dial/program",
+      "fetchedAt": "2026-10-27T13:45:51Z",
+      "mediaType": "text/html",
+      "bytes": 265034,
+      "sha256": "dc1cfd78725e33feb7572968ab1c8e83a22e13ad648e588e8d7c1ee01f0cc49e",
+      "status": "fetched",
+      "title": "Dial v1.1 runtime: uiflow-quickstart.html",
+      "kind": "software-source",
+      "archiveName": "uiflow-quickstart.html"
+    },
+    {
+      "id": "runtime-v11-factory-easyloader-exe",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5Dial/M5dial%20Factory%20Demo.exe",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5Dial/M5dial%20Factory%20Demo.exe",
+      "fetchedAt": "2026-10-27T13:45:53Z",
+      "mediaType": "application/octet-stream",
+      "bytes": 9902592,
+      "sha256": "c65ce95728faf0d3765d2136e15e391ec7306bca2db65579a7a972715b47fc49",
+      "status": "fetched",
+      "title": "Dial v1.1 runtime: factory-easyloader.exe",
+      "kind": "software-source",
+      "archiveName": "factory-easyloader.exe"
     }
   ],
   "assets": [
