@@ -418,7 +418,9 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     requireValue(data.length > 0, 'EMPTY_FILE', 'Firmware file is empty.', { url });
     const digest = await checkedHash(data, item.sha256);
     requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
-    if (!cached && item.sha256) await firmwareCache.putVerified(url, digest, data);
+    // Store computed hashes too; reuse still requires a pinned hash. A newly
+    // discovered Burner version can then be restored from its history receipt.
+    if (!cached) await firmwareCache.putVerified(url, digest, data);
     return { data, url, sha256: digest };
   };
   const prepare = async (source, progress) => {

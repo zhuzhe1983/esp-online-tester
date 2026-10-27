@@ -1,4 +1,5 @@
 // Browser-only metadata. Firmware bytes stay in the separate firmware cache.
+import {parseBurnerDownload} from './m5burner.js';
 export const FIRMWARE_HISTORY_KEY = 'esp-online-tester:firmware-history:v1';
 const LIMIT = 40;
 const clean = value => typeof value === 'string' ? value.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 120) : '';
@@ -9,9 +10,11 @@ function normalized(entry) {
   const sha256 = typeof entry.sha256 === 'string' ? entry.sha256.trim().toLowerCase() : '';
   if (sha256 && !/^[a-f0-9]{64}$/.test(sha256)) return null;
   url.hash = '';
-  return {url:url.href, kind:entry.kind, sha256, productId:clean(entry.productId), name:clean(entry.name), version:clean(entry.version), lastUsedAt:entry.lastUsedAt};
+  const burner=entry.provider==='m5burner'&&parseBurnerDownload(url.href);
+  return {url:url.href, kind:entry.kind, sha256, productId:clean(entry.productId), name:clean(entry.name), version:clean(entry.version), lastUsedAt:entry.lastUsedAt,
+    ...(burner?{provider:'m5burner',deviceId:typeof entry.deviceId==='string'&&/^\d{1,30}$/.test(entry.deviceId)?entry.deviceId:''}:{})};
 }
-const key = entry => JSON.stringify([entry.productId, entry.kind, entry.url, entry.sha256]);
+const key = entry => JSON.stringify([entry.productId, entry.kind, entry.url, entry.provider==='m5burner'?'':entry.sha256]);
 export function createFirmwareHistory(getStorage = () => globalThis.localStorage) {
   let memory = [], persistent = true;
   function read() {
@@ -50,7 +53,7 @@ export function firmwareHistoryAge(time, now = Date.now()) {
   if (minutes < 43200) return `${Math.floor(minutes/1440)} 天前`;
   return new Date(time).toLocaleDateString('zh-CN');
 }
-export function mountFirmwareHistory({input, kindInput, shaInput, productId, onSelect}) {
+export function mountFirmwareHistory({input, kindInput, shaInput, productId, onSelect, mount}) {
   if (!input) return null;
   const store = createFirmwareHistory();
   const region = document.createElement('div'); region.className = 'firmware-history';
@@ -59,7 +62,7 @@ export function mountFirmwareHistory({input, kindInput, shaInput, productId, onS
   const clear = document.createElement('button'); clear.type = 'button'; clear.className = 'text-link'; clear.textContent = '清空记录';
   const select = document.createElement('select'); select.id = label.htmlFor;
   const detail = document.createElement('p'); detail.className = 'helper firmware-history-detail';
-  heading.append(label, clear); region.append(heading, select, detail); input.after(region);
+  heading.append(label, clear); region.append(heading, select, detail); if(mount)mount.append(region);else input.after(region);
   let entries = [];
   function render() {
     entries = store.list(productId()); region.hidden = !entries.length;
@@ -75,7 +78,7 @@ export function mountFirmwareHistory({input, kindInput, shaInput, productId, onS
     const entry = entries[Number(select.value)]; if (!entry) return;
     input.value = entry.url; kindInput.value = entry.kind; shaInput.value = entry.sha256;
     detail.textContent = `${entry.name || firmwareHistoryName(entry.url)} · ${entry.version || '版本未知'} · ${entry.kind === 'manifest' ? '固件清单' : '完整镜像'} · ${new Date(entry.lastUsedAt).toLocaleString('zh-CN')}`;
-    input.title = entry.url; onSelect?.();
+    input.title = entry.url; onSelect?.(entry);
   });
   clear.addEventListener('click', () => { store.clear(productId()); render(); });
   select.addEventListener('focus', () => { const previous=select.value; render(); if ([...select.options].some(option=>option.value===previous)) select.value=previous; });
