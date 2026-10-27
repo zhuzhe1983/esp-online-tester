@@ -2,6 +2,7 @@
 // Catalog entries never load executable product scripts or remote texture URLs.
 import * as THREE from './vendor/three.module.min.js';
 import {createGroveSocket,verifiedGrove} from './grove-geometry.js';
+import {createPcbPlaceholderGeometry} from './pcb-placeholder.js';
 const safeAsset = (name, root) => {
   if (typeof name !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._/-]*$/.test(name) || name.split('/').includes('..')) throw Error('Invalid local model asset');
   return new URL(name,root);
@@ -85,7 +86,7 @@ export function createManufacturerModel(product, screenTexture) {
       }
       if(part.kind!=='pcb-placeholder')continue;
       const pcb=new THREE.Group();pcb.name=part.id || 'pcb-main';pcb.position.set(...center);pcb.rotation.set(...vector(part.geometry?.rotation));pcb.userData={kind:'pcb-placeholder',label:'UNKNOWN',estimated:true};
-      pcb.add(new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color:0x859188,roughness:.85})));
+      pcb.add(new THREE.Mesh(createPcbPlaceholderGeometry(size,part.geometry?.shape),new THREE.MeshStandardMaterial({color:0x859188,roughness:.85})));
       const label=flatLabel('UNKNOWN');if(label){textures.push(label);const width=Math.min(size[0]*.82,42);for(const back of [false,true]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,width/4),new THREE.MeshBasicMaterial({map:label,transparent:true,depthWrite:false}));mesh.position.z=(back?-1:1)*(size[2]/2+.015);if(back)mesh.rotation.y=Math.PI;pcb.add(mesh);}}
       parts[pcb.name]=pcb;group.add(pcb);
     }
