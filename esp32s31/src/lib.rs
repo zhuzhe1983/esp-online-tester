@@ -13,6 +13,7 @@ pub mod mspi;
 pub mod sha;
 pub mod analog;
 pub mod power;
+pub mod pms;
 mod rom;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};

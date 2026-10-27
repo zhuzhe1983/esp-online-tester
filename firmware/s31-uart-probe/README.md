@@ -148,3 +148,12 @@ when enabled; no voltage or physical glitch model is implied. Set the absolute
 `--analog-perif-glitch=hh` as an explicit target input; missing seed, closed power,
 asserted reset and incorrect route fail. Product firmware is never altered by
 these source-built positive/negative controls.
+
+`pms-probe.S` sends `A`, installs and locks UART permissions from a host mailbox,
+attempts to overwrite the locked control, reads real UART status, and sends `B`.
+Set absolute `S31_PMS_ELF` when running the source fixture suite. The positive
+case emits `AB`; denied reads/writes leave only `A` and fault at the actual device
+access. Restrictions require the explicit bus-error response; quiet-denial read
+semantics, security-domain transitions and PMS IRQ/record registers are not yet
+implemented. This validates the private HP-CPU TEE subset, not security isolation
+for an entire product.

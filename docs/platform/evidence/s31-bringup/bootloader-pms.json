@@ -1,0 +1,187 @@
+{
+  "date": "2026-10-27",
+  "base": "6aa84cb2",
+  "scope": "Private S31 peripheral permission arrays and real HP CPU TEE bus enforcement; no board/application/display readiness.",
+  "sources": "sources.json: fixed ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643 reg_base.h, three peri_pms headers, tee_reg.h and bootloader_mem.c.",
+  "semantics": {
+    "permissions": "99 controls: LP29,HP0 31,HP1 39; reset0x11 (TEE read/write), modes0..3 fields and lockbit8. Current actual master is HP CPU in resetTEE domain; REE/master transitions unimplemented.",
+    "targetGuard": "Mapped peripheral MMIO checks actual TEE read/write bit before mutating FIFO, storage or controller. PMS own accesses have no bypass. Unimplemented peripheral registers are not created by storing their permission controls.",
+    "locked": "A set control lock blocks later changes, including attempted unlock.",
+    "subset": "Quiet denial data/stall unknown: restrictive TEE profile requires bus-error response enabled. Unsupported profile rejected before mutation. PMS IRQ/exception-record register paths remain absent. MODEM,CLIC,GPIO ownership and memory-region APM policies not inferred."
+  },
+  "sourceFixture": {
+    "path": "firmware/s31-uart-probe/pms-probe.S",
+    "flow": "EmitA; configure/lock UART permissions from mailbox; attempt unlock; readUART status; emitB; WFI.",
+    "runs": [
+      {
+        "control": "allow",
+        "steps": 21,
+        "stop": "Waiting",
+        "uart": "AB",
+        "controlWrites": 2
+      },
+      {
+        "control": "write-denied",
+        "steps": 20,
+        "stop": "Exception7",
+        "address": "0x2038a000",
+        "uart": "A",
+        "controlWrites": 2
+      },
+      {
+        "control": "read-denied",
+        "steps": 18,
+        "stop": "Exception5",
+        "address": "0x2038a01c",
+        "uart": "A",
+        "controlWrites": 2
+      },
+      {
+        "control": "quiet-denial-unsupported",
+        "steps": 13,
+        "stop": "Exception7",
+        "address": "0x2058a028",
+        "uart": "A",
+        "controlWrites": 0
+      }
+    ]
+  },
+  "notImplemented": [
+    "LP_AON clock and DIG/CPLL initialization (next actual bootloader path)",
+    "REE/master-domain transitions, PMS IRQ/exception records and full APM memory-region filters",
+    "Quiet-denial bus read data/stall behavior",
+    "Permission wiring for unimplemented peripherals and unconfirmed GPIO/MODEM ownership",
+    "Application/display and silicon verification"
+  ],
+  "artifacts": [
+    {
+      "path": "firmware/s31-uart-probe/pms-probe.S",
+      "bytes": 701,
+      "sha256": "31dd31e39f7f46cdce597f813e73dc227e841906db02d16556b0a16e41d80026"
+    },
+    {
+      "path": "output/s31-uart-probe/pms-probe.elf",
+      "bytes": 4796,
+      "sha256": "939e224bc18c05c675c5ad38727ef6f01f624e4c86c76e1bbb47e1c28b31e16f"
+    },
+    {
+      "path": "output/s31-sources/roms/esp32s31_rev0_rom.elf",
+      "bytes": 513396,
+      "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87"
+    }
+  ],
+  "officialProbe": "bootloader-pms-plus-2.0.68.json",
+  "validation": {
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "workspaceRust": 1413,
+    "testGroups": 131,
+    "s31UnitTests": 49,
+    "sourceRomFixtures": 19,
+    "bothClippy": true,
+    "platformNodeFiles": 4,
+    "wasmScenarios": [
+      "hello",
+      "c3-hello",
+      "c6-hello",
+      "p4-hello",
+      "c6-energy-scan",
+      "c6-contiki",
+      "c6-contiki-net",
+      "c6-rpl-net",
+      "panel"
+    ],
+    "additional": [
+      "stable update",
+      "production WASM build/section check",
+      "standalone S31 wasm32 compile",
+      "native bins build"
+    ],
+    "goldensChanged": false,
+    "uiChanged": false,
+    "hardwareVerified": false,
+    "cpuEvidence": "bootloader-pms-perf.json",
+    "logHashes": [
+      {
+        "group": "stable",
+        "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+      },
+      {
+        "group": "clippy-native",
+        "sha256": "e2efe981f410341e16b28a0f9e40af2a0d3d29aab733a361c68c75e60cd4181f"
+      },
+      {
+        "group": "clippy-wasm",
+        "sha256": "91008581a4a9f1b0ac5b48ef43497158587c42b3b9497a1a0fd352d802298957"
+      },
+      {
+        "group": "rust",
+        "sha256": "eddec363581114d4bfdc3390dbd82aa208ab2bb490d2e529beb4cf9d5532b304"
+      },
+      {
+        "group": "fixtures",
+        "sha256": "7a40f3055772ac47a3587e934b0108fd7ac852b931c7a57611541c168ebac181"
+      },
+      {
+        "group": "wasm-build",
+        "sha256": "eb772a52a82a83ed0a43c6678f9b69d87fb56d5d608e2dc94b7b5b30cb864a90"
+      },
+      {
+        "group": "wasm-sections",
+        "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b"
+      },
+      {
+        "group": "platform",
+        "sha256": "33a99848dfac09f6848b6f2d2b30c969bc662eae26826f3720e8ebfe43734ce7"
+      },
+      {
+        "group": "wasm",
+        "sha256": "17048c482947dbabcc6a1878b8da5859526c436b46dee60dbfea0ef89b929242"
+      },
+      {
+        "group": "s31-wasm",
+        "sha256": "7adf189245970078d86f7b11e8904bd8f5a2e63f9487e2727b330865953c35b3"
+      },
+      {
+        "group": "native",
+        "sha256": "711ce8f8c6ed837ff5c93045680b324e7f79e20f656785001472cb224c574950"
+      },
+      {
+        "group": "rom",
+        "sha256": "afb395776f34a4c34e33d815887f3d8818d26eca199fda67855564c767da2e46"
+      }
+    ],
+    "productionArtifacts": {
+      "esp32sim": {
+        "bytes": 3665112,
+        "sha256": "c73d72ecf5685480f0beb7dc23643a1d07bf09e2e31f1204a5acd458268f7044"
+      },
+      "esp32sim-c3": {
+        "bytes": 3665152,
+        "sha256": "b8de84bc5f2dcc71fa4eb604c246b09d471f9a2a6b437bf7f428b6d1fcb82708"
+      },
+      "esp32sim-c6": {
+        "bytes": 3665152,
+        "sha256": "86bd88a17ff5d42a2496108d67a05adf04e4a0efb32f4f3d6e6ed05ee411984f"
+      },
+      "wasm": {
+        "bytes": 3988256,
+        "sha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31"
+      }
+    },
+    "productionScope": "No production native/WASM source path changes; S31 remains a separate crate absent from CLI/WASM dependencies. Actual binary comparison and CPU/output samples retained; no native byte-identity or S31 performance claim."
+  },
+  "reproduce": {
+    "fixtureBuild": "S31_BUILD_ROM_IMAGE=1 ESPTOOL_BIN=<esptool5.4.0> RISCV_TOOLCHAIN_PREFIX=<riscv32-esp-elf15.2.0-prefix> bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "fixture": "S31_PMS_ELF=<absolute-output>/pms-probe.elf cargo test --release -p esp32s31 external_s31_permissions_control_actual_uart_io -- --include-ignored --nocapture",
+    "officialProbe": "cargo build --release -p esp32s31 --example bringup; python3 tools/s31-native-firmware-probe.py --firmware-url <caller-URL> --sha256 <caller-SHA256> --rom <public20260528-S31-ROM-ELF> --rom-spi0-shadow --nor-jedec ef4018 --analog-bias 0000 --analog-perif-glitch ff --steps 2000000 --output <receipt.json>",
+    "defaults": "Omit PERIF seed for strict target-missing rejection; preceding explicit development inputs retain their documented unknown-hardware limitations."
+  },
+  "privacy": "Only public source URLs, firmware/ROM hashes, bounded guest output, test assertions and aggregate benchmark data retained. Official firmware bytes are never written to disk by the probe. Raw local build paths remain only in ignored logs; committed receipts retain log hashes, not host paths.",
+  "failuresRetained": [
+    {
+      "check": "source lookup",
+      "failure": "Guessed esp_hw_support/port/esp32s31/esp_memprot.c returned404; fixed repository tree resolved bootloader_support/src/bootloader_mem.c and the three PMS headers."
+    }
+  ],
+  "sameFirmwareRecheck": "Final source rerun preserves actual fault PC/address/steps,99 permission writes,10 analog transactions and UART bytes; latest GET receipt retained in the official probe."
+}

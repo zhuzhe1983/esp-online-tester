@@ -780,3 +780,50 @@ or availability changed. Five alternating CPU pairs versus fixed main84e67571
 (production paths unchanged through f14d5634) gave S3 +0.588%, C3 −0.050%, C6
 +1.633%, with identical UART hashes and instruction/cycle statistics. This is a
 production regression guard; no S31 speed or silicon claim is inferred.
+
+### Bootloader peripheral-permission initialization
+
+The unchanged official Plus 2.0.68 image now executes all 99 LP/HP peripheral
+permission writes from fixed v6.1 `bootloader_mem.c` (the upstream temporary
+all-security-modes bring-up policy, IDF-14620). It then reaches clock setup and
+faults at PC `0x2f06fd88`, read32 `0x20701000`
+(`LP_AONCLKRST_ROOT_CLK_CONF_REG`), after 200,488 instructions. This does not enter
+the application or display; Plus remains unavailable.
+
+The private S31 bus now has the three documented PMS control arrays, their
+reset TEE read/write permissions, write locks, date, automatic-clock policy and
+bus-error configuration. Permissions actually guard the connected UART, USB,
+SHA, cache/MSPI, clock, PMU, LP scratch, eFuse, TRNG, watchdog, debug-monitor and
+PMS-register accesses. A denied operation cannot mutate the target FIFO/storage.
+The single modeled HP CPU is in its reset TEE security domain; REE/master-mode
+transitions, DMA security and APM memory-region filters are not represented.
+Control words for unimplemented peripherals are retained without creating those
+peripherals. The separate MODEM/CLIC and GPIO permission ownership is unconfirmed
+and is not silently assigned to a neighboring controller.
+
+Restricted TEE profiles require the documented bus-error response in this
+subset. The public header says the reset setting suppresses that error response,
+but does not establish blocked-read data or stall semantics; attempting to
+install a restricted profile with quiet responses is therefore explicitly
+unsupported and leaves the control word unchanged. PMS interrupt enable and
+exception-record registers remain unsupported. A locked control ignores later
+writes, including an attempted unlock. No complete TEE/security certification is
+claimed.
+
+The source-built `pms-probe.S` sends `A`, installs and locks caller-supplied UART
+permissions, attempts to reopen the locked word, reads actual UART status and
+then sends `B`. The allow case emits `AB` and waits in 21 instructions; write-
+denied and read-denied cases stop at the actual UART store/load in 20/18 steps
+and leave output at `A`. Unsupported quiet-denial configuration stops in 13 steps
+before installing the restriction. Bus tests additionally prove denied LP scratch
+and SHA accesses do not mutate the target, and PMS self-protection has no bypass.
+See [stage receipt](evidence/s31-bringup/bootloader-pms.json) and
+[official trace](evidence/s31-bringup/bootloader-pms-plus-2.0.68.json).
+
+PMS-stage checks pass both warnings-denied Clippy targets, 1,413 workspace Rust
+tests, 49 S31 unit tests, 19 real source/ROM fixtures, the four platform Node files,
+nine WASM scenarios and production/private-target builds. Five alternating CPU
+pairs against the same fixed main84e67571 baseline gave S3 +0.077%, C3 −0.403%,
+C6 +2.198%, with identical instruction/cycle statistics and UART hashes. This is
+a production regression guard, not an S31 speed claim. No golden, UI or product
+availability changed; no browser or hardware verification is claimed.

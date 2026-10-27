@@ -389,3 +389,23 @@ fn external_s31_perif_reset_and_qualified_brownout_input() {
         eprintln!("S31 power control={control} steps={} stop={:?} transactions={} reset={:?}", run.steps, run.stop, m.bus.analog.transactions, m.bus.power.reset_request);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_PMS_ELF to pms-probe.elf"]
+fn external_s31_permissions_control_actual_uart_io() {
+    let path = std::env::var("S31_PMS_ELF").expect("build firmware/s31-uart-probe and set S31_PMS_ELF");
+    let elf = std::fs::read(path).expect("read S31_PMS_ELF");
+    for (control, bits, error, exception) in [("allow", 0x111u32, 1u32, 0), ("write-denied", 0x101, 1, 7), ("read-denied", 0x110, 1, 5), ("quiet-denial-unsupported", 0x101, 0, 7)] {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        m.bus.load(0x2f070000, &bits.to_le_bytes(), 4).unwrap(); m.bus.load(0x2f070004, &error.to_le_bytes(), 4).unwrap();
+        let run = m.run(1000);
+        if exception == 0 { assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"AB"); }
+        else {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(exception)));
+            assert_eq!(m.bus.uart0.tx_out, b"A");
+            let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!(f.reason, emu_core::Fault::Prohibited);
+            assert_eq!(f.address, if error == 0 { 0x2058a028 } else if exception == 5 { 0x2038a01c } else { 0x2038a000 });
+        }
+        eprintln!("S31 PMS control={control} steps={} stop={:?} writes={}", run.steps, run.stop, m.bus.permissions.writes);
+    }
+}

@@ -13,6 +13,7 @@ use crate::mspi::Mspi;
 use crate::sha::ShaEngine;
 use crate::analog::Analog;
 use crate::power::Power;
+use crate::pms::Permissions;
 use crate::efuse::{Efuse, BASE as EFUSE_BASE};
 
 // ESP-IDF v6.1 (fff9895c82d744c7237be8847347bdd1b07c6643),
@@ -54,6 +55,7 @@ pub struct S31Bus {
     pub sha: ShaEngine,
     pub analog: Analog,
     pub power: Power,
+    pub permissions: Permissions,
     pc: u32, pub first_fault: Option<AccessFault>,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
@@ -67,7 +69,7 @@ impl S31Bus {
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16],
-            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), sha: ShaEngine::default(), analog: Analog::default(), power: Power::default(), pc: 0, first_fault: None }
+            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), sha: ShaEngine::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -118,6 +120,11 @@ impl S31Bus {
     }
     fn clic_register(off: u32) -> bool { matches!(off & !3, 0 | 4 | 0x1000..=0x10bc) }
     fn read(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
+        if let Err(e) = self.permissions.check(address, false) { return self.fault(address, bytes, false, false, e); }
+        if Permissions::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.permissions.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
         if let Some(data) = self.memory(address, bytes) {
             let mut value = [0; 4]; value[..bytes].copy_from_slice(data); return Ok(u32::from_le_bytes(value));
         }
@@ -239,6 +246,11 @@ impl S31Bus {
         self.fault(address, bytes, false, false, Fault::Unmapped)
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
+        if let Err(e) = self.permissions.check(address, true) { return self.fault(address, bytes, true, false, e); }
+        if Permissions::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.permissions.write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
         if let Some(dest) = self.memory_mut(address, bytes, false) { dest.copy_from_slice(&value.to_le_bytes()[..bytes]); return Ok(()); }
         if address & !3 == crate::mspi::CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
@@ -394,6 +406,21 @@ impl Bus for S31Bus {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn peripheral_denial_does_not_mutate_real_fifo_scratch_or_sha_control() {
+        use crate::pms::{LP, HP0, HP1};
+        let mut b = S31Bus::new(); b.write32(UART0_BASE, 65).unwrap();
+        b.write32(HP1 + 0xff0, 1).unwrap(); b.write32(HP1 + 0x28, 1).unwrap();
+        assert_eq!(b.write32(UART0_BASE, 66), Err(Fault::Prohibited)); assert_eq!(b.uart0.tx_out, b"A");
+        b.write32(LP + 0x7f0, 1).unwrap(); b.write32(LP_STORE0, 0x1234).unwrap(); b.write32(LP, 1).unwrap();
+        assert_eq!(b.write32(LP_STORE0, 0), Err(Fault::Prohibited)); assert_eq!(b.read32(LP_STORE0), Ok(0x1234));
+        b.write32(LP, 0x10).unwrap(); assert_eq!(b.read32(LP_STORE0), Err(Fault::Prohibited));
+        b.write32(LP, 0x11).unwrap(); assert_eq!(b.read32(LP_STORE0), Ok(0x1234));
+        b.write32(HP0 + 0xff0, 1).unwrap(); b.write32(HP0 + 0x70, 1).unwrap();
+        assert_eq!(b.write32(crate::sha::BASE, 2), Err(Fault::Prohibited)); assert_eq!(b.sha.blocks(), 0);
+        // Self-protection applies to PMS words too: no privileged bypass via the bus.
+        b.write32(HP1 + 0x98, 1).unwrap(); assert_eq!(b.write32(HP1 + 0x28, 0x11), Err(Fault::Prohibited));
+    }
     #[test]
     fn psram_clock_gate_blocks_real_reads_writes_and_fetches_without_losing_backing_storage() {
         use crate::cache::{PSRAM_MMU, PSRAM_VADDR};

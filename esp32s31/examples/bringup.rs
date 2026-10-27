@@ -58,6 +58,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         m.cpu.pc, m.cpu.mepc, m.cpu.mcause, m.cpu.mtval, m.bus.first_fault);
     eprintln!("mspi-commands={} cache-maintenance={} sha-blocks={}", m.bus.mspi.commands, m.bus.cache.maintenance_operations, m.bus.sha.blocks());
     eprintln!("analog-transactions={} bias={:?} mpll-shutdown={}", m.bus.analog.transactions, m.bus.analog.bias(), m.bus.power.mpll_disabled());
+    eprintln!("permission-writes={}", m.bus.permissions.writes);
     eprintln!("analog-perif-glitch={:?}", m.bus.analog.perif_glitch());
     if usb_host { eprintln!("usb-host packets={packets} bytes={} data={:?}", usb.len(), String::from_utf8_lossy(&usb)); }
     Ok(())
