@@ -1827,11 +1827,29 @@
           "title": "download",
           "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/471/AtomS3-Lite-Factory-Firmware.exe",
           "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "官方出厂 EasyLoader 容器实测",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/471/AtomS3-Lite-Factory-Firmware.exe",
+          "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/471/AtomS3-Lite-Factory-Firmware.exe",
+          "bytes": 9983488,
+          "sha256": "1b0c21e59ef0fbb637b9007bb13b2809878ebba8dbbc3e6a19a2d73a700a7686",
+          "mediaType": "application/octet-stream",
+          "fetchedAt": "2026-10-27T15:53:01Z",
+          "checkedAt": "2026-10-27"
         }
       ],
       "limitations": [
-        "已找到官方出厂源码或 EasyLoader 恢复入口，但本轮未定位并固定该型号可供浏览器直载的完整 BIN；不能把 EXE 当作固件运行。"
-      ]
+        "官方出厂 EasyLoader 包的内嵌镜像已通过真实 ROM/WASM 启动和 GPIO41 按键计数核验；包内 StartAddress=0x0，未修改原始镜像。",
+        "该下载为 Windows EXE 容器，当前网页不解析容器，故继续作为恢复资料入口；未找到独立公开 BIN，不镜像到本站。红外仅观察到客体发送日志，未模拟接收端。"
+      ],
+      "bootVerification": {
+        "status": "partial",
+        "evidence": "docs/platform/evidence/atoms3-lite-runtime/verification.json",
+        "romBoot": true,
+        "containerExtractionRequired": true,
+        "hardwareValidated": false
+      }
     },
     {
       "id": "m5stack-k007-v27-factory-reference",
@@ -2748,7 +2766,8 @@
       ],
       "status": "trial",
       "source": {
-        "url": "https://burner.m5stack.com/api/v1/firmwares/2099000000000000004/versions/2098279947072393217/download"
+        "url": "https://burner.m5stack.com/api/v1/firmwares/2099000000000000004/versions/2098279947072393217/download",
+        "sha256": "338baf7f16703b26fff78619d32e593d8ca4f1934bdad63e3c95eef862f3133c"
       },
       "sources": [
         {
@@ -2770,11 +2789,21 @@
           "title": "M5Burner 已发布版本元信息",
           "url": "https://burner.m5stack.com/api/v1/firmwares/2099000000000000004/versions?scope=PUBLIC",
           "checkedAt": "2026-10-27"
+        },
+        {
+          "title": "本轮官方 UIFlow2 固定版本镜像核验",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/2099000000000000004/versions/2098279947072393217/download",
+          "resolvedUrl": "https://m5burner-cdn.m5stack.com/community/1/2099000000000000004/2098279947072393217/bin/2098279947072393218.bin",
+          "bytes": 8384512,
+          "sha256": "338baf7f16703b26fff78619d32e593d8ca4f1934bdad63e3c95eef862f3133c",
+          "mediaType": "application/octet-stream",
+          "fetchedAt": "2026-10-27T15:53:58Z",
+          "checkedAt": "2026-10-27"
         }
       ],
       "limitations": [
-        "官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256，尚未核验镜像布局或执行兼容性。",
-        "浏览器加载时计算实际摘要并检查芯片、容量、启动布局；不完整镜像会要求补齐启动文件。不同外设和网络功能的模拟范围仍取决于板级模型。"
+        "官方 v2.5.3 已在真实 ROM/WASM 启动，GPIO35 RMT 输出蓝灯；这只确认启动与状态灯，未验证联网、云端部署及其他 MicroPython API。",
+        "启动时仍有内部 I²C 未初始化日志；本机无屏幕，不能用空白 framebuffer 判断启动失败。"
       ],
       "revision": "v2.5.3",
       "simulationVerified": false,
@@ -2789,7 +2818,7 @@
         "assetName": "uiflow-db526ecc-esp32s3-8mb-atoms3-lite-v2.5.3-20260911.bin",
         "upstreamUrl": "https://burner.m5stack.com/api/v1/firmwares/2099000000000000004/versions/2098279947072393217/download",
         "digestSource": "publisher-hash-unavailable",
-        "layoutVerified": false,
+        "layoutVerified": true,
         "checkedAt": "2026-10-27T14:29:06Z",
         "publisherIdentity": {
           "provider": "m5burner-v1",
@@ -2801,7 +2830,15 @@
           "status": "PUBLISHED"
         }
       },
-      "watchlistId": "m5-official-uiflow2-c124"
+      "watchlistId": "m5-official-uiflow2-c124",
+      "bootVerification": {
+        "status": "partial",
+        "evidence": "docs/platform/evidence/atoms3-lite-runtime/verification.json",
+        "romBoot": true,
+        "appDirect": false,
+        "stubs": false,
+        "hardwareValidated": false
+      }
     },
     {
       "id": "m5stack-k034-uiflow1-reference",

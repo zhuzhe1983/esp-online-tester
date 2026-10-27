@@ -1,0 +1,269 @@
+{
+  "checkedAt": "2026-10-27T16:25:32Z",
+  "productId": "m5stack-c124",
+  "scope": "Partial board runtime, actual official ROM boot, input and RMT LED output; no physical hardware test.",
+  "baseCommit": "84e67571f0d1aecddf77d2432678fec81baabf72",
+  "reusedCommits": [
+    "6fc0d205",
+    "cbd23a2b"
+  ],
+  "artifacts": {
+    "wasm": {
+      "sha256": "bd9ef82297f4b24e61a878a2fe4230ea03654369f00ec9ec23af4ae04d7d55f8",
+      "bytes": 4090870
+    },
+    "rom": {
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+    },
+    "boardSourceSha256": "9b880c31ffcb1cf230dd0232423acf68ee7514fd354e236ab25b3cd4828d01c6",
+    "modelSha256": "91e5ce3ef5428894d75c23c9e51486be8249759edc7f269bd7c7df3ecaaf7a35",
+    "geometrySha256": "e64a2c2bbb7798d8b12b5f6352e38c0fa758dfb0c72ff0d42117dd580027adf9"
+  },
+  "official": {
+    "factory": {
+      "container": {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/471/AtomS3-Lite-Factory-Firmware.exe",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/471/AtomS3-Lite-Factory-Firmware.exe",
+        "bytes": 9983488,
+        "sha256": "1b0c21e59ef0fbb637b9007bb13b2809878ebba8dbbc3e6a19a2d73a700a7686",
+        "mediaType": "application/octet-stream",
+        "fetchedAt": "2026-10-27T15:53:01Z"
+      },
+      "extraction": {
+        "resourceName": "firmware",
+        "resourceType": "ByteArray",
+        "offset": 6775134,
+        "bytes": 2664160,
+        "sha256": "c98c12196856f1fa1af927f56941d4224a7f2df9a8cbb7c03cb679c02eb42008",
+        "flashAddress": 0
+      },
+      "version": "publisher version not stated",
+      "romBoot": true,
+      "appDirect": false,
+      "stubs": [],
+      "nativeGuestSeconds": 8,
+      "browserGuestSeconds": 6.66,
+      "browserInstructions": 1611973546,
+      "serialEvidence": [
+        "IR Send >>> addr:DCE0 cmd:21",
+        "IR Send >>> addr:DCE0 cmd:22",
+        "IR Send >>> addr:DCE0 cmd:23",
+        "IR Send >>> addr:DCE0 cmd:24",
+        "IR Send >>> addr:DCE0 cmd:25",
+        "BTN Pressed 1"
+      ],
+      "leds": [
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "catalogStatus": "reference; Windows EXE cannot be loaded directly by the current web loader",
+      "nativeRevision": "4f0e2ec6 before removal of incomplete software-GPIO decoder; final WASM browser receipt above uses the RMT-only board source hash."
+    },
+    "uiflow2": {
+      "version": "v2.5.3",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/2099000000000000004/versions/2098279947072393217/download",
+        "resolvedUrl": "https://m5burner-cdn.m5stack.com/community/1/2099000000000000004/2098279947072393217/bin/2098279947072393218.bin",
+        "bytes": 8384512,
+        "sha256": "338baf7f16703b26fff78619d32e593d8ca4f1934bdad63e3c95eef862f3133c",
+        "mediaType": "application/octet-stream",
+        "fetchedAt": "2026-10-27T15:53:58Z"
+      },
+      "romBoot": true,
+      "appDirect": false,
+      "stubs": [],
+      "nativeGuestSeconds": 8,
+      "browserGuestSeconds": 0.72,
+      "leds": [
+        [
+          0,
+          0,
+          255
+        ]
+      ],
+      "catalogStatus": "trial",
+      "observedWarning": "i2c.master: this port has not been initialized, please initialize it first",
+      "nativeRevision": "4f0e2ec6 before removal of incomplete software-GPIO decoder; final WASM browser receipt above uses the RMT-only board source hash."
+    }
+  },
+  "browser": {
+    "headless": true,
+    "fixtureMouse": {
+      "hover": "button",
+      "gpio41GuestPressedReleased": true,
+      "rgb": [
+        0,
+        255,
+        0
+      ]
+    },
+    "fixtureKeyboard": {
+      "pressed": {
+        "leds": [
+          [
+            0,
+            0,
+            255
+          ]
+        ],
+        "serial": "ITE_RMT 0 255 0\r\nATOMS3_LITE_RMT 0 255 0\r\nATOMS3_LITE_BUTTON 1\r\nATOMS3_LITE_BUTTON 1\r\nATOMS3_LITE_BUTTON 0\r\nATOMS3_LITE_BUTTON 0\r\nATOMS3_LITE_RMT 0 0 255\r\nATOMS3_LITE_RMT 0 0 255\r\n"
+      },
+      "released": {
+        "leds": [
+          [
+            0,
+            0,
+            255
+          ]
+        ],
+        "serial": "OMS3_LITE_BUTTON 1\r\nATOMS3_LITE_BUTTON 1\r\nATOMS3_LITE_BUTTON 0\r\nATOMS3_LITE_BUTTON 0\r\nATOMS3_LITE_RMT 0 0 255\r\nATOMS3_LITE_RMT 0 0 255\r\nATOMS3_LITE_BUTTON 1\r\nATOMS3_LITE_BUTTON 1\r\n"
+      }
+    },
+    "appearance": [
+      "original shell with guest green/blue LED",
+      "gold shell preserves blue LED",
+      "transparent purple shell preserves blue LED and visible UNKNOWN PCB"
+    ],
+    "captureNotes": "Two early pointer screenshots sampled a queued LED publication before guest resumed; final images use explicit guest-time waits. No image is a fabricated firmware frame. This product has no screen.",
+    "mini": {
+      "productId": "m5stack-c124",
+      "firmwareId": "m5stack-c124-uiflow2-reference",
+      "shareRestore": true,
+      "trialConfirmationRequired": true,
+      "guestSeconds": 0.9,
+      "instructions": 99786462,
+      "frames": 0,
+      "leds": [
+        [
+          0,
+          0,
+          255
+        ]
+      ],
+      "executionMode": "wasm-jit",
+      "appDirect": false,
+      "stubs": [],
+      "statusAtCapture": "paused"
+    },
+    "cleanup": "Task-owned headless browser and HTTP server closed; no retained session."
+  },
+  "modelRebuild": {
+    "passed": true,
+    "verifiedArtifacts": [
+      "LICENSE-M5Stack.txt",
+      "reference-product-photo-57f2fd95a2.webp",
+      "reference-product-photo-4cf7b8a5f3.webp",
+      "geometry.bin",
+      "paper-labels.png",
+      "source.stl",
+      "reference-product-photo-ac08f9d4e0.webp"
+    ],
+    "mismatches": [],
+    "unusedOriginalArtifacts": [],
+    "modelJsonByteIdentical": true,
+    "scope": "Exact regenerated geometry, source/reference files, textures and model contract. Metadata byte order and historical unused files are reported separately. No fresh browser, hardware or firmware acceptance."
+  },
+  "negativeResults": [
+    {
+      "revision": "cbd23a2b reused as 4f0e2ec6 before final board correction",
+      "failure": "WIP GPIO waveform fixture printed its intended color but browser output did not latch it; observed events were [] then RMT [255,0,0]. Gated GPIO-only attempt also failed in ordinary WASM interpreter.",
+      "cause": "WIP omitted EX218 uses_gpio_waveform; default quantum does not preserve microsecond pulse widths.",
+      "resolution": "Final board implements RMT only. Software-GPIO decoding removed; no shared scheduler or CPU edits.",
+      "artifactLimit": "Intermediate WASM hash not recorded; source commit and observed failure retained, not substituted by final hash."
+    },
+    {
+      "failure": "First complete Rust run used relative ESP32SIM_ROM_DIR and failed a classic-ROM file lookup from a crate working directory.",
+      "resolution": "Absolute ROM path rerun passed all 1432 tests."
+    },
+    {
+      "failure": "First ten-scenario WASM batch lacked ignored MicroPython ESP32_GENERIC input for tdisplay-prices.",
+      "resolution": "Copied existing input and ran tdisplay-prices successfully; other nine scenarios already passed."
+    },
+    {
+      "failure": "Initial model source additions omitted knowledge archiveName and catalog checkedAt fields.",
+      "resolution": "Metadata corrected; final 100 Node tests passed."
+    },
+    {
+      "failure": "Existing real-WASM recording sample reports frame=different after 18 events, while its event/guest-time assertions pass.",
+      "resolution": "Kept the mismatch as a recording limitation; no golden or timing expectation changed and no exact replay claim."
+    }
+  ],
+  "checks": {
+    "rust": "1432 passed, ignored included, external_* skipped; goldens unchanged",
+    "clippyNative": "pass -D warnings",
+    "clippyWasm": "pass jit-tests -D warnings",
+    "node": "100 passed",
+    "catalog": "86 products / 7 accessories / 148 firmwares / 103 watchlist",
+    "wasmManifests": [
+      "hello",
+      "c3-hello",
+      "c6-hello",
+      "p4-hello",
+      "c6-energy-scan",
+      "c6-contiki",
+      "c6-contiki-net",
+      "c6-rpl-net",
+      "panel",
+      "tdisplay-prices",
+      "demo-stopwatch"
+    ],
+    "realFixture": "fixture.json: 4 check groups passed",
+    "performance": "No shared bus/device_set/interrupt/scheduler/per-tick path changed; no CPU timing claim or new experiment.",
+    "wasmAbi": "timing-api, ble-api, ble-connection passed",
+    "productionSections": "DWARF absent, names retained",
+    "recording": "18 real WASM events and guest interval checks passed; final framebuffer differs in this sample, not bit-exact playback",
+    "worker": "worker pacing and channel checks passed",
+    "virtualQuantum": "opt-in native machine/virtual-stop checks passed",
+    "ui": "11 touch/StopWatch UI checks passed",
+    "commands": [
+      "cargo clippy --workspace --all-targets -- -D warnings",
+      "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "ESP32SIM_ROM_DIR=<absolute-rom-directory> cargo test --release --workspace -- --include-ignored --skip external_",
+      "node --test tools/platform-*-test.mjs",
+      "python tools/validate-platform-catalog.py",
+      "node tools/probe-atoms3-lite.mjs --build <fixture-build-directory>",
+      "python tools/rebuild-product-model.py plan m5stack-c124",
+      "python tools/rebuild-product-model.py build m5stack-c124 --scratch <scratch-directory>",
+      "node tools/platform-recording-test.mjs --real --receipt <output.json>"
+    ],
+    "recordingReceipt": "recording-regression.json"
+  },
+  "limitations": [
+    "No software GPIO waveform decoding.",
+    "No IR receiver or physical emission validation; guest TX logs only.",
+    "No analog power/reset timing or external Grove electrical route.",
+    "No network/cloud/MicroPython API compatibility claim.",
+    "Prior geometry/photo failure metrics retained; optical proxy is not populated PCB CAD.",
+    "Factory EXE remains a reference; no server-side firmware mirror."
+  ],
+  "images": [
+    {
+      "file": "fixture-mouse-green.png",
+      "sha256": "84d87cd3a810f38ab76f54e42d47659fb8560bab32bc0da2804e203a3fb27083"
+    },
+    {
+      "file": "fixture-keyboard-blue.png",
+      "sha256": "f58aba90a6f054baeba9cd2210e14d4670d8d4fd4366e6f583ce2599b7a40b2e"
+    },
+    {
+      "file": "gold-blue.png",
+      "sha256": "764eb9916afa36fe93b46035d7158ca5b765dbf0ec5d78fb3af938ad99d7dda4"
+    },
+    {
+      "file": "purple-blue.png",
+      "sha256": "6882a88a528e30744691322f0fd6c0f995aa6fdc4add0f6b35a77fa6b5cb785b"
+    },
+    {
+      "file": "factory-button.png",
+      "sha256": "1a00b19fa7a8fc97decd67b7e059b8329a5140a91fe4e9e7581836029274b5f4"
+    },
+    {
+      "file": "mini-blue.png",
+      "sha256": "d995320f0565c1dee1ea3e787140361bb40bd157d6d6e1a0b4bd4b09f4db5cd3"
+    }
+  ],
+  "privacy": "No remote authors/account identifiers, raw captures or host paths retained. Only source IDs, artifact hashes, selected guest output and task screenshots."
+}

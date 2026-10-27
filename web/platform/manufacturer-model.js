@@ -92,6 +92,12 @@ export function createManufacturerModel(product, screenTexture) {
       const label=flatLabel('UNKNOWN');if(label){textures.push(label);const width=Math.min(size[0]*.82,42);for(const back of [false,true]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,width/4),new THREE.MeshBasicMaterial({map:label,transparent:true,depthWrite:false}));mesh.position.z=(back?-1:1)*(size[2]/2+.015);if(back)mesh.rotation.y=Math.PI;pcb.add(mesh);}}
       parts[pcb.name]=pcb;group.add(pcb);
     }
+    // Derived optical windows can expose the same guest LED output as CAD parts.
+    for(const part of metadata.derivedParts || []) {
+      if(part.ledIndex===undefined)continue;
+      const mesh=parts[part.id];if(!Number.isInteger(part.ledIndex)||part.ledIndex<0||part.ledIndex>=256||!mesh?.isMesh||!mesh.material?.emissive)throw Error('Invalid derived LED window');
+      mesh.userData.ledIndex=part.ledIndex;mesh.userData.unlitColor=part.color || '#666d69';(group.userData.rgbLedMeshes ||= [])[part.ledIndex]=mesh;
+    }
     for(const knob of metadata.presentation?.potentiometers || []) {
       if(typeof knob.id!=='string'||!Array.isArray(knob.parts)||!knob.parts.length||knob.parts.some(name=>!parts[name])||!Number.isFinite(knob.visualSweepRadians)||knob.visualSweepRadians<=0||knob.visualSweepRadians>2*Math.PI)throw Error('Invalid potentiometer presentation');
       const pivot=new THREE.Group();pivot.name=`potentiometer:${knob.id}`;pivot.position.set(...vector(knob.centerMm));pivot.userData.value=.5;pivot.userData.visualSweepRadians=knob.visualSweepRadians;group.add(pivot);

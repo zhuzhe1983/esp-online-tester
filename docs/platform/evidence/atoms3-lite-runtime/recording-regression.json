@@ -1,0 +1,522 @@
+{
+  "schemaVersion": "1",
+  "command": "node tools/platform-recording-test.mjs --real --receipt <output.json>",
+  "backend": "actual esp32sim WASM worker",
+  "sourceSha256": {
+    "web/platform/recording.js": "cdfe418708891eb4794a63fb7aac3ded15fbb6d522eb1b779efba538a971bdd2",
+    "web/platform/automation.js": "c5450d2da948f7af4191751569cc6ac099dd1292d3c08326a08dadafdc44f410",
+    "tools/platform-recording-test.mjs": "b1081a013b8876431101d412112184ecee758c63260b926c0427832e3a7cbbd4"
+  },
+  "firmware": {
+    "manifestUrl": "https://platform.example/wasm/fw/demo-stopwatch.json",
+    "manifestHash": "c97ad1d6d29c14464c0917e1e2d903f15c375e5261f717419838895eaa4549d1",
+    "metadata": {
+      "name": "platform_stopwatch",
+      "version": "1.0.0",
+      "source": "esp-app-description"
+    },
+    "source": "remote",
+    "artifacts": [
+      {
+        "kind": "rom",
+        "url": "https://platform.example/wasm/fw/esp32s3_rev0_rom.elf",
+        "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+        "bytes": 949552
+      },
+      {
+        "kind": "bootloader",
+        "url": "https://platform.example/wasm/fw/public/platform-stopwatch-bootloader.bin",
+        "sha256": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+        "bytes": 20832
+      },
+      {
+        "kind": "ptable",
+        "url": "https://platform.example/wasm/fw/public/platform-stopwatch-ptable.bin",
+        "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+        "bytes": 3072
+      },
+      {
+        "kind": "app",
+        "url": "https://platform.example/wasm/fw/public/platform-stopwatch.bin",
+        "sha256": "b4707bdae9a988a28c22ccb1546fef61ade4cf8923d7f9bbad45221287978694",
+        "bytes": 211568
+      }
+    ],
+    "appDirect": false,
+    "stubs": [],
+    "executionMode": "wasm-interpreter"
+  },
+  "wasmSha256": "bd9ef82297f4b24e61a878a2fe4230ea03654369f00ec9ec23af4ae04d7d55f8",
+  "recording": {
+    "schemaVersion": "1",
+    "scene": {
+      "schemaVersion": "1",
+      "productId": "m5stack-stopwatch",
+      "firmware": {
+        "manifestUrl": "https://platform.example/wasm/fw/demo-stopwatch.json",
+        "sha256": "c97ad1d6d29c14464c0917e1e2d903f15c375e5261f717419838895eaa4549d1"
+      },
+      "accessories": [],
+      "keyMapping": {
+        "KeyA": "button-a",
+        "KeyB": "button-b"
+      },
+      "view": {
+        "mode": "studio",
+        "deviceView": "3d"
+      }
+    },
+    "firmware": {
+      "source": "remote",
+      "manifestUrl": "https://platform.example/wasm/fw/demo-stopwatch.json",
+      "manifestHash": "c97ad1d6d29c14464c0917e1e2d903f15c375e5261f717419838895eaa4549d1",
+      "artifacts": [
+        {
+          "kind": "rom",
+          "url": "https://platform.example/wasm/fw/esp32s3_rev0_rom.elf",
+          "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+          "bytes": 949552
+        },
+        {
+          "kind": "bootloader",
+          "url": "https://platform.example/wasm/fw/public/platform-stopwatch-bootloader.bin",
+          "sha256": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+          "bytes": 20832
+        },
+        {
+          "kind": "ptable",
+          "url": "https://platform.example/wasm/fw/public/platform-stopwatch-ptable.bin",
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+          "bytes": 3072
+        },
+        {
+          "kind": "app",
+          "url": "https://platform.example/wasm/fw/public/platform-stopwatch.bin",
+          "sha256": "b4707bdae9a988a28c22ccb1546fef61ade4cf8923d7f9bbad45221287978694",
+          "bytes": 211568
+        }
+      ],
+      "appDirect": false,
+      "stubs": [],
+      "executionMode": "wasm-interpreter"
+    },
+    "clock": {
+      "unit": "guest-seconds",
+      "origin": "reset",
+      "delivery": "worker-acknowledgement"
+    },
+    "display": {
+      "width": 468,
+      "height": 466
+    },
+    "duration": 1.2,
+    "events": [
+      {
+        "at": 0.21431645833333332,
+        "type": "button",
+        "id": "button-a",
+        "pressed": true
+      },
+      {
+        "at": 0.2594905416666667,
+        "type": "button",
+        "id": "button-a",
+        "pressed": false
+      },
+      {
+        "at": 0.26837079166666666,
+        "type": "button",
+        "id": "button-b",
+        "pressed": true
+      },
+      {
+        "at": 0.31145587916666667,
+        "type": "button",
+        "id": "button-b",
+        "pressed": false
+      },
+      {
+        "at": 0.316859,
+        "type": "touch",
+        "x": 0.5010706638115632,
+        "y": 0.5010752688172043,
+        "down": true
+      },
+      {
+        "at": 0.36428191666666665,
+        "type": "touch",
+        "x": 0.5010706638115632,
+        "y": 0.5010752688172043,
+        "down": false
+      },
+      {
+        "at": 0.42381783333333334,
+        "type": "touch",
+        "x": 0.8565310492505354,
+        "y": 0.5010752688172043,
+        "down": true
+      },
+      {
+        "at": 0.485539125,
+        "type": "touch",
+        "x": 0.6852248394004282,
+        "y": 0.5010752688172043,
+        "down": true
+      },
+      {
+        "at": 0.5408841666666667,
+        "type": "touch",
+        "x": 0.5139186295503212,
+        "y": 0.5010752688172043,
+        "down": true
+      },
+      {
+        "at": 0.6202075416666667,
+        "type": "touch",
+        "x": 0.3426124197002141,
+        "y": 0.5010752688172043,
+        "down": true
+      },
+      {
+        "at": 0.6803916666666666,
+        "type": "touch",
+        "x": 0.1284796573875803,
+        "y": 0.5010752688172043,
+        "down": true
+      },
+      {
+        "at": 0.7406895,
+        "type": "touch",
+        "x": 0.1284796573875803,
+        "y": 0.5010752688172043,
+        "down": false
+      },
+      {
+        "at": 0.8010225041666666,
+        "type": "touch",
+        "x": 0.1284796573875803,
+        "y": 0.5010752688172043,
+        "down": true
+      },
+      {
+        "at": 0.8804597083333333,
+        "type": "touch",
+        "x": 0.3426124197002141,
+        "y": 0.5010752688172043,
+        "down": true
+      },
+      {
+        "at": 0.9414062916666667,
+        "type": "touch",
+        "x": 0.5139186295503212,
+        "y": 0.5010752688172043,
+        "down": true
+      },
+      {
+        "at": 1.0168060833333334,
+        "type": "touch",
+        "x": 0.6852248394004282,
+        "y": 0.5010752688172043,
+        "down": true
+      },
+      {
+        "at": 1.0603432916666666,
+        "type": "touch",
+        "x": 0.8565310492505354,
+        "y": 0.5010752688172043,
+        "down": true
+      },
+      {
+        "at": 1.1208798791666668,
+        "type": "touch",
+        "x": 0.8565310492505354,
+        "y": 0.5010752688172043,
+        "down": false
+      }
+    ],
+    "expectedFrame": {
+      "sha256": "f929a0d9f5fba700e82ac0e2a093f71ad13bbd16f181a41a21a2fe5e464a6498",
+      "width": 468,
+      "height": 466
+    }
+  },
+  "recordingSha256": "07f6dd26858cfb8d29e40c855c81ad0b4a0e7fc3f2c094f8fafe3a2294c5d8d9",
+  "eventCount": 18,
+  "gestureEvidence": {
+    "tap": true,
+    "leftwardTrajectory": true,
+    "rightwardTrajectory": true,
+    "originalFirmwareTouchDownCount": 3,
+    "firmwareTouchDownCount": 3,
+    "firmwareNavigationSemantics": "not implemented by diagnostic; not claimed"
+  },
+  "replay": {
+    "kind": "replay",
+    "result": "completed",
+    "bitExact": false,
+    "clock": "stats-observed guest time",
+    "events": [
+      {
+        "index": 0,
+        "originalGuestSeconds": 0.21431645833333332,
+        "scheduledGuestSeconds": 0.21431645833333332,
+        "actualGuestSeconds": 0.24084829166666666,
+        "lateBySeconds": 0.026531833333333338
+      },
+      {
+        "index": 1,
+        "originalGuestSeconds": 0.2594905416666667,
+        "scheduledGuestSeconds": 0.28602237500000005,
+        "actualGuestSeconds": 0.32641933333333334,
+        "lateBySeconds": 0.06692879166666665
+      },
+      {
+        "index": 2,
+        "originalGuestSeconds": 0.26837079166666666,
+        "scheduledGuestSeconds": 0.3352995833333334,
+        "actualGuestSeconds": 0.34784041666666665,
+        "lateBySeconds": 0.07946962499999999
+      },
+      {
+        "index": 3,
+        "originalGuestSeconds": 0.31145587916666667,
+        "scheduledGuestSeconds": 0.3909255041666666,
+        "actualGuestSeconds": 0.4141502083333333,
+        "lateBySeconds": 0.10269432916666665
+      },
+      {
+        "index": 4,
+        "originalGuestSeconds": 0.316859,
+        "scheduledGuestSeconds": 0.4195533291666666,
+        "actualGuestSeconds": 0.43474529166666664,
+        "lateBySeconds": 0.11788629166666664
+      },
+      {
+        "index": 5,
+        "originalGuestSeconds": 0.36428191666666665,
+        "scheduledGuestSeconds": 0.4821682083333333,
+        "actualGuestSeconds": 0.5201535041666666,
+        "lateBySeconds": 0.15587158749999996
+      },
+      {
+        "index": 6,
+        "originalGuestSeconds": 0.42381783333333334,
+        "scheduledGuestSeconds": 0.5796894208333333,
+        "actualGuestSeconds": 0.5808526291666667,
+        "lateBySeconds": 0.15703479583333335
+      },
+      {
+        "index": 7,
+        "originalGuestSeconds": 0.485539125,
+        "scheduledGuestSeconds": 0.6425739208333334,
+        "actualGuestSeconds": 0.6634552541666666,
+        "lateBySeconds": 0.1779161291666666
+      },
+      {
+        "index": 8,
+        "originalGuestSeconds": 0.5408841666666667,
+        "scheduledGuestSeconds": 0.7188002958333333,
+        "actualGuestSeconds": 0.7269634583333333,
+        "lateBySeconds": 0.1860792916666666
+      },
+      {
+        "index": 9,
+        "originalGuestSeconds": 0.6202075416666667,
+        "scheduledGuestSeconds": 0.8062868333333332,
+        "actualGuestSeconds": 0.8317284583333333,
+        "lateBySeconds": 0.21152091666666661
+      },
+      {
+        "index": 10,
+        "originalGuestSeconds": 0.6803916666666666,
+        "scheduledGuestSeconds": 0.8919125833333333,
+        "actualGuestSeconds": 0.9179717083333333,
+        "lateBySeconds": 0.23758004166666669
+      },
+      {
+        "index": 11,
+        "originalGuestSeconds": 0.7406895,
+        "scheduledGuestSeconds": 0.9782695416666666,
+        "actualGuestSeconds": 0.9806769583333333,
+        "lateBySeconds": 0.23998745833333335
+      },
+      {
+        "index": 12,
+        "originalGuestSeconds": 0.8010225041666666,
+        "scheduledGuestSeconds": 1.0410099625,
+        "actualGuestSeconds": 1.0619097083333333,
+        "lateBySeconds": 0.26088720416666666
+      },
+      {
+        "index": 13,
+        "originalGuestSeconds": 0.8804597083333333,
+        "scheduledGuestSeconds": 1.1413469125,
+        "actualGuestSeconds": 1.1661470833333334,
+        "lateBySeconds": 0.2856873750000001
+      },
+      {
+        "index": 14,
+        "originalGuestSeconds": 0.9414062916666667,
+        "scheduledGuestSeconds": 1.2270936666666667,
+        "actualGuestSeconds": 1.2540543333333334,
+        "lateBySeconds": 0.3126480416666667
+      },
+      {
+        "index": 15,
+        "originalGuestSeconds": 1.0168060833333334,
+        "scheduledGuestSeconds": 1.3294541250000003,
+        "actualGuestSeconds": 1.3402600833333334,
+        "lateBySeconds": 0.3234539999999999
+      },
+      {
+        "index": 16,
+        "originalGuestSeconds": 1.0603432916666666,
+        "scheduledGuestSeconds": 1.3837972916666668,
+        "actualGuestSeconds": 1.401441,
+        "lateBySeconds": 0.3410977083333333
+      },
+      {
+        "index": 17,
+        "originalGuestSeconds": 1.1208798791666668,
+        "scheduledGuestSeconds": 1.4619775875,
+        "actualGuestSeconds": 1.4832681291666667,
+        "lateBySeconds": 0.36238824999999997
+      }
+    ],
+    "timingDifferences": [
+      {
+        "index": 1,
+        "originalGuestSeconds": 0.2594905416666667,
+        "scheduledGuestSeconds": 0.28602237500000005,
+        "actualGuestSeconds": 0.32641933333333334,
+        "lateBySeconds": 0.06692879166666665
+      },
+      {
+        "index": 2,
+        "originalGuestSeconds": 0.26837079166666666,
+        "scheduledGuestSeconds": 0.3352995833333334,
+        "actualGuestSeconds": 0.34784041666666665,
+        "lateBySeconds": 0.07946962499999999
+      },
+      {
+        "index": 3,
+        "originalGuestSeconds": 0.31145587916666667,
+        "scheduledGuestSeconds": 0.3909255041666666,
+        "actualGuestSeconds": 0.4141502083333333,
+        "lateBySeconds": 0.10269432916666665
+      },
+      {
+        "index": 4,
+        "originalGuestSeconds": 0.316859,
+        "scheduledGuestSeconds": 0.4195533291666666,
+        "actualGuestSeconds": 0.43474529166666664,
+        "lateBySeconds": 0.11788629166666664
+      },
+      {
+        "index": 5,
+        "originalGuestSeconds": 0.36428191666666665,
+        "scheduledGuestSeconds": 0.4821682083333333,
+        "actualGuestSeconds": 0.5201535041666666,
+        "lateBySeconds": 0.15587158749999996
+      },
+      {
+        "index": 6,
+        "originalGuestSeconds": 0.42381783333333334,
+        "scheduledGuestSeconds": 0.5796894208333333,
+        "actualGuestSeconds": 0.5808526291666667,
+        "lateBySeconds": 0.15703479583333335
+      },
+      {
+        "index": 7,
+        "originalGuestSeconds": 0.485539125,
+        "scheduledGuestSeconds": 0.6425739208333334,
+        "actualGuestSeconds": 0.6634552541666666,
+        "lateBySeconds": 0.1779161291666666
+      },
+      {
+        "index": 8,
+        "originalGuestSeconds": 0.5408841666666667,
+        "scheduledGuestSeconds": 0.7188002958333333,
+        "actualGuestSeconds": 0.7269634583333333,
+        "lateBySeconds": 0.1860792916666666
+      },
+      {
+        "index": 9,
+        "originalGuestSeconds": 0.6202075416666667,
+        "scheduledGuestSeconds": 0.8062868333333332,
+        "actualGuestSeconds": 0.8317284583333333,
+        "lateBySeconds": 0.21152091666666661
+      },
+      {
+        "index": 10,
+        "originalGuestSeconds": 0.6803916666666666,
+        "scheduledGuestSeconds": 0.8919125833333333,
+        "actualGuestSeconds": 0.9179717083333333,
+        "lateBySeconds": 0.23758004166666669
+      },
+      {
+        "index": 11,
+        "originalGuestSeconds": 0.7406895,
+        "scheduledGuestSeconds": 0.9782695416666666,
+        "actualGuestSeconds": 0.9806769583333333,
+        "lateBySeconds": 0.23998745833333335
+      },
+      {
+        "index": 12,
+        "originalGuestSeconds": 0.8010225041666666,
+        "scheduledGuestSeconds": 1.0410099625,
+        "actualGuestSeconds": 1.0619097083333333,
+        "lateBySeconds": 0.26088720416666666
+      },
+      {
+        "index": 13,
+        "originalGuestSeconds": 0.8804597083333333,
+        "scheduledGuestSeconds": 1.1413469125,
+        "actualGuestSeconds": 1.1661470833333334,
+        "lateBySeconds": 0.2856873750000001
+      },
+      {
+        "index": 14,
+        "originalGuestSeconds": 0.9414062916666667,
+        "scheduledGuestSeconds": 1.2270936666666667,
+        "actualGuestSeconds": 1.2540543333333334,
+        "lateBySeconds": 0.3126480416666667
+      },
+      {
+        "index": 15,
+        "originalGuestSeconds": 1.0168060833333334,
+        "scheduledGuestSeconds": 1.3294541250000003,
+        "actualGuestSeconds": 1.3402600833333334,
+        "lateBySeconds": 0.3234539999999999
+      },
+      {
+        "index": 16,
+        "originalGuestSeconds": 1.0603432916666666,
+        "scheduledGuestSeconds": 1.3837972916666668,
+        "actualGuestSeconds": 1.401441,
+        "lateBySeconds": 0.3410977083333333
+      },
+      {
+        "index": 17,
+        "originalGuestSeconds": 1.1208798791666668,
+        "scheduledGuestSeconds": 1.4619775875,
+        "actualGuestSeconds": 1.4832681291666667,
+        "lateBySeconds": 0.36238824999999997
+      }
+    ],
+    "finalFrame": {
+      "sha256": "6dc483755d98f86286c02a4e28cb238e9d31530eaa0ac39c1d077ae25ef7a87f",
+      "width": 468,
+      "height": 466
+    },
+    "frameComparison": "different"
+  },
+  "originalSerialSha256": "0c45024dcce859822e85fd26818fca28f7523ecc59168e4ab2246baa797ab70e",
+  "serialSha256": "0c45024dcce859822e85fd26818fca28f7523ecc59168e4ab2246baa797ab70e",
+  "assertions": [
+    "Actual firmware received original and replayed BUTTON_A and BUTTON_B short presses",
+    "Actual firmware reported touch-down for tap and both trajectories",
+    "Every nonzero original guest interval was preserved or extended, never collapsed",
+    "All replay inputs have worker-acknowledged guest timestamps"
+  ]
+}

@@ -6891,17 +6891,20 @@
       "chip": "esp32s3",
       "module": "ESP32-S3FN8",
       "runtime": {
-        "board": null,
+        "board": "atoms3-lite",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [
         {
           "id": "button",
-          "name": "Documented physical button",
-          "type": "button"
+          "name": "Button A",
+          "type": "button",
+          "pin": 41,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         }
       ],
       "interfaces": [
@@ -6943,7 +6946,8 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "已实现 GPIO41 低电平按键与 GPIO35 单颗 WS2812C 的真实 RMT 输出。",
+        "软件 GPIO 灯带波形、红外、模拟电源/复位电路、无线联网与外部 Grove 配件路由未完成；RMT 解码未与实物校准。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-c124.json",

@@ -2,7 +2,7 @@
   "schemaVersion": "1",
   "checkedAt": "2026-10-26T20:31:46Z",
   "productId": "m5stack-c124",
-  "modelSha256": "a92c19e29048c739c0436d62a569023646b2421a65ce9a7b57c0f4e9a42d73b1",
+  "modelSha256": "91e5ce3ef5428894d75c23c9e51486be8249759edc7f269bd7c7df3ecaaf7a35",
   "geometrySha256": "e64a2c2bbb7798d8b12b5f6352e38c0fa758dfb0c72ff0d42117dd580027adf9",
   "sourceSha256": "deafc7f31cbfcea58d142d4fa0dc70a293292c3044111b1208730f8069639432",
   "dimensions": [
@@ -107,14 +107,14 @@
   ],
   "status": "partial",
   "limitations": [
-    "Manufacturer exterior geometry only; exact product board/CPU/peripheral execution is unavailable.",
     "Photograph-informed material colors are uncalibrated display approximations.",
     "PCB UNKNOWN is an estimated blank placeholder, not a populated or manufacturing-ready board.",
     "External connector/body inserts are photo-derived estimates where manufacturer CAD omits them.",
     "No physical hardware measurements or flashing performed.",
     "Exact front source contains a separate coin and slight perspective; whole-image silhouette is not a valid calibrated front profile.",
     "Paper markings use explicit transparent source-photo masks; unlabelled shell remains a recolorable material. Photo lighting and minor paper placement are not calibrated.",
-    "Visible rear female-header housing/recess outlines are photo-derived approximations; they are separate from the shell and UNKNOWN PCB. Exact crimp/contact internals are unknown."
+    "Visible rear female-header housing/recess outlines are photo-derived approximations; they are separate from the shell and UNKNOWN PCB. Exact crimp/contact internals are unknown.",
+    "RMT LED and GPIO41 input have a partial runtime; software GPIO/IR and analog power circuitry remain unimplemented. Optical proxy is not manufacturer populated PCB data."
   ],
   "reviewScriptSha256": "22f46d08d16503f65778cdeeb74aaf6848fc56bb04fb2fac3a1cef3175bb2da2",
   "buildScriptSha256": "7a9e872c27689850aa88c2a9cc0225105259d586808c99bb39ba00c7d4ee0e38",
@@ -174,5 +174,14 @@
     "grove-geometry.js": "2b61d1b8c26eac4c1d472f220853339c3ff7f6e24b9fa7561a83ec4f69049014",
     "shell-appearance.js": "168c7ca9cdf3befffde8d7853c893b86a10f7638513e48b30323107c39a756aa",
     "review-lane-02.js": "22f46d08d16503f65778cdeeb74aaf6848fc56bb04fb2fac3a1cef3175bb2da2"
+  },
+  "runtimeMetadataRevision": {
+    "checkedAt": "2026-10-27T16:13:40Z",
+    "previousModelSha256": "a92c19e29048c739c0436d62a569023646b2421a65ce9a7b57c0f4e9a42d73b1",
+    "currentModelSha256": "91e5ce3ef5428894d75c23c9e51486be8249759edc7f269bd7c7df3ecaaf7a35",
+    "scope": "Adds conservative front-key hit plane and a separate guest-RMT-driven optical proxy behind the existing CAD LED slot. Manufacturer geometry, dimensions and prior photo metrics unchanged; previous visual failures retained, not rerun or upgraded.",
+    "publicRebuild": "python tools/rebuild-product-model.py build m5stack-c124 --scratch <scratch-dir>",
+    "rebuildResult": "7 artifacts identical; model JSON byte-identical",
+    "runtimeEvidence": "../atoms3-lite-runtime/verification.json"
   }
 }

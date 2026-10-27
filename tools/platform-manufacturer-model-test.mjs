@@ -21,5 +21,9 @@ try {
  for(const invalid of [[[1,0],[2,-1]],[[0,0],[0,2]],[[1,0],[1,6000]],Array.from({length:129},(_,i)=>[1,i])]) {
   metadata={...fixture,derivedParts:[{id:'invalid',kind:'lathe',geometry:{profileMm:invalid}}]};const malformed=createManufacturerModel(product,null);await assert.rejects(malformed.ready,/Invalid lathe profile/);malformed.dispose();
  }
+ const lens={id:'rgb-window',kind:'box',color:'#69746a',ledIndex:0,geometry:{sizeMm:[2.8,.4,.1],centerMm:[0,0,4.64]}};
+ metadata={...fixture,derivedParts:[lens]};const rgb=createManufacturerModel(product,null);await rgb.ready;
+ assert.equal(rgb.group.userData.rgbLedMeshes[0],rgb.parts['rgb-window']);assert.equal(rgb.parts['rgb-window'].userData.unlitColor,'#69746a');assert.deepEqual(rgb.group.userData.shellMeshes,[]);rgb.dispose();
+ for(const ledIndex of [-1,256,1.5,'0']){metadata={...fixture,derivedParts:[{...lens,ledIndex}]};const invalid=createManufacturerModel(product,null);await assert.rejects(invalid.ready,/Invalid derived LED window/);invalid.dispose();}
  console.log('ok manufacturer loader: bare-PCB material isolation, source-verified connector boundary, asset cache identity and invalid label rejection');
 } finally {globalThis.fetch=nativeFetch;}
