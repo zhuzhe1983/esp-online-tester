@@ -714,3 +714,44 @@ fn external_s31_psram_serial_reads_writes_and_executes_with_device_power_clock_a
         eprintln!("S31 PSRAM serial mode={mode} steps={} stop={:?} commands={:?} retired={}", run.steps, run.stop, m.bus.psram_controller.command_counts, m.pc_watch.as_ref().unwrap().retired);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_APM_ELF to apm-probe.elf"]
+fn external_s31_apm_declared_path_filters_real_memory_and_instruction_fetch() {
+    use emu_core::Bus;
+    let path = std::env::var("S31_APM_ELF").expect("build firmware/s31-uart-probe and set S31_APM_ELF");
+    let elf = std::fs::read(path).expect("read S31_APM_ELF");
+    for (label, attr, error, func, route, exception) in [
+        ("allow", 0x7000u32, 1u32, 0x3fu32, true, 0),
+        ("write-denied", 0x5000, 1, 0x3f, true, 7),
+        ("read-denied", 0x3000, 1, 0x3f, true, 5),
+        ("execute-denied", 0x6000, 1, 0x3f, true, 1),
+        ("unknown-route", 0x6000, 1, 0x3f, false, 7),
+        ("quiet-denial-unsupported", 0x6000, 0, 0x3f, true, 7),
+        ("filter-disabled", 0x6000, 1, 0x3b, true, 0),
+    ] {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        for (i, word) in [attr, error, func].iter().enumerate() { m.bus.load(0x2f070000 + i as u32 * 4, &word.to_le_bytes(), 4).unwrap(); }
+        if route { m.bus.apm.set_test_route(2, 2, 0x2f060000, 0x2f06007f).unwrap(); }
+        m.pc_watch = Some(esp32s31::PcWatch { address: 0x2f060000, ..Default::default() });
+        let run = m.run(1000);
+        if exception == 0 {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 APM RWX PASS\n");
+            assert_eq!(m.pc_watch.as_ref().unwrap().retired, 1); assert_eq!(m.bus.read32(0x2f060008), Ok(0xdeadbeef));
+        } else {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(exception)));
+            assert!(m.bus.uart0.tx_out.is_empty()); assert_eq!(m.pc_watch.as_ref().unwrap().retired, 0);
+            let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!(f.reason, emu_core::Fault::Prohibited);
+            assert_eq!(f.address, if !route || error == 0 { 0x2050480c } else if exception == 1 { 0x2f060000 } else { 0x2f060008 });
+            assert_eq!(f.fetch, exception == 1);
+            if route && error != 0 {
+                assert_eq!(m.bus.apm.read(0x205048e8), Ok(1));
+                assert_eq!(m.bus.apm.read(0x205048f0), Err(emu_core::Fault::Unmapped));
+                m.bus.apm.write(0x2050480c, 0x7000).unwrap();
+                assert_eq!(m.bus.read32(0x2f060008), Ok(if exception == 7 { 0x12345678 } else { 0xdeadbeef }));
+                m.bus.apm.write(0x205048ec, 1).unwrap(); assert_eq!(m.bus.apm.read(0x205048e8), Ok(0));
+            }
+        }
+        eprintln!("S31 APM control={label} steps={} stop={:?} retired={} writes={} denial={:?}", run.steps, run.stop, m.pc_watch.as_ref().unwrap().retired, m.bus.apm.writes, m.bus.apm.last_denial);
+    }
+}

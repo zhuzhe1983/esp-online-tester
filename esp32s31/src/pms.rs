@@ -71,6 +71,10 @@ impl Permissions {
     fn target(address: u32) -> Option<(usize, usize)> {
         match address {
             0x2070_6000..=0x2070_67ff => Some((0, 6)),
+            0x2070_6c00..=0x2070_6fff => Some((0, 8)),
+            0x2050_4400..=0x2050_47ff => Some((1, 23)),
+            0x2050_4800..=0x2050_4bff => Some((1, 24)),
+            0x2050_4c00..=0x2050_4fff => Some((1, 25)),
             0x2050_0000..=0x2050_1fff => Some((1, 20)), // FLASH_SPI0/1
             0x2050_2000..=0x2050_3fff => Some((1, 21)), // PSRAM_MSPI0/1
             0x2050_8000..=0x2050_ffff => Some((1, 28)), // CRYPTO includes SHA

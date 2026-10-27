@@ -277,3 +277,10 @@ include a PASS/return42 and nine negatives: missing device,DQS,PHY/core clock,
 closed AXI,DQS removed before fetch,invalid MR/command and absent backing.
 The test supplies reference MR0,1,2,3,4,8 bytes explicitly; this does not identify a
 physical Plus die. DDR transactions are functional,with no analog timing margin.
+
+`apm-probe.elf` exercises real SRAM reads, writes and instruction fetch through an
+explicit testbench HP_MEM_APM path2 connection. Set `S31_APM_ELF` to its absolute
+path. The fixture covers independent R/W/X denial, unchanged storage on denied
+write, no execution on denied fetch, filter disable/restoration, missing route,
+and unsupported quiet denial. This declared connection is **not** identification
+of the physical S31 master/path topology. No fixture binary is published.

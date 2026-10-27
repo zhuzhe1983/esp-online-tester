@@ -121,6 +121,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("mspi-pads-held={} dqs-requested={} pin-d={:?} pin-dqs={:?}", m.bus.mspi_pads.held(), m.bus.mspi_pads.dqs_requested(), m.bus.mspi_pads.read(0x2058401c), m.bus.mspi_pads.read(0x2058403c));
     eprintln!("pmu-updates={} dbias-requests={} readonly-write-attempts={}", m.bus.power.policy.updates, m.bus.power.policy.dbias_requests, m.bus.power.policy.readonly_write_attempts);
     eprintln!("permission-writes={}", m.bus.permissions.writes);
+    eprintln!("apm-writes={} function-controls={:x?} last-denial={:?}", m.bus.apm.writes, m.bus.apm.function_controls(), m.bus.apm.last_denial);
     eprintln!("rtc-timer-counter={}", m.bus.rtc_timer.counter());
     eprintln!("reset-controls={:?}/{:?} pending={:?}", m.bus.reset.read(0x2070103c), m.bus.reset.read(0x20701040), m.bus.reset.request);
     if m.bus.first_fault.is_some() { eprintln!("fault-registers={:08x?}", m.cpu.x); }

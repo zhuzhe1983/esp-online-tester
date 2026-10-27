@@ -1310,3 +1310,53 @@ same-production-source medians change S3 -0.980%, C3 -0.140%, C6 -1.153%; all 37
 production Rust/manifest/lock files match the fixed reference. These small noisy
 changes are not an S31 speed claim. The separate main84 cross-branch guard remains
 qualified by [baseline provenance](evidence/s31-bringup/baseline-qualification.json).
+
+### APM controls and explicit permission-path fixture
+
+The four separate S31 APM banks now expose their documented reset configuration,
+field masks, region locks, per-path function enables, bus-error selection and
+automatic clock gate. LP_APM has a different register layout from HP_APM,
+HP_MEM_APM and CPU_APM; the HP bank's final path also has a distinct offset.
+The existing peripheral permission controller protects these configuration banks.
+The actual application disables LP, HP and HP_MEM filtering itself; CPU filtering
+remains at reset. No guest opcode or firmware byte is changed.
+
+This is a bounded **reset-TEE, region0** subset. The published S31 TRM
+pre-release0.1 still omits the bus/PMS chapters, and the fixed public IDF source
+has no S31 `apm_ll.h`/`apm_defs.h`. Therefore the model does not borrow P4/C6 master
+numbers. Without an explicit test route it accepts only the unrestricted reset
+TEE region configuration and guest function-enable changes. Restrictive TEE
+configuration requires `set_test_route` and an enabled bus-error response.
+There is no default product route or CLI option that pretends this topology is
+known. Region0 retains its documented full range; alternative enabled regions,
+REE transitions, silent-denial responses, interrupt delivery and transparent
+HP-AXI exception traffic are unsupported and rejected.
+
+A source-only guest fixture declares a test connection to a 128-byte SRAM page,
+then independently verifies write, read and execute denial. A denied write leaves
+the previous data intact, and a denied instruction fetch never retires the target
+entry. Disabling the declared path allows the same guest code to execute and
+return42; the guest then restores permissions. Status bits and W1C work, but
+exception INFO0/INFO1 reads remain unsupported because transaction-ID/region
+encoding is not established. Host diagnostics are separate from those registers.
+
+With the same full original Plus2.0.68 image and unchanged explicit development
+inputs, the next first fault is **PMU_CPU_STALL_SW0x207041ec** read from application
+PC **0x2f00c34e**, after **38,340,579 instructions**. It has not completed multicore
+startup or rendered the product framebuffer. Plus remains unavailable.
+
+Final-source validation passes 1,446 workspace Rust tests (including82 S31 unit
+checks),31 source/ROM fixtures,both warnings-denied Clippy targets,the private
+WASM compile and every local CI command group. The initial full-suite run lacked
+19 nested ignored fixture files in the new worktree; the original failure is
+retained,and the complete suite was repeated after copying and hash-checking them.
+No UI,browser product status,production-core code or golden output changes.
+
+Two five-pair CPU guards preserve exact UART, instruction and cycle outcomes.
+Against the fixed identical-production-source reference,the medians change S3
+-0.269%,C3+0.885%,C6+1.306%; all372 non-S31 production source/manifest/lock files
+match. This is a regression guard,not an S31 speed claim. The main84 cross-branch
+comparison retains the existing baseline-provenance qualification.
+See [source/fixture checks](evidence/s31-bringup/apm.json),
+[original-image final result](evidence/s31-bringup/apm-plus-2.0.68-final.json),and
+[CPU guard](evidence/s31-bringup/apm-same-source-perf.json).

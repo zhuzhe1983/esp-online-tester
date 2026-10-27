@@ -16,6 +16,7 @@ use crate::sha::ShaEngine;
 use crate::analog::Analog;
 use crate::power::Power;
 use crate::pms::Permissions;
+use crate::apm::Apm;
 use crate::reset::ResetControl;
 use crate::mwdt::Mwdt;
 use crate::rtc_timer::RtcTimer;
@@ -63,6 +64,7 @@ pub struct S31Bus {
     pub analog: Analog,
     pub power: Power,
     pub permissions: Permissions,
+    pub apm: Apm,
     pub reset: ResetControl,
     pub mwdt: [Mwdt; 2],
     pub rtc_timer: RtcTimer,
@@ -79,7 +81,7 @@ impl S31Bus {
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16],
-            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), reset: ResetControl::default(), mwdt: std::array::from_fn(|_| Mwdt::default()), rtc_timer: RtcTimer::default(), pc: 0, first_fault: None }
+            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), mwdt: std::array::from_fn(|_| Mwdt::default()), rtc_timer: RtcTimer::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -130,6 +132,7 @@ impl S31Bus {
     }
     fn clic_register(off: u32) -> bool { matches!(off & !3, 0 | 4 | 0x1000..=0x10bc) }
     fn read(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
+        if let Err(e) = self.apm.check(address, bytes, 2) { return self.fault(address, bytes, false, false, e); }
         if let Err(e) = self.permissions.check(address, false) { return self.fault(address, bytes, false, false, e); }
         if address & !3 == crate::rtc_timer::RESET || address & !0xfff == crate::rtc_timer::BASE {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -147,6 +150,10 @@ impl S31Bus {
         if ResetControl::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return match self.reset.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
+        if Apm::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.apm.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if Permissions::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -286,6 +293,7 @@ impl S31Bus {
         self.fault(address, bytes, false, false, Fault::Unmapped)
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
+        if let Err(e) = self.apm.check(address, bytes, 1) { return self.fault(address, bytes, true, false, e); }
         if let Err(e) = self.permissions.check(address, true) { return self.fault(address, bytes, true, false, e); }
         if address & !3 == crate::rtc_timer::RESET || address & !0xfff == crate::rtc_timer::BASE {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
@@ -303,6 +311,10 @@ impl S31Bus {
         if ResetControl::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             return match self.reset.write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if Apm::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.apm.write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if Permissions::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
@@ -467,6 +479,7 @@ impl Bus for S31Bus {
         for i in 0..4 {
             if i == 2 && data[0] & 3 != 3 { break; } // A compressed instruction needs only two bytes.
             let Some(address) = pc.checked_add(i as u32) else { return self.fault(pc, 4, false, true, Fault::Unmapped); };
+            if let Err(e) = self.apm.check(address, 1, 0) { return self.fault(pc, 4, false, true, e); }
             if let Some(src) = self.memory(address, 1) { data[i] = src[0]; }
             else if Cache::is_memory(address) {
                 if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(self.psram_controller.mode().is_some()).is_err() || self.psram_controller.memory_ready(false).is_err()) { return self.fault(pc, 4, false, true, Fault::Prohibited); }
@@ -497,6 +510,19 @@ mod tests {
         assert_eq!(b.write32(crate::sha::BASE, 2), Err(Fault::Prohibited)); assert_eq!(b.sha.blocks(), 0);
         // Self-protection applies to PMS words too: no privileged bypass via the bus.
         b.write32(HP1 + 0x98, 1).unwrap(); assert_eq!(b.write32(HP1 + 0x28, 0x11), Err(Fault::Prohibited));
+    }
+    #[test]
+    fn peripheral_permissions_gate_apm_configuration_without_changing_filters() {
+        let mut b = S31Bus::new();
+        b.write32(0x207067f0, 1).unwrap(); b.write32(0x20706020, 1).unwrap();
+        assert_eq!(b.write32(0x20706cbc, 0), Err(Fault::Prohibited));
+        assert_eq!(b.apm.function_controls()[0], 15);
+        b.write32(0x20505ff0, 1).unwrap();
+        for (pms, apm, index, reset) in [(0x2050505c, 0x205044c4, 1, 127), (0x20505060, 0x205048c4, 2, 63), (0x20505064, 0x20504cc4, 3, 15)] {
+            b.write32(pms, 1).unwrap(); assert_eq!(b.write32(apm, 0), Err(Fault::Prohibited));
+            assert_eq!(b.apm.function_controls()[index], reset);
+            b.write32(pms, 0x11).unwrap(); b.write32(apm, 0).unwrap(); assert_eq!(b.apm.function_controls()[index], 0);
+        }
     }
     #[test]
     fn psram_phy_power_and_clock_gate_real_access_without_losing_backing_storage() {

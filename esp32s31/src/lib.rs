@@ -18,6 +18,7 @@ mod mpll;
 mod mspi_pads;
 mod psram_controller;
 pub mod pms;
+pub mod apm;
 pub mod reset;
 pub mod mwdt;
 pub mod rtc_timer;
