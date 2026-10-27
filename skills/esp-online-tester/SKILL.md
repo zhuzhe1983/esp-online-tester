@@ -40,6 +40,8 @@ AtomS3 C123 uses board `atoms3`: GC9107 128×128 visible display, GPIO41 active-
 AtomS3R C126 uses its own `atoms3r` board for the current ST7735 batch: SPI pins differ from AtomS3, LP5562 controls white backlight, GPIO41 screen press is control `button` (keyboard A), BMI270 offers explicit virtual-axis input, and Octal PSRAM is 8 MiB. BMM150 AUX, RGB/IR and old GC9107 panels are still missing; `source:'scene'` is rejected. See `docs/platform/atoms3r-runtime.md`; do not use this board for other S3R SKUs without separate adaptation.
 
 
+Dial K130 uses board `dial`: GC9A01 240×240 display, FT3267 single-contact touch on I2C11/12, front press GPIO42 and encoder A41/B40. Drag the gray grip ring or call `input({type:'encoder',id:'encoder',steps:1})`; orange front bezel press and touch screen are separate hit surfaces. Positive detents are A-first quadrature and produce -4 counts in the official decoder; physical shaft direction is not hardware-calibrated. RTC/RFID, buzzer/audio, PWM brightness and power latch remain unimplemented. K130-V11 is a separate unadapted entry. The factory source/EasyLoader reference remains first; no complete remote BIN was located. See `docs/platform/dial-runtime.md`.
+
 Use explicit timestamps and values for reproducible GPS tests. Choose `m5stack-gps-u032` (AT6558, default 9600) or `m5stack-gps-u032-v11` (AT6668, default 115200) from the actual hardware revision. The implemented GPS path requires StopWatch and `{mode:'logical',port:'uart1'}`. It injects checksummed NMEA into the emulator's UART1 input and bypasses physical pin routing, baud timing and external power. It does not certify wiring or physical GPS behavior.
 
 Hello and StopWatch diagnostic firmware are internal automated-test fixtures. They are absent from the public catalogs, and the StopWatch diagnostic manifest/binaries are excluded from Pages. Do not offer them as user devices or selectable production firmware. Local repository tests can use `tools/fixtures/platform-catalog.mjs`; diagnostic serial assertions do not apply to official firmware.
@@ -50,7 +52,7 @@ To change only presentation, preserve `observe().scene.view` and call `updateSce
 
 ## Record and share interactions
 
-Load a remote firmware source first. `await api.recordingStart()` resets and boots it, then captures only successfully acknowledged button, matrix-key and touch inputs. A keyboard press records its mapped device button or matrix coordinate; screen taps and left/right drags record normalized down/move/up coordinates. Camera selection/frames, serial/GPS injection, flashing and scripts are excluded. The limits are 120 guest seconds, 500 events and 32 KiB per recording. Local firmware files cannot supply a portable recording source.
+Load a remote firmware source first. `await api.recordingStart()` resets and boots it, then captures only successfully acknowledged button, matrix-key, encoder and touch inputs. A keyboard press records its mapped device button or matrix coordinate; screen taps and left/right drags record normalized down/move/up coordinates. Camera selection/frames, serial/GPS injection, flashing and scripts are excluded. The limits are 120 guest seconds, 500 events and 32 KiB per recording. Local firmware files cannot supply a portable recording source.
 
 ```js
 await api.recordingStart();

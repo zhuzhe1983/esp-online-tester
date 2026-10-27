@@ -13,7 +13,7 @@ const json = value => JSON.stringify(canonical(value));
 const config = scene => ({schemaVersion:scene.schemaVersion,productId:scene.productId,firmware:scene.firmware,accessories:scene.accessories,localAccessories:scene.localAccessories || []});
 const sameScene = (a,b) => !!a && !!b && json(config(a)) === json(config(b));
 const hashPattern = /^[a-f0-9]{64}$/i;
-const pressInput=event=>event.type==='matrix-key'?{type:'matrix-key',row:event.row,column:event.column,pressed:event.pressed}:{type:'button',id:event.id,pressed:event.pressed};
+const pressInput=event=>event.type==='encoder'?{type:'encoder',id:event.id,steps:event.steps}:event.type==='matrix-key'?{type:'matrix-key',row:event.row,column:event.column,pressed:event.pressed}:{type:'button',id:event.id,pressed:event.pressed};
 const pressId=event=>event.type==='matrix-key'?`matrix:${event.row}:${event.column}`:`button:${event.id}`;
 const sourceUrl=value=>{try{const url=new URL(value);return typeof value==='string'&&value.length<=4096&&!url.username&&!url.password&&(url.protocol==='https:'||(url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)));}catch{return false;}};
 const fingerprint = firmware => json({manifestHash:firmware.manifestHash ?? null,appDirect:!!firmware.appDirect,executionMode:firmware.executionMode || 'wasm-jit',stubs:firmware.stubs || [],artifacts:firmware.artifacts.map(({kind,sha256,bytes,at}) => ({kind,sha256,bytes,...(at === undefined ? {} : {at})}))});
@@ -70,6 +70,9 @@ export function validateRecording(recording, {scene} = {}) {
       keys(event,['at','type','id','pressed'],path);
       if (typeof event.id !== 'string' || !/^[a-z0-9][a-z0-9-]{0,79}$/.test(event.id) || typeof event.pressed !== 'boolean') add('RECORDING_BUTTON',path,'Invalid semantic button input.');
       if (event.pressed) held.add(event.id); else held.delete(event.id);
+    } else if(event.type==='encoder') {
+      keys(event,['at','type','id','steps'],path);
+      if(typeof event.id!=='string'||!/^[a-z0-9][a-z0-9-]{0,79}$/.test(event.id)||!Number.isInteger(event.steps)||event.steps===0||Math.abs(event.steps)>64)add('RECORDING_ENCODER',path,'Invalid encoder detents.');
     } else if(event.type==='matrix-key') {
       keys(event,['at','type','row','column','pressed'],path);
       if(!Number.isInteger(event.row)||event.row<0||event.row>3||!Number.isInteger(event.column)||event.column<0||event.column>13||typeof event.pressed!=='boolean')add('RECORDING_MATRIX_KEY',path,'Invalid matrix key coordinates.');
@@ -78,7 +81,7 @@ export function validateRecording(recording, {scene} = {}) {
       keys(event,['at','type','x','y','down'],path);
       if (!recording.display || ![event.x,event.y].every(n => Number.isFinite(n) && n >= 0 && n <= 1) || typeof event.down !== 'boolean') add('RECORDING_TOUCH',path,'Touch needs a display and normalized coordinates in 0–1.');
       touch = event.down;
-    } else add('RECORDING_EVENT',path,'Only semantic button, matrix key and touch inputs may be replayed.');
+    } else add('RECORDING_EVENT',path,'Only semantic button, matrix key, encoder and touch inputs may be replayed.');
   }
   if (held.size || touch) add('RECORDING_HELD','/events','Recording must end with every button and touch released.');
   if (recording.expectedFrame !== undefined) {
@@ -149,7 +152,7 @@ export function createRecordingController(runtime) {
     receipt={...(receipt||{}),kind:'replay',result:'cancelled',reason,bitExact:false};emit();return observe();
   };
   const onEvent=event=>{
-    if(event.type==='input'&&['button','matrix-key','touch'].includes(event.event.type)) {
+    if(event.type==='input'&&['button','matrix-key','touch','encoder'].includes(event.event.type)) {
       if(status==='recording') {
         tracked(event.event);
         if(event.receipt?.delivery!=='queued'||!Number.isFinite(event.receipt.guestTime)){void cancel('missing-acknowledgement');return;}
@@ -211,6 +214,7 @@ export function createRecordingController(runtime) {
         if(['preparing','recording','playing'].includes(status))throw err('RECORDING_BUSY','Stop the current recording or playback first.');
         const controls=new Set(current.product?.controls.filter(item=>item.type==='button').map(item=>item.id));
         for(const event of input.events) {
+          if(event.type==='encoder'&&!(current.product?.runtime?.encoder&&current.product.controls.some(c=>c.id===event.id&&c.type==='encoder')))throw err('RECORDING_CONTROL','Recording names an encoder absent from this product.');
           if(event.type==='button'&&!controls.has(event.id))throw err('RECORDING_CONTROL','Recording names a button absent from this product.');
           if(event.type==='matrix-key'&&!current.product?.controls.some(control=>control.type==='matrix-key'&&control.row===event.row&&control.column===event.column))throw err('RECORDING_CONTROL','Recording names a matrix key absent from this product.');
         }

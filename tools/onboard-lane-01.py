@@ -239,7 +239,7 @@ def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
    triangle=[[cx,cy,z],points[i],points[(i+1)%len(points)]]
    if normal[2]<0:triangle.reverse()
    corners.extend([[*v,*normal] for v in triangle])
-  data=np.array(corners,dtype='<f4');binary=data.tobytes();buffers.append(binary);allv.append(data[:,:3]);records.append({'name':surface['name'],'sourceComponent':None,'role':surface.get('role','glass'),**{key:surface[key] for key in ['texture','controlId'] if surface.get(key)},'color':surface.get('color','#111719'),'byteOffset':offset,'vertexCount':len(data),'boundsMm':[data[:,:3].min(0).tolist(),data[:,:3].max(0).tolist()],'basis':'image-measurement','sourceIds':surface['sourceIds'],'notes':surface['notes']});offset+=len(binary)
+  data=np.array(corners,dtype='<f4');binary=data.tobytes();buffers.append(binary);allv.append(data[:,:3]);records.append({'name':surface['name'],'sourceComponent':None,'role':surface.get('role','glass'),**{key:surface[key] for key in ['texture','controlId','encoderId'] if surface.get(key)},'color':surface.get('color','#111719'),'byteOffset':offset,'vertexCount':len(data),'boundsMm':[data[:,:3].min(0).tolist(),data[:,:3].max(0).tolist()],'basis':'image-measurement','sourceIds':surface['sourceIds'],'notes':surface['notes']});offset+=len(binary)
  (output/'geometry.bin').write_bytes(b''.join(buffers));source_file='source'+Path(source['archiveName']).suffix.lower();shutil.copyfile(folder/source['archiveName'],output/source_file);
  for sid in part_sources:
   if sid!=source['id']:shutil.copyfile(folder/sources[sid]['archiveName'],output/('source-'+sources[sid]['archiveName']))

@@ -18,6 +18,9 @@ impl Ft6336State {
 pub struct Ft6336g {registers:Reg8Device,state:Arc<Mutex<Ft6336State>>}
 impl Ft6336g {
     pub fn new(state:Arc<Mutex<Ft6336State>>) -> Self {Self{registers:Reg8Device::new("ft6336g",&[(0xa8,0x11)]),state}}
+    /// FT3267 uses the same FT5x06 single-contact register report on M5Dial.
+    /// Only this common subset is modeled; undocumented chip/revision IDs remain zero.
+    pub fn ft3267(state:Arc<Mutex<Ft6336State>>) -> Self {Self{registers:Reg8Device::new("ft3267",&[(0xa8,0x11)]),state}}
 }
 impl I2cDevice for Ft6336g {
     fn start(&mut self,read:bool) -> bool {self.state.lock().expect("FT6336 state mutex poisoned").powered && self.registers.start(read)}

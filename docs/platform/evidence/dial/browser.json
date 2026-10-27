@@ -1,0 +1,125 @@
+{
+  "checkedAt": "2026-10-27T07:02:32Z",
+  "browser": "Chromium headless",
+  "viewport": {
+    "width": 1600,
+    "height": 1000
+  },
+  "firmware": "Internal source-built ESP-IDF 5.5.1 Dial fixture; factory binary not executed",
+  "wasmSha256": "da3c6747829c5bded219359ae7f67c58a55aee86edac6a97cd7909c2c6b277dc",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+    "dial_fixture.bin": "f89aea644e35a7aa2b27e0abad2b0fdd50949ba9c6008d83d12e96f22749b3b4",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [
+    {
+      "case": "local-build-ui",
+      "result": "flasher_args.json plus three binary segments accepted; actual WASM ROM boot and guest UART reached ready."
+    },
+    {
+      "case": "3d front press",
+      "result": "Pointer held on front-bezel until fresh DIAL_BUTTON 0, release until fresh DIAL_BUTTON 1."
+    },
+    {
+      "case": "3d touch",
+      "result": "Pointer held on screen until fresh touch down 129,127 IRQ0; release produced touch up IRQ1."
+    },
+    {
+      "case": "3d rotary drag",
+      "result": "Clockwise pointer arc on grip-ring yielded fresh guest GPIO interrupt count -4; assembly orbit was not used."
+    },
+    {
+      "case": "keyboard and blur",
+      "result": "Key A down/up produced GPIO42 0/1; window blur released a held 3D press, observed in fresh guest output."
+    },
+    {
+      "case": "2d touch",
+      "result": "Flat center produced touch 120,120 down/up with IRQ0/1."
+    },
+    {
+      "case": "hover",
+      "result": "Front bezel=data-hover button (green), grip-ring=encoder (blue), screen=touch (red). Only visible assembly raycast is used."
+    },
+    {
+      "case": "appearance",
+      "result": "Original, gold metal and translucent purple were visually inspected; framebuffer colors unchanged. This does not add a new 1:1 photography acceptance."
+    },
+    {
+      "case": "mini iframe RPC",
+      "result": "Scene URL restored K130. Parent handshake, build loading, start, input encoder +2 and touch through origin/session-bound RPC; guest count -8 and touch100,200 observed. Captured frame SHA256 equals Node fixture."
+    },
+    {
+      "case": "lifecycle",
+      "result": "Runtime paused/disposed; task-owned browser closed and session absence verified; task-owned static server stopped."
+    }
+  ],
+  "guestEvidence": {
+    "ui": [
+      "DIAL_LCD_READY 240x240 red128 green112",
+      "DIAL_TOUCH_VENDOR 11",
+      "DIAL_BUTTON 1",
+      "DIAL_ENCODER 0",
+      "DIAL_TOUCH 0 0 0 IRQ=1",
+      "DIAL_BUTTON 0",
+      "DIAL_BUTTON 1",
+      "DIAL_TOUCH 1 129 127 IRQ=0",
+      "DIAL_TOUCH 0 129 127 IRQ=1",
+      "DIAL_ENCODER -4",
+      "DIAL_BUTTON 0",
+      "DIAL_BUTTON 1",
+      "DIAL_TOUCH 1 120 120 IRQ=0",
+      "DIAL_TOUCH 0 120 120 IRQ=1",
+      "DIAL_BUTTON 0",
+      "DIAL_BUTTON 1"
+    ],
+    "mini": {
+      "handshake": {
+        "encoders": [
+          {
+            "id": "encoder",
+            "detents": 16,
+            "stepsPerMessage": 64,
+            "phaseMs": 2,
+            "direction": "positive-clk-first"
+          }
+        ],
+        "buttons": [
+          "button"
+        ],
+        "touch": true,
+        "keyboard": null,
+        "serialPorts": [
+          "usb",
+          "uart0",
+          "uart1"
+        ]
+      },
+      "frameSha256": "4194d7b769a219e84f13f3a0a5c20e17c79c7f7995be0826e16fa1a7140e3020",
+      "serial": [
+        "DIAL_LCD_READY 240x240 red128 green112",
+        "DIAL_TOUCH_VENDOR 11",
+        "DIAL_BUTTON 1",
+        "DIAL_ENCODER 0",
+        "DIAL_TOUCH 0 0 0 IRQ=1",
+        "DIAL_ENCODER -4",
+        "DIAL_ENCODER -8",
+        "DIAL_TOUCH 1 100 200 IRQ=0"
+      ],
+      "product": "m5stack-k130"
+    }
+  },
+  "consoleErrorsFinal": 0,
+  "artifacts": {
+    "dial-purple.png": "ad07a6538153640419a67604c82a0430e482f158fb4921ddbabe09d7aac45d1d",
+    "dial-gold.png": "c402715e727f3caf9f37a417bf8ce9fb8f7f343d369bfdc34ce5a9ede426c2b2",
+    "dial-fixture-2d.png": "a4bac9dc038dbbf535fb0c0312891f7b04c7068009aeacfe9ff864513251c697",
+    "dial-fixture-3d.png": "5de9d79eda832a074c833130c84c89f88f1a2cc148e0de08873b3047698229f3",
+    "dial-mini-rpc.png": "711996beaeb8e9859e80538d489eee0f4377da4145180b0bf2ee2085d302920d"
+  },
+  "limitations": [
+    "No physical hardware test; direction sign is a platform convention, not measured shaft direction.",
+    "A development-server reload initially reset concurrent module fetches; after increasing only the local test server request queue, final reload and complete interaction/RPC checks passed.",
+    "A first browser polling harness returned before guest changes; final checks register and await espTester.waitFor with port uart0/fromNow before each physical action. Earlier empty slices were not accepted as evidence."
+  ]
+}

@@ -14,6 +14,7 @@ pub use esp_soc::board::{Board, BoardEdge, BoardModel, NoBoard, VirtualCycle};
 pub mod atech14;
 pub mod atoms3;
 pub mod atoms3r;
+pub mod dial;
 pub mod stopwatch;
 pub mod papermono;
 pub mod cardputer_adv;
@@ -26,6 +27,7 @@ pub mod waveshare_lcd4b;
 pub use atech14::*;
 pub use atoms3::*;
 pub use atoms3r::*;
+pub use dial::*;
 pub use stopwatch::*;
 pub use papermono::*;
 pub use cardputer_adv::*;
@@ -41,6 +43,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "none" | "bare" => Some(Box::new(NoBoard)),
         "atoms3r" | "m5stack-atoms3r" => Some(Box::new(AtomS3R::new())),
         "atoms3" | "m5stack-atoms3" => Some(Box::new(AtomS3::new())),
+        "dial" | "m5stack-dial" => Some(Box::new(Dial::new())),
         "papermono" | "m5stack-papermono" => Some(Box::new(PaperMono::new())),
         "cardputer" | "m5stack-cardputer" => Some(Box::new(Cardputer::new())),
         "cardputer-adv" | "m5stack-cardputer-adv" => Some(Box::new(CardputerAdv::new())),

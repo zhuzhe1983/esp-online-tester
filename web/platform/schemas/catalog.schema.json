@@ -268,7 +268,8 @@
                     "enum": [
                       "button",
                       "touch",
-                      "matrix-key"
+                      "matrix-key",
+                      "encoder"
                     ]
                   },
                   "pin": {
@@ -291,6 +292,11 @@
                   "defaultKeyCode": {
                     "type": "string",
                     "maxLength": 40
+                  },
+                  "detents": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 256
                   }
                 },
                 "allOf": [
@@ -307,6 +313,43 @@
                         "row",
                         "column"
                       ]
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "type": {
+                          "const": "encoder"
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "pins",
+                        "detents"
+                      ],
+                      "properties": {
+                        "pins": {
+                          "type": "object",
+                          "required": [
+                            "a",
+                            "b"
+                          ],
+                          "additionalProperties": false,
+                          "properties": {
+                            "a": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 63
+                            },
+                            "b": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 63
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 ]

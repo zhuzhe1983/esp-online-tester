@@ -55,6 +55,7 @@ export function createManufacturerModel(product, screenTexture) {
       }
       const mesh=new THREE.Mesh(geometry(regular),standard);mesh.name=part.name;mesh.userData.inputOccluder=true;group.add(mesh);parts[part.name]=mesh;
       if(part.role==='shell'||part.name==='shell'||(!part.role&&/case|shell|housing/i.test(part.name)))shells.push(mesh);
+      if(part.encoderId){mesh.userData.encoder=part.encoderId;}
       if(part.controlId){mesh.userData.control=part.controlId;buttons.push(mesh);}
       // Paper is opaque where the alpha mask exists: write depth so a later
       // transparent shell cannot tint it. Cut-out pixels preserve real holes.

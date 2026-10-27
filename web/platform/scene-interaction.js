@@ -53,7 +53,11 @@ export function createScenePointerRouter({onInput = () => {}, onOrbit = () => {}
     if (kind === 'unsupported') { onUnsupported(surface.message); return 'unsupported'; }
     const gesture = {pointerId, x, y, kind};
     if (kind === 'button') { gesture.control = surface.id; pointers.set(pointerId, gesture); emit({type: 'button', id: surface.id, pressed: true}, pointerId); }
-    else if (kind === 'touch') {
+    else if (kind === 'encoder') {
+      if (pointers.size) return 'ignored';
+      gesture.control = surface.id; gesture.angle = point?.angle; gesture.detentAngle = 2 * Math.PI / (surface.detents || 16); gesture.remainder = 0;
+      pointers.set(pointerId, gesture);
+    } else if (kind === 'touch') {
       // The board currently exposes a single-contact touch controller.
       if (touchOwner !== null || [...pointers.values()].some(item => item.kind === 'orbit')) return 'ignored';
       touchOwner = pointerId; pointers.set(pointerId, gesture); touch(gesture, point);
@@ -67,6 +71,15 @@ export function createScenePointerRouter({onInput = () => {}, onOrbit = () => {}
     const gesture = pointers.get(pointerId); if (!gesture) return null;
     if (gesture.kind === 'orbit') { onOrbit(x - gesture.x, y - gesture.y); gesture.x = x; gesture.y = y; }
     else if (gesture.kind === 'touch') touch(gesture, point);
+    else if (gesture.kind === 'encoder' && Number.isFinite(point?.angle)) {
+      if (Number.isFinite(gesture.angle)) {
+        const delta = Math.atan2(Math.sin(gesture.angle - point.angle), Math.cos(gesture.angle - point.angle));
+        gesture.remainder += delta;
+        const steps = Math.trunc(gesture.remainder / gesture.detentAngle);
+        if (steps) { gesture.remainder -= steps * gesture.detentAngle; emit({type:'encoder',id:gesture.control,steps:Math.max(-64,Math.min(64,steps))}, pointerId); }
+      }
+      gesture.angle = point.angle;
+    }
     return gesture.kind;
   }
   return {down, move, up, releaseAll() { for (const id of [...pointers.keys()]) up(id); }, kind: id => pointers.get(id)?.kind || null, get activeCount() { return pointers.size; }};
@@ -81,9 +94,9 @@ export function createSurfaceHalo() {
   function show(mesh, nextKind) {
     if (mesh === target && kind === nextKind) return;
     clear();
-    if (!mesh?.geometry || !['button', 'orbit', 'touch'].includes(nextKind)) return;
+    if (!mesh?.geometry || !['button', 'orbit', 'touch', 'encoder'].includes(nextKind)) return;
     target = mesh; kind = nextKind;
-    const colors = {button: 0x59dca1, orbit: 0x72b9ef, touch: 0xee857f};
+    const colors = {button: 0x59dca1, orbit: 0x72b9ef, encoder: 0x72b9ef, touch: 0xee857f};
     overlay = new THREE.Group(); overlay.name = `hover:${nextKind}`; overlay.userData.pickIgnore = true;
     mesh.geometry.computeBoundingBox(); const center = mesh.geometry.boundingBox.getCenter(new THREE.Vector3());
     // Only contour geometry is added. No highlight is drawn into the live framebuffer.
