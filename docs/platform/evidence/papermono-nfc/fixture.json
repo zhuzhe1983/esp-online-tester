@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-27T09:22:55.142Z",
+  "command": "node tools/probe-papermono-nfc.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+    "papermono_nfc_fixture.bin": "8afbe2f20e36b19cbb81f47800af4474bfe7a4253e31b865c46a161515d4b952",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "wasmSha256": "8de864b46e00c8b34f2762bbd659c3aec1879f5f272a471cb276d59b5e46768f",
+  "checks": [
+    {
+      "productId": "m5stack-papermono",
+      "board": "papermono",
+      "serial": [
+        "NFC_FIXTURE IDENTITY 2a",
+        "NFC_FIXTURE OSC_IRQ_READ_CLEAR",
+        "NFC_FIXTURE REQA_TX_NRT_MASK_NO_RX",
+        "NFC_FIXTURE STOP_CANCELS_NRT",
+        "NFC_FIXTURE SPI3_QUEUED_COMPLETED",
+        "NFC_FIXTURE PASS_FULL"
+      ],
+      "guestSeconds": 0.52
+    },
+    {
+      "productId": "m5stack-c153-lite",
+      "board": "papermono-lite",
+      "serial": [
+        "NFC_FIXTURE LITE_NACK"
+      ],
+      "guestSeconds": 0.16
+    }
+  ],
+  "status": "pass"
+}

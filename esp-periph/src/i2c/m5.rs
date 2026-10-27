@@ -13,11 +13,13 @@ pub struct M5pm1State {
     pub led_enabled: bool,
     /// PWR_CFG bit3, retaining output after shutdown only with HOLD_CFG bit6.
     pub grove_5v_enabled: bool,
+    /// Standard GPIO0..4 driven high in push-pull mode (not open-drain release).
+    pub driven_high: u8,
 }
 
 impl Default for M5pm1State {
     fn default() -> Self {
-        Self { battery_mv: 3900, charging: false, power_off_requested: false, led_enabled: true, grove_5v_enabled: false }
+        Self { battery_mv: 3900, charging: false, power_off_requested: false, led_enabled: true, grove_5v_enabled: false, driven_high: 0 }
     }
 }
 
@@ -30,7 +32,7 @@ impl M5pm1 {
     pub const ADDRESS: u8 = 0x6e;
 
     pub fn new(state: Arc<Mutex<M5pm1State>>) -> Self {
-        {let mut state=state.lock().expect("M5PM1 state mutex poisoned");state.power_off_requested=false;state.led_enabled=true;state.grove_5v_enabled=false;}
+        {let mut state=state.lock().expect("M5PM1 state mutex poisoned");state.power_off_requested=false;state.led_enabled=true;state.grove_5v_enabled=false;state.driven_high=0;}
         Self {
             registers: Reg8Device::new("m5pm1", &[
                 (0x00, 0x50), (0x01, 0x20), (0x02, 0x05), (0x03, 0x06),
@@ -60,6 +62,12 @@ impl I2cDevice for M5pm1 {
         state.led_enabled = self.registers.regs[0x06] & 0x10 != 0;
         // M5PM1 v1.9 pp.13-14: PWR_CFG[3] boost, HOLD_CFG[6] keeps it at shutdown.
         state.grove_5v_enabled = self.registers.regs[0x06] & 8 != 0 && (!state.power_off_requested || self.registers.regs[0x07] & 0x40 != 0);
+        // M5PM1 manual pp.15–17: MODE/OUT/DRV and two-bit FUNC fields.
+        let r=&self.registers.regs;let funcs=u16::from_le_bytes([r[0x16],r[0x17]]);
+        let mut high=r[0x10]&r[0x11]&!r[0x13]&0x1f;
+        for pin in 0..5 {if funcs & (3<<(pin*2))!=0 {high&=!(1<<pin);}}
+        if state.power_off_requested {high&=r[0x07]&0x1f;}
+        state.driven_high=high;
         ack
     }
 

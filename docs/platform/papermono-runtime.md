@@ -2,13 +2,23 @@
 
 `papermono` 板级模型能够运行固定 hash 的 M5Stack UserDemo 1.2.0，生成真实 480×800 仪表盘，并处理 A/B 与触摸。ESP32-S3 执行官方二进制，SPI 写入 SSD1677 的两个 RAM 平面；只有固件发出刷新命令且 BUSY 完成，才发布像素。主机没有绘制仪表盘、替换页面或修改固件。
 
-这是一条已验证的部分兼容路径，未做实机对照。PaperMono 和 Lite 共用此显示、按键与触摸路径；NFC 还未实现，官方固件因此检测为 Lite，不能以它证明 Pro 的 NFC/LoRa 功能可用。
+这是一条已验证的部分兼容路径，未做实机对照。PaperMono 使用 `papermono`，Lite 使用 `papermono-lite`；二者共用显示、按键、触摸及 SD/RGB 路径。完整版新增 ST25R3916 读卡器数字子集，官方程序检测为 Pro，实际无卡扫描结束显示 `NO CARD`。SX1262 数字报文子集已能初始化、发送 `Hello!`，并在显式输入匹配的虚拟对端报文后显示 `Rx PEER`；没有对端时不生成收包。Lite 不接入 NFC/LoRa 器件，保持 Lite 布局。
 
-### 为什么完整版没有显示 LoRa 测试
+### NFC 与完整版识别
 
-UserDemo 的 `Hal::detectBoardVariant()` 给 NFC 上电后，从 I2C `0x50` 读取身份寄存器 `0x7F`；只有类型为 `0x05` 且 revision 非零，才选择 `BoardVariant::Pro`，否则选择 Lite。`main.cpp` 仅在 `hasNfcHardware()` 为真时安装 NFC 和 LoRa 测试，`hal_display.cpp` 与 Wi-Fi 页面也随板型切换背景和区域大小。因此当前模拟器里的大块 Wi-Fi 区域是固件自行选择的 Lite 布局，不是网页遮挡了 LoRa 控件。依据为上述固定版本官方源码，不能据此断言用户实机使用了完全相同的二进制。
+UserDemo 的 `Hal::detectBoardVariant()` 从 I2C `0x50` 读取身份寄存器（读命令 `0x7F`）；类型 `0x05` 且 revision 非零时选择 Pro，否则选择 Lite。新增模型包含 A/B/test 寄存器空间、512 字节有界 FIFO、复位、振荡器、数字发送、TX 完成和无应答计时器、GPIO6 中断及屏蔽/读清。固定官方程序实际发出 A/B/F/V 模式命令；没有 RF peer 时，不产生 RX 数据或虚构卡片 UID。
 
-后续适配顺序：实现有供电门控的 NFC 寄存器/命令模型，分别验证 PaperMono 与 Lite 的板型识别；再接入 LoRa 的 SPI、BUSY/IRQ 和收发行为，验证官方测试页面与真实客体输出。不能只返回一个身份值或由前端画出 LoRa 菜单，就标为 NFC/LoRa 已适配。
+电源按 **2026-10-27 抓取的原理图内容**处理：虽然 PDF 地址带 `V0.6.2_20260522`，NFC 页标注 2026-07-28 / V0.2，U1 负载开关为 NC，R1=0Ω 旁路，主板注明 `PYB_NFC_EN` 为 spare GPIO。因此软件中的 `setNfcPower` / IOE4 名称不作为断电依据；NFC 随系统电源关闭而复位、NACK。现有 PMIC 模型用整机断电请求代表该电源域，尚未细化全部稳压轨。没有实测用户板次，不能据此推定所有量产修订都相同。
+
+此扫描还暴露了已有 S3 SPI 模型遗漏：IDF 5.5.1 通过 SPI2/3 `DMA_INT_SET`（偏移 `0x44`）软件置位 `TRANS_DONE` 启动中断队列。此前 LoRa 初始化会卡住首事务，连带阻塞 UI；补齐真实寄存器行为后，缺失 SX1262 的错误路径能正常返回。没有跳过 LoRa 初始化，也没有修改官方固件。来源、负面结果和复现见 [NFC 阶段证据](evidence/papermono-nfc/README.md)。
+
+### LoRa 数字报文子集
+
+按原理图接入 PM1 GPIO2 控制的 LoRa 供电、IOE10 复位、IOE2 天线开关、GPIO21 BUSY、GPIO5 DIO1，以及 SCK39/MOSI38/MISO40/NSS41。官方程序使用 SPI3、软件 NSS 和 RX GDMA；新增 S3 RX DMA 沿用有界描述符遍历器，只访问内部 SRAM，错误描述符、MMIO 地址及不支持的 EOF 模式产生 DMA 错误。
+
+模型处理真实寄存器/命令、256 字节 FIFO、LoRa 参数、发送完成、接收/超时 IRQ、屏蔽与清除、复位/断电。发送内容来自客体 FIFO，完成时刻依据配置计算空中时间；不模拟射频传播、干扰或真实接收强度。BUSY 使用手册典型值与明确的数字延迟，未作实机时序校准。GFSK、CAD、LR-FHSS、测距及远程无线中继未实现。
+
+通过 `capabilities().lora` 检查支持范围，`readLoRa()` 读取状态及最近 16 个发送报文，`receiveLoRa(packet)` 显式提交虚拟对端参数、数据、RSSI/SNR 和 CRC 错误标记。频率、SF、带宽、编码率、同步字、包头、CRC 和 IQ 配置必须匹配；断电、复位、天线关闭或不在接收状态时拒绝。输入回执只表示已安排数字接收，必须继续检查客体读 FIFO、串口或画面。报文不自动进入录制/分享，也不会自动回显或联网。详见 [LoRa API](../../skills/esp-online-tester/references/api.md#virtual-lora-packets) 与 [来源及闭环证据](evidence/papermono-lora/README.md)。
 
 ## 已实现的硬件路径
 
@@ -54,7 +64,7 @@ ESP32SIM_PROBE_CLOCK_TIMEOUT_MS=60000 node tools/probe-official-papermono.mjs \
 
 - RX8130 仅提供寄存器 RAM，供板型探测和本次会话的固件设置使用。日期/时钟、闹钟、掉电保持和唤醒未实现；启动画面可见无效日期，不校正为主机时间。
 - BMI270 的识别、配置和寄存器子集存在，但 PaperMono 没有持续采样时钟或姿态 API；UserDemo 的三次初始化检测失败。画面上的默认向量不是已验证传感器采样。
-- NFC、LoRa、音频、睡眠唤醒、Wi-Fi 扫描/NTP 和外接附件尚未在此板上验收。TF/SD 与 RGB 的新增范围见下方补充。官方页面的 INIT FAIL 或 NO DATA 保留，不伪造成功。
+- NFC 已验证读卡器无卡路径；RF peer、卡内容/防冲突、卡模拟、模拟测量/校准与唤醒未实现。LoRa 仅支持上述数字报文子集。音频、整机睡眠唤醒、Wi-Fi 扫描/NTP 和外接附件尚未在此板上验收。TF/SD 与 RGB 的新增范围见下方补充。未实现功能的 INIT FAIL 或 NO DATA 保留，不伪造成功。
 - M5IOE1 只对已接线的 TF 插卡检测提供数字输入，未实现通用输入上拉的电气网络；软件 I2C 使用理想上拉，不模拟总线争用、时钟拉伸或模拟电气特性。
 - FT6336G 只支持单点报告；手势、第二触点、精确扫描节奏和面板固件版本未知。芯片/固件版本寄存器不伪造实测值。
 - 远程二进制不进入本站服务器或 Git；浏览器可按既有策略本地缓存并复核 hash。此运行验收不代表刷机或实机验证。
@@ -72,3 +82,8 @@ TF 卡已接入 ESP32-S3 原生 SDMMC 主机，复用现有 SD 卡协议与 IDMA
 RGB 是三个独立通道：PM1 `PWR_CFG` bit4 驱动红光，IOE PWM2/IO8 驱动绿光，PWM1/IO9 驱动蓝光。PWM duty 为 12 bit，遵守输出模式、push-pull、使能与极性，向 viewer 发布 0–255 RGB；红光为开关值。固件驱动的 `leds` 事件和 `observe().leds` 是同一板级输出，前端不得根据点击动画伪造颜色。
 
 CrossPoint 的 PaperMono 适配分支使用 native SDMMC + SdFat `FsVolume`。FAT32 是本平台默认且已由官方 UserDemo 实际挂载验证的格式；不能据此说该分支只支持 FAT32，也不能把其他 e-reader 的格式要求混用。该固定源码是当前适配分支，不声称可复现已发布二进制。当前收录的完整 CrossPoint 1.5.0 在 SD 挂载前发生启动异常，保留试运行入口与真实失败，尚未验证阅读、建库或卡内配置写入。细节及输入/截图/来源见 [SD/RGB 证据](evidence/papermono-sd-rgb/README.md)。
+
+
+## Lite 板名与已有存储兼容
+
+Lite 的执行板名改为 `papermono-lite`，旧 Flash/SD 持久化键继续使用原 `papermono` 板名；仅产品 ID `m5stack-c153-lite` 使用此别名。键内产品 ID、芯片、容量及初始 Flash SHA 仍参与隔离，完整版不会读到 Lite 数据。没有复制旧库、自动清空或在清空后回退恢复旧条目。回归覆盖旧页/卡恢复、手动清空、旧 writer epoch 拒绝和跨产品隔离。两种板型接受同系列固件 manifest；分享仍以产品 ID 选择真实执行板，板型兼容不等于固件功能已验证。

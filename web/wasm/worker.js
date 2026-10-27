@@ -247,6 +247,20 @@ onmessage = async (ev) => {
       for (const data of m.data) withBytes(enc.encode(data), (p, n) => wasm.esp32sim_in_text(emu, p, n));
       if (m.inputId !== undefined) postMessage({ inputQueued:m.inputId,time:wasm.esp32sim_cycles(emu)/CPU_HZ });
     }
+    else if (m.op === 'lora-read' || m.op === 'lora-receive') {
+      let result = {ok:false,code:1};
+      if (emu && wasm.esp32sim_lora_snapshot && wasm.esp32sim_lora_receive) {
+        if (m.op === 'lora-receive') {
+          const code=withBytes(enc.encode(JSON.stringify(m.packet)),(p,n)=>wasm.esp32sim_lora_receive(emu,p,n));
+          result={ok:code===0,code};
+        } else {
+          const capacity=16384,p=wasm.esp32sim_alloc(capacity);
+          try {const n=wasm.esp32sim_lora_snapshot(emu,p,capacity);result=n>0&&n<=capacity?{ok:true,state:JSON.parse(dec.decode(mem().subarray(p,p+n)))}:{ok:false,code:1};}
+          finally {wasm.esp32sim_free(p,capacity);}
+        }
+      }
+      postMessage({loraResult:m.requestId,...result,time:emu?wasm.esp32sim_cycles(emu)/CPU_HZ:0});
+    }
     else if (m.op === 'text') {
       if (traceEnabled && m.touchTrace) {
         postMessage({ touchTrace: { stage: 'worker-receive', ...m.touchTrace, atMs: traceNow(), cycles: wasm.esp32sim_cycles(emu) } });

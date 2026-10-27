@@ -13,6 +13,7 @@ pub mod tca8418;
 pub mod bmi270;
 pub mod mpu6886;
 pub mod lp5562;
+pub mod st25r3916;
 
 pub trait I2cDevice {
     /// Current 7-bit address, sampled after each data write. Defaults to the attached address.

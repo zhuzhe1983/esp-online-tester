@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-10-27T10:33:00Z",
+  "checks": [
+    {
+      "command": "rustup update stable",
+      "result": "pass",
+      "version": "rustc 1.99.1 (58cf8f9c3 2026-10-13)"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "passed": 1384
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> node --test tools/platform-*-test.mjs",
+      "result": "pass",
+      "passed": 69
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices",
+      "result": "pass",
+      "scenarios": 10
+    },
+    {
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "result": "pass",
+      "dwarfAbsent": true,
+      "nameRetained": true
+    },
+    {
+      "command": "uv run --with jsonschema --with referencing python tools/validate-platform-catalog.py",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass"
+    },
+    {
+      "command": "Same privacy patterns scoped to docs/platform/evidence/papermono-lora plus manual review",
+      "result": "pass"
+    },
+    {
+      "command": "git diff --cached --check",
+      "result": "pass"
+    }
+  ],
+  "goldensRegenerated": false
+}

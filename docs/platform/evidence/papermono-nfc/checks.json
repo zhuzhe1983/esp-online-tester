@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-10-27T09:25:42Z",
+  "rust": "1.99.1",
+  "checks": [
+    {
+      "command": "cargo +stable clippy --workspace --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "cargo +stable clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo +stable test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "passed": 1370
+    },
+    {
+      "command": "node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs tools/platform-sd-card-test.mjs tools/platform-device-storage-test.mjs",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel",
+      "result": "pass",
+      "scenarios": 8
+    },
+    {
+      "command": "uv run --with jsonschema --with referencing python tools/validate-platform-catalog.py",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass"
+    },
+    {
+      "command": "same privacy rules scoped to docs/platform/evidence/papermono-nfc plus manual review",
+      "result": "pass",
+      "files": 9
+    }
+  ],
+  "negativeResults": [
+    "Initial full workspace run lacked ignored p4-hosted firmware inputs: 10 cosim tests failed to open files. Copied standard fetched fixtures from the integration tree, then full run passed.",
+    "First Clippy rejected adjacent if statements; split the line without broad rustfmt.",
+    "Initial NFC probe incorrectly accepted a nonzero unchanged framebuffer; it now requires the verified NO CARD region hash.",
+    "Initial memory-storage test mock omitted flash-restore acknowledgement; mock now models that existing protocol, and legacy data/clear/isolation regression passes."
+  ]
+}

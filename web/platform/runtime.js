@@ -1,3 +1,4 @@
+import {isPaperMonoBoard,persistentBoard,firmwareBoardMatches} from './board-compatibility.js';
 import {routedAccessories,accessoryPoweredPath} from './accessory-routing.js';
 import {MAX_FIRMWARE_FILE_BYTES as MAX_FILE, MAX_FIRMWARE_BUNDLE_BYTES as MAX_TOTAL} from './firmware-limits.js';
 import {createFat32Image,validateSdImage,MAX_SD_BYTES} from './sd-card-image.js';
@@ -6,6 +7,7 @@ import {createSdCardStorage} from './sd-card-storage.js';
 import { loadCatalog, validateScene } from './catalog.js';
 import { buildFirmwareIssueUrl } from './watchlist.js';
 import { orientationSample } from './imu.js';
+import { validateLoRaPacket } from './lora-input.js';
 import { firmwareCache } from './firmware-cache.js';
 import { assembleLocalFirmware } from './local-firmware.js';
 import { createDeviceStorage, deviceStorageScope } from './device-storage.js';
@@ -249,6 +251,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     if (message.resumed !== undefined) resolve('resumed', message);
     if (message.inputQueued !== undefined) resolve(`input:${message.inputQueued}`, message);
     if (message.imuApplied !== undefined) resolve(`imu:${message.imuApplied}`, message);
+    if (message.loraResult !== undefined) resolve(`lora:${message.loraResult}`, message);
     if (message.stopped !== undefined) {
       const requested = pending.has('stopped');
       resolve('stopped', message);
@@ -318,7 +321,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     storage.status='loading'; storageEvent(); progress.prepare('device-storage');
     const snapshot = await flashAsk('flash-snapshot'), baseline = new Uint8Array(snapshot.data);
     requireValue(baseline.length===bundle.cfg.flash_mb*MIB, 'STORAGE_WORKER_ERROR', 'Emulator Flash capacity does not match the device.');
-    const scope = deviceStorageScope({productId:product.id, board:bundle.cfg.board, chip:product.chip || 'esp32s3', flashBytes:baseline.length, firmwareSha256:await sha256(baseline)});
+    const scope = deviceStorageScope({productId:product.id, board:persistentBoard(product.id,bundle.cfg.board), chip:product.chip || 'esp32s3', flashBytes:baseline.length, firmwareSha256:await sha256(baseline)});
     const result = await deviceStorage.read(scope);
     requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
     const pages = new Map(result.row.pages.map(page=>[page.offset,page.data]));
@@ -357,9 +360,9 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   const initializeSd=async bundle=>{
     alive();
     if(sdSession)sdSession.closed=true;sdSession=null;sdCard=emptySd();leds=[];
-    if(bundle.cfg.board!=='papermono'){sdEvent();return;}
+    if(!isPaperMonoBoard(bundle.cfg.board)){sdEvent();return;}
     requireValue(storage.scope,'SD_STORAGE_SCOPE','SD requires a loaded firmware identity.');
-    const key=`v1:${product.id}:${bundle.cfg.board}:${storage.scope.firmwareSha256}`;
+    const key=`v1:${product.id}:${persistentBoard(product.id,bundle.cfg.board)}:${storage.scope.firmwareSha256}`;
     // Subscribe to this identity before reading or hashing its base image. A clear
     // from another tab must invalidate even a read-only firmware's pending mount.
     const session={key,baseline:null,pages:new Map(),epoch:-1,revision:-1,version:0,savedVersion:0,saving:null,closed:false,isDefault:true};sdSession=session;
@@ -435,7 +438,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       try { manifest = JSON.parse(new TextDecoder().decode(artifact.data)); } catch { throw error('INVALID_MANIFEST', 'Firmware manifest is not valid JSON.'); }
       requireValue(manifest && !Array.isArray(manifest) && typeof manifest === 'object', 'INVALID_MANIFEST', 'Firmware manifest must be an object.');
       requireValue(!manifest.nodes, 'UNSUPPORTED_MANIFEST', 'Multi-node network manifests are not supported by this product session.');
-      requireValue(!manifest.board || manifest.board === cfg.board, 'BOARD_MISMATCH', 'Manifest board does not match the selected product.', { selected: cfg.board, manifest: manifest.board });
+      requireValue(!manifest.board || firmwareBoardMatches(manifest.board,cfg.board), 'BOARD_MISMATCH', 'Manifest board does not match the selected product.', { selected: cfg.board, manifest: manifest.board });
       for (const [key, expected] of [['flash_mb', cfg.flash_mb], ['psram_mb', cfg.psram_mb]]) if (manifest[key] != null) requireValue(manifest[key] === expected, 'MEMORY_MISMATCH', `Manifest ${key} does not match this product.`, { expected, actual: manifest[key] });
       requireValue(manifest.files && typeof manifest.files === 'object' && !Array.isArray(manifest.files), 'INVALID_MANIFEST', 'Manifest must list its firmware files.');
       const pinned = entry => typeof entry === 'string' ? { url: entry, sha256: manifest.artifact_sha256?.[entry] } : entry;
@@ -608,6 +611,18 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   });
   const api = {
     version: API_VERSION,
+    readLoRa() {return exclusive(async()=>{
+      requireValue(product?.runtime?.board==='papermono'&&worker,'LORA_UNSUPPORTED','Load full PaperMono firmware before inspecting its LoRa radio.');
+      const requestId=++inputSequence,result=await ask(`lora:${requestId}`,{op:'lora-read',requestId});
+      requireValue(result.ok,'LORA_UNSUPPORTED','This runtime does not expose a LoRa radio.');return {...result.state,guestTime:result.time};
+    });},
+    receiveLoRa(packet) {return exclusive(async()=>{
+      requireValue(product?.runtime?.board==='papermono'&&worker,'LORA_UNSUPPORTED','This device does not have the SX1262 digital LoRa model.');
+      requireValue(['running','paused'].includes(status),'NOT_RUNNING','Start the firmware before supplying a LoRa peer packet.');
+      const input=validateLoRaPacket(packet),requestId=++inputSequence,result=await ask(`lora:${requestId}`,{op:'lora-receive',requestId,packet:input});
+      requireValue(result.ok,'LORA_PACKET_REJECTED','Radio power, receive state or channel configuration rejected this packet.');
+      const receipt={accepted:true,delivery:'scheduled-digital-packet',guestTime:result.time,physicalRf:false};emit({type:'lora-input',packet:input,receipt});return receipt;
+    });},
     attachSdCard({bytes,format='fat32'}={}) {return exclusive(async()=>{requireValue(bytes!==undefined||format==='fat32','INVALID_SD_IMAGE','Only FAT32 formatting is available.');return replaceSd(bytes===undefined?null:validateSdImage(bytes));});},
     clearSdCard() {return exclusive(()=>replaceSd(null));},
     exportSdCard() {return exclusive(async()=>{await flushSd();const result=await sdAsk('sd-export');return {bytes:new Uint8Array(result.data),filename:`${product.id}-sd.img`};});},
@@ -633,13 +648,14 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     async capabilities() {
       return { version: API_VERSION, backend: 'esp32sim-wasm', static: true, executable: !!product?.runtime?.board,
         execution: {mode: product?.runtime?.board === 'stopwatch' ? 'wasm-interpreter' : 'wasm-jit', reason: product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null},
-        sdCard:{available:product?.runtime?.board==='papermono',defaultBytes:64*MIB,maxBytes:MAX_SD_BYTES,formats:['fat32','raw-image'],scope:'product-board-canonical-flash-sha256',autoSaveIntervalMs:1500,crashSafe:false},
+        sdCard:{available:isPaperMonoBoard(product?.runtime?.board),defaultBytes:64*MIB,maxBytes:MAX_SD_BYTES,formats:['fat32','raw-image'],scope:'product-board-canonical-flash-sha256',autoSaveIntervalMs:1500,crashSafe:false},
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
         firmware: { manifest: true, mergedImage: true, localFile: true, localSegments: true, localBuild: true, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true },
         input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin,control,hub,viaAccessoryId,portId})=>({accessoryId,model,port,...(pin===undefined?{}:{pin}),controls:control?[control]:[],...(hub?{hub:true}:{}),...(viaAccessoryId?{viaAccessoryId,portId}:{})})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv'].includes(product?.runtime?.board)?{rows:4,columns:14,model:product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: ['usb', 'uart0', 'uart1'] },
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { mode: 'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },
+        lora:{available:product?.runtime?.board==='papermono',model:'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
         imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: product?.runtime?.board === 'stopwatch', orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: 'host-input', physicalMountingVerified: false },
         unsupported: ['arbitrary-dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input'] };
     },
@@ -650,7 +666,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       if (worker && status==='running') await ask('stopped',{op:'stop'});
       await preserveStorage(); alive(); aborter?.abort(); stopWorker(); detachStorage(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
       if(sdSession)sdSession.closed=true;sdSession=null;sdCard=emptySd();leds=[];
-      scene = clone(nextScene); product = catalog.products.find(item => item.id === scene.productId);sdCard.supported=product.runtime?.board==='papermono';sdEvent();emit({type:'leds',leds:[]});
+      scene = clone(nextScene); product = catalog.products.find(item => item.id === scene.productId);sdCard.supported=isPaperMonoBoard(product.runtime?.board);sdEvent();emit({type:'leds',leds:[]});
       resetAccessoryInputs(); imu = defaultImu(); imuPreviousAt = null;
       setStatus('configured'); return { ...snapshot(), warnings: validation.warnings };
     }); },
@@ -664,7 +680,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     loadFirmware(source) { const loadId = ++progressGeneration; return exclusive(async () => {
       requireValue(scene, 'NOT_CONFIGURED', 'Configure a product before loading firmware.');
       if (worker && status==='running') await ask('stopped',{op:'stop'});
-      await preserveStorage(); alive(); stopWorker(); detachStorage();if(sdSession)sdSession.closed=true;sdSession=null;sdCard={...emptySd(),supported:product?.runtime?.board==='papermono'};leds=[]; loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
+      await preserveStorage(); alive(); stopWorker(); detachStorage();if(sdSession)sdSession.closed=true;sdSession=null;sdCard={...emptySd(),supported:isPaperMonoBoard(product?.runtime?.board)};leds=[]; loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
       loadCancelled = false; aborter = new AbortController(); setStatus('loading');
       const progress = loadReporter(loadId, aborter.signal);
       try {

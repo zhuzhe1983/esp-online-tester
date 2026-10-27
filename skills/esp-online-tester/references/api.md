@@ -20,6 +20,8 @@ The platform page installs `window.espTester`. Await its presence before use. Ru
 | `input(event)` | Waits for a matching worker queue receipt and returns `guestTime` in simulated seconds; it does not certify firmware consumption. Shapes below. |
 | `press(id,{durationMs=100}={})` | Presses then releases a button using host wall time (0–10000 ms), not cycle-exact guest time. |
 | `injectGps(options)` | Constructs RMC/GGA sentences with checksums and queues them on logical UART1. Requires an attached `uart-nmea` accessory, logical UART1 wiring and StopWatch. |
+| `readLoRa()` | Full PaperMono SX1262 digital state and bounded TX history, plus actual `guestTime`. Requires a loaded worker; does not drain history. |
+| `receiveLoRa(packet)` | Supplies an explicit virtual peer packet to full PaperMono. Requires running/paused firmware in a matching RX state. Acceptance schedules completion; verify the guest's resulting output. |
 | `setImu({quaternion,angularVelocityDps?,source='agent',enabled?})` | Sets a virtual sensor sample on boards reporting IMU capability. Quaternion is `[x,y,z,w]`; explicit angular velocity is degrees/second. Returns the sample and, with a loaded worker, its register-delivery receipt. See the axis limitations below. |
 | `observe()` | Returns `{version,status,scene,product,firmware,serial,serialByPort,stats,frame,storage,sdCard,leds,imu,accessoryInputs,lastError}`. Each serial string retains its last 65,536 JavaScript string code units; this is not an unbounded event log. |
 | `capabilities()` | Reports actual product inputs, backend, firmware limits and unsupported features. |
@@ -102,6 +104,27 @@ await api.start(); // attach/clear leaves ready, not running.
 ```
 
 RGB output is `observe().leds`, an array of `[red,green,blue]` byte triples, and the same `{type:'leds',leds}` subscription event. PaperMono's first LED uses PM1 LED_EN for red and M5IOE1 PWM2/PWM1 for green/blue; it is not a WS2812. The viewer consumes these actual guest-driven channels. There is no host API that changes their color as a substitute for firmware behavior. A changed LED tuple proves the modeled digital output, not real-world brightness or timing.
+
+## Virtual LoRa packets
+
+Only full `papermono` exposes `capabilities().lora.available`; Lite returns false. `readLoRa()` reports power/reset/antenna/BUSY/mode/IRQ, raw radio config, counters and the last 16 completed transmissions (`payloadHex`, config, guest cycle). Old TX entries are dropped when the queue fills; reset/power loss clears hardware configuration and FIFO while diagnostic counters/history remain until a new board is constructed. No received packet is generated without explicit input. No RF power, range, collision, remote relay or radio network is simulated.
+
+```js
+const radio = await espTester.readLoRa();
+// This is the fixed official UserDemo 1.2.0 peer configuration, not a universal default.
+const receipt = await espTester.receiveLoRa({
+  config: {frequency:0x36400000, sf:12, bandwidth:3, codingRate:4,
+    syncWord:0x3444, implicitHeader:false, crc:true, invertIq:false},
+  payloadHex:'50454552', rssiDbm:-70, snrQuarterDb:24, crcError:false
+});
+// Wait for actual firmware FIFO consumption / UI output; acceptance alone is insufficient.
+```
+
+`frequency` is the raw SX1262 32-bit RF word (Hz = word × 32 MHz / 2^25), not hertz. SF is 5–12. `bandwidth` is a datasheet code: 0/8/1/9/2/10/3/4/5/6 correspond to approximately 7.81/10.42/15.63/20.83/31.25/41.67/62.5/125/250/500 kHz. `codingRate` is 1–4 (4/5 through 4/8); `syncWord` is an unsigned 16-bit register value. All numbers must be integers. Payload is even-length hex, at most 255 bytes. RSSI is −127…0 dBm; SNR is signed quarter-dB (−128…127); `crcError` is boolean. These signal values are explicit test inputs, not measured RF quantities.
+
+The receiver must be powered, out of reset, antenna-enabled, not BUSY and in LoRa RX. All config fields must match; implicit-header payload length must also match. Overlapping reception or a packet whose air time exceeds the pending RX timeout is rejected. `LORA_PACKET_REJECTED` indicates this modeled state/config mismatch, `INVALID_LORA_PACKET` indicates malformed host data, and `LORA_UNSUPPORTED` indicates no loaded full-PaperMono radio. An accepted packet completes only when guest time advances; a paused machine remains paused. IRQ/FIFO handling belongs to guest firmware. `crcError:true` raises the CRC error along with RX_DONE; it does not silently become a valid packet.
+
+The workbench API and origin-bound iframe RPC share these methods. The automation wrapper interrupts recording/playback before LoRa injection; LoRa payloads/state do not enter a share URL or portable recording. There is no ordinary UI receive control yet; this stage exposes agent/test API access. GFSK, CAD, LR-FHSS and analog calibration results are outside the digital subset.
 
 ## Official StopWatch example
 

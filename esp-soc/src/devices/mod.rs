@@ -8,6 +8,7 @@ pub mod i2c_bitbang;
 pub mod dcs_panel;
 pub mod spi_bitbang;
 pub mod ws2812;
+pub mod sx1262;
 
 pub use dcs_panel::DcsPanel;
 pub use spi_bitbang::SpiBitBang;

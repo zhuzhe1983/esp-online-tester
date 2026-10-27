@@ -202,6 +202,9 @@ impl SocBus {
         } else {
             self.board.spi_transfer(host, &transfer.tx, transfer.rx_len)
         };
+        if transfer.rx_len != 0 && self.periph.gpspi(host).regs.read(0x30) & (1 << 27) != 0 {
+            self.complete_gpspi_rx(host, transfer.rx_len, &rx);
+        }
         self.periph.gpspi_mut(host).finish_transfer(transfer, &rx);
     }
 

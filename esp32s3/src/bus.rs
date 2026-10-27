@@ -3,6 +3,7 @@
 use crate::periph::{Peripherals, PERIPH_BASE, PERIPH_END};
 use crate::board::Board;
 mod dma;
+mod gpspi_rx;
 mod sdmmc;
 pub use dma::{DmaDescriptorFault, DmaDescriptorWord};
 use dma::Spi2DmaCompletion;

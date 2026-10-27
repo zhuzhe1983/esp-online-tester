@@ -1,0 +1,36 @@
+{
+  "official": [
+    {
+      "run": "papermono-lora-official-30",
+      "wasmSha256": "db7694c2a1548026076155a043e3191e8841c5c6aead1931c9cbbbad89227210",
+      "firmwareSha256": "72c290bc2ffa216041b276660277369bd17ecef92315e367d98bb2c96c8428fa",
+      "guestSeconds": 30.04,
+      "result": "Previous rejected dummy-wake status poisoned the next valid standby command; repeated retries, no successful init.",
+      "loRaLines": [
+        "I (5246) HAL: LoRa init NSS=41 BUSY=21 DIO1=5 SCK=39 MISO=40 MOSI=38",
+        "E (15356) HAL: LoRa init failed state=-2"
+      ],
+      "rawReceiptSha256": "118d68a7eaacd04a095a8285c5d55921dfb72f21b557fa9aae939a80d347e6c5"
+    },
+    {
+      "run": "papermono-lora-official-status",
+      "wasmSha256": "3b5d52a663073e1dcdabd465a5323993170aeda856c8ff9624e189e224506363",
+      "firmwareSha256": "72c290bc2ffa216041b276660277369bd17ecef92315e367d98bb2c96c8428fa",
+      "guestSeconds": 15.02,
+      "result": "Status corrected, but invented SX1262 family string contradicted pinned RadioLib. Official init returned -2; corrected to driver-documented SX1261 with unknown suffix.",
+      "loRaLines": [
+        "I (5246) HAL: LoRa init NSS=41 BUSY=21 DIO1=5 SCK=39 MISO=40 MOSI=38",
+        "E (5356) HAL: LoRa init failed state=-2"
+      ],
+      "rawReceiptSha256": "ce00e1fbd4eed0ed6fc5171aa2b4b1fb6e43f2a2c7aa4b039f9386b8f8351ceb"
+    }
+  ],
+  "other": [
+    "Semtech Salesforce download returned HTML instead of PDF; retained response receipts; used manufacturer-hosted Semtech Rev2.2 PDF.",
+    "Two full Rust setup failures: missing c6-hosted fixtures (10 cosim tests), then missing other p4 fixtures (7 golden tests). Standard pinned cache restored; complete final workspace passed.",
+    "First ten-scenario WASM attempt lacked ignored MicroPython input. Existing hash-pinned fetch script obtained it; complete final ten-scenario run passed.",
+    "Final Lite GPIO high-impedance check exposed fixture relying on low floating BUSY. Fixture now configures GPIO pull-down explicitly; full/Lite actual WASM and browser passed. No nonexistent Lite radio drives BUSY or IRQ.",
+    "First Clippy rejected adjacent if statements and fixed-size chunks style; localized corrections, no whole-file rustfmt."
+  ],
+  "curation": "Failure messages containing full emulated console omitted; reproducible mechanism, numeric guest times, relevant HAL results and original receipt hashes retained."
+}

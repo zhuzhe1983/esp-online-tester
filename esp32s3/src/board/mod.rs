@@ -45,6 +45,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "atoms3" | "m5stack-atoms3" => Some(Box::new(AtomS3::new())),
         "dial" | "m5stack-dial" => Some(Box::new(Dial::new())),
         "papermono" | "m5stack-papermono" => Some(Box::new(PaperMono::new())),
+        "papermono-lite" | "m5stack-c153-lite" => Some(Box::new(PaperMono::lite())),
         "cardputer" | "m5stack-cardputer" => Some(Box::new(Cardputer::new())),
         "cardputer-adv" | "m5stack-cardputer-adv" => Some(Box::new(CardputerAdv::new())),
         "stopwatch" | "m5stack-stopwatch" => Some(Box::new(StopWatch::new())),
