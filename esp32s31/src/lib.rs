@@ -8,12 +8,15 @@ pub mod pads;
 pub mod efuse;
 pub mod clocks;
 pub mod usb_console;
+pub mod bus_monitor;
+pub mod mspi;
 mod rom;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};
 
 /// This executes the RV32IMAFC subset, not S31's complete custom ISA. No
-/// second hart, SPI flash command engine, PLL/RC clock sources or board devices are installed. Functional
+/// second hart, PLL/RC clock sources or board devices are installed. The Flash command
+/// subset requires explicit NOR identity and array inputs; no product identity is guessed. Functional
 /// MMU mappings use explicitly supplied flash/PSRAM buffers. Unlike a P4 alias, its
 /// bus uses the S31 addresses and reports the first unsupported access with the guest PC.
 pub struct Bringup { pub cpu: Cpu, pub bus: S31Bus }
@@ -63,10 +66,12 @@ impl Bringup {
     pub fn run(&mut self, budget: u64) -> Run {
         for steps in 0..budget {
             if let Some(reset) = self.bus.rtc_wdt.reset_request { return Run { steps, stop: Stop::Reset(reset) }; }
+            self.bus.bus_monitor.observe(self.cpu.pc, self.cpu.x[2]);
             self.cpu.irq = self.bus.refresh_irq(self.cpu.mintthresh);
             if self.cpu.waiting && self.cpu.irq.is_none() { return Run { steps, stop: Stop::Waiting }; }
             if let Err(trap) = riscv_rv32::step(&mut self.cpu, &mut self.bus) {
                 if let Trap::Interrupt(line) = trap { self.bus.interrupt_taken(line); continue; }
+                if matches!(trap, Trap::Exception(_) | Trap::Ebreak(_)) { self.bus.bus_monitor.exception(self.cpu.mcause, self.cpu.mtval, self.cpu.mepc); }
                 return Run { steps: steps + 1, stop: Stop::Trap(trap) };
             }
         }

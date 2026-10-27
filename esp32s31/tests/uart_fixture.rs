@@ -188,13 +188,62 @@ fn external_s31_real_rom_usb_and_flash_boot_banner() {
             let run = m.run(1000); steps += run.steps;
             if let Some(packet) = m.bus.usb_console.host_receive() { packets.push(packet); }
             if run.stop != esp32s31::Stop::Budget { break run.stop; }
-            assert!(steps < 100_000, "real ROM failed to reach the documented unimplemented monitor boundary");
+            assert!(steps < 100_000, "real ROM failed to reach the documented first unsupported access");
         };
         let uart = format!("ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:{strap:#x} ({mode})\r\n");
         assert_eq!(m.bus.uart0.tx_out, uart.as_bytes());
         assert_eq!(packets.len(), 3); assert_eq!(packets.concat(), uart.as_bytes());
         assert_eq!(stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(5)));
-        let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!(f.pc, 0x2f806c3a); assert_eq!(f.address, 0x2d002114);
+        let f = m.bus.first_fault.as_ref().unwrap();
+        let expected = if strap == 0 { (0x2f8152d4, 0x205870ac) } else { (0x2f80ebf6, 0x20500028) };
+        assert_eq!((f.pc, f.address), expected);
         eprintln!("S31 real ROM strap={strap:#x} steps={steps} UART+USB={}B", uart.len());
+    }
+}
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_MONITOR_ELF to monitor-probe.elf"]
+fn external_s31_monitor_capture_irq_and_actual_faults() {
+    let path = std::env::var("S31_MONITOR_ELF").expect("build firmware/s31-uart-probe and set S31_MONITOR_ELF");
+    let mut m = esp32s31::Bringup::new(); m.load_elf(&std::fs::read(path).expect("read S31_MONITOR_ELF")).unwrap();
+    for cause in [5, 7] {
+        let run = m.run(10_000); assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(cause)));
+        assert_eq!(m.cpu.mtval, 0); assert!(m.bus.uart0.tx_out.is_empty());
+        eprintln!("S31 monitor actual trap cause={cause} steps={} mepc={:#010x}", run.steps, m.cpu.mepc);
+        // Resume at the architectural vector the guest itself installed; never set pc,
+        // mepc, cause, capture registers or ISR flags from the host.
+    }
+    let run = m.run(10_000); assert_eq!(run.stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 MONITOR CAPTURE IRQ TRAPS PASS\n");
+    assert_eq!(m.cpu.x[18], 1); assert_eq!(m.cpu.x[19], 2); assert_eq!(m.cpu.mil, 0);
+    eprintln!("S31 monitor final steps={} pc={:#010x}", run.steps, m.cpu.pc);
+}
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_MSPI_ELF to mspi-probe.elf"]
+fn external_s31_mspi_real_array_and_missing_input_controls() {
+    let path = std::env::var("S31_MSPI_ELF").expect("build firmware/s31-uart-probe and set S31_MSPI_ELF");
+    let elf = std::fs::read(path).expect("read S31_MSPI_ELF");
+    for control in ["valid", "wrong-data", "no-identity", "no-array", "clock-off"] {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        if control != "no-identity" { m.bus.mspi.attach_flash([0xef, 0x40, 0x18], 0).unwrap(); }
+        let mut bytes = vec![0xff; 0x100]; bytes[0x20..0x28].copy_from_slice(&[0x5a, 0x3c, 0x29, 0x17, 0x21, 0x43, 0x65, 0x87]);
+        if control == "wrong-data" { bytes[0x20] ^= 1; }
+        if control != "no-array" { m.bus.cache.set_flash(&bytes).unwrap(); }
+        if control == "clock-off" { m.bus.mspi.clock_write(0x680).unwrap(); }
+        let run = m.run(10_000);
+        if control == "valid" {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 MSPI ID STATUS ARRAY PASS\n");
+            assert_eq!(m.bus.mspi.commands, 7); assert!(m.bus.first_fault.is_none());
+        } else if control == "wrong-data" {
+            assert!(matches!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_))));
+            assert_eq!(m.bus.uart0.tx_out, b"S31 MSPI FAIL\n"); assert_eq!(m.bus.mspi.commands, 6);
+        } else {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7)));
+            assert_eq!(m.bus.first_fault.as_ref().unwrap().address, 0x20501000);
+            assert_eq!(m.bus.first_fault.as_ref().unwrap().reason, emu_core::Fault::Prohibited);
+            assert_eq!(m.bus.mspi.commands, 0); assert!(m.bus.uart0.tx_out.is_empty());
+        }
+        eprintln!("S31 MSPI control={control} steps={} stop={:?}", run.steps, run.stop);
     }
 }

@@ -481,3 +481,87 @@ hashes. Main includes independent Guru/INK4 changes, so these are regression gua
 not an attributed S31 speed result. No S3 core changed in this stage.
 [Functional evidence](evidence/s31-bringup/usb-rom.json),
 [CPU samples](evidence/s31-bringup/usb-rom-perf.json).
+
+## Real bus-monitor capture and bounded SPI1 Flash commands
+
+The next standalone stage implements the bus monitor from fixed S31 v6.1 headers:
+actual hart0 PC/SP sampling, stack minimum/maximum interrupts (matrix source119),
+clock/reset gates and two-slot real exception metadata. The second hart remains
+inactive and receives no fabricated samples. The source fixture creates a stack
+underflow, takes the CLIC ISR, then performs actual unmapped load/store instructions;
+its own trap handler returns with `mret` and checks the recorded causes and PCs.
+The diagnostic runner stops at each exception; the test resumes at the architectural
+vector without setting guest PC or capture data. Region watchpoints, memory-stall
+monitoring, a debugger, recursive-handler lockup detection and reset-domain behavior
+remain absent. Exception trace storage is not a claim that automatic lockup/reset
+has been implemented.
+
+SPI1 now has a bounded synchronous NOR command subset: RDID, RDSR, WREN/WRDI,
+24-bit ordinary/fast/dual/quad reads into the 64-byte receive buffer. It requires
+an explicit caller-supplied NOR ID/status and Flash array. No identity or QE bit is
+inferred from the INK4 Plus firmware, and no default Flash die is installed. APB/core
+clock and reset gates, CS0 selection, transfer bounds and supported phase lengths
+are checked. Unsupported commands, write/erase, SFDP, OPI, security, power-down,
+suspend/resume and unsupported clock sources fail explicitly. This models completed
+functional transfers, not SPI wire timing or contention. Existing `SpiMem` array
+operations are reused behind these checks; its permissive unknown-command and PSRAM
+fallbacks are not exposed. RDSR captures the external status only on that command.
+
+SPI0 retains documented configuration and exposes actual empty FIFO state because
+this subset does not queue AXI requests. External Flash access requires the AXI
+interface enabled/open and its clocks/reset released. The existing MMU source
+fixture now explicitly opens that interface before fetching its source-built Flash
+worker. This does not initialize a real product or replace ROM boot.
+
+`mspi-probe.S` checks its explicitly supplied test ID, WREN/RDSR/WRDI, an ordinary
+03h read and dedicated read against independent source data. Changed data takes the
+guest's failure branch; missing ID/array or a disabled clock faults before any
+command completes. These fixture inputs are unrelated to the physical Plus BOM.
+
+### INK4 Plus official image, through the real ROM
+
+The exact official 2.0.68 image was fetched again into host RAM and passed through
+stdin to the standalone S31 ROM runner. SHA-256 matches the catalog; its bootloader
+at0x2000 and application at0x80000 both have chip ID32, valid segment XOR checksums
+and valid appended SHA-256 digests. The partition table at0x8000 was parsed. The
+firmware was not written to disk, Git or a server. No ROM/BIN opcode or boot entry
+was changed, and no application-direct execution was used.
+
+With the explicit experimental strap0x12 and USB packet peer, the ROM prints its
+97-byte SPI_FAST_FLASH_BOOT banner and first fails after43162 steps at
+`SPI_init`, PC`0x2f80ebf6`, read32`0x20500028`. No Flash command has completed;
+the bootloader, application and display have not run. This same image must be
+retested at subsequent stages. [Image and guest receipt](evidence/s31-bringup/monitor-plus-2.0.68.json).
+
+The next barrier is a concrete ROM/header discrepancy: the fixed public ROM reads
+and updates the low10 bits at SPI0 offsets0x28 and0x24, while the fixed v6.1
+`spi_mem_c_struct.h` names those two words `reserved_024[2]`; only SPI1's matching
+offsets are documented as MISO/MOSI data lengths. These accesses are deliberately
+still unsupported. Returning zeros merely to pass initialization would not establish
+the real SPI0 behavior. The USB_BOOT branch separately reaches the still unsupported
+HP_SYS USB control at`0x205870ac`, PC`0x2f8152d4`, after46351 steps/85 output bytes.
+Neither branch establishes the physical product's strap or OTP contents.
+
+Reproduce the official-image probe with caller-selected public source/hash:
+
+```sh
+cargo build --release -p esp32s31 --example bringup
+python3 tools/s31-native-firmware-probe.py \
+  --firmware-url "$S31_FIRMWARE_URL" --sha256 "$S31_FIRMWARE_SHA256" \
+  --rom output/s31-sources/roms/esp32s31_rev0_rom.elf \
+  --output output/s31-plus-current.json
+```
+
+This is development instrumentation, not a website loader or a successful product
+runtime. Plus remains unavailable; PLL/PSRAM initialization, custom ISA/second hart,
+real Flash boot and the TCA9555/TPS65185/parallel EPD/touch/SD board path remain open.
+
+Validation: both stable Clippy targets, all 1399 workspace Rust tests (131 groups),
+36 S31 unit tests, 13 source/ROM tests, four platform Node files, nine existing WASM
+workloads, own S31 wasm32 compile and native binaries pass. Goldens are unchanged.
+Production WASM and the three native code sections match the previous stage byte
+for byte. Five alternating hello pairs versus freshly built main `84e67571` give
+S3 +0.142%, C3 +0.023%, C6 −0.603%, with exact guest statistics and UART hashes.
+Main contains independent changes; these are regression guards, not S31 speed claims.
+[Functional receipt](evidence/s31-bringup/monitor-mspi.json),
+[CPU samples](evidence/s31-bringup/monitor-mspi-perf.json).

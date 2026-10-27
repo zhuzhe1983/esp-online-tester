@@ -1,21 +1,26 @@
 //! Run a caller-supplied SRAM/ROM ELF and report the first unimplemented access.
 use std::io::Write;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None;
+    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None;
     while let Some(arg) = args.peek() {
         match arg.as_str() {
             "--rom" => rom = true, "--usb-host" => usb_host = true,
             value if value.starts_with("--strap=0x") => strap = Some(u16::from_str_radix(&value[10..], 16)?),
+            value if value.starts_with("--flash=") => flash = Some(value[8..].to_owned()),
             _ => break,
         }
         args.next();
     }
-    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
+    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
     let input = args.next().unwrap_or_default();
     let budget = args.next().map(|s| s.parse::<u64>()).transpose()?.unwrap_or(100_000).min(10_000_000);
     if args.next().is_some() { return Err("too many bringup arguments".into()); }
     let mut m = esp32s31::Bringup::new(); let bytes = std::fs::read(elf)?;
     if rom { m.load_rom_elf(&bytes)?; } else { m.load_elf(&bytes)?; }
+    if let Some(path) = flash {
+        let bytes = std::fs::read(path)?; m.bus.cache.set_flash(&bytes)?;
+        eprintln!("flash bytes={} (caller input; no inferred NOR identity or OTP image)", bytes.len());
+    }
     m.bus.usb_console.attach_host(usb_host);
     if let Some(value) = strap { m.bus.pads.strap = value; }
     m.bus.uart_input(input.as_bytes()).map_err(|e| format!("UART input unavailable: {e:?}"))?;

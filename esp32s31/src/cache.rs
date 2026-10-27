@@ -64,12 +64,13 @@ impl Default for Cache {
 }
 impl Cache {
     /// Explicit development input, not a ROM boot shortcut or an assertion of product capacity.
-    /// Allocation limits are host software bounds. There is no SPI flash command engine yet.
+    /// Allocation limits are host software bounds. The SPI1 command subset uses this same backing array.
     pub fn set_flash(&mut self, bytes: &[u8]) -> Result<(), String> {
         if bytes.len() > 256 * 1024 * 1024 { return Err("S31 development flash input exceeds 256 MiB".into()); }
         let mut data = Vec::new(); data.try_reserve_exact(bytes.len()).map_err(|e| e.to_string())?;
         data.extend_from_slice(bytes); self.flash = data; Ok(())
     }
+    pub(crate) fn flash_bytes_mut(&mut self) -> &mut [u8] { &mut self.flash }
     pub fn set_psram_size(&mut self, bytes: usize) -> Result<(), String> {
         if bytes > 64 * 1024 * 1024 { return Err("S31 development PSRAM input exceeds 64 MiB".into()); }
         let mut data = Vec::new(); data.try_reserve_exact(bytes).map_err(|e| e.to_string())?;

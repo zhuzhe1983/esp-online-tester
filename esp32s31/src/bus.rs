@@ -8,6 +8,8 @@ use crate::cache::Cache;
 use crate::pads::Pads;
 use crate::clocks::Clocks;
 use crate::usb_console::UsbConsole;
+use crate::bus_monitor::BusMonitor;
+use crate::mspi::Mspi;
 use crate::efuse::{Efuse, BASE as EFUSE_BASE};
 
 // ESP-IDF v6.1 (fff9895c82d744c7237be8847347bdd1b07c6643),
@@ -44,6 +46,8 @@ pub struct S31Bus {
     pub efuse: Efuse,
     pub clocks: Clocks,
     pub usb_console: UsbConsole,
+    pub bus_monitor: BusMonitor,
+    pub mspi: Mspi,
     pc: u32, pub first_fault: Option<AccessFault>,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
@@ -57,7 +61,7 @@ impl S31Bus {
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16],
-            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), usb_console: UsbConsole::default(), pc: 0, first_fault: None }
+            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -97,7 +101,8 @@ impl S31Bus {
         let conf = self.uart0.read(0x20); self.uart0.write(0x20, conf | 1 << 22); self.uart0.write(0x20, conf);
         self.uart0.int_raw = (1 << 14) | 2;
     }
-    pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> { self.interrupts.refresh(self.uart_irq(), self.rtc_wdt.irq(), self.efuse.irq(), self.usb_console.irq(), threshold) }
+    fn irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.efuse.irq(), usb: self.usb_console.irq(), monitor: self.bus_monitor.irq() } }
+    pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> { self.interrupts.refresh(self.irqs(), threshold) }
     pub fn interrupt_taken(&mut self, line: u32) { if line < 32 { self.interrupts.clic[0].taken(line as usize + 16); } }
     fn clic_offset(address: u32, bytes: usize) -> Option<(usize, u32)> {
         let off = address.checked_sub(CLIC_BASE)?;
@@ -109,6 +114,18 @@ impl S31Bus {
     fn read(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
         if let Some(data) = self.memory(address, bytes) {
             let mut value = [0; 4]; value[..bytes].copy_from_slice(data); return Ok(u32::from_le_bytes(value));
+        }
+        if address & !3 == crate::mspi::CLOCK {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(self.mspi.clock_read());
+        }
+        if address & !3 == crate::bus_monitor::CLOCK {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(self.bus_monitor.clock_read());
+        }
+        if let Some(off) = offset(address, crate::bus_monitor::BASE, bytes, 0x400) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.bus_monitor.read(off as u32) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if let Some(off) = offset(address, LP_STORE0, bytes, 64) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -139,6 +156,7 @@ impl S31Bus {
             return match self.pads.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if Cache::is_memory(address) {
+            if address < crate::cache::PSRAM_VADDR && !self.mspi.flash_accessible() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
             let mut value = [0; 4];
             for (i, byte) in value.iter_mut().take(bytes).enumerate() {
                 match address.checked_add(i as u32).ok_or(Fault::Unmapped).and_then(|a| self.cache.read_byte(a, false)) {
@@ -150,6 +168,10 @@ impl S31Bus {
         if Cache::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return match self.cache.read_register(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
+        if let Some(off) = offset(address, crate::mspi::BASE, bytes, 0x1400) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.mspi.read(off / 0x1000, (off & 0xfff) as u32) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if let Some(off) = offset(address, RTC_WDT_BASE, bytes, 0x400) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -171,7 +193,7 @@ impl S31Bus {
         }
         if let Some(off) = offset(address, MATRIX_BASE, bytes, 0x1000) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
-            if let Some(value) = self.interrupts.matrix_read(off >> 11, (off & 0x7ff) as u32, self.uart_irq(), self.rtc_wdt.irq(), self.efuse.irq(), self.usb_console.irq()) { return Ok(value); }
+            if let Some(value) = self.interrupts.matrix_read(off >> 11, (off & 0x7ff) as u32, self.irqs()) { return Ok(value); }
             return self.fault(address, bytes, false, false, Fault::Unmapped);
         }
         if let Some((core, off)) = Self::clic_offset(address, bytes) {
@@ -191,6 +213,18 @@ impl S31Bus {
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         if let Some(dest) = self.memory_mut(address, bytes, false) { dest.copy_from_slice(&value.to_le_bytes()[..bytes]); return Ok(()); }
+        if address & !3 == crate::mspi::CLOCK {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.mspi.clock_write(value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if address & !3 == crate::bus_monitor::CLOCK {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.bus_monitor.clock_write(value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if let Some(off) = offset(address, crate::bus_monitor::BASE, bytes, 0x400) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.bus_monitor.write(off as u32, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
         if let Some(off) = offset(address, LP_STORE0, bytes, 64) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             self.lp_store[off / 4] = value; return Ok(());
@@ -236,6 +270,10 @@ impl S31Bus {
         if Cache::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             return match self.cache.write_register(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if let Some(off) = offset(address, crate::mspi::BASE, bytes, 0x1400) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.mspi.write(off / 0x1000, (off & 0xfff) as u32, value, self.cache.flash_bytes_mut()) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if let Some(off) = offset(address, RTC_WDT_BASE, bytes, 0x400) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
@@ -294,6 +332,7 @@ impl Bus for S31Bus {
             let Some(address) = pc.checked_add(i as u32) else { return self.fault(pc, 4, false, true, Fault::Unmapped); };
             if let Some(src) = self.memory(address, 1) { data[i] = src[0]; }
             else if Cache::is_memory(address) {
+                if address < crate::cache::PSRAM_VADDR && !self.mspi.flash_accessible() { return self.fault(pc, 4, false, true, Fault::Prohibited); }
                 match self.cache.read_byte(address, true) {
                     Ok(v) => data[i] = v, Err(e) => return self.fault(pc, 4, false, true, e),
                 }
@@ -333,7 +372,7 @@ mod tests {
     #[test]
     fn instruction_fetch_requires_the_real_length_across_mmu_boundaries() {
         use crate::cache::{FLASH_MMU, FLASH_VADDR};
-        let mut b = S31Bus::new(); let page = 32768;
+        let mut b = S31Bus::new(); b.write32(FLASH_MMU + 0x3c, 0x40000001).unwrap(); let page = 32768;
         let mut flash = vec![0; page]; flash[page - 2..].copy_from_slice(&[1, 0]);
         b.cache.set_flash(&flash).unwrap(); b.write32(FLASH_MMU + 0x384, 3 << 3).unwrap();
         b.write32(FLASH_MMU + 0x37c, 0x1000).unwrap();
@@ -360,7 +399,8 @@ mod tests {
         }
         b.load(ROM_BASE, &[1, 2], 2).unwrap();
         assert_eq!(b.read16(ROM_BASE), Ok(0x0201)); assert_eq!(b.write8(ROM_BASE, 0), Err(Fault::Prohibited));
-        for address in [0, u32::MAX, 0x4ff0_0000, 0x4fc0_0000, 0x500c_a000, 0x4000_0000] { assert_eq!(b.read32(address), Err(Fault::Unmapped)); }
+        for address in [0, u32::MAX, 0x500c_a000] { assert_eq!(b.read32(address), Err(Fault::Unmapped)); }
+        for address in [0x4000_0000, 0x4ff0_0000, 0x4fc0_0000] { assert_eq!(b.read32(address), Err(Fault::Prohibited)); } // POR MSPI AXI interface is closed.
         assert!(b.check_load(SRAM_BASE, usize::MAX).is_err());
     }
     #[test]

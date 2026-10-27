@@ -60,7 +60,7 @@ the ISR. This is a packet boundary model, not USB enumeration or physical timing
 The separate fixed-ROM tests reconstruct ROM-side initializer bytes from the ELF,
 then verify the guest's own unpack loop installs the exact interface-table pointer.
 Explicit straps 0/0x12 and an attached packet peer produce USB/SPI Flash boot banners
-before the same documented unimplemented bus-monitor fault. They do not establish
+before the documented first unsupported USB clock or SPI0 reserved-register access. They do not establish
 a real product strap or OTP profile, or a successful flash boot.
 
 ```sh
@@ -76,6 +76,8 @@ S31_PADS_ELF="$PWD/output/s31-uart-probe/pads-probe.elf" \
 S31_EFUSE_ELF="$PWD/output/s31-uart-probe/efuse-probe.elf" \
 S31_CLOCKS_ELF="$PWD/output/s31-uart-probe/clocks-probe.elf" \
 S31_USB_ELF="$PWD/output/s31-uart-probe/usb-probe.elf" \
+S31_MONITOR_ELF="$PWD/output/s31-uart-probe/monitor-probe.elf" \
+S31_MSPI_ELF="$PWD/output/s31-uart-probe/mspi-probe.elf" \
 S31_ROM_ELF="$PWD/output/s31-sources/roms/esp32s31_rev0_rom.elf" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/probe.elf A
@@ -86,3 +88,11 @@ cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/trng-
 Generated ELF/disassembly stays in ignored output. Product catalogs and the deployed
 website do not include this fixture. Register citations and bring-up limits are in
 `docs/platform/s31-runtime.md`.
+
+`monitor-probe.S` reads its actual PC/SP capture, generates a stack-underflow IRQ
+through source119/CLIC17, and creates genuine load/store access exceptions. The
+host resumes only at the architectural trap vector; the guest handler and checks
+verify both exception records. `mspi-probe.S` checks an explicitly supplied test
+NOR ID/status and two Flash reads. Its negative controls change the data, omit
+identity/array, or close the clock; none may produce PASS. These inputs do not
+identify INK4 Plus hardware. The MMU fixture explicitly opens/enables SPI0 AXI.

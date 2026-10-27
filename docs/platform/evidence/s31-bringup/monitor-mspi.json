@@ -1,0 +1,250 @@
+{
+  "date": "2026-10-27",
+  "base": "a7107610d21f1088e319243ab86548771e438979",
+  "scope": "Standalone S31 bus-monitor PC/SP/stack IRQ/real exception history and bounded explicit SPI1 NOR command input, SPI0 Flash AXI gates. INK4 Plus remains unavailable.",
+  "sources": "sources.json: ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643 bus_monitor/assist_debug/hp_sys_clkrst/spi_mem_c/spi1_mem_c/spimem_flash_ll, earliest public SPI0 struct33d29b4, fixed20260528 ROM",
+  "monitor": {
+    "base": "0x2d002000",
+    "clock": "0x20587048",
+    "interruptSource": 119,
+    "inputs": "actual hart0 pre-instruction PC/SP; actual architectural access exceptions",
+    "notImplemented": [
+      "Hart1 execution",
+      "Region watchpoints",
+      "Memory-stall monitor",
+      "Debugger",
+      "Automatic recursive exception lockup detection/reset",
+      "Reset-domain retention"
+    ]
+  },
+  "mspi": {
+    "spi0": "0x20500000",
+    "spi1": "0x20501000",
+    "clock": "0x20587064",
+    "supported": [
+      "Explicit caller NOR ID/status and backing Flash array",
+      "RDID/RDSR/WREN/WRDI",
+      "24-bit byte-aligned ordinary/fast/dual/quad reads, at most64 receive bytes",
+      "CS0 selection, clock/APB reset, AXI enable/close gates",
+      "RDSR latch distinct from live external die status; APB reset preserves die state"
+    ],
+    "notImplemented": [
+      "Flash write/erase/status write",
+      "OPI/SFDP/security",
+      "Power-down/suspend/resume",
+      "Physical wire timing/queued AXI contention",
+      "PLL/RC sources",
+      "Actual product NOR identity"
+    ],
+    "unknownPolicy": "Missing input/unsupported command/phase/clock faults explicitly; never invokes shared permissive unknown-command fallback. SPI0reserved0x24/0x28 remain unmapped."
+  },
+  "fixtures": {
+    "artifacts": [
+      {
+        "path": "esp32s31/src/bus_monitor.rs",
+        "bytes": 6757,
+        "sha256": "594bcfe788b04485b883912315c161a8dd85f1038a243e7639854343657694dd"
+      },
+      {
+        "path": "esp32s31/src/mspi.rs",
+        "bytes": 11213,
+        "sha256": "ec37f5072219d4305fa3271f509dd7206866b288fe894e44326af7d845610a96"
+      },
+      {
+        "path": "firmware/s31-uart-probe/monitor-probe.S",
+        "bytes": 2537,
+        "sha256": "795caf36ac6cdd0ada4e61af20ad90817caf50aa530a1dda2db826bfba17aade"
+      },
+      {
+        "path": "firmware/s31-uart-probe/mspi-probe.S",
+        "bytes": 1734,
+        "sha256": "15355cd0465bc45dc92b2d845e8de87e873cc3c0fa8371f69b5a457a125ed9c7"
+      },
+      {
+        "path": "firmware/s31-uart-probe/mmu-probe.S",
+        "bytes": 1789,
+        "sha256": "77bda1d7b6bd434cd5d74c38eb122941666c48ae913c0fe4ab3a7814c59533ed"
+      },
+      {
+        "path": "tools/s31-native-firmware-probe.py",
+        "bytes": 4423,
+        "sha256": "8fc8e1c3dcf334554136c58c10e1ac3966d151de0c3ecc85e62ce0a9b994a9a1"
+      },
+      {
+        "path": "output/s31-uart-probe/monitor-probe.elf",
+        "bytes": 5656,
+        "sha256": "3ea67fc2eafe1bffcd0ecda3f7d2ca279582d00ca8d3248820fd7f76cc348d7c"
+      },
+      {
+        "path": "output/s31-uart-probe/mspi-probe.elf",
+        "bytes": 5064,
+        "sha256": "b541cd29d4434da8d8291cb4edcbbba0d38f537256b2e8beafdc8f688116f379"
+      },
+      {
+        "path": "output/s31-uart-probe/mmu-probe.elf",
+        "bytes": 5012,
+        "sha256": "5c7394f3682820756fed9543429c5a3ad839970a9a61218768604d5d6b4cb73f"
+      }
+    ],
+    "compiler": "riscv32-esp-elf-gcc15.2.0 esp-15.2.0_20251204",
+    "reproduce": "firmware/s31-uart-probe/README.md",
+    "generatedArtifactsPublished": false,
+    "monitor": {
+      "trapCauses": [
+        5,
+        7
+      ],
+      "trapPcs": [
+        "0x2f0000cc",
+        "0x2f0000d0"
+      ],
+      "phaseSteps": [
+        66,
+        6,
+        208
+      ],
+      "stackIrqs": 1,
+      "guestTrapReturns": 2,
+      "uart": "S31 MONITOR CAPTURE IRQ TRAPS PASS\n",
+      "hostOverrides": "none: runner resumed at guest-installed architectural trap vector"
+    },
+    "mspi": {
+      "validSteps": 207,
+      "commands": 7,
+      "uart": "S31 MSPI ID STATUS ARRAY PASS\n",
+      "wrongData": {
+        "steps": 119,
+        "commands": 6,
+        "uart": "S31 MSPI FAIL\n",
+        "stop": "Ebreak"
+      },
+      "missingIdentityArrayOrClock": {
+        "stepsEach": 5,
+        "commandsEach": 0,
+        "fault": "write32 0x20501000 Prohibited",
+        "uart": ""
+      }
+    },
+    "mmu": {
+      "steps": 178,
+      "uart": "S31 MMU FLASH PSRAM PASS\n",
+      "change": "guest explicitly enables/opens SPI0 AXI before actual mapped Flash instruction fetch"
+    }
+  },
+  "rom": {
+    "plusOfficialImage": "monitor-plus-2.0.68.json",
+    "flashSteps": 43162,
+    "flashFault": {
+      "pc": "0x2f80ebf6",
+      "address": "0x20500028",
+      "access": "read32",
+      "function": "SPI_init"
+    },
+    "usbSteps": 46351,
+    "usbFault": {
+      "pc": "0x2f8152d4",
+      "address": "0x205870ac",
+      "access": "read32"
+    },
+    "discrepancy": "ROM reads/sets low10 bits of SPI0 offsets0x28/0x24; both current and earliest public S31 SPI0 struct mark these reserved_024[2]. No invented response added.",
+    "bootloaderExecuted": false,
+    "appExecuted": false,
+    "displayProduced": false
+  },
+  "validation": {
+    "stable": "rustc1.99.1 (58cf8f9c3 2026-10-13)",
+    "bothClippyTargets": true,
+    "workspaceRust": {
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_",
+      "passed": 1399,
+      "groups": 131
+    },
+    "s31Unit": 36,
+    "sourceAndRomExternal": 13,
+    "platform": "4 required Node files passed",
+    "wasmWorkloads": [
+      "hello",
+      "c3-hello",
+      "c6-hello",
+      "p4-hello",
+      "c6-energy-scan",
+      "c6-contiki",
+      "c6-contiki-net",
+      "c6-rpl-net",
+      "panel"
+    ],
+    "additional": [
+      "WASM build/section check",
+      "S31 wasm32 compile",
+      "native --bins build"
+    ],
+    "goldensChanged": false,
+    "uiChanged": false,
+    "productionWasm": {
+      "bytes": 3988256,
+      "sha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31",
+      "identicalToPreviousStage": true
+    },
+    "productionNativeCode": [
+      {
+        "binary": "esp32sim",
+        "section": "__TEXT,__text",
+        "bytes": 2451648,
+        "sha256": "c7a56e344138282e6c4c5b4903a547b6e88a1ab6b8f01d4c37d42aa7e22128be"
+      },
+      {
+        "binary": "esp32sim-c3",
+        "section": "__TEXT,__text",
+        "bytes": 2451648,
+        "sha256": "68dc7d7430af36b87d9c6c1f37d8d13d5c98a74d872281e50ddeb41093792e86"
+      },
+      {
+        "binary": "esp32sim-c6",
+        "section": "__TEXT,__text",
+        "bytes": 2451648,
+        "sha256": "757541708ed5de127937a92898cf6ebabc9891265fffffc633c437419a3c8047"
+      }
+    ],
+    "productionNativeCodeIdenticalToPreviousStage": true,
+    "logHashes": [
+      {
+        "commandGroup": "clippy-native",
+        "logSha256": "c6d2ba7c40c95ad68fc5f32cf2430b086bb249cf07e1996e3dd47b1833748443"
+      },
+      {
+        "commandGroup": "clippy-wasm",
+        "logSha256": "4b88c1e44dce241c9aef11864a27a55abafa235bbb3febc81a6cb94a6e08f49b"
+      },
+      {
+        "commandGroup": "rust",
+        "logSha256": "acecd08899f6876f5f77d1f3c08acfcad8f10fd8a0072ac0e0c6810e9a1c8abb"
+      },
+      {
+        "commandGroup": "fixtures",
+        "logSha256": "86523fe49e1d8bc100eab9a0ee40ab9c33c74a020877d2386e5f863c24c027cc"
+      },
+      {
+        "commandGroup": "platform",
+        "logSha256": "a96e56708029548a338ea5862fcac5f25c7b11dcd82e3715c5b6424dd6467e5c"
+      },
+      {
+        "commandGroup": "wasm",
+        "logSha256": "714c806de2343631675331471101c2681b6cddcf75793118005e0b6026c2d614"
+      },
+      {
+        "commandGroup": "s31-wasm",
+        "logSha256": "9b0c2d81fec0c4bd9ff11b4484cfabd82ecebdb7cd77aa5f9826e37f003d9913"
+      },
+      {
+        "commandGroup": "native",
+        "logSha256": "5106c7e3cd31fd4626ebb8457d627eaead97c74042f0d0985545a3ddd45d5bda"
+      }
+    ],
+    "negativeResults": [
+      "First unit run kept old Unmapped expectation for Flash-window accesses while new POR AXI gate correctly returned Prohibited; assertions corrected, full36 passed.",
+      "Initial filter external_s31_m also matched existing MMU fixture without its env; new monitor/MSPI passed but targeted command failed. Full13-fixture rerun with every explicit input passed."
+    ],
+    "performance": "monitor-mspi-perf.json"
+  },
+  "privacy": "Only public sources/hashes, guest values, counts, relative paths and aggregate CPU/load data. Official BIN remains RAM-only; no device/user/host identity or private capture retained."
+}
