@@ -588,3 +588,30 @@ fn external_s31_nor_erase_program_read_and_retire_flash_code() {
         eprintln!("S31 NOR mode={mode} steps={} stop={:?} command-count={} watch={:?}", run.steps, run.stop, m.bus.mspi.commands, m.pc_watch);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_GPIO_INPUT_ELF to gpio-input-probe.elf"]
+fn external_s31_gpio_alias_and_explicit_pad_voltage_guest_readback() {
+    let path = std::env::var("S31_GPIO_INPUT_ELF").expect("build firmware/s31-uart-probe and set S31_GPIO_INPUT_ELF");
+    let elf = std::fs::read(path).expect("read S31_GPIO_INPUT_ELF");
+    for mode in 0..4 {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        if mode != 1 { m.bus.pads.set_unresolved_sample(32, Some(mode == 2)).unwrap(); }
+        if mode == 3 { m.bus.pads.set_input(32, Some(true)).unwrap(); }
+        let run = m.run(2000);
+        if mode == 0 {
+            assert_eq!(run.stop, esp32s31::Stop::Budget); assert_eq!(m.bus.uart0.tx_out, b"S31 GPIO SAMPLE READY\n");
+            assert_eq!(m.bus.pads.drive(36), Ok(esp32s31::pads::Drive::High));
+            assert_eq!(m.bus.pads.drive(32), Ok(esp32s31::pads::Drive::Unsupported));
+            m.bus.pads.set_unresolved_sample(32, Some(true)).unwrap(); m.bus.uart_input(b"A").unwrap();
+            assert_eq!(m.run(2000).stop, esp32s31::Stop::Waiting);
+            assert_eq!(m.bus.uart0.tx_out, b"S31 GPIO SAMPLE READY\nS31 GPIO SAMPLE CHANGED PASS\n");
+        } else if mode == 2 {
+            assert!(matches!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_)))); assert_eq!(m.bus.uart0.tx_out, b"S31 GPIO SAMPLE FAIL\n");
+        } else {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(5))); assert!(m.bus.uart0.tx_out.is_empty());
+            let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!((f.address, f.reason), (0x20583068, emu_core::Fault::Prohibited));
+        }
+        eprintln!("S31 GPIO sample mode={mode} steps={} stop={:?} uart={:?}", run.steps, run.stop, String::from_utf8_lossy(&m.bus.uart0.tx_out));
+    }
+}

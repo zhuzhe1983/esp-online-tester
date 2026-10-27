@@ -18,7 +18,7 @@ pub enum Drive { HighZ, Low, High, Unsupported }
 struct Electrical { drive: Drive, input: bool, pull_up: bool, pull_down: bool }
 pub struct Pads {
     out: u64, enable: u64, iomux: [u32; PINS], pin: [u32; PINS], out_sel: [u32; PINS],
-    held: [Option<Electrical>; PINS], host: [Option<bool>; PINS], hold_lp: bool, hold_hp: bool, hold_pin: u64,
+    held: [Option<Electrical>; PINS], host: [Option<bool>; PINS], unresolved_sample: [Option<bool>; PINS], hold_lp: bool, hold_hp: bool, hold_pin: u64,
     /// Explicit sampled boot strap input; zero is the development model initial condition.
     pub strap: u16,
     gpio_date: u32, iomux_date: u32,
@@ -29,7 +29,7 @@ impl Default for Pads {
         // IO_MUX initial zero is a deterministic unconfigured development state, not a
         // claim about package-specific reset pull-ups/functions. Firmware must configure it.
         Self { out: 0, enable: 0, iomux: [0; PINS], pin: [0; PINS], out_sel: [256; PINS],
-            held: [None; PINS], host: [None; PINS], hold_lp: false, hold_hp: false, hold_pin: 0, strap: 0,
+            held: [None; PINS], host: [None; PINS], unresolved_sample: [None; PINS], hold_lp: false, hold_hp: false, hold_pin: 0, strap: 0,
             gpio_date: 38830416, iomux_date: 0x2502070 }
     }
 }
@@ -39,11 +39,23 @@ impl Pads {
         if !Self::valid(pin) { return Err(Fault::Unmapped); }
         self.host[pin] = level; Ok(())
     }
+    /// Explicit already-resolved voltage input for an unmodeled peripheral pad.
+    /// This is not an external driver, a pin-function implementation or a hardware
+    /// reset value. It never replaces known GPIO drive/contention or input gating.
+    pub fn set_unresolved_sample(&mut self, pin: usize, level: Option<bool>) -> Result<(), Fault> {
+        if !Self::valid(pin) { return Err(Fault::Unmapped); }
+        self.unresolved_sample[pin] = level; Ok(())
+    }
+    fn gpio_function(pin: usize, function: u32) -> bool {
+        // Fixed S31 io_mux_reg.h FUNC_*_GPIO<n>_0 aliases, not peripheral
+        // function0 on SPI2,Flash,JTAG or UART pins. GPIO29/41 remain unbonded.
+        function == 1 || function == 0 && matches!(pin, 0..=8 | 20..=25 | 33..=40 | 42..=53 | 60..=61)
+    }
     fn live(&self, pin: usize) -> Electrical {
         let mux = self.iomux[pin]; let sel = self.out_sel[pin];
         let enable = (self.enable & (1 << pin) != 0) ^ (sel & (1 << 11) != 0);
         let high = (self.out & (1 << pin) != 0) ^ (sel & (1 << 9) != 0);
-        let drive = if (mux >> 12) & 7 != 1 { Drive::Unsupported }
+        let drive = if !Self::gpio_function(pin, (mux >> 12) & 7) { Drive::Unsupported }
             else if sel & 0x1ff != 256 { if sel & (1 << 10) != 0 && !enable { Drive::HighZ } else { Drive::Unsupported } }
             else if !enable || (high && self.pin[pin] & 4 != 0) { Drive::HighZ }
             else if high { Drive::High } else { Drive::Low };
@@ -58,7 +70,7 @@ impl Pads {
         let e = self.electrical(pin);
         if !e.input { return Ok(false); }
         let output = match e.drive { Drive::High => Some(true), Drive::Low => Some(false), Drive::HighZ => None,
-            Drive::Unsupported => return Err(Fault::Prohibited) };
+            Drive::Unsupported => self.unresolved_sample[pin].ok_or(Fault::Prohibited).map(Some)? };
         if let (Some(a), Some(b)) = (self.host[pin], output) { if a != b { return Err(Fault::Prohibited); } }
         if let Some(value) = output.or(self.host[pin]) { return Ok(value); }
         if e.pull_up && e.pull_down { return Err(Fault::Prohibited); }
@@ -153,6 +165,32 @@ mod tests {
     fn configure(p: &mut Pads, pin: usize, output: bool) {
         p.write(IO_MUX_BASE + pin as u32 * 4, 0x1200).unwrap();
         if output { p.write(GPIO_BASE + if pin < 32 { 0x38 } else { 0x44 }, 1 << (pin % 32)).unwrap(); }
+    }
+    #[test]
+    fn function_zero_gpio_aliases_route_output_but_spi_and_uart_remain_unknown() {
+        let mut p = Pads::default();
+        p.write(IO_MUX_BASE + 36 * 4, 0x200).unwrap(); // GPIO36 function0 alias
+        p.write(GPIO_BASE + 0x44, 1 << 4).unwrap(); p.write(GPIO_BASE + 0x14, 1 << 4).unwrap();
+        assert_eq!(p.drive(36), Ok(Drive::High)); assert_eq!(p.read(GPIO_BASE + 0x68), Ok(1 << 4));
+        p.write(IO_MUX_BASE + 32 * 4, 0x200).unwrap(); // Flash D function0 is not GPIO
+        assert_eq!(p.drive(32), Ok(Drive::Unsupported)); assert_eq!(p.read(GPIO_BASE + 0x68), Err(Fault::Prohibited));
+        p.set_unresolved_sample(32, Some(false)).unwrap(); assert_eq!(p.read(GPIO_BASE + 0x68), Ok(1 << 4));
+        p.write(IO_MUX_BASE + 59 * 4, 0x300).unwrap();
+        assert_eq!(p.drive(59), Ok(Drive::Unsupported)); assert_eq!(p.read(GPIO_BASE + 0x68), Err(Fault::Prohibited));
+    }
+    #[test]
+    fn explicit_sample_is_live_but_never_overrides_gpio_contention_or_disabled_input() {
+        let mut p = Pads::default(); p.write(IO_MUX_BASE + 32 * 4, 0x200).unwrap();
+        p.set_unresolved_sample(32, Some(true)).unwrap(); assert_eq!(p.read(GPIO_BASE + 0x68), Ok(1));
+        p.write(PMU_PAD_HOLD, 1 << 30).unwrap(); p.write(IO_MUX_BASE + 32 * 4, 0).unwrap();
+        p.set_unresolved_sample(32, Some(false)).unwrap(); assert_eq!(p.read(GPIO_BASE + 0x68), Ok(0));
+        p.set_input(32, Some(true)).unwrap(); assert_eq!(p.read(GPIO_BASE + 0x68), Err(Fault::Prohibited));
+        p.set_input(32, None).unwrap(); p.set_unresolved_sample(32, None).unwrap(); assert_eq!(p.read(GPIO_BASE + 0x68), Err(Fault::Prohibited));
+        p.write(PMU_PAD_HOLD, 1 << 31).unwrap(); assert_eq!(p.read(GPIO_BASE + 0x68), Ok(0));
+        configure(&mut p, 36, true); p.set_unresolved_sample(36, Some(true)).unwrap();
+        assert_eq!(p.read(GPIO_BASE + 0x68), Ok(0)); // known low output wins
+        p.set_input(36, Some(true)).unwrap(); assert_eq!(p.read(GPIO_BASE + 0x68), Err(Fault::Prohibited));
+        for pin in [29, 41, 62, usize::MAX] { assert_eq!(p.set_unresolved_sample(pin, Some(false)), Err(Fault::Unmapped)); }
     }
     #[test]
     fn individual_and_global_hold_preserve_each_others_snapshot() {

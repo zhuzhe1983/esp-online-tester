@@ -1,11 +1,17 @@
 //! Run a caller-supplied SRAM/ROM ELF and report the first unimplemented access.
 use std::io::Write;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut sfdp = None; let mut bbpll = None; let mut rtc_timer_from_cpu = false; let mut watch_pc = None;
+    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut sfdp = None; let mut bbpll = None; let mut rtc_timer_from_cpu = false; let mut watch_pc = None; let mut peripheral_pads = Vec::new();
     while let Some(arg) = args.peek() {
         match arg.as_str() {
             "--rom" => rom = true, "--usb-host" => usb_host = true,
             value if value.starts_with("--watch-pc=0x") => watch_pc = Some(u32::from_str_radix(&value[13..], 16)?),
+            value if value.starts_with("--peripheral-pad=") => {
+                let (pin, level) = value["--peripheral-pad=".len()..].split_once(':').ok_or("peripheral-pad requires pin:0 or pin:1")?;
+                let pin = pin.parse::<usize>()?; let level = match level { "0" => false, "1" => true, _ => return Err("peripheral-pad level must be 0 or 1".into()) };
+                if peripheral_pads.iter().any(|&(n, _)| n == pin) { return Err("duplicate peripheral-pad input".into()); }
+                peripheral_pads.push((pin, level));
+            }
             "--rtc-timer-from-cpu" => rtc_timer_from_cpu = true,
             "--rom-spi0-shadow" => spi0_shadow = true,
             value if value.starts_with("--bbpll-hz=") => bbpll = Some(value["--bbpll-hz=".len()..].parse::<u64>()?),
@@ -38,11 +44,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         args.next();
     }
-    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--rtc-timer-from-cpu] [--watch-pc=0xADDRESS] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
+    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--rtc-timer-from-cpu] [--watch-pc=0xADDRESS] [--peripheral-pad=pin:0|1] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
     let input = args.next().unwrap_or_default();
     let budget = args.next().map(|s| s.parse::<u64>()).transpose()?.unwrap_or(100_000).min(100_000_000);
     if args.next().is_some() { return Err("too many bringup arguments".into()); }
     let mut m = esp32s31::Bringup::new(); let bytes = std::fs::read(elf)?;
+    for (pin, level) in peripheral_pads {
+        m.bus.pads.set_unresolved_sample(pin, Some(level)).map_err(|_| "invalid peripheral-pad pin")?;
+        eprintln!("development unresolved peripheral pad sample pin={pin} level={}", u8::from(level));
+    }
     m.pc_watch = watch_pc.map(|address| esp32s31::PcWatch { address, ..Default::default() });
     m.set_rtc_timer_from_cpu(rtc_timer_from_cpu);
     if rtc_timer_from_cpu { eprintln!("development RTC_TIMER clock from interpreter cycles (one instruction/cycle, nominal RC_SLOW; watchdog timing still explicit)"); }

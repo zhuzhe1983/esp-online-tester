@@ -1089,3 +1089,48 @@ differences do not establish a speedup or isolated overhead. See the
 [same-source numeric samples](evidence/s31-bringup/nor-write-same-source-perf.json);
 the [fixed-main cross-branch guard](evidence/s31-bringup/nor-write-perf.json)
 remains separately qualified by the earlier baseline record.
+
+
+### GPIO function aliases and explicit unresolved input samples
+
+Fixed IDF6.1 IO_MUX definitions assign ordinary GPIO to function0 on selected
+pins, including GPIO36; this is now honored alongside function1. Function0
+Flash/SPI2/JTAG/UART pins are kept distinct. GPIO29/41 remain excluded by the
+S31 capability mask. No default physical pin profile has been inferred.
+
+The private bringup runner accepts repeated `--peripheral-pad=32:0` flags for
+caller-supplied, already-resolved voltage samples at otherwise unresolved pads.
+These are optional diagnostic inputs, not modeled Flash/UART waveforms or
+measured Plus wiring. Missing samples still fault. They apply only to
+`Drive::Unsupported`; known GPIO output/contention and disabled inputs keep their
+normal behavior. A contradictory external driver also faults. Held pad
+configuration retains a live sample, and removing it restores strict behavior.
+
+The unmodified Plus2.0.68 full image still faults at GPIO_IN1 by default. With
+explicit samples32:0/59:1, it reaches application Flash PC **0x400059ce** and
+stops at **0x20704000**, the first write to PMU_HP_ACTIVE_DIG_POWER, after
+**30,099,332 instructions**. Inverting both samples reaches the same PMU access.
+The relevant IDF PMU_instance code reads GPIO36 for the Flash-LDO voltage policy,
+not the unrelated32/59bits. GPIO36 input is still disabled in the retained
+model's deterministic initial state; its physical reset/strap voltage has not
+been established. This does not establish a real board voltage configuration.
+The Plus remains unavailable and has no framebuffer.
+
+The source-only fixture exercises real guest bank reads before and after a
+sample change, with UART PASS and missing/wrong/conflicting input negatives.
+See the [fixed source and functional receipt](evidence/s31-bringup/gpio-input.json)
+and [three official-image observations](evidence/s31-bringup/gpio-input-plus-2.0.68.json).
+Reproduce with the prior fixed-image probe arguments and repeated
+`--peripheral-pad 32:0 --peripheral-pad 59:1`; omit these flags for strict mode.
+
+Final GPIO-stage validation: 1,431 workspace Rust tests (ignored included),
+67 private S31 unit tests and all 26 source/ROM fixtures pass, along with both
+warnings-denied Clippy targets and every local CI command group. The fixture
+suite was repeated single-threaded only because the successful initial run's
+diagnostic lines interleaved; the initial log hash is retained. No goldens, UI
+or product support status changed. The five-pair same-production-source CPU
+guard measured S3 +0.193%, C3 +0.053%, C6 +0.732%, with identical UART and
+instruction/cycle checks. These small noisy differences are not an S31 speed
+claim. [Same-source samples](evidence/s31-bringup/gpio-input-same-source-perf.json)
+and [qualified cross-branch main guard](evidence/s31-bringup/gpio-input-perf.json)
+remain separate.

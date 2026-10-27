@@ -88,6 +88,7 @@ S31_RESET_ELF="$PWD/output/s31-uart-probe/reset-probe.elf" \
 S31_MWDT_ELF="$PWD/output/s31-uart-probe/mwdt-probe.elf" \
 S31_RTC_TIMER_ELF="$PWD/output/s31-uart-probe/rtc-timer-probe.elf" \
 S31_NOR_WRITE_ELF="$PWD/output/s31-uart-probe/nor-write-probe.elf" \
+S31_GPIO_INPUT_ELF="$PWD/output/s31-uart-probe/gpio-input-probe.elf" \
 S31_BOOT_IMAGE="$PWD/output/s31-uart-probe/spi0-observation.bin" \
 S31_ROM_ELF="$PWD/output/s31-sources/roms/esp32s31_rev0_rom.elf" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
@@ -222,3 +223,15 @@ another NOR manufacturer traps before a mutation. This fixture also checks the
 optional PC retirement observer: it records the programmed entry once only for
 the successful run. No fixture binary is published or substituted for a product
 firmware image.
+
+
+`gpio-input-probe.S` uses GPIO36's documented function0 GPIO alias and reads
+GPIO32's unresolved Flash-D pad in the same bank. The host supplies an explicit
+already-resolved voltage sample, then changes it and sends UART `A`; the actual
+guest branches on both bank reads and reports PASS. Missing samples and
+contradictory external drivers fault; the wrong initial level takes the guest
+FAIL branch. `set_unresolved_sample` does not implement a peripheral waveform,
+change `Drive::Unsupported`, override known GPIO output, or disable input gating.
+Set `S31_GPIO_INPUT_ELF` to the generated ELF. The bringup example's repeated
+`--peripheral-pad=32:0` option is a development input, off by default; it does not
+identify the real INK4 Plus pin voltage or manufacture a product profile.
