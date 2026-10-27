@@ -387,7 +387,7 @@ function renderControls() {
   for (const control of controls) {
     const code = Object.keys(scene.keyMapping).find(key => scene.keyMapping[key] === control.id);
     if (bindings) {
-      const row = element('div', 'key-binding'); row.append(element('span', '', control.type==='matrix-key'?control.name:`${control.name} · GPIO ${control.pin}`));
+      const row = element('div', 'key-binding'); row.append(element('span', '', control.type==='matrix-key'||!Number.isInteger(control.pin)?control.name:`${control.name} · GPIO ${control.pin}`));
       const binding = element('button', '', code ? code.replace(/^Key/, '') : '未映射'); binding.type = 'button'; binding.setAttribute('aria-label', `重新映射 ${control.name} 的键盘按键`);
       binding.addEventListener('click', () => {
         recordingControl = control.id; document.querySelectorAll('.key-binding button').forEach(node => node.classList.remove('recording'));

@@ -1,0 +1,640 @@
+{
+  "sourceId": "manufacturer-cad",
+  "title": "M5Stack Unit C6L · U202",
+  "summary": "内置ESP32-C6、SX1262与OLED的可编程LoRa设备，可独立运行，也可作为带自身固件的扩展节点。",
+  "parts": [
+    {
+      "sourceComponent": 0,
+      "name": "shell-front",
+      "role": "shell",
+      "color": "#424442"
+    },
+    {
+      "sourceComponent": 3,
+      "name": "shell-back",
+      "role": "shell",
+      "color": "#424442"
+    },
+    {
+      "sourceComponent": 5,
+      "name": "side-reset",
+      "role": "button",
+      "color": "#424442"
+    }
+  ],
+  "matrixRows": [
+    [
+      1,
+      0,
+      0,
+      -12
+    ],
+    [
+      0,
+      1,
+      0,
+      -28
+    ],
+    [
+      0,
+      0,
+      1,
+      4
+    ],
+    [
+      0,
+      0,
+      0,
+      1
+    ]
+  ],
+  "assemblyNotes": "STL components0,3,5 already assembled; rigid translation only, no scaling. Omit print-layout copies1,2,4. +Z front,+Y RP-SMA end.",
+  "omittedComponents": [
+    {
+      "index": 1,
+      "reason": "Separate print-layout copy; retain assembled counterpart"
+    },
+    {
+      "index": 2,
+      "reason": "Separate print-layout copy; retain assembled counterpart"
+    },
+    {
+      "index": 4,
+      "reason": "Separate print-layout copy; retain assembled counterpart"
+    }
+  ],
+  "dimensions": {
+    "width": 24,
+    "height": 62,
+    "depth": 8,
+    "unit": "mm",
+    "sourceId": "dimension-drawing"
+  },
+  "targets": [
+    {
+      "name": "shell-width",
+      "axis": 0,
+      "valueMm": 24,
+      "toleranceMm": 0.05,
+      "sourceId": "dimension-drawing"
+    },
+    {
+      "name": "shell-height-excluding-sma",
+      "axis": 1,
+      "valueMm": 56,
+      "toleranceMm": 0.05,
+      "sourceId": "dimension-drawing"
+    },
+    {
+      "name": "shell-depth",
+      "axis": 2,
+      "valueMm": 8,
+      "toleranceMm": 0.05,
+      "sourceId": "dimension-drawing"
+    }
+  ],
+  "derivedParts": [
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "geometry": {
+        "sizeMm": [
+          10,
+          30,
+          0.8
+        ],
+        "centerMm": [
+          0,
+          4,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing",
+        "photo-6",
+        "photo-7"
+      ],
+      "notes": "Conservative cavity-fit estimate avoiding mounting holes; not actual PCB layout."
+    },
+    {
+      "id": "grove",
+      "kind": "connector-visual",
+      "geometry": {
+        "centerMm": [
+          0,
+          -28,
+          1.2
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing",
+        "photo-6",
+        "photo-7"
+      ],
+      "connectorType": "HY2.0-4P",
+      "housingColor": "#e9e8e0",
+      "allowConnections": true,
+      "pinOrder": [
+        "gnd",
+        "vcc",
+        "signal1",
+        "signal2"
+      ],
+      "notes": "Front photo bottom inlet: black/red/yellow/white; rear label mirrored G4/G5/5V/GND. Mouth at CAD y=-28, z from5.2mm drawing; hidden depth approximate. Electrical host protocol depends on C6L firmware."
+    },
+    {
+      "id": "usb-c",
+      "kind": "connector-visual",
+      "geometry": {
+        "centerMm": [
+          -12,
+          -13,
+          0.1
+        ],
+        "rotation": [
+          0,
+          -1.5707963267948966,
+          1.5707963267948966
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing",
+        "photo-6",
+        "photo-7"
+      ],
+      "connectorType": "USB-C",
+      "notes": "Side view plus CAD aperture; hidden dimensions approximate."
+    },
+    {
+      "id": "sma--7",
+      "kind": "lathe",
+      "geometry": {
+        "centerMm": [
+          -7,
+          28,
+          0
+        ],
+        "profileMm": [
+          [
+            2.65,
+            0
+          ],
+          [
+            2.65,
+            1
+          ],
+          [
+            2.9,
+            1.42
+          ],
+          [
+            2.55,
+            1.8399999999999999
+          ],
+          [
+            2.9,
+            2.26
+          ],
+          [
+            2.55,
+            2.6799999999999997
+          ],
+          [
+            2.9,
+            3.1
+          ],
+          [
+            2.55,
+            3.52
+          ],
+          [
+            2.9,
+            3.94
+          ],
+          [
+            2.55,
+            4.359999999999999
+          ],
+          [
+            2.9,
+            4.779999999999999
+          ],
+          [
+            2.55,
+            5.2
+          ],
+          [
+            2.65,
+            5.6
+          ],
+          [
+            2.4,
+            6
+          ]
+        ]
+      },
+      "color": "#bc9a3c",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing",
+        "photo-6",
+        "photo-7"
+      ],
+      "material": {
+        "metalness": 0.8,
+        "roughness": 0.35
+      },
+      "notes": "6mm projection from independent dimensional drawing; simplified RP-SMA thread profile; thread pitch is a photo estimate, not mechanical mating data."
+    },
+    {
+      "id": "sma-rim--7",
+      "kind": "torus",
+      "geometry": {
+        "centerMm": [
+          -7,
+          33.7,
+          0
+        ],
+        "radiusMm": 2.4,
+        "tubeMm": 0.3,
+        "rotation": [
+          -1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "color": "#c7ac61",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing",
+        "photo-6",
+        "photo-7"
+      ],
+      "material": {
+        "metalness": 0.8,
+        "roughness": 0.35
+      },
+      "notes": "Visible end ring approximation; no RF connector mating claim."
+    },
+    {
+      "id": "sma-7",
+      "kind": "lathe",
+      "geometry": {
+        "centerMm": [
+          7,
+          28,
+          0
+        ],
+        "profileMm": [
+          [
+            2.65,
+            0
+          ],
+          [
+            2.65,
+            1
+          ],
+          [
+            2.9,
+            1.42
+          ],
+          [
+            2.55,
+            1.8399999999999999
+          ],
+          [
+            2.9,
+            2.26
+          ],
+          [
+            2.55,
+            2.6799999999999997
+          ],
+          [
+            2.9,
+            3.1
+          ],
+          [
+            2.55,
+            3.52
+          ],
+          [
+            2.9,
+            3.94
+          ],
+          [
+            2.55,
+            4.359999999999999
+          ],
+          [
+            2.9,
+            4.779999999999999
+          ],
+          [
+            2.55,
+            5.2
+          ],
+          [
+            2.65,
+            5.6
+          ],
+          [
+            2.4,
+            6
+          ]
+        ]
+      },
+      "color": "#bc9a3c",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing",
+        "photo-6",
+        "photo-7"
+      ],
+      "material": {
+        "metalness": 0.8,
+        "roughness": 0.35
+      },
+      "notes": "6mm projection from independent dimensional drawing; simplified RP-SMA thread profile; thread pitch is a photo estimate, not mechanical mating data."
+    },
+    {
+      "id": "sma-rim-7",
+      "kind": "torus",
+      "geometry": {
+        "centerMm": [
+          7,
+          33.7,
+          0
+        ],
+        "radiusMm": 2.4,
+        "tubeMm": 0.3,
+        "rotation": [
+          -1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "color": "#c7ac61",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing",
+        "photo-6",
+        "photo-7"
+      ],
+      "material": {
+        "metalness": 0.8,
+        "roughness": 0.35
+      },
+      "notes": "Visible end ring approximation; no RF connector mating claim."
+    },
+    {
+      "id": "front-label",
+      "kind": "label",
+      "geometry": {
+        "sizeMm": [
+          20,
+          12
+        ],
+        "centerMm": [
+          0,
+          20,
+          4.025
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing",
+        "photo-6",
+        "photo-7"
+      ],
+      "texture": "front-label.webp",
+      "notes": "Paper-only independent plane; position estimated from front/back photo and24x56mm body."
+    },
+    {
+      "id": "back-label",
+      "kind": "label",
+      "geometry": {
+        "sizeMm": [
+          18,
+          30
+        ],
+        "centerMm": [
+          0,
+          4,
+          -4.025
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "color": "#44494b",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing",
+        "photo-6",
+        "photo-7"
+      ],
+      "texture": "back-label.webp",
+      "notes": "Paper-only independent plane; position estimated from front/back photo and24x56mm body."
+    },
+    {
+      "id": "oled-glass",
+      "kind": "box",
+      "geometry": {
+        "sizeMm": [
+          14.2,
+          10.7,
+          0.15
+        ],
+        "centerMm": [
+          0,
+          6,
+          3.65
+        ]
+      },
+      "color": "#101414",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing",
+        "photo-6",
+        "photo-7"
+      ],
+      "notes": "Blank display inside CAD aperture, photo-derived size; no simulated pixels."
+    }
+  ],
+  "surfaces": [],
+  "textureSources": [
+    {
+      "sourceId": "photo-6",
+      "file": "front-label.webp",
+      "cropXYXY": [
+        461,
+        281,
+        735,
+        446
+      ],
+      "alphaMask": {
+        "includeRoundedRects": [
+          {
+            "xyxy": [
+              463,
+              283,
+              733,
+              444
+            ],
+            "radiusPx": 5
+          }
+        ]
+      },
+      "notes": "Only white paper. Shell, screen, holes and connector excluded."
+    },
+    {
+      "sourceId": "photo-7",
+      "file": "back-label.webp",
+      "cropXYXY": [
+        475,
+        382,
+        724,
+        797
+      ],
+      "alphaMask": {
+        "includeRoundedRects": [
+          {
+            "xyxy": [
+              477,
+              384,
+              722,
+              795
+            ],
+            "radiusPx": 5
+          }
+        ]
+      },
+      "notes": "Only white paper. Shell, screen, holes and connector excluded."
+    }
+  ],
+  "photos": [
+    {
+      "sourceId": "photo-6",
+      "view": "front"
+    },
+    {
+      "sourceId": "photo-7",
+      "view": "back"
+    },
+    {
+      "sourceId": "photo-8",
+      "view": "oblique"
+    },
+    {
+      "sourceId": "photo-11",
+      "view": "side",
+      "silhouetteComparable": false
+    }
+  ],
+  "presentation": {
+    "bodySizeMm": [
+      24,
+      62,
+      8
+    ],
+    "screen": {
+      "sizeMm": [
+        14,
+        10.5
+      ],
+      "positionMm": [
+        0,
+        6,
+        3.85
+      ]
+    }
+  },
+  "reviewViews": {
+    "front": {
+      "position": [
+        0,
+        0,
+        250
+      ],
+      "span": 87,
+      "target": [
+        0,
+        3,
+        0
+      ]
+    },
+    "back": {
+      "position": [
+        0,
+        0,
+        -250
+      ],
+      "span": 87,
+      "target": [
+        0,
+        3,
+        0
+      ]
+    },
+    "oblique": {
+      "position": [
+        80,
+        -100,
+        140
+      ],
+      "span": 85,
+      "target": [
+        0,
+        0,
+        0
+      ]
+    },
+    "side": {
+      "position": [
+        -250,
+        0,
+        0
+      ],
+      "span": 87,
+      "target": [
+        0,
+        3,
+        0
+      ]
+    }
+  },
+  "limitations": [
+    "本型号板级模拟器及作为独立附件的第二颗CPU尚未实现；当前为外观与接线资料。",
+    "厂家STL的装配件原尺寸保留，排版副本已剔除。SMA、Grove、USB和贴纸位置依据尺寸图/照片估算，非连接器厂家CAD。",
+    "未公开PCB布局，内部为UNKNOWN空白占位；SMA螺纹、螺钉及鞭状天线未完整建模。",
+    "贴纸仅取白色纸面，OLED保持空白，不能将产品照片当成固件画面。"
+  ],
+  "catalog": {
+    "display": {
+      "width": 64,
+      "height": 48,
+      "type": "OLED",
+      "controller": "SSD1306"
+    }
+  }
+}

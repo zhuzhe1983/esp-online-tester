@@ -39,10 +39,12 @@ export function validateWatchlist(document) {
     }
     if(entry.releaseChannel!==undefined&&!['stable','rc','prerelease'].includes(entry.releaseChannel))throw new Error('Invalid release channel.');
     if(entry.releaseHistoryLimit!==undefined&&(!Number.isInteger(entry.releaseHistoryLimit)||entry.releaseHistoryLimit<1||entry.releaseHistoryLimit>30))throw new Error('Invalid release history limit.');
+    if(entry.assetMetadata!==undefined&&(entry.assetMetadata!=='meshtastic-targets'||entry.upstreamRepo!=='meshtastic/firmware'))throw new Error('Invalid supplementary asset metadata source.');
     if(entry.catalogTargets!==undefined){
       if(!Array.isArray(entry.catalogTargets)||entry.catalogTargets.length>40)throw new Error('Invalid catalog targets.');
       const targets=new Set();
       for(const target of entry.catalogTargets){
+        if(entry.assetMetadata==='meshtastic-targets'&&(!/^[a-z0-9-]{1,80}$/.test(target.boardTarget||'')||!['esp32c6','esp32s3'].includes(target.targetChip)||target.format!=='merged'||target.sourceType!=='upstream-release'))throw new Error('Invalid Meshtastic board identity.');
         if(!/^[a-z0-9][a-z0-9:-]{0,79}$/.test(target.firmwareId)||targets.has(target.firmwareId))throw new Error('Invalid or duplicate firmware target.');
         targets.add(target.firmwareId);
         if(!Array.isArray(target.productIds)||!target.productIds.length||new Set(target.productIds).size!==target.productIds.length||target.productIds.some(id=>!entry.compatibility.productIds.includes(id)))throw new Error('Target products must be explicitly declared by this watch entry.');

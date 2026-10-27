@@ -311,41 +311,165 @@
       "id": "meshtastic",
       "name": "Meshtastic",
       "category": "mesh",
-      "description": "LoRa Mesh 固件合集；压缩包含多个板型，不能直接刷入当前产品。",
+      "description": "按板型分别关注Unit C6L和Cardputer Mesh Kit的Meshtastic稳定版及Alpha发布；远程完整factory镜像。",
       "upstreamRepo": "meshtastic/firmware",
       "metadataUrl": "https://api.github.com/repos/meshtastic/firmware/releases/latest",
       "releaseUrl": "https://github.com/meshtastic/firmware/releases/tag/v2.7.26.54e0d8d",
       "version": "v2.7.26.54e0d8d",
       "publishedAt": "2026-06-24T11:19:27Z",
-      "checkedAt": "2026-10-26T11:03:27.284Z",
+      "checkedAt": "2026-10-27T08:51:22Z",
       "assets": [
         {
-          "name": "firmware-esp32s3-2.7.26.54e0d8d.zip",
-          "url": "https://github.com/meshtastic/firmware/releases/download/v2.7.26.54e0d8d/firmware-esp32s3-2.7.26.54e0d8d.zip",
-          "bytes": 170272165,
-          "sha256": "339650ced8b8c859751f04be69c6af845fea96baca1327518f199afd2595a9d4",
-          "lastProbe": {
-            "checkedAt": "2026-10-26T11:03:27.284Z",
-            "status": 200,
-            "state": "reachable",
-            "bodyBytesRead": 0
-          }
+          "name": "firmware-m5stack-unitc6l-2.7.26.54e0d8d.factory.bin",
+          "url": "https://release.meshtastic.org/2.7.26.54e0d8d/firmware-m5stack-unitc6l-2.7.26.54e0d8d.factory.bin",
+          "bytes": 2013296,
+          "sha256": "b4e3d8590c21d60a6fa1c2355a054df5193b46798fd3e831effeb05f7de04933",
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        },
+        {
+          "name": "firmware-m5stack-unitc6l-2.8.1.8e6a88d.factory.bin",
+          "url": "https://release.meshtastic.org/2.8.1.8e6a88d/firmware-m5stack-unitc6l-2.8.1.8e6a88d.factory.bin",
+          "bytes": 2605200,
+          "sha256": "089ce6e7eebd13d0f559595d4ace5abd4c85025b8d1c073d2fdfcd47b278377c",
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        },
+        {
+          "name": "firmware-m5stack-cardputer-adv-2.7.26.54e0d8d.factory.bin",
+          "url": "https://release.meshtastic.org/2.7.26.54e0d8d/firmware-m5stack-cardputer-adv-2.7.26.54e0d8d.factory.bin",
+          "bytes": 2291856,
+          "sha256": "fcac1774fa88b5bf44662bcefa74e33879a68c3e8b057b9bd441bec98f590959",
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        },
+        {
+          "name": "firmware-m5stack-cardputer-adv-2.8.1.8e6a88d.factory.bin",
+          "url": "https://release.meshtastic.org/2.8.1.8e6a88d/firmware-m5stack-cardputer-adv-2.8.1.8e6a88d.factory.bin",
+          "bytes": 2562672,
+          "sha256": "fe9c9736e7252890357707a5d77298722af025e6806c96ae249324b0a0a8bd7f",
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
         }
       ],
       "compatibility": {
         "status": "reference-only",
-        "productIds": [],
-        "note": "仅关注上游版本。未验证模拟运行、物理硬件与完整刷写布局；禁止由此条目一键刷机。"
+        "productIds": [
+          "m5stack-u202",
+          "m5stack-k152"
+        ],
+        "note": "官方上游支持的设备目标；两款产品的板级模拟尚未适配，未执行或实机刷写验证。"
       },
       "storage": "remote-links-only",
-      "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
-      "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
       "browserInstallUrl": "https://flasher.meshtastic.org/",
-      "browserNote": "官方固件源目前只允许其官方刷机站跨域读取，未允许本站。请使用官方刷机页；原始收录资源还是多设备 ZIP，不是可直接刷入的 BIN。",
       "releaseChannel": "stable",
       "releaseHistoryLimit": 20,
-      "catalogTargets": [],
-      "catalogSyncNote": "已检查项目发布元信息；尚无已核对的逐产品启动布局/资产映射，不能仅按 ESP 芯片族把通用固件写给全部设备。"
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-u202-meshtastic-stable",
+          "productIds": [
+            "m5stack-u202"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^firmware-m5stack-unitc6l-[0-9A-Za-z.-]+\\.factory\\.bin$",
+          "boardTarget": "m5stack-unitc6l",
+          "targetChip": "esp32c6",
+          "nameTemplate": "Meshtastic Unit C6L · 稳定版 · {version}",
+          "basis": {
+            "url": "https://release.meshtastic.org/2.7.26.54e0d8d/firmware-m5stack-unitc6l-2.7.26.54e0d8d.mt.json",
+            "note": "Exact platformioTarget, mcu and version from Meshtastic official target manifest; factory.bin only, not app-only or a chip-family ZIP."
+          }
+        },
+        {
+          "firmwareId": "m5stack-u202-meshtastic-alpha",
+          "productIds": [
+            "m5stack-u202"
+          ],
+          "channel": "prerelease",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^firmware-m5stack-unitc6l-[0-9A-Za-z.-]+\\.factory\\.bin$",
+          "boardTarget": "m5stack-unitc6l",
+          "targetChip": "esp32c6",
+          "nameTemplate": "Meshtastic Unit C6L · Alpha · {version}",
+          "basis": {
+            "url": "https://release.meshtastic.org/2.8.1.8e6a88d/firmware-m5stack-unitc6l-2.8.1.8e6a88d.mt.json",
+            "note": "Exact platformioTarget, mcu and version from Meshtastic official target manifest; factory.bin only, not app-only or a chip-family ZIP."
+          }
+        },
+        {
+          "firmwareId": "m5stack-k152-meshtastic-stable",
+          "productIds": [
+            "m5stack-k152"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^firmware-m5stack-cardputer-adv-[0-9A-Za-z.-]+\\.factory\\.bin$",
+          "boardTarget": "m5stack-cardputer-adv",
+          "targetChip": "esp32s3",
+          "nameTemplate": "Meshtastic Cardputer Mesh Kit · 稳定版 · {version}",
+          "basis": {
+            "url": "https://release.meshtastic.org/2.7.26.54e0d8d/firmware-m5stack-cardputer-adv-2.7.26.54e0d8d.mt.json",
+            "note": "Exact platformioTarget, mcu and version from Meshtastic official target manifest; factory.bin only, not app-only or a chip-family ZIP."
+          }
+        },
+        {
+          "firmwareId": "m5stack-k152-meshtastic-alpha",
+          "productIds": [
+            "m5stack-k152"
+          ],
+          "channel": "prerelease",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^firmware-m5stack-cardputer-adv-[0-9A-Za-z.-]+\\.factory\\.bin$",
+          "boardTarget": "m5stack-cardputer-adv",
+          "targetChip": "esp32s3",
+          "nameTemplate": "Meshtastic Cardputer Mesh Kit · Alpha · {version}",
+          "basis": {
+            "url": "https://release.meshtastic.org/2.8.1.8e6a88d/firmware-m5stack-cardputer-adv-2.8.1.8e6a88d.mt.json",
+            "note": "Exact platformioTarget, mcu and version from Meshtastic official target manifest; factory.bin only, not app-only or a chip-family ZIP."
+          }
+        }
+      ],
+      "catalogSyncNote": "GitHub发布列表 + 官方逐板型mt.json；芯片、板型、版本及factory文件名必须一致。当前mt.json只有MD5，新版本缺少SHA-256时报告候选并保留已固定镜像。",
+      "assetMetadata": "meshtastic-targets",
+      "deviceVersions": [
+        {
+          "firmwareId": "m5stack-u202-meshtastic-stable",
+          "productIds": [
+            "m5stack-u202"
+          ],
+          "version": "v2.7.26.54e0d8d"
+        },
+        {
+          "firmwareId": "m5stack-u202-meshtastic-alpha",
+          "productIds": [
+            "m5stack-u202"
+          ],
+          "version": "v2.8.1.8e6a88d"
+        },
+        {
+          "firmwareId": "m5stack-k152-meshtastic-stable",
+          "productIds": [
+            "m5stack-k152"
+          ],
+          "version": "v2.7.26.54e0d8d"
+        },
+        {
+          "firmwareId": "m5stack-k152-meshtastic-alpha",
+          "productIds": [
+            "m5stack-k152"
+          ],
+          "version": "v2.8.1.8e6a88d"
+        }
+      ]
     },
     {
       "id": "micropython",

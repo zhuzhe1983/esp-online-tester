@@ -52,6 +52,9 @@
             "items": {
               "$ref": "#/$defs/target"
             }
+          },
+          "assetMetadata": {
+            "const": "meshtastic-targets"
           }
         }
       }
@@ -146,6 +149,16 @@
               "minLength": 1
             }
           }
+        },
+        "boardTarget": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,80}$"
+        },
+        "targetChip": {
+          "enum": [
+            "esp32c6",
+            "esp32s3"
+          ]
         }
       },
       "allOf": [

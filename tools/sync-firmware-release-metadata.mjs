@@ -4,6 +4,7 @@ import {execFileSync,spawnSync} from 'node:child_process';
 import {pathToFileURL,fileURLToPath} from 'node:url';
 import {releaseRequest,publicReleases,releaseMatchesChannel} from './firmware-release-source.mjs';
 import {validateWatchlist} from '../web/platform/watchlist.js';
+import {enrichMeshtasticReleases} from './meshtastic-release-metadata.mjs';
 const DAY=24*3600*1000;
 export function githubToken(args=process.argv) {
   let token=process.env.GITHUB_TOKEN||process.env.GH_TOKEN;
@@ -31,7 +32,8 @@ export async function syncReleaseMetadata(list,{previous={entries:[]},token,fetc
     const saved=previous.entries?.find(item=>item.id===entry.id&&item.upstreamRepo===entry.upstreamRepo);let result;
     try{
       const request=releaseRequest(entry,token);if(!cache.has(request.url))cache.set(request.url,metadata(request));
-      const releases=compactReleaseHistory(entry,publicReleases(entry,await cache.get(request.url)));const release=releases.find(value=>releaseMatchesChannel(value,entry.releaseChannel));
+      const upstream=await enrichMeshtasticReleases(entry,publicReleases(entry,await cache.get(request.url)),{fetchImpl});
+      const releases=compactReleaseHistory(entry,upstream);const release=releases.find(value=>releaseMatchesChannel(value,entry.releaseChannel));
       if(!release)throw Error('No published release for configured channel');
       result={id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:now,sourceUrl:request.url,release,releases,error:null};
       if(saved&&!saved.error&&same(saved.releases||[saved.release],releases)&&same(saved.release,release)&&Date.parse(now)-Date.parse(saved.checkedAt)<DAY)result={...result,checkedAt:saved.checkedAt};

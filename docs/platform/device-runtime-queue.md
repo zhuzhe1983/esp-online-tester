@@ -1,6 +1,6 @@
 # 产品板级适配队列
 
-基准日期：2026-10-27。目录共 83 项，开始本轮时 6 项使用 4 个板级模型；待处理 77 项。AtomS3、AtomS3R 与 Dial K130 已完成本轮部分适配交付：现有 9 项部分适配、74 项尚无产品板级模型。`partial` 不代表整机或任意固件已通过。
+基准日期：2026-10-27。目录共 83 项，开始本轮时 6 项使用 4 个板级模型；待处理 77 项。AtomS3、AtomS3R 与 Dial K130 已完成本轮部分适配交付：现有 9 项部分适配；加入 Unit C6L U202 后目录为84项，75项尚无产品板级模型。`partial` 不代表整机或任意固件已通过。
 
 采用逐台交付：查官方原理图/驱动 → 实现真实引脚与器件 → 源码构建定向固件 → WASM 输出/输入检查 → 浏览器模型检查 → 记录缺项。每一步失败都保留原因；不能把 `none` 通用芯片模型改名后算作适配。
 
@@ -109,3 +109,7 @@
 | 75 | [M5Stack Xiaozhi Card Kit · K146](https://docs.m5stack.com/en/core/Xiaozhi_Card_Kit) · `m5stack-k146` | esp32s3 / GDEY027T91 | 待实现 | GDEY027T91 刷新通道、存储、触摸/按键、电源 |
 | 76 | [M5Stack NanoH2](https://docs.m5stack.com/en/core/NanoH2) · `m5stack-c149` | esp32h2 / 无屏幕 | 待实现 | 先实现对应芯片平台，再核对产品外设 |
 | 77 | [M5Stack Stamp-C5](https://docs.m5stack.com/en/core/Stamp-C5) · `m5stack-s016` | esp32c5 / 无屏幕 | 待实现 | 先实现对应芯片平台，再核对产品外设 |
+
+## 新增双角色设备
+
+- Unit C6L U202：控制器与配件共用资料/模型，板级运行尚未实现。后续核对ESP32-C6、SSD1306 SPI、PI4IOE5V6408、SX1262、WS2812C与蜂鸣器；与Stamp-C6LoRa的封装/引脚差异分别记录。Meshtastic稳定版及Alpha已按准确板型加入watchlist，不能以固件已收录视作模拟器就绪。见[固件记录](meshtastic-watchlist.md)。
