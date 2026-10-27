@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-27T15:45:13.073190+00:00",
+  "sourceCommit": "e657f151",
+  "scope": "Integrated INK4 UI, remote app boot-mode history, StopWatch official alternate firmware metadata, DinMeter, Dial v1.1 and S31 bring-up through USB stage",
+  "toolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "checks": [
+    {
+      "command": "cargo +stable clippy --workspace --all-targets -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "cargo +stable clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=roms cargo +stable test --release --workspace -- --include-ignored --skip external_",
+      "result": "passed",
+      "passed": 1430,
+      "failed": 0,
+      "goldensChanged": false
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "passed"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=roms node --test tools/platform-*-test.mjs",
+      "result": "passed",
+      "passed": 100,
+      "failed": 0
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=roms node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "result": "passed",
+      "scenarios": 11
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "passed",
+      "products": 86,
+      "accessories": 7,
+      "firmwares": 148,
+      "watchlist": 103
+    }
+  ],
+  "productionWasm": {
+    "bytes": 4086531,
+    "sha256": "dd680ae9a32bccbc16ca715861dd53bd535a6bc7810b0ee4f875227882ec7edc"
+  },
+  "limits": [
+    "S31 is still an isolated bring-up crate, not an executable INK4 Plus board.",
+    "Existing board availability means partial support, not every official firmware or peripheral is functional.",
+    "Application-direct mode/history checks do not certify successful application initialization.",
+    "No physical hardware flashing or new combined performance claim."
+  ],
+  "privacy": "Only commands, public source commit, aggregate checks and artifact hash retained; raw machine/session logs omitted."
+}
