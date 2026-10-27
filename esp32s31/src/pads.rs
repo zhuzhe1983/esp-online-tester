@@ -1,12 +1,14 @@
 //! S31 software GPIO pads and PMU global hold; peripheral routing/IRQs are not modeled.
 //! ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643: soc/esp32s31
-//! register/soc/{gpio,io_mux,pmu}_reg.h, include/soc/soc_caps.h, esp_hal_gpio gpio_ll.h;
+//! register/soc/{gpio,io_mux,pmu,lp_system}_reg.h, include/soc/soc_caps.h, esp_hal_gpio gpio_ll.h;
 //! esp_driver_gpio/include/driver/gpio.h documents held configuration and live input.
 use emu_core::Fault;
 
 pub const GPIO_BASE: u32 = 0x2058_3000;
 pub const IO_MUX_BASE: u32 = 0x2058_2000;
 pub const PMU_PAD_HOLD: u32 = 0x2070_410c;
+pub const HP_PIN_HOLD_HIGH: u32 = 0x2070_0270;
+pub const HP_PIN_HOLD_LOW: u32 = 0x2070_0274;
 const PINS: usize = 62;
 const VALID: u64 = ((1u64 << PINS) - 1) & !(1 << 29) & !(1 << 41);
 
@@ -16,7 +18,7 @@ pub enum Drive { HighZ, Low, High, Unsupported }
 struct Electrical { drive: Drive, input: bool, pull_up: bool, pull_down: bool }
 pub struct Pads {
     out: u64, enable: u64, iomux: [u32; PINS], pin: [u32; PINS], out_sel: [u32; PINS],
-    held: [Option<Electrical>; PINS], host: [Option<bool>; PINS], hold_lp: bool, hold_hp: bool,
+    held: [Option<Electrical>; PINS], host: [Option<bool>; PINS], hold_lp: bool, hold_hp: bool, hold_pin: u64,
     /// Explicit sampled boot strap input; zero is the development model initial condition.
     pub strap: u16,
     gpio_date: u32, iomux_date: u32,
@@ -27,7 +29,7 @@ impl Default for Pads {
         // IO_MUX initial zero is a deterministic unconfigured development state, not a
         // claim about package-specific reset pull-ups/functions. Firmware must configure it.
         Self { out: 0, enable: 0, iomux: [0; PINS], pin: [0; PINS], out_sel: [256; PINS],
-            held: [None; PINS], host: [None; PINS], hold_lp: false, hold_hp: false, strap: 0,
+            held: [None; PINS], host: [None; PINS], hold_lp: false, hold_hp: false, hold_pin: 0, strap: 0,
             gpio_date: 38830416, iomux_date: 0x2502070 }
     }
 }
@@ -68,13 +70,17 @@ impl Pads {
         for bit in 0..32 { let pin = bank * 32 + bit; if Self::valid(pin) && self.sample(pin)? { word |= 1 << bit; } }
         Ok(word)
     }
-    fn set_global_hold(&mut self, lp: bool, held: bool) {
-        let old = if lp { self.hold_lp } else { self.hold_hp };
-        if old == held { return; }
+    fn refresh_hold(&mut self) {
+        let mask = self.hold_pin | if self.hold_lp { 255 } else { 0 } | if self.hold_hp { VALID & !255 } else { 0 };
         for pin in 0..PINS {
-            if Self::valid(pin) && (pin < 8) == lp { self.held[pin] = if held { Some(self.live(pin)) } else { None }; }
+            if !Self::valid(pin) { continue; }
+            if mask & (1 << pin) == 0 { self.held[pin] = None; }
+            else if self.held[pin].is_none() { self.held[pin] = Some(self.live(pin)); }
         }
+    }
+    fn set_global_hold(&mut self, lp: bool, held: bool) {
         if lp { self.hold_lp = held; } else { self.hold_hp = held; }
+        self.refresh_hold();
     }
     fn hold_write(&mut self, value: u32) -> Result<(), Fault> {
         // Simultaneous contradictory strobes have no documented priority; reject instead of guess.
@@ -87,13 +93,16 @@ impl Pads {
     }
     pub fn is_mmio(address: u32) -> bool {
         (GPIO_BASE..GPIO_BASE + 0xe00).contains(&address)
-            || (IO_MUX_BASE..IO_MUX_BASE + 0x200).contains(&address) || address & !3 == PMU_PAD_HOLD
+            || (IO_MUX_BASE..IO_MUX_BASE + 0x200).contains(&address) || matches!(address & !3, PMU_PAD_HOLD | HP_PIN_HOLD_HIGH | HP_PIN_HOLD_LOW)
     }
     fn pin_at(address: u32, base: u32) -> Option<usize> {
         let n = address.checked_sub(base)? as usize / 4; if n < PINS { Some(n) } else { None }
     }
     pub fn read(&self, address: u32) -> Result<u32, Fault> {
         if address & 3 != 0 { return Err(Fault::Misaligned); }
+        if matches!(address, HP_PIN_HOLD_HIGH | HP_PIN_HOLD_LOW) {
+            return Ok((self.hold_pin >> if address == HP_PIN_HOLD_HIGH { 40 } else { 8 }) as u32);
+        }
         if address == PMU_PAD_HOLD { return Ok(0); } // WT commands, not state bits.
         if address == IO_MUX_BASE + 0x1fc { return Ok(self.iomux_date); }
         if let Some(pin) = Self::pin_at(address, IO_MUX_BASE) { return Ok(self.iomux[pin]); }
@@ -109,6 +118,14 @@ impl Pads {
     }
     pub fn write(&mut self, address: u32, value: u32) -> Result<(), Fault> {
         if address & 3 != 0 { return Err(Fault::Misaligned); }
+        if matches!(address, HP_PIN_HOLD_HIGH | HP_PIN_HOLD_LOW) {
+            // v6.1 lp_system_reg.h: high bits map GPIO40..62, low GPIO8..39.
+            // soc_caps.h excludes GPIO29/41 and exposes only GPIO0..61.
+            let shift = if address == HP_PIN_HOLD_HIGH { 40 } else { 8 };
+            let mask = if shift == 40 { 0x7fffff } else { 0xffffffff };
+            self.hold_pin = (self.hold_pin & !(mask << shift) | (u64::from(value) & mask) << shift) & VALID;
+            self.refresh_hold(); return Ok(());
+        }
         if address == PMU_PAD_HOLD { return self.hold_write(value); }
         if address == IO_MUX_BASE + 0x1fc { self.iomux_date = value & 0x0fff_ffff; return Ok(()); }
         if let Some(pin) = Self::pin_at(address, IO_MUX_BASE) { self.iomux[pin] = value & 0x7fff; return Ok(()); }
@@ -136,6 +153,16 @@ mod tests {
     fn configure(p: &mut Pads, pin: usize, output: bool) {
         p.write(IO_MUX_BASE + pin as u32 * 4, 0x1200).unwrap();
         if output { p.write(GPIO_BASE + if pin < 32 { 0x38 } else { 0x44 }, 1 << (pin % 32)).unwrap(); }
+    }
+    #[test]
+    fn individual_and_global_hold_preserve_each_others_snapshot() {
+        let mut p = Pads::default(); configure(&mut p, 59, true);
+        p.write(HP_PIN_HOLD_HIGH, 1 << 19).unwrap(); p.write(GPIO_BASE + 0x14, 1 << 27).unwrap();
+        assert_eq!(p.drive(59), Ok(Drive::Low)); p.write(PMU_PAD_HOLD, 1 << 30).unwrap();
+        p.write(HP_PIN_HOLD_HIGH, 0).unwrap(); assert_eq!(p.drive(59), Ok(Drive::Low));
+        p.write(PMU_PAD_HOLD, 1 << 31).unwrap(); assert_eq!(p.drive(59), Ok(Drive::High));
+        p.write(HP_PIN_HOLD_LOW, 1 << 2).unwrap(); assert_eq!(p.read(HP_PIN_HOLD_LOW), Ok(4));
+        p.write(HP_PIN_HOLD_HIGH, u32::MAX).unwrap(); assert_eq!(p.read(HP_PIN_HOLD_HIGH), Ok(0x3ffffd));
     }
     #[test]
     fn bank_layout_and_bonded_pins_match_s31_capabilities() {

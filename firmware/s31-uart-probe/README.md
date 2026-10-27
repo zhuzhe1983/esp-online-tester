@@ -38,6 +38,18 @@ checks that input is still live, releases HP and LP holds separately and verifie
 the newly configured output/input states before printing `S31 PAD HOLD INPUT PASS`.
 Without the external high input it takes its explicit failure branch.
 
+`efuse-probe.S` transfers an explicitly supplied synthetic decoded eFuse read image,
+checks read-only shadow data and the read-complete interrupt, and clears the interrupt.
+It does not program OTP, synthesize a product identity, or validate ECC/security behavior.
+The same guest faults at READ_CMD when no input image is supplied.
+
+`clocks-probe.S` calls the fixed 20260528 S31 ROM's `ets_clk_get_cpu_freq`,
+checks 40 MHz, commits a divide-by-two XTAL root and checks 20 MHz. It waits for
+host UART data, pulses core reset and verifies the RX FIFO emptied while its
+configuration remains; an APB module reset then restores the modeled register defaults.
+Host checks verify computed clock/baud values and retain already-transmitted output.
+This does not measure physical UART/clock timing or prove PLL calibration.
+
 ```sh
 RISCV_TOOLCHAIN_PREFIX=/path/to/riscv32-esp-elf- \
   bash firmware/s31-uart-probe/build.sh output/s31-uart-probe
@@ -48,6 +60,9 @@ S31_WDT_ELF="$PWD/output/s31-uart-probe/wdt-probe.elf" \
 S31_MMU_ELF="$PWD/output/s31-uart-probe/mmu-probe.elf" \
 S31_FLASH_WORKER_BIN="$PWD/output/s31-uart-probe/flash-worker.bin" \
 S31_PADS_ELF="$PWD/output/s31-uart-probe/pads-probe.elf" \
+S31_EFUSE_ELF="$PWD/output/s31-uart-probe/efuse-probe.elf" \
+S31_CLOCKS_ELF="$PWD/output/s31-uart-probe/clocks-probe.elf" \
+S31_ROM_ELF="$PWD/output/s31-sources/roms/esp32s31_rev0_rom.elf" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/probe.elf A
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/irq-probe.elf A

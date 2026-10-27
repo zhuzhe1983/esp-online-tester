@@ -6,6 +6,8 @@ use crate::trng::{Trng, TRNG_BASE, RNG_CTRL};
 use crate::rtc_wdt::{RtcWdt, BASE as RTC_WDT_BASE};
 use crate::cache::Cache;
 use crate::pads::Pads;
+use crate::clocks::Clocks;
+use crate::efuse::{Efuse, BASE as EFUSE_BASE};
 
 // ESP-IDF v6.1 (fff9895c82d744c7237be8847347bdd1b07c6643),
 // components/soc/esp32s31/include/soc/soc.h and register/soc/reg_base.h.
@@ -17,6 +19,13 @@ pub const ROM_BASE: u32 = 0x2f80_0000;
 pub const ROM_SIZE: usize = 0x50000;
 pub const UART0_BASE: u32 = 0x2038_a000;
 const UART_SIZE: usize = 0xa0;
+fn new_uart() -> Uart {
+    let mut uart = Uart::new(UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff });
+    // S31 v6.1 uart_reg.h. Remaining serial framing/flow-control features are inherited
+    // from the existing functional FIFO, not a physical line timing model.
+    for (off, value) in [(0x14, 694), (0x20, 0x1c), (0x24, 0x6060), (0x88, 3 << 24), (0x8c, 36774432), (0x9c, 1280)] { uart.write(off, value); }
+    uart
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AccessFault { pub pc: u32, pub address: u32, pub bytes: usize, pub write: bool, pub fetch: bool, pub reason: Fault }
@@ -27,6 +36,8 @@ pub struct S31Bus {
     pub rtc_wdt: RtcWdt,
     pub cache: Cache,
     pub pads: Pads,
+    pub efuse: Efuse,
+    pub clocks: Clocks,
     pc: u32, pub first_fault: Option<AccessFault>,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
@@ -39,9 +50,8 @@ impl S31Bus {
         // S31 v6.1 uart_reg.h: RX threshold/count 8 bits, RXFIFO_RST bit 22 at 0x20;
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
-        let layout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff };
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE],
-            uart0: Uart::new(layout), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), pc: 0, first_fault: None }
+            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -68,7 +78,20 @@ impl S31Bus {
         if self.first_fault.is_none() { self.first_fault = Some(AccessFault { pc: self.pc, address, bytes, write, fetch, reason }); }
         Err(reason)
     }
-    pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> { self.interrupts.refresh(self.uart0.irq(), self.rtc_wdt.irq(), threshold) }
+    fn uart_irq(&self) -> bool { self.clocks.uart_bus_on() && self.clocks.uart_core_on() && self.uart0.irq() }
+    pub fn uart_input(&mut self, bytes: &[u8]) -> Result<(), Fault> {
+        if !self.clocks.uart_bus_on() || !self.clocks.uart_core_on() || self.uart0.read(0x88) & (1 << 25 | 1 << 27) != 1 << 25 { return Err(Fault::Prohibited); }
+        self.uart0.host_input(bytes); Ok(())
+    }
+    pub fn uart_baud(&mut self) -> Option<u64> {
+        let div = self.uart0.read(0x14); let divisor = u64::from(div & 0xfff) * 16 + u64::from((div >> 20) & 15);
+        (divisor != 0 && self.clocks.uart_sclk_hz() != 0).then(|| self.clocks.uart_sclk_hz() * 16 / divisor)
+    }
+    fn uart_core_reset(&mut self) {
+        let conf = self.uart0.read(0x20); self.uart0.write(0x20, conf | 1 << 22); self.uart0.write(0x20, conf);
+        self.uart0.int_raw = (1 << 14) | 2;
+    }
+    pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> { self.interrupts.refresh(self.uart_irq(), self.rtc_wdt.irq(), self.efuse.irq(), threshold) }
     pub fn interrupt_taken(&mut self, line: u32) { if line < 32 { self.interrupts.clic[0].taken(line as usize + 16); } }
     fn clic_offset(address: u32, bytes: usize) -> Option<(usize, u32)> {
         let off = address.checked_sub(CLIC_BASE)?;
@@ -80,6 +103,18 @@ impl S31Bus {
     fn read(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
         if let Some(data) = self.memory(address, bytes) {
             let mut value = [0; 4]; value[..bytes].copy_from_slice(data); return Ok(u32::from_le_bytes(value));
+        }
+        if let Some(off) = offset(address, EFUSE_BASE, bytes, 0x200) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.efuse.read(off as u32) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
+        if matches!(address & !3, crate::clocks::UART0_CTRL | crate::clocks::UART0_MEM) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(self.clocks.uart_read(address));
+        }
+        if Clocks::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.clocks.read(address - crate::clocks::BASE) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if Pads::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -118,7 +153,7 @@ impl S31Bus {
         }
         if let Some(off) = offset(address, MATRIX_BASE, bytes, 0x1000) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
-            if let Some(value) = self.interrupts.matrix_read(off >> 11, (off & 0x7ff) as u32, self.uart0.irq(), self.rtc_wdt.irq()) { return Ok(value); }
+            if let Some(value) = self.interrupts.matrix_read(off >> 11, (off & 0x7ff) as u32, self.uart_irq(), self.rtc_wdt.irq(), self.efuse.irq()) { return Ok(value); }
             return self.fault(address, bytes, false, false, Fault::Unmapped);
         }
         if let Some((core, off)) = Self::clic_offset(address, bytes) {
@@ -128,13 +163,39 @@ impl S31Bus {
             return Ok((word >> ((off & 3) * 8)) & ((1u64 << (bytes * 8)) - 1) as u32);
         }
         if let Some(o) = offset(address, UART0_BASE, bytes, UART_SIZE) {
-            if bytes == 4 && o.is_multiple_of(4) { return Ok(self.uart0.read(o as u32)); }
+            if bytes == 4 && o.is_multiple_of(4) {
+                if !self.clocks.uart_bus_on() || o == 0 && !self.clocks.uart_core_on() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
+                return Ok(self.uart0.read(o as u32));
+            }
             return self.fault(address, bytes, false, false, Fault::Misaligned);
         }
         self.fault(address, bytes, false, false, Fault::Unmapped)
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         if let Some(dest) = self.memory_mut(address, bytes, false) { dest.copy_from_slice(&value.to_le_bytes()[..bytes]); return Ok(()); }
+        if let Some(off) = offset(address, EFUSE_BASE, bytes, 0x200) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.efuse.write(off as u32, value) {
+                Ok(()) => { self.rtc_wdt.delay_sel = self.efuse.wdt_delay_selector(); Ok(()) }
+                Err(e) => self.fault(address, bytes, true, false, e),
+            };
+        }
+        if matches!(address & !3, crate::clocks::UART0_CTRL | crate::clocks::UART0_MEM) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if let Err(e) = self.clocks.uart_write(address, value) { return self.fault(address, bytes, true, false, e); }
+            if address == crate::clocks::UART0_CTRL {
+                if value & 8 != 0 {
+                    // uart_ll_reset_register pulses APB_RST to reset the module. Captured
+                    // bytes already transmitted belong to host evidence, not UART memory.
+                    let output = std::mem::take(&mut self.uart0.tx_out); self.uart0 = new_uart(); self.uart0.tx_out = output;
+                } else if value & 4 != 0 { self.uart_core_reset(); }
+            }
+            return Ok(());
+        }
+        if Clocks::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.clocks.write(address - crate::clocks::BASE, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
         if Pads::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             return match self.pads.write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
@@ -176,7 +237,11 @@ impl S31Bus {
             self.interrupts.clic[core].write(off & !3, value << (lane * 8), ((1u32 << bytes) - 1) << lane); return Ok(());
         }
         if let Some(o) = offset(address, UART0_BASE, bytes, UART_SIZE) {
-            if bytes == 4 && o.is_multiple_of(4) { self.uart0.write(o as u32, value); return Ok(()); }
+            if bytes == 4 && o.is_multiple_of(4) {
+                if !self.clocks.uart_bus_on() || o == 0 && (!self.clocks.uart_core_on() || self.uart0.read(0x88) & (1 << 24 | 1 << 26) != 1 << 24) { return self.fault(address, bytes, true, false, Fault::Prohibited); }
+                if o == 0x88 && value & (1 << 27) != 0 { self.uart_core_reset(); }
+                self.uart0.write(o as u32, value); return Ok(());
+            }
             return self.fault(address, bytes, true, false, Fault::Misaligned);
         }
         let reason = if offset(address, ROM_BASE, bytes, ROM_SIZE).is_some() { Fault::Prohibited } else { Fault::Unmapped };
@@ -211,6 +276,21 @@ impl Bus for S31Bus {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn uart_clocks_and_reset_control_real_fifo_output_and_irq() {
+        use crate::clocks::{UART0_CTRL, UART0_MEM};
+        let mut b = S31Bus::new(); b.write32(UART0_BASE + 0x24, 1).unwrap(); b.write32(UART0_BASE + 0xc, 1).unwrap();
+        b.uart_input(b"A").unwrap(); assert!(b.uart_irq());
+        b.write32(UART0_CTRL, 0x80).unwrap(); assert!(!b.uart_irq());
+        assert_eq!(b.uart_input(b"B"), Err(Fault::Prohibited)); assert_eq!(b.write32(UART0_BASE, 88), Err(Fault::Prohibited)); assert!(b.uart0.tx_out.is_empty());
+        b.write32(UART0_CTRL, 0x83).unwrap(); assert!(b.uart_irq()); assert_eq!(b.read32(UART0_BASE), Ok(65));
+        b.write32(UART0_CTRL, 0x87).unwrap(); assert!(!b.uart_irq()); b.write32(UART0_CTRL, 0x83).unwrap(); assert_eq!(b.uart0.rx_pending(), 0);
+        b.write32(UART0_BASE, 67).unwrap(); b.write32(UART0_CTRL, 0x8b).unwrap(); b.write32(UART0_CTRL, 0x83).unwrap();
+        assert_eq!(b.uart0.tx_out, b"C"); assert_eq!(b.read32(UART0_BASE + 0xc), Ok(0)); assert_eq!(b.uart_baud(), Some(57636));
+        b.write32(UART0_CTRL, 0x183).unwrap(); assert_eq!(b.uart_baud(), Some(28818));
+        b.write32(UART0_BASE + 0x88, 1 << 25).unwrap(); assert_eq!(b.write32(UART0_BASE, 68), Err(Fault::Prohibited));
+        assert_eq!(b.write32(UART0_CTRL, 0xa3), Err(Fault::Prohibited)); assert_eq!(b.write32(UART0_MEM, 12), Err(Fault::Prohibited));
+    }
     #[test]
     fn instruction_fetch_requires_the_real_length_across_mmu_boundaries() {
         use crate::cache::{FLASH_MMU, FLASH_VADDR};

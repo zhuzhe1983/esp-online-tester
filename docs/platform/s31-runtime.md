@@ -368,3 +368,56 @@ Existing production WASM/CLI code is byte-identical to the preceding stage; thes
 are guard measurements, not an attributed speed change for the new pad model.
 [Functional receipt](evidence/s31-bringup/pmu-gpio.json),
 [CPU samples](evidence/s31-bringup/pmu-gpio-perf.json).
+
+
+## eFuse input, XTAL domain and ROM console initialization
+
+The next standalone stage adds the actual eFuse read command path at `0x20715000`.
+A decoded input image must be supplied explicitly: no MAC, key, revision, calibration
+or product OTP is invented. Correct READ opcode `0x5aa5` transfers supplied words
+and error metadata to read-only shadows, raises READ_DONE source152, and updates
+the RTC watchdog delay selector from its documented one-bit field. Absent input,
+programming, read-protected images and unsupported ECC/security operations fail
+explicitly. Read completion is a zero-latency functional transfer, not OTP timing.
+The fixed header's WDT_DELAY_SEL prose lists four legacy values while its actual
+bitfield is one bit at19; this model follows the bitfield and records the conflict.
+
+The HP clock root at `0x20587000` now models XTAL40 MHz, CPU integer/fractional
+division and MEM/SYS/APB integer division. Configuration is staged until the real
+UPDATE strobe; domain rates are derived from the active configuration. The v6.1 LL
+identifies mux1 as CPLL and mux3 as PLL_F240M, superseding the generated register
+header's older PLL_F300M prose. PLL/RC power/calibration are still absent, so those
+sources are rejected rather than reported locked at a fabricated frequency.
+No CPU-instruction-to-RTC or serial-bit timing relationship is claimed.
+
+UART0 clock/reset `0x20587088` and memory-power control `0x2058628c` now affect
+functional input, output and IRQ eligibility. Disabled bus/core clocks cannot pass
+FIFO traffic. Core reset clears receive state; the APB module reset restores its
+modeled configuration and FIFO. Already-transmitted bytes remain in the host capture.
+The `uart_input` method respects these controls; direct access to `uart0` remains a
+low-level debugger interface. Forced UART memory low-power entry, FORCE_NORST and
+unmodeled UART clock sources are explicit unsupported operations. Serial framing,
+flow control and physical pin transmission remain partial.
+
+The ROM also releases individual GPIO58/59 holds. LP_SYSTEM's two HP hold words
+(`0x20700270/274`) now map GPIO40..62 and GPIO8..39 respectively, intersected with
+the package capability mask. Individual and global holds keep the original snapshot
+until both are released; setting a second hold cannot accidentally resample a changed
+output. LP per-pin hold, sleep retention and reset-domain behavior remain absent.
+
+Source-built `efuse-probe.S` checks data transfer, RO behavior and READ_DONE clearing;
+without an explicit image the same code faults on the command. `clocks-probe.S`
+calls the real fixed ROM frequency routine, observes 40→20 MHz, then exercises actual
+UART reset state and output. The real ROM boot probe reaches `usb_serial_device_tx_one_char`
+and emits UART `E` before its next unsupported read at USB Serial/JTAG EP1_CONF,
+`0x20391004`, PC `0x2f811cfa`. ROM instructions are unchanged and no eFuse image is
+supplied by this default probe. This is a console-initialization checkpoint, not a
+Plus firmware boot: Flash commands, remaining ROM RAM initialization/SoC blocks,
+S31 custom ISA/second core and the Plus board peripherals still need work.
+
+A separately retained official-emulator observation reads strap `0x12` and shows
+its own ROM naming that input SPI_FAST_FLASH_BOOT. Its public read_memory API returns
+zero for unmapped memory, and all sampled eFuse controls—including documented
+nonzero reset registers—returned zero. Those observations do not identify real
+Plus eFuse contents and are not copied into this model as a hardware profile.
+See `evidence/s31-bringup/efuse-clocks.json` for source hashes, exact outcomes and limits.

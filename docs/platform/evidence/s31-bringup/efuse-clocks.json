@@ -1,0 +1,202 @@
+{
+  "date": "2026-10-27",
+  "base": "ce763c26210c3895d3788095dcf2b96f390e32c3",
+  "scope": "Standalone S31 eFuse read input, XTAL divider update, UART0 clocks/reset and individual HP pad hold. Not a Plus board runtime.",
+  "sources": "sources.json: fixed ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643 efuse_reg/ll, hp_sys_clkrst_reg, clk_tree_ll, rtc_clk.c, uart_reg/ll, hp_system_reg and lp_system_reg; usb_serial_jtag_reg labels next fault",
+  "efuse": {
+    "base": "0x20715000",
+    "readImage": "Explicit decoded 79 shadow words,10 error words and block0 valid-bit count; no image is installed by default",
+    "opcode": "0x5aa5 plus READ_CMD bit0",
+    "effect": "Copies caller input to read-only shadows; READ_DONE raw/status and matrix source152; RTC WDT_DELAY_SEL updated from shadow bit19",
+    "latency": "Functional zero-latency transfer; no OTP physical timing or ECC calculation",
+    "notImplemented": [
+      "Programming/security/key operations",
+      "Read-protected input images",
+      "Raw Reed-Solomon bypass path",
+      "Product MAC/revision/calibration profile"
+    ],
+    "conflict": "v6.1 WDT_DELAY_SEL is one bit19 even though prose lists four legacy values"
+  },
+  "clocks": {
+    "base": "0x20587000",
+    "resetDomainsHz": {
+      "cpu": 40000000,
+      "mem": 20000000,
+      "sys": 13333333,
+      "apb": 6666666
+    },
+    "functional": "Pending registers become active together at UPDATE; integer/fractional CPU divider and integer MEM/SYS/APB rates derived from XTAL",
+    "unsupported": "PLL/RC roots, PLL lock/calibration/power and SYS/APB fractional constraints fail explicitly",
+    "uart": "0x20587088 clock/reset and 0x2058628c memory control gate real FIFO/IRQ; core RX reset and APB modeled-module reset; completed TX capture is retained",
+    "timing": "Computed functional rates/baud, not physical serial framing or CPU instruction timing",
+    "headerConflict": "Generated PLL_F300M prose superseded by same-version LL mapping mux1=CPLL,mux3=PLL_F240M"
+  },
+  "pads": {
+    "addresses": [
+      "0x20700270",
+      "0x20700274"
+    ],
+    "pins": "HP high wordGPIO40..62,lowGPIO8..39, intersected with valid GPIO0..61 except29/41",
+    "interaction": "Individual OR global hold retains the first snapshot until both are released; enabled input remains live"
+  },
+  "fixtures": {
+    "artifacts": [
+      {
+        "path": "firmware/s31-uart-probe/efuse-probe.S",
+        "bytes": 1336,
+        "sha256": "a4f9e99d04600406838134e83f3e0132a232b5118e424759415a6afff388f803"
+      },
+      {
+        "path": "firmware/s31-uart-probe/clocks-probe.S",
+        "bytes": 1438,
+        "sha256": "9ff94c62dbc3a5936f814f707656d68a2d3daf8657eb772e03499eeb8f1b99c9"
+      },
+      {
+        "path": "output/s31-uart-probe/efuse-probe.elf",
+        "bytes": 4980,
+        "sha256": "d7ac42c7a3fc676d20c2ca17d9c3b7a213f186bdd855c1bc31f88fd64fabaf8b"
+      },
+      {
+        "path": "output/s31-uart-probe/clocks-probe.elf",
+        "bytes": 5096,
+        "sha256": "d4fc61ef61d350c450265488fadd17fffd363fdcd8832997d43327ff31b22d4b"
+      }
+    ],
+    "compiler": "riscv32-esp-elf-gcc15.2.0 esp-15.2.0_20251204",
+    "reproduce": "firmware/s31-uart-probe/README.md",
+    "efuse": {
+      "explicitData": "shadow34=0x80000;shadow88=0x5a17f00d;valid-bit-count7",
+      "steps": 140,
+      "pc": "0x2f000084",
+      "stop": "Waiting",
+      "uart": "S31 EFUSE READ PASS\n",
+      "noInputNegative": "Same guest: StoreAccessFault/Exception7 at READ_CMD0x207151d8, no UART output"
+    },
+    "clocks": {
+      "initialSteps": 10000,
+      "initialStop": "Budget",
+      "initialUart": "S31 ROM CLOCK20 READY\n",
+      "guestChecks": "Calls actual fixed-ROM ets_clk_get_cpu_freq at0x2f806ba2 before and after divider update; checks40000000 then20000000",
+      "hostRates": {
+        "cpuHz": 20000000,
+        "uartBaudBeforeReset": 115273,
+        "uartBaudAfterReset": 57636
+      },
+      "hostInput": "UART A using gated uart_input API",
+      "afterInputSteps": 133,
+      "pc": "0x2f0000d0",
+      "stop": "Waiting",
+      "uart": "S31 ROM CLOCK20 READY\nS31 UART RESET PASS\n"
+    },
+    "generatedArtifactsPublished": false
+  },
+  "rom": {
+    "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+    "command": "cargo run --release -p esp32s31 --example bringup -- --rom <roms>/esp32s31_rev0_rom.elf \"\" 100000",
+    "previousFault": {
+      "steps": 7267,
+      "pc": "0x2f80818a",
+      "address": "0x207151f8"
+    },
+    "retainedIntermediateFaults": [
+      {
+        "steps": 7291,
+        "pc": "0x2f806baa",
+        "address": "0x20587000",
+        "symbol": "ets_clk_get_cpu_freq"
+      },
+      {
+        "steps": 7432,
+        "pc": "0x2f83f1a0",
+        "address": "0x20587088",
+        "symbol": "uart_hal_init_reset"
+      },
+      {
+        "steps": 7480,
+        "pc": "0x2f81204e",
+        "address": "0x20700270",
+        "symbol": "uart_serial_init"
+      }
+    ],
+    "currentFault": {
+      "steps": 8445,
+      "pc": "0x2f811cfa",
+      "address": "0x20391004",
+      "symbol": "usb_serial_device_tx_one_char",
+      "register": "USB_SERIAL_JTAG_EP1_CONF",
+      "access": "read32",
+      "mcause": 5,
+      "uart": "E"
+    },
+    "eFuseImageSupplied": false,
+    "strapChanged": false,
+    "romInstructionPatches": false,
+    "firmwareOrDisplayRunning": false
+  },
+  "checks": {
+    "rust": "1391 passed,0 failed,131 groups; --release --workspace -- --include-ignored --skip external_",
+    "clippyNative": "pass --workspace --all-targets -- -D warnings",
+    "clippyWasm": "pass --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "sourceFixtures": "8 passed",
+    "platform": "4 required files pass",
+    "wasm": "9 existing workloads pass;sections check passed",
+    "s31WasmCompile": "pass",
+    "nativeBins": "pass",
+    "goldens": "unchanged",
+    "browser": "No UI change or browser session"
+  },
+  "productionCodeEquality": {
+    "native": [
+      {
+        "binary": "esp32sim",
+        "matchesD294e8f0": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "c7a56e344138282e6c4c5b4903a547b6e88a1ab6b8f01d4c37d42aa7e22128be"
+        }
+      },
+      {
+        "binary": "esp32sim-c3",
+        "matchesD294e8f0": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "68dc7d7430af36b87d9c6c1f37d8d13d5c98a74d872281e50ddeb41093792e86"
+        }
+      },
+      {
+        "binary": "esp32sim-c6",
+        "matchesD294e8f0": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "757541708ed5de127937a92898cf6ebabc9891265fffffc633c437419a3c8047"
+        }
+      }
+    ],
+    "wasmSha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31",
+    "comparison": "Native __TEXT,__text and deployed WASM hash still exactly match prior ce763c26 stage; legacy production core/CLI source also unchanged against main df198a74."
+  },
+  "upstreamProfileObservation": {
+    "receipt": "upstream-boot-input-observation.json",
+    "sha256": "6a5af094cce5e7faca4d7d226592a23675695e6b1079675788eaf132fa072de3",
+    "conclusion": "Only upstream model defaults observed. Zero eFuse controls are ambiguous and were not imported as Plus hardware profile."
+  },
+  "remaining": [
+    "USB Serial/JTAG endpoint behavior",
+    "ROM RAM initializer reconstruction",
+    "SPI Flash command engine and actual Plus bootloader/app execution",
+    "PLL/RC clocks and remaining SoC MMIO/ISA/second core",
+    "Plus display/power/I2C/touch/SD board peripherals"
+  ],
+  "privacy": "Curated hashes,numbers,relative paths and public sources. No private firmware, device identifiers or raw local logs.",
+  "performance": {
+    "receipt": "efuse-clocks-perf.json",
+    "sha256": "12c32d69c2c49b8b5b6517c60ba7356100fe9043a484f0fe8b0e649c8b143225",
+    "medianUserPercent": {
+      "s3-hello": -0.19556369248451277,
+      "c3-hello": -0.018200345088259517,
+      "c6-hello": -1.4194484287585851
+    },
+    "outputs": "All UART hashes and instruction/cycle/stat fields identical",
+    "interpretation": "Production code bytes unchanged. Variations are not attributed to the standalone S31 changes; shared host scheduling remains uncontrolled."
+  }
+}

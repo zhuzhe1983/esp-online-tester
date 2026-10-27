@@ -1,5 +1,36 @@
 //! Real source-built SRAM fixture; no generated ELF/BIN is published.
 #[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_CLOCKS_ELF and S31_ROM_ELF (20260528 S31 ROM)"]
+fn external_s31_rom_clock_and_uart_reset_fixture() {
+    let path = std::env::var("S31_CLOCKS_ELF").expect("build firmware/s31-uart-probe and set S31_CLOCKS_ELF");
+    let rom = std::env::var("S31_ROM_ELF").expect("set S31_ROM_ELF to Espressif 20260528 esp32s31_rev0_rom.elf");
+    let mut m = esp32s31::Bringup::new(); m.load_rom_elf(&std::fs::read(rom).expect("read S31_ROM_ELF")).unwrap();
+    m.load_elf(&std::fs::read(path).expect("read S31_CLOCKS_ELF")).unwrap();
+    assert_eq!(m.run(10_000).stop, esp32s31::Stop::Budget);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 ROM CLOCK20 READY\n"); assert_eq!(m.bus.clocks.rates().cpu_hz, 20_000_000);
+    assert_eq!(m.bus.uart_baud(), Some(115273)); m.bus.uart_input(b"A").unwrap();
+    let run = m.run(10_000); assert_eq!(run.stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 ROM CLOCK20 READY\nS31 UART RESET PASS\n");
+    assert_eq!(m.bus.uart_baud(), Some(57636)); assert!(m.bus.first_fault.is_none());
+    eprintln!("S31 ROM clock/UART reset fixture second-stage steps={} pc={:#010x}", run.steps, m.cpu.pc);
+}
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_EFUSE_ELF to efuse-probe.elf"]
+fn external_s31_efuse_fixture() {
+    let path = std::env::var("S31_EFUSE_ELF").expect("build firmware/s31-uart-probe and set S31_EFUSE_ELF");
+    let elf = std::fs::read(path).expect("read S31_EFUSE_ELF");
+    let mut image = esp32s31::efuse::ReadImage::blank_development();
+    image.words[2] = 1 << 19; image.words[23] = 0x5a17f00d; image.block0_valid_bits = 7;
+    let mut m = esp32s31::Bringup::new(); m.bus.efuse.set_read_image(image).unwrap(); m.load_elf(&elf).unwrap();
+    let run = m.run(10_000); assert_eq!(run.stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 EFUSE READ PASS\n"); assert_eq!(m.bus.rtc_wdt.delay_sel, 1);
+    assert!(m.bus.first_fault.is_none()); eprintln!("S31 eFuse fixture steps={} pc={:#010x}", run.steps, m.cpu.pc);
+    let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+    assert_eq!(m.run(10_000).stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7)));
+    let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!(f.address, 0x207151d8); assert!(f.write);
+    assert!(m.bus.uart0.tx_out.is_empty());
+}
+#[test]
 #[ignore = "build firmware/s31-uart-probe and set S31_PADS_ELF to pads-probe.elf"]
 fn external_s31_pads_fixture() {
     use esp32s31::pads::Drive;
@@ -9,14 +40,14 @@ fn external_s31_pads_fixture() {
     assert_eq!(m.run(10_000).stop, esp32s31::Stop::Budget);
     assert_eq!(m.bus.uart0.tx_out, b"S31 PAD HOLD READY\n");
     assert_eq!(m.bus.pads.drive(10), Ok(Drive::Low));
-    m.bus.pads.set_input(2, Some(true)).unwrap(); m.bus.uart0.host_input(b"A");
+    m.bus.pads.set_input(2, Some(true)).unwrap(); m.bus.uart_input(b"A").unwrap();
     let run = m.run(10_000); assert_eq!(run.stop, esp32s31::Stop::Waiting);
     assert_eq!(m.bus.uart0.tx_out, b"S31 PAD HOLD READY\nS31 PAD HOLD INPUT PASS\n");
     assert_eq!(m.bus.pads.drive(10), Ok(Drive::High)); assert!(m.bus.first_fault.is_none());
     eprintln!("S31 pad release steps={} pc={:#010x}", run.steps, m.cpu.pc);
     // Without the actual injected input, the guest takes its failure branch.
     let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
-    assert_eq!(m.run(10_000).stop, esp32s31::Stop::Budget); m.bus.uart0.host_input(b"A");
+    assert_eq!(m.run(10_000).stop, esp32s31::Stop::Budget); m.bus.uart_input(b"A").unwrap();
     assert!(matches!(m.run(10_000).stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_))));
     assert_eq!(m.bus.uart0.tx_out, b"S31 PAD HOLD READY\nS31 PAD FAIL\n");
 }
@@ -53,7 +84,7 @@ fn external_s31_uart_fixture() {
     let mut m = esp32s31::Bringup::new(); m.load_elf(&std::fs::read(path).expect("read S31_UART_ELF")).unwrap();
     assert_eq!(m.run(10_000).stop, esp32s31::Stop::Budget);
     assert_eq!(m.bus.uart0.tx_out, b"S31 UART READY\n");
-    m.bus.uart0.host_input(b"A"); assert_eq!(m.run(10_000).stop, esp32s31::Stop::Waiting);
+    m.bus.uart_input(b"A").unwrap(); assert_eq!(m.run(10_000).stop, esp32s31::Stop::Waiting);
     assert_eq!(m.bus.uart0.tx_out, b"S31 UART READY\nA\nS31 SRAM FPU PASS\n");
     assert!(m.bus.first_fault.is_none());
 }
@@ -68,7 +99,7 @@ fn external_s31_uart_irq_fixture() {
     // Debugger-style threshold change: a pending UART source must not execute the ISR while
     // masked. Unmasking resumes the same guest, which validates mintstatus inside its handler.
     m.cpu.write_csr(riscv_rv32::state::csr::MINTTHRESH, 0xff);
-    m.bus.uart0.host_input(b"A");
+    m.bus.uart_input(b"A").unwrap();
     assert_eq!(m.run(50).stop, esp32s31::Stop::Waiting);
     assert_eq!(m.bus.uart0.tx_out, b"S31 IRQ READY\n");
     m.cpu.write_csr(riscv_rv32::state::csr::MINTTHRESH, 0x1f);
