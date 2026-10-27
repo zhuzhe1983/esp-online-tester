@@ -15,9 +15,10 @@ pub const RTC_WDT_SOURCE: usize = 136; // interrupt_core0_reg.h: LP_WDT_INTR_MAP
 pub const EFUSE_SOURCE: usize = 152; // interrupt_core0_reg.h: LP_EFUSE_INTR_MAP at 0x260.
 const SOURCES: usize = 169;
 #[derive(Clone, Copy, Default)]
-pub struct Irqs { pub uart: bool, pub wdt: bool, pub efuse: bool, pub usb: bool, pub monitor: bool }
+pub struct Irqs { pub uart: bool, pub wdt: bool, pub efuse: bool, pub usb: bool, pub monitor: bool, pub mwdt: [bool; 2] }
 impl Irqs {
-    fn sources(self) -> [(usize, bool); 5] { [(UART0_SOURCE, self.uart), (RTC_WDT_SOURCE, self.wdt), (EFUSE_SOURCE, self.efuse), (USB_SERIAL_SOURCE, self.usb), (MONITOR_SOURCE, self.monitor)] }
+    // Fixed S31 interrupts.h: TIMERGRP0_WDT27, TIMERGRP1_WDT30.
+    fn sources(self) -> [(usize, bool); 7] { [(UART0_SOURCE, self.uart), (RTC_WDT_SOURCE, self.wdt), (EFUSE_SOURCE, self.efuse), (USB_SERIAL_SOURCE, self.usb), (MONITOR_SOURCE, self.monitor), (27, self.mwdt[0]), (30, self.mwdt[1])] }
 }
 
 pub struct Interrupts {

@@ -14,6 +14,9 @@ pub mod sha;
 pub mod analog;
 pub mod power;
 pub mod pms;
+pub mod reset;
+pub mod mwdt;
+pub mod rtc_timer;
 mod rom;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};
@@ -24,9 +27,9 @@ use riscv_rv32::{Cpu, Trap};
 /// subset requires explicit NOR identity and array inputs; no product identity is guessed. Functional
 /// MMU mappings use explicitly supplied flash/PSRAM buffers. Unlike a P4 alias, its
 /// bus uses the S31 addresses and reports the first unsupported access with the guest PC.
-pub struct Bringup { pub cpu: Cpu, pub bus: S31Bus }
+pub struct Bringup { pub cpu: Cpu, pub bus: S31Bus, rtc_timer_from_cpu: bool }
 #[derive(Debug, PartialEq, Eq)]
-pub enum Stop { Budget, Waiting, Trap(Trap), Reset(rtc_wdt::ResetRequest), PowerReset(power::ResetCause) }
+pub enum Stop { Budget, Waiting, Trap(Trap), Reset(rtc_wdt::ResetRequest), PowerReset(power::ResetCause), CpuReset(reset::CpuReset), MwdtReset { group: usize, action: mwdt::Reset } }
 pub struct Run { pub steps: u64, pub stop: Stop }
 
 impl Default for Bringup { fn default() -> Self { Self::new() } }
@@ -34,12 +37,18 @@ impl Bringup {
     pub fn new() -> Self {
         let mut cpu = Cpu::new_esp32s31();
         cpu.pc = bus::ROM_BASE;
-        Self { cpu, bus: S31Bus::new() }
+        Self { cpu, bus: S31Bus::new(), rtc_timer_from_cpu: false }
     }
 
     /// Explicit RTC clock-domain input for bring-up fixtures. CPU cycles are not silently
     /// converted to RTC time before the S31 clock tree has been implemented.
-    pub fn advance_rtc_ticks(&mut self, ticks: u64) { self.bus.rtc_wdt.advance(ticks, false, false); }
+    pub fn advance_rtc_ticks(&mut self, ticks: u64) { self.bus.rtc_timer.advance(ticks); self.bus.rtc_wdt.advance_with_cpu_gates(ticks, false, false, self.bus.reset.watchdog_targets()); }
+    /// Opt-in RTC_TIMER-only timing approximation. Other watchdog domains still
+    /// require explicit ticks; this does not claim a complete clock scheduler.
+    pub fn set_rtc_timer_from_cpu(&mut self, enabled: bool) { self.rtc_timer_from_cpu = enabled; }
+    pub fn advance_mwdt_xtal_ticks(&mut self, group: usize, ticks: u64) -> Result<(), emu_core::Fault> {
+        self.bus.mwdt.get_mut(group).ok_or(emu_core::Fault::Unmapped)?.advance_xtal(ticks)
+    }
 
     /// Load an explicitly SRAM/ROM-linked ELF. This does not accept a flash .bin or bypass its
     /// bootloader. All segment bounds are checked before any bytes are changed.
@@ -70,13 +79,18 @@ impl Bringup {
 
     pub fn run(&mut self, budget: u64) -> Run {
         for steps in 0..budget {
+            if let Some(reset) = self.bus.reset.request { return Run { steps, stop: Stop::CpuReset(reset) }; }
+            for (group, wdt) in self.bus.mwdt.iter().enumerate() { if let Some(action) = wdt.reset { return Run { steps, stop: Stop::MwdtReset { group, action } }; } }
             if let Some(reset) = self.bus.power.reset_request { return Run { steps, stop: Stop::PowerReset(reset) }; }
             if let Some(reset) = self.bus.rtc_wdt.reset_request { return Run { steps, stop: Stop::Reset(reset) }; }
             self.bus.clocks.advance_calibration(1); // private functional model quantum, not physical PLL cycles
             self.bus.bus_monitor.observe(self.cpu.pc, self.cpu.x[2]);
             self.cpu.irq = self.bus.refresh_irq(self.cpu.mintthresh);
             if self.cpu.waiting && self.cpu.irq.is_none() { return Run { steps, stop: Stop::Waiting }; }
-            if let Err(trap) = riscv_rv32::step(&mut self.cpu, &mut self.bus) {
+            let cycles = self.cpu.cycle_count; let hz = self.bus.clocks.rates().cpu_hz;
+            let result = riscv_rv32::step(&mut self.cpu, &mut self.bus);
+            if self.rtc_timer_from_cpu { self.bus.rtc_timer.advance_cpu_cycles(self.cpu.cycle_count.wrapping_sub(cycles), hz, self.bus.clocks.rtc_slow_hz()); }
+            if let Err(trap) = result {
                 if let Trap::Interrupt(line) = trap { self.bus.interrupt_taken(line); continue; }
                 if matches!(trap, Trap::Exception(_) | Trap::Ebreak(_)) { self.bus.bus_monitor.exception(self.cpu.mcause, self.cpu.mtval, self.cpu.mepc); }
                 return Run { steps: steps + 1, stop: Stop::Trap(trap) };

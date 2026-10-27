@@ -14,6 +14,9 @@ use crate::sha::ShaEngine;
 use crate::analog::Analog;
 use crate::power::Power;
 use crate::pms::Permissions;
+use crate::reset::ResetControl;
+use crate::mwdt::Mwdt;
+use crate::rtc_timer::RtcTimer;
 use crate::efuse::{Efuse, BASE as EFUSE_BASE};
 
 // ESP-IDF v6.1 (fff9895c82d744c7237be8847347bdd1b07c6643),
@@ -56,6 +59,9 @@ pub struct S31Bus {
     pub analog: Analog,
     pub power: Power,
     pub permissions: Permissions,
+    pub reset: ResetControl,
+    pub mwdt: [Mwdt; 2],
+    pub rtc_timer: RtcTimer,
     pc: u32, pub first_fault: Option<AccessFault>,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
@@ -69,7 +75,7 @@ impl S31Bus {
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16],
-            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), sha: ShaEngine::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), pc: 0, first_fault: None }
+            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), sha: ShaEngine::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), reset: ResetControl::default(), mwdt: std::array::from_fn(|_| Mwdt::default()), rtc_timer: RtcTimer::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -109,7 +115,7 @@ impl S31Bus {
         let conf = self.uart0.read(0x20); self.uart0.write(0x20, conf | 1 << 22); self.uart0.write(0x20, conf);
         self.uart0.int_raw = (1 << 14) | 2;
     }
-    fn irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.efuse.irq(), usb: self.usb_console.irq(), monitor: self.bus_monitor.irq() } }
+    fn irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.efuse.irq(), usb: self.usb_console.irq(), monitor: self.bus_monitor.irq(), mwdt: [self.mwdt[0].irq(), self.mwdt[1].irq()] } }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> { self.interrupts.refresh(self.irqs(), threshold) }
     pub fn interrupt_taken(&mut self, line: u32) { if line < 32 { self.interrupts.clic[0].taken(line as usize + 16); } }
     fn clic_offset(address: u32, bytes: usize) -> Option<(usize, u32)> {
@@ -121,6 +127,23 @@ impl S31Bus {
     fn clic_register(off: u32) -> bool { matches!(off & !3, 0 | 4 | 0x1000..=0x10bc) }
     fn read(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
         if let Err(e) = self.permissions.check(address, false) { return self.fault(address, bytes, false, false, e); }
+        if address & !3 == crate::rtc_timer::RESET || address & !0xfff == crate::rtc_timer::BASE {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            if address == crate::rtc_timer::RESET { return Ok(self.rtc_timer.reset_read()); }
+            return match self.rtc_timer.read(address & 0xfff) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
+        if let Some(id) = crate::mwdt::CLOCKS.iter().position(|&c| address & !3 == c) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(self.mwdt[id].clock_read());
+        }
+        if let Some(id) = crate::mwdt::BASES.iter().position(|&c| address & !0xfff == c) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.mwdt[id].read(address & 0xfff) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
+        if ResetControl::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.reset.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
         if Permissions::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return match self.permissions.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
@@ -251,6 +274,23 @@ impl S31Bus {
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         if let Err(e) = self.permissions.check(address, true) { return self.fault(address, bytes, true, false, e); }
+        if address & !3 == crate::rtc_timer::RESET || address & !0xfff == crate::rtc_timer::BASE {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if address == crate::rtc_timer::RESET { self.rtc_timer.reset_write(value); return Ok(()); }
+            return match self.rtc_timer.write(address & 0xfff, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if let Some(id) = crate::mwdt::CLOCKS.iter().position(|&c| address & !3 == c) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.mwdt[id].clock_write(value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if let Some(id) = crate::mwdt::BASES.iter().position(|&c| address & !0xfff == c) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.mwdt[id].write(address & 0xfff, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if ResetControl::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.reset.write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
         if Permissions::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             return match self.permissions.write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };

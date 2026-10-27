@@ -84,6 +84,9 @@ S31_POWER_ELF="$PWD/output/s31-uart-probe/power-probe.elf" \
 S31_PMS_ELF="$PWD/output/s31-uart-probe/pms-probe.elf" \
 S31_CPLL_ELF="$PWD/output/s31-uart-probe/cpll-probe.elf" \
 S31_FLASH_PARAMS_ELF="$PWD/output/s31-uart-probe/flash-params-probe.elf" \
+S31_RESET_ELF="$PWD/output/s31-uart-probe/reset-probe.elf" \
+S31_MWDT_ELF="$PWD/output/s31-uart-probe/mwdt-probe.elf" \
+S31_RTC_TIMER_ELF="$PWD/output/s31-uart-probe/rtc-timer-probe.elf" \
 S31_BOOT_IMAGE="$PWD/output/s31-uart-probe/spi0-observation.bin" \
 S31_ROM_ELF="$PWD/output/s31-sources/roms/esp32s31_rev0_rom.elf" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
@@ -183,3 +186,27 @@ manufacturer fail at the corresponding guest access. This does not fabricate a
 complete SFDP table, program/erase completion, oscillator lock or product BOM.
 The private runner accepts `--nor-sfdp=hex-offset:hex-bytes` and
 `--bbpll-hz=480000000` as explicit development inputs; both are absent by default.
+
+
+`reset-probe.S` exercises each HP core's RTC watchdog receiver gate, actual
+software-reset stores, and lockup gates with an explicit qualified host event.
+It emits `S31 RESET READY`; an ordinary guest exception is not classified as
+lockup. Reset requests stop the private runner; they do not reconstruct full
+reset domains or run the second hart.
+
+`mwdt-probe.S` independently uses TIMG0/1 watchdogs, with write protection,
+configuration-update, prescaling and real CLIC interrupt/mret. Eight explicit
+XTAL ticks cause the guest ISR to emit `S31 MWDT IRQ PASS`; six further ticks
+request a system reset. A gated WDT clock does not advance the counter, and
+clearing the first group's interrupt does not clear the other group's state.
+Automatic Flashboot timing and GP timers are not implemented.
+
+`rtc-timer-probe.S` reads actual latched 48-bit RTC counter snapshots, checks
+update-done/clear and digital reset. One run supplies slow-clock ticks explicitly;
+a second opts into the interpreter-cycle clock approximation. A missing clock
+input takes the guest's failure branch; a denied PMS permission faults at the
+actual read. The optional profile converts interpreter cycles using the active
+CPU rate and nominal 136 kHz RC_SLOW rate. The interpreter accounts one cycle per
+instruction; this is not silicon timing. It advances RTC_TIMER only, not the
+watchdogs or a complete sleep clock scheduler. Alarm/IRQ enable, wakeup and
+REGDMA requests remain explicit unsupported operations.

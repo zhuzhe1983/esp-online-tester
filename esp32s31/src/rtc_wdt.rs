@@ -29,6 +29,11 @@ impl RtcWdt {
     /// Explicit clock-domain input until the S31 clock tree is installed. No host wall time
     /// or assumed CPU/RTC conversion is used. A reset request stops the counter.
     pub fn advance(&mut self, ticks: u64, sleeping: bool, debug_halted: bool) {
+        self.advance_with_cpu_gates(ticks, sleeping, debug_halted, [true, true]);
+    }
+    /// The standalone block emits CPU reset outputs. The S31 bus additionally
+    /// gates delivery through LP_AONCLKRST_HPCOREn_ENABLE_LP_WDT_RESET.
+    pub fn advance_with_cpu_gates(&mut self, ticks: u64, sleeping: bool, debug_halted: bool, gates: [bool; 2]) {
         if ticks == 0 || self.reset_request.is_some() || (self.conf & (1 << 31) == 0 && !(self.flashboot && self.conf & (1 << 12) != 0))
             || sleeping && self.conf & (1 << 9) != 0 || debug_halted && self.pause != 0 { return; }
         self.elapsed = self.elapsed.saturating_add(ticks);
@@ -42,7 +47,10 @@ impl RtcWdt {
             let action = (self.conf >> (28 - 3 * self.stage)) & 7; self.stage += 1;
             match action {
                 1 => self.raw |= LP_IRQ,
-                2 if self.conf & (3 << 10) != 0 => self.reset_request = Some(ResetRequest::Cpu { core0: self.conf & (1 << 11) != 0, core1: self.conf & (1 << 10) != 0 }),
+                2 => {
+                    let core0 = gates[0] && self.conf & (1 << 11) != 0; let core1 = gates[1] && self.conf & (1 << 10) != 0;
+                    if core0 || core1 { self.reset_request = Some(ResetRequest::Cpu { core0, core1 }); }
+                }
                 3 => self.reset_request = Some(ResetRequest::System),
                 4 => self.reset_request = Some(ResetRequest::Rtc),
                 _ => {}, // reserved action values never panic or invent a reset cause
@@ -118,6 +126,18 @@ mod tests {
             w.advance(0, false, false); assert_eq!(w.reset_request, None);
             w.advance(1, false, false);
             assert_eq!(w.reset_request, if targets == 0 { None } else { Some(ResetRequest::Cpu { core0: targets & 2 != 0, core1: targets & 1 != 0 }) });
+        }
+    }
+    #[test]
+    fn disabled_receiver_gates_allow_later_watchdog_stages_to_run() {
+        for gates in [[false, false], [true, false], [false, true], [true, true]] {
+            let mut w = RtcWdt::default(); w.write(0x18, KEY); w.write(4, 1); w.write(8, 3);
+            w.write(0, 1 << 31 | 2 << 28 | 3 << 25 | 3 << 10);
+            w.advance_with_cpu_gates(2, false, false, gates);
+            if gates == [false, false] {
+                assert_eq!(w.reset_request, None); w.advance_with_cpu_gates(3, false, false, gates);
+                assert_eq!(w.reset_request, Some(ResetRequest::System));
+            } else { assert_eq!(w.reset_request, Some(ResetRequest::Cpu { core0: gates[0], core1: gates[1] })); }
         }
     }
 }

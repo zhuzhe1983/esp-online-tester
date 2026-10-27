@@ -1,10 +1,11 @@
 //! Run a caller-supplied SRAM/ROM ELF and report the first unimplemented access.
 use std::io::Write;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut sfdp = None; let mut bbpll = None;
+    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut sfdp = None; let mut bbpll = None; let mut rtc_timer_from_cpu = false;
     while let Some(arg) = args.peek() {
         match arg.as_str() {
             "--rom" => rom = true, "--usb-host" => usb_host = true,
+            "--rtc-timer-from-cpu" => rtc_timer_from_cpu = true,
             "--rom-spi0-shadow" => spi0_shadow = true,
             value if value.starts_with("--bbpll-hz=") => bbpll = Some(value["--bbpll-hz=".len()..].parse::<u64>()?),
             value if value.starts_with("--nor-sfdp=") => {
@@ -36,11 +37,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         args.next();
     }
-    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
+    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--rtc-timer-from-cpu] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
     let input = args.next().unwrap_or_default();
-    let budget = args.next().map(|s| s.parse::<u64>()).transpose()?.unwrap_or(100_000).min(10_000_000);
+    let budget = args.next().map(|s| s.parse::<u64>()).transpose()?.unwrap_or(100_000).min(100_000_000);
     if args.next().is_some() { return Err("too many bringup arguments".into()); }
     let mut m = esp32s31::Bringup::new(); let bytes = std::fs::read(elf)?;
+    m.set_rtc_timer_from_cpu(rtc_timer_from_cpu);
+    if rtc_timer_from_cpu { eprintln!("development RTC_TIMER clock from interpreter cycles (one instruction/cycle, nominal RC_SLOW; watchdog timing still explicit)"); }
     if rom { m.load_rom_elf(&bytes)?; } else { m.load_elf(&bytes)?; }
     if let Some(path) = flash {
         let bytes = std::fs::read(path)?; m.bus.cache.set_flash(&bytes)?;
@@ -83,6 +86,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("analog-dig={:?}", m.bus.analog.dig_reg());
     eprintln!("clock-rates={:?} rtc-fast-hz={} rtc-slow-hz={} cpll-control={:?}", m.bus.clocks.rates(), m.bus.clocks.rtc_fast_hz(), m.bus.clocks.rtc_slow_hz(), m.bus.clocks.read(0x174));
     eprintln!("permission-writes={}", m.bus.permissions.writes);
+    eprintln!("rtc-timer-counter={}", m.bus.rtc_timer.counter());
+    eprintln!("reset-controls={:?}/{:?} pending={:?}", m.bus.reset.read(0x2070103c), m.bus.reset.read(0x20701040), m.bus.reset.request);
+    if m.bus.first_fault.is_some() { eprintln!("fault-registers={:08x?}", m.cpu.x); }
     eprintln!("analog-perif-glitch={:?}", m.bus.analog.perif_glitch());
     if usb_host { eprintln!("usb-host packets={packets} bytes={} data={:?}", usb.len(), String::from_utf8_lossy(&usb)); }
     Ok(())

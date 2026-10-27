@@ -53,16 +53,17 @@ def main():
     parser.add_argument("--runner", default="target/release/examples/bringup")
     parser.add_argument("--output", required=True)
     parser.add_argument("--rom-spi0-shadow", action="store_true", help="explicit inferred legacy SPI0 config shadows; strict mode remains default")
+    parser.add_argument("--rtc-timer-from-cpu", action="store_true", help="explicit RTC_TIMER-only one-interpreter-cycle-per-instruction timing approximation")
     parser.add_argument("--bbpll-hz", type=int, help="explicit stable BBPLL output frequency; no modeled analog lock")
     parser.add_argument("--nor-sfdp", help="explicit hex-offset:hex-bytes SFDP interval; no inferred device parameters")
     parser.add_argument("--nor-jedec", help="explicit six-hex-digit development NOR identity; not product hardware identification")
     parser.add_argument("--analog-bias", help="explicit four-hex-digit BIAS register0/register1 seed; no silicon reset claim")
     parser.add_argument("--analog-dig", help="explicit eight-hex-digit DIG registers5,7,13,14 seed")
     parser.add_argument("--analog-perif-glitch", help="explicit two-hex-digit PERIF register10 seed; no voltage/glitch reset claim")
-    parser.add_argument("--steps", type=int, default=200000, help="bounded instruction budget, maximum 10000000")
+    parser.add_argument("--steps", type=int, default=200000, help="bounded instruction budget, maximum 100000000")
     args = parser.parse_args()
-    if not 1 <= args.steps <= 10000000:
-        parser.error("--steps must be between 1 and 10000000")
+    if not 1 <= args.steps <= 100000000:
+        parser.error("--steps must be between 1 and 100000000")
     with urllib.request.urlopen(args.firmware_url, timeout=60) as response:
         data = response.read(256 * 1024 * 1024 + 1)
         if len(data) > 256 * 1024 * 1024:
@@ -88,6 +89,8 @@ def main():
     command = [args.runner, "--rom", "--usb-host", "--strap=0x12", "--flash=/dev/stdin"]
     if args.rom_spi0_shadow:
         command.append("--rom-spi0-shadow")
+    if args.rtc_timer_from_cpu:
+        command.append("--rtc-timer-from-cpu")
     if args.bbpll_hz is not None:
         command.append("--bbpll-hz=" + str(args.bbpll_hz))
     if args.nor_sfdp:
@@ -104,7 +107,7 @@ def main():
     result = subprocess.run(command, input=data, capture_output=True, timeout=120, check=True)
     report = {"stepBudget": args.steps, "source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
               "partitions": partitions, "images": images,
-              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "sfdpInterval": args.nor_sfdp, "bbpllInputHz": args.bbpll_hz, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig},
+              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "sfdpInterval": args.nor_sfdp, "bbpllInputHz": args.bbpll_hz, "rtcTimerFromCpuCycles": args.rtc_timer_from_cpu, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig},
               "uart": result.stdout.decode("utf-8", errors="replace"),
               "diagnostic": result.stderr.decode("utf-8", errors="replace"),
               "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk"}

@@ -945,3 +945,83 @@ fixed main84e67571 yielded S3 −0.126%, C3 −0.293%, C6 −0.979%, with identi
 UART hashes and instruction/cycle statistics. These small differences are not
 a speedup claim. No UI, golden or product-availability change is included, and
 no browser or physical-hardware validation is claimed for S31.
+
+
+### HP reset receivers, timer-group watchdogs and RTC snapshots
+
+The unmodified **INK4 Plus 2.0.68** full image now reads the real partition table,
+selects OTA0, verifies/loads all six application segments and logs
+`Loaded app from partition at offset 0x80000`. It stops after **30,015,263
+instructions** in ROM at **`mepc=0x2f80e4be`**, writing SPI1 CMD
+**`0x20501000`** with **`0x01020000`**. The strict Flash subset rejects this
+unsupported command. **The guest has not entered its application, produced a
+framebuffer or made INK4 Plus usable.** The clocked probe uses the same fixed
+full-image SHA-256; its firmware bytes exist only in host/guest RAM and a pipe.
+No app-direct loader, patched instruction or substitute firmware is used.
+
+The preceding blockers were functional hardware gaps. Each HP-core reset
+control now implements the LP-WDT receiver gate, write-triggered software reset
+and lockup gate. A lockup input must be explicitly qualified by a caller; the
+RV32 core does not yet classify nested traps as hardware lockup, and ordinary
+exceptions never trigger it. Disabled CPU watchdog receivers allow a later
+system-reset stage to proceed. Reset requests stop the private runner and name
+the affected cores/cause; they do not claim reconstructed reset domains, pulse
+width, second-hart execution or an observed hardware reboot. The IDF header's
+STAT_VECTOR prose contains P4 addresses, which are not used as S31 mappings.
+Alternate vectors and stall/debug controls remain unsupported.
+
+Both TIMG watchdogs have their actual S31 register/clock windows, protected
+configuration, atomic update latch, prescaler, feed, four-stage actions and
+separate IRQ status. Sources27/30 reach CLIC and a real guest ISR/mret in the
+source fixture. APB gates register access; the independent WDT gate pauses its
+counter. Explicit XTAL input determines counter boundaries. No automatic
+Flashboot timeout, GP timer or calibration-ready placeholder is installed;
+requests to advance the unsupported Flashboot mode fail explicitly. A
+four-stage run stops after its final stage or a typed reset request; repeating
+hardware reset sequencing is outside this subset.
+
+RTC_TIMER now has a 48-bit counter, paired latched snapshots, write-triggered
+update-done events, independent HP/LP raw-status clearing, overflow and digital
+reset. A read alone does not create a snapshot or return a fabricated ready
+flag. Alarm enable, interrupt enable, wakeup, REGDMA and sleep/stall features
+remain unsupported rather than pretending to fire. Its MMIO and the two TIMG
+windows pass through the real PMS permissions and require aligned word access.
+
+The development option **`--rtc-timer-from-cpu`** advances RTC_TIMER using the
+interpreter's cycle counter, active CPU clock rate and nominal 136 kHz RC_SLOW.
+It is off by default. The RV32 interpreter counts one cycle per instruction;
+this is an explicit functional timing approximation, not measured S31 latency.
+Fractional ticks are retained across runs and clock changes (rounding at a
+clock change is less than one divided by the new CPU frequency, in RTC ticks).
+The option does not silently advance watchdogs or implement a complete clock
+scheduler. Manual source fixtures retain explicit `advance_rtc_ticks` and
+`advance_mwdt_xtal_ticks` inputs. WFI does not fast-forward wall time.
+
+Reproduce the full-image result by adding `--rtc-timer-from-cpu --steps 100000000`
+to the prior fixed-image probe command. The bounded runner now accepts up to
+100 million instructions so the guest can finish its real multi-megabyte image
+verification; it does not skip SHA work. The 2-million and 10-million negative
+budget observations remain retained separately. See the
+[official-image receipt](evidence/s31-bringup/bootloader-reset-plus-2.0.68.json),
+[functional/source checks](evidence/s31-bringup/bootloader-reset.json) and
+[production CPU guard](evidence/s31-bringup/bootloader-reset-perf.json).
+
+
+Performance evidence qualification: the long-lived S31 branch includes an older
+set of product implementations than fixed main84/f14d. Earlier main comparison
+ratios therefore include unrelated branch differences; they cannot isolate S31
+causal overhead. Original samples and hashes are retained unchanged in the
+[qualification record](evidence/s31-bringup/baseline-qualification.json). This
+stage additionally compares against an independently rebuilt fixed59a91211
+with the same production sources. Integration on main still requires its own
+before/after check.
+
+
+Final validation: 1,427 workspace Rust tests (ignored included), 63 private S31
+unit tests and all24 source/ROM fixtures pass, as do both warnings-denied
+Clippy targets and all local CI command groups. No golden or UI changes and no
+silicon verification. The same-production-source five-pair CPU guard measured
+S3 -0.850%, C3 +0.084%, C6 +1.270%, with identical UART/instruction/cycle checks;
+these small noisy differences are not a speedup claim. Its
+[raw numeric samples](evidence/s31-bringup/bootloader-reset-same-source-perf.json)
+are separate from the qualified cross-branch main comparison.

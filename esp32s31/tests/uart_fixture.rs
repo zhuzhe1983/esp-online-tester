@@ -485,3 +485,81 @@ fn external_s31_flash_parameters_clock_and_idle_resume() {
         eprintln!("S31 flash-params control={control} steps={} stop={:?} commands={} core-hz={:?}", run.steps, run.stop, m.bus.mspi.commands, m.bus.mspi.core_hz());
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_RESET_ELF to reset-probe.elf"]
+fn external_s31_reset_gates_and_explicit_lockup_event() {
+    let path = std::env::var("S31_RESET_ELF").expect("build firmware/s31-uart-probe and set S31_RESET_ELF");
+    let elf = std::fs::read(path).expect("read S31_RESET_ELF");
+    for mode in 0u32..8 {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap(); m.bus.load(0x2f070000, &mode.to_le_bytes(), 4).unwrap();
+        let run = m.run(10_000); assert_eq!(m.bus.uart0.tx_out, b"S31 RESET READY\n"); assert!(m.bus.first_fault.is_none());
+        if mode == 4 || mode == 5 {
+            let mut cores = [None, None]; cores[(mode & 1) as usize] = Some(esp32s31::reset::Cause::Software);
+            assert_eq!(run.stop, esp32s31::Stop::CpuReset(esp32s31::reset::CpuReset { cores }));
+            assert_eq!(m.bus.reset.read(0x2070103c + (mode & 1) * 4).unwrap() & (1 << 20), 0);
+        } else {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting);
+            if mode < 4 {
+                m.advance_rtc_ticks(1); assert_eq!(m.run(100).stop, esp32s31::Stop::Waiting);
+                m.advance_rtc_ticks(1);
+                if mode == 0 {
+                    assert_eq!(m.run(100).stop, esp32s31::Stop::Waiting); m.advance_rtc_ticks(3);
+                    assert_eq!(m.run(100).stop, esp32s31::Stop::Reset(esp32s31::rtc_wdt::ResetRequest::System));
+                } else { assert_eq!(m.run(100).stop, esp32s31::Stop::Reset(esp32s31::rtc_wdt::ResetRequest::Cpu { core0: mode & 1 != 0, core1: mode & 2 != 0 })); }
+            } else {
+                let core = (mode & 1) as usize; m.bus.reset.lockup_input(core, false).unwrap(); m.bus.reset.lockup_input(core ^ 1, true).unwrap();
+                assert_eq!(m.run(100).stop, esp32s31::Stop::Waiting);
+                m.bus.reset.lockup_input(core, true).unwrap(); let mut cores = [None, None]; cores[core] = Some(esp32s31::reset::Cause::Lockup);
+                assert_eq!(m.run(100).stop, esp32s31::Stop::CpuReset(esp32s31::reset::CpuReset { cores }));
+            }
+        }
+        assert_eq!(m.bus.uart0.tx_out, b"S31 RESET READY\n");
+        eprintln!("S31 reset mode={mode} initial-steps={} initial-stop={:?}", run.steps, run.stop);
+    }
+}
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_MWDT_ELF to mwdt-probe.elf"]
+fn external_s31_mwdt_actual_guest_isr_and_clock_gates() {
+    let path = std::env::var("S31_MWDT_ELF").expect("build firmware/s31-uart-probe and set S31_MWDT_ELF");
+    let elf = std::fs::read(path).expect("read S31_MWDT_ELF");
+    for group in 0u32..2 {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap(); m.bus.load(0x2f070000, &group.to_le_bytes(), 4).unwrap();
+        let run = m.run(10_000); assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 MWDT READY\n");
+        m.bus.mwdt[group as usize].clock_write(0x121).unwrap(); m.advance_mwdt_xtal_ticks(group as usize, 100).unwrap();
+        assert_eq!(m.run(100).stop, esp32s31::Stop::Waiting); assert!(!m.bus.mwdt[group as usize].irq());
+        m.bus.mwdt[group as usize].clock_write(0x921).unwrap();
+        m.advance_mwdt_xtal_ticks(group as usize, 7).unwrap(); assert_eq!(m.run(100).stop, esp32s31::Stop::Waiting);
+        assert_eq!(m.bus.uart0.tx_out, b"S31 MWDT READY\n");
+        m.advance_mwdt_xtal_ticks(group as usize, 1).unwrap(); let irq = m.run(10_000); assert_eq!(irq.stop, esp32s31::Stop::Waiting);
+        assert_eq!(m.bus.uart0.tx_out, b"S31 MWDT READY\nS31 MWDT IRQ PASS\n");
+        assert!(!m.bus.mwdt[group as usize].irq()); assert_eq!(m.bus.mwdt[(group ^ 1) as usize].read(0x74), Ok(0));
+        m.advance_mwdt_xtal_ticks(group as usize, 5).unwrap(); assert_eq!(m.run(100).stop, esp32s31::Stop::Waiting);
+        m.advance_mwdt_xtal_ticks(group as usize, 1).unwrap(); assert_eq!(m.run(100).stop, esp32s31::Stop::MwdtReset { group: group as usize, action: esp32s31::mwdt::Reset::System });
+        assert!(m.bus.first_fault.is_none()); assert_eq!(m.advance_mwdt_xtal_ticks(usize::MAX, 1), Err(emu_core::Fault::Unmapped));
+        eprintln!("S31 MWDT group={group} initial-steps={} ISR-steps={}", run.steps, irq.steps);
+    }
+}
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_RTC_TIMER_ELF to rtc-timer-probe.elf"]
+fn external_s31_rtc_counter_snapshot_manual_and_interpreter_clock() {
+    let path = std::env::var("S31_RTC_TIMER_ELF").expect("build firmware/s31-uart-probe and set S31_RTC_TIMER_ELF");
+    let elf = std::fs::read(path).expect("read S31_RTC_TIMER_ELF");
+    for mode in 0u32..4 {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        m.bus.load(0x2f070000, &u32::from(mode != 0).to_le_bytes(), 4).unwrap();
+        if mode == 0 { m.advance_rtc_ticks(0x1_ffff_fffe); }
+        m.set_rtc_timer_from_cpu(mode == 1);
+        if mode == 3 { m.bus.permissions.write(0x207067f0, 1).unwrap(); m.bus.permissions.write(0x20706024, 0).unwrap(); }
+        let run = m.run(10_000);
+        match mode {
+            0 | 1 => { assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 RTC SNAPSHOT PASS\n"); assert_eq!(m.bus.rtc_timer.counter(), 0); }
+            2 => { assert!(matches!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_)))); assert_eq!(m.bus.uart0.tx_out, b"S31 RTC SNAPSHOT FAIL\n"); }
+            _ => { assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(5))); let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!((f.address, f.reason), (0x20800028, emu_core::Fault::Prohibited)); assert!(m.bus.uart0.tx_out.is_empty()); }
+        }
+        if mode != 3 { assert!(m.bus.first_fault.is_none()); }
+        eprintln!("S31 RTC snapshot mode={mode} steps={} stop={:?}", run.steps, run.stop);
+    }
+}
