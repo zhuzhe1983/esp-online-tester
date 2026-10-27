@@ -37,3 +37,5 @@ python tools/rebuild-product-model.py build m5stack-k131-v11 --scratch <scratch-
 ```
 
 [Checks](evidence/airquality-v11/checks.json): current stable Rust 1.99.1, both warning-denying Clippy commands, 1,439 Rust tests/132 groups, 11 production WASM scenarios, 100 platform tests, schema, real recording, timing/BLE/worker checks, 111,126 WASM JIT cases and 24 GPIO waveform cases passed. Initial missing ignored ROM and missing mapping-amendment evidence were corrected, then the affected full suites rerun; no golden regeneration or test weakening. No CPU/bus/S3-core hot path changed in this variant slice.
+
+The additional [CPU guard](evidence/airquality-v11/cpu.json) ran five alternating 30-guest-second hello pairs on S3/C3/C6 against fixed main84e67571 binaries. Median user-time deltas were 0%, +0.408%, 0%; UART, instruction counts and cycles match in every pair. All task browsers, guests and builds were closed during timing. This cross-revision guard does not attribute an optimization; no Pocket run is required because the S3 core is unchanged. Reuse `docs/platform/evidence/airquality/cpu.py --baseline-bin <fixed-main-bin-directory> --output <receipt.json>`.
