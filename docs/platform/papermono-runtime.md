@@ -4,6 +4,12 @@
 
 这是一条已验证的部分兼容路径，未做实机对照。PaperMono 和 Lite 共用此显示、按键与触摸路径；NFC 还未实现，官方固件因此检测为 Lite，不能以它证明 Pro 的 NFC/LoRa 功能可用。
 
+### 为什么完整版没有显示 LoRa 测试
+
+UserDemo 的 `Hal::detectBoardVariant()` 给 NFC 上电后，从 I2C `0x50` 读取身份寄存器 `0x7F`；只有类型为 `0x05` 且 revision 非零，才选择 `BoardVariant::Pro`，否则选择 Lite。`main.cpp` 仅在 `hasNfcHardware()` 为真时安装 NFC 和 LoRa 测试，`hal_display.cpp` 与 Wi-Fi 页面也随板型切换背景和区域大小。因此当前模拟器里的大块 Wi-Fi 区域是固件自行选择的 Lite 布局，不是网页遮挡了 LoRa 控件。依据为上述固定版本官方源码，不能据此断言用户实机使用了完全相同的二进制。
+
+后续适配顺序：实现有供电门控的 NFC 寄存器/命令模型，分别验证 PaperMono 与 Lite 的板型识别；再接入 LoRa 的 SPI、BUSY/IRQ 和收发行为，验证官方测试页面与真实客体输出。不能只返回一个身份值或由前端画出 LoRa 菜单，就标为 NFC/LoRa 已适配。
+
 ## 已实现的硬件路径
 
 | 部件 | 路径与验证范围 |
