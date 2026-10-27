@@ -33,20 +33,20 @@
   },
   "stats": {
     "t": "stat",
-    "time": 11.44,
-    "insns": 707570081,
-    "frames": 5,
+    "time": 16.1,
+    "insns": 954076842,
+    "frames": 7,
     "behind": 0,
     "resyncs": 0,
     "speed": null,
     "cam": 0,
     "gpio_in": "cfffffff9c7f",
-    "mips": 90.47198518501607
+    "mips": 37.75999250940688
   },
   "stages": [
     {
       "name": "home",
-      "guestSeconds": 8.023163275,
+      "guestSeconds": 8.0245675,
       "frameNumber": 3,
       "blackPixels": 41646,
       "sha256": "47c75a5ec03e9aac16a9ecd8498a24ec5e7a70f298be2db135f7f4b3f5459274",
@@ -54,7 +54,7 @@
     },
     {
       "name": "settings",
-      "guestSeconds": 9.214141979166667,
+      "guestSeconds": 9.216609041666667,
       "frameNumber": 4,
       "blackPixels": 50067,
       "sha256": "1534640625ca97463dad70ecead1f956f681bf5664903c7365601b5a5b501122",
@@ -62,10 +62,18 @@
     },
     {
       "name": "cover-home",
-      "guestSeconds": 11.451976395833332,
-      "frameNumber": 5,
-      "blackPixels": 50067,
-      "sha256": "1534640625ca97463dad70ecead1f956f681bf5664903c7365601b5a5b501122",
+      "guestSeconds": 14.447348875,
+      "frameNumber": 6,
+      "blackPixels": 50237,
+      "sha256": "d459d32fab8976a8bdfd09cdff335dc04eecbce1991fb359121b6432100a19aa",
+      "status": "running"
+    },
+    {
+      "name": "volume-up",
+      "guestSeconds": 16.118945208333333,
+      "frameNumber": 7,
+      "blackPixels": 50495,
+      "sha256": "c35f3ed2fe01d3b520afe0648452921c4a496f50db48fe27b02d1a174702aa69",
       "status": "running"
     }
   ],
@@ -80,7 +88,7 @@
       },
       "receipt": {
         "delivery": "queued",
-        "guestTime": 8.023969604166666,
+        "guestTime": 8.0245675,
         "frame": {
           "width": 480,
           "height": 800
@@ -97,7 +105,7 @@
       },
       "receipt": {
         "delivery": "queued",
-        "guestTime": 8.186853941666667,
+        "guestTime": 8.185316458333334,
         "frame": {
           "width": 480,
           "height": 800
@@ -113,7 +121,7 @@
       },
       "receipt": {
         "delivery": "queued",
-        "guestTime": 9.215361941666666,
+        "guestTime": 9.216609041666667,
         "frame": {
           "width": 480,
           "height": 800
@@ -129,7 +137,39 @@
       },
       "receipt": {
         "delivery": "queued",
-        "guestTime": 9.924040979166667,
+        "guestTime": 9.921129458333333,
+        "frame": {
+          "width": 480,
+          "height": 800
+        }
+      }
+    },
+    {
+      "type": "input",
+      "event": {
+        "type": "button",
+        "id": "volume-up",
+        "pressed": true
+      },
+      "receipt": {
+        "delivery": "queued",
+        "guestTime": 14.448868375,
+        "frame": {
+          "width": 480,
+          "height": 800
+        }
+      }
+    },
+    {
+      "type": "input",
+      "event": {
+        "type": "button",
+        "id": "volume-up",
+        "pressed": false
+      },
+      "receipt": {
+        "delivery": "queued",
+        "guestTime": 14.601442541666668,
         "frame": {
           "width": 480,
           "height": 800
@@ -137,11 +177,16 @@
       }
     }
   ],
-  "failure": {
-    "message": "Home hold must change actual guest output",
-    "code": "ERR_ASSERTION"
-  },
-  "elapsedMs": 18964,
+  "failure": null,
+  "elapsedMs": 18172,
   "privacy": "No serial logs, emulated identifiers or screenshots retained. Raw observations remain in ignored output/.",
-  "scope": "Official 2.0.53 boot/home and touch-to-settings verified. Board-button waveforms tested; full user-visible button behavior and recording remain in progress."
+  "scope": "Official 2.0.53 home, touch-to-settings, cover-home release return, volume-up actual firmware log and changed framebuffer.",
+  "observedFirmwareMarkers": [
+    "HomeScreen: launch 设置",
+    "SettingsScreen: settings ready",
+    "LVAdapterDisplay: touch down x=80 y=900 vk_home",
+    "VkKey: vk_home long-press no-op (screen=settings)",
+    "ScreenCommon: -> home",
+    "MetalioEInk4Board: VOLUME_UP (P1.0): volume=80"
+  ]
 }

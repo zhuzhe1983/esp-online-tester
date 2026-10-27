@@ -41,7 +41,7 @@ const png = frame => {
 };
 let serial='',emulator='', latestFrame=null, lastSecond=-1;const inputs=[];
 const runtime=createPlatformRuntime({catalog,fetchImpl,workerFactory,baseUrl:'https://platform.example/platform/index.html',assetBaseUrl:'https://platform.example/',onEvent(event){
-  if(event.type==='serial'&&event.source==='uart0'){serial+=event.data;process.stdout.write(event.data);}
+  if(event.type==='serial'&&event.source!=='emulator'){serial+=event.data;process.stdout.write(event.data);}
   if(event.type==='serial'&&event.source==='emulator')emulator+=event.data;
   if(event.type==='frame')latestFrame=event;
   if(event.type==='input')inputs.push(event);
@@ -75,7 +75,7 @@ try {
   const scene=createDefaultScene(catalog,productId);await runtime.configure(scene);await runtime.loadFirmware({url,sha256:expectedHash});await runtime.start();
   await waitGuest(seconds);await checkpoint('home');await tap(395,670);await checkpoint('settings');
   assert.notEqual(stages[0].sha256,stages[1].sha256,'Touch must change actual guest output');
-  await button(['home'],0.7);await checkpoint('cover-home');
+  await button(['home'],0.7);await waitGuest((await queryClock())+3);await checkpoint('cover-home');
   assert.notEqual(stages[1].sha256,stages[2].sha256,'Home hold must change actual guest output');
   await button(['volume-up'],0.15);await checkpoint('volume-up');
   assert.ok(inputs.some(e=>e.event?.id==='home'&&e.receipt?.delivery==='queued'),'Semantic board button must reach the worker');

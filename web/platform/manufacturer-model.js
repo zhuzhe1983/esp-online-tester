@@ -97,6 +97,18 @@ export function createManufacturerModel(product, screenTexture) {
       for(const name of knob.parts){const mesh=parts[name];mesh.position.sub(pivot.position);pivot.add(mesh);mesh.userData.potentiometer={id:knob.id,pivot};}
       (group.userData.potentiometers ||= []).push(pivot);
     }
+    // Photo-aligned cover keys are separate from the display's native touch
+    // range. Invisible hit meshes leave printed art/materials unchanged.
+    for(const region of metadata.presentation?.buttons || []) {
+      if(!product.controls?.some(c=>c.id===region.id && c.type==='button'))throw Error('Unknown cover button');
+      const size=region.sizeMm,pos=region.positionMm;
+      if(!Array.isArray(size)||size.length!==2||!size.every(v=>Number.isFinite(v)&&v>0&&v<=5000)||!Array.isArray(pos)||pos.length!==3||!pos.every(Number.isFinite)||!['circle','capsule','rectangle'].includes(region.shape))throw Error('Invalid cover button region');
+      let geometry;
+      if(region.shape==='circle')geometry=new THREE.CircleGeometry(Math.min(...size)/2,48);
+      else if(region.shape==='capsule'){const [w,h]=size,r=Math.min(w,h)/2,l=w/2-r,shape=new THREE.Shape();if(w<h)throw Error('Cover capsule width must cover its height');shape.moveTo(-l,-r);shape.lineTo(l,-r);shape.absarc(l,0,r,-Math.PI/2,Math.PI/2);shape.lineTo(-l,r);shape.absarc(-l,0,r,Math.PI/2,Math.PI*1.5);geometry=new THREE.ShapeGeometry(shape,24);}
+      else geometry=new THREE.PlaneGeometry(...size);
+      const mesh=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));mesh.name=`cover-key:${region.id}`;mesh.position.set(...pos);mesh.rotation.set(...vector(region.rotation));mesh.userData={control:region.id,inputOccluder:true};parts[mesh.name]=mesh;buttons.push(mesh);group.add(mesh);
+    }
     const display=metadata.presentation?.screen;
     if(display&&product.display){screen=new THREE.Mesh(display.shape==='circle'?new THREE.CircleGeometry(display.sizeMm[0]/2,96):new THREE.PlaneGeometry(...display.sizeMm),new THREE.MeshBasicMaterial({map:screenTexture,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));screen.position.set(...vector(display.positionMm));screen.rotation.set(...vector(display.rotation));screen.name='live-display';screen.userData.screen=true;parts.screen=screen;group.add(screen);}
     // Some devices (AtomS3) use the whole non-touch display cover as a physical button.

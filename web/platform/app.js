@@ -407,7 +407,11 @@ function renderControls() {
   const controls = product()?.controls.filter(isPressControl) || [];
   const bindings = $('key-bindings'), buttons = $('device-buttons'); bindings?.replaceChildren(); buttons?.replaceChildren();
   const keyboardOpen = $('device-keyboard')?.open || false; $('device-keyboard')?.remove();
-  let matrixBindings=null,matrixButtons=null;
+  let matrixBindings=null,matrixButtons=null,buttonTarget=buttons;
+  if(buttons && controls.filter(control=>control.type==='button').length>3){
+    const menu=element('details','device-button-menu');menu.append(element('summary','','按键'));
+    buttonTarget=element('div','device-button-options');menu.append(buttonTarget);buttons.append(menu);
+  }
   if(controls.some(control=>control.type==='matrix-key')) {
     if(bindings){const details=element('details','matrix-key-bindings'),summary=element('summary','','键盘映射');matrixBindings=element('div','matrix-bindings-grid');details.append(summary,matrixBindings);bindings.append(details);}
     if(buttons){const details=element('details','device-keyboard');details.id='device-keyboard';details.open=keyboardOpen;details.append(element('summary','','屏幕键盘'));matrixButtons=element('div','device-matrix');details.append(matrixButtons);buttons.closest('.transport').after(details);}
@@ -429,7 +433,7 @@ function renderControls() {
       button.append(document.createTextNode(({Backspace:'⌫',Enter:'↵',Space:'␣',Shift:'⇧'})[label]||label));button.title=control.name+(code?` · ${code}`:''); if (code) button.append(element('kbd', '', code.replace(/^Key/, '')));
       button.addEventListener('pointerdown', event => { if (event.button !== 0) return; event.preventDefault(); button.setPointerCapture(event.pointerId); sendInput({type: 'button', id: control.id, pressed: true}, `pointer:${event.pointerId}`); });
       for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(type, event => sendInput({type: 'button', id: control.id, pressed: false}, `pointer:${event.pointerId}`));
-      button.addEventListener('click', event => { if (event.detail === 0) { void sendInput({type: 'button', id: control.id, pressed: true}, 'activation'); void sendInput({type: 'button', id: control.id, pressed: false}, 'activation'); } }); if(control.type==='matrix-key'){button.classList.add('matrix-key');button.style.gridRow=control.row+1;button.style.gridColumn=control.column+1;matrixButtons.append(button);}else buttons.append(button);
+      button.addEventListener('click', event => { if (event.detail === 0) { void sendInput({type: 'button', id: control.id, pressed: true}, 'activation'); void sendInput({type: 'button', id: control.id, pressed: false}, 'activation'); } }); if(control.type==='matrix-key'){button.classList.add('matrix-key');button.style.gridRow=control.row+1;button.style.gridColumn=control.column+1;matrixButtons.append(button);}else buttonTarget.append(button);
     }
   }
 }

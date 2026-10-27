@@ -27,3 +27,8 @@ node tools/probe-official-ink4.mjs \
 本阶段双 Clippy、1393项 Rust CI 测试（include-ignored / skip external）、90项平台 Node 测试、11个真实WASM demo、既有真实录制回归通过，黄金输出未更新。浏览器从实际运行按钮加载远程官方镜像，30.12客体秒、1,206,711,719指令、4帧，无runtime错误。详见 [检查](evidence/ink4-runtime/checks.json) 和 [官方WASM](evidence/ink4-runtime/official-wasm.json)。新控制器完整录制、3D盖板命中与SD继续交付，未计为此阶段通过。
 
 CPU 对照：相对 df198a74 同机 release 二进制，S3/C3/C6 hello各交替五对，客体30秒；user中位数分别0.281033→0.285103秒（+1.448%）、2.598123→2.627946秒（+1.148%）、1.833083→1.820878秒（−0.666%）。各组指令数和stdout SHA完全一致；样本较短，不据此宣称加速或零成本。基线/候选二进制与输入hash、命令和全部样本见 [CPU收据](evidence/ink4-runtime/cpu.json)。测量时所有协作任务无编译/客体/浏览器负载，保留用户静态服务器。未修改S3核心，无Pocket对照。最初解析器误将wall时间纳入指令串、C3命令误带不支持的PSRAM选项；两次未形成完整组的尝试丢弃，仅保留修正后完整五对。
+
+
+后续触摸/UI 修正：目录补齐 `runtime.touch`，修复浏览器3D/2D输入开关与已实现触摸器件不一致。透明盖板印刷的现有 alpha-aware 命中逻辑实测正常，未修改。三个盖板键按保留照片印刷位置增加独立圆形/胶囊命中区，CST816S原生坐标仍由板型发送；CAD三角形、位置与印刷纹理不变，四个重建文件逐字节一致。六枚备用按钮改成中文，超过三枚时收进「按键」菜单；工作台和480px mini无水平溢出。
+
+真实鼠标点3D设置图标产生客体(392,675)按下/释放，官方进入SettingsScreen；点击橙色主页盖板键，官方处理vk_home并回到主页。新探针同时采集USB控制台，覆盖音量上键的实际 `volume=80` 日志与刷新输出。首轮Home探针只等1.5客体秒，捕捉到固件已切页但尚未刷新的旧帧；延长观察至其刷新完成后通过。保留 [首轮失败](evidence/ink4-runtime/official-wasm-initial.json)，修正后的 [WASM收据](evidence/ink4-runtime/official-wasm.json) 和 [3D/UI收据](evidence/ink4-runtime/touch-ui.json) 分别记录观察范围。长按Home在设置页会由固件报告no-op，释放后的默认返回才回主页；不把固件本身的菜单规则改成前端强制跳转。新设备录制导出已能保存触摸和语义键事件，但使用旧stats观察时间的浏览器脚本曾在重启初始阶段发送输入，本轮不将其计为有效回放通过。
