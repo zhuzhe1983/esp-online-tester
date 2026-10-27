@@ -1,5 +1,19 @@
 //! Real source-built SRAM fixture; no generated ELF/BIN is published.
 #[test]
+#[ignore = "set S31_ROM_ELF to Espressif 20260528 esp32s31_rev0_rom.elf"]
+fn external_s31_real_rom_unpacks_elf_initializers() {
+    use emu_core::Bus;
+    let rom = std::env::var("S31_ROM_ELF").expect("set S31_ROM_ELF to Espressif 20260528 esp32s31_rev0_rom.elf");
+    let mut m = esp32s31::Bringup::new(); m.load_rom_elf(&std::fs::read(rom).expect("read S31_ROM_ELF")).unwrap();
+    assert_eq!(m.bus.read32(0x2f07fff4), Ok(0)); // Host did not initialize guest RAM.
+    let mut steps = 0;
+    while m.cpu.pc != 0x2f801852 && steps < 10_000 {
+        assert_eq!(m.run(1).stop, esp32s31::Stop::Budget); steps += 1;
+    }
+    assert_eq!(m.cpu.pc, 0x2f801852); assert_eq!(m.bus.read32(0x2f07fff4), Ok(0x2f84882c));
+    assert!(m.bus.first_fault.is_none()); eprintln!("S31 real ROM unpack loop completed in {steps} instructions");
+}
+#[test]
 #[ignore = "build firmware/s31-uart-probe and set S31_CLOCKS_ELF and S31_ROM_ELF (20260528 S31 ROM)"]
 fn external_s31_rom_clock_and_uart_reset_fixture() {
     let path = std::env::var("S31_CLOCKS_ELF").expect("build firmware/s31-uart-probe and set S31_CLOCKS_ELF");
@@ -131,4 +145,56 @@ fn external_s31_wdt_irq_and_reset_fixture() {
     m.advance_rtc_ticks(2); assert_eq!(m.run(100).stop, esp32s31::Stop::Waiting);
     m.advance_rtc_ticks(1); assert_eq!(m.run(100).stop, esp32s31::Stop::Reset(esp32s31::rtc_wdt::ResetRequest::System));
     assert!(m.bus.first_fault.is_none());
+}
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_USB_ELF to usb-probe.elf"]
+fn external_s31_usb_packets_and_irq_fixture() {
+    let path = std::env::var("S31_USB_ELF").expect("build firmware/s31-uart-probe and set S31_USB_ELF");
+    let elf = std::fs::read(path).expect("read S31_USB_ELF");
+    let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+    assert_eq!(m.run(10_000).stop, esp32s31::Stop::Budget);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 USB FULL WAIT\n");
+    assert_eq!(m.bus.usb_console.host_receive(), None);
+    assert_eq!(m.run(10_000).stop, esp32s31::Stop::Budget); // No host: no fake progress.
+    assert_eq!(m.bus.uart0.tx_out, b"S31 USB FULL WAIT\n");
+    m.bus.usb_console.attach_host(true);
+    assert_eq!(m.bus.usb_console.host_receive(), Some((0..64).collect()));
+    assert_eq!(m.run(10_000).stop, esp32s31::Stop::Budget);
+    assert_eq!(m.bus.usb_console.host_receive(), Some(vec![])); // Guest WR_DONE ZLP.
+    assert_eq!(m.run(10_000).stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 USB FULL WAIT\nS31 USB RX READY\n");
+    m.cpu.write_csr(riscv_rv32::state::csr::MINTTHRESH, 0xff);
+    m.bus.usb_console.host_send(b"A").unwrap();
+    assert_eq!(m.run(50).stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.usb_console.host_receive(), None);
+    m.cpu.write_csr(riscv_rv32::state::csr::MINTTHRESH, 0x1f);
+    let run = m.run(10_000); assert_eq!(run.stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.usb_console.host_receive(), Some(b"A".to_vec()));
+    assert_eq!(m.bus.uart0.tx_out, b"S31 USB FULL WAIT\nS31 USB RX READY\nS31 USB IRQ ECHO PASS\n");
+    assert_eq!(m.cpu.mil, 0); assert!(m.bus.first_fault.is_none());
+    eprintln!("S31 USB IRQ guest steps={} pc={:#010x}", run.steps, m.cpu.pc);
+}
+
+#[test]
+#[ignore = "set S31_ROM_ELF to the fixed public 20260528 esp32s31_rev0_rom.elf"]
+fn external_s31_real_rom_usb_and_flash_boot_banner() {
+    let path = std::env::var("S31_ROM_ELF").expect("set S31_ROM_ELF to the fixed public 20260528 ROM ELF");
+    let elf = std::fs::read(path).expect("read S31_ROM_ELF");
+    for (strap, mode) in [(0, "USB_BOOT"), (0x12, "SPI_FAST_FLASH_BOOT")] {
+        let mut m = esp32s31::Bringup::new(); m.load_rom_elf(&elf).unwrap();
+        m.bus.pads.strap = strap; m.bus.usb_console.attach_host(true);
+        let mut steps = 0; let mut packets = Vec::new();
+        let stop = loop {
+            let run = m.run(1000); steps += run.steps;
+            if let Some(packet) = m.bus.usb_console.host_receive() { packets.push(packet); }
+            if run.stop != esp32s31::Stop::Budget { break run.stop; }
+            assert!(steps < 100_000, "real ROM failed to reach the documented unimplemented monitor boundary");
+        };
+        let uart = format!("ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:{strap:#x} ({mode})\r\n");
+        assert_eq!(m.bus.uart0.tx_out, uart.as_bytes());
+        assert_eq!(packets.len(), 3); assert_eq!(packets.concat(), uart.as_bytes());
+        assert_eq!(stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(5)));
+        let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!(f.pc, 0x2f806c3a); assert_eq!(f.address, 0x2d002114);
+        eprintln!("S31 real ROM strap={strap:#x} steps={steps} UART+USB={}B", uart.len());
+    }
 }

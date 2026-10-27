@@ -7,6 +7,8 @@ pub mod cache;
 pub mod pads;
 pub mod efuse;
 pub mod clocks;
+pub mod usb_console;
+mod rom;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};
 
@@ -44,28 +46,15 @@ impl Bringup {
         Ok(())
     }
 
-    /// Inspect the beginning of the real mask ROM, without patching instructions. Espressif's
-    /// 20260528 S31 ELF has a non-executable .eh_frame PT_LOAD at zero; it is debugger metadata,
-    /// not mapped chip memory. ROM-side copies of RAM initializer tables are not reconstructed
-    /// yet, so this is only an early-ROM probe, not a complete reset/boot implementation.
+    /// Load the real mask ROM and reconstruct its omitted ROM-side initializer payloads
+    /// from matching ELF RAM sections. The guest reset/unpack loop still performs every
+    /// copy itself. No ROM opcode, jump target or guest data value is invented.
     pub fn load_rom_elf(&mut self, bytes: &[u8]) -> Result<(), String> {
         if bytes.get(18..20) != Some(&[0xf3, 0][..]) { return Err("S31 ROM probe needs a RISC-V ELF32".into()); }
         let elf = esp_soc::elf::parse(bytes)?;
         if elf.entry != bus::ROM_BASE { return Err("S31 ROM reset entry must be 0x2f800000".into()); }
-        for seg in &elf.segments {
-            if seg.vaddr == 0 && seg.flags == 4 { continue; }
-            self.bus.check_load(seg.vaddr, seg.memsz as usize)?;
-        }
-        for section in &elf.sections {
-            if !section.is_bss && !section.data.is_empty() { self.bus.check_load(section.addr, section.data.len())?; }
-        }
-        for seg in &elf.segments {
-            if seg.vaddr == 0 && seg.flags == 4 { continue; }
-            self.bus.load(seg.vaddr, &seg.data, seg.memsz as usize)?;
-        }
-        for section in &elf.sections {
-            if !section.is_bss && !section.data.is_empty() { self.bus.load(section.addr, &section.data, section.data.len())?; }
-        }
+        let image = rom::image(&elf)?;
+        self.bus.load(bus::ROM_BASE, &image, image.len())?;
         self.cpu.pc = elf.entry;
         self.cpu.x[2] = 0x2f07_cfb0; // v6.1 S31 soc.h: SOC_ROM_STACK_START.
         Ok(())

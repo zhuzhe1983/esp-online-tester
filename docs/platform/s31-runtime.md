@@ -421,3 +421,63 @@ zero for unmapped memory, and all sampled eFuse controls—including documented
 nonzero reset registers—returned zero. Those observations do not identify real
 Plus eFuse contents and are not copied into this model as a hardware profile.
 See `evidence/s31-bringup/efuse-clocks.json` for source hashes, exact outcomes and limits.
+
+## USB console packets and actual ROM initializer execution
+
+The standalone USB Serial/JTAG EP1 subset now models the 64-byte TX FIFO, explicit
+WR_DONE/automatic full-packet commit, RX packet consumption, and receive/empty/IN-token
+raw interrupts. Source2 routes through the existing S31 matrix and standard CLIC.
+The APB clock gates guest accesses and host traffic. Host packets are explicit inputs;
+without a connected functional peer a full TX packet remains pending. There is no
+fabricated periodic host polling, USB enumeration, PHY/JTAG/SOF behavior, reset or
+48-MHz timing. Unsupported interrupt enables and register windows fault explicitly.
+The example's `--usb-host` flag opts into a functional peer polled every 1000 requested
+instructions; this quantum is not a USB frame or timing guarantee.
+
+This exposed a separate defect in the initial ROM inspection loader. The public
+20260528 ELF carries initialized RAM sections separately from its ROM segments. Its
+actual `_init` copy table uses 12-byte `(RAM start,RAM end,ROM source)` records. Missing
+ROM-side source bytes caused the guest copy loop to overwrite its own interface-table
+pointer with zero, later trapping in the USB timeout path. The loader now reconstructs
+only the 19 explicitly matched payloads (1232 bytes) from this same ELF. It checks all
+bounds, alignment, table coverage and overlapping data; missing or conflicting data
+fails before changing guest memory. No ROM instruction or pointer value is invented,
+and no host code performs the guest's RAM initialization. A fixed-ROM test observes
+zero at RAM `0x2f07fff4` before execution and the ELF's `0x2f84882c` value after the
+real copy/clear loops complete in 6303 instructions at `0x2f801852`.
+
+LP_SYSTEM's 16 scratch words at `0x2070002c..0x20700068` now retain actual guest writes,
+with the header's POR-zero defaults. IDF `rtc.h` names STORE4 bit0 as ROM log control.
+Sleep/reset-domain retention is still absent; the words persist only for the lifetime
+of the current development bus. No default strap or product eFuse data was changed.
+
+The source USB fixture sends bytes 0..63, waits for a real host drain, submits a ZLP,
+then receives `A` through a guest ISR and emits an actual one-byte echo packet. With
+no host the same guest remains in its full-FIFO poll; with CLIC threshold masked the
+pending receive cannot execute the handler. Its completed ISR path prints
+`S31 USB IRQ ECHO PASS`. The fixture and generated binaries are test-only, not
+catalog firmware.
+
+The unmodified fixed ROM now emits complete banners through both UART and three USB
+packets. With explicit development strap 0 it reports USB_BOOT (85 bytes, 39232 steps);
+with explicit strap 0x12 it reports SPI_FAST_FLASH_BOOT (97 bytes, 42580 steps). The
+latter value is a caller-selected experiment, corroborated only by the earlier
+upstream emulator observation, not a measured Plus strap profile. Both stop on the
+same exact unimplemented read: BUS_MONITOR_CLOCK_GATE `0x2d002114`, PC `0x2f806c3a`,
+inside `ets_clk_assist_debug_clock_enable`. This is a supported startup-console
+boundary, not execution of the Plus flash bootloader or application.
+
+Bus-monitor capture/reset semantics, the SPI flash command engine, clock/PLL/PSRAM
+bring-up, the S31 ISA/second hart and Plus board devices remain outstanding. Product
+status remains unavailable. The next stage follows the actual monitor and Flash
+path; it must not replace unsupported reads with arbitrary success values.
+
+Validation: both stable Clippy targets pass; all1396 Rust tests (131 groups),32 S31
+unit tests,11 source/ROM tests, four platform Node files and nine existing WASM
+workloads pass, with unchanged goldens. Production WASM is byte-identical to the
+preceding stage. Five alternating hello pairs against freshly built main `a9375446`
+show S3 −1.62%, C3 +1.12%, C6 −0.33%, with exact instruction/cycle statistics and UART
+hashes. Main includes independent Guru/INK4 changes, so these are regression guards,
+not an attributed S31 speed result. No S3 core changed in this stage.
+[Functional evidence](evidence/s31-bringup/usb-rom.json),
+[CPU samples](evidence/s31-bringup/usb-rom-perf.json).

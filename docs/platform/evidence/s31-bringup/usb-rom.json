@@ -1,0 +1,189 @@
+{
+  "date": "2026-10-27",
+  "base": "be969f7a39f09dabc20f9e45e9caa33fcb2d00a6",
+  "scope": "Standalone S31 USB EP1 packet peer/IRQ, fixed ELF ROM payload reconstruction and LP scratch. Product INK4 Plus remains unavailable.",
+  "sources": "sources.json: fixed ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643 USB Serial/JTAG reg/LL, lp_system_reg/rtc.h, bus_monitor_reg (next boundary), fixed 20260528 public S31 ROM",
+  "usb": {
+    "base": "0x20391000",
+    "apbClock": "0x20587144 bit0",
+    "matrixSource": 2,
+    "packetBytes": 64,
+    "supported": "Guest byte FIFO, full/WR_DONE packet commit, explicit host consumption, RX packet/empty/IN token raw/ena/clear, clock gating, CLIC delivery",
+    "host": "Explicit attach_host/host_send/host_receive; no peer is attached by default. Example --usb-host drains after each1000-instruction batch; functional boundary only.",
+    "notImplemented": [
+      "Enumeration/EP0",
+      "PHY/JTAG/SOF",
+      "USB bus reset/detach endpoint reset",
+      "Line coding/control requests",
+      "Physical frame/48MHz timing",
+      "Zero-length OUT packet input"
+    ]
+  },
+  "romLoader": {
+    "elfSha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+    "tableStart": "0x2f83f30c",
+    "tableEnd": "0x2f83f570",
+    "entryBytes": 12,
+    "record": "RAM start,RAM end,ROM source",
+    "nonemptyRecords": 19,
+    "payloadBytes": 1232,
+    "method": "Place explicit matching ELF RAM-section bytes into their ROM-side source holes. Reject missing/misaligned/out-of-window/conflicting data. Guest _init executes every copy/clear operation.",
+    "observedRam": "0x2f07fff4 is zero immediately after load; after6303 guest instructions at PC0x2f801852 it equals exact ELF payload0x2f84882c.",
+    "romInstructionsModified": false,
+    "hostRamInitialization": false
+  },
+  "lpScratch": {
+    "range": "0x2070002c..0x20700068",
+    "words": 16,
+    "por": 0,
+    "effect": "Full32-bit software storage; STORE4 bit0 is ROM log control per rtc.h.",
+    "limitation": "Only current bus lifetime; reset/sleep-domain retention not implemented."
+  },
+  "fixtures": {
+    "artifacts": [
+      {
+        "path": "esp32s31/src/rom.rs",
+        "bytes": 5347,
+        "sha256": "f44015088b3ca3631d4bf586d12d1d4f97c8a0075fa782bf507f1e3eae76ab46"
+      },
+      {
+        "path": "esp32s31/src/usb_console.rs",
+        "bytes": 5167,
+        "sha256": "ce9d1ab49b71833120f9089265f2b784fb756ca1f31257a9cfd0dfe6aed34e6d"
+      },
+      {
+        "path": "firmware/s31-uart-probe/usb-probe.S",
+        "bytes": 2305,
+        "sha256": "6aac936908b14a6792ac266da751f01b6f9552ffd08533eb38e427c16e445cde"
+      },
+      {
+        "path": "output/s31-uart-probe/usb-probe.elf",
+        "bytes": 5724,
+        "sha256": "e035ae457a304f2ddfddc40e79cbc33482be3509a0330ef9572eccc68db4797f"
+      }
+    ],
+    "reproduce": "firmware/s31-uart-probe/README.md",
+    "compiler": "riscv32-esp-elf-gcc15.2.0 esp-15.2.0_20251204",
+    "sequence": [
+      "Guest writes bytes0..63; no host remains Budget after20000 instructions and prints only S31 USB FULL WAIT",
+      "Explicit host reads64 bytes; guest WR_DONE then produces exact empty ZLP",
+      "Guest waits at WFI; host sends A; threshold0xff prevents ISR/echo",
+      "Threshold0x1f permits real ISR/mret; actual echo packet A and S31 USB IRQ ECHO PASS"
+    ],
+    "finalGuestSteps": 146,
+    "finalGuestPc": "0x2f0000f2",
+    "generatedArtifactsPublished": false
+  },
+  "romObservations": [
+    {
+      "case": "Initial USB model with old ROM loader",
+      "steps": 15617,
+      "pc": "0x2f811d14",
+      "faultAddress": "0x00000000",
+      "uart": "ESP-ROM:esp32s31-20251218\r\nB",
+      "reason": "Guest unpack copied missing ROM-side zeros over interface table; retained as negative result."
+    },
+    {
+      "case": "Reconstructed ROM, no host,100000 budget",
+      "stop": "Budget",
+      "pc": "0x2f8036ce",
+      "firstFault": null,
+      "uart": "ESP-ROM:esp32s31-20251218\r\nB",
+      "limitation": "Observed pending USB/ROM delay only; no host traffic was fabricated."
+    },
+    {
+      "case": "Explicit strap0, packet peer attached",
+      "steps": 39232,
+      "usbPackets": 3,
+      "bytes": 85,
+      "uart": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x0 (USB_BOOT)\r\n"
+    },
+    {
+      "case": "Explicit strap0x12 before scratch model",
+      "steps": 8054,
+      "pc": "0x2f8047c0",
+      "faultAddress": "0x2070003c",
+      "uart": ""
+    },
+    {
+      "case": "Explicit strap0x12 with scratch and packet peer",
+      "steps": 42580,
+      "usbPackets": 3,
+      "bytes": 97,
+      "uart": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\n"
+    }
+  ],
+  "nextFault": {
+    "pc": "0x2f806c3a",
+    "address": "0x2d002114",
+    "access": "read32",
+    "exception": 5,
+    "register": "BUS_MONITOR_CLOCK_GATE",
+    "function": "ets_clk_assist_debug_clock_enable",
+    "sameForBothFinalStraps": true
+  },
+  "productBoundary": "No real Plus strap/OTP profile established. No official BIN changed or saved. Plus Flash bootloader/application/display not reached; catalog/default firmware unchanged.",
+  "validation": {
+    "stable": "rustc1.99.1 (58cf8f9c3 2026-10-13)",
+    "clippy": [
+      "cargo clippy --workspace --all-targets -- -D warnings",
+      "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings"
+    ],
+    "rust": {
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_",
+      "passed": 1396,
+      "groups": 131
+    },
+    "s31UnitTests": 32,
+    "s31SourceAndRomExternalTests": 11,
+    "platform": "4 required Node files passed",
+    "wasm": [
+      "hello",
+      "c3-hello",
+      "c6-hello",
+      "p4-hello",
+      "c6-energy-scan",
+      "c6-contiki",
+      "c6-contiki-net",
+      "c6-rpl-net",
+      "panel"
+    ],
+    "other": [
+      "WASM build/section check",
+      "own S31 wasm32 compile",
+      "native --bins build"
+    ],
+    "goldensChanged": false,
+    "productionWasm": {
+      "bytes": 3988256,
+      "sha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31",
+      "matchesPreviousStage": true
+    },
+    "negativeHarnessResults": [
+      "Initial targeted --skip external_s31_clocks did not match external_s31_rom_clock_and_uart_reset_fixture and omitted its S31_CLOCKS_ELF. Complete11-test rerun with all required inputs passed.",
+      "Initial stable Clippy rejected chunks_exact(12); replaced with as_chunks::<12>().0 after validating table multiple-of12. Both Clippy targets and tests then passed."
+    ],
+    "performance": "usb-rom-perf.json: maina9375446 fresh build,1 warmup +5 alternating pairs, exact guest stats/UART hash; S3\u22121.619%,C3+1.118%,C6\u22120.333%. Independent main changes prevent attributing differences to S31.",
+    "productionNativeCode": [
+      {
+        "binary": "esp32sim",
+        "section": "__TEXT,__text",
+        "bytes": 2451648,
+        "sha256": "c7a56e344138282e6c4c5b4903a547b6e88a1ab6b8f01d4c37d42aa7e22128be"
+      },
+      {
+        "binary": "esp32sim-c3",
+        "section": "__TEXT,__text",
+        "bytes": 2451648,
+        "sha256": "68dc7d7430af36b87d9c6c1f37d8d13d5c98a74d872281e50ddeb41093792e86"
+      },
+      {
+        "binary": "esp32sim-c6",
+        "section": "__TEXT,__text",
+        "bytes": 2451648,
+        "sha256": "757541708ed5de127937a92898cf6ebabc9891265fffffc633c437419a3c8047"
+      }
+    ]
+  },
+  "privacy": "Only public source/artifact hashes, commands, counts and relevant functional outcomes. No process inventory, user/host identifiers or firmware bytes retained."
+}

@@ -50,6 +50,19 @@ configuration remains; an APB module reset then restores the modeled register de
 Host checks verify computed clock/baud values and retain already-transmitted output.
 This does not measure physical UART/clock timing or prove PLL calibration.
 
+`usb-probe.S` fills the real EP1 FIFO with bytes 0..63 and waits for an explicitly
+attached functional host to consume it. The guest then submits a ZLP, configures
+USB receive source 2 through the matrix/CLIC, and waits at WFI. Host packet `A`
+triggers a guest ISR that validates and echoes the byte, clears RX interrupt and
+returns with `mret`. No host means no progress; a masked CLIC threshold prevents
+the ISR. This is a packet boundary model, not USB enumeration or physical timing.
+
+The separate fixed-ROM tests reconstruct ROM-side initializer bytes from the ELF,
+then verify the guest's own unpack loop installs the exact interface-table pointer.
+Explicit straps 0/0x12 and an attached packet peer produce USB/SPI Flash boot banners
+before the same documented unimplemented bus-monitor fault. They do not establish
+a real product strap or OTP profile, or a successful flash boot.
+
 ```sh
 RISCV_TOOLCHAIN_PREFIX=/path/to/riscv32-esp-elf- \
   bash firmware/s31-uart-probe/build.sh output/s31-uart-probe
@@ -62,6 +75,7 @@ S31_FLASH_WORKER_BIN="$PWD/output/s31-uart-probe/flash-worker.bin" \
 S31_PADS_ELF="$PWD/output/s31-uart-probe/pads-probe.elf" \
 S31_EFUSE_ELF="$PWD/output/s31-uart-probe/efuse-probe.elf" \
 S31_CLOCKS_ELF="$PWD/output/s31-uart-probe/clocks-probe.elf" \
+S31_USB_ELF="$PWD/output/s31-uart-probe/usb-probe.elf" \
 S31_ROM_ELF="$PWD/output/s31-sources/roms/esp32s31_rev0_rom.elf" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/probe.elf A
