@@ -10,14 +10,15 @@ import {createPlatformRuntime} from '../web/platform/runtime.js';
 import {createFat32Image} from '../web/platform/sd-card-image.js';
 import {createDefaultScene} from '../web/platform/catalog.js';
 
-const [url, expectedHash, output = 'output/official-papermono', duration = '30', scenario] = process.argv.slice(2);
+const [url, expectedHash, output = 'output/official-papermono', duration = '30', scenario, productId='m5stack-papermono'] = process.argv.slice(2);
 if (!url || !/^[a-f0-9]{64}$/.test(expectedHash || '') || !/^https:\/\//.test(url)) throw new Error('Usage: node tools/probe-official-papermono.mjs <https-url> <sha256> [output-dir] [guest-seconds]');
 const seconds = Number(duration); if (!(seconds > 0 && seconds <= 300)) throw new Error('Guest seconds must be 0…300');
 const clockTimeout = Number(process.env.ESP32SIM_PROBE_CLOCK_TIMEOUT_MS || 10000);
 if (!(clockTimeout >= 1000 && clockTimeout <= 120000)) throw new Error('Clock timeout must be 1000…120000 ms');
 const root = new URL('../', import.meta.url), catalog = {};
 for (const name of ['products','accessories','firmwares']) catalog[name] = JSON.parse(await readFile(new URL(`web/platform/catalog/${name}.json`,root))).items;
-const product=catalog.products.find(p=>p.id==='m5stack-papermono');product.runtime={...product.runtime,board:'papermono',status:'partial',flashMb:16,psramMb:8,touch:true};product.display={...product.display,width:480,height:800,touch:true};
+assert.ok(['m5stack-papermono','m5stack-c153-lite'].includes(productId),'Choose full PaperMono or Lite');
+const product=catalog.products.find(p=>p.id===productId);assert.ok(product.runtime.board,'Catalog must declare the real board');
 await mkdir(output,{recursive:true});
 const fetchImpl = async (value,options) => new URL(value).hostname === 'platform.example' ? new Response(await readFile(new URL(`web${new URL(value).pathname}`,root))) : fetch(value,options);
 let queryClock;
@@ -39,9 +40,10 @@ const png = frame => {
   const rows=Buffer.alloc((frame.width*4+1)*frame.height);for(let y=0;y<frame.height;y++)rows.set(frame.pixels.subarray(y*frame.width*4,(y+1)*frame.width*4),y*(frame.width*4+1)+1);
   return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',header),chunk('IDAT',deflateSync(rows)),chunk('IEND',Buffer.alloc(0))]);
 };
-let serial='', latestFrame=null, lastSecond=-1;const inputs=[];
+let serial='',emulator='', latestFrame=null, lastSecond=-1;const inputs=[];
 const runtime=createPlatformRuntime({catalog,fetchImpl,workerFactory,baseUrl:'https://platform.example/platform/index.html',assetBaseUrl:'https://platform.example/',onEvent(event){
   if(event.type==='serial'&&event.source==='uart0'){serial+=event.data;process.stdout.write(event.data);}
+  if(event.type==='serial'&&event.source==='emulator')emulator+=event.data;
   if(event.type==='frame')latestFrame=event;
   if(event.type==='input')inputs.push(event);
   if(event.type==='stats'){const second=Math.floor(Number(event.stats.time));if(second!==lastSecond){lastSecond=second;console.log(JSON.stringify({guestSeconds:second,insns:event.stats.insns}));}}
@@ -53,7 +55,7 @@ const checkpoint=async name=>{
   const nonBlack=latestFrame.pixels.reduce((n,v,i)=>n+(i%4!==3&&v!==0?1:0),0);
   const state=await runtime.observe(),sha256=createHash('sha256').update(latestFrame.pixels).digest('hex');
   await writeFile(`${output}/${name}.png`,png(latestFrame));
-  stages.push({name,guestSeconds:await queryClock(),lastStatSeconds:state.stats.time,frameNumber:latestFrame.frameNumber,nonBlackChannels:nonBlack,sha256,leds:state.leds,sdCard:state.sdCard,brightness:regionHash(latestFrame,0,118,94,28),mute:regionHash(latestFrame,366,480,107,42)});
+  stages.push({name,guestSeconds:await queryClock(),lastStatSeconds:state.stats.time,frameNumber:latestFrame.frameNumber,nonBlackChannels:nonBlack,sha256,leds:state.leds,sdCard:state.sdCard,nfc:regionHash(latestFrame,122,361,230,49),brightness:regionHash(latestFrame,0,118,94,28),mute:regionHash(latestFrame,366,480,107,42)});
   console.log('CHECKPOINT',JSON.stringify(stages.at(-1)));
 };
 const waitGuest=async target=>{
@@ -72,7 +74,7 @@ const tap=async(x,y)=>{
   await waitGuest((await queryClock())+1);
 };
 try{
-  const scene=createDefaultScene(catalog,'m5stack-papermono');scene.firmware=null;
+  const scene=createDefaultScene(catalog,productId);scene.firmware=null;
   await runtime.configure(scene);await runtime.loadFirmware({url,sha256:expectedHash});
   if(scenario==='sd-rgb') {
     // Public generated data only: a short root-directory file proves guest directory reads.
@@ -83,6 +85,12 @@ try{
   }
   await runtime.start();
   await waitGuest(seconds);await checkpoint('boot');
+  if(scenario==='nfc'){
+    assert.equal(productId,'m5stack-papermono');assert.match(serial,/Board variant detected: Pro/);
+    await tap(423,385);await checkpoint('nfc-started');await waitGuest((await queryClock())+12);await checkpoint('nfc-finished');
+    assert.equal(stages.at(-1).nfc,'759d6aec3de60367a804f0589b1e5447597fd16a756decc8b067f9062b37b339','Fixed UserDemo 1.2.0 must finish with the verified NO CARD glyph region, not merely enter SCANNING');
+  }
+  if(scenario==='lite')assert.match(serial,/Board variant detected: Lite/);
   if(scenario==='controls'){
     await button(['button-b'],0.15);await checkpoint('button-b');
     await button(['button-a'],0.15);await checkpoint('button-a');
@@ -110,7 +118,8 @@ try{
 finally{
   const state=await runtime.observe();
   await writeFile(`${output}/serial.log`,serial);
+  await writeFile(`${output}/emulator.log`,emulator);
   if(latestFrame)await writeFile(`${output}/frame.png`,png(latestFrame));
-  await writeFile(`${output}/receipt.json`,JSON.stringify({url,expectedHash,wasmSha256:createHash('sha256').update(await readFile(new URL('web/wasm/esp32sim.wasm',root))).digest('hex'),firmware:state.firmware,storage:state.storage,sdCard:state.sdCard,leds:state.leds,stats:state.stats,frame:latestFrame?{width:latestFrame.width,height:latestFrame.height,frameNumber:latestFrame.frameNumber,sha256:createHash('sha256').update(latestFrame.pixels).digest('hex')}:null,lastError:state.lastError,inputs,stages,failure,elapsedMs:Date.now()-started},null,2)+'\n');
+  await writeFile(`${output}/receipt.json`,JSON.stringify({productId,board:product.runtime.board,url,expectedHash,wasmSha256:createHash('sha256').update(await readFile(new URL('web/wasm/esp32sim.wasm',root))).digest('hex'),firmware:state.firmware,storage:state.storage,sdCard:state.sdCard,leds:state.leds,stats:state.stats,frame:latestFrame?{width:latestFrame.width,height:latestFrame.height,frameNumber:latestFrame.frameNumber,sha256:createHash('sha256').update(latestFrame.pixels).digest('hex')}:null,lastError:state.lastError,inputs,stages,failure,elapsedMs:Date.now()-started},null,2)+'\n');
   await runtime.dispose();
 }

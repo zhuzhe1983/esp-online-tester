@@ -6,6 +6,8 @@ import {createPlatformRuntime} from '../web/platform/runtime.js';
 import {createDefaultScene} from '../web/platform/catalog.js';
 import {createFat32Image,validateSdImage} from '../web/platform/sd-card-image.js';
 import {createSdCardStorage} from '../web/platform/sd-card-storage.js';
+import {createDeviceStorage,deviceStorageScope} from '../web/platform/device-storage.js';
+import {persistentBoard,firmwareBoardMatches} from '../web/platform/board-compatibility.js';
 test('FAT32 default image has consistent partition, backup boot, FSInfo, FAT copies and free-root accounting',()=>{
  const data=createFat32Image(),v=new DataView(data.buffer),start=v.getUint32(454,true),size=v.getUint32(458,true),at=start*512;
  assert.equal(start+size,data.length/512);assert.equal(v.getUint16(510,true),0xaa55);assert.equal(data[450],0x0c);
@@ -43,22 +45,39 @@ const catalog=Object.fromEntries(await Promise.all(['products','accessories','fi
 const productId='m5stack-papermono',digest=bytes=>createHash('sha256').update(bytes).digest('hex');
 const defer=()=>{let resolve;const promise=new Promise(r=>resolve=r);return {promise,resolve};};
 // Structural worker: no CPU or firmware is executed by these lifecycle tests.
-function structuralRuntime(sdStorage){
+function structuralRuntime(sdStorage,deviceStorage){
  const counts={created:0,terminated:0,attached:0};
  const workerFactory=()=>{counts.created++;const worker={terminate(){counts.terminated++;},postMessage(m){let response;
   if(m.op==='init')response={ready:true};if(m.op==='create')response={created:true,flashStorage:true};
   if(m.op==='load')response={loaded:m.at===undefined?m.kind:`at${m.at}`,ok:true};
   if(m.op==='flash-snapshot')response={flashReply:m.requestId,data:new ArrayBuffer(16*1024*1024)};
-  if(m.op==='flash-watch'||m.op==='flash-flush')response={flashReply:m.requestId,ok:true};
+  if(m.op==='flash-watch'||m.op==='flash-flush'||m.op==='flash-restore')response={flashReply:m.requestId,ok:true};
   if(m.op.startsWith('sd-'))response={sdReply:m.requestId,ok:true};if(m.op==='sd-attach')counts.attached++;
   if(m.op==='stop')response={stopped:0};if(response)queueMicrotask(()=>worker.onmessage?.({data:response}));
  }};return worker;};
- const runtime=createPlatformRuntime({catalog,workerFactory,sdStorage,fetchImpl:async()=>new Response(new Uint8Array([1,2,3])),baseUrl:'https://example.invalid/platform/',assetBaseUrl:'https://example.invalid/'});
+ const runtime=createPlatformRuntime({catalog,workerFactory,sdStorage,deviceStorage,fetchImpl:async()=>new Response(new Uint8Array([1,2,3])),baseUrl:'https://example.invalid/platform/',assetBaseUrl:'https://example.invalid/'});
  const header=new Uint8Array(0x10100),v=new DataView(header.buffer);
  for(const at of [0,0x10000]){header[at]=0xe9;header[at+1]=1;header[at+12]=9;v.setUint32(at+28,4,true);}
  header[0x8000]=0xaa;header[0x8001]=0x50;v.setUint32(0x8004,0x10000,true);v.setUint32(0x8008,0x100000,true);
  return {runtime,counts,load:()=>runtime.loadFirmware({file:new Blob([header])})};
 }
+test('Lite execution split retains legacy Flash and SD scopes, product isolation and manual clear',async()=>{
+ const options={indexedDB:null,BroadcastChannel:null,dbName:'paper-variant-'+Date.now()},sd=createSdCardStorage(options),flash=createDeviceStorage(options),hash=digest(new Uint8Array(16*1024*1024));
+ const lite='m5stack-c153-lite',old=deviceStorageScope({productId:lite,board:'papermono',chip:'esp32s3',flashBytes:16*1024*1024,firmwareSha256:hash}),sdKey=`v1:${lite}:papermono:${hash}`;
+ const page=new Uint8Array(4096);page[42]=71;await flash.save(old,{epoch:0,revision:0,pages:[{offset:0x200000,data:page.buffer}]});
+ const image=new Uint8Array(1024*1024);image[42]=83;await sd.replace(sdKey,{image:image.buffer,media:{format:'image',bytes:image.length,sha256:digest(image)}});
+ const {runtime,load}=structuralRuntime(sd,flash);
+ try{
+  assert.equal(catalog.products.find(p=>p.id===lite).runtime.board,'papermono-lite');
+  await runtime.configure(createDefaultScene(catalog,lite));assert.equal((await runtime.capabilities()).sdCard.available,true);await load();
+  const state=await runtime.observe();assert.equal(state.storage.scope.key,old.key);assert.equal(state.storage.restored,true);assert.equal(state.sdCard.restored,true);assert.equal(new Uint8Array((await sd.read(sdKey)).image)[42],83);
+  await runtime.clearSdCard();assert.equal((await sd.read(sdKey)).image,null);
+  // A Flash clear uses the same compatibility scope and must fence stale writers.
+  await runtime.clearDeviceStorage();assert.equal((await flash.read(old)).row.pages.length,0);await assert.rejects(()=>flash.save(old,{epoch:0,revision:1,pages:[]}),{code:'STORAGE_CONFLICT'});
+  await runtime.configure(createDefaultScene(catalog,productId));await load();const full=await runtime.observe();assert.notEqual(full.storage.scope.key,old.key);assert.equal(full.storage.restored,false);assert.equal(full.sdCard.restored,false);
+  assert.equal(persistentBoard('another-product','papermono-lite'),'papermono-lite');assert.equal(firmwareBoardMatches('papermono','papermono-lite'),true);assert.equal(firmwareBoardMatches('stopwatch','papermono-lite'),false);
+ }finally{await runtime.dispose();}
+});
 test('pending SD replacement cannot resurrect a disposed runtime',async()=>{
  const sd=createSdCardStorage({indexedDB:null,BroadcastChannel:null,dbName:'sd-replace-dispose-'+Date.now()}),entered=defer(),release=defer(),replace=sd.replace;
  sd.replace=async(...args)=>{entered.resolve();await release.promise;return replace(...args);};

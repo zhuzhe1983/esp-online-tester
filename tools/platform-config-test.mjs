@@ -32,7 +32,7 @@ test('catalogs retain provenance, distinct GPS defaults and truthful support', (
       for (const source of item.sources) { assert.match(source.url, /^https:\/\//); assert.match(source.checkedAt, /^\d{4}-\d{2}-\d{2}$/); }
     }
   }
-  for(const id of ['m5stack-papermono','m5stack-c153-lite']) { const paper=catalog.products.find(item=>item.id===id);assert.equal(paper.runtime.board,'papermono');assert.equal(paper.runtime.status,'partial');assert.equal(paper.runtime.touch,true);const factory=catalog.firmwares.find(item=>item.id===paper.defaultFirmwareId);assert.ok(factory.productIds.includes(id)&&factory.source?.sha256); }
+  for(const id of ['m5stack-papermono','m5stack-c153-lite']) { const paper=catalog.products.find(item=>item.id===id);assert.equal(paper.runtime.board,id==='m5stack-c153-lite'?'papermono-lite':'papermono');assert.equal(paper.runtime.status,'partial');assert.equal(paper.runtime.touch,true);const factory=catalog.firmwares.find(item=>item.id===paper.defaultFirmwareId);assert.ok(factory.productIds.includes(id)&&factory.source?.sha256); }
   assert.equal(catalog.products.find(item=>item.id==='m5stack-c149').runtime.board,null);
   const watch = catalog.products.find(item => item.id === 'm5stack-stopwatch');
   assert.equal(watch.runtime.status, 'partial');

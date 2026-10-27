@@ -1,3 +1,4 @@
+import {firmwareBoardMatches} from './board-compatibility.js';
 import {MAX_FIRMWARE_FILE_BYTES as MAX_FILE, MAX_FIRMWARE_BUNDLE_BYTES as MAX_TOTAL} from './firmware-limits.js';
 // Hardware writes are available only from a user's Web Serial chooser gesture.
 import { fetchBytes, resolveFirmwareUrl, sha256, validateMergedImage } from './runtime.js';
@@ -103,7 +104,7 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
     try { manifest = JSON.parse(new TextDecoder().decode(artifact.data)); } catch { throw problem('INVALID_MANIFEST', 'Firmware manifest is not valid JSON.'); }
     check(manifest && typeof manifest.files === 'object' && !Array.isArray(manifest.files), 'INVALID_MANIFEST', 'Firmware manifest must list files.');
     check(!manifest.nodes && !manifest.app_direct, 'FLASH_LAYOUT', 'Network and app-direct emulator manifests are not hardware flash plans.');
-    check(manifest.board === (product.runtime.board || product.id) || manifest.productId === product.id, 'BOARD_MISMATCH', 'The manifest must explicitly target the selected product board.');
+    check(firmwareBoardMatches(manifest.board,product.runtime.board || product.id) || manifest.productId === product.id, 'BOARD_MISMATCH', 'The manifest must explicitly target the selected product board.');
     check(manifest.flash_mb === product.runtime.flashMb, 'FLASH_SIZE', 'Manifest and product flash capacities differ.');
     const pin = entry => typeof entry === 'string' ? { url: entry, sha256: manifest.artifact_sha256?.[entry] } : entry;
     const values = {};

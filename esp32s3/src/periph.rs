@@ -564,6 +564,12 @@ impl Peripherals {
     }
 
     pub fn write32(&mut self, addr: u32, v: u32) {
+        // IDF v5.5.1 esp32s3/register/soc/spi_reg.h: DMA_INT_SET +0x44,
+        // bits 20:0 are write-one software interrupt triggers. spi_hal_init uses
+        // TRANS_DONE (bit 12) to start the first queued transaction. Keep this S3
+        // specific: C3's spi_ll_set_int_stat instead writes DMA_INT_RAW +0x3c.
+        if addr==0x6002_4044 {self.spi2.int_raw|=v&0x1f_ffff;return;}
+        if addr==0x6002_5044 {self.spi3.int_raw|=v&0x1f_ffff;return;}
         // IDF v5.5.4 components/soc/esp32s3/register/soc/io_mux_reg.h:42-50 (FUN_PD/PU).
         if (0x60009004..=0x600090c4).contains(&addr) {
             self.gpio.set_pad(((addr - 0x60009004) / 4) as u8, v);
