@@ -239,7 +239,7 @@ def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
    triangle=[[cx,cy,z],points[i],points[(i+1)%len(points)]]
    if normal[2]<0:triangle.reverse()
    corners.extend([[*v,*normal] for v in triangle])
-  data=np.array(corners,dtype='<f4');binary=data.tobytes();buffers.append(binary);allv.append(data[:,:3]);records.append({'name':surface['name'],'sourceComponent':None,'role':surface.get('role','glass'),**({'texture':surface['texture']} if surface.get('texture') else {}),'color':surface.get('color','#111719'),'byteOffset':offset,'vertexCount':len(data),'boundsMm':[data[:,:3].min(0).tolist(),data[:,:3].max(0).tolist()],'basis':'image-measurement','sourceIds':surface['sourceIds'],'notes':surface['notes']});offset+=len(binary)
+  data=np.array(corners,dtype='<f4');binary=data.tobytes();buffers.append(binary);allv.append(data[:,:3]);records.append({'name':surface['name'],'sourceComponent':None,'role':surface.get('role','glass'),**{key:surface[key] for key in ['texture','controlId'] if surface.get(key)},'color':surface.get('color','#111719'),'byteOffset':offset,'vertexCount':len(data),'boundsMm':[data[:,:3].min(0).tolist(),data[:,:3].max(0).tolist()],'basis':'image-measurement','sourceIds':surface['sourceIds'],'notes':surface['notes']});offset+=len(binary)
  (output/'geometry.bin').write_bytes(b''.join(buffers));source_file='source'+Path(source['archiveName']).suffix.lower();shutil.copyfile(folder/source['archiveName'],output/source_file);
  for sid in part_sources:
   if sid!=source['id']:shutil.copyfile(folder/sources[sid]['archiveName'],output/('source-'+sources[sid]['archiveName']))
@@ -314,7 +314,10 @@ def verify_product(id):
 def publish_product(id,submission_path=None,priorities=None):
  assets=Path('web/platform/assets')/id;plan=json.loads((assets/'model-plan.json').read_text());knowledge=json.loads((Path('web/platform/knowledge')/(id+'.json')).read_text());prepared=json.loads((TEMP/id/'prepared.json').read_text());cfg=plan['catalog'];doc=next(s for s in knowledge['sources'] if s['id']=='official-docs');report=json.loads((Path('docs/platform/evidence')/id/'verification.json').read_text())
  assert report['modelSha256']==sha((assets/'model.json').read_bytes())
- entry={'id':id,'name':plan['title'],'manufacturer':'M5Stack','sku':prepared['queue']['skuAsDocumented'],'hardwareRevision':plan.get('hardwareRevision','unspecified'),'chip':cfg['chip'],'module':prepared['queue']['primaryChip'],'summary':plan['summary'],'knowledgeUrl':f'./knowledge/{id}.json','runtime':{'board':None,'flashMb':cfg.get('flashMb'),'psramMb':cfg.get('psramMb'),'status':'unavailable'},'display':cfg.get('display'),'controls':cfg.get('controls',[]),'interfaces':cfg.get('interfaces',[]),'model':{'type':'manufacturer-cad','url':f'./assets/{id}/model.json','status':'partial'},'dimensions':{**plan['dimensions'],'basis':'official'},'limitations':['本产品尚无板级模拟器，模型和资料不能证明固件兼容。','尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。']+plan['limitations'],'sources':[{**doc,'checkedAt':doc['fetchedAt'][:10]}]}
+ runtime=cfg.get('runtime',{'board':None,'flashMb':cfg.get('flashMb'),'psramMb':cfg.get('psramMb'),'status':'unavailable'})
+ runtime_note='已提供部分板级模型；仅几何预览不能证明固件兼容，实际范围见产品运行时记录。' if runtime.get('board') else '本产品尚无板级模拟器，模型和资料不能证明固件兼容。'
+ firmware_note='官方固件可尝试运行，未逐一验证。' if runtime.get('board') else '官方固件入口仅参考，未验证版本/hash/镜像不填猜测值。'
+ entry={'id':id,'name':plan['title'],'manufacturer':'M5Stack','sku':prepared['queue']['skuAsDocumented'],'hardwareRevision':plan.get('hardwareRevision','unspecified'),'chip':cfg['chip'],'module':prepared['queue']['primaryChip'],'summary':plan['summary'],'knowledgeUrl':f'./knowledge/{id}.json','runtime':runtime,'display':cfg.get('display'),'controls':cfg.get('controls',[]),'interfaces':cfg.get('interfaces',[]),'model':{'type':'manufacturer-cad','url':f'./assets/{id}/model.json','status':'partial'},'dimensions':{**plan['dimensions'],'basis':'official'},'limitations':[runtime_note,'尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。']+plan['limitations'],'sources':[{**doc,'checkedAt':doc['fetchedAt'][:10]}]}
  if cfg.get('inputDevices'):entry['inputDevices']=cfg['inputDevices']
  ref=None
  if cfg.get('publication'):
@@ -346,7 +349,7 @@ def publish_product(id,submission_path=None,priorities=None):
 
 正反视图只有照片确属近正投影且原始型号一致时才用0.95轮廓门槛。侧视/斜视保留为定性检查，不以轮廓掩盖标签、组件或装配差异。引用照片的纹理不是独立验证依据；未通过/缺失项不会改写成通过。
 
-厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 unavailable，官方固件入口仅参考，未验证版本/hash/镜像不填猜测值。
+厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 {runtime['status']}。{runtime_note} {firmware_note}
 
 重生成：
 

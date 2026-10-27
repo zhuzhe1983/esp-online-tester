@@ -25,27 +25,22 @@ Retained source assembled cluster; only the recorded rigid rotation and translat
 
 正反视图只有照片确属近正投影且原始型号一致时才用0.95轮廓门槛。侧视/斜视保留为定性检查，不以轮廓掩盖标签、组件或装配差异。引用照片的纹理不是独立验证依据；未通过/缺失项不会改写成通过。
 
-厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 unavailable，官方固件入口仅参考，未验证版本/hash/镜像不填猜测值。
+厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 partial；GC9107、GPIO41 按键与 MPU6886 轮询子集的验证见 [运行时记录](../atoms3-runtime.md)。官方固件可尝试运行，未逐一验证。
 
-重生成：
-
-```sh
-python tools/onboard-lane-01-extra.py prepare --ids m5stack-c123
-python tools/onboard-lane-01-extra.py build --ids m5stack-c123
-```
-
-通过受跟踪的 headless 浏览器打开 `web/platform/review-lane-01.html?id=m5stack-c123`；按 model reviewViews 保存800×800正反侧画布到 `output/playwright/m5stack-c123-front.png` 等，再运行：
+公开重生成入口（使用 `tools/requirements-model.txt` 对应环境）：
 
 ```sh
-python tools/onboard-lane-01-extra.py verify --ids m5stack-c123
-python tools/onboard-lane-01-extra.py publish --ids m5stack-c123
+python tools/rebuild-product-model.py plan m5stack-c123
+python tools/rebuild-product-model.py build m5stack-c123 --scratch output/model-rebuild-m5stack-c123
 ```
+
+每次选择新的 scratch 目录；默认离线，从仓库中固定 hash 的公开资产恢复输入，不依赖历史队列或本机抓取目录。工具只写 scratch，不覆盖公开资产。此次 [重建比较](../evidence/atoms3-runtime/model-rebuild.json) 确认几何字节一致、完整模型元信息语义一致，并保留屏幕盖板 `btnA`。旧轮廓指标及其测量时间原样保留；本次仅升级交互元信息与运行时限制，浏览器交互另见 [本次验证](../evidence/atoms3-runtime/browser.json)。
 
 当前限制：
 
 - Marketing image shows 12.8 mm depth while technical table states 12.9 mm; CAD matches the latter.
 - Manufacturer STL lacks connector inserts, physical display assembly and PCB; blank screen plane and neutral board are explicitly estimates.
-- Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.
+- Partial atoms3 board model: GC9107 SPI display, GPIO41 screen-cover button and MPU6886 polled I2C registers. PWM brightness, IR, IMU FIFO/interrupt/ODR, ST7735 panel variants and physical orientation calibration remain unimplemented or unverified; geometry preview is not firmware compatibility evidence.
 - Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.
 - Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.
 - Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.

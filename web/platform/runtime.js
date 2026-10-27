@@ -164,10 +164,11 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   let sdCard=emptySd(),sdSession=null,leds=[];
   let storage = emptyStorage(), storageSession = null, storageSequence = 0;
   let booted = false, inputSequence = 0, loadCancelled = false, progressGeneration = 0, disposing = false;
-  const defaultImu = () => ({enabled: true, source: 'scene', ...orientationSample([0,0,0,1]), delivery: 'configured', guestTime: null});
+  const imuModel = () => ({stopwatch:'bmi270-register-subset',atoms3:'mpu6886-register-subset'}[product?.runtime?.board] || null);
+  const defaultImu = () => ({enabled: true, source: product?.runtime?.board === 'atoms3' ? 'agent' : 'scene', ...orientationSample([0,0,0,1]), delivery: 'configured', guestTime: null});
   let imu = defaultImu(), imuPreviousAt = null, imuGeneration = 0;
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
-  const snapshot = () => ({ version: API_VERSION, status, scene: clone(scene), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), sdCard:clone(sdCard),leds:clone(leds), imu: product?.runtime?.board === 'stopwatch' ? clone(imu) : null, frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
+  const snapshot = () => ({ version: API_VERSION, status, scene: clone(scene), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), sdCard:clone(sdCard),leds:clone(leds), imu: imuModel() ? clone(imu) : null, frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
   const emit = event => { for (const listener of listeners) { try { listener(event); } catch (e) { console.error('ESP tester event handler:', e); } } };
   const loadReporter = (loadId, signal) => {
     let fileIndex = 0;
@@ -499,7 +500,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     await initializeSd(bundle);
     for (const spec of bundle.cfg.stubs || []) worker.postMessage({ op: 'stub', spec });
     if (bundle.cfg.wifi) worker.postMessage({ op: 'wifi', spec: bundle.cfg.wifi });
-    if (product.runtime.board === 'stopwatch') await applyImu();
+    if (imuModel()) await applyImu();
   };
   const applyImu = async () => {
     if (!worker) return;
@@ -597,7 +598,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         input: { buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv'].includes(product?.runtime?.board)?{rows:4,columns:14,model:product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: ['usb', 'uart0', 'uart1'] },
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { mode: 'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },
-        imu: { available: product?.runtime?.board === 'stopwatch', model: 'bmi270-register-subset', orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: 'host-input', physicalMountingVerified: false },
+        imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: product?.runtime?.board === 'stopwatch', orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: 'host-input', physicalMountingVerified: false },
         unsupported: ['dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input'] };
     },
     configure(nextScene) { progressGeneration++; imuGeneration++; return exclusive(async () => {
@@ -645,7 +646,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     start() { return exclusive(start); },
     pause() { return exclusive(async () => {
       requireValue(['running', 'paused'].includes(status), 'NOT_RUNNING', 'Only a running emulator can be paused.');
-      if (product.runtime.board === 'stopwatch') { imu.gyroDps = [0,0,0]; imuPreviousAt = null; await applyImu(); }
+      if (imuModel()) { imu.gyroDps = [0,0,0]; imuPreviousAt = null; await applyImu(); }
       if (status === 'running') await ask('stopped', { op: 'stop' });
       await preserveStorage(); setStatus('paused'); return snapshot();
     }); },
@@ -659,12 +660,13 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     }); },
     input(event) { return exclusive(() => input(event)); },
     setImu(options = {}) { const generation = imuGeneration, requestedAt = performance.now(); return exclusive(async () => {
-      requireValue(product?.runtime?.board === 'stopwatch', 'IMU_UNSUPPORTED', 'This product does not have a host-fed IMU model.');
+      requireValue(imuModel(), 'IMU_UNSUPPORTED', 'This product does not have a host-fed IMU model.');
       requireValue(generation === imuGeneration, 'SESSION_REPLACED', 'The device changed before its orientation was applied.');
       requireValue(options && typeof options === 'object' && !Array.isArray(options) && Object.keys(options).every(key => ['enabled','quaternion','source','angularVelocityDps'].includes(key)), 'INVALID_IMU', 'IMU options contain unknown fields.');
       requireValue(options.enabled === undefined || typeof options.enabled === 'boolean', 'INVALID_IMU', 'IMU enabled must be a boolean.');
       const source = options.source || 'agent';
       requireValue(['agent', 'scene'].includes(source), 'INVALID_IMU', 'IMU source must be agent or scene.');
+      requireValue(source !== 'scene' || product.runtime.board === 'stopwatch', 'IMU_SCENE_UNSUPPORTED', 'This product has no scene-to-sensor orientation mapping; use agent input with explicit virtual axes.');
       if (source === 'scene' && !imu.enabled && options.enabled !== true) return clone(imu);
       const now = requestedAt;
       const sample = orientationSample(options.quaternion || imu.quaternion, {previous: imu.quaternion,

@@ -90,6 +90,8 @@ export function createManufacturerModel(product, screenTexture) {
     }
     const display=metadata.presentation?.screen;
     if(display&&product.display){screen=new THREE.Mesh(display.shape==='circle'?new THREE.CircleGeometry(display.sizeMm[0]/2,96):new THREE.PlaneGeometry(...display.sizeMm),new THREE.MeshBasicMaterial({map:screenTexture,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));screen.position.set(...vector(display.positionMm));screen.rotation.set(...vector(display.rotation));screen.name='live-display';screen.userData.screen=true;parts.screen=screen;group.add(screen);}
+    // Some devices (AtomS3) use the whole non-touch display cover as a physical button.
+    if(screen && display.controlId && product.controls?.some(control=>control.id===display.controlId && control.type==='button')){screen.userData.control=display.controlId;buttons.push(screen);}
     group.userData.provenance=metadata;return metadata;
   })();
   return {group,get screen(){return screen;},buttons,parts,connectors,ready,dispose(){disposed=true;aborter.abort();for(const texture of textures)texture.dispose();}};

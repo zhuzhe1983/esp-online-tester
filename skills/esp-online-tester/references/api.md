@@ -20,6 +20,7 @@ The platform page installs `window.espTester`. Await its presence before use. Ru
 | `input(event)` | Waits for a matching worker queue receipt and returns `guestTime` in simulated seconds; it does not certify firmware consumption. Shapes below. |
 | `press(id,{durationMs=100}={})` | Presses then releases a button using host wall time (0–10000 ms), not cycle-exact guest time. |
 | `injectGps(options)` | Constructs RMC/GGA sentences with checksums and queues them on logical UART1. Requires an attached `uart-nmea` accessory, logical UART1 wiring and StopWatch. |
+| `setImu({quaternion,angularVelocityDps?,source='agent',enabled?})` | Sets a virtual sensor sample on boards reporting IMU capability. Quaternion is `[x,y,z,w]`; explicit angular velocity is degrees/second. Returns the sample and, with a loaded worker, its register-delivery receipt. See the axis limitations below. |
 | `observe()` | Returns `{version,status,scene,product,firmware,serial,serialByPort,stats,frame,storage,sdCard,leds,imu,lastError}`. Each serial string retains its last 65,536 JavaScript string code units; this is not an unbounded event log. |
 | `capabilities()` | Reports actual product inputs, backend, firmware limits and unsupported features. |
 | `capture({format='png'}={})` | Real framebuffer: PNG `{dataUrl,width,height,frameNumber}` or RGBA `{pixels,width,height,frameNumber}`. Rejects `NO_FRAME` before a frame exists. |
@@ -60,6 +61,14 @@ GPS options:
 ```
 
 Provide fixed timestamps for replayable tests; the default uses current time. Satellite count is 1–99; this API currently generates a valid-fix scenario, not loss-of-fix simulation. Serial injection can supply custom NMEA where a different test case is needed.
+
+## IMU input and virtual axes
+
+Check `capabilities().imu` before using `setImu`: StopWatch exposes a BMI270 register subset and AtomS3 C123 exposes an MPU6886 polling subset. Neither establishes physical mounting calibration. `observe().imu` is null on boards without a host-fed sensor model.
+
+The quaternion uses virtual model axes: +X right, +Y top, +Z out of the display. An identity quaternion supplies `[0,1,0]` g; rotating 90° around +Z supplies `[1,0,0]` g. The firmware may apply its own axis transform. Agent input defaults to zero angular velocity unless supplied explicitly. Pausing clears angular velocity and preserves acceleration. This is a host-fed register state, not FIFO, interrupt or sensor sample-rate simulation.
+
+StopWatch's viewer forwards scene rotation. AtomS3 currently accepts explicit agent input only: `sceneOrientation:false` means the model-to-sensor transform has not been established, and `source:'scene'` rejects with `IMU_SCENE_UNSUPPORTED`. Do not infer calibrated physical tilt from a successful register receipt. IMU changes are not included in portable input recordings.
 
 ## Virtual TF/SD cards and RGB output
 

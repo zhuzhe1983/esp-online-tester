@@ -1,0 +1,61 @@
+{
+  "checkedAt": "2026-10-27T05:32:34.261708Z",
+  "rustc": "1.99.1 (58cf8f9c3 2026-10-13)",
+  "checks": [
+    {
+      "command": "cargo +stable clippy --workspace --all-targets -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "cargo +stable clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<absolute-rom-directory> cargo +stable test --release --workspace -- --include-ignored --skip external_",
+      "status": "pass",
+      "passed": 1356,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "uv run --with jsonschema python tools/validate-platform-catalog.py",
+      "status": "pass"
+    },
+    {
+      "command": "AtomS3 knowledge JSON against knowledge.schema.json with local reference registry",
+      "status": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "status": "pass",
+      "manualReview": "New AtomS3 source/fixture receipts contain public URLs, source hashes and synthetic guest output; generated firmware and local source archives stay under ignored output/."
+    },
+    {
+      "command": "node --test tools/platform-knowledge-test.mjs",
+      "status": "pass",
+      "note": "Knowledge record, source capture timestamps and knowledge index use the existing whole-second UTC format."
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "status": "pass",
+      "nodeTestResults": 56
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "status": "pass",
+      "nodeTestResults": 56
+    },
+    {
+      "command": "python tools/rebuild-product-model.py build m5stack-c123 --scratch <fresh-directory>",
+      "status": "pass",
+      "receipt": "model-rebuild.json",
+      "network": "disabled; pinned committed assets only"
+    }
+  ],
+  "wasmSha256": "e107db1bd089b84141656b66ae80b668d5075b379a04109750294b40929e7125",
+  "limits": [
+    "No physical hardware comparison",
+    "No catalog-wide firmware validation",
+    "No core hot-path changes or performance claims"
+  ]
+}

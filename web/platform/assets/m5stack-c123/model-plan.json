@@ -103,7 +103,8 @@
         0,
         0,
         0
-      ]
+      ],
+      "controlId": "btnA"
     }
   },
   "derivedParts": [
@@ -1054,7 +1055,7 @@
   "limitations": [
     "Marketing image shows 12.8 mm depth while technical table states 12.9 mm; CAD matches the latter.",
     "Manufacturer STL lacks connector inserts, physical display assembly and PCB; blank screen plane and neutral board are explicitly estimates.",
-    "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
+    "Partial atoms3 board model: GC9107 SPI display, GPIO41 screen-cover button and MPU6886 polled I2C registers. PWM brightness, IR, IMU FIFO/interrupt/ODR, ST7735 panel variants and physical orientation calibration remain unimplemented or unverified; geometry preview is not firmware compatibility evidence.",
     "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
     "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
     "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
@@ -1084,13 +1085,14 @@
       "sourceIds": [
         "product-photo-e0eb7a8acb"
       ],
-      "notes": "Photo/CAD-opening envelope estimate only, uncertainty about ±1 mm; color/cover shape is visual approximation. No firmware pixels painted."
+      "notes": "Photo/CAD-opening envelope estimate only, uncertainty about ±1 mm; color/cover shape is visual approximation. No firmware pixels painted.",
+      "controlId": "btnA"
     }
   ],
   "catalog": {
     "chip": "esp32s3",
     "flashMb": 8,
-    "psramMb": null,
+    "psramMb": 0,
     "display": {
       "width": 128,
       "height": 128,
@@ -1098,7 +1100,16 @@
       "technology": "lcd",
       "touch": false
     },
-    "controls": [],
+    "controls": [
+      {
+        "id": "btnA",
+        "name": "Button A · 按压屏幕",
+        "type": "button",
+        "pin": 41,
+        "activeLow": true,
+        "defaultKeyCode": "KeyA"
+      }
+    ],
     "interfaces": [
       {
         "id": "port-custom",
@@ -1135,6 +1146,13 @@
     "publication": {
       "title": "AtomS3 Factory Firmware",
       "url": "https://github.com/m5stack/M5AtomS3-UserDemo"
+    },
+    "runtime": {
+      "board": "atoms3",
+      "flashMb": 8,
+      "psramMb": 0,
+      "status": "partial",
+      "touch": false
     }
   },
   "textureSources": [

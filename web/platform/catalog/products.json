@@ -6765,10 +6765,11 @@
       "summary": "ESP32-S3FN8 方形彩屏终端，含 128×128 GC9107 屏幕与 MPU6886；不混同 AtomS3R 的 IMU 和 PSRAM 配置。",
       "knowledgeUrl": "./knowledge/m5stack-c123.json",
       "runtime": {
-        "board": null,
+        "board": "atoms3",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
       },
       "display": {
         "width": 128,
@@ -6777,7 +6778,16 @@
         "technology": "lcd",
         "touch": false
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "btnA",
+          "name": "Button A · 按压屏幕",
+          "type": "button",
+          "pin": 41,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
       "interfaces": [
         {
           "id": "port-custom",
@@ -6825,11 +6835,12 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "已实现 GC9107 的 SPI 屏幕命令、GPIO41 按键，以及 MPU6886 轮询寄存器与主机采样输入；固件仍需按功能确认。",
+        "当前仅模拟官方 GC9107 屏幕版本；同名 ST7735 屏幕批次、背光 PWM 亮度、红外、IMU FIFO/中断/采样时序及无线通信未完成。",
+        "IMU 使用主机提供的传感器坐标数值；真实轴向装配、噪声和校准尚未与实物比对。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
         "Marketing image shows 12.8 mm depth while technical table states 12.9 mm; CAD matches the latter.",
         "Manufacturer STL lacks connector inserts, physical display assembly and PCB; blank screen plane and neutral board are explicitly estimates.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
         "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
@@ -6850,6 +6861,104 @@
           "archiveName": "official-docs.html",
           "notes": "Reused actual corpus receipt 2026-10-26T15:19:17.377758Z; no new fetch timestamp invented.",
           "checkedAt": "2026-10-26"
+        },
+        {
+          "id": "official-runtime-pinmap",
+          "title": "AtomS3 官方规格与引脚",
+          "url": "https://docs.m5stack.com/en/core/AtomS3",
+          "kind": "official-runtime-reference",
+          "status": "fetched",
+          "fetchedAt": "2026-10-27T05:42:52Z",
+          "checkedAt": "2026-10-27",
+          "sha256": "af0ca25a52c9709e6ef08bde99756730a7cc7ede9d20f6712b4cad47fbe9650d",
+          "bytes": 138147,
+          "archiveName": "official-runtime-pinmap.html",
+          "resolvedUrl": "https://docs.m5stack.com/en/core/AtomS3",
+          "mediaType": "text/html; charset=UTF-8"
+        },
+        {
+          "id": "m5gfx-runtime",
+          "title": "M5GFX AtomS3 屏幕配置",
+          "url": "https://raw.githubusercontent.com/m5stack/M5GFX/65c816a38386062d2c3dc47d41237a9083acbc75/src/M5GFX.cpp",
+          "kind": "official-runtime-reference",
+          "status": "fetched",
+          "fetchedAt": "2026-10-27T05:42:53Z",
+          "checkedAt": "2026-10-27",
+          "sha256": "314251ee69846afa754e11738bb44eaf00509c2b8b5b9de679f34e10411af6bc",
+          "bytes": 167215,
+          "archiveName": "m5gfx-runtime.cpp",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5GFX/65c816a38386062d2c3dc47d41237a9083acbc75/src/M5GFX.cpp",
+          "mediaType": "text/plain; charset=utf-8"
+        },
+        {
+          "id": "gc9107-driver",
+          "title": "GC9107 屏幕驱动",
+          "url": "https://raw.githubusercontent.com/m5stack/M5GFX/65c816a38386062d2c3dc47d41237a9083acbc75/src/lgfx/v1/panel/Panel_GC9A01.hpp",
+          "kind": "official-runtime-reference",
+          "status": "fetched",
+          "fetchedAt": "2026-10-27T05:42:54Z",
+          "checkedAt": "2026-10-27",
+          "sha256": "4296373fb97c7c163e8107dc9bca04f8820069b378b19324bd3cc036367a90fd",
+          "bytes": 14975,
+          "archiveName": "gc9107-driver.hpp",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5GFX/65c816a38386062d2c3dc47d41237a9083acbc75/src/lgfx/v1/panel/Panel_GC9A01.hpp",
+          "mediaType": "text/plain; charset=utf-8"
+        },
+        {
+          "id": "m5unified-runtime",
+          "title": "M5Unified AtomS3 按键与接口",
+          "url": "https://raw.githubusercontent.com/m5stack/M5Unified/368ad60807161625aa65baad37a4a3af2a7eccea/src/M5Unified.inl",
+          "kind": "official-runtime-reference",
+          "status": "fetched",
+          "fetchedAt": "2026-10-27T05:42:55Z",
+          "checkedAt": "2026-10-27",
+          "sha256": "50f4657ffb5c6da5edb2d535baf9d0c6fa148dd4d3ea9c98f1b1f1dbaf422d83",
+          "bytes": 143982,
+          "archiveName": "m5unified-runtime.inl",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5Unified/368ad60807161625aa65baad37a4a3af2a7eccea/src/M5Unified.inl",
+          "mediaType": "text/plain; charset=utf-8"
+        },
+        {
+          "id": "mpu6886-driver",
+          "title": "MPU6886 初始化与读数驱动",
+          "url": "https://raw.githubusercontent.com/m5stack/M5Unified/368ad60807161625aa65baad37a4a3af2a7eccea/src/utility/imu/MPU6886_Class.inl",
+          "kind": "official-runtime-reference",
+          "status": "fetched",
+          "fetchedAt": "2026-10-27T05:42:55Z",
+          "checkedAt": "2026-10-27",
+          "sha256": "bd7bdd1401aa3843b8199cce6ecad262b5685bd3fa7ed9c9d421ed95c3f27eaa",
+          "bytes": 8837,
+          "archiveName": "mpu6886-driver.inl",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5Unified/368ad60807161625aa65baad37a4a3af2a7eccea/src/utility/imu/MPU6886_Class.inl",
+          "mediaType": "text/plain; charset=utf-8"
+        },
+        {
+          "id": "mpu6886-registers",
+          "title": "MPU6886 寄存器定义",
+          "url": "https://raw.githubusercontent.com/m5stack/M5Unified/368ad60807161625aa65baad37a4a3af2a7eccea/src/utility/imu/MPU6886_Class.hpp",
+          "kind": "official-runtime-reference",
+          "status": "fetched",
+          "fetchedAt": "2026-10-27T05:42:55Z",
+          "checkedAt": "2026-10-27",
+          "sha256": "a97eb7eafac0bd667e16bf6426e29960f57b591d552e9e79900bad9929baea31",
+          "bytes": 4288,
+          "archiveName": "mpu6886-registers.hpp",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5Unified/368ad60807161625aa65baad37a4a3af2a7eccea/src/utility/imu/MPU6886_Class.hpp",
+          "mediaType": "text/plain; charset=utf-8"
+        },
+        {
+          "id": "mpu6886-datasheet",
+          "title": "MPU6886 数据手册 DS-000193 rev1.1",
+          "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/MPU-6886-000193%2Bv1.1_GHIC_en.pdf",
+          "kind": "official-runtime-reference",
+          "status": "fetched",
+          "fetchedAt": "2026-10-27T05:42:56Z",
+          "checkedAt": "2026-10-27",
+          "sha256": "6751256f22f10afc7bbd1cdfd2c2d20ecffedddad364cea4973f8a84b13634bb",
+          "bytes": 1837054,
+          "archiveName": "mpu6886-datasheet.pdf",
+          "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/MPU-6886-000193%2Bv1.1_GHIC_en.pdf",
+          "mediaType": "application/pdf"
         }
       ],
       "firmwareReferenceIds": [

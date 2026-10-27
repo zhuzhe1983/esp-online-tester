@@ -1,0 +1,64 @@
+{
+  "checkedAt": "2026-10-27T05:37:20.978Z",
+  "browser": "Chromium, headless",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "page": "local platform workbench",
+  "firmware": "Internal source-built AtomS3 protocol fixture, not the catalog factory firmware",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+    "atoms3_fixture.bin": "26d88ceb9a48faae945ef83fa58c2206ffceeeb70874eeac7beaed48658cc188",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "wasmSha256": "e107db1bd089b84141656b66ae80b668d5075b379a04109750294b40929e7125",
+  "checks": [
+    {
+      "case": "device picker",
+      "result": "AtomS3 C123 has no unavailable suffix; unimplemented NanoH2 and other boards retain × 尚未适配"
+    },
+    {
+      "case": "factory default",
+      "result": "Official v0.1 selected automatically; download-and-trial-run action visible; factory binary not executed in this test"
+    },
+    {
+      "case": "local build",
+      "result": "UI accepts flasher_args.json, bootloader, partition table and app; loads and starts the real worker"
+    },
+    {
+      "case": "framebuffer",
+      "result": "128×128 red-left/green-right guest frame visible in 3D and 2D"
+    },
+    {
+      "case": "3D screen press",
+      "result": "Fresh serial after mouse down/up contains ATOMS3_BUTTON 0 then ATOMS3_BUTTON 1"
+    },
+    {
+      "case": "keyboard A",
+      "result": "Fresh serial after key down/up contains ATOMS3_BUTTON 0 then ATOMS3_BUTTON 1"
+    },
+    {
+      "case": "2D screen press",
+      "result": "Fresh serial after mouse down/up contains ATOMS3_BUTTON 0 then ATOMS3_BUTTON 1"
+    },
+    {
+      "case": "hover routing",
+      "result": "Live screen and black display cover: data-hover=button and pointer cursor; white shell: data-hover=orbit and grab cursor"
+    },
+    {
+      "case": "lifecycle",
+      "result": "Runtime paused and task-owned browser closed"
+    }
+  ],
+  "artifacts": {
+    "atoms3-3d-button.png": "93780af840cebfaf0a24c2d6120bae713a45cc773df776a049a1cd2b9a806b3c",
+    "atoms3-2d.png": "5678a4ad23af890d000b038b728f16450cfb27b54b17e909135a7beb1b67a54b",
+    "atoms3-glass-hover.png": "ad1e123dd50b36fb7b8216f83cd0df18b63ebbf661e52e49c90cd3e81cb946d6"
+  },
+  "limits": [
+    "Fixture validates protocol paths; does not certify official or arbitrary firmware compatibility",
+    "No physical hardware or full 1:1 model comparison",
+    "An initial local module request returned ERR_CONNECTION_RESET; a cache-disabled reload succeeded; no code was changed for that transient request"
+  ]
+}

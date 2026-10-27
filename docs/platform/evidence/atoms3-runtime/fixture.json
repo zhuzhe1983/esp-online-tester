@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-27T05:27:57.951Z",
+  "command": "node tools/probe-atoms3.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+    "atoms3_fixture.bin": "26d88ceb9a48faae945ef83fa58c2206ffceeeb70874eeac7beaed48658cc188",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [
+    "real-boot-gpio41-idle-mpu6886-id",
+    "guest-spi-frame-every-pixel-red-green",
+    "gpio41-press-and-release-observed-by-guest",
+    "host-orientation-to-guest-i2c-accel-8g-and-gyro-2000dps",
+    "pause-clears-gyro-keeps-accel-in-guest-registers"
+  ],
+  "frameSha256": "da6dafb58c6d01c15511d263a26061434352d231b4b0ec791e97f2d920cbbdbc",
+  "status": "pass",
+  "guestSeconds": 0.64,
+  "serialPort": "uart0",
+  "serialEvidence": [
+    "ATOMS3_LCD_READY 128x128 red-left green-right",
+    "ATOMS3_IMU_ID 19",
+    "ATOMS3_BUTTON 1",
+    "ATOMS3_ACCEL 0 4096 0",
+    "ATOMS3_GYRO 0 0 0",
+    "ATOMS3_BUTTON 0",
+    "ATOMS3_ACCEL 4096 0 0",
+    "ATOMS3_GYRO 2048 0 0"
+  ]
+}
