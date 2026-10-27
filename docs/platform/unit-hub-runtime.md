@@ -51,3 +51,5 @@ python tools/rebuild-unit-library.py m5stack-unit-hub-u006 --scratch output/u006
 ```
 
 来源、hash、抓取时间、模型比对、负面结果和运行收据见 `docs/platform/evidence/m5stack-unit-hub-u006/`。原理图属于电气依据，不能冒充 PCB 布局。
+
+U136后续增加经过核验的I²C共用：ENV-IV0x44/0x76与DLight0x23可使用同一G10 SDA/G11 SCL。重复地址、不同针序或数字/模拟/RGB输出争用仍拒绝；未扩展为任意设备通用I²C。

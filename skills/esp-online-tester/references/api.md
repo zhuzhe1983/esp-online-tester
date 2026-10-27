@@ -208,6 +208,12 @@ U006 passive Hub: attach `m5stack-unit-hub-u006` directly with `wiring:{mode:'ph
 
 ### Unit ENV-IV U001-D
 
-`input({type:'accessory-environment',accessoryId,temperatureC,humidityPercent,pressureHpa})` requires all three finite fields: −40…85°C, 0…100%RH, 300…1100hPa. U001-D uses SHT40 0x44 and BMP280 0x76 through StopWatch Port A G10 SDA/G11 SCL, directly or through one U006. Capabilities report `pins:[10,11]`, `addresses:[68,118]`, `controls:['environment']`. It occupies both signals; competing leaves are rejected.
+`input({type:'accessory-environment',accessoryId,temperatureC,humidityPercent,pressureHpa})` requires all three finite fields: −40…85°C, 0…100%RH, 300…1100hPa. U001-D uses SHT40 0x44 and BMP280 0x76 through StopWatch Port A G10 SDA/G11 SCL, directly or through one U006. Capabilities report `pins:[10,11]`, `addresses:[68,118]`, `controls:['environment']`. It occupies both signals; a distinct-address I²C leaf may share the ordered SDA/SCL pair through U006; GPIO drivers and duplicate addresses are rejected.
 
 `observe().accessoryInputs` reports ambient input, not measured guest output. Read actual firmware serial/frame after requesting its sensor measurement. Guest must enable Grove5V. Unplug and power-off NACK both addresses. Disconnected ambient changes are permitted while running; paused environment changes reject. Guest reboot keeps the current environment and connection; platform reset/firmware reload restores scene parameters. Recording and mini use the same input contract. Software I²C, heater, physical noise/thermal lag and user-device calibration are not implemented. See `docs/platform/unit-env4-runtime.md`.
+
+### Unit DLight U136
+
+`input({type:'accessory-illuminance',accessoryId,lux})` accepts finite0…100000lx. Scene `parameters.lux` defaults to1000. Exact U136 BH1750FVI uses StopWatch Port A G10 SDA/G11 SCL and address0x23, with guest-controlled Grove5V. Capabilities report `pins:[10,11]`, `addresses:[35]`, `controls:['illuminance']`. Read real firmware output after a completed conversion; input state does not prove measurement. Default sensitivity saturates near54612lx; higher range requires MTreg configuration by the guest.
+
+Running disconnected ambient changes are allowed; paused ambient changes reject, but paused disconnect works. Guest reboot preserves environment/connection, platform reset restores scene. Recording and mini use the same contract. One U006 can share ENV-IV and DLight on the same ordered pair because addresses are distinct; duplicate addresses/socket, GPIO competition and cascades reject. Software I²C/optical response are not implemented. See [U136 scope](../../../docs/platform/unit-dlight-runtime.md).

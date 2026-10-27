@@ -163,3 +163,5 @@ Unit Angle U005 已支持 StopWatch Port A 的标称模拟电压输入与真实 
 [Unit Hub U006](unit-hub-runtime.md) adds one passive parallel layer between StopWatch Port A and the supported U027/U003/U005 units. Signal contention is rejected; output socket visual pin1 is still unknown and its cables remain hidden.
 
 [Unit ENV-IV U001-D](unit-env4-runtime.md) exposes SHT40/BMP280 over actual StopWatch G10/G11 hardware I²C, with editable ambient values, supply gating, disconnect and recording. It uses both signal lines; software I²C and heater are not implemented. Related ENV-III CAD reuse is explicitly identified and checked against ENV-IV references.
+
+[Unit DLight U136](unit-dlight-runtime.md) adds the BH1750 command, gain and conversion model on real StopWatch G10/G11 I²C. Editable illuminance, supply/disconnect/reset, recording and mini use the common runtime. One U006 may carry DLight and ENV-IV at distinct addresses; duplicate addresses and GPIO contention remain rejected.

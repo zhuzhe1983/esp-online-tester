@@ -1,6 +1,6 @@
 # Unit ENV-IV U001-D
 
-本项是 **U001-D ENV-IV：SHT40-AD1B + BMP280**，不对应 ENV-III（SHT30/QMP6988）或 ENV Pro。官方电路以 HY2.0-4P 的 5V 经 HT7533 供电；黄色 SDA、白色 SCL 都有 4.7kΩ 上拉。首轮只连接 StopWatch Port A：G10 SDA、G11 SCL，电源由客体 M5PM1 控制。也可通过一层 U006 逐脚并联；同时占用 G10 或 G11 的其他配件会拒绝，不能把分线器当作额外 GPIO。
+本项是 **U001-D ENV-IV：SHT40-AD1B + BMP280**，不对应 ENV-III（SHT30/QMP6988）或 ENV Pro。官方电路以 HY2.0-4P 的 5V 经 HT7533 供电；黄色 SDA、白色 SCL 都有 4.7kΩ 上拉。首轮只连接 StopWatch Port A：G10 SDA、G11 SCL，电源由客体 M5PM1 控制。也可通过一层 U006 逐脚并联；同一SDA/SCL针序、不同I²C地址的DLight可共用；重复地址或GPIO输出争用会拒绝，不能把分线器当作额外 GPIO。
 
 环境输入经过真实硬件 I²C 控制器和 S3 GPIO matrix 路由，传感器按地址、命令、忙状态和 CRC 回应；前端不把数字写入固件变量，也不通过串口伪造结果。软件 GPIO I²C 尚未实现。
 

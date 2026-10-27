@@ -1,3 +1,4 @@
+import {validIlluminance} from './illuminance-input.js';
 import {validEnvironment,environmentParameters} from './environment-input.js';
 // Portable semantic input recordings. Guest acknowledgements are evidence of delivery,
 // not cycle-exact scheduling or a guarantee of identical firmware behavior.
@@ -14,7 +15,7 @@ const json = value => JSON.stringify(canonical(value));
 const config = scene => ({schemaVersion:scene.schemaVersion,productId:scene.productId,firmware:scene.firmware,accessories:scene.accessories,localAccessories:scene.localAccessories || []});
 const sameScene = (a,b) => !!a && !!b && json(config(a)) === json(config(b));
 const hashPattern = /^[a-f0-9]{64}$/i;
-const pressInput=event=>event.type==='accessory-environment'?{type:event.type,accessoryId:event.accessoryId,...environmentParameters(event)}:event.type==='accessory-angle'?{type:event.type,accessoryId:event.accessoryId,id:event.id,value:event.value}:event.type==='encoder'?{type:'encoder',id:event.id,steps:event.steps}:event.type==='accessory-connection'?{type:event.type,accessoryId:event.accessoryId,connected:event.connected}:event.type==='accessory-button'?{type:event.type,accessoryId:event.accessoryId,id:event.id,pressed:event.pressed}:event.type==='matrix-key'?{type:'matrix-key',row:event.row,column:event.column,pressed:event.pressed}:{type:'button',id:event.id,pressed:event.pressed};
+const pressInput=event=>event.type==='accessory-illuminance'?{type:event.type,accessoryId:event.accessoryId,lux:event.lux}:event.type==='accessory-environment'?{type:event.type,accessoryId:event.accessoryId,...environmentParameters(event)}:event.type==='accessory-angle'?{type:event.type,accessoryId:event.accessoryId,id:event.id,value:event.value}:event.type==='encoder'?{type:'encoder',id:event.id,steps:event.steps}:event.type==='accessory-connection'?{type:event.type,accessoryId:event.accessoryId,connected:event.connected}:event.type==='accessory-button'?{type:event.type,accessoryId:event.accessoryId,id:event.id,pressed:event.pressed}:event.type==='matrix-key'?{type:'matrix-key',row:event.row,column:event.column,pressed:event.pressed}:{type:'button',id:event.id,pressed:event.pressed};
 const pressId=event=>event.type==='accessory-button'?`accessory:${event.accessoryId}:${event.id}`:event.type==='matrix-key'?`matrix:${event.row}:${event.column}`:`button:${event.id}`;
 const sourceUrl=value=>{try{const url=new URL(value);return typeof value==='string'&&value.length<=4096&&!url.username&&!url.password&&(url.protocol==='https:'||(url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)));}catch{return false;}};
 const fingerprint = firmware => json({manifestHash:firmware.manifestHash ?? null,appDirect:!!firmware.appDirect,executionMode:firmware.executionMode || 'wasm-jit',stubs:firmware.stubs || [],artifacts:firmware.artifacts.map(({kind,sha256,bytes,at}) => ({kind,sha256,bytes,...(at === undefined ? {} : {at})}))});
@@ -79,7 +80,7 @@ export function validateRecording(recording, {scene} = {}) {
     } else if(event.type==='encoder') {
       keys(event,['at','type','id','steps'],path);
       if(typeof event.id!=='string'||!/^[a-z0-9][a-z0-9-]{0,79}$/.test(event.id)||!Number.isInteger(event.steps)||event.steps===0||Math.abs(event.steps)>64)add('RECORDING_ENCODER',path,'Invalid encoder detents.');
-    } else if(['accessory-button','accessory-angle','accessory-environment','accessory-connection'].includes(event.type)) {
+    } else if(['accessory-button','accessory-angle','accessory-environment','accessory-illuminance','accessory-connection'].includes(event.type)) {
       if(!attached.has(event.accessoryId))add('RECORDING_ACCESSORY',path,'Accessory must have a physical route in the recorded scene.');
       const key=`accessory:${event.accessoryId}:button`;
       if(event.type==='accessory-button') {
@@ -87,6 +88,9 @@ export function validateRecording(recording, {scene} = {}) {
         if(recording.scene?.accessories?.find(item=>item.id===event.accessoryId)?.catalogId!=='m5stack-unit-button-u027'||event.id!=='button'||typeof event.pressed!=='boolean')add('RECORDING_ACCESSORY',path,'Invalid accessory button input.');
         if(event.pressed&&(!connected.has(event.accessoryId)||!connected.has(recording.scene.accessories.find(item=>item.id===event.accessoryId)?.wiring?.viaAccessoryId||event.accessoryId)))add('RECORDING_ACCESSORY',path,'A disconnected accessory cannot be pressed.');
         if(event.pressed)held.add(key);else held.delete(key);
+      } else if(event.type==='accessory-illuminance') {
+        keys(event,['at','type','accessoryId','lux'],path);
+        if(recording.scene?.accessories?.find(item=>item.id===event.accessoryId)?.catalogId!=='m5stack-unit-dlight-u136'||!validIlluminance(event.lux))add('RECORDING_ACCESSORY',path,'Invalid DLight illuminance input.');
       } else if(event.type==='accessory-environment') {
         keys(event,['at','type','accessoryId','temperatureC','humidityPercent','pressureHpa'],path);
         if(recording.scene?.accessories?.find(item=>item.id===event.accessoryId)?.catalogId!=='m5stack-unit-env4-u001d'||!validEnvironment(event))add('RECORDING_ACCESSORY',path,'Invalid ENV-IV ambient input.');
@@ -177,7 +181,7 @@ export function createRecordingController(runtime) {
     receipt={...(receipt||{}),kind:'replay',result:'cancelled',reason,bitExact:false};emit();return observe();
   };
   const onEvent=event=>{
-    if(event.type==='input'&&['button','matrix-key','touch','encoder','accessory-button','accessory-angle','accessory-environment','accessory-connection'].includes(event.event.type)) {
+    if(event.type==='input'&&['button','matrix-key','touch','encoder','accessory-button','accessory-angle','accessory-environment','accessory-illuminance','accessory-connection'].includes(event.event.type)) {
       if(status==='recording') {
         tracked(event.event);
         if(event.receipt?.delivery!=='queued'||!Number.isFinite(event.receipt.guestTime)){void cancel('missing-acknowledgement');return;}
@@ -241,7 +245,7 @@ export function createRecordingController(runtime) {
         const accessories=new Set((current.accessoryInputs||[]).map(item=>item.accessoryId));
         for(const event of input.events) {
           if(event.type==='encoder'&&!(current.product?.runtime?.encoder&&current.product.controls.some(c=>c.id===event.id&&c.type==='encoder')))throw err('RECORDING_CONTROL','Recording names an encoder absent from this product.');
-          if(['accessory-button','accessory-angle','accessory-environment','accessory-connection'].includes(event.type)&&!accessories.has(event.accessoryId))throw err('RECORDING_ACCESSORY','Recording names an accessory without a supported physical route.');
+          if(['accessory-button','accessory-angle','accessory-environment','accessory-illuminance','accessory-connection'].includes(event.type)&&!accessories.has(event.accessoryId))throw err('RECORDING_ACCESSORY','Recording names an accessory without a supported physical route.');
           if(event.type==='button'&&!controls.has(event.id))throw err('RECORDING_CONTROL','Recording names a button absent from this product.');
           if(event.type==='matrix-key'&&!current.product?.controls.some(control=>control.type==='matrix-key'&&control.row===event.row&&control.column===event.column))throw err('RECORDING_CONTROL','Recording names a matrix key absent from this product.');
         }

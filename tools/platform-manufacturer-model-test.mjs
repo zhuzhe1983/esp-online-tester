@@ -25,5 +25,9 @@ try {
  metadata={...fixture,derivedParts:[lens]};const rgb=createManufacturerModel(product,null);await rgb.ready;
  assert.equal(rgb.group.userData.rgbLedMeshes[0],rgb.parts['rgb-window']);assert.equal(rgb.parts['rgb-window'].userData.unlitColor,'#69746a');assert.deepEqual(rgb.group.userData.shellMeshes,[]);rgb.dispose();
  for(const ledIndex of [-1,256,1.5,'0']){metadata={...fixture,derivedParts:[{...lens,ledIndex}]};const invalid=createManufacturerModel(product,null);await assert.rejects(invalid.ready,/Invalid derived LED window/);invalid.dispose();}
+ for(const value of [null,[],[0],[0,100],[NaN,0],'bad']) {
+  metadata={...fixture,derivedParts:[{id:'pcb-main',kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],labelOffsetMm:value}}]};const invalid=createManufacturerModel(product,null);await assert.rejects(invalid.ready,/Invalid PCB placeholder label offset/);invalid.dispose();
+ }
+ metadata={...fixture,derivedParts:[{...port,housingVariant:'open-roof'},{id:'pcb-main',kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],labelOffsetMm:[0,-5]}}]};const light=createManufacturerModel(product,null);await light.ready;assert.equal(light.parts.grove.getObjectByName('socket-top'),undefined);assert.ok(light.parts.grove.getObjectByName('socket-top-rear'));light.dispose();
  console.log('ok manufacturer loader: bare-PCB material isolation, source-verified connector boundary, asset cache identity and invalid label rejection');
 } finally {globalThis.fetch=nativeFetch;}

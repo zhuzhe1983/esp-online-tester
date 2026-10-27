@@ -3,6 +3,7 @@ use std::sync::{Arc, Mutex};
 use esp_periph::i2c::m5::{M5ioe1, M5ioe1State, M5pm1, M5pm1State};
 use esp_periph::i2c::bmi270::{Bmi270, Bmi270Sample};
 use esp_periph::i2c::env4::{Env4, Environment};
+use esp_periph::i2c::bh1750::Bh1750;
 use esp_soc::board::{BoardEdge, BoardModel, VirtualCycle};
 use esp_soc::devices::Ws2812Chain;
 use esp_soc::devices::co5300::{Co5300, Co5300Scan};
@@ -27,6 +28,7 @@ struct PanelState {
     unit_button: Option<UnitButton>,
     unit_angle: Option<Box<UnitAngle>>,
     unit_env4: Option<Box<Env4>>,
+    unit_dlight: Option<Box<Bh1750>>,
 }
 
 struct PowerWiring {
@@ -60,6 +62,7 @@ impl PowerWiring {
             if volts!=angle.volts {angle.volts=volts;let _=angle.source.replace_current(volts);}
         }
         if let Some(env)=&mut panel.unit_env4 {env.set_power(grove_power);}
+        if let Some(light)=&mut panel.unit_dlight {light.set_power(grove_power);}
         if off || !expander.touch_reset_high {
             *self.touch.lock().expect("StopWatch touch mutex poisoned") = TouchState::default();
         }
@@ -97,6 +100,15 @@ impl I2cDevice for EnvDevice {
     fn read(&mut self)->u8 {self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").unit_env4.as_mut().map_or(0xff,|env|env.read(self.address))}
 }
 
+struct LightDevice {wiring:Arc<PowerWiring>}
+impl I2cDevice for LightDevice {
+    fn pins(&self)->Option<(u8,u8)> {Some((10,11))}
+    fn start(&mut self,read:bool)->bool {self.wiring.sync();self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").unit_dlight.as_mut().is_some_and(|light|light.start(read))}
+    fn write(&mut self,b:u8)->bool {self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").unit_dlight.as_mut().is_some_and(|light|light.write(b))}
+    fn read(&mut self)->u8 {self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").unit_dlight.as_mut().map_or(0xff,|light|light.read())}
+    fn stop(&mut self) {if let Some(light)=&mut self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").unit_dlight {light.stop();}}
+}
+
 pub struct StopWatch {
     wiring: Arc<PowerWiring>,
     gpio_events: u64,
@@ -126,6 +138,7 @@ impl StopWatch {
                     unit_button: None,
                     unit_angle: None,
                     unit_env4: None,
+                    unit_dlight: None,
                 }),
                 pmic: Default::default(),
                 expander: Default::default(),
@@ -205,7 +218,7 @@ impl BoardModel for StopWatch {
         // StopWatch schematic: internal SDA47/SCL48. M5GFX probes with GPIO,
         // then uses either controller; all paths access the same physical chips.
         let mut routed:Vec<(u8,u8,Box<dyn I2cDevice>)>=(0..2).flat_map(|bus|self.i2c.controller_devices(Some((47,48))).into_iter().map(move |(address,device)|(bus,address,device))).collect();
-        for bus in [0,1] {for address in [0x44,0x76] {routed.push((bus,address,Box::new(EnvDevice{wiring:self.wiring.clone(),address})));}}routed
+        for bus in [0,1] {for address in [0x44,0x76] {routed.push((bus,address,Box::new(EnvDevice{wiring:self.wiring.clone(),address})));}routed.push((bus,0x23,Box::new(LightDevice{wiring:self.wiring.clone()})));}routed
     }
     fn gpio_output_at(&mut self,cycle:VirtualCycle,changes:&[(u8,bool)],enabled:u64,output:u64) {
         self.gpio_changes(changes);
@@ -249,6 +262,7 @@ impl BoardModel for StopWatch {
         let mut state=self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");
         state.panel.advance_to(cycle);if let Some(button)=&mut state.unit_button {button.cycle=cycle;}
         if let Some(env)=&mut state.unit_env4 {env.advance_to(cycle);}
+        if let Some(light)=&mut state.unit_dlight {light.advance_to(cycle);}
     }
     fn take_edges(&mut self) -> Vec<BoardEdge> {
         let mut state=self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");let mut edges=state.panel.take_edges();
@@ -277,6 +291,11 @@ impl BoardModel for StopWatch {
     fn accessory_environment_at(&mut self,cycle:VirtualCycle,model:&str,port:&str,connected:bool,sample:Environment)->bool {
         if model!="sht40-bmp280-u001d"||port!="grove"||!sample.valid() {return false;}
         {let mut panel=self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");let env=panel.unit_env4.get_or_insert_with(||Box::new(Env4::new(crate::periph::CPU_HZ)));env.update(cycle,connected,sample);}
+        self.wiring.sync();true
+    }
+    fn accessory_illuminance_at(&mut self,cycle:VirtualCycle,model:&str,port:&str,connected:bool,lux:f64)->bool {
+        if model!="bh1750fvi-u136"||port!="grove"||!Bh1750::valid(lux) {return false;}
+        {let mut panel=self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");let light=panel.unit_dlight.get_or_insert_with(||Box::new(Bh1750::new(crate::periph::CPU_HZ)));light.update(cycle,connected,lux);}
         self.wiring.sync();true
     }
     fn named_pin(&self, name: &str) -> Option<u8> {
@@ -405,5 +424,27 @@ mod unit_env4_tests {
         assert!(board.accessory_environment_at(crate::periph::CPU_HZ/100,"sht40-bmp280-u001d","grove",true,Environment::default()));
         {let pmic=&mut devices.iter_mut().find(|(_,a,_)|*a==0x6e).unwrap().2;pmic.start(false);pmic.write(6);pmic.write(0x17);pmic.stop();}
         assert!(!devices.iter_mut().find(|(_,a,_)|*a==0x44).unwrap().2.start(false));
+    }
+}
+
+#[cfg(test)]
+mod unit_dlight_tests {
+    use super::*;
+    #[test]
+    fn light_device_is_physical_powered_and_independent_of_environment() {
+        let mut board=StopWatch::new();let mut devices=board.i2c_devices();
+        assert!(!board.accessory_illuminance_at(0,"bh1750-other-sku","grove",true,1000.0));
+        assert!(!board.accessory_illuminance_at(0,"bh1750fvi-u136","wrong",true,1000.0));
+        assert!(board.accessory_illuminance_at(0,"bh1750fvi-u136","grove",true,1000.0));
+        assert!(!devices.iter_mut().find(|(_,a,_)|*a==0x23).unwrap().2.start(false));
+        {let pmic=&mut devices.iter_mut().find(|(_,a,_)|*a==0x6e).unwrap().2;pmic.start(false);pmic.write(6);pmic.write(0x1f);pmic.stop();}
+        {let light=&mut devices.iter_mut().find(|(_,a,_)|*a==0x23).unwrap().2;assert_eq!(light.pins(),Some((10,11)));assert!(light.start(false));assert!(light.write(0x20));light.stop();}
+        board.advance_to(crate::periph::CPU_HZ/5);
+        {let light=&mut devices.iter_mut().find(|(_,a,_)|*a==0x23).unwrap().2;assert!(light.start(true));assert_eq!([light.read(),light.read()],[4,176]);light.stop();}
+        assert!(!devices.iter_mut().find(|(_,a,_)|*a==0x44).unwrap().2.start(false));
+        assert!(board.accessory_environment_at(crate::periph::CPU_HZ/5,"sht40-bmp280-u001d","grove",true,Environment::default()));
+        assert!(board.accessory_illuminance_at(crate::periph::CPU_HZ/5,"bh1750fvi-u136","grove",false,1000.0));
+        assert!(!devices.iter_mut().find(|(_,a,_)|*a==0x23).unwrap().2.start(false));
+        assert!(devices.iter_mut().find(|(_,a,_)|*a==0x76).unwrap().2.start(false));
     }
 }

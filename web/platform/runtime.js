@@ -1,4 +1,5 @@
 import {isPaperMonoBoard,persistentBoard,firmwareBoardMatches} from './board-compatibility.js';
+import {validIlluminance,illuminanceParameter} from './illuminance-input.js';
 import {validEnvironment,environmentParameters} from './environment-input.js';
 import {routedAccessories,accessoryPoweredPath} from './accessory-routing.js';
 import {MAX_FIRMWARE_FILE_BYTES as MAX_FILE, MAX_FIRMWARE_BUNDLE_BYTES as MAX_TOTAL} from './firmware-limits.js';
@@ -169,7 +170,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   const emptySd=()=>({supported:false,present:false,bytes:0,format:null,status:'unloaded',backend:null,restored:false,pristine:true,changedPages:0,error:null});
   let sdCard=emptySd(),sdSession=null,leds=[];
   let accessoryInputs = [], accessoryOutputs = [];
-  const resetAccessoryInputs=()=>{accessoryInputs=routedAccessories(scene,product,catalog).map(route=>({...route,connected:true,...(route.viaAccessoryId?{effectiveConnected:true}:{}),...(route.control==='button'?{pressed:false}:route.control==='knob'?{value:scene.accessories.find(item=>item.id===route.accessoryId)?.parameters?.position??0.5}:route.control==='environment'?environmentParameters(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters):{})}));accessoryOutputs=accessoryInputs.filter(route=>route.output).map(({accessoryId,model,port})=>({accessoryId,model,port,leds:[[0,0,0],[0,0,0],[0,0,0]]}));};
+  const resetAccessoryInputs=()=>{accessoryInputs=routedAccessories(scene,product,catalog).map(route=>({...route,connected:true,...(route.viaAccessoryId?{effectiveConnected:true}:{}),...(route.control==='button'?{pressed:false}:route.control==='knob'?{value:scene.accessories.find(item=>item.id===route.accessoryId)?.parameters?.position??0.5}:route.control==='environment'?environmentParameters(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters):route.control==='illuminance'?{lux:illuminanceParameter(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters)}:{})}));accessoryOutputs=accessoryInputs.filter(route=>route.output).map(({accessoryId,model,port})=>({accessoryId,model,port,leds:[[0,0,0],[0,0,0],[0,0,0]]}));};
   let storage = emptyStorage(), storageSession = null, storageSequence = 0;
   let booted = false, inputSequence = 0, loadCancelled = false, progressGeneration = 0, disposing = false;
   const imuModel = () => ({stopwatch:'bmi270-register-subset',atoms3:'mpu6886-register-subset','atom-matrix':'mpu6886-register-subset','atom-matrix-v11':'bmi270-register-subset',atoms3r:'bmi270-register-subset','atoms3r-chatbot':'bmi270-register-subset',papers3:'bmi270-register-subset'}[product?.runtime?.board] || null);
@@ -544,7 +545,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     requireValue(receipt.ok && Number.isFinite(receipt.time), 'IMU_UNSUPPORTED', 'The loaded emulator does not support this IMU input.');
     imu.delivery = 'register-state'; imu.guestTime = receipt.time;
   };
-  const accessoryMessage=route=>({t:route.control==='button'?'accessory-button':route.control==='knob'?'accessory-angle':route.control==='environment'?'accessory-environment':'accessory-connection',model:route.model,port:route.port,connected:accessoryPoweredPath(route)?1:0,...(route.control==='button'?{pressed:route.pressed?1:0}:route.control==='knob'?{value:route.value}:route.control==='environment'?environmentParameters(route):{})});
+  const accessoryMessage=route=>({t:route.control==='button'?'accessory-button':route.control==='knob'?'accessory-angle':route.control==='environment'?'accessory-environment':route.control==='illuminance'?'accessory-illuminance':'accessory-connection',model:route.model,port:route.port,connected:accessoryPoweredPath(route)?1:0,...(route.control==='button'?{pressed:route.pressed?1:0}:route.control==='knob'?{value:route.value}:route.control==='environment'?environmentParameters(route):route.control==='illuminance'?{lux:route.lux}:{})});
   const sendAccessory=async route=>{const inputId=++inputSequence;return ask(`input:${inputId}`,{op:'text',inputId,data:JSON.stringify(accessoryMessage(route))});};
   const start = async () => {
     requireValue(loaded && ['ready', 'paused', 'running'].includes(status), 'NOT_READY', 'Load firmware before starting the emulator.');
@@ -571,13 +572,16 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(product.runtime?.encoder === true && controls().some(c => c.id === event.id && c.type === 'encoder'), 'UNSUPPORTED_CONTROL', 'This product does not expose that rotary encoder.');
       requireValue(Number.isInteger(event.steps) && event.steps !== 0 && Math.abs(event.steps) <= 64, 'INVALID_INPUT', 'Encoder steps must be a nonzero integer from -64 to 64.');
       message = {t:'knob', d:event.steps};
-    } else if (['accessory-button','accessory-angle','accessory-environment','accessory-connection'].includes(event.type)) {
+    } else if (['accessory-button','accessory-angle','accessory-environment','accessory-illuminance','accessory-connection'].includes(event.type)) {
       const route=accessoryInputs.find(item=>item.accessoryId===event.accessoryId);
       requireValue(route,'ACCESSORY_ROUTE_UNSUPPORTED','This accessory has no supported physical route on the current product.');
       if(event.type==='accessory-button') {
         requireValue(route.control==='button' && event.id==='button' && typeof event.pressed==='boolean','INVALID_INPUT','Unit Button requires id button and a boolean pressed state.');
         requireValue(accessoryPoweredPath(route) || event.pressed===false,'ACCESSORY_DISCONNECTED','Connect this accessory before pressing it.');
         accessoryUpdate={...route,pressed:accessoryPoweredPath(route) && event.pressed};
+      } else if(event.type==='accessory-illuminance') {
+        requireValue(route.control==='illuminance'&&validIlluminance(event.lux),'INVALID_INPUT','Unit DLight requires illuminance lux from 0 to 100000.');
+        accessoryUpdate={...route,lux:event.lux};
       } else if(event.type==='accessory-environment') {
         requireValue(route.control==='environment'&&validEnvironment(event),'INVALID_INPUT','ENV-IV requires temperatureC -40..85, humidityPercent 0..100 and pressureHpa 300..1100.');
         accessoryUpdate={...route,...environmentParameters(event)};
@@ -615,7 +619,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     const inputId = ++inputSequence;
     const receipt = await ask(`input:${inputId}`, Array.isArray(message)?{op:'text-batch',inputId,data:message.map(item=>JSON.stringify(item))}:{op:'text',inputId,data:JSON.stringify(message)});
     requireValue(Number.isFinite(receipt.time) && receipt.time >= 0, 'INVALID_INPUT_RECEIPT', 'Worker did not return a valid guest input clock.');
-    if(accessoryUpdate){accessoryInputs=accessoryInputs.map(route=>(accessoryBatch||[accessoryUpdate]).find(item=>item.accessoryId===route.accessoryId)||route);if(['accessory-connection','accessory-environment'].includes(event.type))emit({type:'accessories',accessoryInputs:clone(accessoryInputs)});else if(event.type==='accessory-angle')emit({type:'accessory-positions',accessoryInputs:clone(accessoryInputs)});}
+    if(accessoryUpdate){accessoryInputs=accessoryInputs.map(route=>(accessoryBatch||[accessoryUpdate]).find(item=>item.accessoryId===route.accessoryId)||route);if(['accessory-connection','accessory-environment','accessory-illuminance'].includes(event.type))emit({type:'accessories',accessoryInputs:clone(accessoryInputs)});else if(event.type==='accessory-angle')emit({type:'accessory-positions',accessoryInputs:clone(accessoryInputs)});}
     emit({ type: 'input', event: clone(event), receipt: { delivery: 'queued', guestTime: receipt.time, frame: { width: frame?.width, height: frame?.height } } });
     return { accepted: true, delivery: 'queued', message, guestTime: receipt.time };
   };

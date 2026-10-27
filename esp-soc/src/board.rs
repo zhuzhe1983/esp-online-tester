@@ -183,6 +183,8 @@ pub trait BoardModel {
 
     /// Cold ambient input; the board owns powered, physically routed I2C sensor devices.
     fn accessory_environment_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _sample: esp_periph::i2c::env4::Environment) -> bool { false }
+    /// Cold optical input; board owns the physical I2C route and supply.
+    fn accessory_illuminance_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _lux: f64) -> bool { false }
 }
 
 pub type Board = Box<dyn BoardModel>;
