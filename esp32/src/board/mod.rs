@@ -5,11 +5,13 @@
 //! - `esp32dev-loopback` — the SPI loopback fixture in `crate::spi`
 pub mod tdisplay;
 pub mod aithinker;
+pub mod atom_lite;
 
 pub use tdisplay::*;
 
 pub fn make_board(name: &str) -> Option<esp_soc::Board> {
     match name {
+        "atom-lite" | "m5stack-c008" => Some(Box::new(atom_lite::AtomLite::new())),
         "none" | "bare" | "esp32dev" => Some(Box::new(esp_soc::NoBoard)),
         "ttgo-tdisplay" | "tdisplay" => Some(Box::new(TtgoTDisplay::new())),
         "ai-thinker-cam" | "esp32cam" => Some(Box::new(aithinker::AiThinkerCam::default())),

@@ -79,7 +79,7 @@ export async function inspectLocalBuild(selectedFiles, {signal} = {}) {
   return {layoutFile, chip, flashSizeBytes, segments:segments.sort((a,b)=>a.offset-b.offset), missingFiles, warnings:[]};
 }
 
-const chipForBoard = board => /^(esp32|ttgo-tdisplay)$/.test(board) ? 'esp32' : board === 'esp32c3' ? 'esp32c3' : board.includes('c6') ? 'esp32c6' : board === 'esp32p4' ? 'esp32p4' : 'esp32s3';
+const chipForBoard = board => /^(esp32|ttgo-tdisplay|atom-lite)$/.test(board) ? 'esp32' : board === 'esp32c3' ? 'esp32c3' : board.includes('c6') ? 'esp32c6' : board === 'esp32p4' ? 'esp32p4' : 'esp32s3';
 /** Return a temporary merged buffer with erased 0xff gaps, never app-direct. */
 export async function assembleLocalFirmware(source, {board, flashBytes, signal, onRead} = {}) {
   ensure(object(source) && ['build','segments'].includes(source.format), 'UNSUPPORTED_FORMAT', 'Choose a build directory or explicit local flash segments.');

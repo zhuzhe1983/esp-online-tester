@@ -7234,17 +7234,20 @@
       "summary": "ESP32-PICO-D4 微型控制器，具备单个 RGB LED、用户按键、红外、USB-C 和 Grove/GPIO 扩展。",
       "knowledgeUrl": "./knowledge/m5stack-c008.json",
       "runtime": {
-        "board": null,
+        "board": "atom-lite",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [
         {
-          "id": "button-a",
+          "id": "button",
           "type": "button",
-          "pin": 39
+          "name": "按键",
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         }
       ],
       "interfaces": [
@@ -7286,13 +7289,11 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "部分板级模型：G39 按键、G27 SK6812 RMT。官方出厂镜像按键进入 Grove 测试并输出红灯；外接器件、红外、网络和模拟供电未验证。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
         "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
         "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-        "Official gallery has no straight back view; back-photo gate unmeasured rather than reusing sibling Atom label.",
-        "Only unlit physical LED/button appearance; no RGB animation or board execution."
+        "Official gallery has no straight back view; back-photo gate unmeasured rather than reusing sibling Atom label."
       ],
       "sources": [
         {

@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T19:58:21Z",
+  "updatedAt": "2026-10-27T19:25:28Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -336,6 +336,27 @@
       "sourceIds": [
         "dimension-drawing-bcc27c9541"
       ]
+    },
+    {
+      "id": "runtime-button-wiring",
+      "label": "User button",
+      "value": "G39 active-low, external 4.7 kΩ pull-up",
+      "basis": "official",
+      "sourceIds": [
+        "runtime-schematic"
+      ],
+      "group": "pinmap"
+    },
+    {
+      "id": "runtime-rgb-wiring",
+      "label": "RGB data",
+      "value": "G27, one SK6812 3535",
+      "basis": "official",
+      "sourceIds": [
+        "runtime-schematic",
+        "runtime-official-docs"
+      ],
+      "group": "pinmap"
     }
   ],
   "revisions": [],
@@ -508,6 +529,58 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "runtime-official-docs",
+      "url": "https://docs.m5stack.com/en/core/Atom-Lite",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Atom-Lite",
+      "fetchedAt": "2026-10-27T19:09:15Z",
+      "bytes": 138352,
+      "mediaType": "text/html; charset=UTF-8",
+      "sha256": "78ceeeded27d51412c35f04c324094724b67a38388450408b592a3f8cb186c3c",
+      "title": "Atom-Lite runtime source review",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "archiveName": "official-docs.html"
+    },
+    {
+      "id": "runtime-schematic",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/ATOM%20Lite/img-2e58eac3-d9ef-4be4-b486-d4dd9a8324fa.webp",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/core/ATOM%20Lite/img-2e58eac3-d9ef-4be4-b486-d4dd9a8324fa.webp",
+      "fetchedAt": "2026-10-27T19:09:17Z",
+      "bytes": 127598,
+      "mediaType": "image/webp",
+      "sha256": "f79ca42d41a64b94ee7900b566434a85c68be7b97eef3a20bde9c05f7802c100",
+      "title": "Atom-Lite official schematic",
+      "kind": "schematic",
+      "status": "fetched",
+      "archiveName": "schematic.webp"
+    },
+    {
+      "id": "runtime-uiflow2-quickstart",
+      "url": "https://docs.m5stack.com/en/uiflow2/atomlite/program",
+      "resolvedUrl": "https://docs.m5stack.com/en/uiflow2/atomlite/program",
+      "fetchedAt": "2026-10-27T19:09:17Z",
+      "bytes": 267960,
+      "mediaType": "text/html; charset=UTF-8",
+      "sha256": "32216ad36da3db96174668a9f948de5a22b111da977f1523d34fddca08beabe4",
+      "title": "Atom-Lite UIFlow2 quickstart",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "archiveName": "uiflow2-quickstart.html"
+    },
+    {
+      "id": "runtime-factory",
+      "url": "https://m5burner-cdn.m5stack.com/firmware/863975d5491b3e07aec72d90518afd6e.bin",
+      "resolvedUrl": "https://m5burner-cdn.m5stack.com/firmware/863975d5491b3e07aec72d90518afd6e.bin",
+      "fetchedAt": "2026-10-27T19:09:18Z",
+      "bytes": 1048576,
+      "mediaType": "application/octet-stream",
+      "sha256": "1c8fa292e31819c4a3ca36c714e93d08f7a8a58f16918f8fdf1df0210e546ce4",
+      "title": "Atom-Lite Factory Test v1.0 remote image",
+      "kind": "firmware",
+      "status": "fetched",
+      "archiveName": "factory.bin"
     }
   ],
   "assets": [
@@ -579,16 +652,6 @@
       "notes": "Explicit capacity not stated in audited specification; null does not mean zero."
     },
     {
-      "id": "default-firmware-artifact",
-      "label": "Pinned default firmware artifact",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "official-docs"
-      ],
-      "notes": "No pinned binary/layout/hash verified. Software documentation remains linked in source records."
-    },
-    {
       "id": "user-hardware-revision",
       "label": "User hardware revision",
       "value": null,
@@ -612,6 +675,9 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-10-27 runtime verification: exact Factory Test v1.0 SHA-256 1c8fa292e31819c4a3ca36c714e93d08f7a8a58f16918f8fdf1df0210e546ce4 boots through classic ESP32 ROM. G39 input starts Grove test and G27 RMT emits RGB [20,0,0]; browser, keyboard and mini verified. Detailed receipts: docs/platform/evidence/atom-lite/.",
+    "The distributed factory binary differs from the public M5Atom rainbow example. IR, physical networking, external Grove fixture and complete factory test are not verified; UIFlow2 remains unverified trial. No physical hardware test.",
+    "Official schematic currently depicts CH552T while the tutorial driver paragraph discusses FTDI. These source revisions are retained without assuming USB controller identity from the driver text."
   ]
 }

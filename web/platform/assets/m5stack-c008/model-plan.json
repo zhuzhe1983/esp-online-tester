@@ -76,11 +76,10 @@
     }
   ],
   "limitations": [
-    "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
     "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
     "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
     "Official gallery has no straight back view; back-photo gate unmeasured rather than reusing sibling Atom label.",
-    "Only unlit physical LED/button appearance; no RGB animation or board execution."
+    "Partial G39/G27 digital runtime; package depth/placement photo-estimated, complete PCB UNKNOWN."
   ],
   "assemblyNotes": "Original manufacturer components selected from assembled cluster; other components excluded with reasons. One rigid global transform, no scaling.",
   "omittedComponents": [
@@ -105,6 +104,27 @@
       24,
       24,
       9.5
+    ],
+    "buttons": [
+      {
+        "id": "button",
+        "shape": "rectangle",
+        "sizeMm": [
+          11,
+          10
+        ],
+        "positionMm": [
+          0,
+          1.8,
+          4.77
+        ],
+        "basis": "manufacturer-cad",
+        "sourceIds": [
+          "manufacturer-cad-851f773867",
+          "product-photo-d857fab326"
+        ],
+        "notes": "Within original cover flexure; 0.02mm above manufacturer cover top, leaving USB and outer rim noninteractive."
+      }
     ]
   },
   "derivedParts": [
@@ -1028,6 +1048,29 @@
         "dimension-drawing-bcc27c9541"
       ],
       "notes": "Photo-visible individual open female header sockets on2.54mm pitch; envelope/seat +/-0.7mm, no actual internal contact CAD."
+    },
+    {
+      "id": "rgb-led",
+      "kind": "box",
+      "color": "#cdd0c8",
+      "ledIndex": 0,
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-d857fab326"
+      ],
+      "geometry": {
+        "sizeMm": [
+          3.5,
+          3.5,
+          0.9
+        ],
+        "centerMm": [
+          0,
+          0,
+          3.8
+        ]
+      },
+      "notes": "SK6812 3535 package size from official specs; position inferred from existing cover light slit. Height/depth estimated, not PCB CAD. No new light hole."
     }
   ],
   "revisions": [],
@@ -1041,16 +1084,6 @@
         "official-docs"
       ],
       "notes": "Explicit capacity not stated in audited specification; null does not mean zero."
-    },
-    {
-      "id": "default-firmware-artifact",
-      "label": "Pinned default firmware artifact",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "official-docs"
-      ],
-      "notes": "No pinned binary/layout/hash verified. Software documentation remains linked in source records."
     }
   ],
   "facts": [
@@ -1123,9 +1156,12 @@
     "display": null,
     "controls": [
       {
-        "id": "button-a",
+        "id": "button",
         "type": "button",
-        "pin": 39
+        "name": "按键",
+        "pin": 39,
+        "activeLow": true,
+        "defaultKeyCode": "KeyA"
       }
     ],
     "interfaces": [
@@ -1152,6 +1188,12 @@
           }
         ]
       }
-    ]
+    ],
+    "runtime": {
+      "board": "atom-lite",
+      "flashMb": 4,
+      "psramMb": 0,
+      "status": "partial"
+    }
   }
 }
