@@ -54,3 +54,8 @@ Rust workspace、两项 Clippy、平台 Node、catalog 与真实 WASM 回归结�
 正式构建的 CPU 中位数：S3 hello 0.24→0.24 s、C3 hello 2.31→2.31 s、C6 hello 1.54→1.56 s（+1.30%）、pocket-tank 39.42→39.12 s。C6 追加一次七轮反向顺序复测，1.61→1.65 s（+2.48%，7/7 候选样本较慢），见[复测样本](evidence/m5stack-unit-button-u027/runtime/cpu-c6-repeat.json)。指令和输出门禁通过，但 C6 CPU 偏差保留为未归因回归标记，不声明无额外 CPU 成本。早期构建条件不一致的样本单独保留于 cpu-initial.json，不作为最终门禁。
 
 该测量用于排查引入无关设备开销，不是性能优化结论。短 hello 的时间粒度和共享主机负载限制了精度。机制审查参考既有 [EX201](../experiments.md#ex201)、[EX203](../experiments.md#ex203)、[EX205](../experiments.md#ex205)、[EX206](../experiments.md#ex206)，没有重复实施其中的时序或优化实验。
+
+
+### 冷输入路径审查后的最终状态
+
+后续只调整了 S3 附件消息的编译范围与解析函数，实际按键、供电和拔插行为保持不变。C6 的多余解析代码已移除，已检查的数据布局与函数形状回到基线，但一次候选 CPU 对照仍为 **+1.875%**，原因未解释；不声明性能无回退。前述四工作量结果属于 ee3 历史版本，新的源码、运行验证和测量分别见[审查说明](evidence/m5stack-unit-button-u027/runtime/cold-path-review.md)、[最终检查](evidence/m5stack-unit-button-u027/runtime/checks-cold.json)和 [CPU 样本](evidence/m5stack-unit-button-u027/runtime/cpu-cold.json)。
