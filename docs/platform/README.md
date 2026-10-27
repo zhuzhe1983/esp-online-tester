@@ -143,3 +143,9 @@ Both the workbench and mini player expose **刷到设备**. Use a Web Serial-cap
 Select a complete merged BIN directly, or select an app BIN followed by `flasher_args.json` and every file it references. Selecting the whole build directory preserves relative paths. The loader validates offsets, chip, flash size, bootloader and application partition before initializing the emulator. Firmware files and JSON manifests accept up to 256 MiB each; firmware bundles also have a 256 MiB total limit. The selected product’s Flash capacity and image layout still apply. Files stay in the browser; no private firmware is uploaded. See [local firmware layouts](local-firmware.md).
 
 **下载并运行** loads into the emulator and starts it, without saving a file into the computer's Downloads folder. For a preview-only product such as NanoH2, run buttons are hidden and a red **尚未完成适配** label is shown, even when a remote release has been found. If the board model exists, unverified catalog firmware asks for confirmation only when Run is clicked; Cancel makes no firmware request. Verified firmware runs directly. **报告问题** opens an issue draft with device/firmware identity, current error and bounded recent logs after common credential/path/device-identifier redaction; the user describes and submits the issue. The mini player follows the same boundary. The agent API remains noninteractive.
+
+Unit RGB U003 的真实 RMT 灯光、供电和拔插支持见 [U003 runtime](unit-rgb-runtime.md)。目前仅核验 StopWatch Port A 黄线 G10，软件 GPIO、串级及实体灯孔链序尚未验证。
+
+Unit Angle U005 已支持 StopWatch Port A 的标称模拟电压输入与真实 ADC2 转换；官方图纸冲突、机械角度未校准等边界见 [Unit Angle 运行说明](unit-angle-runtime.md)。
+
+[Unit Hub U006](unit-hub-runtime.md) adds one passive parallel layer between StopWatch Port A and the supported U027/U003/U005 units. Signal contention is rejected; output socket visual pin1 is still unknown and its cables remain hidden.

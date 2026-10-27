@@ -160,6 +160,10 @@ pub trait BoardModel {
     /// Cold host input for a source-backed button unit on a board-owned physical connector.
     /// Returns the routed pin and its digital drive; None drive disconnects it.
     fn accessory_button_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _pressed: bool) -> Option<(u8, Option<bool>)> { None }
+    /// Cold connection change for a board-owned output unit; never accepts user-selected pins.
+    fn accessory_connection_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool) -> bool { false }
+    /// Cold physical potentiometer input. Board owns the pin, transfer curve and power gate.
+    fn accessory_analog_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _value: f32) -> Option<(u8, esp_periph::AnalogSource)> { None }
 }
 
 pub type Board = Box<dyn BoardModel>;

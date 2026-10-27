@@ -3,14 +3,17 @@ use crate::device::{Device, WriteEffect};
 use crate::regram::RegRam;
 use emu_core::ClockDomain;
 
-/// The WS2812 bit of one RMT symbol's durations and levels: 1 when its high time exceeds its
-/// low time. A macro so the RMT engine's per-symbol loop keeps exactly this inline code.
+/// WS2812-class RMT decoding policy. SK6812 uses equal nonzero high/low durations
+/// for 1 (600/600 ns); WS2812/NeoPixel use a longer high pulse. This ratio-only
+/// path does not validate absolute timings, LED revisions or analog thresholds.
+/// Source/failed guest proof: docs/platform/evidence/m5stack-unit-rgb-u003/runtime/.
+/// Kept inline in the existing per-symbol loop; no new poll or allocation.
 #[macro_export]
 macro_rules! ws2812_bit {
     ($d0:ident, $l0:ident, $d1:ident, $l1:ident) => {{
         let high = if $l0 { $d0 } else { 0 } + if $l1 { $d1 } else { 0 };
         let low = if !$l0 { $d0 } else { 0 } + if !$l1 { $d1 } else { 0 };
-        high > low
+        high != 0 && high >= low
     }};
 }
 
@@ -280,5 +283,22 @@ mod dma_tests {
         r.write(0x2c, 0);
         assert_eq!(r.dma_fifo_len(), 0);
         assert!(r.dma_fifo.is_none());
+    }
+}
+
+#[cfg(test)]
+mod rgb_bit_tests {
+    use super::symbol_bit;
+    fn symbol(high:u32,low:u32,high_first:bool)->u32 {
+        if high_first {high|0x8000|(low<<16)} else {low|((high|0x8000)<<16)}
+    }
+    #[test]
+    fn sk6812_equal_duty_one_and_existing_neopixel_symbols() {
+        // SK6812 0:300/900ns, 1:600/600ns; Adafruit ESP IDF5 0:400/800,
+        // 1:800/400; old IDF4 driver 0:400/850, 1:800/450. 10ns units.
+        for (high,low,bit) in [(30,90,false),(60,60,true),(40,80,false),(80,40,true),(40,85,false),(80,45,true)] {
+            for first in [true,false] {assert_eq!(symbol_bit(symbol(high,low,first)),bit,"high={high} low={low}");}
+        }
+        assert!(!symbol_bit(0));assert!(!symbol_bit(800|(800<<16)),"low reset is not a data one");
     }
 }

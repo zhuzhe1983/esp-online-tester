@@ -11,7 +11,7 @@ const scene=()=>({...createDefaultScene(catalog,'m5stack-stopwatch'),accessories
 test('U027 permits only the audited host/port and rejects overlapping pin assignments',()=>{
   assert.equal(validateScene(scene(),catalog).valid,true);
   assert.deepEqual(decodeScene(encodeScene(scene())),scene());
-  for(const change of [s=>{s.productId='m5stack-c123';s.keyMapping={};s.firmware=null;},s=>{s.accessories[0].wiring.interfaceId='internal-i2c';},s=>{s.accessories[0].wiring.pin=10;},s=>{s.accessories.push({...instance(),id:'second-button'});},s=>{s.accessories[0].catalogId='m5stack-unit-angle-u005';}]){
+  for(const change of [s=>{s.productId='m5stack-c123';s.keyMapping={};s.firmware=null;},s=>{s.accessories[0].wiring.interfaceId='internal-i2c';},s=>{s.accessories[0].wiring.pin=10;},s=>{s.accessories.push({...instance(),id:'second-button'});},s=>{s.accessories[0].catalogId='m5stack-gps-u032-v11';}]){
     const s=scene();change(s);assert.equal(validateScene(s,catalog).valid,false);
   }
   const overlap=scene();overlap.accessories.push({id:'gps',catalogId:'m5stack-gps-u032-v11',parameters:{},wiring:{mode:'physical',connectorId:'grove',port:'uart1',rx:11,tx:10}});assert.ok(validateScene(overlap,catalog).errors.some(e=>e.code==='PIN_CONFLICT'));

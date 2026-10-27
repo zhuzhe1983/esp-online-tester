@@ -56,6 +56,7 @@ export function createManufacturerModel(product, screenTexture) {
       }
       const mesh=new THREE.Mesh(geometry(regular),standard);mesh.name=part.name;mesh.userData.inputOccluder=true;group.add(mesh);parts[part.name]=mesh;
       if(part.role==='shell'||part.name==='shell'||(!part.role&&/case|shell|housing/i.test(part.name)))shells.push(mesh);
+      if(Number.isInteger(part.ledIndex)&&part.ledIndex>=0&&part.ledIndex<256){mesh.userData.ledIndex=part.ledIndex;mesh.userData.unlitColor=part.color || '#cdd0c8';(group.userData.rgbLedMeshes ||= [])[part.ledIndex]=mesh;}
       if(part.encoderId){mesh.userData.encoder=part.encoderId;}
       if(part.controlId){mesh.userData.control=part.controlId;buttons.push(mesh);}
       // Paper is opaque where the alpha mask exists: write depth so a later
@@ -89,6 +90,12 @@ export function createManufacturerModel(product, screenTexture) {
       pcb.add(new THREE.Mesh(createPcbPlaceholderGeometry(size,part.geometry?.shape),new THREE.MeshStandardMaterial({color:0x859188,roughness:.85})));
       const label=flatLabel('UNKNOWN');if(label){textures.push(label);const width=Math.min(size[0]*.82,42);for(const back of [false,true]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,width/4),new THREE.MeshBasicMaterial({map:label,transparent:true,depthWrite:false}));mesh.position.z=(back?-1:1)*(size[2]/2+.015);if(back)mesh.rotation.y=Math.PI;pcb.add(mesh);}}
       parts[pcb.name]=pcb;group.add(pcb);
+    }
+    for(const knob of metadata.presentation?.potentiometers || []) {
+      if(typeof knob.id!=='string'||!Array.isArray(knob.parts)||!knob.parts.length||knob.parts.some(name=>!parts[name])||!Number.isFinite(knob.visualSweepRadians)||knob.visualSweepRadians<=0||knob.visualSweepRadians>2*Math.PI)throw Error('Invalid potentiometer presentation');
+      const pivot=new THREE.Group();pivot.name=`potentiometer:${knob.id}`;pivot.position.set(...vector(knob.centerMm));pivot.userData.value=.5;pivot.userData.visualSweepRadians=knob.visualSweepRadians;group.add(pivot);
+      for(const name of knob.parts){const mesh=parts[name];mesh.position.sub(pivot.position);pivot.add(mesh);mesh.userData.potentiometer={id:knob.id,pivot};}
+      (group.userData.potentiometers ||= []).push(pivot);
     }
     const display=metadata.presentation?.screen;
     if(display&&product.display){screen=new THREE.Mesh(display.shape==='circle'?new THREE.CircleGeometry(display.sizeMm[0]/2,96):new THREE.PlaneGeometry(...display.sizeMm),new THREE.MeshBasicMaterial({map:screenTexture,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));screen.position.set(...vector(display.positionMm));screen.rotation.set(...vector(display.rotation));screen.name='live-display';screen.userData.screen=true;parts.screen=screen;group.add(screen);}

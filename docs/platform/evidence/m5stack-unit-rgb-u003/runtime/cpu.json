@@ -1,0 +1,1014 @@
+{
+  "checkedAt": "2026-10-27T09:06:53Z",
+  "base": "9d072179",
+  "candidate": "U003 working tree identified by source hashes",
+  "method": "One excluded warmup pair then five measured alternating base/candidate pairs per workload; 30 guest seconds; /usr/bin/time -p user. Task-owned browsers and compilers stopped. Other host load uncontrolled. No speed claim.",
+  "host": {
+    "os": "Darwin",
+    "architecture": "arm64",
+    "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)"
+  },
+  "sourceSha256": {
+    "esp-periph/src/rmt.rs": "8eed4760d0b1a4fd00b73cacd98d20652e8866ac5a3f63ef79d655b371ddcbf3",
+    "esp-soc/src/board.rs": "05377977a09b7d526839e7fb01ad7ec3b1270c37a387eb834e369967bd21272a",
+    "esp-soc/src/machine/web.rs": "72a97060e2f4862156c65f5e7e3f36431194400112dfa27e21717322d7547c8c",
+    "esp32s3/src/board/stopwatch.rs": "7530a11e4e7bd8ba8c7160a9310eb505799c4e5f7ac3116601364f5a5cfe1885"
+  },
+  "workloads": [
+    {
+      "name": "hello",
+      "args": [
+        "--boot",
+        "rom",
+        "--rom",
+        "$ROM_DIR/esp32s3_rev0_rom.elf",
+        "--flash-mb",
+        "8",
+        "--board",
+        "none",
+        "--psram-mb",
+        "2",
+        "--bootloader",
+        "web/wasm/fw/public/hello-bootloader.bin",
+        "--ptable",
+        "web/wasm/fw/public/hello-ptable.bin",
+        "--app",
+        "web/wasm/fw/public/hello_world.bin",
+        "--max-seconds",
+        "30",
+        "--no-dump"
+      ],
+      "inputs": {
+        "rom": {
+          "file": "$ROM_DIR/esp32s3_rev0_rom.elf",
+          "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+        },
+        "bootloader": {
+          "file": "web/wasm/fw/public/hello-bootloader.bin",
+          "sha256": "7efecb4df4463ece11ab286068a505ecd174f66fd4aacc53d887fcb9c18f0579"
+        },
+        "ptable": {
+          "file": "web/wasm/fw/public/hello-ptable.bin",
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+        },
+        "app": {
+          "file": "web/wasm/fw/public/hello_world.bin",
+          "sha256": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9"
+        }
+      },
+      "binarySha256": {
+        "base": "ddea13f1742cd152b9fa42bb349cde1ffc35b476a1d5f0102cd7a624af10dd28",
+        "candidate": "e199ce170bd68469764514e0ff9eb5c6f72c348708a64fa747ea6a09a76a1fc3"
+      },
+      "samples": [
+        {
+          "round": 0,
+          "warmup": true,
+          "build": "base",
+          "userSeconds": 0.27,
+          "instructions": [
+            11990305,
+            6798164
+          ],
+          "guestOutputSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "loadBefore": [
+            6.57666015625,
+            8.21533203125,
+            9.54541015625
+          ]
+        },
+        {
+          "round": 0,
+          "warmup": true,
+          "build": "candidate",
+          "userSeconds": 0.27,
+          "instructions": [
+            11990305,
+            6798164
+          ],
+          "guestOutputSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "loadBefore": [
+            7.0107421875,
+            8.27783203125,
+            9.5595703125
+          ]
+        },
+        {
+          "round": 1,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 0.26,
+          "instructions": [
+            11990305,
+            6798164
+          ],
+          "guestOutputSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "loadBefore": [
+            7.0107421875,
+            8.27783203125,
+            9.5595703125
+          ]
+        },
+        {
+          "round": 1,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 0.27,
+          "instructions": [
+            11990305,
+            6798164
+          ],
+          "guestOutputSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "loadBefore": [
+            7.0107421875,
+            8.27783203125,
+            9.5595703125
+          ]
+        },
+        {
+          "round": 2,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 0.27,
+          "instructions": [
+            11990305,
+            6798164
+          ],
+          "guestOutputSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "loadBefore": [
+            7.0107421875,
+            8.27783203125,
+            9.5595703125
+          ]
+        },
+        {
+          "round": 2,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 0.27,
+          "instructions": [
+            11990305,
+            6798164
+          ],
+          "guestOutputSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "loadBefore": [
+            7.0107421875,
+            8.27783203125,
+            9.5595703125
+          ]
+        },
+        {
+          "round": 3,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 0.27,
+          "instructions": [
+            11990305,
+            6798164
+          ],
+          "guestOutputSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "loadBefore": [
+            7.0107421875,
+            8.27783203125,
+            9.5595703125
+          ]
+        },
+        {
+          "round": 3,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 0.26,
+          "instructions": [
+            11990305,
+            6798164
+          ],
+          "guestOutputSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "loadBefore": [
+            7.0107421875,
+            8.27783203125,
+            9.5595703125
+          ]
+        },
+        {
+          "round": 4,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 0.26,
+          "instructions": [
+            11990305,
+            6798164
+          ],
+          "guestOutputSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "loadBefore": [
+            7.0107421875,
+            8.27783203125,
+            9.5595703125
+          ]
+        },
+        {
+          "round": 4,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 0.32,
+          "instructions": [
+            11990305,
+            6798164
+          ],
+          "guestOutputSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "loadBefore": [
+            7.0107421875,
+            8.27783203125,
+            9.5595703125
+          ]
+        },
+        {
+          "round": 5,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 0.32,
+          "instructions": [
+            11990305,
+            6798164
+          ],
+          "guestOutputSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "loadBefore": [
+            7.0107421875,
+            8.27783203125,
+            9.5595703125
+          ]
+        },
+        {
+          "round": 5,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 0.32,
+          "instructions": [
+            11990305,
+            6798164
+          ],
+          "guestOutputSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+          "loadBefore": [
+            7.0107421875,
+            8.27783203125,
+            9.5595703125
+          ]
+        }
+      ],
+      "medianUserSeconds": {
+        "base": 0.27,
+        "candidate": 0.27
+      },
+      "changePercent": 0.0,
+      "slowerPairs": 2,
+      "workAndOutputEqual": true
+    },
+    {
+      "name": "c3-hello",
+      "args": [
+        "--boot",
+        "rom",
+        "--rom",
+        "$ROM_DIR/esp32c3_rev3_rom.elf",
+        "--flash-mb",
+        "4",
+        "--bootloader",
+        "web/wasm/fw/public/c3-hello-bootloader.bin",
+        "--ptable",
+        "web/wasm/fw/public/c3-hello-ptable.bin",
+        "--app",
+        "web/wasm/fw/public/c3-hello_world.bin",
+        "--max-seconds",
+        "30",
+        "--no-dump"
+      ],
+      "inputs": {
+        "rom": {
+          "file": "$ROM_DIR/esp32c3_rev3_rom.elf",
+          "sha256": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c"
+        },
+        "bootloader": {
+          "file": "web/wasm/fw/public/c3-hello-bootloader.bin",
+          "sha256": "3eaeaa5fb91d462a6ce6dbd8f8d488c8dc059216bc5841e50b784aea8348eb7b"
+        },
+        "ptable": {
+          "file": "web/wasm/fw/public/c3-hello-ptable.bin",
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+        },
+        "app": {
+          "file": "web/wasm/fw/public/c3-hello_world.bin",
+          "sha256": "3fd8606fd2fb10d2387ed4d238e16e7f80cd4832f380da02f0128f7bf4e0e8be"
+        }
+      },
+      "binarySha256": {
+        "base": "663b6e464f1293c2d3d50d9d0837411bd5c2ae5c6c71b542feb3fe125cf61e7d",
+        "candidate": "f374c1479c8dc9c28d9f3546948dce2e8aea7eee2c2588cf71a21c55019f6101"
+      },
+      "samples": [
+        {
+          "round": 0,
+          "warmup": true,
+          "build": "base",
+          "userSeconds": 2.42,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "loadBefore": [
+            5.611328125,
+            7.5947265625,
+            9.19287109375
+          ]
+        },
+        {
+          "round": 0,
+          "warmup": true,
+          "build": "candidate",
+          "userSeconds": 2.38,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "loadBefore": [
+            5.56201171875,
+            7.55126953125,
+            9.16796875
+          ]
+        },
+        {
+          "round": 1,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 2.39,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "loadBefore": [
+            5.56201171875,
+            7.55126953125,
+            9.16796875
+          ]
+        },
+        {
+          "round": 1,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 2.47,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "loadBefore": [
+            5.5966796875,
+            7.525390625,
+            9.14892578125
+          ]
+        },
+        {
+          "round": 2,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 2.42,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "loadBefore": [
+            5.5966796875,
+            7.525390625,
+            9.14892578125
+          ]
+        },
+        {
+          "round": 2,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 2.41,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "loadBefore": [
+            6.349609375,
+            7.6494140625,
+            9.18310546875
+          ]
+        },
+        {
+          "round": 3,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 2.71,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "loadBefore": [
+            6.349609375,
+            7.6494140625,
+            9.18310546875
+          ]
+        },
+        {
+          "round": 3,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 2.97,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "loadBefore": [
+            6.4814453125,
+            7.65478515625,
+            9.17578125
+          ]
+        },
+        {
+          "round": 4,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 3.03,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "loadBefore": [
+            9.40576171875,
+            8.2412109375,
+            9.37353515625
+          ]
+        },
+        {
+          "round": 4,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 3.14,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "loadBefore": [
+            9.40576171875,
+            8.2412109375,
+            9.37353515625
+          ]
+        },
+        {
+          "round": 5,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 3.27,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "loadBefore": [
+            14.498046875,
+            9.31591796875,
+            9.74609375
+          ]
+        },
+        {
+          "round": 5,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 3.37,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "loadBefore": [
+            17.8212890625,
+            10.0908203125,
+            10.01708984375
+          ]
+        }
+      ],
+      "medianUserSeconds": {
+        "base": 2.97,
+        "candidate": 2.71
+      },
+      "changePercent": -8.754208754208758,
+      "slowerPairs": 1,
+      "workAndOutputEqual": true
+    },
+    {
+      "name": "c6-hello",
+      "args": [
+        "--boot",
+        "rom",
+        "--rom",
+        "$ROM_DIR/esp32c6_rev0_rom.elf",
+        "--flash-mb",
+        "4",
+        "--bootloader",
+        "web/wasm/fw/public/c6-hello-bootloader.bin",
+        "--ptable",
+        "web/wasm/fw/public/c6-hello-ptable.bin",
+        "--app",
+        "web/wasm/fw/public/c6-hello_world.bin",
+        "--max-seconds",
+        "30",
+        "--no-dump"
+      ],
+      "inputs": {
+        "rom": {
+          "file": "$ROM_DIR/esp32c6_rev0_rom.elf",
+          "sha256": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551"
+        },
+        "bootloader": {
+          "file": "web/wasm/fw/public/c6-hello-bootloader.bin",
+          "sha256": "88fd358b406ebc874cda1f4d14c1fd50d37cd064a1826192ee275ce67741ff75"
+        },
+        "ptable": {
+          "file": "web/wasm/fw/public/c6-hello-ptable.bin",
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+        },
+        "app": {
+          "file": "web/wasm/fw/public/c6-hello_world.bin",
+          "sha256": "e302a3769d3122759ea85ed6caff857da36f558f83f9bf0eb652276657de0131"
+        }
+      },
+      "binarySha256": {
+        "base": "bd9e97612a519648a3cfddc2cfb896515b7647146bde450217b431a76b9e976e",
+        "candidate": "28e08753833b2c363c6f747c4616bf3eae70b4e47ca88bea8ba3d4c75701625d"
+      },
+      "samples": [
+        {
+          "round": 0,
+          "warmup": true,
+          "build": "base",
+          "userSeconds": 2.34,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "loadBefore": [
+            17.8212890625,
+            10.0908203125,
+            10.01708984375
+          ]
+        },
+        {
+          "round": 0,
+          "warmup": true,
+          "build": "candidate",
+          "userSeconds": 2.4,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "loadBefore": [
+            21.43896484375,
+            10.96875,
+            10.3271484375
+          ]
+        },
+        {
+          "round": 1,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 2.4,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "loadBefore": [
+            24.44677734375,
+            11.76611328125,
+            10.6123046875
+          ]
+        },
+        {
+          "round": 1,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 2.43,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "loadBefore": [
+            24.44677734375,
+            11.76611328125,
+            10.6123046875
+          ]
+        },
+        {
+          "round": 2,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 2.44,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "loadBefore": [
+            25.21142578125,
+            12.134765625,
+            10.7490234375
+          ]
+        },
+        {
+          "round": 2,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 2.46,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "loadBefore": [
+            25.21142578125,
+            12.134765625,
+            10.7490234375
+          ]
+        },
+        {
+          "round": 3,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 2.49,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "loadBefore": [
+            28.6376953125,
+            13.06201171875,
+            11.08447265625
+          ]
+        },
+        {
+          "round": 3,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 2.48,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "loadBefore": [
+            28.66650390625,
+            13.326171875,
+            11.18896484375
+          ]
+        },
+        {
+          "round": 4,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 2.48,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "loadBefore": [
+            28.66650390625,
+            13.326171875,
+            11.18896484375
+          ]
+        },
+        {
+          "round": 4,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 2.51,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "loadBefore": [
+            28.77294921875,
+            13.6025390625,
+            11.298828125
+          ]
+        },
+        {
+          "round": 5,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 2.51,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "loadBefore": [
+            32.794921875,
+            14.68798828125,
+            11.6953125
+          ]
+        },
+        {
+          "round": 5,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 2.5,
+          "instructions": [
+            4800000000,
+            0
+          ],
+          "guestOutputSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "loadBefore": [
+            32.794921875,
+            14.68798828125,
+            11.6953125
+          ]
+        }
+      ],
+      "medianUserSeconds": {
+        "base": 2.48,
+        "candidate": 2.49
+      },
+      "changePercent": 0.40322580645162365,
+      "slowerPairs": 4,
+      "workAndOutputEqual": true
+    },
+    {
+      "name": "pocket-tank",
+      "args": [
+        "--boot",
+        "rom",
+        "--rom",
+        "$ROM_DIR/esp32s3_rev0_rom.elf",
+        "--flash-mb",
+        "16",
+        "--board",
+        "waveshare-amoled18-v2",
+        "--psram-mb",
+        "8",
+        "--bootloader",
+        "web/wasm/fw/public/pocket-tank-bootloader.bin",
+        "--ptable",
+        "web/wasm/fw/public/pocket-tank-ptable.bin",
+        "--app",
+        "web/wasm/fw/public/pocket-tank.bin",
+        "--flash-at",
+        "0x290000=web/wasm/fw/local/model_q4.bin",
+        "--max-seconds",
+        "30",
+        "--no-dump"
+      ],
+      "inputs": {
+        "rom": {
+          "file": "$ROM_DIR/esp32s3_rev0_rom.elf",
+          "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+        },
+        "bootloader": {
+          "file": "web/wasm/fw/public/pocket-tank-bootloader.bin",
+          "sha256": "9556d59f3a10f6b04fa6d75f3142a66034339afafffbd4bbc3d9a127eaa73859"
+        },
+        "ptable": {
+          "file": "web/wasm/fw/public/pocket-tank-ptable.bin",
+          "sha256": "7af5b28608c91167e00778b7f20622f3b47849efebeb3e64117162d73f3e0508"
+        },
+        "app": {
+          "file": "web/wasm/fw/public/pocket-tank.bin",
+          "sha256": "443dd24aed14a509e6df597eb3a02635cc07e0fbee6f04db85a62f4d4dadb113"
+        },
+        "flash-at": {
+          "file": "0x290000=web/wasm/fw/local/model_q4.bin",
+          "sha256": "b200bf87c78dc85c4d727f68941ac0b83cced9827037cc169cd2122d71002c2a"
+        }
+      },
+      "binarySha256": {
+        "base": "ddea13f1742cd152b9fa42bb349cde1ffc35b476a1d5f0102cd7a624af10dd28",
+        "candidate": "e199ce170bd68469764514e0ff9eb5c6f72c348708a64fa747ea6a09a76a1fc3"
+      },
+      "samples": [
+        {
+          "round": 0,
+          "warmup": true,
+          "build": "base",
+          "userSeconds": 55.45,
+          "instructions": [
+            4595734479,
+            6171560740
+          ],
+          "guestOutputSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "loadBefore": [
+            37.61572265625,
+            15.98779296875,
+            12.17138671875
+          ]
+        },
+        {
+          "round": 0,
+          "warmup": true,
+          "build": "candidate",
+          "userSeconds": 39.84,
+          "instructions": [
+            4595734479,
+            6171560740
+          ],
+          "guestOutputSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "loadBefore": [
+            24.888671875,
+            16.69091796875,
+            12.720703125
+          ]
+        },
+        {
+          "round": 1,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 39.1,
+          "instructions": [
+            4595734479,
+            6171560740
+          ],
+          "guestOutputSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "loadBefore": [
+            15.5078125,
+            15.2890625,
+            12.3876953125
+          ]
+        },
+        {
+          "round": 1,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 39.04,
+          "instructions": [
+            4595734479,
+            6171560740
+          ],
+          "guestOutputSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "loadBefore": [
+            10.4580078125,
+            14.01416015625,
+            12.0517578125
+          ]
+        },
+        {
+          "round": 2,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 39.06,
+          "instructions": [
+            4595734479,
+            6171560740
+          ],
+          "guestOutputSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "loadBefore": [
+            8.1884765625,
+            13.03564453125,
+            11.77294921875
+          ]
+        },
+        {
+          "round": 2,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 39.51,
+          "instructions": [
+            4595734479,
+            6171560740
+          ],
+          "guestOutputSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "loadBefore": [
+            7.76171875,
+            12.2978515625,
+            11.55810546875
+          ]
+        },
+        {
+          "round": 3,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 39.84,
+          "instructions": [
+            4595734479,
+            6171560740
+          ],
+          "guestOutputSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "loadBefore": [
+            7.4326171875,
+            11.6083984375,
+            11.3369140625
+          ]
+        },
+        {
+          "round": 3,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 39.18,
+          "instructions": [
+            4595734479,
+            6171560740
+          ],
+          "guestOutputSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "loadBefore": [
+            6.80908203125,
+            10.9326171875,
+            11.1005859375
+          ]
+        },
+        {
+          "round": 4,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 39.7,
+          "instructions": [
+            4595734479,
+            6171560740
+          ],
+          "guestOutputSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "loadBefore": [
+            6.29345703125,
+            10.26953125,
+            10.84765625
+          ]
+        },
+        {
+          "round": 4,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 41.64,
+          "instructions": [
+            4595734479,
+            6171560740
+          ],
+          "guestOutputSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "loadBefore": [
+            5.7294921875,
+            9.62353515625,
+            10.58251953125
+          ]
+        },
+        {
+          "round": 5,
+          "warmup": false,
+          "build": "candidate",
+          "userSeconds": 42.47,
+          "instructions": [
+            4595734479,
+            6171560740
+          ],
+          "guestOutputSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "loadBefore": [
+            6.5986328125,
+            9.35546875,
+            10.43896484375
+          ]
+        },
+        {
+          "round": 5,
+          "warmup": false,
+          "build": "base",
+          "userSeconds": 42.13,
+          "instructions": [
+            4595734479,
+            6171560740
+          ],
+          "guestOutputSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "loadBefore": [
+            6.1875,
+            8.82861328125,
+            10.18603515625
+          ]
+        }
+      ],
+      "medianUserSeconds": {
+        "base": 39.18,
+        "candidate": 39.84
+      },
+      "changePercent": 1.6845329249617347,
+      "slowerPairs": 5,
+      "workAndOutputEqual": true
+    }
+  ],
+  "status": "measured",
+  "conditions": [
+    "Other Rust compilation/test load was present during the earlier workloads and Pocket Tank warmup, ending approximately 2026-10-27T09:12Z. No process inventories or command lines retained.",
+    "Task-owned compilers, browser and HTTP server were stopped before the measurement. Aggregate load samples remain in each row.",
+    "Pocket Tank measured pairs all have higher candidate user CPU; 39.18 to 39.84 seconds median (+1.6845%) is unresolved, not dismissed as noise. Pair values also drift with time, so this receipt does not isolate a causal instruction-level cost.",
+    "C3 apparent -8.7542% is not claimed as an improvement under changing shared-host load. No unchanged-candidate repeat was performed.",
+    "The baseline already includes U027. Its older-baseline +1.875% C6 result remains separately recorded and unresolved."
+  ],
+  "assessment": "Functional work/output gate passed. Idle CPU comparison retained with an unresolved Pocket Tank +1.68% median (5/5 slower pairs); no performance non-regression claim."
+}

@@ -325,7 +325,7 @@ mod tests {
         assert_eq!(r.read(0xa4), ends);
         assert_eq!(r.irq_sources(), 1);
         for n in 0..8 {
-            assert_eq!(r.done.iter().find(|(channel, _)| *channel == n as usize).unwrap().1, [n + 1 > 2]);
+            assert_eq!(r.done.iter().find(|(channel, _)| *channel == n as usize).unwrap().1, [n + 1 >= 2]);
             assert_eq!(r.read(0x60 + 4 * n) & (7 << 24), 0);
             assert_eq!(r.read(conf1(n)) & (1 | (1 << 3) | (1 << 4)), 0);
         }

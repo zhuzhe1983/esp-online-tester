@@ -112,7 +112,10 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     if (notify) publishOrientation(false); if (accessoryCount) frameCamera(); draw(); return getOrientation();
   }
   let parts = {}, connectors = {}, shellMeshes = [], customizedAppearance = false, appearanceDefaults = DEFAULT_STOPWATCH_APPEARANCE, appearance = normalizeShellAppearance(null), accessoryDefinitions = [];
-  let rgbLedMeshes = [], rgbValues = [];
+  let rgbLedMeshes = [], rgbValues = [], accessoryOutputs = [];
+  let accessoryPositions=[];
+  function updateAccessoryPositions(values) {accessoryPositions=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryPositions.find(item=>child.name===`accessory:${item.accessoryId}`);for(const pivot of child.userData.potentiometers||[]){const value=Number.isFinite(state?.value)?state.value:.5;pivot.userData.value=value;pivot.rotation.z=(.5-value)*pivot.userData.visualSweepRadians;}}draw();}
+  function updateAccessoryOutputs(values) {accessoryOutputs=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryOutputs.find(item=>child.name===`accessory:${item.accessoryId}`);applyRgbLedValues(child.userData.rgbLedMeshes||[],state?.leds);}draw();}
   function updateLeds(values) { rgbValues = values || []; applyRgbLedValues(rgbLedMeshes, rgbValues); draw(); }
   const halo = createSurfaceHalo();
   try {
@@ -208,9 +211,9 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       accessoryGroup.traverse(object => { object.geometry?.dispose(); if (object.material) for (const material of [].concat(object.material)) material.dispose(); });
       group.remove(accessoryGroup);
     }
-    accessoryCount = Math.min(accessories.length, 3);
+    accessoryCount = Math.min(accessories.length, 32);
     accessoryGroup = new THREE.Group(); accessoryGroup.name = 'accessory-assembly'; group.add(accessoryGroup);
-    let groveOccupied = false;
+    const occupiedSockets = new Set();
     const loadedAccessories = [];
     const attachCables = () => {
       // Rebuild in scene order, never in network completion order. The socket
@@ -219,19 +222,24 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       for (const child of [...accessoryGroup.children]) if (child.name === 'grove-cable-visual-only') {
         child.traverse(object => { object.geometry?.dispose(); object.material?.dispose(); }); accessoryGroup.remove(child);
       }
-      groveOccupied = false;
-      for (const {definition, accessory} of [...loadedAccessories].sort((a,b)=>Number(!!b.definition.physicalButtonSupported)-Number(!!a.definition.physicalButtonSupported))) {
+      occupiedSockets.clear();
+      for (const {definition, accessory} of [...loadedAccessories].sort((a,b)=>Number(!!b.definition.physicalSupported)-Number(!!a.definition.physicalSupported))) {
         const connectorMatches = definition.connector?.type === 'HY2.0-4P' && (!definition.wiring || ['logical','visual'].includes(definition.wiring.mode) || definition.wiring.connectorId === 'grove' || definition.wiring.interfaceId === 'grove');
-        if (connectors.grove && connectorMatches && definition.connected !== false && !groveOccupied) {
-          const cable = createGroveCable(connectors.grove, accessory.connector, group);
-          if (cable) { accessoryGroup.add(cable.group); groveOccupied = true; accessory.group.userData.connection = definition.physicalButtonSupported ? 'grove-gpio-u027' : 'grove-visual-only'; }
+        const parent=definition.wiring?.viaAccessoryId?loadedAccessories.find(item=>item.definition.instanceId===definition.wiring.viaAccessoryId):null;
+        const socketKey=parent?`${definition.wiring.viaAccessoryId}:${definition.wiring.portId}`:'grove';
+        const hostConnector=parent?parent.accessory.connectors?.[definition.wiring.portId]:connectors.grove;
+        const hasRoute=parent?definition.physicalSupported:connectorMatches;
+        if (hostConnector && hasRoute && definition.connected !== false && !occupiedSockets.has(socketKey)) {
+          const cable = createGroveCable(hostConnector, accessory.connector, group);
+          if (cable) { accessoryGroup.add(cable.group); occupiedSockets.add(socketKey); accessory.group.userData.connection = definition.physicalSupported ? 'grove-physical' : 'grove-visual-only'; }
           else accessory.group.userData.connection = 'unverified-connector-preview';
         } else accessory.group.userData.connection = 'unconnected-preview';
       }
-      frameCamera(); draw();
+      updateAccessoryOutputs(accessoryOutputs);updateAccessoryPositions(accessoryPositions);frameCamera(); draw();
     };
     for (let i = 0; i < accessoryCount; i++) {
       const definition = accessories[i], accessory = createIllustrativeAccessory(definition, i); accessoryGroup.add(accessory.group);
+      if(definition.wiring?.viaAccessoryId){const port=Number(definition.wiring.portId?.split('-')[1]||1);accessory.group.position.set(112,(2-port)*42,0);accessory.group.rotation.z=0;}else if(definition.model?.id==='passive-hub-u006'){accessory.group.position.set(64,0,0);accessory.group.rotation.z=0;}
       loadedAccessories.push({definition, accessory});
       if (accessory.dispose) accessoryCleanups.push(() => accessory.dispose());
       accessory.ready?.then(attachCables).catch(error => { if (!disposed && token === accessoryGeneration) { console.error('Accessory model loading failed:', error); draw(); } });
@@ -282,6 +290,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   }
   function surface(intersection) {
     const object = intersection?.object;
+    if(object?.userData.potentiometer){const knob=object.userData.potentiometer;return {kind:'potentiometer',id:knob.id,accessoryId:knob.accessoryId,value:knob.pivot.userData.value,sweep:knob.pivot.userData.visualSweepRadians,message:'拖动旋钮调整官方标称曲线；显示转角未按实物校准。'};}
     if (object?.userData.encoder) {
       const control = product?.controls?.find(c => c.id === object.userData.encoder && c.type === 'encoder');
       return product?.runtime?.encoder && control ? {kind:'encoder',id:control.id,detents:control.detents,message:'沿旋钮圆周拖动；每格发送一个编码器步进。'} : {kind:'unsupported',message:'此设备尚未实现旋钮输入。'};
@@ -303,7 +312,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     const intersection = hit(event), role = surface(intersection);
     if (!intersection) { clearHover(); return; }
     halo.show(intersection.object, role.kind); mount.dataset.hover = role.kind;
-    mount.style.cursor = {button: 'pointer', touch: 'crosshair', unsupported: 'not-allowed', orbit: 'grab', encoder:'grab'}[role.kind];
+    mount.style.cursor = {button: 'pointer', touch: 'crosshair', unsupported: 'not-allowed', orbit: 'grab', encoder:'grab',potentiometer:'grab'}[role.kind];
     if (role.message) mount.title = role.message; else mount.removeAttribute('title'); draw();
   }
   const router = createScenePointerRouter({onInput, onUnsupported, onError: error => console.error('Scene input failed:', error), onOrbit(dx, dy) {
@@ -314,7 +323,9 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   const encoderMeshes = new Map();
   function encoderPoint(event, mesh) {
     if (!mesh) return null;
-    hit(event); mesh.updateWorldMatrix(true,false); mesh.geometry.computeBoundingBox();
+    hit(event);
+    if(mesh.userData.potentiometer){const pivot=mesh.userData.potentiometer.pivot,parent=pivot.parent;parent.updateWorldMatrix(true,false);const world=parent.localToWorld(pivot.position.clone()),normal=new THREE.Vector3(0,0,1).transformDirection(parent.matrixWorld),point=raycaster.ray.intersectPlane(new THREE.Plane().setFromNormalAndCoplanarPoint(normal,world),new THREE.Vector3());if(!point)return null;parent.worldToLocal(point).sub(pivot.position);return point.lengthSq()<.001?null:{angle:Math.atan2(point.y,point.x)};}
+    mesh.updateWorldMatrix(true,false); mesh.geometry.computeBoundingBox();
     const center = mesh.geometry.boundingBox.getCenter(new THREE.Vector3()), world = mesh.localToWorld(center.clone());
     const normal = new THREE.Vector3(0,0,1).transformDirection(mesh.matrixWorld);
     const point = raycaster.ray.intersectPlane(new THREE.Plane().setFromNormalAndCoplanarPoint(normal,world),new THREE.Vector3());
@@ -324,8 +335,8 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   function down(event) {
     if (event.button !== 0) return;
     const flat = event.currentTarget === display, intersection = flat ? {object: screen} : hit(event), role = surface(intersection);
-    const point = role.kind === 'touch' ? screenPoint(event, intersection) : role.kind === 'encoder' ? encoderPoint(event,intersection.object) : null;
-    if (role.kind === 'encoder') encoderMeshes.set(event.pointerId,intersection.object);
+    const point = role.kind === 'touch' ? screenPoint(event, intersection) : ['encoder','potentiometer'].includes(role.kind) ? encoderPoint(event,intersection.object) : null;
+    if (['encoder','potentiometer'].includes(role.kind)) encoderMeshes.set(event.pointerId,intersection.object);
     if (flat && point && product?.display?.shape === 'round' && (point.u - .5) ** 2 + (point.v - .5) ** 2 > .25) return;
     clearHover(); event.preventDefault(); event.currentTarget.focus?.({preventScroll: true});
     const kind = router.down({pointerId: event.pointerId, x: event.clientX, y: event.clientY, surface: role, point});
@@ -334,7 +345,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   function move(event) {
     const kind = router.kind(event.pointerId);
     if (!kind) { hover(event); return; }
-    router.move({pointerId: event.pointerId, x: event.clientX, y: event.clientY, point: kind === 'touch' ? screenPoint(event) : kind === 'encoder' ? encoderPoint(event,encoderMeshes.get(event.pointerId)) : null});
+    router.move({pointerId: event.pointerId, x: event.clientX, y: event.clientY, point: kind === 'touch' ? screenPoint(event) : ['encoder','potentiometer'].includes(kind) ? encoderPoint(event,encoderMeshes.get(event.pointerId)) : null});
   }
   function up(event) { const orbit = router.kind(event.pointerId) === 'orbit'; router.up(event.pointerId); encoderMeshes.delete(event.pointerId); if (orbit) { clearOrientationTimers(); publishOrientation(false); } if (!router.activeCount) clearHover(); }
   function releaseInputs() { const hadMotion = orientationTimer !== null || orientationIdle !== null; clearOrientationTimers(); router.releaseAll(); encoderMeshes.clear(); if (hadMotion) publishOrientation(false); clearHover(); }
@@ -345,7 +356,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   window.addEventListener('blur', releaseInputs);
   function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
     dispose() { disposed = true; releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup(); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }

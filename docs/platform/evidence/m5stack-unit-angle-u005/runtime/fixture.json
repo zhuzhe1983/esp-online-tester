@@ -1,0 +1,118 @@
+{
+  "checkedAt": "2026-10-27T09:38:22Z",
+  "sourceSha256": {
+    "esp-soc/src/board.rs": "d8152352c7d9973150233f16017d655d8b6763eacc7ca8af69d538eb89cca900",
+    "esp-soc/src/machine/web.rs": "3aca8d49b32fdab7ee81a141915c251f7a5071c973764c15de1a5c389f1c4071",
+    "esp32s3/src/board/stopwatch.rs": "ae60ef7dc0b7b15526438bffb1f2d42e94bf12047d8b8fcc76f497cc45f3b65e",
+    "esp-periph/src/i2c/m5.rs": "efbef29b5750623a35205159669a90166d78f9242e66bc22d1f29b0922fb0090",
+    "esp-periph/src/analog/stream.rs": "827e0c23ffe30e14161bf7bb884f483d360236f75fff482a2913c80d47f15e5f",
+    "web/platform/runtime.js": "dcf8f4db8c630c69979fd565dd45ff1244f41f4ba51973e293d9b4755f3e8e96",
+    "web/platform/recording.js": "85683dbe48d5bf5c77b13e97b50504f239d1be86e0c77bfb2fd09f4c58dff9e6",
+    "tools/probe-unit-angle.mjs": "03db8c3704ba6fe119e7ea06830b36c8ebfd6187e82d3e9366bd412f36f5113a",
+    "tools/fixtures/unit-angle-firmware/main/main.c": "f65ba2f350ee2eb6429a6c927f87f7cebbe255114993be0f73570b0d4668e4a7"
+  },
+  "wasmSha256": "fb04a3bbd25eb4a27ddc2fe38360fcf359440057ed015b9015bccf7e69c00498",
+  "romSha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "command": "node tools/probe-unit-angle.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+    "unit_angle_fixture.bin": "d7912b4adaf194eb81ed67a35b72721440c87f71f392b3cffdd67e0b657908d9"
+  },
+  "checks": [
+    "ROM/IDF ADC2_CH0 reads U005 initial G11 voltage; wrong G12 and yellow G10 remain undriven",
+    "five normalized positions reach real ADC driver conversions and calibrated mV",
+    "malformed knob values and fake button injection reject without changing the ADC source",
+    "M5PM1 Grove5V gate wins over knob input and restores current position on powerup",
+    "unplug clears analog drive; rotation while unplugged is retained but cannot energize the pad",
+    "paused rotation rejects; paused disconnect delivers on resume and fresh conversion follows reconnect",
+    "PMIC HOLD5V preserves power during shutdown; clearing hold removes the voltage",
+    "guest reboot preserves physical knob/connection state while resetting PMIC",
+    "platform reset restores the scene initial position and connection",
+    "record/replay reproduces semantic positions and connection; final ADC conversion matches"
+  ],
+  "samples": [
+    {
+      "value": 0,
+      "raw": 0,
+      "mv": 0,
+      "other12": 0,
+      "yellow10": 0
+    },
+    {
+      "value": 0.25,
+      "raw": 1087,
+      "mv": 1000,
+      "other12": 0,
+      "yellow10": 0
+    },
+    {
+      "value": 0.5,
+      "raw": 1831,
+      "mv": 1666,
+      "other12": 0,
+      "yellow10": 0
+    },
+    {
+      "value": 0.75,
+      "raw": 2364,
+      "mv": 2141,
+      "other12": 0,
+      "yellow10": 0
+    },
+    {
+      "value": 1,
+      "raw": 2786,
+      "mv": 2499,
+      "other12": 0,
+      "yellow10": 0
+    }
+  ],
+  "recording": {
+    "events": [
+      {
+        "at": 0.32697162916666667,
+        "type": "accessory-angle",
+        "accessoryId": "angle-unit",
+        "id": "knob",
+        "value": 0.75
+      },
+      {
+        "at": 0.332086625,
+        "type": "accessory-connection",
+        "accessoryId": "angle-unit",
+        "connected": false
+      },
+      {
+        "at": 0.3379055,
+        "type": "accessory-angle",
+        "accessoryId": "angle-unit",
+        "id": "knob",
+        "value": 1
+      },
+      {
+        "at": 0.341696375,
+        "type": "accessory-connection",
+        "accessoryId": "angle-unit",
+        "connected": true
+      }
+    ],
+    "result": "completed",
+    "bitExact": false
+  },
+  "status": "pass",
+  "serialEvidence": [
+    "U005_POWER_OFF",
+    "U005_POWER_OFF",
+    "U005_ADC white11=0 mv=0 other12=0 yellow10=0",
+    "U005_ADC white11=0 mv=0 other12=0 yellow10=0",
+    "U005_BOOT_READY",
+    "U005_BOOT_READY",
+    "U005_ADC white11=1087 mv=1000 other12=0 yellow10=0",
+    "U005_ADC white11=1087 mv=1000 other12=0 yellow10=0",
+    "U005_ADC white11=2786 mv=2499 other12=0 yellow10=0",
+    "U005_ADC white11=2786 mv=2499 other12=0 yellow10=0"
+  ]
+}

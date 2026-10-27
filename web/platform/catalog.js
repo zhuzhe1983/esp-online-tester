@@ -1,4 +1,4 @@
-import {unitButtonRoute} from './accessory-routing.js';
+import {physicalAccessoryRoute} from './accessory-routing.js';
 import {isPressControl} from './control-input.js';
 // Static catalog and portable scene contract. No application server is required.
 import {isShellFinish} from './appearance.js';
@@ -153,7 +153,7 @@ export function validateScene(scene, catalog) {
   }
   if (!Array.isArray(scene.accessories) || scene.accessories.length > 32) errors.push(issue('ACCESSORIES', '/accessories', 'At most 32 accessory instances are allowed.'));
   else {
-    const ids = new Set(), usedPins = new Set();
+    const ids = new Set(), usedPins = new Set(), usedPorts = new Set();
     for (const [index, accessory] of scene.accessories.entries()) {
       const path = `/accessories/${index}`;
       if (!record(accessory)) { errors.push(issue('ACCESSORY', path, 'Accessory must be an object.')); continue; }
@@ -164,20 +164,21 @@ export function validateScene(scene, catalog) {
       if (!definition) errors.push(issue('UNKNOWN_ACCESSORY', `${path}/catalogId`, `Unknown accessory: ${accessory.catalogId}`));
       if (definition?.model.status === 'unavailable') warnings.push(issue('ACCESSORY_MODEL_UNAVAILABLE', path, 'Accessory is metadata-only; no peripheral behavior is implemented.'));
       validateParameters(accessory.parameters, `${path}/parameters`, errors);
+      if(definition?.model.id==='potentiometer-u005-10k-curve' && accessory.parameters?.position!==undefined && (!Number.isFinite(accessory.parameters.position)||accessory.parameters.position<0||accessory.parameters.position>1))errors.push(issue('ANGLE_POSITION',`${path}/parameters/position`,'Potentiometer position must be from 0 to 1.'));
       if (!record(accessory.wiring)) { errors.push(issue('WIRING', `${path}/wiring`, 'Declare logical or physical wiring.')); continue; }
       const wiring = accessory.wiring;
-      allowedKeys(wiring, ['mode', 'port', 'connectorId', 'rx', 'tx', 'interfaceId'], `${path}/wiring`, errors);
+      allowedKeys(wiring, ['mode', 'port', 'connectorId', 'rx', 'tx', 'interfaceId', 'viaAccessoryId', 'portId'], `${path}/wiring`, errors);
       if (wiring.mode === 'logical') {
         if (wiring.port !== 'uart1') errors.push(issue('UART_PORT', `${path}/wiring/port`, 'Logical accessory input currently supports UART1 only.'));
-        if (wiring.interfaceId !== undefined || wiring.connectorId !== undefined || wiring.rx !== undefined || wiring.tx !== undefined) errors.push(issue('LOGICAL_WIRING', `${path}/wiring`, 'Logical UART input does not declare physical pins.'));
+        if (wiring.viaAccessoryId !== undefined || wiring.portId !== undefined || wiring.interfaceId !== undefined || wiring.connectorId !== undefined || wiring.rx !== undefined || wiring.tx !== undefined) errors.push(issue('LOGICAL_WIRING', `${path}/wiring`, 'Logical UART input does not declare physical pins.'));
         warnings.push(issue('LOGICAL_UART', `${path}/wiring`, 'Logical UART injection bypasses GPIO routing, baud timing and external power. It does not verify physical wiring.'));
       } else if (wiring.mode === 'visual') {
         if (Object.keys(wiring).some(key => key !== 'mode')) errors.push(issue('VISUAL_WIRING', `${path}/wiring`, 'Visual placement does not declare electrical routing.'));
         warnings.push(issue('VISUAL_ACCESSORY', `${path}/wiring`, 'The accessory is shown in 3D; no electrical or peripheral behavior is connected.'));
-      } else if (wiring.mode === 'physical' && (wiring.interfaceId !== undefined || definition?.model.id === 'gpio-button-u027')) {
-        const route=unitButtonRoute(product,accessory,definition);
-        if(Object.keys(wiring).some(key=>!['mode','interfaceId'].includes(key)) || !route) errors.push(issue('ACCESSORY_ROUTE',`${path}/wiring`,'Unit Button currently supports only StopWatch Port A, with interfaceId grove.'));
-        if(route){if(usedPins.has(route.pin))errors.push(issue('PIN_CONFLICT',`${path}/wiring`,'A physical GPIO is assigned more than once.'));usedPins.add(route.pin);}
+      } else if (wiring.mode === 'physical' && (wiring.interfaceId !== undefined || wiring.viaAccessoryId !== undefined || wiring.portId !== undefined || ['gpio-button-u027','sk6812-u003','potentiometer-u005-10k-curve','passive-hub-u006'].includes(definition?.model.id))) {
+        const route=physicalAccessoryRoute(product,accessory,definition,scene,catalog);
+        if(Object.keys(wiring).some(key=>!['mode','interfaceId','viaAccessoryId','portId'].includes(key)) || !route) errors.push(issue('ACCESSORY_ROUTE',`${path}/wiring`,'Use audited StopWatch Port A directly, or a single U006 port with viaAccessoryId and portId.'));
+        if(route){const socket=route.viaAccessoryId?`${route.viaAccessoryId}:${route.portId}`:route.port;if(usedPorts.has(socket))errors.push(issue('PIN_CONFLICT',`${path}/wiring`,'The physical connector is already occupied.'));usedPorts.add(socket);if(Number.isInteger(route.pin)){if(usedPins.has(route.pin))errors.push(issue('PIN_CONFLICT',`${path}/wiring`,'U006 ports share GPIOs; competing devices on the same signal are not supported.'));usedPins.add(route.pin);}}
       } else if (wiring.mode === 'physical') {
         const connector = product?.interfaces.find(item => item.id === wiring.connectorId && item.external === true);
         if (!connector) errors.push(issue('CONNECTOR', `${path}/wiring/connectorId`, 'Connector is not in this product’s verified pin map.'));

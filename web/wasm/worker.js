@@ -239,6 +239,14 @@ onmessage = async (ev) => {
         && wasm.esp32sim_set_imu_sample(emu, ...values) === 0;
       postMessage({ imuApplied: m.inputId, ok, time: emu ? wasm.esp32sim_cycles(emu) / CPU_HZ : 0 });
     }
+    else if (m.op === 'text-batch') {
+      // A passive connector unplug changes its bounded child routes before the
+      // next guest slice. One receipt anchors recording; no CPU work is skipped.
+      if (!Array.isArray(m.data) || m.data.length > 3 || m.data.some(data => typeof data !== 'string' || data.length > 1024)) throw new Error('invalid connector input batch');
+      pacing.input(performance.now());
+      for (const data of m.data) withBytes(enc.encode(data), (p, n) => wasm.esp32sim_in_text(emu, p, n));
+      if (m.inputId !== undefined) postMessage({ inputQueued:m.inputId,time:wasm.esp32sim_cycles(emu)/CPU_HZ });
+    }
     else if (m.op === 'text') {
       if (traceEnabled && m.touchTrace) {
         postMessage({ touchTrace: { stage: 'worker-receive', ...m.touchTrace, atMs: traceNow(), cycles: wasm.esp32sim_cycles(emu) } });

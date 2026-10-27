@@ -1,0 +1,87 @@
+{
+  "checkedAt": "2026-10-27T09:46:35Z",
+  "sourceSha256": {
+    "esp-soc/src/board.rs": "d8152352c7d9973150233f16017d655d8b6763eacc7ca8af69d538eb89cca900",
+    "esp-soc/src/machine/web.rs": "3aca8d49b32fdab7ee81a141915c251f7a5071c973764c15de1a5c389f1c4071",
+    "esp32s3/src/board/stopwatch.rs": "ae60ef7dc0b7b15526438bffb1f2d42e94bf12047d8b8fcc76f497cc45f3b65e",
+    "esp-periph/src/i2c/m5.rs": "efbef29b5750623a35205159669a90166d78f9242e66bc22d1f29b0922fb0090",
+    "web/platform/runtime.js": "dcf8f4db8c630c69979fd565dd45ff1244f41f4ba51973e293d9b4755f3e8e96",
+    "web/platform/recording.js": "85683dbe48d5bf5c77b13e97b50504f239d1be86e0c77bfb2fd09f4c58dff9e6",
+    "tools/probe-unit-button.mjs": "6e59b3f4bb1981befe80e1d573f9eb79693b70c9c2ff2db4d65ddb99a93a6218",
+    "tools/fixtures/unit-button-firmware/main/main.c": "d0d13732e8e13b78852aaa6ae3ae2040b96f481418079f265c4fd83f90e187ad"
+  },
+  "wasmSha256": "fb04a3bbd25eb4a27ddc2fe38360fcf359440057ed015b9015bccf7e69c00498",
+  "romSha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "command": "node tools/probe-unit-button.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+    "unit_button_fixture.bin": "3d59c3d761540cef0e55d2f15ba9e706b93ea134b6cf88fd62ec94e9236780df"
+  },
+  "checks": [
+    "ROM boot; Grove power off reads low, enabled reads high; yellow G10 unaffected",
+    "button press/release observed as actual G11 0/1",
+    "PWR_CFG bit3 gates released switch voltage",
+    "detach releases external input: guest pull-down=0, pull-up=1; reconnect=1",
+    "release accepted while paused and consumed after resume",
+    "guest esp_restart retains physically held switch",
+    "host reset restores scene connection and releases switch",
+    "HOLD_CFG bit6 retains Grove5V after shutdown, clearing hold removes it",
+    "record/replay reproduces guest-observed press, release, disconnect and reconnect"
+  ],
+  "recording": {
+    "eventCount": 4,
+    "result": "completed",
+    "bitExact": false,
+    "events": [
+      {
+        "index": 0,
+        "originalGuestSeconds": 0.3615216291666667,
+        "scheduledGuestSeconds": 0.3615216291666667,
+        "actualGuestSeconds": 0.382265125,
+        "lateBySeconds": 0.020743495833333292
+      },
+      {
+        "index": 1,
+        "originalGuestSeconds": 0.4131019625,
+        "scheduledGuestSeconds": 0.43384545833333327,
+        "actualGuestSeconds": 0.4420812125,
+        "lateBySeconds": 0.028979250000000012
+      },
+      {
+        "index": 2,
+        "originalGuestSeconds": 0.4640274208333333,
+        "scheduledGuestSeconds": 0.49300667083333327,
+        "actualGuestSeconds": 0.5235709625,
+        "lateBySeconds": 0.0595435416666667
+      },
+      {
+        "index": 3,
+        "originalGuestSeconds": 0.5154882541666667,
+        "scheduledGuestSeconds": 0.5750317958333335,
+        "actualGuestSeconds": 0.5874099625,
+        "lateBySeconds": 0.07192170833333333
+      }
+    ]
+  },
+  "status": "pass",
+  "serialEvidence": [
+    "U027_POWER_OFF G11=0 G10=1",
+    "U027_POWER_OFF G11=0 G10=1",
+    "U027_POWER_ON",
+    "U027_READ G11=1 G10=1",
+    "U027_POWER_ON",
+    "U027_READ G11=1 G10=1",
+    "U027_READ G11=0 G10=1",
+    "U027_READ G11=0 G10=1",
+    "U027_READ G11=1 G10=1",
+    "U027_READ G11=1 G10=1",
+    "U027_READ G11=0 G10=1",
+    "U027_READ G11=0 G10=1",
+    "U027_READ G11=1 G10=1",
+    "U027_READ G11=1 G10=1"
+  ],
+  "guestSeconds": 0.64
+}

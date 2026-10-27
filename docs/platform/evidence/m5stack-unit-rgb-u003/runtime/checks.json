@@ -1,0 +1,110 @@
+{
+  "checkedAt": "2026-10-27T09:21:42Z",
+  "base": "9d072179",
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "commands": [
+    {
+      "command": "rustup update stable",
+      "status": "pass, unchanged current stable"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=web/wasm/fw cargo test --release --workspace -- --include-ignored --skip external_",
+      "status": "pass",
+      "passed": 1365,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "status": "pass",
+      "passed": 69
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "status": "pass",
+      "products": 83,
+      "accessories": 5,
+      "firmwares": 106,
+      "watchlist": 44
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "status": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=web/wasm/fw node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "status": "pass",
+      "workloads": 11
+    },
+    {
+      "command": "node tools/probe-unit-rgb.mjs --build output/unit-rgb-build",
+      "status": "pass",
+      "receipt": "fixture.json"
+    },
+    {
+      "command": "node tools/probe-unit-button.mjs --build output/unit-button-build",
+      "status": "pass",
+      "receipt": "unit-button-regression.json"
+    },
+    {
+      "command": "python tools/rebuild-unit-library.py m5stack-unit-rgb-u003 --scratch output/u003-rebuild",
+      "status": "pass",
+      "receipt": "model-rebuild.json"
+    },
+    {
+      "command": "python docs/platform/evidence/m5stack-unit-rgb-u003/runtime/bench.py --base-bins output/u003-benchmark-base/target/release --candidate-bins target/release --rom-dir web/wasm/fw --receipt docs/platform/evidence/m5stack-unit-rgb-u003/runtime/cpu.json --resume",
+      "status": "measured; identical work/output, unresolved Pocket Tank +1.68% median; no performance non-regression claim",
+      "receipt": "cpu.json"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "status": "pass; 2122 tracked evidence files, including 20 gzip files; manual review of newly added sources, screenshots and numeric receipts completed"
+    }
+  ],
+  "goldensChanged": false,
+  "intentionalTestChange": "Classic ESP32 eight-channel RMT isolation test now expects equal nonzero high/low symbol=1. Channel memory/interrupt assertions unchanged; shared SK6812 and both NeoPixel protocol vectors added.",
+  "negativeAttempts": [
+    "First Rust workspace run lacked public p4-hosted fixture inputs; copied read-only input links from established local assets and reran without changing implementation or goldens.",
+    "Shared RMT SK6812 600/600ns one initially decoded as zero; retained in initial-rmt-failure.json.",
+    "Knowledge receipts initially lacked archiveName/checkedAt and index updatedAt synchronisation; corrected metadata, unchanged schema validators.",
+    "CPU harness initially parsed only dual-core instruction summaries; retained complete S3 sample set in cpu-parser-checkpoint.json, resumed C3/C6/pocket with bare single-core summary support.",
+    "Final catalog check using system python3 lacked jsonschema; reran with the existing model-tool virtual environment and passed unchanged catalog/schema."
+  ],
+  "openPrReview": {
+    "originOpen": [],
+    "upstreamOpen": [
+      300,
+      299,
+      290,
+      278,
+      263,
+      262
+    ],
+    "note": "Inspected changed-file lists for all six open upstream PRs: no overlapping BoardModel accessory API or RMT decoder implementation. Continued existing EX219 path."
+  },
+  "sourceSha256": {
+    "esp-periph/src/rmt.rs": "8eed4760d0b1a4fd00b73cacd98d20652e8866ac5a3f63ef79d655b371ddcbf3",
+    "esp32/src/rmt.rs": "f8de36809afa0d89f0e7820cef49834be4bd665b09c8e7b8cf20ce5a11492017",
+    "esp-soc/src/board.rs": "05377977a09b7d526839e7fb01ad7ec3b1270c37a387eb834e369967bd21272a",
+    "esp-soc/src/machine/web.rs": "72a97060e2f4862156c65f5e7e3f36431194400112dfa27e21717322d7547c8c",
+    "esp32s3/src/board/stopwatch.rs": "7530a11e4e7bd8ba8c7160a9310eb505799c4e5f7ac3116601364f5a5cfe1885",
+    "web/platform/runtime.js": "b88a1d7607faa7c1077e152b2ebc32c4d08b166a3f797a20410d4c96159b121d",
+    "web/platform/catalog.js": "89370ef5f1f551a5e3fabfbec2b972eadce9fc01cef94451225a9165163e42a4",
+    "web/platform/recording.js": "b104ff5072529ebf9c15c5acd877cb50715008ab2eb2c0fe8c4c0570de9a0f80",
+    "web/platform/manufacturer-model.js": "1ab55a3605a50f1e20c4d33acc4a4122bd2ef1c163d1a623a6257566ed56d3e3",
+    "web/platform/scene-view.js": "a99c295f3884d646b1972bcfd3056a608fa1306043a34142942d35032006e5c6",
+    "web/platform/app.js": "8d08a251841fa5ec2ee12346dc04797a56e44fb2521b9fbc1832093f0dc013ff",
+    "web/platform/rgb-led-view.js": "10b425d844339ef612dce5bd7429c17d8d96298009e41a40fbdbf37ee7f9c166"
+  },
+  "wasmSha256": "3e655e2881fbf8dd23e16fdf5830d212141a990723d0202ab039b286caa6707c",
+  "benchNote": "See cpu.json: all four workloads preserve instructions/output; Pocket Tank +1.68% (5/5 slower) remains unresolved under changing shared-host load. Historical U027 C6 +1.875% versus its older baseline remains unresolved. No instruction/output golden changes.",
+  "finalReview": "After browser evidence, added sparse LED mesh guard and rejected legacy physical UART configuration for U003. Valid route behaviour unchanged; final 69 Node tests rerun, including legacy-route rejection."
+}

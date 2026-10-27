@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild the three audited Unit models from committed CAD, photos and plans.
+"""Rebuild the audited Unit models from committed CAD, photos and plans.
 
 Requires tools/requirements-model.txt. Network is never used. Outputs go to a
 caller-selected scratch directory; catalog/knowledge files are never mutated.
@@ -11,7 +11,7 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-IDS = ('m5stack-unit-button-u027', 'm5stack-unit-angle-u005', 'm5stack-unit-rgb-u003')
+IDS = ('m5stack-unit-button-u027', 'm5stack-unit-angle-u005', 'm5stack-unit-rgb-u003', 'm5stack-unit-hub-u006')
 
 
 def main():
@@ -35,6 +35,10 @@ def main():
     required = {plan['sourceId'], 'cad-license'}
     required.update(item['sourceId'] for item in plan.get('photos', []))
     required.update(item['sourceId'] for item in plan.get('textureSources', []))
+    # Some retained photos support derived knobs/connectors rather than a review camera.
+    # Preserve those pinned reference assets too, so the metadata hash round-trips.
+    required.update(item['id'] for item in audit['sources']
+                    if item.get('archiveName') and (source / ('reference-' + item['archiveName'])).is_file())
     for receipt in audit['sources']:
         if receipt['id'] not in required:
             continue
@@ -49,6 +53,12 @@ def main():
             raise ValueError('Missing or altered pinned input: ' + str(candidate.relative_to(ROOT)))
         shutil.copyfile(candidate, folder / name)
     helper.write(folder / 'components.json', audit['components'])
+    output = scratch / 'assets' / args.id
+    output.mkdir(parents=True, exist_ok=True)
+    for receipt in audit['sources']:
+        name = receipt.get('archiveName')
+        if name and (source / ('reference-' + name)).is_file():
+            shutil.copyfile(folder / name, output / ('reference-' + name))
     helper.build_model(prepared, plan, scratch / 'assets' / args.id,
                        evidence_root=scratch / 'evidence', license_path=source / 'LICENSE-M5Stack.txt')
     print(scratch / 'assets' / args.id / 'model.json')

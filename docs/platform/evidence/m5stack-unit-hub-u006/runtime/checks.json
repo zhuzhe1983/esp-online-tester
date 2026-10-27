@@ -1,0 +1,87 @@
+{
+  "checkedAt": "2026-10-27T10:37:11Z",
+  "base": "53400cbf",
+  "commands": [
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "status": "pass",
+      "passed": 75,
+      "failed": 0
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "status": "pass",
+      "products": 83,
+      "accessories": 6,
+      "firmwares": 106,
+      "watchlist": 44
+    },
+    {
+      "command": "Draft202012Validator(web/platform/schemas/knowledge.schema.json).validate(U006 knowledge record)",
+      "status": "pass"
+    },
+    {
+      "command": "node tools/probe-unit-hub.mjs --build output/unit-hub-build",
+      "status": "pass",
+      "groups": 10,
+      "receipt": "fixture.json"
+    },
+    {
+      "command": "python tools/rebuild-unit-library.py m5stack-unit-hub-u006 --scratch output/u006-rebuild",
+      "status": "pass",
+      "receipt": "model-rebuild.json"
+    },
+    {
+      "command": "Tracked headless browser: studio CAD/panel mouse, Hub toggle, mini shared topology, original/gold/purple model and photo comparisons",
+      "status": "pass with documented model limitations",
+      "receipt": "browser.json"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "status": "pass",
+      "trackedEvidenceFiles": 2122,
+      "gzipFiles": 20,
+      "scope": "docs/evidence"
+    },
+    {
+      "command": "Configured privacy patterns additionally applied to all staged files; manual page-image review",
+      "status": "pass",
+      "stagedPaths": 52,
+      "scope": "All U006 staged files, including docs/platform/evidence"
+    },
+    {
+      "command": "git diff --cached --check and final model/source/WASM SHA-256 audit",
+      "status": "pass"
+    }
+  ],
+  "nativeChecks": {
+    "newRustOrWasmSourceChanges": false,
+    "newRustClippyOrNativeBenchmarkRun": false,
+    "baseChecks": "../../m5stack-unit-angle-u005/runtime/checks.json",
+    "baseWasmSha256": "fb04a3bbd25eb4a27ddc2fe38360fcf359440057ed015b9015bccf7e69c00498",
+    "usedWasmSha256": "fb04a3bbd25eb4a27ddc2fe38360fcf359440057ed015b9015bccf7e69c00498",
+    "reason": "Only JS cold routing and worker message dispatch changed. No bus, per-tick, Board or native code change; existing U027/U003/U005 CPU costs remain in their receipts and are not reclassified as noise."
+  },
+  "goldensChanged": false,
+  "sourceSha256": {
+    "web/wasm/worker.js": "9992b2f3316f18b5fbec3e5df076428637660e0707be77077b3d3d07b0f384ad",
+    "web/platform/accessory-routing.js": "43d5076490494f8fb93e07e39e118eb27f56959713efac98407ee4ab6da7fa8c",
+    "web/platform/catalog.js": "615c2ed9c20430a2f2aaf7be234fd90f6141c8d258ecc3e8616d623b0c4180b1",
+    "web/platform/runtime.js": "d6d5cd2ead79a671ab3f48a839c60a4e78a6e5904afe284c514b94a4466467c5",
+    "web/platform/recording.js": "de62021c7fcb670022ee8db129f218f5416aa0db4653c7f2f0306cd4c9bb95e6",
+    "web/platform/app.js": "2896001b315a8159ba2cb32670d9de6784266a3f2d74d94241877946aff02a3b",
+    "web/platform/accessory-view.js": "d827d2ca9985725ed91c8077fd99f5ec7ef4113783a3bf2c35c90d9cca3b320a",
+    "web/platform/scene-view.js": "6a7f68aae7a81d026303bc70cfc99ac55cd06f56b2171aa8bde6a571dfd64a58",
+    "tools/platform-unit-hub-test.mjs": "a6d17e6eb56976da95ff9961775e71f1bbd690a7716d328f18591e3a1d532b80",
+    "tools/probe-unit-hub.mjs": "e2f638ccf2a475a4f3826b85d06517fabfd85e758374614a501b6549cd59c4f0",
+    "tools/fixtures/unit-hub-firmware/main/main.c": "6e3d72132d379633469255e81fca2764f50b40ad708ec3d5bb3dfec1693e692d",
+    "tools/rebuild-unit-library.py": "205f320364d554689e39b2f0b943ef13a6b568e646a47c0182e0f0cf5fcc3876"
+  },
+  "fixtureToFinalChange": {
+    "file": "web/platform/recording.js",
+    "testedSha256": "824970aaae29338371cefbc5085fb4be57c367866be57c557d8cbf788483766d",
+    "finalSha256": "de62021c7fcb670022ee8db129f218f5416aa0db4653c7f2f0306cd4c9bb95e6",
+    "reason": "Final review removed redundant child-release code from button event validation and made child lookup null-safe for malformed recordings. Hub disconnect still releases child held state; final Node recording tests pass. Runtime, routing, worker and guest fixture are unchanged from actual-WASM pass."
+  },
+  "privacy": "Raw downloads/build/browser logs stay ignored. Curated runtime values, public source hashes and page-only screenshots retained."
+}

@@ -30,6 +30,12 @@ impl<T: Copy> AnalogStream<T> {
     }
 }
 impl AnalogStream<f32> {
+    /// Cold steady-state voltage replacement. Shared clones see the new level on
+    /// the next real ADC conversion; discard queued samples rather than replaying stale power.
+    pub fn replace_current(&self, volts: f32) -> Result<(), &'static str> {
+        if !volts.is_finite() { return Err("voltage must be finite"); }
+        let mut state=self.state.lock().unwrap();state.queue.frames.clear();state.queue.current=volts;Ok(())
+    }
     pub fn new(rate: u32, bias: f32, now: u64) -> Result<Self, &'static str> {
         if !bias.is_finite() { return Err("voltage bias must be finite"); }
         Self::create(rate, bias, now)
@@ -63,6 +69,15 @@ impl<T: Copy> State<T> {
 mod tests {
     use super::*;
     use crate::{AnalogInputs, AnalogSource};
+    #[test]
+    fn cold_voltage_replacement_clears_queued_samples_without_completing_a_conversion() {
+        let source=AnalogStream::new(100,0.0,0).unwrap();let mut pads=AnalogInputs::new(1000);
+        pads.set(11,AnalogSource::Stream(source.clone()));source.push(&[2.0,2.5],0,1000).unwrap();source.replace_current(1.25).unwrap();
+        assert_eq!(pads.volts(11,100),1.25);assert_eq!(source.queued_samples(100,1000),0);assert_eq!(pads.observation(11).generation,0);
+        assert!(source.replace_current(f32::NAN).is_err());assert_eq!(pads.volts(11,200),1.25);
+        assert_eq!(pads.convert(11,200,|v|(v*1000.0)as u32),1250);assert_eq!(pads.observation(11).generation,1);
+        source.replace_current(0.0).unwrap();pads.set_stream_clock_offset(200);assert_eq!(pads.volts(11,0),0.0);
+    }
     #[test]
     fn stream_clock_bound_hold_and_shared_handle() {
         assert!(AnalogStream::new(0, 1.0, 0).is_err());

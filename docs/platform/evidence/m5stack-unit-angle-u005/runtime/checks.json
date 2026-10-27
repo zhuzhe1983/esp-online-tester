@@ -1,0 +1,133 @@
+{
+  "checkedAt": "2026-10-27T10:00:55Z",
+  "base": "69ad0d35",
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "commands": [
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=web/wasm/fw cargo test --release --workspace -- --include-ignored --skip external_",
+      "status": "pass",
+      "passed": 1367,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "status": "pass",
+      "passed": 72
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "status": "pass",
+      "products": 83,
+      "accessories": 5,
+      "firmwares": 106,
+      "watchlist": 44
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "status": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=web/wasm/fw node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "status": "pass",
+      "workloads": 11
+    },
+    {
+      "command": "node tools/probe-unit-angle.mjs --build output/unit-angle-build",
+      "status": "pass",
+      "groups": 10,
+      "receipt": "fixture.json"
+    },
+    {
+      "command": "node tools/probe-unit-rgb.mjs --build output/unit-rgb-build",
+      "status": "pass",
+      "groups": 9,
+      "receipt": "unit-rgb-regression.json"
+    },
+    {
+      "command": "node tools/probe-unit-button.mjs --build output/unit-button-build",
+      "status": "pass",
+      "groups": 9,
+      "receipt": "unit-button-regression.json"
+    },
+    {
+      "command": "python tools/rebuild-unit-library.py m5stack-unit-angle-u005 --scratch output/u005-rebuild-complete",
+      "status": "pass",
+      "receipt": "model-rebuild.json"
+    },
+    {
+      "command": "Draft202012Validator(web/platform/schemas/knowledge.schema.json).validate(U005 knowledge record)",
+      "status": "pass"
+    },
+    {
+      "command": "python3 docs/platform/evidence/m5stack-unit-angle-u005/runtime/bench.py --base-bins output/u005-base-bins --candidate-bins target/release --rom-dir web/wasm/fw --receipt docs/platform/evidence/m5stack-unit-angle-u005/runtime/cpu.json",
+      "status": "measured; work/output equal; C6 +1.20% unexplained, no non-regression claim",
+      "receipt": "cpu.json"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "status": "pass",
+      "trackedEvidenceFiles": 2122,
+      "gzipFiles": 20,
+      "scope": "docs/evidence"
+    },
+    {
+      "command": "Configured privacy patterns applied additionally to all staged text files; manual review of two PNG screenshots",
+      "status": "pass",
+      "textFiles": 45,
+      "pngFiles": 2,
+      "scope": "All 47 U005 staged paths, including docs/platform/evidence"
+    },
+    {
+      "command": "git diff --cached --check and SHA-256 recomputation of final source/model/plan/geometry receipts",
+      "status": "pass"
+    }
+  ],
+  "goldensChanged": false,
+  "intentionalTestChange": "U027/U003 negative route cases previously used U005 as an unsupported model. U005 is now intentionally supported on the same audited host; these negative cases use unsupported physical GPS instead. Exact route, wrong host and whole-port conflict assertions remain.",
+  "negativeAttempts": [
+    "Initial ADC probe assumed rotation while paused was supported. Runtime correctly rejected; probe now requires rejection and checks allowed paused disconnect. See initial-probe.json.",
+    "Initial full Rust suite lacked pinned p4-hosted public inputs in the new tree. Added read-only local links to established public artifacts and reran, without implementation or golden changes.",
+    "First model rebuild omitted four retained reference photos from metadata artifacts. Public rebuild tool now hash-checks and preserves these existing source files. No source geometry changed.",
+    "Initial browser setup used wrong button IDs; catalog rejected the scene. Fixed IDs before all successful UI checks.",
+    "Final strict knowledge validation rejected a non-null unknown fact and source-only catalog fields. Moved uncertainty into unknowns with null value/notes and removed disallowed fields; final schema and Node checks passed without changing validators."
+  ],
+  "openPrReview": {
+    "upstreamOpen": [
+      301,
+      300,
+      299,
+      290,
+      278,
+      263,
+      262
+    ],
+    "note": "Inspected changed-file lists; none overlap the four changed Rust files or add an alternative board/analog-input contract."
+  },
+  "sourceSha256": {
+    "esp-periph/src/analog/stream.rs": "827e0c23ffe30e14161bf7bb884f483d360236f75fff482a2913c80d47f15e5f",
+    "esp-soc/src/board.rs": "d8152352c7d9973150233f16017d655d8b6763eacc7ca8af69d538eb89cca900",
+    "esp-soc/src/machine/web.rs": "3aca8d49b32fdab7ee81a141915c251f7a5071c973764c15de1a5c389f1c4071",
+    "esp32s3/src/board/stopwatch.rs": "ae60ef7dc0b7b15526438bffb1f2d42e94bf12047d8b8fcc76f497cc45f3b65e",
+    "web/platform/runtime.js": "dcf8f4db8c630c69979fd565dd45ff1244f41f4ba51973e293d9b4755f3e8e96",
+    "web/platform/catalog.js": "ca233e73934eb6838c65c80f2c4a9337182b70bc080ae506d9f0590da7c5117e",
+    "web/platform/recording.js": "85683dbe48d5bf5c77b13e97b50504f239d1be86e0c77bfb2fd09f4c58dff9e6",
+    "web/platform/app.js": "a8527840ad9a37b1fd06f99114eecac08ad7ffa229ff4f979136c04044154df7",
+    "web/platform/scene-view.js": "75e3853bd55d8e789e9ad4dbfdaa635e247c2545460ecd2a362dc890ab08f3fc",
+    "web/platform/scene-interaction.js": "c44ae665f8f44fd64bf24680953f41eeb0f651eb2d66b1cbd11c6072f63c7460",
+    "web/platform/manufacturer-model.js": "a56632aaead60d641833fb628bb7fb705f2ab00b7ed60e593da0809482b80b09",
+    "web/platform/accessory-view.js": "5536987b95c6d08d6e6ffdd3b32ee07385ccf24fa44cd70c2939eddaa290c62c",
+    "tools/rebuild-unit-library.py": "120f4ac431a335d3db9224290241564f4da025f7fce8775f6f2bb3dfcec624ee"
+  },
+  "wasmSha256": "fb04a3bbd25eb4a27ddc2fe38360fcf359440057ed015b9015bccf7e69c00498",
+  "cpuReceipt": "cpu.json",
+  "privacy": "Raw HTTP downloads, build outputs, local fixture paths and unfiltered browser logs remain ignored. Curated values, URLs, hashes and screenshots retain no personal/session identifiers."
+}

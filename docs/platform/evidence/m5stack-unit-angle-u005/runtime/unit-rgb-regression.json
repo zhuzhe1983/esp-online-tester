@@ -1,0 +1,88 @@
+{
+  "checkedAt": "2026-10-27T09:46:32Z",
+  "sourceSha256": {
+    "esp-soc/src/board.rs": "d8152352c7d9973150233f16017d655d8b6763eacc7ca8af69d538eb89cca900",
+    "esp-soc/src/machine/web.rs": "3aca8d49b32fdab7ee81a141915c251f7a5071c973764c15de1a5c389f1c4071",
+    "esp32s3/src/board/stopwatch.rs": "ae60ef7dc0b7b15526438bffb1f2d42e94bf12047d8b8fcc76f497cc45f3b65e",
+    "esp-periph/src/i2c/m5.rs": "efbef29b5750623a35205159669a90166d78f9242e66bc22d1f29b0922fb0090",
+    "web/platform/runtime.js": "dcf8f4db8c630c69979fd565dd45ff1244f41f4ba51973e293d9b4755f3e8e96",
+    "web/platform/recording.js": "85683dbe48d5bf5c77b13e97b50504f239d1be86e0c77bfb2fd09f4c58dff9e6",
+    "tools/probe-unit-rgb.mjs": "51f6f34a1ca9a1e67d8872e03f47bed5e2cd815b11c6d75d5208a43c540a7799",
+    "tools/fixtures/unit-rgb-firmware/main/main.c": "56f2b5d60684cfb1f5270154e1d4addcc80ad649bfccbd9a09a0dd9ad9380380"
+  },
+  "wasmSha256": "fb04a3bbd25eb4a27ddc2fe38360fcf359440057ed015b9015bccf7e69c00498",
+  "romSha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "command": "node tools/probe-unit-rgb.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+    "unit_rgb_fixture.bin": "68eb13ace4b61f6a16fa6401d8c7b6b2f4dc90238e9603d3bb1b2a2a32fb629a"
+  },
+  "checks": [
+    "ROM/bootloader/IDF RMT delivers three exact GRB->RGB colours through G10",
+    "different guest payload changes colours; wrong white G11 route leaves colours unchanged",
+    "PWR_CFG poweroff clears output; unpowered transmit is discarded and re-enable stays dark",
+    "unplug clears light; detached frames discarded; reconnect needs new correct-pin guest data",
+    "paused disconnect delivered on resume; RGB unit rejects button injection",
+    "HOLD_CFG bit6 retains Grove output during PMIC shutdown and clearing hold blacks it",
+    "guest reboot retains physical disconnect even when firmware re-enables power and transmits",
+    "platform reset restores scene connection, fresh guest RMT lights output",
+    "record/replay starts fresh guest output then removes it on detach; reconnect preserves dark state"
+  ],
+  "recording": {
+    "events": [
+      {
+        "at": 0.36161725,
+        "type": "accessory-connection",
+        "accessoryId": "rgb-unit",
+        "connected": false
+      },
+      {
+        "at": 0.4125499208333333,
+        "type": "accessory-connection",
+        "accessoryId": "rgb-unit",
+        "connected": true
+      }
+    ],
+    "result": "completed",
+    "bitExact": false
+  },
+  "status": "pass",
+  "serialEvidence": [
+    "U003_READY POWER_OFF",
+    "U003_READY POWER_OFF",
+    "U003_TX pin=10 offset=2 bytes=9",
+    "U003_TX pin=10 offset=2 bytes=9",
+    "U003_TX pin=10 offset=0 bytes=9",
+    "U003_BOOT_READY",
+    "U003_TX pin=10 offset=0 bytes=9",
+    "U003_BOOT_READY"
+  ],
+  "outputs": [
+    {
+      "accessoryId": "rgb-unit",
+      "model": "sk6812-u003",
+      "port": "grove",
+      "leds": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  ],
+  "guestSeconds": 0.46
+}
