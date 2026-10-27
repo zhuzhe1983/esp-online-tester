@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-27T08:01:15Z",
+  "sourceCommit": "77e70b32",
+  "firmwareSha256": "d3242a0ba536024c735fe9ca4b1670e629f0f97435a06da8f2979c06ebbfe805",
+  "command": "target/release/esp32sim --chip s3 --board atoms3r --flash-mb 8 --psram-mb 8 --boot rom --rom web/wasm/fw/esp32s3_rev0_rom.elf --flash-image /dev/stdin --console both --max-seconds 1 --no-reboot --break 40375853 --disasm 403757fc,48 --peek 3fcef744,4 --peek 3fceffb8,4",
+  "flashInput": "Unmodified verified official image, streamed from RAM to stdin.",
+  "rawLog": {
+    "path": "output/atoms3r-boot-fix/cpu1-start.log",
+    "bytes": 10117,
+    "sha256": "105f03df3685d5b8f06faa2901cd4c057ec124d26d6a3993e0992456442375ec"
+  },
+  "observations": {
+    "cpu1Pc": "0x40375853",
+    "printfChannelAddress": "0x3fcef744",
+    "printfChannel": 255,
+    "gUsbPrintAddress": "0x3fceffb8",
+    "gUartPrintAddress": "0x3fceffb9",
+    "gUsbPrint": 1,
+    "gUartPrint": 1,
+    "displayFrames": 0,
+    "displayPixels": 0
+  },
+  "guestDisassembly": [
+    "40375814: call8 403763f4",
+    "40375817: movi a10, 255",
+    "4037581a: l32r a8, 40374450",
+    "4037581d: callx8 a8",
+    "40375853: callx8 a8"
+  ],
+  "romDisassembly": [
+    "40048815: bnei a2, 4, 40048820",
+    "40048820: addmi a8, a2, 0x6000",
+    "40048823: slli a8, a8, 16",
+    "40048828: bltui a2, 2, 4004882e",
+    "4004882b: l32r a9, 40047524 (0xe000)",
+    "4004882e: add.n a8, a8, a9",
+    "40048830: addi a11, a8, 28",
+    "40048839: l32i.n a2, a11, 0"
+  ],
+  "upstreamFix": {
+    "url": "https://github.com/espressif/esp-idf/commit/6768805d20cbd026b7fccf9d7adb49991d6b66a2",
+    "file": "components/esp_system/port/cpu_start.c",
+    "function": "call_start_cpu1",
+    "before": "esp_rom_uart_set_as_console(CONFIG_ESP_CONSOLE_UART_NUM);",
+    "after": "esp_rom_output_set_as_console(CONFIG_ESP_CONSOLE_ROM_SERIAL_PORT_NUM);",
+    "usbSerialJtagConsoleNumber": 4
+  },
+  "limits": [
+    "No S3 silicon result: the C3 hardware failure in Espressif issue 12958 is corroboration of the SDK defect, not S3 hardware equivalence.",
+    "The public factory sdkconfig is corroborating configuration; the unchanged downloaded image itself supplies the observed movi a10,255.",
+    "TRM v1.8 section 4.3.5 maps module/peripheral accesses to 0x60000000..0x600d0fff; it does not establish the silicon response at 0x60ffe01c.",
+    "No eFuse, MMIO, guest binary or ROM modification was made."
+  ],
+  "negativeDiagnostics": [
+    "--stop-after-exceptions 1 stops on a normal register-window exception during ROM startup, before this failure; use the CPU1 breakpoint or the bounded panic probe instead."
+  ]
+}

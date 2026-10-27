@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-10-27T08:05:49Z",
+  "sourceCommit": "77e70b32",
+  "checks": [
+    {
+      "command": "cargo +stable build --release -p esp32sim --bin esp32sim",
+      "result": "pass"
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/probe-atoms3r-factory.mjs --url <catalog official v0.3 URL> --sha256 d3242a0ba536024c735fe9ca4b1670e629f0f97435a06da8f2979c06ebbfe805",
+      "result": "Known failure reproduced independently on native JIT, native interpreter and actual WASM; not a successful firmware boot."
+    },
+    {
+      "command": "node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs",
+      "result": "pass; 4 test files, 0 failures, including actual runtime worker/WASM"
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "pass; 83 products, 5 accessories, 106 firmwares, 44 watchlist entries at this base"
+    },
+    {
+      "command": "node --check tools/probe-atoms3r-factory.mjs",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass; manual review of new evidence also completed"
+    },
+    {
+      "command": "git diff --check --cached",
+      "result": "pass"
+    }
+  ],
+  "browser": {
+    "mode": "headless Chromium, task-owned Playwright wrapper session",
+    "product": "m5stack-c126",
+    "defaultFirmware": "m5stack-c126-factory-reference",
+    "runButtonEnabled": true,
+    "runButtonLabel": "下载并尝试运行",
+    "visibleTooltipContains": [
+      "官方 v0.3",
+      "LoadProhibited",
+      "S3 实机未复核"
+    ],
+    "firmwareRunByBrowser": false
+  },
+  "scope": [
+    "No core, peripheral, timing or runtime implementation changes; Rust Clippy/workspace tests and performance baselines were not rerun for this diagnostic-only change.",
+    "No photos or CAD changed; no new model fidelity claim.",
+    "Official firmware stays trial and default, with original source/hash and simulationVerified=false."
+  ],
+  "evidenceCuration": [
+    "Only relevant serial lines and numeric state retained; full logs remain under ignored output/.",
+    "No hardware device identifiers, account names, hostnames or unrelated process inventories committed."
+  ]
+}
