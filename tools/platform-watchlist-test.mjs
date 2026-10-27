@@ -67,3 +67,28 @@ assert.equal(release.tag_name,'2');assert.equal(release.assets[0].browser_downlo
 assert.throws(()=>publicRelease(burner,[]));
 assert.throws(()=>publicRelease(burner,[{fid:burner.firmwareId,versions:[{version:'x',published_at:'2026-10-01',published:true,file:'../private.bin'}]}]));
 console.log('ok official M5Burner metadata: published versions only, fixed CDN, no GitHub token or author metadata retained');
+
+// A project's newest release can target one product while another remains on
+// its own most recent version. Only the selected product's source is probed.
+const dualEntry={...entry,id:'device-specific',upstreamRepo:'example/devices',version:'1.0.0',releaseUrl:'https://github.com/example/devices/releases',
+  assets:[{name:'reader-2.0-one.bin',url:'https://example.com/one-2.0.bin'},{name:'reader-1.4-two.bin',url:'https://example.com/two-1.4.bin'}],
+  catalogTargets:[{firmwareId:'one-firmware',productIds:['one'],channel:'stable',assetNamePattern:'^reader-[0-9.]+-one\\.bin$',format:'merged',updateMode:'source'},
+    {firmwareId:'two-firmware',productIds:['two'],channel:'stable',assetNamePattern:'^reader-[0-9.]+-two\\.bin$',format:'merged',updateMode:'source'}],
+  deviceVersions:[{firmwareId:'one-firmware',productIds:['one'],version:'2.0.0'},{firmwareId:'two-firmware',productIds:['two'],version:'1.4.0'}]};
+const dualReleases=[{tag_name:'2.0.0',published_at:'2026-10-26T00:00:00Z',html_url:'https://github.com/example/devices/releases/tag/2.0.0',assets:[{name:'reader-2.0-one.bin',browser_download_url:'https://example.com/one-2.0.bin'}]},
+  {tag_name:'1.4.0',published_at:'2026-10-20T00:00:00Z',html_url:'https://github.com/example/devices/releases/tag/1.4.0',assets:[{name:'reader-1.4-two.bin',browser_download_url:'https://example.com/two-1.4.bin'}]}];
+let selectedProbes=[];
+const dualFetch=async(url,options)=>{
+  if(options.method==='HEAD'){selectedProbes.push(url);return new Response(null,{status:url.includes('one-2.0')?404:200});}
+  assert.ok(url.endsWith('firmware-release-snapshot.json'));return Response.json({schemaVersion:'1',entries:[{id:dualEntry.id,upstreamRepo:dualEntry.upstreamRepo,checkedAt:new Date().toISOString(),release:dualReleases[0],releases:dualReleases,error:null}]});
+};
+const deviceTwo=await checkWatchEntry(dualEntry,{fetchImpl:dualFetch,firmwareId:'two-firmware',productId:'two',currentVersion:'1.4.0',source:{url:'https://example.com/two-1.4.bin'}});
+assert.equal(deviceTwo.latestVersion,'1.4.0');assert.equal(deviceTwo.previousVersion,'1.4.0');assert.equal(deviceTwo.updateAvailable,false);assert.equal(deviceTwo.state,'ok');assert.equal(deviceTwo.issueUrl,null);
+assert.deepEqual(selectedProbes,['https://example.com/two-1.4.bin']);assert.equal(deviceTwo.upstreamAssets.length,1);assert.ok(deviceTwo.releaseUrl.endsWith('/1.4.0'));
+selectedProbes=[];
+const deviceOne=await checkWatchEntry(dualEntry,{fetchImpl:dualFetch,firmwareId:'one-firmware',productId:'one',currentVersion:'1.0.0',source:{url:'https://example.com/one-1.0.bin'}});
+assert.equal(deviceOne.latestVersion,'2.0.0');assert.equal(deviceOne.previousVersion,'1.0.0');assert.equal(deviceOne.updateAvailable,true);assert.deepEqual(selectedProbes,['https://example.com/one-1.0.bin'],'probe the selected installed artifact, not another device or its newer candidate');
+selectedProbes=[];
+const unmapped=await checkWatchEntry(dualEntry,{fetchImpl:dualFetch,firmwareId:'missing',productId:'two',currentVersion:'1.4.0'});
+assert.equal(unmapped.latestVersion,null);assert.equal(unmapped.updateAvailable,false);assert.equal(unmapped.metadata.matchReason,'no-device-target');assert.deepEqual(selectedProbes,[]);
+console.log('ok device-scoped release history, independent versions and isolated selected-artifact probes');

@@ -20,6 +20,14 @@ UIFlow、MicroPython、第三方项目，以及厂商分发的第三方适配镜
 
 若为已知上游 app-only 构建另设 `app_direct: true` 实验清单，名称必须标注“实验直启”，并明确跳过 ROM 启动、bootloader 与分区初始化，可能因缺少初始化数据而失败。固定 app 和 ROM 的来源/hash，不将它称为 merged 镜像、出厂默认或兼容已验证；硬件刷机必须拒绝该清单。普通本地 app 上传仍走补齐 `flasher_args.json` 的路径，不能静默切到实验直启。
 
+## 按设备自动同步
+
+发布 Pages 前和手动 **Check firmware update** Action 都执行 `node tools/sync-firmware-catalog.mjs`。本地发布前也运行此命令；`--dry-run` 只检查，`--snapshot-only` 使用已保存快照。Action 使用认证 API，浏览器读取静态 JSON，不依赖匿名 GitHub release API。手动 Action 默认检查后发布 Pages；Pages 内部复用检查时关闭再次发布，避免循环，并构建检查完成后的准确提交。
+
+为每个可更新固件在 watchlist 声明 `catalogTargets`：固件 ID、明确的 `productIds`、stable/prerelease 渠道、merged/app/manifest 格式、发布资产文件名规则、来源类型及依据。Schema 位于 `web/platform/schemas/firmware-watchlist.schema.json`。查阅有限历史发布，为每个设备找到最新的唯一匹配资产，不能把项目最新版本强行套给没有新资产的设备。跨型号共用条目必须确实共用同一资产；若各设备版本不同，先拆分固件条目和规则。
+
+只有唯一匹配且发布元信息提供 SHA-256 时才自动推进版本；缺少 hash、匹配歧义、格式不符、接口失败、无新适配版本时保留已有镜像，原因写入 `web/platform/catalog/firmware-catalog-sync-report.json`。相同版本/hash 保留已核验 CDN 和验证状态；新版本设 `status: trial`、`simulationVerified: false`、`hardwareValidated: false`，旧证据归档至 `artifactHistory`，不得继续展示旧版“已验证”结论。实验 app_direct 清单只更新 app，不自动变成 merged 或可刷硬件镜像。元信息检查不执行固件，也不把第三方 BIN 保存到本站服务器。
+
 ## 目录、版本发现与镜像来源
 
 前台统一使用按当前设备 `productIds` 筛选的固件库，不再提供独立的通用知名固件选择器。通过 `watchlistId` 关联发布源与版本检查；`publisher`、`role` 区分厂商出厂固件和适配项目。`defaultFirmwareId` 指向产品的默认官方出厂条目。硬件已有适配、镜像完整而模拟未验证的项目用 `status: trial`、`simulationVerified: false` 提供“下载并尝试运行”；与本地固件执行同样的芯片、布局、容量校验。只有源码/发布入口或缺少启动文件时用 `reference`。不能因同为 ESP32 就宣称适配，更不能把 trial 当作已验证操作或实机刷写验收。
@@ -28,11 +36,11 @@ UIFlow、MicroPython、第三方项目，以及厂商分发的第三方适配镜
 
 定时 Action 使用认证后的官方 release API 同步发布元信息；浏览器读取本站的版本快照，显示同步时间、过期和失败状态，避免共享出口 IP 的匿名 API 限流。此流程只保存元信息，不镜像二进制。更新程序支持限流、超时；检查远程 URL，HEAD 被拒绝时有限 GET，不下载完整固件入库。区分新版本、有效、404/410、限流、服务器异常与暂时未知。CORS 不能伪装成 404，GitHub API 可读也不意味二进制允许浏览器跨域。
 
-没有 GitHub Release、但已收录于官方 M5Burner 的固件可使用 `metadataProvider: 'm5burner'`。固定官方元信息接口和该固件的 `firmwareId`，仅从已发布版本中按发布时间选择最新项；保存版本、日期与官方 CDN 链接，不能保留作者账号等无关资料。GitHub 令牌只发给 GitHub，不传给 M5Burner。用 `tools/sync-firmware-release-metadata.mjs` 生成静态快照；查到新版本后须单独核对镜像 hash、目标与启动布局，不能自动把新版本替换成默认固件；实际运行验证单独记录，未执行可标为 trial，不能继承旧版兼容性。
+没有 GitHub Release、但已收录于官方 M5Burner 的固件可使用 `metadataProvider: 'm5burner'`。固定官方元信息接口和该固件的 `firmwareId`，仅从已发布版本中按发布时间选择最新项；保存版本、日期与官方 CDN 链接，不能保留作者账号等无关资料。GitHub 令牌只发给 GitHub，不传给 M5Burner。`tools/sync-firmware-catalog.mjs` 同时更新静态快照和明确匹配的设备条目。发布源没有 SHA-256 时保留原镜像，只记录候选及原因；有 hash 也只代表发布元信息，布局和内容在用户加载时检查。实际运行验证单独记录，自动更新标为 trial，不能继承旧版兼容性。
 
 产品提供有依据的官方出厂固件时，按上面的第一项与默认字段规则选择。浏览器直载失败先检查发布者提供的官方 CDN 或安装器使用的官方源；平台白名单、`no-cors`、Service Worker 或 Action 都不能赋予浏览器跨域读取权限。Action 可检查发布元信息，不能下载镜像后转存为本站固件。未找到允许跨域的官方源时展示官方下载/刷机页，并明确本站暂不可直载。
 
-替换下载地址前须把候选完整下载到内存核对 SHA-256。同版本、同大小仍可能是不同构建；应分别收录和固定 hash，不互相冒充。动态 `latest`/`release` 地址只有配合固定 hash 才能作为该版本来源，内容漂移时拒绝运行/刷机，重新核验版本。区分 app、merged/factory 与多设备 ZIP；能跨域读取不意味着镜像完整或产品兼容。
+人工替换同版本 CDN 地址时，须把候选完整下载到内存核对 SHA-256；下述自动版本同步只使用发布源提供的 digest，不下载二进制，也不宣称内容或布局已验证。同版本、同大小仍可能是不同构建；应分别收录和固定 hash，不互相冒充。动态 `latest`/`release` 地址只有配合固定 hash 才能作为该版本来源，内容漂移时拒绝运行/刷机，重新核验版本。区分 app、merged/factory 与多设备 ZIP；能跨域读取不意味着镜像完整或产品兼容。
 
 开发诊断与 Hello fixture 留在仓库测试定义中，不放入用户产品/固件库。发布 Pages 前通过 `tools/stage-platform-pages.mjs` 排除内部 StopWatch 诊断清单与二进制，测试先运行，发布再筛选；线上验证这些路径不可下载。
 
@@ -48,7 +56,9 @@ UIFlow、MicroPython、第三方项目，以及厂商分发的第三方适配镜
 
 测试分别列：元信息/404/CORS、内存下载/布局校验、注入串口替身的协议测试、真实硬件测试。没实际写设备就标“未实机验证”，替身测试不能证明实芯片可启动。
 
-运行入口与版本发现须分开判断。找到最新固件不代表该设备的板级模拟器已就绪；未实现时保留禁用的“下载并运行”按钮，并在按钮旁直接显示设备名和不可运行原因。不要把此按钮替换为浏览器下载文件，也不能用其他设备或诊断固件代替运行。
+运行入口与版本发现须分开判断。完全没有板级模拟器的设备，工作台与 mini 都隐藏运行按钮，显示红字“尚未完成适配”。已有板级模型、镜像可加载但未验证的固件，点击运行后弹出“尚未确认完整适配”确认框，取消时不得开始下载；已验证固件直接运行。警告不常驻固件面板，不将“未验证”变成禁止执行。不要改成下载到用户磁盘，也不能以其他设备或诊断固件替代运行。此确认只属于人机界面，agent API 不弹窗。
+
+运行按钮旁提供“报告问题”，打开 GitHub issue 草稿，预填设备型号/芯片/板型、固件版本与来源、hash、当前错误和近期串口日志。限制 URL 长度，移除常见凭据、URL 查询参数、本地路径与设备标识；不包含本地固件内容。用户补充复现描述后自行提交，平台不得后台提交 issue。
 
 本地文件按内容识别：完整 merged 镜像可直接加载；app.bin 提示继续选择 flasher_args.json 及其列出的 bootloader、partition table 等文件，也可选择整个构建目录。清单决定每段偏移，检查芯片、容量、路径歧义、缺文件和重叠，不能按文件名猜布局。所有本地文件只在当前浏览器读取。
 

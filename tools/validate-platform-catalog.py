@@ -23,6 +23,11 @@ for category in ('products', 'accessories', 'firmwares'):
     if len(ids) != len(set(ids)):
         errors.append(f'{category}: duplicate entry IDs')
     print(f'{category}: {len(ids)} entries')
+watchlist_validator = Draft202012Validator(schemas['firmware-watchlist.schema.json'], registry=registry)
+watchlist = json.loads((root / 'catalog/firmware-watchlist.json').read_text())
+for error in watchlist_validator.iter_errors(watchlist):
+    errors.append(f'watchlist/{"/".join(map(str, error.path))}: {error.message[:240]}')
+print(f'watchlist: {len(watchlist["entries"])} entries')
 if errors:
     raise SystemExit('\n'.join(errors))
 print('Catalog schemas and unique entry IDs passed.')

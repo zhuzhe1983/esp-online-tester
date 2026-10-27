@@ -73,7 +73,27 @@
       "storage": "remote-links-only",
       "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
       "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
-      "browserNote": "官方 CDN 可供本站直接读取；固定 V0.5 和 SHA-256。"
+      "browserNote": "官方 CDN 可供本站直接读取；固定 V0.5 和 SHA-256。",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-stopwatch-official",
+          "productIds": [
+            "m5stack-stopwatch"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^C152-StopWatch-UserDemo-[A-Za-z0-9_.-]+_0x0\\.bin$",
+          "nameTemplate": "StopWatch 官方 User Demo · {version}",
+          "basis": {
+            "url": "https://github.com/m5stack/M5StopWatch-UserDemo/releases/tag/V0.5",
+            "note": "StopWatch 官方 C152 专用、_0x0 完整镜像命名；不匹配 app 或源码压缩包。"
+          }
+        }
+      ]
     },
     {
       "id": "m5stack-papermono-official",
@@ -110,7 +130,27 @@
       },
       "documentationUrl": "https://docs.m5stack.com/en/core/PaperMono",
       "storage": "remote-links-only",
-      "browserNote": "直连官方CDN，可使用浏览器持久缓存；按实际内容hash校验。"
+      "browserNote": "直连官方CDN，可使用浏览器持久缓存；按实际内容hash校验。",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-papermono-official",
+          "productIds": [
+            "m5stack-papermono",
+            "m5stack-c153-lite"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "User Demo · {version}",
+          "basis": {
+            "url": "https://burner.m5stack.com/firmware/2089640807996628993/",
+            "note": "先限定官方 M5Burner firmwareId bc489d32157db39ec4797079bdbc9410，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "uiflow2",
@@ -169,7 +209,11 @@
       "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
       "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
       "browserInstallUrl": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.3",
-      "browserNote": "GitHub 版尚不能由本站直载；另收录可跨域的 M5Burner 官方构建。两者同为 v2.5.3，但 SHA-256 不同，不能互相替代。PaperMono 板级模型已有部分支持，此固件仍待单独验证。"
+      "browserNote": "GitHub 版尚不能由本站直载；另收录可跨域的 M5Burner 官方构建。两者同为 v2.5.3，但 SHA-256 不同，不能互相替代。PaperMono 板级模型已有部分支持，此固件仍待单独验证。",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [],
+      "catalogSyncNote": "已检查项目发布元信息；尚无已核对的逐产品启动布局/资产映射，不能仅按 ESP 芯片族把通用固件写给全部设备。"
     },
     {
       "id": "wled",
@@ -211,7 +255,11 @@
       "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
       "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
       "browserInstallUrl": "https://install.wled.me/",
-      "browserNote": "已验证可跨域的官方入口，下载须核对收录 SHA-256。该资源是 app 镜像，不能直接从地址 0 烧录或作为完整镜像启动。"
+      "browserNote": "已验证可跨域的官方入口，下载须核对收录 SHA-256。该资源是 app 镜像，不能直接从地址 0 烧录或作为完整镜像启动。",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [],
+      "catalogSyncNote": "已检查项目发布元信息；尚无已核对的逐产品启动布局/资产映射，不能仅按 ESP 芯片族把通用固件写给全部设备。"
     },
     {
       "id": "tasmota",
@@ -253,7 +301,11 @@
       "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
       "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
       "browserInstallUrl": "https://tasmota.github.io/install/",
-      "browserNote": "已验证可跨域的官方入口，下载须核对收录 SHA-256。此地址会随上游更新变化，hash 不符时必须拒绝，不能自动改版本。完整镜像结构已检查，产品适配仍未验证。"
+      "browserNote": "已验证可跨域的官方入口，下载须核对收录 SHA-256。此地址会随上游更新变化，hash 不符时必须拒绝，不能自动改版本。完整镜像结构已检查，产品适配仍未验证。",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [],
+      "catalogSyncNote": "已检查项目发布元信息；尚无已核对的逐产品启动布局/资产映射，不能仅按 ESP 芯片族把通用固件写给全部设备。"
     },
     {
       "id": "meshtastic",
@@ -289,7 +341,11 @@
       "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
       "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
       "browserInstallUrl": "https://flasher.meshtastic.org/",
-      "browserNote": "官方固件源目前只允许其官方刷机站跨域读取，未允许本站。请使用官方刷机页；原始收录资源还是多设备 ZIP，不是可直接刷入的 BIN。"
+      "browserNote": "官方固件源目前只允许其官方刷机站跨域读取，未允许本站。请使用官方刷机页；原始收录资源还是多设备 ZIP，不是可直接刷入的 BIN。",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [],
+      "catalogSyncNote": "已检查项目发布元信息；尚无已核对的逐产品启动布局/资产映射，不能仅按 ESP 芯片族把通用固件写给全部设备。"
     },
     {
       "id": "micropython",
@@ -324,7 +380,11 @@
       "browserAuditUrl": "https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/research/watchlist-browser-sources-2026-10-26.md",
       "browserCheckedAt": "2026-10-26T15:52:00.052549Z",
       "browserInstallUrl": "https://micropython.org/download/ESP32_GENERIC_S3/",
-      "browserNote": "当前官方二进制未开放本站所需的跨域读取，暂不能网页直载。可到官方页面下载后手动选择文件；这不代表已适配 StopWatch 或 PaperMono。"
+      "browserNote": "当前官方二进制未开放本站所需的跨域读取，暂不能网页直载。可到官方页面下载后手动选择文件；这不代表已适配 StopWatch 或 PaperMono。",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [],
+      "catalogSyncNote": "已检查项目发布元信息；尚无已核对的逐产品启动布局/资产映射，不能仅按 ESP 芯片族把通用固件写给全部设备。"
     },
     {
       "id": "m5stack-cardputer-adv-official",
@@ -360,7 +420,26 @@
       },
       "documentationUrl": "https://docs.m5stack.com/en/core/Cardputer-Adv",
       "storage": "remote-links-only",
-      "browserNote": "直连官方CDN，允许用户浏览器持久缓存并复核hash。"
+      "browserNote": "直连官方CDN，允许用户浏览器持久缓存并复核hash。",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k132-adv-official",
+          "productIds": [
+            "m5stack-k132-adv"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Cardputer-Adv 官方 User Demo · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Cardputer-Adv",
+            "note": "先限定官方 M5Burner firmwareId 9ec7cfec63ca57dd65fd7ad412bcf7eb，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "m5stack-cardputer-official",
@@ -397,7 +476,27 @@
       },
       "documentationUrl": "https://docs.m5stack.com/en/core/Cardputer",
       "storage": "remote-links-only",
-      "browserNote": "直连官方CDN，允许用户浏览器持久缓存并复核hash。"
+      "browserNote": "直连官方CDN，允许用户浏览器持久缓存并复核hash。",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-cardputer-official",
+          "productIds": [
+            "m5stack-k132",
+            "m5stack-k132-v11"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Cardputer 官方 User Demo · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Cardputer",
+            "note": "先限定官方 M5Burner firmwareId d7ffe780b6414ca0135b2052494a6e2d，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "crosspoint-reader",
@@ -433,7 +532,42 @@
         "note": "完整镜像可在已实现板级模型尝试运行；未验证全功能或真实硬件。"
       },
       "storage": "remote-links-only",
-      "browserNote": "M5Burner 官方 CDN 允许跨域。按固定 hash 校验，可缓存在当前浏览器；版本更新不会自动替换收录内容。"
+      "browserNote": "M5Burner 官方 CDN 允许跨域。按固定 hash 校验，可缓存在当前浏览器；新版本按设备规则匹配；发布源缺少 SHA-256 时保留已有版本。",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "papermono-crosspoint",
+          "productIds": [
+            "m5stack-papermono"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "CrossPoint Reader · {version}（M5Stack 适配版）",
+          "basis": {
+            "url": "https://burner.m5stack.com/",
+            "note": "先限定官方 M5Burner firmwareId 443b9911dec92e1b7a52ea9ad40f2757，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        },
+        {
+          "firmwareId": "m5stack-c153-lite-crosspoint",
+          "productIds": [
+            "m5stack-c153-lite"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "PaperMono-Lite CrossPoint Reader · {version}",
+          "basis": {
+            "url": "https://burner.m5stack.com/",
+            "note": "先限定官方 M5Burner firmwareId 443b9911dec92e1b7a52ea9ad40f2757，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "papermono-uiflow2",
@@ -468,7 +602,26 @@
         "note": "完整镜像可在已实现板级模型尝试运行；未验证全功能或真实硬件。"
       },
       "storage": "remote-links-only",
-      "browserNote": "M5Burner 官方 CDN 允许跨域。按固定 hash 校验，可缓存在当前浏览器；版本更新不会自动替换收录内容。"
+      "browserNote": "M5Burner 官方 CDN 允许跨域。按固定 hash 校验，可缓存在当前浏览器；新版本按设备规则匹配；发布源缺少 SHA-256 时保留已有版本。",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "papermono-uiflow2",
+          "productIds": [
+            "m5stack-papermono"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "PaperMono UIFlow2 · v{version}",
+          "basis": {
+            "url": "https://burner.m5stack.com/",
+            "note": "先限定官方 M5Burner firmwareId 99f8186afdcd3404618a3f80ef6abe22，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "cardputer-adv-uiflow2",
@@ -503,7 +656,26 @@
         "note": "完整镜像可在已实现板级模型尝试运行；未验证全功能或真实硬件。"
       },
       "storage": "remote-links-only",
-      "browserNote": "M5Burner 官方 CDN 允许跨域。按固定 hash 校验，可缓存在当前浏览器；版本更新不会自动替换收录内容。"
+      "browserNote": "M5Burner 官方 CDN 允许跨域。按固定 hash 校验，可缓存在当前浏览器；新版本按设备规则匹配；发布源缺少 SHA-256 时保留已有版本。",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k132-adv-uiflow2",
+          "productIds": [
+            "m5stack-k132-adv"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Cardputer-Adv UIFlow2 · v{version}",
+          "basis": {
+            "url": "https://burner.m5stack.com/",
+            "note": "先限定官方 M5Burner firmwareId 47585dfa97e54aa061ec636a82a4f1aa，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-7887d6b1e61cd18e2d6e2d92526b5f29",
@@ -546,7 +718,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-c145-official-reference",
+          "productIds": [
+            "m5stack-c145"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Tab5 · C145 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Tab5",
+            "note": "先限定官方 M5Burner firmwareId 7887d6b1e61cd18e2d6e2d92526b5f29，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-d7437f47285e12c397377fb53ff9f96e",
@@ -589,7 +780,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k141-official-reference",
+          "productIds": [
+            "m5stack-k141"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "StamPLC · K141 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/StamPLC",
+            "note": "先限定官方 M5Burner firmwareId d7437f47285e12c397377fb53ff9f96e，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-89c292ee5d61635f2f259ed90acb71d7",
@@ -632,7 +842,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k049-b-factory-reference",
+          "productIds": [
+            "m5stack-k049-b"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Paper v1.1 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Paper_v1.1",
+            "note": "先限定官方 M5Burner firmwareId 89c292ee5d61635f2f259ed90acb71d7，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-65b098b5cf443956c6475a727f7b14a8",
@@ -675,7 +904,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k048-factory-reference",
+          "productIds": [
+            "m5stack-k048"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "CoreInk 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/CoreInk",
+            "note": "先限定官方 M5Burner firmwareId 65b098b5cf443956c6475a727f7b14a8，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-8bd6c4700f806c806b98e9c8ec716c00",
@@ -718,7 +966,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-c151-official-reference",
+          "productIds": [
+            "m5stack-c151"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "PaperColor · C151 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/PaperColor",
+            "note": "先限定官方 M5Burner firmwareId 8bd6c4700f806c806b98e9c8ec716c00，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-bbb47b2c310a17a21815fded729482e1",
@@ -761,7 +1028,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-c139-factory-reference",
+          "productIds": [
+            "m5stack-c139"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "PaperS3 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/PaperS3",
+            "note": "先限定官方 M5Burner firmwareId bbb47b2c310a17a21815fded729482e1，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-6846a9ac4fd546ad9b48baf9b374e52d",
@@ -805,7 +1091,42 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k134-factory-reference",
+          "productIds": [
+            "m5stack-k134"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "DinMeter 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/DinMeter",
+            "note": "先限定官方 M5Burner firmwareId 6846a9ac4fd546ad9b48baf9b374e52d，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        },
+        {
+          "firmwareId": "m5stack-k134-v11-official-reference",
+          "productIds": [
+            "m5stack-k134-v11"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "DinMeter v1.1 · K134-V11 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/DinMeter",
+            "note": "先限定官方 M5Burner firmwareId 6846a9ac4fd546ad9b48baf9b374e52d，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-c4dce0a2fbb839e71a7e1ce44108d41a",
@@ -849,7 +1170,42 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k131-factory-reference",
+          "productIds": [
+            "m5stack-k131"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Air Quality 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Air_Quality",
+            "note": "先限定官方 M5Burner firmwareId c4dce0a2fbb839e71a7e1ce44108d41a，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        },
+        {
+          "firmwareId": "m5stack-k131-v11-official-reference",
+          "productIds": [
+            "m5stack-k131-v11"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Air Quality v1.1 · K131-V11 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Air_Quality",
+            "note": "先限定官方 M5Burner firmwareId c4dce0a2fbb839e71a7e1ce44108d41a，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-2108b3f2a532a5547eeaab4c60054de2",
@@ -892,7 +1248,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k152-official-factory",
+          "productIds": [
+            "m5stack-k152"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Cardputer Mesh Kit 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Cardputer_Mesh_Kit",
+            "note": "先限定官方 M5Burner firmwareId 2108b3f2a532a5547eeaab4c60054de2，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-7f6c7acb9cfd3d0aa051ba3830a75fd5",
@@ -935,7 +1310,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-c126-factory-reference",
+          "productIds": [
+            "m5stack-c126"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "AtomS3R 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/AtomS3R",
+            "note": "先限定官方 M5Burner firmwareId 7f6c7acb9cfd3d0aa051ba3830a75fd5，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-476a75ab7404402c4651606d80686a17",
@@ -978,7 +1372,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-c123-official-reference",
+          "productIds": [
+            "m5stack-c123"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "AtomS3 · C123 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/AtomS3",
+            "note": "先限定官方 M5Burner firmwareId 476a75ab7404402c4651606d80686a17，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-78b1ffce115a35308b558323d323778b",
@@ -1021,7 +1434,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-c126-cam-official-factory",
+          "productIds": [
+            "m5stack-c126-cam"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "AtomS3R-CAM · C126-CAM 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/AtomS3R-CAM",
+            "note": "先限定官方 M5Burner firmwareId 78b1ffce115a35308b558323d323778b，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-0facba8295ac5547acc9dbc8b326f447",
@@ -1064,7 +1496,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-c126-m12-official-factory",
+          "productIds": [
+            "m5stack-c126-m12"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "AtomS3R-M12 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/AtomS3R-M12",
+            "note": "先限定官方 M5Burner firmwareId 0facba8295ac5547acc9dbc8b326f447，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-ad32239e5b8177b358b1488168e02b58",
@@ -1107,7 +1558,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-c008-official-factory",
+          "productIds": [
+            "m5stack-c008"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Atom-Lite · C008 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Atom-Lite",
+            "note": "先限定官方 M5Burner firmwareId ad32239e5b8177b358b1488168e02b58，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-c496984bd4f905e2fe45d2f3a7fe1cae",
@@ -1150,7 +1620,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-c008-b-official-factory",
+          "productIds": [
+            "m5stack-c008-b"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Atom-Matrix 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Atom-Matrix",
+            "note": "先限定官方 M5Burner firmwareId c496984bd4f905e2fe45d2f3a7fe1cae，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-5fc0406f725cf94d240e7c3ade99078a",
@@ -1193,7 +1682,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-c008-c-factory-reference",
+          "productIds": [
+            "m5stack-c008-c"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Atom Voice 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/atom/Atom_Voice",
+            "note": "先限定官方 M5Burner firmwareId 5fc0406f725cf94d240e7c3ade99078a，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-0605437981c9f061b88bf6e6516b7d33",
@@ -1236,7 +1744,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k016-p-factory-reference",
+          "productIds": [
+            "m5stack-k016-p"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "StickC-Plus 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/StickC-Plus",
+            "note": "先限定官方 M5Burner firmwareId 0605437981c9f061b88bf6e6516b7d33，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-8f339a3d2b3a9bdb1b693eddecb756c1",
@@ -1279,7 +1806,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。 官方 StickT2 V1.0 原文件的 bootloader 附加摘要与 SPI mode=3 的头部不一致；仅将该字节改为 2 时与已存摘要匹配。保留原始下载和固定文件 hash，不自动改写；运行/实机兼容性未验证。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k016-t2-official-factory",
+          "productIds": [
+            "m5stack-k016-t2"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "StickT2 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/StickT2",
+            "note": "先限定官方 M5Burner firmwareId 8f339a3d2b3a9bdb1b693eddecb756c1，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-46ecde582ec690c2945c61870fa8af9f",
@@ -1323,7 +1869,42 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k010-official-factory",
+          "productIds": [
+            "m5stack-k010"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Core2 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Core2",
+            "note": "先限定官方 M5Burner firmwareId 46ecde582ec690c2945c61870fa8af9f，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        },
+        {
+          "firmwareId": "m5stack-k010-v11-official-factory",
+          "productIds": [
+            "m5stack-k010-v11"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Core2 v1.1 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Core2",
+            "note": "先限定官方 M5Burner firmwareId 46ecde582ec690c2945c61870fa8af9f，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-2d32776dcf4ea6991bb8358a1bec6d05",
@@ -1366,7 +1947,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k010-aws-factory-reference",
+          "productIds": [
+            "m5stack-k010-aws"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Core2 For AWS 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Core2_For_AWS",
+            "note": "先限定官方 M5Burner firmwareId 2d32776dcf4ea6991bb8358a1bec6d05，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-0b0a084640694dc159305d082e4bac89",
@@ -1409,7 +2009,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k149-official-factory",
+          "productIds": [
+            "m5stack-k149"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "CoreS3 Thread BR 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/CoreS3_Thread_BR",
+            "note": "先限定官方 M5Burner firmwareId 0b0a084640694dc159305d082e4bac89，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-e5e989a848b75a1e6f04f6412cad36db",
@@ -1453,7 +2072,42 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k128-factory-reference",
+          "productIds": [
+            "m5stack-k128"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "CoreS3 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/CoreS3",
+            "note": "先限定官方 M5Burner firmwareId e5e989a848b75a1e6f04f6412cad36db，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        },
+        {
+          "firmwareId": "m5stack-k128-lite-official-reference",
+          "productIds": [
+            "m5stack-k128-lite"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "CoreS3-Lite 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/CoreS3",
+            "note": "先限定官方 M5Burner firmwareId e5e989a848b75a1e6f04f6412cad36db，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-5a2a93e0dc74bbb244708ea64d9631a4",
@@ -1496,7 +2150,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k128-se-official-reference",
+          "productIds": [
+            "m5stack-k128-se"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "CoreS3-SE · K128-SE 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/CoreS3-SE",
+            "note": "先限定官方 M5Burner firmwareId 5a2a93e0dc74bbb244708ea64d9631a4，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-b181a9558bf3e36e53ce79018cb11805",
@@ -1539,7 +2212,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "prerelease",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k136-official-reference",
+          "productIds": [
+            "m5stack-k136"
+          ],
+          "channel": "prerelease",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "VAMeter 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/VAMeter",
+            "note": "先限定官方 M5Burner firmwareId b181a9558bf3e36e53ce79018cb11805，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-ec3017841bbecce55be14023f4ba8c2e",
@@ -1582,7 +2274,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-c148-factory-reference",
+          "productIds": [
+            "m5stack-c148"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "PowerHub 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/PowerHub",
+            "note": "先限定官方 M5Burner firmwareId ec3017841bbecce55be14023f4ba8c2e，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-0d0d044eae3b505164c4072658cfb62c",
@@ -1625,7 +2336,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-c125-official-factory",
+          "productIds": [
+            "m5stack-c125"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "NanoC6 · C125 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/NanoC6",
+            "note": "先限定官方 M5Burner firmwareId 0d0d044eae3b505164c4072658cfb62c，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-a0873b3516e945f28d39a0870736a017",
@@ -1668,7 +2398,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k151-official-factory",
+          "productIds": [
+            "m5stack-k151"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "StackChan 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/StackChan",
+            "note": "先限定官方 M5Burner firmwareId a0873b3516e945f28d39a0870736a017，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-8dfe576c365e8b6a4510f1cb4ffa7594",
@@ -1711,7 +2460,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k138-official-factory",
+          "productIds": [
+            "m5stack-k138"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "StampFly 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/app/StampFly",
+            "note": "先限定官方 M5Burner firmwareId 8dfe576c365e8b6a4510f1cb4ffa7594，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-a02a71fc4c86f8dfa0bf73f928b3f44b",
@@ -1754,7 +2522,26 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k016-c-official-factory",
+          "productIds": [
+            "m5stack-k016-c"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "StickC · K016-C 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/StickC",
+            "note": "先限定官方 M5Burner firmwareId a02a71fc4c86f8dfa0bf73f928b3f44b，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "factory-55b2ee0f3f573f8f4a0b6043d22ffe4e",
@@ -1798,7 +2585,42 @@
         "hardwareValidated": false,
         "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "catalogTargets": [
+        {
+          "firmwareId": "m5stack-k001-official-factory",
+          "productIds": [
+            "m5stack-k001"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Basic 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Basic",
+            "note": "先限定官方 M5Burner firmwareId 55b2ee0f3f573f8f4a0b6043d22ffe4e，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        },
+        {
+          "firmwareId": "m5stack-k001-v27-official-factory",
+          "productIds": [
+            "m5stack-k001-v27"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "manufacturer-distribution",
+          "updateMode": "source",
+          "assetNamePattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*\\.bin$",
+          "nameTemplate": "Basic v2.7 官方出厂固件 · {version}",
+          "basis": {
+            "url": "https://docs.m5stack.com/en/core/Basic",
+            "note": "先限定官方 M5Burner firmwareId 55b2ee0f3f573f8f4a0b6043d22ffe4e，再取此分发条目的 BIN；目标型号映射来自已有出厂来源审计。新构建布局在实际加载时校验。"
+          }
+        }
+      ]
     },
     {
       "id": "crosspoint-reader-upstream",
@@ -1831,7 +2653,86 @@
         "hardwareValidated": false,
         "note": "应用镜像实验直启，缺 bootloader/partition，未执行验证。"
       },
-      "storage": "remote-links-only"
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [
+        {
+          "firmwareId": "papermono-crosspoint-1-6-5",
+          "productIds": [
+            "m5stack-papermono",
+            "m5stack-c153-lite"
+          ],
+          "channel": "stable",
+          "format": "app",
+          "sourceType": "upstream-release",
+          "updateMode": "manifest-app",
+          "assetNamePattern": "^crosspoint-[0-9][A-Za-z0-9.+_-]*-papermono\\.bin$",
+          "nameTemplate": "CrossPoint Reader · {version}（实验直启）",
+          "basis": {
+            "url": "https://github.com/crosspoint-reader/crosspoint-reader/releases/tag/1.6.5",
+            "note": "上游 PaperMono 专用资产名；不匹配 x3/x4 等其他设备，也不推定 Paper/PaperS3 与 PaperMono 通用。"
+          },
+          "manifestUrl": "./firmware-plans/papermono-crosspoint-1-6-5.json",
+          "downloadUrl": "https://crosspointreader.com/api/release/firmware?device=papermono"
+        }
+      ]
+    },
+    {
+      "id": "crosspoint-reader-rc",
+      "name": "CrossPoint Reader 上游 RC · PaperMono",
+      "category": "reading",
+      "description": "上游候选版本，与稳定版和 M5Stack 分发完整镜像分别跟踪。",
+      "upstreamRepo": "crosspoint-reader/crosspoint-reader",
+      "metadataUrl": "https://api.github.com/repos/crosspoint-reader/crosspoint-reader/releases/latest",
+      "releaseUrl": "https://github.com/crosspoint-reader/crosspoint-reader/releases/tag/2.0.0rc",
+      "version": "2.0.0rc",
+      "publishedAt": "2026-10-24T21:44:15Z",
+      "checkedAt": "2026-10-27T00:47:26.577927+00:00",
+      "assets": [
+        {
+          "name": "crosspoint-2.0.0rc-papermono.bin",
+          "url": "https://crosspointreader.com/api/rc/firmware?device=papermono",
+          "bytes": 5370912,
+          "sha256": "626a32f7147af8a7e0a03bbb8b4fe8656a0f48188da435b7723af7dbe82f8b7c",
+          "format": "app",
+          "sourcePolicy": "mutable-pinned"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "m5stack-papermono",
+          "m5stack-c153-lite"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "应用镜像实验直启，缺 bootloader/partition，未执行验证。"
+      },
+      "storage": "remote-links-only",
+      "releaseChannel": "rc",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [
+        {
+          "firmwareId": "papermono-crosspoint-2-0-0rc",
+          "productIds": [
+            "m5stack-papermono",
+            "m5stack-c153-lite"
+          ],
+          "channel": "rc",
+          "format": "app",
+          "sourceType": "upstream-release",
+          "updateMode": "manifest-app",
+          "assetNamePattern": "^crosspoint-[0-9][A-Za-z0-9.+_-]*-papermono\\.bin$",
+          "nameTemplate": "CrossPoint Reader · {version}（实验直启）",
+          "basis": {
+            "url": "https://github.com/crosspoint-reader/crosspoint-reader/releases/tag/2.0.0rc",
+            "note": "上游 PaperMono 专用资产名；不匹配 x3/x4 等其他设备，也不推定 Paper/PaperS3 与 PaperMono 通用。"
+          },
+          "manifestUrl": "./firmware-plans/papermono-crosspoint-2-0-0rc.json",
+          "downloadUrl": "https://crosspointreader.com/api/rc/firmware?device=papermono"
+        }
+      ]
     }
   ]
 }

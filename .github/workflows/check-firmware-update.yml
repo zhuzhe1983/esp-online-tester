@@ -1,0 +1,84 @@
+name: Check firmware update
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Publish GitHub Pages after checking and saving catalog updates
+        type: boolean
+        default: true
+  workflow_call:
+    inputs:
+      ref:
+        description: Main commit to check; a concurrent main update causes a safe retry
+        type: string
+        default: ''
+      deploy:
+        type: boolean
+        default: false
+    outputs:
+      commit_sha:
+        description: Checked main commit, including any metadata-only bot commit
+        value: ${{ jobs.sync.outputs.commit_sha }}
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: firmware-catalog-update
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_sha: ${{ steps.save.outputs.commit_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || 'main' }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check release selection rules
+        run: node --test tools/platform-firmware-sync-test.mjs tools/platform-watchlist-test.mjs
+      - name: Sync device firmware metadata without downloading firmware
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node tools/sync-firmware-catalog.mjs
+      - name: Validate updated public JSON
+        run: |
+          python -m pip install -r tools/requirements-catalog.txt
+          python tools/validate-platform-catalog.py
+          node --test tools/platform-firmware-sync-test.mjs tools/platform-watchlist-test.mjs
+      - name: Save checked metadata to main
+        id: save
+        run: |
+          base_sha=$(git rev-parse HEAD)
+          remote_sha=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [ "$remote_sha" != "$base_sha" ]; then
+            echo 'main changed during the check; retry against its current commit. No force push or stale deployment.'
+            exit 1
+          fi
+          git add web/platform/catalog/firmwares.json web/platform/catalog/firmware-watchlist.json web/platform/catalog/firmware-release-snapshot.json web/platform/catalog/firmware-catalog-sync-report.json web/platform/firmware-plans/
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'chore(firmware): sync device release metadata'
+            git push origin HEAD:main
+          fi
+          echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Publish check summary
+        run: |
+          node --input-type=module - <<'JS'
+          import fs from 'node:fs';
+          const report=JSON.parse(fs.readFileSync('web/platform/catalog/firmware-catalog-sync-report.json','utf8'));
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,`Checked ${report.summary.watchEntries} watch entries / ${report.summary.deviceTargets} device targets. Latest recorded result: ${report.summary.updated} updated, ${report.summary.retained} retained. Firmware bodies downloaded: 0. Execution tests: 0.\n\nFull reasons: web/platform/catalog/firmware-catalog-sync-report.json\n`);
+          JS
+      - name: Publish GitHub Pages after a manual check
+        if: ${{ inputs.deploy }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # GITHUB_TOKEN bot pushes do not trigger another push workflow. Dispatch
+        # Pages explicitly; its reusable check runs with deploy:false, so no loop.
+        run: gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref main

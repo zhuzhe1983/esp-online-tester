@@ -7,6 +7,7 @@ import {createSceneView, createHumanButtonController} from './scene-view.js';
 import {installEmbedBridge} from './embed.js';
 import {createTransportUi, createKnowledgePanel, mountFirmwareUpdates} from './transport-ui.js';
 import {firmwareRunPolicy} from './firmware-policy.js';
+import {confirmFirmwareRun, buildRunIssueUrl} from './firmware-run-ui.js';
 import {manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
 import {mountDeviceSearch, mountAccessorySearch} from './device-search.js';
 import {encodeRecording, decodeRecording, validateRecording} from './recording.js';
@@ -127,10 +128,19 @@ function renderDownloadProgress() {
   if (fraction === null) bar.removeAttribute('value'); else bar.value = fraction;
 }
 async function downloadAndRun() {
+  if (!await confirmSelectedRun()) return;
   runAfterLoad = true;
   try { await loadSelected(); await runtime.start(); }
   finally { runAfterLoad = false; renderDownloadProgress(); }
 }
+function currentCatalogFirmware() {
+  if (!embedded && firmwareTab === 'local') return null;
+  if (!embedded && firmwareTab === 'library') return catalog.firmwares.find(item=>item.id===$('firmware-select')?.value);
+  let source=scene.firmware;
+  if (!embedded && firmwareTab === 'remote') { try { source=sourceFromInputs(); } catch { return null; } }
+  return catalog.firmwares.find(item=>item.productIds.includes(scene.productId)&&firmwareSourceMatches(item.source,source));
+}
+const confirmSelectedRun = () => confirmFirmwareRun({product:product(),firmware:currentCatalogFirmware()});
 function clearLocalFiles() { localSelectionToken++; localFiles=[];localSource=null;localFile=null;for(const id of ['firmware-file','firmware-folder'])if($(id))$(id).value='';text('local-file-name','merged .bin、应用 .bin 或 flasher_args.json');text('local-build-status','完整镜像可直接加载；应用镜像需要 flasher_args.json 和其中列出的文件。');renderTransport(); }
 async function selectLocalFiles(incoming, {replace=false}={}) {
   const token=++localSelectionToken, accepted=[...incoming].filter(file=>/\.bin$/i.test(file.name)||file.name==='flasher_args.json');
@@ -208,6 +218,7 @@ function renderTransport() {
   if ($('add-accessory')) $('add-accessory').disabled = configurationBusy || !$('accessory-select')?.value;
   if ($('clear-accessories')) $('clear-accessories').disabled = configurationBusy || !scene?.accessories.length;
   if ($('start-runtime')) {
+    $('start-runtime').hidden = !executable;
     $('start-runtime').disabled = busy || sessionBusy || !executable || status === 'running' || status === 'loading' || !(['ready', 'paused'].includes(status) || canLoad);
     $('start-runtime').textContent = status === 'paused' ? '▶ 继续' : status === 'loading' ? '加载中…' : '▶ 启动';
   }
@@ -215,24 +226,22 @@ function renderTransport() {
   if ($('reset-runtime')) $('reset-runtime').disabled = busy || sessionBusy || !['running', 'paused', 'ready'].includes(status);
   if ($('load-firmware')) $('load-firmware').disabled = busy || sessionBusy || status === 'loading' || !executable || (firmwareTab === 'library' && !catalog.firmwares.find(item => item.id === $('firmware-select')?.value)?.source);
   if ($('load-firmware')) {
-    $('load-firmware').hidden = false;
+    $('load-firmware').hidden = !executable;
     $('load-firmware').textContent = firmwareTab === 'local' ? '加载并运行' : '下载并运行';
     if (firmwareTab === 'library' && firmwareRunPolicy(product(), catalog.firmwares.find(item => item.id === $('firmware-select')?.value)).trial) $('load-firmware').textContent = '下载并尝试运行';
     if (firmwareTab === 'local' && !localSource) $('load-firmware').disabled = true;
   }
   const boundary = $('firmware-run-boundary');
   if (boundary) {
-    const selected = firmwareTab === 'library' && catalog?.firmwares.find(item => item.id === $('firmware-select')?.value);
-    const policy = firmwareRunPolicy(product(), selected);
+    const selected = currentCatalogFirmware();
     const unavailable = !executable || (selected && !selected.source);
-    boundary.hidden = !unavailable && !policy.trial;
+    boundary.hidden = !unavailable;
+    boundary.classList.toggle('unavailable',!executable);boundary.classList.toggle('notice',executable);
     boundary.replaceChildren();
     if (!executable) {
-      boundary.append(element('strong', '', `${product()?.name.replace(/^M5Stack /, '') || '此设备'} 模拟器尚未就绪`), document.createTextNode(`目前仅提供${product()?.model ? '外观与配置预览' : '资料与配置'}，暂不能下载并运行固件。找到固件版本不代表模拟器已支持运行。`));
+      boundary.append(element('strong', '', '尚未完成适配'));
     } else if (unavailable) {
       boundary.append(element('strong', '', '尚缺可启动镜像'), document.createTextNode('目前只有发布资料，或仅有 app.bin。补齐完整镜像或 flasher_args.json 所列文件即可尝试；无需先通过兼容性验证。'));
-    } else if (policy.trial) {
-      boundary.append(element('strong', '', '此固件尚未验证，可尝试运行'), document.createTextNode('将直接在当前板级模型执行。若无法启动或部分功能无响应，可查看串口日志；可尝试运行不代表全部功能兼容。'));
     }
     for (const id of ['load-firmware', 'start-runtime']) {
       if (!boundary.hidden) $(id)?.setAttribute('aria-describedby', boundary.id);
@@ -495,15 +504,20 @@ function defaultFirmware(next) {
 function allDefinitions() {
   const items = new Map([...catalog.accessories, ...localDefinitions, ...(scene.localAccessories || [])].map(item => [item.id, item])); return [...items.values()];
 }
-function renderAccessoryChoices() {
+function renderAccessoryChoices(preferred = {}) {
   const items = allDefinitions();
-  for (const [id, values, label] of [['accessory-brand',accessoryBrands(items),'全部品牌'],['accessory-interface',accessoryInterfaces(items),'全部接口']]) {
-    const select=$(id); if (!select) continue;
-    const previous=select.value;select.replaceChildren(new Option(label,''),...values.map(value=>new Option(value,value)));select.value=values.includes(previous)?previous:'';
-  }
+  const selectValue = (id, values, value) => {
+    const select=$(id); if (!select) return;
+    const previous=value ?? select.value;
+    select.replaceChildren(...values.map(value=>new Option(value,value)));
+    if (values.includes(previous)) select.value=previous;
+  };
+  selectValue('accessory-brand',accessoryBrands(items),preferred.brand);
+  const branded=filterAccessories(items,{brand:$('accessory-brand')?.value});
+  selectValue('accessory-interface',accessoryInterfaces(branded),preferred.connector);
   const selector = $('accessory-select');
   if (selector) {
-    const previous=selector.value,items=filterAccessories(allDefinitions(),{brand:$('accessory-brand')?.value,connector:$('accessory-interface')?.value});
+    const previous=preferred.id ?? selector.value,items=filterAccessories(branded,{connector:$('accessory-interface')?.value});
     selector.replaceChildren(...items.map(item=>new Option(item.name,item.id)));
     if (items.some(item=>item.id===previous)) selector.value=previous;
     if (!items.length) selector.append(new Option('没有符合条件的配件',''));
@@ -688,7 +702,7 @@ async function releaseHumanInputs() {
 function setupEvents() {
   const chooseProduct = async id => { clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, id)); await configure(next, {reflectSource: true}); };
   mountDeviceSearch({button:$('search-devices'),products:catalog.products,onSelect:id=>action(()=>chooseProduct(id)),onError:error=>toast(error.message,true)});
-  mountAccessorySearch({button:$('search-accessories'),getItems:allDefinitions,onSelect:id=>{const item=definition(id);if(!item)return;$('accessory-brand').value=accessoryBrand(item);$('accessory-interface').value=accessoryInterface(item);renderAccessoryChoices();$('accessory-select').value=id;$('add-accessory').focus();},onError:error=>toast(error.message,true)});
+  mountAccessorySearch({button:$('search-accessories'),getItems:allDefinitions,onSelect:id=>{const item=definition(id);if(!item)return;renderAccessoryChoices({brand:accessoryBrand(item),connector:accessoryInterface(item),id});$('add-accessory').focus();},onError:error=>toast(error.message,true)});
   bind('manufacturer-select', 'change', () => action(async () => { const choices = renderProductChoices($('manufacturer-select').value); if (choices.length) await chooseProduct(choices[0].id); }));
   bind('product-select', 'change', () => action(() => chooseProduct($('product-select').value)));
   document.querySelectorAll('[data-firmware-tab]').forEach(button => button.addEventListener('click', () => setFirmwareTab(button.dataset.firmwareTab)));
@@ -698,7 +712,18 @@ function setupEvents() {
   bind('clear-local-files', 'click', clearLocalFiles);
   bind('load-firmware', 'click', () => action(downloadAndRun));
   bind('clear-firmware-cache', 'click', () => action(async () => { await runtime.clearFirmwareCache(); toast('已清除当前浏览器的固件缓存。'); }));
-  bind('start-runtime', 'click', () => action(async () => { if (['ready', 'paused'].includes(status)) await runtime.start(); else await downloadAndRun(); }));
+  bind('start-runtime', 'click', () => action(async () => { if (['ready', 'paused'].includes(status)) { if (await confirmSelectedRun()) await runtime.start(); } else await downloadAndRun(); }));
+  bind('report-runtime-issue','click',async()=>{
+    try {
+      const state=await runtime.observe();let source=state.scene?.firmware,firmware=currentCatalogFirmware();
+      if(state.firmware){
+        if(state.firmware.source==='local'){source={local:true};firmware=null;}
+        else firmware=catalog.firmwares.find(item=>item.productIds.includes(state.scene.productId)&&firmwareSourceMatches(item.source,source));
+      }else if(!embedded){if(firmwareTab==='local')source={local:true};else try{source=sourceFromInputs();}catch{}}
+      const url=buildRunIssueUrl({product:state.product||product(),firmware,source,state});
+      window.open(url,'_blank','noopener,noreferrer');
+    } catch(error) { report(error); }
+  });
   bind('pause-runtime', 'click', () => action(async () => { await releaseHumanInputs(); await runtime.pause(); }));
   bind('reset-runtime', 'click', () => action(async () => { await releaseHumanInputs(); await runtime.reset(); }));
   for (const mode of ['2d', '3d']) bind(`view-${mode}`, 'click', () => action(async () => {

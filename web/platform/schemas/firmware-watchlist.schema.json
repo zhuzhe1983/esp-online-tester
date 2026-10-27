@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "firmware-watchlist.schema.json",
+  "title": "Explicit per-product firmware release mapping",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "categories",
+    "entries"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1"
+    },
+    "categories": {
+      "type": "array"
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "upstreamRepo",
+          "metadataUrl",
+          "releaseUrl",
+          "compatibility",
+          "assets",
+          "checkedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "releaseChannel": {
+            "enum": [
+              "stable",
+              "rc",
+              "prerelease"
+            ]
+          },
+          "releaseHistoryLimit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30
+          },
+          "catalogTargets": {
+            "type": "array",
+            "maxItems": 40,
+            "items": {
+              "$ref": "#/$defs/target"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "firmwareId",
+        "productIds",
+        "channel",
+        "format",
+        "sourceType",
+        "updateMode",
+        "assetNamePattern",
+        "nameTemplate",
+        "basis"
+      ],
+      "properties": {
+        "firmwareId": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9:-]{0,79}$"
+        },
+        "productIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "channel": {
+          "enum": [
+            "stable",
+            "rc",
+            "prerelease"
+          ]
+        },
+        "format": {
+          "enum": [
+            "merged",
+            "app",
+            "manifest"
+          ]
+        },
+        "sourceType": {
+          "enum": [
+            "upstream-release",
+            "manufacturer-distribution"
+          ]
+        },
+        "updateMode": {
+          "enum": [
+            "source",
+            "manifest-app"
+          ]
+        },
+        "assetNamePattern": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^\\^.*\\$$"
+        },
+        "nameTemplate": {
+          "type": "string",
+          "pattern": "\\{version\\}"
+        },
+        "manifestUrl": {
+          "type": "string",
+          "pattern": "^\\./firmware-plans/[a-z0-9-]+\\.json$"
+        },
+        "downloadUrl": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "basis": {
+          "type": "object",
+          "required": [
+            "url",
+            "note"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://"
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "app"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "updateMode": {
+                "const": "manifest-app"
+              }
+            },
+            "required": [
+              "manifestUrl"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "updateMode": {
+                "const": "manifest-app"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "format": {
+                "const": "app"
+              }
+            },
+            "required": [
+              "manifestUrl"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

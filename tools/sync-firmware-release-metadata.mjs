@@ -1,38 +1,52 @@
 #!/usr/bin/env node
-// Fetch ONLY public release metadata. No firmware/body asset download, no token output.
-import { readFile, writeFile } from 'node:fs/promises';
-import { execFileSync } from 'node:child_process';
-import {releaseRequest,publicRelease} from './firmware-release-source.mjs';
-import { validateWatchlist } from '../web/platform/watchlist.js';
-const root = new URL('../web/platform/catalog/', import.meta.url);
-const list = validateWatchlist(JSON.parse(await readFile(new URL('firmware-watchlist.json', root), 'utf8')));
-const output = new URL('firmware-release-snapshot.json', root);
-let previous = {entries: []}; try { previous = JSON.parse(await readFile(output, 'utf8')); } catch {}
-let token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
-if (!token && process.argv.includes('--use-gh-auth')) token = execFileSync('gh', ['auth', 'token'], {encoding:'utf8', stdio:['ignore','pipe','pipe']}).trim();
-const now = new Date().toISOString(), entries = [], metadataCache=new Map();
-for (const entry of list.entries) {
-  const saved = previous.entries?.find(item => item.id === entry.id && item.upstreamRepo === entry.upstreamRepo);
-  try {
-    const request=releaseRequest(entry,token);
-    let data=metadataCache.get(request.url);
-    if(!data){
-    const response = await fetch(request.url,{headers:request.headers,redirect:'error',signal:AbortSignal.timeout(20000)});
-    if (!response.ok) {
-      await response.body?.cancel();
-      const limit = [403,429].includes(response.status);
-      throw Object.assign(new Error(limit ? '发布源 API 查询限额已用尽；保留上次结果，稍后自动重试。' : response.status === 404 ? '此仓库暂未提供 latest release；保留已收录固件入口。' : `发布元信息 HTTP ${response.status}`), {status:response.status, retryAt:response.headers.get('x-ratelimit-reset')});
-    }
-    const reader = response.body.getReader(), chunks = []; let length = 0;
-    try { while (true) { const {done,value}=await reader.read(); if(done)break; length+=value.byteLength;if(length>request.maxBytes)throw Error('Release metadata exceeds limit');chunks.push(value); } }
-    finally { await reader.cancel(); }
-    data=JSON.parse(Buffer.concat(chunks).toString('utf8'));metadataCache.set(request.url,data);
-    }
-    entries.push({id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:new Date().toISOString(),sourceUrl:entry.metadataUrl,release:publicRelease(entry,data),error:null});
-  } catch(error) {
-    entries.push({id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:saved?.checkedAt || null,sourceUrl:entry.metadataUrl,release:saved?.release || null,
-      error:{status:error.status || null,message:error.status ? error.message : '发布元信息同步失败；保留上次结果。',attemptedAt:new Date().toISOString()}});
-  }
+// Public metadata only. Firmware bodies and publisher account data never persist.
+import {execFileSync,spawnSync} from 'node:child_process';
+import {pathToFileURL,fileURLToPath} from 'node:url';
+import {releaseRequest,publicReleases,releaseMatchesChannel} from './firmware-release-source.mjs';
+import {validateWatchlist} from '../web/platform/watchlist.js';
+const DAY=24*3600*1000;
+export function githubToken(args=process.argv) {
+  let token=process.env.GITHUB_TOKEN||process.env.GH_TOKEN;
+  if(!token&&args.includes('--use-gh-auth'))token=execFileSync('gh',['auth','token'],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();return token;
 }
-await writeFile(output, JSON.stringify({schemaVersion:'1',generatedAt:now,policy:'Public release metadata only; firmware binaries stay at upstream sources. No client GitHub API token.',entries},null,2)+'\n');
-console.log(`Release metadata: ${entries.filter(item=>!item.error).length}/${entries.length} updated; ${entries.filter(item=>item.error).length} retained/unavailable. No firmware downloaded.`);
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+export function compactReleaseHistory(entry,releases){
+  const targets=entry.catalogTargets||[];
+  if(!targets.length)return releases.filter(release=>releaseMatchesChannel(release,entry.releaseChannel)).slice(0,1);
+  const patterns=targets.map(target=>new RegExp(target.assetNamePattern));
+  return releases.map(release=>({...release,assetNames:release.assetNames||(release.assets||[]).map(asset=>asset.name),assets:(release.assets||[]).filter(asset=>patterns.some(pattern=>pattern.test(asset.name)))}));
+}
+
+export async function syncReleaseMetadata(list,{previous={entries:[]},token,fetchImpl=fetch,now=new Date().toISOString()}={}) {
+  validateWatchlist(list);const cache=new Map(),entries=[];
+  const metadata=async request=>{
+    const response=await fetchImpl(request.url,{headers:request.headers,redirect:'error',signal:AbortSignal.timeout(30000)});
+    if(!response.ok){await response.body?.cancel();throw Object.assign(Error([403,429].includes(response.status)?'发布源 API 查询受限；保留上次结果。':response.status===404?'发布源暂无公开 Release；保留已收录固件。':`发布元信息 HTTP ${response.status}`),{status:response.status});}
+    if(!response.body)throw Error('Metadata response has no stream');
+    const reader=response.body.getReader(),chunks=[];let length=0;
+    try{while(true){const{done,value}=await reader.read();if(done)break;length+=value.byteLength;if(length>request.maxBytes)throw Error('Release metadata exceeds limit');chunks.push(value);}}
+    finally{await reader.cancel();}return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+  };
+  for(const entry of list.entries){
+    const saved=previous.entries?.find(item=>item.id===entry.id&&item.upstreamRepo===entry.upstreamRepo);let result;
+    try{
+      const request=releaseRequest(entry,token);if(!cache.has(request.url))cache.set(request.url,metadata(request));
+      const releases=compactReleaseHistory(entry,publicReleases(entry,await cache.get(request.url)));const release=releases.find(value=>releaseMatchesChannel(value,entry.releaseChannel));
+      if(!release)throw Error('No published release for configured channel');
+      result={id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:now,sourceUrl:request.url,release,releases,error:null};
+      if(saved&&!saved.error&&same(saved.releases||[saved.release],releases)&&same(saved.release,release)&&Date.parse(now)-Date.parse(saved.checkedAt)<DAY)result={...result,checkedAt:saved.checkedAt};
+    }catch(error){
+      result={id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:saved?.checkedAt||null,sourceUrl:entry.metadataUrl,release:saved?.release||null,releases:saved?.releases||[],error:{status:error.status||null,message:error.status?error.message:'发布元信息同步失败；保留上次结果。',attemptedAt:now}};
+      if(saved?.error&&saved.error.status===result.error.status&&saved.error.message===result.error.message&&Date.parse(now)-Date.parse(saved.error.attemptedAt)<DAY)result.error=saved.error;
+    }
+    entries.push(result);
+  }
+  const generatedAt=same(entries,previous.entries)&&previous.generatedAt?previous.generatedAt:now;
+  return {schemaVersion:'1',generatedAt,policy:'Public release metadata only; firmware binaries stay at upstream sources. No client GitHub API token.',entries};
+}
+// Keep the former command as an alias: every CLI/Action updates both the
+// snapshot and device definitions through the same policy, never one alone.
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
+  const child=spawnSync(process.execPath,[fileURLToPath(new URL('./sync-firmware-catalog.mjs',import.meta.url)),...process.argv.slice(2)],{stdio:'inherit'});
+  process.exitCode=child.status??1;
+}

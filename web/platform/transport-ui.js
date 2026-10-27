@@ -252,19 +252,20 @@ export async function mountFirmwareUpdates(mount, {getProductId} = {}) {
   hints.setAttribute('role', 'group'); hints.setAttribute('aria-label', '固件来源与版本说明');
   const check = button('检查版本'), result = node('div', 'watch-result'); result.setAttribute('aria-live', 'polite');
   body.append(identity, hints, actions, result); mount.append(body); body.hidden = true;
-  let active = true, checkSequence = 0, checkController, selected = null, entry = null, list = null, listError = null;
+  let active = true, checkSequence = 0, checkController, selected = null, selectedProductId = null, entry = null, list = null, listError = null;
   try { list = await loadWatchlist(); } catch (error) { listError = error; }
   function show(firmware) {
     if (!active) return;
-    if (selected?.id === firmware?.id && selected?.productIds.includes(getProductId?.())) return;
-    selected = firmware || null; entry = null; checkSequence++; checkController?.abort(); result.replaceChildren(); actions.replaceChildren(); renderHintList(hints, []);
+    const productId=getProductId?.();
+    if (selected?.id === firmware?.id && selectedProductId===productId) return;
+    selected = firmware || null; selectedProductId=productId; entry = null; checkSequence++; checkController?.abort(); result.replaceChildren(); actions.replaceChildren(); renderHintList(hints, []);
     body.hidden = !firmware || !firmware.productIds.includes(getProductId?.()); if (body.hidden) return;
     entry = list?.entries.find(item => item.id === firmware.watchlistId) || null;
     const role = firmware.role === 'factory' ? '官方出厂' : firmware.role === 'third-party' ? '第三方项目' : '已收录项目';
     identity.textContent = `${firmwareRunPolicy(null, firmware).label} · ${role}${firmware.revision || entry?.version ? ` · ${firmware.revision || entry.version}` : ''}`;
     const facts = [firmware.publisher ? `发布者：${firmware.publisher}` : null, entry?.description, entry?.compatibility?.note, entry?.browserNote, entry?.checkedAt ? `元信息核对于 ${entry.checkedAt}` : null].filter(Boolean);
     const hintItems = facts.length ? [{id: 'source-detail', icon: 'cloud', label: '来源说明', title: '发布来源与访问条件', paragraphs: facts}] : [];
-    if (entry) hintItems.push({id: 'update-check', icon: 'clock', label: '版本核对', title: '发布版本与同步时间', paragraphs: ['发布信息由本站定时同步；检查版本读取本站快照，不直接调用 GitHub API，也不下载固件正文。运行所需固件可缓存在当前浏览器，服务器不保存；新版本不会自动替换已校验镜像。', '资源链接核对可能受上游 CORS 设置限制。版本快照过期或同步失败不代表固件链接已经失效。']});
+    if (entry) hintItems.push({id: 'update-check', icon: 'clock', label: '版本核对', title: '发布版本与同步时间', paragraphs: ['发布前按产品、渠道和镜像格式同步版本；缺少匹配文件或可信 hash 时保留原镜像。检查版本只核对当前设备的固件，读取本站快照，不直接调用 GitHub API，也不下载固件正文。运行所需固件可缓存在当前浏览器，服务器不保存。', '资源链接核对可能受上游 CORS 设置限制。版本快照过期或同步失败不代表固件链接已经失效。']});
     renderHintList(hints, hintItems);
     const releaseUrl = entry?.releaseUrl || firmware.sources?.find(source => /releases/.test(source.url))?.url || firmware.sources?.[0]?.url;
     if (releaseUrl) actions.append(link('上游发布页 ↗', releaseUrl));
@@ -276,13 +277,14 @@ export async function mountFirmwareUpdates(mount, {getProductId} = {}) {
     if (!entry) return; const requested = entry, token = ++checkSequence; checkController?.abort(); checkController = new AbortController();
     check.disabled = true; result.replaceChildren(node('p', 'helper', '正在读取发布信息…'));
     try {
-      const report = await checkWatchEntry(requested, {signal: checkController.signal}); if (!active || token !== checkSequence) return;
+      const report = await checkWatchEntry(requested, {signal: checkController.signal,firmwareId:selected?.id,productId:selectedProductId,currentVersion:selected?.revision||selected?.version,source:selected?.source}); if (!active || token !== checkSequence) return;
       result.replaceChildren(node('p', 'watch-version', report.latestVersion ? `${report.updateAvailable ? '发现新版本' : report.metadata?.source === 'site-snapshot' ? '已同步版本' : '上游版本'}：${report.latestVersion}` : '暂时无法确认最新版本'));
       if (report.metadata?.source === 'site-snapshot') {
         result.append(node('p', 'helper', report.metadata.checkedAt ? `发布信息同步：${report.metadata.checkedAt}` : '本站暂无成功同步记录。'));
         if (report.metadata.stale) result.append(node('p', 'helper', '当前为较早快照，最新发布信息请查看上游发布页。'));
         if (report.metadata.refreshError) result.append(node('p', 'helper', `上游同步暂未更新：${report.metadata.refreshError.message || String(report.metadata.refreshError)}。这不代表固件链接失效。`));
       }
+      if(report.metadata?.probeReason==='selected-artifact-ambiguous')result.append(node('p','helper','当前固件包含多份候选资源，暂未探测链接，避免把其他设备的资源状态当作本机结果。'));
       if (report.checkedAt) result.append(node('p', 'helper', `本次查询：${report.checkedAt}`));
       if (report.error) result.append(node('p', 'helper', report.error.message));
       for (const asset of report.assets || []) {

@@ -18,10 +18,21 @@ concurrency:
   group: pages
   cancel-in-progress: true
 jobs:
+  firmware-catalog:
+    permissions:
+      contents: write
+      actions: write
+    uses: ./.github/workflows/check-firmware-update.yml
+    with:
+      ref: ${{ github.sha }}
+      deploy: false
   build:
+    needs: firmware-catalog
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.firmware-catalog.outputs.commit_sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -32,10 +43,6 @@ jobs:
         run: |
           python -m pip install -r tools/requirements-catalog.txt
           python tools/validate-platform-catalog.py
-      - name: Sync public release metadata (no firmware binaries)
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: node tools/sync-firmware-release-metadata.mjs
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
@@ -62,7 +69,7 @@ jobs:
           cp -R skills/esp-product-onboarding web/platform/onboarding-skill
       - name: Version-stamp the script and module URLs (Pages caches for 10 minutes)
         run: |
-          v=${GITHUB_SHA::8}
+          v=$(git rev-parse --short=8 HEAD)
           sed -i "s|src=\"emu.js\"|src=\"emu.js?v=$v\"|; s|src=\"workbench.js\"|src=\"workbench.js?v=$v\"|; s|href=\"workbench.css\"|href=\"workbench.css?v=$v\"|" web/run.html
           sed -i "s|'wasm/worker.js'|'wasm/worker.js?v=$v'|; s|fetch('wasm/esp32sim.wasm')|fetch('wasm/esp32sim.wasm?v=$v')|" web/emu.js
           test "$(grep -o "v=$v" web/run.html | wc -l)" -eq 3
