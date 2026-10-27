@@ -615,3 +615,24 @@ fn external_s31_gpio_alias_and_explicit_pad_voltage_guest_readback() {
         eprintln!("S31 GPIO sample mode={mode} steps={} stop={:?} uart={:?}", run.steps, run.stop, String::from_utf8_lossy(&m.bus.uart0.tx_out));
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_PMU_POLICY_ELF to pmu-policy-probe.elf"]
+fn external_s31_pmu_policy_storage_command_and_active_power_guards() {
+    let path = std::env::var("S31_PMU_POLICY_ELF").expect("build firmware/s31-uart-probe and set S31_PMU_POLICY_ELF");
+    let elf = std::fs::read(path).expect("read S31_PMU_POLICY_ELF");
+    for mode in 0u32..4 {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap(); m.bus.load(0x2f070000, &mode.to_le_bytes(), 4).unwrap();
+        let run = m.run(2000);
+        if mode == 0 {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 PMU POLICY PASS\n");
+            assert_eq!(m.bus.power.policy.dbias_requests, 1); assert_eq!(m.bus.power.policy.readonly_write_attempts, 1);
+            assert_eq!(m.bus.power.policy.applied_clocks().1, [u32::MAX; 2]);
+        } else {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7))); assert!(m.bus.uart0.tx_out.is_empty());
+            let f = m.bus.first_fault.as_ref().unwrap(); let address = match mode { 1 => 0x20704000, 2 => 0x20704100, _ => 0x20704120 };
+            assert_eq!((f.address, f.reason), (address, emu_core::Fault::Prohibited));
+        }
+        eprintln!("S31 PMU policy mode={mode} steps={} stop={:?} updates={} dbias-requests={}", run.steps, run.stop, m.bus.power.policy.updates, m.bus.power.policy.dbias_requests);
+    }
+}

@@ -235,3 +235,16 @@ change `Drive::Unsupported`, override known GPIO output, or disable input gating
 Set `S31_GPIO_INPUT_ELF` to the generated ELF. The bringup example's repeated
 `--peripheral-pad=32:0` option is a development input, off by default; it does not
 identify the real INK4 Plus pin voltage or manufacture a product profile.
+
+`pmu-policy-probe.S` checks separate active/sleep policy banks, write-trigger
+readback, documented read-only bias fields and release of forced domain controls.
+It emits `S31 PMU POLICY PASS` only after guest readback succeeds. Three negative
+modes request active CPU powerdown, unsupported partial APB gating and forced TOP
+reset; each traps at the actual store. Bias initialization counts a request, not
+analog calibration completion. Set `S31_PMU_POLICY_ELF` to its generated ELF.
+
+`mmu-probe.S` now also enables `PMU_PSRAM_XPD` before accessing the explicitly
+supplied PSRAM backing. The bus checks this PHY power gate as well as the PSRAM
+clock for reads, writes and instruction fetches. Enabling power does not create
+or identify a memory chip. PHY gating preserves the caller's backing bytes;
+external RAM rail loss, decay and retention are not modeled.

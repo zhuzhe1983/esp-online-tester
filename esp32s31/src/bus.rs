@@ -216,7 +216,7 @@ impl S31Bus {
             return match self.pads.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if Cache::is_memory(address) {
-            if address >= crate::cache::PSRAM_VADDR && !self.clocks.psram_on() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
+            if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled()) { return self.fault(address, bytes, false, false, Fault::Prohibited); }
             if address < crate::cache::PSRAM_VADDR && !self.mspi.flash_accessible() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
             let mut value = [0; 4];
             for (i, byte) in value.iter_mut().take(bytes).enumerate() {
@@ -378,7 +378,7 @@ impl S31Bus {
             return match self.pads.write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if Cache::is_memory(address) {
-            if address >= crate::cache::PSRAM_VADDR && !self.clocks.psram_on() { return self.fault(address, bytes, true, false, Fault::Prohibited); }
+            if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled()) { return self.fault(address, bytes, true, false, Fault::Prohibited); }
             return match self.cache.write(address, value, bytes) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if Cache::is_mmio(address) {
@@ -446,7 +446,7 @@ impl Bus for S31Bus {
             let Some(address) = pc.checked_add(i as u32) else { return self.fault(pc, 4, false, true, Fault::Unmapped); };
             if let Some(src) = self.memory(address, 1) { data[i] = src[0]; }
             else if Cache::is_memory(address) {
-                if address >= crate::cache::PSRAM_VADDR && !self.clocks.psram_on() { return self.fault(pc, 4, false, true, Fault::Prohibited); }
+                if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled()) { return self.fault(pc, 4, false, true, Fault::Prohibited); }
                 if address < crate::cache::PSRAM_VADDR && !self.mspi.flash_accessible() { return self.fault(pc, 4, false, true, Fault::Prohibited); }
                 match self.cache.read_byte(address, true) {
                     Ok(v) => data[i] = v, Err(e) => return self.fault(pc, 4, false, true, e),
@@ -476,10 +476,13 @@ mod tests {
         b.write32(HP1 + 0x98, 1).unwrap(); assert_eq!(b.write32(HP1 + 0x28, 0x11), Err(Fault::Prohibited));
     }
     #[test]
-    fn psram_clock_gate_blocks_real_reads_writes_and_fetches_without_losing_backing_storage() {
+    fn psram_phy_power_and_clock_gate_real_access_without_losing_backing_storage() {
         use crate::cache::{PSRAM_MMU, PSRAM_VADDR};
         let mut b = S31Bus::new(); b.cache.set_psram_size(65536).unwrap();
-        b.write32(PSRAM_MMU + 0x37c, 0xc00).unwrap(); b.write32(PSRAM_VADDR, 0x00500013).unwrap();
+        b.write32(PSRAM_MMU + 0x37c, 0xc00).unwrap();
+        assert_eq!(b.read32(PSRAM_VADDR), Err(Fault::Prohibited));
+        assert_eq!(b.write32(PSRAM_VADDR, 0), Err(Fault::Prohibited)); assert_eq!(b.fetch(PSRAM_VADDR), Err(Fault::Prohibited));
+        b.write32(0x207041e8, 1 << 31).unwrap(); b.write32(PSRAM_VADDR, 0x00500013).unwrap();
         assert_eq!(b.fetch(PSRAM_VADDR), Ok([0x13, 0, 0x50, 0]));
         for clock in [0x180, 0x81, 0x183, 0x185] {
             b.write32(crate::clocks::BASE + 0x68, clock).unwrap();
@@ -490,6 +493,10 @@ mod tests {
         b.write32(crate::clocks::BASE + 0x68, 0x181).unwrap(); assert_eq!(b.read32(PSRAM_VADDR), Ok(0x00500013));
         assert_eq!(b.write32(crate::clocks::BASE + 0x68, 0x1a1), Err(Fault::Prohibited)); // No fabricated MPLL rate.
         assert_eq!(b.read32(crate::clocks::BASE + 0x68), Ok(0x181));
+        b.write32(0x207041e8, 0).unwrap();
+        assert_eq!(b.read32(PSRAM_VADDR), Err(Fault::Prohibited)); assert_eq!(b.fetch(PSRAM_VADDR), Err(Fault::Prohibited));
+        assert_eq!(b.write32(PSRAM_VADDR, 0), Err(Fault::Prohibited));
+        b.write32(0x207041e8, 1 << 31).unwrap(); assert_eq!(b.read32(PSRAM_VADDR), Ok(0x00500013));
     }
     #[test]
     fn lp_scratch_words_preserve_full_values_without_aliasing_other_registers() {
@@ -545,8 +552,11 @@ mod tests {
         }
         b.load(ROM_BASE, &[1, 2], 2).unwrap();
         assert_eq!(b.read16(ROM_BASE), Ok(0x0201)); assert_eq!(b.write8(ROM_BASE, 0), Err(Fault::Prohibited));
-        for address in [0, u32::MAX, 0x500c_a000] { assert_eq!(b.read32(address), Err(Fault::Unmapped)); }
+        for address in [0, u32::MAX] { assert_eq!(b.read32(address), Err(Fault::Unmapped)); }
         for address in [0x4000_0000, 0x4ff0_0000, 0x4fc0_0000] { assert_eq!(b.read32(address), Err(Fault::Prohibited)); } // POR MSPI AXI interface is closed.
+        assert_eq!(b.read32(0x500c_a000), Err(Fault::Prohibited)); // POR PSRAM PHY is powered off.
+        b.write32(0x207041e8, 1 << 31).unwrap();
+        assert_eq!(b.read32(0x500c_a000), Err(Fault::Unmapped)); // Power alone does not create a backing chip or map.
         assert!(b.check_load(SRAM_BASE, usize::MAX).is_err());
     }
     #[test]

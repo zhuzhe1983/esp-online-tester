@@ -4,6 +4,7 @@
 //! {pmu_reg,hp_alive_sys_reg,lp_analog_peri_reg}.h, soc/esp32s31/include/soc/reset_reasons.h,
 //! esp_hal_clock/esp32s31/include/hal/clk_tree_ll.h and esp_hal_pmu/esp32s31/include/hal/brownout_ll.h.
 use emu_core::Fault;
+use crate::pmu_policy::PmuPolicy;
 const ACTIVE_CK: u32 = 0x2070_401c;
 const IMMEDIATE_CK: u32 = 0x2070_40f4;
 const SLEEP_LP_CK: u32 = 0x2070_40d0;
@@ -16,13 +17,13 @@ pub enum ResetCause { Brownout } // reset_reasons.h: RESET_REASON_SYS_BROWN_OUT=
 const CPLL_LOW: u32 = 0x111;
 const CPLL_HIGH: u32 = (1 << 19) | (1 << 23) | (1 << 27);
 const MPLL_LOW: u32 = (1 << 3) | (1 << 7) | (1 << 11);
-pub struct Power { cpll: u32, sleep_lp: u32, active: u32, alive: u32, mpll_low: u32, fib: u32, bod1: u32, glitch: u32, pub reset_request: Option<ResetCause> }
+pub struct Power { pub policy: PmuPolicy, cpll: u32, sleep_lp: u32, active: u32, alive: u32, mpll_low: u32, fib: u32, bod1: u32, glitch: u32, pub reset_request: Option<ResetCause> }
 impl Default for Power {
-    fn default() -> Self { Self { cpll: 0, sleep_lp: 1 << 30, active: 0, alive: 0xfffe_0000, mpll_low: 0, fib: u32::MAX, bod1: 0, glitch: 0, reset_request: None } }
+    fn default() -> Self { Self { policy: PmuPolicy::default(), cpll: 0, sleep_lp: 1 << 30, active: 0, alive: 0xfffe_0000, mpll_low: 0, fib: u32::MAX, bod1: 0, glitch: 0, reset_request: None } }
 }
 
 impl Power {
-    pub fn is_mmio(address: u32) -> bool { matches!(address & !3, ACTIVE_CK | IMMEDIATE_CK | ALIVE_CK | SLEEP_LP_CK | HP_INT_ENA | HP_INT_CLR) || matches!((address & !3).wrapping_sub(BOD_BASE), 4 | 0x18 | 0x1c | 0x38 | 0x3c) }
+    pub fn is_mmio(address: u32) -> bool { PmuPolicy::is_mmio(address) || matches!(address & !3, ACTIVE_CK | IMMEDIATE_CK | ALIVE_CK | SLEEP_LP_CK | HP_INT_ENA | HP_INT_CLR) || matches!((address & !3).wrapping_sub(BOD_BASE), 4 | 0x18 | 0x1c | 0x38 | 0x3c) }
     /// Explicit software shutdown requests, not a measured oscillator state.
     pub fn bbpll_output_enabled(&self) -> bool { self.alive & (1 << 30) != 0 }
     pub fn fosc_enabled(&self) -> bool { self.sleep_lp & (1 << 30) != 0 }
@@ -37,11 +38,13 @@ impl Power {
         Ok(())
     }
     pub fn read(&self, address: u32) -> Result<u32, Fault> {
+        if PmuPolicy::is_mmio(address) { return self.policy.read(address); }
         match address { HP_INT_ENA | HP_INT_CLR => Ok(0), a if a == BOD_BASE + 0x38 || a == BOD_BASE + 0x3c => Ok(0), SLEEP_LP_CK => Ok(self.sleep_lp), ACTIVE_CK => Ok(self.active), ALIVE_CK => Ok(self.alive), IMMEDIATE_CK => Ok(0),
             a if a == BOD_BASE + 4 => Ok(self.bod1), a if a == BOD_BASE + 0x18 => Ok(self.glitch),
             a if a == BOD_BASE + 0x1c => Ok(self.fib), _ => Err(Fault::Unmapped) }
     }
     pub fn write(&mut self, address: u32, value: u32) -> Result<(), Fault> {
+        if PmuPolicy::is_mmio(address) { return self.policy.write(address, value); }
         match address {
             // Reset-disabled PMU sleep and BOD mode0 IRQ cleanup. There are no sleep
             // transitions or mode0 comparator in this subset; enabling either fails.
@@ -74,8 +77,8 @@ impl Power {
                 self.alive = value;
             }
             ACTIVE_CK => {
-                if value & !0x4400_0000 != 0 { return Err(Fault::Prohibited); }
-                self.active = value;
+                // Store documented mode policy; this does not replace immediate PLL tie controls.
+                self.active = value & 0x7ff8_0000;
             }
             a if a == BOD_BASE + 4 => self.bod1 = value & (1 << 31),
             a if a == BOD_BASE + 0x18 => self.glitch = value & 0xfc00_0000,
@@ -135,8 +138,8 @@ mod tests {
         p.write(ACTIVE_CK, 0).unwrap(); assert!(p.mpll_disabled());
         assert_eq!(p.write(IMMEDIATE_CK, 1 << 30), Err(Fault::Prohibited));
         assert_eq!(p.write(ALIVE_CK, 0), Err(Fault::Prohibited));
-        assert_eq!(p.write(ACTIVE_CK, 1 << 27), Err(Fault::Prohibited));
+        p.write(ACTIVE_CK, 1 << 27).unwrap(); assert_eq!(p.read(ACTIVE_CK), Ok(1 << 27));
         assert!(p.mpll_disabled()); assert_eq!(p.read(ALIVE_CK), Ok(0x7ffe_0000));
-        assert_eq!(p.read(IMMEDIATE_CK + 4), Err(Fault::Unmapped));
+        assert_eq!(p.read(IMMEDIATE_CK + 4), Ok(0)); // PMU update commands are WT.
     }
 }

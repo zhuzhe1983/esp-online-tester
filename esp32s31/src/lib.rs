@@ -13,6 +13,7 @@ pub mod mspi;
 pub mod sha;
 pub mod analog;
 pub mod power;
+mod pmu_policy;
 pub mod pms;
 pub mod reset;
 pub mod mwdt;

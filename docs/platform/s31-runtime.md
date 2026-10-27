@@ -1,9 +1,11 @@
 # ESP32-S31 bring-up
 
-Status on 2026-10-27: Metalio INK4 Plus remains **unavailable** in this platform. The
-first executable baseline uses Espressif's separate precompiled emulator, not this
-repository's core. It reaches the official application's startup and then fails;
-neither a working product display nor complete board support has been established.
+Status on 2026-10-28: Metalio INK4 Plus remains **unavailable** in this platform.
+The private S31 core now executes the original ROM, bootloader and official
+application entry with explicitly declared development inputs. It currently stops
+during application PMU/clock initialization. No product framebuffer or complete
+board support has been established. The earlier separate Espressif emulator
+baseline below is retained for comparison, not presented as this core's result.
 
 ## Official emulator baseline
 
@@ -1134,3 +1136,46 @@ instruction/cycle checks. These small noisy differences are not an S31 speed
 claim. [Same-source samples](evidence/s31-bringup/gpio-input-same-source-perf.json)
 and [qualified cross-branch main guard](evidence/s31-bringup/gpio-input-perf.json)
 remain separate.
+
+### PMU policy banks and PSRAM PHY power
+
+The private core stores the documented active/modem/sleep policy banks separately,
+with header-defined writable fields and reset values. Immediate clock updates
+apply only the implemented active all-on policy; partial peripheral gating,
+active CPU powerdown, forced reset/isolation and sleep transitions remain
+explicitly unsupported. Releasing force-on/no-reset/no-isolate controls is
+supported. Requested external-LDO controls have register readback; they do not
+establish an analog rail voltage or a completed calibration.
+
+The fixed IDF header calls the active regulator's two bias-voltage fields
+read-only, while the same revision's LL writes them. This implementation retains
+the documented RO reset values and records those attempted writes. DBIAS_INIT
+records a request and reads zero as a write-trigger; there is no invented
+calibration-done result. The discrepancy remains in the evidence, rather than
+being silently resolved in favor of the tested firmware.
+
+`PMU_PSRAM_XPD` is identified by the fixed `ldo_ll_enable(0)` implementation as
+MPLL PHY power enable. It now gates actual PSRAM reads, writes and instruction
+fetches together with the existing clock control. Power alone does not supply a
+chip identity, backing memory or MMU mapping. The source MMU fixture explicitly
+enables it; power-off/clock-off negatives reject real memory access and preserve
+backing bytes. This models PHY access gating, not external RAM power-loss decay.
+
+The same unmodified full Plus2.0.68 image, with the previously declared development
+inputs, passes the mode-policy/force-release/LDO initialization and reaches the
+next unsupported immediate MPLL control at **0x207040f4**. It stops after
+**30,183,046 instructions**, application SRAM PC **0x2f001ef2**. The real application
+entry is still observed once at cycle30,065,117. This has not reached product
+initialization or a framebuffer; INK4 Plus remains unavailable. No firmware/ROM
+patch, direct application launch or substituted fixture is used. See the
+[PMU semantics and checks](evidence/s31-bringup/pmu-init.json) and
+[retained official-image progression](evidence/s31-bringup/pmu-init-plus-2.0.68.json).
+
+PMU-stage validation passes 1,434 workspace Rust tests, all 70 S31 unit tests and
+27 source/ROM fixtures, both strict Clippy targets and all local CI command groups.
+The two performance receipts preserve exact UART/instruction/cycle equality.
+The same-production-source five-pair medians changed S3 -0.464%, C3 +1.208%, C6
++0.609%; these small noisy deltas do not establish S31 execution speed. All 372
+tracked Rust/manifest/lock files in the production workspace members match the
+independently built fixed-source reference. The separate main84 comparison remains
+a qualified cross-branch guard. No UI, product status or goldens changed.
