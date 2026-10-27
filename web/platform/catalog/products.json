@@ -4065,19 +4065,36 @@
       "summary": "集成 SEN55、SCD40 与墨水屏的空气质量设备；保留 v1.1 的硬件身份与针脚资料。",
       "knowledgeUrl": "./knowledge/m5stack-k131-v11.json",
       "runtime": {
-        "board": null,
+        "board": "airquality-v11",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": {
         "width": 200,
         "height": 200,
-        "driver": "GDEY0154D67",
-        "technology": "epaper",
+        "type": "E-Paper",
+        "controller": "SSD1681",
         "touch": false
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "button-a",
+          "name": "按键 A",
+          "type": "button",
+          "gpio": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "button-b",
+          "name": "按键 B",
+          "type": "button",
+          "gpio": 8,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        }
+      ],
       "interfaces": [
         {
           "id": "port-a",
@@ -4125,11 +4142,13 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "官方 v0.2.0 已在独立 v1.1 板型通过真实 ROM/WASM 启动、电子纸和 A/B 操作；其他固件仍可尝试，未保证整机兼容。",
+        "SCD40/SEN55 为数字协议模型，默认固定虚拟样本：420 ppm、25°C、50% RH、PM1/2.5/4/10=5/7/9/10 μg/m³、VOC=100、NOx=1；不代表真实空气读数。",
+        "RTC、电池 ADC、蜂鸣器、外部 Grove、供电锁存/睡眠和联网未完成；日期 2000-00-00、电压 0 V 等客体结果保留，不伪装为实测。",
+        "Stamp-S3A 的 G21 RGB / G38 电源开关尚未模拟；v1.1 保留独立板型和硬件身份。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
         "Manufacturer CAD contains one mounting clip. Three additional instances reuse its exact triangles with photo-inferred rigid assembly to match the four clips visible on the official product; positions are estimated +/-0.4mm, not independently verified assembly instructions.",
         "Dimension checks exclude the optional lug protrusion for body measurements; overall source geometry remains separately visible.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
         "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",

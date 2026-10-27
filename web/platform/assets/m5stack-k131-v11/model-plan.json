@@ -248,16 +248,55 @@
         27.6
       ],
       "positionMm": [
-        8.5,
-        15,
+        9,
+        12,
         13.3
       ],
       "rotation": [
         0,
         0,
         0
-      ]
-    }
+      ],
+      "basis": "V1.1 front photograph body registration and native CAD window; corrected previous +3mm Y offset. Placement +/-0.6mm, not a measured display stack."
+    },
+    "buttons": [
+      {
+        "id": "button-a",
+        "shape": "rectangle",
+        "sizeMm": [
+          8.5,
+          4.5
+        ],
+        "positionMm": [
+          -13.3,
+          22,
+          13.31
+        ],
+        "basis": "V1.1 front/back photograph and native CAD flexure estimate +/-0.6mm; upper A/G0, lower B/G8, no new plastic.",
+        "sourceIds": [
+          "product-photo-0a38a2ee06",
+          "product-photo-0f6ad76add"
+        ]
+      },
+      {
+        "id": "button-b",
+        "shape": "rectangle",
+        "sizeMm": [
+          8.5,
+          4.5
+        ],
+        "positionMm": [
+          -13.3,
+          16,
+          13.31
+        ],
+        "basis": "V1.1 front/back photograph and native CAD flexure estimate +/-0.6mm; upper A/G0, lower B/G8, no new plastic.",
+        "sourceIds": [
+          "product-photo-0a38a2ee06",
+          "product-photo-0f6ad76add"
+        ]
+      }
+    ]
   },
   "derivedParts": [
     {
@@ -357,11 +396,11 @@
   "limitations": [
     "Manufacturer CAD contains one mounting clip. Three additional instances reuse its exact triangles with photo-inferred rigid assembly to match the four clips visible on the official product; positions are estimated +/-0.4mm, not independently verified assembly instructions.",
     "Dimension checks exclude the optional lug protrusion for body measurements; overall source geometry remains separately visible.",
-    "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
     "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
     "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
     "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
-    "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。"
+    "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。",
+    "Digital runtime support is separately scoped in the product catalog; geometry does not establish full firmware compatibility."
   ],
   "display": {
     "width": 200,
@@ -373,15 +412,32 @@
   "catalog": {
     "chip": "esp32s3",
     "flashMb": 8,
-    "psramMb": null,
+    "psramMb": 0,
     "display": {
       "width": 200,
       "height": 200,
-      "driver": "GDEY0154D67",
-      "technology": "epaper",
+      "type": "E-Paper",
+      "controller": "SSD1681",
       "touch": false
     },
-    "controls": [],
+    "controls": [
+      {
+        "id": "button-a",
+        "name": "按键 A",
+        "type": "button",
+        "gpio": 0,
+        "activeLow": true,
+        "defaultKeyCode": "KeyA"
+      },
+      {
+        "id": "button-b",
+        "name": "按键 B",
+        "type": "button",
+        "gpio": 8,
+        "activeLow": true,
+        "defaultKeyCode": "KeyB"
+      }
+    ],
     "interfaces": [
       {
         "id": "port-a",

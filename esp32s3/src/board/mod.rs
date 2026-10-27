@@ -53,6 +53,7 @@ pub use waveshare_lcd4b::*;
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
         "airquality" | "m5stack-k131" => Some(Box::new(airquality::AirQuality::new())),
+        "airquality-v11" | "m5stack-k131-v11" => Some(Box::new(airquality::AirQuality::v11())),
         "atech14" | "atech" => Some(Box::new(Atech14::new())),
         "none" | "bare" => Some(Box::new(NoBoard)),
         "atoms3r" | "m5stack-atoms3r" => Some(Box::new(AtomS3R::new())),
