@@ -56,6 +56,7 @@ export function createManufacturerModel(product, screenTexture) {
       }
       const mesh=new THREE.Mesh(geometry(regular),standard);mesh.name=part.name;mesh.userData.inputOccluder=true;group.add(mesh);parts[part.name]=mesh;
       if(part.role==='shell'||part.name==='shell'||(!part.role&&/case|shell|housing/i.test(part.name)))shells.push(mesh);
+      if(Number.isInteger(part.ledIndex)&&part.ledIndex>=0&&part.ledIndex<256){mesh.userData.ledIndex=part.ledIndex;mesh.userData.unlitColor=part.color || '#cdd0c8';(group.userData.rgbLedMeshes ||= [])[part.ledIndex]=mesh;}
       if(part.encoderId){mesh.userData.encoder=part.encoderId;}
       if(part.controlId){mesh.userData.control=part.controlId;buttons.push(mesh);}
       // Paper is opaque where the alpha mask exists: write depth so a later

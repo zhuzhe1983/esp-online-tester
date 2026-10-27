@@ -112,7 +112,8 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     if (notify) publishOrientation(false); if (accessoryCount) frameCamera(); draw(); return getOrientation();
   }
   let parts = {}, connectors = {}, shellMeshes = [], customizedAppearance = false, appearanceDefaults = DEFAULT_STOPWATCH_APPEARANCE, appearance = normalizeShellAppearance(null), accessoryDefinitions = [];
-  let rgbLedMeshes = [], rgbValues = [];
+  let rgbLedMeshes = [], rgbValues = [], accessoryOutputs = [];
+  function updateAccessoryOutputs(values) {accessoryOutputs=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryOutputs.find(item=>child.name===`accessory:${item.accessoryId}`);applyRgbLedValues(child.userData.rgbLedMeshes||[],state?.leds);}draw();}
   function updateLeds(values) { rgbValues = values || []; applyRgbLedValues(rgbLedMeshes, rgbValues); draw(); }
   const halo = createSurfaceHalo();
   try {
@@ -220,15 +221,15 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
         child.traverse(object => { object.geometry?.dispose(); object.material?.dispose(); }); accessoryGroup.remove(child);
       }
       groveOccupied = false;
-      for (const {definition, accessory} of [...loadedAccessories].sort((a,b)=>Number(!!b.definition.physicalButtonSupported)-Number(!!a.definition.physicalButtonSupported))) {
+      for (const {definition, accessory} of [...loadedAccessories].sort((a,b)=>Number(!!b.definition.physicalSupported)-Number(!!a.definition.physicalSupported))) {
         const connectorMatches = definition.connector?.type === 'HY2.0-4P' && (!definition.wiring || ['logical','visual'].includes(definition.wiring.mode) || definition.wiring.connectorId === 'grove' || definition.wiring.interfaceId === 'grove');
         if (connectors.grove && connectorMatches && definition.connected !== false && !groveOccupied) {
           const cable = createGroveCable(connectors.grove, accessory.connector, group);
-          if (cable) { accessoryGroup.add(cable.group); groveOccupied = true; accessory.group.userData.connection = definition.physicalButtonSupported ? 'grove-gpio-u027' : 'grove-visual-only'; }
+          if (cable) { accessoryGroup.add(cable.group); groveOccupied = true; accessory.group.userData.connection = definition.physicalSupported ? 'grove-physical' : 'grove-visual-only'; }
           else accessory.group.userData.connection = 'unverified-connector-preview';
         } else accessory.group.userData.connection = 'unconnected-preview';
       }
-      frameCamera(); draw();
+      updateAccessoryOutputs(accessoryOutputs);frameCamera(); draw();
     };
     for (let i = 0; i < accessoryCount; i++) {
       const definition = accessories[i], accessory = createIllustrativeAccessory(definition, i); accessoryGroup.add(accessory.group);
@@ -345,7 +346,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   window.addEventListener('blur', releaseInputs);
   function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateAccessoryOutputs, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
     dispose() { disposed = true; releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup(); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }

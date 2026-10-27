@@ -80,7 +80,7 @@ export function validateRecording(recording, {scene} = {}) {
       const key=`accessory:${event.accessoryId}:button`;
       if(event.type==='accessory-button') {
         keys(event,['at','type','accessoryId','id','pressed'],path);
-        if(event.id!=='button'||typeof event.pressed!=='boolean')add('RECORDING_ACCESSORY',path,'Invalid accessory button input.');
+        if(recording.scene?.accessories?.find(item=>item.id===event.accessoryId)?.catalogId!=='m5stack-unit-button-u027'||event.id!=='button'||typeof event.pressed!=='boolean')add('RECORDING_ACCESSORY',path,'Invalid accessory button input.');
         if(event.pressed&&!connected.has(event.accessoryId))add('RECORDING_ACCESSORY',path,'A disconnected accessory cannot be pressed.');
         if(event.pressed)held.add(key);else held.delete(key);
       } else {

@@ -1,4 +1,4 @@
-import {unitButtonRoute} from './accessory-routing.js';
+import {physicalAccessoryRoute} from './accessory-routing.js';
 import {isPressControl} from './control-input.js';
 // Static catalog and portable scene contract. No application server is required.
 import {isShellFinish} from './appearance.js';
@@ -153,7 +153,7 @@ export function validateScene(scene, catalog) {
   }
   if (!Array.isArray(scene.accessories) || scene.accessories.length > 32) errors.push(issue('ACCESSORIES', '/accessories', 'At most 32 accessory instances are allowed.'));
   else {
-    const ids = new Set(), usedPins = new Set();
+    const ids = new Set(), usedPins = new Set(), usedPorts = new Set();
     for (const [index, accessory] of scene.accessories.entries()) {
       const path = `/accessories/${index}`;
       if (!record(accessory)) { errors.push(issue('ACCESSORY', path, 'Accessory must be an object.')); continue; }
@@ -174,10 +174,10 @@ export function validateScene(scene, catalog) {
       } else if (wiring.mode === 'visual') {
         if (Object.keys(wiring).some(key => key !== 'mode')) errors.push(issue('VISUAL_WIRING', `${path}/wiring`, 'Visual placement does not declare electrical routing.'));
         warnings.push(issue('VISUAL_ACCESSORY', `${path}/wiring`, 'The accessory is shown in 3D; no electrical or peripheral behavior is connected.'));
-      } else if (wiring.mode === 'physical' && (wiring.interfaceId !== undefined || definition?.model.id === 'gpio-button-u027')) {
-        const route=unitButtonRoute(product,accessory,definition);
-        if(Object.keys(wiring).some(key=>!['mode','interfaceId'].includes(key)) || !route) errors.push(issue('ACCESSORY_ROUTE',`${path}/wiring`,'Unit Button currently supports only StopWatch Port A, with interfaceId grove.'));
-        if(route){if(usedPins.has(route.pin))errors.push(issue('PIN_CONFLICT',`${path}/wiring`,'A physical GPIO is assigned more than once.'));usedPins.add(route.pin);}
+      } else if (wiring.mode === 'physical' && (wiring.interfaceId !== undefined || ['gpio-button-u027','sk6812-u003'].includes(definition?.model.id))) {
+        const route=physicalAccessoryRoute(product,accessory,definition);
+        if(Object.keys(wiring).some(key=>!['mode','interfaceId'].includes(key)) || !route) errors.push(issue('ACCESSORY_ROUTE',`${path}/wiring`,'This physical unit route requires the audited StopWatch Port A and interfaceId grove.'));
+        if(route){if(usedPorts.has(route.port))errors.push(issue('PIN_CONFLICT',`${path}/wiring`,'The physical connector is already occupied.'));usedPorts.add(route.port);if(usedPins.has(route.pin))errors.push(issue('PIN_CONFLICT',`${path}/wiring`,'A physical GPIO is assigned more than once.'));usedPins.add(route.pin);}
       } else if (wiring.mode === 'physical') {
         const connector = product?.interfaces.find(item => item.id === wiring.connectorId && item.external === true);
         if (!connector) errors.push(issue('CONNECTOR', `${path}/wiring/connectorId`, 'Connector is not in this product’s verified pin map.'));

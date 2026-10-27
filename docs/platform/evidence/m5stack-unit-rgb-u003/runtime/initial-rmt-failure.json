@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-27T08:51:07Z",
+  "status": "failed-retained",
+  "command": "node tools/probe-unit-rgb.mjs --build output/unit-rgb-build",
+  "baseRmtSource": "9d072179:esp-periph/src/rmt.rs",
+  "symptom": "Guest U003_BOOT_READY and RMT G10 TX logs arrived, all three RGB values stayed [0,0,0]; 90s assertion timed out. Reproduced once with captured output.",
+  "actualOutput": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ]
+  ],
+  "expectedOutput": [
+    [
+      255,
+      0,
+      0
+    ],
+    [
+      0,
+      128,
+      0
+    ],
+    [
+      0,
+      0,
+      64
+    ]
+  ],
+  "cause": "ws2812_bit high>low decodes nonzero 600/600ns SK6812 one as zero.",
+  "fixtureSha256": "68eb13ace4b61f6a16fa6401d8c7b6b2f4dc90238e9603d3bb1b2a2a32fb629a",
+  "correction": "Nonzero high>=low ratio policy; source-backed SK6812 and both existing NeoPixel pulse styles explicitly tested. Absolute timing validation remains outside RMT decoder scope.",
+  "limitations": "Original failed-run WASM hash was not preserved. No raw private stack paths are retained."
+}

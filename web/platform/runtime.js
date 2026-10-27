@@ -1,4 +1,4 @@
-import {routedUnitButtons} from './accessory-routing.js';
+import {routedAccessories} from './accessory-routing.js';
 import {MAX_FIRMWARE_FILE_BYTES as MAX_FILE, MAX_FIRMWARE_BUNDLE_BYTES as MAX_TOTAL} from './firmware-limits.js';
 import {createFat32Image,validateSdImage,MAX_SD_BYTES} from './sd-card-image.js';
 import {createSdCardStorage} from './sd-card-storage.js';
@@ -163,15 +163,15 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   const emptyStorage = () => ({status:'unloaded', scope:null, backend:null, restored:false, pristine:true, revision:0, epoch:0, lastSavedAt:null, changedPages:0, error:null});
   const emptySd=()=>({supported:false,present:false,bytes:0,format:null,status:'unloaded',backend:null,restored:false,pristine:true,changedPages:0,error:null});
   let sdCard=emptySd(),sdSession=null,leds=[];
-  let accessoryInputs = [];
-  const resetAccessoryInputs=()=>{accessoryInputs=routedUnitButtons(scene,product,catalog).map(route=>({...route,connected:true,pressed:false}));};
+  let accessoryInputs = [], accessoryOutputs = [];
+  const resetAccessoryInputs=()=>{accessoryInputs=routedAccessories(scene,product,catalog).map(route=>({...route,connected:true,...(route.control?{pressed:false}:{})}));accessoryOutputs=accessoryInputs.filter(route=>route.output).map(({accessoryId,model,port})=>({accessoryId,model,port,leds:[[0,0,0],[0,0,0],[0,0,0]]}));};
   let storage = emptyStorage(), storageSession = null, storageSequence = 0;
   let booted = false, inputSequence = 0, loadCancelled = false, progressGeneration = 0, disposing = false;
   const imuModel = () => ({stopwatch:'bmi270-register-subset',atoms3:'mpu6886-register-subset',atoms3r:'bmi270-register-subset'}[product?.runtime?.board] || null);
   const defaultImu = () => ({enabled: true, source: product?.runtime?.board === 'stopwatch' ? 'scene' : 'agent', ...orientationSample([0,0,0,1]), delivery: 'configured', guestTime: null});
   let imu = defaultImu(), imuPreviousAt = null, imuGeneration = 0;
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
-  const snapshot = () => ({ version: API_VERSION, status, scene: clone(scene), accessoryInputs: clone(accessoryInputs), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), sdCard:clone(sdCard),leds:clone(leds), imu: imuModel() ? clone(imu) : null, frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
+  const snapshot = () => ({ version: API_VERSION, status, scene: clone(scene), accessoryInputs: clone(accessoryInputs), accessoryOutputs: clone(accessoryOutputs), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), sdCard:clone(sdCard),leds:clone(leds), imu: imuModel() ? clone(imu) : null, frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
   const emit = event => { for (const listener of listeners) { try { listener(event); } catch (e) { console.error('ESP tester event handler:', e); } } };
   const loadReporter = (loadId, signal) => {
     let fileIndex = 0;
@@ -218,6 +218,13 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       else if (text.t === 'emu') appendSerial('emulator', `${text.msg}\n`);
       else if (text.t === 'stat') { stats = { ...stats, ...text }; emit({ type: 'stats', stats: clone(stats) }); }
       else if (text.t === 'ring') {leds=clone(text.leds);emit({type:'leds',leds:clone(leds)});}
+      else if (text.t === 'grid') {
+        const route=accessoryInputs.find(item=>item.output===text.id);
+        if(route && Array.isArray(text.leds) && text.leds.length===3 && text.leds.every(rgb=>Array.isArray(rgb)&&rgb.length===3&&rgb.every(v=>Number.isInteger(v)&&v>=0&&v<=255))) {
+          accessoryOutputs=accessoryOutputs.map(item=>item.accessoryId===route.accessoryId?{...item,leds:clone(text.leds)}:item);
+          emit({type:'accessory-outputs',accessoryOutputs:clone(accessoryOutputs)});
+        }
+      }
       else if (text.t === 'board') emit({ type: 'board', board: text });
     }
     if (message.bin !== undefined) {
@@ -515,7 +522,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     requireValue(receipt.ok && Number.isFinite(receipt.time), 'IMU_UNSUPPORTED', 'The loaded emulator does not support this IMU input.');
     imu.delivery = 'register-state'; imu.guestTime = receipt.time;
   };
-  const accessoryMessage=route=>({t:'accessory-button',model:route.model,port:route.port,connected:route.connected?1:0,pressed:route.pressed?1:0});
+  const accessoryMessage=route=>({t:route.control?'accessory-button':'accessory-connection',model:route.model,port:route.port,connected:route.connected?1:0,...(route.control?{pressed:route.pressed?1:0}:{})});
   const sendAccessory=async route=>{const inputId=++inputSequence;return ask(`input:${inputId}`,{op:'text',inputId,data:JSON.stringify(accessoryMessage(route))});};
   const start = async () => {
     requireValue(loaded && ['ready', 'paused', 'running'].includes(status), 'NOT_READY', 'Load firmware before starting the emulator.');
@@ -544,12 +551,12 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       const route=accessoryInputs.find(item=>item.accessoryId===event.accessoryId);
       requireValue(route,'ACCESSORY_ROUTE_UNSUPPORTED','This accessory has no supported physical route on the current product.');
       if(event.type==='accessory-button') {
-        requireValue(event.id==='button' && typeof event.pressed==='boolean','INVALID_INPUT','Unit Button requires id button and a boolean pressed state.');
+        requireValue(route.control==='button' && event.id==='button' && typeof event.pressed==='boolean','INVALID_INPUT','Unit Button requires id button and a boolean pressed state.');
         requireValue(route.connected || event.pressed===false,'ACCESSORY_DISCONNECTED','Connect this accessory before pressing it.');
         accessoryUpdate={...route,pressed:route.connected && event.pressed};
       } else {
         requireValue(typeof event.connected==='boolean','INVALID_INPUT','Connection state must be boolean.');
-        accessoryUpdate={...route,connected:event.connected,pressed:false};
+        accessoryUpdate={...route,connected:event.connected,...(route.control?{pressed:false}:{})};
       }
       message=accessoryMessage(accessoryUpdate);
     } else if (event.type === 'matrix-key') {
@@ -620,7 +627,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
         firmware: { manifest: true, mergedImage: true, localFile: true, localSegments: true, localBuild: true, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true },
-        input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin})=>({accessoryId,model,port,pin,controls:['button']})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv'].includes(product?.runtime?.board)?{rows:4,columns:14,model:product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: ['usb', 'uart0', 'uart1'] },
+        input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin,control})=>({accessoryId,model,port,pin,controls:control?[control]:[]})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv'].includes(product?.runtime?.board)?{rows:4,columns:14,model:product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: ['usb', 'uart0', 'uart1'] },
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { mode: 'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },
         imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: product?.runtime?.board === 'stopwatch', orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: 'host-input', physicalMountingVerified: false },

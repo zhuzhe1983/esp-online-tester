@@ -1,6 +1,6 @@
 # M5Stack Unit RGB · U003 模型与资料验收
 
-包含三个 SK6812 RGB LED 的灯光模块，可用串行数据控制。 本次入库提供可配置外观和有来源的接线资料；模块的 GPIO、ADC 或 SK6812 行为尚未实现。
+包含三个 SK6812 RGB LED 的灯光模块，可用串行数据控制。 现已支持 StopWatch Port A 上的三颗灯 RMT 输出与供电门控，详见 [U003 行为范围](../unit-rgb-runtime.md)。
 
 - 厂家结构：[固定提交的 STL](https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U003_Unit_RGB/Structures/Unit_RGB.stl)，提交 `e29c139cbc7c80b5ccc5557e5ab8025a7a19a109`。
 - 产品文档：https://docs.m5stack.com/en/unit/Unit_RGB。
@@ -18,7 +18,7 @@ Keep already assembled CAD components [3, 4, 0]; rigid center translation and or
 | shell-height | 32.0 | 通过 |
 | shell-depth | 8.0 | 通过 |
 
-背面纸贴使用独立薄面，透明遮罩只保留实际印刷纸；塑料、安装孔、螺钉与 M5 浮雕没有烘焙进纸贴。原厂色、金色和紫色半透明均已截图检查，M5 浮雕是原厂网格，随壳体变化。Angle 旋钮为照片与尺寸约束的近似，非厂家旋钮 CAD；不能按其隐藏部位给出制造精度。
+背面纸贴使用独立薄面，透明遮罩只保留实际印刷纸；塑料、安装孔、螺钉与 M5 浮雕没有烘焙进纸贴。原厂色、金色和紫色半透明均已截图检查，M5 浮雕是原厂网格，随壳体变化。三颗灯的显示分组复用原厂 diffuser 网格；链序对应左右灯孔的位置尚缺实机校准。
 
 正视照片按独立照片的 32 mm 壳高统一定比例。轮廓 IoU 为 **0.98492**，0.95 阈值结果为 **通过**；这项轮廓检验会填平孔洞，不评价印刷、钮帽、内部 PCB 或材料。参考照片镜头及精确姿态未知，背面和斜视只做定性对照。完整 1:1 验收仍为 **partial**。
 
@@ -34,11 +34,11 @@ Keep already assembled CAD components [3, 4, 0]; rigid center translation and or
 
 ![UNKNOWN 占位](../evidence/m5stack-unit-rgb-u003/unknown-pcb.png)
 
-复现：安装 `tools/requirements-model.txt`，运行 `python tools/rebuild-unit-library.py m5stack-unit-rgb-u003 --scratch output/unit-rebuild/m5stack-unit-rgb-u003`。无需网络；所有必需输入按原始 hash 核验。仅渲染测试使用 `review-lane-01.html?id=m5stack-unit-rgb-u003`，证据对应当前 model.json hash `577fc97b1a51fa219a61cb5cabaf10cfc5e66a80aa9f4b39c75f78bf7269bcab`。目前未执行模块行为测试或真实硬件测试。
+复现：安装 `tools/requirements-model.txt`，运行 `python tools/rebuild-unit-library.py m5stack-unit-rgb-u003 --scratch output/unit-rebuild/m5stack-unit-rgb-u003`。无需网络；所有必需输入按原始 hash 核验。仅渲染测试使用 `review-lane-01.html?id=m5stack-unit-rgb-u003`，证据对应当前 model.json hash `31a0024e42100896789a899c8ed25812c4185b5b54a7b7a3d50e7444ede89222`。本轮进行了内部源码固件真实 WASM 行为测试；未测试实体硬件。
 
 已知限制：
 
-- 仅外观、尺寸和接线资料已入库；GPIO/ADC/SK6812 行为尚未实现，不能证明主机固件可使用该模块。
+- StopWatch Port A 黄线 G10 的客体 RMT 输出已实现；需固件开启 Grove 5V。软件 GPIO 波形、串级出口和模拟电流未实现。
 - 厂家 STL 保留原始尺寸，打印排版重复件已剔除；插座、螺钉及无 CAD 的外露部件为照片近似。
 - 未公开 PCB 布局，内部采用 UNKNOWN 占位；贴纸使用官方照片真实印刷区域。
 - 官方 pinmap 把白线标为 NC；串级原理图白线 DI 连通两端，本轮不模拟串级、不启用输出端连线。

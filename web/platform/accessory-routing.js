@@ -13,3 +13,15 @@ export function routedUnitButtons(scene,product,catalog) {
     return route?[{accessoryId:instance.id,...route}]:[];
   });
 }
+export const UNIT_RGB_ID = 'm5stack-unit-rgb-u003';
+export function unitRgbRoute(product,instance,definition) {
+  if(product?.id!=='m5stack-stopwatch'||product.runtime?.board!=='stopwatch'||definition?.id!==UNIT_RGB_ID||definition.model?.id!=='sk6812-u003'||instance?.wiring?.mode!=='physical'||instance.wiring.interfaceId!=='grove')return null;
+  return {model:'sk6812-u003',port:'grove',pin:10,output:'grove-u003'};
+}
+export const physicalAccessoryRoute=(product,instance,definition)=>unitButtonRoute(product,instance,definition)||unitRgbRoute(product,instance,definition);
+export function routedAccessories(scene,product,catalog) {
+  return (scene?.accessories||[]).flatMap(instance=>{
+    const definition=catalog?.accessories.find(item=>item.id===instance.catalogId),route=physicalAccessoryRoute(product,instance,definition);
+    return route?[{accessoryId:instance.id,...route}]:[];
+  });
+}

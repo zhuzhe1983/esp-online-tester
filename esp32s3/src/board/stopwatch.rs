@@ -3,6 +3,7 @@ use std::sync::{Arc, Mutex};
 use esp_periph::i2c::m5::{M5ioe1, M5ioe1State, M5pm1, M5pm1State};
 use esp_periph::i2c::bmi270::{Bmi270, Bmi270Sample};
 use esp_soc::board::{BoardEdge, BoardModel, VirtualCycle};
+use esp_soc::devices::Ws2812Chain;
 use esp_soc::devices::co5300::{Co5300, Co5300Scan};
 
 use crate::i2c::{Cst820, I2cDevice, TouchState};
@@ -10,6 +11,8 @@ use crate::i2c::{Cst820, I2cDevice, TouchState};
 pub const PIN_STOPWATCH_TE: u8 = 38;
 pub const PIN_STOPWATCH_BUTTON_A: u8 = 2;
 pub const PIN_STOPWATCH_BUTTON_B: u8 = 1;
+
+struct UnitRgb {chain:Ws2812Chain,connected:bool,powered:bool}
 
 struct UnitButton {pressed:bool,level:bool,dirty:bool,cycle:VirtualCycle}
 
@@ -71,6 +74,7 @@ pub struct StopWatch {
     gpio_events: u64,
     cs: Option<bool>,
     imu: Arc<Mutex<Bmi270Sample>>,
+    unit_rgb: Option<Box<UnitRgb>>,
 }
 
 impl StopWatch {
@@ -97,6 +101,13 @@ impl StopWatch {
             gpio_events: 0,
             cs: None,
             imu: Default::default(),
+            unit_rgb: None,
+        }
+    }
+    fn sync_rgb_power(&mut self) {
+        if let Some(rgb)=&mut self.unit_rgb {
+            let powered=rgb.connected && self.wiring.pmic.lock().expect("StopWatch PMIC state mutex poisoned").grove_5v_enabled;
+            if powered!=rgb.powered {rgb.powered=powered;rgb.chain.leds.fill([0;3]);rgb.chain.updates=rgb.chain.updates.wrapping_add(1);}
         }
     }
 }
@@ -114,6 +125,15 @@ impl BoardModel for StopWatch {
                 self.cs = Some(level);
             }
         }
+    }
+    fn rmt_frame(&mut self,pin:u8,bits:&[bool]) {
+        // U003 V1.0 J2.2 yellow -> Port A G10; 3 SK6812 RGB, GRB bytes.
+        // Completed RMT frames only. No software pulse timing or daisy-chain output.
+        if pin!=10 {return;}self.sync_rgb_power();
+        if let Some(rgb)=&mut self.unit_rgb {if rgb.powered {rgb.chain.from_bits(bits);}}
+    }
+    fn led_grids(&self)->Vec<(&'static str,&[[u8;3]],u64)> {
+        self.unit_rgb.as_ref().map_or_else(Vec::new,|rgb|vec![("grove-u003",rgb.chain.leds.as_slice(),rgb.chain.updates)])
     }
     fn gpio_events(&self) -> u64 { self.gpio_events }
     fn spi_transfer(&mut self, host: u8, tx: &[u8], rx_len: usize) -> Vec<u8> {
@@ -172,7 +192,7 @@ impl BoardModel for StopWatch {
         self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").panel.next_deadline()
     }
     fn advance_to(&mut self, cycle: VirtualCycle) {
-        self.wiring.sync();
+        self.wiring.sync();self.sync_rgb_power();
         let mut state=self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");
         state.panel.advance_to(cycle);if let Some(button)=&mut state.unit_button {button.cycle=cycle;}
     }
@@ -185,6 +205,12 @@ impl BoardModel for StopWatch {
         let level=self.wiring.pmic.lock().expect("StopWatch PMIC state mutex poisoned").grove_5v_enabled && !pressed;
         self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").unit_button=connected.then_some(UnitButton{pressed,level,dirty:false,cycle});
         Some((11,connected.then_some(level)))
+    }
+    fn accessory_connection_at(&mut self,_cycle:VirtualCycle,model:&str,port:&str,connected:bool)->bool {
+        if model!="sk6812-u003" || port!="grove" {return false;}
+        let rgb=self.unit_rgb.get_or_insert_with(||Box::new(UnitRgb{chain:Ws2812Chain::new(3),connected:false,powered:false}));
+        if rgb.connected!=connected {rgb.connected=connected;rgb.chain.leds.fill([0;3]);rgb.chain.updates=rgb.chain.updates.wrapping_add(1);}
+        self.sync_rgb_power();true
     }
     fn named_pin(&self, name: &str) -> Option<u8> {
         match name {
@@ -228,5 +254,26 @@ mod unit_button_tests {
         write(devices.iter_mut().find(|(_,a,_)|*a==0x6e).unwrap().2.as_mut(),6,0x1f);board.advance_to(3);
         assert!(board.input_levels().contains(&(11,false)),"guest restart does not physically release a held switch");
         assert_eq!(board.accessory_button_at(4,"gpio-button-u027","grove",true,false),Some((11,Some(true))));
+    }
+}
+
+#[cfg(test)]
+mod unit_rgb_tests {
+    use super::*;
+    fn write(device:&mut dyn I2cDevice,reg:u8,value:u8){assert!(device.start(false));assert!(device.write(reg));assert!(device.write(value));device.stop();}
+    fn bits()->Vec<bool>{[0u8,255,0,128,0,0,0,0,64].into_iter().flat_map(|v|(0..8).map(move|i|v&(0x80>>i)!=0)).collect()}
+    #[test]
+    fn u003_real_rmt_route_power_disconnect_and_reset() {
+        let mut board=StopWatch::new();assert!(board.led_grids().is_empty());board.rmt_frame(10,&bits());assert!(board.led_grids().is_empty());
+        assert!(!board.accessory_connection_at(0,"arbitrary","grove",true));assert!(!board.accessory_connection_at(0,"sk6812-u003","other",true));
+        assert!(board.accessory_connection_at(0,"sk6812-u003","grove",true));let mut devices=board.i2c_devices();let pmic=devices.iter_mut().find(|(_,a,_)|*a==0x6e).unwrap().2.as_mut();
+        board.rmt_frame(10,&bits());assert_eq!(board.led_grids()[0].1,[[0;3];3]);write(pmic,6,0x1f);
+        board.rmt_frame(11,&bits());board.advance_to(1);assert_eq!(board.led_grids()[0].1,[[0;3];3]);
+        board.rmt_frame(10,&bits());assert_eq!(board.led_grids()[0].1,[[255,0,0],[0,128,0],[0,0,64]]);
+        write(pmic,6,0x17);board.advance_to(2);assert_eq!(board.led_grids()[0].1,[[0;3];3]);write(pmic,6,0x1f);board.advance_to(3);assert_eq!(board.led_grids()[0].1,[[0;3];3]);
+        board.rmt_frame(10,&bits());board.accessory_connection_at(4,"sk6812-u003","grove",false);board.rmt_frame(10,&bits());assert_eq!(board.led_grids()[0].1,[[0;3];3]);
+        board.accessory_connection_at(5,"sk6812-u003","grove",true);assert_eq!(board.led_grids()[0].1,[[0;3];3]);board.rmt_frame(10,&bits());
+        write(pmic,7,0x40);write(pmic,0x0c,0xa1);board.advance_to(6);assert_eq!(board.led_grids()[0].1[0],[255,0,0]);write(pmic,7,0);board.advance_to(7);assert_eq!(board.led_grids()[0].1,[[0;3];3]);
+        drop(devices);board.i2c_devices();board.advance_to(8);assert_eq!(board.led_grids()[0].1,[[0;3];3]);
     }
 }
