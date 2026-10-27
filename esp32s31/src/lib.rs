@@ -24,6 +24,7 @@ pub mod core_control;
 pub mod mwdt;
 pub mod rtc_timer;
 pub mod rtc_calibration;
+pub mod modem_lpcon;
 mod rom;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};

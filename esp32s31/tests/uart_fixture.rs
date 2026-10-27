@@ -816,3 +816,37 @@ fn external_s31_guest_measures_clock_divider_and_timeout_without_read_side_compl
     assert_eq!(m.bus.uart0.tx_out, b"S31 RTC CALIBRATION COUNT TIMEOUT PASS\n");
     assert_eq!(m.bus.read32(0x2f060000), Ok(1)); assert!(m.bus.first_fault.is_none());
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_MODEM_CLOCKS_ELF"]
+fn external_s31_modem_clocks_share_actual_i2c_gate_and_reset_with_uart_configuration() {
+    use emu_core::Bus;
+    let path = std::env::var("S31_MODEM_CLOCKS_ELF").expect("build firmware/s31-uart-probe and set S31_MODEM_CLOCKS_ELF");
+    let elf = std::fs::read(path).unwrap();
+    for mode in ["enabled", "master-disabled", "parent-disabled", "no-bias-input"] {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        let enables: u32 = if mode == "master-disabled" { 11 } else { 15 };
+        m.bus.load(0x2f070000, &enables.to_le_bytes(), 4).unwrap();
+        if mode != "no-bias-input" { m.bus.analog.set_bias([0x17,0x29]); }
+        if mode == "parent-disabled" { m.bus.clocks.write(0x40,0).unwrap(); }
+        let r = m.run(10000);
+        if mode == "enabled" {
+            assert_eq!(r.stop, esp32s31::Stop::Waiting); assert!(m.bus.first_fault.is_none());
+            assert_eq!(m.bus.uart0.tx_out,b"S31 MODEM CLOCKS I2C RESET PASS\n");
+            assert_eq!(m.bus.read32(0x2f060000),Ok(1)); assert_eq!(m.bus.analog.transactions,8);
+            assert_eq!(m.bus.analog.bias(),Some([0xa7,0x2a]));
+            for (i,hz) in [1000000,34000,2000000].into_iter().enumerate() { assert_eq!(m.bus.analog.lpcon.lp_hz(i,m.bus.clocks.modem_on(),m.bus.clocks.rtc_slow_hz()),Ok(hz)); }
+            assert_eq!(m.bus.clocks.aux_uart_clock(0),Ok((false,true,16000000)));
+            assert_eq!(m.bus.clocks.aux_uart_clock(1),Ok((true,false,0)));
+            assert_eq!(m.bus.clocks.aux_uart_clock(2),Ok((true,false,0)));
+            assert_eq!(m.bus.read32(0x20589010),Ok(0)); assert_eq!(m.bus.read32(0x20589014),Ok(0x80000000));
+        } else {
+            assert_eq!(r.stop,esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7)));
+            let f=m.bus.first_fault.as_ref().unwrap(); assert_eq!(f.reason,emu_core::Fault::Prohibited);
+            assert_eq!(f.address,if mode=="parent-disabled" { 0x2010f018 } else { 0x2010f804 });
+            assert!(m.bus.uart0.tx_out.is_empty()); assert_eq!(m.bus.analog.transactions,0);
+            assert_eq!(m.bus.read32(0x2f060000),Ok(0));
+        }
+        eprintln!("modem-clocks mode={mode} steps={} stop={:?} transactions={}",r.steps,r.stop,m.bus.analog.transactions);
+    }
+}

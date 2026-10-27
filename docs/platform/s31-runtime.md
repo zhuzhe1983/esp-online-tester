@@ -1462,3 +1462,33 @@ then register offset`c`; it is not in the general peripheral base table. Modem
 clock/power behavior is the next stage. **INK4 Plus is still unavailable and has
 no framebuffer output.** See the [calibration receipt](evidence/s31-bringup/rtc-calibration.json)
 and [final official-image result](evidence/s31-bringup/rtc-calibration-plus-2.0.68-final.json).
+
+## MODEM low-frequency requests and startup UART clocks (2026-10-28)
+
+MODEM_LPCON now owns its clock words once, including the internal analog-I²C
+master gate and reset. The BLE timer, COEX and Wi-Fi-power requests select the
+existing XTAL or nominal RC_SLOW input with divider+1; a missing request or
+parent clock yields zero rate. FORCE_ON preserves policy but cannot substitute
+for EN. Unknown clock sources and unimplemented reset targets fail explicitly.
+PMU state maps and pad sleep requests are retained configuration only; neither
+creates a sleep transition, RF calibration result, connection or received packet.
+
+The source fixture executes eight real internal I²C transactions while the other
+LP clock bits are populated, resets the master and checks preserved target data.
+Disabling the master/parent or omitting explicit BIAS data stops the same guest
+before any transaction. This caught and removed an early duplicate-owner bug
+that had disconnected the new LPCON gate from the existing analog sequencer.
+UART1/2/3 expose the documented XTAL divider and independent APB/core gates, but
+their FIFOs, interrupts and pin routes remain unimplemented. UART0's existing
+core-clock predicate now stays independent of APB gating. Four UART sleep-pad
+clock request bits retain their documented reset values without implying wakeup.
+
+The unchanged complete Plus2.0.68 image passes these initialization words and
+stops at ETM clock control `205870a8` (hart0 PC`4000204c`) after71,120,058 total
+instructions. The fixed IDF6.1 `esp_perip_clk_init` calls its clock-gate helper to
+disable unused modules after reset; ETM is the next word in that sequence. The
+model still has no parallel EPD controller/framebuffer and **INK4 Plus remains
+unavailable**. This is a private SoC stage, not evidence of product usability.
+
+See [clock/fixture receipt](evidence/s31-bringup/modem-clocks.json) and
+[official image result](evidence/s31-bringup/modem-clocks-plus-2.0.68-final.json).

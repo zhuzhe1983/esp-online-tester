@@ -1,6 +1,6 @@
 //! S31 XTAL/CPLL dividers, functional calibration, peripheral gates and limited RTC selectors.
 //! ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643:
-//! soc/esp32s31/register/soc/hp_sys_clkrst_reg.h, esp_hal_clock/esp32s31/include/hal/clk_tree_ll.h,
+//! soc/esp32s31/register/soc/{hp_sys_clkrst,hp_alive_sys}_reg.h, esp_hal_clock/esp32s31/include/hal/clk_tree_ll.h,
 //! and esp_hw_support/port/esp32s31/rtc_clk.c (40/20/40÷3/40÷6 MHz reset configuration).
 use emu_core::Fault;
 pub const LP_BASE: u32 = 0x2070_1000;
@@ -9,9 +9,9 @@ pub const UART0_CTRL: u32 = BASE + 0x88;
 pub const UART0_MEM: u32 = 0x2058_628c;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Rates { pub cpu_hz: u64, pub mem_hz: u64, pub sys_hz: u64, pub apb_hz: u64 }
-pub struct Clocks { pub mpll: crate::mpll::Mpll, pending: [u32; 5], active: [u32; 5], uart0: u32, uart_mem: u32, modem: u32, psram: u32, lp_root: u32, fosc: bool, cpll_div: u32, cpll_powered: bool, cal_stop: bool, cal_done: bool, cal_left: Option<u8> }
+pub struct Clocks { pub mpll: crate::mpll::Mpll, pending: [u32; 5], active: [u32; 5], uart0: u32, uart_pad_sleep: u8, aux_uart: [u32; 3], uart_mem: u32, modem: u32, psram: u32, lp_root: u32, fosc: bool, cpll_div: u32, cpll_powered: bool, cal_stop: bool, cal_done: bool, cal_left: Option<u8> }
 impl Default for Clocks {
-    fn default() -> Self { Self { mpll: crate::mpll::Mpll::default(), pending: [0, 0, 1, 2, 1], active: [0, 0, 1, 2, 1], uart0: 0x83, uart_mem: 0, modem: 1, psram: 0x181, lp_root: 1 << 26, fosc: true, cpll_div: 0xf2, cpll_powered: false, cal_stop: false, cal_done: false, cal_left: None } }
+    fn default() -> Self { Self { mpll: crate::mpll::Mpll::default(), pending: [0, 0, 1, 2, 1], active: [0, 0, 1, 2, 1], uart0: 0x83, uart_pad_sleep: 15, aux_uart: [0x83; 3], uart_mem: 0, modem: 1, psram: 0x181, lp_root: 1 << 26, fosc: true, cpll_div: 0xf2, cpll_powered: false, cal_stop: false, cal_done: false, cal_left: None } }
 }
 impl Clocks {
     // lp_clkrst_reg.h: reset source selectors and RO XTAL40MHz field. Selecting
@@ -34,16 +34,26 @@ impl Clocks {
         }
         Ok(())
     }
-    pub fn is_mmio(address: u32) -> bool { (BASE..BASE + 0x18).contains(&address) || matches!((address & !3).wrapping_sub(BASE), 0x40 | 0x68 | 0x174) }
+    pub fn is_mmio(address: u32) -> bool { (BASE..BASE + 0x18).contains(&address) || matches!((address & !3).wrapping_sub(BASE), 0x40 | 0x68 | 0x8c | 0x90 | 0x94 | 0x174 | 0x2010 | 0x2014 | 0x2018 | 0x201c) }
     pub fn uart_read(&self, address: u32) -> u32 { if address == UART0_CTRL { self.uart0 } else { self.uart_mem } }
+    fn validate_uart(value: u32) -> Result<(), Fault> {
+        if value & 0x70 != 0 { return Err(Fault::Prohibited); }
+        let num = (value >> 16) & 255; let den = value >> 24;
+        if num != 0 && (den == 0 || num >= den) { return Err(Fault::Prohibited); }
+        Ok(())
+    }
+    pub fn aux_uart_clock(&self, index: usize) -> Result<(bool, bool, u64), Fault> {
+        let v = *self.aux_uart.get(index).ok_or(Fault::Unmapped)?;
+        let bus = v & 0xb == 3; let core = v & 0x85 == 0x81;
+        let num = u64::from((v >> 16) & 255); let den = if num == 0 { 1 } else { u64::from(v >> 24) };
+        let hz = 40_000_000 * den / (u64::from(((v >> 8) & 255) + 1) * den + num);
+        Ok((bus, core, if core { hz } else { 0 }))
+    }
     pub fn uart_write(&mut self, address: u32, value: u32) -> Result<(), Fault> {
         if address == UART0_CTRL {
             // v6.1 uart_ll.h: 0=XTAL, 1=RC_FAST, 2=PLL80M. Only the XTAL root
             // is implemented. FORCE_NORST/global reset interaction remains unsupported.
-            if value & 0x70 != 0 { return Err(Fault::Prohibited); }
-            let num = (value >> 16) & 255; let den = value >> 24;
-            if num != 0 && (den == 0 || num >= den) { return Err(Fault::Prohibited); }
-            self.uart0 = value;
+            Self::validate_uart(value)?; self.uart0 = value;
         } else {
             // Low-power retention/shutdown is not modeled. Preserve mode configuration
             // while awake, but do not pretend entry to a powered-down memory state works.
@@ -66,7 +76,7 @@ impl Clocks {
     }
     pub fn modem_on(&self) -> bool { self.modem != 0 }
     pub fn uart_bus_on(&self) -> bool { self.uart0 & 0xb == 3 }
-    pub fn uart_core_on(&self) -> bool { self.uart0 & 0x87 == 0x83 }
+    pub fn uart_core_on(&self) -> bool { self.uart0 & 0x85 == 0x81 }
     pub fn uart_sclk_hz(&self) -> u64 {
         if !self.uart_core_on() { return 0; }
         let integer = u64::from((self.uart0 >> 8) & 255) + 1;
@@ -134,7 +144,7 @@ impl Clocks {
     pub fn rates(&self) -> Rates { self.rates_of(&self.active).unwrap_or(Rates { cpu_hz: 0, mem_hz: 0, sys_hz: 0, apb_hz: 0 }) }
     pub fn read(&self, off: u32) -> Result<u32, Fault> {
         if off & 3 != 0 { return Err(Fault::Misaligned); }
-        match off { 0..=0x10 => Ok(self.pending[off as usize / 4]), 0x14 => Ok(0), 0x40 => Ok(self.modem), 0x68 => Ok(self.psram), 0x174 => Ok(u32::from(self.cal_done) << 2 | u32::from(self.cal_stop) << 3 | self.mpll.control()), _ => Err(Fault::Unmapped) }
+        match off { 0..=0x10 => Ok(self.pending[off as usize / 4]), 0x14 => Ok(0), 0x2010 | 0x2014 | 0x2018 | 0x201c => Ok(u32::from((self.uart_pad_sleep >> ((off - 0x2010) / 4)) & 1) << 31), 0x8c | 0x90 | 0x94 => Ok(self.aux_uart[((off - 0x8c) / 4) as usize]), 0x40 => Ok(self.modem), 0x68 => Ok(self.psram), 0x174 => Ok(u32::from(self.cal_done) << 2 | u32::from(self.cal_stop) << 3 | self.mpll.control()), _ => Err(Fault::Unmapped) }
     }
     pub fn write(&mut self, off: u32, value: u32) -> Result<(), Fault> {
         if off & 3 != 0 { return Err(Fault::Misaligned); }
@@ -158,6 +168,15 @@ impl Clocks {
                 if self.cal_stop { self.cal_left = None; }
                 else { self.cal_done = false; self.cal_left = Some(16); }
             }
+            // Fixed UART1/2/3 clock words share documented0x83 defaults and
+            // XTAL/divider/gate fields. Their data FIFOs/IRQ/GPIO are still absent;
+            // accepting clock configuration does not supply fake UART traffic.
+            0x8c | 0x90 | 0x94 => { Self::validate_uart(value)?; self.aux_uart[((off - 0x8c) / 4) as usize] = value; }
+            // HP_ALIVE_SYS_HP_PAD_UART0..3_CTRL: only bit31 RW,reset1.
+            // Configuration retained; deep-sleep/pad-clock wakeup is not modeled.
+            0x2010 | 0x2014 | 0x2018 | 0x201c => {
+                let bit = 1 << ((off - 0x2010) / 4); self.uart_pad_sleep = (self.uart_pad_sleep & !bit) | if value >> 31 != 0 { bit } else { 0 };
+            }
             0x40 => self.modem = value & 1,
             0x68 => {
                 // Selectors use actual powered/calibrated roots; selecting a stopped
@@ -173,6 +192,20 @@ impl Clocks {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn auxiliary_uart_clocks_have_independent_gates_reset_and_fractional_dividers() {
+        let mut c = Clocks::default();
+        for i in 0..3 { assert_eq!(c.aux_uart_clock(i), Ok((true,true,40000000))); }
+        c.write(0x8c,0x81).unwrap(); assert_eq!(c.aux_uart_clock(0), Ok((false,true,40000000)));
+        c.write(0x90,0x83 | 4).unwrap(); assert_eq!(c.aux_uart_clock(1), Ok((true,false,0)));
+        c.write(0x94,0x83 | 1 << 8 | 1 << 16 | 2 << 24).unwrap(); assert_eq!(c.aux_uart_clock(2), Ok((true,true,16000000)));
+        c.uart_write(UART0_CTRL,0x81).unwrap(); assert!(!c.uart_bus_on()); assert!(c.uart_core_on());
+        for i in 0..4 { assert_eq!(c.read(0x2010 + i * 4),Ok(1 << 31)); }
+        c.write(0x2014,u32::MAX >> 1).unwrap(); assert_eq!(c.read(0x2014),Ok(0)); assert_eq!(c.read(0x2010),Ok(1 << 31));
+        assert_eq!(c.uart_sclk_hz(),40000000); assert_eq!(c.write(0x94,0x83 | 1 << 16),Err(Fault::Prohibited));
+        assert_eq!(c.aux_uart_clock(2), Ok((true,true,16000000))); assert_eq!(c.aux_uart_clock(usize::MAX),Err(Fault::Unmapped));
+    }
+
     #[test]
     fn calibration_requires_start_power_divider_and_elapsed_functional_quanta() {
         let mut c = Clocks::default(); c.lp_write(LP_BASE + 0x4c, 0x81).unwrap();

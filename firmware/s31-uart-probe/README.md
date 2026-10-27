@@ -313,3 +313,14 @@ input and must stay in the polling loop; only enabling the explicit nominal CPU
 clock conversion allows the same guest to continue and print PASS. No host writes
 the completion flags or mailbox. The one-instruction-per-cycle relationship is a
 development approximation; it is not physical clock calibration.
+
+`modem-clocks-probe.S` configures BLE/COEX/Wi-Fi-power LP clock requests and
+UART1/2/3 clock gates/dividers, then performs eight real internal I²C reads/writes
+and resets the digital master while preserving its explicit BIAS target data.
+Set `S31_MODEM_CLOCKS_ELF`. The guest writes its completion word and UART PASS;
+the harness checks 1MHz/34kHz/2MHz LP rates and independent UART APB/core gating.
+Negative cases disable the master, gate its parent, or omit BIAS input, and must
+fault without a transaction or PASS. FORCE_ON does not replace software EN.
+The UART3 disabled-core case clears CLK_EN bit7 while retaining SYS/APB bits0/1;
+clearing SYS is a different gate. This verifies configuration and existing I²C
+behavior, not radio, network, auxiliary UART traffic or sleep/wakeup behavior.

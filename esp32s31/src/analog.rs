@@ -5,25 +5,23 @@
 //! soc/esp32s31/{include/soc/{regi2c_saradc,regi2c_dig_reg}.h,register/soc/pmu_reg.h}.
 use emu_core::Fault;
 pub const BASE: u32 = 0x2010_f800;
-const LP_CLK: u32 = 0x2010_f018;
-const LP_FORCE: u32 = 0x2010_f01c;
 const LP_RESET: u32 = 0x2010_f024;
 const PERIF_POWER: u32 = 0x2070_4208;
 const SYS_CLK: u32 = 0x2010_9c04;
 
 pub struct Analog {
-    lp_clock: u32, force: u32, source: u32, ctrl: [u32; 2], config: [u32; 2],
+    pub lpcon: crate::modem_lpcon::ModemLpcon, source: u32, ctrl: [u32; 2], config: [u32; 2],
     select: [u32; 3], timing: [u32; 3], date: u32, bias: Option<[u8; 2]>, perif: Option<[u8; 2]>, perif_power: u32, dig: Option<[u8; 4]>, pub transactions: u64,
 }
 
 impl Default for Analog {
-    fn default() -> Self { Self { lp_clock: 0, force: 0, source: (1 << 21) | 2, ctrl: [0; 2], config: [0; 2],
+    fn default() -> Self { Self { lpcon: crate::modem_lpcon::ModemLpcon::default(), source: (1 << 21) | 2, ctrl: [0; 2], config: [0; 2],
         select: [0xe408, 0x2d, 4], timing: [0x42; 3], date: 0x2411290, bias: None, perif: None, perif_power: 1 << 30, dig: None, transactions: 0 } }
 }
 impl Analog {
-    pub fn master_enabled(&self) -> bool { self.lp_clock & 4 != 0 }
+    pub fn master_enabled(&self) -> bool { self.lpcon.i2c_master_enabled() }
     pub fn is_mmio(address: u32) -> bool {
-        (BASE..BASE + 0x40).contains(&address) || matches!(address & !3, LP_CLK | LP_FORCE | LP_RESET | SYS_CLK | PERIF_POWER)
+        (BASE..BASE + 0x40).contains(&address) || crate::modem_lpcon::ModemLpcon::is_mmio(address) || matches!(address & !3, SYS_CLK | PERIF_POWER)
     }
     /// The public BIAS field header specifies two data bytes but no silicon reset values.
     /// An explicit host seed is therefore required; zero is never assumed for an absent die.
@@ -39,7 +37,7 @@ impl Analog {
         // EN is mandatory in the official LL; FO prevents automatic idle gating, it
         // does not substitute for a disabled master. Only synchronous byte transactions
         // are modeled, not a 160 MHz waveform or an analog settling delay.
-        if self.lp_clock & 4 == 0 { return Err(Fault::Prohibited); }
+        if !self.lpcon.i2c_master_enabled() { return Err(Fault::Prohibited); }
         let slave = value & 255; let reg = ((value >> 8) & 255) as usize;
         // Internal BIAS, DIG and PERIF are separate targets. Public headers specify fields,
         // not their analog reset bytes; all require explicit host inputs.
@@ -61,9 +59,10 @@ impl Analog {
     }
     pub fn read(&self, address: u32, parent_clock: bool) -> Result<u32, Fault> {
         if address == PERIF_POWER { return Ok(self.perif_power); }
+        if crate::modem_lpcon::ModemLpcon::is_mmio(address) { return self.lpcon.read(address,parent_clock); }
         if !parent_clock { return Err(Fault::Prohibited); }
         match address {
-            LP_CLK => Ok(self.lp_clock), LP_FORCE => Ok(self.force), LP_RESET => Ok(0), SYS_CLK => Ok(self.source),
+            SYS_CLK => Ok(self.source),
             a if a >= BASE => match a - BASE {
                 0 | 4 => Ok(self.ctrl[((a - BASE) / 4) as usize]),
                 8 | 0xc => Ok(self.config[((a - BASE - 8) / 4) as usize]),
@@ -84,14 +83,13 @@ impl Analog {
             }
             return Ok(());
         }
+        if crate::modem_lpcon::ModemLpcon::is_mmio(address) {
+            self.lpcon.write(address,value,parent_clock)?;
+            if address == LP_RESET && value & 4 != 0 { self.ctrl = [0; 2]; self.config = [0; 2]; self.select = [0xe408, 0x2d, 4]; self.timing = [0x42; 3]; }
+            return Ok(());
+        }
         if !parent_clock { return Err(Fault::Prohibited); }
         match address {
-            LP_CLK => { if value & 0xb != 0 { return Err(Fault::Prohibited); } self.lp_clock = value & 4; }
-            LP_FORCE => { if value & 0x1b != 0 { return Err(Fault::Prohibited); } self.force = value & 4; }
-            LP_RESET => {
-                if value & 0x1b != 0 { return Err(Fault::Prohibited); }
-                if value & 4 != 0 { self.ctrl = [0; 2]; self.config = [0; 2]; self.select = [0xe408, 0x2d, 4]; self.timing = [0x42; 3]; }
-            }
             SYS_CLK => { if (value ^ self.source) & !(1 << 12) != 0 { return Err(Fault::Prohibited); } self.source = value; }
             a if a >= BASE => match a - BASE {
                 0 | 4 => self.transaction(((a - BASE) / 4) as usize, value)?,
@@ -114,6 +112,8 @@ impl Analog {
 
 #[cfg(test)]
 mod tests {
+    const LP_CLK: u32 = 0x2010_f018;
+    const LP_FORCE: u32 = 0x2010_f01c;
     use super::*;
     #[test]
     fn dig_data_needs_explicit_input_and_follows_its_own_master_route() {
