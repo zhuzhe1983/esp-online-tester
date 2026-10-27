@@ -2842,13 +2842,22 @@
       "summary": "ESP32-S3FN8 核心模块，提供 23 路引脚、USB-C、按键和 RGB LED；支持 SMT/DIP 与飞线连接。",
       "knowledgeUrl": "./knowledge/m5stack-s007.json",
       "runtime": {
-        "board": null,
+        "board": "stamps3",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA",
+          "name": "按键"
+        }
+      ],
       "interfaces": [],
       "model": {
         "type": "manufacturer-cad",
@@ -2864,11 +2873,10 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "部分板级模型：G0 按键和 G21 单颗 WS2812B RMT 输出；不模拟 GPIO 软件波形灯驱动、FPC 屏幕、模拟电源或物理网络。官方 UIFlow2 启动蓝灯不代表全部功能兼容。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
         "Manufacturer STL is a single connected heat-resistant shield; no separate PCB assembly or component identities can be certified from its connectivity.",
         "Different official photographs show optional heat shield and pin headers. Those alternatives are not silently combined into this source configuration.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
         "Browser inspection identifies the connected STL as a heat-resistant shield; actual populated PCB geometry and edge pad assignments remain unknown.",
@@ -2894,7 +2902,8 @@
       ],
       "firmwareReferenceIds": [
         "m5stack-s007-official-reference"
-      ]
+      ],
+      "defaultFirmwareId": "m5stack-s007-uiflow2"
     },
     {
       "id": "m5stack-s007-v033",

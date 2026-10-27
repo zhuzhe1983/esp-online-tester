@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-10-27T18:26:04.068Z",
+  "command": "node tools/probe-stamps3-official.mjs <official-https-url> <sha256>",
+  "productId": "m5stack-s007",
+  "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000020/versions/2098280680509362178/download",
+  "sha256": "6e3b8a72ab7c0d46de2cc661cc2c47e178621161fc29fa34f6d0313fd7037d72",
+  "wasmSha256": "2ec2f634e5d408425c45b9b50c0e2c591ce22f2ce5d91cd6e436a3f6f14a58da",
+  "firmware": {
+    "manifestUrl": null,
+    "manifestHash": null,
+    "metadata": {
+      "name": "micropython",
+      "version": "V2.5.3",
+      "source": "esp-app-description"
+    },
+    "source": "remote",
+    "artifacts": [
+      {
+        "kind": "flash",
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000020/versions/2098280680509362178/download",
+        "sha256": "6e3b8a72ab7c0d46de2cc661cc2c47e178621161fc29fa34f6d0313fd7037d72",
+        "bytes": 8384512
+      },
+      {
+        "kind": "rom",
+        "url": "https://stamps3-fixture.invalid/wasm/fw/esp32s3_rev0_rom.elf",
+        "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+        "bytes": 949552
+      }
+    ],
+    "appDirect": false,
+    "stubs": [],
+    "executionMode": "wasm-jit"
+  },
+  "guestSeconds": 21.04,
+  "checks": [
+    "actual-page-worker-full-rom-boot",
+    "official-g21-rmt-blue",
+    "no-invented-framebuffer",
+    "button-transport-only-not-official-application-acceptance"
+  ],
+  "leds": [
+    [],
+    [
+      [
+        0,
+        0,
+        127
+      ]
+    ],
+    [
+      [
+        0,
+        0,
+        255
+      ]
+    ]
+  ],
+  "status": "pass",
+  "limitations": [
+    "Official application interaction and networking not verified; button electrical behavior is independently tested by source-built fixture."
+  ],
+  "serialEvidence": [
+    "ESP-ROM:esp32s3-20210327",
+    "ESP-ROM:esp32s3-20210327",
+    "entry 0x403c8890",
+    "entry 0x403c8890",
+    "E (723) i2c.master: this port has not been initialized, please initialize it first",
+    "E (723) i2c.master: this port has not been initialized, please initialize it first"
+  ]
+}

@@ -115,6 +115,27 @@
       18,
       24,
       4.7
+    ],
+    "buttons": [
+      {
+        "id": "button",
+        "shape": "rectangle",
+        "sizeMm": [
+          5.2,
+          3.2
+        ],
+        "positionMm": [
+          2,
+          2,
+          2.37
+        ],
+        "basis": "manufacturer-cad",
+        "sourceIds": [
+          "manufacturer-cad-86c80a31be",
+          "product-photo-ea5854bf64"
+        ],
+        "notes": "Conservative interior of the connected shield flexure cap; CAD top plane 2.35 mm, hit plane +0.02 mm. No deformation or new physical cap."
+      }
     ]
   },
   "derivedParts": [
@@ -136,6 +157,29 @@
         ]
       },
       "notes": "Mechanical board outline exists; its electrical/component detail remains unknown. Thin neutral marker immediately behind outward board face makes UNKNOWN readable without inferring a second populated PCB."
+    },
+    {
+      "id": "rgb-led",
+      "kind": "box",
+      "color": "#d7d8cf",
+      "ledIndex": 0,
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-31b74d1c4e"
+      ],
+      "geometry": {
+        "sizeMm": [
+          2,
+          2,
+          1
+        ],
+        "centerMm": [
+          5.75,
+          -9.4,
+          -0.8
+        ]
+      },
+      "notes": "Single WS2812B-2020 package location estimated from the bare-board official photograph using 18 mm board width. Package height/placement not measured CAD; retained shield can occlude it, no invented window or light pipe."
     }
   ],
   "photos": [
@@ -159,19 +203,28 @@
   "limitations": [
     "Manufacturer STL is a single connected heat-resistant shield; no separate PCB assembly or component identities can be certified from its connectivity.",
     "Different official photographs show optional heat shield and pin headers. Those alternatives are not silently combined into this source configuration.",
-    "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
     "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
     "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
     "Browser inspection identifies the connected STL as a heat-resistant shield; actual populated PCB geometry and edge pad assignments remain unknown.",
     "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。",
-    "Officially linked mechanical STEP has board outline, USB, antenna and screw but lacks a full populated PCB. Exact component shapes retained; neutral UNKNOWN label remains on unverified board, no chip layout invented."
+    "Officially linked mechanical STEP has board outline, USB, antenna and screw but lacks a full populated PCB. Exact component shapes retained; neutral UNKNOWN label remains on unverified board, no chip layout invented.",
+    "G0 cap hit region follows the original shield CAD; RGB position is photo-estimated below the retained shield, not a certified package-height or optical/light-pipe model."
   ],
   "catalog": {
     "chip": "esp32s3",
     "flashMb": 8,
-    "psramMb": null,
+    "psramMb": 0,
     "display": null,
-    "controls": [],
+    "controls": [
+      {
+        "id": "button",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true,
+        "defaultKeyCode": "KeyA",
+        "name": "按键"
+      }
+    ],
     "interfaces": [],
     "publication": {
       "title": "Stamp-S3 Arduino Demo",

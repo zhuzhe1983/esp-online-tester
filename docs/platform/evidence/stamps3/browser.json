@@ -1,0 +1,70 @@
+{
+  "checkedAt": "2026-10-27T18:37:29Z",
+  "browser": "headless Chromium via task-owned Playwright wrapper session, closed after checks",
+  "productId": "m5stack-s007",
+  "official": {
+    "version": "UIFlow2 2.5.3",
+    "buttonFlow": "first firmware selected by actual product dropdown; trial confirmation; remote download then real ROM execution",
+    "workbenchGuestSeconds": 20.7,
+    "miniGuestSeconds": 75.4,
+    "leds": [
+      [
+        0,
+        0,
+        255
+      ]
+    ],
+    "error": null,
+    "note": "Startup RMT only; official button application response, network and I2C boot diagnostic unresolved."
+  },
+  "inputFixture": {
+    "source": "tools/fixtures/stamps3-firmware",
+    "localBuildBundle": true,
+    "mouse": {
+      "pixel": [
+        651,
+        269
+      ],
+      "controlId": "button",
+      "guestSerial": [
+        "STAMPS3_BUTTON 0",
+        "STAMPS3_RMT 0 255 0",
+        "STAMPS3_BUTTON 1"
+      ]
+    },
+    "keyboard": {
+      "key": "A",
+      "guestSerial": [
+        "STAMPS3_BUTTON 0",
+        "STAMPS3_RMT 0 0 255",
+        "STAMPS3_BUTTON 1"
+      ]
+    }
+  },
+  "modelChecks": [
+    "green hover lies inside original CAD shield flexure cap",
+    "actual guest RGB remains independent of shell gold/purple choices",
+    "rear PCB marker reads UNKNOWN",
+    "2D remains display-free; no invented display",
+    "retained USB and antenna keep separate materials"
+  ],
+  "failuresRetained": [
+    "Early draft control label omitted required UI name, causing renderControls error; corrected before final screenshots and input checks.",
+    "Two browser automation waits did not wait for guest startup; premature pause failed with NOT_RUNNING. Repeated only after actual running serial/LED output; official mini final error is null.",
+    "No fresh quantitative 1:1 whole-product pass: bare-board reference differs from retained shield configuration; RGB package height/location remains photo estimate."
+  ],
+  "artifacts": {
+    "official-blue.png": "cb89bb3494f61b5457e965074491e3938ad0ae5e1e431421cb0523873392debf",
+    "cap-hover.png": "0d76211784c240a959b4165f1647fb476a127f2b7ff1f8248adb489bc8f6145d",
+    "cap-pressed-green.png": "9e6194dd6d8cbd675401878a9571ce4c59e7631b76917afa76d6b712dac1676f",
+    "gold.png": "ddea1c6e8042b239c1ba6f383561fe0e169f6b5d2a92829c7334d1aadcf771c8",
+    "purple.png": "2a6b8bd2e976383a71a6c10ec6ba93a859905935f889efc9352be1f209aac4d0",
+    "back.png": "a8635c98e5a39366363f65ba885e45ba73000fb1b2a6cf18078971071d097cd8",
+    "2d.png": "6d90ed81489ab08a525e4e52f1fa9b480f3483c14820f488af400b44aa870bb0",
+    "mini.png": "30f0baef2468cbc0fa0d7c4b694096f071744b87f071704fd1376ba72f639b09"
+  },
+  "lifecycle": {
+    "taskBrowserClosed": true,
+    "taskServerStopped": true
+  }
+}

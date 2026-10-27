@@ -17,6 +17,7 @@ pub mod atoms3_lite;
 pub mod atoms3r;
 pub mod dial;
 pub mod dinmeter;
+mod stamps3;
 pub mod stopwatch;
 pub mod papermono;
 pub mod paperdiy;
@@ -55,6 +56,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "atoms3r" | "m5stack-atoms3r" => Some(Box::new(AtomS3R::new())),
         "atoms3" | "m5stack-atoms3" => Some(Box::new(AtomS3::new())),
         "dial" | "m5stack-dial" => Some(Box::new(Dial::new())),
+        "stamps3" | "m5stack-s007" => Some(Box::new(stamps3::StampS3::new())),
         "dinmeter" | "m5stack-dinmeter" => Some(Box::new(DinMeter::new())),
         "dial-v11" | "m5stack-dial-v11" => Some(Box::new(Dial::v11())),
         "atoms3-lite" | "m5stack-atoms3-lite" => Some(Box::new(AtomS3Lite::new())),
