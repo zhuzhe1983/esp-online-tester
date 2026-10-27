@@ -19,7 +19,8 @@ pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};
 
 /// This executes the RV32IMAFC subset, not S31's complete custom ISA. No
-/// second hart, PLL/RC clock sources or board devices are installed. The Flash command
+/// second hart or board devices are installed. XTAL/CPLL domain rates are functional;
+/// RC_FAST/RC_SLOW are nominal selector rates, not oscillator calibration or CPU timing. The Flash command
 /// subset requires explicit NOR identity and array inputs; no product identity is guessed. Functional
 /// MMU mappings use explicitly supplied flash/PSRAM buffers. Unlike a P4 alias, its
 /// bus uses the S31 addresses and reports the first unsupported access with the guest PC.
@@ -71,6 +72,7 @@ impl Bringup {
         for steps in 0..budget {
             if let Some(reset) = self.bus.power.reset_request { return Run { steps, stop: Stop::PowerReset(reset) }; }
             if let Some(reset) = self.bus.rtc_wdt.reset_request { return Run { steps, stop: Stop::Reset(reset) }; }
+            self.bus.clocks.advance_calibration(1); // private functional model quantum, not physical PLL cycles
             self.bus.bus_monitor.observe(self.cpu.pc, self.cpu.x[2]);
             self.cpu.irq = self.bus.refresh_irq(self.cpu.mintthresh);
             if self.cpu.waiting && self.cpu.irq.is_none() { return Run { steps, stop: Stop::Waiting }; }

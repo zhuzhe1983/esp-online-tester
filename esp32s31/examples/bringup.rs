@@ -1,11 +1,15 @@
 //! Run a caller-supplied SRAM/ROM ELF and report the first unimplemented access.
 use std::io::Write;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None;
+    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None;
     while let Some(arg) = args.peek() {
         match arg.as_str() {
             "--rom" => rom = true, "--usb-host" => usb_host = true,
             "--rom-spi0-shadow" => spi0_shadow = true,
+            value if value.starts_with("--analog-dig=") => {
+                let text = &value["--analog-dig=".len()..]; if text.len() != 8 { return Err("analog DIG registers5,7,13,14 require eight hex digits".into()); }
+                dig = Some(u32::from_str_radix(text, 16)?.to_be_bytes());
+            }
             value if value.starts_with("--analog-perif-glitch=") => {
                 let text = &value["--analog-perif-glitch=".len()..]; if text.len() != 2 { return Err("analog PERIF register10 requires exactly two hex digits".into()); }
                 perif = Some(u8::from_str_radix(text, 16)?);
@@ -25,7 +29,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         args.next();
     }
-    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--analog-bias=hhhh] [--analog-perif-glitch=hh] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
+    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
     let input = args.next().unwrap_or_default();
     let budget = args.next().map(|s| s.parse::<u64>()).transpose()?.unwrap_or(100_000).min(10_000_000);
     if args.next().is_some() { return Err("too many bringup arguments".into()); }
@@ -41,6 +45,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     if let Some(bytes) = bias { m.bus.analog.set_bias(bytes); eprintln!("development analog BIAS seed={bytes:02x?} (caller input, no public reset value or voltage calibration)"); }
     if let Some(byte) = perif { m.bus.analog.set_perif_glitch(byte); eprintln!("development analog PERIF reg10 seed={byte:02x} (caller input, not a measured voltage/glitch profile)"); }
+    if let Some(bytes) = dig { m.bus.analog.set_dig_reg(bytes); eprintln!("development analog DIG registers5,7,13,14={bytes:02x?} (caller input, no voltage profile)"); }
     m.bus.usb_console.attach_host(usb_host);
     if spi0_shadow { m.bus.mspi.enable_legacy_rom_lengths(); eprintln!("development SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)"); }
     if let Some(value) = strap { m.bus.pads.strap = value; }
@@ -58,6 +63,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         m.cpu.pc, m.cpu.mepc, m.cpu.mcause, m.cpu.mtval, m.bus.first_fault);
     eprintln!("mspi-commands={} cache-maintenance={} sha-blocks={}", m.bus.mspi.commands, m.bus.cache.maintenance_operations, m.bus.sha.blocks());
     eprintln!("analog-transactions={} bias={:?} mpll-shutdown={}", m.bus.analog.transactions, m.bus.analog.bias(), m.bus.power.mpll_disabled());
+    eprintln!("analog-dig={:?}", m.bus.analog.dig_reg());
+    eprintln!("clock-rates={:?} rtc-fast-hz={} rtc-slow-hz={} cpll-control={:?}", m.bus.clocks.rates(), m.bus.clocks.rtc_fast_hz(), m.bus.clocks.rtc_slow_hz(), m.bus.clocks.read(0x174));
     eprintln!("permission-writes={}", m.bus.permissions.writes);
     eprintln!("analog-perif-glitch={:?}", m.bus.analog.perif_glitch());
     if usb_host { eprintln!("usb-host packets={packets} bytes={} data={:?}", usb.len(), String::from_utf8_lossy(&usb)); }

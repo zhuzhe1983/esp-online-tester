@@ -827,3 +827,62 @@ pairs against the same fixed main84e67571 baseline gave S3 +0.077%, C3 −0.403%
 C6 +2.198%, with identical instruction/cycle statistics and UART hashes. This is
 a production regression guard, not an S31 speed claim. No golden, UI or product
 availability changed; no browser or hardware verification is claimed.
+
+### Bootloader CPLL and low-power clock initialization
+
+The same unmodified Plus 2.0.68 complete image now reaches its real second-stage
+bootloader log: `ESP-IDF v6.1-dirty 2nd stage bootloader`, build timestamp and
+`Multicore bootloader`. The private core has executed the guest's CPLL power,
+320 MHz feedback/reference configuration, calibration start/poll/stop, and clock
+latch. The resulting CPU/MEM/SYS rates are 80 MHz and APB is 40 MHz. It then stops
+at PC `0x2f06d1a8`, write32 `0x20501000` (Flash SPI1 command, prohibited), after
+283,521 instructions. The application and display have not started; Plus remains
+unavailable. This log is a later checkpoint, not complete firmware compatibility.
+
+The subset follows the pinned v6.1 clock LL and register headers. CPLL output is
+computed from XTAL40 MHz × feedback/reference. Completion requires actual power,
+a start command, the supported 320 MHz divider and 16 functional instruction
+quanta. That delay is a deterministic model scheduling choice, **not measured
+silicon settling time**. No analog PLL waveform, RF clock, peripheral PLL or
+sleep transition is inferred. RO calibration-END writes cannot inject completion;
+STOP cancels a pending calibration but retains an already completed result.
+Invalid dividers and missing power/start never produce ready. Changing the active
+CPU's divider/calibration or removing its clock is explicitly rejected before
+mutation because suspended-clock execution is not modeled.
+
+LP clock reset selectors and the RO 40 MHz XTAL field are separate from the
+existing reset-reason registers. RTC_FAST can select XTAL or the functional
+RC_FAST gate; removing FOSC power makes the latter's rate zero. The nominal
+17.5 MHz / 136 kHz RC_FAST/RC_SLOW values come from `clk_tree_defs.h`; some older
+LL identifiers/comments call RC_FAST 20 MHz. These are not measured clocks,
+calibration or automatic CPU-to-RTC conversion. XTAL32K, force-on overrides and
+sleep power transitions remain unsupported. Reset-disabled PMU sleep and BOD
+mode0 interrupt cleanup is accepted; enabling those missing event sources is
+rejected. BOD mode1's existing qualified comparator input remains separate.
+
+DIG slave `0x6d` registers5/7/13/14 now use the existing real internal-I²C data and
+routing path. Public headers provide fields but no analog reset bytes, so
+`--analog-dig=hhhhhhhh` is an explicit development input in register order. With
+`ffffffff`, the unchanged guest writes leave `ff/ff/f3/80`, preserving unrelated
+bits. No seed still fails at the first DIG access. Earlier explicit NOR identity,
+BIAS/PERIF bytes and SPI0 legacy compatibility inputs retain their documented
+limits; none establishes the physical Plus hardware profile.
+
+`cpll-probe.S` executes the documented sequence and calls the fixed real ROM
+frequency reader. It prints `S31 ROM CPLL80 DIG PASS` in 244 instructions, reads
+80 MHz and updates DIG through three real transactions. Missing power, invalid
+divider and no-start controls execute its own timeout path and remain at XTAL40.
+Wrong DIG input executes the failure branch; absent DIG data and active CPU-clock
+removal trap at their real stores. Unit tests cover atomic clock latching,
+calibration cancellation/power loss, target routing, RO fields and disabled IRQ
+cleanup. See [stage receipt](evidence/s31-bringup/bootloader-clocks.json),
+[official probes](evidence/s31-bringup/bootloader-clocks-plus-2.0.68.json) and
+[production CPU guard](evidence/s31-bringup/bootloader-clocks-perf.json).
+
+Clock-stage validation passes both warnings-denied Clippy targets, 1,418 workspace
+Rust tests, 54 S31 unit tests, 20 real source/ROM fixtures, four platform Node
+files, nine existing WASM scenarios and production/private-target builds. Five
+alternating CPU pairs against fixed main84e67571 gave S3 +0.026%, C3 +1.042%,
+C6 −1.805%, with identical output hashes and instruction/cycle statistics. This
+is a regression guard, not an S31 speed claim. No golden, UI or product
+availability changed; no browser or physical-hardware verification is claimed.

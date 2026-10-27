@@ -1,4 +1,4 @@
-//! S31 MPLL shutdown and BOD mode1 configuration with an explicit qualified comparator input.
+//! S31 functional CPLL/FOSC controls, MPLL shutdown and BOD mode1 comparator input.
 //! No analog PLL output, voltage/threshold waveform, glitch detection or PMU sleep transitions.
 //! ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643, soc/esp32s31/register/soc/
 //! {pmu_reg,hp_alive_sys_reg,lp_analog_peri_reg}.h, soc/esp32s31/include/soc/reset_reasons.h,
@@ -6,19 +6,26 @@
 use emu_core::Fault;
 const ACTIVE_CK: u32 = 0x2070_401c;
 const IMMEDIATE_CK: u32 = 0x2070_40f4;
+const SLEEP_LP_CK: u32 = 0x2070_40d0;
+const HP_INT_ENA: u32 = 0x2070_4194;
+const HP_INT_CLR: u32 = 0x2070_4198;
 const ALIVE_CK: u32 = 0x2058_9000;
 pub const BOD_BASE: u32 = 0x2070_2000;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResetCause { Brownout } // reset_reasons.h: RESET_REASON_SYS_BROWN_OUT=15.
+const CPLL_LOW: u32 = 0x111;
+const CPLL_HIGH: u32 = (1 << 19) | (1 << 23) | (1 << 27);
 const MPLL_LOW: u32 = (1 << 3) | (1 << 7) | (1 << 11);
-pub struct Power { active: u32, alive: u32, mpll_low: u32, fib: u32, bod1: u32, glitch: u32, pub reset_request: Option<ResetCause> }
+pub struct Power { cpll: u32, sleep_lp: u32, active: u32, alive: u32, mpll_low: u32, fib: u32, bod1: u32, glitch: u32, pub reset_request: Option<ResetCause> }
 impl Default for Power {
-    fn default() -> Self { Self { active: 0, alive: 0xfffe_0000, mpll_low: 0, fib: u32::MAX, bod1: 0, glitch: 0, reset_request: None } }
+    fn default() -> Self { Self { cpll: 0, sleep_lp: 1 << 30, active: 0, alive: 0xfffe_0000, mpll_low: 0, fib: u32::MAX, bod1: 0, glitch: 0, reset_request: None } }
 }
 
 impl Power {
-    pub fn is_mmio(address: u32) -> bool { matches!(address & !3, ACTIVE_CK | IMMEDIATE_CK | ALIVE_CK) || matches!((address & !3).wrapping_sub(BOD_BASE), 4 | 0x18 | 0x1c) }
+    pub fn is_mmio(address: u32) -> bool { matches!(address & !3, ACTIVE_CK | IMMEDIATE_CK | ALIVE_CK | SLEEP_LP_CK | HP_INT_ENA | HP_INT_CLR) || matches!((address & !3).wrapping_sub(BOD_BASE), 4 | 0x18 | 0x1c | 0x38 | 0x3c) }
     /// Explicit software shutdown requests, not a measured oscillator state.
+    pub fn fosc_enabled(&self) -> bool { self.sleep_lp & (1 << 30) != 0 }
+    pub fn cpll_enabled(&self) -> bool { self.cpll == CPLL_LOW && self.alive & (1 << 29) != 0 }
     pub fn mpll_disabled(&self) -> bool { self.mpll_low == MPLL_LOW && self.alive & (1 << 31) == 0 && self.active & 0x4400_0000 == 0 }
     /// A caller-supplied already-qualified BOD comparator event, not a measured voltage
     /// or an analog threshold model. FIB/eFuse-controlled policy is still unknown.
@@ -29,23 +36,40 @@ impl Power {
         Ok(())
     }
     pub fn read(&self, address: u32) -> Result<u32, Fault> {
-        match address { ACTIVE_CK => Ok(self.active), ALIVE_CK => Ok(self.alive), IMMEDIATE_CK => Ok(0),
+        match address { HP_INT_ENA | HP_INT_CLR => Ok(0), a if a == BOD_BASE + 0x38 || a == BOD_BASE + 0x3c => Ok(0), SLEEP_LP_CK => Ok(self.sleep_lp), ACTIVE_CK => Ok(self.active), ALIVE_CK => Ok(self.alive), IMMEDIATE_CK => Ok(0),
             a if a == BOD_BASE + 4 => Ok(self.bod1), a if a == BOD_BASE + 0x18 => Ok(self.glitch),
             a if a == BOD_BASE + 0x1c => Ok(self.fib), _ => Err(Fault::Unmapped) }
     }
     pub fn write(&mut self, address: u32, value: u32) -> Result<(), Fault> {
         match address {
+            // Reset-disabled PMU sleep and BOD mode0 IRQ cleanup. There are no sleep
+            // transitions or mode0 comparator in this subset; enabling either fails.
+            // CLR is WT and cannot fabricate a pending event or a reset.
+            HP_INT_ENA => { if value & 0xf800_0000 != 0 { return Err(Fault::Prohibited); } }
+            HP_INT_CLR => {},
+            a if a == BOD_BASE + 0x38 => { if value & (1 << 31) != 0 { return Err(Fault::Prohibited); } }
+            a if a == BOD_BASE + 0x3c => {},
+            SLEEP_LP_CK => {
+                // v6.1 clk_ll_rc_fast_enable/disable uses this bit even while awake.
+                // XTAL32K/RC32K and sleep oscillator shutdown are not implemented.
+                if value & 0xb000_0000 != 0 { return Err(Fault::Prohibited); }
+                self.sleep_lp = value & (1 << 30);
+            }
             IMMEDIATE_CK => {
-                // Only the documented WT shutdown commands used by clk_ll_mpll_disable.
-                // The header disagrees about WT/RW on some high controls; powering PLLs
-                // up is deliberately unsupported until their protocol is implemented.
-                if value & !MPLL_LOW != 0 { return Err(Fault::Prohibited); }
-                self.mpll_low |= value;
+                // Group field definitions and the driver use tie-high/low commands.
+                // Some generated per-CPLL aliases say RW instead of WT; model the group
+                // WT protocol, not latched command bits or an analog PLL waveform.
+                if value & !(MPLL_LOW | CPLL_LOW | CPLL_HIGH) != 0 { return Err(Fault::Prohibited); }
+                let high = ((value >> 23) & 1) | ((value >> 23) & 0x10) | ((value >> 11) & 0x100);
+                let low = value & CPLL_LOW;
+                if high & low != 0 { return Err(Fault::Prohibited); }
+                self.cpll = (self.cpll | high) & !low;
+                self.mpll_low |= value & MPLL_LOW;
             }
             ALIVE_CK => {
                 // Preserve other domain enables. Turning off CPU/root clocks cannot be
                 // represented by continuing execution, so such writes fail explicitly.
-                if (value ^ self.alive) & !(1 << 31) != 0 { return Err(Fault::Prohibited); }
+                if (value ^ self.alive) & !((1 << 31) | (1 << 29)) != 0 { return Err(Fault::Prohibited); }
                 self.alive = value;
             }
             ACTIVE_CK => {
@@ -64,6 +88,26 @@ impl Power {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn cpll_power_commands_require_all_gates_and_irq_cleanup_cannot_enable_missing_sources() {
+        let mut p = Power::default(); assert!(!p.cpll_enabled());
+        p.write(IMMEDIATE_CK, 1 << 23 | 1 << 27).unwrap(); assert!(!p.cpll_enabled());
+        p.write(IMMEDIATE_CK, 1 << 19).unwrap(); assert!(p.cpll_enabled());
+        assert_eq!(p.read(IMMEDIATE_CK), Ok(0));
+        assert_eq!(p.write(IMMEDIATE_CK, 1 << 19 | 1 << 8), Err(Fault::Prohibited)); assert!(p.cpll_enabled());
+        p.write(ALIVE_CK, 0xdffe_0000).unwrap(); assert!(!p.cpll_enabled());
+        p.write(ALIVE_CK, 0xfffe_0000).unwrap(); assert!(p.cpll_enabled());
+        p.write(IMMEDIATE_CK, 0x111).unwrap(); assert!(!p.cpll_enabled());
+        assert!(p.fosc_enabled()); p.write(SLEEP_LP_CK, 0).unwrap(); assert!(!p.fosc_enabled());
+        assert_eq!(p.write(SLEEP_LP_CK, 1 << 28), Err(Fault::Prohibited));
+        p.write(SLEEP_LP_CK, 1 << 30).unwrap(); assert!(p.fosc_enabled());
+        for address in [HP_INT_ENA, BOD_BASE + 0x38] {
+            assert_eq!(p.read(address), Ok(0)); p.write(address, 0).unwrap();
+            assert_eq!(p.write(address, 1 << 31), Err(Fault::Prohibited)); assert_eq!(p.read(address), Ok(0));
+        }
+        p.write(HP_INT_CLR, u32::MAX).unwrap(); p.write(BOD_BASE + 0x3c, u32::MAX).unwrap();
+        assert_eq!(p.read(HP_INT_CLR), Ok(0)); assert_eq!(p.read(BOD_BASE + 0x3c), Ok(0)); assert_eq!(p.reset_request, None);
+    }
     #[test]
     fn brownout_requires_known_software_policy_and_actual_comparator_event() {
         let mut p = Power::default();

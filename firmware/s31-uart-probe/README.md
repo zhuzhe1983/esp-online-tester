@@ -64,7 +64,7 @@ before the documented first unsupported USB clock or SPI0 reserved-register acce
 a real product strap or OTP profile, or a successful flash boot.
 
 ```sh
-RISCV_TOOLCHAIN_PREFIX=/path/to/riscv32-esp-elf- \
+S31_BUILD_ROM_IMAGE=1 ESPTOOL_BIN=/path/to/esptool RISCV_TOOLCHAIN_PREFIX=/path/to/riscv32-esp-elf- \
   bash firmware/s31-uart-probe/build.sh output/s31-uart-probe
 S31_UART_ELF="$PWD/output/s31-uart-probe/probe.elf" \
 S31_UART_IRQ_ELF="$PWD/output/s31-uart-probe/irq-probe.elf" \
@@ -79,6 +79,11 @@ S31_USB_ELF="$PWD/output/s31-uart-probe/usb-probe.elf" \
 S31_MONITOR_ELF="$PWD/output/s31-uart-probe/monitor-probe.elf" \
 S31_MSPI_ELF="$PWD/output/s31-uart-probe/mspi-probe.elf" \
 S31_CACHE_ELF="$PWD/output/s31-uart-probe/cache-probe.elf" \
+S31_ANALOG_ELF="$PWD/output/s31-uart-probe/analog-probe.elf" \
+S31_POWER_ELF="$PWD/output/s31-uart-probe/power-probe.elf" \
+S31_PMS_ELF="$PWD/output/s31-uart-probe/pms-probe.elf" \
+S31_CPLL_ELF="$PWD/output/s31-uart-probe/cpll-probe.elf" \
+S31_BOOT_IMAGE="$PWD/output/s31-uart-probe/spi0-observation.bin" \
 S31_ROM_ELF="$PWD/output/s31-sources/roms/esp32s31_rev0_rom.elf" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/probe.elf A
@@ -157,3 +162,13 @@ access. Restrictions require the explicit bus-error response; quiet-denial read
 semantics, security-domain transitions and PMS IRQ/record registers are not yet
 implemented. This validates the private HP-CPU TEE subset, not security isolation
 for an entire product.
+
+`cpll-probe.S` uses the real S31 ROM frequency reader after configuring CPLL80,
+updates DIG through real internal-I²C transactions and removes the RTC_FAST
+oscillator gate. Set absolute `S31_CPLL_ELF` and `S31_ROM_ELF` paths. Missing
+power, invalid divider and no-start controls take the guest timeout path; wrong
+DIG data takes its failure branch; missing data and removal of an active CPU
+clock trap. Calibration takes16 functional model quanta, not measured physical
+settling time. The explicit `--analog-dig=hhhhhhhh` seed orders registers5,7,13,14;
+headers do not establish their analog reset bytes. The fixture does not identify
+product hardware or validate a physical PLL, RTC timing or voltage.

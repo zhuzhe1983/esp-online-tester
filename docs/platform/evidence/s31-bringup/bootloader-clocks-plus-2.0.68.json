@@ -1,0 +1,308 @@
+{
+  "stepBudget": 2000000,
+  "source": {
+    "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+    "finalUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+    "status": 200,
+    "fetchedAt": "2026-10-27T18:17:45Z",
+    "mediaType": "application/octet-stream",
+    "bytes": 16405079,
+    "sha256": "265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80"
+  },
+  "romSha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+  "partitions": [
+    {
+      "type": 1,
+      "subtype": 2,
+      "offset": "0x9000",
+      "bytes": 16384,
+      "label": "nvs",
+      "flags": 0
+    },
+    {
+      "type": 1,
+      "subtype": 0,
+      "offset": "0xd000",
+      "bytes": 8192,
+      "label": "otadata",
+      "flags": 0
+    },
+    {
+      "type": 1,
+      "subtype": 1,
+      "offset": "0xf000",
+      "bytes": 4096,
+      "label": "phy_init",
+      "flags": 0
+    },
+    {
+      "type": 1,
+      "subtype": 130,
+      "offset": "0x10000",
+      "bytes": 409600,
+      "label": "model",
+      "flags": 0
+    },
+    {
+      "type": 0,
+      "subtype": 16,
+      "offset": "0x80000",
+      "bytes": 5242880,
+      "label": "ota_0",
+      "flags": 0
+    },
+    {
+      "type": 0,
+      "subtype": 17,
+      "offset": "0x580000",
+      "bytes": 5242880,
+      "label": "ota_1",
+      "flags": 0
+    },
+    {
+      "type": 1,
+      "subtype": 130,
+      "offset": "0xa80000",
+      "bytes": 409600,
+      "label": "resources",
+      "flags": 0
+    },
+    {
+      "type": 1,
+      "subtype": 64,
+      "offset": "0xae4000",
+      "bytes": 5242880,
+      "label": "font_data",
+      "flags": 0
+    },
+    {
+      "type": 1,
+      "subtype": 3,
+      "offset": "0xfe4000",
+      "bytes": 65536,
+      "label": "coredump",
+      "flags": 0
+    }
+  ],
+  "images": [
+    {
+      "offset": "0x2000",
+      "entry": "0x2f06a2ba",
+      "chipId": 32,
+      "segments": [
+        {
+          "address": "0x2f0740c0",
+          "bytes": 5772
+        },
+        {
+          "address": "0x2f06a2b0",
+          "bytes": 3196
+        },
+        {
+          "address": "0x2f06cfb0",
+          "bytes": 13160
+        }
+      ],
+      "checksumValid": true,
+      "appendedDigestValid": true
+    },
+    {
+      "offset": "0x80000",
+      "entry": "0x2f0009b6",
+      "chipId": 32,
+      "segments": [
+        {
+          "address": "0x402d0020",
+          "bytes": 1780080
+        },
+        {
+          "address": "0x2e000020",
+          "bytes": 36
+        },
+        {
+          "address": "0x2f000000",
+          "bytes": 54868
+        },
+        {
+          "address": "0x40000020",
+          "bytes": 2890828
+        },
+        {
+          "address": "0x2f00d654",
+          "bytes": 48808
+        },
+        {
+          "address": "0x2f019500",
+          "bytes": 41800
+        }
+      ],
+      "checksumValid": true,
+      "appendedDigestValid": true
+    }
+  ],
+  "developmentInputs": {
+    "strap": "0x12",
+    "usbHost": true,
+    "norIdentity": "ef4018",
+    "otpImage": null,
+    "spi0LegacyShadows": true,
+    "analogBiasSeed": "0000",
+    "analogPerifGlitchSeed": "ff",
+    "analogDigSeed": "ffffffff"
+  },
+  "uart": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:1\r\nload:0x2f0740c0,len:0x168c\r\nload:0x2f06a2b0,len:0xc7c\r\nload:0x2f06cfb0,len:0x3368\r\nentry 0x2f06a2ba\r\nI (5) boot: ESP-IDF v6.1-dirty 2nd stage bootloader\r\nI (5) boot: compile time Oct 23 2026 16:28:36\r\nI (5) boot: Multicore bootloader\r\n",
+  "diagnostic": "flash bytes=16405079 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment analog BIAS seed=[00, 00] (caller input, no public reset value or voltage calibration)\ndevelopment analog PERIF reg10 seed=ff (caller input, not a measured voltage/glitch profile)\ndevelopment analog DIG registers5,7,13,14=[ff, ff, ff, ff] (caller input, no voltage profile)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Trap(Exception(7)) steps=283521 pc=0x2f801700 mepc=0x2f06d1a8 mcause=0x7 mtval=0x20501000 fault=Some(AccessFault { pc: 788976040, address: 542117888, bytes: 4, write: true, fetch: false, reason: Prohibited })\nmspi-commands=7 cache-maintenance=4 sha-blocks=347\nanalog-transactions=20 bias=Some([160, 10]) mpll-shutdown=true\nanalog-dig=Some([255, 255, 243, 128])\nclock-rates=Rates { cpu_hz: 80000000, mem_hz: 80000000, sys_hz: 80000000, apb_hz: 40000000 } rtc-fast-hz=40000000 rtc-slow-hz=136000 cpll-control=Ok(12)\npermission-writes=99\nanalog-perif-glitch=Some(242)\nusb-host packets=11 bytes=359 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:1\\r\\nload:0x2f0740c0,len:0x168c\\r\\nload:0x2f06a2b0,len:0xc7c\\r\\nload:0x2f06cfb0,len:0x3368\\r\\nentry 0x2f06a2ba\\r\\nI (5) boot: ESP-IDF v6.1-dirty 2nd stage bootloader\\r\\nI (5) boot: compile time Oct 23 2026 16:28:36\\r\\nI (5) boot: Multicore bootloader\\r\\n\"\n",
+  "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk",
+  "runsDuringBringup": [
+    {
+      "stage": "lp-clock-no-dig",
+      "source": {
+        "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "finalUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "status": 200,
+        "fetchedAt": "2026-10-27T18:01:55Z",
+        "mediaType": "application/octet-stream",
+        "bytes": 16405079,
+        "sha256": "265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80"
+      },
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "ff",
+        "analogDigSeed": null
+      },
+      "diagnostic": "flash bytes=16405079 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment analog BIAS seed=[00, 00] (caller input, no public reset value or voltage calibration)\ndevelopment analog PERIF reg10 seed=ff (caller input, not a measured voltage/glitch profile)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Trap(Exception(7)) steps=200606 pc=0x2f801700 mepc=0x2f0702a0 mcause=0x7 mtval=0x2010f804 fault=Some(AccessFault { pc: 788988576, address: 537982980, bytes: 4, write: true, fetch: false, reason: Prohibited })\nmspi-commands=6 cache-maintenance=4 sha-blocks=347\nanalog-transactions=10 bias=Some([160, 10]) mpll-shutdown=true\nanalog-dig=None\npermission-writes=99\nanalog-perif-glitch=Some(242)\nusb-host packets=8 bytes=225 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:1\\r\\nload:0x2f0740c0,len:0x168c\\r\\nload:0x2f06a2b0,len:0xc7c\\r\\nload:0x2f06cfb0,len:0x3368\\r\\nentry 0x2f06a2ba\\r\\n\"\n",
+      "uart": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:1\r\nload:0x2f0740c0,len:0x168c\r\nload:0x2f06a2b0,len:0xc7c\r\nload:0x2f06cfb0,len:0x3368\r\nentry 0x2f06a2ba\r\n",
+      "originalReceiptSha256": "8dfd4e9b03649936a0119178996ca23e78492958641026c0d824b85002d53460"
+    },
+    {
+      "stage": "lp-clock-dig-ff",
+      "source": {
+        "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "finalUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "status": 200,
+        "fetchedAt": "2026-10-27T18:01:56Z",
+        "mediaType": "application/octet-stream",
+        "bytes": 16405079,
+        "sha256": "265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80"
+      },
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "ff",
+        "analogDigSeed": "ffffffff"
+      },
+      "diagnostic": "flash bytes=16405079 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment analog BIAS seed=[00, 00] (caller input, no public reset value or voltage calibration)\ndevelopment analog PERIF reg10 seed=ff (caller input, not a measured voltage/glitch profile)\ndevelopment analog DIG registers5,7,13,14=[ff, ff, ff, ff] (caller input, no voltage profile)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Trap(Exception(7)) steps=201171 pc=0x2f801700 mepc=0x2f06fefc mcause=0x7 mtval=0x207040f4 fault=Some(AccessFault { pc: 788987644, address: 544227572, bytes: 4, write: true, fetch: false, reason: Prohibited })\nmspi-commands=6 cache-maintenance=4 sha-blocks=347\nanalog-transactions=20 bias=Some([160, 10]) mpll-shutdown=true\nanalog-dig=Some([255, 255, 243, 128])\npermission-writes=99\nanalog-perif-glitch=Some(242)\nusb-host packets=8 bytes=225 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:1\\r\\nload:0x2f0740c0,len:0x168c\\r\\nload:0x2f06a2b0,len:0xc7c\\r\\nload:0x2f06cfb0,len:0x3368\\r\\nentry 0x2f06a2ba\\r\\n\"\n",
+      "uart": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:1\r\nload:0x2f0740c0,len:0x168c\r\nload:0x2f06a2b0,len:0xc7c\r\nload:0x2f06cfb0,len:0x3368\r\nentry 0x2f06a2ba\r\n",
+      "originalReceiptSha256": "b962a6bace0e1be90a1932cf3c4634436d87a53a8c18a6c681d7cabca39e5236"
+    },
+    {
+      "stage": "lp-clock-cpll",
+      "source": {
+        "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "finalUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "status": 200,
+        "fetchedAt": "2026-10-27T18:04:12Z",
+        "mediaType": "application/octet-stream",
+        "bytes": 16405079,
+        "sha256": "265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80"
+      },
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "ff",
+        "analogDigSeed": "ffffffff"
+      },
+      "diagnostic": "flash bytes=16405079 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment analog BIAS seed=[00, 00] (caller input, no public reset value or voltage calibration)\ndevelopment analog PERIF reg10 seed=ff (caller input, not a measured voltage/glitch profile)\ndevelopment analog DIG registers5,7,13,14=[ff, ff, ff, ff] (caller input, no voltage profile)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Trap(Exception(5)) steps=201828 pc=0x2f801700 mepc=0x2f06fd1e mcause=0x5 mtval=0x207040d0 fault=Some(AccessFault { pc: 788987166, address: 544227536, bytes: 4, write: false, fetch: false, reason: Unmapped })\nmspi-commands=6 cache-maintenance=4 sha-blocks=347\nanalog-transactions=20 bias=Some([160, 10]) mpll-shutdown=true\nanalog-dig=Some([255, 255, 243, 128])\npermission-writes=99\nanalog-perif-glitch=Some(242)\nusb-host packets=8 bytes=225 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:1\\r\\nload:0x2f0740c0,len:0x168c\\r\\nload:0x2f06a2b0,len:0xc7c\\r\\nload:0x2f06cfb0,len:0x3368\\r\\nentry 0x2f06a2ba\\r\\n\"\n",
+      "uart": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:1\r\nload:0x2f0740c0,len:0x168c\r\nload:0x2f06a2b0,len:0xc7c\r\nload:0x2f06cfb0,len:0x3368\r\nentry 0x2f06a2ba\r\n",
+      "originalReceiptSha256": "0007a814ca85dc8e4ea07feb18153b8e71f20838f9b9cb7445eed656d336292b"
+    },
+    {
+      "stage": "lp-clock-fosc",
+      "source": {
+        "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "finalUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "status": 200,
+        "fetchedAt": "2026-10-27T18:10:30Z",
+        "mediaType": "application/octet-stream",
+        "bytes": 16405079,
+        "sha256": "265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80"
+      },
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "ff",
+        "analogDigSeed": "ffffffff"
+      },
+      "diagnostic": "flash bytes=16405079 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment analog BIAS seed=[00, 00] (caller input, no public reset value or voltage calibration)\ndevelopment analog PERIF reg10 seed=ff (caller input, not a measured voltage/glitch profile)\ndevelopment analog DIG registers5,7,13,14=[ff, ff, ff, ff] (caller input, no voltage profile)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Trap(Exception(5)) steps=230140 pc=0x2f801700 mepc=0x2f06a69e mcause=0x5 mtval=0x20702038 fault=Some(AccessFault { pc: 788965022, address: 544219192, bytes: 4, write: false, fetch: false, reason: Unmapped })\nmspi-commands=6 cache-maintenance=4 sha-blocks=347\nanalog-transactions=20 bias=Some([160, 10]) mpll-shutdown=true\nanalog-dig=Some([255, 255, 243, 128])\nclock-rates=Rates { cpu_hz: 80000000, mem_hz: 80000000, sys_hz: 80000000, apb_hz: 40000000 } rtc-fast-hz=40000000 rtc-slow-hz=136000 cpll-control=Ok(12)\npermission-writes=99\nanalog-perif-glitch=Some(242)\nusb-host packets=8 bytes=225 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:1\\r\\nload:0x2f0740c0,len:0x168c\\r\\nload:0x2f06a2b0,len:0xc7c\\r\\nload:0x2f06cfb0,len:0x3368\\r\\nentry 0x2f06a2ba\\r\\n\"\n",
+      "uart": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:1\r\nload:0x2f0740c0,len:0x168c\r\nload:0x2f06a2b0,len:0xc7c\r\nload:0x2f06cfb0,len:0x3368\r\nentry 0x2f06a2ba\r\n",
+      "originalReceiptSha256": "a6c403062efc6f6d08e3619fab393cf7d3dadf1f567616e42ca70d1c0ec7372a"
+    },
+    {
+      "stage": "lp-clock-irq-cleanup",
+      "source": {
+        "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "finalUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "status": 200,
+        "fetchedAt": "2026-10-27T18:11:16Z",
+        "mediaType": "application/octet-stream",
+        "bytes": 16405079,
+        "sha256": "265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80"
+      },
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "ff",
+        "analogDigSeed": "ffffffff"
+      },
+      "diagnostic": "flash bytes=16405079 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment analog BIAS seed=[00, 00] (caller input, no public reset value or voltage calibration)\ndevelopment analog PERIF reg10 seed=ff (caller input, not a measured voltage/glitch profile)\ndevelopment analog DIG registers5,7,13,14=[ff, ff, ff, ff] (caller input, no voltage profile)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Trap(Exception(7)) steps=283521 pc=0x2f801700 mepc=0x2f06d1a8 mcause=0x7 mtval=0x20501000 fault=Some(AccessFault { pc: 788976040, address: 542117888, bytes: 4, write: true, fetch: false, reason: Prohibited })\nmspi-commands=7 cache-maintenance=4 sha-blocks=347\nanalog-transactions=20 bias=Some([160, 10]) mpll-shutdown=true\nanalog-dig=Some([255, 255, 243, 128])\nclock-rates=Rates { cpu_hz: 80000000, mem_hz: 80000000, sys_hz: 80000000, apb_hz: 40000000 } rtc-fast-hz=40000000 rtc-slow-hz=136000 cpll-control=Ok(12)\npermission-writes=99\nanalog-perif-glitch=Some(242)\nusb-host packets=11 bytes=359 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:1\\r\\nload:0x2f0740c0,len:0x168c\\r\\nload:0x2f06a2b0,len:0xc7c\\r\\nload:0x2f06cfb0,len:0x3368\\r\\nentry 0x2f06a2ba\\r\\nI (5) boot: ESP-IDF v6.1-dirty 2nd stage bootloader\\r\\nI (5) boot: compile time Oct 23 2026 16:28:36\\r\\nI (5) boot: Multicore bootloader\\r\\n\"\n",
+      "uart": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:1\r\nload:0x2f0740c0,len:0x168c\r\nload:0x2f06a2b0,len:0xc7c\r\nload:0x2f06cfb0,len:0x3368\r\nentry 0x2f06a2ba\r\nI (5) boot: ESP-IDF v6.1-dirty 2nd stage bootloader\r\nI (5) boot: compile time Oct 23 2026 16:28:36\r\nI (5) boot: Multicore bootloader\r\n",
+      "originalReceiptSha256": "4178cf8ae8166e571021a4f3203b885704fbaa4cf16d989e7da43f008fa5e978"
+    },
+    {
+      "stage": "lp-clock-final-00",
+      "source": {
+        "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "finalUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+        "status": 200,
+        "fetchedAt": "2026-10-27T18:17:47Z",
+        "mediaType": "application/octet-stream",
+        "bytes": 16405079,
+        "sha256": "265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80"
+      },
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "ff",
+        "analogDigSeed": "00000000"
+      },
+      "diagnostic": "flash bytes=16405079 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment analog BIAS seed=[00, 00] (caller input, no public reset value or voltage calibration)\ndevelopment analog PERIF reg10 seed=ff (caller input, not a measured voltage/glitch profile)\ndevelopment analog DIG registers5,7,13,14=[00, 00, 00, 00] (caller input, no voltage profile)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Trap(Exception(7)) steps=283521 pc=0x2f801700 mepc=0x2f06d1a8 mcause=0x7 mtval=0x20501000 fault=Some(AccessFault { pc: 788976040, address: 542117888, bytes: 4, write: true, fetch: false, reason: Prohibited })\nmspi-commands=7 cache-maintenance=4 sha-blocks=347\nanalog-transactions=20 bias=Some([160, 10]) mpll-shutdown=true\nanalog-dig=Some([128, 128, 0, 128])\nclock-rates=Rates { cpu_hz: 80000000, mem_hz: 80000000, sys_hz: 80000000, apb_hz: 40000000 } rtc-fast-hz=40000000 rtc-slow-hz=136000 cpll-control=Ok(12)\npermission-writes=99\nanalog-perif-glitch=Some(242)\nusb-host packets=11 bytes=359 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:1\\r\\nload:0x2f0740c0,len:0x168c\\r\\nload:0x2f06a2b0,len:0xc7c\\r\\nload:0x2f06cfb0,len:0x3368\\r\\nentry 0x2f06a2ba\\r\\nI (5) boot: ESP-IDF v6.1-dirty 2nd stage bootloader\\r\\nI (5) boot: compile time Oct 23 2026 16:28:36\\r\\nI (5) boot: Multicore bootloader\\r\\n\"\n",
+      "uart": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:1\r\nload:0x2f0740c0,len:0x168c\r\nload:0x2f06a2b0,len:0xc7c\r\nload:0x2f06cfb0,len:0x3368\r\nentry 0x2f06a2ba\r\nI (5) boot: ESP-IDF v6.1-dirty 2nd stage bootloader\r\nI (5) boot: compile time Oct 23 2026 16:28:36\r\nI (5) boot: Multicore bootloader\r\n",
+      "originalReceiptSha256": "8e6bb4805e8c355fcb34fa15ff1ac0c87162436389240d71097f49858cbd4511"
+    }
+  ]
+}

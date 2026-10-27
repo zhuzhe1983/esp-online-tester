@@ -409,3 +409,42 @@ fn external_s31_permissions_control_actual_uart_io() {
         eprintln!("S31 PMS control={control} steps={} stop={:?} writes={}", run.steps, run.stop, m.bus.permissions.writes);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_CPLL_ELF and S31_ROM_ELF (20260528 S31 ROM)"]
+fn external_s31_cpll_dig_data_and_real_rom_frequency() {
+    let path = std::env::var("S31_CPLL_ELF").expect("build firmware/s31-uart-probe and set S31_CPLL_ELF");
+    let rom = std::env::var("S31_ROM_ELF").expect("set S31_ROM_ELF to the fixed 20260528 S31 ROM");
+    let elf = std::fs::read(path).expect("read S31_CPLL_ELF"); let rom = std::fs::read(rom).expect("read S31_ROM_ELF");
+    for control in 0u32..=6 {
+        let mut m = esp32s31::Bringup::new(); m.load_rom_elf(&rom).unwrap(); m.load_elf(&elf).unwrap();
+        m.bus.load(0x2f070000, &control.to_le_bytes(), 4).unwrap();
+        if control != 6 { m.bus.analog.set_dig_reg([0x11, 0x22, if control == 5 { 0 } else { 0xff }, 0x44]); }
+        let run = m.run(10_000);
+        match control {
+            0 => {
+                assert_eq!(run.stop, esp32s31::Stop::Waiting); assert!(m.bus.first_fault.is_none());
+                assert_eq!(m.bus.uart0.tx_out, b"S31 ROM CPLL80 DIG PASS\n");
+                assert_eq!(m.bus.clocks.rates(), esp32s31::clocks::Rates { cpu_hz: 80_000_000, mem_hz: 80_000_000, sys_hz: 80_000_000, apb_hz: 40_000_000 });
+                assert_eq!(m.bus.analog.dig_reg(), Some([0x11, 0x22, 0xf3, 0x44])); assert_eq!(m.bus.analog.transactions, 3);
+                assert_eq!(m.bus.clocks.rtc_fast_hz(), 0); assert!(!m.bus.power.fosc_enabled());
+            }
+            1..=3 => {
+                assert_eq!(run.stop, esp32s31::Stop::Waiting); assert!(m.bus.first_fault.is_none());
+                assert_eq!(m.bus.uart0.tx_out, b"S31 CPLL NOT READY\n"); assert_eq!(m.bus.clocks.rates().cpu_hz, 40_000_000);
+            }
+            5 => {
+                assert!(matches!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_))));
+                assert_eq!(m.bus.uart0.tx_out, b"S31 CPLL FAIL\n"); assert_eq!(m.bus.analog.transactions, 1);
+            }
+            _ => {
+                assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7)));
+                let fault = m.bus.first_fault.as_ref().unwrap(); assert_eq!(fault.reason, emu_core::Fault::Prohibited);
+                assert_eq!(fault.address, if control == 4 { 0x207040f4 } else { 0x2010f804 });
+                assert!(m.bus.uart0.tx_out.is_empty());
+                if control == 4 { assert!(m.bus.power.cpll_enabled()); assert_eq!(m.bus.clocks.rates().cpu_hz, 80_000_000); }
+            }
+        }
+        eprintln!("S31 CPLL control={control} steps={} stop={:?} rates={:?} transactions={}", run.steps, run.stop, m.bus.clocks.rates(), m.bus.analog.transactions);
+    }
+}

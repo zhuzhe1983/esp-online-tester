@@ -180,6 +180,10 @@ impl S31Bus {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return match self.analog.read(address, self.clocks.modem_on()) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
+        if Clocks::is_lp_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.clocks.lp_read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
         if Clocks::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return match self.clocks.read(address - crate::clocks::BASE) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
@@ -309,11 +313,21 @@ impl S31Bus {
         }
         if Power::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
-            return match self.power.write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+            if self.clocks.using_cpll() && (address == 0x2070_40f4 && value & 0x111 != 0 || address == 0x2058_9000 && value & (1 << 29) == 0) {
+                return self.fault(address, bytes, true, false, Fault::Prohibited); // CPU-clock loss/suspend not modeled.
+            }
+            return match self.power.write(address, value) {
+                Ok(()) => { self.clocks.set_cpll_power(self.power.cpll_enabled()); self.clocks.set_fosc_power(self.power.fosc_enabled()); Ok(()) }
+                Err(e) => self.fault(address, bytes, true, false, e),
+            };
         }
         if Analog::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             return match self.analog.write(address, value, self.clocks.modem_on()) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if Clocks::is_lp_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.clocks.lp_write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if Clocks::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }

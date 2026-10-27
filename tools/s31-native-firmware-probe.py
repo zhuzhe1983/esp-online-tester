@@ -55,6 +55,7 @@ def main():
     parser.add_argument("--rom-spi0-shadow", action="store_true", help="explicit inferred legacy SPI0 config shadows; strict mode remains default")
     parser.add_argument("--nor-jedec", help="explicit six-hex-digit development NOR identity; not product hardware identification")
     parser.add_argument("--analog-bias", help="explicit four-hex-digit BIAS register0/register1 seed; no silicon reset claim")
+    parser.add_argument("--analog-dig", help="explicit eight-hex-digit DIG registers5,7,13,14 seed")
     parser.add_argument("--analog-perif-glitch", help="explicit two-hex-digit PERIF register10 seed; no voltage/glitch reset claim")
     parser.add_argument("--steps", type=int, default=200000, help="bounded instruction budget, maximum 10000000")
     args = parser.parse_args()
@@ -89,13 +90,15 @@ def main():
         command.append("--nor-jedec=" + args.nor_jedec)
     if args.analog_bias:
         command.append("--analog-bias=" + args.analog_bias)
+    if args.analog_dig:
+        command.append("--analog-dig=" + args.analog_dig)
     if args.analog_perif_glitch:
         command.append("--analog-perif-glitch=" + args.analog_perif_glitch)
     command.extend([args.rom, "", str(args.steps)])
     result = subprocess.run(command, input=data, capture_output=True, timeout=120, check=True)
     report = {"stepBudget": args.steps, "source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
               "partitions": partitions, "images": images,
-              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch},
+              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig},
               "uart": result.stdout.decode("utf-8", errors="replace"),
               "diagnostic": result.stderr.decode("utf-8", errors="replace"),
               "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk"}
