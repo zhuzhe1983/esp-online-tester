@@ -1,0 +1,211 @@
+{
+  "date": "2026-10-27",
+  "base": "3344ed58",
+  "scope": "Private S31 bootloader hardware initialization: internal analog-I2C byte transactions, PSRAM XTAL clock/reset gates and narrow MPLL shutdown; no board/app/display readiness.",
+  "sources": "sources.json: fixed ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643 bootloader_esp32s31.c, regi2c_impl.c, modem register headers, regi2c_bias.h, hp_sys_clkrst_reg.h, pmu_reg.h and hp_alive_sys_reg.h.",
+  "semantics": {
+    "modemClock": "0x20587040 bit0 RW reset1; gates all modeled analog controller MMIO; no RF/modem operation.",
+    "analogTarget": "BIAS slave0x6a, registers0/1 only; values must be explicit host input, no public silicon reset values available.",
+    "transactions": "Two digital masters use active-low slave enable and CONF2 route. Every completed read/write changes actual target/controller data. BUSY is idle only after the synchronous operation; timing not modeled.",
+    "reset": "Digital master reset clears controller registers while preserving analog target bytes. Functional reset-domain assumption; no independent silicon measurement.",
+    "psram": "0x20587068 defaults0x181. SYS/core clocks and AXI/APB resets gate actual external mapped reads/writes/fetches, not fake readiness; explicit backing memory remains required. PLL mux and FORCE_NORST unsupported.",
+    "mpll": "Only documented bootloader WT shutdown commands, corresponding ALIVE gate and ACTIVE profile fields. No PLL power-up/lock, voltage or oscillator output.",
+    "sourceClock": "MODEM_SYSCON CLK_CONF reset0x200002 includes unrelated PWDET divider1 at bit1; digital source selection retained, no 160MHz PLL waveform or settling implied."
+  },
+  "sourceFixture": {
+    "path": "firmware/s31-uart-probe/analog-probe.S",
+    "hostSeed": [
+      23,
+      41
+    ],
+    "finalTarget": [
+      167,
+      42
+    ],
+    "positive": {
+      "steps": 252,
+      "transactions": 8,
+      "stop": "Waiting",
+      "uart": "S31 ANALOG ROUTE RESET MPLL PASS\n"
+    },
+    "negative": [
+      {
+        "control": "wrong-data",
+        "steps": 111,
+        "transactions": 1,
+        "stop": "Ebreak",
+        "uart": "S31 ANALOG FAIL\n"
+      },
+      {
+        "control": "no-seed",
+        "steps": 19,
+        "transactions": 0,
+        "stop": "Exception7",
+        "address": "0x2010f804"
+      },
+      {
+        "control": "clock-off",
+        "steps": 7,
+        "transactions": 0,
+        "stop": "Exception7",
+        "address": "0x2010f018"
+      }
+    ]
+  },
+  "failuresRetained": [
+    {
+      "check": "first external fixture invocation",
+      "failure": "Relative S31_ANALOG_ELF resolves from crate working directory, so file not found. Corrected to caller absolute fixture path. No emulator modification for this failure."
+    },
+    {
+      "check": "first native Clippy",
+      "failure": "items_after_test_module in analog.rs/power.rs; moved test modules to end, no lint suppression."
+    },
+    {
+      "check": "first modem header lookup",
+      "failure": "Guessed components/soc/esp32s31/register/soc/modem_lpcon_reg.h returned404; repository tree resolved actual include/modem path, then successful GET receipts recorded."
+    },
+    {
+      "check": "CI skip-filter review",
+      "failure": "CI --skip external_ would exclude the new PSRAM test name external_storage and an earlier MSPI test external_die_state. Renamed both to backing_storage/nor_die_state, and reran CI checks with both included. Only test names changed."
+    }
+  ],
+  "notImplemented": [
+    "BOD/FIB analog reset controller and voltage/glitch detection",
+    "Other analog slaves and burst protocol",
+    "Analog PLL power-up/calibration/lock and frequency transitions",
+    "Full PSRAM transaction protocol/identified product die",
+    "Timers, remaining bootloader/application prerequisites and Plus display",
+    "Silicon or physical device verification"
+  ],
+  "artifacts": [
+    {
+      "path": "firmware/s31-uart-probe/analog-probe.S",
+      "bytes": 2034,
+      "sha256": "dd67e5fa996915dbe94d2cc21eaf0c950d3d6232c627d7abf623bc8d340b92cd"
+    },
+    {
+      "path": "output/s31-uart-probe/analog-probe.elf",
+      "bytes": 5180,
+      "sha256": "f7ccdd313a6da473bbea72cbf12f44e4379cde584a286e656984571c8f3925f6"
+    },
+    {
+      "path": "output/s31-sources/roms/esp32s31_rev0_rom.elf",
+      "bytes": 513396,
+      "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87"
+    }
+  ],
+  "officialProbe": "bootloader-analog-plus-2.0.68.json",
+  "validation": {
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "workspaceRust": 1409,
+    "testGroups": 131,
+    "s31UnitTests": 45,
+    "sourceRomFixtures": 17,
+    "bothClippy": true,
+    "platformNodeFiles": 4,
+    "wasmScenarios": [
+      "hello",
+      "c3-hello",
+      "c6-hello",
+      "p4-hello",
+      "c6-energy-scan",
+      "c6-contiki",
+      "c6-contiki-net",
+      "c6-rpl-net",
+      "panel"
+    ],
+    "additional": [
+      "stable update",
+      "production WASM build/section check",
+      "standalone S31 wasm32 compile",
+      "native bins build"
+    ],
+    "goldensChanged": false,
+    "uiChanged": false,
+    "hardwareVerified": false,
+    "cpuEvidence": "bootloader-analog-perf.json",
+    "logHashes": [
+      {
+        "group": "stable",
+        "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+      },
+      {
+        "group": "clippy-native",
+        "sha256": "0b47e2f3e0cdd319d670f43837827aaac61d25aecf0a2249aa66ff456ff910f3"
+      },
+      {
+        "group": "clippy-wasm",
+        "sha256": "a7200ee1d9d9b5319a86e52bc41e399e23e41fc62387bb7167dc0c100976c487"
+      },
+      {
+        "group": "rust",
+        "sha256": "fb50e59085496ab1e229dd51446471949ad6a6e98e36abc3734450f9a7d05473"
+      },
+      {
+        "group": "fixtures",
+        "sha256": "4e278dbc826e38729f86f78784690b18c5fb577568b19eacfaec4b137ba18729"
+      },
+      {
+        "group": "wasm-build",
+        "sha256": "90e943be525b3c2f244346405bf9c9e735a9e92f9d394cb3f8c547fe74a7a3a6"
+      },
+      {
+        "group": "wasm-sections",
+        "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b"
+      },
+      {
+        "group": "platform",
+        "sha256": "dfddea02f54f1a0b197b5bca3da45fe6de802ca42fb2c6a3d26ecf9a9d5d2a2d"
+      },
+      {
+        "group": "wasm",
+        "sha256": "9191de4a8a0db22e6a943412a319cf6345d58998e9930c925987b7c6ff177052"
+      },
+      {
+        "group": "s31-wasm",
+        "sha256": "4a4e55c2846c5d53bd0d8871014681609df3696f1868dc6476bcb74ebc023a0d"
+      },
+      {
+        "group": "native",
+        "sha256": "c349faffd4a3d52b2e2032e03c05a9764afa4af18e1f18c9c5ebcadb2f443edd"
+      },
+      {
+        "group": "rom",
+        "sha256": "8611c9c269e4cd1e14a9af8977f5a2ce20e130c3f69de28ce6d545404d0642f3"
+      }
+    ],
+    "productionArtifacts": {
+      "esp32sim": {
+        "bytes": 3665512,
+        "sha256": "20cb1bfc549fc45e8d1ad59b974b31b97a8285e51d18cf6f5a75ff680ebefc69",
+        "textBytes": 2451968,
+        "textSha256": "c52857e814bc4af09c27817fc1575a3f0601b74017c15fa904fc535351074ac9"
+      },
+      "esp32sim-c3": {
+        "bytes": 3665552,
+        "sha256": "e2e09a74b6927848fa6e03fef9fbe73784ea905d923689e307e0659b269d4f0c",
+        "textBytes": 2451968,
+        "textSha256": "8edcea0826745da121ddf772e604a637c7fb02196900c2cc21b94a6a1e3dc314"
+      },
+      "esp32sim-c6": {
+        "bytes": 3665552,
+        "sha256": "bf59a3f1892bb91bc87bac962535810ce37cc6599e930ebf49f33c259488b262",
+        "textBytes": 2451968,
+        "textSha256": "0675c8e863d1afe5c543145550024bcf6492012c529f583c39525b5d230d8fd3"
+      },
+      "wasm": {
+        "bytes": 3988256,
+        "sha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31"
+      }
+    },
+    "productionParity": "Production source paths are unchanged by this stage; S31 is absent from CLI/WASM dependencies. Production WASM remains byte-identical to3344ed58. New-worktree native binary/text hashes differ from previous builds, so no native byte-identity claim: fixed artifacts were actually timed and guest outputs/counts compared."
+  },
+  "reproduce": {
+    "fixtureBuild": "S31_BUILD_ROM_IMAGE=1 ESPTOOL_BIN=<esptool5.4.0> RISCV_TOOLCHAIN_PREFIX=<riscv32-esp-elf15.2.0-prefix> bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "sourceFixture": "S31_ANALOG_ELF=<absolute-output>/analog-probe.elf cargo test --release -p esp32s31 external_s31_analog_data_route_reset_and_missing_seed -- --include-ignored --nocapture",
+    "officialProbe": "cargo build --release -p esp32s31 --example bringup; python3 tools/s31-native-firmware-probe.py --firmware-url <caller-URL> --sha256 <caller-SHA256> --rom <public20260528-S31-ROM-ELF> --rom-spi0-shadow --nor-jedec ef4018 --analog-bias 0000 --steps 2000000 --output <receipt.json>",
+    "defaults": "Omit --analog-bias to retain strict missing-input rejection. Omit --rom-spi0-shadow to retain strict documented SPI0 register map."
+  },
+  "privacy": "Only public source URLs, firmware/ROM hashes, bounded guest output, test assertions and aggregate benchmark data retained. Official firmware bytes are never written to disk by the probe. Raw local build paths remain only in ignored logs; committed receipts retain log hashes, not host paths."
+}

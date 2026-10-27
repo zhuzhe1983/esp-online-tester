@@ -150,7 +150,7 @@ impl Mspi {
 mod tests {
     use super::*;
     #[test]
-    fn controller_gates_reset_and_external_die_state_are_separate() {
+    fn controller_gates_reset_and_nor_die_state_are_separate() {
         let mut m = Mspi::default(); let mut flash = vec![0xaa; 128];
         assert!(!m.flash_accessible()); m.write(0, 0x3c, 0x40000001, &mut flash).unwrap(); assert!(m.flash_accessible());
         m.clock_write(0x681).unwrap(); assert!(!m.flash_accessible());

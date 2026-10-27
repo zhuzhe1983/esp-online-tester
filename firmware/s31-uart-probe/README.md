@@ -127,3 +127,14 @@ the ROM's SHA mismatch warning and still boots, while a one-bit payload change
 emits the XOR-checksum assertion and never enters the source guest. The warning-only
 SHA result is observed behavior without secure boot, not a security guarantee or
 host-made decision. These negative controls do not modify any official product BIN.
+
+
+`analog-probe.S` exercises the S31 internal analog-I²C digital transaction path
+with caller-supplied BIAS register0/register1 bytes `17/29`, both master routes,
+and digital-master reset. It checks real guest reads before changing the target
+and completes the documented MPLL shutdown sequence. Run its external test with
+an absolute `S31_ANALOG_ELF` path; generated ELF stays in ignored `output/`.
+The private `bringup` example accepts `--analog-bias=hhhh` (register0 then
+register1) as an explicit development input. Public headers do not establish
+these analog reset values; no seed is installed by default, and no voltage,
+settling, PLL-lock or product-hardware claim follows from byte readback.

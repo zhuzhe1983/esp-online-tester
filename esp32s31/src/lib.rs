@@ -11,6 +11,8 @@ pub mod usb_console;
 pub mod bus_monitor;
 pub mod mspi;
 pub mod sha;
+pub mod analog;
+pub mod power;
 mod rom;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};

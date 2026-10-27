@@ -666,3 +666,66 @@ workloads and both native/WASM builds pass. All three production native binaries
 and the production WASM match the just-timed Flash/cache build byte for byte;
 that hash-linked CPU comparison applies to the identical binaries. No golden or
 platform UI changed, and no separate browser or hardware success is claimed.
+
+
+### Bootloader analog-I²C and MPLL shutdown subset
+
+The unchanged official INK4 Plus 2.0.68 merged image now executes its real
+`bootloader_hardware_init` path after ROM entry. This stage adds the documented
+MODEM bus gate, analog-I²C master enable/force/source controls, two independently
+routed byte-transaction masters, and the documented BIAS register0/register1
+storage. It also adds PSRAM XTAL clock/reset gating for actual mapped reads,
+writes and fetches, plus the narrow MPLL shutdown sequence used before changing
+bias. These controls are private to the S31 crate; no production board or product
+availability is changed.
+
+The digital register addresses, fields, route polarity and reset values come from
+fixed ESP-IDF v6.1 `fff9895c` headers and `regi2c_impl.c`. The BIAS target's analog
+reset values are **not public in those headers**. Default execution therefore
+rejects an unseeded target instead of assuming zero. The example's explicit
+`--analog-bias=0000` input supplies register0/register1 test bytes; it is not an
+identified Plus silicon profile. Other slave/register addresses, burst transfers,
+analog settling, voltage calibration, RF operation and PLL power-up/lock remain
+unsupported. The master returns an idle state only after a real modeled byte read
+or write completes. A digital-master reset clears controller state but preserves
+the separately supplied analog target bytes; this target/controller separation is
+a functional modeling assumption, not a hardware measurement.
+
+With no BIAS seed, the same image faults on its actual first target read request:
+PC `0x2f0702a0`, write32 `0x2010f804`, after 199,507 instructions and zero completed
+analog transactions. With explicit `0000`, the firmware performs four actual
+read/modify/write transactions, leaves BIAS bytes `a0/0a`, and completes its MPLL
+shutdown sequence. The next access faults at PC `0x2f06a512`, read32 `0x2070201c`
+(`LP_ANA_FIB_ENABLE_REG`) after 199,633 instructions. Application and display are
+still not entered; the platform continues to mark INK4 Plus unavailable.
+
+The source-built `analog-probe.S` tests independent host bytes `17/29`, guest
+reads and writes, both master routes, controller reset preserving target data,
+and non-latching MPLL shutdown command bits. It prints
+`S31 ANALOG ROUTE RESET MPLL PASS` and reaches WFI in 252 instructions with eight
+completed byte transactions. The identical guest fails on wrong data (111 steps),
+missing target data (19), and a disabled parent bus clock (7). Unit tests also
+verify that force-on cannot substitute for master enable, missing/disabled routes
+do not mutate the target, and PSRAM clock/reset gates block real memory access
+without erasing external storage.
+
+See the [stage receipt](evidence/s31-bringup/bootloader-analog.json) and
+[official full-image trace](evidence/s31-bringup/bootloader-analog-plus-2.0.68.json).
+
+
+Analog-stage validation: both warnings-denied Clippy targets, 1,409 workspace
+Rust tests under CI's ignored-test policy, 45 S31 unit tests, all 17 external
+source/ROM fixtures, the four platform Node files, nine existing WASM workloads,
+production native/WASM builds and the private S31 wasm32 check pass. Goldens and
+UI are unchanged. No browser or hardware compatibility result is inferred from
+these native/source checks. The initial relative fixture-path failure and test-
+module ordering lint are retained in the stage receipt with their corrections.
+
+The official image was also run with BIAS seed `ffff`: its masked writes leave
+`af/fa`, preserving the unrelated nibbles and reaching the same BOD/FIB access.
+The two CI test names containing `external_` (one new PSRAM case and an older MSPI
+case) were corrected before delivery, and both now run under CI's skip filter.
+Five alternating CPU pairs against fixed main `84e67571` (production source paths
+unchanged through main `f14d5634`) gave S3 −0.842%, C3 +0.474%, C6 +2.062%, with
+identical guest instruction/cycle statistics and UART hashes. This is a regression
+guard, not an attributed S31 speed result; see [samples](evidence/s31-bringup/bootloader-analog-perf.json).

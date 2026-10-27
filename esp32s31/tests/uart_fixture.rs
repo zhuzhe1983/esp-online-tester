@@ -330,3 +330,31 @@ fn external_s31_real_rom_sha_boot_and_corruption_controls() {
         eprintln!("S31 ROM SHA control={control} steps={steps} stop={stop:?} blocks={}", m.bus.sha.blocks());
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_ANALOG_ELF to analog-probe.elf"]
+fn external_s31_analog_data_route_reset_and_missing_seed() {
+    let path = std::env::var("S31_ANALOG_ELF").expect("build firmware/s31-uart-probe and set S31_ANALOG_ELF");
+    let elf = std::fs::read(path).expect("read S31_ANALOG_ELF");
+    for control in ["valid", "wrong-data", "no-seed", "clock-off"] {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        if control != "no-seed" { m.bus.analog.set_bias([if control == "wrong-data" { 0 } else { 0x17 }, 0x29]); }
+        if control == "clock-off" { m.bus.clocks.write(0x40, 0).unwrap(); }
+        let run = m.run(10_000);
+        if control == "valid" {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting); assert!(m.bus.first_fault.is_none());
+            assert_eq!(m.bus.uart0.tx_out, b"S31 ANALOG ROUTE RESET MPLL PASS\n");
+            assert_eq!(m.bus.analog.bias(), Some([0xa7, 0x2a])); assert_eq!(m.bus.analog.transactions, 8);
+            assert!(m.bus.power.mpll_disabled());
+        } else if control == "wrong-data" {
+            assert!(matches!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_))));
+            assert_eq!(m.bus.uart0.tx_out, b"S31 ANALOG FAIL\n"); assert_eq!(m.bus.analog.transactions, 1);
+        } else {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7)));
+            let fault = m.bus.first_fault.as_ref().unwrap(); assert_eq!(fault.reason, emu_core::Fault::Prohibited);
+            assert_eq!(fault.address, if control == "no-seed" { 0x2010f804 } else { 0x2010f018 });
+            assert!(m.bus.uart0.tx_out.is_empty()); assert_eq!(m.bus.analog.transactions, 0);
+        }
+        eprintln!("S31 analog control={control} steps={} stop={:?} transactions={}", run.steps, run.stop, m.bus.analog.transactions);
+    }
+}

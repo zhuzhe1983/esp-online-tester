@@ -1,4 +1,4 @@
-//! S31 XTAL-root clock dividers. PLL/RC power, calibration and reset domains remain unsupported.
+//! S31 XTAL-root dividers and functional peripheral gates; PLL/RC sources remain unsupported.
 //! ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643:
 //! soc/esp32s31/register/soc/hp_sys_clkrst_reg.h, esp_hal_clock/esp32s31/include/hal/clk_tree_ll.h,
 //! and esp_hw_support/port/esp32s31/rtc_clk.c (40/20/40÷3/40÷6 MHz reset configuration).
@@ -8,12 +8,12 @@ pub const UART0_CTRL: u32 = BASE + 0x88;
 pub const UART0_MEM: u32 = 0x2058_628c;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Rates { pub cpu_hz: u64, pub mem_hz: u64, pub sys_hz: u64, pub apb_hz: u64 }
-pub struct Clocks { pending: [u32; 5], active: [u32; 5], uart0: u32, uart_mem: u32 }
+pub struct Clocks { pending: [u32; 5], active: [u32; 5], uart0: u32, uart_mem: u32, modem: u32, psram: u32 }
 impl Default for Clocks {
-    fn default() -> Self { Self { pending: [0, 0, 1, 2, 1], active: [0, 0, 1, 2, 1], uart0: 0x83, uart_mem: 0 } }
+    fn default() -> Self { Self { pending: [0, 0, 1, 2, 1], active: [0, 0, 1, 2, 1], uart0: 0x83, uart_mem: 0, modem: 1, psram: 0x181 } }
 }
 impl Clocks {
-    pub fn is_mmio(address: u32) -> bool { (BASE..BASE + 0x18).contains(&address) }
+    pub fn is_mmio(address: u32) -> bool { (BASE..BASE + 0x18).contains(&address) || matches!((address & !3).wrapping_sub(BASE), 0x40 | 0x68) }
     pub fn uart_read(&self, address: u32) -> u32 { if address == UART0_CTRL { self.uart0 } else { self.uart_mem } }
     pub fn uart_write(&mut self, address: u32, value: u32) -> Result<(), Fault> {
         if address == UART0_CTRL {
@@ -31,6 +31,8 @@ impl Clocks {
         }
         Ok(())
     }
+    pub fn psram_on(&self) -> bool { self.psram & 0x167 == 0x101 }
+    pub fn modem_on(&self) -> bool { self.modem != 0 }
     pub fn uart_bus_on(&self) -> bool { self.uart0 & 0xb == 3 }
     pub fn uart_core_on(&self) -> bool { self.uart0 & 0x87 == 0x83 }
     pub fn uart_sclk_hz(&self) -> u64 {
@@ -61,7 +63,7 @@ impl Clocks {
     pub fn rates(&self) -> Rates { Self::rates_of(&self.active).unwrap_or(Rates { cpu_hz: 0, mem_hz: 0, sys_hz: 0, apb_hz: 0 }) }
     pub fn read(&self, off: u32) -> Result<u32, Fault> {
         if off & 3 != 0 { return Err(Fault::Misaligned); }
-        match off { 0..=0x10 => Ok(self.pending[off as usize / 4]), 0x14 => Ok(0), _ => Err(Fault::Unmapped) }
+        match off { 0..=0x10 => Ok(self.pending[off as usize / 4]), 0x14 => Ok(0), 0x40 => Ok(self.modem), 0x68 => Ok(self.psram), _ => Err(Fault::Unmapped) }
     }
     pub fn write(&mut self, off: u32, value: u32) -> Result<(), Fault> {
         if off & 3 != 0 { return Err(Fault::Misaligned); }
@@ -73,6 +75,15 @@ impl Clocks {
                 Self::rates_of(&self.pending)?;
                 // Functional atomic latch; no fabricated PLL lock/busy poll or physical delay.
                 self.active = self.pending;
+            },
+            // MODEM_CTRL0 has only the documented RW clock gate, reset1. This does
+            // not implement RF or wireless operation.
+            0x40 => self.modem = value & 1,
+            0x68 => {
+                // Functional XTAL PSRAM gate; PLL selection and force-reset override
+                // require the unimplemented external-memory power/PLL sequencing.
+                if value & 0x78 != 0 { return Err(Fault::Prohibited); }
+                self.psram = value & 0x1ffff;
             },
             _ => return Err(Fault::Unmapped),
         }

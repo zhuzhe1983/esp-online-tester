@@ -54,7 +54,11 @@ def main():
     parser.add_argument("--output", required=True)
     parser.add_argument("--rom-spi0-shadow", action="store_true", help="explicit inferred legacy SPI0 config shadows; strict mode remains default")
     parser.add_argument("--nor-jedec", help="explicit six-hex-digit development NOR identity; not product hardware identification")
+    parser.add_argument("--analog-bias", help="explicit four-hex-digit BIAS register0/register1 seed; no silicon reset claim")
+    parser.add_argument("--steps", type=int, default=200000, help="bounded instruction budget, maximum 10000000")
     args = parser.parse_args()
+    if not 1 <= args.steps <= 10000000:
+        parser.error("--steps must be between 1 and 10000000")
     with urllib.request.urlopen(args.firmware_url, timeout=60) as response:
         data = response.read(256 * 1024 * 1024 + 1)
         if len(data) > 256 * 1024 * 1024:
@@ -82,11 +86,13 @@ def main():
         command.append("--rom-spi0-shadow")
     if args.nor_jedec:
         command.append("--nor-jedec=" + args.nor_jedec)
-    command.extend([args.rom, "", "200000"])
+    if args.analog_bias:
+        command.append("--analog-bias=" + args.analog_bias)
+    command.extend([args.rom, "", str(args.steps)])
     result = subprocess.run(command, input=data, capture_output=True, timeout=120, check=True)
-    report = {"source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
+    report = {"stepBudget": args.steps, "source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
               "partitions": partitions, "images": images,
-              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow},
+              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias},
               "uart": result.stdout.decode("utf-8", errors="replace"),
               "diagnostic": result.stderr.decode("utf-8", errors="replace"),
               "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk"}
