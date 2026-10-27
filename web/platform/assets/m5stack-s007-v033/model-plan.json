@@ -74,13 +74,13 @@
     }
   ],
   "limitations": [
-    "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
     "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
     "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
     "Exact SKU source STL is a24mm cover, not the26mm USB-inclusive module. The unmodeled board and connectors must not be confused with full mechanical coverage.",
     "Old Stamp-S3 KiCad PCB STEP not adopted: S3A explicitly changes antenna and boot switch.",
     "USB mouth is a generic dimension/photo-informed visual connector; body, solder joints and PCB routing unknown.",
-    "Visible USB body/antenna face are separately marked photo-informed estimates. PCB remains neutral UNKNOWN, with no invented components/traces."
+    "Visible USB body/antenna face are separately marked photo-informed estimates. PCB remains neutral UNKNOWN, with no invented components/traces.",
+    "Digital G0/G21/G38 model is partial; RGB placement and height are photo estimates, not assembled PCB CAD."
   ],
   "assemblyNotes": "Original manufacturer components selected from assembled cluster; other components excluded with reasons. One rigid global transform, no scaling.",
   "omittedComponents": [],
@@ -96,6 +96,27 @@
       18,
       26,
       4.7
+    ],
+    "buttons": [
+      {
+        "id": "button",
+        "shape": "rectangle",
+        "sizeMm": [
+          5.2,
+          3.2
+        ],
+        "positionMm": [
+          2,
+          2,
+          2.37
+        ],
+        "basis": "manufacturer-cad",
+        "sourceIds": [
+          "manufacturer-cad-b29f5a0d10",
+          "product-photo-c93c2f723a"
+        ],
+        "notes": "Inside exact SKU shield cap, at CAD top plus 0.02 mm; physical button differs from base S3 and remains under this flexure."
+      }
     ]
   },
   "derivedParts": [
@@ -185,6 +206,29 @@
         "product-photo-c93c2f723a"
       ],
       "notes": "Only visible metallic antenna face from official photo; antenna conductive geometry and RF properties unknown, dimensions +/-0.6mm."
+    },
+    {
+      "id": "rgb-led",
+      "kind": "box",
+      "color": "#d7d8cf",
+      "ledIndex": 0,
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-c93c2f723a"
+      ],
+      "geometry": {
+        "sizeMm": [
+          2,
+          2,
+          1
+        ],
+        "centerMm": [
+          5.75,
+          -9.8,
+          -0.8
+        ]
+      },
+      "notes": "Photo-estimated position under right lower slit, using documented18mm width; 1mm height not CAD-measured. No new light pipe/window."
     }
   ],
   "revisions": [
@@ -304,9 +348,18 @@
   "catalog": {
     "chip": "esp32s3",
     "flashMb": 8,
-    "psramMb": null,
+    "psramMb": 0,
     "display": null,
-    "controls": [],
+    "controls": [
+      {
+        "id": "button",
+        "type": "button",
+        "name": "按键",
+        "pin": 0,
+        "activeLow": true,
+        "defaultKeyCode": "KeyA"
+      }
+    ],
     "interfaces": [
       {
         "id": "gpio",

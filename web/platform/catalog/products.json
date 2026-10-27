@@ -2916,13 +2916,22 @@
       "summary": "ESP32-S3FN8 模块的 S3A 修订，改进天线和启动按钮，并调整 RGB LED 供电逻辑。",
       "knowledgeUrl": "./knowledge/m5stack-s007-v033.json",
       "runtime": {
-        "board": null,
+        "board": "stamps3a",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "type": "button",
+          "name": "按键",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
       "interfaces": [
         {
           "id": "gpio",
@@ -3044,9 +3053,8 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "部分板级模型：G0 按键、G21 WS2812B RMT、G38 数字灯电源；网络、模拟电源、软件 GPIO 灯驱动和 FPC 屏幕未模拟。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
         "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
         "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
         "Exact SKU source STL is a24mm cover, not the26mm USB-inclusive module. The unmodeled board and connectors must not be confused with full mechanical coverage.",
@@ -3070,7 +3078,8 @@
           "notes": "Reused actual corpus receipt 2026-10-26T15:19:27.173803Z; no new fetch timestamp invented.",
           "checkedAt": "2026-10-26"
         }
-      ]
+      ],
+      "defaultFirmwareId": "m5stack-s007-v033-uiflow2"
     },
     {
       "id": "m5stack-s007-pin254-v033",

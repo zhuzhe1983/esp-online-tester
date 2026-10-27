@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T18:34:50Z",
+  "updatedAt": "2026-10-27T19:03:43Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -209,6 +209,17 @@
       "sourceIds": [
         "dimension-drawing-512f8cd158"
       ]
+    },
+    {
+      "id": "rgb-supply",
+      "label": "RGB power gate",
+      "value": "G38 / DISP_BL drives AW35122FDR EN; BL_3V3 supplies WS2812B. G21 data; G0 active-low user key.",
+      "basis": "official",
+      "sourceIds": [
+        "runtime-schematic",
+        "runtime-arduino"
+      ],
+      "group": "gpio"
     }
   ],
   "revisions": [
@@ -508,6 +519,58 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "runtime-docs",
+      "url": "https://docs.m5stack.com/en/core/Stamp-S3A",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Stamp-S3A",
+      "fetchedAt": "2026-10-27T18:47:24Z",
+      "bytes": 138500,
+      "mediaType": "text/html; charset=UTF-8",
+      "sha256": "7ae20cf9f299bffe378bf939b28118abf22e8107a538d5b63005ca8aa4efe2d3",
+      "title": "Official Stamp-S3A product page",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "archiveName": "official-docs.html"
+    },
+    {
+      "id": "runtime-schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1150/Sch_StampS3_v0.3.3.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1150/Sch_StampS3_v0.3.3.pdf",
+      "fetchedAt": "2026-10-27T18:47:24Z",
+      "bytes": 369766,
+      "mediaType": "application/pdf",
+      "sha256": "2f9610aecc5a5d2ee51b33c75df31cf90c7639d2997e7a2bb147ba8d46b46966",
+      "title": "Stamp-S3 v0.3.3 schematic",
+      "kind": "official-schematic",
+      "status": "fetched",
+      "archiveName": "schematic.pdf"
+    },
+    {
+      "id": "runtime-uiflow",
+      "url": "https://docs.m5stack.com/en/uiflow2/stamps3/program",
+      "resolvedUrl": "https://docs.m5stack.com/en/uiflow2/stamps3/program",
+      "fetchedAt": "2026-10-27T18:47:25Z",
+      "bytes": 263992,
+      "mediaType": "text/html; charset=UTF-8",
+      "sha256": "81412ad07ea049e7c64a6087fce3eb69c1a2295b524f706e4b3b6ccb8d2e8a56",
+      "title": "Official UIFlow2 Stamp-S3 quickstart linked by S3A",
+      "kind": "official-software-document",
+      "status": "fetched",
+      "archiveName": "uiflow-quickstart.html"
+    },
+    {
+      "id": "runtime-arduino",
+      "url": "https://docs.m5stack.com/en/arduino/m5stamps3a/program",
+      "resolvedUrl": "https://docs.m5stack.com/en/arduino/m5stamps3a/program",
+      "fetchedAt": "2026-10-27T18:47:25Z",
+      "bytes": 338383,
+      "mediaType": "text/html; charset=UTF-8",
+      "sha256": "565744fae0f6ead5d238b7223cf497869b3161bc5e009ac95e1e42de06d5aa21",
+      "title": "Official Stamp-S3A Arduino LED example",
+      "kind": "official-software-document",
+      "status": "fetched",
+      "archiveName": "arduino-quickstart.html"
     }
   ],
   "assets": [
@@ -633,14 +696,14 @@
       "notes": "Explicit capacity not stated in audited specification; null does not mean zero."
     },
     {
-      "id": "default-firmware-artifact",
-      "label": "Pinned default firmware artifact",
+      "id": "factory-firmware-artifact",
+      "label": "Pinned factory firmware artifact",
       "value": null,
       "basis": "unknown",
       "sourceIds": [
         "official-docs"
       ],
-      "notes": "No pinned binary/layout/hash verified. Software documentation remains linked in source records."
+      "notes": "No verified factory BIN located. Official UIFlow2 2.5.3 is pinned as an alternative default; exact remote image and observed SHA retained in firmware catalog and evidence/stamps3a/official-wasm.json."
     },
     {
       "id": "user-hardware-revision",
@@ -666,6 +729,8 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "Schematic v0.3.3 identifies main regulator JW5712 while product specification says MUN3CAD01-SC; conflict retained, no analog supply behavior inferred. GPIO38 supply model is digital only. Runtime verification: docs/platform/stamps3a-runtime.md.",
+    "Partial: active-low G0, G21 RMT GRB LED and driven-high G38 supply. Official UIFlow2 2.5.3 ROM boot and blue RMT output observed; application/network unverified. 8 MB Flash / 0 MB PSRAM configured."
   ]
 }

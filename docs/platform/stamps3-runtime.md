@@ -1,6 +1,6 @@
 # Stamp-S3 S007 运行范围
 
-`stamps3` 是基础 Stamp-S3 的部分板级模型：8 MB Flash、无 PSRAM，G0 用户按键和 G21 单颗 WS2812B-2020。不自动启用 PIN1.27、PIN2.54 或 Stamp-S3A；这些 SKU 仍需分别核对。
+`stamps3` 是基础 Stamp-S3 的部分板级模型：8 MB Flash、无 PSRAM，G0 用户按键和 G21 单颗 WS2812B-2020。不自动启用 PIN1.27 或 PIN2.54。Stamp-S3A 使用独立的 G38 供电模型，见 [S3A 运行范围](stamps3a-runtime.md)。
 
 V0.2 原理图中 G0 经 10 kΩ 上拉、按下接地，G46 默认下拉，WS2812B 的 DIN 接 G21、3V3 供电。固定官方 `m5stack/STAMP-S3` 提交 `6b64d431f930ff5e2bd770a07003ac983c24bc3f` 的 LED 例程同样使用 G0/G21、GRB 顺序。原理图、源码、下载元信息与抓取摘要见 [来源收据](evidence/stamps3/sources.json)。没有新增 SoC 寄存器常量，沿用既有 S3 GPIO/RMT 控制器。
 
