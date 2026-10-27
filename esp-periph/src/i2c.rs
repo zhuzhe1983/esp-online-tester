@@ -11,6 +11,7 @@ pub mod m5;
 pub mod ft6336;
 pub mod tca8418;
 pub mod tca9555;
+pub mod pi4ioe5v6408;
 pub mod cst816s;
 pub mod bmi270;
 pub mod mpu6886;

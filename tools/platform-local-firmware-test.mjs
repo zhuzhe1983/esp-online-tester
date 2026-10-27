@@ -13,6 +13,11 @@ let inspect=await inspectLocalBuild([config(),boot,part,app]);assert.equal(inspe
 inspect=await inspectLocalBuild([config(),app]);assert.deepEqual(inspect.missingFiles,['bootloader/bootloader.bin','partition_table/partition-table.bin']);
 await fail(()=>assembleLocalFirmware({format:'build',files:[config(),app]},opts),'LOCAL_FILES_MISSING');
 const events=[];let merged=await assembleLocalFirmware({format:'build',files:[config(),boot,part,app]},{...opts,onRead:e=>events.push(e)});assert.equal(merged.partitionTableOffset,0x9000);assert.equal(merged.data[0x10000],255);assert.equal(merged.data[0x20000],0xe9);assert.equal(events.length,6);validateMergedImage(merged.data,'stopwatch',flashBytes,{partitionTableOffset:0x9000});
+const nessoOpts={board:'nesso-n1',flashBytes};
+const nessoBuild={format:'build',files:[config({extra_esptool_args:{chip:'esp32c6'}}),file('bootloader.bin',image(13)),part,file('custom.bin',image(13))]};
+const nesso=await assembleLocalFirmware(nessoBuild,nessoOpts);validateMergedImage(nesso.data,'nesso-n1',flashBytes,{partitionTableOffset:0x9000});
+await fail(()=>assembleLocalFirmware({format:'build',files:[config(),boot,part,app]},nessoOpts),'CHIP_MISMATCH');
+assert.throws(()=>validateMergedImage(nesso.data,'stopwatch',flashBytes,{partitionTableOffset:0x9000}),{code:'CHIP_MISMATCH'});
 const dirs=[file('flasher_args.json',await config().arrayBuffer(),'build/flasher_args.json'),file(boot.name,await boot.arrayBuffer(),'build/bootloader/bootloader.bin'),file(part.name,table,'build/partition_table/partition-table.bin'),file(app.name,image(),'build/custom.bin'),file(app.name,image(5),'build/unrelated/custom.bin')];inspect=await inspectLocalBuild(dirs);assert.equal(inspect.segments.at(-1).file.webkitRelativePath,'build/custom.bin');
 await fail(()=>inspectLocalBuild([config(),boot,file('bootloader.bin',image()),part,app]),'DUPLICATE_BUILD_PATH');
 await fail(()=>inspectLocalBuild([config({flash_files:{'0x0':'../bootloader.bin'}}),boot]),'INVALID_BUILD_PATH');

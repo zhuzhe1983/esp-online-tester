@@ -1,0 +1,89 @@
+{
+  "checkedAt": "2026-10-27T21:20:48.655Z",
+  "command": "node tools/probe-nesso-official.mjs <official-https-url> <sha256>",
+  "productId": "m5stack-dk001",
+  "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002638/versions/2098281060085485570/download",
+  "sha256": "49c4a9a669a2bde5b95416fa19ab8e01fc6bdec6a81bb80f2a0fc07480e1444b",
+  "wasmSha256": "10459dbf2686170ed89bf6f220093bb67cab785d0702b2cd938e9565a3eeee43",
+  "firmware": {
+    "manifestUrl": null,
+    "manifestHash": null,
+    "metadata": {
+      "name": "micropython",
+      "version": "V2.5.3",
+      "source": "esp-app-description"
+    },
+    "source": "remote",
+    "artifacts": [
+      {
+        "kind": "flash",
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002638/versions/2098281060085485570/download",
+        "sha256": "49c4a9a669a2bde5b95416fa19ab8e01fc6bdec6a81bb80f2a0fc07480e1444b",
+        "bytes": 16773120
+      },
+      {
+        "kind": "rom",
+        "url": "https://nesso-fixture.invalid/wasm/fw/esp32c6_rev0_rom.elf",
+        "sha256": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551",
+        "bytes": 489768
+      }
+    ],
+    "appDirect": false,
+    "stubs": [],
+    "executionMode": "wasm-jit"
+  },
+  "guestSeconds": 8.82,
+  "keys": {
+    "next": {
+      "down": 3.02487029375,
+      "up": 3.368482125
+    },
+    "enter": {
+      "down": 5.3970933375,
+      "up": 5.70772291875
+    }
+  },
+  "frames": [
+    {
+      "name": "wasm-cloud",
+      "width": 135,
+      "height": 240,
+      "frameNumber": 10,
+      "rgbaSha256": "f71fd7ddf0500f997646966f6ebfd7be3577eb6f7758cb6fd5e4f55e43a0c2fc"
+    },
+    {
+      "name": "wasm-usb",
+      "width": 135,
+      "height": 240,
+      "frameNumber": 14,
+      "rgbaSha256": "7fa2a5dc0c9e6ba3c60c6cb783afae0c09995a44acbc1e3d89c6c9e2280b5a28"
+    },
+    {
+      "name": "wasm-ready",
+      "width": 135,
+      "height": 240,
+      "frameNumber": 17,
+      "rgbaSha256": "3888ddea2bb960acd25d7b8b23d32d1214f003011ba8c2c5e17bf6a3ea7b976e"
+    }
+  ],
+  "checks": [
+    "actual-production-worker-C6-ROM-boot",
+    "official-CLOUD-to-USB-to-READY-through-expander-buttons",
+    "official-MicroPython-FT6336-touch-register-read"
+  ],
+  "serialEvidence": [
+    "MicroPython v1.27.0-dirty on 2026-09-11; Nesso N1 with ESP32C6",
+    ">>> import M5; print(\"NESSO_REPL\", M5.Touch.getCount())",
+    "NESSO_REPL 0",
+    ">>> M5.update(); print(\"NESSO_TOUCH\", M5.Touch.getCount(), M5.Touch.getX(), M5.Touch.getY())",
+    "NESSO_TOUCH 1 42 72",
+    ">>> from machine import I2C, Pin; i=I2C(0,sda=Pin(10),scl=Pin(8)); print(\"NESSO_RAW\", list(i.readfrom_mem(56,2,5)))",
+    "NESSO_RAW [1, 128, 42, 0, 73]",
+    ">>> import time; M5.update(); time.sleep_ms(30); M5.update(); time.sleep_ms(30); M5.update(); print(\"NESSO_RELEASE\", M5.Touch.getCount())",
+    "NESSO_RELEASE 0"
+  ],
+  "status": "pass",
+  "limitations": [
+    "Charger/fuel gauge absent: battery -1% is retained. LoRa RF, network, buzzer, power key and web IMU pose are unverified. Touch checked in the official firmware REPL; launcher itself has no touch callback."
+  ]
+}

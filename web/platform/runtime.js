@@ -159,7 +159,7 @@ export function validateMergedImage(data, board, flashBytes, {partitionTableOffs
   return true;
 }
 
-const romFor = board => board === 'esp32c3' ? 'esp32c3_rev3_rom.elf' : board === 'esp32p4' ? 'esp32p4_rev0_rom.elf' : board.includes('c6') ? 'esp32c6_rev0_rom.elf' : /^(esp32|ttgo-tdisplay|atom-lite|atom-matrix)$/.test(board) ? 'esp32_rev300_rom.elf' : 'esp32s3_rev0_rom.elf';
+const romFor = board => board === 'esp32c3' ? 'esp32c3_rev3_rom.elf' : board === 'esp32p4' ? 'esp32p4_rev0_rom.elf' : (board==='nesso-n1'||board.includes('c6')) ? 'esp32c6_rev0_rom.elf' : /^(esp32|ttgo-tdisplay|atom-lite|atom-matrix)$/.test(board) ? 'esp32_rev300_rom.elf' : 'esp32s3_rev0_rom.elf';
 
 export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000, deviceStorage = createDeviceStorage(), sdStorage = createSdCardStorage() } = {}) {
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;
@@ -553,6 +553,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     booted = true; setStatus('running'); return snapshot();
   };
   const controls = () => Array.isArray(product?.controls) ? product.controls : product?.controls?.buttons || [];
+  const boardButton = control => control?.transport==='board' && ({'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB']}[product?.runtime?.board] || []).includes(control.id);
   const input = async event => {
     const releaseWhilePaused = status === 'paused' && ((['button','matrix-key','accessory-button'].includes(event?.type) && event.pressed === false) || (event?.type==='accessory-connection' && event.connected===false) || (event?.type === 'touch' && event.down === false));
     requireValue(status === 'running' || releaseWhilePaused, 'NOT_RUNNING', 'Start the emulator before sending input.');
@@ -561,10 +562,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     if (event.type === 'button') {
       const control = controls().find(c => c.id === event.id);
       const pin = control?.pin ?? control?.gpio;
-      const boardButton=control?.transport==='board' && product.runtime?.board==='metalio-ink4' && ['volume-up','volume-down','home','previous','next'].includes(control.id);
-      requireValue(boardButton || (Number.isInteger(pin) && pin >= 0 && pin < 64), 'UNSUPPORTED_CONTROL', 'This product does not expose that button.');
+      const semanticButton=boardButton(control);
+      requireValue(semanticButton || (Number.isInteger(pin) && pin >= 0 && pin < 64), 'UNSUPPORTED_CONTROL', 'This product does not expose that button.');
       requireValue(typeof event.pressed === 'boolean', 'INVALID_INPUT', 'Button pressed must be a boolean.');
-      message = boardButton?{t:'board-button',id:control.id,pressed:event.pressed?1:0}:{t:'btn',pin,v:event.pressed?1:0};
+      message = semanticButton?{t:'board-button',id:control.id,pressed:event.pressed?1:0}:{t:'btn',pin,v:event.pressed?1:0};
     } else if (event.type === 'encoder') {
       requireValue(product.runtime?.encoder === true && controls().some(c => c.id === event.id && c.type === 'encoder'), 'UNSUPPORTED_CONTROL', 'This product does not expose that rotary encoder.');
       requireValue(Number.isInteger(event.steps) && event.steps !== 0 && Math.abs(event.steps) <= 64, 'INVALID_INPUT', 'Encoder steps must be a nonzero integer from -64 to 64.');
@@ -671,7 +672,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
         firmware: { manifest: true, mergedImage: true, localFile: true, localSegments: true, localBuild: true, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true },
-        input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin,control,hub,viaAccessoryId,portId})=>({accessoryId,model,port,...(pin===undefined?{}:{pin}),controls:control?[control]:[],...(hub?{hub:true}:{}),...(viaAccessoryId?{viaAccessoryId,portId}:{})})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio) || (c.transport==='board' && product.runtime.board==='metalio-ink4')).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv'].includes(product?.runtime?.board)?{rows:4,columns:14,model:product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: ['usb', 'uart0', 'uart1'] },
+        input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin,control,hub,viaAccessoryId,portId})=>({accessoryId,model,port,...(pin===undefined?{}:{pin}),controls:control?[control]:[],...(hub?{hub:true}:{}),...(viaAccessoryId?{viaAccessoryId,portId}:{})})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio) || boardButton(c)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv'].includes(product?.runtime?.board)?{rows:4,columns:14,model:product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: ['usb', 'uart0', 'uart1'] },
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { mode: 'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },
         lora:{available:product?.runtime?.board==='papermono',model:'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},

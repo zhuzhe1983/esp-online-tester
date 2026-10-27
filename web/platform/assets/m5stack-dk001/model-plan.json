@@ -7,7 +7,17 @@
       "sourceComponent": 13,
       "name": "shell-front",
       "color": "#222728",
-      "role": "shell"
+      "role": "shell",
+      "sourceFaceRanges": [
+        [
+          0,
+          1049
+        ],
+        [
+          1059,
+          3836
+        ]
+      ]
     },
     {
       "sourceComponent": 8,
@@ -19,7 +29,22 @@
       "sourceComponent": 5,
       "name": "front-button",
       "color": "#8cbd44",
-      "role": "button"
+      "role": "button",
+      "controlId": "btnA"
+    },
+    {
+      "sourceComponent": 13,
+      "sourceFaceRanges": [
+        [
+          1049,
+          1059
+        ]
+      ],
+      "name": "side-button-face",
+      "role": "button",
+      "controlId": "btnB",
+      "color": "#222728",
+      "notes": "Exact original +X exterior KEY2 flipper face, source triangles1049..1058. Separated only for material and hit testing; no triangle edits or motion claim."
     }
   ],
   "matrixRows": [
@@ -102,10 +127,10 @@
     "No physical hardware measurement performed; official photographs may include shipping films and uncalibrated perspective.",
     "PCB is an explicitly estimated UNKNOWN placeholder without invented components or traces.",
     "Source CAD does not supply calibrated material properties; colors are source-photo-informed display approximations.",
-    "ESP32-C6 CPU/board emulation unavailable. Antenna is detached in selected exterior view; complete antenna placement remains pending.",
     "Front glass is an independent photo-informed flat surface, not manufacturer glass CAD; inset/radius +/-0.5mm, optical stack and thickness unknown.",
     "Back printed paper is a separate exterior surface; its outline/rounding are photo-derived +/-0.35mm. Mechanical pockets behind the photographed paper are covered rather than textured as visible holes.",
-    "Rear silver fasteners have exact CAD bore centers but photo-estimated head/rim/socket shapes; fastener standard, thread and internal attachment remain unknown."
+    "Rear silver fasteners have exact CAD bore centers but photo-estimated head/rim/socket shapes; fastener standard, thread and internal attachment remain unknown.",
+    "KEY2 exterior flipper face uses original CAD triangles; material separation only, no switch travel/force or complete mechanism claim."
   ],
   "assemblyNotes": "Components 13 front shell,8 back shell and5 button share original assembly. Common translation only. Separate antenna geometry appears in two orientations/locations; excluded from body view to match official photos09/11 with antenna detached, not misrepresented as simultaneous mounted parts.",
   "omittedComponents": [
@@ -564,7 +589,7 @@
   "catalog": {
     "chip": "esp32c6",
     "flashMb": 16,
-    "psramMb": null,
+    "psramMb": 0,
     "display": {
       "width": 135,
       "height": 240,
@@ -573,6 +598,20 @@
       "bus": "SPI"
     },
     "controls": [
+      {
+        "id": "btnA",
+        "name": "按键 A",
+        "type": "button",
+        "transport": "board",
+        "defaultKeyCode": "KeyA"
+      },
+      {
+        "id": "btnB",
+        "name": "按键 B",
+        "type": "button",
+        "transport": "board",
+        "defaultKeyCode": "KeyB"
+      },
       {
         "id": "touch",
         "type": "touch",

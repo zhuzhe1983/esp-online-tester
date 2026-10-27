@@ -13,6 +13,7 @@ pub use esp_soc::board::{Board, BoardEdge, BoardModel, NoBoard, VirtualCycle};
 pub mod waveshare_lcd147;
 pub mod xiao;
 pub mod nanoc6;
+pub mod nesso_n1;
 
 pub use waveshare_lcd147::{
     lcd_visible, WaveshareC6Lcd147, LCD_COL_OFFSET, LCD_VISIBLE_COLS, PIN_BOOT, PIN_LCD_BL, PIN_LCD_CS, PIN_LCD_DC,
@@ -23,6 +24,7 @@ pub use xiao::XiaoEsp32C6;
 /// Board by name: `none` (a bare module), `waveshare-c6-lcd147` or `xiao-esp32c6`.
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
+        "nesso-n1" | "m5stack-dk001" => Some(Box::new(nesso_n1::NessoN1::new())),
         "nanoc6" | "m5stack-c125" => Some(Box::new(nanoc6::NanoC6::new())),
         "none" | "bare" => Some(Box::new(NoBoard)),
         "waveshare-c6-lcd147" | "c6-lcd147" | "lcd147" => Some(Box::new(WaveshareC6Lcd147::new())),

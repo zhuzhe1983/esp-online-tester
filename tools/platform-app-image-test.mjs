@@ -17,6 +17,10 @@ const descriptor=app.slice();descriptor[32]=0;await reject(descriptor,'APP_IMAGE
 const boot=new Uint8Array(await readFile(new URL('../web/wasm/fw/public/hello-bootloader.bin',import.meta.url)));await reject(boot,'APP_IMAGE_INVALID');
 const trailer=new Uint8Array(app.length+10);trailer.set(app);trailer[app.length]=0x42;await reject(trailer,'APP_IMAGE_INVALID');
 
+const c6app=new Uint8Array(await readFile(new URL('../web/wasm/fw/public/c6-hello_world.bin',import.meta.url)));
+assert.equal((await validateAppImage(c6app,'nesso-n1',16*1024*1024)).chipId,13);
+await reject(app,'CHIP_MISMATCH','nesso-n1');
+
 const memory=new Map(),storage={getItem:k=>memory.get(k),setItem:(k,v)=>memory.set(k,v)};
 const h=createFirmwareHistory(()=>storage),url='https://burner.m5stack.com/api/v1/firmwares/123/versions/456/download';
 const item={url,provider:'m5burner',deviceId:'789',kind:'merged',productId:'m5stack-stopwatch',name:'App',version:'1.0',lastUsedAt:1};

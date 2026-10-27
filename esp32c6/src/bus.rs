@@ -54,6 +54,12 @@ pub struct SocBus {
 impl SocBus {
     /// Attach controller devices and restore inputs driven by the persistent board.
     pub fn attach_board_devices(&mut self) {
+        // ESP-IDF v5.5.4 esp32c6/esp_efuse_table.c: BLK1 W3 PKG_VERSION bits120..122;
+        // Nesso TPX00227 uses QFN40 (0), no embedded flash. Other boards unchanged.
+        if self.board.name()=="nesso-n1" {
+            let identity=self.periph.efuse.read(0x50);self.periph.efuse.write(0x50,identity & !(7<<24));
+            let flash=self.periph.efuse.read(0x54);self.periph.efuse.write(0x54,flash & !0xe7);
+        }
         if self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, esp_soc::pins::ChipPins::C6.routes(&self.periph.gpio, &self.periph.io_mux));
         }
@@ -118,6 +124,8 @@ impl SocBus {
                 SPI_MMU_ITEM_INDEX => self.mmu_index,
                 _ => self.mmu_power_ctrl,
             }
+        } else if matches!(addr & !3,0x6008_00d8|0x6008_0198|0x6008_0258) {
+            self.spi2_out_ready(((addr-0x6008_00d8)/0xc0) as usize)
         } else {
             // USB FIFO reads can present the next packet and raise RECV_PKT before tick.
             // IDF v5.5.4 components/soc/esp32c6/register/soc/usb_serial_jtag_reg.h:
@@ -334,14 +342,52 @@ impl SocBus {
         result.is_ok()
     }
 
+    /// C6 GDMA OUTFIFO_STATUS (IDF v5.5.4 gdma_reg.h): bit1 EMPTY,
+    /// bits7:2 available bytes. Untimed, read-only readiness of up to 32 bytes
+    /// in the current validated SPI descriptor; no prefetch ownership/EOF timing.
+    /// Other peripheral channels retain their existing status implementation.
+    #[cold]
+    fn spi2_out_ready(&self,ch:usize)->u32 {
+        let c=&self.periph.gdma.gdma.out[ch];
+        if c.peri_sel!=0 {return self.periph.gdma.gdma.read(ch as u32*0xc0+0x78);}
+        let mut available=0;
+        if c.running && c.desc&3==0 {
+            let mut walk=esp_periph::gdma::DescriptorWalk::new(1);
+            if let Ok((_,d))=walk.read_with(c.desc,|a|self.spi_dma_word(a)) {
+                if d.length<=d.size && c.buf_pos<d.length && (c.conf1&(1<<12)==0 || d.owner_dma) {
+                    let start=d.buf.checked_add(c.buf_pos);let count=(d.length-c.buf_pos).min(32);
+                    if start.is_some_and(|a|self.spi_dma_range(a,count as usize).is_some()) {available=count;}
+                }
+            }
+        }
+        (15<<23)|(available<<2)|if available==0 {2}else{0}
+    }
+    fn spi_dma_range(&self,address:u32,count:usize)->Option<std::ops::Range<usize>> {let start=address.checked_sub(SRAM_LOW)? as usize;let end=start.checked_add(count)?;(end<=self.sram.len()).then_some(start..end)}
+    fn spi_dma_word(&self,address:u32)->Result<u32,Fault> {if address&3!=0 {return Err(Fault::Misaligned);}let r=self.spi_dma_range(address,4).ok_or(Fault::Unmapped)?;Ok(u32::from_le_bytes(self.sram[r].try_into().unwrap()))}
     fn spi2_dma_tx(&mut self) {
-        let Some(bits) = self.periph.spi2.dma_tx_pending else { return };
-        let want = (bits as usize).div_ceil(8);
-        let Some(ch) = self.periph.gdma.gdma.out_channel_for(0) else { return };   // not started yet: the round's end retries
-        // A malformed chain still completes the transfer with the bytes gathered before the
-        // fault, as before the shared gather; GDMA additionally reports OUT_DSCR_ERR.
-        let mut data = Vec::with_capacity(want);
-        self.gather_dma_out(ch, want, &mut data);
+        let Some(bits)=self.periph.spi2.dma_tx_pending else {return};
+        let want=(bits as usize).div_ceil(8);
+        let Some(ch)=self.periph.gdma.gdma.out_channel_for(0) else {return};
+        let mut c=self.periph.gdma.gdma.out[ch];let mut data=Vec::with_capacity(want);let mut visited=std::collections::HashSet::new();
+        let mut walk=esp_periph::gdma::DescriptorWalk::new(esp_periph::gdma::GDMA_DESCRIPTOR_STEP_BUDGET);
+        let mut failed=false;
+        while c.running && c.desc!=0 && data.len()<want {
+            if !visited.insert(c.desc) {failed=true;break;}
+            let Ok((control,d))=walk.read_with(c.desc,|a|self.spi_dma_word(a)) else {failed=true;break;};
+            if d.length>d.size || c.buf_pos>d.length || (c.conf1&(1<<12)!=0 && !d.owner_dma) {failed=true;break;}
+            let remaining=(d.length-c.buf_pos) as usize;let count=remaining.min(want-data.len());
+            let Some(range)=d.buf.checked_add(c.buf_pos).and_then(|a|self.spi_dma_range(a,count)) else {failed=true;break;};
+            data.extend_from_slice(&self.sram[range]);c.buf_pos+=count as u32;
+            if count<remaining {break;}
+            if c.conf0&(1<<2)!=0 {let Some(r)=self.spi_dma_range(c.desc,4) else {failed=true;break;};self.sram[r].copy_from_slice(&(control&!(1<<31)).to_le_bytes());}
+            c.int_raw|=1;if d.eof {c.int_raw|=2;c.eof_desc=c.desc;}
+            c.desc=d.next;c.buf_pos=0;
+            if d.eof || d.next==0 {c.running=false;c.int_raw|=8;break;}
+        }
+        if failed {c.running=false;c.int_raw|=4;}
+        self.periph.gdma.gdma.out[ch]=c;self.irq_dirty=true;
+        // Preserve the existing short/fault transfer contract: deliver the bytes
+        // collected, complete SPI, and expose the descriptor error on GDMA.
         self.periph.spi2.complete_dma_tx(&data);
     }
 
@@ -845,5 +891,40 @@ mod parlio_dma_tests {
             assert_eq!(bus.periph.gdma.gdma.out[0].int_raw & 4, 4, "case {case}");
             assert!(!bus.periph.gdma.gdma.out[0].running);
         }
+    }
+}
+
+#[cfg(test)]
+mod spi_stream_tests {
+    use super::*;
+    const DESC:u32=SRAM_LOW+0x100;const DATA:u32=SRAM_LOW+0x200;
+    fn prepared()->SocBus {
+        let mut b=SocBus::new(1024,[0;6]);
+        for (a,v) in [(DESC,(1<<31)|(1<<30)|(8<<12)|8),(DESC+4,DATA),(DESC+8,0)] {b.write32(a,v).unwrap();}
+        b.sram_store(DATA,&[1,2,3,4,5,6,7,8]);
+        b.write32(0x6008_00d0,4).unwrap();b.write32(0x6008_00d4,1<<12).unwrap();b.write32(0x6008_00e0,(1<<21)|(DESC&0xfffff)).unwrap();b
+    }
+    fn phase(b:&mut SocBus,n:u32)->Vec<u8> {for(r,v) in [(0x30,1<<28),(0x10,1<<27),(0x1c,n*8-1),(0,1<<24)] {b.periph.spi2.write(r,v);}b.spi2_dma_tx();b.periph.spi2.take_transfer().unwrap().tx}
+    #[test]
+    fn source_fifo_readiness_is_validated_and_partial_phases_keep_unread_bytes() {
+        let mut b=prepared();let status=b.read32(0x6008_00d8).unwrap();assert_eq!(status&3,0);assert_eq!((status>>2)&63,8);
+        assert_eq!(b.periph.gdma.gdma.out[0].buf_pos,0,"status read cannot consume data or retire owner");
+        assert_eq!(phase(&mut b,3),[1,2,3]);let c=&b.periph.gdma.gdma.out[0];assert_eq!((c.desc,c.buf_pos,c.int_raw,c.running),(DESC,3,0,true));assert_eq!(b.sram32(DESC)>>31,1);
+        assert_eq!((b.read32(0x6008_00d8).unwrap()>>2)&63,5);assert_eq!(phase(&mut b,5),[4,5,6,7,8]);let c=&b.periph.gdma.gdma.out[0];assert_eq!((c.buf_pos,c.int_raw&15,c.running),(0,11,false));assert_eq!(b.sram32(DESC)>>31,0);assert_eq!(b.read32(0x6008_00d8).unwrap()&3,2);
+    }
+    #[test]
+    fn fifo_does_not_advertise_invalid_memory_owner_stop_or_reset() {
+        for case in 0..6 {let mut b=prepared();match case {
+            0=>b.write32(DESC,(1<<30)|(8<<12)|8).unwrap(),1=>b.write32(DESC+4,SRAM_HIGH-4).unwrap(),2=>b.write32(DESC,(1<<31)|(9<<12)|8).unwrap(),
+            3=>b.write32(0x6008_00e0,1<<20).unwrap(),4=>b.write32(0x6008_00d0,1).unwrap(),_=>b.periph.gdma.gdma.out[0].desc=SRAM_HIGH-4,
+        }assert_eq!(b.read32(0x6008_00d8).unwrap()&3,2,"case {case}");}
+        let mut b=prepared();b.periph.gdma.gdma.out[0].peri_sel=6;assert_eq!(b.read32(0x6008_00d8).unwrap(),b.periph.gdma.gdma.read(0x78),"AES path unchanged");
+    }
+    #[test]
+    fn zero_progress_cycles_fault_and_board_identity_survives_reset() {
+        let mut b=prepared();b.write32(DESC,1<<31).unwrap();b.write32(DESC+8,DESC).unwrap();assert!(phase(&mut b,1).is_empty());assert_eq!(b.periph.gdma.gdma.out[0].int_raw&12,4);
+        let mut m=crate::machine([0;6],16<<20);let old=m.bus.periph.efuse.read(0x50);assert_eq!((old>>24)&7,1);
+        m.bus.board=super::super::board::make_board("nesso-n1").unwrap();m.bus.attach_board_devices();let id=m.bus.periph.efuse.read(0x50);assert_eq!(id,old&!(7<<24));assert_eq!(m.bus.periph.efuse.read(0x54)&0xe7,0);
+        esp_soc::SocBus::reboot(&mut m.bus,[0;6]);assert_eq!(m.bus.periph.efuse.read(0x50),id);assert!(m.bus.board.input_levels().contains(&(18,false)));
     }
 }

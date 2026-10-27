@@ -44,7 +44,7 @@ Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已合入主线；配件
 | 10 | [M5Stack Atom-Lite · C008](https://docs.m5stack.com/en/core/Atom-Lite) · `m5stack-c008` | esp32 / 无屏幕 | 已交付 partial：G39 / G27 RMT | [官方出厂真实启动与按键红灯](atom-lite-runtime.md)；Grove 测试夹具、红外、网络和模拟电源未验证 |
 | 11 | [M5Stack Atom-Matrix](https://docs.m5stack.com/en/core/Atom-Matrix) · `m5stack-c008-b` | esp32 / 无屏幕 | 已交付 partial：G39 / G27×25 / MPU6886 | [官方动画与独立输入/IMU测试](atom-matrix-runtime.md)；Wi-Fi扫描和完整出厂流程未完成 |
 | 12 | [M5Stack NanoC6 · C125](https://docs.m5stack.com/en/core/NanoC6) · `m5stack-c125` | esp32c6 / 无屏幕 | partial：官方 v1.1 ROM 启动 / G9 / RGB 电源与灯 / G7 蓝灯 | IR、无线、外部 SH1107/Grove 未验证；见 [记录](nanoc6-runtime.md) |
-| 13 | [Arduino Nesso N1 · DK001](https://docs.m5stack.com/en/core/Arduino_Nesso_N1) · `m5stack-dk001` | esp32c6 / ST7789 | 待实现 | ST7789 引脚/窗口/批次，按键/触摸，供电及板载外设 |
+| 13 | [Arduino Nesso N1 · DK001](https://docs.m5stack.com/en/core/Arduino_Nesso_N1) · `m5stack-dk001` | esp32c6 / ST7789 | partial：官方 UIFlow2 2.5.3 ROM 启动 / LCD / PI4IO 按键 / FT6336 | 电量/充电、LoRa、音频、电源键、网络与 Web 姿态未实现；见 [记录](nesso-n1-runtime.md) |
 | 14 | [M5Stack Air Quality](https://docs.m5stack.com/en/core/Air_Quality) · `m5stack-k131` | esp32s3 / GDEY0154D67 | 待实现 | GDEY0154D67 刷新通道、存储、触摸/按键、电源 |
 | 15 | [M5Stack Air Quality v1.1 · K131-V11](https://docs.m5stack.com/en/core/Air_Quality_v1.1) · `m5stack-k131-v11` | esp32s3 / GDEY0154D67 | 待实现 | GDEY0154D67 刷新通道、存储、触摸/按键、电源 |
 | 16 | [M5Stack Atom Voice](https://docs.m5stack.com/en/atom/Atom_Voice) · `m5stack-c008-c` | esp32 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |

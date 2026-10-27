@@ -1341,10 +1341,11 @@
       "summary": "M5Stack与Arduino合作的ESP32-C6开发设备，结合LoRa、触摸LCD、IMU与电池，提供多种低功耗无线通信与扩展接口。",
       "knowledgeUrl": "./knowledge/m5stack-dk001.json",
       "runtime": {
-        "board": null,
+        "board": "nesso-n1",
         "flashMb": 16,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 135,
@@ -1354,6 +1355,20 @@
         "bus": "SPI"
       },
       "controls": [
+        {
+          "id": "btnA",
+          "name": "按键 A",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "btnB",
+          "name": "按键 B",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyB"
+        },
         {
           "id": "touch",
           "type": "touch",
@@ -1424,16 +1439,16 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "部分板级模型：ST7789 屏幕、FT6336 单点触摸、PI4IOE5V6408 按键与背光。官方 UIFlow2 v2.5.3 已观察启动及 A/B 按键切换；该启动界面自身不响应触摸。",
+        "电池计量/充电芯片、LoRa 射频、无线网络、蜂鸣器与物理电源键尚未模拟；UIFlow2 电量可能显示 −1%。IMU 只有寄存器模型，尚未接入网页姿态输入。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Only manufacturer exterior geometry is imported; board, display, keyboard, touch and RF runtime unavailable.",
         "No physical hardware measurement performed; official photographs may include shipping films and uncalibrated perspective.",
         "PCB is an explicitly estimated UNKNOWN placeholder without invented components or traces.",
         "Source CAD does not supply calibrated material properties; colors are source-photo-informed display approximations.",
-        "ESP32-C6 CPU/board emulation unavailable. Antenna is detached in selected exterior view; complete antenna placement remains pending.",
         "Front glass is an independent photo-informed flat surface, not manufacturer glass CAD; inset/radius +/-0.5mm, optical stack and thickness unknown.",
         "Back printed paper is a separate exterior surface; its outline/rounding are photo-derived +/-0.35mm. Mechanical pockets behind the photographed paper are covered rather than textured as visible holes.",
-        "Rear silver fasteners have exact CAD bore centers but photo-estimated head/rim/socket shapes; fastener standard, thread and internal attachment remain unknown."
+        "Rear silver fasteners have exact CAD bore centers but photo-estimated head/rim/socket shapes; fastener standard, thread and internal attachment remain unknown.",
+        "Antenna remains detached; complete antenna placement is unverified. Side KEY2 hit face is an original CAD face subset; switch travel and force are not modeled."
       ],
       "sources": [
         {

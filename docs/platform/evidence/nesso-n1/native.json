@@ -1,0 +1,25 @@
+{
+  "command": "cargo run --release -p esp32c6 --example nesso_probe -- <official-bin> <c6-rom>",
+  "firmwareSha256": "49c4a9a669a2bde5b95416fa19ab8e01fc6bdec6a81bb80f2a0fc07480e1444b",
+  "samples": {
+    "2s": "CLOUD",
+    "5s": "USB selection",
+    "8s": "USB READY 115200"
+  },
+  "inputs": {
+    "btnB": [
+      3.0,
+      3.3
+    ],
+    "btnA": [
+      6.0,
+      6.3
+    ]
+  },
+  "notes": [
+    "Source-built interpreter probe; actual official image, no display injection.",
+    "Initial unpatched boot stopped reading GDMA 0x600800d8 EMPTY at PC 0x420860e6.",
+    "Default C6 QFN32 package selected a different board; Nesso QFN40 profile required.",
+    "Battery -1%, I2C initialization error and six PLL calibration messages remain."
+  ]
+}

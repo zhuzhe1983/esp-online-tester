@@ -5455,13 +5455,14 @@
       "revision": "v2.5.3",
       "status": "trial",
       "source": {
-        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002638/versions/2098281060085485570/download"
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002638/versions/2098281060085485570/download",
+        "sha256": "49c4a9a669a2bde5b95416fa19ab8e01fc6bdec6a81bb80f2a0fc07480e1444b"
       },
       "simulationVerified": false,
       "hardwareValidated": false,
       "limitations": [
-        "官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256，尚未核验镜像布局或执行兼容性。",
-        "浏览器加载时计算实际摘要并检查芯片、容量、启动布局；不完整镜像会要求补齐启动文件。不同外设和网络功能的模拟范围仍取决于板级模型。"
+        "已验证官方 v2.5.3 原始镜像的 C6 ROM 启动、屏幕和 A/B 按键 CLOUD→USB→READY；FT6336 单点触摸在同一官方固件的 MicroPython REPL 中读取，启动菜单本身没有触摸处理。",
+        "电池计量、充电、LoRa 射频、Wi-Fi、蜂鸣器和电源键未完成模拟；电量 −1%、I²C 初始化和 PLL 校准提示保留，不代表整机兼容。"
       ],
       "sources": [
         {
@@ -5484,9 +5485,9 @@
         "publishedAt": "2026-09-11T13:22:45+08:00",
         "assetName": "uiflow-db526ecc-esp32c6-16mb-nesso-n1-v2.5.3-20260911.bin",
         "upstreamUrl": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002638/versions/2098281060085485570/download",
-        "digestSource": "publisher-hash-unavailable",
-        "layoutVerified": false,
-        "checkedAt": "2026-10-27T14:29:06Z",
+        "digestSource": "locally-measured",
+        "layoutVerified": true,
+        "checkedAt": "2026-10-27T21:35:59Z",
         "publisherIdentity": {
           "provider": "m5burner-v1",
           "sourceType": "OFFICIAL",
@@ -5497,7 +5498,8 @@
           "status": "PUBLISHED"
         }
       },
-      "watchlistId": "m5-official-uiflow2-dk001"
+      "watchlistId": "m5-official-uiflow2-dk001",
+      "compatibility": "partial"
     },
     {
       "id": "m5stack-u202-uiflow2",
