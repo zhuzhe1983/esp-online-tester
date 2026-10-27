@@ -13,8 +13,8 @@ const json = value => JSON.stringify(canonical(value));
 const config = scene => ({schemaVersion:scene.schemaVersion,productId:scene.productId,firmware:scene.firmware,accessories:scene.accessories,localAccessories:scene.localAccessories || []});
 const sameScene = (a,b) => !!a && !!b && json(config(a)) === json(config(b));
 const hashPattern = /^[a-f0-9]{64}$/i;
-const pressInput=event=>event.type==='encoder'?{type:'encoder',id:event.id,steps:event.steps}:event.type==='matrix-key'?{type:'matrix-key',row:event.row,column:event.column,pressed:event.pressed}:{type:'button',id:event.id,pressed:event.pressed};
-const pressId=event=>event.type==='matrix-key'?`matrix:${event.row}:${event.column}`:`button:${event.id}`;
+const pressInput=event=>event.type==='encoder'?{type:'encoder',id:event.id,steps:event.steps}:event.type==='accessory-connection'?{type:event.type,accessoryId:event.accessoryId,connected:event.connected}:event.type==='accessory-button'?{type:event.type,accessoryId:event.accessoryId,id:event.id,pressed:event.pressed}:event.type==='matrix-key'?{type:'matrix-key',row:event.row,column:event.column,pressed:event.pressed}:{type:'button',id:event.id,pressed:event.pressed};
+const pressId=event=>event.type==='accessory-button'?`accessory:${event.accessoryId}:${event.id}`:event.type==='matrix-key'?`matrix:${event.row}:${event.column}`:`button:${event.id}`;
 const sourceUrl=value=>{try{const url=new URL(value);return typeof value==='string'&&value.length<=4096&&!url.username&&!url.password&&(url.protocol==='https:'||(url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)));}catch{return false;}};
 const fingerprint = firmware => json({manifestHash:firmware.manifestHash ?? null,appDirect:!!firmware.appDirect,executionMode:firmware.executionMode || 'wasm-jit',stubs:firmware.stubs || [],artifacts:firmware.artifacts.map(({kind,sha256,bytes,at}) => ({kind,sha256,bytes,...(at === undefined ? {} : {at})}))});
 
@@ -59,6 +59,8 @@ export function validateRecording(recording, {scene} = {}) {
       if (item.at !== undefined && (!Number.isInteger(item.at) || item.at < 0 || item.at > 32*1024*1024)) add('RECORDING_FIRMWARE',`/firmware/artifacts/${i}/at`,'Invalid artifact offset.');
     }
   }
+  const attached=new Set((recording.scene?.accessories||[]).filter(item=>item.wiring?.mode==='physical'&&item.wiring.interfaceId==='grove').map(item=>item.id));
+  const connected=new Set(attached);
   const held = new Set(); let touch = false, previous = 0;
   if (!Array.isArray(recording.events) || recording.events.length > MAX_RECORDING_EVENTS) add('RECORDING_EVENTS','/events','At most 500 input events are allowed.');
   else for (const [i,event] of recording.events.entries()) {
@@ -73,6 +75,19 @@ export function validateRecording(recording, {scene} = {}) {
     } else if(event.type==='encoder') {
       keys(event,['at','type','id','steps'],path);
       if(typeof event.id!=='string'||!/^[a-z0-9][a-z0-9-]{0,79}$/.test(event.id)||!Number.isInteger(event.steps)||event.steps===0||Math.abs(event.steps)>64)add('RECORDING_ENCODER',path,'Invalid encoder detents.');
+    } else if(['accessory-button','accessory-connection'].includes(event.type)) {
+      if(!attached.has(event.accessoryId))add('RECORDING_ACCESSORY',path,'Accessory must have a physical route in the recorded scene.');
+      const key=`accessory:${event.accessoryId}:button`;
+      if(event.type==='accessory-button') {
+        keys(event,['at','type','accessoryId','id','pressed'],path);
+        if(event.id!=='button'||typeof event.pressed!=='boolean')add('RECORDING_ACCESSORY',path,'Invalid accessory button input.');
+        if(event.pressed&&!connected.has(event.accessoryId))add('RECORDING_ACCESSORY',path,'A disconnected accessory cannot be pressed.');
+        if(event.pressed)held.add(key);else held.delete(key);
+      } else {
+        keys(event,['at','type','accessoryId','connected'],path);
+        if(typeof event.connected!=='boolean')add('RECORDING_ACCESSORY',path,'Connection state must be boolean.');
+        if(event.connected)connected.add(event.accessoryId);else connected.delete(event.accessoryId);held.delete(key);
+      }
     } else if(event.type==='matrix-key') {
       keys(event,['at','type','row','column','pressed'],path);
       if(!Number.isInteger(event.row)||event.row<0||event.row>3||!Number.isInteger(event.column)||event.column<0||event.column>13||typeof event.pressed!=='boolean')add('RECORDING_MATRIX_KEY',path,'Invalid matrix key coordinates.');
@@ -81,7 +96,7 @@ export function validateRecording(recording, {scene} = {}) {
       keys(event,['at','type','x','y','down'],path);
       if (!recording.display || ![event.x,event.y].every(n => Number.isFinite(n) && n >= 0 && n <= 1) || typeof event.down !== 'boolean') add('RECORDING_TOUCH',path,'Touch needs a display and normalized coordinates in 0–1.');
       touch = event.down;
-    } else add('RECORDING_EVENT',path,'Only semantic button, matrix key, encoder and touch inputs may be replayed.');
+    } else add('RECORDING_EVENT',path,'Only semantic button, matrix key, encoder, touch and supported accessory inputs may be replayed.');
   }
   if (held.size || touch) add('RECORDING_HELD','/events','Recording must end with every button and touch released.');
   if (recording.expectedFrame !== undefined) {
@@ -114,7 +129,7 @@ export function createRecordingController(runtime) {
   const failure=e=>{error={code:e.code||'RECORDING_ERROR',message:e.message};change('error');};
   const check=t=>{if(t.cancelled)throw err('RECORDING_CANCELLED','Recording operation cancelled.');};
   const requirePristineStorage=state=>{if(state.sdCard?.pristine===false)throw err('RECORDING_STORAGE_NOT_PRISTINE','当前虚拟 SD 卡含有导入文件或持久化改动，分享录制不会携带这些私人内容。请先导出备份，并手动清空 SD 卡后再录制或回放。');if(state.storage?.pristine===false)throw err('RECORDING_STORAGE_NOT_PRISTINE','当前设备已有持久化数据，分享录制无法携带这些内容。请先在设备存储中手动清空，再开始录制或回放。');};
-  const tracked=event=>{if(['button','matrix-key'].includes(event.type)){if(event.pressed)held.set(pressId(event),pressInput(event));else held.delete(pressId(event));}else if(event.type==='touch')heldTouch=event.down?clone(event):null;};
+  const tracked=event=>{if(['button','matrix-key','accessory-button'].includes(event.type)){if(event.pressed)held.set(pressId(event),pressInput(event));else held.delete(pressId(event));}else if(event.type==='accessory-connection')held.delete(`accessory:${event.accessoryId}:button`);else if(event.type==='touch')heldTouch=event.down?clone(event):null;};
   const release=async()=>{
     const current=await runtime.observe();
     if(['running','paused'].includes(current.status)) {
@@ -152,7 +167,7 @@ export function createRecordingController(runtime) {
     receipt={...(receipt||{}),kind:'replay',result:'cancelled',reason,bitExact:false};emit();return observe();
   };
   const onEvent=event=>{
-    if(event.type==='input'&&['button','matrix-key','touch','encoder'].includes(event.event.type)) {
+    if(event.type==='input'&&['button','matrix-key','touch','encoder','accessory-button','accessory-connection'].includes(event.event.type)) {
       if(status==='recording') {
         tracked(event.event);
         if(event.receipt?.delivery!=='queued'||!Number.isFinite(event.receipt.guestTime)){void cancel('missing-acknowledgement');return;}
@@ -213,8 +228,10 @@ export function createRecordingController(runtime) {
         if(!Number.isFinite(timeoutMs)||timeoutMs<100||timeoutMs>300000)throw err('RECORDING_TIMEOUT','Replay timeout must be 100–300000 ms.');
         if(['preparing','recording','playing'].includes(status))throw err('RECORDING_BUSY','Stop the current recording or playback first.');
         const controls=new Set(current.product?.controls.filter(item=>item.type==='button').map(item=>item.id));
+        const accessories=new Set((current.accessoryInputs||[]).map(item=>item.accessoryId));
         for(const event of input.events) {
           if(event.type==='encoder'&&!(current.product?.runtime?.encoder&&current.product.controls.some(c=>c.id===event.id&&c.type==='encoder')))throw err('RECORDING_CONTROL','Recording names an encoder absent from this product.');
+          if(['accessory-button','accessory-connection'].includes(event.type)&&!accessories.has(event.accessoryId))throw err('RECORDING_ACCESSORY','Recording names an accessory without a supported physical route.');
           if(event.type==='button'&&!controls.has(event.id))throw err('RECORDING_CONTROL','Recording names a button absent from this product.');
           if(event.type==='matrix-key'&&!current.product?.controls.some(control=>control.type==='matrix-key'&&control.row===event.row&&control.column===event.column))throw err('RECORDING_CONTROL','Recording names a matrix key absent from this product.');
         }

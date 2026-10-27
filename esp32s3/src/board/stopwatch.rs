@@ -11,10 +11,13 @@ pub const PIN_STOPWATCH_TE: u8 = 38;
 pub const PIN_STOPWATCH_BUTTON_A: u8 = 2;
 pub const PIN_STOPWATCH_BUTTON_B: u8 = 1;
 
+struct UnitButton {pressed:bool,level:bool,dirty:bool,cycle:VirtualCycle}
+
 struct PanelState {
     panel: Co5300,
     active: bool,
     version: u64,
+    unit_button: Option<UnitButton>,
 }
 
 struct PowerWiring {
@@ -26,7 +29,7 @@ struct PowerWiring {
 
 impl PowerWiring {
     fn sync(&self) {
-        let off = self.pmic.lock().expect("StopWatch PMIC state mutex poisoned").power_off_requested;
+        let (off,grove_power) = {let pmic=self.pmic.lock().expect("StopWatch PMIC state mutex poisoned");(pmic.power_off_requested,pmic.grove_5v_enabled)};
         let expander = *self.expander.lock().expect("StopWatch expander state mutex poisoned");
         let active = !off && expander.oled_rail && expander.oled_reset_high;
         let mut panel = self.panel.lock().expect("StopWatch panel mutex poisoned");
@@ -35,6 +38,12 @@ impl PowerWiring {
             panel.version += 1;
         }
         panel.active = active;
+        if let Some(button)=&mut panel.unit_button {
+            // U027 V1.0: white J1.1 -> G11, R1=10k to Grove5V, R2=20k to GND.
+            // Digital steady state only: no RC delay, bounce or analog contention.
+            let level=grove_power && !button.pressed;
+            if level!=button.level {button.level=level;button.dirty=true;}
+        }
         if off || !expander.touch_reset_high {
             *self.touch.lock().expect("StopWatch touch mutex poisoned") = TouchState::default();
         }
@@ -79,6 +88,7 @@ impl StopWatch {
                     }),
                     active: false,
                     version: 0,
+                    unit_button: None,
                 }),
                 pmic: Default::default(),
                 expander: Default::default(),
@@ -147,8 +157,9 @@ impl BoardModel for StopWatch {
     fn display_frames(&self) -> u64 { self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").panel.frames }
     fn input_levels(&self) -> Vec<(u8, bool)> {
         let state = self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");
-        vec![state.panel.tear_input().expect("StopWatch scan must be configured"),
-            (PIN_STOPWATCH_BUTTON_A, true), (PIN_STOPWATCH_BUTTON_B, true)]
+        let mut levels=vec![state.panel.tear_input().expect("StopWatch scan must be configured"),
+            (PIN_STOPWATCH_BUTTON_A, true), (PIN_STOPWATCH_BUTTON_B, true)];
+        if let Some(button)=&state.unit_button {levels.push((11,button.level));}levels
     }
     fn touch(&mut self, x: u16, y: u16, down: bool) {
         self.wiring.sync();
@@ -162,10 +173,18 @@ impl BoardModel for StopWatch {
     }
     fn advance_to(&mut self, cycle: VirtualCycle) {
         self.wiring.sync();
-        self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").panel.advance_to(cycle);
+        let mut state=self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");
+        state.panel.advance_to(cycle);if let Some(button)=&mut state.unit_button {button.cycle=cycle;}
     }
     fn take_edges(&mut self) -> Vec<BoardEdge> {
-        self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").panel.take_edges()
+        let mut state=self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");let mut edges=state.panel.take_edges();
+        if let Some(button)=&mut state.unit_button {if button.dirty {button.dirty=false;edges.push(BoardEdge{cycle:button.cycle,pin:11,level:button.level});}}edges
+    }
+    fn accessory_button_at(&mut self,cycle:VirtualCycle,model:&str,port:&str,connected:bool,pressed:bool)->Option<(u8,Option<bool>)> {
+        if model!="gpio-button-u027" || port!="grove" {return None;}
+        let level=self.wiring.pmic.lock().expect("StopWatch PMIC state mutex poisoned").grove_5v_enabled && !pressed;
+        self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").unit_button=connected.then_some(UnitButton{pressed,level,dirty:false,cycle});
+        Some((11,connected.then_some(level)))
     }
     fn named_pin(&self, name: &str) -> Option<u8> {
         match name {
@@ -177,5 +196,37 @@ impl BoardModel for StopWatch {
     fn report(&self) -> String {
         let off = self.wiring.pmic.lock().expect("StopWatch PMIC state mutex poisoned").power_off_requested;
         format!("[stopwatch] power_off_requested={off}")
+    }
+}
+
+#[cfg(test)]
+mod unit_button_tests {
+    use super::*;
+    fn write(device:&mut dyn I2cDevice,reg:u8,value:u8) {assert!(device.start(false));assert!(device.write(reg));assert!(device.write(value));device.stop();}
+    #[test]
+    fn u027_routes_only_white_pin_and_follows_grove_power_and_hold() {
+        let mut board=StopWatch::new();let mut devices=board.i2c_devices();let pmic=devices.iter_mut().find(|(_,a,_)|*a==0x6e).unwrap().2.as_mut();
+        assert_eq!(board.accessory_button_at(0,"gpio-button-u027","grove",true,false),Some((11,Some(false))));
+        assert_eq!(board.accessory_button_at(0,"gpio-button-u027","internal-i2c",true,true),None);
+        assert_eq!(board.accessory_button_at(0,"arbitrary","grove",true,true),None);
+        write(pmic,6,0x1f);board.advance_to(10);assert!(board.take_edges().contains(&BoardEdge{cycle:10,pin:11,level:true}));
+        assert!(!board.input_levels().iter().any(|(pin,_)|*pin==10),"yellow wire is NC");
+        assert_eq!(board.accessory_button_at(11,"gpio-button-u027","grove",true,true),Some((11,Some(false))));
+        write(pmic,6,0x17);board.advance_to(12);assert!(board.take_edges().is_empty());
+        assert_eq!(board.accessory_button_at(13,"gpio-button-u027","grove",true,false),Some((11,Some(false))));
+        write(pmic,6,0x1f);write(pmic,7,0x40);write(pmic,0x0c,0xa1);board.advance_to(14);assert!(board.take_edges().contains(&BoardEdge{cycle:14,pin:11,level:true}));
+        write(pmic,7,0);board.advance_to(15);assert!(board.take_edges().contains(&BoardEdge{cycle:15,pin:11,level:false}));
+        assert_eq!(board.accessory_button_at(16,"gpio-button-u027","grove",false,true),Some((11,None)));
+        assert!(!board.input_levels().iter().any(|(pin,_)|*pin==11));write(pmic,7,0x40);board.advance_to(17);assert!(board.take_edges().is_empty(),"detached unit cannot drive after a power write");
+    }
+    #[test]
+    fn u027_detach_discards_pending_edges_and_guest_reset_preserves_physical_hold() {
+        let mut board=StopWatch::new();board.accessory_button_at(0,"gpio-button-u027","grove",true,false);
+        let mut devices=board.i2c_devices();let pmic=devices.iter_mut().find(|(_,a,_)|*a==0x6e).unwrap().2.as_mut();write(pmic,6,0x1f);
+        board.accessory_button_at(1,"gpio-button-u027","grove",false,false);assert!(board.take_edges().is_empty());
+        board.accessory_button_at(2,"gpio-button-u027","grove",true,true);drop(devices);let mut devices=board.i2c_devices();
+        write(devices.iter_mut().find(|(_,a,_)|*a==0x6e).unwrap().2.as_mut(),6,0x1f);board.advance_to(3);
+        assert!(board.input_levels().contains(&(11,false)),"guest restart does not physically release a held switch");
+        assert_eq!(board.accessory_button_at(4,"gpio-button-u027","grove",true,false),Some((11,Some(true))));
     }
 }

@@ -7,6 +7,8 @@ export function shouldCaptureMappedKey(event,product,mapping) {
 // device's actual input protocol after the shared hold/release controller.
 export function controlInput(event,product) {
   if(event.type!=='button')return event;
+  const accessory=/^accessory:(.+):button$/.exec(event.id);
+  if(accessory)return {type:'accessory-button',accessoryId:accessory[1],id:'button',pressed:event.pressed};
   const control=product?.controls?.find(item=>item.id===event.id);
   return control?.type==='matrix-key'?{type:'matrix-key',row:control.row,column:control.column,pressed:event.pressed}:event;
 }

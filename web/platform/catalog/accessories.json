@@ -138,12 +138,20 @@
       "name": "M5Stack Unit Button · U027",
       "manufacturer": "M5Stack",
       "sku": "U027",
-      "hardwareRevision": "U027; manufacturer page does not identify hardware revision",
+      "hardwareRevision": "U027; behavior follows official schematic V1.0 dated 2018-07-18",
       "type": "button",
       "controller": "passive switch",
       "model": {
-        "id": "visual-only",
-        "status": "visual-only"
+        "id": "gpio-button-u027",
+        "status": "partial",
+        "supportedRoutes": [
+          {
+            "productId": "m5stack-stopwatch",
+            "interfaceId": "grove",
+            "signalPin": 11,
+            "signalColor": "white"
+          }
+        ]
       },
       "parameters": {},
       "connector": {
@@ -181,17 +189,18 @@
         "status": "manufacturer-cad-shell",
         "modelUrl": "./assets/m5stack-unit-button-u027/model.json",
         "limitations": [
-          "仅外观、尺寸和接线资料已入库；GPIO/ADC/SK6812 行为尚未实现，不能证明主机固件可使用该模块。",
+          "Unit Button V1.0 数字稳态行为已接入 StopWatch Port A 白线 GPIO11；其他主机、RC 延迟和触点抖动未实现，未实机验证。",
           "厂家 STL 保留原始尺寸，打印排版重复件已剔除；插座、螺钉及无 CAD 的外露部件为照片近似。",
           "未公开 PCB 布局，内部采用 UNKNOWN 占位；贴纸使用官方照片真实印刷区域。",
           "螺钉头纹和无厂家 CAD 的旋钮为简化，照片视角存在透视误差，不声称完整 1:1 通过。"
         ]
       },
       "limitations": [
-        "仅外观、尺寸和接线资料已入库；GPIO/ADC/SK6812 行为尚未实现，不能证明主机固件可使用该模块。",
+        "Unit Button V1.0 数字稳态行为已接入 StopWatch Port A 白线 GPIO11；其他主机、RC 延迟和触点抖动未实现，未实机验证。",
         "厂家 STL 保留原始尺寸，打印排版重复件已剔除；插座、螺钉及无 CAD 的外露部件为照片近似。",
         "未公开 PCB 布局，内部采用 UNKNOWN 占位；贴纸使用官方照片真实印刷区域。",
-        "螺钉头纹和无厂家 CAD 的旋钮为简化，照片视角存在透视误差，不声称完整 1:1 通过。"
+        "螺钉头纹和无厂家 CAD 的旋钮为简化，照片视角存在透视误差，不声称完整 1:1 通过。",
+        "仅模型中的数字稳态，不模拟RC滤波、触点抖动、电压容差或GPIO输出争用。Grove 5V关闭时白线为低；拔出后恢复主机GPIO上下拉。"
       ],
       "sources": [
         {
@@ -207,6 +216,76 @@
           "mediaType": "text/html; charset=UTF-8",
           "sha256": "d867ffb62e2edcb9048a5fc0dfbaf704143da320745db12bd559d3fe2ed18cfe",
           "checkedAt": "2026-10-26"
+        },
+        {
+          "url": "https://docs.m5stack.com/en/unit/Unit_Button",
+          "resolvedUrl": "https://docs.m5stack.com/en/unit/Unit_Button",
+          "mediaType": "text/html",
+          "fetchedAt": "2026-10-27T06:39:28Z",
+          "bytes": 132352,
+          "sha256": "d867ffb62e2edcb9048a5fc0dfbaf704143da320745db12bd559d3fe2ed18cfe",
+          "archiveName": "unit-button.html",
+          "id": "button-runtime-docs",
+          "title": "Unit Button 官方资料",
+          "kind": "product-page",
+          "status": "fetched",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/804/U027_UNIT_BUTTON_SCHE.pdf",
+          "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/804/U027_UNIT_BUTTON_SCHE.pdf",
+          "mediaType": "application/pdf",
+          "fetchedAt": "2026-10-27T06:39:28Z",
+          "bytes": 97785,
+          "sha256": "36ca23cb05aca9250c308fc3a8540e7aa7e8f74b160c6c055ddb126d82f76c7f",
+          "archiveName": "unit-button-schematic.pdf",
+          "id": "button-v1-schematic",
+          "title": "Unit Button V1.0 原理图",
+          "kind": "datasheet",
+          "status": "fetched",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "url": "https://docs.m5stack.com/en/core/StopWatch",
+          "resolvedUrl": "https://docs.m5stack.com/en/core/StopWatch",
+          "mediaType": "text/html",
+          "fetchedAt": "2026-10-27T06:39:28Z",
+          "bytes": 153626,
+          "sha256": "b6310dc498add1b38db0b512f47f9b8dcc8dfecaf0c879b263ec000bfbd855b2",
+          "archiveName": "stopwatch.html",
+          "id": "stopwatch-runtime-docs",
+          "title": "StopWatch 官方资料",
+          "kind": "product-page",
+          "status": "fetched",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf",
+          "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf",
+          "mediaType": "application/pdf",
+          "fetchedAt": "2026-10-27T06:39:28Z",
+          "bytes": 1480402,
+          "sha256": "8d4755c341f966a6191f9f16a7a45c558a99749a5e39a30d0513f86a5e10ef80",
+          "archiveName": "stopwatch-schematic.pdf",
+          "id": "stopwatch-grove-schematic",
+          "title": "StopWatch Grove 原理图",
+          "kind": "datasheet",
+          "status": "fetched",
+          "checkedAt": "2026-10-27"
+        },
+        {
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1207/M5PM1_Datasheet_EN.pdf",
+          "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1207/M5PM1_Datasheet_EN.pdf",
+          "mediaType": "application/pdf",
+          "fetchedAt": "2026-10-27T06:47:20Z",
+          "bytes": 814731,
+          "sha256": "c6daffd0ab89d8de50c0a19f35f94321bc6c9511ad017dd242a3e765d88a96b6",
+          "archiveName": "m5pm1.pdf",
+          "id": "m5pm1-v19",
+          "title": "M5PM1 v1.9 寄存器手册",
+          "kind": "datasheet",
+          "status": "fetched",
+          "checkedAt": "2026-10-27"
         }
       ]
     },

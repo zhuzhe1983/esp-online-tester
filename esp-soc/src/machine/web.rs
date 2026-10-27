@@ -133,6 +133,15 @@ impl<S: Soc> Machine<S> {
             match t.as_str() {
                 "btn" => { let pin: u8 = field("pin").and_then(|x| x.parse().ok()).unwrap_or(0); let v = field("v").unwrap_or_default() == "1";
                            self.bus.gpio_set_input(pin, !v); *self.bus.irq_dirty() = true; }
+                "accessory-button" => {
+                    let (Some(model),Some(port),Some(connected),Some(pressed))=(field("model"),field("port"),field("connected"),field("pressed")) else { continue };
+                    if !matches!(connected.as_str(),"0"|"1") || !matches!(pressed.as_str(),"0"|"1") { continue; }
+                    let cycle=self.bus.cycles();
+                    if let Some((pin,drive))=self.bus.board().accessory_button_at(cycle,&model,&port,connected=="1",pressed=="1") {
+                        if let Some(level)=drive {self.bus.gpio_set_input(pin,level);} else {self.bus.gpio_release_input(pin);}
+                        *self.bus.irq_dirty()=true;
+                    }
+                }
                 "knobpress" => { let v = field("v").unwrap_or_default() == "1"; if let Some(sw) = self.bus.board_ref().named_pin("sw") { self.bus.gpio_set_input(sw, !v); *self.bus.irq_dirty() = true; } }
                 "knob" => {
                     // Bound each browser message to about one second of encoder motion.

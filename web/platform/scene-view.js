@@ -200,6 +200,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     resetView();
   }
   function setAccessories(accessories = []) {
+    releaseInputs();
     const token = ++accessoryGeneration;
     for (const cleanup of accessoryCleanups) cleanup(); accessoryCleanups = [];
     clearHover(); accessoryDefinitions = accessories;
@@ -219,11 +220,11 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
         child.traverse(object => { object.geometry?.dispose(); object.material?.dispose(); }); accessoryGroup.remove(child);
       }
       groveOccupied = false;
-      for (const {definition, accessory} of loadedAccessories) {
-        const connectorMatches = definition.connector?.type === 'HY2.0-4P' && (!definition.wiring || ['logical','visual'].includes(definition.wiring.mode) || definition.wiring.connectorId === 'grove');
-        if (connectors.grove && connectorMatches && !groveOccupied) {
+      for (const {definition, accessory} of [...loadedAccessories].sort((a,b)=>Number(!!b.definition.physicalButtonSupported)-Number(!!a.definition.physicalButtonSupported))) {
+        const connectorMatches = definition.connector?.type === 'HY2.0-4P' && (!definition.wiring || ['logical','visual'].includes(definition.wiring.mode) || definition.wiring.connectorId === 'grove' || definition.wiring.interfaceId === 'grove');
+        if (connectors.grove && connectorMatches && definition.connected !== false && !groveOccupied) {
           const cable = createGroveCable(connectors.grove, accessory.connector, group);
-          if (cable) { accessoryGroup.add(cable.group); groveOccupied = true; accessory.group.userData.connection = 'grove-visual-only'; }
+          if (cable) { accessoryGroup.add(cable.group); groveOccupied = true; accessory.group.userData.connection = definition.physicalButtonSupported ? 'grove-gpio-u027' : 'grove-visual-only'; }
           else accessory.group.userData.connection = 'unverified-connector-preview';
         } else accessory.group.userData.connection = 'unconnected-preview';
       }
