@@ -53,6 +53,9 @@ try{
   assert.equal(recording.events.at(-1).down,false);assert.equal(recording.events.at(-2).pressed,false);
   assert.equal(validateRecording(recording).valid,true);
   assert.deepEqual(decodeRecording(encodeRecording(recording)),recording);
+  const named=structuredClone(recording);for(const e of named.events)if(e.type==='button')e.id='btnA';
+  assert.deepEqual(decodeRecording(encodeRecording(named)),named,'Existing mixed-case catalog IDs remain semantic and round-trip');
+  const badName=structuredClone(named);badName.events[0].id='btnA/../other';assert.equal(validateRecording(badName).valid,false);
   const direct=structuredClone(recording);
   direct.scene.firmware={url:'https://example.org/app.bin',sha256:'b'.repeat(64),bootMode:'app-direct'};
   direct.firmware={...direct.firmware,manifestUrl:null,manifestHash:null,appDirect:true};

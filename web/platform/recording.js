@@ -73,7 +73,7 @@ export function validateRecording(recording, {scene} = {}) {
     previous = event.at;
     if (event.type === 'button') {
       keys(event,['at','type','id','pressed'],path);
-      if (typeof event.id !== 'string' || !/^[a-z0-9][a-z0-9-]{0,79}$/.test(event.id) || typeof event.pressed !== 'boolean') add('RECORDING_BUTTON',path,'Invalid semantic button input.');
+      if (typeof event.id !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9-]{0,79}$/.test(event.id) || typeof event.pressed !== 'boolean') add('RECORDING_BUTTON',path,'Invalid semantic button input.');
       if (event.pressed) held.add(event.id); else held.delete(event.id);
     } else if(event.type==='encoder') {
       keys(event,['at','type','id','steps'],path);
