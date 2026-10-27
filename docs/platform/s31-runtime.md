@@ -1431,3 +1431,34 @@ The [cache stage receipt](evidence/s31-bringup/cache-errors.json) retains source
 versions, functional fixtures, checks and performance guards. The [final official
 image observation](evidence/s31-bringup/cache-errors-plus-2.0.68-final.json) fixes
 the original image hash and explicit development inputs.
+
+## TIMG0 RTC clock measurement (2026-10-28)
+
+The private runner counts XTAL ticks over a configured target-clock window,
+including the selected divider, one-shot completion, periodic data-valid and
+missing/gated-target timeout. The counter advances only with explicit clock
+input. Register reads and writes to read-only results cannot complete a pending
+measurement. TIMG0 register reset clears its measurement state while preserving
+the separate clock mux; APB gating blocks access, and reset holds the counter.
+The supported calibration mux inputs are existing functional MPLL/CPLL,
+SYS/APB/MEM clocks, nominal136kHz RC_SLOW and40MHz XTAL. Unconnected BBPLL/APLL,
+RC_FAST digital routing, external32K/pad and per-core gate paths reject explicitly.
+Zero-cycle requests are outside the fixed IDF LL contract. The timeout reset-pulse
+width and physical edge phase/jitter are not modeled; periodic windows start with
+zero phase and therefore report the rounded-up ideal interval.
+
+A separate `--rtc-calibration-from-cpu` development option advances XTAL ticks
+from one nominal CPU quantum per dual-hart scheduler round. It does not change
+`--rtc-timer-from-cpu` semantics or silently enable watchdog timing. Fractional
+clock conversion is preserved across CPU frequency changes. The source fixture
+first remains in real guest polling for20000 instructions without a clock input;
+with the option enabled it verifies30 and5000 XTAL tick results, a gated-clock
+timeout, a restart and its own UART PASS output.
+
+The complete unmodified Plus2.0.68 image now finishes RTC calibration and reaches
+`MODEM_LPCON_WIFI_LP_CLK_CONF` at`2010f00c` (hart0 PC`401ea4e8`). This address is
+confirmed by the separate modem base header: MODEM_PWR_BASE`2010d000` plus`2000`,
+then register offset`c`; it is not in the general peripheral base table. Modem
+clock/power behavior is the next stage. **INK4 Plus is still unavailable and has
+no framebuffer output.** See the [calibration receipt](evidence/s31-bringup/rtc-calibration.json)
+and [final official-image result](evidence/s31-bringup/rtc-calibration-plus-2.0.68-final.json).

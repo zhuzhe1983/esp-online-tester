@@ -54,6 +54,7 @@ def main():
     parser.add_argument("--output", required=True)
     parser.add_argument("--rom-spi0-shadow", action="store_true", help="explicit inferred legacy SPI0 config shadows; strict mode remains default")
     parser.add_argument("--rtc-timer-from-cpu", action="store_true", help="explicit RTC_TIMER-only one-interpreter-cycle-per-instruction timing approximation")
+    parser.add_argument("--rtc-calibration-from-cpu", action="store_true", help="explicit nominal CPU/XTAL clock conversion for TIMG0 measurement; not physical timing")
     parser.add_argument("--bbpll-hz", type=int, help="explicit stable BBPLL output frequency; no modeled analog lock")
     parser.add_argument("--nor-sfdp", help="explicit hex-offset:hex-bytes SFDP interval; no inferred device parameters")
     parser.add_argument("--nor-jedec", help="explicit six-hex-digit development NOR identity; not product hardware identification")
@@ -97,6 +98,8 @@ def main():
         command.append("--rom-spi0-shadow")
     if args.rtc_timer_from_cpu:
         command.append("--rtc-timer-from-cpu")
+    if args.rtc_calibration_from_cpu:
+        command.append("--rtc-calibration-from-cpu")
     if args.bbpll_hz is not None:
         command.append("--bbpll-hz=" + str(args.bbpll_hz))
     if args.psram_mr is not None:
@@ -122,7 +125,7 @@ def main():
     result = subprocess.run(command, input=data, capture_output=True, timeout=120, check=True)
     report = {"runnerSha256": runner_sha, "stepBudget": args.steps, "source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
               "partitions": partitions, "images": images,
-              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "sfdpInterval": args.nor_sfdp, "bbpllInputHz": args.bbpll_hz, "rtcTimerFromCpuCycles": args.rtc_timer_from_cpu, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig, "unresolvedPeripheralPads": args.peripheral_pad, "psramModeResponses": args.psram_mr, "psramBackingBytes": args.psram_bytes},
+              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "sfdpInterval": args.nor_sfdp, "bbpllInputHz": args.bbpll_hz, "rtcTimerFromCpuCycles": args.rtc_timer_from_cpu, "rtcCalibrationFromCpuCycles": args.rtc_calibration_from_cpu, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig, "unresolvedPeripheralPads": args.peripheral_pad, "psramModeResponses": args.psram_mr, "psramBackingBytes": args.psram_bytes},
               "uart": result.stdout.decode("utf-8", errors="replace"),
               "diagnostic": result.stderr.decode("utf-8", errors="replace"),
               "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk"}

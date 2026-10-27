@@ -23,6 +23,7 @@ pub mod reset;
 pub mod core_control;
 pub mod mwdt;
 pub mod rtc_timer;
+pub mod rtc_calibration;
 mod rom;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};
@@ -38,7 +39,7 @@ pub struct PcWatch { pub address: u32, pub retired: u64, pub first_cycle: Option
 /// subset requires explicit NOR identity and array inputs; no product identity is guessed. Functional
 /// MMU mappings use explicitly supplied flash/PSRAM buffers. Unlike a P4 alias, its
 /// bus uses the S31 addresses and reports the first unsupported access with the guest PC.
-pub struct Bringup { pub cpu: Cpu, pub cpu1: Cpu, pub bus: S31Bus, rtc_timer_from_cpu: bool, pub pc_watch: Option<PcWatch>, pub pc_watch1: Option<PcWatch>, next_core: usize, pub last_core: usize, pub quanta: u64 }
+pub struct Bringup { pub cpu: Cpu, pub cpu1: Cpu, pub bus: S31Bus, rtc_timer_from_cpu: bool, rtc_calibration_from_cpu: bool, pub pc_watch: Option<PcWatch>, pub pc_watch1: Option<PcWatch>, next_core: usize, pub last_core: usize, pub quanta: u64 }
 #[derive(Debug, PartialEq, Eq)]
 pub enum Stop { Budget, Waiting, Trap(Trap), Reset(rtc_wdt::ResetRequest), PowerReset(power::ResetCause), CpuReset(reset::CpuReset), MwdtReset { group: usize, action: mwdt::Reset } }
 pub struct Run { pub steps: u64, pub stop: Stop }
@@ -49,7 +50,7 @@ impl Bringup {
         let mut cpu = Cpu::new_esp32s31();
         cpu.pc = bus::ROM_BASE;
         let mut cpu1 = Cpu::new_esp32s31(); cpu1.hartid = 1; cpu1.pc = bus::ROM_BASE;
-        Self { cpu, cpu1, bus: S31Bus::new(), rtc_timer_from_cpu: false, pc_watch: None, pc_watch1: None, next_core: 0, last_core: 0, quanta: 0 }
+        Self { cpu, cpu1, bus: S31Bus::new(), rtc_timer_from_cpu: false, rtc_calibration_from_cpu: false, pc_watch: None, pc_watch1: None, next_core: 0, last_core: 0, quanta: 0 }
     }
 
     /// Explicit RTC clock-domain input for bring-up fixtures. CPU cycles are not silently
@@ -58,6 +59,12 @@ impl Bringup {
     /// Opt-in RTC_TIMER-only timing approximation. Other watchdog domains still
     /// require explicit ticks; this does not claim a complete clock scheduler.
     pub fn set_rtc_timer_from_cpu(&mut self, enabled: bool) { self.rtc_timer_from_cpu = enabled; }
+    /// Separate opt-in: calibration counting is not silently enabled by RTC_TIMER.
+    pub fn set_rtc_calibration_from_cpu(&mut self, enabled: bool) { self.rtc_calibration_from_cpu = enabled; }
+    pub fn advance_calibration_xtal_ticks(&mut self, ticks: u64) {
+        let hz = self.bus.clocks.calibration_hz(self.bus.rtc_calibration.source());
+        self.bus.rtc_calibration.advance_xtal(ticks, hz, self.bus.mwdt[0].clock_read());
+    }
     pub fn advance_mwdt_xtal_ticks(&mut self, group: usize, ticks: u64) -> Result<(), emu_core::Fault> {
         self.bus.mwdt.get_mut(group).ok_or(emu_core::Fault::Unmapped)?.advance_xtal(ticks)
     }
@@ -130,6 +137,10 @@ impl Bringup {
                 if let Some(watch) = watch.as_mut().filter(|w| w.address == pc) { watch.retired = watch.retired.wrapping_add(1); watch.first_cycle.get_or_insert(cycles); }
             }
             if self.rtc_timer_from_cpu && tick { self.bus.rtc_timer.advance_cpu_cycles(cpu.cycle_count.wrapping_sub(cycles), hz, self.bus.clocks.rtc_slow_hz()); }
+            if self.rtc_calibration_from_cpu && tick {
+                let source = self.bus.clocks.calibration_hz(self.bus.rtc_calibration.source());
+                self.bus.rtc_calibration.advance_cpu(cpu.cycle_count.wrapping_sub(cycles), hz, source, self.bus.mwdt[0].clock_read());
+            }
             if let Err(trap) = result {
                 if let Trap::Interrupt(line) = trap { self.bus.interrupt_taken(line); continue; }
                 if matches!(trap, Trap::Exception(_) | Trap::Ebreak(_)) { self.bus.bus_monitor.exception_core(core, cpu.mcause, cpu.mtval, cpu.mepc); }

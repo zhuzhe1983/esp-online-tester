@@ -304,3 +304,12 @@ writes cannot clear it, clears it through the documented WT register and reopens
 the bus. The guest writes its own completion word and prints PASS. This exercises
 functional tracing and interrupt delivery, not cache-line timing or physical
 requester-ID capture.
+
+`rtc-calibration-probe.S` performs actual TIMG0 register polling, tests a 3-cycle
+XTAL/10 measurement (30 XTAL ticks), a gated-target timeout, then a 17-cycle
+nominal RC_SLOW measurement (5000 XTAL ticks at136kHz). Set
+`S31_RTC_CALIBRATION_ELF`. The first20000 guest instructions run with no clock
+input and must stay in the polling loop; only enabling the explicit nominal CPU
+clock conversion allows the same guest to continue and print PASS. No host writes
+the completion flags or mailbox. The one-instruction-per-cycle relationship is a
+development approximation; it is not physical clock calibration.

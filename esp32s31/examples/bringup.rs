@@ -1,7 +1,7 @@
 //! Run a caller-supplied SRAM/ROM ELF and report the first unimplemented access.
 use std::io::Write;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut sfdp = None; let mut bbpll = None; let mut rtc_timer_from_cpu = false; let mut watch_pc = None; let mut watch_pc1 = None; let mut peripheral_pads = Vec::new(); let mut psram_mode = None; let mut psram_bytes = None;
+    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut sfdp = None; let mut bbpll = None; let mut rtc_timer_from_cpu = false; let mut rtc_calibration_from_cpu = false; let mut watch_pc = None; let mut watch_pc1 = None; let mut peripheral_pads = Vec::new(); let mut psram_mode = None; let mut psram_bytes = None;
     while let Some(arg) = args.peek() {
         match arg.as_str() {
             "--rom" => rom = true, "--usb-host" => usb_host = true,
@@ -19,6 +19,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 psram_mode = Some(mode);
             }
             value if value.starts_with("--psram-bytes=") => psram_bytes = Some(value["--psram-bytes=".len()..].parse::<usize>()?),
+            "--rtc-calibration-from-cpu" => rtc_calibration_from_cpu = true,
             "--rtc-timer-from-cpu" => rtc_timer_from_cpu = true,
             "--rom-spi0-shadow" => spi0_shadow = true,
             value if value.starts_with("--bbpll-hz=") => bbpll = Some(value["--bbpll-hz=".len()..].parse::<u64>()?),
@@ -51,7 +52,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         args.next();
     }
-    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--rtc-timer-from-cpu] [--watch-pc=0xADDRESS] [--watch-pc1=0xADDRESS] [--peripheral-pad=pin:0|1] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] [--psram-mr=12hex --psram-bytes=N] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
+    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--rtc-timer-from-cpu] [--rtc-calibration-from-cpu] [--watch-pc=0xADDRESS] [--watch-pc1=0xADDRESS] [--peripheral-pad=pin:0|1] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] [--psram-mr=12hex --psram-bytes=N] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
     let input = args.next().unwrap_or_default();
     let budget = args.next().map(|s| s.parse::<u64>()).transpose()?.unwrap_or(100_000).min(100_000_000);
     if args.next().is_some() { return Err("too many bringup arguments".into()); }
@@ -63,6 +64,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     m.pc_watch1 = watch_pc1.map(|address| esp32s31::PcWatch { address, ..Default::default() });
     m.pc_watch = watch_pc.map(|address| esp32s31::PcWatch { address, ..Default::default() });
     m.set_rtc_timer_from_cpu(rtc_timer_from_cpu);
+    m.set_rtc_calibration_from_cpu(rtc_calibration_from_cpu);
+    if rtc_calibration_from_cpu { eprintln!("development TIMG0 calibration from nominal CPU/XTAL/target clocks,not measured oscillator or instruction timing"); }
     if rtc_timer_from_cpu { eprintln!("development RTC_TIMER clock from interpreter cycles (one instruction/cycle, nominal RC_SLOW; watchdog timing still explicit)"); }
     if rom { m.load_rom_elf(&bytes)?; } else { m.load_elf(&bytes)?; }
     if let Some(path) = flash {
@@ -126,6 +129,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("pmu-updates={} dbias-requests={} readonly-write-attempts={}", m.bus.power.policy.updates, m.bus.power.policy.dbias_requests, m.bus.power.policy.readonly_write_attempts);
     eprintln!("permission-writes={}", m.bus.permissions.writes);
     eprintln!("apm-writes={} function-controls={:x?} last-denial={:?}", m.bus.apm.writes, m.bus.apm.function_controls(), m.bus.apm.last_denial);
+    eprintln!("rtc-calibration measurements={} clock={:?} config={:?} result={:?} timeout={:?}", m.bus.rtc_calibration.measurements, m.bus.rtc_calibration.read(0x20587118, 0), m.bus.rtc_calibration.read(0x20580068, m.bus.mwdt[0].clock_read()), m.bus.rtc_calibration.read(0x2058006c, m.bus.mwdt[0].clock_read()), m.bus.rtc_calibration.read(0x20580080, m.bus.mwdt[0].clock_read()));
     eprintln!("rtc-timer-counter={}", m.bus.rtc_timer.counter());
     eprintln!("reset-controls={:?}/{:?} pending={:?}", m.bus.reset.read(0x2070103c), m.bus.reset.read(0x20701040), m.bus.reset.request);
     if m.bus.first_fault.is_some() { eprintln!("fault-registers={:08x?}", if m.last_core == 0 { &m.cpu.x } else { &m.cpu1.x }); }

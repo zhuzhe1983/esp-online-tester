@@ -79,6 +79,15 @@ impl Clocks {
     // These are functional rates, not oscillator calibration or a wall-clock model.
     pub fn rtc_fast_hz(&self) -> u64 { if self.lp_root & (1 << 26) != 0 { 40_000_000 } else if self.fosc { 17_500_000 } else { 0 } }
     pub fn rtc_slow_hz(&self) -> u64 { 136_000 }
+    /// Fixed clk_tree_ll frequency-calculation mux. Returns absent clocks as zero;
+    /// unconnected mux inputs remain unavailable at the register write boundary.
+    pub fn calibration_hz(&self, source: u32) -> u64 {
+        let rates = self.rates();
+        match source { 0 => self.mpll.output_hz().unwrap_or(0),
+            2 if self.cpll_powered && self.cal_done => self.cpll_hz().unwrap_or(0),
+            4 => rates.sys_hz, 5 => rates.apb_hz, 6 => rates.mem_hz,
+            8 => self.rtc_slow_hz(), 12 => 40_000_000, _ => 0 }
+    }
     pub fn using_cpll(&self) -> bool { self.active[0] == 1 }
     pub fn set_cpll_power(&mut self, on: bool) {
         self.cpll_powered = on;

@@ -798,3 +798,21 @@ fn external_s31_real_guest_cache_error_isr_and_wtc_clear() {
     assert_eq!(m.bus.read32(0x2f060000), Ok(1)); assert!(!m.bus.cache.irq());
     assert_eq!(m.bus.cache.read_register(0x2c000178), Ok(0)); assert_eq!(m.bus.read32(0x40000000), Ok(0x5a));
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_RTC_CALIBRATION_ELF"]
+fn external_s31_guest_measures_clock_divider_and_timeout_without_read_side_completion() {
+    use emu_core::Bus;
+    let path = std::env::var("S31_RTC_CALIBRATION_ELF").expect("build firmware/s31-uart-probe and set S31_RTC_CALIBRATION_ELF");
+    let bytes = std::fs::read(path).unwrap();
+    let mut m = esp32s31::Bringup::new(); m.load_elf(&bytes).unwrap();
+    assert_eq!(m.run(20000).stop, esp32s31::Stop::Budget); assert_eq!(m.bus.rtc_calibration.measurements, 0);
+    assert!(m.bus.uart0.tx_out.is_empty()); assert_eq!(m.bus.read32(0x2f060000), Ok(0));
+    // Continue the same guest without repairing registers or flags. Only supply
+    // the explicitly selected nominal source-clock relationship.
+    m.set_rtc_calibration_from_cpu(true); let r = m.run(30000);
+    eprintln!("rtc-calibration steps={} stop={:?} measurements={} uart={:?}", r.steps, r.stop, m.bus.rtc_calibration.measurements, String::from_utf8_lossy(&m.bus.uart0.tx_out));
+    assert_eq!(r.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.rtc_calibration.measurements, 2);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 RTC CALIBRATION COUNT TIMEOUT PASS\n");
+    assert_eq!(m.bus.read32(0x2f060000), Ok(1)); assert!(m.bus.first_fault.is_none());
+}
