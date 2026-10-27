@@ -2,6 +2,7 @@
 pub mod bus;
 pub mod interrupts;
 pub mod trng;
+pub mod rtc_wdt;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};
 
@@ -10,7 +11,7 @@ use riscv_rv32::{Cpu, Trap};
 /// bus uses the S31 addresses and reports the first unsupported access with the guest PC.
 pub struct Bringup { pub cpu: Cpu, pub bus: S31Bus }
 #[derive(Debug, PartialEq, Eq)]
-pub enum Stop { Budget, Waiting, Trap(Trap) }
+pub enum Stop { Budget, Waiting, Trap(Trap), Reset(rtc_wdt::ResetRequest) }
 pub struct Run { pub steps: u64, pub stop: Stop }
 
 impl Default for Bringup { fn default() -> Self { Self::new() } }
@@ -20,6 +21,10 @@ impl Bringup {
         cpu.pc = bus::ROM_BASE;
         Self { cpu, bus: S31Bus::new() }
     }
+
+    /// Explicit RTC clock-domain input for bring-up fixtures. CPU cycles are not silently
+    /// converted to RTC time before the S31 clock tree has been implemented.
+    pub fn advance_rtc_ticks(&mut self, ticks: u64) { self.bus.rtc_wdt.advance(ticks, false, false); }
 
     /// Load an explicitly SRAM/ROM-linked ELF. This does not accept a flash .bin or bypass its
     /// bootloader. All segment bounds are checked before any bytes are changed.
@@ -63,6 +68,7 @@ impl Bringup {
 
     pub fn run(&mut self, budget: u64) -> Run {
         for steps in 0..budget {
+            if let Some(reset) = self.bus.rtc_wdt.reset_request { return Run { steps, stop: Stop::Reset(reset) }; }
             self.cpu.irq = self.bus.refresh_irq(self.cpu.mintthresh);
             if self.cpu.waiting && self.cpu.irq.is_none() { return Run { steps, stop: Stop::Waiting }; }
             if let Err(trap) = riscv_rv32::step(&mut self.cpu, &mut self.bus) {

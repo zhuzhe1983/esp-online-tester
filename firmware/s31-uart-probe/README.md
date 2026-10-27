@@ -18,12 +18,19 @@ distinct samples after enable, frozen data with each clock/sampling gate disable
 and cleared data after peripheral reset. `S31 TRNG GATES PASS` is functional
 simulation evidence, not a test of physical entropy or cryptographic quality.
 
+`wdt-probe.S` arms RTC watchdog stage 0 for an interrupt and stage 1 for system
+reset. The host explicitly advances the RTC slow-clock domain: seven ticks produce
+no ISR, the eighth prints `S31 WDT IRQ PASS` through a real guest handler, and three
+more produce a typed reset request. This does not prove a CPU-to-RTC clock tree or
+complete reset-domain execution; the development runner stops at that request.
+
 ```sh
 RISCV_TOOLCHAIN_PREFIX=/path/to/riscv32-esp-elf- \
   bash firmware/s31-uart-probe/build.sh output/s31-uart-probe
 S31_UART_ELF="$PWD/output/s31-uart-probe/probe.elf" \
 S31_UART_IRQ_ELF="$PWD/output/s31-uart-probe/irq-probe.elf" \
 S31_TRNG_ELF="$PWD/output/s31-uart-probe/trng-probe.elf" \
+S31_WDT_ELF="$PWD/output/s31-uart-probe/wdt-probe.elf" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/probe.elf A
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/irq-probe.elf A

@@ -1,4 +1,4 @@
-//! S31 interrupt-matrix routing for UART0 and the documented power-on reset-cause registers.
+//! S31 UART0/RTC-WDT interrupt routing and the documented power-on reset-cause registers.
 use esp_periph::clic::{ClicCore, CLIC_IDS, CLIC_EXT_OFFSET};
 
 // ESP-IDF v6.1 soc/esp32s31/include/soc/{interrupts,clic_reg}.h and
@@ -9,6 +9,7 @@ pub const CLIC_BASE: u32 = 0x1080_0000;
 pub const RESET_CAUSE0: u32 = 0x2070_1030;
 pub const RESET_CAUSE1: u32 = 0x2070_1034;
 pub const UART0_SOURCE: usize = 9;
+pub const RTC_WDT_SOURCE: usize = 136; // interrupt_core0_reg.h: LP_WDT_INTR_MAP at 0x220.
 const SOURCES: usize = 169;
 
 pub struct Interrupts {
@@ -30,10 +31,11 @@ impl Interrupts {
         if value & (1 << 30) != 0 { self.reset_cause[core] &= !(0x3f << 1); }
         if value & (1 << 31) != 0 { self.reset_cause[core] &= !1; }
     }
-    pub fn matrix_read(&self, core: usize, off: u32, uart: bool) -> Option<u32> {
+    pub fn matrix_read(&self, core: usize, off: u32, uart: bool, wdt: bool) -> Option<u32> {
         match off {
             0x000..=0x2a0 => Some(self.map[core][off as usize / 4]),
             0x2a8 => Some(if uart { 1 << UART0_SOURCE } else { 0 }),
+            0x2b8 => Some(if wdt { 1 << (RTC_WDT_SOURCE % 32) } else { 0 }),
             0x2ac..=0x2bc => Some(0), // Other, unimplemented sources are not asserted.
             0x2fc => Some(self.clock[core]), 0x7fc => Some(self.date[core]),
             _ => None,
@@ -50,11 +52,14 @@ impl Interrupts {
         }
         true
     }
-    pub fn refresh(&mut self, uart: bool, threshold: u32) -> Option<u32> {
+    pub fn refresh(&mut self, uart: bool, wdt: bool, threshold: u32) -> Option<u32> {
         for core in 0..2 {
-            let route = self.map[core][UART0_SOURCE]; let id = (route & 0x3f) as usize;
-            let m_mode = (route >> 8) & 3 >= 2;
-            let input = if uart && m_mode && (CLIC_EXT_OFFSET as usize..CLIC_IDS).contains(&id) { 1u64 << id } else { 0 };
+            let mut input = 0;
+            for (source, active) in [(UART0_SOURCE, uart), (RTC_WDT_SOURCE, wdt)] {
+                let route = self.map[core][source]; let id = (route & 0x3f) as usize;
+                let m_mode = (route >> 8) & 3 >= 2;
+                if active && m_mode && (CLIC_EXT_OFFSET as usize..CLIC_IDS).contains(&id) { input |= 1u64 << id; }
+            }
             self.clic[core].set_input(input);
         }
         // Standard S31 threshold is the executing hart's CSR, not P4's MMIO register.
@@ -76,11 +81,11 @@ mod tests {
         i.clic[0].write(0x1000 + 4 * 17, 1 << 8 | 1 << 29, 0xf);
         for pass in 0..=3 {
             i.matrix_write(0, 4 * UART0_SOURCE as u32, pass << 8 | 17);
-            assert_eq!(i.refresh(true, 0x1f).is_some(), pass >= 2);
+            assert_eq!(i.refresh(true, false, 0x1f).is_some(), pass >= 2);
         }
-        assert_eq!(i.refresh(true, 0x3f), None);
-        assert!(i.refresh(true, 0x1f).is_some()); assert_eq!(i.refresh(false, 0x1f), None);
-        for id in [0, 15, 48, 63] { i.matrix_write(0, 4 * UART0_SOURCE as u32, 0x200 | id); assert_eq!(i.refresh(true, 0x1f), None); }
+        assert_eq!(i.refresh(true, false, 0x3f), None);
+        assert!(i.refresh(true, false, 0x1f).is_some()); assert_eq!(i.refresh(false, false, 0x1f), None);
+        for id in [0, 15, 48, 63] { i.matrix_write(0, 4 * UART0_SOURCE as u32, 0x200 | id); assert_eq!(i.refresh(true, false, 0x1f), None); }
     }
     #[test]
     fn reset_cause_is_read_only_except_for_documented_clear_triggers() {

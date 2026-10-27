@@ -1,0 +1,127 @@
+{
+  "date": "2026-10-27",
+  "base": "d4310c9c",
+  "scope": "RTC watchdog counter and reset request, with explicit slow-clock input; not full S31 clock/reset domains or product startup",
+  "sources": "sources.json; fixed ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643 rtc_wdt_reg.h, rwdt_ll.h, interrupt_core0_reg.h, interrupts.h",
+  "model": {
+    "RTC_WDT": "0x20801000",
+    "writeKey": "0x50d83aa1",
+    "irqSource": 136,
+    "matrixOffset": "0x220",
+    "stageZeroMultiplier": "2^(1 + (delay_sel & 3)); delay_sel is explicit model input, initial0 does not assert measured product eFuse",
+    "clock": "Bringup::advance_rtc_ticks supplies RTC slow-clock ticks; no assumed CPU-frequency conversion or wall time",
+    "reset": "Stop::Reset(Cpu{core0,core1}|System|Rtc) reports the request; full chip reset not executed",
+    "superWdt": "POR flag/clear and protected configuration only; missing-clock detection and expiration not implemented",
+    "limits": [
+      "One finite four-stage sequence, restarted by feed or enable; recurring sequence semantics unvalidated",
+      "Flashboot is explicit input; not inferred from CONFIG0 bit12 alone",
+      "CPU/RTC clock tree, eFuse provisioning and reset-domain clearing remain outstanding",
+      "No product catalog or production S31 WASM export"
+    ]
+  },
+  "fixture": {
+    "source": "firmware/s31-uart-probe/wdt-probe.S",
+    "sourceSha256": "41b3dcfadfa4d9151bf3443abcbd9628c5d9311fa2984bc1951a5f8f8b23a069",
+    "compiler": "riscv32-esp-elf-gcc 15.2.0 (esp-15.2.0_20251204)",
+    "build": "RISCV_TOOLCHAIN_PREFIX=<toolchain>/riscv32-esp-elf- bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "elfSha256": "01a24fd21a287b4f9072bb0774123511dbf54c01db804e0da4f60bf7bd440f98",
+    "elfBytes": 5568,
+    "execution": "Real RV32 guest arms WDT via MMIO, WFI; source136\u2192CLIC ID18\u2192guest ISR verifies status, clears interrupt and mret",
+    "observations": [
+      {
+        "advanceRtcTicks": 0,
+        "uart": "S31 WDT READY\n",
+        "stop": "Waiting"
+      },
+      {
+        "advanceRtcTicks": 7,
+        "uart": "S31 WDT READY\n",
+        "stop": "Waiting"
+      },
+      {
+        "advanceRtcTicks": 1,
+        "uart": "S31 WDT READY\nS31 WDT IRQ PASS\n",
+        "stop": "Waiting"
+      },
+      {
+        "advanceRtcTicks": 2,
+        "uart": "S31 WDT READY\nS31 WDT IRQ PASS\n",
+        "stop": "Waiting"
+      },
+      {
+        "advanceRtcTicks": 1,
+        "stop": "Reset(System)"
+      }
+    ],
+    "busFault": null,
+    "testCommand": "S31_UART_ELF=<absolute-probe.elf> S31_UART_IRQ_ELF=<absolute-irq-probe.elf> S31_TRNG_ELF=<absolute-trng-probe.elf> S31_WDT_ELF=<absolute-wdt-probe.elf> cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored",
+    "linkWarning": "Debugger-style code/data SRAM LOAD is RWX; generated ELF/disassembly stays ignored, not published"
+  },
+  "rom": {
+    "input": "esp32s31_rev0_rom.elf release20260528",
+    "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+    "command": "cargo run --release -p esp32s31 --example bringup -- --rom <roms>/esp32s31_rev0_rom.elf",
+    "previousFirstFault": {
+      "steps": 7238,
+      "pc": "0x2f805a12",
+      "address": "0x2080101c"
+    },
+    "currentFirstFault": {
+      "steps": 7245,
+      "pc": "0x2f80207a",
+      "address": "0x2c000000",
+      "access": "read32",
+      "mcause": 5,
+      "symbol": "Cache_Mask_All",
+      "instruction": "0x4398: lw a4,0(a5)"
+    },
+    "romInstructionPatches": false,
+    "fullBoot": false
+  },
+  "checks": {
+    "clippyNative": "pass --workspace --all-targets -- -D warnings",
+    "clippyWasm": "pass --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "workspace": "1377 passed, 0 failed, 131 result groups; --release --workspace -- --include-ignored --skip external_",
+    "sourceFixtures": "4 passed after final code: UART/FPU, IRQ/threshold, TRNG gates, RTC WDT IRQ/reset",
+    "platform": "4 required files passed",
+    "wasm": "9 existing workloads passed, including P4 hello; sections check passed",
+    "s31WasmCompile": "cargo check --release --target wasm32-unknown-unknown -p esp32s31 passed",
+    "goldens": "unchanged",
+    "browser": "no browser session or UI changes"
+  },
+  "productionCodeEquality": {
+    "native": [
+      {
+        "binary": "esp32sim",
+        "matchesD4310c9c": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "c7a56e344138282e6c4c5b4903a547b6e88a1ab6b8f01d4c37d42aa7e22128be"
+        }
+      },
+      {
+        "binary": "esp32sim-c3",
+        "matchesD4310c9c": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "68dc7d7430af36b87d9c6c1f37d8d13d5c98a74d872281e50ddeb41093792e86"
+        }
+      },
+      {
+        "binary": "esp32sim-c6",
+        "matchesD4310c9c": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "757541708ed5de127937a92898cf6ebabc9891265fffffc633c437419a3c8047"
+        }
+      }
+    ],
+    "wasmSha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31"
+  },
+  "performance": {
+    "measurement": "No fresh CPU timing in this stage. Reuse trng-perf.json observations only for unchanged legacy production paths, backed by exact WASM and native __text equality to d4310c9c. The new S31 counter itself has no performance claim.",
+    "priorReceipt": "trng-perf.json",
+    "priorReceiptSha256": "23424ad07f11ccffd4725c567092bec7f5e7c12b3fd8d5e73120ce935d60a010"
+  },
+  "privacy": "Compact facts, hashes and relative commands retained. Raw logs and personal absolute paths omitted; no private firmware/captures retained."
+}

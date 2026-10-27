@@ -237,3 +237,41 @@ The required five-pair CPU guard against main `3c1737de` observes S3 +0.35%, C3
 main binaries after checking their hashes and rebuilds the candidate binaries.
 These timings include the preceding CLIC stage and host noise; they are not an
 attributed TRNG slowdown or speedup. [Samples](evidence/s31-bringup/trng-perf.json).
+
+### RTC watchdog counter and reset requests
+
+The next subset adds RTC WDT configuration, write protection, feed, stage timeout,
+interrupt status/clear, and typed CPU/system/RTC reset requests. IDF v6.1 `rwdt_ll.h`
+requires stage 0's hold value to be multiplied by `2^(1 + WDT_DELAY_SEL)`; the model
+accepts that eFuse field as an explicit input. Its initial zero represents an
+unprogrammed model, not a measured product eFuse. Flashboot mode can count with
+`WDT_EN` clear, but boot-mode logic must explicitly enter flashboot. Sleep/debug
+pause inputs are separate. Guest-controlled values are bounded, including zero
+timeouts and reserved stage actions.
+
+`advance_rtc_ticks` supplies the clock domain explicitly. The runner does not convert
+CPU instructions or host time into RTC time while the clock tree is missing. It
+stops with a typed reset request; it does not yet execute the whole chip's reset
+domains. The counter covers one finite four-stage sequence, restarted by feed or
+enable, without claiming recurring-stage behavior. Super-WDT POR latch/clear and
+configuration storage are modeled; missing-clock detection and super-WDT expiration
+are not. The ROM clears the super reset flag before unlocking configuration, so
+that flag-clear path is separate from protected configuration writes.
+
+The real SRAM fixture arms stage 0 for an interrupt and stage 1 for system reset.
+Seven slow-clock ticks leave the guest waiting; the eighth routes source 136 through
+CLIC ID 18, executes the guest's handler and prints `S31 WDT IRQ PASS`. Two further
+ticks do not reset; the third produces `Reset(System)`. This verifies the MMIO,
+counter and guest ISR path under explicit clock input, not autonomous boot timing.
+
+The unpatched public ROM reaches 7,245 steps, past `clear_super_wdt_reset_flag`,
+before `Cache_Mask_All` reads `0x2c000000` at PC `0x2f80207a`. This is the S31 cache
+controller base, not RAM. Cache controls/MMU and the later flash path remain
+unsupported; no ROM hook or arbitrary MMIO return bypasses that fault.
+
+Both Clippy targets, 1,377 Rust tests, four source fixtures, four platform test files
+and nine existing WASM workloads pass. Goldens remain unchanged. The production
+WASM and native S3/C3/C6 code sections match `d4310c9c` byte for byte. This stage
+therefore cites that stage's existing CPU samples for the unchanged production
+paths; it does not claim a new timing run or a performance result for the new S31
+counter. [Functional evidence and code hashes](evidence/s31-bringup/rtc-wdt.json).

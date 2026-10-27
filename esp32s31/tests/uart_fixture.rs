@@ -38,3 +38,19 @@ fn external_s31_trng_gates_fixture() {
     assert_eq!(m.run(10_000).stop, esp32s31::Stop::Waiting);
     assert_eq!(m.bus.uart0.tx_out, b"S31 TRNG GATES PASS\n"); assert!(m.bus.first_fault.is_none());
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_WDT_ELF to wdt-probe.elf"]
+fn external_s31_wdt_irq_and_reset_fixture() {
+    let path = std::env::var("S31_WDT_ELF").expect("build firmware/s31-uart-probe and set S31_WDT_ELF");
+    let mut m = esp32s31::Bringup::new(); m.load_elf(&std::fs::read(path).expect("read S31_WDT_ELF")).unwrap();
+    assert_eq!(m.run(10_000).stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 WDT READY\n");
+    m.advance_rtc_ticks(7); assert_eq!(m.run(100).stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 WDT READY\n");
+    m.advance_rtc_ticks(1); assert_eq!(m.run(10_000).stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 WDT READY\nS31 WDT IRQ PASS\n");
+    m.advance_rtc_ticks(2); assert_eq!(m.run(100).stop, esp32s31::Stop::Waiting);
+    m.advance_rtc_ticks(1); assert_eq!(m.run(100).stop, esp32s31::Stop::Reset(esp32s31::rtc_wdt::ResetRequest::System));
+    assert!(m.bus.first_fault.is_none());
+}

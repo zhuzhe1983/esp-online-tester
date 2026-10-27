@@ -3,6 +3,7 @@ use emu_core::{Bus, Fault};
 use esp_periph::uart::{Uart, UartLayout};
 use crate::interrupts::{Interrupts, MATRIX_BASE, CLIC_BASE, RESET_CAUSE0, RESET_CAUSE1};
 use crate::trng::{Trng, TRNG_BASE, RNG_CTRL};
+use crate::rtc_wdt::{RtcWdt, BASE as RTC_WDT_BASE};
 
 // ESP-IDF v6.1 (fff9895c82d744c7237be8847347bdd1b07c6643),
 // components/soc/esp32s31/include/soc/soc.h and register/soc/reg_base.h.
@@ -21,6 +22,7 @@ pub struct S31Bus {
     sram: Vec<u8>, lp: Vec<u8>, rom: Vec<u8>, pub uart0: Uart,
     pub interrupts: Interrupts,
     pub trng: Trng,
+    pub rtc_wdt: RtcWdt,
     pc: u32, pub first_fault: Option<AccessFault>,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
@@ -35,7 +37,7 @@ impl S31Bus {
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         let layout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff };
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE],
-            uart0: Uart::new(layout), interrupts: Interrupts::default(), trng: Trng::default(), pc: 0, first_fault: None }
+            uart0: Uart::new(layout), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -62,7 +64,7 @@ impl S31Bus {
         if self.first_fault.is_none() { self.first_fault = Some(AccessFault { pc: self.pc, address, bytes, write, fetch, reason }); }
         Err(reason)
     }
-    pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> { self.interrupts.refresh(self.uart0.irq(), threshold) }
+    pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> { self.interrupts.refresh(self.uart0.irq(), self.rtc_wdt.irq(), threshold) }
     pub fn interrupt_taken(&mut self, line: u32) { if line < 32 { self.interrupts.clic[0].taken(line as usize + 16); } }
     fn clic_offset(address: u32, bytes: usize) -> Option<(usize, u32)> {
         let off = address.checked_sub(CLIC_BASE)?;
@@ -74,6 +76,11 @@ impl S31Bus {
     fn read(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
         if let Some(data) = self.memory(address, bytes) {
             let mut value = [0; 4]; value[..bytes].copy_from_slice(data); return Ok(u32::from_le_bytes(value));
+        }
+        if let Some(off) = offset(address, RTC_WDT_BASE, bytes, 0x400) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            if let Some(value) = self.rtc_wdt.read(off as u32) { return Ok(value); }
+            return self.fault(address, bytes, false, false, Fault::Unmapped);
         }
         if address & !3 == RNG_CTRL {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -90,7 +97,7 @@ impl S31Bus {
         }
         if let Some(off) = offset(address, MATRIX_BASE, bytes, 0x1000) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
-            if let Some(value) = self.interrupts.matrix_read(off >> 11, (off & 0x7ff) as u32, self.uart0.irq()) { return Ok(value); }
+            if let Some(value) = self.interrupts.matrix_read(off >> 11, (off & 0x7ff) as u32, self.uart0.irq(), self.rtc_wdt.irq()) { return Ok(value); }
             return self.fault(address, bytes, false, false, Fault::Unmapped);
         }
         if let Some((core, off)) = Self::clic_offset(address, bytes) {
@@ -107,6 +114,11 @@ impl S31Bus {
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         if let Some(dest) = self.memory_mut(address, bytes, false) { dest.copy_from_slice(&value.to_le_bytes()[..bytes]); return Ok(()); }
+        if let Some(off) = offset(address, RTC_WDT_BASE, bytes, 0x400) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if self.rtc_wdt.write(off as u32, value) { return Ok(()); }
+            return self.fault(address, bytes, true, false, Fault::Unmapped);
+        }
         if address & !3 == RNG_CTRL {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             self.trng.ctrl_write(value); return Ok(());
