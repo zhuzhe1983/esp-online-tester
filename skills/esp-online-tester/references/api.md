@@ -6,7 +6,7 @@ The platform page installs `window.espTester`. Await its presence before use. Ru
 | --- | --- |
 | `configure(scene)` | Validates and replaces the configuration; destroys an earlier running worker and clears outputs. Returns state and configuration warnings. |
 | `updateSceneMetadata({keyMapping?,view?})` | Updates presentation and keyboard mapping without destroying execution. Each supplied object replaces that whole field; a `view` must include both `mode` and `deviceView`. Other fields require `configure`. |
-| `loadFirmware(source?)` | Uses scene firmware by default. Accepts `{manifestUrl,sha256?}`, `{url,sha256?}`, local `{format:'merged',file,sha256?}`, or `{format:'build',files}` containing browser Files for `flasher_args.json` and every referenced binary. Loads artifacts and returns `ready` state. |
+| `loadFirmware(source?)` | Uses scene firmware by default. Accepts `{manifestUrl,sha256?}`, `{url,sha256?}`, local `{format:'merged',file,sha256?}`, or `{format:'build',files}` containing browser Files for `flasher_args.json` and every referenced binary. Files and JSON manifests are limited to 256 MiB each, with a 256 MiB firmware bundle limit; product Flash capacity still applies. Loads artifacts and returns `ready` state. |
 | `start()` | Boots loaded firmware or resumes a paused session. |
 | `pause()` | Pauses an executing session without resetting it. |
 | `reset()` | Preserves current writable Flash and virtual SD contents, reloads the machine and boots it. Does not clear device data. |

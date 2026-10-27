@@ -1,3 +1,4 @@
+import {MAX_FIRMWARE_FILE_BYTES as MAX_FILE, MAX_FIRMWARE_BUNDLE_BYTES as MAX_TOTAL} from './firmware-limits.js';
 // Hardware writes are available only from a user's Web Serial chooser gesture.
 import { fetchBytes, resolveFirmwareUrl, sha256, validateMergedImage } from './runtime.js';
 import { validateScene } from './catalog.js';
@@ -5,7 +6,7 @@ import { loadWatchlist } from './watchlist.js';
 import { firmwareCache } from './firmware-cache.js';
 import { assembleLocalFirmware } from './local-firmware.js';
 
-const MIB = 1024 * 1024, MAX_FILE = 32 * MIB;
+const MIB = 1024 * 1024, MAX_FLASH = 32 * MIB;
 const problem = (code, message, details) => Object.assign(new Error(message), { code, details });
 const check = (condition, code, message, details) => { if (!condition) throw problem(code, message, details); };
 const normalizedChip = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -42,7 +43,7 @@ function appPartition(table, flashBytes) {
 
 export function validateFlashLayout(files, product, {partitionTableOffset = 0x8000} = {}) {
   const flashBytes = product.runtime.flashMb * MIB;
-  check(Number.isSafeInteger(flashBytes) && flashBytes > 0 && flashBytes <= MAX_FILE, 'FLASH_LAYOUT', 'Invalid product flash capacity.');
+  check(Number.isSafeInteger(flashBytes) && flashBytes > 0 && flashBytes <= MAX_FLASH, 'FLASH_LAYOUT', 'Invalid product flash capacity.');
   check(files.length > 0 && files.length <= 32, 'FLASH_LAYOUT', 'Flash plan needs 1–32 images.');
   const sorted = [...files].sort((a, b) => a.address - b.address);
   let previousEnd = 0;
@@ -82,7 +83,7 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
     if (cached && await sha256(cached.data) !== pin.toLowerCase()) { await firmwareCache.remove(url, pin); cached = null; }
     if (signal?.aborted) throw cancelled();
     const data = cached?.data || await fetchBytes(url, { fetchImpl, signal, maxBytes });
-    total += data.length; check(data.length > 0 && total <= 64 * MIB, 'FLASH_SIZE', 'Firmware bundle is empty or exceeds 64 MiB.');
+    total += data.length; check(data.length > 0 && total <= MAX_TOTAL, 'FLASH_SIZE', 'Firmware bundle is empty or exceeds 256 MiB.');
     const actual = await sha256(data);
     // A reviewed catalog/watchlist URL remains pinned even when a caller omits
     // or substitutes its hash. Updating a remote release requires a new review.
@@ -96,7 +97,7 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
   const add = (artifact, address, kind) => { files.push({ data: artifact.data, address }); receipt.push({ kind, address, bytes: artifact.data.length, url: artifact.url || null, sha256: artifact.sha256 }); };
   let manifestHash = null, partitionTableOffset = 0x8000;
   if (source.manifestUrl) {
-    const url = resolveFirmwareUrl(source.manifestUrl, baseUrl), artifact = await read({ url, sha256: source.sha256 }, baseUrl, 256 * 1024);
+    const url = resolveFirmwareUrl(source.manifestUrl, baseUrl), artifact = await read({ url, sha256: source.sha256 }, baseUrl);
     manifestHash = artifact.sha256;
     let manifest;
     try { manifest = JSON.parse(new TextDecoder().decode(artifact.data)); } catch { throw problem('INVALID_MANIFEST', 'Firmware manifest is not valid JSON.'); }
@@ -138,7 +139,7 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
   } else {
     let artifact;
     if (source.file) {
-      check(source.file.size > 0 && source.file.size <= MAX_FILE && typeof source.file.arrayBuffer === 'function', 'INVALID_FILE', 'Choose a local merged flash image no larger than 32 MiB.');
+      check(source.file.size > 0 && source.file.size <= MAX_FILE && typeof source.file.arrayBuffer === 'function', 'INVALID_FILE', 'Choose a local merged flash image no larger than 256 MiB.');
       const data = new Uint8Array(await source.file.arrayBuffer()), actual = await sha256(data);
       check(!source.sha256 || actual === source.sha256.toLowerCase(), 'HASH_MISMATCH', 'Local firmware SHA-256 does not match.');
       artifact = { data, sha256: actual };

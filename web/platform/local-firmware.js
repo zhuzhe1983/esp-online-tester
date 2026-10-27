@@ -1,7 +1,8 @@
+import {MAX_FIRMWARE_FILE_BYTES as MAX_FILE, MAX_FIRMWARE_BUNDLE_BYTES as MAX_TOTAL} from './firmware-limits.js';
 // ESP-IDF flasher_args.json is data, never a command to execute.
 // Format: espressif/esp-idf components/esptool_py/flasher_args.json.in (v5.5.1).
 const MIB = 1024 * 1024;
-const MAX_FILE = 32 * MIB, MAX_TOTAL = 64 * MIB, MAX_SEGMENTS = 32;
+const MAX_SEGMENTS = 32, MAX_FLASH = 32 * MIB;
 const fail = (code, message, details) => { throw Object.assign(new Error(message), {code, details}); };
 const ensure = (ok, code, message, details) => { if (!ok) fail(code, message, details); };
 const cancelled = signal => ensure(!signal?.aborted, 'FETCH_ABORTED', 'Local firmware load was cancelled.');
@@ -47,7 +48,7 @@ export async function inspectLocalBuild(selectedFiles, {signal} = {}) {
   }
   const configs = [...paths].filter(([path]) => basename(path) === 'flasher_args.json');
   ensure(configs.length === 1, 'BUILD_CONFIG_REQUIRED', 'Select exactly one flasher_args.json with its referenced binaries.', {found:configs.length});
-  const [layoutFile, configFile] = configs[0]; localFile(configFile, 256 * 1024);
+  const [layoutFile, configFile] = configs[0]; localFile(configFile);
   let config;
   try { config = JSON.parse(new TextDecoder().decode(await readFile(configFile, {signal}))); }
   catch (e) { if (e.code) throw e; fail('INVALID_BUILD_CONFIG', 'flasher_args.json is not valid JSON.'); }
@@ -97,7 +98,7 @@ export async function assembleLocalFirmware(source, {board, flashBytes, signal, 
       return {file:localFile(entry.file), offset:offsetValue(entry.offset), path:basename(relativePath(entry.file.name || 'local.bin'))};
     }).sort((a,b)=>a.offset-b.offset)};
   }
-  ensure(Number.isSafeInteger(flashBytes) && flashBytes > 0 && flashBytes <= MAX_FILE, 'FLASH_OVERFLOW', 'Invalid selected flash capacity.');
+  ensure(Number.isSafeInteger(flashBytes) && flashBytes > 0 && flashBytes <= MAX_FLASH, 'FLASH_OVERFLOW', 'Invalid selected flash capacity.');
   let total = 0, end = 0;
   const sameFiles = new Set();
   for (const entry of layout.segments) {

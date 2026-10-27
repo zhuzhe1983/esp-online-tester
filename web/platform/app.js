@@ -1,3 +1,4 @@
+import {MAX_FIRMWARE_FILE_BYTES} from './firmware-limits.js';
 import {isPressControl,controlInput,shouldCaptureMappedKey} from './control-input.js';
 import {loadCatalog, createDefaultScene, validateScene, encodeScene, decodeScene, createLocalAccessory, importLocalAccessory, exportLocalAccessory, saveLocalAccessory, listLocalAccessories, removeLocalAccessory, firmwareSourceMatches} from './catalog.js';
 import {createPlatformRuntime, validateMergedImage} from './runtime.js';
@@ -8,7 +9,7 @@ import {installEmbedBridge} from './embed.js';
 import {createTransportUi, createKnowledgePanel, mountFirmwareUpdates} from './transport-ui.js';
 import {firmwareRunPolicy} from './firmware-policy.js';
 import {confirmFirmwareRun, buildRunIssueUrl} from './firmware-run-ui.js';
-import {manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
+import {productOptionLabel, manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
 import {mountDeviceSearch, mountAccessorySearch} from './device-search.js';
 import {encodeRecording, decodeRecording, validateRecording} from './recording.js';
 import {buildFirmwareIssueUrl} from './watchlist.js';
@@ -155,7 +156,7 @@ async function selectLocalFiles(incoming, {replace=false}={}) {
       if(layout.missingFiles.length){text('local-build-status',`还需要：${layout.missingFiles.join('、')}。可继续选择文件，或直接选择整个构建目录。`);return;}
       localSource={format:'build',files:[...localFiles]};text('local-build-status',`${layout.chip || '芯片待校验'} · ${layout.segments.length} 个镜像：${layout.segments.map(s=>`0x${s.offset.toString(16)} ${s.file.name}`).join('；')}。启动前还会校验芯片、分区及完整性。`);
     } else if(localFiles.length===1) {
-      const file=localFiles[0];if(file.size>32*1024*1024)throw Error('固件文件不能超过32 MiB。');const data=new Uint8Array(await file.arrayBuffer());if(token!==localSelectionToken)return;
+      const file=localFiles[0];if(file.size>MAX_FIRMWARE_FILE_BYTES)throw Error('固件文件不能超过 256 MiB。');const data=new Uint8Array(await file.arrayBuffer());if(token!==localSelectionToken)return;
       try {validateMergedImage(data,product().runtime.board || product().chip,(product().runtime.flashMb || 32)*1024*1024);localSource={format:'merged',file};text('local-build-status',`已识别完整合并镜像：${file.name}，可直接加载。`);}
       catch(error){if(error.code!=='INCOMPLETE_IMAGE')throw error;text('local-build-status',`这不是完整合并镜像。请继续选择 flasher_args.json，再补齐其中列出的启动镜像和分区表；也可直接选择构建目录。`);}
     } else text('local-build-status','已选择多个镜像，请补选对应的 flasher_args.json，以读取实际烧录偏移。');
@@ -277,7 +278,7 @@ function renderEmpty() {
 }
 function renderProductChoices(manufacturer) {
   const choices = productsForManufacturer(catalog.products, manufacturer);
-  if ($('product-select')) { $('product-select').replaceChildren(...choices.map(item => new Option(item.name, item.id))); $('product-select').disabled = !choices.length; }
+  if ($('product-select')) { $('product-select').replaceChildren(...choices.map(item => new Option(productOptionLabel(item), item.id))); $('product-select').disabled = !choices.length; }
   text('product-count', `${choices.length} 款`);
   return choices;
 }

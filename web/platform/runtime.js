@@ -1,3 +1,4 @@
+import {MAX_FIRMWARE_FILE_BYTES as MAX_FILE, MAX_FIRMWARE_BUNDLE_BYTES as MAX_TOTAL} from './firmware-limits.js';
 import {createFat32Image,validateSdImage,MAX_SD_BYTES} from './sd-card-image.js';
 import {createSdCardStorage} from './sd-card-storage.js';
 // Browser-only adapter for the upstream ESP32 WASM worker. No server or mock device state.
@@ -11,7 +12,6 @@ import { createDeviceStorage, deviceStorageScope } from './device-storage.js';
 export const API_VERSION = '1.0.0';
 const MIB = 1024 * 1024;
 const KINDS = { rom: 0, bootloader: 1, ptable: 2, app: 3, elf: 4, flash: 5, script: 6, picture: 7 };
-const MAX_FILE = 32 * MIB, MAX_TOTAL = 64 * MIB, MAX_MANIFEST = 256 * 1024;
 const SERIAL_LIMIT = 64 * 1024;
 const clone = value => value == null ? value : structuredClone(value);
 const error = (code, message, details) => Object.assign(new Error(message), { code, details });
@@ -53,7 +53,10 @@ export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes =
     checkAbort();
     requireValue(response.ok, 'HTTP_ERROR', `Firmware request failed: HTTP ${response.status}. Please report this source using the issue link.`, { url, status: response.status, issueUrl: buildFirmwareIssueUrl({ url, status: response.status, reason: 'Firmware request failed.' }) });
     const length = Number(response.headers.get('content-length'));
-    requireValue(!length || length <= maxBytes, 'FILE_TOO_LARGE', `File exceeds ${maxBytes / MIB} MiB limit.`, { url });
+    if (length > maxBytes) {
+      await response.body?.cancel();
+      throw error('FILE_TOO_LARGE', `File exceeds ${maxBytes / MIB} MiB limit.`, {url, maxBytes});
+    }
     // Fetch exposes decoded bytes. A compressed Content-Length is not a usable
     // denominator for those bytes, and absent/invalid lengths remain unknown.
     const encoding = response.headers.get('content-encoding');
@@ -68,7 +71,7 @@ export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes =
     if (!response.body?.getReader) {
       const bytes = new Uint8Array(await response.arrayBuffer());
       checkAbort();
-      requireValue(bytes.byteLength <= maxBytes, 'FILE_TOO_LARGE', 'Downloaded file exceeds its size limit.', { url });
+      requireValue(bytes.byteLength <= maxBytes, 'FILE_TOO_LARGE', `File exceeds ${maxBytes / MIB} MiB limit.`, {url, maxBytes});
       progress(bytes.byteLength, true);
       return bytes;
     }
@@ -82,7 +85,7 @@ export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes =
         checkAbort();
         if (done) break;
         total += value.byteLength;
-        requireValue(total <= maxBytes, 'FILE_TOO_LARGE', 'Downloaded file exceeds its size limit.', { url });
+        requireValue(total <= maxBytes, 'FILE_TOO_LARGE', `File exceeds ${maxBytes / MIB} MiB limit.`, {url, maxBytes});
         chunks.push(value); progress(total);
       }
       progress(total, true);
@@ -409,14 +412,14 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     let total = 0;
     const add = (kind, artifact, at) => {
       total += artifact.data.length;
-      requireValue(total <= MAX_TOTAL, 'BUNDLE_TOO_LARGE', 'Firmware bundle exceeds 64 MiB.');
+      requireValue(total <= MAX_TOTAL, 'BUNDLE_TOO_LARGE', 'Firmware bundle exceeds 256 MiB.');
       files.push({ kind, data: artifact.data, ...(at === undefined ? {} : { at }) });
       receipts.push({ kind, url: artifact.url, sha256: artifact.sha256, bytes: artifact.data.length, ...(at === undefined ? {} : { at }) });
     };
     let manifest = null, manifestUrl = null, manifestHash = null, localLayout = null;
     if (source.manifestUrl) {
       manifestUrl = resolveFirmwareUrl(source.manifestUrl, baseUrl);
-      const artifact = await readArtifact({ url: manifestUrl, sha256: source.sha256 }, baseUrl, progress, 'manifest', MAX_MANIFEST);
+      const artifact = await readArtifact({ url: manifestUrl, sha256: source.sha256 }, baseUrl, progress, 'manifest');
       manifestHash = artifact.sha256;
       try { manifest = JSON.parse(new TextDecoder().decode(artifact.data)); } catch { throw error('INVALID_MANIFEST', 'Firmware manifest is not valid JSON.'); }
       requireValue(manifest && !Array.isArray(manifest) && typeof manifest === 'object', 'INVALID_MANIFEST', 'Firmware manifest must be an object.');
@@ -461,7 +464,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(!source.format || source.format === 'merged', 'UNSUPPORTED_FORMAT', 'Raw firmware must be a merged flash image.');
       let artifact;
       if (source.file) {
-        requireValue(typeof source.file.arrayBuffer === 'function' && source.file.size > 0 && source.file.size <= MAX_FILE, 'INVALID_FILE', 'Choose a nonempty local file no larger than 32 MiB.');
+        requireValue(typeof source.file.arrayBuffer === 'function' && source.file.size > 0 && source.file.size <= MAX_FILE, 'INVALID_FILE', 'Choose a nonempty local file no larger than 256 MiB.');
         progress.prepare('local', 'flash');
         const data = new Uint8Array(await source.file.arrayBuffer());
         progress.prepare('verify', 'flash');
@@ -590,7 +593,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         sdCard:{available:product?.runtime?.board==='papermono',defaultBytes:64*MIB,maxBytes:MAX_SD_BYTES,formats:['fat32','raw-image'],scope:'product-board-canonical-flash-sha256',autoSaveIntervalMs:1500,crashSafe:false},
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
-        firmware: { manifest: true, mergedImage: true, localFile: true, localSegments: true, localBuild: true, sha256: true, maxFileBytes: MAX_FILE, corsRequired: true },
+        firmware: { manifest: true, mergedImage: true, localFile: true, localSegments: true, localBuild: true, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true },
         input: { buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv'].includes(product?.runtime?.board)?{rows:4,columns:14,model:product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: ['usb', 'uart0', 'uart1'] },
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { mode: 'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },

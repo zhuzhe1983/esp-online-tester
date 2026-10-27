@@ -1,12 +1,12 @@
-import {searchProducts,searchAccessories,accessoryBrand,accessoryInterface} from './catalog-selection.js';
+import {searchProducts,searchAccessories,accessoryBrand,accessoryInterface,productOptionLabel} from './catalog-selection.js';
 
 export function mountDeviceSearch({button, products, onSelect, onError}) {
-  return mountCatalogSearch({button,getItems:()=>products,onSelect,onError,kind:'device',label:'设备',search:searchProducts,describe:item=>[item.manufacturer,item.sku,item.chip?.toUpperCase()].filter(Boolean).join(' · ')});
+  return mountCatalogSearch({button,getItems:()=>products,onSelect,onError,kind:'device',label:'设备',search:searchProducts,title:productOptionLabel,describe:item=>[item.manufacturer,item.sku,item.chip?.toUpperCase()].filter(Boolean).join(' · ')});
 }
 export function mountAccessorySearch({button, getItems, onSelect, onError}) {
   return mountCatalogSearch({button,getItems,onSelect,onError,kind:'accessory',label:'配件',search:searchAccessories,describe:item=>[accessoryBrand(item),item.sku,accessoryInterface(item)].filter(Boolean).join(' · ')});
 }
-function mountCatalogSearch({button, getItems, onSelect, onError, kind, label, search, describe}) {
+function mountCatalogSearch({button, getItems, onSelect, onError, kind, label, search, describe, title:displayTitle = item=>item.name}) {
   if (!button) return;
   const node = (tag, text) => { const item = document.createElement(tag); if (text) item.textContent=text; return item; };
   const dialog = node('dialog'); dialog.id=`${kind}-search-dialog`; dialog.className='device-search-dialog'; dialog.setAttribute('aria-labelledby',`${kind}-search-title`);
@@ -21,7 +21,7 @@ function mountCatalogSearch({button, getItems, onSelect, onError, kind, label, s
     const matches=search(getItems(),input.value);count.textContent=`${matches.length} 款${label}`;results.replaceChildren();
     for(const product of matches){
       const row=node('button');row.type='button';row.className='device-search-result';row.dataset.productId=product.id;
-      row.append(node('strong',product.name),node('small',describe(product)));
+      row.append(node('strong',displayTitle(product)),node('small',describe(product)));
       row.addEventListener('click',()=>{dialog.close();Promise.resolve(onSelect(product.id)).catch(onError);});results.append(row);
     }
     if(!matches.length)results.append(node('p','没有匹配的型号，试试其他名称或 SKU。'));

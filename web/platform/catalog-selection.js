@@ -1,4 +1,5 @@
 const collator = new Intl.Collator('zh-CN', {numeric:true,sensitivity:'base'});
+export const productOptionLabel = product => product.runtime?.board ? product.name : `${product.name} × 尚未适配`;
 export const manufacturerNames = products => [...new Set(products.map(item => item.manufacturer))].sort(collator.compare);
 export const productsForManufacturer = (products, manufacturer) => products.filter(item => item.manufacturer === manufacturer).sort((a,b) => collator.compare(a.name.replace(/^M5Stack /,''),b.name.replace(/^M5Stack /,'')) || collator.compare(a.id,b.id));
 export function searchProducts(products, query) {
