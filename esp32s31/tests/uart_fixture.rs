@@ -29,3 +29,12 @@ fn external_s31_uart_irq_fixture() {
     assert_eq!(m.bus.uart0.tx_out, b"S31 IRQ READY\nA\nS31 IRQ MRET PASS\n");
     assert_eq!(m.cpu.mil, 0); assert!(m.bus.first_fault.is_none());
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_TRNG_ELF to trng-probe.elf"]
+fn external_s31_trng_gates_fixture() {
+    let path = std::env::var("S31_TRNG_ELF").expect("build firmware/s31-uart-probe and set S31_TRNG_ELF");
+    let mut m = esp32s31::Bringup::new(); m.load_elf(&std::fs::read(path).expect("read S31_TRNG_ELF")).unwrap();
+    assert_eq!(m.run(10_000).stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 TRNG GATES PASS\n"); assert!(m.bus.first_fault.is_none());
+}

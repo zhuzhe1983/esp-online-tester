@@ -197,3 +197,43 @@ statistics and UART hashes. These observations are not a speedup claim; code
 layout and host load are not controlled beyond isolated timing and alternating
 order. No S3-core code changed, so CONTRIBUTING's Pocket Tank condition does not
 apply. [CPU samples](evidence/s31-bringup/reset-clic-perf.json).
+
+### CRC random-data path
+
+The following stage models the S31 TRNG CRC output path used by the public ROM
+and the fixed IDF v6.1 `rng_ll.h`/`trng_ll.h`. Output requires the LP peripheral
+bus clock (`0x2071003c`, bit 30), deasserted reset (bit 31), module clock
+(`TRNG_DATE`, bit 28), sampling and noise-CRC enables. ROM reads `CRC_DATA`
+at offset `0x44`; the IDF LL uses `CRC_SYNC_DATA` at `0x48`. Both are functional
+sampling points in this subset, without synchronizer timing. Disabled gates hold
+the previous sample; reset clears it and disables sampling. The register clock
+control is retained across the sampling reset, matching the ROM sequence that
+enables it before pulsing reset. This reset-domain behavior is inferred from that
+public ROM path, not measured on silicon.
+
+The noise source is the existing deterministic `esp-periph::rng::Rng` stream.
+It provides reproducible functional input, not physical entropy, a modeled CRC
+polynomial or cryptographic guarantees. Health tests, conditioning keys, request/FIFO
+output and arbitration remain unmapped: code requiring those paths gets an explicit
+unsupported-access fault. No test-result/ready bit is manufactured to bypass them.
+
+The SRAM fixture executes real MMIO loads/stores and prints `S31 TRNG GATES PASS`
+after checking gates, changing samples and reset, reaching WFI in 147 steps. The
+same unpatched public ROM advances from the prior 6,978-step TRNG fault to 7,238
+steps. It now faults in `clear_super_wdt_reset_flag`, PC `0x2f805a12`, read32
+`0x2080101c`. IDF v6.1 identifies this as `RTC_WDT_SWD_CONFIG_REG`; the next ROM
+write sets `SWD_RST_FLAG_CLR` bit 19. RTC watchdog timing and reset behavior remain
+to be implemented. This remains an early-ROM probe, without application or display
+startup, and does not change the product catalog's unavailable status.
+
+Both Clippy targets, 1,373 Rust tests, all three source fixtures, the four platform
+files and nine existing WASM workloads pass; goldens remain unchanged. The
+production WASM SHA-256 and the native S3/C3/C6 `__TEXT,__text` sections are identical
+to `804aa937`, as expected for a change confined to the unused development crate.
+[Functional receipt](evidence/s31-bringup/trng.json).
+
+The required five-pair CPU guard against main `3c1737de` observes S3 +0.35%, C3
+−0.64%, C6 +2.20%, with exact guest-stat and UART matches. It reuses the prior
+main binaries after checking their hashes and rebuilds the candidate binaries.
+These timings include the preceding CLIC stage and host noise; they are not an
+attributed TRNG slowdown or speedup. [Samples](evidence/s31-bringup/trng-perf.json).

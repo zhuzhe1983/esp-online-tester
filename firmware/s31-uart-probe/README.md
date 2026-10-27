@@ -13,14 +13,21 @@ checks the current interrupt level, consumes and echoes the byte, then returns t
 the main code, which checks that the level was restored and prints `S31 IRQ MRET PASS`.
 The host test also masks and unmasks the threshold while the byte is pending.
 
+`trng-probe.S` checks the CRC random-data MMIO path: no sample before enable,
+distinct samples after enable, frozen data with each clock/sampling gate disabled,
+and cleared data after peripheral reset. `S31 TRNG GATES PASS` is functional
+simulation evidence, not a test of physical entropy or cryptographic quality.
+
 ```sh
 RISCV_TOOLCHAIN_PREFIX=/path/to/riscv32-esp-elf- \
   bash firmware/s31-uart-probe/build.sh output/s31-uart-probe
 S31_UART_ELF="$PWD/output/s31-uart-probe/probe.elf" \
 S31_UART_IRQ_ELF="$PWD/output/s31-uart-probe/irq-probe.elf" \
+S31_TRNG_ELF="$PWD/output/s31-uart-probe/trng-probe.elf" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/probe.elf A
 cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/irq-probe.elf A
+cargo run --release -p esp32s31 --example bringup -- output/s31-uart-probe/trng-probe.elf
 ```
 
 Generated ELF/disassembly stays in ignored output. Product catalogs and the deployed

@@ -2,6 +2,7 @@
 use emu_core::{Bus, Fault};
 use esp_periph::uart::{Uart, UartLayout};
 use crate::interrupts::{Interrupts, MATRIX_BASE, CLIC_BASE, RESET_CAUSE0, RESET_CAUSE1};
+use crate::trng::{Trng, TRNG_BASE, RNG_CTRL};
 
 // ESP-IDF v6.1 (fff9895c82d744c7237be8847347bdd1b07c6643),
 // components/soc/esp32s31/include/soc/soc.h and register/soc/reg_base.h.
@@ -19,6 +20,7 @@ pub struct AccessFault { pub pc: u32, pub address: u32, pub bytes: usize, pub wr
 pub struct S31Bus {
     sram: Vec<u8>, lp: Vec<u8>, rom: Vec<u8>, pub uart0: Uart,
     pub interrupts: Interrupts,
+    pub trng: Trng,
     pc: u32, pub first_fault: Option<AccessFault>,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
@@ -33,7 +35,7 @@ impl S31Bus {
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         let layout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff };
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE],
-            uart0: Uart::new(layout), interrupts: Interrupts::default(), pc: 0, first_fault: None }
+            uart0: Uart::new(layout), interrupts: Interrupts::default(), trng: Trng::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -73,6 +75,15 @@ impl S31Bus {
         if let Some(data) = self.memory(address, bytes) {
             let mut value = [0; 4]; value[..bytes].copy_from_slice(data); return Ok(u32::from_le_bytes(value));
         }
+        if address & !3 == RNG_CTRL {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(self.trng.ctrl_read());
+        }
+        if let Some(off) = offset(address, TRNG_BASE, bytes, 0x100) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            if let Some(value) = self.trng.read(off as u32) { return Ok(value); }
+            return self.fault(address, bytes, false, false, Fault::Unmapped);
+        }
         if matches!(address & !3, RESET_CAUSE0 | RESET_CAUSE1) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(self.interrupts.reset_read(((address - RESET_CAUSE0) / 4) as usize));
@@ -96,6 +107,15 @@ impl S31Bus {
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         if let Some(dest) = self.memory_mut(address, bytes, false) { dest.copy_from_slice(&value.to_le_bytes()[..bytes]); return Ok(()); }
+        if address & !3 == RNG_CTRL {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            self.trng.ctrl_write(value); return Ok(());
+        }
+        if let Some(off) = offset(address, TRNG_BASE, bytes, 0x100) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if self.trng.write(off as u32, value) { return Ok(()); }
+            return self.fault(address, bytes, true, false, Fault::Unmapped);
+        }
         if matches!(address & !3, RESET_CAUSE0 | RESET_CAUSE1) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             self.interrupts.reset_write(((address - RESET_CAUSE0) / 4) as usize, value); return Ok(());

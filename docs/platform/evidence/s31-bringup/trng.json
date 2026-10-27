@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-27",
+  "base": "804aa937",
+  "scope": "S31 gated CRC random-data path used by ROM and IDF LL; no product readiness change",
+  "sources": "sources.json: fixed ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643, trng_reg.h/trng_ll.h/rng_ll.h/lp_peri_clkrst_reg.h/bootloader_random_esp32s31.c",
+  "implementation": {
+    "registers": {
+      "LP_PERICLKRST_RNG_CTRL": "0x2071003c: bus clock30, reset31",
+      "TRNG_CONF": "0x20814000: sample31, noiseCRC30",
+      "TRNG_CRC_DATA": "0x20814044, ROM consumer",
+      "TRNG_CRC_SYNC_DATA": "0x20814048, IDF LL consumer",
+      "TRNG_DATE": "0x208140fc: module clock28"
+    },
+    "noiseSource": "Existing esp-periph::rng::Rng deterministic stream, default seed; reproducible simulation, not physical/cryptographic entropy",
+    "gates": "All three clocks/enables and deasserted reset are required. Disabled output holds last sample. Reset clears sample and sampling-enable state.",
+    "resetDomainInference": "Retain register clock control across sampling reset, because unmodified public ROM enables DATE.CLK_EN before pulsing LP reset. This is an inference from ROM behavior, not silicon validation.",
+    "limits": [
+      "No physical CRC polynomial/oscillator/synchronizer timing",
+      "Health tests, conditioning keys, request/FIFO output, arbitration are explicitly unmapped",
+      "Only standalone S31 development crate; no production S31 WASM export or Plus display"
+    ]
+  },
+  "fixture": {
+    "source": "firmware/s31-uart-probe/trng-probe.S",
+    "sourceSha256": "dd9abcf5ba40cdf8d196db77b6666fd4f4b0ad2fabed507fb00778df0303edb5",
+    "compiler": "riscv32-esp-elf-gcc 15.2.0 (esp-15.2.0_20251204)",
+    "build": "RISCV_TOOLCHAIN_PREFIX=<toolchain>/riscv32-esp-elf- bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "elfSha256": "8fcbbebd77f68b6d126f7bafe93e17964bee29d4c10d78e4568c181a041f550c",
+    "elfBytes": 5040,
+    "uart": "S31 TRNG GATES PASS\n",
+    "uartSha256": "edae68d253cd9691d35a5ee22f334ca5db9e7b9d76bbdad403d2e835c06940a3",
+    "steps": 147,
+    "stop": "Waiting",
+    "pc": "0x2f0000aa",
+    "fault": null,
+    "testCommand": "S31_UART_ELF=<absolute-probe.elf> S31_UART_IRQ_ELF=<absolute-irq-probe.elf> S31_TRNG_ELF=<absolute-trng-probe.elf> cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored"
+  },
+  "rom": {
+    "input": "esp32s31_rev0_rom.elf release20260528",
+    "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+    "command": "cargo run --release -p esp32s31 --example bringup -- --rom <roms>/esp32s31_rev0_rom.elf",
+    "previousFirstFault": {
+      "steps": 6978,
+      "pc": "0x2f80cfea",
+      "address": "0x208140fc"
+    },
+    "currentFirstFault": {
+      "steps": 7238,
+      "pc": "0x2f805a12",
+      "address": "0x2080101c",
+      "access": "read32",
+      "mcause": 5,
+      "register": "RTC_WDT_SWD_CONFIG_REG",
+      "symbol": "clear_super_wdt_reset_flag",
+      "instruction": "0x4f5c: lw a5,28(a4)"
+    },
+    "limits": "No ROM instruction patches; ROM initializer reconstruction and watchdog implementation still outstanding. No full boot/application success claimed."
+  },
+  "checks": {
+    "clippyNative": "pass --workspace --all-targets -- -D warnings",
+    "clippyWasm": "pass --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "workspace": "1373 passed, 0 failed, 131 result groups; --release --workspace -- --include-ignored --skip external_",
+    "sourceFixtures": "3 pass: polled UART/FPU, IRQ/mret/threshold, TRNG gates",
+    "platform": "4 required files passed",
+    "wasm": "9 workloads passed: hello,c3-hello,c6-hello,p4-hello,c6-energy-scan,c6-contiki,c6-contiki-net,c6-rpl-net,panel",
+    "s31WasmCompile": "cargo check --release --target wasm32-unknown-unknown -p esp32s31 passed",
+    "wasmArtifact": {
+      "bytes": 3988256,
+      "sha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31",
+      "matches804aa937": true
+    },
+    "goldens": "unchanged",
+    "browser": "no UI change or browser session in this stage",
+    "nativeTextSections": [
+      {
+        "binary": "esp32sim",
+        "matches804aa937": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "c7a56e344138282e6c4c5b4903a547b6e88a1ab6b8f01d4c37d42aa7e22128be"
+        }
+      },
+      {
+        "binary": "esp32sim-c3",
+        "matches804aa937": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "68dc7d7430af36b87d9c6c1f37d8d13d5c98a74d872281e50ddeb41093792e86"
+        }
+      },
+      {
+        "binary": "esp32sim-c6",
+        "matches804aa937": true,
+        "section": {
+          "bytes": 2451648,
+          "sha256": "757541708ed5de127937a92898cf6ebabc9891265fffffc633c437419a3c8047"
+        }
+      }
+    ]
+  },
+  "privacy": "Compact relative commands, facts, samples and hashes retained; raw logs, personal paths and unrelated processes omitted. No private firmware retained or published."
+}

@@ -1,6 +1,7 @@
 //! S31 bring-up subset: one HP hart, SRAM/ROM, UART0 and CLIC; not a product runtime.
 pub mod bus;
 pub mod interrupts;
+pub mod trng;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};
 
