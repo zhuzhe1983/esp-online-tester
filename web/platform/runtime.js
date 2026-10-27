@@ -528,6 +528,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(Number.isInteger(pin) && pin >= 0 && pin < 64, 'UNSUPPORTED_CONTROL', 'This product does not expose that GPIO button.');
       requireValue(typeof event.pressed === 'boolean', 'INVALID_INPUT', 'Button pressed must be a boolean.');
       message = { t: 'btn', pin, v: event.pressed ? 1 : 0 };
+    } else if (event.type === 'encoder') {
+      requireValue(product.runtime?.encoder === true && controls().some(c => c.id === event.id && c.type === 'encoder'), 'UNSUPPORTED_CONTROL', 'This product does not expose that rotary encoder.');
+      requireValue(Number.isInteger(event.steps) && event.steps !== 0 && Math.abs(event.steps) <= 64, 'INVALID_INPUT', 'Encoder steps must be a nonzero integer from -64 to 64.');
+      message = {t:'knob', d:event.steps};
     } else if (event.type === 'matrix-key') {
       requireValue(['cardputer','cardputer-adv'].includes(product.runtime?.board), 'UNSUPPORTED_CONTROL', 'This product does not expose a matrix keyboard.');
       requireValue(Number.isInteger(event.row) && event.row >= 0 && event.row < 4 && Number.isInteger(event.column) && event.column >= 0 && event.column < 14 && typeof event.pressed === 'boolean', 'INVALID_INPUT', 'Keyboard row/column must be within the physical 4×14 layout and pressed must be a boolean.');
@@ -595,7 +599,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
         firmware: { manifest: true, mergedImage: true, localFile: true, localSegments: true, localBuild: true, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true },
-        input: { buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv'].includes(product?.runtime?.board)?{rows:4,columns:14,model:product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: ['usb', 'uart0', 'uart1'] },
+        input: { encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv'].includes(product?.runtime?.board)?{rows:4,columns:14,model:product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: ['usb', 'uart0', 'uart1'] },
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { mode: 'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },
         imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: product?.runtime?.board === 'stopwatch', orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: 'host-input', physicalMountingVerified: false },

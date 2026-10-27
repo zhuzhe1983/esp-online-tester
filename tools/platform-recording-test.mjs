@@ -10,7 +10,7 @@ const scene={schemaVersion:'1',productId:'m5stack-stopwatch',firmware:{manifestU
 const firmware={source:'remote',manifestUrl:scene.firmware.manifestUrl,manifestHash:'a'.repeat(64),artifacts:[{kind:'app',url:'https://example.org/app.bin',sha256:'b'.repeat(64),bytes:1024}],appDirect:false,stubs:[]};
 function harness(extraControls=[]){
   const listeners=new Set();let time=0,status='ready',configured=structuredClone(scene),loaded=structuredClone(firmware),blocked=null;
-  const calls=[], counters={resets:0,loads:0},product={id:scene.productId,controls:[{id:'button-a',type:'button',pin:2},...extraControls],display:{width:466,height:466,framebufferWidth:468,framebufferHeight:466}};
+  const calls=[], counters={resets:0,loads:0},product={id:scene.productId,controls:[{id:'button-a',type:'button',pin:2},...extraControls],runtime:{encoder:extraControls.some(c=>c.type==='encoder')},display:{width:466,height:466,framebufferWidth:468,framebufferHeight:466}};
   const snapshot=()=>structuredClone({status,scene:configured,firmware:loaded,product,storage:runtime.storage,stats:{time},serialByPort:{},frame:{width:468,height:466}});
   const emit=e=>{for(const listener of [...listeners])listener(e);};
   const setStatus=s=>{status=s;emit({type:'state',state:snapshot()});};
@@ -149,6 +149,18 @@ assert.equal((await runtime.observe()).status,'disposed');
   const invalid=structuredClone(keys);invalid.events[0].row=4;assert.equal(validateRecording(invalid).valid,false);
   console.log('ok matrix keyboard recording: control-ID press translation, hold cleanup, roundtrip/replay, absent-key and coordinate bounds');
  } finally {await matrixApi.dispose();}
+}
+
+{
+ const r=harness([{id:'encoder',type:'encoder',detents:16}]),api=installAutomation(r,{target:{location:{href:'https://example.org/platform/'}}});
+ try {
+  await api.recordingStart();await api.input({type:'encoder',id:'encoder',steps:2});await api.input({type:'encoder',id:'encoder',steps:-1});
+  const captured=await api.recordingStop();assert.equal(captured.events.length,2);assert.deepEqual(captured.events.map(e=>e.steps),[2,-1]);assert.deepEqual(decodeRecording(encodeRecording(captured)),captured);
+  await api.recordingPlay(captured,{timeoutMs:2000});assert.deepEqual(r.calls,[{type:'encoder',id:'encoder',steps:2},{type:'encoder',id:'encoder',steps:-1}]);
+  const invalid=structuredClone(captured);invalid.events[0].steps=65;assert.equal(validateRecording(invalid).valid,false);invalid.events[0].steps=0;assert.equal(validateRecording(invalid).valid,false);
+  const absent=structuredClone(captured);absent.events[0].id='missing';await assert.rejects(api.recordingPlay(absent),{code:'RECORDING_CONTROL'});
+  console.log('ok encoder recording: signed detents, no synthetic hold/release, bounds, absent-control rejection and replay');
+ } finally {await api.dispose();}
 }
 
 if(process.argv.includes('--real')){

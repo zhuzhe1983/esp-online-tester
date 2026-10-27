@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {createScenePointerRouter} from '../web/platform/scene-interaction.js';
+const events=[],orbits=[];
+const router=createScenePointerRouter({onInput:event=>events.push(event),onOrbit:(...args)=>orbits.push(args)});
+const down=(angle=0)=>router.down({pointerId:1,x:0,y:0,surface:{kind:'encoder',id:'encoder',detents:16},point:{angle}});
+const move=angle=>router.move({pointerId:1,x:500,y:300,point:{angle}});
+down();move(-.1);assert.equal(events.length,0);move(-Math.PI/4);assert.equal(events[0].steps,2);assert.equal(orbits.length,0);
+move(0);assert.equal(events[1].steps,-2);router.up(1);assert.equal(events.length,2,'Encoder emits detents, not fake button releases');
+down(-3);move(3);assert.equal(events.length,2,'Crossing ±pi follows the short arc');move(2.5);assert.equal(events.at(-1).steps,1);
+router.releaseAll();move(0);assert.equal(events.length,3,'Blur cancels drag and its residual angle');
+router.down({pointerId:2,x:1,y:1,surface:{kind:'orbit'}});router.move({pointerId:2,x:3,y:4});assert.deepEqual(orbits,[[2,3]]);router.releaseAll();
+console.log('ok encoder angular drag: quantized signed detents, wraparound, orbit isolation and blur cancellation');

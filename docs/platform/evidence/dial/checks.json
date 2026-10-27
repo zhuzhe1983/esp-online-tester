@@ -1,0 +1,39 @@
+{
+  "checkedAt": "2026-10-27T07:02:32Z",
+  "rustToolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "checks": [
+    {
+      "command": "cargo +stable clippy --workspace --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "cargo +stable clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<absolute-rom-directory> cargo +stable test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "passed": 1361
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "result": "pass",
+      "passed": 58
+    },
+    {
+      "command": "uv run --with jsonschema --with referencing python tools/validate-platform-catalog.py",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello panel demo-stopwatch",
+      "result": "pass",
+      "scenarios": 5
+    },
+    {
+      "command": "node tools/probe-dial.mjs --build <fixture-build-directory>",
+      "result": "pass",
+      "checks": 7
+    }
+  ],
+  "scope": "New board-specific implementation and explicit encoder input path only; no SoC bus/device_set/interrupt-routing/per-tick change and no CPU performance claim."
+}

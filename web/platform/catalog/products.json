@@ -4073,10 +4073,12 @@
       "summary": "ESP32-S3FN8 智能旋钮，采用 1.28 英寸圆形触摸屏，集成旋转编码器、RFID、RTC 与蜂鸣器。",
       "knowledgeUrl": "./knowledge/m5stack-k130.json",
       "runtime": {
-        "board": null,
+        "board": "dial",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial",
+        "touch": true,
+        "encoder": true
       },
       "display": {
         "width": 240,
@@ -4084,9 +4086,29 @@
         "type": "round LCD",
         "controller": "GC9A01",
         "bus": "SPI",
-        "touchController": "FT3267"
+        "touchController": "FT3267",
+        "shape": "round",
+        "touch": true
       },
       "controls": [
+        {
+          "id": "button",
+          "type": "button",
+          "name": "Front press · GPIO42",
+          "gpio": 42,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "encoder",
+          "type": "encoder",
+          "name": "Rotary ring",
+          "pins": {
+            "a": 41,
+            "b": 40
+          },
+          "detents": 16
+        },
         {
           "id": "touch",
           "type": "touch",
@@ -4155,13 +4177,13 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "GC9A01 SPI、FT3267 单点触摸、GPIO42 按压及 A41/B40 编码器已有内部客体测试；不代表任意固件全部兼容。",
+        "RTC/RFID、蜂鸣器音频、PWM 背光、电源锁存/深睡及无线网络未做本板验收。",
+        "旋钮每步输出四相 GPIO，正数为 A 先下降；3D 顺时针是平台约定，未实机校准机械方向。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
         "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
         "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
         "Official page supplies nominal51×51×32.3mm; the selected source plastic assembly is50.8166mm diameter and30.32mm deep. Missing connector/panel stack or nominal difference is unresolved; source geometry not scaled.",
-        "Circular active display is blank; no factory firmware frame is rendered.",
         "Rear connectors and populated PCB are absent from shell geometry.",
         "Rear terminal mouths are independent photo estimates; exact red/black Grove housings, power socket internals and stamp printed label remain partial."
       ],
@@ -4191,7 +4213,7 @@
           },
           "detents": 16,
           "pulsesPerRevolution": 64,
-          "modeled": false
+          "modeled": true
         }
       ],
       "firmwareReferenceIds": [

@@ -13,7 +13,8 @@
       "sourceComponent": 2,
       "name": "front-bezel",
       "color": "#ee8e10",
-      "role": "shell"
+      "role": "shell",
+      "controlId": "button"
     },
     {
       "sourceComponent": 5,
@@ -25,7 +26,8 @@
       "sourceComponent": 6,
       "name": "grip-ring",
       "color": "#525751",
-      "role": "shell"
+      "role": "shell",
+      "encoderId": "encoder"
     },
     {
       "sourceComponent": 8,
@@ -122,13 +124,14 @@
     }
   ],
   "limitations": [
-    "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
     "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
     "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
     "Official page supplies nominal51×51×32.3mm; the selected source plastic assembly is50.8166mm diameter and30.32mm deep. Missing connector/panel stack or nominal difference is unresolved; source geometry not scaled.",
-    "Circular active display is blank; no factory firmware frame is rendered.",
     "Rear connectors and populated PCB are absent from shell geometry.",
-    "Rear terminal mouths are independent photo estimates; exact red/black Grove housings, power socket internals and stamp printed label remain partial."
+    "Rear terminal mouths are independent photo estimates; exact red/black Grove housings, power socket internals and stamp printed label remain partial.",
+    "GC9A01 SPI、FT3267 单点触摸、GPIO42 按压及 A41/B40 编码器已有内部客体测试；不代表任意固件全部兼容。",
+    "RTC/RFID、蜂鸣器音频、PWM 背光、电源锁存/深睡及无线网络未做本板验收。",
+    "旋钮每步输出四相 GPIO，正数为 A 先下降；3D 顺时针是平台约定，未实机校准机械方向。"
   ],
   "assemblyNotes": "Selected assembled origin cluster0/2/5/6/8/10/12/15/16; negative-source-Z front becomes+Z by rigid Y180deg and Z-2.16mm. Remaining source bodies are translated print copies.",
   "omittedComponents": [
@@ -198,7 +201,7 @@
         0,
         0
       ],
-      "basis": "Nominal1.28-inch round display; no board runtime."
+      "basis": "Official 1.28-inch active display; live GC9A01 framebuffer."
     }
   },
   "derivedParts": [
@@ -598,16 +601,36 @@
   "catalog": {
     "chip": "esp32s3",
     "flashMb": 8,
-    "psramMb": null,
+    "psramMb": 0,
     "display": {
       "width": 240,
       "height": 240,
       "type": "round LCD",
       "controller": "GC9A01",
       "bus": "SPI",
-      "touchController": "FT3267"
+      "touchController": "FT3267",
+      "shape": "round",
+      "touch": true
     },
     "controls": [
+      {
+        "id": "button",
+        "type": "button",
+        "name": "Front press · GPIO42",
+        "gpio": 42,
+        "activeLow": true,
+        "defaultKeyCode": "KeyA"
+      },
+      {
+        "id": "encoder",
+        "type": "encoder",
+        "name": "Rotary ring",
+        "pins": {
+          "a": 41,
+          "b": 40
+        },
+        "detents": 16
+      },
       {
         "id": "touch",
         "type": "touch",
@@ -671,12 +694,20 @@
         },
         "detents": 16,
         "pulsesPerRevolution": 64,
-        "modeled": false
+        "modeled": true
       }
     ],
     "publication": {
       "title": "Dial User Demo",
       "url": "https://github.com/m5stack/M5Dial-UserDemo"
+    },
+    "runtime": {
+      "board": "dial",
+      "flashMb": 8,
+      "psramMb": 0,
+      "status": "partial",
+      "touch": true,
+      "encoder": true
     }
   },
   "surfaces": [
