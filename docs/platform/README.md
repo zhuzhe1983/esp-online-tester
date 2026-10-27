@@ -147,3 +147,5 @@ Select a complete merged BIN directly, or select an app BIN followed by `flasher
 Unit RGB U003 的真实 RMT 灯光、供电和拔插支持见 [U003 runtime](unit-rgb-runtime.md)。目前仅核验 StopWatch Port A 黄线 G10，软件 GPIO、串级及实体灯孔链序尚未验证。
 
 Unit Angle U005 已支持 StopWatch Port A 的标称模拟电压输入与真实 ADC2 转换；官方图纸冲突、机械角度未校准等边界见 [Unit Angle 运行说明](unit-angle-runtime.md)。
+
+[Unit Hub U006](unit-hub-runtime.md) adds one passive parallel layer between StopWatch Port A and the supported U027/U003/U005 units. Signal contention is rejected; output socket visual pin1 is still unknown and its cables remain hidden.

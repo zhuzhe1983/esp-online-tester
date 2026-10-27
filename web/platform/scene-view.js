@@ -211,9 +211,9 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       accessoryGroup.traverse(object => { object.geometry?.dispose(); if (object.material) for (const material of [].concat(object.material)) material.dispose(); });
       group.remove(accessoryGroup);
     }
-    accessoryCount = Math.min(accessories.length, 3);
+    accessoryCount = Math.min(accessories.length, 32);
     accessoryGroup = new THREE.Group(); accessoryGroup.name = 'accessory-assembly'; group.add(accessoryGroup);
-    let groveOccupied = false;
+    const occupiedSockets = new Set();
     const loadedAccessories = [];
     const attachCables = () => {
       // Rebuild in scene order, never in network completion order. The socket
@@ -222,12 +222,16 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       for (const child of [...accessoryGroup.children]) if (child.name === 'grove-cable-visual-only') {
         child.traverse(object => { object.geometry?.dispose(); object.material?.dispose(); }); accessoryGroup.remove(child);
       }
-      groveOccupied = false;
+      occupiedSockets.clear();
       for (const {definition, accessory} of [...loadedAccessories].sort((a,b)=>Number(!!b.definition.physicalSupported)-Number(!!a.definition.physicalSupported))) {
         const connectorMatches = definition.connector?.type === 'HY2.0-4P' && (!definition.wiring || ['logical','visual'].includes(definition.wiring.mode) || definition.wiring.connectorId === 'grove' || definition.wiring.interfaceId === 'grove');
-        if (connectors.grove && connectorMatches && definition.connected !== false && !groveOccupied) {
-          const cable = createGroveCable(connectors.grove, accessory.connector, group);
-          if (cable) { accessoryGroup.add(cable.group); groveOccupied = true; accessory.group.userData.connection = definition.physicalSupported ? 'grove-physical' : 'grove-visual-only'; }
+        const parent=definition.wiring?.viaAccessoryId?loadedAccessories.find(item=>item.definition.instanceId===definition.wiring.viaAccessoryId):null;
+        const socketKey=parent?`${definition.wiring.viaAccessoryId}:${definition.wiring.portId}`:'grove';
+        const hostConnector=parent?parent.accessory.connectors?.[definition.wiring.portId]:connectors.grove;
+        const hasRoute=parent?definition.physicalSupported:connectorMatches;
+        if (hostConnector && hasRoute && definition.connected !== false && !occupiedSockets.has(socketKey)) {
+          const cable = createGroveCable(hostConnector, accessory.connector, group);
+          if (cable) { accessoryGroup.add(cable.group); occupiedSockets.add(socketKey); accessory.group.userData.connection = definition.physicalSupported ? 'grove-physical' : 'grove-visual-only'; }
           else accessory.group.userData.connection = 'unverified-connector-preview';
         } else accessory.group.userData.connection = 'unconnected-preview';
       }
@@ -235,6 +239,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     };
     for (let i = 0; i < accessoryCount; i++) {
       const definition = accessories[i], accessory = createIllustrativeAccessory(definition, i); accessoryGroup.add(accessory.group);
+      if(definition.wiring?.viaAccessoryId){const port=Number(definition.wiring.portId?.split('-')[1]||1);accessory.group.position.set(112,(2-port)*42,0);accessory.group.rotation.z=0;}else if(definition.model?.id==='passive-hub-u006'){accessory.group.position.set(64,0,0);accessory.group.rotation.z=0;}
       loadedAccessories.push({definition, accessory});
       if (accessory.dispose) accessoryCleanups.push(() => accessory.dispose());
       accessory.ready?.then(attachCables).catch(error => { if (!disposed && token === accessoryGeneration) { console.error('Accessory model loading failed:', error); draw(); } });

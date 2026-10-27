@@ -59,7 +59,7 @@ export function validateRecording(recording, {scene} = {}) {
       if (item.at !== undefined && (!Number.isInteger(item.at) || item.at < 0 || item.at > 32*1024*1024)) add('RECORDING_FIRMWARE',`/firmware/artifacts/${i}/at`,'Invalid artifact offset.');
     }
   }
-  const attached=new Set((recording.scene?.accessories||[]).filter(item=>item.wiring?.mode==='physical'&&item.wiring.interfaceId==='grove').map(item=>item.id));
+  const attached=new Set((recording.scene?.accessories||[]).filter(item=>item.wiring?.mode==='physical'&&(item.wiring.interfaceId==='grove'||item.wiring.viaAccessoryId)).map(item=>item.id));
   const connected=new Set(attached);
   const held = new Set(); let touch = false, previous = 0;
   if (!Array.isArray(recording.events) || recording.events.length > MAX_RECORDING_EVENTS) add('RECORDING_EVENTS','/events','At most 500 input events are allowed.');
@@ -81,7 +81,7 @@ export function validateRecording(recording, {scene} = {}) {
       if(event.type==='accessory-button') {
         keys(event,['at','type','accessoryId','id','pressed'],path);
         if(recording.scene?.accessories?.find(item=>item.id===event.accessoryId)?.catalogId!=='m5stack-unit-button-u027'||event.id!=='button'||typeof event.pressed!=='boolean')add('RECORDING_ACCESSORY',path,'Invalid accessory button input.');
-        if(event.pressed&&!connected.has(event.accessoryId))add('RECORDING_ACCESSORY',path,'A disconnected accessory cannot be pressed.');
+        if(event.pressed&&(!connected.has(event.accessoryId)||!connected.has(recording.scene.accessories.find(item=>item.id===event.accessoryId)?.wiring?.viaAccessoryId||event.accessoryId)))add('RECORDING_ACCESSORY',path,'A disconnected accessory cannot be pressed.');
         if(event.pressed)held.add(key);else held.delete(key);
       } else if(event.type==='accessory-angle') {
         keys(event,['at','type','accessoryId','id','value'],path);
@@ -89,7 +89,7 @@ export function validateRecording(recording, {scene} = {}) {
       } else {
         keys(event,['at','type','accessoryId','connected'],path);
         if(typeof event.connected!=='boolean')add('RECORDING_ACCESSORY',path,'Connection state must be boolean.');
-        if(event.connected)connected.add(event.accessoryId);else connected.delete(event.accessoryId);held.delete(key);
+        if(event.connected)connected.add(event.accessoryId);else connected.delete(event.accessoryId);held.delete(key);if(!event.connected)for(const child of (recording.scene?.accessories||[]).filter(item=>item.wiring?.viaAccessoryId===event.accessoryId))held.delete(`accessory:${child.id}:button`);
       }
     } else if(event.type==='matrix-key') {
       keys(event,['at','type','row','column','pressed'],path);

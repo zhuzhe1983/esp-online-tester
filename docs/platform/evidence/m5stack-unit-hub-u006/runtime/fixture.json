@@ -1,0 +1,111 @@
+{
+  "checkedAt": "2026-10-27T10:21:56Z",
+  "sourceSha256": {
+    "web/wasm/worker.js": "9992b2f3316f18b5fbec3e5df076428637660e0707be77077b3d3d07b0f384ad",
+    "web/platform/accessory-routing.js": "43d5076490494f8fb93e07e39e118eb27f56959713efac98407ee4ab6da7fa8c",
+    "web/platform/catalog.js": "615c2ed9c20430a2f2aaf7be234fd90f6141c8d258ecc3e8616d623b0c4180b1",
+    "web/platform/runtime.js": "d6d5cd2ead79a671ab3f48a839c60a4e78a6e5904afe284c514b94a4466467c5",
+    "web/platform/recording.js": "824970aaae29338371cefbc5085fb4be57c367866be57c557d8cbf788483766d",
+    "tools/probe-unit-hub.mjs": "e2f638ccf2a475a4f3826b85d06517fabfd85e758374614a501b6549cd59c4f0",
+    "tools/fixtures/unit-hub-firmware/main/main.c": "6e3d72132d379633469255e81fca2764f50b40ad708ec3d5bb3dfec1693e692d"
+  },
+  "wasmSha256": "fb04a3bbd25eb4a27ddc2fe38360fcf359440057ed015b9015bccf7e69c00498",
+  "romSha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "command": "node tools/probe-unit-hub.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+    "unit_hub_fixture.bin": "6a5a2e727eefec8cca5b6cd5df5a59e621d1e1274c97d67da817c9d93b435dc4"
+  },
+  "checks": [
+    "actual ROM/IDF fixture drives U003 G10 RMT and reads U027 G11 simultaneously through U006",
+    "button low/high and fresh RGB payload change independently on the shared two-wire host port",
+    "child unplug affects its signal only; sibling output preserved",
+    "hub batch disconnect clears both actual routes, releases button, and discards guest LED data",
+    "hub reconnect restores released button but LEDs require fresh real RMT data",
+    "shared Grove supply gate applies to both children; no fabricated retained light",
+    "paused parent disconnect and guest reset preserve the physical open connection",
+    "platform reset restores initial scene topology",
+    "semantic recording replays button plus upstream disconnect through real guest outputs",
+    "U005 through another outlet reaches real ADC2_CH0; detached knob changes remain unpowered and restore on reconnect"
+  ],
+  "recording": {
+    "events": [
+      {
+        "at": 0.364122625,
+        "type": "accessory-button",
+        "accessoryId": "button-unit",
+        "id": "button",
+        "pressed": true
+      },
+      {
+        "at": 0.4170393333333333,
+        "type": "accessory-connection",
+        "accessoryId": "hub",
+        "connected": false
+      },
+      {
+        "at": 0.4669110416666667,
+        "type": "accessory-button",
+        "accessoryId": "button-unit",
+        "id": "button",
+        "pressed": false
+      }
+    ],
+    "result": "completed",
+    "bitExact": false
+  },
+  "status": "pass",
+  "serialEvidence": [
+    "U006_READY POWER_OFF",
+    "U006_READY POWER_OFF",
+    "U006_TX pin=10 offset=2 bytes=9",
+    "U006_TX pin=10 offset=2 bytes=9",
+    "U006_TX pin=10 offset=0 bytes=9",
+    "U006_BOOT_READY",
+    "U006_INPUT white11=0 other12=0",
+    "U006_TX pin=10 offset=0 bytes=9",
+    "U006_BOOT_READY",
+    "U006_INPUT white11=0 other12=0",
+    "U006_ADC whiteU006_ADC white11=2786",
+    "U006_ADC white11=0",
+    "U006_ADC white11=0",
+    "U006_ADC white11=0",
+    "U006_ADC white11=0",
+    "U006_ADC wU006_ADC white11=1087"
+  ],
+  "accessoryInputs": [
+    {
+      "accessoryId": "hub",
+      "model": "passive-hub-u006",
+      "port": "grove",
+      "hub": true,
+      "connected": true
+    },
+    {
+      "accessoryId": "angle-unit",
+      "model": "potentiometer-u005-10k-curve",
+      "port": "grove",
+      "pin": 11,
+      "control": "knob",
+      "viaAccessoryId": "hub",
+      "portId": "port-2",
+      "connected": true,
+      "effectiveConnected": true,
+      "value": 0.25
+    },
+    {
+      "accessoryId": "rgb-unit",
+      "model": "sk6812-u003",
+      "port": "grove",
+      "pin": 10,
+      "output": "grove-u003",
+      "viaAccessoryId": "hub",
+      "portId": "port-3",
+      "connected": true,
+      "effectiveConnected": true
+    }
+  ]
+}

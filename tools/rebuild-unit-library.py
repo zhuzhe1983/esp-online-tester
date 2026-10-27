@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild the three audited Unit models from committed CAD, photos and plans.
+"""Rebuild the audited Unit models from committed CAD, photos and plans.
 
 Requires tools/requirements-model.txt. Network is never used. Outputs go to a
 caller-selected scratch directory; catalog/knowledge files are never mutated.
@@ -11,7 +11,7 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-IDS = ('m5stack-unit-button-u027', 'm5stack-unit-angle-u005', 'm5stack-unit-rgb-u003')
+IDS = ('m5stack-unit-button-u027', 'm5stack-unit-angle-u005', 'm5stack-unit-rgb-u003', 'm5stack-unit-hub-u006')
 
 
 def main():
