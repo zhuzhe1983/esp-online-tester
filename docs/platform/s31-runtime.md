@@ -1360,3 +1360,44 @@ comparison retains the existing baseline-provenance qualification.
 See [source/fixture checks](evidence/s31-bringup/apm.json),
 [original-image final result](evidence/s31-bringup/apm-plus-2.0.68-final.json),and
 [CPU guard](evidence/s31-bringup/apm-same-source-perf.json).
+
+## Two functional HP harts (2026-10-28)
+
+The private runner now executes both HP harts. The S31 v6.1 clock/reset words
+`2058701c/20`, PMU stall commands `207041ec`, actual stalled-state word
+`20586064`, and LP boot-address word `20700164` control execution. CPU1 begins
+at the real ROM reset vector `2f800000` with `mhartid=1`; the ROM waits for the
+address written by `ets_set_appcpu_boot_addr` and performs its own jump. Writing
+the boot-address register does not itself start or redirect a CPU. The CLIC
+window `10800000` belongs to the executing hart; the previous unsubstantiated
+`+10000` remote alias now faults explicitly. Each hart has its own interrupt
+matrix/threshold, instruction-cache gate and monitor capture. The common data
+cache/MMU and SRAM/PSRAM are shared. Successful stores invalidate a conservative
+whole-address-space LR/SC reservation set, including writes through aliases;
+this permits extra SC failures without allowing a false successful reservation.
+
+The scheduler alternates one interpreter instruction per eligible hart. A round
+advances one optional nominal RTC quantum; it does not sum both cores' cycles
+or claim silicon arbitration/timing. Gated or stalled cores do not execute, and
+one core's WFI does not stop the other. Global-reset assertion resets that hart
+and its CLIC, preserves shared RAM and the LP boot-address word, and causes a
+fresh ROM execution when released. `FORCE_NORST`, unknown stall command values,
+LP-triggered reset-domain reconstruction, full PMU sleep and DMA remain explicit
+gaps. This stage does not turn on a product runtime.
+
+The source fixture runs the real CPU1 ROM twice, checks each hart's independent
+CLIC word, obtains 400 shared atomic increments with 200 observed SC retries,
+then stalls/resumes CPU1 and changes its guest boot address before resetting it.
+Both guest routines finish in WFI; no host writes the result words or CPU1 PC.
+The complete official Plus 2.0.68 image also executes its second-hart application
+code. Its next failure is a read of `CACHE_TRACE_ENA` (`2c0003d8`) by hart1 at
+`400022ee`; the old PMU stall-register fault is gone. Cache-error/trace setup,
+remaining application peripherals and the parallel EPD display are still pending.
+**INK4 Plus remains unavailable, with no framebuffer output.**
+
+The [stage receipt](evidence/s31-bringup/multicore.json) records final source/input
+hashes, failures and regression measurements. Final validation passes 1,454 workspace
+Rust tests, 90 private S31 unit tests, 32 source/ROM fixtures, both warnings-denied
+Clippy checks and every local CI group. The [official image receipt](evidence/s31-bringup/multicore-plus-2.0.68-final.json)
+records CPU1 entry `2f000882` retiring once at its own cycle1,008. Earlier single-hart statements above describe
+their historical checkpoints, not the scope of this new private runner.

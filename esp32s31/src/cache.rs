@@ -1,7 +1,8 @@
 //! Functional S31 external-memory translation, without cache lines or timing.
 //! ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643:
 //! soc/esp32s31/{register/soc/{cache,spi_mem_c,spi_mem_s}_reg.h,include/soc/ext_mem_defs.h}
-//! and hal/esp32s31/include/hal/mmu_ll.h. Only hart0 buses execute.
+//! and hal/esp32s31/include/hal/{mmu,cache}_ll.h. Each hart has an I-cache
+//! input/clock; both use D-cache bus0, as cache_ll_l1_{enable,disable}_bus specifies.
 use emu_core::Fault;
 
 pub const CACHE_BASE: u32 = 0x2c00_0000;
@@ -180,10 +181,12 @@ impl Cache {
         if (PSRAM_MMU..PSRAM_MMU + 0x1000).contains(&address) { return self.psram_mmu.write(address - PSRAM_MMU, value, true); }
         Err(Fault::Unmapped)
     }
-    fn physical(&self, address: u32, fetch: bool, write: bool) -> Result<(bool, usize), Fault> {
-        if !self.domain_on(9, 11) || !self.domain_on(6, 8) || !self.domain_on(if fetch { 14 } else { 12 }, if fetch { 15 } else { 13 }) { return Err(Fault::Prohibited); }
-        if self.freeze & (if fetch { 1 } else { 1 << 16 }) != 0 { return Err(Fault::Prohibited); }
-        if (if fetch { self.icache } else { self.dcache }) & 1 != 0 { return Err(Fault::Prohibited); }
+    fn physical(&self, address: u32, fetch: bool, write: bool, hart: usize) -> Result<(bool, usize), Fault> {
+        if hart >= 2 { return Err(Fault::Prohibited); }
+        let iclock = 14 + hart as u32 * 2;
+        if !self.domain_on(9, 11) || !self.domain_on(6, 8) || !self.domain_on(if fetch { iclock } else { 12 }, if fetch { iclock + 1 } else { 13 }) { return Err(Fault::Prohibited); }
+        if self.freeze & (if fetch { 1 << (hart * 4) } else { 1 << 16 }) != 0 { return Err(Fault::Prohibited); }
+        if (if fetch { self.icache >> hart } else { self.dcache }) & 1 != 0 { return Err(Fault::Prohibited); }
         if (FLASH_VADDR..PSRAM_VADDR).contains(&address) {
             if write { return Err(Fault::Prohibited); }
             self.flash_mmu.translate((address - FLASH_VADDR) as usize, false, self.flash.len()).map(|o| (false, o))
@@ -191,8 +194,9 @@ impl Cache {
             self.psram_mmu.translate((address - PSRAM_VADDR) as usize, true, self.psram.len()).map(|o| (true, o))
         } else { Err(Fault::Unmapped) }
     }
-    pub fn read_byte(&self, address: u32, fetch: bool) -> Result<u8, Fault> {
-        let (psram, off) = self.physical(address, fetch, false)?;
+    pub fn read_byte(&self, address: u32, fetch: bool) -> Result<u8, Fault> { self.read_byte_core(address, fetch, 0) }
+    pub fn read_byte_core(&self, address: u32, fetch: bool, hart: usize) -> Result<u8, Fault> {
+        let (psram, off) = self.physical(address, fetch, false, hart)?;
         Ok(if psram { self.psram[off] } else { self.flash[off] })
     }
     pub fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
@@ -200,7 +204,7 @@ impl Cache {
         // Validate the entire access before changing any bytes, including discontiguous pages.
         let mut offsets = [0; 4];
         for (i, off) in offsets.iter_mut().take(bytes).enumerate() {
-            *off = self.physical(address.checked_add(i as u32).ok_or(Fault::Unmapped)?, false, true)?.1;
+            *off = self.physical(address.checked_add(i as u32).ok_or(Fault::Unmapped)?, false, true, 0)?.1;
         }
         for (i, &off) in offsets.iter().take(bytes).enumerate() { self.psram[off] = value.to_le_bytes()[i]; }
         Ok(())
@@ -292,4 +296,24 @@ mod tests {
         map(&mut c, true, 0, 0x800); assert_eq!(c.read_byte(PSRAM_VADDR, false), Err(Fault::Prohibited));
         assert_eq!(c.set_psram_size(usize::MAX), Err("S31 development PSRAM input exceeds 64 MiB".into()));
     }
+    #[test]
+    fn per_core_instruction_inputs_and_clocks_share_one_data_path() {
+        let mut c = Cache::default(); c.set_flash(&[0x6f, 0, 0, 0]).unwrap(); map(&mut c, false, 0, 0x1000);
+        c.write_register(CACHE_BASE, 1).unwrap();
+        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 0), Err(Fault::Prohibited));
+        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 1), Ok(0x6f));
+        c.write_register(CACHE_BASE, 2).unwrap();
+        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 0), Ok(0x6f));
+        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 1), Err(Fault::Prohibited));
+        for core in 0..2 { assert_eq!(c.read_byte_core(FLASH_VADDR, false, core), Ok(0x6f)); }
+        c.write_register(CACHE_BASE, 0).unwrap(); c.clock_write(c.clock_read() & !(1 << 16));
+        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 0), Ok(0x6f));
+        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 1), Err(Fault::Prohibited));
+        c.clock_write(c.clock_read() | 1 << 16); c.write_register(CACHE_BASE + 0x30, 1 << 4).unwrap();
+        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 0), Ok(0x6f));
+        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 1), Err(Fault::Prohibited));
+        c.write_register(CACHE_BASE + 4, 1).unwrap();
+        for core in 0..2 { assert_eq!(c.read_byte_core(FLASH_VADDR, false, core), Err(Fault::Prohibited)); }
+    }
+
 }

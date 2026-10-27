@@ -755,3 +755,25 @@ fn external_s31_apm_declared_path_filters_real_memory_and_instruction_fetch() {
         eprintln!("S31 APM control={label} steps={} stop={:?} retired={} writes={} denial={:?}", run.steps, run.stop, m.pc_watch.as_ref().unwrap().retired, m.bus.apm.writes, m.bus.apm.last_denial);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_MULTICORE_ELF and S31_ROM_ELF"]
+fn external_s31_two_real_rom_harts_share_atomics_and_honor_stall_reset() {
+    use emu_core::Bus;
+    let path = std::env::var("S31_MULTICORE_ELF").expect("build firmware/s31-uart-probe and set S31_MULTICORE_ELF");
+    let rom = std::env::var("S31_ROM_ELF").expect("set S31_ROM_ELF to Espressif 20260528 S31 ROM");
+    let mut m = esp32s31::Bringup::new(); m.load_rom_elf(&std::fs::read(rom).unwrap()).unwrap();
+    while m.cpu.pc != 0x2f801852 { assert_eq!(m.run(1).stop, esp32s31::Stop::Budget); assert!(m.cpu.insn_count < 10000); }
+    m.load_elf(&std::fs::read(path).unwrap()).unwrap();
+    m.pc_watch1 = Some(esp32s31::PcWatch { address: esp32s31::bus::ROM_BASE, ..Default::default() });
+    let run = m.run(50000);
+    let counts = [m.bus.read32(0x2f060008), m.bus.read32(0x2f060014)];
+    eprintln!("multicore steps={} stop={:?} fault={:?} pcs={:x}/{:x} counters={:?}/{:?}", run.steps, run.stop, m.bus.first_fault, m.cpu.pc, m.cpu1.pc, counts[0], counts[1]);
+    assert_eq!(run.stop, esp32s31::Stop::Waiting);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 MULTICORE ROM ATOMIC RESET PASS\n");
+    assert_eq!(m.bus.read32(0x2f060008), Ok(400));
+    assert!(m.bus.read32(0x2f060010).unwrap() + m.bus.read32(0x2f060014).unwrap() > 0);
+    assert_eq!(m.bus.read32(0x2f060018), Ok(0x5a31));
+    assert_eq!(m.pc_watch1.as_ref().unwrap().retired, 2);
+    assert_eq!(m.bus.cores.resets, [0, 1]); assert!(m.cpu1.retired_count > 0); assert!(m.bus.first_fault.is_none());
+}

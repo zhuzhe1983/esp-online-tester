@@ -1,7 +1,7 @@
 //! S31 HP-core reset gates and software reset requests.
 //! ESP-IDF6.1 fff9895c82d744c7237be8847347bdd1b07c6643: lp_clkrst_reg.h
 //! and hal/esp32s31/include/hal/cpu_utility_ll.h. Requests stop the development
-//! runner; reset-domain reconstruction, second-hart execution and pulse timing
+//! runner; LP-triggered reset-domain reconstruction and pulse timing
 //! are not implemented. Header vector prose still contains P4 addresses, so
 //! non-default vectors are rejected rather than mapped to those addresses.
 use emu_core::Fault;

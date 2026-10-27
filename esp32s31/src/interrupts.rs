@@ -3,7 +3,7 @@ use esp_periph::clic::{ClicCore, CLIC_IDS, CLIC_EXT_OFFSET};
 
 // ESP-IDF v6.1 soc/esp32s31/include/soc/{interrupts,clic_reg}.h and
 // register/soc/{reg_base,interrupt_core0_reg,lp_clkrst_reg}.h. The other core's
-// matrix is +0x800. Only hart 0 executes in this bring-up stage.
+// matrix is +0x800. CLIC MMIO is local to the executing hart.
 pub const MATRIX_BASE: u32 = 0x2058_5000;
 pub const CLIC_BASE: u32 = 0x1080_0000;
 pub const RESET_CAUSE0: u32 = 0x2070_1030;
@@ -59,7 +59,9 @@ impl Interrupts {
         }
         true
     }
-    pub fn refresh(&mut self, irq: Irqs, threshold: u32) -> Option<u32> {
+    pub fn refresh(&mut self, irq: Irqs, threshold: u32) -> Option<u32> { self.refresh_core(0, irq, threshold) }
+    pub fn refresh_core(&mut self, hart: usize, irq: Irqs, threshold: u32) -> Option<u32> {
+        if hart >= 2 { return None; }
         for core in 0..2 {
             let mut input = 0;
             for (source, active) in irq.sources() {
@@ -70,11 +72,11 @@ impl Interrupts {
             self.clic[core].set_input(input);
         }
         // Standard S31 threshold is the executing hart's CSR, not P4's MMIO register.
-        self.clic[0].thresh = (threshold & 0xff) << 24;
-        self.clic[0].candidate().and_then(|(id, level)| {
+        self.clic[hart].thresh = (threshold & 0xff) << 24;
+        self.clic[hart].candidate().and_then(|(id, level)| {
             if !(CLIC_EXT_OFFSET as usize..CLIC_IDS).contains(&id) { return None; }
             let line = id as u32 - CLIC_EXT_OFFSET;
-            Some(line | level << riscv_rv32::exec::CLIC_IRQ_LEVEL_SHIFT | if self.clic[0].vectored(id) { riscv_rv32::exec::CLIC_IRQ_SHV } else { 0 })
+            Some(line | level << riscv_rv32::exec::CLIC_IRQ_LEVEL_SHIFT | if self.clic[hart].vectored(id) { riscv_rv32::exec::CLIC_IRQ_SHV } else { 0 })
         })
     }
 }
@@ -109,4 +111,15 @@ mod tests {
         i.reset_write(0, !(3 << 30)); assert_eq!(i.reset_read(0), 2);
         i.reset_write(0, 1 << 30); assert_eq!(i.reset_read(0), 0); assert_eq!(i.reset_read(1), 2);
     }
+    #[test]
+    fn executing_hart_uses_its_own_route_enable_and_threshold() {
+        let mut i = Interrupts::default(); let irq = Irqs { uart: true, ..Default::default() };
+        i.matrix_write(1, 4 * UART0_SOURCE as u32, 0x211);
+        i.clic[1].write(0x1044, 1 << 8 | 1 << 29, 0xf);
+        assert_eq!(i.refresh_core(0, irq, 0), None); assert!(i.refresh_core(1, irq, 0).is_some());
+        assert_eq!(i.refresh_core(1, irq, 0x3f), None); assert!(i.refresh_core(1, irq, 0x1f).is_some());
+        i.clic[1].write(0x1044, 0, 2); assert_eq!(i.refresh_core(1, irq, 0), None);
+        assert_eq!(i.refresh_core(usize::MAX, irq, 0), None);
+    }
+
 }

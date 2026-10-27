@@ -1,4 +1,4 @@
-//! S31 bring-up subset: one HP hart, SRAM/ROM, UART0 and CLIC; not a product runtime.
+//! S31 bring-up subset: two functional HP harts, SRAM/ROM, UART0 and CLIC; not a product runtime.
 pub mod bus;
 pub mod interrupts;
 pub mod trng;
@@ -20,6 +20,7 @@ mod psram_controller;
 pub mod pms;
 pub mod apm;
 pub mod reset;
+pub mod core_control;
 pub mod mwdt;
 pub mod rtc_timer;
 mod rom;
@@ -31,12 +32,13 @@ use riscv_rv32::{Cpu, Trap};
 pub struct PcWatch { pub address: u32, pub retired: u64, pub first_cycle: Option<u64> }
 
 /// This executes the RV32IMAFC subset, not S31's complete custom ISA. No
-/// second hart or board devices are installed. XTAL/CPLL domain rates are functional;
+/// board devices are installed. Two harts interleave one interpreter instruction at a time;
+/// each round advances one nominal CPU quantum, not two parallel hardware cycles. XTAL/CPLL domain rates are functional;
 /// RC_FAST/RC_SLOW are nominal selector rates, not oscillator calibration or CPU timing. The Flash command
 /// subset requires explicit NOR identity and array inputs; no product identity is guessed. Functional
 /// MMU mappings use explicitly supplied flash/PSRAM buffers. Unlike a P4 alias, its
 /// bus uses the S31 addresses and reports the first unsupported access with the guest PC.
-pub struct Bringup { pub cpu: Cpu, pub bus: S31Bus, rtc_timer_from_cpu: bool, pub pc_watch: Option<PcWatch> }
+pub struct Bringup { pub cpu: Cpu, pub cpu1: Cpu, pub bus: S31Bus, rtc_timer_from_cpu: bool, pub pc_watch: Option<PcWatch>, pub pc_watch1: Option<PcWatch>, next_core: usize, pub last_core: usize, pub quanta: u64 }
 #[derive(Debug, PartialEq, Eq)]
 pub enum Stop { Budget, Waiting, Trap(Trap), Reset(rtc_wdt::ResetRequest), PowerReset(power::ResetCause), CpuReset(reset::CpuReset), MwdtReset { group: usize, action: mwdt::Reset } }
 pub struct Run { pub steps: u64, pub stop: Stop }
@@ -46,7 +48,8 @@ impl Bringup {
     pub fn new() -> Self {
         let mut cpu = Cpu::new_esp32s31();
         cpu.pc = bus::ROM_BASE;
-        Self { cpu, bus: S31Bus::new(), rtc_timer_from_cpu: false, pc_watch: None }
+        let mut cpu1 = Cpu::new_esp32s31(); cpu1.hartid = 1; cpu1.pc = bus::ROM_BASE;
+        Self { cpu, cpu1, bus: S31Bus::new(), rtc_timer_from_cpu: false, pc_watch: None, pc_watch1: None, next_core: 0, last_core: 0, quanta: 0 }
     }
 
     /// Explicit RTC clock-domain input for bring-up fixtures. CPU cycles are not silently
@@ -92,20 +95,44 @@ impl Bringup {
             for (group, wdt) in self.bus.mwdt.iter().enumerate() { if let Some(action) = wdt.reset { return Run { steps, stop: Stop::MwdtReset { group, action } }; } }
             if let Some(reset) = self.bus.power.reset_request { return Run { steps, stop: Stop::PowerReset(reset) }; }
             if let Some(reset) = self.bus.rtc_wdt.reset_request { return Run { steps, stop: Stop::Reset(reset) }; }
-            self.bus.clocks.mpll.advance(1, self.bus.analog.master_enabled() && self.bus.clocks.modem_on());
-            self.bus.clocks.advance_calibration(1); // private functional model quantum, not physical PLL cycles
-            self.bus.bus_monitor.observe(self.cpu.pc, self.cpu.x[2]);
-            self.cpu.irq = self.bus.refresh_irq(self.cpu.mintthresh);
-            if self.cpu.waiting && self.cpu.irq.is_none() { return Run { steps, stop: Stop::Waiting }; }
-            let pc = self.cpu.pc; let cycles = self.cpu.cycle_count; let hz = self.bus.clocks.rates().cpu_hz;
-            let result = riscv_rv32::step(&mut self.cpu, &mut self.bus);
-            if result.is_ok() {
-                if let Some(watch) = self.pc_watch.as_mut().filter(|w| w.address == pc) { watch.retired = watch.retired.wrapping_add(1); watch.first_cycle.get_or_insert(cycles); }
+            for (core, reset) in self.bus.cores.take_resets().into_iter().enumerate() {
+                if reset {
+                    let cpu = if core == 0 { &mut self.cpu } else { &mut self.cpu1 };
+                    cpu.reset(); cpu.pc = bus::ROM_BASE; self.bus.reset_hart(core);
+                }
             }
-            if self.rtc_timer_from_cpu { self.bus.rtc_timer.advance_cpu_cycles(self.cpu.cycle_count.wrapping_sub(cycles), hz, self.bus.clocks.rtc_slow_hz()); }
+            let mut ready = [false; 2];
+            for (core, cpu) in [&mut self.cpu, &mut self.cpu1].into_iter().enumerate() {
+                self.bus.set_hart(core); cpu.irq = self.bus.refresh_irq(cpu.mintthresh);
+                ready[core] = self.bus.cores.running(core) && (!cpu.waiting || cpu.irq.is_some());
+            }
+            let core = if ready[self.next_core] { self.next_core } else if ready[self.next_core ^ 1] { self.next_core ^ 1 } else { return Run { steps, stop: Stop::Waiting }; };
+            // One round is hart0 then hart1 when both can run. Skipping a gated/WFI
+            // hart does not consume an instruction or double the optional RTC time.
+            // This is a deterministic functional interleaving, not bus arbitration or
+            // measured multi-core timing. Preserve round position across run() budgets.
+            let tick = core == 0 || self.next_core == 0;
+            self.next_core = core ^ 1; self.last_core = core; self.bus.set_hart(core);
+            if tick {
+                self.quanta = self.quanta.wrapping_add(1);
+                self.bus.clocks.mpll.advance(1, self.bus.analog.master_enabled() && self.bus.clocks.modem_on());
+                self.bus.clocks.advance_calibration(1);
+            }
+            let cpu = if core == 0 { &mut self.cpu } else { &mut self.cpu1 };
+            self.bus.bus_monitor.observe_core(core, cpu.pc, cpu.x[2]);
+            let pc = cpu.pc; let cycles = cpu.cycle_count; let hz = self.bus.clocks.rates().cpu_hz;
+            // A hardware-vectored interrupt can read its table before the core
+            // calls note_pc for an instruction. Attribute that fault to this hart/PC.
+            emu_core::Bus::note_pc(&mut self.bus, pc);
+            let result = riscv_rv32::step(cpu, &mut self.bus);
+            if result.is_ok() {
+                let watch = if core == 0 { &mut self.pc_watch } else { &mut self.pc_watch1 };
+                if let Some(watch) = watch.as_mut().filter(|w| w.address == pc) { watch.retired = watch.retired.wrapping_add(1); watch.first_cycle.get_or_insert(cycles); }
+            }
+            if self.rtc_timer_from_cpu && tick { self.bus.rtc_timer.advance_cpu_cycles(cpu.cycle_count.wrapping_sub(cycles), hz, self.bus.clocks.rtc_slow_hz()); }
             if let Err(trap) = result {
                 if let Trap::Interrupt(line) = trap { self.bus.interrupt_taken(line); continue; }
-                if matches!(trap, Trap::Exception(_) | Trap::Ebreak(_)) { self.bus.bus_monitor.exception(self.cpu.mcause, self.cpu.mtval, self.cpu.mepc); }
+                if matches!(trap, Trap::Exception(_) | Trap::Ebreak(_)) { self.bus.bus_monitor.exception_core(core, cpu.mcause, cpu.mtval, cpu.mepc); }
                 return Run { steps: steps + 1, stop: Stop::Trap(trap) };
             }
         }
@@ -130,4 +157,50 @@ mod tests {
         let f = m.bus.first_fault.as_ref().unwrap();
         assert_eq!((f.pc, f.address, f.bytes, f.write), (bus::SRAM_BASE + 12, 0, 4, false));
     }
+    #[test]
+    fn dual_hart_rounds_survive_budget_boundaries_and_only_advance_one_quantum() {
+        fn machine() -> Bringup {
+            let mut m = Bringup::new(); m.bus.load(bus::ROM_BASE, &0x0000006fu32.to_le_bytes(), 4).unwrap();
+            m.bus.cores.write(core_control::CTRL1, 3).unwrap(); m
+        }
+        let mut a = machine(); let mut b = machine();
+        assert_eq!(a.run(10).stop, Stop::Budget);
+        for _ in 0..10 { assert_eq!(b.run(1).stop, Stop::Budget); }
+        assert_eq!([a.cpu.insn_count, a.cpu1.insn_count], [5, 5]);
+        assert_eq!([b.cpu.insn_count, b.cpu1.insn_count], [5, 5]); assert_eq!((a.quanta, b.quanta), (5, 5));
+        a.bus.cores.write(core_control::STALL, 0x00860000).unwrap(); a.run(6);
+        assert_eq!([a.cpu.insn_count, a.cpu1.insn_count], [11, 5]); assert_eq!(a.quanta, 11);
+        a.bus.cores.write(core_control::STALL, 0x86000000 | 0x00ff0000).unwrap(); a.run(6);
+        assert_eq!([a.cpu.insn_count, a.cpu1.insn_count], [11, 11]); assert_eq!(a.quanta, 16); // First resumed hart1 step completes the preceding half-round.
+    }
+    #[test]
+    fn gated_second_hart_does_not_execute_and_its_fault_is_attributed_after_release() {
+        let mut m = Bringup::new();
+        m.bus.load(bus::SRAM_BASE, &0x0000006fu32.to_le_bytes(), 4).unwrap(); m.cpu.pc = bus::SRAM_BASE;
+        m.run(8); assert_eq!(m.cpu1.insn_count, 0);
+        m.bus.cores.write(core_control::BOOT1, bus::SRAM_BASE).unwrap(); m.run(8); assert_eq!(m.cpu1.insn_count, 0);
+        // Actual ROM reset location is executed, not the BOOT1 value. This tiny
+        // synthetic ROM reads unmapped address0 to make fault attribution observable.
+        m.bus.load(bus::ROM_BASE, &0x00002383u32.to_le_bytes(), 4).unwrap();
+        m.bus.cores.write(core_control::CTRL1, 3).unwrap();
+        assert_eq!(m.run(4).stop, Stop::Trap(Trap::Exception(5)));
+        let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!((f.hart, f.pc, f.address), (1, bus::ROM_BASE, 0));
+        assert_eq!(m.cpu1.mepc, bus::ROM_BASE); assert_eq!(m.cpu1.hartid, 1);
+    }
+
+    #[test]
+    fn second_hart_vector_fetch_fault_does_not_inherit_first_hart_pc() {
+        use emu_core::Bus;
+        let mut m = Bringup::new(); m.bus.load(bus::SRAM_BASE, &0x0000006fu32.to_le_bytes(), 4).unwrap();
+        m.cpu.pc = bus::SRAM_BASE; m.run(1); m.bus.cores.write(core_control::CTRL0, 1).unwrap();
+        m.bus.cores.write(core_control::CTRL1, 3).unwrap(); m.cpu1.pc = bus::ROM_BASE + 0x100;
+        m.cpu1.mtvec = bus::ROM_BASE | 3; m.cpu1.mtvt = 0; m.cpu1.mstatus |= 8;
+        m.bus.write32(bus::UART0_BASE + 0xc, 2).unwrap();
+        m.bus.interrupts.matrix_write(1, 0x24, 0x211);
+        m.bus.interrupts.clic[1].write(0x1044, 1 << 29 | 1 << 16 | 1 << 8, 15);
+        assert_eq!(m.run(2).stop, Stop::Trap(Trap::Exception(1)));
+        let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!((f.hart, f.pc, f.address), (1, bus::ROM_BASE + 0x100, 0x44));
+        assert_eq!(m.cpu1.mtval, 0x44);
+    }
+
 }

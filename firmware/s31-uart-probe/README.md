@@ -284,3 +284,13 @@ path. The fixture covers independent R/W/X denial, unchanged storage on denied
 write, no execution on denied fetch, filter disable/restoration, missing route,
 and unsupported quiet denial. This declared connection is **not** identification
 of the physical S31 master/path topology. No fixture binary is published.
+
+`multicore-probe.S` uses the real S31 ROM to start hart1, rather than setting its
+PC from the host. Set `S31_MULTICORE_ELF` and `S31_ROM_ELF`; the test first runs
+hart0's actual ROM initializer loop, then loads this SRAM-linked test program.
+The guest writes its secondary entry with the ROM API, enables clocks/releases
+reset, and verifies independent CLIC state, 400 simultaneous atomic increments,
+SC conflict retries, software stall/resume, and a second ROM boot to a changed
+entry. Shared result words come only from executed guest stores. The fixture does
+not validate an INK4 Plus board or physical dual-core timing. All generated ELFs,
+BINs and objdump listings stay in the ignored output directory.

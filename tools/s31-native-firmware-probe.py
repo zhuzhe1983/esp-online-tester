@@ -63,6 +63,7 @@ def main():
     parser.add_argument("--peripheral-pad", action="append", default=[], help="explicit unresolved peripheral pad sample pin:0|1; repeat for each pin, not measured board wiring")
     parser.add_argument("--psram-mr", help="explicit AP-compatible MR0,1,2,3,4,8 responses,12hex; not identified product die")
     parser.add_argument("--psram-bytes", type=int, help="explicit separate PSRAM backing bytes; no inferred density")
+    parser.add_argument("--watch-pc1", help="optional diagnostic retirement watch for the actual second-hart entry address; no execution change")
     parser.add_argument("--steps", type=int, default=200000, help="bounded instruction budget, maximum 100000000")
     args = parser.parse_args()
     if not 1 <= args.steps <= 100000000:
@@ -90,6 +91,8 @@ def main():
     if not partitions or any(x["chipId"] != 32 for x in images):
         raise ValueError("input does not contain the expected S31 merged image layout")
     command = [args.runner, "--rom", "--usb-host", "--strap=0x12", "--flash=/dev/stdin"]
+    if args.watch_pc1:
+        command.append("--watch-pc1=" + args.watch_pc1)
     if args.rom_spi0_shadow:
         command.append("--rom-spi0-shadow")
     if args.rtc_timer_from_cpu:
@@ -115,8 +118,9 @@ def main():
     if len(images) > 1:
         command.append("--watch-pc=" + images[1]["entry"])
     command.extend([args.rom, "", str(args.steps)])
+    runner_sha = hashlib.sha256(pathlib.Path(args.runner).read_bytes()).hexdigest()
     result = subprocess.run(command, input=data, capture_output=True, timeout=120, check=True)
-    report = {"stepBudget": args.steps, "source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
+    report = {"runnerSha256": runner_sha, "stepBudget": args.steps, "source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
               "partitions": partitions, "images": images,
               "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "sfdpInterval": args.nor_sfdp, "bbpllInputHz": args.bbpll_hz, "rtcTimerFromCpuCycles": args.rtc_timer_from_cpu, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig, "unresolvedPeripheralPads": args.peripheral_pad, "psramModeResponses": args.psram_mr, "psramBackingBytes": args.psram_bytes},
               "uart": result.stdout.decode("utf-8", errors="replace"),
