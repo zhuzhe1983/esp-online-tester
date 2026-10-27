@@ -1,0 +1,84 @@
+{
+  "checkedAt": "2026-10-27T22:19:15.145Z",
+  "command": "node tools/probe-airquality-official.mjs <official-https-url> <sha256>",
+  "productId": "m5stack-k131",
+  "url": "https://m5burner-cdn.m5stack.com/firmware/a9499d06eab7cfbe2789905eed454d85.bin",
+  "sha256": "ac47e80ba0b0e6c304e90ba10aa978f367d4369a2e449c1f4a58813a671b3216",
+  "wasmSha256": "cd4fa7f24c410f1da5da5e04ae1e4e5e1205b0bd5f9a45d0b120ea3ed97034bd",
+  "firmware": {
+    "manifestUrl": null,
+    "manifestHash": null,
+    "metadata": {
+      "name": "arduino-lib-builder",
+      "version": "esp-idf: v4.4.6 3572900934",
+      "source": "esp-app-description"
+    },
+    "source": "remote",
+    "artifacts": [
+      {
+        "kind": "flash",
+        "url": "https://m5burner-cdn.m5stack.com/firmware/a9499d06eab7cfbe2789905eed454d85.bin",
+        "sha256": "ac47e80ba0b0e6c304e90ba10aa978f367d4369a2e449c1f4a58813a671b3216",
+        "bytes": 8323072
+      },
+      {
+        "kind": "rom",
+        "url": "https://airquality-fixture.invalid/wasm/fw/esp32s3_rev0_rom.elf",
+        "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+        "bytes": 949552
+      }
+    ],
+    "appDirect": false,
+    "stubs": [],
+    "executionMode": "wasm-jit"
+  },
+  "guestSeconds": 20.74,
+  "keys": {
+    "settings": {
+      "down": 16.0516760875,
+      "up": 16.364310379166668
+    },
+    "next": {
+      "down": 18.408506670833333,
+      "up": 18.7243289625
+    }
+  },
+  "frames": [
+    {
+      "name": "wasm-samples",
+      "width": 200,
+      "height": 200,
+      "frameNumber": 21,
+      "rgbaSha256": "6de9068493ab52af6d8cdde7fa861ae973168236464e5d06434ff3a8b5f19acd"
+    },
+    {
+      "name": "wasm-settings",
+      "width": 200,
+      "height": 200,
+      "frameNumber": 28,
+      "rgbaSha256": "c64bd09a0ec2e34723ace59182661e8b6bbca04ed62ffa05b1df248d39f34e4d"
+    },
+    {
+      "name": "wasm-setting-next",
+      "width": 200,
+      "height": 200,
+      "frameNumber": 33,
+      "rgbaSha256": "c2d9204a091721a8a9db3276acdabdd5c71bc016b43e495763ddd2a87f65a275"
+    }
+  ],
+  "checks": [
+    "actual-production-worker-S3-ROM-boot",
+    "official-SCD40-SEN55-samples-page",
+    "B-settings-and-selection-change"
+  ],
+  "serialEvidence": [
+    "[  2033][I][AirQUserDemo.ino:290] setup(): Waiting for first measurement... (5 sec)",
+    "[  2033][I][AirQUserDemo.ino:290] setup(): Waiting for first measurement... (5 sec)",
+    "[  2254][I][AirQUserDemo.ino:307] setup(): Temperature Offset set to 0.000000 deg. Celsius (SEN54/SEN55 only)",
+    "[  2254][I][AirQUserDemo.ino:307] setup(): Temperature Offset set to 0.000000 deg. Celsius (SEN54/SEN55 only)"
+  ],
+  "status": "pass",
+  "limitations": [
+    "RTC/battery/audio/network/power-sleep are not modeled. Samples are explicitly virtual constants; conversion/warmup timing is not physically calibrated."
+  ]
+}

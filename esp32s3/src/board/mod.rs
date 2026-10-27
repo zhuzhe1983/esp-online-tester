@@ -12,6 +12,7 @@
 pub use esp_soc::board::{Board, BoardEdge, BoardModel, NoBoard, VirtualCycle};
 
 pub mod atech14;
+pub mod airquality;
 pub mod atoms3;
 pub mod atoms3_lite;
 pub mod atoms3r;
@@ -51,6 +52,7 @@ pub use waveshare_lcd4b::*;
 /// Board by name: `atech14` (default), `none`, `stopwatch` or a supported Waveshare board.
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
+        "airquality" | "m5stack-k131" => Some(Box::new(airquality::AirQuality::new())),
         "atech14" | "atech" => Some(Box::new(Atech14::new())),
         "none" | "bare" => Some(Box::new(NoBoard)),
         "atoms3r" | "m5stack-atoms3r" => Some(Box::new(AtomS3R::new())),

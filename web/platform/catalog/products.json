@@ -3964,29 +3964,34 @@
       "chip": "esp32s3",
       "module": "ESP32-S3FN8",
       "runtime": {
-        "board": null,
+        "board": "airquality",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": {
         "width": 200,
         "height": 200,
         "type": "E-Paper",
-        "controller": "GDEY0154D67"
+        "controller": "SSD1681",
+        "touch": false
       },
       "controls": [
         {
           "id": "button-a",
-          "name": "Button A",
+          "name": "按键 A",
           "type": "button",
-          "pin": 0
+          "gpio": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         },
         {
           "id": "button-b",
-          "name": "Button B",
+          "name": "按键 B",
           "type": "button",
-          "pin": 8
+          "gpio": 8,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
         }
       ],
       "interfaces": [
@@ -4028,8 +4033,10 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "官方 v0.2.0 已在真实 ROM/WASM 执行，支持 SSD1681 电子纸和 A/B 按键；其他固件仍可尝试，未保证整机兼容。",
+        "SCD40/SEN55 为数字协议模型，默认固定虚拟样本：420 ppm、25°C、50% RH、PM1/2.5/4/10=5/7/9/10 μg/m³、VOC=100、NOx=1；不代表真实空气读数。",
+        "RTC、电池 ADC、蜂鸣器、外部 Grove、供电锁存/睡眠和联网未完成；日期 2000-00-00、电压 0 V 等客体结果保留，不伪装为实测。",
+        "厂家 CAD 尺寸与照片复核仍为部分通过；屏幕位置及按键命中面为照片/CAD 推定，UNKNOWN PCB 不是实板。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k131.json",
       "model": {

@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T19:02:33Z",
+  "updatedAt": "2026-10-27T22:02:36Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -411,6 +411,26 @@
         "official-docs"
       ],
       "group": "pinmap"
+    },
+    {
+      "id": "ssd1681-control",
+      "label": "Electronic-paper controller",
+      "value": "SSD1681, 200×200, byte-addressed X RAM",
+      "basis": "official",
+      "sourceIds": [
+        "ssd1681-datasheet"
+      ],
+      "group": "display"
+    },
+    {
+      "id": "sen55-power",
+      "label": "SEN55 supply enable",
+      "value": "GPIO10 active LOW via ME1502CM5G active-low EN",
+      "basis": "official",
+      "sourceIds": [
+        "runtime-schematic"
+      ],
+      "group": "power"
     }
   ],
   "revisions": [],
@@ -697,6 +717,62 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "runtime-schematic",
+      "title": "Original K131 schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/467/Sch_AirQ_v1.0.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/467/Sch_AirQ_v1.0.pdf",
+      "kind": "schematic",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T21:44:16Z",
+      "sha256": "0fd9c1576c889de780f311a908ab35d8b5de43b96ea1ae283cdb4c55937c630f",
+      "bytes": 544297,
+      "mediaType": "application/pdf",
+      "notes": "Full-precision acquisition receipt retained in docs/platform/evidence/airquality/sources.json.",
+      "archiveName": "schematic.pdf"
+    },
+    {
+      "id": "ssd1681-datasheet",
+      "title": "GDEY0154D67 / SSD1681 datasheet",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/AirQ/GDEY0154D67(1).pdf",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/core/AirQ/GDEY0154D67(1).pdf",
+      "kind": "datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T21:44:18Z",
+      "sha256": "eee071d46913e566ebb0a2f51206fea9bb00b1024b32396ad498553149c5f308",
+      "bytes": 9684264,
+      "mediaType": "application/pdf",
+      "notes": "Full-precision acquisition receipt retained in docs/platform/evidence/airquality/sources.json.",
+      "archiveName": "display.pdf"
+    },
+    {
+      "id": "sen55-datasheet",
+      "title": "Sensirion SEN5x v2-D1 March 2022",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/AirQ/Sensirion_Datasheet_Environmental_Node_SEN5x.pdf-9e2861345ac4a2cd640cc28e0e2d2a07.pdf",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/core/AirQ/Sensirion_Datasheet_Environmental_Node_SEN5x.pdf-9e2861345ac4a2cd640cc28e0e2d2a07.pdf",
+      "kind": "datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T21:47:18Z",
+      "sha256": "274338ac3d69f3b1cd1d58d995ad05e1f5ab6cd824df39b80d89c66218b322fc",
+      "bytes": 1375059,
+      "mediaType": "application/pdf",
+      "notes": "Full-precision acquisition receipt retained in docs/platform/evidence/airquality/sources.json.",
+      "archiveName": "sen55.pdf"
+    },
+    {
+      "id": "scd40-datasheet",
+      "title": "Sensirion SCD4x v1.2 May 2022",
+      "url": "https://static-cdn.m5stack.com/resource/docs/datasheet/unit/co2/SCD40.pdf",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/datasheet/unit/co2/SCD40.pdf",
+      "kind": "datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T21:47:22Z",
+      "sha256": "8dbb0ea9df113ee4d952e940f79668fa1ce555f5b7033e441d60ac7cd3f6bf47",
+      "bytes": 1081271,
+      "mediaType": "application/pdf",
+      "notes": "Full-precision acquisition receipt retained in docs/platform/evidence/airquality/sources.json.",
+      "archiveName": "scd40.pdf"
     }
   ],
   "assets": [
@@ -823,6 +899,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "K131 airquality runtime executes fixed official v0.2.0 ROM image: SSD1681 and A/B buttons, explicit fixed virtual SCD40/SEN55 samples. RTC/battery/audio/power/network remain incomplete; see docs/platform/airquality-runtime.md. K131-V11 is separate."
   ]
 }
