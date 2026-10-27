@@ -1,0 +1,288 @@
+{
+  "checkedAt": "2026-10-27T16:26:12Z",
+  "sourceBase": "5122cb18",
+  "environment": {
+    "os": "Darwin",
+    "architecture": "arm64",
+    "rust": "1.99.1 stable",
+    "node": "26.8.2"
+  },
+  "sourceFiles": {
+    "esp-soc/src/board.rs": "c14169db40626ac54ebb0a01ce9ce655700786bb30ee758b4b0e1f2ddc36bdd6",
+    "esp32s3/src/board/mod.rs": "e6b8f931af00786d1ae0957c66df492ea01a051a3523b45accf7dde8c1d97386",
+    "esp32s3/src/board/paperdiy.rs": "65290c3fc4e56ed50554fa7edc5362623bc8df5ff19ae2897ac63a1843ff67ea",
+    "esp32s3/src/bus.rs": "19b799caa1354a15394cc7ed9213e62840cdf07098407611a54fac151254649e",
+    "esp32s3/src/bus/dma.rs": "c59f7321aff68fc18d004510ac8d4496ac006ab620dd5ff4d35fcb51a8f9095f",
+    "esp32s3/src/bus/dma_tests.rs": "f26646baabe599535f0e93a11a3f20ce2e96f57b218fce4cae26eab26649e860",
+    "esp32s3/src/periph.rs": "f0bd6a417d32a4d75c3555fe095095a9a9f59c135943b17f04133d9435c1dd84",
+    "web/platform/scene-view.js": "042be960016dbeb6f40698ac77f2124a46c0e1f3bbe6a5cd78e7b382427ff26d",
+    "tools/probe-paperdiy-factory.mjs": "01bd8338730f89004fc1f4043e046efe909e586e43842eed4fd56b22d0d79aa8"
+  },
+  "firmwarePatched": false,
+  "goldensChanged": false,
+  "checks": [
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=$PWD/web/wasm/fw cargo test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "tests": 1433,
+      "groups": 132
+    },
+    {
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "result": "pass"
+    },
+    {
+      "command": "cargo build --release --workspace; tools/wasm-build.sh",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "result": "pass",
+      "scenarios": 11
+    },
+    {
+      "command": "tools/wasm-jit-test.sh",
+      "result": "pass",
+      "cases": 111126,
+      "groups": 78,
+      "gpioWaveforms": 24
+    },
+    {
+      "command": ". ./tools/wasm-rustflags.sh; cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "result": "pass"
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "result": "pass",
+      "tests": 100
+    },
+    {
+      "command": "uv run --with-requirements tools/requirements-catalog.txt python tools/validate-platform-catalog.py",
+      "result": "pass",
+      "products": 86,
+      "accessories": 7,
+      "firmwares": 148,
+      "watchlist": 104
+    },
+    {
+      "command": "node tools/platform-recording-test.mjs --real",
+      "result": "pass",
+      "events": 18,
+      "finalFrame": "different",
+      "scope": "Guest event/lifecycle contracts passed; exact final-frame replay is not claimed."
+    },
+    {
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "result": "pass"
+    },
+    {
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm; node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf; node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/worker-pacing-test.mjs; node tools/worker-channel-test.mjs; node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs",
+      "result": "pass",
+      "touchAndUiTests": 11
+    },
+    {
+      "command": "node --test tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs; python3 -m unittest discover -s tools/browser-benchmark -p test_*.py",
+      "result": "pass",
+      "nodeTests": 16,
+      "pythonTests": 15
+    },
+    {
+      "command": "CI retained x5 receipt tests and three verifiers from .github/workflows/ci.yml",
+      "result": "pass",
+      "tests": 83
+    }
+  ],
+  "browser": {
+    "mode": "headless Chrome, real page worker; task-owned browser and local service closed",
+    "viewport": [
+      1280,
+      1000
+    ],
+    "remoteDownload": "Official API redirect to CDN, unmodified image; no fixture/interception.",
+    "checks": [
+      "First factory image then retained NVS host restart into real main interface",
+      "2D view uses the same guest framebuffer",
+      "Screen drag rotates non-touch PaperDIY without unsupported-touch warning",
+      "Upper CAD button A and lower CAD button B hold/release change official border pixels",
+      "Button hover green, gold opaque and purple translucent shells retain buttons and live display"
+    ],
+    "inputMethod": "Rotate screen pointer from [640,410] to [720,410]; pointer-down on A [508,503] and B [508,560], run >=0.9 guest seconds, check framebuffer [30,620]/[30,731] black; release, run >=0.9 guest seconds, check white.",
+    "timingLimit": "Host pointer delivery and guest observation are not cycle-exact; not a physical-hardware test.",
+    "localScreenshotChecksums": [
+      {
+        "name": "paperdiy-browser-2d.png",
+        "bytes": 273932,
+        "sha256": "3c50a55675eeba3688de78461c187585003b91b5e36b128d4358b666601e8c0f"
+      },
+      {
+        "name": "paperdiy-browser-button-a.png",
+        "bytes": 329476,
+        "sha256": "1569bfe32ff0b95e2c1d09392921f70e96d47d9c61164da2c42d8efe4616fc61"
+      },
+      {
+        "name": "paperdiy-browser-button-b.png",
+        "bytes": 329746,
+        "sha256": "300b9f542e94c6e07d1bd2076aa5b72584a4e91f36ed5a952b1c4e6b94665633"
+      },
+      {
+        "name": "paperdiy-browser-gold.png",
+        "bytes": 324500,
+        "sha256": "3c441cc65f978e1d11835d5a74ab9c5a802edb826ee540684f099493ed08af42"
+      },
+      {
+        "name": "paperdiy-browser-left.png",
+        "bytes": 245687,
+        "sha256": "bf5ff1ce5aed9000386c07c87ca47bb2a791e30d1bee97b7eea4fd75fdca9f47"
+      },
+      {
+        "name": "paperdiy-browser-main.png",
+        "bytes": 204644,
+        "sha256": "a4131e9b3d58318c8aac3fa653e2f799d821d4f721b2705265a9cb224001307c"
+      },
+      {
+        "name": "paperdiy-browser-purple.png",
+        "bytes": 329363,
+        "sha256": "4c0bd8829de4f1e9372b2056fb6b8c92a046da6971f38c44cf8afdde86063889"
+      },
+      {
+        "name": "paperdiy-browser-rotation.png",
+        "bytes": 307813,
+        "sha256": "49dcd0d3d2a48e0f35f779899326abb24b1c06a68df751a7c6175be3ac489b7f"
+      },
+      {
+        "name": "paperdiy-browser-zoom.png",
+        "bytes": 240014,
+        "sha256": "e8cb2cc3fc76fcfc4279f257ef96c71d7eba57edee953d34c390a6a816164c3d"
+      },
+      {
+        "name": "paperdiy-first.png",
+        "bytes": 1556343,
+        "sha256": "ec07d5ad0b51bc1cd02d64fcba856a77b363b9d39c25e8504a3ff69e3b234c22"
+      },
+      {
+        "name": "paperdiy-hover-a.png",
+        "bytes": 307975,
+        "sha256": "6af21f0d9686eea6035c7d2d81a1a573c64ea779025795e4acb3dede03080eb8"
+      },
+      {
+        "name": "paperdiy-rom-first.png",
+        "bytes": 1556343,
+        "sha256": "7867a1f6a7c41f9082a6d62e8ea27eb28e59ede823207002d655272f5a8ee736"
+      }
+    ]
+  },
+  "negativeAndLimits": [
+    "Treating the merged image as app-direct fails at Simcall / 0xffffffe0 bus write; the verified mode is ROM boot.",
+    "Wi-Fi PHY calibration emits pll_cal errors and no usable network; networking is not validated.",
+    "No TF SPI implementation: G48 reports absent card.",
+    "16-gray optical waveform calibration, true PMIC power cycling/sleep and FPC devices unimplemented or unverified.",
+    "Existing estimated screen-opening gap/internal tabs remain visible; this is not a new 1:1 model-fidelity acceptance."
+  ],
+  "logChecksums": {
+    "paperdiy-ble-api.log": {
+      "sha256": "deb19fd5f40a033a9b6df2d9d3cdf25f8e460420bc42ced602a3edb3a6cc6a28",
+      "bytes": 552
+    },
+    "paperdiy-browser-contract.log": {
+      "sha256": "fb369b309ec8f402a42c1a85505f3d71064ab1ce46c59b8b5707a026c1e235ac",
+      "bytes": 1506
+    },
+    "paperdiy-build.log": {
+      "sha256": "8891688152b3682ac33cac049b7f47af9e151be35242f35d1894ba784331e3a7",
+      "bytes": 74
+    },
+    "paperdiy-clippy.log": {
+      "sha256": "b349bb075831bcb5c305d2701a2eafe659dd3bb321bfd53d756a717bbb9b21bc",
+      "bytes": 439
+    },
+    "paperdiy-evidence-tests.log": {
+      "sha256": "17ad909fddba7dd62838fbce2a791514dbfc096e30903d15e922b6ee09ad3b1c",
+      "bytes": 4345
+    },
+    "paperdiy-evidence-verify.log": {
+      "sha256": "990277f39d060a6da8a97ab6f72df824b95dabbeb4c0b62bc1bfcfb523cb08c4",
+      "bytes": 547
+    },
+    "paperdiy-i80-tests.log": {
+      "sha256": "91f52fb638757fae09ed0ddd021fcf3868f77332f8f161707a850eea3054c544",
+      "bytes": 3505
+    },
+    "paperdiy-jit-tests.log": {
+      "sha256": "5440543082d396aa3285bf95eff58d701cae65b6e8b2474c8c2f5c31eac05cde",
+      "bytes": 6088
+    },
+    "paperdiy-model-rebuild.log": {
+      "sha256": "7e2f41fae24503e961940425f87f66bcdfce5af552ba949c32a8cb34ec6bd881",
+      "bytes": 98
+    },
+    "paperdiy-platform-final.log": {
+      "sha256": "21ffbe8d2ff7a932d0793ab167cb2287692a58661eabe0b4b0823dd36632b649",
+      "bytes": 17843
+    },
+    "paperdiy-profile-build.log": {
+      "sha256": "ddd9b87885b5a1c457295629c795696738b88a3307ce0b53c3516afe4da2d956",
+      "bytes": 785
+    },
+    "paperdiy-python.log": {
+      "sha256": "0b25b87cdaf7c9018e588e07a12cb645e1f465cee2bc7bfbc81d62d0985a72ed",
+      "bytes": 114
+    },
+    "paperdiy-recording.log": {
+      "sha256": "399fddbf88243d83ab600a3563adbf729fd9d8df9ec282e4b76cef835734f284",
+      "bytes": 1100
+    },
+    "paperdiy-schema-final.log": {
+      "sha256": "851cddef98101ceb5c9524f94fd1ee5f905875942f88d3b730d6b90d6bd69d3b",
+      "bytes": 135
+    },
+    "paperdiy-tests.log": {
+      "sha256": "e881df89baea48d8e1e16813f8a8ac84cdad08949d0c1d9510c2906c739ba75e",
+      "bytes": 158842
+    },
+    "paperdiy-timing-api.log": {
+      "sha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3",
+      "bytes": 78
+    },
+    "paperdiy-ui-tests.log": {
+      "sha256": "d0ccadd13d0c5483afb1c2b2fe1902a3cc8103d4f1ad062f1da55e9d8c12f2ef",
+      "bytes": 1103
+    },
+    "paperdiy-wasm-build.log": {
+      "sha256": "659cc844552c916a6429e516aafce72ef1e112a4cb0ff026e9dc209c4c759b1a",
+      "bytes": 417
+    },
+    "paperdiy-wasm-clippy.log": {
+      "sha256": "59e0f70210579455608ee3ae36eb36d4639a98127c766942edf391fba71ca323",
+      "bytes": 1172
+    },
+    "paperdiy-wasm-sections.log": {
+      "sha256": "8d0a023f766d1dad21b271a424ecadfd97e9dd92dcba2f32e746081679711be7",
+      "bytes": 57
+    },
+    "paperdiy-wasm-tests.log": {
+      "sha256": "3e15ecd2430fea584939907067fb8df666ab02778d90f6eff3303d74ba4fb6d1",
+      "bytes": 1315
+    },
+    "paperdiy-worker-channel.log": {
+      "sha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6",
+      "bytes": 347
+    },
+    "paperdiy-worker-pacing.log": {
+      "sha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158",
+      "bytes": 89
+    }
+  },
+  "privacy": "Raw UART, application inventories, private machine/session details, firmware bytes and screenshots are not committed. Compact checks retain only public source hashes, numeric outcomes and reproduction steps; no captures uploaded."
+}

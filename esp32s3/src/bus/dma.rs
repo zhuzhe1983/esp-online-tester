@@ -29,6 +29,56 @@ pub(super) struct Spi2DmaCompletion {
 
 
 impl SocBus {
+    /// IDF v5.5.1 lcd_ll.h and esp_lcd/i80/esp_lcd_panel_io_i80.c: LCD_USER START
+    /// starts command/dummy/data phases; DMA trigger5 supplies data until EOF in ALWAYS_OUT.
+    /// This digital subset completes at the START write, not cycle-accurate pixel timing.
+    /// No new tick polling; RGB continues through dma_lcd_step unchanged.
+    #[cold]
+    #[inline(never)]
+    pub(super) fn lcd_i80_start(&mut self) {
+        if !self.periph.lcd_cam.i80_started() { return; }
+        let user = self.periph.lcd_cam.lcd_user;
+        if user & (1 << 28) != 0 { return; }
+        let wide = user & (1 << 23) != 0;
+        let mut bytes = Vec::new();
+        if user & (1 << 24) != 0 {
+            let Some(ch) = self.periph.gdma.out_channel_for(5) else { return; };
+            // Bound allocations independently of descriptor count. Reject overlong frames rather
+            // than publish partial data or pretend a malformed/unowned chain completed.
+            let result = esp_periph::gdma::gather_out(&mut LcdDmaOut { bus: self, channel: ch }, 1_048_577, &mut bytes);
+            let expected = ((user & 0x1fff) as usize + 1) * if wide { 2 } else { 1 };
+            let valid = bytes.len() <= 1_048_576 && (!wide || bytes.len() & 1 == 0)
+                && (user & (1 << 13) != 0 || bytes.len() == expected);
+            match result {
+                Ok(next) if valid => {
+                    let c = &mut self.periph.gdma.out[ch]; c.desc = next; c.running = false;
+                    c.int_raw |= 1 << 3; // IDF v5.5.1 gdma_reg.h OUT_TOTAL_EOF_CH0_INT_RAW; same bit as v5.5.5.
+                }
+                _ => { self.fail_dma_out(ch); return; }
+            }
+        }
+        let routes = esp_soc::pins::ChipPins::S3.routes(&self.periph.gpio, &self.periph.io_mux);
+        // IDF v5.5.1 soc/esp32s3/include/soc/gpio_sig_map.h, LCD_CS132, DATA0..15
+        // 133..148, PCLK154. Inverted or disabled routes are deliberately not physical outputs.
+        let mask = |signal| routes.output_pins(signal).fold(0u64, |m, p| m | (1 << p));
+        let pins = esp_soc::board::LcdI80Pins { data: std::array::from_fn(|i| mask(133 + i as u32)), clock: mask(154), select: mask(132), width: if wide { 16 } else { 8 } };
+        if user & (1 << 26) != 0 {
+            let cmd = self.periph.lcd_cam.ram.read(0x28);
+            let words = if wide { [cmd as u16, (cmd >> 16) as u16] } else { [cmd as u8 as u16, (cmd >> 8) as u8 as u16] };
+            self.board.lcd_i80(pins, false, &words[..if user & (1 << 31) != 0 { 2 } else { 1 }]);
+        }
+        if !bytes.is_empty() {
+            // LCD_BYTE_ORDER swaps adjacent bytes; BIT_ORDER reverses each bus word.
+            if user & (1 << if wide { 22 } else { 19 }) != 0 { for pair in bytes.as_chunks_mut::<2>().0 { pair.swap(0, 1); } }
+            let mut words: Vec<u16> = if wide { bytes.as_chunks::<2>().0.iter().map(|b| u16::from_le_bytes([b[0],b[1]])).collect() } else { bytes.iter().map(|&b| u16::from(b)).collect() };
+            if user & (1 << 21) != 0 { for word in &mut words { *word = if wide { word.reverse_bits() } else { (*word as u8).reverse_bits() as u16 }; } }
+            self.board.lcd_i80(pins, true, &words);
+        }
+        self.periph.lcd_cam.lcd_user &= !(1 << 27);
+        self.periph.lcd_cam.int_raw |= 1 << 1; // LCD_TRANS_DONE; includes the driver's no-data priming transfer.
+        self.irq_dirty = true;
+    }
+
     /// IDF v5.5.4 components/soc/esp32s3/include/soc/gdma_channel.h:21: trigger 9.
     /// Error bit: register/soc/rmt_reg.h:1650-1656. GDMA writeback/owner:
     /// register/soc/gdma_reg.h:585-618; OUT interrupts:649-678.
@@ -766,4 +816,14 @@ impl esp_periph::gdma::OutMemory for RmtDmaOut<'_> {
         self.bus.append_mapped_bytes(address, count, out)
     }
     fn writeback(&mut self, address: u32, value: u32) -> Result<(), Fault> { self.bus.write32_unpriced(address, value) }
+}
+
+/// Byte-oriented LCD DMA. Descriptor structures stay in memory; unlike crypto's legacy
+/// adapter, they cannot recurse through peripheral START registers during a gather.
+struct LcdDmaOut<'a> { bus: &'a mut SocBus, channel: usize }
+impl esp_periph::gdma::OutMemory for LcdDmaOut<'_> {
+    fn out_channel(&mut self) -> &mut esp_periph::GdmaOutCh { &mut self.bus.periph.gdma.out[self.channel] }
+    fn word(&mut self, address: u32) -> Result<u32, Fault> { if SocBus::is_periph(address) { Err(Fault::Prohibited) } else { self.bus.read32_unpriced(address) } }
+    fn append(&mut self, address: u32, count: usize, out: &mut Vec<u8>) -> Result<(), (u32, Fault)> { self.bus.append_mapped_bytes(address, count, out) }
+    fn writeback(&mut self, address: u32, value: u32) -> Result<(), Fault> { if SocBus::is_periph(address) { Err(Fault::Prohibited) } else { self.bus.write32_unpriced(address, value) } }
 }

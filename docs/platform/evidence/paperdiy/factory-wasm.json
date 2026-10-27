@@ -1,0 +1,65 @@
+{
+  "checkedAt": "2026-10-27T16:04:41.140Z",
+  "command": "node tools/probe-paperdiy-factory.mjs --url <catalog-k159-b-factory-url> --sha256 <catalog-sha256>",
+  "source": {
+    "url": "https://burner.m5stack.com/api/v1/firmwares/2110309776206622722/versions/2110309776210817025/download",
+    "resolvedUrl": "https://m5burner-cdn.m5stack.com/community/1/2110309776206622722/2110309776210817025/bin/2110309776210817026.bin",
+    "bytes": 1404800,
+    "sha256": "d7de13e62342c1ab7115897a4a731abb054efda8ecb01d711aeb66c8bc6baa37"
+  },
+  "backend": "actual-page-worker-wasm-jit",
+  "firmwarePatched": false,
+  "wasmSha256": "992eac47233411f2bae434a05f9254ec1b1e0665a2a1021a4456a875c98b582e",
+  "checks": [
+    "rom-boot-first-factory-shutdown-logo",
+    "factory-nvs-retained-after-host-restart",
+    "button-a-physical-gpio-held-black-released-white-border",
+    "button-b-physical-gpio-held-black-released-white-border"
+  ],
+  "first": {
+    "width": 540,
+    "height": 960,
+    "sha256": "1c00ae793ca2445369469a824c7ef096baf2645345664a66ac275310dcf0fae3"
+  },
+  "changedPages": 1,
+  "main": {
+    "width": 540,
+    "height": 960,
+    "sha256": "5e32ce9968fed6c9dd20c1a20fad69dd07b883d17ea6248b1d8d517758ce3fe3"
+  },
+  "button-a": {
+    "width": 540,
+    "height": 960,
+    "sha256": "9afe1c2bcbac8284f61b0b5a1c328793f6d822c579b0d1f6547e97b1800a76be"
+  },
+  "button-b": {
+    "width": 540,
+    "height": 960,
+    "sha256": "799e49d4feabeb1109044a42c156583a07d1011f05b47fb9102f1bf555d73031"
+  },
+  "status": "pass",
+  "guestSeconds": 7.9,
+  "artifacts": [
+    {
+      "kind": "flash",
+      "sha256": "d7de13e62342c1ab7115897a4a731abb054efda8ecb01d711aeb66c8bc6baa37",
+      "bytes": 1404800
+    },
+    {
+      "kind": "rom",
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+      "bytes": 949552
+    }
+  ],
+  "serialEvidence": [
+    "I (200) app_init: Project name:     PaperDIY",
+    "I (202) PaperDIY: Firmware version: V1.0",
+    "I (206) M5GFX: [Autodetect] board_M5PaperDIY",
+    "I (230) HAL: Display ready: 540x960"
+  ],
+  "limitations": [
+    "Black/white digital terminal response only, not 16-gray optical calibration.",
+    "TF SPI, FPC, true power cycling/sleep and wireless networking are not validated. Host restart retains flash but is not a physical PMIC power button.",
+    "No physical hardware used. Host input duration is not a cycle-exact timing guarantee."
+  ]
+}

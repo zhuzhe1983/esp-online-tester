@@ -534,6 +534,7 @@ impl SocBus {
             self.spi3_pins = self.board.uses_spi_pins().then(|| self.periph.spi3_pins());
         }
         self.periph.write32(a, v);
+        if a == 0x6004_1014 { self.lcd_i80_start(); }
         if a>>12==0x60028 || a==0x600c0024 {self.sdmmc_write(a,v);}
         if matches!(a & !0xfff, 0x6000_4000 | 0x6000_9000) && self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, esp_soc::pins::ChipPins::S3.routes(&self.periph.gpio, &self.periph.io_mux));

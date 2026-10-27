@@ -244,6 +244,8 @@ impl LcdCam {
     pub fn irq(&self) -> bool { self.int_raw & self.int_ena != 0 }
     /// LCD RGB mode running: LCD_START (USER bit 27) with LCD_RGB_MODE_EN (CTRL bit 31).
     pub fn lcd_running(&self) -> bool { self.lcd_user & (1 << 27) != 0 && self.lcd_ctrl & (1 << 31) != 0 }
+    /// IDF v5.5.1 lcd_cam_reg.h: LCD_START bit27, RGB_MODE bit31, CLK_SEL bits29..30.
+    pub fn i80_started(&self) -> bool { self.clock_enabled && self.lcd_clock & (3 << 29) != 0 && self.lcd_user & (1 << 27) != 0 && self.lcd_ctrl & (1 << 31) == 0 }
     /// (active width, active height, bytes per pixel, CPU cycles per frame) from the timing registers.
     pub fn lcd_geometry(&self) -> (u32, u32, u32, u64) {
         // the registers hold (value - 1): lcd_ll_set_horizontal/vertical_timing

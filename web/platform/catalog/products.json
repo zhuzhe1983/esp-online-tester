@@ -843,12 +843,29 @@
       "chip": "esp32s3",
       "module": "ESP32-S3-WROOM-1-N16R8",
       "runtime": {
-        "board": null,
-        "status": "unavailable",
+        "board": "paperdiy",
+        "status": "partial",
         "flashMb": 16,
         "psramMb": 8
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "button-a",
+          "name": "按键 A",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "button-b",
+          "name": "按键 B",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        }
+      ],
       "interfaces": [],
       "model": {
         "type": "manufacturer-cad",
@@ -856,10 +873,10 @@
         "status": "partial"
       },
       "limitations": [
+        "ET047TC1 并行纸屏黑白数字子集、M5PM1 电源寄存器与 A/B 按键；16 灰阶光学响应、TF SPI、FPC、睡眠及无线功能尚未适配或验证。",
+        "官方 v1.0 首次启动会保存初始化标记并显示关机标志；保留设备存储后点击重启进入演示。屏幕没有触摸输入。",
         "Screen opening and PCB dimensions are explicitly estimated; no full 1:1 interior claim.",
         "Overall button protrusion differs from official body length; dimensional failure is retained.",
-        "PaperDIY factory firmware is an upstream reference; M5PM1/e-paper/FPC behavior is not implemented.",
-        "No complete board/peripheral emulator exists for this SKU; preview and documentation only.",
         "PCB placeholder has no components. Its dimensions/placement are an enclosure-space estimate, not a verified PCB layout.",
         "Manufacturer photo rights are separate from CAD MIT license. Materials are visual approximations, not measured reflectance."
       ],
@@ -885,7 +902,8 @@
         "bus": "parallel",
         "sourceIds": [
           "official-docs"
-        ]
+        ],
+        "touch": false
       },
       "dimensions": {
         "width": 120,

@@ -301,7 +301,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     }
     if (object?.userData.control) return {kind: 'button', id: object.userData.control};
     if (object?.userData.unsupported) return {kind: 'unsupported', message: object.userData.unsupported};
-    if (object?.userData.screen) return product?.runtime?.touch ? {kind: 'touch'} : {kind: 'unsupported', message: '此设备尚未实现触摸输入。'};
+    if (object?.userData.screen) return product?.runtime?.touch ? {kind: 'touch'} : product?.display?.touch === false ? {kind:'orbit'} : {kind: 'unsupported', message: '此设备尚未实现触摸输入。'};
     return {kind: 'orbit'};
   }
   function clearHover() {

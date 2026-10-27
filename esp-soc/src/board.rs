@@ -22,6 +22,10 @@ pub struct SpiPins {
     pub cs: u64,
 }
 
+/// GPIO matrix masks at an LCD_CAM i80 transaction. Each data bit may drive several pads.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct LcdI80Pins { pub data: [u64; 16], pub clock: u64, pub select: u64, pub width: u8 }
+
 /// What a board does with the SoC's pin-level activity.
 pub trait BoardModel {
     fn name(&self) -> &'static str;
@@ -173,6 +177,10 @@ pub trait BoardModel {
     /// controller. The board owns physical wiring; no caller-selected pin/register.
     /// Appended to preserve existing hot-call vtable offsets.
     fn button_at(&mut self, _cycle: VirtualCycle, _id: &str, _pressed: bool) -> bool { false }
+    /// Cold completed i80 phase, in wire word order; not a framebuffer or a tick callback.
+    /// Appended to preserve hot vtable offsets. No callback on a failed DMA gather.
+    fn lcd_i80(&mut self, _pins: LcdI80Pins, _data_phase: bool, _words: &[u16]) {}
+
 }
 
 pub type Board = Box<dyn BoardModel>;

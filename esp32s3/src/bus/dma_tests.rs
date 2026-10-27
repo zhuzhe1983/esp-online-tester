@@ -603,3 +603,38 @@ fn crypto_descriptor_writeback_preserves_mmio_side_effects() {
     assert!(!bus.periph.gdma.out[0].running);
     assert_eq!(bus.periph.gdma.out[0].desc, 0);
 }
+
+#[test]
+fn i80_dma_reaches_routed_bus_words_and_completes_irq() {
+    use std::sync::{Arc,Mutex};
+    use esp_soc::board::{BoardModel,LcdI80Pins};
+    type Transfer = (LcdI80Pins,bool,Vec<u16>);
+    struct Capture(Arc<Mutex<Vec<Transfer>>>);
+    impl BoardModel for Capture {fn name(&self)->&'static str {"i80-capture"} fn lcd_i80(&mut self,p:LcdI80Pins,d:bool,w:&[u16]) {self.0.lock().unwrap().push((p,d,w.to_vec()));}}
+    let frames=Arc::new(Mutex::new(Vec::new()));let mut bus=bus_with_out(5,4,0);bus.board=Box::new(Capture(frames.clone()));
+    bus.write32(DESC,(1<<31)|(1<<30)|(4<<12)|4).unwrap();bus.write32(INPUT,0x10208001).unwrap();
+    for (pin,signal) in [(6,133),(16,154),(13,132)] {bus.periph.io_mux.write(4+pin*4,1<<12);bus.periph.gpio.func_out_sel[pin as usize]=signal;}
+    bus.periph.lcd_cam.set_clock_enabled(true);bus.periph.lcd_cam.lcd_clock=3<<29;
+    bus.periph.lcd_cam.write(0x64,2);bus.periph.lcd_cam.ram.write(0x28,0x11ab);
+    bus.periph.lcd_cam.lcd_user=(1<<27)|(1<<26)|(1<<31)|(1<<24)|(1<<13)|(1<<19)|(1<<21);
+    bus.lcd_i80_start();let data=frames.lock().unwrap();assert_eq!(data.len(),2);
+    assert_eq!(data[0].2,[0xab,0x11]);assert!(!data[0].1);assert_eq!(data[1].2,[1,128,8,4]);assert!(data[1].1);
+    assert_eq!(data[1].0.data[0],1<<6);assert_eq!(data[1].0.data[1],0);assert_eq!(data[1].0.clock,1<<16);assert_eq!(data[1].0.select,1<<13);
+    assert_eq!(bus.periph.lcd_cam.lcd_user&(1<<27),0);assert!(bus.periph.lcd_cam.irq());assert_ne!(bus.periph.gdma.out[0].int_raw&3,0);
+    bus.periph.lcd_cam.write(0x70,2);assert!(!bus.periph.lcd_cam.irq());
+}
+
+#[test]
+fn i80_dummy_priming_clock_rgb_and_bad_dma_do_not_fake_data() {
+    let mut bus=SocBus::new(1024,1024,[0;6]);bus.periph.lcd_cam.lcd_clock=3<<29;
+    bus.periph.lcd_cam.lcd_user=(1<<27)|(1<<25);bus.lcd_i80_start();assert_eq!(bus.periph.lcd_cam.int_raw,0,"clock disabled");
+    bus.periph.lcd_cam.set_clock_enabled(true);bus.periph.lcd_cam.lcd_ctrl=1<<31;bus.lcd_i80_start();assert_eq!(bus.periph.lcd_cam.int_raw,0,"RGB is not i80");
+    bus.periph.lcd_cam.lcd_ctrl=0;bus.lcd_i80_start();assert_eq!(bus.periph.lcd_cam.int_raw,2,"IDF dummy phase primes ISR without a DMA channel");
+    for (length,desc,owner) in [(0,DESC,true),(4,0x60041014,true),(4,DESC,false)] {
+        let mut bus=bus_with_out(5,length,desc);bus.periph.gdma.out[0].conf1=1<<12;
+        if !owner {bus.write32(DESC,(length<<12)|length).unwrap();}
+        bus.periph.lcd_cam.set_clock_enabled(true);bus.periph.lcd_cam.lcd_clock=3<<29;
+        bus.periph.lcd_cam.lcd_user=(1<<27)|(1<<24)|(1<<13);bus.lcd_i80_start();
+        assert_eq!(bus.periph.lcd_cam.int_raw&2,0);assert_eq!(bus.periph.gdma.out[0].int_raw&4,4);assert!(!bus.periph.gdma.out[0].running);
+    }
+}
