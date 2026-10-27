@@ -13,13 +13,13 @@ function flatLabel(text) {
   if(typeof document==='undefined')return null;
   const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const context=canvas.getContext('2d');context.fillStyle='#f2f2e9';context.font='bold 68px monospace';context.textAlign='center';context.textBaseline='middle';context.fillText(text,256,64);const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
-function visualConnector(type,housingColor) {
+function visualConnector(type,housingColor,housingVariant) {
   const group=new THREE.Group(),standard=(color,metalness=0)=>new THREE.MeshStandardMaterial({color,metalness,roughness:.55});
   const add=(size,color,position=[0,0,0],metalness=0)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(...size),standard(color,metalness));mesh.position.set(...position);group.add(mesh);};
   if(type==='USB-C') {
     const capsule=(w,h)=>{const shape=new THREE.Shape(),r=h/2,l=(w-h)/2;shape.moveTo(-l,-r);shape.lineTo(l,-r);shape.absarc(l,0,r,-Math.PI/2,Math.PI/2);shape.lineTo(-l,r);shape.absarc(-l,0,r,Math.PI/2,Math.PI*1.5);return shape;};
     const rim=capsule(8.9,3.2);rim.holes.push(new THREE.Path(capsule(8.05,2.42).getPoints(32)));group.add(new THREE.Mesh(new THREE.ShapeGeometry(rim,32),standard(0x9ea7ad,.8)));add([7.8,2.2,.2],0x111616,[0,0,-.12]);add([6.4,.55,.3],0x303737,[0,0,.05]);
-  } else return createGroveSocket({color:housingColor});
+  } else return createGroveSocket({color:housingColor,housingVariant});
 
   return group;
 }
@@ -83,7 +83,8 @@ export function createManufacturerModel(product, screenTexture) {
       }
       if(part.kind==='connector-visual'&&['USB-C','HY2.0-4P'].includes(part.connectorType)) {
         if(part.housingColor!==undefined&&!/^#[a-fA-F0-9]{6}$/.test(part.housingColor))throw Error('Invalid connector housing color');
-        const socket=visualConnector(part.connectorType,part.housingColor);socket.name=part.id;socket.position.set(...center);socket.rotation.set(...vector(part.geometry?.rotation));socket.userData={kind:'connector-visual',basis:part.basis,sourceIds:part.sourceIds};parts[part.id]=socket;group.add(socket);
+        if(part.housingVariant!==undefined&&part.housingVariant!=='open-roof')throw Error('Invalid connector housing variant');
+        const socket=visualConnector(part.connectorType,part.housingColor,part.housingVariant);socket.name=part.id;socket.position.set(...center);socket.rotation.set(...vector(part.geometry?.rotation));socket.userData={kind:'connector-visual',basis:part.basis,sourceIds:part.sourceIds};parts[part.id]=socket;group.add(socket);
         const anchor=new THREE.Object3D();anchor.name=`connector:${part.id}:mouth`;anchor.userData={kind:'connector-anchor',type:part.connectorType,visualOnly:true};socket.add(anchor);const connector={type:part.connectorType,anchor,normal:new THREE.Vector3(0,0,1),allowConnections:part.allowConnections,pinOrder:part.pinOrder,sourceIds:part.sourceIds};if(part.connectorType==='USB-C'||verifiedGrove(connector))connectors[part.id]=connector;continue;
       }
       if(part.kind!=='pcb-placeholder')continue;

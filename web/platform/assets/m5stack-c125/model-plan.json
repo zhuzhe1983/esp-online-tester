@@ -92,6 +92,25 @@
       12,
       23.5,
       9.5
+    ],
+    "buttons": [
+      {
+        "id": "button",
+        "sizeMm": [
+          6.6,
+          6.4
+        ],
+        "positionMm": [
+          0,
+          -1.8,
+          4.77
+        ],
+        "sourceIds": [
+          "product-photo-91e7cf782f"
+        ],
+        "notes": "Actual case-top G9 flexure bounds from fixed manufacturer CAD/front photo; invisible hit plane, no keycap geometry replacement.",
+        "shape": "rectangle"
+      }
     ]
   },
   "derivedParts": [
@@ -115,28 +134,6 @@
       "basis": "estimated"
     },
     {
-      "id": "grove-body",
-      "kind": "box",
-      "basis": "photo-dimensions",
-      "color": "#e5e6da",
-      "geometry": {
-        "sizeMm": [
-          9.5,
-          5.5,
-          4.2
-        ],
-        "centerMm": [
-          0,
-          8.7,
-          1.4
-        ]
-      },
-      "sourceIds": [
-        "product-photo-91e7cf782f"
-      ],
-      "notes": "Visible white Grove housing estimate from front/top photos, ±0.7 mm; no manufacturer connector CAD."
-    },
-    {
       "id": "grove",
       "kind": "connector-visual",
       "connectorType": "HY2.0-4P",
@@ -150,13 +147,16 @@
         "rotation": [
           -1.5707963267948966,
           0,
-          0
+          3.141592653589793
         ]
       },
       "sourceIds": [
+        "product-photo-91e7cf782f",
         "product-photo-c75a7368ab"
       ],
-      "notes": "Visual-only connector; electrical pinmap remains in knowledge."
+      "notes": "Open roof and visible pin channel follow official front/oblique photos; redundant solid housing removed. Dimensions/hidden depth estimated; physical pin orientation and insertion fit not verified, therefore connections remain disabled. Socket-local +Y roof faces product +Z (front), with mouth normal +Y; no pin-order claim.",
+      "allowConnections": false,
+      "housingVariant": "open-roof"
     },
     {
       "id": "usb-c",
@@ -179,6 +179,54 @@
         "product-photo-af772f4361"
       ],
       "notes": "USB-C visual mouth position estimated from side photo, ±1 mm; no exact-fit claim."
+    },
+    {
+      "id": "rgb-light-window",
+      "kind": "box",
+      "basis": "photo-dimensions",
+      "ledIndex": 0,
+      "color": "#142027",
+      "geometry": {
+        "sizeMm": [
+          3.4,
+          0.5,
+          0.05
+        ],
+        "centerMm": [
+          0,
+          -2.75,
+          4.65
+        ]
+      },
+      "sourceIds": [
+        "product-photo-3b7485a4d2",
+        "product-photo-91e7cf782f"
+      ],
+      "notes": "Optical approximation behind CAD slit (x ±2, y -2.75, surface z4.75 mm). Photo labels RGB G20 at slit; not a claim of internal package coordinates."
+    },
+    {
+      "id": "blue-light-window",
+      "kind": "box",
+      "basis": "photo-dimensions",
+      "ledIndex": 1,
+      "color": "#142027",
+      "geometry": {
+        "sizeMm": [
+          1.6,
+          1.6,
+          0.1
+        ],
+        "centerMm": [
+          0,
+          -9.8,
+          -4.1
+        ]
+      },
+      "sourceIds": [
+        "product-photo-3b7485a4d2",
+        "product-photo-8948e53bb3"
+      ],
+      "notes": "G7 blue light behind central rear USB-end slot, per official annotated photo. Hidden depth and optical area are estimated, not PCB CAD."
     }
   ],
   "facts": [
@@ -197,7 +245,7 @@
     "Manufacturer CAD contains enclosure only; visible Grove/USB inserts are photo-derived approximations; label details are absent.",
     "Exterior shell dimensions pass 0.1 mm tolerance; this does not certify absent connectors or populated board.",
     "No display exists on NanoC6; no fabricated screen or framebuffer is added.",
-    "No complete board/peripheral emulator exists for this SKU; preview and documentation only.",
+    "Partial runtime supports the G9 key, G19-powered G20 RGB and G7 blue LED; IR, RF and external Grove/factory display behavior are unverified.",
     "PCB placeholder has no components. Its dimensions/placement are an enclosure-space estimate, not a verified PCB layout.",
     "Manufacturer photo rights are separate from CAD MIT license. Materials are visual approximations, not measured reflectance."
   ],
@@ -218,6 +266,10 @@
     {
       "sourceId": "product-photo-c75a7368ab",
       "view": "Grove-side"
+    },
+    {
+      "sourceId": "product-photo-3b7485a4d2",
+      "view": "annotated-controls-and-lights"
     }
   ],
   "photoReview": "实际浏览器四视图确认 Grove 朝上方向，依据官方照片改为青色壳体；壳体尺寸检查通过。官方 CAD 未包含照片中白色 Grove 端子、USB 金属内芯和文字；当前 UNKNOWN PCB 通过开口可见，外观仍不完整，未标记 1:1 通过。"

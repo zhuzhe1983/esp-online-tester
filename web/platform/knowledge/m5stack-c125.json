@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T18:07:56Z",
+  "updatedAt": "2026-10-27T20:09:33Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -295,6 +295,36 @@
         "official-docs"
       ],
       "group": "technical"
+    },
+    {
+      "id": "runtime-wiring",
+      "label": "按键与指示灯接线",
+      "basis": "official",
+      "value": {
+        "button": {
+          "gpio": 9,
+          "activeLow": true,
+          "pullupOhms": 10000
+        },
+        "rgb": {
+          "dataGpio": 20,
+          "powerEnableGpio": 19,
+          "powerActiveHigh": true,
+          "count": 1,
+          "wireOrder": "GRB"
+        },
+        "blueLed": {
+          "gpio": 7,
+          "activeHigh": true
+        }
+      },
+      "sourceIds": [
+        "runtime-schematic",
+        "runtime-pin-header",
+        "runtime-button-source",
+        "runtime-rgb-source"
+      ],
+      "group": "pinmap"
     }
   ],
   "revisions": [],
@@ -575,6 +605,71 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "runtime-docs",
+      "title": "NanoC6 runtime official-docs.html",
+      "kind": "official-product-document",
+      "url": "https://docs.m5stack.com/en/core/NanoC6",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/NanoC6",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T19:59:09Z",
+      "bytes": 138849,
+      "sha256": "eb49114df861e67c347ce7b293804bc2bc63f63a4872bc781e3624242bbf4fe6",
+      "mediaType": "text/html",
+      "archiveName": "runtime-docs.html"
+    },
+    {
+      "id": "runtime-schematic",
+      "title": "NanoC6 runtime schematic.pdf",
+      "kind": "schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/505/Sch_M5NanoC6_v0.0.1.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/505/Sch_M5NanoC6_v0.0.1.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T19:59:09Z",
+      "bytes": 275687,
+      "sha256": "56b454481c6373745837208df1d7bce91cb2fce2735669e69288bfccd09c3ce6",
+      "mediaType": "application/pdf",
+      "archiveName": "runtime-schematic.pdf"
+    },
+    {
+      "id": "runtime-pin-header",
+      "title": "NanoC6 runtime src/M5NanoC6.h",
+      "kind": "software-source",
+      "url": "https://raw.githubusercontent.com/m5stack/M5NanoC6/7cf509694316c9acb41e98658fb0ddb8ab6db790/src/M5NanoC6.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5NanoC6/7cf509694316c9acb41e98658fb0ddb8ab6db790/src/M5NanoC6.h",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T20:00:46Z",
+      "bytes": 459,
+      "sha256": "86b4395e74efc0d8c8c7f57e66b50d0046ff56ca72af1751cf89eb80141f2ccd",
+      "mediaType": "text/plain",
+      "archiveName": "runtime-pin-header.h"
+    },
+    {
+      "id": "runtime-button-source",
+      "title": "NanoC6 runtime src/M5NanoC6.cpp",
+      "kind": "software-source",
+      "url": "https://raw.githubusercontent.com/m5stack/M5NanoC6/7cf509694316c9acb41e98658fb0ddb8ab6db790/src/M5NanoC6.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5NanoC6/7cf509694316c9acb41e98658fb0ddb8ab6db790/src/M5NanoC6.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T20:00:46Z",
+      "bytes": 273,
+      "sha256": "df2dd3a51e1a5593c887d3f09721c4e0b2a245aa8d550bbb60166d7629e1fdf1",
+      "mediaType": "text/plain",
+      "archiveName": "runtime-button-source.cpp"
+    },
+    {
+      "id": "runtime-rgb-source",
+      "title": "NanoC6 runtime examples/Basic/rgb_led/rgb_led.ino",
+      "kind": "software-source",
+      "url": "https://raw.githubusercontent.com/m5stack/M5NanoC6/7cf509694316c9acb41e98658fb0ddb8ab6db790/examples/Basic/rgb_led/rgb_led.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5NanoC6/7cf509694316c9acb41e98658fb0ddb8ab6db790/examples/Basic/rgb_led/rgb_led.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-10-27T20:00:47Z",
+      "bytes": 1010,
+      "sha256": "3958b8bc4d28d29c762dc3432b1b5c8a2898e280acad29ad08f8b0803e18d501",
+      "mediaType": "text/plain",
+      "archiveName": "runtime-rgb-source.ino"
     }
   ],
   "assets": [
@@ -695,6 +790,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-10-28 runtime：固定原版 C125 出厂 v1.1 镜像，原生 ROM 启动和 G20/G7 输出已观察；G9 输入/浏览器验收另有报告。原理图只用于电气事实，内部 PCB 继续 UNKNOWN；位置和模拟效果不计为实机测量。"
   ]
 }

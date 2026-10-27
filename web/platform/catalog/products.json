@@ -1550,12 +1550,21 @@
       "chip": "esp32c6",
       "module": "ESP32-C6FH4",
       "runtime": {
-        "board": null,
-        "status": "unavailable",
+        "board": "nanoc6",
+        "status": "partial",
         "flashMb": 4,
-        "psramMb": null
+        "psramMb": 0
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "name": "按键",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
       "interfaces": [],
       "model": {
         "type": "manufacturer-cad",
@@ -1563,10 +1572,10 @@
         "status": "partial"
       },
       "limitations": [
+        "部分板级模型：G9 按键、G19 供电控制的 G20 RGB、G7 蓝灯；官方 v1.1 启动、灯光与按键状态切换已观察。IR、无线协议、物理 Grove 路由及模拟电气未验证。",
         "Manufacturer CAD contains enclosure only; visible Grove/USB inserts and label details are not supplied as mechanical CAD.",
         "Exterior shell dimensions pass 0.1 mm tolerance; this does not certify absent connectors or populated board.",
         "No display exists on NanoC6; no fabricated screen or framebuffer is added.",
-        "No complete board/peripheral emulator exists for this SKU; preview and documentation only.",
         "PCB placeholder has no components. Its dimensions/placement are an enclosure-space estimate, not a verified PCB layout.",
         "Manufacturer photo rights are separate from CAD MIT license. Materials are visual approximations, not measured reflectance."
       ],

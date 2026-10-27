@@ -15,11 +15,15 @@ export function verifiedGrove(connector) {
 }
 const material = (color, metalness=0) => new THREE.MeshStandardMaterial({color,metalness,roughness:metalness?.35:.65});
 const addBox = (group,name,size,position,mat) => { const mesh=new THREE.Mesh(new THREE.BoxGeometry(...size),mat);mesh.name=name;mesh.position.set(...position);group.add(mesh);return mesh; };
-export function createGroveSocket({color=0xe4e5dc}={}) {
+export function createGroveSocket({color=0xe4e5dc,housingVariant}={}) {
   const group=new THREE.Group(),white=material(color),dark=material(0x41463f),metal=material(0xb8a572,.65);
   // A real open cavity: no dark plate immediately across the insertion path.
   for(const x of [-4.7,4.7])addBox(group,'socket-side',[.8,5.2,4.8],[x,0,-2.4],white);
-  addBox(group,'socket-top',[8.6,.7,4.8],[0,2.25,-2.4],white);
+  if(housingVariant==='open-roof') {
+    // U136 official front/oblique photos show the pin channel through this roof opening.
+    addBox(group,'socket-top-rear',[8.6,.7,1.4],[0,2.25,-4.1],white);
+    for(const x of [-3.95,3.95])addBox(group,'socket-top-rail',[.7,.7,3.4],[x,2.25,-1.7],white);
+  } else addBox(group,'socket-top',[8.6,.7,4.8],[0,2.25,-2.4],white);
   for(const x of [-3.2,3.2])addBox(group,'socket-bottom-rail',[2.2,.7,4.8],[x,-2.25,-2.4],white);
   addBox(group,'socket-bottom',[4.2,.7,3.2],[0,-2.25,-3.2],white);
   addBox(group,'socket-rear',[8.6,3.8,.3],[0,0,-4.95],white);

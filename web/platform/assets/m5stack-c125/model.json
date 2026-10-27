@@ -103,6 +103,25 @@
       12,
       23.5,
       9.5
+    ],
+    "buttons": [
+      {
+        "id": "button",
+        "sizeMm": [
+          6.6,
+          6.4
+        ],
+        "positionMm": [
+          0,
+          -1.8,
+          4.77
+        ],
+        "sourceIds": [
+          "product-photo-91e7cf782f"
+        ],
+        "notes": "Actual case-top G9 flexure bounds from fixed manufacturer CAD/front photo; invisible hit plane, no keycap geometry replacement.",
+        "shape": "rectangle"
+      }
     ]
   },
   "derivedParts": [
@@ -126,28 +145,6 @@
       "basis": "estimated"
     },
     {
-      "id": "grove-body",
-      "kind": "box",
-      "basis": "photo-dimensions",
-      "color": "#e5e6da",
-      "geometry": {
-        "sizeMm": [
-          9.5,
-          5.5,
-          4.2
-        ],
-        "centerMm": [
-          0,
-          8.7,
-          1.4
-        ]
-      },
-      "sourceIds": [
-        "product-photo-91e7cf782f"
-      ],
-      "notes": "Visible white Grove housing estimate from front/top photos, ±0.7 mm; no manufacturer connector CAD."
-    },
-    {
       "id": "grove",
       "kind": "connector-visual",
       "connectorType": "HY2.0-4P",
@@ -161,13 +158,16 @@
         "rotation": [
           -1.5707963267948966,
           0,
-          0
+          3.141592653589793
         ]
       },
       "sourceIds": [
+        "product-photo-91e7cf782f",
         "product-photo-c75a7368ab"
       ],
-      "notes": "Visual-only connector; electrical pinmap remains in knowledge."
+      "notes": "Open roof and visible pin channel follow official front/oblique photos; redundant solid housing removed. Dimensions/hidden depth estimated; physical pin orientation and insertion fit not verified, therefore connections remain disabled. Socket-local +Y roof faces product +Z (front), with mouth normal +Y; no pin-order claim.",
+      "allowConnections": false,
+      "housingVariant": "open-roof"
     },
     {
       "id": "usb-c",
@@ -190,6 +190,54 @@
         "product-photo-af772f4361"
       ],
       "notes": "USB-C visual mouth position estimated from side photo, ±1 mm; no exact-fit claim."
+    },
+    {
+      "id": "rgb-light-window",
+      "kind": "box",
+      "basis": "photo-dimensions",
+      "ledIndex": 0,
+      "color": "#142027",
+      "geometry": {
+        "sizeMm": [
+          3.4,
+          0.5,
+          0.05
+        ],
+        "centerMm": [
+          0,
+          -2.75,
+          4.65
+        ]
+      },
+      "sourceIds": [
+        "product-photo-3b7485a4d2",
+        "product-photo-91e7cf782f"
+      ],
+      "notes": "Optical approximation behind CAD slit (x ±2, y -2.75, surface z4.75 mm). Photo labels RGB G20 at slit; not a claim of internal package coordinates."
+    },
+    {
+      "id": "blue-light-window",
+      "kind": "box",
+      "basis": "photo-dimensions",
+      "ledIndex": 1,
+      "color": "#142027",
+      "geometry": {
+        "sizeMm": [
+          1.6,
+          1.6,
+          0.1
+        ],
+        "centerMm": [
+          0,
+          -9.8,
+          -4.1
+        ]
+      },
+      "sourceIds": [
+        "product-photo-3b7485a4d2",
+        "product-photo-8948e53bb3"
+      ],
+      "notes": "G7 blue light behind central rear USB-end slot, per official annotated photo. Hidden depth and optical area are estimated, not PCB CAD."
     }
   ],
   "derivedSurfaces": [],
@@ -217,6 +265,12 @@
       "view": "Grove-side",
       "file": "reference-product-photo-c75a7368ab.webp",
       "sourceSha256": "7ddab0c0934c951a2eef928034b74d2fea26dee46f32fb4c245d4cb822438944"
+    },
+    {
+      "sourceId": "product-photo-3b7485a4d2",
+      "view": "annotated-controls-and-lights",
+      "file": "reference-product-photo-3b7485a4d2.webp",
+      "sourceSha256": "da5cc5b540f795f3ed16d8960e74f11ddf95359a9da7a6f3bfee11824a76a038"
     }
   ],
   "textures": [],
@@ -226,6 +280,10 @@
     "commit": "e29c139cbc7c80b5ccc5557e5ab8025a7a19a109",
     "sourceUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/C125_NanoC6/Structures/NanoC6.stl",
     "sourceSha256": "fbd54deabcb7612e784684be62e8d49d7028d1e6d6c2b6bc8ca94ccf5bd3e024",
+    "tessellation": {
+      "step": "OpenCascade 7.8.1.1; absolute deflection0.05mm, angle0.2rad, native solids plus orphan shells/faces; units converted by STEP reader to millimetres",
+      "stl": "Original triangles"
+    },
     "sourceLicense": "MIT; Copyright (c) 2021 M5Stack; see LICENSE-M5Stack.txt",
     "photoRights": "Official product photographs copyright M5Stack / named manufacturer. No separate open photo license verified; retained for product reference, not relicensed under project MIT.",
     "sources": [
@@ -512,7 +570,7 @@
     "Manufacturer CAD contains enclosure only; visible Grove/USB inserts are photo-derived approximations; label details are absent.",
     "Exterior shell dimensions pass 0.1 mm tolerance; this does not certify absent connectors or populated board.",
     "No display exists on NanoC6; no fabricated screen or framebuffer is added.",
-    "No complete board/peripheral emulator exists for this SKU; preview and documentation only.",
+    "Partial runtime supports the G9 key, G19-powered G20 RGB and G7 blue LED; IR, RF and external Grove/factory display behavior are unverified.",
     "PCB placeholder has no components. Its dimensions/placement are an enclosure-space estimate, not a verified PCB layout.",
     "Manufacturer photo rights are separate from CAD MIT license. Materials are visual approximations, not measured reflectance."
   ],
@@ -521,6 +579,7 @@
     "reference-product-photo-c75a7368ab.webp": "7ddab0c0934c951a2eef928034b74d2fea26dee46f32fb4c245d4cb822438944",
     "reference-product-photo-af772f4361.webp": "204f209a74c9489bcbd8d4493fbd1be4ff7891e8ef10c3964994179e5a16ce66",
     "reference-product-photo-8948e53bb3.webp": "a35e9d3ffdf440384a19e3577728c547196b3187304bcb8e3164f6b6b72cce90",
+    "reference-product-photo-3b7485a4d2.webp": "da5cc5b540f795f3ed16d8960e74f11ddf95359a9da7a6f3bfee11824a76a038",
     "geometry.bin": "6898a0b828fb5cb4364211bd2943fb69839e2093213e86157f1e2ed9fcaae2f2",
     "source.stl": "fbd54deabcb7612e784684be62e8d49d7028d1e6d6c2b6bc8ca94ccf5bd3e024",
     "reference-product-photo-91e7cf782f.webp": "0db82a8edb2f6d38c5f2bd814c8f04ae1169c452c5ad235466cdd7c410b3f3c4"
