@@ -138,7 +138,37 @@ impl Mspi {
             self.powered_down = value == 1 << 21; self.commands = self.commands.wrapping_add(1); return Ok(());
         }
         if self.powered_down { return Err(Fault::Prohibited); }
-        // No multiple commands, writes/erase, auto-suspend or unknown commands
+        if value == 1 << 24 || value == (1 << 24 | 1 << 17) {
+            // S31 SPI1 FLASH_SE; fixed ROM20260528 also sets FLASH_PE with SE.
+            // Header PE prose mentions USER only. This additional combination is
+            // observed ROM behavior, not an independent silicon verification.
+            // Winbond W25Q128JV RevF2018 §7.1.2/8.2.15: WEL required,4KiB erase,
+            // low12 address bits ignored,WEL clears after actual completion.
+            if self.descriptor.map(|d| d.0) != Some([0xef, 0x40, 0x18]) || self.spi1.regs.read(0x1c) >> 26 != 23 { return Err(Fault::Prohibited); }
+            let address = self.spi1.regs.read(4); if address > 0xff_ffff { return Err(Fault::Prohibited); }
+            if self.spi1.status & 2 != 0 {
+                let start = (address & !0xfff) as usize;
+                let sector = flash.get_mut(start..start + 0x1000).ok_or(Fault::Unmapped)?;
+                sector.fill(0xff); self.spi1.status &= !2;
+            }
+            self.commands += 1; return Ok(()); // synchronous functional completion,not erase latency
+        }
+        if (value == 1 << 18 || value == (1 << 18 | 1 << 17)) && self.spi1.regs.read(0x20) & 0xff == 2 {
+            // USER+FLASH_PE is documented by the S31 header. ROM SPI_write at
+            // 0x2f80e86a sends command02/address24/MOSI bytes through this path.
+            // Winbond §8.2.13: program ANDs bits and wraps within the256-byte page.
+            let user = self.spi1.regs.read(0x18); let user2 = self.spi1.regs.read(0x20);
+            let bits = (self.spi1.regs.read(0x24) & 0x3ff) + 1; let address = self.spi1.regs.read(4);
+            if self.descriptor.map(|d| d.0) != Some([0xef, 0x40, 0x18]) || user & 0xff00_0000 != 0xc800_0000 || user2 >> 28 != 7 || self.spi1.regs.read(0x1c) >> 26 != 23 || address > 0xff_ffff || bits > 512 || !bits.is_multiple_of(8) { return Err(Fault::Prohibited); }
+            if self.spi1.status & 2 != 0 {
+                let count = (bits / 8) as usize; let page = (address & !255) as usize; let first = (address & 255) as usize;
+                for i in 0..count { if flash.get(page + ((first + i) & 255)).is_none() { return Err(Fault::Unmapped); } }
+                for i in 0..count { flash[page + ((first + i) & 255)] &= (self.spi1.w[i / 4] >> ((i % 4) * 8)) as u8; }
+                self.spi1.status &= !2;
+            }
+            self.commands += 1; return Ok(());
+        }
+        // No multiple commands, other writes/erase, auto-suspend or unknown commands
         // are sent into the older shared model's permissive fallbacks.
         let allowed = (1 << 31) | (1 << 30) | (1 << 29) | (1 << 28) | (1 << 27) | (1 << 18);
         if value & !allowed != 0 || value.count_ones() != 1 { return Err(Fault::Prohibited); }
@@ -194,6 +224,35 @@ impl Mspi {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn user_program_uses_only_clocked_bytes_wraps_page_and_cannot_restore_bits() {
+        let mut m = Mspi::default(); let mut flash = vec![0xff; 0x200]; m.attach_flash([0xef, 0x40, 0x18], 0).unwrap();
+        m.write(1, 0x18, 0xc8000000, &mut flash).unwrap(); m.write(1, 0x20, 0x70000002, &mut flash).unwrap();
+        m.write(1, 4, 0xfe, &mut flash).unwrap(); m.write(1, 0x24, 31, &mut flash).unwrap(); m.write(1, 0x58, 0x78563412, &mut flash).unwrap();
+        m.write(1, 0, 1 << 18 | 1 << 17, &mut flash).unwrap(); assert!(flash.iter().all(|&b| b == 0xff));
+        m.write(1, 0, 1 << 30, &mut flash).unwrap(); m.write(1, 0, 1 << 18 | 1 << 17, &mut flash).unwrap();
+        assert_eq!(&flash[0xfe..0x100], &[0x12, 0x34]); assert_eq!(&flash[..2], &[0x56, 0x78]); assert!(flash[0x100..].iter().all(|&b| b == 0xff));
+        m.write(1, 0, 1 << 27, &mut flash).unwrap(); assert_eq!(m.read(1, 0x2c).unwrap() & 2, 0);
+        m.write(1, 0x58, u32::MAX, &mut flash).unwrap(); m.write(1, 0, 1 << 30, &mut flash).unwrap();
+        m.write(1, 0, 1 << 18, &mut flash).unwrap(); assert_eq!(&flash[0xfe..0x100], &[0x12, 0x34]);
+        m.write(1, 0, 1 << 30, &mut flash).unwrap(); let before = flash.clone();
+        for (off, bad, good) in [(4, 0x1000000, 0xfe), (0x24, 30, 31), (0x24, 519, 31), (0x18, 0xcc000000, 0xc8000000)] {
+            m.write(1, off, bad, &mut flash).unwrap(); assert_eq!(m.write(1, 0, 1 << 18 | 1 << 17, &mut flash), Err(Fault::Prohibited)); assert_eq!(flash, before); m.write(1, off, good, &mut flash).unwrap();
+        }
+        m.write(1, 4, 0x200, &mut flash).unwrap(); assert_eq!(m.write(1, 0, 1 << 18 | 1 << 17, &mut flash), Err(Fault::Unmapped)); assert_eq!(flash, before);
+    }
+    #[test]
+    fn sector_erase_requires_wel_and_changes_only_the_complete_addressed_sector() {
+        let mut m = Mspi::default(); let mut flash = vec![0xa5; 0x3000]; m.attach_flash([0xef, 0x40, 0x18], 0).unwrap();
+        m.write(1, 4, 0x1234, &mut flash).unwrap(); m.write(1, 0, 1 << 24, &mut flash).unwrap(); assert!(flash.iter().all(|&b| b == 0xa5));
+        m.write(1, 0, 1 << 30, &mut flash).unwrap(); m.write(1, 0, 1 << 24 | 1 << 17, &mut flash).unwrap();
+        assert!(flash[0x1000..0x2000].iter().all(|&b| b == 0xff)); assert!(flash[..0x1000].iter().all(|&b| b == 0xa5)); assert!(flash[0x2000..].iter().all(|&b| b == 0xa5));
+        m.write(1, 0, 1 << 27, &mut flash).unwrap(); assert_eq!(m.read(1, 0x2c).unwrap() & 2, 0);
+        m.write(1, 4, 0x3000, &mut flash).unwrap(); m.write(1, 0, 1 << 30, &mut flash).unwrap(); let before = flash.clone();
+        assert_eq!(m.write(1, 0, 1 << 24, &mut flash), Err(Fault::Unmapped)); assert_eq!(flash, before);
+        m.write(1, 0, 1 << 27, &mut flash).unwrap(); assert_eq!(m.read(1, 0x2c).unwrap() & 2, 2);
+        assert_eq!(m.write(1, 0, 1 << 24 | 1 << 25, &mut flash), Err(Fault::Prohibited)); assert_eq!(flash, before);
+    }
     #[test]
     fn sfdp_reads_only_supplied_interval_with_exact_command_framing() {
         let mut m = Mspi::default(); let mut flash = vec![0xa5; 128]; m.attach_flash([0xef, 0x40, 0x18], 0).unwrap();

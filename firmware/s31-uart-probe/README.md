@@ -87,6 +87,7 @@ S31_FLASH_PARAMS_ELF="$PWD/output/s31-uart-probe/flash-params-probe.elf" \
 S31_RESET_ELF="$PWD/output/s31-uart-probe/reset-probe.elf" \
 S31_MWDT_ELF="$PWD/output/s31-uart-probe/mwdt-probe.elf" \
 S31_RTC_TIMER_ELF="$PWD/output/s31-uart-probe/rtc-timer-probe.elf" \
+S31_NOR_WRITE_ELF="$PWD/output/s31-uart-probe/nor-write-probe.elf" \
 S31_BOOT_IMAGE="$PWD/output/s31-uart-probe/spi0-observation.bin" \
 S31_ROM_ELF="$PWD/output/s31-sources/roms/esp32s31_rev0_rom.elf" \
   cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored
@@ -210,3 +211,14 @@ CPU rate and nominal 136 kHz RC_SLOW rate. The interpreter accounts one cycle pe
 instruction; this is not silicon timing. It advances RTC_TIMER only, not the
 watchdogs or a complete sleep clock scheduler. Alarm/IRQ enable, wakeup and
 REGDMA requests remain explicit unsupported operations.
+
+
+`nor-write-probe.S` erases an independently supplied Flash sector, programs two
+instructions through SPI1 USER02, reads them through the actual Flash MMU and
+executes them. The programmed function must return42 before the guest emits
+`S31 NOR ERASE PROGRAM EXECUTE PASS`. A second FF write cannot restore cleared
+bits. Omitting erase or program WREN takes the guest's own failure branch;
+another NOR manufacturer traps before a mutation. This fixture also checks the
+optional PC retirement observer: it records the programmed entry once only for
+the successful run. No fixture binary is published or substituted for a product
+firmware image.

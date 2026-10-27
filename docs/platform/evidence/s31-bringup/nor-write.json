@@ -1,0 +1,222 @@
+{
+  "date": "2026-10-28",
+  "base": "6d6d642d345c191d52dfd5c715234e6b22ffcb27",
+  "scope": "Private S31 Winbond-profile Sector Erase and USER Page Program,actual Flash mutation and optional successful-PC-retirement observation. No shared production runtime/UI change.",
+  "sources": "Existing sources.json fixed S31 ROM20260528,IDF6.1 fff9895 SPI1 register/IO_MUX headers and Winbond-authored W25Q128JV RevF2018 sections7.1.2/8.2.13/8.2.15. PDFs are public distributor-mirror copies with exact URL/time/hash in the prior source manifest. No new unversioned hardware values.",
+  "semantics": {
+    "writeEnable": "Missing WEL leaves array unchanged; successful accepted erase/program clears WEL. Unsupported profiles and malformed operations fault before mutation.",
+    "erase": "4KiB sector selected by24-bit address with low12ignored; entire supplied backing sector must exist. Only ef4018 unprotected profile.",
+    "program": "USER opcode02,command8/address24,MOSI byte-aligned1..64 bytes. Within256-byte page addresses wrap,only transmitted bytes are ANDed; cannot turn0 into1. Validate all addressed backing bytes before mutation.",
+    "timing": "Functional synchronous completion after real array change,no BUSY latency/wear/reset interruption.",
+    "cache": "Private functional cache has no retained lines; mapped data/fetch observe the same backing array. No production JIT cache/invalidation changes.",
+    "observer": "Optional single caller address; counts only successful instruction retirement,records pre-instruction cycle count. Does not redirect PC or affect guest bytes.",
+    "notImplemented": "Other direct PP/block/chip erase,protection/security,status writes,suspend,power-failure semantics,product persistence or board/display readiness."
+  },
+  "fixture": {
+    "path": "firmware/s31-uart-probe/nor-write-probe.S",
+    "runs": [
+      "S31 NOR mode=0 steps=264 stop=Waiting command-count=7 watch=Some(PcWatch { address: 1073746048, retired: 1, first_cycle: Some(57) })",
+      "S31 NOR mode=1 steps=126 stop=Trap(Ebreak(788529474)) command-count=1 watch=Some(PcWatch { address: 1073746048, retired: 0, first_cycle: None })",
+      "S31 NOR mode=2 steps=157 stop=Trap(Ebreak(788529474)) command-count=3 watch=Some(PcWatch { address: 1073746048, retired: 0, first_cycle: None })",
+      "S31 NOR mode=3 steps=22 stop=Trap(Exception(7)) command-count=1 watch=Some(PcWatch { address: 1073746048, retired: 0, first_cycle: None })"
+    ],
+    "positive": "Guest erases/programs,reads via MMU,executes newly programmed instructions returning42,verifiesFFcannotrestorebits,and emitsS31 NOR ERASE PROGRAM EXECUTE PASS.",
+    "negative": "Missing erase/program WREN takes actual guest failure branch;unsupported manufacturer faults atSPI1CMD. Entry retirement remains0 on failed writes."
+  },
+  "artifacts": [
+    {
+      "path": "firmware/s31-uart-probe/nor-write-probe.S",
+      "bytes": 2267,
+      "sha256": "38dc2f70581ab12bb9a0d610390e6f2a912dbf99c825b9db1bfc0adddb47701c"
+    },
+    {
+      "path": "output/s31-uart-probe/nor-write-probe.elf",
+      "bytes": 5252,
+      "sha256": "0bc60ca08b8e75d55723cd5329875f5e2d2af55971ff9e731d425f25bb5008b2"
+    },
+    {
+      "path": "output/nor-rom-erase.disassembly.txt",
+      "bytes": 8726,
+      "sha256": "9d3d01839f4a85f80e56fb1eff8ae19bcdea1231c1b469aa72890a1f16f0fa88"
+    },
+    {
+      "path": "output/nor-rom-gpio.disassembly.txt",
+      "bytes": 2007,
+      "sha256": "23e13a2d5d40db681fc93c9c75a8887bb5e6ce6effb3cc41a032981d1d01ef20"
+    },
+    {
+      "path": "output/s31-sources/roms/esp32s31_rev0_rom.elf",
+      "bytes": 513396,
+      "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87"
+    }
+  ],
+  "officialProbe": "nor-write-plus-2.0.68.json",
+  "validation": {
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "workspaceRust": 1429,
+    "testGroups": 131,
+    "s31UnitTests": 65,
+    "sourceRomFixtures": 25,
+    "bothClippy": true,
+    "localCi": "All local CI command groups from .github/workflows/ci.yml,including full workspace build,ignored Rust,VQ,WASM/JIT,platform/recording,worker/timing/BLE,receipt/browser contracts and AArch64 core checks. arm64 macOS host,notLinuxCI.",
+    "cpuEvidence": "nor-write-same-source-perf.json",
+    "mainGuard": "nor-write-perf.json",
+    "baselineQualification": "baseline-qualification.json",
+    "uiChanged": false,
+    "goldensChanged": false,
+    "hardwareVerified": false,
+    "logs": [
+      {
+        "group": "arm",
+        "sha256": "2a88520521c01f31f26e091a654066a53edc4e0ba4712ff2511dc4ed5d86ed81"
+      },
+      {
+        "group": "ble-api",
+        "sha256": "56f7b531026607ec2ff0e80fd4ad5ac392cc1ce24834d9f43b39fbec9d406cb5"
+      },
+      {
+        "group": "ble-connection",
+        "sha256": "57cbc65214667e93e03ac82a235612b8b34cf8f08ce07e234d7cd7dea085d0dd"
+      },
+      {
+        "group": "browser-contract",
+        "sha256": "be79b00013dd94d69a03c7852ba2accbffd3bd205b48664b2d0b0844e1fd95f9"
+      },
+      {
+        "group": "browser-python",
+        "sha256": "36e632bbf6589bac8037ace7030ead9f8c8947bdb0f34d0e4b025484e5464ee7"
+      },
+      {
+        "group": "clippy-native",
+        "sha256": "5f0c7dd3ee56b63ff84cd82243e04e9c33f17706e79878b17c0564e48a06edc0"
+      },
+      {
+        "group": "clippy-wasm",
+        "sha256": "299e86569587d2fa559351df07a1e5a94cd93d5a1cad25b1e09a2fe0da828cda"
+      },
+      {
+        "group": "fixtures",
+        "sha256": "a0528f0d3496fdf9d147f33910dd0ee1ad55bfb4265bd33339eb0e1c9b518bf7"
+      },
+      {
+        "group": "jit",
+        "sha256": "9242bfca5b587bfd38a38f14b65043a623c8c82d0900e49a418458e5f873e797"
+      },
+      {
+        "group": "micropython-input",
+        "sha256": "cc24ab8cbf543d7ce868f8c0dd7155e19c563bbe1a86f5f36fb85ddef39cefe5"
+      },
+      {
+        "group": "native",
+        "sha256": "09f7af2ff9cdcadfac512d53f8eff6ba3b902c54886e613afaa350a783e834bb"
+      },
+      {
+        "group": "p4-inputs",
+        "sha256": "432ff652437d0f820ec35109a56881793efb3f977dc202d36f88be3b0fb4b82f"
+      },
+      {
+        "group": "perf-main",
+        "sha256": "b3a54bd9ae7537ed3b6968a241253f8aabca0c3a207d8ee3be5b3db0b87ada48"
+      },
+      {
+        "group": "perf-same-source",
+        "sha256": "411912e67cedd6a2606d2d68c4566e726255e7df03d660eac9f82acda05dd4a9"
+      },
+      {
+        "group": "platform-all",
+        "sha256": "3f7016b8ab7f034e4053ceb2cbd15f08f616aef96bbc6056c446362490854848"
+      },
+      {
+        "group": "platform",
+        "sha256": "630ec77005adec4fc0bb5c33ed712a77f6960792fe22833ed3c2a7e975fac96d"
+      },
+      {
+        "group": "profiling",
+        "sha256": "2e99c5f07f314435414f2d7e970454e9a5784150a7c66bc8b3c90cd29b77191c"
+      },
+      {
+        "group": "receipt-historical",
+        "sha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4"
+      },
+      {
+        "group": "receipt-m1",
+        "sha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a"
+      },
+      {
+        "group": "receipt-test",
+        "sha256": "d395a8138981fbdf847c698591233e731c0d24d90504b2336ec34fa6d7b0fb2f"
+      },
+      {
+        "group": "receipt-verify",
+        "sha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b"
+      },
+      {
+        "group": "recording",
+        "sha256": "399fddbf88243d83ab600a3563adbf729fd9d8df9ec282e4b76cef835734f284"
+      },
+      {
+        "group": "rom",
+        "sha256": "1f2073367fcf623f88d62fb45a53c6c29996305a63535ddca4946d9d3d9120df"
+      },
+      {
+        "group": "rust",
+        "sha256": "caa0b43d2ed7178e1f3e7c738369d0adcf150c4fe4c377d3db82cf9041c85f99"
+      },
+      {
+        "group": "s31-wasm",
+        "sha256": "4ddd367cf1573e8366c4719c49ddf103aac32019d0cc0a350203e93966e011a7"
+      },
+      {
+        "group": "stable",
+        "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+      },
+      {
+        "group": "stopwatch",
+        "sha256": "8308d7bc2ea7435a8743e5f50865b33ba0dc405d73f8321d2cb60259327ebc7d"
+      },
+      {
+        "group": "timing-api",
+        "sha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3"
+      },
+      {
+        "group": "vq",
+        "sha256": "e4b32ded6768170e9b85dbda17c9625e09851a3a731b0e8dd0c33671167948ee"
+      },
+      {
+        "group": "wasm-build",
+        "sha256": "5fd99697a368d0dd86dc5544066ad5242dc571e7e9acba4f09ae3d91cc1c7a90"
+      },
+      {
+        "group": "wasm-sections",
+        "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b"
+      },
+      {
+        "group": "wasm-tdisplay",
+        "sha256": "9c6111cc2fd5dc0628b88744ceb690501f36823d0f6cf23595498ea86fc75a96"
+      },
+      {
+        "group": "wasm",
+        "sha256": "0be499b5a9d55c8b66fdd01728c13d5a6a3307bc6681a4336abb5492abf4bd88"
+      },
+      {
+        "group": "worker-channel",
+        "sha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6"
+      },
+      {
+        "group": "worker-pacing",
+        "sha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158"
+      },
+      {
+        "group": "worker-touch",
+        "sha256": "2b68fafe985845cb7b0df82cd2f8ea004660b3a3a087bc08dd157160def1cdf6"
+      }
+    ]
+  },
+  "commands": {
+    "fixture": "Build firmware/s31-uart-probe into ignored output,set all README environment paths includingS31_NOR_WRITE_ELF;cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored --nocapture.",
+    "official": "tools/s31-native-firmware-probe.py with fixed caller URL/hash and explicit inputs in linked report;budget100000000. The tool observes parsed app-entry PC.",
+    "checks": "Both Clippy targets with-D warnings;ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_;remaining exact CI commands as workflow."
+  },
+  "privacy": "No personal paths,machine names,process inventories or session identifiers. Raw diagnostic/build logs remain ignored;relevant numbers and original artifact hashes retained.",
+  "productionIsolation": "cargo tree -i esp32s31 shows only the private workspace crate; production native CLI and esp32sim-wasm do not depend on it. Production source comparison against fixed59 matched322 inspected .rs/.toml files; no production path changed in this stage."
+}

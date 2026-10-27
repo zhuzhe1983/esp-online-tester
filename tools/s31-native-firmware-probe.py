@@ -103,6 +103,9 @@ def main():
         command.append("--analog-dig=" + args.analog_dig)
     if args.analog_perif_glitch:
         command.append("--analog-perif-glitch=" + args.analog_perif_glitch)
+    # Observe retirement at the parsed application entry without changing execution.
+    if len(images) > 1:
+        command.append("--watch-pc=" + images[1]["entry"])
     command.extend([args.rom, "", str(args.steps)])
     result = subprocess.run(command, input=data, capture_output=True, timeout=120, check=True)
     report = {"stepBudget": args.steps, "source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),

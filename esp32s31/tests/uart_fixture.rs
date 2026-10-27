@@ -563,3 +563,28 @@ fn external_s31_rtc_counter_snapshot_manual_and_interpreter_clock() {
         eprintln!("S31 RTC snapshot mode={mode} steps={} stop={:?}", run.steps, run.stop);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_NOR_WRITE_ELF to nor-write-probe.elf"]
+fn external_s31_nor_erase_program_read_and_retire_flash_code() {
+    let path = std::env::var("S31_NOR_WRITE_ELF").expect("build firmware/s31-uart-probe and set S31_NOR_WRITE_ELF");
+    let elf = std::fs::read(path).expect("read S31_NOR_WRITE_ELF");
+    for mode in 0u32..4 {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap(); m.bus.cache.set_flash(&[0xa5; 0x4000]).unwrap();
+        m.bus.mspi.attach_flash([if mode == 3 { 0x20 } else { 0xef }, 0x40, 0x18], 0).unwrap();
+        m.bus.load(0x2f070000, &mode.to_le_bytes(), 4).unwrap();
+        m.pc_watch = Some(esp32s31::PcWatch { address: 0x40001080, ..Default::default() });
+        let run = m.run(10_000);
+        if mode == 0 {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 NOR ERASE PROGRAM EXECUTE PASS\n");
+            assert_eq!(m.pc_watch.as_ref().unwrap().retired, 1); assert!(m.pc_watch.as_ref().unwrap().first_cycle.is_some());
+            assert_eq!(m.bus.cache.read_byte(0x40001080, false), Ok(0x13)); assert_eq!(m.bus.cache.read_byte(0x40000000, false), Ok(0xa5));
+        } else if mode < 3 {
+            assert!(matches!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_)))); assert_eq!(m.bus.uart0.tx_out, b"S31 NOR WRITE FAIL\n"); assert_eq!(m.pc_watch.as_ref().unwrap().retired, 0);
+        } else {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7))); let f = m.bus.first_fault.as_ref().unwrap();
+            assert_eq!((f.address, f.reason), (0x20501000, emu_core::Fault::Prohibited)); assert!(m.bus.uart0.tx_out.is_empty());
+        }
+        eprintln!("S31 NOR mode={mode} steps={} stop={:?} command-count={} watch={:?}", run.steps, run.stop, m.bus.mspi.commands, m.pc_watch);
+    }
+}

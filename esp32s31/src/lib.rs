@@ -21,13 +21,17 @@ mod rom;
 pub use bus::{S31Bus, AccessFault};
 use riscv_rv32::{Cpu, Trap};
 
+/// Diagnostic observation after an instruction at the address retires successfully.
+#[derive(Debug, Default)]
+pub struct PcWatch { pub address: u32, pub retired: u64, pub first_cycle: Option<u64> }
+
 /// This executes the RV32IMAFC subset, not S31's complete custom ISA. No
 /// second hart or board devices are installed. XTAL/CPLL domain rates are functional;
 /// RC_FAST/RC_SLOW are nominal selector rates, not oscillator calibration or CPU timing. The Flash command
 /// subset requires explicit NOR identity and array inputs; no product identity is guessed. Functional
 /// MMU mappings use explicitly supplied flash/PSRAM buffers. Unlike a P4 alias, its
 /// bus uses the S31 addresses and reports the first unsupported access with the guest PC.
-pub struct Bringup { pub cpu: Cpu, pub bus: S31Bus, rtc_timer_from_cpu: bool }
+pub struct Bringup { pub cpu: Cpu, pub bus: S31Bus, rtc_timer_from_cpu: bool, pub pc_watch: Option<PcWatch> }
 #[derive(Debug, PartialEq, Eq)]
 pub enum Stop { Budget, Waiting, Trap(Trap), Reset(rtc_wdt::ResetRequest), PowerReset(power::ResetCause), CpuReset(reset::CpuReset), MwdtReset { group: usize, action: mwdt::Reset } }
 pub struct Run { pub steps: u64, pub stop: Stop }
@@ -37,7 +41,7 @@ impl Bringup {
     pub fn new() -> Self {
         let mut cpu = Cpu::new_esp32s31();
         cpu.pc = bus::ROM_BASE;
-        Self { cpu, bus: S31Bus::new(), rtc_timer_from_cpu: false }
+        Self { cpu, bus: S31Bus::new(), rtc_timer_from_cpu: false, pc_watch: None }
     }
 
     /// Explicit RTC clock-domain input for bring-up fixtures. CPU cycles are not silently
@@ -87,8 +91,11 @@ impl Bringup {
             self.bus.bus_monitor.observe(self.cpu.pc, self.cpu.x[2]);
             self.cpu.irq = self.bus.refresh_irq(self.cpu.mintthresh);
             if self.cpu.waiting && self.cpu.irq.is_none() { return Run { steps, stop: Stop::Waiting }; }
-            let cycles = self.cpu.cycle_count; let hz = self.bus.clocks.rates().cpu_hz;
+            let pc = self.cpu.pc; let cycles = self.cpu.cycle_count; let hz = self.bus.clocks.rates().cpu_hz;
             let result = riscv_rv32::step(&mut self.cpu, &mut self.bus);
+            if result.is_ok() {
+                if let Some(watch) = self.pc_watch.as_mut().filter(|w| w.address == pc) { watch.retired = watch.retired.wrapping_add(1); watch.first_cycle.get_or_insert(cycles); }
+            }
             if self.rtc_timer_from_cpu { self.bus.rtc_timer.advance_cpu_cycles(self.cpu.cycle_count.wrapping_sub(cycles), hz, self.bus.clocks.rtc_slow_hz()); }
             if let Err(trap) = result {
                 if let Trap::Interrupt(line) = trap { self.bus.interrupt_taken(line); continue; }

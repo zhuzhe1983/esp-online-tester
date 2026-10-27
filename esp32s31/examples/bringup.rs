@@ -1,10 +1,11 @@
 //! Run a caller-supplied SRAM/ROM ELF and report the first unimplemented access.
 use std::io::Write;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut sfdp = None; let mut bbpll = None; let mut rtc_timer_from_cpu = false;
+    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut sfdp = None; let mut bbpll = None; let mut rtc_timer_from_cpu = false; let mut watch_pc = None;
     while let Some(arg) = args.peek() {
         match arg.as_str() {
             "--rom" => rom = true, "--usb-host" => usb_host = true,
+            value if value.starts_with("--watch-pc=0x") => watch_pc = Some(u32::from_str_radix(&value[13..], 16)?),
             "--rtc-timer-from-cpu" => rtc_timer_from_cpu = true,
             "--rom-spi0-shadow" => spi0_shadow = true,
             value if value.starts_with("--bbpll-hz=") => bbpll = Some(value["--bbpll-hz=".len()..].parse::<u64>()?),
@@ -37,11 +38,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         args.next();
     }
-    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--rtc-timer-from-cpu] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
+    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--rtc-timer-from-cpu] [--watch-pc=0xADDRESS] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
     let input = args.next().unwrap_or_default();
     let budget = args.next().map(|s| s.parse::<u64>()).transpose()?.unwrap_or(100_000).min(100_000_000);
     if args.next().is_some() { return Err("too many bringup arguments".into()); }
     let mut m = esp32s31::Bringup::new(); let bytes = std::fs::read(elf)?;
+    m.pc_watch = watch_pc.map(|address| esp32s31::PcWatch { address, ..Default::default() });
     m.set_rtc_timer_from_cpu(rtc_timer_from_cpu);
     if rtc_timer_from_cpu { eprintln!("development RTC_TIMER clock from interpreter cycles (one instruction/cycle, nominal RC_SLOW; watchdog timing still explicit)"); }
     if rom { m.load_rom_elf(&bytes)?; } else { m.load_elf(&bytes)?; }
@@ -76,10 +78,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if let Some(packet) = m.bus.usb_console.host_receive() { packets += 1; usb.extend(packet); }
         if stop != esp32s31::Stop::Budget { break; }
     }
+    if let Some(watch) = &m.pc_watch { eprintln!("pc-watch address={:#010x} retired={} first-cycle={:?}", watch.address, watch.retired, watch.first_cycle); }
     std::io::stdout().write_all(&m.bus.uart0.tx_out)?;
     eprintln!("stop={stop:?} steps={steps} pc={:#010x} mepc={:#010x} mcause={:#x} mtval={:#010x} fault={:?}",
         m.cpu.pc, m.cpu.mepc, m.cpu.mcause, m.cpu.mtval, m.bus.first_fault);
     eprintln!("mspi-commands={} cache-maintenance={} sha-blocks={}", m.bus.mspi.commands, m.bus.cache.maintenance_operations, m.bus.sha.blocks());
+    eprintln!("mspi-address={:?} mosi-dlen={:?} miso-dlen={:?}", m.bus.mspi.read(1, 4), m.bus.mspi.read(1, 0x24), m.bus.mspi.read(1, 0x28));
     eprintln!("flash-core-hz={:?}", m.bus.mspi.core_hz());
     eprintln!("mspi-last-command={:?} user={:?} user1={:?} user2={:?} ctrl={:?} status={:?} w0={:?}", m.bus.mspi.last_command, m.bus.mspi.read(1, 0x18), m.bus.mspi.read(1, 0x1c), m.bus.mspi.read(1, 0x20), m.bus.mspi.read(1, 8), m.bus.mspi.read(1, 0x2c), m.bus.mspi.read(1, 0x58));
     eprintln!("analog-transactions={} bias={:?} mpll-shutdown={}", m.bus.analog.transactions, m.bus.analog.bias(), m.bus.power.mpll_disabled());
@@ -89,6 +93,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("rtc-timer-counter={}", m.bus.rtc_timer.counter());
     eprintln!("reset-controls={:?}/{:?} pending={:?}", m.bus.reset.read(0x2070103c), m.bus.reset.read(0x20701040), m.bus.reset.request);
     if m.bus.first_fault.is_some() { eprintln!("fault-registers={:08x?}", m.cpu.x); }
+    if m.bus.first_fault.as_ref().is_some_and(|f| (0x20583064..=0x2058306b).contains(&f.address)) {
+        for pin in 0..62 {
+            if let Ok(mux) = m.bus.pads.read(esp32s31::pads::IO_MUX_BASE + pin * 4) {
+                if mux & 512 != 0 { eprintln!("pad-input pin={pin} mux={mux:#x} out-sel={:?} drive={:?}", m.bus.pads.read(esp32s31::pads::GPIO_BASE + 0xaf4 + pin * 4), m.bus.pads.drive(pin as usize)); }
+            }
+        }
+    }
     eprintln!("analog-perif-glitch={:?}", m.bus.analog.perif_glitch());
     if usb_host { eprintln!("usb-host packets={packets} bytes={} data={:?}", usb.len(), String::from_utf8_lossy(&usb)); }
     Ok(())
