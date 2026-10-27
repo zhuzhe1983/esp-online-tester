@@ -1,6 +1,6 @@
 # M5Stack Unit Angle · U005 模型与资料验收
 
-10kΩ 电位器旋钮模块，将角度转换为模拟电压。 本次入库提供可配置外观和有来源的接线资料；模块的 GPIO、ADC 或 SK6812 行为尚未实现。
+10kΩ 电位器旋钮模块，将角度转换为模拟电压。 已增加 StopWatch Port A 的标称模拟电压输入与真实 ADC2 转换；官方曲线冲突和运行证据见 [运行说明](../unit-angle-runtime.md)。
 
 - 厂家结构：[固定提交的 STL](https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/U005_Unit_Angle/Structures/Unit_Angle.stl)，提交 `e29c139cbc7c80b5ccc5557e5ab8025a7a19a109`。
 - 产品文档：https://docs.m5stack.com/en/unit/Unit_Angle。
@@ -23,7 +23,7 @@ Keep already assembled CAD components [0, 3]; rigid center translation and origi
 
 ![原图与渲染叠图](../evidence/m5stack-unit-angle-u005/front-overlay.webp)
 
-插口沿采用模型 y=-16 mm、局部朝外 -Y；源照片正面左到右为黑/红/黄/白，背贴镜像为白/黄/红/黑。黑色插座和四根线逐项核对。共享插头估算插入深度 3 mm；有插入段和外部止挡。实用插接公差没有厂家连接器 CAD，仍待验证。RGB 上端输出口的物理线序未独立确认，不启用该口的连接线。连接可视化不构成任何电气兼容声明。
+插口沿采用模型 y=-16 mm、局部朝外 -Y；源照片正面左到右为黑/红/黄/白，背贴镜像为白/黄/红/黑。黑色插座和四根线逐项核对。共享插头估算插入深度 3 mm；有插入段和外部止挡。实用插接公差没有厂家连接器 CAD，仍待验证。U005 黄线为 NC，模拟输出走白线。连接可视化不构成任何电气兼容声明。
 
 ![已插接入口](../evidence/m5stack-unit-angle-u005/connected-inlet.png)
 ![金色壳体](../evidence/m5stack-unit-angle-u005/back-gold.png)
@@ -33,11 +33,11 @@ Keep already assembled CAD components [0, 3]; rigid center translation and origi
 
 ![UNKNOWN 占位](../evidence/m5stack-unit-angle-u005/unknown-pcb.png)
 
-复现：安装 `tools/requirements-model.txt`，运行 `python tools/rebuild-unit-library.py m5stack-unit-angle-u005 --scratch output/unit-rebuild/m5stack-unit-angle-u005`。无需网络；所有必需输入按原始 hash 核验。仅渲染测试使用 `review-lane-01.html?id=m5stack-unit-angle-u005`，证据对应当前 model.json hash `cb0459f5ffbb26b4daec883d6459bf5242a85dd54c2b7b134e81017b3a8197da`。目前未执行模块行为测试或真实硬件测试。
+复现：安装 `tools/requirements-model.txt`，运行 `python tools/rebuild-unit-library.py m5stack-unit-angle-u005 --scratch output/unit-rebuild/m5stack-unit-angle-u005`。无需网络；所有必需输入按原始 hash 核验。仅渲染测试使用 `review-lane-01.html?id=m5stack-unit-angle-u005`，旧视觉证据对应 model.json hash `cb0459f5ffbb26b4daec883d6459bf5242a85dd54c2b7b134e81017b3a8197da`；本次仅加入可转动旋钮分组和运行范围元数据，当前 hash 为 `48e01ada4620bcbbf988f223a8c46e9c864a595b9c60a9927bdd90506a4b746f`，geometry.bin 逐字节不变，默认位置 0.5 的姿态不变。原测量时间、IoU 未通过结果保留，没有重跑或改写旧视觉结论。真实 WASM 行为检查已执行；没有实物校准。
 
 已知限制：
 
-- 仅外观、尺寸和接线资料已入库；GPIO/ADC/SK6812 行为尚未实现，不能证明主机固件可使用该模块。
+- 仅支持 StopWatch Port A 白线 G11 的官方 10k 标称曲线；内部 ADC 软件模型、旋钮角度和源阻抗均未实物校准。
 - 厂家 STL 保留原始尺寸，打印排版重复件已剔除；插座、螺钉及无 CAD 的外露部件为照片近似。
 - 未公开 PCB 布局，内部采用 UNKNOWN 占位；贴纸使用官方照片真实印刷区域。
 - 官方页面两张电路图分别标 R1=4.7kΩ 和 10kΩ；资料未标硬件版次，输出电压规格保留官网 0–2500mV，不推定所有实物一致。

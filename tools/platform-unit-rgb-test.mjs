@@ -9,7 +9,7 @@ const instance=()=>({id:'rgb-unit',catalogId:'m5stack-unit-rgb-u003',parameters:
 const scene=()=>({...createDefaultScene(catalog,'m5stack-stopwatch'),accessories:[instance()]});
 test('U003 physical route is G10 on one StopWatch Grove input, with whole-port exclusivity',()=>{
   assert.equal(validateScene(scene(),catalog).valid,true);assert.deepEqual(decodeScene(encodeScene(scene())),scene());
-  for(const change of [s=>{s.productId='m5stack-c123';s.firmware=null;s.keyMapping={};},s=>{s.accessories[0].wiring.interfaceId='out';},s=>{s.accessories[0].wiring.pin=11;},s=>{s.accessories[0].wiring={mode:'physical',connectorId:'grove',port:'uart1',rx:10,tx:11};},s=>{s.accessories.push({...instance(),id:'other'});},s=>{s.accessories[0].catalogId='m5stack-unit-angle-u005';}]){const s=scene();change(s);assert.equal(validateScene(s,catalog).valid,false);}
+  for(const change of [s=>{s.productId='m5stack-c123';s.firmware=null;s.keyMapping={};},s=>{s.accessories[0].wiring.interfaceId='out';},s=>{s.accessories[0].wiring.pin=11;},s=>{s.accessories[0].wiring={mode:'physical',connectorId:'grove',port:'uart1',rx:10,tx:11};},s=>{s.accessories.push({...instance(),id:'other'});},s=>{s.accessories[0].catalogId='m5stack-gps-u032-v11';}]){const s=scene();change(s);assert.equal(validateScene(s,catalog).valid,false);}
   const s=scene();s.accessories.push({...instance(),id:'button',catalogId:'m5stack-unit-button-u027'});assert.ok(validateScene(s,catalog).errors.some(e=>e.code==='PIN_CONFLICT'));s.accessories.reverse();assert.ok(validateScene(s,catalog).errors.some(e=>e.code==='PIN_CONFLICT'));
 });
 test('U003 exposes output and connection, never a fake button or frontend colour setter',async()=>{

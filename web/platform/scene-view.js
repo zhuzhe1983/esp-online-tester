@@ -113,6 +113,8 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   }
   let parts = {}, connectors = {}, shellMeshes = [], customizedAppearance = false, appearanceDefaults = DEFAULT_STOPWATCH_APPEARANCE, appearance = normalizeShellAppearance(null), accessoryDefinitions = [];
   let rgbLedMeshes = [], rgbValues = [], accessoryOutputs = [];
+  let accessoryPositions=[];
+  function updateAccessoryPositions(values) {accessoryPositions=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryPositions.find(item=>child.name===`accessory:${item.accessoryId}`);for(const pivot of child.userData.potentiometers||[]){const value=Number.isFinite(state?.value)?state.value:.5;pivot.userData.value=value;pivot.rotation.z=(.5-value)*pivot.userData.visualSweepRadians;}}draw();}
   function updateAccessoryOutputs(values) {accessoryOutputs=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryOutputs.find(item=>child.name===`accessory:${item.accessoryId}`);applyRgbLedValues(child.userData.rgbLedMeshes||[],state?.leds);}draw();}
   function updateLeds(values) { rgbValues = values || []; applyRgbLedValues(rgbLedMeshes, rgbValues); draw(); }
   const halo = createSurfaceHalo();
@@ -229,7 +231,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
           else accessory.group.userData.connection = 'unverified-connector-preview';
         } else accessory.group.userData.connection = 'unconnected-preview';
       }
-      updateAccessoryOutputs(accessoryOutputs);frameCamera(); draw();
+      updateAccessoryOutputs(accessoryOutputs);updateAccessoryPositions(accessoryPositions);frameCamera(); draw();
     };
     for (let i = 0; i < accessoryCount; i++) {
       const definition = accessories[i], accessory = createIllustrativeAccessory(definition, i); accessoryGroup.add(accessory.group);
@@ -283,6 +285,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   }
   function surface(intersection) {
     const object = intersection?.object;
+    if(object?.userData.potentiometer){const knob=object.userData.potentiometer;return {kind:'potentiometer',id:knob.id,accessoryId:knob.accessoryId,value:knob.pivot.userData.value,sweep:knob.pivot.userData.visualSweepRadians,message:'拖动旋钮调整官方标称曲线；显示转角未按实物校准。'};}
     if (object?.userData.encoder) {
       const control = product?.controls?.find(c => c.id === object.userData.encoder && c.type === 'encoder');
       return product?.runtime?.encoder && control ? {kind:'encoder',id:control.id,detents:control.detents,message:'沿旋钮圆周拖动；每格发送一个编码器步进。'} : {kind:'unsupported',message:'此设备尚未实现旋钮输入。'};
@@ -304,7 +307,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     const intersection = hit(event), role = surface(intersection);
     if (!intersection) { clearHover(); return; }
     halo.show(intersection.object, role.kind); mount.dataset.hover = role.kind;
-    mount.style.cursor = {button: 'pointer', touch: 'crosshair', unsupported: 'not-allowed', orbit: 'grab', encoder:'grab'}[role.kind];
+    mount.style.cursor = {button: 'pointer', touch: 'crosshair', unsupported: 'not-allowed', orbit: 'grab', encoder:'grab',potentiometer:'grab'}[role.kind];
     if (role.message) mount.title = role.message; else mount.removeAttribute('title'); draw();
   }
   const router = createScenePointerRouter({onInput, onUnsupported, onError: error => console.error('Scene input failed:', error), onOrbit(dx, dy) {
@@ -315,7 +318,9 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   const encoderMeshes = new Map();
   function encoderPoint(event, mesh) {
     if (!mesh) return null;
-    hit(event); mesh.updateWorldMatrix(true,false); mesh.geometry.computeBoundingBox();
+    hit(event);
+    if(mesh.userData.potentiometer){const pivot=mesh.userData.potentiometer.pivot,parent=pivot.parent;parent.updateWorldMatrix(true,false);const world=parent.localToWorld(pivot.position.clone()),normal=new THREE.Vector3(0,0,1).transformDirection(parent.matrixWorld),point=raycaster.ray.intersectPlane(new THREE.Plane().setFromNormalAndCoplanarPoint(normal,world),new THREE.Vector3());if(!point)return null;parent.worldToLocal(point).sub(pivot.position);return point.lengthSq()<.001?null:{angle:Math.atan2(point.y,point.x)};}
+    mesh.updateWorldMatrix(true,false); mesh.geometry.computeBoundingBox();
     const center = mesh.geometry.boundingBox.getCenter(new THREE.Vector3()), world = mesh.localToWorld(center.clone());
     const normal = new THREE.Vector3(0,0,1).transformDirection(mesh.matrixWorld);
     const point = raycaster.ray.intersectPlane(new THREE.Plane().setFromNormalAndCoplanarPoint(normal,world),new THREE.Vector3());
@@ -325,8 +330,8 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   function down(event) {
     if (event.button !== 0) return;
     const flat = event.currentTarget === display, intersection = flat ? {object: screen} : hit(event), role = surface(intersection);
-    const point = role.kind === 'touch' ? screenPoint(event, intersection) : role.kind === 'encoder' ? encoderPoint(event,intersection.object) : null;
-    if (role.kind === 'encoder') encoderMeshes.set(event.pointerId,intersection.object);
+    const point = role.kind === 'touch' ? screenPoint(event, intersection) : ['encoder','potentiometer'].includes(role.kind) ? encoderPoint(event,intersection.object) : null;
+    if (['encoder','potentiometer'].includes(role.kind)) encoderMeshes.set(event.pointerId,intersection.object);
     if (flat && point && product?.display?.shape === 'round' && (point.u - .5) ** 2 + (point.v - .5) ** 2 > .25) return;
     clearHover(); event.preventDefault(); event.currentTarget.focus?.({preventScroll: true});
     const kind = router.down({pointerId: event.pointerId, x: event.clientX, y: event.clientY, surface: role, point});
@@ -335,7 +340,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   function move(event) {
     const kind = router.kind(event.pointerId);
     if (!kind) { hover(event); return; }
-    router.move({pointerId: event.pointerId, x: event.clientX, y: event.clientY, point: kind === 'touch' ? screenPoint(event) : kind === 'encoder' ? encoderPoint(event,encoderMeshes.get(event.pointerId)) : null});
+    router.move({pointerId: event.pointerId, x: event.clientX, y: event.clientY, point: kind === 'touch' ? screenPoint(event) : ['encoder','potentiometer'].includes(kind) ? encoderPoint(event,encoderMeshes.get(event.pointerId)) : null});
   }
   function up(event) { const orbit = router.kind(event.pointerId) === 'orbit'; router.up(event.pointerId); encoderMeshes.delete(event.pointerId); if (orbit) { clearOrientationTimers(); publishOrientation(false); } if (!router.activeCount) clearHover(); }
   function releaseInputs() { const hadMotion = orientationTimer !== null || orientationIdle !== null; clearOrientationTimers(); router.releaseAll(); encoderMeshes.clear(); if (hadMotion) publishOrientation(false); clearHover(); }
@@ -346,7 +351,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   window.addEventListener('blur', releaseInputs);
   function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateAccessoryOutputs, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
     dispose() { disposed = true; releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup(); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }

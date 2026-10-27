@@ -91,6 +91,12 @@ export function createManufacturerModel(product, screenTexture) {
       const label=flatLabel('UNKNOWN');if(label){textures.push(label);const width=Math.min(size[0]*.82,42);for(const back of [false,true]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,width/4),new THREE.MeshBasicMaterial({map:label,transparent:true,depthWrite:false}));mesh.position.z=(back?-1:1)*(size[2]/2+.015);if(back)mesh.rotation.y=Math.PI;pcb.add(mesh);}}
       parts[pcb.name]=pcb;group.add(pcb);
     }
+    for(const knob of metadata.presentation?.potentiometers || []) {
+      if(typeof knob.id!=='string'||!Array.isArray(knob.parts)||!knob.parts.length||knob.parts.some(name=>!parts[name])||!Number.isFinite(knob.visualSweepRadians)||knob.visualSweepRadians<=0||knob.visualSweepRadians>2*Math.PI)throw Error('Invalid potentiometer presentation');
+      const pivot=new THREE.Group();pivot.name=`potentiometer:${knob.id}`;pivot.position.set(...vector(knob.centerMm));pivot.userData.value=.5;pivot.userData.visualSweepRadians=knob.visualSweepRadians;group.add(pivot);
+      for(const name of knob.parts){const mesh=parts[name];mesh.position.sub(pivot.position);pivot.add(mesh);mesh.userData.potentiometer={id:knob.id,pivot};}
+      (group.userData.potentiometers ||= []).push(pivot);
+    }
     const display=metadata.presentation?.screen;
     if(display&&product.display){screen=new THREE.Mesh(display.shape==='circle'?new THREE.CircleGeometry(display.sizeMm[0]/2,96):new THREE.PlaneGeometry(...display.sizeMm),new THREE.MeshBasicMaterial({map:screenTexture,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));screen.position.set(...vector(display.positionMm));screen.rotation.set(...vector(display.rotation));screen.name='live-display';screen.userData.screen=true;parts.screen=screen;group.add(screen);}
     // Some devices (AtomS3) use the whole non-touch display cover as a physical button.

@@ -13,6 +13,7 @@ pub const PIN_STOPWATCH_BUTTON_A: u8 = 2;
 pub const PIN_STOPWATCH_BUTTON_B: u8 = 1;
 
 struct UnitRgb {chain:Ws2812Chain,connected:bool,powered:bool}
+struct UnitAngle {source:esp_periph::analog::AnalogStream,connected:bool,value:f32,volts:f32}
 
 struct UnitButton {pressed:bool,level:bool,dirty:bool,cycle:VirtualCycle}
 
@@ -21,6 +22,7 @@ struct PanelState {
     active: bool,
     version: u64,
     unit_button: Option<UnitButton>,
+    unit_angle: Option<Box<UnitAngle>>,
 }
 
 struct PowerWiring {
@@ -46,6 +48,12 @@ impl PowerWiring {
             // Digital steady state only: no RC delay, bounce or analog contention.
             let level=grove_power && !button.pressed;
             if level!=button.level {button.level=level;button.dirty=true;}
+        }
+        if let Some(angle)=&mut panel.unit_angle {
+            // U005 manufacturer's R1=10k published curve: 5*Rp/(Rp+10k), Rp/R2=value.
+            // Other official drawing says 4.7k; do not claim an identified physical revision.
+            let volts=if grove_power && angle.connected {5.0*angle.value/(1.0+angle.value)}else{0.0};
+            if volts!=angle.volts {angle.volts=volts;let _=angle.source.replace_current(volts);}
         }
         if off || !expander.touch_reset_high {
             *self.touch.lock().expect("StopWatch touch mutex poisoned") = TouchState::default();
@@ -93,6 +101,7 @@ impl StopWatch {
                     active: false,
                     version: 0,
                     unit_button: None,
+                    unit_angle: None,
                 }),
                 pmic: Default::default(),
                 expander: Default::default(),
@@ -212,6 +221,13 @@ impl BoardModel for StopWatch {
         if rgb.connected!=connected {rgb.connected=connected;rgb.chain.leds.fill([0;3]);rgb.chain.updates=rgb.chain.updates.wrapping_add(1);}
         self.sync_rgb_power();true
     }
+    fn accessory_analog_at(&mut self,cycle:VirtualCycle,model:&str,port:&str,connected:bool,value:f32)->Option<(u8,esp_periph::AnalogSource)> {
+        if model!="potentiometer-u005-10k-curve" || port!="grove" || !value.is_finite() || !(0.0..=1.0).contains(&value) {return None;}
+        let source={let mut panel=self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");
+            if panel.unit_angle.is_none() {panel.unit_angle=Some(Box::new(UnitAngle{source:esp_periph::analog::AnalogStream::new(1,0.0,cycle).ok()?,connected:false,value:0.0,volts:0.0}));}
+            let angle=panel.unit_angle.as_mut()?;angle.connected=connected;angle.value=value;angle.source.clone()};
+        self.wiring.sync();Some((11,esp_periph::AnalogSource::Stream(source)))
+    }
     fn named_pin(&self, name: &str) -> Option<u8> {
         match name {
             "a" | "btn_a" => Some(PIN_STOPWATCH_BUTTON_A),
@@ -275,5 +291,26 @@ mod unit_rgb_tests {
         board.accessory_connection_at(5,"sk6812-u003","grove",true);assert_eq!(board.led_grids()[0].1,[[0;3];3]);board.rmt_frame(10,&bits());
         write(pmic,7,0x40);write(pmic,0x0c,0xa1);board.advance_to(6);assert_eq!(board.led_grids()[0].1[0],[255,0,0]);write(pmic,7,0);board.advance_to(7);assert_eq!(board.led_grids()[0].1,[[0;3];3]);
         drop(devices);board.i2c_devices();board.advance_to(8);assert_eq!(board.led_grids()[0].1,[[0;3];3]);
+    }
+}
+
+#[cfg(test)]
+mod unit_angle_tests {
+    use super::*;
+    fn write(device:&mut dyn I2cDevice,reg:u8,value:u8){assert!(device.start(false));assert!(device.write(reg));assert!(device.write(value));device.stop();}
+    #[test]
+    fn u005_voltage_reaches_only_white_adc_pad_and_tracks_power_and_connection() {
+        let mut board=StopWatch::new();assert!(board.accessory_analog_at(0,"other","grove",true,0.5).is_none());assert!(board.accessory_analog_at(0,"potentiometer-u005-10k-curve","wrong",true,0.5).is_none());
+        let (pin,source)=board.accessory_analog_at(0,"potentiometer-u005-10k-curve","grove",true,0.5).unwrap();assert_eq!(pin,11);
+        let mut pads=esp_periph::AnalogInputs::new(240_000_000);pads.set(pin,source);let mut devices=board.i2c_devices();let pmic=devices.iter_mut().find(|(_,a,_)|*a==0x6e).unwrap().2.as_mut();
+        assert_eq!(pads.volts(11,0),0.0);write(pmic,6,0x1f);assert!((pads.volts(11,1)-5.0/3.0).abs()<0.00001);assert_eq!(pads.volts(10,1),0.0);
+        for value in [f32::NAN,-0.1,1.1] {assert!(board.accessory_analog_at(2,"potentiometer-u005-10k-curve","grove",true,value).is_none());}
+        assert!((pads.volts(11,2)-5.0/3.0).abs()<0.00001);
+        board.accessory_analog_at(3,"potentiometer-u005-10k-curve","grove",true,1.0);assert_eq!(pads.volts(11,3),2.5);
+        write(pmic,6,0x17);assert_eq!(pads.volts(11,4),0.0);write(pmic,6,0x1f);assert_eq!(pads.volts(11,5),2.5);
+        board.accessory_analog_at(6,"potentiometer-u005-10k-curve","grove",false,1.0);assert_eq!(pads.volts(11,6),0.0);
+        board.accessory_analog_at(7,"potentiometer-u005-10k-curve","grove",true,0.25);assert_eq!(pads.volts(11,7),1.0);
+        write(pmic,7,0x40);write(pmic,0x0c,0xa1);assert_eq!(pads.volts(11,8),1.0);write(pmic,7,0);assert_eq!(pads.volts(11,9),0.0);
+        drop(devices);board.i2c_devices();assert_eq!(pads.volts(11,10),0.0);
     }
 }

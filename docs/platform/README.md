@@ -145,3 +145,5 @@ Select a complete merged BIN directly, or select an app BIN followed by `flasher
 **下载并运行** loads into the emulator and starts it, without saving a file into the computer's Downloads folder. For a preview-only product such as NanoH2, run buttons are hidden and a red **尚未完成适配** label is shown, even when a remote release has been found. If the board model exists, unverified catalog firmware asks for confirmation only when Run is clicked; Cancel makes no firmware request. Verified firmware runs directly. **报告问题** opens an issue draft with device/firmware identity, current error and bounded recent logs after common credential/path/device-identifier redaction; the user describes and submits the issue. The mini player follows the same boundary. The agent API remains noninteractive.
 
 Unit RGB U003 的真实 RMT 灯光、供电和拔插支持见 [U003 runtime](unit-rgb-runtime.md)。目前仅核验 StopWatch Port A 黄线 G10，软件 GPIO、串级及实体灯孔链序尚未验证。
+
+Unit Angle U005 已支持 StopWatch Port A 的标称模拟电压输入与真实 ADC2 转换；官方图纸冲突、机械角度未校准等边界见 [Unit Angle 运行说明](unit-angle-runtime.md)。

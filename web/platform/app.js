@@ -171,6 +171,7 @@ async function selectLocalFiles(incoming, {replace=false}={}) {
 function onRuntimeEvent(event) {
   if(event.type==='accessory-outputs'){accessoryOutputState=event.accessoryOutputs;sceneView?.updateAccessoryOutputs(accessoryOutputState);updateAccessoryOutputsPanel(accessoryOutputState);}
   if(event.type==='accessories'){accessoryInputState=event.accessoryInputs;renderAccessories();}
+  if(event.type==='accessory-positions'){accessoryInputState=event.accessoryInputs;updateAccessoryPositionsPanel();}
 
   if (event.type === 'state') {
     const previousStatus = status; status = event.state.status;
@@ -548,14 +549,14 @@ function renderAccessories() {
   if (!scene.accessories.length) list.append(element('p', 'empty-list', '连接 GPS、传感器，或设计自己的配件。'));
   for (const instance of scene.accessories) {
     const item = definition(instance.catalogId); if (!item) continue;
-    const route=physicalAccessoryRoute(product(),instance,item),rgb=route?.model==='sk6812-u003';
+    const route=physicalAccessoryRoute(product(),instance,item),rgb=route?.model==='sk6812-u003',angle=route?.control==='knob';
     const card = element('article', 'accessory-card');
     const heading = element('div', 'accessory-card-header'), identity = element('div');
-    identity.append(element('h3', '', item.name), element('span', 'small-label', route ? (rgb?'客体 RMT · StopWatch Port A · 黄线 G10':'物理 GPIO · StopWatch Port A · 白线 G11') : item.model.id === 'uart-nmea' ? `${item.controller || 'NMEA'} · ${instance.parameters.baudRate || item.parameters.baudRate} baud · 逻辑 UART1` : `${item.visual?.modelUrl ? '3D 外观与接线资料' : '仅元信息'} · 行为模型未实现`));
+    identity.append(element('h3', '', item.name), element('span', 'small-label', route ? (rgb?'客体 RMT · StopWatch Port A · 黄线 G10':angle?'模拟电压 · StopWatch Port A · 白线 G11 / ADC2_CH0':'物理 GPIO · StopWatch Port A · 白线 G11') : item.model.id === 'uart-nmea' ? `${item.controller || 'NMEA'} · ${instance.parameters.baudRate || item.parameters.baudRate} baud · 逻辑 UART1` : `${item.visual?.modelUrl ? '3D 外观与接线资料' : '仅元信息'} · 行为模型未实现`));
     const remove = element('button', 'icon-button', '×'); remove.setAttribute('aria-label', `移除 ${item.name}`);
     remove.addEventListener('click', () => action(async () => { const next = clone(scene); next.accessories = next.accessories.filter(other => other.id !== instance.id); pruneDefinitions(next); await configure(next); }));
     heading.append(identity, remove); card.append(heading);
-    card.append(element('p', 'helper', route ? (rgb?'需固件开启 Grove 5V，通过 G10 RMT 发送 3 颗 GRB 数据；软件 GPIO 波形与串级出口尚未支持。':'需固件开启 Grove 5V；按下为低电平，释放电平由供电决定。') : item.model.id === 'uart-nmea' ? '向 UART1 注入 NMEA 数据；未模拟物理接线、供电或无线信号。' : '此配件可导出和分享；不会自动执行电路或协议行为。'));
+    card.append(element('p', 'helper', route ? (rgb?'需固件开启 Grove 5V，通过 G10 RMT 发送 3 颗 GRB 数据；软件 GPIO 波形与串级出口尚未支持。':angle?'采用官方 10k 标称曲线，需固件开启 Grove 5V 并读取 ADC2_CH0；实物版次、方向和转角尚未校准。':'需固件开启 Grove 5V；按下为低电平，释放电平由供电决定。') : item.model.id === 'uart-nmea' ? '向 UART1 注入 NMEA 数据；未模拟物理接线、供电或无线信号。' : '此配件可导出和分享；不会自动执行电路或协议行为。'));
     const details = element('details'); details.append(element('summary', '', '接线与参数'));
     const wiring = element('textarea'); wiring.rows = 3; wiring.value = JSON.stringify(instance.wiring, null, 2); wiring.setAttribute('aria-label', `${item.name} 接线 JSON`);
     const parameters = element('textarea'); parameters.rows = 3; parameters.value = JSON.stringify(instance.parameters, null, 2); parameters.setAttribute('aria-label', `${item.name} 参数 JSON`);
@@ -566,19 +567,25 @@ function renderAccessories() {
     if (item.model.id === 'uart-nmea') card.append(createGpsControls(instance, item));
     if(route) {
       const state=accessoryInputState.find(value=>value.accessoryId===instance.id),connected=state?.connected!==false;
-      if(!rgb) {
+      if(!rgb&&!angle) {
       const press=element('button','button device-button','按住 Unit Button');press.dataset.control=unitButtonControl(instance.id);press.disabled=!connected;
       press.addEventListener('pointerdown',event=>{if(event.button!==0)return;event.preventDefault();press.setPointerCapture(event.pointerId);void sendInput({type:'button',id:press.dataset.control,pressed:true},`unit:${event.pointerId}`);});
       for(const type of ['pointerup','pointercancel','lostpointercapture'])press.addEventListener(type,event=>void sendInput({type:'button',id:press.dataset.control,pressed:false},`unit:${event.pointerId}`));
       press.addEventListener('click',event=>{if(event.detail===0){void sendInput({type:'button',id:press.dataset.control,pressed:true},'unit-activation');void sendInput({type:'button',id:press.dataset.control,pressed:false},'unit-activation');}});
       card.append(press);
+      } else if(angle){
+        const label=element('label','','旋钮位置（Rp/R2）'),slider=element('input'),value=element('output');slider.type='range';slider.min='0';slider.max='1';slider.step='0.01';slider.dataset.accessoryPosition=instance.id;slider.setAttribute('aria-label','Unit Angle 旋钮位置');value.dataset.accessoryPositionLabel=instance.id;label.append(slider,value);slider.addEventListener('input',()=>void sendInput({type:'accessory-angle',accessoryId:instance.id,id:'knob',value:Number(slider.value)},'unit-angle-slider'));card.append(label);
       } else {const colors=element('div','unit-rgb-output');colors.dataset.accessoryOutput=instance.id;colors.setAttribute('aria-label','客体输出的三颗 RGB 灯');card.append(colors);}
       const toggle=element('button','button secondary',connected?'拔出配件':'连接配件');toggle.addEventListener('click',()=>action(async()=>{await releaseHumanInputs();await api.input({type:'accessory-connection',accessoryId:instance.id,connected:!connected});}));
       card.append(toggle);
     }
     list.append(card);
   }
-  updateAccessoryOutputsPanel(accessoryOutputState);
+  updateAccessoryOutputsPanel(accessoryOutputState);updateAccessoryPositionsPanel();
+}
+function updateAccessoryPositionsPanel(){
+  sceneView?.updateAccessoryPositions(accessoryInputState);
+  for(const node of document.querySelectorAll('[data-accessory-position]')){const state=accessoryInputState.find(item=>item.accessoryId===node.dataset.accessoryPosition),value=state?.value??scene.accessories.find(item=>item.id===node.dataset.accessoryPosition)?.parameters?.position??.5;node.value=String(value);const label=[...document.querySelectorAll('[data-accessory-position-label]')].find(item=>item.dataset.accessoryPositionLabel===node.dataset.accessoryPosition);if(label)label.textContent=`${Math.round(value*100)}% · 供电时标称 ${Math.round(5000*value/(1+value))} mV`; }
 }
 function updateAccessoryOutputsPanel(outputs) {
   for(const node of document.querySelectorAll('[data-accessory-output]')) {

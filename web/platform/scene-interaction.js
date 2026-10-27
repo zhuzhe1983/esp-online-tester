@@ -53,6 +53,10 @@ export function createScenePointerRouter({onInput = () => {}, onOrbit = () => {}
     if (kind === 'unsupported') { onUnsupported(surface.message); return 'unsupported'; }
     const gesture = {pointerId, x, y, kind};
     if (kind === 'button') { gesture.control = surface.id; pointers.set(pointerId, gesture); emit({type: 'button', id: surface.id, pressed: true}, pointerId); }
+    else if (kind === 'potentiometer') {
+      if(pointers.size)return 'ignored';
+      gesture.control=surface.id;gesture.accessoryId=surface.accessoryId;gesture.angle=point?.angle;gesture.value=surface.value;gesture.sweep=surface.sweep;pointers.set(pointerId,gesture);
+    }
     else if (kind === 'encoder') {
       if (pointers.size) return 'ignored';
       gesture.control = surface.id; gesture.angle = point?.angle; gesture.detentAngle = 2 * Math.PI / (surface.detents || 16); gesture.remainder = 0;
@@ -71,6 +75,13 @@ export function createScenePointerRouter({onInput = () => {}, onOrbit = () => {}
     const gesture = pointers.get(pointerId); if (!gesture) return null;
     if (gesture.kind === 'orbit') { onOrbit(x - gesture.x, y - gesture.y); gesture.x = x; gesture.y = y; }
     else if (gesture.kind === 'touch') touch(gesture, point);
+    else if (gesture.kind === 'potentiometer' && Number.isFinite(point?.angle)) {
+      if(Number.isFinite(gesture.angle)){
+        const delta=Math.atan2(Math.sin(gesture.angle-point.angle),Math.cos(gesture.angle-point.angle)),value=Math.max(0,Math.min(1,gesture.value+delta/gesture.sweep));
+        if(value!==gesture.value){gesture.value=value;emit({type:'accessory-angle',accessoryId:gesture.accessoryId,id:gesture.control,value:Math.round(value*1e6)/1e6},pointerId);}
+      }
+      gesture.angle=point.angle;
+    }
     else if (gesture.kind === 'encoder' && Number.isFinite(point?.angle)) {
       if (Number.isFinite(gesture.angle)) {
         const delta = Math.atan2(Math.sin(gesture.angle - point.angle), Math.cos(gesture.angle - point.angle));
@@ -94,9 +105,9 @@ export function createSurfaceHalo() {
   function show(mesh, nextKind) {
     if (mesh === target && kind === nextKind) return;
     clear();
-    if (!mesh?.geometry || !['button', 'orbit', 'touch', 'encoder'].includes(nextKind)) return;
+    if (!mesh?.geometry || !['button', 'orbit', 'touch', 'encoder', 'potentiometer'].includes(nextKind)) return;
     target = mesh; kind = nextKind;
-    const colors = {button: 0x59dca1, orbit: 0x72b9ef, encoder: 0x72b9ef, touch: 0xee857f};
+    const colors = {button: 0x59dca1, orbit: 0x72b9ef, encoder: 0x72b9ef, potentiometer:0x72b9ef, touch: 0xee857f};
     overlay = new THREE.Group(); overlay.name = `hover:${nextKind}`; overlay.userData.pickIgnore = true;
     mesh.geometry.computeBoundingBox(); const center = mesh.geometry.boundingBox.getCenter(new THREE.Vector3());
     // Only contour geometry is added. No highlight is drawn into the live framebuffer.

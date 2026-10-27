@@ -35,6 +35,10 @@ def main():
     required = {plan['sourceId'], 'cad-license'}
     required.update(item['sourceId'] for item in plan.get('photos', []))
     required.update(item['sourceId'] for item in plan.get('textureSources', []))
+    # Some retained photos support derived knobs/connectors rather than a review camera.
+    # Preserve those pinned reference assets too, so the metadata hash round-trips.
+    required.update(item['id'] for item in audit['sources']
+                    if item.get('archiveName') and (source / ('reference-' + item['archiveName'])).is_file())
     for receipt in audit['sources']:
         if receipt['id'] not in required:
             continue
@@ -49,6 +53,12 @@ def main():
             raise ValueError('Missing or altered pinned input: ' + str(candidate.relative_to(ROOT)))
         shutil.copyfile(candidate, folder / name)
     helper.write(folder / 'components.json', audit['components'])
+    output = scratch / 'assets' / args.id
+    output.mkdir(parents=True, exist_ok=True)
+    for receipt in audit['sources']:
+        name = receipt.get('archiveName')
+        if name and (source / ('reference-' + name)).is_file():
+            shutil.copyfile(folder / name, output / ('reference-' + name))
     helper.build_model(prepared, plan, scratch / 'assets' / args.id,
                        evidence_root=scratch / 'evidence', license_path=source / 'LICENSE-M5Stack.txt')
     print(scratch / 'assets' / args.id / 'model.json')

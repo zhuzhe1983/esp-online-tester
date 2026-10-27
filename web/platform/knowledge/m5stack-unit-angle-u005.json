@@ -8,8 +8,8 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-27T00:08:52Z",
-  "hardwareRevision": "U005; manufacturer page does not identify hardware revision",
+  "updatedAt": "2026-10-27T09:47:38Z",
+  "hardwareRevision": "U005; official R1=10k transfer-curve profile, physical revision not identified",
   "identity": {
     "manufacturer": "M5Stack",
     "sku": "U005",
@@ -191,6 +191,16 @@
         "photo-13"
       ],
       "notes": "页面另图 photo-12 把串联电阻标为 4.7kΩ，photo-13 标 10kΩ；未标明硬件修订，保留冲突，不推定所有实物版本一致。"
+    },
+    {
+      "id": "nominal-curve",
+      "label": "厂家公布的 10k 电压曲线",
+      "value": "Uo=5000mV×Rp/(Rp+10k); Rp/R2=0..1",
+      "basis": "official",
+      "sourceIds": [
+        "angle-schematic-b"
+      ],
+      "group": "electrical"
     }
   ],
   "revisions": [],
@@ -324,6 +334,84 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "angle-docs",
+      "title": "Unit Angle U005 产品资料",
+      "url": "https://docs.m5stack.com/en/unit/Unit_Angle",
+      "resolvedUrl": "https://docs.m5stack.com/en/unit/Unit_Angle",
+      "mediaType": "text/html; charset=UTF-8",
+      "fetchedAt": "2026-10-27T09:25:25Z",
+      "bytes": 128816,
+      "sha256": "881dfeb8194b42e6253df3e02c3c52959220e6a59eb8df35ab18d4e8cff8284c",
+      "archiveName": "angle-docs.html",
+      "status": "fetched",
+      "kind": "product-page"
+    },
+    {
+      "id": "angle-schematic-a",
+      "title": "U005 官方电路图 R1 4.7k",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/800/U005_Sche.jpg",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/800/U005_Sche.jpg",
+      "mediaType": "image/jpg",
+      "fetchedAt": "2026-10-27T09:25:39Z",
+      "bytes": 829824,
+      "sha256": "874d0912c82b1a0ce63d2bb1e3fee96f311a91832b47a07d64fd99cfaaeeeed2",
+      "archiveName": "U005_Sche.jpg",
+      "status": "fetched",
+      "kind": "schematic"
+    },
+    {
+      "id": "angle-schematic-b",
+      "title": "U005 官方电路图 R1 10k",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/angle/angle_sch_02.webp",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/angle/angle_sch_02.webp",
+      "mediaType": "image/webp",
+      "fetchedAt": "2026-10-27T09:25:41Z",
+      "bytes": 18016,
+      "sha256": "64d6af1fd1e63f29c0b823ff634b2e935e65e5064f07ce9cc9aadb0a96cf72c6",
+      "archiveName": "angle_sch_02.webp",
+      "status": "fetched",
+      "kind": "schematic"
+    },
+    {
+      "id": "idf-adc-map",
+      "title": "ESP-IDF v5.5.1 ESP32-S3 ADC 通道映射",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.1/components/soc/esp32s3/include/soc/adc_channel.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.1/components/soc/esp32s3/include/soc/adc_channel.h",
+      "mediaType": "text/plain; charset=utf-8",
+      "fetchedAt": "2026-10-27T09:25:42Z",
+      "bytes": 1527,
+      "sha256": "7a6ab711b25a0eb33db21001038d567ca4a9bfdf802ff84bb289ebf02e06702b",
+      "archiveName": "adc_channel.h",
+      "status": "fetched",
+      "kind": "source-code"
+    },
+    {
+      "id": "stopwatch-schematic",
+      "title": "StopWatch Port A 白线 G11 与供电",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf",
+      "mediaType": "application/pdf",
+      "fetchedAt": "2026-10-27T09:47:38Z",
+      "bytes": 1480402,
+      "sha256": "8d4755c341f966a6191f9f16a7a45c558a99749a5e39a30d0513f86a5e10ef80",
+      "archiveName": "C152-SCH_Stopwatch_PRJ_Main_VA_20251201_2026_04_24_17_46_22.pdf",
+      "status": "fetched",
+      "kind": "schematic"
+    },
+    {
+      "id": "pmic-datasheet",
+      "title": "M5PM1 Grove 5V 与关机保持寄存器",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1207/M5PM1_Datasheet_EN.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1207/M5PM1_Datasheet_EN.pdf",
+      "mediaType": "application/pdf",
+      "fetchedAt": "2026-10-27T09:47:38Z",
+      "bytes": 814731,
+      "sha256": "c6daffd0ab89d8de50c0a19f35f94321bc6c9511ad017dd242a3e765d88a96b6",
+      "archiveName": "M5PM1_Datasheet_EN.pdf",
+      "status": "fetched",
+      "kind": "datasheet"
     }
   ],
   "assets": [
@@ -399,14 +487,16 @@
       "notes": "No complete populated PCB layout or Gerber verified in the audited files. A manufacturer mechanical board outline, when present, does not establish every component or copper trace. Unknown internals remain a neutral UNKNOWN placeholder."
     },
     {
-      "id": "runtime",
-      "label": "Behavior support",
+      "id": "schematic-conflict",
+      "label": "电路资料冲突",
       "value": null,
       "basis": "unknown",
       "sourceIds": [
-        "official-docs"
+        "angle-schematic-a",
+        "angle-schematic-b"
       ],
-      "notes": "GPIO/ADC/SK6812 module behavior not implemented."
+      "group": "limitations",
+      "notes": "两图 R1=4.7k/10k，三端电位器画法与公开公式也不完全一致；未确定实物版次与真实机械曲线。"
     }
   ],
   "collectionNotes": [
@@ -414,7 +504,7 @@
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
     "Model import does not establish CPU/board/peripheral firmware support.",
     "The official M5_Hardware product directory publishes shell STL only; searched files are recorded in the source audit. No PCB layout or Gerber was found there.",
-    "Current runtime support is visual-only, separately from these manufacturer facts.",
+    "Current runtime is the explicit official-10k nominal curve on StopWatch Port A G11/ADC2_CH0; see docs/platform/unit-angle-runtime.md. This implementation scope is separate from manufacturer facts.",
     "A separate component datasheet was not linked by the audited product page; schematic and dimension-image links are retained."
   ]
 }
