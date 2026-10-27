@@ -45,3 +45,14 @@ test('AtomS3 accepts explicit virtual IMU input without claiming a scene mountin
     close((await runtime.setImu({source:'scene',quaternion:[0,0,0,1]})).accelG,[0,1,0]);
   } finally {await runtime.dispose();}
 });
+
+test('AtomS3R exposes its own BMI270 virtual input without aliasing AtomS3 or calibrating scene axes', async () => {
+  const catalog={};for(const name of ['products','accessories','firmwares'])catalog[name]=JSON.parse(await readFile(new URL(`../web/platform/catalog/${name}.json`,import.meta.url),'utf8')).items;
+  const runtime=createPlatformRuntime({catalog});try {
+    await runtime.configure(createDefaultScene(catalog,'m5stack-c126'));
+    assert.equal((await runtime.observe()).imu.source,'agent');
+    const cap=(await runtime.capabilities()).imu;assert.equal(cap.model,'bmi270-register-subset');assert.equal(cap.sceneOrientation,false);
+    close((await runtime.setImu({quaternion:[0,0,Math.SQRT1_2,Math.SQRT1_2]})).accelG,[1,0,0]);
+    await assert.rejects(runtime.setImu({source:'scene',quaternion:[0,0,0,1]}),{code:'IMU_SCENE_UNSUPPORTED'});
+  } finally {await runtime.dispose();}
+});

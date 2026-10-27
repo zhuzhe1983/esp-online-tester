@@ -1,0 +1,61 @@
+{
+  "checkedAt": "2026-10-27T06:13:31Z",
+  "browser": "Chromium, headless",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "page": "local platform workbench from isolated AtomS3R worktree",
+  "firmware": "Internal source-built ESP-IDF 5.5.1 AtomS3R protocol fixture; not factory firmware",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+    "atoms3r_fixture.bin": "243f32172e6ea5260fdcaa5bbad093eafc9b2ac2e75cf84d24024e1ccc3d8b8d",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "wasmSha256": "eaa06d1c68f1eed4a0b42ac8f390c8ff252b69242a096f0ed1a2916b8007672c",
+  "frameSha256": "da6dafb58c6d01c15511d263a26061434352d231b4b0ec791e97f2d920cbbdbc",
+  "checks": [
+    {
+      "case": "device and factory selection",
+      "result": "AtomS3R has no unavailable suffix; official v0.3 defaults first and trial-run button is present. Other S3R variants retain unavailable suffix. Factory binary not executed."
+    },
+    {
+      "case": "local files",
+      "result": "UI accepts flasher_args.json, bootloader, partition table and app; actual worker starts."
+    },
+    {
+      "case": "3D mouse",
+      "result": "Pressed and held screen until guest emitted ATOMS3R_BUTTON 0 / ATOMS3R_BACKLIGHT 0; release produced ATOMS3R_BUTTON 1."
+    },
+    {
+      "case": "keyboard A",
+      "result": "Held A until guest emitted ATOMS3R_BUTTON 0 / ATOMS3R_BACKLIGHT 128; release produced ATOMS3R_BUTTON 1."
+    },
+    {
+      "case": "2D mouse",
+      "result": "Pressed and held screen until guest emitted ATOMS3R_BUTTON 0 / ATOMS3R_BACKLIGHT 255; release produced ATOMS3R_BUTTON 1."
+    },
+    {
+      "case": "hover",
+      "result": "Screen data-hover=button (green), white shell data-hover=orbit (blue); screen is a press button, not touch input."
+    },
+    {
+      "case": "framebuffer",
+      "result": "128x128 final RGBA SHA256 matches real worker probe exactly; 3D and 2D display the same firmware pixels."
+    },
+    {
+      "case": "lifecycle",
+      "result": "Runtime paused; task-owned browser closed and session list verified closed."
+    }
+  ],
+  "artifacts": {
+    "atoms3r-3d-button.png": "4277358103737319c3b8bc3d8010057d5afede6da60f1bb8595b9c61d8b0beaa",
+    "atoms3r-2d-half.png": "eccbdb31bac6c06e55ae4371630fec27ce00ba6ad469879bed25eef09d5cb7ea",
+    "atoms3r-2d-full.png": "e8a7d1f98077997b322f7a8055d5440ef628d1ca6cf18c79df3dfe3e97270a2c"
+  },
+  "limits": [
+    "No physical hardware validation or fresh 1:1 photo acceptance. Original geometric/photographic limitations retained.",
+    "Fast combined down/up helper calls did not produce guest button edges; separate held input plus observed serial was required. No host duration timing guarantee is claimed.",
+    "Initial Python HTTP default queue produced connection resets on module requests; a 128-entry queue served the unchanged app successfully."
+  ]
+}

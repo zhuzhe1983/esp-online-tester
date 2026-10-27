@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-27T06:09:28.119Z",
+  "command": "node tools/probe-atoms3r.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+    "atoms3r_fixture.bin": "243f32172e6ea5260fdcaa5bbad093eafc9b2ac2e75cf84d24024e1ccc3d8b8d",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [
+    "real-boot-gpio41-idle-bmi270-init-package-pico-8m-octal-psram",
+    "guest-spi-frame-every-pixel-red-green",
+    "guest-gpio41-press-release-and-lp5562-backlight-0-every-pixel",
+    "guest-gpio41-press-release-and-lp5562-backlight-128-every-pixel",
+    "guest-gpio41-press-release-and-lp5562-backlight-255-every-pixel",
+    "host-orientation-to-guest-bmi270-i2c-accel-8g-and-gyro-2000dps",
+    "pause-clears-gyro-keeps-accel-in-guest-registers"
+  ],
+  "frameSha256": "da6dafb58c6d01c15511d263a26061434352d231b4b0ec791e97f2d920cbbdbc",
+  "status": "pass",
+  "guestSeconds": 1.74,
+  "serialPort": "uart0",
+  "serialEvidence": [
+    "ATOMS3R_PANEL_ID 83 76 00 00",
+    "ATOMS3R_LCD_READY 128x128 red-left green-right",
+    "ATOMS3R_IMU_ID 24",
+    "ATOMS3R_IMU_INIT 01",
+    "ATOMS3R_BACKLIGHT 255",
+    "ATOMS3R_PACKAGE 1",
+    "ATOMS3R_PSRAM 8388608 bytes read-write passed",
+    "ATOMS3R_BUTTON 1",
+    "ATOMS3R_ACCEL 0 4096 0",
+    "ATOMS3R_GYRO 0 0 0",
+    "ATOMS3R_BUTTON 0",
+    "ATOMS3R_BACKLIGHT 0",
+    "ATOMS3R_BACKLIGHT 128",
+    "ATOMS3R_ACCEL 4096 0 0",
+    "ATOMS3R_GYRO 2048 0 0"
+  ],
+  "wasmSha256": "eaa06d1c68f1eed4a0b42ac8f390c8ff252b69242a096f0ed1a2916b8007672c"
+}

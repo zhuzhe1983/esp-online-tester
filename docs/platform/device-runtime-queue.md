@@ -1,14 +1,14 @@
 # 产品板级适配队列
 
-基准日期：2026-10-27。目录共 83 项，开始本轮时 6 项使用 4 个板级模型；待处理 77 项。首台 AtomS3 已完成本轮部分适配交付：现有 7 项部分适配、76 项尚无产品板级模型。`partial` 不代表整机或任意固件已通过。
+基准日期：2026-10-27。目录共 83 项，开始本轮时 6 项使用 4 个板级模型；待处理 77 项。AtomS3 与 AtomS3R 已完成本轮部分适配交付：现有 8 项部分适配、75 项尚无产品板级模型。`partial` 不代表整机或任意固件已通过。
 
 采用逐台交付：查官方原理图/驱动 → 实现真实引脚与器件 → 源码构建定向固件 → WASM 输出/输入检查 → 浏览器模型检查 → 记录缺项。每一步失败都保留原因；不能把 `none` 通用芯片模型改名后算作适配。
 
 ## 首台与接续顺序
 
 - AtomS3 C123：本轮 GC9107、GPIO41 按键、MPU6886 轮询子集。证据见 [AtomS3 记录](atoms3-runtime.md)。
-- 下一台 AtomS3R C126：可复用 GC9107 数据通路，必须重新实现 SPI 引脚、I2C 背光控制及 BMI270/BMM150，并核对 ST7735/GC9107 批次；不能直接映射 AtomS3。M5GFX 当前为 I2C 地址 0x30 的背光控制，器件型号和各寄存器需先由官方原理图确认。
-- AtomS3-Lite C124：复用 S3 执行、GPIO 和 RMT 解码；按官方图补 GPIO41 按键、SK6812 灯以及 IR/电源约束。先检查软件 GPIO 与 RMT 两种灯驱动，3D 灯颜色必须来自客体输出。
+- AtomS3R C126：本轮 ST7735 批次、LP5562白光直控、GPIO41、BMI270轮询子集与8MB Octal PSRAM。BMM150 AUX、RGB/IR、旧GC9107批次及物理姿态校准暂缺。证据见 [AtomS3R记录](atoms3r-runtime.md)。
+- 下一台 AtomS3-Lite C124：复用 S3 执行、GPIO 和 RMT 解码；按官方图补 GPIO41 按键、SK6812 灯以及 IR/电源约束。先检查软件 GPIO 与 RMT 两种灯驱动，3D 灯颜色必须来自客体输出。
 - Dial K130 / v1.1：GC9A01 可复用 DCS 框架；FT3267 触摸、旋转编码器、RTC/RFID 各自按来源建模，版本引脚分别核对。先交付屏幕/触摸/编码器，RTC/RFID 明示阶段缺项。
 - DinMeter K134 / v1.1：ST7789 复用可行，接续电源管理、编码器和 RTC；不同屏幕批次与引脚分别核对。
 - Stamp-S3 系列：实现真实按键/地址灯及供电控制；基础版通过后逐 SKU 核对封装引脚和固件配置。
@@ -21,7 +21,7 @@
 | 顺序 | 产品 | 芯片 / 屏幕 | 当前状态 | 缺项/入口 |
 | --- | --- | --- | --- | --- |
 | 1 | [M5Stack AtomS3 · C123](https://docs.m5stack.com/en/core/AtomS3) · `m5stack-c123` | esp32s3 / GC9107 | 本轮已完成 partial：GC9107 / 按键 / IMU 子集 | 背光、IR、IMU FIFO/时序、屏幕批次 |
-| 2 | [M5Stack AtomS3R](https://docs.m5stack.com/en/core/AtomS3R) · `m5stack-c126` | esp32s3 / ST7735 | 待实现 | ST7735 引脚/窗口/批次，按键/触摸，供电及板载外设 |
+| 2 | [M5Stack AtomS3R](https://docs.m5stack.com/en/core/AtomS3R) · `m5stack-c126` | esp32s3 / ST7735 | 本轮已完成 partial：屏幕 / 背光 / 按键 / BMI270 / PSRAM | BMM150 AUX、RGB/IR、旧GC9107批次、IMU时序/物理坐标 |
 | 3 | [M5Stack AtomS3-Lite](https://docs.m5stack.com/en/core/AtomS3-Lite) · `m5stack-c124` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
 | 4 | [M5Stack Dial · K130](https://docs.m5stack.com/en/core/Dial) · `m5stack-k130` | esp32s3 / GC9A01 | 待实现 | GC9A01 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 5 | [M5Stack Dial v1.1](https://docs.m5stack.com/en/core/Dial_v1.1) · `m5stack-k130-v11` | esp32s3 / GC9A01 | 待实现 | GC9A01 引脚/窗口/批次，按键/触摸，供电及板载外设 |

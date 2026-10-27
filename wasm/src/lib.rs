@@ -163,6 +163,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         let mut m = esp32s3::machine([0x44, 0x1b, 0xf6, 0x75, 0xdc, 0xe0]);
         let Some(b) = esp32s3::board::make_board(&board) else { log(&format!("[emu] unknown board '{}'", board)); return std::ptr::null_mut() };
         m.bus.board = b;
+        esp32s3::board::configure_chip_identity(m.bus.board.name(), &mut m.bus.periph.efuse);
         m.bus.attach_board_devices();
         m.bus.set_flash_size(flash_bytes);
         let _ = m.bus.set_psram_size(psram_bytes);

@@ -164,8 +164,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   let sdCard=emptySd(),sdSession=null,leds=[];
   let storage = emptyStorage(), storageSession = null, storageSequence = 0;
   let booted = false, inputSequence = 0, loadCancelled = false, progressGeneration = 0, disposing = false;
-  const imuModel = () => ({stopwatch:'bmi270-register-subset',atoms3:'mpu6886-register-subset'}[product?.runtime?.board] || null);
-  const defaultImu = () => ({enabled: true, source: product?.runtime?.board === 'atoms3' ? 'agent' : 'scene', ...orientationSample([0,0,0,1]), delivery: 'configured', guestTime: null});
+  const imuModel = () => ({stopwatch:'bmi270-register-subset',atoms3:'mpu6886-register-subset',atoms3r:'bmi270-register-subset'}[product?.runtime?.board] || null);
+  const defaultImu = () => ({enabled: true, source: product?.runtime?.board === 'stopwatch' ? 'scene' : 'agent', ...orientationSample([0,0,0,1]), delivery: 'configured', guestTime: null});
   let imu = defaultImu(), imuPreviousAt = null, imuGeneration = 0;
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
   const snapshot = () => ({ version: API_VERSION, status, scene: clone(scene), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), sdCard:clone(sdCard),leds:clone(leds), imu: imuModel() ? clone(imu) : null, frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });

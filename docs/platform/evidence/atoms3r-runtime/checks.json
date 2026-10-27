@@ -1,0 +1,83 @@
+{
+  "checkedAt": "2026-10-27T06:12:52Z",
+  "baseCommit": "4b89a483e8341b5534c3527167b62553a5e36439",
+  "rustToolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13); rustup update stable completed",
+  "commands": [
+    {
+      "command": "cargo +stable clippy --workspace --all-targets -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "cargo +stable clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<absolute-rom-directory> cargo +stable test --release --workspace -- --include-ignored --skip external_",
+      "status": "pass",
+      "passed": 1359
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "status": "pass",
+      "passed": 57
+    },
+    {
+      "command": "uv run --with jsonschema python tools/validate-platform-catalog.py",
+      "status": "pass",
+      "products": 83,
+      "accessories": 5,
+      "firmwares": 106,
+      "watchlist": 44
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<absolute-rom-directory> node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices",
+      "status": "pass",
+      "scenarios": 10
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<absolute-rom-directory> node tools/platform-recording-test.mjs --real --receipt <output.json>",
+      "status": "pass",
+      "events": 18,
+      "frameComparison": "different",
+      "limitation": "Timing contract passes; final frame equality is observational, not guaranteed cycle-exact replay. No new timing optimization or root-cause claim."
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<absolute-rom-directory> node tools/wasm-test.mjs demo-stopwatch",
+      "status": "pass"
+    },
+    {
+      "command": "node tools/probe-atoms3r.mjs --build output/atoms3r-build",
+      "status": "pass",
+      "receipt": "fixture.json"
+    },
+    {
+      "command": "python tools/rebuild-product-model.py build m5stack-c126 --scratch output/atoms3r-public-rebuild",
+      "status": "pass",
+      "receipt": "model-rebuild.json"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "status": "pass",
+      "scope": "Existing docs/evidence paths; new docs/platform/evidence/atoms3r-runtime JSON additionally scanned for personal paths/email/SSH/local hostnames and images reviewed manually."
+    }
+  ],
+  "scope": "No bus/device_set/IRQ/general per-tick changes. New devices are only instantiated by atoms3r; package eFuse setup executes once at board construction. No hot-path performance experiment.",
+  "negativeResults": [
+    {
+      "stage": "ESP-IDF environment",
+      "result": "Installed Python 3.14 environment failed existing esp-coredump constraint; activated existing IDF 5.5/Python 3.11 environment without changing packages."
+    },
+    {
+      "stage": "Clippy",
+      "result": "Initial color expression needed explicit parentheses; corrected, both -D warnings commands pass."
+    },
+    {
+      "stage": "workspace tests",
+      "result": "Unmerged worktree initially lacked ignored P4 then C6 hosted fixtures; hydrated existing public CI artifacts and reran the complete suite successfully."
+    },
+    {
+      "stage": "knowledge test",
+      "result": "Initial index timestamp not updated because an update script used the wrong array key; corrected the entry and global index timestamps, 57 Node tests pass."
+    }
+  ]
+}

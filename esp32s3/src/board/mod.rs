@@ -13,6 +13,7 @@ pub use esp_soc::board::{Board, BoardEdge, BoardModel, NoBoard, VirtualCycle};
 
 pub mod atech14;
 pub mod atoms3;
+pub mod atoms3r;
 pub mod stopwatch;
 pub mod papermono;
 pub mod cardputer_adv;
@@ -24,6 +25,7 @@ pub mod waveshare_lcd4b;
 
 pub use atech14::*;
 pub use atoms3::*;
+pub use atoms3r::*;
 pub use stopwatch::*;
 pub use papermono::*;
 pub use cardputer_adv::*;
@@ -37,6 +39,7 @@ pub fn make_board(name: &str) -> Option<Board> {
     match name {
         "atech14" | "atech" => Some(Box::new(Atech14::new())),
         "none" | "bare" => Some(Box::new(NoBoard)),
+        "atoms3r" | "m5stack-atoms3r" => Some(Box::new(AtomS3R::new())),
         "atoms3" | "m5stack-atoms3" => Some(Box::new(AtomS3::new())),
         "papermono" | "m5stack-papermono" => Some(Box::new(PaperMono::new())),
         "cardputer" | "m5stack-cardputer" => Some(Box::new(Cardputer::new())),
@@ -47,4 +50,11 @@ pub fn make_board(name: &str) -> Option<Board> {
         "waveshare-amoled18-v2" | "amoled18-v2" => Some(Box::new(WaveshareAmoled18V2::new())),
         _ => None,
     }
+}
+
+/// Cold board identity setup: ESP-IDF v5.5.1 S3 efuse_reg.h RD_MAC_SPI_SYS_3
+/// offset 0x50, PKG_VERSION bits 23:21; M5GFX 65c816a3 identifies PICO as 1.
+/// v4.4.8 defines the same offset/field. No changes for other products.
+pub fn configure_chip_identity(board:&str,efuse:&mut esp_periph::efuse::Efuse) {
+    if board=="atoms3r" {let r=efuse.ram.read(0x50);efuse.ram.write(0x50,(r&!(7<<21))|(1<<21));}
 }
