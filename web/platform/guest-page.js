@@ -172,8 +172,10 @@ function guestBootstrap(config,createStorage) {
     const entries=[...data];if(entries.some(([,value])=>typeof value!=='string'))throw new Error('File upload needs the advanced network mapping.');
     const body=new URLSearchParams(entries).toString();if(method==='GET'){url.search=body;message('navigate',{url:url.href});}else message('navigate',{url:url.href,method,headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
   };
-  document.addEventListener('click',event=>{const a=event.target.closest?.('a[href]');if(!a||event.defaultPrevented)return;event.preventDefault();try{navigate(a.getAttribute('href'));}catch(error){message('error',{message:error.message});}});
-  document.addEventListener('submit',event=>{if(event.defaultPrevented)return;event.preventDefault();try{submit(event.target,event.submitter);}catch(error){message('error',{message:error.message});}});
+  // Firmware commonly delegates events to document. Run the native-action fallback one
+  // bubbling level later so those handlers can preventDefault and perform their own fetch.
+  window.addEventListener('click',event=>{const a=event.target.closest?.('a[href]');if(!a||event.defaultPrevented)return;event.preventDefault();try{navigate(a.getAttribute('href'));}catch(error){message('error',{message:error.message});}});
+  window.addEventListener('submit',event=>{if(event.defaultPrevented)return;event.preventDefault();try{submit(event.target,event.submitter);}catch(error){message('error',{message:error.message});}});
   HTMLFormElement.prototype.submit=function(){submit(this);};
   addEventListener('error',event=>message('error',{message:event.message||'A firmware page resource failed to load.'}));
   addEventListener('unhandledrejection',event=>message('error',{message:event.reason?.message||String(event.reason)}));
