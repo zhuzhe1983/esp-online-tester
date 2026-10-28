@@ -818,6 +818,27 @@ fn external_s31_guest_measures_clock_divider_and_timeout_without_read_side_compl
 }
 
 #[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_SYSTIMER_ELF"]
+fn external_s31_systimer_clock_snapshot_alarm_wfi_and_real_guest_irq() {
+    use emu_core::Bus;
+    let path = std::env::var("S31_SYSTIMER_ELF").expect("build firmware/s31-uart-probe and set S31_SYSTIMER_ELF");
+    let bytes = std::fs::read(path).unwrap(); let mut m = esp32s31::Bringup::new(); m.load_elf(&bytes).unwrap();
+    assert_eq!(m.run(20000).stop, esp32s31::Stop::Budget); assert_eq!(m.bus.systimer.counters(), [0; 2]); assert!(m.bus.uart0.tx_out.is_empty());
+    // Continue the unchanged guest, now with the documented explicit nominal
+    // clock relationship. It programs a future alarm and genuinely reaches WFI.
+    m.set_systimer_from_cpu(true); let first = m.run(2000);
+    assert_eq!(first.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.systimer.events, [0; 3]); assert_eq!(m.bus.read32(0x2f060000), Ok(0));
+    let counters = m.bus.systimer.counters(); assert_eq!(m.run(1000).steps, 0); assert_eq!(m.bus.systimer.counters(), counters);
+    // A halted hart does not manufacture elapsed time. Supply512 actual timer
+    // edges; the routed interrupt wakes it and its own ISR clears the source.
+    m.advance_systimer_ticks(512); let second = m.run(2000);
+    eprintln!("systimer strict=20000 pre-wfi={} post-input={} stop={:?} counters={:?} events={:?} uart={:?}", first.steps, second.steps, second.stop, m.bus.systimer.counters(), m.bus.systimer.events, String::from_utf8_lossy(&m.bus.uart0.tx_out));
+    assert_eq!(second.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.systimer.events, [1, 0, 0]);
+    assert_eq!(m.bus.uart0.tx_out, b"S31 SYSTIMER CLOCK SNAPSHOT IRQ MRET PASS\n");
+    assert_eq!(m.bus.read32(0x2f060000), Ok(1)); assert!(m.bus.first_fault.is_none());
+}
+
+#[test]
 #[ignore = "build firmware/s31-uart-probe and set S31_MODEM_CLOCKS_ELF"]
 fn external_s31_modem_clocks_share_actual_i2c_gate_and_reset_with_uart_configuration() {
     use emu_core::Bus;

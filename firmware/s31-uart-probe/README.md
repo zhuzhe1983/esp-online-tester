@@ -333,3 +333,12 @@ clock and reading the unchanged digest. Six negative modes access gated SHA,
 unimplemented ETM data, unsupported LCDCAM activation, or a PMS-denied TEE,
 LP_PERICLKRST or CNNT word. No mode replaces a denied read with a fake value.
 These tests do not implement the data planes behind the new clock requests.
+
+`systimer-probe.S` verifies real snapshot polling, a future one-shot target,
+source33/CLIC delivery, interrupt acknowledgement and `mret`. Set
+`S31_SYSTIMER_ELF`. The first20000 instructions have no timer clock input and
+cannot leave the snapshot loop. Explicit nominal CPU/source timing lets the
+guest reach WFI;512 explicitly supplied timer ticks then wake it through its
+actual interrupt handler. The handler checks RAW cannot be cleared by writing
+status and clears it through INT_CLR before writing its mailbox and UART PASS.
+No automatic idle-time advance or complete product readiness is implied.

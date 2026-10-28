@@ -87,6 +87,7 @@ impl Clocks {
     pub fn set_fosc_power(&mut self, on: bool) { self.fosc = on; }
     // clk_tree_defs.h gives nominal17.5MHz; older LL comments call this20MHz.
     // These are functional rates, not oscillator calibration or a wall-clock model.
+    pub fn rc_fast_hz(&self) -> u64 { if self.fosc { 17_500_000 } else { 0 } }
     pub fn rtc_fast_hz(&self) -> u64 { if self.lp_root & (1 << 26) != 0 { 40_000_000 } else if self.fosc { 17_500_000 } else { 0 } }
     pub fn rtc_slow_hz(&self) -> u64 { 136_000 }
     /// Fixed clk_tree_ll frequency-calculation mux. Returns absent clocks as zero;

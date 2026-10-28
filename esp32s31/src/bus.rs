@@ -74,6 +74,7 @@ pub struct S31Bus {
     pub mwdt: [Mwdt; 2],
     pub rtc_calibration: crate::rtc_calibration::Calibration,
     pub rtc_timer: RtcTimer,
+    pub systimer: crate::systimer::Systimer,
     pc: u32, pub first_fault: Option<AccessFault>,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
@@ -87,7 +88,7 @@ impl S31Bus {
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16],
-            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), startup_clocks: StartupClocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), cores: CoreControl::default(), hart: 0, reservations: [None; 2], mwdt: std::array::from_fn(|_| Mwdt::default()), rtc_timer: RtcTimer::default(), rtc_calibration: crate::rtc_calibration::Calibration::default(), pc: 0, first_fault: None }
+            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), startup_clocks: StartupClocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), cores: CoreControl::default(), hart: 0, reservations: [None; 2], mwdt: std::array::from_fn(|_| Mwdt::default()), rtc_timer: RtcTimer::default(), systimer: crate::systimer::Systimer::default(), rtc_calibration: crate::rtc_calibration::Calibration::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -127,7 +128,7 @@ impl S31Bus {
         let conf = self.uart0.read(0x20); self.uart0.write(0x20, conf | 1 << 22); self.uart0.write(0x20, conf);
         self.uart0.int_raw = (1 << 14) | 2;
     }
-    fn irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.efuse.irq(), usb: self.usb_console.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.mwdt[0].irq(), self.mwdt[1].irq()] } }
+    fn irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.efuse.irq(), usb: self.usb_console.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.mwdt[0].irq(), self.mwdt[1].irq()], systimer: self.systimer.irqs() } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
@@ -149,6 +150,10 @@ impl S31Bus {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             if address == crate::rtc_timer::RESET { return Ok(self.rtc_timer.reset_read()); }
             return match self.rtc_timer.read(address & 0xfff) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
+        if crate::systimer::Systimer::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.systimer.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if crate::rtc_calibration::Calibration::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -323,6 +328,10 @@ impl S31Bus {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             if address == crate::rtc_timer::RESET { self.rtc_timer.reset_write(value); return Ok(()); }
             return match self.rtc_timer.write(address & 0xfff, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if crate::systimer::Systimer::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.systimer.write(address, value) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if crate::rtc_calibration::Calibration::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }

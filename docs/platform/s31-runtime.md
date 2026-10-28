@@ -3,7 +3,8 @@
 Status on 2026-10-28: Metalio INK4 Plus remains **unavailable** in this platform.
 The private S31 core now executes the original ROM, bootloader and official
 application entry with explicitly declared development inputs. It currently stops
-during application PMU/clock initialization. No product framebuffer or complete
+during application PSRAM interrupt initialization, after system-timer setup and
+adding the PSRAM heap. No product framebuffer or complete
 board support has been established. The earlier separate Espressif emulator
 baseline below is retained for comparison, not presented as this core's result.
 
@@ -1523,3 +1524,61 @@ unfinished; **INK4 Plus is still unavailable, with no framebuffer**.
 
 See the [startup clock receipt](evidence/s31-bringup/peripheral-clocks.json) and
 [official image observation](evidence/s31-bringup/peripheral-clocks-plus-2.0.68-final.json).
+
+## SYSTIMER counters, snapshots and guest alarm interrupt (2026-10-28)
+
+The private S31 timer uses its own documented `20399000` register window and
+`20587120` clock/reset word. It has two52-bit counters, three independently
+selected comparators, source33/34/35 interrupt routes, and the fixed divide-by2.5
+clock relationship. APB access gating is separate from counter-clock gating;
+the local `CLK_EN` bit selects automatic/free-running register-clock policy and
+does not stop the counter when clear. XTAL uses40MHz; the optional RC_FAST path
+uses the existing power-gated nominal17.5MHz source, not a measured oscillator.
+
+Snapshot validity begins clear and only becomes valid after an actual update
+request crosses an explicit timer edge. Reading status or writing its SS/WTC
+bits does not complete work. Counter and comparator loads use their WT bits;
+zero does nothing. Alarms retain active targets separately from pending register
+values, honor unit/work/stall gates, and latch raw interrupts independently of
+interrupt enables. Only the paired clear register clears raw status. Periodic
+comparators handle52-bit wrap and large elapsed inputs without per-event loops
+or guest-triggered arithmetic overflow. The permissions route uses the real
+HP_PERI1_PMS control at offset60. ETM enable configuration is retained, but no
+ETM event consumer or sleep transition is claimed.
+
+`--systimer-from-cpu` is a separate, explicit development timing option. It
+converts one nominal CPU quantum per dual-hart round into source ticks, retaining
+fractional progress across CPU frequency changes. It does not silently enable
+RTC/watchdog time or claim instruction-accurate timing. A completely waiting
+machine still returns `Waiting`; callers can supply explicit timer edges with
+`advance_systimer_ticks`. There is no automatic idle-time jump in this stage.
+Synchronization on the next timer edge is a functional model, not measured CDC
+latency. FORCE_NORST precedence and zero-period alarms remain unsupported.
+The retained September2026 public TRM still marks its System Timer chapter
+“to be added later” (27%); register semantics and clock ratio here come from
+the fixed public IDF headers/HAL. Wrap and batching tests establish the declared
+functional model, not silicon validation of edge ordering or simultaneous events.
+
+The source fixture first executes20000 instructions without a timer input and
+stays in the real snapshot polling loop. Enabling the nominal clock conversion
+lets the same guest program its alarm and reach WFI after44 instructions. With
+no further edges it remains asleep and produces no interrupt. Supplying512
+timer edges wakes the guest through the actual matrix/CLIC route; its own ISR
+checks and clears status, returns with `mret`, and prints
+`S31 SYSTIMER CLOCK SNAPSHOT IRQ MRET PASS` after241 further instructions. The
+host neither writes completion flags nor changes the PC to obtain that result.
+
+With the same original Plus2.0.68 complete image and the previously declared
+development electrical/clock inputs, execution now passes SYSTIMER initialization
+and prints `Adding pool of 32768K of PSRAM memory to heap allocator`. The next
+actual fault is a store to the PSRAM controller's interrupt-enable register
+`205020c0`, CPU0 PC`4000bb2c`, after72,090,520 total instructions. There are no
+timer alarm events before that stop. This is not a scheduler or display pass:
+**INK4 Plus remains unavailable, with no framebuffer**.
+The same complete image without `--systimer-from-cpu` exhausts100,000,000
+instructions at PC`2f808cb6`, with no access fault, zero timer ticks/counters and
+no fabricated snapshot acknowledgement. Its earlier RTC clock inputs remain
+unchanged, so this control isolates the missing SYSTIMER input.
+
+See the [timer receipt](evidence/s31-bringup/systimer.json) and
+[official image observation](evidence/s31-bringup/systimer-plus-2.0.68-final.json).

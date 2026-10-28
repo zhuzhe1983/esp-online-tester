@@ -18,6 +18,7 @@ impl Default for CoreControl {
 impl CoreControl {
     pub fn is_mmio(address: u32) -> bool { matches!(address & !3, CTRL0 | CTRL1 | STALL | STALLED | BOOT1) }
     pub fn running(&self, core: usize) -> bool { self.controls[core] & 6 == 2 && !self.stalled[core] }
+    pub fn stalled(&self) -> [bool; 2] { self.stalled }
     pub fn clic_on(&self, core: usize) -> bool { self.controls[core] & 5 == 1 }
     pub fn take_resets(&mut self) -> [bool; 2] { std::mem::take(&mut self.reset_pending) }
     pub fn read(&self, address: u32) -> Result<u32, Fault> {
