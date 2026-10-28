@@ -4,10 +4,13 @@ import argparse,hashlib,json,datetime
 from pathlib import Path
 import numpy as np,cv2
 from PIL import Image,ImageDraw
-p=argparse.ArgumentParser();p.add_argument('--renders',type=Path,default=Path('output/playwright'));a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--renders',type=Path,default=Path('output/playwright'));p.add_argument('--evidence-dir',type=Path);a=p.parse_args()
 id='m5stack-unit-env4-u001d';assets=Path('web/platform/assets')/id;evidence=Path('docs/platform/evidence')/id
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 meta=json.loads((assets/'model.json').read_text());report=json.loads((evidence/'verification.json').read_text());assert report['modelSha256']==sha(assets/'model.json')
+if a.evidence_dir:
+ evidence=a.evidence_dir;evidence.mkdir(parents=True,exist_ok=True)
+report['dimensions']=[d for d in report['dimensions'] if not d['name'].startswith('hole')]
 # Official drawing: two diameter5 mounting holes,16 apart,12 from bottom.
 binary=(assets/'geometry.bin').read_bytes();v=np.concatenate([np.frombuffer(binary,dtype='<f4',offset=x['byteOffset'],count=x['vertexCount']*6).reshape(-1,6)[:,:3] for x in meta['parts'] if x['sourceComponent'] is not None]);centers=[]
 for x in [-8,8]:

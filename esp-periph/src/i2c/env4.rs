@@ -10,31 +10,8 @@ impl Environment {
     // Intersection of SHT40 (-40..125 C) and BMP280 (-40..85 C) operating ranges.
     pub fn valid(self)->bool {self.temperature_c.is_finite()&&(-40.0..=85.0).contains(&self.temperature_c)&&self.humidity_percent.is_finite()&&(0.0..=100.0).contains(&self.humidity_percent)&&self.pressure_hpa.is_finite()&&(300.0..=1100.0).contains(&self.pressure_hpa)}
 }
-fn crc(bytes:&[u8])->u8 {let mut c=0xffu8;for b in bytes {c^=*b;for _ in 0..8 {c=if c&0x80!=0 {(c<<1)^0x31}else{c<<1};}}c}
-fn words(a:u16,b:u16)->[u8;6] {let a=a.to_be_bytes();let b=b.to_be_bytes();[a[0],a[1],crc(&a),b[0],b[1],crc(&b)]}
-#[derive(Default)]
-struct Sht40 {ready:u64,response:Option<[u8;6]>,readout:[u8;6],at:usize,general:bool,written:bool}
-impl Sht40 {
-    fn reset(&mut self,now:u64,hz:u64) {*self=Self{ready:now.saturating_add(hz/1000),..Self::default()};}
-    fn start(&mut self,now:u64,read:bool,general:bool)->bool {
-        self.general=general;self.written=false;
-        if read {if now<self.ready {return false;}let Some(data)=self.response.take()else{return false};self.readout=data;self.at=0;}
-        // Write commands may abort a conversion using reset (datasheet §4.7).
-        true
-    }
-    fn write(&mut self,now:u64,hz:u64,b:u8,sample:Environment)->bool {
-        if self.written {return false;}self.written=true;
-        if self.general {if b==6 {self.reset(now,hz);return true;}return false;}
-        if b==0x94 {self.reset(now,hz);return true;}
-        if now<self.ready {return false;}
-        if b==0x89 {self.response=Some(words(0x4553,0x5034));return true;} // Stable virtual serial; not a physical sensor identity.
-        let micros=match b {0xfd=>8200,0xf6=>4500,0xe0=>1700,_=>return false};
-        let t=((sample.temperature_c+45.0)*65535.0/175.0).round() as u16;
-        let h=((sample.humidity_percent+6.0)*65535.0/125.0).round() as u16;
-        self.response=Some(words(t,h));self.ready=now.saturating_add(hz/1_000_000*micros);true
-    }
-    fn read(&mut self)->u8 {let value=self.readout.get(self.at).copied().unwrap_or(0xff);self.at=self.at.saturating_add(1);value}
-}
+use super::{I2cDevice,sht4x::{Sht4x,Sht4xState}};
+use std::sync::{Arc,Mutex};
 
 // Deterministic virtual trimming, from M5Unit-ENV's datasheet_trimming test at
 // 28c521a137cb6696f4860cdce93ca7df9ce9a6af. Not calibration measured on a unit.
@@ -103,18 +80,22 @@ impl Bmp280 {
     }
 }
 
-pub struct Env4 {pub sample:Environment,pub connected:bool,powered:bool,cycle:u64,hz:u64,sht:Sht40,bmp:Bmp280}
+pub struct Env4 {pub sample:Environment,pub connected:bool,powered:bool,cycle:u64,hz:u64,sht:Sht4x,sht_state:Arc<Mutex<Sht4xState>>,general:bool,bmp:Bmp280}
 impl Env4 {
-    pub fn new(hz:u64)->Self {Self{sample:Environment::default(),connected:false,powered:false,cycle:0,hz,sht:Sht40::default(),bmp:Bmp280::default()}}
-    pub fn update(&mut self,cycle:u64,connected:bool,sample:Environment)->bool {if !sample.valid(){return false;}self.advance_to(cycle);self.connected=connected;self.sample=sample;true}
-    pub fn set_power(&mut self,supply:bool) {let powered=supply&&self.connected;if powered!=self.powered {self.powered=powered;self.sht.reset(self.cycle,self.hz);self.bmp.reset(self.cycle,self.hz);}}
-    pub fn advance_to(&mut self,cycle:u64) {self.cycle=cycle;if self.powered {self.bmp.advance(cycle,self.hz,self.sample);}}
+    pub fn new(hz:u64)->Self {
+        let state=Arc::new(Mutex::new(Sht4xState{serial:0x45535034,powered:false,..Sht4xState::default()}));
+        let sht=Sht4x::new(state.clone(),hz/1_000_000).with_sht40_d1_v2();
+        Self{sample:Environment::default(),connected:false,powered:false,cycle:0,hz,sht,sht_state:state,general:false,bmp:Bmp280::default()}
+    }
+    pub fn update(&mut self,cycle:u64,connected:bool,sample:Environment)->bool {if !sample.valid(){return false;}self.advance_to(cycle);self.connected=connected;self.sample=sample;let mut s=self.sht_state.lock().expect("ENV SHT state poisoned");s.temperature_c=sample.temperature_c;s.humidity_rh=sample.humidity_percent;true}
+    pub fn set_power(&mut self,supply:bool) {let powered=supply&&self.connected;if powered!=self.powered {self.powered=powered;self.sht.reset_at(self.cycle);self.sht_state.lock().expect("ENV SHT state poisoned").powered=powered;self.bmp.reset(self.cycle,self.hz);}}
+    pub fn advance_to(&mut self,cycle:u64) {self.cycle=cycle;self.sht_state.lock().expect("ENV SHT state poisoned").cycle=cycle;if self.powered {self.bmp.advance(cycle,self.hz,self.sample);}}
     pub fn start(&mut self,address:u8,read:bool,general:bool)->bool {
         if !self.powered {return false;}
-        if address==0x44 {self.sht.start(self.cycle,read,general)}else if address==0x76&&!general {self.bmp.start(read);true}else{false}
+        if address==0x44 {{self.general=general;self.sht.start(read)}}else if address==0x76&&!general {self.bmp.start(read);true}else{false}
     }
     pub fn write(&mut self,address:u8,byte:u8)->bool {if !self.powered {return false;}
-        if address==0x44 {self.sht.write(self.cycle,self.hz,byte,self.sample)}else if address==0x76 {self.bmp.write(self.cycle,self.hz,byte)}else{false}}
+        if address==0x44 {if self.general {if byte==6 {self.sht.write(0x94)}else{false}}else{self.sht.write(byte)}}else if address==0x76 {self.bmp.write(self.cycle,self.hz,byte)}else{false}}
     pub fn read(&mut self,address:u8)->u8 {if !self.powered {return 0xff;}
         if address==0x44 {self.sht.read()}else if address==0x76 {self.bmp.read(self.cycle,self.hz)}else{0xff}}
 }
@@ -122,6 +103,8 @@ impl Env4 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    fn crc(bytes:&[u8])->u8 {let mut c=0xffu8;for b in bytes {c^=*b;for _ in 0..8 {c=if c&0x80!=0 {(c<<1)^0x31}else{c<<1};}}c}
+    fn words(a:u16,b:u16)->[u8;6] {let a=a.to_be_bytes();let b=b.to_be_bytes();[a[0],a[1],crc(&a),b[0],b[1],crc(&b)]}
     fn active()->Env4 {let mut d=Env4::new(1_000_000);assert!(d.update(0,true,Environment::default()));d.set_power(true);d.advance_to(2_000);d}
     fn write(d:&mut Env4,reg:u8,value:u8) {assert!(d.start(0x76,false,false));assert!(d.write(0x76,reg));assert!(d.write(0x76,value));}
     fn read(d:&mut Env4,reg:u8)->u8 {assert!(d.start(0x76,false,false));assert!(d.write(0x76,reg));assert!(d.start(0x76,true,false));d.read(0x76)}
