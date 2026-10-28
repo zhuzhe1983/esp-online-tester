@@ -197,9 +197,11 @@ fn light_sleep_does_not_enter_deep_sleep() {
     m.bus.write32(RTC + 0x18, 1 << 31).unwrap();
     let before = m.insns();
     m.run(128);
-    assert!(m.insns() > before);
+    assert_eq!(m.insns(), before, "light sleep also parks the CPUs");
     m.bus.gpio_set_input(0, false);
     assert!(!m.bus.sw_reset());
+    m.run(128);
+    assert!(m.insns() > before, "light sleep resumes without reset");
 }
 
 struct UnitCost;
