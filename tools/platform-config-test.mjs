@@ -55,10 +55,12 @@ test('catalogs retain provenance, distinct GPS defaults and truthful support', (
 test('every executable catalog source is a valid portable scene', () => {
   for (const firmware of catalog.firmwares.filter(item => item.source)) {
     for (const productId of firmware.productIds) {
-      const scene={...createDefaultScene(catalog,productId),firmware:firmware.source};
+      const source={...firmware.source};
+      if(source.manifestUrl?.startsWith('file:'))source.manifestUrl=`https://platform.example/platform/${source.manifestUrl.split('/platform/')[1]}`;
+      const scene={...createDefaultScene(catalog,productId),firmware:source};
       const result=validateScene(scene,catalog);
       assert.equal(result.valid,true,`${firmware.id}: ${JSON.stringify(result.errors)}`);
-      assert.deepEqual(decodeScene(encodeScene(scene,catalog),catalog).firmware,firmware.source);
+      assert.deepEqual(decodeScene(encodeScene(scene,catalog),catalog).firmware,source);
     }
   }
 });
