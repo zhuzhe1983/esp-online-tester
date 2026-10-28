@@ -315,7 +315,7 @@
       "id": "meshtastic",
       "name": "Meshtastic",
       "category": "mesh",
-      "description": "按板型分别关注Unit C6L和Cardputer Mesh Kit的Meshtastic稳定版及Alpha发布；远程完整factory镜像。",
+      "description": "按具体板型关注 M5Stack 与 LILYGO 的 Meshtastic 发布；不同芯片和设备分别映射完整 factory 镜像。",
       "upstreamRepo": "meshtastic/firmware",
       "metadataUrl": "https://api.github.com/repos/meshtastic/firmware/releases/latest",
       "releaseUrl": "https://github.com/meshtastic/firmware/releases/tag/v2.7.26.54e0d8d",
@@ -354,15 +354,42 @@
           "sha256": "fe9c9736e7252890357707a5d77298722af025e6806c96ae249324b0a0a8bd7f",
           "format": "merged",
           "sourcePolicy": "immutable-pinned"
+        },
+        {
+          "name": "firmware-t-deck-2.7.26.54e0d8d.factory.bin",
+          "url": "https://release.meshtastic.org/2.7.26.54e0d8d/firmware-t-deck-2.7.26.54e0d8d.factory.bin",
+          "sha256": "f55469e588ea79ded5fa4fce58900bc0252021ab02e79329dc77bedfce40ab13",
+          "bytes": 2306304,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        },
+        {
+          "name": "firmware-tbeam-2.7.26.54e0d8d.factory.bin",
+          "url": "https://release.meshtastic.org/2.7.26.54e0d8d/firmware-tbeam-2.7.26.54e0d8d.factory.bin",
+          "sha256": "58170de4aded78aead0e43e064429189caaccc0aa888d7c980cb85d676006fef",
+          "bytes": 2243856,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        },
+        {
+          "name": "firmware-t-watch-s3-2.7.26.54e0d8d.factory.bin",
+          "url": "https://release.meshtastic.org/2.7.26.54e0d8d/firmware-t-watch-s3-2.7.26.54e0d8d.factory.bin",
+          "sha256": "3c2f18f63f6d60b74e62588d340cebc94baccfb76a621336482a5272587fb74d",
+          "bytes": 2316592,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
         }
       ],
       "compatibility": {
         "status": "reference-only",
         "productIds": [
           "m5stack-u202",
-          "m5stack-k152"
+          "m5stack-k152",
+          "lilygo-t-deck",
+          "lilygo-t-beam-v1-2",
+          "lilygo-t-watch-s3"
         ],
-        "note": "官方上游支持的设备目标；两款产品的板级模拟尚未适配，未执行或实机刷写验证。"
+        "note": "逐板型官方目标清单与芯片身份已核对；不以源码支持代替模拟或实机验证。"
       },
       "storage": "remote-links-only",
       "browserInstallUrl": "https://flasher.meshtastic.org/",
@@ -440,6 +467,60 @@
             "url": "https://release.meshtastic.org/2.8.1.8e6a88d/firmware-m5stack-cardputer-adv-2.8.1.8e6a88d.mt.json",
             "note": "Exact platformioTarget, mcu and version from Meshtastic official target manifest; factory.bin only, not app-only or a chip-family ZIP."
           }
+        },
+        {
+          "firmwareId": "lilygo-t-deck-meshtastic-stable",
+          "productIds": [
+            "lilygo-t-deck"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^firmware-t\\-deck-[0-9A-Za-z.-]+\\.factory\\.bin$",
+          "nameTemplate": "Meshtastic · LILYGO T-Deck · SX1262 · {version}",
+          "basis": {
+            "url": "https://release.meshtastic.org/2.7.26.54e0d8d/firmware-t-deck-2.7.26.54e0d8d.mt.json",
+            "note": "精确官方板型文件名；不匹配 Plus、Pro、触摸版、其他射频版本或 app-only 文件。"
+          },
+          "boardTarget": "t-deck",
+          "targetChip": "esp32s3"
+        },
+        {
+          "firmwareId": "lilygo-t-beam-v1-2-meshtastic-stable",
+          "productIds": [
+            "lilygo-t-beam-v1-2"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^firmware-tbeam-[0-9A-Za-z.-]+\\.factory\\.bin$",
+          "nameTemplate": "Meshtastic · LILYGO T-Beam V1.2 · SX1276 · {version}",
+          "basis": {
+            "url": "https://release.meshtastic.org/2.7.26.54e0d8d/firmware-tbeam-2.7.26.54e0d8d.mt.json",
+            "note": "精确官方板型文件名；不匹配 Plus、Pro、触摸版、其他射频版本或 app-only 文件。"
+          },
+          "boardTarget": "tbeam",
+          "targetChip": "esp32"
+        },
+        {
+          "firmwareId": "lilygo-t-watch-s3-meshtastic-stable",
+          "productIds": [
+            "lilygo-t-watch-s3"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^firmware-t\\-watch\\-s3-[0-9A-Za-z.-]+\\.factory\\.bin$",
+          "nameTemplate": "Meshtastic · LILYGO T-Watch S3 · SX1262 · {version}",
+          "basis": {
+            "url": "https://release.meshtastic.org/2.7.26.54e0d8d/firmware-t-watch-s3-2.7.26.54e0d8d.mt.json",
+            "note": "精确官方板型文件名；不匹配 Plus、Pro、触摸版、其他射频版本或 app-only 文件。"
+          },
+          "boardTarget": "t-watch-s3",
+          "targetChip": "esp32s3"
         }
       ],
       "catalogSyncNote": "GitHub发布列表 + 官方逐板型mt.json；芯片、板型、版本及factory文件名必须一致。当前mt.json只有MD5，新版本缺少SHA-256时报告候选并保留已固定镜像。",
@@ -472,6 +553,27 @@
             "m5stack-k152"
           ],
           "version": "v2.8.1.8e6a88d"
+        },
+        {
+          "firmwareId": "lilygo-t-deck-meshtastic-stable",
+          "productIds": [
+            "lilygo-t-deck"
+          ],
+          "version": "2.7.26.54e0d8d"
+        },
+        {
+          "firmwareId": "lilygo-t-beam-v1-2-meshtastic-stable",
+          "productIds": [
+            "lilygo-t-beam-v1-2"
+          ],
+          "version": "2.7.26.54e0d8d"
+        },
+        {
+          "firmwareId": "lilygo-t-watch-s3-meshtastic-stable",
+          "productIds": [
+            "lilygo-t-watch-s3"
+          ],
+          "version": "2.7.26.54e0d8d"
         }
       ]
     },
@@ -6200,6 +6302,502 @@
       ],
       "storage": "remote-links-only",
       "releaseHistoryLimit": 5
+    },
+    {
+      "id": "lilygo-factory-s3",
+      "name": "LILYGO T-Display-S3 · 非触摸版 官方出厂固件",
+      "category": "factory",
+      "description": "固定官方仓库提交的出厂测试镜像；发布资产不匹配或没有发布源 SHA-256 时保留本版。",
+      "upstreamRepo": "Xinyuan-LilyGO/T-Display-S3",
+      "metadataUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Display-S3/releases/latest",
+      "releaseUrl": "https://github.com/Xinyuan-LilyGO/T-Display-S3/tree/1cc41eb1c76b2f3215130a3dd64e7138ce00b482/firmware",
+      "version": "20231013",
+      "checkedAt": "2026-10-28T04:32:43Z",
+      "assets": [
+        {
+          "name": "t-display-s3-no-touch-20231013_0x0.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3/1cc41eb1c76b2f3215130a3dd64e7138ce00b482/firmware/t-display-s3-no-touch-20231013_0x0.bin",
+          "sha256": "f288081645eecf7bf6a17fd7b5bc2e724121d00cdc2099b5a5ea7db5107eb9fa",
+          "bytes": 1601328,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "lilygo-t-display-s3"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确硬件版本映射与完整镜像校验，不代表模拟兼容。"
+      },
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [
+        {
+          "firmwareId": "lilygo-t-display-s3-factory",
+          "productIds": [
+            "lilygo-t-display-s3"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^t-display-s3-no-touch-[0-9]+_0x0\\.bin$",
+          "nameTemplate": "LILYGO T-Display-S3 · 非触摸版 官方出厂测试 · {version}",
+          "basis": {
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3/1cc41eb1c76b2f3215130a3dd64e7138ce00b482/firmware/README.MD",
+            "note": "限定此设备、射频/触摸版本及完整 factory 镜像文件名；仓库文件不会因项目最新 release 自动漂移。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "lilygo-factory-original",
+      "name": "LILYGO TTGO T-Display · 4MB 官方出厂固件",
+      "category": "factory",
+      "description": "固定官方仓库提交的出厂测试镜像；发布资产不匹配或没有发布源 SHA-256 时保留本版。",
+      "upstreamRepo": "Xinyuan-LilyGO/TTGO-T-Display",
+      "metadataUrl": "https://api.github.com/repos/Xinyuan-LilyGO/TTGO-T-Display/releases/latest",
+      "releaseUrl": "https://github.com/Xinyuan-LilyGO/TTGO-T-Display/tree/6f89cddcde7152b84f7afc1831b6a1dee1fc3206/firmware",
+      "version": "repo-6f89cddc",
+      "checkedAt": "2026-10-28T04:32:43Z",
+      "assets": [
+        {
+          "name": "firmware.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/TTGO-T-Display/6f89cddcde7152b84f7afc1831b6a1dee1fc3206/firmware/firmware.bin",
+          "sha256": "85a2598f363a96c4d4eb4aebad5af81c286653eab0d20543110546e4d2c7b9ed",
+          "bytes": 807728,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "lilygo-ttgo-t-display"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确硬件版本映射与完整镜像校验，不代表模拟兼容。"
+      },
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [
+        {
+          "firmwareId": "lilygo-ttgo-t-display-factory",
+          "productIds": [
+            "lilygo-ttgo-t-display"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^firmware\\.bin$",
+          "nameTemplate": "LILYGO TTGO T-Display · 4MB 官方出厂测试 · {version}",
+          "basis": {
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/TTGO-T-Display/6f89cddcde7152b84f7afc1831b6a1dee1fc3206/firmware/README.MD",
+            "note": "限定此设备、射频/触摸版本及完整 factory 镜像文件名；仓库文件不会因项目最新 release 自动漂移。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "lilygo-factory-beam",
+      "name": "LILYGO T-Beam V1.2 · SX1276 官方出厂固件",
+      "category": "factory",
+      "description": "固定官方仓库提交的出厂测试镜像；发布资产不匹配或没有发布源 SHA-256 时保留本版。",
+      "upstreamRepo": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "metadataUrl": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-LoRa-Series/releases/latest",
+      "releaseUrl": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/tree/1991b1ed70915d4f246b841f99f6027166ea7330/firmware",
+      "version": "20260817",
+      "checkedAt": "2026-10-28T04:32:43Z",
+      "assets": [
+        {
+          "name": "tbeam-v1.x-all-band-sx1276-factory-20260817_0x0.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/firmware/tbeam-v1.x-all-band-sx1276-factory-20260817_0x0.bin",
+          "sha256": "2867c0cdfe47a9ad70cb69504a7fbe757ccaf73b044fc2345a2250d93284a4b6",
+          "bytes": 1004784,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "lilygo-t-beam-v1-2"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确硬件版本映射与完整镜像校验，不代表模拟兼容。"
+      },
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [
+        {
+          "firmwareId": "lilygo-t-beam-v1-2-factory",
+          "productIds": [
+            "lilygo-t-beam-v1-2"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^tbeam-v1\\.x-all-band-sx1276-factory-[0-9]+_0x0\\.bin$",
+          "nameTemplate": "LILYGO T-Beam V1.2 · SX1276 官方出厂测试 · {version}",
+          "basis": {
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/firmware/README.MD",
+            "note": "限定此设备、射频/触摸版本及完整 factory 镜像文件名；仓库文件不会因项目最新 release 自动漂移。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "lilygo-factory-deck",
+      "name": "LILYGO T-Deck · SX1262 官方出厂固件",
+      "category": "factory",
+      "description": "固定官方仓库提交的出厂测试镜像；发布资产不匹配或没有发布源 SHA-256 时保留本版。",
+      "upstreamRepo": "Xinyuan-LilyGO/T-Deck",
+      "metadataUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/releases/latest",
+      "releaseUrl": "https://github.com/Xinyuan-LilyGO/T-Deck/tree/2027dee79198af949a9e14e1a09e301f993fc7cf/firmware",
+      "version": "20261024",
+      "checkedAt": "2026-10-28T04:32:43Z",
+      "assets": [
+        {
+          "name": "tdeck-sx1262-factory-20261024-0x0.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/2027dee79198af949a9e14e1a09e301f993fc7cf/firmware/tdeck-sx1262-factory-20261024-0x0.bin",
+          "sha256": "6985490c35ca5e5245321a60036f44f81ae3182423a0194fa74f8bf97870302c",
+          "bytes": 16711680,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "lilygo-t-deck"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确硬件版本映射与完整镜像校验，不代表模拟兼容。"
+      },
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [
+        {
+          "firmwareId": "lilygo-t-deck-factory",
+          "productIds": [
+            "lilygo-t-deck"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^tdeck-sx1262-factory-[0-9]+-0x0\\.bin$",
+          "nameTemplate": "LILYGO T-Deck · SX1262 官方出厂测试 · {version}",
+          "basis": {
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/2027dee79198af949a9e14e1a09e301f993fc7cf/firmware/README.MD",
+            "note": "限定此设备、射频/触摸版本及完整 factory 镜像文件名；仓库文件不会因项目最新 release 自动漂移。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "lilygo-factory-embed",
+      "name": "LILYGO T-Embed CC1101 · V1.0 官方出厂固件",
+      "category": "factory",
+      "description": "固定官方仓库提交的出厂测试镜像；发布资产不匹配或没有发布源 SHA-256 时保留本版。",
+      "upstreamRepo": "Xinyuan-LilyGO/T-Embed-CC1101",
+      "metadataUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Embed-CC1101/releases/latest",
+      "releaseUrl": "https://github.com/Xinyuan-LilyGO/T-Embed-CC1101/tree/c36826e0f91311cb591c4545fccf91e254fc55dc/firmware",
+      "version": "repo-c36826e0",
+      "checkedAt": "2026-10-28T04:32:43Z",
+      "assets": [
+        {
+          "name": "factory.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Embed-CC1101/c36826e0f91311cb591c4545fccf91e254fc55dc/firmware/examples/factory.bin",
+          "sha256": "e7a00ad05e6228d1508c82c79993c2bde25c6be415df611a4b7cae66c119c050",
+          "bytes": 1140112,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "lilygo-t-embed-cc1101"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确硬件版本映射与完整镜像校验，不代表模拟兼容。"
+      },
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [
+        {
+          "firmwareId": "lilygo-t-embed-cc1101-factory",
+          "productIds": [
+            "lilygo-t-embed-cc1101"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^T_Embed_CC1101_HW_V1\\.0_SW_V[0-9.]+\\.bin$",
+          "nameTemplate": "LILYGO T-Embed CC1101 · V1.0 官方出厂测试 · {version}",
+          "basis": {
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Embed-CC1101/c36826e0f91311cb591c4545fccf91e254fc55dc/firmware/README.md",
+            "note": "限定此设备、射频/触摸版本及完整 factory 镜像文件名；仓库文件不会因项目最新 release 自动漂移。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "lilygo-factory-watch",
+      "name": "LILYGO T-Watch S3 · SX1262 官方出厂固件",
+      "category": "factory",
+      "description": "固定官方仓库提交的出厂测试镜像；发布资产不匹配或没有发布源 SHA-256 时保留本版。",
+      "upstreamRepo": "Xinyuan-LilyGO/LilyGoLib",
+      "metadataUrl": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGoLib/releases/latest",
+      "releaseUrl": "https://github.com/Xinyuan-LilyGO/LilyGoLib/tree/57f6414e682ae124817ae0936f7b8251ac17d6c3/firmware",
+      "version": "20260919",
+      "checkedAt": "2026-10-28T04:32:43Z",
+      "assets": [
+        {
+          "name": "twatchs3-sx1262-factory-20260919-0x0.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/57f6414e682ae124817ae0936f7b8251ac17d6c3/firmware/twatchs3-sx1262-factory-20260919-0x0.bin",
+          "sha256": "c651f7592c26136b8274cef368fe1ad07aa774b6fc860c13f17b8009d601b502",
+          "bytes": 16711680,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "lilygo-t-watch-s3"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确硬件版本映射与完整镜像校验，不代表模拟兼容。"
+      },
+      "storage": "remote-links-only",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [
+        {
+          "firmwareId": "lilygo-t-watch-s3-factory",
+          "productIds": [
+            "lilygo-t-watch-s3"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^twatchs3-sx1262-factory-[0-9]+-0x0\\.bin$",
+          "nameTemplate": "LILYGO T-Watch S3 · SX1262 官方出厂测试 · {version}",
+          "basis": {
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/57f6414e682ae124817ae0936f7b8251ac17d6c3/firmware/README.md",
+            "note": "限定此设备、射频/触摸版本及完整 factory 镜像文件名；仓库文件不会因项目最新 release 自动漂移。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bruce",
+      "name": "Bruce",
+      "category": "automation",
+      "description": "按精确板型关注 Bruce 官方稳定版；与其他厂商固件共享同一 watchlist，不把相近型号混用。",
+      "upstreamRepo": "BruceDevices/firmware",
+      "metadataUrl": "https://api.github.com/repos/BruceDevices/firmware/releases/latest",
+      "releaseUrl": "https://github.com/BruceDevices/firmware/releases/tag/1.16.1",
+      "version": "1.16.1",
+      "publishedAt": "2026-08-11T16:36:36Z",
+      "checkedAt": "2026-10-28T04:32:43Z",
+      "assets": [
+        {
+          "name": "Bruce-lilygo-t-display-ttgo.bin",
+          "url": "https://github.com/BruceDevices/firmware/releases/download/1.16.1/Bruce-lilygo-t-display-ttgo.bin",
+          "sha256": "8e4b75c05dce9cf72ab1fe8e61c6badaea33dfbbafcf0f992c598053b7ee695c",
+          "bytes": 3655824,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        },
+        {
+          "name": "Bruce-lilygo-t-display-s3.bin",
+          "url": "https://github.com/BruceDevices/firmware/releases/download/1.16.1/Bruce-lilygo-t-display-s3.bin",
+          "sha256": "8527fd4ae515976a8b9409719e5604cc1b01920896c02cf7b60fd5b3241da550",
+          "bytes": 3860912,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        },
+        {
+          "name": "Bruce-lilygo-t-deck.bin",
+          "url": "https://github.com/BruceDevices/firmware/releases/download/1.16.1/Bruce-lilygo-t-deck.bin",
+          "sha256": "16b57f1371756df6ee6bbc4500bc5ae4c288f6d78a8c25edb55062d7ad120664",
+          "bytes": 4262592,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        },
+        {
+          "name": "Bruce-lilygo-t-embed-cc1101.bin",
+          "url": "https://github.com/BruceDevices/firmware/releases/download/1.16.1/Bruce-lilygo-t-embed-cc1101.bin",
+          "sha256": "c0eb401a6e24da21f639f2082a906402441380aa29c3457060b65d4b29f8dfed",
+          "bytes": 4264656,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        },
+        {
+          "name": "Bruce-lilygo-t-watch-s3.bin",
+          "url": "https://github.com/BruceDevices/firmware/releases/download/1.16.1/Bruce-lilygo-t-watch-s3.bin",
+          "sha256": "fbed3e6f9c304d186bf8075ac1b25010b86685cecdf7870b5a6f03114bad2e61",
+          "bytes": 4233120,
+          "format": "merged",
+          "sourcePolicy": "immutable-pinned"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "lilygo-ttgo-t-display",
+          "lilygo-t-display-s3",
+          "lilygo-t-deck",
+          "lilygo-t-embed-cc1101",
+          "lilygo-t-watch-s3"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "上游具体板型与镜像完整性已核对；未验证模拟或实机运行。"
+      },
+      "storage": "remote-links-only",
+      "browserInstallUrl": "https://bruce.computer/flasher.html",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 20,
+      "catalogTargets": [
+        {
+          "firmwareId": "lilygo-ttgo-t-display-bruce",
+          "productIds": [
+            "lilygo-ttgo-t-display"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^Bruce\\-lilygo\\-t\\-display\\-ttgo\\.bin$",
+          "nameTemplate": "Bruce · LILYGO TTGO T-Display · 4MB · {version}",
+          "basis": {
+            "url": "https://api.github.com/repos/BruceDevices/firmware/releases/latest",
+            "note": "精确官方板型文件名；不匹配 Plus、Pro、触摸版、其他射频版本或 app-only 文件。"
+          }
+        },
+        {
+          "firmwareId": "lilygo-t-display-s3-bruce",
+          "productIds": [
+            "lilygo-t-display-s3"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^Bruce\\-lilygo\\-t\\-display\\-s3\\.bin$",
+          "nameTemplate": "Bruce · LILYGO T-Display-S3 · 非触摸版 · {version}",
+          "basis": {
+            "url": "https://api.github.com/repos/BruceDevices/firmware/releases/latest",
+            "note": "精确官方板型文件名；不匹配 Plus、Pro、触摸版、其他射频版本或 app-only 文件。"
+          }
+        },
+        {
+          "firmwareId": "lilygo-t-deck-bruce",
+          "productIds": [
+            "lilygo-t-deck"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^Bruce\\-lilygo\\-t\\-deck\\.bin$",
+          "nameTemplate": "Bruce · LILYGO T-Deck · SX1262 · {version}",
+          "basis": {
+            "url": "https://api.github.com/repos/BruceDevices/firmware/releases/latest",
+            "note": "精确官方板型文件名；不匹配 Plus、Pro、触摸版、其他射频版本或 app-only 文件。"
+          }
+        },
+        {
+          "firmwareId": "lilygo-t-embed-cc1101-bruce",
+          "productIds": [
+            "lilygo-t-embed-cc1101"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^Bruce\\-lilygo\\-t\\-embed\\-cc1101\\.bin$",
+          "nameTemplate": "Bruce · LILYGO T-Embed CC1101 · V1.0 · {version}",
+          "basis": {
+            "url": "https://api.github.com/repos/BruceDevices/firmware/releases/latest",
+            "note": "精确官方板型文件名；不匹配 Plus、Pro、触摸版、其他射频版本或 app-only 文件。"
+          }
+        },
+        {
+          "firmwareId": "lilygo-t-watch-s3-bruce",
+          "productIds": [
+            "lilygo-t-watch-s3"
+          ],
+          "channel": "stable",
+          "format": "merged",
+          "sourceType": "upstream-release",
+          "updateMode": "source",
+          "assetNamePattern": "^Bruce\\-lilygo\\-t\\-watch\\-s3\\.bin$",
+          "nameTemplate": "Bruce · LILYGO T-Watch S3 · SX1262 · {version}",
+          "basis": {
+            "url": "https://api.github.com/repos/BruceDevices/firmware/releases/latest",
+            "note": "精确官方板型文件名；不匹配 Plus、Pro、触摸版、其他射频版本或 app-only 文件。"
+          }
+        }
+      ],
+      "deviceVersions": [
+        {
+          "firmwareId": "lilygo-ttgo-t-display-bruce",
+          "productIds": [
+            "lilygo-ttgo-t-display"
+          ],
+          "version": "1.16.1"
+        },
+        {
+          "firmwareId": "lilygo-t-display-s3-bruce",
+          "productIds": [
+            "lilygo-t-display-s3"
+          ],
+          "version": "1.16.1"
+        },
+        {
+          "firmwareId": "lilygo-t-deck-bruce",
+          "productIds": [
+            "lilygo-t-deck"
+          ],
+          "version": "1.16.1"
+        },
+        {
+          "firmwareId": "lilygo-t-embed-cc1101-bruce",
+          "productIds": [
+            "lilygo-t-embed-cc1101"
+          ],
+          "version": "1.16.1"
+        },
+        {
+          "firmwareId": "lilygo-t-watch-s3-bruce",
+          "productIds": [
+            "lilygo-t-watch-s3"
+          ],
+          "version": "1.16.1"
+        }
+      ]
     }
   ]
 }

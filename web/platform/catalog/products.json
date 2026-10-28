@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1",
-  "revision": "2026-10-27-metalio",
+  "revision": "2026-10-28-lilygo",
   "items": [
     {
       "id": "m5stack-k132-adv",
@@ -11349,6 +11349,892 @@
         "照片含 4G 标识，源码主要描述 Wi-Fi 板型；未核实 4G SKU、模组与所有硬件版次，不合并为已确认配置。",
         "ESP32-S31 是独立的 RISC-V 平台，当前执行内核尚未支持；不能选择 ESP32-S3 代替。Plus 背面缺少对应照片，本轮不复用 INK4 背面镜头或标记。"
       ]
+    },
+    {
+      "id": "lilygo-t-display-s3",
+      "name": "LILYGO T-Display-S3 · 非触摸版",
+      "manufacturer": "LILYGO",
+      "sku": "T-Display-S3 (non-touch)",
+      "hardwareRevision": "non-touch; PCB revision unspecified",
+      "chip": "esp32s3",
+      "module": "ESP32-S3R8",
+      "summary": "带 1.9 英寸并行 LCD 和两颗用户按键的 ESP32-S3 开发板；本条目限定非触摸版。",
+      "knowledgeUrl": "./knowledge/lilygo-t-display-s3.json",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable",
+        "touch": false
+      },
+      "display": {
+        "width": 170,
+        "height": 320,
+        "type": "LCD",
+        "controller": "ST7789V",
+        "bus": "I8080 8-bit"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT / GPIO0",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "user",
+          "name": "GPIO14 用户键",
+          "type": "button",
+          "pin": 14,
+          "activeLow": true
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C 供电 / 原生 USB",
+          "type": "USB-C",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "qwiic",
+          "name": "Qwiic / STEMMA QT（线序待核）",
+          "type": "JST-SH-4P",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "lcd",
+          "name": "LCD I8080",
+          "type": "I8080",
+          "external": false,
+          "pins": [
+            {
+              "name": "BL",
+              "gpio": 38
+            },
+            {
+              "name": "EN",
+              "gpio": 15
+            },
+            {
+              "name": "RST",
+              "gpio": 5
+            },
+            {
+              "name": "CS",
+              "gpio": 6
+            },
+            {
+              "name": "DC",
+              "gpio": 7
+            },
+            {
+              "name": "WR",
+              "gpio": 8
+            },
+            {
+              "name": "RD",
+              "gpio": 9
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "D4",
+              "gpio": 45
+            },
+            {
+              "name": "D5",
+              "gpio": 46
+            },
+            {
+              "name": "D6",
+              "gpio": 47
+            },
+            {
+              "name": "D7",
+              "gpio": 48
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "title": "LILYGO 官方产品文档",
+          "url": "https://wiki.lilygo.cc/products/t-display-series/t-display-s3/",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "LILYGO 官方仓库说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3/1cc41eb1c76b2f3215130a3dd64e7138ce00b482/README.md",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "LILYGO 官方固件说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3/1cc41eb1c76b2f3215130a3dd64e7138ce00b482/firmware/README.MD",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "官方原理图",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3/1cc41eb1c76b2f3215130a3dd64e7138ce00b482/schematic/T_Display_S3.pdf",
+          "checkedAt": "2026-10-28"
+        }
+      ],
+      "limitations": [
+        "尚未完成适配：本型号没有板级运行模型，外观模型与固件链接不表示可模拟运行。",
+        "硬件批次与裸板厚度尚未从本条目的制造商尺寸图确认；触摸版、AMOLED、Pro、MIDI 不适用。"
+      ],
+      "defaultFirmwareId": "lilygo-t-display-s3-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/lilygo-t-display-s3/model.json",
+        "status": "partial"
+      }
+    },
+    {
+      "id": "lilygo-ttgo-t-display",
+      "name": "LILYGO TTGO T-Display · 4MB",
+      "manufacturer": "LILYGO",
+      "sku": "TTGO T-Display 4MB",
+      "hardwareRevision": "V18 pin mapping; 4MB variant",
+      "chip": "esp32",
+      "module": "ESP32-D0WDQ6",
+      "summary": "原版 ESP32 T-Display，带 1.14 英寸 LCD、两颗按键与锂电池充电电路；限定 4MB Flash、无 PSRAM 配置。",
+      "knowledgeUrl": "./knowledge/lilygo-ttgo-t-display.json",
+      "runtime": {
+        "board": "ttgo-tdisplay",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "display": {
+        "width": 135,
+        "height": 240,
+        "type": "LCD",
+        "controller": "ST7789V",
+        "bus": "SPI"
+      },
+      "controls": [
+        {
+          "id": "btn1",
+          "name": "BOOT / GPIO0",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "btn2",
+          "name": "用户键 / GPIO35",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C 供电 / USB-UART",
+          "type": "USB-C",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "lcd",
+          "name": "LCD SPI",
+          "type": "SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "MOSI",
+              "gpio": 19
+            },
+            {
+              "name": "SCK",
+              "gpio": 18
+            },
+            {
+              "name": "CS",
+              "gpio": 5
+            },
+            {
+              "name": "DC",
+              "gpio": 16
+            },
+            {
+              "name": "RST",
+              "gpio": 23
+            },
+            {
+              "name": "BL",
+              "gpio": 4
+            }
+          ]
+        },
+        {
+          "id": "i2c-header",
+          "name": "排针 I2C 信号（非接插件针序）",
+          "type": "GPIO",
+          "external": true,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21
+            },
+            {
+              "name": "SCL",
+              "gpio": 22
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "title": "LILYGO 官方产品文档",
+          "url": "https://wiki.lilygo.cc/products/t-display-series/t-display/",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "LILYGO 官方仓库说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/TTGO-T-Display/6f89cddcde7152b84f7afc1831b6a1dee1fc3206/README.MD",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "LILYGO 官方固件说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/TTGO-T-Display/6f89cddcde7152b84f7afc1831b6a1dee1fc3206/firmware/README.MD",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "官方原理图",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/TTGO-T-Display/6f89cddcde7152b84f7afc1831b6a1dee1fc3206/schematic/ESP32-TFT%286-26%29.pdf",
+          "checkedAt": "2026-10-28"
+        }
+      ],
+      "limitations": [
+        "已有原版 T-Display 板级显示与 GPIO 输入模型；官方出厂固件、无线、充电和电池监测未验证。",
+        "USB-UART 芯片随批次不同；不推断用户板卡是 CH9102 还是 CP210x。",
+        "16MB 变体未纳入本条目。"
+      ],
+      "defaultFirmwareId": "lilygo-ttgo-t-display-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/lilygo-ttgo-t-display/model.json",
+        "status": "partial"
+      }
+    },
+    {
+      "id": "lilygo-t-beam-v1-2",
+      "name": "LILYGO T-Beam V1.2 · SX1276",
+      "manufacturer": "LILYGO",
+      "sku": "T-Beam V1.2 SX1276 868/915MHz",
+      "hardwareRevision": "V1.2 AXP2101; GNSS batch unspecified",
+      "chip": "esp32",
+      "module": "ESP32-D0WDQ6-V3",
+      "summary": "集成 SX1276 LoRa、GNSS 和 18650 电池座的 ESP32 开发板；限定 V1.2 AXP2101、868/915MHz 版本，OLED 为另装扩展。",
+      "knowledgeUrl": "./knowledge/lilygo-t-beam-v1-2.json",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 8,
+        "status": "unavailable",
+        "touch": false
+      },
+      "display": null,
+      "controls": [
+        {
+          "id": "user",
+          "name": "GPIO38 用户键",
+          "type": "button",
+          "pin": 38,
+          "activeLow": true
+        },
+        {
+          "id": "power",
+          "name": "AXP2101 电源键",
+          "type": "button"
+        },
+        {
+          "id": "reset",
+          "name": "硬件复位",
+          "type": "button"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb",
+          "name": "USB 供电 / 串口（接口批次待核）",
+          "type": "USB",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "oled-header",
+          "name": "可选 OLED I2C 排针",
+          "type": "GPIO",
+          "external": true,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21
+            },
+            {
+              "name": "SCL",
+              "gpio": 22
+            }
+          ]
+        },
+        {
+          "id": "lora",
+          "name": "SX1276 SPI",
+          "type": "SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "SCK",
+              "gpio": 5
+            },
+            {
+              "name": "MISO",
+              "gpio": 19
+            },
+            {
+              "name": "MOSI",
+              "gpio": 27
+            },
+            {
+              "name": "CS",
+              "gpio": 18
+            },
+            {
+              "name": "RST",
+              "gpio": 23
+            },
+            {
+              "name": "DIO1",
+              "gpio": 33
+            },
+            {
+              "name": "DIO2",
+              "gpio": 32
+            }
+          ]
+        },
+        {
+          "id": "gnss",
+          "name": "GNSS UART（主控方向）",
+          "type": "UART",
+          "external": false,
+          "pins": [
+            {
+              "name": "TX",
+              "gpio": 12
+            },
+            {
+              "name": "RX",
+              "gpio": 34
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "title": "LILYGO 官方产品文档",
+          "url": "https://wiki.lilygo.cc/products/t-beam-series/t-beam/",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "LILYGO 官方仓库说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/README.MD",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "LILYGO 官方固件说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/firmware/README.MD",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "官方原理图",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/schematic/LilyGo_TBeam_V1.2.pdf",
+          "checkedAt": "2026-10-28"
+        }
+      ],
+      "limitations": [
+        "尚未完成适配：本型号没有板级运行模型，外观模型与固件链接不表示可模拟运行。",
+        "官方 wiki 沿用 AXP192/V1.1 介绍；本条目采用 V1.2 官方硬件资料的 AXP2101。",
+        "官方硬件文档称 USB-C，而 wiki/部分产品照片为 Micro-USB；未将接口批次冲突隐藏。",
+        "GNSS 型号、射频地区选项和可选 OLED 是否随货安装不能从系列名称推断。"
+      ],
+      "defaultFirmwareId": "lilygo-t-beam-v1-2-factory"
+    },
+    {
+      "id": "lilygo-t-deck",
+      "name": "LILYGO T-Deck · SX1262",
+      "manufacturer": "LILYGO",
+      "sku": "T-Deck original SX1262 868/915MHz",
+      "hardwareRevision": "original; not Plus, Pro or V2",
+      "chip": "esp32s3",
+      "module": "ESP32-S3FN16R8",
+      "summary": "原版 T-Deck 手持终端，带 2.8 英寸触摸屏、独立 ESP32-C3 键盘和五向轨迹球；本条目包含 SX1262，不含 Plus 的板载 GNSS。",
+      "knowledgeUrl": "./knowledge/lilygo-t-deck.json",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable",
+        "touch": true
+      },
+      "display": {
+        "width": 320,
+        "height": 240,
+        "type": "LCD",
+        "controller": "ST7789",
+        "bus": "SPI"
+      },
+      "controls": [
+        {
+          "id": "trackball-center",
+          "name": "轨迹球中键 / BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "trackball-up",
+          "name": "轨迹球向上",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true
+        },
+        {
+          "id": "trackball-right",
+          "name": "轨迹球向右",
+          "type": "button",
+          "pin": 2,
+          "activeLow": true
+        },
+        {
+          "id": "trackball-down",
+          "name": "轨迹球向下",
+          "type": "button",
+          "pin": 15,
+          "activeLow": true
+        },
+        {
+          "id": "trackball-left",
+          "name": "轨迹球向左",
+          "type": "button",
+          "pin": 1,
+          "activeLow": true
+        },
+        {
+          "id": "touch",
+          "name": "GT911 触摸屏",
+          "type": "touch",
+          "controller": "GT911"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C 供电 / 原生 USB",
+          "type": "USB-C",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "grove",
+          "name": "Grove UART（插口针序待核）",
+          "type": "HY2.0-4P",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "micro-sd",
+          "name": "MicroSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CS",
+              "gpio": 39
+            }
+          ]
+        },
+        {
+          "id": "i2c",
+          "name": "触摸 / 键盘 / 音频 I2C",
+          "type": "I2C",
+          "external": false,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 18
+            },
+            {
+              "name": "SCL",
+              "gpio": 8
+            }
+          ]
+        },
+        {
+          "id": "lcd",
+          "name": "LCD SPI",
+          "type": "SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "MOSI",
+              "gpio": 41
+            },
+            {
+              "name": "MISO",
+              "gpio": 38
+            },
+            {
+              "name": "SCK",
+              "gpio": 40
+            },
+            {
+              "name": "CS",
+              "gpio": 12
+            },
+            {
+              "name": "DC",
+              "gpio": 11
+            },
+            {
+              "name": "BL",
+              "gpio": 42
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "title": "LILYGO 官方产品文档",
+          "url": "https://wiki.lilygo.cc/products/t-deck-series/t-deck/",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "LILYGO 官方仓库说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/2027dee79198af949a9e14e1a09e301f993fc7cf/README.MD",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "LILYGO 官方固件说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/2027dee79198af949a9e14e1a09e301f993fc7cf/firmware/README.MD",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "官方原理图",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/2027dee79198af949a9e14e1a09e301f993fc7cf/schematic/schematic.pdf",
+          "checkedAt": "2026-10-28"
+        }
+      ],
+      "limitations": [
+        "尚未完成适配：本型号没有板级运行模型，外观模型与固件链接不表示可模拟运行。",
+        "官方 wiki 部分段落误混 Plus 的 GNSS/电池，并称无触摸；采用明确标注 original 的 LilyGoLib 硬件文档与原理图。",
+        "键盘逐键矩阵与 ESP32-C3 固件尚未完成平台输入模型；此轮仅记录真实硬件，不以串口文本替代按键。",
+        "Grove 端子物理针序与连接器方向尚未逐针核验，暂不提供已连接线缆。"
+      ],
+      "defaultFirmwareId": "lilygo-t-deck-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/lilygo-t-deck/model.json",
+        "status": "partial"
+      }
+    },
+    {
+      "id": "lilygo-t-embed-cc1101",
+      "name": "LILYGO T-Embed CC1101 · V1.0",
+      "manufacturer": "LILYGO",
+      "sku": "T-Embed CC1101 V1.0",
+      "hardwareRevision": "V1.0; 2024-07-29 schematic",
+      "chip": "esp32s3",
+      "module": "ESP32-S3-WROOM-1",
+      "summary": "带旋钮和 1.9 英寸 LCD 的 ESP32-S3 手持设备，集成 CC1101、PN532、红外、音频与八颗 RGB LED；限定原版 CC1101，不包含 Plus。",
+      "knowledgeUrl": "./knowledge/lilygo-t-embed-cc1101.json",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable",
+        "touch": false
+      },
+      "display": {
+        "width": 320,
+        "height": 170,
+        "type": "LCD",
+        "controller": "ST7789V",
+        "bus": "SPI"
+      },
+      "controls": [
+        {
+          "id": "encoder-press",
+          "name": "旋钮按压 / BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "user",
+          "name": "GPIO6 用户键",
+          "type": "button",
+          "pin": 6,
+          "activeLow": true
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C 供电 / 原生 USB",
+          "type": "USB-C",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "micro-sd",
+          "name": "MicroSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CS",
+              "gpio": 13
+            }
+          ]
+        },
+        {
+          "id": "qwiic-1",
+          "name": "Qwiic 1（针序待核）",
+          "type": "JST-SH-4P",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "qwiic-2",
+          "name": "Qwiic 2（针序待核）",
+          "type": "JST-SH-4P",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "lcd",
+          "name": "LCD SPI",
+          "type": "SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "MOSI",
+              "gpio": 9
+            },
+            {
+              "name": "MISO",
+              "gpio": 10
+            },
+            {
+              "name": "SCK",
+              "gpio": 11
+            },
+            {
+              "name": "CS",
+              "gpio": 41
+            },
+            {
+              "name": "DC",
+              "gpio": 16
+            },
+            {
+              "name": "BL",
+              "gpio": 21
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "title": "LILYGO 官方产品文档",
+          "url": "https://wiki.lilygo.cc/products/t-embed-series/t-embed-cc1101/",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "LILYGO 官方仓库说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Embed-CC1101/c36826e0f91311cb591c4545fccf91e254fc55dc/README.md",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "LILYGO 官方固件说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Embed-CC1101/c36826e0f91311cb591c4545fccf91e254fc55dc/firmware/README.md",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "官方原理图",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Embed-CC1101/c36826e0f91311cb591c4545fccf91e254fc55dc/hardware/T-Embed-CC1101%20V1.0%2024-07-29.pdf",
+          "checkedAt": "2026-10-28"
+        }
+      ],
+      "limitations": [
+        "尚未完成适配：本型号没有板级运行模型，外观模型与固件链接不表示可模拟运行。",
+        "README 最新硬件写 V1.0-241103，示例定义写 V1.0-240729；本条目按 2024-07-29 原理图记录，不推断两个批次完全相同。",
+        "示例文件的 BOARD_I2C_SDA/SCL 与 legacy BOARD_SDA_PIN/SCL_PIN 命名相反；在原理图逐项交叉检查前不发布外部针序。",
+        "旋钮卡点数、USB/NFC/RF/音频行为未模拟；外部 NRF24 扩展不算原机内置。"
+      ],
+      "defaultFirmwareId": "lilygo-t-embed-cc1101-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/lilygo-t-embed-cc1101/model.json",
+        "status": "partial"
+      },
+      "dimensions": {
+        "width": 97.5,
+        "height": 39,
+        "depth": 31,
+        "unit": "mm",
+        "basis": "official",
+        "sourceId": "official-docs"
+      }
+    },
+    {
+      "id": "lilygo-t-watch-s3",
+      "name": "LILYGO T-Watch S3 · SX1262",
+      "manufacturer": "LILYGO",
+      "sku": "T-Watch-S3 SX1262",
+      "hardwareRevision": "original; sensor batch unspecified",
+      "chip": "esp32s3",
+      "module": "ESP32-S3",
+      "summary": "原版 ESP32-S3 智能手表，带 1.54 英寸触摸屏、SX1262、RTC、加速度计、触觉反馈与音频；不包含 S3 Plus/Ultra。",
+      "knowledgeUrl": "./knowledge/lilygo-t-watch-s3.json",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable",
+        "touch": true
+      },
+      "display": {
+        "width": 240,
+        "height": 240,
+        "type": "LCD",
+        "controller": "ST7789V3",
+        "bus": "SPI"
+      },
+      "controls": [
+        {
+          "id": "touch",
+          "name": "FT6336U 触摸屏",
+          "type": "touch",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "power",
+          "name": "AXP2101 电源键",
+          "type": "button"
+        },
+        {
+          "id": "boot",
+          "name": "内部 BOOT 键",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-usb",
+          "name": "Micro-USB 供电 / 原生 USB",
+          "type": "Micro-USB",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "touch-i2c",
+          "name": "触摸 I2C",
+          "type": "I2C",
+          "external": false,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 39
+            },
+            {
+              "name": "SCL",
+              "gpio": 40
+            },
+            {
+              "name": "INT",
+              "gpio": 16
+            }
+          ]
+        },
+        {
+          "id": "i2c",
+          "name": "RTC / PMU / 传感器 I2C",
+          "type": "I2C",
+          "external": false,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 10
+            },
+            {
+              "name": "SCL",
+              "gpio": 11
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "title": "LILYGO 官方产品文档",
+          "url": "https://wiki.lilygo.cc/products/t-watch-series/t-watch-s3/",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "LILYGO 官方仓库说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/57f6414e682ae124817ae0936f7b8251ac17d6c3/README.MD",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "LILYGO 官方固件说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/57f6414e682ae124817ae0936f7b8251ac17d6c3/firmware/README.md",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "官方原理图",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/TTGO_TWatch_Library/t-watch-s3/schematic/T_WATCH_S3.pdf",
+          "checkedAt": "2026-10-28"
+        }
+      ],
+      "limitations": [
+        "尚未完成适配：本型号没有板级运行模型，外观模型与固件链接不表示可模拟运行。",
+        "具体射频地区频段及加速度计批次待设备确认；不将 SX1280 2.4GHz、CC1101 或 Ultra 固件混入此条目。",
+        "PCB、表带和完整装配 CAD 尚未核验；尺寸知识不代表模型还原。"
+      ],
+      "defaultFirmwareId": "lilygo-t-watch-s3-factory",
+      "dimensions": {
+        "width": 42,
+        "height": 51.5,
+        "depth": 20,
+        "unit": "mm",
+        "basis": "official",
+        "sourceId": "official-docs"
+      }
     }
   ]
 }
