@@ -13,7 +13,7 @@ node tools/network-helper.mjs
 
 打开终端显示的本机工作台 URL；它携带本次随机连接凭据，自动使用同一助手。本机工作台需要先按平台运行说明准备 WASM 与 ROM。默认仅监听 `127.0.0.1:8787`，停止命令会关闭其网络会话和端口映射。
 
-使用 github.io 工作台时，把终端显示的 `Pages connection endpoint` 填入网络连接地址，或将它 URL 编码后放入工作台的 `#network=` 片段。凭据仅属于这次助手进程，不应写入仓库、分享链接、录制或截图。浏览器可能要求本地网络访问授权；如果它不允许 HTTPS 页面连接本机助手，使用终端显示的本机工作台 URL，或配置可信的 WSS。
+使用 github.io 工作台时，直接打开终端显示的 `GitHub Pages workspace` 链接；也可把 `Pages connection endpoint` 填入网络连接地址。工作台会消费并移除 `#network=` 临时片段。凭据仅属于这次助手进程，不应写入仓库、分享链接、录制或截图。浏览器可能要求本地网络访问授权；如果它不允许 HTTPS 页面连接本机助手，使用终端显示的本机工作台 URL，或配置可信的 WSS。
 
 ```sh
 node tools/network-helper.mjs --port 8787 --cert /path/to/trusted-cert.pem --key /path/to/key.pem

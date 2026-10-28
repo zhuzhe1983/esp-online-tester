@@ -69,7 +69,7 @@ for (const chunk of result.chunks) { samples.set(chunk.samples,offset); offset +
 const wavBytes = encodePcm16Wav({...first,samples}); // Uint8Array，交给文件保存工具或下载入口。
 ```
 
-`encodePcm16Wav` / `decodePcm16Wav` 位于 `web/platform/audio.js`，处理单/双声道、8–96 kHz 的无压缩 PCM16 WAV，不是 `espTester` 方法。导出 PCM 上限为 128 MiB；压缩音频和多个 `data` 块被拒绝。文件输入可使用 `decodePcm16Wav(new Uint8Array(await file.arrayBuffer()))`，随后按上述输入队列规则分块提交。runtime 能保留固件较宽范围的有效输出采样率；超出浏览器/WAV 帮助函数支持范围时应保留原数据并报告，不能重标采样率改变声音。
+`encodePcm16Wav` / `decodePcm16Wav` 位于 `web/platform/audio.js`，处理单/双声道、1–400 kHz 的无压缩 PCM16 WAV，不是 `espTester` 方法。导出 PCM 上限为 128 MiB；压缩音频和多个 `data` 块被拒绝。文件输入可使用 `decodePcm16Wav(new Uint8Array(await file.arrayBuffer()))`，随后按上述输入队列规则分块提交。固件输出及浏览器播放接受 1–400 kHz；WAV 用作输入时仍须符合输入的 8–96 kHz 限制，不能重标采样率改变声音。
 
 输出历史最多保留最近十秒，以完整块为单位淘汰。`readAudio` 返回 `enabled`、`receivedFrames`、`droppedFrames`、`overflowed`、`queuedSeconds`、`queuedChunks`、`capacitySeconds`、`input` 和 `chunks`。默认清空后，丢帧标记/计数也清零，`receivedFrames` 仍累计到 worker 更换为止。长期录音应持续排空或订阅数据，不能依赖十秒历史保存整段音频。S3 原生 CLI 的历史 WAV 捕获不受浏览器流模式影响。
 

@@ -14,6 +14,10 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
       const stopRuntime = runtime.subscribe(listener), stopRecorder = recorder.subscribe(listener);
       return () => { stopRuntime(); stopRecorder(); };
     },
+    async audioConfigure(options){if(options?.input)await recorder.beforeLifecycle('audio-input');return runtime.audioConfigure(options);},
+    async pushAudio(options){await recorder.beforeLifecycle('audio-input');return runtime.pushAudio(options);},
+    async configureNetwork(options){await recorder.beforeLifecycle('network-configure');return runtime.configureNetwork(options);},
+    async provisionNetwork(){await recorder.beforeLifecycle('network-provision');return runtime.provisionNetwork();},
     async input(event) { await recorder.beforeInput(); return runtime.input(event); },
     async setGpsFix(options) { await recorder.beforeLifecycle('gps-fix'); return runtime.setGpsFix(options); },
     async injectGps(options) { await recorder.beforeLifecycle('gps-input'); return runtime.injectGps(options); },

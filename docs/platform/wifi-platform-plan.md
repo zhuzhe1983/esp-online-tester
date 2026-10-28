@@ -1,75 +1,46 @@
-# 浏览器 Wi-Fi 与 AP 配网：现状和实施方向
+# 浏览器 Wi-Fi、SoftAP 配网与网络服务
 
-核对日期：2026-10-28；代码基点 `1ab5ea73`。本文是实现边界与后续方案，不代表下述自动联网、配网桥或服务端口映射已经完成。
+更新：2026-10-28。本文取代此前的实施计划；网络助手、虚拟 SoftAP 客户端、工作台 UI 和 agent API 已接通。静态 GitHub Pages 本身不提供任意 TCP/UDP socket，真实联网使用本机网络助手。见 [启动说明](network-helper.md)。
 
-## 当前可用的部分
+## 默认自动配网
 
-底层 `esp-soc/src/wifi.rs` 实现虚拟 AP，供固件作为 STA 扫描、关联并取得地址；`esp-soc/src/net.rs` 提供 DHCP、ARP、DNS、SNTP 等虚拟局域网服务。支持范围以各芯片的实际测试为准，不能据此宣称所有 ESP32/IDF 版本均兼容。
+工作台默认开启“自动配网”，虚拟路由器默认为 `esp32sim` / `esp32sim-pass`，固件 manifest 中的显式 Wi-Fi 配置优先。助手连接地址只属于当前会话，不进入分享链接或便携录制。没有助手时显示“等待网络助手”，不会显示已经联网。
 
-原生 CLI 使用 `esp-soc/src/nat.rs` 的主机 TCP/UDP socket 转发出站流量；浏览器 ABI `wasm/src/s3.rs::esp32sim_wifi` 明确传入 `nat=None`，没有这个真实联网能力。离线 DNS 的回答和内部 ICMP 回应不能当作互联网连通证据。现有产品页仅从固件 manifest 的 `wifi` 字符串配置虚拟 AP，完整 BIN 和 flasher_args 上传没有独立的 Wi-Fi 场景配置入口。
+固件已有凭据时正常关联虚拟路由器，沿原生 NAT 访问主机网络；TLS 由固件处理。固件进入 SoftAP 时，S3 虚拟客户端完成真实 802.11 关联，再由助手向固件发送 DHCP 请求。配网页通过真实 TCP 连接读取，不伪造 HTTP 响应、不直接写 NVS。
 
-固件显示 AP SETUP/SSID，不表示电脑实际广播了 Wi-Fi 热点。目前还缺少模拟手机作为 STA 连接固件 SoftAP 的通路，也缺少从网页访问固件内部 HTTP 服务器的入站桥。底层虽然已有 `wasm/src/ethernet.rs` 的帧收发 ABI，产品 worker/UI 尚未接入；这组 ABI 本身也不能替代 SoftAP 对端、TCP 或浏览器页面路由。
+当前自动适配 `esp-wifi-connect` 的网页协议：检查原页面包含 `/scan`、`/submit`、SSID 和密码字段，提交测试路由器；若原页面指定 `/done.html`，读取成功页并按其中的 `/exit` POST 请求退出配网。只有原服务接受配置才记为已提交，取得 STA 地址才记为联网。未知协议保留原页面及 HTTP API，报告需要手动或专用客户端；尚未实现通用 ESP-IDF protocomm / PoP 自动适配。
 
-## 确定的产品交互：默认自动联网，保留手动配网
+关闭“自动配网”保留虚拟路由器、网络助手和固件已保存的配置；已发出的请求不能撤回，尚未发出的自动步骤会取消。需要完全断网时使用单独的“断网”按钮。关闭自动配网不会清空 NVS，也不强迫已联网固件进入 AP。
 
-工作台默认启用“自动联网”，为用户省去填写测试 SSID、密码及逐个操作固件配网页的步骤。底层必须保留两个独立状态：是否自动配置固件，以及真实网络通道是否可用。关闭自动联网的自动配置部分后，仍保留网络通道和虚拟路由器，供用户或 agent 手动配网；另设断网操作用于离线测试。尚未连接网络助手时明确显示“等待网络助手”，不能用一个默认开启的开关表示已经接通互联网。
+## 手动配网和服务端口
 
-| 固件当前状态 | 自动模式行为 | 手动模式行为 |
-| --- | --- | --- |
-| 已保存并能连接虚拟网络 | 复用配置，验证地址与外部响应 | 保留配置，不主动触发配网 |
-| 使用已知固定 SSID/密码 | 根据明确的固件配置建立匹配的虚拟路由器 | 显示测试路由器配置，允许修改 |
-| 启动 SoftAP 等待配网 | 虚拟客户端连接，使用受支持的原始网页或协议完成一次配网 | 展示 SoftAP 信息与原始配网页 iframe，由用户或 agent 操作 |
-| 配网协议未知、需要 PoP/设备绑定 | 显示实际阻碍及可用入口，不假造成功 | 保留原有认证/绑定流程，由用户提供所需信息 |
+底部网络区显示虚拟路由器、STA 地址、SoftAP SSID/地址和已知服务。手动模式下，虚拟客户端取得 AP DHCP 地址后自动打开 HTTP 80 候选服务；用户可以关闭网页或取消映射。原 HTML、脚本、相对请求通过独立回环 origin 显示在 iframe，另有独立打开入口。保留固件 CSP 和 X-Frame-Options；固件禁止嵌入时使用独立窗口，不删除安全头。
 
-“免配置”是用户不必手填，不是跳过固件程序。固件若没有任何 STA 配置、一直阻塞在配网流程，默认虚拟路由器本身不能使其继续运行。优先复用它的真实配网入口，不暗中写 NVS 或截获驱动返回假成功。已完成配网的 Flash 沿现有产品/固件内容范围保存，后续启动无需重复填写。显式清除设备数据后才回到首次配网；分享链接不含私人 Flash，接收方可能需要重新自动配网。
+可以手工添加 STA/AP 上的 HTTP、HTTPS、TCP、UDP 服务。HTTP 通过独立代理页面打开，HTTPS 使用 TCP 映射并保留浏览器证书检查；非 HTTP 服务显示本机 `127.0.0.1:<port>`，本机 MQTT、SSH 或其他客户端按原协议访问。取消、助手断线、固件切换和会话销毁会释放相应映射。
 
-关闭自动配置不自动清空已保存凭据，也不强制把正在运行的固件切回 AP。固件没有启动 SoftAP 时，iframe 区域说明“未检测到配网热点”，并提供该固件已验证的进入配网方法。需要重新配网时，通过真实按键/菜单等固件操作进入；不能把“关闭自动配置”变成破坏性的恢复出厂。
+服务来源和验证状态分别显示；端口 80 只是候选，不证明服务存在。尚未实现 mDNS/DNS-SD 发现或全端口扫描，也不能自动知道所有静默监听端口。现阶段用手工声明补充应用服务。TCP/UDP 按端口映射已经实现；TUN、原始二层桥、组播跨网转发及绑定 `0.0.0.0` 不属于这个入口。
 
-### SoftAP 页面和 agent 操作
+## Agent 与嵌入调用
 
-SoftAP 区域显示实际观测到的 SSID、安全方式、虚拟客户端状态、地址与服务。iframe 打开的必须是桥接 URL，例如按会话隔离的 HTTPS 页面；不能直接把 `http://192.168.4.1` 填进 iframe。用户看到的是固件实际返回的 HTML、资源、表单及错误，agent 也操作同一页面。
+人、agent 和嵌入父页共用同一 runtime：
 
-浏览器内 HTTP 桥需处理相对/绝对路径、重定向、Cookie、fetch/XHR、WebSocket 和会话销毁。固件 HTML/脚本不能与产品工作台共享有权限的 origin：同站 `/platform/` 路径或同源 Service Worker 路由本身不构成隔离。实现时选择独立 origin 或经过验证的隔离执行方式；不默默删除固件的 CSP / X-Frame-Options 来强行嵌入。无法安全嵌入的服务提供独立页面入口，并清楚说明限制。HTTPS 工作台内也不能依赖未经浏览器认可的 HTTP/自签名桥接地址。
+```js
+await espTester.configureNetwork({endpoint: helperWebSocketUrl, autoProvision: true});
+// 正常 configure / loadFirmware / start；凭据在加载前配置。
+const state = await espTester.readNetwork();
+// 未知原页面可以按实际协议请求，也可用浏览器操作 iframe。
+const page = await espTester.requestNetworkHttp({interface:1,path:'/',method:'GET'});
+const mapping = await espTester.mapNetworkPort({interface:0,protocol:'tcp',guestPort:1883});
+await espTester.unmapNetworkPort({mappingId:mapping.mappingId});
+```
 
-skill 的自动流程依次为：读取能力和网络状态 → 连接虚拟 SoftAP → 发现网页或 provisioning 协议 → 提交测试路由器配置 → 等待固件实际保存/重启 → 确认 STA/DHCP → 验证目标服务响应。网页固件用浏览器工具操作真实表单；ESP-IDF protocomm 通过明确版本的客户端执行握手、PoP 和 protobuf 请求。错误需区分“协议不支持”“认证缺失”“配网失败”“网络助手断开”“目标服务不可达”。这些能力尚未发布，不在 skill 中写成可调用 API。
+另有 `connectNetwork`、`provisionNetwork`、`addNetworkService`。配置中的密码和助手 token 不出现在 `observe()` / `readNetwork()` 中。详见 [skill API](../../skills/esp-online-tester/references/api.md)。
 
-### 状态栏中的固件网络服务
+## 验证边界
 
-配网页只是固件服务的一种。工作台底部的网络状态区持续显示 STA/AP 地址、外网通道状态，以及已知的服务端口；选择一个服务可展开详情。每行保留协议、端口、地址、发现依据、验证时间和访问入口。
+- 官方 M5Stack StopWatch 小智 2.2.6（ESP-IDF 5.5.2）原始 BIN：浏览器 ROM 启动，原 SoftAP 关联、固件 DHCP、原始 HTML 和扫描响应、配置保存、退出 AP、STA DHCP、证书校验及真实 HTTPS 服务响应已联通。没有绑定私人账户或完成云端语音对话。
+- 网络助手测试覆盖实际 HTTP、验证证书的 TLS、UDP 出站、HTTP 代理和 UDP 入站映射、鉴权与销毁；不能将包级夹具测试扩展为所有固件兼容。
+- S3 SoftAP 开放热点有真实固件证据；WPA2 虚拟客户端握手有单测，真实 WPA2 SoftAP 固件尚未验收。其他芯片的 STA 能力仍以对应固件为准；SoftAP 对端目前仅 S3。
+- 原生 CLI 的 `--wifi ... --net nat` 仍可独立使用。内部 ICMP 回应不能作为外网证据。浏览器本地网络权限或证书限制时，使用助手提供的本机工作台链接或可信 WSS。
 
-- **HTTP/HTTPS：** 已验证的服务可直接打开，HTTP 用 HTTP、HTTPS 用 HTTPS；工作台内使用满足浏览器要求的桥接 URL，详情仍显示真实虚拟地址。端口 80/8080 只能作为 HTTP 候选，443 只能作为 HTTPS 候选，不能只凭端口号判定协议。用户也可明确指定协议。未验证的入口标明候选，禁止为了识别协议向任意二进制服务自动发送 HTTP 数据。
-- **其他 TCP/UDP：** 显示“映射到本机”，由网络助手建立 `127.0.0.1:<hostPort> → <guestAddress>:<guestPort>` 的显式映射。随后本机 MQTT、SSH 或其他客户端使用自己的协议连接。端口冲突、断线和固件重启需反馈并清理映射；不自动绑定 `0.0.0.0`，局域网共享须单独选择。
-- **发现边界：** 通用包转发无法得知固件所有静默监听端口，UDP 尤其如此。优先使用固件公开服务声明、模拟网络内的 mDNS/DNS-SD 广播、已观测连接及明确的探测结果，并提供手工添加。来源为“声明”“广播”“探测”或“手工”的记录不能混成已验证监听。现有 NAT 不转发 mDNS，模拟网络内收集器仍需实现；不默认扫描全部端口。
-- **生命周期：** 地址变化、固件重启、重新加载和切换产品后使旧服务记录失效，再重新确认。AP 与 STA 接口分别标注，避免将过期配网端口作为应用服务。显示正在监听或映射成功，仍不等于应用协议测试通过。
-
-这里的“打通电脑网络”第一版采用按端口的 TCP/UDP 转发；原始二层桥、TUN、组播跨网转发和局域网广播不在这一入口的承诺内。浏览器和 agent 共用服务列表及映射生命周期；助手地址、凭据和本机映射不进入分享 URL 或便携录制。
-
-## 纯静态页面内可以实现的配网流程
-
-1. 在场景中定义虚拟路由器及可见 SSID、信号/断开场景，统一用于人机界面和 agent API；使用测试网络信息，不要求用户填真实家庭密码。
-2. 补充虚拟 STA，与固件自己的 SoftAP 完成真实协议交换，再从该虚拟客户端建立 TCP/HTTP 请求。目标是调用固件原有 Web 服务，不在前端假造“配网成功”或直接篡改固件 NVS。
-3. 提供“打开配网页面”入口。HTTP 适配层把请求转入虚拟网络；Service Worker / 隔离页面负责将 HTML、资源、表单和后续请求路由回虚拟服务。需要明确根路径、跳转、Cookie、WebSocket 和隔离边界；简单 iframe 指向 `192.168.4.1` 不会访问到虚拟设备。
-4. 固件收到配置后自行保存、重启并连接虚拟路由器。复用已有按设备和固件内容隔离的 Flash 持久化；不为配网自动清空用户数据。分别显示“连接虚拟路由器”“获得地址”“可访问真实网络”，避免混为一个联网图标。
-
-ESP-IDF 标准 SoftAP provisioning 使用 HTTP/protocomm，未必提供人类可点击的 HTML 页面；有的固件使用自定义配网页面，有的需要匹配的协议客户端。因此通用 HTTP 桥与具体 provisioning 客户端须分开实现，不能承诺一个表单适配所有固件。[ESP-IDF 5.5 provisioning 文档](https://docs.espressif.com/projects/esp-idf/en/v5.5/esp32/api-reference/provisioning/wifi_provisioning.html)
-
-## 访问真实互联网需要单独的通路
-
-普通 GitHub Pages 网页没有任意 TCP/UDP socket。Chrome 的 Direct Sockets 属于安装式 Isolated Web App 能力，不能直接当作 github.io 页面的能力。[Chrome 官方说明](https://developer.chrome.com/docs/iwa/direct-sockets)
-
-保持静态前端的方案是提供可选 WSS 网络中继，连接本机或自部署的 TCP/UDP 网关；设备 TLS 仍在固件内处理，保留证书与时间检查。网页 fetch 只能支持特定 HTTP 接入并受浏览器跨域规则限制，不能透明替代任意 MQTT、原始 TCP/UDP 和固件里的 TLS。
-
-不依赖任何服务的模式则提供浏览器内的测试服务器和可复现响应，用于离线业务流程测试。不得将这些模拟响应标成真实云端结果。中继地址/凭证不默认随分享链接传播。
-
-## 实施与验收顺序
-
-先接通真实通路，再完成默认自动联网和手动配网交互（以下仍是待实现计划）：
-
-1. 为完整 BIN、flasher_args 和 manifest 提供统一的虚拟路由器 UI/scene/API；界面分别显示关联、DHCP 和外网状态。网络助手地址与认证信息仅留本机，不默认进入分享或录制。
-2. 接通现有 Ethernet ABI、worker 与可选本机网络助手。助手复用 `VirtualNet`/NAT，按连接隔离 DHCP/TCP/UDP 状态，限定帧长和队列，显式报告断开与丢包。默认仅监听回环，校验页面来源与临时连接凭证；HTTPS 页面使用经过浏览器验证的 WSS，不要求关闭证书验证，也不假设任意 `ws://localhost` 可直接跨混合内容限制。网络助手是独立可选组件，Pages 仍只发布静态站点。
-3. 用源码固件验证真实 HTTP、HTTPS、MQTT、DNS/SNTP 与 UDP 往返；TLS 在固件内完成，不禁用证书检查。响应必须来自测试服务，内部 DNS/ICMP 的合成回复不计为外网通过。记录拒绝连接、错误密码、断线重连、重启以及板型/IDF 版本的限制。
-4. 对进入 AP SETUP 的固件，另补虚拟 STA 连接 SoftAP + HTTP 入站，使用内部源码固件验证表单提交、实际 NVS 写入和重启恢复，再接用户固件的配网页面。出站联网助手本身不会让 SoftAP 配网自动可用。
-5. 在同一流程上加入默认自动配置、手动 iframe 与统一 agent 操作；验收首次自动配置、关闭后手动配置、保持已有凭据、再次启动无需填写，以及未知协议/PoP 缺失的可解释失败。已配网 Flash 与现有便携录制的 pristine 限制单独处理，不能自动清空用户数据来迁就录制。
-6. 加入底部服务列表、隔离的 HTTP 页面和网络助手按端口映射。用同时提供 HTTP、非 HTTP TCP 及 UDP 服务的源码固件验证真实双向数据，覆盖 AP→STA 切换、过期记录、非标准 HTTP 端口、非 HTTP 占用 80 端口、端口冲突、助手断线、会话关闭和映射释放。
-
-每步观察固件事件、串口和协议结果，不能只检查屏幕或主机侧“已发送”。这是共用引擎能力，各产品另核对芯片、驱动版本和专用网络器件。现在可供开发者使用的真实出站联网路径仍是原生 CLI 的 `--wifi ... --net nat`（见 [运行指南](../networking-howto.md)）；尚未接入产品页。
+协议与性能证据见 [SoftAP 核心记录](../evidence/softap-client-2026-10-28/README.md)，工作台验收见 [浏览器联调记录](../evidence/network-audio-platform-2026-10-28/README.md)。音频接口见 [PCM 与浏览器设备](audio-runtime.md)。

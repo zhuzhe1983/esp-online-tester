@@ -19,10 +19,13 @@ The implemented entry points are `window.espTester` and the origin-bound iframe 
 | Run and verify firmware | `start`, `pause`, `reset`, `observe`, `waitFor`, framebuffer `capture` |
 | Exercise controls and sensors | `input`, `press`, `setGpsFix`, `injectGps`, `setImu`; check per-product capabilities |
 | Exchange virtual LoRa packets | `readLoRa`, `receiveLoRa`; explicit peer, supported radio only |
+| Stream audio | `audioConfigure`, `pushAudio`, `readAudio`, `audio` events; browser mic/speaker controls share PCM transport |
+| Connect and provision networks | `configureNetwork`, `readNetwork`, `connectNetwork`, `provisionNetwork`; local helper supplies real sockets |
+| Access guest services | `addNetworkService`, `mapNetworkPort`, `unmapNetworkPort`, `requestNetworkHttp` |
 | Retain device data | Writable Flash persistence and TF/SD import/export/flush; clearing is separate |
 | Reproduce and embed interactions | Recording/replay, pinned scene sharing and iframe RPC |
 
-Browser microphone/speaker streaming, SoftAP provisioning, browser Internet relay and a guest-duration press helper are not implemented platform APIs. Never invent methods for them or equate codec initialization / virtual Wi-Fi association with working audio / Internet access.
+Read [audio and network workflows](references/agent-workflows.md) before using these transports. Browser microphone permission requires explicit activation; agent PCM input uses a logical I²S port. Real Internet and guest-service access require the network helper. SoftAP currently targets ESP32-S3; automatic provisioning recognizes the Xiaozhi web contract and other firmware may need its original page or a protocol client. A guest-duration press helper remains unimplemented. Never equate codec initialization / virtual Wi-Fi association with working audio / Internet access.
 
 ## Establish the actual device state
 
@@ -78,11 +81,11 @@ On a fresh visit or device change, the workbench selects the first matching firm
 
 To change only presentation, preserve `observe().scene.view` and call `updateSceneMetadata({view:{...view,appearance:{shell:{color:'#8456cf',opacity:0.36,finish:'plastic'}}}})`. This preserves running firmware and is portable through sharing/embedding. Color is six-digit hex, opacity is 0–1; read `SHELL_FINISHES` from `appearance.js` for the eight supported finish IDs. Omit `appearance` to restore the product's original shell. `UNKNOWN` PCB is a replaceable blank placeholder, not verified internal CAD. Exploded animation remains planned, not an implemented API.
 
-StopWatch exposes the ES8311 control-register initialization subset at `0x18` on SDA47/SCL48, shared by GPIO I²C and both controllers. Official Xiaozhi v2.2.6 now initializes the codec and opens the audio device in WASM; this does not verify PCM playback, microphone capture, codec reset/read-only behavior or audio power gating. See `docs/platform/stopwatch-es8311.md`. A custom firmware's address-probe failure is distinct from unsupported audio processing; verify its actual register accesses before claiming compatibility.
+StopWatch exposes the ES8311 control-register initialization subset at `0x18` on SDA47/SCL48, shared by GPIO I²C and both controllers. Official Xiaozhi v2.2.6 initializes the codec and emits PCM through the WASM stream. Browser audio and the logical I²S source are separately tested; codec reset/read-only behavior, gain, audio power gating and full voice recognition remain partial. See `docs/platform/stopwatch-es8311.md`. A custom firmware's address-probe failure is distinct from unsupported audio processing; verify its actual register accesses before claiming compatibility.
 
 ## Record and share interactions
 
-Load a remote firmware source first. `await api.recordingStart()` resets and boots it, then captures successfully acknowledged button, matrix-key, encoder, touch and supported physical-accessory inputs (button, connection, angle, environment, illuminance and motion). A keyboard press records its mapped device button or matrix coordinate; screen taps and left/right drags record normalized down/move/up coordinates. Camera selection/frames, serial/GPS injection, IMU, LoRa, flashing and scripts are excluded. The limits are 120 guest seconds, 500 events and 32 KiB per recording. Local firmware files cannot supply a portable recording source.
+Load a remote firmware source first. `await api.recordingStart()` resets and boots it, then captures successfully acknowledged button, matrix-key, encoder, touch and supported physical-accessory inputs (button, connection, angle, environment, illuminance and motion). A keyboard press records its mapped device button or matrix coordinate; screen taps and left/right drags record normalized down/move/up coordinates. Camera selection/frames, serial/GPS injection, IMU, LoRa, audio PCM, network sessions, flashing and scripts are excluded. The limits are 120 guest seconds, 500 events and 32 KiB per recording. Local firmware files cannot supply a portable recording source.
 
 ```js
 await api.recordingStart();

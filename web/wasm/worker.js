@@ -8,6 +8,7 @@ let traceEnabled = false, pendingInputTrace = [];
 const traceNow = () => performance.timeOrigin + performance.now();
 // esp32sim in a Web Worker: owns the wasm instance, paces it to wall time, and relays the UI
 // protocol (docs/web-ui.md) to the page as postMessage — text as strings, binary as ArrayBuffers.
+let ethernetRelay=false,softApEnabled=false,softApLastStatus='',softApStatusAt=0;
 let CPU_HZ = 240e6;   // replaced from the module once an emulator exists: the C3 runs at 160 MHz
 let wasm = null, emu = 0, running = false, t0 = 0, resyncs = 0, lastStat = { wall: 0, insns: 0, cycles: 0 };
 let loopGeneration = 0, booted = false, catchupTurns = 0;
@@ -48,6 +49,19 @@ let experiments = [], setupError = null, smoothDisplay = false;
 let frameAck = false, framesInFlight = 0, pendingFrame = null;
 const imports = { env: { ...blockJit.imports, host_log: (p, n) => postMessage({ log: dec.decode(mem().subarray(p, p + n)) }) } };
 
+function drainNetwork() {
+  if(!emu||!wasm)return;
+  const publish=(iface,take,ptr,len)=>{
+    const n=take(emu);
+    for(let i=0;i<n;i++){const p=ptr(emu,i),size=len(emu,i);if(size<14||size>1518)continue;const data=mem().slice(p,p+size).buffer;postMessage({networkFrame:{interface:iface,data}},[data]);}
+  };
+  if(ethernetRelay)publish(0,wasm.esp32sim_ethernet_take,wasm.esp32sim_ethernet_ptr,wasm.esp32sim_ethernet_len);
+  if(softApEnabled) {
+    const len=wasm.esp32sim_softap_poll(emu),ptr=wasm.esp32sim_softap_status_ptr(emu);
+    if(performance.now()-softApStatusAt>=250){softApStatusAt=performance.now();const json=dec.decode(mem().subarray(ptr,ptr+len));if(json!==softApLastStatus){softApLastStatus=json;postMessage({softAp:JSON.parse(json)});}}
+    publish(1,wasm.esp32sim_softap_take,wasm.esp32sim_softap_ptr,wasm.esp32sim_softap_len);
+  }
+}
 function drain() {
   const n = wasm.esp32sim_out_take(emu);
   for (let i = 0; i < n; i++) {
@@ -63,7 +77,7 @@ function drain() {
       const buf = new ArrayBuffer(len);
       new Uint8Array(buf).set(mem().subarray(p, p + len));
       if (frameAck && display) { framesInFlight++; pendingFrame = null; }
-      postMessage({ bin: buf, frameTrace, ack: frameAck && display }, [buf]);
+      postMessage({ bin: buf, frameTrace, ack: frameAck && display, ...(mem()[p]===2?{guestTime:wasm.esp32sim_cycles(emu)/CPU_HZ}:{}) }, [buf]);
     }
   }
 }
@@ -85,7 +99,7 @@ function loop(generation = loopGeneration) {
     cur = wasm.esp32sim_cycles(emu);
     if (inputTraceIds.length) postMessage({ touchTrace: { stage: 'run-exit', ids: inputTraceIds, atMs: traceNow(), cycles: cur } });
     pacing.observe(cur - previous, performance.now() - before);
-    drain();
+    drain();drainNetwork();
     collectFlash();collectSd();
     if (rc !== 0) { running = false; postMessage({ stopped: rc }); return; }
     if (performance.now() - now >= turnMs) break;                       // let messages flow, come back
@@ -158,7 +172,7 @@ onmessage = async (ev) => {
     }
     if (m.op === 'init') { frameAck = m.frameAck === true; traceEnabled = !!m.touchTrace; const r = await WebAssembly.instantiate(m.wasm, imports); wasm = r.instance.exports;  postMessage({ ready: true }); }
     else if (m.op === 'create') {
-      running = false; loopGeneration++; booted = false;
+      running = false; loopGeneration++; booted = false;ethernetRelay=false;softApEnabled=false;softApLastStatus='';softApStatusAt=0;
       flashShadow = null; flashWatchId = null;
       // Keep credits for already posted frames until their ACKs arrive, but never send
       // a retained frame from the emulator being replaced.
@@ -172,7 +186,43 @@ onmessage = async (ev) => {
       experiments = m.experiments === undefined ? [] : m.experiments;
       smoothDisplay = m.smoothDisplay === true;
       if (emu !== 0 && wasm.esp32sim_cpu_hz) CPU_HZ = wasm.esp32sim_cpu_hz(emu);
-      postMessage({ created: emu !== 0, flashStorage: !!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
+      const audioAvailable=!!(emu&&wasm.esp32sim_audio_input_state&&wasm.esp32sim_audio_input_state(emu,0)>0);
+      if(emu&&m.audioStreaming&&wasm.esp32sim_audio_output_streaming)wasm.esp32sim_audio_output_streaming(emu,1);
+      postMessage({ created: emu !== 0, audioAvailable, networkAvailable:!!wasm.esp32sim_softap_configure&&!!wasm.esp32sim_ethernet_relay, flashStorage: !!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
+    }
+    else if(m.op.startsWith('network-')) {
+      try {
+        if(!emu||!wasm.esp32sim_ethernet_relay)throw new Error('Ethernet transport unavailable');
+        if(m.op==='network-setup') {
+          if(booted)throw new Error('Configure virtual Wi-Fi before boot');
+          if(withBytes(enc.encode(m.spec),(p,n)=>wasm.esp32sim_wifi(emu,p,n))!==0)throw new Error('Virtual router configuration rejected');
+          softApEnabled=!!wasm.esp32sim_softap_configure&&withBytes(enc.encode(JSON.stringify(m.softAp)),(p,n)=>wasm.esp32sim_softap_configure(emu,p,n))===0;
+        } else if(m.op==='network-relay') {
+          if(wasm.esp32sim_ethernet_relay(emu,m.enabled?1:0)!==0)throw new Error('Ethernet relay rejected');ethernetRelay=!!m.enabled;
+        } else if(m.op==='network-receive') {
+          if(!(m.data instanceof ArrayBuffer)||m.data.byteLength<14||m.data.byteLength>1518||![0,1].includes(m.interface))throw new Error('Invalid Ethernet frame');
+          const receiver=m.interface===0?wasm.esp32sim_ethernet_receive:wasm.esp32sim_softap_receive;
+          if(!receiver||withBytes(new Uint8Array(m.data),(p,n)=>receiver(emu,p,n))!==0)throw new Error('Ethernet receive queue rejected frame');
+        } else throw new Error('Unknown network operation');
+        if(m.requestId!==undefined)postMessage({networkReply:m.requestId,ok:true,softApSupported:softApEnabled});
+      } catch(error){if(m.requestId!==undefined)postMessage({networkReply:m.requestId,ok:false,error:error.message});else postMessage({networkError:error.message});}
+    }
+    else if (m.op.startsWith('audio-')) {
+      try {
+        if(!emu||!wasm.esp32sim_audio_input_configure)throw new Error('PCM audio is unsupported by this WASM build');
+        if(![0,1].includes(m.port))throw new Error('Invalid I2S port');
+        let acceptedFrames;
+        if(m.op==='audio-configure') {if(wasm.esp32sim_audio_input_configure(emu,m.port,m.sampleRate)!==0)throw new Error('PCM input configuration rejected');}
+        else if(m.op==='audio-disable') {if(wasm.esp32sim_audio_input_disable(emu,m.port)!==0)throw new Error('PCM input disable rejected');}
+        else if(m.op==='audio-push') {
+          if(!(m.data instanceof ArrayBuffer)||m.data.byteLength>65536)throw new Error('Invalid PCM block');
+          acceptedFrames=withBytes(new Uint8Array(m.data),(p,n)=>wasm.esp32sim_audio_input_push(emu,m.port,m.channels,p,n));
+          if(acceptedFrames<0)throw new Error('PCM input rejected');
+        } else if(m.op!=='audio-state')throw new Error('Unknown audio operation');
+        const len=wasm.esp32sim_audio_input_state(emu,m.port),ptr=wasm.esp32sim_audio_state_ptr(emu);
+        const state=JSON.parse(dec.decode(mem().subarray(ptr,ptr+len)));
+        postMessage({audioReply:m.requestId,ok:true,state,acceptedFrames,guestTime:wasm.esp32sim_cycles(emu)/CPU_HZ});
+      } catch(error){postMessage({audioReply:m.requestId,ok:false,error:error.message});}
     }
     else if (m.op === 'sd-attach') {if(booted||running)throw new Error('Attach SD only before boot');if(withBytes(new Uint8Array(m.data),(p,n)=>wasm.esp32sim_load(emu,8,p,n))!==0)throw new Error('SD attach rejected');postMessage({sdReply:m.requestId,ok:true});}
     else if (m.op === 'sd-export') {const data=sdBytes().slice().buffer;postMessage({sdReply:m.requestId,data},[data]);}
@@ -238,7 +288,7 @@ onmessage = async (ev) => {
     else if (m.op === 'net-load') { const rc = withBytes(new Uint8Array(m.data), (p, n) => wasm.esp32sim_net_load(net, m.node, m.kind, p, n)); postMessage({ loaded: 'n' + m.node + ':' + m.kind, ok: rc === 0 }); }
     else if (m.op === 'net-stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_net_stub_spec(net, m.node, p, n)) !== 0) setupError ||= 'invalid stub for node ' + m.node + ': ' + m.spec; }
     else if (m.op === 'net-start') { if (setupError) throw new Error(setupError); const rc = wasm.esp32sim_net_boot(net); if (rc === 0) { running = true; netT0 = performance.now(); netLoop(); } postMessage({ started: rc === 0 }); }
-    else if (m.op === 'stop') { running = false; loopGeneration++; collectFlash(true);collectSd(true); postMessage({ stopped: 0 }); }
+    else if (m.op === 'stop') { if(emu&&wasm.esp32sim_audio_output_flush){wasm.esp32sim_audio_output_flush(emu);drain();} running = false; loopGeneration++; collectFlash(true);collectSd(true); postMessage({ stopped: 0 }); }
     else if (m.op === 'imu') {
       const values = [...(m.accelG || []), ...(m.gyroDps || [])];
       const ok = !!emu && values.length === 6 && values.every(Number.isFinite) && !!wasm.esp32sim_set_imu_sample

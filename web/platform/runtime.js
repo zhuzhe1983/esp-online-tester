@@ -1,3 +1,5 @@
+import {createNetworkSession} from './network-session.js';
+import {createAudioStream} from './audio-stream.js';
 import {motionParameter} from './motion-input.js';
 import {hasSdCard,persistentBoard,firmwareBoardMatches} from './board-compatibility.js';
 import {validIlluminance,illuminanceParameter} from './illuminance-input.js';
@@ -178,7 +180,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   const defaultImu = () => ({enabled: true, source: product?.runtime?.board === 'stopwatch' ? 'scene' : 'agent', ...orientationSample([0,0,0,1]), delivery: 'configured', guestTime: null});
   let imu = defaultImu(), imuPreviousAt = null, imuGeneration = 0;
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
-  const snapshot = () => ({ version: API_VERSION, status, scene: clone(scene), accessoryInputs: clone(accessoryInputs), accessoryOutputs: clone(accessoryOutputs), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), sdCard:clone(sdCard),leds:clone(leds), imu: imuModel() ? clone(imu) : null, frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
+  const snapshot = () => ({ version: API_VERSION, status, audio:audio.snapshot(), network:network.snapshot(), scene: clone(scene), accessoryInputs: clone(accessoryInputs), accessoryOutputs: clone(accessoryOutputs), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), sdCard:clone(sdCard),leds:clone(leds), imu: imuModel() ? clone(imu) : null, frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
   const emit = event => { for (const listener of listeners) { try { listener(event); } catch (e) { console.error('ESP tester event handler:', e); } } };
   const loadReporter = (loadId, signal) => {
     let fileIndex = 0;
@@ -204,7 +206,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   };
   const resolve = (key, value) => { const item = pending.get(key); if (!item) return; pending.delete(key); clearTimeout(item.timeout); item.resolve(value); };
   const rejectPending = e => { for (const item of pending.values()) { clearTimeout(item.timeout); item.reject(e); } pending.clear(); };
-  const stopWorker = () => { worker?.terminate(); worker = null; rejectPending(error('SESSION_REPLACED', 'The emulator session was replaced.')); booted = false; imuPreviousAt = null; imu.gyroDps = [0,0,0]; imu.delivery = 'configured'; imu.guestTime = null; };
+  const stopWorker = () => { network.detach(); audio.reset(); worker?.terminate(); worker = null; rejectPending(error('SESSION_REPLACED', 'The emulator session was replaced.')); booted = false; imuPreviousAt = null; imu.gyroDps = [0,0,0]; imu.delivery = 'configured'; imu.guestTime = null; };
   const ask = (key, message, transfer = []) => new Promise((resolveRequest, reject) => {
     requireValue(worker, 'NOT_READY', 'The emulator worker is not ready.');
     requireValue(!pending.has(key), 'BUSY', 'A worker command is already pending.');
@@ -212,12 +214,22 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     pending.set(key, { resolve: resolveRequest, reject, timeout });
     worker.postMessage(message, transfer);
   });
+  const audio=createAudioStream({emit,isRunning:()=>status==='running',request:async(action,options,transfer=[])=>{
+    const requestId=++inputSequence,reply=await ask(`audio:${requestId}`,{op:`audio-${action}`,requestId,...options},transfer);
+    requireValue(reply.ok,'AUDIO_COMMAND_FAILED',reply.error||'The emulator rejected this audio operation.');return reply;
+  }});
+  const network=createNetworkSession({emit,command:async(action,options)=>{
+    const requestId=++inputSequence,reply=await ask(`network:${requestId}`,{op:`network-${action}`,requestId,...options});
+    requireValue(reply.ok,'NETWORK_COMMAND_FAILED',reply.error||'The emulator rejected this network operation.');return reply;
+  },sendFrame:(interfaceId,data)=>worker?.postMessage({op:'network-receive',interface:interfaceId,data},[data])});
   const appendSerial = (source, data) => {
     serial = (serial + data).slice(-SERIAL_LIMIT);
     serialByPort[source] = ((serialByPort[source] || '') + data).slice(-SERIAL_LIMIT);
     emit({ type: 'serial', source, data });
   };
   const receive = message => {
+    if(message.networkFrame||message.softAp||message.networkError)network.receive(message);
+    if(message.networkReply!==undefined)resolve(`network:${message.networkReply}`,message);
     if (message.text !== undefined) {
       let text;
       try { text = JSON.parse(message.text); } catch { appendSerial('emulator', String(message.text)); return; }
@@ -239,12 +251,13 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         if (new Uint8Array(message.bin)[0] === 1) {
           frame = decodeFramebuffer(message.bin); frameNumber++;
           emit({ type: 'frame', ...frame, frameNumber, source: 'emulator' });
-        }
+        } else if(new Uint8Array(message.bin)[0]===2)audio.receive(message.bin,message.guestTime??stats.time??null);
       } catch (e) { report(e); }
       finally { if (message.ack) worker?.postMessage({ op: 'frame-ack' }); }
     }
     if (message.log !== undefined) appendSerial('emulator', `${message.log}\n`);
     if (message.pace) { stats = { ...stats, ...message.pace }; emit({ type: 'stats', stats: clone(stats) }); }
+    if (message.audioReply !== undefined)resolve(`audio:${message.audioReply}`,message);
     if (message.flashReply !== undefined) resolve(`flash:${message.flashReply}`, message);
     if (message.flashDelta) { try { receiveFlash(message.flashDelta); } catch(e) { storageFailure(storageSession,e); } }
     if (message.ready) resolve('ready', message);
@@ -523,8 +536,9 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     current.onerror = event => { const e = error('WORKER_ERROR', event.message || 'WebAssembly worker failed.'); rejectPending(e); report(e); setStatus('error'); };
     const wasmBuffer = wasm.buffer.slice(wasm.byteOffset, wasm.byteOffset + wasm.byteLength);
     await ask('ready', { op: 'init', wasm: wasmBuffer, frameAck: true }, [wasmBuffer]);
-    const result = await ask('created', { op: 'create', ...bundle.cfg });
+    const result = await ask('created', { op: 'create', ...bundle.cfg, audioStreaming:true });
     requireValue(result.created, 'CREATE_FAILED', 'Cannot create the selected emulator board.');
+    audio.reset(result.audioAvailable===true);
     for (const file of bundle.files) {
       const data = file.data.slice().buffer;
       const result = await ask(`loaded:${file.at === undefined ? KINDS[file.kind] : `at${file.at}`}`, { op: 'load', ...(file.at === undefined ? { kind: KINDS[file.kind] } : { at: file.at }), data }, [data]);
@@ -533,7 +547,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     await initializeStorage(bundle, result.flashStorage, progress);
     await initializeSd(bundle);
     for (const spec of bundle.cfg.stubs || []) worker.postMessage({ op: 'stub', spec });
-    if (bundle.cfg.wifi) worker.postMessage({ op: 'wifi', spec: bundle.cfg.wifi });
+    if(result.networkAvailable&&romFor(bundle.cfg.board)!=='esp32p4_rev0_rom.elf')await network.attach({available:true,manifestWifi:bundle.cfg.wifi});
+    else if(bundle.cfg.wifi)worker.postMessage({op:'wifi',spec:bundle.cfg.wifi});
     if (imuModel()) await applyImu();
     resetAccessoryInputs();
     for(const route of accessoryInputs.filter(route=>!route.hub)) await sendAccessory(route);
@@ -679,10 +694,23 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     }); },
     subscribe(listener) { requireValue(typeof listener === 'function', 'INVALID_LISTENER', 'Event listener must be a function.'); listeners.add(listener); return () => listeners.delete(listener); },
     async observe() { return snapshot(); },
+    configureNetwork(options){return exclusive(()=>network.configure(options));},
+    async readNetwork(){alive();return network.snapshot();},
+    connectNetwork(){return exclusive(()=>network.connect());},
+    async mapNetworkPort(options){alive();return network.mapPort(options);},
+    async unmapNetworkPort(options){alive();return network.unmap(options);},
+    async requestNetworkHttp(options){alive();return network.http(options);},
+    async provisionNetwork(){alive();return network.provision();},
+    async addNetworkService(options){alive();return network.addService(options);},
+    audioConfigure(options){return exclusive(()=>audio.configure(options));},
+    pushAudio(options){return exclusive(()=>audio.push(options));},
+    readAudio(options){return exclusive(async()=>{await audio.refresh();return audio.read(options);});},
     async capabilities() {
       return { version: API_VERSION, backend: 'esp32sim-wasm', static: true, executable: !!product?.runtime?.board,
         execution: {mode: product?.runtime?.board === 'stopwatch' ? 'wasm-interpreter' : 'wasm-jit', reason: product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null},
         sdCard:{available:hasSdCard(product?.runtime?.board),defaultBytes:64*MIB,maxBytes:MAX_SD_BYTES,formats:['fat32','raw-image'],scope:'product-board-canonical-flash-sha256',autoSaveIntervalMs:1500,crashSafe:false},
+        network:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',transport:'ethernet-websocket',helperRequired:true,softAp:!!product?.runtime?.board&&romFor(product.runtime.board)==='esp32s3_rev0_rom.elf',automaticProvisioning:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
+        audio:{input:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&romFor(product.runtime.board)==='esp32s3_rev0_rom.elf',channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
         firmware: { manifest: true, mergedImage: true, localFile: true, localSegments: true, localBuild: true, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true },
