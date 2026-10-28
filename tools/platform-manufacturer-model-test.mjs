@@ -25,5 +25,11 @@ try {
  metadata={...fixture,derivedParts:[lens]};const rgb=createManufacturerModel(product,null);await rgb.ready;
  assert.equal(rgb.group.userData.rgbLedMeshes[0],rgb.parts['rgb-window']);assert.equal(rgb.parts['rgb-window'].userData.unlitColor,'#69746a');assert.deepEqual(rgb.group.userData.shellMeshes,[]);rgb.dispose();
  for(const ledIndex of [-1,256,1.5,'0']){metadata={...fixture,derivedParts:[{...lens,ledIndex}]};const invalid=createManufacturerModel(product,null);await assert.rejects(invalid.ready,/Invalid derived LED window/);invalid.dispose();}
+ const button={id:'cover',shape:'rectangle',sizeMm:[19.2,19.2],positionMm:[0,0,6.98]},buttonProduct={...product,controls:[{id:'cover',type:'button'}]};
+ for(const dragToOrbit of [undefined,true,false]) {
+  metadata={...fixture,presentation:{buttons:[{...button,dragToOrbit}]}};const cover=createManufacturerModel(buttonProduct,null);await cover.ready;
+  assert.equal(cover.parts['cover-key:cover'].userData.dragToOrbit,dragToOrbit===true);assert.equal(cover.parts['cover-key:cover'].userData.control,'cover');assert.equal(cover.parts['cover-key:cover'].userData.screen,undefined);cover.dispose();
+ }
+ metadata={...fixture,presentation:{buttons:[{...button,dragToOrbit:'yes'}]}};const invalidCover=createManufacturerModel(buttonProduct,null);await assert.rejects(invalidCover.ready,/Invalid cover button drag behavior/);invalidCover.dispose();
  console.log('ok manufacturer loader: bare-PCB material isolation, source-verified connector boundary, asset cache identity and invalid label rejection');
 } finally {globalThis.fetch=nativeFetch;}

@@ -299,7 +299,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       const control = product?.controls?.find(c => c.id === object.userData.encoder && c.type === 'encoder');
       return product?.runtime?.encoder && control ? {kind:'encoder',id:control.id,detents:control.detents,message:'沿旋钮圆周拖动；每格发送一个编码器步进。'} : {kind:'unsupported',message:'此设备尚未实现旋钮输入。'};
     }
-    if (object?.userData.control) return {kind: 'button', id: object.userData.control};
+    if (object?.userData.control) return {kind: 'button', id: object.userData.control, dragToOrbit: object.userData.dragToOrbit, ...(object.userData.dragToOrbit ? {message:'点击或按住前盖操作按键，拖动前盖旋转设备。'} : {})};
     if (object?.userData.unsupported) return {kind: 'unsupported', message: object.userData.unsupported};
     if (object?.userData.screen) return product?.runtime?.touch ? {kind: 'touch'} : product?.display?.touch === false ? {kind:'orbit'} : {kind: 'unsupported', message: '此设备尚未实现触摸输入。'};
     return {kind: 'orbit'};
@@ -349,9 +349,10 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   function move(event) {
     const kind = router.kind(event.pointerId);
     if (!kind) { hover(event); return; }
-    router.move({pointerId: event.pointerId, x: event.clientX, y: event.clientY, point: kind === 'touch' ? screenPoint(event) : ['encoder','potentiometer'].includes(kind) ? encoderPoint(event,encoderMeshes.get(event.pointerId)) : null});
+    const next = router.move({pointerId: event.pointerId, x: event.clientX, y: event.clientY, point: kind === 'touch' ? screenPoint(event) : ['encoder','potentiometer'].includes(kind) ? encoderPoint(event,encoderMeshes.get(event.pointerId)) : null});
+    if (next === 'orbit') mount.style.cursor = 'grabbing';
   }
-  function up(event) { const orbit = router.kind(event.pointerId) === 'orbit'; router.up(event.pointerId); encoderMeshes.delete(event.pointerId); if (orbit) { clearOrientationTimers(); publishOrientation(false); } if (!router.activeCount) clearHover(); }
+  function up(event) { const orbit = router.kind(event.pointerId) === 'orbit'; router.up(event.pointerId, event.type !== 'pointerup'); encoderMeshes.delete(event.pointerId); if (orbit) { clearOrientationTimers(); publishOrientation(false); } if (!router.activeCount) clearHover(); }
   function releaseInputs() { const hadMotion = orientationTimer !== null || orientationIdle !== null; clearOrientationTimers(); router.releaseAll(); encoderMeshes.clear(); if (hadMotion) publishOrientation(false); clearHover(); }
   for (const canvas of [display, renderer?.domElement].filter(Boolean)) {
     canvas.addEventListener('pointerdown', down); canvas.addEventListener('pointermove', move); canvas.addEventListener('pointerleave', clearHover); canvas.addEventListener('blur', releaseInputs);

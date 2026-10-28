@@ -19,6 +19,8 @@
 
 ## 验证与复现
 
+前盖是机械按键而非触摸屏。原版和 v1.1 的模型显式启用“短点击／原地按住操作按键，拖动旋转”：按下后的 220 ms 用于区分手势，移动超过 6 个 CSS 像素则转为旋转；取消、失焦不补发点击，已按住后转为拖动会释放按键。其他按键和真正的触摸屏不改变行为。浏览器检查两版前盖拖动均改变姿态且没有按钮事件；原版官方固件运行时，短点击产生一对输入，按住／释放改变 G39 状态。官方程序仍停留在 Wi-Fi 扫描，这次检查没有扩大它的应用兼容声明。回归覆盖 `platform-scene-test.mjs`、`platform-manufacturer-model-test.mjs` 及现有输入、触摸、编码器和真实 worker 测试。
+
 ```sh
 node tools/probe-atom-matrix-official.mjs \
   https://m5burner-cdn.m5stack.com/firmware/100dd8d63b862f38d8c9c1b96a4706ce.bin \

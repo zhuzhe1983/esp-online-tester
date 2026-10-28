@@ -38,6 +38,28 @@ check('touch and orbit keep separate ownership for their entire gesture', () => 
   const count = events.length; router.down({pointerId: 3, x: 0, y: 0, surface: {kind: 'orbit'}}); router.move({pointerId: 3, x: 25, y: 15, point: {x: 10, y: 10}}); router.up(3);
   assert.equal(events.length, count); assert.deepEqual(moves, [[25, 15]]);
 });
+check('mechanical matrix cover distinguishes tap, hold and orbit without phantom button presses', () => {
+  const events=[],moves=[],timers=new Map();let timerId=0;
+  const router=createScenePointerRouter({onInput:e=>events.push(e),onOrbit:(...v)=>moves.push(v),setTimer:fn=>{timers.set(++timerId,fn);return timerId;},clearTimer:id=>timers.delete(id)});
+  const down=()=>router.down({pointerId:1,x:20,y:30,surface:{kind:'button',id:'matrix-cover',dragToOrbit:true}});
+  const hold=()=>{for(const [id,fn] of [...timers]){timers.delete(id);fn();}};
+  down();router.move({pointerId:1,x:60,y:40});assert.equal(router.kind(1),'orbit');router.up(1);hold();
+  assert.deepEqual(events,[],'drag cannot trigger a tap or a delayed hold');assert.deepEqual(moves,[[40,10]]);
+  down();router.move({pointerId:1,x:22,y:32});router.up(1);hold();
+  assert.deepEqual(events.map(e=>e.pressed),[true,false],'small mouse jitter remains a single tap');
+  events.length=0;down();hold();assert.deepEqual(events.map(e=>e.pressed),[true]);router.up(1);assert.deepEqual(events.map(e=>e.pressed),[true,false]);
+  events.length=0;down();router.up(1,true);hold();down();router.releaseAll();hold();assert.deepEqual(events,[],'cancel and blur must not synthesize pending clicks');
+  down();hold();router.move({pointerId:1,x:60,y:40});router.up(1);assert.deepEqual(events.map(e=>e.pressed),[true,false],'drag after a deliberate hold releases the guest button once');
+  assert.equal(router.activeCount,0);assert.equal(timers.size,0);
+});
+check('mechanical cover drag cannot steal a second pointer; a held button releases on blur', () => {
+  const events=[],moves=[];let tick;
+  const router=createScenePointerRouter({onInput:e=>events.push(e),onOrbit:(...v)=>moves.push(v),setTimer:fn=>{tick=fn;return 1;},clearTimer:()=>{tick=null;}});
+  router.down({pointerId:1,x:0,y:0,surface:{kind:'button',id:'cover',dragToOrbit:true}});
+  router.down({pointerId:2,x:0,y:0,surface:{kind:'button',id:'side'}});
+  router.move({pointerId:1,x:100,y:30});assert.equal(router.kind(1),'button');assert.deepEqual(moves,[]);
+  tick();router.releaseAll();assert.deepEqual(events.map(e=>[e.id,e.pressed]),[['side',true],['cover',true],['cover',false],['side',false]]);
+});
 check('unsupported power control explains the limitation without emitting GPIO', () => {
   const events = [], notices = [], router = createScenePointerRouter({onInput: e => events.push(e), onUnsupported: x => notices.push(x)});
   router.down({pointerId: 1, surface: {kind: 'unsupported', message: 'power unavailable'}}); router.up(1);
