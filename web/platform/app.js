@@ -10,7 +10,7 @@ import {installEmbedBridge} from './embed.js';
 import {createTransportUi, createKnowledgePanel, mountFirmwareUpdates} from './transport-ui.js';
 import {firmwareRunPolicy} from './firmware-policy.js';
 import {confirmFirmwareRun, buildRunIssueUrl} from './firmware-run-ui.js';
-import {productOptionLabel, manufacturerLabel, manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
+import {productOptionLabel, productIdentityLabel, productFamilies, productFamilyGroups, manufacturerLabel, manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
 import {mountDeviceSearch, mountAccessorySearch} from './device-search.js';
 import {encodeRecording, decodeRecording, validateRecording} from './recording.js';
 import {buildFirmwareIssueUrl} from './watchlist.js';
@@ -36,6 +36,7 @@ let firmwareHistory, burnerUi, sparkUi, pendingRemoteHistory, remoteModeSelectio
 const remoteHub = () => ({m5burner:burnerUi,'lilygo-spark':sparkUi})[$('firmware-kind')?.value];
 const matchingHubFirmware = source => [burnerUi?.current(),sparkUi?.current()].find(item=>item?.source&&firmwareSourceMatches(item.source,source));
 let preserveUnspecifiedFirmware = false;
+let productChoiceManufacturer = '', productFamilyFilter = '', productChoiceTarget = '';
 let orientationSettlement = null;
 let localFiles = [], localSource = null, localSelectionToken = 0;
 const gpsLookups = new Map(), gpsMessages = new Map();
@@ -244,7 +245,7 @@ function renderTransport() {
   const canLoad = Boolean(scene?.firmware || localSource);
   const sessionBusy = ['preparing', 'recording', 'playing'].includes(recordingState.status);
   const configurationBusy = busy || status === 'loading';
-  for (const id of ['manufacturer-select','product-select','search-devices','firmware-select','firmware-kind','firmware-url','firmware-sha','firmware-history-select','accessory-brand','accessory-interface','accessory-select','search-accessories']) if ($(id)) $(id).disabled = configurationBusy;
+  for (const id of ['manufacturer-select','product-family-select','product-select','search-devices','firmware-select','firmware-kind','firmware-url','firmware-sha','firmware-history-select','accessory-brand','accessory-interface','accessory-select','search-accessories']) if ($(id)) $(id).disabled = configurationBusy;
   burnerUi?.setDisabled(configurationBusy);sparkUi?.setDisabled(configurationBusy);
   if ($('add-accessory')) $('add-accessory').disabled = configurationBusy || !$('accessory-select')?.value;
   if ($('clear-accessories')) $('clear-accessories').disabled = configurationBusy || !scene?.accessories.length;
@@ -310,11 +311,29 @@ function renderEmpty() {
     text('empty-description', selected?.id === 'm5stack-stopwatch-official' ? '官方固件：同时长按 A+B 进入菜单，A/B 切换，点击图标进入。' : '加载所选固件；操作行为以该固件的说明为准。');
   }
 }
-function renderProductChoices(manufacturer) {
-  const choices = productsForManufacturer(catalog.products, manufacturer);
-  if ($('product-select')) { $('product-select').replaceChildren(...choices.map(item => new Option(productOptionLabel(item), item.id))); $('product-select').disabled = !choices.length; }
+function renderProductChoices(manufacturer, {familyId = '', selectedId} = {}) {
+  const families = productFamilies(catalog.products, manufacturer);
+  productChoiceManufacturer = manufacturer;
+  productFamilyFilter = families.some(item=>item.id===familyId) ? familyId : '';
+  if ($('product-family-field')) $('product-family-field').hidden = !families.length;
+  if ($('product-family-select')) {
+    $('product-family-select').replaceChildren(new Option('全部系列', ''), ...families.map(item=>new Option(`${item.name} · ${item.count} 款`,item.id)));
+    $('product-family-select').value = productFamilyFilter;
+  }
+  const choices = productsForManufacturer(catalog.products, manufacturer, productFamilyFilter);
+  if ($('product-select')) {
+    const select = $('product-select'); select.replaceChildren();
+    if (families.length && !productFamilyFilter) {
+      for (const family of productFamilyGroups(choices)) {
+        const group = element('optgroup'); group.label = family.name;
+        group.append(...family.products.map(item=>new Option(productOptionLabel(item),item.id))); select.append(group);
+      }
+    } else select.append(...choices.map(item=>new Option(productOptionLabel(item),item.id)));
+    if (choices.some(item=>item.id===selectedId)) select.value = selectedId;
+    select.disabled = !choices.length;
+  }
   text('product-count', `${choices.filter(item=>item.runtime?.board).length} / ${choices.length} 款`);
-  if($('product-count'))$('product-count').title='已有板级适配（含部分支持） / 当前厂商设备总数';
+  if ($('product-count')) $('product-count').title = `已有板级适配（含部分支持） / 当前${productFamilyFilter ? '系列' : '厂商'}设备总数`;
   return choices;
 }
 function renderProduct() {
@@ -323,16 +342,20 @@ function renderProduct() {
   if(kind){const option=kind.querySelector('[value="m5burner"]');if(isM5Stack(selected)){if(!option)kind.append(new Option('burner.m5stack.com','m5burner'));}else{if(kind.value==='m5burner')kind.value='merged';option?.remove();}}
   if(kind){const option=kind.querySelector('[value="lilygo-spark"]');if(isLilygo(selected)){if(!option)kind.append(new Option('LILYGO Spark','lilygo-spark'));}else{if(kind.value==='lilygo-spark')kind.value='merged';option?.remove();}}
   burnerUi?.setProduct(selected);sparkUi?.setProduct(selected);updateRemoteMode();
-  if ($('manufacturer-select')) { $('manufacturer-select').value = selected.manufacturer; renderProductChoices(selected.manufacturer); }
+  if ($('manufacturer-select')) {
+    $('manufacturer-select').value = selected.manufacturer;
+    const keepFilter = (renderedProduct === selected.id || productChoiceTarget === selected.id) && productChoiceManufacturer === selected.manufacturer && (!productFamilyFilter || productFamilyFilter === selected.family?.id);
+    renderProductChoices(selected.manufacturer, {familyId:keepFilter ? productFamilyFilter : selected.family?.id || '',selectedId:selected.id});
+  }
   text('stage-title', selected.name); text('product-name', selected.name.replace(/^M5Stack /, ''));
   text('model-origin', selected.model?.type === 'source-derived' ? '照片与尺寸建模 · 内部结构有未知项' : selected.model || selected.id === 'm5stack-stopwatch' ? '官方 CAD · 外观来源可查' : '模型待建 · 来源资料可查');
-  text('product-model', `${manufacturerLabel(selected.manufacturer)} / ${selected.sku}`);
-  text('product-symbol', selected.display?.shape === 'round' ? '◉' : selected.display ? '▤' : '▧');
+  text('product-model', productIdentityLabel(selected));
+  text('product-symbol', selected.displayStatus === 'unknown' ? '?' : selected.display?.shape === 'round' ? '◉' : selected.display ? '▤' : '▧');
   if ($('product-select')) $('product-select').value = selected.id;
   const specs = $('product-specs');
   if (specs) {
     specs.replaceChildren();
-    for (const [label, value] of [['芯片', selected.module || selected.chip.toUpperCase()], ['存储', `${selected.runtime.flashMb == null ? 'Flash 待核对' : `${selected.runtime.flashMb} MB Flash`} / ${selected.runtime.psramMb == null ? 'PSRAM 待核对' : `${selected.runtime.psramMb} MB PSRAM`}`], ['屏幕', selected.display ? `${selected.display.width} × ${selected.display.height} ${selected.display.type || selected.display.technology || selected.display.controller || ''}`.trim() : '串口输出 / 无屏幕'], ['接口', selected.interfaces.filter(item => item.external).map(item => item.name || item.type).join(' · ') || '详见产品元信息']]) {
+    for (const [label, value] of [['芯片', selected.module || selected.chip.toUpperCase()], ['存储', `${selected.runtime.flashMb == null ? 'Flash 待核对' : `${selected.runtime.flashMb} MB Flash`} / ${selected.runtime.psramMb == null ? 'PSRAM 待核对' : `${selected.runtime.psramMb} MB PSRAM`}`], ['屏幕', selected.displayStatus === 'unknown' ? '屏幕资料待核对' : selected.display ? `${selected.display.width} × ${selected.display.height} ${selected.display.type || selected.display.technology || selected.display.controller || ''}`.trim() : '串口输出 / 无屏幕'], ['接口', selected.interfaces.filter(item => item.external).map(item => item.name || item.type).join(' · ') || '详见产品元信息']]) {
       specs.append(element('dt', '', label), element('dd', '', value));
     }
   }
@@ -829,11 +852,15 @@ function setupEvents() {
     updateRemoteMode();renderTransport();text('load-status','已选取历史地址，点击“下载并运行”加载。');
   }});
   bind('firmware-kind','change',()=>{updateRemoteMode();renderTransport();});
-  const chooseProduct = async id => { clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, id)); await configure(next, {reflectSource: true}); };
+  const chooseProduct = async (id, keepFamily = false) => { clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, id)); productChoiceTarget = keepFamily ? id : ''; try { await configure(next, {reflectSource: true}); } finally { productChoiceTarget = ''; } };
   mountDeviceSearch({button:$('search-devices'),products:catalog.products,onSelect:id=>action(()=>chooseProduct(id)),onError:error=>toast(error.message,true)});
   mountAccessorySearch({button:$('search-accessories'),getItems:allDefinitions,onSelect:id=>{const item=definition(id);if(!item)return;renderAccessoryChoices({brand:accessoryBrand(item),connector:accessoryInterface(item),id});$('add-accessory').focus();},onError:error=>toast(error.message,true)});
-  bind('manufacturer-select', 'change', () => action(async () => { const choices = renderProductChoices($('manufacturer-select').value); if (choices.length) await chooseProduct(choices[0].id); }));
-  bind('product-select', 'change', () => action(() => chooseProduct($('product-select').value)));
+  bind('manufacturer-select', 'change', () => action(async () => { const choices = renderProductChoices($('manufacturer-select').value); if (choices.length) await chooseProduct(choices[0].id, true); }));
+  bind('product-family-select', 'change', () => action(async () => {
+    const choices = renderProductChoices($('manufacturer-select').value, {familyId:$('product-family-select').value,selectedId:scene.productId});
+    if (choices.length && !choices.some(item=>item.id===scene.productId)) await chooseProduct(choices[0].id);
+  }));
+  bind('product-select', 'change', () => action(() => chooseProduct($('product-select').value, true)));
   document.querySelectorAll('[data-firmware-tab]').forEach(button => button.addEventListener('click', () => setFirmwareTab(button.dataset.firmwareTab)));
   bind('firmware-select', 'change', () => action(async () => { preserveUnspecifiedFirmware = false; const selected = catalog.firmwares.find(item => item.id === $('firmware-select').value); const next = clone(scene); next.firmware = selected?.source ? clone(selected.source) : null; await configure(next); $('firmware-select').value = selected?.id || ''; renderFirmwareNote(selected); }));
   bind('firmware-file', 'change', () => { void selectLocalFiles($('firmware-file').files); });

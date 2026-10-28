@@ -19,11 +19,12 @@ function groupFacts(facts, rules, fallback) {
   return [...groups.values()].map(({test, ...item}) => item);
 }
 export function productHints(product) {
-  const state = {partial: '部分硬件模型，按固件验证', unavailable: '外观预览，板级模型待实现', diagnostic: '通用执行基准，无产品外设'}[product.runtime.status] || product.runtime.status;
+  const unavailableLabel = product.model ? '仅外观预览' : '资料与配置';
+  const state = {partial: '部分硬件模型，按固件验证', unavailable: product.model ? '外观预览，板级模型待实现' : '产品资料，外观与板级模型待实现', diagnostic: '通用执行基准，无产品外设'}[product.runtime.status] || product.runtime.status;
   const hints = groupFacts(product.limitations, [
     {id: 'display', icon: 'display', label: '显示模型', title: '显示与帧缓冲', test: /帧缓冲|列偏移|可视屏幕/},
     {id: 'interfaces', icon: 'plug', label: '接口约束', title: '接口与硬件版本', test: /接线|引脚|G10\/G11|硬件.*v1/},
-  ], {id: 'scope', icon: 'chip', label: product.runtime.status === 'unavailable' ? '仅外观预览' : '模拟范围', title: state});
+  ], {id: 'scope', icon: 'chip', label: product.runtime.status === 'unavailable' ? unavailableLabel : '模拟范围', title: state});
   if (!hints.some(item => item.id === 'scope')) hints.unshift({id: 'scope', icon: 'chip', label: '模拟范围', title: state, paragraphs: [state]});
   return hints;
 }
