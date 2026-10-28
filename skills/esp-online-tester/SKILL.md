@@ -9,6 +9,21 @@ Use the running platform at `web/platform/index.html` (workbench) or `web/platfo
 
 Read [the API reference](references/api.md) for commands and [configuration and catalogs](references/configuration.md) when constructing scenes or adding products/accessories/firmware.
 
+## Choose the agent workflow
+
+The implemented entry points are `window.espTester` and the origin-bound iframe RPC, not a dedicated MCP server. Read [agent workflows and audio/network boundaries](references/agent-workflows.md) for unattended tests, failure diagnosis, SoftAP provisioning and streaming integration.
+
+| Task | Implemented entry points |
+| --- | --- |
+| Select a product, firmware and accessories | Catalog helpers, `configure`, `loadFirmware`, `cancelPendingLoad` |
+| Run and verify firmware | `start`, `pause`, `reset`, `observe`, `waitFor`, framebuffer `capture` |
+| Exercise controls and sensors | `input`, `press`, `setGpsFix`, `injectGps`, `setImu`; check per-product capabilities |
+| Exchange virtual LoRa packets | `readLoRa`, `receiveLoRa`; explicit peer, supported radio only |
+| Retain device data | Writable Flash persistence and TF/SD import/export/flush; clearing is separate |
+| Reproduce and embed interactions | Recording/replay, pinned scene sharing and iframe RPC |
+
+Browser microphone/speaker streaming, SoftAP provisioning, browser Internet relay and a guest-duration press helper are not implemented platform APIs. Never invent methods for them or equate codec initialization / virtual Wi-Fi association with working audio / Internet access.
+
 ## Establish the actual device state
 
 Use the page's `window.espTester`, wait until it exists, then read `version`, `capabilities()` and `observe()`. Version `1.0.0` is implemented. Methods are asynchronous except `subscribe`; failures reject with `error.code`, `error.message` and sometimes `error.details`.
@@ -27,7 +42,7 @@ PaperMono/Lite and PaperS3 also have a virtual TF card: firmware load creates a 
 
 The workbench and mini player share these SD controls and API, including iframe RPC. SD autosave scans every 1.5 seconds (`crashSafe:false`); IndexedDB persistence survives normal reload, while memory fallback and uncommitted writes do not. Same-origin cross-page changes stop stale sessions rather than silently merge cards. Private SD content stays out of URLs and recordings; imported or modified cards are not pristine. Read [the SD/RGB API details](references/api.md#virtual-tfsd-cards-and-rgb-output) before handling images or testing storage. Observe `leds` events or `observe().leds` for real firmware RGB output; do not simulate it by manually coloring the mesh.
 
-Full PaperMono exposes a digital SX1262 LoRa subset; Lite does not. Check `capabilities().lora`, inspect `readLoRa()`, and supply an explicit peer with `receiveLoRa(packet)` only when intended. It has no automatic echo, real RF propagation or remote relay. Match the peer's actual channel settings; do not silently copy receiver settings to hide a mismatch. A scheduled-input receipt is not guest consumption: verify FIFO/IRQ-driven firmware output. LoRa inputs are not portable recording events. Read [the LoRa API](references/api.md#virtual-lora-packets) before use.
+Full PaperMono exposes a digital SX1262 LoRa subset; T-Beam v1.2 exposes an SX1276 subset; PaperMono Lite has neither. Check `capabilities().lora`, inspect `readLoRa()`, and supply an explicit peer with `receiveLoRa(packet)` only when intended. It has no automatic echo, real RF propagation or remote relay. Match the peer's actual channel settings; do not silently copy receiver settings to hide a mismatch. A scheduled-input receipt is not guest consumption: verify FIFO/IRQ-driven firmware output. LoRa inputs are not portable recording events. Read [the LoRa API](references/api.md#virtual-lora-packets) before use.
 
 ## Configure, operate, verify
 
@@ -67,7 +82,7 @@ StopWatch exposes the ES8311 control-register initialization subset at `0x18` on
 
 ## Record and share interactions
 
-Load a remote firmware source first. `await api.recordingStart()` resets and boots it, then captures only successfully acknowledged button, matrix-key, encoder and touch inputs. A keyboard press records its mapped device button or matrix coordinate; screen taps and left/right drags record normalized down/move/up coordinates. Camera selection/frames, serial/GPS injection, flashing and scripts are excluded. The limits are 120 guest seconds, 500 events and 32 KiB per recording. Local firmware files cannot supply a portable recording source.
+Load a remote firmware source first. `await api.recordingStart()` resets and boots it, then captures successfully acknowledged button, matrix-key, encoder, touch and supported physical-accessory inputs (button, connection, angle, environment, illuminance and motion). A keyboard press records its mapped device button or matrix coordinate; screen taps and left/right drags record normalized down/move/up coordinates. Camera selection/frames, serial/GPS injection, IMU, LoRa, flashing and scripts are excluded. The limits are 120 guest seconds, 500 events and 32 KiB per recording. Local firmware files cannot supply a portable recording source.
 
 ```js
 await api.recordingStart();
