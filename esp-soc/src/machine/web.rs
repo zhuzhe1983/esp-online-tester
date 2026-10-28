@@ -81,6 +81,27 @@ fn accessory_motion_input(board:&mut dyn crate::BoardModel,cycle:crate::board::V
 
 impl<S: Soc> Machine<S> {
     // ------------------------------------------------------------------ web UI
+    /// Drain each published audio chunk instead of retaining the entire native WAV capture.
+    /// Switching modes starts a fresh capture; it never changes guest sample clocks or rate.
+    pub fn set_audio_streaming(&mut self, enabled: bool) {
+        if self.ws.audio_streaming != enabled {
+            self.bus.clear_audio_capture(); self.ws.audio_sent = 0; self.ws.audio_streaming = enabled;
+        }
+    }
+    /// Publish pending TX samples without advancing the guest; useful at a pause boundary.
+    pub fn flush_audio_output(&mut self) {
+        let Some(w) = self.web.as_ref() else { return };
+        let (pcm, rate) = self.bus.audio();
+        if pcm.len() > self.ws.audio_sent {
+            let chunk = &pcm[self.ws.audio_sent..];
+            let mut b = vec![2u8];
+            b.extend_from_slice(&rate.to_le_bytes());
+            for s in chunk { b.extend_from_slice(&s.to_le_bytes()); }
+            w.send_binary(&b);
+            self.ws.audio_sent = pcm.len();
+        }
+        if self.ws.audio_streaming { self.bus.clear_audio_capture(); self.ws.audio_sent = 0; }
+    }
     /// Send display / audio / ring updates to the browser (called ~50x per emulated second).
     pub(super) fn web_push(&mut self) {
         if self.rt.log {
@@ -120,15 +141,7 @@ impl<S: Soc> Machine<S> {
             }
             self.ws.cam_pushed = self.bus.camera_frames() / 20;
         }
-        let (pcm, rate) = self.bus.audio();
-        if pcm.len() > self.ws.audio_sent {
-            let chunk = &pcm[self.ws.audio_sent..];
-            let mut b = vec![2u8];
-            b.extend_from_slice(&rate.to_le_bytes());
-            for s in chunk { b.extend_from_slice(&s.to_le_bytes()); }
-            w.send_binary(&b);
-            self.ws.audio_sent = pcm.len();
-        }
+        self.flush_audio_output();
         let board = self.bus.board_ref();
         let grids: Vec<(&'static str, Vec<[u8; 3]>, u64)> =
             board.led_grids().into_iter().map(|(id, leds, updates)| (id, leds.to_vec(), updates)).collect();

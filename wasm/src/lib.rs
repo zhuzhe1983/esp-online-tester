@@ -19,6 +19,8 @@ pub use ble::*;
 pub use ethernet::*;
 mod s3;
 mod lora;
+mod audio;
+pub use audio::*;
 #[cfg(target_arch = "wasm32")]
 mod browser_jit;
 use machine::MachineKind;
@@ -50,6 +52,7 @@ pub struct Emu {
     out: Vec<(u8, Vec<u8>)>,
     ethernet_out: Vec<Vec<u8>>,
     ble_out: String,
+    audio_state: String,
     sd_image: Option<std::sync::Arc<std::sync::Mutex<Vec<u8>>>>,
     booted: bool,
     /// a mask ROM ELF was loaded: a ROM boot without one would run from empty memory and print nothing
@@ -184,7 +187,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     }
     Box::into_raw(Box::new(Emu {
         m,
-        out: Vec::new(), ethernet_out: Vec::new(), ble_out: String::new(),
+        out: Vec::new(), ethernet_out: Vec::new(), ble_out: String::new(), audio_state: String::new(),
         booted: false, rom_loaded: false, sd_image: None,
         #[cfg(target_arch = "wasm32")]
         jit: BrowserJit::default(),

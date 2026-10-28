@@ -28,11 +28,13 @@ impl<T: Copy> ClockedQueue<T> {
                 .unwrap_or_else(|| if self.hold { self.frames.back().copied().unwrap_or(self.current) } else { self.silence })
         }
     }
-    pub(crate) fn advance(&mut self, cycles: u64, cpu_hz: u64) {
+    pub(crate) fn advance(&mut self, cycles: u64, cpu_hz: u64) -> (u64, usize) {
         self.current = self.sample(cycles, cpu_hz);
         let phase = u128::from(self.phase) + u128::from(cycles) * u128::from(self.rate);
-        let due = (phase / u128::from(cpu_hz)).min(self.frames.len() as u128) as usize;
-        self.frames.drain(..due);
+        let due = phase / u128::from(cpu_hz);
+        let consumed = due.min(self.frames.len() as u128) as usize;
+        self.frames.drain(..consumed);
         self.phase = (phase % u128::from(cpu_hz)) as u64;
+        (due.min(u128::from(u64::MAX)) as u64, consumed)
     }
 }

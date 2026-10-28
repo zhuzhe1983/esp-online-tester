@@ -3,7 +3,7 @@ use crate::device::{Device, WriteEffect};
 use crate::regram::RegRam;
 mod rx;
 mod sources;
-pub use sources::{PcmPins, PcmSource, PcmSources, RxSignals};
+pub use sources::{PcmPins, PcmSource, PcmSources, PcmStreamStats, RxSignals};
 pub type PcmInput = PcmSource;
 
 

@@ -297,6 +297,7 @@ impl esp_soc::SocBus for SocBus {
         Some(esp_soc::soc::attach_pcm_sources(self.periph.i2s0.pcm_bank(), self.cycles, periph::CPU_HZ))
     }
     fn audio(&self) -> (&[i16], u32) { let a = self.periph.audio(); (&a.pcm, a.sample_rate) }
+    fn clear_audio_capture(&mut self) { self.periph.i2s0.pcm.clear(); self.periph.i2s1.pcm.clear(); }
     fn camera_frames(&self) -> u64 { self.periph.lcd_cam.frames }
     fn irq_sources_of(&self, core: usize, line: u32) -> Vec<usize> { (0..NUM_SOURCES).filter(|&s| self.periph.intmatrix.map[core][s] == line).collect() }
 }

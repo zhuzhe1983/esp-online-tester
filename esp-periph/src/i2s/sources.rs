@@ -19,9 +19,18 @@ pub struct PcmSource {
     pins: Option<PcmPins>,
     queue: ClockedQueue<[i16; 2]>,
     tone: Option<(f64, f64, f64)>,
+    stream: Option<PcmStreamStats>,
+}
+/// Explicit live-stream counters. Consumed frames advance the source clock; they do not prove
+/// application-level processing. Full queues reject new input rather than discard older speech.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct PcmStreamStats {
+    pub sample_rate: u32, pub queued_frames: usize, pub capacity_frames: usize,
+    pub pushed_frames: u64, pub consumed_frames: u64, pub underrun_frames: u64,
+    pub rejected_frames: u64, pub cleared_frames: u64,
 }
 impl Default for PcmSource {
-    fn default() -> Self { Self { pins: None, queue: ClockedQueue::new(32768, [0; 2], false).unwrap(), tone: None } }
+    fn default() -> Self { Self { pins: None, queue: ClockedQueue::new(32768, [0; 2], false).unwrap(), tone: None, stream: None } }
 }
 impl PcmSource {
     pub fn new(rate: u32, pins: PcmPins) -> Result<Self, &'static str> {
@@ -31,18 +40,36 @@ impl PcmSource {
             PcmPins::Pdm { clk, data } => clk < 49 && data < 49 && clk != data,
         };
         if !valid { return Err("PCM source needs distinct GPIOs in 0..49"); }
-        Ok(Self { pins: Some(pins), queue: ClockedQueue::new(rate, [0; 2], false)?, tone: None })
+        Ok(Self { pins: Some(pins), queue: ClockedQueue::new(rate, [0; 2], false)?, tone: None, stream: None })
+    }
+    /// A bounded PCM stream at its declared source rate. Controller routing bypasses pins;
+    /// pin routing preserves the existing GPIO-matrix checks. Resampling preserves duration.
+    pub fn stream(rate: u32, pins: Option<PcmPins>) -> Result<Self, &'static str> {
+        if !(8000..=96000).contains(&rate) { return Err("PCM stream rate must be 8000..96000 Hz"); }
+        let mut source = if let Some(pins) = pins { Self::new(rate, pins)? }
+            else { Self { queue: ClockedQueue::new(rate, [0; 2], false)?, ..Self::default() } };
+        source.stream = Some(PcmStreamStats { sample_rate: rate, capacity_frames: rate as usize * 2, ..Default::default() });
+        Ok(source)
+    }
+    pub fn stream_stats(&self) -> Option<PcmStreamStats> {
+        self.stream.map(|stats| PcmStreamStats { queued_frames: self.queued_frames(), ..stats })
     }
     pub fn queued_frames(&self) -> usize { self.queue.frames.len() }
     /// Routed sources retain the newest two seconds; per-port input accepts up to 65536 frames.
     pub fn push(&mut self, frames: &[[i16; 2]]) -> usize {
         self.tone = None;
-        let n = if self.pins.is_none() { frames.len().min(65536 - self.queue.frames.len()) } else { frames.len() };
+        let n = if let Some(stats) = &mut self.stream {
+            let n = frames.len().min(stats.capacity_frames.saturating_sub(self.queue.frames.len()));
+            stats.pushed_frames = stats.pushed_frames.saturating_add(n as u64);
+            stats.rejected_frames = stats.rejected_frames.saturating_add((frames.len() - n) as u64);
+            n
+        } else if self.pins.is_none() { frames.len().min(65536 - self.queue.frames.len()) } else { frames.len() };
         self.queue.push(frames[..n].iter().copied());
         n
     }
     /// Per-controller input only: a routed source samples its queue by absolute time.
     pub fn tone(&mut self, hz: f64, amplitude: f64) -> Result<(), &'static str> {
+        if self.stream.is_some() { return Err("disable PCM streaming before selecting a generated tone"); }
         if self.pins.is_some() { return Err("tone is only available on per-controller input; push frames to a routed source"); }
         if !hz.is_finite() || !(0.0..=192000.0).contains(&hz) || !amplitude.is_finite() || !(0.0..=1.0).contains(&amplitude) {
             return Err("I2S tone needs frequency 0..192000 Hz and amplitude 0..1");
@@ -51,19 +78,31 @@ impl PcmSource {
         self.tone = Some((hz, amplitude, 0.0));
         Ok(())
     }
-    pub fn clear(&mut self) { self.queue.frames.clear(); self.tone = None; }
+    pub fn clear(&mut self) {
+        if let Some(stats) = &mut self.stream {
+            stats.cleared_frames = stats.cleared_frames.saturating_add(self.queue.frames.len() as u64);
+            self.queue = ClockedQueue::new(stats.sample_rate, [0; 2], false).expect("validated stream rate");
+        } else { self.queue.frames.clear(); }
+        self.tone = None;
+    }
     pub(super) fn next(&mut self, rate: u32) -> [i16; 2] {
         if let Some((hz, amplitude, phase)) = &mut self.tone {
             let sample = (phase.sin() * *amplitude * 32767.0).round() as i16;
             *phase = (*phase + std::f64::consts::TAU * *hz / rate as f64) % std::f64::consts::TAU;
             [sample; 2]
         } else {
-            self.queue.advance(1, u64::from(self.queue.rate));
+            self.advance(1, u64::from(if self.stream.is_some() { rate.max(1) } else { self.queue.rate }));
             self.queue.current
         }
     }
     fn sample(&self, cycles: u64, cpu_hz: u64) -> [i16; 2] { self.queue.sample(cycles, cpu_hz) }
-    fn advance(&mut self, cycles: u64, cpu_hz: u64) { self.queue.advance(cycles, cpu_hz); }
+    fn advance(&mut self, cycles: u64, cpu_hz: u64) {
+        let (due, consumed) = self.queue.advance(cycles, cpu_hz);
+        if let Some(stats) = &mut self.stream {
+            stats.consumed_frames = stats.consumed_frames.saturating_add(consumed as u64);
+            stats.underrun_frames = stats.underrun_frames.saturating_add(due.saturating_sub(consumed as u64));
+        }
+    }
 }
 
 /// Shared by all RX ports. A receiver whose matrix route matches a slot reads that slot;
@@ -134,6 +173,48 @@ pub struct RxSignals {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn stream_backpressure_keeps_prefix_and_reports_cleared_and_underrun_frames() {
+        let mut source = PcmSource::stream(8000, None).unwrap();
+        assert_eq!(source.push(&vec![[11, -11]; 15999]), 15999);
+        assert_eq!(source.push(&[[22, -22], [33, -33]]), 1);
+        let stats = source.stream_stats().unwrap();
+        assert_eq!((stats.queued_frames, stats.pushed_frames, stats.rejected_frames), (16000, 16000, 1));
+        assert_eq!(source.next(8000), [11, -11]);
+        source.clear();
+        let stats = source.stream_stats().unwrap();
+        assert_eq!((stats.queued_frames, stats.consumed_frames, stats.cleared_frames), (0, 1, 15999));
+        assert_eq!(source.next(8000), [0, 0]);
+        assert_eq!(source.stream_stats().unwrap().underrun_frames, 1);
+        assert!(source.tone(1000.0, 0.5).is_err());
+    }
+
+    #[test]
+    fn stream_rate_conversion_preserves_source_duration_and_legacy_controller_semantics() {
+        let mut down = PcmSource::stream(16000, None).unwrap();
+        down.push(&[[1; 2], [2; 2], [3; 2], [4; 2]]);
+        assert_eq!([down.next(8000), down.next(8000), down.next(8000)], [[2; 2], [4; 2], [0; 2]]);
+        assert_eq!((down.stream_stats().unwrap().consumed_frames, down.stream_stats().unwrap().underrun_frames), (4, 2));
+        let mut up = PcmSource::stream(8000, None).unwrap();
+        up.push(&[[1; 2], [2; 2]]);
+        assert_eq!([up.next(16000), up.next(16000), up.next(16000), up.next(16000)], [[0; 2], [1; 2], [1; 2], [2; 2]]);
+        assert_eq!(up.stream_stats().unwrap().consumed_frames, 2);
+        let mut legacy = PcmSource::default();
+        legacy.push(&[[1; 2], [2; 2]]);
+        assert_eq!([legacy.next(8000), legacy.next(96000)], [[1; 2], [2; 2]]);
+        assert!(legacy.stream_stats().is_none());
+    }
+
+    #[test]
+    fn routed_stream_uses_same_bounded_contract_without_changing_route_selection() {
+        let mut source = PcmSource::stream(8000, Some(PcmPins::I2s { bclk: 4, ws: 5, data: 6 })).unwrap();
+        source.push(&[[7; 2], [8; 2]]);
+        assert_eq!(source.sample(20000, 80_000_000), [8; 2]);
+        source.advance(30000, 80_000_000);
+        let stats = source.stream_stats().unwrap();
+        assert_eq!((stats.consumed_frames, stats.underrun_frames, stats.queued_frames), (2, 1, 0));
+        assert!(PcmSource::stream(48000, Some(PcmPins::I2s { bclk: 4, ws: 4, data: 6 })).is_err());
+    }
     #[test]
     fn absolute_time_is_lazy_monotonic_and_handles_long_stalls() {
         let mut sources = PcmSources::default();

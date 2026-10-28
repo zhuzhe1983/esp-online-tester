@@ -213,6 +213,9 @@ pub trait SocBus: Bus {
     fn attach_pcm_sources(&mut self) -> Option<&mut esp_periph::i2s::PcmSources> { None }
     /// Captured audio so far (left channel) and its sample rate.
     fn audio(&self) -> (&[i16], u32);
+    /// Discard published TX capture, retaining hardware counters. Only explicit live streaming
+    /// uses this; native WAV capture keeps its complete history by default.
+    fn clear_audio_capture(&mut self) {}
     fn camera_frames(&self) -> u64 { 0 }
     /// Peripheral source numbers routed to CPU interrupt `line` of `core` (for the end-of-run report).
     fn irq_sources_of(&self, core: usize, line: u32) -> Vec<usize>;
