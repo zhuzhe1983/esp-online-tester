@@ -9,9 +9,10 @@
   "candidateCommits": [
     "b86c4107",
     "cfdb7810",
-    "65324016"
+    "65324016",
+    "6f5b4baa"
   ],
-  "status": "functional-checks-pass-cpu-separate",
+  "status": "functional-checks-pass-cpu-comparison-recorded",
   "goldensChanged": false,
   "wasmSha256": "88c7bf9d474ebf1ab172b7a7210b7c397c95c1a483b33dc35d2e854a82a90fc0",
   "wasmBytes": 4225069,
@@ -146,6 +147,12 @@
       "command": ". ./tools/wasm-rustflags.sh && cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
       "exitCode": 0,
       "localLogSha256": "b29fa4955bc7d6684f36b2f2c021bc75e684f8c1a7260dfc1e2fda722a5b3751"
+    },
+    {
+      "name": "native-benchmark-build",
+      "command": "cargo build --release --bins",
+      "exitCode": 0,
+      "localLogSha256": "03ce2beeae9606d76ffdfcfd54cdd1915c8352c3ad480c16af90545ca5544839"
     }
   ],
   "sourceSha256": {
@@ -159,7 +166,13 @@
     "web/platform/runtime.js": "8bc7a3499ad958d8d893b4d5b20674673e79b2c6fa702adfe4b6b1f94580a760",
     "web/platform/recording.js": "eb3a12e4541a474bab3827d3fed66c1b0cfe1bd68b2a7ffa1867e4ba116e4d05",
     "tools/probe-unit-pir.mjs": "8605cb34e006018b6a0542553b2b2973545ed09da333963ad9508b2ac47f08b6",
-    "tools/fixtures/unit-pir-firmware/main/main.c": "adb8a43c2cc5335fc17a6272d82f217594ebbd8e16da29c075295656c1e19519"
+    "tools/fixtures/unit-pir-firmware/main/main.c": "adb8a43c2cc5335fc17a6272d82f217594ebbd8e16da29c075295656c1e19519",
+    "web/platform/app.js": "fc81912f67638e4b53cf1283b977adf82e660cdfb076f80e81c7aaa8b885edec",
+    "web/platform/manufacturer-model.js": "ce1a759ae23f4090c22d9aaa438ff822e7616c7a39a3d3a25d386612a909a9d4",
+    "web/platform/scene-view.js": "042be960016dbeb6f40698ac77f2124a46c0e1f3bbe6a5cd78e7b382427ff26d",
+    "web/platform/accessory-view.js": "d827d2ca9985725ed91c8077fd99f5ec7ef4113783a3bf2c35c90d9cca3b320a",
+    "web/platform/grove-geometry.js": "fa5b69dfba9e272400a0ca3a980c9cbd547608a4e147a85ce9b7869ab837e639",
+    "tools/platform-unit-pir-test.mjs": "5f1beea709a398f54d1173511e234398a3fa22f796fbc94b3a9308faddd96db8"
   },
   "notes": [
     "Retains current 28 M5Stack controller identities, StopWatch internal I2C47/48 software routing and RTC; no old baseline merge.",
@@ -185,5 +198,16 @@
     "Runtime retains full current IMU model map, firmware loading/storage and Hub text-batch input semantics.",
     "App edits are limited to PIR accessory card input; no Matrix LED/transport UI changes.",
     "No ENV-IV/DLight code or old baseline brought in; their parallel extension methods must be unioned on integration."
-  ]
+  ],
+  "cpu": {
+    "receipt": "cpu.json",
+    "workAndOutputEqual": true,
+    "changesPercent": {
+      "hello": 0.0,
+      "c3-hello": -0.4115226337448652,
+      "c6-hello": 0.6134969325153339,
+      "pocket-tank": 0.6237006237006293
+    },
+    "assessment": "Identical guest work/output. Small nonzero CPU differences retained without causal attribution; no speed or no-regression claim. Earlier U027/U003/ENV-IV results remain separate historical comparisons."
+  }
 }

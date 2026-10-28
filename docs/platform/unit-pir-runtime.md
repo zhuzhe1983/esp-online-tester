@@ -34,7 +34,9 @@ python tools/verify-unit-pir-model.py --renders output/playwright
 
 ## 阶段状态
 
-功能阶段已验证；性能对照尚未开始，不能声明无性能回退。工作台与 mini 自动启动均已保留完整 uart0 GPIO 高低变化证据。此阶段保留待审，不作为最终合入许可。
+已迁移到当前主线 `5a9b68e0`，保留现有主控及 StopWatch 内部 I²C/RTC。1565 项 Rust、104 项平台测试、11 个 WASM 场景、双 Clippy、真实录制和定向客体检查通过；工作台与 mini 自动启动保留完整 UART0 GPIO 高低变化证据。
+
+四负载五对 CPU 对照的指令数与输出一致：S3 0.00%、C3 −0.41%、C6 +0.61%、Pocket Tank +0.62%。后两项各有 4/5 对较慢，保留差异，不宣称零回退或把它们直接当作噪声。最新检查、模型复建和对照在 [current-main 收据](evidence/m5stack-unit-pir-u004/runtime/current-main/)；旧阶段的未计时记录和历史成本仍保留。
 
 ## 定向验收
 
