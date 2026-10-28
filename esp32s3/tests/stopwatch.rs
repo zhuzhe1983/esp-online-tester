@@ -70,11 +70,12 @@ fn factory_devices_and_active_low_button_inputs() {
     for name in ["stopwatch", "m5stack-stopwatch"] {
         let mut board = make_board(name).unwrap();
         assert_eq!(board.name(), "stopwatch");
-        let devices = board.i2c_devices();
-        assert_eq!(devices.iter().map(|(bus, addr, _)| (*bus, *addr)).collect::<Vec<_>>(),
-            [(0, 0x6e), (0, 0x4f), (0, 0x15), (0, 0x68), (0, 0x32),
-             (1, 0x6e), (1, 0x4f), (1, 0x15), (1, 0x68), (1, 0x32)]);
-        assert!(devices.iter().all(|(_,_,device)|device.pins()==Some((47,48))));
+        let mut devices = board.i2c_devices();
+        let internal:Vec<_>=devices.iter().filter(|(_,_,d)|d.pins()==Some((47,48))).map(|(bus,addr,_)|(*bus,*addr)).collect();
+        assert_eq!(internal,[(0,0x6e),(0,0x4f),(0,0x15),(0,0x68),(0,0x32),(1,0x6e),(1,0x4f),(1,0x15),(1,0x68),(1,0x32)]);
+        let external:Vec<_>=devices.iter().filter(|(_,_,d)|d.pins()==Some((10,11))).map(|(bus,addr,_)|(*bus,*addr)).collect();
+        assert_eq!(external,[(0,0x44),(0,0x76),(0,0x23),(1,0x44),(1,0x76),(1,0x23)]);
+        for (_,_,dev) in devices.iter_mut().filter(|(_,_,d)|d.pins()==Some((10,11))) {assert!(!dev.start(false));}
         assert_eq!(board.named_pin("a"), Some(2));
         assert_eq!(board.named_pin("btn_b"), Some(1));
         assert_eq!(board.named_pin("missing"), None);

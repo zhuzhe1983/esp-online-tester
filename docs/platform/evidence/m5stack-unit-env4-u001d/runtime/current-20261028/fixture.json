@@ -1,0 +1,95 @@
+{
+  "checkedAt": "2026-10-28T04:38:40Z",
+  "sourceSha256": {
+    "web/wasm/worker.js": "eb26ea86778dfcb7edb15f75787643c9b9796c43905d57968c80cdea27b49dc9",
+    "web/platform/accessory-routing.js": "274a8598e7e0f1c4d194fce10b5e0b1c3657683472c840c227b5925e222e73a2",
+    "web/platform/catalog.js": "f4ff20a2d18b13853a91cd64790c6aec5a569d997a93ad7b0aa9174bd90cf4da",
+    "web/platform/runtime.js": "4e0bbde33f101a3f8cf6cec7b9cd109d08e6903cbc88f8012c521523ad12429b",
+    "web/platform/recording.js": "856429b0c8274740708756cb0f8307c5cba55f888f6005348093612e2bd7f66e",
+    "tools/probe-unit-env4.mjs": "82d8e7eeed7f2bf60ad1d9ed63124b6f97c621444b75fb80a60d3f0c32fea069",
+    "esp-periph/src/i2c/env4.rs": "d26feaa113695c307a43fc58508f211e9e2f36e966351559ab69fcab1252a72e",
+    "esp32s3/src/board/stopwatch.rs": "a3a41edae96fec9b879a514d5cd5e312d363d106e501e824c92d5e85da07eb66",
+    "web/platform/environment-input.js": "5e848f13aaec5d7ac37701636fe9b83024ca87273d9d184b0d807b1d36eb68c7",
+    "tools/fixtures/unit-env4-firmware/main/main.cpp": "168b6b7125e271c4b6e1dc930e99cdfd434f73d5cb8b7b70a6ec08ce39a25676",
+    "esp-periph/src/i2c/sht4x.rs": "b10f321e6ddb282e4cc120c7b3fa451c84b12c35afd29669f9eea8c974826769"
+  },
+  "wasmSha256": "924fd4dcf8115d0e7bde813ad39d655d4556765b341ffe7ad6b910bd7078a6a1",
+  "romSha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "command": "node tools/probe-unit-env4.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+    "unit_env4_fixture.bin": "b688fc8ec59cc0389c7c7ed3b87684fbb38be63b5c607125ac8fd34fc1860353"
+  },
+  "checks": [
+    "real IDF I2C1 on G10/G11 reads SHT40 CRC and BMP280 calibration/raw registers; unchanged manufacturer header computes default ambient",
+    "ambient API changes actual sensor raw words and independently compensated guest output; invalid range rejected",
+    "swapped SDA/SCL really NACKs through GPIO matrix; correct route restores communication",
+    "wrong SHT40/BMP280 addresses do not ACK",
+    "SHT40 conversion busy NACK, CRC and read-once behavior verified by actual guest transaction timing",
+    "M5PM1 supply gate and sensor soft reset invalidate state, then restore fresh measurement",
+    "unplug NACKs both chips; ambient changes persist physically while disconnected and are measured after reconnection",
+    "paused ambient changes reject while paused disconnect is permitted",
+    "guest restart preserves open physical connection; host reset restores initial scene attachment and ambient",
+    "record/replay preserves ambient semantics and guest protocol output",
+    "one U006 parallel path carries the same two I2C signals; upstream detach/reconnect gates both chips"
+  ],
+  "samples": [
+    "ENV4_SAMPLE shtT=25.000 rh=50.001 bmpT=25.000 pressure=1013.250 crc=1 id=58 raw=6462f07edc90",
+    "ENV4_SAMPLE shtT=22.501 rh=61.201 bmpT=22.500 pressure=990.100 crc=1 id=58 raw=671fe07cea00",
+    "ENV4_SAMPLE shtT=-10.000 rh=9.999 bmpT=-10.000 pressure=800.000 crc=1 id=58 raw=7c623063b2f0",
+    "ENV4_SAMPLE shtT=27.000 rh=30.000 bmpT=27.000 pressure=999.950 crc=1 id=58 raw=66b300806b90"
+  ],
+  "recording": {
+    "events": [
+      {
+        "at": 0.21207687916666668,
+        "type": "accessory-environment",
+        "accessoryId": "environment",
+        "temperatureC": 27,
+        "humidityPercent": 30,
+        "pressureHpa": 999.95
+      }
+    ],
+    "result": "completed",
+    "bitExact": false
+  },
+  "status": "pass",
+  "accessoryInputs": [
+    {
+      "accessoryId": "hub",
+      "model": "passive-hub-u006",
+      "port": "grove",
+      "hub": true,
+      "connected": true
+    },
+    {
+      "accessoryId": "environment",
+      "model": "sht40-bmp280-u001d",
+      "port": "grove",
+      "pins": [
+        10,
+        11
+      ],
+      "addresses": [
+        68,
+        118
+      ],
+      "control": "environment",
+      "viaAccessoryId": "hub",
+      "portId": "port-2",
+      "connected": true,
+      "effectiveConnected": true,
+      "temperatureC": 25,
+      "humidityPercent": 50,
+      "pressureHpa": 1013.25
+    }
+  ],
+  "sourceRevision": "da61bbc1cd7fd76db67efae5d4e066cbae145515",
+  "curation": {
+    "originalLocalReceiptSha256": "8a8be8a65a94921689f9cd9271ae654ee0a32e0cfad4b9b00107e443a9c3aa13",
+    "omitted": "Repeated/fragmented serial tail and repeated sample lines removed; distinct compensated values, checks, input hashes, recording event and status retained. Original receipt remains ignored locally."
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "checkedAt": "2026-10-27T11:57:40Z",
+  "base": "be5291d7",
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "goldensChanged": false,
+  "checks": [
+    {
+      "name": "native-clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "status": "pass",
+      "completedAt": "2026-10-27T11:41:51Z",
+      "localLogSha256": "6f2c00db9fdbb5a6139a369a93be6bd2ae5a955bb09e7f6492ea943fa08ff37d"
+    },
+    {
+      "name": "wasm-clippy",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "pass",
+      "completedAt": "2026-10-27T11:33:56Z",
+      "localLogSha256": "ba9a701251c570208e973e36babdaa3793c5bfcdb5f2dd2e6ad71d3022bbe5e4"
+    },
+    {
+      "name": "rust-ci",
+      "command": "ESP32SIM_ROM_DIR=$ROM_DIR cargo test --release --workspace -- --include-ignored --skip external_",
+      "status": "pass",
+      "completedAt": "2026-10-27T11:40:09Z",
+      "localLogSha256": "7e7e751d07616e3e754c8a2aaf66f63e7d433e0784152bb60fda08f5398ee9c4",
+      "testsPassed": 1372,
+      "testsFailed": 0,
+      "testsIgnored": 0
+    },
+    {
+      "name": "platform-node",
+      "command": "node --test tools/platform-*-test.mjs",
+      "status": "pass",
+      "completedAt": "2026-10-27T11:33:57Z",
+      "localLogSha256": "5784d7574e958e72ef061190fae7b23c1a6301fa7da6f8ac394e6beb8c0ee43a",
+      "testsPassed": 78
+    },
+    {
+      "name": "catalog",
+      "command": "python tools/validate-platform-catalog.py",
+      "status": "pass",
+      "completedAt": "2026-10-27T11:24:31Z",
+      "localLogSha256": "8eea8602ed37d93d02c3b3430daba10368db17bcce76312235bb4abde7701210",
+      "counts": "83 products; 7 accessories; 106 firmwares; 44 watchlist projects in this branch base"
+    },
+    {
+      "name": "production-wasm",
+      "command": "tools/wasm-build.sh",
+      "status": "pass",
+      "completedAt": "2026-10-27T11:36:24Z",
+      "localLogSha256": "f9bfff605d678b0c86cc21785e5a613f9646dc19cdff9744e6a1b4264d3121fc"
+    },
+    {
+      "name": "wasm-regressions",
+      "command": "ESP32SIM_ROM_DIR=$ROM_DIR node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices",
+      "status": "pass",
+      "completedAt": "2026-10-27T11:37:47Z",
+      "localLogSha256": "d38d43eff0338417d2b94c2e25416fcc15dc9db2805c37cad5ecdae17bebaecd",
+      "scenarios": [
+        "hello",
+        "c3-hello",
+        "c6-hello",
+        "p4-hello",
+        "c6-energy-scan",
+        "c6-contiki",
+        "c6-contiki-net",
+        "c6-rpl-net",
+        "panel",
+        "tdisplay-prices"
+      ],
+      "jitHandoff": "pass"
+    }
+  ],
+  "wasmSections": {
+    "dwarfAbsent": true,
+    "nameRetained": true,
+    "bytes": 4026151
+  },
+  "fixtureChecks": 11,
+  "modelDimensionChecks": 10,
+  "browserReceipt": "browser.json",
+  "limits": [
+    "No physical hardware test; no arbitrary official firmware compatibility sweep",
+    "Final source and binaries identified in fixture.json and cpu.json",
+    "Local logs are not published; hashes retain linkage without personal paths"
+  ],
+  "privacy": {
+    "repositoryScript": "pass:2122 tracked docs/evidence files",
+    "newPlatformEvidence": "same configured patterns:20 files/11 text files pass; binary captures visually reviewed",
+    "scopeNote": "Repository script only enumerates docs/evidence, so the new docs/platform/evidence directory was checked explicitly.",
+    "localPythonRetry": "Default python3 lacks jsonschema; catalog validation uses the documented model virtualenv, then passes. No schema change to bypass dependency."
+  },
+  "processCleanup": "Headless wrapper session closed and empty; owned HTTP listener stopped. User preview server untouched."
+}

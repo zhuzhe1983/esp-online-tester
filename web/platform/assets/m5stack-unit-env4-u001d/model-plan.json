@@ -1,0 +1,306 @@
+{
+  "sourceId": "related-cad",
+  "title": "M5Stack Unit ENV-IV · U001-D",
+  "summary": "SHT40 温湿度与 BMP280 气压传感器；通过主机真实硬件 I²C 读取。",
+  "hardwareRevision": "U001-D; user hardware revision unknown",
+  "parts": [
+    {
+      "sourceComponent": 2,
+      "name": "shell-front",
+      "role": "shell",
+      "color": "#e8e9e2"
+    },
+    {
+      "sourceComponent": 0,
+      "name": "shell-back",
+      "role": "shell",
+      "color": "#e8e9e2"
+    }
+  ],
+  "matrixRows": [
+    [
+      1,
+      0,
+      0,
+      -441.2688293457031
+    ],
+    [
+      0,
+      1,
+      0,
+      -269.2234802246094
+    ],
+    [
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1
+    ]
+  ],
+  "assemblyNotes": "Related ENV-III STL only: use assembled components 2 and 0; omit duplicate print copies 1 and 3. Rigid XY centering, no scale. +Z front; connector opens -Y; shell z=-2..6 mm. Independently verify against ENV-IV drawing/photos.",
+  "omittedComponents": [
+    {
+      "index": 1,
+      "reason": "Translated duplicate back shell"
+    },
+    {
+      "index": 3,
+      "reason": "Translated duplicate front shell"
+    }
+  ],
+  "dimensions": {
+    "width": 24,
+    "height": 32,
+    "depth": 8,
+    "unit": "mm"
+  },
+  "targets": [
+    {
+      "name": "shell-width",
+      "axis": 0,
+      "valueMm": 24,
+      "toleranceMm": 0.05,
+      "parts": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "shell-height",
+      "axis": 1,
+      "valueMm": 32,
+      "toleranceMm": 0.05,
+      "parts": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "shell-depth",
+      "axis": 2,
+      "valueMm": 8,
+      "toleranceMm": 0.05,
+      "parts": [
+        0,
+        1
+      ]
+    }
+  ],
+  "surfaces": [
+    {
+      "name": "back-paper",
+      "sizeMm": [
+        16,
+        12
+      ],
+      "radiusMm": 0.12,
+      "positionMm": [
+        0,
+        7,
+        -2.025
+      ],
+      "side": "back",
+      "role": "label",
+      "sourceIds": [
+        "photo-2",
+        "dimensions"
+      ],
+      "color": "#ffffff",
+      "notes": "Paper-only quadrilateral from ENV-IV photo; independent thin back surface, excludes screw, hole walls and plastic. Label 16x12 mm from drawing ratio; position/image uncertainty remains.",
+      "texture": {
+        "file": "label.webp",
+        "projection": "xy",
+        "side": "back",
+        "boundsMm": [
+          -8,
+          1,
+          8,
+          13
+        ],
+        "mode": "decal"
+      }
+    }
+  ],
+  "textureSources": [
+    {
+      "sourceId": "photo-2",
+      "file": "label.webp",
+      "perspectiveQuad": [
+        [
+          201,
+          269
+        ],
+        [
+          407,
+          170
+        ],
+        [
+          492,
+          308
+        ],
+        [
+          280,
+          409
+        ]
+      ],
+      "rectifiedPixels": [
+        640,
+        480
+      ],
+      "notes": "Four paper corners in original 800x800 official back photo; white print only, no gray casing or screw."
+    }
+  ],
+  "derivedParts": [
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "geometry": {
+        "sizeMm": [
+          20,
+          16,
+          1
+        ],
+        "centerMm": [
+          0,
+          7,
+          1
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimensions",
+        "photo-7"
+      ],
+      "notes": "UNKNOWN simplified internal fit estimate, not actual full board outline. No internal sensor/component layout claim; avoids mounting holes."
+    },
+    {
+      "id": "grove",
+      "kind": "connector-visual",
+      "connectorType": "HY2.0-4P",
+      "housingColor": "#983f3d",
+      "geometry": {
+        "centerMm": [
+          0,
+          -16,
+          2.85
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "photo-2",
+        "photo-4",
+        "photo-5",
+        "dimensions",
+        "schematic"
+      ],
+      "allowConnections": true,
+      "pinOrder": [
+        "gnd",
+        "vcc",
+        "signal1",
+        "signal2"
+      ],
+      "notes": "Back label L→R SCL white, SDA yellow,5V red,GND black; mirror to front +X order black/red/yellow/white. Mouth y=-16. Pin row z≈2.85 from independent 8mm connector-end drawing pixel ratio; labeled5.2mm measures seam, not pins. Estimated hidden insertion depth."
+    }
+  ],
+  "photos": [
+    {
+      "sourceId": "photo-4",
+      "view": "front"
+    },
+    {
+      "sourceId": "photo-2",
+      "view": "back"
+    },
+    {
+      "sourceId": "photo-5",
+      "view": "connector"
+    }
+  ],
+  "presentation": {
+    "bodySizeMm": [
+      24,
+      32,
+      8
+    ]
+  },
+  "reviewViews": {
+    "front": {
+      "position": [
+        0,
+        0,
+        250
+      ],
+      "span": 50.9,
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "calibration": "Official photo4 shell height about503px /800 at32mm; no model stretching."
+    },
+    "back": {
+      "position": [
+        0,
+        -110,
+        -250
+      ],
+      "up": [
+        -0.43,
+        0.9,
+        0
+      ],
+      "span": 55,
+      "target": [
+        0,
+        0,
+        0
+      ]
+    },
+    "oblique": {
+      "position": [
+        -130,
+        -90,
+        200
+      ],
+      "span": 52,
+      "target": [
+        0,
+        0,
+        2
+      ]
+    },
+    "connector": {
+      "position": [
+        0,
+        -220,
+        90
+      ],
+      "span": 42,
+      "target": [
+        0,
+        -6,
+        2
+      ]
+    }
+  },
+  "limitations": [
+    "U001-D ENV-IV；当前仅 StopWatch Port A G10 SDA / G11 SCL 的硬件 I²C，或经一层 U006；不支持软件 GPIO I²C。",
+    "SHT40 测量、CRC、复位和 BMP280 校准/测量寄存器已实现；加热、噪声、热响应和模拟电源/线缆时序未实现，未实机验证。",
+    "没有找到 ENV-IV 专属 CAD；外壳采用厂家 ENV-III STL 的同尺寸壳体，逐项按 ENV-IV 尺寸图和照片核对，不能视为该 SKU 完整厂家装配。",
+    "厂家只有 PCB 照片及原理图，没有公开布局/板级 CAD；pcb-main 为 UNKNOWN 简化占位，不复制内部器件或声称内部 1:1。",
+    "背贴从官方 ENV-IV 照片透视校正；未保留外壳阴影。背部螺丝和 PCB 细节未还原；连接器外形与隐藏插合深度为近似。"
+  ],
+  "facts": []
+}

@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+// Run the source-built internal Unit ENV-IV U001-D fixture on the actual page worker/WASM path.
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {resolve,join,basename} from 'node:path';
+import {Worker} from 'node:worker_threads';
+import {createHash} from 'node:crypto';
+import {createPlatformRuntime} from '../web/platform/runtime.js';
+import {createDeviceStorage} from '../web/platform/device-storage.js';
+import {createDefaultScene} from '../web/platform/catalog.js';
+import {installAutomation} from '../web/platform/automation.js';
+const index=process.argv.indexOf('--build');if(index<0||!process.argv[index+1])throw Error('Build tools/fixtures/unit-env4-firmware with ESP-IDF 5.5.1 and supply --build <build-directory>.');
+const folder=resolve(process.argv[index+1]),root=new URL('../',import.meta.url),baseUrl='https://unit-env4-fixture.invalid/platform/';
+const artifacts=new Map(),inputHashes={};
+const layout=JSON.parse(await readFile(join(folder,'flasher_args.json')));
+const manifest={board:'stopwatch',flash_mb:16,psram_mb:8,files:{rom:'/wasm/fw/esp32s3_rev0_rom.elf'},artifact_sha256:{}};
+for(const [kind,key] of [['bootloader','bootloader'],['ptable','partition-table'],['app','app']]){
+  const path=layout[key].file,bytes=await readFile(join(folder,path)),url='/fixture/'+basename(path);artifacts.set(url,bytes);manifest.files[kind]=url;inputHashes[path]=createHash('sha256').update(bytes).digest('hex');manifest.artifact_sha256[url]=inputHashes[path];
+}
+const manifestBytes=Buffer.from(JSON.stringify(manifest));artifacts.set('/fixture/manifest.json',manifestBytes);
+const source={manifestUrl:'https://unit-env4-fixture.invalid/fixture/manifest.json',sha256:createHash('sha256').update(manifestBytes).digest('hex')};
+const catalog={};for(const key of ['products','accessories','firmwares'])catalog[key]=JSON.parse(await readFile(new URL(`web/platform/catalog/${key}.json`,root))).items;
+const fetchImpl=async value=>{const url=new URL(value);assert.equal(url.origin,'https://unit-env4-fixture.invalid');try{if(artifacts.has(url.pathname))return new Response(artifacts.get(url.pathname));return new Response(await readFile(new URL('web'+url.pathname,root)));}catch{return new Response('',{status:404});}};
+const workerFactory=url=>{const real=new URL('web'+url.pathname,root);const thread=new Worker(new URL('data:text/javascript,'+encodeURIComponent(`import {parentPort} from 'node:worker_threads';globalThis.onmessage=null;globalThis.postMessage=(data,transfer)=>parentPort.postMessage(data,transfer);await import(${JSON.stringify(String(real))});parentPort.on('message',data=>globalThis.onmessage({data}));`)));const adapter={postMessage:(...args)=>thread.postMessage(...args),terminate:()=>thread.terminate()};thread.on('message',data=>adapter.onmessage?.({data}));thread.on('error',e=>adapter.onerror?.(e));return adapter;};
+const runtime=createPlatformRuntime({catalog,fetchImpl,workerFactory,baseUrl,assetBaseUrl:'https://unit-env4-fixture.invalid/',deviceStorage:createDeviceStorage({indexedDB:null,dbName:'unit-env4-probe'})});
+const sourceSha256=Object.fromEntries(await Promise.all(['web/wasm/worker.js','web/platform/accessory-routing.js','web/platform/catalog.js','web/platform/runtime.js','web/platform/recording.js','tools/probe-unit-env4.mjs','esp-periph/src/i2c/env4.rs','esp32s3/src/board/stopwatch.rs','web/platform/environment-input.js','tools/fixtures/unit-env4-firmware/main/main.cpp'].map(async path=>[path,createHash('sha256').update(await readFile(new URL(path,root))).digest('hex')])));
+const receipt={checkedAt:new Date().toISOString().replace(/\.\d{3}Z$/,'Z'),sourceSha256,wasmSha256:createHash('sha256').update(await readFile(new URL('web/wasm/esp32sim.wasm',root))).digest('hex'),romSha256:createHash('sha256').update(await readFile(new URL('web/wasm/fw/esp32s3_rev0_rom.elf',root))).digest('hex'),command:'node tools/probe-unit-env4.mjs --build <fixture-build-directory>',backend:'actual-wasm-worker',firmware:'internal ESP-IDF 5.5.1 protocol fixture',inputHashes,checks:[]};
+const wait=async predicate=>{const end=Date.now()+90000;while(Date.now()<end){const state=await runtime.observe();if(predicate(state))return state;if(state.status==='error')throw Error(JSON.stringify(state.lastError));await new Promise(r=>setTimeout(r,50));}throw Error(`Fixture timed out: ${(await runtime.observe()).serial.slice(-4000)}`);};
+const check=message=>{receipt.checks.push(message);console.error('ok '+message);};
+const api=installAutomation(runtime,{target:{}});
+const send=async(data,marker)=>{const at=(await runtime.observe()).serial.length;await runtime.input({type:'serial',port:'uart0',data});return wait(s=>{const tail=s.serial.slice(at),start=tail.indexOf(marker);return start>=0&&tail.indexOf('\n',start)>=0;});};
+// A UART probe is a FIFO barrier: boot emits an unsolicited sample after READY.
+// Do not mistake that in-flight boot sample for the response to this query.
+const sample=async expected=>{await send('p','ENV4_PROBE ');const tick=await runtime.input({type:'serial',port:'uart0',data:''});await wait(s=>s.stats.time>=tick.guestTime+.003);const state=await send('q','ENV4_SAMPLE '),line=state.serial.match(/ENV4_SAMPLE shtT=([-\d.]+) rh=([-\d.]+) bmpT=([-\d.]+) pressure=([-\d.]+) crc=(\d) id=(\w+) raw=(\w+)/g).at(-1),m=/shtT=([-\d.]+) rh=([-\d.]+) bmpT=([-\d.]+) pressure=([-\d.]+) crc=(\d) id=(\w+)/.exec(line);assert.equal(m[5],'1');assert.equal(m[6],'58');for(const [i,v] of [expected[0],expected[1],expected[0],expected[2]].entries())assert.ok(Math.abs(Number(m[i+1])-v)<.02,line);receipt.samples??=[];receipt.samples.push(line);return state;};
+const nack=async()=>{const state=await send('q','ENV4_NACK ');const m=[...state.serial.matchAll(/ENV4_NACK sht=(-?\d+) bmp=(-?\d+)/g)].at(-1);assert.ok(Number(m[1])!==0&&Number(m[2])!==0);};
+const connect=connected=>runtime.input({type:'accessory-connection',accessoryId:'environment',connected});
+const environment=(temperatureC,humidityPercent,pressureHpa)=>runtime.input({type:'accessory-environment',accessoryId:'environment',temperatureC,humidityPercent,pressureHpa});
+const scene=createDefaultScene(catalog,'m5stack-stopwatch');scene.firmware=source;scene.accessories=[{id:'environment',catalogId:'m5stack-unit-env4-u001d',parameters:{},wiring:{mode:'physical',interfaceId:'grove'}}];
+try {
+ await runtime.configure(scene);await runtime.loadFirmware(source);await runtime.start();await wait(s=>s.serial.includes('ENV4_BOOT_READY'));await sample([25,50,1013.25]);assert.ok((await runtime.observe()).serial.includes('ENV4_PROBE sht=0 bmp=0'));check('real IDF I2C1 on G10/G11 reads SHT40 CRC and BMP280 calibration/raw registers; unchanged manufacturer header computes default ambient');
+ await environment(22.5,61.2,990.1);await sample([22.5,61.2,990.1]);await assert.rejects(()=>environment(NaN,50,1000),{code:'INVALID_INPUT'});await assert.rejects(()=>environment(86,50,1000),{code:'INVALID_INPUT'});check('ambient API changes actual sensor raw words and independently compensated guest output; invalid range rejected');
+ await send('w','ENV4_ROUTE sda=11 scl=10');await nack();await send('c','ENV4_ROUTE sda=10 scl=11');await sample([22.5,61.2,990.1]);check('swapped SDA/SCL really NACKs through GPIO matrix; correct route restores communication');
+ {const s=await send('a','ENV4_OTHER '),m=[...s.serial.matchAll(/ENV4_OTHER sht45=(-?\d+) bmp77=(-?\d+)/g)].at(-1);assert.ok(+m[1]!==0&&+m[2]!==0);}check('wrong SHT40/BMP280 addresses do not ACK');
+ {const s=await send('t','ENV4_TIMING '),m=[...s.serial.matchAll(/ENV4_TIMING write=(\d+) early=(-?\d+) ready=(-?\d+) twice=(-?\d+) crc=(\d)/g)].at(-1);assert.equal(+m[1],0);assert.notEqual(+m[2],0);assert.equal(+m[3],0);assert.notEqual(+m[4],0);assert.equal(+m[5],1);}check('SHT40 conversion busy NACK, CRC and read-once behavior verified by actual guest transaction timing');
+ await send('o','ENV4_POWER 0');await nack();await send('i','ENV4_POWER 1');await sample([22.5,61.2,990.1]);await send('x','ENV4_RESET ');await sample([22.5,61.2,990.1]);check('M5PM1 supply gate and sensor soft reset invalidate state, then restore fresh measurement');
+ await connect(false);await nack();await environment(-10,10,800);await connect(true);await sample([-10,10,800]);check('unplug NACKs both chips; ambient changes persist physically while disconnected and are measured after reconnection');
+ await runtime.pause();await assert.rejects(()=>environment(0,50,1000),{code:'NOT_RUNNING'});await connect(false);await runtime.start();await nack();check('paused ambient changes reject while paused disconnect is permitted');
+ await send('r','ENV4_BOOT_READY');await nack();await runtime.reset();await wait(s=>s.serial.includes('ENV4_BOOT_READY'));await sample([25,50,1013.25]);check('guest restart preserves open physical connection; host reset restores initial scene attachment and ambient');
+ await api.recordingStart();await wait(s=>s.serial.includes('ENV4_BOOT_READY'));await environment(27,30,999.95);await sample([27,30,999.95]);const recording=await api.recordingStop();assert.ok(recording.events.some(e=>e.type==='accessory-environment'));const replay=await api.recordingPlay(recording);assert.equal(replay.result,'completed');await sample([27,30,999.95]);receipt.recording={events:recording.events,result:replay.result,bitExact:replay.bitExact};check('record/replay preserves ambient semantics and guest protocol output');
+ await runtime.pause();scene.accessories[0].wiring={mode:'physical',viaAccessoryId:'hub',portId:'port-2'};scene.accessories.unshift({id:'hub',catalogId:'m5stack-unit-hub-u006',parameters:{},wiring:{mode:'physical',interfaceId:'grove'}});await runtime.configure(scene);await runtime.loadFirmware(source);await runtime.start();await wait(s=>s.serial.includes('ENV4_BOOT_READY'));await sample([25,50,1013.25]);await runtime.input({type:'accessory-connection',accessoryId:'hub',connected:false});await nack();await runtime.input({type:'accessory-connection',accessoryId:'hub',connected:true});await sample([25,50,1013.25]);check('one U006 parallel path carries the same two I2C signals; upstream detach/reconnect gates both chips');
+ await runtime.pause();receipt.status='pass';receipt.serialEvidence=(await runtime.observe()).serial.split(/\r?\n/).filter(l=>l.startsWith('ENV4_'));receipt.accessoryInputs=(await runtime.observe()).accessoryInputs;console.log(JSON.stringify(receipt,null,2));
+} finally {await api.dispose();}

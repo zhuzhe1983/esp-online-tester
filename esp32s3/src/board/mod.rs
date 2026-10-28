@@ -33,6 +33,7 @@ pub mod cardputer;
 pub mod tdeck;
 mod tdeck_keyboard;
 mod cardputer_lcd;
+mod unit_pir;
 pub mod waveshare_amoled18;
 pub mod waveshare_cam;
 pub mod waveshare_lcd4b;

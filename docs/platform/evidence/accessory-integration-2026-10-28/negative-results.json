@@ -1,0 +1,23 @@
+{
+  "initialPlatform": {
+    "result": "three tests failed",
+    "cause": "Fresh independent worktree lacked production WASM; registry read ENOENT and runtime test fetch returned 404. Production build followed by all114 passed."
+  },
+  "envRecordingProbe": {
+    "result": "replay query matched in-flight default startup measurement",
+    "observed": "ENV4_SAMPLE shtT=25.000 rh=50.001 bmpT=25.000 pressure=1013.250 crc=1 id=58 raw=6462f07edc90",
+    "cause": "Firmware emits unsolicited sample after BOOT_READY; querying immediately could collect that sample rather than the query response.",
+    "fix": "Wait for a real UART p probe completion as FIFO barrier before q, then allow SHT command-ready interval. No runtime or fixture binary changed.",
+    "verified": "Real recording/replay now reads27°C/30%/999.95hPa."
+  },
+  "miniInitialHarness": {
+    "result": "timeout",
+    "cause": "Unverified custom firmware share correctly awaited human confirmation.",
+    "fix": "Browser harness explicitly clicks continue; final receipt records automatic start after confirmation."
+  },
+  "browserCapture": {
+    "result": "first receipt aggregate serial included interleaved duplicate UART chunks and partial lines",
+    "fix": "Final browser harness reads serialByPort.uart0 and waits newline before pause. Earlier aggregate capture is not used as final evidence."
+  },
+  "cpu": "C3 median+2.0468%,4/5 pairs slower; retain samples, do not label no-regression or noise."
+}

@@ -187,7 +187,13 @@ pub trait BoardModel {
     /// Observe the already-latched physical PWM duty without advancing peripheral time.
     /// Only derived visible output state may change here; bump display_version when it does.
     fn gpio_pwm_at(&mut self, _cycle: VirtualCycle, _pwm: &dyn Fn(u8) -> Option<(f64, u32)>) {}
+    /// Cold motion stimulus; board owns its physical GPIO, power and autonomous deadlines.
+    fn accessory_motion_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _motion: bool) -> bool { false }
 
+    /// Cold ambient input; the board owns powered, physically routed I2C sensor devices.
+    fn accessory_environment_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _sample: esp_periph::i2c::env4::Environment) -> bool { false }
+    /// Cold optical input; board owns the physical I2C route and supply.
+    fn accessory_illuminance_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _lux: f64) -> bool { false }
 }
 
 pub type Board = Box<dyn BoardModel>;

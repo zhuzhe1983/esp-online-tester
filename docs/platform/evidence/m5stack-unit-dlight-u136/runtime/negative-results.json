@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-10-27T12:52:59Z",
+  "failures": [
+    {
+      "kind": "probe harness",
+      "observation": "UART0 and USB mirror duplicate aggregate serial lines; counting two rows consumed two copies of the early zero result.",
+      "fix": "Wait for a later nonzero result and assert first/last values; no sensor engine change.",
+      "logSha256": "f7a0b769783ea36e22ca91c62c48c60ffb781d08fa35894ef10b874634b55999"
+    },
+    {
+      "kind": "WASM regression missing local input",
+      "observation": "Nine scenarios passed, tdisplay-prices stopped before execution because pinned ESP32_GENERIC-20260824-v1.29.0.bin was absent.",
+      "fix": "Copied the existing pinned image from integration workspace and reran only tdisplay-prices; 17 console lines and8binary frames pass.",
+      "logSha256": "dd4e7d4b8196a8f36433488ee197afaa1c9be31e35a12d004df9801641b8df27",
+      "rerunLogSha256": "4be4ad2c040ac128c5492841bad767e0531c31883d2e430f2e08035e52a4b844"
+    },
+    {
+      "kind": "browser harness",
+      "observation": "A serial input sent when DLIGHT_READY appeared but runtime start transition was not yet running was rejected NOT_RUNNING.",
+      "fix": "Wait for both running status and readiness before input; production behavior unchanged."
+    },
+    {
+      "kind": "CPU harness missing input",
+      "observation": "S3/C3/C6 pairs finished; Pocket preflight stopped before any Pocket sample because model_q4.bin was missing.",
+      "fix": "Copied pinned model b200bf87c78dc85c4d727f68941ac0b83cced9827037cc169cd2122d71002c2a; resumed only incomplete Pocket workload. Earlier pairs retained."
+    }
+  ]
+}

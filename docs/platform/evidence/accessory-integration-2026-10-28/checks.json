@@ -1,0 +1,196 @@
+{
+  "checkedAt": "2026-10-28T08:01:30Z",
+  "base": "61e1808fce496ba6d9b45b50d22d20b8d9b04312",
+  "integrationSourceHead": "85f1fed47bcc89fe0ce539db713527eb51e892b3",
+  "additionalSourceChange": "tools/probe-unit-env4.mjs UART FIFO barrier; production Rust/JS unchanged after head",
+  "rustTestsPassed": 1575,
+  "wasmCases": 11,
+  "workerCases": {
+    "ENV-IV": 11,
+    "DLight": 15,
+    "PIR": 11
+  },
+  "jitCases": 111126,
+  "gpioWaveformCases": 24,
+  "checks": [
+    {
+      "name": "stable",
+      "command": "rustup update stable",
+      "exitCode": 0
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0
+    },
+    {
+      "name": "wasm-clippy",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0
+    },
+    {
+      "name": "build",
+      "command": "cargo build --release --workspace",
+      "exitCode": 0
+    },
+    {
+      "name": "rust",
+      "command": "cargo test --release --workspace -- --include-ignored --skip external_",
+      "exitCode": 0
+    },
+    {
+      "name": "wasm",
+      "command": "tools/wasm-build.sh",
+      "exitCode": 0
+    },
+    {
+      "name": "schema",
+      "command": "/tmp/esp-product-model-venv/bin/python tools/validate-platform-catalog.py",
+      "exitCode": 0
+    },
+    {
+      "name": "sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0
+    },
+    {
+      "name": "probe-pir",
+      "command": "node tools/probe-unit-pir.mjs --build output/accessory-integration/fixture-pir",
+      "exitCode": 0
+    },
+    {
+      "name": "probe-dlight",
+      "command": "node tools/probe-unit-dlight.mjs --build output/accessory-integration/fixture-dlight",
+      "exitCode": 0
+    },
+    {
+      "name": "recording",
+      "command": "node tools/platform-recording-test.mjs --real --receipt output/accessory-integration/recording.json",
+      "exitCode": 0
+    },
+    {
+      "name": "wasm-eleven",
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "exitCode": 0
+    },
+    {
+      "name": "vq",
+      "command": "env ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "exitCode": 0
+    },
+    {
+      "name": "timing",
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0
+    },
+    {
+      "name": "ble",
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exitCode": 0
+    },
+    {
+      "name": "ble-connection",
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exitCode": 0
+    },
+    {
+      "name": "worker",
+      "command": "node --test tools/worker-pacing-test.mjs tools/worker-channel-test.mjs tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs",
+      "exitCode": 0
+    },
+    {
+      "name": "benchmark-contract",
+      "command": "sh -c 'node --test tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs'",
+      "exitCode": 0
+    },
+    {
+      "name": "benchmark-python",
+      "command": "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "exitCode": 0
+    },
+    {
+      "name": "jit",
+      "command": "tools/wasm-jit-test.sh",
+      "exitCode": 0
+    },
+    {
+      "name": "profiling",
+      "command": "sh -c '. ./tools/wasm-rustflags.sh && cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile'",
+      "exitCode": 0
+    },
+    {
+      "name": "privacy",
+      "command": "node tools/check-evidence-privacy.mjs",
+      "exitCode": 0
+    },
+    {
+      "name": "x5-test",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs",
+      "exitCode": 0
+    },
+    {
+      "name": "x5",
+      "command": "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+      "exitCode": 0
+    },
+    {
+      "name": "x5-m1-test",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs",
+      "exitCode": 0
+    },
+    {
+      "name": "x5-m1",
+      "command": "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+      "exitCode": 0
+    },
+    {
+      "name": "x5-history-test",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+      "exitCode": 0
+    },
+    {
+      "name": "x5-history",
+      "command": "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "exitCode": 0
+    },
+    {
+      "name": "arm",
+      "command": "cargo test --release -p xtensa-lx7",
+      "exitCode": 0
+    },
+    {
+      "name": "probe-env-fixed",
+      "command": "node tools/probe-unit-env4.mjs --build <fixture-build-directory>",
+      "exitCode": 0
+    },
+    {
+      "name": "platform",
+      "command": "ESP32SIM_ROM_DIR=<roms> node --test tools/platform-*-test.mjs",
+      "exitCode": 0,
+      "tests": 114
+    }
+  ],
+  "productionWasm": {
+    "path": "web/wasm/esp32sim.wasm",
+    "bytes": 4261828,
+    "sha256": "6ed54509073ab7229ee721164b56692178b67d477581f70f4e0e6c72687b7a4e"
+  },
+  "unchangedFromBase": [
+    "web/platform/catalog/products.json",
+    "web/platform/catalog/firmwares.json",
+    "web/platform/rgb-led-view.js",
+    "web/platform/scene-view.js",
+    "web/platform/scene-interaction.js"
+  ],
+  "catalog": {
+    "products": 92,
+    "boardsDeclared": 30,
+    "accessories": 10
+  },
+  "limits": [
+    "Runtime checks use internal source fixtures, not a claim about all official firmware.",
+    "No physical hardware validation.",
+    "Original geometry/texture hashes unchanged from the three delivered SKU revisions; visual evidence reuse is explicitly distinguished from this integrated browser load.",
+    "Task-owned browser and static server closed; no user server update."
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "browser-mini": {
+    "status": "paused",
+    "productId": "m5stack-stopwatch",
+    "view": {
+      "deviceView": "3d",
+      "mode": "embed"
+    },
+    "inputs": [
+      {
+        "accessoryId": "pir",
+        "model": "pir-u004-m5-2s",
+        "port": "grove",
+        "pin": 11,
+        "control": "motion",
+        "connected": true,
+        "motion": false
+      }
+    ],
+    "serialPort": "uart0",
+    "serial": [
+      "U004_POWER_OFF G11=0 G10=1",
+      "U004_POWER_ON",
+      "U004_READ G11=0 G10=1 US=310299",
+      "U004_READ G11=1 G10=1 US=319988",
+      "U004_READ G11=0 G10=1 US=2379988"
+    ]
+  },
+  "browser-mini-panel": {
+    "mode": "embed",
+    "serial": "U004_READ G11=1 G10=1 US=2459988\r\nU004_READ G11=0 G10=1 US=4589988\r\n"
+  },
+  "browser-studio": {
+    "mode": "studio",
+    "serial": "U004_READ G11=1 G10=1 US=429988\r\nU004_READ G11=0 G10=1 US=2569988\r\n"
+  },
+  "checkedAt": "2026-10-28T04:41:20Z",
+  "wasmSha256": "88c7bf9d474ebf1ab172b7a7210b7c397c95c1a483b33dc35d2e854a82a90fc0",
+  "modelSha256": "1d5f03b166baddb1099f7b9114e703cf50635af29e0251b63438ba5ea5294f51",
+  "images": {
+    "pir-current-connector.png": "eea085387eb4303d20fe532a8a899aed7f81f183ea8963a8a98d56584e490153",
+    "pir-current-back.png": "d0e37c375ce316f522ed1f3ff83f159df4fffd9f21354de45350510a074a5488",
+    "pir-current-gold.png": "95be8d98ebd04169a6579db8d880a84ef74ad5e25fc0ef821b99626fd57984e4",
+    "pir-current-purple.png": "9f0909c1c31a9775a8ce4e01a2d651e66d143eb3df57522b68bf1c8a777a8829",
+    "pir-current-unknown.png": "6e7ba30224b39e7a14ec859c0b6ac0b65e224eac229f3f67e77c5325f242116b",
+    "pir-current-plug-front.png": "24890dc388eb134c3d72e7303d9a5439669a0a43dd1202f0a8171a7ec705825c",
+    "pir-current-plug-rear.png": "f59ebe8a4c769f89d5343410f701f9592063ce68dd28ca5451ef7ac4639e9522",
+    "pir-current-studio.png": "b5a587c1c6f357e8475b9b10f327b24c6e613e12ce37858532f3e6d1dc1d7e39",
+    "pir-current-mini-panel.png": "240eecf6cac6f1f72db3d61dafb3c53509d1f317cf0d4325931f683e433ce120"
+  },
+  "visualChecks": [
+    "Original white case/black hollow socket at connector view; visible four wires use blackGND/red5V/yellowNC/whiteOUT.",
+    "Studio front/rear rotated: insertion at both mouth anchors; rear whiteIN/yellowOUT are host PortB labels and mirrored from front. Hidden plug depth remains an estimate.",
+    "Back standalone capture uses explicit black shell appearance (null appearance defaults to StopWatch black); it is a material/label isolation check, not the original-color comparison. Studio rear and historical measurements retain original white shell.",
+    "Gold/purple affect shell only; separate label, lens and connector retain original materials.",
+    "UNKNOWN blank PCB remains visible with shell hidden. No Fresnel facets or rear screw reconstruction claimed."
+  ],
+  "browserCleanup": "Task-owned headless wrapper session closed; task-owned HTTP listener exited. No user/other-task sessions touched.",
+  "limitations": [
+    "Only source-built test firmware, not arbitrary host firmware compatibility.",
+    "No new photo contour metrics: exact regenerated geometry and model hashes reuse historical verification.json and comparison images without changing their timestamps.",
+    "Only favicon.ico404 observed; no runtime errors in tested inputs.",
+    "Direct API and human panel verified in studio/mini. Actual WASM fixture verifies timing/power/unplug/reset/recording; API receipt alone is not acceptance."
+  ]
+}

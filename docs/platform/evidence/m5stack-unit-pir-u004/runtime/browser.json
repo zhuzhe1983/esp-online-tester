@@ -1,0 +1,87 @@
+{
+  "checkedAt": "2026-10-27T14:55:39Z",
+  "status": "studio-and-mini-pass",
+  "studio": {
+    "status": "paused",
+    "inputs": [
+      {
+        "accessoryId": "pir",
+        "model": "pir-u004-m5-2s",
+        "port": "grove",
+        "pin": 11,
+        "control": "motion",
+        "connected": true,
+        "motion": false
+      }
+    ],
+    "serial": [
+      "U004_POWER_OFF G11=0 G10=1",
+      "U004_POWER_OFF G11=0 G10=1",
+      "U004_POWER_ON",
+      "U004_READ G11=0 G10=1 US=310298",
+      "U004_POWER_ON",
+      "U004_READ G11=0 G10=1 US=310298",
+      "U004_READ G11=1 G10=1 US=409988",
+      "U004_READ G11=1 G10=1 US=409988",
+      "U004_READ G11=0 G10=1 US=2479988",
+      "U004_READ G11=0 G10=1 US=2479988"
+    ]
+  },
+  "checks": [
+    "human start/stop motion panel produces real G11 high and nominal delayed low",
+    "gold shell retains white paper/white lens and black hollow connector",
+    "transparent purple exposes neutral UNKNOWN board; paper remains separate"
+  ],
+  "mini": {
+    "status": "paused",
+    "productId": "m5stack-stopwatch",
+    "view": {
+      "deviceView": "3d",
+      "mode": "embed"
+    },
+    "inputs": [
+      {
+        "accessoryId": "pir",
+        "model": "pir-u004-m5-2s",
+        "port": "grove",
+        "pin": 11,
+        "control": "motion",
+        "connected": true,
+        "motion": false
+      }
+    ],
+    "serialPort": "uart0",
+    "serial": [
+      "U004_POWER_OFF G11=0 G10=1",
+      "U004_POWER_ON",
+      "U004_READ G11=0 G10=1 US=310299",
+      "U004_READ G11=1 G10=1 US=339988",
+      "U004_READ G11=0 G10=1 US=2399988"
+    ]
+  },
+  "modelSha256": "1d5f03b166baddb1099f7b9114e703cf50635af29e0251b63438ba5ea5294f51",
+  "wasmSha256": "f9daea7cbefaf86a07c71941a5c652e1be70c2be155a23ebc7f2df66591d5158",
+  "cleanup": "Task-owned wrapper session and HTTP server closed.",
+  "screenshots": {
+    "pir-gold-oblique.png": "243e81f67b8cd8b96b818b16881cb979e654f89a49c4ba9acbf148b5301e9edd",
+    "pir-front.png": "c868dbdbf969d9509b1c5bb954c08da469457d901fbccea8a1f239200e0c5d00",
+    "pir-front-mask.png": "d000d059fb6907a6da693c80bd88afc197ae5ab0c63fcbe53dc396d75893be97",
+    "pir-connector-mask.png": "2840042abb56766ad3a880b40242f6187d2b67456bacacf6a059e4888ca0b213",
+    "pir-gold-back.png": "8f433f99ac88d3aea8d0eb824d0d5e50493fabd0415e9303ee85445d029ac360",
+    "pir-purple-oblique.png": "523dc9987e6720efa3fca19f94dc8d4783a3f883b79e91bea8cd3d538de0b20f",
+    "pir-purple-back.png": "1247036fbb7760507e1b34b95bc8697a767c42911acd6726c620ee60dc0eec8d",
+    "pir-connector.png": "5b9d517ab1d97e79faa116cdade9decf036dbecae0caf371cfbf2a6017dc5996",
+    "pir-studio.png": "a9c7ed7db830c483accb114868097b6acacba13342ebab602517fd08d4772628",
+    "pir-back-mask.png": "fd399a87a8ed490e82968e5a48941c22ea01c6380a8ff0a1a0567ff7a745dd41",
+    "pir-mini.png": "710e6f102f398edd6d10d15dc9458ccf706466c4df53420bfdcb67ae6ea4dcc3",
+    "pir-back.png": "a545925164e10ffb4e15cdb6c2ee3a16127cebc528dd42739acf81c0cc481eb7",
+    "pir-unknown.png": "1f84639e932f5746c2889ddcfe1fdaee16fa29409985c7989e96ee21ac1dc044",
+    "pir-mini-final.png": "8ebe4d400a5b9f983eab66cbba1d713a33c738620c0ea0c0e1cf166c7e020963"
+  },
+  "previousStatus": {
+    "checkedAt": "2026-10-27T14:14:51Z",
+    "status": "studio-pass-mini-evidence-pending",
+    "mini": "Shared scene auto-start and API motion update observed. A later direct read returned genuine G11=1, but retained automated serial extraction lacks that line; repeat before complete acceptance."
+  },
+  "miniCaptureMethod": "Poll running state and complete uart0 lines; do not parse merged USB/UART stream or pause before a newline. Genuine guest GPIO timestamps retained."
+}

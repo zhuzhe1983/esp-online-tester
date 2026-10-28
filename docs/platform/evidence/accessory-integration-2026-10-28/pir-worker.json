@@ -1,0 +1,171 @@
+{
+  "checkedAt": "2026-10-28T05:26:45Z",
+  "sourceSha256": {
+    "esp32s3/src/board/unit_pir.rs": "48dcb09e10aba5aaaee2ed364213e6badc22684a3d1e1ffe73dffd60bbba62d2",
+    "web/platform/accessory-routing.js": "132cecdd6070d656cfd7f45f8298aecddf62ee158f21307a93419ebbc1ebd411",
+    "web/platform/motion-input.js": "4b9a3bf15ec45bb96ba6b5b5768f40bff0ca7a1d86b1452b6294e6898f837bdb",
+    "esp-soc/src/board.rs": "d94522a89d883b75593f68a8103f2cee9f1f2bef92e7f05d4bd260734ccba57a",
+    "esp-soc/src/machine/web.rs": "1d5ab10c0b2f5f4a53803e5eb977365e4eb4501f7189ebaf842efb2708c8f3b2",
+    "esp32s3/src/board/stopwatch.rs": "6bd2586df49a36291601183d31532d77410889a12c49d903ebd0009bda3cbd34",
+    "esp-periph/src/i2c/m5.rs": "d7eb7fb40f47c9d2c43f6b6532b6b4fc8f34b726b1662c58d0927385a8231203",
+    "web/platform/runtime.js": "0aa32205a13577cb266697ac32bd73685d35e20ec5b52bb555d94cf09ce8012f",
+    "web/platform/recording.js": "dddac286ee142b460f14e3d402a94641940b787641570ef933b7239df8a00387",
+    "tools/probe-unit-pir.mjs": "8605cb34e006018b6a0542553b2b2973545ed09da333963ad9508b2ac47f08b6",
+    "tools/fixtures/unit-pir-firmware/main/main.c": "adb8a43c2cc5335fc17a6272d82f217594ebbd8e16da29c075295656c1e19519"
+  },
+  "wasmSha256": "6ed54509073ab7229ee721164b56692178b67d477581f70f4e0e6c72687b7a4e",
+  "romSha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "command": "node tools/probe-unit-pir.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+    "unit_pir_fixture.bin": "305b4c64d27a484f540df435ca2720d37f1cbd412d2cb9afb2916fb160a5abdb"
+  },
+  "checks": [
+    "ROM boot, M5PM1 power gate and idle G11 low; yellow G10 remains guest pull-up",
+    "continuous infrared-change stimulus holds actual GPIO high beyond2s; invalid input rejected",
+    "stop-motion keeps G11 high before2s and low after nominal2s",
+    "new motion during hold extends high state, new trailing edge falls after2s",
+    "Grove supply loss releases driver; actual guest pulls choose level; supply-on clears stale hold",
+    "disconnect releases drive; environment can change while unplugged, reconnect samples new environment",
+    "M5PM1 HOLD_5V retains output after shutdown; clearing hold releases it",
+    "paused ambient change rejected; paused disconnect allowed; guest restart preserves disconnected physical route and ambient",
+    "platform reset restores configured connection and original false environment",
+    "record/replay uses actual guest time and reproduces high then delayed low",
+    "one U006 preserves G11 route alongside G10 RGB; upstream disconnect and individual child state respected"
+  ],
+  "samples": [
+    "U004_READ G11=0 G10=1 US=370002",
+    "U004_READ G11=1 G10=1 US=420002",
+    "U004_READ G11=1 G10=1 US=3520002",
+    "U004_READ G11=1 G10=1 US=3570002",
+    "U004_READ G11=1 G10=1 US=4430002",
+    "U004_READ G11=0 G10=1 US=5800002",
+    "U004_READ G11=1 G10=1 US=5850002",
+    "U004_READ G11=1 G10=1 US=8290002",
+    "U004_READ G11=0 G10=1 US=10570002",
+    "U004_READ G11=1 G10=1 US=10620002",
+    "U004_READ G11=0 G10=1 US=10670304",
+    "U004_READ G11=1 G10=1 US=10730003",
+    "U004_READ G11=0 G10=1 US=10780004",
+    "U004_READ G11=0 G10=1 US=10830303",
+    "U004_READ G11=1 G10=1 US=10880002",
+    "U004_READ G11=0 G10=1 US=10930002",
+    "U004_READ G11=1 G10=1 US=10980003",
+    "U004_READ G11=0 G10=1 US=11030004",
+    "U004_READ G11=0 G10=1 US=11080002",
+    "U004_READ G11=1 G10=1 US=11130002",
+    "U004_READ G11=1 G10=1 US=11180303",
+    "U004_READ G11=1 G10=1 US=11230303",
+    "U004_READ G11=0 G10=1 US=11290303",
+    "U004_READ G11=0 G10=1 US=370001",
+    "U004_READ G11=0 G10=1 US=420001",
+    "U004_READ G11=0 G10=1 US=350092",
+    "U004_READ G11=1 G10=1 US=410092",
+    "U004_READ G11=0 G10=1 US=370001",
+    "U004_READ G11=1 G10=1 US=320001",
+    "U004_READ G11=0 G10=1 US=2610001",
+    "U004_READ G11=0 G10=1 US=2690001",
+    "U004_READ G11=1 G10=1 US=320001",
+    "U004_READ G11=0 G10=1 US=370001",
+    "U004_READ G11=1 G10=1 US=420001",
+    "U004_READ G11=0 G10=1 US=470001"
+  ],
+  "hold": {
+    "sampleUs": 3570002,
+    "endSampleUs": 5800002,
+    "transitions": [
+      "U004_READ G11=0 G10=1 US=5569989",
+      "U004_READ G11=0 G10=1 US=5569989",
+      "U004_READ G11=0 G10=1 US=5800002",
+      "U004_READ G11=0 G10=1 US=5800002"
+    ]
+  },
+  "recording": {
+    "events": [
+      {
+        "at": 0.3111272125,
+        "type": "accessory-motion",
+        "accessoryId": "pir",
+        "motion": true
+      },
+      {
+        "at": 0.3622795875,
+        "type": "accessory-motion",
+        "accessoryId": "pir",
+        "motion": false
+      }
+    ],
+    "result": "completed",
+    "bitExact": false,
+    "observed": [
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "status": "pass",
+  "serialEvidence": [
+    "U004_POWER_OFF G11=0 G10=1",
+    "U004_POWER_OFF G11=0 G10=1",
+    "U004_POWER_ON",
+    "U004_READ G11=1 G10=1 US=310298",
+    "U004_POWER_ON",
+    "U004_READ G11=1 G10=1 US=310298",
+    "U004_COMMAND SAMPLE",
+    "U004_COMMAND SAMPLE",
+    "U004_READ G11=1 G10=1 US=320001",
+    "U004_READ G11=1 G10=1 US=320001",
+    "U004_COMMAND SAMPLE",
+    "U004_COMMAND SAMPLE",
+    "U004_READ G11=0 G10=1 US=370001",
+    "U004_READ G11=0 G10=1 US=370001",
+    "U004_COMMAND SAMPLE",
+    "U004_COMMAND SAMPLE",
+    "U004_READ G11=1 G10=1 US=420001",
+    "U004_READ G11=1 G10=1 US=420001",
+    "U004_COMMAND SAMPLE",
+    "U004_COMMAND SAMPLE",
+    "U004_READ G11=0 G10=1 US=470001",
+    "U004_READ G11=0 G10=1 US=470001"
+  ],
+  "accessoryInputs": [
+    {
+      "accessoryId": "hub",
+      "model": "passive-hub-u006",
+      "port": "grove",
+      "hub": true,
+      "connected": true
+    },
+    {
+      "accessoryId": "pir",
+      "model": "pir-u004-m5-2s",
+      "port": "grove",
+      "pin": 11,
+      "control": "motion",
+      "viaAccessoryId": "hub",
+      "portId": "port-1",
+      "connected": false,
+      "effectiveConnected": false,
+      "motion": true
+    },
+    {
+      "accessoryId": "rgb",
+      "model": "sk6812-u003",
+      "port": "grove",
+      "pin": 10,
+      "output": "grove-u003",
+      "viaAccessoryId": "hub",
+      "portId": "port-2",
+      "connected": true,
+      "effectiveConnected": true
+    }
+  ]
+}

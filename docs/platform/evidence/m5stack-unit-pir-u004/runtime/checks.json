@@ -1,0 +1,84 @@
+{
+  "checkedAt": "2026-10-27T14:14:51Z",
+  "base": "4670491d",
+  "status": "functional-stage-performance-pending",
+  "goldensChanged": false,
+  "checks": [
+    {
+      "name": "native-clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "status": "pass",
+      "localLogSha256": "367290a14ce612f43cce029b05ff006c2af4ab23fc4173ad73aa6797250ce1dc",
+      "completedAt": "2026-10-27T14:00:49Z"
+    },
+    {
+      "name": "wasm-clippy",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "pass",
+      "localLogSha256": "a198262b2370dfc574c84095b211a90403c9c17e0be08ca92c3da00991dd1a66",
+      "completedAt": "2026-10-27T14:00:51Z"
+    },
+    {
+      "name": "rust-ci",
+      "command": "ESP32SIM_ROM_DIR=<absolute-ROM-directory> cargo test --release --workspace -- --include-ignored --skip external_",
+      "status": "pass",
+      "localLogSha256": "19bdc33c02ec3b92db3006f08cf792d2fd3dd677dd1772acb1d6f16b42fc3050",
+      "completedAt": "2026-10-27T14:05:51Z",
+      "testsPassed": 1379,
+      "testsFailed": 0
+    },
+    {
+      "name": "platform-node",
+      "command": "node --test tools/platform-*-test.mjs",
+      "status": "pass",
+      "localLogSha256": "9b236ee5159d0e33cfe638ee720fdf23fe7ad9f7cbcbbae3169200f13b2c32b8",
+      "completedAt": "2026-10-27T14:00:48Z",
+      "testsPassed": 84
+    },
+    {
+      "name": "production-wasm",
+      "command": "tools/wasm-build.sh",
+      "status": "pass",
+      "localLogSha256": "d7c654723d9697b5b5b1908c6c21db1fc3a8784e95b99e2bf6a2f3bf023f3256",
+      "completedAt": "2026-10-27T13:54:28Z"
+    },
+    {
+      "name": "wasm-core-eight",
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel paper tdisplay",
+      "status": "partial-invalid-two-scenario-names",
+      "localLogSha256": "63bac7f46ef1bf8c1bfe84754edf396f84b2fa5dff80c015730ba6b4cbb62419",
+      "completedAt": "2026-10-27T14:01:55Z",
+      "passedScenarios": 8,
+      "invalidScenarios": [
+        "paper",
+        "tdisplay"
+      ],
+      "notes": "These do not exist. Required CI eight passed; p4-hello and tdisplay-prices completed in separate exact-name run. No failures waived."
+    },
+    {
+      "name": "wasm-extra-two",
+      "command": "node tools/wasm-test.mjs p4-hello tdisplay-prices",
+      "status": "pass",
+      "localLogSha256": "c8670167ba949a490fa84e441651b7ed7bd642812f5936fd9d518030238cc20a",
+      "completedAt": "2026-10-27T14:03:28Z"
+    }
+  ],
+  "fixtureChecks": 11,
+  "sourceSha256": {
+    "esp32s3/src/board/unit_pir.rs": "48dcb09e10aba5aaaee2ed364213e6badc22684a3d1e1ffe73dffd60bbba62d2",
+    "esp32s3/src/board/stopwatch.rs": "c55046593dc94871369c7032c1eb7d458db1950cd94b97646c8c242c3b2d72f9",
+    "esp32s3/src/board/mod.rs": "3c51dcf155fd9718111ec9a6e180c09ec583e034d7c9aa8021a63d5c4d6e5a0c",
+    "esp-soc/src/board.rs": "0cc06c459fd9e8d360af6ce583b208244c89fdccc3629ae0c699fbcc3a0b4305",
+    "esp-soc/src/machine/web.rs": "0b2ed2a1b06f47a83b81d24581df2bde9881c163894628dde9104b942f2923db",
+    "web/platform/runtime.js": "f1974fc302cad66545c9a2d8a69157a14241aa7b0bc54f3d72ae78a6eb34c90f",
+    "web/platform/catalog.js": "1b694d7f066d8a08bcaf2e878ba08b8d848c2a57e7b727d5863aa563625ed4c5",
+    "web/platform/recording.js": "082d59cf169b1b5eaee75af2daf04920820f7e50d2b2ff22c54c38f5b4df71b8",
+    "web/platform/accessory-routing.js": "4066d4081ff14c1b609243e4f468140ef3efd2fcec562ff930ccb1b839d32670",
+    "web/platform/motion-input.js": "4b9a3bf15ec45bb96ba6b5b5768f40bff0ca7a1d86b1452b6294e6898f837bdb",
+    "web/platform/app.js": "8a3133796ce5d6561c3511b51b3839afd10389452e290a555773e0d9700f646a"
+  },
+  "remaining": [
+    "CPU comparison with retained4670491d baseline; no no-regression claim",
+    "Repeat mini startup evidence using exact serialByPort.uart0 extraction; earlier automated captures were insufficient"
+  ]
+}

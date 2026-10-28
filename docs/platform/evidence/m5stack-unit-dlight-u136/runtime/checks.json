@@ -1,0 +1,110 @@
+{
+  "checkedAt": "2026-10-27T12:59:11Z",
+  "base": "d3c7820f",
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "goldensChanged": false,
+  "checks": [
+    {
+      "name": "native-clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "status": "pass",
+      "completedAt": "2026-10-27T12:34:07Z",
+      "localLogSha256": "7b1ba39610203490df2b0425fc0756472fe8f494135c1bccfdde04b0fcb28133"
+    },
+    {
+      "name": "wasm-clippy",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "pass",
+      "completedAt": "2026-10-27T12:34:08Z",
+      "localLogSha256": "0e26c0ee74bf91563f0469a26202c795dcba40d6aff1d9d6b2fd0af9726e581a"
+    },
+    {
+      "name": "rust-ci",
+      "command": "ESP32SIM_ROM_DIR=$ROM_DIR cargo test --release --workspace -- --include-ignored --skip external_",
+      "status": "pass",
+      "completedAt": "2026-10-27T12:37:27Z",
+      "localLogSha256": "1ac7f091a510b22bab8cda9e9a08347b7ad7203efc901f70da927ab047e314ea",
+      "testsPassed": 1376,
+      "testsFailed": 0,
+      "testsIgnored": 0
+    },
+    {
+      "name": "platform-node",
+      "command": "node --test tools/platform-*-test.mjs",
+      "status": "pass",
+      "completedAt": "2026-10-27T12:53:30Z",
+      "localLogSha256": "1467755c09df952152233dddef1087212f76eb0a4c2f781cb82ce030a6cc51de",
+      "testsPassed": 81
+    },
+    {
+      "name": "catalog",
+      "command": "python tools/validate-platform-catalog.py",
+      "status": "pass",
+      "completedAt": "2026-10-27T12:53:30Z",
+      "localLogSha256": "cd66de851b40a35f1d35b238e7a10ebd6c103757c38eb2c40f76727028001f82"
+    },
+    {
+      "name": "production-wasm",
+      "command": "tools/wasm-build.sh",
+      "status": "pass",
+      "completedAt": "2026-10-27T12:45:52Z",
+      "localLogSha256": "ba182acce6aa0eb23ef5b97258b480c0782518415e7a078db97ed23055122747"
+    },
+    {
+      "name": "wasm-regressions-partial",
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices",
+      "status": "partial-missing-local-input",
+      "completedAt": "2026-10-27T12:48:45Z",
+      "localLogSha256": "dd4e7d4b8196a8f36433488ee197afaa1c9be31e35a12d004df9801641b8df27",
+      "passedScenarios": 9,
+      "missingScenario": "tdisplay-prices",
+      "missingInput": "ESP32_GENERIC-20260824-v1.29.0.bin",
+      "jitHandoff": "pass",
+      "negativeEvidence": "negative-results.json"
+    },
+    {
+      "name": "tdisplay-missing-input-rerun",
+      "command": "node tools/wasm-test.mjs tdisplay-prices",
+      "status": "pass",
+      "completedAt": "2026-10-27T12:50:04Z",
+      "localLogSha256": "4be4ad2c040ac128c5492841bad767e0531c31883d2e430f2e08035e52a4b844"
+    },
+    {
+      "name": "connector-compatibility",
+      "command": "node tools/check-dlight-connector-compat.mjs",
+      "status": "pass",
+      "completedAt": "2026-10-27T12:44:36Z",
+      "localLogSha256": "f124b671a8358d556e703388c0df930a75800be2dbeb930a8ca47966e1a37282"
+    }
+  ],
+  "wasmSections": {
+    "dwarfAbsent": true,
+    "nameRetained": true,
+    "bytes": 4038429
+  },
+  "fixtureChecks": 13,
+  "sourceSha256": {
+    "esp-periph/src/i2c/bh1750.rs": "63fc465806b9cb8a2fd7f80741d762e26345fada4b6cd438392890c16b2d696a",
+    "esp-periph/src/i2c.rs": "e0afd60e678e82133110dec3c24ae8b59b3f0ac140d9bce358240c224ff882d7",
+    "esp-soc/src/board.rs": "8daf56aead3e2f0d20accb05461f20e8485a776e18344d6b6dd0824377057c8c",
+    "esp-soc/src/machine/web.rs": "12b6b8ee1f41aaed288a5a19bb3bc7b26bc2d912f6e1ab45f655146adcc21df4",
+    "esp32s3/src/board/stopwatch.rs": "90f2dcdbd6a9aa247cdceac10aae14ddd1a785318efefe04626d80e68efc1e9d",
+    "esp32s3/tests/stopwatch.rs": "f3dcb89bf845a9e58eab94cc0bafe67bab2f4846171ef02bc6ab0d44ef2dcfb2",
+    "web/platform/runtime.js": "fccc3d11249e7154b8fe61cbbd8dc3577bfd65c156a4b9e1fb0e69859669b8db",
+    "web/platform/catalog.js": "2b1f823d5d10d7d1eaa0930f1f78037123fe8f30bfa2bab0ef0320dd2ee1400d",
+    "web/platform/manufacturer-model.js": "e8616cb63b2b3bdbf32a733a31ce2fae6b50acfba9eed0d1440c5dca38da1ab2",
+    "web/platform/grove-geometry.js": "fa5b69dfba9e272400a0ca3a980c9cbd547608a4e147a85ce9b7869ab837e639"
+  },
+  "wasmSha256": "7f63808e5970d644a3e522fd8eeb081b6e4920cda01424f8bc2e1dbe12093666",
+  "nativeBinarySha256": {
+    "esp32sim": "ed60c7af78e1336402e5794c11f1a6b096620479241683a5021ba7e299cb2640",
+    "esp32sim-c3": "a4cddd113b233cb4f7aae7e7807ad8102ac2bafbf84ff1a75146b931ec6cdc2c",
+    "esp32sim-c6": "12cee06123e899febcff54d0d0f37aef27248eeb07cbaab40f1804c276444346"
+  },
+  "limits": [
+    "No physical hardware or arbitrary official-firmware sweep",
+    "CPU receipt separately records remaining costs and historical increments; no speed claim",
+    "Local logs include workspace paths and are not committed; hashes preserve provenance",
+    "Evidence privacy pattern check passed; new platform files also manually reviewed"
+  ]
+}

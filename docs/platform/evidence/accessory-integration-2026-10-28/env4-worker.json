@@ -1,0 +1,119 @@
+{
+  "checkedAt": "2026-10-28T05:30:06Z",
+  "sourceSha256": {
+    "web/wasm/worker.js": "eb26ea86778dfcb7edb15f75787643c9b9796c43905d57968c80cdea27b49dc9",
+    "web/platform/accessory-routing.js": "132cecdd6070d656cfd7f45f8298aecddf62ee158f21307a93419ebbc1ebd411",
+    "web/platform/catalog.js": "5a3dc34b02eebc822a8860b667d375c4d62926ee10de805cc9d1e9ca7de62e69",
+    "web/platform/runtime.js": "0aa32205a13577cb266697ac32bd73685d35e20ec5b52bb555d94cf09ce8012f",
+    "web/platform/recording.js": "dddac286ee142b460f14e3d402a94641940b787641570ef933b7239df8a00387",
+    "tools/probe-unit-env4.mjs": "e9bfb1b55979cea36a127cc4801b5c283bbc00f12c6d822ee55eef05858c62b0",
+    "esp-periph/src/i2c/env4.rs": "d26feaa113695c307a43fc58508f211e9e2f36e966351559ab69fcab1252a72e",
+    "esp32s3/src/board/stopwatch.rs": "6bd2586df49a36291601183d31532d77410889a12c49d903ebd0009bda3cbd34",
+    "web/platform/environment-input.js": "5e848f13aaec5d7ac37701636fe9b83024ca87273d9d184b0d807b1d36eb68c7",
+    "tools/fixtures/unit-env4-firmware/main/main.cpp": "168b6b7125e271c4b6e1dc930e99cdfd434f73d5cb8b7b70a6ec08ce39a25676"
+  },
+  "wasmSha256": "6ed54509073ab7229ee721164b56692178b67d477581f70f4e0e6c72687b7a4e",
+  "romSha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "command": "node tools/probe-unit-env4.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+    "unit_env4_fixture.bin": "b688fc8ec59cc0389c7c7ed3b87684fbb38be63b5c607125ac8fd34fc1860353"
+  },
+  "checks": [
+    "real IDF I2C1 on G10/G11 reads SHT40 CRC and BMP280 calibration/raw registers; unchanged manufacturer header computes default ambient",
+    "ambient API changes actual sensor raw words and independently compensated guest output; invalid range rejected",
+    "swapped SDA/SCL really NACKs through GPIO matrix; correct route restores communication",
+    "wrong SHT40/BMP280 addresses do not ACK",
+    "SHT40 conversion busy NACK, CRC and read-once behavior verified by actual guest transaction timing",
+    "M5PM1 supply gate and sensor soft reset invalidate state, then restore fresh measurement",
+    "unplug NACKs both chips; ambient changes persist physically while disconnected and are measured after reconnection",
+    "paused ambient changes reject while paused disconnect is permitted",
+    "guest restart preserves open physical connection; host reset restores initial scene attachment and ambient",
+    "record/replay preserves ambient semantics and guest protocol output",
+    "one U006 parallel path carries the same two I2C signals; upstream detach/reconnect gates both chips"
+  ],
+  "samples": [
+    "ENV4_SAMPLE shtT=25.000 rh=50.001 bmpT=25.000 pressure=1013.250 crc=1 id=58 raw=6462f07edc90",
+    "ENV4_SAMPLE shtT=22.501 rh=61.201 bmpT=22.500 pressure=990.100 crc=1 id=58 raw=671fe07cea00",
+    "ENV4_SAMPLE shtT=22.501 rh=61.201 bmpT=22.500 pressure=990.100 crc=1 id=58 raw=671fe07cea00",
+    "ENV4_SAMPLE shtT=22.501 rh=61.201 bmpT=22.500 pressure=990.100 crc=1 id=58 raw=671fe07cea00",
+    "ENV4_SAMPLE shtT=22.501 rh=61.201 bmpT=22.500 pressure=990.100 crc=1 id=58 raw=671fe07cea00",
+    "ENV4_SAMPLE shtT=-10.000 rh=9.999 bmpT=-10.000 pressure=800.000 crc=1 id=58 raw=7c623063b2f0",
+    "ENV4_SAMPLE shtT=25.000 rh=50.001 bmpT=25.000 pressure=1013.250 crc=1 id=58 raw=6462f07edc90",
+    "ENV4_SAMPLE shtT=27.000 rh=30.000 bmpT=27.000 pressure=999.950 crc=1 id=58 raw=66b300806b90",
+    "ENV4_SAMPLE shtT=27.000 rh=30.000 bmpT=27.000 pressure=999.950 crc=1 id=58 raw=66b300806b90",
+    "ENV4_SAMPLE shtT=25.000 rh=50.001 bmpT=25.000 pressure=1013.250 crc=1 id=58 raw=6462f07edc90",
+    "ENV4_SAMPLE shtT=25.000 rh=50.001 bmpT=25.000 pressure=1013.250 crc=1 id=58 raw=6462f07edc90"
+  ],
+  "recording": {
+    "events": [
+      {
+        "at": 0.20894166666666666,
+        "type": "accessory-environment",
+        "accessoryId": "environment",
+        "temperatureC": 27,
+        "humidityPercent": 30,
+        "pressureHpa": 999.95
+      }
+    ],
+    "result": "completed",
+    "bitExact": false
+  },
+  "status": "pass",
+  "serialEvidence": [
+    "ENV4_ROUTE sda=10 scl=11",
+    "ENV4_ROUTE sda=10 scl=11",
+    "ENV4_POWER 0",
+    "ENV4_POWER 0",
+    "ENV4_PROBE sht=0 bmp=0 id=00",
+    "ENV4_PROBE sht=0 bmp=0 id=00",
+    "ENV4_POWER 1",
+    "ENV4_POWER 1",
+    "ENV4_BOOT_READY",
+    "ENV4_BOOT_READY",
+    "ENV4_SAMPLE shtT=25.000 rh=50.00ENV4_SAMPLE shtT=25.000 rh=50.001 bmpT=25.000 pressure=1013.250 crc=1 id=58 raw=6462f07edc90",
+    "ENV4_PROBE sht=1 bmp=1 id=58",
+    "ENV4_PROBE sht=1 bmp=1 id=58",
+    "ENV4_SAMPLE shtT=25.000 rh=50.001 bmpT=25.000 pressure=1013.250 crc=1 id=58 raw=6462f07edc90",
+    "ENV4_SAMPLE shtT=25.000 rh=50.001 bmpT=25.000 pressure=1013.250 crc=1 id=58 raw=6462f07edc90",
+    "ENV4_NACK sht=-1 bmp=-1",
+    "ENV4_NACK sht=-1 bmp=-1",
+    "ENV4_PROBE sht=1 bmp=1 id=58",
+    "ENV4_PROBE sht=1 bmp=1 id=58",
+    "ENV4_SAMPLE shtT=25.000 rh=50.001 bmpT=25.000 pressure=1013.250 crc=1 id=58 raw=6462f07edc90",
+    "ENV4_SAMPLE shtT=25.000 rh=50.001 bmpT=25.000 pressure=1013.250 crc=1 id=58 raw=6462f07edc90"
+  ],
+  "accessoryInputs": [
+    {
+      "accessoryId": "hub",
+      "model": "passive-hub-u006",
+      "port": "grove",
+      "hub": true,
+      "connected": true
+    },
+    {
+      "accessoryId": "environment",
+      "model": "sht40-bmp280-u001d",
+      "port": "grove",
+      "pins": [
+        10,
+        11
+      ],
+      "addresses": [
+        68,
+        118
+      ],
+      "control": "environment",
+      "viaAccessoryId": "hub",
+      "portId": "port-2",
+      "connected": true,
+      "effectiveConnected": true,
+      "temperatureC": 25,
+      "humidityPercent": 50,
+      "pressureHpa": 1013.25
+    }
+  ]
+}
