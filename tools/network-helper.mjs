@@ -20,7 +20,7 @@ const headerAllowed=name=>!['host','connection','content-length','transfer-encod
 function websocketFrame(opcode,bytes) {
   bytes=Buffer.from(bytes);const prefix=bytes.length<126?Buffer.from([0x80|opcode,bytes.length]):bytes.length<65536?Buffer.from([0x80|opcode,126,bytes.length>>>8,bytes.length&255]):Buffer.from([0x80|opcode,127,0,0,0,0,(bytes.length>>>24)&255,(bytes.length>>>16)&255,(bytes.length>>>8)&255,bytes.length&255]);return Buffer.concat([prefix,bytes]);
 }
-function attachWebSocket(socket,head,onMessage,onClose) {
+export function attachWebSocket(socket,head,onMessage,onClose) {
   let input=Buffer.alloc(0),closed=false;const send=(op,data)=>{if(closed)return;if(socket.writableLength>MAX_BUFFER){close(1013,'network client too slow');return;}socket.write(websocketFrame(op,data));};
   const close=(code=1000,reason='closed')=>{if(closed)return;closed=true;const body=Buffer.alloc(2);body.writeUInt16BE(code);socket.end(websocketFrame(8,Buffer.concat([body,Buffer.from(reason).subarray(0,120)])));setTimeout(()=>socket.destroy(),1000).unref();onClose();};
   const receive=chunk=>{if(closed)return;input=Buffer.concat([input,chunk]);if(input.length>MAX_BUFFER){close(1009,'receive buffer limit');return;}
@@ -36,9 +36,9 @@ function attachWebSocket(socket,head,onMessage,onClose) {
   };
   socket.on('data',receive);socket.on('error',()=>close(1011,'socket error'));socket.on('close',()=>{if(!closed){closed=true;onClose();}});if(head.length)queueMicrotask(()=>receive(head));return {send,close};
 }
-class Backend {
-  constructor(executable,iface,emit){this.iface=iface;this.emit=emit;this.pending=new Map();this.sequence=0;this.closed=false;this.status={ready:false,leaseReady:false};
-    this.process=spawn(executable,iface===1?['--client']:[],{stdio:['pipe','pipe','pipe']});
+export class Backend {
+  constructor(executable,iface,emit,{resolver}={}){this.iface=iface;this.emit=emit;this.pending=new Map();this.sequence=0;this.closed=false;this.status={ready:false,leaseReady:false};
+    this.process=spawn(executable,[...(iface===1?['--client']:[]),...(resolver?['--resolver',resolver]:[])],{stdio:['pipe','pipe','pipe']});
     createInterface({input:this.process.stdout}).on('line',line=>{if(line.startsWith('frame ')){const frame=Buffer.from(line.slice(6),'hex');if(frame.length>=14&&frame.length<=1518)this.emit(2,Buffer.concat([Buffer.from([iface]),frame]));}
       else if(line.startsWith('status ')){try{this.status=JSON.parse(line.slice(7));this.status.leaseReady=this.status.ready;this.emit(1,{type:'network-status',interface:iface,...this.status});}catch{this.close();}}
       else if(line.startsWith('reply ')){const [,id,result,value]=line.split(' '),request=this.pending.get(id);if(!request)return;this.pending.delete(id);clearTimeout(request.timer);result==='ok'?request.resolve(Number(value)):request.reject(fail('MAPPING_FAILED',value||'Mapping rejected'));}});

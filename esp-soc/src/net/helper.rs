@@ -148,7 +148,8 @@ impl Backend {
 /// Private stdio protocol. The Node server owns authentication, limits and WebSocket framing.
 /// Each backend process is one network interface; closing its stdin releases every mapping/flow.
 pub fn run() -> io::Result<()> {
-    let client = std::env::args().any(|arg|arg=="--client"); let mut backend = Backend::new(client);
+    let (client,resolver) = options(std::env::args().skip(1))?; let mut backend = Backend::new(client);
+    if let Some(resolver) = resolver { backend.net.nat.as_mut().unwrap().resolver = resolver; }
     let (tx,rx) = sync_channel(64);
     std::thread::spawn(move || {
         let stdin=io::stdin(); let mut reader=stdin.lock();
@@ -183,9 +184,28 @@ pub fn run() -> io::Result<()> {
     }
 }
 
+fn options(mut args: impl Iterator<Item=String>) -> io::Result<(bool, Option<[u8;4]>)> {
+    let mut client=false; let mut resolver=None;
+    while let Some(arg)=args.next() {
+        match arg.as_str() {
+            "--client"=>client=true,
+            "--resolver"=>resolver=Some(args.next().and_then(|v|v.parse::<Ipv4Addr>().ok()).ok_or_else(||io::Error::new(io::ErrorKind::InvalidInput,"--resolver requires an IPv4 address"))?.octets()),
+            _=>return Err(io::Error::new(io::ErrorKind::InvalidInput,"unknown network backend argument")),
+        }
+    }
+    Ok((client,resolver))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn explicit_resolver_does_not_use_host_dns() {
+        let parse=|args:&[&str]|options(args.iter().map(|s|s.to_string()));
+        assert_eq!(parse(&[]).unwrap(),(false,None));
+        assert_eq!(parse(&["--resolver","1.1.1.1","--client"]).unwrap(),(true,Some([1;4])));
+        assert!(parse(&["--resolver"]).is_err()); assert!(parse(&["--resolver","example.com"]).is_err()); assert!(parse(&["--unknown"]).is_err());
+    }
     fn dhcp_reply(kind:u8,address:[u8;4],xid:[u8;4])->Vec<u8>{
         let mut p=vec![0;240];p[..4].copy_from_slice(&[2,1,6,0]);p[4..8].copy_from_slice(&xid);p[16..20].copy_from_slice(&address);p[28..34].copy_from_slice(&CLIENT_MAC);p[236..240].copy_from_slice(&[99,130,83,99]);p.extend_from_slice(&[53,1,kind,54,4,192,168,4,1,255]);
         ethernet(&CLIENT_MAC,&[2,3,4,5,6,7],0x800,&ip_packet(17,&[192,168,4,1],&[255;4],&udp_packet(&[192,168,4,1],&[255;4],67,68,&p)))

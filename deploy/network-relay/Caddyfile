@@ -1,0 +1,26 @@
+{
+	# Runtime errors can contain the request URI; never retain one-use session tokens.
+	log {
+		format filter {
+			wrap json
+			fields {
+				request>uri query {
+					delete token
+				}
+				request>headers>X-Relay-Proxy-Token delete
+			}
+		}
+	}
+}
+
+{$RELAY_DOMAIN} {
+	header -Server
+	request_body {
+		max_size 1KB
+	}
+	# Caddy terminates TLS and supports WebSocket upgrades without a separate route.
+	reverse_proxy relay:8788 {
+		header_up X-Relay-Client-IP {remote_host}
+		header_up X-Relay-Proxy-Token {$RELAY_PROXY_TOKEN}
+	}
+}
