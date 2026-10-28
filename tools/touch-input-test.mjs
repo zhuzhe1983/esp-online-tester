@@ -14,6 +14,7 @@ function panel() {
   });
   const context = {
     window: {}, performance: {timeOrigin: 1000, now: () => clock},
+    getComputedStyle: () => ({}),
     setTimeout: (callback, delay) => { const id = ++nextTimer; timers.set(id, {callback, at: clock + delay}); return id; },
     clearTimeout: id => timers.delete(id),
   };
@@ -117,10 +118,36 @@ test('the touch handler sends panel coordinates for a rotated view', () => {
     getBoundingClientRect: () => ({left: 0, top: 0, width: 448, height: 368}),
     setPointerCapture() {},
   });
-  const context = { window: {}, performance: {timeOrigin: 0, now: () => clock}, setTimeout, clearTimeout };
+  const context = { window: {}, performance: {timeOrigin: 0, now: () => clock}, getComputedStyle: () => ({}), setTimeout, clearTimeout };
   vm.runInNewContext(source, context);
   context.window.installTouchInput(canvas, data => messages.push(JSON.parse(data)), { rotation: () => 90 });
   canvas.dispatchEvent(Object.assign(new Event('pointerdown'), {clientX: 0, clientY: 0, pointerId: 1}));
   canvas.dispatchEvent(Object.assign(new Event('pointerup'), {clientX: 447, clientY: 367, pointerId: 1}));
   assert.deepEqual(messages, [{t: 'touch', x: 0, y: 447, down: 1}, {t: 'touch', x: 367, y: 0, down: 0}]);
+});
+
+test('scaled workbench pixels exclude the bezel and padding before rotation', () => {
+  const messages = [];
+  const canvas = Object.assign(new EventTarget(), {
+    width: 480, height: 320,
+    getBoundingClientRect: () => ({left: 241, top: 150, width: 456, height: 320}),
+    setPointerCapture() {},
+  });
+  const context = {
+    window: {}, performance: {timeOrigin: 0, now: () => 0}, setTimeout, clearTimeout,
+    getComputedStyle: () => ({borderLeftWidth: '20px', borderRightWidth: '20px', borderTopWidth: '20px', borderBottomWidth: '20px', paddingLeft: '3px', paddingRight: '5px', paddingTop: '2px', paddingBottom: '6px'}),
+  };
+  vm.runInNewContext(source, context);
+  context.window.installTouchInput(canvas, data => messages.push(JSON.parse(data)), { rotation: () => 90 });
+  const event = (type, clientX, clientY) => canvas.dispatchEvent(Object.assign(new Event(type), {clientX, clientY, pointerId: 1}));
+  // Content is 408x272 at (264,172); the displayed preset arrow is pixel (444,23).
+  event('pointerdown', 264 + 444 * .85, 172 + 23 * .85);
+  event('pointerup', 264 + 444 * .85, 172 + 23 * .85);
+  // Captured movement through the bezel still clamps to the real panel edge.
+  event('pointerdown', 241, 150);
+  event('pointerup', 697, 470);
+  assert.deepEqual(messages, [
+    {t: 'touch', x: 23, y: 35, down: 1}, {t: 'touch', x: 23, y: 35, down: 0},
+    {t: 'touch', x: 0, y: 479, down: 1}, {t: 'touch', x: 319, y: 0, down: 0},
+  ]);
 });
