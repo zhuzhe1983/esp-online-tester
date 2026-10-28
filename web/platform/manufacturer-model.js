@@ -111,7 +111,7 @@ export function createManufacturerModel(product, screenTexture) {
     // Photo-aligned cover keys are separate from the display's native touch
     // range. Invisible hit meshes leave printed art/materials unchanged.
     for(const region of metadata.presentation?.buttons || []) {
-      if(!product.controls?.some(c=>c.id===region.id && c.type==='button'))throw Error('Unknown cover button');
+      if(!product.controls?.some(c=>c.id===region.id && ['button','matrix-key'].includes(c.type)))throw Error('Unknown cover button');
       const size=region.sizeMm,pos=region.positionMm;
       if(region.dragToOrbit!==undefined&&typeof region.dragToOrbit!=='boolean')throw Error('Invalid cover button drag behavior');
       if(!Array.isArray(size)||size.length!==2||!size.every(v=>Number.isFinite(v)&&v>0&&v<=5000)||!Array.isArray(pos)||pos.length!==3||!pos.every(Number.isFinite)||!['circle','capsule','rectangle'].includes(region.shape))throw Error('Invalid cover button region');

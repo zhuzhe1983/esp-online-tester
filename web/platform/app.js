@@ -458,7 +458,7 @@ function renderControls() {
   }
   if(controls.some(control=>control.type==='matrix-key')) {
     if(bindings){const details=element('details','matrix-key-bindings'),summary=element('summary','','键盘映射');matrixBindings=element('div','matrix-bindings-grid');details.append(summary,matrixBindings);bindings.append(details);}
-    if(buttons){const details=element('details','device-keyboard');details.id='device-keyboard';details.open=keyboardOpen;details.append(element('summary','','屏幕键盘'));matrixButtons=element('div','device-matrix');details.append(matrixButtons);buttons.closest('.transport').after(details);}
+    if(buttons){const details=element('details','device-keyboard');details.id='device-keyboard';details.open=keyboardOpen;details.append(element('summary','','屏幕键盘'));matrixButtons=element('div','device-matrix');matrixButtons.style.gridTemplateColumns=`repeat(${Math.max(...controls.filter(c=>c.type==='matrix-key').map(c=>c.column))+1},minmax(0,1fr))`;details.append(matrixButtons);buttons.closest('.transport').after(details);}
   }
   if (!controls.length && bindings) bindings.append(element('span', 'helper', '此设备没有可映射的按键。'));
   for (const control of controls) {
