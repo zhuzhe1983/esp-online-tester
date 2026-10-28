@@ -1,10 +1,10 @@
-import {searchProducts,searchAccessories,accessoryBrand,accessoryInterface,productOptionLabel} from './catalog-selection.js';
+import {searchProducts,searchAccessories,accessoryBrand,accessoryInterface,productOptionLabel,manufacturerLabel} from './catalog-selection.js';
 
 export function mountDeviceSearch({button, products, onSelect, onError}) {
-  return mountCatalogSearch({button,getItems:()=>products,onSelect,onError,kind:'device',label:'设备',search:searchProducts,title:productOptionLabel,describe:item=>[item.manufacturer,item.sku,item.chip?.toUpperCase()].filter(Boolean).join(' · ')});
+  return mountCatalogSearch({button,getItems:()=>products,onSelect,onError,kind:'device',label:'设备',search:searchProducts,title:productOptionLabel,describe:item=>[manufacturerLabel(item.manufacturer),item.sku,item.chip?.toUpperCase()].filter(Boolean).join(' · ')});
 }
 export function mountAccessorySearch({button, getItems, onSelect, onError}) {
-  return mountCatalogSearch({button,getItems,onSelect,onError,kind:'accessory',label:'配件',search:searchAccessories,describe:item=>[accessoryBrand(item),item.sku,accessoryInterface(item)].filter(Boolean).join(' · ')});
+  return mountCatalogSearch({button,getItems,onSelect,onError,kind:'accessory',label:'配件',search:searchAccessories,describe:item=>[manufacturerLabel(accessoryBrand(item)),item.sku,accessoryInterface(item)].filter(Boolean).join(' · ')});
 }
 function mountCatalogSearch({button, getItems, onSelect, onError, kind, label, search, describe, title:displayTitle = item=>item.name}) {
   if (!button) return;
