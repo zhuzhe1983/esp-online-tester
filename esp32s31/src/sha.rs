@@ -2,6 +2,8 @@
 //! soc/esp32s31/register/soc/{sha,hp_sys_clkrst}_reg.h and
 //! esp_hal_security/esp32s31/include/hal/sha_ll.h. Shared compression only; S31 gates,
 //! 16-bit DMA block count and algorithm limits are explicit. No DMA or SHA3/SM3.
+//! Crypto root encoding follows S31 sec_ll.h at IDF6.1
+//! 274d7ebeaf15cf397347877c34816ea9470d153f (absent at the older header revision).
 use emu_core::Fault;
 use esp_periph::sha::Sha;
 pub const BASE: u32 = 0x2050_9000;
@@ -12,8 +14,9 @@ impl Default for ShaEngine {
 }
 impl ShaEngine {
     pub fn clock_read(&self) -> u32 { self.clock }
+    pub fn clock_source(&self) -> u32 { (self.clock >> 20) & 3 }
     pub fn clock_write(&mut self, value: u32) -> Result<(), Fault> {
-        if value & 0x300000 != 0 { return Err(Fault::Prohibited); } // No alternate PLL root model yet.
+        if (value >> 20) & 3 == 3 { return Err(Fault::Prohibited); } // Reserved by the S31 LL.
         self.clock = value & 0xf3ffff;
         // The official LL explicitly clears parent/DS/HMAC/ECDSA resets because they
         // hold SHA in reset. Include the enclosing security-domain reset as well.

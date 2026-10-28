@@ -1021,3 +1021,49 @@ fn external_s31_explicit_fp_memory_reason_policy_and_guest_handler() {
         eprintln!("S31 FP memory policy compatibility={compatibility} steps={steps} actual-exceptions={exceptions}");
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_CRYPTO_CLOCK_ELF"]
+fn external_s31_crypto_roots_hash_guest_data_and_reject_absent_clocks() {
+    use emu_core::Bus;
+    let path = std::env::var("S31_CRYPTO_CLOCK_ELF").expect("build firmware/s31-uart-probe and set S31_CRYPTO_CLOCK_ELF");
+    let elf = std::fs::read(path).unwrap();
+    for mode in 0..6 {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+        m.bus.write32(0x2f070000, match mode { 0 => 0, 1 => 1, 3 => 3, _ => 2 }).unwrap();
+        if mode != 2 { m.bus.mspi.set_bbpll_input(Some(480_000_000)).unwrap(); }
+        if mode == 1 { m.bus.clocks.set_fosc_power(false); }
+        if mode == 4 { m.bus.write32(0x2058717c, 1).unwrap(); }
+        if mode == 5 { m.bus.mspi.set_bbpll_gate(false); }
+        let run = m.run(10000);
+        if mode == 0 {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 CRYPTO ROOTS REAL SHA PASS\n");
+            assert_eq!(m.bus.read32(0x2f060000), Ok(3)); assert_eq!(m.bus.sha.blocks(), 1);
+            assert_eq!(m.bus.crypto_clock_hz(), Some(240_000_000));
+        } else {
+            assert!(matches!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7))));
+            let fault = m.bus.first_fault.as_ref().unwrap();
+            assert_eq!(fault.address, if mode == 3 { 0x20587058 } else { 0x20509000 });
+            assert_eq!(fault.reason, emu_core::Fault::Prohibited); assert_eq!(m.bus.sha.blocks(), 0);
+            assert!(m.bus.uart0.tx_out.is_empty()); assert_eq!(m.bus.read32(0x2f060000), Ok(0));
+        }
+        eprintln!("S31 crypto root mode={mode} steps={} stop={:?}", run.steps, run.stop);
+    }
+}
+
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_CRYPTO_CLOCK_ELF"]
+fn external_s31_key_manager_guest_reset_policy_never_reports_key_operation_success() {
+    use emu_core::Bus;
+    let path = std::env::var("S31_CRYPTO_CLOCK_ELF").expect("build firmware/s31-uart-probe and set S31_CRYPTO_CLOCK_ELF");
+    let elf = std::fs::read(path).unwrap();
+    for mode in [6, 7] {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap(); m.bus.write32(0x2f070000, mode).unwrap();
+        let run = m.run(10000); assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7)));
+        let fault = m.bus.first_fault.as_ref().unwrap(); assert_eq!(fault.address, 0x20506024); assert_eq!(fault.reason, emu_core::Fault::Prohibited);
+        assert!(m.bus.uart0.tx_out.is_empty()); assert_eq!(m.bus.read32(0x2f060000), Ok(0));
+        for off in [8, 0xc, 0x28, 0x2c, 0x30] { assert_eq!(m.bus.read32(0x20506000 + off), Ok(0)); }
+        eprintln!("S31 key manager mode={mode} steps={} unsupported command rejected", run.steps);
+    }
+}

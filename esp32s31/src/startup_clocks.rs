@@ -7,7 +7,7 @@
 use emu_core::Fault;
 #[derive(Clone,Copy)]
 struct Word { address: u32, reset: u32, mask: u32, writable: u32 }
-const WORDS: [Word;21] = [
+const WORDS: [Word;20] = [
     Word { address:0x205870a8,reset:0x40,mask:0x7e,writable:0x42 }, // ETM APB/core; alternate source/reset absent
     Word { address:0x20587024,reset:3,mask:255,writable:3 }, // TRACE CPU/SYS; trace engine absent
     Word { address:0x20587078,reset:1,mask:7,writable:1 }, // AXI PDMA SYS
@@ -17,7 +17,6 @@ const WORDS: [Word;21] = [
     Word { address:0x2058706c,reset:0x800043,mask:0xffffff,writable:0x800043 }, // GPSPI2 clocks,not transfers
     Word { address:0x20587070,reset:0x800043,mask:0xffffff,writable:0x800043 }, // GPSPI3
     Word { address:0x205871d0,reset:1,mask:7,writable:1 }, // HP I2C master APB
-    Word { address:0x2058705c,reset:5,mask:7,writable:5 }, // key manager SYS/core
     Word { address:0x20589004,reset:0xc0000000,mask:0xc0000000,writable:0xc0000000 }, // PARLIO TX/RX pad
     Word { address:0x20589008,reset:0x80000000,mask:0x80000000,writable:0x80000000 }, // I2S0 MCLK
     Word { address:0x2058900c,reset:0x80000000,mask:0x80000000,writable:0x80000000 }, // I2S1 MCLK
@@ -37,10 +36,10 @@ const WORDS: [Word;21] = [
     // source/divisor; enabling LCDCAM or a fractional/other source still faults.
     Word { address:0x20587154,reset:0,mask:0x7ffffff,writable:0x7fb },
 ];
-pub struct StartupClocks { values:[u32;21] }
+pub struct StartupClocks { values:[u32;20] }
 impl Default for StartupClocks { fn default()->Self { Self { values:WORDS.map(|word|word.reset) } } }
 impl StartupClocks {
-    pub fn is_mmio(address:u32)->bool { matches!(address & !3, 0x205870a8 | 0x20587024 | 0x20587078 | 0x2058707c | 0x20587080 | 0x205871b0 | 0x2058706c | 0x20587070 | 0x205871d0 | 0x2058705c | 0x20589004 | 0x20589008 | 0x2058900c | 0x205043f8 | 0x20706bf8 | 0x20359030 | 0x207133f8 | 0x20710018 | 0x2071002c | 0x20710050 | 0x20587154) }
+    pub fn is_mmio(address:u32)->bool { matches!(address & !3, 0x205870a8 | 0x20587024 | 0x20587078 | 0x2058707c | 0x20587080 | 0x205871b0 | 0x2058706c | 0x20587070 | 0x205871d0 | 0x20589004 | 0x20589008 | 0x2058900c | 0x205043f8 | 0x20706bf8 | 0x20359030 | 0x207133f8 | 0x20710018 | 0x2071002c | 0x20710050 | 0x20587154) }
     pub fn read(&self,address:u32)->Result<u32,Fault> {
         let i=WORDS.iter().position(|w|w.address==address).ok_or(Fault::Unmapped)?; Ok(self.values[i])
     }

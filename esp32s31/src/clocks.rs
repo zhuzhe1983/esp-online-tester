@@ -9,9 +9,9 @@ pub const UART0_CTRL: u32 = BASE + 0x88;
 pub const UART0_MEM: u32 = 0x2058_628c;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Rates { pub cpu_hz: u64, pub mem_hz: u64, pub sys_hz: u64, pub apb_hz: u64 }
-pub struct Clocks { pub mpll: crate::mpll::Mpll, pending: [u32; 5], active: [u32; 5], uart0: u32, uart_pad_sleep: u8, aux_uart: [u32; 3], uart_mem: u32, modem: u32, psram: u32, lp_root: u32, fosc: bool, cpll_div: u32, cpll_powered: bool, cal_stop: bool, cal_done: bool, cal_left: Option<u8> }
+pub struct Clocks { pub mpll: crate::mpll::Mpll, pending: [u32; 5], active: [u32; 5], uart0: u32, ref_240m: u32, uart_pad_sleep: u8, aux_uart: [u32; 3], uart_mem: u32, modem: u32, psram: u32, lp_root: u32, fosc: bool, cpll_div: u32, cpll_powered: bool, cal_stop: bool, cal_done: bool, cal_left: Option<u8> }
 impl Default for Clocks {
-    fn default() -> Self { Self { mpll: crate::mpll::Mpll::default(), pending: [0, 0, 1, 2, 1], active: [0, 0, 1, 2, 1], uart0: 0x83, uart_pad_sleep: 15, aux_uart: [0x83; 3], uart_mem: 0, modem: 1, psram: 0x181, lp_root: 1 << 26, fosc: true, cpll_div: 0xf2, cpll_powered: false, cal_stop: false, cal_done: false, cal_left: None } }
+    fn default() -> Self { Self { mpll: crate::mpll::Mpll::default(), pending: [0, 0, 1, 2, 1], active: [0, 0, 1, 2, 1], uart0: 0x83, ref_240m: 0x101, uart_pad_sleep: 15, aux_uart: [0x83; 3], uart_mem: 0, modem: 1, psram: 0x181, lp_root: 1 << 26, fosc: true, cpll_div: 0xf2, cpll_powered: false, cal_stop: false, cal_done: false, cal_left: None } }
 }
 impl Clocks {
     // lp_clkrst_reg.h: reset source selectors and RO XTAL40MHz field. Selecting
@@ -34,7 +34,7 @@ impl Clocks {
         }
         Ok(())
     }
-    pub fn is_mmio(address: u32) -> bool { (BASE..BASE + 0x18).contains(&address) || matches!((address & !3).wrapping_sub(BASE), 0x40 | 0x68 | 0x8c | 0x90 | 0x94 | 0x174 | 0x2010 | 0x2014 | 0x2018 | 0x201c) }
+    pub fn is_mmio(address: u32) -> bool { (BASE..BASE + 0x18).contains(&address) || matches!((address & !3).wrapping_sub(BASE), 0x40 | 0x68 | 0x8c | 0x90 | 0x94 | 0x174 | 0x17c | 0x2010 | 0x2014 | 0x2018 | 0x201c) }
     pub fn uart_read(&self, address: u32) -> u32 { if address == UART0_CTRL { self.uart0 } else { self.uart_mem } }
     fn validate_uart(value: u32) -> Result<(), Fault> {
         if value & 0x70 != 0 { return Err(Fault::Prohibited); }
@@ -73,6 +73,10 @@ impl Clocks {
             2 if pll && self.cpll_powered && self.cal_done => self.cpll_hz()?, _ => return None,
         };
         Some(root / u64::from(((self.psram >> 9) & 255) + 1))
+    }
+    /// S31 REF_240M_CTRL0: independent gate and integer divider plus one.
+    pub fn ref_240m_hz(&self, bbpll: Option<u64>) -> Option<u64> {
+        if self.ref_240m & 0x100 == 0 { None } else { bbpll.map(|hz| hz / u64::from((self.ref_240m & 255) + 1)) }
     }
     pub fn modem_on(&self) -> bool { self.modem != 0 }
     pub fn uart_bus_on(&self) -> bool { self.uart0 & 0xb == 3 }
@@ -145,7 +149,7 @@ impl Clocks {
     pub fn rates(&self) -> Rates { self.rates_of(&self.active).unwrap_or(Rates { cpu_hz: 0, mem_hz: 0, sys_hz: 0, apb_hz: 0 }) }
     pub fn read(&self, off: u32) -> Result<u32, Fault> {
         if off & 3 != 0 { return Err(Fault::Misaligned); }
-        match off { 0..=0x10 => Ok(self.pending[off as usize / 4]), 0x14 => Ok(0), 0x2010 | 0x2014 | 0x2018 | 0x201c => Ok(u32::from((self.uart_pad_sleep >> ((off - 0x2010) / 4)) & 1) << 31), 0x8c | 0x90 | 0x94 => Ok(self.aux_uart[((off - 0x8c) / 4) as usize]), 0x40 => Ok(self.modem), 0x68 => Ok(self.psram), 0x174 => Ok(u32::from(self.cal_done) << 2 | u32::from(self.cal_stop) << 3 | self.mpll.control()), _ => Err(Fault::Unmapped) }
+        match off { 0..=0x10 => Ok(self.pending[off as usize / 4]), 0x14 => Ok(0), 0x2010 | 0x2014 | 0x2018 | 0x201c => Ok(u32::from((self.uart_pad_sleep >> ((off - 0x2010) / 4)) & 1) << 31), 0x8c | 0x90 | 0x94 => Ok(self.aux_uart[((off - 0x8c) / 4) as usize]), 0x17c => Ok(self.ref_240m), 0x40 => Ok(self.modem), 0x68 => Ok(self.psram), 0x174 => Ok(u32::from(self.cal_done) << 2 | u32::from(self.cal_stop) << 3 | self.mpll.control()), _ => Err(Fault::Unmapped) }
     }
     pub fn write(&mut self, off: u32, value: u32) -> Result<(), Fault> {
         if off & 3 != 0 { return Err(Fault::Misaligned); }
@@ -178,6 +182,7 @@ impl Clocks {
             0x2010 | 0x2014 | 0x2018 | 0x201c => {
                 let bit = 1 << ((off - 0x2010) / 4); self.uart_pad_sleep = (self.uart_pad_sleep & !bit) | if value >> 31 != 0 { bit } else { 0 };
             }
+            0x17c => self.ref_240m = value & 0x1ff,
             0x40 => self.modem = value & 1,
             0x68 => {
                 // Selectors use actual powered/calibrated roots; selecting a stopped

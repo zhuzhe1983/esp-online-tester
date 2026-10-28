@@ -11,6 +11,7 @@ pub mod usb_console;
 pub mod bus_monitor;
 pub mod mspi;
 pub mod sha;
+pub mod key_manager;
 pub mod analog;
 pub mod power;
 mod brownout;

@@ -6,7 +6,7 @@ application entry with explicitly declared development inputs. It currently stop
 after Flash initialization at a real FS-Off floating-point exception in strict
 mode. An explicit upstream-emulator compatibility option now lets the real
 guest handler return and retire that instruction; startup then stops at the
-unsupported crypto-domain clock control. No product framebuffer or complete
+next unsupported PMU initialization register after crypto-domain setup. No product framebuffer or complete
 board support has been established. The earlier separate Espressif emulator
 baseline below is retained for comparison, not presented as this core's result.
 
@@ -1789,3 +1789,68 @@ closes its own debugger/process even on failure. Reference downloads, source
 versions, exact observations, negative history and validation are in the
 [FP reason receipt](evidence/s31-bringup/fpu-reason.json) and
 [original image result](evidence/s31-bringup/fpu-plus-2.0.68-compatible.json).
+
+
+## Crypto roots and bounded key-manager initialization (2026-10-28)
+
+The S31-specific security LL added after the earlier public source baseline
+identifies root0 as XTAL, root1 as RC_FAST and root2 as PLL_F240M. This stage pins
+`sec_ll.h` and security drivers to ESP-IDF6.1 commit
+`274d7ebeaf15cf397347877c34816ea9470d153f`; the older fixed revision has no such
+file. Both revisions' register definitions and the failed old-path lookup are
+retained. The original image's private dirty SDK remains unknown. No P4 clock
+encoding is substituted for S31.
+
+The existing private SHA engine now accepts these documented selectors. Data
+access depends on the actual selected root: nominal40MHz XTAL, powered nominal
+RC_FAST, or the explicitly supplied BBPLL through the documented REF_240M gate
+and integer divider. The default divider gives240MHz from480MHz; changing or
+gating it affects availability/rate. Missing BBPLL input, a closed parent gate,
+closed reference gate or unpowered RC_FAST cannot create working SHA access.
+The reserved fourth selector is rejected without changing configuration.
+SHA still computes actual supported block digests synchronously; these rates
+are functional gate dependencies, not cycle-accurate crypto latency.
+
+Key-manager initialization now owns its separate clock/reset word and a bounded
+set of documented cold registers. Reset restores IDLE, no valid keys, no result
+and no interrupt event. Static eFuse-vs-deployed-key policy and key-length fields
+honor individual one-way lock bits; writing zero cannot unlock them. Peripheral
+reset restores the LL's register defaults. The actual HP_PERI0 permission word
+at offset6c gates accesses independently. Force-clock and interrupt enables are
+retained configuration. They never fabricate an operation or a completion.
+All START/CONTINUE operations are explicitly rejected, and key-material/data
+paths remain unmapped. Choosing an eFuse key is only configuration: no key bytes,
+cryptographic success, secure boot or Flash encryption support are claimed.
+
+The source guest `crypto-clock-probe.S` resets the key manager, checks its idle
+and invalid-key state, exercises a locked policy and restores reset defaults.
+It then runs real SHA-256 of the padded `abc` message through all three roots,
+checking all eight digest words. Missing clocks, a closed reference/parent gate,
+and a reserved selector are negative cases. Separate guest START/CONTINUE cases
+stop at the actual command write without a valid key or success result. No host
+register repair or replacement product firmware is involved.
+
+With the same original full Plus2.0.68 image and the explicitly recorded FPU
+compatibility/electrical inputs, startup now passes crypto clock selection and
+key-manager reset/policy setup. The next actual read is PMU address`20704158`,
+PC`40005454`, after72,392,412 instructions. This is still before a product
+framebuffer: **INK4 Plus remains unavailable**. Earlier stops at crypto clock,
+key-manager reset, and key-manager STATE are preserved in the stage evidence.
+
+The precise next register is `PMU_SLP_WAKEUP_CNTL2_REG` (`PMU + 0x158`),
+whose S31 header defines a 32-bit read/write `WAKEUP_ENA` field with reset zero.
+`pmu_ll_hp_get_wakeup_enable()` reads it and `pmu_ll_hp_set_wakeup_enable()`
+writes it. This stage does not implement that register or sleep transitions.
+Further work must distinguish stored wakeup policy from actual sleep requests,
+wakeup causes and interrupts; accepting configuration must not invent a wakeup.
+
+Validation passed 1,482 workspace Rust tests, 118 private S31 unit tests,
+44 source/ROM fixture tests, both Clippy commands with warnings denied and
+the remaining local CI groups. The three production hello workloads retained
+identical UART output, instruction counts and cycles in both five-pair CPU
+comparisons. Measured CPU differences are retained, including small increases;
+they are regression guards, not evidence of S31 speed or product readiness.
+See the [stage receipt](evidence/s31-bringup/crypto-clocks.json),
+[original full-image result](evidence/s31-bringup/crypto-plus-2.0.68-final.json),
+[main reference comparison](evidence/s31-bringup/crypto-perf.json) and
+[identical production-source comparison](evidence/s31-bringup/crypto-same-source-perf.json).

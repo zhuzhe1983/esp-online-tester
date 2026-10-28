@@ -64,6 +64,7 @@ pub struct S31Bus {
     pub mspi_pads: MspiPads,
     pub psram_controller: PsramController,
     pub sha: ShaEngine,
+    pub key_manager: crate::key_manager::KeyManager,
     pub analog: Analog,
     pub power: Power,
     pub permissions: Permissions,
@@ -83,12 +84,22 @@ fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
 }
 impl Default for S31Bus { fn default() -> Self { Self::new() } }
 impl S31Bus {
+    /// S31 sec_ll.h: XTAL, RC_FAST, BBPLL/2; the root must actually be supplied
+    /// and powered. SHA compression is functional/synchronous, not timed silicon.
+    pub fn crypto_clock_hz(&self) -> Option<u64> {
+        match self.sha.clock_source() {
+            0 => Some(40_000_000),
+            1 => { let hz = self.clocks.rc_fast_hz(); if hz != 0 { Some(hz) } else { None } }
+            2 => self.clocks.ref_240m_hz(self.mspi.bbpll_root_hz()),
+            _ => None,
+        }
+    }
     pub fn new() -> Self {
         // S31 v6.1 uart_reg.h: RX threshold/count 8 bits, RXFIFO_RST bit 22 at 0x20;
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16],
-            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), startup_clocks: StartupClocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), cores: CoreControl::default(), hart: 0, reservations: [None; 2], mwdt: std::array::from_fn(|_| Mwdt::default()), rtc_timer: RtcTimer::default(), systimer: crate::systimer::Systimer::default(), rtc_calibration: crate::rtc_calibration::Calibration::default(), pc: 0, first_fault: None }
+            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), startup_clocks: StartupClocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), key_manager: crate::key_manager::KeyManager::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), cores: CoreControl::default(), hart: 0, reservations: [None; 2], mwdt: std::array::from_fn(|_| Mwdt::default()), rtc_timer: RtcTimer::default(), systimer: crate::systimer::Systimer::default(), rtc_calibration: crate::rtc_calibration::Calibration::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -193,12 +204,21 @@ impl S31Bus {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(self.mspi.clock_read());
         }
+        if address & !3 == crate::key_manager::CLOCK {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(self.key_manager.clock_read());
+        }
+        if let Some(off) = offset(address, crate::key_manager::BASE, bytes, 0x1000) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.key_manager.read(off as u32) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
         if address & !3 == crate::sha::CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(self.sha.clock_read());
         }
         if let Some(off) = offset(address, crate::sha::BASE, bytes, 0x300) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            if self.crypto_clock_hz().is_none() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
             return match self.sha.read(off as u32) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if address & !3 == crate::cache::CLOCK_CTRL {
@@ -369,12 +389,21 @@ impl S31Bus {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             return match self.mspi.clock_write(value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
+        if address & !3 == crate::key_manager::CLOCK {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            self.key_manager.clock_write(value); return Ok(());
+        }
+        if let Some(off) = offset(address, crate::key_manager::BASE, bytes, 0x1000) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.key_manager.write(off as u32, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
         if address & !3 == crate::sha::CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             return match self.sha.clock_write(value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if let Some(off) = offset(address, crate::sha::BASE, bytes, 0x300) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if self.crypto_clock_hz().is_none() { return self.fault(address, bytes, true, false, Fault::Prohibited); }
             return match self.sha.write(off as u32, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if address & !3 == crate::cache::CLOCK_CTRL {
@@ -548,6 +577,47 @@ impl Bus for S31Bus {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn crypto_roots_preserve_real_sha_data_and_obey_source_gates() {
+        use emu_core::Bus;
+        let mut b = super::S31Bus::new(); let ctrl = crate::sha::CLOCK; let sha = crate::sha::BASE;
+        assert_eq!(b.read32(0x2058717c), Ok(0x101));
+        b.write32(ctrl, 0x200045).unwrap(); assert_eq!(b.crypto_clock_hz(), None);
+        assert_eq!(b.write32(sha + 0x10, 1), Err(emu_core::Fault::Prohibited)); assert_eq!(b.sha.blocks(), 0);
+        b.mspi.set_bbpll_input(Some(480_000_000)).unwrap(); assert_eq!(b.crypto_clock_hz(), Some(240_000_000));
+        for (source, hz) in [(0, 40_000_000), (1, 17_500_000), (2, 240_000_000)] {
+            b.write32(ctrl, source << 20 | 0x45 | 0x80).unwrap(); b.write32(ctrl, source << 20 | 0x45).unwrap();
+            assert_eq!(b.crypto_clock_hz(), Some(hz));
+            b.write32(sha + 0x80, 0x80636261).unwrap(); b.write32(sha + 0xbc, 0x18000000).unwrap();
+            b.write32(sha + 0x10, 1).unwrap(); assert_eq!(b.read32(sha + 0x40), Ok(0xbf1678ba)); assert_eq!(b.sha.blocks(), 1);
+        }
+        b.write32(0x2058717c, 7).unwrap(); assert_eq!(b.crypto_clock_hz(), None);
+        assert_eq!(b.read32(sha + 0x40), Err(emu_core::Fault::Prohibited));
+        b.write32(0x2058717c, 0x107).unwrap(); assert_eq!(b.crypto_clock_hz(), Some(60_000_000));
+        assert_eq!(b.read32(sha + 0x40), Ok(0xbf1678ba)); // Gating never invents a reset or a digest.
+        b.mspi.set_bbpll_gate(false); assert_eq!(b.crypto_clock_hz(), None);
+        assert_eq!(b.write32(sha + 0x10, 1), Err(emu_core::Fault::Prohibited)); assert_eq!(b.sha.blocks(), 1);
+        b.write32(ctrl, 0x100045).unwrap(); b.clocks.set_fosc_power(false);
+        assert_eq!(b.crypto_clock_hz(), None); assert_eq!(b.read32(sha), Err(emu_core::Fault::Prohibited));
+        let before = b.read32(ctrl).unwrap(); assert_eq!(b.write32(ctrl, 0x300045), Err(emu_core::Fault::Prohibited));
+        assert_eq!(b.read32(ctrl), Ok(before));
+        b.write32(0x2058705c, 7).unwrap(); assert_eq!(b.read32(0x2058705c), Ok(7));
+        b.write32(0x2058705c, 5).unwrap(); assert_eq!(b.read32(0x2058705c), Ok(5));
+        assert_eq!(b.write32(0x20506024, 1), Err(emu_core::Fault::Prohibited)); // No key-manager engine claimed.
+    }
+    #[test]
+    fn key_manager_permission_denial_cannot_change_the_locked_policy() {
+        use emu_core::Bus;
+        let mut b = super::S31Bus::new();
+        b.write32(0x20506018, 0x1e2).unwrap(); b.write32(0x2050601c, 2).unwrap();
+        b.permissions.write(crate::pms::HP0 + 0xff0, 1).unwrap();
+        b.permissions.write(crate::pms::HP0 + 0x6c, 1).unwrap(); // Read permitted, write denied.
+        assert_eq!(b.write32(0x20506018, 31), Err(emu_core::Fault::Prohibited));
+        assert_eq!(b.read32(0x20506018), Ok(0x1e2));
+        b.permissions.write(crate::pms::HP0 + 0x6c, 0x10).unwrap();
+        assert_eq!(b.read32(0x20506028), Err(emu_core::Fault::Prohibited));
+        assert_eq!(b.key_manager.read(0x18), Ok(0x1e2)); assert_eq!(b.key_manager.read(0x1c), Ok(2));
+    }
     use super::*;
     #[test]
     fn peripheral_denial_does_not_mutate_real_fifo_scratch_or_sha_control() {

@@ -408,3 +408,12 @@ source ELF/BIN stays in ignored output. This reference behavior conflicts with
 the public IDF S31 load/store reason-bug capability, so the private runner's
 `--upstream-fpu-memory-reason` remains explicit and off by default. See
 `docs/platform/s31-runtime.md` for evidence and limitations.
+
+
+`crypto-clock-probe.S` verifies actual SHA-256 of `abc` through S31 XTAL, RC_FAST
+and explicit BBPLL/ref240 roots. Set `S31_CRYPTO_CLOCK_ELF`. The same guest first
+checks real key-manager reset, lock and no-key state. Clock-negative modes leave
+SHA untouched; reserved selector fails at its write. Modes6/7 attempt actual
+key-manager START/CONTINUE and must stop without completion, success or valid
+keys. This bounded initialization model has no key-generation/deployment engine
+and does not claim secure boot or Flash encryption.

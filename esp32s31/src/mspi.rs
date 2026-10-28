@@ -59,6 +59,9 @@ impl Mspi {
         self.bbpll_input = hz; Ok(())
     }
     pub fn set_bbpll_gate(&mut self, on: bool) { self.bbpll_gate = on; }
+    /// The same explicitly supplied BBPLL root feeds documented peripheral taps.
+    /// No additional ready/lock state is inferred from a requested divider.
+    pub fn bbpll_root_hz(&self) -> Option<u64> { if self.bbpll_gate { self.bbpll_input } else { None } }
     fn core_hz_for(&self, clock: u32) -> Option<u64> {
         if clock & 0x105 != 0x101 { return None; }
         match (clock >> 5) & 3 {
