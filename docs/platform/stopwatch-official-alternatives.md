@@ -23,6 +23,11 @@ UIFlow 当前公开源码的 A/B 页面导航与触摸路径也已核对，但�
 
 ## 复现
 
+2026-10-28 更新：StopWatch 补齐 ES8311 的 I²C 控制寄存器子集后，同一小智
+v2.2.6 镜像在浏览器中输出 `Es8311AudioCodec initialized` 和
+`Open codec device OK`。上表保留修复前的历史结果；当前边界和回归证据见
+[ES8311 修复记录](stopwatch-es8311.md)。播放、麦克风、唤醒词和云端对话仍未验证。
+
 先按平台 README 构建 WASM、获取匹配 ROM，并启动静态服务器。在独立测试浏览器
 打开平台，运行同一公开 API；不要清除用户原有 Flash 或 TF 卡数据。
 

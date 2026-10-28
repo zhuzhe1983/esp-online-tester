@@ -63,6 +63,8 @@ On a fresh visit or device change, the workbench selects the first matching firm
 
 To change only presentation, preserve `observe().scene.view` and call `updateSceneMetadata({view:{...view,appearance:{shell:{color:'#8456cf',opacity:0.36,finish:'plastic'}}}})`. This preserves running firmware and is portable through sharing/embedding. Color is six-digit hex, opacity is 0–1; read `SHELL_FINISHES` from `appearance.js` for the eight supported finish IDs. Omit `appearance` to restore the product's original shell. `UNKNOWN` PCB is a replaceable blank placeholder, not verified internal CAD. Exploded animation remains planned, not an implemented API.
 
+StopWatch exposes the ES8311 control-register initialization subset at `0x18` on SDA47/SCL48, shared by GPIO I²C and both controllers. Official Xiaozhi v2.2.6 now initializes the codec and opens the audio device in WASM; this does not verify PCM playback, microphone capture, codec reset/read-only behavior or audio power gating. See `docs/platform/stopwatch-es8311.md`. A custom firmware's address-probe failure is distinct from unsupported audio processing; verify its actual register accesses before claiming compatibility.
+
 ## Record and share interactions
 
 Load a remote firmware source first. `await api.recordingStart()` resets and boots it, then captures only successfully acknowledged button, matrix-key, encoder and touch inputs. A keyboard press records its mapped device button or matrix coordinate; screen taps and left/right drags record normalized down/move/up coordinates. Camera selection/frames, serial/GPS injection, flashing and scripts are excluded. The limits are 120 guest seconds, 500 events and 32 KiB per recording. Local firmware files cannot supply a portable recording source.

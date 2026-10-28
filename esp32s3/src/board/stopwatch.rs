@@ -217,6 +217,11 @@ impl BoardModel for StopWatch {
             // RX8130 register RAM for board probing/settings, as on PaperMono.
             // Calendar progression, alarms and battery-domain retention are not modeled.
             (0, 0x32, Box::new(Reg8Device::new("rx8130-register-ram", &[]))),
+            // M5Stack StopWatch pin map: ES8311 on SDA47/SCL48 at 0x18.
+            // ES8311 rev10.0 Jan2021 p29 (https://files.waveshare.com/wiki/common/ES8311.DS.pdf):
+            // FD/FE identify 83/11. As on Cardputer-Adv, this is control-register RAM
+            // only: no codec reset/RO semantics, audio rail, PCM or microphone model.
+            (0, 0x18, Box::new(Reg8Device::new("es8311-initialization-subset", &[(0xfd, 0x83), (0xfe, 0x11)]))),
         ];
         for (_,address,device) in devices {self.i2c.attach(address,device);}
         // StopWatch schematic: internal SDA47/SCL48. M5GFX probes with GPIO,
@@ -338,8 +343,11 @@ mod unit_button_tests {
         fn stop(b:&mut StopWatch) {drive(b,false,false);drive(b,true,false);assert!(drive(b,true,true));}
         fn send(b:&mut StopWatch,value:u8)->bool {for bit in (0..8).rev() {drive(b,false,value&(1<<bit)!=0);drive(b,true,value&(1<<bit)!=0);}drive(b,false,true);let ack=!drive(b,true,true);drive(b,false,true);ack}
         let mut b=StopWatch::new();let mut devices=b.i2c_devices();
-        for address in [0x6e,0x4f,0x68,0x15,0x32] {start(&mut b);assert!(send(&mut b,address<<1));stop(&mut b);}
+        for address in [0x6e,0x4f,0x68,0x15,0x32,0x18] {start(&mut b);assert!(send(&mut b,address<<1));stop(&mut b);}
         start(&mut b);assert!(!send(&mut b,0x50<<1));stop(&mut b); // StopWatch has no PaperMono NFC.
+        start(&mut b);assert!(!send(&mut b,0x19<<1));stop(&mut b); // ES8311 CE is low, not an address wildcard.
+        start(&mut b);assert!(send(&mut b,0x18<<1));assert!(send(&mut b,0x32));assert!(send(&mut b,0xbf));stop(&mut b);
+        for bus in 0..2 {let d=devices.iter_mut().find(|(port,a,_)|*port==bus&&*a==0x18).unwrap().2.as_mut();assert_eq!(d.pins(),Some((47,48)));assert!(d.start(false));assert!(d.write(0x32));assert!(d.start(true));assert_eq!(d.read(),0xbf);d.stop();}
         start(&mut b);assert!(send(&mut b,0x6e<<1));assert!(send(&mut b,6));assert!(send(&mut b,0x1f));stop(&mut b);
         for bus in 0..2 {let d=devices.iter_mut().find(|(port,a,_)|*port==bus&&*a==0x6e).unwrap().2.as_mut();assert_eq!(d.pins(),Some((47,48)));assert!(d.start(false));assert!(d.write(6));assert!(d.start(true));assert_eq!(d.read(),0x1f);d.stop();}
         assert!(b.wiring.pmic.lock().unwrap().grove_5v_enabled);

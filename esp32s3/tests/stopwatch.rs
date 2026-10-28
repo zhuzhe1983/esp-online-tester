@@ -72,7 +72,7 @@ fn factory_devices_and_active_low_button_inputs() {
         assert_eq!(board.name(), "stopwatch");
         let mut devices = board.i2c_devices();
         let internal:Vec<_>=devices.iter().filter(|(_,_,d)|d.pins()==Some((47,48))).map(|(bus,addr,_)|(*bus,*addr)).collect();
-        assert_eq!(internal,[(0,0x6e),(0,0x4f),(0,0x15),(0,0x68),(0,0x32),(1,0x6e),(1,0x4f),(1,0x15),(1,0x68),(1,0x32)]);
+        assert_eq!(internal,[(0,0x6e),(0,0x4f),(0,0x15),(0,0x68),(0,0x32),(0,0x18),(1,0x6e),(1,0x4f),(1,0x15),(1,0x68),(1,0x32),(1,0x18)]);
         let external:Vec<_>=devices.iter().filter(|(_,_,d)|d.pins()==Some((10,11))).map(|(bus,addr,_)|(*bus,*addr)).collect();
         assert_eq!(external,[(0,0x44),(0,0x76),(0,0x23),(1,0x44),(1,0x76),(1,0x23)]);
         for (_,_,dev) in devices.iter_mut().filter(|(_,_,d)|d.pins()==Some((10,11))) {assert!(!dev.start(false));}
@@ -82,6 +82,32 @@ fn factory_devices_and_active_low_button_inputs() {
         assert_eq!(board.input_levels(), [(38, false), (2, true), (1, true), (47,true), (48,true)]);
         assert_eq!(board.display().map(|(w, h, _, _)| (w, h)), Some((468, 466)));
     }
+}
+
+#[test]
+fn es8311_probe_identity_and_configuration_survive_controller_handoff() {
+    let mut board = StopWatch::new();
+    let mut devices = board.i2c_devices();
+    // ES8311 rev10.0 January 2021, p29: FD/FE/FF identify 83/11/00.
+    // This exercises only the control-register subset, not PCM or microphone data.
+    assert_eq!(read(&mut devices, 0x18, 0xfd, 3), [0x83, 0x11, 0]);
+    write(&mut devices, 0x18, 0x32, 0xbf);
+    let dev = devices.iter_mut().find(|(bus, addr, _)| *bus == 1 && *addr == 0x18).unwrap().2.as_mut();
+    assert_eq!(dev.pins(), Some((47, 48)));
+    assert!(!dev.start_address(0x18, 0x19, false));
+    assert!(dev.start(false));
+    assert!(dev.write(0x32));
+    assert!(dev.start(true));
+    assert_eq!(dev.read(), 0xbf);
+    dev.stop();
+    assert!(dev.start(false));
+    assert!(dev.write(0x14));
+    assert!(dev.write(0x1a));
+    dev.stop();
+    assert_eq!(read(&mut devices, 0x18, 0x14, 1), [0x1a]);
+    let mut reset = board.i2c_devices();
+    assert_eq!(read(&mut reset, 0x18, 0xfd, 3), [0x83, 0x11, 0]);
+    assert_eq!(read(&mut reset, 0x18, 0x32, 1), [0]);
 }
 
 #[test]
