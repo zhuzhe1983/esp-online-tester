@@ -93,7 +93,7 @@ The storage namespace is product ID + board + SHA-256 of the original full Flash
 
 ```js
 const api = window.espTester;
-// After configuring PaperMono/Lite and loading its firmware:
+// After configuring PaperMono/Lite or PaperS3 and loading its firmware:
 const sd = (await api.observe()).sdCard;
 await api.flushSdCard();
 const backup = await api.exportSdCard(); // Preserve locally; never add private bytes to a URL.

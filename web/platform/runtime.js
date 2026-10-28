@@ -1,4 +1,4 @@
-import {isPaperMonoBoard,persistentBoard,firmwareBoardMatches} from './board-compatibility.js';
+import {hasSdCard,persistentBoard,firmwareBoardMatches} from './board-compatibility.js';
 import {routedAccessories,accessoryPoweredPath} from './accessory-routing.js';
 import {MAX_FIRMWARE_FILE_BYTES as MAX_FILE, MAX_FIRMWARE_BUNDLE_BYTES as MAX_TOTAL} from './firmware-limits.js';
 import {createFat32Image,validateSdImage,MAX_SD_BYTES} from './sd-card-image.js';
@@ -358,11 +358,11 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       const bytes=new Uint8Array(data);if(bytes.some((b,i)=>b!==session.baseline[offset+i]))session.pages.set(offset,data);else session.pages.delete(offset);}
     session.version++;sdCard.changedPages=session.pages.size;sdCard.pristine=session.isDefault&&!session.pages.size;void persistSd(session);
   };
-  const flushSd=async()=>{requireValue(sdSession&&!sdSession.closed,'SD_NOT_LOADED','Load a PaperMono firmware before using its SD card.');if(worker)await sdAsk('sd-flush');await persistSd(sdSession);return clone(sdCard);};
+  const flushSd=async()=>{requireValue(sdSession&&!sdSession.closed,'SD_NOT_LOADED','Load a firmware for a device with SD support before using its SD card.');if(worker)await sdAsk('sd-flush');await persistSd(sdSession);return clone(sdCard);};
   const initializeSd=async bundle=>{
     alive();
     if(sdSession)sdSession.closed=true;sdSession=null;sdCard=emptySd();leds=[];
-    if(!isPaperMonoBoard(bundle.cfg.board)){sdEvent();return;}
+    if(!hasSdCard(bundle.cfg.board)){sdEvent();return;}
     requireValue(storage.scope,'SD_STORAGE_SCOPE','SD requires a loaded firmware identity.');
     const key=`v1:${product.id}:${persistentBoard(product.id,bundle.cfg.board)}:${storage.scope.firmwareSha256}`;
     // Subscribe to this identity before reading or hashing its base image. A clear
@@ -382,7 +382,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   };
   const unsubscribeSd=sdStorage.subscribe(change=>{const session=sdSession;if(!session||session.closed||change.key!==session.key||change.epoch<session.epoch||change.epoch===session.epoch&&change.revision<=session.revision)return;sdFailure(error('STORAGE_CONFLICT','Another tab replaced or saved this SD card. Reload the firmware.'));});
   const replaceSd=async bytes=>{
-    requireValue(loaded&&sdSession&&!sdSession.closed,'SD_NOT_LOADED','Load a PaperMono firmware before replacing its SD card.');
+    requireValue(loaded&&sdSession&&!sdSession.closed,'SD_NOT_LOADED','Load a firmware for a device with SD support before replacing its SD card.');
     const session=sdSession,bundle=loaded,signal=aborter.signal;
     const active=()=>{alive();requireValue(!signal.aborted,'FETCH_ABORTED','SD replacement was cancelled.');requireValue(session===sdSession&&!session.closed,'STORAGE_CONFLICT','The SD card changed while it was being replaced. Reload the firmware.');};
     if(worker&&status==='running'){await ask('stopped',{op:'stop'});active();setStatus('paused');}
@@ -668,7 +668,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     async capabilities() {
       return { version: API_VERSION, backend: 'esp32sim-wasm', static: true, executable: !!product?.runtime?.board,
         execution: {mode: product?.runtime?.board === 'stopwatch' ? 'wasm-interpreter' : 'wasm-jit', reason: product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null},
-        sdCard:{available:isPaperMonoBoard(product?.runtime?.board),defaultBytes:64*MIB,maxBytes:MAX_SD_BYTES,formats:['fat32','raw-image'],scope:'product-board-canonical-flash-sha256',autoSaveIntervalMs:1500,crashSafe:false},
+        sdCard:{available:hasSdCard(product?.runtime?.board),defaultBytes:64*MIB,maxBytes:MAX_SD_BYTES,formats:['fat32','raw-image'],scope:'product-board-canonical-flash-sha256',autoSaveIntervalMs:1500,crashSafe:false},
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
         firmware: { manifest: true, mergedImage: true, localFile: true, localSegments: true, localBuild: true, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true },
@@ -686,7 +686,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       if (worker && status==='running') await ask('stopped',{op:'stop'});
       await preserveStorage(); alive(); aborter?.abort(); stopWorker(); detachStorage(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
       if(sdSession)sdSession.closed=true;sdSession=null;sdCard=emptySd();leds=[];
-      scene = clone(nextScene); product = catalog.products.find(item => item.id === scene.productId);sdCard.supported=isPaperMonoBoard(product.runtime?.board);sdEvent();emit({type:'leds',leds:[]});
+      scene = clone(nextScene); product = catalog.products.find(item => item.id === scene.productId);sdCard.supported=hasSdCard(product.runtime?.board);sdEvent();emit({type:'leds',leds:[]});
       resetAccessoryInputs(); imu = defaultImu(); imuPreviousAt = null;
       setStatus('configured'); return { ...snapshot(), warnings: validation.warnings };
     }); },
@@ -700,7 +700,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     loadFirmware(source) { const loadId = ++progressGeneration; return exclusive(async () => {
       requireValue(scene, 'NOT_CONFIGURED', 'Configure a product before loading firmware.');
       if (worker && status==='running') await ask('stopped',{op:'stop'});
-      await preserveStorage(); alive(); stopWorker(); detachStorage();if(sdSession)sdSession.closed=true;sdSession=null;sdCard={...emptySd(),supported:isPaperMonoBoard(product?.runtime?.board)};leds=[]; loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
+      await preserveStorage(); alive(); stopWorker(); detachStorage();if(sdSession)sdSession.closed=true;sdSession=null;sdCard={...emptySd(),supported:hasSdCard(product?.runtime?.board)};leds=[]; loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
       loadCancelled = false; aborter = new AbortController(); setStatus('loading');
       const progress = loadReporter(loadId, aborter.signal);
       try {

@@ -49,7 +49,7 @@ function structuralRuntime(sdStorage,deviceStorage){
  const counts={created:0,terminated:0,attached:0};
  const workerFactory=()=>{counts.created++;const worker={terminate(){counts.terminated++;},postMessage(m){let response;
   if(m.op==='init')response={ready:true};if(m.op==='create')response={created:true,flashStorage:true};
-  if(m.op==='load')response={loaded:m.at===undefined?m.kind:`at${m.at}`,ok:true};
+  if(m.op==='imu')response={imuApplied:m.inputId,ok:true,time:0};if(m.op==='load')response={loaded:m.at===undefined?m.kind:`at${m.at}`,ok:true};
   if(m.op==='flash-snapshot')response={flashReply:m.requestId,data:new ArrayBuffer(16*1024*1024)};
   if(m.op==='flash-watch'||m.op==='flash-flush'||m.op==='flash-restore')response={flashReply:m.requestId,ok:true};
   if(m.op.startsWith('sd-'))response={sdReply:m.requestId,ok:true};if(m.op==='sd-attach')counts.attached++;
@@ -104,4 +104,19 @@ for(const window of ['read','checksum'])test(`another tab clearing SD during ${w
   const state=await runtime.observe();assert.equal(state.status,'error');assert.equal(state.sdCard.status,'conflict');assert.equal(counts.attached,0);
   assert.equal((await other.read(key)).row.media,null);
  }finally{release.resolve();crypto.subtle.digest=originalDigest;await runtime.dispose();other.close();}
+});
+test('PaperS3 SPI TF shares controls but isolates media from PaperMono and preserves Flash on explicit clear',async()=>{
+ const options={indexedDB:null,BroadcastChannel:null,dbName:'papers3-tf-'+Date.now()},sd=createSdCardStorage(options),flash=createDeviceStorage(options);
+ const {runtime,counts,load}=structuralRuntime(sd,flash);
+ try {
+  await runtime.configure(createDefaultScene(catalog,'m5stack-c139'));assert.equal((await runtime.capabilities()).sdCard.available,true);await load();
+  const state=await runtime.observe();assert.equal(state.sdCard.supported,true);assert.equal(counts.attached,1);
+  const hash=state.storage.scope.firmwareSha256,key=`v1:m5stack-c139:papers3:${hash}`;
+  const image=new Uint8Array(1024*1024);image[123]=42;await runtime.attachSdCard({bytes:image});assert.equal((await sd.read(key)).image.byteLength,image.length);
+  await runtime.configure(createDefaultScene(catalog,productId));await load();assert.equal((await runtime.observe()).sdCard.restored,false);
+  await runtime.configure(createDefaultScene(catalog,'m5stack-c139'));await load();assert.equal((await runtime.observe()).sdCard.restored,true);
+  const before=(await flash.read(state.storage.scope)).row;await runtime.clearSdCard();assert.deepEqual((await flash.read(state.storage.scope)).row,before);assert.equal((await sd.read(key)).image,null);assert.equal((await runtime.observe()).status,'ready');
+  assert.equal((await sd.read(`v1:m5stack-c139:papers3:${'b'.repeat(64)}`)).image,null);
+  await runtime.configure(createDefaultScene(catalog,'m5stack-stopwatch'));assert.equal((await runtime.capabilities()).sdCard.available,false);
+ } finally {await runtime.dispose();}
 });

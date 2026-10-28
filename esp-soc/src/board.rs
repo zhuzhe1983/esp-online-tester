@@ -181,6 +181,8 @@ pub trait BoardModel {
     /// Appended to preserve hot vtable offsets. No callback on a failed DMA gather.
     fn lcd_i80(&mut self, _pins: LcdI80Pins, _data_phase: bool, _words: &[u16]) {}
 
+    /// Cold SPI card attachment; native SDMMC boards retain their existing host path.
+    fn attach_spi_sd_card(&mut self, _image: Box<dyn esp_periph::sdmmc::SdStore>, _config: esp_periph::sdmmc::SdCardConfig) -> Result<String,String> {Err("this board has no modeled SPI SD socket".into())}
 }
 
 pub type Board = Box<dyn BoardModel>;
