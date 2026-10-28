@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {guestPageUrl,checkGuestPagePolicy,rewriteGuestScript,wrapGuestDocumentTags} from '../web/platform/guest-page.js';
+import {guestPageUrl,checkGuestPagePolicy,rewriteGuestScript,wrapGuestDocumentTags,createGuestStorage} from '../web/platform/guest-page.js';
 
 test('guest page requests remain on the selected firmware origin',()=>{
   const base='http://192.168.4.1:8080/config/';
@@ -54,4 +54,30 @@ test('legacy no-referrer CSP is retained while mixed or additional restrictions 
   assert.throws(()=>checkGuestPagePolicy({'X-Frame-Options':'DENY'},legacy),{code:'GUEST_FRAME_POLICY'});
   assert.equal(checkGuestPagePolicy({},`<meta content="referrer no-referrer" data-description="a > b" http-equiv="Content-Security-Policy">`),'');
   assert.equal(checkGuestPagePolicy({},`<!-- <meta http-equiv="Content-Security-Policy" content="script-src none"> --><script>const text='<meta http-equiv="Content-Security-Policy" content="script-src none">';</script>`),'');
+});
+
+
+test('guest storage implements Web Storage operations without host storage and supports snapshots',()=>{
+  const changes=[],first=createGuestStorage({onChange:entries=>changes.push(entries)}),{storage}=first;
+  assert.equal(storage.length,0);assert.equal(storage.getItem('language'),null);assert.equal(storage.key(0),null);
+  storage.setItem('language','zh-CN');storage.setItem('count',2);storage.setItem('__proto__','guest-only');
+  assert.equal(storage.getItem('language'),'zh-CN');assert.equal(storage.getItem('count'),'2');assert.equal(storage.length,3);
+  assert.equal(storage.key(0),'language');assert.equal(storage.key(3),null);assert.equal(storage.key(-1),null);
+  storage.setItem('language','en-US');assert.equal(storage.length,3);assert.equal(storage.key(0),'language');
+  const second=createGuestStorage({entries:first.snapshot()});assert.equal(second.storage.getItem('language'),'en-US');
+  second.storage.removeItem('language');assert.equal(second.storage.getItem('language'),null);assert.equal(storage.getItem('language'),'en-US');
+  storage.removeItem('count');assert.equal(storage.length,2);assert.equal(changes.length,5);
+  storage.clear();assert.equal(storage.length,0);assert.deepEqual(first.snapshot(),[]);assert.equal(changes.length,6);
+  assert.equal(second.storage.getItem('__proto__'),'guest-only');
+  assert.throws(()=>storage.getItem(),TypeError);assert.throws(()=>storage.setItem('missing-value'),TypeError);
+});
+test('guest storage is bounded and quota failures leave existing values intact',()=>{
+  const {storage}=createGuestStorage();storage.setItem('key','retained');
+  assert.throws(()=>storage.setItem('key','x'.repeat(32768)),{name:'QuotaExceededError'});
+  assert.equal(storage.getItem('key'),'retained');assert.equal(storage.length,1);
+  for(let i=1;i<128;i++)storage.setItem(String(i),'');
+  assert.throws(()=>storage.setItem('one-too-many',''),{name:'QuotaExceededError'});assert.equal(storage.length,128);
+  storage.removeItem('1');storage.setItem('one-too-many','');assert.equal(storage.length,128);
+  assert.throws(()=>createGuestStorage({entries:[['bad',{}]]}),TypeError);
+  assert.throws(()=>createGuestStorage({entries:[['oversize','x'.repeat(32768)]]}),{name:'QuotaExceededError'});
 });

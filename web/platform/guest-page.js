@@ -82,11 +82,39 @@ export function wrapGuestDocumentTags(source) {
   return result;
 }
 
+// Storage is intentionally in memory: it never calls the workbench's native Web Storage.
+// Keep this factory self-contained because it is serialized into the opaque iframe.
+export function createGuestStorage({entries=[],onChange=()=>{}}={}) {
+  const values=new Map(),maxKeys=128,maxBytes=65536;let bytes=0;
+  const snapshot=()=>[...values];
+  const set=(key,value,notify)=>{
+    key=String(key);value=String(value);
+    const previous=values.get(key),nextBytes=bytes+(key.length+value.length)*2-(previous===undefined?0:(key.length+previous.length)*2);
+    if(nextBytes>maxBytes||!values.has(key)&&values.size>=maxKeys)throw new DOMException('Guest storage is limited to 128 keys and 64 KiB.','QuotaExceededError');
+    values.set(key,value);bytes=nextBytes;if(notify)onChange(snapshot());
+  };
+  if(!Array.isArray(entries)||entries.length>maxKeys)throw new TypeError('Invalid guest storage snapshot.');
+  for(const entry of entries){if(!Array.isArray(entry)||entry.length!==2||entry.some(value=>typeof value!=='string'))throw new TypeError('Invalid guest storage entry.');set(entry[0],entry[1],false);}
+  const storage={
+    get length(){return values.size;},
+    key(index){return [...values.keys()][Number(index)>>>0]??null;},
+    getItem(key){if(arguments.length<1)throw new TypeError('getItem requires a key.');return values.get(String(key))??null;},
+    setItem(key,value){if(arguments.length<2)throw new TypeError('setItem requires a key and value.');set(key,value,true);},
+    removeItem(key){if(arguments.length<1)throw new TypeError('removeItem requires a key.');key=String(key);if(!values.has(key))return;bytes-=(key.length+values.get(key).length)*2;values.delete(key);onChange(snapshot());},
+    clear(){if(!values.size)return;values.clear();bytes=0;onChange(snapshot());},
+  };
+  return {storage,snapshot};
+}
+
 // This function is serialized into the sandbox and has no access to workbench state.
-function guestBootstrap(config) {
+function guestBootstrap(config,createStorage) {
   const pending=new Map();let sequence=0,current=config.url;
   const target=value=>{const url=new URL(value,current);if(url.origin!==new URL(config.url).origin||url.username||url.password)throw new TypeError('Only this firmware HTTP service is available here.');return url;};
   const message=(type,value={})=>parent.postMessage({guestPage:config.token,type,...value},'*');
+  for(const area of ['localStorage','sessionStorage']){
+    const {storage}=createStorage({entries:config.storage[area],onChange:entries=>message('storage',{area,entries})});
+    Object.defineProperty(window,area,{value:storage,writable:false,configurable:false});
+  }
   const invoke=(operation,value,signal)=>new Promise((resolve,reject)=>{
     if(signal?.aborted){reject(new DOMException('Aborted','AbortError'));return;}
     const id=++sequence,timer=setTimeout(()=>{pending.delete(id);message('abort',{id});reject(new Error('Firmware request timed out.'));},95000);
@@ -159,7 +187,7 @@ function guestBootstrap(config) {
 export function mountGuestPage({iframe,requestHttp,guestAddress,onError=()=>{},onNavigate=()=>{}}={}) {
   if(!iframe||typeof requestHttp!=='function')throw new TypeError('Guest page requires an iframe and HTTP transport.');
   const doc=iframe.ownerDocument,win=doc.defaultView;
-  let disposed=false,generation=0,session=null;
+  let disposed=false,generation=0,session=null,storageOrigin='',storageState={localStorage:[],sessionStorage:[]};
   iframe.setAttribute('sandbox','allow-scripts allow-forms');iframe.setAttribute('referrerpolicy','no-referrer');
   const stop=()=>{generation++;for(const request of session?.active||[])request.abort();session=null;};
   const address=()=>{const value=typeof guestAddress==='function'?guestAddress():guestAddress;if(typeof value!=='string'||!/^\d{1,3}(?:\.\d{1,3}){3}$/.test(value)||value.split('.').some(x=>Number(x)>255))throw fail('GUEST_ADDRESS','Wait for the firmware SoftAP address.');return value;};
@@ -225,7 +253,8 @@ export function mountGuestPage({iframe,requestHttp,guestAddress,onError=()=>{},o
     if(session!==target||disposed)throw fail('GUEST_PAGE_CLOSED','Firmware page closed.');
     const csp="default-src 'none'; script-src 'unsafe-inline' data:; style-src 'unsafe-inline' data:; img-src data:; font-src data:; media-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'";
     const escape=value=>value.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
-    const bootstrap=`(${guestBootstrap.toString()})(${JSON.stringify({token:target.token,url:pageUrl})});`;
+    const config=JSON.stringify({token:target.token,url:pageUrl,storage:storageState}).replaceAll('<','\\u003c');
+    const bootstrap=`(${guestBootstrap.toString()})(${config},(${createGuestStorage.toString()}));`;
     const wrappers=Object.fromEntries(['html','head','body'].map(name=>[name,root.querySelector('esp-guest-'+name)]));
     const attrs=name=>[...(wrappers[name]?.attributes||[])].map(attr=>` ${attr.name}="${escape(attr.value)}"`).join('');
     const htmlAttrs=attrs('html'),headAttrs=attrs('head'),bodyAttrs=attrs('body'),headHtml=wrappers.head?.innerHTML||'';
@@ -240,11 +269,16 @@ export function mountGuestPage({iframe,requestHttp,guestAddress,onError=()=>{},o
     if(!Number.isInteger(guestPort)||guestPort<1||guestPort>65535)throw fail('GUEST_PORT','Invalid firmware HTTP port.');
     stop();const token=Array.from(crypto.getRandomValues(new Uint32Array(4)),v=>v.toString(16).padStart(8,'0')).join('');
     const target={token,port:guestPort,origin:`http://${address()}:${guestPort}/`,requests:new Map(),active:new Set(),generation};session=target;
+    if(storageOrigin!==target.origin){storageOrigin=target.origin;storageState={localStorage:[],sessionStorage:[]};}
     try{return await render(target,await perform(target,guestPageUrl(path,target.origin).href,{method,headers,body}));}catch(error){if(session===target){iframe.removeAttribute('srcdoc');onError(error);}throw error;}
   }
   const receive=event=>{
     const target=session,m=event.data;
     if(disposed||!target||event.source!==iframe.contentWindow||event.origin!=='null'||m?.guestPage!==target.token)return;
+    if(m.type==='storage'){
+      if(!['localStorage','sessionStorage'].includes(m.area))return;
+      try{storageState[m.area]=createGuestStorage({entries:m.entries}).snapshot();}catch(error){onError(fail('GUEST_STORAGE',error.message));}return;
+    }
     if(m.type==='error'){onError(fail('GUEST_SCRIPT',String(m.message).slice(0,500)));return;}
     if(m.type==='abort'){target.requests.get(m.id)?.abort();target.requests.delete(m.id);return;}
     if(m.type==='navigate'){
@@ -263,5 +297,5 @@ export function mountGuestPage({iframe,requestHttp,guestAddress,onError=()=>{},o
     }catch(error){send(target,m.id,null,error);}
   };
   win.addEventListener('message',receive);
-  return {open,dispose(){if(disposed)return;disposed=true;stop();win.removeEventListener('message',receive);iframe.removeAttribute('src');iframe.removeAttribute('srcdoc');}};
+  return {open,dispose(){if(disposed)return;disposed=true;stop();storageState={localStorage:[],sessionStorage:[]};storageOrigin='';win.removeEventListener('message',receive);iframe.removeAttribute('src');iframe.removeAttribute('srcdoc');}};
 }
