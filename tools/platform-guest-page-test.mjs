@@ -35,3 +35,23 @@ test('inert parsing preserves document wrapper attributes and raw script text',(
   assert.ok(wrapped.includes('<!-- <body> -->'));
   assert.ok(wrapped.endsWith('</esp-guest-body></esp-guest-html>'));
 });
+
+
+test('legacy no-referrer CSP is retained while mixed or additional restrictions fail closed',()=>{
+  const policies=['referrer no-referrer',' REFERRER NO-REFERRER; ','\nreferrer\tno-referrer\r'];
+  for(const policy of policies){
+    assert.equal(checkGuestPagePolicy({'Content-Security-Policy':policy}),policy);
+    for(const tag of [`<meta http-equiv="Content-Security-Policy" content="${policy}">`,`<META CONTENT='${policy}' HTTP-EQUIV='CONTENT-SECURITY-POLICY'>`])assert.equal(checkGuestPagePolicy({},tag),'');
+  }
+  const strict=["referrer no-referrer; script-src 'none'","default-src 'self'; referrer no-referrer","referrer no-referrer; frame-ancestors 'none'",'referrer origin','referrer no-referrer, referrer origin','referrer no-referrerX'];
+  for(const policy of strict){
+    assert.throws(()=>checkGuestPagePolicy({'Content-Security-Policy':policy}),{code:'GUEST_FRAME_POLICY'});
+    assert.throws(()=>checkGuestPagePolicy({},`<meta CONTENT="${policy}" HTTP-EQUIV='Content-Security-Policy'>`),{code:'GUEST_FRAME_POLICY'});
+  }
+  const legacy='<meta http-equiv="Content-Security-Policy" content="referrer no-referrer">';
+  assert.throws(()=>checkGuestPagePolicy({},legacy+`<meta content="connect-src 'none'" http-equiv="content-security-policy">`),{code:'GUEST_FRAME_POLICY'});
+  assert.throws(()=>checkGuestPagePolicy({'Content-Security-Policy':"script-src 'none'"},legacy),{code:'GUEST_FRAME_POLICY'});
+  assert.throws(()=>checkGuestPagePolicy({'X-Frame-Options':'DENY'},legacy),{code:'GUEST_FRAME_POLICY'});
+  assert.equal(checkGuestPagePolicy({},`<meta content="referrer no-referrer" data-description="a > b" http-equiv="Content-Security-Policy">`),'');
+  assert.equal(checkGuestPagePolicy({},`<!-- <meta http-equiv="Content-Security-Policy" content="script-src none"> --><script>const text='<meta http-equiv="Content-Security-Policy" content="script-src none">';</script>`),'');
+});

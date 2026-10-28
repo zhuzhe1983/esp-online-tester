@@ -8,13 +8,30 @@ export function guestPageUrl(value,base) {
   if(url.protocol!=='http:'||url.origin!==origin||url.username||url.password)throw fail('GUEST_URL','The embedded page can request only this firmware HTTP service.');
   return url;
 }
+function metaPolicies(html) {
+  const policies=[];
+  // Skip comments/raw text, parse complete quoted attributes, and keep the first duplicate
+  // attribute like the HTML parser. The inert DOM pass below checks decoded attributes too.
+  const tags=html.matchAll(/<!--[\s\S]*?-->|<(script|style|textarea|title)\b(?:[^"'<>]|"[^"]*"|'[^']*')*>[\s\S]*?<\/\1\s*>|<meta\b(?:[^"'<>]|"[^"]*"|'[^']*')*>/gi);
+  for(const [tag]of tags){
+    if(!/^<meta\b/i.test(tag))continue;
+    const attributes={};
+    for(const match of tag.slice(5,-1).matchAll(/([^\t\n\f\r "'<>/=]+)(?:[\t\n\f\r ]*=[\t\n\f\r ]*(?:"([^"]*)"|'([^']*)'|([^\t\n\f\r "'=<>`]+)))?/g)){
+      const name=match[1].toLowerCase();if(!Object.hasOwn(attributes,name))attributes[name]=match[2]??match[3]??match[4]??'';
+    }
+    if(attributes['http-equiv']?.toLowerCase()==='content-security-policy')policies.push(attributes.content||'');
+  }
+  return policies;
+}
 export function checkGuestPagePolicy(headers={},html='') {
   const h=Object.fromEntries(Object.entries(headers).map(([k,v])=>[k.toLowerCase(),String(v)]));
   if(h['x-frame-options'])throw fail('GUEST_FRAME_POLICY','This firmware forbids this isolated embedded view (X-Frame-Options). Use an advanced network mapping.');
-  const policies=[h['content-security-policy'],...html.matchAll(/<meta\b[^>]*http-equiv\s*=\s*["']?content-security-policy["']?[^>]*>/gi)].filter(Boolean).map(x=>typeof x==='string'?x:x[0]);
-  // Requests are proxied and resources become data URLs: arbitrary firmware CSP cannot be
-  // enforced faithfully in this origin. Refuse it instead of silently weakening any directive.
-  if(policies.some(p=>p.trim()))throw fail('GUEST_FRAME_POLICY','The firmware CSP cannot be preserved by this isolated page adapter. Use an advanced network mapping.');
+  const policies=[h['content-security-policy']||'',...metaPolicies(html)];
+  // Only the obsolete, standalone no-referrer directive is compatible: keep the original
+  // policy and also enforce its modern meta equivalent. All actual CSP restrictions still
+  // fail closed because proxied requests/data URLs cannot preserve their origin semantics.
+  const legacyNoReferrer=/^[ \t\r\n\f]*referrer[ \t\r\n\f]+no-referrer[ \t\r\n\f]*;?[ \t\r\n\f]*$/i;
+  if(policies.some(policy=>policy.trim()&&!legacyNoReferrer.test(policy)))throw fail('GUEST_FRAME_POLICY','The firmware CSP cannot be preserved by this isolated page adapter. Use an advanced network mapping.');
   return h['content-security-policy']||'';
 }
 function bytesOf(response) {
@@ -138,6 +155,7 @@ function guestBootstrap(config) {
 // open() returns after assigning the isolated document, not after firmware JavaScript settles.
 // Supported: classic scripts, fetch, async XHR, static resources, ordinary forms and navigation.
 // Cookies, module/dynamic imports, generated navigation, WebSocket and arbitrary CSP are unsupported.
+// The obsolete standalone CSP 'referrer no-referrer' is retained with its standard meta equivalent.
 export function mountGuestPage({iframe,requestHttp,guestAddress,onError=()=>{},onNavigate=()=>{}}={}) {
   if(!iframe||typeof requestHttp!=='function')throw new TypeError('Guest page requires an iframe and HTTP transport.');
   const doc=iframe.ownerDocument,win=doc.defaultView;
@@ -213,7 +231,7 @@ export function mountGuestPage({iframe,requestHttp,guestAddress,onError=()=>{},o
     const htmlAttrs=attrs('html'),headAttrs=attrs('head'),bodyAttrs=attrs('body'),headHtml=wrappers.head?.innerHTML||'';
     wrappers.head?.remove();for(const name of ['body','html'])if(wrappers[name])wrappers[name].replaceWith(...wrappers[name].childNodes);
     iframe.removeAttribute('src');
-    iframe.srcdoc=`<!doctype html><html${htmlAttrs}><head${headAttrs}><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${escape(csp)}">${policy?`<meta http-equiv="Content-Security-Policy" content="${escape(policy)}">`:''}<script>${bootstrap}<\/script>${headHtml}</head><body${bodyAttrs}>${template.innerHTML}</body></html>`;
+    iframe.srcdoc=`<!doctype html><html${htmlAttrs}><head${headAttrs}><meta charset="utf-8"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="${escape(csp)}">${policy?`<meta http-equiv="Content-Security-Policy" content="${escape(policy)}">`:''}<script>${bootstrap}<\/script>${headHtml}<meta name="referrer" content="no-referrer"></head><body${bodyAttrs}>${template.innerHTML}</body></html>`;
     onNavigate({url:pageUrl,path:new URL(pageUrl).pathname,guestPort:target.port,status:response.status,resources:count});
     return {url:pageUrl,status:response.status,resources:count};
   }
