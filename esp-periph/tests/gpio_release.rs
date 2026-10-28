@@ -80,14 +80,15 @@ fn input_change_result_does_not_depend_on_irq_configuration() {
 
 #[test]
 fn open_drain_high_releases_to_pulls_and_low_drives_without_losing_external_inputs() {
-    let mut gpio = esp_periph::Gpio::new();
-    for pin in [5u8, 37] {
+    for (pins, pin) in [(49, 5u8), (49, 37), (57, 53), (57, 56)] {
+        let mut gpio = esp_periph::Gpio::with_pins(pins);
         let mask = 1u32 << (pin & 31);
         let (out_set, out_clear, enable_set, enable_clear) = if pin < 32 { (8, 12, 0x24, 0x28) } else { (0x14, 0x18, 0x30, 0x34) };
         gpio.set_pulls(pin, false, true);
         gpio.write(out_set, mask); gpio.write(enable_set, mask);
         assert!(gpio.level(pin), "push-pull HIGH overcomes pulldown");
-        gpio.write(0x74 + u32::from(pin) * 4, 4);
+        if pin < 49 { gpio.write(0x74 + u32::from(pin) * 4, 4); }
+        else { gpio.set_pin_config(pin as usize, 4); } // The P4 adapter routes its extra PIN registers here.
         assert!(!gpio.level(pin), "PAD_DRIVER makes HIGH release to pulldown immediately");
         gpio.set_pulls(pin, true, false);
         assert!(gpio.level(pin), "released open drain follows pullup");
@@ -102,7 +103,8 @@ fn open_drain_high_releases_to_pulls_and_low_drives_without_losing_external_inpu
         assert!(gpio.level(pin), "external HIGH on a released line wins over pulldown");
         gpio.release_input(pin);
         assert!(!gpio.level(pin), "releasing an external drive restores the original pull");
-        gpio.write(0x74 + u32::from(pin) * 4, 0);
+        if pin < 49 { gpio.write(0x74 + u32::from(pin) * 4, 0); }
+        else { gpio.set_pin_config(pin as usize, 0); }
         assert!(gpio.level(pin), "return to push-pull takes effect without another OUT write");
     }
 }

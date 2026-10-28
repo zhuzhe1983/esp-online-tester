@@ -2,7 +2,8 @@
 //! worker is between run calls; this adds no work to the guest's instruction or tick paths.
 use crate::Emu;
 
-/// Length of the current flash array, including erased bytes.
+/// Length of the primary chip's flash array, including erased bytes. Co-processor
+/// flash is separate and is not part of this snapshot ABI.
 ///
 /// # Safety
 /// `e` must point to a live emulator with no overlapping mutable access.
@@ -64,7 +65,7 @@ mod tests {
 
     #[test]
     fn flash_export_keeps_contents_through_chip_reboot_and_never_ticks() {
-        for board in ["none", "esp32", "esp32c3", "esp32c6", "esp32p4"] {
+        for board in ["none", "esp32", "esp32c3", "esp32c6", "esp32p4", "esp32p4-rev3", "esp32p4+c6", "esp32p4-rev3+c6", "waveshare-p4-lcd35"] {
             // SAFETY: This test owns each handle and every source buffer until deletion.
             unsafe {
                 let e = esp32sim_new(board.as_ptr(), board.len(), 8, 0);
@@ -75,7 +76,12 @@ mod tests {
                 let before = (esp32sim_cycles(e), esp32sim_insns(e));
                 assert_eq!(std::slice::from_raw_parts(esp32sim_flash_ptr(e).add(0x110000), data.len()), data);
                 assert_eq!((esp32sim_cycles(e), esp32sim_insns(e)), before);
-                match &mut (*e).m { MachineKind::S3(m) => { m.reboot(); }, MachineKind::Esp32(m) => { m.reboot(); }, MachineKind::C3(m) => { m.reboot(); }, MachineKind::C6(m) => { m.reboot(); }, MachineKind::P4(m) => { m.reboot(); } }
+                if board.ends_with("+c6") {
+                    assert_eq!(esp32sim_load_at(e, 0x80110000, [0x43, 0x36].as_ptr(), 2), 0);
+                    assert_eq!(std::slice::from_raw_parts(esp32sim_flash_ptr(e).add(0x110000), data.len()), data, "co-processor writes must not replace primary flash");
+                }
+                match &mut (*e).m { MachineKind::S3(m) => { m.reboot(); }, MachineKind::Esp32(m) => { m.reboot(); }, MachineKind::C3(m) => { m.reboot(); }, MachineKind::C6(m) => { m.reboot(); }, MachineKind::P4(m) => { m.reboot(); },
+                    MachineKind::P4Rev3(m) => { m.reboot(); }, MachineKind::P4C6(m) => { m.p4.reboot(); }, MachineKind::P4Rev3C6(m) => { m.p4.reboot(); } }
                 assert_eq!(std::slice::from_raw_parts(esp32sim_flash_ptr(e).add(0x110000), data.len()), data, "{board}: physical flash survives a chip reset");
                 esp32sim_delete(e);
             }

@@ -1,0 +1,25 @@
+{
+ "board": "esp32p4-rev3+c6",
+ "flash_mb": 2,
+ "psram_mb": 0,
+ "seconds": 5,
+ "expect": "wifi station: got ip:10.0.2.15",
+ "wifi": "ssid=esp32sim,psk=esp32sim-pass",
+ "stubs": ["c6:0x420bac5c=0"],
+ "files": {
+  "rom": "esp32p4_rev300_rom.elf",
+  "bootloader": "public/p4-hosted-rev3-bootloader.bin",
+  "ptable": "public/p4-hosted-ptable.bin",
+  "app": "public/p4-hosted-rev3-station.bin"
+ },
+ "coproc": {
+  "files": {
+   "rom": "esp32c6_rev0_rom.elf",
+   "bootloader": "public/c6-hosted-bootloader.bin",
+   "ptable": "public/c6-hosted-ptable.bin",
+   "app": "public/c6-hosted-slave.bin"
+  },
+  "flash_at": { "0xd000": "public/c6-hosted-otadata.bin" }
+ },
+ "_note": "An ESP32-P4 rev >= 3 with an ESP32-C6 co-processor on SDIO, as on the Waveshare ESP32-P4-WIFI6 boards: the P4 runs IDF v5.5.4's wifi_station with ESP-Hosted 2.12.13 (examples/esp-hosted-p4), the C6 the ESP-Hosted slave, both from their mask ROMs, in lock-step in this tab (esp32p4::coproc). The C6 joins the virtual access point and the P4 gets its address through it. The stub is the C6 slave's bb_init (bb_init=0 in the CLI's --coproc)."
+}

@@ -25,8 +25,10 @@ pub mod csr {
     /// base, and the ESP32-P4 rev < 3's `mintstatus`, which sits at 0x346 instead of 0xFB1
     /// (ESP-IDF v5.5.3 riscv/include/esp_private/interrupt_clic.h:46-58).
     pub const MTVT: u32 = 0x307; pub const MINTSTATUS_P4: u32 = 0x346;
-    /// Standard CLIC CSRs used by S31: ESP-IDF v6.1 soc/esp32s31/include/soc/interrupt_reg.h
-    /// (`INTTHRESH_STANDARD=1`) and riscv/include/riscv/csr_clic.h.
+    /// The specification's `mintstatus` and `mintthresh`, as on the ESP32-P4 rev >= 3
+    /// (ESP-IDF v5.5.4 riscv/include/esp_private/interrupt_clic.h:60-66).
+    /// S31 uses the same placement (IDF v6.1 soc/esp32s31/include/soc/interrupt_reg.h,
+    /// INTTHRESH_STANDARD=1, and riscv/include/riscv/csr_clic.h).
     pub const MINTSTATUS: u32 = 0xFB1; pub const MINTTHRESH: u32 = 0x347;
     /// ESP32-P4 EXT_ILL: why the last illegal-instruction trap was taken
     /// (ESP-IDF v5.5.3 `components/riscv/vectors.S`, `EXT_ILL_CSR`).
@@ -117,6 +119,10 @@ pub struct Cpu {
     pub fcsr: u32,
     /// EXT_ILL's value, when `has_ext_ill`
     pub ext_ill: u32,
+    /// EXT_ILL flags every FP instruction taken with FS = Off, FLW/FSW, their compressed forms and
+    /// the FP CSRs included, as on the ESP32-P4 rev >= 3. Without it those are left unflagged
+    /// (SOC_CPU_HAS_FPU_EXT_ILL_BUG, rev < 3) and IDF's `vectors.S` decodes `mtval` for them.
+    pub ext_ill_all_fp: bool,
     /// `cycle`/`instret` (Zicntr) read the machine counters; without it they are unmodelled CSRs,
     /// as they always were on the C3 and C6, which read the cycle count from MPCCR
     pub user_counters: bool,
@@ -124,9 +130,11 @@ pub struct Cpu {
     /// candidate as `line | level << 8 | SHV << 16` (`exec::CLIC_IRQ_*`). Without it the presented
     /// value is a line the SoC has already arbitrated, as on the C3 and C6.
     pub clic: bool,
-    /// Standard CLIC CSR placement (S31); false retains the existing P4 rev < 3 contract.
-    pub standard_clic: bool,
-    /// Standard mintthresh, low eight bits. The SoC applies it to CLIC arbitration.
+    /// the CLIC is the specification's: the threshold is the `mintthresh` CSR and `mintstatus`
+    /// sits at 0xFB1, as on the ESP32-P4 rev >= 3. Without it the SoC applies a memory-mapped
+    /// threshold and `mintstatus` is at 0x346, as on rev < 3.
+    pub clic_std: bool,
+    /// mintthresh.th when `clic_std`: an interrupt is taken only above it (and above `mil`)
     pub mintthresh: u32,
     /// the hardware-vectoring table base (CSR 0x307), 64-byte aligned
     pub mtvt: u32,
@@ -153,7 +161,7 @@ impl Cpu {
             mstatus: 0x1800,          // MPP = machine
             mtvec: 0, mepc: 0, mcause: 0, mtval: 0, mie: 0, mscratch: 0,
             insn_count: 0, retired_count: 0, cycle_count: 0, cycle_base: 0, instret_base: 0, waiting: false, irq: None, misa: MISA_RV32IMC,
-            has_ext_ill: false, f: [0; 32], fcsr: 0, ext_ill: 0, user_counters: false, clic: false, standard_clic: false, mintthresh: 0, mtvt: 0, hartid: 0, mil: 0, reservation: None, boundary_bloom: 0, csr_other: HashMap::new(),
+            has_ext_ill: false, f: [0; 32], fcsr: 0, ext_ill: 0, ext_ill_all_fp: false, user_counters: false, clic: false, clic_std: false, mintthresh: 0, mtvt: 0, hartid: 0, mil: 0, reservation: None, boundary_bloom: 0, csr_other: HashMap::new(),
         }
     }
     pub fn new_rv32imac() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAC; c }
@@ -162,20 +170,25 @@ impl Cpu {
     /// custom extensions (Xesppie, hardware loops) are not modelled and decode as illegal. FS is
     /// Off at reset, as on any core with F.
     pub fn new_esp32p4() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.has_ext_ill = true; c.user_counters = true; c.clic = true; c }
+    /// An ESP32-P4 rev >= 3 HP core: the same, with the specification's CLIC CSRs and EXT_ILL
+    /// flagging every FP instruction ("The FPU_EXT_ILL bug was fixed on revision 3.0 and higher",
+    /// ESP-IDF v5.5.4 riscv/vectors.S:279).
+    pub fn new_esp32p4_rev3() -> Self { let mut c = Cpu::new_esp32p4(); c.clic_std = true; c.ext_ill_all_fp = true; c }
     /// S31's RV32IMAFC subset and standard CLIC CSRs (IDF v6.1 soc_caps.h, interrupt_reg.h).
     /// Custom PIE/HWLOOP instructions remain unimplemented. The SoC supplies its own reset PC.
-    pub fn new_esp32s31() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.has_ext_ill = true; c.user_counters = true; c.clic = true; c.standard_clic = true; c }
+    pub fn new_esp32s31() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.has_ext_ill = true; c.user_counters = true; c.clic = true; c.clic_std = true; c }
 
     pub fn reset(&mut self) {
         // `insn_count` is the emulator's own monotonic counter — it drives the run statistics and
         // the trace, so a chip reset must not rewind it (a reset that did made the browser UI
         // report a negative instruction rate). The architectural cycle counter is separately
         // monotonic and firmware reads its reset-relative value.
-        let (insns, retired, cycles, misa, ext_ill, counters, clic, standard_clic, hart, bloom) = (self.insn_count, self.retired_count, self.cycle_count, self.misa, self.has_ext_ill, self.user_counters, self.clic, self.standard_clic, self.hartid, self.boundary_bloom);
+        let (insns, retired, cycles, misa, ext_ill, counters, clic, clic_std, hart, bloom) = (self.insn_count, self.retired_count, self.cycle_count, self.misa, self.has_ext_ill, self.user_counters, self.clic, self.clic_std, self.hartid, self.boundary_bloom);
+        let all_fp = self.ext_ill_all_fp;
         *self = Cpu::new();
         self.insn_count = insns; self.retired_count = retired; self.cycle_count = cycles;
         self.cycle_base = cycles; self.instret_base = retired;
-        self.misa = misa; self.has_ext_ill = ext_ill; self.user_counters = counters; self.clic = clic; self.standard_clic = standard_clic; self.hartid = hart; self.boundary_bloom = bloom;
+        self.misa = misa; self.has_ext_ill = ext_ill; self.user_counters = counters; self.clic = clic; self.clic_std = clic_std; self.hartid = hart; self.boundary_bloom = bloom; self.ext_ill_all_fp = all_fp;
     }
 
     #[inline(always)]
@@ -212,9 +225,9 @@ impl Cpu {
             MCAUSE => self.mcause,
             MTVAL => self.mtval,
             MTVT if self.clic => self.mtvt,
-            MINTSTATUS_P4 if self.clic && !self.standard_clic => self.mil << 24,
-            MINTSTATUS if self.clic && self.standard_clic => self.mil << 24,
-            MINTTHRESH if self.clic && self.standard_clic => self.mintthresh,
+            MINTSTATUS_P4 if self.clic && !self.clic_std => self.mil << 24,
+            MINTSTATUS if self.clic_std => self.mil << 24,
+            MINTTHRESH if self.clic_std => self.mintthresh,
             MIP => 0,                               // the SoC's INTC holds pending state, not `mip`
             MCYCLE | MPCCR | PCCR_U => self.cycle_count.wrapping_sub(self.cycle_base) as u32,
             MCYCLEH => (self.cycle_count.wrapping_sub(self.cycle_base) >> 32) as u32,
@@ -259,9 +272,9 @@ impl Cpu {
             MCAUSE => self.mcause = v,
             MTVAL => self.mtval = v,
             MTVT if self.clic => self.mtvt = v & !0x3f,
-            MINTSTATUS_P4 if self.clic && !self.standard_clic => {}
-            MINTSTATUS if self.clic && self.standard_clic => {}
-            MINTTHRESH if self.clic && self.standard_clic => self.mintthresh = v & 0xff,
+            MINTSTATUS_P4 if self.clic && !self.clic_std => {}
+            MINTSTATUS if self.clic_std => {}
+            MINTTHRESH if self.clic_std => self.mintthresh = v & 0xff,
             // a write moves the guest-visible counter; the emulator's own count stays monotonic
             MCYCLE | MPCCR | PCCR_U => { let c = self.cycle_count.wrapping_sub(self.cycle_base) & !0xffff_ffff | v as u64; self.cycle_base = self.cycle_count.wrapping_sub(c); }
             MCYCLEH => { let c = self.cycle_count.wrapping_sub(self.cycle_base) & 0xffff_ffff | ((v as u64) << 32); self.cycle_base = self.cycle_count.wrapping_sub(c); }

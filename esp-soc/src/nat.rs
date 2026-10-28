@@ -229,6 +229,19 @@ struct Udp {
     last_activity_us: u64,
 }
 
+/// Current TCP occupancy, independent of cumulative connection statistics.
+///
+/// Only `active` counts against the 64-flow table limit: a new SYN on a full table evicts a
+/// TimeWait entry. A small `active` still does not mean a new connect will be admitted: the limit
+/// of 8 host connects in progress is process-wide, shared by every `Nat`.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct TcpFlowCounts {
+    /// Connecting and connected flows, including half-close and unacknowledged FIN.
+    pub active: usize,
+    /// Completed flows retained to retry the final ACK.
+    pub time_wait: usize,
+}
+
 pub struct Nat {
     tcp: Vec<Tcp>,
     udp: Vec<Udp>,
@@ -284,6 +297,21 @@ impl Nat {
         self.pending.retain(|p| p.host_port != port);
         self.tcp.retain(|c| !c.inbound || c.host_port != port);
         before != self.forwards.len()
+    }
+
+    /// Snapshot TCP transport state without polling sockets, retransmitting or expiring flows.
+    /// Closed entries are excluded even before the next poll removes them. Expiration and
+    /// transitions (including pending connector results) take effect only through normal polling.
+    pub fn tcp_flow_counts(&self) -> TcpFlowCounts {
+        let mut counts = TcpFlowCounts::default();
+        for flow in &self.tcp {
+            match flow.transport {
+                Transport::Connecting(_) | Transport::Connected(_) => counts.active += 1,
+                Transport::TimeWait => counts.time_wait += 1,
+                Transport::Closed => {}
+            }
+        }
+        counts
     }
 
     /// Forward a UDP datagram through a connected socket, which accepts replies only from its peer.

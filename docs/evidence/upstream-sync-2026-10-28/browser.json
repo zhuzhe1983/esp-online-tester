@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-28",
+  "runner": "headless Chromium through Playwright CLI",
+  "upstream_revision": "2e36224d",
+  "touch_fix_revision": "55c3f2f8",
+  "production_wasm_sha256": "afd57d99f7c0adbbf1069929a5bcc2e3d50038944bf2cfdb596c7037dafcfd44",
+  "checks": [
+    {
+      "path": "/platform/",
+      "result": "passed",
+      "observed": "Product workbench loads; API version 1.0.0; product entry preserved."
+    },
+    {
+      "path": "/run.html?wasm&fw=p4-lcd35-synth",
+      "result": "passed after touch fix",
+      "observed": "scintilla: ready; 480x320 rotated display; a normal click at viewport (638,189) changed audio: preset 0 Chunky Synth to audio: preset 1 Wah brass and visible label to 11 Wah brass.",
+      "initial_failure": "The same click before the fix produced no preset change. Compensating for the CSS bezel at (655,172) reached preset 1, isolating coordinate scaling.",
+      "audio_audition": false
+    },
+    {
+      "path": "/run.html?wasm&fw=p4-c6-hosted",
+      "result": "passed",
+      "observed": "C6 associates; P4 wifi station reports got ip:10.0.2.15 at guest timestamp 3766 ms. Built-in virtual AP only.",
+      "browser_errors": 0,
+      "browser_warnings": 0
+    },
+    {
+      "path": "/platform/",
+      "source_revision": "fdf83053",
+      "result": "passed",
+      "firmware": "/wasm/fw/demo-stopwatch.json (explicit internal diagnostic)",
+      "observed": "Loaded actual firmware, observed PLATFORM_READY stopwatch, frame 468x466, registered a fresh BUTTON_A waiter before pressing; firmware acknowledged. Paused after observation. Network/audio API methods remain present.",
+      "static_host_notes": [
+        "Expected localhost /network-info probe returns 404 on ordinary static server; network remains waiting-helper with no runtime error.",
+        "Chromium warns about the initially empty iframe sandbox combining allow-scripts and allow-same-origin. Firmware pages are required by network-ui.js to use a different origin; this test did not load a firmware HTTP page."
+      ],
+      "audio_audition": false
+    }
+  ],
+  "captures": [
+    {
+      "local_artifact": "output/playwright/upstream-workbench.png",
+      "sha256": "5a406344cd34a36c0ee269c781c99fb9c16037304b4ddb5903e3a3088e826a87",
+      "bytes": 212000
+    },
+    {
+      "local_artifact": "output/playwright/p4-current.png",
+      "sha256": "c4a88a13e183ae71ffe0a27ef6a14750761c2f696c11238fae438de929be46a0",
+      "bytes": 284464
+    },
+    {
+      "local_artifact": "output/playwright/p4-touch-fixed.png",
+      "sha256": "ab3046a24fb700dba3ba74abe1a62ee663c5159d8a5178e7c40b6bab55c4771e",
+      "bytes": 282033
+    },
+    {
+      "local_artifact": "output/playwright/p4-c6.png",
+      "sha256": "d5a6bd0873e99bd3ab458eed271d41ff64b8ce08be7cdeb90d0a956488b87e00",
+      "bytes": 261636
+    },
+    {
+      "local_artifact": "output/playwright/platform-final.png",
+      "sha256": "13c13bbe668633de311d9e0bdf0ac66bff7db38b71c3fa609a264df8df87bac7",
+      "bytes": 208885
+    }
+  ],
+  "capture_retention": "Local ignored artifacts only; no public upload. Numeric observations and reproduction are retained; no screenshot is required by automated tests.",
+  "cleanup": "Owned browser session closed and absent from session list; owned static server stopped. Unrelated sessions preserved.",
+  "final_platform_revision": "fdf83053"
+}

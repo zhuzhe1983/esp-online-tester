@@ -244,6 +244,26 @@ MTMS/MTDI/MTCK/MTDO on GPIO 4, 5, 6, 7, and `EN` as the chip's reset rather than
 the LED, the button and the RF switch are wired to anything, so only they are modelled.
 
 The blink firmware and the run recipe: `examples/xiao-esp32c6/`, [esp32c6.md](esp32c6.md).
+## `waveshare-p4-lcd35` — Waveshare ESP32-P4-WIFI6-Touch-LCD-3.5 (ESP32-P4 rev ≥ 3)
+
+The wiring is Waveshare's BSP `waveshare/esp32_p4_wifi6_touch_lcd_3_5` 2.0.2
+(`include/bsp/esp32_p4_wifi6_touch_lcd_3_5.h`); the BSP and LVGL 9 run on the model unmodified.
+
+| Device | Bus | Model |
+| --- | --- | --- |
+| ST7796 320×480 panel | GPSPI2 (MOSI 20, CLK 21, CS 23, D/C 26, RST 27) through the AXI-GDMA | `DcsPanel::new(320, 480)`; the glass shows the RAM with its columns reversed (the BSP sets MADCTL.MX) and R/B exchanged unless MADCTL.BGR is set; pixels high byte first; INVON, which the BSP sets for the IPS glass, not applied |
+| FT5x06-family touch | I2C1 (SCL 8, SDA 7) at 0x38, INT on GPIO 50, RST 29 | `Ft5x06`: TD_STATUS and five point records; INT pulses low every 12 ms while touched (the driver's ID_G_PERIODACTIVE) and once on release; a touch shorter than two report periods (24 ms) is held that long, so the driver, woken by INT, reads it |
+| ES8311 codec | I2C1 at 0x18 (registers), I2S1 through the AHB-GDMA (DOUT 9, LRCK 10, DIN 11, SCLK 12, MCLK 13) | a register file; the audio is I2S1's first slot (`--wav`, the page's audio); its volume register is not applied |
+| Speaker amplifier | enable on GPIO 53 | the level, reported |
+| Backlight | LEDC on GPIO 28 | `Ledc` (P4 layout); the panel is drawn whatever the duty |
+| ESP32-C6 | SDIO slot 1 (ESP-Hosted) | `--coproc` ([esp32p4.md](esp32p4.md), "The co-processor"); without it ESP-Hosted's probe fails |
+| TF card | SDMMC slot 0 | `--sd` |
+
+Firmware for it: the Scintilla synth (`p4-scintilla-lcd35*`, fetched by `tools/fetch-p4-firmware.sh`;
+source joakimeriksson/esp32 at commit `eed6180`, directory `scintilla-p4-lcd35`, GPL-3.0, licences in
+`web/wasm/fw/public/p4-scintilla-NOTICE.txt`), pinned by the golden `scintilla_p4_lcd35`, and the
+page demo `p4-lcd35-synth`. It wants PSRAM: `--psram-mb 32`, as the board has (the CLI's default
+is none; the page's manifest sets 32).
 
 ## `ttgo-tdisplay` — LilyGO TTGO T-Display (classic ESP32)
 

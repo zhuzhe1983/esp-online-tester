@@ -8,6 +8,10 @@ description = "esp32sim compiled to WebAssembly: the emulator in the page, drive
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[[example]]
+name = "psram-qualification"
+required-features = ["psram-tests"]
+
 [dependencies]
 esp32s3 = { path = "../esp32s3" }
 esp-soc = { path = "../esp-soc" }
@@ -22,7 +26,9 @@ xtensa-lx7 = { path = "../xtensa-lx7" }
 [features]
 # The inline data-cache probe of the timing model; it is emitted only once the model is switched on.
 default = ["cache-inline"]
-jit-tests = ["xtensa-lx7/wasm-jit-tests"]
+# Qualification exports without enabling the JIT's additional internal assertions.
+psram-tests = []
+jit-tests = ["psram-tests", "xtensa-lx7/wasm-jit-tests"]
 jit-profile = ["xtensa-lx7/wasm-jit-profile"]
 cpu-profile = ["xtensa-lx7/wasm-cpu-profile", "esp-soc/wasm-cpu-profile"]
 cache-inline = ["xtensa-lx7/wasm-cache-inline", "esp32s3/cache-inline"]

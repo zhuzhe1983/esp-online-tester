@@ -7,8 +7,10 @@ Unmodified ESP-IDF firmware built for rev < 3 boots from the real mask ROM, thro
 through the SDMMC host ("SD card" below), presents it as a USB mass-storage device to
 a host written in Rust on the high-speed USB-OTG port ("USB" below), and
 reaches WiFi through an emulated ESP32-C6 on SDIO running unmodified ESP-Hosted slave firmware,
-the two chips in lock-step in one process ("The co-processor" below). An image built
-for rev ≥ 3 is refused ("Revisions" below). This page describes the chip and its peripherals.
+the two chips in lock-step in one process ("The co-processor" below). Silicon **rev ≥ 3**
+(v3.x), what a stock `idf.py set-target esp32p4` builds for, has its own model, so far up to
+hello_world on one and both cores ("Revisions" below). This page describes the chip and its
+peripherals.
 
 ```sh
 cargo build --release
@@ -33,7 +35,7 @@ Hello world!
 This is esp32p4 chip with 2 CPU core(s), , silicon revision v1.0, 2MB external flash
 Restarting now.
 rst:0xc (SW_CPU_RESET),boot:0x30f (SPI_FAST_FLASH_BOOT)
-Core0 Saved PC:0x4ff0232a
+Core0 Saved PC:0x4ff02328
 ```
 
 The images are IDF v5.5.3's hello_world for rev < 3 (`examples/hello_world-p4`): `p4-hello-*`
@@ -97,34 +99,100 @@ are `Bus` defaults that a single-hart bus inlines away, and the machine's `selec
 
 ## Revisions
 
-The model is rev < 3, with the efuses reporting v1.0. ESP-IDF v5.5.x builds for rev ≥ 3 unless
-`CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y` (it defaults to n, IDF v5.5.3
-`components/esp_hw_support/port/esp32p4/Kconfig.hw_support`), and the two families differ in
-ISA, interrupt controller and ROM (the table at the end of this section). So a stock
-`idf.py set-target esp32p4 build` does not run here. Its bootloader and app record
-`min_chip_rev_full` 300 or more in their image header (`esp_image_header_t`, IDF v5.5.3
-`components/bootloader_support/include/esp_app_format.h`), and the emulator stops before the first
-instruction:
+ESP-IDF v5.5.x builds for rev ≥ 3 unless `CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y` (it defaults to
+n, IDF v5.5.4 `components/esp_hw_support/port/esp32p4/Kconfig.hw_support`, whose help calls the
+two families incompatible), and they differ in ISA, interrupt controller, memory layout and ROM
+(the table at the end of this section). Each is an `esp32p4::Revision`: `RevLt3`, the efuses
+reporting v1.0, on the ECO0 ROM `esp32p4_rev0_rom.elf`, and `RevGe3`, the efuses reporting v3.1
+(the lowest IDF v5.5.4 builds for by default, `ESP32P4_REV_MIN_301`), on the ECO5 ROM
+`esp32p4_rev300_rom.elf`. `tools/fetch-rom-elfs.sh` fetches both from esp-rom-elfs 20260528.
+
+Bootloaders and apps record the revisions they run on in their image header
+(`min_chip_rev_full`, `max_chip_rev_full`; `esp_image_header_t`, IDF v5.5.3
+`components/bootloader_support/include/esp_app_format.h`): 100 to 199 with the examples'
+`CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y` and `CONFIG_ESP32P4_REV_MIN_100=y`, 301 to 399 by default.
+esp32sim-p4 (and `--chip p4`) runs the rev ≥ 3 model when the bootloader asks for 300 or more,
+the app when there is no bootloader, or the bootloader inside `--flash-image`
+(`esp32p4::built_for_rev3`), and the rev < 3 model otherwise. A stock build runs as it is
+(`examples/hello_world-p4`, `sdkconfig.defaults.rev3`; goldens `hello-p4-rev3` and, both cores
+from `sdkconfig.defaults.rev3-smp`, `hello-p4-rev3-smp`; `tools/fetch-p4-firmware.sh` fetches
+the images):
+
+```sh
+./target/release/esp32sim-p4 --flash-mb 2 --bootloader $FW/p4-hello-rev3-bootloader.bin \
+    --ptable $FW/p4-hello-ptable.bin --app $FW/p4-hello-rev3_world.bin --max-seconds 12
+```
 
 ```
-[emu] build/hello_world.bin was built for ESP32-P4 rev ≥ v3.0 (min_chip_rev_full=300); this model is rev < 3 (v1.0). Rebuild with CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y, or wait for rev 3 support.
+ESP-ROM:esp32p4-eco5-20250430
+Build:Apr 30 2025
+rst:0x1 (POWERON),boot:0x30f (SPI_FAST_FLASH_BOOT)
+load:0x4ffac2c0,len:0xe88
+I (7) boot: chip revision: v3.1
+I (34) cpu_start: cpu freq: 400000000 Hz
+I (34) heap_init: At 4FF30340 len 0008AC80 (555 KiB): RETENT_RAM
+Hello world!
+This is esp32p4 chip with 2 CPU core(s), , silicon revision v3.1, 2MB external flash
 ```
 
-The examples set `CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y` and `CONFIG_ESP32P4_REV_MIN_100=y`, which
-records 100 to 199. The check (`Soc::check_image`) runs on every bootloader and app the CLI loads
-(`--bootloader`, `--app`, `--flash-at`, and those inside `--flash-image`) and on the browser
-build's loads, and only on headers whose chip ID is the P4's. Rev 3 becomes a second
-`esp32p4::Revision`: the ROM `esp32p4_rev300_rom.elf` is in the esp-rom-elfs release
-`tools/fetch-rom-elfs.sh` already pins, and its `refuse` accepts these images and refuses rev < 3
-builds instead.
+`--coproc` picks the revision the same way ("The co-processor"). The browser build takes it from
+the board name: `esp32p4` is rev < 3, `esp32p4-rev3` rev ≥ 3. An image for the other revision
+stops the run before the first instruction: a rev ≥ 3 app behind a rev < 3 bootloader, a rev < 3
+app behind a rev ≥ 3 bootloader, or, in the browser, an image for the other board name:
+
+```
+[emu] build/hello_world.bin was built for ESP32-P4 rev ≥ v3.0 (min_chip_rev_full=301); this model is rev < 3 (v1.0). Rebuild with CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y, or run a bootloader and app both built for rev ≥ 3.
+```
+
+The check (`Soc::check_image`) runs on every bootloader and app the CLI loads (`--bootloader`,
+`--app`, `--flash-at`, and those inside `--flash-image`) and on the browser build's loads, and
+only on headers whose chip ID is the P4's.
+
+What the rev ≥ 3 model changes is the core's CLIC, which is the specification's
+(`Cpu::new_esp32p4_rev3`, `Cpu::clic_std`): the threshold is the `mintthresh` CSR, an interrupt
+being taken only above both it and the current level, and `mintstatus` reads at 0xFB1 (IDF v5.5.4
+`riscv/include/esp_private/interrupt_clic.h:50-66`). The model keeps the memory-mapped threshold
+as well; IDF's rev ≥ 3 builds set `mintthresh` instead (`INTTHRESH_STANDARD`). Without the
+change, the threshold left to the SoC as on rev < 3, the one-core hello_world still runs, but the
+two-core boot gets no further than `cpu_start: Multicore app` (1008 exceptions in 12 emulated
+seconds, both cores ending in `ets_delay_us`). The core's EXT_ILL flags every FP instruction taken
+with the FPU off (`Cpu::ext_ill_all_fp`): rev ≥ 3 fixed the EXT_ILL bug of rev < 3, which left
+FLW, FSW, their compressed forms and the FP CSRs unflagged, and IDF's rev ≥ 3 builds no longer
+decode `mtval` for them (v5.5.4 `components/riscv/vectors.S:279-280`). Without that, the sdmmc
+example panics with an illegal instruction at the first `c.flw` in `sdmmc_card_init`. The ROM
+leaves the bootloader its stack at
+0x4FFBCFC0 (`SOC_ROM_STACK_START_REV2`, IDF v5.5.4 `include/soc/soc.h`). The rest is the ROM's,
+the bootloader's and the app's own doing: on rev ≥ 3 the bootloader loads at the top of L2MEM and
+the app above the L2 cache at its bottom (its first RAM segment at 0x4FF20000), and L2MEM is RAM
+throughout here.
+
+So far it is the rev < 3 model with those changes. Within the headers of the blocks the model
+implements, no register moves between IDF v5.5.4's `soc/esp32p4/register/hw_ver1` and `hw_ver3`;
+the changes are added bits and registers, a few removed bits and the eFuse system words, none in
+a field the model gives a meaning to ([the comparison](evidence/p4-rev3-registers/README.md)).
+One register moves between headers, which that comparison cannot see: `WDEV_RND_REG`, the random
+number, is LP_SYSTEM's RNG_DATA on rev < 3 and LP_TRNG's (0x50126004, `trng_reg.h`, a header only
+`hw_ver3` has) on rev ≥ 3; the model has both. Of the blocks it does
+not implement, many differ (DMA2D, PPA, MIPI-CSI's bridge, ISP and PMU among them), and `hw_ver3`
+adds 23 headers. hello_world does not reach the differences, and neither do ESP-Hosted with the C6
+(golden `hosted-p4-rev3`) and the sdmmc example (golden `sdcard-p4-rev3`); USB has not been run on
+rev ≥ 3. The
+model runs at 360 MHz on both revisions, where IDF sets rev ≥ 3 to 400 MHz: the systimer and the
+timer groups count from the XTAL and keep time, but code that counts CPU cycles against the
+400 MHz IDF assumes, a busy-wait on the cycle counter such as `esp_rom_delay_us`, should take
+about 11% longer in emulated time than on silicon (not measured).
 
 | | rev < 3 (v0.x, v1.x) | rev ≥ 3 |
 | --- | --- | --- |
 | `-march` | `rv32imafc_zicsr_zifencei_xesppie` | `rv32imafc_zicsr_zifencei_xesploop_xespv` |
 | CLIC threshold | memory-mapped, `0x20800008` bits 31:24 | `mintthresh` CSR (0x347) |
 | `mintstatus` | CSR 0x346 | CSR 0xFB1 |
+| EXT_ILL for FLW/FSW and the FP CSRs | not flagged (`SOC_CPU_HAS_FPU_EXT_ILL_BUG`) | flagged |
 | L2 cache | top of L2MEM | bottom of L2MEM |
-| ROM published in esp-rom-elfs | `esp32p4_rev0_rom.elf` (ECO0) | `esp32p4_rev300` |
+| ROM published in esp-rom-elfs | `esp32p4_rev0_rom.elf` (ECO0, `esp32p4-20230811`) | `esp32p4_rev300_rom.elf` (ECO5, `esp32p4-eco5-20250430`) |
+| ROM stack for the bootloader | 0x4FF3CFC0 | 0x4FFBCFC0 |
+| CPU clock IDF sets | 360 MHz | 400 MHz (modelled at 360 MHz) |
+| efuses here | v1.0 | v3.1 |
 
 ## SD card
 
@@ -672,7 +740,20 @@ interrupt, and the slave answers with its INIT event: the chip, the capabilities
 version. The host compares that with its own and prints `Version mismatch` only when the
 major.minor differ (transport_drv.c, `compare_fw_version`); it prints nothing here, 2.12 against
 2.12. The station's RPCs follow, the C6 joins the access point, and the P4's lwIP takes a lease
-through the link 3.77 s after power-up. The golden pins both consoles in the order the slices
+through the link 3.77 s after power-up. The same station built for rev ≥ 3 (`station/sdkconfig.defaults.rev3`,
+IDF v5.5.4, images `p4-hosted-rev3-*`, golden `hosted-p4-rev3`) runs on the rev ≥ 3 model with the
+same C6 and takes its lease at 3.77 s too. On a Waveshare ESP32-P4-WIFI6 with a v3.2 chip and the
+board's own C6 the image goes through the same steps (SDIO up, slave identified, transport
+active, WiFi started); that C6's factory firmware reports version 0.0.0, so the host also prints
+`Version mismatch`. Built for a real 2.4 GHz network instead of `esp32sim`, it connects at 5.5 s
+and takes its lease at 6.8 s.
+
+**In the browser.** The demo `p4-c6-hosted` (`web/wasm/fw/p4-c6-hosted.json`, board
+`esp32p4-rev3+c6`) runs the rev ≥ 3 pair in the page: both chips from their ROMs, the P4's console
+and the C6's side by side (the "both chips" tab). A board name ending in `+c6` makes the module
+create the pair (`esp32p4::coproc::CoSim`); a manifest's `coproc` section lists the C6's images,
+which load through `esp32sim_load` with bit 8 of the kind set and `esp32sim_load_at` with bit 31 of
+the offset set; a stub `c6:NAME` and the WiFi configuration go to the C6. The golden pins both consoles in the order the slices
 produced them, the P4's instruction count, the C6's run and its SDIO, WiFi and network counts.
 19 frames go by before the C6's driver has given its MAC a receive ring (beacons before the
 radio is on; the report counts them apart from frames that find no free descriptor, of which
@@ -811,7 +892,7 @@ ENABLE1, which the W1TS and W1TC registers reach for every pin to 56; the IO MUX
 
 ### Lock-step
 
-`cli/src/cosim.rs` runs a P4 machine and a C6 machine on one clock, nanoseconds from power-up
+`esp32p4::coproc` (`esp32p4/src/coproc.rs`) runs a P4 machine and a C6 machine on one clock, nanoseconds from power-up
 (the P4 at 9 cycles per 25 ns, the C6 at 4). Slices of 10 µs (`slice-us`) end on a fixed grid:
 
 1. the P4 runs to the slice's end (`max_cycles`, both cores);
@@ -844,8 +925,8 @@ pieces). The virtual network's SNTP server answers its own clock plus emulated t
 none,epoch=S` fixes that clock, and without it the host's clock at the first answer sets it
 ([networking-howto.md](networking-howto.md)), so a firmware that asks for the time is
 reproducible only with an epoch. The goldens and tests pass one. Both consoles are
-collected a line at a time and printed in the order the slices produced them. The co-processor
-is native only: the browser build has none.
+collected a line at a time and printed in the order the slices produced them. The browser build
+runs the same pair ("In the browser" above).
 
 **Cost.** Without `--coproc` nothing of this runs: the C6's slave is an optional device-table
 entry and one address compare after a peripheral write, the P4's SDIO path one flag tested where
@@ -914,8 +995,33 @@ bus or a single lost DAT1 edge stop the WiFi for good without a log line.
 
 ## Compared with silicon
 
-Nothing on this page was compared with P4 silicon directly; the ECO0 ROM and IDF's own sources
-are what it is checked against.
+Two Waveshare ESP32-P4-WIFI6 boards, console on UART0 through the board's USB-UART bridge
+(2026-10-24/25). Timestamps aside:
+
+- **v1.3 chip** (ROM `esp32p4-eco2-20240710`, 32 MB flash): `p4-hello` and `p4-hello-smp`, both
+  boots, print what the goldens hold except the ROM's two banner lines, the heap region below the
+  ROM's data (`len 00004BF0`, 12 bytes more than ECO0 leaves), the chip revision, the flash
+  size warning for the larger part and, after the two-core image's restart, the value of
+  `Core1 Saved PC` (0x12 bytes later here: "Not there yet", core stall). `Core0 Saved PC` is the
+  store that requested the reset, on silicon and here (ASSIST_DEBUG 0x48 and 0xC8,
+  `AssistDebug`). The two-core image's `Minimum free heap size` is 16 bytes higher on silicon
+  beyond those 12. `p4-sdcard` with the socket empty prints the same lines, the timeout 20 ms
+  after `Mounting filesystem` on both; with a 64 GB SDHC card the same lines apart from the
+  card's name and size; the model's card answers at once, so mounting takes 30 ms of emulated
+  time against 40 ms on the board, and the file operations none against 50 ms. The ESP-Hosted
+  station (`examples/esp-hosted-p4`) against the board's own C6 firmware (it reports version
+  0.0.0) brings SDIO up, identifies the slave and starts WiFi as here; rebuilt for a real 2.4 GHz
+  network it connects and gets an address.
+- **v3.2 chip** (ROM `esp32p4-eco7-20260109`, 16 MB flash, a 3.5-inch LCD): the rev ≥ 3
+  hello_world on one core and on both prints what `hello-p4-rev3` and `hello-p4-rev3-smp` hold
+  except the ROM's banner lines, `boot:0x31f` for `boot:0x30f`, the chip revision (v3.2) and
+  efuse block revision (v1.2), the flash chip (`generic`) and its size warning, and the same
+  `Core1 Saved PC` difference as on v1.3; the two-core `Minimum free heap size` is again 16 bytes
+  higher on silicon. The heap region below the ROM's data has the same length on ECO5 and ECO7.
+  The sdmmc example built for rev ≥ 3 prints what `sdcard-p4-rev3` holds apart from the card's
+  name and size, on the same 64 GB card.
+
+Beyond that, the ROMs and IDF's own sources are what this page is checked against.
 
 ## What the bring-up found
 
@@ -954,25 +1060,39 @@ are what it is checked against.
 
 | | |
 | --- | --- |
-| CPU | two RV32IMAFC cores (`Cpu::new_esp32p4`, `misa` 0x40001125): F with the lazy FPU traps, EXT_ILL, Zicntr, CLIC mode, `mhartid`; core 1 held in reset until HP_SYS_CLKRST releases it. Xesppie and the hardware loops decode as illegal |
+| CPU | two RV32IMAFC cores (`Cpu::new_esp32p4`, `misa` 0x40001125): F with the lazy FPU traps, EXT_ILL, Zicntr, CLIC mode, `mhartid`; on rev ≥ 3 the specification's CLIC CSRs (`Cpu::new_esp32p4_rev3`); core 1 held in reset until HP_SYS_CLKRST releases it. Xesppie and the hardware loops decode as illegal |
 | Memory | 128 KB mask ROM at 0x4FC00000 (reset vector), 768 KB L2MEM at 0x4FF00000 and its uncached alias at 0x8FF00000, 8 KB TCM at 0x30100000, LP ROM (empty) and 32 KB LP RAM; flash (0x40000000) and PSRAM (0x48000000) windows behind two 1024-entry MMUs of 64 KB pages, reached through SPI_MEM_C / SPI_MEM_S item registers, with their uncached aliases |
 | Interrupts | both interrupt matrices (128 sources, rev < 3) and both CLIC register blocks, delivered through the cores' CLIC mode |
-| Peripherals | UART0/1, USB-Serial/JTAG, systimer (16 MHz from XTAL), TIMG0/1, SHA, efuse (v1.0, block v0.3, security efuses zero), the flash controller (SPI0 cache side, SPI1 commands, a GigaDevice part answering RDID), the PSRAM controller with an AP Memory x16 PSRAM, the cache controller, HP_SYSTEM (cross-core interrupts, stall status), HP_SYS_CLKRST (divider update, PLL calibration done, core 1 clock and reset), LP_SYSTEM / LP_CLKRST / LP_TIMER (reset cause, software reset, core 1 boot address, RTC counter, the SDMMC reset), the analog I2C master (regi2c read-back), ASSIST_DEBUG's saved PC, the RNG, GPIO with the P4's register layout, the SDMMC host with its IDMAC and an SD card in the board's socket (`--sd`), the high-speed USB-OTG core as a device with buffer DMA and a host on its port (`--usb-host`), an SDIO function on slot 1 with its interrupt on DAT1 (`--coproc`: an ESP32-C6 running ESP-Hosted's slave, "The co-processor"); everything else is register RAM, listed by `--log-periph` |
-| Time base | 360 MHz, the rev < 3 application clock; one instruction is one cycle |
+| Peripherals | UART0/1, USB-Serial/JTAG, systimer (16 MHz from XTAL), TIMG0/1, SHA, efuse (v1.0 or v3.1, block v0.3, security efuses zero), the flash controller (SPI0 cache side, SPI1 commands, a GigaDevice part answering RDID), the PSRAM controller with an AP Memory x16 PSRAM, the cache controller, HP_SYSTEM (cross-core interrupts, stall status), HP_SYS_CLKRST (divider update, PLL calibration done, core 1 clock and reset), LP_SYSTEM / LP_CLKRST / LP_TIMER (reset cause, software reset, core 1 boot address, RTC counter, the SDMMC reset), the analog I2C master (regi2c read-back), ASSIST_DEBUG's saved PC, the RNG (LP_SYSTEM's RNG_DATA, and LP_TRNG's that rev ≥ 3 builds read), GPIO with the P4's register layout, the SDMMC host with its IDMAC and an SD card in the board's socket (`--sd`), the high-speed USB-OTG core as a device with buffer DMA and a host on its port (`--usb-host`), an SDIO function on slot 1 with its interrupt on DAT1 (`--coproc`: an ESP32-C6 running ESP-Hosted's slave, "The co-processor"), and for `--board waveshare-p4-lcd35` ([boards.md](boards.md)): GPSPI2 (the shared model) with transmit DMA through the AXI-GDMA, I2C1 (its clock from HP_SYS_CLKRST), I2S1 transmitting through the AHB-GDMA at 44.1 kHz, LEDC, and GPIO's pins 49–56 and its interrupt status words; everything else is register RAM, listed by `--log-periph` |
+| Time base | 360 MHz, the rev < 3 application clock, on both revisions; one instruction is one cycle |
 
-The revision is a type parameter (`esp32p4::Revision`, `RevLt3`): rev ≥ 3 (its own ROM, the
-`mintthresh` CSR, the L2 cache at the bottom of L2MEM) is a second implementation, not a change
-to this one, and an image built for it is refused until then ("Revisions"). The browser build
-boots the same images (`web/wasm/fw/p4-hello.json`, run by `tools/wasm-test.mjs p4-hello`); its
-firmware dialog offers the board `esp32p4`.
+The revision is a type parameter (`esp32p4::Revision`): `RevLt3` and `RevGe3`, with its own ROM
+and the `mintthresh` CSR ("Revisions"); the CLI picks it from the images. The browser build
+runs both: `web/wasm/fw/p4-hello.json` boots the rev < 3 hello_world (board `esp32p4`), and
+`web/wasm/fw/p4-c6-hosted.json` the rev ≥ 3 ESP-Hosted station with its C6 (board
+`esp32p4-rev3+c6`), both run by `tools/wasm-test.mjs`; the firmware dialog offers `esp32p4` and
+`esp32p4-rev3`.
 
 ## Not there yet
 
-- **AXI-GDMA, the LP core, MIPI-DSI/CSI, DMA2D/PPA, rev ≥ 3**, and Xesppie's save and restore,
-  which FreeRTOS runs only for a task that uses PIE. mbedTLS's SHA and AES in DMA mode run through
-  the AXI GDMA on the P4 (IDF v5.5.3 `mbedtls/port/crypto_shared_gdma`, `SOC_AXI_GDMA_SUPPORTED`),
-  so SHA_BUSY (0x50091018) never clears and the caller spins on it.
-- **The co-processor**: native only; the SDIO link without timing by default and the slave
+- **Rev ≥ 3 beyond hello_world and ESP-Hosted**: its register-layout differences and 400 MHz
+  ("Revisions").
+- **Core stall**: PMU's CPU_SW_STALL (stall code 0x86, IDF v5.5.4
+  `hal/esp32p4/include/hal/cpu_utility_ll.h`) does not stop the other core, and HP_SYSTEM's
+  CORESTALLED_ST reads 0. Nor does LP_CLKRST's HPCORE1_SW_RESET reset core 1: the model clears the
+  bit and ignores it. `esp_restart_noos` does both to core 1 before the chip reset, resets it and
+  then stalls it (IDF v5.5.4 `esp_system/port/soc/esp32p4/system_internal.c:174-175`), so core 1
+  runs on here and its `Core1 Saved PC` is 0x12 bytes later than on silicon, on both revisions
+  ("Compared with silicon"); which of the two would fix that is not tried. Anything else that
+  relies on stalling the other core does not get it either.
+- **The rest of the AXI-GDMA and AHB-GDMA**: the two front ends carry GPSPI2's and I2S1's
+  transmit chains only. mbedTLS's SHA and AES in DMA mode run through the AXI GDMA on the P4
+  (IDF v5.5.3 `mbedtls/port/crypto_shared_gdma`, `SOC_AXI_GDMA_SUPPORTED`), so SHA_BUSY
+  (0x50091018) never clears and the caller spins on it. I2S1's clock dividers (HP_SYS_CLKRST)
+  are not read: it streams at 44.1 kHz.
+- **The LP core, MIPI-DSI/CSI, DMA2D/PPA**, and Xesppie's save and restore, which FreeRTOS runs
+  only for a task that uses PIE.
+- **The co-processor**: the SDIO link without timing by default and the slave
   without busy or read wait, CRC or suspend ("The co-processor"); faults are injected on the link
   rather than arising from a model of the bus. `--usb-host` does not run with `--coproc` yet.
 - **The temperature sensor** (LP_TSENS) is register RAM: IDF's driver reads OUT as 0, which it

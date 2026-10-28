@@ -8,11 +8,13 @@ pub mod ed2208;
 pub mod ssd1681;
 pub mod i2c_bitbang;
 pub mod dcs_panel;
+pub mod ft5x06;
 pub mod spi_bitbang;
 pub mod ws2812;
 pub mod sx1262;
 
 pub use dcs_panel::DcsPanel;
+pub use ft5x06::{Ft5x06, Ft5x06Points, FT5X06_ADDRESS};
 pub use spi_bitbang::SpiBitBang;
 pub use ws2812::Ws2812Chain;
 

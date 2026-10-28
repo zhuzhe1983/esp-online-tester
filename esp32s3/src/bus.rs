@@ -596,15 +596,42 @@ impl SocBus {
         if let Some(frame) = self.periph.wifi.link.next_rx(now_us, busy) { self.wifi_rx_deliver(&frame, now_us); }
     }
 
+    /// The receive descriptor at `desc` (a masked pointer from `rx_next`) as the DMA would use it for a
+    /// `total`-byte frame, if software armed it: owned, with a buffer, and with room for the frame.
+    /// `None` means the receive DMA is stopped there.
+    fn wifi_rx_armed(&mut self, desc: u32, total: usize) -> Option<(u32, u32, u32, u32)> {
+        if desc == 0 { return None; }
+        let d = desc | crate::periph::DMA_ADDR_BASE;
+        let dw0 = self.read32_unpriced(d).unwrap_or(0);
+        let buf = self.read32_unpriced(d + 4).unwrap_or(0);
+        let next = self.read32_unpriced(d + 8).unwrap_or(0);
+        (dw0 & (1 << 31) != 0 && buf != 0 && (dw0 & 0xfff) as usize >= total).then_some((d, dw0, buf, next))
+    }
+
     /// Write one received frame into the next RX descriptor (rx_ctrl header + frame + FCS) and raise the RX event.
     #[allow(clippy::identity_op, reason = "rx_state zero remains visible in the packed descriptor layout")]
     fn wifi_rx_deliver(&mut self, frame: &[u8], now_us: u64) {
-        if self.periph.wifi.rx_next == 0 { self.periph.wifi.link.drop_rx_unarmed(); return; }
-        let desc = self.periph.wifi.rx_next | crate::periph::DMA_ADDR_BASE;
-        let dw0 = self.read32_unpriced(desc).unwrap_or(0); let buf = self.read32_unpriced(desc + 4).unwrap_or(0); let next = self.read32_unpriced(desc + 8).unwrap_or(0);
-        let size = (dw0 & 0xfff) as usize;
         let total = 48 + frame.len() + 4;
-        if dw0 & (1 << 31) == 0 || buf == 0 || size < total { self.periph.wifi.link.drop_rx(); return; }
+        // The DMA can only advance while the descriptor at `rx_next` is one software armed: owned, with a
+        // buffer, and with room for the whole frame. A driver that hands the hardware one short list at a
+        // time (Arduino-ESP32 does: four descriptors, the last one's `next` null) leaves the next word of
+        // the list empty by the time the next frame is due, and writes the base of the *new* list before
+        // that frame arrives. So a descriptor that is not usable means the receive DMA has stopped: take
+        // the pending base as the new head and try once more. Frames that still find nothing are lost, as
+        // they are when a radio's RX FIFO is full.
+        let mut armed = self.wifi_rx_armed(self.periph.wifi.rx_next, total);
+        if armed.is_none() && self.periph.wifi.rx_handover {
+            self.periph.wifi.rx_next = self.periph.wifi.rx_base;
+            self.periph.wifi.rx_handover = false;
+            armed = self.wifi_rx_armed(self.periph.wifi.rx_next, total);
+        }
+        // Neither a head nor a pending base: the driver has not handed the radio a receive ring yet, which
+        // is not a lost frame. Counted apart, and only after the hand-over above has had its chance (#276).
+        if self.periph.wifi.rx_next == 0 { self.periph.wifi.link.drop_rx_unarmed(); return; }
+        let Some((desc, dw0, buf, next)) = armed else {
+            if self.periph.wifi.log { eprintln!("[wifi] RX dropped: rx_next {:#x} is not a usable descriptor (base {:#x}, last {:#x})", self.periph.wifi.rx_next, self.periph.wifi.rx_base & 0xf_ffff, self.periph.wifi.rx_last); }
+            self.periph.wifi.link.drop_rx(); return;
+        };
         // A network around's frames carry its own channel and signal (`VirtualAp::rx_meta`)
         let (chan, rssi, softap, log) = { let link = &self.periph.wifi.link; let (c, r, s) = link.rx_meta(frame); (c as u32, r, s, link.ap().is_some_and(|ap| ap.log)) };
         let mut b = Vec::with_capacity(total);
@@ -616,7 +643,7 @@ impl SocBus {
         // inferred from that blob and exercised by the unmodified Xiaozhi test, not silicon.
         let bcast = frame.len() >= 5 && frame[4] & 1 == 1;
         let fm = if softap { 1u32 << 29 } else if bcast { 1u32 << 28 } else { (1u32 << 28) | (1u32 << 29) };
-        let w0: u32 = fm | (rssi as u8 as u32);   // rssi (−40 dBm for the access point), 1 Mbps, legacy
+        let w0: u32 = fm | (rssi as u8 as u32);   // rssi as the network reports it (`rx_meta`), 1 Mbps, legacy
         let w2: u32 = (chan << 16) | (chan << 20);                                        // channel, secondary
         let w5: u32 = 0xa6;                                                                // noise floor -90
         let w11: u32 = ((frame.len() + 4) as u32 & 0xfff) | (0 << 24);                    // sig_len (incl. FCS), rx_state OK
@@ -628,7 +655,7 @@ impl SocBus {
         let ndw0 = (dw0 & !(0xfff << 12)) | ((total as u32) << 12) | (1 << 30) | (1 << 31);   // length; owner AND has_data set (verified on silicon 2026-08-25: dw0=0xc0..)
         let _ = self.write32_unpriced(desc, ndw0);
         let w = &mut self.periph.wifi;
-        w.rx_last = (desc & 0xf_ffff) | (1 << 24); w.rx_next = next & 0xf_ffff; w.link.rx_delivered(desc); w.events |= (1 << 14) | (1 << 24);   // RX data (wDev_ProcessFiq tests 0x1004000)   // registers hold masked descriptor addrs; rx_last has a 0x01 prefix (silicon)
+        w.rx_last = (desc & 0xf_ffff) | (1 << 24); w.rx_next = next & 0xf_ffff; w.rx_handover = false; w.link.rx_delivered(desc); w.events |= (1 << 14) | (1 << 24);   // RX data (wDev_ProcessFiq tests 0x1004000)   // registers hold masked descriptor addrs; rx_last has a 0x01 prefix (silicon)
         if log { let d = crate::wifi::describe(frame); if d.contains("auth")||d.contains("assoc") { eprintln!("[wifi] RX AUTH/ASSOC -> desc {:#010x} buf {:#010x} {}", desc, buf, d); } else { eprintln!("[wifi] RX -> desc {:#010x} {}", desc, d); } }
         self.irq_dirty = true;
     }

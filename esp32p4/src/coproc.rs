@@ -16,7 +16,6 @@
 //! Nothing reads a host clock or host randomness, and the order of every step is fixed, so a run
 //! is the same to the instruction every time, however `run_until` is called.
 use esp32c6::Machine as C6Machine;
-use esp32p4::Machine as P4Machine;
 use esp_periph::sdmmc::{SdCmdError, SdDataError, SdDevice, SdResponse};
 use esp_soc::{RunUntil, SocBus, Stop};
 use std::cell::RefCell;
@@ -450,9 +449,9 @@ impl CoprocSpec {
 #[derive(Clone, Debug, Default)]
 pub struct Summary { pub slices: u64, pub en_changes: u64, pub p4_resets: u64, pub stopped: Option<String> }
 
-/// The pair on one clock.
-pub struct CoSim {
-    pub p4: P4Machine,
+/// The pair on one clock, the P4 of either revision.
+pub struct CoSim<R: crate::Revision = crate::RevLt3> {
+    pub p4: esp_soc::Machine<crate::Esp32p4<R>>,
     pub c6: Rc<RefCell<Coproc>>,
     pub cfg: Config,
     pub now_ns: u64,
@@ -464,16 +463,16 @@ pub struct CoSim {
     pub summary: Summary,
 }
 
-impl CoSim {
+impl<R: crate::Revision> CoSim<R> {
     /// Join two machines that are set up and booted: the C6's slave goes on the P4's SD bus at
     /// ESP-Hosted's pins. Both consoles are collected here rather than printed by the machines.
-    pub fn new(mut p4: P4Machine, mut c6: C6Machine, cfg: Config) -> Self {
+    pub fn new(mut p4: esp_soc::Machine<crate::Esp32p4<R>>, mut c6: C6Machine, cfg: Config) -> Self {
         p4.console.capture = true;
         c6.console.capture = true;
         let mut coproc = Coproc::new(c6);
         (coproc.reboot, coproc.console_mask) = (cfg.reboot_c6, cfg.c6_console);
         let c6 = Rc::new(RefCell::new(coproc));
-        p4.bus.attach_sdio(esp32p4::periph::SdPins::HOSTED, Box::new(SdioLink(c6.clone())));
+        p4.bus.attach_sdio(crate::periph::SdPins::HOSTED, Box::new(SdioLink(c6.clone())));
         let mut s = CoSim { p4, c6, cfg, now_ns: 0, en: true, p4_console: Vec::new(), lines: Vec::new(), summary: Summary::default() };
         s.en = s.en_level();
         s

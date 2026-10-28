@@ -47,6 +47,13 @@ example with esp_hosted 2.12.13 on the P4 and ESP-Hosted 2.12.13's slave on the 
 pair with ESP-Hosted's raw throughput test, built as
 [`examples/esp-hosted-p4`](../../../examples/esp-hosted-p4/README.md) describes; their licences are in
 `public/hosted-NOTICE.txt`; `tools/fetch-p4-firmware.sh` pins them too.
+`p4-lcd35-synth.json` boots `public/p4-scintilla-lcd35*`, the Scintilla synth for the Waveshare
+ESP32-P4-WIFI6-Touch-LCD-3.5, built from [joakimeriksson/esp32](https://github.com/joakimeriksson/esp32)
+at commit `eed6180`, directory `scintilla-p4-lcd35`, and pinned in `tools/fetch-p4-firmware.sh`. Its
+application is GPL-3.0-only; that text, the corresponding source and the licences of the linked
+components (LVGL, Waveshare's BSP, ESP-IDF and others) are in `public/p4-scintilla-NOTICE.txt`
+(the firmware repository's `p4/p4-scintilla-NOTICE.txt` at the pinned commit, SHA-256
+`c6eec7a427747c9c552a7474c4ec04641d9ac29c811173a81db7bb2f621d3aac`).
 
 `esp32/tests/fixtures/classic-camera/` at the repository root holds the
 reproducible public-driver RGB565 camera fixture from
@@ -56,6 +63,20 @@ lists its linked components and points to the accompanying runtime licences.
 The companion `lifecycle.bin` uses the same pinned project
 and public driver for replacement, deinit/reinit and reboot tests; [recipe](../../../examples/classic-camera/lifecycle.md)
 and `lifecycle-NOTICE` accompany it. The bootloader and partition table are shared.
+
+The committed `public/schematik-tdisplay-*` files run a restyled Schematik T-Display
+Arduino sketch on the same classic board. [Source, pinned build and button controls](../../../examples/schematik-tdisplay/README.md),
+linked licences (`public/schematik-tdisplay-NOTICE.txt`) and LGPL rebuild sources
+(`public/schematik-tdisplay-sources.tar.gz`) accompany the three images. Pages serves them
+unchanged, without an additional download channel. `tdisplay-schematik.json` requires a
+boot-console line and at least one panel frame; GPIO35 advances, GPIO0 powers off/wakes.
+No physical-board verification is claimed.
+
+The native-only `public/classic-psram-idf-{bootloader,ptable,app}.bin` inputs
+exercise genuine ESP-IDF 4.4.7 unicore PSRAM startup and allocator code.
+[Recipe, configuration and hashes](../../../docs/fixtures/classic-psram-idf/README.md),
+`classic-psram-idf-NOTICE.txt` and `classic-psram-idf-licenses.txt` accompany them.
+They do not expose a browser demo or qualify classic PSRAM under WASM.
 
 `tdisplay-prices.json` is the LilyGO TTGO T-Display demo on the classic ESP32: stock MicroPython
 v1.29.0 (`ESP32_GENERIC-20260824-v1.29.0.bin`, MIT, fetched from micropython.org by

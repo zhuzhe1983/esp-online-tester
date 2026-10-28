@@ -2,6 +2,7 @@
 pub mod adc;
 pub mod ble;
 pub mod bus;
+mod psram;
 pub mod periph;
 pub mod soc;
 mod sleep;
