@@ -73,10 +73,11 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
       if (!state.scene) throw Object.assign(new Error('Configure a scene before sharing.'), { code: 'NOT_CONFIGURED' });
       if (state.firmware?.source === 'local') throw Object.assign(new Error('Local firmware bytes cannot be included in a URL. Publish the firmware at a CORS-enabled URL or share its manifest first.'), { code: 'LOCAL_FIRMWARE_NOT_SHAREABLE' });
       if (mode !== undefined && !['studio', 'embed'].includes(mode)) throw Object.assign(new Error('Share mode must be studio or embed.'), { code: 'INVALID_INPUT' });
+      setSharedPlayback(new URLSearchParams(),{autostart,autoplay});
       const scene = structuredClone(state.scene);
       if (mode) scene.view.mode = mode;
       const url = new URL(mode === 'embed' ? 'embed.html' : mode === 'studio' ? 'index.html' : baseUrl, baseUrl);
-      const params = setSharedPlayback(new URLSearchParams({scene: encodeScene(scene)}), {autostart, autoplay});
+      const params = setSharedPlayback(new URLSearchParams({scene: encodeScene(scene)}), {autostart:autostart&&!!scene.firmware, autoplay});
       const recordingState = await recorder.api.recordingObserve(), recorded = recordingState.recording;
       if (includeRecording && ['preparing','recording','playing'].includes(recordingState.status)) throw Object.assign(new Error('Stop recording or playback before sharing its replay payload.'), {code:'RECORDING_NOT_SHAREABLE'});
       if (includeRecording && recorded) {

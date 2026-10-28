@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {sharedStartup, setSharedPlayback} from '../web/platform/shared-startup.js';
+import {sharedStartup, setSharedPlayback, shareFirmwareSource} from '../web/platform/shared-startup.js';
 import {installAutomation} from '../web/platform/automation.js';
 
 const source = {url: 'https://example.org/factory.bin'};
@@ -40,4 +40,16 @@ test('automation share carries playback choices and preserves repository subpath
   assert.equal(withoutReplay.get('autostart'), '1'); assert.equal(withoutReplay.get('autoplay'), '0');
   await assert.rejects(api.share({autostart: '0'}), {code: 'INVALID_INPUT'});
   assert.throws(() => setSharedPlayback(new URLSearchParams(), {autoplay: 1}), {code: 'INVALID_INPUT'});
+});
+
+test('sharing keeps the loaded firmware while browsing another Spark entry',()=>{
+ const scene={firmware:{...source,sha256:'a'.repeat(64),bootMode:'rom'}};
+ for(const status of ['running','paused','ready'])for(const selectedSource of [null,{url:'https://example.org/other.bin'}])assert.deepEqual(shareFirmwareSource({scene,status,firmware:{source:'remote'},selectedSource}),scene.firmware);
+ assert.equal(shareFirmwareSource({scene,status:'running',firmware:{source:'local'},selectedSource:source}),null);
+ assert.deepEqual(shareFirmwareSource({scene,status:'configured',firmware:null,selectedSource:source}),source);
+});
+test('a source-less API share is explicitly a preview, never an autostart promise',async()=>{
+ const scene={schemaVersion:'1',productId:'device',firmware:null,accessories:[],keyMapping:{},view:{mode:'studio'}};
+ const api=installAutomation({observe:async()=>({scene}),subscribe:()=>()=>{}},{target:{location:{href:'https://example.org/repo/platform/'}}});
+ const params=new URLSearchParams(new URL(await api.share({mode:'embed'})).hash.slice(1));assert.equal(params.get('autostart'),'0');assert.equal(params.get('autoplay'),'0');
 });

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {firmwareZip} from './fixtures/firmware-zip.mjs';
 // Boundary checks plus the actual browser worker/WASM protocol in a Node Worker.
 // Build web/wasm/esp32sim.wasm and fetch demo ROMs before running this test.
 import assert from 'node:assert/strict';
@@ -215,6 +216,19 @@ try {
     await expectCode(()=>runtime.loadFirmware({url,bootMode:'app-direct',sha256:'0'.repeat(64)}),'HASH_MISMATCH');
     const bootUrl='https://platform.example/wasm/fw/public/hello-bootloader.bin';
     await expectCode(()=>runtime.loadFirmware({url:bootUrl}),'INCOMPLETE_IMAGE');
+  });
+
+  await step('ZIP extraction preserves app detection, content pins, cache and share source',async()=>{
+    const data=await readFile(new URL('web/wasm/fw/public/hello_world.bin',root)),url='https://platform.example/hello-app.zip';
+    const source={url,sha256:await sha256(data),archive:{format:'zip',entry:'hello.bin'}};
+    responseOverrides.set(url,firmwareZip(data,{name:'hello.bin',descriptor:true}));
+    const loaded=await runtime.loadFirmware(source);assert.equal(loaded.firmware.appDirect,true);assert.deepEqual(loaded.scene.firmware.archive,source.archive);assert.equal(loaded.scene.firmware.sha256,source.sha256);
+    await runtime.start();await waitForStats(stats=>stats.insns>0);await runtime.pause();assert.equal(workerStarts.at(-1),true);
+    const shared=decodeScene(new URLSearchParams(new URL(await api.share()).hash.slice(1)).get('scene'));assert.deepEqual(shared.firmware,{...source,bootMode:'app-direct'});
+    responseOverrides.set(url,Buffer.from('must use the verified extracted BIN cache'));
+    await runtime.configure(shared);await runtime.loadFirmware();assert.equal(fetchCounts.get(url),1);
+    const bad='https://platform.example/wrong-hash.zip';responseOverrides.set(bad,firmwareZip(data,{name:'hello.bin'}));
+    await expectCode(()=>runtime.loadFirmware({...source,url:bad,sha256:'0'.repeat(64)}),'HASH_MISMATCH');
   });
 
   const stopwatchScene = createDefaultScene(catalog, 'm5stack-stopwatch');

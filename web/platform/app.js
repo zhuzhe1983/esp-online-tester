@@ -22,7 +22,7 @@ import {buildFirmwareIssueUrl} from './watchlist.js';
 import {SHELL_DEFAULT, SHELL_PRESETS, SHELL_FINISHES, shellPreset} from './appearance.js';
 import {renderHintList, productHints, firmwareHints} from './hints.js';
 import {lookupIpLocation, IP_LOCATION_PROVIDER} from './ip-geolocation.js';
-import {sharedStartup, setSharedPlayback} from './shared-startup.js';
+import {sharedStartup, setSharedPlayback, shareFirmwareSource} from './shared-startup.js';
 import {mountFirmwareHistory, firmwareHistoryName} from './firmware-history.js';
 import {isM5Stack} from './m5burner.js';
 import {mountM5Burner} from './m5burner-ui.js';
@@ -36,7 +36,7 @@ let accessoryInputState = [], accessoryOutputState = [];
 let catalog, scene, runtime, sceneView, humanButtons, api, detachBridge, localDefinitions = [], status = 'idle', firmwareTab = 'library';
 let busy = false, frameCount = 0, renderedProduct = '', renderedScene = '', recordingControl = null, toastTimer, localFile = null, editingAccessoryId = null, uiConfiguring = false;
 let transportUi, knowledgePanel, firmwareUpdates, recordingDocument = null, recordingState = {status: 'idle'};
-let downloadView = null, loadProgress = null, runAfterLoad = false;
+let downloadView = null, loadProgress = null, runAfterLoad = false, loadedFirmware = null;
 let firmwareHistory, burnerUi, sparkUi, pendingRemoteHistory, remoteModeSelection;
 const remoteHub = () => ({m5burner:burnerUi,'lilygo-spark':sparkUi})[$('firmware-kind')?.value];
 const matchingHubFirmware = source => [burnerUi?.current(),sparkUi?.current()].find(item=>item?.source&&firmwareSourceMatches(item.source,source));
@@ -148,7 +148,7 @@ function renderDownloadProgress() {
       detail = `${Math.floor(fraction * 100)}% · ${formatDownloadBytes(loaded)} / ${formatDownloadBytes(total)}`;
     } else if (Number.isFinite(loaded)) detail = `${formatDownloadBytes(loaded)} · 总大小未知`;
   } else if (loadProgress?.phase === 'prepare') {
-    message = {verify: '正在校验文件', local: '正在读取本地固件', worker: '正在准备设备'}[loadProgress.stage] || '正在准备设备';
+    message = {extract: '正在解压并核对固件', verify: '正在校验文件', local: '正在读取本地固件', worker: '正在准备设备'}[loadProgress.stage] || '正在准备设备';
   }
   if (label.textContent !== message) label.textContent = message;
   value.textContent = detail;
@@ -200,7 +200,7 @@ function onRuntimeEvent(event) {
   if(event.type==='accessory-positions'){accessoryInputState=event.accessoryInputs;updateAccessoryPositionsPanel();}
 
   if (event.type === 'state') {
-    const previousStatus = status; status = event.state.status;
+    const previousStatus = status; status = event.state.status; loadedFirmware=event.state.firmware;
     accessoryInputState=event.state.accessoryInputs || [];accessoryOutputState=event.state.accessoryOutputs || [];sceneView?.updateAccessoryOutputs(accessoryOutputState);
     if (['configured', 'loading', 'error', 'disposed'].includes(status)) humanButtons?.invalidate();
     else if (status === 'paused') humanButtons?.suspend();
@@ -282,7 +282,7 @@ function renderTransport() {
     if (!executable) {
       boundary.append(element('strong', '', '尚未完成适配'));
     } else if (unavailable) {
-      boundary.append(element('strong', '', '尚缺可启动镜像'), document.createTextNode('当前条目仅收录资料链接，尚未配置可加载的固件文件。请选择其他固件，或通过远程地址、本地文件加载。'));
+      boundary.append(element('strong', '', '所选条目暂不可加载'), document.createTextNode((selected?.sourceNote||'此条目未提供可加载的固件文件。请选择其他固件，或导入本地文件。')+(['running','paused'].includes(status)?' 右侧仍是此前加载的固件。':'')));
     }
     for (const id of ['load-firmware', 'start-runtime']) {
       if (!boundary.hidden) $(id)?.setAttribute('aria-describedby', boundary.id);
@@ -424,7 +424,7 @@ function reflectFirmwareSource({preserveLocal = false} = {}) {
   const known = catalog.firmwares.find(item => item.productIds.includes(scene.productId) && firmwareSourceMatches(item.source, scene.firmware));
   if (known && $('firmware-select')) { $('firmware-select').value = known.id; renderFirmwareNote(known); setFirmwareTab('library'); }
   else if ($('firmware-url')) {
-    remoteModeSelection=scene.firmware.bootMode?{url:scene.firmware.url,sha256:scene.firmware.sha256||'',bootMode:scene.firmware.bootMode}:null;
+    remoteModeSelection=scene.firmware.bootMode||scene.firmware.archive?{url:scene.firmware.url,sha256:scene.firmware.sha256||'',bootMode:scene.firmware.bootMode,...(scene.firmware.archive?{archive:clone(scene.firmware.archive)}:{})}:null;
     $('firmware-url').value = scene.firmware.manifestUrl || scene.firmware.url || '';
     const provider=matchingHubFirmware(scene.firmware)?.provider;
     $('firmware-kind').value = provider|| (scene.firmware.manifestUrl ? 'manifest' : 'merged'); $('firmware-sha').value = scene.firmware.sha256 || ''; setFirmwareTab('remote');
@@ -443,7 +443,7 @@ function sourceFromInputs() {
     const url = $('firmware-url').value.trim(); if (!url) throw new Error('请输入固件地址。');
     const result = {[ $('firmware-kind').value === 'manifest' ? 'manifestUrl' : 'url' ]: url};
     const hash = $('firmware-sha').value.trim(); if (hash) result.sha256 = hash;
-    if(result.url&&remoteModeSelection?.url===url&&remoteModeSelection.sha256===hash)result.bootMode=remoteModeSelection.bootMode;
+    if(result.url&&remoteModeSelection?.url===url&&remoteModeSelection.sha256===hash){if(remoteModeSelection.bootMode)result.bootMode=remoteModeSelection.bootMode;if(remoteModeSelection.archive)result.archive=clone(remoteModeSelection.archive);}
     return result;
   }
   const selected = catalog.firmwares.find(item => item.id === $('firmware-select')?.value);
@@ -584,7 +584,7 @@ async function loadSelected() {
   const known = currentCatalogFirmware();
   const history = !embedded && firmwareTab === 'remote' ? {
     url:source.manifestUrl || source.url, kind:source.manifestUrl ? 'manifest' : 'merged', sha256:source.sha256 || '',
-    ...(source.bootMode?{bootMode:source.bootMode}:{}),
+    ...(source.bootMode?{bootMode:source.bootMode}:{}),...(source.archive?{archive:clone(source.archive)}:{}),
     productId:scene.productId, lastUsedAt:Date.now(), name:known?.name || firmwareHistoryName(source.manifestUrl || source.url), version:known?.version || known?.revision || '',
     ...(['m5burner','lilygo-spark'].includes(known?.provider)?{provider:known.provider,deviceId:known.deviceId,firmwareId:known.firmwareId}:{}),
   } : null;
@@ -811,7 +811,7 @@ function makeDiy() {
   return result;
 }
 
-function portableScene() {
+function portableScene({forSharing=false}={}) {
   const next = clone(scene); next.view.mode = embedded ? 'embed' : 'studio';
   if (!embedded) {
     if (firmwareTab === 'local') next.firmware = null;
@@ -821,6 +821,7 @@ function portableScene() {
     else if (firmwareTab === 'library' && !catalog.firmwares.find(item => item.id === $('firmware-select').value)?.source) next.firmware = null;
     else next.firmware = sourceFromInputs();
   }
+  if(forSharing)next.firmware=shareFirmwareSource({scene,status,firmware:loadedFirmware,selectedSource:next.firmware});
   return next;
 }
 function recordingForScene(candidate, {strict = true} = {}) {
@@ -836,15 +837,16 @@ function recordingForScene(candidate, {strict = true} = {}) {
   return recordingDocument;
 }
 function shareUrl(mode = 'studio', {strictRecording = true, autostart = true} = {}) {
-  const shared = portableScene(); shared.view.mode = mode;
+  const shared = portableScene({forSharing:true}); shared.view.mode = mode;
   const url = new URL(mode === 'embed' ? './embed.html' : './index.html', import.meta.url);
-  const params = setSharedPlayback(new URLSearchParams({scene: encodeScene(shared)}), {autostart}), recorded = recordingForScene(shared, {strict: strictRecording});
+  const params = setSharedPlayback(new URLSearchParams({scene: encodeScene(shared)}), {autostart:autostart&&!!shared.firmware}), recorded = recordingForScene(shared, {strict: strictRecording});
   if (recorded) params.set('recording', encodeRecording(recorded));
   url.hash = params.toString(); return url.href;
 }
 function shareNotice(url, confirmation) {
-  const included = new URLSearchParams(new URL(url).hash.slice(1)).has('recording');
-  return [confirmation, localFile ? '本地固件需接收者自行选择' : '打开后自动启动，未验证固件需确认一次', included ? '启动后自动回放，可随时接管' : recordingDocument && '旧录制与当前配置不匹配，未包含在链接中'].filter(Boolean).join('；')+'。';
+  const params=new URLSearchParams(new URL(url).hash.slice(1)),included=params.has('recording');
+  const source=decodeScene(params.get('scene')).firmware;
+  return [confirmation, !source ? '仅分享设备配置，未包含固件，不会自动启动' : '包含所加载的固件，打开后自动启动，未验证固件需确认一次', included ? '启动后自动回放，可随时接管' : recordingDocument && '旧录制与当前配置不匹配，未包含在链接中'].filter(Boolean).join('；')+'。';
 }
 function validatePortable(next) {
   const validation = validateScene(next, catalog); if (!validation.valid) throw new Error(validation.errors.map(item => item.message).join(' '));
@@ -861,7 +863,7 @@ function setupEvents() {
   burnerUi=mountM5Burner({mount:$('firmware-burner'),onChange:renderTransport});burnerUi?.setProduct(product());
   sparkUi=mountLilygoSpark({mount:$('firmware-spark'),onChange:renderTransport});sparkUi?.setProduct(product());
   firmwareHistory = mountFirmwareHistory({input:$('firmware-url'),kindInput:$('firmware-kind'),shaInput:$('firmware-sha'),mount:$('firmware-history-mount'),productId:()=>scene.productId,onSelect:entry=>{
-    remoteModeSelection=entry.bootMode?{url:entry.url,sha256:entry.sha256,bootMode:entry.bootMode}:null;
+    remoteModeSelection=entry.bootMode||entry.archive?{url:entry.url,sha256:entry.sha256,bootMode:entry.bootMode,...(entry.archive?{archive:clone(entry.archive)}:{})}:null;
     if(isM5Stack(product())&&burnerUi?.restore(entry))$('firmware-kind').value='m5burner';
     else if(isLilygo(product())&&sparkUi?.restore(entry))$('firmware-kind').value='lilygo-spark';
     updateRemoteMode();renderTransport();text('load-status','已选取历史地址，点击“下载并运行”加载。');
@@ -941,9 +943,9 @@ function setupEvents() {
     if (recorded) { const validation = validateRecording(recorded, {scene: imported}); if (!validation.valid) throw new Error(validation.errors.map(item => item.message).join(' ')); }
     clearLocalFiles(); preserveUnspecifiedFirmware = !imported.firmware; await configure(imported, {reflectSource: true}); transportUi?.setRecording(recorded); input.value = ''; toast(recorded ? '场景与录制已导入，点击回放即可重现操作。' : '场景已导入。');
   }));
-  bind('share-scene', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene()); const url = shareUrl('studio'); await copy(url, shareNotice(url,'场景链接已复制')); history.replaceState(null, '', url); }));
-  bind('copy-embed', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene()); const url = shareUrl('embed'); await copy(`<iframe src="${url}" title="${product().name.replaceAll('"', '&quot;')} · ESP Player" width="800" height="640" allow="serial; fullscreen; microphone; autoplay" loading="lazy"></iframe>`, shareNotice(url,'iframe 代码已复制')); }));
-  bind('open-player', 'click', () => { try { validatePortable(portableScene()); const url=shareUrl('embed');window.open(url, '_blank', 'noopener');if(recordingDocument&&!new URLSearchParams(new URL(url).hash.slice(1)).has('recording'))toast('已打开当前场景；旧录制未包含在独立窗口中。'); } catch (error) { report(error); } });
+  bind('share-scene', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene({forSharing:true})); const url = shareUrl('studio'); await copy(url, shareNotice(url,'场景链接已复制')); history.replaceState(null, '', url); }));
+  bind('copy-embed', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene({forSharing:true})); const url = shareUrl('embed'); await copy(`<iframe src="${url}" title="${product().name.replaceAll('"', '&quot;')} · ESP Player" width="800" height="640" allow="serial; fullscreen; microphone; autoplay" loading="lazy"></iframe>`, shareNotice(url,'iframe 代码已复制')); }));
+  bind('open-player', 'click', () => { try { validatePortable(portableScene({forSharing:true})); const url=shareUrl('embed');window.open(url, '_blank', 'noopener');if(!decodeScene(new URLSearchParams(new URL(url).hash.slice(1)).get('scene')).firmware)toast(shareNotice(url,'已打开设备预览'));else if(recordingDocument&&!new URLSearchParams(new URL(url).hash.slice(1)).has('recording'))toast('已打开当前场景；旧录制未包含在独立窗口中。'); } catch (error) { report(error); } });
   bind('keyboard-enabled', 'change', () => { if (!$('keyboard-enabled').checked) releaseKeys(); });
   document.addEventListener('keydown', event => {
     if (document.querySelector('dialog[open]')) return;

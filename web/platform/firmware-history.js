@@ -1,3 +1,4 @@
+import {validFirmwareArchive} from './firmware-archive.js';
 // Browser-only metadata. Firmware bytes stay in the separate firmware cache.
 import {parseBurnerDownload} from './m5burner.js';
 import {sparkHistoryFirmware} from './lilygo-spark.js';
@@ -11,13 +12,14 @@ function normalized(entry) {
   const sha256 = typeof entry.sha256 === 'string' ? entry.sha256.trim().toLowerCase() : '';
   if (sha256 && !/^[a-f0-9]{64}$/.test(sha256)) return null;
   if(entry.bootMode!==undefined&&(entry.kind!=='merged'||!['rom','app-direct'].includes(entry.bootMode)))return null;
+  if(entry.archive!==undefined&&(entry.kind!=='merged'||!validFirmwareArchive(entry)))return null;
   url.hash = '';
   const burner=entry.provider==='m5burner'&&parseBurnerDownload(url.href);
   const spark=entry.provider==='lilygo-spark'&&sparkHistoryFirmware({...entry,url:url.href,sha256});
   return {url:url.href, kind:entry.kind, sha256, productId:clean(entry.productId), name:clean(entry.name), version:clean(entry.version), lastUsedAt:entry.lastUsedAt,
-    ...(entry.bootMode?{bootMode:entry.bootMode}:{}),...(burner?{provider:'m5burner',deviceId:typeof entry.deviceId==='string'&&/^\d{1,30}$/.test(entry.deviceId)?entry.deviceId:''}:{}),...(spark?{provider:'lilygo-spark',deviceId:spark.deviceId,firmwareId:spark.firmwareId}:{})};
+    ...(entry.bootMode?{bootMode:entry.bootMode}:{}),...(entry.archive?{archive:{...entry.archive}}:{}),...(burner?{provider:'m5burner',deviceId:typeof entry.deviceId==='string'&&/^\d{1,30}$/.test(entry.deviceId)?entry.deviceId:''}:{}),...(spark?{provider:'lilygo-spark',deviceId:spark.deviceId,firmwareId:spark.firmwareId}:{})};
 }
-const key = entry => JSON.stringify([entry.productId, entry.kind, entry.url, entry.provider==='m5burner'?'':entry.sha256]);
+const key = entry => JSON.stringify([entry.productId, entry.kind, entry.url, entry.archive?.entry||'', entry.provider==='m5burner'?'':entry.sha256]);
 export function createFirmwareHistory(getStorage = () => globalThis.localStorage) {
   let memory = [], persistent = true;
   function read() {

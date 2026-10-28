@@ -1,3 +1,4 @@
+import {validFirmwareArchive} from './firmware-archive.js';
 import {validIlluminance,illuminanceParameter} from './illuminance-input.js';
 import {validEnvironment,environmentParameters} from './environment-input.js';
 import {physicalAccessoryRoute,compatibleI2cRoutes} from './accessory-routing.js';
@@ -98,6 +99,7 @@ export function firmwareSourceMatches(left, right) {
   if (!left || !right) return false;
   const kind = left.manifestUrl ? 'manifestUrl' : 'url';
   return typeof left[kind] === 'string' && left[kind].length > 0 && left[kind] === right[kind]
+    && (left.archive?.format||null)===(right.archive?.format||null) && (left.archive?.entry||null)===(right.archive?.entry||null)
     && (!left.sha256 || !right.sha256 || left.sha256.toLowerCase() === right.sha256.toLowerCase());
 }
 
@@ -136,7 +138,8 @@ export function validateScene(scene, catalog) {
   if (scene.firmware === null) warnings.push(issue('FIRMWARE_MISSING', '/firmware', 'Choose a firmware artifact before running.'));
   else if (!record(scene.firmware)) errors.push(issue('FIRMWARE', '/firmware', 'Firmware must be null or a source object.'));
   else {
-    allowedKeys(scene.firmware, ['manifestUrl', 'url', 'sha256', 'bootMode'], '/firmware', errors);
+    allowedKeys(scene.firmware, ['manifestUrl', 'url', 'sha256', 'bootMode', 'archive'], '/firmware', errors);
+    if(scene.firmware.archive!==undefined&&!validFirmwareArchive(scene.firmware))errors.push(issue('FIRMWARE_ARCHIVE','/firmware/archive','ZIP requires one BIN entry name and its SHA-256, with a remote URL.'));
     if(scene.firmware.bootMode!==undefined&&(!scene.firmware.url||!['rom','app-direct'].includes(scene.firmware.bootMode)))errors.push(issue('FIRMWARE_BOOT_MODE','/firmware/bootMode','Boot mode requires a raw URL and must be rom or app-direct.'));
     if (Boolean(scene.firmware.manifestUrl) === Boolean(scene.firmware.url)) errors.push(issue('FIRMWARE_SOURCE', '/firmware', 'Specify exactly one manifestUrl or merged image url.'));
     for (const key of ['manifestUrl', 'url']) if (scene.firmware[key] !== undefined && !remoteUrl(scene.firmware[key])) errors.push(issue('FIRMWARE_URL', `/firmware/${key}`, 'Use an absolute HTTPS URL, or loopback HTTP for local development.'));

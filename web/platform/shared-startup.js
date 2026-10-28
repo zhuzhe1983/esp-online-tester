@@ -14,3 +14,10 @@ export function setSharedPlayback(params, {autostart = true, autoplay = true} = 
   params.set('autoplay', autostart && autoplay ? '1' : '0');
   return params;
 }
+
+// Browsing another firmware is a draft choice, not a change to the running
+// scene. Preserve the loaded source (including its observed hash and mode).
+export function shareFirmwareSource({scene,status,firmware,selectedSource}) {
+  if(firmware&&['ready','running','paused'].includes(status))return firmware.source==='local'?null:structuredClone(scene.firmware);
+  return selectedSource?structuredClone(selectedSource):null;
+}

@@ -71,3 +71,17 @@ await assert.rejects(()=>deckClient.search('t-deck-series'),/型号无效/);
 const duplicateClient=createLilygoSparkClient(async()=>Response.json({...deckManifest,product_list:[...deckManifest.product_list,...deckManifest.product_list]}));
 await assert.rejects(()=>duplicateClient.search('t-deck-plus-1'),/型号无效/);
 console.log('ok Spark exact target contracts, version overrides, metadata-only CORS reads, raw BIN/hash boundary, ZIP references, search, cancellation and scoped history');
+
+// A fixed ZIP describes one exact payload; its SHA is not the container digest.
+const bruceHash='c6e5c5df56ec30bbbfc826075f3deccf1f809343a6bec7bdf09e9a00fc74146d',bruceFile='Bruce-lilygo-t-embed-cc1101.bin';
+const bruceUrl=`https://lilygo.oss-accelerate.aliyuncs.com/firmware/${bruceHash.slice(0,16)}_${bruceFile}.zip`;
+const bruce={id:'bruce-v1-10-3',name:'Bruce v1.10.3',supported_product_ids:['t-embed-cc1101','t-embed-cc1101-plus'],versions:[{version:'1.10.3',filename:bruceFile,sha256:bruceHash,oss_url:bruceUrl,size:4203216}]};
+const sendHash='f6c96c4e9b89cc5dd05a835c43316d6f7c89733da9b077fece222a7f55bce73a',sendUrl='https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Embed-CC1101/master/firmware/examples/cc1101_send_irq.bin';
+const sparkArchiveManifest={schema_version:2,product_list:[{product_id:'t-embed-cc1101',name:'T-Embed CC1101'}],firmwares:[bruce,{id:'cc1101-send-irq',name:'cc1101 send irq',supported_product_ids:['t-embed-cc1101'],versions:[{filename:'cc1101_send_irq.bin',download_url:sendUrl,sha256:sendHash}]}]};
+const archives=createLilygoSparkClient(async()=>Response.json(sparkArchiveManifest));const bruceVersion=(await archives.versions(bruce.id,'t-embed-cc1101'))[0];
+assert.deepEqual(bruceVersion.source,{url:bruceUrl,sha256:bruceHash,archive:{format:'zip',entry:bruceFile}});
+const archivedEntry={...entry,productId:'lilygo-t-embed-cc1101',deviceId:'t-embed-cc1101',firmwareId:bruce.id,...bruceVersion.source};
+assert.deepEqual(sparkHistoryFirmware(archivedEntry).source,bruceVersion.source);history.remember(archivedEntry);assert.deepEqual(history.list(archivedEntry.productId)[0].archive,bruceVersion.source.archive);
+for(const change of [{url:bruceUrl.replace('lilygo.oss-accelerate.aliyuncs.com','evil.example')},{sha256:hash},{archive:{format:'zip',entry:'other-board.bin'}},{deviceId:'t-embed-cc1101-plus'}])assert.equal(sparkHistoryFirmware({...archivedEntry,...change}),null);
+const restoredSend=(await archives.versions('cc1101-send-irq','t-embed-cc1101'))[0].source;assert.equal(restoredSend.sha256,sendHash);assert.equal(restoredSend.url,sendUrl.replace('/master/','/68ef3042980e51711c0318efd6cc944999e688db/'));
+console.log('ok Spark ZIP identity/history and same-hash pinned recovery of deleted upstream paths');

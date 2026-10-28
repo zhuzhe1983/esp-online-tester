@@ -67,6 +67,7 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
   const product = selectedProduct(scene, catalog);
   check(!watchEntry || (watchEntry.compatibility?.status === 'product-verified' && watchEntry.compatibility.productIds.includes(product.id)), 'REFERENCE_ONLY', 'This watchlist entry is reference-only for the selected product and cannot be flashed.');
   check(source && typeof source === 'object', 'FIRMWARE_REQUIRED', 'Choose a complete firmware image or manifest first.');
+  check(!source.archive,'FLASH_LAYOUT','ZIP 固件请先解压，并使用完整 BIN 或烧录清单刷写实体设备。');
   check(source.bootMode!=='app-direct','FLASH_LAYOUT','应用直启不是完整刷机镜像；请提供 bootloader、分区表和应用文件的清单。');
   const known = catalog.firmwares.find(item => item.source && ((source.manifestUrl && item.source.manifestUrl === source.manifestUrl) || (source.url && item.source.url === source.url)));
   check(!known || known.status === 'available', 'REFERENCE_ONLY', 'This catalog entry has no flashable artifact.');

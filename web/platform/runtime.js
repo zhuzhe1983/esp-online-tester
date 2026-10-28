@@ -1,3 +1,4 @@
+import {validFirmwareArchive,extractFirmwareZip,firmwareArchiveCacheKey,MAX_FIRMWARE_ZIP_BYTES} from './firmware-archive.js';
 import {createNetworkSession} from './network-session.js';
 import {createAudioStream} from './audio-stream.js';
 import {motionParameter} from './motion-input.js';
@@ -423,13 +424,15 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     const item = typeof entry === 'string' ? { url: entry } : entry;
     requireValue(item && typeof item.url === 'string', 'INVALID_MANIFEST', 'Each firmware file needs a URL.');
     const url = resolveFirmwareUrl(item.url, root);
-    let cached = await firmwareCache.get(url, item.sha256, maxBytes);
+    const cacheUrl=firmwareArchiveCacheKey(item,url);
+    let cached = await firmwareCache.get(cacheUrl, item.sha256, maxBytes);
     requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
     if (cached) {
       try { await checkedHash(cached.data, item.sha256); }
-      catch { await firmwareCache.remove(url, item.sha256); cached = null; }
+      catch { await firmwareCache.remove(cacheUrl, item.sha256); cached = null; }
     }
-    const data = cached?.data || await fetchBytes(url, { fetchImpl, maxBytes, signal: aborter.signal, onProgress: progress.file(kind, url) });
+    let data = cached?.data || await fetchBytes(url, { fetchImpl, maxBytes:item.archive?MAX_FIRMWARE_ZIP_BYTES:maxBytes, signal: aborter.signal, onProgress: progress.file(kind, url) });
+    if(item.archive&&!cached){progress.prepare('extract',kind,url);data=await extractFirmwareZip(data,item,{maxBytes,signal:aborter.signal});}
     if (cached) progress.cache(kind, url, data.byteLength, cached.storage);
     progress.prepare('verify', kind, url);
     requireValue(data.length > 0, 'EMPTY_FILE', 'Firmware file is empty.', { url });
@@ -437,13 +440,14 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
     // Store computed hashes too; reuse still requires a pinned hash. A newly
     // discovered Burner version can then be restored from its history receipt.
-    if (!cached) await firmwareCache.putVerified(url, digest, data);
+    if (!cached) await firmwareCache.putVerified(cacheUrl, digest, data);
     return { data, url, sha256: digest };
   };
   const prepare = async (source, progress) => {
     requireValue(source && typeof source === 'object', 'FIRMWARE_REQUIRED', 'Select a firmware manifest or merged flash image first.');
     requireValue(source.bootMode===undefined||['rom','app-direct'].includes(source.bootMode),'INVALID_BOOT_MODE','Unknown firmware boot mode.');
     requireValue(!source.bootMode||source.url&&!source.manifestUrl&&!source.file&&!source.files,'INVALID_BOOT_MODE','Explicit boot mode is only supported for a remote raw image.');
+    requireValue(source.archive===undefined||validFirmwareArchive(source)&&!source.file&&!source.files,'INVALID_FIRMWARE_ARCHIVE','ZIP 固件必须指定唯一 BIN 文件名及其 SHA-256。');
     const cfg = runtimeConfig(), files = [], receipts = [];
     let total = 0;
     const add = (kind, artifact, at) => {
@@ -505,7 +509,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         const data = new Uint8Array(await source.file.arrayBuffer());
         progress.prepare('verify', 'flash');
         artifact = { data, url: null, sha256: await checkedHash(data, source.sha256) };
-      } else artifact = await readArtifact(source, baseUrl, progress, 'flash');
+      } else artifact = await readArtifact(source, baseUrl, progress, 'flash',source.archive?cfg.flash_mb*MIB:MAX_FILE);
       if(source.bootMode==='app-direct') {
         await validateAppImage(artifact.data,cfg.board,cfg.flash_mb*MIB);cfg.appDirect=true;
       } else {
@@ -750,7 +754,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         await initialize(bundle, progress); loaded = bundle; firmware = bundle.receipt;
         if (bundle.receipt.source === 'remote') scene.firmware = bundle.receipt.manifestUrl
           ? { manifestUrl: bundle.receipt.manifestUrl, sha256: bundle.receipt.manifestHash }
-          : { url: bundle.receipt.artifacts[0].url, sha256: bundle.receipt.artifacts[0].sha256, ...(bundle.receipt.appDirect?{bootMode:'app-direct'}:selected.bootMode?{bootMode:'rom'}:{}) };
+          : { url: bundle.receipt.artifacts[0].url, sha256: bundle.receipt.artifacts[0].sha256, ...(selected.archive?{archive:clone(selected.archive)}:{}), ...(bundle.receipt.appDirect?{bootMode:'app-direct'}:selected.bootMode?{bootMode:'rom'}:{}) };
         setStatus('ready'); return snapshot();
       }
       catch (e) { stopWorker(); if (status !== 'disposed') setStatus(loadCancelled ? 'configured' : 'error'); if (loadCancelled) throw error('FETCH_ABORTED', 'Firmware load was cancelled.'); throw e; }

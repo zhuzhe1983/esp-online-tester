@@ -45,6 +45,24 @@
                 "rom",
                 "app-direct"
               ]
+            },
+            "archive": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "format",
+                "entry"
+              ],
+              "properties": {
+                "format": {
+                  "const": "zip"
+                },
+                "entry": {
+                  "type": "string",
+                  "maxLength": 180,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_. -]*\\.[bB][iI][nN]$"
+                }
+              }
             }
           },
           "oneOf": [
@@ -72,6 +90,10 @@
           "dependentRequired": {
             "bootMode": [
               "url"
+            ],
+            "archive": [
+              "url",
+              "sha256"
             ]
           }
         }
