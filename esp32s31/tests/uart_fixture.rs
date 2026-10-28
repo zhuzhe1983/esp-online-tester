@@ -800,6 +800,26 @@ fn external_s31_real_guest_cache_error_isr_and_wtc_clear() {
 }
 
 #[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_PSRAM_IRQ_ELF"]
+fn external_s31_psram_actual_read_write_errors_and_guest_exception_irq_handlers() {
+    use emu_core::Bus;
+    let path = std::env::var("S31_PSRAM_IRQ_ELF").expect("build firmware/s31-uart-probe and set S31_PSRAM_IRQ_ELF");
+    let mut m = esp32s31::Bringup::new(); m.load_elf(&std::fs::read(path).unwrap()).unwrap(); m.bus.cache.set_psram_size(65536).unwrap();
+    let first = m.run(10000); assert_eq!(first.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(5)));
+    assert_eq!(m.bus.read32(0x205020c8), Ok(0x80)); assert!(m.bus.psram_controller.irq());
+    let fault = m.bus.first_fault.as_ref().unwrap(); assert_eq!((fault.hart, fault.address, fault.reason), (0, 0x50000000, emu_core::Fault::Unmapped));
+    // No register/PC repair: execute the guest's own exception handler, mret,
+    // source112 ISR and next real store. That store must independently fault.
+    let second = m.run(10000); assert_eq!(second.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7)));
+    assert_eq!(m.bus.read32(0x205020c8), Ok(0x200)); assert!(m.bus.psram_controller.irq());
+    let third = m.run(10000);
+    eprintln!("psram-irq steps={}/{}/{} stop={:?} uart={:?}", first.steps, second.steps, third.steps, third.stop, String::from_utf8_lossy(&m.bus.uart0.tx_out));
+    assert_eq!(third.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 PSRAM REAL FAULT IRQ MRET PASS\n");
+    assert_eq!(m.bus.read32(0x2f060000), Ok(2)); assert_eq!(m.bus.read32(0x50000000), Ok(0x12345678));
+    assert_eq!(m.bus.read32(0x205020c8), Ok(0)); assert!(!m.bus.psram_controller.irq());
+}
+
+#[test]
 #[ignore = "build firmware/s31-uart-probe and set S31_RTC_CALIBRATION_ELF"]
 fn external_s31_guest_measures_clock_divider_and_timeout_without_read_side_completion() {
     use emu_core::Bus;

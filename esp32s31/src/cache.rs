@@ -143,6 +143,22 @@ impl Cache {
     }
     pub(crate) fn flash_bytes_mut(&mut self) -> &mut [u8] { &mut self.flash }
     pub(crate) fn psram_bytes_mut(&mut self) -> &mut [u8] { &mut self.psram }
+    /// Distinguish an invalid MMU address from absent development backing or an
+    /// unsupported encrypted/alternate target. Only the former is AXI_ADDR_ERR.
+    pub(crate) fn invalid_psram_mapping(&self, address: u32, bytes: usize) -> bool {
+        if !self.psram_mmu.powered() { return false; }
+        for i in 0..bytes.min(4) {
+            let Some(a) = address.checked_add(i as u32) else { return false; };
+            if !(PSRAM_VADDR..0x54000000).contains(&a) { return false; }
+            let relative = (a - PSRAM_VADDR) as usize;
+            let index = relative / self.psram_mmu.page_size(true);
+            if self.psram_mmu.entries.get(index).is_none_or(|v| v & (1 << 11) == 0) { return true; }
+            // Preserve first-failure ordering across page boundaries: a prior
+            // absent backing/encrypted target is not the later invalid entry.
+            if self.psram_mmu.translate(relative, true, self.psram.len()).is_err() { return false; }
+        }
+        false
+    }
     pub fn set_psram_size(&mut self, bytes: usize) -> Result<(), String> {
         if bytes > 64 * 1024 * 1024 { return Err("S31 development PSRAM input exceeds 64 MiB".into()); }
         let mut data = Vec::new(); data.try_reserve_exact(bytes).map_err(|e| e.to_string())?;

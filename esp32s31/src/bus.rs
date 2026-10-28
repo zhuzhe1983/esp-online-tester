@@ -116,6 +116,9 @@ impl S31Bus {
         Err(reason)
     }
     fn uart_irq(&self) -> bool { self.clocks.uart_bus_on() && self.clocks.uart_core_on() && self.uart0.irq() }
+    fn psram_address_error(&mut self, address: u32, bytes: usize, write: bool, reason: Fault) {
+        if reason == Fault::Unmapped && self.cache.invalid_psram_mapping(address, bytes) { self.psram_controller.invalid_axi_mapping(write); }
+    }
     pub fn uart_input(&mut self, bytes: &[u8]) -> Result<(), Fault> {
         if !self.clocks.uart_bus_on() || !self.clocks.uart_core_on() || self.uart0.read(0x88) & (1 << 25 | 1 << 27) != 1 << 25 { return Err(Fault::Prohibited); }
         self.uart0.host_input(bytes); Ok(())
@@ -128,7 +131,7 @@ impl S31Bus {
         let conf = self.uart0.read(0x20); self.uart0.write(0x20, conf | 1 << 22); self.uart0.write(0x20, conf);
         self.uart0.int_raw = (1 << 14) | 2;
     }
-    fn irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.efuse.irq(), usb: self.usb_console.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.mwdt[0].irq(), self.mwdt[1].irq()], systimer: self.systimer.irqs() } }
+    fn irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.efuse.irq(), usb: self.usb_console.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.mwdt[0].irq(), self.mwdt[1].irq()], systimer: self.systimer.irqs(), psram: self.psram_controller.irq() } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
@@ -264,7 +267,7 @@ impl S31Bus {
             let mut value = [0; 4];
             for (i, byte) in value.iter_mut().take(bytes).enumerate() {
                 match address.checked_add(i as u32).ok_or(Fault::Unmapped).and_then(|a| self.cache.read_byte_core(a, false, self.hart)) {
-                    Ok(v) => *byte = v, Err(e) => return self.fault(address, bytes, false, false, e),
+                    Ok(v) => *byte = v, Err(e) => { self.psram_address_error(address, bytes, false, e); return self.fault(address, bytes, false, false, e); },
                 }
             }
             return Ok(u32::from_le_bytes(value));
@@ -453,7 +456,7 @@ impl S31Bus {
         }
         if Cache::is_memory(address) {
             if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(self.psram_controller.mode().is_some()).is_err() || self.psram_controller.memory_ready(true).is_err()) { return self.fault(address, bytes, true, false, Fault::Prohibited); }
-            return match self.cache.write(address, value, bytes) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+            return match self.cache.write(address, value, bytes) { Ok(()) => Ok(()), Err(e) => { self.psram_address_error(address, bytes, true, e); self.fault(address, bytes, true, false, e) } };
         }
         if Cache::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
@@ -535,7 +538,7 @@ impl Bus for S31Bus {
                 if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(self.psram_controller.mode().is_some()).is_err() || self.psram_controller.memory_ready(false).is_err()) { return self.fault(pc, 4, false, true, Fault::Prohibited); }
                 if address < crate::cache::PSRAM_VADDR && !self.mspi.flash_accessible() { return self.fault(pc, 4, false, true, Fault::Prohibited); }
                 match self.cache.read_byte_core(address, true, self.hart) {
-                    Ok(v) => data[i] = v, Err(e) => return self.fault(pc, 4, false, true, e),
+                    Ok(v) => data[i] = v, Err(e) => { self.psram_address_error(address, 1, false, e); return self.fault(pc, 4, false, true, e); },
                 }
             } else { return self.fault(pc, 4, false, true, Fault::Unmapped); }
         }
@@ -598,6 +601,35 @@ mod tests {
         assert_eq!(b.read32(PSRAM_VADDR), Err(Fault::Prohibited)); assert_eq!(b.fetch(PSRAM_VADDR), Err(Fault::Prohibited));
         assert_eq!(b.write32(PSRAM_VADDR, 0), Err(Fault::Prohibited));
         b.write32(0x207041e8, 1 << 31).unwrap(); assert_eq!(b.read32(PSRAM_VADDR), Ok(0x00500013));
+    }
+    #[test]
+    fn actual_invalid_psram_translation_routes_error_but_gating_and_missing_input_do_not() {
+        use crate::cache::{PSRAM_MMU, PSRAM_VADDR};
+        let mut b = S31Bus::new(); b.cache.set_psram_size(65536).unwrap(); b.write32(0x207041e8, 1 << 31).unwrap();
+        assert_eq!(b.read32(PSRAM_VADDR), Err(Fault::Unmapped)); assert_eq!(b.read32(PSRAM_MMU + 0xc8), Ok(0x80)); assert!(!b.psram_controller.irq());
+        b.write32(PSRAM_MMU + 0xc0, 0x280).unwrap(); assert!(b.psram_controller.irq());
+        b.interrupts.matrix_write(0, 112 * 4, 0x211); b.interrupts.clic[0].write(0x1044, 1 << 29 | 1 << 8, 15); assert!(b.refresh_irq(0).is_some());
+        b.write32(PSRAM_MMU + 0xc4, 0x80).unwrap(); assert_eq!(b.refresh_irq(0), None);
+        assert_eq!(b.write32(PSRAM_VADDR, 1), Err(Fault::Unmapped)); assert_eq!(b.read32(PSRAM_MMU + 0xcc), Ok(0x200));
+        b.write32(PSRAM_MMU + 0xc4, 0x200).unwrap();
+        b.write32(0x207041e8, 0).unwrap(); assert_eq!(b.read32(PSRAM_VADDR), Err(Fault::Prohibited)); assert_eq!(b.read32(PSRAM_MMU + 0xc8), Ok(0)); b.write32(0x207041e8, 1 << 31).unwrap();
+        for entry in [0x1c00, 0x800] { b.write32(PSRAM_MMU + 0x37c, entry).unwrap(); assert_eq!(b.read32(PSRAM_VADDR), Err(Fault::Prohibited)); assert_eq!(b.read32(PSRAM_MMU + 0xc8), Ok(0)); }
+        b.write32(PSRAM_MMU + 0x37c, 0xc01).unwrap(); // valid mapping beyond explicitly supplied array is not an invalid MMU entry
+        assert_eq!(b.read32(PSRAM_VADDR), Err(Fault::Unmapped)); assert_eq!(b.read32(PSRAM_MMU + 0xc8), Ok(0));
+        b.write32(PSRAM_MMU + 0x37c, 0xc00).unwrap(); b.write32(PSRAM_VADDR, 0x12345678).unwrap(); assert_eq!(b.read32(PSRAM_VADDR), Ok(0x12345678)); assert_eq!(b.read32(PSRAM_MMU + 0xc8), Ok(0));
+    }
+    #[test]
+    fn cross_page_rejected_write_is_atomic_and_fetch_invalid_mapping_is_read_error() {
+        use crate::cache::{PSRAM_MMU, PSRAM_VADDR};
+        let mut b = S31Bus::new(); b.cache.set_psram_size(65536).unwrap(); b.write32(0x207041e8, 1 << 31).unwrap(); b.write32(PSRAM_MMU + 0x37c, 0xc00).unwrap();
+        b.write16(PSRAM_VADDR + 65534, 0x1234).unwrap(); assert_eq!(b.write32(PSRAM_VADDR + 65534, 0xdeadbeef), Err(Fault::Unmapped)); assert_eq!(b.read16(PSRAM_VADDR + 65534), Ok(0x1234));
+        assert_eq!(b.read32(PSRAM_MMU + 0xc8), Ok(0x200)); b.write32(PSRAM_MMU + 0xc4, 0x200).unwrap();
+        assert_eq!(b.fetch(PSRAM_VADDR + 65536), Err(Fault::Unmapped)); assert_eq!(b.read32(PSRAM_MMU + 0xc8), Ok(0x80));
+        b.write32(crate::clocks::BASE + 0x68, 0x185).unwrap(); assert!(!b.psram_controller.irq()); b.write32(crate::clocks::BASE + 0x68, 0x181).unwrap();
+        assert_eq!(b.read32(PSRAM_MMU + 0xc8), Ok(0)); assert_eq!(b.read16(PSRAM_VADDR + 65534), Ok(0x1234));
+        b.cache.set_psram_size(0).unwrap(); // first byte lacks supplied backing, before the later invalid page
+        assert_eq!(b.read32(PSRAM_VADDR + 65534), Err(Fault::Unmapped)); assert_eq!(b.write32(PSRAM_VADDR + 65534, 1), Err(Fault::Unmapped));
+        assert_eq!(b.read32(PSRAM_MMU + 0xc8), Ok(0));
     }
     #[test]
     fn lp_scratch_words_preserve_full_values_without_aliasing_other_registers() {

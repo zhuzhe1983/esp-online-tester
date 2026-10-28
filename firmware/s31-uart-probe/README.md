@@ -342,3 +342,12 @@ guest reach WFI;512 explicitly supplied timer ticks then wake it through its
 actual interrupt handler. The handler checks RAW cannot be cleared by writing
 status and clears it through INT_CLR before writing its mailbox and UART PASS.
 No automatic idle-time advance or complete product readiness is implied.
+
+`psram-irq-probe.S` executes real loads and stores through an invalid PSRAM MMU
+entry, with an explicit 64KiB development backing array. Set `S31_PSRAM_IRQ_ELF`.
+The harness stops at each actual access exception and resumes without changing
+guest registers or PC. The guest exception handler advances its own `mepc`; its
+source112 CLIC ISR checks and clears the real read/write error bits. Finally the
+guest creates a valid mapping and verifies a successful data write/read, prints
+PASS and writes its mailbox. This tests functional address errors and the two
+handlers; it does not identify a physical RAM die or claim ECC/FIFO engines.

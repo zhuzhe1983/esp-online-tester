@@ -60,18 +60,25 @@ const PERIPHERAL_CONFIG: &[(u32, u32, u32)] = &[
     (0x200, 0x1, 0x1),
 ];
 
-pub struct PsramController { regs: [[u32; 256]; 2], mode: Option<[u8; 6]>, raw: u32, pub commands: u64, pub command_counts: [u64; 4], pub last_command: Option<u32> }
+const SYSTEM_IRQ_MASK: u32 = 0xfc0023f8; // Fixed spi_mem_s_reg.h:3..9,13,26..31.
+pub struct PsramController { regs: [[u32; 256]; 2], mode: Option<[u8; 6]>, raw: u32, system_raw: u32, system_ena: u32, pub commands: u64, pub command_counts: [u64; 4], pub last_command: Option<u32> }
 impl Default for PsramController {
     fn default() -> Self {
-        let mut p = Self { regs: [[0; 256]; 2], mode: None, raw: 0, commands: 0, command_counts: [0; 4], last_command: None }; p.reset(); p
+        let mut p = Self { regs: [[0; 256]; 2], mode: None, raw: 0, system_raw: 0, system_ena: 0, commands: 0, command_counts: [0; 4], last_command: None }; p.reset(); p
     }
 }
 impl PsramController {
     fn config(port: usize) -> &'static [(u32, u32, u32)] { if port == 0 { SYSTEM_CONFIG } else { PERIPHERAL_CONFIG } }
     pub fn reset(&mut self) {
-        self.regs = [[0; 256]; 2]; self.raw = 0; self.last_command = None; // controller reset leaves the external die intact
+        self.regs = [[0; 256]; 2]; self.raw = 0; self.system_raw = 0; self.system_ena = 0; self.last_command = None; // controller reset leaves the external die intact
         for p in 0..2 { for &(off, reset, _) in Self::config(p) { self.regs[p][off as usize / 4] = reset; } }
     }
+    /// Fixed S31 mspi_periph.c assigns source112 only to system MSPI2. MSPI3
+    /// has irq=-1; do not invent an additional line or OR in its local raw bank.
+    pub fn irq(&self) -> bool { self.system_raw & self.system_ena != 0 }
+    /// Only a real rejected AXI translation raises these address-error events.
+    /// Cache/power gating, absent backing or unsupported encryption do not.
+    pub(crate) fn invalid_axi_mapping(&mut self, write: bool) { self.system_raw |= if write { 1 << 9 } else { 1 << 7 }; }
     pub fn read(&self, port: usize, off: u32) -> Result<u32, Fault> {
         if port > 1 { return Err(Fault::Unmapped); }
         if off & 3 != 0 { return Err(Fault::Misaligned); }
@@ -79,8 +86,8 @@ impl PsramController {
         match (port, off) {
             (_, 0) => Ok(0), // no accepted pending transaction
             (0, 0x178) => Ok(0xfc000000), // queues are empty in the synchronous subset
-            (1, 0xc8) => Ok(self.raw),
-            (_, 0xcc | 0xc0) => Ok(0), // interrupt enables remain zero; system raw events are unsupported
+            (0, 0xc0) => Ok(self.system_ena), (0, 0xc8) => Ok(self.system_raw), (0, 0xcc) => Ok(self.system_raw & self.system_ena),
+            (1, 0xc8) => Ok(self.raw), (1, 0xcc | 0xc0) | (_, 0xc4) => Ok(0),
             _ => Err(Fault::Unmapped),
         }
     }
@@ -96,9 +103,12 @@ impl PsramController {
         match off {
             0 if value == 0 => Ok(()),
             0 => { self.last_command = Some(value); self.execute(port, value, memory) }
+            0xc0 if port == 0 => { self.system_ena = value & SYSTEM_IRQ_MASK; Ok(()) }
             0xc0 if value == 0 => Ok(()),
-            0xc4 | 0xc8 if port == 1 => { self.raw &= !value; Ok(()) }
-            0xc4 if port == 0 => Ok(()),
+            0xc0 => Err(Fault::Prohibited), // no demonstrated MSPI3 interrupt route
+            0xc4 if port == 1 => { self.raw &= !value; Ok(()) }
+            0xc4 if port == 0 => { self.system_raw &= !(value & SYSTEM_IRQ_MASK); Ok(()) }
+            0xc8 | 0xcc => Ok(()), // RAW is SS/WTC through CLR; ST is read-only
             _ => Err(Fault::Unmapped),
         }
     }
@@ -250,9 +260,23 @@ mod tests {
         assert_eq!(p.write(0, 0x1a0, 1 << 16, &mut memory), Err(Fault::Prohibited));
         assert_eq!(p.read(0, 0x1a0), Ok(0xb084)); assert_eq!(p.read(1, u32::MAX), Err(Fault::Misaligned));
         assert_eq!(p.write(0, 0x174, 0x1c0000, &mut memory), Err(Fault::Prohibited)); assert_eq!(p.read(0, 0x174), Ok(0x80000));
-        assert_eq!(p.read(0, 0xc8), Err(Fault::Unmapped));
+        assert_eq!(p.read(0, 0xc8), Ok(0));
         assert_eq!(command(&mut p, &mut memory, 0x4040, 6, 2, true), Err(Fault::Prohibited));
         assert_eq!(command(&mut p, &mut memory, 0x4040, 0, 65, true), Err(Fault::Prohibited));
+    }
+    #[test]
+    fn system_irq_masks_clear_reset_and_peripheral_raw_are_independent() {
+        let mut p = controller(); let mut memory = vec![0; 16];
+        command(&mut p, &mut memory, 0x4040, 0, 2, true).unwrap(); assert_eq!(p.read(1, 0xc8), Ok(0x18)); assert_eq!(p.read(0, 0xc8), Ok(0));
+        p.write(0, 0xc0, u32::MAX, &mut memory).unwrap(); assert_eq!(p.read(0, 0xc0), Ok(SYSTEM_IRQ_MASK)); assert!(!p.irq());
+        p.write(0, 0xc8, u32::MAX, &mut memory).unwrap(); assert_eq!(p.read(0, 0xc8), Ok(0));
+        p.invalid_axi_mapping(false); p.invalid_axi_mapping(true); assert!(p.irq()); assert_eq!(p.read(0, 0xcc), Ok(0x280));
+        p.write(0, 0xc8, 0x280, &mut memory).unwrap(); assert_eq!(p.read(0, 0xcc), Ok(0x280));
+        p.write(0, 0xc4, 0x80, &mut memory).unwrap(); assert_eq!(p.read(0, 0xc8), Ok(0x200)); assert_eq!(p.read(0, 0xc4), Ok(0));
+        p.write(1, 0xc8, 0x18, &mut memory).unwrap(); assert_eq!(p.read(1, 0xc8), Ok(0x18));
+        p.write(1, 0xc4, 0x18, &mut memory).unwrap(); assert_eq!(p.read(1, 0xc8), Ok(0)); assert_eq!(p.read(0, 0xc8), Ok(0x200));
+        p.write(0, 0xc0, 0, &mut memory).unwrap(); assert!(!p.irq()); assert_eq!(p.read(0, 0xc8), Ok(0x200));
+        assert_eq!(p.write(1, 0xc0, 0x18, &mut memory), Err(Fault::Prohibited)); let mode = p.mode(); p.reset(); assert_eq!(p.mode(), mode); assert_eq!(p.read(0, 0xc8), Ok(0));
     }
     #[test]
     fn attached_device_requires_its_real_axi_configuration() {

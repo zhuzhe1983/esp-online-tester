@@ -1582,3 +1582,50 @@ unchanged, so this control isolates the missing SYSTIMER input.
 
 See the [timer receipt](evidence/s31-bringup/systimer.json) and
 [official image observation](evidence/s31-bringup/systimer-plus-2.0.68-final.json).
+
+## PSRAM address errors and guest interrupt handlers (2026-10-28)
+
+System MSPI2 now implements its documented interrupt bank at
+`205020c0/c4/c8/cc`. An actual rejected PSRAM MMU translation raises the read
+address-error bit7 or write address-error bit9 while retaining the original
+synchronous access exception. Instruction fetch is a read. Raw events latch
+independently of enables, become masked status, and clear only through the paired
+WT clear register. Controller reset clears both banks without erasing the
+explicitly supplied external RAM data or mode registers.
+
+The fixed public S31 `mspi_periph.c` assigns source112 to system MSPI2 and
+`irq=-1` to peripheral MSPI3. Only real enabled system events reach the per-hart
+matrix/CLIC. The existing MSPI3 command-completion raw bits remain independent;
+this stage does not invent a peripheral interrupt route. Documented enables for
+ECC, FIFO, local PMS and XTS events can be retained as configuration, but their
+unimplemented engines do not fabricate successful checks or pending events.
+
+The error path distinguishes invalid MMU entries from missing development
+backing, unsupported sensitive/alternate targets, and power/cache/pad gating.
+Those other failures remain explicit diagnostics and do not falsely become
+PSRAM address-error interrupts. Cross-page operations preserve first-failure
+order; a rejected multi-byte write leaves earlier bytes unchanged.
+
+The source fixture executes a real unmapped load, receives exception5 after37
+instructions, and resumes its own exception handler without host register/PC
+repair. That handler advances `mepc`; the real source112 ISR checks and clears
+the latched read error before `mret`. A subsequent store independently produces
+exception7 after32 more instructions and takes the same two-handler path. The
+guest then establishes a valid mapping and verifies an actual data write/read,
+writes completion word2 and prints `S31 PSRAM REAL FAULT IRQ MRET PASS` after225
+more instructions. The supplied64KiB backing is a declared development input,
+not physical RAM identification. The first fixture attempt failed because it
+compared the whole CLIC `mcause`, including MPIE/MPP state, with the exception
+number; correcting the guest's extraction fixed that test without changing the
+emulator's exception behavior.
+
+With the same complete, unmodified Plus2.0.68 image and prior explicit electrical
+and clock inputs, the actual application passes PSRAM error-handler registration
+and reaches its brownout initialization. Its next fault is a read from
+`LP_ANA_BOD_MODE0_CNTL` at`20702000`, CPU0 PC`401ea9e4`, after72,090,656 total
+instructions. This stage does not bypass brownout control, replace the image or
+claim a working scheduler/display: **INK4 Plus remains unavailable and has no
+framebuffer**. All production chip paths remain unchanged.
+
+See the [PSRAM interrupt receipt](evidence/s31-bringup/psram-irqs.json) and
+[original image observation](evidence/s31-bringup/psram-irqs-plus-2.0.68-final.json).
