@@ -45,7 +45,7 @@ export TBEAM_FACTORY_BIN=/path/to/tbeam-v1.x-all-band-sx1276-factory-20260817_0x
 export ESP32SIM_ROM_DIR=/path/to/roms
 cargo test -p esp32 --lib tbeam
 cargo test --release -p esp32 --test tbeam_factory -- --ignored --nocapture
-node tools/platform-tbeam-runtime-test.mjs
+node tools/tbeam-factory-test.mjs
 cargo clippy -p esp32 --all-targets -- -D warnings
 cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings
 ```

@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Exact official factory image through the public runtime and worker, without
 // app-direct boot or stubs. Supply the downloaded, hash-pinned input explicitly.
+// Keep this opt-in check outside the platform-*-test.mjs CI glob, like the other
+// device factory checks: its external firmware input is not a CI fixture.
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {Worker} from 'node:worker_threads';

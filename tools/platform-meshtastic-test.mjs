@@ -51,7 +51,16 @@ test('actual dual-role catalog, stable/alpha targets and missing-SHA update poli
  assert.equal(product.knowledgeUrl,accessory.knowledgeUrl);assert.equal(product.model.url,accessory.visual.modelUrl);assert.equal(product.catalogRoles.accessoryId,accessory.id);assert.equal(accessory.catalogRoles.productId,product.id);
  const mesh=watchlist.entries.find(x=>x.id==='meshtastic');assert.equal(mesh.catalogTargets.filter(t=>t.productIds.every(id=>id.startsWith('m5stack-'))).length,4);
  assert.deepEqual(mesh.catalogTargets.filter(t=>t.productIds.some(id=>id.startsWith('lilygo-'))).map(t=>[t.boardTarget,t.targetChip]),[['t-deck','esp32s3'],['tbeam','esp32'],['t-watch-s3','esp32s3']]);
- for(const t of mesh.catalogTargets){const fw=firmwares.items.find(x=>x.id===t.firmwareId);assert.match(fw.source.sha256,/^[a-f0-9]{64}$/);assert.ok(fw.source.url.includes(t.boardTarget));assert.equal(firmwareRunPolicy(products.items.find(p=>p.id===t.productIds[0]),fw).canRun,false);}
+ const runnableTrials=new Set(['lilygo-t-deck','lilygo-t-beam-v1-2']);
+ for(const t of mesh.catalogTargets){
+  const fw=firmwares.items.find(x=>x.id===t.firmwareId),product=products.items.find(p=>p.id===t.productIds[0]);
+  assert.match(fw.source.sha256,/^[a-f0-9]{64}$/);assert.ok(fw.source.url.includes(t.boardTarget));
+  // Board adaptation permits an attempt; factory checks do not verify Meshtastic.
+  assert.equal(fw.status,'trial');assert.equal(fw.simulationVerified,false);
+  const policy=firmwareRunPolicy(product,fw),canRun=runnableTrials.has(product.id);
+  assert.equal(policy.canRun,canRun,product.id);assert.equal(policy.trial,true);
+  assert.equal(policy.reason,canRun?null:'board-unavailable');
+ }
  const saved=snapshot.entries.find(x=>x.id==='meshtastic'),old=firmwares.items.find(x=>x.id==='m5stack-u202-meshtastic-stable');
  const newAsset={...saved.releases.flatMap(r=>r.assets).find(a=>a.boardTarget==='m5stack-unitc6l'),name:'firmware-m5stack-unitc6l-99.0.0.abcdef0.factory.bin',digest:null};
  saved.releases.unshift({...releases[0],tag_name:'v99.0.0.abcdef0',prerelease:false,published_at:'2099-01-01',assets:[newAsset]});
