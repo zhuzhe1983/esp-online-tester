@@ -7153,7 +7153,7 @@
         "lilygo-t-beam-v1-2"
       ],
       "version": "20260817",
-      "status": "trial",
+      "status": "available",
       "source": {
         "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/firmware/tbeam-v1.x-all-band-sx1276-factory-20260817_0x0.bin",
         "sha256": "2867c0cdfe47a9ad70cb69504a7fbe757ccaf73b044fc2345a2250d93284a4b6",
@@ -7162,7 +7162,7 @@
       "role": "factory",
       "publisher": "LILYGO",
       "publisherGroup": "官方",
-      "simulationVerified": false,
+      "simulationVerified": true,
       "hardwareValidated": false,
       "watchlistId": "lilygo-factory-beam",
       "sources": [
@@ -7178,9 +7178,17 @@
         }
       ],
       "limitations": [
-        "完整镜像已在内存校验 SHA-256、目标芯片、分区与容量；尚未验证本镜像的模拟运行和实机刷写。",
-        "只有存在板级模型的产品提供尝试运行；其余产品保留固件入口。"
-      ]
+        "已验证固定官方镜像的完整 ROM 启动、AXP2101 初始化、电源键短按中断、GPIO38 切换、SX1276 数字发送/显式对端接收，以及串口修改频率；不代表全部功能均可模拟。",
+        "无选配 OLED；PSRAM、GNSS、真实 RF/Wi-Fi 链路、电池充放电与物理断电尚未实现。电源状态为虚拟 USB 5V、未安装电池。",
+        "出厂固件探测 GNSS 会等待约 32 秒客体时间；屏幕缺失与 PSRAM 禁用信息属于当前已知范围，验证以串口与数字外设状态为准。",
+        "菜单中的同步 LoRa 发送可能暂时忽略短按；过长按压不产生 AceButton 单击。长按睡眠、唤醒和实机刷写尚未验收。"
+      ],
+      "compatibility": "partial",
+      "verification": {
+        "simulationVerified": true,
+        "hardwareValidated": false,
+        "evidence": "docs/platform/lilygo-tbeam-runtime.md"
+      }
     },
     {
       "id": "lilygo-t-deck-factory",

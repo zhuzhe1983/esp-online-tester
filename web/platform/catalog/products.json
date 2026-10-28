@@ -11673,10 +11673,10 @@
       "summary": "集成 SX1276 LoRa、GNSS 和 18650 电池座的 ESP32 开发板；限定 V1.2 AXP2101、868/915MHz 版本，OLED 为另装扩展。",
       "knowledgeUrl": "./knowledge/lilygo-t-beam-v1-2.json",
       "runtime": {
-        "board": null,
+        "board": "lilygo-t-beam-v1-2",
         "flashMb": 4,
         "psramMb": 8,
-        "status": "unavailable",
+        "status": "partial",
         "touch": false
       },
       "display": null,
@@ -11691,7 +11691,8 @@
         {
           "id": "power",
           "name": "AXP2101 电源键",
-          "type": "button"
+          "type": "button",
+          "transport": "board"
         },
         {
           "id": "reset",
@@ -11750,6 +11751,10 @@
               "gpio": 23
             },
             {
+              "name": "DIO0",
+              "gpio": 26
+            },
+            {
               "name": "DIO1",
               "gpio": 33
             },
@@ -11799,7 +11804,8 @@
         }
       ],
       "limitations": [
-        "尚未完成适配：本型号没有板级运行模型，外观模型与固件链接不表示可模拟运行。",
+        "板级数字模型已提供 AXP2101、GPIO38 和 SX1276 LoRa；GNSS、PSRAM、可选 OLED、模拟电源与真实射频尚未实现。",
+        "电源键仅验证短按中断；长按睡眠/唤醒、物理断电与复位键模型未验收。可用运行控制重置固件。",
         "官方 wiki 沿用 AXP192/V1.1 介绍；本条目采用 V1.2 官方硬件资料的 AXP2101。",
         "官方硬件文档称 USB-C，而 wiki/部分产品照片为 Micro-USB；未将接口批次冲突隐藏。",
         "GNSS 型号、射频地区选项和可选 OLED 是否随货安装不能从系列名称推断。"
@@ -11816,6 +11822,13 @@
           "mappingScope": "hardware-variant",
           "catalogRevision": "0fd728e800d9ebaa5a15515b49aa6244f3453340"
         }
+      },
+      "model": {
+        "type": "source-derived",
+        "url": "./assets/lilygo-t-beam-v1-2/model.json",
+        "status": "partial",
+        "basis": "photo-proxy",
+        "notes": "有限照片预览，UNKNOWN PCB；不是V1.2厂家CAD。"
       }
     },
     {
