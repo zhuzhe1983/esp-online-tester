@@ -1,0 +1,161 @@
+{
+  "checkedAt": "2026-10-28T04:49:34Z",
+  "sourceSha256": {
+    "web/wasm/worker.js": "eb26ea86778dfcb7edb15f75787643c9b9796c43905d57968c80cdea27b49dc9",
+    "web/platform/accessory-routing.js": "fe614d8cac3edf830403822989297830476cef4f15d02a923b9d16340d2e7737",
+    "web/platform/catalog.js": "be88aab803055bb44063a475443d2c7c4ca86474b280048bfbf19db2c2ea582f",
+    "web/platform/runtime.js": "bb485483c8ec5652b4fc91305b650ef0fcb16921c2f3ef7b52226a84cd41ff55",
+    "web/platform/recording.js": "7342ac0f7f480add6ec3a97541853cb5cb8383f30a82353935655becaaa19452",
+    "tools/probe-unit-dlight.mjs": "3c4e502c5c5644e9b06aaf6ed79ca8ef6e33e00633e537cb4e952b97caa1d745",
+    "esp-periph/src/i2c/bh1750.rs": "63fc465806b9cb8a2fd7f80741d762e26345fada4b6cd438392890c16b2d696a",
+    "esp32s3/src/board/stopwatch.rs": "db29d576e2f8cae71c1fd5bb98a98dbf1796abf42ee2c50cd69a9068b524cca0",
+    "web/platform/illuminance-input.js": "2ee7d0efa6d3259e112eb81c9f0e9f1f0f222317b02bdfb6002bf9d2242eb5b5",
+    "tools/fixtures/unit-dlight-firmware/main/main.cpp": "f2f778c36212bf98c376d74dba21541172365c43843ccad75e707170a1bf93dd"
+  },
+  "wasmSha256": "5d9c6b06cb92982fabba874942f94172b46867d1d1ed9818d4bdf92a3d23504f",
+  "romSha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "command": "node tools/probe-unit-dlight.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "8301ea9f387ff1fb33cd2a023b4be3c9cdfb86b87e87716c07612540f43dcc2a",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+    "unit_dlight_fixture.bin": "20211bb1e2c303603c8366cc99e925f48f63f98e440b9ca6831e725e585e2f6d"
+  },
+  "checks": [
+    "unchanged M5-DLight driver reads1000lx through actual IDF I2C1 G10/G11 and BH1750 raw bytes",
+    "illuminance API updates genuine continuous conversion; invalid range rejected",
+    "continuous H2 and L produce fresh guest register results after changing ambient light",
+    "wrong physical GPIO pair and alternate0x5c address NACK; corrected route works",
+    "data remains reset0 before maximum180ms conversion; one-shot result arrives later",
+    "H2 and MTreg138 gain/timing plus L-resolution are preserved; vendor getLUX raw/1.2 limitation is visible, independent datasheet correction used",
+    "power-down keeps last result and ignores new exposure until measurement restarts",
+    "M5PM1 supply off NACKs; fresh supply resets result and MTreg before a new measurement",
+    "unplug NACKs; disconnected ambient persists and reconnect resets sensor conversion state",
+    "connected guest restart retains the configured ambient value while the sensor is reinitialized",
+    "paused input rule, disconnected guest restart and original-scene platform reset retain distinct semantics",
+    "record/replay preserves light input and actual guest output",
+    "one U006 carries distinct BH1750/SHT40/BMP280 addresses; unplugging DLight leaves ENV communication alive",
+    "upstream Hub disconnect gates every sensor while preserving the individual child connection state",
+    "MTreg31 reaches100klx; default sensitivity saturates16-bit data instead of overflowing"
+  ],
+  "samples": [
+    "DLIGHT_SAMPLE err=0 raw=1200 vendor=1000 lux=1000.0000 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=3001 vendor=2500 lux=2500.8333 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=6001 vendor=5000 lux=2500.4167 mode=11 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=8640 vendor=7200 lux=3600.0000 mode=11 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=3000 vendor=2500 lux=2500.0000 mode=13 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=4320 vendor=3600 lux=3600.0000 mode=13 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=3000 vendor=2500 lux=2500.0000 mode=13 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=6001 vendor=5000 lux=2500.4167 mode=21 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=6001 vendor=5000 lux=2500.4167 mode=20 mt=138",
+    "DLIGHT_SAMPLE err=0 raw=3000 vendor=2500 lux=2500.0000 mode=23 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=3000 vendor=2500 lux=2500.0000 mode=23 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=3000 vendor=2500 lux=2500.0000 mode=23 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=3600 vendor=3000 lux=3000.0000 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=0 vendor=0 lux=0.0000 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=3600 vendor=3000 lux=3000.0000 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=26 vendor=21 lux=21.6667 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=26 vendor=21 lux=21.6667 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=1200 vendor=1000 lux=1000.0000 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=1481 vendor=1234 lux=1234.1667 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=1481 vendor=1234 lux=1234.1667 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=1200 vendor=1000 lux=1000.0000 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=1200 vendor=1000 lux=1000.0000 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=53913 vendor=44927 lux=99999.9194 mode=20 mt=31"
+  ],
+  "timing": [
+    "DLIGHT_SAMPLE err=0 raw=0 vendor=0 lux=0.0000 mode=20 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=3001 vendor=2500 lux=2500.8333 mode=20 mt=69"
+  ],
+  "recording": {
+    "events": [
+      {
+        "at": 0.262385625,
+        "type": "accessory-illuminance",
+        "accessoryId": "light",
+        "lux": 1234
+      }
+    ],
+    "result": "completed",
+    "bitExact": false
+  },
+  "sharedBus": [
+    "DLIGHT_ENV sht=0/0 t=20.001 rh=30.000 crc=1 bmp=0 id=58",
+    "DLIGHT_ENV sht=0/0 t=20.001 rh=30.000 crc=1 bmp=0 id=58"
+  ],
+  "status": "pass",
+  "serialEvidence": [
+    "DLIGHT_POWER 1",
+    "DLIGHT_POWER 1",
+    "DLIGHT_SAMPLE err=0 raw=1200 vendor=1000 lux=1000.0000 mode=10 mt=69",
+    "DLIGHT_READY",
+    "DLIGHT_SAMPLE err=0 raw=1200 vendor=1000 lux=1000.0000 mode=10 mt=69",
+    "DLIGHT_READY",
+    "DLIGHT_SAMPLE err=0 raw=1200 vendor=1000 lux=1000.0000 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=1200 vendor=1000 lux=1000.0000 mode=10 mt=69",
+    "DLIGHT_ENV sht=0/0 t=20.001 rh=30.000 crc=1 bmp=0 id=58",
+    "DLIGHT_ENV sht=0/0 t=20.001 rh=30.000 crc=1 bmp=0 id=58",
+    "DLIGHT_PROBE address=23 err=-1",
+    "DLIGHT_PROBE address=23 err=-1",
+    "DLIGHT_ENV sht=0/0 t=20.001 rh=30.000 crc=1 bmp=0 id=58",
+    "DLIGHT_ENV sht=0/0 t=20.001 rh=30.000 crc=1 bmp=0 id=58",
+    "DLIGHT_PROBE address=23 err=-1",
+    "DLIGHT_PROBE address=23 err=-1",
+    "DLIGHT_ENV sht=-1/-1 t=-45.000 rh=-6.000 crc=0 bmp=-1 id=00",
+    "DLIGHT_ENV sht=-1/-1 t=-45.000 rh=-6.000 crc=0 bmp=-1 id=00",
+    "DLIGHT_SAMPLE err=0 raw=1200 vendor=1000 lux=1000.0000 mode=10 mt=DLIGHT_SAMPLE err=0 raw=1200 vendor=1000 lux=1000.0000 mode=10 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=53913 vendor=44927 lux=99999.9194 mode=20 mt=31",
+    "DLIGHT_SAMPLE err=0 raw=53913 vendor=44927 lux=99999.9194 mode=20 mt=31",
+    "DLIGHT_SAMPLE err=0 raw=65535 vendor=54612 lux=54612.5000 mode=20 mt=69",
+    "DLIGHT_SAMPLE err=0 raw=65535 vendor=54612 lux=54612.5000 mode=20 mt=69"
+  ],
+  "accessoryInputs": [
+    {
+      "accessoryId": "hub",
+      "model": "passive-hub-u006",
+      "port": "grove",
+      "hub": true,
+      "connected": true
+    },
+    {
+      "accessoryId": "light",
+      "model": "bh1750fvi-u136",
+      "port": "grove",
+      "pins": [
+        10,
+        11
+      ],
+      "addresses": [
+        35
+      ],
+      "control": "illuminance",
+      "viaAccessoryId": "hub",
+      "portId": "port-1",
+      "connected": true,
+      "effectiveConnected": true,
+      "lux": 100000
+    },
+    {
+      "accessoryId": "env",
+      "model": "sht40-bmp280-u001d",
+      "port": "grove",
+      "pins": [
+        10,
+        11
+      ],
+      "addresses": [
+        68,
+        118
+      ],
+      "control": "environment",
+      "viaAccessoryId": "hub",
+      "portId": "port-2",
+      "connected": true,
+      "effectiveConnected": true,
+      "temperatureC": 20,
+      "humidityPercent": 30,
+      "pressureHpa": 999
+    }
+  ]
+}

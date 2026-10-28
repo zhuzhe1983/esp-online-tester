@@ -1,0 +1,251 @@
+{
+  "checkedAt": "2026-10-28T04:51:48Z",
+  "base": "5a9b68e0",
+  "dependency": [
+    "95fc5da2 (equivalent local cherry-pick 5ad60550)",
+    "da61bbc1 (equivalent local cherry-pick 18ca1dd8)"
+  ],
+  "import": "0c1d589d (adapted from 4670491d)",
+  "goldensChanged": false,
+  "rustTests": 1572,
+  "rustGroups": 132,
+  "platformTests": 107,
+  "actualWasmProtocolChecks": 15,
+  "checks": [
+    {
+      "name": "stable",
+      "command": "rustup update stable",
+      "exitCode": 0,
+      "seconds": 0.763,
+      "logSha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+    },
+    {
+      "name": "build",
+      "command": "cargo build --release --workspace",
+      "exitCode": 0,
+      "seconds": 27.163,
+      "logSha256": "0e8d6f75570f013a6d8e8da93887e3181f646b48ad545faab7a2bbef04ece0c9"
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "seconds": 2.146,
+      "logSha256": "bd18476845b6531c7c267dff1a5d6a854b4662ce24f9464c276b4e7381489393"
+    },
+    {
+      "name": "clippy-wasm",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "seconds": 1.66,
+      "logSha256": "e5cfebf9ac536c0f12a766ba2ad1f4866af921374798bb2ef7869dbe6e74bcfb"
+    },
+    {
+      "name": "rust",
+      "command": "cargo test --release --workspace -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "seconds": 145.609,
+      "logSha256": "5e1141ac371f64c0ae2910e850caaeddc08a297368f1084cb01c88b8d66d24c0"
+    },
+    {
+      "name": "vq",
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "exitCode": 0,
+      "seconds": 14.309,
+      "logSha256": "907ee5357daaff5c21af9c38aa36bd075609f6e2390ce13e4cc486178660782a"
+    },
+    {
+      "name": "wasm-build",
+      "command": "tools/wasm-build.sh",
+      "exitCode": 0,
+      "seconds": 16.407,
+      "logSha256": "8698bc6e7340859e4f12ae5a5835bde462d6a35ed4a51f36dbe0116171aa4943"
+    },
+    {
+      "name": "wasm-sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "seconds": 0.042,
+      "logSha256": "b5265fe45659e41298a9616cc1e1903d21b77e7e0e9848b9a105774f930f6b23"
+    },
+    {
+      "name": "wasm",
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "exitCode": 0,
+      "seconds": 31.504,
+      "logSha256": "f7091a3a8bfbff5c3b0d92cb04627478a80900f31bb8d95bbe2b587d456d1ed8"
+    },
+    {
+      "name": "platform",
+      "command": "node --test tools/platform-*-test.mjs",
+      "exitCode": 0,
+      "seconds": 2.826,
+      "logSha256": "45d2e5318f99a531b9ead87fbdf3175cbe13e97626bffec77a2142b80675a733"
+    },
+    {
+      "name": "recording",
+      "command": "node tools/platform-recording-test.mjs --real",
+      "exitCode": 0,
+      "seconds": 3.806,
+      "logSha256": "fb28a4151c78da3e7407c93f247df0d879a64cac193458d9256b0667fb64233d"
+    },
+    {
+      "name": "timing",
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "seconds": 0.041,
+      "logSha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3"
+    },
+    {
+      "name": "ble",
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "seconds": 0.601,
+      "logSha256": "d437303d739ae21a7b9a697179c82c2b84ce74401f2f18c2ff3241c79c684a12"
+    },
+    {
+      "name": "ble-connection",
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "seconds": 2.022,
+      "logSha256": "bf29512974ec2b83522a7e8e3492da4893eb42fee971cf5ced733f617d333db5"
+    },
+    {
+      "name": "pacing",
+      "command": "node tools/worker-pacing-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.035,
+      "logSha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158"
+    },
+    {
+      "name": "channel",
+      "command": "node tools/worker-channel-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.107,
+      "logSha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6"
+    },
+    {
+      "name": "input",
+      "command": "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.078,
+      "logSha256": "8cc3c3fb7f2fee6bbc68cd071cc5d22b34ac5bd2a18f3b7a978590365206b744"
+    },
+    {
+      "name": "bench",
+      "command": "node --test tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.094,
+      "logSha256": "cd098d491f5918dd2d593c5fc006db195e266f73b8dc48333e649c44fef0499a"
+    },
+    {
+      "name": "bench-python",
+      "command": "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "exitCode": 0,
+      "seconds": 0.076,
+      "logSha256": "c7de476d1b78f867b2bbe4e9d11b5587cebe9384a2c3f2a5dc48ff78e0c49d6d"
+    },
+    {
+      "name": "jit",
+      "command": "tools/wasm-jit-test.sh",
+      "exitCode": 0,
+      "seconds": 32.633,
+      "logSha256": "1e1c5e6f74aca2b327084c03ba67f60cd376f4fa6a7c52232c267d02cf4269f2"
+    },
+    {
+      "name": "profile",
+      "command": ". ./tools/wasm-rustflags.sh; cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "exitCode": 0,
+      "seconds": 15.676,
+      "logSha256": "f526528d42e60c3ebdf223f1bb8153c7ef2becec0283cb2dec2406266c74367e"
+    },
+    {
+      "name": "schema",
+      "command": "uv run --with-requirements tools/requirements-catalog.txt python tools/validate-platform-catalog.py",
+      "exitCode": 0,
+      "seconds": 0.153,
+      "logSha256": "7210b5d5b032a3c4c4482fefcf58211d524a156998fb88bc7e0b88a02d98b234"
+    },
+    {
+      "name": "x5",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.095,
+      "logSha256": "281f5f0f6f221179808839db2d4c0a0f856ad70be82ca050e9f6f0a137cc0230"
+    },
+    {
+      "name": "x5verify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+      "exitCode": 0,
+      "seconds": 0.035,
+      "logSha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b"
+    },
+    {
+      "name": "m1",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.09,
+      "logSha256": "6ed02a66e68566b3acd12a13d7630330cb78dd0915897a1dd70f4dfe32cc966e"
+    },
+    {
+      "name": "m1verify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+      "exitCode": 0,
+      "seconds": 0.035,
+      "logSha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a"
+    },
+    {
+      "name": "historical",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.09,
+      "logSha256": "71f0270ba425ea8c0cd67e3af2b513acbb5085ab25b79d7041b9cc96787674b2"
+    },
+    {
+      "name": "historicalverify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "exitCode": 0,
+      "seconds": 0.036,
+      "logSha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4"
+    },
+    {
+      "name": "aarch64",
+      "command": "cargo test --release -p xtensa-lx7",
+      "exitCode": 0,
+      "seconds": 4.569,
+      "logSha256": "b7a8fbf75e2c51a87ef963fe89101d6eaebd104c32cd2005dafda2fe7538e635"
+    }
+  ],
+  "sourceSha256": {
+    "esp-periph/src/i2c/bh1750.rs": "63fc465806b9cb8a2fd7f80741d762e26345fada4b6cd438392890c16b2d696a",
+    "esp-periph/src/i2c.rs": "dbe8c2fe4c65c47092a7d7b5b4e0c1fda258555ff363683e2b8152ff863a4eff",
+    "esp-soc/src/board.rs": "cebaf35bba1e2d5cf761d7cc7114807c1d99687d5e7858787e9e64fef6e57e12",
+    "esp-soc/src/machine/web.rs": "d56f976ef47844064380c96a235e37e474664d6a5375e1931245d5ba6cb8ebd1",
+    "esp32s3/src/board/stopwatch.rs": "db29d576e2f8cae71c1fd5bb98a98dbf1796abf42ee2c50cd69a9068b524cca0",
+    "web/platform/runtime.js": "bb485483c8ec5652b4fc91305b650ef0fcb16921c2f3ef7b52226a84cd41ff55",
+    "web/platform/recording.js": "7342ac0f7f480add6ec3a97541853cb5cb8383f30a82353935655becaaa19452",
+    "web/platform/catalog.js": "be88aab803055bb44063a475443d2c7c4ca86474b280048bfbf19db2c2ea582f",
+    "web/platform/app.js": "5b215be9fbde3bb8a1bbb2245207f3613c1e963af9ab6ed60b7eab998df41176",
+    "web/platform/accessory-routing.js": "fe614d8cac3edf830403822989297830476cef4f15d02a923b9d16340d2e7737",
+    "web/platform/illuminance-input.js": "2ee7d0efa6d3259e112eb81c9f0e9f1f0f222317b02bdfb6002bf9d2242eb5b5",
+    "web/platform/manufacturer-model.js": "ce1a759ae23f4090c22d9aaa438ff822e7616c7a39a3d3a25d386612a909a9d4",
+    "web/platform/grove-geometry.js": "fa5b69dfba9e272400a0ca3a980c9cbd547608a4e147a85ce9b7869ab837e639",
+    "web/platform/assets/m5stack-unit-dlight-u136/model.json": "a46061fe207d63357e50c46ab1e3c97e76c5baaae3d7eef601324ce8571af254",
+    "web/platform/assets/m5stack-unit-dlight-u136/geometry.bin": "f2ab5293f56cd5a0b911e6b8ff6a9e3007c5a865006a18ff562f3caec40c9b34",
+    "tools/probe-unit-dlight.mjs": "3c4e502c5c5644e9b06aaf6ed79ca8ef6e33e00633e537cb4e952b97caa1d745",
+    "tools/fixtures/unit-dlight-firmware/main/main.cpp": "f2f778c36212bf98c376d74dba21541172365c43843ccad75e707170a1bf93dd",
+    "esp-periph/src/i2c/env4.rs": "d26feaa113695c307a43fc58508f211e9e2f36e966351559ab69fcab1252a72e",
+    "esp-periph/src/i2c/sht4x.rs": "b10f321e6ddb282e4cc120c7b3fa451c84b12c35afd29669f9eea8c974826769"
+  },
+  "wasmSha256": "5d9c6b06cb92982fabba874942f94172b46867d1d1ed9818d4bdf92a3d23504f",
+  "nativeBinarySha256": {
+    "esp32sim": "ffa27f61b2c3965036aa0ab8ada8f877d216facbf6d91aa4edadee7bce899967",
+    "esp32sim-c3": "42b856d0a59e442829c25cbf531e19ffa96b5575e0cbccd74ac07bc99f5c7d57",
+    "esp32sim-c6": "0bc1063cdf394d492e30e3ab3c0940b6c10b4af3fd2fecd9ce46b83c55213623"
+  },
+  "limitations": [
+    "Source-built fixture with unchanged M5-DLight driver; no physical hardware validation or arbitrary official firmware compatibility sweep.",
+    "Only the audited StopWatch hardware I2C Grove G10/G11 route; external software I2C not modeled.",
+    "Full logs retained locally only; command summaries and hashes omit workspace identity."
+  ]
+}

@@ -26,7 +26,7 @@ extern "C" void app_main(){
             case 'q':sample();break;case 'p':probe(0x23);break;case 'a':probe(0x5c);break;case 'o':supply(false);break;case 'i':supply(true);mt=69;mode=0x10;break;
             case 'w':Wire.begin(14,15,400000);probe(0x23);break;case 'c':Wire.begin(10,11,400000);probe(0x23);break;
             case 'h':set_mt(69);measure(0x20,220);break;case '2':set_mt(69);measure(0x21,220);break;case 'l':set_mt(69);measure(0x23,40);break;
-            case 'm':set_mt(138);measure(0x20,400);break;case 'n':set_mt(31);measure(0x20,120);break;case 'g':set_mt(69);measure(0x10,220);break;
+            case 'm':set_mt(138);measure(0x20,400);break;case 'n':set_mt(31);measure(0x20,120);break;case 'g':set_mt(69);measure(0x10,220);break;case 'H':set_mt(69);measure(0x11,220);break;case 'L':set_mt(69);measure(0x13,40);break;
             case 'd':light.powerOff();sample();break;case 'z':light.powerOn();ESP_ERROR_CHECK(write1(7));sample();break;
             case 't':light.powerOn();ESP_ERROR_CHECK(write1(7));set_mt(69);mode=0x20;ESP_ERROR_CHECK(write1(mode));sample();wait_ms(220);sample();break;
             case 'e':environment();break;case 'r':puts("DLIGHT_REBOOT");esp_restart();break;default:break;

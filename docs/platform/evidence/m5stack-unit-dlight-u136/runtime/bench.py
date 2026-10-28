@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """Reproduce the U136 idle CPU comparison; use independently cargo-build --release --bins trees."""
 import argparse, datetime, hashlib, json, os, pathlib, platform, re, statistics, subprocess
-p=argparse.ArgumentParser();p.add_argument('--base-bins',required=True);p.add_argument('--candidate-bins',required=True);p.add_argument('--rom-dir',required=True);p.add_argument('--receipt',required=True);p.add_argument('--resume',action='store_true');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--base-bins',required=True);p.add_argument('--candidate-bins',required=True);p.add_argument('--rom-dir',required=True);p.add_argument('--receipt',required=True);p.add_argument('--resume',action='store_true');p.add_argument('--base-ref',required=True);p.add_argument('--workload',action='append',choices=['hello','c3-hello','c6-hello','pocket-tank']);a=p.parse_args()
 sha=lambda b:hashlib.sha256(b).hexdigest()
 # The same four source-pinned baseline workloads used for U027; no firmware sweep.
 previous=json.loads(pathlib.Path('docs/platform/evidence/m5stack-unit-button-u027/runtime/cpu.json').read_text())
 bins={'hello':'esp32sim','c3-hello':'esp32sim-c3','c6-hello':'esp32sim-c6','pocket-tank':'esp32sim'}
-report={'checkedAt':datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),'base':'d3c7820f (retained native binaries; SHA-256 recorded)' ,'candidate':'U136 working tree identified by source hashes','method':'One excluded warmup pair then five measured alternating base/candidate pairs per workload; 30 guest seconds; /usr/bin/time -p user. Task-owned browsers and compilers stopped. Other host load uncontrolled; root performed light HTTP/browser metadata checks at start, other lanes deferred heavy workloads. No speed claim.','host':{'os':platform.system(),'architecture':platform.machine(),'rust':subprocess.check_output(['rustc','--version'],text=True).strip()},'sourceSha256':{f:sha(pathlib.Path(f).read_bytes()) for f in ['esp-periph/src/i2c/bh1750.rs','esp-periph/src/i2c.rs','esp-soc/src/board.rs','esp-soc/src/machine/web.rs','esp32s3/src/board/stopwatch.rs']},'workloads':[]}
+report={'checkedAt':datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),'base':a.base_ref ,'candidate':'U136 working tree identified by source hashes','method':'One excluded warmup pair then five measured alternating base/candidate pairs per workload; 30 guest seconds; /usr/bin/time -p user. Task-owned browsers and compilers stopped; other host load uncontrolled. No speed claim.','host':{'os':platform.system(),'architecture':platform.machine(),'rust':subprocess.check_output(['rustc','--version'],text=True).strip()},'sourceSha256':{f:sha(pathlib.Path(f).read_bytes()) for f in ['esp-periph/src/i2c/bh1750.rs','esp-periph/src/i2c.rs','esp-soc/src/board.rs','esp-soc/src/machine/web.rs','esp32s3/src/board/stopwatch.rs']},'workloads':[]}
 if a.resume:
  previous_report=json.loads(pathlib.Path(a.receipt).read_text());assert previous_report['sourceSha256']==report['sourceSha256'];report=previous_report
 for old in previous['workloads']:
+ if a.workload and old['name'] not in a.workload:continue
  if any(w['name']==old['name'] and w.get('workAndOutputEqual') for w in report['workloads']):continue
  report['workloads']=[w for w in report['workloads']if w['name']!=old['name']]
  name=old['name'];args=[x.replace('$ROM_DIR',a.rom_dir) for x in old['args']];paths={key:str(pathlib.Path(folder)/bins[name]) for key,folder in [('base',a.base_bins),('candidate',a.candidate_bins)]}

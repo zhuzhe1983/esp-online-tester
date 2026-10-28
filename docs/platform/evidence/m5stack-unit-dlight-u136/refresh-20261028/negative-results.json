@@ -1,0 +1,31 @@
+{
+  "failures": [
+    {
+      "stage": "fixture build activation",
+      "cause": "IDF5.5 Python3.14 environment included esp-coredump1.17.0 excluded by the current constraints",
+      "resolution": "Rebuilt with the installed IDF5.5 Python3.11 environment; no global package changes."
+    },
+    {
+      "stage": "first Studio automation",
+      "cause": "Harness attempted serial input before asynchronous firmware boot completed.",
+      "resolution": "Explicit polling of actual runtime status and DLIGHT_READY before input; real UART samples then passed.",
+      "applicationRegression": false
+    },
+    {
+      "stage": "browser resources",
+      "cause": "Standalone local server has no favicon.ico (404).",
+      "effect": "Unrelated to CAD and firmware resources, which loaded."
+    },
+    {
+      "stage": "platform catalog validation",
+      "cause": "New updatedAt text used +00:00 while the repository requires a literal Z suffix. The knowledge index initially retained the previous timestamp.",
+      "resolution": "Normalized UTC formatting and synchronized the index; reran all platform contracts and the complete final CI."
+    },
+    {
+      "stage": "missing-model initial browser check",
+      "cause": "Initial page readiness timed out during overlapping non-timing checks; no product cause established.",
+      "resolution": "Fresh page diagnostic exposed the API normally with no page errors; repeated missing-model guest read passed.",
+      "uncertainty": "Transient harness/host timing cause is not established."
+    }
+  ]
+}

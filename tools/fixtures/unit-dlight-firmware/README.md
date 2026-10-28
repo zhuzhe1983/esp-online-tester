@@ -11,6 +11,6 @@ Binaries remain in ignored output and are not catalog firmware. I2C0 G47/G48 con
 
 The vendor `getLUX()` divides raw by1.2 regardless of MTreg/H2. The fixture prints that value separately from a datasheet-compensated result; the difference is intentional and tested.
 
-UART0 commands: `q` sample; `p` probe0x23; `a` probe0x5c; `o/i` Grove power off/on; `w/c` wrong G14/G15/correct G10/G11; `h/2/l` one-shot H1/H2/L; `m/n` MT138/MT31; `g` continuous H1; `d` PowerDown; `z` PowerOn+reset; `t` early/late conversion reads; `e` ENV SHT40/BMP280 coexistence; `r` guest restart. UART and USB mirrors can duplicate aggregate console lines; timing assertions compare actual values, not line counts.
+UART0 commands: `q` sample; `p` probe0x23; `a` probe0x5c; `o/i` Grove power off/on; `w/c` wrong G14/G15/correct G10/G11; `h/2/l` one-shot H1/H2/L; `m/n` MT138/MT31; `g/H/L` continuous H1/H2/L; `d` PowerDown; `z` PowerOn+reset; `t` early/late conversion reads; `e` ENV SHT40/BMP280 coexistence; `r` guest restart. UART and USB mirrors can duplicate aggregate console lines; timing assertions compare actual values, not line counts.
 
 This validates modeled protocol behavior, not individual hardware accuracy or arbitrary published firmware compatibility. Source receipts and real worker/WASM results are in the U136 evidence directory.

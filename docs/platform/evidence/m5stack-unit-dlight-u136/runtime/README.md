@@ -23,7 +23,7 @@ The fixture includes unchanged pinned M5-DLight source. `probe.json` covers13 ac
 Performance reproduction uses independent native release builds for base/candidate, matching pinned inputs, one excluded warmup and five alternating pairs. Use caller-supplied directories:
 
 ```sh
-python docs/platform/evidence/m5stack-unit-dlight-u136/runtime/bench.py --base-bins /path/to/base/target/release --candidate-bins /path/to/candidate/target/release --rom-dir /path/to/roms --receipt output/dlight-cpu.json
+python docs/platform/evidence/m5stack-unit-dlight-u136/runtime/bench.py --base-ref d3c7820f --base-bins /path/to/base/target/release --candidate-bins /path/to/candidate/target/release --rom-dir /path/to/roms --receipt output/dlight-cpu.json
 ```
 
 `cpu.json` preserves every sample, user CPU, anonymous load, instructions, binary/input hashes and stdout hashes. `--resume` only skips already completed workloads with identical candidate source hashes. Missing local-input failures and the duplicate-console harness failure remain in `negative-results.json`; no golden was edited. Previous U027/U003/ENV-IV costs remain in their receipts and experiment entries; this is an incremental comparison, not evidence that earlier costs disappeared.

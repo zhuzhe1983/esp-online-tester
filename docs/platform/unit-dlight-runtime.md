@@ -1,6 +1,6 @@
 # Unit DLight U136
 
-本项对应 **U136、BH1750FVI-TR**，不对应 U134 HAT。官方电路将 ADDR 接地，地址固定为0x23；HY2.0-4P 的5V经HT7533降至3.3V，黄色 SDA、白色 SCL 有4.7kΩ上拉。首轮核验 StopWatch Port A 的G10 SDA/G11 SCL，供电由客体 M5PM1 控制。软件 GPIO I²C 尚未实现。
+本项对应 **U136、BH1750FVI-TR**，不对应 U134 HAT。官方电路将 ADDR 接地，地址固定为0x23；HY2.0-4P 的5V经HT7533降至3.3V，黄色 SDA、白色 SCL 有4.7kΩ上拉。首轮核验 StopWatch Port A 的G10 SDA/G11 SCL，供电由客体 M5PM1 控制。Grove 外部软件 GPIO I²C 尚未实现（主机内部 G47/G48 总线另有实现）。
 
 ```js
 const scene = (await espTester.observe()).scene;
@@ -46,3 +46,13 @@ python tools/rebuild-unit-library.py m5stack-unit-dlight-u136 --scratch output/d
 公开重建与已提交资产逐字节比较。验证入口`tools/verify-unit-dlight-model.py`，证据位于`docs/platform/evidence/m5stack-unit-dlight-u136/`。没有连接真实硬件，不代表全部固件或BH1750功能兼容。
 
 本轮5对同工作量CPU对照中，S3/C6 Hello中位值不变，C3为−0.826%，Pocket Tank为−2.113%（2/5对较慢）；指令数与控制台输出哈希一致。样本区间重叠并有主机负载漂移，不据此宣称加速。此前U027、U003与ENV-IV的成本记录保留，不能用本次增量对照抵消。全部样本见runtime/cpu.json。
+
+## 当前主线复核（2026-10-28）
+
+在主线 `5a9b68e0` 上接入 ENV-IV 基础 `95fc5da2` 与通用 SHT4x 复用修复 `da61bbc1`，保留 StopWatch 内部 G47/G48 的共享硬件/GPIO I²C 路径；Grove G10/G11 的 U136 仍是单独的物理端点，不影响内部 PMIC、触摸、IMU 与 RTC。官方页面、原理图、datasheet、固定 CAD/驱动和照片共15个来源重新抓取，hash 均与历史资料相同，原始抓取时间保留。
+
+新编译 ESP-IDF5.5.1 fixture 的15组真实 worker/WASM 检查已通过；补测了连续 H2、连续 L 和连接状态下客体重启后的环境保留。工作台与 mini 均重新检查真实原始字节；重建11个模型资产逐字节一致。当前收据与截图位于 [refresh-20261028](evidence/m5stack-unit-dlight-u136/refresh-20261028/)，历史 runtime 目录继续保留2026-10-27结果。
+
+最终共享代码通过双 Clippy、1,572 项 Rust 测试（含 ignored/golden）、107 项平台检查、11 个生产 WASM 场景及其余 CI 检查；golden 未改动。最终 WASM 的工作台与 mini 再次读取到 raw5186 和 raw932，原始协议检查仍为15组全部通过。
+
+当前固定主线的五对 CPU 对照：S3 Hello 中位值不变，C3 +0.397%（4/5 对较慢），C6 −1.212%（0/5 对较慢）；全部指令数与 UART 输出逐对相同。这是 ENV-IV 与 DLight 整体栈的闲置回归检查，不能把差值归因于 DLight，也不宣称零回退或加速。本次未修改 S3 CPU、通用总线或 tick 遍历，未重跑 Pocket Tank；历史结果继续保留。
