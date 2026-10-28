@@ -170,7 +170,8 @@
       ],
       "name": "encoder-ring",
       "color": "#c6ccc9",
-      "role": "control"
+      "role": "control",
+      "encoderId": "encoder"
     },
     {
       "file": "0-bmq_asm.stp",
@@ -179,7 +180,8 @@
       ],
       "name": "encoder-center",
       "color": "#353b3a",
-      "role": "control"
+      "role": "control",
+      "controlId": "encoder-press"
     },
     {
       "file": "0-bmq_asm.stp",
@@ -227,12 +229,12 @@
         22.6844
       ],
       "positionMm": [
-        -14,
+        -10.075,
         0,
-        11.58
+        13.45
       ],
       "basis": "image-measurement",
-      "notes": "Screen active area estimated from official front photo; its pane uses only runtime framebuffer."
+      "notes": "Active area size remains photo-estimated. Center follows the manufacturer middle-shell aperture: x=-32.01..11.86 mm, y=-11.92..11.92 mm at z=13.74 mm. Glass z=13.45 mm is an unmeasured 0.29 mm recess, retained as an estimate; not an official panel CAD."
     }
   },
   "referencePhotos": [
@@ -314,16 +316,16 @@
           1.2
         ],
         "centerMm": [
-          -13,
+          -10.075,
           0,
-          10.9
+          12.75
         ]
       },
       "basis": "image-measurement",
       "sourceIds": [
         "photo-de38f89ed013"
       ],
-      "notes": "Photo-informed LCD carrier in the shell aperture; dimensional estimate, not manufacturer panel CAD."
+      "notes": "Photo-informed panel carrier, centered under the measured manufacturer shell aperture. Depth and glass recess are estimated, not manufacturer panel CAD."
     },
     {
       "id": "pcb-unknown-label",
@@ -353,7 +355,9 @@
     "原版 CC1101，不含 Plus 的 nRF24L01 模块。",
     "外壳、旋钮与侧键沿原始共同坐标装配。独立 PCB STEP 的坐标系与整机未核对，因此未硬塞入；内部暂用 UNKNOWN 空白主板。",
     "透明外壳的实际光学性质未标定，原色为不透明浅色预览；可用现有材质配置查看内部 UNKNOWN。",
-    "官方外形97.5×39×31 mm；壳体CAD为98×39×27.5 mm，旋钮/侧键会增加总包络，保留差异。"
+    "官方外形97.5×39×31 mm；壳体CAD为98×39×27.5 mm，旋钮/侧键会增加总包络，保留差异。",
+    "旋钮外圈可拖动，中心可按压；每圈 16 步仅为 UI 约定。GPIO6 所在侧键未核实，不将两只外壳侧键猜映射为 GPIO 输入。",
+    "屏幕活动区按照片估算；中心按厂家 CAD 开窗校正。玻璃距前框 0.29 mm 为估计，未测量实物屏幕安装深度。"
   ],
   "dimensionChecks": [
     {

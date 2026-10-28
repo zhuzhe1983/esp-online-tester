@@ -19,6 +19,7 @@ pub mod atoms3r;
 pub mod atom_voices3r;
 pub mod dial;
 pub mod dinmeter;
+mod tembed_cc1101;
 mod stamps3;
 pub mod stopwatch;
 pub mod papermono;
@@ -53,6 +54,7 @@ pub use waveshare_lcd4b::*;
 /// Board by name: `atech14` (default), `none`, `stopwatch` or a supported Waveshare board.
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
+        "tembed-cc1101" | "lilygo-t-embed-cc1101" => Some(Box::new(tembed_cc1101::TEmbedCc1101::new())),
         "airquality" | "m5stack-k131" => Some(Box::new(airquality::AirQuality::new())),
         "airquality-v11" | "m5stack-k131-v11" => Some(Box::new(airquality::AirQuality::v11())),
         "atech14" | "atech" => Some(Box::new(Atech14::new())),
