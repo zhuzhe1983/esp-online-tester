@@ -1,0 +1,229 @@
+{
+  "sourceCommit": "bbbdc5d23e469f5d804150efedd03c0da337ce0c",
+  "wasm": {
+    "bytes": 4342027,
+    "sha256": "8e53a1eaf8adaba957d963b124be42903b5bed99b432640ef63a6ef2bfc3d834"
+  },
+  "checks": [
+    {
+      "name": "build",
+      "exitCode": 0,
+      "seconds": 29.14
+    },
+    {
+      "name": "clippy",
+      "exitCode": 0,
+      "seconds": 3.24
+    },
+    {
+      "name": "wasm-clippy",
+      "exitCode": 0,
+      "seconds": 1.91
+    },
+    {
+      "name": "rust",
+      "exitCode": 0,
+      "seconds": 168.18
+    },
+    {
+      "name": "virtual-quantum",
+      "exitCode": 0,
+      "seconds": 15.69
+    },
+    {
+      "name": "wasm",
+      "exitCode": 0,
+      "seconds": 17.16
+    },
+    {
+      "name": "sections",
+      "exitCode": 0,
+      "seconds": 0.04
+    },
+    {
+      "name": "platform",
+      "exitCode": 1,
+      "seconds": 2.91
+    },
+    {
+      "name": "platform-rerun",
+      "exitCode": 0,
+      "seconds": 2.87
+    },
+    {
+      "name": "wasm-demos",
+      "exitCode": 0,
+      "seconds": 31.25
+    },
+    {
+      "name": "real-recording",
+      "exitCode": 0,
+      "seconds": 3.79
+    },
+    {
+      "name": "timing-api",
+      "exitCode": 0,
+      "seconds": 0.04
+    },
+    {
+      "name": "ble-api",
+      "exitCode": 0,
+      "seconds": 0.61
+    },
+    {
+      "name": "ble-connection",
+      "exitCode": 0,
+      "seconds": 2.04
+    },
+    {
+      "name": "worker-pacing",
+      "exitCode": 0,
+      "seconds": 0.04
+    },
+    {
+      "name": "worker-channel",
+      "exitCode": 0,
+      "seconds": 0.1
+    },
+    {
+      "name": "touch-stopwatch",
+      "exitCode": 0,
+      "seconds": 0.08
+    },
+    {
+      "name": "benchmark-contracts",
+      "exitCode": 0,
+      "seconds": 0.1
+    },
+    {
+      "name": "benchmark-python",
+      "exitCode": 0,
+      "seconds": 0.09
+    },
+    {
+      "name": "jit",
+      "exitCode": 0,
+      "seconds": 47.14
+    },
+    {
+      "name": "profile-compile",
+      "exitCode": 0,
+      "seconds": 16.74
+    },
+    {
+      "name": "catalog",
+      "exitCode": 0,
+      "seconds": 0.25
+    },
+    {
+      "name": "privacy",
+      "exitCode": 0,
+      "seconds": 0.31
+    },
+    {
+      "name": "x5-contract",
+      "exitCode": 0,
+      "seconds": 0.11
+    },
+    {
+      "name": "x5-results",
+      "exitCode": 0,
+      "seconds": 0.04
+    },
+    {
+      "name": "x5-m1",
+      "exitCode": 0,
+      "seconds": 0.04
+    },
+    {
+      "name": "x5-history",
+      "exitCode": 0,
+      "seconds": 0.04
+    },
+    {
+      "name": "papers3-user",
+      "exitCode": 0,
+      "seconds": 26.31
+    }
+  ],
+  "counts": {
+    "rustPassed": 1610,
+    "platformPassed": 124,
+    "wasmDifferentialCases": 111126,
+    "gpioWaveformCases": 24
+  },
+  "initialFailures": {
+    "platform-meshtastic-test": "Obsolete expectation that every Meshtastic target has no executable board; corrected by 8736ff3f. Unverified firmware remains a trial.",
+    "platform-tbeam-runtime-test": "Explicit-input factory probe was unintentionally matched by the ordinary CI glob; 8736ff3f renamed it to tbeam-factory-test.mjs without silently passing a missing input."
+  },
+  "finalPlatform": {
+    "command": "ESP32SIM_ROM_DIR=<roms> node --test tools/platform-*-test.mjs",
+    "passed": true
+  },
+  "papers3PrivateFirmware": {
+    "checkedAt": "2026-10-28T09:02:31.994Z",
+    "firmware": {
+      "bytes": 6406048,
+      "sha256": "0d84eda76334b4fe6e26bcad4760e44d1dc736d891b8427cb061b8e1734e9a60",
+      "modified": false,
+      "private": true
+    },
+    "backend": "actual-page-worker-WASM",
+    "wasmSha256": "8e53a1eaf8adaba957d963b124be42903b5bed99b432640ef63a6ef2bfc3d834",
+    "checks": [
+      "original ROM boot mounts FAT32 and commits multi-cluster file",
+      "reset preserves complete file bytes and FAT chain",
+      "fresh worker reload restores saved card; original guest mounts and reads existing file",
+      "image import preserves bytes and Flash identity, leaves ready",
+      "explicit TF clear creates empty FAT32 and keeps Flash identity"
+    ],
+    "first": {
+      "sd": {
+        "supported": true,
+        "present": true,
+        "bytes": 67108864,
+        "format": "fat32",
+        "status": "memory-only",
+        "backend": "memory",
+        "restored": false,
+        "pristine": false,
+        "changedPages": 4,
+        "error": null
+      },
+      "frame": {
+        "width": 540,
+        "height": 960,
+        "frameNumber": 7
+      },
+      "files": [
+        {
+          "bytes": 2389,
+          "clusters": 5,
+          "sha256": "bc717c1439f4f44cd1635643e6438402104c5b7545a0003e80d9b0f5914e8784"
+        }
+      ],
+      "sdSha256": "7efb023f7b0ed9d22777a71b6873cd40c9b2fb35554f1ee489098f40eff47255"
+    },
+    "status": "pass"
+  },
+  "browser": {
+    "engine": "Chromium",
+    "mode": "headless isolated profile",
+    "page": "/platform/",
+    "checks": [
+      "M5Stack family selector exposes 13 families; Paper/CoreInk filters 7 products, 5 with board models",
+      "PaperS3 device storage exposes virtual TF import/export/clear controls",
+      "Caller-supplied unmodified factory image detects SD and writes 4 changed pages",
+      "IndexedDB save and full page reload restore identical 64 MiB card SHA-256; Flash left intact"
+    ],
+    "tfSha256": "7efb023f7b0ed9d22777a71b6873cd40c9b2fb35554f1ee489098f40eff47255",
+    "consoleErrors": 0,
+    "consoleWarnings": 0
+  },
+  "privacy": "Private firmware bytes, filenames, generated file names and contents, raw UART, screenshots, machine identities and browser session data are omitted. Retained hashes and counts permit equality checks without disclosing those contents.",
+  "limitations": [
+    "PaperS3 SPI SDHC is a digital subset; optical grayscale, real radio and full device compatibility are not established.",
+    "Cross-brand accessory wiring is physically possible when voltage and protocol match; generic GPIO/I2C routing across all board models remains unimplemented.",
+    "S31/INK4 Plus support remains incomplete; no compatibility upgrade is asserted."
+  ]
+}
