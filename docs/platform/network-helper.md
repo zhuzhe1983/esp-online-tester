@@ -47,9 +47,9 @@ WebSocket 路径 `/network?token=<临时凭据>`，校验允许的 Origin 与随
 | `{id,op:'status'}` | 读取接口与当前映射 |
 | `{id,op:'map',interface:0,protocol:'tcp'|'udp'|'http'|'https',guestPort:80,hostPort:0}` | 创建回环映射；0 表示让系统分配端口；HTTP 返回隔离代理 URL |
 | `{id,op:'unmap',mappingId}` | 释放映射及其连接 |
-| `{id,op:'http',interface:1,guestPort:80,path:'/',method:'GET',headers?,body?,bodyBase64?}` | 在真实虚拟 TCP 连接上向固件发 HTTP 请求；响应含 `status,headers,body,bodyBase64` |
+| `{id,op:'http',interface:1,guestPort:80,path:'/',method:'GET',headers?,body?,bodyBase64?}` | 在真实虚拟 TCP 连接上向固件发 HTTP 请求；响应含 `status,headers,body,bodyBase64`；`body` 是解码后的 UTF-8 文本，`bodyBase64` 保留原始 HTTP 实体字节 |
 
-状态事件为 `{type:'network-status',interface,enabled,ready,leaseReady,address,guestAddress,addressSource,counters,mappings}`。HTTP 请求体最多 32 KiB、响应最多 2 MiB、超时 90 秒；文本控制消息最多 64 KiB，最多 16 个进行中的请求。大音频流应走 PCM 接口，不经过这个 HTTP 控制接口。
+状态事件为 `{type:'network-status',interface,enabled,ready,leaseReady,address,guestAddress,addressSource,counters,mappings}`。HTTP 请求体最多 32 KiB、响应最多 2 MiB、超时 90 秒；文本控制消息最多 64 KiB，最多 16 个进行中的请求。支持 gzip、deflate 和 br 响应解压；压缩实体与解压结果分别限为 2 MiB。原始响应头保留，编码响应另附 `decodedBodyBase64`；无效编码、未知编码或解压超限返回 `HTTP_DECODE_ERROR`。大音频流应走 PCM 接口，不经过这个 HTTP 控制接口。
 
 `/network-info` 为本机同源工作台返回 `{version,endpoint}`；它不向跨来源网页公开 token。助手仅提供调用者明确选择的网络访问，不进行全端口扫描或自动建立局域网共享。
 

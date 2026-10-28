@@ -10,6 +10,7 @@ import {existsSync} from 'node:fs';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import {resolve, extname, sep} from 'node:path';
 import {createInterface} from 'node:readline';
+import {gunzipSync,inflateSync,brotliDecompressSync} from 'node:zlib';
 
 const ROOT=fileURLToPath(new URL('../',import.meta.url)), MAX_MESSAGE=65536, MAX_RESPONSE=2*1024*1024, MAX_BUFFER=1024*1024;
 const types={'.html':'text/html; charset=utf-8','.js':'application/javascript','.mjs':'application/javascript','.css':'text/css','.json':'application/json','.wasm':'application/wasm','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.md':'text/markdown; charset=utf-8'};
@@ -41,7 +42,7 @@ class Backend {
     createInterface({input:this.process.stdout}).on('line',line=>{if(line.startsWith('frame ')){const frame=Buffer.from(line.slice(6),'hex');if(frame.length>=14&&frame.length<=1518)this.emit(2,Buffer.concat([Buffer.from([iface]),frame]));}
       else if(line.startsWith('status ')){try{this.status=JSON.parse(line.slice(7));this.status.leaseReady=this.status.ready;this.emit(1,{type:'network-status',interface:iface,...this.status});}catch{this.close();}}
       else if(line.startsWith('reply ')){const [,id,result,value]=line.split(' '),request=this.pending.get(id);if(!request)return;this.pending.delete(id);clearTimeout(request.timer);result==='ok'?request.resolve(Number(value)):request.reject(fail('MAPPING_FAILED',value||'Mapping rejected'));}});
-    this.process.stderr.on('data',()=>{});this.process.on('error',error=>this.close(error));this.process.on('exit',()=>this.close(fail('BACKEND_EXIT','Network backend exited')));
+    this.process.stdin.on('error',error=>this.close(error));this.process.stderr.on('data',()=>{});this.process.on('error',error=>this.close(error));this.process.on('exit',()=>this.close(fail('BACKEND_EXIT','Network backend exited')));
   }
   write(line){if(this.closed)throw fail('BACKEND_EXIT','Network backend closed');if(this.process.stdin.writableLength>MAX_BUFFER)throw fail('NETWORK_BACKPRESSURE','Network backend queue full');this.process.stdin.write(line+'\n');}
   request(command){if(this.pending.size>=16)return Promise.reject(fail('TOO_MANY_REQUESTS','Too many pending network operations'));const id=String(++this.sequence);return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{this.pending.delete(id);reject(fail('BACKEND_TIMEOUT','Network backend timeout'));},10000);this.pending.set(id,{resolve,reject,timer});try{this.write(command(id));}catch(error){clearTimeout(timer);this.pending.delete(id);reject(error);}});}
@@ -53,7 +54,10 @@ function guestRequest(port,guest,options={}) {
   const method=options.method??'GET',path=options.path??'/';if(!['GET','HEAD','POST','PUT','PATCH','DELETE','OPTIONS'].includes(method)||typeof path!=='string'||!path.startsWith('/')||path.startsWith('//')||/[\r\n]/.test(path))throw fail('INVALID_HTTP','Invalid guest HTTP method or path');
   const headers={host:guest,connection:'close'};for(const [key,value]of Object.entries(options.headers??{})){if(headerAllowed(key)&&typeof value==='string')headers[key]=value;}
   const body=options.bodyBase64?Buffer.from(options.bodyBase64,'base64'):Buffer.from(options.body??'');if(body.length>32768)throw fail('HTTP_BODY_LIMIT','Request body exceeds 32 KiB');if(body.length)headers['content-length']=body.length;
-  return new Promise((resolve,reject)=>{const request=http.request({host:'127.0.0.1',port,path,method,headers},response=>{const chunks=[];let length=0;response.on('data',chunk=>{length+=chunk.length;if(length>MAX_RESPONSE){response.destroy(fail('HTTP_RESPONSE_LIMIT','Guest response exceeds 2 MiB'));return;}chunks.push(chunk);});response.on('error',reject);response.on('end',()=>{const data=Buffer.concat(chunks);resolve({status:response.statusCode,headers:response.headers,body:data.toString('utf8'),bodyBase64:data.toString('base64')});});});request.setTimeout(90000,()=>request.destroy(fail('HTTP_TIMEOUT','Guest HTTP request timed out')));request.on('error',reject);request.end(body);});
+  return new Promise((resolve,reject)=>{const request=http.request({host:'127.0.0.1',port,path,method,headers},response=>{const chunks=[];let length=0;response.on('data',chunk=>{length+=chunk.length;if(length>MAX_RESPONSE){response.destroy(fail('HTTP_RESPONSE_LIMIT','Guest response exceeds 2 MiB'));return;}chunks.push(chunk);});response.on('error',reject);response.on('end',()=>{const data=Buffer.concat(chunks);let decoded=data;
+        try{const encodings=String(response.headers['content-encoding']??'').split(',').map(x=>x.trim().toLowerCase()).filter(x=>x&&x!=='identity');if(encodings.length>3)throw new Error('Too many content encodings');for(const encoding of encodings.reverse()){const decode={gzip:gunzipSync,deflate:inflateSync,br:brotliDecompressSync}[encoding];if(!decode)throw new Error('Unsupported content encoding');decoded=decode(decoded,{maxOutputLength:MAX_RESPONSE});}
+          resolve({status:response.statusCode,headers:response.headers,body:decoded.toString('utf8'),bodyBase64:data.toString('base64'),...(decoded!==data?{decodedBodyBase64:decoded.toString('base64')}:{})});
+        }catch(error){reject(fail('HTTP_DECODE_ERROR',`Guest HTTP response could not be decoded within 2 MiB: ${error.message}`));}});});request.setTimeout(90000,()=>request.destroy(fail('HTTP_TIMEOUT','Guest HTTP request timed out')));request.on('error',reject);request.end(body);});
 }
 async function guestProxy(mapping,backend,secureOptions) {
   const sockets=new Set();const server=(secureOptions?https:http).createServer(secureOptions??{},(request,response)=>{
