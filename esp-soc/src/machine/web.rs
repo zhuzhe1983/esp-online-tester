@@ -129,9 +129,11 @@ impl<S: Soc> Machine<S> {
         self.ws.px_pending = ver;
         self.ws.px_deferred = changed && !due;
         if due {
-            if let Some((w_, h_, px, _)) = board.display() {
-                self.ws.px_sent = ver;
-                w.send_binary(&display_message(w_, h_, &px));
+            if let Some((w_, h_, px, published)) = board.display_for_ui() {
+                if published != self.ws.px_sent {
+                    self.ws.px_sent = published;
+                    w.send_binary(&display_message(w_, h_, &px));
+                }
             }
         }
         let board = self.bus.board_ref();
@@ -162,7 +164,7 @@ impl<S: Soc> Machine<S> {
             hello.push(frame(1, format!("{{\"t\":\"serial\",\"src\":\"uart0\",\"data\":\"{}\"}}", json_escape(&String::from_utf8_lossy(&self.console.uart0))).as_bytes()));
             hello.push(frame(1, format!("{{\"t\":\"serial\",\"src\":\"usb\",\"data\":\"{}\"}}", json_escape(&String::from_utf8_lossy(&self.console.usb))).as_bytes()));
             hello.push(frame(1, format!("{{\"t\":\"board\",\"name\":\"{}\",\"chip\":\"{}\"}}", board.name(), S::NAME).as_bytes()));
-            if let Some((w_, h_, px, _)) = board.display() { hello.push(frame(2, &display_message(w_, h_, &px))); }
+            if let Some((w_, h_, px, _)) = board.display_for_ui() { hello.push(frame(2, &display_message(w_, h_, &px))); }
             if let Some(rgb) = board.camera_preview(320, 240) { hello.push(frame(2, &camera_message(&rgb))); }
             if let Some((leds, _)) = board.leds() { hello.push(frame(1, format!("{{\"t\":\"ring\",\"leds\":[{}]}}", leds_json(leds)).as_bytes())); }
             for (id, leds, _) in board.led_grids() { hello.push(frame(1, format!("{{\"t\":\"grid\",\"id\":\"{}\",\"leds\":[{}]}}", id, leds_json(leds)).as_bytes())); }

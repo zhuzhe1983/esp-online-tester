@@ -196,6 +196,10 @@ pub trait BoardModel {
     fn accessory_illuminance_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _lux: f64) -> bool { false }
     /// Cold SPI card attachment; native SDMMC boards retain their existing host path.
     fn attach_spi_sd_card(&mut self, _image: Box<dyn esp_periph::sdmmc::SdStore>, _config: esp_periph::sdmmc::SdCardConfig) -> Result<String,String> {Err("this board has no modeled SPI SD socket".into())}
+    /// Host presentation snapshot. A board may retain a completed update while its
+    /// GRAM receives a multi-window redraw; `display()` remains the current GRAM.
+    /// The returned version identifies these pixels. Appended to preserve hot vtable offsets.
+    fn display_for_ui(&self) -> Option<(u32, u32, Vec<u16>, u64)> { self.display() }
 }
 
 pub type Board = Box<dyn BoardModel>;

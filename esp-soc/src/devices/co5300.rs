@@ -86,6 +86,9 @@ impl Co5300 {
 
     pub fn width(&self) -> usize { self.width }
     pub fn height(&self) -> usize { self.height }
+    /// Register window and current virtual time, for optional host presentation.
+    pub fn window(&self) -> [u16; 4] { [self.x0, self.x1, self.y0, self.y1] }
+    pub fn cycle(&self) -> VirtualCycle { self.cycle }
     pub fn tear_row(&self) -> u16 { self.tear_row }
     pub fn tear_enabled(&self) -> bool { self.tear_enabled }
     pub fn tear_input(&self) -> Option<(u8, bool)> { self.scan.map(|scan| (scan.pin, self.tear_level)) }

@@ -1,4 +1,5 @@
 use std::sync::{Arc, Mutex};
+mod display;
 use super::unit_pir::UnitPir;
 
 use esp_periph::i2c::m5::{M5ioe1, M5ioe1State, M5pm1, M5pm1State};
@@ -24,6 +25,7 @@ struct UnitButton {pressed:bool,level:bool,dirty:bool,cycle:VirtualCycle}
 
 struct PanelState {
     panel: Co5300,
+    presentation: display::Presentation,
     active: bool,
     version: u64,
     unit_button: Option<UnitButton>,
@@ -48,6 +50,7 @@ impl PowerWiring {
         let mut panel = self.panel.lock().expect("StopWatch panel mutex poisoned");
         if panel.active && !active {
             panel.panel.reset();
+            panel.presentation.reset();
             panel.version += 1;
         }
         panel.active = active;
@@ -136,6 +139,7 @@ impl StopWatch {
                     panel: Co5300::new(Self::WIDTH, Self::HEIGHT, Self::X_OFFSET).with_scan(Co5300Scan {
                         lines: 500, period: 15_000 * us, pulse_width: 120 * us, pin: PIN_STOPWATCH_TE,
                     }),
+                    presentation: display::Presentation::default(),
                     active: false,
                     version: 0,
                     unit_button: None,
@@ -194,11 +198,16 @@ impl BoardModel for StopWatch {
             self.wiring.sync();
             let mut state = self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");
             if state.active && self.cs != Some(true) {
+                let PanelState { panel, presentation, version, .. } = &mut *state;
+                presentation.before(panel.window(), &panel.frame, *version);
                 let before = state.panel.pixels_written;
+                let before_frames = state.panel.frames;
                 if self.cs.is_some() { state.panel.transaction_stream(tx); } else { state.panel.transaction(tx); }
                 if state.panel.pixels_written != before || tx.get(..4) == Some(&[0x02, 0, 0x01, 0]) {
                     state.version += 1;
                 }
+                let PanelState { panel, presentation, .. } = &mut *state;
+                presentation.after(panel.window(), before_frames, panel.frames, before, panel.pixels_written, panel.cycle());
             }
         }
         vec![0xff; rx_len]
@@ -247,6 +256,12 @@ impl BoardModel for StopWatch {
     fn display(&self) -> Option<(u32, u32, Vec<u16>, u64)> {
         let state = self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");
         Some((Self::WIDTH as u32, Self::HEIGHT as u32, state.panel.frame.clone(), state.version))
+    }
+    fn display_for_ui(&self) -> Option<(u32, u32, Vec<u16>, u64)> {
+        let mut state = self.wiring.panel.lock().expect("StopWatch panel mutex poisoned");
+        let PanelState { panel, presentation, version, .. } = &mut *state;
+        let (pixels, published) = presentation.snapshot(&panel.frame, *version, panel.cycle());
+        Some((Self::WIDTH as u32, Self::HEIGHT as u32, pixels, published))
     }
     fn display_version(&self) -> u64 { self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").version }
     fn display_frames(&self) -> u64 { self.wiring.panel.lock().expect("StopWatch panel mutex poisoned").panel.frames }

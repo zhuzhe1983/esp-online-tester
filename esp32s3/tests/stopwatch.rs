@@ -6,6 +6,129 @@ use esp32s3::board::{make_board, BoardEdge, BoardModel, StopWatch};
 
 type Devices = Vec<(u8, u8, Box<dyn I2cDevice>)>;
 
+fn fill_window(board: &mut StopWatch, window: [u16; 4], color: u16) {
+    let [x0, x1, y0, y1] = window;
+    command(board, 0x2a, &[x0.to_be_bytes(), x1.to_be_bytes()].concat());
+    command(board, 0x2b, &[y0.to_be_bytes(), y1.to_be_bytes()].concat());
+    command(board, 0x2c, &color.to_be_bytes().repeat(usize::from(x1 - x0 + 1) * usize::from(y1 - y0 + 1)));
+}
+
+fn display_board() -> StopWatch {
+    let mut board = StopWatch::new();
+    power_up(&mut board.i2c_devices());
+    fill_window(&mut board, [6, 473, 0, 465], 0x001f);
+    board
+}
+
+#[test]
+fn ui_commit_waits_for_contiguous_strips_while_gram_remains_live() {
+    let mut board = display_board();
+    let previous = board.display_for_ui().unwrap();
+    for (index, y0) in (0..466u16).step_by(60).enumerate() {
+        board.advance_to((index as u64 + 1) * 240_000);
+        fill_window(&mut board, [6, 473, y0, (y0 + 59).min(465)], 0xf800);
+        assert_eq!(board.display().unwrap().2[usize::from(y0) * 468], 0xf800, "guest GRAM changes immediately");
+        if y0 < 420 { assert_eq!(board.display_for_ui().unwrap(), previous, "no partial strip sequence may become a UI frame"); }
+    }
+    let completed = board.display_for_ui().unwrap();
+    assert_eq!(completed, board.display().unwrap());
+    assert!(completed.2.iter().all(|&p| p == 0xf800));
+    assert!(completed.3 > previous.3);
+    fill_window(&mut board, [106, 107, 12, 13], 0x07e0);
+    assert_eq!(board.display_for_ui().unwrap(), board.display().unwrap(), "small local update must not wait for a full screen");
+}
+
+#[test]
+fn abandoned_top_strip_has_bounded_idle_fallback_including_sleep_commands() {
+    for command_after in [None, Some(0x10), Some(0x28)] {
+        let mut board = display_board();
+        let previous = board.display_for_ui().unwrap();
+        let start = 240_000;
+        board.advance_to(start);
+        fill_window(&mut board, [6, 473, 0, 59], 0xf800);
+        if let Some(cmd) = command_after { command(&mut board, cmd, &[]); }
+        // CO5300 sleep/display-off optical behavior is outside the existing model;
+        // these commands must not leave its last real GRAM writes hidden forever.
+        board.advance_to(start + esp32s3::periph::CPU_HZ / 50 - 1);
+        assert_eq!(board.display_for_ui().unwrap(), previous);
+        board.advance_to(start + esp32s3::periph::CPU_HZ / 50);
+        assert_eq!(board.display_for_ui().unwrap(), board.display().unwrap());
+        assert_eq!(board.display_for_ui().unwrap().2[60 * 468], 0x001f);
+    }
+}
+
+#[test]
+fn interrupted_reordered_and_restarted_strip_sequences_keep_latest_pixels() {
+    for next in [[6, 473, 120, 179], [6, 473, 0, 59], [106, 107, 12, 13]] {
+        let mut board = display_board();
+        let previous = board.display_for_ui().unwrap();
+        board.advance_to(240_000);
+        fill_window(&mut board, [6, 473, 0, 59], 0xf800);
+        board.advance_to(480_000);
+        fill_window(&mut board, next, 0x07e0);
+        if next[2] == 0 {
+            assert_eq!(board.display_for_ui().unwrap(), previous, "new top strip replaces the abandoned pass without exposing it");
+            for y0 in (60..466u16).step_by(60) { fill_window(&mut board, [6, 473, y0, (y0 + 59).min(465)], 0x07e0); }
+            assert!(board.display_for_ui().unwrap().2.iter().all(|&p| p == 0x07e0));
+        } else {
+            assert_eq!(board.display_for_ui().unwrap(), board.display().unwrap(), "non-adjacent/local windows end strip grouping");
+        }
+    }
+}
+
+#[test]
+fn reset_discards_a_retained_ui_frame_and_incomplete_strip_sequence() {
+    let mut board = display_board();
+    board.advance_to(240_000);
+    fill_window(&mut board, [6, 473, 0, 59], 0xf800);
+    command(&mut board, 0x01, &[]);
+    assert_eq!(board.display_for_ui().unwrap(), board.display().unwrap());
+    assert!(board.display_for_ui().unwrap().2.iter().all(|&p| p == 0));
+    fill_window(&mut board, [6, 473, 0, 59], 0x07e0);
+    let mut devices = board.i2c_devices();
+    update(&mut devices, 0x4f, 0x05, 0, 0x08);
+    assert_eq!(board.display_for_ui().unwrap(), board.display().unwrap());
+    assert!(board.display_for_ui().unwrap().2.iter().all(|&p| p == 0));
+}
+
+#[test]
+fn split_cs_headers_and_row_transfers_keep_the_ui_frozen_from_the_first_pixel() {
+    let mut board = display_board();
+    let previous = board.display_for_ui().unwrap();
+    board.advance_to(20 * esp32s3::periph::CPU_HZ);
+    let cs_command = |board: &mut StopWatch, cmd: u8, args: &[u8]| {
+        board.gpio_changes(&[(39, true), (39, false)]);
+        for byte in [0x02, 0, cmd, 0] { board.spi_transfer(2, &[byte], 0); }
+        for byte in args { board.spi_transfer(2, &[*byte], 0); }
+        board.gpio_changes(&[(39, true)]);
+    };
+    cs_command(&mut board, 0x2a, &[0, 6, 1, 0xd9]);
+    cs_command(&mut board, 0x2b, &[0, 0, 0, 59]);
+    board.gpio_changes(&[(39, false)]);
+    for byte in [0x32, 0, 0x2c, 0] { board.spi_transfer(2, &[byte], 0); }
+    assert_eq!(board.display_for_ui().unwrap(), previous, "a zero-payload header must not look like an old idle timeout");
+    for row in 0..60 {
+        board.spi_transfer(2, &[0xf8, 0].repeat(468), 0);
+        assert_eq!(board.display().unwrap().2[row * 468], 0xf800);
+        assert_eq!(board.display_for_ui().unwrap(), previous);
+    }
+    board.gpio_changes(&[(39, true)]);
+    board.advance_to(20 * esp32s3::periph::CPU_HZ + esp32s3::periph::CPU_HZ / 50);
+    assert_eq!(board.display_for_ui().unwrap(), board.display().unwrap());
+}
+
+#[test]
+fn an_incomplete_or_overlapping_strip_cannot_be_mistaken_for_a_complete_pass() {
+    for previous_complete in [false, true] {
+        let mut board = display_board();
+        command(&mut board, 0x2a, &[0, 6, 1, 0xd9]);
+        command(&mut board, 0x2b, &[0, 0, 0, 59]);
+        command(&mut board, 0x2c, &[0xf8, 0].repeat(if previous_complete { 468 * 60 } else { 468 }));
+        fill_window(&mut board, [6, 473, if previous_complete { 30 } else { 60 }, 119], 0x07e0);
+        assert_eq!(board.display_for_ui().unwrap(), board.display().unwrap());
+    }
+}
+
 fn device(devices: &mut Devices, address: u8) -> &mut dyn I2cDevice {
     &mut *devices.iter_mut().find(|(bus, addr, _)| *bus == 0 && *addr == address).unwrap().2
 }

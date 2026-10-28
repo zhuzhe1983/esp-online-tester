@@ -277,6 +277,39 @@ fn quiet_display_publication_remains_live_during_continuous_changes() {
 }
 
 #[test]
+fn retained_ui_generation_does_not_hide_the_final_gram_generation() {
+    use std::sync::{Arc, atomic::{AtomicU64, Ordering}};
+    struct Display(Arc<AtomicU64>);
+    impl esp_soc::board::BoardModel for Display {
+        fn name(&self) -> &'static str { "retained-display" }
+        fn display_version(&self) -> u64 { 2 }
+        fn display(&self) -> Option<(u32, u32, Vec<u16>, u64)> { Some((1, 1, vec![2], 2)) }
+        fn display_for_ui(&self) -> Option<(u32, u32, Vec<u16>, u64)> {
+            let version = self.0.load(Ordering::Relaxed);
+            Some((1, 1, vec![version as u16], version))
+        }
+    }
+    const PUSH: u64 = 240_000_000 / 50;
+    let mut m = machine();
+    let published = Arc::new(AtomicU64::new(1));
+    m.bus.board = Box::new(Display(published.clone()));
+    m.cores[0].waiting = true;
+    m.cores[0].ps = 0;
+    let web = esp_soc::web::WebServer::queued();
+    m.web = Some(web.clone());
+    let frames = || web.take_outbox().into_iter().filter(|(kind, data)| *kind == 2 && data[0] == 1).collect::<Vec<_>>();
+    m.run_until_cycle(PUSH);
+    assert_eq!(frames(), [(2, vec![1, 1, 0, 1, 0, 1, 0])]);
+    m.run_until_cycle(2 * PUSH);
+    assert!(frames().is_empty(), "a retained picture must not be repeated as a new frame");
+    published.store(2, Ordering::Relaxed);
+    m.run_until_cycle(3 * PUSH);
+    assert_eq!(frames(), [(2, vec![1, 1, 0, 1, 0, 2, 0])], "no new GRAM write is needed to publish a bounded fallback");
+    m.run_until_cycle(4 * PUSH);
+    assert!(frames().is_empty());
+}
+
+#[test]
 fn queued_display_output_does_not_build_an_unused_socket_snapshot() {
     use std::sync::{Arc, atomic::{AtomicUsize, Ordering}};
     struct Display(Arc<AtomicUsize>);
