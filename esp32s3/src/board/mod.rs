@@ -12,6 +12,7 @@
 pub use esp_soc::board::{Board, BoardEdge, BoardModel, NoBoard, VirtualCycle};
 
 pub mod atech14;
+pub mod tdisplay_s3;
 pub mod airquality;
 pub mod atoms3;
 pub mod atoms3_lite;
@@ -55,6 +56,7 @@ pub fn make_board(name: &str) -> Option<Board> {
     match name {
         "airquality" | "m5stack-k131" => Some(Box::new(airquality::AirQuality::new())),
         "airquality-v11" | "m5stack-k131-v11" => Some(Box::new(airquality::AirQuality::v11())),
+        "tdisplay-s3" | "lilygo-t-display-s3" => Some(Box::new(tdisplay_s3::TDisplayS3::new())),
         "atech14" | "atech" => Some(Box::new(Atech14::new())),
         "none" | "bare" => Some(Box::new(NoBoard)),
         "atom-voices3r" | "m5stack-c126-echo" => Some(Box::new(atom_voices3r::AtomVoiceS3R::new())),

@@ -59,12 +59,18 @@ impl SocBus {
         }
         let routes = esp_soc::pins::ChipPins::S3.routes(&self.periph.gpio, &self.periph.io_mux);
         // IDF v5.5.1 soc/esp32s3/include/soc/gpio_sig_map.h, LCD_CS132, DATA0..15
-        // 133..148, PCLK154. Inverted or disabled routes are deliberately not physical outputs.
+        // 133..148, DC153, PCLK154; identical in IDF v4.4.4 gpio_sig_map.h.
+        // Inverted or disabled routes are deliberately not physical outputs.
         let mask = |signal| routes.output_pins(signal).fold(0u64, |m, p| m | (1 << p));
-        let pins = esp_soc::board::LcdI80Pins { data: std::array::from_fn(|i| mask(133 + i as u32)), clock: mask(154), select: mask(132), width: if wide { 16 } else { 8 } };
+        let mut pins = esp_soc::board::LcdI80Pins { data: std::array::from_fn(|i| mask(133 + i as u32)), clock: mask(154), select: mask(132), width: if wide { 16 } else { 8 }, dc: mask(153), dc_high: false };
+        // IDF v4.4.4 lcd_cam_reg.h LCD_MISC +0x18: idle DC bit31, command/data
+        // XOR toggles bit30/28 (lcd_ll_set_dc_level). Same fields in v5.5.1.
+        let misc = self.periph.lcd_cam.ram.read(0x18);
+        let dc_level = |bit:u32| ((misc >> 31) ^ (misc >> bit)) & 1u32 != 0;
         if user & (1 << 26) != 0 {
             let cmd = self.periph.lcd_cam.ram.read(0x28);
             let words = if wide { [cmd as u16, (cmd >> 16) as u16] } else { [cmd as u8 as u16, (cmd >> 8) as u8 as u16] };
+            pins.dc_high = dc_level(30);
             self.board.lcd_i80(pins, false, &words[..if user & (1 << 31) != 0 { 2 } else { 1 }]);
         }
         if !bytes.is_empty() {
@@ -72,6 +78,7 @@ impl SocBus {
             if user & (1 << if wide { 22 } else { 19 }) != 0 { for pair in bytes.as_chunks_mut::<2>().0 { pair.swap(0, 1); } }
             let mut words: Vec<u16> = if wide { bytes.as_chunks::<2>().0.iter().map(|b| u16::from_le_bytes([b[0],b[1]])).collect() } else { bytes.iter().map(|&b| u16::from(b)).collect() };
             if user & (1 << 21) != 0 { for word in &mut words { *word = if wide { word.reverse_bits() } else { (*word as u8).reverse_bits() as u16 }; } }
+            pins.dc_high = dc_level(28);
             self.board.lcd_i80(pins, true, &words);
         }
         self.periph.lcd_cam.lcd_user &= !(1 << 27);

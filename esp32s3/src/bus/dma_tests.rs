@@ -613,15 +613,25 @@ fn i80_dma_reaches_routed_bus_words_and_completes_irq() {
     impl BoardModel for Capture {fn name(&self)->&'static str {"i80-capture"} fn lcd_i80(&mut self,p:LcdI80Pins,d:bool,w:&[u16]) {self.0.lock().unwrap().push((p,d,w.to_vec()));}}
     let frames=Arc::new(Mutex::new(Vec::new()));let mut bus=bus_with_out(5,4,0);bus.board=Box::new(Capture(frames.clone()));
     bus.write32(DESC,(1<<31)|(1<<30)|(4<<12)|4).unwrap();bus.write32(INPUT,0x10208001).unwrap();
-    for (pin,signal) in [(6,133),(16,154),(13,132)] {bus.periph.io_mux.write(4+pin*4,1<<12);bus.periph.gpio.func_out_sel[pin as usize]=signal;}
+    for (pin,signal) in [(6,133),(16,154),(13,132),(7,153)] {bus.periph.io_mux.write(4+pin*4,1<<12);bus.periph.gpio.func_out_sel[pin as usize]=signal;}
     bus.periph.lcd_cam.set_clock_enabled(true);bus.periph.lcd_cam.lcd_clock=3<<29;
     bus.periph.lcd_cam.write(0x64,2);bus.periph.lcd_cam.ram.write(0x28,0x11ab);
+    bus.periph.lcd_cam.ram.write(0x18,1<<28); // IDF v4.4.4: idle/command low, data high.
     bus.periph.lcd_cam.lcd_user=(1<<27)|(1<<26)|(1<<31)|(1<<24)|(1<<13)|(1<<19)|(1<<21);
     bus.lcd_i80_start();let data=frames.lock().unwrap();assert_eq!(data.len(),2);
     assert_eq!(data[0].2,[0xab,0x11]);assert!(!data[0].1);assert_eq!(data[1].2,[1,128,8,4]);assert!(data[1].1);
     assert_eq!(data[1].0.data[0],1<<6);assert_eq!(data[1].0.data[1],0);assert_eq!(data[1].0.clock,1<<16);assert_eq!(data[1].0.select,1<<13);
+    assert_eq!(data[0].0.dc,1<<7);assert!(!data[0].0.dc_high);assert!(data[1].0.dc_high);
     assert_eq!(bus.periph.lcd_cam.lcd_user&(1<<27),0);assert!(bus.periph.lcd_cam.irq());assert_ne!(bus.periph.gdma.out[0].int_raw&3,0);
     bus.periph.lcd_cam.write(0x70,2);assert!(!bus.periph.lcd_cam.irq());
+    drop(data);
+    // An idle-high configuration uses the inverse CMD_SET value for the same
+    // physical command level; report physical DC instead of guessing from phase.
+    for idle in 0..=1 {for toggle in 0..=1 {
+        bus.periph.lcd_cam.ram.write(0x18,(idle<<31)|(toggle<<30));
+        bus.periph.lcd_cam.lcd_user=(1<<27)|(1<<26);bus.lcd_i80_start();
+        assert_eq!(frames.lock().unwrap().last().unwrap().0.dc_high,idle!=toggle);
+    }}
 }
 
 #[test]
