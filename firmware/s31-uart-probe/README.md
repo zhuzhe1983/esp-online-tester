@@ -361,3 +361,22 @@ second mode produces a diagnostic digital-system reset request after four
 edges. Negative modes omit the required analog byte or request an unimplemented
 RF shutdown on a real event; neither fabricates successful completion. The test
 does not measure physical voltage, comparator latency, or Flash/RF power behavior.
+
+`waiti-probe.S` configures the documented automatic Flash idle controls, then
+executes real erase/program/read and calls instructions from the modified Flash.
+Set `S31_WAITI_ELF`. Enabled wait samples the completed NOR status three times;
+disabled wait performs no automatic status transaction. Wrong command/address/
+width and actual suspend requests are negative modes that stop before modifying
+Flash. This is the existing synchronous functional NOR,not physical BUSY latency
+or analog timing tuning.
+
+`lazy-fpu-probe.S` leaves FS Off,executes FLW,and enters its own exception handler.
+Set `S31_LAZY_FPU_ELF`. The first diagnostic stop preserves the architectural
+trap. Resuming calls the real handler,which enables FS and returns with `mret`;
+the same FLW retires and real FADD/FSW produce binary32 `0x40400000`. UART `L`
+leaves FS Off for a repeated-exception test;UART `X` causes an unmapped load.
+The native `bringup --guest-exceptions=N` option resumes at most N architectural
+exceptions without bus faults;the default0 stops at the first exception. It
+never changes PC/registers or skips guest instructions. The reusable remote
+probe exposes the same bounded option and records its value. This fixture does
+not prove that the private Plus firmware handles its own FPU exception correctly.

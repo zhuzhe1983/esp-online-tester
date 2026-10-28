@@ -3,8 +3,9 @@
 Status on 2026-10-28: Metalio INK4 Plus remains **unavailable** in this platform.
 The private S31 core now executes the original ROM, bootloader and official
 application entry with explicitly declared development inputs. It currently stops
-during application PSRAM interrupt initialization, after system-timer setup and
-adding the PSRAM heap. No product framebuffer or complete
+after Flash initialization at a real FS-Off floating-point exception. Bounded
+execution of its guest handler then hits a gated watchdog access; that handler
+has not returned successfully. No product framebuffer or complete
 board support has been established. The earlier separate Espressif emulator
 baseline below is retained for comparison, not presented as this core's result.
 
@@ -1686,3 +1687,52 @@ completion: **INK4 Plus remains unavailable, with no framebuffer**.
 See the [brownout receipt](evidence/s31-bringup/brownout.json),
 [strict missing-input observation](evidence/s31-bringup/brownout-plus-2.0.68-no-seed.json)
 and [explicit-input observation](evidence/s31-bringup/brownout-plus-2.0.68-final.json).
+
+
+## Flash automatic idle control and bounded guest handlers (2026-10-28)
+
+The private SPI1 model now retains `FLASH_WAITI_CTRL` with its documented reset
+value and mask. PER/PES wait-delay bits are cold configuration;actual suspend/
+resume triggers and automatic engines remain unsupported. Supported sector
+erase and page program still change the backing array under the real WEL rules.
+When automatic wait is enabled,an eight-bit command05 with no address samples
+the resulting NOR status after the synchronous operation. Invalid command or
+framing fails before array/WEL mutation. Disabled wait sends no automatic
+status command. Dummy timing fields are retained,without a claim of physical
+sampling calibration or busy-time simulation. Host diagnostic counters report
+these internal samples;the public RD_STATUS latch is not invented as an alias.
+
+The source fixture erases,programs,reads and executes the programmed Flash code.
+It passes with automatic waiting (three status samples) and with waiting off
+(no samples). Wrong command,address phase,16-bit command and actual suspend
+trigger each stop before any Flash write. The existing NOR fixtures and tests
+remain unchanged.
+
+The original complete Plus2.0.68 image now passes Flash initialization. With the
+same declared electrical/clock inputs,it first stops after72,245,916 instructions
+at an architectural illegal-instruction exception for `flw fa5,1340(a5)`
+(`53c7a787`,mepc`4006ba84`);the CPU has already entered its exception vector at
+`2f000000`. FS is Off and no bus fault has occurred. This is a diagnostic stop,
+not evidence of a missing FLW decoder:the shared RV32F implementation already
+raises that exception when floating-point state is disabled.
+
+An optional bounded `--guest-exceptions=N` diagnostic policy now permits the
+guest's architectural handler to execute. Default0 preserves the first-stop
+behavior. It never changes guest PC/registers,skips instructions,or continues
+through a recorded unsupported bus access. A separate source fixture proves
+that a real handler enables FS,returns with `mret`,retries the same FLW and
+computes/stores binary32 3.0. A repeated-exception case checks the finite limit.
+
+For the actual Plus image,continuing one such exception reaches a second,real
+failure after72,246,976 instructions:store to TIMG1 watchdog write protection
+at`20581064`,PC`2f80927c`,denied by the existing clock gate. The exception
+handler has not been shown to return successfully. Public IDF6.1 `soc_caps.h`
+marks the FPU EXT_ILL load/store limitation,but its `vectors.S` opcode fallback
+also has a P4-only revision condition;the image's private dirty SDK revision is
+unknown. This potential mismatch and the actual handler path need further
+investigation;no FPU state or watchdog gate is forced merely to pass startup.
+**INK4 Plus remains unavailable,with no framebuffer or board-level UI claim.**
+
+See the [Flash wait receipt](evidence/s31-bringup/waiti.json),
+[first-exception observation](evidence/s31-bringup/waiti-plus-2.0.68-first.json)
+and [guest-handler observation](evidence/s31-bringup/waiti-plus-2.0.68-handlers.json).

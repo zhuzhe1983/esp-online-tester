@@ -1,9 +1,10 @@
 //! Run a caller-supplied SRAM/ROM ELF and report the first unimplemented access.
 use std::io::Write;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut bod = None; let mut sfdp = None; let mut bbpll = None; let mut systimer_from_cpu = false; let mut rtc_timer_from_cpu = false; let mut rtc_calibration_from_cpu = false; let mut watch_pc = None; let mut watch_pc1 = None; let mut peripheral_pads = Vec::new(); let mut psram_mode = None; let mut psram_bytes = None;
+    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut bod = None; let mut sfdp = None; let mut bbpll = None; let mut systimer_from_cpu = false; let mut rtc_timer_from_cpu = false; let mut rtc_calibration_from_cpu = false; let mut watch_pc = None; let mut watch_pc1 = None; let mut peripheral_pads = Vec::new(); let mut psram_mode = None; let mut psram_bytes = None; let mut guest_exceptions = 0u32;
     while let Some(arg) = args.peek() {
         match arg.as_str() {
+            value if value.starts_with("--guest-exceptions=") => { guest_exceptions = value["--guest-exceptions=".len()..].parse()?; if guest_exceptions > 1024 { return Err("guest-exceptions limit must be at most1024".into()); } }
             "--rom" => rom = true, "--usb-host" => usb_host = true,
             value if value.starts_with("--watch-pc1=0x") => watch_pc1 = Some(u32::from_str_radix(&value[14..], 16)?),
             value if value.starts_with("--watch-pc=0x") => watch_pc = Some(u32::from_str_radix(&value[13..], 16)?),
@@ -57,7 +58,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         args.next();
     }
-    let elf = args.next().ok_or("usage: bringup [--rom] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--systimer-from-cpu] [--rtc-timer-from-cpu] [--rtc-calibration-from-cpu] [--watch-pc=0xADDRESS] [--watch-pc1=0xADDRESS] [--peripheral-pad=pin:0|1] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] [--analog-bod=hh] [--psram-mr=12hex --psram-bytes=N] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
+    let elf = args.next().ok_or("usage: bringup [--rom] [--guest-exceptions=N] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--systimer-from-cpu] [--rtc-timer-from-cpu] [--rtc-calibration-from-cpu] [--watch-pc=0xADDRESS] [--watch-pc1=0xADDRESS] [--peripheral-pad=pin:0|1] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] [--analog-bod=hh] [--psram-mr=12hex --psram-bytes=N] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
     let input = args.next().unwrap_or_default();
     let budget = args.next().map(|s| s.parse::<u64>()).transpose()?.unwrap_or(100_000).min(100_000_000);
     if args.next().is_some() { return Err("too many bringup arguments".into()); }
@@ -108,14 +109,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if spi0_shadow { m.bus.mspi.enable_legacy_rom_lengths(); eprintln!("development SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)"); }
     if let Some(value) = strap { m.bus.pads.strap = value; }
     m.bus.uart_input(input.as_bytes()).map_err(|e| format!("UART input unavailable: {e:?}"))?;
-    let mut steps = 0; let mut stop = esp32s31::Stop::Budget; let mut usb = Vec::new(); let mut packets = 0;
+    let mut steps = 0; let mut stop = esp32s31::Stop::Budget; let mut usb = Vec::new(); let mut packets = 0; let mut guest_exceptions_run = 0;
     while steps < budget {
         // Explicit functional host polling, not a USB frame/time guarantee. Without this
         // opt-in, no peer drains packets or fabricates receive data/readiness.
         let run = m.run((budget - steps).min(1000)); steps += run.steps; stop = run.stop;
         if let Some(packet) = m.bus.usb_console.host_receive() { packets += 1; usb.extend(packet); }
+        // The architecture already transferred control to mtvec. An explicit
+        // budget lets the guest execute its own handler (e.g. lazy FPU enable),
+        // never patches PC/registers or skips the trapping instruction. Unknown
+        // bus operations still stop at their first fault; default remains zero.
+        if matches!(stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(_))) && m.bus.first_fault.is_none() && guest_exceptions_run < guest_exceptions {
+            let cpu = if m.last_core == 0 { &m.cpu } else { &m.cpu1 };
+            eprintln!("guest-exception-resume hart={} pc={:#010x} mepc={:#010x} cause={:#x} mtval={:#010x} mstatus={:#x}", m.last_core, cpu.pc, cpu.mepc, cpu.mcause, cpu.mtval, cpu.mstatus);
+            guest_exceptions_run += 1; continue;
+        }
         if stop != esp32s31::Stop::Budget { break; }
     }
+    eprintln!("guest-exception-resumes={guest_exceptions_run} limit={guest_exceptions}");
     if let Some(watch) = &m.pc_watch { eprintln!("pc-watch address={:#010x} retired={} first-cycle={:?}", watch.address, watch.retired, watch.first_cycle); }
     std::io::stdout().write_all(&m.bus.uart0.tx_out)?;
     eprintln!("stop={stop:?} steps={steps} pc={:#010x} mepc={:#010x} mcause={:#x} mtval={:#010x} fault={:?}",
@@ -125,6 +136,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("systimer-ticks={} counters={:?} events={:?}", m.bus.systimer.ticks, m.bus.systimer.counters(), m.bus.systimer.events);
     eprintln!("mspi-commands={} cache-maintenance={} sha-blocks={}", m.bus.mspi.commands, m.bus.cache.maintenance_operations, m.bus.sha.blocks());
     eprintln!("mspi-address={:?} mosi-dlen={:?} miso-dlen={:?}", m.bus.mspi.read(1, 4), m.bus.mspi.read(1, 0x24), m.bus.mspi.read(1, 0x28));
+    eprintln!("core-fpu mstatus={:#x}/{:#x} ext-ill={:#x}/{:#x} mwdt-clocks={:#x}/{:#x}",m.cpu.mstatus,m.cpu1.mstatus,m.cpu.ext_ill,m.cpu1.ext_ill,m.bus.mwdt[0].clock_read(),m.bus.mwdt[1].clock_read());
+    eprintln!("mspi-waiti-polls={} sample={:?} control={:?} suspend={:?}", m.bus.mspi.waiti_polls, m.bus.mspi.last_waiti_status, m.bus.mspi.read(1, 0x98), m.bus.mspi.read(1, 0x9c));
     eprintln!("flash-core-hz={:?}", m.bus.mspi.core_hz());
     eprintln!("mspi-last-command={:?} user={:?} user1={:?} user2={:?} ctrl={:?} status={:?} w0={:?}", m.bus.mspi.last_command, m.bus.mspi.read(1, 0x18), m.bus.mspi.read(1, 0x1c), m.bus.mspi.read(1, 0x20), m.bus.mspi.read(1, 8), m.bus.mspi.read(1, 0x2c), m.bus.mspi.read(1, 0x58));
     eprintln!("analog-transactions={} bias={:?} mpll-shutdown={}", m.bus.analog.transactions, m.bus.analog.bias(), m.bus.power.mpll_disabled());

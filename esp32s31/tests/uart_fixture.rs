@@ -951,3 +951,44 @@ fn external_s31_startup_clocks_preserve_real_sha_and_apply_permissions_to_new_do
         eprintln!("startup-clocks mode={mode} steps={} stop={:?} sha-blocks={}",r.steps,r.stop,m.bus.sha.blocks());
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_WAITI_ELF"]
+fn external_s31_auto_wait_after_actual_nor_writes_and_invalid_commands() {
+    let path = std::env::var("S31_WAITI_ELF").expect("build firmware/s31-uart-probe and set S31_WAITI_ELF");
+    let elf = std::fs::read(path).unwrap();
+    for mode in 0u32..6 {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap(); m.bus.cache.set_flash(&[0xa5; 0x4000]).unwrap();
+        m.bus.mspi.attach_flash([0xef, 0x40, 0x18], 0x200).unwrap(); m.bus.load(0x2f070000, &mode.to_le_bytes(), 4).unwrap();
+        m.pc_watch = Some(esp32s31::PcWatch { address: 0x40001080, ..Default::default() }); let run = m.run(10000);
+        if mode < 2 {
+            assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 FLASH WAITI ERASE PROGRAM EXECUTE PASS\n");
+            assert_eq!(m.pc_watch.as_ref().unwrap().retired, 1); assert_eq!(m.bus.cache.read_byte(0x40001080, false), Ok(0x13));
+            assert_eq!(m.bus.mspi.waiti_polls, if mode == 0 { 3 } else { 0 }); assert_eq!(m.bus.mspi.last_waiti_status, if mode == 0 { Some(0) } else { None });
+        } else {
+            assert_eq!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7))); assert!(m.bus.uart0.tx_out.is_empty());
+            let f = m.bus.first_fault.as_ref().unwrap(); assert_eq!((f.address, f.reason), (if mode == 5 { 0x2050109c } else { 0x20501000 }, emu_core::Fault::Prohibited));
+            assert_eq!(m.bus.cache.read_byte(0x40001080, false), Ok(0xa5)); assert_eq!(m.pc_watch.as_ref().unwrap().retired, 0);
+            assert_eq!(m.bus.mspi.waiti_polls, 0); assert_eq!(m.bus.mspi.last_waiti_status, None);
+        }
+        assert_eq!(m.bus.cache.read_byte(0x40000000, false), Ok(0xa5));
+        eprintln!("S31 WAITI mode={mode} steps={} stop={:?} polls={} sample={:?}", run.steps, run.stop, m.bus.mspi.waiti_polls, m.bus.mspi.last_waiti_status);
+    }
+}
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_LAZY_FPU_ELF"]
+fn external_s31_guest_lazy_fpu_handler_retires_original_load_without_host_repair() {
+    use emu_core::Bus;
+    let path = std::env::var("S31_LAZY_FPU_ELF").expect("build firmware/s31-uart-probe and set S31_LAZY_FPU_ELF");
+    let elf = std::fs::read(path).unwrap(); let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+    let first = m.run(10000); assert_eq!(first.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(2)));
+    assert!(m.bus.first_fault.is_none()); assert_eq!(m.cpu.mtval & 0x7f, 7); assert!(m.cpu.fs_off()); assert!(m.bus.uart0.tx_out.is_empty());
+    let faulting_pc = m.cpu.mepc; m.pc_watch = Some(esp32s31::PcWatch { address: faulting_pc, ..Default::default() });
+    let second = m.run(10000); assert_eq!(second.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 GUEST LAZY FPU MRET PASS\n");
+    assert_eq!(m.bus.read32(0x2f060000), Ok(1)); assert_eq!(m.bus.read32(0x2f060004), Ok(0x40400000)); assert_eq!(m.pc_watch.as_ref().unwrap().retired, 1);
+    eprintln!("S31 lazyFPU first={} second={} original-pc={faulting_pc:#x}", first.steps, second.steps);
+    let mut repeat = esp32s31::Bringup::new(); repeat.load_elf(&elf).unwrap(); repeat.bus.uart_input(b"L").unwrap();
+    for _ in 0..3 { assert_eq!(repeat.run(10000).stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(2))); }
+    assert!(repeat.cpu.fs_off()); assert!(repeat.bus.uart0.tx_out.is_empty()); assert_eq!(repeat.bus.read32(0x2f060000), Ok(2));
+}
