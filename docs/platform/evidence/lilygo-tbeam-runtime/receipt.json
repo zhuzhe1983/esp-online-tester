@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-28T07:06:32Z",
+  "baseRevision": "dafdf87254272944140a6be1dce1f5c4f245e32d",
+  "board": "lilygo-t-beam-v1-2",
+  "scope": "Original V1.2 AXP2101 / SX1276 868/915; no optional OLED",
+  "toolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "native": {
+    "passed": true,
+    "cycles": 11704800000,
+    "guestSeconds": 48.77,
+    "instructions": 8052638319,
+    "setupCount": 1,
+    "radio": {
+      "model": "sx1276-lora-digital",
+      "physicalRf": false,
+      "powered": true,
+      "resetHigh": true,
+      "mode": 5,
+      "irq": 0,
+      "config": {
+        "frequency": 959447040,
+        "sf": 10,
+        "bandwidth": 4,
+        "codingRate": 2,
+        "syncWord": 5156,
+        "implicitHeader": false,
+        "crc": false,
+        "invertIq": false
+      },
+      "txCount": 4,
+      "rxCount": 1,
+      "rejectedCommands": 0
+    }
+  },
+  "browser": {
+    "passed": true,
+    "guestSeconds": 188.06,
+    "instructions": 12124190902,
+    "checks": [
+      {
+        "text": "AXP2101 PMU init succeeded",
+        "found": true
+      },
+      {
+        "text": "[SX1276]:LoRa Initialized Success!",
+        "found": true
+      },
+      {
+        "text": "Failed to find Display",
+        "found": true
+      },
+      {
+        "text": "Start transmit",
+        "found": true
+      },
+      {
+        "text": "Start receive",
+        "found": true
+      },
+      {
+        "text": "COUNT:7",
+        "found": true
+      },
+      {
+        "text": "isPekeyShortPress",
+        "found": true
+      },
+      {
+        "text": "Frequency set to 915.00 MHz",
+        "found": true
+      }
+    ],
+    "resetCount": 1,
+    "radio": {
+      "model": "sx1276-lora-digital",
+      "physicalRf": false,
+      "powered": true,
+      "resetHigh": true,
+      "mode": 5,
+      "irq": 0,
+      "config": {
+        "frequency": 959447040,
+        "sf": 10,
+        "bandwidth": 4,
+        "codingRate": 2,
+        "syncWord": 5156,
+        "implicitHeader": false,
+        "crc": false,
+        "invertIq": false
+      },
+      "txCount": 3,
+      "rxCount": 1,
+      "rejectedCommands": 0,
+      "guestTime": 188.077604375
+    },
+    "firmware": {
+      "manifestUrl": null,
+      "manifestHash": null,
+      "metadata": {
+        "name": "arduino-lib-builder",
+        "version": "esp-idf: v4.4.7 38eeba213a",
+        "source": "esp-app-description"
+      },
+      "source": "remote",
+      "artifacts": [
+        {
+          "kind": "flash",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/firmware/tbeam-v1.x-all-band-sx1276-factory-20260817_0x0.bin",
+          "sha256": "2867c0cdfe47a9ad70cb69504a7fbe757ccaf73b044fc2345a2250d93284a4b6",
+          "bytes": 1004784
+        },
+        {
+          "kind": "rom",
+          "url": "<site>/wasm/fw/esp32_rev300_rom.elf",
+          "sha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+          "bytes": 857500
+        }
+      ],
+      "appDirect": false,
+      "stubs": [],
+      "executionMode": "wasm-jit"
+    },
+    "human3d": {
+      "pmuShortPressBefore": 1,
+      "pmuShortPressAfter": 2,
+      "userPage3": true,
+      "time": 268.84,
+      "finalGuestSeconds": 270.68
+    }
+  },
+  "model": {
+    "status": "partial-not-1-to-1-verified",
+    "modelSha256": "1b9bd8fc365e80c9df77388aae87d8ebb280c18e1f03469fc3610230bf4c7041",
+    "geometrySha256": "e54cf135e4a4133302709168be0122870991a02d0c507c250c636a581258ffd5",
+    "views": [
+      "front",
+      "back",
+      "side"
+    ],
+    "observed": "Generic renderer shows UNKNOWN board, 3 side buttons and estimated battery holder; power/user hit regions drive the running factory firmware. No optional OLED or invented component details.",
+    "notVerified": [
+      "Exact V1.2 PCB outline/thickness/hole positions",
+      "Connectors, radio/GNSS components and copper layout",
+      "Aligned photo-overlay IoU and landmark residuals",
+      "Whole front/back screenshots are vertically clipped by the review viewport; side view is visible"
+    ]
+  },
+  "negativeResults": [
+    "Initial platform test lacked the S3 ROM fixture; passed after supplying the documented ROM input.",
+    "Initial WASM LoRa ABI only dispatched to ESP32-S3; classic board dispatch now uses the existing generic Board hooks.",
+    "Short presses during startup/blocking transmit can be missed; 700 ms guest holds do not produce AceButton clicks. Tests wait for readiness and use observed short press/release edges.",
+    "Factory can print COUNT:0 from a stale TX callback flag on entering RX. A real explicit peer is distinguished by RX count and COUNT:7; the model does not auto-echo packets.",
+    "One browser harness call used a nonexistent serial method and left a waiter timeout. Corrected public input({type:serial,port:uart0,data}) produced the expected frequency change.",
+    "The first worker harness used SoftAP as the readiness checkpoint and pressed during remaining setup. It timed out without Start transmit. Waiting until guest 42 seconds, as in the native test, passed without firmware/model changes.",
+    "Catalog validation initially lacked jsonschema and knowledge timestamps included fractional seconds rejected by the existing stricter test. Installed the pinned requirements in an isolated venv and normalized record timestamps to seconds; validation passed."
+  ],
+  "rawArtifacts": [
+    {
+      "name": "browser-final-receipt.log",
+      "bytes": 3331,
+      "sha256": "2aa982c429f92481c4468c0f2997b249643822ba0b5b0ba1cc57a0e48cae9812",
+      "storage": "local scratch; not published"
+    },
+    {
+      "name": "browser-front.png",
+      "bytes": 215415,
+      "sha256": "885ed478cd62da14e8cc485afdd9685ced4d660bd40655f1b4dcf180d94428bf",
+      "storage": "local scratch; not published"
+    },
+    {
+      "name": "browser-final.png",
+      "bytes": 215992,
+      "sha256": "6efa39669fccfcc21e534b159e030e07e1d120f7487346dfe53f059664e14eed",
+      "storage": "local scratch; not published"
+    },
+    {
+      "name": "model-front.png",
+      "bytes": 271733,
+      "sha256": "d28a0945c4c7bfd794a3f1aa89c405c4315d714d70b945ef8520f703d0335f63",
+      "storage": "local scratch; not published"
+    },
+    {
+      "name": "model-back.png",
+      "bytes": 218387,
+      "sha256": "f04616330673b7f52f15408faefff520849758dd1cb727b8fa06e16d89c001eb",
+      "storage": "local scratch; not published"
+    },
+    {
+      "name": "model-side.png",
+      "bytes": 218424,
+      "sha256": "59b39ff54abcb20385db7a1662f7c162aba983491aaf71980ac1969420eef6d5",
+      "storage": "local scratch; not published"
+    },
+    {
+      "name": "factory-test.log",
+      "bytes": 1914,
+      "sha256": "6591c3f49082c122c88e3a44c00c995783d26378bc43f02ee1b4b0ab6f28f70f",
+      "storage": "local scratch; not published"
+    }
+  ],
+  "privacy": {
+    "removed": [
+      "Local server origin",
+      "Full UART logs",
+      "TX history arrays",
+      "Browser session identifiers and process details"
+    ],
+    "effect": "Retains guest counts, exact inputs/hashes, observed output predicates and model limitations. Raw captures remain outside Git; no private capture was published."
+  },
+  "performance": "No CPU benchmark claim: only board-local behavior and cold explicit WASM LoRa dispatch changed; no shared bus/tick/device_set changes.",
+  "worker": {
+    "passed": true,
+    "guestSeconds": 46.44,
+    "instructions": 7981531820,
+    "txCount": 4,
+    "rxCount": 1,
+    "frequency": 959447040,
+    "sourceSha256": "2867c0cdfe47a9ad70cb69504a7fbe757ccaf73b044fc2345a2250d93284a4b6"
+  },
+  "checks": [
+    {
+      "command": "cargo test -p esp32 --lib tbeam (8 tests)",
+      "result": "passed"
+    },
+    {
+      "command": "TBEAM_FACTORY_BIN=<official-bin> ESP32SIM_ROM_DIR=<roms> cargo test --release -p esp32 --test tbeam_factory -- --ignored --nocapture",
+      "result": "passed"
+    },
+    {
+      "command": "TBEAM_FACTORY_BIN=<official-bin> ESP32SIM_ROM_DIR=<roms> node tools/platform-tbeam-runtime-test.mjs",
+      "result": "passed"
+    },
+    {
+      "command": "cargo clippy -p esp32 --all-targets -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "passed"
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "passed"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> node --test tools/platform-knowledge-test.mjs tools/platform-lilygo-catalog-test.mjs tools/platform-config-test.mjs tools/platform-input-test.mjs tools/platform-runtime-test.mjs tools/platform-view-test.mjs tools/platform-lora-test.mjs",
+      "result": "passed"
+    },
+    {
+      "command": "python3 tools/build-tbeam-model.py --output <scratch> (byte-identical model.json and geometry.bin)",
+      "result": "passed"
+    },
+    {
+      "command": "Full workspace CI",
+      "result": "deferred to integration; not claimed here"
+    }
+  ]
+}

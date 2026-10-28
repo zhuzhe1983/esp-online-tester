@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "hardware-doc"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
+  "updatedAt": "2026-10-28T07:06:32Z",
   "hardwareRevision": "V1.2 AXP2101; GNSS batch unspecified",
   "identity": {
     "manufacturer": "LILYGO",
@@ -97,7 +97,7 @@
         "official-repo",
         "factory-doc"
       ],
-      "notes": "布局、芯片和容量已校验；不等同于模拟或实机验证。"
+      "notes": "固定官方镜像已验证 ROM 启动、GPIO38 菜单、AXP2101 短按 IRQ、SX1276 数字收发与串口频率修改。完整功能及实机刷写未验收；见 docs/platform/lilygo-tbeam-runtime.md。"
     },
     {
       "id": "radio",
@@ -166,6 +166,31 @@
         "spark-product-catalog"
       ],
       "notes": "本地条目保留已核验硬件变体；Spark 商品入口可能覆盖其他配置，不扩大固件适用范围。"
+    },
+    {
+      "id": "runtime-wiring",
+      "label": "本次板级模型采用的官方引脚",
+      "value": {
+        "user": 38,
+        "pmuSda": 21,
+        "pmuScl": 22,
+        "pmuIrq": 35,
+        "lora": {
+          "sck": 5,
+          "miso": 19,
+          "mosi": 27,
+          "cs": 18,
+          "reset": 23,
+          "dio0": 26,
+          "dio1": 33,
+          "dio2": 32
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "pinmap",
+        "schematic"
+      ]
     }
   ],
   "revisions": [],
@@ -277,6 +302,100 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "photo-angle",
+      "title": "LILYGO 官方照片 / 尺寸参考",
+      "kind": "manufacturer-photo",
+      "status": "fetched",
+      "url": "https://lilygo.cc/cdn/shop/files/LILYGO-T-BEAM_3_42e9cc44-d2ee-42ed-9e9f-075be459e93d.jpg?v=1753065307",
+      "resolvedUrl": "https://lilygo.cc/cdn/shop/files/LILYGO-T-BEAM_3_42e9cc44-d2ee-42ed-9e9f-075be459e93d.jpg?v=1753065307",
+      "fetchedAt": "2026-10-28T06:25:13Z",
+      "sha256": "b3878459f6da850c4ee13faa01caab3431cd2c73c4356546418a106aba2a69f2",
+      "bytes": 100864,
+      "mediaType": "image/jpeg",
+      "archiveName": "reference-v12-no-oled.jpg",
+      "notes": "照片含其他射频标签，只作共用外形参照；旧版尺寸图不能证明 V1.2 精确尺寸。"
+    },
+    {
+      "id": "photo-back",
+      "title": "LILYGO 官方照片 / 尺寸参考",
+      "kind": "manufacturer-photo",
+      "status": "fetched",
+      "url": "https://lilygo.cc/cdn/shop/files/Q408-LILYGO-T-Beam_4.jpg?v=1753065307",
+      "resolvedUrl": "https://lilygo.cc/cdn/shop/files/Q408-LILYGO-T-Beam_4.jpg?v=1753065307",
+      "fetchedAt": "2026-10-28T06:25:11Z",
+      "sha256": "85922605b3b87b0467ef1405e19ce15997049b58c06195deb0b6649ba4474d0a",
+      "bytes": 73791,
+      "mediaType": "image/jpeg",
+      "archiveName": "reference-v12-angle.jpg",
+      "notes": "照片含其他射频标签，只作共用外形参照；旧版尺寸图不能证明 V1.2 精确尺寸。"
+    },
+    {
+      "id": "photo-dimensions",
+      "title": "LILYGO 官方照片 / 尺寸参考",
+      "kind": "manufacturer-photo",
+      "status": "fetched",
+      "url": "https://cdn.shopifycdn.net/s/files/1/0617/7190/7253/files/product-size_1024x1024.png?v=1656990054",
+      "resolvedUrl": "https://cdn.shopifycdn.net/s/files/1/0617/7190/7253/files/product-size_1024x1024.png?v=1656990054",
+      "fetchedAt": "2026-10-28T06:25:12Z",
+      "sha256": "ee8f8290ab80d9f85fb817b0a71334ca74bf126890e01e93bf4ff899023ce6c4",
+      "bytes": 46306,
+      "mediaType": "image/png",
+      "archiveName": "reference-v1x-dimensions.png",
+      "notes": "照片含其他射频标签，只作共用外形参照；旧版尺寸图不能证明 V1.2 精确尺寸。"
+    },
+    {
+      "id": "cad-v1x",
+      "title": "官方 T-Beam-V1X CAD 压缩包",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/dimensions/T-Beam-V1X.7z",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/dimensions/T-Beam-V1X.7z",
+      "fetchedAt": "2026-10-28T06:14:57Z",
+      "sha256": "1ecef0a98f5888059964a8993d7ff12685b1eafbf8d9394c1e87f87e02d9ab0d",
+      "bytes": 408372,
+      "mediaType": "application/octet-stream",
+      "archiveName": "T-Beam-V1X.7z"
+    },
+    {
+      "id": "factory-code",
+      "title": "固定版本官方 Factory 源码",
+      "kind": "software-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/examples/Factory/Factory.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/examples/Factory/Factory.ino",
+      "fetchedAt": "2026-10-28T06:14:57Z",
+      "sha256": "c80b9736f36f73193511d456087d11a955e1cfb4e83a9ba0094495af055b7878",
+      "bytes": 67216,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "Factory.ino"
+    },
+    {
+      "id": "pmu-registers",
+      "title": "官方固件内 AXP2101 寄存器定义",
+      "kind": "software-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "fetchedAt": "2026-10-28T06:14:56Z",
+      "sha256": "ee5ae2828fdf6583600e228f4be927ddd20e0299e6c71dc292469d16f27b366e",
+      "bytes": 10604,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "AXP2101Constants.h"
+    },
+    {
+      "id": "radio-registers",
+      "title": "官方固件内 SX127x 寄存器定义",
+      "kind": "software-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/lib/RadioLib/src/modules/SX127x/SX127x.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/lib/RadioLib/src/modules/SX127x/SX127x.h",
+      "fetchedAt": "2026-10-28T06:14:57Z",
+      "sha256": "fd9c0fd1266d2191dab6419ca9e1ec3df8240eca73006cd23e54935a560e928d",
+      "bytes": 81923,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "SX127x.h"
     }
   ],
   "assets": [
@@ -285,6 +404,27 @@
       "sourceId": "schematic",
       "role": "schematic",
       "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/1991b1ed70915d4f246b841f99f6027166ea7330/schematic/LilyGo_TBeam_V1.2.pdf"
+    },
+    {
+      "id": "photo-angle",
+      "sourceId": "photo-angle",
+      "role": "model-reference",
+      "url": "https://lilygo.cc/cdn/shop/files/LILYGO-T-BEAM_3_42e9cc44-d2ee-42ed-9e9f-075be459e93d.jpg?v=1753065307",
+      "localUrl": "./assets/lilygo-t-beam-v1-2/reference-v12-no-oled.jpg"
+    },
+    {
+      "id": "photo-back",
+      "sourceId": "photo-back",
+      "role": "model-reference",
+      "url": "https://lilygo.cc/cdn/shop/files/Q408-LILYGO-T-Beam_4.jpg?v=1753065307",
+      "localUrl": "./assets/lilygo-t-beam-v1-2/reference-v12-angle.jpg"
+    },
+    {
+      "id": "photo-dimensions",
+      "sourceId": "photo-dimensions",
+      "role": "model-reference",
+      "url": "https://cdn.shopifycdn.net/s/files/1/0617/7190/7253/files/product-size_1024x1024.png?v=1656990054",
+      "localUrl": "./assets/lilygo-t-beam-v1-2/reference-v1x-dimensions.png"
     }
   ],
   "unknowns": [
@@ -326,7 +466,7 @@
       "sourceIds": [
         "official-docs"
       ],
-      "notes": "本次元信息与镜像布局校验不证明完整固件兼容或硬件刷写。"
+      "notes": "已验证操作仅限当前官方出厂镜像的 ROM 启动、按键、PMU IRQ 与 SX1276 数字收发；PSRAM/GNSS/可选 OLED/真实 RF/Wi-Fi、电池模拟、物理断电和长按睡眠唤醒仍未验收，未进行实机刷写。"
     },
     {
       "id": "weight",
@@ -337,11 +477,25 @@
         "official-docs"
       ],
       "notes": "未从本次核验的一手资料取得适用该配置的重量。"
+    },
+    {
+      "id": "exact-v12-model",
+      "label": "V1.2 精确几何 / 内部结构",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "cad-v1x",
+        "photo-angle",
+        "photo-back",
+        "photo-dimensions"
+      ],
+      "notes": "官方 V1X STEP 标识 T22_GPS_V1-1-PCB，不能作为 V1.2 CAD。当前仅有明示 UNKNOWN 的局部照片模型；厚度、孔位、连接器与 1:1 叠图误差未验收。"
     }
   ],
   "collectionNotes": [
     "资料按具体型号和固定 GitHub 提交核验；未提交第三方固件二进制。",
     "来源清单保留实际抓取 URL、UTC、字节数和 SHA-256；原始 API 的作者、账号、邮件和下载者信息不入库。",
-    "暂未完成可复用的模型核验；不以通用盒体冒充设备。"
+    "局部照片模型及重建工具已入库；官方 V1.1 CAD 未套用至 V1.2。通用渲染器正/背/侧面可见，但 1:1 几何验收未通过，不作完整模型声明。",
+    "运行与 3D 按键通过同一浏览器 worker 验证；证据、复现方法及边界见 docs/platform/lilygo-tbeam-runtime.md。"
   ]
 }

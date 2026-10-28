@@ -4,6 +4,7 @@
 //! - `NoBoard` — a bare module (`none`, `bare`, `esp32dev`): nothing on the pins, console only
 //! - `esp32dev-loopback` — the SPI loopback fixture in `crate::spi`
 pub mod tdisplay;
+pub mod tbeam;
 pub mod aithinker;
 pub mod atom_lite;
 pub mod atom_matrix;
@@ -14,6 +15,7 @@ pub use tdisplay::*;
 
 pub fn make_board(name: &str) -> Option<esp_soc::Board> {
     match name {
+        "lilygo-t-beam-v1-2" => Some(Box::new(tbeam::TBeam::new())),
         "atom-matrix-v11" | "m5stack-c008-b-v11" => Some(Box::new(atom_matrix_v11::AtomMatrixV11::new())),
         "atom-matrix" | "m5stack-c008-b" => Some(Box::new(atom_matrix::AtomMatrix::new())),
         "atom-voice" | "m5stack-c008-c" => Some(Box::new(atom_voice::AtomVoice::new())),
