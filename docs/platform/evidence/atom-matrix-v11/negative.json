@@ -1,0 +1,49 @@
+{
+  "stage": "first-official-WASM-probe",
+  "result": "timeout-after-press",
+  "boot": "Original UIFlow2 v2.5.3 reached MicroPython REPL and25 blue G27 RGB pixels.",
+  "guestResponses": [
+    "MATRIX_KEY 0",
+    "MATRIX_KEY 0"
+  ],
+  "interpretation": "One M5.update immediately after an input is insufficient evidence of debounced press; repeating with explicit guest30ms interval. No passed input assertion recorded.",
+  "privacy": "Original serial includes MAC; retained only relevant marker lines, rawcapture remains ignored.",
+  "investigation": [
+    {
+      "issue": "M5.BtnA stayed0 while raw G39=0",
+      "resolution": "Exact PICO-D4 eFuse package5 at board attach fixes official board autodetection. M5.begin/update now observes0/1/0."
+    },
+    {
+      "issue": "M5.Imu returned(2,-1,0) after1g X input",
+      "resolution": "Bosch DS000-08 p102 ACC_RANGE reset is2, existing model used1. Corrected8g reset; final M5.Imu is(1,0,0), raw4096."
+    },
+    {
+      "issue": "SoftI2C SDA25/SCL21 read returnedENODEV",
+      "status": "unresolved; software bit-banged I2C is not claimed supported; hardware I2C and M5 internal driver verified."
+    },
+    {
+      "issue": "Official UIFlow2 does not provide neopixel module",
+      "status": "Guest import failed, no fixture RGB claim. Actual firmware boot outputs25 blue pixels."
+    },
+    {
+      "issue": "First release read was1",
+      "resolution": "Human minimum host hold150ms; final real mouse/key test allows200ms host before reading release."
+    },
+    {
+      "issue": "Knowledge UTC/filename/index and watchlist map checks failed",
+      "resolution": "Strict source receipt fields and matching knowledge index/mapping corrected; final schema and platform suite passed."
+    },
+    {
+      "issue": "New eFuse unit test usedwrong Bus type",
+      "resolution": "Fixed to SocBus; final bothClippy passed."
+    },
+    {
+      "issue": "Mini initial navigation missed sd-card-storage.js with connection reset",
+      "resolution": "Reload plus explicit actual guest-time/LED condition used; initial0.02second capture not accepted as boot evidence."
+    },
+    {
+      "issue": "Two existing BMI270 tests expected reset 4g counts8192, so full Rust failed after the datasheet correction.",
+      "resolution": "Updated reset expectations to8g counts4096; explicit4g test still expects8192. Final full Rust suite passed; no goldens regenerated."
+    }
+  ]
+}

@@ -44,4 +44,12 @@ mod tests {
         let bits:Vec<_>=(0..25).flat_map(|n|[n,0x40+n,0x80+n]).flat_map(|v|(0..8).map(move|i|v&(0x80>>i)!=0)).collect();
         b.rmt_frame(26,&bits);assert_eq!(b.leds().unwrap().1,0);b.rmt_frame(27,&bits);assert_eq!(b.leds().unwrap().0[24],[0x58,24,0x98]);
     }
+    #[test]
+    fn pico_package_identity_is_cold_board_scoped() {
+        let mut b=crate::bus::SocBus::new(4*1024*1024,[0;6]);
+        let old=b.periph.efuse.ram.read(0x0c);assert_eq!((old>>9)&7,0);
+        b.board=Box::new(AtomMatrixV11::new());b.attach_board_devices();
+        assert_eq!(b.periph.efuse.ram.read(0x0c),(old&!(7<<9))|(5<<9));
+    }
+
 }

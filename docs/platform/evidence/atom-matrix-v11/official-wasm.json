@@ -1,0 +1,208 @@
+{
+  "checkedAt": "2026-10-28T01:31:41.739Z",
+  "productId": "m5stack-c008-b-v11",
+  "source": {
+    "url": "https://burner.m5stack.com/api/v1/firmwares/2099000000000000002/versions/2098279897621549057/download",
+    "sha256": "1591382c9b46f10549faa0053b4036aa55f5c8131867b2f039d2650982e7886d"
+  },
+  "wasmSha256": "a3d029435073bdce432caf338d67803bb0a6ddde424f0936f5784d575b9b025c",
+  "backend": "actual-page-worker-wasm",
+  "firmwarePatched": false,
+  "guestProgram": "Explicit MicroPython REPL expressions call M5.begin/update and read M5.BtnA/M5.Imu, read BMI270 hardware I2C registers, executed by the original official firmware.",
+  "inputs": {
+    "press": {
+      "accepted": true,
+      "delivery": "queued",
+      "message": {
+        "t": "btn",
+        "pin": 39,
+        "v": 1
+      },
+      "guestTime": 0.7908042083333333
+    },
+    "release": {
+      "accepted": true,
+      "delivery": "queued",
+      "message": {
+        "t": "btn",
+        "pin": 39,
+        "v": 0
+      },
+      "guestTime": 0.8838701708333333
+    },
+    "imu": {
+      "enabled": true,
+      "source": "agent",
+      "quaternion": [
+        0,
+        0,
+        0.7071067811865475,
+        0.7071067811865475
+      ],
+      "accelG": [
+        0.9999999999999998,
+        0,
+        0
+      ],
+      "gyroDps": [
+        0,
+        0,
+        0
+      ],
+      "delivery": "register-state",
+      "guestTime": 0.9802215458333333
+    }
+  },
+  "leds": [
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ]
+  ],
+  "serialEvidence": [
+    "MATRIX_KEY 0",
+    "RAW39 0",
+    "MATRIX_KEY 1",
+    "MATRIX_KEY 0",
+    "IMU_AVAILABLE True",
+    "ACCEL (0.0, 1.0, 0.0)",
+    "ROTATED (1.0, 0.0, 0.0)",
+    "BMI_RANGE b'\\x02'",
+    "BMI_RAW [0, 16, 0, 0, 0, 0]",
+    "ROTATED_LATER (1.0, 0.0, 0.0)"
+  ],
+  "guestSeconds": 1.2,
+  "checks": [
+    "official-micropython-repl",
+    "M5.BtnA-released0-pressed1-released0",
+    "actual-g27-25-pixel-output",
+    "M5.Imu-axis-change-after-quaternion",
+    "hardware-I2C-bmi270-range2-raw4096"
+  ],
+  "status": "pass",
+  "limitations": [
+    "IR/network transport/full BMI270 features not validated.",
+    "No physical hardware; REPL expressions test GPIO input, not a factory button workflow."
+  ]
+}

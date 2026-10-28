@@ -383,6 +383,12 @@ impl SocBus {
         Some((w, h, frame))
     }
     pub fn attach_board_devices(&mut self) {
+        // C008-B-V11 carries ESP32-PICO-D4, not the default D0WD package. Cold board setup;
+        // IDF v5.5.1 efuse_reg.h CHIP_PACKAGE [11:9], v4.4.3 CHIP_VER_PKG=5 (PICO-D4).
+        if self.board.name() == "atom-matrix-v11" {
+            let value = self.periph.efuse.ram.read(0x0c);
+            self.periph.efuse.ram.write(0x0c, (value & !(7 << 9)) | (5 << 9));
+        }
         self.irq_dirty = true;
         if self.board.uses_gpio_waveform() {
             self.board.gpio_waveform_at(self.cycles, self.periph.gpio.routes());

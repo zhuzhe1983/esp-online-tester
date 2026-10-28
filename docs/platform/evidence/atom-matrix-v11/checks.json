@@ -1,0 +1,180 @@
+{
+  "checkedAt": "2026-10-28T01:45:35.070444+00:00",
+  "checks": [
+    {
+      "name": "stable",
+      "command": "rustup update stable",
+      "exitCode": 0,
+      "seconds": 0.647
+    },
+    {
+      "name": "build",
+      "command": "cargo build --release --workspace",
+      "exitCode": 0,
+      "seconds": 22.992
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "seconds": 0.947
+    },
+    {
+      "name": "clippy-wasm",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "seconds": 1.394
+    },
+    {
+      "name": "rust",
+      "command": "cargo test --release --workspace -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "seconds": 131.554
+    },
+    {
+      "name": "vq",
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "exitCode": 0,
+      "seconds": 13.316
+    },
+    {
+      "name": "wasm-build",
+      "command": "tools/wasm-build.sh",
+      "exitCode": 0,
+      "seconds": 14.651
+    },
+    {
+      "name": "wasm-sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "seconds": 0.034
+    },
+    {
+      "name": "wasm",
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "exitCode": 0,
+      "seconds": 30.541
+    },
+    {
+      "name": "platform",
+      "command": "node --test tools/platform-*-test.mjs",
+      "exitCode": 0,
+      "seconds": 2.77
+    },
+    {
+      "name": "recording",
+      "command": "node tools/platform-recording-test.mjs --real",
+      "exitCode": 0,
+      "seconds": 3.797
+    },
+    {
+      "name": "timing",
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "seconds": 0.039
+    },
+    {
+      "name": "ble",
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "seconds": 0.594
+    },
+    {
+      "name": "ble-connection",
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "seconds": 2.008
+    },
+    {
+      "name": "pacing",
+      "command": "node tools/worker-pacing-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.033
+    },
+    {
+      "name": "channel",
+      "command": "node tools/worker-channel-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.105
+    },
+    {
+      "name": "input",
+      "command": "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.076
+    },
+    {
+      "name": "bench",
+      "command": "node --test tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.092
+    },
+    {
+      "name": "bench-python",
+      "command": "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "exitCode": 0,
+      "seconds": 0.077
+    },
+    {
+      "name": "jit",
+      "command": "tools/wasm-jit-test.sh",
+      "exitCode": 0,
+      "seconds": 30.936
+    },
+    {
+      "name": "profile",
+      "command": ". ./tools/wasm-rustflags.sh; cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "exitCode": 0,
+      "seconds": 14.406
+    },
+    {
+      "name": "schema",
+      "command": "uv run --with-requirements tools/requirements-catalog.txt python tools/validate-platform-catalog.py",
+      "exitCode": 0,
+      "seconds": 0.533
+    },
+    {
+      "name": "x5",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.092
+    },
+    {
+      "name": "x5verify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+      "exitCode": 0,
+      "seconds": 0.033
+    },
+    {
+      "name": "m1",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.088
+    },
+    {
+      "name": "m1verify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+      "exitCode": 0,
+      "seconds": 0.032
+    },
+    {
+      "name": "historical",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.086
+    },
+    {
+      "name": "historicalverify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "exitCode": 0,
+      "seconds": 0.033
+    }
+  ],
+  "allPassed": true,
+  "environment": "macOS arm64; rustup stable; ESP32SIM_ROM_DIR=web/wasm/fw; production WASM built by tools/wasm-build.sh",
+  "goldens": "No golden output regeneration or golden file changes.",
+  "rustPassed": 1439,
+  "rustGroups": 132,
+  "sourceCommitBeforeFinalFixes": "6cfbe4a9",
+  "finalCodeIdentification": "Final code is in the commit containing this receipt; no hash substitution."
+}

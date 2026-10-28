@@ -25,7 +25,7 @@ impl Bmi270 {
     }
     fn reset(&mut self) {
         self.regs.fill(0); self.written.fill(false); self.init_at = 0; self.version = 0;
-        for (reg, value) in [(0x00, 0x24), (0x03, 0x10), (0x40, 0xa8), (0x41, 0x01),
+        for (reg, value) in [(0x00, 0x24), (0x03, 0x10), (0x40, 0xa8), (0x41, 0x02),
             (0x42, 0xa9), (0x7c, 0x03)] { self.regs[reg] = value; }
     }
     fn latch(&mut self) {
@@ -96,13 +96,22 @@ mod tests {
     fn ready(device: &mut Bmi270) { write(device, 0x59, &[0]); write(device, 0x5e, &[0; 8192]); write(device, 0x59, &[1]); write(device, 0x7d, &[6]); }
     fn vector(bytes: &[u8]) -> Vec<i16> { bytes.as_chunks::<2>().0.iter().map(|b| i16::from_le_bytes(*b)).collect() }
     #[test]
+    fn datasheet_reset_range_is_eight_g() {
+        // Bosch BST-BMI270-DS000-08 section5.2.42, page102: ACC_RANGE reset=0x02.
+        let sample=Arc::new(Mutex::new(Bmi270Sample {accel_g:[1.0,0.0,0.0],..Default::default()}));
+        let mut d=Bmi270::new(sample);assert_eq!(read(&mut d,0x41,1),[2]);
+        ready(&mut d);assert_eq!(vector(&read(&mut d,0x0c,6)),[4096,0,0]);
+        write(&mut d,0x41,&[1]);assert_eq!(vector(&read(&mut d,0x0c,6)),[8192,0,0]);
+        write(&mut d,0x7e,&[0xb6]);assert_eq!(read(&mut d,0x41,1),[2]);
+    }
+    #[test]
     fn config_power_ranges_and_saturation() {
         let sample = Arc::new(Mutex::new(Bmi270Sample { accel_g: [1.0, -1.0, 100.0], gyro_dps: [1000.0, -500.0, f64::NAN], version: 1 }));
         let mut d = Bmi270::new(sample);
         assert_eq!(read(&mut d, 0, 1), [0x24]); assert_eq!(read(&mut d, 0x0c, 12), [0; 12]);
         write(&mut d, 0x59, &[1]); assert_eq!(read(&mut d, 0x21, 1), [2]);
         ready(&mut d); assert_eq!(read(&mut d, 0x21, 1), [1]);
-        assert_eq!(vector(&read(&mut d, 0x0c, 12)), [8192, -8192, 32767, 16384, -8192, 0]);
+        assert_eq!(vector(&read(&mut d, 0x0c, 12)), [4096, -4096, 32767, 16384, -8192, 0]);
         write(&mut d, 0x41, &[3]); write(&mut d, 0x43, &[2]);
         assert_eq!(vector(&read(&mut d, 0x0c, 12)), [2048, -2048, 32767, 32767, -32768, 0]);
         write(&mut d, 0x7d, &[0]); assert_eq!(read(&mut d, 0x0c, 12), [0; 12]);
@@ -114,7 +123,7 @@ mod tests {
         assert_eq!(read(&mut d, 0x1c, 2), [0, 0xc0]); assert_eq!(read(&mut d, 0x1c, 2), [0, 0]);
         write(&mut d, 0x0c, &[]); d.start(true); let first = d.read();
         *sample.lock().unwrap() = Bmi270Sample { accel_g: [-1.0, 0.0, 0.0], gyro_dps: [0.0; 3], version: 2 };
-        let mut bytes = vec![first]; bytes.extend((0..5).map(|_| d.read())); assert_eq!(vector(&bytes), [0, 8192, 0]);
-        assert_eq!(read(&mut d, 0x1d, 1), [0xc0]); assert_eq!(vector(&read(&mut d, 0x0c, 6)), [-8192, 0, 0]);
+        let mut bytes = vec![first]; bytes.extend((0..5).map(|_| d.read())); assert_eq!(vector(&bytes), [0, 4096, 0]);
+        assert_eq!(read(&mut d, 0x1d, 1), [0xc0]); assert_eq!(vector(&read(&mut d, 0x0c, 6)), [-4096, 0, 0]);
     }
 }
