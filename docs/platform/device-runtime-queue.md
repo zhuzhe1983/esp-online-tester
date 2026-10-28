@@ -1,6 +1,6 @@
 # 产品板级适配队列
 
-更新日期：2026-10-28。目录共86项，M5Stack 27/84、Metalio 1/2 已有产品板级模型（均含部分支持），58项尚无产品板级模型。本轮整合16个已交付型号，来源提交、检查及限制见 [集成记录](controller-integration-2026-10-28.md)。`partial` 不代表整机或任意固件已通过。
+更新日期：2026-10-28。目录共86项，M5Stack 28/84、Metalio 1/2 已有产品板级模型（均含部分支持），57项尚无产品板级模型。本轮整合16个已交付型号后，另接入K147的GC9107批次；来源提交、检查及限制见 [集成记录](controller-integration-2026-10-28.md)。`partial` 不代表整机或任意固件已通过。
 
 采用逐台交付：查官方原理图/驱动 → 实现真实引脚与器件 → 源码构建定向固件 → WASM 输出/输入检查 → 浏览器模型检查 → 记录缺项。每一步失败都保留原因；不能把 `none` 通用芯片模型改名后算作适配。
 
@@ -50,7 +50,7 @@ Unit Button U027、Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已�
 | 16 | [M5Stack Atom Voice](https://docs.m5stack.com/en/atom/Atom_Voice) · `m5stack-c008-c` | esp32 / 无屏幕 | 已交付 partial：G39 / G27 RGB | [官方镜像红灯后 BT 已知崩溃，保留 trial](atom-voice-runtime.md)；录音/A2DP 不支持 |
 | 17 | [M5Stack Atom VoiceS3R](https://docs.m5stack.com/en/core/Atom_VoiceS3R) · `m5stack-c126-echo` | esp32s3 / 无屏幕 | 部分：UIFlow2 REPL / G41 | [原始固件与实际网页输入](atom-voices3r-runtime.md)；ES8311 仅初始化，音频/UAC/网络未验；无 RGB；出厂恢复工具布局冲突保留 |
 | 18 | [M5Stack Atom-Matrix v1.1 · C008-B-V11](https://docs.m5stack.com/en/core/Atom-Matrix_v1.1) · `m5stack-c008-b-v11` | esp32 / 无屏幕 | 已交付 partial：G39 / G27×25 / BMI270 | [官方UIFlow2与输入/IMU记录](atom-matrix-v11-runtime.md)；出厂镜像未知，SoftI2C未通过，音频/无线等未实现 |
-| 19 | [M5Stack AtomS3R AI Chatbot Kit · K147](https://docs.m5stack.com/en/core/AtomS3R-AI_Chatbot) · `m5stack-k147` | esp32s3 / GC9107 | 待实现 | GC9107 引脚/窗口/批次，按键/触摸，供电及板载外设 |
+| 19 | [M5Stack AtomS3R AI Chatbot Kit · K147](https://docs.m5stack.com/en/core/AtomS3R-AI_Chatbot) · `m5stack-k147` | esp32s3 / GC9107 | 已交付 partial：GC9107 / G41 / 背光 | [官方UIFlow2真屏与按键](atoms3r-chatbot-runtime.md)；小智因音频底座未实现受阻，未实现音频、联网、IR与完整IMU |
 | 20 | [M5Stack AtomS3R-CAM AI Chatbot · K147-CAM](https://docs.m5stack.com/en/core/AtomS3R-CAM_AI_Chatbot) · `m5stack-k147-cam` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
 | 21 | [M5Stack AtomS3R-CAM · C126-CAM](https://docs.m5stack.com/en/core/AtomS3R-CAM) · `m5stack-c126-cam` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
 | 22 | [M5Stack AtomS3R-Ext · C126-Ext](https://docs.m5stack.com/en/core/AtomS3R-Ext) · `m5stack-c126-ext` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |

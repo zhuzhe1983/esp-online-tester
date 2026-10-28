@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-10-28T03:08:53Z",
+  "base": "4b6ec71c3e53695ddec67650269f85f56ccda453",
+  "sourceCommit": "b396eadb0583c5ff5c08c5c8747019deec4f750d",
+  "integrationRevision": "572b5aaf",
+  "resolutions": [
+    "Retained AtomVoiceS3R and added K147 in board registration and PICO efuse identity.",
+    "Kept existing PaperS3, classic Atom-Matrix and Matrix-v1.1 IMU entries while adding K147.",
+    "BMI270 8g reset patch was already identical to Matrix-v1.1 delivery; did not duplicate or revert it."
+  ],
+  "productionWasm": {
+    "sha256": "6771f355753d2f6a2affb8c9a01545d134b02aed859ed43bad6c981113401d65",
+    "bytes": 4214692,
+    "dwarfAbsent": true,
+    "nameRetained": true
+  },
+  "checks": [
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "originalLogSha256": "c9fa2596a698da1a49fa0c8f8107b47d07fd70d8a3ca3c4c8c984113201a0510"
+    },
+    {
+      "name": "clippy-wasm",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "originalLogSha256": "64729986de2e5eaa0d6f11c56031b77452a6bb3f310fb08bbfe3d4a867bd0443"
+    },
+    {
+      "name": "board",
+      "command": "cargo test --release -p esp32s3 board::atoms3r",
+      "exitCode": 0,
+      "originalLogSha256": "f3c233b20ec16900618afbb34ece8b016dad39852632cadfd623911d8b9326e7"
+    },
+    {
+      "name": "bmi",
+      "command": "cargo test --release -p esp-periph i2c::bmi270",
+      "exitCode": 0,
+      "originalLogSha256": "c8544662454a05c3e17ddd8b148c6994af4846ea6c5b79be79674e24d73a5113"
+    },
+    {
+      "name": "wasm-build",
+      "command": "tools/wasm-build.sh",
+      "exitCode": 0,
+      "originalLogSha256": "ce503160d1a06f52ae3fffb8e34650a5f3e59f7b263310b98e0171002b975f39"
+    },
+    {
+      "name": "sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "originalLogSha256": "0766779d246502f8995e09eb36f2285322e87e0e3a972ba72b452f0fb1d53f20"
+    },
+    {
+      "name": "platform",
+      "command": "sh -c 'node --test tools/platform-*-test.mjs'",
+      "exitCode": 0,
+      "originalLogSha256": "caf48a18d18b542d93117d11095042d25306081a305bf2fafa3daa3e5751afa6"
+    },
+    {
+      "name": "catalog",
+      "command": "/tmp/esp-product-model-venv/bin/python tools/validate-platform-catalog.py",
+      "exitCode": 0,
+      "originalLogSha256": "991088d764c2f60a1d4bb22482284e9ebcb72b5522b5e9182848b92607b34381"
+    },
+    {
+      "name": "official",
+      "command": "node tools/probe-atoms3r-chatbot-uiflow.mjs https://burner.m5stack.com/api/v1/firmwares/1897200000000001772/versions/2098279973173547010/download 91c0f97c904271d4c47d240165fbf5589d44aa0d753ca17d685bfdce5bff199a",
+      "exitCode": 0,
+      "originalLogSha256": "2c7b98dd6faaa7c1d4d98935d473eec98aba9e068e35d492a7a1ccb10dbc6d90"
+    },
+    {
+      "name": "recording",
+      "command": "node tools/platform-recording-test.mjs --real --receipt output/k147-integration/recording.json",
+      "exitCode": 0,
+      "originalLogSha256": "fb28a4151c78da3e7407c93f247df0d879a64cac193458d9256b0667fb64233d"
+    }
+  ],
+  "testTotals": {
+    "atoms3rBoardTests": 3,
+    "bmi270Tests": 3,
+    "platformTests": 101,
+    "actualWasmRegistrationSkus": 17,
+    "recordingEvents": 18,
+    "recordingFrameEqual": true
+  },
+  "browser": {
+    "count": "28 / 84",
+    "productId": "m5stack-k147",
+    "selectedFirmware": "AtomS3R UIFlow2 · v2.5.3",
+    "board": "atoms3r-chatbot",
+    "modelStatus": "ready",
+    "configuredBeforeDownload": true,
+    "trialConsentVisible": true,
+    "downloadAttempt": {
+      "status": "error",
+      "code": "FETCH_ABORTED",
+      "message": "Firmware download was cancelled or timed out.",
+      "guestStarted": false
+    },
+    "scope": "This integration browser run verified selection/model/default source but not official guest execution. The same original URL/hash passed the real page-worker Node probe; earlier original-stage browser evidence remains separately attributed.",
+    "cleanup": "Own browser and 8094 HTTP service closed; PID and listener absent."
+  },
+  "limitations": [
+    "No ES8311 audio base; Xiaozhi disconnected-base failure remains.",
+    "No aggregate performance remeasurement: original K147 and prior16 integration receipts retained.",
+    "Full Rust/JIT/11-WASM suites were already run in K147 source delivery and previous integrated batch; this follow-up reran affected board/BMI, both Clippy, all101platform, official real-worker and recording checks.",
+    "No firmware binary added to published assets.",
+    "Logs represented by hashes to omit local host paths; raw IP/MAC page pixels not retained."
+  ]
+}

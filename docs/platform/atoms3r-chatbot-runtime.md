@@ -41,3 +41,9 @@ node tools/probe-atoms3r-chatbot-uiflow.mjs \
 28 组检查通过，包括 stable Rust、双 Clippy `-D warnings`、1,435 项 Rust 测试（132 组，含 ignored、跳过 external）、11 项生产 WASM、100 项平台测试、真实通用录制回放、JIT 和 schema。没有更新黄金输出。全部命令见 [checks.json](evidence/atoms3r-chatbot/checks.json)；三芯片 hello 五对 CPU 对照见 [cpu.json](evidence/atoms3r-chatbot/cpu.json)，这是跨版本回归检查，不是性能优化结论。
 
 ES8311 / 麦克风 / 扬声器、联网与云端服务、红外、BMM150 AUX 和完整 BMI270 行为未完成；本轮没有得到官方 REPL，也没有真实硬件验收。K147 专属录制逐帧一致未验，通用实际客体录制回归通过不等于该固件确定性重放。所有任务浏览器和临时服务已关闭，用户会话不受影响。
+
+## 与16台控制器合并后的复查
+
+在4b6ec71c之上接入本板，保留AtomVoiceS3R包型及PaperS3/Matrix两版IMU，已有BMI270复位修正没有重复应用。双Clippy、AtomS3R三项与BMI270三项测试、101项平台合同、17个SKU实际生产WASM注册、目录schema、官方UIFlow真实worker屏幕翻页与18事件录制回放通过。生产WASM为4,214,692字节，hash及完整范围见 [集成收据](evidence/atoms3r-chatbot/integration/checks.json)。
+
+本次浏览器确认28/84、K147模型与默认固件、试运行确认，但官方下载超时（FETCH_ABORTED），客体尚未启动；不能把此前浏览器成功或本次Node真实worker通过当作这次浏览器固件已启动。音频底座与小智失败范围不变。

@@ -5,7 +5,7 @@ import {chipIdForBoard} from '../web/platform/app-image.js';
 import {createJitHost} from '../web/wasm/jit.mjs';
 
 const products=JSON.parse(await readFile(new URL('../web/platform/catalog/products.json',import.meta.url))).items;
-const ids=['m5stack-c124','m5stack-k159-b','m5stack-c151','m5stack-c139','m5stack-s007','m5stack-s007-v033','m5stack-c008','m5stack-c008-b','m5stack-c125','m5stack-dk001','m5stack-k131','m5stack-k131-v11','m5stack-k134-v11','m5stack-c008-c','m5stack-c126-echo','m5stack-c008-b-v11'];
+const ids=['m5stack-c124','m5stack-k159-b','m5stack-c151','m5stack-c139','m5stack-s007','m5stack-s007-v033','m5stack-c008','m5stack-c008-b','m5stack-c125','m5stack-dk001','m5stack-k131','m5stack-k131-v11','m5stack-k134-v11','m5stack-c008-c','m5stack-c126-echo','m5stack-c008-b-v11','m5stack-k147'];
 let w;const host=createJitHost(()=>w),enc=new TextEncoder(),dec=new TextDecoder();
 w=(await WebAssembly.instantiate(await readFile(new URL('../web/wasm/esp32sim.wasm',import.meta.url)),{env:{...host.imports,host_profile_now:()=>performance.now(),host_log(){}}})).instance.exports;
 for(const id of ids){
