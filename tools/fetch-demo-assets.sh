@@ -3,6 +3,8 @@
 # workflow does (it runs this script):
 #   - the classic ESP32, ESP32-S3, C3, C6 and P4 mask ROM ELFs (Apache-2.0, espressif/esp-rom-elfs, pinned by release and
 #     SHA-256; tools/fetch-rom-elfs.sh) into web/wasm/fw/ — every demo boots from the ROM;
+#   - the ESP32-P4 and ESP32-C6 ESP-Hosted images for the P4 + C6 demo (mikroverk/esp32sim-firmware,
+#     pinned by commit and SHA-256; tools/fetch-p4-firmware.sh) into web/wasm/fw/public/;
 #   - xterm.js for the Terminal tab (MIT, pinned; tools/fetch-web-vendor.sh);
 #   - the Linux-on-esp32-S3 flash image (GPL-3.0, svermigo/Linux-on-esp32-S3, release 0.7, pinned by
 #     commit and SHA-256) for the linux demos; 16 MB, skipped with --no-linux;
@@ -31,6 +33,8 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
 tools/fetch-rom-elfs.sh "$FW"
+
+tools/fetch-p4-firmware.sh
 
 tools/fetch-web-vendor.sh
 

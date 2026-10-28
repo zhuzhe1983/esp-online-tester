@@ -168,6 +168,9 @@ pub trait SocBus: Bus {
     fn write_flash(&mut self, offset: usize, data: &[u8]) -> Result<(), String>;
     /// Map and copy the app image at flash `app_off` as the bootloader would; returns the entry point.
     fn boot_app(&mut self, app_off: usize) -> Result<u32, String>;
+    /// Where each core was when a chip reset took effect, just before `reboot` (a chip that records
+    /// it for its ROM, as the P4's ASSIST_DEBUG does, keeps it).
+    fn note_core_pcs(&mut self, _pcs: &[u32]) {}
     /// Chip reset: re-create the digital peripherals, keep what survives on silicon. Returns the cause.
     fn reboot(&mut self, mac: [u8; 6]) -> u32;
     fn sw_reset(&self) -> bool;

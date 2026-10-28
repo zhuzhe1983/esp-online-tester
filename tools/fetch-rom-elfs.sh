@@ -6,7 +6,8 @@
 #   tools/fetch-rom-elfs.sh DIR
 # A newer release only matters if it changes one of these files: check its tarball against Espressif's
 # esp-rom-elfs-<release>-checksum.sha256, then update RELEASE, TARBALL_SHA and any ELF hash that changed.
-# 20260528's three ELFs are byte-identical to 20241011's (the copy ESP-IDF 5.x installs).
+# 20260528's ELFs are byte-identical to 20241011's (the copy ESP-IDF 5.x installs), except
+# esp32p4_rev300_rom.elf (the ESP32-P4 rev >= 3, ECO5), which 20241011 does not have.
 set -e
 [ $# -eq 1 ] || { echo "usage: $0 DIR" >&2; exit 2; }
 DIR=$1
@@ -16,7 +17,8 @@ ROMS="esp32_rev300_rom.elf 920b70635440517866aab2230964a570d2cf2b676658d93c52fba
 esp32s3_rev0_rom.elf c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd
 esp32c3_rev3_rom.elf 19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c
 esp32c6_rev0_rom.elf 788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551
-esp32p4_rev0_rom.elf 948f2c7d108d04a9c3a982f9c1c498fb17f2c4a68abc51f87782592034d7ce44"
+esp32p4_rev0_rom.elf 948f2c7d108d04a9c3a982f9c1c498fb17f2c4a68abc51f87782592034d7ce44
+esp32p4_rev300_rom.elf 90e723f71fe4701adee7e40bfab6971d8ecf5e356f4d5a81e77743248abc3a97"
 URL=https://github.com/espressif/esp-rom-elfs/releases/download/$RELEASE/esp-rom-elfs-$RELEASE.tar.gz
 
 sha256_ok() {  # FILE HASH; -c without GNU-only --status, so macOS shasum and sha256sum both work

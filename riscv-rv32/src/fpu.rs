@@ -24,10 +24,10 @@ fn write_f(cpu: &mut Cpu, rd: u8, v: u32) { cpu.f[rd as usize] = v; cpu.set_fs_d
 pub(crate) fn exec<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc: u32) -> Result<(), Trap> {
     use Op::*;
     if cpu.fs_off() {
-        // EXT_ILL flags the computational instructions but not FLW/FSW or their compressed forms
-        // (ESP-IDF v5.5.3 `soc_caps.h` SOC_CPU_HAS_FPU_EXT_ILL_BUG; `vectors.S` decodes mtval for those).
-        // TODO: rev < 3 only; a rev >= 3 Revision must flag FLW/FSW too, as IDF then expects.
-        if cpu.has_ext_ill && !matches!(i.op, Flw | Fsw) { cpu.ext_ill |= ext_ill::FPU; }
+        // On rev < 3 EXT_ILL flags the computational instructions but not FLW/FSW or their
+        // compressed forms (ESP-IDF v5.5.3 `soc_caps.h` SOC_CPU_HAS_FPU_EXT_ILL_BUG; `vectors.S`
+        // decodes mtval for those); on rev >= 3 it flags them all (`Cpu::ext_ill_all_fp`).
+        if cpu.has_ext_ill && (cpu.ext_ill_all_fp || !matches!(i.op, Flw | Fsw)) { cpu.ext_ill |= ext_ill::FPU; }
         return illegal(cpu, i, pc);
     }
     let (a, b) = (cpu.f[i.rs1 as usize], cpu.f[i.rs2 as usize]);

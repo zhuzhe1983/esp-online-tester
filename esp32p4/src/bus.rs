@@ -93,6 +93,25 @@ impl esp_periph::sdmmc::SdmmcMemory for DmaView<'_> {
     }
 }
 
+/// An AXI-GDMA OUT channel's view of memory: descriptors and buffers in L2MEM or PSRAM.
+struct AxiOut<'a> { mem: DmaView<'a>, channel: &'a mut esp_periph::gdma::GdmaOutCh }
+impl esp_periph::gdma::OutMemory for AxiOut<'_> {
+    fn out_channel(&mut self) -> &mut esp_periph::gdma::GdmaOutCh { self.channel }
+    fn word(&mut self, address: u32) -> Result<u32, Fault> {
+        let mut b = [0u8; 4];
+        esp_periph::sdmmc::SdmmcMemory::read(&mut self.mem, address, &mut b)?;
+        Ok(u32::from_le_bytes(b))
+    }
+    fn append(&mut self, address: u32, count: usize, out: &mut Vec<u8>) -> Result<(), (u32, Fault)> {
+        let start = out.len();
+        out.resize(start + count, 0);
+        esp_periph::sdmmc::SdmmcMemory::read(&mut self.mem, address, &mut out[start..]).map_err(|f| { out.truncate(start); (address, f) })
+    }
+    fn writeback(&mut self, address: u32, value: u32) -> Result<(), Fault> {
+        esp_periph::sdmmc::SdmmcMemory::write(&mut self.mem, address, &value.to_le_bytes())
+    }
+}
+
 pub struct SocBus {
     pub rom: Vec<u8>,
     pub l2mem: Vec<u8>,
@@ -119,6 +138,10 @@ pub struct SocBus {
     pub cur_core: usize,
     /// each hart's LR reservation (the word); a store by the other hart to it breaks it
     pub reservation: [Option<u32>; 2],
+    /// the core whose store requested the pending software reset, and that store's PC
+    pub reset_request: Option<(usize, u32)>,
+    /// where each core was when the reset took effect (`SocBus::note_core_pcs`)
+    pub core_pcs: [u32; 2],
 }
 
 impl SocBus {
@@ -129,7 +152,7 @@ impl SocBus {
             flash: vec![0xff; flash_size], psram: Vec::new(),
             mmu_flash: Box::new([0; MMU_ENTRIES]), mmu_psram: Box::new([0; MMU_ENTRIES]), mmu_flash_index: 0, mmu_psram_index: 0,
             periph: Peripherals::new(mac, wafer), wafer, board: Box::new(esp_soc::NoBoard),
-            cycles: 0, last_fault: None, irq_dirty: true, gpio_events: None, debug: Default::default(), cur_core: 0, reservation: [None; 2],
+            cycles: 0, last_fault: None, irq_dirty: true, gpio_events: None, debug: Default::default(), cur_core: 0, reservation: [None; 2], reset_request: None, core_pcs: [0; 2],
         }
     }
 
@@ -223,11 +246,111 @@ impl SocBus {
             return;
         }
         let v = if size == 4 { v } else { merge(self.periph.read32(a)) };
+        let resetting = self.periph.lp.sw_reset;
         self.periph.write32(a, v);
+        // the store that asks for a software reset is where ASSIST_DEBUG finds this core
+        if !resetting && self.periph.lp.sw_reset { self.reset_request = Some((self.cur_core, self.periph.misc.cur_pc)); }
         if self.periph.spi_exec { self.run_spi(); }
         if self.periph.psram_exec { self.run_psram(); }
         if self.periph.sdmmc.pending() { self.run_sdmmc(); }
+        // A GP-SPI transfer reaches the board now, after the GPIO edges before it (a panel's D/C
+        // line is a GPIO the driver sets right before each transaction).
+        if self.periph.spi2.dma_tx_pending.is_some() { self.spi2_dma_tx(); }
+        if self.periph.spi2.has_pending_transfer() || !self.periph.gpio.g.changes.is_empty() { self.deliver_board_events(); }
         self.irq_dirty = true;
+    }
+
+    /// The board's I2C devices on I2C1 (bus 0 of `BoardModel::i2c_devices`).
+    pub fn attach_board_devices(&mut self) {
+        for (bus, address, device) in self.board.i2c_devices() {
+            if bus == 0 { self.periph.i2c1.attach(address, device); }
+        }
+        for (pin, level) in self.board.input_levels() { self.irq_dirty |= self.periph.gpio.g.set_input(pin, level); }
+    }
+
+    /// I2S1's transmit DMA through the AHB-GDMA (trigger 4), paced by the frame rate: the frames
+    /// due since the last call are taken from the OUT chain, a descriptor at a time, each one
+    /// written back to the CPU when AUTO_WRBACK is set, with OUT_DONE, OUT_EOF on a SUC_EOF one and
+    /// OUT_TOTAL_EOF when that one ends the chain, as the S3's pump does (esp32s3/src/bus/dma.rs).
+    /// Descriptors are read through the shared `DescriptorWalk`, with its step budget. The
+    /// first slot of each frame goes to the audio sink. IDF's I2S driver keeps a ring of
+    /// descriptors, so the stream runs as long as it refills them.
+    fn i2s1_tx(&mut self, cycles: u64) {
+        let (frames, bpf, sample_bytes) = { let i = &mut self.periph.i2s1; (i.frames_due(cycles), i.bytes_per_frame as usize, i.sample_bytes()) };
+        if frames == 0 || bpf == 0 { return; }
+        let Some(ch) = self.periph.ahb_dma.gdma.out_channel_for(4) else { return };
+        let mut need = frames as usize * bpf;
+        // the bytes of every descriptor taken, so a frame split between two stays whole
+        let mut stream: Vec<u8> = Vec::with_capacity(need);
+        let mut mem = DmaView { l2mem: &mut self.l2mem, psram: &mut self.psram, mmu: &self.mmu_psram };
+        let mut walk = esp_periph::gdma::DescriptorWalk::new(esp_periph::gdma::GDMA_DESCRIPTOR_STEP_BUDGET);
+        loop {
+            if need == 0 { break; }
+            let c = self.periph.ahb_dma.gdma.out[ch];
+            if !c.running || c.desc == 0 { break; }
+            let read = walk.read_with(c.desc, |a| { let mut b = [0u8; 4]; esp_periph::sdmmc::SdmmcMemory::read(&mut mem, a, &mut b).map(|_| u32::from_le_bytes(b)) });
+            let (dw0, d) = match read {
+                Ok(read) => read,
+                Err(esp_periph::gdma::DmaDescriptorFault::StepBudgetExceeded { .. }) => break,   // the rest at the next call
+                Err(_) => { let c = &mut self.periph.ahb_dma.gdma.out[ch]; c.running = false; c.int_raw |= 1 << 2; break; }   // OUT_DSCR_ERR
+            };
+            let (buf, next) = (d.buf, d.next);
+            let remaining = d.length.saturating_sub(c.buf_pos) as usize;
+            if remaining == 0 {
+                if c.conf0 & (1 << 2) != 0 { let _ = esp_periph::sdmmc::SdmmcMemory::write(&mut mem, c.desc, &(dw0 & !(1 << 31)).to_le_bytes()); }   // AUTO_WRBACK: owner -> CPU
+                let c = &mut self.periph.ahb_dma.gdma.out[ch];
+                c.int_raw |= 1 << 0;                                                    // OUT_DONE
+                if dw0 & (1 << 30) != 0 { c.int_raw |= 1 << 1; c.eof_desc = c.desc; }   // OUT_EOF
+                if next == 0 { c.running = false; c.desc = 0; if d.eof { c.int_raw |= 1 << 3; } break; }   // OUT_TOTAL_EOF
+                c.desc = next; c.buf_pos = 0;
+                continue;
+            }
+            let take = remaining.min(need);
+            let start = stream.len();
+            stream.resize(start + take, 0);
+            if esp_periph::sdmmc::SdmmcMemory::read(&mut mem, buf.wrapping_add(c.buf_pos), &mut stream[start..]).is_err() {
+                stream.truncate(start);
+                let c = &mut self.periph.ahb_dma.gdma.out[ch]; c.running = false; c.int_raw |= 1 << 2; break;
+            }
+            self.periph.ahb_dma.gdma.out[ch].buf_pos += take as u32;
+            need -= take;
+        }
+        self.irq_dirty = true;
+        // a frame cut short by the chain's end, an error or the step budget is dropped
+        let samples: Vec<i16> = stream.chunks_exact(bpf)
+            .map(|f| if sample_bytes == 1 { (f[0] as i8 as i16) << 8 } else { i16::from_le_bytes([f[sample_bytes - 2], f[sample_bytes - 1]]) })
+            .collect();
+        if !samples.is_empty() { let i = &mut self.periph.i2s1; i.frames_out += samples.len() as u64; i.pcm.extend_from_slice(&samples); }
+    }
+
+    /// GPSPI2's transmit DMA through the AXI-GDMA (trigger 1): one finite gather per transaction,
+    /// the channel stopping after it with OUT_TOTAL_EOF, or OUT_DSCR_ERR on a descriptor fault
+    /// (the transfer then completes with what was gathered, as on the C6).
+    fn spi2_dma_tx(&mut self) {
+        let Some(bits) = self.periph.spi2.dma_tx_pending else { return };
+        let Some(ch) = self.periph.axi_dma.gdma.out_channel_for(1) else { return };   // not started yet: the round's end retries
+        let mut data = Vec::with_capacity((bits as usize).div_ceil(8));
+        let mut memory = AxiOut { mem: DmaView { l2mem: &mut self.l2mem, psram: &mut self.psram, mmu: &self.mmu_psram }, channel: &mut self.periph.axi_dma.gdma.out[ch] };
+        let result = esp_periph::gdma::gather_out(&mut memory, (bits as usize).div_ceil(8), &mut data);
+        let c = &mut self.periph.axi_dma.gdma.out[ch];
+        c.running = false; c.buf_pos = 0;
+        match result { Ok(next) => { c.desc = next; c.int_raw |= 1 << 3; } Err(_) => c.int_raw |= 1 << 2 }
+        self.periph.spi2.complete_dma_tx(&data);
+        self.irq_dirty = true;
+    }
+
+    /// GPIO edges, then a finished GP-SPI transaction, to the board.
+    fn deliver_board_events(&mut self) {
+        let changes = std::mem::take(&mut self.periph.gpio.g.changes);
+        if !changes.is_empty() {
+            if let Some(ev) = &mut self.gpio_events { for &(pin, level) in &changes { ev.push((self.cycles, pin, level)); } }
+            self.board.gpio_output_at(self.cycles, &changes, self.periph.gpio.g.enable, self.periph.gpio.g.out);
+        }
+        if let Some(transfer) = self.periph.spi2.take_transfer() {
+            let rx = self.board.spi_transfer(2, &transfer.tx, transfer.rx_len);
+            self.periph.spi2.finish_transfer(transfer, &rx);
+            self.irq_dirty = true;
+        }
     }
 
     /// Carry out the SDMMC command or IDMAC resume the last write started, on the slots'
@@ -310,7 +433,14 @@ impl SocBus {
 
     fn devices(&mut self, cycles: u32) {
         if self.periph.spi_exec { self.run_spi(); }
+        // board time first, its input edges after the peripherals (as the S3 bus does)
+        let edges = self.board.uses_gpio_edges();
+        if edges { self.board.advance_to(self.cycles); }
         self.periph.tick(cycles as u64);
+        if edges { self.irq_dirty |= esp_soc::gpio::drain_board_inputs(&mut *self.board, &mut self.periph.gpio.g, &mut self.gpio_events, self.cycles); }
+        if self.periph.spi2.dma_tx_pending.is_some() { self.spi2_dma_tx(); }
+        if self.periph.spi2.has_pending_transfer() || !self.periph.gpio.g.changes.is_empty() { self.deliver_board_events(); }
+        if self.periph.i2s1.poll_active() { self.i2s1_tx(cycles as u64); }
         if self.periph.usb_otg.pending() { self.run_usb(); }
         if self.periph.sdmmc.timed { self.sd_time(); }
     }
@@ -407,6 +537,46 @@ impl Bus for SocBus {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// I2S1's transmit chain read from a guest-chosen descriptor address: one at the top of the
+    /// address space reads unmapped words, an OUT_DSCR_ERR, not an overflow (a panic in a debug
+    /// build); a chain of descriptors that loops ends at the walk's step budget, with no frames.
+    #[test]
+    fn i2s1_descriptors_at_any_address_end_in_an_error_not_a_panic() {
+        let mut b = SocBus::new(0x1000, [0; 6], (3, 1));
+        b.periph.i2s1.write(0x24, 1 << 2);                            // TX_START
+        let ch = &mut b.periph.ahb_dma.gdma.out[0];
+        (ch.peri_sel, ch.running, ch.desc) = (4, true, 0xffff_fffc);
+        b.i2s1_tx(crate::periph::CPU_HZ);
+        let ch = b.periph.ahb_dma.gdma.out[0];
+        assert!(!ch.running && ch.int_raw & 1 << 2 != 0, "OUT_DSCR_ERR: {:#x}", ch.int_raw);
+        // An owned descriptor of length 0 pointing at itself, in L2MEM.
+        let d = 0x4ff4_0000;
+        for (o, v) in [(0, 1u32 << 31), (4, d), (8, d)] { b.write32(d + o, v).unwrap(); }
+        let ch = &mut b.periph.ahb_dma.gdma.out[0];
+        (ch.running, ch.desc, ch.int_raw) = (true, d, 0);
+        b.i2s1_tx(crate::periph::CPU_HZ);
+        assert!(b.periph.i2s1.pcm.is_empty());
+        assert_eq!(b.periph.ahb_dma.gdma.out[0].int_raw & 1 << 3, 0, "no OUT_TOTAL_EOF");
+    }
+
+    /// A frame split between two descriptors (16-bit stereo, 6 bytes and then 2) is one frame,
+    /// not a frame and a dropped tail.
+    #[test]
+    fn i2s1_a_frame_split_between_descriptors_stays_whole() {
+        let mut b = SocBus::new(0x1000, [0; 6], (3, 1));
+        b.periph.i2s1.write(0x24, 1 << 2);                            // TX_START
+        (b.periph.i2s1.tx_conf1, b.periph.i2s1.bytes_per_frame) = (15 << 13, 4);   // 16-bit samples, two slots
+        let (d1, d2) = (0x4ff4_0000, 0x4ff4_0010);
+        for (o, v) in [(0, 1u32 << 31 | 6 << 12 | 6), (4, d1 + 0x100), (8, d2)] { b.write32(d1 + o, v).unwrap(); }
+        for (o, v) in [(0, 1u32 << 31 | 1 << 30 | 2 << 12 | 2), (4, d1 + 0x200), (8, 0)] { b.write32(d2 + o, v).unwrap(); }
+        for (a, v) in [(d1 + 0x100, 0x2222_1111), (d1 + 0x104, 0x3333), (d1 + 0x200, 0x4444)] { b.write32(a, v).unwrap(); }
+        let ch = &mut b.periph.ahb_dma.gdma.out[0];
+        (ch.peri_sel, ch.running, ch.desc) = (4, true, d1);
+        b.i2s1_tx(crate::periph::CPU_HZ);
+        assert_eq!(b.periph.i2s1.pcm, [0x1111, 0x3333], "the first slot of each frame");
+        assert!(b.periph.ahb_dma.gdma.out[0].int_raw & 1 << 3 != 0, "OUT_TOTAL_EOF");
+    }
 
     #[test]
     fn flash_window_and_its_uncached_alias_go_through_the_mmu() {

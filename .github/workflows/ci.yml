@@ -61,7 +61,7 @@ jobs:
       - name: Production WASM sections (no DWARF, profile names retained)
         run: node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm
       - name: Test the wasm module (the real build, under Node, through the page's manifests)
-        run: ESP32SIM_ROM_DIR=$PWD/roms node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik
+        run: ESP32SIM_ROM_DIR=$PWD/roms node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik
       - name: Product platform contracts and real worker execution
         run: |
           ESP32SIM_ROM_DIR=$PWD/roms node --test tools/platform-*-test.mjs

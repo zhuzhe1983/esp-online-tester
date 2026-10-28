@@ -4,9 +4,16 @@ use crate::device::{Device, WriteEffect};
 use crate::regram::RegRam;
 
 // ------------------------------------------------------------------ GPIO
+/// Pins the arrays have room for: the P4's 57. `Gpio::pins` is how many a chip has (S3 49).
+pub const GPIO_MAX_PINS: usize = 57;
+
 pub struct Gpio {
-    pub out: u64, pub enable: u64, pub input: u64, pub status: u64, pub pin: [u32; 49],
-    pub func_in_sel: [u32; 256], pub func_out_sel: [u32; 49], ram: RegRam,
+    pub out: u64, pub enable: u64, pub input: u64, pub status: u64, pub pin: [u32; GPIO_MAX_PINS],
+    pub func_in_sel: [u32; 256], pub func_out_sel: [u32; GPIO_MAX_PINS], ram: RegRam,
+    /// the chip's pin count: 49 unless `with_pins` says otherwise. The register map is the S3's,
+    /// whose PIN registers stop at pin 48 (0x134); a chip with more reaches the rest through
+    /// `set_pin_config`.
+    pub pins: u8,
     pub input_changes: Vec<(u8, bool)>,
     /// (pin, level) changes of enabled outputs since last drain
     pub changes: Vec<(u8, bool)>,
@@ -19,14 +26,31 @@ pub struct Gpio {
     pub input_select: u32,
 }
 impl Gpio {
-    pub fn new() -> Self { Gpio { out: 0, enable: 0, input: (1u64 << 49) - 1, status: 0, pin: [0; 49], func_in_sel: [0x3c; 256], func_out_sel: [0x100; 49], ram: RegRam::new(), changes: Vec::new(), strap: 0x0f, input_changes: Vec::new(), pull_up: 0, pull_down: 0, open_drain: 0, external_mask: 0, external_levels: 0, int_ena_pins: 0, matrix_input_pins: 0, input_select: 0x80 } }
+    pub fn new() -> Self { Self::with_pins(49) }
+    /// A GPIO with `pins` pins, at most `GPIO_MAX_PINS` (the P4's 57).
+    pub fn with_pins(pins: u8) -> Self {
+        assert!(pins as usize <= GPIO_MAX_PINS, "{pins} GPIO pins, at most {GPIO_MAX_PINS}");
+        Gpio { out: 0, enable: 0, input: (1u64 << pins) - 1, status: 0, pin: [0; GPIO_MAX_PINS], func_in_sel: [0x3c; 256], func_out_sel: [0x100; GPIO_MAX_PINS], ram: RegRam::new(), pins, changes: Vec::new(), strap: 0x0f, input_changes: Vec::new(), pull_up: 0, pull_down: 0, open_drain: 0, external_mask: 0, external_levels: 0, int_ena_pins: 0, matrix_input_pins: 0, input_select: 0x80 } }
+    /// The bits of this GPIO's pins.
+    fn mask(&self) -> u64 { (1u64 << self.pins) - 1 }
+    /// A PIN register by pin number (INT_TYPE 9:7, INT_ENA 17:13), for pins past the S3 map.
+    pub fn set_pin_config(&mut self, pin: usize, v: u32) {
+        if pin >= self.pins as usize { return; }
+        self.pin[pin] = v;
+        let mask = 1u64 << pin;
+        let old_drain = self.open_drain;
+        self.open_drain = (self.open_drain & !mask) | if v & 4 != 0 { mask } else { 0 };
+        if old_drain != self.open_drain { self.resolve(mask, u64::MAX); }
+        let enabled = v & (1 << 13) != 0 && matches!((v >> 7) & 7, 1..=5);
+        self.int_ena_pins = (self.int_ena_pins & !(1 << pin)) | (u64::from(enabled) << pin);
+    }
     /// Report every pin whose driven level changed: `out & enable` before against after. Both
     /// words matter — a driver that toggles the output *enable* to produce a level (IDF 5.5's
     /// esp_lcd releases the D/C line after each colour transfer and re-enables it before the
     /// next) changes what a board sees just as much as one that toggles `out`.
     fn note_out(&mut self, old_out: u64, old_enable: u64) {
         let vis = self.out & self.enable; let oldvis = old_out & old_enable;
-        let mut diff = (vis ^ oldvis) & ((1u64 << 49) - 1);
+        let mut diff = (vis ^ oldvis) & self.mask();
         while diff != 0 {
             let p = diff.trailing_zeros() as u8;
             self.changes.push((p, vis & (1u64 << p) != 0));
@@ -35,7 +59,7 @@ impl Gpio {
     }
     /// Drive an input; returns whether its resolved level changed.
     pub fn set_input(&mut self, pin: u8, level: bool) -> bool {
-        if pin >= 49 { return false; }
+        if pin >= self.pins { return false; }
         let mask = 1u64 << pin;
         self.external_mask |= mask;
         if level { self.external_levels |= mask; } else { self.external_levels &= !mask; }
@@ -43,7 +67,7 @@ impl Gpio {
     }
     /// Stop driving a pin externally; return whether output/pull resolution changed its level.
     pub fn release_input(&mut self, pin: u8) -> bool {
-        if pin >= 49 { return false; }
+        if pin >= self.pins { return false; }
         let mask = 1u64 << pin;
         self.external_mask &= !mask;
         self.resolve(mask, u64::MAX)
@@ -53,7 +77,7 @@ impl Gpio {
         self.set_pulls(pin, v & (1 << 8) != 0, v & (1 << 7) != 0);
     }
     pub fn set_pulls(&mut self, pin: u8, up: bool, down: bool) {
-        if pin >= 49 { return; }
+        if pin >= self.pins { return; }
         let mask = 1u64 << pin;
         self.pull_up = (self.pull_up & !mask) | if up { mask } else { 0 };
         self.pull_down = (self.pull_down & !mask) | if down { mask } else { 0 };
@@ -69,7 +93,7 @@ impl Gpio {
     // INT_TYPE/INT_ENA: IDF v5.5.4 components/soc/esp32s3/register/soc/gpio_reg.h:278-301.
     // C3/C6 use the same fields; see docs/evidence/gpio-input-feedback/README.md.
     fn resolve(&mut self, mask: u64, record: u64) -> bool {
-        let mask = mask & ((1u64 << 49) - 1);
+        let mask = mask & self.mask();
         // Host-driven levels are ideal digital sources; opposing output drivers do not
         // model electrical contention. Floating and simultaneous pulls retain HIGH.
         let passive = self.pull_up | !self.pull_down;
@@ -96,7 +120,7 @@ impl Gpio {
         input_changed
     }
     pub fn level(&self, pin: u8) -> bool {
-        if pin as usize >= self.pin.len() { return false; }
+        if pin >= self.pins { return false; }
         self.input & (1u64 << pin) != 0
     }
     /// `GPIO_STATUS_REG` (0x44) / `GPIO_PCPU_INT_REG` (0x5c, `soc/gpio_reg.h`, IDF v5.5.3): the
@@ -106,11 +130,11 @@ impl Gpio {
     /// `gpio_ll_get_intr_status` to find the pins whose handlers to call: without them here it
     /// found none. Masking of `PCPU_INT` by `INT_ENA` is not modelled, as before.
     fn status_now(&self) -> u64 {
-        (0..49u8).filter(|&p| { let typ = (self.pin[p as usize] >> 7) & 7; (typ == 4 && !self.level(p)) || (typ == 5 && self.level(p)) }).fold(self.status, |m, p| m | (1u64 << p))
+        (0..self.pins).filter(|&p| { let typ = (self.pin[p as usize] >> 7) & 7; (typ == 4 && !self.level(p)) || (typ == 5 && self.level(p)) }).fold(self.status, |m, p| m | (1u64 << p))
     }
     pub fn irq(&self) -> bool {
         // level-type interrupts on current input, plus latched edge status, gated by INT_ENA (bits 13..17, bit 13 = core0)
-        (0..49u8).any(|p| { let cfg = self.pin[p as usize]; let ena = (cfg >> 13) & 1 != 0; let typ = (cfg >> 7) & 7;
+        (0..self.pins).any(|p| { let cfg = self.pin[p as usize]; let ena = (cfg >> 13) & 1 != 0; let typ = (cfg >> 7) & 7;
             ena && ((self.status & (1u64 << p) != 0) || (typ == 4 && !self.level(p)) || (typ == 5 && self.level(p))) })
     }
     pub fn read(&mut self, off: u32) -> u32 {
@@ -136,13 +160,13 @@ impl Gpio {
             0x4 => self.out = (self.out & !0xffff_ffff) | v as u64,
             0x8 => self.out |= v as u64,
             0xc => self.out &= !(v as u64),
-            0x10 => self.out = (self.out & 0xffff_ffff) | ((v as u64 & 0x1ffff) << 32),
+            0x10 => self.out = (self.out & 0xffff_ffff) | ((v as u64 & (self.mask() >> 32)) << 32),
             0x14 => self.out |= (v as u64) << 32,
             0x18 => self.out &= !((v as u64) << 32),
             0x20 => { self.enable = (self.enable & !0xffff_ffff) | v as u64; }
             0x24 => self.enable |= v as u64,
             0x28 => self.enable &= !(v as u64),
-            0x2c => self.enable = (self.enable & 0xffff_ffff) | ((v as u64 & 0x1ffff) << 32),
+            0x2c => self.enable = (self.enable & 0xffff_ffff) | ((v as u64 & (self.mask() >> 32)) << 32),
             0x30 => self.enable |= (v as u64) << 32,
             0x34 => self.enable &= !((v as u64) << 32),
             0x44 => self.status = (self.status & !0xffff_ffff) | v as u64,
@@ -151,21 +175,12 @@ impl Gpio {
             0x50 => self.status = (self.status & 0xffff_ffff) | ((v as u64) << 32),
             0x54 => self.status |= (v as u64) << 32,
             0x58 => self.status &= !((v as u64) << 32),
-            0x74..=0x134 => {
-                let pin = ((off - 0x74) / 4) as usize;
-                self.pin[pin] = v;
-                let mask = 1u64 << pin;
-                let old_drain = self.open_drain;
-                self.open_drain = (self.open_drain & !mask) | if v & 4 != 0 { mask } else { 0 };
-                if old_drain != self.open_drain { self.resolve(mask, u64::MAX); }
-                let enabled = v & (1 << 13) != 0 && matches!((v >> 7) & 7, 1..=5);
-                self.int_ena_pins = (self.int_ena_pins & !(1 << pin)) | (u64::from(enabled) << pin);
-            },
+            0x74..=0x134 => self.set_pin_config(((off - 0x74) / 4) as usize, v),
             0x154..=0x550 => {
                 self.func_in_sel[((off - 0x154) / 4) as usize] = v;
                 self.matrix_input_pins = self.func_in_sel.iter().fold(0, |mask, &sel| {
                     let pin = sel & (self.input_select / 2 - 1);
-                    if sel & self.input_select != 0 && pin < 49 { mask | (1 << pin) } else { mask }
+                    if sel & self.input_select != 0 && pin < self.pins as u32 { mask | (1 << pin) } else { mask }
                 });
             },
             0x554..=0x614 => self.func_out_sel[((off - 0x554) / 4) as usize] = v,
@@ -182,4 +197,25 @@ impl Device for Gpio {
     fn read(&mut self, off: u32) -> u32 { Gpio::read(self, off) }
     fn write(&mut self, off: u32, v: u32) -> WriteEffect { Gpio::write(self, off, v); WriteEffect::NONE }
     fn irq_sources(&self) -> u64 { self.irq() as u64 }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    /// A P4 pin past the S3 map: its PIN register through `set_pin_config`, a falling edge on it
+    /// latched in STATUS1 and raising the interrupt, cleared by STATUS1_W1TC.
+    #[test]
+    fn a_57_pin_matrix_raises_pin_50() {
+        let mut g = Gpio::with_pins(57);
+        assert!(g.level(50) && !g.level(57));
+        g.set_pin_config(50, 2 << 7 | 1 << 13);              // INT_TYPE negedge, INT_ENA core 0
+        assert!(!g.set_input(57, false));
+        assert!(g.set_input(50, false));
+        assert!(g.irq());
+        assert_eq!(g.read(0x50), 1 << (50 - 32));
+        g.write(0x58, 1 << (50 - 32));
+        assert!(!g.irq());
+        let mut s3 = Gpio::new();
+        assert!(!s3.set_input(50, false) && !s3.level(49));
+    }
 }

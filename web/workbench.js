@@ -30,6 +30,11 @@
     esp32c6: { soc: 'ESP32-C6 rev 0', cpu: '1× RISC-V RV32IMAC @ 160 MHz', board: 'Bare ESP32-C6', peripherals: 'UART · USB-Serial/JTAG · timers · flash' },
     'waveshare-c6-lcd147': { soc: 'ESP32-C6 rev 0', cpu: '1× RISC-V RV32IMAC @ 160 MHz', board: 'Waveshare C6-LCD-1.47', peripherals: 'ST7789 172×320 · SPI2/GDMA · WS2812 · 802.15.4' },
     'ttgo-tdisplay': { soc: 'ESP32-D0WD rev 3', cpu: '2× Xtensa LX6 @ 240 MHz', board: 'LilyGO TTGO T-Display', peripherals: 'ST7789 135×240 · VSPI · two buttons' },
+    esp32p4: { soc: 'ESP32-P4 rev < 3 (v1.0)', cpu: '2× RISC-V RV32IMAFC @ 360 MHz', board: 'Bare ESP32-P4', peripherals: 'UART · USB-Serial/JTAG · timers · SDMMC · flash' },
+    'esp32p4-rev3': { soc: 'ESP32-P4 rev ≥ 3 (v3.1)', cpu: '2× RISC-V RV32IMAFC @ 360 MHz', board: 'Bare ESP32-P4', peripherals: 'UART · USB-Serial/JTAG · timers · flash' },
+    'esp32p4-c6': { soc: 'ESP32-P4 rev < 3 + ESP32-C6', cpu: '2× RV32IMAFC @ 360 MHz + 1× RV32IMAC @ 160 MHz', board: 'P4 with a C6 on SDIO, as the Waveshare ESP32-P4-WIFI6', peripherals: 'SDIO 4-bit · ESP-Hosted 2.12.13 · the C6\'s WiFi on a virtual AP' },
+    'waveshare-p4-lcd35': { soc: 'ESP32-P4 rev ≥ 3 (v3.1)', cpu: '2× RISC-V RV32IMAFC @ 360 MHz', board: 'Waveshare ESP32-P4-WIFI6-Touch-LCD-3.5', peripherals: 'ST7796 320×480 SPI · FT5x06 touch · ES8311 I²S audio' },
+    'esp32p4-rev3-c6': { soc: 'ESP32-P4 rev ≥ 3 (v3.1) + ESP32-C6', cpu: '2× RV32IMAFC @ 360 MHz + 1× RV32IMAC @ 160 MHz', board: 'P4 with a C6 on SDIO, as the Waveshare ESP32-P4-WIFI6', peripherals: 'SDIO 4-bit · ESP-Hosted 2.12.13 · the C6\'s WiFi on a virtual AP' },
     none: { soc: 'ESP32-S3 rev 0', cpu: '2× Xtensa LX7 @ 240 MHz', board: 'Bare ESP32-S3', peripherals: 'UART · USB-Serial/JTAG · timers · flash' },
   };
   const HINTS = {
@@ -47,9 +52,11 @@
     'pocket-tank': ['Tap or drag to touch the tank', 'Type feed 6 or shadow in the line box', 'help lists the director commands'],
     hello: ['Watch the ROM, the bootloader, then the app', 'The watchdog reboots it: same output again', 'Compare UART0 and USB-CDC'],
     'c3-hello': ['The RISC-V mask ROM boots the app', 'Open UART0 for the console', 'Verified line for line against a real C3'],
+    'p4-lcd35-synth': ['Enable audio, then play the keys', 'Tap the red display to pick a preset', 'INSTRUMENT edits the sound while it plays'],
+    'p4-c6-hosted': ['Both chips boot from their ROMs: [p4] and [c6]', 'The C6 joins the virtual AP for the P4', 'The P4 gets its address over SDIO'],
     'c6-hello': ['The C6 mask ROM boots the app', 'Open UART0 for the console', 'Verified against a Waveshare C6-LCD-1.47'],
   };
-  const CHIP = { esp32c3: 'c3', esp32c6: 'c6', 'waveshare-c6-lcd147': 'c6', 'ttgo-tdisplay': 'esp32' };
+  const CHIP = { esp32c3: 'c3', esp32c6: 'c6', 'waveshare-c6-lcd147': 'c6', 'ttgo-tdisplay': 'esp32', esp32p4: 'p4', 'esp32p4-rev3': 'p4', 'esp32p4-c6': 'p4', 'esp32p4-rev3-c6': 'p4', 'esp32p4+c6': 'p4', 'esp32p4-rev3+c6': 'p4', 'waveshare-p4-lcd35': 'p4' };
   // The board the running machine announced (run.html's `board` message): a native --web run has no
   // manifest or Configure form, and a board picked in Configure can change after the rail is built.
   let liveBoard = null, renderMachine = null;
@@ -66,7 +73,16 @@
     if (manifest.flash_mb) parts.push('--flash-mb ' + manifest.flash_mb);
     if (manifest.psram_mb) parts.push('--psram-mb ' + manifest.psram_mb);
     if (manifest.wifi) parts.push('--wifi ' + manifest.wifi);
-    for (const s of manifest.stubs || []) { const [name, value] = s.split('='); const addr = (manifest.symbols || {})[name]; parts.push('--stub ' + (addr || name) + (value !== undefined ? '=' + value : '')); }
+    for (const s of (manifest.stubs || []).filter((s) => !s.startsWith('c6:'))) { const [name, value] = s.split('='); const addr = (manifest.symbols || {})[name]; parts.push('--stub ' + (addr || name) + (value !== undefined ? '=' + value : '')); }
+    // the co-processor: its images and its stubs (`c6:NAME`) in one --coproc
+    if (manifest.coproc) {
+      const c = manifest.coproc.files || {}, kv = [];
+      for (const k of ['bootloader', 'ptable', 'app']) if (c[k]) kv.push(k + '=web/wasm/fw/' + c[k]);
+      for (const [off, u] of Object.entries(manifest.coproc.flash_at || {})) kv.push('otadata=web/wasm/fw/' + u + '@' + off);
+      if (c.rom) kv.push('rom=web/wasm/fw/' + c.rom);
+      for (const s of (manifest.stubs || []).filter((s) => s.startsWith('c6:'))) kv.push('stub=' + s.slice(3));
+      parts.push('--coproc c6:' + kv.join(','), '--net none');
+    }
     if (f.script) parts.push('--script web/wasm/fw/' + f.script);
     parts.push('--max-seconds ' + (manifest.seconds || 8));
     if (manifest.nodes) return '# two nodes: ' + fw + '.json lists each mote; the CLI runs one at a time\n' + parts.join(' \\\n  ');

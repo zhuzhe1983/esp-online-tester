@@ -47,6 +47,13 @@ example with esp_hosted 2.12.13 on the P4 and ESP-Hosted 2.12.13's slave on the 
 pair with ESP-Hosted's raw throughput test, built as
 [`examples/esp-hosted-p4`](../../../examples/esp-hosted-p4/README.md) describes; their licences are in
 `public/hosted-NOTICE.txt`; `tools/fetch-p4-firmware.sh` pins them too.
+`p4-lcd35-synth.json` boots `public/p4-scintilla-lcd35*`, the Scintilla synth for the Waveshare
+ESP32-P4-WIFI6-Touch-LCD-3.5, built from [joakimeriksson/esp32](https://github.com/joakimeriksson/esp32)
+at commit `eed6180`, directory `scintilla-p4-lcd35`, and pinned in `tools/fetch-p4-firmware.sh`. Its
+application is GPL-3.0-only; that text, the corresponding source and the licences of the linked
+components (LVGL, Waveshare's BSP, ESP-IDF and others) are in `public/p4-scintilla-NOTICE.txt`
+(the firmware repository's `p4/p4-scintilla-NOTICE.txt` at the pinned commit, SHA-256
+`c6eec7a427747c9c552a7474c4ec04641d9ac29c811173a81db7bb2f621d3aac`).
 
 `esp32/tests/fixtures/classic-camera/` at the repository root holds the
 reproducible public-driver RGB565 camera fixture from

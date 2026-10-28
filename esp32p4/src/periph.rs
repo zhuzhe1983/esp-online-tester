@@ -7,8 +7,8 @@
 //! efuse) come from `esp-periph`; the chip-only blocks are written here.
 
 use emu_core::{ClockDomain, ClockTree};
-use esp_periph::{device_set, mmio, Device, DeviceSet, Dispatch, Misc, RegRam, WriteEffect};
-use esp_periph::{Efuse, Gpio, Rng, Sha, SpiMem, Systimer, TimerGroup, Uart, UartLayout, UsbSerialJtag};
+use esp_periph::{device_set, mmio, Device, DeviceSet, Dispatch, Misc, RegRam, WriteEffect, NO_SOURCE};
+use esp_periph::{Efuse, Gdma, GpSpi, Gpio, Ledc, LedcLayout, Rng, Sha, SpiMem, Systimer, TimerGroup, Uart, UartLayout, UsbSerialJtag};
 use esp_periph::sdmmc::{Sdmmc, SdmmcLayout, SLOTS};
 use esp_periph::usb_otg::{Dwc2, Dwc2Config};
 use esp_periph::{RST_POWERON, RST_SW_CPU, RST_SW_SYS};
@@ -22,6 +22,17 @@ pub const CPU_HZ: u64 = 360_000_000;
 /// (register/hw_ver1/soc/interrupt_core0_reg.h). rev < 3 has 128 sources.
 pub mod src {
     pub const USB_SERIAL_JTAG: usize = 22;
+    /// ETS_SPI2_INTR_SOURCE: GPSPI2
+    pub const GPSPI2: usize = 25;
+    pub const I2C1: usize = 45;
+    pub const LEDC: usize = 52;
+    pub const I2S1: usize = 28;
+    /// ETS_AHB_PDMA_IN_CH0..2 (56-58) and OUT_CH0..2 (59-61)
+    pub const AHB_DMA_IN_CH0: usize = 56;
+    pub const AHB_DMA_OUT_CH0: usize = 59;
+    /// ETS_AXI_PDMA_IN_CH0..2 (62-64) and OUT_CH0..2 (65-67)
+    pub const AXI_DMA_IN_CH0: usize = 62;
+    pub const AXI_DMA_OUT_CH0: usize = 65;
     /// ETS_SDIO_HOST_INTR_SOURCE: the SDMMC host
     pub const SDIO_HOST: usize = 23;
     pub const UART0: usize = 31; pub const UART1: usize = 32;
@@ -37,7 +48,8 @@ pub mod src {
     /// The name IDF gives a source, for diagnostics.
     pub fn name(s: usize) -> &'static str {
         match s {
-            USB_SERIAL_JTAG => "USB_SERIAL_JTAG", SDIO_HOST => "SDIO_HOST", UART0 => "UART0", UART1 => "UART1", TG0_T0 => "TG0_T0", TG0_T1 => "TG0_T1",
+            USB_SERIAL_JTAG => "USB_SERIAL_JTAG", SDIO_HOST => "SDIO_HOST", GPSPI2 => "SPI2", I2C1 => "I2C1", LEDC => "LEDC",
+            I2S1 => "I2S1", 56..=58 => "AHB_PDMA_IN", 59..=61 => "AHB_PDMA_OUT", 62..=64 => "AXI_PDMA_IN", 65..=67 => "AXI_PDMA_OUT", UART0 => "UART0", UART1 => "UART1", TG0_T0 => "TG0_T0", TG0_T1 => "TG0_T1",
             TG1_T0 => "TG1_T0", TG1_T1 => "TG1_T1", 53 => "SYSTIMER_TARGET0", 54 => "SYSTIMER_TARGET1", 55 => "SYSTIMER_TARGET2",
             GPIO_INTR0 => "GPIO_INTR0", 79 => "FROM_CPU_INTR0", 80 => "FROM_CPU_INTR1", 81 => "FROM_CPU_INTR2", 82 => "FROM_CPU_INTR3",
             USB_OTG => "USB_OTG", _ => "?",
@@ -290,12 +302,14 @@ impl Device for AnaMst {
     }
 }
 
-/// ASSIST_DEBUG (0x3FF06000): the ROM prints core 0's recorded PC as `Saved PC` after a reset.
-/// IDF v5.5.3 register/hw_ver1/soc/assist_debug_reg.h: CORE_0_RCD_PDEBUGPC at 0x48.
+/// ASSIST_DEBUG (0x3FF06000): the ROM prints each core's recorded PC as `CoreN Saved PC` after a
+/// reset, and nothing for a core whose register reads 0. IDF v5.5.4 register/hw_ver1/soc/
+/// assist_debug_reg.h: CORE_0_RCD_PDEBUGPC at 0x48, CORE_1_RCD_PDEBUGPC at 0xC8; the ECO0 ROM's
+/// `main` reads both (0x4fc028e4-0x4fc02918).
 #[derive(Default)]
-pub struct AssistDebug { pub saved_pc: u32, ram: RegRam }
+pub struct AssistDebug { pub saved_pc: [u32; 2], ram: RegRam }
 impl Device for AssistDebug {
-    fn read(&mut self, off: u32) -> u32 { match off { 0x48 => self.saved_pc, _ => self.ram.read(off) } }
+    fn read(&mut self, off: u32) -> u32 { match off { 0x48 => self.saved_pc[0], 0xc8 => self.saved_pc[1], _ => self.ram.read(off) } }
     fn write(&mut self, off: u32, v: u32) -> WriteEffect { self.ram.write(off, v); WriteEffect::NONE }
 }
 
@@ -370,16 +384,16 @@ fn psram_controller() -> SpiMem {
 /// OUT_SEL49-56 are register RAM. FUNCn_IN_SEL resets to 0x3F (constant high), or to 0x3E
 /// (constant low) for the signals in `IN_SEL_LOW`.
 /// IDF v5.5.3 register/hw_ver1/soc/gpio_reg.h, include/soc/gpio_pins.h.
-pub struct GpioP4 { pub g: Gpio, ram: RegRam }
+pub struct GpioP4 { pub g: Gpio }
 const IN_SEL_LOW: [(usize, usize); 10] = [(10, 45), (47, 66), (74, 78), (89, 114), (117, 118), (126, 127), (130, 133), (138, 156), (158, 203), (214, 255)];
 impl Default for GpioP4 { fn default() -> Self { Self::new() } }
 impl GpioP4 {
     pub fn new() -> Self {
-        let mut g = Gpio::new();
+        let mut g = Gpio::with_pins(57);
         g.strap = 0x30f;
         g.func_in_sel = [0x3f; 256];
         for (lo, hi) in IN_SEL_LOW { for s in lo..=hi { g.func_in_sel[s] = 0x3e; } }
-        GpioP4 { g, ram: RegRam::new() }
+        GpioP4 { g }
     }
     /// The level an input signal sees: FUNCn_IN_SEL bits 5:0 pick a pin or a constant (0x3F
     /// high, 0x3E low), bit 6 inverts.
@@ -399,14 +413,158 @@ impl GpioP4 {
     }
 }
 impl Device for GpioP4 {
+    /// The P4's 57 pins: PIN49-56 (0x138-0x154) past the shared S3 map, which stops at PIN48, and
+    /// the matrix tables one word later than the S3's (FUNC0_IN_SEL 0x158, FUNC0_OUT_SEL 0x558),
+    /// FUNC49-56_OUT_SEL at 0x61C-0x638 (register/hw_ver3/soc/gpio_reg.h). The interrupt status
+    /// is INTR_0 / INTR1_0 (0x5C, 0x60: pins 0-31, 32-56) for interrupt 0 and INTR_1 / INTR1_1
+    /// (0x64, 0x68) for interrupt 1, which `gpio_ll_get_intr_status(_high)` reads (hal/gpio_ll.h:157-174);
+    /// both show the latched status, as the shared model's PCPU_INT does.
     fn read(&mut self, off: u32) -> u32 {
-        match off { 0x138..=0x154 | 0x61c..=0x638 => self.ram.read(off), 0x158..=0x618 => self.g.read(off - 4), _ => self.g.read(off) }
+        match off {
+            0x5c | 0x64 => self.g.read(0x44),
+            0x60 | 0x68 => self.g.read(0x50),
+            0x138..=0x154 => self.g.pin[((off - 0x74) / 4) as usize],
+            0x61c..=0x638 => self.g.func_out_sel[((off - 0x558) / 4) as usize],
+            0x158..=0x618 => self.g.read(off - 4),
+            _ => self.g.read(off),
+        }
     }
     fn write(&mut self, off: u32, v: u32) -> WriteEffect {
-        match off { 0x138..=0x154 | 0x61c..=0x638 => self.ram.write(off, v), 0x158..=0x618 => self.g.write(off - 4, v), _ => self.g.write(off, v) }
+        match off {
+            0x138..=0x154 => self.g.set_pin_config(((off - 0x74) / 4) as usize, v),
+            0x61c..=0x638 => self.g.func_out_sel[((off - 0x558) / 4) as usize] = v,
+            0x158..=0x618 => self.g.write(off - 4, v),
+            _ => self.g.write(off, v),
+        }
         WriteEffect::NONE
     }
     fn irq_sources(&self) -> u64 { self.g.irq() as u64 }
+}
+
+/// The AXI-GDMA (0x5008A000): three channel pairs, the IN channels' blocks at 0x68 * n, the OUT
+/// channels' at 0x138 + 0x68 * n, each register in the order conf/interrupts first
+/// (INT_RAW, INT_ST, INT_ENA, INT_CLR, CONF0, CONF1, FIFO status, POP/PUSH, LINK1, LINK2,
+/// STATE, EOF addresses, DSCR, DSCR_BF0/1, PRI, PERI_SEL), the CRC registers after them not
+/// modelled (IDF v5.5.4 register/hw_ver3/soc/axi_dma_reg.h). The transfers are the shared
+/// GDMA's: this maps the layout onto it. Two differences: a descriptor address is a whole word
+/// (LINK2), not 20 bits, and the start/stop bits are in LINK1 (IN: AUTO_RET 0, STOP 1, START 2,
+/// RESTART 3, PARK 4; OUT: STOP 0, START 1, RESTART 2, PARK 3). The interrupt bits are the
+/// shared model's (OUT_DONE 0, OUT_EOF 1, OUT_DSCR_ERR 2, OUT_TOTAL_EOF 3). GPSPI2, LCD0 and
+/// PARLIO are its peripherals (include/soc/gdma_channel.h: SPI2 is trigger 1).
+pub struct AxiDma { pub gdma: Gdma, link2: [[u32; 3]; 2], ram: RegRam }
+impl Default for AxiDma { fn default() -> Self { Self::new() } }
+impl AxiDma {
+    pub const CHANNELS: usize = 3;
+    pub fn new() -> Self { AxiDma { gdma: Gdma::new(), link2: [[0; 3]; 2], ram: RegRam::new() } }
+    /// (out, channel, register within its block) of an offset in the channel area
+    fn locate(off: u32) -> Option<(bool, usize, u32)> {
+        let (out, rel) = if off < 0x138 { (false, off) } else if off < 0x270 { (true, off - 0x138) } else { return None };
+        Some((out, (rel / 0x68) as usize, rel % 0x68))
+    }
+    /// The shared model's offset for an AXI register other than LINK1/LINK2.
+    fn shared(out: bool, ch: usize, k: u32) -> Option<u32> {
+        let t = match k {
+            0x00 => 0x08, 0x04 => 0x0c, 0x08 => 0x10, 0x0c => 0x14, 0x10 => 0x00, 0x14 => 0x04, 0x18 => 0x18, 0x1c => 0x1c,
+            0x28 => 0x24, 0x2c => 0x28, 0x30 => 0x2c, 0x34 => 0x30, 0x38 => 0x34, 0x3c => 0x38, 0x40 => 0x44, 0x44 => 0x48,
+            _ => return None,
+        };
+        Some(ch as u32 * 0xc0 + if out { 0x60 } else { 0 } + t)
+    }
+}
+impl Device for AxiDma {
+    fn read(&mut self, off: u32) -> u32 {
+        if let Some((out, ch, k)) = Self::locate(off) {
+            let running = if out { self.gdma.out[ch].running } else { self.gdma.inp[ch].running };
+            return match k {
+                0x20 => if running { 0 } else if out { 1 << 3 } else { 1 << 4 },     // PARK: the link is idle
+                0x24 => self.link2[out as usize][ch],
+                _ => match Self::shared(out, ch, k) { Some(o) => self.gdma.read(o), None => self.ram.read(off) },
+            };
+        }
+        match off { 0x28c..=0x2a0 => 1, _ => self.ram.read(off) }                   // IN/OUT_RESET_AVAIL: a reset is allowed
+    }
+    fn write(&mut self, off: u32, v: u32) -> WriteEffect {
+        let Some((out, ch, k)) = Self::locate(off) else { self.ram.write(off, v); return WriteEffect::NONE };
+        match k {
+            0x24 => self.link2[out as usize][ch] = v,
+            0x20 => {
+                let (stop, start, restart) = if out { (v & 1, v >> 1 & 1, v >> 2 & 1) } else { (v >> 1 & 1, v >> 2 & 1, v >> 3 & 1) };
+                let addr = self.link2[out as usize][ch];
+                self.gdma.addr_base = addr & 0xfff0_0000;
+                // the shared LINK: address 19:0, then OUT STOP 20 / START 21 / RESTART 22, IN STOP 21 / START 22 / RESTART 23
+                let s = if out { 20 } else { 21 };
+                let word = (addr & 0xf_ffff) | stop << s | start << (s + 1) | restart << (s + 2);
+                self.gdma.write(ch as u32 * 0xc0 + if out { 0x80 } else { 0x20 }, word);
+            }
+            _ => match Self::shared(out, ch, k) { Some(o) => self.gdma.write(o, v), None => self.ram.write(off, v) },
+        }
+        WriteEffect::NONE
+    }
+    /// bits 0..3 the OUT channels, 5..8 the IN channels, as the shared model numbers them
+    fn irq_sources(&self) -> u64 { Device::irq_sources(&self.gdma) }
+    fn debug(&mut self, on: bool) { self.gdma.dbg = on; }
+}
+
+/// The AHB-GDMA (0x50085000): the C6's GDMA layout (each channel's IN and OUT interrupt blocks
+/// at 0x10 * n and 0x30 + 0x10 * n, MISC_CONF 0x64, the channel blocks from 0x70 every 0xC0, OUT
+/// at +0x60), with the LINK registers' start/stop bits placed as on the AXI-GDMA and the
+/// descriptor address in its own word: IN_LINK_ADDR 0x3AC + 4n, OUT_LINK_ADDR 0x3B8 + 4n (IDF
+/// v5.5.4 register/hw_ver3/soc/ahb_dma_reg.h). I2S0-2 are its peripherals (triggers 3-5).
+pub struct AhbDma { pub gdma: Gdma, link_addr: [[u32; 3]; 2], ram: RegRam }
+impl Default for AhbDma { fn default() -> Self { Self::new() } }
+impl AhbDma {
+    pub fn new() -> Self { AhbDma { gdma: Gdma::new(), link_addr: [[0; 3]; 2], ram: RegRam::new() } }
+    /// The shared model's offset, as `GdmaC6::map` (esp32c6/src/periph.rs) maps the C6's layout;
+    /// None for the LINK registers, which `write` translates.
+    fn map(off: u32) -> Option<u32> {
+        const T: [u32; 13] = [0x00, 0x04, 0x18, 0x1c, 0x20, 0x24, 0x28, 0x2c, 0x30, 0x34, 0x38, 0x44, 0x48];
+        if off < 0x30 { return Some((off / 0x10) * 0xc0 + 0x08 + off % 0x10); }
+        if off < 0x60 { let o = off - 0x30; return Some((o / 0x10) * 0xc0 + 0x68 + o % 0x10); }
+        if off == 0x64 { return Some(0x3c8); }
+        if (0x70..0x70 + 3 * 0xc0).contains(&off) {
+            let rel = off - 0x70; let (n, k) = (rel / 0xc0, rel % 0xc0);
+            if k <= 0x30 { return Some(n * 0xc0 + T[(k / 4) as usize]); }
+            if (0x60..=0x90).contains(&k) { return Some(n * 0xc0 + 0x60 + T[((k - 0x60) / 4) as usize]); }
+        }
+        None
+    }
+    /// (out, channel) of a LINK register
+    fn link(off: u32) -> Option<(bool, usize)> {
+        if !(0x70..0x70 + 3 * 0xc0).contains(&off) { return None; }
+        let rel = off - 0x70; let (n, k) = ((rel / 0xc0) as usize, rel % 0xc0);
+        match k { 0x10 => Some((false, n)), 0x70 => Some((true, n)), _ => None }
+    }
+}
+impl Device for AhbDma {
+    fn read(&mut self, off: u32) -> u32 {
+        if let Some((out, ch)) = Self::link(off) {
+            let running = if out { self.gdma.out[ch].running } else { self.gdma.inp[ch].running };
+            return if running { 0 } else if out { 1 << 3 } else { 1 << 4 };                  // PARK: the link is idle
+        }
+        match off {
+            0x3ac..=0x3b4 => self.link_addr[0][((off - 0x3ac) / 4) as usize],
+            0x3b8..=0x3c0 => self.link_addr[1][((off - 0x3b8) / 4) as usize],
+            _ => match Self::map(off) { Some(o) => self.gdma.read(o), None => self.ram.read(off) },
+        }
+    }
+    fn write(&mut self, off: u32, v: u32) -> WriteEffect {
+        if let Some((out, ch)) = Self::link(off) {
+            let (stop, start, restart) = if out { (v & 1, v >> 1 & 1, v >> 2 & 1) } else { (v >> 1 & 1, v >> 2 & 1, v >> 3 & 1) };
+            let addr = self.link_addr[out as usize][ch];
+            self.gdma.addr_base = addr & 0xfff0_0000;
+            let s = if out { 20 } else { 21 };
+            self.gdma.write(ch as u32 * 0xc0 + if out { 0x80 } else { 0x20 }, (addr & 0xf_ffff) | stop << s | start << (s + 1) | restart << (s + 2));
+            return WriteEffect::NONE;
+        }
+        match off {
+            0x3ac..=0x3b4 => self.link_addr[0][((off - 0x3ac) / 4) as usize] = v,
+            0x3b8..=0x3c0 => self.link_addr[1][((off - 0x3b8) / 4) as usize] = v,
+            _ => match Self::map(off) { Some(o) => self.gdma.write(o, v), None => self.ram.write(off, v) },
+        }
+        WriteEffect::NONE
+    }
+    fn irq_sources(&self) -> u64 { Device::irq_sources(&self.gdma) }
+    fn debug(&mut self, on: bool) { self.gdma.dbg = on; }
 }
 
 /// The pins an SD bus device hangs on.
@@ -464,9 +622,24 @@ pub struct Peripherals {
     pub hp_clkrst: HpClkRst,
     pub lp: LpAon,
     pub ana_mst: AnaMst,
+    /// GPSPI2 (0x500D0000): the shared model, the C6's register map
+    pub spi2: GpSpi,
+    /// I2C1 (0x500C5000), the bus Waveshare's BSP puts its touch controller and codec on: the
+    /// shared model, the C6's register map less CLK_CONF, which is HP_SYS_CLKRST's here
+    pub i2c1: esp_periph::i2c::I2c,
+    /// AXI-GDMA: GPSPI2's DMA
+    pub axi_dma: AxiDma,
+    /// AHB-GDMA: the I2S controllers' DMA
+    pub ahb_dma: AhbDma,
+    /// I2S1 (0x500C7000), the BSP's codec port (CONFIG_BSP_I2S_NUM 1): the shared model, the
+    /// C6's register map. Its clock dividers are HP_SYS_CLKRST's and not read: 44.1 kHz.
+    pub i2s1: esp_periph::I2s,
+    /// LEDC (0x500D3000); its clock is HP_SYS_CLKRST PERI_CLK_CTRL22's (`ledc_clock`)
+    pub ledc: Ledc,
     pub assist_debug: AssistDebug,
-    /// WDEV_RND_REG = LP_SYSTEM_REG_RNG_DATA (0x501101A4) on rev < 3
-    /// (IDF v5.5.3 register/hw_ver1/soc/wdev_reg.h:16, lp_system_reg.h:1251)
+    /// WDEV_RND_REG: LP_SYSTEM_REG_RNG_DATA (0x501101A4) on rev < 3, LP_TRNG's RNG_DATA
+    /// (0x50126004) on rev >= 3 (IDF v5.5.4 register/hw_ver1/soc/wdev_reg.h:16,
+    /// lp_system_reg.h:1251; hw_ver3/soc/wdev_reg.h:16, trng_reg.h:52). Both read this one generator.
     pub rng: Rng,
     /// register RAM behind unmodelled blocks, first-touch logging, pc attribution
     pub misc: Misc,
@@ -491,16 +664,24 @@ device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::Xtal, 9), (Cloc
     0x3ff06 "ASSIST_DEBUG" (assist_debug) => [];
     0x3ff10 "CACHE" (cache) => [];
     0x50083 "SDMMC" (sdmmc) => [src::SDIO_HOST];
+    0x50085 "AHB_DMA" (ahb_dma) => [src::AHB_DMA_OUT_CH0, src::AHB_DMA_OUT_CH0 + 1, src::AHB_DMA_OUT_CH0 + 2, NO_SOURCE, NO_SOURCE,
+                                    src::AHB_DMA_IN_CH0, src::AHB_DMA_IN_CH0 + 1, src::AHB_DMA_IN_CH0 + 2, NO_SOURCE, NO_SOURCE];
+    0x5008a "AXI_DMA" (axi_dma) => [src::AXI_DMA_OUT_CH0, src::AXI_DMA_OUT_CH0 + 1, src::AXI_DMA_OUT_CH0 + 2, NO_SOURCE, NO_SOURCE,
+                                    src::AXI_DMA_IN_CH0, src::AXI_DMA_IN_CH0 + 1, src::AXI_DMA_IN_CH0 + 2, NO_SOURCE, NO_SOURCE];
     0x5008c "FLASH_SPI0" (spi0) => [];
     0x5008d "FLASH_SPI1" (spi1) => [];
     0x5008e "PSRAM_MSPI0" (psram0) => [];
     0x5008f "PSRAM_MSPI1" (psram1) => [];
     0x50091 "SHA" (sha) => [];
     0x500c2 "TIMG0" (timg[0]) => [src::TG0_T0, src::TG0_T1];
+    0x500c5 "I2C1" (i2c1) => [src::I2C1];
+    0x500c7 "I2S1" (i2s1) => [src::I2S1];
     0x500c3 "TIMG1" (timg[1]) => [src::TG1_T0, src::TG1_T1];
     0x500ca "UART0" (uart[0]) => [src::UART0];
     0x500cb "UART1" (uart[1]) => [src::UART1];
+    0x500d0 "SPI2" (spi2) => [src::GPSPI2];
     0x500d2 "USB_SERIAL_JTAG" (usb) => [src::USB_SERIAL_JTAG];
+    0x500d3 "LEDC" (ledc) => [src::LEDC];
     0x500d6 "INTMTX" (intmtx) => [];
     0x500e0 "GPIO" (gpio) => [src::GPIO_INTR0];
     0x500e1 "IO_MUX" (io_mux) => [];
@@ -508,6 +689,9 @@ device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::Xtal, 9), (Cloc
     0x500e5 "HP_SYS" (hp_sys) => [src::FROM_CPU0, src::FROM_CPU0 + 1, src::FROM_CPU0 + 2, src::FROM_CPU0 + 3];
     0x500e6 "HP_SYS_CLKRST" (hp_clkrst) => [];
     0x50110 "LP_RNG" (rng) @ 0x1a4..=0x1a7 => [];
+    // LP_TRNG, rev >= 3's random source. hw_ver1 has no block here and its IDF never reads it, so
+    // it is mounted on both revisions; CFG, RSTN and DATE stay register RAM.
+    0x50126 "LP_TRNG" (rng) @ 0x4..=0x7 => [];
     0x50110 "LP_SYS" (lp) => [];
     0x50111 "LP_CLKRST" alias (lp) delta 0x1000 => [];
     0x50112 "LP_TIMER" alias (lp) delta 0x2000 => [];
@@ -523,7 +707,15 @@ impl DeviceSet for Peripherals {
     fn pre_access(&mut self, block: u32, off: u32, write: bool) {
         // INTR_STATUS_0..3 read the source state.
         if block == 0x500d6 && !write && (0x200..=0x20c).contains(&(off & 0x7ff)) { self.intmtx.status = self.source_status(); }
-        if block == 0x50110 && off == 0x1a4 && !write { self.rng.now = self.clock.cycles() as u32; }
+        if (block == 0x50110 && off == 0x1a4 || block == 0x50126 && off == 0x4) && !write { self.rng.now = self.clock.cycles() as u32; }
+        // I2C1's clock: HP_SYS_CLKRST PERI_CLK_CTRL10 I2C1_CLK_SRC_SEL bit 26 (1 = RC_FAST),
+        // PERI_CLK_CTRL11 I2C1_CLK_DIV_NUM 7:0, NUMERATOR 15:8, DENOMINATOR 23:16
+        // (register/hw_ver3/soc/hp_sys_clkrst_reg.h:1443-1470; hal/i2c_ll.h:186-226 writes div_a to
+        // the numerator), repacked into the shared S3 CLK_CONF layout.
+        if block == 0x500c5 {
+            let (c10, c11) = (self.hp_clkrst.read(0x40), self.hp_clkrst.read(0x44));
+            self.i2c1.set_external_clock_config(Some((c11 & 255) | (c11 >> 8 & 63) << 8 | (c11 >> 16 & 63) << 14 | (c10 >> 26 & 1) << 20));
+        }
         if block == 0x50083 { self.sdmmc.now_ns = self.now_ns(); if self.sdmmc.timed { self.sdmmc.ciu_hz = self.hp_clkrst.sdio_ls_hz(); } }
         // CDETECT and WRTPRT read the card-detect and write-protect signals of the GPIO matrix.
         if block == 0x50083 && (off == 0x50 || off == 0x54) && !write {
@@ -547,6 +739,7 @@ impl Peripherals {
             spi0: MspiCache(flash_controller(false)), psram0: MspiCache(RegRam::new()), spi1: flash_controller(true), psram1: psram_controller(),
             sha: Sha::new(), intmtx: IntMatrix::new(), clic: Clic::default(), cache: Cache::new(), hp_sys: HpSys::default(), hp_clkrst: HpClkRst::new(),
             lp: LpAon::new(), ana_mst: AnaMst::default(), assist_debug: AssistDebug::default(), rng: Rng::new(),
+            spi2: GpSpi::new(), i2c1: esp_periph::i2c::I2c::new(), axi_dma: AxiDma::new(), ahb_dma: AhbDma::new(), i2s1: esp_periph::I2s::new(CPU_HZ), ledc: Ledc::new(LedcLayout::P4),
             misc: Misc::new(), spi_exec: false, psram_exec: false, clock: Self::new_clock(), cycle_base: 0, last_status: [0; 4],
         }
     }
@@ -572,7 +765,7 @@ impl Peripherals {
             0x500e4 => "AUDIO_ADDC", 0x500e5 => "HP_SYS", 0x500e6 => "HP_SYS_CLKRST",
             0x50110 => "LP_SYS", 0x50111 => "LP_CLKRST", 0x50112 => "LP_TIMER", 0x50113 => "LP_ANA_PERI", 0x50114 => "LP_HUK",
             0x50115 => "PMU", 0x50116 => "LP_WDT", 0x50118 => "LP_MAILBOX", 0x50119 => "RTC", 0x50120 => "LP_PERI",
-            0x50121 => "LP_UART", 0x50122 => "LP_I2C", 0x50123 => "LP_SPI", 0x50124 => "I2C_ANA_MST", 0x50125 => "LP_I2S",
+            0x50121 => "LP_UART", 0x50122 => "LP_I2C", 0x50123 => "LP_SPI", 0x50124 => "I2C_ANA_MST", 0x50125 => "LP_I2S", 0x50126 => "LP_TRNG",
             0x50127 => "LP_ADC", 0x50128 => "LP_TOUCH", 0x5012a => "LP_GPIO", 0x5012b => "LP_IOMUX", 0x5012c => "LP_INTR",
             0x5012d => "EFUSE", 0x5012e => "LP_PERI_PMS", 0x5012f => "LP_TSENSOR",
             _ => "?",
@@ -583,6 +776,7 @@ impl Peripherals {
 
     pub fn write32(&mut self, addr: u32, v: u32) {
         let fx = mmio::write32(self, addr, v);
+        if addr == 0x500e_609c { self.ledc_clock(v); }
         if fx.contains(WriteEffect::SPI_EXEC | WriteEffect::PERIPH_RESET) {
             if fx.contains(WriteEffect::PERIPH_RESET) {
                 match addr {
@@ -593,6 +787,13 @@ impl Peripherals {
             }
             if fx.contains(WriteEffect::SPI_EXEC) { if addr >> 12 == 0x5008f { self.psram_exec = true; } else { self.spi_exec = true; } }
         }
+    }
+
+    /// HP_SYS_CLKRST PERI_CLK_CTRL22: LEDC_CLK_SRC_SEL 1:0 (0 XTAL, 1 RC_FAST, 2 PLL_F80M),
+    /// LEDC_CLK_EN bit 2 (register/hw_ver3/soc/hp_sys_clkrst_reg.h:2510-2524, hal/ledc_ll.h:98-115;
+    /// RC_FAST is SOC_CLK_RC_FAST_FREQ_APPROX, 20 MHz).
+    fn ledc_clock(&mut self, v: u32) {
+        self.ledc.external_clock_hz = if v & (1 << 2) == 0 { 0 } else { match v & 3 { 0 => 40_000_000, 1 => 20_000_000, 2 => 80_000_000, _ => 0 } };
     }
 
     /// Which device each SDMMC slot reaches. Slot 0 is wired to its IO MUX pins: a device on
@@ -672,6 +873,43 @@ impl Peripherals {
 mod tests {
     use super::*;
 
+    /// AXI-GDMA OUT channel 2: a whole-word descriptor address in LINK2, START in LINK1 bit 1, the
+    /// peripheral select and interrupt words of its block at 0x138 + 2 * 0x68 (axi_dma_reg.h).
+    #[test]
+    fn axi_dma_starts_an_out_link_from_link2() {
+        let mut d = AxiDma::new();
+        let base = 0x138 + 2 * 0x68;
+        d.write(base + 0x44, 1);                                      // PERI_SEL: GPSPI2
+        d.write(base + 0x24, 0x4ff1_2340);                            // LINK2
+        assert_eq!(d.read(base + 0x20), 1 << 3);                      // parked
+        d.write(base + 0x20, 1 << 1);                                 // START
+        assert_eq!(d.gdma.out_channel_for(1), Some(2));
+        assert_eq!(d.gdma.out[2].desc, 0x4ff1_2340);
+        assert_eq!((d.read(base + 0x20), d.read(base + 0x24)), (0, 0x4ff1_2340));
+        d.write(base + 0x08, 1 << 3);                                 // INT_ENA: TOTAL_EOF
+        d.gdma.out[2].int_raw |= 1 << 3;
+        assert_eq!((d.read(base + 0x04), Device::irq_sources(&d)), (1 << 3, 1 << 2));
+        d.write(base + 0x0c, 1 << 3);
+        assert_eq!(d.read(base), 0);
+        d.write(base + 0x20, 1);                                      // STOP
+        assert_eq!(d.gdma.out_channel_for(1), None);
+    }
+
+    /// AHB-GDMA: the C6's layout, the address in OUT_LINK_ADDR (0x3B8 + 4n) and START in
+    /// OUT_LINK bit 1 (0x70 + 0xC0 n + 0x70), I2S1 its trigger 4 (ahb_dma_reg.h, gdma_channel.h).
+    #[test]
+    fn ahb_dma_starts_an_out_link_from_its_address_word() {
+        let mut d = AhbDma::new();
+        let ch = 0x70 + 0xc0;
+        d.write(ch + 0x90, 4);                                        // OUT_PERI_SEL_CH1
+        d.write(0x3bc, 0x4ffa_0000);                                  // OUT_LINK_ADDR_CH1
+        d.write(ch + 0x70, 1 << 1);                                   // OUT_LINK_CH1: START
+        assert_eq!((d.gdma.out_channel_for(4), d.gdma.out[1].desc), (Some(1), 0x4ffa_0000));
+        assert_eq!((d.read(0x3bc), d.read(ch + 0x70)), (0x4ffa_0000, 0));
+        d.gdma.out[1].int_raw |= 1;
+        assert_eq!(d.read(0x40), 1);                                  // OUT_INT_RAW_CH1
+    }
+
     #[test]
     fn systimer_keeps_16_mhz_on_xtal_ticks() {
         let mut t = SystimerP4::default();
@@ -742,6 +980,18 @@ mod tests {
         p.write32(0x500e_5010, 0);
         p.refresh_lines();
         assert_eq!(p.clic.core[0].candidate(), None);
+    }
+
+    #[test]
+    fn both_revisions_random_sources_read_the_generator() {
+        // WDEV_RND_REG: LP_SYSTEM RNG_DATA on rev < 3, LP_TRNG RNG_DATA on rev >= 3.
+        let mut p = Peripherals::new([0; 6], (3, 1));
+        for addr in [0x5011_01a4, 0x5012_6004] {
+            let (a, b) = (p.read32(addr), p.read32(addr));
+            assert!(a != 0 && b != 0 && a != b, "{addr:#x}: {a:#x} {b:#x}");
+        }
+        p.write32(0x5012_6000, 1);                                    // CFG stays register RAM
+        assert_eq!(p.read32(0x5012_6000), 1);
     }
 
     #[test]

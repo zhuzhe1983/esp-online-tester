@@ -150,6 +150,30 @@ fn f_arithmetic_rounds_flags_and_canonicalises() {
     assert_eq!((b.x, b.f, b.fcsr, b.mstatus, b.pc), (cpu.x, cpu.f, cpu.fcsr, cpu.mstatus, cpu.pc));
 }
 
+/// On the P4 rev >= 3 core EXT_ILL flags every FP instruction taken with FS = Off: FLW, FSW, the FP
+/// CSRs, C.FLW, C.FSW, C.FLWSP and C.FSWSP as well as the computational ones (FMADD among them),
+/// which is all IDF's rev >= 3 `vectors.S` looks at ("The FPU_EXT_ILL bug was fixed on revision
+/// 3.0 and higher", ESP-IDF v5.5.4 components/riscv/vectors.S:279-280). An IDF v5.5.4 sdmmc
+/// example built for rev >= 3 panics in `sdmmc_card_init` at its first C.FLW without it.
+#[test]
+fn rev3_ext_ill_flags_fp_loads_stores_and_csrs() {
+    let prog = asm("00c5f553 e00505d3 00052507 003025f3 7f001673 e15c 6022 00a52027 6108 e02a 68c58543");
+    for (core, ld_st) in [(Cpu::new_esp32p4_rev3(), 1), (Cpu::new_esp32p4(), 0)] {
+        let (mut cpu, mut ram) = machine_on(core, &prog, "fadd.s fa0,fa1,fa2");
+        cpu.mtvec = BASE + 0x400;
+        cpu.x[10] = BASE + 0x800; cpu.x[2] = BASE + 0x900;
+        for (off, raw, ext) in [(0, 0x00c5_f553u32, 1), (4, 0xe005_05d3, 1), (8, 0x0005_2507, ld_st), (12, 0x0030_25f3, ld_st), (20, 0xe15c, ld_st), (22, 0x6022, ld_st),
+            (24, 0x00a5_2027, ld_st), (28, 0x6108, ld_st), (30, 0xe02a, ld_st), (32, 0x68c5_8543, 1)] {
+            cpu.ext_ill = 0;
+            cpu.pc = BASE + off;
+            assert_eq!(step(&mut cpu, &mut ram), Err(Trap::Exception(2)), "{raw:08x}");
+            assert_eq!((cpu.mtval, cpu.ext_ill), (raw, ext), "EXT_ILL after {raw:08x}, rev >= 3: {}", cpu.ext_ill_all_fp);
+        }
+        cpu.reset();
+        assert_eq!(cpu.ext_ill_all_fp, ld_st == 1, "a reset keeps the revision's EXT_ILL");
+    }
+}
+
 /// The lazy FPU contract ESP-IDF v5.5.3 relies on (`components/riscv/vectors.S`, `_panic_handler`):
 /// with FS = Off every F instruction and FP CSR access is an illegal instruction with mtval = its
 /// bits; EXT_ILL (0x7F0) bit 0 is set for the computational instructions only, and reads and
@@ -380,11 +404,11 @@ fn s31_standard_clic_status_and_threshold_are_separate_from_old_p4() {
     assert_eq!(s31.read_csr(csr::MINTSTATUS_P4), 0);
     s31.write_csr(csr::MINTSTATUS, 0); assert_eq!(s31.read_csr(csr::MINTSTATUS), 0x7f00_0000);
     s31.write_csr(csr::MINTTHRESH, 0xffff_ff3f); assert_eq!(s31.read_csr(csr::MINTTHRESH), 0x3f);
-    s31.reset(); assert!(s31.clic && s31.standard_clic);
+    s31.reset(); assert!(s31.clic && s31.clic_std);
     assert_eq!((s31.mil, s31.read_csr(csr::MINTTHRESH)), (0, 0));
     let mut p4 = Cpu::new_esp32p4(); p4.mil = 0x3f;
     assert_eq!(p4.read_csr(csr::MINTSTATUS_P4), 0x3f00_0000);
-    assert_eq!(p4.read_csr(csr::MINTSTATUS), 0); assert!(!p4.standard_clic);
+    assert_eq!(p4.read_csr(csr::MINTSTATUS), 0); assert!(!p4.clic_std);
 }
 
 /// mhartid reads the core's index, read-only, and a reset keeps it with the rest of the P4
@@ -397,6 +421,36 @@ fn mhartid_survives_reset() {
     c.reset();
     assert_eq!((c.read_csr(csr::MHARTID), c.clic, c.user_counters), (1, true, true));
     assert_eq!(Cpu::new_rv32imac().read_csr(csr::MHARTID), 0);
+}
+
+/// The P4 rev >= 3 core's CLIC is the specification's (ESP-IDF v5.5.4
+/// riscv/include/esp_private/interrupt_clic.h:60-66): an interrupt is taken only above both
+/// mintthresh (0x347) and the current level, mintstatus reads at 0xFB1, and 0x346 is a plain CSR
+/// there. On the rev < 3 core the threshold is the SoC's: a write to 0x347 masks nothing.
+#[test]
+fn rev3_clic_takes_only_above_mintthresh() {
+    let nops = asm("0001 0001 0001 0001");
+    let (mut cpu, mut ram) = machine_on(Cpu::new_esp32p4_rev3(), &nops, "nop");
+    cpu.write_csr(csr::MTVEC, BASE + 0x203);
+    cpu.write_csr(csr::MSTATUS, cpu.mstatus | mstatus::MIE);
+    cpu.write_csr(csr::MINTTHRESH, 0x13f);
+    assert_eq!(cpu.read_csr(csr::MINTTHRESH), 0x3f, "the threshold is 8 bits");
+    cpu.set_irq(clic_irq(2, 0x3f, false));                          // level 1 at threshold 1 waits
+    assert_eq!(step(&mut cpu, &mut ram), Ok(()));
+    cpu.set_irq(clic_irq(2, 0x7f, false));                          // level 3 is taken
+    assert_eq!(step(&mut cpu, &mut ram), Err(Trap::Interrupt(2)));
+    assert_eq!(cpu.read_csr(csr::MINTSTATUS), 0x7f << 24);
+    cpu.write_csr(csr::MINTSTATUS_P4, 0x55);
+    assert_eq!(cpu.read_csr(csr::MINTSTATUS_P4), 0x55, "0x346 is not mintstatus on rev >= 3");
+    cpu.reset();
+    assert!(cpu.clic_std);
+    assert_eq!(cpu.read_csr(csr::MINTTHRESH), 0, "a reset clears the threshold");
+    let (mut old, mut ram) = machine_on(Cpu::new_esp32p4(), &nops, "nop");
+    old.write_csr(csr::MTVEC, BASE + 0x203);
+    old.write_csr(csr::MSTATUS, old.mstatus | mstatus::MIE);
+    old.write_csr(csr::MINTTHRESH, 0xff);
+    old.set_irq(clic_irq(2, 0x3f, false));
+    assert_eq!(step(&mut old, &mut ram), Err(Trap::Interrupt(2)));
 }
 
 fn clic_irq(line: u32, level: u32, shv: bool) -> Option<u32> {

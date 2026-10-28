@@ -30,7 +30,7 @@ pub extern "C" fn esp32sim_test_classic_psram() -> u32 {
     // Existing manifest defaults (T-Display: 0 || 2), upload defaults and ABI callers.
     for (board, flash, size) in [("esp32", 4, 1), ("esp32", 4, 2),
         ("esp32", 4, 8), ("esp32", 4, 32), ("ttgo-tdisplay", 4, 2),
-        ("esp32", 32, 32)] {
+        ("esp32", 32, 32), ("lilygo-t-beam-v1-2", 4, 8)] {
         // SAFETY: the board string is readable for its declared length.
         let p = unsafe { esp32sim_new(board.as_ptr(), board.len(), flash, size) };
         assert!(!p.is_null(), "unsupported classic PSRAM size must start without PSRAM");
