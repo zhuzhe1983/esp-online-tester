@@ -52,6 +52,17 @@ test('catalogs retain provenance, distinct GPS defaults and truthful support', (
   assert.ok(catalog.firmwares.find(item => item.id === 'm5stack-stopwatch-official').source.url.startsWith('https://m5burner-cdn.m5stack.com/'));
 });
 
+test('every executable catalog source is a valid portable scene', () => {
+  for (const firmware of catalog.firmwares.filter(item => item.source)) {
+    for (const productId of firmware.productIds) {
+      const scene={...createDefaultScene(catalog,productId),firmware:firmware.source};
+      const result=validateScene(scene,catalog);
+      assert.equal(result.valid,true,`${firmware.id}: ${JSON.stringify(result.errors)}`);
+      assert.deepEqual(decodeScene(encodeScene(scene,catalog),catalog).firmware,firmware.source);
+    }
+  }
+});
+
 test('configuration validity is separate from execution readiness', () => {
   const result = validateScene(base(), catalog);
   assert.equal(result.valid, true);
