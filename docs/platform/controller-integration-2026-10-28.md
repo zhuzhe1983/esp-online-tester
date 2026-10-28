@@ -14,8 +14,8 @@
 - 11个实际 WASM 场景通过；真实 worker 录制18个事件，回放 framebuffer 一致。
 - 原生 VQ 43项、timing/BLE ABI、worker pacing/channel、输入 UI 11项通过。
 - 目录 schema：86产品、7配件、150固件、104 watchlist。
-- Headless 浏览器逐项选择16个新增型号，CAD 均加载完成；品牌显示与计数正确。PaperDIY 的无效源字段另行修正，随后须复查；此前截图保留为负面证据。
+- Headless 浏览器逐项选择16个新增型号，CAD 均加载完成；品牌显示与计数正确。PaperDIY 的无效源字段修正后，主线程在用户8088页面确认 configured、bootMode:rom 且无错误；此前截图保留为负面证据。
 
-生产 WASM：4,213,648字节，SHA-256 `2a913ce4b9d5db3d8eb144ef7e6bfbeaa5da4d0418d9316e9046bd93bdc87226`；无 DWARF，保留名称。JIT 差分、profiling 编译、benchmark工具与历史 x5 合同在本次核心交付时尚待补跑，不声称完整 CI 已结束。没有新增整合性能测量，保留各实现阶段的对照收据，不作整体性能无回退声明。
+生产 WASM：4,213,648字节，SHA-256 `2a913ce4b9d5db3d8eb144ef7e6bfbeaa5da4d0418d9316e9046bd93bdc87226`；无 DWARF，保留名称。核心交付后补跑 JIT 差分111126例及GPIO波形24例、profiling编译、benchmark工具（含Python15项）与历史x5六项命令，均通过，生产WASM hash未变化。默认隐私检查只覆盖docs/evidence；新增平台收据另做同规则扫描和人工复核。没有新增整合性能测量，保留各实现阶段的对照收据，不作整体性能无回退声明。
 
-真实录制收据见 [recording.json](evidence/controller-integration-2026-10-28/recording.json)。未新增线上固件二进制。任务浏览器和独立服务器均已关闭。
+完整命令、来源提交链、失败与修复记录见 [checks.json](evidence/controller-integration-2026-10-28/checks.json)。真实录制收据见 [recording.json](evidence/controller-integration-2026-10-28/recording.json)。未新增线上固件二进制。任务浏览器和独立服务器均已关闭。

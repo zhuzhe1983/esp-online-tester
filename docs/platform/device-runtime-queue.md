@@ -8,9 +8,9 @@
 
 按用户最新要求，允许最多十个子代理并行，实际并发仍受当前会话工具上限约束。主线程负责用户问题与集成，持续保留控制器和配件适配工作线，其余可用工作线处理独立产品或修复。编码任务使用独立 worktree、明确文件归属；共享构建与 CPU 基准测试协调排期。每路逐项交付，先保存检查点再换任务。
 
-PaperMono 完整版 NFC 通信、板型识别与 LoRa 数字收发已合入主线；控制器线按用户最新需求进行 ESP32-S31 启动验证，之后接续已保存工作的 AtomS3-Lite C124、DinMeter K134。AtomS3R 官方 v0.3 的 CPU1 启动异常已完成三种执行路径的复现与源码定位，尚缺 S3 实机行为依据；保持已知失败和试运行入口，不以猜测修改底层行为。
+PaperMono 完整版的 NFC/LoRa 数字子集与 Lite 的独立板型已经合入。ESP32-S31 的芯片级分阶段验证继续进行，尚不计为 INK4 Plus 产品板级适配。此次16个已交付控制器已合入统一源码，并验证目录、真实 WASM 注册与共享运行链路；各型号官方固件结果及未实现项仍分别保留。
 
-Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已合入主线；配件线继续 Unit ENV-IV U001-D（SHT40 / BMP280），按实际引脚、供电和 I²C 命令实现温湿度与气压。Unit Button U027 → StopWatch Port A 已实现实际 GPIO 行为并合并；功能回归通过，C6 hello 本机 CPU 中位数约 +1.875% 的偏差保留记录。Dial K130 运行时与两版 PCB 占位修复已合并；K130-V11 尚无板级模型。
+Unit Button U027、Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已合入，继续保留供电、主机端口和拓扑边界；用户要求当前优先主控，新增配件适配暂停。U027阶段 C6 hello 本机 CPU 中位数约 +1.875% 的偏差仍保留记录。AtomS3R 官方 v0.3 的 CPU1启动失败也继续保留，不以目录部分支持覆盖该负面结果。
 
 每项按可独立验收的阶段提交，主线程审查、整合并更新本表；子任务交付阶段后接续下一阶段或下一项资料核对，遇到外部依赖时保留检查点并报告。未完成的研究工作树保留，不能把排队、已抓资料或菜单出现算作已适配。
 
@@ -20,11 +20,11 @@ Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已合入主线；配件
 - AtomS3R C126：本轮 ST7735 批次、LP5562白光直控、GPIO41、BMI270轮询子集与8MB Octal PSRAM。BMM150 AUX、RGB/IR、旧GC9107批次及物理姿态校准暂缺。证据见 [AtomS3R记录](atoms3r-runtime.md)。
 - AtomS3R 官方 v0.3：已复现屏幕初始化前 CPU1 启动异常；内部定向固件通过不代表官方固件通过，修复前保持 trial。
 - PaperMono 完整版：已合入 ST25R3916 与 SX1262 数字子集，UserDemo 1.2.0 识别为 Pro、显示 NFC/LoRa；已验证无卡扫描、发送 Hello! 和显式虚拟对端 PEER 接收。Lite 使用独立板型，不接入这两个器件。没有真实 RF 或 NFC 卡片模拟。见 [范围与证据](papermono-runtime.md)。
-- 下一台 AtomS3-Lite C124：复用 S3 执行、GPIO 和 RMT 解码；按官方图补 GPIO41 按键、WS2812C-2020 灯（当前 C124 官方资料，G35）以及 IR/电源约束。先检查软件 GPIO 与 RMT 两种灯驱动，3D 灯颜色必须来自客体输出。
-- Dial K130 / v1.1：GC9A01 可复用 DCS 框架；FT3267 触摸、旋转编码器、RTC/RFID 各自按来源建模，版本引脚分别核对。先交付屏幕/触摸/编码器，RTC/RFID 明示阶段缺项。
-- DinMeter K134 / v1.1：ST7789 复用可行，接续电源管理、编码器和 RTC；不同屏幕批次与引脚分别核对。
-- Stamp-S3 系列：实现真实按键/地址灯及供电控制；基础版通过后逐 SKU 核对封装引脚和固件配置。
-- 经典 ESP32 Atom 与 C6 产品随后处理；ESP32-H2/C5 需要先补芯片级执行与外设平台，不用现有 S3/C6 模型冒充。
+- AtomS3-Lite C124：G41按键与G35真实RMT灯色已交付；官方UIFlow2和固定出厂包提取镜像分别验收。软件GPIO灯驱动未通过，见 [记录](atoms3-lite-runtime.md)。
+- Dial K130 / v1.1：独立板型已交付屏幕、触摸、按压与编码器子集，RTC/RFID等仍缺失；见 [原版](dial-runtime.md)与 [v1.1](dial-v11-runtime.md)。
+- DinMeter K134 / v1.1：ST7789V2与ST7789P3身份分别保留，屏幕、按压、编码器与官方固件定向验收已交付，RTC等仍缺失；见 [原版](dinmeter-runtime.md)与 [v1.1](dinmeter-v11-runtime.md)。
+- Stamp-S3 / S3A：基础版与S3A独立身份已实现按键和RMT灯，S3A另含G38灯供电；其它PIN/DIP版次仍需单独核对。
+- 经典ESP32的Atom-Lite、Matrix两版、Voice及C6的NanoC6、Nesso已交付部分板级模型；ESP32-H2/C5仍须先补芯片平台，不能用S3/C6冒充。
 
 ## 原始77项工作清单（保留编号）
 
@@ -34,10 +34,10 @@ Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已合入主线；配件
 | --- | --- | --- | --- | --- |
 | 1 | [M5Stack AtomS3 · C123](https://docs.m5stack.com/en/core/AtomS3) · `m5stack-c123` | esp32s3 / GC9107 | 本轮已完成 partial：GC9107 / 按键 / IMU 子集 | 背光、IR、IMU FIFO/时序、屏幕批次 |
 | 2 | [M5Stack AtomS3R](https://docs.m5stack.com/en/core/AtomS3R) · `m5stack-c126` | esp32s3 / ST7735 | 本轮已完成 partial：屏幕 / 背光 / 按键 / BMI270 / PSRAM | BMM150 AUX、RGB/IR、旧GC9107批次、IMU时序/物理坐标 |
-| 3 | [M5Stack AtomS3-Lite](https://docs.m5stack.com/en/core/AtomS3-Lite) · `m5stack-c124` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
+| 3 | [M5Stack AtomS3-Lite](https://docs.m5stack.com/en/core/AtomS3-Lite) · `m5stack-c124` | esp32s3 / 无屏幕 | 已交付 partial：G41 / G35 RMT | [官方UIFlow2、出厂镜像与输入记录](atoms3-lite-runtime.md)；软件GPIO灯、红外、供电和Grove仍缺失 |
 | 4 | [M5Stack Dial · K130](https://docs.m5stack.com/en/core/Dial) · `m5stack-k130` | esp32s3 / GC9A01 | 本轮已完成 partial：GC9A01 / 触摸 / 按压 / 编码器 | RTC/RFID、音频、电源与背光尚未实现 |
-| 5 | [M5Stack Dial v1.1](https://docs.m5stack.com/en/core/Dial_v1.1) · `m5stack-k130-v11` | esp32s3 / GC9A01 | 待实现 | GC9A01 引脚/窗口/批次，按键/触摸，供电及板载外设 |
-| 6 | [M5Stack DinMeter](https://docs.m5stack.com/en/core/DinMeter) · `m5stack-k134` | esp32s3 / ST7789V2 | 待实现 | ST7789V2 引脚/窗口/批次，按键/触摸，供电及板载外设 |
+| 5 | [M5Stack Dial v1.1](https://docs.m5stack.com/en/core/Dial_v1.1) · `m5stack-k130-v11` | esp32s3 / GC9A01 | 已交付 partial：屏幕 / 触摸 / 按压 / 编码器 | [v1.1 官方固件记录](dial-v11-runtime.md)；RTC/RFID、音频、电源与无线仍缺失 |
+| 6 | [M5Stack DinMeter](https://docs.m5stack.com/en/core/DinMeter) · `m5stack-k134` | esp32s3 / ST7789V2 | 已交付 partial：ST7789V2 / 按压 / 编码器 | [官方出厂镜像记录](dinmeter-runtime.md)；RTC、背光PWM、音频、电源与无线仍缺失 |
 | 7 | [M5Stack DinMeter v1.1 · K134-V11](https://docs.m5stack.com/en/core/DinMeter_v1.1) · `m5stack-k134-v11` | esp32s3 / ST7789P3 | 部分适配 | 独立 P3 身份、官方 v0.1 菜单/旋钮/按压；RTC、PWM、电池、音频、供电与无线未实现，见 [收据](dinmeter-v11-runtime.md) |
 | 8 | [M5Stack Stamp-S3 · S007](https://docs.m5stack.com/en/core/Stamp-S3) · `m5stack-s007` | esp32s3 / 无屏幕 | 已交付 partial：G0 / G21 RMT | [UIFlow2 启动蓝灯、源码 fixture 输入](stamps3-runtime.md)；联网、软件波形灯、FPC 屏幕及真实电源缺失 |
 | 9 | [M5Stack Stamp-S3A · S007-V033](https://docs.m5stack.com/en/core/Stamp-S3A) · `m5stack-s007-v033` | esp32s3 / 无屏幕 | 已交付 partial：G0 / G21 RMT / G38 灯电源 | [官方 UIFlow2 启动与供电/按键 fixture](stamps3a-runtime.md)；模拟电源、FPC、网络未实现 |
@@ -49,7 +49,7 @@ Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已合入主线；配件
 | 15 | [M5Stack Air Quality v1.1 · K131-V11](https://docs.m5stack.com/en/core/Air_Quality_v1.1) · `m5stack-k131-v11` | esp32s3 / SSD1681 | 部分支持 | 独立 v1.1 标识，共用已核对载板数字模型；官方 0.2.0 / 屏幕 / A/B 已验收，RGB、电源、RTC、电池、网络仍未模拟 |
 | 16 | [M5Stack Atom Voice](https://docs.m5stack.com/en/atom/Atom_Voice) · `m5stack-c008-c` | esp32 / 无屏幕 | 已交付 partial：G39 / G27 RGB | [官方镜像红灯后 BT 已知崩溃，保留 trial](atom-voice-runtime.md)；录音/A2DP 不支持 |
 | 17 | [M5Stack Atom VoiceS3R](https://docs.m5stack.com/en/core/Atom_VoiceS3R) · `m5stack-c126-echo` | esp32s3 / 无屏幕 | 部分：UIFlow2 REPL / G41 | [原始固件与实际网页输入](atom-voices3r-runtime.md)；ES8311 仅初始化，音频/UAC/网络未验；无 RGB；出厂恢复工具布局冲突保留 |
-| 18 | [M5Stack Atom-Matrix v1.1 · C008-B-V11](https://docs.m5stack.com/en/core/Atom-Matrix_v1.1) · `m5stack-c008-b-v11` | esp32 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
+| 18 | [M5Stack Atom-Matrix v1.1 · C008-B-V11](https://docs.m5stack.com/en/core/Atom-Matrix_v1.1) · `m5stack-c008-b-v11` | esp32 / 无屏幕 | 已交付 partial：G39 / G27×25 / BMI270 | [官方UIFlow2与输入/IMU记录](atom-matrix-v11-runtime.md)；出厂镜像未知，SoftI2C未通过，音频/无线等未实现 |
 | 19 | [M5Stack AtomS3R AI Chatbot Kit · K147](https://docs.m5stack.com/en/core/AtomS3R-AI_Chatbot) · `m5stack-k147` | esp32s3 / GC9107 | 待实现 | GC9107 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 20 | [M5Stack AtomS3R-CAM AI Chatbot · K147-CAM](https://docs.m5stack.com/en/core/AtomS3R-CAM_AI_Chatbot) · `m5stack-k147-cam` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
 | 21 | [M5Stack AtomS3R-CAM · C126-CAM](https://docs.m5stack.com/en/core/AtomS3R-CAM) · `m5stack-c126-cam` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
@@ -116,7 +116,7 @@ Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已合入主线；配件
 
 ## 无名科技 / Metalio 新增系列
 
-- `metalio-ink4`：ESP32-S3 / SSD1677 / CST816S / TCA9555，需独立引脚、电源、SDMMC与传感器接入，不直接复用PaperMono板名。
+- `metalio-ink4`：独立板型已实现SSD1677 / CST816S / TCA9555，官方2.0.53到主页；电量、RTC、IMU、音频和网络仍缺失，见 [运行说明](ink4-runtime.md)。
 - `metalio-ink4-plus`：ESP32-S31 / 并行EPDiy / TPS65185 / FT6336U，先补S31芯片级支持再实现板级；不能作为ESP32-S3运行。
 
 [产品、官方固件与模型边界](metalio-onboarding.md)已记录；两款当前均为 unavailable，不以外观入库计作适配完成。
