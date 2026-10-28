@@ -2,7 +2,7 @@
   "date": "2026-10-28",
   "upstream_revision": "2e36224d",
   "integration_revision": "164382ea",
-  "final_code_revision": "656c84ba",
+  "final_code_revision": "fdf83053",
   "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
   "node": "24.22.1",
   "host_system": "Darwin",
@@ -288,12 +288,63 @@
       "summary": "PASS: 2193 tracked evidence files checked (22 gzip files); no configured privacy patterns found. Manual review is still required.",
       "raw_log_sha256": "2951da65a4d0475c0f488d11f79e3c8c8b03b909a3accf995e09e69cd31c3fe8",
       "manual_review": "Retained JSON/scripts contain commands, hashes, counts, numeric samples and aggregate load only. Full logs/captures and personal paths are excluded."
+    },
+    {
+      "name": "Integrated platform and audio/network contracts",
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms node --test tools/platform-*-test.mjs",
+      "source_revision": "fdf83053",
+      "result": "passed",
+      "raw_log_sha256": "4c4a02000bd11075946b90a5c14d0cd5d213020d8e8363112ba1939db5345fc1",
+      "raw_log_bytes": 23119,
+      "node_totals": {
+        "tests": 144,
+        "pass": 144,
+        "fail": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "Real network helper",
+      "command": "node tools/network-helper-test.mjs",
+      "source_revision": "fdf83053",
+      "result": "passed",
+      "raw_log_sha256": "18dc4bc02cb5191c5c981adbc373a5a80eccdb7fbd861240f4f329ba91023c30",
+      "raw_log_bytes": 127
+    },
+    {
+      "name": "Final worker pacing",
+      "command": "node tools/worker-pacing-test.mjs",
+      "source_revision": "fdf83053",
+      "result": "passed",
+      "raw_log_sha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158",
+      "raw_log_bytes": 89
+    },
+    {
+      "name": "Final worker channels",
+      "command": "node tools/worker-channel-test.mjs",
+      "source_revision": "fdf83053",
+      "result": "passed",
+      "raw_log_sha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6",
+      "raw_log_bytes": 347
+    },
+    {
+      "name": "Final actual worker recording/replay",
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms node tools/platform-recording-test.mjs --real --receipt target/upstream-sync/recording-final.json",
+      "source_revision": "fdf83053",
+      "result": "passed",
+      "raw_log_sha256": "fb28a4151c78da3e7407c93f247df0d879a64cac193458d9256b0667fb64233d",
+      "raw_log_bytes": 1100,
+      "details": {
+        "events": 18,
+        "frame_equal": true,
+        "guest_buttons_and_touch_confirmed": true
+      }
     }
   ],
   "limitations": [
     "All commands ran locally on Darwin arm64. GitHub Linux jobs are not represented as executed.",
     "External firmware/hardware tests excluded by the documented CI policy.",
     "Raw logs are ignored local artifacts; hashes identify them. Commands, outcomes and relevant counts retained here; personal paths and full guest output omitted.",
-    "The final-code follow-up changes only JavaScript, documentation and tests; native/WASM source trees match 164382ea."
+    "Native/WASM source trees at fdf83053 match 164382ea. After 656c84ba, main 078ad582 adds JavaScript UI/worker networking/audio and tests; affected platform, helper, worker and recording checks were rerun."
   ]
 }

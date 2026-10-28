@@ -3,10 +3,12 @@
 The product fork at `fad5cc64` is integrated with mikroverk/esp32sim `2e36224d`.
 The history retains the upstream commits in three merge tranches: stability and
 observability (`95558777`, with the S3 RX fix in `8f351c7b`), classic PSRAM and
-BLE (`c76bb108`), then P4/shared-core integration (`164382ea`). The final code at `656c84ba` also
+BLE (`c76bb108`), then P4/shared-core integration (`164382ea`). The code at `656c84ba` also
 retains main's committed audio/network follow-ups through `c83cb4f5` and fixes
 the legacy workbench's touch bezel mapping (`55c3f2f8`). Native and WASM source
-trees are unchanged after `164382ea`.
+trees are unchanged after `164382ea`. Final code `fdf83053` also retains main
+`078ad582` (workbench network/audio UI and worker changes); its affected checks
+and the browser firmware/input path were rerun.
 
 The experiment mechanisms are existing EX234 (classic PSRAM), EX238 (S3 receive
 handover), EX241/EX247 (CLIC/P4), and EX246-LILYGO (the fork's physical display).
@@ -79,8 +81,10 @@ Linux CI is a separate condition.
 - Both Clippy commands pass with warnings denied. The complete release suite
   passes 1,699 tests, including ignored tests except `external_` inputs.
 - All 14 production WASM demo manifests pass, including P4, P4+C6, the P4 synth,
-  T-Display Schematik and StopWatch. The platform suite passes 136 tests after
-  retaining the real mono/stereo RX-GDMA-TX PCM loopback follow-up.
+  T-Display Schematik and StopWatch. The platform suite initially passes 136 tests after
+  retaining the real mono/stereo RX-GDMA-TX PCM loopback follow-up, then 144
+  tests after integrating `078ad582`. The added real TCP/TLS/UDP helper test,
+  worker checks and real recording replay also pass at `fdf83053`.
 - The real worker records and replays 18 input events; firmware acknowledges
   buttons and touches, and the final framebuffer matches. Replay intervals may
   extend under load; this is not exact timing reproduction.
@@ -126,3 +130,11 @@ one-minute load ranged from 5.09 to 6.53 on 18 logical CPUs.
 The task's browser and builds were stopped, but other host activity was not
 controlled. These short samples do not prove universal performance neutrality.
 Individual samples, ranges, input hashes and exact commands are in [cpu.json](cpu.json).
+
+The final product browser check loads the explicit internal StopWatch diagnostic,
+observes its 468×466 framebuffer and a fresh firmware `BUTTON_A` response, then
+pauses. On the ordinary local static server, `/network-info` returns its expected
+404 (no helper); Chromium also warns about the initially empty guest-page iframe's
+sandbox flags. No firmware HTTP page was loaded in this check; the network helper
+suite separately verifies HTTP/TLS/UDP and isolated proxy behavior. The observation
+does not replace the original `078ad582` firmware provisioning qualification.

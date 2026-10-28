@@ -23,6 +23,18 @@
       "observed": "C6 associates; P4 wifi station reports got ip:10.0.2.15 at guest timestamp 3766 ms. Built-in virtual AP only.",
       "browser_errors": 0,
       "browser_warnings": 0
+    },
+    {
+      "path": "/platform/",
+      "source_revision": "fdf83053",
+      "result": "passed",
+      "firmware": "/wasm/fw/demo-stopwatch.json (explicit internal diagnostic)",
+      "observed": "Loaded actual firmware, observed PLATFORM_READY stopwatch, frame 468x466, registered a fresh BUTTON_A waiter before pressing; firmware acknowledged. Paused after observation. Network/audio API methods remain present.",
+      "static_host_notes": [
+        "Expected localhost /network-info probe returns 404 on ordinary static server; network remains waiting-helper with no runtime error.",
+        "Chromium warns about the initially empty iframe sandbox combining allow-scripts and allow-same-origin. Firmware pages are required by network-ui.js to use a different origin; this test did not load a firmware HTTP page."
+      ],
+      "audio_audition": false
     }
   ],
   "captures": [
@@ -45,8 +57,14 @@
       "local_artifact": "output/playwright/p4-c6.png",
       "sha256": "d5a6bd0873e99bd3ab458eed271d41ff64b8ce08be7cdeb90d0a956488b87e00",
       "bytes": 261636
+    },
+    {
+      "local_artifact": "output/playwright/platform-final.png",
+      "sha256": "13c13bbe668633de311d9e0bdf0ac66bff7db38b71c3fa609a264df8df87bac7",
+      "bytes": 208885
     }
   ],
   "capture_retention": "Local ignored artifacts only; no public upload. Numeric observations and reproduction are retained; no screenshot is required by automated tests.",
-  "cleanup": "Owned browser session closed and absent from session list; owned static server stopped. Unrelated sessions preserved."
+  "cleanup": "Owned browser session closed and absent from session list; owned static server stopped. Unrelated sessions preserved.",
+  "final_platform_revision": "fdf83053"
 }
