@@ -30,10 +30,11 @@ impl BusMonitor {
         Ok(())
     }
     pub fn irq(&self) -> bool { (0..2).any(|i| self.enabled(i) && self.cores[i].raw & self.cores[i].ena != 0) }
-    /// Sample executing hart0 only. A configured hart1 has no fabricated execution samples.
-    pub fn observe(&mut self, pc: u32, sp: u32) {
-        if !self.enabled(0) { return; }
-        let c = &mut self.cores[0];
+    pub fn observe(&mut self, pc: u32, sp: u32) { self.observe_core(0, pc, sp); }
+    /// Sample only the hart actually selected by the functional scheduler.
+    pub fn observe_core(&mut self, core: usize, pc: u32, sp: u32) {
+        if core >= 2 || !self.enabled(core) { return; }
+        let c = &mut self.cores[core];
         if c.record & 3 == 3 { c.pc = pc; c.sp = sp; }
         let raw = (if sp < c.min { SP_MIN } else { 0 } | if sp > c.max { SP_MAX } else { 0 }) & c.monitor;
         if raw != 0 { c.raw |= raw; c.spill_pc = pc; }
@@ -41,9 +42,10 @@ impl BusMonitor {
     /// Fixed LL labels trace slot0 the latest trap and slot1 the previous trap. Preserve
     /// real exception metadata; the runner still stops at each exception. This does not
     /// claim hardware detection of a recursive-handler lockup or an automatic reset.
-    pub fn exception(&mut self, cause: u32, tval: u32, pc: u32) {
-        if !self.enabled(0) { return; }
-        let c = &mut self.cores[0]; c.last_pc = pc;
+    pub fn exception(&mut self, cause: u32, tval: u32, pc: u32) { self.exception_core(0, cause, tval, pc); }
+    pub fn exception_core(&mut self, core: usize, cause: u32, tval: u32, pc: u32) {
+        if core >= 2 || !self.enabled(core) { return; }
+        let c = &mut self.cores[core]; c.last_pc = pc;
         if c.monitor & TRACE != 0 {
             c.exceptions[1] = c.exceptions[0]; c.exceptions[0] = Exception { cause: cause & 0xfff, tval, pc, privilege: 3 };
         }
@@ -104,4 +106,15 @@ mod tests {
         assert_eq!(m.read(0x78), Ok(5)); assert_eq!(m.read(0x80), Ok(0x1000)); assert_eq!(m.read(0x60), Ok(0x2000));
         m.write(0x68, 0).unwrap(); assert_eq!(m.read(0x68), Ok(7)); assert_eq!(m.write(0, 1), Err(Fault::Prohibited));
     }
+    #[test]
+    fn core1_capture_uses_its_own_samples_and_exception_history() {
+        let mut m = BusMonitor::default(); m.clock_write(0x10).unwrap();
+        m.write(0x88, TRACE).unwrap(); m.write(0xcc, 3).unwrap();
+        m.observe_core(1, 0x2f001000, 0x2f07e000); m.exception_core(1, 5, 0x2c0003d8, 0x400022ee);
+        assert_eq!(m.read(0xd0), Ok(0x2f001000)); assert_eq!(m.read(0xd4), Ok(0x2f07e000));
+        assert_eq!(m.read(0xf8), Ok(0x400022ee)); assert_eq!(m.read(0x70), Ok(0));
+        m.observe_core(0, 1, 2); assert_eq!(m.read(0xd0), Ok(0x2f001000));
+        m.clock_write(0x40).unwrap(); assert_eq!(m.read(0xd0), Ok(0));
+    }
+
 }

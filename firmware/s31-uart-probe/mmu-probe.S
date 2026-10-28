@@ -8,6 +8,9 @@
 .global _start
 _start:
     li sp, 0x2f07fff0
+    li t0, 0x207041e8               /* PMU_PSRAM_XPD: actual MPLL PHY power gate */
+    li t1, 0x80000000
+    sw t1, 0(t0)
     li t0, 0x20500000
     li t1, 0x40000001               /* Enable/open Flash AXI interface, keep same-address check */
     sw t1, 0x3c(t0)

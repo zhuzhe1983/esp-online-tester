@@ -1,0 +1,293 @@
+{
+  "date": "2026-10-28",
+  "source": {
+    "url": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+    "finalUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/7b023372-744e-42f4-92dc-31f9754c8921.bin",
+    "status": 200,
+    "fetchedAt": "2026-10-27T18:46:51Z",
+    "mediaType": "application/octet-stream",
+    "bytes": 16405079,
+    "sha256": "265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80"
+  },
+  "romSha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+  "base": "22036fb3",
+  "images": [
+    {
+      "offset": "0x2000",
+      "entry": "0x2f06a2ba",
+      "chipId": 32,
+      "segments": [
+        {
+          "address": "0x2f0740c0",
+          "bytes": 5772
+        },
+        {
+          "address": "0x2f06a2b0",
+          "bytes": 3196
+        },
+        {
+          "address": "0x2f06cfb0",
+          "bytes": 13160
+        }
+      ],
+      "checksumValid": true,
+      "appendedDigestValid": true
+    },
+    {
+      "offset": "0x80000",
+      "entry": "0x2f0009b6",
+      "chipId": 32,
+      "segments": [
+        {
+          "address": "0x402d0020",
+          "bytes": 1780080
+        },
+        {
+          "address": "0x2e000020",
+          "bytes": 36
+        },
+        {
+          "address": "0x2f000000",
+          "bytes": 54868
+        },
+        {
+          "address": "0x40000020",
+          "bytes": 2890828
+        },
+        {
+          "address": "0x2f00d654",
+          "bytes": 48808
+        },
+        {
+          "address": "0x2f019500",
+          "bytes": 41800
+        }
+      ],
+      "checksumValid": true,
+      "appendedDigestValid": true
+    }
+  ],
+  "partitions": [
+    {
+      "type": 1,
+      "subtype": 2,
+      "offset": "0x9000",
+      "bytes": 16384,
+      "label": "nvs",
+      "flags": 0
+    },
+    {
+      "type": 1,
+      "subtype": 0,
+      "offset": "0xd000",
+      "bytes": 8192,
+      "label": "otadata",
+      "flags": 0
+    },
+    {
+      "type": 1,
+      "subtype": 1,
+      "offset": "0xf000",
+      "bytes": 4096,
+      "label": "phy_init",
+      "flags": 0
+    },
+    {
+      "type": 1,
+      "subtype": 130,
+      "offset": "0x10000",
+      "bytes": 409600,
+      "label": "model",
+      "flags": 0
+    },
+    {
+      "type": 0,
+      "subtype": 16,
+      "offset": "0x80000",
+      "bytes": 5242880,
+      "label": "ota_0",
+      "flags": 0
+    },
+    {
+      "type": 0,
+      "subtype": 17,
+      "offset": "0x580000",
+      "bytes": 5242880,
+      "label": "ota_1",
+      "flags": 0
+    },
+    {
+      "type": 1,
+      "subtype": 130,
+      "offset": "0xa80000",
+      "bytes": 409600,
+      "label": "resources",
+      "flags": 0
+    },
+    {
+      "type": 1,
+      "subtype": 64,
+      "offset": "0xae4000",
+      "bytes": 5242880,
+      "label": "font_data",
+      "flags": 0
+    },
+    {
+      "type": 1,
+      "subtype": 3,
+      "offset": "0xfe4000",
+      "bytes": 65536,
+      "label": "coredump",
+      "flags": 0
+    }
+  ],
+  "runs": [
+    {
+      "label": "before SFDP support",
+      "rawPath": "output/flash-status-initial.json",
+      "rawSha256": "bd8c2dbac3ff78b9f3f841f1355cc11ef68d3c457c9f4be16932bae5cb498732",
+      "fetchedAt": "2026-10-27T18:23:20Z",
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "ff",
+        "analogDigSeed": "ffffffff"
+      },
+      "stop": "stop=Trap(Exception(7)) steps=283521 pc=0x2f801700 mepc=0x2f06d1a8 mcause=0x7 mtval=0x20501000 fault=Some(AccessFault { pc: 788976040, address: 542117888, bytes: 4, write: true, fetch: false, reason: Prohibited })",
+      "commandState": "mspi-last-command=Some(262144) user=Ok(4026531840) user1=Ok(1543503879) user2=Ok(1879048282) ctrl=Ok(2097152) status=Ok(0) w0=Ok(1589487)"
+    },
+    {
+      "label": "explicit SFDP, absent BBPLL input",
+      "rawPath": "output/flash-status-sfdp-ef.json",
+      "rawSha256": "86904c4c93f62fcb33c53605dc48438388cc933d8ed039c21d164df6d34fdc27",
+      "fetchedAt": "2026-10-27T18:25:37Z",
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "sfdpInterval": "10:ef",
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "ff",
+        "analogDigSeed": "ffffffff"
+      },
+      "stop": "stop=Trap(Exception(7)) steps=308411 pc=0x2f801700 mepc=0x2f06d52e mcause=0x7 mtval=0x20587064 fault=Some(AccessFault { pc: 788976942, address: 542666852, bytes: 4, write: true, fetch: false, reason: Prohibited })",
+      "commandState": "mspi-last-command=Some(262144) user=Ok(2147483648) user1=Ok(1543503879) user2=Ok(1879048192) ctrl=Ok(11280396) status=Ok(0) w0=Ok(239)"
+    },
+    {
+      "label": "BBPLL input before idle Resume implementation",
+      "rawPath": "output/flash-status-bbpll.json",
+      "rawSha256": "09f41edc7287fb21a7c2aa8fa82dadc1c272f678f89692aed2615e6ee54b82d7",
+      "fetchedAt": "2026-10-27T18:28:24Z",
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "sfdpInterval": "10:ef",
+        "bbpllInputHz": 480000000,
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "ff",
+        "analogDigSeed": "ffffffff"
+      },
+      "stop": "stop=Trap(Exception(7)) steps=308777 pc=0x2f801700 mepc=0x2f06d1a8 mcause=0x7 mtval=0x20501000 fault=Some(AccessFault { pc: 788976040, address: 542117888, bytes: 4, write: true, fetch: false, reason: Prohibited })",
+      "commandState": "mspi-last-command=Some(262144) user=Ok(2147483648) user1=Ok(4227858439) user2=Ok(1879048314) ctrl=Ok(2097152) status=Ok(0) w0=Ok(239)"
+    },
+    {
+      "label": "final source, explicit SFDP10:ef and BBPLL480",
+      "rawPath": "output/flash-status-final.json",
+      "rawSha256": "b72faf5fde363d0b5ef2ede82e1b785721742be849db50e1e3e1082eba77e020",
+      "fetchedAt": "2026-10-27T18:46:51Z",
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "sfdpInterval": "10:ef",
+        "bbpllInputHz": 480000000,
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "ff",
+        "analogDigSeed": "ffffffff"
+      },
+      "stop": "stop=Trap(Exception(5)) steps=362095 pc=0x2f801700 mepc=0x2f06a378 mcause=0x5 mtval=0x2070103c fault=Some(AccessFault { pc: 788964216, address: 544215100, bytes: 4, write: false, fetch: false, reason: Unmapped })",
+      "commandState": "mspi-last-command=Some(262144) user=Ok(2147483648) user1=Ok(1543503879) user2=Ok(1879048192) ctrl=Ok(11280396) status=Ok(0) w0=Ok(0)"
+    },
+    {
+      "label": "final source, SFDP10:20 enters unsupported XMC startup",
+      "rawPath": "output/flash-status-xmc-control.json",
+      "rawSha256": "3621ea6782dca9cc5919302f2172aedda4e22be31a1c4c009c8765b2b2a03874",
+      "fetchedAt": "2026-10-27T18:47:06Z",
+      "developmentInputs": {
+        "strap": "0x12",
+        "usbHost": true,
+        "norIdentity": "ef4018",
+        "sfdpInterval": "10:20",
+        "bbpllInputHz": 480000000,
+        "otpImage": null,
+        "spi0LegacyShadows": true,
+        "analogBiasSeed": "0000",
+        "analogPerifGlitchSeed": "ff",
+        "analogDigSeed": "ffffffff"
+      },
+      "stop": "stop=Trap(Exception(7)) steps=296610 pc=0x2f801700 mepc=0x2f06d1a8 mcause=0x7 mtval=0x20501000 fault=Some(AccessFault { pc: 788976040, address: 542117888, bytes: 4, write: true, fetch: false, reason: Prohibited })",
+      "commandState": "mspi-last-command=Some(262144) user=Ok(2147483648) user1=Ok(4227858439) user2=Ok(1879048377) ctrl=Ok(2097152) status=Ok(0) w0=Ok(32)"
+    }
+  ],
+  "latestObservation": {
+    "transport": "actual USB EP1 host-consumed packets; UART0 remained empty",
+    "bootloader": "ESP-IDF v6.1-dirty second-stage bootloader, compiled Oct23 2026 16:28:36",
+    "flashLog": {
+      "speedMHz": 80,
+      "mode": "DIO",
+      "sizeMiB": 16
+    },
+    "instructions": 362095,
+    "mepc": "0x2f06a378",
+    "fault": {
+      "address": "0x2070103c",
+      "operation": "read32",
+      "reason": "Unmapped",
+      "register": "LP_AONCLKRST_HPCORE0_RESET_CTRL_REG"
+    },
+    "mspiCommands": 14,
+    "cacheMaintenance": 28,
+    "shaBlocks": 347,
+    "analogTransactions": 20,
+    "permissionWrites": 99,
+    "flashCoreHz": 80000000,
+    "cpuMemSysApbHz": [
+      80000000,
+      80000000,
+      80000000,
+      40000000
+    ],
+    "appEntered": false,
+    "framebufferAvailable": false
+  },
+  "strictDefaults": "No SFDP,BBPLL,NOR identity,analog seeds or SPI0 legacy compatibility inferred by default. Development inputs are not physical Plus hardware identification.",
+  "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk",
+  "curation": "Raw diagnostic/USB console retained in ignored output paths with hashes. Compact receipt preserves input provenance, actual stop, visible bootloader values and negative runs; no personal identifiers or unrelated process data retained.",
+  "sourceFetchFailures": [
+    {
+      "url": "https://www.winbond.com/resource-files/W25Q128JV%20RevM%2012242024%20Plus.pdf",
+      "status": 403,
+      "result": "No PDF fetched; used another public distributor copy of manufacturer datasheet."
+    },
+    {
+      "url": "https://datasheet.lcsc.com/lcsc/1811142111_Winbond-Elec-W25Q128JVSIQ_C97521.pdf",
+      "status": 403,
+      "result": "No PDF fetched; used another public distributor copy of manufacturer datasheet."
+    },
+    {
+      "url": "https://www.winbond-electronics.com/pdf-7d/w25q128jvsjq.pdf",
+      "error": "TLS EOF, no PDF retrieved"
+    }
+  ]
+}

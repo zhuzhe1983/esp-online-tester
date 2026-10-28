@@ -1,0 +1,200 @@
+{
+  "date": "2026-10-28",
+  "base": "ec56c696",
+  "scope": "Private S31 functional CPLL/DIG/RTC initialization to actual official bootloader log, not application/display or product readiness.",
+  "sources": "sources.json: fixed ESP-IDF6.1 fff9895c82d744c7237be8847347bdd1b07c6643, LP/HP clock and PMU register headers, clock LL/rtc_clk.c and DIG register/route definitions.",
+  "semantics": {
+    "cpll": "Power/I2C/global gates + ALIVE output, actual40MHz feedback/reference, supported320MHz calibration configuration, explicit start/poll/stop.16 functional instruction quanta are a deterministic model choice, not measured settling. Completed output drives actual CPU/MEM/SYS/APB rate latch. Active CPU clock removal/recalibration/divider change is rejected before mutation.",
+    "rtc": "RO XTAL40MHz; RTC_FAST selectsXTAL or power-gated nominalRC_FAST17.5MHz; RTC_SLOW nominal136kHz. No automatic CPU-to-RTC time conversion,32k crystal input,force override or sleep transitions. LL20MHz prose differs from fixed clock-tree nominal17.5MHz.",
+    "dig": "Slave0x6d registers5,7,13,14 require explicit caller data, parent/master clock and routing. No guessed analog reset. Master reset preserves separate target bytes. Hardware voltage/retention uncharacterized.",
+    "irqCleanup": "Known reset-disabled PMU sleep/BODmode0 IRQ enable reads0; clearing inactive events is WT. Attempts to enable missing sources fail. Existing BODmode1 qualified comparator is separate.",
+    "headerDifference": "PMU high-group fields sayWT; some generated CPLL per-field aliases sayRW. Follow groupWT and actual LL tie-high/low protocol; no silicon assertion."
+  },
+  "sourceFixture": {
+    "path": "firmware/s31-uart-probe/cpll-probe.S",
+    "flow": "DIGff→f3 via3guest transactions; CPLL configure/start/poll/stop;80MHz actual ROM frequency read; RTC_FAST gateoff; UART/WFI.",
+    "runs": [
+      {
+        "control": "valid",
+        "mailbox": 0,
+        "steps": 244,
+        "outcome": "UART S31 ROM CPLL80 DIG PASS;80/80/80/40MHz;RTC_FAST0"
+      },
+      {
+        "control": "missing-power",
+        "mailbox": 1,
+        "steps": 649,
+        "outcome": "UART S31 CPLL NOT READY;XTAL40"
+      },
+      {
+        "control": "invalid-divider",
+        "mailbox": 2,
+        "steps": 652,
+        "outcome": "UART S31 CPLL NOT READY;XTAL40"
+      },
+      {
+        "control": "no-start",
+        "mailbox": 3,
+        "steps": 650,
+        "outcome": "UART S31 CPLL NOT READY;XTAL40"
+      },
+      {
+        "control": "active-clock-removal",
+        "mailbox": 4,
+        "steps": 113,
+        "outcome": "Exception7@207040f4;active80MHz preserved"
+      },
+      {
+        "control": "wrong-DIG-data",
+        "mailbox": 5,
+        "steps": 98,
+        "outcome": "guest failure UART and Ebreak"
+      },
+      {
+        "control": "missing-DIG-data",
+        "mailbox": 6,
+        "steps": 16,
+        "outcome": "Exception7@2010f804 beforetransaction"
+      }
+    ]
+  },
+  "officialProbe": "bootloader-clocks-plus-2.0.68.json",
+  "notImplemented": [
+    "Actual Plus app/display/board routing",
+    "SPI1 next unsupported bootloader command",
+    "Physical PLL waveforms/settling, other PLLs and CPU cycle-rate timing",
+    "RTC calibration/CPU-to-RTC conversion,32k crystal,force/sleep modes",
+    "BODmode0/PMU sleep events and IRQ enable",
+    "Actual Plus NOR/OTP/analog initial profiles and silicon validation"
+  ],
+  "artifacts": [
+    {
+      "path": "firmware/s31-uart-probe/cpll-probe.S",
+      "bytes": 2253,
+      "sha256": "e30553c97136dc46924740704a1929c3f76e5ed354441122389338ce6f9b54ed"
+    },
+    {
+      "path": "output/s31-uart-probe/cpll-probe.elf",
+      "bytes": 5228,
+      "sha256": "5bd9b70d937c7985d2df76563effcd594a48da922575d98f6ca46601517de7a7"
+    },
+    {
+      "path": "output/s31-sources/roms/esp32s31_rev0_rom.elf",
+      "bytes": 513396,
+      "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87"
+    }
+  ],
+  "validation": {
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "workspaceRust": 1418,
+    "testGroups": 131,
+    "s31UnitTests": 54,
+    "sourceRomFixtures": 20,
+    "bothClippy": true,
+    "platformNodeFiles": 4,
+    "wasmScenarios": [
+      "hello",
+      "c3-hello",
+      "c6-hello",
+      "p4-hello",
+      "c6-energy-scan",
+      "c6-contiki",
+      "c6-contiki-net",
+      "c6-rpl-net",
+      "panel"
+    ],
+    "additional": [
+      "stable update",
+      "production WASM build/section check",
+      "standalone S31 wasm32 compile",
+      "native bins build"
+    ],
+    "goldensChanged": false,
+    "uiChanged": false,
+    "hardwareVerified": false,
+    "cpuEvidence": "bootloader-clocks-perf.json",
+    "logHashes": [
+      {
+        "group": "stable",
+        "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+      },
+      {
+        "group": "clippy-native",
+        "sha256": "8b3ef9f315b321110f2d6110ad780a90b3fc8a533670bbc58376d0464ebbbf72"
+      },
+      {
+        "group": "clippy-wasm",
+        "sha256": "ac2e58f3dec598e0e710871f0b7ff42fbe488ffc8321270df17d5fda9ffe8086"
+      },
+      {
+        "group": "rust",
+        "sha256": "f935495c00eb68b4b10edc05cd31dc6d2355017aadb4339194cb256853ac747f"
+      },
+      {
+        "group": "fixtures",
+        "sha256": "a27471c20f4c25d106f348552deebc5ec5ed898584495cbd453b20a3c814983f"
+      },
+      {
+        "group": "wasm-build",
+        "sha256": "10dc6f1189eb2f2429493959995f8289f854d0291953b7728d9a1552ac2dd32b"
+      },
+      {
+        "group": "wasm-sections",
+        "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b"
+      },
+      {
+        "group": "platform",
+        "sha256": "748ae56afde70d1c66d5d725e5a70512ffe0367e283d36360e0eb6bbf8ad81e0"
+      },
+      {
+        "group": "wasm",
+        "sha256": "317694ec5439bfed0e9c9f471c933389a5fb86b975b603f4af6ccd5361920959"
+      },
+      {
+        "group": "s31-wasm",
+        "sha256": "789c7232b341e8ac0b7afc5487a65581e6ee08f573ef35e80c38db47fd48e88c"
+      },
+      {
+        "group": "native",
+        "sha256": "18015ebd4b7858dfb9eb183b5454b56464a6adf1b99e44d2e4fd03d849a80ac4"
+      },
+      {
+        "group": "rom",
+        "sha256": "97c6cf311d5a40bd9c81b9107b631e5c520b75df28c2c2f6133f268dee9c3e82"
+      }
+    ],
+    "productionArtifacts": {
+      "esp32sim": {
+        "bytes": 3665112,
+        "sha256": "86ed0c00476ad19b173dbcca1f9f33a635cc8ade1bdaa21e26efc878eb58408b"
+      },
+      "esp32sim-c3": {
+        "bytes": 3665152,
+        "sha256": "dc2ad08190e94e5d5d200ce974395f1cb7ee985ef45893524dcdf07593e070e2"
+      },
+      "esp32sim-c6": {
+        "bytes": 3665152,
+        "sha256": "ab1c026ff67916383cab05238ab3e0ef49463f4d05a54d4347536a0c30a0534b"
+      },
+      "wasm": {
+        "bytes": 3988256,
+        "sha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31"
+      }
+    },
+    "productionScope": "No production native/WASM source path changes; S31 remains a separate crate absent from CLI/WASM dependencies. Actual binary comparison and CPU/output samples retained; no native byte-identity or S31 performance claim."
+  },
+  "reproduce": {
+    "fixtureBuild": "S31_BUILD_ROM_IMAGE=1 ESPTOOL_BIN=<esptool5.4.0> RISCV_TOOLCHAIN_PREFIX=<riscv32-esp-elf15.2.0-prefix> bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "fixture": "S31_CPLL_ELF=<absolute-output>/cpll-probe.elf S31_ROM_ELF=<absolute-public20260528-S31-ROM-ELF> cargo test --release -p esp32s31 external_s31_cpll_dig_data_and_real_rom_frequency -- --include-ignored --nocapture",
+    "officialProbe": "cargo build --release -p esp32s31 --example bringup; python3 tools/s31-native-firmware-probe.py --firmware-url <caller-URL> --sha256 <caller-SHA256> --rom <public20260528-S31-ROM-ELF> --rom-spi0-shadow --nor-jedec ef4018 --analog-bias 0000 --analog-perif-glitch ff --analog-dig ffffffff --steps 2000000 --output <receipt.json>",
+    "defaults": "No DIG seed by default. Use00000000 as alternative explicit seed; fixed official image preserves unrelated bits and reaches same SPI1 stop."
+  },
+  "privacy": "Only public source URLs, firmware/ROM hashes, bounded guest output, test assertions and aggregate benchmark data retained. Official firmware bytes are never written to disk by the probe. Raw local build paths remain only in ignored logs; committed receipts retain log hashes, not host paths.",
+  "failuresRetained": [
+    {
+      "check": "source lookup",
+      "failure": "lp_aonclkrst_reg.h404; fixedtree resolves lp_clkrst_reg.h."
+    }
+  ],
+  "sameFirmwareRecheck": "Latest full image GET/hash/ROM/partition receipts retained; finalff and00 controls reach same283521-step fault,80MHz clocks,20analog and99permission writes with identical output."
+}

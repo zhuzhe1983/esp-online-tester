@@ -1,0 +1,260 @@
+{
+  "date": "2026-10-28",
+  "base": "22036fb3a7a3531037d7c1d31c3dd5435d9456f0",
+  "scope": "Private S31 SFDP, digital Flash-clock and idle Winbond Resume subset; no shared production runtime or platform support change.",
+  "sources": "sources.json: fixed ESP-IDF6.1 fff9895c82d744c7237be8847347bdd1b07c6643 MSPI LL, SPI1/hp_sys_clkrst/hp_alive register headers and bootloader sources; Winbond-authored W25Q128JV RevF2018/RevI2021 sections8.2.20/8.2.28 via named public mirrors.",
+  "semantics": {
+    "sfdp": "Real command8/address24/dummy8, byte-aligned reads of caller-owned interval only. Malformed command, absent data and interval overrun fail before buffer mutation. DUMMY_IDLE unsupported. Input separate from JEDEC/array and retained across controller reset.",
+    "clock": "Caller-supplied stable BBPLL480MHz input, absent by default. Functional source/divider yields80MHz for guest-selected /6; actual ALIVE output gate,PLL/core enable,APB/reset and cache AXI gate control access. No analog lock, physical timing or measured Plus profile. XTAL divider interpretation has not been checked on silicon.",
+    "resume": "Only explicit ef4018 idle unsuspended NOR accepts command7A. No array/buffer/WEL/QE mutation or fabricated erase/program completion. Other manufacturer,missing clock,wrong phases and unsupported suspend profile reject.",
+    "strictness": "All development profile inputs remain explicit; no product identity, SFDP table or ready PLL default inferred."
+  },
+  "fixture": {
+    "path": "firmware/s31-uart-probe/flash-params-probe.S",
+    "runs": [
+      {
+        "control": "valid",
+        "steps": 184,
+        "stop": "Waiting",
+        "commands": 3,
+        "flashCoreHz": "Some(80000000)"
+      },
+      {
+        "control": "wrong-data",
+        "steps": 138,
+        "stop": "Trap(Ebreak(788529354))",
+        "commands": 1,
+        "flashCoreHz": "Some(10000000)"
+      },
+      {
+        "control": "no-sfdp",
+        "steps": 16,
+        "stop": "Trap(Exception(7))",
+        "commands": 0,
+        "flashCoreHz": "Some(10000000)"
+      },
+      {
+        "control": "no-bbpll",
+        "steps": 32,
+        "stop": "Trap(Exception(7))",
+        "commands": 2,
+        "flashCoreHz": "Some(10000000)"
+      },
+      {
+        "control": "clock-gated",
+        "steps": 47,
+        "stop": "Trap(Exception(7))",
+        "commands": 2,
+        "flashCoreHz": "None"
+      },
+      {
+        "control": "other-manufacturer",
+        "steps": 41,
+        "stop": "Trap(Exception(7))",
+        "commands": 2,
+        "flashCoreHz": "Some(80000000)"
+      }
+    ],
+    "uartPass": "S31 SFDP FLASH80 IDLE PASS",
+    "uartWrongData": "S31 FLASH PARAMS FAIL"
+  },
+  "officialProbe": "flash-parameters-plus-2.0.68.json",
+  "notImplemented": [
+    "INK4 Plus application/framebuffer and board routing",
+    "HPCORE0 reset-control register next bootloader access",
+    "Analog BBPLL startup,physical Flash timing and SPI waveforms",
+    "SFDP outside caller interval,program/erase/suspend and other NOR families",
+    "Actual Plus OTP/NOR/analog hardware profile and silicon validation"
+  ],
+  "artifacts": [
+    {
+      "path": "firmware/s31-uart-probe/flash-params-probe.S",
+      "bytes": 1438,
+      "sha256": "7f579c5b765c24bc58c0c68221f739ca25bb9542a1a2c9fe092e5bfa196305a2"
+    },
+    {
+      "path": "output/s31-uart-probe/flash-params-probe.elf",
+      "bytes": 5052,
+      "sha256": "e94a26f0a68a47832f7748c8c3bacabd19f46433ff11309b5f1c21d013bdb1b9"
+    },
+    {
+      "path": "output/s31-sources/roms/esp32s31_rev0_rom.elf",
+      "bytes": 513396,
+      "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87"
+    }
+  ],
+  "validation": {
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "workspaceRust": 1420,
+    "testGroups": 131,
+    "s31UnitTests": 56,
+    "sourceRomFixtures": 21,
+    "bothClippy": true,
+    "finalPrivateRecheck": "After stricter DUMMY_IDLE rejection and mapped-Flash gate assertions: native Clippy,all56S31 units+21fixtures and private wasm32 compile passed. Shared production source unchanged.",
+    "ci": "All local commands from .github/workflows/ci.yml passed, including ignored workspace tests, VQ, source receipts, production WASM sections,ten public WASM scenarios plusStopWatch,all platform tests,real recording,timing/BLE,worker/browser contracts,JIT differential,profiling and native AArch64 tests. Native host is arm64 macOS,not Linux CI.",
+    "goldensChanged": false,
+    "uiChanged": false,
+    "hardwareVerified": false,
+    "cpuEvidence": "flash-parameters-perf.json",
+    "logHashes": [
+      {
+        "group": "arm",
+        "sha256": "9a8449e75f3915f5c4db942284cb9aae2f46230f84811bf02a89331275a1edec"
+      },
+      {
+        "group": "ble-api",
+        "sha256": "56f7b531026607ec2ff0e80fd4ad5ac392cc1ce24834d9f43b39fbec9d406cb5"
+      },
+      {
+        "group": "ble-connection",
+        "sha256": "57cbc65214667e93e03ac82a235612b8b34cf8f08ce07e234d7cd7dea085d0dd"
+      },
+      {
+        "group": "browser-contract",
+        "sha256": "e5fa4abd96d32feaee2268f21b0e50efe492b95067784e9ac71ef8d7f17f1d59"
+      },
+      {
+        "group": "browser-python",
+        "sha256": "c7de476d1b78f867b2bbe4e9d11b5587cebe9384a2c3f2a5dc48ff78e0c49d6d"
+      },
+      {
+        "group": "clippy-native",
+        "sha256": "f51af61c4d6de1f6bf361ff9d75eb0effc80b73fff4a2cef46d2a8292611ebb3"
+      },
+      {
+        "group": "clippy-wasm",
+        "sha256": "71017619d4f75130d29ce5f883c471eb62400549ded262973ededb098ed84bd0"
+      },
+      {
+        "group": "final-clippy",
+        "sha256": "4dddd56d091c8777f908c9c82061cd1f45e2e43bd5745556dcfa0bb644fd56d5"
+      },
+      {
+        "group": "final-private-wasm",
+        "sha256": "09f7af2ff9cdcadfac512d53f8eff6ba3b902c54886e613afaa350a783e834bb"
+      },
+      {
+        "group": "final-s31",
+        "sha256": "382a57c6ca3319d2af809b7481c58c24e9d865652f26bea869109ff5dac73c80"
+      },
+      {
+        "group": "fixtures",
+        "sha256": "af9026f36433760308245962f6a61f005b0ca770e0ba1483924a967735328f43"
+      },
+      {
+        "group": "jit",
+        "sha256": "a45f7014aa7355a0eb37cf7edc7f1c8a753d04526a0c9980025530d2276b5eb6"
+      },
+      {
+        "group": "micropython-input",
+        "sha256": "cc24ab8cbf543d7ce868f8c0dd7155e19c563bbe1a86f5f36fb85ddef39cefe5"
+      },
+      {
+        "group": "native",
+        "sha256": "1428157a090659801e125ffbfd0288ce178d49f03f9b593fccd0d71881dd77c9"
+      },
+      {
+        "group": "p4-inputs",
+        "sha256": "432ff652437d0f820ec35109a56881793efb3f977dc202d36f88be3b0fb4b82f"
+      },
+      {
+        "group": "platform-all",
+        "sha256": "a38a5256cd2ab5f3a38bf6b0a870eac20e3ad2179ef90d7b2ac84f5ab36d23c9"
+      },
+      {
+        "group": "platform",
+        "sha256": "8192dbcb5c7176cf06b12019a1af534a12e48a4fc0e6c16fd1ab9979bdb1dbf7"
+      },
+      {
+        "group": "profiling",
+        "sha256": "99fe8d0e107788085528e32470d88b35b72b4dd9902676575c06633a86a1282a"
+      },
+      {
+        "group": "receipt-historical",
+        "sha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4"
+      },
+      {
+        "group": "receipt-m1",
+        "sha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a"
+      },
+      {
+        "group": "receipt-test",
+        "sha256": "378e5c5c012d885f935d15a593115d9c6ad8fb6c017c6feb45f4899808559377"
+      },
+      {
+        "group": "receipt-verify",
+        "sha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b"
+      },
+      {
+        "group": "recording",
+        "sha256": "399fddbf88243d83ab600a3563adbf729fd9d8df9ec282e4b76cef835734f284"
+      },
+      {
+        "group": "rom",
+        "sha256": "0de6ab277281c5f03697fbd00651a681557e09cba01f4b4959767f856d7dccdb"
+      },
+      {
+        "group": "rust",
+        "sha256": "819c0ba1faac778727751a9f94585be9a46d9aa5736de39946e9b27b40fe02b6"
+      },
+      {
+        "group": "s31-wasm",
+        "sha256": "12e84851ce911918432b16b4242b386cc567cff493e566351c277961e303b6c0"
+      },
+      {
+        "group": "stable",
+        "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+      },
+      {
+        "group": "stopwatch",
+        "sha256": "c7b3531577ad5946d23cab323900abd0246e7524db36b532b6c7c346a153691b"
+      },
+      {
+        "group": "timing-api",
+        "sha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3"
+      },
+      {
+        "group": "vq",
+        "sha256": "a3379e13d4fe799cc4afa0e40eba872920cd1c9e2351b95209a75d467e90fdfe"
+      },
+      {
+        "group": "wasm-build",
+        "sha256": "e5b6a2c5f2e881d57061ade77b7203b9b3ee84702b7849ddb35773ca2cee59d9"
+      },
+      {
+        "group": "wasm-sections",
+        "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b"
+      },
+      {
+        "group": "wasm-tdisplay",
+        "sha256": "cc0f37f5ec4e531ee26059dceb4049705df91fcd04a17e0ae953ecec49807873"
+      },
+      {
+        "group": "wasm",
+        "sha256": "3225dae0f62c3d2a252c13fae694ed06815e2dbb29ee4ecdb86edfd0a2eb0199"
+      },
+      {
+        "group": "worker-channel",
+        "sha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6"
+      },
+      {
+        "group": "worker-pacing",
+        "sha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158"
+      },
+      {
+        "group": "worker-touch",
+        "sha256": "0da02c648b37642b16c5f6a1b43bc97d90ae7df37c64373a72627aa70158977e"
+      },
+      {
+        "group": "workspace-build",
+        "sha256": "5cb07098490ec1926492abce206c4a313a10aea025f2c1d70e49ef4ff59d38eb"
+      }
+    ]
+  },
+  "commands": {
+    "fixtures": "See firmware/s31-uart-probe/README.md; set S31_FLASH_PARAMS_ELF with the other source fixture paths.",
+    "official": "python3 tools/s31-native-firmware-probe.py --firmware-url <receipt source URL> --sha256 265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80 --rom <fixed20260528 S31 ROM> --rom-spi0-shadow --nor-jedec ef4018 --nor-sfdp 10:ef --bbpll-hz 480000000 --analog-bias 0000 --analog-perif-glitch ff --analog-dig ffffffff --steps 2000000 --output <ignored receipt>",
+    "build": "cargo build --release -p esp32s31 --example bringup"
+  },
+  "privacy": "Receipt contains source paths,hashes,numeric results and reproducible inputs only. Raw logs stay in ignored output. No unrelated processes,host identity,session or login metadata retained."
+}

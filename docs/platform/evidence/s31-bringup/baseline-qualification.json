@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-28",
+  "kind": "Performance interpretation correction; historical samples retained unchanged",
+  "finding": "The fixed main84 reference and mainf14d have matching production source paths,but the long-lived S31 branch still inherits product code from common ancestor20e75f72. It differs from main by unrelated NFC/LoRa/board features. A reference-main equality statement must not be extended to the candidate. Prior ratios compare complete different branches and cannot isolate causal S31 overhead.",
+  "main": "f14d563479c7d3a2aa43e15cce9d8d7df239247c",
+  "reference": "84e67571f0d1aecddf77d2432678fec81baabf72",
+  "candidateCheckpoint": "59a912115da36bd84e2e69032182421fdb4389ca",
+  "commonAncestor": "20e75f722d41a8f95308ea18abc4457bc2dde345",
+  "productionPathsChecked": [
+    "esp32s3",
+    "esp32c3",
+    "esp32c6",
+    "esp-soc",
+    "esp-periph",
+    "riscv-rv32",
+    "xtensa-lx7",
+    "emu-core",
+    "wasm",
+    "Cargo.lock",
+    "cli"
+  ],
+  "referenceToMainDiffEmpty": true,
+  "referenceToCandidateChangedPaths": [
+    "esp-periph/src/analog/stream.rs",
+    "esp-periph/src/i2c.rs",
+    "esp-periph/src/i2c/cst816s.rs",
+    "esp-periph/src/i2c/m5.rs",
+    "esp-periph/src/i2c/st25r3916.rs",
+    "esp-periph/src/i2c/tca9555.rs",
+    "esp-periph/src/rmt.rs",
+    "esp-periph/tests/m5_i2c.rs",
+    "esp-soc/src/board.rs",
+    "esp-soc/src/devices/mod.rs",
+    "esp-soc/src/devices/ssd1677.rs",
+    "esp-soc/src/devices/sx1262.rs",
+    "esp-soc/src/machine/web.rs",
+    "esp32s3/src/board/dial.rs",
+    "esp32s3/src/board/dinmeter.rs",
+    "esp32s3/src/board/metalio_ink4.rs",
+    "esp32s3/src/board/mod.rs",
+    "esp32s3/src/board/papermono.rs",
+    "esp32s3/src/board/stopwatch.rs",
+    "esp32s3/src/bus.rs",
+    "esp32s3/src/bus/dma.rs",
+    "esp32s3/src/bus/gpspi_rx.rs",
+    "esp32s3/src/periph.rs",
+    "esp32s3/tests/spi_software_irq.rs",
+    "esp32s3/tests/stopwatch.rs",
+    "wasm/src/lib.rs",
+    "wasm/src/lora.rs"
+  ],
+  "affectedReceipts": [
+    {
+      "receipt": "bootloader-analog-perf.json",
+      "sha256": "11ad9a41f4a2e0e5359d6e5e595b1588fb6db2793e147aa73917c874704e3fa6",
+      "candidateBase": "3344ed58"
+    },
+    {
+      "receipt": "bootloader-clocks-perf.json",
+      "sha256": "21a23f46cb58791cfe8655c9382df333a4b7547984f9f514dcb41851470bacef",
+      "candidateBase": "ec56c696"
+    },
+    {
+      "receipt": "bootloader-pms-perf.json",
+      "sha256": "296f3688d097458f4b879116c21fccf261c4cb4591cf39d087a3e4b3668f7d05",
+      "candidateBase": "6aa84cb2"
+    },
+    {
+      "receipt": "bootloader-power-perf.json",
+      "sha256": "a951392808746d42108c8ed4069be82153d6c51578be6bdd3aec05d3221f4643",
+      "candidateBase": "d266abad"
+    },
+    {
+      "receipt": "flash-cache-perf.json",
+      "sha256": "e8f72ad240f1059a49abaa956658414cef89708548af5b2bdf927b55aa7bbc5d",
+      "candidateBase": "7d7c229f9cf2a31a8bdf3540b923b1dba5044a49"
+    },
+    {
+      "receipt": "flash-parameters-perf.json",
+      "sha256": "5d1476e68ea73507ab3ed9eb1581161fdb6d74f3440d52c97bed06115464677a",
+      "candidateBase": "22036fb3"
+    },
+    {
+      "receipt": "monitor-mspi-perf.json",
+      "sha256": "181e51acf8e6a9a96cd096b5c8f51a7452d29a0eea22b73004fc744cf3b35801",
+      "candidateBase": "a7107610d21f1088e319243ab86548771e438979"
+    }
+  ],
+  "preserved": "Original samples,UART/stat checks,artifact hashes and outcomes remain unchanged. Those observations still compare the stated binaries; they do not establish identical unrelated production code or causal S31 overhead.",
+  "currentCorrection": "The reset/MWDT/RTC stage adds both a qualified cross-branch main guard and an independently rebuilt fixed59a91211 same-production-source stage comparison. Final integration still needs a true main-before/main-after check.",
+  "binaryProvenanceCheck": "A current old-tree binary did not match its historical retained hash,so it was not reused as a reference. The fixed59a91211 baseline is rebuilt from git archive with separate output; no unknown old build provenance is inferred.",
+  "rejectedOldBinary": {
+    "path": "previous-delivery/target/release/esp32sim",
+    "observedSha256": "9dc5cbd616ef14923791624efbc6df0711b9a7a44ff7de614e6a9b86a399fc90",
+    "historicalCandidateSha256": "4535730bb98b8f9605b1fd05d56ec9d5faa1c579f997aa3beece3a7633f2d3bc",
+    "effect": "Not used for timing; separate git-archive source rebuild used instead. Historical hash remains unchanged."
+  }
+}

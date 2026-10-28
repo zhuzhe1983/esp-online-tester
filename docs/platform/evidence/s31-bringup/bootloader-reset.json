@@ -1,0 +1,251 @@
+{
+  "date": "2026-10-28",
+  "base": "59a912115da36bd84e2e69032182421fdb4389ca",
+  "scope": "Private S31 HP reset receivers, two timer-group watchdogs,RTC_TIMER snapshot and explicit interpreter-clock profile; no shared production runtime or product readiness change.",
+  "sources": "sources.json, pinned ESP-IDF6.1 fff9895c82d744c7237be8847347bdd1b07c6643: lp_clkrst/cpu_utility, timer_group/mwdt/timg,rtc_timer registers+LL,interrupts and LP/HP PMS.",
+  "semantics": {
+    "reset": "Per-core LP-WDT receiver gate,SW reset WT,lockup gate with already-qualified explicit host input. Normal exceptions never automatically assert lockup. First pending per-core cause retained; typed stop,not a domain reboot. Alternate vector/stall unsupported; P4 addresses in S31 header prose are not adopted.",
+    "mwdt": "Two protected watchdogs,config update,prescaler,feed,finite four-stage actions,IRQ and typed reset. Explicit XTAL ticks only. APB access and WDT count gates separate. Default Flashboot timing,GP timers,calibration and full reset execution unsupported.",
+    "rtcTimer": "48-bit slow counter,latched paired snapshots,triggered update-done,HP/LP raw clear,overflow,digital reset. Alarm/IRQ enable,REGDMA,wakeup,sleep/stall unsupported.",
+    "timing": "Optional --rtc-timer-from-cpu uses actual interpreter cycle delta and active CPU/nominal slow-clock rates; default off. Fraction retained; no host wall time. One instruction/cycle is approximate; watchdog timing remains separate explicit input.",
+    "strictness": "Unaligned or denied PMS accesses fault before peripheral side effects. No unknown peripheral readiness or app-entry bypass."
+  },
+  "fixtures": {
+    "reset": [
+      "S31 reset mode=0 initial-steps=120 initial-stop=Waiting",
+      "S31 reset mode=1 initial-steps=120 initial-stop=Waiting",
+      "S31 reset mode=2 initial-steps=120 initial-stop=Waiting",
+      "S31 reset mode=3 initial-steps=120 initial-stop=Waiting",
+      "S31 reset mode=4 initial-steps=test external_s31_analog_data_route_reset_and_missing_seed ... ok",
+      "S31 reset mode=5 initial-steps=106 initial-stop=CpuReset(CpuReset { cores: [None, Some(Software)] })",
+      "S31 reset mode=6 initial-steps=107 initial-stop=Waiting",
+      "S31 reset mode=7 initial-steps=107 initial-stop=Waiting"
+    ],
+    "mwdt": [
+      "S31 MWDT group=0 initial-steps=134 ISR-steps=118",
+      "S31 MWDT group=1 initial-steps=135 ISR-steps=118"
+    ],
+    "rtcTimer": [
+      "S31 RTC snapshot mode=0test external_s31_trng_gates_fixture ... ok",
+      "S31 RTC snapshot mode=1 steps=2157 stop=Waiting",
+      "S31 RTC snapshot mode=2 steps=2134 stop=Trap(Ebreak(788529356))",
+      "S31 RTC snapshot mode=3 steps=2007 stop=Trap(Exception(test external_s31_uart_irq_fixture ... ok"
+    ],
+    "outputs": [
+      "S31 RESET READY",
+      "S31 MWDT READY\nS31 MWDT IRQ PASS",
+      "S31 RTC SNAPSHOT PASS",
+      "S31 RTC SNAPSHOT FAIL (deliberately missing clock)"
+    ],
+    "meaning": "Actual guest stores,ISR/mret,branch checks and UART outputs. No pre-rendered guest success or official-firmware substitution."
+  },
+  "artifacts": [
+    {
+      "path": "firmware/s31-uart-probe/reset-probe.S",
+      "bytes": 1384,
+      "sha256": "afba8f62b133983f55793b8a002de19e5bd89ee4eecb5a4d9d4efebe67599bab"
+    },
+    {
+      "path": "firmware/s31-uart-probe/mwdt-probe.S",
+      "bytes": 2000,
+      "sha256": "6916937005020eb08443eacb4ab120cddc2f14506d2c05a648dea8a76c256bf8"
+    },
+    {
+      "path": "firmware/s31-uart-probe/rtc-timer-probe.S",
+      "bytes": 1525,
+      "sha256": "3fcf675965c4d20a0bfaaaba3a64e00d0a400606251bd1ffeaf68ee3d4834a75"
+    },
+    {
+      "path": "output/s31-uart-probe/reset-probe.elf",
+      "bytes": 5068,
+      "sha256": "d641b5b58e1d108cee1a41f473c79ac039baa4e09edc3641d6f10984555fde9e"
+    },
+    {
+      "path": "output/s31-uart-probe/mwdt-probe.elf",
+      "bytes": 5636,
+      "sha256": "5caddf86c5ff7efc50ea90f8e38ffb7b017384a87edd2d8745b4114e43c947dc"
+    },
+    {
+      "path": "output/s31-uart-probe/rtc-timer-probe.elf",
+      "bytes": 5120,
+      "sha256": "3bab5c789baff2baebc1be066ce8b071982e224530db46d3b5d166a8bdfb37d2"
+    },
+    {
+      "path": "output/s31-sources/roms/esp32s31_rev0_rom.elf",
+      "bytes": 513396,
+      "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87"
+    }
+  ],
+  "officialProbe": "bootloader-reset-plus-2.0.68.json",
+  "validation": {
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "workspaceRust": 1427,
+    "testGroups": 131,
+    "s31UnitTests": 63,
+    "sourceRomFixtures": 24,
+    "bothClippy": true,
+    "localCi": "All commands from .github/workflows/ci.yml executed locally on arm64 macOS,not Linux CI. Includes full workspace build,ignored Rust tests,public WASM/JIT,platform/recording,VQ,worker,timing/BLE,receipt/browser contracts and AArch64 core tests.",
+    "uiChanged": false,
+    "goldensChanged": false,
+    "hardwareVerified": false,
+    "cpuEvidence": "bootloader-reset-perf.json",
+    "logHashes": [
+      {
+        "group": "arm",
+        "sha256": "f262d68498a780b1a7de9dc7c233d395e41e26c7ef233df048c9c258be780f90"
+      },
+      {
+        "group": "base59-build",
+        "sha256": "4559098320f0ec86fb0a3a60656caff00dec155335348a400e7d428ccbbf5cd3"
+      },
+      {
+        "group": "ble-api",
+        "sha256": "56f7b531026607ec2ff0e80fd4ad5ac392cc1ce24834d9f43b39fbec9d406cb5"
+      },
+      {
+        "group": "ble-connection",
+        "sha256": "57cbc65214667e93e03ac82a235612b8b34cf8f08ce07e234d7cd7dea085d0dd"
+      },
+      {
+        "group": "browser-contract",
+        "sha256": "63bfe31fab995bc94574150b35cf73843099bf22d404967d0ea7c72081a50565"
+      },
+      {
+        "group": "browser-python",
+        "sha256": "c7de476d1b78f867b2bbe4e9d11b5587cebe9384a2c3f2a5dc48ff78e0c49d6d"
+      },
+      {
+        "group": "clippy-native",
+        "sha256": "eda0ccb2ec0c7cf935d140fe43803be76736545947098735e6eb4072813d0dec"
+      },
+      {
+        "group": "clippy-wasm",
+        "sha256": "1cb2a428cba1edad0f9a9d772249b795045ee7b00403326a4c5f7f65aa61d238"
+      },
+      {
+        "group": "fixtures",
+        "sha256": "413cd996b16bc44eac1a4a0f046039e77e31e4257309bee98d9ca46c1b9dc092"
+      },
+      {
+        "group": "jit",
+        "sha256": "61dcfa7d391538afdcd8257501a64ba6f279ba543a3c557515d62ad862f256b2"
+      },
+      {
+        "group": "micropython-input",
+        "sha256": "cc24ab8cbf543d7ce868f8c0dd7155e19c563bbe1a86f5f36fb85ddef39cefe5"
+      },
+      {
+        "group": "native",
+        "sha256": "8891688152b3682ac33cac049b7f47af9e151be35242f35d1894ba784331e3a7"
+      },
+      {
+        "group": "p4-inputs",
+        "sha256": "432ff652437d0f820ec35109a56881793efb3f977dc202d36f88be3b0fb4b82f"
+      },
+      {
+        "group": "perf-main",
+        "sha256": "be6a42040e1bba37ddaebef6c1d7da521c563bf6ccf8542b08eab65a21e97a3c"
+      },
+      {
+        "group": "perf-same-source",
+        "sha256": "654c01c302641a8822dd7aea8a29896bffc4897d64aaad234d5c11968de2aa41"
+      },
+      {
+        "group": "platform-all",
+        "sha256": "5da7e0137f74df7a7dbc31231a780455d38de3979a4df60117eb1c3fb1b3db83"
+      },
+      {
+        "group": "platform",
+        "sha256": "d63b8dd9f825570c4fdb41ff241cb9288b2cccebe99f8ed0855530d51c3e503d"
+      },
+      {
+        "group": "profiling",
+        "sha256": "11290c6cc635af562f3aa7c92a2b58cfc3fcf09d666b7becf64cd72a576acfbe"
+      },
+      {
+        "group": "receipt-historical",
+        "sha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4"
+      },
+      {
+        "group": "receipt-m1",
+        "sha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a"
+      },
+      {
+        "group": "receipt-test",
+        "sha256": "a498b2b623d8ce3f46f13dafb0e46fe9594fdff196302a9801d365bec287e354"
+      },
+      {
+        "group": "receipt-verify",
+        "sha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b"
+      },
+      {
+        "group": "recording",
+        "sha256": "85d52fbfb586369d1d3c0c67da0622de2fd02f584067f87ebacd24ff3e11816c"
+      },
+      {
+        "group": "rom",
+        "sha256": "01f1d9a27e85900a8c7337ebd5bde61e4ee2f390f613894aee80712750147776"
+      },
+      {
+        "group": "rust",
+        "sha256": "4b614e7648019cfc8933b3cb3e009ec7439970d34f9c1b24ec1c2831a0e3739f"
+      },
+      {
+        "group": "s31-wasm",
+        "sha256": "0186e514a29e621de6d567edb66af09e194bde5fb1b6fd6fa0ccd9f16a21b31a"
+      },
+      {
+        "group": "stable",
+        "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+      },
+      {
+        "group": "stopwatch",
+        "sha256": "2b38c225c179e66aaad0e4d432e0096918b04a4f4727784e121669dbe5b3e788"
+      },
+      {
+        "group": "timing-api",
+        "sha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3"
+      },
+      {
+        "group": "vq",
+        "sha256": "18823e09bfc88487ff23381c88965c99ef2193d6bbad6f062c418813d5d4d632"
+      },
+      {
+        "group": "wasm-build",
+        "sha256": "222741f995cd41d2a64a2b6b6f3fabcfaf5395bc4ebc7c325ad1b3da65614507"
+      },
+      {
+        "group": "wasm-sections",
+        "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b"
+      },
+      {
+        "group": "wasm-tdisplay",
+        "sha256": "d3d8632e8d44fc450ea45b9a83b9a4555648b10432b78b0cbe3c4c7b72901914"
+      },
+      {
+        "group": "wasm",
+        "sha256": "7e3f2b4bccd9031d872437922a263bf6b3d1bd4c04ca8e61a0fc3ab6c5a447ca"
+      },
+      {
+        "group": "worker-channel",
+        "sha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6"
+      },
+      {
+        "group": "worker-pacing",
+        "sha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158"
+      },
+      {
+        "group": "worker-touch",
+        "sha256": "52f9a8cb80606b0124a454463c38e10965cab9b32b5cb00fedd9b487bceefef5"
+      }
+    ],
+    "sameProductionCpuEvidence": "bootloader-reset-same-source-perf.json",
+    "baselineQualification": "baseline-qualification.json"
+  },
+  "commands": {
+    "checks": "Both warnings-denied Clippy targets; ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_; remaining exact CI commands as .github/workflows/ci.yml.",
+    "fixture": "Build firmware/s31-uart-probe into ignored output, set all README fixture paths including S31_RESET_ELF/S31_MWDT_ELF/S31_RTC_TIMER_ELF,then cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored --nocapture.",
+    "official": "tools/s31-native-firmware-probe.py with caller-supplied fixed source/hash and the explicit developmentInputs in the linked official receipt; budget100000000."
+  },
+  "privacy": "Only source paths,hashes,guest output,numeric checks and aggregate performance retained; raw build/diagnostic logs remain ignored. No machine/user/session inventory."
+}

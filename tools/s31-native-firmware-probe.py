@@ -52,7 +52,29 @@ def main():
     parser.add_argument("--rom", required=True)
     parser.add_argument("--runner", default="target/release/examples/bringup")
     parser.add_argument("--output", required=True)
+    parser.add_argument("--upstream-fpu-memory-reason", action="store_true", help="explicit official-emulator0.51.0 S31 reason-bit compatibility,not silicon verified")
+    parser.add_argument("--guest-exceptions", type=int, default=0, help="bounded execution of architectural guest handlers; unknown bus faults still stop, maximum1024")
+    parser.add_argument("--rom-spi0-shadow", action="store_true", help="explicit inferred legacy SPI0 config shadows; strict mode remains default")
+    parser.add_argument("--systimer-from-cpu", action="store_true")
+    parser.add_argument("--rtc-timer-from-cpu", action="store_true", help="explicit RTC_TIMER-only one-interpreter-cycle-per-instruction timing approximation")
+    parser.add_argument("--rtc-calibration-from-cpu", action="store_true", help="explicit nominal CPU/XTAL clock conversion for TIMG0 measurement; not physical timing")
+    parser.add_argument("--bbpll-hz", type=int, help="explicit stable BBPLL output frequency; no modeled analog lock")
+    parser.add_argument("--nor-sfdp", help="explicit hex-offset:hex-bytes SFDP interval; no inferred device parameters")
+    parser.add_argument("--nor-jedec", help="explicit six-hex-digit development NOR identity; not product hardware identification")
+    parser.add_argument("--analog-bias", help="explicit four-hex-digit BIAS register0/register1 seed; no silicon reset claim")
+    parser.add_argument("--analog-bod", help="explicit two-hex-digit BOD register5 seed; no measured voltage threshold")
+    parser.add_argument("--analog-dig", help="explicit eight-hex-digit DIG registers5,7,13,14 seed")
+    parser.add_argument("--analog-perif-glitch", help="explicit two-hex-digit PERIF register10 seed; no voltage/glitch reset claim")
+    parser.add_argument("--peripheral-pad", action="append", default=[], help="explicit unresolved peripheral pad sample pin:0|1; repeat for each pin, not measured board wiring")
+    parser.add_argument("--psram-mr", help="explicit AP-compatible MR0,1,2,3,4,8 responses,12hex; not identified product die")
+    parser.add_argument("--psram-bytes", type=int, help="explicit separate PSRAM backing bytes; no inferred density")
+    parser.add_argument("--watch-pc1", help="optional diagnostic retirement watch for the actual second-hart entry address; no execution change")
+    parser.add_argument("--steps", type=int, default=200000, help="bounded instruction budget, maximum 100000000")
     args = parser.parse_args()
+    if not 1 <= args.steps <= 100000000:
+        parser.error("--steps must be between 1 and 100000000")
+    if not 0 <= args.guest_exceptions <= 1024:
+        parser.error("--guest-exceptions must be between0 and1024")
     with urllib.request.urlopen(args.firmware_url, timeout=60) as response:
         data = response.read(256 * 1024 * 1024 + 1)
         if len(data) > 256 * 1024 * 1024:
@@ -75,11 +97,47 @@ def main():
                   if p["type"] == 0 and data[int(p["offset"], 16)] == 0xE9)
     if not partitions or any(x["chipId"] != 32 for x in images):
         raise ValueError("input does not contain the expected S31 merged image layout")
-    command = [args.runner, "--rom", "--usb-host", "--strap=0x12", "--flash=/dev/stdin", args.rom, "", "200000"]
+    command = [args.runner, "--rom", "--usb-host", "--strap=0x12", "--flash=/dev/stdin"]
+    command.append("--guest-exceptions=" + str(args.guest_exceptions))
+    if args.upstream_fpu_memory_reason:
+        command.append("--upstream-fpu-memory-reason")
+    if args.watch_pc1:
+        command.append("--watch-pc1=" + args.watch_pc1)
+    if args.rom_spi0_shadow:
+        command.append("--rom-spi0-shadow")
+    if args.systimer_from_cpu: command.append("--systimer-from-cpu")
+    if args.rtc_timer_from_cpu:
+        command.append("--rtc-timer-from-cpu")
+    if args.rtc_calibration_from_cpu:
+        command.append("--rtc-calibration-from-cpu")
+    if args.bbpll_hz is not None:
+        command.append("--bbpll-hz=" + str(args.bbpll_hz))
+    if args.psram_mr is not None:
+        command.append("--psram-mr=" + args.psram_mr)
+    if args.psram_bytes is not None:
+        command.append("--psram-bytes=" + str(args.psram_bytes))
+    if args.nor_sfdp:
+        command.append("--nor-sfdp=" + args.nor_sfdp)
+    if args.nor_jedec:
+        command.append("--nor-jedec=" + args.nor_jedec)
+    if args.analog_bias:
+        command.append("--analog-bias=" + args.analog_bias)
+    if args.analog_dig:
+        command.append("--analog-dig=" + args.analog_dig)
+    if args.analog_bod:
+        command.append("--analog-bod=" + args.analog_bod)
+    if args.analog_perif_glitch:
+        command.append("--analog-perif-glitch=" + args.analog_perif_glitch)
+    command.extend("--peripheral-pad=" + value for value in args.peripheral_pad)
+    # Observe retirement at the parsed application entry without changing execution.
+    if len(images) > 1:
+        command.append("--watch-pc=" + images[1]["entry"])
+    command.extend([args.rom, "", str(args.steps)])
+    runner_sha = hashlib.sha256(pathlib.Path(args.runner).read_bytes()).hexdigest()
     result = subprocess.run(command, input=data, capture_output=True, timeout=120, check=True)
-    report = {"source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
+    report = {"runnerSha256": runner_sha, "stepBudget": args.steps, "guestExceptionLimit": args.guest_exceptions, "source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
               "partitions": partitions, "images": images,
-              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": None, "otpImage": None},
+              "developmentInputs": {"upstreamFpuMemoryReason": args.upstream_fpu_memory_reason, "strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "sfdpInterval": args.nor_sfdp, "bbpllInputHz": args.bbpll_hz, "systimerFromCpuCycles": args.systimer_from_cpu, "rtcTimerFromCpuCycles": args.rtc_timer_from_cpu, "rtcCalibrationFromCpuCycles": args.rtc_calibration_from_cpu, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig, "analogBodSeed": args.analog_bod, "unresolvedPeripheralPads": args.peripheral_pad, "psramModeResponses": args.psram_mr, "psramBackingBytes": args.psram_bytes},
               "uart": result.stdout.decode("utf-8", errors="replace"),
               "diagnostic": result.stderr.decode("utf-8", errors="replace"),
               "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk"}

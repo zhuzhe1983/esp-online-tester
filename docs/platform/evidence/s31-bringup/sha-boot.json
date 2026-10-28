@@ -1,0 +1,223 @@
+{
+  "date": "2026-10-27",
+  "base": "f0310b6b",
+  "scope": "Isolated S31 SHA register/block engine; first actual bootloader execution from unchanged official INK4 Plus2.0.68 full image. No product readiness.",
+  "sources": "sources.json: fixed IDF v6.1 sha_reg.h and esp_hal_security/esp32s31/sha_ll.h; hp_sys_clkrst_reg.h; public20260528 ROM",
+  "supported": {
+    "algorithms": [
+      "SHA1",
+      "SHA224",
+      "SHA256",
+      "SHA384",
+      "SHA512"
+    ],
+    "execution": "actual shared compression, synchronous register/block mode",
+    "s31Differences": [
+      "S31 addresses and clock/reset fields",
+      "16-bit DMA count configuration; DMA itself unsupported",
+      "4-bit mode decoded with unsupported algorithms rejected rather than aliased"
+    ],
+    "sourceProof": "ROM computes digest from source-built Flash image, matches appended bytes, warns for changed digest and rejects changed payload checksum",
+    "gates": "System/security/SHA clocks plus parent/security/SHA/DS/HMAC/ECDSA resets. Parent/DS/HMAC/ECDSA reset dependencies explicitly in official LL; enclosing security-domain gate follows register grouping and has no independent silicon verification."
+  },
+  "notImplemented": [
+    "DMA/interrupts",
+    "SHA512 truncated/t variants",
+    "SHA3/SHAKE/SM3",
+    "Alternate clock roots",
+    "Physical crypto timing/security-domain or silicon validation",
+    "Other crypto accelerators",
+    "Product app/display"
+  ],
+  "fixtures": {
+    "knownAnswer": "SHA256(abc)=ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    "regressionControls": [
+      {
+        "control": "valid",
+        "steps": 83822,
+        "stop": "Waiting",
+        "shaBlocks": 5
+      },
+      {
+        "control": "digest-flip",
+        "steps": 178739,
+        "stop": "Waiting",
+        "shaBlocks": 5,
+        "behavior": "ROM calculates original correct digest, warns mismatch, attempts boot anyway and source guest executes"
+      },
+      {
+        "control": "payload-flip",
+        "steps": 200000,
+        "stop": "Budget",
+        "shaBlocks": 3,
+        "behavior": "ROM checksum assertion loop; no source guest entry"
+      }
+    ],
+    "exploratoryControls": [
+      {
+        "variant": "valid",
+        "returncode": 0,
+        "stdout": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:2\r\nload:0x2f000000,len:0xd0\r\nentry 0x2f000000\r\nSPI0 BEFORE\n000000ff\n000000ff\nSPI0 AFTER\na55a03ff\na55a03ff\nSPI0 OBSERVATION DONE\n",
+        "stderr": "flash bytes=65536 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Waiting steps=83822 pc=0x2f00005a mepc=0x00000000 mcause=0x0 mtval=0x00000000 fault=None\nmspi-commands=6 cache-maintenance=4 sha-blocks=5\nusb-host packets=6 bytes=168 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:2\\r\\nload:0x2f000000,len:0xd0\\r\\nentry 0x2f000000\\r\\n\"\n",
+        "bound": 1000000
+      },
+      {
+        "variant": "digest-flip",
+        "returncode": 0,
+        "stdout": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:2\r\nload:0x2f000000,len:0xd0\r\nSHA-256 comparison failed:\r\nCalculated: 34593d31e188bf824bdfec6d542815f1215c8a4e1f0898cb4a0c810b03186ce9\r\nExpected: 34593d31e188bf824bdfec6d542815f1215c8a4e1f0898cb4a0c810b03186ce8\r\nAttempting to boot anyway...\r\nentry 0x2f000000\r\nSPI0 BEFORE\n000000ff\n000000ff\nSPI0 AFTER\na55a03ff\na55a03ff\nSPI0 OBSERVATION DONE\n",
+        "stderr": "flash bytes=65536 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Waiting steps=178739 pc=0x2f00005a mepc=0x00000000 mcause=0x0 mtval=0x00000000 fault=None\nmspi-commands=6 cache-maintenance=4 sha-blocks=5\nusb-host packets=12 bytes=380 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:2\\r\\nload:0x2f000000,len:0xd0\\r\\nSHA-256 comparison failed:\\r\\nCalculated: 34593d31e188bf824bdfec6d542815f1215c8a4e1f0898cb4a0c810b03186ce9\\r\\nExpected: 34593d31e188bf824bdfec6d542815f1215c8a4e1f0898cb4a0c810b03186ce8\\r\\nAttempting to boot anyway...\\r\\nentry 0x2f000000\\r\\n\"\n",
+        "bound": 1000000
+      },
+      {
+        "variant": "payload-flip",
+        "returncode": 0,
+        "stdout": "ESP-ROM:esp32s31-20251218\r\nBuild:Dec 18 2025\r\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\r\nSPI mode:DIO, clock div:2\r\nload:0x2f000000,len:0xd0\r\nChecksum failure. Calculated 0xd5 stored 0xd4\r\nassertion \"result == ETS_OK\" failed: file \"rom/ets_kernel/ets_main.c\", line 496, function: ets_flash_boot\r\n",
+        "stderr": "flash bytes=65536 (caller input; no inferred NOR identity or OTP image)\ndevelopment NOR JEDEC=[ef, 40, 18] status=0 (caller input, not identified product hardware)\ndevelopment SPI0 legacy length shadows enabled (ROM/upstream inference, not verified silicon)\nstop=Budget steps=1000000 pc=0x2f80d1bc mepc=0x00000000 mcause=0x0 mtval=0x00000000 fault=None\nmspi-commands=6 cache-maintenance=3 sha-blocks=3\nusb-host packets=8 bytes=304 data=\"ESP-ROM:esp32s31-20251218\\r\\nBuild:Dec 18 2025\\r\\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\\r\\nSPI mode:DIO, clock div:2\\r\\nload:0x2f000000,len:0xd0\\r\\nChecksum failure. Calculated 0xd5 stored 0xd4\\r\\nassertion \\\"result == ETS_OK\\\" failed: file \\\"rom/ets_kernel/ets_main.c\\\", line 496, function: ets_flash_boot\\r\\n\"\n",
+        "bound": 1000000
+      }
+    ],
+    "artifacts": [
+      {
+        "path": "esp32s31/src/sha.rs",
+        "bytes": 4414,
+        "sha256": "3cdeaad75c484c2c36c5fc81e3757639852ae5b0a66971e2c0667493a0a8a794"
+      },
+      {
+        "path": "esp32s31/src/bus.rs",
+        "bytes": 31005,
+        "sha256": "dad29843c35369602e7b8bb4db4c1d850d2e32e7a4b4dc06e991b6354c125f1d"
+      },
+      {
+        "path": "esp32s31/src/lib.rs",
+        "bytes": 4929,
+        "sha256": "f9f9703aab1ad87b0e3bbbcb6737efbba45738dbcefe84084f3346454ae346e6"
+      },
+      {
+        "path": "esp32s31/examples/bringup.rs",
+        "bytes": 3631,
+        "sha256": "c01fec3ed36ff39e01b14d462d73a5ede9f481e1981fc9b6522bb436f7136a9c"
+      },
+      {
+        "path": "esp32s31/tests/uart_fixture.rs",
+        "bytes": 21582,
+        "sha256": "60d48e3bac0c1ebb38652cb3f09c58ae3e9c3882ec9c1721fee149d4d4eeb53f"
+      },
+      {
+        "path": "firmware/s31-uart-probe/build.sh",
+        "bytes": 1447,
+        "sha256": "24b9fc6e13cebace4d33197f47ef684c52d2467f3d6625273a87cb134ca622c2"
+      },
+      {
+        "path": "firmware/s31-uart-probe/spi0-observation.S",
+        "bytes": 1019,
+        "sha256": "91d98c1f7c9c28d76683c7d3e0d9ab77b8ef1243209aa06140351986023fbcd7"
+      },
+      {
+        "path": "output/s31-uart-probe/spi0-observation.elf",
+        "bytes": 5004,
+        "sha256": "ee39be6c48b30755e33b118dc5cb6657ce85982214680ceadf05001c35e9bcdf"
+      },
+      {
+        "path": "output/s31-uart-probe/spi0-observation.bin",
+        "bytes": 288,
+        "sha256": "82d870e6808669f5258fff6eae3210405e7c59d700e6ec085a8a5a4df76f0347"
+      }
+    ],
+    "generatedArtifactsPublished": false,
+    "inputChanges": "Only the source-built observation fixture is mutated for negative controls, entirely in host RAM. Official product input is unchanged."
+  },
+  "official": "sha-plus-2.0.68.json",
+  "validation": {
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "workspaceRust": 1404,
+    "testGroups": 131,
+    "s31UnitTests": 41,
+    "sourceRomFixtures": 16,
+    "bothClippy": true,
+    "platformNodeFiles": 4,
+    "wasmScenarios": [
+      "hello",
+      "c3-hello",
+      "c6-hello",
+      "p4-hello",
+      "c6-energy-scan",
+      "c6-contiki",
+      "c6-contiki-net",
+      "c6-rpl-net",
+      "panel"
+    ],
+    "additional": [
+      "stable update",
+      "production WASM build/section check",
+      "standalone S31 wasm32 compile",
+      "native bins build"
+    ],
+    "goldensChanged": false,
+    "uiChanged": false,
+    "productionParity": {
+      "nativeBinariesIdenticalToTimedFlashStage": [
+        [
+          "esp32sim",
+          "13f1f814661ce93c60fd5d82df05e0dd94c7ab69f78d564fec43a56052459e71"
+        ],
+        [
+          "esp32sim-c3",
+          "eb4cf12e8c178e3d3bcb8854a2c1b83dce0ae357f36471f70f4ece4fe9741bad"
+        ],
+        [
+          "esp32sim-c6",
+          "11c06942abb74cba44b489ba8922050a364b4a407608751d5ec45ad4d79d1169"
+        ]
+      ],
+      "productionWasmIdentical": true
+    },
+    "cpuEvidence": "flash-cache-perf.json: exact same full production binaries after this build, confirmed by SHA256, not merely similar source. Five paired measurements after SHA private-bus edit, with isolated S31 crate absent from production runtime. No second statistically independent performance claim.",
+    "logHashes": [
+      {
+        "group": "native",
+        "sha256": "087fcc95dbcd41f42e59840ec46185a7f28ec395743128e64144cd986cd9be16"
+      },
+      {
+        "group": "wasm-sections",
+        "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b"
+      },
+      {
+        "group": "fixtures",
+        "sha256": "0b37a5fcbb6768ed73a5bfa8878f319eef291c46690fab31c4631b3aeed88d07"
+      },
+      {
+        "group": "platform",
+        "sha256": "c16a1ac25c9c400d6137013d926232e51aa51830259cd95cd1ed1b9ed2fef4d3"
+      },
+      {
+        "group": "stable",
+        "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+      },
+      {
+        "group": "rust",
+        "sha256": "e5b487888044a30823281bdf226b88045c0a062f9f3bde0a4b40ab60f0124e68"
+      },
+      {
+        "group": "s31-wasm",
+        "sha256": "fa7f15b2e2805065f2ca8a0f5ac054230c0418ee400cbd239656e0234e866e38"
+      },
+      {
+        "group": "clippy-wasm",
+        "sha256": "09f7af2ff9cdcadfac512d53f8eff6ba3b902c54886e613afaa350a783e834bb"
+      },
+      {
+        "group": "clippy-native",
+        "sha256": "53d16349b5d0a28939efcb65ce47e74c424a065792d599e3ab58d1cbc109c268"
+      },
+      {
+        "group": "wasm",
+        "sha256": "f2a8416d587e57fe6ac6b905aa1bbaf4e3d14dc564595c5085212c2abd9746bc"
+      },
+      {
+        "group": "wasm-build",
+        "sha256": "7c88547e64e25269e75e0a01cb2bdd632a33b16d43e5b6e36df76c2a1bf74da9"
+      }
+    ]
+  },
+  "privacy": "Only source-generated public bytes/digests, actual public ROM logs, relative artifacts and aggregate test results retained; no firmware BIN or private host inventory committed."
+}

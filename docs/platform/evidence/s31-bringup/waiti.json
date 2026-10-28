@@ -1,0 +1,517 @@
+{
+  "date": "2026-10-28",
+  "base": "edd9ad6a010e5392c8be674b5120b5c7ec11cdc4",
+  "scope": "Private S31 SPI1 automatic idle-status controls and bounded diagnostic continuation of real guest exceptions. Production chips/boards/UI unchanged; INK4 Plus remains unavailable.",
+  "sources": [
+    {
+      "name": "waiti-vectors.S",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/riscv/vectors.S",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/riscv/vectors.S",
+      "fetchedAt": "2026-10-28T01:22:56Z",
+      "status": 200,
+      "mediaType": "text/plain",
+      "bytes": 18299,
+      "sha256": "2a00ac4bc0ce194e98922d76d1baffaa16e1d7f1790b1d674bba8029f5841dbe"
+    },
+    {
+      "name": "waiti-spimem_flash_ll.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/esp_hal_mspi/esp32s31/include/hal/spimem_flash_ll.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/esp_hal_mspi/esp32s31/include/hal/spimem_flash_ll.h",
+      "fetchedAt": "2026-10-28T01:22:56Z",
+      "status": 200,
+      "mediaType": "text/plain",
+      "bytes": 27022,
+      "sha256": "88b833d38f7ec79bcf24c8d7ed159be3605e5986eb6afc0104e35941ecf5ce8d"
+    },
+    {
+      "name": "s31-spi1_mem_c_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/spi1_mem_c_reg.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/spi1_mem_c_reg.h",
+      "fetchedAt": "2026-10-27T15:28:06Z",
+      "mediaType": "text/plain",
+      "bytes": 74476,
+      "sha256": "ff7a22fa6156fa3b535c5e16c27fbd5d2258ccc5d1831e6531001484e2f61ba7",
+      "status": 200
+    },
+    {
+      "name": "s31-soc_caps.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/include/soc/soc_caps.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/include/soc/soc_caps.h",
+      "fetchedAt": "2026-10-27T11:04:53Z",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 37239,
+      "sha256": "6b85717b0b0e34c03b9a2c6a474415b8491b890ad5b2cc43891a1a35cfb4e814",
+      "status": 200
+    }
+  ],
+  "sourceDiscoveryFailures": [
+    {
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/hal/esp32s31/include/hal/spimem_flash_ll.h",
+      "status": 404,
+      "method": "web.open",
+      "meaning": "Initial outdated directory discovery failed; correct esp_hal_mspi path fetched and separately recorded."
+    }
+  ],
+  "norReference": "Winbond-authored W25Q128JV RevF2018 sections7.1.2,8.2.13,8.2.15; existing source manifest retains exact official discovery and distributor PDF URL/time/hash. No new identification of the product die.",
+  "sourceInterpretation": "Official image reports IDFv6.1-dirty with unknown private revision. Fixed public fff9895c82d744c7237be8847347bdd1b07c6643 establishes WAITI field/mask/reset and cold PER/PES delay policy. Actual S31 FPU load/store EXT_ILL behavior still requires comparison; public soc_caps names the bug while vectors fallback also uses a P4-only configuration condition.",
+  "semantics": {
+    "waiti": "Reset0x50001,mask0xfffffe1f. Supported synchronous SE/PP sample actual status after completion when wait enabled; validate8-bit05/noaddress before array/WEL mutation. Disabled wait sends nothing. High stored command byte is unused for8-bit command.",
+    "framing": "Wrong command,address or16bitcommand fails before backing mutation. Timing dummy is retained functional policy,not calibration or physical busy latency.",
+    "suspend": "Wait-delay bits2/3 can be configured. Actual PER/PES bits0/1 and automatic engine bits4/5 remain explicitly unsupported. No suspended write is invented.",
+    "status": "Host-only poll counter/lastsample; RD_STATUS remains explicit RDSR/RES latch per header,not aliased to automatic samples.",
+    "exceptions": "Default runner limit0 stops at first exception. Optional0..1024 resumes the already-established architectural handler for at most that many exceptions with no recorded bus fault. No host PC/register patch,no skipped instruction. Guest can still fail or loop; global instruction budget remains.",
+    "unsupported": [
+      "Physical Flash busy/write latency,analog dummy calibration",
+      "Status-register writes,block/chip erase,automatic suspend",
+      "Complete Plus hardware/display",
+      "Claim that private Plus lazy-FPU handler succeeds"
+    ]
+  },
+  "fixture": {
+    "waitiSource": "firmware/s31-uart-probe/waiti-probe.S",
+    "waitiElfSha256": "ce9f9d9d96f8a565ad827f18bce29305fa759f52ff3bbcc796493015256ccd5d",
+    "runs": [
+      "S31 WAITI mode=0 steps=317 stop=Waiting polls=3 sample=Some(0)",
+      "S31 WAITI mode=1 steps=321 stop=Waiting polls=0 sample=None",
+      "S31 WAITI mode=2 steps=45 stop=Trap(Exception(7)) polls=0 sample=None",
+      "S31 WAITI mode=3 steps=49 stop=Trap(Exception(7)) polls=0 sample=None",
+      "S31 WAITI mode=4 steps=51 stop=Trap(Exception(7)) polls=0 sample=None",
+      "S31 WAITI mode=5 steps=27 stop=Trap(Exception(7)) polls=0 sample=None"
+    ],
+    "positive": "Actual guest erase/program/read/MMU fetch returns42. Auto mode3samples;disabled0. No host data repair.",
+    "negative": "Wrong command,address,16bitwidth and actual suspend trigger fault before Flash write,with0samples,noPASS,no retired Flash entry.",
+    "lazyFpuSource": "firmware/s31-uart-probe/lazy-fpu-probe.S",
+    "lazyFpuElfSha256": "66472286850ea4b4513bec320a608a7804272193f90101dd9817d32da2570e88",
+    "lazyFpuRun": [
+      "S31 lazyFPU first=13 second=178 original-pc=0x2f000032"
+    ],
+    "lazyFpuContract": "First13instructions reach actual FSOff FLW exception;178 furtherinstructions run actualhandler/mret,retire sameFLWonce,and FADD/FSW writes binary32 3.0. Repeatedhandler without enablingFS stays exceptional. No platform compatibility claim."
+  },
+  "cliCases": [
+    {
+      "case": "strict",
+      "options": [],
+      "uartInput": "",
+      "stdout": "",
+      "diagnostic": "guest-exception-resumes=0 limit=0\nstop=Trap(Exception(2)) steps=13 pc=0x2f000080 mepc=0x2f000032 mcause=0x2 mtval=0x0004a507 fault=None\nlast-hart=0 quanta=13 core-instructions=[13, 0] core-retired=[12, 0] core1-pc=0x2f800000 core1-mepc=0x00000000 core1-mcause=0x0 core1-mtval=0x00000000\ncore-controls=Ok(3)/Ok(4) stall=Ok(0) boot1=Ok(0) last-nonzero-boot1=None resets=[0, 0] pc-watch1=None\nsystimer-ticks=0 counters=[0, 0] events=[0, 0, 0]\nmspi-commands=0 cache-maintenance=1 sha-blocks=0\nmspi-address=Ok(0) mosi-dlen=Ok(0) miso-dlen=Ok(0)\ncore-fpu mstatus=0x1800/0x1800 ext-ill=0x0/0x0 mwdt-clocks=0x921/0x921\nmspi-waiti-polls=0 sample=None control=Ok(327681) suspend=Ok(134225920)\nflash-core-hz=Some(10000000)\nmspi-last-command=None user=Ok(2147483648) user1=Ok(1543503879) user2=Ok(1879048192) ctrl=Ok(2924556) status=Ok(0) w0=Ok(0)\nanalog-transactions=0 bias=None mpll-shutdown=false\nanalog-dig=None\nclock-rates=Rates { cpu_hz: 40000000, mem_hz: 20000000, sys_hz: 13333333, apb_hz: 6666666 } rtc-fast-hz=40000000 rtc-slow-hz=136000 cpll-control=Ok(0)\nmpll-divider=0xc1 mpll-hz=None psram-core-hz=Some(40000000)\npsram-command-counts-mr-read-write-array-read-write=[0, 0, 0, 0]\npsram-commands=0 mode=None ddr=Ok(32) mosi=Ok(0) miso=Ok(0)\npsram-last-command=None ctrl=Ok(2924556) user=Ok(2147483648) user1=Ok(1543503879) user2=Ok(1879048192) address=Ok(0) misc=Ok(2)\nmspi-pads-held=false dqs-requested=false pin-d=Ok(16384) pin-dqs=Ok(131072)\npmu-updates=0 dbias-requests=0 readonly-write-attempts=0\npermission-writes=0\napm-writes=0 function-controls=[f, 7f, 3f, f] last-denial=None\nrtc-calibration measurements=0 clock=Ok(17) config=Ok(69632) result=Ok(0) timeout=Ok(4294967192)\nrtc-timer-counter=0\nreset-controls=Ok(1073807360)/Ok(1073807360) pending=None\nanalog-bod=None mode0=Ok(268173568) irq=false\nanalog-perif-glitch=None\n",
+      "rawDiagnosticSha256": "27845b7111b20c484fc6165b4f41d52d11ffc84922b6266712f5345f06839a6a",
+      "passed": true
+    },
+    {
+      "case": "one-handler",
+      "options": [
+        "--guest-exceptions=1"
+      ],
+      "uartInput": "",
+      "stdout": "S31 GUEST LAZY FPU MRET PASS\n",
+      "diagnostic": "guest-exception-resume hart=0 pc=0x2f000080 mepc=0x2f000032 cause=0x2 mtval=0x0004a507 mstatus=0x1800\nguest-exception-resumes=1 limit=1\nstop=Waiting steps=191 pc=0x2f000060 mepc=0x2f000032 mcause=0x2 mtval=0x0004a507 fault=None\nlast-hart=0 quanta=191 core-instructions=[191, 0] core-retired=[190, 0] core1-pc=0x2f800000 core1-mepc=0x00000000 core1-mcause=0x0 core1-mtval=0x00000000\ncore-controls=Ok(3)/Ok(4) stall=Ok(0) boot1=Ok(0) last-nonzero-boot1=None resets=[0, 0] pc-watch1=None\nsystimer-ticks=0 counters=[0, 0] events=[0, 0, 0]\nmspi-commands=0 cache-maintenance=1 sha-blocks=0\nmspi-address=Ok(0) mosi-dlen=Ok(0) miso-dlen=Ok(0)\ncore-fpu mstatus=0x80007880/0x1800 ext-ill=0x0/0x0 mwdt-clocks=0x921/0x921\nmspi-waiti-polls=0 sample=None control=Ok(327681) suspend=Ok(134225920)\nflash-core-hz=Some(10000000)\nmspi-last-command=None user=Ok(2147483648) user1=Ok(1543503879) user2=Ok(1879048192) ctrl=Ok(2924556) status=Ok(0) w0=Ok(0)\nanalog-transactions=0 bias=None mpll-shutdown=false\nanalog-dig=None\nclock-rates=Rates { cpu_hz: 40000000, mem_hz: 20000000, sys_hz: 13333333, apb_hz: 6666666 } rtc-fast-hz=40000000 rtc-slow-hz=136000 cpll-control=Ok(0)\nmpll-divider=0xc1 mpll-hz=None psram-core-hz=Some(40000000)\npsram-command-counts-mr-read-write-array-read-write=[0, 0, 0, 0]\npsram-commands=0 mode=None ddr=Ok(32) mosi=Ok(0) miso=Ok(0)\npsram-last-command=None ctrl=Ok(2924556) user=Ok(2147483648) user1=Ok(1543503879) user2=Ok(1879048192) address=Ok(0) misc=Ok(2)\nmspi-pads-held=false dqs-requested=false pin-d=Ok(16384) pin-dqs=Ok(131072)\npmu-updates=0 dbias-requests=0 readonly-write-attempts=0\npermission-writes=0\napm-writes=0 function-controls=[f, 7f, 3f, f] last-denial=None\nrtc-calibration measurements=0 clock=Ok(17) config=Ok(69632) result=Ok(0) timeout=Ok(4294967192)\nrtc-timer-counter=0\nreset-controls=Ok(1073807360)/Ok(1073807360) pending=None\nanalog-bod=None mode0=Ok(268173568) irq=false\nanalog-perif-glitch=None\n",
+      "rawDiagnosticSha256": "c3762c3f6551a1d99da906b3bfb0ad8315df12f8c7d457edb86de1a53b7dd02d",
+      "passed": true
+    },
+    {
+      "case": "repeated-bound",
+      "options": [
+        "--guest-exceptions=2"
+      ],
+      "uartInput": "L",
+      "stdout": "",
+      "diagnostic": "guest-exception-resume hart=0 pc=0x2f000080 mepc=0x2f000032 cause=0x2 mtval=0x0004a507 mstatus=0x1800\nguest-exception-resume hart=0 pc=0x2f000080 mepc=0x2f000032 cause=0x2 mtval=0x0004a507 mstatus=0x1800\nguest-exception-resumes=2 limit=2\nstop=Trap(Exception(2)) steps=45 pc=0x2f000080 mepc=0x2f000032 mcause=0x2 mtval=0x0004a507 fault=None\nlast-hart=0 quanta=45 core-instructions=[45, 0] core-retired=[42, 0] core1-pc=0x2f800000 core1-mepc=0x00000000 core1-mcause=0x0 core1-mtval=0x00000000\ncore-controls=Ok(3)/Ok(4) stall=Ok(0) boot1=Ok(0) last-nonzero-boot1=None resets=[0, 0] pc-watch1=None\nsystimer-ticks=0 counters=[0, 0] events=[0, 0, 0]\nmspi-commands=0 cache-maintenance=1 sha-blocks=0\nmspi-address=Ok(0) mosi-dlen=Ok(0) miso-dlen=Ok(0)\ncore-fpu mstatus=0x1800/0x1800 ext-ill=0x0/0x0 mwdt-clocks=0x921/0x921\nmspi-waiti-polls=0 sample=None control=Ok(327681) suspend=Ok(134225920)\nflash-core-hz=Some(10000000)\nmspi-last-command=None user=Ok(2147483648) user1=Ok(1543503879) user2=Ok(1879048192) ctrl=Ok(2924556) status=Ok(0) w0=Ok(0)\nanalog-transactions=0 bias=None mpll-shutdown=false\nanalog-dig=None\nclock-rates=Rates { cpu_hz: 40000000, mem_hz: 20000000, sys_hz: 13333333, apb_hz: 6666666 } rtc-fast-hz=40000000 rtc-slow-hz=136000 cpll-control=Ok(0)\nmpll-divider=0xc1 mpll-hz=None psram-core-hz=Some(40000000)\npsram-command-counts-mr-read-write-array-read-write=[0, 0, 0, 0]\npsram-commands=0 mode=None ddr=Ok(32) mosi=Ok(0) miso=Ok(0)\npsram-last-command=None ctrl=Ok(2924556) user=Ok(2147483648) user1=Ok(1543503879) user2=Ok(1879048192) address=Ok(0) misc=Ok(2)\nmspi-pads-held=false dqs-requested=false pin-d=Ok(16384) pin-dqs=Ok(131072)\npmu-updates=0 dbias-requests=0 readonly-write-attempts=0\npermission-writes=0\napm-writes=0 function-controls=[f, 7f, 3f, f] last-denial=None\nrtc-calibration measurements=0 clock=Ok(17) config=Ok(69632) result=Ok(0) timeout=Ok(4294967192)\nrtc-timer-counter=0\nreset-controls=Ok(1073807360)/Ok(1073807360) pending=None\nanalog-bod=None mode0=Ok(268173568) irq=false\nanalog-perif-glitch=None\n",
+      "rawDiagnosticSha256": "cf683e35b80a7f3eb3ab4fdc6575b65cf55eac1e75eddd0456c032a11d52fd94",
+      "passed": true
+    },
+    {
+      "case": "bus-fault",
+      "options": [
+        "--guest-exceptions=32"
+      ],
+      "uartInput": "X",
+      "stdout": "",
+      "diagnostic": "guest-exception-resumes=0 limit=32\nstop=Trap(Exception(5)) steps=11 pc=0x2f000080 mepc=0x2f000026 mcause=0x5 mtval=0x00000000 fault=Some(AccessFault { hart: 0, pc: 788529190, address: 0, bytes: 4, write: false, fetch: false, reason: Unmapped })\nlast-hart=0 quanta=11 core-instructions=[11, 0] core-retired=[10, 0] core1-pc=0x2f800000 core1-mepc=0x00000000 core1-mcause=0x0 core1-mtval=0x00000000\ncore-controls=Ok(3)/Ok(4) stall=Ok(0) boot1=Ok(0) last-nonzero-boot1=None resets=[0, 0] pc-watch1=None\nsystimer-ticks=0 counters=[0, 0] events=[0, 0, 0]\nmspi-commands=0 cache-maintenance=1 sha-blocks=0\nmspi-address=Ok(0) mosi-dlen=Ok(0) miso-dlen=Ok(0)\ncore-fpu mstatus=0x1800/0x1800 ext-ill=0x0/0x0 mwdt-clocks=0x921/0x921\nmspi-waiti-polls=0 sample=None control=Ok(327681) suspend=Ok(134225920)\nflash-core-hz=Some(10000000)\nmspi-last-command=None user=Ok(2147483648) user1=Ok(1543503879) user2=Ok(1879048192) ctrl=Ok(2924556) status=Ok(0) w0=Ok(0)\nanalog-transactions=0 bias=None mpll-shutdown=false\nanalog-dig=None\nclock-rates=Rates { cpu_hz: 40000000, mem_hz: 20000000, sys_hz: 13333333, apb_hz: 6666666 } rtc-fast-hz=40000000 rtc-slow-hz=136000 cpll-control=Ok(0)\nmpll-divider=0xc1 mpll-hz=None psram-core-hz=Some(40000000)\npsram-command-counts-mr-read-write-array-read-write=[0, 0, 0, 0]\npsram-commands=0 mode=None ddr=Ok(32) mosi=Ok(0) miso=Ok(0)\npsram-last-command=None ctrl=Ok(2924556) user=Ok(2147483648) user1=Ok(1543503879) user2=Ok(1879048192) address=Ok(0) misc=Ok(2)\nmspi-pads-held=false dqs-requested=false pin-d=Ok(16384) pin-dqs=Ok(131072)\npmu-updates=0 dbias-requests=0 readonly-write-attempts=0\npermission-writes=0\napm-writes=0 function-controls=[f, 7f, 3f, f] last-denial=None\nrtc-calibration measurements=0 clock=Ok(17) config=Ok(69632) result=Ok(0) timeout=Ok(4294967192)\nrtc-timer-counter=0\nreset-controls=Ok(1073807360)/Ok(1073807360) pending=None\nanalog-bod=None mode0=Ok(268173568) irq=false\nanalog-perif-glitch=None\n",
+      "rawDiagnosticSha256": "5ecd799fe632401ee1b156f4f25d4ff3b31c3a4f985075e3c82fb11885817e30",
+      "passed": true
+    }
+  ],
+  "sanitization": {
+    "waiti-plus-2.0.68-first.json": {
+      "original": "0296c58481a567c6a31f938cc2dcfe5763757a8b6785925ffffdb3eb3db7ced1",
+      "sanitized": "e7aae429359f5cb040842c0d4fd1c37404feb12ba2033bfb7bca83ff81bebccd"
+    },
+    "waiti-plus-2.0.68-handlers.json": {
+      "original": "044ed1672e8e4d6a7077f0d2d7375f6725ab4928abd85082c359ef7d3e2579ef",
+      "sanitized": "3ac1a8543389d92ac859b6c1d147a4efe4aa2149a681e60d9925793ebb3f5467"
+    }
+  },
+  "officialOutcomes": {
+    "firstException": {
+      "receipt": "waiti-plus-2.0.68-first.json",
+      "steps": 72245916,
+      "mepc": "0x4006ba84",
+      "mtval": "0x53c7a787",
+      "handlerPc": "0x2f000000",
+      "instruction": "flw fa5,1340(a5)",
+      "reason": "Architectural illegal instruction with FSOff,no bus fault. Diagnostic stopped before executing handler."
+    },
+    "boundedGuestHandler": {
+      "receipt": "waiti-plus-2.0.68-handlers.json",
+      "steps": 72246976,
+      "exceptionsResumed": 1,
+      "configuredLimit": 32,
+      "pc": "0x2f80927c",
+      "access": "store32",
+      "address": "0x20581064",
+      "reason": "TIMG1 WDTWPROTECT access denied by existing clock gate. Guest handler return unproven;possibleSDK/FPU contract mismatch requires follow-up."
+    }
+  },
+  "negativeHistory": [
+    {
+      "file": "waiti-initial-fixture-failure.txt",
+      "sha256": "b4a49c7fd69ccf43b97964758f45095542b70832334c66bce0c4e38607db054f",
+      "outcome": "Relative fixture path resolved from crateCWD;NotFound before execution. Corrected caller path only."
+    },
+    {
+      "file": "waiti-lazy-fixture.log",
+      "sha256": "262a33b0e7caff890ca3de72b7a1f837fb3072b244bfc9d67a3cfbae6bf11e90",
+      "outcome": "Assembler compressed FLW but assertion expected32-bitopcode. Fixture now forces that one instruction32-bit;no CPU change."
+    }
+  ],
+  "logs": [
+    {
+      "name": "waiti-stage-arm.log",
+      "sha256": "acc2a12ecad50168a3e4c858a885dc99a614bafe6410dc53ae4cc52bd721a79e",
+      "rustPassed": 53
+    },
+    {
+      "name": "waiti-stage-ble-api.log",
+      "sha256": "56f7b531026607ec2ff0e80fd4ad5ac392cc1ce24834d9f43b39fbec9d406cb5",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-ble-connection.log",
+      "sha256": "57cbc65214667e93e03ac82a235612b8b34cf8f08ce07e234d7cd7dea085d0dd",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-browser-contract.log",
+      "sha256": "4f0e9655cc58da84ed08333343207ca2e7434c6f8b9437b9c8281b6c3ffab688",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-browser-python.log",
+      "sha256": "c7de476d1b78f867b2bbe4e9d11b5587cebe9384a2c3f2a5dc48ff78e0c49d6d",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-build.log",
+      "sha256": "f378ee1613046aeb3d3dd657c435f561f0f26d311c58890c7d2514098850e887",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-clippy-native-final.log",
+      "sha256": "79270092588f79cdb0ef7e227dc501ce6fe24d991200c6a3f9d3c3e90e3d1c5f",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-clippy-native.log",
+      "sha256": "be65b80fbd5c55213321aa591a925b563940654902dcb65ec40d5ec2fd1957d5",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-clippy-wasm.log",
+      "sha256": "103e3720d57d3636119571305a7083063f8c2ac08883c8dc16d28984c3af2ae7",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-fixtures.log",
+      "sha256": "83087f3890c7c5ef998c696879ca308d7b2ef409a6b8d332b2d3c4f2fe61299d",
+      "rustPassed": 41
+    },
+    {
+      "name": "waiti-stage-jit.log",
+      "sha256": "a1c1bcc9ff22e016e54379e82778c2fbfcca56ece4789a5a259dc7043ee0e1d7",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-platform-all.log",
+      "sha256": "0b4c025a5b3d50730b773b0fdb05bb81510265278ebb9697cd16fdd83c1a1c28",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-profiling.log",
+      "sha256": "66a89ecbea085d89c623a19c2a566b165ffda5c08bedd068b00706506930d7c2",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-receipt-historical.log",
+      "sha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-receipt-m1.log",
+      "sha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-receipt-test.log",
+      "sha256": "b0df3d59901529d090522e2cea9a4a638979f30b865813f2a37c62e4f18db948",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-receipt-verify.log",
+      "sha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-recording.log",
+      "sha256": "399fddbf88243d83ab600a3563adbf729fd9d8df9ec282e4b76cef835734f284",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-rust.log",
+      "sha256": "bc8c7c6fb42b366d3862cfca58effed5f6784ba290e3cc9715ee8f0aa0d0eb44",
+      "rustPassed": 1477
+    },
+    {
+      "name": "waiti-stage-s31-wasm.log",
+      "sha256": "9d887a6bef0d6286ba29c339ecb85679a2455979ca316a35a53cd26cc1aeb3b0",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-stable.log",
+      "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-stopwatch.log",
+      "sha256": "8308d7bc2ea7435a8743e5f50865b33ba0dc405d73f8321d2cb60259327ebc7d",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-timing-api.log",
+      "sha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-vq.log",
+      "sha256": "7db6e3215979097449945440e006572b6b9c15f636c73037472431d2bbe16b54",
+      "rustPassed": 43
+    },
+    {
+      "name": "waiti-stage-wasm-build.log",
+      "sha256": "75863c4bcd4f8f69b968d8b4f869c90eded7c1c269d8732246e3f790ac478c02",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-wasm-sections.log",
+      "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-wasm-tdisplay.log",
+      "sha256": "0be804adfb05fd1900f225363f893b82c49d77737387e1fdc8a7a13eae56459d",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-wasm.log",
+      "sha256": "bf63560a92587eaf80995f335998da199bed2dbccda1ade0f9755bab0f9820db",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-worker-channel.log",
+      "sha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-worker-pacing.log",
+      "sha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158",
+      "rustPassed": null
+    },
+    {
+      "name": "waiti-stage-worker-touch.log",
+      "sha256": "bf1b0e155d14bd6e5f5c4bce7218557ec4491366bced79cf2426735a3eb9ddba",
+      "rustPassed": null
+    }
+  ],
+  "validationSummary": {
+    "workspaceRustPassed": 1477,
+    "privateS31UnitPassed": 113,
+    "sourceRomFixturesPassed": 41,
+    "bothClippyWarningsDenied": true,
+    "privateWasmCompile": true,
+    "allLocalCiGroups": true,
+    "platformTestsPassed": 76,
+    "wasmDifferentialCases": 111126,
+    "gpioWaveformCases": 24,
+    "boundedCliCases": 4,
+    "noProductUiChanges": true
+  },
+  "artifacts": {
+    "esp32s31/src/mspi.rs": "e7521a62c055552015440781f13d64c32b2a416109a0498356728e567fba5461",
+    "esp32s31/tests/uart_fixture.rs": "f5dc5f830eb675b93eb6050a94630d58ca22c3fa5bb65274140e4e58b5b9fb38",
+    "esp32s31/examples/bringup.rs": "52b0bb4158198d0b60acda6ff0580bb53bb6c8ef8602a6bd233e67778d4017d2",
+    "firmware/s31-uart-probe/waiti-probe.S": "ecebcbd308eb0b44b8712864ba381d03ef509c776c685dfcf516ce39ac4eaf23",
+    "firmware/s31-uart-probe/lazy-fpu-probe.S": "69cc4d7f9f261412ac85f79e8570fb2371812d7661a9f12421d3d32eef911c1a",
+    "firmware/s31-uart-probe/build.sh": "c399059878b296aee10f49a8bd0ca5a8368db8d6e2ace6ea39a4144b3d4bc99b",
+    "tools/s31-native-firmware-probe.py": "050a272adeb2477e955a5d8e4084d2b9f66f5b7fa6c87635b15010f4315b8e6d"
+  },
+  "productionSourceComparison": {
+    "reference": "59a912115da36bd84e2e69032182421fdb4389ca",
+    "filesChecked": 379,
+    "different": []
+  },
+  "performance": {
+    "mainGuard": {
+      "receipt": "waiti-perf.json",
+      "percent": [
+        -2.3110181035674526,
+        -0.46322580366207067,
+        0.46937806921585334
+      ]
+    },
+    "sameProductionSource": {
+      "receipt": "waiti-same-source-perf.json",
+      "percent": [
+        0.05452227419380229,
+        -1.7049879396710432,
+        1.3565811445222842
+      ]
+    },
+    "interpretation": "Every UART/instruction/cycle result identical. Main84 cross-branch is only broad guard;fixed59a91211 matches all379production source/manifests. No S31 speed claim. S3coreunchanged;Pocketconditionalnotapplicable."
+  },
+  "commands": [
+    "rustup update stable",
+    "cargo build --release --workspace",
+    "cargo clippy --workspace --all-targets -- -D warnings",
+    "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "ESP32SIM_ROM_DIR=<fixedROMdir> cargo test --release --workspace -- --include-ignored --skip external_",
+    "RISCV_TOOLCHAIN_PREFIX=<toolchain prefix> bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "All41fixture variables follow firmware/s31-uart-probe/README.md; cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored --nocapture --test-threads=1",
+    "cargo check --release --target wasm32-unknown-unknown -p esp32s31",
+    "Unchanged .github/workflows/ci.yml full local command groups;per-group log hashes retained.",
+    "bringup --guest-exceptions=0|1|2|32 with lazy-fpu fixture and UART input from cliCases",
+    "tools/s31-native-firmware-probe.py with source/hash,ROM,stepBudget and developmentInputs in official receipts;guestExceptionLimit0or32"
+  ],
+  "priorOpenPrCheck": {
+    "checkedAt": "2026-10-28T00:43:53Z",
+    "repositories": [
+      {
+        "repository": "mikroverk/esp32sim",
+        "openPullRequests": 17,
+        "checked": [
+          {
+            "number": 316,
+            "head": "c55a19ae8bd29c581e2c00ec5323e752c9b215c9",
+            "files": 2,
+            "sortedPathListSha256": "40e5e1a09bb5974cfd4c85250ca238f3bc2bffbf4a47fcef61574d14b599909e"
+          },
+          {
+            "number": 315,
+            "head": "f742cb5fff908044df127b4ae3723cfad8978cc9",
+            "files": 1,
+            "sortedPathListSha256": "458cc8a1f978156fc32ea87b4592f5affcfc871860e98a971bb183dd1bf9c4c5"
+          },
+          {
+            "number": 314,
+            "head": "8e169242e5263f3a7a1b76778ec0db804811dd27",
+            "files": 2,
+            "sortedPathListSha256": "4394e3a78cabe6326b4062d6edc78370c7c0c2801508866a5674dabde9db3458"
+          },
+          {
+            "number": 313,
+            "head": "bdad9bf8c00744e4cc0125ea1663fce0973f6717",
+            "files": 1,
+            "sortedPathListSha256": "bab76d25569045ebfd1de889ec181d8b3fedb66387927d07de20f64f52815e4a"
+          },
+          {
+            "number": 312,
+            "head": "935f5e51b8e8d2a3a27ba5ae3ef99a9bcbda2afb",
+            "files": 2,
+            "sortedPathListSha256": "ddeca83b2bbcd07c39405dc475274a57e72d435d070859c9ef09e9fdf53f3245"
+          },
+          {
+            "number": 311,
+            "head": "be0d9e2cf7c92862b47c922ea5b989f7fcd427bd",
+            "files": 9,
+            "sortedPathListSha256": "85a54f33a788ad9134efb3d7ced1f86a9597d2bbb3da28c61c035c940b37b603"
+          },
+          {
+            "number": 310,
+            "head": "5bb5cf87b86d7f5eed8fbfeb2281fff5c294dacb",
+            "files": 17,
+            "sortedPathListSha256": "42e1a68d52dbfdfd4f5f174a5fa5f1d97b264c529b38bd6ea96cc438b867e959"
+          },
+          {
+            "number": 309,
+            "head": "03c6f59c5aa7326708c59c8f9977d1fefcd0bcee",
+            "files": 1,
+            "sortedPathListSha256": "4be198af9aee6c1836e00522fe0b2a9f6989ea62e71d315f821fad2b54fcb152"
+          },
+          {
+            "number": 308,
+            "head": "c1a3ea31881c9bf08f7d40990378758ff8578e7e",
+            "files": 1,
+            "sortedPathListSha256": "873dcc4715aa53582fdb977def00be184a13ace1745283c71b629fe8f42a4e6c"
+          },
+          {
+            "number": 307,
+            "head": "c7b856f42cf4d39d9b8bf9eb226f354888030bae",
+            "files": 1,
+            "sortedPathListSha256": "8b8693de6589b3b5f74355fd743000ceab72a19e15df7696fa9e81b7b8805a41"
+          },
+          {
+            "number": 301,
+            "head": "5cfee51630f0e29332e0467f9b08c0f51a315a2a",
+            "files": 22,
+            "sortedPathListSha256": "fd48df52a0f1d539d554202b82bf5453618d4a25781a3ad760e98b4d431e5b2e"
+          },
+          {
+            "number": 300,
+            "head": "c675573c0d613991aa146cec0468509781eeda06",
+            "files": 10,
+            "sortedPathListSha256": "7a249872905aa74cf19be6fd532ec19bbd0ac054399bdbd5d567d594331eadbf"
+          },
+          {
+            "number": 299,
+            "head": "14c3994756c62f2d372c5be49d9b39a0882356a0",
+            "files": 3,
+            "sortedPathListSha256": "fad197832ad22e04e73722f081f0604498b081f6677cfe71f4ffa30557902c9a"
+          },
+          {
+            "number": 290,
+            "head": "268caa4aef2fa7a0053132aa1ed15c2de2697e41",
+            "files": 7,
+            "sortedPathListSha256": "89e7b6e0d8fe4373d825fdd48cecdd9e1b6066c092b35c1625dffcfd0ccc7cbf"
+          },
+          {
+            "number": 278,
+            "head": "5e7d8bc728462ca37d1c60df660a7f5a4b6b7a03",
+            "files": 15,
+            "sortedPathListSha256": "6eeb363a59c59b52e2c1ca36c211655b6480335a20cfffab94c55b4f5f32382d"
+          },
+          {
+            "number": 263,
+            "head": "b76b165186192d0a90e1054061aa7e75b1f275cc",
+            "files": 18,
+            "sortedPathListSha256": "9b0cbfc1188ed363534de7eda72e3ac0d41d4f330f42bb0588bcd985ec9d4ed0"
+          },
+          {
+            "number": 262,
+            "head": "f63e204683196fa98c2280903a84ef92c450e0b0",
+            "files": 31,
+            "sortedPathListSha256": "c1efa120a110361dfccbeb3a7e458eaa8df8791e9a897935c7e2f5b86a9995d5"
+          }
+        ],
+        "matchingPrivateS31Paths": [],
+        "method": "gh pr list with changedFiles; paginated PR files if returned length differs; all path counts verified"
+      },
+      {
+        "repository": "zhuzhe1983/esp-online-tester",
+        "openPullRequests": 0,
+        "checked": [],
+        "matchingPrivateS31Paths": [],
+        "method": "gh pr list with changedFiles; paginated PR files if returned length differs; all path counts verified"
+      }
+    ],
+    "reuse": "Retained check from fa002e8b with its original observation time; all17upstreamPRfull file lists verified,no private S31 overlap. Current change adds no shared production component."
+  },
+  "privacy": "No login,hostname,session or unrelated process inventory. Full faultregister dumps removed with original/sanitized hashes. No downloadedBIN/ROM/generatedELFcommitted."
+}

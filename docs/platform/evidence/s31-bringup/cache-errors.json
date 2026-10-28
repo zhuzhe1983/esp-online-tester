@@ -1,0 +1,326 @@
+{
+  "date": "2026-10-28",
+  "base": "8d0b2f37589bcea0ebd28ee142c8bff310d8d1ef",
+  "scope": "Private S31 L1 cache failure tracing and source69 IRQ. No production-chip,board,catalog or UI changes; INK4 Plus unavailable.",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/esp_system/port/soc/esp32s31/cache_err_int.c",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/esp_system/port/soc/esp32s31/cache_err_int.c",
+      "fetchedAt": "2026-10-27T22:29:37Z",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 3184,
+      "sha256": "396f0ffbbb551ad37c3069b60728af16fd6a784e24ad22aca78dc60cd39fa62b"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/hal/esp32s31/include/hal/cache_ll.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/hal/esp32s31/include/hal/cache_ll.h",
+      "fetchedAt": "2026-10-27T22:29:37Z",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 35255,
+      "sha256": "427099d1aa402ce387190cd94143397ef3c3ec6c962570e8171fa181c5630737"
+    },
+    {
+      "name": "s31-cache_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/cache_reg.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/cache_reg.h",
+      "fetchedAt": "2026-10-27T12:45:21Z",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 361557,
+      "sha256": "d358ef9ee267b27d9c8e266ebb6e6bd4e1e0d809bd657d5c029bee754db80e9e",
+      "status": 200
+    },
+    {
+      "name": "s31-interrupt_core0_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/interrupt_core0_reg.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/interrupt_core0_reg.h",
+      "fetchedAt": "2026-10-27T11:20:10Z",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 228199,
+      "sha256": "60785a48a2b2be35670a789bf2e0a82a45f4bd85f110fc18c197de14211f311e",
+      "status": 200
+    },
+    {
+      "name": "s31-interrupts.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/include/soc/interrupts.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/include/soc/interrupts.h",
+      "fetchedAt": "2026-10-27T10:59:27Z",
+      "mediaType": "text/plain",
+      "bytes": 6169,
+      "sha256": "1a4f155b87090376b1a40ac62e19de344c7f10dc53d9b4451b66d545e9e4717d",
+      "status": 200
+    },
+    {
+      "name": "s31-timer_group_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/timer_group_reg.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/timer_group_reg.h",
+      "fetchedAt": "2026-10-27T18:59:34Z",
+      "mediaType": "text/plain",
+      "bytes": 30256,
+      "sha256": "e3299695b4e6ab7d414a168d6115a683462ed261d0c8b41921f195f746d6e808",
+      "status": 200
+    },
+    {
+      "url": "https://documentation.espressif.com/esp32-s31_technical_reference_manual_en.pdf",
+      "finalUrl": "https://documentation.espressif.com/esp32-s31_technical_reference_manual_en.pdf",
+      "fetchedAt": "2026-10-27T21:58:03Z",
+      "mediaType": "application/pdf",
+      "bytes": 7386489,
+      "sha256": "d6a63c70c46a45e9b44239f591e383efd1a82ce3a0bfd8154d709dc25d87f6ef"
+    }
+  ],
+  "sourceInterpretation": "Official image reports ESP-IDF v6.1-dirty,exact private source revision unknown. Public cache_err_int.c/cache LL/registers fixed to fff9895c82d744c7237be8847347bdd1b07c6643; TRM pre-release0.1 glossary pages1087\u20131088 distinguishes WT/WTC from W1C.",
+  "semantics": {
+    "events": "Executed request through a closed cache bus with trace enabled,powered/clocked domains and no freeze latches I0(bit0),I1(bit1) or shared D(bit4).",
+    "interrupt": "RAW & ENA drives source69 and existing per-hart matrix/CLIC. Trace-disable does not clear latched RAW; ENA does not clear RAW.",
+    "clear": "174 is WT; selected bits clear178 WTC. Direct178 and17c writes cannot clear/forge status. TRACE3d8 bit0 is RW;L2 bit1 HRO stays0.",
+    "unsupported": [
+      "Physical requester ID/ATTR/address capture",
+      "Unmodeled MMU/access-error causes",
+      "Complete fail-propagation masking: strict diagnostic faults retained,no substitute data",
+      "Cache-line timing,DMA/coherence",
+      "Clock calibration and remaining Plus board/display peripherals"
+    ]
+  },
+  "fixture": {
+    "source": "firmware/s31-uart-probe/cache-error-probe.S",
+    "elfSha256": "97ed0c4e95d6cc1fdec217369c65e539ea465531e7d2f760e8a5601c581e5c84",
+    "firstRun": {
+      "steps": 1078,
+      "stop": "Trap(Exception(5))",
+      "faultHart": 1,
+      "address": "0x40000000",
+      "raw": 16
+    },
+    "resume": {
+      "steps": 188,
+      "stop": "Waiting",
+      "raw": 0,
+      "guestCompletionWord": 1,
+      "flashWord": "0x5a"
+    },
+    "uart": "S31 CACHE ERROR REAL ISR PASS\n",
+    "contract": "Starts hart1 through real ROM. Resume continues the real exception vector without changing guest registers/PC. Core0 ISR executes,clearsWT and reopens bus; guest writes PASS and mailbox."
+  },
+  "officialImage": "cache-errors-plus-2.0.68-final.json",
+  "validationSummary": {
+    "workspaceRustPassed": 1456,
+    "privateS31UnitPassed": 92,
+    "sourceRomFixturesPassed": 33,
+    "bothClippyWarningsDenied": true,
+    "privateWasmCompile": true,
+    "allLocalCiGroups": true,
+    "platformTestsPassed": 76,
+    "wasmDifferentialCases": 111126,
+    "gpioWaveformCases": 24,
+    "noBrowserOrProductUiChanges": true
+  },
+  "productionSourceComparison": {
+    "reference": "59a912115da36bd84e2e69032182421fdb4389ca",
+    "filesChecked": 379,
+    "different": [],
+    "scope": "all non-S31 workspace Rust and manifests plus root Cargo.toml/Cargo.lock"
+  },
+  "performance": {
+    "mainGuard": {
+      "receipt": "cache-errors-perf.json",
+      "percent": [
+        -1.5657058158131565,
+        0.9696951134956278,
+        -1.7909666933006219
+      ]
+    },
+    "sameProductionSource": {
+      "receipt": "cache-errors-same-source-perf.json",
+      "percent": [
+        -0.42357634543180867,
+        -1.4350301315192548,
+        -0.2479752217156017
+      ]
+    },
+    "interpretation": "Every UART/instruction/cycle result identical. Small CPU shifts retained without causal S31 overhead claim; main84 is cross-branch broadguard,59a91211 has identical production sources. S3 core unchanged,so Pocket conditional does not apply."
+  },
+  "artifacts": {
+    "esp32s31/src/cache.rs": "19d581d7d3ebff8c075cc7b713516f475cd76fadf90689b3a7d6983f2cdc1434",
+    "esp32s31/src/bus.rs": "30987f93613375c2d35fbb5467ac03799b234ff14f953f8286abc96a823f821c",
+    "esp32s31/src/interrupts.rs": "720889cebe11b778341d9b88031079280675b2c61b3550df2e9846b4d7daf8c9",
+    "esp32s31/tests/uart_fixture.rs": "fe764f50f1d50b7c0cb7c9e15e48d64f76fa33b3e31a643db0f9f1f5c36d1b33",
+    "firmware/s31-uart-probe/cache-error-probe.S": "a2c0eb71fdeaafd3351555c43f956096b4e49bd47043ee52df3dfa28921fb4a6",
+    "firmware/s31-uart-probe/build.sh": "2cad43d5b86ec1293aee809b82ab045c49e83d7e318513da28601ad18a7ae2c1"
+  },
+  "logs": [
+    {
+      "name": "cache-errors-stage-arm.log",
+      "sha256": "774640497432b528b1ec4ff3933d45ea9324c62fb23d31d2a267be3fe628bbab",
+      "rustPassed": 53
+    },
+    {
+      "name": "cache-errors-stage-ble-api.log",
+      "sha256": "56f7b531026607ec2ff0e80fd4ad5ac392cc1ce24834d9f43b39fbec9d406cb5",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-ble-connection.log",
+      "sha256": "57cbc65214667e93e03ac82a235612b8b34cf8f08ce07e234d7cd7dea085d0dd",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-browser-contract.log",
+      "sha256": "7b6301937f7d5571f89f04cb18b56e98ed62203d9a5f9b83b3f2f0d03b13fc55",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-browser-python.log",
+      "sha256": "c7de476d1b78f867b2bbe4e9d11b5587cebe9384a2c3f2a5dc48ff78e0c49d6d",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-build.log",
+      "sha256": "638d0f467c2b02207ad4d373b44859abaa7586fbdbcef30509a4c461af73ab5f",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-clippy-native.log",
+      "sha256": "4fcca034fa613ad8c0eee58e3cad5bbaa1feb2f478f9712a6cbe8a52c712cbba",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-clippy-wasm.log",
+      "sha256": "c656798cd1a4e1f40969663226bc72ff32dc1c86c9c9c953a2965c17a01c90b7",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-fixtures.log",
+      "sha256": "158a32adc98401a2e6c676d7fff55c10dcdc733ae174697a04ed8946148280d7",
+      "rustPassed": 33
+    },
+    {
+      "name": "cache-errors-stage-jit.log",
+      "sha256": "ea0f482139e8ad69d5b583f81d86aa7390ab878fe42243607c7ecb8ffbfce536",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-platform-all.log",
+      "sha256": "53182a90bf980bc0b924ccde10f7bcd90b97ab5a14aa1330ec6795879e1f8157",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-profiling.log",
+      "sha256": "a77cf648ecb84bfc38cfed6f911d91105f477b032c2f316580e86a503fec65e3",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-receipt-historical.log",
+      "sha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-receipt-m1.log",
+      "sha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-receipt-test.log",
+      "sha256": "18a0fe98353eb667a6b171e4f46e69d9b286c8ac72d6b727cbd38ae5d96e7a4d",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-receipt-verify.log",
+      "sha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-recording.log",
+      "sha256": "399fddbf88243d83ab600a3563adbf729fd9d8df9ec282e4b76cef835734f284",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-rust.log",
+      "sha256": "663b8b54844f8c84f819f36da7e480258b5e10c8e5c0b5b93daaf0abc68c3370",
+      "rustPassed": 1456
+    },
+    {
+      "name": "cache-errors-stage-s31-wasm.log",
+      "sha256": "1b77f2737e697823922948c92762a29f3eeee39dba00dcdbb3abe659cf40b18c",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-stable.log",
+      "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-stopwatch.log",
+      "sha256": "7672c3af747d72e337cef6d6a04eb54c950f59ff63d69457b443a4b0ccbeb3d0",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-timing-api.log",
+      "sha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-vq.log",
+      "sha256": "b26cf59191ce09c802034279a88b4a777b7cc73f5d369672ab04393c1c76c16b",
+      "rustPassed": 43
+    },
+    {
+      "name": "cache-errors-stage-wasm-build.log",
+      "sha256": "5f7c29239e2db7b0d5b5e173af73525fbfc4eca49c1c267334dc5db457b04fe3",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-wasm-sections.log",
+      "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-wasm-tdisplay.log",
+      "sha256": "d3d8632e8d44fc450ea45b9a83b9a4555648b10432b78b0cbe3c4c7b72901914",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-wasm.log",
+      "sha256": "44c7c673f39502bea340c47de3a60de757493ab98f8cd40be97da12977930970",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-worker-channel.log",
+      "sha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-worker-pacing.log",
+      "sha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158",
+      "rustPassed": null
+    },
+    {
+      "name": "cache-errors-stage-worker-touch.log",
+      "sha256": "78a487cf4fb0b09dc4aa624d54b316345c4d194737d07b2c8ba8696bfd892360",
+      "rustPassed": null
+    }
+  ],
+  "negativeHistory": [
+    {
+      "receipt": "cache-errors-plus-2.0.68-first.json",
+      "outcome": "Initial candidate incorrectly interpreted RAW R/WTC/SS as directly write-one-to-clear. Fixed against TRM WT/WTC glossary; added both source ISR and unit regression. Official image writes paired CLR,so same PSRAM self-test and next fault remain after correction."
+    }
+  ],
+  "commands": [
+    "rustup update stable",
+    "cargo build --release --workspace",
+    "cargo clippy --workspace --all-targets -- -D warnings",
+    "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "ESP32SIM_ROM_DIR=<fixedROMdir> cargo test --release --workspace -- --include-ignored --skip external_",
+    "RISCV_TOOLCHAIN_PREFIX=<riscv32-esp-elf prefix> bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "S31_CACHE_ERROR_ELF=<cache-error-probe.elf> S31_ROM_ELF=<20260528 S31 ROM> cargo test --release -p esp32s31 --test uart_fixture external_s31_real_guest_cache_error -- --include-ignored --nocapture",
+    "All33fixture environment variables follow firmware/s31-uart-probe/README.md.",
+    "cargo check --release --target wasm32-unknown-unknown -p esp32s31",
+    "All unchanged .github/workflows/ci.yml local command groups; per-group log hashes retained.",
+    "tools/s31-native-firmware-probe.py with fixed source/hash,ROM,stepBudget and developmentInputs from cache-errors-plus-2.0.68-final.json"
+  ],
+  "privacy": "No local login/host/session/process inventory. Raw local log hashes retained without private build-path text. Full guest registers removed from curated image receipts; original and sanitized receipt hashes retained. No downloaded firmware/ROM or generated fixture binary is committed.",
+  "sanitizedImageHashes": {
+    "cache-errors-plus-2.0.68-first.json": "60455061903d70edfe73fcbae5ad7c98f853adf1d7e3ae314785d13715e7c95c",
+    "cache-errors-plus-2.0.68-final.json": "1f938cf587caf95d7ae61995d673d84b5b8a21b27c48b03fccf53f18fae1f34f"
+  }
+}

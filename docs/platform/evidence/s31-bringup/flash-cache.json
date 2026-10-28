@@ -1,0 +1,252 @@
+{
+  "date": "2026-10-27",
+  "base": "7d7c229f9cf2a31a8bdf3540b923b1dba5044a49",
+  "scope": "Isolated S31 functional cache/MMU control and explicit development SPI0 compatibility/NOR input. Product remains unavailable.",
+  "sourceRevision": "ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643; see sources.json",
+  "evidenceClasses": {
+    "officialHeaders": "cache clocks, sync/freeze control, MMU LP fields, SPI0 RD_STATUS and SPI1 RD_STATUS/RES/DP semantics",
+    "romInference": "SPI_init uses reserved SPI0+0x24/+0x28 as legacy length words; no public physical meaning established",
+    "upstreamCompatibility": "Espressif emulator0.51.0 accepts full-word shadows; its generic zero reset reads contradict documented SPI0 CTRL reset",
+    "developmentInput": "Explicit ef4018 test NOR status0, strap0x12 and USB packet peer, not product hardware identification"
+  },
+  "strictDefault": {
+    "reservedReads": "Unmapped",
+    "realRomSteps": 43162,
+    "pc": "0x2f80ebf6",
+    "address": "0x20500028"
+  },
+  "explicitShadowWithoutNorArray": {
+    "steps": 49816,
+    "pc": "0x2f80e43a",
+    "address": "0x20501000",
+    "fault": "Prohibited",
+    "mspiCommands": 0,
+    "cacheMaintenance": 2
+  },
+  "upstreamObservation": {
+    "version": "0.51.0",
+    "publicRomSha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+    "interceptedRomFunctions": 22,
+    "source": "firmware/s31-uart-probe/spi0-observation.S",
+    "uart": "ESP-ROM:esp32s31-20251218\nBuild:Dec 18 2025\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\nSPI mode:DIO, clock div:2\nload:0x2f000000,len:0xd0\nentry 0x2f000000\nSPI0 BEFORE\n000000ff\n000000ff\nSPI0 AFTER\na55a03ff\na55a03ff\nSPI0 OBSERVATION DONE\n",
+    "resetGdbObservation": {
+      "pc": "0x2f800000",
+      "spi0_24": "0x00000000",
+      "spi0_28": "0x00000000",
+      "spi0_ctrl8": "0x00000000"
+    },
+    "resetLimitation": "CTRL documented reset is0x802c200c, so upstream generic zeros do not establish physical reset values",
+    "processLifecycle": "Owned process terminated after observed DONE; upstream guest timeout did not promptly stop WFI"
+  },
+  "fixtures": {
+    "cache": {
+      "valid": {
+        "steps": 220,
+        "uart": "S31 CACHE POWER SYNC FREEZE PASS\n",
+        "stop": "Waiting"
+      },
+      "wrong-data": {
+        "steps": 106,
+        "uart": "S31 CACHE FAIL\n",
+        "stop": "Ebreak"
+      },
+      "no-array": {
+        "steps": 20,
+        "stop": "Exception5",
+        "address": "0x40000000"
+      },
+      "clock-off": {
+        "steps": 20,
+        "stop": "Exception5",
+        "address": "0x40000000"
+      }
+    },
+    "generatedArtifactsPublished": false,
+    "artifacts": [
+      {
+        "path": "esp32s31/src/cache.rs",
+        "bytes": 18534,
+        "sha256": "a887d1c274d1a605818a8e1f27590f17ffa0b8557216122c6e4f783ea07a09c7"
+      },
+      {
+        "path": "esp32s31/src/mspi.rs",
+        "bytes": 14859,
+        "sha256": "6104037e943e813579b947d7e863487050a647bb886733c4d3d6bda1412906e6"
+      },
+      {
+        "path": "esp32s31/src/bus.rs",
+        "bytes": 29741,
+        "sha256": "9531f747203b61fa0d4c3b0cbeaae6eed23121e831a40dca7ced54eb398edd10"
+      },
+      {
+        "path": "esp32s31/examples/bringup.rs",
+        "bytes": 3597,
+        "sha256": "db3d28be7e4b4ce8d406e30ed6b8e25dc09130b8027af5d722f3b8301ca2dc8b"
+      },
+      {
+        "path": "esp32s31/tests/uart_fixture.rs",
+        "bytes": 18925,
+        "sha256": "3deeeb24e34ade53946c49bf10e02478399f4fa812a8d62376370a42816ba973"
+      },
+      {
+        "path": "tools/s31-native-firmware-probe.py",
+        "bytes": 4929,
+        "sha256": "d53a351bebe791ef4b27b3c1bde414896b457aa460ef0bf103b6afd863a03a97"
+      },
+      {
+        "path": "firmware/s31-uart-probe/cache-probe.S",
+        "bytes": 1727,
+        "sha256": "1ea945c2cb9f4ce4e7f999f6207523e9b9c5bf788f64fe17b8ca3e664d2d4c7f"
+      },
+      {
+        "path": "firmware/s31-uart-probe/spi0-observation.S",
+        "bytes": 1019,
+        "sha256": "91d98c1f7c9c28d76683c7d3e0d9ab77b8ef1243209aa06140351986023fbcd7"
+      },
+      {
+        "path": "output/s31-uart-probe/cache-probe.elf",
+        "bytes": 5048,
+        "sha256": "1fa71dda5a946a7d8d0571a2ee40bc48a70e46af7f483d684710ce4f7cc6762a"
+      },
+      {
+        "path": "output/s31-uart-probe/spi0-observation.elf",
+        "bytes": 5004,
+        "sha256": "343a4083aeeff70546635a90103286d9fffa2b5d8c5516ad7d63238141381acc"
+      },
+      {
+        "path": "output/spi0-observation.bin",
+        "bytes": 288,
+        "sha256": "82d870e6808669f5258fff6eae3210405e7c59d700e6ec085a8a5a4df76f0347"
+      },
+      {
+        "path": "output/spi0-observation-merged.bin",
+        "bytes": 8480,
+        "sha256": "283dbe19790467bb9a31946f77bf2ed49752a460937abe1f8ab20debd3f39225"
+      }
+    ],
+    "compiler": "riscv32-esp-elf-gcc15.2.0 esp-15.2.0_20251204",
+    "esptool": "5.4.0"
+  },
+  "officialImage": "flash-cache-plus-2.0.68.json",
+  "notImplemented": [
+    "Real product NOR/OTP/straps identification",
+    "Cache line/dirty-line/timing behavior",
+    "Preload/autoload/lock enabled operations",
+    "Freeze mode1 forced-hit contents",
+    "MMU deep/shutdown retention",
+    "Cache error interrupt recovery",
+    "NOR wire/wakeup timing/electronic-ID/status-write/erase/program",
+    "Crypto SHA registers/clock (next actual ROM blocker)",
+    "Bootloader/app/display"
+  ],
+  "validation": {
+    "rustc": "1.99.1 (58cf8f9c3 2026-10-13)",
+    "workspaceRust": 1402,
+    "testGroups": 131,
+    "s31UnitTests": 39,
+    "sourceRomFixtures": 15,
+    "clippy": [
+      "cargo clippy --workspace --all-targets -- -D warnings",
+      "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings"
+    ],
+    "platformFiles": [
+      "platform-config-test.mjs",
+      "platform-runtime-test.mjs",
+      "platform-input-test.mjs",
+      "platform-view-test.mjs"
+    ],
+    "wasmScenarios": [
+      "hello",
+      "c3-hello",
+      "c6-hello",
+      "p4-hello",
+      "c6-energy-scan",
+      "c6-contiki",
+      "c6-contiki-net",
+      "c6-rpl-net",
+      "panel"
+    ],
+    "additional": [
+      "WASM build/section check",
+      "S31 wasm32 compile",
+      "native --bins build"
+    ],
+    "goldensChanged": false,
+    "uiChanged": false,
+    "productionCodeParity": {
+      "native": [
+        {
+          "binary": "esp32sim",
+          "section": "__TEXT,__text",
+          "bytes": 2451648,
+          "sha256": "c7a56e344138282e6c4c5b4903a547b6e88a1ab6b8f01d4c37d42aa7e22128be"
+        },
+        {
+          "binary": "esp32sim-c3",
+          "section": "__TEXT,__text",
+          "bytes": 2451648,
+          "sha256": "68dc7d7430af36b87d9c6c1f37d8d13d5c98a74d872281e50ddeb41093792e86"
+        },
+        {
+          "binary": "esp32sim-c6",
+          "section": "__TEXT,__text",
+          "bytes": 2451648,
+          "sha256": "757541708ed5de127937a92898cf6ebabc9891265fffffc633c437419a3c8047"
+        }
+      ],
+      "wasm": {
+        "bytes": 3988256,
+        "sha256": "fa6675b3600c201e902dd489fdcebf96889381c7c150074e91916b8f89f5fb31"
+      }
+    },
+    "productionParityReference": "7d7c229f9cf2a31a8bdf3540b923b1dba5044a49",
+    "logHashes": [
+      {
+        "group": "s31-wasm",
+        "sha256": "0a2c898171cdf543b088e881063aa33f6eca7ad721d01cfdeaf972e19a04533c"
+      },
+      {
+        "group": "native",
+        "sha256": "56d96167b1e8425ea626b89fe589a582f6713a541e4198dae9cdd6670a69cc85"
+      },
+      {
+        "group": "wasm",
+        "sha256": "866cca4327dda18a686660a1cc24159e14bdf2979127d1ae45ca304ad96e1a24"
+      },
+      {
+        "group": "clippy-native",
+        "sha256": "49ceceb77d0e8767f0dc74f57ba0f48f330542fa463579f4ba96bfe0596475b6"
+      },
+      {
+        "group": "stable",
+        "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+      },
+      {
+        "group": "wasm-sections",
+        "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b"
+      },
+      {
+        "group": "clippy-wasm",
+        "sha256": "66462ea260ba51d7f07d5e8b923e26c9af62042e3e9d09909b06272033783659"
+      },
+      {
+        "group": "rust",
+        "sha256": "736079441c45f4626f6bf9fe4a9b0956dc24b89f696ccbc3b6b1d0939d8268fa"
+      },
+      {
+        "group": "fixtures",
+        "sha256": "3896ad740c986666235bfee1b8c8c6e1ecee7612054921c230adbe0a0fb0f6df"
+      },
+      {
+        "group": "platform",
+        "sha256": "e684b0f5015fb2f7069b4b175dcf60204dbfd0576fc4f9ea55e875b2b2df99c8"
+      },
+      {
+        "group": "wasm-build",
+        "sha256": "7a32ec670268bbaca9c8ee5b1556f65c33b6e3461336755dc681819269dca58f"
+      }
+    ],
+    "cpuComparison": "flash-cache-perf.json: five alternating pairs against fixed main84e67571, exact UART/statistics; S3+1.4504%, C3+0.2474%, C6+0.7295%, no causal speed attribution. Production code sections byte-identical to previous stage."
+  },
+  "privacy": "Only public source guest UART, targeted register observations, relative artifact names, hashes and numeric aggregate checks retained. Host-network diagnostics from upstream stderr omitted. No private firmware bytes or browser session data committed."
+}
