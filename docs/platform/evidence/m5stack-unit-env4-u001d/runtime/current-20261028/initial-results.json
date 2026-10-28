@@ -1,0 +1,22 @@
+{
+  "scope": "Test-harness failures retained separately from successful final checks; emulator behavior was not weakened.",
+  "cases": [
+    {
+      "failure": "Default Python model rebuild lacked numpy",
+      "correction": "Use the existing model virtual environment with declared requirements; public rebuild then byte-identical"
+    },
+    {
+      "failure": "Initial locator capture was 600 px or 800 by 801 px, rejected by exact-size verifier",
+      "correction": "Place actual canvas at integer fixed origin and 800 by 800 CSS pixels; capture without resizing/warping"
+    },
+    {
+      "failure": "Material test supplied the wrong appearance argument shape",
+      "correction": "Use shell.color/opacity/finish contract, then repeat original/gold/purple views"
+    },
+    {
+      "failure": "Async waitForFunction predicate was treated as truthy before actual guest readiness; first input returned NOT_RUNNING",
+      "correction": "Explicitly await observe() in a bounded polling loop and require complete UART sample lines; failed attempt is not acceptance evidence"
+    }
+  ],
+  "historicalFailures": "../initial-results.json"
+}

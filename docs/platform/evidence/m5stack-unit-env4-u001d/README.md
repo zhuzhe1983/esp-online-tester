@@ -2,6 +2,8 @@
 
 This is the SHT40-AD1B + BMP280 ENV-IV, not ENV-III or ENV Pro. See the [runtime scope](../../unit-env4-runtime.md). All source URLs, actual fetched UTC seconds, final URLs, MIME types, sizes and SHA-256 are retained in `source-audit.json` and `runtime/sources.json`.
 
+The original receipts below are the 2026-10-27 implementation and measurements. The independent current-main migration, shared SHT4x reuse, fresh browser/model/guest checks and CPU samples are in [current-20261028](runtime/current-20261028/README.md). Historical timestamps and negative results are preserved; they are not current-run evidence.
+
 ## Reproduce
 
 1. Build the source-only `tools/fixtures/unit-env4-firmware` with ESP-IDF5.5.1. Its independent BMP280 compensation header is unchanged from M5Unit-ENV `28c521a137cb6696f4860cdce93ca7df9ce9a6af`; MIT license retained. Binaries remain in ignored output.
@@ -23,7 +25,7 @@ The PCB is visibly marked UNKNOWN and simplified. Original/gold/translucent-purp
 - The initial source fixture used one10ms FreeRTOS tick as a sensor wait. Depending on tick phase it was shorter than the8.2ms SHT40 conversion and correctly NACKed. Two ticks fix the test; emulator timing was not relaxed.
 - Immediate post-reconnect reads also correctly NACKed during1ms startup. The harness waits3ms of guest time before a normal sample, while still explicitly checking early-read rejection.
 - ESP-IDF uses negative `ESP_FAIL`; the initial probe regex wrongly required nonnegative errors. The expected NACK was observed, and the parser was corrected.
-- The old StopWatch unit test assumed the device list contained only four internal chips. It now separately checks those unchanged unpinned endpoints and all four optional, pinned, initially silent ENV endpoints. This is an intentional device-list extension, not a golden change.
+- The 2026-10-27 StopWatch unit test assumed the device list contained only four internal chips. That revision separately checked unchanged unpinned endpoints and all four optional, pinned, initially silent ENV endpoints. The current migration instead preserves the newer shared, pin-routed internal G47/G48 bus (including RTC) and checks G10/G11 ENV separately. Neither extension changes a golden.
 - One initial full-suite run lacked C6-hosted inputs in the new worktree. The existing fetch script verified the copied pinned inputs before rerunning. No missing-input test was hidden.
 
 Numeric/source details for the first three are in `runtime/initial-results.json`. Build logs remain local; public receipts contain normalized commands, outcomes and hashes rather than personal paths. Native CPU measurements are in `runtime/cpu.json`; previous U027 C6 and U003 Pocket costs remain in their original EX201/EX219 evidence.

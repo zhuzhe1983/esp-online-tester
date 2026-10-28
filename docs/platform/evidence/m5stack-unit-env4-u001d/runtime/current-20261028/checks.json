@@ -1,0 +1,248 @@
+{
+  "checkedAt": "2026-10-28T04:37:35Z",
+  "base": "5a9b68e0cd5aee1c6c51ca17c9fd2250a3c23fa7",
+  "sourceRevision": "da61bbc1cd7fd76db67efae5d4e066cbae145515",
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "checks": [
+    {
+      "name": "stable",
+      "status": "pass",
+      "command": "rustup update stable",
+      "completedAt": "2026-10-28T04:28:07Z",
+      "localLogSha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+    },
+    {
+      "name": "build",
+      "status": "pass",
+      "command": "cargo build --release --workspace",
+      "completedAt": "2026-10-28T04:29:25Z",
+      "localLogSha256": "6fbc3909ab4314c920fdb5593c5c1a8660e3932a94550ada2e76fe729678193c"
+    },
+    {
+      "name": "clippy-native",
+      "status": "pass",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "completedAt": "2026-10-28T04:29:35Z",
+      "localLogSha256": "e21de434278477d488ca451ab17be61181bb7715d0af447c4085591ac14e9627"
+    },
+    {
+      "name": "clippy-wasm",
+      "status": "pass",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "completedAt": "2026-10-28T04:29:40Z",
+      "localLogSha256": "9881180944e50757d93fb761e2244e41dd0a7d180ab290d09f12d5aa376121b5"
+    },
+    {
+      "name": "rust",
+      "status": "pass",
+      "command": "cargo test --release --workspace -- --include-ignored --skip external_",
+      "completedAt": "2026-10-28T04:34:48Z",
+      "localLogSha256": "0eea6aa8addb4e8982c994c7a8eeb31898ed7fbf21253052317be82bc302cfa1"
+    },
+    {
+      "name": "wasm-build",
+      "status": "pass",
+      "command": "tools/wasm-build.sh",
+      "completedAt": "2026-10-28T04:35:11Z",
+      "localLogSha256": "f1a62f2a7875c9a9fabf27d36f27d446c84e45a21a6bb9e4f4e596d838d89e1e"
+    },
+    {
+      "name": "wasm-sections",
+      "status": "pass",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "completedAt": "2026-10-28T04:35:11Z",
+      "localLogSha256": "e71ef8359f21209ac90fb7d03165977286b9bde89ca071fdb66f90888d3f62ce"
+    },
+    {
+      "name": "wasm",
+      "status": "pass",
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel",
+      "completedAt": "2026-10-28T04:35:44Z",
+      "localLogSha256": "12be145b9ec10290f2a47d362c3b7290901d60e83bfe2a1c1d37f4caecac3acb"
+    },
+    {
+      "name": "receipt-test",
+      "status": "pass",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+      "completedAt": "2026-10-28T04:35:45Z",
+      "localLogSha256": "773adafff70752643ef61c3d0d51b8cb72df36e9a22c735abd69f356636607ec"
+    },
+    {
+      "name": "receipt-verify",
+      "status": "pass",
+      "command": "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+      "completedAt": "2026-10-28T04:35:45Z",
+      "localLogSha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b"
+    },
+    {
+      "name": "receipt-m1",
+      "status": "pass",
+      "command": "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+      "completedAt": "2026-10-28T04:35:45Z",
+      "localLogSha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a"
+    },
+    {
+      "name": "receipt-historical",
+      "status": "pass",
+      "command": "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "completedAt": "2026-10-28T04:35:45Z",
+      "localLogSha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4"
+    },
+    {
+      "name": "vq",
+      "status": "pass",
+      "command": "env ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "completedAt": "2026-10-28T04:36:03Z",
+      "localLogSha256": "8f95f4f76966d87a488ed4d5e51565e9c81bcdf0f57a74f555f0f736bac72352"
+    },
+    {
+      "name": "wasm-tdisplay",
+      "status": "pass",
+      "command": "node tools/wasm-test.mjs tdisplay-prices",
+      "completedAt": "2026-10-28T04:36:06Z",
+      "localLogSha256": "2b885536b31c3e2d6c42407f0e51a3e79d68bb4f3bb9a30ab4f88b0d5fac04ff"
+    },
+    {
+      "name": "platform-all",
+      "status": "pass",
+      "command": "node --test tools/platform-*-test.mjs",
+      "completedAt": "2026-10-28T04:36:10Z",
+      "localLogSha256": "8bd987f61ca209b989732786f3995e6351b5c622554c61674297a0965ef4b5c2"
+    },
+    {
+      "name": "recording",
+      "status": "pass",
+      "command": "node tools/platform-recording-test.mjs --real",
+      "completedAt": "2026-10-28T04:36:14Z",
+      "localLogSha256": "fb28a4151c78da3e7407c93f247df0d879a64cac193458d9256b0667fb64233d"
+    },
+    {
+      "name": "stopwatch",
+      "status": "pass",
+      "command": "node tools/wasm-test.mjs demo-stopwatch",
+      "completedAt": "2026-10-28T04:36:14Z",
+      "localLogSha256": "dc486397658c1bccf3d2f2bd87af2ca9fc488d4396b80ab943fa64e27e2ef638"
+    },
+    {
+      "name": "timing-api",
+      "status": "pass",
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "completedAt": "2026-10-28T04:36:14Z",
+      "localLogSha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3"
+    },
+    {
+      "name": "ble-api",
+      "status": "pass",
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public \"$ESP32SIM_ROM_DIR/esp32c3_rev3_rom.elf\"",
+      "completedAt": "2026-10-28T04:36:15Z",
+      "localLogSha256": "471d2c9309faadf9dea806ca00ac19fa0d8c4f09f7495b49ccaa12fe49714872"
+    },
+    {
+      "name": "ble-connection",
+      "status": "pass",
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public \"$ESP32SIM_ROM_DIR/esp32c3_rev3_rom.elf\"",
+      "completedAt": "2026-10-28T04:36:17Z",
+      "localLogSha256": "806b292dc18967b9951e546bc39033daadd20bc4f154f37c6c364cdaef4939a9"
+    },
+    {
+      "name": "worker-pacing",
+      "status": "pass",
+      "command": "node tools/worker-pacing-test.mjs",
+      "completedAt": "2026-10-28T04:36:17Z",
+      "localLogSha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158"
+    },
+    {
+      "name": "worker-channel",
+      "status": "pass",
+      "command": "node tools/worker-channel-test.mjs",
+      "completedAt": "2026-10-28T04:36:17Z",
+      "localLogSha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6"
+    },
+    {
+      "name": "worker-touch",
+      "status": "pass",
+      "command": "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs",
+      "completedAt": "2026-10-28T04:36:17Z",
+      "localLogSha256": "f7297e66e53296b37d9eb24a818f5cd8714baa8e9d17f9170a23cf8ea816cba9"
+    },
+    {
+      "name": "browser-contract",
+      "status": "pass",
+      "command": "node --test tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+      "completedAt": "2026-10-28T04:36:17Z",
+      "localLogSha256": "516eb5b76e54222ffda6485959a9f01ad548adb3147d1e475ac3d26dea607116"
+    },
+    {
+      "name": "browser-python",
+      "status": "pass",
+      "command": "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "completedAt": "2026-10-28T04:36:17Z",
+      "localLogSha256": "ecd7ba5b75a44f1c6152f17499e61460ce25d58c558dcfaeb286981eaddf0335"
+    },
+    {
+      "name": "jit",
+      "status": "pass",
+      "command": "tools/wasm-jit-test.sh",
+      "completedAt": "2026-10-28T04:37:05Z",
+      "localLogSha256": "c05b4a9e52b1ea5c633c061d7b0dac0f98013673e6d646a4203d2693327d7bb1"
+    },
+    {
+      "name": "profiling",
+      "status": "pass",
+      "command": "bash -c '. ./tools/wasm-rustflags.sh; cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile'",
+      "completedAt": "2026-10-28T04:37:22Z",
+      "localLogSha256": "19fe539e229558e5b6159276a6822da3986743385ff3cbace6b0c01c113c5673"
+    },
+    {
+      "name": "arm",
+      "status": "pass",
+      "command": "cargo test --release -p xtensa-lx7",
+      "completedAt": "2026-10-28T04:37:35Z",
+      "localLogSha256": "ba7c4990cdcf4ad911a6d5624493554e2b6fcebda2ddd0c389d45684ce1ba6a4"
+    },
+    {
+      "name": "catalog",
+      "command": "python tools/validate-platform-catalog.py",
+      "status": "pass",
+      "localLogSha256": "c2d1a0e8e0cc974054daedbaa5bc537647f18b4dc6e44740a8b4168e1b3f1504",
+      "counts": {
+        "products": 86,
+        "accessories": 8,
+        "firmwares": 150,
+        "watchlist": 104
+      }
+    },
+    {
+      "name": "env4-actual-worker",
+      "command": "node tools/probe-unit-env4.mjs --build <fixture-build-directory>",
+      "status": "pass",
+      "checks": 11,
+      "receipt": "fixture.json"
+    }
+  ],
+  "counts": {
+    "rust": 1568,
+    "platformNode": 104,
+    "wasmScenarios": 11,
+    "wasmDifferential": 111126,
+    "gpioWaveform": 24,
+    "browserPython": 15
+  },
+  "wasmSections": {
+    "dwarfAbsent": true,
+    "nameRetained": true,
+    "bytes": 4237713
+  },
+  "goldensChanged": false,
+  "limits": [
+    "No physical hardware test; no arbitrary official firmware compatibility sweep",
+    "Source-only IDF fixture outputs UART; blank framebuffer is expected",
+    "Local build logs and browser captures remain ignored; hashes preserve identity without private paths"
+  ],
+  "cleanup": "Task-owned headless browser session closed and verified absent; owned HTTP listener stopped; unrelated browser sessions preserved.",
+  "privacy": {
+    "repositoryScript": "pass: 2122 tracked docs/evidence files, including 20 gzip files",
+    "scopedCheck": "same configured patterns over all 33 tracked/untracked ENV-IV evidence files: pass",
+    "manualReview": "Reviewed structured receipts, scripts, and model/Studio/mini captures; no personal data retained. Fresh captures remain ignored locally, with only hashes and sizes committed. All fresh evidence files are below 50 KB."
+  }
+}
