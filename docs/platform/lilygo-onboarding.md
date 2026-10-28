@@ -6,7 +6,7 @@
 
 以下 6 款继续作为优先适配对象，保留原有本地产品 ID、精确硬件配置、出厂默认项和模型。其余新增条目先建立来源可查的产品列表，容量、屏幕和引脚未核验的部分保持未知，不借用同系列型号的板级模型。
 
-[产品顺序与后续队列](research/lilygo-priority-2026-10-28.md)记录了关注度来源；[目录与固件审计](research/lilygo-catalog-audit-2026-10-28.json)保留每款产品的出厂固件调查和校验数据。
+[Spark 系列与产品清单](research/lilygo-spark-product-inventory-2026-10-28.md)记录完整标识映射和排除项。[产品顺序与后续队列](research/lilygo-priority-2026-10-28.md)记录了关注度来源；[目录与固件审计](research/lilygo-catalog-audit-2026-10-28.json)保留每款产品的出厂固件调查和校验数据。
 
 | 优先适配产品 | 已有基础 | 当前运行边界 |
 | --- | --- | --- |
