@@ -120,6 +120,8 @@ pub trait SocBus: Bus {
     fn ble_enabled(&self) -> bool { false }
     fn ble_pending_commands(&self) -> usize { 0 }
     fn ble_command(&mut self, _command: &str) -> Result<(), String> { Err("BLE is not enabled".into()) }
+    /// The Bluetooth devices around the station (`--ble-nearby`) the virtual controller's scans report.
+    fn ble_nearby(&mut self, _list: Vec<crate::ble::peer::Nearby>) -> Result<(), String> { Err("BLE is not enabled".into()) }
     /// Put a virtual access point (`--wifi`) and the network behind it, with `nat` to the host if
     /// given, on the air the chip's WiFi MAC hears, logging as the bus's debug flags say. They
     /// survive a guest reboot. A second call replaces them and restarts the link's queues, pacing
@@ -166,6 +168,9 @@ pub trait SocBus: Bus {
     fn write_flash(&mut self, offset: usize, data: &[u8]) -> Result<(), String>;
     /// Map and copy the app image at flash `app_off` as the bootloader would; returns the entry point.
     fn boot_app(&mut self, app_off: usize) -> Result<u32, String>;
+    /// Where each core was when a chip reset took effect, just before `reboot` (a chip that records
+    /// it for its ROM, as the P4's ASSIST_DEBUG does, keeps it).
+    fn note_core_pcs(&mut self, _pcs: &[u32]) {}
     /// Chip reset: re-create the digital peripherals, keep what survives on silicon. Returns the cause.
     fn reboot(&mut self, mac: [u8; 6]) -> u32;
     fn sw_reset(&self) -> bool;

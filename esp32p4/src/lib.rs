@@ -3,16 +3,18 @@
 //! behind its own 1024-entry MMU. No radio.
 //!
 //! The silicon revision is a type parameter (`Revision`), because rev < 3 and rev >= 3 differ in
-//! ISA, interrupt-threshold location and ROM. `P4` is rev < 3 (v0.x, v1.x), the only one so far.
+//! ISA, interrupt-threshold location and ROM. `P4` is rev < 3 (v0.x, v1.x), `P4Rev3` rev >= 3.
 //!
 //! Shared IP (UART, USB-Serial/JTAG, systimer, timer groups, SPI flash controller, efuse) comes
 //! from `esp-periph`. Written here: the memory map, the interrupt matrices and CLIC register
 //! blocks, the cache controller, HP_SYSTEM, HP_SYS_CLKRST, the LP system blocks and the analog
 //! I2C master. Each core's CLIC candidate is presented to the core, whose CLIC mode takes it
 //! (`periph::Clic`, `riscv_rv32::exec::CLIC_IRQ_*`).
+pub mod board;
 pub mod bus;
+pub mod coproc;
 pub mod periph;
 pub mod soc;
 
 pub use esp_soc::Stop;
-pub use soc::{machine, Esp32p4, Machine, RevLt3, Revision, P4};
+pub use soc::{built_for_rev3, machine, machine_rev, Esp32p4, Machine, P4Rev3, RevGe3, RevLt3, Revision, P4};

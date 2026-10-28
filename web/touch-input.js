@@ -16,8 +16,12 @@ window.installTouchInput = function (canvas, send, { intervalMs = 40, trace = nu
   const now = () => performance.timeOrigin + performance.now();
   const sample = (e) => {
     const r = canvas.getBoundingClientRect();
-    const x = Math.max(0, Math.min(canvas.width - 1, Math.round((e.clientX - r.left) * canvas.width / r.width)));
-    const y = Math.max(0, Math.min(canvas.height - 1, Math.round((e.clientY - r.top) * canvas.height / r.height)));
+    // The workbench bezel belongs to the CSS box, not to the panel pixels.
+    const style = getComputedStyle(canvas), px = key => parseFloat(style[key]) || 0;
+    const left = px('borderLeftWidth') + px('paddingLeft'), right = px('borderRightWidth') + px('paddingRight');
+    const top = px('borderTopWidth') + px('paddingTop'), bottom = px('borderBottomWidth') + px('paddingBottom');
+    const x = Math.max(0, Math.min(canvas.width - 1, Math.round((e.clientX - r.left - left) * canvas.width / Math.max(1, r.width - left - right))));
+    const y = Math.max(0, Math.min(canvas.height - 1, Math.round((e.clientY - r.top - top) * canvas.height / Math.max(1, r.height - top - bottom))));
     return { ...window.panelPoint(x, y, canvas.width, canvas.height, rotation()), id: ++sequence, event: e.type, arrivalMs: now() };
   };
   const publish = (point, down) => {

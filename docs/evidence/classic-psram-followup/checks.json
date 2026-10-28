@@ -1,0 +1,304 @@
+{
+  "base": "77e43c20a70054ac84d1724d757fa9ce12668151",
+  "starting_head": "304125aab8b3e933a31cc682dc687fb40415207d",
+  "implementation": "9823ed9a978c0fc798ffebc322662624566758f5",
+  "rust": "1.99.0",
+  "build_jobs": 2,
+  "priority": "nice -n 10",
+  "checks": [
+    {
+      "check": "build",
+      "command": "cargo +1.99.0 build --release --workspace -j2",
+      "exit_code": 0
+    },
+    {
+      "check": "clippy-native",
+      "command": "cargo +1.99.0 clippy --workspace --all-targets -j2 -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "check": "clippy-wasm",
+      "command": "cargo +1.99.0 clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -j2 -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "check": "tests-rom",
+      "command": "env HOME=$OUT/empty-home ESP32SIM_ROM_DIR=$REPO/web/wasm/fw cargo +1.99.0 test --release --workspace -j2 -- --include-ignored --skip external_",
+      "exit_code": 0
+    },
+    {
+      "check": "tests-plain",
+      "command": "env -u ESP32SIM_ROM_DIR HOME=$OUT/empty-home cargo +1.99.0 test --release --workspace -j2",
+      "exit_code": 0
+    },
+    {
+      "check": "vq",
+      "command": "env ESP32SIM_ROM_DIR=$REPO/web/wasm/fw ESP32SIM_VQ_NATIVE=1 cargo +1.99.0 test --release -p esp32s3 --test machine --test virtual_stops -j2",
+      "exit_code": 0
+    },
+    {
+      "check": "wasm-build",
+      "command": "bash tools/wasm-build.sh",
+      "exit_code": 0
+    },
+    {
+      "check": "wasm-sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "exit_code": 0
+    },
+    {
+      "check": "wasm-demos",
+      "command": "env ESP32SIM_ROM_DIR=$REPO/web/wasm/fw node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices",
+      "exit_code": 0
+    },
+    {
+      "check": "timing-api",
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "exit_code": 0
+    },
+    {
+      "check": "ble-api",
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exit_code": 0
+    },
+    {
+      "check": "ble-connection",
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exit_code": 0
+    },
+    {
+      "check": "pacing",
+      "command": "node tools/worker-pacing-test.mjs",
+      "exit_code": 0
+    },
+    {
+      "check": "channel",
+      "command": "node tools/worker-channel-test.mjs",
+      "exit_code": 0
+    },
+    {
+      "check": "touch",
+      "command": "node --test tools/touch-input-test.mjs",
+      "exit_code": 0
+    },
+    {
+      "check": "build-policy",
+      "command": "node --test tools/wasm-build-policy.test.mjs",
+      "exit_code": 0
+    },
+    {
+      "check": "browser-tests",
+      "command": "bash -c node --test tools/browser-benchmark/*.test.mjs && python3 -m unittest discover -s tools/browser-benchmark -p \"test_*.py\"",
+      "exit_code": 0
+    },
+    {
+      "check": "retained-x5",
+      "command": "bash -c node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs && node docs/evidence/perf-x5-2026-09-22/verify-results.mjs && node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs && node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs && node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs && node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "exit_code": 0
+    },
+    {
+      "check": "jit",
+      "command": "bash tools/wasm-jit-test.sh",
+      "exit_code": 0
+    },
+    {
+      "check": "wasm-profile",
+      "command": "bash -c . ./tools/wasm-rustflags.sh; cargo +1.99.0 build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile -j2",
+      "exit_code": 0
+    },
+    {
+      "check": "privacy",
+      "command": "node tools/check-evidence-privacy.mjs",
+      "exit_code": 0
+    },
+    {
+      "check": "native-aarch64",
+      "command": "cargo +1.99.0 test --release -p xtensa-lx7",
+      "exit_code": 0
+    },
+    {
+      "check": "fetch-rom",
+      "command": "bash tools/fetch-rom-elfs.sh roms",
+      "exit_code": 0
+    },
+    {
+      "check": "fetch-micropython",
+      "command": "bash tools/fetch-micropython.sh",
+      "exit_code": 0
+    }
+  ],
+  "test_totals": {
+    "tests-rom": {
+      "passed": 1037,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 29
+    },
+    "tests-plain": {
+      "passed": 1006,
+      "failed": 0,
+      "ignored": 60,
+      "measured": 0,
+      "filtered": 0
+    },
+    "vq": {
+      "passed": 43,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    "native-aarch64": {
+      "passed": 53,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0
+    },
+    "fixtures": {
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    "arduino311": {
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    "lowhigh": {
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    }
+  },
+  "fixture_profiles": 4,
+  "fixture_results": [
+    "fixtures 0",
+    "arduino311 0",
+    "lowhigh 0"
+  ],
+  "fixture_command": "ESP32SIM_ROM_DIR=$ROMS ARDUINO2_FIRMWARE_DIR=$ARDUINO2 ARDUINO3_FIRMWARE_DIR=$ARDUINO3 MICROPYTHON_SPIRAM_IMAGE=$IMAGE nice -n 10 cargo +1.99.0 test --release -j2 -p esp32sim --test classic_psram_idf --test classic_psram_arduino2 --test classic_psram_arduino3 --test classic_psram_micropython --test classic_psram_option -- --include-ignored --nocapture",
+  "arduino311_command": "ESP32SIM_ROM_DIR=$ROMS ARDUINO3_FIRMWARE_DIR=$ARDUINO311 nice -n 10 cargo +1.99.0 test --release -j2 -p esp32sim --test classic_psram_arduino3 -- --ignored --nocapture",
+  "lowhigh_command": "ESP32SIM_ROM_DIR=$ROMS P5_FIRMWARE_DIR=$STOCK_A2 nice -n 10 cargo +1.99.0 test --release -j2 -p esp32sim --test classic_psram_lowhigh -- --ignored --nocapture",
+  "micropython": {
+    "sha256": "a8dc95b75cbbda9e5702a37166f94d08469f5b9046262be7187b1911ac07a358",
+    "bytes": 1612336,
+    "free_bytes_present": 4178272,
+    "free_bytes_absent": 160096
+  },
+  "golden_files": 55,
+  "golden_changes": [],
+  "archive_original_files": 167,
+  "archive_manifest_sha256": "24cd108e6dfd71641a707a06d723d35daedf15c54341f0818f4a00bbab6196a5",
+  "historical_evidence_markdown_scan": {
+    "resolved_markdown_paths": 375,
+    "scope": "Prior docs/evidence Markdown-only pass; not a whole-tree provenance result"
+  },
+  "reference_scan": {
+    "scope": "All tracked UTF-8 text; classic-PSRAM Markdown links, bare repository provenance paths and current ancestry claims, including source comments and docs/fixtures. Not all repository links or arbitrary prose.",
+    "tracked_text_files": 2594,
+    "path_occurrences": 56,
+    "current_ancestry_claims": 25,
+    "dangling_targeted_references": [],
+    "stale_current_ancestry_claims": [],
+    "historical_exceptions": [
+      "Explicitly historical P0 capture base/proposed contract and failed probe values retained",
+      "Original IDF low/high and 40/40 negatives retained with explicit historical labeling and current qualification links"
+    ]
+  },
+  "semantic_mutations": [
+    {
+      "mutation": "drop-load-dispatch",
+      "exit_code": 101,
+      "assertion": "PSRAM load miss dispatch",
+      "assertion_killed": true
+    },
+    {
+      "mutation": "drop-store-dispatch",
+      "exit_code": 101,
+      "assertion": "PSRAM store miss dispatch",
+      "assertion_killed": true
+    },
+    {
+      "mutation": "wrong-load-bound",
+      "exit_code": 101,
+      "assertion": "PSRAM load miss dispatch",
+      "assertion_killed": true
+    },
+    {
+      "mutation": "wrong-store-bound",
+      "exit_code": 101,
+      "assertion": "PSRAM store miss dispatch",
+      "assertion_killed": true
+    },
+    {
+      "mutation": "wrong-fetch-bound",
+      "exit_code": 101,
+      "assertion": "outside PSRAM window",
+      "assertion_killed": true
+    },
+    {
+      "mutation": "absent-as-present",
+      "exit_code": 101,
+      "assertion": "absent device has no backing",
+      "assertion_killed": true
+    }
+  ],
+  "restored_control_passed": true,
+  "strict_hotpath_gate": "explained deltas, CPU table pending",
+  "literal_main_equivalent_codegen": false,
+  "disassembly": {
+    "binary_sha256": {
+      "base": "e29a97c5c418e44b4dcaa92b08d45f8343ebfb0b42caebcf5918cb27ec2c29a3",
+      "head": "70a7d26e98a3b673833c2f4ff85af2a2ca1635a9cf4ea4358022cab6844e9ca1"
+    },
+    "functions": [
+      {
+        "function": "tick",
+        "base_instructions": 2207,
+        "head_instructions": 2207,
+        "same_mnemonic_sequence": true
+      },
+      {
+        "function": "fetch",
+        "base_instructions": 122,
+        "head_instructions": 127,
+        "same_mnemonic_sequence": false
+      },
+      {
+        "function": "read8",
+        "base_instructions": 106,
+        "head_instructions": 104,
+        "same_mnemonic_sequence": false
+      },
+      {
+        "function": "read16",
+        "base_instructions": 122,
+        "head_instructions": 117,
+        "same_mnemonic_sequence": false
+      },
+      {
+        "function": "read32",
+        "base_instructions": 171,
+        "head_instructions": 178,
+        "same_mnemonic_sequence": false
+      },
+      {
+        "function": "store",
+        "base_instructions": 2722,
+        "head_instructions": 2739,
+        "same_mnemonic_sequence": false
+      }
+    ]
+  },
+  "remote_ci": false,
+  "cpu_comparison": "maintainer run, main 6cf190c6 vs f8cfc039, user CPU, 7 alternating pairs, load gate 5: classic hello 30 s 0.370->0.370 s +0.0% slower 0/7; T-Display MicroPython 60 s 0.920->0.920 s +0.0% slower 3/7",
+  "publication": false
+}

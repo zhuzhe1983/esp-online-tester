@@ -159,6 +159,12 @@ async function runManifest(name) {
     }
   }
   for (const [off, rel] of Object.entries(m.flash_at || {})) withBytes(new Uint8Array(file(rel)), (p, n) => w.esp32sim_load_at(emu, Number(off) >>> 0, p, n));
+  // a co-processor (`"coproc"`, board `esp32p4…+c6`): its images go to the C6, as the page loads them
+  for (const [k, v] of Object.entries((m.coproc || {}).files || {})) {
+    const rc = withBytes(new Uint8Array(file(v)), (p, n) => w.esp32sim_load(emu, (k === 'elf' ? 4 : kinds[k]) | 0x100, p, n));
+    if (rc !== 0) throw new Error(`load co-processor ${k} ${v} failed: ${logs.join(' | ')}`);
+  }
+  for (const [off, rel] of Object.entries((m.coproc || {}).flash_at || {})) withBytes(new Uint8Array(file(rel)), (p, n) => w.esp32sim_load_at(emu, (Number(off) | 0x80000000) >>> 0, p, n));
   for (const s of m.stubs || []) { const [sym, ...values] = s.split('='); const val = values.length ? values.join('=') : undefined; const name = (m.symbols || {})[sym] || sym;   // as the page: a symbols map resolves a stub without the ELF
     if (withBytes(enc.encode(name + (val === undefined ? '' : '=' + val)), (p, n) => w.esp32sim_stub_spec(emu, p, n)) !== 0) throw new Error('invalid stub: ' + s); }
   if (m.wifi && withBytes(enc.encode(m.wifi), (p, n) => w.esp32sim_wifi(emu, p, n)) !== 0) throw new Error('invalid WiFi configuration');

@@ -988,6 +988,79 @@ fn periodic_tick_notifies_wifi_tx_and_air_rx() {
     assert!(bus.periph.wifi.irq());
 }
 
+/// A WiFi bus with one open virtual access point and `frames` of 24 bytes queued on the air, the
+/// first byte of each a marker so the test can tell them apart in the receive buffer.
+fn wifi_bus_with_air_frames(frames: &[u8]) -> SocBus {
+    let mut bus = SocBus::new(1024, 1024, [0; 6]);
+    bus.periph.wifi.link.attach(Some(crate::wifi::VirtualAp::new(crate::wifi::ApConfig {
+        ssid: "test".into(), bssid: [2, 0, 0, 0, 0, 1], channel: 1, psk: None, epoch_s: None,
+    }, false)), None);
+    for &marker in frames {
+        bus.periph.wifi.link.ap_mut().unwrap().queue.push(crate::wifi::AirFrame { at_us: 0, frame: vec![marker; 24] });
+    }
+    bus
+}
+
+/// One RX descriptor: `512` bytes of buffer at `buf`, owned by the DMA, pointing at `next`.
+fn arm_rx_desc(bus: &mut SocBus, at: u32, buf: u32, next: u32) {
+    bus.write32(at, 512 | (1 << 31)).unwrap();
+    bus.write32(at + 4, buf).unwrap();
+    bus.write32(at + 8, next).unwrap();
+}
+
+/// One scheduling round of one emulated millisecond: the air delivers at most one frame in a round.
+fn wifi_air_round(bus: &mut SocBus) { assert_eq!(Bus::tick(bus, (crate::periph::CPU_HZ / 1000) as u32), 1); }
+
+#[test]
+fn air_rx_restarts_at_the_base_when_the_list_runs_dry() {
+    // Arduino-ESP32 arms the receive DMA one short list at a time: four descriptors, the last one's
+    // `next` null. The frame after that list therefore finds nothing to land in, and the driver's
+    // `BASE_RX_DSCR` write — the head of the list it just recycled — is what starts the DMA again.
+    let mut bus = wifi_bus_with_air_frames(&[0x11, 0x22, 0x33]);
+    let (first, dead, second) = (FIRST_DESC, FIRST_DESC + 0x40, FIRST_DESC + 0x80);
+    let dead_base = dead & 0xf_ffff;
+    arm_rx_desc(&mut bus, first, first + 0x200, dead);          // the armed list: one descriptor, then a null word
+    bus.write32(dead, 0).unwrap();
+    bus.write32(0x6003_3088, first & 0xf_ffff).unwrap();        // BASE_RX_DSCR
+    wifi_air_round(&mut bus);
+    assert_eq!((bus.periph.wifi.link.tx_frames(), bus.periph.wifi.link.rx_frames()), (0, 1));
+    assert_eq!(bus.read8_unpriced(first + 0x200 + 48).unwrap_or(0), 0x11, "frame after the 48-byte rx_ctrl header");
+    assert_eq!(bus.periph.wifi.rx_next, dead_base);
+
+    // Software recycled the frame and left the next descriptor alone: the DMA stops there.
+    arm_rx_desc(&mut bus, first, first + 0x200, dead);
+    wifi_air_round(&mut bus);
+    assert_eq!(bus.periph.wifi.link.rx_dropped(), 1, "a frame that finds the DMA stopped is lost");
+
+    // The driver hands over the next list, base first and the base write on its own.
+    arm_rx_desc(&mut bus, second, second + 0x200, 0);
+    bus.write32(0x6003_3088, second & 0xf_ffff).unwrap();
+    wifi_air_round(&mut bus);
+    assert_eq!(bus.periph.wifi.link.rx_frames(), 2, "the base write restarts the stopped DMA");
+    assert_eq!(bus.periph.wifi.rx_next, 0, "the new list ends after one descriptor");
+    assert_eq!(bus.read8_unpriced(second + 0x200 + 48).unwrap_or(0), 0x33);
+}
+
+#[test]
+fn air_rx_base_write_does_not_rewind_a_running_list() {
+    // Software rewrites BASE_RX_DSCR every time it recycles descriptors. While the DMA runs, that must
+    // leave its pointer alone: rewinding re-delivers into descriptors the stack has already moved past.
+    let mut bus = wifi_bus_with_air_frames(&[0x11, 0x22]);
+    let (first, second) = (FIRST_DESC, FIRST_DESC + 0x40);
+    arm_rx_desc(&mut bus, first, first + 0x200, second);
+    arm_rx_desc(&mut bus, second, second + 0x200, 0);
+    bus.write32(0x6003_3088, first & 0xf_ffff).unwrap();
+    wifi_air_round(&mut bus);
+    assert_eq!((bus.periph.wifi.link.rx_frames(), bus.periph.wifi.rx_next), (1, (second & 0xf_ffff)));
+
+    arm_rx_desc(&mut bus, first, first + 0x200, second);        // recycle descriptor 0
+    bus.write32(0x6003_3088, first & 0xf_ffff).unwrap();        // and rewrite the base, as software does
+    wifi_air_round(&mut bus);
+    assert_eq!(bus.periph.wifi.link.rx_frames(), 2);
+    assert_eq!(bus.read8_unpriced(second + 0x200 + 48).unwrap_or(0), 0x22, "landed in the next descriptor, not back at the base");
+    assert_eq!(bus.read32(first).unwrap() >> 30 & 1, 0, "descriptor 0 was not filled a second time");
+}
+
 fn read_flush(bus: &mut SocBus, cycles: u32) {
     bus.tick_budget = MAX_TICK_DEFER;
     bus.irq_dirty = false;

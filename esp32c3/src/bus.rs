@@ -146,8 +146,45 @@ impl SocBus {
         // read returns zeros — which is exactly how `E memspi: no response` showed up on a
         // non-power-on boot while a power-on boot happened to survive it.
         if self.periph.spi_exec { self.run_spi(); }
-        if a == 0x6002_4000 && self.periph.spi2.has_pending_transfer() { self.deliver_spi2_transfer(); }
+        // SPI2 (0x6002_4000) or GDMA (0x6003_f000): either can be the last write before a DMA
+        // data phase can run, as drivers start the out link before or after CMD.USR.
+        if matches!(a & !0xfff, 0x6002_4000 | 0x6003_f000) && self.periph.spi2.has_pending_transfer() {
+            if self.periph.spi2.dma_tx_pending.is_some() { self.spi2_dma_step(); }
+            self.deliver_spi2_transfer();
+        }
         self.irq_dirty = true;
+    }
+
+    /// Supply a GP-SPI2 MOSI data phase from the GDMA out channel bound to it, through the shared
+    /// `gather_out` like the C6's `spi2_dma_tx` and the SHA path above.
+    /// SPI2 is GDMA peripheral 0 (IDF v5.5.4 components/soc/esp32c3/include/soc/gdma_channel.h).
+    /// OUT_TOTAL_EOF (bit 3 of the shared layout) is raised when the chain ends at a null link. A chain
+    /// that faults or ends short raises OUT_DSCR_ERR and the command still completes, without data, as on the S3.
+    /// The data phase completes at once, without wire time.
+    /// Model choice, as on the S3: a chain that ends before the SPI data length raises OUT_DSCR_ERR and
+    /// sends nothing, where silicon would not flag a descriptor error and the SPI side would underflow.
+    #[cold]
+    #[inline(never)]
+    fn spi2_dma_step(&mut self) {
+        let Some(bits) = self.periph.spi2.dma_tx_pending else { return };
+        let Some(ch) = self.periph.gdma.state.out_channel_for(0) else { return };
+        let wanted = bits.div_ceil(8) as usize;
+        let mut payload = Vec::with_capacity(wanted);
+        let mut memory = esp_periph::gdma::SramOut { base: DRAM_LOW, bytes: &mut self.sram[DRAM_IN_SRAM..], channel: &mut self.periph.gdma.state.out[ch] };
+        let result = esp_periph::gdma::gather_out(&mut memory, wanted, &mut payload);
+        let c = &mut self.periph.gdma.state.out[ch];
+        c.running = false; c.buf_pos = 0;
+        let complete = match result {
+            Ok(next) => { c.desc = next; if next == 0 { c.int_raw |= 1 << 3; } payload.len() == wanted }
+            Err(_) => false,
+        };
+        if !complete {
+            c.int_raw |= 1 << 2;
+            if self.periph.spi2.log { eprintln!("[spi2] DMA descriptor fault ({} of {} bytes)", payload.len(), wanted); }
+            self.periph.spi2.fail_dma_tx();
+            return;
+        }
+        self.periph.spi2.complete_dma_tx(&payload);
     }
 
     #[inline(always)]

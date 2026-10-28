@@ -3,7 +3,10 @@
 The `esp32` crate models the dual-core LX6 classic ESP32 and loads the ECO3 mask ROM. It boots the real
 rev-3 mask ROM through the second-stage bootloader into an unchanged application.
 The shared Xtensa core enables DFP context registers only for this target.
-Double-precision arithmetic and PSRAM are not modeled.
+Double-precision arithmetic is not modeled. Optional 4 MiB quad data PSRAM is
+available through `--psram-mb 4` and the WASM factory, with 32 KiB MMU pages and
+normal/low-high cache modes. Other nonzero capacities, PSRAM execution and external
+DMA remain unsupported; see [qualification and limits](evidence/classic-psram-followup/README.md).
 
 ## Clock model
 

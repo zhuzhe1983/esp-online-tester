@@ -307,6 +307,8 @@ impl<S: Soc> Machine<S> {
         // where core 0 was when the reset took effect (the C6 ROM prints it as `Saved PC`)
         let pc = self.cores[0].pc();
         self.bus.note_pc(pc);
+        let pcs: Vec<u32> = self.cores.iter().map(|c| c.pc()).collect();
+        self.bus.note_core_pcs(&pcs);
         let cause = self.bus.reboot(self.mac);
         for (i, c) in self.cores.iter_mut().enumerate() { S::reset_core_with_bus(c, &mut self.bus, i); if i > 0 { self.core_held[i] = true; } }
         self.reboots += 1;

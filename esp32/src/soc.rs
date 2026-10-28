@@ -84,12 +84,14 @@ impl Soc for Esp32 {
 }
 
 impl esp_soc::SocBus for SocBus {
+    fn set_psram_size(&mut self, bytes: usize) -> Result<(), String> { self.configure_psram(bytes) }
     fn enable_ble(&mut self, elf: &esp_soc::elf::Elf) -> Result<(), String> {
         self.ble.enable(&elf.by_name, elf.symbol_sizes.get("esp_bt_controller_init").copied().unwrap_or(0), &<Self as esp_soc::ble::vhci::VhciBus>::abi())
     }
     fn ble_enabled(&self) -> bool { !self.ble.hooks.is_empty() }
     fn ble_pending_commands(&self) -> usize { self.ble.session.pending_commands() }
     fn ble_command(&mut self, command: &str) -> Result<(), String> { self.ble.command(command, self.cycles, periph::CPU_HZ) }
+    fn ble_nearby(&mut self, list: Vec<esp_soc::ble::peer::Nearby>) -> Result<(), String> { self.ble.set_nearby(list, self.cycles, periph::CPU_HZ) }
     fn attach_wifi(&mut self, cfg: esp_soc::wifi::ApConfig, nat: Option<esp_soc::nat::Nat>) -> Result<(), String> {
         self.periph.wifi.link.attach_new(cfg, nat, &self.debug);
         Ok(())
@@ -140,6 +142,7 @@ impl esp_soc::SocBus for SocBus {
     fn reboot(&mut self, mac: [u8; 6]) -> u32 {
         self.deep_sleep = false;
         self.light_sleep = false;
+        self.reset_psram();
         self.ble.restore_flash(&mut self.flash);
         self.ble.reset();
         let cause = self.periph.rtc.0.reset_cause;

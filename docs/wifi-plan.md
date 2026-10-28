@@ -26,6 +26,12 @@ wifi station: got ip:10.0.2.15
 What is modelled:
 - PHY calibration loops satisfied with faked done-bits; scan, open-system auth, association.
 - The 802.11 MAC (TX queue registers, RX descriptor ring, interrupt events) — see below.
+- **Receive lists handed over one at a time**, as Arduino-ESP32 writes them: the DMA follows the
+  `next` pointers, stops when the next descriptor is not software-armed, and restarts at
+  `BASE_RX_DSCR` (0x088) when software hands it the next short list. The IDF station example writes
+  the base once and keeps a long ring; an Arduino-ESP32 application (IDF 5.1) arms four descriptors at a
+  time, and without the hand-over its station never authenticated — 314 of 315 frames were dropped
+  ([decisions](decisions.md), [receipt](evidence/wifi-rx-handover/README.md)).
 - A **virtual AP** (`esp-soc/src/wifi.rs`): beacons, probe responses, auth/assoc, and the WPA2
   four-way handshake (PMK from the passphrase, PTK derivation, MIC, GTK delivered AES-key-wrapped).
 - The **AES accelerator** (`Aes` in `esp-periph/src/aes.rs`, DMA and block mode) — the supplicant unwraps the

@@ -5,7 +5,10 @@ use crate::{Device, Gpio, RegRam, WriteEffect, APB_HZ};
 use emu_core::ClockDomain;
 
 #[derive(Clone, Copy)]
-pub enum LedcLayout { S3, C3, C6 }
+/// `P4`: the C6's register fields (and its external clock) with the S3's eight channels; a
+/// channel's fade step count is in the gamma RAM at 0x400 (IDF v5.5.4 esp32p4 hal/ledc_ll.h,
+/// register/hw_ver3/soc/ledc_reg.h).
+pub enum LedcLayout { S3, C3, C6, P4 }
 
 /// `CLASSIC` marks a classic ESP32 speed group: S3's eight channels, C6-width timer fields and a
 /// configuration write that drops a pending duty update. S3/C3/C6 use the default.
@@ -33,8 +36,8 @@ impl Ledc {
     pub fn output(&self, gpio: &Gpio, pin: u8) -> Option<(f64, u32)> {
         let matrix = *gpio.func_out_sel.get(pin as usize)?;
         if gpio.enable & (1u64 << pin) == 0 { return None; }
-        let base = match self.layout { LedcLayout::S3 => 73, LedcLayout::C3 => 45, LedcLayout::C6 => 0 };
-        let bits = if matches!(self.layout, LedcLayout::S3) { 9 } else { 8 };
+        let base = match self.layout { LedcLayout::S3 => 73, LedcLayout::C3 => 45, LedcLayout::C6 => 0, LedcLayout::P4 => 126 };
+        let bits = if matches!(self.layout, LedcLayout::S3 | LedcLayout::P4) { 9 } else { 8 };
         let channel = (matrix & ((1 << bits) - 1)).checked_sub(base)? as usize;
         let timer = self.channel_timer_settings(channel)?;
         let hz = self.source_hz();
@@ -81,11 +84,11 @@ impl Ledc<$classic> {
         Self { layout, regs: RegRam::new(), duty: [0; 8], pending: [false; 8],
             unsupported_fade: [false; 8], phase: [0; 4], active: 0, timer_params: [0; 4], raw: 0, ena: 0, external_clock_hz: 0, clock_enabled: true }
     }
-    fn channels(&self) -> usize { if matches!(self.layout, LedcLayout::S3) { 8 } else { 6 } }
-    fn shift(&self) -> u32 { u32::from($classic || matches!(self.layout, LedcLayout::C6)) }
+    fn channels(&self) -> usize { if matches!(self.layout, LedcLayout::S3 | LedcLayout::P4) { 8 } else { 6 } }
+    fn shift(&self) -> u32 { u32::from($classic || matches!(self.layout, LedcLayout::C6 | LedcLayout::P4)) }
     fn source_hz(&self) -> u64 {
         if !self.clock_enabled { return 0; }
-        if matches!(self.layout, LedcLayout::C6) { return self.external_clock_hz; }
+        if matches!(self.layout, LedcLayout::C6 | LedcLayout::P4) { return self.external_clock_hz; }
         match self.regs.read(0xd0) & 3 { 1 => APB_HZ, 2 => 17_500_000, 3 => 40_000_000, _ => 0 }
     }
     fn timer_settings(&self, n: usize) -> Option<(u64, u64)> {
@@ -169,9 +172,11 @@ impl Device for Ledc<$classic> {
                         self.regs.write(off, value & !(1 << 4));
                         if $classic { self.pending[n] = false; }
                         if value & (1 << 4) != 0 && self.regs.read(off + 12) & (1 << 31) != 0 {
-                            let fade = if matches!(self.layout, LedcLayout::C6) {
-                                (self.regs.read(0x100 + n as u32 * 16) >> 11) & 0x3ff
-                            } else { self.regs.read(off + 12) & 0x3ff };
+                            let fade = match self.layout {
+                                LedcLayout::C6 => (self.regs.read(0x100 + n as u32 * 16) >> 11) & 0x3ff,
+                                LedcLayout::P4 => (self.regs.read(0x400 + n as u32 * 0x40) >> 21) & 0x3ff,   // range 0's DUTY_NUM
+                                _ => self.regs.read(off + 12) & 0x3ff,
+                            };
                             self.unsupported_fade[n] = fade != 0;
                             self.pending[n] = fade == 0;
                         }
@@ -248,6 +253,28 @@ mod tests {
             assert!(ledc.output(&gpio, 4).is_none());
         }
     }
+    /// The P4's eighth channel at 0x8C, its matrix signal 126 + 7 (IDF v5.5.4 esp32p4
+    /// gpio_sig_map.h:235), and a plain duty, whose gamma range 0 has DUTY_NUM 0 at 0x400 + 7 * 0x40.
+    #[test]
+    fn p4_channel_seven_and_its_gamma_ram() {
+        let mut ledc = Ledc::new(LedcLayout::P4);
+        ledc.external_clock_hz = 80_000_000;
+        ledc.write(0xa0, 10 | (256 << 5) | (1 << 26));           // timer 0: 10-bit, divider 1, PARA_UP
+        ledc.write(0x8c + 8, 512 << 4);                          // channel 7 duty: half of 1024 (4 fraction bits)
+        ledc.write(0x8c + 12, 1 << 31);                          // DUTY_START
+        ledc.write(0x8c, 4 | (1 << 4));                          // SIG_OUT_EN, PARA_UP, timer 0
+        ledc.tick(1 << 20);
+        let mut gpio = Gpio::with_pins(57);
+        gpio.enable = 1 << 28;
+        gpio.func_out_sel[28] = 126 + 7;
+        assert_eq!(ledc.read(0x8c + 16), 512 << 4);
+        assert_eq!(ledc.output(&gpio, 28).unwrap().1, 32768);
+        ledc.write(0x400 + 7 * 0x40, 3 << 21);                   // a fade of three steps: not modelled
+        ledc.write(0x8c + 12, 1 << 31);
+        ledc.write(0x8c, 4 | (1 << 4));
+        assert!(ledc.output(&gpio, 28).is_none());
+    }
+
     #[test]
     fn c6_twenty_bit_timer_and_duty_do_not_truncate_or_overflow() {
         let mut ledc = Ledc::new(LedcLayout::C6);

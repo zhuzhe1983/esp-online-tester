@@ -18,8 +18,6 @@ licensed, and contains no third-party emulator code (QEMU was consulted for inst
 cli/          esp32sim binary, every chip (`esp32sim-c3`, `esp32sim-c6`, `esp32sim-p4` are aliases): argument
               parsing, image loading, run loop, reports
               (`--chip esp32|s3|c3|c6|p4`; the setup that is chip-specific is one function per chip)
-  cosim.rs    the ESP32-P4 and an ESP32-C6 co-processor on SDIO, two machines in lock-step
-              (`--coproc`, docs/esp32p4.md "The co-processor")
 esp-soc/      Machine<S: Soc>, written once for every chip: the scheduler (256-instruction quanta
               on wasm32, 64 natively; idle skipping, per-core reset state), lazy device time,
               console capture, action scripts, function stubs/probes, tracing and watchpoints,
@@ -67,8 +65,9 @@ esp32c3/      the C3 SoC: memory map, interrupt matrix, cache controller, RNG; p
 esp32c6/      the C6 SoC: unified memory map and MMU, interrupt matrix + PLIC/INTPRI, L1 cache,
               PCR, the LP blocks (reset cause, software reset, RTC timer), ASSIST_DEBUG,
               the 802.15.4 and WiFi MACs
-esp32p4/      the P4 SoC (rev < 3, two cores): memory map with L2MEM and the flash and PSRAM MMUs,
+esp32p4/      the P4 SoC (rev < 3 and rev >= 3, two cores): memory map with L2MEM and the flash and PSRAM MMUs,
               interrupt matrices and per-core CLICs, HP/LP system blocks, PSRAM (esp32p4.md)
+              and `coproc`, the P4 with an ESP32-C6 on SDIO in lock-step (`--coproc`, the browser demo)
 tests/        golden-output regression tests and their fixtures (tests/README.md)
 hw/           JTAG differential-test scripts against a real board, captured C3 and C6 consoles
               (hardware-testing.md)

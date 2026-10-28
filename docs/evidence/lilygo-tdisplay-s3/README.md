@@ -1,4 +1,6 @@
-# EX246 — T-Display-S3 physical i80 and lazy PWM display snapshots
+# EX246-LILYGO — T-Display-S3 physical i80 and lazy PWM display snapshots
+
+The fork originally recorded this as EX246. The upstream sync disambiguates it as EX246-LILYGO because upstream EX246 records BLE advertisers; this is the same experiment, with unchanged historical results.
 
 This is a board correctness extension, not a scheduler or speed experiment. Searches for LCD_CAM, i8080, parallel LCD and D/C found no prior experiment for this physical ST7789 wiring. Related EX056 covers timed TE/SPI completion and EX134 covers device-tick deferral; neither supplies this board's i80 D/C signal or GPIO WR transport. Neither mechanism is retried here.
 
