@@ -14,6 +14,7 @@ import { buildFirmwareIssueUrl } from './watchlist.js';
 import { orientationSample } from './imu.js';
 import { validateLoRaPacket } from './lora-input.js';
 import { firmwareCache } from './firmware-cache.js';
+import {firmwareDownloadUrl} from './firmware-relay.js';
 import { assembleLocalFirmware } from './local-firmware.js';
 import {firmwareMetadata} from './firmware-metadata.js';
 import {chipIdForBoard,validateAppImage} from './app-image.js';
@@ -50,7 +51,8 @@ async function checkedHash(data, expected) {
   return actual;
 }
 
-export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes = MAX_FILE, signal, onProgress } = {}) {
+export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes = MAX_FILE, signal, onProgress, sha256: expectedHash, relayUrl } = {}) {
+  const downloadUrl=firmwareDownloadUrl(url,expectedHash,relayUrl);
   const controller = new AbortController();
   const abort = () => controller.abort();
   const checkAbort = () => requireValue(!controller.signal.aborted, 'FETCH_ABORTED', 'Firmware download was cancelled or timed out.', { url });
@@ -59,8 +61,9 @@ export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes =
   const timeout = setTimeout(abort, 60000);
   try {
     checkAbort();
-    const response = await fetchImpl(url, { mode: 'cors', cache: 'no-store', credentials: 'omit', signal: controller.signal });
+    const response = await fetchImpl(downloadUrl, { mode: 'cors', cache: 'no-store', credentials: 'omit', signal: controller.signal });
     checkAbort();
+    if(!response.ok&&downloadUrl!==url&&response.headers.get('x-firmware-relay-error')!=='UPSTREAM_HTTP')throw error('FIRMWARE_RELAY_FAILED',`Firmware relay returned HTTP ${response.status}.`,{url,status:response.status});
     requireValue(response.ok, 'HTTP_ERROR', `Firmware request failed: HTTP ${response.status}. Please report this source using the issue link.`, { url, status: response.status, issueUrl: buildFirmwareIssueUrl({ url, status: response.status, reason: 'Firmware request failed.' }) });
     const length = Number(response.headers.get('content-length'));
     if (length > maxBytes) {
@@ -405,7 +408,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     await preserveStorage();active();
     const image=bytes?.slice().buffer||null,hash=image?await sha256(new Uint8Array(image)):null;active();
     await sdStorage.replace(session.key,{image,media:image?{format:'image',sha256:hash,bytes:image.byteLength}:null});active();session.closed=true;
-    loadCancelled=false;aborter=new AbortController();serial='';serialByPort={};stats={};frame=null;frameNumber=0;lastError=null;setStatus('loading');
+    loadCancelled=false;aborter=new AbortController();serial='';serialByPort={};stats={};hostPace={};frame=null;frameNumber=0;lastError=null;setStatus('loading');
     try{await initialize(bundle,loadReporter(++progressGeneration,aborter.signal));alive();setStatus('ready');return snapshot();}catch(e){stopWorker();if(!disposing&&status!=='disposed')setStatus('error');throw e;}
   };
   const pageHide=()=>{if(worker)void preserveStorage().catch(report);};
@@ -429,7 +432,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       try { await checkedHash(cached.data, item.sha256); }
       catch { await firmwareCache.remove(url, item.sha256); cached = null; }
     }
-    const data = cached?.data || await fetchBytes(url, { fetchImpl, maxBytes, signal: aborter.signal, onProgress: progress.file(kind, url) });
+    const data = cached?.data || await fetchBytes(url, { fetchImpl, maxBytes, signal: aborter.signal, onProgress: progress.file(kind, url), sha256:item.sha256 });
     if (cached) progress.cache(kind, url, data.byteLength, cached.storage);
     progress.prepare('verify', kind, url);
     requireValue(data.length > 0, 'EMPTY_FILE', 'Firmware file is empty.', { url });
@@ -688,7 +691,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       await session.saving?.catch(()=>{});
       try { await deviceStorage.clear(scope); }
       catch(e) { session.closed=false; storageFailure(session,e); setStatus('error'); throw e; }
-      loadCancelled=false; aborter=new AbortController(); serial=''; serialByPort={}; stats={}; frame=null; frameNumber=0; lastError=null; setStatus('loading');
+      loadCancelled=false; aborter=new AbortController(); serial=''; serialByPort={}; stats={}; hostPace={}; frame=null; frameNumber=0; lastError=null; setStatus('loading');
       try { await initialize(bundle,loadReporter(loadId,aborter.signal)); setStatus('ready'); return snapshot(); }
       catch(e) { stopWorker(); if(status!=='disposed')setStatus('error'); throw e; }
     }); },

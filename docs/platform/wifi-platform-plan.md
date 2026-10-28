@@ -14,7 +14,7 @@
 
 ## 手动配网和服务端口
 
-底部网络区显示虚拟路由器、STA 地址、SoftAP SSID/地址和已知服务。手动模式下，虚拟客户端取得 AP DHCP 地址后自动打开 HTTP 80 候选服务；用户可以关闭网页或取消映射。默认在不允许 same-origin 的隔离 iframe 中显示固件 HTML；相对静态资源、fetch/XHR、常规表单及受支持的跳转由浏览器转入虚拟 TCP。192.168.4.1 是固件虚拟地址，不能在电脑地址栏直接打开。遇到 CSP、X-Frame-Options、HTTPS、WebSocket 或不支持的动态导航会明确报错，可切到本机助手获得独立代理 origin 和打开入口；不删除安全策略强行嵌入。
+底部网络区显示虚拟路由器、STA 地址、SoftAP SSID/地址和已知服务。手动模式下，虚拟客户端取得 AP DHCP 地址后自动打开 HTTP 80 候选服务；用户可以关闭网页或取消映射。默认在不允许 same-origin 的隔离 iframe 中显示固件 HTML；相对静态资源、fetch/XHR、常规表单及受支持的跳转由浏览器转入虚拟 TCP。192.168.4.1 是固件虚拟地址，不能在电脑地址栏直接打开。独立的旧式 `referrer no-referrer` 策略保留并补充标准 no-referrer；本地存储替换为隔离的有界会话内存，不写入工作台存储。遇到其他 CSP、X-Frame-Options、HTTPS、WebSocket 或不支持的动态导航会明确报错，可切到本机助手获得独立代理 origin 和打开入口；不删除安全策略强行嵌入。
 
 可以手工添加 STA/AP 上的 HTTP、HTTPS、TCP、UDP 服务。默认模式可在浏览器内打开 SoftAP HTTP（包括非 80 端口）；STA 服务及其他协议需要在“高级连接”选择本机助手。助手的 HTTP 通过独立代理页面打开，HTTPS 使用 TCP 映射并保留浏览器证书检查；非 HTTP 服务显示本机 `127.0.0.1:<port>`，本机 MQTT、SSH 或其他客户端按原协议访问。取消、助手断线、固件切换和会话销毁会释放相应映射。
 

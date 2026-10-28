@@ -27,7 +27,7 @@ export function networkService({interface:iface=0,protocol='tcp',guestPort,label
 export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globalThis.WebSocket,fetchImpl=globalThis.fetch,guestFactory=createGuestNetwork,requestTimeout=120000}={}) {
   let config={enabled:true,autoProvision:true,...DEFAULT_ROUTER,endpoint:'',mode:'public-relay',relayUrl:'',softApSsid:'',softApPassword:''};
   let socket=null,epoch=0,sequence=0,attached=false,supported=false,softapStarted=false,autoAttempted=false;
-  let guest=null,bootstrapController=null;
+  let guest=null,bootstrapController=null,heartbeat=null;
   let connection='relay-unconfigured',lastError=null,interfaces={},softAp=null,services=[],txFrames=0,rxFrames=0,droppedFrames=0,provisioning='idle';
   const pending=new Map(),mappingRequests=new Map();let finishConnecting=null,autoGeneration=0;
   const snapshot=()=>({enabled:config.enabled,mode:config.mode,relayConfigured:!!config.relayUrl,browserSoftAp:config.mode==='public-relay',autoProvision:config.autoProvision,router:{ssid:config.ssid,security:config.password?'wpa2-psk':'open'},helperConfigured:!!config.endpoint,connection,supported,interfaces:copy(interfaces),softAp:copy(softAp),services:copy(services),provisioning,txFrames,rxFrames,droppedFrames,lastError:copy(lastError)});
@@ -41,7 +41,7 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
     pending.set(id,{resolve,reject,timer});socket.send(JSON.stringify({...options,id,op}));
   });
   const close=()=>{
-    epoch++;autoGeneration++;bootstrapController?.abort();bootstrapController=null;mappingRequests.clear();finishConnecting?.(fail('SESSION_REPLACED','Network session replaced.'));finishConnecting=null;const old=socket;socket=null;old?.close();rejectPending();softapStarted=!!guest;interfaces=config.mode==='public-relay'&&interfaces[1]?{1:interfaces[1]}:{};services=services.filter(s=>s.source==='manual'||config.mode==='public-relay'&&s.interface===1).map(({mapping,...s})=>({...s,...(mapping?.browser?{mapping}:{}),verified:false}));
+    epoch++;autoGeneration++;clearInterval(heartbeat);heartbeat=null;bootstrapController?.abort();bootstrapController=null;mappingRequests.clear();finishConnecting?.(fail('SESSION_REPLACED','Network session replaced.'));finishConnecting=null;const old=socket;socket=null;old?.close();rejectPending();softapStarted=!!guest;interfaces=config.mode==='public-relay'&&interfaces[1]?{1:interfaces[1]}:{};services=services.filter(s=>s.source==='manual'||config.mode==='public-relay'&&s.interface===1).map(({mapping,...s})=>({...s,...(mapping?.browser?{mapping}:{}),verified:false}));
     connection=config.enabled?(config.mode==='public-relay'?(config.relayUrl?'disconnected':'relay-unconfigured'):(config.endpoint?'disconnected':'waiting-helper')):'offline';changed();
   };
   const mapPort=async(options)=>{
@@ -64,7 +64,7 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
     try{return await work;}finally{if(mappingRequests.get(item.id)?.work===work)mappingRequests.delete(item.id);}
   };
   const http=(options={})=>{
-    if(config.mode==='public-relay'){if((options.interface??1)!==1||!guest)throw fail('SOFTAP_NOT_READY','Browser HTTP requires a connected firmware SoftAP.');return guest.requestHttp(options);}
+    if(config.mode==='public-relay'){if((options.interface??1)!==1||!guest)throw fail('SOFTAP_NOT_READY','Browser HTTP requires a connected firmware SoftAP.');const client=guest;return guest.requestHttp(options).then(result=>{if(guest===client){const id=`1:http:${options.guestPort??80}`;services=services.map(s=>s.id===id?{...s,verified:true}:s);changed();}return result;});}
     return request('http',options);
   };
   const provision=async({automatic=false}={})=>{
@@ -110,7 +110,7 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
     changed();
   };
   const tryAutoProvision=()=>{if(config.autoProvision&&connection==='connected'&&interfaces[1]?.leaseReady&&!autoAttempted){autoAttempted=true;void provision({automatic:true}).catch(()=>{});}};
-  const stopGuest=()=>{guest?.close();guest=null;softapStarted=false;delete interfaces[1];services=services.filter(s=>s.interface!==1);};
+  const stopGuest=()=>{const old=guest;guest=null;old?.close();softapStarted=false;delete interfaces[1];services=services.filter(s=>s.interface!==1);};
   const startSoftAp=()=>{
     if(config.mode==='public-relay'){
       if(!guest&&softAp?.state==='connected'){
@@ -150,13 +150,13 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
         let value;try{if(typeof event.data!=='string'||event.data.length>20*1024*1024)throw Error();value=JSON.parse(event.data);}catch{finish(fail('NETWORK_PROTOCOL','Malformed network helper response.'));ws.close();return;}
         if(value.type==='hello') {
           if(value.version!==1||config.mode==='public-relay'&&!value.capabilities?.publicRelay){finish(fail('NETWORK_PROTOCOL','Unsupported network helper version.'));ws.close();return;}
-          connection='connected';changed();
+          connection='connected';if(config.mode==='public-relay'){clearInterval(heartbeat);let waiting=false;heartbeat=setInterval(()=>{if(waiting||socket!==ws)return;waiting=true;void request('status').catch(()=>{}).finally(()=>{waiting=false;});},30000);}changed();
           void command('relay',{enabled:true}).then(()=>{startSoftAp();tryAutoProvision();finish();}).catch(finish);
         } else if(value.type==='network-status'&&(config.mode==='local-helper'||value.interface===0))updateInterface(value);
         else if(value.id!==undefined) {const p=pending.get(String(value.id));if(p){pending.delete(String(value.id));clearTimeout(p.timer);value.error?p.reject(fail(value.error.code||'NETWORK_COMMAND_FAILED',value.error.message)):p.resolve(value.result);}}
       };
       ws.onerror=()=>{if(generation!==epoch||socket!==ws)return;const error=fail('NETWORK_CONNECTION_FAILED','Cannot connect to the network helper. Check its address and browser local-network permission.');report(error);finish(error);};
-      ws.onclose=event=>{if(generation!==epoch||socket!==ws)return;socket=null;connection='disconnected';if(config.mode==='public-relay'&&event?.code===1008)lastError={code:'RELAY_LIMIT',message:`公共中继已断开：${event.reason||'会话期限或资源配额已达到上限'}。可点击连接重新尝试。`};rejectPending();interfaces=config.mode==='public-relay'&&interfaces[1]?{1:interfaces[1]}:{};services=services.map(({mapping,...s})=>({...s,...(mapping?.browser?{mapping}:{}),verified:false}));changed();void command('relay',{enabled:false}).catch(()=>{});finish(fail('NETWORK_DISCONNECTED','Network helper disconnected.'));};
+      ws.onclose=event=>{if(generation!==epoch||socket!==ws)return;socket=null;clearInterval(heartbeat);heartbeat=null;connection='disconnected';if(config.mode==='public-relay'&&event?.code===1008)lastError={code:'RELAY_LIMIT',message:`公共中继已断开：${event.reason||'会话期限或资源配额已达到上限'}。可点击连接重新尝试。`};rejectPending();interfaces=config.mode==='public-relay'&&interfaces[1]?{1:interfaces[1]}:{};services=services.map(({mapping,...s})=>({...s,...(mapping?.browser?{mapping}:{}),verified:false}));changed();void command('relay',{enabled:false}).catch(()=>{});finish(fail('NETWORK_DISCONNECTED','Network helper disconnected.'));};
     });return snapshot();
   };
   const configure=async(options={})=>{

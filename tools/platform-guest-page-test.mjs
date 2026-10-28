@@ -96,6 +96,7 @@ const pages={
   '/delegated': '<form id="form" action="/unexpected-form" method="post"><input name="ssid" value="fixture-router"><button>Connect</button></form><script>document.addEventListener("submit",async event=>{event.preventDefault();const response=await fetch("/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ssid:"fixture-router",password:"fixture-password"})});if(response.ok)location.href="/done";});setTimeout(()=>document.querySelector("form").requestSubmit(),0);<\\/script>',
   '/native': '<form action="/native-submit" method="post"><input name="ssid" value="fixture router"><button>Submit</button></form><script>setTimeout(()=>document.querySelector("form").requestSubmit(),0);<\\/script>',
   '/delegated-link': '<a id="link" href="/unexpected-link">Link</a><script>document.addEventListener("click",async event=>{event.preventDefault();await fetch("/link-submit");location.href="/link-done";});setTimeout(()=>document.getElementById("link").click(),0);<\\/script>',
+  '/fragment': '<a id="pick" href="#">Select network</a><script>setTimeout(()=>{document.getElementById("pick").click();setTimeout(()=>fetch("/fragment-still-here"),30);},0);<\\/script>',
   '/native-link': '<a id="link" href="/native-linked">Link</a><script>setTimeout(()=>document.getElementById("link").click(),0);<\\/script>',
 };
 let lastPath='';
@@ -113,6 +114,10 @@ try{
   await adapter.open({path:'/delegated-link'});await waitPath('/link-done');
   ensure(requests.some(request=>request.path==='/link-submit')&&!requests.some(request=>request.path==='/unexpected-link'),'Document click handler precedes link fallback');
   await adapter.open({path:'/native-link'});await waitPath('/native-linked');
+  await adapter.open({path:'/fragment'});await waitPath('/fragment');
+  const fragmentDeadline=Date.now()+5000;while(!requests.some(r=>r.path==='/fragment-still-here')&&Date.now()<fragmentDeadline)await new Promise(r=>setTimeout(r,10));
+  ensure(requests.some(r=>r.path==='/fragment-still-here'),'Empty fragment keeps the firmware script alive');
+  ensure(requests.filter(r=>r.path==='/fragment').length===1,'Empty fragment does not reload or cancel firmware HTTP');
   ensure(errors.length===0,'No guest script or transport errors');
   window.regression={passed:true,checks,requests,errors};
 }catch(error){window.regression={passed:false,checks,requests,errors:[...errors,error.message]};}

@@ -203,7 +203,13 @@ onmessage = async (ev) => {
         } else if(m.op==='network-receive') {
           if(!(m.data instanceof ArrayBuffer)||m.data.byteLength<14||m.data.byteLength>1518||![0,1].includes(m.interface))throw new Error('Invalid Ethernet frame');
           const receiver=m.interface===0?wasm.esp32sim_ethernet_receive:wasm.esp32sim_softap_receive;
-          if(!receiver||withBytes(new Uint8Array(m.data),(p,n)=>receiver(emu,p,n))!==0)throw new Error('Ethernet receive queue rejected frame');
+          if(!receiver||withBytes(new Uint8Array(m.data),(p,n)=>receiver(emu,p,n))!==0){
+            // A final HTTP ACK can race the firmware leaving AP mode. Publish that
+            // lifecycle change immediately instead of reporting a queue overflow.
+            let disconnected=false;
+            if(m.interface===1&&wasm.esp32sim_softap_poll){const size=wasm.esp32sim_softap_poll(emu),ptr=wasm.esp32sim_softap_status_ptr(emu),status=JSON.parse(dec.decode(mem().subarray(ptr,ptr+size)));if(status.state!=='connected'){postMessage({softAp:status});disconnected=true;}}
+            if(!disconnected)throw new Error(`Ethernet interface ${m.interface} receive queue rejected frame`);
+          }
         } else throw new Error('Unknown network operation');
         if(m.requestId!==undefined)postMessage({networkReply:m.requestId,ok:true,softApSupported:softApEnabled});
       } catch(error){if(m.requestId!==undefined)postMessage({networkReply:m.requestId,ok:false,error:error.message});else postMessage({networkError:error.message});}

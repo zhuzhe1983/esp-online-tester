@@ -126,7 +126,7 @@ function guestBootstrap(config,createStorage) {
     const p=pending.get(event.data.id);if(!p)return;pending.delete(event.data.id);clearTimeout(p.timer);p.signal?.removeEventListener('abort',p.abort);
     if(event.data.error)p.reject(new Error(event.data.error.message));else p.resolve(event.data.result);
   });
-  const navigate=value=>{const url=target(value);if(url.pathname===new URL(current).pathname&&url.search===new URL(current).search&&url.hash){current=url.href;document.getElementById(decodeURIComponent(url.hash.slice(1)))?.scrollIntoView();return;}message('navigate',{url:url.href});};
+  const navigate=value=>{const url=target(value);if(url.pathname===new URL(current).pathname&&url.search===new URL(current).search&&(url.hash||url.href.endsWith('#'))){current=url.href;if(url.hash)document.getElementById(decodeURIComponent(url.hash.slice(1)))?.scrollIntoView();else window.scrollTo(0,0);return;}message('navigate',{url:url.href});};
   const location={assign:navigate,replace:navigate,reload:()=>navigate(current),toString:()=>current};
   for(const key of ['href','pathname','search','hash'])Object.defineProperty(location,key,{get:()=>new URL(current)[key],set:value=>{if(key==='href'){navigate(value);return;}const url=new URL(current);url[key]=value;navigate(url.href);}});
   for(const key of ['origin','host','hostname','port','protocol'])Object.defineProperty(location,key,{get:()=>new URL(current)[key]});

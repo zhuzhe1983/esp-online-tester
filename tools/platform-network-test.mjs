@@ -64,15 +64,15 @@ test('disabling automatic provisioning cancels the pending credential submission
 
 test('browser SoftAP works without any external connection and survives disabling Internet',async()=>{
   const frames=[],commands=[];let client,closed=false;
-  const n=createNetworkSession({emit(){},command:async(...x)=>commands.push(x),sendFrame:(...x)=>frames.push(x),WebSocketImpl:class {constructor(){throw Error('Must not open a socket');}},guestFactory:({emit,sendFrame})=>(client={enable(){emit({type:'network-status',interface:1,leaseReady:true,guestAddress:'10.23.4.1'});sendFrame(new Uint8Array(14).buffer);},receive(data){this.frame=data;},requestHttp:async options=>({status:200,body:options.path}),close(){closed=true;}})});
+  const n=createNetworkSession({emit(){},command:async(...x)=>commands.push(x),sendFrame:(...x)=>frames.push(x),WebSocketImpl:class {constructor(){throw Error('Must not open a socket');}},guestFactory:({emit,sendFrame})=>(client={enable(){emit({type:'network-status',interface:1,leaseReady:true,guestAddress:'10.23.4.1'});sendFrame(new Uint8Array(14).buffer);},receive(data){this.frame=data;},requestHttp:async options=>({status:200,body:options.path}),close(){closed=true;sendFrame(new Uint8Array(14).buffer);}})});
   await n.attach({available:true});n.receive({softAp:{state:'connected',clientMac:'02:53:49:4d:00:03'}});
   assert.equal(n.snapshot().connection,'relay-unconfigured');assert.equal(n.snapshot().interfaces[1].guestAddress,'10.23.4.1');
-  assert.equal((await n.http({path:'/scan'})).body,'/scan');assert.equal(frames[0][0],1);
+  assert.equal((await n.http({path:'/scan'})).body,'/scan');assert.equal(n.snapshot().services[0].verified,true);assert.equal(frames[0][0],1);
   n.receive({networkFrame:{interface:1,data:new Uint8Array([1,2]).buffer}});assert.deepEqual([...client.frame],[1,2]);
   const mapping=await n.mapPort({interface:1,protocol:'http',guestPort:80});assert.equal(mapping.browser,true);assert.equal(mapping.guestAddress,'10.23.4.1');
   await n.configure({enabled:false});assert.equal(closed,false);assert.equal(n.snapshot().interfaces[1].leaseReady,true);assert.equal((await n.http({path:'/'})).status,200);
   await assert.rejects(n.mapPort({interface:0,protocol:'tcp',guestPort:1883}),{code:'LOCAL_HELPER_REQUIRED'});
-  n.detach();assert.equal(closed,true);assert.equal(n.snapshot().services.length,0);
+  n.detach();assert.equal(closed,true);assert.equal(frames.length,1,'closed guest must not send stale teardown frames');assert.equal(n.snapshot().services.length,0);
 });
 
 test('public relay uses ephemeral same-origin bootstrap, only STA packets, and keeps tokens private',async()=>{

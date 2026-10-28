@@ -48,7 +48,7 @@ const page = await api.mapNetworkPort({interface:1, protocol:'http', guestPort:8
 await api.provisionNetwork();
 ```
 
-The client learns the firmware address from DHCP. Never change the host Wi-Fi or navigate to a host private address as a substitute. Browser pages run in an opaque sandbox; relative assets, fetch/XHR, ordinary forms and known navigation are bridged to the guest. CSP/X-Frame-Options, WebSockets, TLS pages and unsupported navigation report limitations; use the optional helper when the original origin/protocol is needed.
+The client learns the firmware address from DHCP. Never change the host Wi-Fi or navigate to a host private address as a substitute. Browser pages run in an opaque sandbox; relative assets, fetch/XHR, ordinary forms and known navigation are bridged to the guest. Restrictive CSP/X-Frame-Options, WebSockets, TLS pages and unsupported navigation report limitations; use the optional helper when the original origin/protocol is needed.
 
 For LAN access or native ports, read the [helper guide](https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/network-helper.md). Start `node tools/network-helper.mjs` with its built native backend, use the emitted token URL or `configureNetwork({mode:'local-helper',endpoint:helperEndpoint})`, and stop the task-owned process after testing. Firmware still executes in WASM. Tokens stay in session memory and are removed from the URL fragment; never retain them in evidence or share links.
 
