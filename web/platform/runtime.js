@@ -14,7 +14,6 @@ import { buildFirmwareIssueUrl } from './watchlist.js';
 import { orientationSample } from './imu.js';
 import { validateLoRaPacket } from './lora-input.js';
 import { firmwareCache } from './firmware-cache.js';
-import {firmwareDownloadUrl} from './firmware-relay.js';
 import { assembleLocalFirmware } from './local-firmware.js';
 import {firmwareMetadata} from './firmware-metadata.js';
 import {chipIdForBoard,validateAppImage} from './app-image.js';
@@ -51,8 +50,7 @@ async function checkedHash(data, expected) {
   return actual;
 }
 
-export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes = MAX_FILE, signal, onProgress, sha256: expectedHash, relayUrl } = {}) {
-  const downloadUrl=firmwareDownloadUrl(url,expectedHash,relayUrl);
+export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes = MAX_FILE, signal, onProgress } = {}) {
   const controller = new AbortController();
   const abort = () => controller.abort();
   const checkAbort = () => requireValue(!controller.signal.aborted, 'FETCH_ABORTED', 'Firmware download was cancelled or timed out.', { url });
@@ -61,9 +59,8 @@ export async function fetchBytes(url, { fetchImpl = globalThis.fetch, maxBytes =
   const timeout = setTimeout(abort, 60000);
   try {
     checkAbort();
-    const response = await fetchImpl(downloadUrl, { mode: 'cors', cache: 'no-store', credentials: 'omit', signal: controller.signal });
+    const response = await fetchImpl(url, { mode: 'cors', cache: 'no-store', credentials: 'omit', signal: controller.signal });
     checkAbort();
-    if(!response.ok&&downloadUrl!==url&&response.headers.get('x-firmware-relay-error')!=='UPSTREAM_HTTP')throw error('FIRMWARE_RELAY_FAILED',`Firmware relay returned HTTP ${response.status}.`,{url,status:response.status});
     requireValue(response.ok, 'HTTP_ERROR', `Firmware request failed: HTTP ${response.status}. Please report this source using the issue link.`, { url, status: response.status, issueUrl: buildFirmwareIssueUrl({ url, status: response.status, reason: 'Firmware request failed.' }) });
     const length = Number(response.headers.get('content-length'));
     if (length > maxBytes) {
@@ -432,7 +429,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       try { await checkedHash(cached.data, item.sha256); }
       catch { await firmwareCache.remove(url, item.sha256); cached = null; }
     }
-    const data = cached?.data || await fetchBytes(url, { fetchImpl, maxBytes, signal: aborter.signal, onProgress: progress.file(kind, url), sha256:item.sha256 });
+    const data = cached?.data || await fetchBytes(url, { fetchImpl, maxBytes, signal: aborter.signal, onProgress: progress.file(kind, url) });
     if (cached) progress.cache(kind, url, data.byteLength, cached.storage);
     progress.prepare('verify', kind, url);
     requireValue(data.length > 0, 'EMPTY_FILE', 'Firmware file is empty.', { url });
