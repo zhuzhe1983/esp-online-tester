@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Reproduce the U004 idle CPU comparison; use independently cargo-build --release --bins trees."""
 import argparse, datetime, hashlib, json, os, pathlib, platform, re, statistics, subprocess
-p=argparse.ArgumentParser();p.add_argument('--base-bins',required=True);p.add_argument('--candidate-bins',required=True);p.add_argument('--rom-dir',required=True);p.add_argument('--receipt',required=True);p.add_argument('--resume',action='store_true');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--base-bins',required=True);p.add_argument('--base-revision',required=True);p.add_argument('--candidate-bins',required=True);p.add_argument('--rom-dir',required=True);p.add_argument('--receipt',required=True);p.add_argument('--resume',action='store_true');a=p.parse_args()
 sha=lambda b:hashlib.sha256(b).hexdigest()
 # The same four source-pinned baseline workloads used for U027; no firmware sweep.
 previous=json.loads(pathlib.Path('docs/platform/evidence/m5stack-unit-button-u027/runtime/cpu.json').read_text())
 bins={'hello':'esp32sim','c3-hello':'esp32sim-c3','c6-hello':'esp32sim-c6','pocket-tank':'esp32sim'}
-report={'checkedAt':datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),'base':'4670491d (retained native binaries; SHA-256 recorded)' ,'candidate':'U004 working tree identified by source hashes','method':'One excluded warmup pair then five measured alternating base/candidate pairs per workload; 30 guest seconds; /usr/bin/time -p user. Task-owned browsers and compilers stopped. Other host load uncontrolled; other lanes were asked to defer heavy workloads; this is not an exclusive host reservation. No speed claim.','host':{'os':platform.system(),'architecture':platform.machine(),'rust':subprocess.check_output(['rustc','--version'],text=True).strip()},'sourceSha256':{f:sha(pathlib.Path(f).read_bytes()) for f in ['esp32s3/src/board/unit_pir.rs','esp32s3/src/board/mod.rs','esp-soc/src/board.rs','esp-soc/src/machine/web.rs','esp32s3/src/board/stopwatch.rs']},'workloads':[]}
+report={'checkedAt':datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),'base':a.base_revision ,'candidate':'U004 working tree identified by source hashes','method':'One excluded warmup pair then five measured alternating base/candidate pairs per workload; 30 guest seconds; /usr/bin/time -p user. Task-owned browsers and compilers stopped. Concurrent build/emulator work deferred; unrelated host load uncontrolled. This is not an exclusive host reservation. No speed claim.','host':{'os':platform.system(),'architecture':platform.machine(),'rust':subprocess.check_output(['rustc','--version'],text=True).strip()},'sourceSha256':{f:sha(pathlib.Path(f).read_bytes()) for f in ['esp32s3/src/board/unit_pir.rs','esp32s3/src/board/mod.rs','esp-soc/src/board.rs','esp-soc/src/machine/web.rs','esp32s3/src/board/stopwatch.rs']},'workloads':[]}
 if a.resume:
- previous_report=json.loads(pathlib.Path(a.receipt).read_text());assert previous_report['sourceSha256']==report['sourceSha256'];report=previous_report
+ previous_report=json.loads(pathlib.Path(a.receipt).read_text());assert previous_report['sourceSha256']==report['sourceSha256'] and previous_report['base']==a.base_revision;report=previous_report
 for old in previous['workloads']:
  if any(w['name']==old['name'] and w.get('workAndOutputEqual') for w in report['workloads']):continue
  report['workloads']=[w for w in report['workloads']if w['name']!=old['name']]

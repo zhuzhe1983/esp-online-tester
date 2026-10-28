@@ -5,8 +5,8 @@ U004 使用 AS312，经 HT7533 由 Grove 5V 供电；传感器 OUT 串联 1kΩ �
 ## 已实现
 
 ```js
-await espPlatform.input({type:'accessory-motion',accessoryId:'pir',motion:true});
-await espPlatform.input({type:'accessory-motion',accessoryId:'pir',motion:false});
+await espTester.input({type:'accessory-motion',accessoryId:'pir',motion:true});
+await espTester.input({type:'accessory-motion',accessoryId:'pir',motion:false});
 ```
 
 `motion:true` 表示视场内持续的红外变化，不是“有人静止站着”。`false` 停止变化，随后保持高电平 2 个客体秒；再次变化取消下降期限。初始化来自 `parameters.motion`，默认 `false`。面板、agent、mini 和录制使用同一 API。观察中的 `accessoryInputs[].motion` 是环境输入，不能代替固件 `gpio_get_level(11)` 的结果。

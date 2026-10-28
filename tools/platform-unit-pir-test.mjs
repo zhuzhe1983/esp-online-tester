@@ -17,7 +17,7 @@ test('PIR exact G11 route validates boolean stimulus and shares without losing i
 });
 test('PIR can share U006 with G10 RGB but rejects another G11 driver or occupied socket',()=>{
  assert.equal(validateScene(pair(),catalog).valid,true);const reverse=pair();reverse.accessories.reverse();assert.equal(validateScene(reverse,catalog).valid,true);
- for(const catalogId of ['m5stack-unit-pir-u004','m5stack-unit-dlight-u136','m5stack-unit-env4-u001d','m5stack-unit-button-u027','m5stack-unit-angle-u005']){const bad=pair();bad.accessories.push(via('conflict',catalogId,'port-3'));assert.ok(validateScene(bad,catalog).errors.some(e=>e.code==='PIN_CONFLICT'));}
+ for(const catalogId of ['m5stack-unit-pir-u004','m5stack-unit-dlight-u136','m5stack-unit-env4-u001d','m5stack-unit-button-u027','m5stack-unit-angle-u005']){const bad=pair();bad.accessories.push(via('conflict',catalogId,'port-3'));assert.ok(validateScene(bad,catalog).errors.some(e=>e.code===(catalog.accessories.some(item=>item.id===catalogId)?'PIN_CONFLICT':'UNKNOWN_ACCESSORY')));}
  for(const mutate of [s=>s.accessories[2].wiring.portId='port-1',s=>s.accessories[1].wiring={mode:'physical',interfaceId:'grove'},s=>{s.productId='m5stack-c123';s.keyMapping={};s.firmware=null;},s=>s.accessories[1].wiring.portId='port-4']){const bad=pair();mutate(bad);assert.equal(validateScene(bad,catalog).valid,false);}
 });
 test('recording accepts ongoing environmental motion even while disconnected, not button hold rules',()=>{

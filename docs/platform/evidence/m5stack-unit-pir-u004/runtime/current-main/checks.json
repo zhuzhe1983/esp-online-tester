@@ -1,0 +1,189 @@
+{
+  "checkedAt": "2026-10-28T04:41:20Z",
+  "base": "5a9b68e0cd5aee1c6c51ca17c9fd2250a3c23fa7",
+  "migratedFrom": [
+    "39cce22d",
+    "14a8bac4",
+    "e073e661"
+  ],
+  "candidateCommits": [
+    "b86c4107",
+    "cfdb7810",
+    "65324016"
+  ],
+  "status": "functional-checks-pass-cpu-separate",
+  "goldensChanged": false,
+  "wasmSha256": "88c7bf9d474ebf1ab172b7a7210b7c397c95c1a483b33dc35d2e854a82a90fc0",
+  "wasmBytes": 4225069,
+  "checks": [
+    {
+      "name": "stable",
+      "command": "rustup update stable",
+      "exitCode": 0,
+      "localLogSha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d"
+    },
+    {
+      "name": "native-clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "localLogSha256": "92dad7ef40a174207d9a4d28d40a2be782d0096a62032c770ab339262f30946b"
+    },
+    {
+      "name": "wasm-clippy",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "localLogSha256": "1d0f053def22652a759f91b176443cf05299ec65738f6e165f41d40ce053f79d"
+    },
+    {
+      "name": "build",
+      "command": "cargo build --release --workspace",
+      "exitCode": 0,
+      "localLogSha256": "2b626fe922389e832ad270ef10d846a224459f5c3d5cea7d2feda6f9d0b10e57"
+    },
+    {
+      "name": "rust",
+      "command": "ESP32SIM_ROM_DIR=<absolute populated rom directory> cargo test --release --workspace -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "localLogSha256": "012d6d6d4091cfe8bb212aad9695ff3d8cb03a830b5d314dbb6b0fb1713f09ee",
+      "testsPassed": 1565
+    },
+    {
+      "name": "wasm",
+      "command": "tools/wasm-build.sh",
+      "exitCode": 0,
+      "localLogSha256": "a09f16528a52cfe02f359b3582fcd8c52ba485a0bc0f7602491c34e44c22405e"
+    },
+    {
+      "name": "platform",
+      "command": "node --test tools/platform-*-test.mjs",
+      "exitCode": 0,
+      "localLogSha256": "68e55aee0235d263a1b1f9f156a41e28570590e0a9d589bb6ce872463c178344",
+      "testsPassed": 104
+    },
+    {
+      "name": "schema",
+      "command": "python tools/validate-platform-catalog.py",
+      "exitCode": 0,
+      "localLogSha256": "c2d1a0e8e0cc974054daedbaa5bc537647f18b4dc6e44740a8b4168e1b3f1504"
+    },
+    {
+      "name": "probe",
+      "command": "node tools/probe-unit-pir.mjs --build <fixture-build-directory>",
+      "exitCode": 0,
+      "localLogSha256": "3c9526b3eb5ce6e083f457fee629318116d41cab0aab6c206bb10a27f54ae049"
+    },
+    {
+      "name": "native-vq",
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "exitCode": 0,
+      "localLogSha256": "dfb6cbf79fdce837f0c616667111dbab5983c1a39ba5781225bf6ae65aa180d2"
+    },
+    {
+      "name": "wasm-sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "localLogSha256": "2bb69ccae2f26a3f15ba7a4ce6682558b738a78b404ccbaebffdcce12d85d346"
+    },
+    {
+      "name": "wasm-eleven",
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "exitCode": 0,
+      "localLogSha256": "fd9962c54837fb1d0d04a8e871811e6663a207b0ca582ddd97f9211784ee32de",
+      "scenariosPassed": 11
+    },
+    {
+      "name": "recording",
+      "command": "node tools/platform-recording-test.mjs --real --receipt <receipt.json>",
+      "exitCode": 0,
+      "localLogSha256": "fb28a4151c78da3e7407c93f247df0d879a64cac193458d9256b0667fb64233d"
+    },
+    {
+      "name": "timing",
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "localLogSha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3"
+    },
+    {
+      "name": "ble",
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public <romdir>/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "localLogSha256": "8c39033f82a99d9c7ff102677c28bb255fd9fcd667fa960542d0df9ac7d2e803"
+    },
+    {
+      "name": "ble-connection",
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public <romdir>/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "localLogSha256": "3f418991ce52f9cdcddf5da7bc23cd9398fc6da212bff5550379281d4df7d9ec"
+    },
+    {
+      "name": "worker",
+      "command": "node --test tools/worker-pacing-test.mjs tools/worker-channel-test.mjs tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs",
+      "exitCode": 0,
+      "localLogSha256": "9820850848eac041325bb30b93870c005da52a8aa751b2d96d57ada4b5443709"
+    },
+    {
+      "name": "benchmark-contract",
+      "command": "node --test tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+      "exitCode": 0,
+      "localLogSha256": "8729ad0e8129164ee0337eb1796ee217f274569c4c8cf7a18464e1eecc06ca09"
+    },
+    {
+      "name": "benchmark-python",
+      "command": "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "exitCode": 0,
+      "localLogSha256": "845bf2218f103dc953858efccc475b16d7ddf07c9d98ab23404efda3e4a9e0c0"
+    },
+    {
+      "name": "jit",
+      "command": "tools/wasm-jit-test.sh",
+      "exitCode": 0,
+      "localLogSha256": "8235cb3215ab6875bbee2b73d769ee1dc9f33bd9482ad8ff9363b0d7091319f5",
+      "differentialCases": 111126,
+      "gpioWaveformCases": 24
+    },
+    {
+      "name": "profiling",
+      "command": ". ./tools/wasm-rustflags.sh && cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "exitCode": 0,
+      "localLogSha256": "b29fa4955bc7d6684f36b2f2c021bc75e684f8c1a7260dfc1e2fda722a5b3751"
+    }
+  ],
+  "sourceSha256": {
+    "esp32s3/src/board/unit_pir.rs": "48dcb09e10aba5aaaee2ed364213e6badc22684a3d1e1ffe73dffd60bbba62d2",
+    "web/platform/accessory-routing.js": "8becbd7a7838d832d4f98b05ee3dc7c8a59a3d4a651d1ba9608dce2b525783c2",
+    "web/platform/motion-input.js": "4b9a3bf15ec45bb96ba6b5b5768f40bff0ca7a1d86b1452b6294e6898f837bdb",
+    "esp-soc/src/board.rs": "d50436fcf3a96808869db801d869d1b001d346c481d46a62b4637c798490c449",
+    "esp-soc/src/machine/web.rs": "6ebbea92ac12c62d46342456f509b53775c989d63fdaf0a3989eda896690d7df",
+    "esp32s3/src/board/stopwatch.rs": "088709f5d02b7d5139035ae8e08740292e203d6520d89b47e284da1db6c152cf",
+    "esp-periph/src/i2c/m5.rs": "d7eb7fb40f47c9d2c43f6b6532b6b4fc8f34b726b1662c58d0927385a8231203",
+    "web/platform/runtime.js": "8bc7a3499ad958d8d893b4d5b20674673e79b2c6fa702adfe4b6b1f94580a760",
+    "web/platform/recording.js": "eb3a12e4541a474bab3827d3fed66c1b0cfe1bd68b2a7ffa1867e4ba116e4d05",
+    "tools/probe-unit-pir.mjs": "8605cb34e006018b6a0542553b2b2973545ed09da333963ad9508b2ac47f08b6",
+    "tools/fixtures/unit-pir-firmware/main/main.c": "adb8a43c2cc5335fc17a6272d82f217594ebbd8e16da29c075295656c1e19519"
+  },
+  "notes": [
+    "Retains current 28 M5Stack controller identities, StopWatch internal I2C47/48 software routing and RTC; no old baseline merge.",
+    "U004 only: ENV-IV/DLight implementation is intentionally absent. Their unknown catalog IDs reject before physical contention; later integration reruns exact G11 conflicts.",
+    "Existing compiled internal fixture reused; main.c source and all firmware artifacts match retained previous receipt. No new firmware binary published.",
+    "Production WASM preserved separately before JIT/profiling; all source/behavior/section/fixture/browser checks use the recorded production artifact.",
+    "Local log hashes retain integrity without publishing raw home paths."
+  ],
+  "fixtureReuse": {
+    "inputHashesEqual": true,
+    "sourceEqual": true,
+    "historicalReceiptSha256": "ba09d3fe4dc3583a2aada4fe1ce4766d895da7a3c3ad43aae10104ca81c88116"
+  },
+  "privacy": {
+    "defaultEvidenceFiles": 2122,
+    "additionalPlatformEvidence": true,
+    "manualReview": "Public source metadata, numeric GPIO output and model screenshots only; raw local paths/browser profiles are not published."
+  },
+  "conflictAudit": [
+    "BoardModel accessory_motion_at appended after button_at/lcd_i80, preserving existing hot vtable method offsets.",
+    "StopWatch retained current internal I2C47/48 endpoints, software-bus levels and i2c_edges; PIR adds only physical G11 cold input, deadline and release.",
+    "Web input cold helper is S3-only; other SoC input matches retain their original branches.",
+    "Runtime retains full current IMU model map, firmware loading/storage and Hub text-batch input semantics.",
+    "App edits are limited to PIR accessory card input; no Matrix LED/transport UI changes.",
+    "No ENV-IV/DLight code or old baseline brought in; their parallel extension methods must be unioned on integration."
+  ]
+}
