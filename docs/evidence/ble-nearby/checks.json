@@ -1,0 +1,93 @@
+[
+  {
+    "check": "clippy-native",
+    "command": "cargo +1.99.1 clippy --workspace --all-targets -- -D warnings",
+    "exit_code": 0
+  },
+  {
+    "check": "clippy-wasm",
+    "command": "cargo +1.99.1 clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "exit_code": 0
+  },
+  {
+    "check": "workspace-ci",
+    "command": "cargo +1.99.1 test --release --workspace --no-fail-fast -- --include-ignored --skip external_",
+    "exit_code": 101,
+    "environment": "ESP32SIM_ROM_DIR=roms (tools/fetch-rom-elfs.sh, with the P4 ROM); tools/fetch-p4-firmware.sh; Rust 1.99.1 (58cf8f9c3 2026-10-13); Windows 11, core.autocrlf=false checkout",
+    "tests": {
+      "passed": 1232,
+      "failed": 4,
+      "ignored": 0
+    },
+    "failures": "decoder_matches_corpus (xtensa-lx7, riscv-rv32), p4_decoder_matches_corpus and cores_without_f_reject_every_f_instruction: the corpus paths are split on ':', which breaks a Windows drive letter; the same on untouched main, unrelated. Every golden passed byte-identical; none regenerated.",
+    "note": "the first run lacked tools/fetch-p4-firmware.sh's images (20 P4 / hosted tests: file not found); with them goldens 22/22 and cosim 34/34 pass"
+  },
+  {
+    "check": "virtual",
+    "command": "ESP32SIM_VQ_NATIVE=1 cargo +1.99.1 test --release -p esp32s3 --test machine --test virtual_stops",
+    "exit_code": 0,
+    "tests": {
+      "passed": 43,
+      "failed": 0
+    }
+  },
+  {
+    "check": "ble-peer",
+    "command": "cargo +1.99.1 test --release -p esp-soc --lib ble::peer",
+    "exit_code": 0,
+    "tests": {
+      "passed": 15,
+      "failed": 0
+    },
+    "mutations": "without the report at scan start, LinkEvent::ScanStopped, the list kept over Session::reset or the shared-address check, the matching new test fails"
+  },
+  {
+    "check": "cli-option",
+    "command": "cargo +1.99.1 test --release -p esp32sim --test ble_nearby_option",
+    "exit_code": 0
+  },
+  {
+    "check": "wasm-build-and-demos",
+    "command": "tools/wasm-build.sh && node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel",
+    "exit_code": 0
+  },
+  {
+    "check": "privacy",
+    "command": "node tools/check-evidence-privacy.mjs",
+    "exit_code": 0
+  },
+  {
+    "check": "firmware-s3",
+    "command": "the inputs.json s3 run",
+    "exit_code": 0,
+    "uart0": "each of two scans: found name=esp32sim addr=02:53:49:00:00:02 rssi=-35 uuid=0000180f-0000-1000-8000-00805f9b34fb, found name=Thermo addr=c4:aa:01:02:03:04 rssi=-70 uuid=0000180f-0000-1000-8000-00805f9b34fb, found name=Scale addr=ce:34:5f:b3:8c:4b rssi=-82 uuid=-, scan done n=3"
+  },
+  {
+    "check": "firmware-c3",
+    "command": "the inputs.json c3 run",
+    "exit_code": 0,
+    "uart0": "the same four lines as the S3, each scan"
+  },
+  {
+    "check": "firmware-control",
+    "command": "the S3 and C3 runs without --ble-nearby",
+    "exit_code": 0,
+    "uart0": "found name=esp32sim ..., scan done n=1"
+  },
+  {
+    "check": "review-follow-up",
+    "base": "main ddf753a5 merged",
+    "command": "cargo +1.99.1 test --release --workspace --no-fail-fast -- --include-ignored --skip external_",
+    "exit_code": 0,
+    "tests": {
+      "binaries": 129,
+      "passed": 1321,
+      "failed": 0,
+      "ignored": 0
+    },
+    "changes": "ADV_SCAN_IND (0x02) instead of ADV_IND; rssi -127..20 or 127; random addr with top bits 10 refused; name with adv refused; docs/cli.md: no ',' in name",
+    "mutations": "each new rule removed (event type, rssi range, reserved bits, name with adv) fails the matching peer test",
+    "firmware": "S3 and C3 scans: the same four lines, scan done n=3",
+    "other": "clippy native and wasm, wasm build and demos, privacy, virtual-quantum 43: pass"
+  }
+]

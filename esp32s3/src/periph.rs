@@ -132,6 +132,9 @@ impl WifiMac {
                 // `wifi_rx_deliver` takes it there only once the DMA has stopped, because the descriptor it
                 // wants is not usable (Arduino-ESP32 arms four at a time and writes the base of the
                 // next list while the last frame of the current one is still being processed).
+                // Inferred from the 5.1 blob's register writes under emulation, not from a public header:
+                // the latch is cleared by the next frame that goes in, so the rule assumes the driver
+                // publishes the base after the current list is exhausted (see docs/decisions.md).
                 self.rx_base = DMA_ADDR_BASE | (v & 0xf_ffff);
                 self.rx_handover = true;
                 if self.rx_next == 0 { self.rx_next = self.rx_base; }

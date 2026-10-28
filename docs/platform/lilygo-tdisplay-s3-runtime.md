@@ -33,4 +33,4 @@ ROM 启动后能够发送 11 个 LCD i80 阶段并完成部分 ST7789 初始化�
 
 ## 复现与证据
 
-输入 URL、版本、UTC、字节数、SHA-256、原生/Worker 结果和限制见 [EX246 证据](../evidence/lilygo-tdisplay-s3/README.md)。第三方固件只从调用者指定的官方 URL 获取，未加入 Git 或本站资产。
+输入 URL、版本、UTC、字节数、SHA-256、原生/Worker 结果和限制见 [EX246-LILYGO 证据](../evidence/lilygo-tdisplay-s3/README.md)。第三方固件只从调用者指定的官方 URL 获取，未加入 Git 或本站资产。

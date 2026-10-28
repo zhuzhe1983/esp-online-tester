@@ -64,6 +64,44 @@ UPDATE_GOLDENS=1 cargo test --release --workspace -- --include-ignored --skip ex
 tools/wasm-build.sh && node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel   # the wasm module, as the page runs it
 ```
 
+Classic PSRAM stock Arduino-ESP32 2.0.17 qualification is a developer-input test,
+not a CI golden. Build `docs/fixtures/classic-psram-arduino2/recipe.sh OUTPUT`, then
+set `ARDUINO2_FIRMWARE_DIR=OUTPUT/fw-A2` and `ESP32SIM_ROM_DIR` and run
+`cargo test --release -p esp32sim --test classic_psram_arduino2 -- --ignored`.
+It checks genuine dual-core low/high startup/test/heap-add, exact Arduino getter
+and heap accounting, two volatile 1 MiB write/read/hash passes with free recovery,
+repeat boot and the identical firmware with no device. No firmware binary is
+committed for this external test; its receipt explains the SDK size accounting.
+
+The same P6 external assertions also qualify stock Arduino-ESP32 3.1.1 on classic
+ESP32-CAM. Build `docs/fixtures/classic-psram-arduino311/recipe.sh OUTPUT`, then set
+`ARDUINO3_FIRMWARE_DIR=OUTPUT/fw-p6` and `ESP32SIM_ROM_DIR` and run
+`cargo test --release -p esp32sim --test classic_psram_arduino3 -- --ignored`.
+This is a separate 5.3-family binary SDK profile, not all Arduino 3.x or vanilla
+IDF v5.3.2 equivalence; no new CI golden or firmware binary is added.
+
+`tools/psram-wasm-test.mjs` compares the retained P5/P6 public Arduino fixtures
+through the native C ABI and real WASM, with JIT off/on, same-machine reboot and
+successive emulator creation. It requires both Arduino firmware directories, ROMs,
+and the `psram-qualification` example (`--features psram-tests`). Build the WASM
+module with `psram-tests` for production JIT settings, and separately with
+`jit-tests` for extra internal validation. Both matrices pass, including classic
+same-machine reboot and repeated construction; the earlier hot-region ownership
+assertion is resolved by the separately retained JIT fix/regression.
+See [the current integrated qualification receipt](../docs/evidence/classic-psram-followup/README.md)
+and [the retained WASM negative and its resolution](../docs/evidence/classic-psram-wasm/README.md).
+
+The classic CLI PSRAM test (`classic_psram_option`) boots the committed IDF
+fixture through the executable with `--psram-mb 4`, explicit `0`, and the absent
+default; unsupported sizes are rejected without a panic. Only the ECO3 ROM is
+needed for the boot test. Unit tests replay normal and delay-clock SPI phases.
+
+The external `classic_psram_micropython` test boots the unmodified official
+MicroPython v1.29.0 SPIRAM image, waits for its REPL, then runs `gc.mem_free()`
+with 4 MiB and with none. Set `MICROPYTHON_SPIRAM_IMAGE` and `ESP32SIM_ROM_DIR`;
+[download, hash and results](../docs/evidence/classic-psram-dclk/README.md).
+This downloaded image stays local, not a new committed firmware or CI golden.
+
 Tests named `external_*` need inputs only a developer machine has (full objdump listings via
 `XTENSA_DIS_FILES`/`RISCV_DIS_FILES`/`RISCV_P4_DIS_FILES`, Apple's clang for the encoder fixture) and fail loudly
 without them; run them by name. Their hermetic counterparts (`decoder_matches_corpus`,
@@ -81,6 +119,7 @@ output is left next to the golden as `*.actual` for diffing.
 | `esp32/tests/camera_fixture.rs` | public esp32-camera on the AI-Thinker classic ESP32: normal ROM boot, OV2640 initialization, two 160 × 120 RGB565 frames, guest SHA-256 against the independent host-source oracle; reproducible IDF 5.4.3 inputs and recipe in `examples/classic-camera`. Requires the fetched classic ROM; no PSRAM or JPEG. |
 | `esp32/tests/camera_lifecycle.rs` | same public driver/configuration, two initial frames, live host-image replacement, deinit/reinit and a second full sequence after same-machine reboot; pins per-phase hashes and reset IRQ state. `esp32/tests/fixtures/classic-camera/lifecycle.bin` shares the first fixture's bootloader and partition table; [recipe](../examples/classic-camera/lifecycle.md). |
 | `cli/tests/classic_camera.rs` | real `--chip esp32 --board ai-thinker-cam --cam-image` run, normal ROM boot and two non-zero RGB565 frame hashes; same committed fixture and independent image oracle as the library test. Requires the fetched classic ROM. |
+| `classic_psram_idf` | standalone unicore IDF 4.4.7 ROM boot, authentic PSRAM memory test and heap registration, 1 MiB/33-page bytewise readback/hash, DMA/exhaustion controls, repeated creation and absent device; committed firmware and recipe in `docs/fixtures/classic-psram-idf`, requires ECO3 ROM only |
 | `hello-s3.*` | stock ESP-IDF hello_world on UART0, ROM → bootloader → app_main |
 | `hello-c3.*` | the same on the ESP32-C3 (RISC-V), with the MAC/reset cause/straps of the real module in `hw/c3-hello-world-real.txt`, through `esp32sim-c3` and `esp32sim --chip c3` |
 | `hello-c6.*` | the same on the ESP32-C6 (RISC-V, RV32IMAC), with the identity of the Waveshare ESP32-C6-LCD-1.47 in `hw/c6-hello-world-real.txt`; the reboot variant also pins the ROM's `Saved PC` |

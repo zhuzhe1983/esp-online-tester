@@ -12,5 +12,5 @@ fn classic_esp32_accepts_the_wifi_option() {
     // The other gates stay.
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_esp32sim")).args(["--chip", "esp32", "--psram-mb", "2"]).output().unwrap();
     assert_eq!(output.status.code(), Some(2));
-    assert!(String::from_utf8(output.stderr).unwrap().contains("--psram-mb is not available on the classic ESP32"));
+    assert!(String::from_utf8(output.stderr).unwrap().contains("--psram-mb: classic ESP32 supports only 0 or 4 MiB"));
 }

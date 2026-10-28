@@ -111,7 +111,7 @@ pub struct Opts {
     pub sd: Option<(String, bool)>, pub sd_prg_us: Option<u64>, pub sd_serial: Option<u32>, pub sd_timing: bool,
     /// `--usb-host FILE`: a USB host on the chip's USB-OTG port, running the commands in FILE
     pub usb_host: Option<String>,
-    pub board: String, pub wifi: Option<String>, pub wifi_nearby: Vec<String>, pub ble: bool, pub ble_full: bool, pub ble_observe: bool, pub ble_scan: bool, pub net: String, pub cam_image: Option<String>, pub cam_stream: Option<String>, pub cam_size: Option<String>, pub cam_fps: f64,
+    pub board: String, pub wifi: Option<String>, pub wifi_nearby: Vec<String>, pub ble_nearby: Vec<String>, pub ble: bool, pub ble_full: bool, pub ble_observe: bool, pub ble_scan: bool, pub net: String, pub cam_image: Option<String>, pub cam_stream: Option<String>, pub cam_size: Option<String>, pub cam_fps: f64,
     pub spi2_timing: bool, pub measured_te: bool,
     pub max_insns: u64, pub max_seconds: Option<f64>, pub script: Option<String>, pub serial: Option<String>,
     pub console: Option<String>, pub console_prefix: bool, pub realtime: bool, pub web_port: Option<u16>, pub web_dir: Option<String>, pub no_reboot: bool,
@@ -166,6 +166,7 @@ pub fn parse(args: &[String], default_chip: &str) -> Opts {
             "--measured-te" => o.measured_te = true,
             "--wifi" => o.wifi = Some(next()),
             "--wifi-nearby" => o.wifi_nearby.push(next()),
+            "--ble-nearby" => o.ble_nearby.push(next()),
             "--ble-scan" => o.ble_scan = true,
             "--ble-observe" => o.ble_observe = true,
             "--ble" => {
@@ -237,6 +238,10 @@ pub fn parse(args: &[String], default_chip: &str) -> Opts {
     }
     if (o.ble_observe || o.ble_scan) && !o.ble_full { usage_error("BLE central/observer use requires --ble full"); }
     if o.ble_full && o.ble { usage_error("--ble full and --ble are mutually exclusive"); }
+    if !o.ble_nearby.is_empty() {
+        if !o.ble { usage_error("--ble-nearby needs the virtual controller of --ble"); }
+        if let Err(e) = esp_soc::ble::peer::Nearby::parse_all(&o.ble_nearby) { usage_error(&format!("--ble-nearby: {e}")); }
+    }
     if o.ble_full && !matches!(o.chip.as_str(), "c3" | "esp32c3") { usage_error("--ble full requires C3"); }
     if let Some(path) = &o.script {
         let text = std::fs::read_to_string(path).unwrap_or_else(|e| usage_error(&format!("script: {e}")));
@@ -545,7 +550,11 @@ fn setup_esp32(o: &Opts) -> esp32::Machine {
         m.bus.attach_wifi(cfg, nat).unwrap_or_else(|e| { eprintln!("--wifi: {e}"); std::process::exit(2) });
     }
     attach_nearby_networks(&mut m.bus.periph.wifi.link, o);
-    for (flag, on) in [("--psram-mb", o.psram_mb.is_some()), ("--flash-octal", o.flash_octal), ("--efuse-regs", o.efuse_regs.is_some()), ("--regs-init", o.regs_init.is_some()), ("--regstat", o.regstat.is_some())] {
+    if let Some(mb) = o.psram_mb {
+        if !matches!(mb, 0 | 4) { usage_error("--psram-mb: classic ESP32 supports only 0 or 4 MiB"); }
+        m.bus.set_psram_size(mb << 20).unwrap_or_else(|e| usage_error(&e));
+    }
+    for (flag, on) in [("--flash-octal", o.flash_octal), ("--efuse-regs", o.efuse_regs.is_some()), ("--regs-init", o.regs_init.is_some()), ("--regstat", o.regstat.is_some())] {
         if on { eprintln!("{} is not available on the classic ESP32", flag); std::process::exit(2); }
     }
     m
@@ -739,6 +748,14 @@ fn prepare<S: Soc>(m: &mut Machine<S>, o: &Opts) -> String {
         if o.ble { let elf = esp_soc::elf::parse(&data).expect("BLE ELF symbols"); if elf.by_name.contains_key("esp_bt_controller_init") { ble_elf = elf; } }
     }
     if o.ble { m.bus.enable_ble(&ble_elf).unwrap_or_else(|e| usage_error(&format!("--ble: {e}"))); }
+    if !o.ble_nearby.is_empty() {
+        let list = esp_soc::ble::peer::Nearby::parse_all(&o.ble_nearby).unwrap_or_else(|e| usage_error(&format!("--ble-nearby: {e}")));
+        for n in &list {
+            let fields = esp_soc::ble::peer::advertising_fields(&n.adv);
+            eprintln!("[emu] device around: {} ({}) {} dBm {}", esp_soc::ble::peer::addr_text(&n.addr), if n.addr_type == 0 { "public" } else { "random" }, n.rssi, fields.join(" "));
+        }
+        m.bus.ble_nearby(list).unwrap_or_else(|e| usage_error(&format!("--ble-nearby: {e}")));
+    }
     if let Some(p) = &o.script { m.load_script(&std::fs::read_to_string(p).unwrap_or_else(|e| usage_error(&format!("script: {e}")))).unwrap_or_else(|e| usage_error(&format!("script: {e}"))); }
     if let Some(s) = &o.serial { m.bus.serial_input(s.as_bytes()); }
     apply_adc_raw(m, &o.adc_raw);

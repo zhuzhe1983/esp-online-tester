@@ -1,0 +1,28 @@
+Licences of the classic PSRAM IDF fixture
+========================================
+
+Files: classic-psram-idf-{bootloader,ptable,app}.bin.
+Source/recipe: docs/fixtures/classic-psram-idf (application: MIT, repository LICENSE).
+SDK: ESP-IDF v4.4.7, 38eeba213aa695aabfd6d89aa9f5078dbe5a94c3.
+Compiler: GCC 8.4.0, crosstool-NG esp-2021r2-patch5.
+
+Linked code (from both ELF maps; exact archive hashes in the fixture provenance):
+ESP-IDF and Mbed TLS crypto: Apache-2.0; FreeRTOS and Xtensa HAL: MIT;
+IDF multi_heap: Apache-2.0, TLSF: BSD-3-Clause; newlib: per-file licences;
+GCC runtime: GPLv3 with GCC Runtime Library Exception 3.1.
+
+The app links libapp_update, libbootloader_support, libc, libcxx, libdriver,
+libefuse, libesp_common, libesp_hw_support, libesp_phy (initialization glue),
+libesp_pm, libesp_ringbuf, libesp_rom, libesp_system, libesp_timer, libfreertos,
+libgcc, libhal, libheap, liblog, libmain, libmbedcrypto, libnewlib, libpthread,
+libsoc, libspi_flash, libvfs, libxt_hal and libxtensa.
+The bootloader links libbootloader_support, libc, libesp_hw_support, libesp_rom,
+libgcc, libhal, liblog, libmain, libsoc and libspi_flash.
+No Wi-Fi, Bluetooth, lwIP, TLS protocol or proprietary PHY radio archive
+contributes code to these images. Linked ESP-IDF initialization glue is not a
+radio implementation.
+
+Shared licence texts are retained in classic-hello-NOTICE.txt in this directory
+(Apache-2.0, MIT, newlib notices, GPLv3 and runtime exception). The Xtensa HAL
+MIT copyright/permission text is also retained with this fixture's SDK licences.
+See classic-psram-idf-licenses.txt for the exact SDK component notices.

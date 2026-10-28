@@ -129,6 +129,14 @@ impl Ble {
         self.log(cycles);
         result
     }
+    /// The devices around the station (`--ble-nearby`), replacing the ones there were.
+    pub fn set_nearby(&mut self, list: Vec<esp_soc::ble::peer::Nearby>, cycles: u64) -> Result<(), String> {
+        if self.hooks.is_empty() { return Err("BLE requires --ble and the application ELF".into()); }
+        self.session.advance_to(cycles);
+        self.session.set_nearby(list);
+        self.log(cycles);
+        Ok(())
+    }
     fn log(&mut self, cycles: u64) {
         for line in self.session.drain_log() { eprintln!("[ble] t={:.6}s {line}", cycles as f64 / crate::periph::CPU_HZ as f64); }
     }

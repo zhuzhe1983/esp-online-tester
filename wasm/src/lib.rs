@@ -12,6 +12,8 @@ use esp_soc::{Machine, Soc, SocBus};
 mod machine;
 mod storage;
 pub use storage::*;
+#[cfg(any(test, feature = "psram-tests"))]
+pub mod psram_tests;
 mod network;
 mod ethernet;
 mod softap;
@@ -108,6 +110,8 @@ unsafe fn text<'a>(ptr: *const u8, len: usize) -> &'a str {
 /// C6, `esp32c3` for the C3 or `esp32p4` for the P4 (rev < 3), which are console-only and take no
 /// board. Null on failure.
 /// Flash and PSRAM are each limited to 32 MiB, matching the browser configuration form.
+/// Classic ESP32 enables PSRAM only at 4 MiB; other sizes within the cap start without
+/// PSRAM (0 is the default), preserving existing callers' configurations.
 ///
 /// # Safety
 /// For nonzero `board_len`, `board` must be non-null and readable for `board_len` bytes throughout
@@ -143,6 +147,16 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         m.bus.board = b;
         m.bus.attach_board_devices();
         m.bus.set_flash_size(flash_bytes);
+        let classic_psram_bytes = if matches!(psram_mb, 0 | 4) {
+            psram_bytes
+        } else {
+            log("[emu] classic ESP32 PSRAM is 0 or 4 MiB; starting without PSRAM");
+            0
+        };
+        if let Err(reason) = m.bus.set_psram_size(classic_psram_bytes) {
+            log(&format!("[emu] {}", reason));
+            return std::ptr::null_mut();
+        }
         m.console.mask = 2;
         prepare(&mut m);
         MachineKind::Esp32(Box::new(m))
