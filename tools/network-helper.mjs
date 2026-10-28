@@ -22,7 +22,7 @@ function websocketFrame(opcode,bytes) {
 }
 function attachWebSocket(socket,head,onMessage,onClose) {
   let input=Buffer.alloc(0),closed=false;const send=(op,data)=>{if(closed)return;if(socket.writableLength>MAX_BUFFER){close(1013,'network client too slow');return;}socket.write(websocketFrame(op,data));};
-  const close=(code=1000,reason='closed')=>{if(closed)return;closed=true;const body=Buffer.alloc(2);body.writeUInt16BE(code);socket.end(websocketFrame(8,Buffer.concat([body,Buffer.from(reason).subarray(0,120)])));onClose();};
+  const close=(code=1000,reason='closed')=>{if(closed)return;closed=true;const body=Buffer.alloc(2);body.writeUInt16BE(code);socket.end(websocketFrame(8,Buffer.concat([body,Buffer.from(reason).subarray(0,120)])));setTimeout(()=>socket.destroy(),1000).unref();onClose();};
   const receive=chunk=>{if(closed)return;input=Buffer.concat([input,chunk]);if(input.length>MAX_MESSAGE+14){close(1009,'message limit');return;}
     while(input.length>=2){const op=input[0]&15,fin=input[0]&128,masked=input[1]&128;let length=input[1]&127,offset=2;
       if(!fin||(input[0]&0x70)||!masked||![1,2,8,9,10].includes(op)){close(1002,'unsupported frame');return;}
