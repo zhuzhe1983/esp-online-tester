@@ -3,6 +3,7 @@
 import * as THREE from './vendor/three.module.min.js';
 import {createGroveSocket,verifiedGrove} from './grove-geometry.js';
 import {createPcbPlaceholderGeometry} from './pcb-placeholder.js';
+import {addRgbLedGlow} from './rgb-led-view.js';
 const safeAsset = (name, root) => {
   if (typeof name !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._/-]*$/.test(name) || name.split('/').includes('..')) throw Error('Invalid local model asset');
   return new URL(name,root);
@@ -99,6 +100,7 @@ export function createManufacturerModel(product, screenTexture) {
       if(part.ledIndex===undefined)continue;
       const mesh=parts[part.id];if(!Number.isInteger(part.ledIndex)||part.ledIndex<0||part.ledIndex>=256||!mesh?.isMesh||!mesh.material?.emissive)throw Error('Invalid derived LED window');
       mesh.userData.ledIndex=part.ledIndex;mesh.userData.unlitColor=part.color || '#666d69';(group.userData.rgbLedMeshes ||= [])[part.ledIndex]=mesh;
+      if(part.id.startsWith('rgb-diffuser-'))textures.push(addRgbLedGlow(mesh));
     }
     for(const knob of metadata.presentation?.potentiometers || []) {
       if(typeof knob.id!=='string'||!Array.isArray(knob.parts)||!knob.parts.length||knob.parts.some(name=>!parts[name])||!Number.isFinite(knob.visualSweepRadians)||knob.visualSweepRadians<=0||knob.visualSweepRadians>2*Math.PI)throw Error('Invalid potentiometer presentation');

@@ -252,7 +252,10 @@ export async function mountFirmwareUpdates(mount, {getProductId} = {}) {
   const body = node('div', 'firmware-updates'), identity = node('p', 'firmware-update-identity'), hints = node('div', 'hint-list'), actions = node('div', 'firmware-update-actions');
   hints.setAttribute('role', 'group'); hints.setAttribute('aria-label', '固件来源与版本说明');
   const check = button('检查版本'), result = node('div', 'watch-result'); result.setAttribute('aria-live', 'polite');
-  body.append(identity, hints, actions, result); mount.append(body); body.hidden = true;
+  const downloadDetails=node('details','firmware-download-details'),downloadSummary=node('summary','','固件下载地址'),downloadLink=link('','#','firmware-download-url'),copyDownload=button('复制地址');
+  downloadDetails.append(downloadSummary,downloadLink,copyDownload);
+  copyDownload.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(downloadLink.href);copyDownload.textContent='已复制';}catch{copyDownload.textContent='请选中地址复制';}});
+  body.append(identity, hints, actions, downloadDetails, result); mount.append(body); body.hidden = true;
   let active = true, checkSequence = 0, checkController, selected = null, selectedProductId = null, entry = null, list = null, listError = null;
   try { list = await loadWatchlist(); } catch (error) { listError = error; }
   function show(firmware) {
@@ -260,7 +263,10 @@ export async function mountFirmwareUpdates(mount, {getProductId} = {}) {
     const productId=getProductId?.();
     if (selected?.id === firmware?.id && selectedProductId===productId) return;
     selected = firmware || null; selectedProductId=productId; entry = null; checkSequence++; checkController?.abort(); result.replaceChildren(); actions.replaceChildren(); renderHintList(hints, []);
+    downloadDetails.open=false;downloadDetails.hidden=true;copyDownload.textContent='复制地址';downloadLink.removeAttribute('href');downloadLink.textContent='';
     body.hidden = !firmware || !firmware.productIds.includes(getProductId?.()); if (body.hidden) return;
+    const downloadUrl=safeUrl(firmware.source?.url||firmware.source?.manifestUrl);
+    if(downloadUrl){downloadDetails.hidden=false;downloadSummary.textContent=firmware.source?.manifestUrl?'固件清单地址':'固件下载地址';downloadLink.href=downloadUrl;downloadLink.textContent=downloadUrl;}
     entry = list?.entries.find(item => item.id === firmware.watchlistId) || null;
     const role = firmware.role === 'factory' ? '官方出厂' : firmware.role === 'third-party' ? '第三方项目' : '已收录项目';
     identity.textContent = `${firmwareRunPolicy(null, firmware).label} · ${role}${firmware.revision || entry?.version ? ` · ${firmware.revision || entry.version}` : ''}`;
