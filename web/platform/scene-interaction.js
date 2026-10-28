@@ -32,15 +32,19 @@ export function pickVisibleSurface(raycaster, root) {
   return null;
 }
 
-// A pointer owns its role from down to up. A screen swipe never turns into an orbit,
-// and independent pointers can hold A and B without releasing each other's inputs.
-export function createScenePointerRouter({onInput = () => {}, onOrbit = () => {}, onUnsupported = () => {}, onError = () => {}} = {}) {
+// Touch keeps its role until release. A mechanical cover can explicitly opt into
+// click/hold versus drag-to-orbit; other buttons still press immediately.
+export function createScenePointerRouter({onInput = () => {}, onOrbit = () => {}, onUnsupported = () => {}, onError = () => {}, setTimer = setTimeout, clearTimer = clearTimeout} = {}) {
   const pointers = new Map(); let touchOwner = null;
   const emit = (event, pointerId) => { try { Promise.resolve(onInput(event, `scene:${pointerId}`)).catch(onError); } catch (error) { onError(error); } };
-  function up(pointerId) {
+  function up(pointerId, cancelled = false) {
     const gesture = pointers.get(pointerId); if (!gesture) return;
     pointers.delete(pointerId);
-    if (gesture.kind === 'button') emit({type: 'button', id: gesture.control, pressed: false}, pointerId);
+    if (gesture.timer !== undefined) clearTimer(gesture.timer);
+    if (gesture.kind === 'button') {
+      if (!gesture.pressed && !cancelled) emit({type: 'button', id: gesture.control, pressed: true}, pointerId);
+      if (gesture.pressed || !cancelled) emit({type: 'button', id: gesture.control, pressed: false}, pointerId);
+    }
     if (gesture.kind === 'touch') { touchOwner = null; if (gesture.lastTouch) emit({...gesture.lastTouch, down: false}, pointerId); }
   }
   function touch(gesture, point) {
@@ -48,11 +52,17 @@ export function createScenePointerRouter({onInput = () => {}, onOrbit = () => {}
     gesture.lastTouch = {type: 'touch', x: point.x, y: point.y, down: true}; emit(gesture.lastTouch, gesture.pointerId);
   }
   function down({pointerId, x, y, surface, point}) {
-    up(pointerId);
+    up(pointerId, true);
     const kind = surface?.kind || 'orbit';
     if (kind === 'unsupported') { onUnsupported(surface.message); return 'unsupported'; }
     const gesture = {pointerId, x, y, kind};
-    if (kind === 'button') { gesture.control = surface.id; pointers.set(pointerId, gesture); emit({type: 'button', id: surface.id, pressed: true}, pointerId); }
+    if (kind === 'button') {
+      gesture.control = surface.id; gesture.dragToOrbit = surface.dragToOrbit === true; pointers.set(pointerId, gesture);
+      const press = () => { if (pointers.get(pointerId) !== gesture || gesture.kind !== 'button') return; gesture.pressed = true; emit({type: 'button', id: surface.id, pressed: true}, pointerId); };
+      // A quick drag must not also press the firmware's button. A stationary
+      // hold still reaches the guest, while a tap uses the normal minimum pulse.
+      if (gesture.dragToOrbit) gesture.timer = setTimer(press, 220); else press();
+    }
     else if (kind === 'potentiometer') {
       if(pointers.size)return 'ignored';
       gesture.control=surface.id;gesture.accessoryId=surface.accessoryId;gesture.angle=point?.angle;gesture.value=surface.value;gesture.sweep=surface.sweep;pointers.set(pointerId,gesture);
@@ -73,6 +83,11 @@ export function createScenePointerRouter({onInput = () => {}, onOrbit = () => {}
   }
   function move({pointerId, x, y, point}) {
     const gesture = pointers.get(pointerId); if (!gesture) return null;
+    if (gesture.kind === 'button' && gesture.dragToOrbit && pointers.size === 1 && Math.hypot(x - gesture.x, y - gesture.y) > 6) {
+      clearTimer(gesture.timer);
+      if (gesture.pressed) emit({type:'button',id:gesture.control,pressed:false},pointerId);
+      gesture.kind = 'orbit';
+    }
     if (gesture.kind === 'orbit') { onOrbit(x - gesture.x, y - gesture.y); gesture.x = x; gesture.y = y; }
     else if (gesture.kind === 'touch') touch(gesture, point);
     else if (gesture.kind === 'potentiometer' && Number.isFinite(point?.angle)) {
@@ -93,7 +108,7 @@ export function createScenePointerRouter({onInput = () => {}, onOrbit = () => {}
     }
     return gesture.kind;
   }
-  return {down, move, up, releaseAll() { for (const id of [...pointers.keys()]) up(id); }, kind: id => pointers.get(id)?.kind || null, get activeCount() { return pointers.size; }};
+  return {down, move, up, releaseAll() { for (const id of [...pointers.keys()]) up(id, true); }, kind: id => pointers.get(id)?.kind || null, get activeCount() { return pointers.size; }};
 }
 
 export function createSurfaceHalo() {
