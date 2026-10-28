@@ -75,10 +75,12 @@ jobs:
           test "$(grep -o "v=$v" web/run.html | wc -l)" -eq 3
           grep -c "v=$v" web/run.html web/emu.js
       - name: Stage public site without internal diagnostic firmware
-        run: node tools/stage-platform-pages.mjs web target/pages
+        # Rust's target cache can restore a previous target/pages. Stage outside
+        # that cache, with a fresh directory for every workflow attempt.
+        run: node tools/stage-platform-pages.mjs web "${{ runner.temp }}/esp-platform-pages-${{ github.run_id }}-${{ github.run_attempt }}"
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: target/pages
+          path: ${{ runner.temp }}/esp-platform-pages-${{ github.run_id }}-${{ github.run_attempt }}
   deploy:
     needs: build
     runs-on: ubuntu-latest
