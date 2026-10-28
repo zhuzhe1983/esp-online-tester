@@ -4823,10 +4823,10 @@
       "summary": "由 AtomS3R 与 Atomic Voice Base 组成的语音交互套件；彩屏、IMU、磁力计和音频部件分别记录。",
       "knowledgeUrl": "./knowledge/m5stack-k147.json",
       "runtime": {
-        "board": null,
+        "board": "atoms3r-chatbot",
         "flashMb": 8,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial"
       },
       "display": {
         "width": 128,
@@ -4835,7 +4835,16 @@
         "technology": "lcd",
         "touch": false
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "button-a",
+          "name": "按键",
+          "type": "button",
+          "pin": 41,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
       "interfaces": [
         {
           "id": "port-custom",
@@ -4884,10 +4893,11 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "仅按K147文档的GC9107批次：屏幕、LP5562白光、G41按键与BMI270轮询子集；不是整机兼容认证。",
+        "Atomic Voice Base的ES8311音频和麦克风尚未模拟；小智固件会提示底座未连接。真实网络、红外、BMI270 AUX/BMM150未实现。",
+        "未找到K147整套明确的出厂恢复镜像；默认UIFlow2是官方开发固件，不标作出厂固件。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
         "Official specifications list AtomS3R 12.9 mm and separate base 14.14 mm; source assembled stack is 22.9 mm with a 10 mm exposed base. Base mating/envelope convention is unverified.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
         "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
@@ -4909,7 +4919,8 @@
           "notes": "Reused actual corpus receipt 2026-10-26T15:19:25.332105Z; no new fetch timestamp invented.",
           "checkedAt": "2026-10-26"
         }
-      ]
+      ],
+      "defaultFirmwareId": "m5stack-c126-uiflow2-reference"
     },
     {
       "id": "m5stack-k147-cam",

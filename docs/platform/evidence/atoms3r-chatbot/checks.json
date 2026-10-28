@@ -1,0 +1,203 @@
+{
+  "checkedAt": "2026-10-28T02:25:42.476960+00:00",
+  "sourceBase": "f14d563479c7d3a2aa43e15cce9d8d7df239247c",
+  "checks": [
+    {
+      "name": "stable",
+      "command": "rustup update stable",
+      "exitCode": 0,
+      "seconds": 0.63
+    },
+    {
+      "name": "build",
+      "command": "cargo build --release --workspace",
+      "exitCode": 0,
+      "seconds": 30.57
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "seconds": 3.044
+    },
+    {
+      "name": "clippy-wasm",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "seconds": 1.897
+    },
+    {
+      "name": "rust",
+      "command": "cargo test --release --workspace -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "seconds": 158.483
+    },
+    {
+      "name": "vq",
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "exitCode": 0,
+      "seconds": 14.418
+    },
+    {
+      "name": "wasm-build",
+      "command": "tools/wasm-build.sh",
+      "exitCode": 0,
+      "seconds": 0.142
+    },
+    {
+      "name": "wasm-sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "seconds": 0.036
+    },
+    {
+      "name": "wasm",
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "exitCode": 0,
+      "seconds": 51.477
+    },
+    {
+      "name": "platform",
+      "command": "node --test tools/platform-*-test.mjs",
+      "exitCode": 0,
+      "seconds": 4.126
+    },
+    {
+      "name": "recording",
+      "command": "node tools/platform-recording-test.mjs --real",
+      "exitCode": 0,
+      "seconds": 4.399
+    },
+    {
+      "name": "timing",
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "seconds": 0.069
+    },
+    {
+      "name": "ble",
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "seconds": 1.219
+    },
+    {
+      "name": "ble-connection",
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "seconds": 4.28
+    },
+    {
+      "name": "pacing",
+      "command": "node tools/worker-pacing-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.062
+    },
+    {
+      "name": "channel",
+      "command": "node tools/worker-channel-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.413
+    },
+    {
+      "name": "input",
+      "command": "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.137
+    },
+    {
+      "name": "bench",
+      "command": "node --test tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.272
+    },
+    {
+      "name": "bench-python",
+      "command": "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "exitCode": 0,
+      "seconds": 0.299
+    },
+    {
+      "name": "jit",
+      "command": "tools/wasm-jit-test.sh",
+      "exitCode": 0,
+      "seconds": 74.381
+    },
+    {
+      "name": "profile",
+      "command": ". ./tools/wasm-rustflags.sh; cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "exitCode": 0,
+      "seconds": 18.199
+    },
+    {
+      "name": "schema",
+      "command": "uv run --with-requirements tools/requirements-catalog.txt python tools/validate-platform-catalog.py",
+      "exitCode": 0,
+      "seconds": 0.179
+    },
+    {
+      "name": "x5",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.109
+    },
+    {
+      "name": "x5verify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+      "exitCode": 0,
+      "seconds": 0.043
+    },
+    {
+      "name": "m1",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.104
+    },
+    {
+      "name": "m1verify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+      "exitCode": 0,
+      "seconds": 0.041
+    },
+    {
+      "name": "historical",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.107
+    },
+    {
+      "name": "historicalverify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "exitCode": 0,
+      "seconds": 0.041
+    }
+  ],
+  "summary": {
+    "groupsPassed": 28,
+    "rustTestsPassed": 1435,
+    "rustGroups": 132,
+    "platformTests": 100,
+    "productionWasmScenarios": 11,
+    "goldensRegenerated": false
+  },
+  "productionWasmSha256": "fbf9b21931cee7759bcce690ce23a45793bf1ea7c5c1f54d4e1d083a93edb349",
+  "romSha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "limitations": "No physical hardware test. Official UI evidence and CPU samples are separate receipts.",
+  "environment": {
+    "ESP32SIM_ROM_DIR": "<repository>/web/wasm/fw",
+    "remoteFirmware": "Original vendor images in ignored output only"
+  },
+  "postReviewChecks": [
+    {
+      "command": "node --check tools/probe-atoms3r-chatbot-uiflow.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "uv run --with-requirements tools/requirements-catalog.txt python tools/validate-platform-catalog.py",
+      "exitCode": 0
+    },
+    {
+      "command": "node --test tools/platform-watchlist-test.mjs tools/platform-official-firmware-test.mjs",
+      "exitCode": 0
+    }
+  ]
+}
