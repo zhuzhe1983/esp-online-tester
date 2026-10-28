@@ -23,7 +23,7 @@ export function productFamilies(products, manufacturer) {
     const family = families.get(item.family.id) || {id:item.family.id,name:item.family.name,count:0};
     family.count++; families.set(family.id,family);
   }
-  return [...families.values()].sort((a,b)=>collator.compare(a.name,b.name) || collator.compare(a.id,b.id));
+  return [...families.values()].sort((a,b)=>compareManufacturers(a.name,b.name) || collator.compare(a.id,b.id));
 }
 export function productFamilyGroups(products) {
   const groups = new Map();
@@ -32,7 +32,7 @@ export function productFamilyGroups(products) {
     if (!groups.has(id)) groups.set(id,{id,name:item.family?.name || '未分类',products:[]});
     groups.get(id).products.push(item);
   }
-  return [...groups.values()].sort((a,b)=>Number(!a.id)-Number(!b.id) || collator.compare(a.name,b.name));
+  return [...groups.values()].sort((a,b)=>Number(!a.id)-Number(!b.id) || compareManufacturers(a.name,b.name));
 }
 export function productIdentityLabel(product) {
   const revision = product.hardwareRevision;

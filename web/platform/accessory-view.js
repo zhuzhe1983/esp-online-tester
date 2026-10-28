@@ -24,8 +24,8 @@ export function createIllustrativeAccessory(definition, index = 0) {
     model.group.position.set(64 + index * 36, -9 - index * 5, 0); model.group.rotation.z = -Math.PI / 4;
     const ready=model.ready.then(value=>{if(definition.id===UNIT_BUTTON_ID)for(const mesh of model.buttons){
       if(definition.physicalButtonSupported && definition.connected!==false && definition.effectiveConnected!==false){mesh.userData.control=unitButtonControl(definition.instanceId);}
-      else {delete mesh.userData.control;mesh.userData.unsupported=definition.effectiveConnected===false?'Hub 上游已拔出，请先连接。':definition.connected===false?'配件已拔出，请先连接。':'Unit Button 仅支持 StopWatch Port A 的物理接线。';}
-    }model.group.traverse(mesh=>{if(!mesh.userData.potentiometer)return;if(definition.physicalSupported){mesh.userData.potentiometer.accessoryId=definition.instanceId;}else{delete mesh.userData.potentiometer;mesh.userData.unsupported='Unit Angle 仅支持已核实的 StopWatch Port A 接线。';}});return value;});
+      else {delete mesh.userData.control;mesh.userData.unsupported=definition.effectiveConnected===false?'Hub 上游已拔出，请先连接。':definition.connected===false?'配件已拔出，请先连接。':'当前模拟器尚未接入这组主机与配件的 GPIO 路由；不是品牌限制。';}
+    }model.group.traverse(mesh=>{if(!mesh.userData.potentiometer)return;if(definition.physicalSupported){mesh.userData.potentiometer.accessoryId=definition.instanceId;}else{delete mesh.userData.potentiometer;mesh.userData.unsupported='当前模拟器尚未接入这组主机与配件的 ADC 路由；不是品牌限制。';}});return value;});
     return {...model, ready, get connector() { return model.connectors.grove || null; }};
   }
   const group = new THREE.Group(); group.name = `accessory:${definition.instanceId || definition.id || index}`;
