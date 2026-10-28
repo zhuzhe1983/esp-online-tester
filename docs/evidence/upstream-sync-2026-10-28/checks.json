@@ -1,0 +1,299 @@
+{
+  "date": "2026-10-28",
+  "upstream_revision": "2e36224d",
+  "integration_revision": "164382ea",
+  "final_code_revision": "656c84ba",
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "node": "24.22.1",
+  "host_system": "Darwin",
+  "architecture": "arm64",
+  "production_wasm": {
+    "sha256": "afd57d99f7c0adbbf1069929a5bcc2e3d50038944bf2cfdb596c7037dafcfd44",
+    "bytes": 4564870
+  },
+  "checks": [
+    {
+      "name": "Release workspace build",
+      "command": "cargo build --release --workspace",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "66d2cb54ae8ef7dc8ae2959a1ae3e0c79cbe2434ac868c45333931a98b0bc5c1",
+      "raw_log_bytes": 1533
+    },
+    {
+      "name": "Native Clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "e8f285cb95485c161abc29ec15b27c7b9199e55457c0d975404951bf9fd14f23",
+      "raw_log_bytes": 838
+    },
+    {
+      "name": "WASM Clippy",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "05b774dbbeb41d92e9603b2edce4caab5e848293e7f13a8a8ec59c091219ad6f",
+      "raw_log_bytes": 553
+    },
+    {
+      "name": "Complete CI-policy Rust tests",
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms cargo test --release --workspace -- --include-ignored --skip external_",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "1e15a700899587d7a76ad3120c03b9fe7ff6e730d2aac824577092b2d927e057",
+      "raw_log_bytes": 184897,
+      "test_totals": {
+        "passed": 1699,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "name": "Virtual quantum",
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "23753aff96f63de8de03687a4c22f1d1bbe577e8167b388a02454886a95b9800",
+      "raw_log_bytes": 3672,
+      "test_totals": {
+        "passed": 43,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "name": "Native AArch64",
+      "command": "cargo test --release -p xtensa-lx7",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "310a3b5deee59a067fc4f3db30999d5bac59b681202fc83d1c3f707a147db14a",
+      "raw_log_bytes": 5423,
+      "test_totals": {
+        "passed": 53,
+        "failed": 0,
+        "ignored": 1
+      },
+      "details": "Local Darwin arm64; Linux ARM CI is separate."
+    },
+    {
+      "name": "Production WASM build",
+      "command": "tools/wasm-build.sh",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "280290e75c9dd5c94e1c2689305bdba42ecabef2627b8ec8dd4e0c59f5af6ed4",
+      "raw_log_bytes": 1348
+    },
+    {
+      "name": "Production sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "2b3214960e72349d3f255c34e271234e3cdb9e2fb33d2cb5504e7f574234e2ba",
+      "raw_log_bytes": 57,
+      "details": {
+        "dwarfAbsent": true,
+        "nameRetained": true,
+        "bytes": 4564870
+      }
+    },
+    {
+      "name": "Real WASM manifests",
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik demo-stopwatch",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "b7054659f0bd87d0eb96cce7be06f35a942789e45a8917e2df33b922d1fc8cad",
+      "raw_log_bytes": 1694,
+      "details": {
+        "manifests": [
+          "hello",
+          "c3-hello",
+          "c6-hello",
+          "p4-hello",
+          "p4-c6-hosted",
+          "p4-lcd35-synth",
+          "c6-energy-scan",
+          "c6-contiki",
+          "c6-contiki-net",
+          "c6-rpl-net",
+          "panel",
+          "tdisplay-prices",
+          "tdisplay-schematik",
+          "demo-stopwatch"
+        ],
+        "passed": 14
+      }
+    },
+    {
+      "name": "Platform and real PCM loopback",
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms node --test tools/platform-*-test.mjs",
+      "source_revision": "656c84ba",
+      "result": "passed",
+      "raw_log_sha256": "d95f2adf8707c91e58cfa5cddfa1e82dfe7c27524cb6fdbebcd6d57ded80efef",
+      "raw_log_bytes": 22327,
+      "node_totals": {
+        "tests": 136,
+        "pass": 136,
+        "fail": 0,
+        "skipped": 0
+      },
+      "details": {
+        "mono_stereo_rx_gdma_tx_pcm": "passed"
+      }
+    },
+    {
+      "name": "Real input replay",
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms node tools/platform-recording-test.mjs --real",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "fb28a4151c78da3e7407c93f247df0d879a64cac193458d9256b0667fb64233d",
+      "raw_log_bytes": 1100,
+      "details": {
+        "events": 18,
+        "guest_button_acknowledgements": true,
+        "tap_and_left_right_touch_trajectory": true,
+        "replay_frame_equal": true
+      }
+    },
+    {
+      "name": "Timing and BLE ABI",
+      "command": [
+        "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+        "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf",
+        "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf"
+      ],
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "6d8434709b24fcfd603869fa2b3961245497d8774446d25ba09bdb9a919210ba",
+      "raw_log_bytes": 1071,
+      "details": {
+        "advertiser_events": 19,
+        "advertiser_pdus": 57,
+        "connections": 2,
+        "reads": 2,
+        "guest_errors": []
+      }
+    },
+    {
+      "name": "Worker and touch checks",
+      "command": [
+        "node tools/worker-pacing-test.mjs",
+        "node tools/worker-channel-test.mjs",
+        "node --test tools/touch-input-test.mjs",
+        "node --test tools/stopwatch-ui-test.mjs"
+      ],
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "a83dbcab66497625157254858ff28ad0edb106930784f728eefb2f1bb75ef8dc",
+      "raw_log_bytes": 1539,
+      "node_totals": {
+        "tests": 11,
+        "pass": 11,
+        "fail": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "Touch bezel regression and StopWatch UI",
+      "command": "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs",
+      "source_revision": "656c84ba",
+      "result": "passed",
+      "raw_log_sha256": "4400b751bcef25a64d413bfbf364d4dd1a6636a95738eb29be9d2ebae496d897",
+      "raw_log_bytes": 1190,
+      "node_totals": {
+        "tests": 12,
+        "pass": 12,
+        "fail": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "WASM JIT differential",
+      "command": "tools/wasm-jit-test.sh",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "3566b4f3015c3c9b9d2d46d4e70fba72636487c4695c61c77c5eb1aa12e1b24f",
+      "raw_log_bytes": 6228,
+      "details": {
+        "cases": 111126,
+        "groups": 78,
+        "released_modules": 99679,
+        "gpio_waveform_cases": 24,
+        "waveform_released_modules": 738
+      }
+    },
+    {
+      "name": "WASM profiling build",
+      "command": ". tools/wasm-rustflags.sh && cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "9fd76c59a0fab5577cb5df1fecd6a91d5ac806733ad0fca136d84041b33daeba",
+      "raw_log_bytes": 925
+    },
+    {
+      "name": "Actual WASM classic PSRAM lifecycle",
+      "command": "node tools/psram-wasm-test.mjs --lifecycle",
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "f30485605b62be35ce8d6e96324155ef82937d57dffa0ec8253fd8d3ba398c90",
+      "raw_log_bytes": 35
+    },
+    {
+      "name": "Browser benchmark harness",
+      "command": [
+        "node --test tools/wasm-build-policy.test.mjs",
+        "node --test tools/browser-benchmark/*.test.mjs",
+        "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'"
+      ],
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "7cd7e22a1739e0fb33d349b9aa6f67c3d37f7ba460aee2acf7ceb192efcd9f4e",
+      "raw_log_bytes": 1613,
+      "node_totals": {
+        "tests": 16,
+        "pass": 16,
+        "fail": 0,
+        "skipped": 0
+      },
+      "details": {
+        "python_unittests": 15
+      }
+    },
+    {
+      "name": "Historical x5 receipt contracts",
+      "command": [
+        "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs",
+        "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+        "node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs",
+        "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+        "node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+        "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs"
+      ],
+      "source_revision": "164382ea",
+      "result": "passed",
+      "raw_log_sha256": "a9d28da4cdc97a1557b544ec150c40d3b9139d5e9689ae67773d8ef54c470116",
+      "raw_log_bytes": 5124,
+      "node_totals": {
+        "tests": 83,
+        "pass": 83,
+        "fail": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "Evidence privacy patterns",
+      "command": "node tools/check-evidence-privacy.mjs",
+      "source_revision": "656c84ba plus staged evidence",
+      "result": "passed",
+      "summary": "PASS: 2193 tracked evidence files checked (22 gzip files); no configured privacy patterns found. Manual review is still required.",
+      "raw_log_sha256": "2951da65a4d0475c0f488d11f79e3c8c8b03b909a3accf995e09e69cd31c3fe8",
+      "manual_review": "Retained JSON/scripts contain commands, hashes, counts, numeric samples and aggregate load only. Full logs/captures and personal paths are excluded."
+    }
+  ],
+  "limitations": [
+    "All commands ran locally on Darwin arm64. GitHub Linux jobs are not represented as executed.",
+    "External firmware/hardware tests excluded by the documented CI policy.",
+    "Raw logs are ignored local artifacts; hashes identify them. Commands, outcomes and relevant counts retained here; personal paths and full guest output omitted.",
+    "The final-code follow-up changes only JavaScript, documentation and tests; native/WASM source trees match 164382ea."
+  ]
+}

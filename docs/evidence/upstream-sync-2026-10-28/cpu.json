@@ -1,0 +1,2000 @@
+{
+ "date_utc": "2026-10-28T11:46:55.454058+00:00",
+ "base_revision": "fad5cc64",
+ "new_revision": "656c84ba",
+ "pairs": 7,
+ "method": "resource.RUSAGE_CHILDREN user CPU deltas; one warmup per side; alternating order; same command and bytes",
+ "environment": {
+  "system": "Darwin",
+  "release": "27.0.0",
+  "architecture": "arm64",
+  "logical_cpus": 18,
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)"
+ },
+ "inputs_sha256": {
+  "ROM/esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "web/wasm/fw/public/hello-bootloader.bin": "7efecb4df4463ece11ab286068a505ecd174f66fd4aacc53d887fcb9c18f0579",
+  "web/wasm/fw/public/hello-ptable.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+  "web/wasm/fw/public/hello_world.bin": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9",
+  "ROM/esp32c3_rev3_rom.elf": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c",
+  "web/wasm/fw/public/c3-hello-bootloader.bin": "3eaeaa5fb91d462a6ce6dbd8f8d488c8dc059216bc5841e50b784aea8348eb7b",
+  "web/wasm/fw/public/c3-hello-ptable.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+  "web/wasm/fw/public/c3-hello_world.bin": "3fd8606fd2fb10d2387ed4d238e16e7f80cd4832f380da02f0128f7bf4e0e8be",
+  "ROM/esp32c6_rev0_rom.elf": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551",
+  "web/wasm/fw/public/c6-hello-bootloader.bin": "88fd358b406ebc874cda1f4d14c1fd50d37cd064a1826192ee275ce67741ff75",
+  "web/wasm/fw/public/c6-hello-ptable.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+  "web/wasm/fw/public/c6-hello_world.bin": "e302a3769d3122759ea85ed6caff857da36f558f83f9bf0eb652276657de0131",
+  "web/wasm/fw/public/pocket-tank-bootloader.bin": "9556d59f3a10f6b04fa6d75f3142a66034339afafffbd4bbc3d9a127eaa73859",
+  "web/wasm/fw/public/pocket-tank-ptable.bin": "7af5b28608c91167e00778b7f20622f3b47849efebeb3e64117162d73f3e0508",
+  "web/wasm/fw/public/pocket-tank.bin": "443dd24aed14a509e6df597eb3a02635cc07e0fbee6f04db85a62f4d4dadb113",
+  "web/wasm/fw/local/model_q4.bin": "b200bf87c78dc85c4d727f68941ac0b83cced9827037cc169cd2122d71002c2a",
+  "ROM/esp32_rev300_rom.elf": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+  "web/wasm/fw/public/classic-hello-bootloader.bin": "faa4ac0961a9ec6c02d865c874c82bfe0a01225491b89d54fe4b7393f712be2a",
+  "web/wasm/fw/public/classic-hello-ptable.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+  "web/wasm/fw/public/classic-hello_world.bin": "fa4307fe9545e6599155ac38ad61205946b3f56e92890ad10a69c1592e120cdd"
+ },
+ "binaries_sha256": {
+  "new/esp32sim": "c85af13a56fe64510c950b788fd0ebe10873c236b243c8764df8516f2ab5e745",
+  "base/esp32sim": "fcb67c7d90302f62693649b44996400dd080542c607461adb82de0d27bbe1169",
+  "new/esp32sim-c3": "8fe5f7e55444167246038feddee2579e895017e734169a3a786d4b5e31c826ac",
+  "base/esp32sim-c3": "47a291b8e8d953226ced51d2dc8eb7faa6bc1c2a18f9b5c6a1b339b8010d5b9e",
+  "new/esp32sim-c6": "588aa6b022cbea89c85500521c92df8323d86bba00ac6211424a10c8b1513f9b",
+  "base/esp32sim-c6": "b10524640167e93f07a01aaf7f0dd82ff72911798a12bd70c00387c7ec60f05f"
+ },
+ "workloads": {
+  "s3-hello": {
+   "command": [
+    "esp32sim",
+    "--boot",
+    "rom",
+    "--rom",
+    "$ESP32SIM_ROM_DIR/esp32s3_rev0_rom.elf",
+    "--board",
+    "none",
+    "--bootloader",
+    "web/wasm/fw/public/hello-bootloader.bin",
+    "--ptable",
+    "web/wasm/fw/public/hello-ptable.bin",
+    "--app",
+    "web/wasm/fw/public/hello_world.bin",
+    "--max-seconds",
+    "30",
+    "--no-dump"
+   ],
+   "runs": [
+    {
+     "pair": -1,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.289321,
+     "wall_s": 0.326842,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": -1,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.257702,
+     "wall_s": 0.687422,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 0,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.255063,
+     "wall_s": 0.267634,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 0,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.27613,
+     "wall_s": 0.298575,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 1,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.27895,
+     "wall_s": 0.303152,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 1,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.276175,
+     "wall_s": 0.30015,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 2,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.283091,
+     "wall_s": 0.307312,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 2,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.280101,
+     "wall_s": 0.301126,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 3,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.277958,
+     "wall_s": 0.301155,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 3,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.28895,
+     "wall_s": 0.31562,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 4,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.263163,
+     "wall_s": 0.282105,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 4,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.260578,
+     "wall_s": 0.272491,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 5,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.275179,
+     "wall_s": 0.292029,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 5,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.28089,
+     "wall_s": 0.301209,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 6,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.265208,
+     "wall_s": 0.283774,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    },
+    {
+     "pair": 6,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.257423,
+     "wall_s": 0.268662,
+     "insns": [
+      11990305,
+      6798164
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+     "exit": 0,
+     "load_before": [
+      5.80078125,
+      9.97802734375,
+      11.6259765625
+     ]
+    }
+   ],
+   "exact_work_and_console": true,
+   "summary": {
+    "median_user_s": {
+     "base": 0.276175,
+     "new": 0.27613
+    },
+    "change_percent": -0.016,
+    "new_slower_pairs": 2,
+    "flagged": false,
+    "range_user_s": {
+     "base": [
+      0.255063,
+      0.28895
+     ],
+     "new": [
+      0.257423,
+      0.280101
+     ]
+    }
+   }
+  },
+  "c3-hello": {
+   "command": [
+    "esp32sim-c3",
+    "--boot",
+    "rom",
+    "--rom",
+    "$ESP32SIM_ROM_DIR/esp32c3_rev3_rom.elf",
+    "--flash-mb",
+    "4",
+    "--bootloader",
+    "web/wasm/fw/public/c3-hello-bootloader.bin",
+    "--ptable",
+    "web/wasm/fw/public/c3-hello-ptable.bin",
+    "--app",
+    "web/wasm/fw/public/c3-hello_world.bin",
+    "--max-seconds",
+    "30",
+    "--no-dump"
+   ],
+   "runs": [
+    {
+     "pair": -1,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 2.597983,
+     "wall_s": 2.652728,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      5.736328125,
+      9.89501953125,
+      11.5869140625
+     ]
+    },
+    {
+     "pair": -1,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 2.555166,
+     "wall_s": 2.900289,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      5.736328125,
+      9.89501953125,
+      11.5869140625
+     ]
+    },
+    {
+     "pair": 0,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 2.56661,
+     "wall_s": 2.618632,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      5.75732421875,
+      9.830078125,
+      11.5537109375
+     ]
+    },
+    {
+     "pair": 0,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 2.740319,
+     "wall_s": 2.791662,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      5.75732421875,
+      9.830078125,
+      11.5537109375
+     ]
+    },
+    {
+     "pair": 1,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 2.562922,
+     "wall_s": 2.612633,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      5.6962890625,
+      9.74951171875,
+      11.51513671875
+     ]
+    },
+    {
+     "pair": 1,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 2.562977,
+     "wall_s": 2.612024,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      5.6962890625,
+      9.74951171875,
+      11.51513671875
+     ]
+    },
+    {
+     "pair": 2,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 2.628833,
+     "wall_s": 2.70363,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      5.47998046875,
+      9.63720703125,
+      11.46484375
+     ]
+    },
+    {
+     "pair": 2,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 2.606328,
+     "wall_s": 2.66894,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      5.47998046875,
+      9.63720703125,
+      11.46484375
+     ]
+    },
+    {
+     "pair": 3,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 2.553544,
+     "wall_s": 2.600054,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      6.162109375,
+      9.70947265625,
+      11.4794921875
+     ]
+    },
+    {
+     "pair": 3,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 2.539083,
+     "wall_s": 2.594388,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      6.162109375,
+      9.70947265625,
+      11.4794921875
+     ]
+    },
+    {
+     "pair": 4,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 2.564655,
+     "wall_s": 2.613959,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      6.38916015625,
+      9.697265625,
+      11.46484375
+     ]
+    },
+    {
+     "pair": 4,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 2.582241,
+     "wall_s": 2.651558,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      6.38916015625,
+      9.697265625,
+      11.46484375
+     ]
+    },
+    {
+     "pair": 5,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 2.592507,
+     "wall_s": 2.668508,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      6.43798828125,
+      9.65234375,
+      11.4384765625
+     ]
+    },
+    {
+     "pair": 5,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 2.562677,
+     "wall_s": 2.639173,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      6.43798828125,
+      9.65234375,
+      11.4384765625
+     ]
+    },
+    {
+     "pair": 6,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 2.679268,
+     "wall_s": 2.793119,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      6.32275390625,
+      9.57470703125,
+      11.400390625
+     ]
+    },
+    {
+     "pair": 6,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 2.581695,
+     "wall_s": 2.63495,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "load_before": [
+      6.056640625,
+      9.46533203125,
+      11.35107421875
+     ]
+    }
+   ],
+   "exact_work_and_console": true,
+   "summary": {
+    "median_user_s": {
+     "base": 2.564655,
+     "new": 2.582241
+    },
+    "change_percent": 0.686,
+    "new_slower_pairs": 4,
+    "flagged": false,
+    "range_user_s": {
+     "base": [
+      2.539083,
+      2.679268
+     ],
+     "new": [
+      2.553544,
+      2.740319
+     ]
+    }
+   }
+  },
+  "c6-hello": {
+   "command": [
+    "esp32sim-c6",
+    "--boot",
+    "rom",
+    "--rom",
+    "$ESP32SIM_ROM_DIR/esp32c6_rev0_rom.elf",
+    "--flash-mb",
+    "4",
+    "--bootloader",
+    "web/wasm/fw/public/c6-hello-bootloader.bin",
+    "--ptable",
+    "web/wasm/fw/public/c6-hello-ptable.bin",
+    "--app",
+    "web/wasm/fw/public/c6-hello_world.bin",
+    "--max-seconds",
+    "30",
+    "--no-dump"
+   ],
+   "runs": [
+    {
+     "pair": -1,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 1.73612,
+     "wall_s": 1.766062,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      6.056640625,
+      9.46533203125,
+      11.35107421875
+     ]
+    },
+    {
+     "pair": -1,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 1.771054,
+     "wall_s": 2.121652,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      6.056640625,
+      9.46533203125,
+      11.35107421875
+     ]
+    },
+    {
+     "pair": 0,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 1.771481,
+     "wall_s": 1.830444,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      5.9716796875,
+      9.39111328125,
+      11.3134765625
+     ]
+    },
+    {
+     "pair": 0,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 1.813074,
+     "wall_s": 1.85865,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      5.9716796875,
+      9.39111328125,
+      11.3134765625
+     ]
+    },
+    {
+     "pair": 1,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 1.721279,
+     "wall_s": 1.76733,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      5.7333984375,
+      9.28466796875,
+      11.2646484375
+     ]
+    },
+    {
+     "pair": 1,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 1.752878,
+     "wall_s": 1.794123,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      5.7333984375,
+      9.28466796875,
+      11.2646484375
+     ]
+    },
+    {
+     "pair": 2,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 1.708228,
+     "wall_s": 1.744699,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      5.7333984375,
+      9.28466796875,
+      11.2646484375
+     ]
+    },
+    {
+     "pair": 2,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 1.687642,
+     "wall_s": 1.711881,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      5.99462890625,
+      9.27978515625,
+      11.2509765625
+     ]
+    },
+    {
+     "pair": 3,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 1.774207,
+     "wall_s": 1.811432,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      5.99462890625,
+      9.27978515625,
+      11.2509765625
+     ]
+    },
+    {
+     "pair": 3,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 1.74074,
+     "wall_s": 1.788559,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      5.99462890625,
+      9.27978515625,
+      11.2509765625
+     ]
+    },
+    {
+     "pair": 4,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 1.716806,
+     "wall_s": 1.750019,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      6.23486328125,
+      9.27490234375,
+      11.2373046875
+     ]
+    },
+    {
+     "pair": 4,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 1.750686,
+     "wall_s": 1.802248,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      6.23486328125,
+      9.27490234375,
+      11.2373046875
+     ]
+    },
+    {
+     "pair": 5,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 1.800889,
+     "wall_s": 1.859889,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      6.23486328125,
+      9.27490234375,
+      11.2373046875
+     ]
+    },
+    {
+     "pair": 5,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 1.756855,
+     "wall_s": 1.803916,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      6.0556640625,
+      9.18701171875,
+      11.19482421875
+     ]
+    },
+    {
+     "pair": 6,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 1.781716,
+     "wall_s": 1.838081,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      6.0556640625,
+      9.18701171875,
+      11.19482421875
+     ]
+    },
+    {
+     "pair": 6,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 1.741576,
+     "wall_s": 1.762656,
+     "insns": [
+      4800000000
+     ],
+     "cycles": 4800000000,
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "load_before": [
+      6.53125,
+      9.2333984375,
+      11.19921875
+     ]
+    }
+   ],
+   "exact_work_and_console": true,
+   "summary": {
+    "median_user_s": {
+     "base": 1.752878,
+     "new": 1.750686
+    },
+    "change_percent": -0.125,
+    "new_slower_pairs": 4,
+    "flagged": false,
+    "range_user_s": {
+     "base": [
+      1.708228,
+      1.781716
+     ],
+     "new": [
+      1.687642,
+      1.813074
+     ]
+    }
+   }
+  },
+  "pocket-tank": {
+   "command": [
+    "esp32sim",
+    "--boot",
+    "rom",
+    "--rom",
+    "$ESP32SIM_ROM_DIR/esp32s3_rev0_rom.elf",
+    "--board",
+    "waveshare-amoled18-v2",
+    "--flash-mb",
+    "16",
+    "--psram-mb",
+    "8",
+    "--bootloader",
+    "web/wasm/fw/public/pocket-tank-bootloader.bin",
+    "--ptable",
+    "web/wasm/fw/public/pocket-tank-ptable.bin",
+    "--app",
+    "web/wasm/fw/public/pocket-tank.bin",
+    "--flash-at",
+    "0x290000=web/wasm/fw/local/model_q4.bin",
+    "--max-seconds",
+    "8",
+    "--no-dump"
+   ],
+   "runs": [
+    {
+     "pair": -1,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 7.829056,
+     "wall_s": 7.97857,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      6.53125,
+      9.2333984375,
+      11.19921875
+     ]
+    },
+    {
+     "pair": -1,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 7.695221,
+     "wall_s": 7.833115,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      6.29541015625,
+      9.09375,
+      11.12646484375
+     ]
+    },
+    {
+     "pair": 0,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 7.556658,
+     "wall_s": 7.647553,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      6.19140625,
+      9.025390625,
+      11.09033203125
+     ]
+    },
+    {
+     "pair": 0,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 7.781413,
+     "wall_s": 7.979155,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      6.08154296875,
+      8.90869140625,
+      11.0244140625
+     ]
+    },
+    {
+     "pair": 1,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 7.66382,
+     "wall_s": 7.807379,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      5.91455078125,
+      8.8271484375,
+      10.98291015625
+     ]
+    },
+    {
+     "pair": 1,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 7.529088,
+     "wall_s": 7.609258,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      5.85400390625,
+      8.71728515625,
+      10.91845703125
+     ]
+    },
+    {
+     "pair": 2,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 7.942019,
+     "wall_s": 8.200724,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      5.544921875,
+      8.60546875,
+      10.86572265625
+     ]
+    },
+    {
+     "pair": 2,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 7.660833,
+     "wall_s": 7.776521,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      5.9091796875,
+      8.58447265625,
+      10.83154296875
+     ]
+    },
+    {
+     "pair": 3,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 7.681337,
+     "wall_s": 7.805499,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      5.595703125,
+      8.47509765625,
+      10.77978515625
+     ]
+    },
+    {
+     "pair": 3,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 7.792583,
+     "wall_s": 7.993967,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      5.423828125,
+      8.34326171875,
+      10.7060546875
+     ]
+    },
+    {
+     "pair": 4,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 7.770879,
+     "wall_s": 7.965351,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      5.5986328125,
+      8.28271484375,
+      10.65625
+     ]
+    },
+    {
+     "pair": 4,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 7.733795,
+     "wall_s": 7.891074,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      5.71044921875,
+      8.26123046875,
+      10.634765625
+     ]
+    },
+    {
+     "pair": 5,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 7.765144,
+     "wall_s": 7.926673,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      5.22607421875,
+      8.07177734375,
+      10.53955078125
+     ]
+    },
+    {
+     "pair": 5,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 7.514426,
+     "wall_s": 7.590529,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      5.52783203125,
+      8.0869140625,
+      10.5302734375
+     ]
+    },
+    {
+     "pair": 6,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 7.558201,
+     "wall_s": 7.649855,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      5.8466796875,
+      8.06787109375,
+      10.49462890625
+     ]
+    },
+    {
+     "pair": 6,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 7.527568,
+     "wall_s": 7.623024,
+     "insns": [
+      1115772031,
+      946151715
+     ],
+     "cycles": 1920000000,
+     "console_sha256": "1d1d57f7c150bcaf169c57bd1f050f5b86cb5550b121480254bcaa616d201bd8",
+     "exit": 0,
+     "load_before": [
+      5.77880859375,
+      8.0166015625,
+      10.46240234375
+     ]
+    }
+   ],
+   "exact_work_and_console": true,
+   "summary": {
+    "median_user_s": {
+     "base": 7.558201,
+     "new": 7.681337
+    },
+    "change_percent": 1.629,
+    "new_slower_pairs": 3,
+    "flagged": false,
+    "range_user_s": {
+     "base": [
+      7.514426,
+      7.942019
+     ],
+     "new": [
+      7.527568,
+      7.781413
+     ]
+    }
+   }
+  },
+  "classic-hello": {
+   "command": [
+    "esp32sim",
+    "--chip",
+    "esp32",
+    "--board",
+    "esp32dev",
+    "--boot",
+    "rom",
+    "--rom",
+    "$ESP32SIM_ROM_DIR/esp32_rev300_rom.elf",
+    "--flash-mb",
+    "16",
+    "--bootloader",
+    "web/wasm/fw/public/classic-hello-bootloader.bin",
+    "--ptable",
+    "web/wasm/fw/public/classic-hello-ptable.bin",
+    "--app",
+    "web/wasm/fw/public/classic-hello_world.bin",
+    "--max-seconds",
+    "30",
+    "--no-dump"
+   ],
+   "runs": [
+    {
+     "pair": -1,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.38676,
+     "wall_s": 0.396484,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.27734375,
+      7.83447265625,
+      10.369140625
+     ]
+    },
+    {
+     "pair": -1,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.387523,
+     "wall_s": 0.397637,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.27734375,
+      7.83447265625,
+      10.369140625
+     ]
+    },
+    {
+     "pair": 0,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.391632,
+     "wall_s": 0.40306,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.27734375,
+      7.83447265625,
+      10.369140625
+     ]
+    },
+    {
+     "pair": 0,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.383234,
+     "wall_s": 0.393854,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.27734375,
+      7.83447265625,
+      10.369140625
+     ]
+    },
+    {
+     "pair": 1,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.390291,
+     "wall_s": 0.406187,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.27734375,
+      7.83447265625,
+      10.369140625
+     ]
+    },
+    {
+     "pair": 1,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.390653,
+     "wall_s": 0.403584,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.27734375,
+      7.83447265625,
+      10.369140625
+     ]
+    },
+    {
+     "pair": 2,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.403865,
+     "wall_s": 0.423118,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.27734375,
+      7.83447265625,
+      10.369140625
+     ]
+    },
+    {
+     "pair": 2,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.394692,
+     "wall_s": 0.410166,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.0947265625,
+      7.75390625,
+      10.32568359375
+     ]
+    },
+    {
+     "pair": 3,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.383481,
+     "wall_s": 0.394639,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.0947265625,
+      7.75390625,
+      10.32568359375
+     ]
+    },
+    {
+     "pair": 3,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.380078,
+     "wall_s": 0.390901,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.0947265625,
+      7.75390625,
+      10.32568359375
+     ]
+    },
+    {
+     "pair": 4,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.381796,
+     "wall_s": 0.39286,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.0947265625,
+      7.75390625,
+      10.32568359375
+     ]
+    },
+    {
+     "pair": 4,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.383916,
+     "wall_s": 0.393058,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.0947265625,
+      7.75390625,
+      10.32568359375
+     ]
+    },
+    {
+     "pair": 5,
+     "side": "new",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.386273,
+     "wall_s": 0.397051,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.0947265625,
+      7.75390625,
+      10.32568359375
+     ]
+    },
+    {
+     "pair": 5,
+     "side": "base",
+     "order": [
+      "new",
+      "base"
+     ],
+     "user_s": 0.381727,
+     "wall_s": 0.392031,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.0947265625,
+      7.75390625,
+      10.32568359375
+     ]
+    },
+    {
+     "pair": 6,
+     "side": "base",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.385585,
+     "wall_s": 0.396061,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.0947265625,
+      7.75390625,
+      10.32568359375
+     ]
+    },
+    {
+     "pair": 6,
+     "side": "new",
+     "order": [
+      "base",
+      "new"
+     ],
+     "user_s": 0.385578,
+     "wall_s": 0.396191,
+     "insns": [
+      16696248,
+      4539663
+     ],
+     "cycles": 7200000000,
+     "console_sha256": "e6fabd9878a3ace42c18d925759108dae8fbee8cf1f16a97db021703ee604c21",
+     "exit": 0,
+     "load_before": [
+      5.0947265625,
+      7.75390625,
+      10.32568359375
+     ]
+    }
+   ],
+   "exact_work_and_console": true,
+   "summary": {
+    "median_user_s": {
+     "base": 0.385585,
+     "new": 0.385578
+    },
+    "change_percent": -0.002,
+    "new_slower_pairs": 3,
+    "flagged": false,
+    "range_user_s": {
+     "base": [
+      0.380078,
+      0.403865
+     ],
+     "new": [
+      0.383234,
+      0.394692
+     ]
+    }
+   }
+  }
+ },
+ "interpretation": "All fixed work and console hashes match. No workload met the predefined 6-of-7 slower-pairs flag. Local short samples under shared host load; not a speedup or universal no-regression claim.",
+ "aggregate_load_1m_range": [
+  5.0947265625,
+  6.53125
+ ],
+ "source_equivalence": "Native/WASM sources at 656c84ba match 164382ea; base fad5cc64 native/WASM sources match main c83cb4f5. Later changes are JavaScript, tests and documentation."
+}
