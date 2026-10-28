@@ -27,6 +27,8 @@ pub mod csr {
     pub const MTVT: u32 = 0x307; pub const MINTSTATUS_P4: u32 = 0x346;
     /// The specification's `mintstatus` and `mintthresh`, as on the ESP32-P4 rev >= 3
     /// (ESP-IDF v5.5.4 riscv/include/esp_private/interrupt_clic.h:60-66).
+    /// S31 uses the same placement (IDF v6.1 soc/esp32s31/include/soc/interrupt_reg.h,
+    /// INTTHRESH_STANDARD=1, and riscv/include/riscv/csr_clic.h).
     pub const MINTSTATUS: u32 = 0xFB1; pub const MINTTHRESH: u32 = 0x347;
     /// ESP32-P4 EXT_ILL: why the last illegal-instruction trap was taken
     /// (ESP-IDF v5.5.3 `components/riscv/vectors.S`, `EXT_ILL_CSR`).
@@ -175,6 +177,9 @@ impl Cpu {
     /// flagging every FP instruction ("The FPU_EXT_ILL bug was fixed on revision 3.0 and higher",
     /// ESP-IDF v5.5.4 riscv/vectors.S:279).
     pub fn new_esp32p4_rev3() -> Self { let mut c = Cpu::new_esp32p4(); c.clic_std = true; c.ext_ill_all_fp = true; c }
+    /// S31's RV32IMAFC subset and standard CLIC CSRs (IDF v6.1 soc_caps.h, interrupt_reg.h).
+    /// Custom PIE/HWLOOP instructions remain unimplemented. The SoC supplies its own reset PC.
+    pub fn new_esp32s31() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.has_ext_ill = true; c.user_counters = true; c.clic = true; c.clic_std = true; c }
 
     pub fn reset(&mut self) {
         // `insn_count` is the emulator's own monotonic counter — it drives the run statistics and

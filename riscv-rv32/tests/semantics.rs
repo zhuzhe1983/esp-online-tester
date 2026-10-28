@@ -383,7 +383,7 @@ fn clic_vectors_nests_by_level_and_mret_restores_it() {
 /// The ROM's `mtvec` mode 1 keeps taking exceptions at its base on the P4 core, and the C6 core
 /// has no CLIC: 0x307 and 0x346 are plain CSRs there and a presented line is taken as before.
 #[test]
-fn clic_mode_is_the_p4_cores_alone() {
+fn clic_mode_is_disabled_on_the_c6_core() {
     let (mut p4, mut ram) = machine_on(Cpu::new_esp32p4(), &asm("00000073"), "ecall");
     p4.write_csr(csr::MTVEC, BASE + 0x101);
     assert_eq!(step(&mut p4, &mut ram), Err(Trap::Exception(11)));
@@ -393,6 +393,22 @@ fn clic_mode_is_the_p4_cores_alone() {
     c6.write_csr(csr::MINTSTATUS_P4, 0x55);
     assert_eq!((c6.read_csr(csr::MTVT), c6.read_csr(csr::MINTSTATUS_P4)), (0x1234, 0x55));
     assert!(!c6.clic);
+}
+
+/// S31 v6.1 selects standard CLIC CSRs, while the existing P4 rev < 3 keeps 0x346.
+#[test]
+fn s31_standard_clic_status_and_threshold_are_separate_from_old_p4() {
+    let mut s31 = Cpu::new_esp32s31();
+    s31.mil = 0x7f;
+    assert_eq!(s31.read_csr(csr::MINTSTATUS), 0x7f00_0000);
+    assert_eq!(s31.read_csr(csr::MINTSTATUS_P4), 0);
+    s31.write_csr(csr::MINTSTATUS, 0); assert_eq!(s31.read_csr(csr::MINTSTATUS), 0x7f00_0000);
+    s31.write_csr(csr::MINTTHRESH, 0xffff_ff3f); assert_eq!(s31.read_csr(csr::MINTTHRESH), 0x3f);
+    s31.reset(); assert!(s31.clic && s31.clic_std);
+    assert_eq!((s31.mil, s31.read_csr(csr::MINTTHRESH)), (0, 0));
+    let mut p4 = Cpu::new_esp32p4(); p4.mil = 0x3f;
+    assert_eq!(p4.read_csr(csr::MINTSTATUS_P4), 0x3f00_0000);
+    assert_eq!(p4.read_csr(csr::MINTSTATUS), 0); assert!(!p4.clic_std);
 }
 
 /// mhartid reads the core's index, read-only, and a reset keeps it with the rest of the P4
