@@ -8,11 +8,13 @@ pub mod aithinker;
 pub mod atom_lite;
 pub mod atom_matrix;
 pub mod atom_voice;
+pub mod atom_matrix_v11;
 
 pub use tdisplay::*;
 
 pub fn make_board(name: &str) -> Option<esp_soc::Board> {
     match name {
+        "atom-matrix-v11" | "m5stack-c008-b-v11" => Some(Box::new(atom_matrix_v11::AtomMatrixV11::new())),
         "atom-matrix" | "m5stack-c008-b" => Some(Box::new(atom_matrix::AtomMatrix::new())),
         "atom-voice" | "m5stack-c008-c" => Some(Box::new(atom_voice::AtomVoice::new())),
         "atom-lite" | "m5stack-c008" => Some(Box::new(atom_lite::AtomLite::new())),
