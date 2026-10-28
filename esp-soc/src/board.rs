@@ -194,6 +194,8 @@ pub trait BoardModel {
     fn accessory_environment_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _sample: esp_periph::i2c::env4::Environment) -> bool { false }
     /// Cold optical input; board owns the physical I2C route and supply.
     fn accessory_illuminance_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _lux: f64) -> bool { false }
+    /// Cold SPI card attachment; native SDMMC boards retain their existing host path.
+    fn attach_spi_sd_card(&mut self, _image: Box<dyn esp_periph::sdmmc::SdStore>, _config: esp_periph::sdmmc::SdCardConfig) -> Result<String,String> {Err("this board has no modeled SPI SD socket".into())}
 }
 
 pub type Board = Box<dyn BoardModel>;

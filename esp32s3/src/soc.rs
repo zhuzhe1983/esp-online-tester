@@ -238,7 +238,7 @@ impl esp_soc::SocBus for SocBus {
     fn set_strap(&mut self, v: u32) { self.periph.gpio.strap = v; }
     fn set_reset_cause(&mut self, c: u32) { self.periph.rtc.ram.write(0x38, c | (c << 6)); }
     fn attach_sd_card(&mut self,image:Box<dyn esp_periph::sdmmc::SdStore>,config:esp_periph::sdmmc::SdCardConfig)->Result<String,String> {
-        if self.board.sd_card_slot().is_none() {return Err("this S3 board has no modeled native SD socket".into());}
+        if self.board.sd_card_slot().is_none() {return self.board.attach_spi_sd_card(image,config);}
         if config.timed_bus || config.prg_ns!=0 {return Err("S3 SDMMC currently models immediate digital transfers, not wire timing".into());}
         let card=esp_periph::sdmmc::SdCard::with_config(image,config)?;let info=card.describe();
         self.periph.sdmmc.devices.clear();self.periph.sdmmc.attach(Box::new(card));self.board.set_sd_card_present(true);Ok(info)

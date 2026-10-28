@@ -132,7 +132,7 @@ The **外壳** menu changes shell color, opacity and eight material finishes wit
 
 ## Virtual TF card and RGB output
 
-PaperMono/Lite load with a browser-generated 64 MiB FAT32 card. Both the workbench and mini player offer import, export and clear controls. Imports accept complete 1–128 MiB raw disk images in 512 KiB increments; import/clear saves current Flash and SD, rebuilds the machine and leaves it ready for an explicit start. Export returns the complete disk image. Clearing SD does not clear Flash or downloaded firmware.
+PaperMono/Lite and PaperS3 load with a browser-generated 64 MiB FAT32 card. Both the workbench and mini player offer import, export and clear controls. Imports accept complete 1–128 MiB raw disk images in 512 KiB increments; import/clear saves current Flash and SD, rebuilds the machine and leaves it ready for an explicit start. Export returns the complete disk image. Clearing SD does not clear Flash or downloaded firmware.
 
 SD data is isolated by product ID, board and the original full-Flash SHA-256. IndexedDB stores an imported base separately from changed 4 KiB pages; the same device/firmware restores them after reset or reload. Other tabs' newer saves/clears invalidate stale writers. The scan interval is 1.5 seconds and `crashSafe:false`: shutdown flushes are best effort, and memory fallback cannot retain data across reload. Private cards are excluded from share URLs and portable recordings.
 

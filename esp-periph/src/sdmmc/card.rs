@@ -7,6 +7,8 @@ use super::{SdCmdError, SdDataError, SdDevice, SdResponse};
 use std::collections::HashMap;
 use std::io::{Read, Seek, SeekFrom, Write};
 
+pub mod spi;
+
 pub const BLOCK: usize = 512;
 
 /// The blocks behind a card.
