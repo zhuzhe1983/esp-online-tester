@@ -29,7 +29,7 @@
 
 每款均调查并固定了官方出厂测试/恢复镜像；六个出厂条目均优先于社区项目，作为各自默认项。另收录五个精确板型的 Bruce 1.16.1 和三个 Meshtastic 2.7.26 稳定版镜像。Bruce 使用同一个 `bruce` watchlist 条目，Meshtastic 扩展现有 `meshtastic` 条目，与 M5Stack 平铺共享。发布匹配须同时满足板型、芯片、格式与校验规则；不将 Meshtastic 文件名中的 `factory` 当成厂商出厂身份。
 
-14 个镜像均只下载到进程内存，验证实际 SHA-256、芯片、容量、bootloader、分区和应用完整性，不提交二进制，也未执行这些镜像或刷写硬件。可重复运行：
+14 个镜像在入库审计阶段均只下载到进程内存，验证实际 SHA-256、芯片、容量、bootloader、分区和应用完整性，不提交二进制。后续集成检查尝试了原版 TTGO 出厂镜像，能显示启动 Logo，但发生持续看门狗复位，仍保留 trial；详见[集成结果](../lilygo-onboarding.md)。其余镜像未执行，未刷写真实硬件。元信息与布局审计可重复运行：
 
 ```sh
 node tools/audit-lilygo-firmware.mjs

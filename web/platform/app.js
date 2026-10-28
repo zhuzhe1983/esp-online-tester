@@ -162,7 +162,8 @@ function currentCatalogFirmware() {
   if (!embedded && firmwareTab === 'remote' && remoteHub()) return remoteHub().current();
   let source=scene.firmware;
   if (!embedded && firmwareTab === 'remote') { try { source=sourceFromInputs(); } catch { return null; } }
-  return catalog.firmwares.find(item=>item.productIds.includes(scene.productId)&&firmwareSourceMatches(item.source,source));
+  return catalog.firmwares.find(item=>item.productIds.includes(scene.productId)&&firmwareSourceMatches(item.source,source))
+    || (source?.url || source?.manifestUrl ? {name:'远程固件',source,simulationVerified:false,status:'trial'} : null);
 }
 const confirmSelectedRun = () => confirmFirmwareRun({product:product(),firmware:currentCatalogFirmware()});
 function clearLocalFiles() { localSelectionToken++; localFiles=[];localSource=null;localFile=null;for(const id of ['firmware-file','firmware-folder'])if($(id))$(id).value='';text('local-file-name','merged .bin、应用 .bin 或 flasher_args.json');text('local-build-status','完整镜像可直接加载；应用镜像需要 flasher_args.json 和其中列出的文件。');renderTransport(); }
@@ -776,6 +777,7 @@ function portableScene() {
   const next = clone(scene); next.view.mode = embedded ? 'embed' : 'studio';
   if (!embedded) {
     if (firmwareTab === 'local') next.firmware = null;
+    else if (firmwareTab === 'remote' && remoteHub()) next.firmware = clone(remoteHub().current()?.source || null);
     else if (firmwareTab === 'remote' && !$('firmware-url').value.trim()) next.firmware = null;
     else if (firmwareTab === 'library' && preserveUnspecifiedFirmware && !scene.firmware) next.firmware = null;
     else if (firmwareTab === 'library' && !catalog.firmwares.find(item => item.id === $('firmware-select').value)?.source) next.firmware = null;
