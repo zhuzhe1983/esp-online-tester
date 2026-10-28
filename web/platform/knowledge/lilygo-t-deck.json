@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "hardware-doc"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
+  "updatedAt": "2026-10-28T06:10:33Z",
   "hardwareRevision": "original; not Plus, Pro or V2",
   "identity": {
     "manufacturer": "LILYGO",
@@ -111,7 +111,7 @@
         "official-repo",
         "factory-doc"
       ],
-      "notes": "布局、芯片和容量已校验；不等同于模拟或实机验证。"
+      "notes": "布局、芯片和容量已校验；另有指定模拟输入/画面验证，范围及限制见 docs/platform/lilygo-t-deck-runtime.md；未实机验证。"
     },
     {
       "id": "display-diagonal",
@@ -188,6 +188,24 @@
         "spark-product-catalog"
       ],
       "notes": "本地条目保留已核验硬件变体；Spark 商品入口可能覆盖其他配置，不扩大固件适用范围。"
+    },
+    {
+      "id": "keyboard-protocol",
+      "label": "键盘扫描协议",
+      "value": {
+        "electricalColumns": 5,
+        "electricalRows": 7,
+        "keys": 35,
+        "rawCommand": "0x03",
+        "rawReadBytes": 5,
+        "characterCommand": "0x04",
+        "scanDelayPerSwitchMs": 1
+      },
+      "basis": "official",
+      "sourceIds": [
+        "keyboard-controller-source"
+      ],
+      "notes": "平台物理行列为四排 10 / 10 / 10 / 5 键，独立映射至控制器 5×7 电气矩阵；末排空位拒绝输入。"
     }
   ],
   "revisions": [],
@@ -299,6 +317,19 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/2027dee79198af949a9e14e1a09e301f993fc7cf/examples/Keyboard_ESP32C3/Keyboard_ESP32C3.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/2027dee79198af949a9e14e1a09e301f993fc7cf/examples/Keyboard_ESP32C3/Keyboard_ESP32C3.ino",
+      "fetchedAt": "2026-10-28T05:58:31.918421+00:00",
+      "bytes": 11588,
+      "sha256": "81133f226e69b4d32cec8190e71737f5cfd7d158a555f7906e3f5a798357236d",
+      "mediaType": "text/plain; charset=utf-8",
+      "id": "keyboard-controller-source",
+      "title": "官方 ESP32-C3 键盘 I2C 协议与扫描源码",
+      "kind": "software-source",
+      "status": "fetched",
+      "archiveName": "Keyboard_ESP32C3.ino"
     }
   ],
   "assets": [
@@ -321,16 +352,6 @@
       "notes": "官方 wiki 部分段落误混 Plus 的 GNSS/电池，并称无触摸；采用明确标注 original 的 LilyGoLib 硬件文档与原理图。"
     },
     {
-      "id": "unknown-2",
-      "label": "未确认项 2",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "official-docs"
-      ],
-      "notes": "键盘逐键矩阵与 ESP32-C3 固件尚未完成平台输入模型；此轮仅记录真实硬件，不以串口文本替代按键。"
-    },
-    {
       "id": "unknown-3",
       "label": "未确认项 3",
       "value": null,
@@ -348,7 +369,7 @@
       "sourceIds": [
         "official-docs"
       ],
-      "notes": "本次元信息与镜像布局校验不证明完整固件兼容或硬件刷写。"
+      "notes": "完整镜像已通过原厂菜单、触摸翻页、键盘 q / Shift+Q / Enter、四向轨迹球及中键反馈；不证明所有菜单、真实 RF 或硬件刷写。音频、SD、GNSS、Wi-Fi / Bluetooth 与睡眠唤醒未验证，键盘为 I2C 协议模型而非第二颗 CPU。详见 docs/platform/lilygo-t-deck-runtime.md。"
     },
     {
       "id": "weight",

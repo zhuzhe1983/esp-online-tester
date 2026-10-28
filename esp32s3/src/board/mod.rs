@@ -29,6 +29,8 @@ mod papers3;
 pub mod metalio_ink4;
 pub mod cardputer_adv;
 pub mod cardputer;
+pub mod tdeck;
+mod tdeck_keyboard;
 mod cardputer_lcd;
 pub mod waveshare_amoled18;
 pub mod waveshare_cam;
@@ -76,6 +78,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "paperdiy" | "m5stack-k159-b" => Some(Box::new(PaperDiy::new())),
         "papers3" | "m5stack-c139" => Some(Box::new(papers3::PaperS3::new())),
         "metalio-ink4" => Some(Box::new(MetalioInk4::new())),
+        "tdeck" | "lilygo-t-deck" => Some(Box::new(tdeck::TDeck::new())),
         "cardputer" | "m5stack-cardputer" => Some(Box::new(Cardputer::new())),
         "cardputer-adv" | "m5stack-cardputer-adv" => Some(Box::new(CardputerAdv::new())),
         "stopwatch" | "m5stack-stopwatch" => Some(Box::new(StopWatch::new())),

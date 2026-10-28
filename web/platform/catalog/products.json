@@ -11830,10 +11830,10 @@
       "summary": "原版 T-Deck 手持终端，带 2.8 英寸触摸屏、独立 ESP32-C3 键盘和五向轨迹球；本条目包含 SX1262，不含 Plus 的板载 GNSS。",
       "knowledgeUrl": "./knowledge/lilygo-t-deck.json",
       "runtime": {
-        "board": null,
+        "board": "tdeck",
         "flashMb": 16,
         "psramMb": 8,
-        "status": "unavailable",
+        "status": "partial",
         "touch": true
       },
       "display": {
@@ -11849,41 +11849,325 @@
           "name": "轨迹球中键 / BOOT",
           "type": "button",
           "pin": 0,
-          "activeLow": true
+          "activeLow": true,
+          "defaultKeyCode": "Escape"
         },
         {
           "id": "trackball-up",
           "name": "轨迹球向上",
           "type": "button",
           "pin": 3,
-          "activeLow": true
+          "activeLow": true,
+          "defaultKeyCode": "ArrowUp"
         },
         {
           "id": "trackball-right",
           "name": "轨迹球向右",
           "type": "button",
           "pin": 2,
-          "activeLow": true
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
         },
         {
           "id": "trackball-down",
           "name": "轨迹球向下",
           "type": "button",
           "pin": 15,
-          "activeLow": true
+          "activeLow": true,
+          "defaultKeyCode": "ArrowDown"
         },
         {
           "id": "trackball-left",
           "name": "轨迹球向左",
           "type": "button",
           "pin": 1,
-          "activeLow": true
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
         },
         {
           "id": "touch",
           "name": "GT911 触摸屏",
           "type": "touch",
           "controller": "GT911"
+        },
+        {
+          "id": "key-q",
+          "name": "Q",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 0,
+          "defaultKeyCode": "KeyQ"
+        },
+        {
+          "id": "key-w",
+          "name": "W",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 1,
+          "defaultKeyCode": "KeyW"
+        },
+        {
+          "id": "key-e",
+          "name": "E",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 2,
+          "defaultKeyCode": "KeyE"
+        },
+        {
+          "id": "key-r",
+          "name": "R",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 3,
+          "defaultKeyCode": "KeyR"
+        },
+        {
+          "id": "key-t",
+          "name": "T",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 4,
+          "defaultKeyCode": "KeyT"
+        },
+        {
+          "id": "key-y",
+          "name": "Y",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 5,
+          "defaultKeyCode": "KeyY"
+        },
+        {
+          "id": "key-u",
+          "name": "U",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 6,
+          "defaultKeyCode": "KeyU"
+        },
+        {
+          "id": "key-i",
+          "name": "I",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 7,
+          "defaultKeyCode": "KeyI"
+        },
+        {
+          "id": "key-o",
+          "name": "O",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 8,
+          "defaultKeyCode": "KeyO"
+        },
+        {
+          "id": "key-p",
+          "name": "P",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 9,
+          "defaultKeyCode": "KeyP"
+        },
+        {
+          "id": "key-a",
+          "name": "A",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 0,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "key-s",
+          "name": "S",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 1,
+          "defaultKeyCode": "KeyS"
+        },
+        {
+          "id": "key-d",
+          "name": "D",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 2,
+          "defaultKeyCode": "KeyD"
+        },
+        {
+          "id": "key-f",
+          "name": "F",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 3,
+          "defaultKeyCode": "KeyF"
+        },
+        {
+          "id": "key-g",
+          "name": "G",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 4,
+          "defaultKeyCode": "KeyG"
+        },
+        {
+          "id": "key-h",
+          "name": "H",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 5,
+          "defaultKeyCode": "KeyH"
+        },
+        {
+          "id": "key-j",
+          "name": "J",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 6,
+          "defaultKeyCode": "KeyJ"
+        },
+        {
+          "id": "key-k",
+          "name": "K",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 7,
+          "defaultKeyCode": "KeyK"
+        },
+        {
+          "id": "key-l",
+          "name": "L",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 8,
+          "defaultKeyCode": "KeyL"
+        },
+        {
+          "id": "key-backspace",
+          "name": "Backspace",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 9,
+          "defaultKeyCode": "Backspace"
+        },
+        {
+          "id": "key-alt",
+          "name": "Alt",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 0,
+          "defaultKeyCode": "AltLeft"
+        },
+        {
+          "id": "key-z",
+          "name": "Z",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 1,
+          "defaultKeyCode": "KeyZ"
+        },
+        {
+          "id": "key-x",
+          "name": "X",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 2,
+          "defaultKeyCode": "KeyX"
+        },
+        {
+          "id": "key-c",
+          "name": "C",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 3,
+          "defaultKeyCode": "KeyC"
+        },
+        {
+          "id": "key-v",
+          "name": "V",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 4,
+          "defaultKeyCode": "KeyV"
+        },
+        {
+          "id": "key-b",
+          "name": "B",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 5,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "key-n",
+          "name": "N",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 6,
+          "defaultKeyCode": "KeyN"
+        },
+        {
+          "id": "key-m",
+          "name": "M",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 7,
+          "defaultKeyCode": "KeyM"
+        },
+        {
+          "id": "key-dollar",
+          "name": "$",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 8,
+          "defaultKeyCode": "Digit4"
+        },
+        {
+          "id": "key-enter",
+          "name": "Enter",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 9,
+          "defaultKeyCode": "Enter"
+        },
+        {
+          "id": "key-shiftleft",
+          "name": "Shift / 左",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 1,
+          "defaultKeyCode": "ShiftLeft"
+        },
+        {
+          "id": "key-microphone",
+          "name": "麦克风键",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 2
+        },
+        {
+          "id": "key-space",
+          "name": "Space",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 4,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "key-symbol",
+          "name": "sym",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 7,
+          "defaultKeyCode": "ControlLeft"
+        },
+        {
+          "id": "key-shiftright",
+          "name": "Shift / 右",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 8,
+          "defaultKeyCode": "ShiftRight"
         }
       ],
       "interfaces": [
@@ -11985,9 +12269,10 @@
         }
       ],
       "limitations": [
-        "尚未完成适配：本型号没有板级运行模型，外观模型与固件链接不表示可模拟运行。",
+        "原版 SX1262 已验证官方 20261024 出厂固件的显示、触摸翻页、键盘 q / Shift+Q / Enter、四向轨迹球和中键反馈；其他菜单功能不代表已兼容，未实机验证。",
+        "键盘按 ESP32-C3 I2C 协议实现 35 键原始扫描与字符模式；完整扫描近似为 35 ms，不模拟第二颗 CPU、逐点扫描和机械抖动。ControlLeft→sym、Digit4→$、Escape→中键是平台默认电脑键位，可重新绑定。",
+        "GT911 仅单点触摸；屏幕背光仅开关，未校准 16 档亮度。SX1262 复用数字命令模型，未验证真实无线收发；音频、SD、GNSS、Wi-Fi / Bluetooth 及睡眠唤醒不在本轮验证范围。",
         "官方 wiki 部分段落误混 Plus 的 GNSS/电池，并称无触摸；采用明确标注 original 的 LilyGoLib 硬件文档与原理图。",
-        "键盘逐键矩阵与 ESP32-C3 固件尚未完成平台输入模型；此轮仅记录真实硬件，不以串口文本替代按键。",
         "Grove 端子物理针序与连接器方向尚未逐针核验，暂不提供已连接线缆。"
       ],
       "defaultFirmwareId": "lilygo-t-deck-factory",

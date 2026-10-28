@@ -416,9 +416,10 @@ try {
 } finally { await transportRuntime.dispose(); }
 
 // Input contract only: hardware FIFO/scan/IRQ is tested in Rust and the opt-in
-// official Cardputer probe. This transport stand-in is not firmware evidence.
-for(const matrixBoard of ['cardputer-adv','cardputer']){
-const matrixCatalog=structuredClone(catalog),matrixProduct=matrixCatalog.products.find(p=>p.id==='m5stack-k132-adv');
+// official product probes. This transport stand-in is not firmware evidence.
+for(const matrixBoard of ['cardputer-adv','cardputer','tdeck']){
+const matrixCatalog=structuredClone(catalog),matrixProduct=matrixCatalog.products.find(p=>p.id===(matrixBoard==='tdeck'?'lilygo-t-deck':'m5stack-k132-adv'));
+const columns=matrixBoard==='tdeck'?10:14,lastColumn=columns-1;
 matrixProduct.runtime={...matrixProduct.runtime,board:matrixBoard,flashMb:8,psramMb:0,status:'partial'};
 const matrixManifest=JSON.parse(await readFile(new URL('web/wasm/fw/hello.json',root),'utf8'));matrixManifest.board=matrixBoard;matrixManifest.psram_mb=0;
 responseOverrides.set('https://platform.example/wasm/fw/cardputer-contract.json',JSON.stringify(matrixManifest));
@@ -428,15 +429,16 @@ const matrixMessages=[],matrixTransport={
 const matrixRuntime=createPlatformRuntime({catalog:matrixCatalog,fetchImpl:fileFetch,workerFactory:()=>matrixTransport,baseUrl,assetBaseUrl:'https://platform.example/'});
 try{
   await matrixRuntime.configure(createDefaultScene(matrixCatalog,matrixProduct.id));
-  assert.deepEqual((await matrixRuntime.capabilities()).input.keyboard,{rows:4,columns:14,model:matrixBoard==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:matrixBoard});
+  assert.deepEqual((await matrixRuntime.capabilities()).input.keyboard,{rows:4,columns,model:matrixBoard==='tdeck'?'esp32c3-i2c-raw':matrixBoard==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:matrixBoard});
   await matrixRuntime.loadFirmware({manifestUrl:'https://platform.example/wasm/fw/cardputer-contract.json'});await matrixRuntime.start();
-  for(const event of [{row:-1,column:0,pressed:true},{row:4,column:0,pressed:true},{row:0,column:14,pressed:true},{row:0.5,column:0,pressed:true},{row:0,column:0,pressed:1}])await expectCode(()=>matrixRuntime.input({type:'matrix-key',...event}),'INVALID_INPUT');
-  await matrixRuntime.input({type:'matrix-key',row:2,column:13,pressed:true});
-  assert.deepEqual(matrixMessages,[{t:'matrix-key',row:2,column:13,pressed:1}]);
-  await matrixRuntime.pause();await matrixRuntime.input({type:'matrix-key',row:2,column:13,pressed:false});
-  await expectCode(()=>matrixRuntime.input({type:'matrix-key',row:2,column:13,pressed:true}),'NOT_RUNNING');
-  assert.deepEqual(matrixMessages.at(-1),{t:'matrix-key',row:2,column:13,pressed:0});
+  for(const event of [{row:-1,column:0,pressed:true},{row:4,column:0,pressed:true},{row:0,column:columns,pressed:true},{row:0.5,column:0,pressed:true},{row:0,column:0,pressed:1}])await expectCode(()=>matrixRuntime.input({type:'matrix-key',...event}),'INVALID_INPUT');
+  if(matrixBoard==='tdeck')for(const column of [0,3,5,6,9])await expectCode(()=>matrixRuntime.input({type:'matrix-key',row:3,column,pressed:true}),'INVALID_INPUT');
+  await matrixRuntime.input({type:'matrix-key',row:2,column:lastColumn,pressed:true});
+  assert.deepEqual(matrixMessages,[{t:'matrix-key',row:2,column:lastColumn,pressed:1}]);
+  await matrixRuntime.pause();await matrixRuntime.input({type:'matrix-key',row:2,column:lastColumn,pressed:false});
+  await expectCode(()=>matrixRuntime.input({type:'matrix-key',row:2,column:lastColumn,pressed:true}),'NOT_RUNNING');
+  assert.deepEqual(matrixMessages.at(-1),{t:'matrix-key',row:2,column:lastColumn,pressed:0});
 }finally{await matrixRuntime.dispose();}
-console.log('ok matrix-key contract: physical 4×14 bounds, independent hardware event, matching receipt and paused release');
+console.log(`ok ${matrixBoard} matrix-key contract: physical 4×${columns} bounds, holes, hardware event, receipt and paused release`);
 
 }
