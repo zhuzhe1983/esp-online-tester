@@ -24,6 +24,13 @@ test('Meshtastic fails on mismatched identity, duplicate images and oversized me
  }
  await assert.rejects(enrichMeshtasticReleases(single,releases,{fetchImpl:async()=>new Response(' '.repeat(256*1024+1))}),/exceeds/);
 });
+test('classic ESP32 T-Beam targets retain the chip and exact board identity',async()=>{
+ const single={...entry,catalogTargets:[target('tbeam','esp32')]};
+ const good=manifest('tbeam','2.1.0.abcdef0','esp32');
+ const result=await enrichMeshtasticReleases(single,releases,{fetchImpl:async()=>Response.json(good)});
+ assert.equal(result[0].assets[0].chip,'esp32');assert.equal(result[0].assets[0].boardTarget,'tbeam');
+ for(const patch of [{mcu:'esp32s3'},{platformioTarget:'tbeam-s3-core'}])await assert.rejects(enrichMeshtasticReleases(single,releases,{fetchImpl:async()=>Response.json({...good,...patch})}),/identity mismatch/);
+});
 test('Meshtastic sync is stable within a day and a failed target fetch preserves the previous release',async()=>{
  const list=JSON.parse(await readFile(new URL('../web/platform/catalog/firmware-watchlist.json',import.meta.url),'utf8'));
  list.entries=list.entries.filter(x=>x.id==='meshtastic');list.entries[0].catalogTargets=list.entries[0].catalogTargets.slice(0,1);
@@ -42,7 +49,8 @@ test('actual dual-role catalog, stable/alpha targets and missing-SHA update poli
  const [products,accessories,firmwares,watchlist,snapshot]=await Promise.all(['products','accessories','firmwares','firmware-watchlist','firmware-release-snapshot'].map(read));
  const product=products.items.find(x=>x.id==='m5stack-u202'),accessory=accessories.items.find(x=>x.id==='m5stack-unit-c6l-u202');
  assert.equal(product.knowledgeUrl,accessory.knowledgeUrl);assert.equal(product.model.url,accessory.visual.modelUrl);assert.equal(product.catalogRoles.accessoryId,accessory.id);assert.equal(accessory.catalogRoles.productId,product.id);
- const mesh=watchlist.entries.find(x=>x.id==='meshtastic');assert.equal(mesh.catalogTargets.length,4);
+ const mesh=watchlist.entries.find(x=>x.id==='meshtastic');assert.equal(mesh.catalogTargets.filter(t=>t.productIds.every(id=>id.startsWith('m5stack-'))).length,4);
+ assert.deepEqual(mesh.catalogTargets.filter(t=>t.productIds.some(id=>id.startsWith('lilygo-'))).map(t=>[t.boardTarget,t.targetChip]),[['t-deck','esp32s3'],['tbeam','esp32'],['t-watch-s3','esp32s3']]);
  for(const t of mesh.catalogTargets){const fw=firmwares.items.find(x=>x.id===t.firmwareId);assert.match(fw.source.sha256,/^[a-f0-9]{64}$/);assert.ok(fw.source.url.includes(t.boardTarget));assert.equal(firmwareRunPolicy(products.items.find(p=>p.id===t.productIds[0]),fw).canRun,false);}
  const saved=snapshot.entries.find(x=>x.id==='meshtastic'),old=firmwares.items.find(x=>x.id==='m5stack-u202-meshtastic-stable');
  const newAsset={...saved.releases.flatMap(r=>r.assets).find(a=>a.boardTarget==='m5stack-unitc6l'),name:'firmware-m5stack-unitc6l-99.0.0.abcdef0.factory.bin',digest:null};

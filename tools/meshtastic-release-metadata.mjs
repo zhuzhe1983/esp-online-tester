@@ -7,7 +7,7 @@ export async function enrichMeshtasticReleases(entry,releases,{fetchImpl=fetch}=
   if(entry.upstreamRepo!=='meshtastic/firmware')throw Error('Unexpected Meshtastic repository');
   const result=structuredClone(releases),cache=new Map();
   for(const target of entry.catalogTargets||[]) {
-    if(!/^[a-z0-9-]+$/.test(target.boardTarget||'')||!['esp32c6','esp32s3'].includes(target.targetChip)||target.format!=='merged')throw Error('Invalid Meshtastic target');
+    if(!/^[a-z0-9-]+$/.test(target.boardTarget||'')||!['esp32','esp32c6','esp32s3'].includes(target.targetChip)||target.format!=='merged')throw Error('Invalid Meshtastic target');
     for(const release of result.filter(r=>releaseMatchesChannel(r,target.channel))) {
       const version=release.tag_name.replace(/^v/,'');
       if(!/^[0-9][a-zA-Z0-9.-]{0,79}$/.test(version))throw Error('Invalid Meshtastic version');
