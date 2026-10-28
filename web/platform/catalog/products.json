@@ -12318,11 +12318,12 @@
       "summary": "带旋钮和 1.9 英寸 LCD 的 ESP32-S3 手持设备，集成 CC1101、PN532、红外、音频与八颗 RGB LED；限定原版 CC1101，不包含 Plus。",
       "knowledgeUrl": "./knowledge/lilygo-t-embed-cc1101.json",
       "runtime": {
-        "board": null,
+        "board": "tembed-cc1101",
         "flashMb": 16,
         "psramMb": 8,
-        "status": "unavailable",
-        "touch": false
+        "status": "partial",
+        "touch": false,
+        "encoder": true
       },
       "display": {
         "width": 320,
@@ -12337,14 +12338,27 @@
           "name": "旋钮按压 / BOOT",
           "type": "button",
           "pin": 0,
-          "activeLow": true
+          "activeLow": true,
+          "defaultKeyCode": "Enter"
         },
         {
           "id": "user",
           "name": "GPIO6 用户键",
           "type": "button",
           "pin": 6,
-          "activeLow": true
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "encoder",
+          "name": "旋钮 A/B 相位",
+          "type": "encoder",
+          "pins": {
+            "a": 4,
+            "b": 5
+          },
+          "detents": 16,
+          "notes": "每圈 16 步为界面拖动约定，实物卡点数未核实；每步发送四个 GPIO 相位，当前原厂菜单移动两项。"
         }
       ],
       "interfaces": [
@@ -12437,10 +12451,13 @@
         }
       ],
       "limitations": [
-        "尚未完成适配：本型号没有板级运行模型，外观模型与固件链接不表示可模拟运行。",
-        "README 最新硬件写 V1.0-241103，示例定义写 V1.0-240729；本条目按 2024-07-29 原理图记录，不推断两个批次完全相同。",
-        "示例文件的 BOARD_I2C_SDA/SCL 与 legacy BOARD_SDA_PIN/SCL_PIN 命名相反；在原理图逐项交叉检查前不发布外部针序。",
-        "旋钮卡点数、USB/NFC/RF/音频行为未模拟；外部 NRF24 扩展不算原机内置。"
+        "部分适配：固定官方出厂镜像已验证 SPI 屏幕、GPIO0/6 按键、A/B 编码器相位和 RGB 测试页；未实机验证。",
+        "BQ25896 仅身份/配置寄存器子集；PN532 与 BQ27220 尚未实现，原厂启动页仍显示 Mixed / Unknown，不代表硬件自检全部通过。",
+        "电池、充电/ADC 时序、NFC、CC1101、SD、音频、红外、BLE/Wi-Fi 射频和整机休眠尚未完成；这些测试页不可当作兼容通过。",
+        "旋钮每圈 16 步为 UI 约定，未校准实物卡点；八颗 LED 的链序可读取，但模型灯孔与链序尚未标定。",
+        "GPIO15 控制 RGB 的 VCC3V3，LCD 使用独立 VDD3V3；GPIO21 控制背光。按压旋钮为 GPIO0，GPIO6 用户键的侧键位置尚未核实，使用操作面板或空格键。",
+        "README 最新硬件写 V1.0-241103，示例定义写 V1.0-240729；本条目按 2024-07-29 原理图记录，不推断批次完全相同。",
+        "示例 BOARD_I2C_SDA/SCL 为 GPIO8/18，legacy 别名相反；外部连接器逐脚朝向未验收，不发布已连接线缆。"
       ],
       "defaultFirmwareId": "lilygo-t-embed-cc1101-factory",
       "model": {
