@@ -1,0 +1,90 @@
+{
+  "checkedAt": "2026-10-28",
+  "baseRevision": "85e73255",
+  "input": {
+    "catalogPath": "web/platform/catalog/products.json",
+    "catalog": {
+      "bytes": 569326,
+      "sha256": "bcca6eb37902de4da5fb9635ad22b7b8500ece0b8573016f17a0d9419eba99a2"
+    },
+    "delivery": "Same-origin read-only HTTP mapping to the real generated Spark catalog and product knowledge; no generated mock products."
+  },
+  "uiInputs": {
+    "web/platform/app.js": {
+      "bytes": 88885,
+      "sha256": "7f553918653f8a9c1ca5003bb43641fe1defcdb3d942d8e567dfaf4a55715c14"
+    },
+    "web/platform/catalog-selection.js": {
+      "bytes": 4982,
+      "sha256": "d2454035b416006c9c04a910e6e55b90cda83b671e47f15a70c60a721715f30c"
+    },
+    "web/platform/device-search.js": {
+      "bytes": 3532,
+      "sha256": "bdab82727e0ce0e122803fc99b8e470d13b1bedb8928f2ec185aaf400b8af20f"
+    },
+    "web/platform/hints.js": {
+      "bytes": 8957,
+      "sha256": "4d9f5fe94cdf7d62810ae93594d42484255ab713f7193151cc4c3c1033572a69"
+    },
+    "web/platform/index.html": {
+      "bytes": 14460,
+      "sha256": "7b3f92465bc28afaca0f7fb741b3c0adc7663384f4d7b733c9a6a24d2c46a90d"
+    },
+    "tools/platform-lilygo-series-browser-check.js": {
+      "bytes": 8410,
+      "sha256": "4c4fcc2d4683da40915e61f0f2725aa2388e1adcdac603920959d3cb396ddf3f"
+    }
+  },
+  "browser": {
+    "engine": "Chromium",
+    "headless": true,
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "result": {
+      "lilygoProducts": 127,
+      "families": 21,
+      "deckProducts": 6,
+      "m5Products": 84,
+      "sharedProductId": "lilygo-t-deck-plus-1",
+      "searchProductId": "lilygo-ttgo-t-display",
+      "pageErrors": [],
+      "checks": [
+        "manufacturer/family/model selection",
+        "family-scoped concrete variants",
+        "cross-family search",
+        "stable local-ID studio and embed sharing",
+        "unknown display and unavailable execution",
+        "firmware selection preservation",
+        "known TTGO CAD ready and visible canvas",
+        "busy disable/recovery"
+      ]
+    },
+    "visualReview": "Known TTGO CAD is visible in the all-series capture after modelStatus=ready; unknown T-Deck Plus remains an empty metadata-only scene."
+  },
+  "checks": {
+    "targeted": "node --test tools/platform-catalog-selection-test.mjs tools/platform-hints-test.mjs — 8 passed",
+    "platformBaseline": "node --test tools/platform-catalog-selection-test.mjs tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs — 11 passed before final filter-preservation and unknown-revision presentation adjustments",
+    "syntaxAndWhitespace": "node --check web/platform/app.js; node --check tools/platform-lilygo-series-browser-check.js; git diff --check — passed"
+  },
+  "captures": {
+    "output/lilygo-series-all.png": {
+      "bytes": 305252,
+      "sha256": "d0560e746227f62c371e3ac47bd2464ac88bdb0dd98eb93ee28f314f1eab3693",
+      "storage": "Ignored local output; not included in Git."
+    },
+    "output/lilygo-series-unavailable.png": {
+      "bytes": 327627,
+      "sha256": "c70d4c39dd0b9a26a520826ecb527b0eb10ff75a6c6b29f4d46051b25bdc6bdc",
+      "storage": "Ignored local output; not included in Git."
+    }
+  },
+  "limitations": [
+    "Browser checks verify catalog selection, presentation, sharing and unavailable-runtime guards; they do not verify new firmware execution or hardware compatibility.",
+    "Existing baseline WASM and ROM artifacts were reused for the platform suite.",
+    "The initial browser attempt failed during local HTTP server replacement (one module connection reset); reloading after server readiness resolved initialization.",
+    "Raw browser logs, URL scene payloads and session identifiers were omitted; no private product data was used.",
+    "An earlier selector screenshot was taken before CAD loading completed. The final script waits for modelStatus=ready; the retained all-series screenshot shows the loaded CAD."
+  ]
+}

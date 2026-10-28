@@ -18,3 +18,7 @@ for(const viewport of [{width:390,height:844},{width:320,height:480},{width:1280
  }
 }
 console.log('ok tooltip placement stays inside desktop, mobile and zoomed viewports');
+const unavailable={runtime:{status:'unavailable'},limitations:['Hardware support has not been implemented.']};
+assert.equal(productHints(unavailable)[0].label,'资料与配置');
+assert.equal(productHints({...unavailable,model:{type:'manufacturer-cad'}})[0].label,'仅外观预览');
+console.log('ok metadata-only products do not claim an existing visual model');

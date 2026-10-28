@@ -1,7 +1,7 @@
-import {searchProducts,searchAccessories,accessoryBrand,accessoryInterface,productOptionLabel,manufacturerLabel} from './catalog-selection.js';
+import {searchProducts,searchAccessories,accessoryBrand,accessoryInterface,productOptionLabel,productIdentityLabel,manufacturerLabel} from './catalog-selection.js';
 
 export function mountDeviceSearch({button, products, onSelect, onError}) {
-  return mountCatalogSearch({button,getItems:()=>products,onSelect,onError,kind:'device',label:'设备',search:searchProducts,title:productOptionLabel,describe:item=>[manufacturerLabel(item.manufacturer),item.sku,item.chip?.toUpperCase()].filter(Boolean).join(' · ')});
+  return mountCatalogSearch({button,getItems:()=>products,onSelect,onError,kind:'device',label:'设备',search:searchProducts,title:productOptionLabel,describe:item=>[productIdentityLabel(item),item.chip?.toUpperCase()].filter(Boolean).join(' · ')});
 }
 export function mountAccessorySearch({button, getItems, onSelect, onError}) {
   return mountCatalogSearch({button,getItems,onSelect,onError,kind:'accessory',label:'配件',search:searchAccessories,describe:item=>[manufacturerLabel(accessoryBrand(item)),item.sku,accessoryInterface(item)].filter(Boolean).join(' · ')});
@@ -13,7 +13,7 @@ function mountCatalogSearch({button, getItems, onSelect, onError, kind, label, s
   const heading=node('div');heading.className='dialog-heading';
   const title=node('h2',`搜索所有${label}`);title.id=`${kind}-search-title`;
   const close=node('button','×');close.type='button';close.className='icon-button';close.setAttribute('aria-label',`关闭${label}搜索`);heading.append(title,close);
-  const input=node('input');input.type='search';input.placeholder=kind==='accessory'?'品牌、型号、SKU 或接口':'品牌、型号或 SKU';input.setAttribute('aria-label',`跨品牌搜索${label}`);
+  const input=node('input');input.type='search';input.placeholder=kind==='accessory'?'品牌、型号、SKU 或接口':'品牌、系列、型号或 SKU';input.setAttribute('aria-label',`跨品牌搜索${label}`);
   const count=node('p');count.className='helper';count.setAttribute('role','status');
   const results=node('div');results.className='device-search-results';
   dialog.append(heading,input,count,results);document.body.append(dialog);
