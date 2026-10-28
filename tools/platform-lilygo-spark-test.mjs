@@ -51,4 +51,23 @@ await assert.rejects(()=>createLilygoSparkClient(async()=>new Response(null,{sta
 await assert.rejects(()=>createLilygoSparkClient(async()=>new Response(' '.repeat(2*1024*1024+1))).devices(),/元信息过大/);
 await assert.rejects(()=>createLilygoSparkClient(async()=>{throw new TypeError('CORS');}).devices(),/无法读取/);
 const controller=new AbortController();controller.abort();await assert.rejects(()=>client.devices(controller.signal),{name:'AbortError'});
+const deckProduct={id:'lilygo-t-deck-plus-1',manufacturer:'LILYGO',providers:{'lilygo-spark':{productId:'t-deck-plus-1'}},family:{id:'t-deck-series',name:'T-Deck 系列'}};
+const deckManifest={schema_version:2,product_list:[{id:'t-deck-series',name:'T-Deck Series',products:[{product_id:'t-deck',name:'T-Deck'},{product_id:'t-deck-plus-1',name:'T-Deck Plus'},{product_id:'t-deck-pro',name:'T-Deck Pro'}]}],firmwares:[
+  {id:'plus',name:'Plus firmware',supported_product_ids:['t-deck-plus-1'],versions:[{...version,download_url:'https://example.com/plus.bin'},{...version,supported_product_ids:['t-deck-pro'],sha256:otherHash}]},
+  {id:'pro',name:'Pro firmware',supported_product_ids:['t-deck-pro'],versions:[version]},
+]};
+let deckCalls=0;const deckClient=createLilygoSparkClient(async()=>{deckCalls++;return Response.json(deckManifest);});
+const deckDevices=await deckClient.devices();
+assert.equal(matchSparkDevice(deckProduct,deckDevices).deviceId,'t-deck-plus-1','Use upstream product ID, including its non-obvious -1 suffix');
+assert.equal(matchSparkDevice({...deckProduct,providers:{'lilygo-spark':{productId:'t-deck-series'}}},deckDevices),null,'A family is not a firmware target');
+assert.equal(matchSparkDevice({...product,providers:{'lilygo-spark':{productId:'t-deck-plus-1'}}},deckDevices),null,'A conflicting identity must not override an audited hardware target');
+assert.deepEqual(deckDevices.map(item=>item.familyId),Array(3).fill('t-deck-series'));
+const plusRows=await deckClient.search('t-deck-plus-1');assert.deepEqual(plusRows.rows.map(row=>row.firmwareId),['plus']);
+assert.equal(plusRows.rows[0].versions.length,1,'Version target overrides prevent sibling-series leakage');
+const plusFirmware=sparkFirmware(plusRows.rows[0],plusRows.rows[0].versions[0],'t-deck-plus-1');
+assert.equal(plusFirmware.status,'reference');assert.equal(plusFirmware.source,null,'Unreviewed product identity alone never authorizes a binary');
+assert.match(plusFirmware.sourceNote,/硬件版次/);assert.equal(deckCalls,1,'Expanded product browsing remains metadata-only');
+await assert.rejects(()=>deckClient.search('t-deck-series'),/型号无效/);
+const duplicateClient=createLilygoSparkClient(async()=>Response.json({...deckManifest,product_list:[...deckManifest.product_list,...deckManifest.product_list]}));
+await assert.rejects(()=>duplicateClient.search('t-deck-plus-1'),/型号无效/);
 console.log('ok Spark exact target contracts, version overrides, metadata-only CORS reads, raw BIN/hash boundary, ZIP references, search, cancellation and scoped history');

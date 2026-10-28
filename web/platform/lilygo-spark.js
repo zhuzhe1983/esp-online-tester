@@ -31,12 +31,17 @@ function directTarget(target,value) {
 }
 export function matchSparkDevice(product,devices) {
   if(!isLilygo(product))return null;
-  const target=targets[product.id];if(!target)return null;
-  const matches=devices.filter(item=>item.deviceId===target.deviceId);return matches.length===1?matches[0]:null;
+  const target=targets[product.id],declared=product.providers?.['lilygo-spark']?.productId;
+  // Stable upstream identity is independent of our exact hardware/revision ID.
+  // Keep old six-product scenes working, but never silently override a conflict.
+  const deviceId=declared===undefined?target?.deviceId:slug(declared);
+  if(!deviceId||(target&&deviceId!==target.deviceId))return null;
+  const matches=devices.filter(item=>item.deviceId===deviceId);return matches.length===1?matches[0]:null;
 }
 function exactVersion(target,project,version) {
   const supported=version.supported_product_ids??project.supported_product_ids;
   if(!Array.isArray(supported)||!supported.includes(target.deviceId))return false;
+  if(target.referenceOnly)return true;
   if(directTarget(target,version.download_url))return true;
   // These filename contracts only expose reference entries: an OSS ZIP is not a
   // raw BIN and its SHA belongs to the extracted payload, not the ZIP container.
@@ -74,15 +79,16 @@ export function createLilygoSparkClient(fetchImpl=globalThis.fetch) {
     finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
   }
   async function projects(deviceId,signal) {
-    const target=Object.values(targets).find(item=>item.deviceId===deviceId);if(!target)throw Error('LILYGO Spark 型号无效。');
     const data=await manifest(signal);
+    if(!slug(deviceId)||catalogDevices(data).filter(item=>item.deviceId===deviceId).length!==1)throw Error('LILYGO Spark 型号无效。');
+    const target=Object.values(targets).find(item=>item.deviceId===deviceId)||{deviceId,referenceOnly:true};
     return data.firmwares.flatMap(project=>{
       if(!project||!slug(project.id)||!label(project.name)||!Array.isArray(project.versions))return [];
       const versions=project.versions.flatMap((version,index)=>{
         if(!version||!exactVersion(target,project,version))return [];
-        const hash=digest(version.sha256),direct=directTarget(target,version.download_url),source=direct&&hash&&(!Number.isFinite(version.size)||version.size>=32768)?{url:version.download_url,sha256:hash}:null;
+        const hash=digest(version.sha256),direct=!target.referenceOnly&&directTarget(target,version.download_url),source=direct&&hash&&(!Number.isFinite(version.size)||version.size>=32768)?{url:version.download_url,sha256:hash}:null;
         return [{versionId:hash||`reference-${index}`,versionName:label(version.version)||label(version.filename)||'版本未知',publishTime:label(version.published_at),source,
-          sourceNote:source?'Spark 目录版本；运行时仍会核对芯片、容量与镜像布局。':direct?'此条目缺少完整校验值或镜像信息；请在 Spark 核对后导入本地文件。':'此版本只提供 Spark 压缩包；请在 Spark 下载并解压，再导入本地 BIN。'}];
+          sourceNote:target.referenceOnly?'Spark 将此版本列在当前产品下；具体硬件版次与镜像尚未核验，目前仅供查阅。':source?'Spark 目录版本；运行时仍会核对芯片、容量与镜像布局。':direct?'此条目缺少完整校验值或镜像信息；请在 Spark 核对后导入本地文件。':'此版本只提供 Spark 压缩包；请在 Spark 下载并解压，再导入本地 BIN。'}];
       });
       if(!versions.length)return [];
       const details=https(project.source_code_url||project.homepage);
@@ -92,12 +98,15 @@ export function createLilygoSparkClient(fetchImpl=globalThis.fetch) {
   }
   return {
     describe:()=>`官方仓库目录${generatedAt?' '+generatedAt:''}`,
-    async devices(signal) {const data=await manifest(signal);return data.product_list.flatMap(group=>Array.isArray(group?.products)?group.products:[group]).filter(item=>slug(item?.product_id)&&label(item.name)).map(item=>({deviceId:item.product_id,deviceName:label(item.name)}));},
+    async devices(signal) {return catalogDevices(await manifest(signal));},
     async search(deviceId,query='',page=1,signal) {
       if(!Number.isSafeInteger(page)||page<1)throw Error('LILYGO Spark 页码无效。');
       const words=label(query).toLowerCase().split(/\s+/).filter(Boolean),all=(await projects(deviceId,signal)).filter(project=>words.every(word=>[project.firmwareName,...project.versions.map(v=>v.versionName)].join(' ').toLowerCase().includes(word)));
-      const rows=all.slice((page-1)*50,page*50);return {total:all.length,page,received:rows.length,rows,note:'仅列出已核对型号的条目。'};
+      const rows=all.slice((page-1)*50,page*50);return {total:all.length,page,received:rows.length,rows,note:Object.values(targets).some(item=>item.deviceId===deviceId)?'仅列出已核对型号的条目。':'按 Spark 产品 ID 列出资料；镜像尚未完成型号核验。'};
     },
     async versions(firmwareId,deviceId,signal) {const rows=await projects(deviceId,signal);return rows.find(item=>item.firmwareId===firmwareId)?.versions||[];},
   };
+}
+function catalogDevices(data) {
+  return data.product_list.flatMap(group=>(Array.isArray(group?.products)?group.products:[group]).filter(item=>slug(item?.product_id)&&label(item.name)).map(item=>({deviceId:item.product_id,deviceName:label(item.name),...(slug(group?.id)?{familyId:group.id,familyName:label(group.name)}:{})})));
 }

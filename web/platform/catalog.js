@@ -66,7 +66,7 @@ export async function loadCatalog() {
   const entries = await Promise.all(['products', 'accessories', 'firmwares'].map(async name => {
     const response = await fetch(new URL(`./catalog/${name}.json`, import.meta.url), {cache: 'no-store'});
     if (!response.ok) fail('CATALOG_FETCH', `Cannot load ${name}: HTTP ${response.status}.`);
-    const document = parseJson(await response.text(), 512 * 1024);
+    const document = parseJson(await response.text(), (name === 'products' ? 1024 : 512) * 1024);
     if (document.schemaVersion !== SCHEMA_VERSION || !Array.isArray(document.items)) fail('CATALOG_SCHEMA', `Invalid ${name} catalog.`);
     const ids = new Set();
     for (const item of document.items) {
