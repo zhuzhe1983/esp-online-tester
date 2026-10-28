@@ -1,0 +1,47 @@
+diff --git a/esp-soc/src/devices/co5300.rs b/esp-soc/src/devices/co5300.rs
+index f24ca1da..8f508a7d 100644
+--- a/esp-soc/src/devices/co5300.rs
++++ b/esp-soc/src/devices/co5300.rs
+@@ -150,6 +150,15 @@ impl Co5300 {
+
+     pub fn take_edges(&mut self) -> Vec<BoardEdge> { std::mem::take(&mut self.edges) }
+
++    #[cfg(target_arch = "wasm32")]
++    fn trace_window(&self, op: &str, bytes: usize) {
++        if self.width != 468 || !(4_800_000_000..5_280_000_000).contains(&self.cycle) { return; }
++        #[link(wasm_import_module = "env")]
++        extern "C" { fn host_log(ptr: *const u8, len: usize); }
++        let text = format!("[display-window] {{\"cycle\":{},\"op\":\"{}\",\"bytes\":{},\"window\":[{},{},{},{}],\"cursor\":[{},{}],\"pixels\":{}}}", self.cycle, op, bytes, self.x0, self.x1, self.y0, self.y1, self.x, self.y, self.pixels_written);
++        unsafe { host_log(text.as_ptr(), text.len()); }
++    }
++
+     pub fn transaction(&mut self, tx: &[u8]) {
+         let data = if tx.len() >= 4 && matches!(tx[0], 0x02 | 0x32) {
+             let command = tx[2];
+@@ -163,6 +172,8 @@ impl Co5300 {
+             if command == 0x35 { self.tear_enabled = true; self.schedule_rise(); }
+             if command == 0x34 { self.disable_tear(); }
+             if command == 0x2c { self.x = self.x0; self.y = self.y0; self.frames += 1; }
++            #[cfg(target_arch = "wasm32")]
++            if matches!(command, 0x2c | 0x3c) { self.trace_window(if command == 0x2c { "RAMWR" } else { "RAMWRC" }, tx.len() - 4); }
+             &tx[4..]
+         } else { tx };
+         self.transaction_data(data);
+@@ -208,6 +219,8 @@ impl Co5300 {
+                         _ => { self.tear_row = start; self.schedule_rise(); }
+                     }
+                     self.pending = None;
++                    #[cfg(target_arch = "wasm32")]
++                    self.trace_window(if command == 0x2a { "CASET" } else if command == 0x2b { "RASET" } else { "STE" }, data.len());
+                 }
+             }
+             Some(0x2c | 0x3c) => self.write_pixel_bytes(data),
+@@ -218,6 +231,8 @@ impl Co5300 {
+
+     /// EX158/EX170: the per-byte loop, a row run at a time. Same window walk and `pixels_written`.
+     fn write_pixel_bytes(&mut self, mut data: &[u8]) {
++        #[cfg(target_arch = "wasm32")]
++        self.trace_window("PIXELS", data.len());
+         if let Some(high) = self.pixel_hi {
+             let Some((&low, rest)) = data.split_first() else { return };
+             self.pixel_hi = None;
