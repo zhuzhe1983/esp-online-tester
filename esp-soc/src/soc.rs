@@ -236,6 +236,8 @@ pub trait SocBus: Bus {
     fn attach_usb_host(&mut self, _timing: esp_periph::usb_otg::UsbTiming) -> Result<(), String> { Err("this chip has no USB-OTG device port".into()) }
     /// The cable `attach_usb_host` plugged in.
     fn usb_link(&mut self) -> Option<&mut esp_periph::usb_otg::UsbLink> { None }
+    /// Refresh derived board outputs from current peripheral state before host capture. No time advances.
+    fn refresh_board_outputs(&mut self) {}
 }
 
 /// Attach and synchronize the shared host source bank without adding device-tick work.

@@ -70,6 +70,7 @@ impl<S: Soc> Machine<S> {
         }
         let Some(w) = self.web.clone() else { return };
         self.drain_console();
+        self.bus.refresh_board_outputs();
         let board = self.bus.board_ref();
         let ver = board.display_version();
         // Prefer one quiet push interval for pixel streams, but never defer a changed frame

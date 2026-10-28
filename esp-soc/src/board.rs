@@ -23,8 +23,10 @@ pub struct SpiPins {
 }
 
 /// GPIO matrix masks at an LCD_CAM i80 transaction. Each data bit may drive several pads.
+/// `dc_high` is the physical D/C level after the controller's phase polarity,
+/// independent of the callback's logical command/data phase.
 #[derive(Clone, Copy, Debug, Default)]
-pub struct LcdI80Pins { pub data: [u64; 16], pub clock: u64, pub select: u64, pub width: u8 }
+pub struct LcdI80Pins { pub data: [u64; 16], pub clock: u64, pub select: u64, pub width: u8, pub dc: u64, pub dc_high: bool }
 
 /// What a board does with the SoC's pin-level activity.
 pub trait BoardModel {
@@ -180,6 +182,11 @@ pub trait BoardModel {
     /// Cold completed i80 phase, in wire word order; not a framebuffer or a tick callback.
     /// Appended to preserve hot vtable offsets. No callback on a failed DMA gather.
     fn lcd_i80(&mut self, _pins: LcdI80Pins, _data_phase: bool, _words: &[u16]) {}
+    /// Opt in to lazy PWM snapshots before host display publication/capture, never per tick.
+    fn uses_gpio_pwm(&self) -> bool { false }
+    /// Observe the already-latched physical PWM duty without advancing peripheral time.
+    /// Only derived visible output state may change here; bump display_version when it does.
+    fn gpio_pwm_at(&mut self, _cycle: VirtualCycle, _pwm: &dyn Fn(u8) -> Option<(f64, u32)>) {}
 
 }
 

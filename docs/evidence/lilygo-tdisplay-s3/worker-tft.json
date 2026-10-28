@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-10-28T06:17:58.815Z",
+  "productId": "lilygo-t-display-s3",
+  "source": {
+    "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3/1cc41eb1c76b2f3215130a3dd64e7138ce00b482/firmware/t-display-s3-tft-espi-20231113_0x0.bin",
+    "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3/1cc41eb1c76b2f3215130a3dd64e7138ce00b482/firmware/t-display-s3-tft-espi-20231113_0x0.bin",
+    "mediaType": "application/octet-stream",
+    "bytes": 501520,
+    "sha256": "45385b2a90070a7616b7fceca553d60ca984e33115f4b9586a5ebb6ddb8213f1"
+  },
+  "backend": "actual-platform-worker-wasm-jit",
+  "wasmSha256": "699bbc1dd403e653692db3cca9cddafa1ed82c9bcb6ecc8836c1865dd8cbaafc",
+  "firmwarePatched": false,
+  "expectedOutcome": "tft-demo",
+  "frames": [
+    {
+      "label": "font-page-1",
+      "guestSeconds": 3.9,
+      "insns": 19939213,
+      "nonblackPixels": 4088,
+      "rgbaSha256": "994ed0dcd5a4d9d86345e53beb619639daf9915941a712d87b19a6430316096e"
+    },
+    {
+      "label": "font-page-2",
+      "guestSeconds": 5.1,
+      "insns": 24088918,
+      "nonblackPixels": 2369,
+      "rgbaSha256": "54feaea5ec3636fa655b48e9215cdcd727509d2b45a0ca5cc1c0b1903e837966"
+    }
+  ],
+  "checks": [
+    "ROM boot and two nonblank changing 170x320 guest font pages",
+    "GPIO i8080 writes and latched LEDC backlight reach actual worker framebuffer"
+  ],
+  "status": "pass",
+  "limitations": [
+    "TFT demo has no button handler; independent Rust guest-instruction tests cover GPIO0/14 input.",
+    "Factory and LVGL DMA compatibility remain unresolved; no physical hardware test."
+  ]
+}

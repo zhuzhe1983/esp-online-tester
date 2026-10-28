@@ -1224,7 +1224,8 @@ impl<S: Soc> Machine<S> {
     }
 
     /// Save the board's display (scaled) as PNG.
-    pub fn write_tft_png(&self, path: &str, scale: usize) -> std::io::Result<()> {
+    pub fn write_tft_png(&mut self, path: &str, scale: usize) -> std::io::Result<()> {
+        self.bus.refresh_board_outputs();
         let Some((w, h, px, _)) = self.bus.board_ref().display() else { return Err(std::io::Error::other("this board has no display")) };
         png::write_png_rgb565(path, &px, w as usize, h as usize, if w > 200 { 1 } else { scale })
     }

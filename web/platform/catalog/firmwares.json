@@ -7106,8 +7106,43 @@
         }
       ],
       "limitations": [
-        "完整镜像已在内存校验 SHA-256、目标芯片、分区与容量；尚未验证本镜像的模拟运行和实机刷写。",
-        "只有存在板级模型的产品提供尝试运行；其余产品保留固件入口。"
+        "本镜像已实际 ROM 启动，LCD 初始化后等待 TRANS_DONE；当前模拟器在旧描述符 owner 检查处报 DMA 错误，未出现屏幕画面。保留 trial 和出厂默认，不视为可用。",
+        "不据模拟结果断言实机固件缺陷。电池、休眠唤醒和实机刷写未验证。"
+      ]
+    },
+    {
+      "id": "lilygo-t-display-s3-tft-demo",
+      "name": "LILYGO T-Display-S3 · 官方 TFT-eSPI 字体演示 · 20231113",
+      "productIds": [
+        "lilygo-t-display-s3"
+      ],
+      "version": "20231113",
+      "status": "available",
+      "source": {
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3/1cc41eb1c76b2f3215130a3dd64e7138ce00b482/firmware/t-display-s3-tft-espi-20231113_0x0.bin",
+        "sha256": "45385b2a90070a7616b7fceca553d60ca984e33115f4b9586a5ebb6ddb8213f1",
+        "bootMode": "rom"
+      },
+      "role": "demo",
+      "publisher": "LILYGO",
+      "publisherGroup": "官方",
+      "simulationVerified": true,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "官方出厂说明",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3/1cc41eb1c76b2f3215130a3dd64e7138ce00b482/firmware/README.MD",
+          "checkedAt": "2026-10-28"
+        },
+        {
+          "title": "固定仓库镜像",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3/1cc41eb1c76b2f3215130a3dd64e7138ce00b482/firmware/t-display-s3-tft-espi-20231113_0x0.bin",
+          "checkedAt": "2026-10-28"
+        }
+      ],
+      "limitations": [
+        "官方字体显示示例，与出厂测试不同；不会替换默认出厂固件。",
+        "仅验证 USB 供电下 GPIO i8080 写屏与 LEDC 平均背光；此演示不处理 GPIO0/14 按钮。电池、休眠唤醒和实机刷写未验证。"
       ]
     },
     {

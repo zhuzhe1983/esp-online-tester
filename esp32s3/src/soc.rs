@@ -276,6 +276,18 @@ impl esp_soc::SocBus for SocBus {
     }
     fn pwm_output(&self, pin: u8) -> Option<(f64, u32)> { self.periph.ledc.output(&self.periph.gpio, pin).or_else(|| self.periph.mcpwm.iter().find_map(|pwm| pwm.output(&self.periph.gpio, pin))) }
 
+    fn refresh_board_outputs(&mut self) {
+        if !self.board.uses_gpio_pwm() {return;}
+        let p=&self.periph;
+        // Reuse the LEDC model's latched duty, clock gate, matrix channel and inversion.
+        // IDF v4.4.4 gpio_reg.h: OEN_INV_SEL bit11 is unsupported, not a valid drive;
+        // io_mux_reg.h MCU_SEL=1 selects GPIO matrix. No peripheral tick here.
+        self.board.gpio_pwm_at(self.cycles,&|pin| {
+            if !esp_soc::pins::ChipPins::S3.routes(&p.gpio,&p.io_mux).function(pin as usize,1)
+                || p.gpio.func_out_sel.get(pin as usize)?&(1<<11)!=0 {return None;}
+            p.ledc.output(&p.gpio,pin)
+        });
+    }
     fn board(&mut self) -> &mut dyn BoardModel { &mut *self.board }
     fn board_ref(&self) -> &dyn BoardModel { &*self.board }
     fn i2s_input(&mut self, port: usize) -> Option<&mut esp_periph::i2s::PcmInput> { match port { 0 => Some(self.periph.i2s0.rx_input()), 1 => Some(self.periph.i2s1.rx_input()), _ => None } }
