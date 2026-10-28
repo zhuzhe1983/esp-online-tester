@@ -1,5 +1,6 @@
 // Browser-only metadata. Firmware bytes stay in the separate firmware cache.
 import {parseBurnerDownload} from './m5burner.js';
+import {sparkHistoryFirmware} from './lilygo-spark.js';
 export const FIRMWARE_HISTORY_KEY = 'esp-online-tester:firmware-history:v1';
 const LIMIT = 40;
 const clean = value => typeof value === 'string' ? value.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 120) : '';
@@ -12,8 +13,9 @@ function normalized(entry) {
   if(entry.bootMode!==undefined&&(entry.kind!=='merged'||!['rom','app-direct'].includes(entry.bootMode)))return null;
   url.hash = '';
   const burner=entry.provider==='m5burner'&&parseBurnerDownload(url.href);
+  const spark=entry.provider==='lilygo-spark'&&sparkHistoryFirmware({...entry,url:url.href,sha256});
   return {url:url.href, kind:entry.kind, sha256, productId:clean(entry.productId), name:clean(entry.name), version:clean(entry.version), lastUsedAt:entry.lastUsedAt,
-    ...(entry.bootMode?{bootMode:entry.bootMode}:{}),...(burner?{provider:'m5burner',deviceId:typeof entry.deviceId==='string'&&/^\d{1,30}$/.test(entry.deviceId)?entry.deviceId:''}:{})};
+    ...(entry.bootMode?{bootMode:entry.bootMode}:{}),...(burner?{provider:'m5burner',deviceId:typeof entry.deviceId==='string'&&/^\d{1,30}$/.test(entry.deviceId)?entry.deviceId:''}:{}),...(spark?{provider:'lilygo-spark',deviceId:spark.deviceId,firmwareId:spark.firmwareId}:{})};
 }
 const key = entry => JSON.stringify([entry.productId, entry.kind, entry.url, entry.provider==='m5burner'?'':entry.sha256]);
 export function createFirmwareHistory(getStorage = () => globalThis.localStorage) {

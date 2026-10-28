@@ -21,6 +21,8 @@ import {sharedStartup, setSharedPlayback} from './shared-startup.js';
 import {mountFirmwareHistory, firmwareHistoryName} from './firmware-history.js';
 import {isM5Stack} from './m5burner.js';
 import {mountM5Burner} from './m5burner-ui.js';
+import {isLilygo} from './lilygo-spark.js';
+import {mountLilygoSpark} from './lilygo-spark-ui.js';
 
 const $ = id => document.getElementById(id);
 const clone = value => structuredClone(value);
@@ -30,7 +32,9 @@ let catalog, scene, runtime, sceneView, humanButtons, api, detachBridge, localDe
 let busy = false, frameCount = 0, renderedProduct = '', renderedScene = '', recordingControl = null, toastTimer, localFile = null, editingAccessoryId = null, uiConfiguring = false;
 let transportUi, knowledgePanel, firmwareUpdates, recordingDocument = null, recordingState = {status: 'idle'};
 let downloadView = null, loadProgress = null, runAfterLoad = false;
-let firmwareHistory, burnerUi, pendingRemoteHistory, remoteModeSelection;
+let firmwareHistory, burnerUi, sparkUi, pendingRemoteHistory, remoteModeSelection;
+const remoteHub = () => ({m5burner:burnerUi,'lilygo-spark':sparkUi})[$('firmware-kind')?.value];
+const matchingHubFirmware = source => [burnerUi?.current(),sparkUi?.current()].find(item=>item?.source&&firmwareSourceMatches(item.source,source));
 let preserveUnspecifiedFirmware = false;
 let orientationSettlement = null;
 let localFiles = [], localSource = null, localSelectionToken = 0;
@@ -155,7 +159,7 @@ async function downloadAndRun() {
 function currentCatalogFirmware() {
   if (!embedded && firmwareTab === 'local') return null;
   if (!embedded && firmwareTab === 'library') return catalog.firmwares.find(item=>item.id===$('firmware-select')?.value);
-  if (!embedded && firmwareTab === 'remote' && $('firmware-kind')?.value==='m5burner') return burnerUi?.current();
+  if (!embedded && firmwareTab === 'remote' && remoteHub()) return remoteHub().current();
   let source=scene.firmware;
   if (!embedded && firmwareTab === 'remote') { try { source=sourceFromInputs(); } catch { return null; } }
   return catalog.firmwares.find(item=>item.productIds.includes(scene.productId)&&firmwareSourceMatches(item.source,source));
@@ -240,7 +244,7 @@ function renderTransport() {
   const sessionBusy = ['preparing', 'recording', 'playing'].includes(recordingState.status);
   const configurationBusy = busy || status === 'loading';
   for (const id of ['manufacturer-select','product-select','search-devices','firmware-select','firmware-kind','firmware-url','firmware-sha','firmware-history-select','accessory-brand','accessory-interface','accessory-select','search-accessories']) if ($(id)) $(id).disabled = configurationBusy;
-  burnerUi?.setDisabled(configurationBusy);
+  burnerUi?.setDisabled(configurationBusy);sparkUi?.setDisabled(configurationBusy);
   if ($('add-accessory')) $('add-accessory').disabled = configurationBusy || !$('accessory-select')?.value;
   if ($('clear-accessories')) $('clear-accessories').disabled = configurationBusy || !scene?.accessories.length;
   if ($('start-runtime')) {
@@ -256,9 +260,9 @@ function renderTransport() {
     $('load-firmware').textContent = firmwareTab === 'local' ? '加载并运行' : '下载并运行';
     if (firmwareTab === 'library' && firmwareRunPolicy(product(), catalog.firmwares.find(item => item.id === $('firmware-select')?.value)).trial) $('load-firmware').textContent = '下载并尝试运行';
     if (firmwareTab === 'local' && !localSource) $('load-firmware').disabled = true;
-    if (firmwareTab === 'remote' && $('firmware-kind')?.value==='m5burner') {
+    if (firmwareTab === 'remote' && remoteHub()) {
       $('load-firmware').textContent='下载并尝试运行';
-      if(!burnerUi?.current())$('load-firmware').disabled=true;
+      if(!remoteHub().current()?.source)$('load-firmware').disabled=true;
     }
   }
   const boundary = $('firmware-run-boundary');
@@ -316,7 +320,8 @@ function renderProduct() {
   const selected = product(); if (!selected) return;
   const kind=$('firmware-kind');
   if(kind){const option=kind.querySelector('[value="m5burner"]');if(isM5Stack(selected)){if(!option)kind.append(new Option('burner.m5stack.com','m5burner'));}else{if(kind.value==='m5burner')kind.value='merged';option?.remove();}}
-  burnerUi?.setProduct(selected);updateRemoteMode();
+  if(kind){const option=kind.querySelector('[value="lilygo-spark"]');if(isLilygo(selected)){if(!option)kind.append(new Option('LILYGO Spark','lilygo-spark'));}else{if(kind.value==='lilygo-spark')kind.value='merged';option?.remove();}}
+  burnerUi?.setProduct(selected);sparkUi?.setProduct(selected);updateRemoteMode();
   if ($('manufacturer-select')) { $('manufacturer-select').value = selected.manufacturer; renderProductChoices(selected.manufacturer); }
   text('stage-title', selected.name); text('product-name', selected.name.replace(/^M5Stack /, ''));
   text('model-origin', selected.model?.type === 'source-derived' ? '照片与尺寸建模 · 内部结构有未知项' : selected.model || selected.id === 'm5stack-stopwatch' ? '官方 CAD · 外观来源可查' : '模型待建 · 来源资料可查');
@@ -350,9 +355,12 @@ function setFirmwareTab(tab) {
 }
 function updateRemoteMode() {
   const burner=$('firmware-kind')?.value==='m5burner'&&isM5Stack(product());
-  if($('firmware-url-fields'))$('firmware-url-fields').hidden=burner;
+  const spark=$('firmware-kind')?.value==='lilygo-spark'&&isLilygo(product());
+  if($('firmware-url-fields'))$('firmware-url-fields').hidden=burner||spark;
   if($('firmware-burner'))$('firmware-burner').hidden=!burner;
+  if($('firmware-spark'))$('firmware-spark').hidden=!spark;
   if(burner&&firmwareTab==='remote')burnerUi?.activate();else burnerUi?.deactivate();
+  if(spark&&firmwareTab==='remote')sparkUi?.activate();else sparkUi?.deactivate();
 }
 function renderFirmwareLibrary() {
   const select = $('firmware-select'); if (!select) return;
@@ -389,8 +397,8 @@ function reflectFirmwareSource({preserveLocal = false} = {}) {
   else if ($('firmware-url')) {
     remoteModeSelection=scene.firmware.bootMode?{url:scene.firmware.url,sha256:scene.firmware.sha256||'',bootMode:scene.firmware.bootMode}:null;
     $('firmware-url').value = scene.firmware.manifestUrl || scene.firmware.url || '';
-    const burner=burnerUi?.current()?.source.url===scene.firmware.url&&isM5Stack(product());
-    $('firmware-kind').value = burner?'m5burner':scene.firmware.manifestUrl ? 'manifest' : 'merged'; $('firmware-sha').value = scene.firmware.sha256 || ''; setFirmwareTab('remote');
+    const provider=matchingHubFirmware(scene.firmware)?.provider;
+    $('firmware-kind').value = provider|| (scene.firmware.manifestUrl ? 'manifest' : 'merged'); $('firmware-sha').value = scene.firmware.sha256 || ''; setFirmwareTab('remote');
   }
 }
 function sourceFromInputs() {
@@ -400,8 +408,8 @@ function sourceFromInputs() {
     return localSource;
   }
   if (firmwareTab === 'remote') {
-    if($('firmware-kind').value==='m5burner'){
-      const selected=burnerUi?.current();if(!selected)throw Error('请先选择 M5Burner 固件和版本。');return clone(selected.source);
+    if(remoteHub()){
+      const selected=remoteHub().current();if(!selected?.source)throw Error('请先选择可直接加载的固件和版本。');return clone(selected.source);
     }
     const url = $('firmware-url').value.trim(); if (!url) throw new Error('请输入固件地址。');
     const result = {[ $('firmware-kind').value === 'manifest' ? 'manifestUrl' : 'url' ]: url};
@@ -549,9 +557,9 @@ async function loadSelected() {
     url:source.manifestUrl || source.url, kind:source.manifestUrl ? 'manifest' : 'merged', sha256:source.sha256 || '',
     ...(source.bootMode?{bootMode:source.bootMode}:{}),
     productId:scene.productId, lastUsedAt:Date.now(), name:known?.name || firmwareHistoryName(source.manifestUrl || source.url), version:known?.version || known?.revision || '',
-    ...(known?.provider==='m5burner'?{provider:'m5burner',deviceId:known.deviceId}:{}),
+    ...(['m5burner','lilygo-spark'].includes(known?.provider)?{provider:known.provider,deviceId:known.deviceId,firmwareId:known.firmwareId}:{}),
   } : null;
-  if (history && history.provider!=='m5burner') firmwareHistory?.remember(history);
+  if (history && !history.provider) firmwareHistory?.remember(history);
   const next = clone(scene); next.firmware = source.file || source.files ? null : source;
   await configure(next); const state = await runtime.loadFirmware(source);
   if (history) {
@@ -559,8 +567,8 @@ async function loadSelected() {
     const digest = state.firmware?.manifestHash || state.firmware?.artifacts[0]?.sha256;
     if(!source.manifestUrl)history.bootMode=state.firmware?.appDirect?'app-direct':'rom';
     const catalogMatch = known?.source?.sha256 && known.source.sha256.toLowerCase() === digest;
-    if(history.provider==='m5burner'){
-      pendingRemoteHistory={...history,sha256:digest};burnerUi?.pin(digest,history.bootMode);
+    if(history.provider){
+      pendingRemoteHistory={...history,sha256:digest};(history.provider==='m5burner'?burnerUi:sparkUi)?.pin(digest,history.bootMode);
     }else firmwareHistory?.remember({...history, name:catalogMatch ? history.name : metadata?.name || firmwareHistoryName(history.url), version:catalogMatch ? history.version || metadata?.version : metadata?.version || ''});
   }
   if(state.firmware?.appDirect)toast('已识别为应用镜像，采用应用直启；未提供 bootloader 和分区表，部分功能可能不可用。');
@@ -811,9 +819,11 @@ async function releaseHumanInputs() {
 
 function setupEvents() {
   burnerUi=mountM5Burner({mount:$('firmware-burner'),onChange:renderTransport});burnerUi?.setProduct(product());
+  sparkUi=mountLilygoSpark({mount:$('firmware-spark'),onChange:renderTransport});sparkUi?.setProduct(product());
   firmwareHistory = mountFirmwareHistory({input:$('firmware-url'),kindInput:$('firmware-kind'),shaInput:$('firmware-sha'),mount:$('firmware-history-mount'),productId:()=>scene.productId,onSelect:entry=>{
     remoteModeSelection=entry.bootMode?{url:entry.url,sha256:entry.sha256,bootMode:entry.bootMode}:null;
     if(isM5Stack(product())&&burnerUi?.restore(entry))$('firmware-kind').value='m5burner';
+    else if(isLilygo(product())&&sparkUi?.restore(entry))$('firmware-kind').value='lilygo-spark';
     updateRemoteMode();renderTransport();text('load-status','已选取历史地址，点击“下载并运行”加载。');
   }});
   bind('firmware-kind','change',()=>{updateRemoteMode();renderTransport();});
@@ -835,7 +845,7 @@ function setupEvents() {
       const state=await runtime.observe();let source=state.scene?.firmware,firmware=currentCatalogFirmware();
       if(state.firmware){
         if(state.firmware.source==='local'){source={local:true};firmware=null;}
-        else firmware=catalog.firmwares.find(item=>item.productIds.includes(state.scene.productId)&&firmwareSourceMatches(item.source,source)) || (firmwareSourceMatches(burnerUi?.current()?.source,source)?burnerUi.current():null);
+        else firmware=catalog.firmwares.find(item=>item.productIds.includes(state.scene.productId)&&firmwareSourceMatches(item.source,source)) || matchingHubFirmware(source);
       }else if(!embedded){if(firmwareTab==='local')source={local:true};else try{source=sourceFromInputs();}catch{}}
       const url=buildRunIssueUrl({product:state.product||product(),firmware,source,state});
       window.open(url,'_blank','noopener,noreferrer');
