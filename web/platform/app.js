@@ -10,7 +10,7 @@ import {installEmbedBridge} from './embed.js';
 import {createTransportUi, createKnowledgePanel, mountFirmwareUpdates} from './transport-ui.js';
 import {firmwareRunPolicy} from './firmware-policy.js';
 import {confirmFirmwareRun, buildRunIssueUrl} from './firmware-run-ui.js';
-import {productOptionLabel, manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
+import {productOptionLabel, manufacturerLabel, manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
 import {mountDeviceSearch, mountAccessorySearch} from './device-search.js';
 import {encodeRecording, decodeRecording, validateRecording} from './recording.js';
 import {buildFirmwareIssueUrl} from './watchlist.js';
@@ -320,7 +320,7 @@ function renderProduct() {
   if ($('manufacturer-select')) { $('manufacturer-select').value = selected.manufacturer; renderProductChoices(selected.manufacturer); }
   text('stage-title', selected.name); text('product-name', selected.name.replace(/^M5Stack /, ''));
   text('model-origin', selected.model?.type === 'source-derived' ? '照片与尺寸建模 · 内部结构有未知项' : selected.model || selected.id === 'm5stack-stopwatch' ? '官方 CAD · 外观来源可查' : '模型待建 · 来源资料可查');
-  text('product-model', `${selected.manufacturer} / ${selected.sku}`);
+  text('product-model', `${manufacturerLabel(selected.manufacturer)} / ${selected.sku}`);
   text('product-symbol', selected.display?.shape === 'round' ? '◉' : selected.display ? '▤' : '▧');
   if ($('product-select')) $('product-select').value = selected.id;
   const specs = $('product-specs');
@@ -578,13 +578,13 @@ function allDefinitions() {
 }
 function renderAccessoryChoices(preferred = {}) {
   const items = allDefinitions();
-  const selectValue = (id, values, value) => {
+  const selectValue = (id, values, value, label = value=>value) => {
     const select=$(id); if (!select) return;
     const previous=value ?? select.value;
-    select.replaceChildren(...values.map(value=>new Option(value,value)));
+    select.replaceChildren(...values.map(value=>new Option(label(value),value)));
     if (values.includes(previous)) select.value=previous;
   };
-  selectValue('accessory-brand',accessoryBrands(items),preferred.brand);
+  selectValue('accessory-brand',accessoryBrands(items),preferred.brand,manufacturerLabel);
   const branded=filterAccessories(items,{brand:$('accessory-brand')?.value});
   selectValue('accessory-interface',accessoryInterfaces(branded),preferred.connector);
   const selector = $('accessory-select');
@@ -943,7 +943,7 @@ async function init() {
     onRecordingChange: value => { recordingDocument = value; if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false, autostart: false}); },
     onError: report, onLog: log,
   });
-  if ($('manufacturer-select')) { $('manufacturer-select').replaceChildren(...manufacturerNames(catalog.products).map(name => new Option(name,name))); $('manufacturer-select').disabled = false; }
+  if ($('manufacturer-select')) { $('manufacturer-select').replaceChildren(...manufacturerNames(catalog.products).map(name => new Option(manufacturerLabel(name),name))); $('manufacturer-select').disabled = false; }
   mountAppearance(); setupEvents(); await runtime.configure(scene); renderLocalAccessories(); reflectFirmwareSource(); transportUi.setRecording(recordingDocument);
   firmwareUpdates = await mountFirmwareUpdates($('firmware-updates'), {getProductId: () => scene.productId, onError: report});
   firmwareUpdates.show(catalog.firmwares.find(item => item.id === $('firmware-select')?.value));

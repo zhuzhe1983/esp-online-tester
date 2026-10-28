@@ -1,6 +1,20 @@
 const collator = new Intl.Collator('zh-CN', {numeric:true,sensitivity:'base'});
+const manufacturerCollator = new Intl.Collator('en', {numeric:true,sensitivity:'base'});
+export function manufacturerLabel(name) {
+  const value = String(name || '').trim();
+  const parts = value.match(/^(.+?)\s*[（(]([^（）()]+)[）)]$/);
+  if (!parts) return value;
+  const [,first,second] = parts.map(part=>part.trim());
+  if (/\p{Script=Han}/u.test(first) && /^[A-Za-z]/.test(second) && !/\p{Script=Han}/u.test(second)) return `${second}（${first}）`;
+  if (/^[A-Za-z]/.test(first) && /\p{Script=Han}/u.test(second)) return `${first}（${second}）`;
+  return value;
+}
+const compareManufacturers = (a,b) => {
+  const left=manufacturerLabel(a),right=manufacturerLabel(b);
+  return Number(!/^[A-Za-z0-9]/.test(left))-Number(!/^[A-Za-z0-9]/.test(right)) || manufacturerCollator.compare(left,right);
+};
 export const productOptionLabel = product => product.runtime?.board ? product.name : `${product.name} × 尚未适配`;
-export const manufacturerNames = products => [...new Set(products.map(item => item.manufacturer))].sort(collator.compare);
+export const manufacturerNames = products => [...new Set(products.map(item => item.manufacturer))].sort(compareManufacturers);
 export const productsForManufacturer = (products, manufacturer) => products.filter(item => item.manufacturer === manufacturer).sort((a,b) => collator.compare(a.name.replace(/^M5Stack /,''),b.name.replace(/^M5Stack /,'')) || collator.compare(a.id,b.id));
 export function searchProducts(products, query) {
   const words = String(query).normalize('NFKC').toLowerCase().trim().split(/\s+/).filter(Boolean);
@@ -8,7 +22,7 @@ export function searchProducts(products, query) {
 }
 export const accessoryBrand = item => item.manufacturer || 'DIY';
 export const accessoryInterface = item => item.connector?.type || '未标注';
-export const accessoryBrands = items => [...new Set(items.map(accessoryBrand))].sort(collator.compare);
+export const accessoryBrands = items => [...new Set(items.map(accessoryBrand))].sort(compareManufacturers);
 export const accessoryInterfaces = items => [...new Set(items.map(accessoryInterface))].sort(collator.compare);
 export function filterAccessories(items, {brand='', connector=''} = {}) {
   return items.filter(item => (!brand || accessoryBrand(item) === brand) && (!connector || accessoryInterface(item) === connector)).sort((a,b) => collator.compare(a.name,b.name));
