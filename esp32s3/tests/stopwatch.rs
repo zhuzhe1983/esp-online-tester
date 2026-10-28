@@ -39,6 +39,24 @@ fn ui_commit_waits_for_contiguous_strips_while_gram_remains_live() {
 }
 
 #[test]
+fn a_single_full_screen_window_waits_for_its_last_spi_row() {
+    let mut board = display_board();
+    let previous = board.display_for_ui().unwrap();
+    command(&mut board, 0x2a, &[0, 6, 1, 0xd9]);
+    command(&mut board, 0x2b, &[0, 0, 1, 0xd1]);
+    board.gpio_changes(&[(39, true), (39, false)]);
+    board.spi_transfer(2, &[0x32, 0, 0x2c, 0], 0);
+    for row in 0..466 {
+        board.spi_transfer(2, &[0xf8, 0].repeat(468), 0);
+        assert_eq!(board.display().unwrap().2[row * 468], 0xf800);
+        if row < 465 { assert_eq!(board.display_for_ui().unwrap(), previous); }
+    }
+    board.gpio_changes(&[(39, true)]);
+    assert_eq!(board.display_for_ui().unwrap(), board.display().unwrap());
+    assert!(board.display_for_ui().unwrap().2.iter().all(|&p| p == 0xf800));
+}
+
+#[test]
 fn abandoned_top_strip_has_bounded_idle_fallback_including_sleep_commands() {
     for command_after in [None, Some(0x10), Some(0x28)] {
         let mut board = display_board();

@@ -23,7 +23,7 @@ impl Batch {
     fn complete(&self) -> bool { self.pixels >= u64::from(self.window[1] - self.window[0] + 1) * u64::from(self.window[3] - self.window[2] + 1) }
 }
 fn full_width(w: Window) -> bool { w[0] == super::StopWatch::X_OFFSET && w[1] == w[0] + super::StopWatch::WIDTH as u16 - 1 && w[2] <= w[3] && w[3] <= LAST_ROW }
-fn first_strip(w: Window) -> bool { full_width(w) && w[2] == 0 && w[3] < LAST_ROW }
+fn first_strip(w: Window) -> bool { full_width(w) && w[2] == 0 }
 
 impl Presentation {
     pub(super) fn reset(&mut self) { *self = Self::default(); }
