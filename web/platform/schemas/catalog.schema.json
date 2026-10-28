@@ -380,6 +380,98 @@
                   }
                 }
               }
+            },
+            "family": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "name"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]{0,79}$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                }
+              },
+              "description": "Grouping identity, not a runnable product. Provider-backed families retain the upstream group key."
+            },
+            "providers": {
+              "type": "object",
+              "properties": {
+                "lilygo-spark": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "productId",
+                    "groupId",
+                    "mappingScope",
+                    "catalogRevision"
+                  ],
+                  "properties": {
+                    "productId": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]{0,100}$"
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]{0,100}$"
+                    },
+                    "mappingScope": {
+                      "enum": [
+                        "product",
+                        "hardware-variant"
+                      ]
+                    },
+                    "catalogRevision": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{40}$"
+                    }
+                  },
+                  "description": "Exact product_id and group.id from the pinned official Spark catalog. A hardware-variant is narrower than the upstream product listing. Neither scope proves firmware compatibility."
+                }
+              }
+            },
+            "displayStatus": {
+              "enum": [
+                "known",
+                "none",
+                "unknown"
+              ],
+              "description": "Optional inventory distinction: display:null with unknown means not yet researched, never evidence of no screen."
+            },
+            "firmwareEdition": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "description": "Commercial preloaded-software edition label, not an exact firmware image, version or hardware equivalence declaration."
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "displayStatus"
+            ],
+            "properties": {
+              "displayStatus": {
+                "enum": [
+                  "none",
+                  "unknown"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "display": {
+                "type": "null"
+              }
             }
           }
         }
