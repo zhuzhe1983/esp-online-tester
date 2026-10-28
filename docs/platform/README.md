@@ -161,3 +161,5 @@ Unit RGB U003 的真实 RMT 灯光、供电和拔插支持见 [U003 runtime](uni
 Unit Angle U005 已支持 StopWatch Port A 的标称模拟电压输入与真实 ADC2 转换；官方图纸冲突、机械角度未校准等边界见 [Unit Angle 运行说明](unit-angle-runtime.md)。
 
 [Unit Hub U006](unit-hub-runtime.md) adds one passive parallel layer between StopWatch Port A and the supported U027/U003/U005 units. Signal contention is rejected; output socket visual pin1 is still unknown and its cables remain hidden.
+
+[Unit ENV-IV U001-D](unit-env4-runtime.md) exposes SHT40/BMP280 over actual StopWatch G10/G11 hardware I²C, with editable ambient values, supply gating, disconnect and recording. It uses both signal lines; software I²C and heater are not implemented. Related ENV-III CAD reuse is explicitly identified and checked against ENV-IV references.

@@ -2,6 +2,7 @@
 export const UNIT_BUTTON_ID='m5stack-unit-button-u027';
 export const UNIT_RGB_ID='m5stack-unit-rgb-u003';
 export const UNIT_ANGLE_ID='m5stack-unit-angle-u005';
+export const UNIT_ENV4_ID='m5stack-unit-env4-u001d';
 export const UNIT_HUB_ID='m5stack-unit-hub-u006';
 export const HUB_PORTS=['port-1','port-2','port-3'];
 export const unitButtonControl=id=>`accessory:${id}:button`;
@@ -26,7 +27,8 @@ function leafRoute(product,instance,definition,scene,catalog,id,model,fields) {
 export const unitButtonRoute=(p,i,d,s,c)=>leafRoute(p,i,d,s,c,UNIT_BUTTON_ID,'gpio-button-u027',{pin:11,control:'button'});
 export const unitRgbRoute=(p,i,d,s,c)=>leafRoute(p,i,d,s,c,UNIT_RGB_ID,'sk6812-u003',{pin:10,output:'grove-u003'});
 export const unitAngleRoute=(p,i,d,s,c)=>leafRoute(p,i,d,s,c,UNIT_ANGLE_ID,'potentiometer-u005-10k-curve',{pin:11,control:'knob'});
-export const physicalAccessoryRoute=(p,i,d,s,c)=>unitHubRoute(p,i,d)||unitButtonRoute(p,i,d,s,c)||unitRgbRoute(p,i,d,s,c)||unitAngleRoute(p,i,d,s,c);
+export const unitEnv4Route=(p,i,d,s,c)=>leafRoute(p,i,d,s,c,UNIT_ENV4_ID,'sht40-bmp280-u001d',{pins:[10,11],addresses:[0x44,0x76],control:'environment'});
+export const physicalAccessoryRoute=(p,i,d,s,c)=>unitHubRoute(p,i,d)||unitButtonRoute(p,i,d,s,c)||unitRgbRoute(p,i,d,s,c)||unitAngleRoute(p,i,d,s,c)||unitEnv4Route(p,i,d,s,c);
 export function routedAccessories(scene,product,catalog) {
   return (scene?.accessories||[]).flatMap(instance=>{
     const definition=catalog?.accessories.find(item=>item.id===instance.catalogId),route=physicalAccessoryRoute(product,instance,definition,scene,catalog);

@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-27T11:32:47Z",
+  "status": "fixture-corrected",
+  "negativeResult": {
+    "originalLogSha256": "5d8b3ac9dff40b78f93575f625ac68b79d2f8a25bb0df10f9d569d99b5744d63",
+    "retainedExcerpt": [
+      "ENV4_SAMPLE shtT=25.000 rh=50.001 bmpT=25.000 pressure=1013.250 crc=1 id=58",
+      "ENV4_NACK sht=-1 bmp=0"
+    ],
+    "cause": "The initial fixture waited one 10ms FreeRTOS tick; a task starting late in a tick can resume before the SHT40 maximum8.2ms conversion has completed. Initial boot measurement succeeded, subsequent sample NACKed.",
+    "correction": "Use two ticks for normal sensor waits; retain immediate early-read test. No emulator conversion time relaxed.",
+    "initialFixtureSourceSha256": "1cda9a6361e2658756216353a355ff47627558ab4b156f6b94edbc18307bac09",
+    "redactions": "Only sensor output retained; local absolute paths and unrelated boot log omitted. The original log hash identifies the uncommitted local capture."
+  },
+  "probeCorrection": "ESP-IDF ESP_FAIL is -1, so negative-return-code regex must include minus sign; otherwise expected swapped-pin NACK was misparsed as missing data.",
+  "lintCorrection": "Two dense adjacent early-return if statements were separated by a newline for possible_missing_else; no behavior change.",
+  "startupProbeCorrection": "After reconnect, an immediate SHT40 command correctly NACKed within its1ms startup window. The harness now waits3ms of guest time before requesting a normal sample; conversion-busy testing remains immediate. No sensor startup timing relaxed."
+}

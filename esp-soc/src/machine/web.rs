@@ -51,6 +51,17 @@ fn accessory_analog_input(board: &mut dyn crate::BoardModel, cycle: crate::board
     board.accessory_analog_at(cycle,&model,&port,connected=="1",value)
 }
 
+#[cold]
+#[inline(never)]
+fn accessory_environment_input(board:&mut dyn crate::BoardModel,cycle:crate::board::VirtualCycle,message:&crate::json::Json) {
+    let field=|key|message.get(key).and_then(crate::json::Json::scalar_text);
+    let (Some(model),Some(port),Some(connected))=(field("model"),field("port"),field("connected")) else{return};
+    let values:Option<Vec<f64>>=["temperatureC","humidityPercent","pressureHpa"].iter().map(|key|field(key)?.parse::<f64>().ok()).collect();
+    let Some(values)=values else{return};if !matches!(connected.as_str(),"0"|"1") {return;}
+    let sample=esp_periph::i2c::env4::Environment{temperature_c:values[0],humidity_percent:values[1],pressure_hpa:values[2]};
+    if sample.valid() {board.accessory_environment_at(cycle,&model,&port,connected=="1",sample);}
+}
+
 impl<S: Soc> Machine<S> {
     // ------------------------------------------------------------------ web UI
     /// Send display / audio / ring updates to the browser (called ~50x per emulated second).
@@ -175,6 +186,9 @@ impl<S: Soc> Machine<S> {
                 }
                 "accessory-angle" if S::NAME=="esp32s3" => {
                     let cycle=self.bus.cycles();if let Some((pin,source))=accessory_analog_input(self.bus.board(),cycle,&message) {self.bus.analog_set(pin,source);}
+                }
+                "accessory-environment" if S::NAME=="esp32s3" => {
+                    let cycle=self.bus.cycles();accessory_environment_input(self.bus.board(),cycle,&message);
                 }
                 "knobpress" => { let v = field("v").unwrap_or_default() == "1"; if let Some(sw) = self.bus.board_ref().named_pin("sw") { self.bus.gpio_set_input(sw, !v); *self.bus.irq_dirty() = true; } }
                 "knob" => {

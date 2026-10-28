@@ -1,3 +1,4 @@
+import {validEnvironment,environmentParameters} from './environment-input.js';
 import {physicalAccessoryRoute} from './accessory-routing.js';
 import {isPressControl} from './control-input.js';
 // Static catalog and portable scene contract. No application server is required.
@@ -166,6 +167,7 @@ export function validateScene(scene, catalog) {
       if (definition?.model.status === 'unavailable') warnings.push(issue('ACCESSORY_MODEL_UNAVAILABLE', path, 'Accessory is metadata-only; no peripheral behavior is implemented.'));
       validateParameters(accessory.parameters, `${path}/parameters`, errors);
       if(definition?.model.id==='potentiometer-u005-10k-curve' && accessory.parameters?.position!==undefined && (!Number.isFinite(accessory.parameters.position)||accessory.parameters.position<0||accessory.parameters.position>1))errors.push(issue('ANGLE_POSITION',`${path}/parameters/position`,'Potentiometer position must be from 0 to 1.'));
+      if(definition?.model.id==='sht40-bmp280-u001d'&&!validEnvironment(environmentParameters(accessory.parameters)))errors.push(issue('ENVIRONMENT_RANGE',`${path}/parameters`,'ENV-IV requires finite temperature -40..85 C, humidity 0..100 %, pressure 300..1100 hPa.'));
       if (!record(accessory.wiring)) { errors.push(issue('WIRING', `${path}/wiring`, 'Declare logical or physical wiring.')); continue; }
       const wiring = accessory.wiring;
       allowedKeys(wiring, ['mode', 'port', 'connectorId', 'rx', 'tx', 'interfaceId', 'viaAccessoryId', 'portId'], `${path}/wiring`, errors);
@@ -176,10 +178,10 @@ export function validateScene(scene, catalog) {
       } else if (wiring.mode === 'visual') {
         if (Object.keys(wiring).some(key => key !== 'mode')) errors.push(issue('VISUAL_WIRING', `${path}/wiring`, 'Visual placement does not declare electrical routing.'));
         warnings.push(issue('VISUAL_ACCESSORY', `${path}/wiring`, 'The accessory is shown in 3D; no electrical or peripheral behavior is connected.'));
-      } else if (wiring.mode === 'physical' && (wiring.interfaceId !== undefined || wiring.viaAccessoryId !== undefined || wiring.portId !== undefined || ['gpio-button-u027','sk6812-u003','potentiometer-u005-10k-curve','passive-hub-u006'].includes(definition?.model.id))) {
+      } else if (wiring.mode === 'physical' && (wiring.interfaceId !== undefined || wiring.viaAccessoryId !== undefined || wiring.portId !== undefined || ['gpio-button-u027','sk6812-u003','potentiometer-u005-10k-curve','passive-hub-u006','sht40-bmp280-u001d'].includes(definition?.model.id))) {
         const route=physicalAccessoryRoute(product,accessory,definition,scene,catalog);
         if(Object.keys(wiring).some(key=>!['mode','interfaceId','viaAccessoryId','portId'].includes(key)) || !route) errors.push(issue('ACCESSORY_ROUTE',`${path}/wiring`,'Use audited StopWatch Port A directly, or a single U006 port with viaAccessoryId and portId.'));
-        if(route){const socket=route.viaAccessoryId?`${route.viaAccessoryId}:${route.portId}`:route.port;if(usedPorts.has(socket))errors.push(issue('PIN_CONFLICT',`${path}/wiring`,'The physical connector is already occupied.'));usedPorts.add(socket);if(Number.isInteger(route.pin)){if(usedPins.has(route.pin))errors.push(issue('PIN_CONFLICT',`${path}/wiring`,'U006 ports share GPIOs; competing devices on the same signal are not supported.'));usedPins.add(route.pin);}}
+        if(route){const socket=route.viaAccessoryId?`${route.viaAccessoryId}:${route.portId}`:route.port;if(usedPorts.has(socket))errors.push(issue('PIN_CONFLICT',`${path}/wiring`,'The physical connector is already occupied.'));usedPorts.add(socket);for(const pin of route.pins||(Number.isInteger(route.pin)?[route.pin]:[])){if(usedPins.has(pin))errors.push(issue('PIN_CONFLICT',`${path}/wiring`,'U006 ports share GPIOs; competing devices on the same signal are not supported.'));usedPins.add(pin);}}
       } else if (wiring.mode === 'physical') {
         const connector = product?.interfaces.find(item => item.id === wiring.connectorId && item.external === true);
         if (!connector) errors.push(issue('CONNECTOR', `${path}/wiring/connectorId`, 'Connector is not in this product’s verified pin map.'));

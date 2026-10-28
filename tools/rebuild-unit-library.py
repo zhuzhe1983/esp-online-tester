@@ -11,7 +11,7 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-IDS = ('m5stack-unit-button-u027', 'm5stack-unit-angle-u005', 'm5stack-unit-rgb-u003', 'm5stack-unit-hub-u006')
+IDS = ('m5stack-unit-button-u027', 'm5stack-unit-angle-u005', 'm5stack-unit-rgb-u003', 'm5stack-unit-hub-u006', 'm5stack-unit-env4-u001d')
 
 
 def main():
