@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-28",
+  "experiment": "EX233 light-sleep extension",
+  "testedBaseCommit": "61e1808fce496ba6d9b45b50d22d20b8d9b04312",
+  "baselineCommit": "2a8aa920be68dab0321752a9817f9dfd70563f22",
+  "configuration": {
+    "os": "Darwin",
+    "osVersion": "27.0.1",
+    "architecture": "arm64",
+    "logicalCpus": 18,
+    "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "node": "v26.8.2",
+    "timing": "functional; no approximate timing; full ROM boot; no stubs; no application-direct"
+  },
+  "firmware": {
+    "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/TTGO-T-Display/6f89cddcde7152b84f7afc1831b6a1dee1fc3206/firmware/firmware.bin",
+    "bytes": 807728,
+    "sha256": "85a2598f363a96c4d4eb4aebad5af81c286653eab0d20543110546e4d2c7b9ed",
+    "embeddedIdfVersion": "v3.2.3"
+  },
+  "checks": {
+    "rustupUpdateStable": "unchanged; current stable",
+    "nativeClippy": "passed; workspace all-targets -D warnings",
+    "wasmClippy": "passed; release wasm32 jit-tests -D warnings",
+    "workspaceTests": {
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_",
+      "suites": 134,
+      "passed": 1572,
+      "failed": 0,
+      "goldensUpdated": false
+    },
+    "portableLightSleepTests": 9,
+    "existingDeepSleepTests": 15,
+    "tdisplayDisplayControlTest": "passed",
+    "factoryWorker": "passed; worker.json",
+    "wasmManifests": [
+      "hello",
+      "c3-hello",
+      "c6-hello",
+      "c6-energy-scan",
+      "c6-contiki",
+      "c6-contiki-net",
+      "c6-rpl-net",
+      "panel",
+      "tdisplay-prices"
+    ],
+    "wasmJitHandoff": "passed",
+    "platformContracts": {
+      "files": [
+        "platform-config-test.mjs",
+        "platform-runtime-test.mjs",
+        "platform-input-test.mjs",
+        "platform-view-test.mjs"
+      ],
+      "passed": 4,
+      "failed": 0
+    },
+    "factoryNative": "passed; native.json; fixed 33 guest seconds, five frame oracles"
+  },
+  "cpu": {
+    "receipt": "cpu-background.json",
+    "strictIdleWindows": "two attempts failed, each 60 one-second aggregate CPU samples above 150%",
+    "baseline": "fresh main build, cargo build --release --bins",
+    "candidate": "fresh final runtime source build, cargo build --release --bins",
+    "warmupsPerBuildPerWorkload": 1,
+    "alternatingMeasuredPairs": 7,
+    "allInstructionCountsCyclesAndConsoleHashesIdentical": true,
+    "conclusion": "No conspicuous regression in these samples. Sustained background load prevents an isolated performance conclusion.",
+    "originalCaptureSha256": "2d870402494668f7809a054b23943b56d008113a44c52edeb2ff6e136841c120",
+    "classifiedCaptureSha256": "d8bcbc45bd859c0623256c2eb8e1636286075bb06e2458aa799cd49a0fb9b647",
+    "initialAggregateCpuThreshold": 500,
+    "maximumAggregateCpuBeforeSample": 762.9
+  },
+  "artifacts": {
+    "deep-sleep.png": "a37275fcc7984d24db6567d77ff9b1fbb6ffaed1756b45b6b825d4a01d7de358",
+    "menu.png": "b3c5c1b5d7d4288cacaa6c86a3e053c53d1975f3009a1fd8a3d16459b18e4ed5",
+    "scan.png": "62321774e3d3528a52b11394ce51802e297523320e8db594493b9c56572e9692",
+    "voltage.png": "e32356800f76ba01724cc2bff7bfd8a7e95b8a53d41fc21ebd0bd244d3162b53"
+  },
+  "wasmSha256": "4acde05247e9fbea0d411f89048b4346a5b3967b5b10f5a981cacd1a326542b1",
+  "negativeResults": [
+    {
+      "beforeFix": "RTCWDT_RTC_RESET after logo at approximately 1.675 guest seconds; guest armed the normal light-sleep watchdog safety net"
+    },
+    {
+      "workerBeforeDisplayVersionFix": "deep-sleep capture kept the lit prompt, FNV64 97728a6cdb508058; expected dark panel 26993a53c3c439a5"
+    },
+    {
+      "cpuIdleGate": "cpu-idle-gate.json and cpu-idle-gate-retry.json; did not benchmark in either failed quiet window"
+    }
+  ],
+  "privacy": "No host/process inventory or source-embedded build paths retained. Aggregate CPU/load, public artifact identities and numeric guest results only. The CPU capture correction renames a misleading legacy gate field; measurements are unchanged and original/corrected hashes are retained."
+}

@@ -918,6 +918,19 @@ impl Peripherals {
         }
         if matches!(addr >> 12, 0x3ff00 | 0x3ff56) { self.sync_rmt_outputs(); }
     }
+    /// Light sleep gates the digital clocks. Preserve fractional RTC phase across
+    /// entry/exit, and respect WDT_PAUSE_IN_SLP (IDF v3.2.3 rtc_cntl_reg.h bit 7).
+    /// The watchdog remains enabled and resumes its count after wake.
+    pub(crate) fn tick_light_sleep(&mut self, cycles: u64) {
+        let rtc = &mut self.rtc.0;
+        self.clock.advance(&[(ClockDomain::RtcSlow, 1600)], cycles, |_, ticks| {
+            rtc.slow_ticks += ticks;
+            if rtc.ram.read(0x8c) & (1 << 7) == 0 { rtc.wdt_tick(ticks); }
+        });
+    }
+    pub(crate) fn sleep_timer_cycles(&self, ticks: u64) -> u64 {
+        ticks.saturating_mul(1600).saturating_sub(self.clock.cycles() % 1600).max(1)
+    }
     pub fn tick(&mut self, cycles: u64) -> bool {
         let gpio_before = self.gpio.raw_status();
         let mut irq_changed = Dispatch::tick(self, cycles);

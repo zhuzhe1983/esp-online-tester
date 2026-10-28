@@ -72,7 +72,9 @@ impl Soc for Esp32 {
         }
     }
     fn core_state(bus: &SocBus, core: usize) -> CoreState {
-        if core == 0 {
+        if bus.light_sleep {
+            CoreState::Held
+        } else if core == 0 {
             CoreState::Running
         } else {
             let (clock, reset, stall) = bus.periph.dport.core1_control();
@@ -107,10 +109,13 @@ impl esp_soc::SocBus for SocBus {
         cycles.saturating_mul(2).saturating_sub(self.clock_half).div_ceil(self.periph.cpu_scale_half())
     }
     fn next_deadline(&self) -> Option<u64> {
-        let timer = match self.periph.cycles_until_timer() {
+        let timer = if self.light_sleep {
+            (self.periph.rtc.0.ram.read(0x34) & (8 << 11) != 0)
+                .then(|| self.cpu_cycles_for_bus(self.periph.sleep_timer_cycles(self.sleep_timer_remaining())).max(1))
+        } else { match self.periph.cycles_until_timer() {
             u32::MAX => None,
             n => Some(self.cpu_cycles_for_bus(u64::from(n)).max(1)),
-        };
+        } };
         if !self.pins_active { return timer; }
         timer.into_iter().chain(self.board.next_deadline().map(|n| self.cpu_cycles_for_bus(n.saturating_sub(self.cycles)).max(1))).min()
     }
@@ -134,6 +139,7 @@ impl esp_soc::SocBus for SocBus {
     }
     fn reboot(&mut self, mac: [u8; 6]) -> u32 {
         self.deep_sleep = false;
+        self.light_sleep = false;
         self.ble.restore_flash(&mut self.flash);
         self.ble.reset();
         let cause = self.periph.rtc.0.reset_cause;

@@ -391,6 +391,10 @@ impl<S: Soc> Machine<S> {
     #[cfg_attr(all(target_arch = "wasm32", not(feature = "wasm-cpu-profile")), inline)]
     #[cfg_attr(not(target_arch = "wasm32"), inline(always))]
     fn step_blocks(&mut self, core: usize, budget: u32) -> (u32, Option<Stop>) {
+        // A primary clock gate can be entered by an MMIO store inside this round.
+        // Consume its remaining slots without retiring instructions or CCOUNT.
+        // The first test folds away for chips whose primary is always Running.
+        if S::core_state(&self.bus, 0) == CoreState::Held && S::core_state(&self.bus, core) == CoreState::Held { return (budget, None); }
         // Core::run returns a trap without its faulting PC. One-instruction fragments make
         // the entry PC exact while retaining callbacks for combined BLOCK/TRAP observers.
         let budget = if self.probes.contains(Wants::TRAP_PC) { budget.min(1) } else { budget };
@@ -467,6 +471,7 @@ impl<S: Soc> Machine<S> {
     /// Execute one instruction on `core` with every per-instruction observer; returns Some(stop) if the run must end.
     #[inline]
     fn step_core(&mut self, core: usize) -> Option<Stop> {
+        if S::core_state(&self.bus, 0) == CoreState::Held && S::core_state(&self.bus, core) == CoreState::Held { return None; }
         S::select_core(&mut self.bus, core);
         let cpu = &mut self.cores[core];
         let pc = cpu.pc();
@@ -580,7 +585,7 @@ impl<S: Soc> Machine<S> {
             self.refresh_irq();
             if self.bus.sw_reset() { self.drain_console(); return Stop::SwReset; }
             if self.bus.cycles() >= self.max_cycles { self.drain_console(); return Stop::Halted; }
-            for (i, state) in on.iter_mut().enumerate().take(S::CORES).skip(1) {
+            for (i, state) in on.iter_mut().enumerate().take(S::CORES) {
                 *state = match S::core_state(&self.bus, i) {
                     CoreState::Reset => { self.core_held[i] = true; false }
                     CoreState::Held => false,
@@ -692,7 +697,7 @@ impl<S: Soc> Machine<S> {
             let mut stalls = [0u64; 4];
             let mut round_elapsed = 0;
             for i in 0..S::CORES {
-                if !on[i] { continue; }
+                if !on[i] || S::core_state(&self.bus, 0) == CoreState::Held && S::core_state(&self.bus, i) == CoreState::Held { continue; }
                 if idle[i] && !slow_path {
                     self.cores[i].idle_advance(elapsed as u32);
                     if i == 0 { self.run_steps += quantum; }
@@ -868,7 +873,7 @@ impl<S: Soc> Machine<S> {
                 // batch-s1: the accesses may have moved a device deadline or a core's run state. Re-bound
                 // from this round's start (core 0 already counted it in `n`); the loop top would re-plan.
                 open = false;
-                if (1..S::CORES).any(|i| on[i] != (S::core_state(&self.bus, i) == CoreState::Running)) { break; }
+                if (0..S::CORES).any(|i| on[i] != (S::core_state(&self.bus, i) == CoreState::Running)) { break; }
                 k = self.bb_quanta(k * q, *n - q);
                 self.bus.set_defer(true);
             }
@@ -948,9 +953,10 @@ impl<S: Soc> Machine<S> {
             if let Some(stop) = self.observe_idle_pcs(&[true]) { self.drain_console(); return RunUntil::Stop(stop); }
             let left = target - now;
             let core = &self.cores[0];
-            if core.waiting() && !core.irq_pending() && !no_skip {
-                let chunk = self.idle_budget(left, &[true]);
-                self.cores[0].idle_advance(chunk as u32);
+            let held = S::core_state(&self.bus, 0) == CoreState::Held;
+            if held || core.waiting() && !core.irq_pending() && !no_skip {
+                let chunk = self.idle_budget(left, &[!held]);
+                if !held { self.cores[0].idle_advance(chunk as u32); }
                 if self.after_round(chunk) { self.drain_console(); return RunUntil::Stop(Stop::Halted); }
                 if self.bus.take_host_event() { return RunUntil::Yield; }
             } else {

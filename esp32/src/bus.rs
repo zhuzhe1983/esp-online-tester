@@ -70,6 +70,7 @@ pub struct SocBus {
     pub(crate) pins_active: bool,
     pub ble: esp_soc::ble::vhci::Ble,
     pub(crate) deep_sleep: bool,
+    pub(crate) light_sleep: bool,
 }
 
 impl SocBus {
@@ -97,6 +98,7 @@ impl SocBus {
             pins_active: false,
             ble: Default::default(),
             deep_sleep: false,
+            light_sleep: false,
         }
     }
     fn load<const N: usize>(&mut self, a: u32) -> Result<[u8; N], Fault> {
@@ -277,7 +279,7 @@ impl SocBus {
         // IDF v5.5.4 rtc_cntl_reg.h:247-252,1281-1287: SLEEP_EN and
         // DIG_PWC.DG_WRAP_PD_EN distinguish deep sleep from light sleep.
         if a == 0x3ff4_8018 && v & (1 << 31) != 0 {
-            self.enter_deep_sleep();
+            self.enter_sleep();
         }
         if self.pins_active {
             if let Some(port) = [0x3ff4_0000, 0x3ff5_0000, 0x3ff6_e000].iter().position(|&base| a == base) {
@@ -609,9 +611,15 @@ impl Bus for SocBus {
         self.clock_half = half & 1;
         let elapsed = half >> 1;
         self.cycles += elapsed;
+        let sleeping = self.light_sleep;
         if self.pins_active {
             self.deliver_board_inputs();
             for input in self.board.uart_rx(self.cycles) { self.periph.uart_pin_input(&input); self.irq_dirty = true; }
+        }
+        if sleeping {
+            self.periph.tick_light_sleep(elapsed);
+            self.sleep_timer_wake();
+            return u32::from(self.irq_dirty);
         }
         let irq_changed = self.periph.tick(elapsed);
         self.irq_dirty |= irq_changed;

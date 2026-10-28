@@ -67,6 +67,7 @@ pub struct TtgoTDisplay {
     pub cs_high: bool,
     pub backlight: bool,
     pub adc_enable: bool,
+    display_changes: u64,
     pub gpio_events: u64,
     /// SPI bytes delivered to the controller / dropped (CS high, or not on GPIO 18/19)
     pub spi_bytes: u64, pub spi_dropped: u64,
@@ -74,7 +75,7 @@ pub struct TtgoTDisplay {
 impl Default for TtgoTDisplay { fn default() -> Self { Self::new() } }
 impl TtgoTDisplay {
     pub fn new() -> Self {
-        TtgoTDisplay { panel: DcsPanel::st7789(), cs_high: true, backlight: false, adc_enable: false, gpio_events: 0, spi_bytes: 0, spi_dropped: 0 }
+        TtgoTDisplay { panel: DcsPanel::st7789(), cs_high: true, backlight: false, adc_enable: false, display_changes: 0, gpio_events: 0, spi_bytes: 0, spi_dropped: 0 }
     }
     /// Whether a transaction with these routes is on the panel's wires. Routes the bus could
     /// not decode (no SCLK or MOSI pin known) are taken as the panel's: the module has one SPI
@@ -92,8 +93,8 @@ impl BoardModel for TtgoTDisplay {
             match pin {
                 PIN_LCD_CS => self.cs_high = level,
                 PIN_LCD_DC => self.panel.dc = level,
-                PIN_LCD_RST => if !level { self.panel.reset(); },
-                PIN_LCD_BL => self.backlight = level,
+                PIN_LCD_RST => if !level { self.panel.reset(); self.display_changes = self.display_changes.wrapping_add(1); },
+                PIN_LCD_BL => if self.backlight != level { self.backlight = level; self.display_changes = self.display_changes.wrapping_add(1); },
                 PIN_ADC_EN => self.adc_enable = level,
                 _ => {}
             }
@@ -103,7 +104,13 @@ impl BoardModel for TtgoTDisplay {
     fn spi_transfer_pins(&mut self, _host: u8, pins: SpiPins, tx: &[u8], rx_len: usize) -> Vec<u8> {
         if !self.cs_high && Self::on_panel_wires(&pins) {
             self.spi_bytes += tx.len() as u64;
+            // DCS power/colour commands change visible output without writing GRAM.
+            // Observe the completed transfer, including MADCTL parameter bytes.
+            let before = (self.panel.on, self.panel.sleeping, self.panel.madctl, self.panel.resets);
             for &b in tx { self.panel.byte(b); }
+            if before != (self.panel.on, self.panel.sleeping, self.panel.madctl, self.panel.resets) {
+                self.display_changes = self.display_changes.wrapping_add(1);
+            }
         } else {
             self.spi_dropped += tx.len() as u64;
         }
@@ -115,9 +122,9 @@ impl BoardModel for TtgoTDisplay {
         match name { "boot" | "btn1" | "left" => Some(PIN_BTN_LEFT), "btn2" | "right" => Some(PIN_BTN_RIGHT), _ => None }
     }
     fn display(&self) -> Option<(u32, u32, Vec<u16>, u64)> {
-        Some((LCD_VISIBLE_COLS as u32, LCD_VISIBLE_ROWS as u32, lcd_visible(&self.panel), self.panel.pixels_written))
+        Some((LCD_VISIBLE_COLS as u32, LCD_VISIBLE_ROWS as u32, if self.backlight { lcd_visible(&self.panel) } else { vec![0; LCD_VISIBLE_COLS * LCD_VISIBLE_ROWS] }, self.display_version()))
     }
-    fn display_version(&self) -> u64 { self.panel.pixels_written }
+    fn display_version(&self) -> u64 { self.panel.pixels_written.wrapping_add(self.panel.resets).wrapping_add(self.display_changes) }
     fn display_frames(&self) -> u64 { self.panel.frames }
     fn gram(&self) -> Option<(Vec<u16>, usize, usize)> { Some((self.panel.gram.clone(), self.panel.cols, self.panel.rows)) }
     fn report(&self) -> String {
@@ -243,6 +250,37 @@ mod tests {
         b.gpio_changes(&[(PIN_LCD_RST, false)]);
         assert!(b.panel.sleeping && b.panel.madctl == 0 && b.panel.gram[40 * 240 + 52] == 0x07e0);
         assert_eq!(b.gram().unwrap().1, 240);
+    }
+
+    #[test]
+    fn visible_control_changes_invalidate_the_frame_without_pixel_writes() {
+        let mut b = TtgoTDisplay::new();
+        bring_up(&mut b, 0x08);
+        window(&mut b, 52, 52, 40, 40);
+        cmd(&mut b, 0x2c, &[0xf8, 0]);
+        let writes = b.panel.pixels_written;
+        for (off, on) in [(0x28, 0x29), (0x10, 0x11)] {
+            let before = b.display_version();
+            cmd(&mut b, off, &[]);
+            assert_ne!(b.display_version(), before);
+            assert!(b.display().unwrap().2.iter().all(|&p| p == 0));
+            let dark = b.display_version();
+            cmd(&mut b, on, &[]);
+            assert_ne!(b.display_version(), dark);
+            assert_eq!(b.display().unwrap().2[0], 0xf800);
+        }
+        let lit = b.display_version();
+        b.gpio_changes(&[(PIN_LCD_BL, false)]);
+        assert_ne!(b.display_version(), lit);
+        assert!(b.display().unwrap().2.iter().all(|&p| p == 0));
+        b.gpio_changes(&[(PIN_LCD_BL, true)]);
+        assert_eq!(b.display().unwrap().2[0], 0xf800);
+        let colour = b.display_version();
+        cmd(&mut b, 0x36, &[0]); // MADCTL BGR is a parameter, not a command byte.
+        assert_ne!(b.display_version(), colour);
+        assert_eq!(b.display().unwrap().2[0], 0x001f);
+        assert_eq!(b.panel.pixels_written, writes);
+        assert_eq!(b.display().unwrap().3, b.display_version());
     }
 
     #[test]
