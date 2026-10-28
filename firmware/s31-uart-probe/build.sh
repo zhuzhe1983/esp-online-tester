@@ -4,7 +4,7 @@ task_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 task_output=${1:?Supply an ignored output directory, for example output/s31-uart-probe}
 task_prefix=${RISCV_TOOLCHAIN_PREFIX:-riscv32-esp-elf-}
 mkdir -p -- "$task_output"
-for task_name in probe irq-probe trng-probe wdt-probe mmu-probe pads-probe efuse-probe clocks-probe usb-probe monitor-probe mspi-probe cache-probe spi0-observation analog-probe power-probe pms-probe cpll-probe flash-params-probe reset-probe mwdt-probe rtc-timer-probe nor-write-probe gpio-input-probe pmu-policy-probe mpll-probe mspi-pads-probe psram-controller-probe apm-probe multicore-probe cache-error-probe rtc-calibration-probe modem-clocks-probe startup-clocks-probe systimer-probe psram-irq-probe; do
+for task_name in probe irq-probe trng-probe wdt-probe mmu-probe pads-probe efuse-probe clocks-probe usb-probe monitor-probe mspi-probe cache-probe spi0-observation analog-probe power-probe pms-probe cpll-probe flash-params-probe reset-probe mwdt-probe rtc-timer-probe nor-write-probe gpio-input-probe pmu-policy-probe mpll-probe mspi-pads-probe psram-controller-probe apm-probe multicore-probe cache-error-probe rtc-calibration-probe modem-clocks-probe startup-clocks-probe systimer-probe psram-irq-probe brownout-probe; do
   "${task_prefix}gcc" -march=rv32imafc_zicsr -mabi=ilp32f -nostdlib -nostartfiles \
     -Wl,--build-id=none -Wl,--no-relax -Wl,-T,"$task_dir/probe.ld" \
     "$task_dir/$task_name.S" -o "$task_output/$task_name.elf"

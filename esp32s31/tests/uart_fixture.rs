@@ -800,6 +800,40 @@ fn external_s31_real_guest_cache_error_isr_and_wtc_clear() {
 }
 
 #[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_BROWNOUT_ELF"]
+fn external_s31_brownout_qualified_input_irq_system_reset_and_missing_analog_seed() {
+    use emu_core::Bus;
+    let path = std::env::var("S31_BROWNOUT_ELF").expect("build firmware/s31-uart-probe and set S31_BROWNOUT_ELF");
+    let elf = std::fs::read(path).unwrap();
+    for mode in 0u32..4 {
+        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap(); m.bus.load(0x2f070000, &mode.to_le_bytes(), 4).unwrap();
+        if mode != 3 { m.bus.analog.set_bod_register(0xff); }
+        let first = m.run(10000);
+        if mode == 3 {
+            assert_eq!(first.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(7))); assert_eq!(m.bus.analog.transactions, 0);
+            assert_eq!(m.bus.first_fault.as_ref().unwrap().address, 0x2010f804); assert!(m.bus.uart0.tx_out.is_empty()); continue;
+        }
+        assert_eq!(first.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.analog.bod_register(), Some(0xfd)); assert_eq!(m.bus.analog.transactions, 3);
+        assert_eq!(m.bus.uart0.tx_out, b"S31 BROWNOUT MODE0 ARMED\n"); assert_eq!(m.run(1000).steps, 0); assert_eq!(m.bus.read32(0x20702020), Ok(0));
+        if mode == 0 {
+            m.bus.power.brownout_mode0_ticks(true, 1).unwrap(); assert_eq!(m.run(1000).steps, 0); assert_eq!(m.bus.read32(0x20702020), Ok(0));
+            m.bus.power.brownout_mode0_ticks(true, 1).unwrap(); let second = m.run(10000);
+            eprintln!("brownout mode0 armed={} after-input={} stop={:?}", first.steps, second.steps, second.stop);
+            assert_eq!(second.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.read32(0x2f060000), Ok(1));
+            assert_eq!(m.bus.uart0.tx_out, b"S31 BROWNOUT MODE0 ARMED\nS31 BROWNOUT REAL IRQ MRET PASS\n");
+            assert_eq!(m.bus.read32(0x20702020), Ok(0)); assert_eq!(m.bus.read32(0x20702030), Ok(0));
+        } else if mode == 1 {
+            m.bus.power.brownout_mode0_ticks(true, 3).unwrap(); assert_eq!(m.run(1000).stop, esp32s31::Stop::Waiting);
+            m.bus.power.brownout_mode0_ticks(true, 1).unwrap(); assert_eq!(m.run(1000).stop, esp32s31::Stop::PowerReset(esp32s31::power::ResetCause::Brownout));
+            assert_eq!(m.bus.read32(0x2f060000), Ok(0));
+        } else {
+            assert_eq!(m.bus.power.brownout_mode0_ticks(true, 1), Err(emu_core::Fault::Prohibited));
+            assert_eq!(m.bus.read32(0x20702020), Ok(0)); assert_eq!(m.run(1000).stop, esp32s31::Stop::Waiting);
+        }
+    }
+}
+
+#[test]
 #[ignore = "build firmware/s31-uart-probe and set S31_PSRAM_IRQ_ELF"]
 fn external_s31_psram_actual_read_write_errors_and_guest_exception_irq_handlers() {
     use emu_core::Bus;

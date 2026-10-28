@@ -13,6 +13,7 @@ pub mod mspi;
 pub mod sha;
 pub mod analog;
 pub mod power;
+mod brownout;
 mod pmu_policy;
 mod mpll;
 mod mspi_pads;

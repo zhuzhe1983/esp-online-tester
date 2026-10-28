@@ -1,4 +1,4 @@
-//! S31 functional CPLL/FOSC controls, MPLL shutdown and BOD mode1 comparator input.
+//! S31 functional CPLL/FOSC controls, MPLL shutdown and separate BOD mode0/mode1 inputs.
 //! No analog PLL output, voltage/threshold waveform, glitch detection or PMU sleep transitions.
 //! ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643, soc/esp32s31/register/soc/
 //! {pmu_reg,hp_alive_sys_reg,lp_analog_peri_reg}.h, soc/esp32s31/include/soc/reset_reasons.h,
@@ -18,13 +18,13 @@ const CPLL_LOW: u32 = 0x111;
 const CPLL_HIGH: u32 = (1 << 19) | (1 << 23) | (1 << 27);
 const MPLL_HIGH: u32 = (1 << 22) | (1 << 26) | (1 << 30);
 const MPLL_LOW: u32 = (1 << 3) | (1 << 7) | (1 << 11);
-pub struct Power { pub policy: PmuPolicy, cpll: u32, sleep_lp: u32, active: u32, alive: u32, mpll_high: u32, mpll_low: u32, fib: u32, bod1: u32, glitch: u32, pub reset_request: Option<ResetCause> }
+pub struct Power { pub policy: PmuPolicy, pub mode0: crate::brownout::Brownout, cpll: u32, sleep_lp: u32, active: u32, alive: u32, mpll_high: u32, mpll_low: u32, fib: u32, bod1: u32, glitch: u32, pub reset_request: Option<ResetCause> }
 impl Default for Power {
-    fn default() -> Self { Self { policy: PmuPolicy::default(), cpll: 0, sleep_lp: 1 << 30, active: 0, alive: 0xfffe_0000, mpll_high: 0, mpll_low: 0, fib: u32::MAX, bod1: 0, glitch: 0, reset_request: None } }
+    fn default() -> Self { Self { policy: PmuPolicy::default(), mode0: crate::brownout::Brownout::default(), cpll: 0, sleep_lp: 1 << 30, active: 0, alive: 0xfffe_0000, mpll_high: 0, mpll_low: 0, fib: u32::MAX, bod1: 0, glitch: 0, reset_request: None } }
 }
 
 impl Power {
-    pub fn is_mmio(address: u32) -> bool { PmuPolicy::is_mmio(address) || matches!(address & !3, ACTIVE_CK | IMMEDIATE_CK | ALIVE_CK | SLEEP_LP_CK | HP_INT_ENA | HP_INT_CLR) || matches!((address & !3).wrapping_sub(BOD_BASE), 4 | 0x18 | 0x1c | 0x38 | 0x3c) }
+    pub fn is_mmio(address: u32) -> bool { crate::brownout::Brownout::is_mmio(address & !3) || PmuPolicy::is_mmio(address) || matches!(address & !3, ACTIVE_CK | IMMEDIATE_CK | ALIVE_CK | SLEEP_LP_CK | HP_INT_ENA | HP_INT_CLR) || matches!((address & !3).wrapping_sub(BOD_BASE), 4 | 0x18 | 0x1c) }
     /// Explicit software shutdown requests, not a measured oscillator state.
     pub fn bbpll_output_enabled(&self) -> bool { self.alive & (1 << 30) != 0 }
     pub fn fosc_enabled(&self) -> bool { self.sleep_lp & (1 << 30) != 0 }
@@ -39,22 +39,28 @@ impl Power {
         if self.bod1 != 0 { self.reset_request = Some(ResetCause::Brownout); }
         Ok(())
     }
+    /// Separate detector-mode0 input. Its source/threshold are already qualified
+    /// by the caller; unknown FIB or active higher-priority mode1 cannot be bypassed.
+    pub fn brownout_mode0_ticks(&mut self, tripped: bool, ticks: u64) -> Result<(), Fault> {
+        if tripped && ticks != 0 && (self.fib & 2 != 0 || self.bod1 != 0) { return Err(Fault::Prohibited); }
+        if self.mode0.advance(tripped, ticks)? { self.reset_request = Some(ResetCause::Brownout); }
+        Ok(())
+    }
     pub fn read(&self, address: u32) -> Result<u32, Fault> {
+        if crate::brownout::Brownout::is_mmio(address) { return self.mode0.read(address); }
         if PmuPolicy::is_mmio(address) { return self.policy.read(address); }
-        match address { HP_INT_ENA | HP_INT_CLR => Ok(0), a if a == BOD_BASE + 0x38 || a == BOD_BASE + 0x3c => Ok(0), SLEEP_LP_CK => Ok(self.sleep_lp), ACTIVE_CK => Ok(self.active), ALIVE_CK => Ok(self.alive), IMMEDIATE_CK => Ok(0),
+        match address { HP_INT_ENA | HP_INT_CLR => Ok(0), SLEEP_LP_CK => Ok(self.sleep_lp), ACTIVE_CK => Ok(self.active), ALIVE_CK => Ok(self.alive), IMMEDIATE_CK => Ok(0),
             a if a == BOD_BASE + 4 => Ok(self.bod1), a if a == BOD_BASE + 0x18 => Ok(self.glitch),
             a if a == BOD_BASE + 0x1c => Ok(self.fib), _ => Err(Fault::Unmapped) }
     }
     pub fn write(&mut self, address: u32, value: u32) -> Result<(), Fault> {
+        if crate::brownout::Brownout::is_mmio(address) { return self.mode0.write(address, value); }
         if PmuPolicy::is_mmio(address) { return self.policy.write(address, value); }
         match address {
-            // Reset-disabled PMU sleep and BOD mode0 IRQ cleanup. There are no sleep
-            // transitions or mode0 comparator in this subset; enabling either fails.
-            // CLR is WT and cannot fabricate a pending event or a reset.
+            // PMU sleep transitions remain unsupported. Mode0 has its own
+            // explicit comparator/edge input and separate interrupt banks.
             HP_INT_ENA => { if value & 0xf800_0000 != 0 { return Err(Fault::Prohibited); } }
             HP_INT_CLR => {},
-            a if a == BOD_BASE + 0x38 => { if value & (1 << 31) != 0 { return Err(Fault::Prohibited); } }
-            a if a == BOD_BASE + 0x3c => {},
             SLEEP_LP_CK => {
                 // v6.1 clk_ll_rc_fast_enable/disable uses this bit even while awake.
                 // XTAL32K/RC32K and sleep oscillator shutdown are not implemented.
@@ -108,7 +114,8 @@ mod tests {
         assert!(p.fosc_enabled()); p.write(SLEEP_LP_CK, 0).unwrap(); assert!(!p.fosc_enabled());
         assert_eq!(p.write(SLEEP_LP_CK, 1 << 28), Err(Fault::Prohibited));
         p.write(SLEEP_LP_CK, 1 << 30).unwrap(); assert!(p.fosc_enabled());
-        for address in [HP_INT_ENA, BOD_BASE + 0x38] {
+        {
+            let address = HP_INT_ENA;
             assert_eq!(p.read(address), Ok(0)); p.write(address, 0).unwrap();
             assert_eq!(p.write(address, 1 << 31), Err(Fault::Prohibited)); assert_eq!(p.read(address), Ok(0));
         }
@@ -140,8 +147,10 @@ mod tests {
         assert_eq!(p.reset_request, Some(ResetCause::Brownout));
         p.brownout_input(false).unwrap(); assert_eq!(p.reset_request, Some(ResetCause::Brownout));
         p.write(BOD_BASE + 0x18, u32::MAX).unwrap(); assert_eq!(p.read(BOD_BASE + 0x18), Ok(0xfc00_0000));
-        // Mode0 IRQs and comparator qualification are not silently represented by mode1.
-        assert_eq!(p.write(BOD_BASE, 1 << 29), Err(Fault::Unmapped));
+        // Mode0 cannot silently bypass the higher-priority analog reset path.
+        p.write(BOD_BASE, 1 << 29).unwrap();
+        assert_eq!(p.brownout_mode0_ticks(true, 1), Err(Fault::Prohibited));
+        assert_eq!(p.mode0.read(BOD_BASE + 0x20), Ok(0));
     }
     #[test]
     fn mpll_shutdown_requires_the_actual_sequence_and_does_not_enable_unknown_plls() {

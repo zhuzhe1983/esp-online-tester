@@ -351,3 +351,13 @@ source112 CLIC ISR checks and clears the real read/write error bits. Finally the
 guest creates a valid mapping and verifies a successful data write/read, prints
 PASS and writes its mailbox. This tests functional address errors and the two
 handlers; it does not identify a physical RAM die or claim ECC/FIFO engines.
+
+`brownout-probe.S` configures the real internal BOD threshold byte with a guest
+read-modify-write, then programs mode0 and reaches WFI. Set `S31_BROWNOUT_ELF`.
+No implicit voltage or clock input is supplied. Two explicit detector edges with
+an already-qualified active comparator sample trigger source143; the guest ISR
+clears HP/LP raw banks independently and returns with `mret` to print PASS. A
+second mode produces a diagnostic digital-system reset request after four
+edges. Negative modes omit the required analog byte or request an unimplemented
+RF shutdown on a real event; neither fabricates successful completion. The test
+does not measure physical voltage, comparator latency, or Flash/RF power behavior.

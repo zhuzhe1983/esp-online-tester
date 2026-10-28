@@ -11,12 +11,12 @@ const SYS_CLK: u32 = 0x2010_9c04;
 
 pub struct Analog {
     pub lpcon: crate::modem_lpcon::ModemLpcon, source: u32, ctrl: [u32; 2], config: [u32; 2],
-    select: [u32; 3], timing: [u32; 3], date: u32, bias: Option<[u8; 2]>, perif: Option<[u8; 2]>, perif_power: u32, dig: Option<[u8; 4]>, pub transactions: u64,
+    select: [u32; 3], timing: [u32; 3], date: u32, bias: Option<[u8; 2]>, perif: Option<[u8; 2]>, perif_power: u32, dig: Option<[u8; 4]>, bod: Option<u8>, pub transactions: u64,
 }
 
 impl Default for Analog {
     fn default() -> Self { Self { lpcon: crate::modem_lpcon::ModemLpcon::default(), source: (1 << 21) | 2, ctrl: [0; 2], config: [0; 2],
-        select: [0xe408, 0x2d, 4], timing: [0x42; 3], date: 0x2411290, bias: None, perif: None, perif_power: 1 << 30, dig: None, transactions: 0 } }
+        select: [0xe408, 0x2d, 4], timing: [0x42; 3], date: 0x2411290, bias: None, perif: None, perif_power: 1 << 30, dig: None, bod: None, transactions: 0 } }
 }
 impl Analog {
     pub fn master_enabled(&self) -> bool { self.lpcon.i2c_master_enabled() }
@@ -33,6 +33,10 @@ impl Analog {
     /// DIG_REG registers5,7,13,14 in that order; header does not give reset bytes.
     pub fn set_dig_reg(&mut self, values: [u8; 4]) { self.dig = Some(values); }
     pub fn dig_reg(&self) -> Option<[u8; 4]> { self.dig }
+    /// Internal BOD target0x61/register5. Only threshold bits2:0 are documented;
+    /// require the caller's complete byte for read-modify-write,not a reset guess.
+    pub fn set_bod_register(&mut self, value: u8) { self.bod = Some(value); }
+    pub fn bod_register(&self) -> Option<u8> { self.bod }
     fn transaction(&mut self, host: usize, value: u32) -> Result<(), Fault> {
         // EN is mandatory in the official LL; FO prevents automatic idle gating, it
         // does not substitute for a disabled master. Only synchronous byte transactions
@@ -41,9 +45,10 @@ impl Analog {
         let slave = value & 255; let reg = ((value >> 8) & 255) as usize;
         // Internal BIAS, DIG and PERIF are separate targets. Public headers specify fields,
         // not their analog reset bytes; all require explicit host inputs.
-        let slave_bit = match (slave, reg) { (0x6a, 0 | 1) => 4, (0x69, 10) => 9, (0x6d, 5 | 7 | 13 | 14) => 13, _ => return Err(Fault::Unmapped) };
+        let slave_bit = match (slave, reg) { (0x61, 5) => 6, (0x6a, 0 | 1) => 4, (0x69, 10) => 9, (0x6d, 5 | 7 | 13 | 14) => 13, _ => return Err(Fault::Unmapped) };
         if self.select[1] & (1 << (slave_bit + 2)) != 0 || host != usize::from(self.select[2] & (1 << (slave_bit + 4)) == 0) { return Err(Fault::Prohibited); }
-        let byte = if slave == 0x6a { &mut self.bias.as_mut().ok_or(Fault::Prohibited)?[reg] }
+        let byte = if slave == 0x61 { self.bod.as_mut().ok_or(Fault::Prohibited)? }
+            else if slave == 0x6a { &mut self.bias.as_mut().ok_or(Fault::Prohibited)?[reg] }
             else if slave == 0x6d {
                 let index = match reg { 5 => 0, 7 => 1, 13 => 2, _ => 3 };
                 &mut self.dig.as_mut().ok_or(Fault::Prohibited)?[index]
@@ -113,6 +118,17 @@ impl Analog {
 #[cfg(test)]
 mod tests {
     const LP_CLK: u32 = 0x2010_f018;
+    #[test]
+    fn bod_threshold_byte_requires_input_and_the_selected_master_route() {
+        let mut a = super::Analog::default(); a.write(LP_CLK, 4, true).unwrap();
+        assert_eq!(a.write(super::BASE + 4, 0x561, true), Err(emu_core::Fault::Prohibited)); assert_eq!(a.transactions, 0);
+        a.set_bod_register(0xff); a.write(super::BASE + 4, 0x561, true).unwrap(); assert_eq!(a.read(super::BASE + 4, true), Ok(0xff0561));
+        a.write(super::BASE + 4, 0x01fd0561, true).unwrap(); assert_eq!(a.bod_register(), Some(0xfd));
+        a.write(super::BASE + 0x20, 0x404, true).unwrap(); assert_eq!(a.write(super::BASE + 4, 0x561, true), Err(emu_core::Fault::Prohibited));
+        a.write(super::BASE, 0x561, true).unwrap(); assert_eq!(a.read(super::BASE, true), Ok(0xfd0561));
+        a.write(LP_CLK, 0, true).unwrap(); assert_eq!(a.write(super::BASE, 0x01000561, true), Err(emu_core::Fault::Prohibited));
+        assert_eq!(a.bod_register(), Some(0xfd)); assert_eq!(a.transactions, 3);
+    }
     const LP_FORCE: u32 = 0x2010_f01c;
     use super::*;
     #[test]

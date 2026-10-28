@@ -1629,3 +1629,60 @@ framebuffer**. All production chip paths remain unchanged.
 
 See the [PSRAM interrupt receipt](evidence/s31-bringup/psram-irqs.json) and
 [original image observation](evidence/s31-bringup/psram-irqs-plus-2.0.68-final.json).
+
+## Brownout mode0 configuration and explicit detector input (2026-10-28)
+
+The private S31 power model now separates mode0's digital counter/interrupt
+path from the earlier mode1 analog reset input. Mode0 uses its own documented
+control reset value, wait fields, RW counter-clear level, and independent HP/LP
+RAW/ENA/ST/CLR banks. HP events route through source143 to the real matrix/CLIC.
+The LP bank retains its register behavior; no LP processor delivery is claimed.
+Writing RAW/status cannot fabricate or acknowledge an event. Reset requests stop
+the diagnostic runner with the existing `PowerReset(Brownout)` result; they do
+not silently restart a host process or invent reset sequencing.
+
+`brownout_mode0_ticks(tripped,ticks)` accepts an explicitly qualified comparator
+sample and detector-domain edges. It does not derive voltage from the threshold
+byte, assume a physical detector clock, or advance while the guest reads a
+register. Zero edges do nothing. Disabled detection, held counter-clear and
+inactive samples do not accumulate qualification time. Active samples reach the
+configured interrupt/reset waits; clearing raw while the condition persists can
+raise it again on a later edge. This is a declared functional counter model,
+not silicon validation of detector latency or simultaneous-edge ordering. The
+source-selection register is retained as configuration; callers qualify input
+for that selection externally.
+
+Unknown FIB policy or an enabled higher-priority mode1 path cannot be silently
+bypassed. Chip-wide analog reset and Flash/RF shutdown on a real comparator
+input remain unsupported: their configuration can be inspected, but such an
+input returns an explicit error instead of claiming successful power behavior.
+The bounded supported path delivers the digital interrupt and digital-system
+reset request with those unsupported actions disabled. Ordinary startup with
+no comparator event does not manufacture a healthy-voltage measurement.
+
+The internal threshold register is the actual target`0x61`, register5, on the
+existing digital analog-I²C controller. Its source header documents bits2:0 but
+not the full reset byte, so `--analog-bod=hh` is an explicit optional seed. Reads
+without that byte fail. Real guest read-modify-write preserves the other bits,
+uses the selected master and respects clock/slave gates; it does not bypass the
+bus or convert the byte into a voltage.
+
+The source fixture programs that byte through three guest transactions and
+reaches WFI after201 instructions. With no input it remains asleep; one detector
+edge is insufficient. After the second edge, its actual ISR checks HP and LP
+raw status, clears each bank independently and returns with `mret`;192 further
+instructions produce `S31 BROWNOUT REAL IRQ MRET PASS`. A separate mode requests
+a digital-system reset on the fourth edge. Missing analog input and requested
+RF shutdown are negative cases, with no fabricated completion.
+
+For the same original Plus2.0.68 full image, leaving the new analog seed absent
+stops at the real internal-I²C transaction:72,091,514 instructions, store to
+`2010f804`, PC`2f00c06c`. Supplying the explicitly declared reference byte`ff`
+lets the guest finish its brownout setup without a comparator event. The next
+actual stop is a read from `FLASH_SPI1_FLASH_WAITI_CTRL` at`20501098`,
+PC`2f00bc7c`, after72,135,486 instructions. Neither result indicates board/display
+completion: **INK4 Plus remains unavailable, with no framebuffer**.
+
+See the [brownout receipt](evidence/s31-bringup/brownout.json),
+[strict missing-input observation](evidence/s31-bringup/brownout-plus-2.0.68-no-seed.json)
+and [explicit-input observation](evidence/s31-bringup/brownout-plus-2.0.68-final.json).
