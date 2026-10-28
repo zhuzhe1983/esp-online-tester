@@ -156,7 +156,7 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
         else if(value.id!==undefined) {const p=pending.get(String(value.id));if(p){pending.delete(String(value.id));clearTimeout(p.timer);value.error?p.reject(fail(value.error.code||'NETWORK_COMMAND_FAILED',value.error.message)):p.resolve(value.result);}}
       };
       ws.onerror=()=>{if(generation!==epoch||socket!==ws)return;const error=fail('NETWORK_CONNECTION_FAILED','Cannot connect to the network helper. Check its address and browser local-network permission.');report(error);finish(error);};
-      ws.onclose=event=>{if(generation!==epoch||socket!==ws)return;socket=null;clearInterval(heartbeat);heartbeat=null;connection='disconnected';if(config.mode==='public-relay'&&event?.code===1008)lastError={code:'RELAY_LIMIT',message:`公共中继已断开：${event.reason||'会话期限或资源配额已达到上限'}。可点击连接重新尝试。`};rejectPending();interfaces=config.mode==='public-relay'&&interfaces[1]?{1:interfaces[1]}:{};services=services.map(({mapping,...s})=>({...s,...(mapping?.browser?{mapping}:{}),verified:false}));changed();void command('relay',{enabled:false}).catch(()=>{});finish(fail('NETWORK_DISCONNECTED','Network helper disconnected.'));};
+      ws.onclose=event=>{if(generation!==epoch||socket!==ws)return;socket=null;clearInterval(heartbeat);heartbeat=null;connection='disconnected';if(config.mode==='public-relay'&&event?.code===1008)lastError={code:'RELAY_LIMIT',message:`云端助手已断开：${event.reason||'会话期限或资源配额已达到上限'}。可点击连接重新尝试。`};rejectPending();interfaces=config.mode==='public-relay'&&interfaces[1]?{1:interfaces[1]}:{};services=services.map(({mapping,...s})=>({...s,...(mapping?.browser?{mapping}:{}),verified:false}));changed();void command('relay',{enabled:false}).catch(()=>{});finish(fail('NETWORK_DISCONNECTED','Network helper disconnected.'));};
     });return snapshot();
   };
   const configure=async(options={})=>{
@@ -169,6 +169,7 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
     if(config.endpoint!==previous.endpoint||config.relayUrl!==previous.relayUrl||config.mode!==previous.mode||config.enabled!==previous.enabled) {
       if(!config.enabled){close();if(attached)await command('relay',{enabled:false});}
       else if(attached)await connect();
+      else close();
     }
     tryAutoProvision();changed();return snapshot();
   };

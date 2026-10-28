@@ -1,10 +1,10 @@
-# 公共网络中继
+# 自行部署云端网络助手
 
-公共中继让 GitHub Pages 中的固件经 WSS 访问真实互联网。开发者使用网页时不需要克隆项目、运行程序或安装插件。网站维护者需要在有公网地址的服务器上部署一次中继；GitHub Pages 只托管静态文件，不能运行这个服务。
+云端网络助手让 GitHub Pages 中的固件经 WSS 访问真实互联网，代码和 API 中称为 `public-relay`。由使用者在自己的云服务器上部署，并在工作台填写 HTTPS 地址；本站不提供默认中继，网站维护者无需为使用者部署服务。部署完成后，使用该地址的人无需在本机安装助手。GitHub Pages 只托管静态文件，不能运行这个服务。
 
-固件配网页由浏览器内的虚拟网络客户端访问，不经过公共中继。公共中继只处理 station 接口 0 的出站流量；本机助手仍提供局域网访问和入站端口映射，属于高级选项。
+固件配网页由浏览器内的虚拟网络客户端访问，不经过云端助手。云端助手只处理 station 接口 0 的公网出站流量；访问电脑、局域网或使用入站端口映射时，选择本地助手。两种方式的安装与地址填写见[连接你自己的网络助手](network-setup.md)。
 
-## 维护者部署一次
+## 在自己的云服务器上部署
 
 准备一台可以运行 Docker Compose 的 Linux 服务器和一个已指向服务器公网地址的域名。开放 TCP 80、443；服务器需要允许出站 TCP 80/443/1883/8883 和 UDP 53/123。服务器已有占用 80/443 的反向代理时，请把下面的 Caddy 配置合并到已有代理中。
 
@@ -16,7 +16,7 @@ bash deploy/network-relay/start.sh relay.your-domain.tld
 
 脚本生成本地 `.env` 和随机代理密钥，随后构建 Rust 后端、Node 服务并启动 Caddy。Caddy 自动申请 TLS 证书；只有 Caddy 的 80/443 端口对外发布。密钥文件不提交 Git，不发送给浏览器。重复运行脚本复用已有配置。证书和密钥保存在持久卷及 `.env` 中。
 
-部署后检查 `https://自己的域名/health` 返回 `{"ok":true,"version":1,"service":"esp-network-relay"}`，再将网站的公共中继地址配置为 `https://自己的域名`。这里不提供尚未部署的默认公网地址，也不把示例域名当作可用服务。
+部署后检查 `https://自己的域名/health` 返回 `{"ok":true,"version":1,"service":"esp-network-relay"}`，然后在工作台的“网络”面板选择“云端助手”，填入 `https://自己的域名` 并点击“连接”。无需修改网站配置或给网站提交 PR；不要把 `/health`、`/session` 或 WebSocket token 路径填入这个地址栏。示例域名不是可用服务。
 
 使用已有代理时，必须支持 WebSocket、保留原始 `Host`，并覆盖 `X-Relay-Client-IP` 为连接方 IP、`X-Relay-Proxy-Token` 为服务器端密钥。不要信任客户端传入的同名头。缺少代理密钥时中继按实际 socket 对端限额，所有通过代理的访客会共享该 IP 的配额。Caddy 的转发与日志配置依据 [reverse_proxy 文档](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy)和 [log filter 文档](https://caddyserver.com/docs/caddyfile/directives/log)。不要记录 `/network` 的 token 查询参数。
 
@@ -27,7 +27,7 @@ cargo build --release -p esp-network-backend
 RELAY_ORIGINS=http://127.0.0.1:8080 node tools/network-relay.mjs
 ```
 
-默认监听 `127.0.0.1:8788`；在同源为 `http://127.0.0.1:8080` 的本地平台预览中使用该地址。其他开发服务器端口须相应修改 `RELAY_ORIGINS`。这用于维护者验收，不是最终使用者必须安装的程序。HTTPS 网页连接本地 HTTP 地址可能受浏览器本地网络权限限制；公开部署使用 HTTPS/WSS。
+默认监听 `127.0.0.1:8788`；在同源为 `http://127.0.0.1:8080` 的本地平台预览中使用该地址。其他开发服务器端口须相应修改 `RELAY_ORIGINS`。这是云端部署前的本地预览；使用已部署的云端地址无需在本机运行此程序。HTTPS 网页连接本地 HTTP 地址可能受浏览器本地网络权限限制；公开部署使用 HTTPS/WSS。
 
 ```sh
 node --test tools/network-relay-test.mjs

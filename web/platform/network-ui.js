@@ -4,10 +4,13 @@ export function mountNetworkControls({container,runtime,onError=console.error}={
   if(!container)return {dispose(){}};
   const style=document.createElement('link');style.rel='stylesheet';style.href=new URL('./network-ui.css',import.meta.url).href;document.head.append(style);
   container.className='network-panel';
-  container.innerHTML=`<details><summary><span class="network-dot" aria-hidden="true"></span><strong>网络</strong><span data-status>公共中继未配置</span><span class="network-summary-actions"><label><input type="checkbox" data-auto checked>自动配网</label></span></summary>
-    <div class="network-body"><p class="network-description">SoftAP 配网页直接在浏览器内运行；外网默认使用公共中继。关闭自动配网可手动操作固件原页面。</p>
-      <details class="network-advanced"><summary>高级连接</summary><label>外网方式<select data-mode><option value="public-relay">公共中继（默认）</option><option value="local-helper">本机助手</option></select></label><label data-relay-label>公共中继地址<input data-relay type="url" placeholder="https://relay.example.com"></label><div class="network-connect"><label data-helper-label>本机助手地址<input data-endpoint type="password" autocomplete="off" placeholder="ws://127.0.0.1:8787/network?token=…"></label><button class="button" data-connect>连接</button><button class="button quiet" data-offline>断开外网</button></div>
-      <p class="network-helper">本机助手用于访问电脑或局域网服务。在项目目录运行 <code>node tools/network-helper.mjs</code>，打开助手给出的链接。<a href="https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/network-helper.md" target="_blank" rel="noopener noreferrer">使用说明 ↗</a></p></details>
+  container.innerHTML=`<details><summary><span class="network-dot" aria-hidden="true"></span><strong>网络</strong><span data-status>未连接网络助手</span><span class="network-summary-actions"><label><input type="checkbox" data-auto checked>自动配网</label></span></summary>
+    <div class="network-body"><p class="network-description">固件 SoftAP 配网页可直接在浏览器内访问；关闭自动配网即可手动操作。访问互联网需要连接你自己部署的网络助手，本站不提供默认中继。</p>
+      <div class="network-connection"><label>连接你自己的网络助手<select data-mode><option value="local-helper">本地助手 · 部署在当前电脑</option><option value="public-relay">云端助手 · 部署在自己的服务器</option></select></label>
+      <div class="network-setup" data-local-help hidden><strong>1. 本地部署，指向本机</strong><ol><li>在当前电脑安装 Node.js 和 Rust，克隆项目并编译网络后端。</li><li>运行 <code>node tools/network-helper.mjs</code>，保持终端运行。</li><li>打开终端输出的 GitHub Pages 链接，或将连接地址填在下方。</li></ol><p>地址通常以 <code>ws://127.0.0.1:8787/network?token=</code> 开头。可访问互联网、电脑及局域网服务，也可将固件端口映射到本机。<a href="https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/network-helper.md" target="_blank" rel="noopener noreferrer">本地安装与连接步骤 ↗</a></p></div>
+      <div class="network-setup" data-cloud-help><strong>2. 云端部署，指向公网地址</strong><ol><li>准备自己的云服务器和域名，安装 Docker Compose 并克隆项目。</li><li>运行 <code>bash deploy/network-relay/start.sh 你的域名</code>。</li><li>将部署好的 <code>https://你的域名</code> 填在下方并连接。</li></ol><p>云端助手只提供互联网出口，不能访问你电脑的局域网或映射本机端口。<a href="https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/public-network-relay.md" target="_blank" rel="noopener noreferrer">云端部署与检查步骤 ↗</a></p></div>
+      <div class="network-connect"><label data-relay-label>云端助手 HTTPS 地址<input data-relay type="url" autocomplete="off" spellcheck="false" placeholder="https://relay.your-domain.tld"></label><label data-helper-label hidden>本地助手连接地址<input data-endpoint type="password" autocomplete="off" placeholder="粘贴终端输出的 Pages connection endpoint"></label><button class="button" data-connect>连接</button><button class="button quiet" data-offline>断开外网</button></div>
+      <p class="network-helper">地址与连接凭据仅用于当前会话，不会放进场景分享链接。<a href="https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/network-setup.md" target="_blank" rel="noopener noreferrer">两种方式怎么选 ↗</a></p></div>
       <div class="network-addresses" data-addresses></div><p class="network-error" data-error role="status"></p>
       <div class="network-services" data-services></div>
       <form class="network-add"><select data-interface aria-label="固件网络接口"><option value="0">STA 应用服务</option><option value="1">SoftAP 服务</option></select><select data-protocol aria-label="服务协议"><option>http</option><option>https</option><option>tcp</option><option>udp</option></select><input data-port type="number" min="1" max="65535" value="80" aria-label="固件服务端口"><button class="button" type="submit">添加服务</button></form>
@@ -33,8 +36,8 @@ export function mountNetworkControls({container,runtime,onError=console.error}={
   const render=state=>{
     if(!alive)return;current=state;
     $('[data-auto]').checked=state.autoProvision;
-    const labels={'relay-unconfigured':'公共中继尚未部署 · 配网页可用','waiting-helper':'等待本机助手',connecting:'外网连接中',connected:state.mode==='public-relay'?'公共中继已连接':'本机助手已连接',disconnected:'外网已断开',offline:'外网已关闭',unsupported:'当前板型不支持'};
-    $('[data-mode]').value=state.mode||'local-helper';$('[data-helper-label]').hidden=state.mode!=='local-helper';$('[data-relay-label]').hidden=state.mode!=='public-relay';
+    const labels={'relay-unconfigured':'填写自建助手地址 · 配网页可用','waiting-helper':'等待连接本地助手',connecting:'网络助手连接中',connected:state.mode==='public-relay'?'云端助手已连接':'本地助手已连接',disconnected:'外网已断开',offline:'外网已关闭',unsupported:'当前板型不支持'};
+    const local=state.mode==='local-helper';$('[data-mode]').value=state.mode||'public-relay';$('[data-helper-label]').hidden=!local;$('[data-relay-label]').hidden=local;$('[data-local-help]').hidden=!local;$('[data-cloud-help]').hidden=local;
     $('[data-status]').textContent=labels[state.connection]||state.connection;
     $('.network-dot').classList.toggle('connected',state.connection==='connected');
     const a=state.interfaces?.[0],b=state.interfaces?.[1];
@@ -57,7 +60,7 @@ export function mountNetworkControls({container,runtime,onError=console.error}={
   };
   $('[data-auto]').addEventListener('click',event=>event.stopPropagation());
   $('[data-auto]').addEventListener('change',()=>run(()=>(manualClosed=false,runtime.configureNetwork({autoProvision:$('[data-auto]').checked}))));
-  $('[data-connect]').addEventListener('click',()=>run(async()=>{const mode=$('[data-mode]').value,endpoint=$('[data-endpoint]').value.trim(),relayUrl=$('[data-relay]').value.trim();await runtime.configureNetwork({enabled:true,mode,...(mode==='local-helper'&&endpoint?{endpoint}:{}),...(mode==='public-relay'&&relayUrl?{relayUrl}:{})});if(current?.connection!=='connected')await runtime.connectNetwork();}));
+  $('[data-connect]').addEventListener('click',()=>run(async()=>{const mode=$('[data-mode]').value,endpoint=$('[data-endpoint]').value.trim(),relayUrl=$('[data-relay]').value.trim();if(mode==='local-helper'?!endpoint&&!current?.helperConfigured:!relayUrl&&!current?.relayConfigured)throw new Error(mode==='local-helper'?'请粘贴本地助手输出的 Pages connection endpoint。':'请填写你部署的云端助手 HTTPS 地址。');await runtime.configureNetwork({enabled:true,mode,...(mode==='local-helper'&&endpoint?{endpoint}:{}),...(mode==='public-relay'&&relayUrl?{relayUrl}:{})});if(current?.connection!=='connected')await runtime.connectNetwork();}));
   $('[data-mode]').addEventListener('change',()=>run(()=>runtime.configureNetwork({mode:$('[data-mode]').value})));
   $('[data-offline]').addEventListener('click',()=>run(()=>runtime.configureNetwork({enabled:false})));
   $('.network-add').addEventListener('submit',event=>{event.preventDefault();run(()=>runtime.addNetworkService({interface:Number($('[data-interface]').value),protocol:$('[data-protocol]').value,guestPort:Number($('[data-port]').value)}));});

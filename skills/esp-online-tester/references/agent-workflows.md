@@ -34,7 +34,9 @@ The public skill is served at `https://zhuzhe1983.github.io/esp-online-tester/pl
 
 ## Network and guest services
 
-The default mode is `public-relay`. SoftAP DHCP/TCP/HTTP runs locally in the browser without a helper. Internet uses the site-configured public relay; an empty `web/platform/network-config.json` URL means no deployed relay, not Internet connectivity. Read the [relay guide](https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/public-network-relay.md) for operator deployment. Public relay has no inbound mappings or LAN access.
+The default mode is `public-relay`, labeled “云端助手” in the UI. SoftAP DHCP/TCP/HTTP runs locally in the browser without a helper. The site provides no default public relay. For Internet access, users deploy either a local helper on their computer and supply its token endpoint, or a cloud helper on their own server and supply its HTTPS base URL. Read the [two deployment paths](https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/network-setup.md). Do not ask the website maintainer to provide a server or invent a hosted endpoint. Cloud/public-relay mode has no inbound mappings or LAN access.
+
+For a caller-supplied cloud endpoint, use `configureNetwork({mode:'public-relay',relayUrl:cloudBaseUrl})`; `cloudBaseUrl` is the HTTPS base URL, not `/health`, `/session`, or a WebSocket token URL. It is a per-session setting, not a portable scene setting. Local mode uses `configureNetwork({mode:'local-helper',endpoint:helperEndpoint})` with the actual emitted token URL. Both modes leave firmware execution in browser WASM.
 
 The virtual router defaults to `esp32sim` / `esp32sim-pass`; a manifest router takes priority. Configure known firmware credentials before loading; no home Wi-Fi password is needed. Automatic provisioning waits for a connected external transport so it does not exit AP into a nonfunctional Internet connection.
 
@@ -52,7 +54,7 @@ The client learns the firmware address from DHCP. Never change the host Wi-Fi or
 
 For LAN access or native ports, read the [helper guide](https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/network-helper.md). Start `node tools/network-helper.mjs` with its built native backend, use the emitted token URL or `configureNetwork({mode:'local-helper',endpoint:helperEndpoint})`, and stop the task-owned process after testing. Firmware still executes in WASM. Tokens stay in session memory and are removed from the URL fragment; never retain them in evidence or share links.
 
-A portable skill package can ship the Node launcher plus a matching prebuilt `esp-network-backend`, then pass `--backend /path/to/esp-network-backend`. The repository skill does not currently include cross-platform release binaries. Do not claim the source-only skill eliminates Node/Rust setup, or download an invented release URL. Bundling a local helper helps agents; ordinary website users still use browser SoftAP and a deployed public relay.
+A portable skill package can ship the Node launcher plus a matching prebuilt `esp-network-backend`, then pass `--backend /path/to/esp-network-backend`. The repository skill does not currently include cross-platform release binaries. Do not claim the source-only skill eliminates Node/Rust setup, or download an invented release URL. Bundling a local helper helps agents; website users choose their own local or cloud helper for Internet access, while browser SoftAP needs neither.
 
 Automatic provisioning inspects the original page and recognizes the Xiaozhi web `/scan` + `/submit` contract. Other HTML pages can be operated manually through the iframe/browser. ESP-IDF protocomm requires its version/security/PoP client; an HTTP bridge alone does not implement that protocol. Unknown schemes return `PROVISIONING_UNSUPPORTED`, not fabricated success or direct NVS writes.
 

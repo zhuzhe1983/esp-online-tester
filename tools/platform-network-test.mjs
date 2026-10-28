@@ -9,6 +9,15 @@ class Socket {
   close(){this.readyState=3;this.onclose?.();}
 }
 const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
+test('choosing a self-hosted helper updates idle status without opening a network connection',async()=>{
+  const n=createNetworkSession({emit(){},command:async()=>{},sendFrame(){},WebSocketImpl:class {constructor(){throw Error('Firmware is not attached');}}});
+  assert.equal(n.snapshot().connection,'relay-unconfigured');
+  await n.configure({mode:'local-helper'});assert.equal(n.snapshot().connection,'waiting-helper');
+  await n.configure({endpoint:'ws://127.0.0.1:8787/network?token=private'});assert.equal(n.snapshot().connection,'disconnected');assert.equal(n.snapshot().helperConfigured,true);
+  await n.configure({mode:'public-relay'});assert.equal(n.snapshot().connection,'relay-unconfigured');
+  await n.configure({relayUrl:'https://relay.example.test'});assert.equal(n.snapshot().connection,'disconnected');assert.equal(n.snapshot().relayConfigured,true);
+  await n.configure({relayUrl:''});assert.equal(n.snapshot().connection,'relay-unconfigured');n.detach();
+});
 test('network options reject unsafe protocols and secrets stay out of observation',async()=>{
   assert.throws(()=>validateNetworkOptions({endpoint:'ws://example.com/network'}),{code:'INVALID_NETWORK'});
   assert.throws(()=>validateNetworkOptions({ssid:'name,psk=unexpected'}),{code:'INVALID_NETWORK'});
