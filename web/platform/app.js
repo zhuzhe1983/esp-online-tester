@@ -1,3 +1,5 @@
+import {mountAudioControls} from './audio-controls.js';
+import {mountNetworkControls} from './network-ui.js';
 import {illuminanceParameter} from './illuminance-input.js';
 import {ENVIRONMENT_FIELDS,environmentParameters} from './environment-input.js';
 import {motionParameter} from './motion-input.js';
@@ -940,7 +942,7 @@ function setupEvents() {
     clearLocalFiles(); preserveUnspecifiedFirmware = !imported.firmware; await configure(imported, {reflectSource: true}); transportUi?.setRecording(recorded); input.value = ''; toast(recorded ? '场景与录制已导入，点击回放即可重现操作。' : '场景已导入。');
   }));
   bind('share-scene', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene()); const url = shareUrl('studio'); await copy(url, shareNotice(url,'场景链接已复制')); history.replaceState(null, '', url); }));
-  bind('copy-embed', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene()); const url = shareUrl('embed'); await copy(`<iframe src="${url}" title="${product().name.replaceAll('"', '&quot;')} · ESP Player" width="800" height="640" allow="serial; fullscreen" loading="lazy"></iframe>`, shareNotice(url,'iframe 代码已复制')); }));
+  bind('copy-embed', 'click', () => action(async () => { await transportUi?.syncRecording(); validatePortable(portableScene()); const url = shareUrl('embed'); await copy(`<iframe src="${url}" title="${product().name.replaceAll('"', '&quot;')} · ESP Player" width="800" height="640" allow="serial; fullscreen; microphone; autoplay" loading="lazy"></iframe>`, shareNotice(url,'iframe 代码已复制')); }));
   bind('open-player', 'click', () => { try { validatePortable(portableScene()); const url=shareUrl('embed');window.open(url, '_blank', 'noopener');if(recordingDocument&&!new URLSearchParams(new URL(url).hash.slice(1)).has('recording'))toast('已打开当前场景；旧录制未包含在独立窗口中。'); } catch (error) { report(error); } });
   bind('keyboard-enabled', 'change', () => { if (!$('keyboard-enabled').checked) releaseKeys(); });
   document.addEventListener('keydown', event => {
@@ -985,6 +987,18 @@ async function init() {
     onVisual: (id, pressed) => document.querySelectorAll('.device-button').forEach(button => { if (button.dataset.control === id) button.classList.toggle('pressed', pressed); }),
   });
   api = installAutomation(runtime, {target: window});
+  const browserAudio=mountAudioControls({container:$('browser-audio-controls'),runtime:api});
+  window.addEventListener('pagehide',()=>browserAudio.dispose(),{once:true});
+  const networkMount=document.createElement('section');
+  document.querySelector('.console-panel, .embed-console')?.before(networkMount);
+  const networkUi=mountNetworkControls({container:networkMount,runtime:api,onError:report});
+  window.addEventListener('pagehide',()=>networkUi.dispose(),{once:true});
+  const networkEndpoint=params.get('network');
+  if(networkEndpoint){try{await api.configureNetwork({endpoint:networkEndpoint});}catch(error){report(error);}params.delete('network');history.replaceState(null,'',`${location.pathname}${location.search}${params.size?'#'+params.toString():''}`);}
+  else if(['127.0.0.1','localhost','[::1]'].includes(location.hostname)) {
+    try{const response=await fetch('/network-info',{signal:AbortSignal.timeout(1500)});if(response.ok){const helper=await response.json();if(helper.endpoint)await api.configureNetwork({endpoint:helper.endpoint});}}catch{/* Ordinary static local servers have no network helper. */}
+  }
+
   detachBridge = installEmbedBridge(api);
   knowledgePanel = createKnowledgePanel($('product-knowledge'));
   transportUi = createTransportUi({mount: $('session-tools-mount'), catalog, getScene: () => clone(scene), getSource: sourceFromInputs, getApi: () => api,

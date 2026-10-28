@@ -7,7 +7,7 @@ export class PcmPlaybackQueue {
     this.underflows = 0; this.overflows = 0; this.renderedFrames = 0;
   }
   enqueue({samples, sampleRate, channels = 1}) {
-    if (!(samples instanceof Int16Array) || !Number.isInteger(sampleRate) || sampleRate < 8000 || sampleRate > 96000 || ![1, 2].includes(channels) || !samples.length || samples.length % channels) return {accepted:false, code:'INVALID_PCM'};
+    if (!(samples instanceof Int16Array) || !Number.isInteger(sampleRate) || sampleRate < 1000 || sampleRate > 400000 || ![1, 2].includes(channels) || !samples.length || samples.length % channels) return {accepted:false, code:'INVALID_PCM'};
     const duration = samples.length / channels / sampleRate;
     if (this.seconds + duration > this.maxQueuedSeconds + 1e-9) { this.overflows++; return {accepted:false, code:'AUDIO_OUTPUT_OVERFLOW'}; }
     this.chunks.push({samples, sampleRate, channels, frames:samples.length / channels, offset:0});

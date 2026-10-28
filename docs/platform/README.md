@@ -167,3 +167,9 @@ Unit Angle U005 已支持 StopWatch Port A 的标称模拟电压输入与真实 
 [Unit DLight U136](unit-dlight-runtime.md) adds the BH1750 command, gain and conversion model on real StopWatch G10/G11 I²C. Editable illuminance, supply/disconnect/reset, recording and mini use the common runtime. One U006 may carry DLight and ENV-IV at distinct addresses; duplicate addresses and GPIO contention remain rejected.
 
 [Unit PIR U004](unit-pir-runtime.md) adds the AS312 nominal 2-second retriggerable profile on real StopWatch G11, with M5PM1 power, unplug, guest output, recording and mini. Warm-up, optical and lock-window behavior are not calibrated; the model retains an UNKNOWN PCB.
+
+## Browser network and audio
+
+The workbench now connects firmware Ethernet to a local [network helper](network-helper.md), supports S3 SoftAP provisioning through the original guest page, and exposes HTTP/TCP/UDP service mappings. Automatic provisioning is enabled by default; a helper connection is still required for real external sockets. See [implemented scope](wifi-platform-plan.md).
+
+The 3D stage has microphone and speaker controls. Agents use `audioConfigure`, `pushAudio`, and `readAudio` for bounded PCM streaming without a sound device. See [audio formats, lifecycle and model limitations](audio-runtime.md).

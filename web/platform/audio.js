@@ -2,13 +2,13 @@
 const MAX_SECONDS = 2;
 const fail = (code, message) => Object.assign(new Error(message), {code});
 const describe = error => ({code:error?.code || error?.name || 'AUDIO_ERROR', message:error?.message || String(error)});
-export function validatePcm({samples, sampleRate, channels = 1}) {
-  if (!(samples instanceof Int16Array) || !Number.isInteger(sampleRate) || sampleRate < 8000 || sampleRate > 96000 || ![1,2].includes(channels) || !samples.length || samples.length % channels) throw fail('INVALID_PCM', 'Audio requires nonempty interleaved PCM16, 8–96 kHz, one or two channels.');
+export function validatePcm({samples, sampleRate, channels = 1}, {output = false} = {}) {
+  if (!(samples instanceof Int16Array) || !Number.isInteger(sampleRate) || sampleRate < (output?1000:8000) || sampleRate > (output?400000:96000) || ![1,2].includes(channels) || !samples.length || samples.length % channels) throw fail('INVALID_PCM', 'Audio requires nonempty interleaved PCM16, a supported sample rate, one or two channels.');
   return {samples, sampleRate, channels};
 }
 
 export function encodePcm16Wav(packet) {
-  const {samples, sampleRate, channels} = validatePcm(packet);
+  const {samples, sampleRate, channels} = validatePcm(packet,{output:true});
   if (samples.byteLength > 128 * 1024 * 1024) throw fail('AUDIO_TOO_LARGE', 'WAV export is limited to 128 MiB of PCM.');
   const bytes = new Uint8Array(44 + samples.byteLength), view = new DataView(bytes.buffer);
   const text = (at, value) => { for (let i = 0; i < value.length; i++) bytes[at + i] = value.charCodeAt(i); };
@@ -42,7 +42,7 @@ export function decodePcm16Wav(input) {
   if (!format || !data || data.length % 2 || format.alignment !== format.channels * 2 || format.byteRate !== format.sampleRate * format.alignment) throw fail('INVALID_WAV', 'Missing or inconsistent PCM16 WAV format/data.');
   const samples = new Int16Array(data.length / 2), pcm = new DataView(data.buffer,data.byteOffset,data.byteLength);
   for (let i = 0; i < samples.length; i++) samples[i] = pcm.getInt16(i * 2,true);
-  return validatePcm({...format,samples});
+  return validatePcm({...format,samples},{output:true});
 }
 
 export function createBrowserAudio({runtime, onState = () => {}, AudioContextClass = globalThis.AudioContext || globalThis.webkitAudioContext,
@@ -109,7 +109,7 @@ export function createBrowserAudio({runtime, onState = () => {}, AudioContextCla
   function queueOutput(packet) {
     if (state.speaker !== 'on' || !playbackNode) return;
     try {
-      const {samples,sampleRate,channels} = validatePcm(packet), duration = samples.length / channels / sampleRate;
+      const {samples,sampleRate,channels} = validatePcm(packet,{output:true}), duration = samples.length / channels / sampleRate;
       const inFlight = [...pending.values()].reduce((total,seconds) => total + seconds,0);
       if (inFlight + state.queuedSeconds + duration > maxQueuedSeconds + 1e-9) throw fail('AUDIO_OUTPUT_OVERFLOW','Speaker queue is full; playback stopped. Export the captured PCM for offline listening.');
       const copied = samples.slice(), id = ++nextId; pending.set(id,duration);

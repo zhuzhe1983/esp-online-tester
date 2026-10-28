@@ -32,37 +32,55 @@ The public skill is served at `https://zhuzhe1983.github.io/esp-online-tester/pl
 | `RECORDING_NOT_SHAREABLE` | Restore the matching scene or explicitly call `share({includeRecording:false})`. |
 | Unsupported input/radio/IMU | Inspect product capabilities and actual model; do not fall back to fabricated output. |
 
-## Network: implemented scope
+## Network and guest services
 
-Virtual Wi-Fi association, an assigned IP and real Internet access are separate outcomes.
+Read the [network helper guide](https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/network-helper.md) for build/start and transport limits. The helper runs native sockets; firmware still runs in the browser worker. Its startup command prints a local workbench URL and a Pages URL carrying a temporary connection token. The page consumes the token into session memory and removes it from the location fragment. Never copy credentials into share links, recordings or committed evidence.
 
-- Native CLI: virtual STA/AP connectivity plus host TCP/UDP NAT is available through `--wifi "ssid=esp32sim,psk=esp32sim-pass" --net nat`, subject to chip/firmware support. Firmware credentials must match this virtual network; a real home Wi-Fi password is unnecessary. See the [networking guide](https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/networking-howto.md).
-- Product browser runtime: a firmware manifest's `wifi` string configures the virtual AP. The WASM Wi-Fi path has no native NAT. Internal DNS/SNTP/ICMP responses are simulated and cannot prove external connectivity. Downloading firmware with browser `fetch` does not connect the guest to the Internet.
-- The WASM Ethernet relay ABI exists, but the product worker has not connected it to an external gateway. Scene-level network configuration, network state/probe methods and a SoftAP provisioning bridge are not exposed by `window.espTester` or iframe RPC.
-- Firmware AP SETUP/SSID output does not create a real computer hotspot. Do not change the host's Wi-Fi connection or browse the host's `192.168.4.1` as a substitute for reaching the simulated device. A virtual client and inbound TCP/HTTP path are still missing.
+The workbench defaults to automatic provisioning and a virtual test router (`esp32sim` / `esp32sim-pass`). An explicit firmware manifest router takes priority. Configure documented fixed firmware credentials before loading when they differ; no real home Wi-Fi password is needed. Without a connected helper, the page reports waiting for it rather than claiming Internet connectivity.
 
-For a network-dependent test today, report this browser limitation; use native CLI NAT when suitable for the requested test. Do not claim cloud success based on a local fixture, a synthetic DNS/ping answer or a UI connectivity icon.
+```js
+await api.configureNetwork({endpoint: helperEndpoint, autoProvision: false});
+// Configure/load/start the intended firmware using the ordinary runtime workflow.
+const network = await api.readNetwork();
+// Wait for network.interfaces[1].leaseReady when testing the guest SoftAP.
+const response = await api.requestNetworkHttp({interface: 1, path: '/'});
+const page = await api.mapNetworkPort({interface: 1, protocol: 'http', guestPort: 80});
+// Open page.url through the browser tool, or operate the workbench's original-page iframe.
+// Supported Xiaozhi page contract only; preserves real guest NVS/connection behavior:
+await api.provisionNetwork();
+```
 
-## SoftAP and automatic setup: required future workflow
+SoftAP uses actual virtual-client association and DHCP, then real guest TCP/HTTP. ESP32-S3 is the supported chip for this client. Open SoftAP and WPA2 have distinct capability/evidence boundaries; consult the runtime documentation before claiming a particular firmware/security combination. The helper learns the AP's address from DHCP instead of assuming `192.168.4.1`. Never switch the host computer's Wi-Fi or browse its private-network address as a substitute.
 
-Both modes must use the same guest network implementation. See the [implementation plan](https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/wifi-platform-plan.md); the following is a specification, not a callable skill workflow today.
+Automatic provisioning inspects the original page and recognizes the Xiaozhi web `/scan` + `/submit` contract. Other HTML pages can be operated manually through the iframe/browser. ESP-IDF protocomm requires its version/security/PoP client; an HTTP bridge alone does not implement that protocol. Unknown schemes return `PROVISIONING_UNSUPPORTED`, not fabricated success or direct NVS writes.
 
-- **Provisioning test:** discover the guest's SoftAP, connect a virtual client, obtain its IP and route requests to the guest's actual provisioning service. For HTML firmware, expose an isolated browser URL for the original page and let the agent inspect/fill it. ESP-IDF protocomm requires a compatible protocol client and the firmware's supported security/PoP flow; not every SoftAP serves an HTML form. Supply only the virtual router's test credentials. Observe the guest save/restart, STA association, DHCP and a response from the intended external test service.
-- **Automatic setup:** create a default virtual router, reuse existing saved configuration, and auto-provision supported firmware through that same service on first boot. Match documented fixed credentials for firmware that already tries a known SSID. Unknown provisioning protocols must report an actionable unsupported state or expose their real page. Firmware waiting forever in AP mode cannot be made application-ready by a fake Wi-Fi success flag.
-- Do not silently modify NVS, bypass PoP, return canned cloud responses, or overwrite existing user configuration. A future firmware-specific seeded test image must be explicit, isolated and separately verified; it does not validate provisioning.
-- Persist successful guest configuration with the existing product/firmware Flash scope. A shared URL does not carry private Flash, so a recipient may need automatic first-run provisioning again. Provisioned storage may also fail the current pristine-storage requirement for portable recording; do not clear it to force recording.
-- Report provisioning, association, DHCP and external-response evidence separately. Relay setup is independent of firmware provisioning; automatic setup still needs a usable browser gateway to reach real services.
+Turning automatic provisioning off keeps transport and saved configuration. It does not force already-provisioned firmware back into AP mode or clear storage. Use the firmware's actual menu/button flow if reconfiguration is intended. Successful guest configuration persists under the existing product/firmware Flash scope; recipients of shared links do not receive private Flash.
 
-The requested Web UI defaults to automatic setup. Disabling it preserves the network transport and existing credentials, and exposes an iframe for the guest's real SoftAP page when available; it does not force the guest back into provisioning. A separate offline control disconnects transport. The bottom status area should list known guest services with their discovery/verification source. HTTP/HTTPS entries open through an isolated browser bridge; arbitrary TCP/UDP services require explicit localhost port mappings through the network helper. A conventional port number is only a protocol hint, and passive traffic cannot reveal every listening service. Manual service entries remain necessary. None of these controls or service-discovery/mapping APIs is implemented yet.
+The bottom network area lists known services and supports explicit entries. HTTP services get an isolated proxy origin; HTTP pages with restrictive CSP/X-Frame-Options may need the independent-window link. HTTPS is a raw TCP mapping and retains normal certificate validation. Other TCP/UDP services map to localhost for a native protocol client. A conventional port number is only a hint, a mapping alone is not proof of a listener, and passive traffic cannot reveal every silent service. No automatic full-port scanning or LAN-wide exposure occurs.
 
-## Audio: implemented scope and next interface
+Verify four separate results: guest provisioning, Wi-Fi association, DHCP lease, and actual target-service response. Native CLI NAT remains available too. Synthetic DNS/SNTP/ICMP in offline mode and browser firmware downloads are not external guest responses. Explicitly distinguish testing the helper with packet fixtures from observing unmodified firmware behavior. Network state, helper tokens and host mappings are not portable recording events; provisioned Flash can fail the recorder's pristine-storage requirement. Do not clear user data to force recording.
 
-Rust already has PCM input sources and I2S TX sample capture. The existing WASM binary output type `2` carries a little-endian sample rate followed by mono PCM16 samples. The older `web/run.html` player can play this output; the product platform's runtime currently only consumes framebuffer binary output and does not play audio. Its generic binary input queue has a camera decoder, not a public microphone PCM decoder.
+## Audio streams and browser devices
 
-StopWatch ES8311 control-register initialization now passes in official Xiaozhi v2.2.6. That result does not verify microphone input, speaker playback, gain/mute, power gating or complete codec behavior. There are no platform audio stream methods to invoke today.
+Read the [audio runtime guide](https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/audio-runtime.md) for PCM/WAV workflows and sample-rate boundaries. The top-right microphone/speaker buttons use real browser AudioWorklets. Microphone capture requests permission only after activation; speaker playback also needs a browser user gesture. Device tracks and contexts are released during session teardown. Cross-origin embedded players need iframe `allow="microphone; autoplay"` in addition to the user's permission.
 
-The next shared interface should carry PCM format/sample rate/channels, sequence or guest timestamp, bounded queues and consumed/underflow/overflow counters. Browser microphone capture and speaker playback, file-based test input/output and an optional Node/MCP adapter should all use that contract. Browser device access remains a user-activated permission flow. Requested microphone and speaker controls belong at the upper-right of the 3D view, with independent active/muted/error state and track cleanup on session teardown.
+The agent transport does not require a physical microphone or speaker:
 
-Use MCP calls for stream setup/teardown, file submission and observations; continuous PCM should use a suitable binary transport rather than one tool call per audio block. Preserve original speech/music speed and pitch. If the simulator cannot keep up, report the condition or use offline capture; do not silently stretch, accelerate or truncate voiced content.
+```js
+await api.audioConfigure({input:{enabled:true,port:0,sampleRate:16000,channels:1}});
+await api.pushAudio({port:0,sampleRate:16000,channels:1,samples:pcm16Chunk});
+const capture = await api.readAudio();
+// capture.input has current queued/consumed/rejected counters.
+// capture.chunks carry exact PCM16 output with sampleRate/channels/sequence/guestTime.
+await api.audioConfigure({input:{enabled:false,port:0}});
+```
 
-Priority gaps after the documented API corrections are: shared browser network state and relay; SoftAP client/provisioning with automatic setup; PCM input/output; explicit guest-duration input helpers. Add their callable examples only after implementation and real guest-output verification.
+Input uses an explicitly logical I²S controller source and the guest's RX clocks/DMA. It bypasses physical GPIO routing, ES8311 gain/mute and power gates. Check per-board ports; output capture currently uses the S3 TX path and is mono. Codec initialization alone does not prove the voice application processed the input.
+
+PCM input accepts 1–16384 frames per call and holds two source seconds. Keep chunk format fixed, inspect queue counters and handle backpressure. A partial-acceptance error includes the accepted frame count: retry only the unaccepted suffix, never the whole block. Output capture retains ten seconds; `droppedFrames` / `overflowed` explicitly report lost history. Read regularly for a complete longer capture. Browser live playback has its own bounded queue and does not consume the agent's captured chunks.
+
+Subscribe to `audio` events for window-local streaming; iframe clients can push/read structured-cloned arrays. There is still no dedicated MCP server. An MCP adapter can use these APIs for setup/files/results and a suitable binary stream for continuous audio. PCM, microphone access and network state are excluded from portable input recording.
+
+Preserve original duration and pitch. Sample-rate conversion uses the declared source rate; it does not adjust playback speed to match simulator lag. When capture/playback cannot keep up, report the explicit error or use offline PCM/WAV testing. Do not silently stretch, accelerate or truncate voiced content.
+
+A guest-duration press helper remains a useful unimplemented addition. Do not invent its method name; current `press` still uses host time.
