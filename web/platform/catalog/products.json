@@ -6791,23 +6791,19 @@
       "chip": "esp32s3",
       "module": "ESP32-S3-PICO-1-N8R8",
       "runtime": {
-        "board": null,
+        "board": "atom-voices3r",
         "flashMb": 8,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial",
+        "touch": false
       },
       "display": null,
       "controls": [
         {
           "id": "button-a",
-          "name": "User button",
+          "name": "按键",
           "type": "button",
           "pin": 41
-        },
-        {
-          "id": "reset",
-          "name": "Reset / boot",
-          "type": "button"
         }
       ],
       "interfaces": [
@@ -6891,8 +6887,9 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "当前仅 G41 数字按键和 ES8311 控制总线初始化子集；官方 UIFlow2 可进入命令行，小智可进入配网状态，尚不代表网络可连接。",
+        "麦克风、音频播放、USB UAC、红外、物理复位监督器尚未模拟；此型号没有 RGB 灯。",
+        "官网 UAC Easyloader 的原样镜像布局存在冲突，保留恢复资料入口；其他官方固件可选择试运行。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-c126-echo.json",
       "model": {
@@ -6907,7 +6904,8 @@
         "unit": "mm",
         "sourceId": "official-docs",
         "basis": "official"
-      }
+      },
+      "defaultFirmwareId": "m5stack-c126-echo-factory-reference"
     },
     {
       "id": "m5stack-c126-cam",

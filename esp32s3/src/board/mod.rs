@@ -16,6 +16,7 @@ pub mod airquality;
 pub mod atoms3;
 pub mod atoms3_lite;
 pub mod atoms3r;
+pub mod atom_voices3r;
 pub mod dial;
 pub mod dinmeter;
 mod stamps3;
@@ -56,6 +57,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "airquality-v11" | "m5stack-k131-v11" => Some(Box::new(airquality::AirQuality::v11())),
         "atech14" | "atech" => Some(Box::new(Atech14::new())),
         "none" | "bare" => Some(Box::new(NoBoard)),
+        "atom-voices3r" | "m5stack-c126-echo" => Some(Box::new(atom_voices3r::AtomVoiceS3R::new())),
         "atoms3r" | "m5stack-atoms3r" => Some(Box::new(AtomS3R::new())),
         "atoms3" | "m5stack-atoms3" => Some(Box::new(AtomS3::new())),
         "dial" | "m5stack-dial" => Some(Box::new(Dial::new())),
@@ -85,5 +87,5 @@ pub fn make_board(name: &str) -> Option<Board> {
 /// offset 0x50, PKG_VERSION bits 23:21; M5GFX 65c816a3 identifies PICO as 1.
 /// v4.4.8 defines the same offset/field. No changes for other products.
 pub fn configure_chip_identity(board:&str,efuse:&mut esp_periph::efuse::Efuse) {
-    if board=="atoms3r" {let r=efuse.ram.read(0x50);efuse.ram.write(0x50,(r&!(7<<21))|(1<<21));}
+    if matches!(board,"atoms3r"|"atom-voices3r") {let r=efuse.ram.read(0x50);efuse.ram.write(0x50,(r&!(7<<21))|(1<<21));}
 }

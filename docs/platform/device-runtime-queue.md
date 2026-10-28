@@ -48,7 +48,7 @@ Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已合入主线；配件
 | 14 | [M5Stack Air Quality](https://docs.m5stack.com/en/core/Air_Quality) · `m5stack-k131` | esp32s3 / SSD1681 | [原版 K131 部分适配](airquality-runtime.md)：官方 v0.2.0、电子纸、A/B、SCD40/SEN55 虚拟样本 | RTC、电池、音频、网络、供电/睡眠、Grove |
 | 15 | [M5Stack Air Quality v1.1 · K131-V11](https://docs.m5stack.com/en/core/Air_Quality_v1.1) · `m5stack-k131-v11` | esp32s3 / SSD1681 | 部分支持 | 独立 v1.1 标识，共用已核对载板数字模型；官方 0.2.0 / 屏幕 / A/B 已验收，RGB、电源、RTC、电池、网络仍未模拟 |
 | 16 | [M5Stack Atom Voice](https://docs.m5stack.com/en/atom/Atom_Voice) · `m5stack-c008-c` | esp32 / 无屏幕 | 已交付 partial：G39 / G27 RGB | [官方镜像红灯后 BT 已知崩溃，保留 trial](atom-voice-runtime.md)；录音/A2DP 不支持 |
-| 17 | [M5Stack Atom VoiceS3R](https://docs.m5stack.com/en/core/Atom_VoiceS3R) · `m5stack-c126-echo` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
+| 17 | [M5Stack Atom VoiceS3R](https://docs.m5stack.com/en/core/Atom_VoiceS3R) · `m5stack-c126-echo` | esp32s3 / 无屏幕 | 部分：UIFlow2 REPL / G41 | [原始固件与实际网页输入](atom-voices3r-runtime.md)；ES8311 仅初始化，音频/UAC/网络未验；无 RGB；出厂恢复工具布局冲突保留 |
 | 18 | [M5Stack Atom-Matrix v1.1 · C008-B-V11](https://docs.m5stack.com/en/core/Atom-Matrix_v1.1) · `m5stack-c008-b-v11` | esp32 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
 | 19 | [M5Stack AtomS3R AI Chatbot Kit · K147](https://docs.m5stack.com/en/core/AtomS3R-AI_Chatbot) · `m5stack-k147` | esp32s3 / GC9107 | 待实现 | GC9107 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 20 | [M5Stack AtomS3R-CAM AI Chatbot · K147-CAM](https://docs.m5stack.com/en/core/AtomS3R-CAM_AI_Chatbot) · `m5stack-k147-cam` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |

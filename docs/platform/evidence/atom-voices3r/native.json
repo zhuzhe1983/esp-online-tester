@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-28T00:47:23.175073+00:00",
+  "probes": [
+    {
+      "name": "factory",
+      "inputSha256": "e4e4b272a7f33b022554b02e41edada89c284dc7030c2e4ff51bd14a11c7f664",
+      "inputBytes": 383728,
+      "boot": "original ROM / original full image at 0x0",
+      "command": "target/release/esp32sim --board atom-voices3r --boot rom --flash-mb 8 --psram-mb 8 --rom web/wasm/fw/esp32s3_rev0_rom.elf --flash-image <caller-downloaded-file> --max-seconds 5 --no-dump",
+      "markers": {
+        "invalid header: 0xffffffff": 100680
+      },
+      "stop": "[emu] stop: Halted — core0 239948096 + core1 0 insns in 1.2s wall = 201.1 Minsn/s; emulated 1.000s (240000000 cycles); 103806 exceptions, 0 interrupts",
+      "firmwarePatched": false,
+      "rawSerialPublished": false
+    },
+    {
+      "name": "uiflow",
+      "inputSha256": "3fdc3de97d399fa77f5404ac155051ca1309e7a14dccc9353270f339d80ce33c",
+      "inputBytes": 8384512,
+      "boot": "original ROM / original full image at 0x0",
+      "command": "target/release/esp32sim --board atom-voices3r --boot rom --flash-mb 8 --psram-mb 8 --rom web/wasm/fw/esp32s3_rev0_rom.elf --flash-image <caller-downloaded-file> --max-seconds 5 --no-dump",
+      "markers": {
+        "MicroPython v1.27.0-dirty": 1,
+        "M5STACK Atom EchoS3R": 1,
+        ">>>": 1,
+        "this port has not been initialized": 2
+      },
+      "stop": "[emu] stop: Halted — core0 72660554 + core1 110619287 insns in 1.0s wall = 180.3 Minsn/s; emulated 5.000s (1200000000 cycles); 453103 exceptions, 21135 interrupts",
+      "firmwarePatched": false,
+      "rawSerialPublished": false
+    },
+    {
+      "name": "xiaozhi",
+      "inputSha256": "7997414bec17383bf5b9c5e30cac65c8a17fd013e9f21cce5a3b6c15c2676e0f",
+      "inputBytes": 6582654,
+      "boot": "original ROM / original full image at 0x0",
+      "command": "target/release/esp32sim --board atom-voices3r --boot rom --flash-mb 8 --psram-mb 8 --rom web/wasm/fw/esp32s3_rev0_rom.elf --flash-image <caller-downloaded-file> --max-seconds 5 --no-dump",
+      "markers": {
+        "WifiConfigurationAp": 4,
+        "WebServer": 0,
+        "配网": 4,
+        "AudioCodec": 12,
+        "Web server started": 2
+      },
+      "stop": "[emu] stop: Halted — core0 20377735 + core1 14762141 insns in 0.4s wall = 79.2 Minsn/s; emulated 5.000s (1200000000 cycles); 62854 exceptions, 4760 interrupts",
+      "firmwarePatched": false,
+      "rawSerialPublished": false
+    }
+  ],
+  "privacy": "Only marker counts and guest execution statistics retained; raw serial omitted because it contains identifiers.",
+  "limits": [
+    "Xiaozhi AP and audio initialization logs do not certify networking or audio transport.",
+    "Factory failure is for this exact downloaded resource; no physical flashing claim.",
+    "ROM file was initially copied into a nested fw directory in setup, causing a no-ROM probe; corrected before these three recorded runs."
+  ]
+}

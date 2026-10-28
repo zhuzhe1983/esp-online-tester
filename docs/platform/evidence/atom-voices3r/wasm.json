@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-28T00:27:30.779Z",
+  "productId": "m5stack-c126-echo",
+  "source": {
+    "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000775/versions/2098279852121739265/download",
+    "sha256": "3fdc3de97d399fa77f5404ac155051ca1309e7a14dccc9353270f339d80ce33c"
+  },
+  "wasmSha256": "6620ed31e607d8cdd89bb752f802fcbdf5e6078c97fd2c728fe1628f9c90a814",
+  "backend": "actual-page-worker-wasm",
+  "firmwarePatched": false,
+  "guestProgram": "Explicit MicroPython REPL expressions call M5.update and read M5.BtnA, executed by the original official firmware.",
+  "inputs": {
+    "press": {
+      "accepted": true,
+      "delivery": "queued",
+      "message": {
+        "t": "btn",
+        "pin": 41,
+        "v": 1
+      },
+      "guestTime": 0.7430290875
+    },
+    "release": {
+      "accepted": true,
+      "delivery": "queued",
+      "message": {
+        "t": "btn",
+        "pin": 41,
+        "v": 0
+      },
+      "guestTime": 0.7783407125
+    }
+  },
+  "guestSeconds": 0.8,
+  "checks": [
+    "official-micropython-repl",
+    "M5.BtnA-released0-pressed1-released0",
+    "no-fabricated-frame-or-rgb"
+  ],
+  "status": "pass",
+  "limitations": [
+    "Audio/microphone/USB UAC/IR/network transport/reset-supervisor not validated.",
+    "No physical hardware; REPL expressions test GPIO input, not a factory button workflow."
+  ]
+}
