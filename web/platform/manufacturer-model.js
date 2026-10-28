@@ -90,7 +90,8 @@ export function createManufacturerModel(product, screenTexture) {
       if(part.kind!=='pcb-placeholder')continue;
       const pcb=new THREE.Group();pcb.name=part.id || 'pcb-main';pcb.position.set(...center);pcb.rotation.set(...vector(part.geometry?.rotation));pcb.userData={kind:'pcb-placeholder',label:'UNKNOWN',estimated:true};
       pcb.add(new THREE.Mesh(createPcbPlaceholderGeometry(size,part.geometry?.shape),new THREE.MeshStandardMaterial({color:0x859188,roughness:.85})));
-      const label=flatLabel('UNKNOWN');if(label){textures.push(label);const width=Math.min(size[0]*.82,42);for(const back of [false,true]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,width/4),new THREE.MeshBasicMaterial({map:label,transparent:true,depthWrite:false}));mesh.position.z=(back?-1:1)*(size[2]/2+.015);if(back)mesh.rotation.y=Math.PI;pcb.add(mesh);}}
+      const width=Math.min(size[0]*.82,42),offset=part.geometry?.labelOffsetMm===undefined?[0,0]:part.geometry.labelOffsetMm;if(part.geometry?.labelOffsetMm!==undefined&&(!Array.isArray(offset)||offset.length!==2||offset.some((v,i)=>!Number.isFinite(v)||Math.abs(v)+(i?width/8:width/2)>size[i]/2)))throw Error('Invalid PCB placeholder label offset');
+      const label=flatLabel('UNKNOWN');if(label){textures.push(label);for(const back of [false,true]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,width/4),new THREE.MeshBasicMaterial({map:label,transparent:true,depthWrite:false}));mesh.position.set(offset[0],offset[1],(back?-1:1)*(size[2]/2+.015));if(back)mesh.rotation.y=Math.PI;pcb.add(mesh);}}
       parts[pcb.name]=pcb;group.add(pcb);
     }
     // Derived optical windows can expose the same guest LED output as CAD parts.

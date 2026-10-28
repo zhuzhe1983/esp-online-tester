@@ -6,6 +6,7 @@ pub mod periph;
 pub mod soc;
 mod sleep;
 pub mod timers;
+pub mod frc;
 pub mod wifi;
 
 pub use esp_soc::Stop;

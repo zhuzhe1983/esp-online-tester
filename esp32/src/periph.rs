@@ -673,6 +673,7 @@ pub struct Peripherals {
     pub efuse: ClassicEfuse,
     pub sha: ClassicSha,
     pub timg: [ClassicTimer; 2],
+    pub frc2: crate::frc::Frc2,
     pub i2c: [esp_periph::i2c::I2c<16>; 2],
     pub misc: Misc,
     pub spi_exec: bool,
@@ -701,6 +702,8 @@ device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::RtcSlow, 1600)]
     0x4f "I2S0" (i2s[0]) => [32];
     0x6d "I2S1" (i2s[1]) => [33];
     0x46 "FE" (fe) => [];
+    // ESP-IDF v3.2.3 soc.h:92,384: FRC2 base and ETS_TIMER2_INTR_SOURCE.
+    0x47 "FRC2" (frc2) => [57];
     0x4e "I2C_MST" (analog) => [];
     0x73 "WIFI_MAC" (wifi) => [SRC_WIFI_MAC];
     0x74 "WIFI_MAC" alias (wifi) delta 0x1000 => [];
@@ -761,6 +764,7 @@ impl Peripherals {
             efuse: ClassicEfuse::new(mac),
             sha: ClassicSha::new(),
             timg: [ClassicTimer::new(0), ClassicTimer::new(1)],
+            frc2: crate::frc::Frc2::default(),
             i2c: [esp_periph::i2c::I2c::new_classic(), esp_periph::i2c::I2c::new_classic()],
             misc: Misc::new(),
             spi_exec: false,
@@ -927,6 +931,9 @@ impl Peripherals {
             timer.tick(ticks);
             irq_changed |= before != timer.irq_sources();
         }
+        let frc_before = self.frc2.irq_sources();
+        self.frc2.tick(ticks);
+        irq_changed |= frc_before != self.frc2.irq_sources();
         let ledc_before = self.ledc.irq_sources();
         let rmt_before = self.rmt.irq_sources();
         if self.ledc.clock() == Some(ClockDomain::Apb) { self.ledc.tick(ticks); }
@@ -988,7 +995,7 @@ impl Peripherals {
                 best = best.min(t.saturating_sub(1).saturating_mul(self.apb_divider()));
             }
         }
-        for device in [&self.ledc as &dyn Device, &self.rmt as &dyn Device] {
+        for device in [&self.ledc as &dyn Device, &self.rmt as &dyn Device, &self.frc2 as &dyn Device] {
             if let Some(t) = device.next_deadline() {
                 best = best.min(t.saturating_sub(1).saturating_mul(self.apb_divider()));
             }
@@ -1154,6 +1161,26 @@ mod tests {
         p.write32(BASE + 0x04, 1 << 5);
         assert_ne!(p.source_status(0)[SRC_I2C1 / 32] & (1 << (SRC_I2C1 % 32)), 0);
         assert_ne!(p.cpu_lines(0) & (1 << 9), 0);
+    }
+
+    #[test]
+    fn legacy_frc2_uses_apb_and_routes_source57_to_both_cores() {
+        let mut p = Peripherals::new([0; 6]);
+        p.write32(0x3ff0_0104 + 57 * 4, 9);
+        p.write32(0x3ff0_0218 + 57 * 4, 13);
+        p.write32(0x3ff4_7030, 10);
+        p.write32(0x3ff4_7028, 0x81);
+        assert_eq!(p.cycles_until_timer(), 54);
+        p.tick(30); assert_eq!(p.read32(0x3ff4_7024), 5);
+        assert_eq!(p.read32(0x3ff4_7024), 5, "reads alone never advance clock");
+        p.write32(0x3ff4_8070, 1 << 27);
+        assert_eq!(p.cycles_until_timer(), 12);
+        assert!(p.tick(15));
+        assert_ne!(p.cpu_lines(0) & (1 << 9), 0);
+        assert_ne!(p.cpu_lines(1) & (1 << 13), 0);
+        p.write32(0x3ff4_702c, 1);
+        assert_eq!(p.cpu_lines(0) & (1 << 9), 0);
+        assert_eq!(p.cpu_lines(1) & (1 << 13), 0);
     }
 
     #[test]

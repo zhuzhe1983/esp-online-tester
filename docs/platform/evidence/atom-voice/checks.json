@@ -1,0 +1,189 @@
+{
+  "checks": [
+    {
+      "name": "stable",
+      "command": "rustup update stable",
+      "exitCode": 0,
+      "seconds": 0.652
+    },
+    {
+      "name": "build",
+      "command": "cargo build --release --workspace",
+      "exitCode": 0,
+      "seconds": 20.963
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "seconds": 0.519
+    },
+    {
+      "name": "clippy-wasm",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "seconds": 0.419
+    },
+    {
+      "name": "rust",
+      "command": "cargo test --release --workspace -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "seconds": 88.703
+    },
+    {
+      "name": "vq",
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "exitCode": 0,
+      "seconds": 0.216
+    },
+    {
+      "name": "wasm-build",
+      "command": "tools/wasm-build.sh",
+      "exitCode": 0,
+      "seconds": 0.138
+    },
+    {
+      "name": "wasm-sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "seconds": 0.036
+    },
+    {
+      "name": "wasm",
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices demo-stopwatch",
+      "exitCode": 0,
+      "seconds": 32.717
+    },
+    {
+      "name": "platform",
+      "command": "node --test tools/platform-*-test.mjs",
+      "exitCode": 0,
+      "seconds": 2.817
+    },
+    {
+      "name": "recording",
+      "command": "node tools/platform-recording-test.mjs --real",
+      "exitCode": 1,
+      "seconds": 3.562
+    },
+    {
+      "name": "recording",
+      "command": "node tools/platform-recording-test.mjs --real",
+      "exitCode": 0,
+      "seconds": 3.78
+    },
+    {
+      "name": "timing",
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "seconds": 0.05
+    },
+    {
+      "name": "ble",
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "seconds": 0.581
+    },
+    {
+      "name": "ble-connection",
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "seconds": 1.958
+    },
+    {
+      "name": "pacing",
+      "command": "node tools/worker-pacing-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.032
+    },
+    {
+      "name": "channel",
+      "command": "node tools/worker-channel-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.104
+    },
+    {
+      "name": "input",
+      "command": "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs",
+      "exitCode": 0,
+      "seconds": 0.076
+    },
+    {
+      "name": "bench",
+      "command": "node --test tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.089
+    },
+    {
+      "name": "bench-python",
+      "command": "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "exitCode": 0,
+      "seconds": 0.072
+    },
+    {
+      "name": "jit",
+      "command": "tools/wasm-jit-test.sh",
+      "exitCode": 0,
+      "seconds": 28.883
+    },
+    {
+      "name": "profile",
+      "command": ". ./tools/wasm-rustflags.sh; cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "exitCode": 0,
+      "seconds": 11.491
+    },
+    {
+      "name": "schema",
+      "command": "uv run --with-requirements tools/requirements-catalog.txt python tools/validate-platform-catalog.py",
+      "exitCode": 0,
+      "seconds": 0.478
+    },
+    {
+      "name": "x5",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.095
+    },
+    {
+      "name": "x5verify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+      "exitCode": 0,
+      "seconds": 0.036
+    },
+    {
+      "name": "m1",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.087
+    },
+    {
+      "name": "m1verify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+      "exitCode": 0,
+      "seconds": 0.032
+    },
+    {
+      "name": "historical",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+      "exitCode": 0,
+      "seconds": 0.09
+    },
+    {
+      "name": "historicalverify",
+      "command": "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "exitCode": 0,
+      "seconds": 0.034
+    }
+  ],
+  "negativeResults": [
+    {
+      "kind": "intermittent recording test",
+      "message": "One full-check pass failed on Both replayed button presses must reach the actual diagnostic firmware. Unchanged test passed a subsequent standalone continuation; original observation-based GPIO waits are present. No production S3 or recording code changed. Timing sensitivity remains a limitation."
+    },
+    {
+      "kind": "catalog timestamps",
+      "message": "Earlier Node run caught knowledge updatedAt older than a newly fetched source and stale index updatedAt. Both metadata fields corrected before final successful 100-test pass."
+    }
+  ],
+  "goldensRegenerated": false
+}

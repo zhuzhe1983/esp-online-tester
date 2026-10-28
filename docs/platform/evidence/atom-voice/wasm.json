@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-10-27T23:55:09.647Z",
+  "command": "node tools/probe-atom-voice-official.mjs <official-https-url> <sha256>",
+  "productId": "m5stack-c008-c",
+  "url": "https://m5burner-cdn.m5stack.com/firmware/776bd8c3e6b5b3ca14ea7ef8c0da304a.bin",
+  "sha256": "fa9a4c4491a83fa5b60310ee35b14e3cef71bfeac5e1cd0883b84448f6923951",
+  "wasmSha256": "8d9586f4496276a5c8a2eb23b451960e855f18d6d9f398e8289562780a879eb0",
+  "firmware": {
+    "manifestUrl": null,
+    "manifestHash": null,
+    "metadata": {
+      "name": "",
+      "version": "",
+      "source": "manifest"
+    },
+    "source": "remote",
+    "artifacts": [
+      {
+        "kind": "flash",
+        "url": "https://m5burner-cdn.m5stack.com/firmware/776bd8c3e6b5b3ca14ea7ef8c0da304a.bin",
+        "sha256": "fa9a4c4491a83fa5b60310ee35b14e3cef71bfeac5e1cd0883b84448f6923951",
+        "bytes": 2097152
+      },
+      {
+        "kind": "rom",
+        "url": "https://atom-voice-fixture.invalid/wasm/fw/esp32_rev300_rom.elf",
+        "sha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+        "bytes": 857500
+      }
+    ],
+    "appDirect": false,
+    "stubs": [],
+    "executionMode": "wasm-jit"
+  },
+  "guestSeconds": 0.16,
+  "leds": [
+    [
+      5,
+      0,
+      0
+    ]
+  ],
+  "ledUpdateEvents": 2,
+  "checks": [
+    "page-worker-full-rom-boot",
+    "actual-g27-rmt-red-5-0-0",
+    "no-invented-framebuffer",
+    "known-classic-bt-startup-panic-retained"
+  ],
+  "serialEvidence": [
+    "\u001b[0;32mI (143) BTDM_INIT: BT controller compile version [acab313]\u001b[0m",
+    "Guru Meditation Error: Core  0 panic'ed (StoreProhibited). Exception was unhandled.",
+    "EXCVADDR: 0x0000019c  LBEG    : 0x4000c2e0  LEND    : 0x4000c2f6  LCOUNT  : 0xffffffff  ",
+    "Rebooting..."
+  ],
+  "status": "partial-known-failure",
+  "limitations": [
+    "The unmodified factory image initializes the real LED then faults at classic Bluetooth startup; A2DP/audio/microphone are not supported. G39 is not consumed by this factory source."
+  ]
+}

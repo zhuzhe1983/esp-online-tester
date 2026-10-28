@@ -9,6 +9,11 @@ pub struct Esp32;
 pub type Machine = esp_soc::Machine<Esp32>;
 pub fn machine(mac: [u8; 6], flash_size: usize) -> Machine {
     let mut m = Machine::new(mac, SocBus::new(flash_size, mac));
+    // Retain the native granularity in browsers too. IDF v3.2.3's DPORT
+    // two-core handshake stalls with the shared WASM default of 256, but not
+    // 64, with VQ both on and off. See atom-voice-runtime.md for controls.
+    // This does not alter other chips or assert cycle-accurate timing.
+    m.quantum = 64;
     m.set_debug(&esp_soc::DebugFlags::from_env());
     m
 }

@@ -7,12 +7,14 @@ pub mod tdisplay;
 pub mod aithinker;
 pub mod atom_lite;
 pub mod atom_matrix;
+pub mod atom_voice;
 
 pub use tdisplay::*;
 
 pub fn make_board(name: &str) -> Option<esp_soc::Board> {
     match name {
         "atom-matrix" | "m5stack-c008-b" => Some(Box::new(atom_matrix::AtomMatrix::new())),
+        "atom-voice" | "m5stack-c008-c" => Some(Box::new(atom_voice::AtomVoice::new())),
         "atom-lite" | "m5stack-c008" => Some(Box::new(atom_lite::AtomLite::new())),
         "none" | "bare" | "esp32dev" => Some(Box::new(esp_soc::NoBoard)),
         "ttgo-tdisplay" | "tdisplay" => Some(Box::new(TtgoTDisplay::new())),
