@@ -128,7 +128,7 @@ export function validateScene(scene, catalog) {
   if (scene.schemaVersion !== SCHEMA_VERSION) errors.push(issue('SCHEMA_VERSION', '/schemaVersion', 'Only scene schema version 1 is supported.'));
   const product = catalog.products.find(item => item.id === scene.productId);
   if (!product) errors.push(issue('UNKNOWN_PRODUCT', '/productId', `Unknown product: ${scene.productId}`));
-  else if (product.runtime.status === 'unavailable') warnings.push(issue('MODEL_UNAVAILABLE', '/productId', 'This product has metadata and a visual preview; its board model is not implemented.'));
+  else if (product.runtime.status === 'unavailable') warnings.push(issue('MODEL_UNAVAILABLE', '/productId', product.model ? 'This product has metadata and a visual preview; its board model is not implemented.' : 'This product has catalog metadata; its board model and visual preview are not implemented.'));
   else if (product.runtime.status === 'partial') warnings.push(issue('PARTIAL_MODEL', '/productId', 'The board model is partial. Firmware compatibility requires an actual execution test.'));
   if (scene.firmware === null) warnings.push(issue('FIRMWARE_MISSING', '/firmware', 'Choose a firmware artifact before running.'));
   else if (!record(scene.firmware)) errors.push(issue('FIRMWARE', '/firmware', 'Firmware must be null or a source object.'));

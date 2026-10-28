@@ -1,6 +1,6 @@
 # 产品板级适配队列
 
-更新日期：2026-10-28。目录共86项，M5Stack 28/84、Metalio 1/2 已有产品板级模型（均含部分支持），57项尚无产品板级模型。本轮整合16个已交付型号后，另接入K147的GC9107批次；来源提交、检查及限制见 [集成记录](controller-integration-2026-10-28.md)。`partial` 不代表整机或任意固件已通过。
+更新日期：2026-10-28。目录共213项，M5Stack 28/84、Metalio 1/2、LILYGO 1/127 已有产品板级模型（均含部分支持），183项尚无产品板级模型。LILYGO 的127项是 Spark 商品身份清单，不是127款已适配设备。本轮整合16个已交付型号后，另接入K147的GC9107批次；来源提交、检查及限制见 [集成记录](controller-integration-2026-10-28.md)。`partial` 不代表整机或任意固件已通过。
 
 采用逐台交付：查官方原理图/驱动 → 实现真实引脚与器件 → 源码构建定向固件 → WASM 输出/输入检查 → 浏览器模型检查 → 记录缺项。每一步失败都保留原因；不能把 `none` 通用芯片模型改名后算作适配。
 
@@ -25,6 +25,19 @@ Unit Button U027、Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已�
 - DinMeter K134 / v1.1：ST7789V2与ST7789P3身份分别保留，屏幕、按压、编码器与官方固件定向验收已交付，RTC等仍缺失；见 [原版](dinmeter-runtime.md)与 [v1.1](dinmeter-v11-runtime.md)。
 - Stamp-S3 / S3A：基础版与S3A独立身份已实现按键和RMT灯，S3A另含G38灯供电；其它PIN/DIP版次仍需单独核对。
 - 经典ESP32的Atom-Lite、Matrix两版、Voice及C6的NanoC6、Nesso已交付部分板级模型；ESP32-H2/C5仍须先补芯片平台，不能用S3/C6冒充。
+
+## LILYGO 优先适配
+
+列表按 Spark 系列和产品 ID 登记，适配按具体硬件版本验收。T-Deck 系列的原版、Plus、Pro 和各自预装商品不能共用一条硬件定义。优先范围仍为已选定的六款；清单补齐不改变这个范围。来源热度与后续顺序见 [调查](research/lilygo-priority-2026-10-28.md)，当前可运行边界见 [LILYGO 进度](lilygo-onboarding.md)。
+
+| 系列 | 优先具体配置 | Spark 产品 ID | 当前缺项 |
+| --- | --- | --- | --- |
+| T-Display | TTGO T-Display 原版 4MB | `t-display` | 现有屏幕/双按键模型可运行定向 MicroPython；官方出厂镜像复位仍需解决 |
+| T-Display | T-Display-S3 非触摸版 | `t-display-s3` | 独立板型、i8080 屏幕通道、供电和按键，以及官方固件验收 |
+| T-Deck | 原版 SX1262 868/915MHz | `t-deck` | 独立板型、SPI 屏幕、GT911、键盘控制器、轨迹球及官方固件验收 |
+| T-Embed | T-Embed CC1101 原版 V1.0 | `t-embed-cc1101` | 独立板型、屏幕、编码器、按键、电源与官方固件验收；无线/NFC 单列边界 |
+| T-Beam | V1.2 SX1276 868/915MHz | `t-beam` | 独立板型、AXP2101、按键、GNSS 与官方固件验收；3D 待核验 |
+| T-Watch | T-Watch S3 原版 SX1262 | `t-watch-s3` | 独立板型、屏幕、触摸、电源与官方固件验收；3D 待核验 |
 
 ## 原始77项工作清单（保留编号）
 
