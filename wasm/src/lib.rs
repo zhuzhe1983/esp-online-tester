@@ -14,6 +14,8 @@ mod storage;
 pub use storage::*;
 mod network;
 mod ethernet;
+mod softap;
+pub use softap::*;
 mod ble;
 pub use ble::*;
 pub use ethernet::*;
@@ -51,6 +53,8 @@ pub struct Emu {
     /// the last drained outbox: (1 text | 2 binary, payload), addressed by index from JS
     out: Vec<(u8, Vec<u8>)>,
     ethernet_out: Vec<Vec<u8>>,
+    softap_out: Vec<Vec<u8>>,
+    softap_status: String,
     ble_out: String,
     audio_state: String,
     sd_image: Option<std::sync::Arc<std::sync::Mutex<Vec<u8>>>>,
@@ -187,7 +191,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     }
     Box::into_raw(Box::new(Emu {
         m,
-        out: Vec::new(), ethernet_out: Vec::new(), ble_out: String::new(), audio_state: String::new(),
+        out: Vec::new(), ethernet_out: Vec::new(), softap_out: Vec::new(), softap_status: String::new(), ble_out: String::new(), audio_state: String::new(),
         booted: false, rom_loaded: false, sd_image: None,
         #[cfg(target_arch = "wasm32")]
         jit: BrowserJit::default(),

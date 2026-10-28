@@ -4,6 +4,7 @@
 
 #[cfg(test)]
 mod tests;
+pub mod softap;
 
 pub fn mac_str(m: &[u8]) -> String { m.iter().map(|b| format!("{:02x}", b)).collect::<Vec<_>>().join(":") }
 
@@ -490,6 +491,8 @@ pub fn fcs(data: &[u8]) -> u32 {
 pub struct StationLink {
     ap: Option<VirtualAp>,
     net: Option<crate::net::VirtualNet>,
+    /// Opt-in host peer for the guest's SoftAP, separate from the guest's STA connection.
+    softap: Option<softap::VirtualSta>,
     /// the host relays raw Ethernet (`set_ethernet_relay`) instead of the virtual network answering
     relay: bool,
     /// Ethernet frames the station sent, for the network or the relay
@@ -532,7 +535,8 @@ impl StationLink {
     /// Put an access point and the network behind it on the air, replacing any there were. The
     /// queues, pacing and counts start again; the relay mode stays.
     pub fn attach(&mut self, ap: Option<VirtualAp>, net: Option<crate::net::VirtualNet>) {
-        *self = StationLink { ap, net, relay: self.relay, ..Default::default() };
+        let softap = self.softap.take().map(|peer| softap::VirtualSta::new(peer.cfg));
+        *self = StationLink { ap, net, softap, relay: self.relay, ..Default::default() };
     }
     /// `attach` with a fresh access point for `cfg` and network, logging as `debug` says.
     pub fn attach_new(&mut self, cfg: ApConfig, nat: Option<crate::nat::Nat>, debug: &crate::DebugFlags) {
@@ -543,7 +547,10 @@ impl StationLink {
     }
     /// What a guest reboot keeps: the host's access point, network and relay mode. The queues, the
     /// pacing and the counts start again.
-    pub fn surviving_reboot(self) -> Self { StationLink { ap: self.ap, net: self.net, relay: self.relay, ..Default::default() } }
+    pub fn surviving_reboot(mut self) -> Self {
+        if self.softap.is_some() { if let Some(ap) = &mut self.ap { ap.queue.retain(|f| f.frame.get(10..16) != Some(&softap::CLIENT_MAC)); } }
+        StationLink { ap: self.ap, net: self.net, softap: self.softap.map(|peer| softap::VirtualSta::new(peer.cfg)), relay: self.relay, ..Default::default() }
+    }
 
     pub fn ap(&self) -> Option<&VirtualAp> { self.ap.as_ref() }
     pub fn ap_mut(&mut self) -> Option<&mut VirtualAp> { self.ap.as_mut() }
@@ -578,6 +585,12 @@ impl StationLink {
     pub fn station_tx(&mut self, frame: &[u8], now_us: u64) {
         self.tx_frames += 1;
         let Some(ap) = &mut self.ap else { return };
+        if let Some(peer) = &mut self.softap {
+            let mut replies = peer.on_guest_tx(frame, now_us);
+            let room = RELAY_QUEUE.saturating_sub(ap.queue.len());
+            if replies.len() > room { peer.dropped += (replies.len() - room) as u64; replies.truncate(room); }
+            ap.queue.extend(replies);
+        }
         let Some(eth) = ap.on_station_tx(frame, now_us).and_then(|data| data_to_eth(&data)) else { return };
         if !self.relay || (eth.len() <= RELAY_FRAME_MAX && self.eth_tx.len() < RELAY_QUEUE) { self.eth_tx.push(eth); } else { self.tx_dropped += 1; }
     }
@@ -659,6 +672,33 @@ impl StationLink {
         if self.eth_rx.len() >= RELAY_QUEUE { return Err("Ethernet receive queue full".into()); }
         self.eth_rx.push(frame.to_vec());
         Ok(())
+    }
+
+    /// Enable a peer for the guest's SoftAP. A virtual AP also supplies the chip's air scheduler.
+    pub fn configure_softap(&mut self, cfg: Option<softap::ClientConfig>) -> Result<(), String> {
+        if cfg.is_some() && self.ap.is_none() { return Err("configure virtual Wi-Fi before the SoftAP client".into()); }
+        if let Some(ap) = &mut self.ap { ap.queue.retain(|f| f.frame.get(10..16) != Some(&softap::CLIENT_MAC)); }
+        self.softap = cfg.map(softap::VirtualSta::new);
+        Ok(())
+    }
+    /// Drive only this optional client's retry timers from the host bridge.
+    pub fn poll_softap(&mut self, now_us: u64) {
+        if let (Some(ap), Some(peer)) = (&mut self.ap, &mut self.softap) { if ap.queue.len() < RELAY_QUEUE { ap.queue.extend(peer.poll(now_us)); } }
+    }
+    pub fn softap_status(&self) -> String { self.softap.as_ref().map_or("{\"enabled\":false,\"state\":\"disabled\"}".into(), softap::VirtualSta::status_json) }
+    pub fn take_softap_frames(&mut self) -> Vec<Vec<u8>> { self.softap.as_mut().map_or_else(Vec::new, softap::VirtualSta::take_frames) }
+    pub fn receive_softap_frame(&mut self, frame: &[u8], now_us: u64) -> Result<(), String> {
+        let ap = self.ap.as_mut().ok_or("virtual Wi-Fi is not configured")?;
+        if ap.queue.len() >= RELAY_QUEUE { return Err("SoftAP receive queue full".into()); }
+        let peer = self.softap.as_mut().ok_or("SoftAP client is disabled")?;
+        ap.queue.push(peer.receive(frame, now_us)?);
+        Ok(())
+    }
+    /// Channel, RSSI and whether the receiver is the guest AP rather than its station.
+    pub fn rx_meta(&self, frame: &[u8]) -> (u8, i8, bool) {
+        if let Some(peer) = &self.softap { if frame.get(10..16) == Some(&softap::CLIENT_MAC) { return (peer.channel, -40, true); } }
+        let (channel, rssi) = self.ap.as_ref().map_or((1, -40), |ap| ap.rx_meta(frame));
+        (channel, rssi, false)
     }
 
     /// The end-of-run lines, one per line without a final newline: what the station sent and

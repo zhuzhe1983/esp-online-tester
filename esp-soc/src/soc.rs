@@ -133,6 +133,12 @@ pub trait SocBus: Bus {
     /// Queue a 14..=1518-byte Ethernet frame without FCS. Requires relay mode and an AP.
     /// At most 64 frames may await delivery; a full queue returns an error without changing it.
     fn receive_ethernet_frame(&mut self, _frame: &[u8]) -> Result<(), String> { Err("this chip has no Ethernet transport".into()) }
+    /// Virtual station talking to the guest's own SoftAP, independent of the STA relay.
+    fn configure_softap_client(&mut self, _cfg: Option<crate::wifi::softap::ClientConfig>) -> Result<(), String> { Err("SoftAP client is unsupported on this chip".into()) }
+    fn poll_softap_client(&mut self) {}
+    fn softap_client_status(&mut self) -> String { "{\"enabled\":false,\"state\":\"unsupported\"}".into() }
+    fn take_softap_frames(&mut self) -> Vec<Vec<u8>> { Vec::new() }
+    fn receive_softap_frame(&mut self, _frame: &[u8]) -> Result<(), String> { Err("SoftAP client is unsupported on this chip".into()) }
     fn cycles(&self) -> u64;
     /// Convert a positive bus-reference interval to CPU clocks, rounding up to
     /// the first CPU boundary at/after it. Fixed-clock chips compile to identity.

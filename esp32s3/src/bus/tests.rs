@@ -1919,3 +1919,28 @@ fn cardputer_ir_diode_load_matches_input_probe_but_releases_for_gpio_output() {
     assert_ne!(bus.read32(0x6000_4040).unwrap()&(1<<12),0,"push-pull GPIO output is not forced LOW by a fake permanent input");
     bus.write32(0x6000_4034,1<<12).unwrap();assert_eq!(bus.read32(0x6000_4040).unwrap()&(1<<12),0);
 }
+
+#[test]
+fn wifi_softap_rx_selects_ap_without_changing_station_metadata() {
+    for (enabled, source, broadcast, flags) in [
+        (false, esp_soc::wifi::softap::CLIENT_MAC, false, 3 << 28),
+        (true, esp_soc::wifi::softap::CLIENT_MAC, false, 1 << 29),
+        (true, [2, 0x53, 0x49, 0x4d, 0, 1], false, 3 << 28),
+        (true, [2, 0x53, 0x49, 0x4d, 0, 1], true, 1 << 28),
+    ] {
+        let mut bus = SocBus::new(0x20000, 0x20000, [0; 6]);
+        let cfg = esp_soc::wifi::ApConfig::parse("ssid=test,channel=6").unwrap();
+        bus.periph.wifi.link.attach(Some(esp_soc::wifi::VirtualAp::new(cfg, false)), None);
+        if enabled { bus.periph.wifi.link.configure_softap(Some(Default::default())).unwrap(); }
+        let buf = FIRST_DESC + 0x100;
+        bus.write32_unpriced(FIRST_DESC, (1 << 31) | 2048).unwrap();
+        bus.write32_unpriced(FIRST_DESC + 4, buf).unwrap();
+        bus.write32_unpriced(FIRST_DESC + 8, 0).unwrap();
+        bus.periph.wifi.rx_next = FIRST_DESC & 0xf_ffff;
+        let mut frame = vec![0; 30]; frame[0] = 0xb0; frame[10..16].copy_from_slice(&source);
+        if broadcast { frame[4..10].fill(255); }
+        bus.wifi_rx_deliver(&frame, 1_000);
+        assert_eq!(bus.read32_unpriced(buf).unwrap() & (3 << 28), flags);
+        assert_eq!(bus.read32_unpriced(FIRST_DESC).unwrap() & (1 << 30), 1 << 30);
+    }
+}

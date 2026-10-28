@@ -81,6 +81,15 @@ impl esp_soc::SocBus for SocBus {
         self.flush_ticks();
         self.periph.wifi.link.receive_relay_frame(frame)
     }
+    fn configure_softap_client(&mut self, cfg: Option<esp_soc::wifi::softap::ClientConfig>) -> Result<(), String> {
+        self.flush_ticks(); self.periph.wifi.link.configure_softap(cfg)
+    }
+    fn poll_softap_client(&mut self) { self.flush_ticks(); self.periph.wifi.link.poll_softap(self.cycles / (periph::CPU_HZ / 1_000_000)); }
+    fn softap_client_status(&mut self) -> String { self.periph.wifi.link.softap_status() }
+    fn take_softap_frames(&mut self) -> Vec<Vec<u8>> { self.flush_ticks(); self.periph.wifi.link.take_softap_frames() }
+    fn receive_softap_frame(&mut self, frame: &[u8]) -> Result<(), String> {
+        self.flush_ticks(); self.periph.wifi.link.receive_softap_frame(frame, self.cycles / (periph::CPU_HZ / 1_000_000))
+    }
     fn cycles(&self) -> u64 { self.cycles }
     fn next_deadline(&self) -> Option<u64> { Some(SocBus::next_deadline(self)) }
     fn irq_dirty(&mut self) -> &mut bool { &mut self.irq_dirty }

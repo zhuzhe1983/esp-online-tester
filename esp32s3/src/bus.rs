@@ -606,18 +606,16 @@ impl SocBus {
         let total = 48 + frame.len() + 4;
         if dw0 & (1 << 31) == 0 || buf == 0 || size < total { self.periph.wifi.link.drop_rx(); return; }
         // A network around's frames carry its own channel and signal (`VirtualAp::rx_meta`)
-        let (chan, rssi, log) = { let ap = self.periph.wifi.link.ap().unwrap(); let (c, r) = ap.rx_meta(frame); (c as u32, r, ap.log) };
+        let (chan, rssi, softap, log) = { let link = &self.periph.wifi.link; let (c, r, s) = link.rx_meta(frame); (c as u32, r, s, link.ap().is_some_and(|ap| ap.log)) };
         let mut b = Vec::with_capacity(total);
-        // rx_ctrl word 0 (silicon: a real broadcast beacon reads 0x111b20ad — bit 28 set, signed rssi in the low
-        // byte). The MAC has already address-filtered, so every delivered frame is "for us"; use the same flags
-        // for unicast and broadcast (an invented "filter_match" nibble made the blob discard unicast frames).
-        // filter-match nibble (silicon: broadcast beacon reads bit 28). A frame the hardware accepted because
-        // addr1 is our unicast MAC must carry the unicast-match bit (29), not the broadcast bit (28), or
-        // wDev_IndicateFrame drops it as "not for me".
+        // IDF v5.5.2 components/esp_wifi/include/local/esp_wifi_types_native.h leaves word 0
+        // bits 28/29 reserved. In its esp32-wifi-lib 01d52d9e ESP32-S3 libpp.a, ppRxPkt
+        // selects the STA callback when bit 28 is set, otherwise the AP callback for bit 29.
+        // A virtual-client frame must carry AP alone, or dual-mode firmware drops its auth
+        // request in the STA path. Keep the established STA metadata unchanged; this is
+        // inferred from that blob and exercised by the unmodified Xiaozhi test, not silicon.
         let bcast = frame.len() >= 5 && frame[4] & 1 == 1;
-        // filter-match nibble: bit 28 is the "accepted by the address filter" bit the blob's RX path
-        // requires (silicon: a broadcast beacon reads 0x111b20ad); unicast frames add bit 29.
-        let fm = if bcast { 1u32 << 28 } else { (1u32 << 28) | (1u32 << 29) };
+        let fm = if softap { 1u32 << 29 } else if bcast { 1u32 << 28 } else { (1u32 << 28) | (1u32 << 29) };
         let w0: u32 = fm | (rssi as u8 as u32);   // rssi (−40 dBm for the access point), 1 Mbps, legacy
         let w2: u32 = (chan << 16) | (chan << 20);                                        // channel, secondary
         let w5: u32 = 0xa6;                                                                // noise floor -90
