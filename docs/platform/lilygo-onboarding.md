@@ -8,14 +8,17 @@
 
 [Spark 系列与产品清单](research/lilygo-spark-product-inventory-2026-10-28.md)记录完整标识映射和排除项。[产品顺序与后续队列](research/lilygo-priority-2026-10-28.md)记录了关注度来源；[目录与固件审计](research/lilygo-catalog-audit-2026-10-28.json)保留每款产品的出厂固件调查和校验数据。
 
-| 优先适配产品 | 已有基础 | 当前运行边界 |
+| 具体产品 | 本轮已验证 | 尚未覆盖 |
 | --- | --- | --- |
-| TTGO T-Display 原版 | 产品配置、官方固件、官方 CAD、现有 ESP32 板级模型 | ST7789 135×240 与 GPIO0/35 双按键；不能推广到 S3 或 AMOLED |
-| T-Display-S3 非触摸版 | 产品配置、官方固件、官方 CAD | 尚无对应板级模拟器 |
-| T-Deck 原版 | 产品配置、官方固件、官方 CAD | 不混用 Plus/Pro；键盘、触摸和无线功能未适配 |
-| T-Embed CC1101 | 产品配置、官方固件、官方 CAD | 不混用普通 T-Embed/Plus；编码器、无线和 NFC 未适配 |
-| T-Beam V1.2 | 产品配置、官方固件、来源资料 | 暂无核准的该版 3D；尚无对应板级模拟器 |
-| T-Watch-S3 | 产品配置、官方固件、来源资料 | 暂无核准的该版 3D；不混用 2019/2020 版 |
+| [TTGO T-Display 原版](../evidence/classic-light-sleep-tdisplay/README.md) | 原厂 ROM、屏幕、GPIO0/35、轻睡眠、深睡眠与唤醒 | 真实电池、射频和实机验证 |
+| [T-Display-S3 非触摸版](lilygo-tdisplay-s3-runtime.md) | 官方 TFT 示例、GPIO i8080、LEDC 背光、GPIO0/14 | 原厂/LVGL 镜像仍卡在 DMA；整机保持 partial |
+| [T-Deck 原版](lilygo-t-deck-runtime.md) | 原厂 ROM、屏幕、GT911、35键、轨迹球、实际 CAD 点击 | 音频、SD、无线、电源及完整第二 MCU 执行 |
+| [T-Embed CC1101 V1.0](lilygo-tembed-runtime.md) | 原厂菜单、屏幕、按键、编码器、RMT8、CAD 交互 | 硬件检测仍 Mixed/Unknown；电池、NFC、RF、SD、音频、睡眠 |
+| [T-Beam V1.2 SX1276](lilygo-tbeam-runtime.md) | 原厂 ROM、GPIO38、PMU 短按、SX1276 数字收发、串口改频 | PSRAM、GNSS、OLED、真实 RF 和完整电源；3D 仅局部照片估算 |
+| T-Watch S3 原版 | 已有目录、出厂固件和来源 | 按暂停范围保留后续队列，未开始板级适配 |
+| T5 4.7 英寸 e-Paper | 已确认后续具体产品 `t5-4-7-inch-e-paper-v2-3` | 按暂停范围保留后续队列，未开始板级适配 |
+
+2026-10-28 收尾范围为前五款；主任务与三个并行任务均停止扩展。以上均未实机验证，partial 不代表所有外设或任意固件兼容。
 
 产品事实、来源抓取时间、源文件摘要、版次冲突和未知项保存在 `web/platform/knowledge/lilygo-*.json`。官方 CAD 的来源、变换和验证限制随 `web/platform/assets/lilygo-*` 资产保存；视觉预览不等于 1:1 全部验收通过，更不代表固件兼容。
 
@@ -37,7 +40,7 @@ Spark 官方配置中的 OSS 端点本轮未提供本站所需的 CORS 响应头
 
 `tools/platform-lilygo-runtime-test.mjs` 通过公共产品定义、平台 runtime 和真实 WASM worker 启动原有 MicroPython 价格屏测试。它检查固件绘制的 135×240 framebuffer，并通过固件读取 GPIO 验证两个按键的按下、释放、组合键及暂停后释放。此测试固件仅用于回归，不冒充出厂固件，也不进入公共固件目录。
 
-原版 TTGO 的官方出厂镜像也在真实浏览器中尝试运行：SHA-256 为 `85a2598f363a96c4d4eb4aebad5af81c286653eab0d20543110546e4d2c7b9ed`，从 ROM 启动、不使用 stub 或应用直启，串口输出 `Start`，并绘制真实启动 Logo。但随后约每 1.675 客体秒发生 `RTCWDT_RTC_RESET`，观察到持续复位。该镜像仍为未验证 trial，不能称为稳定兼容。保留这一失败结果，不用价格屏测试替换出厂默认项。
+早期原版 TTGO 出厂镜像每约 1.675 客体秒出现 RTCWDT 复位，负结果保留在首阶段回执。随后补齐 classic 轻睡眠后，固定镜像在 native 与实际 Worker 通过菜单、电压/扫描、深睡眠及唤醒，五个 RGB565 帧一致，未再出现 RTCWDT。详见 [EX233 扩展证据](../evidence/classic-light-sleep-tdisplay/README.md)。默认仍为同一个官方镜像，不以价格屏测试替换。
 
 目录检查使用 `python tools/validate-platform-catalog.py`；平台回归使用 `node --test tools/platform-*-test.mjs`。UI 检查包括厂商切换、Spark 搜索与版本选择、3D/2D、外壳材质、分享及嵌入页。未进行真实设备刷写或实机对比。
 

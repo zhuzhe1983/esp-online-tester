@@ -14,7 +14,7 @@ fn run_to(m: &mut esp32::Machine, seconds: f64) {
     }
     m.drain_console();
 }
-fn checkpoint(m: &esp32::Machine, name: &str) -> u64 {
+fn checkpoint(m: &mut esp32::Machine, name: &str) -> u64 {
     let (w, h, pixels, version) = m.bus.board.display().expect("factory display");
     assert_eq!((w, h), (135, 240));
     let hash = fnv(pixels.iter().flat_map(|p| p.to_le_bytes()));
@@ -42,13 +42,13 @@ fn external_factory_boot_buttons_and_deep_sleep_wake() {
     m.boot_rom();
     run_to(&mut m, 8.0);
     assert!(String::from_utf8_lossy(&m.console.all).contains("eFuse Vref:1100 mV"));
-    let menu = checkpoint(&m, "menu");
+    let menu = checkpoint(&mut m, "menu");
     assert_eq!(menu, 0x95c5_ea57_a02c_b645);
     m.bus.gpio_set_input(35, false);
     run_to(&mut m, 8.1);
     m.bus.gpio_set_input(35, true);
     run_to(&mut m, 9.5);
-    let voltage = checkpoint(&m, "voltage");
+    let voltage = checkpoint(&mut m, "voltage");
     assert_eq!(voltage, 0x4006_054a_b84c_daa8);
     let serial = String::from_utf8_lossy(&m.console.all);
     assert!(serial.contains("Detect Voltage..") && serial.contains("Voltage :0.00V"));
@@ -57,7 +57,7 @@ fn external_factory_boot_buttons_and_deep_sleep_wake() {
     run_to(&mut m, 10.1);
     m.bus.gpio_set_input(0, true);
     run_to(&mut m, 15.0);
-    let scan = checkpoint(&m, "scan");
+    let scan = checkpoint(&mut m, "scan");
     assert_eq!(scan, 0xe84d_73cc_7407_87bd);
     assert!(String::from_utf8_lossy(&m.console.all).contains("btn press wifi scan"));
     // Long right-button press uses the firmware's own light-sleep delay, then
@@ -67,7 +67,7 @@ fn external_factory_boot_buttons_and_deep_sleep_wake() {
     m.bus.gpio_set_input(35, true);
     run_to(&mut m, 23.0);
     let asleep = m.insns();
-    assert_eq!(checkpoint(&m, "deep-sleep"), 0x2699_3a53_c3c4_39a5);
+    assert_eq!(checkpoint(&mut m, "deep-sleep"), 0x2699_3a53_c3c4_39a5);
     run_to(&mut m, 24.0);
     assert_eq!(m.insns(), asleep, "deep sleep must park both cores");
     assert!(!m.bus.sw_reset());
@@ -78,7 +78,7 @@ fn external_factory_boot_buttons_and_deep_sleep_wake() {
     run_to(&mut m, 24.1);
     m.bus.gpio_set_input(35, true);
     run_to(&mut m, 33.0);
-    assert_eq!(checkpoint(&m, "wake-menu"), menu);
+    assert_eq!(checkpoint(&mut m, "wake-menu"), menu);
     let serial = String::from_utf8_lossy(&m.console.all);
     assert_eq!(serial.matches("Start\r\n").count(), 2);
     assert!(!serial.contains("RTCWDT"));
