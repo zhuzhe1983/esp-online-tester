@@ -47,7 +47,11 @@ impl Gdma {
                 0x24 => if r.running { (r.desc & 0x3ffff) | (1 << 20) } else { 0 },
                 0x28 => r.eof_desc, 0x2c => r.eof_desc, 0x30 => r.desc, 0x44 => r.pri, 0x48 => r.peri_sel,
                 0x60 => c.conf0, 0x64 => c.conf1, 0x68 => c.int_raw, 0x6c => c.int_raw & c.int_ena, 0x70 => c.int_ena,
-                0x78 => 0x1f | (1 << 1),   // OUTFIFO_STATUS: fifo empty
+                // OUTFIFO_STATUS (components/soc/esp32c3/register/soc/gdma_reg.h, IDF v5.5.4: FULL bit 0, EMPTY
+                // bit 1, CNT bits 7:2): a channel holding a descriptor has its data in the FIFO, so it is not
+                // empty (a C3 rev 0.4 read 0x14 for 5 bytes, idle 0x07800002; the count is not modelled).
+                // esp-hal's `start_transfer` waits for EMPTY to clear before starting the peripheral.
+                0x78 => if c.running && c.desc != 0 { 0 } else { 0x1f | (1 << 1) },
                 0x80 => c.link & 0xF_FFFF,
                 0x84 => if c.running { (c.desc & 0x3ffff) | (1 << 20) } else { 0 },   // OUT_STATE: dscr addr + state
                 0x88 => c.eof_desc, 0x8c => c.eof_desc, 0x90 => c.desc, 0xa4 => c.pri, 0xa8 => c.peri_sel,
@@ -116,4 +120,20 @@ impl Device for Gdma {
     /// bits 0..5 = out channels, bits 5..10 = in channels
     fn debug(&mut self, on: bool) { self.dbg = on; }
     fn irq_sources(&self) -> u64 { (0..GDMA_CHANNELS).fold(0, |m, i| m | ((self.out[i].irq() as u64) << i) | ((self.inp[i].irq() as u64) << (GDMA_CHANNELS + i))) }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// OUTFIFO_STATUS reads empty while idle and not empty once OUTLINK_START runs a descriptor.
+    #[test]
+    fn out_fifo_is_not_empty_while_a_channel_runs() {
+        let mut g = Gdma::new();
+        assert_ne!(g.read(0x78) & (1 << 1), 0, "idle: empty");
+        g.write(0x80, (1 << 21) | 0x1000);                              // OUT_LINK: START
+        assert_eq!(g.read(0x78) & (1 << 1), 0, "running: prefetched");
+        g.write(0x80, 1 << 20);                                         // OUT_LINK: STOP
+        assert_ne!(g.read(0x78) & (1 << 1), 0, "stopped: empty");
+    }
 }
