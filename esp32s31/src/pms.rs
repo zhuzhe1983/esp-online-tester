@@ -71,7 +71,9 @@ impl Permissions {
     fn target(address: u32) -> Option<(usize, usize)> {
         match address {
             0x2070_6000..=0x2070_67ff => Some((0, 6)),
+            0x2070_6800..=0x2070_6bff => Some((0, 7)), // LP_TEE (clock policy only)
             0x2070_6c00..=0x2070_6fff => Some((0, 8)),
+            0x2050_4000..=0x2050_43ff => Some((1, 22)), // TEE (clock policy only)
             0x2050_4400..=0x2050_47ff => Some((1, 23)),
             0x2050_4800..=0x2050_4bff => Some((1, 24)),
             0x2050_4c00..=0x2050_4fff => Some((1, 25)),
@@ -81,9 +83,11 @@ impl Permissions {
             0x2058_2000..=0x2058_2fff => Some((2, 31)), // IOMUX (separate GPIO ownership unconfirmed)
             _ => match address & !0xfff {
                 0x2070_0000 => Some((0, 0)), 0x2070_1000 => Some((0, 1)),
+                0x2071_0000 => Some((0, 14)), // LP_PERICLKRST
                 0x2070_2000 => Some((0, 2)), 0x2070_4000 => Some((0, 4)),
                 0x2071_5000 => Some((0, 17)), 0x2080_0000 => Some((0, 9)), 0x2080_1000 => Some((0, 10)), 0x2081_4000 => Some((0, 22)),
                 0x2d00_2000 => Some((1, 2)), 0x2c00_0000 => Some((1, 5)), 0x2050_5000 => Some((1, 26)),
+                0x2035_9000 => Some((1, 19)), // CNNT_SYS_REG
                 0x2038_a000 => Some((2, 10)), 0x2039_1000 => Some((2, 17)),
                 0x2058_0000 => Some((2, 29)), 0x2058_1000 => Some((2, 30)),
                 0x2058_5000 => Some((2, 33)), 0x2058_6000 => Some((2, 34)),

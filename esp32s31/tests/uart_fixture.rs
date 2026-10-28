@@ -850,3 +850,29 @@ fn external_s31_modem_clocks_share_actual_i2c_gate_and_reset_with_uart_configura
         eprintln!("modem-clocks mode={mode} steps={} stop={:?} transactions={}",r.steps,r.stop,m.bus.analog.transactions);
     }
 }
+
+#[test]
+#[ignore = "build firmware/s31-uart-probe and set S31_STARTUP_CLOCKS_ELF"]
+fn external_s31_startup_clocks_preserve_real_sha_and_apply_permissions_to_new_domains() {
+    use emu_core::Bus;
+    let path=std::env::var("S31_STARTUP_CLOCKS_ELF").expect("build firmware/s31-uart-probe and set S31_STARTUP_CLOCKS_ELF");
+    let elf=std::fs::read(path).unwrap();
+    for mode in 0u32..7 {
+        let mut m=esp32s31::Bringup::new();m.load_elf(&elf).unwrap();m.bus.load(0x2f070000,&mode.to_le_bytes(),4).unwrap();
+        let r=m.run(10000);
+        if mode==0 {
+            assert_eq!(r.stop,esp32s31::Stop::Waiting);assert!(m.bus.first_fault.is_none());
+            assert_eq!(m.bus.uart0.tx_out,b"S31 STARTUP CLOCKS SHA PRESERVE PASS\n");
+            assert_eq!(m.bus.read32(0x2f060000),Ok(1));assert_eq!(m.bus.sha.blocks(),1);
+            assert_eq!(m.bus.sha.read(0x40),Ok(0xbf1678ba));
+            assert_eq!(m.bus.startup_clocks.read(0x20359030),Ok(0xe0000000));
+        } else {
+            assert_eq!(r.stop,esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(if mode==3 {7} else {5})));
+            let f=m.bus.first_fault.as_ref().unwrap();
+            assert_eq!(f.address,[0,0x20509040,0x20393000,0x20587154,0x205043f8,0x20710018,0x20359030][mode as usize]);
+            assert_eq!(f.reason,if mode==2 {emu_core::Fault::Unmapped} else {emu_core::Fault::Prohibited});
+            assert!(m.bus.uart0.tx_out.is_empty());assert_eq!(m.bus.read32(0x2f060000),Ok(0));
+        }
+        eprintln!("startup-clocks mode={mode} steps={} stop={:?} sha-blocks={}",r.steps,r.stop,m.bus.sha.blocks());
+    }
+}

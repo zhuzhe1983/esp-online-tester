@@ -324,3 +324,12 @@ fault without a transaction or PASS. FORCE_ON does not replace software EN.
 The UART3 disabled-core case clears CLK_EN bit7 while retaining SYS/APB bits0/1;
 clearing SYS is a different gate. This verifies configuration and existing I²C
 behavior, not radio, network, auxiliary UART traffic or sleep/wakeup behavior.
+
+`startup-clocks-probe.S` executes the documented unused-clock shutdown sequence
+for the supported cold configuration words. Set `S31_STARTUP_CLOCKS_ELF`.
+It preserves USB OTG reset bits, checks TEE automatic clock policy, and computes
+a real SHA256 block through the existing SHA device before gating/restoring its
+clock and reading the unchanged digest. Six negative modes access gated SHA,
+unimplemented ETM data, unsupported LCDCAM activation, or a PMS-denied TEE,
+LP_PERICLKRST or CNNT word. No mode replaces a denied read with a fake value.
+These tests do not implement the data planes behind the new clock requests.
