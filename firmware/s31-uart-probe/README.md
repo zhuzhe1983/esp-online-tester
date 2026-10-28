@@ -380,3 +380,31 @@ exceptions without bus faults;the default0 stops at the first exception. It
 never changes PC/registers or skips guest instructions. The reusable remote
 probe exposes the same bounded option and records its value. This fixture does
 not prove that the private Plus firmware handles its own FPU exception correctly.
+
+
+`fpu-reason-probe.S` checks EXT_ILL for six actual FS-Off full/compressed floating
+loads and stores. Set `S31_FPU_REASON_ELF`. The strict default reaches the guest's
+FAIL because the memory reason remains zero; the explicit private S31 upstream
+compatibility policy produces six real traps, handler `mret` returns, and PASS
+with binary32 1.5 stored by actual FSW. No host FS/PC repair is used. The reference
+Espressif emulator0.51.0 also passes this source image after real ROM boot:
+
+```sh
+esptool --chip esp32s31 elf2image --flash-mode dio --flash-size 16MB \
+  --flash-freq 40m --output output/s31-uart-probe/fpu-reason-probe.bin \
+  output/s31-uart-probe/fpu-reason-probe.elf
+python3 - <<'PYTHON'
+from pathlib import Path
+p = Path('output/s31-uart-probe')
+(p / 'fpu-reason-rom-image.bin').write_bytes(bytes([255]) * 8192 + (p / 'fpu-reason-probe.bin').read_bytes())
+PYTHON
+<reference-esp-emu> --chip esp32s31 \
+  --firmware output/s31-uart-probe/fpu-reason-rom-image.bin \
+  --net user,restrict=yes --timeout 1s --exit-on 'S31 FPU MEMORY' --log-color never
+```
+
+Require `S31 FPU MEMORY REASONS PASS`; exit0 alone is not success. Generated
+source ELF/BIN stays in ignored output. This reference behavior conflicts with
+the public IDF S31 load/store reason-bug capability, so the private runner's
+`--upstream-fpu-memory-reason` remains explicit and off by default. See
+`docs/platform/s31-runtime.md` for evidence and limitations.

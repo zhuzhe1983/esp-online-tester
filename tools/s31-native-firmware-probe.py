@@ -52,6 +52,7 @@ def main():
     parser.add_argument("--rom", required=True)
     parser.add_argument("--runner", default="target/release/examples/bringup")
     parser.add_argument("--output", required=True)
+    parser.add_argument("--upstream-fpu-memory-reason", action="store_true", help="explicit official-emulator0.51.0 S31 reason-bit compatibility,not silicon verified")
     parser.add_argument("--guest-exceptions", type=int, default=0, help="bounded execution of architectural guest handlers; unknown bus faults still stop, maximum1024")
     parser.add_argument("--rom-spi0-shadow", action="store_true", help="explicit inferred legacy SPI0 config shadows; strict mode remains default")
     parser.add_argument("--systimer-from-cpu", action="store_true")
@@ -98,6 +99,8 @@ def main():
         raise ValueError("input does not contain the expected S31 merged image layout")
     command = [args.runner, "--rom", "--usb-host", "--strap=0x12", "--flash=/dev/stdin"]
     command.append("--guest-exceptions=" + str(args.guest_exceptions))
+    if args.upstream_fpu_memory_reason:
+        command.append("--upstream-fpu-memory-reason")
     if args.watch_pc1:
         command.append("--watch-pc1=" + args.watch_pc1)
     if args.rom_spi0_shadow:
@@ -134,7 +137,7 @@ def main():
     result = subprocess.run(command, input=data, capture_output=True, timeout=120, check=True)
     report = {"runnerSha256": runner_sha, "stepBudget": args.steps, "guestExceptionLimit": args.guest_exceptions, "source": receipt, "romSha256": hashlib.sha256(pathlib.Path(args.rom).read_bytes()).hexdigest(),
               "partitions": partitions, "images": images,
-              "developmentInputs": {"strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "sfdpInterval": args.nor_sfdp, "bbpllInputHz": args.bbpll_hz, "systimerFromCpuCycles": args.systimer_from_cpu, "rtcTimerFromCpuCycles": args.rtc_timer_from_cpu, "rtcCalibrationFromCpuCycles": args.rtc_calibration_from_cpu, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig, "analogBodSeed": args.analog_bod, "unresolvedPeripheralPads": args.peripheral_pad, "psramModeResponses": args.psram_mr, "psramBackingBytes": args.psram_bytes},
+              "developmentInputs": {"upstreamFpuMemoryReason": args.upstream_fpu_memory_reason, "strap": "0x12", "usbHost": True, "norIdentity": args.nor_jedec, "sfdpInterval": args.nor_sfdp, "bbpllInputHz": args.bbpll_hz, "systimerFromCpuCycles": args.systimer_from_cpu, "rtcTimerFromCpuCycles": args.rtc_timer_from_cpu, "rtcCalibrationFromCpuCycles": args.rtc_calibration_from_cpu, "otpImage": None, "spi0LegacyShadows": args.rom_spi0_shadow, "analogBiasSeed": args.analog_bias, "analogPerifGlitchSeed": args.analog_perif_glitch, "analogDigSeed": args.analog_dig, "analogBodSeed": args.analog_bod, "unresolvedPeripheralPads": args.peripheral_pad, "psramModeResponses": args.psram_mr, "psramBackingBytes": args.psram_bytes},
               "uart": result.stdout.decode("utf-8", errors="replace"),
               "diagnostic": result.stderr.decode("utf-8", errors="replace"),
               "storage": "firmware bytes only in host/guest RAM and subprocess pipe; not written to disk"}

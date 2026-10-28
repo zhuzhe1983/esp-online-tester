@@ -3,9 +3,10 @@
 Status on 2026-10-28: Metalio INK4 Plus remains **unavailable** in this platform.
 The private S31 core now executes the original ROM, bootloader and official
 application entry with explicitly declared development inputs. It currently stops
-after Flash initialization at a real FS-Off floating-point exception. Bounded
-execution of its guest handler then hits a gated watchdog access; that handler
-has not returned successfully. No product framebuffer or complete
+after Flash initialization at a real FS-Off floating-point exception in strict
+mode. An explicit upstream-emulator compatibility option now lets the real
+guest handler return and retire that instruction; startup then stops at the
+unsupported crypto-domain clock control. No product framebuffer or complete
 board support has been established. The earlier separate Espressif emulator
 baseline below is retained for comparison, not presented as this core's result.
 
@@ -1736,3 +1737,55 @@ investigation;no FPU state or watchdog gate is forced merely to pass startup.
 See the [Flash wait receipt](evidence/s31-bringup/waiti.json),
 [first-exception observation](evidence/s31-bringup/waiti-plus-2.0.68-first.json)
 and [guest-handler observation](evidence/s31-bringup/waiti-plus-2.0.68-handlers.json).
+
+
+## Explicit upstream FP memory reason compatibility (2026-10-28)
+
+The first FLW exception was compared with the fixed official Espressif emulator
+v0.51.0 using the same complete Plus2.0.68 image. Its actual guest executes
+`csrrw a0,0x7f0,zero` at`2f00017e` and reads EXT_ILL=1. The handler returns to
+`4006ba84`, retries the original `53c7a787` FLW, advances to`4006ba88`, and loads
+binary32 1.0 into F15. Temporary breakpoints are removed before each step; no
+host register/FS/PC edit or firmware patch is used. The public reference reports
+22 ROM intercepts, so this is evidence of that emulator's behavior, not measured
+silicon. Its debug target does not expose arbitrary CSR numbers as register
+indices: an earlier attempt to read `p300`/`p7f0` was inconclusive and is retained
+as a negative observation, not interpreted as mstatus or EXT_ILL.
+
+This differs from the fixed public ESP-IDF6.1 S31 `soc_caps.h`, which declares
+`SOC_CPU_HAS_FPU_EXT_ILL_BUG=1`. The public vector load/store fallback is also
+conditional on a P4-only revision option. The image reports a private dirty SDK
+revision; neither the exact hardware revision behavior nor that private SDK is
+known. Therefore strict behavior remains the default. The private S31 runner's
+explicit `--upstream-fpu-memory-reason` option adds the FPU reason bit only after
+a real FS-Off FLW/FSW illegal-instruction trap, including their compressed forms.
+It does not enable FS, advance PC, suppress the exception, change mtval/mepc,
+or convert unrelated illegal instructions or data faults. A per-hart diagnostic
+counter records each compatibility intervention. Shared RISC-V/P4/C3/C6 code is
+unchanged; no product uses this option implicitly.
+
+The source fixture `fpu-reason-probe.S` checks six real FS-Off traps: FLW, FSW,
+C.FLW, C.FSW, C.FLWSP and C.FSWSP. For each, its own handler checks EXT_ILL,
+enables FS, returns with `mret` and retries. The complete guest checks stored
+binary32 1.5 and the six-event mailbox. Strict mode fails its explicit reason
+check; the opt-in path prints PASS. The same source-built image, loaded by the
+official emulator's real ROM at Flash offset`2000`, also prints PASS. Additional
+unit cases preserve unrelated exception behavior, default/off policy, and
+correct hart attribution. These diagnostic images are ignored local outputs,
+not firmware catalog entries or replacements for Plus's official image.
+
+With the opt-in reason and the prior declared electrical/clock inputs, the
+unmodified full Plus2.0.68 image handles one actual FPU exception and proceeds.
+Its next recorded fault is a store to `HP_SYS_CLKRST_CRYPTO_CTRL0_REG` at
+`20587058`, PC`40000b3e`, after72,370,696 instructions. This is the next real
+unsupported clock/reset path, not a successful board boot. Strict-mode results
+are retained separately. **INK4 Plus remains unavailable, with no framebuffer.**
+
+Use `tools/s31-upstream-fpu-probe.py` with caller-supplied firmware URL/hash,
+reference executable/hash and an ignored output directory to reproduce the
+reference handler observation. It keeps firmware only in RAM/stdin, validates
+fixed instruction signatures, records only relevant architectural values, and
+closes its own debugger/process even on failure. Reference downloads, source
+versions, exact observations, negative history and validation are in the
+[FP reason receipt](evidence/s31-bringup/fpu-reason.json) and
+[original image result](evidence/s31-bringup/fpu-plus-2.0.68-compatible.json).

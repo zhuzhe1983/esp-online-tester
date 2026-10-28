@@ -1,0 +1,471 @@
+{
+  "date": "2026-10-28",
+  "base": "e449922526a53f4b96292a0398bc4f0e6b44b489",
+  "scope": "Private S31 explicit upstream FP-memory exception-reason compatibility. Strict default,shared RV32 core,production chips/boards/UI unchanged; INK4 Plus unavailable.",
+  "sources": [
+    {
+      "name": "waiti-vectors.S",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/riscv/vectors.S",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/riscv/vectors.S",
+      "fetchedAt": "2026-10-28T01:22:56Z",
+      "status": 200,
+      "mediaType": "text/plain",
+      "bytes": 18299,
+      "sha256": "2a00ac4bc0ce194e98922d76d1baffaa16e1d7f1790b1d674bba8029f5841dbe"
+    },
+    {
+      "name": "s31-soc_caps.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/include/soc/soc_caps.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/include/soc/soc_caps.h",
+      "fetchedAt": "2026-10-27T11:04:53Z",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 37239,
+      "sha256": "6b85717b0b0e34c03b9a2c6a474415b8491b890ad5b2cc43891a1a35cfb4e814",
+      "status": 200
+    },
+    {
+      "name": "s31-hp_sys_clkrst_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/hp_sys_clkrst_reg.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fff9895c82d744c7237be8847347bdd1b07c6643/components/soc/esp32s31/register/soc/hp_sys_clkrst_reg.h",
+      "fetchedAt": "2026-10-27T14:15:34Z",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 229183,
+      "sha256": "1ea5f6783bf861b4f59e90799db46e5746ce0f6d52440ec0339661a5f9241043",
+      "status": 200
+    },
+    {
+      "name": "esp-emulator-wasm.tar.gz",
+      "url": "https://github.com/espressif/esp-emulator/releases/download/v0.51.0/esp-emu-0.51.0-wasm.tar.gz",
+      "finalUrl": "https://release-assets.githubusercontent.com/github-production-release-asset/1237876767/1cce2ed1-23ee-44ed-9440-08c29c56e06e",
+      "finalUrlSha256": "a693e2b955e0d02c60b9559af442643cb3de8bcdfff2574f0dd72d7c19643f09",
+      "redaction": "Expiring signed release query removed;full final URL hash retained.",
+      "fetchedAt": "2026-10-28T01:35:15Z",
+      "mediaType": "application/octet-stream",
+      "status": 200,
+      "bytes": 2369090,
+      "sha256": "b411ddf0faa7f213a991344ec0536801d8ea24f1d3dd6aa04be5b64a986e8d2a"
+    },
+    {
+      "name": "esp-emulator-native.tar.gz",
+      "url": "https://github.com/espressif/esp-emulator/releases/download/v0.51.0/esp-emu-0.51.0-aarch64-apple-darwin.tar.gz",
+      "finalUrl": "https://release-assets.githubusercontent.com/github-production-release-asset/1237876767/14f51c36-c0fb-4dd2-8ba2-9317feface50",
+      "finalUrlSha256": "695a6993fd6ed0caed830de2bf947c8e9f7d5772598c87ed79823a31793c2622",
+      "redaction": "Expiring signed release query removed;full final URL hash retained.",
+      "fetchedAt": "2026-10-28T01:35:17Z",
+      "mediaType": "application/octet-stream",
+      "status": 200,
+      "bytes": 3471329,
+      "sha256": "ab02524bd286ce84577639731d0e48d623ce9be65e45d9e1246dd220c1476102"
+    }
+  ],
+  "sourceInterpretation": "Public IDF6.1 fff9895c82d744c7237be8847347bdd1b07c6643 marks S31 FPU memory EXT_ILL bug; vectors.S fallback additionally tests a P4-only revision option. Original image reports private v6.1-dirty. Official emulator0.51.0 actually supplies FPU reason1 for all six forms. This establishes upstream compatibility,not silicon behavior or matching private SDK.",
+  "semantics": {
+    "default": "Strict default unchanged,reason0 for FSOff FP loads/stores. Option must be explicit.",
+    "optIn": "After a real FSOff illegal-instruction trap,decode mtval using actual MISA; only FLW/FSW including compressed forms OR the FPU reason bit. Counts perhart.",
+    "preserved": "No PC/FS/mepc/mtval/register repair; trap remains visible. Guest handler must read reason,enable FS,mret and retry. Other illegal instructions/data faults unchanged. Shared CPU code untouched.",
+    "unsupported": [
+      "Measured silicon behavior or exact private SDK revision",
+      "Crypto-domain startup clock/reset controls at next actual access",
+      "Plus board/display/complete application readiness"
+    ]
+  },
+  "referenceHandler": {
+    "receipt": "fpu-upstream-handler.json",
+    "script": "tools/s31-upstream-fpu-probe.py",
+    "method": "Original full firmware viaRAM/stdin. Temporary debug breakpoints removed before step; unchanged FLW signature checked. Actual guest CSRRW a0,EXT_ILL,zero observed; no GDB CSR-index guess.",
+    "limitations": "Official emulator uses22ROMintercepts. Debug stop behavior is not target silicon evidence. Original public probe logs kept only in ignored local output;selected PC/reason/F15 values published."
+  },
+  "fixture": {
+    "source": "firmware/s31-uart-probe/fpu-reason-probe.S",
+    "elfSha256": "f1b1e55f5673fe838f5c6299e1f565d07cde9a59e059e82106ec421febbea4a8",
+    "espImageSha256": "ff5411f35928bb1278c9c6e83d57b631beaff524888b673a074dd1d3f9417b29",
+    "romImageSha256": "5aef90e8449aec4a52dd119560082d7ae22a2efd95944c1a895382c06f0f0937",
+    "sixInstructions": [
+      "FLW",
+      "FSW",
+      "C.FLW",
+      "C.FSW",
+      "C.FLWSP",
+      "C.FSWSP"
+    ],
+    "privateResults": [
+      "S31 FP memory policy compatibility=false steps=163 actual-exceptions=1",
+      "S31 FP memory policy compatibility=true steps=270 actual-exceptions=6"
+    ],
+    "referenceUart": "ESP-ROM:esp32s31-20251218\nBuild:Dec 18 2025\nrst:0x1 (POWERON),boot:0x12 (SPI_FAST_FLASH_BOOT)\nSPI mode:DIO, clock div:2\nload:0x2f000000,len:0x144\nentry 0x2f000000\nS31 FPU MEMORY REASONS PASS\n",
+    "referenceLogSha256": "78923fb40d6c6ce57539fb9da76c4e5a664ab77dec4469ed4065cc1effcd6dfc",
+    "method": "Source ELF converted with esptool esp32s31 DIO40MHz16MB,placed at flash offset0x2000 in source-generated image;actual reference ROM loads and executes it. Require PASS and noFAIL,not merely process exit0. Generated source binaries ignored,not product firmware."
+  },
+  "sanitization": {
+    "fpu-plus-2.0.68-compatible.json": {
+      "original": "53a2ca79dbd73eaa1ba8d8e74cb74f4fde694be3a637f15e9910164bbd8e1820",
+      "sanitized": "a48e2be2791790a0807dcb5dbf0c70ecf5b6941f80d1ff16ba9578641de09c10"
+    },
+    "fpu-plus-2.0.68-strict.json": {
+      "original": "d3185ae4b4a38ac04f442acf9f2cbb1a27abd2f55fee696e257d59fd7792900f",
+      "sanitized": "584a59ca70b29ef2cbebc771042575ad789f48bd127c15b3ce7a0d6fddb91d40"
+    }
+  },
+  "officialOutcomes": {
+    "strict": {
+      "receipt": "fpu-plus-2.0.68-strict.json",
+      "steps": 72246976,
+      "pc": "0x2f80927c",
+      "address": "0x20581064",
+      "reason": "Guest reason0 handler still enters gated TIMG1WDT access;no compatibility implicitly applied."
+    },
+    "compatible": {
+      "receipt": "fpu-plus-2.0.68-compatible.json",
+      "steps": 72370696,
+      "actualExceptionsResumed": 1,
+      "compatibilityCounter": [
+        1,
+        0
+      ],
+      "pc": "0x40000b3e",
+      "access": "store32",
+      "address": "0x20587058",
+      "reason": "HP_SYS_CLKRST_CRYPTO_CTRL0 unsupported control after actual lazy-FPU handler recovery. No framebuffer."
+    }
+  },
+  "negativeHistory": [
+    {
+      "originalReceiptSha256": "fb8218d6bdf628868d263c87da585be6b424f3ebd9f9a3925402687525b31eae",
+      "outcome": "FirstreferenceGDB p300/p7f0 used register indices,not CSR identifiers;zero responses establish no CSR behavior. Replaced with actual guest CSRRW observation. Full rawregisterpackets remain unpublished."
+    }
+  ],
+  "logs": [
+    {
+      "name": "fpu-stage-arm.log",
+      "sha256": "a64cb179745cb382c2f95fe5a14c7505831ce97ab5628c8113d02e028600e647",
+      "rustPassed": 53
+    },
+    {
+      "name": "fpu-stage-ble-api.log",
+      "sha256": "56f7b531026607ec2ff0e80fd4ad5ac392cc1ce24834d9f43b39fbec9d406cb5",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-ble-connection.log",
+      "sha256": "57cbc65214667e93e03ac82a235612b8b34cf8f08ce07e234d7cd7dea085d0dd",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-browser-contract.log",
+      "sha256": "9925dacba50d74c73fe6c731157f5ca9a176a2c326f749201989f0708b6e98f7",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-browser-python.log",
+      "sha256": "83ad79a1e26467e2445a1816751b66d64a11dbbbac25b9002f6e48960864f468",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-build.log",
+      "sha256": "546a98997c6a29b8dcb14a39925105f74b97befc795a9aa92319f2a223f370fc",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-clippy-native.log",
+      "sha256": "0d45aaa04b6672ad3f86a4964f059bb6a60265dc40be6b7188f94a3b1b91f9e7",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-clippy-wasm.log",
+      "sha256": "9f6f19dab41a682010bc1bea04de20ebf3ed467b9b52989f735c579c0f0b907a",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-fixtures.log",
+      "sha256": "599a98a22771d87be7d91cf26a3a61a5d7624e484b62b041713d8eff780ff3de",
+      "rustPassed": 42
+    },
+    {
+      "name": "fpu-stage-jit.log",
+      "sha256": "c6fa6ac9a25fa35024d3bedaac474f23eb1fbeecebcfe1df73512a7cb610a7df",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-platform-all.log",
+      "sha256": "7f95854aea4f8e9dc8423c053045d604bf390a0e1a5369c698bea3d674debf09",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-profiling.log",
+      "sha256": "d7c4f714c7bae089c206907077eed2a898bcd5775a031f24476876fceeda7a36",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-receipt-historical.log",
+      "sha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-receipt-m1.log",
+      "sha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-receipt-test.log",
+      "sha256": "5e18c29ec6f6798118224002b4fc65281464237480694c0236e01bc4bb897823",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-receipt-verify.log",
+      "sha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-recording.log",
+      "sha256": "399fddbf88243d83ab600a3563adbf729fd9d8df9ec282e4b76cef835734f284",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-rust.log",
+      "sha256": "c34ab1805590f93a30f2c69efd1379224c158b6c5160a130f08017bf33889a22",
+      "rustPassed": 1479
+    },
+    {
+      "name": "fpu-stage-s31-wasm.log",
+      "sha256": "ce57012356d9701c6febade2de50888eee79f0f75ddf6433948c66f8ed1f4567",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-stable.log",
+      "sha256": "b28359af7d15a0198071aec4bb7a5c587b079f6794305149ae91e970a1319a6d",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-stopwatch.log",
+      "sha256": "1f365da4581dfcf61898bc2845b8bb216b13e50297ceb326d6597977fdb9226b",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-timing-api.log",
+      "sha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-vq.log",
+      "sha256": "d0e32f95fd80a1210362cfcd8fa613afe2c66e9d4c2ae32a0a9dbc57244ef8ca",
+      "rustPassed": 43
+    },
+    {
+      "name": "fpu-stage-wasm-build.log",
+      "sha256": "229b5973b725c26b8a6af4672919236bf2ff7a9611e946aa62d0a70d4bb56655",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-wasm-sections.log",
+      "sha256": "27004dbf0bd2f9f05482afe363bad3efe77233ce2baa0d4219e743ee0c7a996b",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-wasm-tdisplay.log",
+      "sha256": "003e5b41d438049ce253320c47402de64f8adcbab6ecff04274746808d98ce85",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-wasm.log",
+      "sha256": "a3665bab4cef4fefb113f1561b891e6a668b86f8bd19b2285967a6e9f465d702",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-worker-channel.log",
+      "sha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-worker-pacing.log",
+      "sha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158",
+      "rustPassed": null
+    },
+    {
+      "name": "fpu-stage-worker-touch.log",
+      "sha256": "b1b0fddad6c7fd5404207b402bc0fc0eed4052095a6670ca606dfadf292383a9",
+      "rustPassed": null
+    }
+  ],
+  "validationSummary": {
+    "workspaceRustPassed": 1479,
+    "privateS31UnitPassed": 115,
+    "sourceRomFixturesPassed": 42,
+    "bothClippyWarningsDenied": true,
+    "privateWasmCompile": true,
+    "allLocalCiGroups": true,
+    "platformTestsPassed": 76,
+    "wasmDifferentialCases": 111126,
+    "gpioWaveformCases": 24,
+    "noProductUiChanges": true
+  },
+  "artifacts": {
+    "esp32s31/src/lib.rs": "b017774a4ec4a1e966d4c827a16b6d4df6c3461a677c3fb972afefc4ce0e608e",
+    "esp32s31/tests/uart_fixture.rs": "750f2a0e189546c51a4965df8646dfe0f388775499f34bea2b2f2626c0946935",
+    "esp32s31/examples/bringup.rs": "a5354446d76154ea78971a010307f6915b6b9df567b6d7d3362f10383ecef5b6",
+    "firmware/s31-uart-probe/fpu-reason-probe.S": "791ebd89f186e45629bc4e48bbf3a0e9f568e581b5abae938585615b6cd35b63",
+    "firmware/s31-uart-probe/build.sh": "b6ef4507b6353b686e1b6af934ef5fae78287ef485062ba268b1c561d4e3c157",
+    "tools/s31-native-firmware-probe.py": "a232ce4501ea544d145a571c2b64c4db3f1867566d59b53f8d590e186a8cf051",
+    "tools/s31-upstream-fpu-probe.py": "c342f5aee5d83dc6540f4589a17254e1c94aa53ca857d44c1a966d11ab4cf7a5"
+  },
+  "productionSourceComparison": {
+    "reference": "59a912115da36bd84e2e69032182421fdb4389ca",
+    "filesChecked": 379,
+    "different": []
+  },
+  "performance": {
+    "mainGuard": {
+      "receipt": "fpu-perf.json",
+      "percent": [
+        -2.8455846889522074,
+        2.7454039169756417,
+        0.19626972601469728
+      ]
+    },
+    "sameProductionSource": {
+      "receipt": "fpu-same-source-perf.json",
+      "percent": [
+        -1.8197645812042307,
+        -0.4123100075002384,
+        -0.4942148361071541
+      ]
+    },
+    "interpretation": "Every UART/instruction/cycle result identical. Main84 cross-branch only broad guard;fixed59a91211 matches all379production source/manifests. No S31 speed claim. S3coreunchanged;Pocketconditionalnotapplicable."
+  },
+  "commands": [
+    "rustup update stable",
+    "cargo build --release --workspace",
+    "cargo clippy --workspace --all-targets -- -D warnings",
+    "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "ESP32SIM_ROM_DIR=<fixedROMdir> cargo test --release --workspace -- --include-ignored --skip external_",
+    "RISCV_TOOLCHAIN_PREFIX=<toolchain prefix> bash firmware/s31-uart-probe/build.sh output/s31-uart-probe",
+    "All42fixture variables follow firmware/s31-uart-probe/README.md; cargo test --release -p esp32s31 --test uart_fixture -- --include-ignored --nocapture --test-threads=1",
+    "cargo check --release --target wasm32-unknown-unknown -p esp32s31",
+    "Unchanged .github/workflows/ci.yml full local command groups;per-group log hashes retained.",
+    "tools/s31-native-firmware-probe.py with source/hash,ROM,stepBudget and developmentInputs in official receipts;guestExceptionLimit32,upstreamFpuMemoryReasonfalseortrue",
+    "tools/s31-upstream-fpu-probe.py --firmware-url <receipt source URL> --sha256 <receipt source SHA> --runtime <fixed reference executable> --runtime-sha256 <receipt runtimeSHA> --output <ignored output>",
+    "Source fixture esptool/ROM commands in firmware/s31-uart-probe/README.md"
+  ],
+  "openPrCheck": {
+    "checkedAt": "2026-10-28T01:47:30Z",
+    "repositories": [
+      {
+        "repository": "mikroverk/esp32sim",
+        "openPullRequests": 17,
+        "checked": [
+          {
+            "number": 316,
+            "head": "c55a19ae8bd29c581e2c00ec5323e752c9b215c9",
+            "files": 2,
+            "sortedPathListSha256": "40e5e1a09bb5974cfd4c85250ca238f3bc2bffbf4a47fcef61574d14b599909e"
+          },
+          {
+            "number": 315,
+            "head": "f742cb5fff908044df127b4ae3723cfad8978cc9",
+            "files": 1,
+            "sortedPathListSha256": "458cc8a1f978156fc32ea87b4592f5affcfc871860e98a971bb183dd1bf9c4c5"
+          },
+          {
+            "number": 314,
+            "head": "8e169242e5263f3a7a1b76778ec0db804811dd27",
+            "files": 2,
+            "sortedPathListSha256": "4394e3a78cabe6326b4062d6edc78370c7c0c2801508866a5674dabde9db3458"
+          },
+          {
+            "number": 313,
+            "head": "bdad9bf8c00744e4cc0125ea1663fce0973f6717",
+            "files": 1,
+            "sortedPathListSha256": "bab76d25569045ebfd1de889ec181d8b3fedb66387927d07de20f64f52815e4a"
+          },
+          {
+            "number": 312,
+            "head": "935f5e51b8e8d2a3a27ba5ae3ef99a9bcbda2afb",
+            "files": 2,
+            "sortedPathListSha256": "ddeca83b2bbcd07c39405dc475274a57e72d435d070859c9ef09e9fdf53f3245"
+          },
+          {
+            "number": 311,
+            "head": "be0d9e2cf7c92862b47c922ea5b989f7fcd427bd",
+            "files": 9,
+            "sortedPathListSha256": "85a54f33a788ad9134efb3d7ced1f86a9597d2bbb3da28c61c035c940b37b603"
+          },
+          {
+            "number": 310,
+            "head": "5bb5cf87b86d7f5eed8fbfeb2281fff5c294dacb",
+            "files": 17,
+            "sortedPathListSha256": "42e1a68d52dbfdfd4f5f174a5fa5f1d97b264c529b38bd6ea96cc438b867e959"
+          },
+          {
+            "number": 309,
+            "head": "03c6f59c5aa7326708c59c8f9977d1fefcd0bcee",
+            "files": 1,
+            "sortedPathListSha256": "4be198af9aee6c1836e00522fe0b2a9f6989ea62e71d315f821fad2b54fcb152"
+          },
+          {
+            "number": 308,
+            "head": "c1a3ea31881c9bf08f7d40990378758ff8578e7e",
+            "files": 1,
+            "sortedPathListSha256": "873dcc4715aa53582fdb977def00be184a13ace1745283c71b629fe8f42a4e6c"
+          },
+          {
+            "number": 307,
+            "head": "c7b856f42cf4d39d9b8bf9eb226f354888030bae",
+            "files": 1,
+            "sortedPathListSha256": "8b8693de6589b3b5f74355fd743000ceab72a19e15df7696fa9e81b7b8805a41"
+          },
+          {
+            "number": 301,
+            "head": "5cfee51630f0e29332e0467f9b08c0f51a315a2a",
+            "files": 22,
+            "sortedPathListSha256": "fd48df52a0f1d539d554202b82bf5453618d4a25781a3ad760e98b4d431e5b2e"
+          },
+          {
+            "number": 300,
+            "head": "c675573c0d613991aa146cec0468509781eeda06",
+            "files": 10,
+            "sortedPathListSha256": "7a249872905aa74cf19be6fd532ec19bbd0ac054399bdbd5d567d594331eadbf"
+          },
+          {
+            "number": 299,
+            "head": "14c3994756c62f2d372c5be49d9b39a0882356a0",
+            "files": 3,
+            "sortedPathListSha256": "fad197832ad22e04e73722f081f0604498b081f6677cfe71f4ffa30557902c9a"
+          },
+          {
+            "number": 290,
+            "head": "268caa4aef2fa7a0053132aa1ed15c2de2697e41",
+            "files": 7,
+            "sortedPathListSha256": "89e7b6e0d8fe4373d825fdd48cecdd9e1b6066c092b35c1625dffcfd0ccc7cbf"
+          },
+          {
+            "number": 278,
+            "head": "5e7d8bc728462ca37d1c60df660a7f5a4b6b7a03",
+            "files": 15,
+            "sortedPathListSha256": "6eeb363a59c59b52e2c1ca36c211655b6480335a20cfffab94c55b4f5f32382d"
+          },
+          {
+            "number": 263,
+            "head": "b76b165186192d0a90e1054061aa7e75b1f275cc",
+            "files": 18,
+            "sortedPathListSha256": "9b0cbfc1188ed363534de7eda72e3ac0d41d4f330f42bb0588bcd985ec9d4ed0"
+          },
+          {
+            "number": 262,
+            "head": "f63e204683196fa98c2280903a84ef92c450e0b0",
+            "files": 31,
+            "sortedPathListSha256": "c1efa120a110361dfccbeb3a7e458eaa8df8791e9a897935c7e2f5b86a9995d5"
+          }
+        ],
+        "matchingPrivateS31Paths": [],
+        "method": "gh pr list with changedFiles;paginated fullfiles,count verified"
+      },
+      {
+        "repository": "zhuzhe1983/esp-online-tester",
+        "openPullRequests": 0,
+        "checked": [],
+        "matchingPrivateS31Paths": [],
+        "method": "gh pr list with changedFiles;paginated fullfiles,count verified"
+      }
+    ]
+  },
+  "privacy": "No login,hostname,session or unrelated process inventory. Full register dumps omitted with original/sanitized hashes or selected-value evidence. No downloadedBIN/ROM/generatedELFcommitted."
+}
