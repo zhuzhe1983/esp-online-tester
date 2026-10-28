@@ -45,3 +45,5 @@ Spark 官方配置中的 OSS 端点本轮未提供本站所需的 CORS 响应头
 目录检查使用 `python tools/validate-platform-catalog.py`；平台回归使用 `node --test tools/platform-*-test.mjs`。UI 检查包括厂商切换、Spark 搜索与版本选择、3D/2D、外壳材质、分享及嵌入页。未进行真实设备刷写或实机对比。
 
 首批 6 款接入时的 105 项平台测试、目录 schema 与证据隐私检查通过。真实浏览器检查了 6 款的出厂默认项及运行按钮边界、4 套模型加载、Spark 搜索和选择版本、尚未运行的选择分享、iframe 源/hash 还原、2D/3D 切换和外壳原色/金色/紫透。未验证远程源的 mini 自动启动会先确认，取消时没有固件下载；原版 3D 上下两个按键分别命中 GPIO0/35，并由 MicroPython 固件读取确认。结果见 [集成回执](evidence/lilygo-integration/receipt.json)。
+
+最终检查与暂停范围见 [2026-10-28 收尾记录](lilygo-runtime-closeout-2026-10-28.md)。

@@ -34,8 +34,10 @@ const workerFactory=url=>{
 };
 const runtime=createPlatformRuntime({catalog,fetchImpl:fileFetch,workerFactory,baseUrl,assetBaseUrl:'https://platform.example/'});
 const api=installAutomation(runtime,{target:{location:{href:baseUrl}}});
+// Full factory GNSS baud probing executes billions of guest instructions.
+// Bound host wait independently of the unchanged guest-time checkpoints.
 const guest=async seconds=>{
-  const until=Date.now()+120000;
+  const until=Date.now()+300000;
   while(Date.now()<until) {const s=await api.observe();assert.notEqual(s.status,'error',JSON.stringify(s.lastError));if(Number(s.stats.time)>=seconds)return;await new Promise(r=>setTimeout(r,20));}
   throw Error('Guest-time timeout');
 };
@@ -48,10 +50,10 @@ const press=async(id,duration=.15)=>{
 try {
   await api.configure(createDefaultScene(catalog,product.id));
   await api.loadFirmware(firmware.source);await api.start();
-  await api.waitFor({port:'uart0',serialIncludes:'SoftAP started',timeoutMs:120000});
   // SoftAP logs before setup's remaining delays and initial blocking radio TX.
   // The native test reaches its first interactive checkpoint at guest 42 s.
   await guest(42);
+  assert.ok((await api.observe()).serialByPort.uart0.includes('SoftAP started'),'Factory startup completed by guest 42 s');
   await press('user');await api.waitFor({port:'uart0',serialIncludes:'Start transmit',timeoutMs:30000});
   await api.waitFor({port:'uart0',serialIncludes:'transmission finished',timeoutMs:30000});
   for(let i=0;i<12;i++) {if((await api.observe()).serial.includes('Start receive'))break;await press('user');await guest(Number((await api.observe()).stats.time)+i*.013);}
