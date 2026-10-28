@@ -271,7 +271,7 @@ function renderTransport() {
     if (!executable) {
       boundary.append(element('strong', '', '尚未完成适配'));
     } else if (unavailable) {
-      boundary.append(element('strong', '', '尚缺可启动镜像'), document.createTextNode('目前只有发布资料，或仅有 app.bin。补齐完整镜像或 flasher_args.json 所列文件即可尝试；无需先通过兼容性验证。'));
+      boundary.append(element('strong', '', '尚缺可启动镜像'), document.createTextNode('当前条目仅收录资料链接，尚未配置可加载的固件文件。请选择其他固件，或通过远程地址、本地文件加载。'));
     }
     for (const id of ['load-firmware', 'start-runtime']) {
       if (!boundary.hidden) $(id)?.setAttribute('aria-describedby', boundary.id);
@@ -410,7 +410,7 @@ function sourceFromInputs() {
     return result;
   }
   const selected = catalog.firmwares.find(item => item.id === $('firmware-select')?.value);
-  if (!selected?.source) throw new Error('此资料入口尚缺可启动镜像；可从远程地址或本地文件加载完整镜像，或补齐 flasher_args.json 所列文件。');
+  if (!selected?.source) throw new Error('当前条目仅收录资料链接，尚未配置固件文件。请选择其他固件，或通过远程地址、本地文件加载。');
   const source = clone(selected.source);
   if (firmwareSourceMatches(scene.firmware, source) && scene.firmware.sha256) source.sha256 = scene.firmware.sha256;
   return source;
