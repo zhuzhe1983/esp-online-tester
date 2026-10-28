@@ -20,12 +20,12 @@ The implemented entry points are `window.espTester` and the origin-bound iframe 
 | Exercise controls and sensors | `input`, `press`, `setGpsFix`, `injectGps`, `setImu`; check per-product capabilities |
 | Exchange virtual LoRa packets | `readLoRa`, `receiveLoRa`; explicit peer, supported radio only |
 | Stream audio | `audioConfigure`, `pushAudio`, `readAudio`, `audio` events; browser mic/speaker controls share PCM transport |
-| Connect and provision networks | `configureNetwork`, `readNetwork`, `connectNetwork`, `provisionNetwork`; local helper supplies real sockets |
+| Connect and provision networks | `configureNetwork`, `readNetwork`, `connectNetwork`, `provisionNetwork`; browser-local SoftAP HTTP; public relay or optional local helper supplies external sockets |
 | Access guest services | `addNetworkService`, `mapNetworkPort`, `unmapNetworkPort`, `requestNetworkHttp` |
 | Retain device data | Writable Flash persistence and TF/SD import/export/flush; clearing is separate |
 | Reproduce and embed interactions | Recording/replay, pinned scene sharing and iframe RPC |
 
-Read [audio and network workflows](references/agent-workflows.md) before using these transports. Browser microphone permission requires explicit activation; agent PCM input uses a logical I²S port. Real Internet and guest-service access require the network helper. SoftAP currently targets ESP32-S3; automatic provisioning recognizes the Xiaozhi web contract and other firmware may need its original page or a protocol client. A guest-duration press helper remains unimplemented. Never equate codec initialization / virtual Wi-Fi association with working audio / Internet access.
+Read [audio and network workflows](references/agent-workflows.md) before using these transports. Browser microphone permission requires explicit activation; agent PCM input uses a logical I²S port. SoftAP HTTP works inside the browser without a helper. Real Internet needs a configured public relay or the optional local helper; native port mappings require the helper. SoftAP currently targets ESP32-S3; automatic provisioning recognizes the Xiaozhi web contract and other firmware may need its original page or a protocol client. A guest-duration press helper remains unimplemented. Never equate codec initialization / virtual Wi-Fi association with working audio / Internet access.
 
 ## Establish the actual device state
 

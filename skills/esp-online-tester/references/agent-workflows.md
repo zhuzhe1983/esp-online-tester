@@ -34,29 +34,31 @@ The public skill is served at `https://zhuzhe1983.github.io/esp-online-tester/pl
 
 ## Network and guest services
 
-Read the [network helper guide](https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/network-helper.md) for build/start and transport limits. The helper runs native sockets; firmware still runs in the browser worker. Its startup command prints a local workbench URL and a Pages URL carrying a temporary connection token. The page consumes the token into session memory and removes it from the location fragment. Never copy credentials into share links, recordings or committed evidence.
+The default mode is `public-relay`. SoftAP DHCP/TCP/HTTP runs locally in the browser without a helper. Internet uses the site-configured public relay; an empty `web/platform/network-config.json` URL means no deployed relay, not Internet connectivity. Read the [relay guide](https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/public-network-relay.md) for operator deployment. Public relay has no inbound mappings or LAN access.
 
-The workbench defaults to automatic provisioning and a virtual test router (`esp32sim` / `esp32sim-pass`). An explicit firmware manifest router takes priority. Configure documented fixed firmware credentials before loading when they differ; no real home Wi-Fi password is needed. Without a connected helper, the page reports waiting for it rather than claiming Internet connectivity.
+The virtual router defaults to `esp32sim` / `esp32sim-pass`; a manifest router takes priority. Configure known firmware credentials before loading; no home Wi-Fi password is needed. Automatic provisioning waits for a connected external transport so it does not exit AP into a nonfunctional Internet connection.
 
 ```js
-await api.configureNetwork({endpoint: helperEndpoint, autoProvision: false});
-// Configure/load/start the intended firmware using the ordinary runtime workflow.
-const network = await api.readNetwork();
-// Wait for network.interfaces[1].leaseReady when testing the guest SoftAP.
-const response = await api.requestNetworkHttp({interface: 1, path: '/'});
-const page = await api.mapNetworkPort({interface: 1, protocol: 'http', guestPort: 80});
-// Open page.url through the browser tool, or operate the workbench's original-page iframe.
-// Supported Xiaozhi page contract only; preserves real guest NVS/connection behavior:
+await api.configureNetwork({mode:'public-relay', autoProvision:false});
+// Configure/load/start the intended firmware, then wait for interfaces[1].leaseReady.
+const response = await api.requestNetworkHttp({interface:1, path:'/'});
+const page = await api.mapNetworkPort({interface:1, protocol:'http', guestPort:80});
+// page.browser=true: use the workbench iframe, not the OS browser's 192.168.4.1.
+// For the supported Xiaozhi page contract, explicitly submit real guest HTTP:
 await api.provisionNetwork();
 ```
 
-SoftAP uses actual virtual-client association and DHCP, then real guest TCP/HTTP. ESP32-S3 is the supported chip for this client. Open SoftAP and WPA2 have distinct capability/evidence boundaries; consult the runtime documentation before claiming a particular firmware/security combination. The helper learns the AP's address from DHCP instead of assuming `192.168.4.1`. Never switch the host computer's Wi-Fi or browse its private-network address as a substitute.
+The client learns the firmware address from DHCP. Never change the host Wi-Fi or navigate to a host private address as a substitute. Browser pages run in an opaque sandbox; relative assets, fetch/XHR, ordinary forms and known navigation are bridged to the guest. CSP/X-Frame-Options, WebSockets, TLS pages and unsupported navigation report limitations; use the optional helper when the original origin/protocol is needed.
+
+For LAN access or native ports, read the [helper guide](https://github.com/zhuzhe1983/esp-online-tester/blob/main/docs/platform/network-helper.md). Start `node tools/network-helper.mjs` with its built native backend, use the emitted token URL or `configureNetwork({mode:'local-helper',endpoint:helperEndpoint})`, and stop the task-owned process after testing. Firmware still executes in WASM. Tokens stay in session memory and are removed from the URL fragment; never retain them in evidence or share links.
+
+A portable skill package can ship the Node launcher plus a matching prebuilt `esp-network-backend`, then pass `--backend /path/to/esp-network-backend`. The repository skill does not currently include cross-platform release binaries. Do not claim the source-only skill eliminates Node/Rust setup, or download an invented release URL. Bundling a local helper helps agents; ordinary website users still use browser SoftAP and a deployed public relay.
 
 Automatic provisioning inspects the original page and recognizes the Xiaozhi web `/scan` + `/submit` contract. Other HTML pages can be operated manually through the iframe/browser. ESP-IDF protocomm requires its version/security/PoP client; an HTTP bridge alone does not implement that protocol. Unknown schemes return `PROVISIONING_UNSUPPORTED`, not fabricated success or direct NVS writes.
 
 Turning automatic provisioning off keeps transport and saved configuration. It does not force already-provisioned firmware back into AP mode or clear storage. Use the firmware's actual menu/button flow if reconfiguration is intended. Successful guest configuration persists under the existing product/firmware Flash scope; recipients of shared links do not receive private Flash.
 
-The bottom network area lists known services and supports explicit entries. HTTP services get an isolated proxy origin; HTTP pages with restrictive CSP/X-Frame-Options may need the independent-window link. HTTPS is a raw TCP mapping and retains normal certificate validation. Other TCP/UDP services map to localhost for a native protocol client. A conventional port number is only a hint, a mapping alone is not proof of a listener, and passive traffic cannot reveal every silent service. No automatic full-port scanning or LAN-wide exposure occurs.
+The bottom network area lists known services and supports explicit entries. In local-helper mode HTTP services get an isolated proxy origin; HTTP pages with restrictive CSP/X-Frame-Options may need the independent-window link. HTTPS is a raw TCP mapping and retains normal certificate validation. Other TCP/UDP services map to localhost for a native protocol client. A conventional port number is only a hint, a mapping alone is not proof of a listener, and passive traffic cannot reveal every silent service. No automatic full-port scanning or LAN-wide exposure occurs.
 
 Verify four separate results: guest provisioning, Wi-Fi association, DHCP lease, and actual target-service response. Native CLI NAT remains available too. Synthetic DNS/SNTP/ICMP in offline mode and browser firmware downloads are not external guest responses. Explicitly distinguish testing the helper with packet fixtures from observing unmodified firmware behavior. Network state, helper tokens and host mappings are not portable recording events; provisioned Flash can fail the recorder's pristine-storage requirement. Do not clear user data to force recording.
 
@@ -70,6 +72,7 @@ The agent transport does not require a physical microphone or speaker:
 await api.audioConfigure({input:{enabled:true,port:0,sampleRate:16000,channels:1}});
 await api.pushAudio({port:0,sampleRate:16000,channels:1,samples:pcm16Chunk});
 const capture = await api.readAudio();
+// Counters only: await api.readAudio({clear:false,includeChunks:false});
 // capture.input has current queued/consumed/rejected counters.
 // capture.chunks carry exact PCM16 output with sampleRate/channels/sequence/guestTime.
 await api.audioConfigure({input:{enabled:false,port:0}});
@@ -81,6 +84,6 @@ PCM input accepts 1–16384 frames per call and holds two source seconds. Keep c
 
 Subscribe to `audio` events for window-local streaming; iframe clients can push/read structured-cloned arrays. There is still no dedicated MCP server. An MCP adapter can use these APIs for setup/files/results and a suitable binary stream for continuous audio. PCM, microphone access and network state are excluded from portable input recording.
 
-Preserve original duration and pitch. Sample-rate conversion uses the declared source rate; it does not adjust playback speed to match simulator lag. When capture/playback cannot keep up, report the explicit error or use offline PCM/WAV testing. Do not silently stretch, accelerate or truncate voiced content.
+Preserve original duration and pitch. Sample-rate conversion uses the declared source rate; it does not adjust playback speed to match simulator lag. Browser controls default to realtime: keep recent microphone samples, discard queued stale audio when necessary and display loss duration. `pushAudio` remains lossless by default; opt into `{overflowPolicy:'drop-oldest',maxLatencyMs:250}` only for intended realtime tests, and inspect droppedFrames/skippedFrames. Complete mode retains audio and reports overflow. Playback prebuffers 200 ms without changing sample rate. When capture/playback cannot keep up, report loss or use offline PCM/WAV testing. Do not silently stretch, accelerate or truncate voiced content.
 
 A guest-duration press helper remains a useful unimplemented addition. Do not invent its method name; current `press` still uses host time.

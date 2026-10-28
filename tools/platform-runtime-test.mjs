@@ -391,6 +391,10 @@ try {
   await transportRuntime.configure(scene);
   await transportRuntime.loadFirmware({ manifestUrl: 'https://platform.example/wasm/fw/demo-stopwatch.json' });
   await transportRuntime.start();
+  transport.emit({pace:{speed:0.7,behind:0.25,resyncs:3,mips:90}});
+  transport.emit({text:JSON.stringify({t:'stat',time:1,speed:null,behind:0,resyncs:0})});
+  const pace=(await transportRuntime.observe()).stats;
+  assert.equal(pace.speed,0.7);assert.equal(pace.behind,0.25);assert.equal(pace.resyncs,3);
   const pending = transportRuntime.injectGps({ accessoryId: 'gps-contract', latitude: 31.2304, longitude: 121.4737, timestamp: '2026-01-02T03:04:05Z' });
   // Attach a rejection handler immediately so a regression cannot escape the final cleanup.
   const outcome = pending.then(value => ({ value }), error => ({ error }));

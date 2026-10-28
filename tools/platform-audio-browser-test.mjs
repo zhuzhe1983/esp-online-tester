@@ -27,7 +27,7 @@ function fakeStream() {
   const track = {stopped:false,stop(){this.stopped = true;}};
   return {track,getTracks:() => [track]};
 }
-const create = (runtime,options = {}) => createBrowserAudio({runtime,AudioContextClass:FakeContext,AudioWorkletNodeClass:FakeNode,...options});
+const create = (runtime,options = {}) => createBrowserAudio({runtime,mode:'buffered',AudioContextClass:FakeContext,AudioWorkletNodeClass:FakeNode,...options});
 
 test('fixed-ratio PCM preserves sample duration and pitch across chunk boundaries', () => {
   const sourceRate = 16000, renderRate = 48000, hz = 500;
@@ -88,7 +88,7 @@ test('microphone is explicit, uses PCM backpressure, stops tracks on mute and gu
     const node = FakeNode.instances.at(-1); assert.equal(node.name,'esp-platform-capture');
     const samples = Int16Array.of(123,-123);
     await node.receive({type:'pcm',samples,sampleRate:48000,channels:1});
-    assert.deepEqual(runtime.packets[0],{samples,sampleRate:48000,channels:1,port:0});
+    assert.deepEqual(runtime.packets[0],{samples,sampleRate:48000,channels:1,port:0,overflowPolicy:'error',maxLatencyMs:250});
     assert.deepEqual(node.sent.at(-1),{type:'ack'});
     await audio.setMicrophone(true); await node.receive({type:'pcm',samples,sampleRate:48000,channels:1});
     assert.equal(runtime.packets.length,2,'repeated enable must not invalidate the active source');

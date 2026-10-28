@@ -1,3 +1,4 @@
+import {realtimeInputPlan} from './audio-input-policy.js';
 import { createJitHost } from './jit.mjs';
 import { createPacing } from './pacing.mjs';
 import { applyExperiments } from './experiments.mjs';
@@ -211,17 +212,25 @@ onmessage = async (ev) => {
       try {
         if(!emu||!wasm.esp32sim_audio_input_configure)throw new Error('PCM audio is unsupported by this WASM build');
         if(![0,1].includes(m.port))throw new Error('Invalid I2S port');
-        let acceptedFrames;
+        let acceptedFrames,droppedFrames=0,skippedFrames=0;
         if(m.op==='audio-configure') {if(wasm.esp32sim_audio_input_configure(emu,m.port,m.sampleRate)!==0)throw new Error('PCM input configuration rejected');}
         else if(m.op==='audio-disable') {if(wasm.esp32sim_audio_input_disable(emu,m.port)!==0)throw new Error('PCM input disable rejected');}
         else if(m.op==='audio-push') {
           if(!(m.data instanceof ArrayBuffer)||m.data.byteLength>65536)throw new Error('Invalid PCM block');
-          acceptedFrames=withBytes(new Uint8Array(m.data),(p,n)=>wasm.esp32sim_audio_input_push(emu,m.port,m.channels,p,n));
+          let bytes=new Uint8Array(m.data);
+          if(m.overflowPolicy==='drop-oldest') {
+            if(![1,2].includes(m.channels)||bytes.length%(m.channels*2))throw new Error('Invalid live PCM channels');
+            const length=wasm.esp32sim_audio_input_state(emu,m.port),pointer=wasm.esp32sim_audio_state_ptr(emu),before=JSON.parse(dec.decode(mem().subarray(pointer,pointer+length)));
+            const plan=realtimeInputPlan(before,bytes.length/(m.channels*2),m.maxLatencyMs);
+            if(plan.clear&&wasm.esp32sim_audio_input_clear(emu,m.port)!==0)throw new Error('Live input queue clear rejected');
+            droppedFrames=plan.droppedFrames;skippedFrames=plan.skipFrames;bytes=bytes.subarray(skippedFrames*m.channels*2);
+          } else if(m.overflowPolicy!==undefined&&m.overflowPolicy!=='error')throw new Error('Invalid PCM overflow policy');
+          acceptedFrames=withBytes(bytes,(p,n)=>wasm.esp32sim_audio_input_push(emu,m.port,m.channels,p,n));
           if(acceptedFrames<0)throw new Error('PCM input rejected');
         } else if(m.op!=='audio-state')throw new Error('Unknown audio operation');
         const len=wasm.esp32sim_audio_input_state(emu,m.port),ptr=wasm.esp32sim_audio_state_ptr(emu);
         const state=JSON.parse(dec.decode(mem().subarray(ptr,ptr+len)));
-        postMessage({audioReply:m.requestId,ok:true,state,acceptedFrames,guestTime:wasm.esp32sim_cycles(emu)/CPU_HZ});
+        postMessage({audioReply:m.requestId,ok:true,state,acceptedFrames,droppedFrames,skippedFrames,guestTime:wasm.esp32sim_cycles(emu)/CPU_HZ});
       } catch(error){postMessage({audioReply:m.requestId,ok:false,error:error.message});}
     }
     else if (m.op === 'sd-attach') {if(booted||running)throw new Error('Attach SD only before boot');if(withBytes(new Uint8Array(m.data),(p,n)=>wasm.esp32sim_load(emu,8,p,n))!==0)throw new Error('SD attach rejected');postMessage({sdReply:m.requestId,ok:true});}

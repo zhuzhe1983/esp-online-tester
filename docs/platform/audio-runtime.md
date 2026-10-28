@@ -98,3 +98,13 @@ const unsubscribe = espTester.subscribe(event => {
 常见 API 错误：`AUDIO_UNSUPPORTED`（未加载或 ABI/芯片不支持）、`INVALID_AUDIO`（格式错误）、`AUDIO_INPUT_DISABLED`、`AUDIO_FORMAT_MISMATCH`、`AUDIO_PORT_MISMATCH`、`NOT_RUNNING`、`AUDIO_INPUT_OVERFLOW`、`AUDIO_COMMAND_FAILED`（worker 拒绝）。会话更换还可能拒绝未完成的命令。浏览器层另报告权限失败、AudioWorklet 故障、输入/播放溢出，不把失败包装成正常录音。
 
 `node --test tools/platform-audio-browser-test.mjs` 验证 PCM 时长/频率、边界跨块、立体声、WAV 往返、背压、权限取消及资源释放。真实 Chromium 合成 440 Hz MediaStream 已通过 AudioWorklet 输入；16000 个 16 kHz 输出样本渲染为 48000 个 48 kHz 样本，未改变一秒时长。桌面和 375/320 px 布局检查通过。这些是数字通路与浏览器生命周期验证，不代替物理麦克风、扬声器主观试听或某款固件完整语音功能验收。
+
+## 实时缓冲与性能（2026-10-28）
+
+浏览器默认选择“实时·可丢帧”：麦克风按 80 ms 分块发送，主机环形缓冲及 WASM 待读输入保留约 250 ms 的近期音频；固件长期不读 RX 时继续捕获，并显示“等待固件读取”和累计丢弃时长。播放端预缓冲 200 ms，短片段最多等待 350 ms；两秒队列满时淘汰旧播放数据，向 AudioWorklet 派发积压时丢弃新块，均计入显示的丢弃时长。此模式不适合要求完整保存的录音。
+
+“完整·保留音频”维持有界、不覆盖已排队样本的行为，溢出时停止并提示。两种模式都按原始采样率播放，不通过变速弥补模拟器落后。实时模式会明确损失片段，不能将结果声称为完整录音。
+
+Agent API 默认仍为 `overflowPolicy:'error'`。明确需要实时输入时，`pushAudio({...pcm,overflowPolicy:'drop-oldest',maxLatencyMs:250})` 返回本次 `droppedFrames`（清除的旧队列加跳过的输入前缀）、`skippedFrames`（本块未入队前缀）和 `acceptedFrames`；可配置的延迟范围为 80–2000 ms。计数在 `input.droppedFrames` 累计。`readAudio({clear:false,includeChunks:false})` 只读状态，不复制十秒 PCM 历史。
+
+确定性抖动夹具中，200 ms 预缓冲把中断次数从 36 降至 2，前后均完整渲染 16000 源帧。这不代表任意固件都不卡顿；完整页面的 CPU/渲染竞争和固件 RX 行为仍影响体验。固定小智固件的解释器/JIT 对照没有证明 JIT 稳定更快，保持原执行方式，见 [测量范围与原始数值](../evidence/stopwatch-audio-performance-2026-10-28/README.md)。浏览器自动化验证不代替物理扬声器试听。

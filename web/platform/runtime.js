@@ -168,7 +168,7 @@ const romFor = board => board === 'esp32c3' ? 'esp32c3_rev3_rom.elf' : board ===
 
 export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000, deviceStorage = createDeviceStorage(), sdStorage = createSdCardStorage() } = {}) {
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;
-  let lastError = null, firmware = null, loaded = null, frame = null, frameNumber = 0, serial = '', serialByPort = {}, stats = {}, queue = Promise.resolve();
+  let lastError = null, firmware = null, loaded = null, frame = null, frameNumber = 0, serial = '', serialByPort = {}, stats = {}, hostPace = {}, queue = Promise.resolve();
   const emptyStorage = () => ({status:'unloaded', scope:null, backend:null, restored:false, pristine:true, revision:0, epoch:0, lastSavedAt:null, changedPages:0, error:null});
   const emptySd=()=>({supported:false,present:false,bytes:0,format:null,status:'unloaded',backend:null,restored:false,pristine:true,changedPages:0,error:null});
   let sdCard=emptySd(),sdSession=null,leds=[];
@@ -235,7 +235,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       try { text = JSON.parse(message.text); } catch { appendSerial('emulator', String(message.text)); return; }
       if (text.t === 'serial') appendSerial(text.src || 'usb', text.data || '');
       else if (text.t === 'emu') appendSerial('emulator', `${text.msg}\n`);
-      else if (text.t === 'stat') { stats = { ...stats, ...text }; emit({ type: 'stats', stats: clone(stats) }); }
+      else if (text.t === 'stat') { stats = { ...stats, ...text, ...hostPace };  emit({ type: 'stats', stats: clone(stats) }); }
       else if (text.t === 'ring') {leds=clone(text.leds);emit({type:'leds',leds:clone(leds)});}
       else if (text.t === 'grid') {
         const route=accessoryInputs.find(item=>item.output===text.id);
@@ -256,7 +256,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       finally { if (message.ack) worker?.postMessage({ op: 'frame-ack' }); }
     }
     if (message.log !== undefined) appendSerial('emulator', `${message.log}\n`);
-    if (message.pace) { stats = { ...stats, ...message.pace }; emit({ type: 'stats', stats: clone(stats) }); }
+    if (message.pace) { hostPace = { ...message.pace }; stats = { ...stats, ...hostPace }; emit({ type: 'stats', stats: clone(stats) }); }
     if (message.audioReply !== undefined)resolve(`audio:${message.audioReply}`,message);
     if (message.flashReply !== undefined) resolve(`flash:${message.flashReply}`, message);
     if (message.flashDelta) { try { receiveFlash(message.flashDelta); } catch(e) { storageFailure(storageSession,e); } }
@@ -709,7 +709,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       return { version: API_VERSION, backend: 'esp32sim-wasm', static: true, executable: !!product?.runtime?.board,
         execution: {mode: product?.runtime?.board === 'stopwatch' ? 'wasm-interpreter' : 'wasm-jit', reason: product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null},
         sdCard:{available:hasSdCard(product?.runtime?.board),defaultBytes:64*MIB,maxBytes:MAX_SD_BYTES,formats:['fat32','raw-image'],scope:'product-board-canonical-flash-sha256',autoSaveIntervalMs:1500,crashSafe:false},
-        network:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',transport:'ethernet-websocket',helperRequired:true,softAp:!!product?.runtime?.board&&romFor(product.runtime.board)==='esp32s3_rev0_rom.elf',automaticProvisioning:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
+        network:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',transport:'browser-softap+ethernet-websocket',helperRequired:false,externalConnectionRequired:true,modes:['public-relay','local-helper'],portMappingRequiresHelper:true,softAp:!!product?.runtime?.board&&romFor(product.runtime.board)==='esp32s3_rev0_rom.elf',automaticProvisioning:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
         audio:{input:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&romFor(product.runtime.board)==='esp32s3_rev0_rom.elf',channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
@@ -726,7 +726,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       const validation = validateScene(nextScene, catalog);
       requireValue(validation.valid, 'INVALID_SCENE', 'Scene configuration is invalid.', validation);
       if (worker && status==='running') await ask('stopped',{op:'stop'});
-      await preserveStorage(); alive(); aborter?.abort(); stopWorker(); detachStorage(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
+      await preserveStorage(); alive(); aborter?.abort(); stopWorker(); detachStorage(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; hostPace = {}; lastError = null;
       if(sdSession)sdSession.closed=true;sdSession=null;sdCard=emptySd();leds=[];
       scene = clone(nextScene); product = catalog.products.find(item => item.id === scene.productId);sdCard.supported=hasSdCard(product.runtime?.board);sdEvent();emit({type:'leds',leds:[]});
       resetAccessoryInputs(); imu = defaultImu(); imuPreviousAt = null;
@@ -742,7 +742,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     loadFirmware(source) { const loadId = ++progressGeneration; return exclusive(async () => {
       requireValue(scene, 'NOT_CONFIGURED', 'Configure a product before loading firmware.');
       if (worker && status==='running') await ask('stopped',{op:'stop'});
-      await preserveStorage(); alive(); stopWorker(); detachStorage();if(sdSession)sdSession.closed=true;sdSession=null;sdCard={...emptySd(),supported:hasSdCard(product?.runtime?.board)};leds=[]; loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; lastError = null;
+      await preserveStorage(); alive(); stopWorker(); detachStorage();if(sdSession)sdSession.closed=true;sdSession=null;sdCard={...emptySd(),supported:hasSdCard(product?.runtime?.board)};leds=[]; loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; hostPace = {}; lastError = null;
       loadCancelled = false; aborter = new AbortController(); setStatus('loading');
       const progress = loadReporter(loadId, aborter.signal);
       try {
@@ -774,7 +774,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(loaded, 'NOT_READY', 'Load firmware before resetting.');
       if (worker && status==='running') await ask('stopped',{op:'stop'});
       await preserveStorage();
-      loadCancelled = false; aborter = new AbortController(); serial = ''; serialByPort = {}; stats = {}; frame = null; frameNumber = 0; lastError = null; setStatus('loading');
+      loadCancelled = false; aborter = new AbortController(); serial = ''; serialByPort = {}; stats = {}; hostPace = {}; frame = null; frameNumber = 0; lastError = null; setStatus('loading');
       try { await initialize(loaded, loadReporter(loadId, aborter.signal)); setStatus('ready'); return await start(); }
       catch (e) { stopWorker(); if (status !== 'disposed') setStatus(loadCancelled ? 'configured' : 'error'); if (loadCancelled) throw error('FETCH_ABORTED', 'Firmware load was cancelled.'); throw e; }
     }); },

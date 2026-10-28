@@ -170,6 +170,6 @@ Unit Angle U005 已支持 StopWatch Port A 的标称模拟电压输入与真实 
 
 ## Browser network and audio
 
-The workbench now connects firmware Ethernet to a local [network helper](network-helper.md), supports S3 SoftAP provisioning through the original guest page, and exposes HTTP/TCP/UDP service mappings. Automatic provisioning is enabled by default; a helper connection is still required for real external sockets. See [implemented scope](wifi-platform-plan.md).
+The workbench accesses S3 SoftAP pages inside the browser. External sockets default to a [public relay](public-network-relay.md), which the site operator must deploy and configure; no public endpoint is bundled. The optional [local helper](network-helper.md) supplies LAN access and HTTP/TCP/UDP port mappings. Automatic provisioning is enabled by default and waits for an external transport. See [implemented scope](wifi-platform-plan.md).
 
 The 3D stage has microphone and speaker controls. Agents use `audioConfigure`, `pushAudio`, and `readAudio` for bounded PCM streaming without a sound device. See [audio formats, lifecycle and model limitations](audio-runtime.md).

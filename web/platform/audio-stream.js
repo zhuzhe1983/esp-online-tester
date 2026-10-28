@@ -23,9 +23,9 @@ export function decodeAudio(buffer) {
 }
 
 export function createAudioStream({request,emit,isRunning,capacitySeconds=10}={}) {
-  let available=false,sequence=0,chunks=[],seconds=0,input={enabled:false},output={enabled:true,receivedFrames:0,droppedFrames:0,overflowed:false};
+  let lastStateAt=0,available=false,sequence=0,chunks=[],seconds=0,input={enabled:false},output={enabled:true,receivedFrames:0,droppedFrames:0,overflowed:false};
   const snapshot=()=>({available,input:{...input},output:{...output,queuedSeconds:seconds,queuedChunks:chunks.length,capacitySeconds}});
-  const changed=()=>emit({type:'audio-state',audio:snapshot()});
+  const changed=()=>{lastStateAt=Date.now();emit({type:'audio-state',audio:snapshot()});};
   const reset=(supported=false)=>{available=supported;sequence=0;chunks=[];seconds=0;input={enabled:false};output={enabled:true,receivedFrames:0,droppedFrames:0,overflowed:false};changed();};
   const receive=(buffer,guestTime)=>{
     if(!available||!output.enabled)return;
@@ -38,7 +38,7 @@ export function createAudioStream({request,emit,isRunning,capacitySeconds=10}={}
       const old=chunks.shift();seconds-=old.samples.length/old.sampleRate;output.droppedFrames+=old.samples.length;output.overflowed=true;
     }
     seconds=Math.max(0,seconds);emit({type:'audio',...chunk});
-    if(output.overflowed)changed();
+    if(output.overflowed&&Date.now()-lastStateAt>=250)changed();
   };
   const configure=async(options={})=>{
     if(!available)throw fail('AUDIO_UNSUPPORTED','Load an emulator with the PCM streaming ABI first.');
@@ -62,18 +62,20 @@ export function createAudioStream({request,emit,isRunning,capacitySeconds=10}={}
     changed();return snapshot();
   };
   const push=async(options)=>{
+    const {overflowPolicy='error',maxLatencyMs=250}=options||{};
+    if(!['error','drop-oldest'].includes(overflowPolicy)||!Number.isFinite(maxLatencyMs)||maxLatencyMs<80||maxLatencyMs>2000)throw fail('INVALID_AUDIO','Invalid live PCM overflow policy or latency.');
     if(!available||!input.enabled)throw fail('AUDIO_INPUT_DISABLED','Enable PCM input before submitting frames.');
     if(!isRunning())throw fail('NOT_RUNNING','Run the firmware before submitting PCM input.');
     const packet=validatePcmInput(options);
     if(packet.port!==input.port||packet.sampleRate!==input.sampleRate||packet.channels!==input.channels)throw fail('AUDIO_FORMAT_MISMATCH','PCM format differs from the configured input.');
-    const result=await request('push',packet,[packet.data]);input={...input,...result.state};
-    if(result.acceptedFrames!==packet.frames)throw Object.assign(fail('AUDIO_INPUT_OVERFLOW',`Accepted ${result.acceptedFrames} of ${packet.frames} frames; queued audio was not replaced.`),{details:{acceptedFrames:result.acceptedFrames,requestedFrames:packet.frames,input:{...input}}});
-    return {acceptedFrames:result.acceptedFrames,guestTime:result.guestTime,input:{...input}};
+    const result=await request('push',{...packet,overflowPolicy,maxLatencyMs},[packet.data]);input={...input,...result.state,droppedFrames:(input.droppedFrames||0)+(result.droppedFrames||0)};
+    if(result.acceptedFrames+(result.skippedFrames||0)!==packet.frames)throw Object.assign(fail('AUDIO_INPUT_OVERFLOW',`Accepted ${result.acceptedFrames} of ${packet.frames} frames; queued audio was not replaced.`),{details:{acceptedFrames:result.acceptedFrames,requestedFrames:packet.frames,input:{...input}}});
+    return {acceptedFrames:result.acceptedFrames,droppedFrames:result.droppedFrames||0,skippedFrames:result.skippedFrames||0,guestTime:result.guestTime,input:{...input}};
   };
   const refresh=async()=>{if(available&&input.enabled){const result=await request('state',{port:input.port});input={...input,...result.state};}return snapshot();};
-  const read=({clear=true}={})=>{
-    if(typeof clear!=='boolean')throw fail('INVALID_AUDIO','clear must be boolean.');
-    const result={...snapshot().output,input:{...input},chunks:chunks.map(c=>({...c,samples:c.samples.slice()}))};
+  const read=({clear=true,includeChunks=true}={})=>{
+    if(typeof clear!=='boolean'||typeof includeChunks!=='boolean')throw fail('INVALID_AUDIO','clear must be boolean.');
+    const result={...snapshot().output,input:{...input},chunks:includeChunks?chunks.map(c=>({...c,samples:c.samples.slice()})):[]};
     if(clear){chunks=[];seconds=0;output.droppedFrames=0;output.overflowed=false;}return result;
   };
   return {snapshot,reset,receive,configure,push,read,refresh};

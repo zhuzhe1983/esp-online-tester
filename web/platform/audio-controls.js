@@ -15,11 +15,12 @@ export function mountAudioControls({container, runtime, createAudio = createBrow
     container.append(node); return node;
   };
   const microphone = button('microphone',microphoneIcon,'开启麦克风'), speaker = button('speaker',speakerIcon,'开启扬声器');
+  const mode = document.createElement('select');mode.className='browser-audio-mode';mode.setAttribute('aria-label','音频缓冲模式');mode.innerHTML='<option value="realtime">实时 · 可丢帧</option><option value="buffered">完整 · 保留音频</option>';mode.title='实时模式会丢弃积压的旧音频并显示时长；完整模式队列满时停止。';container.append(mode);
   const message = document.createElement('span'); message.className = 'browser-audio-status'; message.setAttribute('role','status'); message.setAttribute('aria-live','polite'); message.hidden = true; container.append(message);
   let destroyed = false, status = 'idle', caps = null, current = null, readGeneration = 0;
   const supported = kind => caps?.audio?.[kind === 'microphone' ? 'input' : 'output']?.available !== false;
   function render(state) {
-    current = state;
+    current = state;mode.value=state.mode||'realtime';
     for (const [kind,node,name] of [['microphone',microphone,'麦克风'],['speaker',speaker,'扬声器']]) {
       const on = state[kind] === 'on', starting = state[kind] === 'starting', error = state[`${kind}Error`];
       const usable = kind === 'microphone' ? status === 'running' : ['ready','running','paused'].includes(status);
@@ -32,14 +33,21 @@ export function mountAudioControls({container, runtime, createAudio = createBrow
     const explanations = {
       NotAllowedError:'浏览器未允许麦克风访问，请检查权限。', NotFoundError:'没有检测到可用的麦克风。',
       NotReadableError:'麦克风无法打开，可能正被其他应用占用。',
-      AUDIO_INPUT_FULL:'模拟器来不及接收音频，麦克风已停止。可使用 PCM 文件进行离线测试。',
-      AUDIO_INPUT_OVERFLOW:'模拟器来不及接收音频，麦克风已停止。可使用 PCM 文件进行离线测试。',
+      AUDIO_INPUT_FULL:'完整模式的录音队列已满。可切换实时模式，允许丢弃旧音频。',
+      AUDIO_INPUT_OVERFLOW:'完整模式的录音队列已满。可切换实时模式，允许丢弃旧音频。',
       AUDIO_OUTPUT_OVERFLOW:'播放队列已满，扬声器已停止。可导出 PCM 进行离线试听。',
       MICROPHONE_ENDED:'麦克风访问已结束。', MICROPHONE_UNAVAILABLE:'请使用 HTTPS 或 localhost，并允许浏览器访问麦克风。',
       AUDIO_UNAVAILABLE:'当前浏览器不支持 AudioWorklet 音频处理。', AUDIO_PROCESSOR_ERROR:'浏览器音频处理已停止，请重新开启。'
     };
     let text = error ? explanations[error.code] || error.message : '';
-    if (!text && state.speaker === 'on' && state.underflows) text = `音频供给中断 ${state.underflows} 次；保持原始语速。`;
+    if(!text){const notes=[];
+      if(state.microphone==='on'&&state.microphoneWaiting)notes.push('等待固件读取麦克风');
+      if(state.speaker==='on'&&state.buffering)notes.push(state.queuedSeconds>0.001?`扬声器缓冲中 · ${Math.round(state.queuedSeconds*1000)} ms`:'等待固件音频');
+      if(state.microphoneDroppedFrames&&state.sampleRate)notes.push(`输入已丢弃 ${(state.microphoneDroppedFrames/state.sampleRate).toFixed(1)} 秒旧音频`);
+      if(state.speakerDroppedSeconds)notes.push(`输出已丢弃 ${state.speakerDroppedSeconds.toFixed(1)} 秒音频`);
+      if((state.microphone==='on'||state.speaker==='on')&&Number.isFinite(state.simulationSpeed)&&state.simulationSpeed<0.95)notes.push(`模拟速度 ${state.simulationSpeed.toFixed(2)}×，低于实时`);
+      text=notes.join('；');
+    }
     message.textContent = text; message.hidden = !text; message.dataset.error = String(!!error);
   }
   let audio;
@@ -51,6 +59,7 @@ export function mountAudioControls({container, runtime, createAudio = createBrow
   render(audio.observe());
   const micClick = () => { void audio.setMicrophone(!['on','starting'].includes(audio.observe().microphone)).catch(() => {}); };
   const speakerClick = () => { void audio.setSpeaker(!['on','starting'].includes(audio.observe().speaker)).catch(() => {}); };
+  const modeChange=()=>{void audio.setMode(mode.value).catch(()=>{});};mode.addEventListener('change',modeChange);
   microphone.addEventListener('click',micClick); speaker.addEventListener('click',speakerClick);
   async function refresh() {
     const generation = ++readGeneration;
@@ -69,7 +78,7 @@ export function mountAudioControls({container, runtime, createAudio = createBrow
   return {...audio,async dispose() {
     if (destroyed) return; destroyed = true; unsubscribe(); readGeneration++;
     document.defaultView?.removeEventListener('pagehide',leave);
-    microphone.removeEventListener('click',micClick); speaker.removeEventListener('click',speakerClick);
+    mode.removeEventListener('change',modeChange);microphone.removeEventListener('click',micClick); speaker.removeEventListener('click',speakerClick);
     await audio.dispose(); container.replaceChildren();
   }};
 }

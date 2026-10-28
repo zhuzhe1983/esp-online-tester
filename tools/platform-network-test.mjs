@@ -61,3 +61,35 @@ test('disabling automatic provisioning cancels the pending credential submission
   await n.configure({autoProvision:true});await n.connect();ws=Socket.instances.at(-1);
   ws.deliver({type:'network-status',interface:1,leaseReady:true});assert.ok(ws.get);n.detach();await tick();
 });
+
+test('browser SoftAP works without any external connection and survives disabling Internet',async()=>{
+  const frames=[],commands=[];let client,closed=false;
+  const n=createNetworkSession({emit(){},command:async(...x)=>commands.push(x),sendFrame:(...x)=>frames.push(x),WebSocketImpl:class {constructor(){throw Error('Must not open a socket');}},guestFactory:({emit,sendFrame})=>(client={enable(){emit({type:'network-status',interface:1,leaseReady:true,guestAddress:'10.23.4.1'});sendFrame(new Uint8Array(14).buffer);},receive(data){this.frame=data;},requestHttp:async options=>({status:200,body:options.path}),close(){closed=true;}})});
+  await n.attach({available:true});n.receive({softAp:{state:'connected',clientMac:'02:53:49:4d:00:03'}});
+  assert.equal(n.snapshot().connection,'relay-unconfigured');assert.equal(n.snapshot().interfaces[1].guestAddress,'10.23.4.1');
+  assert.equal((await n.http({path:'/scan'})).body,'/scan');assert.equal(frames[0][0],1);
+  n.receive({networkFrame:{interface:1,data:new Uint8Array([1,2]).buffer}});assert.deepEqual([...client.frame],[1,2]);
+  const mapping=await n.mapPort({interface:1,protocol:'http',guestPort:80});assert.equal(mapping.browser,true);assert.equal(mapping.guestAddress,'10.23.4.1');
+  await n.configure({enabled:false});assert.equal(closed,false);assert.equal(n.snapshot().interfaces[1].leaseReady,true);assert.equal((await n.http({path:'/'})).status,200);
+  await assert.rejects(n.mapPort({interface:0,protocol:'tcp',guestPort:1883}),{code:'LOCAL_HELPER_REQUIRED'});
+  n.detach();assert.equal(closed,true);assert.equal(n.snapshot().services.length,0);
+});
+
+test('public relay uses ephemeral same-origin bootstrap, only STA packets, and keeps tokens private',async()=>{
+  const requests=[],frames=[],commands=[];
+  class PublicSocket extends Socket {constructor(url){super(url);}deliver(value){if(value.type==='hello')value={...value,capabilities:{publicRelay:true}};super.deliver(value);}}
+  const n=createNetworkSession({emit(){},command:async(...x)=>commands.push(x),sendFrame:(...x)=>frames.push(x),WebSocketImpl:PublicSocket,fetchImpl:async(url,options)=>{requests.push({url,options});return {ok:true,text:async()=>JSON.stringify({version:1,endpoint:'wss://relay.example.test/network?token=secret'})};}});
+  await n.configure({relayUrl:'https://relay.example.test',autoProvision:false});await n.attach({available:true});
+  assert.equal(requests[0].url,'https://relay.example.test/session');assert.equal(requests[0].options.method,'POST');assert.equal(requests[0].options.credentials,'omit');
+  const ws=Socket.instances.at(-1);assert.equal(ws.url,'wss://relay.example.test/network?token=secret');assert.equal(n.snapshot().connection,'connected');assert.ok(!JSON.stringify(n.snapshot()).includes('secret'));
+  ws.deliver(new Uint8Array(15).buffer);assert.equal(frames.length,1);ws.deliver(new Uint8Array([1,...new Uint8Array(14)]).buffer);assert.equal(frames.length,1);
+  ws.deliver({type:'network-status',interface:1,leaseReady:true});assert.equal(n.snapshot().interfaces[1],undefined);
+  assert.ok(commands.some(([op,v])=>op==='relay'&&v.enabled));n.detach();
+});
+
+test('public bootstrap rejects a different origin or a helper impersonating the public relay',async()=>{
+  let endpoint='wss://elsewhere.example.test/network';
+  const n=createNetworkSession({emit(){},command:async()=>{},sendFrame(){},WebSocketImpl:Socket,fetchImpl:async()=>({ok:true,text:async()=>JSON.stringify({endpoint})})});
+  await n.configure({relayUrl:'https://relay.example.test'});await n.attach({available:true});assert.equal(n.snapshot().lastError.code,'NETWORK_PROTOCOL');
+  endpoint='wss://relay.example.test/network';await assert.rejects(n.connect(),{code:'NETWORK_PROTOCOL'});n.detach();
+});

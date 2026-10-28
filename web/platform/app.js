@@ -15,6 +15,7 @@ import {installEmbedBridge} from './embed.js';
 import {createTransportUi, createKnowledgePanel, mountFirmwareUpdates} from './transport-ui.js';
 import {firmwareRunPolicy} from './firmware-policy.js';
 import {confirmFirmwareRun, buildRunIssueUrl} from './firmware-run-ui.js';
+import {recoverFirmwareDownload} from './firmware-download-recovery.js';
 import {productOptionLabel, productIdentityLabel, productFamilies, productFamilyGroups, manufacturerLabel, manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
 import {mountDeviceSearch, mountAccessorySearch} from './device-search.js';
 import {encodeRecording, decodeRecording, validateRecording} from './recording.js';
@@ -53,7 +54,7 @@ const errorMessages = {
   UNSUPPORTED_PRODUCT: '此产品的板级模型尚未实现，可配置和预览外观。',
   NO_FIRMWARE: '请先选择固件。', FIRMWARE_MISSING: '请先选择固件。',
   NO_FRAME: '固件尚未输出真实屏幕帧。',
-  FETCH_FAILED: '固件下载失败，请检查地址与远程服务器的 CORS 设置。',
+  FETCH_FAILED: '固件下载失败：网络或上游跨域限制。可下载原始文件后通过“本地文件”加载；本站无法修改上游 CORS 设置。',
   INCOMPLETE_IMAGE: '需要从地址 0 开始的完整 Flash 镜像。单独 app.bin 请改用包含启动镜像的清单。',
   HASH_MISMATCH: '下载内容与 SHA-256 校验值不一致。',
   APP_IMAGE_CHECKSUM: '应用镜像校验失败，不能切换启动模式。',
@@ -590,7 +591,16 @@ async function loadSelected() {
   } : null;
   if (history && !history.provider) firmwareHistory?.remember(history);
   const next = clone(scene); next.firmware = source.file || source.files ? null : source;
-  await configure(next); const state = await runtime.loadFirmware(source);
+  await configure(next);
+  let state;
+  try {state=await runtime.loadFirmware(source);}
+  catch(error) {
+    if(!await recoverFirmwareDownload({error,source,firmware:known}))throw error;
+    if(scene.productId!==next.productId||!firmwareSourceMatches(scene.firmware,source))throw new Error('设备或固件选择已改变，请重新点击运行。');
+    state=await runtime.loadFirmware(source);
+    if($('toast')?.classList.contains('error')){clearTimeout(toastTimer);$('toast').hidden=true;}
+    if($('firmware-issue'))$('firmware-issue').hidden=true;
+  }
   if (history) {
     const metadata = state.firmware?.metadata;
     const digest = state.firmware?.manifestHash || state.firmware?.artifacts[0]?.sha256;
@@ -993,9 +1003,10 @@ async function init() {
   document.querySelector('.console-panel, .embed-console')?.before(networkMount);
   const networkUi=mountNetworkControls({container:networkMount,runtime:api,onError:report});
   window.addEventListener('pagehide',()=>networkUi.dispose(),{once:true});
+  try{const response=await fetch(new URL('./network-config.json',import.meta.url),{cache:'no-store'});if(response.ok){const defaults=await response.json();if(defaults.publicRelayUrl)await api.configureNetwork({mode:'public-relay',relayUrl:defaults.publicRelayUrl});}}catch{/* A static checkout can preview SoftAP without any relay deployment. */}
   const networkEndpoint=params.get('network');
   if(networkEndpoint){try{await api.configureNetwork({endpoint:networkEndpoint});}catch(error){report(error);}params.delete('network');history.replaceState(null,'',`${location.pathname}${location.search}${params.size?'#'+params.toString():''}`);}
-  else if(['127.0.0.1','localhost','[::1]'].includes(location.hostname)) {
+  else if(params.get('localNetwork')==='1'&&['127.0.0.1','localhost','[::1]'].includes(location.hostname)) {
     try{const response=await fetch('/network-info',{signal:AbortSignal.timeout(1500)});if(response.ok){const helper=await response.json();if(helper.endpoint)await api.configureNetwork({endpoint:helper.endpoint});}}catch{/* Ordinary static local servers have no network helper. */}
   }
 

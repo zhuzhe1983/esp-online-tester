@@ -1,22 +1,22 @@
 # 浏览器 Wi-Fi、SoftAP 配网与网络服务
 
-更新：2026-10-28。本文取代此前的实施计划；网络助手、虚拟 SoftAP 客户端、工作台 UI 和 agent API 已接通。静态 GitHub Pages 本身不提供任意 TCP/UDP socket，真实联网使用本机网络助手。见 [启动说明](network-helper.md)。
+更新：2026-10-28。本文取代此前的实施计划；浏览器内 SoftAP 客户端、公共中继协议、可选本机助手、工作台 UI 和 agent API 已接通。默认配网页无需安装程序；外网默认使用公共中继，网站维护者需先按 [部署说明](public-network-relay.md) 部署服务，并填写 `web/platform/network-config.json` 的 `publicRelayUrl`。当前仓库默认值为空，表示尚未提供公网出口。本机助手见 [启动说明](network-helper.md)。
 
 ## 默认自动配网
 
-工作台默认开启“自动配网”，虚拟路由器默认为 `esp32sim` / `esp32sim-pass`，固件 manifest 中的显式 Wi-Fi 配置优先。助手连接地址只属于当前会话，不进入分享链接或便携录制。没有助手时显示“等待网络助手”，不会显示已经联网。
+工作台默认开启“自动配网”，虚拟路由器默认为 `esp32sim` / `esp32sim-pass`，固件 manifest 中的显式 Wi-Fi 配置优先。助手连接地址只属于当前会话，不进入分享链接或便携录制。公共中继地址为空时显示“公共中继尚未部署 · 配网页可用”；浏览器内配网和外网连接分别显示状态。
 
-固件已有凭据时正常关联虚拟路由器，沿原生 NAT 访问主机网络；TLS 由固件处理。固件进入 SoftAP 时，S3 虚拟客户端完成真实 802.11 关联，再由助手向固件发送 DHCP 请求。配网页通过真实 TCP 连接读取，不伪造 HTTP 响应、不直接写 NVS。
+固件已有凭据时正常关联虚拟路由器，经选定中继/助手的原生 NAT 访问网络；TLS 由固件处理。固件进入 SoftAP 时，S3 虚拟客户端完成真实 802.11 关联，默认由浏览器内客户端向固件发送 DHCP 请求；本机助手模式使用助手客户端。配网页通过真实 TCP 连接读取，不伪造 HTTP 响应、不直接写 NVS。
 
-当前自动适配 `esp-wifi-connect` 的网页协议：检查原页面包含 `/scan`、`/submit`、SSID 和密码字段，提交测试路由器；若原页面指定 `/done.html`，读取成功页并按其中的 `/exit` POST 请求退出配网。只有原服务接受配置才记为已提交，取得 STA 地址才记为联网。未知协议保留原页面及 HTTP API，报告需要手动或专用客户端；尚未实现通用 ESP-IDF protocomm / PoP 自动适配。
+自动配网先等待外网传输连接，避免没有出口就退出 AP。当前自动适配 `esp-wifi-connect` 的网页协议：检查原页面包含 `/scan`、`/submit`、SSID 和密码字段，提交测试路由器；若原页面指定 `/done.html`，读取成功页并按其中的 `/exit` POST 请求退出配网。只有原服务接受配置才记为已提交，取得 STA 地址才记为联网。未知协议保留原页面及 HTTP API，报告需要手动或专用客户端；尚未实现通用 ESP-IDF protocomm / PoP 自动适配。
 
-关闭“自动配网”保留虚拟路由器、网络助手和固件已保存的配置；已发出的请求不能撤回，尚未发出的自动步骤会取消。需要完全断网时使用单独的“断网”按钮。关闭自动配网不会清空 NVS，也不强迫已联网固件进入 AP。
+关闭“自动配网”保留虚拟路由器、网络助手和固件已保存的配置；已发出的请求不能撤回，尚未发出的自动步骤会取消。“断开外网”只关闭公共中继/助手连接，默认浏览器模式的 SoftAP 仍可用。关闭自动配网不会清空 NVS，也不强迫已联网固件进入 AP。
 
 ## 手动配网和服务端口
 
-底部网络区显示虚拟路由器、STA 地址、SoftAP SSID/地址和已知服务。手动模式下，虚拟客户端取得 AP DHCP 地址后自动打开 HTTP 80 候选服务；用户可以关闭网页或取消映射。原 HTML、脚本、相对请求通过独立回环 origin 显示在 iframe，另有独立打开入口。保留固件 CSP 和 X-Frame-Options；固件禁止嵌入时使用独立窗口，不删除安全头。
+底部网络区显示虚拟路由器、STA 地址、SoftAP SSID/地址和已知服务。手动模式下，虚拟客户端取得 AP DHCP 地址后自动打开 HTTP 80 候选服务；用户可以关闭网页或取消映射。默认在不允许 same-origin 的隔离 iframe 中显示固件 HTML；相对静态资源、fetch/XHR、常规表单及受支持的跳转由浏览器转入虚拟 TCP。192.168.4.1 是固件虚拟地址，不能在电脑地址栏直接打开。遇到 CSP、X-Frame-Options、HTTPS、WebSocket 或不支持的动态导航会明确报错，可切到本机助手获得独立代理 origin 和打开入口；不删除安全策略强行嵌入。
 
-可以手工添加 STA/AP 上的 HTTP、HTTPS、TCP、UDP 服务。HTTP 通过独立代理页面打开，HTTPS 使用 TCP 映射并保留浏览器证书检查；非 HTTP 服务显示本机 `127.0.0.1:<port>`，本机 MQTT、SSH 或其他客户端按原协议访问。取消、助手断线、固件切换和会话销毁会释放相应映射。
+可以手工添加 STA/AP 上的 HTTP、HTTPS、TCP、UDP 服务。默认模式可在浏览器内打开 SoftAP HTTP（包括非 80 端口）；STA 服务及其他协议需要在“高级连接”选择本机助手。助手的 HTTP 通过独立代理页面打开，HTTPS 使用 TCP 映射并保留浏览器证书检查；非 HTTP 服务显示本机 `127.0.0.1:<port>`，本机 MQTT、SSH 或其他客户端按原协议访问。取消、助手断线、固件切换和会话销毁会释放相应映射。
 
 服务来源和验证状态分别显示；端口 80 只是候选，不证明服务存在。尚未实现 mDNS/DNS-SD 发现或全端口扫描，也不能自动知道所有静默监听端口。现阶段用手工声明补充应用服务。TCP/UDP 按端口映射已经实现；TUN、原始二层桥、组播跨网转发及绑定 `0.0.0.0` 不属于这个入口。
 
@@ -25,12 +25,14 @@
 人、agent 和嵌入父页共用同一 runtime：
 
 ```js
-await espTester.configureNetwork({endpoint: helperWebSocketUrl, autoProvision: true});
+await espTester.configureNetwork({mode:'public-relay', autoProvision:false});
+// 外网测试须配置实际可用的 relayUrl；本机模式改为 mode:'local-helper',endpoint:helperWebSocketUrl。
 // 正常 configure / loadFirmware / start；凭据在加载前配置。
 const state = await espTester.readNetwork();
 // 未知原页面可以按实际协议请求，也可用浏览器操作 iframe。
 const page = await espTester.requestNetworkHttp({interface:1,path:'/',method:'GET'});
-const mapping = await espTester.mapNetworkPort({interface:0,protocol:'tcp',guestPort:1883});
+const mapping = await espTester.mapNetworkPort({interface:1,protocol:'http',guestPort:80});
+// 默认返回 browser:true，在工作台 iframe 内打开；本机映射另返回 url/hostPort。
 await espTester.unmapNetworkPort({mappingId:mapping.mappingId});
 ```
 

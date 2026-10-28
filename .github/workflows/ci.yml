@@ -55,7 +55,9 @@ jobs:
       - name: Test (hermetic + golden outputs)
         run: ESP32SIM_ROM_DIR=$PWD/roms cargo test --release --workspace -- --include-ignored --skip external_
       - name: Browser network helper (real TCP, TLS, UDP and port mapping)
-        run: node tools/network-helper-test.mjs
+        run: |
+          node tools/network-helper-test.mjs
+          node --test tools/network-relay-test.mjs
       - name: Virtual-quantum scheduler (native opt-in)
         run: ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops
       - name: Build the wasm module

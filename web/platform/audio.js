@@ -47,13 +47,15 @@ export function decodePcm16Wav(input) {
 
 export function createBrowserAudio({runtime, onState = () => {}, AudioContextClass = globalThis.AudioContext || globalThis.webkitAudioContext,
   AudioWorkletNodeClass = globalThis.AudioWorkletNode, mediaDevices = globalThis.navigator?.mediaDevices,
-  workletUrl = new URL('./audio-worklet.js', import.meta.url), maxQueuedSeconds = MAX_SECONDS} = {}) {
+  workletUrl = new URL('./audio-worklet.js', import.meta.url), maxQueuedSeconds = MAX_SECONDS, mode = 'realtime'} = {}) {
   if (!Number.isFinite(maxQueuedSeconds) || maxQueuedSeconds < 0.05 || maxQueuedSeconds > 10) throw fail('INVALID_AUDIO_LIMIT','Audio buffering must be 0.05–10 seconds.');
   if (!runtime?.subscribe || typeof runtime.pushAudio !== 'function' || typeof runtime.audioConfigure !== 'function') throw fail('AUDIO_UNSUPPORTED', 'The runtime does not expose PCM audio IO.');
   let disposed = false, context = null, contextReady = null, contextGeneration = 0, microphoneGeneration = 0, speakerGeneration = 0;
   let stream = null, captureNode = null, mediaNode = null, playbackNode = null, nextId = 0;
   const pending = new Map(), pendingStreams = new Set();
-  const state = {microphone:'off',speaker:'off',microphoneError:null,speakerError:null,sampleRate:null,inputFrames:0,outputFrames:0,renderedFrames:0,queuedSeconds:0,underflows:0,overflows:0};
+  let dispatchDroppedSeconds=0;
+  if(!['realtime','buffered'].includes(mode))throw fail('INVALID_AUDIO_MODE','Choose realtime or buffered audio.');
+  const state = {mode,microphoneWaiting:false,microphoneDroppedFrames:0,speakerDroppedSeconds:0,buffering:false,simulationSpeed:null,microphone:'off',speaker:'off',microphoneError:null,speakerError:null,sampleRate:null,inputFrames:0,outputFrames:0,renderedFrames:0,queuedSeconds:0,underflows:0,overflows:0};
   const snapshot = () => ({...state,microphoneError:state.microphoneError && {...state.microphoneError},speakerError:state.speakerError && {...state.speakerError}});
   const emit = () => { if (!disposed) onState(snapshot()); };
   const alive = () => { if (disposed) throw fail('AUDIO_DISPOSED','Browser audio was disposed.'); };
@@ -111,7 +113,8 @@ export function createBrowserAudio({runtime, onState = () => {}, AudioContextCla
     try {
       const {samples,sampleRate,channels} = validatePcm(packet,{output:true}), duration = samples.length / channels / sampleRate;
       const inFlight = [...pending.values()].reduce((total,seconds) => total + seconds,0);
-      if (inFlight + state.queuedSeconds + duration > maxQueuedSeconds + 1e-9) throw fail('AUDIO_OUTPUT_OVERFLOW','Speaker queue is full; playback stopped. Export the captured PCM for offline listening.');
+      if(state.mode==='realtime'&&inFlight+duration>maxQueuedSeconds+1e-9){dispatchDroppedSeconds+=duration;state.speakerDroppedSeconds+=duration;emit();return;}
+      if (state.mode==='buffered' && inFlight + state.queuedSeconds + duration > maxQueuedSeconds + 1e-9) throw fail('AUDIO_OUTPUT_OVERFLOW','Speaker queue is full; playback stopped. Export the captured PCM for offline listening.');
       const copied = samples.slice(), id = ++nextId; pending.set(id,duration);
       playbackNode.port.postMessage({type:'pcm',id,samples:copied,sampleRate,channels},[copied.buffer]);
       state.outputFrames += samples.length / channels;
@@ -122,19 +125,19 @@ export function createBrowserAudio({runtime, onState = () => {}, AudioContextCla
     if (enabled && state.speaker === 'on') return snapshot();
     const generation = ++speakerGeneration;
     if (!enabled) { releaseSpeaker(); state.speaker = 'off'; state.speakerError = null; emit(); await closeIdleContext(); return snapshot(); }
-    state.speaker = 'starting'; state.underflows = 0; state.speakerError = null; emit();
+    state.speaker = 'starting'; state.underflows = 0; state.buffering=false; state.speakerDroppedSeconds=0;dispatchDroppedSeconds=0; state.speakerError = null; emit();
     try {
       const ctx = await ensureContext();
       if (generation !== speakerGeneration || disposed) return snapshot();
-      const node = new AudioWorkletNodeClass(ctx,'esp-platform-playback',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[2],processorOptions:{maxQueuedSeconds}});
+      const node = new AudioWorkletNodeClass(ctx,'esp-platform-playback',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[2],processorOptions:{maxQueuedSeconds,prebufferSeconds:Math.min(0.2,maxQueuedSeconds),overflowPolicy:state.mode==='realtime'?'drop-oldest':'error'}});
       playbackNode = node;
       node.port.onmessage = ({data}) => {
         if (playbackNode !== node || disposed) return;
         if (data.type === 'accepted') {
-          pending.delete(data.id); state.queuedSeconds = data.queuedSeconds;
+          pending.delete(data.id); state.queuedSeconds = data.queuedSeconds; state.speakerDroppedSeconds=dispatchDroppedSeconds+(data.droppedSeconds||0);
           if (!data.accepted) { speakerError(fail(data.code || 'AUDIO_OUTPUT_ERROR','Speaker queue rejected PCM; playback stopped.')); return; }
         } else if (data.type === 'playback') {
-          state.queuedSeconds = data.queuedSeconds; state.underflows = data.underflows; state.renderedFrames = data.renderedFrames;
+          state.queuedSeconds = data.queuedSeconds; state.underflows = data.underflows; state.renderedFrames = data.renderedFrames;state.buffering=!!data.buffering;state.speakerDroppedSeconds=dispatchDroppedSeconds+(data.droppedSeconds||0);
         }
         emit();
       };
@@ -149,8 +152,8 @@ export function createBrowserAudio({runtime, onState = () => {}, AudioContextCla
     alive();
     if (enabled && state.microphone === 'on') return snapshot();
     const generation = ++microphoneGeneration;
-    if (!enabled) { releaseMicrophone(); state.microphone = 'off'; state.microphoneError = null; emit(); await disableInput(); await closeIdleContext(); return snapshot(); }
-    state.microphone = 'starting'; state.microphoneError = null; emit();
+    if (!enabled) { releaseMicrophone(); state.microphoneWaiting=false; state.microphone = 'off'; state.microphoneError = null; emit(); await disableInput(); await closeIdleContext(); return snapshot(); }
+    state.microphone = 'starting'; state.microphoneError = null; state.microphoneWaiting=true;state.microphoneDroppedFrames=0;emit();
     let acquired = null;
     try {
       const prepared = ensureContext();
@@ -170,17 +173,22 @@ export function createBrowserAudio({runtime, onState = () => {}, AudioContextCla
       await runtime.audioConfigure({input:{enabled:true,port:0,sampleRate:ctx.sampleRate,channels:1}});
       if (generation !== microphoneGeneration || disposed) { for (const track of acquired.getTracks()) track.stop(); if (disposed || !['on','starting'].includes(state.microphone)) await disableInput(); return snapshot(); }
       stream = acquired; pendingStreams.delete(acquired); acquired = null;
-      const node = new AudioWorkletNodeClass(ctx,'esp-platform-capture',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1],processorOptions:{maxQueuedSeconds}});
+      const node = new AudioWorkletNodeClass(ctx,'esp-platform-capture',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1],processorOptions:{maxQueuedSeconds:state.mode==='realtime'?0.25:maxQueuedSeconds,blockFrames:Math.round(ctx.sampleRate*0.08),overflowPolicy:state.mode==='realtime'?'drop-oldest':'error'}});
       captureNode = node; mediaNode = ctx.createMediaStreamSource(stream);
+      let hostDropped=0,guestDropped=0,previousProgress=0,lastProgressAt=performance.now();
       node.port.onmessage = async ({data}) => {
         if (captureNode !== node || generation !== microphoneGeneration || disposed) return;
         if (data.type === 'error') { await microphoneError(fail(data.code,'Microphone queue is full; capture stopped because the simulator cannot keep up.')); return; }
         if (data.type !== 'pcm') return;
         try {
           const packet = validatePcm(data);
-          await runtime.pushAudio({...packet,port:0});
+          const receipt=await runtime.pushAudio({...packet,port:0,overflowPolicy:state.mode==='realtime'?'drop-oldest':'error',maxLatencyMs:250});
           if (captureNode !== node || generation !== microphoneGeneration || disposed) return;
-          state.inputFrames += packet.samples.length / packet.channels;
+          state.inputFrames += receipt?.acceptedFrames??packet.samples.length / packet.channels;
+          hostDropped=data.droppedFrames||0;guestDropped+=receipt?.droppedFrames||0;state.microphoneDroppedFrames=hostDropped+guestDropped;
+          const progress=(receipt?.input?.consumedFrames||0)+(receipt?.input?.underrunFrames||0);
+          if(progress>previousProgress)lastProgressAt=performance.now();
+          state.microphoneWaiting=progress===0||performance.now()-lastProgressAt>600;previousProgress=progress;
           node.port.postMessage({type:'ack'}); emit();
         } catch (error) { if (captureNode === node && generation === microphoneGeneration && !disposed) await microphoneError(error); }
       };
@@ -198,15 +206,21 @@ export function createBrowserAudio({runtime, onState = () => {}, AudioContextCla
     microphoneGeneration++; speakerGeneration++; contextGeneration++;
     releaseMicrophone(); releaseSpeaker();
     const old = context; context = null; contextReady = null;
-    state.microphone = 'off'; state.speaker = 'off'; state.microphoneError = null; state.speakerError = null; state.sampleRate = null;
+    state.microphone = 'off'; state.speaker = 'off'; state.microphoneError = null; state.speakerError = null; state.sampleRate = null;state.microphoneWaiting=false;state.microphoneDroppedFrames=0;state.speakerDroppedSeconds=0;state.buffering=false;state.simulationSpeed=null;dispatchDroppedSeconds=0;
     emit(); if (old && old.state !== 'closed') await old.close().catch(() => {});
     if (detachInput) await disableInput();
   }
   const unsubscribe = runtime.subscribe(event => {
     if (event.type === 'audio') queueOutput(event);
+    else if(event.type==='stats'&&Number.isFinite(event.stats?.speed)){state.simulationSpeed=event.stats.speed;emit();}
     else if (event.type === 'state' && ['idle','configured','loading','error','disposed'].includes(event.state?.status)) void reset({detachInput:false});
-    else if (event.type === 'state' && event.state?.status === 'paused' && state.microphone !== 'off') void setMicrophone(false).catch(() => {});
+    else if(event.type==='state'&&event.state?.status==='paused'){playbackNode?.port.postMessage({type:'flush'});if(state.microphone!=='off')void setMicrophone(false).catch(()=>{});}
   });
-  return {observe:snapshot,setMicrophone,setSpeaker,reset,
+  async function setMode(value){
+    alive();if(!['realtime','buffered'].includes(value))throw fail('INVALID_AUDIO_MODE','Choose realtime or buffered audio.');
+    if(value===state.mode)return snapshot();const mic=['on','starting'].includes(state.microphone),speaker=['on','starting'].includes(state.speaker);
+    await setMicrophone(false);await setSpeaker(false);state.mode=value;emit();if(speaker)await setSpeaker(true);if(mic)await setMicrophone(true);return snapshot();
+  }
+  return {observe:snapshot,setMicrophone,setSpeaker,setMode,reset,
     async dispose() { if (disposed) return; unsubscribe(); disposed = true; await reset(); }};
 }
