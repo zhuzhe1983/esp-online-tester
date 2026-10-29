@@ -48,9 +48,10 @@ impl Soc for S3 {
         c.set_ar(0, 0);
     }
     fn irqs(bus: &SocBus, out: &mut [u32]) { let (l0, l1) = bus.periph.cpu_lines_both(); out[0] = l0; out[1] = l1; }
-    /// Core 0 is always running. SYSTEM_CORE_1_CONTROL_0 controls core 1's clock gate, reset,
+    /// Light sleep holds both cores with their register state retained. Otherwise core 0 runs. SYSTEM_CORE_1_CONTROL_0 controls core 1's clock gate, reset,
     /// and run-stall state.
     fn core_state(bus: &SocBus, core: usize) -> CoreState {
+        if bus.light_sleep { return CoreState::Held; }
         if core == 0 { return CoreState::Running; }
         let (clk, reset, stall) = bus.periph.core1_control();
         if reset { CoreState::Reset } else if clk && !stall { CoreState::Running } else { CoreState::Held }
@@ -159,6 +160,7 @@ impl esp_soc::SocBus for SocBus {
         self.ble.reset();
         self.flush_ticks();
         self.cancel_spi2_timing();
+        self.light_sleep = false;
         let cause = self.periph.rtc.reset_cause;
         let mut old = std::mem::replace(&mut self.periph, periph::Peripherals::new(mac));
         let p = &mut self.periph;
@@ -170,7 +172,7 @@ impl esp_soc::SocBus for SocBus {
         p.lcd_cam.frame_cycles = old.lcd_cam.frame_cycles;
         p.efuse = old.efuse;
         p.i2s0.keep_rx_input(&mut old.i2s0); p.i2s1.keep_rx_input(&mut old.i2s1);
-        p.rtc.analog = old.rtc.analog;
+        p.rtc.analog = old.rtc.0.analog;
         p.rtc.analog.set_stream_clock_offset(self.cycles); // ticks flushed; the new peripheral clock starts at zero
         p.gpio.restore_external(&old.gpio);
         p.gpio.strap = old.gpio.strap;
@@ -180,7 +182,7 @@ impl esp_soc::SocBus for SocBus {
         // resets it) or the PSRAM (MR2 is read-only and keeps its density).
         p.spi0.octal_flash = old.spi0.octal_flash; p.spi1.octal_flash = old.spi1.octal_flash; p.spi1.flash_cr2 = old.spi1.flash_cr2;
         p.spi0.psram_mr[2] = old.spi0.psram_mr[2]; p.spi1.psram_mr[2] = old.spi1.psram_mr[2];
-        p.rtc.ram = old.rtc.ram; p.rtc.slow_ticks = old.rtc.slow_ticks;
+        p.rtc.ram = old.rtc.0.ram; p.rtc.slow_ticks = old.rtc.0.slow_ticks;
         p.rtc.ram.write(0x38, cause | (cause << 6));
         p.rtc.ram.write(0x98, 0);                       // watchdog disarmed by the reset; the ROM re-arms it
         p.i2s0.pcm = old.i2s0.pcm; p.i2s0.frames_out = old.i2s0.frames_out; p.i2s1.pcm = old.i2s1.pcm; p.i2s1.frames_out = old.i2s1.frames_out;   // keep the captured audio continuous
@@ -222,11 +224,15 @@ impl esp_soc::SocBus for SocBus {
         ((1..=20).contains(&pin)).then(|| self.periph.rtc.analog.observation(pin))
     }
     fn gpio_release_input(&mut self, pin: u8) {
+        self.flush_ticks();
         self.irq_dirty |= esp_soc::gpio::release_and_report(&mut self.periph.gpio, &mut self.gpio_events, self.cycles, pin);
+        self.check_sleep_wake();
         self.refresh_tick_budget();
     }
     fn gpio_set_input(&mut self, pin: u8, level: bool) {
+        self.flush_ticks();
         self.irq_dirty |= self.periph.gpio.set_input(pin, level);
+        self.check_sleep_wake();
         // Host edges queue PCNT work without going through the MMIO refresh hook.
         // Recompute the threshold without dropping cycles already pending.
         self.refresh_tick_budget();

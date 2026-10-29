@@ -57,6 +57,7 @@ pub struct SocBus {
     pub board: Board,
     uart_pins: bool,
     pub cycles: u64,
+    pub(crate) light_sleep: bool,
     pub last_fault: Option<(u32, bool)>,
     pub spi2_dma_fault: Option<DmaDescriptorFault>,
     /// Experimental register-derived SPI2 wire timing; disabled for baseline runs.
@@ -152,7 +153,7 @@ impl SocBus {
         let bus_uninit = SocBus {
             ble: Default::default(),
             sram: vec![0; SRAM_SIZE], irom: vec![0; (IROM_MASK_HIGH - IROM_MASK_LOW) as usize], drom: vec![0; (DROM_MASK_HIGH - DROM_MASK_LOW) as usize],
-            rtc_fast: vec![0; 8192], rtc_slow: vec![0; 8192], flash: vec![0xff; flash_size], psram: vec![0; psram_size],
+            light_sleep: false, rtc_fast: vec![0; 8192], rtc_slow: vec![0; 8192], flash: vec![0xff; flash_size], psram: vec![0; psram_size],
             mmu: [MMU_INVALID; MMU_ENTRIES], periph: Peripherals::new(mac), board: Box::new(crate::board::Atech14::new()), uart_pins: false, cycles: 0, last_fault: None, spi2_dma_fault: None, irq_dirty: false, gpio_events: None, debug: Default::default(), board_edges: true,
             spi2_timing: false, spi2_scheduled: None, spi2_pins: None, spi3_dma_fault: None, spi3_pins: None,
             tlb: vec![TlbEntry::EMPTY; TLB_SIZE], page_ver: Vec::new(), ver_base: [0; 7], flash_epoch: BUS_EPOCHS.fetch_add(1, std::sync::atomic::Ordering::Relaxed) << 32, code_blk: Vec::new(), tick_pending: 0, tick_budget: 0, defer_mmio: false, mmio_deferred: false, vq_violations: 0,
@@ -535,6 +536,7 @@ impl SocBus {
             self.spi3_pins = self.board.uses_spi_pins().then(|| self.periph.spi3_pins());
         }
         self.periph.write32(a, v);
+        if a == 0x6000_8018 && v & (1 << 31) != 0 { self.enter_light_sleep(); }
         if a == 0x6004_1014 { self.lcd_i80_start(); }
         if a>>12==0x60028 || a==0x600c0024 {self.sdmmc_write(a,v);}
         if matches!(a & !0xfff, 0x6000_4000 | 0x6000_9000) && self.board.uses_gpio_routes() {
@@ -892,6 +894,14 @@ impl SocBus {
     /// Refresh the cached deadline after host-side device configuration changes.
     /// Pending elapsed cycles are retained and count toward the new threshold.
     pub fn refresh_tick_budget(&mut self) {
+        if self.light_sleep {
+            let mut budget = u64::from(QUIET_TICK_DEFER);
+            if self.periph.rtc.ram.read(0x3c) & (8 << 15) != 0 { budget = budget.min(self.periph.sleep_timer_cycles(self.sleep_timer_remaining())); }
+            if self.periph.rtc.ram.read(0x98) & (1 << 31) != 0 { budget = budget.min(u64::from(MAX_TICK_DEFER)); }
+            if let Some(deadline) = self.board.next_deadline() { budget = budget.min(u64::from(self.tick_pending).saturating_add(deadline.saturating_sub(self.cycles)).max(1)); }
+            self.tick_budget = budget.min(u64::from(u32::MAX)) as u32;
+            return;
+        }
         let cap = if self.cadence_active() { MAX_TICK_DEFER } else { QUIET_TICK_DEFER };
         let mut budget = self.periph.cycles_until_timer().clamp(1, cap);
         if let Some((deadline, _)) = &self.spi2_scheduled {
@@ -921,6 +931,12 @@ impl SocBus {
     }
 
     fn tick_impl(&mut self, cycles: u32) -> u32 {
+        if self.light_sleep {
+            self.periph.tick_light_sleep(u64::from(cycles));
+            if self.board_edges { self.irq_dirty |= esp_soc::gpio::deliver_board_inputs(&mut *self.board, &mut self.periph.gpio, &mut self.gpio_events, self.cycles); }
+            self.check_sleep_wake();
+            return 0;
+        }
         // Board time advances before peripheral callbacks; inputs are delivered after them.
         if self.board_edges { self.board.advance_to(self.cycles); }
         // Reads may flush before the periodic backstop. Refresh for either edge

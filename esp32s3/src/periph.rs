@@ -14,6 +14,8 @@ pub const PERIPH_END: u32 = 0x600D_0000;
 
 // interrupt sources (soc/interrupts.h, with the enum's explicit gaps)
 pub const SRC_GPIO: usize = 16;
+/// ESP-IDF v5.5.2 soc/esp32s3/include/soc/interrupts.h: ETS_RTC_CORE_INTR_SOURCE.
+pub const SRC_RTC_CORE: usize = 39;
 pub const SRC_UART0: usize = 27;
 pub const SRC_UART1: usize = 28;
 pub const SRC_UART2: usize = 29;
@@ -423,7 +425,7 @@ pub struct Peripherals {
     pub timg: [TimerGroup; 2],
     pub intmatrix: IntMatrix,
     pub gpio: Gpio,
-    pub rtc: RtcCntl,
+    pub rtc: crate::sleep::S3Rtc,
     pub efuse: Efuse,
     pub system: SystemRegs,
     pub extmem: Extmem,
@@ -476,7 +478,7 @@ device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::Systimer, 15), 
     0x2c "MCPWM1" optional (mcpwm[1]) => [SRC_PWM1];
     0xc2 "INTERRUPT" (intmatrix) => [];
     0x04 "GPIO" (gpio) => [SRC_GPIO];
-    0x08 "RTC" (rtc) => [];
+    0x08 "RTC" (rtc) => [SRC_RTC_CORE];
     0x07 "EFUSE" (efuse) => [];
     0xc0 "SYSTEM" (system) => [SRC_FROM_CPU0, SRC_FROM_CPU0 + 1, SRC_FROM_CPU0 + 2, SRC_FROM_CPU0 + 3];
     0xc4 "EXTMEM" (extmem) => [];
@@ -529,10 +531,26 @@ impl DeviceSet for Peripherals {
 impl Peripherals {
     /// CPU cycles since this peripheral set was built.
     pub(crate) fn clock_cycles(&self) -> u64 { self.clock.cycles() }
+    /// IDF v5.5.2 sleep_modes.c: digital clocks stop, RTC measures elapsed sleep.
+    /// Advance all clock accounting so gated domains never catch up after wake.
+    pub(crate) fn tick_light_sleep(&mut self, cycles: u64) {
+        let rtc = &mut self.rtc;
+        self.clock.advance(&Self::CLOCKS, cycles, |domain, ticks| {
+            if domain == ClockDomain::RtcSlow {
+                rtc.slow_ticks += ticks;
+                // S3 WDTCONFIG0.WDT_PAUSE_IN_SLP is bit9, not classic's bit7.
+                if rtc.ram.read(0x98) & (1 << 9) == 0 { rtc.wdt_tick(ticks); }
+            }
+        });
+    }
+    // Existing CLOCKS model: 240 MHz CPU / nominal 150 kHz RTC slow clock = 1600.
+    pub(crate) fn sleep_timer_cycles(&self, ticks: u64) -> u64 {
+        ticks.saturating_mul(1600).saturating_sub(self.clock.cycles() % 1600).max(1)
+    }
     pub fn new(mac: [u8; 6]) -> Self {
         Peripherals {
             usb: UsbSerialJtag::new(CPU_HZ), uart: [Uart::new(UartLayout::S3), Uart::new(UartLayout::S3), Uart::new(UartLayout::S3)], systimer: Systimer::new(),
-            timg: [TimerGroup::new(), TimerGroup::new()], intmatrix: IntMatrix::new(), gpio: Gpio::new(), ledc: Ledc::new(LedcLayout::S3), mcpwm: [Mcpwm::new(160, 9), Mcpwm::new(166, 9)], rtc: RtcCntl::new(),
+            timg: [TimerGroup::new(), TimerGroup::new()], intmatrix: IntMatrix::new(), gpio: Gpio::new(), ledc: Ledc::new(LedcLayout::S3), mcpwm: [Mcpwm::new(160, 9), Mcpwm::new(166, 9)], rtc: crate::sleep::S3Rtc(RtcCntl::new()),
             efuse: Efuse::new(mac), system: SystemRegs::new(0x30), extmem: Extmem::new(), spi0: SpiMem::new(false), spi1: SpiMem::new(true),
             i2c: [crate::i2c::I2c::new(), crate::i2c::I2c::new()], lcd_cam: LcdCam::new(), spi2: GpSpi::new(), spi3: GpSpi::with_host(3), pcnt: Pcnt::new(), wifi: WifiMac::new(), fe: FeIq { word: 0 },
             aes: Aes::new(), rsa: Rsa::new(), sha: Sha::new(), wdev: Wdev::new(), i2c_mst: I2cMst::new(), gdma: Gdma::new(), i2s0: I2s::new(CPU_HZ), i2s1: I2s::new(CPU_HZ), rmt: Rmt::new(CPU_HZ),
