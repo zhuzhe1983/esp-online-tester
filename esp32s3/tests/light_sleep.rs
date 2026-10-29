@@ -461,3 +461,36 @@ fn deep_sleep_request_does_not_report_an_ordinary_light_sleep_wake() {
     // Deep-sleep/reset modelling is outside this light-sleep implementation.
     assert_eq!(esp32s3::S3::core_state(&m.bus, 0), CoreState::Running);
 }
+
+#[test]
+fn autonomous_board_deadline_publishes_and_wakes_while_cpus_sleep() {
+    // An externally powered panel/IRQ source keeps its own clock while the SoC sleeps.
+    struct WakeBoard { deadline: u64, fired: bool, edges: Vec<esp_soc::board::BoardEdge> }
+    impl esp32s3::board::BoardModel for WakeBoard {
+        fn name(&self) -> &'static str { "sleep-wake-test" }
+        fn input_levels(&self) -> Vec<(u8, bool)> { vec![(4, !self.fired)] }
+        fn next_deadline(&self) -> Option<u64> { (!self.fired).then_some(self.deadline) }
+        fn advance_to(&mut self, cycle: u64) {
+            if !self.fired && cycle >= self.deadline {
+                self.fired = true;
+                self.edges.push(esp_soc::board::BoardEdge { cycle: self.deadline, pin: 4, level: false });
+            }
+        }
+        fn take_edges(&mut self) -> Vec<esp_soc::board::BoardEdge> { std::mem::take(&mut self.edges) }
+        fn display_frames(&self) -> u64 { u64::from(self.fired) }
+    }
+    let mut m = machine();
+    let deadline = m.bus.cycles + 4321;
+    m.bus.board = Box::new(WakeBoard { deadline, fired: false, edges: Vec::new() });
+    m.bus.attach_board_devices();
+    digital_input(&mut m, 4, 4);
+    enable(&mut m, 4);
+    sleep(&mut m);
+    held(&m);
+    m.run_until_cycle(deadline - 1);
+    held(&m);
+    assert_eq!(m.bus.board.display_frames(), 0);
+    m.run_until_cycle(deadline);
+    woke(&mut m, 4);
+    assert_eq!(m.bus.board.display_frames(), 1);
+}

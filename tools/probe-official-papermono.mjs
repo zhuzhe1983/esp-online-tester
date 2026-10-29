@@ -123,6 +123,16 @@ try{
     const exported=await runtime.exportSdCard();assert.equal(exported.bytes.length,64*1024*1024);assert.ok(new TextDecoder().decode(exported.bytes).includes('HELLO   TXT'));
     await runtime.pause();await runtime.reset();assert.equal((await runtime.observe()).sdCard.restored,true);await runtime.start();await waitGuest(seconds);await checkpoint('sd-after-reset');
   }
+  if(scenario==='edcbook') {
+    await tap(425,625);await checkpoint('reading-menu');
+    await tap(240,625);await checkpoint('recent-reading');
+    await tap(400,740);await checkpoint('guide-first-page');
+    await tap(400,400);await checkpoint('guide-next-page');
+    assert.equal((serial.match(/ESP-ROM:esp32s3/g)||[]).length,1,'The reader must not reboot after entering light sleep');
+    assert.doesNotMatch(emulator,/reset.*(?:RTCWDT|watchdog)/i);
+    assert.ok(stages.at(-1).frameNumber>stages.at(-2).frameNumber,'Page turn must produce firmware display output');
+    // PNGs require visual review: a changed frame alone cannot certify readable text.
+  }
   if(scenario==='crosspoint') {await runtime.flushSdCard();assert.ok((await runtime.observe()).sdCard.changedPages>0,'CrossPoint must write real card sectors');const bytes=(await runtime.exportSdCard()).bytes;await writeFile(`${output}/sd-write-summary.json`,JSON.stringify({bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex'),changedPages:(await runtime.observe()).sdCard.changedPages},null,2));}
   await runtime.pause();
 }catch(e){failure={message:e.message,code:e.code};process.exitCode=1;}
