@@ -131,7 +131,7 @@ try{
     assert.equal((serial.match(/ESP-ROM:esp32s3/g)||[]).length,1,'The reader must not reboot after entering light sleep');
     assert.doesNotMatch(emulator,/reset.*(?:RTCWDT|watchdog)/i);
     assert.ok(stages.at(-1).frameNumber>stages.at(-2).frameNumber,'Page turn must produce firmware display output');
-    // PNGs require visual review: a changed frame alone cannot certify readable text.
+    assert.equal(stages.at(-1).sha256,'60d5ebcaa2c5701afb302770eaa1ace6e6577c4b6d89e98566b1eb01a07a916a','Fixed EDC Book 3.1.2 must render the visually verified complete second guide page');
   }
   if(scenario==='crosspoint') {await runtime.flushSdCard();assert.ok((await runtime.observe()).sdCard.changedPages>0,'CrossPoint must write real card sectors');const bytes=(await runtime.exportSdCard()).bytes;await writeFile(`${output}/sd-write-summary.json`,JSON.stringify({bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex'),changedPages:(await runtime.observe()).sdCard.changedPages},null,2));}
   await runtime.pause();
