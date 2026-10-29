@@ -224,13 +224,13 @@ impl esp_soc::SocBus for SocBus {
         ((1..=20).contains(&pin)).then(|| self.periph.rtc.analog.observation(pin))
     }
     fn gpio_release_input(&mut self, pin: u8) {
-        self.flush_ticks();
+        if self.light_sleep { self.flush_ticks(); }
         self.irq_dirty |= esp_soc::gpio::release_and_report(&mut self.periph.gpio, &mut self.gpio_events, self.cycles, pin);
         self.check_sleep_wake();
         self.refresh_tick_budget();
     }
     fn gpio_set_input(&mut self, pin: u8, level: bool) {
-        self.flush_ticks();
+        if self.light_sleep { self.flush_ticks(); }
         self.irq_dirty |= self.periph.gpio.set_input(pin, level);
         self.check_sleep_wake();
         // Host edges queue PCNT work without going through the MMIO refresh hook.
