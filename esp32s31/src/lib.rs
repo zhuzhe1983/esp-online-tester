@@ -44,7 +44,7 @@ pub struct PcWatch { pub address: u32, pub retired: u64, pub first_cycle: Option
 /// subset requires explicit NOR identity and array inputs; no product identity is guessed. Functional
 /// MMU mappings use explicitly supplied flash/PSRAM buffers. Unlike a P4 alias, its
 /// bus uses the S31 addresses and reports the first unsupported access with the guest PC.
-pub struct Bringup { upstream_fpu_memory_reason: bool, pub compatibility_fpu_memory_traps: [u64; 2], pub cpu: Cpu, pub cpu1: Cpu, pub bus: S31Bus, rtc_timer_from_cpu: bool, rtc_calibration_from_cpu: bool, systimer_from_cpu: bool, pub pc_watch: Option<PcWatch>, pub pc_watch1: Option<PcWatch>, next_core: usize, pub last_core: usize, pub quanta: u64 }
+pub struct Bringup { pub cpu: Cpu, pub cpu1: Cpu, pub bus: S31Bus, rtc_timer_from_cpu: bool, rtc_calibration_from_cpu: bool, systimer_from_cpu: bool, pub pc_watch: Option<PcWatch>, pub pc_watch1: Option<PcWatch>, next_core: usize, pub last_core: usize, pub quanta: u64 }
 #[derive(Debug, PartialEq, Eq)]
 pub enum Stop { Budget, Waiting, Trap(Trap), Reset(rtc_wdt::ResetRequest), PowerReset(power::ResetCause), CpuReset(reset::CpuReset), MwdtReset { group: usize, action: mwdt::Reset } }
 pub struct Run { pub steps: u64, pub stop: Stop }
@@ -55,7 +55,7 @@ impl Bringup {
         let mut cpu = Cpu::new_esp32s31();
         cpu.pc = bus::ROM_BASE;
         let mut cpu1 = Cpu::new_esp32s31(); cpu1.hartid = 1; cpu1.pc = bus::ROM_BASE;
-        Self { upstream_fpu_memory_reason: false, compatibility_fpu_memory_traps: [0; 2], cpu, cpu1, bus: S31Bus::new(), rtc_timer_from_cpu: false, rtc_calibration_from_cpu: false, systimer_from_cpu: false, pc_watch: None, pc_watch1: None, next_core: 0, last_core: 0, quanta: 0 }
+        Self { cpu, cpu1, bus: S31Bus::new(), rtc_timer_from_cpu: false, rtc_calibration_from_cpu: false, systimer_from_cpu: false, pc_watch: None, pc_watch1: None, next_core: 0, last_core: 0, quanta: 0 }
     }
 
     /// Explicit RTC clock-domain input for bring-up fixtures. CPU cycles are not silently
@@ -103,12 +103,6 @@ impl Bringup {
         Ok(())
     }
 
-    /// Development-only compatibility with observed esp-emulator0.51.0 S31
-    /// EXT_ILL for FP memory instructions. Public IDF6.1 soc_caps instead names
-    /// the load/store reason-bit bug; preserve strict default and record opt-in.
-    /// This changes only the reason CSR on the real FS-Off exception,not FS,
-    /// PC,the trapping instruction or the guest's own handler.
-    pub fn set_upstream_fpu_memory_reason(&mut self, enabled: bool) { self.upstream_fpu_memory_reason = enabled; }
 
     pub fn run(&mut self, budget: u64) -> Run {
         for steps in 0..budget {
@@ -158,13 +152,6 @@ impl Bringup {
             if self.systimer_from_cpu && tick { self.bus.systimer.advance_cpu(cpu.cycle_count.wrapping_sub(cycles), hz, self.bus.clocks.rc_fast_hz(), self.bus.cores.stalled()); }
             if let Err(trap) = result {
                 if let Trap::Interrupt(line) = trap { self.bus.interrupt_taken(line); continue; }
-                if self.upstream_fpu_memory_reason && trap == Trap::Exception(2) && cpu.fs_off() && cpu.has_ext_ill {
-                    let insn = riscv_rv32::decode_for(cpu.misa, cpu.mepc, cpu.mtval.to_le_bytes());
-                    if matches!(insn.op, riscv_rv32::Op::Flw | riscv_rv32::Op::Fsw) {
-                        cpu.ext_ill |= riscv_rv32::state::ext_ill::FPU;
-                        self.compatibility_fpu_memory_traps[core] = self.compatibility_fpu_memory_traps[core].wrapping_add(1);
-                    }
-                }
                 if matches!(trap, Trap::Exception(_) | Trap::Ebreak(_)) { self.bus.bus_monitor.exception_core(core, cpu.mcause, cpu.mtval, cpu.mepc); }
                 return Run { steps: steps + 1, stop: Stop::Trap(trap) };
             }
@@ -177,35 +164,36 @@ impl Bringup {
 mod tests {
     use super::*;
     #[test]
-    fn upstream_fp_memory_reason_is_explicit_and_never_repairs_state_or_other_faults() {
-        for (word, fs, enabled, exception, reason, count) in [
-            (0x00002507u32, 0, false, 2, 0, 0), // flw fa0,0(zero), strict default
-            (0x00002507, 0, true, 2, 1, 1),
-            (0x00002507, 0x2000, true, 5, 0, 0), // Actual unmapped data read, not FS-Off
-            (0xffffffff, 0, true, 2, 0, 0), // Unrelated illegal instruction
-            (0x00000053, 0, true, 2, 1, 0), // FADD's existing reason requires no compatibility
-        ] {
-            let mut m = Bringup::new(); m.bus.load(bus::SRAM_BASE, &word.to_le_bytes(), 4).unwrap();
-            m.cpu.pc = bus::SRAM_BASE; m.cpu.mtvec = bus::SRAM_BASE + 0x100; m.cpu.mstatus |= fs;
-            if enabled { m.set_upstream_fpu_memory_reason(true); }
-            assert_eq!(m.run(1).stop, Stop::Trap(Trap::Exception(exception)));
-            assert_eq!(m.cpu.mepc, bus::SRAM_BASE); assert_eq!(m.cpu.pc, bus::SRAM_BASE + 0x100);
-            assert_eq!(m.cpu.mstatus & 0x6000, fs); assert_eq!(m.cpu.ext_ill, reason);
-            assert_eq!(m.compatibility_fpu_memory_traps, [count, 0]); assert_eq!(m.cpu.f[10], 0);
-        }
-        let mut m = Bringup::new(); m.set_upstream_fpu_memory_reason(true); m.set_upstream_fpu_memory_reason(false);
-        m.bus.load(bus::SRAM_BASE, &0x00002507u32.to_le_bytes(), 4).unwrap(); m.cpu.pc = bus::SRAM_BASE;
-        assert_eq!(m.run(1).stop, Stop::Trap(Trap::Exception(2))); assert_eq!(m.cpu.ext_ill, 0);
-        assert_eq!(m.compatibility_fpu_memory_traps, [0, 0]);
+    fn s31_default_ext_ill_flags_fp_memory_ops_like_p4_rev3() {
+        // FLW with FS Off: illegal + EXT_ILL.FPU (default for S31 / P4 rev >= 3).
+        let mut m = Bringup::new();
+        m.bus.load(bus::SRAM_BASE, &0x00002507u32.to_le_bytes(), 4).unwrap();
+        m.cpu.pc = bus::SRAM_BASE; m.cpu.mtvec = bus::SRAM_BASE + 0x100;
+        assert!(m.cpu.ext_ill_all_fp);
+        assert_eq!(m.run(1).stop, Stop::Trap(Trap::Exception(2)));
+        assert_eq!(m.cpu.mepc, bus::SRAM_BASE); assert_eq!(m.cpu.pc, bus::SRAM_BASE + 0x100);
+        assert!(m.cpu.fs_off()); assert_eq!(m.cpu.ext_ill, 1); assert_eq!(m.cpu.f[10], 0);
+        // FS Initial: FLW becomes a real load and faults on unmapped address 0.
+        let mut m = Bringup::new();
+        m.bus.load(bus::SRAM_BASE, &0x00002507u32.to_le_bytes(), 4).unwrap();
+        m.cpu.pc = bus::SRAM_BASE; m.cpu.mtvec = bus::SRAM_BASE + 0x100; m.cpu.mstatus |= 0x2000;
+        assert_eq!(m.run(1).stop, Stop::Trap(Trap::Exception(5)));
+        assert_eq!(m.cpu.ext_ill, 0);
+        // Unrelated illegal instruction does not set FPU reason.
+        let mut m = Bringup::new();
+        m.bus.load(bus::SRAM_BASE, &0xffff_ffffu32.to_le_bytes(), 4).unwrap();
+        m.cpu.pc = bus::SRAM_BASE; m.cpu.mtvec = bus::SRAM_BASE + 0x100;
+        assert_eq!(m.run(1).stop, Stop::Trap(Trap::Exception(2)));
+        assert_eq!(m.cpu.ext_ill, 0);
     }
     #[test]
-    fn upstream_fp_memory_reason_is_attributed_to_the_executing_hart() {
-        let mut m = Bringup::new(); m.set_upstream_fpu_memory_reason(true);
+    fn s31_ext_ill_fpu_reason_is_attributed_to_the_executing_hart() {
+        let mut m = Bringup::new();
         m.bus.load(bus::SRAM_BASE, &0x0000006fu32.to_le_bytes(), 4).unwrap(); m.cpu.pc = bus::SRAM_BASE;
         m.bus.load(bus::ROM_BASE, &0x00002507u32.to_le_bytes(), 4).unwrap(); m.bus.cores.write(core_control::CTRL1, 3).unwrap();
         assert_eq!(m.run(4).stop, Stop::Trap(Trap::Exception(2))); assert_eq!(m.last_core, 1);
         assert_eq!(m.cpu1.mepc, bus::ROM_BASE); assert!(m.cpu1.fs_off()); assert_eq!(m.cpu1.ext_ill, 1);
-        assert_eq!(m.cpu.ext_ill, 0); assert_eq!(m.compatibility_fpu_memory_traps, [0, 1]);
+        assert_eq!(m.cpu.ext_ill, 0);
     }
     #[test]
     fn guest_executes_uart_store_and_traps_at_unmapped_address() {

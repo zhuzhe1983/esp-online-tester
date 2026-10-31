@@ -179,7 +179,13 @@ impl Cpu {
     pub fn new_esp32p4_rev3() -> Self { let mut c = Cpu::new_esp32p4(); c.clic_std = true; c.ext_ill_all_fp = true; c }
     /// S31's RV32IMAFC subset and standard CLIC CSRs (IDF v6.1 soc_caps.h, interrupt_reg.h).
     /// Custom PIE/HWLOOP instructions remain unimplemented. The SoC supplies its own reset PC.
-    pub fn new_esp32s31() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.has_ext_ill = true; c.user_counters = true; c.clic = true; c.clic_std = true; c }
+    pub fn new_esp32s31() -> Self {
+        // IDF v6.1 lazy-FPU applies the FLW/FSW opcode workaround only under
+        // SOC_CPU_HAS_FPU_EXT_ILL_BUG && CONFIG_ESP32P4_SELECTS_REV_LESS_V3
+        // (components/riscv/vectors.S). An S31 build never takes that branch, so
+        // EXT_ILL.FPU must be set for FP memory ops, as on P4 rev >= 3.
+        let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.has_ext_ill = true; c.ext_ill_all_fp = true; c.user_counters = true; c.clic = true; c.clic_std = true; c
+    }
 
     pub fn reset(&mut self) {
         // `insn_count` is the emulator's own monotonic counter — it drives the run statistics and

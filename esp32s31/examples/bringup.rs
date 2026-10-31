@@ -1,11 +1,10 @@
 //! Run a caller-supplied SRAM/ROM ELF and report the first unimplemented access.
 use std::io::Write;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut bod = None; let mut sfdp = None; let mut bbpll = None; let mut systimer_from_cpu = false; let mut rtc_timer_from_cpu = false; let mut rtc_calibration_from_cpu = false; let mut watch_pc = None; let mut watch_pc1 = None; let mut peripheral_pads = Vec::new(); let mut psram_mode = None; let mut psram_bytes = None; let mut guest_exceptions = 0u32; let mut upstream_fpu_memory_reason = false;
+    let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut bod = None; let mut sfdp = None; let mut bbpll = None; let mut systimer_from_cpu = false; let mut rtc_timer_from_cpu = false; let mut rtc_calibration_from_cpu = false; let mut watch_pc = None; let mut watch_pc1 = None; let mut peripheral_pads = Vec::new(); let mut psram_mode = None; let mut psram_bytes = None; let mut guest_exceptions = 0u32;
     while let Some(arg) = args.peek() {
         match arg.as_str() {
             value if value.starts_with("--guest-exceptions=") => { guest_exceptions = value["--guest-exceptions=".len()..].parse()?; if guest_exceptions > 1024 { return Err("guest-exceptions limit must be at most1024".into()); } }
-            "--upstream-fpu-memory-reason" => upstream_fpu_memory_reason = true,
             "--rom" => rom = true, "--usb-host" => usb_host = true,
             value if value.starts_with("--watch-pc1=0x") => watch_pc1 = Some(u32::from_str_radix(&value[14..], 16)?),
             value if value.starts_with("--watch-pc=0x") => watch_pc = Some(u32::from_str_radix(&value[13..], 16)?),
@@ -59,7 +58,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         args.next();
     }
-    let elf = args.next().ok_or("usage: bringup [--rom] [--guest-exceptions=N] [--upstream-fpu-memory-reason] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--systimer-from-cpu] [--rtc-timer-from-cpu] [--rtc-calibration-from-cpu] [--watch-pc=0xADDRESS] [--watch-pc1=0xADDRESS] [--peripheral-pad=pin:0|1] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] [--analog-bod=hh] [--psram-mr=12hex --psram-bytes=N] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
+    let elf = args.next().ok_or("usage: bringup [--rom] [--guest-exceptions=N] [--usb-host] [--strap=0xNN] [--flash=path] [--rom-spi0-shadow] [--nor-jedec=hhhhhh] [--nor-sfdp=hex-offset:hex-bytes] [--bbpll-hz=480000000] [--systimer-from-cpu] [--rtc-timer-from-cpu] [--rtc-calibration-from-cpu] [--watch-pc=0xADDRESS] [--watch-pc1=0xADDRESS] [--peripheral-pad=pin:0|1] [--analog-bias=hhhh] [--analog-perif-glitch=hh] [--analog-dig=hhhhhhhh] [--analog-bod=hh] [--psram-mr=12hex --psram-bytes=N] <RISC-V SRAM/ROM ELF> [UART RX text] [step budget]")?;
     let input = args.next().unwrap_or_default();
     let budget = args.next().map(|s| s.parse::<u64>()).transpose()?.unwrap_or(100_000).min(100_000_000);
     if args.next().is_some() { return Err("too many bringup arguments".into()); }
@@ -68,8 +67,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         m.bus.pads.set_unresolved_sample(pin, Some(level)).map_err(|_| "invalid peripheral-pad pin")?;
         eprintln!("development unresolved peripheral pad sample pin={pin} level={}", u8::from(level));
     }
-    m.set_upstream_fpu_memory_reason(upstream_fpu_memory_reason);
-    if upstream_fpu_memory_reason { eprintln!("development S31 FP memory EXT_ILL reason matches observed official-emulator0.51.0; public-IDF header differs,not silicon verified"); }
     m.pc_watch1 = watch_pc1.map(|address| esp32s31::PcWatch { address, ..Default::default() });
     m.pc_watch = watch_pc.map(|address| esp32s31::PcWatch { address, ..Default::default() });
     m.set_systimer_from_cpu(systimer_from_cpu);
@@ -139,7 +136,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("systimer-ticks={} counters={:?} events={:?}", m.bus.systimer.ticks, m.bus.systimer.counters(), m.bus.systimer.events);
     eprintln!("mspi-commands={} cache-maintenance={} sha-blocks={}", m.bus.mspi.commands, m.bus.cache.maintenance_operations, m.bus.sha.blocks());
     eprintln!("mspi-address={:?} mosi-dlen={:?} miso-dlen={:?}", m.bus.mspi.read(1, 4), m.bus.mspi.read(1, 0x24), m.bus.mspi.read(1, 0x28));
-    eprintln!("compatibility-fpu-memory-traps={:?}",m.compatibility_fpu_memory_traps);
     eprintln!("core-fpu mstatus={:#x}/{:#x} ext-ill={:#x}/{:#x} mwdt-clocks={:#x}/{:#x}",m.cpu.mstatus,m.cpu1.mstatus,m.cpu.ext_ill,m.cpu1.ext_ill,m.bus.mwdt[0].clock_read(),m.bus.mwdt[1].clock_read());
     eprintln!("mspi-waiti-polls={} sample={:?} control={:?} suspend={:?}", m.bus.mspi.waiti_polls, m.bus.mspi.last_waiti_status, m.bus.mspi.read(1, 0x98), m.bus.mspi.read(1, 0x9c));
     eprintln!("flash-core-hz={:?}", m.bus.mspi.core_hz());

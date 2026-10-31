@@ -995,31 +995,24 @@ fn external_s31_guest_lazy_fpu_handler_retires_original_load_without_host_repair
 
 #[test]
 #[ignore = "build examples/s31-bringup and set S31_FPU_REASON_ELF"]
-fn external_s31_explicit_fp_memory_reason_policy_and_guest_handler() {
+fn external_s31_default_fp_memory_reason_lets_guest_handler_pass() {
     use emu_core::Bus;
     let path = std::env::var("S31_FPU_REASON_ELF").expect("build examples/s31-bringup and set S31_FPU_REASON_ELF");
     let elf = std::fs::read(path).unwrap();
-    for compatibility in [false, true] {
-        let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap(); m.set_upstream_fpu_memory_reason(compatibility);
-        let mut steps = 0; let mut exceptions = 0;
-        loop {
-            let run = m.run(10000); steps += run.steps;
-            if run.stop == esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(2)) {
-                exceptions += 1; assert!(exceptions <= 6); assert!(m.bus.first_fault.is_none()); assert!(m.cpu.fs_off());
-                assert_eq!(m.cpu.ext_ill & 1, u32::from(compatibility)); continue;
-            }
-            if compatibility {
-                assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 FPU MEMORY REASONS PASS\n");
-                assert_eq!(exceptions, 6); assert_eq!(m.bus.read32(0x2f060000), Ok(6)); assert_eq!(m.bus.read32(0x2f07fff4), Ok(0x3fc00000));
-                assert_eq!(m.compatibility_fpu_memory_traps, [6, 0]);
-            } else {
-                assert!(matches!(run.stop, esp32s31::Stop::Trap(riscv_rv32::Trap::Ebreak(_)))); assert_eq!(m.bus.uart0.tx_out, b"S31 FPU MEMORY REASON FAIL\n");
-                assert_eq!(exceptions, 1); assert_eq!(m.compatibility_fpu_memory_traps, [0, 0]);
-            }
-            break;
+    let mut m = esp32s31::Bringup::new(); m.load_elf(&elf).unwrap();
+    assert!(m.cpu.ext_ill_all_fp);
+    let mut steps = 0; let mut exceptions = 0;
+    loop {
+        let run = m.run(10000); steps += run.steps;
+        if run.stop == esp32s31::Stop::Trap(riscv_rv32::Trap::Exception(2)) {
+            exceptions += 1; assert!(exceptions <= 6); assert!(m.bus.first_fault.is_none()); assert!(m.cpu.fs_off());
+            assert_eq!(m.cpu.ext_ill & 1, 1); continue;
         }
-        eprintln!("S31 FP memory policy compatibility={compatibility} steps={steps} actual-exceptions={exceptions}");
+        assert_eq!(run.stop, esp32s31::Stop::Waiting); assert_eq!(m.bus.uart0.tx_out, b"S31 FPU MEMORY REASONS PASS\n");
+        assert_eq!(exceptions, 6); assert_eq!(m.bus.read32(0x2f060000), Ok(6)); assert_eq!(m.bus.read32(0x2f07fff4), Ok(0x3fc00000));
+        break;
     }
+    eprintln!("S31 FP memory default EXT_ILL steps={steps} actual-exceptions={exceptions}");
 }
 
 #[test]
