@@ -17,10 +17,10 @@ pub const EFUSE_SOURCE: usize = 152; // interrupt_core0_reg.h: LP_EFUSE_INTR_MAP
 pub(crate) const SOURCE_COUNT: usize = 169;
 const SOURCES: usize = SOURCE_COUNT;
 #[derive(Clone, Copy, Default)]
-pub struct Irqs { pub uart: bool, pub wdt: bool, pub efuse: bool, pub usb: bool, pub monitor: bool, pub cache: bool, pub mwdt: [bool; 2], pub systimer: [bool; 3], pub psram: bool, pub brownout: bool }
+pub struct Irqs { pub uart: bool, pub wdt: bool, pub efuse: bool, pub usb: bool, pub monitor: bool, pub cache: bool, pub mwdt: [bool; 2], pub systimer: [bool; 3], pub psram: bool, pub brownout: bool, pub from_cpu: [bool; 4] }
 impl Irqs {
     // Fixed S31 interrupts.h: TIMERGRP0_WDT27,TIMERGRP1_WDT30,SYSTIMER_TARGET0..2 sources33..35,LP_ANAPERI143.
-    fn sources(self) -> [(usize, bool); 13] { [(UART0_SOURCE, self.uart), (RTC_WDT_SOURCE, self.wdt), (EFUSE_SOURCE, self.efuse), (USB_SERIAL_SOURCE, self.usb), (MONITOR_SOURCE, self.monitor), (CACHE_SOURCE, self.cache), (27, self.mwdt[0]), (30, self.mwdt[1]), (33, self.systimer[0]), (34, self.systimer[1]), (35, self.systimer[2]), (112, self.psram), (143, self.brownout)] }
+    fn sources(self) -> [(usize, bool); 17] { [(UART0_SOURCE, self.uart), (RTC_WDT_SOURCE, self.wdt), (EFUSE_SOURCE, self.efuse), (USB_SERIAL_SOURCE, self.usb), (MONITOR_SOURCE, self.monitor), (CACHE_SOURCE, self.cache), (27, self.mwdt[0]), (30, self.mwdt[1]), (33, self.systimer[0]), (34, self.systimer[1]), (35, self.systimer[2]), (112, self.psram), (143, self.brownout), (65, self.from_cpu[0]), (66, self.from_cpu[1]), (67, self.from_cpu[2]), (68, self.from_cpu[3])] }
 }
 
 pub struct Interrupts {
@@ -56,8 +56,10 @@ impl Interrupts {
     }
     pub fn matrix_write(&mut self, core: usize, off: u32, value: u32) -> bool {
         match off {
-            // Unlike the old P4, S31 also has PASS_LEVEL bits 9:8. Zero disables
-            // remapping, one is S-mode (not implemented), two/three select M-mode.
+            // Unlike the old P4, S31 also has PASS_LEVEL bits 9:8. interrupt_core0_reg.h:
+            // zero disables the privilege *remap* feature (plain routing, as ROM/IDF
+            // intr_matrix_set writes only MAP), one remaps to S-level (no S-mode here,
+            // so not delivered), two/three remap with M-level.
             0x000..=0x2a0 => self.map[core][off as usize / 4] = value & 0x33f,
             0x2a8..=0x2bc => {}, // source status is read-only
             0x2fc => self.clock[core] = value & 1, 0x7fc => self.date[core] = value & 0x0fff_ffff,
@@ -72,7 +74,7 @@ impl Interrupts {
             let mut input = 0;
             for (source, active) in irq.sources() {
                 let route = self.map[core][source]; let id = (route & 0x3f) as usize;
-                let m_mode = (route >> 8) & 3 >= 2;
+                let m_mode = (route >> 8) & 3 != 1;
                 if active && m_mode && (CLIC_EXT_OFFSET as usize..CLIC_IDS).contains(&id) { input |= 1u64 << id; }
             }
             self.clic[core].set_input(input);
@@ -100,12 +102,14 @@ mod tests {
         assert_eq!(i.refresh(Irqs::default(), 0x1f), None);
     }
     #[test]
-    fn s31_requires_machine_pass_level_and_strictly_higher_priority() {
+    fn s31_pass_level_remap_and_strictly_higher_priority() {
+        // IDF v6.1 esp_cpu_intr/crosscore init writes MAP only (PASS_LEVEL 0) and FreeRTOS
+        // relies on that route, so 0 is plain M routing; only S-level remap (1) is withheld.
         let mut i = Interrupts::default();
         i.clic[0].write(0x1000 + 4 * 17, 1 << 8 | 1 << 29, 0xf);
         for pass in 0..=3 {
             i.matrix_write(0, 4 * UART0_SOURCE as u32, pass << 8 | 17);
-            assert_eq!(i.refresh(Irqs { uart: true, ..Irqs::default() }, 0x1f).is_some(), pass >= 2);
+            assert_eq!(i.refresh(Irqs { uart: true, ..Irqs::default() }, 0x1f).is_some(), pass != 1);
         }
         assert_eq!(i.refresh(Irqs { uart: true, ..Irqs::default() }, 0x3f), None);
         assert!(i.refresh(Irqs { uart: true, ..Irqs::default() }, 0x1f).is_some()); assert_eq!(i.refresh(Irqs::default(), 0x1f), None);
