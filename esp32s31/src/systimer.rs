@@ -50,7 +50,20 @@ impl Systimer {
             off @ (4 | 8) => if value & (1 << 30) != 0 { let u = &mut self.units[(off / 4 - 1) as usize]; u.snapshot = true; u.valid = false; },
             off @ (0xc..=0x18) if off & 3 == 0 => { let u = &mut self.units[((off - 0xc) / 8) as usize]; Self::half(&mut u.load, off & 4 != 0, value); }
             off @ (0x1c..=0x30) if off & 3 == 0 => { let a = &mut self.alarms[((off - 0x1c) / 8) as usize]; Self::half(&mut a.target, off & 4 != 0, value); }
-            off @ (0x34 | 0x38 | 0x3c) => self.alarms[((off - 0x34) / 4) as usize].conf = value & 0xc3ffffff,
+            off @ (0x34 | 0x38 | 0x3c) => {
+                let a = &mut self.alarms[((off - 0x34) / 4) as usize]; a.conf = value & 0xc3ffffff;
+                // IDF v6.1 port_systick.c applies the comparator in one-shot mode and only then
+                // sets PERIOD_MODE without another COMP_LOAD; silicon still ticks. So a loaded
+                // comparator entering period mode starts its period from the current count,
+                // the same origin COMP_LOAD uses in period mode. Leaving period mode is live too.
+                if let Some((_, conf)) = &mut a.pending { if a.conf & (1 << 30) != 0 && *conf & (1 << 30) == 0 && a.conf & 0x3ffffff != 0 { *conf = a.conf; } } // unsynchronized load
+                let loaded = a.pending.is_none() && (a.armed || a.active_conf != 0 || a.real != 0);
+                let entering = a.conf & (1 << 30) != 0 && a.active_conf & (1 << 30) == 0;
+                if loaded && entering && a.conf & 0x3ffffff != 0 {
+                    a.active_conf = a.conf; let unit = (a.conf >> 31) as usize;
+                    a.real = self.units[unit].count.wrapping_add(u64::from(a.conf & 0x3ffffff)) & MASK; a.armed = true;
+                }
+            }
             off @ (0x50 | 0x54 | 0x58) => if value & 1 != 0 {
                 let a = &mut self.alarms[((off - 0x50) / 4) as usize];
                 if a.conf & 0x43ffffff == 0x40000000 { return Err(Fault::Prohibited); } // unspecified zero-period comparator
@@ -158,6 +171,13 @@ mod tests {
         w(&mut t, 0x6c, 1); w(&mut t, 0, 0x40000000); w(&mut t, 0x20, 1); w(&mut t, 0x50, 1); t.advance_ticks(1, [false; 2]); assert_eq!(t.events[0], 4);
         w(&mut t, 0, 0x41000000); t.advance_ticks(1, [false; 2]); assert_eq!(t.events[0], 5); t.advance_ticks(100, [false; 2]); assert_eq!(t.events[0], 5);
         w(&mut t, 0x34, 1 << 30); assert_eq!(t.write(BASE + 0x50, 1), Err(Fault::Prohibited));
+    }
+    #[test]
+    fn idf_port_systick_oneshot_load_then_period_mode_keeps_ticking() {
+        let mut t = timer(); w(&mut t, 0, 0x41000000); t.advance_ticks(5, [false; 2]);
+        w(&mut t, 0x34, 10); w(&mut t, 0x50, 1); t.advance_ticks(1, [false; 2]); // one-shot target 0 fires
+        let first = t.events[0]; w(&mut t, 0x34, 1 << 30 | 10); t.advance_ticks(30, [false; 2]);
+        assert_eq!(t.events[0], first + 3);
     }
     #[test]
     fn batched_edges_match_individual_edges_and_clock_rate_changes_keep_fraction() {
