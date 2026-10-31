@@ -142,12 +142,12 @@ impl S31Bus {
         let conf = self.uart0.read(0x20); self.uart0.write(0x20, conf | 1 << 22); self.uart0.write(0x20, conf);
         self.uart0.int_raw = (1 << 14) | 2;
     }
-    fn irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.efuse.irq(), usb: self.usb_console.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.mwdt[0].irq(), self.mwdt[1].irq()], systimer: self.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq() } }
+    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.efuse.irq(), usb: self.usb_console.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.mwdt[0].irq(), self.mwdt[1].irq()], systimer: self.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq() } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
         if !self.cores.clic_on(self.hart) { return None; }
-        self.interrupts.refresh_core(self.hart, self.irqs(), threshold)
+        self.interrupts.refresh_core(self.hart, self.peripheral_irqs(), threshold)
     }
     pub fn interrupt_taken(&mut self, line: u32) { if line < 32 { self.interrupts.clic[self.hart].taken(line as usize + 16); } }
     fn clic_offset(&self, address: u32, bytes: usize) -> Option<(usize, u32)> {
@@ -325,7 +325,7 @@ impl S31Bus {
         }
         if let Some(off) = offset(address, MATRIX_BASE, bytes, 0x1000) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
-            if let Some(value) = self.interrupts.matrix_read(off >> 11, (off & 0x7ff) as u32, self.irqs()) { return Ok(value); }
+            if let Some(value) = self.interrupts.matrix_read(off >> 11, (off & 0x7ff) as u32, self.peripheral_irqs()) { return Ok(value); }
             return self.fault(address, bytes, false, false, Fault::Unmapped);
         }
         if let Some((core, off)) = self.clic_offset(address, bytes) {

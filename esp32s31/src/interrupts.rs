@@ -14,7 +14,8 @@ pub const USB_SERIAL_SOURCE: usize = 2; // v6.1 interrupts.h / interrupt_core0_r
 pub const MONITOR_SOURCE: usize = 119; // v6.1 interrupts.h: ETS_ASSIST_DEBUG_INTR_SOURCE.
 pub const RTC_WDT_SOURCE: usize = 136; // interrupt_core0_reg.h: LP_WDT_INTR_MAP at 0x220.
 pub const EFUSE_SOURCE: usize = 152; // interrupt_core0_reg.h: LP_EFUSE_INTR_MAP at 0x260.
-const SOURCES: usize = 169;
+pub(crate) const SOURCE_COUNT: usize = 169;
+const SOURCES: usize = SOURCE_COUNT;
 #[derive(Clone, Copy, Default)]
 pub struct Irqs { pub uart: bool, pub wdt: bool, pub efuse: bool, pub usb: bool, pub monitor: bool, pub cache: bool, pub mwdt: [bool; 2], pub systimer: [bool; 3], pub psram: bool, pub brownout: bool }
 impl Irqs {
@@ -24,7 +25,7 @@ impl Irqs {
 
 pub struct Interrupts {
     map: [[u32; SOURCES]; 2], clock: [u32; 2], date: [u32; 2],
-    pub clic: [ClicCore; 2], reset_cause: [u32; 2],
+    pub clic: [ClicCore; 2], pub(crate) reset_cause: [u32; 2],
 }
 impl Default for Interrupts {
     fn default() -> Self {
@@ -40,6 +41,10 @@ impl Interrupts {
         // Cause and flag are RO; only the two write-triggered clear bits affect them.
         if value & (1 << 30) != 0 { self.reset_cause[core] &= !(0x3f << 1); }
         if value & (1 << 31) != 0 { self.reset_cause[core] &= !1; }
+    }
+    /// CLIC ID field of the interrupt-matrix route (PASS_LEVEL bits ignored).
+    pub(crate) fn map_id(&self, core: usize, source: usize) -> u32 {
+        (self.map[core & 1][source] & 0x3f) as u32
     }
     pub fn matrix_read(&self, core: usize, off: u32, irq: Irqs) -> Option<u32> {
         match off {

@@ -13,6 +13,7 @@ impl ReadImage {
     /// Synthetic development input only; it is never selected automatically for a product.
     pub fn blank_development() -> Self { Self { words: [0; SHADOW_WORDS], errors: [0; 10], block0_valid_bits: 0 } }
 }
+#[derive(Clone)]
 pub struct Efuse {
     image: Option<ReadImage>, shadow: [u32; SHADOW_WORDS], errors: [u32; 10], pgm: [u32; 11],
     clk: u32, conf: u32, status: u32, cmd: u32, int_raw: u32, int_ena: u32, date: u32,

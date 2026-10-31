@@ -1,5 +1,6 @@
-//! S31 bring-up subset: two functional HP harts, SRAM/ROM, UART0 and CLIC; not a product runtime.
+//! S31 bring-up subset and `esp_soc::Machine` path: two HP harts, SRAM/ROM, UART0 and CLIC; not a product runtime.
 pub mod bus;
+pub mod soc;
 pub mod interrupts;
 pub mod trng;
 pub mod rtc_wdt;
@@ -31,6 +32,7 @@ pub mod startup_clocks;
 pub mod systimer;
 mod rom;
 pub use bus::{S31Bus, AccessFault};
+pub use soc::{machine, Machine, S31, SocBus, CPU_HZ, RESET_VECTOR, ROM_STACK};
 use riscv_rv32::{Cpu, Trap};
 
 /// Diagnostic observation after an instruction at the address retires successfully.

@@ -77,7 +77,7 @@ impl Pads {
         // Floating unconnected inputs resolve low only as a deterministic model convention.
         Ok(e.pull_up)
     }
-    fn input_word(&self, bank: usize) -> Result<u32, Fault> {
+    pub(crate) fn input_word(&self, bank: usize) -> Result<u32, Fault> {
         let mut word = 0;
         for bit in 0..32 { let pin = bank * 32 + bit; if Self::valid(pin) && self.sample(pin)? { word |= 1 << bit; } }
         Ok(word)
