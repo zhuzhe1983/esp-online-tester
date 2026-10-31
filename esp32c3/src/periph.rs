@@ -238,7 +238,7 @@ impl DeviceSet for Peripherals {
     fn block_name(block: u32) -> &'static str { Peripherals::block_name(block) }
     fn misc(&self) -> &Misc { &self.misc }
     fn misc_mut(&mut self) -> &mut Misc { &mut self.misc }
-    fn pre_access(&mut self, block: u32, _off: u32, _write: bool) {
+    fn pre_access(&mut self, block: u32, off: u32, _write: bool) {
         if block == 0x31 && self.ble_lc.enabled() {
             // IDF v5.5.5 soc/esp32c3/register/soc/{syscon,rtc_cntl}_reg.h.
             // Checked on C3 rev v0.3: pre-init BT is powered down and isolated,
@@ -251,6 +251,11 @@ impl DeviceSet for Peripherals {
         }
         if block == 0x40 { self.adc.now_cycles = self.clock.cycles(); }
         if (0x33..=0x35).contains(&block) { self.wifi.now_cycles = self.clock.cycles(); }
+        // WIFI_RST_EN: MAC_RST is set and cleared by two read-modify-writes, so the access that
+        // clears it still sees it set (see `WifiMac::reset_mac`).
+        if block == 0x26 && off == 0x18 && self.misc.generic.get(&0x26).is_some_and(|s| s.read(0x18) & (1 << 2) != 0) {
+            self.wifi.reset_mac();
+        }
         if block == 0x06 { self.fe_iq.now_cycles = self.clock.cycles(); }
         if block == 0x26 { self.rng.now = self.clock.cycles() as u32; }
     }
@@ -444,6 +449,26 @@ mod tests {
         for addr in [0x6001_3028, 0x6002_4034, 0x6001_6040] { p.write32(addr, 0); }
         assert!(p.refresh_lines());
         assert_eq!(p.last_status[0], 0);
+    }
+
+    /// A driver restart (esp-radio drops and re-creates its controller) resets the MAC through
+    /// WIFI_RST_EN, then writes a new receive ring base: the hardware must start filling that ring.
+    #[test]
+    fn mac_reset_makes_a_new_rx_ring_take_effect() {
+        let mut p = Peripherals::new([0; 6]);
+        p.write32(0x6003_3088, 0x3fc9_1000);
+        assert_eq!(p.read32(0x6003_308c), 0x9_1000);
+        // Mid-ring, a rewritten base does not rewind the hardware.
+        p.wifi.rx_next = 0x9_1040;
+        p.write32(0x6003_3088, 0x3fc9_1000);
+        assert_eq!(p.read32(0x6003_308c), 0x9_1040);
+        // esp-radio `reset_wifi_mac`: set MAC_RST, then clear it (two read-modify-writes).
+        let rst = p.read32(0x6002_6018);
+        p.write32(0x6002_6018, rst | 1 << 2);
+        let rst = p.read32(0x6002_6018);
+        p.write32(0x6002_6018, rst & !(1 << 2));
+        p.write32(0x6003_3088, 0x3fca_2000);
+        assert_eq!(p.read32(0x6003_308c), 0xa_2000, "the new driver's ring");
     }
 
     /// INTR_STATUS_0/1 report the asserted sources; the map registers end before them.
