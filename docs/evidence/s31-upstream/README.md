@@ -15,14 +15,14 @@ Status for [EX260](../../experiments.md#ex260) and docs in
 
 ## Oracle / license
 
-Espressif **esp-emulator 0.51.0** (MIT) was used as an **observable oracle only**
-(register/behaviour observations that informed EXT_ILL defaults and ROM probes).
+Espressif **esp-emulator 0.51.0** (**Apache-2.0**) was used as an **observable oracle only**
+(register/behaviour observations that informed EXT_ILL defaults).
 This tree is **not** a source port of that emulator.
 
-## Bringup vs Machine
+## Machine / CLI
 
-- `esp32s31::Machine` — review path for mikroverk/esp32sim PR integration.
-- `esp32s31::Bringup` — temporary fixture runner for hermetic / `external_*` probes.
+- `esp32s31::Machine` / `--chip s31` / `esp32sim-s31` — review path (same as C3/C6/P4).
+- `--boot rom` and `--boot app` are wired through that CLI path.
 
 ## hello_world golden (IDF v6.1, commit fff9895c82d7)
 
@@ -57,5 +57,4 @@ routing (only 1, S-level, is not delivered); SYSTIMER `PERIOD_MODE` set after a 
 and reloads the ROM. Hello golden uses `BoardInputs::hello_w25q16()` (JEDEC 0xef4015, 2 MiB NOR) to match the
 image header; `devkit_w25q128()` remains available for 16 MiB bring-up profiles.
 
-Remaining gaps (later PR): deeper esp-periph reuse for shared blocks (SYSTIMER/UART/…);
-Metalio product image is not an acceptance target.
+Remaining gaps (later PR): further DeviceSet reuse where maps allow; Metalio product image is not an acceptance target.

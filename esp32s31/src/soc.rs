@@ -1,9 +1,8 @@
-//! ESP32-S31 as an `esp_soc::Soc`: dual-hart Machine path wrapping the bring-up bus.
+//! ESP32-S31 as an `esp_soc::Soc`: dual-hart Machine path (same review surface as C3/C6/P4).
 //!
-//! `Bringup` remains the fixture runner. This module exposes `Machine` / `SocBus` so the chip
-//! follows the same review surface as C3/C6/P4. Flash-MMU app boot is not ready yet; SRAM/ROM
-//! loads and interpreter steps work today. Peripheral models stay in `S31Bus` (Systimer, Mwdt,
-//! Efuse, UsbSerialJtag, Gpio pads, interrupt matrix / CLIC) rather than a one-commit rewrite.
+//! Mask-ROM and Flash-MMU `--boot app` work on this path. Shared DeviceSet IP covers UART /
+//! Systimer / USJ / TimerGroup / Efuse; GPIO pads and the interrupt matrix stay local (see
+//! `periph` / `pads` / `interrupts` module notes).
 
 use crate::bus::{self, S31Bus};
 use crate::interrupts;
@@ -56,6 +55,8 @@ impl Soc for S31 {
     fn reset_core(c: &mut Cpu, _i: usize) {
         Cpu::reset(c);
         c.pc = RESET_VECTOR;
+        // Match the ROM stack the IDF hello path / load_mask_rom leave for core 0.
+        c.x[2] = ROM_STACK;
     }
 
     fn reset_core_with_bus(c: &mut Cpu, bus: &mut SocBus, i: usize) {
@@ -211,9 +212,8 @@ impl SocBus {
         self.inner.cache.set_flash(&self.flash)
     }
 
-    /// Load the real S31 mask ROM, reconstructing its ROM-side initializer payloads the same
-    /// way `Bringup::load_rom_elf` does (see `rom::image`). Core 0 then starts at the reset
-    /// vector with the ROM stack.
+    /// Load the real S31 mask ROM, reconstructing its ROM-side initializer payloads via
+    /// `rom::image` (same result as `Machine::load_rom` after eh_frame skip + ROM snapshot).
     pub fn load_mask_rom(&mut self, bytes: &[u8]) -> Result<(), String> {
         let elf = esp_soc::elf::parse(bytes)?;
         if elf.entry != bus::ROM_BASE { return Err("S31 ROM reset entry must be 0x2f800000".into()); }
@@ -234,6 +234,21 @@ impl SocBus {
     }
 
     pub fn load_bytes(&mut self, addr: u32, data: &[u8]) -> Result<(), String> {
+        // Debugger-only .eh_frame at vaddr 0 (Machine::load_rom); nothing reads it (P4 pattern).
+        if addr == 0 {
+            return Ok(());
+        }
+        // Keep a ROM snapshot for reboot() when Machine::load_rom writes the mask ROM window.
+        if addr >= bus::ROM_BASE {
+            let off = (addr - bus::ROM_BASE) as usize;
+            let end = off
+                .checked_add(data.len())
+                .filter(|&e| e <= bus::ROM_SIZE)
+                .ok_or_else(|| format!("load: ROM address {:#010x} out of range", addr))?;
+            self.inner.mspi.enable_legacy_rom_lengths();
+            let image = self.rom_image.get_or_insert_with(|| vec![0u8; bus::ROM_SIZE]);
+            image[off..end].copy_from_slice(data);
+        }
         self.inner.load(addr, data, data.len())
     }
 
@@ -532,7 +547,7 @@ impl esp_soc::SocBus for SocBus {
 
     fn report(&self) -> String {
         format!(
-            "esp32s31: cycles={} flash={}KiB Machine path (ROM boot + --boot app MMU map)",
+            "esp32s31: cycles={} flash={}KiB CLI Machine path (ROM boot + --boot app MMU map)",
             self.cycles,
             self.flash.len() / 1024
         )
@@ -643,7 +658,7 @@ impl Bus for SocBus {
             self.inner.analog.master_enabled() && self.inner.clocks.modem_on(),
         );
         self.inner.clocks.advance_calibration(cycles);
-        // Machine time drives the RTC domains Bringup leaves opt-in: the RTC timer and the
+        // Machine time drives the RTC domains (timer + calibration) that were formerly opt-in:
         // TIMG0 RTC_CALI counter both count from the modeled source rates.
         self.inner.rtc_timer.advance_cpu_cycles(cycles as u64, hz, self.inner.clocks.rtc_slow_hz());
         let source = self.inner.clocks.calibration_hz(self.inner.rtc_calibration.source());

@@ -1,5 +1,5 @@
-//! esp32sim — the command line, one front end for every chip (`--chip esp32|s3|c3|c6|p4`; the `esp32sim-c3`,
-//! `esp32sim-c6` and `esp32sim-p4` binaries are `--chip c3` / `--chip c6` / `--chip p4`). Parsing and everything a run does are chip-agnostic over
+//! esp32sim — the command line, one front end for every chip (`--chip esp32|s3|c3|c6|p4|s31`; the `esp32sim-c3`,
+//! `esp32sim-c6`, `esp32sim-p4` and `esp32sim-s31` binaries are `--chip c3` / `--chip c6` / `--chip p4` / `--chip s31`). Parsing and everything a run does are chip-agnostic over
 //! `Machine<S>`; the few flags a chip owns (board, WiFi, camera, PSRAM, register presets) live in
 //! its setup function.
 use esp_soc::observers::{BlockProfile, Breakpoints, Coverage, IrqLatency, MmioHeat, PcHist, RegTrace, Trace, Vcd, Watch};
@@ -16,9 +16,9 @@ fn usage(chip: &str) -> ! { help(chip, 2) }
 
 /// `--help` prints this and exits 0; a usage error prints it and exits 2.
 fn help(chip: &str, code: i32) -> ! {
-    eprintln!("usage: esp32sim [--chip esp32|s3|c3|c6|p4] --boot rom|app --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf]... [options]");
+    eprintln!("usage: esp32sim [--chip esp32|s3|c3|c6|p4|s31] --boot rom|app --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf]... [options]");
     eprintln!("       esp32sim --flash-image flash.bin --boot rom [options]            (a whole flash dump instead of the three images)");
-    eprintln!("       default chip here: {}; esp32sim-c3, esp32sim-c6 and esp32sim-p4 are --chip c3 / --chip c6 / --chip p4", chip);
+    eprintln!("       default chip here: {}; esp32sim-c3/c6/p4/s31 are --chip c3 / c6 / p4 / s31", chip);
     eprintln!();
     eprintln!("  --rom F               the chip's mask ROM ELF; default: $ESP32SIM_ROM_DIR, then ~/.espressif/tools/esp-rom-elfs/*/");
     eprintln!("                        (Espressif's, not in the tarball: tools/fetch-rom-elfs.sh DIR downloads all five)");
@@ -288,7 +288,8 @@ pub fn run_cli(default_chip: &str) {
         "c6" | "esp32c6" => { let m = setup_c6(&o); run(m, &o) }
         "p4" | "esp32p4" if p4_rev3(&o) => { let m = setup_p4::<esp32p4::RevGe3>(&o); run(m, &o) }
         "p4" | "esp32p4" => { let m = setup_p4::<esp32p4::RevLt3>(&o); run(m, &o) }
-        c => { eprintln!("--chip {}: esp32, s3, c3, c6 or p4", c); std::process::exit(2) }
+        "s31" | "esp32s31" => { let m = setup_s31(&o); run(m, &o) }
+        c => { eprintln!("--chip {}: esp32, s3, c3, c6, p4 or s31", c); std::process::exit(2) }
     }
 }
 
@@ -653,6 +654,49 @@ fn setup_p4<R: esp32p4::Revision>(o: &Opts) -> esp_soc::Machine<esp32p4::Esp32p4
     m.bus.attach_board_devices();
     for (flag, on) in [("--wifi", !o.wifi.is_empty() && o.coproc.is_none()), ("--cam-image", o.cam_image.is_some()), ("--cam-stream", o.cam_stream.is_some()), ("--cam-size", o.cam_size.is_some()), ("--flash-octal", o.flash_octal), ("--efuse-regs", o.efuse_regs.is_some()), ("--regs-init", o.regs_init.is_some()), ("--regstat", o.regstat.is_some())] {
         if on { eprintln!("{} is not available on the P4{}", flag, if flag == "--wifi" { " (it goes to a co-processor: --coproc)" } else { "" }); std::process::exit(2); }
+    }
+    m
+}
+
+
+/// ESP32-S31 bare module: 2 MiB NOR + W25Q16 JEDEC by default (IDF hello image header).
+fn setup_s31(o: &Opts) -> esp32s31::Machine {
+    let flash = o.flash_mb.unwrap_or(2) << 20;
+    let mut m = esp32s31::machine(o.mac.unwrap_or([0x10, 0x20, 0x30, 0x40, 0x50, 0x60]), flash);
+    m.bus.set_flash_size(flash);
+    // Prefer the hello image's JEDEC / SFDP when flash is the default 2 MiB; larger sizes keep
+    // BoardInputs unset so callers can supply their own NOR identity.
+    if o.flash_mb.unwrap_or(2) == 2 {
+        m.bus
+            .set_board_inputs(esp32s31::soc::BoardInputs::hello_w25q16())
+            .unwrap_or_else(|e| usage_error(&e));
+    }
+    // SPI_FAST_FLASH_BOOT; prepare() may override with --strap.
+    if o.strap.is_none() {
+        m.bus.set_strap(0x10);
+    }
+    if !o.debug.is_empty() {
+        let mut f = esp_soc::DebugFlags::from_env();
+        for d in &o.debug { f.parse(d); }
+        m.set_debug(&f);
+    }
+    for (flag, on) in [
+        ("--wifi", o.wifi.is_some()),
+        ("--board", o.board != "atech14" && o.board != "none"),
+        ("--cam-image", o.cam_image.is_some()),
+        ("--cam-stream", o.cam_stream.is_some()),
+        ("--cam-size", o.cam_size.is_some()),
+        ("--psram-mb", o.psram_mb.is_some()),
+        ("--flash-octal", o.flash_octal),
+        ("--efuse-regs", o.efuse_regs.is_some()),
+        ("--regs-init", o.regs_init.is_some()),
+        ("--regstat", o.regstat.is_some()),
+        ("--coproc", o.coproc.is_some()),
+    ] {
+        if on {
+            eprintln!("{flag} is not available on the S31");
+            std::process::exit(2);
+        }
     }
     m
 }
