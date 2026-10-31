@@ -155,6 +155,16 @@ impl BoardInputs {
         Self { flash_id: [0xef, 0x40, 0x18], sfdp, bias: [0; 2], perif_glitch: 0, dig_reg: [0; 4], bod: 0,
             bbpll_hz: 480_000_000, idle_level: Some(false), inputs: vec![(36, true)] }
     }
+
+    /// Winbond W25Q16 (0xef4015) — 2 MiB, matching the IDF hello_world image header
+    /// (`flash_size = 2MB`). Prefer this for BoardInputs + Machine flash sizing so the
+    /// image-header / modelled-flash mismatch warning does not fire.
+    pub fn hello_w25q16() -> Self {
+        let mut sfdp = vec![0x53, 0x46, 0x44, 0x50, 0x05, 0x01, 0x00, 0xff, 0x00, 0x05, 0x01, 0x10, 0x80, 0x00, 0x00, 0xff];
+        sfdp.extend([0xff; 0x70]);
+        Self { flash_id: [0xef, 0x40, 0x15], sfdp, bias: [0; 2], perif_glitch: 0, dig_reg: [0; 4], bod: 0,
+            bbpll_hz: 480_000_000, idle_level: Some(false), inputs: vec![(36, true)] }
+    }
     pub fn apply(&self, b: &mut S31Bus) -> Result<(), String> {
         let a = &mut b.analog; a.set_bias(self.bias); a.set_perif_glitch(self.perif_glitch); a.set_dig_reg(self.dig_reg); a.set_bod_register(self.bod);
         b.mspi.attach_flash(self.flash_id, 0).map_err(|e| format!("{e:?}"))?;
@@ -241,20 +251,33 @@ impl SocBus {
     }
 
     fn poll_chip_reset(&mut self) {
-        if self.inner.reset.request.is_some()
-            || self.inner.power.reset_request.is_some()
-            || self.inner.rtc_wdt.reset_request.is_some()
-            || self.inner.mwdt.iter().any(|w| w.reset.is_some())
-        {
+        // Latch the reset *cause* the ROM reads from HPCORE0_RESET_CAUSE before the
+        // Machine consumes `sw_reset`. Soft reboot (esp_restart → esp_cpu_reset →
+        // LP_AONCLKRST_HPCOREn_SW_RESET) must report RESET_REASON_CPU_SW (0x0c),
+        // matching silicon — not POWERON.
+        if self.inner.reset.request.is_some() {
+            self.reset_cause = esp_periph::RST_SW_CPU;
+            self.sw_reset = true;
+        } else if self.inner.power.reset_request.is_some() {
+            self.reset_cause = 0x0f; // RESET_REASON_SYS_BROWN_OUT
+            self.sw_reset = true;
+        } else if self.inner.rtc_wdt.reset_request.is_some() {
+            self.reset_cause = esp_periph::RST_RTCWDT_SYS;
+            self.sw_reset = true;
+        } else if self.inner.mwdt.iter().any(|w| w.reset.is_some()) {
+            self.reset_cause = 0x07; // RESET_REASON_CORE_MWDT0
             self.sw_reset = true;
         }
         for (core, reset) in self.inner.cores.take_resets().into_iter().enumerate() {
             if reset {
+                // Core-local lockup / exception reset: keep chip up, report Lockup.
+                self.reset_cause = 0x1a; // RESET_REASON_CPU_LOCKUP
                 self.inner.reset_hart(core);
                 self.irq_dirty = true;
             }
         }
     }
+
 }
 
 impl esp_soc::SocBus for SocBus {
@@ -263,7 +286,22 @@ impl esp_soc::SocBus for SocBus {
     }
 
     fn next_deadline(&self) -> Option<u64> {
-        None
+        // Convert SYSTIMER ticks-until-IRQ into CPU cycles so Machine idle_advance
+        // can skip FreeRTOS vTaskDelay (hello_world's 10 s countdown) instead of
+        // burning one cycle per idle round when next_deadline is None.
+        let stalled = self.inner.cores.stalled();
+        let ticks = self.inner.systimer.ticks_until_irq(stalled)?;
+        if ticks == 0 { return Some(1); }
+        let hz = self.inner.clocks.rates().cpu_hz.max(1);
+        let source = if self.inner.systimer.source_rc_fast() {
+            self.inner.clocks.rc_fast_hz().max(1)
+        } else {
+            40_000_000
+        };
+        // Inverse of Systimer::advance_cpu: ticks ≈ cycles * source * 2 / (cpu_hz * 5)
+        // => cycles ≈ ticks * cpu_hz * 5 / (source * 2), ceil.
+        let cycles = (u128::from(ticks) * u128::from(hz) * 5).div_ceil(u128::from(source) * 2);
+        Some(cycles.min(u128::from(u64::MAX)).max(1) as u64)
     }
 
     fn irq_dirty(&mut self) -> &mut bool {
@@ -287,13 +325,56 @@ impl esp_soc::SocBus for SocBus {
         SocBus::write_flash(self, offset, data)
     }
 
-    fn boot_app(&mut self, _app_off: usize) -> Result<u32, String> {
-        Err(
-            "--boot app is not supported on ESP32-S31 yet: flash MMU / 2nd-stage bootloader \
-             mapping is incomplete. Load an SRAM/ROM-linked ELF, or boot from the mask ROM once \
-             a flash image and IDF v6.1 hello_world (--preview set-target esp32s31) are available."
-                .into(),
-        )
+    fn boot_app(&mut self, app_off: usize) -> Result<u32, String> {
+        // Skip mask ROM: parse the IDF image, program Flash MMU (32 KiB pages, same as
+        // the 2nd-stage bootloader), open SPI0 AXI, map flash-resident segments and
+        // copy SRAM/RTC ones. Entry is ESP_IMAGE_HEADER.entry (often in SRAM).
+        use crate::cache::{FLASH_MMU, FLASH_VADDR};
+        const PAGE_SHIFT: u32 = 15; // 32 KiB
+        let image = self.flash.get(app_off..).ok_or("app offset beyond flash")?;
+        let img = esp_soc::image::parse(image)?;
+        // Page size + AXI enable (bootloader writes SPI_MEM_AXI_CTRL / MMU page_size).
+        self.write32(FLASH_MMU + 0x384, 3 << 3)
+            .map_err(|e| format!("boot_app page_size: {e:?}"))?;
+        self.write32(FLASH_MMU + 0x3c, 0x4000_0001)
+            .map_err(|e| format!("boot_app axi: {e:?}"))?;
+        // Clear a 4 MiB DROM/IROM window (128 × 32 KiB).
+        for idx in 0..0x80u32 {
+            self.write32(FLASH_MMU + 0x380, idx)
+                .map_err(|e| format!("boot_app mmu idx: {e:?}"))?;
+            self.write32(FLASH_MMU + 0x37c, 0)
+                .map_err(|e| format!("boot_app mmu clr: {e:?}"))?;
+        }
+        let mask = (1u32 << PAGE_SHIFT) - 1;
+        for s in &img.segments {
+            let start = app_off + s.file_off as usize;
+            let end = start + s.len as usize;
+            if end > self.flash.len() {
+                return Err("segment beyond flash".into());
+            }
+            if (FLASH_VADDR..FLASH_VADDR + 0x1000_0000).contains(&s.load_addr) {
+                if (s.load_addr & mask) != (start as u32 & mask) {
+                    return Err(format!(
+                        "segment {:#x} not page-aligned with flash offset {:#x}",
+                        s.load_addr, start
+                    ));
+                }
+                let first_page = (start as u32) >> PAGE_SHIFT;
+                let npages = ((s.load_addr & mask) + s.len + mask) >> PAGE_SHIFT;
+                for i in 0..npages {
+                    let idx = ((s.load_addr - FLASH_VADDR) >> PAGE_SHIFT) + i;
+                    self.write32(FLASH_MMU + 0x380, idx)
+                        .map_err(|e| format!("boot_app mmu idx: {e:?}"))?;
+                    // valid (bit12) | physical page — page_size lives in MMU power, not the entry
+                    self.write32(FLASH_MMU + 0x37c, (1 << 12) | (first_page + i))
+                        .map_err(|e| format!("boot_app mmu map: {e:?}"))?;
+                }
+            } else {
+                let data = self.flash[start..end].to_vec();
+                SocBus::load_bytes(self, s.load_addr, &data)?;
+            }
+        }
+        Ok(img.entry)
     }
 
     fn reboot(&mut self, mac: [u8; 6]) -> u32 {
@@ -451,7 +532,7 @@ impl esp_soc::SocBus for SocBus {
 
     fn report(&self) -> String {
         format!(
-            "esp32s31: cycles={} flash={}KiB bringup-bus (Machine path; flash MMU boot pending)",
+            "esp32s31: cycles={} flash={}KiB Machine path (ROM boot + --boot app MMU map)",
             self.cycles,
             self.flash.len() / 1024
         )
@@ -604,10 +685,51 @@ mod tests {
     }
 
     #[test]
-    fn boot_app_reports_flash_mmu_gap() {
+    fn boot_app_maps_flash_image_and_returns_entry() {
+        use crate::cache::FLASH_MMU;
+        use emu_core::Bus;
+        // Minimal ESP image: magic, 1 flash segment at 0x4000_0000, entry = that vaddr.
+        // Payload must share the 32 KiB page offset with the load address (C6/P4 rule).
+        // Layout: header+meta immediately before a 32 KiB-aligned payload at 0x8000.
+        let mut flash = vec![0xffu8; 0x10000];
+        let page = 0x8000usize;
+        let payload_off = page;
+        let meta_off = payload_off - 8;
+        let hdr_off = meta_off - 24;
+        flash[hdr_off] = 0xE9;
+        flash[hdr_off + 1] = 1; // n_seg
+        flash[hdr_off + 4..hdr_off + 8].copy_from_slice(&0x4000_0000u32.to_le_bytes());
+        flash[meta_off..meta_off + 4].copy_from_slice(&0x4000_0000u32.to_le_bytes());
+        flash[meta_off + 4..meta_off + 8].copy_from_slice(&0x20u32.to_le_bytes());
+        for i in 0..0x20 {
+            flash[payload_off + i] = i as u8;
+        }
         let mut bus = SocBus::new(1 << 20, [0; 6]);
-        let err = bus.boot_app(0x10000).unwrap_err();
-        assert!(err.contains("not supported"), "{err}");
+        bus.write_flash(0, &flash).unwrap();
+        let entry = bus.boot_app(hdr_off).unwrap();
+        assert_eq!(entry, 0x4000_0000);
+        let vpage = (0x4000_0000u32 - 0x4000_0000) / 0x8000;
+        bus.write32(FLASH_MMU + 0x380, vpage).unwrap();
+        let got = bus.read32(FLASH_MMU + 0x37c).unwrap();
+        assert_eq!(got, (1 << 12) | (payload_off as u32 / 0x8000), "{got:#x}");
+    }
+
+    #[test]
+    fn software_reset_latches_cause_0x0c() {
+        use emu_core::Bus;
+        let mut bus = SocBus::new(1 << 20, [0; 6]);
+        assert_eq!(bus.reset_cause, esp_periph::RST_POWERON);
+        // esp_cpu_reset → LP_AONCLKRST_HPCORE0_SW_RESET (bit 20) via ResetControl.
+        bus.write32(crate::reset::BASE, 0x4001_0000 | (1 << 20)).unwrap();
+        assert!(bus.inner.reset.request.is_some());
+        bus.poll_chip_reset();
+        assert!(bus.sw_reset);
+        assert_eq!(bus.reset_cause, esp_periph::RST_SW_CPU);
+        let cause = esp_soc::SocBus::reboot(&mut bus, [0; 6]);
+        assert_eq!(cause, esp_periph::RST_SW_CPU);
+        assert_eq!(bus.reset_cause, esp_periph::RST_SW_CPU);
+        let raw = bus.read32(crate::interrupts::RESET_CAUSE0).unwrap();
+        assert_eq!((raw >> 1) & 0x3f, esp_periph::RST_SW_CPU);
     }
 
     #[test]

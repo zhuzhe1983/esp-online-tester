@@ -36,6 +36,11 @@ impl Mspi {
     /// Caller-supplied decoded device response, never a product-specific default.
     /// This subset supports ordinary 8-bit quad-NOR commands only; no OPI/security.
     /// Optional SFDP data is an independent explicit input, never derived from JEDEC ID.
+    /// Winbond W25Qxx (0xef40xx): capacity byte varies (0x15=2MiB, 0x18=16MiB, …).
+    fn is_winbond_flash(&self) -> bool {
+        matches!(self.descriptor.map(|d| d.0), Some([0xef, 0x40, _]))
+    }
+
     pub fn attach_flash(&mut self, jedec: [u8; 3], status: u16) -> Result<(), Fault> {
         if status & !0x202 != 0 { return Err(Fault::Prohibited); } // No BUSY/protection/security state synthesized.
         self.descriptor = Some((jedec, status)); self.powered_down = false; self.spi1.jedec = jedec; self.spi1.status = status as u32; Ok(())
@@ -166,7 +171,7 @@ impl Mspi {
             // observed ROM behavior, not an independent silicon verification.
             // Winbond W25Q128JV RevF2018 §7.1.2/8.2.15: WEL required,4KiB erase,
             // low12 address bits ignored,WEL clears after actual completion.
-            if self.descriptor.map(|d| d.0) != Some([0xef, 0x40, 0x18]) || self.spi1.regs.read(0x1c) >> 26 != 23 { return Err(Fault::Prohibited); }
+            if !self.is_winbond_flash() || self.spi1.regs.read(0x1c) >> 26 != 23 { return Err(Fault::Prohibited); }
             let address = self.spi1.regs.read(4); if address > 0xff_ffff { return Err(Fault::Prohibited); }
             self.validate_waiti()?;
             if self.spi1.status & 2 != 0 {
@@ -182,7 +187,7 @@ impl Mspi {
             // Winbond §8.2.13: program ANDs bits and wraps within the256-byte page.
             let user = self.spi1.regs.read(0x18); let user2 = self.spi1.regs.read(0x20);
             let bits = (self.spi1.regs.read(0x24) & 0x3ff) + 1; let address = self.spi1.regs.read(4);
-            if self.descriptor.map(|d| d.0) != Some([0xef, 0x40, 0x18]) || user & 0xff00_0000 != 0xc800_0000 || user2 >> 28 != 7 || self.spi1.regs.read(0x1c) >> 26 != 23 || address > 0xff_ffff || bits > 512 || !bits.is_multiple_of(8) { return Err(Fault::Prohibited); }
+            if !self.is_winbond_flash() || user & 0xff00_0000 != 0xc800_0000 || user2 >> 28 != 7 || self.spi1.regs.read(0x1c) >> 26 != 23 || address > 0xff_ffff || bits > 512 || !bits.is_multiple_of(8) { return Err(Fault::Prohibited); }
             self.validate_waiti()?;
             if self.spi1.status & 2 != 0 {
                 let count = (bits / 8) as usize; let page = (address & !255) as usize; let first = (address & 255) as usize;
@@ -207,7 +212,7 @@ impl Mspi {
                 // Winbond W25Q128JV RevF2018/RevI2021 §8.2.20: an idle die
                 // (SUS=0) ignores Resume. No erase/program/suspend state is accepted
                 // by this subset. Never feed this into permissive generic fallbacks.
-                if self.descriptor.map(|d| d.0) != Some([0xef, 0x40, 0x18]) || user & 0xfc00_0000 != 0x8000_0000 || self.spi1.status & !0x202 != 0 { return Err(Fault::Prohibited); }
+                if !self.is_winbond_flash() || user & 0xfc00_0000 != 0x8000_0000 || self.spi1.status & !0x202 != 0 { return Err(Fault::Prohibited); }
                 self.commands += 1; return Ok(());
             }
             if command == 0x5a {

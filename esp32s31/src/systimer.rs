@@ -117,6 +117,26 @@ impl Systimer {
             u.count = u.count.wrapping_add(advances[id]) & MASK;
         }
     }
+    /// Systimer ticks until the next armed comparator IRQ (None if none pending).
+    pub fn ticks_until_irq(&self, stalled: [bool; 2]) -> Option<u64> {
+        if !self.on() { return None; }
+        let running = std::array::from_fn::<_, 2, _>(|u| self.running(u, stalled));
+        let mut best: Option<u64> = None;
+        for (id, a) in self.alarms.iter().enumerate() {
+            if !a.armed || self.conf & (1 << (24 - id)) == 0 { continue; }
+            // Pending INT must already be visible via irqs(); do not sleep past it.
+            if self.raw & self.ena & (1 << id) != 0 { return Some(0); }
+            let unit = (a.active_conf >> 31) as usize;
+            if !running[unit] { continue; }
+            let now = self.units[unit].count;
+            let periodic = a.active_conf & (1 << 30) != 0;
+            let until = if periodic { a.real.wrapping_sub(now) & MASK } else { a.real.saturating_sub(now) };
+            if until == 0 { return Some(0); }
+            best = Some(best.map_or(until, |b| b.min(until)));
+        }
+        best
+    }
+
     /// Optional deterministic instruction-clock approximation, not wall time or
     /// measured S31 timing. One quantum per dual-hart round, divided by exactly2.5.
     pub fn advance_cpu(&mut self, cycles: u64, cpu_hz: u64, rc_fast_hz: u64, stalled: [bool; 2]) {
@@ -211,5 +231,17 @@ mod tests {
         b.write32(BASE + 0x6c, 1).unwrap(); assert_eq!(b.refresh_irq(0), None);
         assert_eq!(b.read16(BASE), Err(Fault::Misaligned)); b.permissions.write(crate::pms::HP1 + 0xff0, 1).unwrap(); b.permissions.write(crate::pms::HP1 + 0x60, 0).unwrap();
         assert_eq!(b.read32(BASE), Err(Fault::Prohibited)); assert_eq!(b.read32(CLOCK), Ok(0x11));
+    }
+    #[test]
+    fn ticks_until_irq_tracks_periodic_comparator() {
+        let mut t = timer();
+        w(&mut t, 0, 1 << 30); // unit0 run
+        w(&mut t, 0x34, (1 << 30) | 100); // alarm0 period=100, unit0
+        w(&mut t, 0, (1 << 30) | (1 << 24)); // enable comparator 0
+        w(&mut t, 0x50, 1); // COMP0_LOAD
+        t.advance_ticks(1, [false; 2]); // apply pending → real = count+100
+        assert_eq!(t.ticks_until_irq([false; 2]), Some(99));
+        t.advance_ticks(50, [false; 2]);
+        assert_eq!(t.ticks_until_irq([false; 2]), Some(49));
     }
 }
