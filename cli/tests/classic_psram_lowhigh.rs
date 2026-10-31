@@ -8,12 +8,11 @@ use std::{env, fs, path::PathBuf};
 fn boot(present: bool) -> String {
     let firmware = PathBuf::from(env::var_os("P5_FIRMWARE_DIR")
         .expect("set P5_FIRMWARE_DIR to the stock A2 fw-A2 directory"));
-    let rom = PathBuf::from(env::var_os("ESP32SIM_ROM_DIR")
-        .expect("set ESP32SIM_ROM_DIR to the fetched mask ROM directory"));
+    let rom = esp_soc::rom::require("esp32_rev300_rom.elf");
     let mut m = esp32::machine([0; 6], 4 << 20);
     m.bus.set_psram_size(if present { 4 << 20 } else { 0 }).unwrap();
     m.console.capture = true;
-    m.load_rom(&fs::read(rom.join("esp32_rev300_rom.elf")).unwrap()).unwrap();
+    m.load_rom(&fs::read(&rom).unwrap()).unwrap();
     m.add_symbols(&fs::read(firmware.join("p0_probe.ino.elf")).unwrap()).unwrap();
     for prefix in ["psram", "esp_spiram", "cache_sram_mmu", "esp_himem"] { m.trace_fns(prefix); }
     for (offset, suffix) in [(0x1000, ".bootloader.bin"), (0x8000, ".partitions.bin"), (0x10000, ".bin")] {

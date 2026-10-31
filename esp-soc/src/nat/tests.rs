@@ -366,3 +366,27 @@ fn host_mapping_rejects_bad_syn_ack_and_unlisten_releases_connections() {
     nat.tcp_in(&[2;6],&[192,168,4,1],&[192,168,4,2],&segment_ports(80,port,10,seq+1,SYN|ACK,&[]),3);assert_eq!(nat.tcp_accepted,1);
     assert!(nat.unlisten(addr.port()));assert!(nat.tcp.is_empty());assert!(TcpListener::bind(addr).is_ok());assert!(!nat.unlisten(addr.port()));
 }
+
+#[test]
+fn hostfwd_counts_a_guest_rst_to_the_forwarded_syn_as_refused() {
+    let mut nat = Nat::new(false);
+    let bound = nat.listen(&HostFwdSpec { bind: SocketAddr::from((Ipv4Addr::LOCALHOST, 0)), guest_ip: [10, 0, 2, 15], guest_port: 4444 }).unwrap();
+    let connector = std::thread::spawn(move || TcpStream::connect(bound).unwrap());
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(1);
+    while !connector.is_finished() {
+        nat.poll(0);
+        assert!(std::time::Instant::now() < deadline, "host connect timed out");
+        std::thread::yield_now();
+    }
+    let _host = connector.join().unwrap();
+    nat.set_station([2; 6]);
+    let frames = poll_ready(&mut nat, 1);
+    assert_eq!(frames.len(), 1);
+    assert_eq!(frames[0][47], SYN);
+    let eph = u16::from_be_bytes(frames[0][34..36].try_into().unwrap());
+    let syn_seq = u32::from_be_bytes(frames[0][38..42].try_into().unwrap());
+    assert_eq!(nat.tcp_refused, 0);
+    let out = nat.tcp_in(&[2; 6], &[10, 0, 2, 15], &[10, 0, 2, 2], &segment_ports(4444, eph, 0, syn_seq + 1, RST | ACK, &[]), 2);
+    assert!(out.is_empty());
+    assert_eq!((nat.tcp_refused, nat.tcp_accepted), (1, 0));
+}

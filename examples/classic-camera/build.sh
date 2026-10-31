@@ -15,5 +15,9 @@ fi
 test "$(git -C "$CAMERA" rev-parse HEAD)" = b817e9b81041980608d1a3d3e0b08d86e3666382
 test -z "$(git -C "$CAMERA" status --porcelain)"
 mkdir -p "$BUILD"
+DEFAULTS="$FIXTURE/sdkconfig.defaults"
+# C10_PSRAM=ON (with C10_JPEG=ON) adds the 4 MiB external RAM profile.
+if [ "${C10_PSRAM:-OFF}" = ON ]; then DEFAULTS="$DEFAULTS;$FIXTURE/sdkconfig.psram"; fi
 nice -n 10 idf.py -C "$FIXTURE" -B "$BUILD" -D SDKCONFIG="$BUILD/sdkconfig" \
-  -D C9_LIFECYCLE="${C9_LIFECYCLE:-OFF}" build
+  -D SDKCONFIG_DEFAULTS="$DEFAULTS" -D C9_LIFECYCLE="${C9_LIFECYCLE:-OFF}" \
+  -D C10_JPEG="${C10_JPEG:-OFF}" -D C10_PSRAM="${C10_PSRAM:-OFF}" build

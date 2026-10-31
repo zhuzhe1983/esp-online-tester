@@ -486,6 +486,21 @@ fn external_energy_scan_c6() {
     expect_u64("energy-scan-c6.insns", r.insns);
 }
 
+/// AWTRIX 3 on the Ulanzi TC001 (the stock release image, not in this repository): `AWTRIX_FLASH`
+/// is a 4 MB flash image of its bootloader, partitions, boot_app0 and firmware. With no network
+/// configured it starts its access point and shows "AP MODE", drawn through RMT and the zigzag map.
+#[test] #[ignore = "set AWTRIX_FLASH=/path/to/awtrix-flash.bin (4 MB image); needs the ESP32 ECO3 mask ROM ELF"]
+fn external_awtrix_tc001() {
+    let flash = std::env::var("AWTRIX_FLASH").expect("AWTRIX_FLASH=/path/to/awtrix-flash.bin is required for this test");
+    let rom = rom("esp32_rev300");
+    let r = run(BIN, &["--chip", "esp32", "--rom", rom.to_str().unwrap(), "--board", "ulanzi-tc001", "--boot", "rom", "--no-dump",
+        "--flash-image", &flash, "--flash-mb", "4", "--net", "none", "--max-seconds", "10"]);
+    assert!(r.stdout.contains("Framebuffer_GFX::begin Width: 32 Height: 8") && r.stdout.contains("AP mode."), "{}", r.stdout);
+    let tc = r.stderr.lines().find(|l| l.starts_with("[emu] ulanzi-tc001:")).unwrap_or_else(|| panic!("no board report:\n{}", r.stderr));
+    let n = |after: &str| tc.split(after).next().and_then(|s| s.split_whitespace().last()).and_then(|v| v.parse::<u64>().ok()).unwrap_or(0);
+    assert!(n(" matrix frames") >= 100 && n(" of 256 LEDs lit") >= 40, "{tc}");
+}
+
 /// The WiFi station (`examples/c6-wifi-station`, built with ESP-IDF 5.5.4 for each chip with the
 /// emulator's default network and no display, `sdkconfig.ci.defaults`): the unmodified WiFi
 /// library scans, finds the virtual access point, joins it through the WPA2 four-way handshake,

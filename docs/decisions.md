@@ -177,7 +177,8 @@ Things that cost real time to find out, recorded so they do not have to be found
   block interpreter it measured 1.23× (panel), 1.30× (detector), 1.37× (Atech), 1.46× (SID);
   the SID player now runs 193 Minsn/s, 2.1× real time. Decisions that mattered:
   a hand-written encoder for the ~90 instructions used, checked word-for-word against clang
-  (`cargo test encodings_match_clang`) rather than a dependency; anything not inlined calls
+  (`encodings_match_fixture`, against a fixture `external_encodings_match_clang` regenerates)
+  rather than a dependency; anything not inlined calls
   `exec_insn` for that one instruction and carries on natively, so coverage grew op by op
   with the oracle green at every step; the register window base is cached per block and
   reloaded after any helper that could rotate it; the window-overflow test is emitted once

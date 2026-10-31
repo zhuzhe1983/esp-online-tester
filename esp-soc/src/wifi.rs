@@ -646,7 +646,9 @@ impl StationLink {
     /// host's sockets every `NET_POLL_US`. Nothing to do in relay mode: the host has the frames.
     pub fn net_step(&mut self, now_us: u64) {
         if self.relay { return; }
+        let sta = self.ap.as_ref().map(|ap| ap.sta);
         let Some(net) = self.net.as_mut() else { return };
+        if let Some(mac) = sta { if mac != [0; 6] { net.sta_mac = mac; } }
         let out = std::mem::take(&mut self.eth_tx);
         let due = now_us.wrapping_sub(self.net_polled_us) >= NET_POLL_US;
         if out.is_empty() && !due { return; }
@@ -711,7 +713,10 @@ impl StationLink {
             lines.push(format!("[emu] wifi: {} frames sent by the station, {} received ({} dropped: no descriptor{unarmed}){}", self.tx_frames, self.rx_frames, self.rx_dropped, self.ap.as_ref().map_or(String::new(), |ap| format!("; AP: {} beacons, {} probe responses, {} data frames from the station, state {:?}", ap.stats.0, ap.stats.1, ap.stats.2, ap.state))));
         }
         if let Some(n) = &self.net { lines.push(format!("[emu] net: {} DHCP leases, {} ARP replies, {} DNS answers, {} NTP answers, {} TCP refused, {} pings, {} frames ignored", n.dhcp_acks, n.arp_replies, n.dns_answers, n.ntp_answers, n.tcp_rejects, n.pings, n.unhandled));
-            if let Some(t) = &n.nat { lines.push(format!("[emu] nat: {} TCP connections ({} failed), {} UDP flows ({} evicted, {} send errors), {} bytes out, {} bytes in", t.tcp_opened, t.tcp_refused, t.udp_flows, t.udp_evicted, t.udp_send_errors, t.bytes_to_host, t.bytes_to_guest)); } }
+            if let Some(t) = &n.nat {
+                let inbound = if t.hostfwd == 0 { String::new() } else { format!(", {} inbound, {} hostfwd", t.tcp_accepted, t.hostfwd) };
+                lines.push(format!("[emu] nat: {} TCP connections ({} failed{}), {} UDP flows ({} evicted, {} send errors), {} bytes out, {} bytes in", t.tcp_opened, t.tcp_refused, inbound, t.udp_flows, t.udp_evicted, t.udp_send_errors, t.bytes_to_host, t.bytes_to_guest));
+            } }
         lines.join("\n")
     }
 }

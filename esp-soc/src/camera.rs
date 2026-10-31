@@ -94,10 +94,13 @@ impl Ov5640Camera {
 
 /// Shared validated host picture, preview and register-selected conversion cache.
 /// Array coordinates are supplied by the sensor adapter, never assumed generic.
+/// Host JPEG is a separate input: delivered verbatim to a sensor in JPEG mode, never
+/// decoded, so it neither replaces the raw picture nor feeds the preview.
 #[derive(Default)]
 pub struct HostFrameSource {
     picture: Option<picture::Picture>,
     cached: Option<(FrameConfig, std::sync::Arc<Vec<u8>>)>,
+    jpeg: Option<picture::Jpeg>,
 }
 #[derive(Clone, Copy, PartialEq, Eq)]
 struct FrameConfig { w: u32, h: u32, format: picture::PixelFormat, window: Option<([u32; 4], u32, u32)> }
@@ -106,6 +109,18 @@ impl HostFrameSource {
     pub fn set_camera_picture(&mut self, p: picture::Picture) -> Result<(), &'static str> {
         if !p.valid() { return Err("invalid camera picture or frame exceeds 8 MiB"); }
         self.picture = Some(p); self.invalidate(); Ok(())
+    }
+    /// `sensor` is the configured output size; with no size configured yet (a zero
+    /// dimension) the size is checked at delivery instead. Refusal keeps the old input.
+    pub fn set_camera_jpeg(&mut self, jpeg: picture::Jpeg, sensor: (u32, u32)) -> Result<(), picture::JpegError> {
+        if sensor.0 != 0 && sensor.1 != 0 && (jpeg.w, jpeg.h) != sensor {
+            return Err(picture::JpegError::SizeMismatch { jpeg: (jpeg.w, jpeg.h), sensor });
+        }
+        self.jpeg = Some(jpeg); Ok(())
+    }
+    /// The host JPEG bytes, only when their SOF0 size equals the sensor output `w`x`h`.
+    pub fn jpeg_frame(&self, w: u32, h: u32) -> Option<(u32, u32, std::sync::Arc<Vec<u8>>)> {
+        self.jpeg.as_ref().filter(|j| (j.w, j.h) == (w, h)).map(|j| (w, h, j.bytes.clone()))
     }
     pub fn camera_preview(&self, w: u32, h: u32) -> Option<Vec<u8>> {
         let p = self.picture.as_ref()?;
@@ -168,5 +183,39 @@ mod tests {
         write(&mut sensor, 0x3008, 0x82);
         assert_eq!((sensor.get(0x300a), sensor.get(0x300b)), (0x56, 0x40));
         assert!(camera.camera_frame().is_none());
+    }
+
+    #[test]
+    fn host_jpeg_is_separate_verbatim_and_size_checked() {
+        let jpeg = |w, h, tag| picture::Jpeg { w, h, bytes: Arc::new(vec![0xff, 0xd8, tag, 0xff, 0xd9]) };
+        let mut source = HostFrameSource::default();
+        assert!(source.jpeg_frame(4, 2).is_none());
+        // No size configured yet: accepted, then checked at delivery.
+        assert_eq!(source.set_camera_jpeg(jpeg(8, 2, 1), (0, 2)), Ok(()));
+        assert_eq!(source.set_camera_jpeg(jpeg(4, 2, 1), (4, 0)), Ok(()));
+        assert!(source.jpeg_frame(8, 2).is_none() && source.jpeg_frame(4, 4).is_none());
+        let first = source.jpeg_frame(4, 2).unwrap();
+        assert_eq!((first.0, first.1, &*first.2), (4, 2, &vec![0xff, 0xd8, 1, 0xff, 0xd9]));
+        assert!(Arc::ptr_eq(&first.2, &source.jpeg_frame(4, 2).unwrap().2), "delivered, not copied");
+        for size in [(8, 2), (4, 4)] {
+            assert_eq!(source.set_camera_jpeg(jpeg(size.0, size.1, 2), (4, 2)),
+                Err(picture::JpegError::SizeMismatch { jpeg: size, sensor: (4, 2) }));
+            assert!(source.jpeg_frame(4, 2).is_some_and(|j| Arc::ptr_eq(&first.2, &j.2)), "refusal keeps the previous JPEG");
+        }
+        assert_eq!(source.set_camera_jpeg(jpeg(4, 2, 3), (4, 2)), Ok(()));
+        assert_eq!(source.jpeg_frame(4, 2).unwrap().2[2], 3);
+        // The raw picture, its cache and the preview are independent of JPEG input.
+        assert!(source.camera_preview(1, 1).is_none());
+        assert_eq!(*source.frame(1, 1, picture::PixelFormat::Rgb565, None).unwrap().2, [0, 0]);
+        source.set_camera_picture(picture::Picture { w: 1, h: 1, rgb: vec![255, 0, 0] }).unwrap();
+        let raw = source.frame(1, 1, picture::PixelFormat::Rgb565, None).unwrap().2;
+        assert_eq!(*raw, [248, 0]);
+        assert_eq!(source.set_camera_jpeg(jpeg(4, 2, 4), (4, 2)), Ok(()));
+        assert!(Arc::ptr_eq(&raw, &source.frame(1, 1, picture::PixelFormat::Rgb565, None).unwrap().2));
+        assert_eq!(source.camera_preview(1, 1).unwrap(), [255, 0, 0]);
+        assert_eq!(source.jpeg_frame(4, 2).unwrap().2[2], 4);
+        let mut board = crate::board::NoBoard;
+        assert_eq!(crate::board::BoardModel::set_camera_jpeg(&mut board, jpeg(4, 2, 5)), Err(picture::JpegError::Unsupported));
+        assert!(!crate::board::BoardModel::camera_frame_is_jpeg(&board));
     }
 }

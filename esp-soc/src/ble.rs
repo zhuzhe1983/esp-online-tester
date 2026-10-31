@@ -65,6 +65,8 @@ pub enum LinkAction {
 const HANDLE: u16 = 1;
 const ADDRESS: [u8; 6] = [1, 0, 0, 0x49, 0x53, 2];
 const PEER: [u8; 6] = [2, 0, 0, 0x49, 0x53, 2];
+/// What an ESP32-S3's controller answers to LE Read Resolving List Size.
+const RESOLVING_LIST_SIZE: usize = 10;
 
 fn word(b: &[u8]) -> u16 { u16::from_le_bytes([b[0], b[1]]) }
 /// No RF, encryption sessions or pairing. One ACL link is enough for the Arduino examples.
@@ -82,6 +84,8 @@ pub struct Controller {
     random: u64,
     local_name: [u8; 248],
     default_link_policy: u16,
+    /// LL Privacy's resolving list: the peers' identity addresses (type, address in HCI order).
+    resolving: Vec<(u8, [u8; 6])>,
 }
 
 impl Default for Controller { fn default() -> Self { Self::new(Link::default()) } }
@@ -100,6 +104,7 @@ impl Controller {
             random: 0x3253_5045_424c_4531,
             local_name: [0; 248],
             default_link_policy: 0,
+            resolving: Vec::new(),
         }
     }
     pub fn pop_packet(&mut self) -> Option<Vec<u8>> { self.packets.pop_front() }
@@ -165,6 +170,8 @@ impl Controller {
             | LE_CLEAR_FILTER_ACCEPT_LIST
             | LE_RAND
             | LE_READ_SUPPORTED_STATES
+            | LE_CLEAR_RESOLVING_LIST
+            | LE_READ_RESOLVING_LIST_SIZE
             | ESP_CLEAR_LEGACY_ADVERTISING => Some(0),
             READ_LOCAL_EXTENDED_FEATURES
             | WRITE_SCAN_ENABLE
@@ -176,6 +183,7 @@ impl Controller {
             | LE_SET_ADVERTISING_ENABLE
             | SET_CONTROLLER_TO_HOST_FLOW_CONTROL
             | ESP_ENABLE_CSA2
+            | LE_SET_ADDRESS_RESOLUTION_ENABLE
             | VENDOR_FD82 => Some(1),
             WRITE_DEFAULT_LINK_POLICY
             | WRITE_CONNECTION_ACCEPT_TIMEOUT
@@ -186,15 +194,18 @@ impl Controller {
             | LE_READ_REMOTE_FEATURES
             | READ_RSSI
             | READ_REMOTE_VERSION
+            | LE_SET_RPA_TIMEOUT
             | ESP_UPDATE_ADV_REPORT_FLOW_CONTROL => Some(2),
             DISCONNECT | WRITE_CLASS_OF_DEVICE | VENDOR_FC82 => Some(3),
             ESP_SET_LE_EVENT_MASK => Some(4),
-            SET_EVENT_MASK | SET_EVENT_MASK_PAGE_2 | LE_SET_EVENT_MASK => Some(8),
+            SET_EVENT_MASK | SET_EVENT_MASK_PAGE_2 | LE_SET_EVENT_MASK | LE_SET_PRIVACY_MODE => Some(8),
             LE_SET_RANDOM_ADDRESS => Some(6),
             LE_SET_ADVERTISING_PARAMETERS => Some(15),
             LE_SET_ADVERTISING_DATA | LE_SET_SCAN_RESPONSE_DATA | LE_ENCRYPT => Some(32),
             LE_SET_SCAN_PARAMETERS | HOST_BUFFER_SIZE | LE_ADD_FILTER_ACCEPT_LIST | LE_REMOVE_FILTER_ACCEPT_LIST => { Some(7) }
+            LE_REMOVE_DEVICE_FROM_RESOLVING_LIST | LE_READ_PEER_RESOLVABLE_ADDRESS | LE_READ_LOCAL_RESOLVABLE_ADDRESS => Some(7),
             LE_CREATE_CONNECTION => Some(25),
+            LE_ADD_DEVICE_TO_RESOLVING_LIST => Some(39),
             LE_CONNECTION_UPDATE => Some(14),
             WRITE_LOCAL_NAME => Some(248),
             ESP_SET_ADV_REPORT_FLOW_CONTROL | LE_SET_HOST_CHANNEL_CLASSIFICATION => Some(5),
@@ -215,6 +226,7 @@ impl Controller {
                 self.scan_response.clear();
                 self.active_scan = false;
                 self.packets.clear();
+                self.resolving.clear();
                 self.complete(op, &[0]);
             }
             WRITE_DEFAULT_LINK_POLICY => {
@@ -248,6 +260,13 @@ impl Controller {
                     (26, 0xff),
                     (27, 0xff),
                     (28, 8),
+                    // LE Add / Remove Device To / From Resolving List, Clear Resolving List, Read
+                    // Resolving List Size, Read Peer Resolvable Address; Read Local Resolvable
+                    // Address, Set Address Resolution Enable, Set Resolvable Private Address
+                    // Timeout; Set Privacy Mode.
+                    (34, 0xf8),
+                    (35, 0x07),
+                    (39, 0x04),
                 ] { commands[octet + 1] = bits; }
                 self.complete(op, &commands);
             }
@@ -272,7 +291,10 @@ impl Controller {
                 self.complete(op, &v);
             }
             LE_READ_BUFFER_SIZE => self.complete(op, &[0, 0xfb, 0, 8]),
-            LE_READ_LOCAL_FEATURES => self.complete(op, &[0; 9]),
+            // LE feature bit 6, LL Privacy (Bluetooth Core 5.4 Vol 6 Part B 4.6): a host stack
+            // sizes its resolving list only when the controller reports it, and IDF's Bluedroid
+            // adds its default entry either way (#296).
+            LE_READ_LOCAL_FEATURES => self.complete(op, &[0, 0x40, 0, 0, 0, 0, 0, 0, 0]),
             LE_READ_ADVERTISING_TX_POWER => self.complete(op, &[0, 0]),
             LE_READ_FILTER_ACCEPT_LIST_SIZE => self.complete(op, &[0, 8]),
             LE_READ_SUPPORTED_STATES => self.complete(op, &[0, 0xff, 0x07, 0, 0, 0, 0, 0, 0]),
@@ -369,6 +391,43 @@ impl Controller {
                 let mut response = vec![0];
                 response.extend_from_slice(&self.random.to_le_bytes());
                 self.complete(op, &response);
+            }
+            // The resolving list (Bluetooth Core 5.4 Vol 4 Part E 7.8.38-7.8.45, 7.8.77), with the
+            // status codes an ESP32-S3's controller answers. It keeps identity addresses only: no
+            // address is resolved against the IRKs and no resolvable private address is made.
+            LE_ADD_DEVICE_TO_RESOLVING_LIST => {
+                let entry = (p[0], p[1..7].try_into().unwrap());
+                let status = if p[0] > 1 || self.resolving.contains(&entry) {
+                    0x12
+                } else if self.resolving.len() == RESOLVING_LIST_SIZE {
+                    0x07
+                } else {
+                    self.resolving.push(entry);
+                    0
+                };
+                self.complete(op, &[status]);
+            }
+            LE_REMOVE_DEVICE_FROM_RESOLVING_LIST => {
+                let entry = (p[0], p[1..7].try_into().unwrap());
+                let found = self.resolving.iter().position(|e| *e == entry);
+                if let Some(i) = found { self.resolving.remove(i); }
+                self.complete(op, &[if found.is_some() { 0 } else { 2 }]);
+            }
+            LE_CLEAR_RESOLVING_LIST => {
+                self.resolving.clear();
+                self.complete(op, &[0]);
+            }
+            LE_READ_RESOLVING_LIST_SIZE => self.complete(op, &[0, RESOLVING_LIST_SIZE as u8]),
+            // No resolvable private address exists, so Unknown Connection Identifier, as the S3
+            // answers for an entry it has made none for.
+            LE_READ_PEER_RESOLVABLE_ADDRESS | LE_READ_LOCAL_RESOLVABLE_ADDRESS => self.complete(op, &[2, 0, 0, 0, 0, 0, 0]),
+            LE_SET_ADDRESS_RESOLUTION_ENABLE => self.complete(op, &[if p[0] > 1 { 0x12 } else { 0 }]),
+            // The S3 refuses 0 s only, 3601 s too is accepted.
+            LE_SET_RPA_TIMEOUT => self.complete(op, &[if word(p) == 0 { 0x12 } else { 0 }]),
+            LE_SET_PRIVACY_MODE => {
+                let entry = (p[0], p[1..7].try_into().unwrap());
+                let status = if p[7] > 1 { 0x12 } else if self.resolving.contains(&entry) { 0 } else { 2 };
+                self.complete(op, &[status]);
             }
             READ_RSSI => self.complete(op, &[0, p[0], p[1], (-35i8) as u8]),
             HOST_COMPLETED_PACKETS => {} // Host Number Of Completed Packets has no completion event.

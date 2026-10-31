@@ -277,15 +277,36 @@ is none; the page's manifest sets 32).
 
 Selected with `--chip esp32 --board ttgo-tdisplay` (alias `tdisplay`); [esp32.md](esp32.md#the-board---board-ttgo-tdisplay).
 
+## `ulanzi-tc001` — Ulanzi TC001 pixel clock (classic ESP32)
+
+| Device | Bus | Model |
+| --- | --- | --- |
+| 256 WS2812, 32×8 | GPIO 32 via RMT | one `Ws2812Chain` with `MATRIX_PHYSICAL`: the chain runs in rows from the top left, every second row right to left (AWTRIX layout 0), so `leds()` and the 32×8 `display()` are in reading order |
+| Buttons | GPIO 26 (left), 27 (select), 14 (right), active low | `press left 150`, `press select 150`, `press right 150` |
+| Light sensor, battery divider | GPIO 35, GPIO 34 (ADC1) | not modelled |
+| Buzzer | GPIO 15 | not modelled |
+| I2C | SDA 21 / SCL 22 | temperature/humidity sensor and RTC not modelled |
+| AWTRIX `RESET_PIN` | GPIO 13 (held low for 5 s, AWTRIX erases its settings) | not modelled, reads high |
+
+Selected with `--chip esp32 --board ulanzi-tc001` (alias `tc001`). Pins from the AWTRIX 3 firmware
+(Blueforcer/awtrix3 at `a69571703a88`, `src/DisplayManager.cpp`, `src/PeripheryManager.cpp`; the
+pin block moves between versions). A 256-LED frame is 6144 RMT symbols sent
+through the refilled 64-word block; the classic RMT hands transmissions up to 4096 pixels to the
+board. Stock AWTRIX 3 runs on it: [examples/ulanzi-tc001](../examples/ulanzi-tc001/README.md).
+CLI only for now: the web page (`web/emu.js`) does not offer the board yet.
+
 ## `ai-thinker-cam` — AI-Thinker ESP32-CAM (classic ESP32)
 
 Select `--chip esp32 --board ai-thinker-cam` (alias `esp32cam`). The OV2640 is
-on SCCB/I2C0 at 0x30 (SDA 26, SCL 27), with PWDN 32, XCLK 0, no reset wire,
-D0–D7 5/18/19/21/36/39/34/35, PCLK 22, HREF 23 and VSYNC 25. The guest must
-configure the physical routes and a live PWM clock. `--cam-image image.bmp|ppm`
-supplies a still image; absent input is black. Raw RGB565/YUV422 captures use
-I2S0 RX DMA into internal DRAM with a fixed approximate 10 FPS cadence.
-JPEG+PSRAM CameraWebServer, adjustable FPS and silicon/PCLK timing are unsupported.
+on SCCB at 0x30 (SDA 26, SCL 27; either I2C controller), with PWDN 32, XCLK 0,
+no reset wire, D0–D7 5/18/19/21/36/39/34/35, PCLK 22, HREF 23 and VSYNC 25. The
+guest must configure the physical routes and a live PWM clock.
+`--cam-image image.bmp|ppm` supplies a still image; absent input is black. Raw
+RGB565/YUV422 captures use I2S0 RX DMA with a fixed approximate 10 FPS cadence.
+`--cam-image photo.jpg` supplies baseline JPEG for `PIXFORMAT_JPEG`, delivered
+byte for byte when its size equals the configured frame size; frame buffers may
+be in DRAM or, with `--psram-mb 4`, PSRAM.
+JPEG encoding, adjustable FPS and silicon/PCLK timing are unsupported.
 See [the fixture and scope](esp32.md#the-camera---board-ai-thinker-cam).
 
 ## `none` — bare module

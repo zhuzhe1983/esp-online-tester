@@ -150,17 +150,18 @@ fn board_devices_can_be_removed_or_moved_without_reset() {
 }
 
 /// Build the sketch in docs/evidence/gpio-i2c-hooks-2026-10-02, then set
-/// HOOKS_ROM and HOOKS_FIRMWARE (the PlatformIO build directory).
+/// HOOKS_FIRMWARE (the PlatformIO build directory). The S3 ROM comes from ESP32SIM_ROM_DIR or
+/// ESP-IDF, or from HOOKS_ROM (a file), the name the evidence README uses.
 #[test]
-#[ignore = "set HOOKS_ROM to the S3 mask ROM ELF and HOOKS_FIRMWARE to the GPIO/I2C sketch PlatformIO build directory"]
+#[ignore = "needs the S3 mask ROM ELF (ESP32SIM_ROM_DIR, ESP-IDF or HOOKS_ROM); set HOOKS_FIRMWARE to the GPIO/I2C sketch PlatformIO build directory"]
 fn external_arduino_s3_gpio_and_i2c_detach() {
     use std::{env, fs, path::PathBuf};
     let firmware = PathBuf::from(env::var_os("HOOKS_FIRMWARE").expect("set HOOKS_FIRMWARE to the PlatformIO build directory for docs/evidence/gpio-i2c-hooks-2026-10-02"));
     let mut m = esp32s3::machine([0; 6]);
     m.bus.board = Box::new(esp_soc::NoBoard);
     m.console.capture = true;
-    m.load_rom(&fs::read(env::var_os("HOOKS_ROM").expect("set HOOKS_ROM to the ESP32-S3 mask ROM ELF path")).unwrap())
-        .unwrap();
+    let rom = env::var_os("HOOKS_ROM").map(PathBuf::from).unwrap_or_else(|| esp_soc::rom::require("esp32s3_rev0_rom.elf"));
+    m.load_rom(&fs::read(rom).unwrap()).unwrap();
     for (offset, name) in [
         (0, "bootloader.bin"),
         (0x8000, "partitions.bin"),

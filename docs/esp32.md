@@ -2,6 +2,8 @@
 
 The `esp32` crate models the dual-core LX6 classic ESP32 and loads the ECO3 mask ROM. It boots the real
 rev-3 mask ROM through the second-stage bootloader into an unchanged application.
+It reports silicon revision v3.0, the ECO3 that ROM belongs to: eFuse CHIP_VER_REV1 and REV2,
+and bit 31 of SYSCON_DATE, so an image built with `CONFIG_ESP32_REV_MIN_3` boots.
 The shared Xtensa core enables DFP context registers only for this target.
 Double-precision arithmetic is not modeled. Optional 4 MiB quad data PSRAM is
 available through `--psram-mb 4` and the WASM factory, with 32 KiB MMU pages and
@@ -31,7 +33,7 @@ cargo build --release -p esp32sim
 
 `hello_world_classic` compares the ROM banner, bootloader and application output
 and interrupt totals/per-source counts against committed goldens. The ROM comes from Espressif's
-ROM ELF package; set `ESP32SIM_ROM_DIR` to its absolute directory for tests.
+ROM ELF package: ESP-IDF's copy is found by itself, otherwise set `ESP32SIM_ROM_DIR` to its absolute directory.
 The three firmware binaries were built from the existing CC0 hello_world source
 with ESP-IDF 5.5.4, the pioarduino 55.03.38-1 platform and the esp32dev board.
 See the [reproducible build recipe](../examples/hello_world-classic/README.md).
@@ -41,6 +43,8 @@ secondary-core control, eFuse, SPI flash, three UARTs, GPIO/IO_MUX, RTC control,
 and timer groups including LACT. `none` and `esp32dev` select the bare module.
 The default board option also selects the bare module for this chip.
 `ttgo-tdisplay` (alias `tdisplay`) is the LilyGO TTGO T-Display, see below.
+`ulanzi-tc001` (alias `tc001`) is the Ulanzi TC001 pixel clock, a 32×8 WS2812 matrix on RMT
+([boards.md](boards.md#ulanzi-tc001--ulanzi-tc001-pixel-clock-classic-esp32)).
 WASM accepts the `esp32` chip identifier. Boot applications through ROM.
 
 T0/T1 and LACT use 64-bit counters and the shared timer stepping logic.
@@ -81,11 +85,21 @@ receive work. See EX229 for checks and limits.
 ## The camera: `--board ai-thinker-cam`
 
 The AI-Thinker ESP32-CAM (alias `esp32cam`) models OV2640 SCCB configuration,
-physical GPIO routing and I2S0 RX DMA into internal DRAM. Supply a BMP/PPM still
-with `--cam-image`; absent input produces black frames. Supported sensor output
-is raw RGB565 or YUV422 (grayscale requests use the YUV wire format), at a fixed
-approximate 10 FPS. JPEG+PSRAM CameraWebServer is unsupported; unsupported output
-prints one `[camera] unsupported sensor output` notice per board instance.
+physical GPIO routing and I2S0 RX DMA. Supply a BMP/PPM still with `--cam-image`;
+absent input produces black frames. Supported raw sensor output is RGB565 or
+YUV422 (grayscale requests use the YUV wire format), at a fixed approximate 10 FPS.
+Either I2C controller routed to GPIO26/27 reaches the one sensor.
+
+`PIXFORMAT_JPEG` takes host-encoded input: `--cam-image photo.jpg` (or loader
+kind 7 in the browser) with a baseline JPEG whose SOF0 size equals the sensor's
+configured output size (640 × 480 for `FRAMESIZE_VGA`). Its bytes reach
+`fb->buf` unchanged and `fb->len` is the file length; the model never encodes,
+decodes or scales. A malformed, non-baseline or wrongly sized JPEG is refused
+when supplied and the previous input stays. After `set_framesize` the host must
+supply a JPEG of the new size; until then JPEG mode delivers no frame and prints
+one `[camera] JPEG output … has no host JPEG of that size` notice. Frame buffers
+may be in internal DRAM or, with `--psram-mb 4`, in PSRAM. Other output prints one
+`[camera] unsupported sensor output` notice per board instance.
 There is no adjustable FPS, JPEG encoding, ISP fidelity or per-PCLK timing claim.
 Losing a route mid-frame raises IN_DSCR_ERR as a conservative model policy to
 prevent splicing partial frames, not as a measured hardware fault mapping.
@@ -107,6 +121,9 @@ The [build recipe](../examples/classic-camera/README.md) pins IDF and the camera
 driver. Its guest fixture uses 10 MHz XCLK / FIFO mode 1. FIFO mode 3 (normally
 selected at 20 MHz by Arduino) has exact-vector unit coverage only, not a
 20 MHz compiled-driver fixture. See [EX232](experiments.md#ex232) and its receipt.
+The JPEG fixture (20 MHz XCLK, quality 12, VGA then QVGA, DRAM and PSRAM
+framebuffers) is [EX256](experiments.md#ex256) with its
+[recipe](../examples/classic-camera/jpeg.md).
 
 ## The board: `--board ttgo-tdisplay`
 

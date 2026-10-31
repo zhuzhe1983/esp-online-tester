@@ -986,4 +986,70 @@ mod tests {
         scan(&mut c, false);
         assert_eq!(reports(&mut c).iter().filter(|x| x.2 == thermo().addr).count(), 1);
     }
+
+    /// The status of one command's Command Complete.
+    fn status(c: &mut Session, op: u16, p: &[u8]) -> u8 {
+        cmd(c, op, p);
+        let r = c.pop_packet().unwrap();
+        assert_eq!(&r[..6], &[4, 14, r[2], 1, op as u8, (op >> 8) as u8]);
+        r[6]
+    }
+    /// LE Add Device To Resolving List for a public address ending in `last` (HCI order).
+    fn rl_add(last: u8) -> Vec<u8> {
+        let mut p = vec![0, last, 0, 0, 0, 0, 0];
+        p.extend((7..39).map(|i| (i + last as usize) as u8));
+        p
+    }
+
+    #[test]
+    fn ll_privacy_is_reported_and_the_resolving_list_answers_as_on_an_s3() {
+        let mut c = Session::default();
+        cmd(&mut c, 0x2003, &[]);
+        let features = c.pop_packet().unwrap();
+        assert_eq!(features[7] & 0x40, 0x40, "LE feature bit 6, LL Privacy");
+        cmd(&mut c, 0x1002, &[]);
+        let commands = c.pop_packet().unwrap();
+        assert_eq!((commands[7 + 34] & 0xf8, commands[7 + 35] & 0x07, commands[7 + 39] & 0x04), (0xf8, 0x07, 0x04));
+        cmd(&mut c, 0x202a, &[]);
+        assert_eq!(c.pop_packet().unwrap(), [4, 14, 5, 1, 0x2a, 0x20, 0, 10]);
+        // The sequence the receipt's probe sent to an ESP32-S3, with the statuses it answered.
+        let remove = |last: u8| vec![0, last, 0, 0, 0, 0, 0];
+        let script: Vec<(u16, Vec<u8>, u8)> = vec![
+            (0x2029, vec![], 0),
+            (0x2028, remove(0), 0x02),
+            (0x2027, rl_add(0), 0),
+            (0x2027, rl_add(0), 0x12),
+            (0x2028, remove(0), 0),
+            (0x2028, remove(0), 0x02),
+        ];
+        for (op, p, expected) in script { assert_eq!(status(&mut c, op, &p), expected, "0x{op:04x} {p:02x?}"); }
+        for last in 1..=10 { assert_eq!(status(&mut c, 0x2027, &rl_add(last)), 0, "entry {last}"); }
+        assert_eq!(status(&mut c, 0x2027, &rl_add(11)), 0x07, "the eleventh: Memory Capacity Exceeded");
+        let script: Vec<(u16, Vec<u8>, u8)> = vec![
+            (0x2029, vec![], 0),
+            (0x202d, vec![1], 0),
+            (0x202d, vec![2], 0x12),
+            (0x2027, rl_add(1), 0),
+            (0x202d, vec![0], 0),
+            (0x202e, vec![0x84, 0x03], 0),
+            (0x202e, vec![0, 0], 0x12),
+            (0x202e, vec![0x10, 0x0e], 0),
+            (0x202e, vec![0x11, 0x0e], 0),
+            (0x204e, vec![0, 1, 0, 0, 0, 0, 0, 1], 0),
+            (0x204e, vec![0, 0x7f, 0, 0, 0, 0, 0, 1], 0x02),
+            (0x204e, vec![0, 1, 0, 0, 0, 0, 0, 2], 0x12),
+        ];
+        for (op, p, expected) in script { assert_eq!(status(&mut c, op, &p), expected, "0x{op:04x} {p:02x?}"); }
+        for (op, entry) in [(0x202b, 1), (0x202b, 0x7f), (0x202c, 1)] {
+            cmd(&mut c, op, &remove(entry));
+            assert_eq!(c.pop_packet().unwrap(), [4, 14, 10, 1, op as u8, 0x20, 2, 0, 0, 0, 0, 0, 0]);
+        }
+        // HCI Reset and a guest reset empty the list.
+        status(&mut c, 0x0c03, &[]);
+        assert_eq!(status(&mut c, 0x204e, &[0, 1, 0, 0, 0, 0, 0, 1]), 0x02);
+        assert_eq!(status(&mut c, 0x2027, &rl_add(1)), 0);
+        c.reset();
+        assert_eq!(status(&mut c, 0x2028, &remove(1)), 0x02);
+        assert!(c.drain_log().iter().all(|l| !l.contains("unsupported")));
+    }
 }

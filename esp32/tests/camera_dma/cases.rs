@@ -320,3 +320,50 @@ fn rmw_stop(disable_rx: bool) {
 mod arming;
 #[path = "cancellation.rs"]
 mod cancellation;
+
+#[test]
+fn jpeg_frame_is_host_bytes_then_zeros_to_one_word_before_an_eof() {
+    // An odd-length JPEG leaves a mode-1 half word: it is flushed, not dropped.
+    for (mode, eof, tag, odd) in [(3, 8, 1, false), (3, 13, 2, false), (1, 8, 3, false), (1, 8, 4, true), (3, 8, 5, true)] {
+        let mut b=setup(mode);
+        write(&mut b,0xda,0x12);
+        let mut host=super::jpeg(4,4,tag);
+        if odd { let end=host.len()-2; host.insert(end,0x55); }
+        assert_eq!(host.len()%2==1,odd);
+        b.board.set_camera_jpeg(Jpeg::parse(host.clone()).unwrap()).unwrap();
+        for j in 0..8 { descriptor(&mut b,j,eof*4,if j==7 {0}else{D+(j+1)*12}); }
+        for a in (B..B+8*64).step_by(4) { put(&mut b,a,0xaaaa_aaaa); }
+        arm(&mut b,eof); begin(&mut b);
+        tick_bus(&mut b,FRAME_CYCLES-VSYNC_CYCLES);
+        let mut stream:Vec<u8>=if mode==3 {host.iter().flat_map(|&x| [0,0,x,0]).collect()}
+            else {let (pairs,tail)=host.as_chunks::<2>(); pairs.iter().flat_map(|p| [p[1],0,p[0],0]).chain(tail.iter().flat_map(|&x| [0,0,x,0])).collect()};
+        let words=stream.len() as u32/4;
+        // At least one EOF block; the last block stops one word short of its EOF.
+        let mut total=words.max(eof);
+        while total%eof!=eof-1 { total+=1; }
+        stream.resize(total as usize*4,0);
+        let blocks=total/eof;
+        let mut actual=Vec::new();
+        for j in 0..=blocks { actual.extend(bytes(&mut b,B+j*64,eof*4)); }
+        assert_eq!(&actual[..stream.len()],&stream[..],"mode {mode}, EOF {eof}");
+        assert_eq!(&actual[stream.len()..],&[0xaa;4],"the final word is never written");
+        for j in 0..blocks { assert_eq!(b.read32(D+j*12).unwrap(),(eof*4)|((eof*4)<<12)|(1<<30)); }
+        assert_ne!(b.read32(D+blocks*12).unwrap()&(1<<31),0,"the last block raises no EOF");
+        assert_eq!(raw(&mut b)&EOF,EOF);
+    }
+}
+#[test]
+fn jpeg_mode_without_matching_host_jpeg_delivers_nothing() {
+    let mut b=setup(3);
+    write(&mut b,0xda,0x12);
+    for j in 0..2 { descriptor(&mut b,j,32,if j==1 {0}else{D+12}); }
+    arm(&mut b,8); begin(&mut b);
+    tick_bus(&mut b,FRAME_CYCLES);
+    assert_eq!(raw(&mut b)&EOF,0);
+    assert_eq!(bytes(&mut b,B,32),vec![0;32]);
+    // A JPEG of the configured size starts at the next frame, not mid-frame.
+    b.board.set_camera_jpeg(Jpeg::parse(super::jpeg(4,4,9)).unwrap()).unwrap();
+    begin(&mut b); tick_bus(&mut b,FRAME_CYCLES-VSYNC_CYCLES);
+    assert_eq!(raw(&mut b)&EOF,EOF);
+    assert_eq!(bytes(&mut b,B,8),[0,0,0xff,0,0,0,0xd8,0]);
+}

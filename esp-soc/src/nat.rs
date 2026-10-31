@@ -402,7 +402,12 @@ impl Nat {
             return reply;
         }
         let c = &mut self.tcp[i];
-        if flags & RST != 0 { c.transport = Transport::Closed; return Vec::new(); }
+        if flags & RST != 0 {
+            // the guest refused a forwarded connection (nothing listening on the port yet)
+            if c.inbound && c.handshake_pending() { self.tcp_refused += 1; }
+            c.transport = Transport::Closed;
+            return Vec::new();
+        }
         if matches!(c.transport, Transport::TimeWait) {
             return if flags & FIN != 0 { vec![c.segment(ACK, &[], c.our_seq)] } else { Vec::new() };
         }

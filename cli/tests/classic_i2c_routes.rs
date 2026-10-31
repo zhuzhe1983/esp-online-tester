@@ -1,15 +1,16 @@
 use emu_core::Bus;
 
 #[test]
-#[ignore = "set CLASSIC_I2C_ROM to the classic mask ROM ELF and CLASSIC_I2C_FIRMWARE to the PlatformIO classic build directory"]
+#[ignore = "needs the classic mask ROM ELF (ESP32SIM_ROM_DIR, ESP-IDF or CLASSIC_I2C_ROM); set CLASSIC_I2C_FIRMWARE to the PlatformIO classic build directory"]
 fn external_arduino_classic_i2c_routes() {
     use std::{env, fs, path::PathBuf};
     let firmware = PathBuf::from(env::var_os("CLASSIC_I2C_FIRMWARE")
         .expect("set CLASSIC_I2C_FIRMWARE to the build directory for docs/evidence/classic-i2c-routes/firmware"));
     let mut m = esp32::machine([0; 6], 4 * 1024 * 1024);
     m.console.capture = true;
-    m.load_rom(&fs::read(env::var_os("CLASSIC_I2C_ROM")
-        .expect("set CLASSIC_I2C_ROM to the ESP32 ECO3 mask ROM ELF")).unwrap()).unwrap();
+    // CLASSIC_I2C_ROM (a file) is the name the evidence README uses; otherwise the shared lookup.
+    let rom = env::var_os("CLASSIC_I2C_ROM").map(PathBuf::from).unwrap_or_else(|| esp_soc::rom::require("esp32_rev300_rom.elf"));
+    m.load_rom(&fs::read(rom).unwrap()).unwrap();
     for (offset, name) in [(0x1000, "bootloader.bin"), (0x8000, "partitions.bin"), (0x10000, "firmware.bin")] {
         m.write_flash(offset, &fs::read(firmware.join(name)).unwrap()).unwrap();
     }

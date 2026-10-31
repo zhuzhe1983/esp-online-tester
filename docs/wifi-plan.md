@@ -77,8 +77,8 @@ Bugs found on the way to a TLS session, each one a place where the model was pla
   answered with a fatal alert rather than an error we could read.
 
 Not yet working:
-- Inbound connections (no port forwarding yet), multicast and mDNS, so `esp-web.local` and Home
-  Assistant discovery do not cross; use IP addresses.
+- UDP inbound, multicast and mDNS, so `esp-web.local` and Home Assistant discovery do not cross;
+  use IP addresses. TCP servers in the guest are reachable with `--hostfwd`.
 - Hardware AES-GCM (block mode 6) and the DS/HMAC peripherals; mbedTLS has not asked for them yet.
 - Roaming, power save, 802.11n rates, multiple stations, WPA3/SAE, PMF.
 

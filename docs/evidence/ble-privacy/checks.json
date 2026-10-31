@@ -1,0 +1,60 @@
+[
+  {
+    "check": "clippy-native",
+    "command": "cargo +1.99.1 clippy --workspace --all-targets -- -D warnings",
+    "exit_code": 0
+  },
+  {
+    "check": "clippy-wasm",
+    "command": "cargo +1.99.1 clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "exit_code": 0
+  },
+  {
+    "check": "workspace-ci",
+    "command": "cargo +1.99.1 test --release --workspace --no-fail-fast -- --include-ignored --skip external_",
+    "environment": "ESP32SIM_ROM_DIR=roms (tools/fetch-rom-elfs.sh, with the P4 ROM); tools/fetch-p4-firmware.sh; Rust 1.99.1 (58cf8f9c3 2026-10-13); Windows 11",
+    "exit_code": 0,
+    "tests": { "passed": 1362, "failed": 0, "ignored": 0 },
+    "note": "every golden passed byte-identical; none regenerated"
+  },
+  {
+    "check": "virtual",
+    "command": "ESP32SIM_VQ_NATIVE=1 cargo +1.99.1 test --release -p esp32s3 --test machine --test virtual_stops",
+    "exit_code": 0,
+    "tests": { "passed": 43, "failed": 0 }
+  },
+  {
+    "check": "ble-peer",
+    "command": "cargo +1.99.1 test --release -p esp-soc --lib ble::",
+    "exit_code": 0,
+    "tests": { "passed": 16, "failed": 0 },
+    "mutations": "13, each fails ll_privacy_is_reported_and_the_resolving_list_answers_as_on_an_s3: the feature bit, the command bits, the list size, the duplicate check, the capacity check, Remove's 0x02, Clear, the list emptied by HCI Reset, Set Address Resolution Enable's 0x12, the RPA timeout's 0, Set Privacy Mode's value check, its list lookup, the Read Resolvable Address status"
+  },
+  {
+    "check": "wasm-build-and-demos",
+    "command": "tools/wasm-build.sh && node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel",
+    "exit_code": 0
+  },
+  {
+    "check": "privacy",
+    "command": "node tools/check-evidence-privacy.mjs",
+    "exit_code": 0
+  },
+  {
+    "check": "silicon-probe",
+    "command": "the inputs.json silicon_probe run",
+    "result": "s3-answers.txt; the model's statuses match each line (the ble-peer test replays the sequence)"
+  },
+  {
+    "check": "firmware-gatt-client",
+    "command": "the inputs.json gatt_client run, on main 2718410a and on this change",
+    "main": "GATT client register, then Guru Meditation Error: Core 0 panic'ed (StoreProhibited), EXCVADDR 0x00000000, in btm_ble_enq_resolving_list_pending; 40 panics in 8 emulated seconds",
+    "change": "GATT client register, Scanning start successfully, Scan result, device 02:53:49:00:00:02, name len 8, esp32sim; one boot, no panic"
+  },
+  {
+    "check": "firmware-nimble",
+    "command": "the inputs.json nimble_s3 and nimble_c3 runs, on main 2718410a and on this change",
+    "uart0": "identical: each of the two scans that end within 8 s: found name=esp32sim addr=02:53:49:00:00:02 rssi=-35 uuid=0000180f-0000-1000-8000-00805f9b34fb, scan done n=1",
+    "ble_log": "the unsupported HCI opcode=0x202d line is gone; the scan reports come 10 ms of emulated time later"
+  }
+]

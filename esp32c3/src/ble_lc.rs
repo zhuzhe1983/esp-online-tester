@@ -830,10 +830,9 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "needs the ESP32-C3 mask ROM ELF fetched by CI; set ESP32SIM_ROM_DIR"]
+    #[ignore = "needs the ESP32-C3 mask ROM ELF (ESP32SIM_ROM_DIR or ESP-IDF)"]
     fn mapping_boundaries_match_rom_em_base_reg_lut() {
-        let dir = std::env::var_os("ESP32SIM_ROM_DIR").expect("set ESP32SIM_ROM_DIR to the fetched mask ROM directory");
-        let bytes = std::fs::read(std::path::Path::new(&dir).join("esp32c3_rev3_rom.elf")).unwrap();
+        let bytes = std::fs::read(esp_soc::rom::require("esp32c3_rev3_rom.elf")).unwrap();
         let elf = esp_soc::elf::parse(&bytes).unwrap();
         let addr = elf.by_name["em_base_reg_lut"];
         let section = elf.sections.iter().find(|s| addr >= s.addr && (addr - s.addr) as usize + 51 * 4 <= s.data.len()).unwrap();

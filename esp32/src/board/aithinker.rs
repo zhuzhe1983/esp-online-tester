@@ -2,7 +2,7 @@
 //! CameraWebServer/camera_pins.h (CAMERA_MODEL_AI_THINKER).
 //! This is a host frame source, not an I2S/DVP capture engine.
 use esp_periph::i2c::I2cDevice;
-use esp_soc::{board::BoardModel, camera::{Ov2640, Ov2640State, HostFrameSource}, picture::{Picture, PixelFormat}};
+use esp_soc::{board::BoardModel, camera::{Ov2640, Ov2640State, HostFrameSource}, picture::{Jpeg, JpegError, Picture, PixelFormat}};
 use std::sync::{Arc, Mutex};
 
 use esp_soc::board::BoardEdge;
@@ -21,6 +21,10 @@ pub const PIN_XCLK: u8 = 0;
 /// The module has no reset wire. Never interpret -1 as GPIO 255 or GPIO 0.
 pub const PIN_RESET: Option<u8> = None;
 
+/// esp32-camera v2.1.4 ov2640_regs.h: IMAGE_MODE_JPEG_EN (0x10), optionally with
+/// IMAGE_MODE_HREF_VSYNC (0x02); ov2640_settings_jpeg3 writes 0x12.
+fn jpeg_mode(image_mode: u8) -> bool { image_mode & !0x02 == 0x10 }
+
 pub struct AiThinkerCam {
     sensor: Arc<Mutex<Ov2640State>>,
     source: HostFrameSource,
@@ -31,18 +35,22 @@ pub struct AiThinkerCam {
     edges: Vec<BoardEdge>,
     frame_start: Option<u64>,
     unsupported_reported: bool,
+    jpeg_reported: bool,
 }
-impl Default for AiThinkerCam { fn default() -> Self { Self { sensor: Default::default(), source: Default::default(), powered_down: Arc::new(Mutex::new(true)), now: 0, next: None, vsync: false, edges: Vec::new(), frame_start: None, unsupported_reported: false } } }
+impl Default for AiThinkerCam { fn default() -> Self { Self { sensor: Default::default(), source: Default::default(), powered_down: Arc::new(Mutex::new(true)), now: 0, next: None, vsync: false, edges: Vec::new(), frame_start: None, unsupported_reported: false, jpeg_reported: false } } }
 
-struct Sccb { sensor: Ov2640, powered_down: Arc<Mutex<bool>> }
+struct Sccb { sensor: Arc<Mutex<Ov2640>>, powered_down: Arc<Mutex<bool>> }
 // Power is shared with the SCCB device so a powered-down sensor does not ACK.
 // The board's output callbacks maintain this independently of frame requests.
+// One sensor sits on GPIO26/27: either I2C controller routed there reaches the
+// same registers. SCCB_Init uses CONFIG_SCCB_HARDWARE_I2C_PORT (default I2C1);
+// the C8 fixture sets PORT0 in sdkconfig.defaults.
 impl I2cDevice for Sccb {
     fn pins(&self) -> Option<(u8, u8)> { Some((26, 27)) }
-    fn start(&mut self, read: bool) -> bool { !*self.powered_down.lock().unwrap() && self.sensor.start(read) }
-    fn write(&mut self, byte: u8) -> bool { self.sensor.write(byte) }
-    fn read(&mut self) -> u8 { self.sensor.read() }
-    fn stop(&mut self) { self.sensor.stop(); }
+    fn start(&mut self, read: bool) -> bool { !*self.powered_down.lock().unwrap() && self.sensor.lock().unwrap().start(read) }
+    fn write(&mut self, byte: u8) -> bool { self.sensor.lock().unwrap().write(byte) }
+    fn read(&mut self) -> u8 { self.sensor.lock().unwrap().read() }
+    fn stop(&mut self) { self.sensor.lock().unwrap().stop(); }
 }
 
 impl BoardModel for AiThinkerCam {
@@ -88,7 +96,8 @@ impl BoardModel for AiThinkerCam {
         *self.powered_down.lock().unwrap() = enabled & (1 << PIN_PWDN) == 0 || output & (1 << PIN_PWDN) != 0;
     }
     fn i2c_devices(&mut self) -> Vec<(u8, u8, Box<dyn I2cDevice>)> {
-        vec![(0, 0x30, Box::new(Sccb { sensor: Ov2640::new(self.sensor.clone()), powered_down: self.powered_down.clone() }))]
+        let sensor = Arc::new(Mutex::new(Ov2640::new(self.sensor.clone())));
+        (0..2).map(|port| (port, 0x30, Box::new(Sccb { sensor: sensor.clone(), powered_down: self.powered_down.clone() }) as Box<dyn I2cDevice>)).collect()
     }
     fn set_camera_picture(&mut self, p: Picture) -> Result<(), &'static str> { self.source.set_camera_picture(p) }
     fn camera_preview(&self, w: u32, h: u32) -> Option<Vec<u8>> { self.source.camera_preview(w, h) }
@@ -101,9 +110,18 @@ impl BoardModel for AiThinkerCam {
         let format = match config.image_mode {
             0 => PixelFormat::Yuyv,
             8 => PixelFormat::Rgb565,
+            mode if jpeg_mode(mode) => {
+                // No encoder: only host JPEG of exactly the configured size is a frame.
+                let frame = self.source.jpeg_frame(config.width, config.height);
+                if frame.is_none() && !self.jpeg_reported {
+                    eprintln!("[camera] JPEG output {}x{} has no host JPEG of that size", config.width, config.height);
+                    self.jpeg_reported = true;
+                }
+                return frame;
+            }
             _ => {
                 if !self.unsupported_reported {
-                    eprintln!("[camera] unsupported sensor output: IMAGE_MODE {:#x}; classic ESP32-CAM supports raw RGB565/YUV422 in DRAM, not JPEG/PSRAM CameraWebServer", config.image_mode);
+                    eprintln!("[camera] unsupported sensor output: IMAGE_MODE {:#x}; classic ESP32-CAM supports raw RGB565/YUV422 and host-encoded JPEG", config.image_mode);
                     self.unsupported_reported = true;
                 }
                 return None;
@@ -111,4 +129,9 @@ impl BoardModel for AiThinkerCam {
         };
         self.source.frame(config.width, config.height, format, None)
     }
+    fn set_camera_jpeg(&mut self, jpeg: Jpeg) -> Result<(), JpegError> {
+        let config = *self.sensor.lock().unwrap();
+        self.source.set_camera_jpeg(jpeg, (config.width, config.height))
+    }
+    fn camera_frame_is_jpeg(&self) -> bool { jpeg_mode(self.sensor.lock().unwrap().image_mode) }
 }

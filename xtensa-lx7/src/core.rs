@@ -28,15 +28,14 @@ impl emu_core::Core for Cpu {
     fn set_approximate_cpi(&mut self, cycles: u32) { self.approximate_cpi = cycles.max(1); }
     fn step_charges_cpi(&self) -> bool { true }
     fn take_timing_extra(&mut self) -> u32 { std::mem::take(&mut self.timing_extra) }
+    /// EX257: a sleeping core with no CCOMPARE line both enabled and not yet raised (the usual
+    /// idle core: the RTOS tick comes from a device timer) answers here, inline in the scheduler's
+    /// idle round; any other core searches its armed lines in `timer_wake`, out of line.
+    #[inline]
     fn cycles_until_wake(&self) -> Option<u64> {
-        if !self.waiting { return None; }
-        let mask_level = if self.excm() { self.intlevel().max(EXCM_LEVEL) } else { self.intlevel() };
-        self.ccompare.iter().zip(TIMER_INTERRUPT).filter_map(|(&compare, irq)| {
-            let bit = 1 << irq;
-            if self.intenable & INT_ABOVE[mask_level as usize] & bit == 0 || self.interrupt & bit != 0 { return None; }
-            let delta = compare.wrapping_sub(self.ccount);
-            Some(if delta == 0 { 1u64 << 32 } else { delta as u64 })
-        }).min()
+        let armed = self.intenable & !self.interrupt & TIMER_LINES;
+        if !self.waiting || armed == 0 { return None; }
+        self.timer_wake(armed)
     }
     fn step<B: Bus>(&mut self, bus: &mut B) -> StepOutcome { crate::exec::step_outcome(self, bus) }
     fn run<B: Bus>(&mut self, bus: &mut B, budget: u32) -> (u32, Option<Trap>) { crate::block::run_block(self, bus, budget) }
@@ -96,7 +95,23 @@ impl emu_core::Core for Cpu {
     fn return_address<B: emu_core::Bus>(&self, bus: &mut B) -> u32 { (self.get_ar(self.frame_base(bus)) & 0x3fff_ffff) | (self.pc & 0xc000_0000) }
 }
 
+/// INTENABLE/INTERRUPT bits of the three CCOMPARE lines.
+const TIMER_LINES: u32 = (1 << TIMER_INTERRUPT[0]) | (1 << TIMER_INTERRUPT[1]) | (1 << TIMER_INTERRUPT[2]);
+
 impl Cpu {
+    /// Cycles until the nearest CCOMPARE match among `armed` (enabled, not yet raised timer lines)
+    /// that PS.INTLEVEL/EXCM does not mask.
+    #[inline(never)]
+    fn timer_wake(&self, armed: u32) -> Option<u64> {
+        let mask_level = if self.excm() { self.intlevel().max(EXCM_LEVEL) } else { self.intlevel() };
+        let armed = armed & INT_ABOVE[mask_level as usize];
+        self.ccompare.iter().zip(TIMER_INTERRUPT).filter_map(|(&compare, irq)| {
+            if armed & (1 << irq) == 0 { return None; }
+            let delta = compare.wrapping_sub(self.ccount);
+            Some(if delta == 0 { 1u64 << 32 } else { delta as u64 })
+        }).min()
+    }
+
     /// Register offset of the frame a stub or probe at pc sees: 4·CALLINC when the function
     /// starts with `entry` (a windowed call is pending), 0 otherwise (call0 ABI).
     fn frame_base<B: emu_core::Bus>(&self, bus: &mut B) -> u8 {
@@ -366,5 +381,35 @@ mod tests {
         assert_eq!(cpu.insn_count, 0);
         cpu.interrupt = 0; cpu.write_sr(sr::CCOMPARE0, cpu.ccount);
         assert_eq!(cpu.cycles_until_wake(), Some(1u64 << 32));
+    }
+
+    /// EX257: the inline test in front of the wake search must pass every CCOMPARE line, and
+    /// only for a sleeping core with that line enabled and not yet raised.
+    #[test]
+    fn wake_search_sees_each_ccompare_line_of_a_sleeping_core() {
+        for (i, &line) in TIMER_INTERRUPT.iter().enumerate() {
+            let mut cpu = crate::Cpu::new(0);
+            cpu.ps = 0; cpu.write_sr(sr::CCOUNT, 100);
+            cpu.write_sr(sr::CCOMPARE0 + i as u32, 100 + 7 + i as u32);
+            cpu.intenable = 1 << line;
+            assert_eq!(cpu.cycles_until_wake(), None, "line {line}: a running core does not wait");
+            cpu.waiting = true;
+            assert_eq!(cpu.cycles_until_wake(), Some(7 + i as u64), "line {line}");
+            // PS.EXCM masks levels up to 3 (lines 6 and 15), INTLEVEL 5 masks all three
+            cpu.ps = 1 << 4;
+            assert_eq!(cpu.cycles_until_wake(), (i == 2).then_some(9), "line {line} under EXCM");
+            cpu.ps = 5;
+            assert_eq!(cpu.cycles_until_wake(), None, "line {line} under INTLEVEL 5");
+            cpu.ps = 0;
+            // a raised line no longer counts; another armed line still does
+            let other = TIMER_INTERRUPT[(i + 1) % 3];
+            cpu.intenable |= 1 << other; cpu.interrupt = 1 << line;
+            assert_eq!(cpu.cycles_until_wake(), Some(cpu.ccompare[(i + 1) % 3].wrapping_sub(100) as u64), "line {line} raised");
+            cpu.intenable = 1 << line;
+            cpu.interrupt = 1 << line;
+            assert_eq!(cpu.cycles_until_wake(), None, "line {line}: already raised");
+            cpu.interrupt = 0; cpu.intenable = TIMER_INTERRUPT.iter().fold(!0, |m, &l| m & !(1 << l));
+            assert_eq!(cpu.cycles_until_wake(), None, "line {line}: only other interrupts enabled");
+        }
     }
 }

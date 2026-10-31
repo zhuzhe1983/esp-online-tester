@@ -6,7 +6,6 @@
 //! registers (item index / item content), not a memory-mapped table as on the C3.
 
 use crate::periph::{Peripherals, CPU_SUB_BASE, CPU_SUB_END, PERIPH_BASE, PERIPH_END};
-use esp_periph::read_desc;
 use riscv_rv32::bus::{Bus, Fault};
 
 /// GPIO matrix output signal of RMT TX channel 0 (soc/gpio_sig_map.h); channel n is this + n.
@@ -395,9 +394,11 @@ impl SocBus {
     /// this chip: the OUT chain is the input, the cipher is the shared model's, the result goes
     /// into the IN chain, each descriptor written back with its length, SUC_EOF on the last and
     /// the owner handed to the CPU. All of it happens in the round that set the trigger.
+    /// Both chains are read through the shared walker (`gather_out`, `GdmaInCh::receive`).
     /// A chain that leaves SRAM or is otherwise malformed ends the input where it is: the driver
     /// sees the AES done with what was delivered (as before), and GDMA reports OUT_DSCR_ERR.
-    /// A short IN chain receives the result that fits.
+    /// A malformed or short IN chain receives the result that fits and GDMA reports IN_DSCR_ERR
+    /// (with IN_DSCR_EMPTY when it ran out). Each channel stops after the transaction.
     fn aes_dma_step(&mut self) {
         self.periph.aes.dma_pending = false;
         let (out_ch, in_ch) = { let g = &self.periph.gdma.gdma; (g.out_channel_for(6), g.in_channel_for(6)) };
@@ -406,22 +407,12 @@ impl SocBus {
             self.gather_dma_out(out_ch, usize::MAX, &mut input);
 
             let output = self.periph.aes.transform_blocks(&input);
-            let (mut desc, mut pos, mut last) = (self.periph.gdma.gdma.inp[in_ch].desc, 0usize, 0);
-            for _ in 0..4096 {
-                if desc == 0 || pos >= output.len() { break; }
-                let d = read_desc(&|a| self.sram32(a), desc);
-                let n = (d.size as usize).min(output.len() - pos);
-                if n == 0 || !self.sram_store(d.buf, &output[pos..pos + n]) { break; }
-                pos += n;
-                let eof = pos == output.len();
-                let dw0 = (self.sram32(desc) & !(0xfff << 12) & !(3 << 30)) | (n as u32) << 12 | if eof { 1 << 30 } else { 0 };
-                self.sram_store(desc, &dw0.to_le_bytes());
-                last = desc;
-                desc = d.next;
+            let mut channel = self.periph.gdma.gdma.inp[in_ch];
+            let mut irq_changed = false;
+            if channel.receive(self, &output, Some(output.len() as u32), false, Self::is_periph, &mut irq_changed) {
+                channel.running = false; channel.desc = 0;
             }
-            let c = &mut self.periph.gdma.gdma.inp[in_ch];
-            c.running = false; c.desc = 0; c.eof_desc = last;
-            c.int_raw |= (1 << 0) | (1 << 1);                            // IN_DONE, IN_SUC_EOF
+            self.periph.gdma.gdma.inp[in_ch] = channel;
         }
         self.periph.aes.state = 2;                                       // DONE
         self.periph.aes.int_raw |= 1;
@@ -507,7 +498,7 @@ impl SocBus {
     #[inline(never)]
     fn parlio_dma_write(&mut self, a: u32) {
         if a >> 12 == 0x60080 {
-            let Some(off) = crate::periph::GdmaC6::map(a & 0xfff) else { return };
+            let Some(off) = crate::periph::GdmaC6::map_c6(a & 0xfff) else { return };
             let channel = (off / esp_periph::GDMA_CH_STRIDE) as usize;
             if !self.periph.gdma.gdma.out.get(channel).is_some_and(|c| c.running && c.peri_sel == 9) { return; }
         }
@@ -651,9 +642,13 @@ impl Bus for SocBus {
             _ => { self.last_fault = Some((addr, true)); Err(Fault::Prohibited) }
         }
     }
+    /// Every instruction comes through here: inlined into the step, and one word read when the
+    /// whole window is in the buffer. The bytes past a buffer's end still read as zero.
+    #[inline(always)]
     fn fetch(&mut self, pc: u32) -> Result<[u8; 4], Fault> {
         match self.resolve(pc) {
             Some((b, o, _)) if o < b.len() => {
+                if let Some(w) = b.get(o..o + 4) { return Ok([w[0], w[1], w[2], w[3]]); }
                 let mut r = [0u8; 4];
                 for i in 0..4 { if o + i < b.len() { r[i] = b[o + i]; } }
                 Ok(r)
@@ -926,5 +921,40 @@ mod spi_stream_tests {
         let mut m=crate::machine([0;6],16<<20);let old=m.bus.periph.efuse.read(0x50);assert_eq!((old>>24)&7,1);
         m.bus.board=super::super::board::make_board("nesso-n1").unwrap();m.bus.attach_board_devices();let id=m.bus.periph.efuse.read(0x50);assert_eq!(id,old&!(7<<24));assert_eq!(m.bus.periph.efuse.read(0x54)&0xe7,0);
         esp_soc::SocBus::reboot(&mut m.bus,[0;6]);assert_eq!(m.bus.periph.efuse.read(0x50),id);assert!(m.bus.board.input_levels().contains(&(18,false)));
+    }
+}
+
+#[cfg(test)]
+mod fetch_tests {
+    use super::*;
+    use emu_core::Bus;
+
+    /// The four-byte window, whole or cut short by the end of a backing buffer.
+    #[test]
+    fn fetch_reads_the_window_and_zero_fills_past_the_buffer() {
+        let mut b = SocBus::new(0x1_0003, [0; 6]);
+        b.sram[0x100..0x106].copy_from_slice(&[1, 2, 3, 4, 5, 6]);
+        assert_eq!(b.fetch(SRAM_LOW + 0x100), Ok([1, 2, 3, 4]));
+        assert_eq!(b.fetch(SRAM_LOW + 0x102), Ok([3, 4, 5, 6]));
+        let n = b.sram.len();
+        b.sram[n - 3..].copy_from_slice(&[7, 8, 9]);
+        assert_eq!(b.fetch(SRAM_HIGH - 4), Ok([0, 7, 8, 9]));
+        assert_eq!(b.fetch(SRAM_HIGH - 3), Ok([7, 8, 9, 0]));
+        assert_eq!(b.fetch(SRAM_HIGH - 2), Ok([8, 9, 0, 0]));
+        b.rom[..4].copy_from_slice(&[0x13, 0, 0, 0]);
+        assert_eq!(b.fetch(ROM_LOW), Ok([0x13, 0, 0, 0]));
+        let r = b.rom.len();
+        b.rom[r - 1] = 0x82;
+        assert_eq!(b.fetch(ROM_HIGH - 1), Ok([0x82, 0, 0, 0]));
+        let l = b.lp_sram.len();
+        b.lp_sram[l - 2..].copy_from_slice(&[0x42, 0x73]);
+        assert_eq!(b.fetch(LP_SRAM_HIGH - 2), Ok([0x42, 0x73, 0, 0]));
+        // The flash image ends three bytes into physical page 1.
+        b.flash[0x1_0000..].copy_from_slice(&[0xa1, 0xb2, 0xc3]);
+        b.mmu[0] = MMU_VALID | 1;
+        assert_eq!(b.fetch(FLASH_LOW), Ok([0xa1, 0xb2, 0xc3, 0]));
+        assert_eq!(b.fetch(FLASH_LOW + 2), Ok([0xc3, 0, 0, 0]));
+        assert_eq!(b.fetch(FLASH_LOW + 3), Err(Fault::Unmapped));
+        assert_eq!(b.last_fault, Some((FLASH_LOW + 3, false)));
     }
 }

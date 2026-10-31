@@ -3,11 +3,12 @@ mod common;
 use std::{path::PathBuf, process::Command};
 
 #[test]
-#[ignore = "set ESP32SIM_BLE_FIRMWARE_DIR to the Arduino builds and ESP32SIM_ROM_DIR to the ROM directory"]
+#[ignore = "set ESP32SIM_BLE_FIRMWARE_DIR to the Arduino builds; needs the S3/C3/C6 ROM ELFs (ESP32SIM_ROM_DIR or ESP-IDF)"]
 fn external_ble_arduino_examples() {
     let firmware = PathBuf::from(std::env::var_os("ESP32SIM_BLE_FIRMWARE_DIR")
         .expect("set ESP32SIM_BLE_FIRMWARE_DIR to the Arduino builds: CHIP/EXAMPLE/.pio/build/BOARD/firmware.{elf,factory.bin}"));
-    let roms = PathBuf::from(std::env::var_os("ESP32SIM_ROM_DIR").expect("set ESP32SIM_ROM_DIR to the S3/C3/C6 ROM ELF directory"));
+    // The evidence runner takes one directory: the one the S3 ROM is found in must hold all three.
+    let roms = esp_soc::rom::require("esp32s3_rev0_rom.elf").parent().unwrap().to_path_buf();
     for (chip, board, rom) in [("s3", "esp32-s3-devkitc-1", "esp32s3_rev0_rom.elf"),
                               ("c3", "esp32-c3-devkitm-1", "esp32c3_rev3_rom.elf"),
                               ("c6", "esp32-c6-devkitc-1", "esp32c6_rev0_rom.elf")] {
@@ -67,11 +68,10 @@ fn passive_observer_requires_full_ble() {
 }
 
 #[test]
-#[ignore = "set ESP32SIM_BLE_SERVER_DIR to the unchanged Arduino 3.3.11 C3 Server build and ESP32SIM_ROM_DIR to the ROM directory"]
+#[ignore = "set ESP32SIM_BLE_SERVER_DIR to the unchanged Arduino 3.3.11 C3 Server build; needs the C3 rev3 ROM (ESP32SIM_ROM_DIR or ESP-IDF)"]
 fn external_full_ble_server_responds_to_active_scan() {
     let build = PathBuf::from(std::env::var_os("ESP32SIM_BLE_SERVER_DIR").expect("set ESP32SIM_BLE_SERVER_DIR to the Arduino C3 Server build"));
-    let rom = PathBuf::from(std::env::var_os("ESP32SIM_ROM_DIR").expect("set ESP32SIM_ROM_DIR to the C3 rev3 ROM directory")).join("esp32c3_rev3_rom.elf");
-    assert!(rom.is_file(), "missing C3 rev3 ROM input");
+    let rom = esp_soc::rom::require("esp32c3_rev3_rom.elf");
     let mut command = Command::new(env!("CARGO_BIN_EXE_esp32sim-c3"));
     command.args(["--boot", "rom", "--rom"]).arg(rom).args(["--ble", "full", "--ble-scan", "--ble-observe",
         "--flash-mb", "4", "--max-seconds", "2", "--no-dump", "--trace-fn", "r_lld_rxdesc_free"]);
@@ -110,11 +110,10 @@ fn external_full_ble_server_responds_to_active_scan() {
 }
 
 #[test]
-#[ignore = "set ESP32SIM_BLE_SERVER_DIR to the unchanged Arduino 3.3.11 C3 Server build and ESP32SIM_ROM_DIR to the ROM directory"]
+#[ignore = "set ESP32SIM_BLE_SERVER_DIR to the unchanged Arduino 3.3.11 C3 Server build; needs the C3 rev3 ROM (ESP32SIM_ROM_DIR or ESP-IDF)"]
 fn external_full_ble_server_connects_and_times_out() {
     let build = PathBuf::from(std::env::var_os("ESP32SIM_BLE_SERVER_DIR").expect("set ESP32SIM_BLE_SERVER_DIR to the Arduino C3 Server build"));
-    let rom = PathBuf::from(std::env::var_os("ESP32SIM_ROM_DIR").expect("set ESP32SIM_ROM_DIR to the C3 rev3 ROM directory")).join("esp32c3_rev3_rom.elf");
-    assert!(rom.is_file(), "missing C3 rev3 ROM input");
+    let rom = esp_soc::rom::require("esp32c3_rev3_rom.elf");
     let mut command = Command::new(env!("CARGO_BIN_EXE_esp32sim-c3"));
     command.args(["--boot", "rom", "--rom"]).arg(rom).args(["--ble", "full", "--ble-observe", "--flash-mb", "4", "--max-seconds", "6", "--no-dump",
         "--trace-fn", "r_llc_disconnect_end", "--trace-fn", "r_lld_con_tx_isr"]);
@@ -174,11 +173,10 @@ fn external_full_ble_server_connects_and_times_out() {
 }
 
 #[test]
-#[ignore = "set ESP32SIM_BLE_SERVER_DIR to the unchanged Arduino 3.3.11 C3 Server build and ESP32SIM_ROM_DIR to the ROM directory"]
+#[ignore = "set ESP32SIM_BLE_SERVER_DIR to the unchanged Arduino 3.3.11 C3 Server build; needs the C3 rev3 ROM (ESP32SIM_ROM_DIR or ESP-IDF)"]
 fn external_full_ble_server_reads_gatt_from_script() {
     let build = PathBuf::from(std::env::var_os("ESP32SIM_BLE_SERVER_DIR").expect("set ESP32SIM_BLE_SERVER_DIR to the Arduino C3 Server build"));
-    let rom = PathBuf::from(std::env::var_os("ESP32SIM_ROM_DIR").expect("set ESP32SIM_ROM_DIR to the C3 rev3 ROM directory")).join("esp32c3_rev3_rom.elf");
-    assert!(rom.is_file(), "missing C3 rev3 ROM input");
+    let rom = esp_soc::rom::require("esp32c3_rev3_rom.elf");
     let mut command = Command::new(env!("CARGO_BIN_EXE_esp32sim-c3"));
     command.args(["--boot", "rom", "--rom"]).arg(rom).args(["--ble", "full",
  "--ble-observe", "--flash-mb", "4", "--max-seconds", "3", "--no-dump",
@@ -207,9 +205,8 @@ fn external_full_ble_server_reads_gatt_from_script() {
 
 fn reconnect_server(build: &std::path::Path, arduino: bool, read_first: bool, normal: bool) {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
-    let rom = std::env::var_os("ESP32SIM_ROM_DIR").map(PathBuf::from)
-        .unwrap_or_else(|| root.join("web/wasm/fw")).join("esp32c3_rev3_rom.elf");
-    assert!(rom.is_file(), "fetch the C3 ROM or set ESP32SIM_ROM_DIR");
+    let rom = esp_soc::rom::find("esp32c3_rev3_rom.elf").unwrap_or_else(|| root.join("web/wasm/fw/esp32c3_rev3_rom.elf"));
+    assert!(rom.is_file(), "fetch the C3 ROM, set ESP32SIM_ROM_DIR or install ESP-IDF");
     let mut command = Command::new(env!("CARGO_BIN_EXE_esp32sim-c3"));
     command.args(["--boot", "rom", "--rom"]).arg(rom).args(["--ble", "full", "--ble-scan",
         "--ble-observe", "--flash-mb", "4", "--max-seconds", "8", "--no-dump", "--trace-fn", "r_llc_disconnect_end"]);
@@ -273,7 +270,7 @@ fn full_ble_server_reconnects_in_ci() {
 }
 
 #[test]
-#[ignore = "set ESP32SIM_BLE_SERVER_DIR to the unchanged Arduino 3.3.11 C3 Server build and ESP32SIM_ROM_DIR to the ROM directory"]
+#[ignore = "set ESP32SIM_BLE_SERVER_DIR to the unchanged Arduino 3.3.11 C3 Server build; needs the C3 rev3 ROM (ESP32SIM_ROM_DIR or ESP-IDF)"]
 fn external_full_ble_server_reconnects_without_uuid_corruption() {
     let build = PathBuf::from(std::env::var_os("ESP32SIM_BLE_SERVER_DIR").expect("set ESP32SIM_BLE_SERVER_DIR to the unchanged Arduino C3 Server build"));
     for read_first in [false, true] { reconnect_server(&build, true, read_first, false); }

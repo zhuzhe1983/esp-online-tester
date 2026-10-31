@@ -31,7 +31,7 @@ default too, with 16 MB of flash ([esp32p4.md](esp32p4.md)).
 | `--sd-timing` | (P4) commands and data take their time on the SD bus at the slot's card clock and width: CMD_DONE, DATA_OVER and the auto-stop come when the bits are through (default: at once); with `--coproc` the SDIO link's too. See [esp32p4.md](esp32p4.md), "The host" |
 | `--usb-host F` | (P4) a USB host on the high-speed USB-OTG port, running the commands in F (below) from power-up; the run then goes on to `--max-seconds`. See [esp32p4.md](esp32p4.md), "USB" |
 | `--coproc c6:KEY=VALUE,...` | (P4) an ESP32-C6 co-processor on SDIO slot 1, run in lock-step with the P4 (below); `--wifi` and `--net` then go to the C6's radio |
-| `--board atech14\|waveshare-cam\|waveshare-lcd4b\|waveshare-amoled18-v2\|stopwatch\|none` | board model (default atech14); on the C6: `waveshare-c6-lcd147`, `xiao-esp32c6` or `none`; on the P4: `waveshare-p4-lcd35` (rev ≥ 3) or `none`; on the classic ESP32: `ttgo-tdisplay` (alias `tdisplay`), `esp32dev-loopback` or `none`/`esp32dev` |
+| `--board atech14\|waveshare-cam\|waveshare-lcd4b\|waveshare-amoled18-v2\|stopwatch\|none` | board model (default atech14); on the C6: `waveshare-c6-lcd147`, `xiao-esp32c6` or `none`; on the P4: `waveshare-p4-lcd35` (rev ≥ 3) or `none`; on the classic ESP32: `ttgo-tdisplay` (alias `tdisplay`), `ulanzi-tc001` (alias `tc001`), `esp32dev-loopback` or `none`/`esp32dev` |
 | `--strap HEX`, `--reset-cause HEX`, `--efuse-regs F`, `--regs-init F` | reproduce a real chip's boot state (used by the differential tests) |
 | `--no-reboot` | stop at the first chip reset instead of rebooting from ROM |
 | `--flash-at OFFSET=FILE` (repeatable) | write a file into flash at a hex offset — a data partition's contents (the panel's `demo` partition takes `energydata.json`) |
@@ -41,9 +41,10 @@ default too, with 16 MB of flash ([esp32p4.md](esp32p4.md)).
 | `--ble-observe` | passive full-mode PDU log: half-microsecond timestamp, channel, type, AdvA, decoded AD and raw PDU |
 | `--ble` | opt-in virtual BLE controller on S3/C3/C6; requires the matching application `--elf` |
 | `--ble-nearby SPEC` (repeatable) | a Bluetooth LE device around the station, heard but not connectable: the guest's scans report it (ADV_SCAN_IND, plus SCAN_RSP for an active scan) next to the virtual peer — `name=Thermo,rssi=-60` (`name` 1 to 26 bytes, a Complete Local Name after the Flags; `adv` / `rsp` the advertising data / scan response as hex, at most 31 bytes each, `adv` instead of `name`; `addr` aa:bb:cc:dd:ee:ff, default a random static address derived from the data, a random one not with the reserved top bits 10; `type` random (default) or public; `rssi` -127 to 20 dBm or 127 for not available, default -60; a `name` cannot hold `,`, use `adv` for one that does); reported as scannable and not connectable (ADV_SCAN_IND); up to 32, each on an address of its own, needs `--ble` |
-| `--wifi SPEC` | attach a virtual access point the WiFi blob hears, plus a virtual network (DHCP/ARP/ICMP/DNS/SNTP; station 10.0.2.15, gateway 10.0.2.2) — for example `ssid=demo,chan=6,psk=demo-password,bssid=02:00:00:00:00:01`. `password` and `pass` alias `psk`; unknown keys and invalid values are rejected. Open and WPA2-PSK networks both join end to end, on S3, C3, C6 and the classic ESP32 (docs/wifi-plan.md, docs/esp32c3.md, docs/wifi-c6-plan.md) |
+| `--wifi SPEC` | attach a virtual access point the WiFi blob hears, plus a virtual network (DHCP/ARP/ICMP/DNS/SNTP; station 10.0.2.15, gateway 10.0.2.2) — for example `ssid=demo,chan=6,psk=demo-password,bssid=02:00:00:00:00:01`. `password` and `pass` alias `psk`; unknown keys and invalid values are rejected. Open and WPA2-PSK networks both join end to end, on S3, C3, C6 and the classic ESP32 (docs/wifi-plan.md, docs/esp32c3.md, docs/wifi-c6-plan.md). `--hostfwd` publishes a guest TCP port on the host |
 | `--wifi-nearby SPEC` (repeatable) | a network around the station, heard but not joinable: a scan lists it with its channel, signal and security, joining it fails as out of reach — `ssid=Home,chan=1,rssi=-60,secure=1` (`chan` 1 through 14, default 1; `rssi` in dBm, default -60; `secure` 0 or 1, default 1; `bssid` optional, derived from the SSID otherwise); up to 32, each on a BSSID of its own, needs `--wifi`; one with the access point's SSID or BSSID is left out with a log line |
 | `--net nat\|none[,epoch=S]` | what the virtual network does with traffic it is not itself answering: `nat` (default; `user` is an alias) forwards TCP and UDP to the host's own network through ordinary sockets, `none` refuses it. `epoch=S` sets the network's clock at power-on (seconds since 1970, at most 4294967295): its SNTP answers are that plus emulated time, so a run that asks for the time is reproducible; without it the host's clock at the first answer fixes it. `epoch=` in the `--wifi` spec does the same |
+| `--hostfwd tcp:HOST:HOSTPORT-GUEST:GUESTPORT` | (repeatable) listen on the host and deliver accepted TCP connections as SYNs to the station. Empty HOST binds 127.0.0.1; empty GUEST is 10.0.2.15. Example: `tcp:127.0.0.1:8080-:80`. Requires `--wifi` and `--net nat`. UDP is not forwarded |
 | `--trace-fn PREFIX` (repeatable) | log every call to functions whose name starts with PREFIX, with args and caller; append `$` for an exact name |
 | `--regstat FILE` | write per-register access statistics (count, pc, symbol) at exit — for reverse-engineering |
 
@@ -279,7 +280,10 @@ peripheral named `esp32sim` advertising the Battery Service.
 
 This models one unencrypted LE link, legacy advertisements and ATT MTU 23.
 It does not model RF, pairing, physical connection timing or the controller's
-registers. Unsupported HCI commands return Unknown Command. The callback task
+registers. Unsupported HCI commands return Unknown Command. The controller reports LL
+Privacy and keeps a 10-entry resolving list with an ESP32-S3 controller's statuses, so a host
+stack can set up controller privacy; it resolves no addresses and makes no resolvable private
+address. The callback task
 and its storage stay allocated until reboot. C6 initializes the guest NPL support
 and a heap-backed mbuf pool; it uses no controller BSS reservation. Cost-model execution
 does not support function substitutions; reported cycle time is not radio timing.
@@ -316,9 +320,12 @@ separates the historical probe-b field checks from unvalidated RF timing.
 ## Live camera input
 
 For classic ESP32 use `--chip esp32 --board ai-thinker-cam --cam-image image.bmp`
-(BMP or PPM). This is a still source for OV2640 raw RGB565/YUV422 capture into
-internal DRAM, with fixed approximate 10 FPS. JPEG+PSRAM CameraWebServer and
-adjustable classic frame cadence are unsupported. The public-driver fixture and
+(BMP or PPM). This is a still source for OV2640 raw RGB565/YUV422 capture,
+with fixed approximate 10 FPS. A baseline JPEG file (`--cam-image photo.jpg`) is
+delivered verbatim to `PIXFORMAT_JPEG` firmware when its size equals the configured
+frame size; a malformed or non-baseline one is a usage error, and one of another
+size yields no frame (one `[camera] JPEG output` notice). Adjustable classic
+frame cadence is unsupported. The public-driver fixture and
 complete command are in [esp32.md](esp32.md#the-camera---board-ai-thinker-cam).
 The live stream, crop and adjustable FPS description below applies to the S3
 `waveshare-cam`, not the classic model.
