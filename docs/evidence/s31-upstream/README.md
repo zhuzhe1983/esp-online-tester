@@ -8,9 +8,10 @@ Status for [EX260](../../experiments.md#ex260) and docs in
 | Item | Status |
 | --- | --- |
 | `esp_soc::Machine<S31>` / `Soc` / `SocBus` | Compiles; SRAM load + interpreter steps; UART0 console drain; CLIC/matrix IRQ presentation |
-| Flash-MMU `--boot app` | Not ready (clear `Err` from `boot_app`) |
-| IDF v6.1 `hello_world` (`--preview set-target esp32s31`) | **Prints, default mode.** Real mask ROM (`esp32s31_rev0_rom.elf` 20251218, esp-rom-elfs 20260528) → SPI_FAST_FLASH_BOOT (strap 0x10) → 2nd-stage bootloader → app → `Hello world!`, full 10 s countdown, `esp_restart`, and a second boot from the kept flash. Golden: `esp32s31/tests/hello_golden.rs` (ignored by default) |
-| Metalio INK4 Plus product image | **Not** an acceptance target; historical bring-up exploration only (superseded) |
+| IDF v6.1 `hello_world` (`--preview set-target esp32s31`) | **Prints.** Real mask ROM (`esp32s31_rev0_rom.elf` 20251218, esp-rom-elfs 20260528) → SPI_FAST_FLASH_BOOT (strap 0x10) → 2nd-stage bootloader → app → `Hello world!`, full 10 s countdown, `esp_restart`, second boot. Golden: `esp32s31/tests/hello_golden.rs` (ignored by default; needs `S31_ROM_ELF`) |
+| Software reset cause after `esp_restart` | **Latched.** `poll_chip_reset` sets `RST_SW_CPU` (0x0c); SYSTIMER `next_deadline` lets idle skip FreeRTOS delays so the golden reaches restart. Second ROM banner: `rst:0xc (SW_CPU_RESET)` |
+| Flash size vs image header | **Aligned.** Hello path: `BoardInputs::hello_w25q16` + 2 MiB NOR (JEDEC `0xef4015`) matches the image header (no size warning) |
+| Flash-MMU `--boot app` | **Ready.** `SocBus::boot_app` programs 32 KiB Flash MMU + AXI, maps flash / copies SRAM; example `s31_hello app FW_DIR` |
 
 ## Oracle / license
 
@@ -53,9 +54,8 @@ calibration advance with CPU time; PMU `SLP_WAKEUP_CNTL2` (0x158) storage; HP_SY
 `CPU_INT_FROM_CPU_0..3` latches as interrupt sources 65..68; matrix `PASS_LEVEL` 0 is plain
 routing (only 1, S-level, is not delivered); SYSTIMER `PERIOD_MODE` set after a one-shot
 `COMP_LOAD` starts the period (IDF `port_systick.c` order); `esp_restart` reboot keeps NOR flash
-and reloads the ROM. Board inputs (W25Q128 JEDEC 0xef4018 + SFDP, 480 MHz BBPLL, GPIO36 high,
-zero analog seeds) are explicit `BoardInputs::devkit_w25q128()` host choices, not reset values.
+and reloads the ROM. Hello golden uses `BoardInputs::hello_w25q16()` (JEDEC 0xef4015, 2 MiB NOR) to match the
+image header; `devkit_w25q128()` remains available for 16 MiB bring-up profiles.
 
-Known gaps: after `esp_restart` the ROM prints `rst:0x1 (POWERON)` (a real chip reports a software
-reset cause); flash reports 16 MB vs the 2 MB image header (warning only); Flash-MMU `--boot app`
-still open.
+Remaining gaps (later PR): deeper esp-periph reuse for shared blocks (SYSTIMER/UART/…);
+Metalio product image is not an acceptance target.

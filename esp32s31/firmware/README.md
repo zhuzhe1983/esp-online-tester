@@ -4,4 +4,3 @@
 from source with `tools/s31-hello/sdkconfig.defaults` and checks their pinned SHA-256s. The
 `*.bin` files are not committed. See `docs/evidence/s31-upstream/README.md`.
 
-Do not drop Metalio INK4 product images here as upstream goldens.
