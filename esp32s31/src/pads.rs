@@ -2,6 +2,8 @@
 //! ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643: soc/esp32s31
 //! register/soc/{gpio,io_mux,pmu,lp_system}_reg.h, include/soc/soc_caps.h, esp_hal_gpio gpio_ll.h;
 //! esp_driver_gpio/include/driver/gpio.h documents held configuration and live input.
+//! Pads stay outside DeviceSet: S31 GPIO/IO_MUX offsets and LP/HP hold regs do not match
+//! shared esp-periph `Gpio` (S3 map). A thin remap wrap is not enough without hold-reg coverage.
 use emu_core::Fault;
 
 pub const GPIO_BASE: u32 = 0x2058_3000;

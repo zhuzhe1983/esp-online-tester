@@ -180,7 +180,7 @@ impl SocBus {
     pub fn new(flash_size: usize, mac: [u8; 6]) -> Self {
         let mut inner = S31Bus::new();
         // USB console peer so Machine can drain EP1 IN packets like a connected host.
-        inner.usb_console.attach_host(true);
+        inner.periph.usb.attach_host(true);
         SocBus {
             inner,
             flash: vec![0xff; flash_size],
@@ -264,7 +264,7 @@ impl SocBus {
         } else if self.inner.rtc_wdt.reset_request.is_some() {
             self.reset_cause = esp_periph::RST_RTCWDT_SYS;
             self.sw_reset = true;
-        } else if self.inner.mwdt.iter().any(|w| w.reset.is_some()) {
+        } else if self.inner.periph.timg.iter().any(|t| t.wdt.reset.is_some()) {
             self.reset_cause = 0x07; // RESET_REASON_CORE_MWDT0
             self.sw_reset = true;
         }
@@ -290,10 +290,10 @@ impl esp_soc::SocBus for SocBus {
         // can skip FreeRTOS vTaskDelay (hello_world's 10 s countdown) instead of
         // burning one cycle per idle round when next_deadline is None.
         let stalled = self.inner.cores.stalled();
-        let ticks = self.inner.systimer.ticks_until_irq(stalled)?;
+        let ticks = self.inner.periph.systimer.ticks_until_irq(stalled)?;
         if ticks == 0 { return Some(1); }
         let hz = self.inner.clocks.rates().cpu_hz.max(1);
-        let source = if self.inner.systimer.source_rc_fast() {
+        let source = if self.inner.periph.systimer.source_rc_fast() {
             self.inner.clocks.rc_fast_hz().max(1)
         } else {
             40_000_000
@@ -379,15 +379,15 @@ impl esp_soc::SocBus for SocBus {
 
     fn reboot(&mut self, mac: [u8; 6]) -> u32 {
         let cause = self.reset_cause;
-        let efuse = self.inner.efuse.clone();
+        let efuse = self.inner.periph.efuse.clone();
         let strap = self.inner.pads.strap;
         let usb_attached = true;
         let log_unknown = self.misc.log_unknown;
         let log_all = self.misc.log_all;
         let mut inner = S31Bus::new();
-        inner.efuse = efuse;
+        inner.periph.efuse = efuse;
         inner.pads.strap = strap;
-        inner.usb_console.attach_host(usb_attached);
+        inner.periph.usb.attach_host(usb_attached);
         // Publish the cause the ROM reads (HPCOREn_RESET_CAUSE[6:1]).
         inner.interrupts.reset_cause = [cause << 1; 2];
         // Non-volatile across a chip reset: NOR contents (with guest writes), mask ROM, PCB.
@@ -428,24 +428,24 @@ impl esp_soc::SocBus for SocBus {
 
     fn console_take(&mut self) -> [Vec<u8>; 4] {
         let mut usb = Vec::new();
-        while let Some(p) = self.inner.usb_console.host_receive() {
+        while let Some(p) = self.inner.periph.usb.host_receive() {
             usb.extend(p);
         }
         [
             usb,
-            std::mem::take(&mut self.inner.uart0.tx_out),
+            std::mem::take(&mut self.inner.periph.uart0.tx_out),
             Vec::new(),
             Vec::new(),
         ]
     }
 
     fn serial_input(&mut self, data: &[u8]) {
-        self.inner.usb_console.attach_host(true);
+        self.inner.periph.usb.attach_host(true);
         for chunk in data.chunks(64) {
             if chunk.is_empty() {
                 continue;
             }
-            if self.inner.usb_console.host_send(chunk).is_ok() {
+            if self.inner.periph.usb.host_send(chunk).is_ok() {
                 self.irq_dirty = true;
             }
         }
@@ -455,9 +455,9 @@ impl esp_soc::SocBus for SocBus {
         if n != 0 {
             return;
         }
-        let before = self.inner.uart0.irq();
+        let before = self.inner.periph.uart0.irq();
         let _ = self.inner.uart_input(data);
-        self.irq_dirty |= before != self.inner.uart0.irq();
+        self.irq_dirty |= before != self.inner.periph.uart0.irq();
     }
 
     fn gpio_set_input(&mut self, pin: u8, level: bool) {
@@ -628,14 +628,14 @@ impl Bus for SocBus {
     fn tick(&mut self, cycles: u32) -> u32 {
         self.cycles += cycles as u64;
         let hz = self.inner.clocks.rates().cpu_hz.max(1);
-        let before = self.inner.systimer.irqs();
-        self.inner.systimer.advance_cpu(
+        let before = self.inner.periph.systimer.irqs();
+        self.inner.periph.systimer.advance_cpu(
             cycles as u64,
             hz,
             self.inner.clocks.rc_fast_hz(),
             self.inner.cores.stalled(),
         );
-        if self.inner.systimer.irqs() != before {
+        if self.inner.periph.systimer.irqs() != before {
             self.irq_dirty = true;
         }
         self.inner.clocks.mpll.advance(
@@ -647,7 +647,7 @@ impl Bus for SocBus {
         // TIMG0 RTC_CALI counter both count from the modeled source rates.
         self.inner.rtc_timer.advance_cpu_cycles(cycles as u64, hz, self.inner.clocks.rtc_slow_hz());
         let source = self.inner.clocks.calibration_hz(self.inner.rtc_calibration.source());
-        let group = self.inner.mwdt[0].clock_read();
+        let group = self.inner.periph.timg[0].wdt.clock_read();
         self.inner.rtc_calibration.advance_cpu(cycles as u64, hz, source, group);
         self.poll_chip_reset();
         1

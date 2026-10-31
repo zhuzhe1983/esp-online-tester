@@ -8,7 +8,6 @@ pub mod cache;
 pub mod pads;
 pub mod efuse;
 pub mod clocks;
-pub mod usb_console;
 pub mod bus_monitor;
 pub mod mspi;
 pub mod sha;
@@ -29,7 +28,7 @@ pub mod rtc_timer;
 pub mod rtc_calibration;
 pub mod modem_lpcon;
 pub mod startup_clocks;
-pub mod systimer;
+pub mod periph;
 mod rom;
 pub use bus::{S31Bus, AccessFault};
 pub use soc::{machine, Machine, S31, SocBus, CPU_HZ, RESET_VECTOR, ROM_STACK};
@@ -69,13 +68,13 @@ impl Bringup {
     /// Separate opt-in: calibration counting is not silently enabled by RTC_TIMER.
     pub fn set_rtc_calibration_from_cpu(&mut self, enabled: bool) { self.rtc_calibration_from_cpu = enabled; }
     pub fn set_systimer_from_cpu(&mut self, enabled: bool) { self.systimer_from_cpu = enabled; }
-    pub fn advance_systimer_ticks(&mut self, ticks: u64) { self.bus.systimer.advance_ticks(ticks, self.bus.cores.stalled()); }
+    pub fn advance_systimer_ticks(&mut self, ticks: u64) { self.bus.periph.systimer.advance_ticks(ticks, self.bus.cores.stalled()); }
     pub fn advance_calibration_xtal_ticks(&mut self, ticks: u64) {
         let hz = self.bus.clocks.calibration_hz(self.bus.rtc_calibration.source());
-        self.bus.rtc_calibration.advance_xtal(ticks, hz, self.bus.mwdt[0].clock_read());
+        self.bus.rtc_calibration.advance_xtal(ticks, hz, self.bus.periph.timg[0].wdt.clock_read());
     }
     pub fn advance_mwdt_xtal_ticks(&mut self, group: usize, ticks: u64) -> Result<(), emu_core::Fault> {
-        self.bus.mwdt.get_mut(group).ok_or(emu_core::Fault::Unmapped)?.advance_xtal(ticks)
+        self.bus.periph.timg.get_mut(group).ok_or(emu_core::Fault::Unmapped)?.wdt.advance_xtal(ticks)
     }
 
     /// Load an explicitly SRAM/ROM-linked ELF. This does not accept a flash .bin or bypass its
@@ -109,7 +108,7 @@ impl Bringup {
     pub fn run(&mut self, budget: u64) -> Run {
         for steps in 0..budget {
             if let Some(reset) = self.bus.reset.request { return Run { steps, stop: Stop::CpuReset(reset) }; }
-            for (group, wdt) in self.bus.mwdt.iter().enumerate() { if let Some(action) = wdt.reset { return Run { steps, stop: Stop::MwdtReset { group, action } }; } }
+            for (group, wdt) in self.bus.periph.timg.iter().map(|t| &t.wdt).enumerate() { if let Some(action) = wdt.reset { return Run { steps, stop: Stop::MwdtReset { group, action } }; } }
             if let Some(reset) = self.bus.power.reset_request { return Run { steps, stop: Stop::PowerReset(reset) }; }
             if let Some(reset) = self.bus.rtc_wdt.reset_request { return Run { steps, stop: Stop::Reset(reset) }; }
             for (core, reset) in self.bus.cores.take_resets().into_iter().enumerate() {
@@ -149,9 +148,9 @@ impl Bringup {
             if self.rtc_timer_from_cpu && tick { self.bus.rtc_timer.advance_cpu_cycles(cpu.cycle_count.wrapping_sub(cycles), hz, self.bus.clocks.rtc_slow_hz()); }
             if self.rtc_calibration_from_cpu && tick {
                 let source = self.bus.clocks.calibration_hz(self.bus.rtc_calibration.source());
-                self.bus.rtc_calibration.advance_cpu(cpu.cycle_count.wrapping_sub(cycles), hz, source, self.bus.mwdt[0].clock_read());
+                self.bus.rtc_calibration.advance_cpu(cpu.cycle_count.wrapping_sub(cycles), hz, source, self.bus.periph.timg[0].wdt.clock_read());
             }
-            if self.systimer_from_cpu && tick { self.bus.systimer.advance_cpu(cpu.cycle_count.wrapping_sub(cycles), hz, self.bus.clocks.rc_fast_hz(), self.bus.cores.stalled()); }
+            if self.systimer_from_cpu && tick { self.bus.periph.systimer.advance_cpu(cpu.cycle_count.wrapping_sub(cycles), hz, self.bus.clocks.rc_fast_hz(), self.bus.cores.stalled()); }
             if let Err(trap) = result {
                 if let Trap::Interrupt(line) = trap { self.bus.interrupt_taken(line); continue; }
                 if matches!(trap, Trap::Exception(_) | Trap::Ebreak(_)) { self.bus.bus_monitor.exception_core(core, cpu.mcause, cpu.mtval, cpu.mepc); }
@@ -205,7 +204,7 @@ mod tests {
         let bytes: Vec<_> = code.iter().flat_map(|w| w.to_le_bytes()).collect();
         m.bus.load(bus::SRAM_BASE, &bytes, bytes.len()).unwrap(); m.cpu.pc = bus::SRAM_BASE;
         let run = m.run(20);
-        assert_eq!(run.steps, 4); assert_eq!(m.bus.uart0.tx_out, b"A");
+        assert_eq!(run.steps, 4); assert_eq!(m.bus.periph.uart0.tx_out, b"A");
         assert_eq!(run.stop, Stop::Trap(Trap::Exception(5)));
         assert_eq!(m.cpu.mepc, bus::SRAM_BASE + 12); assert_eq!(m.cpu.mtval, 0);
         let f = m.bus.first_fault.as_ref().unwrap();

@@ -1,14 +1,13 @@
 //! S31 memory/MMU, UART0, reset causes and CLIC/matrix windows; other MMIO faults explicitly.
 use emu_core::{Bus, Fault};
-use esp_periph::uart::{Uart, UartLayout};
 use crate::interrupts::{Interrupts, MATRIX_BASE, CLIC_BASE, RESET_CAUSE0, RESET_CAUSE1};
 use crate::trng::{Trng, TRNG_BASE, RNG_CTRL};
 use crate::rtc_wdt::{RtcWdt, BASE as RTC_WDT_BASE};
 use crate::cache::Cache;
 use crate::pads::Pads;
+use crate::periph::{Peripherals, SYSTIMER_CLOCK, USB_CLOCK, TIMG0_CLOCK, TIMG1_CLOCK};
 use crate::clocks::Clocks;
 use crate::startup_clocks::StartupClocks;
-use crate::usb_console::UsbConsole;
 use crate::bus_monitor::BusMonitor;
 use crate::mspi::Mspi;
 use crate::mspi_pads::MspiPads;
@@ -20,9 +19,7 @@ use crate::pms::Permissions;
 use crate::apm::Apm;
 use crate::reset::ResetControl;
 use crate::core_control::CoreControl;
-use crate::mwdt::Mwdt;
 use crate::rtc_timer::RtcTimer;
-use crate::efuse::{Efuse, BASE as EFUSE_BASE};
 
 // ESP-IDF v6.1 (fff9895c82d744c7237be8847347bdd1b07c6643),
 // components/soc/esp32s31/include/soc/soc.h and register/soc/reg_base.h.
@@ -38,27 +35,18 @@ const UART_SIZE: usize = 0xa0;
 // rtc.h names STORE4 bit0 ROM_LOG_CTRL. No reset/sleep domain sequencing is
 // implemented yet; these retain software writes for the lifetime of this bus.
 const LP_STORE0: u32 = 0x2070_002c;
-fn new_uart() -> Uart {
-    let mut uart = Uart::new(UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff });
-    // S31 v6.1 uart_reg.h. Remaining serial framing/flow-control features are inherited
-    // from the existing functional FIFO, not a physical line timing model.
-    for (off, value) in [(0x14, 694), (0x20, 0x1c), (0x24, 0x6060), (0x88, 3 << 24), (0x8c, 36774432), (0x9c, 1280)] { uart.write(off, value); }
-    uart
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AccessFault { pub hart: usize, pub pc: u32, pub address: u32, pub bytes: usize, pub write: bool, pub fetch: bool, pub reason: Fault }
 pub struct S31Bus {
-    sram: Vec<u8>, lp: Vec<u8>, rom: Vec<u8>, lp_store: [u32; 16], pub uart0: Uart,
+    sram: Vec<u8>, lp: Vec<u8>, rom: Vec<u8>, lp_store: [u32; 16],
+    pub periph: Peripherals,
     pub interrupts: Interrupts,
     pub trng: Trng,
     pub rtc_wdt: RtcWdt,
     pub cache: Cache,
     pub pads: Pads,
-    pub efuse: Efuse,
     pub clocks: Clocks,
     pub startup_clocks: StartupClocks,
-    pub usb_console: UsbConsole,
     pub bus_monitor: BusMonitor,
     pub mspi: Mspi,
     pub mspi_pads: MspiPads,
@@ -72,10 +60,8 @@ pub struct S31Bus {
     pub reset: ResetControl,
     pub cores: CoreControl,
     hart: usize, reservations: [Option<u32>; 2],
-    pub mwdt: [Mwdt; 2],
     pub rtc_calibration: crate::rtc_calibration::Calibration,
     pub rtc_timer: RtcTimer,
-    pub systimer: crate::systimer::Systimer,
     pc: u32, pub first_fault: Option<AccessFault>,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
@@ -99,7 +85,7 @@ impl S31Bus {
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16],
-            uart0: new_uart(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), efuse: Efuse::default(), clocks: Clocks::default(), startup_clocks: StartupClocks::default(), usb_console: UsbConsole::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), key_manager: crate::key_manager::KeyManager::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), cores: CoreControl::default(), hart: 0, reservations: [None; 2], mwdt: std::array::from_fn(|_| Mwdt::default()), rtc_timer: RtcTimer::default(), systimer: crate::systimer::Systimer::default(), rtc_calibration: crate::rtc_calibration::Calibration::default(), pc: 0, first_fault: None }
+            periph: Peripherals::new(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), clocks: Clocks::default(), startup_clocks: StartupClocks::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), key_manager: crate::key_manager::KeyManager::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), cores: CoreControl::default(), hart: 0, reservations: [None; 2], rtc_timer: RtcTimer::default(), rtc_calibration: crate::rtc_calibration::Calibration::default(), pc: 0, first_fault: None }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -126,23 +112,23 @@ impl S31Bus {
         if self.first_fault.is_none() { self.first_fault = Some(AccessFault { hart: self.hart, pc: self.pc, address, bytes, write, fetch, reason }); }
         Err(reason)
     }
-    fn uart_irq(&self) -> bool { self.clocks.uart_bus_on() && self.clocks.uart_core_on() && self.uart0.irq() }
+    fn uart_irq(&self) -> bool { self.clocks.uart_bus_on() && self.clocks.uart_core_on() && self.periph.uart0.irq() }
     fn psram_address_error(&mut self, address: u32, bytes: usize, write: bool, reason: Fault) {
         if reason == Fault::Unmapped && self.cache.invalid_psram_mapping(address, bytes) { self.psram_controller.invalid_axi_mapping(write); }
     }
     pub fn uart_input(&mut self, bytes: &[u8]) -> Result<(), Fault> {
-        if !self.clocks.uart_bus_on() || !self.clocks.uart_core_on() || self.uart0.read(0x88) & (1 << 25 | 1 << 27) != 1 << 25 { return Err(Fault::Prohibited); }
-        self.uart0.host_input(bytes); Ok(())
+        if !self.clocks.uart_bus_on() || !self.clocks.uart_core_on() || self.periph.uart0.read(0x88) & (1 << 25 | 1 << 27) != 1 << 25 { return Err(Fault::Prohibited); }
+        self.periph.uart0.host_input(bytes); Ok(())
     }
     pub fn uart_baud(&mut self) -> Option<u64> {
-        let div = self.uart0.read(0x14); let divisor = u64::from(div & 0xfff) * 16 + u64::from((div >> 20) & 15);
+        let div = self.periph.uart0.read(0x14); let divisor = u64::from(div & 0xfff) * 16 + u64::from((div >> 20) & 15);
         (divisor != 0 && self.clocks.uart_sclk_hz() != 0).then(|| self.clocks.uart_sclk_hz() * 16 / divisor)
     }
     fn uart_core_reset(&mut self) {
-        let conf = self.uart0.read(0x20); self.uart0.write(0x20, conf | 1 << 22); self.uart0.write(0x20, conf);
-        self.uart0.int_raw = (1 << 14) | 2;
+        let conf = self.periph.uart0.read(0x20); self.periph.uart0.write(0x20, conf | 1 << 22); self.periph.uart0.write(0x20, conf);
+        self.periph.uart0.int_raw = (1 << 14) | 2;
     }
-    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.efuse.irq(), usb: self.usb_console.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.mwdt[0].irq(), self.mwdt[1].irq()], systimer: self.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs() } }
+    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs() } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
@@ -165,21 +151,31 @@ impl S31Bus {
             if address == crate::rtc_timer::RESET { return Ok(self.rtc_timer.reset_read()); }
             return match self.rtc_timer.read(address & 0xfff) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
-        if crate::systimer::Systimer::is_mmio(address) {
+        if address & !3 == SYSTIMER_CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
-            return match self.systimer.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+            return Ok(self.periph.systimer.clock_read());
+        }
+        if address >> 12 == 0x20399 {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            if !self.periph.systimer.clock_on() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
+            return Ok(self.periph.read32(address));
         }
         if crate::rtc_calibration::Calibration::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
-            return match self.rtc_calibration.read(address, self.mwdt[0].clock_read()) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+            return match self.rtc_calibration.read(address, self.periph.timg[0].wdt.clock_read()) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
-        if let Some(id) = crate::mwdt::CLOCKS.iter().position(|&c| address & !3 == c) {
+        if let Some(id) = [TIMG0_CLOCK, TIMG1_CLOCK].iter().position(|&c| address & !3 == c) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
-            return Ok(self.mwdt[id].clock_read());
+            return Ok(self.periph.timg[id].wdt.clock_read());
         }
-        if let Some(id) = crate::mwdt::BASES.iter().position(|&c| address & !0xfff == c) {
+        if matches!(address >> 12, 0x20580 | 0x20581) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
-            return match self.mwdt[id].read(address & 0xfff) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+            let id = if address >> 12 == 0x20580 { 0 } else { 1 };
+            // Preserve MWDT gate Faults for the WDT half; timer regs go through DeviceSet.
+            if (address & 0xfff) >= 0x48 {
+                return match self.periph.timg[id].wdt.read(address & 0xfff) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+            }
+            return Ok(self.periph.read32(address));
         }
         if CoreControl::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -237,17 +233,18 @@ impl S31Bus {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(self.lp_store[off / 4]);
         }
-        if address & !3 == crate::usb_console::CLOCK {
+        if address & !3 == USB_CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
-            return Ok(self.usb_console.clock_read());
+            return Ok(self.periph.usb.clock_read());
         }
-        if let Some(off) = offset(address, crate::usb_console::BASE, bytes, 0x100) {
-            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
-            return match self.usb_console.read(off as u32) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        if address >> 12 == 0x20391 {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            if !self.periph.usb.clock_on() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
+            return Ok(self.periph.read32(address));
         }
-        if let Some(off) = offset(address, EFUSE_BASE, bytes, 0x200) {
-            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
-            return match self.efuse.read(off as u32) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        if address >> 12 == 0x20715 {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.periph.efuse.read(address & 0xfff) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
         if matches!(address & !3, crate::clocks::UART0_CTRL | crate::clocks::UART0_MEM) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -338,7 +335,7 @@ impl S31Bus {
         if let Some(o) = offset(address, UART0_BASE, bytes, UART_SIZE) {
             if bytes == 4 && o.is_multiple_of(4) {
                 if !self.clocks.uart_bus_on() || o == 0 && !self.clocks.uart_core_on() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
-                return Ok(self.uart0.read(o as u32));
+                return Ok(self.periph.uart0.read(o as u32));
             }
             return self.fault(address, bytes, false, false, Fault::Misaligned);
         }
@@ -352,21 +349,30 @@ impl S31Bus {
             if address == crate::rtc_timer::RESET { self.rtc_timer.reset_write(value); return Ok(()); }
             return match self.rtc_timer.write(address & 0xfff, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
-        if crate::systimer::Systimer::is_mmio(address) {
+        if address & !3 == SYSTIMER_CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
-            return match self.systimer.write(address, value) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, true, false, e) };
+            return match self.periph.systimer.clock_write(value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if address >> 12 == 0x20399 {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if !self.periph.systimer.clock_on() { return self.fault(address, bytes, true, false, Fault::Prohibited); }
+            self.periph.write32(address, value); return Ok(());
         }
         if crate::rtc_calibration::Calibration::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
-            return match self.rtc_calibration.write(address, value, self.mwdt[0].clock_read()) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+            return match self.rtc_calibration.write(address, value, self.periph.timg[0].wdt.clock_read()) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
-        if let Some(id) = crate::mwdt::CLOCKS.iter().position(|&c| address & !3 == c) {
+        if let Some(id) = [TIMG0_CLOCK, TIMG1_CLOCK].iter().position(|&c| address & !3 == c) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
-            return match self.mwdt[id].clock_write(value) { Ok(()) => { if id == 0 && value & 2 != 0 { self.rtc_calibration.reset(); } Ok(()) }, Err(e) => self.fault(address, bytes, true, false, e) };
+            return match self.periph.timg[id].wdt.clock_write(value) { Ok(()) => { if id == 0 && value & 2 != 0 { self.rtc_calibration.reset(); } Ok(()) }, Err(e) => self.fault(address, bytes, true, false, e) };
         }
-        if let Some(id) = crate::mwdt::BASES.iter().position(|&c| address & !0xfff == c) {
+        if matches!(address >> 12, 0x20580 | 0x20581) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
-            return match self.mwdt[id].write(address & 0xfff, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+            let id = if address >> 12 == 0x20580 { 0 } else { 1 };
+            if (address & 0xfff) >= 0x48 {
+                return match self.periph.timg[id].wdt.write(address & 0xfff, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+            }
+            self.periph.write32(address, value); return Ok(());
         }
         if CoreControl::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
@@ -422,18 +428,19 @@ impl S31Bus {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             self.lp_store[off / 4] = value; return Ok(());
         }
-        if address & !3 == crate::usb_console::CLOCK {
+        if address & !3 == USB_CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
-            self.usb_console.clock_write(value); return Ok(());
+            self.periph.usb.clock_write(value); return Ok(());
         }
-        if let Some(off) = offset(address, crate::usb_console::BASE, bytes, 0x100) {
-            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
-            return match self.usb_console.write(off as u32, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        if address >> 12 == 0x20391 {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if !self.periph.usb.clock_on() { return self.fault(address, bytes, true, false, Fault::Prohibited); }
+            self.periph.write32(address, value); return Ok(());
         }
-        if let Some(off) = offset(address, EFUSE_BASE, bytes, 0x200) {
-            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
-            return match self.efuse.write(off as u32, value) {
-                Ok(()) => { self.rtc_wdt.delay_sel = self.efuse.wdt_delay_selector(); Ok(()) }
+        if address >> 12 == 0x20715 {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.periph.efuse.write(address & 0xfff, value) {
+                Ok(()) => { self.rtc_wdt.delay_sel = self.periph.efuse.wdt_delay_selector(); Ok(()) }
                 Err(e) => self.fault(address, bytes, true, false, e),
             };
         }
@@ -444,7 +451,7 @@ impl S31Bus {
                 if value & 8 != 0 {
                     // uart_ll_reset_register pulses APB_RST to reset the module. Captured
                     // bytes already transmitted belong to host evidence, not UART memory.
-                    let output = std::mem::take(&mut self.uart0.tx_out); self.uart0 = new_uart(); self.uart0.tx_out = output;
+                    let output = std::mem::take(&mut self.periph.uart0.tx_out); self.periph.uart0 = Peripherals::new().uart0; self.periph.uart0.tx_out = output;
                 } else if value & 4 != 0 { self.uart_core_reset(); }
             }
             return Ok(());
@@ -533,9 +540,9 @@ impl S31Bus {
         }
         if let Some(o) = offset(address, UART0_BASE, bytes, UART_SIZE) {
             if bytes == 4 && o.is_multiple_of(4) {
-                if !self.clocks.uart_bus_on() || o == 0 && (!self.clocks.uart_core_on() || self.uart0.read(0x88) & (1 << 24 | 1 << 26) != 1 << 24) { return self.fault(address, bytes, true, false, Fault::Prohibited); }
+                if !self.clocks.uart_bus_on() || o == 0 && (!self.clocks.uart_core_on() || self.periph.uart0.read(0x88) & (1 << 24 | 1 << 26) != 1 << 24) { return self.fault(address, bytes, true, false, Fault::Prohibited); }
                 if o == 0x88 && value & (1 << 27) != 0 { self.uart_core_reset(); }
-                self.uart0.write(o as u32, value); return Ok(());
+                self.periph.uart0.write(o as u32, value); return Ok(());
             }
             return self.fault(address, bytes, true, false, Fault::Misaligned);
         }
@@ -624,7 +631,7 @@ mod tests {
         use crate::pms::{LP, HP0, HP1};
         let mut b = S31Bus::new(); b.write32(UART0_BASE, 65).unwrap();
         b.write32(HP1 + 0xff0, 1).unwrap(); b.write32(HP1 + 0x28, 1).unwrap();
-        assert_eq!(b.write32(UART0_BASE, 66), Err(Fault::Prohibited)); assert_eq!(b.uart0.tx_out, b"A");
+        assert_eq!(b.write32(UART0_BASE, 66), Err(Fault::Prohibited)); assert_eq!(b.periph.uart0.tx_out, b"A");
         b.write32(LP + 0x7f0, 1).unwrap(); b.write32(LP_STORE0, 0x1234).unwrap(); b.write32(LP, 1).unwrap();
         assert_eq!(b.write32(LP_STORE0, 0), Err(Fault::Prohibited)); assert_eq!(b.read32(LP_STORE0), Ok(0x1234));
         b.write32(LP, 0x10).unwrap(); assert_eq!(b.read32(LP_STORE0), Err(Fault::Prohibited));
@@ -716,11 +723,11 @@ mod tests {
         let mut b = S31Bus::new(); b.write32(UART0_BASE + 0x24, 1).unwrap(); b.write32(UART0_BASE + 0xc, 1).unwrap();
         b.uart_input(b"A").unwrap(); assert!(b.uart_irq());
         b.write32(UART0_CTRL, 0x80).unwrap(); assert!(!b.uart_irq());
-        assert_eq!(b.uart_input(b"B"), Err(Fault::Prohibited)); assert_eq!(b.write32(UART0_BASE, 88), Err(Fault::Prohibited)); assert!(b.uart0.tx_out.is_empty());
+        assert_eq!(b.uart_input(b"B"), Err(Fault::Prohibited)); assert_eq!(b.write32(UART0_BASE, 88), Err(Fault::Prohibited)); assert!(b.periph.uart0.tx_out.is_empty());
         b.write32(UART0_CTRL, 0x83).unwrap(); assert!(b.uart_irq()); assert_eq!(b.read32(UART0_BASE), Ok(65));
-        b.write32(UART0_CTRL, 0x87).unwrap(); assert!(!b.uart_irq()); b.write32(UART0_CTRL, 0x83).unwrap(); assert_eq!(b.uart0.rx_pending(), 0);
+        b.write32(UART0_CTRL, 0x87).unwrap(); assert!(!b.uart_irq()); b.write32(UART0_CTRL, 0x83).unwrap(); assert_eq!(b.periph.uart0.rx_pending(), 0);
         b.write32(UART0_BASE, 67).unwrap(); b.write32(UART0_CTRL, 0x8b).unwrap(); b.write32(UART0_CTRL, 0x83).unwrap();
-        assert_eq!(b.uart0.tx_out, b"C"); assert_eq!(b.read32(UART0_BASE + 0xc), Ok(0)); assert_eq!(b.uart_baud(), Some(57636));
+        assert_eq!(b.periph.uart0.tx_out, b"C"); assert_eq!(b.read32(UART0_BASE + 0xc), Ok(0)); assert_eq!(b.uart_baud(), Some(57636));
         b.write32(UART0_CTRL, 0x183).unwrap(); assert_eq!(b.uart_baud(), Some(28818));
         b.write32(UART0_BASE + 0x88, 1 << 25).unwrap(); assert_eq!(b.write32(UART0_BASE, 68), Err(Fault::Prohibited));
         assert_eq!(b.write32(UART0_CTRL, 0xa3), Err(Fault::Prohibited)); assert_eq!(b.write32(UART0_MEM, 12), Err(Fault::Prohibited));
@@ -764,7 +771,7 @@ mod tests {
     }
     #[test]
     fn uart_uses_s31_fifo_and_reset_fields() {
-        let mut b = S31Bus::new(); b.uart0.host_input(b"RX");
+        let mut b = S31Bus::new(); b.periph.uart0.host_input(b"RX");
         assert_eq!(b.read32(UART0_BASE + 0x1c).unwrap() & 0xff, 2);
         assert_eq!(b.read32(UART0_BASE), Ok(b'R' as u32));
         b.write32(UART0_BASE + 0x20, 1 << 17).unwrap();
@@ -791,7 +798,7 @@ mod tests {
     #[test]
     fn matrix_source_status_and_reset_cause_use_documented_addresses() {
         let mut b = S31Bus::new();
-        b.write32(UART0_BASE + 0x24, 1).unwrap(); b.write32(UART0_BASE + 0xc, 1).unwrap(); b.uart0.host_input(b"A");
+        b.write32(UART0_BASE + 0x24, 1).unwrap(); b.write32(UART0_BASE + 0xc, 1).unwrap(); b.periph.uart0.host_input(b"A");
         assert_eq!(b.read32(MATRIX_BASE + 0x2a8), Ok(1 << 9));
         b.write32(MATRIX_BASE + 0x24, 0x211).unwrap();
         assert_eq!(b.read32(MATRIX_BASE + 0x24), Ok(0x211)); assert_eq!(b.read32(MATRIX_BASE + 0x824), Ok(0));
