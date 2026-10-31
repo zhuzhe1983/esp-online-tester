@@ -44,7 +44,7 @@ impl Interrupts {
     }
     /// CLIC ID field of the interrupt-matrix route (PASS_LEVEL bits ignored).
     pub(crate) fn map_id(&self, core: usize, source: usize) -> u32 {
-        (self.map[core & 1][source] & 0x3f) as u32
+        self.map[core & 1][source] & 0x3f
     }
     pub fn matrix_read(&self, core: usize, off: u32, irq: Irqs) -> Option<u32> {
         match off {
