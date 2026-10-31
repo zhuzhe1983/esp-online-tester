@@ -57,4 +57,22 @@ routing (only 1, S-level, is not delivered); SYSTIMER `PERIOD_MODE` set after a 
 and reloads the ROM. Hello golden uses `BoardInputs::hello_w25q16()` (JEDEC 0xef4015, 2 MiB NOR) to match the
 image header; `devkit_w25q128()` remains available for 16 MiB bring-up profiles.
 
-Remaining gaps (later PR): further DeviceSet reuse where maps allow; Metalio product image is not an acceptance target.
+
+## End-to-end CLI
+
+Proven locally (Machine path only; Bringup removed):
+
+```sh
+esp32sim-s31 --boot rom \
+  --rom $S31_ROM_ELF \
+  --bootloader esp32s31/firmware/s31-hello-bootloader.bin \
+  --ptable esp32s31/firmware/s31-hello-ptable.bin \
+  --app esp32s31/firmware/s31-hello_world.bin \
+  --max-insns 8000000000
+```
+
+Expect UART0: ROM banner → `SPI_FAST_FLASH_BOOT` → `Hello world!` → countdown →
+`esp_restart` → second banner `rst:0xc (SW_CPU_RESET)` (then Hello again).
+`--max-insns 2000000000` prints Hello but usually stops mid-countdown; use `8000000000` for the full reboot cycle on the CLI path. Same images/ROM as `hello_golden` (`S31_ROM_ELF=… cargo test -p esp32s31 --release --test hello_golden -- --ignored`).
+
+Remaining local-only peripherals (maps checked, not a shrug): GPIO/IO_MUX/hold (`pads.rs`) and intmtx+CLIC (`interrupts.rs` — not `intmtx::Lines`). Metalio product image is not an acceptance target.

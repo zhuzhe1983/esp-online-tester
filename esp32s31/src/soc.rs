@@ -1,8 +1,9 @@
 //! ESP32-S31 as an `esp_soc::Soc`: dual-hart Machine path (same review surface as C3/C6/P4).
 //!
 //! Mask-ROM and Flash-MMU `--boot app` work on this path. Shared DeviceSet IP covers UART /
-//! Systimer / USJ / TimerGroup / Efuse; GPIO pads and the interrupt matrix stay local (see
-//! `periph` / `pads` / `interrupts` module notes).
+//! Systimer / USJ / TimerGroup(+local MWDT stages) / Efuse. GPIO pads and the interrupt matrix
+//! stay local after map check (not shared `Gpio` / not `intmtx::Lines`); see `pads` /
+//! `interrupts` / `periph` module notes for the irreducible remainder.
 
 use crate::bus::{self, S31Bus};
 use crate::interrupts;

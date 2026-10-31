@@ -2,8 +2,14 @@
 //! ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643: soc/esp32s31
 //! register/soc/{gpio,io_mux,pmu,lp_system}_reg.h, include/soc/soc_caps.h, esp_hal_gpio gpio_ll.h;
 //! esp_driver_gpio/include/driver/gpio.h documents held configuration and live input.
-//! Pads stay outside DeviceSet: S31 GPIO/IO_MUX offsets and LP/HP hold regs do not match
-//! shared esp-periph `Gpio` (S3 map). A thin remap wrap is not enough without hold-reg coverage.
+//!
+//! Shared `esp_periph::Gpio` reuse is blocked (not a P4-style thin remap). Irreducible map
+//! mismatch vs the shared S3 layout (`esp-periph/src/gpio.rs`): ENABLE bank at 0x34 (shared
+//! 0x20), IN at 0x64 (shared 0x3c), PIN0 at 0xf4 (shared 0x74), OUT_SEL at 0xaf4 (shared
+//! FUNC_OUT 0x554), 62 pins vs `GPIO_MAX_PINS` 57, plus IO_MUX + PMU/HP hold that couple into
+//! the electrical/hold model. Maximum feasible path kept here: local `Pads` with that model;
+//! OUT W1TS/W1TC words that happen to align are not worth a hybrid wrap that would still leave
+//! enable/input/pin/hold outside shared `Gpio`.
 use emu_core::Fault;
 
 pub const GPIO_BASE: u32 = 0x2058_3000;

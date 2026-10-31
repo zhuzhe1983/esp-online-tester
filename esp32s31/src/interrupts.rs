@@ -1,7 +1,10 @@
 //! S31 UART0/RTC-WDT/eFuse interrupt routing and the documented power-on reset-cause registers.
-//! Interrupt matrix stays local (not esp-periph `intmtx::Lines`): S31 has 169 sources, dual-core
-//! maps, and CLIC delivery — same choice as S3/P4. Source 152 (EFUSE) is outside DeviceSet's
-//! 128-bit `source_status`; IRQs are gathered via `Irqs` into this matrix.
+//!
+//! Prefer `intmtx::Lines` only when the map fits (C3/C6: single-core PLIC/INTPRI front end,
+//! ≤32 CPU lines, `Lines::update` over a flat source→line map). S31 does not: 169 sources,
+//! dual-core MAP windows (+0x800), and CLIC delivery (`ClicCore`, IDs 16..47) — the same local
+//! matrix+CLIC shape as S3/`esp32p4::IntMatrix`, not `Lines`. Source 152 (EFUSE) is also
+//! outside DeviceSet's 128-bit `source_status`; IRQs are gathered via `Irqs` into this matrix.
 use esp_periph::clic::{ClicCore, CLIC_IDS, CLIC_EXT_OFFSET};
 
 // ESP-IDF v6.1 soc/esp32s31/include/soc/{interrupts,clic_reg}.h and

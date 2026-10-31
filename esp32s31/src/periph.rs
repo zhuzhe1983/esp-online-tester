@@ -4,9 +4,12 @@
 //! TimerGroup (with local MWDT stages for the WDT half), and S31 Efuse (ReadImage protocol —
 //! shared `Efuse` is RegRam-only and cannot replace it).
 //!
-//! Still local outside this table:
-//! - Pads / GPIO / IO_MUX — S31 offsets and LP/HP hold regs do not match shared `Gpio` (S3 map).
-//! - Interrupt matrix — S31 CLIC + 169 sources / dual-core map (same choice as S3/P4 local matrix).
+//! Still local outside this table (maps checked; not a shrug):
+//! - Pads / GPIO / IO_MUX — shared `Gpio` S3 map mismatch (ENABLE@0x34, IN@0x64, PIN@0xf4,
+//!   OUT_SEL@0xaf4, 62>57 pins) plus IO_MUX+PMU/HP hold electrical coupling; see `pads.rs`.
+//! - Interrupt matrix — not `intmtx::Lines` (C3/C6 PLIC); S31 is CLIC + 169 sources / dual-core
+//!   like S3/P4 local `IntMatrix`; see `interrupts.rs`. MWDT stages stay in `TimgS31` (shared
+//!   `TimerGroup` has no stage WDT); PCR clock words stay on the bus (not Device blocks).
 
 use emu_core::{ClockDomain, ClockTree};
 use esp_periph::{
