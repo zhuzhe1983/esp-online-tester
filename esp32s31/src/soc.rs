@@ -119,6 +119,51 @@ pub struct SocBus {
     pub reset_cause: u32,
     pub sw_reset: bool,
     pub mac: [u8; 6],
+    /// Reconstructed mask-ROM image; ROM is not reset-volatile, so `reboot` reloads it.
+    rom_image: Option<Vec<u8>>,
+    /// Board-level inputs replayed after every chip reset (they model the PCB, not the SoC).
+    pub board_inputs: Option<BoardInputs>,
+}
+
+/// Explicit board-level inputs needed to run an IDF v6.1 image from the mask ROM. None of
+/// these are SoC reset values: they describe the attached flash part, the analog/regi2c
+/// readback seeds a host must choose, the SPLL/BBPLL source rate, and the pad levels a
+/// board presents. `devkit_w25q128` is one such documented choice, not silicon truth.
+#[derive(Clone, Debug)]
+pub struct BoardInputs {
+    /// JEDEC ID (manufacturer, type, capacity) answered by the SPI NOR model.
+    pub flash_id: [u8; 3],
+    /// SFDP bytes returned by READ_SFDP (0x5a) from offset 0.
+    pub sfdp: Vec<u8>,
+    /// regi2c readback seeds: BIAS[2], PERIF glitch, DIG_REG[4], BOD. Host choices.
+    pub bias: [u8; 2], pub perif_glitch: u8, pub dig_reg: [u8; 4], pub bod: u8,
+    /// Rate fed to the MSPI SPLL/BBPLL consumer (Hz).
+    pub bbpll_hz: u64,
+    /// Level sampled for every GPIO that has no driver (`None` keeps them unresolved).
+    pub idle_level: Option<bool>,
+    /// Explicit per-pin input levels applied after `idle_level`.
+    pub inputs: Vec<(usize, bool)>,
+}
+
+impl BoardInputs {
+    /// Winbond W25Q128JV (0xef4018) with its SFDP header, zero regi2c seeds, a 480 MHz
+    /// SPLL input, idle-low pads and GPIO36 high. pmu_init.c reads GPIO36 as the flash
+    /// LDO strap; high selects the internal flash supply path a 3.3 V devkit uses.
+    pub fn devkit_w25q128() -> Self {
+        let mut sfdp = vec![0x53, 0x46, 0x44, 0x50, 0x05, 0x01, 0x00, 0xff, 0x00, 0x05, 0x01, 0x10, 0x80, 0x00, 0x00, 0xff];
+        sfdp.extend([0xff; 0x70]);
+        Self { flash_id: [0xef, 0x40, 0x18], sfdp, bias: [0; 2], perif_glitch: 0, dig_reg: [0; 4], bod: 0,
+            bbpll_hz: 480_000_000, idle_level: Some(false), inputs: vec![(36, true)] }
+    }
+    pub fn apply(&self, b: &mut S31Bus) -> Result<(), String> {
+        let a = &mut b.analog; a.set_bias(self.bias); a.set_perif_glitch(self.perif_glitch); a.set_dig_reg(self.dig_reg); a.set_bod_register(self.bod);
+        b.mspi.attach_flash(self.flash_id, 0).map_err(|e| format!("{e:?}"))?;
+        b.mspi.attach_sfdp(0, &self.sfdp).map_err(|e| format!("{e:?}"))?;
+        if let Some(level) = self.idle_level { for pin in 0..62 { let _ = b.pads.set_unresolved_sample(pin, Some(level)); } }
+        for &(pin, level) in &self.inputs { b.pads.set_input(pin, Some(level)).map_err(|e| format!("{e:?}"))?; }
+        b.mspi.set_bbpll_input(Some(self.bbpll_hz)).map_err(|e| format!("{e:?}"))?;
+        Ok(())
+    }
 }
 
 impl SocBus {
@@ -140,6 +185,8 @@ impl SocBus {
             reset_cause: 1,
             sw_reset: false,
             mac,
+            rom_image: None,
+            board_inputs: None,
         }
     }
 
@@ -150,6 +197,29 @@ impl SocBus {
             .and_then(|tail| tail.get_mut(..data.len()))
             .ok_or("flash image too large")?;
         target.copy_from_slice(data);
+        // SPI0 cache reads and SPI1 commands see the same NOR array.
+        self.inner.cache.set_flash(&self.flash)
+    }
+
+    /// Load the real S31 mask ROM, reconstructing its ROM-side initializer payloads the same
+    /// way `Bringup::load_rom_elf` does (see `rom::image`). Core 0 then starts at the reset
+    /// vector with the ROM stack.
+    pub fn load_mask_rom(&mut self, bytes: &[u8]) -> Result<(), String> {
+        let elf = esp_soc::elf::parse(bytes)?;
+        if elf.entry != bus::ROM_BASE { return Err("S31 ROM reset entry must be 0x2f800000".into()); }
+        let image = crate::rom::image(&elf)?;
+        // The 20251218 mask ROM's SPI_init read-modify-writes SPI0 +0x24/+0x28 (legacy
+        // MISO/MOSI length words, reserved in the v6.1 headers); keep them as plain storage.
+        self.inner.mspi.enable_legacy_rom_lengths();
+        self.inner.load(bus::ROM_BASE, &image, image.len())?;
+        self.rom_image = Some(image);
+        Ok(())
+    }
+
+    /// Install board inputs now and after every reset.
+    pub fn set_board_inputs(&mut self, inputs: BoardInputs) -> Result<(), String> {
+        inputs.apply(&mut self.inner)?;
+        self.board_inputs = Some(inputs);
         Ok(())
     }
 
@@ -239,6 +309,15 @@ impl esp_soc::SocBus for SocBus {
         inner.usb_console.attach_host(usb_attached);
         // Publish the cause the ROM reads (HPCOREn_RESET_CAUSE[6:1]).
         inner.interrupts.reset_cause = [cause << 1; 2];
+        // Non-volatile across a chip reset: NOR contents (with guest writes), mask ROM, PCB.
+        let nor = self.inner.cache.take_flash();
+        if !nor.is_empty() { self.flash = nor; }
+        let _ = inner.cache.set_flash(&self.flash);
+        if let Some(image) = &self.rom_image {
+            inner.mspi.enable_legacy_rom_lengths();
+            let _ = inner.load(bus::ROM_BASE, image, image.len());
+        }
+        if let Some(b) = &self.board_inputs { let _ = b.apply(&mut inner); }
         self.inner = inner;
         self.mac = mac;
         self.misc.log_unknown = log_unknown;
@@ -483,6 +562,12 @@ impl Bus for SocBus {
             self.inner.analog.master_enabled() && self.inner.clocks.modem_on(),
         );
         self.inner.clocks.advance_calibration(cycles);
+        // Machine time drives the RTC domains Bringup leaves opt-in: the RTC timer and the
+        // TIMG0 RTC_CALI counter both count from the modeled source rates.
+        self.inner.rtc_timer.advance_cpu_cycles(cycles as u64, hz, self.inner.clocks.rtc_slow_hz());
+        let source = self.inner.clocks.calibration_hz(self.inner.rtc_calibration.source());
+        let group = self.inner.mwdt[0].clock_read();
+        self.inner.rtc_calibration.advance_cpu(cycles as u64, hz, source, group);
         self.poll_chip_reset();
         1
     }

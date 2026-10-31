@@ -141,6 +141,8 @@ impl Cache {
         let mut data = Vec::new(); data.try_reserve_exact(bytes.len()).map_err(|e| e.to_string())?;
         data.extend_from_slice(bytes); self.flash = data; Ok(())
     }
+    /// Hand the NOR array (including SPI1 program/erase results) across a chip reset.
+    pub(crate) fn take_flash(&mut self) -> Vec<u8> { std::mem::take(&mut self.flash) }
     pub(crate) fn flash_bytes_mut(&mut self) -> &mut [u8] { &mut self.flash }
     pub(crate) fn psram_bytes_mut(&mut self) -> &mut [u8] { &mut self.psram }
     /// Distinguish an invalid MMU address from absent development backing or an
