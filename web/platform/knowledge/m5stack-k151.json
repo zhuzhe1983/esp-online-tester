@@ -4,11 +4,11 @@
   "kind": "product",
   "catalogId": "m5stack-k151",
   "title": "M5Stack StackChan · K151",
-  "summary": "ESP32-S3交互机器人，CoreS3触摸屏、双舵机、摄像头、NFC、语音与触摸输入；外观装配仍为可追溯的部分模型。",
+  "summary": "ESP32-S3交互机器人，CoreS3触摸屏、双舵机、三分区触摸板和12颗RGB；模型复用官方结构件与CoreS3前部，未知PCB布局保留明确占位。",
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-11-01T13:42:54Z",
+  "updatedAt": "2026-11-01T17:17:22Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -470,6 +470,37 @@
       ],
       "group": "runtime-hardware",
       "notes": "Writing the goal position automatically engages torque. This is distinct from switching VM_EN off; physical calibration and load behavior remain unverified."
+    },
+    {
+      "id": "model-core-front-assembly",
+      "label": "CoreS3 front assembly and StackChan envelope",
+      "value": {
+        "widthMm": 54,
+        "heightMm": 70.5,
+        "headDepthMm": 61.5,
+        "officialStackchanPrintParts": 10,
+        "cores3FrontTranslationMm": [
+          0,
+          0,
+          22.4032
+        ],
+        "servoBodyEnvelopeMm": [
+          23.3,
+          12.1,
+          25.25
+        ]
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "dimension-drawing-b0fa1f6c39",
+        "manufacturer-cad-ca86c257a3",
+        "manufacturer-cad-c6394d7bc8",
+        "dimension-drawing-74afac7b92",
+        "datasheet-7e78dcd1bc"
+      ],
+      "group": "model-geometry",
+      "method": "Retain manufacturer STL triangles and native millimetres; assemble the CoreS3 head rear plane at z=22.6532 using its source rear z=0.25. Measure width/height/head depth on the selected shell parts. tools/rebuild-product-model.py build m5stack-k151 reproduces geometry; detail-dimensions-verification.json records all 15 checks. Servo envelope follows the SCS0009 dimension drawing.",
+      "notes": "Glass display offset is excluded from nominal head depth. Optical depths/materials, battery geometry, PCB outlines/placement and touch electrode geometry are estimates. The rectangular servo mounting-ear approximation retains a 0.55 mm fit residual. Photo checks are qualitative; no physical fit or movement-direction calibration."
     }
   ],
   "revisions": [],
@@ -1503,6 +1534,63 @@
       "sha256": "b8eb2e4e817fdf765e2027c94386f527e259a4b0546415de268459ab97b8bc29",
       "kind": "source-code",
       "archiveName": "ftservo-memory-scscl.md"
+    },
+    {
+      "id": "dimension-drawing-74afac7b92",
+      "title": "Cores3 Model Size DXF",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/CoreS3/cores3.dxf",
+      "kind": "dimension-drawing",
+      "status": "fetched",
+      "discoveredFrom": "official-docs",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/CoreS3/cores3.dxf",
+      "fetchedAt": "2026-11-01T16:48:50Z",
+      "bytes": 957204,
+      "sha256": "c97a042b573bdc2e0f7c09897420b9352ccc941a7705ce18caf59356fb17fc42",
+      "archiveName": "cores3.dxf",
+      "notes": "Fetched for front optical-center extraction; earlier linked-only record did not carry a content hash. Planar entity coordinates are retained separately from estimated optical material/depth.",
+      "contentType": "image/vnd.dxf"
+    },
+    {
+      "id": "manufacturer-cad-c6394d7bc8",
+      "title": "Products/K128_CoreS3/Structures/CoreS3.stl",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K128_CoreS3/Structures/CoreS3.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "discoveredFrom": "official-docs",
+      "archiveName": "manufacturer-cad-c6394d7bc8.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K128_CoreS3/Structures/CoreS3.stl",
+      "fetchedAt": "2026-10-26T17:34:44Z",
+      "bytes": 1930484,
+      "sha256": "e113f76db8d829b8737cfcc79c1835fa98274a9fc828ef5df5173b1c9c58e585",
+      "contentType": "application/octet-stream"
+    },
+    {
+      "id": "product-photo-fbcb404695",
+      "title": "CoreS3 official photo",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/CoreS3/img-96063e2a-637a-4d11-ac47-1ce4f1cdfd3e.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "discoveredFrom": "official-docs",
+      "archiveName": "product-photo-fbcb404695.webp",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/core/CoreS3/img-96063e2a-637a-4d11-ac47-1ce4f1cdfd3e.webp",
+      "fetchedAt": "2026-10-26T17:34:38Z",
+      "bytes": 120028,
+      "sha256": "61663c9767d7e137ba3ff498d044c69f62356def8898cbe26a7e2212b045fd7c",
+      "contentType": "image/webp"
+    },
+    {
+      "id": "product-photo-86528c8744",
+      "title": "CoreS3 official photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/490/K128-weight.jpg",
+      "kind": "product-photo",
+      "status": "fetched",
+      "discoveredFrom": "official-docs",
+      "archiveName": "product-photo-86528c8744.jpg",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/490/K128-weight.jpg",
+      "fetchedAt": "2026-10-26T17:34:38Z",
+      "bytes": 215774,
+      "sha256": "6681a855beff5774b0c5b7b590ae5c4311d51af1ccd26da554df6a608d756b6b",
+      "contentType": "image/jpg"
     }
   ],
   "assets": [
@@ -1510,31 +1598,36 @@
       "id": "manufacturer-cad-bf85a6c836",
       "sourceId": "manufacturer-cad-bf85a6c836",
       "role": "manufacturer-cad",
-      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-Base.stl"
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-Base.stl",
+      "localUrl": "./assets/m5stack-k151/source-manufacturer-cad-bf85a6c836.stl"
     },
     {
       "id": "manufacturer-cad-62eea1a3b6",
       "sourceId": "manufacturer-cad-62eea1a3b6",
       "role": "manufacturer-cad",
-      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-BaseCover.stl"
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-BaseCover.stl",
+      "localUrl": "./assets/m5stack-k151/source-manufacturer-cad-62eea1a3b6.stl"
     },
     {
       "id": "manufacturer-cad-88638030c5",
       "sourceId": "manufacturer-cad-88638030c5",
       "role": "manufacturer-cad",
-      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-BearingFixture.stl"
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-BearingFixture.stl",
+      "localUrl": "./assets/m5stack-k151/source-manufacturer-cad-88638030c5.stl"
     },
     {
       "id": "manufacturer-cad-fbd57f39a7",
       "sourceId": "manufacturer-cad-fbd57f39a7",
       "role": "manufacturer-cad",
-      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-LightGuideBar-A.stl"
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-LightGuideBar-A.stl",
+      "localUrl": "./assets/m5stack-k151/source-manufacturer-cad-fbd57f39a7.stl"
     },
     {
       "id": "manufacturer-cad-c71853d138",
       "sourceId": "manufacturer-cad-c71853d138",
       "role": "manufacturer-cad",
-      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-LightGuideBar-B.stl"
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-LightGuideBar-B.stl",
+      "localUrl": "./assets/m5stack-k151/source-manufacturer-cad-c71853d138.stl"
     },
     {
       "id": "manufacturer-cad-ca86c257a3",
@@ -1547,25 +1640,29 @@
       "id": "manufacturer-cad-07c827fd72",
       "sourceId": "manufacturer-cad-07c827fd72",
       "role": "manufacturer-cad",
-      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-ServoArm.stl"
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-ServoArm.stl",
+      "localUrl": "./assets/m5stack-k151/source-manufacturer-cad-07c827fd72.stl"
     },
     {
       "id": "manufacturer-cad-52cb7ac41d",
       "sourceId": "manufacturer-cad-52cb7ac41d",
       "role": "manufacturer-cad",
-      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-ServoBody.stl"
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-ServoBody.stl",
+      "localUrl": "./assets/m5stack-k151/source-manufacturer-cad-52cb7ac41d.stl"
     },
     {
       "id": "manufacturer-cad-6176ffdaa9",
       "sourceId": "manufacturer-cad-6176ffdaa9",
       "role": "manufacturer-cad",
-      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-ServoCover.stl"
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-ServoCover.stl",
+      "localUrl": "./assets/m5stack-k151/source-manufacturer-cad-6176ffdaa9.stl"
     },
     {
       "id": "manufacturer-cad-8ed6ee0116",
       "sourceId": "manufacturer-cad-8ed6ee0116",
       "role": "manufacturer-cad",
-      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-ServoSideCover.stl"
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K151_StackChan/Structures/StackChan-ServoSideCover.stl",
+      "localUrl": "./assets/m5stack-k151/source-manufacturer-cad-8ed6ee0116.stl"
     },
     {
       "id": "product-photo-935b7011a9",
@@ -1625,7 +1722,8 @@
       "id": "product-photo-b051267015",
       "sourceId": "product-photo-b051267015",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_05.webp"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_05.webp",
+      "localUrl": "./assets/m5stack-k151/reference-product-photo-b051267015.webp"
     },
     {
       "id": "product-photo-a5085eb132",
@@ -1637,13 +1735,15 @@
       "id": "product-photo-9567dda286",
       "sourceId": "product-photo-9567dda286",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_07.webp"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_07.webp",
+      "localUrl": "./assets/m5stack-k151/reference-product-photo-9567dda286.webp"
     },
     {
       "id": "product-photo-286633d4b5",
       "sourceId": "product-photo-286633d4b5",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_08.webp"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_08.webp",
+      "localUrl": "./assets/m5stack-k151/reference-product-photo-286633d4b5.webp"
     },
     {
       "id": "product-photo-d05634cbac",
@@ -1655,19 +1755,22 @@
       "id": "product-photo-7dbf95bb28",
       "sourceId": "product-photo-7dbf95bb28",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_10.webp"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_10.webp",
+      "localUrl": "./assets/m5stack-k151/reference-product-photo-7dbf95bb28.webp"
     },
     {
       "id": "product-photo-6ce7959e87",
       "sourceId": "product-photo-6ce7959e87",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_11.webp"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_11.webp",
+      "localUrl": "./assets/m5stack-k151/reference-product-photo-6ce7959e87.webp"
     },
     {
       "id": "product-photo-ad2f64f41c",
       "sourceId": "product-photo-ad2f64f41c",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_12.webp"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_12.webp",
+      "localUrl": "./assets/m5stack-k151/reference-product-photo-ad2f64f41c.webp"
     },
     {
       "id": "product-photo-811e46c420",
@@ -1679,7 +1782,8 @@
       "id": "dimension-drawing-b0fa1f6c39",
       "sourceId": "dimension-drawing-b0fa1f6c39",
       "role": "dimension-drawing",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/Model_Size.png"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/Model_Size.png",
+      "localUrl": "./assets/m5stack-k151/source-dimension-drawing.png"
     },
     {
       "id": "dimension-drawing-f4dc6a6cb1",
@@ -1799,7 +1903,8 @@
       "id": "datasheet-7e78dcd1bc",
       "sourceId": "datasheet-7e78dcd1bc",
       "role": "datasheet",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/SCS0009.pdf"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/SCS0009.pdf",
+      "localUrl": "./assets/m5stack-k151/source-scs0009.pdf"
     },
     {
       "id": "datasheet-c5331eb3a4",
@@ -1830,6 +1935,32 @@
       "sourceId": "datasheet-6f6bd96964",
       "role": "datasheet",
       "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/PY32L020_Datasheet_EN.pdf"
+    },
+    {
+      "id": "dimension-drawing-74afac7b92",
+      "sourceId": "dimension-drawing-74afac7b92",
+      "role": "dimension-drawing",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/CoreS3/cores3.dxf",
+      "localUrl": "./assets/m5stack-k151/source-cores3.dxf"
+    },
+    {
+      "id": "manufacturer-cad-c6394d7bc8",
+      "sourceId": "manufacturer-cad-c6394d7bc8",
+      "role": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K128_CoreS3/Structures/CoreS3.stl",
+      "localUrl": "./assets/m5stack-k151/source-manufacturer-cad-c6394d7bc8.stl"
+    },
+    {
+      "id": "product-photo-fbcb404695",
+      "sourceId": "product-photo-fbcb404695",
+      "role": "product-photo",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/CoreS3/img-96063e2a-637a-4d11-ac47-1ce4f1cdfd3e.webp"
+    },
+    {
+      "id": "product-photo-86528c8744",
+      "sourceId": "product-photo-86528c8744",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/490/K128-weight.jpg"
     }
   ],
   "unknowns": [
@@ -1860,6 +1991,7 @@
     "Model import does not establish CPU/board/peripheral firmware support.",
     "2026-11-01: audited StackChan K151 host, base touch/RGB and feedback-servo protocols. Historical sources retained. Fetch identities and factory/UIFlow2/XiaoZhi investigation: docs/platform/research/stackchan-runtime-sources-2026-11-01.json. Hardware facts do not imply complete simulator compatibility.",
     "VM_EN off feedback conflict: manufacturer schematics show only the gated VM supply at the three-wire servo; upstream Xiaozhi K151 README reports feedback while motor power is off. Current ideal model excludes unverified signal back-power; no physical-device claim. Full conflict and higher-precision fetch timestamps are retained in the runtime source audit.",
-    "2026-11-01: official SCSCL goal-write auto torque enable and power-on torque=0 checked against FEETECH memory table; source receipts: docs/platform/research/stackchan-servo-torque-sources-2026-11-01.json. Factory Servo Test now separately exercises actual mechanical movement, rather than its timed completion page alone."
+    "2026-11-01: official SCSCL goal-write auto torque enable and power-on torque=0 checked against FEETECH memory table; source receipts: docs/platform/research/stackchan-servo-torque-sources-2026-11-01.json. Factory Servo Test now separately exercises actual mechanical movement, rather than its timed completion page alone.",
+    "2026-11-02: model assembly now includes all ten official K151 printed parts, the reusable K128 CoreS3 front, visible terminals/optics, SCS0009 servo envelopes, RGB packages, screws and photo-derived labels. Five neutral UNKNOWN PCB layers and estimated battery geometry remain partial. See docs/platform/models/m5stack-k151.md and detail-source-receipts.json for source reuse/refetch timestamps and retained limitations. Factory V1.5.1 App Setup Next is verified through virtual VHCI; this does not model physical radio pairing."
   ]
 }

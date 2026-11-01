@@ -108,3 +108,7 @@ node tools/probe-stackchan-ble.mjs --firmware FACTORY_BIN \
 | 无界面 Chromium：工作台、mini、iframe、2D/3D、模型失败回退 | 通过；任务浏览器和本地服务器已关闭 |
 
 完整平台测试初次发现知识库 UTC 时间格式不符合既有约定，修正为秒精度 UTC 后 199 项全部通过。没有改变测试条件或跳过失败项。
+
+## 2026-11-02 合并验收
+
+CoreS3 前部与 StackChan 补充模型完成合并后，208 项平台测试通过；底层改动的 1,743 项工作区测试、两项真实固件集成测试、两组 Clippy、WASM 差分与 GPIO 测试、全部 CI demo 均通过。生产 WASM SHA-256 为 `a3d5cde2154ca1bbe73a6263773dc62945f47db1747d667c4e3c1f6724bee598`；诊断 worker 六组、18 事件录制回放及静态 Pages 打包再次通过。输入 hash 和检查清单见[最终整合回执](evidence/m5stack-k151/runtime/integration-2026-11-02.json)。以上历史段落中的旧构建和测试数量仍按原回执保留。
