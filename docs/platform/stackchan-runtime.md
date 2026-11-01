@@ -73,6 +73,8 @@ ESP32SIM_ROM_DIR=ROM_DIR ESP32SIM_STACKCHAN_FACTORY=FACTORY_BIN \
 
 固定 V1.5.1 在原生运行与生产 WASM worker 中均完成官方初始化，NimBLE 开始广播，画面进入 “Look for me in the app to start setup.”。实际保存 Flash 后再次启动也完成同一流程；首次保存仅改变 `0x9000`（NVS）和 `0xd000`（otadata）页，第二次无新差异，应用/资源区始终与原镜像一致。复现工具为 `tools/probe-stackchan-ble.mjs`，输入文件均由调用者提供。输入时序、正反结果、镜像与符号 hash 见[回执](evidence/m5stack-k151/runtime/factory-next-ble.json)，页面逻辑依据见[来源记录](research/stackchan-next-ble-sources-2026-11-02.json)。当前源码晚于出厂镜像；解释性源码与固定二进制的执行结果分别记录，不声称二者逐字节一致。
 
+真实浏览器另行验证了完整 ServoTest 结束后拖转模型再点 Next、保留 IndexedDB 数据的 `reset()` 后切到 2D 点击，以及重新打开嵌入播放器并恢复保存数据后的 3D 点击。三种情况均使用普通鼠标点击，串口出现初始化完成和广播事件，真实帧缓冲进入下一页。回执保留实际触摸坐标与客体时间；其中两个快速点击的 down/up 在同一客体时间排队，触摸控制器仍正确交付，未添加人为延长触摸的处理。
+
 ```sh
 node tools/probe-stackchan-ble.mjs --firmware FACTORY_BIN \
   --symbols web/platform/assets/firmware-profiles/stackchan-factory-1.5.1/symbols.elf \
