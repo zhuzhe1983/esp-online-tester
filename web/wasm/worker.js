@@ -16,6 +16,18 @@ let loopGeneration = 0, booted = false, catchupTurns = 0;
 let flashShadow = null, flashWatchId = null, flashScanAt = 0;
 const FLASH_PAGE = 4096;
 let sdShadow=null,sdWatchId=null,sdScanAt=0;
+let motionEnabled=false,motionLast='',motionAt=0;
+// Host observation only, on the opted-in board. No generic machine/tick polling.
+function collectMotion(force=false) {
+  if(!motionEnabled||!emu||!wasm.esp32sim_motion_snapshot||!force&&performance.now()-motionAt<20)return;
+  motionAt=performance.now();const capacity=4096,p=wasm.esp32sim_alloc(capacity);
+  try {
+    const n=wasm.esp32sim_motion_snapshot(emu,p,capacity);
+    if(n<=0||n>capacity)return;
+    const json=dec.decode(mem().subarray(p,p+n));
+    if(json!==motionLast){motionLast=json;postMessage({text:JSON.stringify({t:'motion',...JSON.parse(json)})});}
+  } finally {wasm.esp32sim_free(p,capacity);}
+}
 function sdBytes() {if(!emu||!wasm.esp32sim_sd_len)throw new Error('SD images unsupported by this WASM');return mem().subarray(wasm.esp32sim_sd_ptr(emu),wasm.esp32sim_sd_ptr(emu)+wasm.esp32sim_sd_len(emu));}
 function collectSd(force=false) {
   if(!sdShadow||!force&&performance.now()-sdScanAt<1500)return;sdScanAt=performance.now();
@@ -101,7 +113,7 @@ function loop(generation = loopGeneration) {
     if (inputTraceIds.length) postMessage({ touchTrace: { stage: 'run-exit', ids: inputTraceIds, atMs: traceNow(), cycles: cur } });
     pacing.observe(cur - previous, performance.now() - before);
     drain();drainNetwork();
-    collectFlash();collectSd();
+    collectFlash();collectSd();collectMotion();
     if (rc !== 0) { running = false; postMessage({ stopped: rc }); return; }
     if (performance.now() - now >= turnMs) break;                       // let messages flow, come back
   }
@@ -178,6 +190,7 @@ onmessage = async (ev) => {
       // Keep credits for already posted frames until their ACKs arrive, but never send
       // a retained frame from the emulator being replaced.
       pendingFrame = null;sdShadow=null;sdWatchId=null;
+      motionEnabled=m.board==='stackchan';motionLast='';motionAt=0;
       pacing = createPacing(); catchupTurns = 0;
       pendingInputTrace = [];
       if (emu) { wasm.esp32sim_delete(emu); emu = 0; }
@@ -280,6 +293,7 @@ onmessage = async (ev) => {
       postMessage({ resumed: true });
     }
     else if (m.op === 'net-create') {
+      motionEnabled=false;motionLast='';
       flashShadow = null; flashWatchId = null;sdShadow=null;sdWatchId=null;
       setupError = null;
       running = false; loopGeneration++; booted = false;
@@ -303,7 +317,7 @@ onmessage = async (ev) => {
     else if (m.op === 'net-load') { const rc = withBytes(new Uint8Array(m.data), (p, n) => wasm.esp32sim_net_load(net, m.node, m.kind, p, n)); postMessage({ loaded: 'n' + m.node + ':' + m.kind, ok: rc === 0 }); }
     else if (m.op === 'net-stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_net_stub_spec(net, m.node, p, n)) !== 0) setupError ||= 'invalid stub for node ' + m.node + ': ' + m.spec; }
     else if (m.op === 'net-start') { if (setupError) throw new Error(setupError); const rc = wasm.esp32sim_net_boot(net); if (rc === 0) { running = true; netT0 = performance.now(); netLoop(); } postMessage({ started: rc === 0 }); }
-    else if (m.op === 'stop') { if(emu&&wasm.esp32sim_audio_output_flush){wasm.esp32sim_audio_output_flush(emu);drain();} running = false; loopGeneration++; collectFlash(true);collectSd(true); postMessage({ stopped: 0 }); }
+    else if (m.op === 'stop') { if(emu&&wasm.esp32sim_audio_output_flush){wasm.esp32sim_audio_output_flush(emu);drain();} running = false; loopGeneration++; collectFlash(true);collectSd(true);collectMotion(true); postMessage({ stopped: 0 }); }
     else if (m.op === 'imu') {
       const values = [...(m.accelG || []), ...(m.gyroDps || [])];
       const ok = !!emu && values.length === 6 && values.every(Number.isFinite) && !!wasm.esp32sim_set_imu_sample

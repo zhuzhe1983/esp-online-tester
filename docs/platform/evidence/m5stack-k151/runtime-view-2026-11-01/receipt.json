@@ -1,0 +1,271 @@
+{
+  "schemaVersion": "1",
+  "productId": "m5stack-k151",
+  "date": "2026-11-01",
+  "scope": "Renderer-only verification with explicit synthetic servo/RGB state; no guest firmware or real hardware compatibility claim.",
+  "artifacts": {
+    "web/platform/assets/m5stack-k151/model.json": "7603be1ef1d2e0420b4e63bdb8db6232c2b6dc0e3e0028889087b0a3e96ce6d9",
+    "web/platform/assets/m5stack-k151/model-plan.json": "3754ed29a3814d0ac41e1ac55a9d9b36ac2684d83e049abdbcc7e45e5b1d0202",
+    "web/platform/assets/m5stack-k151/geometry.bin": "3408dd116c3f144bd9b3f69cc3e97aa3a5741073a04337b10ff5e77ea50b6b0a",
+    "web/platform/assets/m5stack-k151/reference-product-photo-6ce7959e87.webp": "a801ef8b8a8b82a5e34da35cb2559155bd84cdca0b649657a4a4a16ebeb64687",
+    "web/platform/servo-view.js": "5d0f25f025262ccc32e681c2cdfbaacc04a4e508fd6479d17c18bce74a7c2aea",
+    "web/platform/manufacturer-model.js": "a0a66471bf510351d96c5e84734b07d508f84ae92def8b549faa8576d7db83dd",
+    "web/platform/scene-view.js": "2b4d83278cf686121c9272e1f7d2d75aae0eae4ccdf1a91fbcb4f2f77808ebad"
+  },
+  "renders": {
+    "stackchan-side-neutral.png": "6bff19b558b784be22a6c679b528d5f423eb54a2377c537b530a2884c139d5d6",
+    "stackchan-side-tilt60.png": "785ad9694379083915695aa353a4fc1a02ab1e2faa3edd39a9d2b6252829a039",
+    "stackchan-top-rgb.png": "ae6750b375c82f1ef227dc5937b2575ed5fad1b6d3ea19362284f6abd02b3f8b",
+    "stackchan-gold-pose.png": "0ee50c94843031da89ff4f357602051b9802acf6a1dbca6f038a6ee4ebf77657",
+    "stackchan-purple-pose.png": "ec223baec0cf6e965f5b6dbd1c350a2d26b34a83838d824f39e972871978a5db",
+    "stackchan-purple-back.png": "824f2de4627db53a8da05e26576f7f05c900d18e0b588ca9c9a66a58d489fe9f"
+  },
+  "states": {
+    "neutral": [],
+    "tilt60": [
+      {
+        "id": "pan",
+        "positionDegrees": 0
+      },
+      {
+        "id": "tilt",
+        "positionDegrees": 60
+      }
+    ],
+    "material-pose": [
+      {
+        "id": "pan",
+        "positionDegrees": 30
+      },
+      {
+        "id": "tilt",
+        "positionDegrees": 15
+      }
+    ],
+    "rgb": [
+      [
+        255,
+        0,
+        0
+      ],
+      [
+        0,
+        255,
+        0
+      ],
+      [
+        0,
+        0,
+        255
+      ],
+      [
+        255,
+        0,
+        0
+      ],
+      [
+        0,
+        255,
+        0
+      ],
+      [
+        0,
+        0,
+        255
+      ],
+      [
+        255,
+        0,
+        0
+      ],
+      [
+        0,
+        255,
+        0
+      ],
+      [
+        0,
+        0,
+        255
+      ],
+      [
+        255,
+        0,
+        0
+      ],
+      [
+        0,
+        255,
+        0
+      ],
+      [
+        0,
+        0,
+        255
+      ]
+    ]
+  },
+  "cameras": {
+    "side-neutral": {
+      "position": [
+        -250,
+        0,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "target": [
+        0,
+        -7,
+        0
+      ],
+      "span": 95
+    },
+    "side-tilt60": {
+      "position": [
+        -250,
+        0,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "target": [
+        0,
+        -7,
+        0
+      ],
+      "span": 115
+    },
+    "top-rgb": {
+      "position": [
+        0,
+        250,
+        0
+      ],
+      "up": [
+        0,
+        0,
+        -1
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "span": 85
+    },
+    "gold-purple-pose": {
+      "position": [
+        -80,
+        100,
+        200
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "target": [
+        0,
+        -7,
+        0
+      ],
+      "span": 115
+    },
+    "purple-back": {
+      "position": [
+        80,
+        60,
+        -180
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "target": [
+        0,
+        -7,
+        0
+      ],
+      "span": 115
+    }
+  },
+  "renderSize": [
+    800,
+    800
+  ],
+  "savedCssPixels": [
+    600,
+    600
+  ],
+  "appearance": {
+    "gold": {
+      "color": "#caa34e",
+      "opacity": 1,
+      "finish": "metal"
+    },
+    "purple": {
+      "color": "#8456cf",
+      "opacity": 0.25,
+      "finish": "plastic"
+    }
+  },
+  "checks": {
+    "nodeCommand": "node --test tools/platform-servo-view-test.mjs tools/platform-manufacturer-model-test.mjs tools/platform-view-test.mjs",
+    "nodeResult": {
+      "passed": 7,
+      "failed": 0
+    },
+    "offlineRebuild": {
+      "passed": true,
+      "verifiedArtifacts": [
+        "LICENSE-M5Stack.txt",
+        "reference-product-photo-6ce7959e87.webp",
+        "source-manufacturer-cad-6176ffdaa9.stl",
+        "source-manufacturer-cad-8ed6ee0116.stl",
+        "reference-product-photo-9567dda286.webp",
+        "geometry.bin",
+        "source-manufacturer-cad-bf85a6c836.stl",
+        "source-manufacturer-cad-62eea1a3b6.stl",
+        "reference-product-photo-7dbf95bb28.webp",
+        "source.stl",
+        "reference-product-photo-b051267015.webp",
+        "source-manufacturer-cad-52cb7ac41d.stl"
+      ],
+      "mismatches": [],
+      "unusedOriginalArtifacts": [],
+      "modelJsonByteIdentical": false,
+      "scope": "Exact regenerated geometry, source/reference files, textures and model contract. Metadata byte order and historical unused files are reported separately. No fresh browser, hardware or firmware acceptance."
+    }
+  },
+  "limitations": [
+    "Neutral assembly remains partial; servo cover placement and missing internal mechanical pieces were not redesigned.",
+    "Joint axes use measured CAD centers; installed servo zero and positive mechanical direction are not physically calibrated.",
+    "Pad electrode outlines and RGB chain-to-physical-location order are not known.",
+    "Optical segments approximate a shared diffuser; they are not twelve measured independent holes."
+  ],
+  "captureStorage": {
+    "directory": "output/playwright/stackchan-view",
+    "published": false,
+    "notes": "Raw screenshots are retained locally outside Git per docs/evidence/README.md. Hashes identify the measured captures; no public download availability is claimed.",
+    "bytes": {
+      "stackchan-purple-pose.png": 94483,
+      "stackchan-side-tilt60.png": 37884,
+      "stackchan-top-rgb.png": 16140,
+      "stackchan-gold-pose.png": 42275,
+      "stackchan-side-neutral.png": 18871,
+      "stackchan-purple-back.png": 136787
+    }
+  },
+  "curation": {
+    "originalReceiptSha256": "2cc47707d26d3ff450891fc57a6d5c0e4795261df6dfe53b77c21255e6180a62",
+    "change": "Move raw renderer screenshots out of source tree; retain measurements, state definitions and original capture hashes."
+  }
+}

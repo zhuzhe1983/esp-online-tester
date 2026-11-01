@@ -10516,10 +10516,11 @@
       "chip": "esp32s3",
       "module": "ESP32-S3",
       "runtime": {
-        "board": null,
+        "board": "stackchan",
         "flashMb": 16,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
@@ -10537,12 +10538,41 @@
         {
           "id": "power",
           "type": "button",
-          "name": "Power control"
+          "name": "Power control",
+          "simulationSupported": false
         },
         {
           "id": "reset",
           "type": "button",
-          "name": "Reset"
+          "name": "Reset",
+          "simulationSupported": false
+        },
+        {
+          "id": "touch-pad-front",
+          "type": "button",
+          "name": "顶部前区触摸板",
+          "transport": "board",
+          "controller": "Si12T",
+          "channel": 2,
+          "defaultKeyCode": "Digit1"
+        },
+        {
+          "id": "touch-pad-middle",
+          "type": "button",
+          "name": "顶部中区触摸板",
+          "transport": "board",
+          "controller": "Si12T",
+          "channel": 1,
+          "defaultKeyCode": "Digit2"
+        },
+        {
+          "id": "touch-pad-back",
+          "type": "button",
+          "name": "顶部后区触摸板",
+          "transport": "board",
+          "controller": "Si12T",
+          "channel": 0,
+          "defaultKeyCode": "Digit3"
         }
       ],
       "interfaces": [
@@ -10580,10 +10610,17 @@
           "title": "StackChan",
           "url": "https://docs.m5stack.com/en/StackChan",
           "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "StackChan BSP pinned protocol source",
+          "url": "https://github.com/m5stack/StackChan-BSP/tree/e2f3b02dbe7f28e26a02adc72bef3aa2c545e4a0",
+          "checkedAt": "2026-11-01"
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "K151 部分板级模拟：显示、屏幕触摸、三分区触摸板、底座 RGB 与串口反馈舵机；完整官方固件兼容性以运行报告为准。",
+        "舵机为数字位置/反馈模型，未校准负载、惯量、扭矩或碰撞；3D 转轴与 LED 空间链序的估算见模型报告。",
+        "电源键、物理复位键、摄像头、红外、NFC、完整音频与电池行为尚未完成验证；未实机验证。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k151.json",

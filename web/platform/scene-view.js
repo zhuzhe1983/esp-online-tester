@@ -5,6 +5,7 @@ import {createManufacturerModel} from './manufacturer-model.js';
 import {pickVisibleSurface, createScenePointerRouter, createSurfaceHalo} from './scene-interaction.js';
 import {createIllustrativeAccessory, createGroveCable} from './accessory-view.js';
 import {applyRgbLedValues} from './rgb-led-view.js';
+import {applyServoValues} from './servo-view.js';
 import {normalizeShellAppearance, applyShellAppearance, DEFAULT_STOPWATCH_APPEARANCE} from './shell-appearance.js';
 import {normalizeOrientation} from './imu.js';
 
@@ -112,7 +113,8 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     if (notify) publishOrientation(false); if (accessoryCount) frameCamera(); draw(); return getOrientation();
   }
   let parts = {}, connectors = {}, shellMeshes = [], customizedAppearance = false, appearanceDefaults = DEFAULT_STOPWATCH_APPEARANCE, appearance = normalizeShellAppearance(null), accessoryDefinitions = [];
-  let rgbLedMeshes = [], rgbValues = [], accessoryOutputs = [];
+  let rgbLedMeshes = [], rgbValues = [], accessoryOutputs = [], servoJoints = [], servoValues = [];
+  function updateServos(values) { servoValues = values || []; applyServoValues(servoJoints, servoValues); clearHover(); draw(); }
   let accessoryPositions=[];
   function updateAccessoryPositions(values) {accessoryPositions=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryPositions.find(item=>child.name===`accessory:${item.accessoryId}`);for(const pivot of child.userData.potentiometers||[]){const value=Number.isFinite(state?.value)?state.value:.5;pivot.userData.value=value;pivot.rotation.z=(.5-value)*pivot.userData.visualSweepRadians;}}draw();}
   function updateAccessoryOutputs(values) {accessoryOutputs=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryOutputs.find(item=>child.name===`accessory:${item.accessoryId}`);applyRgbLedValues(child.userData.rgbLedMeshes||[],state?.leds);}draw();}
@@ -161,7 +163,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       if (object.material) for (const material of [].concat(object.material)) material.dispose();
     });
     group.clear(); buttons = []; screen = null; parts = {}; connectors = {}; shellMeshes = []; accessoryGroup = null; accessoryCount = 0;
-    rgbLedMeshes = []; rgbValues = [];
+    rgbLedMeshes = []; rgbValues = []; servoJoints = []; servoValues = [];
   }
   function clearDisplay() {
     frameWidth = product?.display?.framebufferWidth || product?.display?.width || 320;
@@ -190,6 +192,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
         screen = model.screen; if(screen)screen.userData.screen=true;
         shellMeshes = model.group.userData.shellMeshes || [parts.shell].filter(Boolean);
         rgbLedMeshes = model.group.userData.rgbLedMeshes || []; applyRgbLedValues(rgbLedMeshes, rgbValues);
+        servoJoints = model.group.userData.servoJoints || []; applyServoValues(servoJoints, servoValues);
         for(const mesh of shellMeshes)mesh.userData.originalAppearance ||= {shell:{color:`#${mesh.material.color.getHexString()}`,opacity:1,finish:'plastic'}};
         if(product.model && product.id !== 'm5stack-papermono') { appearanceDefaults = shellMeshes[0]?.userData.originalAppearance || DEFAULT_STOPWATCH_APPEARANCE; if(!customizedAppearance)appearance=normalizeShellAppearance(null,appearanceDefaults); }
         mount.dataset.modelStatus = 'ready'; onModelReady(); applyAppearance(); setAccessories(accessoryDefinitions); frameCamera(); draw();
@@ -361,7 +364,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   window.addEventListener('blur', releaseInputs);
   function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateServos, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
     dispose() { disposed = true; releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup(); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }

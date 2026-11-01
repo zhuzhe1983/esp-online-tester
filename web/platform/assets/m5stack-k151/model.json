@@ -389,7 +389,150 @@
         0
       ],
       "basis": "Image-informed window size/placement within manufacturer case; not an independently calibrated display stack."
-    }
+    },
+    "buttons": [
+      {
+        "id": "touch-pad-front",
+        "shape": "rectangle",
+        "sizeMm": [
+          42,
+          10
+        ],
+        "positionMm": [
+          0,
+          27.03,
+          12
+        ],
+        "rotation": [
+          -1.5707963267948966,
+          0,
+          0
+        ],
+        "basis": "estimated",
+        "sourceIds": [
+          "product-photo-6ce7959e87"
+        ],
+        "notes": "Normalized front/middle/back interaction zones on the visible top shell. Hidden electrode outlines are not measured; region borders are not drawn as physical markings."
+      },
+      {
+        "id": "touch-pad-middle",
+        "shape": "rectangle",
+        "sizeMm": [
+          42,
+          10
+        ],
+        "positionMm": [
+          0,
+          27.03,
+          0
+        ],
+        "rotation": [
+          -1.5707963267948966,
+          0,
+          0
+        ],
+        "basis": "estimated",
+        "sourceIds": [
+          "product-photo-6ce7959e87"
+        ],
+        "notes": "Normalized front/middle/back interaction zones on the visible top shell. Hidden electrode outlines are not measured; region borders are not drawn as physical markings."
+      },
+      {
+        "id": "touch-pad-back",
+        "shape": "rectangle",
+        "sizeMm": [
+          42,
+          10
+        ],
+        "positionMm": [
+          0,
+          27.03,
+          -12
+        ],
+        "rotation": [
+          -1.5707963267948966,
+          0,
+          0
+        ],
+        "basis": "estimated",
+        "sourceIds": [
+          "product-photo-6ce7959e87"
+        ],
+        "notes": "Normalized front/middle/back interaction zones on the visible top shell. Hidden electrode outlines are not measured; region borders are not drawn as physical markings."
+      }
+    ],
+    "servoJoints": [
+      {
+        "id": "pan",
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "pivotMm": [
+          0,
+          -31.6,
+          -8.0968
+        ],
+        "neutralDegrees": 0,
+        "direction": 1,
+        "parts": [
+          "servo-shell",
+          "servo-cover",
+          "servo-side-cover"
+        ],
+        "basis": "cad-measurement",
+        "sourceIds": [
+          "manufacturer-cad-52cb7ac41d"
+        ],
+        "notes": "Y axis through the source servo-body base ring; source geometry and current neutral assembly are preserved. Positive sense relative to physical hardware has not been calibrated."
+      },
+      {
+        "id": "tilt",
+        "parent": "pan",
+        "axis": [
+          1,
+          0,
+          0
+        ],
+        "pivotMm": [
+          0,
+          0,
+          -8.0968
+        ],
+        "neutralDegrees": 0,
+        "direction": -1,
+        "parts": [
+          "shell-main",
+          "front-glass",
+          "live-display",
+          "pcb-main",
+          "usb-c",
+          "grove-a",
+          "cover-key:touch-pad-front",
+          "cover-key:touch-pad-middle",
+          "cover-key:touch-pad-back",
+          "rgb-window-left-0",
+          "rgb-window-left-1",
+          "rgb-window-left-2",
+          "rgb-window-left-3",
+          "rgb-window-left-4",
+          "rgb-window-left-5",
+          "rgb-window-right-0",
+          "rgb-window-right-1",
+          "rgb-window-right-2",
+          "rgb-window-right-3",
+          "rgb-window-right-4",
+          "rgb-window-right-5"
+        ],
+        "basis": "cad-measurement",
+        "sourceIds": [
+          "manufacturer-cad-52cb7ac41d"
+        ],
+        "notes": "X axis through the source servo-body lateral bearing bore, center y=0,z=-8.0968 mm. Upward tilt is an explicit visual convention; neutral mechanical alignment and physical direction remain uncalibrated."
+      }
+    ],
+    "servoNotes": "Only observed board feedback positions move the joints. Disabled servos keep their feedback pose; absent feedback resets the neutral presentation. No frontend motion interpolation, collision or mechanical load simulation."
   },
   "derivedParts": [
     {
@@ -471,6 +614,306 @@
         ],
         "notes": "Socket plastic color category checked against the exact product source photograph; hex is an approximate display value, not a calibrated optical measurement. Contacts/inner shading independent from shell appearance."
       }
+    },
+    {
+      "id": "rgb-window-left-0",
+      "kind": "box",
+      "color": "#bdceca",
+      "ledIndex": 0,
+      "geometry": {
+        "sizeMm": [
+          0.25,
+          1.1,
+          4.7
+        ],
+        "centerMm": [
+          -25.58,
+          25.15,
+          -10.5
+        ]
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-ca86c257a3",
+        "product-photo-7dbf95bb28",
+        "product-photo-6ce7959e87"
+      ],
+      "notes": "Optical cell inside the CAD upper-side light-guide opening. Six cells per side visualize the twelve actual chain values; left/right physical chain order and optical diffusion are not calibrated."
+    },
+    {
+      "id": "rgb-window-left-1",
+      "kind": "box",
+      "color": "#bdceca",
+      "ledIndex": 1,
+      "geometry": {
+        "sizeMm": [
+          0.25,
+          1.1,
+          4.7
+        ],
+        "centerMm": [
+          -25.58,
+          25.15,
+          -5.5
+        ]
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-ca86c257a3",
+        "product-photo-7dbf95bb28",
+        "product-photo-6ce7959e87"
+      ],
+      "notes": "Optical cell inside the CAD upper-side light-guide opening. Six cells per side visualize the twelve actual chain values; left/right physical chain order and optical diffusion are not calibrated."
+    },
+    {
+      "id": "rgb-window-left-2",
+      "kind": "box",
+      "color": "#bdceca",
+      "ledIndex": 2,
+      "geometry": {
+        "sizeMm": [
+          0.25,
+          1.1,
+          4.7
+        ],
+        "centerMm": [
+          -25.58,
+          25.15,
+          -0.5
+        ]
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-ca86c257a3",
+        "product-photo-7dbf95bb28",
+        "product-photo-6ce7959e87"
+      ],
+      "notes": "Optical cell inside the CAD upper-side light-guide opening. Six cells per side visualize the twelve actual chain values; left/right physical chain order and optical diffusion are not calibrated."
+    },
+    {
+      "id": "rgb-window-left-3",
+      "kind": "box",
+      "color": "#bdceca",
+      "ledIndex": 3,
+      "geometry": {
+        "sizeMm": [
+          0.25,
+          1.1,
+          4.7
+        ],
+        "centerMm": [
+          -25.58,
+          25.15,
+          4.5
+        ]
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-ca86c257a3",
+        "product-photo-7dbf95bb28",
+        "product-photo-6ce7959e87"
+      ],
+      "notes": "Optical cell inside the CAD upper-side light-guide opening. Six cells per side visualize the twelve actual chain values; left/right physical chain order and optical diffusion are not calibrated."
+    },
+    {
+      "id": "rgb-window-left-4",
+      "kind": "box",
+      "color": "#bdceca",
+      "ledIndex": 4,
+      "geometry": {
+        "sizeMm": [
+          0.25,
+          1.1,
+          4.7
+        ],
+        "centerMm": [
+          -25.58,
+          25.15,
+          9.5
+        ]
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-ca86c257a3",
+        "product-photo-7dbf95bb28",
+        "product-photo-6ce7959e87"
+      ],
+      "notes": "Optical cell inside the CAD upper-side light-guide opening. Six cells per side visualize the twelve actual chain values; left/right physical chain order and optical diffusion are not calibrated."
+    },
+    {
+      "id": "rgb-window-left-5",
+      "kind": "box",
+      "color": "#bdceca",
+      "ledIndex": 5,
+      "geometry": {
+        "sizeMm": [
+          0.25,
+          1.1,
+          4.7
+        ],
+        "centerMm": [
+          -25.58,
+          25.15,
+          14.5
+        ]
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-ca86c257a3",
+        "product-photo-7dbf95bb28",
+        "product-photo-6ce7959e87"
+      ],
+      "notes": "Optical cell inside the CAD upper-side light-guide opening. Six cells per side visualize the twelve actual chain values; left/right physical chain order and optical diffusion are not calibrated."
+    },
+    {
+      "id": "rgb-window-right-0",
+      "kind": "box",
+      "color": "#bdceca",
+      "ledIndex": 6,
+      "geometry": {
+        "sizeMm": [
+          0.25,
+          1.1,
+          4.7
+        ],
+        "centerMm": [
+          25.58,
+          25.15,
+          -10.5
+        ]
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-ca86c257a3",
+        "product-photo-7dbf95bb28",
+        "product-photo-6ce7959e87"
+      ],
+      "notes": "Optical cell inside the CAD upper-side light-guide opening. Six cells per side visualize the twelve actual chain values; left/right physical chain order and optical diffusion are not calibrated."
+    },
+    {
+      "id": "rgb-window-right-1",
+      "kind": "box",
+      "color": "#bdceca",
+      "ledIndex": 7,
+      "geometry": {
+        "sizeMm": [
+          0.25,
+          1.1,
+          4.7
+        ],
+        "centerMm": [
+          25.58,
+          25.15,
+          -5.5
+        ]
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-ca86c257a3",
+        "product-photo-7dbf95bb28",
+        "product-photo-6ce7959e87"
+      ],
+      "notes": "Optical cell inside the CAD upper-side light-guide opening. Six cells per side visualize the twelve actual chain values; left/right physical chain order and optical diffusion are not calibrated."
+    },
+    {
+      "id": "rgb-window-right-2",
+      "kind": "box",
+      "color": "#bdceca",
+      "ledIndex": 8,
+      "geometry": {
+        "sizeMm": [
+          0.25,
+          1.1,
+          4.7
+        ],
+        "centerMm": [
+          25.58,
+          25.15,
+          -0.5
+        ]
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-ca86c257a3",
+        "product-photo-7dbf95bb28",
+        "product-photo-6ce7959e87"
+      ],
+      "notes": "Optical cell inside the CAD upper-side light-guide opening. Six cells per side visualize the twelve actual chain values; left/right physical chain order and optical diffusion are not calibrated."
+    },
+    {
+      "id": "rgb-window-right-3",
+      "kind": "box",
+      "color": "#bdceca",
+      "ledIndex": 9,
+      "geometry": {
+        "sizeMm": [
+          0.25,
+          1.1,
+          4.7
+        ],
+        "centerMm": [
+          25.58,
+          25.15,
+          4.5
+        ]
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-ca86c257a3",
+        "product-photo-7dbf95bb28",
+        "product-photo-6ce7959e87"
+      ],
+      "notes": "Optical cell inside the CAD upper-side light-guide opening. Six cells per side visualize the twelve actual chain values; left/right physical chain order and optical diffusion are not calibrated."
+    },
+    {
+      "id": "rgb-window-right-4",
+      "kind": "box",
+      "color": "#bdceca",
+      "ledIndex": 10,
+      "geometry": {
+        "sizeMm": [
+          0.25,
+          1.1,
+          4.7
+        ],
+        "centerMm": [
+          25.58,
+          25.15,
+          9.5
+        ]
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-ca86c257a3",
+        "product-photo-7dbf95bb28",
+        "product-photo-6ce7959e87"
+      ],
+      "notes": "Optical cell inside the CAD upper-side light-guide opening. Six cells per side visualize the twelve actual chain values; left/right physical chain order and optical diffusion are not calibrated."
+    },
+    {
+      "id": "rgb-window-right-5",
+      "kind": "box",
+      "color": "#bdceca",
+      "ledIndex": 11,
+      "geometry": {
+        "sizeMm": [
+          0.25,
+          1.1,
+          4.7
+        ],
+        "centerMm": [
+          25.58,
+          25.15,
+          14.5
+        ]
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-ca86c257a3",
+        "product-photo-7dbf95bb28",
+        "product-photo-6ce7959e87"
+      ],
+      "notes": "Optical cell inside the CAD upper-side light-guide opening. Six cells per side visualize the twelve actual chain values; left/right physical chain order and optical diffusion are not calibrated."
     }
   ],
   "derivedSurfaces": [
@@ -513,6 +956,12 @@
       "view": "side",
       "file": "reference-product-photo-7dbf95bb28.webp",
       "sourceSha256": "f4f94b97d7086e5edecd17d13c9518a2ed8a49b29d3a94ff201e0b68302e6c08"
+    },
+    {
+      "sourceId": "product-photo-6ce7959e87",
+      "view": "top",
+      "file": "reference-product-photo-6ce7959e87.webp",
+      "sourceSha256": "a801ef8b8a8b82a5e34da35cb2559155bd84cdca0b649657a4a4a16ebeb64687"
     }
   ],
   "textures": [],
@@ -953,20 +1402,6 @@
         "sha256": "f4f94b97d7086e5edecd17d13c9518a2ed8a49b29d3a94ff201e0b68302e6c08"
       },
       {
-        "id": "product-photo-6ce7959e87",
-        "title": "StackChan official photo",
-        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_11.webp",
-        "kind": "product-photo",
-        "status": "fetched",
-        "discoveredFrom": "official-docs",
-        "archiveName": "product-photo-6ce7959e87.webp",
-        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_11.webp",
-        "fetchedAt": "2026-10-26T17:34:48Z",
-        "bytes": 25416,
-        "mediaType": "image/webp",
-        "sha256": "a801ef8b8a8b82a5e34da35cb2559155bd84cdca0b649657a4a4a16ebeb64687"
-      },
-      {
         "id": "product-photo-ad2f64f41c",
         "title": "StackChan official photo",
         "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_12.webp",
@@ -1370,6 +1805,20 @@
         "kind": "license",
         "status": "fetched",
         "archiveName": "license.txt"
+      },
+      {
+        "id": "product-photo-6ce7959e87",
+        "title": "StackChan official photo",
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_11.webp",
+        "kind": "product-photo",
+        "status": "fetched",
+        "discoveredFrom": "official-docs",
+        "archiveName": "product-photo-6ce7959e87.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_11.webp",
+        "fetchedAt": "2026-10-26T17:34:48Z",
+        "bytes": 25416,
+        "mediaType": "image/webp",
+        "sha256": "a801ef8b8a8b82a5e34da35cb2559155bd84cdca0b649657a4a4a16ebeb64687"
       }
     ]
   },
@@ -1392,6 +1841,7 @@
     "reference-product-photo-7dbf95bb28.webp": "f4f94b97d7086e5edecd17d13c9518a2ed8a49b29d3a94ff201e0b68302e6c08",
     "source.stl": "5495cd313847c2c135fa0309ee64747b93794e3d464a08e76d518b73b13a3107",
     "reference-product-photo-b051267015.webp": "7a174ac8f94f83773893b893a6ee26f91f00c34f1d5a034602295e25be3883a3",
-    "source-manufacturer-cad-52cb7ac41d.stl": "c21e35ad812b71aa44933055d3873090ae8c184479edf8e66e1fe595df598e1b"
+    "source-manufacturer-cad-52cb7ac41d.stl": "c21e35ad812b71aa44933055d3873090ae8c184479edf8e66e1fe595df598e1b",
+    "reference-product-photo-6ce7959e87.webp": "a801ef8b8a8b82a5e34da35cb2559155bd84cdca0b649657a4a4a16ebeb64687"
   }
 }

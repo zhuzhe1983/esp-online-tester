@@ -1,0 +1,95 @@
+{
+  "target": "M5Stack StackChan K151, ILI9342C digital subset",
+  "factory": {
+    "path": "FACTORY_BIN",
+    "version": "1.5.1",
+    "idf": "5.5.4",
+    "sha256": "411578a2ebca2cfe3541fdc32aeddbc4703cf912a5daa7e1253f69306d6e1d87"
+  },
+  "command": "target/release/esp32sim --board stackchan --boot rom --rom ROM_DIR/esp32s3_rev0_rom.elf --flash-mb 16 --psram-mb 8 --flash-image FACTORY_BIN --max-seconds 15 --no-dump --tft-png OUTPUT.png",
+  "boot": {
+    "guestSeconds": 15,
+    "core0Instructions": 135267197,
+    "core1Instructions": 30960857,
+    "displayTransactions": 276,
+    "displayPixelsWritten": 307200,
+    "output": "Welcome screen with Skip and Start",
+    "pngSha256": "63bbc592b49cca1c5b0a577c32c268596b08bf59f11fca481ae193abfba8553b"
+  },
+  "skip": {
+    "replaceLimitWith": "--script SCRIPT_FILE",
+    "script": "3.0 touch 88 188 1\n3.3 touch 88 188 0\n10 stop\n",
+    "guestSeconds": 10,
+    "core0Instructions": 121377737,
+    "core1Instructions": 176953725,
+    "displayTransactions": 845,
+    "displayPixelsWritten": 3782428,
+    "serialIncludes": [
+      "[Setup-Startup] startup skipped",
+      "[LauncherView] init"
+    ],
+    "output": "AI.AGENT launcher menu",
+    "pngSha256": "a74455fe7d8f1ad644139259354ecafa921725941347a1598b588c17cc6b1381"
+  },
+  "avatar": {
+    "script": "3.0 touch 88 188 1\n3.3 touch 88 188 0\n6.0 touch 294 120 1\n6.4 touch 294 120 0\n9.0 touch 160 120 1\n9.4 touch 160 120 0\n20 stop\n",
+    "guestSeconds": 20,
+    "core0Instructions": 149547946,
+    "core1Instructions": 234268423,
+    "serialIncludes": [
+      "[Launcher] handle open app, app id: 2",
+      "[AVATAR] on open",
+      "[WS-Avatar] start websocket avatar service",
+      "[Network] start and wait for network connected...",
+      "WifiBoard: WiFi config mode entered"
+    ],
+    "output": "Official network configuration screen; no remote Avatar service connected"
+  },
+  "limitations": [
+    "No physical device verification",
+    "GC0308 and RTC correctly NACK and report unavailable",
+    "Audio, NFC, battery dynamics, remote cloud and full app compatibility not verified",
+    "PWM velocity command is observable; continuous angular displacement unsupported without calibrated speed law",
+    "Native output is separate from browser/WASM acceptance",
+    "Wall-clock times intentionally omitted because concurrent builds were active; these are correctness checks, not CPU benchmarks",
+    "VM_EN no-reply behavior is an ideal disconnected-VM model from manufacturer schematics; community Xiaozhi README claims powered-off feedback, which may involve unmodeled signal backpower and remains unverified"
+  ],
+  "privacy": "Private local paths normalized to placeholders; native command output not retained verbatim; generated MAC and SSID omitted. Screenshot of network configuration excluded. Numeric correctness counters preserved.",
+  "dance": {
+    "script": "3.0 touch 88 188 1\n3.3 touch 88 188 0\n6.0 touch 294 120 1\n6.4 touch 294 120 0\n7.5 touch 294 120 1\n7.9 touch 294 120 0\n9.0 touch 294 120 1\n9.4 touch 294 120 0\n10.5 touch 294 120 1\n10.9 touch 294 120 0\n12.0 touch 294 120 1\n12.4 touch 294 120 0\n14.0 touch 160 120 1\n14.4 touch 160 120 0\n22 stop\n",
+    "guestSeconds": 22,
+    "core0Instructions": 1968172110,
+    "core1Instructions": 442465294,
+    "displayTransactions": 1785,
+    "displayPixelsWritten": 9541063,
+    "serialIncludes": [
+      "[Launcher] handle open app, app id: 6",
+      "[DANCE] on open",
+      "[HAL-BLE] start ble server",
+      "[HAL-BLE] init"
+    ],
+    "output": "Starting BLE server; no BLE peer, dance playback not accepted",
+    "pngSha256": "40e2d52e1389d85f59b7e77314f00256c5fae47c66e221d20de30d3a93e9bffd"
+  },
+  "setup": {
+    "script": "3.0 touch 88 188 1\n3.3 touch 88 188 0\n6.0 touch 294 120 1\n6.4 touch 294 120 0\n7.5 touch 294 120 1\n7.9 touch 294 120 0\n9.0 touch 294 120 1\n9.4 touch 294 120 0\n10.5 touch 294 120 1\n10.9 touch 294 120 0\n12.0 touch 294 120 1\n12.4 touch 294 120 0\n13.5 touch 294 120 1\n13.9 touch 294 120 0\n16.0 touch 160 120 1\n16.4 touch 160 120 0\n20 stop\n",
+    "guestSeconds": 20,
+    "core0Instructions": 195902820,
+    "core1Instructions": 504250583,
+    "displayTransactions": 2048,
+    "displayPixelsWritten": 10984254,
+    "serialIncludes": [
+      "[Launcher] handle open app, app id: 7",
+      "[SETUP] on open"
+    ],
+    "output": "Settings screen with Change Wi-Fi and Brightness",
+    "pngSha256": "1622bce1dc44eb294e8da78024c84448b7520e62ca1972b437785b4893537693"
+  },
+  "screenshotRetention": "Screenshots remain local ignored artifacts; hashes and exact reproduction commands are retained here, following docs/evidence/README.md.",
+  "implementationFilesSha256": {
+    "esp32s3/src/board/stackchan.rs": "f2e583c06c253e52166b599727a0bffbfba3589f87e218af549f17fdbf4bcf1a",
+    "esp32s3/src/board/stackchan_host.rs": "0b82575400901e798a6749e19a8dd45c78fbd024b6d803339fd118a0312bf033",
+    "esp32s3/src/board/stackchan_base.rs": "30afd631d3e1961ae753f5b0a33b8582037b34925a331e41799fadd9d0f528fa"
+  },
+  "baseRevision": "035278a0dbac05013ae64041749b1fdea706bc4f"
+}
