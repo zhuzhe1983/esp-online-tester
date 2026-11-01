@@ -52,7 +52,7 @@ def configure(plan):
  plan = copy.deepcopy(plan); spec = front_spec()
  plan['derivedParts'] = [p for p in plan['derivedParts'] if p['id'] not in OPTIC_IDS] + spec['optics']
  surface = next(p for p in plan['surfaces'] if p['name'] == 'front-glass')
- surface.update(spec['glass'], sourceIds=[DXF_ID, 'product-photo-86528c8744'], notes='DXF TMP_DWG front-cover outline: 50.8 mm square with R3.4 corners. Z=15.8 mm is a display-stack estimate 0.05 mm beyond the source shell; no photographed screen pixels are drawn.')
+ surface.update(spec['glass'], basis='cad-measurement', sourceIds=[DXF_ID, 'product-photo-86528c8744'], notes='DXF TMP_DWG front-cover outline: 50.8 mm square with R3.4 corners. Z=15.8 mm is a display-stack estimate 0.05 mm beyond the source shell; no photographed screen pixels are drawn.')
  screen = plan['presentation']['screen']; screen['positionMm'] = [*spec['screenCenterMm'], 15.85]
  screen['sourceIds'] = [DXF_ID, 'official-docs']
  screen['basis'] = 'Centered using DXF entities 734/756/759 (41.6×31.4 mm optical window). 40.64×30.48 mm active LCD is the nominal 2-inch 4:3 display area; physical stack Z remains estimated.'
