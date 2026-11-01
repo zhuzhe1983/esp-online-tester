@@ -1,0 +1,411 @@
+{
+  "schemaVersion": 1,
+  "id": "stackchan-factory-1.5.1",
+  "board": "stackchan",
+  "firmware": {
+    "url": "https://m5burner-cdn.m5stack.com/firmware/746f9662f48ac465cccf49bcad941414.bin",
+    "sha256": "411578a2ebca2cfe3541fdc32aeddbc4703cf912a5daa7e1253f69306d6e1d87",
+    "bytes": 12783789,
+    "format": "merged",
+    "appOffset": 131072,
+    "idf": "v5.5.4",
+    "appName": "stack-chan",
+    "appVersion": "1.5.1",
+    "buildDate": "Jul 31 2026"
+  },
+  "segments": [
+    {
+      "address": 1009123360,
+      "offset": 131104,
+      "bytes": 1132652
+    },
+    {
+      "address": 1070242816,
+      "offset": 1263764,
+      "bytes": 36404
+    },
+    {
+      "address": 1077379072,
+      "offset": 1300176,
+      "bytes": 10568
+    },
+    {
+      "address": 1107296288,
+      "offset": 1310752,
+      "bytes": 2483104
+    },
+    {
+      "address": 1077389640,
+      "offset": 3793864,
+      "bytes": 127412
+    },
+    {
+      "address": 1342177280,
+      "offset": 3921284,
+      "bytes": 32
+    }
+  ],
+  "symbols": [
+    {
+      "name": "esp_bt_controller_init",
+      "address": 1107824872,
+      "size": 932,
+      "basis": "IDF init argument checks, unique __func__ string, and NimBLE caller 0x4207ed5f. Extent is the entry-to-next-function interval, including padding."
+    },
+    {
+      "name": "esp_bt_controller_enable",
+      "address": 1107825852,
+      "size": 169,
+      "basis": "IDF status==INITED and mode checks, btdm_controller_enable call, then status=ENABLED; NimBLE caller 0x4207ed85."
+    },
+    {
+      "name": "esp_bt_controller_disable",
+      "address": 1107826024,
+      "size": 76,
+      "basis": "IDF status==ENABLED, async wake(2), power-active wait, btdm_controller_disable, then status=INITED."
+    },
+    {
+      "name": "esp_bt_controller_deinit",
+      "address": 1107825804,
+      "size": 46,
+      "basis": "IDF status==INITED, btdm_controller_deinit and common free; next entry is enable."
+    },
+    {
+      "name": "esp_vhci_host_check_send_available",
+      "address": 1107824784,
+      "size": 20,
+      "basis": "IDF status==ENABLED and call8 to exact controller-library API_vhci_host_check_send_available 0x42095570."
+    },
+    {
+      "name": "esp_vhci_host_send_packet",
+      "address": 1107824804,
+      "size": 34,
+      "basis": "IDF status guard and async wake bracket around API_vhci_host_send_packet 0x420955ac; data/16-bit length arguments preserved."
+    },
+    {
+      "name": "esp_vhci_host_register_callback",
+      "address": 1107824840,
+      "size": 31,
+      "basis": "IDF status guard and result conversion around API_vhci_host_register_callback 0x42095668."
+    },
+    {
+      "name": "xTaskCreatePinnedToCore",
+      "address": 1077488144,
+      "size": 141,
+      "basis": "Unique assertion __func__ string; stack and TCB allocation; prvInitialiseNewTask/prvAddNewTask calls; NimBLE host-task caller loads 0x42043e88."
+    },
+    {
+      "name": "vTaskDelay",
+      "address": 1077485504,
+      "size": 59,
+      "basis": "Unique assertion __func__ string; scheduler suspension check, delayed-list insertion and yield; zero-delay path yields."
+    },
+    {
+      "name": "_bt_controller_bss_start",
+      "address": 1070314112,
+      "size": 0,
+      "basis": "Alias for the verified controller-only BSS reservation start, NOT a recovered original linker boundary."
+    },
+    {
+      "name": "_bt_controller_bss_end",
+      "address": 1070314624,
+      "size": 0,
+      "basis": "Alias for reservation start + 512 bytes, NOT a recovered original linker boundary."
+    }
+  ],
+  "bssReservation": {
+    "start": 1070314112,
+    "end": 1070314624,
+    "bytes": 512,
+    "provenContainerStartAtMost": 1070314112,
+    "provenContainerEndAtLeast": 1070314800,
+    "originalLinkerBoundsRecovered": false,
+    "condition": "The native BT controller init/enable/disable/deinit and VHCI entry points are intercepted. Only the guest NimBLE host/RTOS and virtual controller execute. These aliases are invalid if the native controller executes."
+  },
+  "bssAnchors": [
+    {
+      "object": "arch_main.o",
+      "function": "ble_try_turn_on_pll_track",
+      "functionAddress": 1077394012,
+      "functionSize": 62,
+      "relocationOffset": 22,
+      "loadAddress": 1077394018,
+      "literalAddress": 1077393996,
+      "symbol": "pll_track_state",
+      "symbolAddress": 1070314112,
+      "symbolSize": 16,
+      "section": ".bss.pll_track_state"
+    },
+    {
+      "object": "lld_adv.o",
+      "function": "ble_ext_config_init",
+      "functionAddress": 1107870660,
+      "functionSize": 18,
+      "relocationOffset": 11,
+      "loadAddress": 1107870663,
+      "literalAddress": 1107870656,
+      "symbol": "g_ble_ext_config",
+      "symbolAddress": 1070314408,
+      "symbolSize": 36,
+      "section": ".bss.g_ble_ext_config"
+    },
+    {
+      "object": "rf_coexist_hook.o",
+      "function": "coex_hook_check_coex_schm_st",
+      "functionAddress": 1107910084,
+      "functionSize": 42,
+      "relocationOffset": 11,
+      "loadAddress": 1107910087,
+      "literalAddress": 1107910076,
+      "symbol": ".bss.s_ble_st_group_map",
+      "symbolAddress": 1070314790,
+      "symbolSize": 10,
+      "section": ".bss.s_ble_st_group_map"
+    },
+    {
+      "object": "rf_coexist_hook.o",
+      "function": "bt_rf_coex_hook_register",
+      "functionAddress": 1107910940,
+      "functionSize": 34,
+      "relocationOffset": 26,
+      "loadAddress": 1107910946,
+      "literalAddress": 1107910076,
+      "symbol": ".bss.s_ble_st_group_map",
+      "symbolAddress": 1070314790,
+      "symbolSize": 10,
+      "section": ".bss.s_ble_st_group_map"
+    }
+  ],
+  "partitions": [
+    {
+      "name": "nvs",
+      "type": 1,
+      "subtype": 2,
+      "offset": 36864,
+      "bytes": 16384,
+      "availableBytes": 16384,
+      "availableSha256": "0fbba07a833d4dcfc7024eaf313661a0ba8f80a05c6d29b8801c612e10e60dee",
+      "availableAllFF": true,
+      "flags": 0
+    },
+    {
+      "name": "otadata",
+      "type": 1,
+      "subtype": 0,
+      "offset": 53248,
+      "bytes": 8192,
+      "availableBytes": 8192,
+      "availableSha256": "7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f",
+      "availableAllFF": true,
+      "flags": 0
+    },
+    {
+      "name": "phy_init",
+      "type": 1,
+      "subtype": 1,
+      "offset": 61440,
+      "bytes": 4096,
+      "availableBytes": 4096,
+      "availableSha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "availableAllFF": true,
+      "flags": 0
+    },
+    {
+      "name": "ota_0",
+      "type": 0,
+      "subtype": 16,
+      "offset": 131072,
+      "bytes": 5177344,
+      "availableBytes": 5177344,
+      "availableSha256": "c2bd2ea71256a39c5c19b7e6763c139b8d9313c93af0febd91a6fb2422e3deb5",
+      "availableAllFF": false,
+      "flags": 0
+    },
+    {
+      "name": "ota_1",
+      "type": 0,
+      "subtype": 17,
+      "offset": 5308416,
+      "bytes": 5177344,
+      "availableBytes": 5177344,
+      "availableSha256": "a1c373a3265318764fce2aea477d303f4412415e9e9462bbdcc91c49db45e956",
+      "availableAllFF": true,
+      "flags": 0
+    },
+    {
+      "name": "assets",
+      "type": 1,
+      "subtype": 130,
+      "offset": 10485760,
+      "bytes": 4194304,
+      "availableBytes": 2298029,
+      "availableSha256": "3e845bf47a6239eddcdd8190a1634ab6167e3e599765d29eb7e603cba64fa858",
+      "availableAllFF": false,
+      "flags": 0
+    },
+    {
+      "name": "coredump",
+      "type": 1,
+      "subtype": 3,
+      "offset": 14680064,
+      "bytes": 65536,
+      "availableBytes": 0,
+      "availableSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "availableAllFF": true,
+      "flags": 0
+    }
+  ],
+  "mutableFlashRanges": [
+    {
+      "offset": 36864,
+      "bytes": 16384,
+      "name": "nvs"
+    },
+    {
+      "offset": 53248,
+      "bytes": 8192,
+      "name": "otadata"
+    }
+  ],
+  "sources": [
+    {
+      "id": "controller-library",
+      "url": "https://raw.githubusercontent.com/espressif/esp32c3-bt-lib/ebd6043a8e3c3bbde45ee483895303b9c1229ab5/esp32s3/libbtdm_app.a",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp32c3-bt-lib/ebd6043a8e3c3bbde45ee483895303b9c1229ab5/esp32s3/libbtdm_app.a",
+      "mediaType": "application/octet-stream",
+      "retrievedAt": "2026-11-01T17:01:09Z",
+      "bytes": 1520374,
+      "sha256": "ff3538c403108897cf34a74b45251ad2a3d0e1beab70979c2e332832cbf04a6e"
+    },
+    {
+      "id": "bt-source",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/bt/controller/esp32c3/bt.c",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/bt/controller/esp32c3/bt.c",
+      "mediaType": "text/plain; charset=utf-8",
+      "retrievedAt": "2026-11-01T17:01:10Z",
+      "bytes": 77105,
+      "sha256": "83b82316502ede67fbd6f2f6c900127853f6f43422ecade33507c1d01bf1165b"
+    },
+    {
+      "id": "controller-linker",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/bt/linker_rw_bt_controller.lf",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/bt/linker_rw_bt_controller.lf",
+      "mediaType": "text/plain; charset=utf-8",
+      "retrievedAt": "2026-11-01T17:01:10Z",
+      "bytes": 1207,
+      "sha256": "0dca0ea11b7056cedb4fdf7f004a20b5598caad0004203e8326a549fe1630c14"
+    },
+    {
+      "id": "controller-sections",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/bt/linker_common.lf",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/bt/linker_common.lf",
+      "mediaType": "text/plain; charset=utf-8",
+      "retrievedAt": "2026-11-01T17:01:10Z",
+      "bytes": 188,
+      "sha256": "fd54acfd407bb9e86e085136d9b2d2a58cfc3d18372e517719baafe7eb4f8d69"
+    },
+    {
+      "id": "freertos-tasks",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/freertos/FreeRTOS-Kernel/tasks.c",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/freertos/FreeRTOS-Kernel/tasks.c",
+      "mediaType": "text/plain; charset=utf-8",
+      "retrievedAt": "2026-11-01T17:01:12Z",
+      "bytes": 272955,
+      "sha256": "193c3d8379acc847097632da8e6d4dd2ee0bf8e069d78979d68dd26b653d48df"
+    },
+    {
+      "id": "freertos-additions",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/freertos/esp_additions/freertos_tasks_c_additions.h",
+      "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/freertos/esp_additions/freertos_tasks_c_additions.h",
+      "mediaType": "text/plain; charset=utf-8",
+      "retrievedAt": "2026-11-01T17:05:22Z",
+      "bytes": 50785,
+      "sha256": "6d100f12a99807975367d44788630ca312f3aadb6ea465783cdc74bee9dd0dd8"
+    }
+  ],
+  "symbolWindows": [
+    {
+      "address": 1107575140,
+      "bytes": 4,
+      "symbol": "esp_bt_controller_init:__func__-literal"
+    },
+    {
+      "address": 1009463915,
+      "bytes": 23,
+      "symbol": "esp_bt_controller_init:__func__"
+    },
+    {
+      "address": 1077383712,
+      "bytes": 4,
+      "symbol": "xTaskCreatePinnedToCore:__func__-literal"
+    },
+    {
+      "address": 1009330806,
+      "bytes": 24,
+      "symbol": "xTaskCreatePinnedToCore:__func__"
+    },
+    {
+      "address": 1077383628,
+      "bytes": 4,
+      "symbol": "vTaskDelay:__func__-literal"
+    },
+    {
+      "address": 1009331368,
+      "bytes": 11,
+      "symbol": "vTaskDelay:__func__"
+    }
+  ],
+  "limitations": [
+    "No official ELF/map/build artifact was published in the queried StackChan releases or Actions artifacts (both empty on 2026-11-01).",
+    "The public StackChan source f901cc2969189f3f0e96af1442c0f96e77e1e2c1 is newer and is not represented as a byte-identical build.",
+    "No original linker BSS boundaries are claimed; the ELF names denote the verified internal reservation only.",
+    "This enables existing EX200 VHCI emulation; no RF controller, encryption, pairing or external phone connectivity is claimed."
+  ],
+  "controllerApiFunctions": [
+    {
+      "object": "vhci.o",
+      "function": "API_vhci_host_check_send_available",
+      "functionAddress": 1107907952,
+      "functionSize": 57
+    },
+    {
+      "object": "vhci.o",
+      "function": "API_vhci_host_send_packet",
+      "functionAddress": 1107908012,
+      "functionSize": 188
+    },
+    {
+      "object": "vhci.o",
+      "function": "API_vhci_host_register_callback",
+      "functionAddress": 1107908200,
+      "functionSize": 20
+    }
+  ],
+  "callSites": [
+    {
+      "address": 1107824797,
+      "target": 1107907952,
+      "basis": "VHCI availability wrapper calls exact archive API"
+    },
+    {
+      "address": 1107824828,
+      "target": 1107908012,
+      "basis": "VHCI send wrapper calls exact archive API"
+    },
+    {
+      "address": 1107824858,
+      "target": 1107908200,
+      "basis": "VHCI callback wrapper calls exact archive API"
+    },
+    {
+      "address": 1107815775,
+      "target": 1107824872,
+      "basis": "NimBLE transport initialization calls controller init"
+    },
+    {
+      "address": 1107815813,
+      "target": 1107825852,
+      "basis": "NimBLE transport initialization calls controller enable"
+    }
+  ]
+}
