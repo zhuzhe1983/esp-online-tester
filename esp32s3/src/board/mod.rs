@@ -19,6 +19,9 @@ pub mod atoms3_lite;
 pub mod atoms3r;
 pub mod atom_voices3r;
 pub mod dial;
+pub mod stackchan;
+mod stackchan_host;
+mod stackchan_base;
 pub mod dinmeter;
 mod tembed_cc1101;
 mod stamps3;
@@ -68,6 +71,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "atoms3r-chatbot" | "m5stack-k147" => Some(Box::new(AtomS3R::chatbot())),
         "atoms3r" | "m5stack-atoms3r" => Some(Box::new(AtomS3R::new())),
         "atoms3" | "m5stack-atoms3" => Some(Box::new(AtomS3::new())),
+        "stackchan" | "m5stack-k151" => Some(Box::new(stackchan::StackChan::new())),
         "dial" | "m5stack-dial" => Some(Box::new(Dial::new())),
         "stamps3" | "m5stack-s007" => Some(Box::new(stamps3::StampS3::new())),
         "stamps3a" | "m5stack-s007-v033" => Some(Box::new(stamps3::StampS3::s3a())),

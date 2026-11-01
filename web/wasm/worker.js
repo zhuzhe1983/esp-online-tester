@@ -16,6 +16,18 @@ let loopGeneration = 0, booted = false, catchupTurns = 0;
 let flashShadow = null, flashWatchId = null, flashScanAt = 0;
 const FLASH_PAGE = 4096;
 let sdShadow=null,sdWatchId=null,sdScanAt=0;
+let motionEnabled=false,motionLast='',motionAt=0;
+// Host observation only, on the opted-in board. No generic machine/tick polling.
+function collectMotion(force=false) {
+  if(!motionEnabled||!emu||!wasm.esp32sim_motion_snapshot||!force&&performance.now()-motionAt<20)return;
+  motionAt=performance.now();const capacity=4096,p=wasm.esp32sim_alloc(capacity);
+  try {
+    const n=wasm.esp32sim_motion_snapshot(emu,p,capacity);
+    if(n<=0||n>capacity)return;
+    const json=dec.decode(mem().subarray(p,p+n));
+    if(json!==motionLast){motionLast=json;postMessage({text:JSON.stringify({t:'motion',...JSON.parse(json)})});}
+  } finally {wasm.esp32sim_free(p,capacity);}
+}
 function sdBytes() {if(!emu||!wasm.esp32sim_sd_len)throw new Error('SD images unsupported by this WASM');return mem().subarray(wasm.esp32sim_sd_ptr(emu),wasm.esp32sim_sd_ptr(emu)+wasm.esp32sim_sd_len(emu));}
 function collectSd(force=false) {
   if(!sdShadow||!force&&performance.now()-sdScanAt<1500)return;sdScanAt=performance.now();
@@ -26,7 +38,15 @@ function collectSd(force=false) {
 }
 function flashBytes() {
   if (!emu || !wasm.esp32sim_flash_ptr || !wasm.esp32sim_flash_len) throw new Error('Flash snapshots are unsupported by this WASM build');
-  return mem().subarray(wasm.esp32sim_flash_ptr(emu), wasm.esp32sim_flash_ptr(emu) + wasm.esp32sim_flash_len(emu));
+  const bytes = mem().subarray(wasm.esp32sim_flash_ptr(emu), wasm.esp32sim_flash_ptr(emu) + wasm.esp32sim_flash_len(emu));
+  const length = wasm.esp32sim_ble_hci_flash_len?.(emu) || 0;
+  if (!length) return bytes;
+  // The virtual controller installs a guest callback trampoline. It is execution
+  // state, never a firmware/NVS write: snapshot, watch and delta use this same view.
+  const offset = wasm.esp32sim_ble_hci_flash_offset(emu), pointer = wasm.esp32sim_ble_hci_flash_ptr(emu);
+  if (offset + length > bytes.length) throw new Error('Virtual HCI Flash overlay exceeds image');
+  const snapshot = bytes.slice(); snapshot.set(mem().subarray(pointer, pointer + length), offset);
+  return snapshot;
 }
 function collectFlash(force = false) {
   if (!flashShadow || !force && performance.now() - flashScanAt < 500) return;
@@ -101,7 +121,7 @@ function loop(generation = loopGeneration) {
     if (inputTraceIds.length) postMessage({ touchTrace: { stage: 'run-exit', ids: inputTraceIds, atMs: traceNow(), cycles: cur } });
     pacing.observe(cur - previous, performance.now() - before);
     drain();drainNetwork();
-    collectFlash();collectSd();
+    collectFlash();collectSd();collectMotion();
     if (rc !== 0) { running = false; postMessage({ stopped: rc }); return; }
     if (performance.now() - now >= turnMs) break;                       // let messages flow, come back
   }
@@ -178,6 +198,7 @@ onmessage = async (ev) => {
       // Keep credits for already posted frames until their ACKs arrive, but never send
       // a retained frame from the emulator being replaced.
       pendingFrame = null;sdShadow=null;sdWatchId=null;
+      motionEnabled=m.board==='stackchan';motionLast='';motionAt=0;
       pacing = createPacing(); catchupTurns = 0;
       pendingInputTrace = [];
       if (emu) { wasm.esp32sim_delete(emu); emu = 0; }
@@ -258,6 +279,15 @@ onmessage = async (ev) => {
       postMessage({flashReply: m.requestId, ok: true});
     }
     else if (m.op === 'load') { const rc = withBytes(new Uint8Array(m.data), (p, n) => m.at !== undefined ? wasm.esp32sim_load_at(emu, m.at >>> 0, p, n) : wasm.esp32sim_load(emu, m.kind, p, n)); postMessage({ loaded: m.at !== undefined ? 'at' + m.at : m.kind, ok: rc === 0 }); }
+    else if (m.op === 'ble-hci') {
+      try {
+        if (!emu || booted || running) throw new Error('Configure virtual HCI only before boot');
+        if (!(m.data instanceof ArrayBuffer) || !m.data.byteLength || m.data.byteLength > 256 * 1024 * 1024) throw new Error('Invalid virtual HCI symbol ELF');
+        if (!wasm.esp32sim_ble_hci || !wasm.esp32sim_ble_hci_flash_len || !wasm.esp32sim_ble_hci_flash_offset || !wasm.esp32sim_ble_hci_flash_ptr) throw new Error('Virtual HCI with safe Flash snapshots is unavailable in this WASM build');
+        if (withBytes(new Uint8Array(m.data), (p, n) => wasm.esp32sim_ble_hci(emu, p, n)) !== 0) throw new Error('Virtual HCI symbol ELF rejected (see console)');
+        postMessage({bleReply: m.requestId, ok: true});
+      } catch (error) { postMessage({bleReply: m.requestId, ok: false, error: error.message}); }
+    }
     else if (m.op === 'stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_stub_spec(emu, p, n)) !== 0) setupError ||= 'invalid stub: ' + m.spec; }
     else if (m.op === 'wifi') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_wifi(emu, p, n)) !== 0) setupError ||= 'invalid WiFi configuration (see console)'; }
     else if (m.op === 'start') {
@@ -280,6 +310,7 @@ onmessage = async (ev) => {
       postMessage({ resumed: true });
     }
     else if (m.op === 'net-create') {
+      motionEnabled=false;motionLast='';
       flashShadow = null; flashWatchId = null;sdShadow=null;sdWatchId=null;
       setupError = null;
       running = false; loopGeneration++; booted = false;
@@ -303,7 +334,7 @@ onmessage = async (ev) => {
     else if (m.op === 'net-load') { const rc = withBytes(new Uint8Array(m.data), (p, n) => wasm.esp32sim_net_load(net, m.node, m.kind, p, n)); postMessage({ loaded: 'n' + m.node + ':' + m.kind, ok: rc === 0 }); }
     else if (m.op === 'net-stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_net_stub_spec(net, m.node, p, n)) !== 0) setupError ||= 'invalid stub for node ' + m.node + ': ' + m.spec; }
     else if (m.op === 'net-start') { if (setupError) throw new Error(setupError); const rc = wasm.esp32sim_net_boot(net); if (rc === 0) { running = true; netT0 = performance.now(); netLoop(); } postMessage({ started: rc === 0 }); }
-    else if (m.op === 'stop') { if(emu&&wasm.esp32sim_audio_output_flush){wasm.esp32sim_audio_output_flush(emu);drain();} running = false; loopGeneration++; collectFlash(true);collectSd(true); postMessage({ stopped: 0 }); }
+    else if (m.op === 'stop') { if(emu&&wasm.esp32sim_audio_output_flush){wasm.esp32sim_audio_output_flush(emu);drain();} running = false; loopGeneration++; collectFlash(true);collectSd(true);collectMotion(true); postMessage({ stopped: 0 }); }
     else if (m.op === 'imu') {
       const values = [...(m.accelG || []), ...(m.gyroDps || [])];
       const ok = !!emu && values.length === 6 && values.every(Number.isFinite) && !!wasm.esp32sim_set_imu_sample

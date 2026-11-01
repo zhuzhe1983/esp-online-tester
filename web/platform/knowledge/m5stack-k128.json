@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:28:18Z",
+  "updatedAt": "2026-11-01T17:06:43Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -954,6 +954,52 @@
         "official-docs"
       ],
       "group": "pinmap"
+    },
+    {
+      "id": "model-front-optics",
+      "label": "Front optical apertures from official DXF",
+      "value": {
+        "glassSizeMm": [
+          50.8,
+          50.8
+        ],
+        "glassCornerRadiusMm": 3.4,
+        "lcdWindowCenterMm": [
+          0,
+          0
+        ],
+        "cameraCenterMm": [
+          0,
+          -21
+        ],
+        "microphoneCentersMm": [
+          [
+            -14,
+            -20.25
+          ],
+          [
+            14,
+            -20.25
+          ]
+        ],
+        "ltrWindowCentersMm": [
+          [
+            6.58,
+            -21
+          ],
+          [
+            8.98,
+            -21
+          ]
+        ]
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "dimension-drawing-74afac7b92"
+      ],
+      "group": "model-geometry",
+      "notes": "Coordinates are relative to the 54 mm front-panel center. These describe visible apertures, not internal package placement. Optical depth, materials and the active LCD plane remain presentation estimates; no camera/audio/proximity runtime validation is implied.",
+      "method": "tools/rebuild-cores3-front.py --check: parse pinned DXF ENTITIES, origin from dimension witnesses 6D1/6D2; glass 71E/75B/724/75F, LCD 734/756/759, camera 10B8/10BA/10BB, microphones 109A/10BC, LTR 10BD/10BE. Retain native mm coordinates."
     }
   ],
   "revisions": [],
@@ -977,8 +1023,15 @@
       "title": "Cores3 Model Size DXF",
       "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/CoreS3/cores3.dxf",
       "kind": "dimension-drawing",
-      "status": "linked",
-      "discoveredFrom": "official-docs"
+      "status": "fetched",
+      "discoveredFrom": "official-docs",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/CoreS3/cores3.dxf",
+      "fetchedAt": "2026-11-01T16:48:50Z",
+      "bytes": 957204,
+      "sha256": "c97a042b573bdc2e0f7c09897420b9352ccc941a7705ce18caf59356fb17fc42",
+      "archiveName": "cores3.dxf",
+      "notes": "Fetched for front optical-center extraction; earlier linked-only record did not carry a content hash. Planar entity coordinates are retained separately from estimated optical material/depth.",
+      "contentType": "image/vnd.dxf"
     },
     {
       "id": "manufacturer-source-1a014da16b",
@@ -1509,7 +1562,8 @@
       "id": "dimension-drawing-74afac7b92",
       "sourceId": "dimension-drawing-74afac7b92",
       "role": "dimension-drawing",
-      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/CoreS3/cores3.dxf"
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/CoreS3/cores3.dxf",
+      "localUrl": "./assets/m5stack-k128/source-cores3.dxf"
     },
     {
       "id": "manufacturer-cad-c6394d7bc8",
@@ -1736,6 +1790,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-02: source-backed camera, dual microphone and LTR front apertures added from the official DXF. Head-only reuse contract excludes DinBase and internal PCB assumptions. Current and historical geometry evidence: docs/platform/evidence/m5stack-k128/front-details-2026-11-02/receipt.json."
   ]
 }

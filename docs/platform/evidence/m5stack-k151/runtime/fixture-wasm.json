@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-01T08:42:41.282Z",
+  "command": "node tools/probe-stackchan.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.4.3 protocol fixture",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "c17a0829a7035338493a172c947cba7f5a6361d60a9fe62f2e2b0e51dd0e67ed",
+    "platform_stackchan.bin": "cdcf8226d986f2c05408e1cdff2830a47b30c43e61974188455c79a75aa53c79",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "wasmSha256": "7710be02c1e470413fcd54260c59c8ad62a26c5b3dfeb49d4bc72d867697f8b6",
+  "checks": [
+    "real-rom-boot-expander-identity-servo-feedback-wrong-route-and-motor-power-gates",
+    "three-separate-si12t-pads-consumed-by-guest-drive-rgb-servo-feedback-and-framebuffer",
+    "independent-simultaneous-pad-press-and-release",
+    "ft6336-screen-contact-is-separate-from-head-pads",
+    "platform-reset-releases-pad-and-requires-fresh-guest-output",
+    "record-and-replay-pad-events-through-real-worker"
+  ],
+  "initialFrameSha256": "fc0342444f41db3366c15daecdc7263a06ef2662cf119fe11e545041661d13a2",
+  "replay": {
+    "result": "completed",
+    "bitExact": false,
+    "eventCount": 2,
+    "control": "touch-pad-front",
+    "pressGuestSeconds": 1.2163014166666666,
+    "releaseGuestSeconds": 1.3193404166666667
+  },
+  "status": "pass",
+  "guestSeconds": 1.68,
+  "servos": [
+    {
+      "id": "pan",
+      "positionDegrees": 0,
+      "targetDegrees": 0,
+      "enabled": true,
+      "moving": false,
+      "mode": "position",
+      "pwm": 0
+    },
+    {
+      "id": "tilt",
+      "positionDegrees": 0,
+      "targetDegrees": 0,
+      "enabled": true,
+      "moving": false,
+      "mode": "position",
+      "pwm": 0
+    }
+  ],
+  "leds": [
+    [
+      65,
+      64,
+      65
+    ],
+    [
+      65,
+      64,
+      65
+    ],
+    [
+      65,
+      64,
+      65
+    ],
+    [
+      65,
+      64,
+      65
+    ],
+    [
+      65,
+      64,
+      65
+    ],
+    [
+      65,
+      64,
+      65
+    ],
+    [
+      65,
+      64,
+      65
+    ],
+    [
+      65,
+      64,
+      65
+    ],
+    [
+      65,
+      64,
+      65
+    ],
+    [
+      65,
+      64,
+      65
+    ],
+    [
+      65,
+      64,
+      65
+    ],
+    [
+      65,
+      64,
+      65
+    ]
+  ],
+  "guestSelfChecks": {
+    "expander-version": "PASS",
+    "yaw-goal-feedback": "PASS",
+    "pitch-goal-feedback": "PASS",
+    "wrong-tx-no-response": "PASS",
+    "motor-power-off-no-response": "PASS",
+    "motor-power-recovery-response": "PASS"
+  },
+  "curation": {
+    "originalCaptureSha256": "217e5a9d86242c2098dfdd33f4bbb1e5d4345236023f81f6e08d9eaa06ff53aa",
+    "originalCaptureBytes": 4620,
+    "localCapture": "output/stackchan-evidence/fixture-wasm-full.json",
+    "omitted": "Raw serial excerpts and event objects; self-check results and replay input times are retained. Raw capture is local only."
+  }
+}

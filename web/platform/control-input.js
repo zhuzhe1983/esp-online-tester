@@ -1,4 +1,4 @@
-export const isPressControl = control => ['button','matrix-key'].includes(control.type);
+export const isPressControl = control => control.simulationSupported!==false && ['button','matrix-key'].includes(control.type);
 export function shouldCaptureMappedKey(event,product,mapping) {
   const control=product?.controls?.find(item=>item.id===mapping?.[event.code]);
   return Boolean(isPressControl(control||{}) && (!(event.altKey||event.ctrlKey||event.metaKey)||control.type==='matrix-key'));

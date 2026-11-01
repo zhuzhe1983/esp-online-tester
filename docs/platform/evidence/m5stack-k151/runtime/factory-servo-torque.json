@@ -1,0 +1,235 @@
+{
+  "schemaVersion": "1",
+  "date": "2026-11-01",
+  "scope": "Official StackChan V1.5.1 Servo Test after idle torque release; simulator verification, no physical-device calibration.",
+  "environment": {
+    "os": "macOS arm64",
+    "rust": "stable 1.99.1",
+    "node": "26.8.2",
+    "browser": "headless Chromium"
+  },
+  "firmware": {
+    "name": "M5Stack StackChan factory",
+    "version": "1.5.1",
+    "sha256": "411578a2ebca2cfe3541fdc32aeddbc4703cf912a5daa7e1253f69306d6e1d87",
+    "bytes": 12783789,
+    "delivery": "Manufacturer image supplied through the existing local-file input; not hosted or committed.",
+    "sourceReceipt": "../../../research/stackchan-runtime-sources-2026-11-01.json"
+  },
+  "sources": "../../../research/stackchan-servo-torque-sources-2026-11-01.json",
+  "defect": {
+    "beforeRevision": "5232eafb5d99d6f1baa21f1cd0ea4c9066deb26a",
+    "beforeWasmSha256": "7710be02c1e470413fcd54260c59c8ad62a26c5b3dfeb49d4bc72d867697f8b6",
+    "cause": "The model required explicit torque=1 after release; SCSCL target-position writes automatically engage torque. Official firmware releases torque during initialization and at rest, then sends WritePos without a separate enable.",
+    "beforeBrowser": {
+      "samples": 155,
+      "panDegrees": [
+        0,
+        0
+      ],
+      "tiltDegrees": [
+        0.0155,
+        0.0155
+      ],
+      "everEnabled": false
+    },
+    "beforeNative": "Timed Servo Test reached its completion screen without physical movement. A completion screen alone is not an execution assertion."
+  },
+  "fix": {
+    "behavior": "Torque defaults to zero. A validated position-mode goal write engages it; explicit torque-off still releases it. REG_WRITE remains deferred until ACTION, and SYNC_WRITE applies the same behavior.",
+    "artifactSha256": {
+      "web/wasm/esp32sim.wasm": "d69f1a868c6d159866c9d2ed0f9c54bf40a3746727adfcd73afd2c9f2562c779",
+      "esp32s3/src/board/stackchan_base.rs": "0c95960c6171968935e0afc0de2a388a8118e455da3e557351793853c7ca2323",
+      "esp32s3/tests/stackchan.rs": "45d58852a4c5e2b674e0fd1fdf70cb66d656a20c7b5c6544510f53dd823aca3e"
+    },
+    "unitChecks": [
+      "position write after idle torque release",
+      "invalid range, reads and unrelated writes do not engage torque",
+      "explicit release still works",
+      "registered writes engage only at ACTION",
+      "synchronized position writes engage both servo IDs"
+    ]
+  },
+  "reproduction": {
+    "nativeCommand": "ESP32SIM_ROM_DIR=ROM_DIR ESP32SIM_STACKCHAN_FACTORY=FACTORY_BIN ESP32SIM_STACKCHAN_FIXTURE=FIXTURE_MERGED_BIN cargo test --release -p esp32s3 --test stackchan -- --include-ignored",
+    "nativeInput": "Fresh machine: run 3 guest seconds, touch (235,188) for 300 ms, release for 2700 ms, touch (235,188) for 300 ms, release. Observe 400 steps of 40 ms.",
+    "nativeAssertions": "Ordered left >85°, home |pan|<1°, right <-85°, home, up >80°, home tilt<4°; torque enabled during motion and released at rest; actual 320×240 framebuffer.",
+    "browserInput": "Load the same factory image in a fresh workbench, click Welcome Start and Servo Test Start through FT6336 input, observe the full test. Retest, pausing for left/right/up screenshots, then resume to completion."
+  },
+  "afterBrowser": {
+    "firstRun": {
+      "samples": 280,
+      "pan": [
+        -90,
+        90
+      ],
+      "tilt": [
+        2.8125,
+        86.875
+      ],
+      "enabled": true,
+      "state": [
+        {
+          "id": "pan",
+          "positionDegrees": 0,
+          "targetDegrees": 0,
+          "enabled": false,
+          "moving": false,
+          "mode": "position",
+          "pwm": 0
+        },
+        {
+          "id": "tilt",
+          "positionDegrees": 2.8125,
+          "targetDegrees": 2.8125,
+          "enabled": false,
+          "moving": false,
+          "mode": "position",
+          "pwm": 0
+        }
+      ]
+    },
+    "retestPoses": [
+      {
+        "pose": "left",
+        "servos": [
+          {
+            "id": "pan",
+            "positionDegrees": 87.1033,
+            "targetDegrees": 87.5,
+            "enabled": true,
+            "moving": true,
+            "mode": "position",
+            "pwm": 0
+          },
+          {
+            "id": "tilt",
+            "positionDegrees": 2.8125,
+            "targetDegrees": 2.8125,
+            "enabled": false,
+            "moving": false,
+            "mode": "position",
+            "pwm": 0
+          }
+        ]
+      },
+      {
+        "pose": "right",
+        "servos": [
+          {
+            "id": "pan",
+            "positionDegrees": -85.9799,
+            "targetDegrees": -86.875,
+            "enabled": true,
+            "moving": true,
+            "mode": "position",
+            "pwm": 0
+          },
+          {
+            "id": "tilt",
+            "positionDegrees": 2.8125,
+            "targetDegrees": 2.8125,
+            "enabled": false,
+            "moving": false,
+            "mode": "position",
+            "pwm": 0
+          }
+        ]
+      },
+      {
+        "pose": "up",
+        "servos": [
+          {
+            "id": "pan",
+            "positionDegrees": 0,
+            "targetDegrees": 0,
+            "enabled": false,
+            "moving": false,
+            "mode": "position",
+            "pwm": 0
+          },
+          {
+            "id": "tilt",
+            "positionDegrees": 81.3143,
+            "targetDegrees": 82.5,
+            "enabled": true,
+            "moving": true,
+            "mode": "position",
+            "pwm": 0
+          }
+        ]
+      }
+    ],
+    "final": [
+      {
+        "id": "pan",
+        "positionDegrees": 0,
+        "targetDegrees": 0,
+        "enabled": false,
+        "moving": false,
+        "mode": "position",
+        "pwm": 0
+      },
+      {
+        "id": "tilt",
+        "positionDegrees": 2.8125,
+        "targetDegrees": 2.8125,
+        "enabled": false,
+        "moving": false,
+        "mode": "position",
+        "pwm": 0
+      }
+    ],
+    "frame": {
+      "width": 320,
+      "height": 240,
+      "sha256": "4184f49863b30b2751b35358add161f9cd6977b8fb4793afa7df0ab4f59bdd86"
+    }
+  },
+  "captures": [
+    {
+      "path": "output/playwright/stackchan-official-servo-left.png",
+      "sha256": "e259b18983f69cdc9e5639fd0d83a6ded904bf2d1909d49fedb15684a1f2be72",
+      "bytes": 219982,
+      "storage": "Local ignored output directory; not committed or uploaded."
+    },
+    {
+      "path": "output/playwright/stackchan-official-servo-right.png",
+      "sha256": "10f4f25331a8286ab44478c56463c37dd27cbd0beb5d301f6d7b9d89990e9ca3",
+      "bytes": 217294,
+      "storage": "Local ignored output directory; not committed or uploaded."
+    },
+    {
+      "path": "output/playwright/stackchan-official-servo-up.png",
+      "sha256": "07a02b30c39e2ef2adc92b5c252b2756967dac30e5126aec8f2edbc7410bf85d",
+      "bytes": 220664,
+      "storage": "Local ignored output directory; not committed or uploaded."
+    },
+    {
+      "path": "output/playwright/stackchan-official-servo-completed.png",
+      "sha256": "773f14dbe6545dedd31251c8f10e2fc928daace851638bbca390a9326d7e63ae",
+      "bytes": 216262,
+      "storage": "Local ignored output directory; not committed or uploaded."
+    }
+  ],
+  "regression": {
+    "workspaceTestsPassed": 1740,
+    "externalFirmwareTestsPassed": 2,
+    "boardUnitTestsPassed": 12,
+    "platformTestsPassed": 199,
+    "diagnosticWorkerGroupsPassed": 6,
+    "wasmDifferentialCasesPassed": 111126,
+    "gpioWaveformCasesPassed": 24,
+    "ciDemosPassed": 13,
+    "additionalDemo": "StopWatch",
+    "nativeAndWasmClippy": "pass, warnings denied",
+    "catalog": "pass"
+  },
+  "limitations": [
+    "Firmware source revision is independent of the binary; not claimed byte-identical.",
+    "Pitch home is 2.8125° in this binary, consistent with its 3° lower target clamp and servo quantization.",
+    "Position mechanics are unloaded and ideal; PWM rotation, physical zero/direction, torque and collision calibration remain unverified.",
+    "Raw console, event streams, device identifiers and screenshots are omitted from Git. Compact ranges and hashes support the result without retaining those fields.",
+    "Previous runtime receipts retain their original hashes and describe the earlier build."
+  ]
+}

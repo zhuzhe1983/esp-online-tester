@@ -200,6 +200,9 @@ pub trait BoardModel {
     /// GRAM receives a multi-window redraw; `display()` remains the current GRAM.
     /// The returned version identifies these pixels. Appended to preserve hot vtable offsets.
     fn display_for_ui(&self) -> Option<(u32, u32, Vec<u16>, u64)> { self.display() }
+    /// Cold feedback-driven mechanical state, serialized by the board; absent on non-mechanical boards.
+    /// No host caller may write servo positions through this observation API.
+    fn motion_snapshot(&self) -> Option<String> { None }
 }
 
 pub type Board = Box<dyn BoardModel>;

@@ -1,0 +1,577 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-01T16:59:41.274Z",
+  "backend": "production-worker-wasm",
+  "firmware": {
+    "version": "1.5.1",
+    "sha256": "411578a2ebca2cfe3541fdc32aeddbc4703cf912a5daa7e1253f69306d6e1d87"
+  },
+  "inputs": {
+    "firmware": {
+      "bytes": 12783789,
+      "sha256": "411578a2ebca2cfe3541fdc32aeddbc4703cf912a5daa7e1253f69306d6e1d87"
+    },
+    "symbols": {
+      "bytes": 708,
+      "sha256": "7d4996d8cddd6b735abb4cb0600f32148a7fb48c0d3b50489e7e0e1ca8928a14"
+    },
+    "rom": {
+      "bytes": 949552,
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+    },
+    "wasm": {
+      "bytes": 4643322,
+      "sha256": "a3d5cde2154ca1bbe73a6263773dc62945f47db1747d667c4e3c1f6724bee598"
+    }
+  },
+  "runs": [
+    {
+      "restoredPreviousFlash": false,
+      "guestSeconds": 6.98,
+      "inputs": [
+        {
+          "x": 235,
+          "y": 188,
+          "down": 3.0084576666666667,
+          "up": 3.3922286666666666
+        },
+        {
+          "x": 88,
+          "y": 188,
+          "down": 4.304002816666666,
+          "up": 4.631422604166667
+        },
+        {
+          "x": 232,
+          "y": 211,
+          "down": 5.4509102875,
+          "up": 5.9267057
+        }
+      ],
+      "beforeFrameSha256": "7e88c2f1152b97a3d415730c96cbf083aa45c13abdf836cb7b91df1defe33847",
+      "afterFrameSha256": "b26ae5b526bae78b8d599a37b4b9acf3aff79e3838f984ad81c3d1de00e103ea",
+      "changedPages": [
+        36864,
+        53248
+      ],
+      "autosavePages": [
+        36864,
+        53248
+      ],
+      "serialEvidence": [
+        "[1327] [info] [Launcher] app not configured, start startup worker",
+        "[3337] [info] [Setup-Startup] start servo test",
+        "[4587] [info] [Setup-Startup] start wifi setup",
+        "[5907] [info] [HAL-BLE] start app config server",
+        "[5907] [info] [HAL-BLE] init",
+        "[5908] [info] [HAL-BLE] init done, factory mac: <generated-mac>",
+        "I (6517) NimBLE: GAP procedure initiated: advertise; "
+      ]
+    },
+    {
+      "restoredPreviousFlash": true,
+      "guestSeconds": 6.96,
+      "inputs": [
+        {
+          "x": 235,
+          "y": 188,
+          "down": 3.0693583291666666,
+          "up": 3.430209533333333
+        },
+        {
+          "x": 88,
+          "y": 188,
+          "down": 4.2632965,
+          "up": 4.7393565375
+        },
+        {
+          "x": 232,
+          "y": 211,
+          "down": 5.547688708333333,
+          "up": 5.888342208333333
+        }
+      ],
+      "beforeFrameSha256": "7e88c2f1152b97a3d415730c96cbf083aa45c13abdf836cb7b91df1defe33847",
+      "afterFrameSha256": "b26ae5b526bae78b8d599a37b4b9acf3aff79e3838f984ad81c3d1de00e103ea",
+      "changedPages": [],
+      "autosavePages": [],
+      "serialEvidence": [
+        "[1327] [info] [Launcher] app not configured, start startup worker",
+        "[3377] [info] [Setup-Startup] start servo test",
+        "[4707] [info] [Setup-Startup] start wifi setup",
+        "[5867] [info] [HAL-BLE] start app config server",
+        "[5867] [info] [HAL-BLE] init",
+        "[5868] [info] [HAL-BLE] init done, factory mac: <generated-mac>",
+        "I (6477) NimBLE: GAP procedure initiated: advertise; "
+      ]
+    }
+  ],
+  "limitations": [
+    "Virtual HCI controller; no physical radio, phone connection, pairing, or cloud-account acceptance.",
+    "Symbol metadata must independently match the fixed firmware; this probe does not recover addresses."
+  ],
+  "status": "pass",
+  "command": "node tools/probe-stackchan-ble.mjs --firmware FACTORY_BIN --symbols PROFILE_ELF --rom ROM_ELF --wasm PRODUCTION_WASM --receipt OUTPUT_JSON",
+  "beforeFix": {
+    "wasmSha256": "d69f1a868c6d159866c9d2ed0f9c54bf40a3746727adfcd73afd2c9f2562c779",
+    "browser": "task-owned headless Chromium, 1280×720",
+    "threeDimensionalQuickTap": {
+      "clientPoint": [
+        649,
+        266
+      ],
+      "nativePoint": [
+        234,
+        209
+      ],
+      "guestDown": 88.75166666666667,
+      "guestUp": 88.75648625416666,
+      "guestBleInitStartedMs": 88777,
+      "outcome": "Next consumed: HAL-BLE start app config server and BLE_INIT logged; QR framebuffer remains unchanged; no init done."
+    },
+    "twoDimensionalLongPress": {
+      "clientPoint": [
+        688,
+        323
+      ],
+      "nativePoint": [
+        231,
+        211
+      ],
+      "guestDown": 44.23640000416667,
+      "guestUp": 44.534200004166664,
+      "guestBleInitStartedMs": 44507,
+      "outcome": "Same BLE initialization stall despite a 297.8 ms guest hold."
+    },
+    "frameSha256": "7e88c2f1152b97a3d415730c96cbf083aa45c13abdf836cb7b91df1defe33847",
+    "conclusion": "No hit-testing change: both inputs reach the guest. The upstream page starts BLE synchronously before creating its next LVGL widgets."
+  },
+  "native": {
+    "command": "target/release/esp32sim --board stackchan --boot rom --rom ROM_ELF --flash-mb 16 --psram-mb 8 --flash-image FACTORY_BIN --elf PROFILE_ELF --ble --script INPUT_SCRIPT --no-dump --tft-png OUTPUT_PNG",
+    "script": "3.0 touch 235 188 1\n3.3 touch 235 188 0\n4.3 touch 88 188 1\n4.6 touch 88 188 0\n5.5 touch 232 211 1\n5.8 touch 232 211 0\n10 stop\n",
+    "guestSeconds": 10,
+    "core0Instructions": 131024044,
+    "core1Instructions": 40244283,
+    "cycles": 2400000000,
+    "displayTransactions": 333,
+    "displayPixels": 636421,
+    "advertisingGuestSeconds": 6.216996,
+    "advertisedName": "StackChan",
+    "advertisedService": "e2e5e5ff-1234-5678-1234-56789abcdef0",
+    "framePngSha256": "9f37649c3cdd1ead6f802c1db92655e75d00a68b20adc08a6ed68e6332a0a8ec",
+    "observedScreen": "ID button and Look for me in the app to start setup.",
+    "phoneConnected": false
+  },
+  "privacy": "Only targeted guest events retained. Local paths and generated MAC values replaced with placeholders. Screen images containing a generated device ID remain uncommitted; original artifact hashes are retained. No user storage was accessed or cleared.",
+  "browser": {
+    "viewport": [
+      1280,
+      720
+    ],
+    "automation": "Playwright CLI wrapper, task-owned headless Chromium session",
+    "app": "production workbench and mini player; fixed factory image loaded through the local File API",
+    "modelRevision": "9c0cbee1 manufacturer model (before the pending fine-detail CAD revision)",
+    "cases": [
+      {
+        "before": "7e88c2f1152b97a3d415730c96cbf083aa45c13abdf836cb7b91df1defe33847",
+        "events": [
+          {
+            "type": "input",
+            "event": {
+              "type": "touch",
+              "x": 230,
+              "y": 212,
+              "down": true
+            },
+            "receipt": {
+              "delivery": "queued",
+              "guestTime": 61.107200004166664,
+              "frame": {
+                "width": 320,
+                "height": 240
+              }
+            }
+          },
+          {
+            "type": "input",
+            "event": {
+              "type": "touch",
+              "x": 230,
+              "y": 212,
+              "down": false
+            },
+            "receipt": {
+              "delivery": "queued",
+              "guestTime": 61.1148,
+              "frame": {
+                "width": 320,
+                "height": 240
+              }
+            }
+          }
+        ],
+        "after": "5cb79e1716a3a7b5c013f57444a247ea79b830252255fcee3f830758cd76ee43",
+        "ble": {
+          "id": "stackchan-factory-1.5.1",
+          "model": "virtual-vhci",
+          "physicalBluetooth": false,
+          "firmwareSha256": "411578a2ebca2cfe3541fdc32aeddbc4703cf912a5daa7e1253f69306d6e1d87",
+          "symbolsSha256": "7d4996d8cddd6b735abb4cb0600f32148a7fb48c0d3b50489e7e0e1ca8928a14"
+        },
+        "serial": [
+          "[61137] [info] [HAL-BLE] start app config server",
+          "[61137] [info] [HAL-BLE] init",
+          "[61138] [info] [HAL-BLE] init done, factory mac: <generated-mac>",
+          "I (61747) NimBLE: GAP procedure initiated: advertise; "
+        ],
+        "case": "studio-3d-rotated",
+        "steps": "Completed the full official ServoTest using ordinary mouse clicks, then orbited from client (684,341) to (708,329). Next ordinary click at (663,260).",
+        "observedScreen": "ID button and Look for me in the app to start setup, with the guest heart animation.",
+        "screenshotSha256": "7b211aa4cfa6e12624120611f7466f3e002efffe11797b3d06b48940460d02ce"
+      },
+      {
+        "before": "7e88c2f1152b97a3d415730c96cbf083aa45c13abdf836cb7b91df1defe33847",
+        "events": [
+          {
+            "type": "input",
+            "event": {
+              "type": "touch",
+              "x": 231,
+              "y": 211,
+              "down": true
+            },
+            "receipt": {
+              "delivery": "queued",
+              "guestTime": 22.086,
+              "frame": {
+                "width": 320,
+                "height": 240
+              }
+            }
+          },
+          {
+            "type": "input",
+            "event": {
+              "type": "touch",
+              "x": 231,
+              "y": 211,
+              "down": false
+            },
+            "receipt": {
+              "delivery": "queued",
+              "guestTime": 22.086,
+              "frame": {
+                "width": 320,
+                "height": 240
+              }
+            }
+          }
+        ],
+        "after": "5cb79e1716a3a7b5c013f57444a247ea79b830252255fcee3f830758cd76ee43",
+        "ble": {
+          "id": "stackchan-factory-1.5.1",
+          "model": "virtual-vhci",
+          "physicalBluetooth": false,
+          "firmwareSha256": "411578a2ebca2cfe3541fdc32aeddbc4703cf912a5daa7e1253f69306d6e1d87",
+          "symbolsSha256": "7d4996d8cddd6b735abb4cb0600f32148a7fb48c0d3b50489e7e0e1ca8928a14"
+        },
+        "storage": {
+          "backend": "indexeddb",
+          "restored": true,
+          "changedPages": 2
+        },
+        "serial": [
+          "[22107] [info] [HAL-BLE] start app config server",
+          "[22107] [info] [HAL-BLE] init",
+          "[22108] [info] [HAL-BLE] init done, factory mac: <generated-mac>",
+          "I (22717) NimBLE: GAP procedure initiated: advertise; "
+        ],
+        "case": "studio-2d-after-platform-reset",
+        "steps": "Called platform reset and start, with saved IndexedDB data restored. Ordinary pointer clicks on the displayed 2D framebuffer.",
+        "observedScreen": "ID button and Look for me in the app to start setup, with the guest heart animation.",
+        "screenshotSha256": "40155ec50fd43cde169b4e47ece3a1694f5c9a816ca56211ba10afec4231697b"
+      },
+      {
+        "before": "7e88c2f1152b97a3d415730c96cbf083aa45c13abdf836cb7b91df1defe33847",
+        "events": [
+          {
+            "type": "input",
+            "event": {
+              "type": "touch",
+              "x": 233,
+              "y": 210,
+              "down": true
+            },
+            "receipt": {
+              "delivery": "queued",
+              "guestTime": 50.62060000416667,
+              "frame": {
+                "width": 320,
+                "height": 240
+              }
+            }
+          },
+          {
+            "type": "input",
+            "event": {
+              "type": "touch",
+              "x": 233,
+              "y": 210,
+              "down": false
+            },
+            "receipt": {
+              "delivery": "queued",
+              "guestTime": 50.62060000416667,
+              "frame": {
+                "width": 320,
+                "height": 240
+              }
+            }
+          }
+        ],
+        "after": "5cb79e1716a3a7b5c013f57444a247ea79b830252255fcee3f830758cd76ee43",
+        "ble": {
+          "id": "stackchan-factory-1.5.1",
+          "model": "virtual-vhci",
+          "physicalBluetooth": false,
+          "firmwareSha256": "411578a2ebca2cfe3541fdc32aeddbc4703cf912a5daa7e1253f69306d6e1d87",
+          "symbolsSha256": "7d4996d8cddd6b735abb4cb0600f32148a7fb48c0d3b50489e7e0e1ca8928a14"
+        },
+        "storage": {
+          "backend": "indexeddb",
+          "restored": true,
+          "changedPages": 2
+        },
+        "serial": [
+          "[50627] [info] [HAL-BLE] start app config server",
+          "[50627] [info] [HAL-BLE] init",
+          "[50628] [info] [HAL-BLE] init done, factory mac: <generated-mac>",
+          "I (51237) NimBLE: GAP procedure initiated: advertise; "
+        ],
+        "case": "mini-after-page-reload",
+        "steps": "Navigated the task-owned browser to embed.html, configured K151 and selected the same local BIN. Saved IndexedDB data restored; ordinary 3D Next click at (654,276).",
+        "observedScreen": "ID button and Look for me in the app to start setup, with the guest heart animation.",
+        "screenshotSha256": "ebff23016f105ff3be8c2abe502053b6b9fe5cf9d381b8f490ebc1316201d8cf"
+      }
+    ],
+    "storage": "Only the task browser profile was used. No user storage was cleared or accessed."
+  },
+  "finalModelBrowser": {
+    "official": {
+      "before": "7e88c2f1152b97a3d415730c96cbf083aa45c13abdf836cb7b91df1defe33847",
+      "events": [
+        {
+          "type": "input",
+          "event": {
+            "type": "touch",
+            "x": 233,
+            "y": 210,
+            "down": true
+          },
+          "receipt": {
+            "delivery": "queued",
+            "guestTime": 117.51063334583333,
+            "frame": {
+              "width": 320,
+              "height": 240
+            }
+          }
+        },
+        {
+          "type": "input",
+          "event": {
+            "type": "touch",
+            "x": 233,
+            "y": 210,
+            "down": false
+          },
+          "receipt": {
+            "delivery": "queued",
+            "guestTime": 117.51063334583333,
+            "frame": {
+              "width": 320,
+              "height": 240
+            }
+          }
+        }
+      ],
+      "after": "5cb79e1716a3a7b5c013f57444a247ea79b830252255fcee3f830758cd76ee43",
+      "servos": [
+        {
+          "id": "pan",
+          "positionDegrees": 0,
+          "targetDegrees": 0,
+          "enabled": false,
+          "moving": false,
+          "mode": "position",
+          "pwm": 0
+        },
+        {
+          "id": "tilt",
+          "positionDegrees": 2.8125,
+          "targetDegrees": 2.8125,
+          "enabled": false,
+          "moving": false,
+          "mode": "position",
+          "pwm": 0
+        }
+      ],
+      "servoRanges": {
+        "pan": [
+          -90,
+          90
+        ],
+        "tilt": [
+          0,
+          86.875
+        ]
+      },
+      "ble": {
+        "id": "stackchan-factory-1.5.1",
+        "model": "virtual-vhci",
+        "physicalBluetooth": false,
+        "firmwareSha256": "411578a2ebca2cfe3541fdc32aeddbc4703cf912a5daa7e1253f69306d6e1d87",
+        "symbolsSha256": "7d4996d8cddd6b735abb4cb0600f32148a7fb48c0d3b50489e7e0e1ca8928a14"
+      },
+      "storage": {
+        "backend": "indexeddb",
+        "restored": true,
+        "changedPages": 2
+      },
+      "serial": [
+        "[117537] [info] [HAL-BLE] start app config server",
+        "[117537] [info] [HAL-BLE] init",
+        "[117538] [info] [HAL-BLE] init done, factory mac: <generated-mac>",
+        "I (118147) NimBLE: GAP procedure initiated: advertise; "
+      ],
+      "revision": "340112cc",
+      "modelSha256": "5b304737b8653793949923c6c8f5ecc7b06c6779b3ec09699f675e98d307b64d",
+      "steps": "Complete official ServoTest. Orbit client (685,340) to (706,330). Ordinary Next click at (665,259), with the new CoreS3 glass coordinates.",
+      "observedScreen": "Official ID and Look for me in the app to start setup.",
+      "screenshotSha256": "57b83c8964cf491d36ac606949bcfa234826692f3f56e32ce3b6b90215b5769e"
+    },
+    "fixture": {
+      "servos": [
+        {
+          "id": "pan",
+          "positionDegrees": 40,
+          "targetDegrees": 40,
+          "enabled": true,
+          "moving": false,
+          "mode": "position",
+          "pwm": 0
+        },
+        {
+          "id": "tilt",
+          "positionDegrees": 0,
+          "targetDegrees": 0,
+          "enabled": true,
+          "moving": false,
+          "mode": "position",
+          "pwm": 0
+        }
+      ],
+      "leds": [
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ]
+      ],
+      "serial": [
+        "CHECK expander-version PASS",
+        "CHECK yaw-goal-feedback PASS",
+        "CHECK pitch-goal-feedback PASS",
+        "CHECK wrong-tx-no-response PASS",
+        "CHECK motor-power-off-no-response PASS",
+        "CHECK motor-power-recovery-response PASS",
+        "PLATFORM_READY stackchan; front/middle/back=Si12T channels2/1/0; touch=FT6336U",
+        "TOUCH_PADS front=0 middle=0 back=0 raw=0",
+        "TOUCH_PADS front=3 middle=0 back=0 raw=48"
+      ],
+      "released": [
+        {
+          "id": "pan",
+          "positionDegrees": 0,
+          "targetDegrees": 0,
+          "enabled": true,
+          "moving": false,
+          "mode": "position",
+          "pwm": 0
+        },
+        {
+          "id": "tilt",
+          "positionDegrees": 0,
+          "targetDegrees": 0,
+          "enabled": true,
+          "moving": false,
+          "mode": "position",
+          "pwm": 0
+        }
+      ],
+      "firmwareSha256": "217ffd33fc4c2367741e4889b5c2f418f87173e0a3ccea087f0cc173e41be3a9",
+      "firmwareRole": "internal IDF fixture, separate from official acceptance",
+      "input": "Human Digit1 down, held 800 host ms; Digit1 up.",
+      "observedMechanics": "The head and live framebuffer rotate together at pan 40 degrees; release returns guest servo feedback to zero.",
+      "ledVisibility": "All twelve real guest outputs are red. This frontal oblique screenshot does not independently establish visibility of every side light-guide cell; optical diffusion and physical chain order remain uncalibrated.",
+      "screenshotSha256": "2f65183cb42724d5ac1f9ebdf121b323d78fef26b6febb53112ef6977aaeb85a"
+    },
+    "consoleErrors": 0,
+    "cleanup": "Task-owned headless browser closed and absence verified; temporary server8174 stopped; existing preview8171 preserved."
+  }
+}

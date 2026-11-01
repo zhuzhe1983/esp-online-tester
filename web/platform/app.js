@@ -231,7 +231,7 @@ function onRuntimeEvent(event) {
     }
     if (status === 'loading' && previousStatus !== 'loading') loadProgress = null;
     if (['configured', 'loading'].includes(status) && status !== previousStatus) {
-      sceneView?.updateLeds([]);
+      sceneView?.updateLeds([]);sceneView?.updateServos([]);
       frameCount = 0; sceneView?.clearDisplay(); text('frame-count', '0 帧');
     }
     if (['configured', 'loading', 'error', 'disposed'].includes(status)) text('runtime-speed', '');
@@ -241,6 +241,8 @@ function onRuntimeEvent(event) {
     else if (status === 'loading') text('load-status', '正在读取固件并初始化 WebAssembly…');
   } else if (event.type === 'leds') {
     sceneView?.updateLeds(event.leds);
+  } else if (event.type === 'servos') {
+    sceneView?.updateServos(event.servos);
   } else if (event.type === 'imu') {
     if (event.imu?.source === 'agent') sceneView?.setOrientation?.(event.imu.quaternion, {notify: false});
   } else if (event.type === 'load-progress') {

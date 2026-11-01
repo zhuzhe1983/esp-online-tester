@@ -1,0 +1,181 @@
+{
+  "schemaVersion": "1",
+  "productId": "m5stack-k151",
+  "checkedAt": "2026-11-01",
+  "backend": "headless Chromium, production platform module and real WASM worker",
+  "firmware": {
+    "diagnosticAppSha256": "cdcf8226d986f2c05408e1cdff2830a47b30c43e61974188455c79a75aa53c79",
+    "factorySha256": "411578a2ebca2cfe3541fdc32aeddbc4703cf912a5daa7e1253f69306d6e1d87"
+  },
+  "artifacts": {
+    "web/wasm/esp32sim.wasm": "7710be02c1e470413fcd54260c59c8ad62a26c5b3dfeb49d4bc72d867697f8b6",
+    "web/platform/assets/m5stack-k151/model.json": "7603be1ef1d2e0420b4e63bdb8db6232c2b6dc0e3e0028889087b0a3e96ce6d9",
+    "web/platform/assets/m5stack-k151/model-plan.json": "3754ed29a3814d0ac41e1ac55a9d9b36ac2684d83e049abdbcc7e45e5b1d0202",
+    "web/platform/servo-view.js": "5d0f25f025262ccc32e681c2cdfbaacc04a4e508fd6479d17c18bce74a7c2aea",
+    "web/platform/runtime.js": "46aea6617d3403e4ae473db1026993680b7639ba1a755ed001dd1518f8cc00c0",
+    "web/wasm/worker.js": "02d1332b1be8d1d08e1dd73422233b2a1c9b98d979b1d9dba8973c43f444c047"
+  },
+  "checks": [
+    {
+      "action": "Diagnostic boot, focus 3D canvas, hold/release Digit1",
+      "guest": "Si12T front=3 middle=0 back=0 raw=48",
+      "output": {
+        "panDegrees": 40,
+        "allTwelveLeds": [
+          255,
+          0,
+          0
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "action": "Orbit to top; hover and physically click/hold/release visible middle pad",
+      "guest": "Si12T front=0 middle=3 back=0 raw=12",
+      "output": {
+        "tiltDegrees": 60,
+        "allTwelveLeds": [
+          0,
+          255,
+          0
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "action": "Load official V1.5.1 local image; click Skip on real 2D display",
+      "guest": "Setup-Startup startup skipped; LauncherView init",
+      "output": {
+        "display": [
+          320,
+          240
+        ],
+        "menu": "AI.AGENT"
+      },
+      "result": "pass"
+    },
+    {
+      "action": "Open an independent mini share with pinned first-party diagnostic manifest, restore product/mappings, press/release back pad",
+      "output": {
+        "panDegrees": -40,
+        "allTwelveLeds": [
+          0,
+          0,
+          255
+        ],
+        "display": [
+          320,
+          240
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "action": "Embed share in same-origin iframe; source/origin/session-bound hello and call RPC; press/release middle pad",
+      "output": {
+        "tiltDegrees": 60,
+        "allTwelveLeds": [
+          0,
+          255,
+          0
+        ],
+        "display": [
+          320,
+          240
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "action": "Abort K151 model.json request; load diagnostic and physically press panel front-pad button",
+      "output": {
+        "modelStatus": "error",
+        "view": "2d",
+        "guestFrontPad": 3,
+        "display": [
+          320,
+          240
+        ],
+        "uncaughtPageErrors": 0
+      },
+      "result": "pass"
+    },
+    {
+      "action": "Fresh page load with final source and adequate local HTTP accept queue; inspect hover hit classes",
+      "output": {
+        "modelStatus": "ready",
+        "touch": "red",
+        "orbit": "blue",
+        "button": "green",
+        "uncaughtPageErrors": 0
+      },
+      "result": "pass"
+    }
+  ],
+  "captures": [
+    {
+      "path": "output/playwright/stackchan-fixture.png",
+      "sha256": "41ae4aeb0af66d42ee7751f2ddbe0aa586929973f967b54e881c80ffd9093d42",
+      "bytes": 212445
+    },
+    {
+      "path": "output/playwright/stackchan-red-pan.png",
+      "sha256": "db4b40cca30734f1ed5391f00941ceb6195b06fe75ef803187a8f132186a32f8",
+      "bytes": 212867
+    },
+    {
+      "path": "output/playwright/stackchan-pad-hover.png",
+      "sha256": "167070a542c08ac7c8628e4a558f79599b979dc4c1896091803e4f7043689657",
+      "bytes": 215716
+    },
+    {
+      "path": "output/playwright/stackchan-green-tilt.png",
+      "sha256": "99c0dc1c42b0673ea7af9a3a24d3f74eb7fe990c4b94ce1336978e1a60ee6198",
+      "bytes": 216054
+    },
+    {
+      "path": "output/playwright/stackchan-factory-welcome.png",
+      "sha256": "dd4e92c0935cc36721d19e1b5462e3051cbbb2724a4477eecf19bc5bb18bc2af",
+      "bytes": 209299
+    },
+    {
+      "path": "output/playwright/stackchan-factory-launcher.png",
+      "sha256": "eaf51fbc6a9cd4d1f473aa15f3341c284f009a7531e153cf800c1006a24330f6",
+      "bytes": 210382
+    },
+    {
+      "path": "output/playwright/stackchan-mini-blue-pan.png",
+      "sha256": "ecb1fe6cb03ed108f56a3004e9fa4cc1a0d2ea86c7564cf746fec0b5de65cd30",
+      "bytes": 198558
+    },
+    {
+      "path": "output/playwright/stackchan-model-fallback.png",
+      "sha256": "42408d37726ad06d1d0fc1b8e6558b4cce345f508fa90c200822ba96f7bd4331",
+      "bytes": 176907
+    },
+    {
+      "path": "output/playwright/stackchan-hover-screen.png",
+      "sha256": "a9812474977c12756fc7ab332025f5979742745ed007d4f8afb51752608e3111",
+      "bytes": 205585
+    },
+    {
+      "path": "output/playwright/stackchan-hover-shell.png",
+      "sha256": "12885555e8d95f81b699c37cdfad9f566bebdf9faf8e578b23accc4adb2b880f",
+      "bytes": 207000
+    }
+  ],
+  "reproduction": [
+    "Build examples/platform-stackchan as documented, then tools/wasm-build.sh; serve web/ locally with concurrent module requests supported.",
+    "Use window.espTester.configure with createDefaultScene(catalog, \"m5stack-k151\"), then load the diagnostic local build and start.",
+    "Hold the three pad IDs through keyboard/3D or API; verify fresh guest serial, RGB, positionDegrees and the actual framebuffer.",
+    "For sharing, serve the first-party build with a pinned manifest and artifact SHA-256 values; share({mode:\"embed\",autostart:false,includeRecording:false}). Load/start through the same API in mini and the documented parent RPC.",
+    "For fallback, intercept only assets/m5stack-k151/model.json; verify the 2D view and real panel input still work."
+  ],
+  "limitations": [
+    "No physical hardware comparison; diagnostic actions do not certify all factory apps.",
+    "Raw images are retained locally outside Git; no public capture archive is claimed.",
+    "Initial test harness used a low-backlog static HTTP server, which intermittently reset module requests; fresh-page check used a larger accept queue.",
+    "An iframe load event can precede asynchronous application initialization; hello must be retried or sent once the app is ready.",
+    "Top pad boundaries, spatial LED order and joint zero/direction remain uncalibrated."
+  ]
+}

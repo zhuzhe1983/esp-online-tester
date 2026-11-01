@@ -241,3 +241,10 @@ Running disconnected ambient changes are allowed; paused ambient changes reject,
 ### Unit PIR U004
 
 `input({type:'accessory-motion',accessoryId,motion:boolean})` sets sustained infrared-change stimulus, not a synthetic GPIO level. Exact route: StopWatch Port A G11 white, direct or through one U006; M5PM1 Grove5V required. Scene `parameters.motion` defaults false. True holds output high; false starts the named M5 nominal2s guest-time hold, retriggerable. Observe actual guest GPIO/logs to check output. No warm-up/lock/optical/noise calibration; AS312 mirrored tables list2.3s and are retained as a source mismatch. Power-off high-Z is an ideal-interface policy. Running/unplugged ambient changes persist; paused ambient changes reject, paused detach is allowed. Guest restart preserves environment/connection; platform reset restores scene. See `docs/platform/unit-pir-runtime.md`.
+
+
+### StackChan K151 touch zones and servo feedback
+
+`capabilities().servos.available` is true only on the `stackchan` board. `observe().servos` contains `pan` and `tilt` with `positionDegrees`, `targetDegrees`, `enabled`, `moving`, `mode` and `pwm`. `observe().servoSupply` is the guest-controlled VM_EN digital supply state (`null` before observation). A `servos` event carries the same axes and `supply`. Values reset when the product or firmware changes and come from the real UART device model. There is no host servo-position setter. The degree origin is the BSP default (pan raw460, tilt raw620), not a physical calibration or a guarantee about firmware-customized NVS zero positions.
+
+The three top contacts are `button` events with IDs `touch-pad-front`, `touch-pad-middle`, `touch-pad-back` and boolean `pressed`; they route to Si12T channel2/1/0, not GPIO. They support simultaneous holds, pause-time release, keyboard Digit1/2/3 and ordinary recording/replay. Screen `touch` uses independent FT6336 coordinates 0..319 × 0..239. Check fresh guest output after injection; a queued receipt alone does not prove consumption. Physical power/reset buttons remain unavailable; use the platform reset lifecycle command.

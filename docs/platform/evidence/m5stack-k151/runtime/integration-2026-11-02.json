@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-01T17:18:02Z",
+  "scope": "Final StackChan hardware/Next and StackChan/CoreS3 model integration",
+  "platform": {
+    "os": "macOS arm64",
+    "rust": "stable 1.99.1",
+    "node": "26.8.2"
+  },
+  "inputs": {
+    "web/wasm/esp32sim.wasm": "a3d5cde2154ca1bbe73a6263773dc62945f47db1747d667c4e3c1f6724bee598",
+    "web/platform/assets/m5stack-k151/model.json": "5b304737b8653793949923c6c8f5ecc7b06c6779b3ec09699f675e98d307b64d",
+    "web/platform/assets/m5stack-k151/geometry.bin": "342aaa367b708eaa1a86b80827145e139747259308c937d113e1d7f1273c117d",
+    "web/platform/assets/m5stack-k128/model.json": "ab09ba91be770f50f7d2fa53f5f9b13541118423f300a6af5a1e2168f433be37",
+    "web/platform/assets/m5stack-k128/geometry.bin": "7343b46f3eb7f0a1b45d1049596c5ed33bb779e9dbe2fa9c48a980590eb7585c",
+    "web/platform/assets/firmware-profiles/stackchan-factory-1.5.1/profile.json": "d9fb0e726cc36fc1357dfad3fcb272da639716db7ea3a8546ed35cc506943437",
+    "web/platform/assets/firmware-profiles/stackchan-factory-1.5.1/symbols.elf": "7d4996d8cddd6b735abb4cb0600f32148a7fb48c0d3b50489e7e0e1ca8928a14"
+  },
+  "checks": [
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=ROM_DIR cargo test --release --workspace -- --include-ignored --skip external_",
+      "status": "pass",
+      "tests": 1743,
+      "goldensChanged": false
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=ROM_DIR ESP32SIM_STACKCHAN_FACTORY=FACTORY_BIN ESP32SIM_STACKCHAN_FIXTURE=FIXTURE_BIN cargo test --release -p esp32s3 --test stackchan -- --include-ignored",
+      "status": "pass",
+      "tests": 2
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "status": "pass",
+      "tests": 208
+    },
+    {
+      "command": "node tools/probe-stackchan.mjs --build FIXTURE_BUILD",
+      "status": "pass",
+      "groups": 6
+    },
+    {
+      "command": "node tools/platform-recording-test.mjs --real",
+      "status": "pass",
+      "events": 18
+    },
+    {
+      "command": "tools/wasm-jit-test.sh",
+      "status": "pass",
+      "differentialCases": 111126,
+      "gpioCases": 24
+    },
+    {
+      "command": "node tools/wasm-test.mjs (13 CI demos and demo-stopwatch)",
+      "status": "pass"
+    },
+    {
+      "command": "CI remaining JS/Python correctness and retained-evidence commands",
+      "status": "pass",
+      "detail": "Network helper/relay, timing/BLE ABI/connection, worker pacing/channel, touch/UI, build policy, browser benchmark contract, three retained x5 receipts"
+    },
+    {
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "status": "pass"
+    },
+    {
+      "command": "tools/wasm-build.sh; production-flags jit-profile,cpu-profile build; cargo build --release --workspace; node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "status": "pass"
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "status": "pass"
+    },
+    {
+      "command": "node tools/stage-platform-pages.mjs web OUTPUT_DIR",
+      "status": "pass",
+      "detail": "Static subtree retains hash-matching VHCI manifest and symbol-only ELF; excludes existing internal StopWatch fixtures."
+    }
+  ],
+  "evidence": [
+    "factory-next-ble.json",
+    "factory-servo-torque.json",
+    "../../../../../web/platform/assets/m5stack-k151/detail-visual-review.json",
+    "../../../../../web/platform/assets/m5stack-k151/detail-rebuild-verification.json"
+  ],
+  "limitations": [
+    "No physical-device validation. PCB layouts, touch electrode geometry, LED physical chain order and servo orientation remain uncalibrated.",
+    "Virtual HCI initialization is verified; physical phone pairing, cloud account flow, camera, full audio and NFC are not certified.",
+    "Timing during concurrent correctness builds is not used for a performance claim. Raw logs and browser captures remain in ignored local output."
+  ]
+}
