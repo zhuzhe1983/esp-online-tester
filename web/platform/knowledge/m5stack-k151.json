@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-11-01T08:48:19Z",
+  "updatedAt": "2026-11-01T13:42:54Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -454,6 +454,22 @@
         "stackchan-runtime-sch-power-pdf"
       ],
       "group": "runtime-hardware"
+    },
+    {
+      "id": "runtime-servo-torque",
+      "label": "SCSCL position command and torque",
+      "value": {
+        "torqueRegister": 40,
+        "powerOnTorque": 0,
+        "goalPositionRegister": 42,
+        "positionCommandEnablesTorque": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "stackchan-feetech-scscl-torque"
+      ],
+      "group": "runtime-hardware",
+      "notes": "Writing the goal position automatically engages torque. This is distinct from switching VM_EN off; physical calibration and load behavior remain unverified."
     }
   ],
   "revisions": [],
@@ -1474,6 +1490,19 @@
       "archiveName": "touch_sensor.cpp",
       "kind": "official-source",
       "notes": "Fetched source identity retained; immutable source URL when available."
+    },
+    {
+      "id": "stackchan-feetech-scscl-torque",
+      "title": "FEETECH SCSCL memory table, pinned 5637b798, section 4.1",
+      "url": "https://raw.githubusercontent.com/ftservo/ftservo-wiki/5637b7985bffb9baa3cda9d0f266be9c1714eb84/docs/reference/parameter/memory-scscl.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/ftservo/ftservo-wiki/5637b7985bffb9baa3cda9d0f266be9c1714eb84/docs/reference/parameter/memory-scscl.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-01T13:39:17Z",
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 23715,
+      "sha256": "b8eb2e4e817fdf765e2027c94386f527e259a4b0546415de268459ab97b8bc29",
+      "kind": "source-code",
+      "archiveName": "ftservo-memory-scscl.md"
     }
   ],
   "assets": [
@@ -1830,6 +1859,7 @@
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
     "Model import does not establish CPU/board/peripheral firmware support.",
     "2026-11-01: audited StackChan K151 host, base touch/RGB and feedback-servo protocols. Historical sources retained. Fetch identities and factory/UIFlow2/XiaoZhi investigation: docs/platform/research/stackchan-runtime-sources-2026-11-01.json. Hardware facts do not imply complete simulator compatibility.",
-    "VM_EN off feedback conflict: manufacturer schematics show only the gated VM supply at the three-wire servo; upstream Xiaozhi K151 README reports feedback while motor power is off. Current ideal model excludes unverified signal back-power; no physical-device claim. Full conflict and higher-precision fetch timestamps are retained in the runtime source audit."
+    "VM_EN off feedback conflict: manufacturer schematics show only the gated VM supply at the three-wire servo; upstream Xiaozhi K151 README reports feedback while motor power is off. Current ideal model excludes unverified signal back-power; no physical-device claim. Full conflict and higher-precision fetch timestamps are retained in the runtime source audit.",
+    "2026-11-01: official SCSCL goal-write auto torque enable and power-on torque=0 checked against FEETECH memory table; source receipts: docs/platform/research/stackchan-servo-torque-sources-2026-11-01.json. Factory Servo Test now separately exercises actual mechanical movement, rather than its timed completion page alone."
   ]
 }

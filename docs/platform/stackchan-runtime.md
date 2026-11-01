@@ -18,6 +18,8 @@ VM_EN 的资料存在冲突：厂家 Power/Adapter 原理图显示 Q4/Q3 切断�
 
 SCSCL 数据字为大端，校验和覆盖 ID、长度、指令和参数。BSP 默认水平舵机 ID=1、零位 raw=460；俯仰舵机 ID=2、零位 raw=620；一步对应 0.3125°。固件可在 NVS 中保存不同零位；API 中默认参考角不能代替实机校准。位置随客体时间推进。无负载的理想位置模型不能预测转矩、堵转、回差、碰撞或实际转速。PWM 连续旋转模式只保留固件设置的模式和输出值，尚未模拟其连续旋转位移；没有经过校准的 PWM 到转速映射，不能把模式设置成功当作旋转功能通过。
 
+SCSCL 上电时扭矩寄存器 40 默认为 0；位置模式写入目标寄存器 42 会自动将其置为 1。依据为 [FEETECH 固定版内存表 §4.1](https://github.com/ftservo/ftservo-wiki/blob/5637b7985bffb9baa3cda9d0f266be9c1714eb84/docs/reference/parameter/memory-scscl.md#L262)。显式关闭扭矩仍会停止运动；REG_WRITE 到 ACTION 执行时才恢复驱动，SYNC_WRITE 同样遵循目标写入规则。VM_EN 切断电源与扭矩释放是不同状态。
+
 ## 操作与验收
 
 顶部控制 ID 为 `touch-pad-front`、`touch-pad-middle`、`touch-pad-back`。它们使用普通按下/释放事件并写入 Si12T 接触状态，不占用或伪造 GPIO。可组合按下；录制保存同一语义事件。屏幕仍使用 `input({type:'touch',x,y,down})`。舵机观察值由客体串口协议产生，界面不提供覆盖客体反馈的角度动画。
@@ -47,9 +49,23 @@ UIFlow2 的官方 M5Burner 项目 `1897200000000002716` 精确映射 `STACKCHAN`
 
 逐来源 URL、最终 URL、UTC 抓取时间、媒体类型、字节数和 hash 见 [2026-11-01 来源回执](research/stackchan-runtime-sources-2026-11-01.json)。知识库保留旧资料身份并追加本轮依据。官方顶部照片只说明外壳区域，原理图只说明灯的电气链序；三块隐藏电极的边界、十二颗灯的三维顺序以及机械零位均不能据此宣称实机校准。摄像头、完整音频、NFC、IR、无线服务、供电模拟与机械负载均需独立验收；本轮未实机验证。
 
+### 官方 Servo Test 回归修复
+
+后续发现旧构建 `5232eafb` 的官方舵机测试没有实际运动：固件初始化及静止时释放扭矩，随后仅写目标位置，原模型却要求再次显式开启扭矩。先前诊断固件主动开启扭矩，未覆盖这个路径。官方测试按七个固定时段推进，即使舵机不动也能显示完成，因此不能只用完成页面验收。
+
+修正后，相同 V1.5.1 镜像在原生执行和真实浏览器中均完成左转、回位、右转、回位、抬头、回位。浏览器 280 次观察的水平范围为 −90° 至 +90°，俯仰为 2.8125° 至 86.875°；再次点击 Retest 后仍可运动，结束时两个舵机都重新释放扭矩。俯仰回位 2.8125° 对应此固件约 3° 的下限及舵机量化，并非必须回到 API 的 0°。截图检查确认 CAD 随实际反馈转动。
+
+新增外部固件集成测试断言上述运动顺序及末尾卸力；单元测试覆盖无效写入、读取、延迟写和同步写。修复后的生产 WASM SHA-256 为 `d69f1a868c6d159866c9d2ed0f9c54bf40a3746727adfcd73afd2c9f2562c779`。原有诊断 worker 六组检查再次通过；原生与 WASM Clippy、1,740 项工作区测试、两项真实固件测试、199 项平台测试、完整 WASM 差分和 GPIO 测试、13 个 CI demo 及 StopWatch、目录校验均通过。负面结果、输入步骤、源码及截图 hash 见[修复回执](evidence/m5stack-k151/runtime/factory-servo-torque.json)，协议及固件源码依据见[来源记录](research/stackchan-servo-torque-sources-2026-11-01.json)。旧回执保留原构建的 hash，不覆盖历史结果；仍未实机验证，官方固件继续标为 `trial`。
+
+```sh
+ESP32SIM_ROM_DIR=ROM_DIR ESP32SIM_STACKCHAN_FACTORY=FACTORY_BIN \
+  ESP32SIM_STACKCHAN_FIXTURE=FIXTURE_MERGED_BIN \
+  cargo test --release -p esp32s3 --test stackchan -- --include-ignored
+```
+
 ## 回归检查
 
-2026-11-01 在 macOS arm64、Rust stable 1.99.1、Node 26.8.2、Python 3.14.7 上完成。`ROM_DIR` 须为绝对路径；诊断程序使用 ESP-IDF 5.4.3。以下是正确性检查，未据并行构建时的耗时作性能结论。
+2026-11-01 在 macOS arm64、Rust stable 1.99.1、Node 26.8.2、Python 3.14.7 上完成。`ROM_DIR` 须为绝对路径；诊断程序使用 ESP-IDF 5.4.3。下表保留首次适配检查；后续舵机扭矩修复的增量结果见上节。以下是正确性检查，未据并行构建时的耗时作性能结论。
 
 | 检查 | 结果 |
 | --- | --- |

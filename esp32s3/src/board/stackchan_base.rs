@@ -19,7 +19,8 @@ struct Servo {
 }
 impl Servo {
     fn new(id:u8,position:u16)->Self {
-        let mut regs=[0;71];regs[5]=id;regs[6]=0;regs[40]=1;regs[48]=1;
+        // SCSCL RAM table: torque starts released; a position command engages it.
+        let mut regs=[0;71];regs[5]=id;regs[6]=0;regs[48]=1;
         regs[11..13].copy_from_slice(&1000u16.to_be_bytes());regs[42..44].copy_from_slice(&position.to_be_bytes());
         Self{regs,position:position as f64,from:position as f64,target:position as f64,start:0,end:0,pending:None}
     }
@@ -42,6 +43,10 @@ impl Servo {
         if candidate[5]>=0xfe || candidate[6] as usize>=SERVO_BAUDS.len() || u16::from_be_bytes([candidate[42],candidate[43]])>1000 {return 0x08;}
         if u16::from_be_bytes([candidate[9],candidate[10]])>1000 || u16::from_be_bytes([candidate[11],candidate[12]])>1000 {return 0x08;}
         self.advance(cycle,powered);let was_torque=self.regs[40]!=0;self.regs=candidate;
+        // FEETECH ftservo-wiki 5637b798, memory-scscl.md §4.1: goal position (42) automatically
+        // enables torque (40). The factory firmware releases torque at rest and
+        // relies on this for its next move; it does not send a separate enable.
+        if powered && !self.pwm_mode() && start<=42 && end>=44 {self.regs[40]=1;}
         if self.regs[40]==0 {self.stop();}
         else if (start<48 && end>42) || (!was_torque && self.regs[40]!=0) {
             self.from=self.position;self.target=self.word(42) as f64;self.start=cycle;
@@ -273,6 +278,39 @@ mod tests {
         let reply=send(&mut b,at+HZ/20,1,2,&[56,2]);assert_eq!(&reply[5..7],&556u16.to_be_bytes());assert!(b.motion_snapshot().contains("\"moving\":true"));
         b.advance_to(at+HZ/10);assert!(b.motion_snapshot().contains("\"positionDegrees\":60.0000"));assert_eq!(&send(&mut b,at+HZ/10,1,2,&[66,1])[5..6],&[0]);
         send(&mut b,at+HZ/5,1,3,&[42,0x03,0x20,0,100,0,0]);let mut d=b.i2c_devices();write(d[0].1.as_mut(),5,&[0]);b.advance_to(at+HZ);let stopped=b.motion_snapshot();write(d[0].1.as_mut(),5,&[1]);b.advance_to(at+2*HZ);assert!(stopped.contains("\"supply\":false"));assert!(!b.motion_snapshot().contains("\"moving\":true"));
+    }
+    #[test]
+    fn position_command_reengages_released_torque_but_invalid_writes_and_reads_do_not() {
+        let mut b=powered();let at=HZ;
+        send(&mut b,at,1,3,&[40,0]);
+        assert_eq!(&send(&mut b,at+HZ/100,1,2,&[40,2])[5..7],&[0,0]);
+        assert_eq!(send(&mut b,at+HZ/50,1,3,&[42,0xff,0xff])[4],8);
+        send(&mut b,at+HZ/40,1,3,&[48,0]);b.advance_to(at+HZ/30);
+        assert!(b.motion_snapshot().contains("\"positionDegrees\":0.0000,\"targetDegrees\":0.0000,\"enabled\":false"));
+        // The same six-byte WritePos used by official V1.5.1, following its idle release.
+        send(&mut b,at+HZ/10,1,3,&[42,0x02,0x8c,0,100,0,0]);
+        assert_eq!(&send(&mut b,at+HZ*11/100,1,2,&[40,2])[5..7],&[1,0]);
+        b.advance_to(at+HZ/5);assert!(b.motion_snapshot().contains("\"positionDegrees\":60.0000"));
+        send(&mut b,at+HZ/4,1,3,&[40,0]);b.advance_to(at+HZ/3);
+        assert_eq!(&send(&mut b,at+HZ/3,1,2,&[40,2])[5..7],&[0,0]);
+        assert_eq!(&send(&mut b,at+HZ*35/100,1,2,&[56,2])[5..7],&652u16.to_be_bytes());
+    }
+    #[test]
+    fn queued_and_sync_position_commands_reengage_only_when_executed() {
+        let mut b=powered();send(&mut b,HZ,0xfe,3,&[40,0]);
+        send(&mut b,HZ+HZ/10,1,4,&[42,2,0,0,0,0,0]);
+        assert_eq!(&send(&mut b,HZ+HZ/5,1,2,&[40,2])[5..7],&[0,0]);
+        assert_eq!(&send(&mut b,HZ+HZ*21/100,1,2,&[56,2])[5..7],&460u16.to_be_bytes());
+        send(&mut b,HZ+HZ/4,0xfe,5,&[]);
+        assert_eq!(&send(&mut b,HZ+HZ/3,1,2,&[40,2])[5..7],&[1,0]);
+        assert_eq!(&send(&mut b,HZ+HZ*35/100,1,2,&[56,2])[5..7],&512u16.to_be_bytes());
+        send(&mut b,2*HZ,0xfe,3,&[40,0]);
+        send(&mut b,2*HZ+HZ/10,0xfe,0x83,&[42,6,1,1,0xf4,0,0,0,0,2,2,0xd0,0,0,0,0]);
+        for (id,pos) in [(1,500u16),(2,720)] {
+            let at=3*HZ+u64::from(id)*HZ/10;
+            assert_eq!(&send(&mut b,at,id,2,&[40,2])[5..7],&[1,0]);
+            assert_eq!(&send(&mut b,at+HZ/100,id,2,&[56,2])[5..7],&pos.to_be_bytes());
+        }
     }
     #[test]
     fn sync_and_registered_writes_are_atomic_and_bad_ranges_do_not_panic() {
