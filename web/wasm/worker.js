@@ -38,7 +38,15 @@ function collectSd(force=false) {
 }
 function flashBytes() {
   if (!emu || !wasm.esp32sim_flash_ptr || !wasm.esp32sim_flash_len) throw new Error('Flash snapshots are unsupported by this WASM build');
-  return mem().subarray(wasm.esp32sim_flash_ptr(emu), wasm.esp32sim_flash_ptr(emu) + wasm.esp32sim_flash_len(emu));
+  const bytes = mem().subarray(wasm.esp32sim_flash_ptr(emu), wasm.esp32sim_flash_ptr(emu) + wasm.esp32sim_flash_len(emu));
+  const length = wasm.esp32sim_ble_hci_flash_len?.(emu) || 0;
+  if (!length) return bytes;
+  // The virtual controller installs a guest callback trampoline. It is execution
+  // state, never a firmware/NVS write: snapshot, watch and delta use this same view.
+  const offset = wasm.esp32sim_ble_hci_flash_offset(emu), pointer = wasm.esp32sim_ble_hci_flash_ptr(emu);
+  if (offset + length > bytes.length) throw new Error('Virtual HCI Flash overlay exceeds image');
+  const snapshot = bytes.slice(); snapshot.set(mem().subarray(pointer, pointer + length), offset);
+  return snapshot;
 }
 function collectFlash(force = false) {
   if (!flashShadow || !force && performance.now() - flashScanAt < 500) return;
@@ -271,6 +279,15 @@ onmessage = async (ev) => {
       postMessage({flashReply: m.requestId, ok: true});
     }
     else if (m.op === 'load') { const rc = withBytes(new Uint8Array(m.data), (p, n) => m.at !== undefined ? wasm.esp32sim_load_at(emu, m.at >>> 0, p, n) : wasm.esp32sim_load(emu, m.kind, p, n)); postMessage({ loaded: m.at !== undefined ? 'at' + m.at : m.kind, ok: rc === 0 }); }
+    else if (m.op === 'ble-hci') {
+      try {
+        if (!emu || booted || running) throw new Error('Configure virtual HCI only before boot');
+        if (!(m.data instanceof ArrayBuffer) || !m.data.byteLength || m.data.byteLength > 256 * 1024 * 1024) throw new Error('Invalid virtual HCI symbol ELF');
+        if (!wasm.esp32sim_ble_hci || !wasm.esp32sim_ble_hci_flash_len || !wasm.esp32sim_ble_hci_flash_offset || !wasm.esp32sim_ble_hci_flash_ptr) throw new Error('Virtual HCI with safe Flash snapshots is unavailable in this WASM build');
+        if (withBytes(new Uint8Array(m.data), (p, n) => wasm.esp32sim_ble_hci(emu, p, n)) !== 0) throw new Error('Virtual HCI symbol ELF rejected (see console)');
+        postMessage({bleReply: m.requestId, ok: true});
+      } catch (error) { postMessage({bleReply: m.requestId, ok: false, error: error.message}); }
+    }
     else if (m.op === 'stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_stub_spec(emu, p, n)) !== 0) setupError ||= 'invalid stub: ' + m.spec; }
     else if (m.op === 'wifi') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_wifi(emu, p, n)) !== 0) setupError ||= 'invalid WiFi configuration (see console)'; }
     else if (m.op === 'start') {

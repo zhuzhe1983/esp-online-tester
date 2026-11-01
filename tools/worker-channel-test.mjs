@@ -36,7 +36,7 @@ async function harness(cost = 0, additions = [], experiments = [], overrides = {
     esp32sim_out_kind: () => 2, esp32sim_out_ptr: () => 0, esp32sim_out_len: () => 2,
   };
   const context = {
-    applyExperiments, createPacing, createJitHost: () => ({ imports: {} }), TextEncoder, TextDecoder, MessageChannel: Channel,
+    applyExperiments, createPacing, createJitHost: () => ({ imports: {} }), TextEncoder, TextDecoder, MessageChannel: Channel, ArrayBuffer,
     performance: { now: () => wall, timeOrigin: 0 }, Date, postMessage: m => messages.push(m),
     WebAssembly: { instantiate: async () => ({ instance: { exports: wasm } }) },
     setTimeout: (callback, delay) => timers.push({ callback, delay }),
@@ -52,6 +52,47 @@ async function harness(cost = 0, additions = [], experiments = [], overrides = {
     frame(id) { frame = id; runInNewContext('drain()', context); },
     close() { channels.forEach(c => { c.port1.close(); c.port2.close(); }); },
   };
+}
+
+// Controller trampolines belong to the running machine, never persisted device data.
+{
+  const memory = new WebAssembly.Memory({initial:1}), bytes = new Uint8Array(memory.buffer);
+  const base = 4096, size = 8192, offset = 128, originalPointer = 24576, original = Uint8Array.from({length:32},(_,i)=>i);
+  bytes.fill(0xff,base,base+size);bytes.set(original,base+offset);bytes.set(original,originalPointer);
+  let patchLength = 0, enabled = 0;
+  const h = await harness(0, [], [], {
+    memory, esp32sim_flash_ptr:()=>base, esp32sim_flash_len:()=>size,
+    esp32sim_ble_hci:()=>{enabled++;return 0;}, esp32sim_ble_hci_flash_len:()=>patchLength,
+    esp32sim_ble_hci_flash_offset:()=>offset, esp32sim_ble_hci_flash_ptr:()=>originalPointer,
+  });
+  try {
+    await h.send({op:'ble-hci',requestId:1,data:new ArrayBuffer(0)});
+    assert.equal(h.messages.at(-1).ok,false);assert.equal(enabled,0);
+    await h.send({op:'ble-hci',requestId:2,data:new ArrayBuffer(64)});
+    assert.equal(h.messages.at(-1).bleReply,2);assert.equal(h.messages.at(-1).ok,true);assert.equal(enabled,1);
+    await h.send({op:'flash-watch',requestId:3});
+    patchLength=original.length;bytes.fill(0x77,base+offset,base+offset+patchLength);
+    await h.send({op:'flash-snapshot',requestId:4});
+    assert.deepEqual([...new Uint8Array(h.messages.at(-1).data).slice(offset,offset+patchLength)],[...original]);
+    assert.equal(bytes[base+offset],0x77,'snapshot cannot unpatch live guest execution');
+    await h.send({op:'flash-flush',requestId:5});
+    assert.equal(h.messages.some(message=>message.flashDelta),false,'install alone emits no persisted page');
+    bytes[base+4096+17]=0x5a;
+    await h.send({op:'flash-flush',requestId:6});
+    const deltas=h.messages.filter(message=>message.flashDelta);
+    assert.equal(deltas.length,1);assert.equal(deltas[0].flashDelta.pages.length,1);
+    assert.equal(deltas[0].flashDelta.pages[0].offset,4096);
+    assert.equal(new Uint8Array(deltas[0].flashDelta.pages[0].data)[17],0x5a,'guest data write is retained');
+    bytes.set(original,base+offset);patchLength=0;
+    await h.send({op:'flash-flush',requestId:7});
+    patchLength=original.length;bytes.fill(0x77,base+offset,base+offset+patchLength);
+    await h.send({op:'flash-flush',requestId:8});
+    assert.equal(h.messages.filter(message=>message.flashDelta).length,1,'restore and reinstall emit no code delta');
+    await h.send({op:'start'});
+    await h.send({op:'ble-hci',requestId:9,data:new ArrayBuffer(64)});
+    assert.equal(h.messages.at(-1).ok,false);assert.equal(enabled,1,'a running guest cannot replace controller hooks');
+    await h.send({op:'stop'});
+  } finally {h.close();}
 }
 
 for (const cost of [0, 1 / 24_000_000]) {
