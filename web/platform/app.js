@@ -16,6 +16,7 @@ import {createTransportUi, createKnowledgePanel, mountFirmwareUpdates} from './t
 import {firmwareRunPolicy} from './firmware-policy.js';
 import {confirmFirmwareRun, buildRunIssueUrl} from './firmware-run-ui.js';
 import {recoverFirmwareDownload,firmwareRecoverySource} from './firmware-download-recovery.js';
+import {prepareBurnerSource} from './m5burner-download-ui.js';
 import {mountHeaderMenus} from './header-ui.js';
 import {showErrorDialog,expectedCancellation} from './error-ui.js';
 import {configureFirmwareRelay} from './firmware-relay.js';
@@ -595,7 +596,9 @@ async function configure(next, {reflectSource = false} = {}) {
 async function loadSelected() {
   if ($('toast')?.classList.contains('error')) { clearTimeout(toastTimer); $('toast').hidden = true; }
   if ($('firmware-issue')) $('firmware-issue').hidden = true;
-  const source = sourceFromInputs();
+  const selectedProductId=scene.productId,selectedSource=sourceFromInputs();
+  const source = await prepareBurnerSource(selectedSource);
+  if(scene.productId!==selectedProductId||(source!==selectedSource&&!firmwareSourceMatches(sourceFromInputs(),selectedSource)))throw new Error('设备或固件选择已改变，请重新点击运行。');
   const known = currentCatalogFirmware();
   const history = !embedded && firmwareTab === 'remote' ? {
     url:source.manifestUrl || source.url, kind:source.manifestUrl ? 'manifest' : 'merged', sha256:source.sha256 || '',

@@ -4,6 +4,7 @@ import {renderHintList} from './hints.js';
 import {firmwareRunPolicy, firmwareFlashPolicy} from './firmware-policy.js';
 import {createSdCardUi} from './sd-card-ui.js';
 import {openFlashConfirmation} from './firmware-flash-ui.js';
+import {prepareBurnerSource} from './m5burner-download-ui.js';
 import {burnerProjectUrl,M5BURNER_VERIFICATION_MESSAGE} from './firmware-download-access.js';
 
 const node = (tag, className, text) => { const result = document.createElement(tag); if (className) result.className = className; if (text !== undefined) result.textContent = text; return result; };
@@ -48,6 +49,7 @@ export function createTransportUi({mount, flashMount, catalog, getScene, getSour
   storageSection.append(storageHeading, storageIdentity, storageStatus, storageNote, clearStorage, confirmStorage); details.prepend(storageSection);
   let deviceStorage = null, storageOperation = false, storageScope = null;
   let recording = null, recordingState = {status: 'idle', recording: null, progress: {index: 0, total: 0}}, localSelection = false, recordingBusy = false, replayRequested = false, takeoverPending = null, active = true, flashState = {status: 'idle'}, flashTarget = null, flashConfirmation = null;
+  let downloadController=null;
   const flashActive = () => ['choosing', 'preparing', 'connecting', 'validating', 'writing', 'resetting', 'cancelling'].includes(flashState.status);
   const recordingActive = () => ['preparing', 'recording', 'playing'].includes(recordingState.status);
   const api = () => getApi();
@@ -91,7 +93,7 @@ export function createTransportUi({mount, flashMount, catalog, getScene, getSour
     try { source = getSource(); } catch (error) { sourceError = error.message; }
     const policy = firmwareFlashPolicy(catalog.products.find(product => product.id === getScene().productId), source);
     const unavailable = !capability.supported ? capability.reason : !policy.canFlash ? sourceError || policy.message : '';
-    flash.disabled = Boolean(unavailable) || flashActive() || Boolean(flashConfirmation);
+    flash.disabled = Boolean(unavailable) || flashActive() || Boolean(flashConfirmation) || Boolean(downloadController);
     flash.title = unavailable || '独立下载并校验所选固件，然后写入真实设备；无需先运行模拟器';
     flashAvailability.textContent = unavailable || '刷到设备会独立下载所选固件，无需先运行模拟器。';
     const access=source?.url&&catalog.firmwares.find(item=>item.source?.url===source.url)?.downloadAccess;
@@ -173,18 +175,24 @@ export function createTransportUi({mount, flashMount, catalog, getScene, getSour
     onLog?.(`[刷机] ${flashState.message || flashState.status}\n`); render();
   }});
   // The confirmation's final click opens the chooser; do not await preparation.
-  flash.addEventListener('click', () => {
+  flash.addEventListener('click', async () => {
+    if(downloadController)return;
+    downloadController=new AbortController();render();
     try {
       const scene = getScene(), source = getSource(), selected = catalog.products.find(product => product.id === scene.productId);
       if (!source) throw new Error('此场景没有固件地址，请先在工作台选择固件。');
       // Keep File references: cloning can discard directory-relative file paths.
-      const confirmedScene=structuredClone(scene),confirmedSource={...source,...(source.files?{files:source.files.map(item=>source.format==='segments'?{...item}:item)}:{})};
+      const confirmedScene=structuredClone(scene),snapshot={...source,...(source.files?{files:source.files.map(item=>source.format==='segments'?{...item}:item)}:{})};
+      const confirmedSource=await prepareBurnerSource(snapshot,{signal:downloadController.signal});
+      if(!active||downloadController.signal.aborted)return;
+      if(getScene().productId!==confirmedScene.productId||JSON.stringify(getSource())!==JSON.stringify(source))throw new Error('设备或固件选择已改变，请重新点击刷到设备。');
       flashConfirmation=openFlashConfirmation({product:selected,source:confirmedSource,onClose(){flashConfirmation=null;render();},onConfirm(){
         flashTarget = {id: confirmedScene.productId, name: selected?.name, source:confirmedSource}; flashIssue.hidden = true; flashLog.textContent = ''; flashLog.hidden = true;
         const operation = flasher.flash({scene:confirmedScene, catalog, source:confirmedSource});
         Promise.resolve(operation).catch(error => { if (error.code !== 'FLASH_CANCELLED') onError(error); });
       }});render();
-    } catch (error) { onError(error); }
+    } catch (error) { if(error.code!=='FETCH_ABORTED')onError(error); }
+    finally{downloadController=null;render();}
   });
   cancelFlash.addEventListener('click', () => { flasher.cancel(); });
   const unsubscribe = api()?.subscribe?.(event => { if (event.type === 'recording') acceptRecordingState(event.state); if (event.type === 'storage') { deviceStorage = event.storage; render(); } });
@@ -199,10 +207,11 @@ export function createTransportUi({mount, flashMount, catalog, getScene, getSour
     setRecording(value) { localSelection = true; recording = value; recordingState = {status: 'idle', recording: value, progress: {index: 0, total: value?.events?.length || 0}}; onRecordingChange?.(value); onRecordingState?.(recordingState); render(); },
     async beforeHumanInput() { if (replayRequested || recordingState.status === 'playing') await takeControl(); },
     async settleForConfiguration() {
+      downloadController?.abort();flashConfirmation?.close();
       if (replayRequested || ['preparing', 'playing'].includes(recordingState.status)) await takeControl();
       if (recordingState.status === 'recording') { await releaseInputs(); recording = await api().recordingStop(); onRecordingChange?.(recording); await syncRecording(); }
     },
-    dispose() { active = false; unsubscribe?.(); sdUi.dispose(); flashConfirmation?.close(); if (flashActive()) flasher.cancel(); flash.remove();flashAvailability.remove();root.remove(); },
+    dispose() { active = false; downloadController?.abort(); unsubscribe?.(); sdUi.dispose(); flashConfirmation?.close(); if (flashActive()) flasher.cancel(); flash.remove();flashAvailability.remove();root.remove(); },
   };
 }
 

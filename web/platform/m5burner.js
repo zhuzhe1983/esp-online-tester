@@ -28,7 +28,7 @@ export function burnerFirmware(project,version,deviceId) {
   return {id:`m5burner:${project.firmwareId}:${version.versionId}`,name:project.firmwareName,revision:version.versionName,version:version.versionName,
     simulationVerified:false,source:{url:burnerDownloadUrl(project.firmwareId,version.versionId)},provider:'m5burner',deviceId,
     firmwareId:project.firmwareId,versionId:version.versionId,publisherGroup:project.sourceType==='OFFICIAL'?'官方':'社区',
-    sourceNote:'下载可能要求 M5Burner 验证。若提示验证码或登录，请在官方页面下载后，通过“本地文件”导入。',
+    sourceNote:'下载时可能弹出 M5Burner 验证码，按提示完成验证后继续下载。',
     detailsUrl:`https://burner.m5stack.com/firmware/${project.firmwareId}`};
 }
 export function burnerHistoryFirmware(entry) {
