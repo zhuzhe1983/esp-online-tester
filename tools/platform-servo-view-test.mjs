@@ -13,9 +13,9 @@ const product = {id:'m5stack-k151',model:{url:'./assets/m5stack-k151/model.json'
 const near = (a,b) => assert.ok(a.distanceTo(b)<1e-6,`${a.toArray()} != ${b.toArray()}`);
 const world = object => object.getWorldPosition(new THREE.Vector3());
 async function load() {
-  const nativeFetch = globalThis.fetch;
-  try { globalThis.fetch = async url => new Response(String(url).includes('model.json') ? JSON.stringify(metadata) : binary); const model=createManufacturerModel(product,null);await model.ready;return model; }
-  finally { globalThis.fetch=nativeFetch; }
+  const nativeFetch = globalThis.fetch, nativeTextureLoad = THREE.TextureLoader.prototype.loadAsync;
+  try { THREE.TextureLoader.prototype.loadAsync = async () => new THREE.Texture(); globalThis.fetch = async url => new Response(String(url).includes('model.json') ? JSON.stringify(metadata) : binary); const model=createManufacturerModel(product,null);await model.ready;return model; }
+  finally { globalThis.fetch=nativeFetch; THREE.TextureLoader.prototype.loadAsync=nativeTextureLoad; }
 }
 function dispose(model) { model.dispose();model.group.traverse(object=>{object.geometry?.dispose();for(const material of [].concat(object.material || []))material.dispose();}); }
 
@@ -23,12 +23,15 @@ test('StackChan retains neutral CAD coordinates and moves head, display and cont
  const model=await load();try {
   const {group,parts}=model,joints=group.userData.servoJoints;group.updateMatrixWorld(true);
   assert.equal(joints.length,2);assert.equal(joints[1].parent,joints[0]);
-  near(world(parts['shell-main']),new THREE.Vector3());near(world(parts['servo-shell']),new THREE.Vector3());near(world(parts.screen),new THREE.Vector3(0,2,23.5));
+  near(world(parts['shell-main']),new THREE.Vector3());near(world(parts['servo-shell']),new THREE.Vector3());near(world(parts.screen),new THREE.Vector3(0,0,38.2532019043));
   const fixed=world(parts['shell-base']),screen0=world(parts.screen),glass0=world(parts['front-glass']);
   applyServoValues(joints,[{id:'pan',positionDegrees:90,targetDegrees:0},{id:'tilt',positionDegrees:45}]);group.updateMatrixWorld(true);
   near(world(parts['shell-base']),fixed);assert.ok(world(parts.screen).distanceTo(screen0)>20);
   const pose=world(parts.screen);applyServoValues(joints,[{id:'pan',positionDegrees:90,targetDegrees:-90,enabled:false},{id:'tilt',positionDegrees:45,enabled:false}]);group.updateMatrixWorld(true);near(world(parts.screen),pose);
-  for(const name of ['front-glass','pcb-main','usb-c','grove-a','live-display','cover-key:touch-pad-front','rgb-window-left-0']) assert.equal(group.getObjectByName(name).parent,joints[1],`${name} must follow tilt`);
+  for(const name of ['shell-front','front-glass','camera-lens','pcb-main','pcb-power','pcb-touch','grove-b','grove-c','label-side-left','label-cores3-top','light-guide-left','usb-c','grove-a','live-display','cover-key:touch-pad-front','rgb-window-left-0']) assert.equal(group.getObjectByName(name).parent,joints[1],`${name} must follow tilt`);
+  for(const name of ['servo-pan-body','servo-tilt-body','servo-pan-gear','servo-tilt-gear']) assert.equal(group.getObjectByName(name).parent,joints[0],`${name} stays fixed to the moving stand`);
+  for(const name of ['servo-arm','bearing-fixture','servo-tilt-output']) assert.equal(group.getObjectByName(name).parent,joints[1]);
+  assert.equal(group.getObjectByName('servo-pan-output').parent,group,'Pan output shaft is fixed to the base');
   const normal=new THREE.Vector3(0,0,1).transformDirection(parts.screen.matrixWorld),ray=new THREE.Raycaster(pose.clone().addScaledVector(normal,100),normal.clone().negate());
   assert.equal(pickVisibleSurface(ray,group)?.object,parts.screen,'Moved framebuffer remains the nearest visible touch surface');
   for(let i=0;i<10;i++){applyServoValues(joints,[]);applyServoValues(joints,[{id:'pan',positionDegrees:-70},{id:'tilt',positionDegrees:80}]);}applyServoValues(joints,[]);group.updateMatrixWorld(true);
@@ -70,4 +73,21 @@ test('Invalid or ambiguous articulation declarations fail before claiming duplic
 test('Joint membership cannot reparent an ancestor into its descendant',()=>{
  const group=new THREE.Group(),body=new THREE.Object3D();body.name='body';group.add(body);
  assert.throws(()=>createServoJoints(group,[{id:'pan',axis:[0,1,0],pivotMm:[0,0,0],parts:['body']},{id:'tilt',parent:'pan',axis:[1,0,0],pivotMm:[0,0,0],parts:['servo:pan']}]),/Invalid servo part membership/);
+});
+
+test('StackChan assembled envelope and CoreS3 optical landmarks match independent official dimensions',async()=>{
+ const model=await load();try {
+  const {group,parts}=model;group.updateMatrixWorld(true);
+  // K151 Model_Size.png:54 ×70.5mm; head depth61.5mm. Glass has a declared0.05mm presentation offset.
+  const bounds=names=>names.reduce((box,name)=>box.union(new THREE.Box3().setFromObject(parts[name])),new THREE.Box3());
+  const head=bounds(['shell-main','shell-front']).getSize(new THREE.Vector3()),height=bounds(['shell-main','shell-front','shell-base']).getSize(new THREE.Vector3()).y;
+  assert.ok(Math.abs(head.x-54)<.05);assert.ok(Math.abs(head.z-61.5)<.05);assert.ok(Math.abs(height-70.5)<.05);
+  near(world(parts.screen),new THREE.Vector3(0,0,38.2532019043));
+  // CoreS3 DXF optical centers, relative to the LCD center (not to model-generated reference points).
+  for(const [name,x,y] of [['camera-lens',0,-21],['microphone-left',-14,-20.25],['microphone-right',14,-20.25],['ltr-window-1',6.58,-21],['ltr-window-2',8.98,-21]]) {
+   const position=world(group.getObjectByName(name));assert.ok(Math.abs(position.x-x)<1e-6);assert.ok(Math.abs(position.y-y)<1e-6);
+  }
+  assert.equal(metadata.derivedParts.filter(part=>part.kind==='pcb-placeholder').length,5,'All five board layers retain explicit UNKNOWN geometry');
+  for(const name of ['label-base','label-side-left','label-side-right','label-cores3-top']) assert.ok(!group.userData.shellMeshes.includes(group.getObjectByName(name)),'Paper labels keep their own material');
+ }finally{dispose(model);}
 });
