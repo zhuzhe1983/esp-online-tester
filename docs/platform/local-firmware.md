@@ -29,9 +29,23 @@ await espTester.loadFirmware({format:'segments', files:[
 
 `observe().firmware.source` 为 `local`，`localLayout` 记录偏移、字节数与 SHA-256；各镜像没有远程 URL。本地固件不能通过分享 URL 或录制 URL 携带给他人。Web Serial 的本地分段烧录复用相同校验，只写入用户提供的分段，不把模拟内存中填充的 0xff 空洞写入硬件；仍需点击选择串口并核对实物芯片、Flash 容量与安全状态。本轮测试未连接或刷写硬件。
 
+**刷到设备**位于运行按钮旁，独立读取当前选择的远程或本地固件，不要求模拟器先加载或启动成功。每次刷机都需确认型号、固件来源，以及已自行备份并承担刷写风险。完整 merged BIN（包括 `flasher_args.json` 中只列出地址 0 完整镜像的构建）按合并方式写入；分区构建按清单真实偏移逐段写入。独立应用 BIN 会提示补齐烧录清单、启动镜像和分区表，不推测应用地址。只有资料链接、没有固件文件的条目仍不能刷机。
+
 验证：
 
 - `node tools/platform-local-firmware-test.mjs`：路径冲突、缺文件、自定义分区地址、芯片、布局、取消检查通过。
 - `node tools/platform-runtime-test.mjs`：内部诊断固件的手动分段和 ESP-IDF 构建模式均经真实 ROM/bootloader 启动并产生帧；分享明确拒绝本地源。
 - `node tools/platform-flasher-test.mjs`：分段保持原长度和地址，不写入空洞；使用注入的串口测试替身，没有访问硬件。
 - `node tools/probe-local-build.mjs --build <user-build-directory>`：可显式测试其他构建，不复制镜像；只输出匿名化统计与哈希。当前用户构建在 30.15 秒宿主时间内推进到 6.5 秒 guest 时间、收到 2 帧，但未确认应用就绪。此前较长观察后的暂停回执超时也保留为限制，不能据此声称应用功能已可用。见 [探针记录](evidence/local-build/user-build-probe.json)。
+
+## 远程 BIN 下载失败后恢复
+
+站点配置[固件下载中继](firmware-relay.md)后，目录内固定 hash 的 GitHub Release 与 Meshtastic BIN 可自动下载。下面的手动入口用于未配置中继、网络故障或中继不可用时恢复。
+
+当跨域 BIN 下载因网络或 CORS 限制失败，且当前固件有固定 SHA-256 时，工作台与 mini 页面会打开恢复对话框。点击原始下载地址保存文件，选回下载好的 BIN，再点击“校验并继续”。校验通过的文件按原始 URL 和 hash 存入现有浏览器缓存，随后继续检查芯片、容量和镜像布局。当前版本、历史与分享来源仍指向原始远程固件；分享接收者若遇到同样的上游限制，也需要下载后导入。
+
+此入口由用户下载并选回文件，不能绕过 CORS，也不会将固件镜像到本站。浏览器缓存最多接受 64 MiB 的单个文件；选错版本、ZIP 或网页内容会因 hash 不符而被拒绝，取消不会启动执行。清单、未固定 hash 的地址、缺失 ROM、上游 HTTP 错误和镜像校验失败不走这条恢复流程。agent API 保持非交互，仍返回 `FETCH_FAILED` 或 `FIRMWARE_RELAY_FAILED`。
+
+验证：`node --test tools/platform-firmware-recovery-test.mjs` 覆盖精确来源匹配、hash 不符、文件大小、取消、缓存不可用，以及恢复后仍须通过镜像布局检查。
+
+2026-10-28 无头 Chromium 实测：在工作台选择 T-Deck 的 Meshtastic 2.7.26.54e0d8d、在 mini 页选择 Bruce 1.16.1，点击运行后均复现上游 CORS 失败。使用对话框的原始链接下载并选回文件，分别校验 2,306,304 字节（`f55469e588ea79ded5fa4fce58900bc0252021ab02e79329dc77bedfce40ab13`）和 4,262,592 字节（`16b57f1371756df6ee6bbc4500bc5ae4c288f6d78a8c25edb55062d7ad120664`），恢复 ROM 启动并产生串口输出；Bruce 输出 320×240 framebuffer。错误文件被 hash 校验拒绝，Bruce 刷新重启时未再次请求远程 BIN。此检查验证下载恢复，不代表固件完整兼容或实机刷写通过。

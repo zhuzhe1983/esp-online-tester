@@ -6,7 +6,9 @@ RUN cargo build --locked --release -p esp-network-backend
 FROM node:22-bookworm-slim
 WORKDIR /app
 COPY --from=build /src/target/release/esp-network-backend /usr/local/bin/esp-network-backend
-COPY tools/network-relay.mjs tools/network-helper.mjs ./tools/
+COPY tools/network-relay.mjs tools/network-helper.mjs tools/firmware-relay.mjs tools/public-ipv4.mjs ./tools/
+COPY web/platform/firmware-relay.js ./web/platform/
+COPY web/platform/catalog/firmwares.json ./web/platform/catalog/
 USER node
 ENV RELAY_HOST=0.0.0.0 RELAY_PORT=8788 RELAY_BACKEND=/usr/local/bin/esp-network-backend
 EXPOSE 8788

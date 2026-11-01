@@ -1,6 +1,7 @@
 // Firmware stays at its publisher and in the user's browser, never on our server.
 // Only hash-pinned remote artifacts are reusable; callers recheck SHA-256 on hits.
-const MAX_BYTES = 64 * 1024 * 1024;
+export const MAX_CACHED_FIRMWARE_BYTES = 64 * 1024 * 1024;
+const MAX_BYTES = MAX_CACHED_FIRMWARE_BYTES;
 const keyFor = (url, hash) => typeof hash === 'string' && /^[a-f0-9]{64}$/i.test(hash) ? `${url}\n${hash.toLowerCase()}` : null;
 
 export function createFirmwareCache({ indexedDB = globalThis.indexedDB, maxBytes = MAX_BYTES, dbName = 'esp-online-tester-firmware-v1' } = {}) {

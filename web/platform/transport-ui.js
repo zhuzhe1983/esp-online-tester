@@ -1,8 +1,10 @@
 import {createFlasher} from './flasher.js';
 import {loadWatchlist, checkWatchEntry, buildFirmwareIssueUrl} from './watchlist.js';
 import {renderHintList} from './hints.js';
-import {firmwareRunPolicy} from './firmware-policy.js';
+import {firmwareRunPolicy, firmwareFlashPolicy} from './firmware-policy.js';
 import {createSdCardUi} from './sd-card-ui.js';
+import {openFlashConfirmation} from './firmware-flash-ui.js';
+import {burnerProjectUrl,M5BURNER_VERIFICATION_MESSAGE} from './firmware-download-access.js';
 
 const node = (tag, className, text) => { const result = document.createElement(tag); if (className) result.className = className; if (text !== undefined) result.textContent = text; return result; };
 const button = (label, className = 'button quiet tiny') => { const result = node('button', className, label); result.type = 'button'; return result; };
@@ -16,13 +18,16 @@ const describe = value => {
   return String(value);
 };
 
-export function createTransportUi({mount, catalog, getScene, getSource, getApi, prepareRecording, releaseInputs, recordingMatchesScene, onRecordingState, onRecordingChange, onError, onLog}) {
+export function createTransportUi({mount, flashMount, catalog, getScene, getSource, getApi, prepareRecording, releaseInputs, recordingMatchesScene, onRecordingState, onRecordingChange, onError, onLog}) {
   const root = node('section', 'session-tools'); root.setAttribute('aria-label', '操作录制与实体刷机');
   const row = node('div', 'session-tool-row');
   const storageButton = button('设备存储'); storageButton.dataset.action = 'device-storage';
-  const record = button('● 重启并录制'), stop = button('■ 停止'), play = button('▷ 回放'), takeOver = button('接管', 'button tiny'), options = button('详情', 'button quiet tiny'), flash = button('刷到设备 ↗', 'button tiny');
+  const record = button('● 重启并录制'), stop = button('■ 停止'), play = button('▷ 回放'), takeOver = button('接管', 'button tiny'), options = button('详情', 'button quiet tiny'), flash = button('刷到设备', 'button');flash.id='flash-device';
   const recordingStatus = node('span', 'session-status', '未录制'); recordingStatus.setAttribute('aria-live', 'polite');
-  row.append(record, stop, play, takeOver, recordingStatus, options, storageButton, flash); root.append(row);
+  row.append(record, stop, play, takeOver, recordingStatus, options, storageButton); root.append(row);
+  (flashMount || row).append(flash);
+  const flashAvailability = node('p', 'helper flash-availability'); flashAvailability.id='flash-availability';flashAvailability.setAttribute('role', 'status');flash.setAttribute('aria-describedby',flashAvailability.id);
+  if(flashMount){const area=flashMount.classList.contains('transport-main')?flashMount.parentElement:flashMount;area.insertAdjacentElement('afterend',flashAvailability);}else root.append(flashAvailability);
   const details = node('details', 'session-details'), summary = node('summary', '', '录制、存储与刷机说明'); details.append(summary);
   const recordingNote = node('p', 'helper', '录制从重启开始，保存按键、点击与滑动。共享录制需要接收者主动点击回放。串口、GPS 与刷机不会录入。');
   const recordingReceipt = node('p', 'helper'); recordingReceipt.hidden = true;
@@ -42,7 +47,7 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
   confirmStorage.append(confirmNote, confirmClearStorage, cancelClearStorage);
   storageSection.append(storageHeading, storageIdentity, storageStatus, storageNote, clearStorage, confirmStorage); details.prepend(storageSection);
   let deviceStorage = null, storageOperation = false, storageScope = null;
-  let recording = null, recordingState = {status: 'idle', recording: null, progress: {index: 0, total: 0}}, localSelection = false, recordingBusy = false, replayRequested = false, takeoverPending = null, active = true, flashState = {status: 'idle'}, flashTarget = null;
+  let recording = null, recordingState = {status: 'idle', recording: null, progress: {index: 0, total: 0}}, localSelection = false, recordingBusy = false, replayRequested = false, takeoverPending = null, active = true, flashState = {status: 'idle'}, flashTarget = null, flashConfirmation = null;
   const flashActive = () => ['choosing', 'preparing', 'connecting', 'validating', 'writing', 'resetting', 'cancelling'].includes(flashState.status);
   const recordingActive = () => ['preparing', 'recording', 'playing'].includes(recordingState.status);
   const api = () => getApi();
@@ -82,8 +87,18 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
     if (storageOperation) storageStatus.textContent = '正在清空设备数据…';
     sdUi.refresh();
     const capability = flasher.capabilities();
-    flash.disabled = !capability.supported || flashActive();
-    flash.title = capability.supported ? '选择串口并将当前固件写入真实设备' : capability.reason;
+    let source = null, sourceError = '';
+    try { source = getSource(); } catch (error) { sourceError = error.message; }
+    const policy = firmwareFlashPolicy(catalog.products.find(product => product.id === getScene().productId), source);
+    const unavailable = !capability.supported ? capability.reason : !policy.canFlash ? sourceError || policy.message : '';
+    flash.disabled = Boolean(unavailable) || flashActive() || Boolean(flashConfirmation);
+    flash.title = unavailable || '独立下载并校验所选固件，然后写入真实设备；无需先运行模拟器';
+    flashAvailability.textContent = unavailable || '刷到设备会独立下载所选固件，无需先运行模拟器。';
+    const access=source?.url&&catalog.firmwares.find(item=>item.source?.url===source.url)?.downloadAccess;
+    if (!unavailable&&access?.status==='verification-required'&&access.sourceUrl===source.url) {
+      flashAvailability.textContent=M5BURNER_VERIFICATION_MESSAGE+' ';
+      const officialUrl=burnerProjectUrl(source.url);if(officialUrl)flashAvailability.append(link('打开官方页面 ↗',officialUrl));
+    }
     if (!capability.supported && flashState.status === 'idle') flashStatus.textContent = capability.reason;
   }
   function acceptRecordingState(state) {
@@ -150,18 +165,25 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
     cancelFlash.hidden = !flashActive(); cancelFlash.disabled = flashState.status === 'cancelling';
     if (flashState.status === 'error') {
       const source = flashTarget?.source, url = source?.manifestUrl || source?.url;
-      if (url) { flashIssue.href = safeUrl(flashState.error?.details?.issueUrl) || buildFirmwareIssueUrl({entryId: 'custom-source', url, reason: flashState.error?.message || flashState.message, status: flashState.error?.details?.status, productId: flashTarget?.id}); flashIssue.hidden = false; }
+      const officialUrl=burnerProjectUrl(flashState.error?.details?.url||url);
+      if (officialUrl&&['FIRMWARE_AUTH_REQUIRED','FIRMWARE_DOWNLOAD_RESPONSE'].includes(flashState.error?.code)) {
+        flashIssue.href=officialUrl;flashIssue.textContent='前往 M5Burner 验证并下载，再导入本地文件 ↗';flashIssue.hidden=false;
+      } else flashIssue.hidden=true;
     }
     onLog?.(`[刷机] ${flashState.message || flashState.status}\n`); render();
   }});
-  // Keep requestPort inside the direct click call stack: no awaited preparation or automation API.
+  // The confirmation's final click opens the chooser; do not await preparation.
   flash.addEventListener('click', () => {
     try {
       const scene = getScene(), source = getSource(), selected = catalog.products.find(product => product.id === scene.productId);
       if (!source) throw new Error('此场景没有固件地址，请先在工作台选择固件。');
-      flashTarget = {id: scene.productId, name: selected?.name, source}; flashIssue.hidden = true; flashLog.textContent = ''; flashLog.hidden = true;
-      const operation = flasher.flash({scene, catalog, source});
-      Promise.resolve(operation).catch(error => { if (error.code !== 'FLASH_CANCELLED') onError(error); });
+      // Keep File references: cloning can discard directory-relative file paths.
+      const confirmedScene=structuredClone(scene),confirmedSource={...source,...(source.files?{files:source.files.map(item=>source.format==='segments'?{...item}:item)}:{})};
+      flashConfirmation=openFlashConfirmation({product:selected,source:confirmedSource,onClose(){flashConfirmation=null;render();},onConfirm(){
+        flashTarget = {id: confirmedScene.productId, name: selected?.name, source:confirmedSource}; flashIssue.hidden = true; flashLog.textContent = ''; flashLog.hidden = true;
+        const operation = flasher.flash({scene:confirmedScene, catalog, source:confirmedSource});
+        Promise.resolve(operation).catch(error => { if (error.code !== 'FLASH_CANCELLED') onError(error); });
+      }});render();
     } catch (error) { onError(error); }
   });
   cancelFlash.addEventListener('click', () => { flasher.cancel(); });
@@ -180,7 +202,7 @@ export function createTransportUi({mount, catalog, getScene, getSource, getApi, 
       if (replayRequested || ['preparing', 'playing'].includes(recordingState.status)) await takeControl();
       if (recordingState.status === 'recording') { await releaseInputs(); recording = await api().recordingStop(); onRecordingChange?.(recording); await syncRecording(); }
     },
-    dispose() { active = false; unsubscribe?.(); sdUi.dispose(); if (flashActive()) flasher.cancel(); root.remove(); },
+    dispose() { active = false; unsubscribe?.(); sdUi.dispose(); flashConfirmation?.close(); if (flashActive()) flasher.cancel(); flash.remove();flashAvailability.remove();root.remove(); },
   };
 }
 

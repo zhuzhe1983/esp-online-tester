@@ -15,10 +15,14 @@ import {installEmbedBridge} from './embed.js';
 import {createTransportUi, createKnowledgePanel, mountFirmwareUpdates} from './transport-ui.js';
 import {firmwareRunPolicy} from './firmware-policy.js';
 import {confirmFirmwareRun, buildRunIssueUrl} from './firmware-run-ui.js';
+import {recoverFirmwareDownload,firmwareRecoverySource} from './firmware-download-recovery.js';
+import {mountHeaderMenus} from './header-ui.js';
+import {showErrorDialog,expectedCancellation} from './error-ui.js';
+import {configureFirmwareRelay} from './firmware-relay.js';
+import {burnerProjectUrl} from './firmware-download-access.js';
 import {productOptionLabel, productIdentityLabel, productFamilies, productFamilyGroups, manufacturerLabel, manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
 import {mountDeviceSearch, mountAccessorySearch} from './device-search.js';
 import {encodeRecording, decodeRecording, validateRecording} from './recording.js';
-import {buildFirmwareIssueUrl} from './watchlist.js';
 import {SHELL_DEFAULT, SHELL_PRESETS, SHELL_FINISHES, shellPreset} from './appearance.js';
 import {renderHintList, productHints, firmwareHints} from './hints.js';
 import {lookupIpLocation, IP_LOCATION_PROVIDER} from './ip-geolocation.js';
@@ -53,7 +57,9 @@ const errorMessages = {
   UNSUPPORTED_PRODUCT: '此产品的板级模型尚未实现，可配置和预览外观。',
   NO_FIRMWARE: '请先选择固件。', FIRMWARE_MISSING: '请先选择固件。',
   NO_FRAME: '固件尚未输出真实屏幕帧。',
-  FETCH_FAILED: '固件下载失败，请检查地址与远程服务器的 CORS 设置。',
+  HTTP_ERROR: '固件下载失败，请检查来源地址或稍后重试。',
+  FETCH_FAILED: '固件下载失败：网络或上游跨域限制。可下载原始文件后通过“本地文件”加载；本站无法修改上游 CORS 设置。',
+  FIRMWARE_RELAY_FAILED: '固件下载中继暂时不可用，可稍后重试，或下载原文件后校验导入。',
   INCOMPLETE_IMAGE: '需要从地址 0 开始的完整 Flash 镜像。单独 app.bin 请改用包含启动镜像的清单。',
   HASH_MISMATCH: '下载内容与 SHA-256 校验值不一致。',
   APP_IMAGE_CHECKSUM: '应用镜像校验失败，不能切换启动模式。',
@@ -83,25 +89,34 @@ function appendConsole() {
   });
 }
 function log(message) { for (const port of Object.keys(consoleBuffers)) consoleBuffers[port] = (consoleBuffers[port] + message).slice(-65536); appendConsole(); }
-function report(error) {
+function errorContext(error) {
+  let source=scene?.firmware,firmware=null;
+  if(catalog&&scene){try{source=sourceFromInputs();firmware=currentCatalogFirmware();}catch{}}
+  if(source?.file||source?.files)source={local:true};
+  return {product:product(),firmware,source,state:{status,version:api?.version,scene,firmware:loadedFirmware,serialByPort:{...consoleBuffers},lastError:error}};
+}
+function report(error,{kind='operation'}={}) {
+  error=error&&typeof error==='object'?error:{message:String(error||'未知错误')};
+  if(expectedCancellation(error))return;
   const message = errorMessages[error.code] || error.message || String(error);
-  toast(message, true); text('load-status', message);
+  text('load-status', message);
   showFirmwareIssue(error);
   log(`\n[${error.code || 'ERROR'}] ${error.message || message}\n`);
+  showErrorDialog({error,message,context:errorContext(error),kind});
 }
 function showFirmwareIssue(error) {
   const issueLink = $('firmware-issue');
-  if (!issueLink || !['HTTP_ERROR', 'FETCH_FAILED', 'FETCH_ABORTED'].includes(error.code)) return;
-  const url = error.details?.url || $('firmware-url')?.value.trim() || scene?.firmware?.manifestUrl || scene?.firmware?.url;
-  if (!url) return;
-  issueLink.href = buildFirmwareIssueUrl({entryId: 'custom-source', url, reason: error.message, status: error.details?.status, productId: scene?.productId});
-  issueLink.textContent = [404, 410].includes(error.details?.status) ? '远程资源失效：打开 issue 草稿 ↗' : '网络或 CORS 无法确认：打开 issue 草稿 ↗';
-  issueLink.hidden = false;
+  if (!issueLink) return;
+  const officialUrl=burnerProjectUrl(error.details?.url);
+  if (officialUrl&&['FIRMWARE_AUTH_REQUIRED','FIRMWARE_DOWNLOAD_RESPONSE'].includes(error.code)) {
+    issueLink.href=officialUrl;issueLink.textContent='前往 M5Burner 验证并下载，再导入本地文件 ↗';issueLink.hidden=false;return;
+  }
+  issueLink.hidden = true;
 }
-async function action(work) {
+async function action(work,{kind='operation'}={}) {
   if (busy) return;
   busy = true; renderTransport();
-  try { return await work(); } catch (error) { report(error); }
+  try { return await work(); } catch (error) { report(error,{kind}); }
   finally { busy = false; renderTransport(); }
 }
 function download(name, value, type = 'application/json') {
@@ -190,7 +205,7 @@ async function selectLocalFiles(incoming, {replace=false}={}) {
       try {validateMergedImage(data,product().runtime.board || product().chip,(product().runtime.flashMb || 32)*1024*1024);localSource={format:'merged',file};text('local-build-status',`已识别完整合并镜像：${file.name}，可直接加载。`);}
       catch(error){if(error.code!=='INCOMPLETE_IMAGE')throw error;text('local-build-status',`这不是完整合并镜像。请继续选择 flasher_args.json，再补齐其中列出的启动镜像和分区表；也可直接选择构建目录。`);}
     } else text('local-build-status','已选择多个镜像，请补选对应的 flasher_args.json，以读取实际烧录偏移。');
-  } catch(error){if(token===localSelectionToken){text('local-build-status',error.message);localSource=null;}}
+  } catch(error){if(token===localSelectionToken){text('local-build-status',error.message);localSource=null;report(error);}}
   finally {if(token===localSelectionToken)renderTransport();}
 }
 
@@ -239,7 +254,7 @@ function onRuntimeEvent(event) {
       if (event.source === ($('serial-port')?.value || 'uart0')) appendConsole();
     } else log(event.data);
   }
-  else if (event.type === 'error') { text('load-status', errorMessages[event.error.code] || event.error.message); showFirmwareIssue(event.error); }
+  else if (event.type === 'error') { text('load-status', errorMessages[event.error.code] || event.error.message); if(!busy)report(event.error); }
   else if (event.type === 'stats') {
     text('runtime-speed', Number.isFinite(event.stats.mips) ? `${event.stats.mips.toFixed(2)} MIPS${event.stats.speed == null ? '' : ` · ${Math.round(event.stats.speed * 100)}% 实时`}` : '');
   }
@@ -590,7 +605,17 @@ async function loadSelected() {
   } : null;
   if (history && !history.provider) firmwareHistory?.remember(history);
   const next = clone(scene); next.firmware = source.file || source.files ? null : source;
-  await configure(next); const state = await runtime.loadFirmware(source);
+  await configure(next);
+  let state;
+  try {state=await runtime.loadFirmware(source);}
+  catch(error) {
+    if(!firmwareRecoverySource(error,source))throw error;
+    if(!await recoverFirmwareDownload({error,source,firmware:known,issueUrl:buildRunIssueUrl(errorContext(error))}))throw Object.assign(new Error('已取消下载恢复。'),{code:'RECOVERY_CANCELLED'});
+    if(scene.productId!==next.productId||!firmwareSourceMatches(scene.firmware,source))throw new Error('设备或固件选择已改变，请重新点击运行。');
+    state=await runtime.loadFirmware(source);
+    if($('toast')?.classList.contains('error')){clearTimeout(toastTimer);$('toast').hidden=true;}
+    if($('firmware-issue'))$('firmware-issue').hidden=true;
+  }
   if (history) {
     const metadata = state.firmware?.metadata;
     const digest = state.firmware?.manifestHash || state.firmware?.artifacts[0]?.sha256;
@@ -869,9 +894,10 @@ function setupEvents() {
     updateRemoteMode();renderTransport();text('load-status','已选取历史地址，点击“下载并运行”加载。');
   }});
   bind('firmware-kind','change',()=>{updateRemoteMode();renderTransport();});
+  for (const id of ['firmware-url', 'firmware-sha']) bind(id, 'input', renderTransport);
   const chooseProduct = async (id, keepFamily = false) => { clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, id)); productChoiceTarget = keepFamily ? id : ''; try { await configure(next, {reflectSource: true}); } finally { productChoiceTarget = ''; } };
-  mountDeviceSearch({button:$('search-devices'),products:catalog.products,onSelect:id=>action(()=>chooseProduct(id)),onError:error=>toast(error.message,true)});
-  mountAccessorySearch({button:$('search-accessories'),getItems:allDefinitions,onSelect:id=>{const item=definition(id);if(!item)return;renderAccessoryChoices({brand:accessoryBrand(item),connector:accessoryInterface(item),id});$('add-accessory').focus();},onError:error=>toast(error.message,true)});
+  mountDeviceSearch({button:$('search-devices'),products:catalog.products,onSelect:id=>action(()=>chooseProduct(id)),onError:report});
+  mountAccessorySearch({button:$('search-accessories'),getItems:allDefinitions,onSelect:id=>{const item=definition(id);if(!item)return;renderAccessoryChoices({brand:accessoryBrand(item),connector:accessoryInterface(item),id});$('add-accessory').focus();},onError:report});
   bind('manufacturer-select', 'change', () => action(async () => { const choices = renderProductChoices($('manufacturer-select').value); if (choices.length) await chooseProduct(choices[0].id, true); }));
   bind('product-family-select', 'change', () => action(async () => {
     const choices = renderProductChoices($('manufacturer-select').value, {familyId:$('product-family-select').value,selectedId:scene.productId});
@@ -883,20 +909,9 @@ function setupEvents() {
   bind('firmware-file', 'change', () => { void selectLocalFiles($('firmware-file').files); });
   bind('firmware-folder', 'change', () => { void selectLocalFiles($('firmware-folder').files,{replace:true}); });
   bind('clear-local-files', 'click', clearLocalFiles);
-  bind('load-firmware', 'click', () => action(downloadAndRun));
+  bind('load-firmware', 'click', () => action(downloadAndRun,{kind:'startup'}));
   bind('clear-firmware-cache', 'click', () => action(async () => { await runtime.clearFirmwareCache(); toast('已清除当前浏览器的固件缓存。'); }));
-  bind('start-runtime', 'click', () => action(async () => { if (['ready', 'paused'].includes(status)) { if (await confirmSelectedRun()) await runtime.start(); } else await downloadAndRun(); }));
-  bind('report-runtime-issue','click',async()=>{
-    try {
-      const state=await runtime.observe();let source=state.scene?.firmware,firmware=currentCatalogFirmware();
-      if(state.firmware){
-        if(state.firmware.source==='local'){source={local:true};firmware=null;}
-        else firmware=catalog.firmwares.find(item=>item.productIds.includes(state.scene.productId)&&firmwareSourceMatches(item.source,source)) || matchingHubFirmware(source);
-      }else if(!embedded){if(firmwareTab==='local')source={local:true};else try{source=sourceFromInputs();}catch{}}
-      const url=buildRunIssueUrl({product:state.product||product(),firmware,source,state});
-      window.open(url,'_blank','noopener,noreferrer');
-    } catch(error) { report(error); }
-  });
+  bind('start-runtime', 'click', () => action(async () => { if (['ready', 'paused'].includes(status)) { if (await confirmSelectedRun()) await runtime.start(); } else await downloadAndRun(); },{kind:'startup'}));
   bind('pause-runtime', 'click', () => action(async () => { await releaseHumanInputs(); await runtime.pause(); }));
   bind('reset-runtime', 'click', () => action(async () => { await releaseHumanInputs(); await runtime.reset(); }));
   for (const mode of ['2d', '3d']) bind(`view-${mode}`, 'click', () => action(async () => {
@@ -995,7 +1010,7 @@ async function init() {
   document.querySelector('.console-panel, .embed-console')?.before(networkMount);
   const networkUi=mountNetworkControls({container:networkMount,runtime:api,onError:report});
   window.addEventListener('pagehide',()=>networkUi.dispose(),{once:true});
-  try{const response=await fetch(new URL('./network-config.json',import.meta.url),{cache:'no-store'});if(response.ok){const defaults=await response.json();if(defaults.publicRelayUrl)await api.configureNetwork({mode:'public-relay',relayUrl:defaults.publicRelayUrl});}}catch{/* A static checkout can preview SoftAP without any relay deployment. */}
+  try{const response=await fetch(new URL('./network-config.json',import.meta.url),{cache:'no-store'});if(response.ok){const defaults=await response.json();configureFirmwareRelay(defaults.firmwareRelayUrl??defaults.publicRelayUrl??'');if(defaults.publicRelayUrl)await api.configureNetwork({mode:'public-relay',relayUrl:defaults.publicRelayUrl});}}catch{/* A static checkout can preview SoftAP without any relay deployment. */}
   const networkEndpoint=params.get('network');
   if(networkEndpoint){try{await api.configureNetwork({endpoint:networkEndpoint});}catch(error){report(error);}params.delete('network');history.replaceState(null,'',`${location.pathname}${location.search}${params.size?'#'+params.toString():''}`);}
   else if(params.get('localNetwork')==='1'&&['127.0.0.1','localhost','[::1]'].includes(location.hostname)) {
@@ -1004,7 +1019,7 @@ async function init() {
 
   detachBridge = installEmbedBridge(api);
   knowledgePanel = createKnowledgePanel($('product-knowledge'));
-  transportUi = createTransportUi({mount: $('session-tools-mount'), catalog, getScene: () => clone(scene), getSource: sourceFromInputs, getApi: () => api,
+  transportUi = createTransportUi({mount: $('session-tools-mount'), flashMount:document.querySelector(embedded ? '.transport-main' : '.firmware-actions'), catalog, getScene: () => clone(scene), getSource: sourceFromInputs, getApi: () => api,
     prepareRecording: async () => { await releaseHumanInputs(); if (!['ready', 'running', 'paused'].includes(status)) await loadSelected(); },
     releaseInputs: releaseHumanInputs,
     recordingMatchesScene: recorded => validateRecording(recorded, {scene}).valid,
@@ -1038,4 +1053,7 @@ async function init() {
     }
   });
 }
-init().catch(error => { report(error); text('empty-title', '工作台初始化失败'); text('empty-description', error.message); });
+mountHeaderMenus();
+window.addEventListener('error',event=>{if(event.error||event.message)report(event.error||{code:'PAGE_ERROR',message:event.message},{kind:'page'});});
+window.addEventListener('unhandledrejection',event=>{report(event.reason,{kind:'page'});});
+init().catch(error => { report(error,{kind:'page'}); text('empty-title', '工作台初始化失败'); text('empty-description', error.message); });

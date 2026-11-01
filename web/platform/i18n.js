@@ -90,7 +90,7 @@ export function chooseLocale(next) {
 }
 
 function mountSwitcher(doc) {
-  const host = doc.querySelector('.topbar-actions') || doc.querySelector('.view-controls');
+  const host = doc.querySelector('[data-language-mount]') || doc.querySelector('.topbar-actions') || doc.querySelector('.view-controls');
   if (!host || doc.getElementById('language-select')) return;
   const select = doc.createElement('select');
   select.id = 'language-select'; select.className = 'language-select'; select.setAttribute('data-i18n-skip', '');

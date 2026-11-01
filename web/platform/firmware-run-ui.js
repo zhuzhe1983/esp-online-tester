@@ -5,7 +5,7 @@ export function confirmFirmwareRun({product, firmware}) {
   const dialog=node('dialog');dialog.className='firmware-run-confirm';dialog.setAttribute('aria-labelledby','firmware-run-confirm-title');
   const title=node('h2','尚未确认完整适配');title.id='firmware-run-confirm-title';
   const identity=node('p',`${product.name} · ${firmware.name}`);identity.className='helper';
-  const detail=node('p','此固件尚未完成适配验证。可以继续运行，但可能无法启动，或有部分功能不可用。遇到问题可点击“报告问题”，附上运行日志。');
+  const detail=node('p','此固件尚未完成适配验证。可以继续运行，但可能无法启动，或有部分功能不可用。发生错误时，可在弹窗中报告问题并附上运行日志。');
   const limitations=(firmware.limitations||[]).filter(text=>/实验直启|app-only|跳过 ROM/.test(text));
   const actions=node('div');actions.className='dialog-actions';
   const cancel=node('button','取消');cancel.type='button';cancel.className='button';

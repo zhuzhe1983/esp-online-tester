@@ -7,19 +7,13 @@ import {existsSync} from 'node:fs';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {resolve} from 'node:path';
 import {Backend,attachWebSocket} from './network-helper.mjs';
+import {publicIpv4} from './public-ipv4.mjs';
+import {createFirmwareRelay,loadFirmwareAllowlist} from './firmware-relay.mjs';
+export {publicIpv4} from './public-ipv4.mjs';
 
 const ROOT=fileURLToPath(new URL('../',import.meta.url));
 const DEFAULTS={maxSessions:16,maxSessionsPerIp:2,maxPending:64,sessionMs:10*60_000,tokenMs:30_000,idleMs:90_000,maxBytes:64*1024*1024,bytesPerSecond:256*1024,burstBytes:512*1024,packetsPerSecond:1000,newFlowsPerMinute:120,sessionsPerMinute:6};
 const denied=(code,message)=>Object.assign(new Error(message),{code});
-const ipNumber=bytes=>bytes.reduce((n,b)=>n*256+b,0);
-// Conservative IANA special-purpose exclusions, plus multicast. Checked 2026-10-28:
-// https://www.iana.org/assignments/iana-ipv4-special-registry/
-const SPECIAL=['0.0.0.0/8','10.0.0.0/8','100.64.0.0/10','127.0.0.0/8','169.254.0.0/16','172.16.0.0/12','192.0.0.0/24','192.0.2.0/24','192.31.196.0/24','192.52.193.0/24','192.88.99.0/24','192.168.0.0/16','192.175.48.0/24','198.18.0.0/15','198.51.100.0/24','203.0.113.0/24','224.0.0.0/4','240.0.0.0/4'].map(cidr=>{const [ip,bits]=cidr.split('/'),size=2**(32-Number(bits));return [ipNumber(ip.split('.').map(Number)),size];});
-export function publicIpv4(ip) {
-  const bytes=typeof ip==='string'?(isIP(ip)===4?ip.split('.').map(Number):[]):Array.from(ip??[]);
-  if(bytes.length!==4||bytes.some(b=>!Number.isInteger(b)||b<0||b>255))return false;
-  const value=ipNumber(bytes);return !SPECIAL.some(([start,size])=>value>=start&&value<start+size);
-}
 function dnsQuery(bytes) {
   if(bytes.length<17||bytes.length>512||bytes.readUInt16BE(2)&~0x0100||bytes.readUInt16BE(4)!==1||bytes.readUInt16BE(6)||bytes.readUInt16BE(8)||bytes.readUInt16BE(10))return false;
   let at=12,length=0;
@@ -70,6 +64,7 @@ export async function startNetworkRelay({host='127.0.0.1',port=8788,publicUrl,or
   let base=publicUrl?new URL(publicUrl):undefined;
   if(base&&(base.pathname!=='/'||base.search||base.hash||base.username||base.password||base.protocol!=='https:'&&!(base.protocol==='http:'&&loopback(base.hostname)))||!base&&!loopback(host))throw denied('INVALID_CONFIG','Set an HTTPS public URL, or use a loopback preview');
   const tokens=new Map(),sessions=new Set(),issuance=new Map(),sockets=new Set();
+  const firmwareRelay=createFirmwareRelay({allowlist:await loadFirmwareAllowlist()});
   const caps={ethernet:true,tcp:true,udp:true,http:false,https:false,publicRelay:true,interfaces:[0],maxFrameBytes:1518,tcpPorts,udpPorts:[53,...udpPorts],inbound:false};
   const counts=ip=>[...sessions].filter(s=>s.ip===ip).length+[...tokens.values()].filter(s=>s.ip===ip).length;
   const prune=()=>{const now=Date.now();for(const [id,item]of tokens)if(item.expires<=now)tokens.delete(id);for(const [ip,item]of issuance)if(now-item.at>=60_000)issuance.delete(ip);};
@@ -81,6 +76,7 @@ export async function startNetworkRelay({host='127.0.0.1',port=8788,publicUrl,or
       if(req.url==='/health'&&req.method==='GET'){respond(res,200,{ok:true,version:1,service:'esp-network-relay'});return;}
       const origin=req.headers.origin;
       if(req.headers.host!==base.host||!origins.includes(origin)){respond(res,403,{error:{code:'ORIGIN_DENIED',message:'Origin or Host is not allowed'}});return;}
+      if(req.url.split('?')[0]==='/firmware'){void firmwareRelay.handle(req,res,{origin,ip:clientAddress(req,proxyToken)}).catch(()=>res.destroy());return;}
       if(req.url!=='/session'){respond(res,404,{error:{code:'NOT_FOUND'}} ,origin);return;}
       if(req.method==='OPTIONS'){res.setHeader('Access-Control-Allow-Methods','POST');res.setHeader('Access-Control-Allow-Headers','Content-Type');respond(res,204,undefined,origin);return;}
       if(req.method!=='POST'){respond(res,405,{error:{code:'METHOD_DENIED'}},origin);return;}
@@ -135,9 +131,9 @@ export async function startNetworkRelay({host='127.0.0.1',port=8788,publicUrl,or
     send(1,{type:'hello',version:1,interfaces:[0],capabilities:caps});
     try{child=backendFactory(emit);if(closed)child.close();}catch{connection.close(1011,'network backend unavailable');}
   });
-  try{await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,host,resolve);});}catch(error){clearInterval(timer);throw error;}
+  try{await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,host,resolve);});}catch(error){clearInterval(timer);firmwareRelay.close();throw error;}
   base??=new URL(`http://${host==='::1'?'[::1]':host}:${server.address().port}`);
-  return {url:base.origin,address:server.address(),capabilities:caps,close:()=>new Promise(resolve=>{clearInterval(timer);tokens.clear();for(const session of sessions)session.close();server.close(resolve);for(const socket of sockets)socket.destroy();})};
+  return {url:base.origin,address:server.address(),capabilities:caps,close:()=>new Promise(resolve=>{clearInterval(timer);tokens.clear();firmwareRelay.close();for(const session of sessions)session.close();server.close(resolve);for(const socket of sockets)socket.destroy();})};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
   const env=process.env,options={host:env.RELAY_HOST??'127.0.0.1',port:Number(env.RELAY_PORT??8788),publicUrl:env.RELAY_PUBLIC_URL,origins:(env.RELAY_ORIGINS??'https://zhuzhe1983.github.io').split(',').filter(Boolean),resolver:env.RELAY_DNS??'1.1.1.1',proxyToken:env.RELAY_PROXY_TOKEN,...(env.RELAY_BACKEND?{backend:env.RELAY_BACKEND}:{}),limits:{}};

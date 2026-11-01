@@ -578,6 +578,21 @@
                 "reference"
               ]
             },
+            "downloadAccess": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["sourceUrl", "officialUrl", "checkedAt", "status"],
+              "properties": {
+                "sourceUrl": {"type": "string", "pattern": "^https://burner\\.m5stack\\.com/api/v1/firmwares/[0-9]{1,30}/versions/[0-9]{1,30}/download$"},
+                "officialUrl": {"type": "string", "pattern": "^https://burner\\.m5stack\\.com/firmware/[0-9]{1,30}$"},
+                "checkedAt": {"type": "string", "format": "date-time"},
+                "status": {"enum": ["resolved", "verification-required", "no-public-redirect", "http-error", "unstable-or-untrusted-redirect", "cdn-unavailable", "invalid-download-response", "check-failed"]},
+                "directUrl": {"type": "string", "pattern": "^https://m5burner-cdn\\.m5stack\\.com/(firmware|community|official)/[A-Za-z0-9/_.-]+\\.bin$"},
+                "providerCode": {"type": "string", "pattern": "^[A-Z][A-Z_]{0,79}$"},
+                "httpStatus": {"type": "integer", "minimum": 100, "maximum": 599}
+              },
+              "allOf": [{"if": {"properties": {"status": {"const": "resolved"}}}, "then": {"required": ["directUrl"]}, "else": {"not": {"required": ["directUrl"]}}}]
+            },
             "source": {
               "type": [
                 "object",

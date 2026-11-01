@@ -93,6 +93,14 @@ test('session duration, message rate and new-flow quotas terminate the backend',
 test('configuration cannot opt into private DNS or cleartext remote public URLs',async()=>{
   for(const options of [{resolver:'127.0.0.1'},{resolver:'169.254.169.254'},{publicUrl:'http://relay.example.invalid'},{host:'0.0.0.0'},{origins:['*']},{proxyToken:'short'}])await assert.rejects(startNetworkRelay({backend:process.execPath,...options}),{code:'INVALID_CONFIG'});
 });
+test('firmware route shares Origin checks but never grants arbitrary download destinations',async()=>{
+  const relay=await fixture();
+  try{
+    const path=relay.url+'/firmware?'+new URLSearchParams({url:'https://example.com/unlisted.bin',sha256:'a'.repeat(64)});
+    const denied=await fetch(path,{headers:{origin}});assert.equal(denied.status,403);assert.equal((await denied.json()).error.code,'SOURCE_NOT_ALLOWED');assert.equal(denied.headers.get('access-control-allow-origin'),origin);
+    assert.equal((await fetch(path,{headers:{origin:'https://other.example'}})).status,403);assert.equal(relay.children.length,0);
+  }finally{await relay.close();}
+});
 test('real native backend opens the caller-supplied public TCP target',{skip:!process.env.ESP_RELAY_TEST_TARGET},async()=>{
   const [address,portText]=process.env.ESP_RELAY_TEST_TARGET.split(':'),port=Number(portText);assert.ok(publicIpv4(address));
   const relay=await startNetworkRelay({port:0,tcpPorts:[port],...(process.env.ESP_NETWORK_BACKEND?{backend:process.env.ESP_NETWORK_BACKEND}:{})});let ws;

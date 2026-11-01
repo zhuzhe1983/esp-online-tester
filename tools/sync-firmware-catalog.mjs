@@ -8,6 +8,7 @@ import {releaseMatchesChannel} from './firmware-release-source.mjs';
 import {syncReleaseMetadata,githubToken,compactReleaseHistory} from './sync-firmware-release-metadata.mjs';
 import {createHash} from 'node:crypto';
 import {isOfficialM5BurnerVersion} from './firmware-source-m5burner-v1.mjs';
+import {resolveCatalogDownloads} from './resolve-firmware-downloads.mjs';
 const copy=value=>structuredClone(value), equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const norm=value=>String(value||'').replace(/^v/i,'').toLowerCase();
 const sha=value=>/^sha256:[a-f0-9]{64}$/i.test(value||'')?value.slice(7).toLowerCase():null;
@@ -67,7 +68,7 @@ export function updateFirmwareCatalog({products,firmwares,watchlist,snapshot,man
       if(!digest&&!officialVersion){report.reason='candidate-missing-sha256';continue;}
       if(target.sourceType==='manufacturer-distribution'&&!['m5burner','m5burner-v1','cloudzao'].includes(entry.metadataProvider)){report.reason='distribution-source-mismatch';continue;}
       const url=target.downloadUrl||asset.browser_download_url;const parsed=new URL(url);if(parsed.protocol!=='https:'||parsed.username||parsed.password)throw Error('Unsafe target source URL');
-      firmware.artifactHistory=[...(firmware.artifactHistory||[]),{revision:current,source:copy(firmware.source),status:firmware.status,simulationVerified:firmware.simulationVerified===true,hardwareValidated:firmware.hardwareValidated===true,limitations:copy(firmware.limitations||[]),...Object.fromEntries(['integrityNotes','sdk','verification','validation','evidence','verificationStatus','description','sources','catalogUpdate'].filter(key=>firmware[key]!==undefined).map(key=>[key,copy(firmware[key])]))}].slice(-12);
+      firmware.artifactHistory=[...(firmware.artifactHistory||[]),{revision:current,source:copy(firmware.source),status:firmware.status,simulationVerified:firmware.simulationVerified===true,hardwareValidated:firmware.hardwareValidated===true,limitations:copy(firmware.limitations||[]),...Object.fromEntries(['integrityNotes','sdk','verification','validation','evidence','verificationStatus','description','sources','catalogUpdate','downloadAccess'].filter(key=>firmware[key]!==undefined).map(key=>[key,copy(firmware[key])]))}].slice(-12);
       if(target.updateMode==='manifest-app'){
         manifest.files.app={url,sha256:digest};delete manifest.artifact_sha256;
         // Pin all remaining manifest files explicitly before dropping old map.
@@ -77,7 +78,7 @@ export function updateFirmwareCatalog({products,firmwares,watchlist,snapshot,man
         result.manifests[target.manifestUrl]=manifest;firmware.source={manifestUrl:target.manifestUrl,sha256:hash(encoded(manifest))};
       }else firmware.source=target.format==='manifest'?{manifestUrl:url,sha256:digest}:{url,...(digest?{sha256:digest}:{})};
       firmware.revision=release.tag_name;firmware.version=release.tag_name;firmware.name=target.nameTemplate.replaceAll('{version}',release.tag_name);firmware.status='trial';firmware.simulationVerified=false;firmware.hardwareValidated=false;firmware.compatibility='unverified';firmware.publicationUrl=release.html_url;
-      for(const key of ['integrityNotes','sdk','verification','validation','evidence','verificationStatus','description','browserCheckedAt','browserNote'])delete firmware[key];
+      for(const key of ['integrityNotes','sdk','verification','validation','evidence','verificationStatus','description','browserCheckedAt','browserNote','downloadAccess'])delete firmware[key];
       firmware.limitations=[digest?'按明确设备资产规则更新远程发布元信息；SHA-256 来自发布源，未下载完整镜像或执行验证。':'官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256。浏览器加载时计算实际摘要，尚未核验镜像布局或运行兼容性。','启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。',...(target.format==='app'?['这是 app-only 实验直启清单，跳过 bootloader/分区初始化，不能作为完整镜像一键刷写硬件。']:[])];
       firmware.catalogUpdate={watchlistId:entry.id,channel:target.channel,format:target.format,sourceType:target.sourceType,version:release.tag_name,publishedAt:release.published_at,assetName:asset.name,upstreamUrl:asset.browser_download_url,digestSource:digest?'release-metadata':'publisher-hash-unavailable',...(officialVersion?{publisherIdentity:copy(asset.publisherIdentity)}:{}),layoutVerified:false,checkedAt:saved.checkedAt||now};
       firmware.sources=[{title:'Device asset mapping basis; not validation of this version',url:target.basis.url,checkedAt:(saved.checkedAt||now).slice(0,10)},{title:'Automatic device release metadata',url:release.html_url,checkedAt:(saved.checkedAt||now).slice(0,10)}];
@@ -107,10 +108,11 @@ export async function runCatalogSync({base=new URL('../',import.meta.url),fetchI
   if(Buffer.byteLength(encoded(snapshot))>2*1024*1024)throw Error('Release snapshot exceeds the browser metadata limit');const manifests={};
   for(const target of watchlist.entries.flatMap(e=>e.catalogTargets||[]))if(target.manifestUrl&&!manifests[target.manifestUrl])manifests[target.manifestUrl]=JSON.parse(await readFile(new URL(target.manifestUrl,platform),'utf8'));
   const result=updateFirmwareCatalog({products,firmwares,watchlist,snapshot,manifests,now});
+  if(!snapshotOnly)await resolveCatalogDownloads(result,{fetchImpl,now});
   const reportUrl=new URL('firmware-catalog-sync-report.json',catalog);let oldReport;try{oldReport=JSON.parse(await readFile(reportUrl,'utf8'));}catch{}
   let recordedReport=result.report;
   if(oldReport&&Date.parse(now)-Date.parse(oldReport.checkedAt)<24*3600*1000){
-    const sameObservation=oldReport.summary?.watchEntries===result.report.summary.watchEntries&&oldReport.summary?.upstreamRepositories===result.report.summary.upstreamRepositories&&oldReport.entries.length===result.report.entries.length&&result.report.entries.every(entry=>{
+    const sameObservation=equal(oldReport.downloads,result.report.downloads)&&oldReport.summary?.watchEntries===result.report.summary.watchEntries&&oldReport.summary?.upstreamRepositories===result.report.summary.upstreamRepositories&&oldReport.entries.length===result.report.entries.length&&result.report.entries.every(entry=>{
       const old=oldReport.entries.find(previous=>previous.watchlistId===entry.watchlistId&&previous.firmwareId===entry.firmwareId);
       return equal(old,entry)||old?.status==='updated'&&entry.reason==='current-version'&&equal(old.candidate,entry.candidate);
     });

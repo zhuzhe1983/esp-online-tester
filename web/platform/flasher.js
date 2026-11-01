@@ -5,7 +5,9 @@ import { fetchBytes, resolveFirmwareUrl, sha256, validateMergedImage } from './r
 import { validateScene } from './catalog.js';
 import { loadWatchlist } from './watchlist.js';
 import { firmwareCache } from './firmware-cache.js';
-import { assembleLocalFirmware } from './local-firmware.js';
+import { assembleLocalFirmware, inspectLocalBuild } from './local-firmware.js';
+import {firmwareFlashPolicy} from './firmware-policy.js';
+import {validateAppImage} from './app-image.js';
 
 const MIB = 1024 * 1024, MAX_FLASH = 32 * MIB;
 const problem = (code, message, details) => Object.assign(new Error(message), { code, details });
@@ -27,6 +29,40 @@ function selectedProduct(scene, catalog) {
   const product = catalog.products.find(item => item.id === scene.productId);
   check(product && ['esp32s3', 'esp32c3', 'esp32c6'].includes(normalizedChip(product.chip)), 'FLASH_UNSUPPORTED_CHIP', 'This flasher currently accepts ESP32-S3, C3 and C6 product definitions with security-info support.');
   return product;
+}
+
+function artifactTarget(url, product, catalog, watched) {
+  const asset = watched?.assets?.find(item => item.url === url || item.upstreamUrl === url);
+  const urls = [url, asset?.url, asset?.upstreamUrl].filter(Boolean);
+  const matches = catalog.firmwares.filter(item => item.source && [item.source.url, item.source.manifestUrl].some(value => value && urls.includes(value)));
+  const firmware = matches.find(item => item.productIds?.includes(product.id));
+  check(!matches.length || firmware, 'BOARD_MISMATCH', 'Catalog firmware does not target the selected product.');
+  check(!firmware || ['available', 'trial'].includes(firmware.status), 'REFERENCE_ONLY', 'This catalog entry has no flashable artifact.');
+  // A precise catalog artifact/target is independent of simulation verification.
+  // Broad watchlist project membership alone does not identify a device image.
+  check(!watched || asset && firmware || watched.compatibility?.status === 'product-verified' && watched.compatibility.productIds?.includes(product.id), 'REFERENCE_ONLY', 'This watchlist asset has no confirmed firmware mapping for the selected product.');
+  return {asset, firmware};
+}
+
+async function flashBuild(source, product, signal) {
+  const board=normalizedChip(product.chip),flashBytes=product.runtime.flashMb*MIB;
+  check(!source.file && !source.url && !source.manifestUrl,'INVALID_LOCAL_SOURCE','Do not mix local segments with a remote or merged source.');
+  const layout=source.format==='build'?await inspectLocalBuild(source.files,{signal}):{segments:source.files};
+  // Some flasher_args.json files contain a single merged image at offset zero.
+  // Try that format first; otherwise preserve each declared partition offset.
+  if(Array.isArray(layout.segments) && layout.segments.length===1 && /^(?:0|0x0+)$/i.test(String(layout.segments[0]?.offset)) && !layout.missingFiles?.length) {
+    const file=layout.segments[0].file;
+    check(file?.size>0 && file.size<=MAX_FILE && typeof file.arrayBuffer==='function','INVALID_FILE','Choose a nonempty firmware file no larger than 256 MiB.');
+    const data=new Uint8Array(await file.arrayBuffer());if(signal?.aborted)throw cancelled();
+    check(data.length===file.size,'INVALID_FILE','Firmware file size changed while reading.');
+    try {
+      validateMergedImage(data,board,flashBytes);
+      check(!layout.chip || layout.chip===board,'CHIP_MISMATCH','Build metadata targets a different chip.');
+      check(!layout.flashSizeBytes || layout.flashSizeBytes<=flashBytes,'FLASH_OVERFLOW','Build metadata exceeds the product flash capacity.');
+      return {data,partitionTableOffset:0x8000,segments:[{data,offset:0}],format:'merged'};
+    } catch(error) {if(error.code!=='INCOMPLETE_IMAGE')throw error;}
+  }
+  return {...await assembleLocalFirmware(source,{board,flashBytes,signal}),format:'segments'};
 }
 
 function appPartition(table, flashBytes) {
@@ -65,27 +101,23 @@ export function validateFlashLayout(files, product, {partitionTableOffset = 0x80
 // actually destined for flash are loaded: no emulator ROM, ELF, script or picture.
 export async function prepareFlashPlan({ scene, catalog, source = scene?.firmware, watchEntry, watchlist, fetchImpl = globalThis.fetch, signal, baseUrl = globalThis.location?.href } = {}) {
   const product = selectedProduct(scene, catalog);
-  check(!watchEntry || (watchEntry.compatibility?.status === 'product-verified' && watchEntry.compatibility.productIds.includes(product.id)), 'REFERENCE_ONLY', 'This watchlist entry is reference-only for the selected product and cannot be flashed.');
+  if (watchEntry) artifactTarget(source?.url || source?.manifestUrl, product, catalog, watchEntry);
   check(source && typeof source === 'object', 'FIRMWARE_REQUIRED', 'Choose a complete firmware image or manifest first.');
   check(!source.archive,'FLASH_LAYOUT','ZIP 固件请先解压，并使用完整 BIN 或烧录清单刷写实体设备。');
   check(source.bootMode!=='app-direct','FLASH_LAYOUT','应用直启不是完整刷机镜像；请提供 bootloader、分区表和应用文件的清单。');
-  const known = catalog.firmwares.find(item => item.source && ((source.manifestUrl && item.source.manifestUrl === source.manifestUrl) || (source.url && item.source.url === source.url)));
-  check(!known || known.status === 'available', 'REFERENCE_ONLY', 'This catalog entry has no flashable artifact.');
-  check(!known?.productIds || known.productIds.includes(product.id), 'BOARD_MISMATCH', 'Catalog firmware does not target the selected product.');
+  if (source.url || source.manifestUrl) artifactTarget(resolveFirmwareUrl(source.url || source.manifestUrl, baseUrl), product, catalog);
   let total = 0;
   const read = async (entry, base, maxBytes = MAX_FILE) => {
     const value = typeof entry === 'string' ? { url: entry } : entry;
     check(value && typeof value.url === 'string', 'INVALID_MANIFEST', 'Firmware file requires a URL.');
     const url = resolveFirmwareUrl(value.url, base);
     const watched = watchlist?.entries.find(entry => entry.assets.some(asset => asset.url === url || asset.upstreamUrl === url));
-    const watchedAsset = watched?.assets.find(asset => asset.url === url || asset.upstreamUrl === url);
-    const catalogArtifact = catalog.firmwares.find(item => item.source && [item.source.url, item.source.manifestUrl].includes(url));
-    check(!watched || watched.compatibility.status === 'product-verified' && watched.compatibility.productIds.includes(product.id), 'REFERENCE_ONLY', 'This known remote asset is reference-only for the selected product; it cannot be flashed through a custom manifest either.');
+    const {asset: watchedAsset, firmware: catalogArtifact} = artifactTarget(url, product, catalog, watched);
     const pin = value.sha256 || watchedAsset?.sha256 || catalogArtifact?.source.sha256;
     let cached = await firmwareCache.get(url, pin, maxBytes);
     if (cached && await sha256(cached.data) !== pin.toLowerCase()) { await firmwareCache.remove(url, pin); cached = null; }
     if (signal?.aborted) throw cancelled();
-    const data = cached?.data || await fetchBytes(url, { fetchImpl, signal, maxBytes });
+    const data = cached?.data || await fetchBytes(url, { fetchImpl, signal, maxBytes, sha256:pin });
     total += data.length; check(data.length > 0 && total <= MAX_TOTAL, 'FLASH_SIZE', 'Firmware bundle is empty or exceeds 256 MiB.');
     const actual = await sha256(data);
     // A reviewed catalog/watchlist URL remains pinned even when a caller omits
@@ -98,7 +130,7 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
   };
   const files = [], receipt = [];
   const add = (artifact, address, kind) => { files.push({ data: artifact.data, address }); receipt.push({ kind, address, bytes: artifact.data.length, url: artifact.url || null, sha256: artifact.sha256 }); };
-  let manifestHash = null, partitionTableOffset = 0x8000;
+  let manifestHash = null, partitionTableOffset = 0x8000, format = 'merged';
   if (source.manifestUrl) {
     const url = resolveFirmwareUrl(source.manifestUrl, baseUrl), artifact = await read({ url, sha256: source.sha256 }, baseUrl);
     manifestHash = artifact.sha256;
@@ -120,6 +152,7 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
       check(!values.bootloader && !values.ptable && !values.app && !Object.keys(manifest.flash_at || {}).length, 'FLASH_LAYOUT', 'Merged flash cannot be combined with overlapping segments.');
       add(values.flash, 0, 'flash');
     } else {
+      format = 'segments';
       check(values.bootloader && values.ptable, 'FLASH_LAYOUT', 'Hardware flashing requires a bootloader and partition table.');
       add(values.bootloader, normalizedChip(product.chip) === 'esp32' ? 0x1000 : 0, 'bootloader');
       add(values.ptable, 0x8000, 'ptable');
@@ -134,7 +167,7 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
       }
     }
   } else if (['build','segments'].includes(source.format)) {
-    const local = await assembleLocalFirmware(source, {board:normalizedChip(product.chip), flashBytes:product.runtime.flashMb*MIB, signal});
+    const local = await flashBuild(source, product, signal);format=local.format;
     partitionTableOffset = local.partitionTableOffset;
     if (source.sha256) check(await sha256(local.data) === source.sha256.toLowerCase(), 'HASH_MISMATCH', 'Local firmware SHA-256 does not match.');
     // Write only supplied segments: never erase the 0xff gaps used by simulation.
@@ -147,9 +180,16 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
       check(!source.sha256 || actual === source.sha256.toLowerCase(), 'HASH_MISMATCH', 'Local firmware SHA-256 does not match.');
       artifact = { data, sha256: actual };
     } else artifact = await read(source, baseUrl);
+    try { validateMergedImage(artifact.data,normalizedChip(product.chip),product.runtime.flashMb*MIB); }
+    catch(error) {
+      if(error.code!=='INCOMPLETE_IMAGE')throw error;
+      try { await validateAppImage(artifact.data,normalizedChip(product.chip),product.runtime.flashMb*MIB); }
+      catch(appError) {if(appError.code!=='APP_IMAGE_INVALID')throw appError;throw error;}
+      throw problem('FLASH_LAYOUT','检测到独立应用分区镜像。请提供 flasher_args.json 及其引用的启动镜像、分区表和应用文件，按实际分区地址刷写。');
+    }
     add(artifact, 0, 'flash');
   }
-  return { product: clone(product), files: validateFlashLayout(files, product, {partitionTableOffset}), receipt: { productId: product.id, chip: product.chip, flashBytes: product.runtime.flashMb * MIB, manifestHash, partitionTableOffset, artifacts: receipt, hardwareValidated: false, persistence: 'user-browser-cache-for-pinned-remote-artifacts' } };
+  return { product: clone(product), files: validateFlashLayout(files, product, {partitionTableOffset}), receipt: { productId: product.id, chip: product.chip, flashBytes: product.runtime.flashMb * MIB, format, manifestHash, partitionTableOffset, artifacts: receipt, hardwareValidated: false, persistence: 'user-browser-cache-for-pinned-remote-artifacts' } };
 }
 
 export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, document: doc = globalThis.document, secureContext = globalThis.isSecureContext, fetchImpl = globalThis.fetch, baseUrl = globalThis.location?.href,
@@ -168,9 +208,11 @@ export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, 
       check(!active, 'FLASH_BUSY', 'A flash operation is already active.');
       const capability = capabilities(); check(capability.supported, 'WEB_SERIAL_UNAVAILABLE', capability.reason);
       check(nav.userActivation?.isActive === true, 'USER_GESTURE_REQUIRED', 'Click the flash button to choose a serial device. Background calls and replay cannot request a port.');
-      selectedProduct(scene, catalog);
-      check(!watchEntry || watchEntry.compatibility?.status === 'product-verified' && watchEntry.compatibility.productIds.includes(scene.productId), 'REFERENCE_ONLY', 'This watchlist entry is not verified for the selected product.');
-      check(source, 'FIRMWARE_REQUIRED', 'Choose firmware before requesting a serial device.');
+      const product = selectedProduct(scene, catalog);
+      if (watchEntry) artifactTarget(source?.url || source?.manifestUrl, product, catalog, watchEntry);
+      const policy = firmwareFlashPolicy(product, source);
+      check(policy.canFlash, policy.reason, policy.message);
+      if (source.url || source.manifestUrl) artifactTarget(resolveFirmwareUrl(source.url || source.manifestUrl, baseUrl), product, catalog);
       active = true; wantsCancel = false; beganWrite = false; aborter = new AbortController();
       state = { status: 'choosing', message: '请选择要刷写的 USB 串口设备。', progress: 0, writtenBytes: 0 }; emit({ type: 'state', state: clone(state) });
       let transport, port, plan;
@@ -197,7 +239,7 @@ export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, 
         check(flashBytes === plan.receipt.flashBytes, 'FLASH_SIZE_MISMATCH', 'Detected flash capacity does not match the selected product.', { detectedBytes: flashBytes, expectedBytes: plan.receipt.flashBytes });
         validateFlashLayout(plan.files, plan.product, {partitionTableOffset:plan.receipt.partitionTableOffset});
         const totalBytes = plan.files.reduce((sum, file) => sum + file.data.length, 0);
-        setState('writing', '正在写入并逐镜像校验 MD5；仅擦除对应写入范围。', { flashBytes, receipt: plan.receipt });
+        setState('writing', plan.receipt.format==='merged' ? '正在写入完整 merged 镜像并校验 MD5。' : '正在按分区偏移逐段写入并校验 MD5；仅擦除对应写入范围。', { flashBytes, receipt: plan.receipt });
         guard(); beganWrite = true;
         await loader.writeFlash({ fileArray: plan.files, flashMode: 'keep', flashFreq: 'keep', flashSize: 'keep', eraseAll: false, compress: true, calculateMD5Hash: md5,
           reportProgress(index, written, total) {
