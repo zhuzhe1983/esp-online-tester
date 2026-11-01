@@ -55,8 +55,12 @@ test('Twelve optical cells show only supplied RGB chain values and remain indepe
   const meshes=model.group.userData.rgbLedMeshes;assert.equal(meshes.length,12);
   for(const [index,mesh] of meshes.entries()) {
    assert.equal(mesh.userData.ledIndex,index);assert.ok(!model.group.userData.shellMeshes.includes(mesh));
-   const center=world(mesh),sign=index<6?-1:1,ray=new THREE.Raycaster(center.clone().add(new THREE.Vector3(sign*30,0,0)),new THREE.Vector3(-sign,0,0));
-   assert.equal(pickVisibleSurface(ray,model.group)?.object,mesh,`RGB ${index} is in a visible light-guide opening`);
+   const attribute=mesh.geometry.getAttribute('position');let largest=0,center,normal;const a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3();
+   for(let i=0;i<attribute.count;i+=3){a.fromBufferAttribute(attribute,i);b.fromBufferAttribute(attribute,i+1);c.fromBufferAttribute(attribute,i+2);const cross=new THREE.Vector3().subVectors(b,a).cross(new THREE.Vector3().subVectors(c,a));if(cross.length()>largest){largest=cross.length();center=a.clone().add(b).add(c).multiplyScalar(1/3);normal=cross.normalize();}}
+   center=mesh.localToWorld(center);normal.transformDirection(mesh.matrixWorld);
+   for(const outward of [normal,new THREE.Vector3(index<6?-1:1,0,0),new THREE.Vector3(0,1,0),normal.clone().add(new THREE.Vector3(0,0,.65)).normalize()]) {
+    const ray=new THREE.Raycaster(center.clone().addScaledVector(outward,30),outward.clone().negate());assert.equal(pickVisibleSurface(ray,model.group)?.object,mesh,`RGB ${index} retains its actual CAD emitting surface in an oblique opening view`);
+   }
   }
   const values=meshes.map((_,i)=>[i*20,0,255-i*20]);applyRgbLedValues(meshes,values);assert.deepEqual(meshes.map(m=>m.userData.rgb),values);
   applyRgbLedValues(meshes,[]);assert.deepEqual(meshes.map(m=>m.userData.rgb),Array.from({length:12},()=>[0,0,0]));
@@ -89,5 +93,24 @@ test('StackChan assembled envelope and CoreS3 optical landmarks match independen
   }
   assert.equal(metadata.derivedParts.filter(part=>part.kind==='pcb-placeholder').length,5,'All five board layers retain explicit UNKNOWN geometry');
   for(const name of ['label-base','label-side-left','label-side-right','label-cores3-top']) assert.ok(!group.userData.shellMeshes.includes(group.getObjectByName(name)),'Paper labels keep their own material');
+ }finally{dispose(model);}
+});
+
+
+test('RGB output partitions the original curved light-guide crowns without overlay boxes or added surface area',async()=>{
+ const model=await load();try {
+  const meshArea=mesh=>{let sum=0;const p=mesh.geometry.getAttribute('position'),a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3();for(let i=0;i<p.count;i+=3){a.fromBufferAttribute(p,i);b.fromBufferAttribute(p,i+1);c.fromBufferAttribute(p,i+2);sum+=b.sub(a).cross(c.sub(a)).length()/2;}return sum;};
+  assert.equal(metadata.derivedParts.filter(part=>part.ledIndex!==undefined).length,0,'No extra solid light windows may protrude through the shell');
+  for(const side of ['left','right']) {
+   const rows=metadata.parts.filter(part=>part.name.startsWith(`rgb-window-${side}-`));assert.equal(rows.length,6);
+   const area=rows.reduce((sum,part)=>sum+meshArea(model.parts[part.name]),0);assert.ok(Math.abs(area-59.841491690158996)<1e-4,'Union of six zones keeps the independently measured original crown area');
+   for(const row of rows){assert.equal(row.sourcePlaneClip.axis,1);assert.ok(row.sourcePlaneClip.minMm>=-15.5&&row.sourcePlaneClip.maxMm<=15.5);}
+  }
+  const board=metadata.derivedParts.find(part=>part.id==='pcb-touch').geometry;
+  for(const part of metadata.derivedParts.filter(part=>part.id.startsWith('led-package-'))) {
+   const [x,y,z]=part.geometry.centerMm,[w,h,d]=part.geometry.sizeMm;
+   assert.ok(Math.abs(x)+w/2<=board.sizeMm[0]/2);assert.ok(Math.abs(z-board.centerMm[2])+d/2<=board.sizeMm[1]/2);
+   assert.ok(Math.abs(y-h/2-(board.centerMm[1]+board.sizeMm[2]/2))<1e-8,'Estimated package underside sits on the estimated board top');
+  }
  }finally{dispose(model);}
 });

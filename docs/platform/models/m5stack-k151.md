@@ -14,7 +14,7 @@ CoreS3 前部复用 [前部装配契约](../../../web/platform/assets/m5stack-k1
 | CoreS3 DXF：玻璃 | 50.8×50.8 mm，R3.4 | 同值 | 独立玻璃面 |
 | SCS0009 图纸：主壳 | 23.3×12.1×25.25 mm | 同值包络 | 分段外壳近似，不是厂家舵机 CAD |
 
-`pcb-main`、`pcb-touch`、`pcb-power`、`pcb-adapter` 和 `pcb-ring` 都是带有 **UNKNOWN** 标识的空板层。原理图只用于确认板的身份与功能；板形、厚度与位置依据壳内空间估计。未画芯片、走线、焊盘或触摸铜箔。12 个 LED 封装保留独立实体；只有外侧 12 个光窗响应固件 RGB 值，避免重复映射覆盖。550 mAh 容量来自官方资料，电池外形与位置属于空间估计，不附加臆造厂标。
+`pcb-main`、`pcb-touch`、`pcb-power`、`pcb-adapter` 和 `pcb-ring` 都是带有 **UNKNOWN** 标识的空板层。原理图只用于确认板的身份与功能；板形、厚度与位置依据壳内空间估计。未画芯片、走线、焊盘或触摸铜箔。12 个 LED 封装保留独立实体；发光区域直接由两条原 CAD 导光曲面各分六段，响应固件 RGB 值。没有额外贴在外壳上的灯片。550 mAh 容量来自官方资料，电池外形与位置属于空间估计，不附加臆造厂标。
 
 侧面、底面和 CoreS3 顶面纸贴由官方产品照片确定性裁切、透视校正并加透明遮罩；它们是独立表面，换壳色时保持原样。螺丝六角暗部只是凹槽的视觉表达，未建真实螺纹。Grove A/B/C 与两处 USB-C 有独立开口和内壁；未核实的插接线序继续禁止连线。
 
@@ -30,3 +30,12 @@ node --test tools/platform-servo-view-test.mjs
 ```
 
 当前板级运行时已经实现舵机协议与反馈驱动、RGB 链、Si12T 三区触摸、CoreS3 触摸屏；实测范围和固件限制见 [StackChan 运行时](../stackchan-runtime.md)。视觉关节只跟随板级反馈，不生成动画轨迹；电机的齿轮、碰撞、负载和线缆扭转未模拟，正方向与真实硬件尚未标定。外观尺寸通过不能替代固件或真实机械验收。
+
+
+本轮 RGB 穿模修正的依据见 [修正回执](../../../web/platform/assets/m5stack-k151/rgb-fit-review.json)。此前的矩形灯片在导光条原曲面之外最高约 0.179 mm，整条分区又向前偏移 2 mm，末格超出导光条端部 1.35 mm；单点正侧向射线测试没有发现这些问题。旧 geometry hash 和真实固件亮灯截图 hash 保留为负结果。
+
+现在直接分割每条导光条的原始 99 个外冠三角形，沿源坐标 Y 切成六个连续区域，不生成端盖、叠面或凸起。每侧原冠面积为 59.8414916902 mm²；导出全部顶点、三角形中心和边中点均核对原 CAD 表面，面积误差小于 0.000051 mm²。原壳外角与导光冠面均为约 5 mm 半径，独立圆拟合给出了装配基准：两条导光条各沿 45° 内法线平移 0.212132 mm，使光面约内陷 0.05 mm。源网格的尺度和形状没有改变。
+
+精确多边形截面以 0.05 mm 的 Z 步长积分，导光条与壳体的交叠由左/右约 7.864/7.452 mm³ 降为 0.02358/0.001235 mm³，端部小残差仍保留。12 颗封装的估算位置内移后，同样检查中与壳体、导光条均未交叠。空白 PCB 本身也是估算包络，封装放得下不表示恢复了真实板上布局；物理链序与导光效果仍未标定。
+
+该修正可用 `tools/prepare-stackchan-rgb-surfaces.py --write` 更新计划，再运行通用重建工具。`tools/test-source-plane-clip.py` 检查多平面切分、面积、法线和非法参数；`tools/verify-stackchan-rgb-surfaces.py --output <receipt.json>` 独立检查最终曲面。截面复现工具 `tools/verify-stackchan-rgb-sections.py <assets> --dz .05 --output <receipt.json>` 除模型依赖外需要 `shapely==2.2.0`，圆拟合工具 `tools/verify-stackchan-rgb-circles.py <assets> <section-receipt> --output <receipt.json>` 不改变任何网格。修正前后的接合残差和失败候选分别保留在 [截面回执](../../../web/platform/assets/m5stack-k151/rgb-section-fit.json) 与 [圆拟合回执](../../../web/platform/assets/m5stack-k151/rgb-circle-fit.json)。

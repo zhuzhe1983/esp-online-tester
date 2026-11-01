@@ -202,6 +202,35 @@ def prepare(product):
   sheet.save(folder/'contact-sheet.jpg')
  print(json.dumps({'id':id,'priority':product['priority'],'sources':len(sources),'fetched':sum(s['status']=='fetched' for s in sources),'cad':cad},ensure_ascii=False))
 
+def source_plane_clip(spec):
+ if not isinstance(spec,dict) or set(spec)!={'axis','minMm','maxMm'}:raise ValueError('Invalid source plane clip')
+ axis=spec['axis'];lo=spec['minMm'];hi=spec['maxMm']
+ if type(axis)is not int or not 0<=axis<=2 or any(type(v)not in(int,float)or not np.isfinite(v)for v in[lo,hi])or lo>=hi:raise ValueError('Invalid source plane clip')
+ return axis,float(lo),float(hi)
+
+def clip_source_triangle(corners,clip):
+ """Partition one source triangle without caps, displacement or new surface area.
+ Positions are in native CAD coordinates; normals share the caller's frame.
+ """
+ axis,lo,hi=clip;polygon=[np.asarray(v,dtype=float)for v in corners]
+ for plane,sign in[(lo,1),(hi,-1)]:
+  output=[]
+  for i,end in enumerate(polygon):
+   start=polygon[i-1];inside_start=sign*(start[axis]-plane)>=0;inside_end=sign*(end[axis]-plane)>=0
+   if inside_start!=inside_end:
+    fraction=(plane-start[axis])/(end[axis]-start[axis]);intersection=start+(end-start)*fraction;intersection[axis]=plane;output.append(intersection)
+   if inside_end:output.append(end)
+  polygon=output
+  if len(polygon)<3:return []
+ result=[]
+ for i in range(1,len(polygon)-1):
+  triangle=np.asarray([polygon[0],polygon[i],polygon[i+1]])
+  if np.linalg.norm(np.cross(triangle[1,:3]-triangle[0,:3],triangle[2,:3]-triangle[0,:3]))<=1e-12:continue
+  for corner in triangle:
+   length=np.linalg.norm(corner[3:]);corner[3:]=corner[3:]/length if length>1e-12 else corners[0][3:]
+  result.extend(triangle)
+ return result
+
 def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
  """Stable reusable API. prepared is prepare JSON; plan uses parts/sourceId/matrixRows/targets. output Path.
  Only selected manufacturer triangles are exported. Plans are reviewed evidence, never auto-fit geometry.
@@ -221,11 +250,17 @@ def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
   if 'sourceFaceRanges' in item:
    ranges=item['sourceFaceRanges'];assert ranges and all(len(pair)==2 and all(isinstance(q,int)for q in pair)and 0<=pair[0]<pair[1]<=len(part.faces)for pair in ranges),'Invalid source face range'
    face_indices=np.concatenate([np.arange(a,b)for a,b in ranges]);assert len(np.unique(face_indices))==len(face_indices),'Duplicate source face selection'
+  clip=source_plane_clip(item['sourcePlaneClip'])if 'sourcePlaneClip'in item else None
   for fi in face_indices:
-   face=part.faces[fi]
+   face=part.faces[fi];native_corners=[]
    for vi in face:
-    adjacent=part.vertex_faces[vi];adjacent=adjacent[adjacent>=0];adjacent=adjacent[(n[adjacent]@n[fi])>np.cos(np.deg2rad(38))];normal=(n[adjacent]*part.area_faces[adjacent,None]).sum(0);length=np.linalg.norm(normal);normal=normal/length if length>1e-12 else n[fi];assert np.isfinite(normal).all();corners.append([*v[vi],*normal])
-  data=np.asarray(corners,dtype='<f4');expected=v[part.faces[face_indices]].reshape(-1,3);error=float(np.abs(data[:,:3]-expected).max());checks.append({'name':item['name']+' source-fidelity','errorMm':error,'toleranceMm':.05,'pass':error<=.05,'sourceId':item_source['id']});binary=data.tobytes();buffers.append(binary);allv.append(data[:,:3]);records.append({**item,'byteOffset':offset,'vertexCount':len(corners),'boundsMm':[expected.min(0).tolist(),expected.max(0).tolist()]});offset+=len(binary)
+    adjacent=part.vertex_faces[vi];adjacent=adjacent[adjacent>=0];adjacent=adjacent[(n[adjacent]@n[fi])>np.cos(np.deg2rad(38))];normal=(n[adjacent]*part.area_faces[adjacent,None]).sum(0);length=np.linalg.norm(normal);normal=normal/length if length>1e-12 else n[fi];assert np.isfinite(normal).all()
+    if clip is None:corners.append([*v[vi],*normal])
+    else:native_corners.append([*part.vertices[vi],*normal])
+   if clip is not None:
+    for corner in clip_source_triangle(native_corners,clip):corners.append([*(corner[:3]@pr.T+effective[:3,3]),*corner[3:]])
+  if not corners:raise ValueError('Source plane clip selects an empty surface')
+  data=np.asarray(corners,dtype='<f4');expected=np.asarray(corners)[:,:3]if clip is not None else v[part.faces[face_indices]].reshape(-1,3);error=float(np.abs(data[:,:3]-expected).max());checks.append({'name':item['name']+' source-fidelity','errorMm':error,'toleranceMm':.05,'pass':error<=.05,'sourceId':item_source['id']});binary=data.tobytes();buffers.append(binary);allv.append(data[:,:3]);records.append({**item,'byteOffset':offset,'vertexCount':len(corners),'boundsMm':[expected.min(0).tolist(),expected.max(0).tolist()]});offset+=len(binary)
  for surface in plan.get('surfaces',[]):
   w,h=surface['sizeMm'];radius=surface['radiusMm'];cx,cy,z=surface['positionMm'];points=[]
   for x,y,start in [(w/2-radius,h/2-radius,0),(-w/2+radius,h/2-radius,90),(-w/2+radius,-h/2+radius,180),(w/2-radius,-h/2+radius,270)]:
