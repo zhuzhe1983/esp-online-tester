@@ -57,6 +57,14 @@ UIFlow2 的官方 M5Burner 项目 `1897200000000002716` 精确映射 `STACKCHAN`
 
 新增外部固件集成测试断言上述运动顺序及末尾卸力；单元测试覆盖无效写入、读取、延迟写和同步写。修复后的生产 WASM SHA-256 为 `d69f1a868c6d159866c9d2ed0f9c54bf40a3746727adfcd73afd2c9f2562c779`。原有诊断 worker 六组检查再次通过；原生与 WASM Clippy、1,740 项工作区测试、两项真实固件测试、199 项平台测试、完整 WASM 差分和 GPIO 测试、13 个 CI demo 及 StopWatch、目录校验均通过。负面结果、输入步骤、源码及截图 hash 见[修复回执](evidence/m5stack-k151/runtime/factory-servo-torque.json)，协议及固件源码依据见[来源记录](research/stackchan-servo-torque-sources-2026-11-01.json)。旧回执保留原构建的 hash，不覆盖历史结果；仍未实机验证，官方固件继续标为 `trial`。
 
+## APP SETUP 的 Next 与蓝牙初始化
+
+二维码页的 Next 看似没有响应，实测却已收到触摸：3D 普通点击保持约 4.82 毫秒客体时间，2D 长按保持约 297.8 毫秒，均使官方固件打印 `start app config server`，随后停在 `BLE_INIT`。当前官方源码的 `WaitAppConnection` 分支先同步启动蓝牙，再创建下一页控件；这解释了为何原画面仍留在二维码页。没有为此修改命中坐标、延长触摸或跳过固件按钮。
+
+浏览器新增显式 S3 虚拟 HCI 接口，复用 [EX200](../experiments.md#ex200) 的 VHCI 控制器与客体 FreeRTOS 回调。启用前必须把符号元数据与实际镜像核对，不能将它套用到其他版本。临时代码保留原字节，浏览器的 Flash 快照、自动保存和差量输出均排除这些字节；客体的 NVS/otadata 写入仍保留，芯片重启恢复临时代码。它不模拟物理蓝牙射频，也不会自动制造手机连接或账号配对成功。
+
+固定 V1.5.1 在原生运行与生产 WASM worker 中均完成官方初始化，NimBLE 开始广播，画面进入 “Look for me in the app to start setup.”。实际保存 Flash 后再次启动也完成同一流程；首次保存仅改变 `0x9000`（NVS）和 `0xd000`（otadata）页，第二次无新差异，应用/资源区始终与原镜像一致。复现工具为 `tools/probe-stackchan-ble.mjs`，输入文件均由调用者提供。输入时序、正反结果、镜像与符号 hash 见[回执](evidence/m5stack-k151/runtime/factory-next-ble.json)，页面逻辑依据见[来源记录](research/stackchan-next-ble-sources-2026-11-02.json)。当前源码晚于出厂镜像；解释性源码与固定二进制的执行结果分别记录，不声称二者逐字节一致。
+
 ```sh
 ESP32SIM_ROM_DIR=ROM_DIR ESP32SIM_STACKCHAN_FACTORY=FACTORY_BIN \
   ESP32SIM_STACKCHAN_FIXTURE=FIXTURE_MERGED_BIN \
