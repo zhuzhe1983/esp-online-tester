@@ -1,4 +1,5 @@
 import {validServoSnapshot} from './servo-state.js';
+import {selectBleProfile,loadBleProfile,verifyBleStoredPages} from './ble-profile.js';
 import {validFirmwareArchive,extractFirmwareZip,firmwareArchiveCacheKey,MAX_FIRMWARE_ZIP_BYTES} from './firmware-archive.js';
 import {createNetworkSession} from './network-session.js';
 import {createAudioStream} from './audio-stream.js';
@@ -266,6 +267,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     if (message.ready) resolve('ready', message);
     if (message.sdDelta) {try{receiveSd(message.sdDelta);}catch(e){sdFailure(e);}}
     if (message.sdReply !== undefined) resolve(`sd:${message.sdReply}`,message);
+    if (message.bleReply !== undefined) resolve(`ble:${message.bleReply}`,message);
     if (message.created !== undefined) resolve('created', message);
     if (message.loaded !== undefined) resolve(`loaded:${message.loaded}`, message);
     if (message.started !== undefined) resolve('started', message);
@@ -552,6 +554,18 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     }
     await initializeStorage(bundle, result.flashStorage, progress);
     await initializeSd(bundle);
+    const selectedBle = selectBleProfile(bundle.cfg.board, bundle.files, bundle.receipt.artifacts);
+    if (selectedBle) {
+      progress.prepare('ble-controller');
+      const adapter = await loadBleProfile(selectedBle, {digest:sha256, read:(url,maxBytes)=>fetchBytes(url,{fetchImpl,maxBytes,signal:aborter.signal})});
+      requireValue(worker === current && !aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
+      requireValue(storageSession?.baseline, 'BLE_PROFILE_MISMATCH', 'BLE profile validation requires the restored Flash snapshot.');
+      verifyBleStoredPages(adapter.profile, storageSession.baseline, storageSession.pages);
+      const requestId = ++inputSequence, data = adapter.symbols.slice().buffer;
+      const reply = await ask(`ble:${requestId}`, {op:'ble-hci',requestId,data}, [data]);
+      requireValue(reply.ok, 'BLE_CONTROLLER_UNAVAILABLE', reply.error || 'Cannot enable the virtual BLE controller.');
+      bundle.receipt.ble = adapter.receipt;
+    }
     for (const spec of bundle.cfg.stubs || []) worker.postMessage({ op: 'stub', spec });
     if(result.networkAvailable&&romFor(bundle.cfg.board)!=='esp32p4_rev0_rom.elf')await network.attach({available:true,manifestWifi:bundle.cfg.wifi});
     else if(bundle.cfg.wifi)worker.postMessage({op:'wifi',spec:bundle.cfg.wifi});
