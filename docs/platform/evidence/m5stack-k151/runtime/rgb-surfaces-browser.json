@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-01T17:50:02Z",
+  "productId": "m5stack-k151",
+  "scope": "Headless production viewer and actual guest output after RGB surface correction",
+  "inputs": {
+    "geometrySha256": "43a3f731ea8f12b7071f75e5c8d2a325ab876737164906f7993bfd7765ad1e29",
+    "modelSha256": "2a80ddc2d4d6e5942ca3968651e25a34e6b4a2a347928696ff3405e4f89fdc68",
+    "wasmSha256": "a3d5cde2154ca1bbe73a6263773dc62945f47db1747d667c4e3c1f6724bee598",
+    "diagnosticAppSha256": "cdcf8226d986f2c05408e1cdff2830a47b30c43e61974188455c79a75aa53c79"
+  },
+  "before": {
+    "geometrySha256": "342aaa367b708eaa1a86b80827145e139747259308c937d113e1d7f1273c117d",
+    "observed": "Separate rectangular emitting faces formed protruding edges at the top-side openings and at the front end. Earlier center-point visibility checks did not cover the shape boundary."
+  },
+  "view": {
+    "viewportPx": [
+      1280,
+      720
+    ],
+    "initialPresentation": "Default embedded 3D view",
+    "gesture": "Drag from (450,330) to (360,420) in20 steps, wheel deltaY−350, then move pointer to (20,20). Firmware poses change only through pad input.",
+    "materialChecks": [
+      "factory",
+      "purple translucent opacity0.36"
+    ]
+  },
+  "checks": [
+    {
+      "input": {
+        "id": "touch-pad-front",
+        "pressed": true
+      },
+      "guestLedValues": {
+        "count": 12,
+        "all": [
+          255,
+          0,
+          0
+        ]
+      },
+      "servosDegrees": {
+        "pan": 40,
+        "tilt": 0
+      },
+      "visual": "Rounded emitting surface follows the opening; protruding rectangular ends removed."
+    },
+    {
+      "input": {
+        "release": "touch-pad-front",
+        "press": "touch-pad-middle"
+      },
+      "guestLedValues": {
+        "count": 12,
+        "all": [
+          0,
+          255,
+          0
+        ]
+      },
+      "servosDegrees": {
+        "pan": 0,
+        "tilt": 60
+      },
+      "visual": "Guide and emitting surfaces follow head tilt; visible side remains inside its rounded opening."
+    },
+    {
+      "input": {
+        "release": "touch-pad-middle",
+        "press": "touch-pad-back"
+      },
+      "guestLedValues": {
+        "count": 12,
+        "all": [
+          0,
+          0,
+          255
+        ]
+      },
+      "servosDegrees": {
+        "pan": -40,
+        "tilt": 0
+      },
+      "visual": "Full side light visible with curved section and rounded ends. Purple transparency preserves blue emission and independent shell color."
+    },
+    {
+      "input": "Release pad and configure the same product with firmware:null",
+      "status": "configured",
+      "leds": [],
+      "visual": "Neutral unlit guide restored without residual emission. This is unloaded presentation, not a physical power-switch test."
+    }
+  ],
+  "console": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "validation": {
+    "platformTests": 209,
+    "sourceClipTests": 5,
+    "independentOriginalSurfaceCoverage": "pass"
+  },
+  "screenshots": {
+    "output/playwright/stackchan-rgb-lit-before.png": {
+      "sha256": "f7ed77792cc50dc03be4b324381df57b60194a3c15ea41d2d8d42f4c15264217",
+      "bytes": 202207
+    },
+    "output/playwright/stackchan-rgb-oblique-before.png": {
+      "sha256": "778d515fea6253f56cb7be92471e1f083960361c1c29da62e73cb83ef1593965",
+      "bytes": 226566
+    },
+    "output/playwright/stackchan-rgb-purple-before.png": {
+      "sha256": "754aeb4ba08a6d547c9e9519b2a1cf751a468233aecb63f7fb0a669a7b05e96e",
+      "bytes": 273604
+    },
+    "output/playwright/stackchan-rgb-red-final.png": {
+      "sha256": "d9cbdda26830d2f02e3eb434b350e7da0d729158f70cd37918f6d07220569a3d",
+      "bytes": 223198
+    },
+    "output/playwright/stackchan-rgb-green-final.png": {
+      "sha256": "057b79b614f43af115a9d01db61158ed6ccd00de06ab1d15376870527e49f09b",
+      "bytes": 210919
+    },
+    "output/playwright/stackchan-rgb-blue-final.png": {
+      "sha256": "f064b18270f139900930b19125b20614f06ef134b5f567d6ed06795e1b7d27b8",
+      "bytes": 221376
+    },
+    "output/playwright/stackchan-rgb-purple-final.png": {
+      "sha256": "b1642ab4a26f7662f5ca0c8c3bbaee10b83019a0ebda1b4ec56c783ed1f31833",
+      "bytes": 307872
+    },
+    "output/playwright/stackchan-rgb-unloaded-final.png": {
+      "sha256": "88325cc8e03fe218cb3e42149c00dc75687d037be387935cdb5cb3d29e8c5b49",
+      "bytes": 231571
+    }
+  },
+  "limitations": [
+    "Raw screenshots remain local and ignored.",
+    "LED physical chain order, optical diffusion and actual PCB placement remain uncalibrated.",
+    "Small end-region CAD fit residuals are quantified separately in rgb-fit-review.json; no physical fit certification."
+  ]
+}
