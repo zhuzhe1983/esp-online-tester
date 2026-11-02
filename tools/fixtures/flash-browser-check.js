@@ -22,7 +22,7 @@ async page => {
   await page.route('**/vendor/esptool-js-0.7.0/bundle.js',route=>route.fulfill({contentType:'text/javascript',body:`
     export class Transport {constructor(port){this.port=port;}async disconnect(){flashTest.closed.push(this.port.id);}async setDTR(){}async setRTS(){}}
     export class ESPLoader {
-      constructor(options){this.options=options;this.port=options.transport.port;this.chip={CHIP_NAME:'ESP32-C6'};}
+      constructor(options){this.options=options;this.port=options.transport.port;this.chip={CHIP_NAME:this.port.id==='wrong-chip'?'ESP32-S31':'ESP32-C6'};}
       async main(){this.options.terminal.writeLine('Connected to test ESP32-C6');}
       async getSecurityInfo(){return {flashCryptCnt:0,parsedFlags:{}};}
       async detectFlashSize(){return '16MB';}flashSizeBytes(){return 16*1024*1024;}
@@ -71,7 +71,7 @@ async page => {
   assert((await dialog.locator('.flash-source').innerText()).includes('batch-A.bin'),'Scene changes preserve current batch source');
   await page.waitForFunction(()=>document.querySelector('.flash-counts').textContent.includes('成功 1 · 失败 1'));
   assert(await page.evaluate(()=>flashTest.maxActive)===2,'Separate ports wrote concurrently');
-  await dialog.getByRole('button',{name:'重试',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.flash-counts').textContent.includes('成功 2 · 失败 0'));
+  await dialog.getByRole('button',{name:'重试此设备',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.flash-counts').textContent.includes('成功 2 · 失败 0'));
   assert(await page.evaluate(()=>new Set(flashTest.writes.map(row=>row.hash)).size)===1,'Retry keeps the prepared firmware bytes');
   assert(await page.evaluate(()=>flashTest.closed.length)===3,'Every completed/failed device closes its port');
   results.push('Independent modal, chooser activation/cancellation, acknowledgement, duplicate ports, parallel isolation/retry, hidden status, frozen firmware');
@@ -101,14 +101,45 @@ async page => {
   assert(!(await page.evaluate(()=>flashTest.writes.some(row=>row.id==='cancel-active'))),'Cancelled device does not report success');
   await dialog.getByRole('button',{name:'新建批次',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.flash-queue-heading button')&&!document.querySelector('.flash-queue-heading button').disabled);
   await choose('cancel-queued');await dialog.getByRole('button',{name:'取消排队',exact:true}).click();
-  assert((await dialog.locator('.flash-mode-hint').innerText()).includes('要选择其他设备，请新建批次'),'Cancelled single-device selection explains how to change the device');
+  assert((await dialog.locator('.flash-mode-hint').innerText()).includes('更换设备'),'Cancelled single-device selection explains how to change the device');
   assert(await dialog.getByRole('button',{name:'新建批次',exact:true}).isEnabled(),'Cancelled selection permits a new batch');
-  await dialog.getByRole('checkbox').check();await dialog.getByRole('button',{name:'重试',exact:true}).click();
+  await dialog.getByRole('checkbox').check();await dialog.getByRole('button',{name:'重试此设备',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('.flash-counts').textContent.includes('成功 1'));
   assert(await page.evaluate(()=>flashTest.writes.filter(row=>row.id==='cancel-queued').length)===1,'A cancelled queued device can be retried with confirmation');
   await page.keyboard.press('Escape');
   assert(await page.evaluate(()=>flashTest.activation.every(Boolean)),'Every chooser retained a user activation');
   results.push('Mid-write batch cancellation and port cleanup');
+
+  await page.locator('#flash-device').click();
+  await dialog.getByRole('button',{name:'新建批次',exact:true}).click();await page.waitForFunction(()=>!document.querySelector('.flash-queue-heading button').disabled);
+  await choose('wrong-chip');await dialog.getByRole('checkbox').check();await dialog.getByRole('button',{name:'开始烧录',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('.flash-counts').textContent.includes('失败 1'));
+  const failed=dialog.locator('.flash-device'),replace=failed.getByRole('button',{name:'更换设备',exact:true});
+  assert((await failed.innerText()).includes('ESP32-S31')&&(await failed.innerText()).includes('未写入 Flash'),'Chip mismatch explains the wrong selection and blocked write');
+  assert(await replace.isEnabled()&&await failed.getByRole('button',{name:'重试此设备',exact:true}).isEnabled(),'Failed single-device batch offers retry and replacement');
+  assert(!(await page.evaluate(()=>flashTest.writes.some(row=>row.id==='wrong-chip'))),'Wrong chip receives no firmware write');
+  await page.screenshot({path:'output/playwright/flash-station-replace-error.png',fullPage:false});
+  const beforeReplacement=await page.evaluate(()=>({writes:flashTest.writes.length,closed:flashTest.closed.length})),pinned=await dialog.locator('.flash-fingerprint').innerText();
+  await replace.click();await page.waitForFunction(()=>!document.querySelector('.flash-station-status').textContent.includes('请在浏览器中'));
+  assert((await failed.innerText()).includes('ESP32-S31'),'Cancelling replacement preserves the original failure');
+  await page.evaluate(()=>flashTest.next='wrong-chip');await replace.click();
+  await page.waitForFunction(()=>!document.querySelector('.flash-station-error').hidden);
+  assert((await dialog.getByRole('alert').innerText()).includes('仍是原设备'),'Choosing the same port explains how to recover');
+  await page.evaluate(()=>flashTest.next='corrected-device');await replace.click();
+  await failed.getByRole('button',{name:'烧录此设备',exact:true}).waitFor();
+  assert(await failed.count()===1&&(await dialog.locator('.flash-counts').innerText()).includes('等待 1'),'Replacement reuses the row and returns it to waiting');
+  assert(await dialog.locator('.flash-fingerprint').innerText()===pinned,'Replacement preserves the pinned firmware');
+  assert(await page.evaluate(before=>flashTest.writes.length===before.writes&&flashTest.closed.length===before.closed,beforeReplacement),'Choosing replacement alone does not connect or write');
+  assert(await dialog.getByRole('alert').isHidden(),'A successful selection clears the previous chooser error');
+  await page.screenshot({path:'output/playwright/flash-station-replace-ready.png',fullPage:false});
+  const replacementBounds=await dialog.evaluate(el=>({width:el.scrollWidth,client:el.clientWidth}));
+  assert(replacementBounds.width<=replacementBounds.client,'Replacement actions fit the mobile modal');
+  await failed.getByRole('button',{name:'烧录此设备',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('.flash-counts').textContent.includes('成功 1 · 失败 0'));
+  assert(await page.evaluate(()=>flashTest.writes.filter(row=>row.id==='corrected-device').length)===1,'Explicit action writes the replacement once');
+  await page.keyboard.press('Escape');
+  assert(await page.evaluate(()=>flashTest.activation.every(Boolean)),'Replacement chooser retains user activation');
+  results.push('Single-device chip mismatch recovery, cancelled/same-port chooser, explicit replacement write, pinned firmware and mobile layout');
 
   // Remote local-server fixture makes the same UI reachable in the embedded player.
   await page.route('**/__flash-test.bin',route=>route.fulfill({contentType:'application/octet-stream',body:Buffer.from(localBytes)}));

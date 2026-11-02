@@ -276,7 +276,7 @@ export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, 
         setState('connecting', '正在连接 ROM 下载模式并识别芯片；此过程会复位设备。');
         await loader.main(); guard();
         const chip = normalizedChip(loader.chip?.CHIP_NAME), expected = normalizedChip(plan.product.chip);
-        check(chip === expected, 'CHIP_MISMATCH', `Connected chip ${loader.chip?.CHIP_NAME || 'unknown'} does not match ${plan.product.chip}.`);
+        check(chip === expected, 'CHIP_MISMATCH', `所选设备为 ${loader.chip?.CHIP_NAME || '未知芯片'}，当前固件需要 ${plan.product.chip.replace(/^esp32/i,'ESP32-').toUpperCase()}。未写入 Flash，请点击“更换设备”选择正确的设备。`);
         setState('validating', '正在核对芯片、安全配置、Flash 容量与写入范围。', { chip: loader.chip.CHIP_NAME });
         // This release intentionally excludes secured/encrypted devices rather than
         // attempting efuse changes, forced writes or security-mode workarounds.

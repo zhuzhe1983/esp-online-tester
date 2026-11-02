@@ -5,21 +5,27 @@ const problem=(code,message)=>Object.assign(new Error(message),{code});
 const check=(value,code,message)=>{if(!value)throw problem(code,message);};
 const copy=value=>structuredClone(value);
 const terminal=new Set(['done','error','cancelled']);
+const replaceable=new Set(['queued','ready','error','cancelled']);
+const waiting=item=>['queued','ready'].includes(item.status);
+const deviceLabel=(id,port)=>{
+  const info=port.getInfo?.() || {},usb=[info.usbVendorId,info.usbProductId].every(value=>Number.isInteger(value))?` · USB ${info.usbVendorId.toString(16).padStart(4,'0').toUpperCase()}:${info.usbProductId.toString(16).padStart(4,'0').toUpperCase()}`:'';
+  return `设备 ${id.slice('device-'.length)}${usb}`;
+};
 export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,createDeviceFlasher=createFlasher,...options}={}) {
   const dependencies={...options,navigator:nav};
-  let session=null,prepareAbort=null,status='idle',mode='parallel',running=false,choosing=false,disposed=false,generation=0,nextId=1,concurrency=4,error=null;
+  let session=null,prepareAbort=null,status='idle',mode='parallel',running=false,choosing=false,replacingId=null,disposed=false,generation=0,nextId=1,concurrency=4,error=null;
   const items=[],ports=new Map(),jobs=new Map(),pending=new Set();
   const capabilities=()=>flasherCapabilities(dependencies);
   const publicItem=item=>{const {port,...rest}=item;return copy(rest);};
   const observe=()=>({status,mode,running,choosing,product:session?copy(session.product):null,receipt:session?copy(session.receipt):null,error:copy(error),
-    items:items.map(publicItem),counts:{total:items.length,queued:items.filter(item=>item.status==='queued').length,active:jobs.size,done:items.filter(item=>item.status==='done').length,error:items.filter(item=>item.status==='error').length,cancelled:items.filter(item=>item.status==='cancelled').length}});
+    items:items.map(publicItem),counts:{total:items.length,queued:items.filter(waiting).length,active:jobs.size,done:items.filter(item=>item.status==='done').length,error:items.filter(item=>item.status==='error').length,cancelled:items.filter(item=>item.status==='cancelled').length}});
   const emit=()=>{try{onEvent?.({type:'state',state:observe()});}catch(e){console.error(e);}};
   const alive=()=>check(!disposed,'FLASH_SESSION_CLOSED','This flashing window has been closed.');
   const itemById=id=>{const item=items.find(item=>item.id===id);check(item,'FLASH_DEVICE_UNKNOWN','This device is not in the batch.');return item;};
   const deactivate=()=>{if(session)activateFlashSession(session,false,dependencies);};
   function settle() {
     if(status==='stopping' && !jobs.size)status='stopped';
-    if(running && mode==='parallel' && !jobs.size && !items.some(item=>item.status==='queued')) {running=false;status='done';deactivate();}
+    if(running && mode==='parallel' && !jobs.size && !items.some(item=>item.status==='queued')) {running=false;status=items.some(waiting)?'ready':'done';deactivate();}
     emit();
   }
   function launch(item) {
@@ -53,7 +59,7 @@ export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,cre
     const limit=mode==='sequential'?1:concurrency;
     for(const item of items) {
       if(jobs.size>=limit)break;
-      if(item.status==='queued' && item.connected)launch(item);
+      if(item.status==='queued' && item.connected && item.id!==replacingId)launch(item);
     }
     settle();
   }
@@ -65,7 +71,7 @@ export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,cre
       // USB reset can re-enumerate after MD5 verification. Do not turn a verified
       // write into cancellation while the reset strategy is releasing the port.
       if(jobs.has(item.id) && !['resetting','closing','done'].includes(item.status))jobs.get(item.id).disconnect();
-      else if(item.status==='queued') {item.status='error';item.error={code:'DEVICE_DISCONNECTED',message:'设备已断开，请重新连接后重试。'};item.message=item.error.message;}
+      else if(waiting(item)) {item.status='error';item.error={code:'DEVICE_DISCONNECTED',message:'设备已断开，请重新连接后重试。'};item.message=item.error.message;}
     }
     // Completed/reconnected devices never automatically get a second write.
     emit();
@@ -98,22 +104,42 @@ export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,cre
         check(!disposed && revision===generation,'FLASH_CANCELLED','Device selection was cancelled.');
         let item=ports.get(port);
         if(item) {item.connected=true;emit();return publicItem(item);}
-        const info=port.getInfo?.() || {},usb=[info.usbVendorId,info.usbProductId].every(value=>Number.isInteger(value))?` · USB ${info.usbVendorId.toString(16).padStart(4,'0').toUpperCase()}:${info.usbProductId.toString(16).padStart(4,'0').toUpperCase()}`:'';
-        item={id:`device-${nextId}`,label:`设备 ${nextId++}${usb}`,port,status:'queued',progress:0,message:'等待烧录',logs:[],error:null,connected:true,attempt:0,mayBePartial:false};
+        const id=`device-${nextId++}`;
+        item={id,label:deviceLabel(id,port),port,status:'queued',progress:0,message:'等待烧录',logs:[],error:null,connected:true,attempt:0,mayBePartial:false};
         items.push(item);ports.set(port,item);if(!running)status='ready';else pump();
         emit();return publicItem(item);
       } finally {choosing=false;emit();}
+    },
+    async replaceDevice(id) {
+      alive();const item=itemById(id);
+      check(!jobs.has(id) && replaceable.has(item.status),'FLASH_BUSY','只能更换尚未开始、失败或已取消的设备。');
+      check(!choosing && status!=='stopping','FLASH_BUSY','请等待设备选择或停止操作完成。');
+      choosing=true;replacingId=id;const revision=generation,oldPort=item.port;emit();
+      // Freeze a queued item while its chooser is open, including when another
+      // parallel job completes. Selection alone must never authorize a write.
+      try {
+        const port=await chooseFlashPort(session,dependencies);
+        check(!disposed && revision===generation,'FLASH_CANCELLED','Device selection was cancelled.');
+        check(port!==oldPort,'FLASH_SAME_DEVICE','选择的仍是原设备。请选择其他设备，或取消后重试此设备。');
+        check(!ports.has(port),'FLASH_DUPLICATE_DEVICE','这台设备已在本批队列中，请选择其他设备。');
+        const logs=[...item.logs,`更换前：${item.label} · ${item.message}`,'已更换设备，等待点击烧录。'].slice(-200);
+        ports.delete(oldPort);ports.set(port,item);
+        Object.assign(item,{port,label:deviceLabel(id,port),status:'ready',progress:0,message:'已更换设备，确认后点击烧录。',logs,error:null,connected:true,attempt:0,mayBePartial:false,flashVerified:false});
+        if(!running)status='ready';
+        return publicItem(item);
+      } finally {choosing=false;replacingId=null;if(running)pump();emit();}
     },
     start({mode:nextMode='parallel',concurrency:nextConcurrency=4}={}) {
       alive();check(session,'FLASH_SESSION_INVALID','Prepare a firmware batch first.');
       check(!running && !jobs.size && !choosing,'FLASH_BUSY','A flashing batch is already active.');
       check(['parallel','sequential'].includes(nextMode),'FLASH_MODE_INVALID','Choose parallel or sequential flashing.');
       check(Number.isInteger(nextConcurrency) && nextConcurrency>=1 && nextConcurrency<=4,'FLASH_CONCURRENCY_INVALID','Choose between 1 and 4 simultaneous devices.');
-      check(items.some(item=>item.status==='queued' && item.connected) || nextMode==='sequential','FLASH_NO_DEVICES','Choose at least one connected device.');
-      activateFlashSession(session,true,dependencies);mode=nextMode;concurrency=nextConcurrency;running=true;status='running';pump();return observe();
+      check(items.some(item=>waiting(item) && item.connected) || nextMode==='sequential','FLASH_NO_DEVICES','Choose at least one connected device.');
+      activateFlashSession(session,true,dependencies);for(const item of items)if(item.status==='ready')item.status='queued';
+      mode=nextMode;concurrency=nextConcurrency;running=true;status='running';pump();return observe();
     },
     retry(id) {
-      alive();const item=itemById(id);check(!jobs.has(id) && terminal.has(item.status) && item.status!=='done','FLASH_BUSY','Only a failed or cancelled device can be retried.');
+      alive();const item=itemById(id);check(!jobs.has(id) && (item.status==='ready' || terminal.has(item.status) && item.status!=='done'),'FLASH_BUSY','Only a waiting, failed or cancelled device can be started.');
       check(item.connected,'DEVICE_DISCONNECTED','Reconnect this device before retrying.');
       check(status!=='stopping' && !choosing,'FLASH_BUSY','Wait for cancellation or device selection to finish.');
       activateFlashSession(session,true,dependencies);item.status='queued';item.error=null;item.message='等待重试';item.progress=0;running=true;status='running';pump();return observe();
@@ -121,7 +147,7 @@ export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,cre
     cancel(id) {
       alive();const item=itemById(id);
       if(jobs.has(id))jobs.get(id).flasher.cancel();
-      else if(item.status==='queued') {item.status='cancelled';item.message='已取消，未写入 Flash。';}
+      else if(waiting(item)) {item.status='cancelled';item.message='已取消，未写入 Flash。';}
       settle();return observe();
     },
     stop() {
@@ -129,7 +155,7 @@ export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,cre
       running=false;generation++;deactivate();prepareAbort?.abort();
       for(const item of items) {
         if(jobs.has(item.id))jobs.get(item.id).flasher.cancel();
-        else if(item.status==='queued') {item.status='cancelled';item.message='已取消，未写入 Flash。';}
+        else if(waiting(item)) {item.status='cancelled';item.message='已取消，未写入 Flash。';}
       }
       status=jobs.size?'stopping':'stopped';emit();return observe();
     },
