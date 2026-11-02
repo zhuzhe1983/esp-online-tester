@@ -99,6 +99,13 @@ async page => {
   await dialog.getByRole('button',{name:'停止本批',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.flash-counts').textContent.includes('已取消 1'));
   assert(await page.evaluate(()=>flashTest.active===0&&flashTest.closed.includes('cancel-active')),'Cancel waits for active device cleanup');
   assert(!(await page.evaluate(()=>flashTest.writes.some(row=>row.id==='cancel-active'))),'Cancelled device does not report success');
+  await dialog.getByRole('button',{name:'新建批次',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.flash-queue-heading button')&&!document.querySelector('.flash-queue-heading button').disabled);
+  await choose('cancel-queued');await dialog.getByRole('button',{name:'取消排队',exact:true}).click();
+  assert((await dialog.locator('.flash-mode-hint').innerText()).includes('要选择其他设备，请新建批次'),'Cancelled single-device selection explains how to change the device');
+  assert(await dialog.getByRole('button',{name:'新建批次',exact:true}).isEnabled(),'Cancelled selection permits a new batch');
+  await dialog.getByRole('checkbox').check();await dialog.getByRole('button',{name:'重试',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('.flash-counts').textContent.includes('成功 1'));
+  assert(await page.evaluate(()=>flashTest.writes.filter(row=>row.id==='cancel-queued').length)===1,'A cancelled queued device can be retried with confirmation');
   await page.keyboard.press('Escape');
   assert(await page.evaluate(()=>flashTest.activation.every(Boolean)),'Every chooser retained a user activation');
   results.push('Mid-write batch cancellation and port cleanup');
@@ -112,5 +119,21 @@ async page => {
   assert(await dialog.getByRole('radio',{name:'多台并行'}).count()===1,'Embedded player uses the same batch window');
   await page.screenshot({path:'output/playwright/flash-station-mini.png',fullPage:false});await page.keyboard.press('Escape');
   results.push('Embedded player shares station UI');
+
+  await page.goto(root);await page.waitForFunction(()=>Boolean(window.espTester));
+  await page.evaluate(async()=>{
+    const {openFlashStation}=await import('./firmware-flash-ui.js');window.delayedPrepareCalls=0;
+    window.delayedStation=openFlashStation({product:{name:'Delayed preparation fixture'},source:{url:'https://firmware.invalid/test.bin'},scene:{},catalog:{},
+      prepareSource:()=>new Promise(resolve=>{window.releaseDelayedSource=resolve;}),
+      createBatch:({onEvent})=>({prepare(){delayedPrepareCalls++;},stop(){onEvent({type:'state',state:{status:'stopped',items:[],counts:{},running:false,choosing:false}});},dispose(){}}),
+    });
+  });
+  await dialog.getByRole('button',{name:'取消准备',exact:true}).click();
+  await page.evaluate(()=>releaseDelayedSource({url:'https://firmware.invalid/test.bin'}));
+  await page.waitForFunction(()=>!delayedStation.observe().busy);
+  assert(await page.evaluate(()=>delayedPrepareCalls)===0,'A source that resolves after cancellation never starts batch.prepare');
+  assert(await dialog.getByRole('button',{name:'添加设备',exact:true}).isDisabled(),'Cancelled preparation cannot select or write devices');
+  await page.evaluate(()=>delayedStation.dispose());
+  results.push('Cancelled single-device queue can retry; delayed source preparation is discarded after cancellation');
   assert(!errors.length,JSON.stringify(errors));return results;
 }

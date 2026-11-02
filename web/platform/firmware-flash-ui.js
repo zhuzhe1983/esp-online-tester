@@ -10,7 +10,7 @@ const modeHints={single:'写入一台设备，完成后保留结果。',parallel
 
 // A batch owns its source snapshot and its chosen ports. Hiding the dialog does
 // not dispose that session; the workbench entry remains its visible status.
-export function openFlashStation({product,source,scene,catalog,onChange,onClose,onNewBatch,createBatch=createFlashBatch}) {
+export function openFlashStation({product,source,scene,catalog,onChange,onClose,onNewBatch,createBatch=createFlashBatch,prepareSource=prepareBurnerSource}) {
   const dialog=node('dialog','firmware-run-confirm flash-station');dialog.setAttribute('aria-labelledby','flash-station-title');
   const heading=node('div','flash-station-heading'),headingText=node('div');headingText.append(node('span','eyebrow','USB / 实体设备'));
   const title=node('h2','','烧录到设备');title.id='flash-station-title';headingText.append(title);
@@ -73,10 +73,10 @@ export function openFlashStation({product,source,scene,catalog,onChange,onClose,
   function render(){
     if(disposed)return;
     const items=state.items||[],isBusy=busy();
-    modeHint.textContent=modeHints[mode];
+    modeHint.textContent=mode==='single'&&!started&&items.some(item=>item.status==='cancelled')?'已取消排队。勾选确认后可重试这台设备；要选择其他设备，请新建批次。':modeHints[mode];
     for(const input of radios.values())input.disabled=started||isBusy||items.length>1&&input.value==='single';
     add.textContent=mode==='sequential'&&started?'选择下一台':'添加设备';
-    add.disabled=preparing||state.status==='preparing'||state.status==='stopping'||state.choosing||Boolean(prepareError)||mode==='single'&&items.length>=1||started&&mode!=='sequential'||started&&!state.running;
+    add.disabled=!state.receipt||preparing||state.status==='preparing'||state.status==='stopping'||state.choosing||Boolean(prepareError)||mode==='single'&&items.length>=1||started&&mode!=='sequential'||started&&!state.running;
     const labels={idle:'正在准备固件…',preparing:'正在下载并校验固件…',ready:'固件已准备好，添加设备后即可开始。',running:mode==='sequential'?'连续烧录已开启。完成后换插设备，再点击“选择下一台”。':'正在烧录，请保持 USB 连接。',stopping:'正在停止本批次，等待各设备关闭连接…',stopped:'本批已停止，可查看结果或新建批次。',done:'本批次已完成。',error:'准备固件失败，可新建批次重试。'};
     status.textContent=preparing?'正在下载并校验固件…':prepareError?'固件未准备好，尚未连接或写入设备。':state.choosing?'请在浏览器中选择一台设备。':labels[state.status]||state.status;
     close.textContent=isBusy?'收起':'关闭';close.setAttribute('aria-label',isBusy?'收起烧录窗口':'关闭烧录窗口');
@@ -86,7 +86,7 @@ export function openFlashStation({product,source,scene,catalog,onChange,onClose,
       row.badge.textContent=statusLabels[item.status]||item.status;
       row.message.textContent=item.message||(!item.connected?'设备未连接':'已选择设备');
       row.progress.setAttribute('aria-label',`${item.label||item.id} 写入进度`);row.progress.value=Math.max(0,Math.min(1,item.progress||0));row.progress.hidden=!isActive&&item.status!=='done';
-      row.cancel.hidden=!isActive&&!queued;row.cancel.disabled=item.status==='cancelling';row.cancel.textContent=queued?'移出队列':'取消';
+      row.cancel.hidden=!isActive&&!queued;row.cancel.disabled=item.status==='cancelling';row.cancel.textContent=queued?'取消排队':'取消';
       row.retry.hidden=!['error','cancelled'].includes(item.status);row.retry.disabled=isBusy&&!state.running||!checked.checked||item.connected===false;
       const logs=Array.isArray(item.logs)?item.logs.map(entry=>typeof entry==='string'?entry:entry.message||'').join('\n'):String(item.logs||'');
       if(row.log.textContent!==logs)row.log.textContent=logs;row.details.hidden=!logs;return row.root;
@@ -115,7 +115,7 @@ export function openFlashStation({product,source,scene,catalog,onChange,onClose,
   function show(){if(disposed||dialog.open)return;closeFocus=document.activeElement;dialog.showModal();render();close.focus();}
   show();
   void (async()=>{
-    try{const prepared=await prepareBurnerSource(source,{signal:aborter.signal});if(disposed)return;await batch.prepare({scene,catalog,source:prepared});}
+    try{const prepared=await prepareSource(source,{signal:aborter.signal});if(disposed||aborter.signal.aborted)return;await batch.prepare({scene,catalog,source:prepared});}
     catch(error){prepareError=error;showError(error);}
     finally{preparing=false;render();}
   })();
