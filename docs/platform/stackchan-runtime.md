@@ -91,7 +91,7 @@ node tools/probe-stackchan-ble.mjs --firmware FACTORY_BIN \
 
 DANCE 页面启动 BLE 服务后显示 Avatar，等待 `motion`、`avatar` 和 `rgb` 特征的 JSON 控制，不会仅因进入菜单就自动跳舞。从首次欢迎页选择 Skip，等待 Launcher 入场，向右翻五次，再点中间图标可进入；底边上滑后点 Home 会触发官方固件的 warm reboot。浏览器当前没有手机蓝牙桥接或 DANCE 控制面板，原生虚拟 GATT 测试与浏览器实际页面验收分别记录，不能互相替代。
 
-具体命令依据 [Bluetooth Core 5.4, Vol 4 Part E](https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Core-54/out/en/host-controller-interface/host-controller-interface-functional-specification.html) 的 C.9、7.8.33、7.8.38–44、7.8.77，以及 [ESP-IDF 5.5.4 所固定的 esp-nimble](https://github.com/espressif/esp-nimble/tree/5c1a43ca3d205c3d5183e57dedce335fb6a81155)。DANCE 初始化与实际输出的复现结果见[本次回执](evidence/m5stack-k151/runtime/factory-dance-ble.json)和[来源清单](research/stackchan-dance-sources-2026-11-02.json)；未实机验证。
+具体命令依据 [Bluetooth Core 5.4, Vol 4 Part E](https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Core-54/out/en/host-controller-interface/host-controller-interface-functional-specification.html) 的 C.9、7.8.33、7.8.38–44、7.8.77，以及 [ESP-IDF 5.5.4 所固定的 esp-nimble](https://github.com/espressif/esp-nimble/tree/5c1a43ca3d205c3d5183e57dedce335fb6a81155)。在前述 worker 探针命令中加 `--flow dance` 可运行进入、Home 退出、重启、重进及保存 Flash 恢复；`--expect-unknown-hci` 仅用于复现旧版负结果。DANCE 初始化与实际输出的复现结果见[本次回执](evidence/m5stack-k151/runtime/factory-dance-ble.json)和[来源清单](research/stackchan-dance-sources-2026-11-02.json)；未实机验证。
 
 ## 回归检查
 
