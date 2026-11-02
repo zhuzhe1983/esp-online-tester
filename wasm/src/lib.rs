@@ -24,6 +24,7 @@ pub use ethernet::*;
 mod s3;
 mod lora;
 mod motion;
+mod hardware_diagnostics;
 mod audio;
 pub use audio::*;
 #[cfg(target_arch = "wasm32")]
