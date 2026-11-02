@@ -49,9 +49,11 @@ hw/difftest.sh 8000                 # reset, then single-step 8000 instructions 
 hw/difftest-at.sh 403c8948 6000     # run both to a PC (here the 2nd-stage bootloader entry), then step 6000 and diff
 ```
 
-`difftest*.sh` read the chip's efuses (`hw/efuse.txt`), strapping pins and the peripheral reset
-state (`hw/reset-regs.txt`, dumped over JTAG at `reset halt`), and start the emulator from the same
-image and state.
+`difftest*.sh` read the chip's efuses and strapping pins over JTAG, take the peripheral reset
+state from `$DIFF_DIR/reset-regs.txt` (dumped over JTAG at `reset halt`), and start the emulator
+from the same image and state. Everything read from the chip (efuses, traces, logs) goes to
+`$DIFF_OUT`, a fresh temporary directory unless set, because the efuses hold the chip's MAC
+address; the scripts print where. They stop rather than kill an openocd that is already running.
 
 `hw/compare.py` diffs `pc a0..a15 ps windowbase` per instruction. It:
 

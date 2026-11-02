@@ -58,7 +58,8 @@ tools/fetch-demo-assets.sh --no-linux      # the S3, C3 and C6 ROMs into web/was
 ```
 
 Then pass `--rom web/wasm/fw/esp32s3_rev0_rom.elf` (or the C3/C6 file), or set
-`ESP32SIM_ROM_DIR=web/wasm/fw`, which the tests also use.
+`ESP32SIM_ROM_DIR=$PWD/web/wasm/fw`, which the tests also use. Give the tests an absolute path:
+`cargo test` runs each test from its own crate's directory.
 
 ## ESP32-S3
 
@@ -191,7 +192,8 @@ the WPA2-PSK four-way handshake. Behind it is a virtual network with DHCP, ARP, 
 off the host clock.
 
 `--net nat` (the default) relays the guest's TCP and UDP over ordinary host sockets, so firmware
-reaches the real network. `--net none` refuses it. No firmware changes, no root, no tun device.
+reaches the real network. `--net none` refuses it. `--hostfwd tcp:127.0.0.1:8080-:80` publishes a
+guest TCP server on the host. No firmware changes, no root, no tun device.
 
 ```sh
 ./target/release/esp32sim --board waveshare-lcd4b --boot rom --flash-mb 16 --psram-mb 8 \

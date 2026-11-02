@@ -34,8 +34,6 @@ impl Timer {
         if t.config & (1 << 31) == 0 { return; }   // TIMG_T0_EN
         let div = Self::divisor(t.config);
         t.prescale_acc += apb_ticks;
-        let mut steps = t.prescale_acc / div;
-        t.prescale_acc %= div;
         let inc = t.config & (1 << 30) != 0;   // TIMG_T0_INCREASE
         let alarm = t.alarm;
         // A one-shot alarm armed at or behind the counter fires at once ("If the current count
@@ -51,7 +49,11 @@ impl Timer {
             on_alarm();
             t.config &= !(1 << 10);
         }
-        if steps == 0 { return; }
+        // Below the divisor no counter step is due: keep the residual and skip the division,
+        // which a tick shorter than the divisor would otherwise pay for a zero quotient.
+        if t.prescale_acc < div { return; }
+        let mut steps = t.prescale_acc / div;
+        t.prescale_acc %= div;
         // Steps to the alarm from `c`, if counting reaches it (not already at or past it).
         let gap = |c: u64| if inc { alarm.checked_sub(c) } else { c.checked_sub(alarm) }.filter(|&d| d > 0);
         if t.config & (1 << 10) != 0 {   // TIMG_T0_ALARM_EN
@@ -150,5 +152,81 @@ impl Device for TimerGroup {
             best = Some(best.map_or(apb, |b| b.min(apb)));
         }
         best
+    }
+}
+
+#[cfg(test)]
+mod prescaler_tests {
+    use super::Timer;
+
+    /// `Timer::step` as it was before the sub-divisor early return: it always divides.
+    fn reference(t: &mut Timer, apb_ticks: u64, width_mask: u64, alarms: &mut u32) {
+        if t.config & (1 << 31) == 0 { return; }
+        let div = Timer::divisor(t.config);
+        t.prescale_acc += apb_ticks;
+        let mut steps = t.prescale_acc / div;
+        t.prescale_acc %= div;
+        let inc = t.config & (1 << 30) != 0;
+        let alarm = t.alarm;
+        let reached = if inc { t.count >= alarm } else { t.count <= alarm };
+        if t.config & (1 << 10) != 0 && t.config & (1 << 29) == 0 && reached {
+            *alarms += 1;
+            t.config &= !(1 << 10);
+        }
+        if steps == 0 { return; }
+        let gap = |c: u64| if inc { alarm.checked_sub(c) } else { c.checked_sub(alarm) }.filter(|&d| d > 0);
+        if t.config & (1 << 10) != 0 {
+            if let Some(d) = gap(t.count).filter(|&d| d <= steps) {
+                *alarms += 1;
+                steps -= d;
+                if t.config & (1 << 29) != 0 {
+                    t.count = t.load;
+                    if let Some(p) = gap(t.load) { steps %= p; }
+                } else { t.count = t.alarm; t.config &= !(1 << 10); }
+            }
+        }
+        t.count = if inc { t.count.wrapping_add(steps) & width_mask } else { t.count.wrapping_sub(steps) & width_mask };
+    }
+
+    fn state(t: &Timer, alarms: u32) -> (u32, [u64; 5], u32) {
+        (t.config, [t.count, t.latch, t.alarm, t.load, t.prescale_acc], alarms)
+    }
+
+    #[test]
+    fn short_prescaler_advances_match_division_reference() {
+        // Divider fields 0 and 1 encode 65536 and 2. A rewritten divider can leave a residual at
+        // or above the new divisor; a zero-tick step must still consume it.
+        for field in [0u32, 1, 2, 3, 40, 80, 65535] {
+            let div = Timer::divisor(field << 13);
+            for mask in [(1u64 << 54) - 1, u64::MAX] {
+                for flags in 0..16u32 {
+                    for residual in [0, div - 1, div, 2 * div + 1] {
+                        for alarm in [97, 100, 103] {
+                            let config = (field << 13) | ((flags & 1) << 31) | (((flags >> 1) & 1) << 30) | (((flags >> 2) & 1) << 29) | (((flags >> 3) & 1) << 10);
+                            let mut a = Timer { config, count: 100, latch: 123, alarm, load: 100, prescale_acc: residual };
+                            let mut b = a;
+                            let (mut got, mut want) = (0, 0);
+                            for ticks in [0, 1, div - 1, 1, div, 3 * div, u32::MAX as u64] {
+                                a.step(ticks, mask, || got += 1);
+                                reference(&mut b, ticks, mask, &mut want);
+                                assert_eq!(state(&a, got), state(&b, want), "field={field} flags={flags} residual={residual} alarm={alarm} ticks={ticks}");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        let mut seed = 0x1234_5678_9abc_def0u64;
+        for i in 0..100_000 {
+            seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1);
+            let mut a = Timer { config: seed as u32, count: seed.rotate_left(7), latch: seed, alarm: seed.rotate_left(23), load: seed.rotate_left(41), prescale_acc: (seed >> 32) & 0x1ffff };
+            let mut b = a;
+            let (mut got, mut want) = (0, 0);
+            let mask = if i & 1 == 0 { u64::MAX } else { (1u64 << 54) - 1 };
+            let ticks = (seed >> 13) & 0x3ffff;
+            a.step(ticks, mask, || got += 1);
+            reference(&mut b, ticks, mask, &mut want);
+            assert_eq!(state(&a, got), state(&b, want), "case={i}");
+        }
     }
 }

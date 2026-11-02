@@ -1,5 +1,5 @@
 {
-  "base": "upstream main 2e36224d (Merge pull request #293)",
+  "base": "upstream main 2e36224d (Merge pull request #293), then main dd4796a0 (Merge pull request #338) merged in; the runs compare main dd4796a0 with this branch",
   "toolchain": "Rust 1.99.1 (58cf8f9c3 2026-10-13), cargo +1.99.1 build --release; Windows 11 (10.0.26200), x86_64",
   "mask_roms": {
     "source": "tools/fetch-rom-elfs.sh roms (espressif/esp-rom-elfs, pinned by SHA-256 in the script)",
@@ -10,15 +10,47 @@
     "build": "arduino-cli 1.5.1, Arduino-ESP32 core 3.3.12 (ESP-IDF v5.5.5); the core's WiFi and HTTPClient libraries",
     "fqbn": "esp32:esp32:esp32s3 (default options: 4 MB quad flash, DIO)",
     "images": {
-      "wifi-net.bin": { "bytes": 997840, "sha256": "6d78df2df8be9cde964da488e6565a485eff7a91657c1fa1d483a372e844d46d" },
-      "bootloader.bin": { "bytes": 19968, "sha256": "66cf6c060fc857c8ea6d6812aab8e9b27448431846426218b6fb81526b31e564", "note": "the core's default S3 bootloader, 4 MB flash header" },
-      "partitions.bin": { "bytes": 3072, "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1" }
+      "wifi-net.bin": {
+        "bytes": 997840,
+        "sha256": "6d78df2df8be9cde964da488e6565a485eff7a91657c1fa1d483a372e844d46d"
+      },
+      "bootloader.bin": {
+        "bytes": 19968,
+        "sha256": "66cf6c060fc857c8ea6d6812aab8e9b27448431846426218b6fb81526b31e564",
+        "note": "the core's default S3 bootloader, 4 MB flash header"
+      },
+      "partitions.bin": {
+        "bytes": 3072,
+        "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+      }
     },
-    "not_committed": "A plain Arduino build of the sketch; not added to the repository."
+    "not_committed": "A plain Arduino build of the sketch; not added to the repository.",
+    "note_runs": "outbound and inbound runs on 2026-11-02"
   },
   "runs": {
     "wifi-net": "esp32sim --rom roms/esp32s3_rev0_rom.elf --boot rom --board none --flash-mb 4 --bootloader bootloader.bin --ptable partitions.bin --app wifi-net.bin --wifi ssid=esp32sim --net nat --console uart0 --debug net --max-seconds 40 --no-dump",
     "resolver": "etc/resolv.conf with `nameserver 8.8.8.8` under the run's current drive (a subst-mapped directory); UDP to the 1.1.1.1 fallback is blocked on this host",
-    "note": "The same command on main 2e36224d and on this branch, twice each (main, branch, branch, main), on a desktop with internet access: the NAT relays the guest's DNS, SNTP and HTTP to the real network through StdTransport. Host addresses and ports in the NAT log are left out of the receipt."
+    "note": "The same command on main 2e36224d and on this branch, twice each (main, branch, branch, main), on a desktop with internet access: the NAT relays the guest's DNS, SNTP and HTTP to the real network through StdTransport. Host addresses and ports in the NAT log are left out of the receipt.",
+    "hostfwd": "esp32sim --rom roms/esp32s3_rev0_rom.elf --boot rom --board none --flash-mb 4 --bootloader bootloader.bin --ptable partitions.bin --app hostfwd-server.bin --wifi ssid=esp32sim --net nat --hostfwd tcp:127.0.0.1:18080-:80 --realtime --console uart0 --max-seconds 40 --no-dump; after the console prints \"listening on 80\", a Python 3.14 client connects to 127.0.0.1:18080 three times in a row and then twice at once, each sending \"hello <tag>\n\" and reading to EOF"
+  },
+  "firmware_inbound": {
+    "sketch": "hostfwd-server.ino (this directory)",
+    "build": "arduino-cli 1.5.1, Arduino-ESP32 core 3.3.12 (ESP-IDF v5.5.5)",
+    "fqbn": "esp32:esp32:esp32s3 (default options)",
+    "images": {
+      "hostfwd-server.bin": {
+        "bytes": 859936,
+        "sha256": "8abf9be6255c123053cc8858e52d42b78a0c2add43817747442d87f124c46683"
+      },
+      "bootloader.bin": {
+        "bytes": 19968,
+        "sha256": "66cf6c060fc857c8ea6d6812aab8e9b27448431846426218b6fb81526b31e564"
+      },
+      "partitions.bin": {
+        "bytes": 3072,
+        "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+      }
+    },
+    "not_committed": "A plain Arduino build of the sketch; not added to the repository."
   }
 }

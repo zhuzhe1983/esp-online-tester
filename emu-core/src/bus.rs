@@ -179,8 +179,9 @@ pub trait Bus {
     fn begin_timing_batch(&mut self, _core: usize, _now: u64) {}
     /// Add an opt-in instruction penalty to the same provisional batch drain.
     fn add_timing_penalty(&mut self, _cycles: u32) {}
-    /// Called after every executed instruction with the cycle estimate; lets the
-    /// SoC advance timers and DMA. Return pending external level-interrupt lines.
+    /// Called by the machine after each scheduling round with the cycles it ran; lets the SoC
+    /// advance timers and DMA (the S3 batches this device time). Non-zero means interrupt lines
+    /// may have moved and must be re-derived.
     fn tick(&mut self, cycles: u32) -> u32 { let _ = cycles; 0 }
 }
 

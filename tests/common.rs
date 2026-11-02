@@ -1,5 +1,5 @@
-//! Shared by the golden-output tests in `cli/tests` and `cli-c3/tests` (included with `#[path]`).
-//! No dependencies, like the rest of the workspace: a small SHA-256 stands in for a crate.
+//! Shared by the firmware tests in `cli/tests`, `esp32c6/tests` and `wasm/tests` (included with `#[path]`).
+//! No dependencies beyond the workspace's own crates: a small SHA-256 stands in for a crate.
 #![allow(dead_code)]
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -8,22 +8,10 @@ use std::process::Command;
 pub fn root() -> PathBuf { Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap().to_path_buf() }
 pub fn golden(name: &str) -> PathBuf { root().join("tests/golden").join(name) }
 
-/// The mask ROM ELF for `chip` (`esp32s3_rev0` / `esp32c3_rev3`): `ESP32SIM_ROM_DIR/<name>.elf`,
-/// else the newest `~/.espressif/tools/esp-rom-elfs/*/<name>.elf`. These ELFs ship with ESP-IDF
-/// (Apache-2.0, espressif/esp-rom-elfs) and are not checked in, so a test that needs one panics
-/// with this path when it is missing — never a silent pass.
-pub fn rom(name: &str) -> PathBuf {
-    let file = format!("{}_rom.elf", name);
-    if let Ok(d) = std::env::var("ESP32SIM_ROM_DIR") { let p = Path::new(&d).join(&file); if p.exists() { return p; } }
-    let mut best = None;
-    if let Ok(home) = std::env::var("HOME") {
-        if let Ok(dir) = std::fs::read_dir(Path::new(&home).join(".espressif/tools/esp-rom-elfs")) {
-            let mut dirs: Vec<PathBuf> = dir.flatten().map(|e| e.path()).collect(); dirs.sort();
-            for d in dirs { let p = d.join(&file); if p.exists() { best = Some(p); } }
-        }
-    }
-    best.unwrap_or_else(|| panic!("{} not found: set ESP32SIM_ROM_DIR or install ESP-IDF (~/.espressif/tools/esp-rom-elfs)", file))
-}
+/// The mask ROM ELF for `chip` (`esp32s3_rev0` / `esp32c3_rev3`), found as the CLI finds it
+/// (`esp_soc::rom`: `ESP32SIM_ROM_DIR`, then ESP-IDF's `~/.espressif/tools/esp-rom-elfs`). These ELFs
+/// are not checked in, so a test that needs one panics when it is missing — never a silent pass.
+pub fn rom(name: &str) -> PathBuf { esp_soc::rom::require(&format!("{}_rom.elf", name)) }
 
 pub struct Run { pub stdout: String, pub stderr: String, pub insns: u64 }
 

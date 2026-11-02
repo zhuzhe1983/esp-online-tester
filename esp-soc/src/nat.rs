@@ -1,5 +1,6 @@
 //! User-mode NAT: guest TCP and UDP flows are relayed through a host transport (`NatTransport`):
-//! natively `StdTransport`, ordinary host sockets.
+//! natively `StdTransport`, ordinary host sockets, which also carries `--hostfwd` inbound TCP to
+//! the station.
 //!
 //! TCP uses bounded buffers in both directions. SYN, data and FIN share one retransmission queue,
 //! so a dropped virtual-air frame cannot discard acknowledged guest bytes or strand a handshake.
@@ -7,12 +8,15 @@
 
 use std::collections::VecDeque;
 use std::io::{self, ErrorKind, Write};
-use std::net::{Ipv4Addr, SocketAddrV4};
+use std::net::{IpAddr, Ipv4Addr, SocketAddr, SocketAddrV4};
 use crate::net::packet::{dns_question, dns_reply, ethernet, ip_packet, transport_checksum, udp_packet, GATEWAY_MAC};
 
-// The host side is a trait; `Nat::new` keeps the std::net sockets.
+// The host side is a trait; `Nat::new` keeps the std::net sockets. The browser build has neither
+// sockets nor threads, so it picks its own transport.
+#[cfg(not(target_arch = "wasm32"))]
 mod std_transport;
 mod transport;
+#[cfg(not(target_arch = "wasm32"))]
 pub use std_transport::StdTransport;
 pub use transport::{Connect, FlowId, NatTransport, Resolve};
 
@@ -23,6 +27,11 @@ const IDLE_CLOSE_US: u64 = 120_000_000;
 const TIME_WAIT_US: u64 = 30_000_000;
 const MAX_FLOWS: usize = 64;
 const UDP_BATCH: usize = 16;
+/// Accepted inbound connections waiting for the station MAC; a new one drops the oldest.
+const MAX_PENDING: usize = 16;
+const GATEWAY_IP: [u8; 4] = [10, 0, 2, 2];
+const STATION_IP: [u8; 4] = [10, 0, 2, 15];
+const INBOUND_PORT_BASE: u16 = 50_000;
 /// Name lookups the transport resolves itself, waiting at once; a new one drops the oldest.
 const MAX_DNS_PENDING: usize = 32;
 /// A lookup the transport has not finished by then is forgotten (the guest has long retried).
@@ -56,8 +65,55 @@ impl Sent {
     fn len(&self) -> usize { self.data.len() + usize::from(self.flags & (SYN | FIN) != 0) }
 }
 
+/// One `--hostfwd` listener: a host TCP port that becomes a SYN to the station.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct HostFwdSpec {
+    pub bind: SocketAddr,
+    pub guest_ip: [u8; 4],
+    pub guest_port: u16,
+}
+
+impl HostFwdSpec {
+    /// `tcp:[hostaddr]:hostport-[guestaddr]:guestport`. Empty host binds loopback; empty guest is 10.0.2.15.
+    pub fn parse(spec: &str) -> Result<Self, String> {
+        let rest = match spec.strip_prefix("tcp:") {
+            Some(rest) => rest,
+            None if spec.starts_with("udp:") => return Err("UDP host forwarding is not supported".into()),
+            None => return Err(format!("invalid --hostfwd {spec:?}: expected tcp:HOST:HOSTPORT-GUEST:GUESTPORT")),
+        };
+        let (left, right) = rest.split_once('-')
+            .ok_or_else(|| format!("invalid --hostfwd {spec:?}: expected tcp:HOST:HOSTPORT-GUEST:GUESTPORT"))?;
+        let (host, host_port) = left.rsplit_once(':')
+            .ok_or_else(|| format!("invalid --hostfwd {spec:?}: missing host port"))?;
+        let (guest, guest_port) = right.rsplit_once(':')
+            .ok_or_else(|| format!("invalid --hostfwd {spec:?}: missing guest port"))?;
+        let host_ip: IpAddr = if host.is_empty() {
+            Ipv4Addr::LOCALHOST.into()
+        } else {
+            host.parse().map_err(|_| format!("invalid --hostfwd host address {host:?}"))?
+        };
+        let host_port: u16 = host_port.parse().map_err(|_| format!("invalid --hostfwd host port {host_port:?}"))?;
+        let guest_ip = if guest.is_empty() {
+            STATION_IP
+        } else {
+            guest.parse::<Ipv4Addr>().map_err(|_| format!("invalid --hostfwd guest address {guest:?}"))?.octets()
+        };
+        let guest_port: u16 = guest_port.parse().map_err(|_| format!("invalid --hostfwd guest port {guest_port:?}"))?;
+        if guest_port == 0 { return Err("--hostfwd guest port must be 1..=65535".into()); }
+        Ok(Self { bind: SocketAddr::new(host_ip, host_port), guest_ip, guest_port })
+    }
+}
+
+/// An inbound connection the transport accepted, waiting for the station MAC.
+struct Pending {
+    id: FlowId,
+    guest_ip: [u8; 4],
+    guest_port: u16,
+}
+
 struct Tcp {
     guest_mac: [u8; 6], guest_ip: [u8; 4], guest_port: u16, dst_ip: [u8; 4], dst_port: u16,
+    inbound: bool,
     state: FlowState,
     guest_write: GuestWrite,
     host_closed: bool,
@@ -203,10 +259,16 @@ pub struct Nat {
     udp: Vec<Udp>,
     dns: VecDeque<DnsQuery>,
     transport: Box<dyn NatTransport>,
+    pending: Vec<Pending>,
+    sta_mac: [u8; 6],
+    next_eph: u16,
     isn: u32,
     pub resolver: [u8; 4],
     pub log: bool,
-    pub tcp_opened: u64, pub tcp_refused: u64, pub udp_flows: u64,
+    pub tcp_opened: u64, pub tcp_refused: u64, pub tcp_accepted: u64,
+    /// `--hostfwd` listeners on the transport (`StdTransport::listen`), for the report line
+    pub hostfwd: u64,
+    pub udp_flows: u64,
     pub udp_evicted: u64, pub udp_send_errors: u64,
     pub bytes_to_host: u64, pub bytes_to_guest: u64,
     /// answers to DNS queries the transport resolved itself
@@ -215,13 +277,21 @@ pub struct Nat {
 
 impl Nat {
     /// The NAT over ordinary host sockets.
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn new(log: bool) -> Self { Self::with_transport(log, Box::new(StdTransport::new())) }
 
     /// The NAT over another host transport.
     pub fn with_transport(log: bool, transport: Box<dyn NatTransport>) -> Self {
-        Self { tcp: Vec::new(), udp: Vec::new(), dns: VecDeque::new(), resolver: transport.resolver(), transport, isn: 0x1000, log,
-            tcp_opened: 0, tcp_refused: 0, udp_flows: 0, udp_evicted: 0, udp_send_errors: 0, bytes_to_host: 0, bytes_to_guest: 0,
+        Self { tcp: Vec::new(), udp: Vec::new(), dns: VecDeque::new(), resolver: transport.resolver(), transport,
+            pending: Vec::new(), sta_mac: [0; 6], next_eph: INBOUND_PORT_BASE, isn: 0x1000, log,
+            tcp_opened: 0, tcp_refused: 0, tcp_accepted: 0, hostfwd: 0,
+            udp_flows: 0, udp_evicted: 0, udp_send_errors: 0, bytes_to_host: 0, bytes_to_guest: 0,
             dns_answers: 0 }
+    }
+
+    /// The station MAC learned from the virtual network; inbound SYNs wait until it is known.
+    pub fn set_station(&mut self, mac: [u8; 6]) {
+        if mac != [0; 6] { self.sta_mac = mac; }
     }
 
     /// Snapshot TCP transport state without polling sockets, retransmitting or expiring flows.
@@ -244,6 +314,7 @@ impl Nat {
     pub fn abort_all(&mut self) {
         for c in &mut self.tcp { c.release(&mut *self.transport, FlowState::Closed, true); }
         self.tcp.clear();
+        for p in self.pending.drain(..) { self.transport.tcp_close(p.id, true); }
         for f in self.udp.drain(..) { self.transport.udp_close(f.id); }
         self.dns.clear();
     }
@@ -318,20 +389,46 @@ impl Nat {
             if let Some(i) = evict { self.tcp.remove(i); }
             self.isn = self.isn.wrapping_add(0x10000);
             self.tcp.push(Tcp { guest_mac: *gmac, guest_ip: *gip, guest_port: sport, dst_ip: *dip, dst_port: dport,
-                state: FlowState::Connecting(id), guest_write: GuestWrite::Open, host_closed: false,
+                inbound: false, state: FlowState::Connecting(id), guest_write: GuestWrite::Open, host_closed: false,
                 our_seq: self.isn, guest_seq: seq.wrapping_add(1), guest_window: window,
                 to_host: VecDeque::new(), unacked: VecDeque::new(), last_activity_us: now_us });
             if self.log { eprintln!("[nat] TCP {}:{} -> {}:{} connecting", ip(gip), sport, ip(dip), dport); }
             return Vec::new();
         }
         let Some(i) = idx else { return Vec::new() };
+        let inbound_accept = {
+            let c = &mut self.tcp[i];
+            c.last_activity_us = now_us;
+            c.inbound && c.handshake_pending() && flags & (SYN | ACK) == SYN | ACK
+        };
+        if inbound_accept {
+            let (reply, gip, gport) = {
+                let c = &mut self.tcp[i];
+                c.acknowledge(ack);
+                c.guest_seq = seq.wrapping_add(1);
+                c.guest_window = window;
+                (vec![c.segment(ACK, &[], c.our_seq)], c.guest_ip, c.guest_port)
+            };
+            self.tcp_opened += 1;
+            self.tcp_accepted += 1;
+            if self.log { eprintln!("[nat] TCP hostfwd -> {}:{} accepted", ip(&gip), gport); }
+            return reply;
+        }
         let c = &mut self.tcp[i];
-        c.last_activity_us = now_us;
-        if flags & RST != 0 { c.release(&mut *self.transport, FlowState::Closed, true); return Vec::new(); }
+        if flags & RST != 0 {
+            // the guest refused a forwarded connection (nothing listening on the port yet)
+            if c.inbound && c.handshake_pending() { self.tcp_refused += 1; }
+            c.release(&mut *self.transport, FlowState::Closed, true);
+            return Vec::new();
+        }
         if c.state == FlowState::TimeWait {
             return if flags & FIN != 0 { vec![c.segment(ACK, &[], c.our_seq)] } else { Vec::new() };
         }
+        if c.inbound && c.handshake_pending() {
+            return if flags & SYN != 0 { vec![c.segment(SYN, &[], c.unacked[0].seq)] } else { Vec::new() };
+        }
         if flags & SYN != 0 {
+            if c.inbound { return vec![c.segment(ACK, &[], c.our_seq)]; }
             return if c.handshake_pending() { vec![c.segment(SYN | ACK, &[], c.unacked[0].seq)] } else { Vec::new() };
         }
         if !matches!(c.state, FlowState::Connected(_)) { return Vec::new(); }
@@ -344,9 +441,51 @@ impl Nat {
         Vec::new()
     }
 
+    fn alloc_eph(&mut self) -> Option<u16> {
+        for _ in 0..1000u16 {
+            let port = self.next_eph;
+            self.next_eph = if self.next_eph == u16::MAX { INBOUND_PORT_BASE } else { self.next_eph + 1 };
+            if port >= INBOUND_PORT_BASE && !self.tcp.iter().any(|c| c.inbound && c.dst_port == port) { return Some(port); }
+        }
+        None
+    }
+
+    /// Take the connections the transport accepted; past `MAX_PENDING` the oldest is closed.
+    fn accept_inbound(&mut self) {
+        while let Some((id, guest_ip, guest_port)) = self.transport.tcp_accept() {
+            self.pending.push(Pending { id, guest_ip, guest_port });
+        }
+        if self.pending.len() > MAX_PENDING {
+            for p in self.pending.drain(0..self.pending.len() - MAX_PENDING) { self.transport.tcp_close(p.id, false); }
+        }
+    }
+
+    fn start_pending(&mut self, now_us: u64, out: &mut Vec<Vec<u8>>) {
+        if self.sta_mac == [0; 6] { return; }
+        let pending = std::mem::take(&mut self.pending);
+        for p in pending {
+            if self.tcp.len() >= MAX_FLOWS {
+                if let Some(i) = self.tcp.iter().position(|c| matches!(c.state, FlowState::TimeWait | FlowState::Closed)) {
+                    self.tcp.remove(i);
+                } else { self.pending.push(p); continue; }
+            }
+            let Some(eph) = self.alloc_eph() else { self.pending.push(p); continue; };
+            self.isn = self.isn.wrapping_add(0x10000);
+            let mut c = Tcp { guest_mac: self.sta_mac, guest_ip: p.guest_ip, guest_port: p.guest_port,
+                dst_ip: GATEWAY_IP, dst_port: eph, inbound: true, state: FlowState::Connected(p.id),
+                guest_write: GuestWrite::Open, host_closed: false, our_seq: self.isn, guest_seq: 0,
+                guest_window: WINDOW, to_host: VecDeque::new(), unacked: VecDeque::new(), last_activity_us: now_us };
+            if self.log { eprintln!("[nat] TCP hostfwd SYN {}:{} -> {}:{}", ip(&GATEWAY_IP), eph, ip(&c.guest_ip), c.guest_port); }
+            out.push(c.send(SYN, Vec::new(), now_us));
+            self.tcp.push(c);
+        }
+    }
+
     /// Pump a bounded amount of host traffic, then retransmit and expire flows.
     pub fn poll(&mut self, now_us: u64) -> Vec<Vec<u8>> {
         let mut out = Vec::new();
+        self.accept_inbound();
+        self.start_pending(now_us, &mut out);
         let transport = &mut *self.transport;
         for c in &mut self.tcp {
             if c.closed() { continue; }

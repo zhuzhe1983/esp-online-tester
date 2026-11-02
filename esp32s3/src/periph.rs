@@ -72,106 +72,8 @@ impl IntMatrix {
 pub const SRC_RSA: usize = 76;
 // ------------------------------------------------------------------ WiFi MAC (blocks 0x33/0x34)
 pub const SRC_WIFI_MAC: usize = 0;
-/// The 802.11 MAC the closed `libpp`/`libnet80211` drive. Undocumented by Espressif; the register
-/// layout matches the classic ESP32's as reverse-engineered by esp32-open-mac (0x3ff73000 there,
-/// 0x60033000 here). Modelled from the blob's own accesses — see docs/wifi-plan.md.
-///   TX: 5 slots; slot n has TX_CONFIG at 0xd1c-8n and PLCP0 at 0xd20-8n; PLCP0 = (desc & 0xfffff) | 0x600000,
-///       bits 31:30 start the transmission. Completion: TXQ_STATE_COMPLETE (0xcc8) bit n, cleared via 0xcc4;
-///       DMA_INT_STATUS (0xc48) bit 7, cleared via 0xc4c.
-///   RX: descriptor ring base at 0x088 (dma_list_item: size:12 length:12 _:6 has_data:1 owner:1, packet, next).
-pub struct WifiMac { pub ram: RegRam, pub ram2: RegRam, pub log: bool,
-                     /// TSF: 1 MHz counter (offset applied to the CPU cycle clock), latched into WDEV 0x18/0x1c
-                     pub tsf_offset: i64, pub tsf_latched: u64, pub now_cycles: u64,
-                     /// interrupt events (0xc3c; cleared by writing 0xc40): bit 7 = TX complete, bits 14/24 = RX data (libpp wDev_ProcessFiq)
-                     pub events: u32, pub pwr_events: u32,
-                     /// per-queue completion bitmap (0xca8 bits 10:0, cleared via 0xca4)
-                     pub txq_complete: u32, pub txq_error: u32,
-                     pub tx_pending: Vec<(u8, u32)>,
-                     /// RX descriptor ring: base written by the driver (0x088), the descriptor the hardware fills next, the last one filled
-                     pub rx_base: u32, pub rx_next: u32, pub rx_last: u32,
-                     /// `BASE_RX_DSCR` was written since the last frame went in: the driver may have handed over a
-                     /// fresh list. A stopped receive DMA restarts there (`wifi_rx_deliver`); a running one keeps
-                     /// its pointer, because software rewrites the base on every recycle.
-                     pub rx_handover: bool,
-                     /// the access point, the network and the counts, shared with the other chips
-                     pub link: crate::wifi::StationLink }
-impl Default for WifiMac { fn default() -> Self { Self::new() } }
-
-impl WifiMac {
-    pub fn new() -> Self { WifiMac { ram: RegRam::new(), ram2: RegRam::new(), log: false, tsf_offset: 0, tsf_latched: 0, now_cycles: 0, rx_base: 0, rx_next: 0, rx_last: 0, rx_handover: false, events: 0, pwr_events: 0, txq_complete: 0, txq_error: 0, tx_pending: Vec::new(), link: Default::default() } }
-    pub fn irq(&self) -> bool { self.events != 0 || self.pwr_events != 0 }
-    /// TX queue n has its PLCP0 register at 0xd08 - 8n (hal_mac_txq_enable: (0x0c0067a1 - n) << 3).
-    fn txq_of(off: u32) -> Option<u8> { if off <= 0xd08 && (0xd08 - off).is_multiple_of(8) && (0xd08 - off) / 8 < 16 { Some(((0xd08 - off) / 8) as u8) } else { None } }
-    pub fn read(&mut self, block: u32, off: u32) -> u32 {
-        let v = match (block, off) {
-            (0x33, 0xd14) => self.ram.read(off) | 1,                 // hal_init: writes bit 1, waits for bit 0
-            (0x33, 0xc3c) => self.events,
-            (0x33, 0x088) => self.rx_base & 0xf_ffff, (0x33, 0x08c) => self.rx_next & 0xf_ffff, (0x33, 0x090) => self.rx_last,
-            (0x33, 0xca8) => self.txq_error & 0x7ff,                 // txq state types 0/1 (errors/collisions)
-            (0x33, 0xcb0) => self.txq_complete & 0xf,                    // txq state type 2: completed queues
-            (0x35, 0x118) => self.pwr_events,
-            (0x35, 0x18) => self.tsf_latched as u32,
-            (0x35, 0x1c) => (self.tsf_latched >> 32) as u32,
-            (0x35, 0x128) => self.ram2.read(off),
-            (0x33, _) => self.ram.read(off),
-            (_, _) => self.ram2.read(off),
-        };
-        if self.log { eprintln!("[wifi] rd {:#x}+{:#05x} -> {:#010x}", block, off, v); }
-        v
-    }
-    pub fn write(&mut self, block: u32, off: u32, v: u32) {
-        if self.log { eprintln!("[wifi] wr {:#x}+{:#05x} <- {:#010x}", block, off, v); }
-        match (block, off) {
-            (0x33, 0xc40) => { self.events &= !v; }
-            (0x33, 0x088) => {
-                // BASE_RX_DSCR: the head of the receive list. Software rewrites it whenever it recycles
-                // descriptors, so this must not rewind a running DMA — doing so re-delivers into descriptors
-                // the stack has already moved past. It is also how software hands the DMA a fresh list, and
-                // `wifi_rx_deliver` takes it there only once the DMA has stopped, because the descriptor it
-                // wants is not usable (Arduino-ESP32 arms four at a time and writes the base of the
-                // next list while the last frame of the current one is still being processed).
-                // Inferred from the 5.1 blob's register writes under emulation, not from a public header:
-                // the latch is cleared by the next frame that goes in, so the rule assumes the driver
-                // publishes the base after the current list is exhausted (see docs/decisions.md).
-                self.rx_base = DMA_ADDR_BASE | (v & 0xf_ffff);
-                self.rx_handover = true;
-                if self.rx_next == 0 { self.rx_next = self.rx_base; }
-                self.ram.write(off, v);
-            }
-            (0x33, 0x084) => {
-                // DSCR_RELOAD: software has appended recycled descriptors and asks the hardware to
-                // re-read the chain.
-                // Measured against the blob: rewinding here makes every second frame land in a
-                // descriptor the stack has moved past, and it is recycled instead of indicated. The
-                // hardware keeps its own pointer; base only matters once the ring has run dry.
-                if v & 1 != 0 && self.rx_next == 0 { self.rx_next = self.rx_base; }
-                self.ram.write(off, v & !1);
-            }
-            (0x35, 0x11c) => { self.pwr_events &= !v; }
-            (0x35, 0x0c) => {
-                let now = (self.now_cycles / (CPU_HZ / 1_000_000)) as i64;
-                if v & 3 != 0 { self.tsf_latched = (now + self.tsf_offset) as u64; }                              // latch
-                if v & (1 << 4) != 0 { let set = (self.ram2.read(0x10) as u64) | ((self.ram2.read(0x14) as u64) << 32); self.tsf_offset = set as i64 - now; }   // load
-                self.ram2.write(off, v);
-            }
-            (0x33, 0xca4) => { self.txq_error &= !(v & 0x7ff); }
-            (0x33, 0xcac) => { self.txq_complete &= !(v & 0xf); }
-            (0x33, o) if Self::txq_of(o).is_some() => {                                   // MAC_TX_PLCP0[queue]
-                self.ram.write(off, v);
-                if v & (1 << 31) != 0 { let q = Self::txq_of(o).unwrap(); self.tx_pending.push((q, DMA_ADDR_BASE | (v & 0xf_ffff))); }
-            }
-            (0x33, _) => self.ram.write(off, v),
-            (_, _) => self.ram2.write(off, v),
-        }
-    }
-    /// Hardware finished sending the frame in `queue`.
-    pub fn tx_done(&mut self, queue: u8) {
-        self.txq_complete |= 1 << queue; self.events |= 1 << 7;
-        let o = 0xd08 - 8 * queue as u32; let v = self.ram.read(o); self.ram.write(o, v & !(3 << 30));
-        // result word (hal_mac_get_txq_pmd): bits 15:12 = status code, 0 = success (3 would trap the blob)
-        let r = 0x320 - 76 * queue as u32; let w = self.ram2.read(r); self.ram2.write(r, w & !(0xf << 12));
-    }
-}
+/// The 802.11 MAC, shared with the C3 (`esp_soc::wifi::WifiMac`).
+pub use crate::wifi::WifiMac;
 
 // ------------------------------------------------------------------ PCNT (pulse counter)
 /// Four units, two channels each: a signal input counts on rising/falling edges (mode 0 ignore,
@@ -370,13 +272,6 @@ impl Device for IntMatrix {
     fn read(&mut self, off: u32) -> u32 { IntMatrix::read(self, off) }
     fn write(&mut self, off: u32, v: u32) -> WriteEffect { IntMatrix::write(self, off, v); WriteEffect::INTMAP }
 }
-/// The MAC spans blocks 0x33..0x35; the table mounts it three times with `delta` = block index << 12.
-impl Device for WifiMac {
-    fn read(&mut self, off: u32) -> u32 { WifiMac::read(self, 0x33 + (off >> 12), off & 0xfff) }
-    fn write(&mut self, off: u32, v: u32) -> WriteEffect { WifiMac::write(self, 0x33 + (off >> 12), off & 0xfff, v); WriteEffect::NONE }
-    fn irq_sources(&self) -> u64 { self.irq() as u64 }
-    fn debug(&mut self, on: bool) { self.log = on; }
-}
 impl Device for Pcnt {
     fn read(&mut self, off: u32) -> u32 { Pcnt::read(self, off) }
     fn write(&mut self, off: u32, v: u32) -> WriteEffect { Pcnt::write(self, off, v); WriteEffect::NONE }
@@ -527,7 +422,7 @@ impl Peripherals {
             usb: UsbSerialJtag::new(CPU_HZ), uart: [Uart::new(UartLayout::S3), Uart::new(UartLayout::S3), Uart::new(UartLayout::S3)], systimer: Systimer::new(),
             timg: [TimerGroup::new(), TimerGroup::new()], intmatrix: IntMatrix::new(), gpio: Gpio::new(), ledc: Ledc::new(LedcLayout::S3), mcpwm: [Mcpwm::new(160, 9), Mcpwm::new(166, 9)], rtc: RtcCntl::new(),
             efuse: Efuse::new(mac), system: SystemRegs::new(0x30), extmem: Extmem::new(), spi0: SpiMem::new(false), spi1: SpiMem::new(true),
-            i2c: [crate::i2c::I2c::new(), crate::i2c::I2c::new()], lcd_cam: LcdCam::new(), spi2: GpSpi::new(), spi3: GpSpi::with_host(3), pcnt: Pcnt::new(), wifi: WifiMac::new(), fe: FeIq { word: 0 },
+            i2c: [crate::i2c::I2c::new(), crate::i2c::I2c::new()], lcd_cam: LcdCam::new(), spi2: GpSpi::new(), spi3: GpSpi::with_host(3), pcnt: Pcnt::new(), wifi: WifiMac::new(CPU_HZ), fe: FeIq { word: 0 },
             aes: Aes::new(), rsa: Rsa::new(), sha: Sha::new(), wdev: Wdev::new(), i2c_mst: I2cMst::new(), gdma: Gdma::new(), i2s0: I2s::new(CPU_HZ), i2s1: I2s::new(CPU_HZ), rmt: Rmt::new(CPU_HZ),
             io_mux: RegRam::new(), misc: Misc::new(), fake_reads: std::env::var("ESP_EMU_FAKE_READ").ok().map(|v| v.split(',').filter_map(|e| { let mut p = e.split(':'); let a = u32::from_str_radix(p.next()?.trim_start_matches("0x"), 16).ok()?; let o = u32::from_str_radix(p.next().unwrap_or("0").trim_start_matches("0x"), 16).ok()?; let m = u32::from_str_radix(p.next().unwrap_or("ffffffff").trim_start_matches("0x"), 16).ok()?; Some((a, (o, m))) }).collect()).unwrap_or_default(),
             clock: Self::new_clock(),

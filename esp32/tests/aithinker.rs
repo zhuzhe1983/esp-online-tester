@@ -1,8 +1,8 @@
 //! Board-only qualification. No I2S, DMA or guest capture claim.
 use emu_core::Bus;
 use esp32::bus::SocBus;
-use esp_periph::i2c::INT_NACK;
-use esp_soc::picture::Picture;
+use esp_periph::i2c::{INT_NACK, INT_TIMEOUT};
+use esp_soc::picture::{Jpeg, JpegError, Picture};
 use std::sync::Arc;
 
 fn put(bus: &mut SocBus, addr: u32, value: u32) { bus.write32(addr, value).unwrap(); }
@@ -17,17 +17,22 @@ fn board() -> SocBus {
     route(&mut bus, 26, 27);
     bus
 }
-fn route(bus: &mut SocBus, sda: u8, scl: u8) {
-    // IDF v5.5.4 gpio_sig_map.h I2CEXT0 29/30; io_mux_reg.h pad offsets.
-    for (pin, signal) in [(sda, 30), (scl, 29)] {
+fn route(bus: &mut SocBus, sda: u8, scl: u8) { route_on(bus, 0, sda, scl) }
+fn route_on(bus: &mut SocBus, port: usize, sda: u8, scl: u8) {
+    // IDF v5.5.4 gpio_sig_map.h I2CEXT0 SCL/SDA 29/30, I2CEXT1 95/96;
+    // io_mux_reg.h pad offsets.
+    let (scl_signal, sda_signal) = [(29, 30), (95, 96)][port];
+    for (pin, signal) in [(sda, sda_signal), (scl, scl_signal)] {
         let mux = match pin { 26 => 0x28, 27 => 0x2c, _ => unreachable!() };
         put(bus, 0x3ff4_9000 + mux, (2 << 12) | (1 << 9) | (1 << 8));
         put(bus, 0x3ff4_4130 + 4 * signal, (1 << 7) | u32::from(pin));
         put(bus, 0x3ff4_4530 + 4 * u32::from(pin), signal);
     }
 }
-fn transfer(bus: &mut SocBus, bytes: &[u8], read: bool) -> (u32, u8) {
-    let base = 0x3ff5_3000;
+fn transfer(bus: &mut SocBus, bytes: &[u8], read: bool) -> (u32, u8) { transfer_on(bus, 0, bytes, read) }
+fn transfer_on(bus: &mut SocBus, port: usize, bytes: &[u8], read: bool) -> (u32, u8) {
+    // IDF v5.5.4 reg_base.h: DR_REG_I2C_EXT_BASE 0x3ff53000, DR_REG_I2C1_EXT_BASE 0x3ff67000.
+    let base = [0x3ff5_3000, 0x3ff6_7000][port];
     put(bus, base + 0x24, u32::MAX);
     put(bus, base + 0x18, 3 << 12);
     put(bus, base + 0x1c, if read { 0x61 } else { 0x60 });
@@ -64,13 +69,22 @@ fn clock(bus: &mut SocBus) {
     bus.periph.tick(64);
 }
 fn picture(rgb: [u8; 3]) -> Picture { Picture { w: 1, h: 1, rgb: rgb.to_vec() } }
+/// Structurally valid baseline JPEG (SOI, SOF0, SOS, entropy byte, EOI); never decoded.
+fn jpeg(w: u16, h: u16, tag: u8) -> Vec<u8> {
+    let mut d = vec![0xff, 0xd8, 0xff, 0xc0, 0, 11, 8];
+    d.extend(h.to_be_bytes()); d.extend(w.to_be_bytes());
+    d.extend([1, 1, 0x11, 0, 0xff, 0xda, 0, 8, 1, 1, 0, 0, 63, 0, tag, 0xff, 0xd9]);
+    d
+}
+fn set_jpeg(bus: &mut SocBus, bytes: &[u8]) -> Result<(), JpegError> { bus.board.set_camera_jpeg(Jpeg::parse(bytes.to_vec()).unwrap()) }
 
 #[test]
 fn unsupported_sensor_output_warns_once() {
     const CHILD: &str = "ESP32SIM_CAMERA_WARNING_CHILD";
     if std::env::var_os(CHILD).is_some() {
         let mut bus = board(); configure(&mut bus); clock(&mut bus);
-        for mode in [0x10, 0x10, 8, 0x10, 0x18] {
+        // RAW10 and JPEG+RGB565 are unsupported; JPEG without host input is no frame.
+        for mode in [0x18, 0x04, 8, 0x18, 0x10, 0x12, 0x10, 0x05] {
             write(&mut bus, 0xda, mode);
             assert_eq!(bus.camera_frame().is_some(), mode == 8);
         }
@@ -82,7 +96,8 @@ fn unsupported_sensor_output_warns_once() {
     assert!(output.status.success());
     let stderr = String::from_utf8(output.stderr).unwrap();
     assert_eq!(stderr.matches("[camera] unsupported sensor output").count(), 1, "{stderr}");
-    assert!(stderr.contains("raw RGB565/YUV422 in DRAM, not JPEG/PSRAM CameraWebServer"), "{stderr}");
+    assert!(stderr.contains("IMAGE_MODE 0x18; classic ESP32-CAM supports raw RGB565/YUV422 and host-encoded JPEG"), "{stderr}");
+    assert_eq!(stderr.matches("[camera] JPEG output 4x4 has no host JPEG of that size").count(), 1, "{stderr}");
 }
 
 #[test]
@@ -91,8 +106,8 @@ fn aithinker_selection_and_only_sensor_attachment() {
         let mut board = esp32::board::make_board(alias).unwrap();
         assert_eq!(board.name(), "ai-thinker-cam");
         let devices = board.i2c_devices();
-        assert_eq!(devices.len(), 1);
-        assert_eq!((devices[0].0, devices[0].1, devices[0].2.pins()), (0, 0x30, Some((26, 27))));
+        let attached: Vec<_> = devices.iter().map(|(port, address, device)| (*port, *address, device.pins())).collect();
+        assert_eq!(attached, [(0, 0x30, Some((26, 27))), (1, 0x30, Some((26, 27)))]);
     }
     assert_eq!(esp32::board::aithinker::PIN_RESET, None);
     assert!(esp32::board::make_board("waveshare-cam").is_none());
@@ -114,6 +129,32 @@ fn aithinker_sccb_requires_both_physical_wires() {
     assert_eq!(read(&mut bus, 0x0a), 0x26);
 }
 #[test]
+fn aithinker_sccb_is_one_sensor_on_either_controller() {
+    // SCCB_Init uses CONFIG_SCCB_HARDWARE_I2C_PORT (default I2C1); C8
+    // sets PORT0. Either controller routed to GPIO26/27 reaches the sensor.
+    let read_on = |bus: &mut SocBus, port, reg| {
+        assert_eq!(transfer_on(bus, port, &[reg], false).0 & INT_NACK, 0);
+        let (status, byte) = transfer_on(bus, port, &[], true);
+        assert_eq!(status & INT_NACK, 0);
+        byte
+    };
+    let mut bus = board();
+    // I2C1 not routed (its SDA/SCL inputs are not high): it times out.
+    assert_ne!(transfer_on(&mut bus, 1, &[0x0a], false).0 & INT_TIMEOUT, 0);
+    route_on(&mut bus, 1, 26, 27);
+    assert_eq!(transfer_on(&mut bus, 1, &[0xff, 1], false).0 & INT_NACK, 0);
+    assert_eq!(read_on(&mut bus, 1, 0x0a), 0x26);
+    // The bank selected and a register written through I2C1 are what I2C0 sees.
+    assert_eq!(transfer_on(&mut bus, 1, &[0xff, 0], false).0 & INT_NACK, 0);
+    assert_eq!(transfer_on(&mut bus, 1, &[0xda, 0x10], false).0 & INT_NACK, 0);
+    route(&mut bus, 26, 27);
+    assert_eq!(read_on(&mut bus, 0, 0xda), 0x10);
+    // A powered-down sensor answers neither controller.
+    put(&mut bus, 0x3ff4_4014, 1); // OUT1_W1TS: PWDN high
+    route_on(&mut bus, 1, 26, 27);
+    assert_ne!(transfer_on(&mut bus, 1, &[0x0a], false).0 & INT_NACK, 0);
+}
+#[test]
 fn aithinker_host_and_register_updates_invalidate_shared_cache() {
     let mut bus = board(); configure(&mut bus); clock(&mut bus);
     assert_eq!(*bus.camera_frame().unwrap().2, [0; 32]);
@@ -133,6 +174,49 @@ fn aithinker_host_and_register_updates_invalidate_shared_cache() {
     assert!(bus.camera_frame().is_none(), "JPEG is not fabricated as raw bytes");
     write(&mut bus, 0xda, 8);
     assert_eq!(*bus.camera_frame().unwrap().2, [7, 224].repeat(32));
+}
+#[test]
+fn aithinker_jpeg_output_is_host_jpeg_verbatim_at_configured_size() {
+    let mut bus = board(); configure(&mut bus); clock(&mut bus);
+    bus.board.set_camera_picture(picture([255, 0, 0])).unwrap();
+    let a = jpeg(4, 4, 1);
+    assert_eq!(set_jpeg(&mut bus, &a), Ok(()));
+    assert!(!bus.board.camera_frame_is_jpeg());
+    assert_eq!(*bus.camera_frame().unwrap().2, [248, 0].repeat(16), "raw output ignores host JPEG");
+    // ov2640_settings_jpeg3: IMAGE_MODE_JPEG_EN | IMAGE_MODE_HREF_VSYNC.
+    for mode in [0x12, 0x10] {
+        write(&mut bus, 0xda, mode);
+        assert!(bus.board.camera_frame_is_jpeg());
+        let (w, h, frame) = bus.camera_frame().unwrap();
+        assert_eq!((w, h, &*frame), (4, 4, &a));
+    }
+    let first = bus.camera_frame().unwrap().2;
+    assert_eq!(set_jpeg(&mut bus, &jpeg(8, 4, 2)), Err(JpegError::SizeMismatch { jpeg: (8, 4), sensor: (4, 4) }));
+    assert!(Arc::ptr_eq(&first, &bus.camera_frame().unwrap().2), "refusal keeps the previous JPEG");
+    let b = jpeg(4, 4, 3);
+    assert_eq!(set_jpeg(&mut bus, &b), Ok(()));
+    assert_eq!(*bus.camera_frame().unwrap().2, b);
+    // A new geometry needs a matching JPEG; nothing is scaled or fabricated.
+    write(&mut bus, 0x5a, 2);
+    assert!(bus.camera_frame().is_none());
+    assert_eq!(set_jpeg(&mut bus, &b), Err(JpegError::SizeMismatch { jpeg: (4, 4), sensor: (8, 4) }));
+    let c = jpeg(8, 4, 4);
+    assert_eq!(set_jpeg(&mut bus, &c), Ok(()));
+    assert_eq!(*bus.camera_frame().unwrap().2, c);
+    write(&mut bus, 0xda, 8);
+    assert!(!bus.board.camera_frame_is_jpeg());
+    assert_eq!(*bus.camera_frame().unwrap().2, [248, 0].repeat(32));
+}
+#[test]
+fn aithinker_unconfigured_sensor_accepts_jpeg_checked_at_delivery() {
+    for (size, delivered) in [((4, 4), true), ((8, 4), false), ((4, 8), false)] {
+        let mut bus = board(); clock(&mut bus);
+        let bytes = jpeg(size.0, size.1, 5);
+        assert_eq!(set_jpeg(&mut bus, &bytes), Ok(()), "no configured size yet");
+        configure(&mut bus);
+        write(&mut bus, 0xda, 0x12);
+        assert_eq!(bus.camera_frame().map(|f| (f.0, f.1, f.2.to_vec())), delivered.then_some((4, 4, bytes)));
+    }
 }
 #[test]
 fn aithinker_grayscale_requests_keep_yuv_wire_bytes() {

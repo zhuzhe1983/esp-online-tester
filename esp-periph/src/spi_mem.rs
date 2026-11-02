@@ -79,7 +79,15 @@ pub fn flash_jedec(octal: bool, bytes: usize) -> [u8; 3] {
 }
 
 impl SpiMem {
-    pub fn new(is_spi1: bool) -> Self { SpiMem { has_psram: true, addr_msb_aligned: false, regs: RegRam::new(), dirty: Vec::new(), w: [0; 16], pending_cmd: 0, status: 0x200, jedec: [0x20, 0x40, 0x17], is_spi1, log: false , psram_mr: [0x09, 0x0d, 0x8b, 0x00, 0x20, 0, 0, 0, 0x03], octal_flash: false, flash_cr2: 0, classic_quad: None } }
+    pub fn new(is_spi1: bool) -> Self {
+        let mut s = SpiMem { has_psram: true, addr_msb_aligned: false, regs: RegRam::new(), dirty: Vec::new(), w: [0; 16], pending_cmd: 0, status: 0x200, jedec: [0x20, 0x40, 0x17], is_spi1, log: false , psram_mr: [0x09, 0x0d, 0x8b, 0x00, 0x20, 0, 0, 0, 0x03], octal_flash: false, flash_cr2: 0, classic_quad: None };
+        // SPI1 comes out of reset with a command phase: USER.USR_COMMAND = 1 and USER2.USR_COMMAND_BITLEN = 7
+        // (IDF v5.5.4 components/soc/esp32c3/register/soc/spi_mem_reg.h:328,438; the S3 and C6 headers agree).
+        // The C3 ROM's `esp_rom_spiflash_read` only read-modify-writes the other USER bits and the low half of
+        // USER2, so it relies on these to send an ordinary 8-bit read command.
+        if is_spi1 { s.regs.write(0x18, 1 << 31); s.regs.write(0x20, 7 << 28); }
+        s
+    }
     /// The octal PSRAM on CS1 is `bytes` long, and MR2 says so. Device id and good-die bits keep
     /// their values. A size the field cannot encode leaves MR2 as it was (the reset value's
     /// 64 Mbit) and returns false.
@@ -438,6 +446,26 @@ mod tests {
         // Right-aligned decoding reads 0x200000ff, past a 4 MiB array.
         let mut spi = SpiMem::new(true);
         assert_eq!(user_read(&mut spi, &mut flash, 24, 0x03), 0xffffffff);
+    }
+
+    /// The C3 mask ROM's `esp_rom_spiflash_read` (0x4004df94 in esp32c3_rev3_rom.elf) never writes
+    /// USR_COMMAND: it read-modify-writes USER (clears bit 27, ORs in 0x70000000 for DIO) and the low
+    /// half of USER2 (0xbb), so the command phase comes from the SPI1 reset values (IDF v5.5.4
+    /// components/soc/esp32c3/register/soc/spi_mem_reg.h:328,438: USR_COMMAND 1, USR_COMMAND_BITLEN 7).
+    #[test]
+    fn rom_style_dio_read_gets_its_command_phase_from_the_reset_values() {
+        let mut flash = vec![0xffu8; 0x400000];
+        flash[0x1000..0x1004].copy_from_slice(&[0x11, 0x22, 0x33, 0x44]);
+        let mut spi = SpiMem::new(true);
+        spi.write(0x34, 2);                                       // CS0: the flash
+        let user = spi.read(0x18); spi.write(0x18, (user & !(1 << 27)) | 0x7000_00c0);
+        let user2 = spi.read(0x20); spi.write(0x20, (user2 & 0xffff_0000) | 0xbb);
+        spi.write(0x1c, 23 << 26);                                // USER1: 24-bit address
+        spi.write(0x04, 0x1000);
+        spi.write(0x28, 31);                                      // MISO_DLEN: 32 bits
+        spi.write(0, 1 << 18);
+        spi.execute(&mut flash, &mut []);
+        assert_eq!(spi.w[0], 0x44332211);
     }
 
     #[test]

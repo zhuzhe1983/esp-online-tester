@@ -22,6 +22,12 @@ pub fn symbol_bit(sym: u32) -> bool {
 
 // ------------------------------------------------------------------ RMT (TX channels 0-3) — enough for WS2812 via the legacy driver
 pub const RMT_MEM_WORDS: usize = 48;
+/// Longest transmission handed to the board: 4096 WS2812 pixels, the S3's RMT DMA limit
+/// (`esp32s3/src/bus/dma.rs`). A wrap-mode or DMA stream with no end marker never completes, so
+/// capture stops one bit past the limit to keep host memory bounded. A longer transmission still
+/// completes and raises its interrupt, but does not reach the board: a truncated frame would
+/// light the wrong LEDs.
+pub const MAX_FRAME_BITS: usize = 24 * 4096;
 #[derive(Clone, Default)]
 pub struct RmtTxCh {
     pub conf0: u32, pub tx_lim: u32, pub carrier: u32,
@@ -134,7 +140,8 @@ impl Rmt {
                 c.running = false;
                 self.int_raw |= 1 << n;
                 self.tx_count += 1;
-                self.done.push((n, std::mem::take(&mut c.bits)));
+                let bits = std::mem::take(&mut c.bits);
+                if bits.len() <= MAX_FRAME_BITS { self.done.push((n, bits)); }
                 break;
             }
             // No-wrap exhaustion is an empty-memory error, not an end marker
@@ -156,7 +163,7 @@ impl Rmt {
                 c.end_pending = true;
                 continue;
             }
-            c.bits.push(ws2812_bit!(d0, l0, d1, l1));
+            if c.bits.len() <= MAX_FRAME_BITS { c.bits.push(ws2812_bit!(d0, l0, d1, l1)); }
             c.acc_cycles -= (d0 + d1) * cycles_per_tick;
             c.rd += 1;
             c.since_thr += 1;
@@ -280,5 +287,29 @@ mod dma_tests {
         r.write(0x2c, 0);
         assert_eq!(r.dma_fifo_len(), 0);
         assert!(r.dma_fifo.is_none());
+    }
+    #[test]
+    fn wrap_mode_without_end_marker_keeps_capture_bounded() {
+        let mut r = Rmt::new(160_000_000);
+        for w in 0..RMT_MEM_WORDS as u32 { r.write(0x800 + w * 4, 0x8000 | 1 | (1 << 16)); }   // 1-tick high, 1-tick low, never an end marker
+        r.write(0x20, (1 << 16) | (1 << 8) | (1 << 4) | 1);   // one block, divider 1, MEM_TX_WRAP_EN, TX_START
+        for _ in 0..100 { r.tick(1 << 20); }
+        assert!(r.ch[0].running, "wrap mode with no end marker transmits forever");
+        assert_eq!(r.ch[0].bits.len(), MAX_FRAME_BITS + 1);
+    }
+    /// 4096 pixels over TX3 DMA reach the board whole; one bit more completes but is not delivered.
+    #[test]
+    fn dma_frame_at_the_limit_is_delivered_and_a_longer_one_is_not() {
+        for (bits, delivered) in [(24 * 4096, true), (24 * 4096 + 1, false)] {
+            let mut r = RmtDma::new(240_000_000);
+            r.write(0x2c, (1 << 25) | (1 << 8) | 1);   // DMA_ACCESS_EN, divider 1, TX_START
+            r.dma_fifo().extend(std::iter::repeat_n(0x8000 | 1 | (1 << 16), bits));
+            r.dma_fifo().push_back(0);   // end marker
+            for _ in 0..1000 { if !r.ch[3].running { break; } r.tick(1 << 16); }
+            assert!(!r.ch[3].running);
+            assert_eq!(r.int_raw & (1 << 3), 1 << 3, "the transmission completes either way");
+            assert_eq!(r.tx_count, 1);
+            assert_eq!(r.done.first().map(|(_, b)| b.len()), delivered.then_some(bits));
+        }
     }
 }

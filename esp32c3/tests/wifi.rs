@@ -57,7 +57,7 @@ fn aes_runs_through_gdma() {
         (16, 1),
         "16 bytes, SUC_EOF, owner back with the CPU"
     );
-    assert!(!m.bus.periph.gdma.state.inp[0].running && !m.bus.periph.gdma.state.out[0].running);
+    assert!(!m.bus.periph.gdma.gdma.inp[0].running && !m.bus.periph.gdma.gdma.out[0].running);
 }
 
 #[test]
@@ -94,14 +94,14 @@ fn gdma_interrupt_bits_and_mmio_observers() {
         let base = 0x6003f000 + ch as u32 * 16;
         for (input, bits) in [(true, &[0, 1, 2, 5, 7, 9, 10][..]), (false, &[3, 4, 6, 8, 11, 12][..])] {
             for (logical, bit) in bits.iter().enumerate() {
-                p.gdma.state.inp[ch].int_raw = if input { 1 << logical } else { 0 };
-                p.gdma.state.out[ch].int_raw = if input { 0 } else { 1 << logical };
+                p.gdma.gdma.inp[ch].int_raw = if input { 1 << logical } else { 0 };
+                p.gdma.gdma.out[ch].int_raw = if input { 0 } else { 1 << logical };
                 p.write32(base + 8, 0);
                 assert_eq!(p.read32(base), 1 << bit);
                 assert_eq!(p.read32(base + 4), 0);
                 p.write32(base + 8, 1 << bit);
-                assert_eq!(p.gdma.state.inp[ch].int_ena, if input { 1 << logical } else { 0 });
-                assert_eq!(p.gdma.state.out[ch].int_ena, if input { 0 } else { 1 << logical });
+                assert_eq!(p.gdma.gdma.inp[ch].int_ena, if input { 1 << logical } else { 0 });
+                assert_eq!(p.gdma.gdma.out[ch].int_ena, if input { 0 } else { 1 << logical });
                 assert_eq!(p.read32(base + 8), 1 << bit);
                 assert_eq!(p.read32(base + 4), 1 << bit);
                 assert_ne!(p.source_status()[1] & (1 << (12 + ch)), 0);

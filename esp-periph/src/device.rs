@@ -20,7 +20,7 @@ impl std::ops::BitOr for WriteEffect { type Output = WriteEffect; fn bitor(self,
 
 /// A peripheral: a 4 KiB register block (or a slice of one), optionally clocked, optionally an
 /// interrupt source. The chip's `DeviceSet` table says where it sits and what its sources are
-/// numbered; the model itself knows nothing about the chip.
+/// numbered; the model itself knows nothing about where it is mounted.
 pub trait Device {
     fn read(&mut self, off: u32) -> u32;
     fn write(&mut self, off: u32, v: u32) -> WriteEffect;

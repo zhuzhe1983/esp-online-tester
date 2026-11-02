@@ -153,6 +153,10 @@ impl esp_soc::SocBus for SocBus {
         self.periph.rtc.0.ram.write(0x8c, 0);
         self.periph.rtc.0.reset_cause = cause;
         self.attach_board_devices();
+        for area in self.debug.iter() {
+            esp_periph::Dispatch::debug(&mut self.periph, area, true);
+        }
+        self.periph.misc.log_all = self.debug.has("mmio");
         cause
     }
     fn sw_reset(&self) -> bool {

@@ -601,20 +601,8 @@ pub struct AhbDma { pub gdma: Gdma, link_addr: [[u32; 3]; 2], ram: RegRam }
 impl Default for AhbDma { fn default() -> Self { Self::new() } }
 impl AhbDma {
     pub fn new() -> Self { AhbDma { gdma: Gdma::new(), link_addr: [[0; 3]; 2], ram: RegRam::new() } }
-    /// The shared model's offset, as `GdmaC6::map` (esp32c6/src/periph.rs) maps the C6's layout;
-    /// None for the LINK registers, which `write` translates.
-    fn map(off: u32) -> Option<u32> {
-        const T: [u32; 13] = [0x00, 0x04, 0x18, 0x1c, 0x20, 0x24, 0x28, 0x2c, 0x30, 0x34, 0x38, 0x44, 0x48];
-        if off < 0x30 { return Some((off / 0x10) * 0xc0 + 0x08 + off % 0x10); }
-        if off < 0x60 { let o = off - 0x30; return Some((o / 0x10) * 0xc0 + 0x68 + o % 0x10); }
-        if off == 0x64 { return Some(0x3c8); }
-        if (0x70..0x70 + 3 * 0xc0).contains(&off) {
-            let rel = off - 0x70; let (n, k) = (rel / 0xc0, rel % 0xc0);
-            if k <= 0x30 { return Some(n * 0xc0 + T[(k / 4) as usize]); }
-            if (0x60..=0x90).contains(&k) { return Some(n * 0xc0 + 0x60 + T[((k - 0x60) / 4) as usize]); }
-        }
-        None
-    }
+    /// The shared model's offset in the C6 layout; None for the LINK registers, which `write` translates.
+    fn map(off: u32) -> Option<u32> { esp_periph::gdma::GdmaAhb::map_c6(off) }
     /// (out, channel) of a LINK register
     fn link(off: u32) -> Option<(bool, usize)> {
         if !(0x70..0x70 + 3 * 0xc0).contains(&off) { return None; }

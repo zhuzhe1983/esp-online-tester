@@ -60,15 +60,16 @@ run, so update first: `rustup update stable`, plus `rustup target add wasm32-unk
 for the WebAssembly steps. A lint that a recent Clippy adds fails CI even when
 an older toolchain passes.
 
-The tests that boot firmware need the ESP32-S3, C3 and C6 mask ROM ELFs. They ship with ESP-IDF
-(`~/.espressif/tools/esp-rom-elfs/`); without it, `tools/fetch-demo-assets.sh --no-linux` fetches
-them into `web/wasm/fw/`.
+The tests that boot firmware need the mask ROM ELFs of all five chips and the ESP32-P4 example
+images; the wasm test also boots the MicroPython image. `tools/fetch-demo-assets.sh --no-linux`
+fetches all of them into `web/wasm/fw/`. The ROMs ESP-IDF 5.x installs
+(`~/.espressif/tools/esp-rom-elfs/`, release 20241011) lack the P4 rev ≥ 3 one.
 
 ```sh
 cargo clippy --workspace --all-targets -- -D warnings
 cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings
-ESP32SIM_ROM_DIR=web/wasm/fw cargo test --release --workspace -- --include-ignored --skip external_
-tools/wasm-build.sh && node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel
+ESP32SIM_ROM_DIR=$PWD/web/wasm/fw cargo test --release --workspace -- --include-ignored --skip external_
+tools/wasm-build.sh && node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik
 node tools/check-evidence-privacy.mjs
 ```
 

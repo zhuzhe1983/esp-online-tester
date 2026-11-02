@@ -26,16 +26,16 @@ cd esp32sim-*/
 ./esp32sim --version
 ```
 
-It holds `esp32sim` (every chip: `--chip esp32|s3|c3|c6`, default S3), the aliases `esp32sim-c3` and
-`esp32sim-c6`, this page, the CLI reference, the getting-started guide and `tools/fetch-rom-elfs.sh`.
+It holds `esp32sim` (every chip: `--chip esp32|s3|c3|c6|p4`, default S3), the aliases `esp32sim-c3`,
+`esp32sim-c6` and `esp32sim-p4`, this page, the CLI reference, the getting-started guide and `tools/fetch-rom-elfs.sh`.
 Put the directory on your `PATH` or call the binaries by path; the examples below assume the current
 directory.
 
 On macOS the first start of a downloaded binary may be refused by Gatekeeper ("cannot be opened
 because the developer cannot be verified"): allow it under System Settings → Privacy & Security, or
-`xattr -d com.apple.quarantine esp32sim esp32sim-c3 esp32sim-c6`.
+`xattr -d com.apple.quarantine esp32sim esp32sim-c3 esp32sim-c6 esp32sim-p4`.
 
-Building from source works as well: `cargo build --release` in a checkout puts the same three
+Building from source works as well: `cargo build --release` in a checkout puts the same four
 binaries in `target/release/`.
 
 ## 2. Get the mask ROM

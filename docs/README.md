@@ -14,8 +14,11 @@ New here? [quick-start.md](quick-start.md) runs your own firmware from a release
 | [getting-started.md](getting-started.md) | Building, running firmware on each chip, WiFi, scripts, the browser build, debugging |
 | [hardware-testing.md](hardware-testing.md) | How each chip is compared with real hardware, and the results |
 | [architecture.md](architecture.md) | How the emulator is built: crates, CPU core, SoC bus, scheduling, boards, UI |
+| [adding.md](adding.md) | Recipes: adding a peripheral, a board, a CPU and chip, an observer |
 | [peripherals.md](peripherals.md) | Every modelled block, what part of it is modelled, what is missing |
 | [boards.md](boards.md) | The `BoardModel` trait, the boards, pin maps, how to add one |
+| [uart.md](uart.md) | UART devices on a board: routed bytes to and from a `BoardModel` |
+| [m5-i2c.md](m5-i2c.md) | The StopWatch's M5PM1 and M5IOE1 I2C devices |
 | [cli.md](cli.md) | Command-line flags, environment variables, action scripts, output files |
 | [web-ui.md](web-ui.md) | The browser UI and its WebSocket protocol |
 | [decisions.md](decisions.md) | Design decisions and hard-won gotchas (the "why" behind the code) |
@@ -25,6 +28,7 @@ New here? [quick-start.md](quick-start.md) runs your own firmware from a release
 | [networking-howto.md](networking-howto.md) | How to run firmware with WiFi and the network: flags, what the subnet offers, debugging, limits |
 | [networking-plan.md](networking-plan.md) | Status: the emulated subnet and the user-mode NAT that carries traffic to the host network |
 | [speed-plan.md](speed-plan.md) | Plan: performance roadmap — measured baselines, block interpreter, JIT, with the rejected ideas |
+| [experiments.md](experiments.md) | Every speed and timing experiment, kept or rejected, with its receipt in `evidence/`; search it before trying one |
 | [esp32.md](esp32.md) | The classic ESP32 (dual LX6): what boots and how to run it |
 | [esp32c3.md](esp32c3.md) | The ESP32-C3 (RISC-V) model: what boots, how to run it, and the bring-up gotchas |
 | [esp32c6.md](esp32c6.md) | The ESP32-C6 (RISC-V, RV32IMAC) model: the Waveshare LCD-1.47 bring-up, what silicon found, what is left for the board |

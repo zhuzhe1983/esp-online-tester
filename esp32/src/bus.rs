@@ -816,6 +816,16 @@ mod tests {
         assert_eq!(b.read32(0x3ff4_8034), Ok(12 | (12 << 6)));
     }
     #[test]
+    fn reboot_reapplies_debug_areas() {
+        let mut b = SocBus::new(4 << 20, [0; 6]);
+        let mut flags = esp_soc::DebugFlags::default();
+        flags.add("mmio");
+        esp_soc::SocBus::set_debug(&mut b, &flags);
+        assert!(b.periph.misc.log_all);
+        esp_soc::SocBus::reboot(&mut b, [0; 6]);
+        assert!(b.periph.misc.log_all, "--debug mmio still logs after esp_restart()");
+    }
+    #[test]
     fn stores_invalidate_only_the_written_code_pages_and_rtc_alias() {
         let mut b = SocBus::new(4 << 20, [0; 6]);
         let rom = b.code_page(IROM_MASK_LOW) as usize;

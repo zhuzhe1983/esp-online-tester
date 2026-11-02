@@ -30,6 +30,7 @@
     esp32c6: { soc: 'ESP32-C6 rev 0', cpu: '1× RISC-V RV32IMAC @ 160 MHz', board: 'Bare ESP32-C6', peripherals: 'UART · USB-Serial/JTAG · timers · flash' },
     'waveshare-c6-lcd147': { soc: 'ESP32-C6 rev 0', cpu: '1× RISC-V RV32IMAC @ 160 MHz', board: 'Waveshare C6-LCD-1.47', peripherals: 'ST7789 172×320 · SPI2/GDMA · WS2812 · 802.15.4' },
     'ttgo-tdisplay': { soc: 'ESP32-D0WD rev 3', cpu: '2× Xtensa LX6 @ 240 MHz', board: 'LilyGO TTGO T-Display', peripherals: 'ST7789 135×240 · VSPI · two buttons' },
+    'ulanzi-tc001': { soc: 'ESP32-D0WD rev 3', cpu: '2× Xtensa LX6 @ 240 MHz', board: 'Ulanzi TC001', peripherals: '256 WS2812 32×8 · RMT · three buttons' },
     esp32p4: { soc: 'ESP32-P4 rev < 3 (v1.0)', cpu: '2× RISC-V RV32IMAFC @ 360 MHz', board: 'Bare ESP32-P4', peripherals: 'UART · USB-Serial/JTAG · timers · SDMMC · flash' },
     'esp32p4-rev3': { soc: 'ESP32-P4 rev ≥ 3 (v3.1)', cpu: '2× RISC-V RV32IMAFC @ 360 MHz', board: 'Bare ESP32-P4', peripherals: 'UART · USB-Serial/JTAG · timers · flash' },
     'esp32p4-c6': { soc: 'ESP32-P4 rev < 3 + ESP32-C6', cpu: '2× RV32IMAFC @ 360 MHz + 1× RV32IMAC @ 160 MHz', board: 'P4 with a C6 on SDIO, as the Waveshare ESP32-P4-WIFI6', peripherals: 'SDIO 4-bit · ESP-Hosted 2.12.13 · the C6\'s WiFi on a virtual AP' },
@@ -56,7 +57,7 @@
     'p4-c6-hosted': ['Both chips boot from their ROMs: [p4] and [c6]', 'The C6 joins the virtual AP for the P4', 'The P4 gets its address over SDIO'],
     'c6-hello': ['The C6 mask ROM boots the app', 'Open UART0 for the console', 'Verified against a Waveshare C6-LCD-1.47'],
   };
-  const CHIP = { esp32c3: 'c3', esp32c6: 'c6', 'waveshare-c6-lcd147': 'c6', 'ttgo-tdisplay': 'esp32', esp32p4: 'p4', 'esp32p4-rev3': 'p4', 'esp32p4-c6': 'p4', 'esp32p4-rev3-c6': 'p4', 'esp32p4+c6': 'p4', 'esp32p4-rev3+c6': 'p4', 'waveshare-p4-lcd35': 'p4' };
+  const CHIP = { esp32c3: 'c3', esp32c6: 'c6', 'waveshare-c6-lcd147': 'c6', 'ttgo-tdisplay': 'esp32', 'ulanzi-tc001': 'esp32', esp32p4: 'p4', 'esp32p4-rev3': 'p4', 'esp32p4-c6': 'p4', 'esp32p4-rev3-c6': 'p4', 'esp32p4+c6': 'p4', 'esp32p4-rev3+c6': 'p4', 'waveshare-p4-lcd35': 'p4' };
   // The board the running machine announced (run.html's `board` message): a native --web run has no
   // manifest or Configure form, and a board picked in Configure can change after the rail is built.
   let liveBoard = null, renderMachine = null;
@@ -65,7 +66,7 @@
     if (!manifest) return 'esp32sim --board ' + boardName + ' --boot rom --bootloader build/bootloader/bootloader.bin \\\n  --ptable build/partition_table/partition-table.bin --app build/app.bin --max-seconds 5';
     const chip = CHIP[boardName]; const f = manifest.files || {};
     const parts = ['esp32sim' + (chip ? ' --chip ' + chip : ''), '--boot rom'];
-    if (!chip || boardName === 'waveshare-c6-lcd147' || boardName === 'ttgo-tdisplay') parts.splice(1, 0, '--board ' + boardName);   // the RISC-V chips refuse --board except for their own board
+    if (!chip || boardName === 'waveshare-c6-lcd147' || boardName === 'ttgo-tdisplay' || boardName === 'ulanzi-tc001') parts.splice(1, 0, '--board ' + boardName);   // the RISC-V chips refuse --board except for their own board
     if (f.rom) parts.push('--rom web/wasm/fw/' + f.rom);
     if (f.flash) parts.push('--flash-image web/wasm/fw/' + f.flash);
     for (const k of ['bootloader', 'ptable', 'app']) if (f[k]) parts.push('--' + k + ' web/wasm/fw/' + f[k]);
@@ -86,7 +87,7 @@
     if (f.script) parts.push('--script web/wasm/fw/' + f.script);
     parts.push('--max-seconds ' + (manifest.seconds || 8));
     if (manifest.nodes) return '# two nodes: ' + fw + '.json lists each mote; the CLI runs one at a time\n' + parts.join(' \\\n  ');
-    if (boardName !== 'none' && !chip || boardName === 'waveshare-c6-lcd147' || boardName === 'ttgo-tdisplay') parts.push('--tft-png ' + fw + '.png');
+    if (boardName !== 'none' && !chip || boardName === 'waveshare-c6-lcd147' || boardName === 'ttgo-tdisplay' || boardName === 'ulanzi-tc001') parts.push('--tft-png ' + fw + '.png');
     return parts.join(' \\\n  ');
   }
 

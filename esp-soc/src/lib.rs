@@ -1,8 +1,8 @@
-//! The machine around a chip, written once: the `Soc` implementations (ESP32-S3, ESP32-C3,
-//! ESP32-C6) plug their cores, memory map, peripherals and interrupt controller into
-//! `Machine<S>`, which owns the scheduler, device time, console, action scripts, the web UI
-//! protocol, real-time pacing, the image loaders and the board model. `devices` holds the
-//! chip-neutral models a board is built from.
+//! The machine around a chip, written once: the `Soc` implementations (classic ESP32, ESP32-S3,
+//! ESP32-C3, ESP32-C6, ESP32-P4) plug their cores, memory map, peripherals and interrupt
+//! controller into `Machine<S>`, which owns the scheduler, device time, console, action scripts,
+//! the web UI protocol, real-time pacing, the image loaders and the board model. `devices` holds
+//! the chip-neutral models a board is built from.
 pub mod ble;
 pub mod board;
 pub mod camera;
@@ -23,6 +23,7 @@ pub mod observers;
 pub mod picture;
 pub mod pins;
 pub mod png;
+pub mod rom;
 pub mod soc;
 pub mod uart;
 pub mod usb_host;

@@ -1,0 +1,30 @@
+--- a/esp-periph/src/timg.rs
++++ b/esp-periph/src/timg.rs
+@@ -31,9 +31,13 @@
+     #[inline(always)]
+     pub fn step(&mut self, apb_ticks: u64, width_mask: u64, mut on_alarm: impl FnMut()) {
+         let t = self;
++        STEP.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+         if t.config & (1 << 31) == 0 { return; }   // TIMG_T0_EN
++        ENABLED.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+         let div = Self::divisor(t.config);
+         t.prescale_acc += apb_ticks;
++        if t.prescale_acc < div { SHORT.fetch_add(1, std::sync::atomic::Ordering::Relaxed); }
++        DIVS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+         let mut steps = t.prescale_acc / div;
+         t.prescale_acc %= div;
+         let inc = t.config & (1 << 30) != 0;   // TIMG_T0_INCREASE
+@@ -152,3 +156,13 @@
+         best
+     }
+ }
++
++static STEP: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
++static ENABLED: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
++static SHORT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
++static DIVS: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
++impl Drop for TimerGroup {
++    fn drop(&mut self) {
++        eprintln!("PRESCALER {} {} {} {}", STEP.load(std::sync::atomic::Ordering::Relaxed), ENABLED.load(std::sync::atomic::Ordering::Relaxed), SHORT.load(std::sync::atomic::Ordering::Relaxed), DIVS.load(std::sync::atomic::Ordering::Relaxed));
++    }
++}

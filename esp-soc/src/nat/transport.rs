@@ -25,8 +25,8 @@ pub enum Resolve {
 /// queue the operations for its own network. Reads and writes follow non-blocking std::io rules:
 /// `WouldBlock` = try at the next poll, `tcp_read` `Ok(0)` = peer EOF.
 ///
-/// The NAT calls `tcp_close` exactly once for every flow `tcp_connect` returned, and `udp_close`
-/// once for every flow `udp_open` returned, when it forgets the flow.
+/// The NAT calls `tcp_close` exactly once for every flow `tcp_connect` or `tcp_accept` returned,
+/// and `udp_close` once for every flow `udp_open` returned, when it forgets the flow.
 pub trait NatTransport {
     /// Begin a TCP connection; None when no more may be opened now (the guest's SYN is dropped
     /// and its retransmission tries again).
@@ -48,4 +48,8 @@ pub trait NatTransport {
     fn resolve(&mut self, _name: &str, _qtype: u16) -> Option<u32> { None }
     /// A finished lookup started by `resolve`.
     fn resolved(&mut self) -> Option<(u32, Resolve)> { None }
+    /// A connection from the host side to forward to the guest (`--hostfwd`), already open: its
+    /// flow, the guest address and the guest port. The NAT sends the station a SYN from the gateway
+    /// once it knows the station's MAC; until the guest's SYN-ACK nothing is read from the flow.
+    fn tcp_accept(&mut self) -> Option<(FlowId, [u8; 4], u16)> { None }
 }

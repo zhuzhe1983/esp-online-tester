@@ -365,12 +365,15 @@ fn reboot_keeps_what_silicon_keeps() {
     m.bus.periph.spi0.jedec[2] = 0x18; m.bus.periph.spi1.jedec[2] = 0x18;   // a 16 MB flash chip
     m.cores[0].pc = IRAM;
     m.bus.periph.rtc.reset_cause = esp_periph::RST_SW_CPU;
+    m.bus.periph.usb.connected = false;
     let cause = m.reboot();
     assert_eq!(cause, esp_periph::RST_SW_CPU);
     let p = &m.bus.periph;
     assert_eq!(p.efuse.ram.read(0x44), 0xdead_beef); assert_eq!(p.gpio.strap, 0x7);
     assert_eq!(p.rtc.ram.read(0x120), 0x1234); assert_eq!(p.rtc.slow_ticks, 999);
     assert_eq!(p.rtc.ram.read(0x38), cause | (cause << 6));
+    assert_eq!(p.rtc.reset_cause, cause, "reset_cause() reports the cause, not POWERON");
+    assert!(!p.usb.connected, "an unplugged USB cable stays unplugged");
     assert_eq!(p.i2s0.pcm, vec![1, 2, 3]);
     assert_eq!((p.spi0.jedec[2], p.spi1.jedec[2]), (0x18, 0x18), "the flash chip keeps its capacity, or IDF finds it smaller than the image header");
     assert!(p.uart[0].tx_out.is_empty() && p.systimer.conf == 0x4600_0000, "digital peripherals are fresh");

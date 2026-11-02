@@ -1,14 +1,17 @@
 //! The native NAT transport, ordinary host sockets. A TCP connect runs on a
 //! worker thread (at most `MAX_CONNECTS` at once, process-wide) so the emulator never blocks on it.
+//! `--hostfwd` listeners live here too: a browser has no sockets to listen on.
 
 use std::collections::HashMap;
 use std::io::{self, ErrorKind, Read, Write};
-use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4, TcpStream, UdpSocket};
+use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4, TcpListener, TcpStream, UdpSocket};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::mpsc::{channel, Receiver, TryRecvError};
 use super::transport::{Connect, FlowId, NatTransport};
+use super::HostFwdSpec;
 
 pub(super) const MAX_CONNECTS: usize = 8;
+const MAX_HOSTFWD: usize = 8;
 
 // A permit belongs to the blocking connect worker, not its guest flow. Removing a flow with RST
 // must not free a slot while connect_timeout is still running on the host.
@@ -37,10 +40,18 @@ fn connect(addr: SocketAddr) -> Option<Receiver<io::Result<TcpStream>>> {
 
 pub(super) enum StdTcp { Connecting(Receiver<io::Result<TcpStream>>), Connected(TcpStream), Failed(ErrorKind) }
 
+/// One `--hostfwd` listener and where its connections go.
+struct HostFwd {
+    listener: TcpListener,
+    guest_ip: [u8; 4],
+    guest_port: u16,
+}
+
 /// `NatTransport` over `std::net`: what `Nat::new` uses.
 pub struct StdTransport {
     tcp: HashMap<FlowId, StdTcp>,
     udp: HashMap<FlowId, UdpSocket>,
+    forwards: Vec<HostFwd>,
     next: FlowId,
     resolver: [u8; 4],
 }
@@ -50,7 +61,20 @@ impl Default for StdTransport {
 }
 
 impl StdTransport {
-    pub fn new() -> Self { Self { tcp: HashMap::new(), udp: HashMap::new(), next: 0, resolver: host_resolver() } }
+    pub fn new() -> Self { Self { tcp: HashMap::new(), udp: HashMap::new(), forwards: Vec::new(), next: 0, resolver: host_resolver() } }
+
+    /// Bind one host TCP port; its connections reach the NAT through `tcp_accept`, which delivers
+    /// each as a SYN to `spec.guest_ip:guest_port`.
+    pub fn listen(&mut self, spec: &HostFwdSpec) -> io::Result<SocketAddr> {
+        if self.forwards.len() >= MAX_HOSTFWD {
+            return Err(io::Error::other("too many --hostfwd listeners"));
+        }
+        let listener = TcpListener::bind(spec.bind)?;
+        listener.set_nonblocking(true)?;
+        let bound = listener.local_addr()?;
+        self.forwards.push(HostFwd { listener, guest_ip: spec.guest_ip, guest_port: spec.guest_port });
+        Ok(bound)
+    }
 
     fn id(&mut self) -> FlowId {
         self.next = self.next.wrapping_add(1);
@@ -128,6 +152,26 @@ impl NatTransport for StdTransport {
     fn udp_close(&mut self, id: FlowId) { self.udp.remove(&id); }
 
     fn resolver(&self) -> [u8; 4] { self.resolver }
+
+    fn tcp_accept(&mut self) -> Option<(FlowId, [u8; 4], u16)> {
+        for i in 0..self.forwards.len() {
+            loop {
+                let fwd = &self.forwards[i];
+                match fwd.listener.accept() {
+                    Ok((sock, _)) => {
+                        if sock.set_nonblocking(true).is_err() || sock.set_nodelay(true).is_err() { continue; }
+                        let (guest_ip, guest_port) = (fwd.guest_ip, fwd.guest_port);
+                        let id = self.id();
+                        self.tcp.insert(id, StdTcp::Connected(sock));
+                        return Some((id, guest_ip, guest_port));
+                    }
+                    Err(e) if e.kind() == ErrorKind::Interrupted => continue,
+                    Err(_) => break,
+                }
+            }
+        }
+        None
+    }
 }
 
 fn host_resolver() -> [u8; 4] {

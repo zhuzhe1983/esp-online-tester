@@ -1,6 +1,7 @@
-//! `emu_core::Core` for the RV32IMC: one instruction per `step`, no fast path yet (the default
-//! `run` loops `step`). The interrupt input is the single line the C3's interrupt controller has
-//! already arbitrated.
+//! `emu_core::Core` for the RV32 cores (C3, C6, P4): one instruction per `step`, no decode cache,
+//! block cache or JIT; `run` loops `step` and stops where a block would. The interrupt input is
+//! the one line the SoC's interrupt controller has already arbitrated; on a CLIC core (the P4) it
+//! also carries the level and the vectoring attribute (`exec::clic_take`).
 use crate::bus::Bus;
 use crate::exec::Trap;
 use crate::state::Cpu;

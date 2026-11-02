@@ -1821,3 +1821,43 @@ fn wifi_rx_ctrl_carries_a_nearby_networks_channel_and_rssi() {
         assert_eq!(bus.read32(BUF + 8).unwrap(), (chan << 16) | (chan << 20), "channel of {from:02x?}");
     }
 }
+
+/// EX254: a register write first delivers the deferred device time, then leaves the tick
+/// budget its own post-write state derives (the flush inside the write no longer refreshes
+/// it; the write's closing refresh does). The board deadline is absolute, so the budget also
+/// shows that the flushed time was counted exactly once.
+#[test]
+fn mmio_write_delivers_pending_time_and_leaves_the_post_write_budget() {
+    const USB_INT_ENA: u32 = 0x6003_8010;
+    for (pending, deadline) in [(37u32, 5_000u64), (300, 400), (100, 40_000)] {
+        let mut bus = SocBus::new(1024, 1024, [0; 6]);
+        bus.board = Box::new(FixedDeadlineBoard { deadline });
+        bus.refresh_tick_budget();
+        let expect = |bus: &SocBus, cap: u32| (deadline - bus.cycles).clamp(1, u64::from(cap)) as u32;
+        assert_eq!(bus.tick_budget, expect(&bus, QUIET_TICK_DEFER));
+        for (on, cap, step) in [(2, MAX_TICK_DEFER, pending), (0, QUIET_TICK_DEFER, 1)] {
+            let before = bus.cycles;
+            assert_eq!(Bus::tick(&mut bus, step), 0, "{pending}/{deadline}: stays deferred");
+            assert_eq!((bus.tick_pending, bus.periph.clock_cycles()), (step, before));
+            bus.write32(USB_INT_ENA, on).unwrap();                          // SOF on: active cadence
+            assert_eq!(bus.tick_pending, 0, "{pending}/{deadline}: the write flushed");
+            assert_eq!(bus.periph.clock_cycles(), before + u64::from(step), "devices saw the time once");
+            assert_eq!(bus.tick_budget, expect(&bus, cap), "{pending}/{deadline} int_ena={on}");
+            assert_eq!(bus.next_deadline(), u64::from(expect(&bus, cap)));
+            let got = bus.tick_budget;
+            bus.refresh_tick_budget();
+            assert_eq!(bus.tick_budget, got, "the write left a fresh derivation");
+        }
+    }
+    // The pending time reaches the devices before the written value: the SOF due at the
+    // flushed cycle is raised first, so the INT_CLR write clears it.
+    for (reg, value, raw) in [(0x6003_8014u32, 2u32, 0u32), (0x6003_8010, 2, 2)] {
+        let mut bus = SocBus::new(1024, 1024, [0; 6]);
+        bus.tick_budget = MAX_TICK_DEFER;
+        bus.periph.usb.tick(crate::periph::CPU_HZ / 4000 - 1);
+        assert_eq!(Bus::tick(&mut bus, 1), 0);
+        assert_eq!(bus.periph.usb.int_raw & 2, 0, "SOF still deferred");
+        bus.write32(reg, value).unwrap();
+        assert_eq!(bus.periph.usb.int_raw & 2, raw, "write {reg:#x}={value}");
+    }
+}

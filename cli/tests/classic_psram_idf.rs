@@ -1,13 +1,12 @@
 use emu_core::Bus;
 use esp_soc::SocBus;
-use std::{env, fs, path::PathBuf};
+use std::{fs, path::PathBuf};
 
 // Genuine ROM -> stock IDF startup -> guest allocator. No register preconfiguration,
 // symbol stubs, host-side allocator, or direct PSRAM writes in this harness.
 fn boot(present: bool) -> String {
     let firmware = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../web/wasm/fw/public");
-    let rom = PathBuf::from(env::var_os("ESP32SIM_ROM_DIR").expect("set ESP32SIM_ROM_DIR to the fetched ROM directory"))
-        .join("esp32_rev300_rom.elf");
+    let rom = esp_soc::rom::require("esp32_rev300_rom.elf");
     let mut m = esp32::machine([0; 6], 4 << 20);
     m.bus.set_psram_size(if present { 4 << 20 } else { 0 }).unwrap();
     m.console.capture = true;
