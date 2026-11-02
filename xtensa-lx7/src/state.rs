@@ -250,7 +250,8 @@ impl Cpu {
         self.icountlevel = 0;
         self.memctl = 1;      // observed reset value on ESP32-S3 silicon (rsr.memctl in the ROM reset path)
         self.waiting = false;
-        // CCOUNT counts again from reset: on an ESP32-S3, the bootloader's first early-log
+        // The ISA leaves CCOUNT undefined after a processor reset (Xtensa ISA Reference Manual,
+        // 2010, 4.4.6.2); 0 follows silicon: on an ESP32-S3 the bootloader's first early-log
         // timestamp after esp_restart() (RTC_SW_CPU_RST) is the cold boot's (EX259).
         self.ccount = 0;
         #[cfg(target_arch = "wasm32")]

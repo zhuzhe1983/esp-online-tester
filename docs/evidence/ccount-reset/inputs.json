@@ -3,13 +3,23 @@
   "toolchain": "Rust 1.99.1 (58cf8f9c3 2026-10-13); Windows 11 (10.0.26200), x86_64",
   "mask_roms": {
     "source": "tools/fetch-rom-elfs.sh roms (espressif/esp-rom-elfs, pinned by SHA-256 in the script)",
-    "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+    "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+    "esp32_rev300_rom.elf": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31"
   },
   "firmware": {
     "source": "the hello_world_s3_reboot golden's images, committed in web/wasm/fw/public (ESP-IDF v5.5.4 examples/get-started/hello_world)",
-    "hello-bootloader.bin": { "bytes": 20832, "sha256": "7efecb4df4463ece11ab286068a505ecd174f66fd4aacc53d887fcb9c18f0579" },
-    "hello-ptable.bin": { "bytes": 3072, "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820" },
-    "hello_world.bin": { "bytes": 161712, "sha256": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9" }
+    "hello-bootloader.bin": {
+      "bytes": 20832,
+      "sha256": "7efecb4df4463ece11ab286068a505ecd174f66fd4aacc53d887fcb9c18f0579"
+    },
+    "hello-ptable.bin": {
+      "bytes": 3072,
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    "hello_world.bin": {
+      "bytes": 161712,
+      "sha256": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9"
+    }
   },
   "silicon": {
     "board": "an ESP32-S3 board, chip revision v0.2, 16 MB flash, connected through its USB-Serial/JTAG port",
@@ -19,6 +29,9 @@
   },
   "emulator": {
     "golden": "ESP32SIM_ROM_DIR=roms cargo test --release -p esp32sim --test goldens -- --include-ignored hello_world_s3_reboot",
-    "regenerated": "UPDATE_GOLDENS=1 with the same command: tests/golden/hello-s3-reboot.console.txt, tests/golden/hello-s3-reboot.insns"
-  }
+    "regenerated": "UPDATE_GOLDENS=1 with the same command: tests/golden/hello-s3-reboot.console.txt, tests/golden/hello-s3-reboot.insns",
+    "trace": "the golden's command with --max-seconds 11, 11.5, 12 and 21, on main dd4796a0 and on this branch merged onto it; the stop line's core 0 + core 1 instruction counts",
+    "classic": "esp32sim --chip esp32 --rom roms/esp32_rev300_rom.elf --board esp32dev --boot rom --no-dump --console uart0 --bootloader web/wasm/fw/public/classic-hello-bootloader.bin --ptable web/wasm/fw/public/classic-hello-ptable.bin --app web/wasm/fw/public/classic-hello_world.bin --max-seconds 30, on main dd4796a0 and on this branch"
+  },
+  "rom_disassembly": "ESP-IDF v5.5.4 image (espressif/idf:v5.5.4), esp-14.2.0_20260121: xtensa-esp32s3-elf-objdump -d esp32s3_rev0_rom.elf and xtensa-esp32-elf-objdump -d esp32_rev300_rom.elf; grep -cE '(wsr|xsr)\\.ccount' gives 0 for both (rsr.ccount 11 and 1)"
 }

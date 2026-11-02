@@ -12,16 +12,23 @@
   {
     "check": "workspace-ci",
     "command": "cargo +1.99.1 test --release --workspace --no-fail-fast -- --include-ignored --skip external_",
-    "environment": "ESP32SIM_ROM_DIR=roms (tools/fetch-rom-elfs.sh, with the P4 ROMs); tools/fetch-p4-firmware.sh; Rust 1.99.1 (58cf8f9c3 2026-10-13); Windows 11",
+    "environment": "ESP32SIM_ROM_DIR=roms (tools/fetch-rom-elfs.sh, with the P4 ROMs); tools/fetch-p4-firmware.sh; Rust 1.99.1 (58cf8f9c3 2026-10-13); Windows 11; on this branch merged onto main dd4796a0",
     "exit_code": 0,
-    "tests": { "passed": 1385, "failed": 0, "ignored": 0 },
+    "tests": {
+      "passed": 1453,
+      "failed": 0,
+      "ignored": 0
+    },
     "note": "hello-s3-reboot regenerated with UPDATE_GOLDENS=1 (console and instruction count); every other golden passed byte-identical"
   },
   {
     "check": "virtual",
     "command": "ESP32SIM_VQ_NATIVE=1 cargo +1.99.1 test --release -p esp32s3 --test machine --test virtual_stops",
     "exit_code": 0,
-    "tests": { "passed": 43, "failed": 0 }
+    "tests": {
+      "passed": 43,
+      "failed": 0
+    }
   },
   {
     "check": "xtensa-reset",
@@ -33,7 +40,7 @@
     "check": "wasm",
     "command": "tools/wasm-build.sh && node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm && node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel",
     "exit_code": 0,
-    "notes": "esp32sim.wasm 4018255 bytes, dwarfAbsent, nameRetained; all eight demos ok"
+    "notes": "esp32sim.wasm 4063622 bytes, dwarfAbsent, nameRetained; all eight demos ok"
   },
   {
     "check": "wasm-abi",
@@ -49,6 +56,21 @@
     "check": "silicon",
     "command": "see inputs.json: the hello_world_s3_reboot images on an ESP32-S3, read over USB-Serial/JTAG through two esp_restart() resets",
     "result": "s3-hello-reboot.txt: boot 1 (USB_UART_CHIP_RESET) and boots 2 and 3 (RTC_SW_CPU_RST) print the bootloader's first line at 24 ms, cpu_start at 145 ms, app_main at 261 ms; every early-log timestamp of the three boots within 1 ms of the others"
+  },
+  {
+    "check": "instruction-trace",
+    "command": "see inputs.json emulator.trace",
+    "result": "0 difference at 11 s (before the reset at 11.005 s); -32828 (core 0) - 13598 (core 1) at 11.5, 12 and 21 s"
+  },
+  {
+    "check": "classic-reboots",
+    "command": "see inputs.json emulator.classic",
+    "result": "bootloader / cpu_start Multicore app / app_main: boot 1 4 / 30 / 42 on both; boots 2 and 3 44176 / 44202 / 17371 and 6115 / 6141 / 6154 on main, 4 / 29 / 42 with this change; exceptions and interrupts 27408 / 6016 on both"
+  },
+  {
+    "check": "rom-disassembly",
+    "command": "see inputs.json rom_disassembly",
+    "result": "no wsr.ccount or xsr.ccount in esp32s3_rev0_rom.elf or esp32_rev300_rom.elf"
   },
   {
     "check": "not-run",
