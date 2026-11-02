@@ -51,6 +51,56 @@ fn stopwatch_pmic_wake_and_power_up_rmw() {
 }
 
 #[test]
+fn pmic_observes_nominal_clock_against_current_speed_without_changing_ack() {
+    let state=Arc::new(Mutex::new(M5pm1State::default()));
+    let mut pmic=M5pm1::new(state.clone());
+    assert!(!pmic.start_address_with_clock(0x6e,0x4f,false,Some(400_000)));
+    assert_eq!(state.lock().unwrap().i2c_address_phases,0);
+    assert!(pmic.start_address_with_clock(0x6e,0x6e,false,Some(400_000)));
+    {let s=state.lock().unwrap();assert_eq!((s.i2c_first_hz,s.i2c_last_hz,s.i2c_max_hz),(Some(400_000),Some(400_000),400_000));assert_eq!(s.i2c_speed_mismatches,1);assert_eq!(s.i2c_last_mismatch_limit_hz,Some(100_000));}
+    // The safe order sets the slave speed while the master is still at 100 kHz.
+    assert!(pmic.start_address_with_clock(0x6e,0x6e,false,Some(100_000)));
+    pmic.write(0x09);pmic.write(0x10);pmic.stop();
+    assert!(pmic.start_address_with_clock(0x6e,0x6e,true,Some(400_000)));
+    assert!(pmic.start_address_with_clock(0x6e,0x6e,true,Some(100_000)));
+    {let s=state.lock().unwrap();assert_eq!(s.i2c_speed_hz,400_000);assert_eq!(s.i2c_speed_mismatches,1);}
+    write(&mut pmic,0x09,&[0]);
+    assert!(pmic.start_address_with_clock(0x6e,0x6e,false,Some(400_000)));
+    // Bit-banged/direct accesses explicitly replace the last known clock with unknown.
+    assert!(pmic.start(false));
+    let s=state.lock().unwrap();assert_eq!(s.i2c_last_hz,None);assert_eq!(s.i2c_first_hz,Some(400_000));assert_eq!(s.i2c_speed_mismatches,2);
+    assert_eq!((s.i2c_last_mismatch_hz,s.i2c_last_mismatch_limit_hz),(Some(400_000),Some(100_000)));
+}
+
+#[test]
+fn pmic_clock_diagnostic_allows_small_nominal_divider_rounding() {
+    let state=Arc::new(Mutex::new(M5pm1State::default()));let mut pmic=M5pm1::new(state.clone());
+    assert!(pmic.start_address_with_clock(0x6e,0x6e,false,Some(100_500)));
+    assert!(pmic.start_address_with_clock(0x6e,0x6e,false,Some(101_000)));
+    assert_eq!(state.lock().unwrap().i2c_speed_mismatches,0);
+    assert!(pmic.start_address_with_clock(0x6e,0x6e,false,Some(101_001)));
+    assert_eq!(state.lock().unwrap().i2c_speed_mismatches,1);
+    write(&mut pmic,0x09,&[0x10]);
+    assert!(pmic.start_address_with_clock(0x6e,0x6e,false,Some(400_500)));
+    assert_eq!(state.lock().unwrap().i2c_speed_mismatches,1);
+}
+
+#[test]
+fn pmic_download_lock_and_led_observation_preserve_register_semantics() {
+    let state=Arc::new(Mutex::new(M5pm1State::default()));let mut pmic=M5pm1::new(state.clone());
+    write(&mut pmic,0x49,&[0x2b]); // unrelated single-press setting is not a lock
+    write(&mut pmic,0x06,&[7]); // factory firmware intentionally turns the LED off
+    {let s=state.lock().unwrap();assert!(!s.led_enabled);assert!(!s.download_locked);assert_eq!(s.download_lock_writes,0);}
+    write(&mut pmic,0x49,&[0xab]);write(&mut pmic,0x49,&[0xab]);
+    {let s=state.lock().unwrap();assert!(s.download_locked);assert_eq!(s.download_lock_writes,2);}
+    write(&mut pmic,0x49,&[0x2b]);
+    assert_eq!(read(&mut pmic,0x49,1),[0x2b]);
+    {let s=state.lock().unwrap();assert!(!s.download_locked);assert_eq!(s.download_unlock_attempts,1);}
+    let _reattached=M5pm1::new(state.clone());
+    let s=state.lock().unwrap();assert!(s.led_enabled);assert!(!s.download_locked);assert_eq!(s.download_lock_writes,0);assert_eq!(s.download_unlock_attempts,0);assert_eq!(s.i2c_address_phases,0);
+}
+
+#[test]
 fn stopwatch_battery_reads_host_voltage_and_active_low_charge_input() {
     let state = Arc::new(Mutex::new(M5pm1State::default()));
     let mut device = M5pm1::new(state.clone());

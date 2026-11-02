@@ -38,6 +38,13 @@ pub trait I2cDevice {
     /// One data byte to the master.
     fn read(&mut self) -> u8;
     fn stop(&mut self) {}
+    /// Cold address-phase observation. Nominal SCL comes from the master's registers,
+    /// not a measured waveform; None means unavailable (including software I2C).
+    /// Preserve address aliases/general calls and ACK behavior unless explicitly overridden.
+    /// Appended to preserve existing vtable slots.
+    fn start_address_with_clock(&mut self, configured: u8, address: u8, read: bool, _hz: Option<u32>) -> bool {
+        self.start_address(configured, address, read)
+    }
 }
 
 pub const INT_END_DETECT: u32 = 1 << 3;
@@ -186,6 +193,17 @@ impl I2c<$n> {
         (cycles * divisor * 80_000_000).div_ceil(hz * denominator).max(1)
     }
 
+    /// Same nominal source/divider and SCL periods as schedule(), sampled only at
+    /// an address byte. Classic timing has a different layout and remains unknown.
+    /// Also checked against IDF v5.5.1 esp32s3/include/hal/i2c_ll.h:165-186:
+    /// low is programmed minus one; high and wait-high are literal.
+    fn scl_hz(&self) -> Option<u32> {
+        if $n == 16 { return None; }
+        let high = self.regs.read(0x38);
+        let period = (self.regs.read(0) & 0x1ff) + 1 + (high & 0x1ff) + ((high >> 9) & 127);
+        Some((80_000_000 / self.clock_ticks(u64::from(period))) as u32)
+    }
+
     // Inferred byte/ACK timing, not measured on hardware. IDF v5.5.4
     // components/hal/{esp32s3,esp32c3,esp32c6}/include/hal/i2c_ll.h
     // master_set_bus_timing (S3:175-201, C6:173-200): low/setup/hold are
@@ -243,8 +261,9 @@ impl I2c<$n> {
                     self.expect_addr = false;
                     let addr = b >> 1; let rd = b & 1 != 0;
                     self.cur.clear();
+                    let hz = self.scl_hz();
                     for (k, (configured, device)) in self.devices.iter_mut().enumerate() {
-                        if (device.pins().is_none() || device.pins() == self.pins) && device.start_address(*configured, addr, rd) {
+                        if (device.pins().is_none() || device.pins() == self.pins) && device.start_address_with_clock(*configured, addr, rd, hz) {
                             self.cur.push(k);
                         }
                     }
@@ -345,3 +364,59 @@ mod classic_tests {
 }
 
 pub mod gt911;
+
+#[cfg(test)]
+mod clock_observation_tests {
+    use super::*;
+    use std::sync::{Arc,Mutex};
+    struct Probe(Arc<Mutex<Vec<Option<u32>>>>);
+    impl I2cDevice for Probe {
+        fn pins(&self)->Option<(u8,u8)> {Some((47,48))}
+        fn start_address_with_clock(&mut self,configured:u8,address:u8,_read:bool,hz:Option<u32>)->bool {
+            if configured!=address {return false;}self.0.lock().unwrap().push(hz);true
+        }
+        fn write(&mut self,_b:u8)->bool {true}
+        fn read(&mut self)->u8 {0}
+    }
+    fn send(i2c:&mut I2c,address:u8) {
+        i2c.write(0x24,u32::MAX);i2c.write(0x18,3<<12);i2c.write(0x1c,u32::from(address<<1));
+        i2c.write(0x58,6<<11);i2c.write(0x5c,(1<<11)|(1<<8)|1);i2c.write(0x60,2<<11);
+        i2c.write(4,1<<5);i2c.advance(u64::MAX);
+    }
+    #[test]
+    fn controller_samples_nominal_scl_only_on_the_matching_route_and_address() {
+        let seen=Arc::new(Mutex::new(Vec::new()));let mut i2c=I2c::new();i2c.attach(0x6e,Box::new(Probe(seen.clone())));
+        i2c.write(0,199);i2c.write(0x38,200); // 40 MHz / (200+200) = 100 kHz
+        send(&mut i2c,0x6e);assert!(seen.lock().unwrap().is_empty());assert_ne!(i2c.int_raw&INT_NACK,0);
+        i2c.set_pins(Some((48,47)));send(&mut i2c,0x6e);assert!(seen.lock().unwrap().is_empty());
+        i2c.set_pins(Some((47,48)));send(&mut i2c,0x4f);assert!(seen.lock().unwrap().is_empty());
+        send(&mut i2c,0x6e);assert_eq!(i2c.int_raw&INT_NACK,0);
+        i2c.write(0,49);i2c.write(0x38,50);send(&mut i2c,0x6e);
+        i2c.write(0x54,1);send(&mut i2c,0x6e); // integer source divider doubles
+        i2c.write(0x54,(2<<8)|(1<<14));send(&mut i2c,0x6e); // 1 + 1/2
+        assert_eq!(*seen.lock().unwrap(),[Some(100_000),Some(400_000),Some(200_000),Some(266_666)]);
+        i2c.set_external_clock_config(Some(3));send(&mut i2c,0x6e);
+        assert_eq!(seen.lock().unwrap().last(),Some(&Some(100_000)));
+        // IDF v5.5.1's actual 40 MHz / 100 kHz and / 400 kHz calculations:
+        // low=half_cycle-1, high=half_cycle-wait, wait=half_cycle/2-2.
+        i2c.set_external_clock_config(None);i2c.write(0x54,0);
+        for (low,high,wait,want) in [(199,102,98,100_000),(49,27,23,400_000)] {
+            i2c.write(0,low);i2c.write(0x38,high|(wait<<9));send(&mut i2c,0x6e);
+            assert_eq!(seen.lock().unwrap().last(),Some(&Some(want)));
+        }
+    }
+    #[test]
+    fn default_clock_hook_preserves_alias_and_general_call_dispatch() {
+        struct Alias;
+        impl I2cDevice for Alias {
+            fn start_address(&mut self,configured:u8,address:u8,read:bool)->bool {configured==address||address==0&&!read}
+            fn write(&mut self,_b:u8)->bool {true}
+            fn read(&mut self)->u8 {0}
+        }
+        let mut i2c=I2c::new();i2c.attach(0x44,Box::new(Alias));
+        send(&mut i2c,0);assert_eq!(i2c.int_raw&INT_NACK,0);
+        send(&mut i2c,0x44);assert_eq!(i2c.int_raw&INT_NACK,0);
+        send(&mut i2c,0x45);assert_ne!(i2c.int_raw&INT_NACK,0);
+        assert_eq!(I2c::new_classic().scl_hz(),None);
+    }
+}

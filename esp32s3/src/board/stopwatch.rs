@@ -83,6 +83,7 @@ struct PowerDevice {
 
 impl I2cDevice for PowerDevice {
     fn start(&mut self, read: bool) -> bool { self.device.start(read) }
+    fn start_address_with_clock(&mut self, configured: u8, address: u8, read: bool, hz: Option<u32>) -> bool { self.device.start_address_with_clock(configured,address,read,hz) }
     fn write(&mut self, byte: u8) -> bool {
         let ack = self.device.write(byte);
         self.wiring.sync();
@@ -364,6 +365,20 @@ impl BoardModel for StopWatch {
 mod unit_button_tests {
     use super::*;
     fn write(device:&mut dyn I2cDevice,reg:u8,value:u8) {assert!(device.start(false));assert!(device.write(reg));assert!(device.write(value));device.stop();}
+    #[test]
+    fn pmic_hardware_clock_passes_through_both_shared_power_wrappers() {
+        use esp_periph::device::Device;
+        let mut board=StopWatch::new();let mut devices=board.i2c_devices();
+        for port in 0..2 {
+            let index=devices.iter().position(|(bus,address,_)|*bus==port&&*address==0x6e).unwrap();
+            let (_,address,pmic)=devices.swap_remove(index);let mut controller=esp_periph::i2c::I2c::new();
+            controller.attach(address,pmic);controller.set_pins(Some((47,48)));
+            controller.write(0,49);controller.write(0x38,27|(23<<9));
+            controller.write(0x1c,0xdc);controller.write(0x58,6<<11);controller.write(0x5c,(1<<11)|(1<<8)|1);controller.write(0x60,2<<11);
+            controller.write(4,1<<5);controller.tick(10_000);
+            let state=board.wiring.pmic.lock().unwrap();assert_eq!(state.i2c_last_hz,Some(400_000));assert_eq!(state.i2c_speed_mismatches,u64::from(port)+1);
+        }
+    }
     #[test]
     fn internal_i2c_gpio_probe_and_both_controllers_share_state() {
         fn drive(b:&mut StopWatch,scl:bool,sda:bool)->bool {
