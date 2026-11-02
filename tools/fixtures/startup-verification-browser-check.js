@@ -63,9 +63,10 @@ async page => {
       window.verificationTest={issues:0,reads:0,verifies:0,aborted:0,late:null,outcome:null};
       const t=verificationTest;
       const client={issue:async()=>{t.issues++;return {...fixture.challenge,captchaToken:'local-challenge-token-'+String(t.issues).padStart(10,'0')};},verify:async(c,p,s)=>{t.verifies++;if(kind==='rate')throw Object.assign(Error('请求过于频繁，请稍后再试。'),{code:'CAPTCHA_RATE_LIMIT'});return c.captchaToken;}};
-      const readPoints=(c,{signal,onProgress})=>{
+      const readPoints=(c,{signal,onProgress,onReady})=>{
         t.reads++;signal.addEventListener('abort',()=>t.aborted++,{once:true});
-        if(kind==='timeout'&&t.reads===1||kind==='cancel'||kind==='manual')return new Promise(resolve=>{t.late=()=>{onProgress('stale-result');resolve({complete:true,points:[{x:1,y:1},{x:2,y:2},{x:3,y:3}]});};});
+        if(kind!=='resource-timeout'||t.reads>1)onReady?.();
+        if(['timeout','resource-timeout'].includes(kind)&&t.reads===1||kind==='cancel'||kind==='manual')return new Promise(resolve=>{t.late=()=>{onProgress('stale-result');resolve({complete:true,points:[{x:1,y:1},{x:2,y:2},{x:3,y:3}]});};});
         if(kind==='incomplete')return Promise.resolve({complete:false,points:[]});
         return Promise.resolve({complete:true,points:[{x:1,y:1},{x:2,y:2},{x:3,y:3}]});
       };
@@ -74,11 +75,18 @@ async page => {
     await dialog.waitFor();await page.waitForFunction(()=>document.querySelector('.burner-captcha-image')?.hidden===false);
   };
   await openCase('timeout',10000);await dialog.getByRole('button',{name:'自动验证',exact:true}).click();
+  assert((await dialog.getByRole('status').innerText()).includes('识别验证剩余 10 秒'),'Ready resources switch to the 10-second recognition budget');
   await page.waitForFunction(()=>verificationTest.outcome==='success');
   assert(await page.evaluate(()=>verificationTest.issues===2&&verificationTest.reads===2&&verificationTest.verifies===1&&verificationTest.aborted>=1),'Timed-out attempt aborts, refreshes and retries once');
   await page.evaluate(()=>verificationTest.late());
   assert(await page.locator('dialog[open]').count()===0,'Late OCR result cannot resurrect a closed dialog');
   checks.push('Deadline abort, next image retry, successful continuation and stale result disposal');
+  await openCase('resource-timeout',10000);await dialog.getByRole('button',{name:'自动验证',exact:true}).click();
+  assert((await dialog.getByRole('status').innerText()).includes('组件加载剩余 20 秒'),'Resource download receives its own 20-second budget');
+  await page.waitForFunction(()=>verificationTest.outcome==='success');
+  assert(await page.evaluate(()=>verificationTest.issues===2&&verificationTest.reads===2&&verificationTest.verifies===1),'A resource timeout refreshes and retries without submitting the stale image');
+  await page.evaluate(()=>verificationTest.late());
+  checks.push('20-second resource budget, then separate 10-second recognition/verification budget');
   await openCase('incomplete');await dialog.getByRole('button',{name:'自动验证',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('.burner-captcha .form-error').textContent.includes('已尝试 3 张'));
   assert(await page.evaluate(()=>verificationTest.issues===3&&verificationTest.reads===3&&verificationTest.verifies===0),'Only three automatic attempts');

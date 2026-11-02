@@ -1,22 +1,38 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createBurnerCaptchaClient,captchaPoint,captchaAttempt,CAPTCHA_ATTEMPT_MS,CAPTCHA_AUTO_ATTEMPTS} from '../web/platform/m5burner-captcha.js';
+import {createBurnerCaptchaClient,captchaPoint,captchaAttempt,CAPTCHA_ATTEMPT_MS,CAPTCHA_RESOURCE_MS,CAPTCHA_AUTO_ATTEMPTS} from '../web/platform/m5burner-captcha.js';
 import {expectedCancellation} from '../web/platform/error-ui.js';
 import {prepareBurnerSource} from '../web/platform/m5burner-download-ui.js';
 import {createFirmwareCache} from '../web/platform/firmware-cache.js';
 import {sha256,fetchBytes} from '../web/platform/runtime.js';
+import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
 const url='https://burner.m5stack.com/api/v1/firmwares/1897200000000001943/versions/1897300000000004110/download';
 const token='test-token-for-a-single-challenge',data=new Uint8Array([0xe9,0,1,2]);
 const challenge={captchaToken:token,captchaImage:'data:image/png;base64,AAAA',width:520,height:300,targetCount:3,instruction:'Click in order: A, B, C',expiresInSeconds:120};
 const rejected=()=>Response.json({code:400,data:{errorCode:'BURN_CAPTCHA_INVALID'},requestId:'private-request-id'},{status:400});
 
+test('vendored OCR assets match their pins and retain the original OEM 1 components',async()=>{
+  const base=new URL('../web/platform/vendor/tesseract/',import.meta.url),manifest=JSON.parse(await readFile(new URL('manifest.json',base)));
+  for(const file of manifest.files){const bytes=await readFile(new URL(file.file,base));assert.equal(bytes.length,file.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),file.sha256);}
+  const data=gunzipSync(await readFile(new URL('eng.traineddata.gz',base)));assert.equal(data.readInt32LE(0),24);
+  for(let id=0;id<17;id++)assert.equal(data.readBigInt64LE(4+8*id),-1n);
+  for(const component of manifest.languageTransform.preservedComponents){
+    const start=Number(data.readBigInt64LE(4+8*component.id)),end=component.id===23?data.length:Number(data.readBigInt64LE(4+8*(component.id+1)));
+    assert.equal(end-start,component.bytes);assert.equal(createHash('sha256').update(data.subarray(start,end)).digest('hex'),component.sha256);
+  }
+  assert.equal(manifest.languageTransform.preservedComponents.length,7);
+});
+
 test('verification deadlines abort hanging work, discard late results and distinguish user cancellation',async()=>{
-  assert.equal(CAPTCHA_ATTEMPT_MS,10000);assert.equal(CAPTCHA_AUTO_ATTEMPTS,3);
+  assert.equal(CAPTCHA_ATTEMPT_MS,10000);assert.equal(CAPTCHA_RESOURCE_MS,20000);assert.equal(CAPTCHA_AUTO_ATTEMPTS,3);
   let taskSignal,late;
   const task=captchaAttempt(signal=>{taskSignal=signal;return new Promise((_,reject)=>{late=reject;});},{timeoutMs:10});
   await assert.rejects(task,{code:'CAPTCHA_TIMEOUT'});assert.equal(taskSignal.aborted,true);
   late(Error('late worker rejection'));await new Promise(resolve=>setTimeout(resolve,0));
   await assert.rejects(captchaAttempt(signal=>new Promise((_,reject)=>signal.addEventListener('abort',()=>reject(Object.assign(Error('aborted'),{code:'FETCH_ABORTED'})),{once:true})),{timeoutMs:10}),{code:'CAPTCHA_TIMEOUT'});
+  await assert.rejects(captchaAttempt((signal,limit)=>{limit(5);return new Promise(()=>{});},{timeoutMs:1000}),{code:'CAPTCHA_TIMEOUT'});
   const controller=new AbortController();let calls=0;
   const cancelled=captchaAttempt(()=>{calls++;return new Promise(()=>{});},{signal:controller.signal});controller.abort();
   await assert.rejects(cancelled,{code:'FETCH_ABORTED'});assert.equal(calls,0);

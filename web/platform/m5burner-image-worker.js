@@ -12,6 +12,7 @@ self.onmessage=async({data:challenge})=>{
     // Without errorHandler, Tesseract also throws rejected jobs from its message
     // handler. Keep failures in this attempt instead of a page-level dialog.
     worker=await createWorker('eng',1,{workerPath:base+'worker.min.js',corePath:base,langPath:base,workerBlobURL:false,cacheMethod:'none',errorHandler:()=>{}});
+    self.postMessage({type:'ready'});
     image=await createImageBitmap(await (await fetch(challenge.captchaImage)).blob());
     if(image.width!==challenge.width||image.height!==challenge.height)throw Error('Image dimensions changed');
     const canvas=new OffscreenCanvas(challenge.width,challenge.height),ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0);

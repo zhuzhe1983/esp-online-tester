@@ -54,7 +54,7 @@ export function captchaTextMasks({data,width,height}) {
 
 // Own the complete OCR worker tree, including slow initialization. Aborting the
 // attempt terminates it instead of leaving a pending library worker behind.
-export function readImagePoints(challenge,{signal,onProgress}={}) {
+export function readImagePoints(challenge,{signal,onProgress,onReady}={}) {
   return new Promise((resolve,reject)=>{
     const cancelled=()=>Object.assign(new Error('图片处理已取消。'),{code:'FETCH_ABORTED'});
     if(signal?.aborted){reject(cancelled());return;}
@@ -64,6 +64,7 @@ export function readImagePoints(challenge,{signal,onProgress}={}) {
     worker.onmessage=({data})=>{
       if(settled)return;
       if(data.type==='progress')onProgress?.(data.message);
+      else if(data.type==='ready')onReady?.();
       else if(data.type==='result')finish(null,data.result);
       else if(data.type==='error')finish(Object.assign(new Error('自动识图失败，可手动点选或换一张。'),{code:'CAPTCHA_IMAGE_ERROR'}));
     };
