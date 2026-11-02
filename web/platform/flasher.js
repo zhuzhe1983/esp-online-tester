@@ -8,7 +8,8 @@ import { firmwareCache } from './firmware-cache.js';
 import { assembleLocalFirmware, inspectLocalBuild } from './local-firmware.js';
 import {firmwareFlashPolicy} from './firmware-policy.js';
 import {validateAppImage} from './app-image.js';
-import {createFlashHardReset} from './flash-reset.js';
+import {createFlashHardReset,resetFlashedDevice} from './flash-reset.js';
+import {createFlashTransport,waitForFlashClose} from './flash-transport.js';
 
 const MIB = 1024 * 1024, MAX_FLASH = 32 * MIB;
 const problem = (code, message, details) => Object.assign(new Error(message), { code, details });
@@ -240,7 +241,7 @@ export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, 
   return {
     capabilities,
     observe: () => clone(state),
-    cancel() { if (active) { wantsCancel = true; aborter?.abort(); setState('cancelling', beganWrite ? '正在当前协议块结束后停止；设备可能需要重新刷写。' : '正在取消。'); } return clone(state); },
+    cancel() { if (active && state.status!=='closing') { wantsCancel = true; aborter?.abort(); setState('cancelling', beganWrite ? '正在当前协议块结束后停止；设备可能需要重新刷写。' : '正在取消。'); } return clone(state); },
     async flash({ scene, catalog, source = scene?.firmware, watchEntry, prepared, port: chosenPort } = {}) {
       check(!active, 'FLASH_BUSY', 'A flash operation is already active.');
       const capability = capabilities(); check(capability.supported, 'WEB_SERIAL_UNAVAILABLE', capability.reason);
@@ -257,7 +258,7 @@ export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, 
       }
       active = true; wantsCancel = false; beganWrite = false; aborter = new AbortController();
       state = { status: 'choosing', message: '请选择要刷写的 USB 串口设备。', progress: 0, writtenBytes: 0 }; emit({ type: 'state', state: clone(state) });
-      let transport, port, plan, ownsPort=false;
+      let transport, port, plan, ownsPort=false,verified=false;
       try {
         // This must be the first asynchronous call, directly inside the user's click.
         port = prepared ? chosenPort : await nav.serial.requestPort(); guard();
@@ -270,7 +271,7 @@ export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, 
           plan = await prepareFlashPlan({ scene, catalog, source, watchEntry, watchlist, fetchImpl, baseUrl, signal: aborter.signal }); guard();
         }
         const { ESPLoader, Transport, md5 } = await loadTools(); guard();
-        transport = new Transport(port, false);
+        transport = createFlashTransport(Transport,port);
         const loader = new ESPLoader({ transport, baudrate: 115200, romBaudrate: 115200, resetConstructors:{hardReset:createFlashHardReset}, debugLogging: false, terminal: { clean() {}, write: message => emit({ type: 'log', message: String(message) }), writeLine: message => emit({ type: 'log', message: String(message) }) } });
         setState('connecting', '正在连接 ROM 下载模式并识别芯片；此过程会复位设备。');
         await loader.main(); guard();
@@ -295,21 +296,32 @@ export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, 
             const writtenBytes = Math.round(completed + plan.files[index].data.length * fraction);
             setState('writing', '正在写入并校验；取消会在当前协议块结束后生效。', { progress: writtenBytes / totalBytes, writtenBytes });
           } });
-        guard(); setState('resetting', '写入与校验完成，正在复位设备。');
-        await loader.after('hard_reset');
-        setState('done', '固件已写入并通过 MD5 校验。', { progress: 1, writtenBytes: totalBytes });
-        return clone(state);
+        verified=true;guard(); setState('resetting', '写入与校验完成，正在复位设备。',{flashVerified:true});
+        await resetFlashedDevice(loader,port);
+        setState('closing', '固件已写入并通过 MD5 校验，正在关闭串口。', { progress: 1, writtenBytes: totalBytes });
       } catch (error) {
         const stopped = wantsCancel || error.name === 'NotFoundError';
         const failure = stopped ? cancelled() : error;
-        setState(stopped ? 'cancelled' : 'error', stopped ? beganWrite ? '已停止；Flash 可能只有部分内容，请重新进入下载模式刷写。' : '已取消，未写入 Flash。' : error.message, { error: { code: failure.code || 'FLASH_FAILED', message: failure.message, details: failure.details }, mayBePartial: beganWrite });
+        setState(stopped ? 'cancelled' : 'error', stopped ? verified ? '固件已写入并通过校验，复位操作已取消。' : beganWrite ? '已停止；Flash 可能只有部分内容，请重新进入下载模式刷写。' : '已取消，未写入 Flash。' : error.message, { error: { code: failure.code || 'FLASH_FAILED', message: failure.message, details: failure.details }, mayBePartial: beganWrite && !verified,flashVerified:verified });
         throw failure;
       } finally {
         // Do not reset after an interrupted or failed write. Close only this chosen port.
-        if (transport) await transport.disconnect().catch(error => emit({ type: 'log', message: `串口关闭失败：${error.message}` }));
-        if(ownsPort)occupiedPorts.delete(port);
+        let closeError;
+        if(transport) {
+          const closingPort=port,closingTransport=transport;
+          const closing=Promise.resolve().then(()=>closingTransport.disconnect()).then(()=>{if(ownsPort)occupiedPorts.delete(closingPort);});
+          try {await waitForFlashClose(closing);} catch(error) {closeError=error;emit({type:'log',message:`串口关闭失败：${error.message}`});}
+        } else if(ownsPort)occupiedPorts.delete(port);
         plan = null; transport = null; port = null; aborter = null; active = false;
+        if(closeError) {
+          const message=verified?'固件已写入并通过校验，但串口关闭失败；请断开设备并刷新页面后重试。':`${state.message} 串口关闭失败，请断开设备并刷新页面后重试。`;
+          const failure=problem('SERIAL_CLOSE_FAILED',message,{flashVerified:verified,mayBePartial:beganWrite && !verified});
+          setState('error',message,{error:{code:failure.code,message,details:failure.details},mayBePartial:beganWrite && !verified,flashVerified:verified});
+          throw failure;
+        }
+        if(state.status==='closing')setState('done','固件已写入并通过 MD5 校验。');
       }
+      return clone(state);
     },
   };
 }

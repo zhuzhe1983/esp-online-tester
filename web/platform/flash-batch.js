@@ -28,7 +28,7 @@ export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,cre
     const flasher=createDeviceFlasher({...dependencies,onEvent(event){
       if(event.type==='state') {
         const state=event.state;
-        Object.assign(item,{status:state.status==='choosing'?'connecting':state.status,progress:state.progress,message:state.message,error:state.error || null,mayBePartial:!!state.mayBePartial});
+        Object.assign(item,{status:state.status==='choosing'?'connecting':state.status,progress:state.progress,message:state.message,error:state.error || null,mayBePartial:!!state.mayBePartial,flashVerified:!!state.flashVerified});
       } else if(event.type==='log') {
         item.logs.push(String(event.message).slice(-4096));if(item.logs.length>200)item.logs.splice(0,item.logs.length-200);
       }
@@ -64,7 +64,7 @@ export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,cre
     if(!connected) {
       // USB reset can re-enumerate after MD5 verification. Do not turn a verified
       // write into cancellation while the reset strategy is releasing the port.
-      if(jobs.has(item.id) && !['resetting','done'].includes(item.status))jobs.get(item.id).disconnect();
+      if(jobs.has(item.id) && !['resetting','closing','done'].includes(item.status))jobs.get(item.id).disconnect();
       else if(item.status==='queued') {item.status='error';item.error={code:'DEVICE_DISCONNECTED',message:'设备已断开，请重新连接后重试。'};item.message=item.error.message;}
     }
     // Completed/reconnected devices never automatically get a second write.
