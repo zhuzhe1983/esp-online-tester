@@ -1,4 +1,69 @@
+//! CO5300 command/GRAM model with optional display-state observations, not analog brightness timing.
 use crate::board::{BoardEdge, VirtualCycle};
+
+/// Optional command observations. Hidden writes are legal preloading, not proof of a fault.
+/// Chipone CO5300 V0.01 (2023-07-24), pp.131,143,155,157,176,184,186:
+/// https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1242/CO5300_Datasheet.pdf
+/// Page186 contradicts itself (WRCTRLD default28h versus reset table00h), so that
+/// default stays unknown until written. Sleep In follows RDDPM=08h and p.143;
+/// p.145's Sleep Out default table conflicts with both. No settle/dimming delay is invented.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Co5300DisplayState {
+    pub sleep_out: bool,
+    pub display_on: bool,
+    pub brightness: u8,
+    pub control_display: Option<u8>,
+    pub pixel_format: u8,
+    /// Command-state changes only; lets a board publish blank/restored output without new pixels.
+    pub revision: u64,
+    pub pixel_bytes_while_hidden: u64,
+    pub pixel_bytes_control_unverified: u64,
+    pub pixel_bytes_unsupported_format: u64,
+}
+
+impl Default for Co5300DisplayState {
+    fn default() -> Self {
+        Self { sleep_out:false, display_on:false, brightness:0, control_display:None, pixel_format:0x77,
+               revision:0, pixel_bytes_while_hidden:0, pixel_bytes_control_unverified:0, pixel_bytes_unsupported_format:0 }
+    }
+}
+
+impl Co5300DisplayState {
+    /// Digital Sleep/Display gates and explicitly enabled DBV=0 (p.184: 0%).
+    /// No dimming transition or calibrated non-zero emitted brightness is modeled.
+    pub fn visible(&self) -> bool { self.sleep_out && self.display_on && !(self.brightness_control_enabled()==Some(true) && self.brightness==0) }
+    pub fn brightness_control_enabled(&self) -> Option<bool> { self.control_display.map(|v|v&0x20!=0) }
+    /// COLMOD bit7 selects VIPF[6:4] instead of IFPF[2:0] for SPI (p.176).
+    pub fn rgb565(&self) -> bool { (if self.pixel_format&0x80!=0 {self.pixel_format>>4}else{self.pixel_format})&7==5 }
+
+    fn command(&mut self, command:u8, parameter:Option<u8>) {
+        let before=*self;
+        match (command,parameter) {
+            (0x10,_)=>self.sleep_out=false,
+            (0x11,_)=>self.sleep_out=true,
+            (0x28,_)=>self.display_on=false,
+            (0x29,_)=>self.display_on=true,
+            (0x51,Some(v))=>self.brightness=v,
+            (0x53,Some(v))=>self.control_display=Some(v),
+            (0x3a,Some(v))=>self.pixel_format=v,
+            _=>{}
+        }
+        if *self!=before {self.revision=self.revision.wrapping_add(1);}
+    }
+
+    fn pixels(&mut self, bytes:usize) {
+        let bytes=u64::try_from(bytes).unwrap_or(u64::MAX);
+        if !self.visible() {self.pixel_bytes_while_hidden=self.pixel_bytes_while_hidden.saturating_add(bytes);}
+        if self.control_display.is_none() {self.pixel_bytes_control_unverified=self.pixel_bytes_control_unverified.saturating_add(bytes);}
+        if !self.rgb565() {self.pixel_bytes_unsupported_format=self.pixel_bytes_unsupported_format.saturating_add(bytes);}
+    }
+
+    fn reset(&mut self) {
+        *self=Self{revision:self.revision.wrapping_add(1),pixel_bytes_while_hidden:self.pixel_bytes_while_hidden,
+                   pixel_bytes_control_unverified:self.pixel_bytes_control_unverified,
+                   pixel_bytes_unsupported_format:self.pixel_bytes_unsupported_format,..Self::default()};
+    }
+}
 
 /// Synthetic scan timing, not a calibration of a physical panel. The scan starts at
 /// cycle zero and never restarts when STE or TE enable changes. All times are virtual cycles.
@@ -38,6 +103,7 @@ pub struct Co5300 {
     next_fall: Option<VirtualCycle>,
     tear_level: bool,
     edges: Vec<BoardEdge>,
+    display_state: Option<Co5300DisplayState>,
 }
 
 impl Co5300 {
@@ -71,6 +137,7 @@ impl Co5300 {
             next_fall: None,
             tear_level: false,
             edges: Vec::new(),
+            display_state: None,
         }
     }
 
@@ -83,6 +150,11 @@ impl Co5300 {
         self.schedule_rise();
         self
     }
+
+    /// Opt into register observations. GRAM and legacy parsing stay unchanged; the board owns
+    /// visible output gating and can still expose `frame` separately for raw-memory inspection.
+    pub fn with_display_state(mut self) -> Self { self.display_state=Some(Co5300DisplayState::default()); self }
+    pub fn display_state(&self) -> Option<Co5300DisplayState> { self.display_state }
 
     pub fn width(&self) -> usize { self.width }
     pub fn height(&self) -> usize { self.height }
@@ -100,6 +172,7 @@ impl Co5300 {
         reset.scan = self.scan;
         reset.cycle = self.cycle;
         reset.edges = std::mem::take(&mut self.edges);
+        reset.display_state=self.display_state.map(|mut state|{state.reset();state});
         *self = reset;
     }
 
@@ -160,6 +233,7 @@ impl Co5300 {
                 self.reset();
                 return;
             }
+            if let Some(state)=&mut self.display_state {state.command(command,None);}
             self.pending = Some(command);
             self.arg_count = 0;
             self.pixel_hi = None;
@@ -214,6 +288,12 @@ impl Co5300 {
                 }
             }
             Some(0x2c | 0x3c) => self.write_pixel_bytes(data),
+            Some(command @ (0x3a | 0x51 | 0x53)) => {
+                if let Some(&value)=data.first() {
+                    if let Some(state)=&mut self.display_state {state.command(command,Some(value));}
+                    self.pending=None;
+                }
+            }
             Some(_) => self.pending = None,
             None => {}
         }
@@ -221,6 +301,7 @@ impl Co5300 {
 
     /// EX158/EX170: the per-byte loop, a row run at a time. Same window walk and `pixels_written`.
     fn write_pixel_bytes(&mut self, mut data: &[u8]) {
+        if let Some(state)=&mut self.display_state {state.pixels(data.len());}
         if let Some(high) = self.pixel_hi {
             let Some((&low, rest)) = data.split_first() else { return };
             self.pixel_hi = None;
@@ -294,6 +375,125 @@ mod tests {
         rows.extend_from_slice(&y1.to_be_bytes());
         command(panel, 0x2a, &columns);
         command(panel, 0x2b, &rows);
+    }
+
+    #[test]
+    fn display_state_distinguishes_preloaded_gram_from_visible_output() {
+        let mut panel=Co5300::new(2,1,0).with_display_state();
+        let initial=panel.display_state().unwrap();
+        assert!(!initial.visible());
+        assert_eq!((initial.brightness,initial.control_display,initial.pixel_format),(0,None,0x77));
+        command(&mut panel,0x3a,&[0x55]);
+        command(&mut panel,0x2c,&[0xf8,0,0x07,0xe0]);
+        assert_eq!(panel.frame,[0xf800,0x07e0]);
+        let hidden=panel.display_state().unwrap();
+        assert_eq!((hidden.pixel_bytes_while_hidden,hidden.pixel_bytes_control_unverified,hidden.pixel_bytes_unsupported_format),(4,4,0));
+        command(&mut panel,0x11,&[]);
+        assert!(!panel.display_state().unwrap().visible());
+        command(&mut panel,0x29,&[]);
+        assert!(panel.display_state().unwrap().visible()); // 53h default is unresolved, not an invented failure.
+        command(&mut panel,0x53,&[0x20]);
+        assert!(!panel.display_state().unwrap().visible()); // Explicitly enabled DBV=0 is zero brightness.
+        command(&mut panel,0x51,&[0xa0]);
+        let ready=panel.display_state().unwrap();
+        assert!(ready.visible());
+        assert_eq!(ready.brightness_control_enabled(),Some(true));
+        assert!(ready.revision>hidden.revision);
+        assert_eq!(panel.frame,[0xf800,0x07e0]);
+        command(&mut panel,0x28,&[]);
+        assert!(!panel.display_state().unwrap().visible());
+        command(&mut panel,0x29,&[]);
+        assert!(panel.display_state().unwrap().visible());
+        command(&mut panel,0x10,&[]);
+        assert!(!panel.display_state().unwrap().visible());
+        command(&mut panel,0x11,&[]);
+        assert!(panel.display_state().unwrap().visible());
+        assert_eq!(panel.frame,[0xf800,0x07e0]);
+        assert_eq!(panel.display_state().unwrap().pixel_bytes_while_hidden,4);
+    }
+
+    #[test]
+    fn display_parameters_survive_split_headers_and_data_but_not_a_new_cs() {
+        let mut panel=Co5300::new(1,1,0).with_display_state();
+        command(&mut panel,0x11,&[]);command(&mut panel,0x29,&[]);
+        panel.begin_transaction();
+        for byte in [0x02,0,0x53,0] {panel.transaction_stream(&[byte]);}
+        panel.transaction_stream(&[]);
+        assert_eq!(panel.display_state().unwrap().control_display,None);
+        panel.transaction_stream(&[0x20]);
+        panel.transaction_stream(&[0]); // Parameter writes consume one byte, not arbitrary following data.
+        assert_eq!(panel.display_state().unwrap().control_display,Some(0x20));
+        assert!(!panel.display_state().unwrap().visible());
+        panel.begin_transaction();panel.transaction_stream(&[0x02,0,0x51,0]);
+        panel.transaction_stream(&[0x7f]);
+        assert!(panel.display_state().unwrap().visible());
+        assert_eq!(panel.display_state().unwrap().brightness,0x7f);
+        panel.begin_transaction();panel.transaction_stream(&[0x02,0,0x53,0]);
+        panel.begin_transaction();panel.transaction_stream(&[0x02,0,0x28,0]);
+        panel.transaction_stream(&[0]);
+        assert_eq!(panel.display_state().unwrap().control_display,Some(0x20));
+        assert!(!panel.display_state().unwrap().visible());
+        panel.begin_transaction();panel.transaction_stream(&[0x02,0,0x29,0]);
+        let before=panel.display_state().unwrap();
+        command(&mut panel,0x29,&[]);
+        assert_eq!(panel.display_state().unwrap().revision,before.revision);
+    }
+
+    #[test]
+    fn pixel_format_and_brightness_observations_do_not_guess_unsupported_output() {
+        let mut panel=Co5300::new(1,1,0).with_display_state();
+        command(&mut panel,0x11,&[]);command(&mut panel,0x29,&[]);
+        command(&mut panel,0x2c,&[0xff,0xff]);
+        assert_eq!(panel.display_state().unwrap().pixel_bytes_unsupported_format,2);
+        for (value,supported) in [(0x55,true),(0xd7,true),(0x57,false),(0xf5,false)] {
+            command(&mut panel,0x3a,&[]);panel.transaction(&[]);panel.transaction(&[value]);
+            assert_eq!(panel.display_state().unwrap().rgb565(),supported);
+        }
+        command(&mut panel,0x53,&[0]);command(&mut panel,0x51,&[0]);
+        assert!(panel.display_state().unwrap().visible()); // Disabled brightness control is not proved black.
+        assert_eq!(panel.display_state().unwrap().brightness_control_enabled(),Some(false));
+        command(&mut panel,0x53,&[0x28]);
+        assert!(!panel.display_state().unwrap().visible());
+        command(&mut panel,0x51,&[1]);
+        assert!(panel.display_state().unwrap().visible());
+    }
+
+    #[test]
+    fn reset_restores_display_registers_and_keeps_diagnostic_history_and_revision() {
+        let mut panel=Co5300::new(1,1,0).with_display_state();
+        command(&mut panel,0x2c,&[0xaa,0x55]);
+        command(&mut panel,0x11,&[]);command(&mut panel,0x29,&[]);
+        command(&mut panel,0x53,&[0x20]);command(&mut panel,0x51,&[0xa0]);
+        command(&mut panel,0x3a,&[0x55]);
+        let before=panel.display_state().unwrap();
+        command(&mut panel,0x01,&[]);
+        let reset=panel.display_state().unwrap();
+        assert!(!reset.visible());
+        assert_eq!((reset.brightness,reset.control_display,reset.pixel_format),(0,None,0x77));
+        assert_ne!(reset.revision,before.revision);
+        assert_eq!((reset.pixel_bytes_while_hidden,reset.pixel_bytes_control_unverified,reset.pixel_bytes_unsupported_format),(2,2,2));
+        assert_eq!(panel.frame,[0]); // Existing reset/GRAM convention is unchanged by observation.
+        panel.reset();
+        assert_ne!(panel.display_state().unwrap().revision,reset.revision);
+        assert_eq!(panel.display_state().unwrap().pixel_bytes_while_hidden,2);
+    }
+
+    #[test]
+    fn opt_in_observations_preserve_legacy_parser_pixels_and_saturate_history() {
+        let mut legacy=Co5300::new(2,1,0);
+        let mut observed=Co5300::new(2,1,0).with_display_state();
+        for tx in [&[0x02,0,0x11,0][..],&[0x02,0,0x51,0],&[],&[0xff],&[0x32,0,0x2c,0],&[0xf8],&[0,0x07,0xe0],&[0x02,0,0x28,0],&[0x02,0,0x01,0]] {
+            legacy.transaction(tx);observed.transaction(tx);
+            assert_eq!((&legacy.frame,legacy.frames,legacy.pixels_written,legacy.x,legacy.y),(&observed.frame,observed.frames,observed.pixels_written,observed.x,observed.y));
+            assert_eq!(legacy.display_state(),None);
+        }
+        let state=observed.display_state.as_mut().unwrap();
+        state.pixel_bytes_while_hidden=u64::MAX-1;
+        state.pixel_bytes_control_unverified=u64::MAX;
+        state.pixel_bytes_unsupported_format=u64::MAX;
+        command(&mut observed,0x2c,&[0,0,0,0]);
+        let state=observed.display_state().unwrap();
+        assert_eq!((state.pixel_bytes_while_hidden,state.pixel_bytes_control_unverified,state.pixel_bytes_unsupported_format),(u64::MAX,u64::MAX,u64::MAX));
     }
 
     #[test]

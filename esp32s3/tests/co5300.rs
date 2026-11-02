@@ -24,6 +24,11 @@ impl BoardModel for PanelBoard {
     fn next_deadline(&self) -> Option<u64> { self.0.next_deadline() }
     fn advance_to(&mut self, cycle: u64) { self.0.advance_to(cycle); }
     fn take_edges(&mut self) -> Vec<BoardEdge> { self.0.take_edges() }
+    fn display(&self) -> Option<(u32,u32,Vec<u16>,u64)> {
+        let state=self.0.display_state();
+        let frame=if state.is_none_or(|s|s.visible()) {self.0.frame.clone()}else{vec![0;self.0.frame.len()]};
+        Some((self.0.width() as u32,self.0.height() as u32,frame,state.map_or(0,|s|s.revision)))
+    }
 }
 
 fn command(bus: &mut esp32s3::bus::SocBus, command: u8, data: &[u8]) {
@@ -37,6 +42,36 @@ fn command(bus: &mut esp32s3::bus::SocBus, command: u8, data: &[u8]) {
     bytes[..data.len()].copy_from_slice(data);
     bus.write32(SPI2 + 0x98, u32::from_le_bytes(bytes)).unwrap();
     bus.write32(SPI2, 1 << 24).unwrap();
+}
+
+#[test]
+fn real_spi_register_commands_separate_gram_writes_from_display_enable() {
+    let mut bus=esp32s3::bus::SocBus::new(1024,1024,[0;6]);
+    bus.board=Box::new(PanelBoard(Co5300::new(1,1,0).with_display_state()));
+    bus.attach_board_devices();
+    command(&mut bus,0x3a,&[0x55]);
+    command(&mut bus,0x2c,&[0xf8,0]);
+    assert_eq!(bus.board.display().unwrap().2,[0]);
+    command(&mut bus,0x11,&[]);
+    assert_eq!(bus.board.display().unwrap().2,[0]);
+    command(&mut bus,0x29,&[]);
+    assert_eq!(bus.board.display().unwrap().2,[0xf800]);
+    command(&mut bus,0x53,&[0x20]);
+    assert_eq!(bus.board.display().unwrap().2,[0]);
+    command(&mut bus,0x51,&[0xa0]);
+    assert_eq!(bus.board.display().unwrap().2,[0xf800]);
+    let on_revision=bus.board.display().unwrap().3;
+    command(&mut bus,0x28,&[]);
+    assert_eq!(bus.board.display().unwrap().2,[0]);
+    assert_ne!(bus.board.display().unwrap().3,on_revision);
+    command(&mut bus,0x29,&[]);
+    assert_eq!(bus.board.display().unwrap().2,[0xf800]);
+    command(&mut bus,0x10,&[]);
+    assert_eq!(bus.board.display().unwrap().2,[0]);
+    command(&mut bus,0x11,&[]);
+    assert_eq!(bus.board.display().unwrap().2,[0xf800]);
+    command(&mut bus,0x01,&[]);
+    assert_eq!(bus.board.display().unwrap().2,[0]);
 }
 
 #[test]
