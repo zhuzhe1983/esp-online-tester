@@ -65,19 +65,20 @@ export function openFlashStation({product,source,scene,catalog,onChange,onClose,
     let row=rows.get(item.id);if(row)return row;
     const root=node('article','flash-device'),header=node('div','flash-device-heading'),label=node('strong'),badge=node('span','flash-device-badge');header.append(label,badge);
     const message=node('p','flash-device-message'),progress=node('progress','flash-progress');progress.max=1;progress.value=0;
-    const controls=node('div','flash-device-actions'),cancel=button('取消','button quiet tiny'),retry=button('重试','button quiet tiny');
-    cancel.addEventListener('click',()=>action(()=>batch.cancel(item.id)));retry.addEventListener('click',()=>action(()=>{const result=batch.retry(item.id);started=true;render();return result;}));controls.append(cancel,retry);
+    const controls=node('div','flash-device-actions'),cancel=button('取消','button quiet tiny'),retry=button('重试此设备','button quiet tiny'),replace=button('更换设备','button quiet tiny');
+    cancel.addEventListener('click',()=>action(()=>batch.cancel(item.id)));retry.addEventListener('click',()=>action(()=>{const result=batch.retry(item.id);started=true;render();return result;}));
+    replace.addEventListener('click',()=>action(()=>batch.replaceDevice(item.id)));controls.append(cancel,retry,replace);
     const details=node('details','flash-device-log'),summary=node('summary','','查看日志'),log=node('pre');details.append(summary,log);root.append(header,message,progress,controls,details);
-    row={root,label,badge,message,progress,cancel,retry,details,log};rows.set(item.id,row);return row;
+    row={root,label,badge,message,progress,cancel,retry,replace,details,log};rows.set(item.id,row);return row;
   }
   function render(){
     if(disposed)return;
     const items=state.items||[],isBusy=busy();
-    modeHint.textContent=mode==='single'&&!started&&items.some(item=>item.status==='cancelled')?'已取消排队。勾选确认后可重试这台设备；要选择其他设备，请新建批次。':modeHints[mode];
+    modeHint.textContent=mode==='single'&&!started&&items.some(item=>item.status==='cancelled')?'已取消排队。勾选确认后可重试此设备，也可点击“更换设备”重新选择。':modeHints[mode];
     for(const input of radios.values())input.disabled=started||isBusy||items.length>1&&input.value==='single';
     add.textContent=mode==='sequential'&&started?'选择下一台':'添加设备';
     add.disabled=!state.receipt||preparing||state.status==='preparing'||state.status==='stopping'||state.choosing||Boolean(prepareError)||mode==='single'&&items.length>=1||started&&mode!=='sequential'||started&&!state.running;
-    const labels={idle:'正在准备固件…',preparing:'正在下载并校验固件…',ready:'固件已准备好，添加设备后即可开始。',running:mode==='sequential'?'连续烧录已开启。完成后换插设备，再点击“选择下一台”。':'正在烧录，请保持 USB 连接。',stopping:'正在停止本批次，等待各设备关闭连接…',stopped:'本批已停止，可查看结果或新建批次。',done:'本批次已完成。',error:'准备固件失败，可新建批次重试。'};
+    const labels={idle:'正在准备固件…',preparing:'正在下载并校验固件…',ready:started?'设备已更换，点击“烧录此设备”继续。':'固件已准备好，选择设备并勾选确认后即可开始。',running:mode==='sequential'?'连续烧录已开启。完成后换插设备，再点击“选择下一台”。':'正在烧录，请保持 USB 连接。',stopping:'正在停止本批次，等待各设备关闭连接…',stopped:'本批已停止，可查看结果或新建批次。',done:'本批次已完成。',error:'准备固件失败，可新建批次重试。'};
     status.textContent=preparing?'正在下载并校验固件…':prepareError?'固件未准备好，尚未连接或写入设备。':state.choosing?'请在浏览器中选择一台设备。':labels[state.status]||state.status;
     close.textContent=isBusy?'收起':'关闭';close.setAttribute('aria-label',isBusy?'收起烧录窗口':'关闭烧录窗口');
     const nextRows=items.map(item=>{
@@ -86,8 +87,10 @@ export function openFlashStation({product,source,scene,catalog,onChange,onClose,
       row.badge.textContent=statusLabels[item.status]||item.status;
       row.message.textContent=item.message||(!item.connected?'设备未连接':'已选择设备');
       row.progress.setAttribute('aria-label',`${item.label||item.id} 写入进度`);row.progress.value=Math.max(0,Math.min(1,item.progress||0));row.progress.hidden=!isActive&&item.status!=='done';
-      row.cancel.hidden=!isActive&&!queued;row.cancel.disabled=item.status==='cancelling';row.cancel.textContent=queued?'取消排队':'取消';
-      row.retry.hidden=!['error','cancelled'].includes(item.status);row.retry.disabled=isBusy&&!state.running||!checked.checked||item.connected===false;
+      row.cancel.hidden=!isActive&&!queued;row.cancel.disabled=item.status==='cancelling'||state.choosing;row.cancel.textContent=queued?'取消排队':'取消';
+      row.retry.textContent=item.status==='ready'?'烧录此设备':'重试此设备';
+      row.retry.hidden=!['error','cancelled'].includes(item.status)&&!(started&&item.status==='ready');row.retry.disabled=state.choosing||state.status==='stopping'||isBusy&&!state.running||!checked.checked||item.connected===false;
+      row.replace.hidden=!['queued','ready','error','cancelled'].includes(item.status);row.replace.disabled=state.choosing||state.status==='stopping'||preparing;
       const logs=Array.isArray(item.logs)?item.logs.map(entry=>typeof entry==='string'?entry:entry.message||'').join('\n'):String(item.logs||'');
       if(row.log.textContent!==logs)row.log.textContent=logs;row.details.hidden=!logs;return row.root;
     });

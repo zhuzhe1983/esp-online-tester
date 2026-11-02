@@ -204,6 +204,67 @@ for(const extra of [{chip:'ESP32-C3'},{size:'8MB'},{secured:true}]) {
 console.log('ok every batch device independently checks chip, Flash capacity and security before writing');
 
 {
+  const f=fixture();await f.batch.prepare({scene,catalog,source:source()});
+  const wrong=f.port('wrong',{chip:'ESP32-S31'}),right=f.port('right'),first=await f.choose(wrong);
+  f.click(()=>f.batch.start());await until(()=>f.batch.observe().status==='done');
+  const failed=f.batch.observe(),receipt=failed.receipt;
+  assert.equal(failed.items[0].error.code,'CHIP_MISMATCH');assert.match(failed.items[0].message,/ESP32-S31.*ESP32-S3.*未写入 Flash.*更换设备/);
+  assert.equal(f.calls.writes,0);
+  await assert.rejects(()=>f.batch.replaceDevice(first.id),{code:'USER_GESTURE_REQUIRED'});
+  f.selected.push(new DOMException('Cancelled','NotFoundError'));
+  await assert.rejects(()=>f.click(()=>f.batch.replaceDevice(first.id)),{name:'NotFoundError'});
+  assert.deepEqual(f.batch.observe(),failed,'Cancelled selection preserves the failed row and firmware');
+  f.selected.push(wrong);await assert.rejects(()=>f.click(()=>f.batch.replaceDevice(first.id)),{code:'FLASH_SAME_DEVICE'});
+  assert.deepEqual(f.batch.observe(),failed);
+  f.selected.push(right);await f.click(()=>f.batch.replaceDevice(first.id));
+  let state=f.batch.observe();assert.equal(state.items.length,1);assert.equal(state.items[0].id,first.id);assert.equal(state.items[0].status,'ready');assert.equal(state.counts.queued,1);
+  assert.equal(state.items[0].error,null);assert.match(state.items[0].logs.join('\n'),/ESP32-S31/);assert.deepEqual(state.receipt,receipt);
+  f.notify('disconnect',wrong);assert.equal(f.batch.observe().items[0].connected,true,'Old port no longer controls this row');
+  f.notify('connect',right);await tick();assert.equal(f.calls.connects,1,'Replacement never opens or writes the port');
+  assert.throws(()=>f.batch.retry(first.id),{code:'USER_GESTURE_REQUIRED'});
+  f.click(()=>f.batch.retry(first.id));await until(()=>f.calls.writes===1);right.release();await until(()=>f.batch.observe().status==='done');
+  assert.equal(f.batch.observe().counts.done,1);assert.equal(f.calls.prepares,1);assert.equal(f.calls.disconnects,2);
+  assert.deepEqual(f.calls.hashes[0],originalPlan.files.map(file=>createHash('sha256').update(file.data).digest('hex')));
+  await assert.rejects(()=>f.click(()=>f.batch.replaceDevice(first.id)),{code:'FLASH_BUSY'});
+  await f.batch.dispose();
+}
+console.log('ok wrong-chip replacement, cancelled/same-port chooser, pinned bytes, detached old port, explicit write authorization');
+
+{
+  const f=fixture();await f.batch.prepare({scene,catalog,source:source()});
+  const a=f.port('active'),b=f.port('queued'),c=f.port('replacement'),first=await f.choose(a),second=await f.choose(b);
+  f.selected.push(a);await assert.rejects(()=>f.click(()=>f.batch.replaceDevice(second.id)),{code:'FLASH_DUPLICATE_DEVICE'});
+  f.click(()=>f.batch.start({concurrency:1}));await until(()=>f.calls.writes===1);
+  await assert.rejects(()=>f.click(()=>f.batch.replaceDevice(first.id)),{code:'FLASH_BUSY'});
+  let resolveChooser;f.navigator.serial.requestPort=()=>new Promise(resolve=>{resolveChooser=resolve;});
+  const replacing=f.click(()=>f.batch.replaceDevice(second.id));a.release();await until(()=>f.batch.observe().counts.active===0);
+  assert.equal(f.calls.writes,1,'Queued old port cannot launch while replacement chooser is pending');
+  resolveChooser(c);await replacing;await tick();assert.equal(f.calls.writes,1);assert.equal(f.batch.observe().status,'ready');
+  f.click(()=>f.batch.start({concurrency:1}));await until(()=>f.calls.writes===2);c.release();await until(()=>f.batch.observe().status==='done');
+  assert.equal(b.release,undefined);assert.equal(f.batch.observe().counts.done,2);await f.batch.dispose();
+}
+console.log('ok duplicate/active-port guards and queued replacement paused across parallel job completion');
+
+for(const end of ['stop','dispose']) {
+  const f=fixture();await f.batch.prepare({scene,catalog,source:source()});const first=await f.choose(f.port('original'));
+  let resolveChooser;f.navigator.serial.requestPort=()=>new Promise(resolve=>{resolveChooser=resolve;});
+  const replacing=f.click(()=>f.batch.replaceDevice(first.id));await f.batch[end]();resolveChooser(f.port('late'));
+  await assert.rejects(()=>replacing,{code:end==='dispose'?'FLASH_SESSION_INVALID':'FLASH_CANCELLED'});
+  assert.equal(f.calls.connects,0);assert.equal(f.batch.observe().items[0].status,'cancelled');await f.batch.dispose();
+}
+console.log('ok stop/dispose discard late replacement selections without opening any port');
+
+for(const extra of [{chip:'ESP32-S31'},{size:'8MB'},{secured:true}]) {
+  const f=fixture();await f.batch.prepare({scene,catalog,source:source()});f.click(()=>f.batch.start({mode:'sequential'}));
+  const first=await f.choose(f.port('wrong',{chip:'ESP32-C3'}));await until(()=>f.batch.observe().counts.active===0);
+  f.selected.push(f.port('replacement',extra));await f.click(()=>f.batch.replaceDevice(first.id));
+  await tick();assert.equal(f.calls.connects,1,'Continuous mode does not automatically write replacements');
+  f.click(()=>f.batch.retry(first.id));await until(()=>f.batch.observe().counts.active===0);
+  assert.equal(f.calls.connects,2);assert.equal(f.calls.writes,0);assert.equal(f.batch.observe().counts.error,1);await f.batch.dispose();
+}
+console.log('ok continuous replacement requires a click and repeats chip/capacity/security checks');
+
+{
   const f=fixture();await f.batch.prepare({scene,catalog,source:source()});const p=f.port('close-failure',{closeFailure:true});await f.choose(p);f.click(()=>f.batch.start());
   await until(()=>f.calls.writes===1);p.release();await until(()=>f.batch.observe().status==='done');
   const item=f.batch.observe().items[0];assert.equal(item.status,'error');assert.equal(item.error.code,'SERIAL_CLOSE_FAILED');assert.equal(item.flashVerified,true);assert.equal(item.mayBePartial,false);
