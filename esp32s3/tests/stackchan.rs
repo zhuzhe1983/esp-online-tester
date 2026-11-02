@@ -81,8 +81,9 @@ fn external_stackchan_factory_dance_gatt_drives_display_servos_and_rgb() {
     assert_eq!(m.bus.ble_pending_commands(),0,"real guest ATT discovery must finish");
     let before=m.bus.board.display().unwrap().2.to_vec();
     // Handles were obtained by discovery on this exact fixed image, not written into guest RAM.
+    // hal_servo.cpp maps angle in tenths of a degree: raw = zero + angle * 16 / 5 / 10.
     // Each ATT write is <=20 bytes; longer JSON uses the manufacturer's own fragment assembly.
-    for (handle,json) in [(0x10u16,r#"{"yawServo":{"angle":30}}"#),(0x10,r#"{"pitchServo":{"angle":20}}"#),
+    for (handle,json) in [(0x10u16,r#"{"yawServo":{"angle":300}}"#),(0x10,r#"{"pitchServo":{"angle":200}}"#),
         (0x13,r#"{"mouth":{"size":60}}"#),(0x19,r##"{"leftRgbColor":"#ff0000","rightRgbColor":"#0000ff"}"##)] {
         let bytes=json.as_bytes();let count=bytes.len().div_ceil(10);
         for (index,chunk) in bytes.chunks(10).enumerate() {
