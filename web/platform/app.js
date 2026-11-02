@@ -1,3 +1,4 @@
+import {mountHardwareDiagnostics} from './hardware-diagnostics.js';
 import {mountAudioControls} from './audio-controls.js';
 import {mountNetworkControls} from './network-ui.js';
 import {illuminanceParameter} from './illuminance-input.js';
@@ -1020,6 +1021,10 @@ async function init() {
   api = installAutomation(runtime, {target: window});
   const browserAudio=mountAudioControls({container:$('browser-audio-controls'),runtime:api});
   window.addEventListener('pagehide',()=>browserAudio.dispose(),{once:true});
+  const checksMount=document.createElement('section');
+  document.querySelector('.console-panel, .embed-console')?.before(checksMount);
+  const hardwareChecks=mountHardwareDiagnostics({container:checksMount,runtime:api});
+  window.addEventListener('pagehide',()=>hardwareChecks.dispose(),{once:true});
   const networkMount=document.createElement('section');
   document.querySelector('.console-panel, .embed-console')?.before(networkMount);
   const networkUi=mountNetworkControls({container:networkMount,runtime:api,onError:report});

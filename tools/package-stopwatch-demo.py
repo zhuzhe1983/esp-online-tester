@@ -25,4 +25,9 @@ for source, name in files.items():
     manifest.setdefault("artifact_sha256", {})["public/" + name] = hashlib.sha256((public / name).read_bytes()).hexdigest()
 (public / "platform-stopwatch.sha256").write_text("".join(hashes))
 manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
-print("Packaged StopWatch firmware and SHA-256 receipts.")
+fixture_path = root / "tools/fixtures/platform-stopwatch.json"
+fixture = json.loads(fixture_path.read_text())
+fixture["source"]["sha256"] = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+fixture["revision"] = json.loads((build / "project_description.json").read_text())["project_version"]
+fixture_path.write_text(json.dumps(fixture, indent=2, ensure_ascii=False) + "\n")
+print("Packaged StopWatch firmware, manifest pin and SHA-256 receipts.")

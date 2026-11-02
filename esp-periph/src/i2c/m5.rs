@@ -20,11 +20,30 @@ pub struct M5pm1State {
     pub input_high: u8,
     /// Standard GPIO0..4 driven high in push-pull mode (not open-drain release).
     pub driven_high: u8,
+    /// Nominal master rates at addressed transfers; unknown software-I2C does not
+    /// supply a rate. The first/max values refer only to known observations.
+    pub i2c_first_hz: Option<u32>,
+    pub i2c_last_hz: Option<u32>,
+    pub i2c_max_hz: u32,
+    /// I2C_CFG[4]: 100/400 kHz, not a claim that slower transfers must fail.
+    pub i2c_speed_hz: u32,
+    pub i2c_address_phases: u64,
+    pub i2c_speed_mismatches: u64,
+    pub i2c_last_mismatch_hz: Option<u32>,
+    pub i2c_last_mismatch_limit_hz: Option<u32>,
+    pub download_locked: bool,
+    /// Guest writes requesting DL_LOCK=1, including repeated writes of that value.
+    pub download_lock_writes: u64,
+    /// Attempts to clear a previously set lock; silicon latch clearing is not modeled.
+    pub download_unlock_attempts: u64,
 }
 
 impl Default for M5pm1State {
     fn default() -> Self {
-        Self { battery_mv: 3900, charging: false, power_off_requested: false, led_enabled: true, grove_5v_enabled: false, ldo3v3_enabled:true, input_mask:0, input_high:0, driven_high: 0 }
+        Self { battery_mv: 3900, charging: false, power_off_requested: false, led_enabled: true, grove_5v_enabled: false, ldo3v3_enabled:true, input_mask:0, input_high:0, driven_high: 0,
+            i2c_first_hz:None, i2c_last_hz:None, i2c_max_hz:0, i2c_speed_hz:100_000, i2c_address_phases:0,
+            i2c_speed_mismatches:0, i2c_last_mismatch_hz:None, i2c_last_mismatch_limit_hz:None,
+            download_locked:false, download_lock_writes:0, download_unlock_attempts:0 }
     }
 }
 
@@ -37,7 +56,7 @@ impl M5pm1 {
     pub const ADDRESS: u8 = 0x6e;
 
     pub fn new(state: Arc<Mutex<M5pm1State>>) -> Self {
-        {let mut state=state.lock().expect("M5PM1 state mutex poisoned");state.power_off_requested=false;state.led_enabled=true;state.grove_5v_enabled=false;state.ldo3v3_enabled=true;state.driven_high=0;}
+        {let mut state=state.lock().expect("M5PM1 state mutex poisoned");*state=M5pm1State {battery_mv:state.battery_mv,charging:state.charging,input_mask:state.input_mask,input_high:state.input_high,..Default::default()};}
         Self {
             registers: Reg8Device::new("m5pm1", &[
                 (0x00, 0x50), (0x01, 0x20), (0x02, 0x05), (0x03, 0x06),
@@ -46,10 +65,33 @@ impl M5pm1 {
             state,
         }
     }
+
+    fn observe_clock(&mut self, hz: Option<u32>) {
+        let mut state=self.state.lock().expect("M5PM1 state mutex poisoned");
+        state.i2c_address_phases=state.i2c_address_phases.saturating_add(1);
+        state.i2c_last_hz=hz;
+        if let Some(hz)=hz {
+            state.i2c_first_hz.get_or_insert(hz);
+            state.i2c_max_hz=state.i2c_max_hz.max(hz);
+            // A diagnostic, never an ACK rule. Allow 1% nominal-divider rounding;
+            // this is not an electrical tolerance or a measured failure threshold.
+            if hz > state.i2c_speed_hz + state.i2c_speed_hz/100 {
+                state.i2c_speed_mismatches=state.i2c_speed_mismatches.saturating_add(1);
+                state.i2c_last_mismatch_hz=Some(hz);
+                state.i2c_last_mismatch_limit_hz=Some(state.i2c_speed_hz);
+            }
+        }
+    }
 }
 
 impl I2cDevice for M5pm1 {
-    fn start(&mut self, read: bool) -> bool { self.registers.start(read) }
+    fn start(&mut self, read: bool) -> bool { self.observe_clock(None); self.registers.start(read) }
+
+    fn start_address_with_clock(&mut self, configured: u8, address: u8, read: bool, hz: Option<u32>) -> bool {
+        if self.address(configured)!=address {return false;}
+        self.observe_clock(hz);
+        self.registers.start(read)
+    }
 
     fn write(&mut self, byte: u8) -> bool {
         if !self.registers.first {
@@ -61,10 +103,21 @@ impl I2cDevice for M5pm1 {
             if reg == 0x0c && byte == 0xa1 {
                 self.state.lock().expect("M5PM1 state mutex poisoned").power_off_requested = true;
             }
+            // M5PM1 315d2899 src/M5PM1.h: BTN_CFG_1[7] is DL_LOCK. The
+            // manufacturer's library refuses clearing a set lock; no silicon
+            // power-cycle/latch enforcement is inferred from that library check.
+            if reg == 0x49 {
+                let mut state=self.state.lock().expect("M5PM1 state mutex poisoned");
+                if byte & 0x80 != 0 {state.download_lock_writes=state.download_lock_writes.saturating_add(1);}
+                else if self.registers.regs[0x49] & 0x80 != 0 {state.download_unlock_attempts=state.download_unlock_attempts.saturating_add(1);}
+            }
         }
         let ack = self.registers.write(byte);
         let mut state=self.state.lock().expect("M5PM1 state mutex poisoned");
         state.led_enabled = self.registers.regs[0x06] & 0x10 != 0;
+        // M5PM1 315d2899 src/M5PM1.h I2C_CFG (0x09), SPD bit4; manual v1.9 §System.
+        state.i2c_speed_hz = if self.registers.regs[0x09] & 0x10 != 0 {400_000} else {100_000};
+        state.download_locked = self.registers.regs[0x49] & 0x80 != 0;
         // M5PM1 v1.9 pp.13-14: PWR_CFG[3] boost, HOLD_CFG[6] keeps it at shutdown.
         state.grove_5v_enabled = self.registers.regs[0x06] & 8 != 0 && (!state.power_off_requested || self.registers.regs[0x07] & 0x40 != 0);
         state.ldo3v3_enabled = self.registers.regs[0x06] & 4 != 0 && (!state.power_off_requested || self.registers.regs[0x07] & 0x20 != 0);

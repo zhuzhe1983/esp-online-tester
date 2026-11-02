@@ -292,3 +292,12 @@ success or 1 for invalid commands/state/chip. Reads use the guest ATT server.
 The central models one unencrypted 1M CSA#1 connection with a 30 ms interval,
 2 s supervision timeout and ATT MTU 23. See [EX213](evidence/ble-c3-connection/README.md)
 for model limits and the production-module reconnect test.
+
+### Hardware initialization observations
+
+`esp32sim_hardware_diagnostics(emu, ptr, capacity)` copies the board's UTF-8 JSON
+snapshot and returns its required byte length. A short buffer is left unchanged;
+unsupported boards return zero. This cold call does not execute guest instructions
+or inject UART text. StopWatch currently reports PM1 configuration and CO5300
+display state; the worker bounds the buffer at 32 KiB and samples at existing
+publication points. See [checks, sources and limits](platform/hardware-diagnostics.md).

@@ -203,6 +203,10 @@ pub trait BoardModel {
     /// Cold feedback-driven mechanical state, serialized by the board; absent on non-mechanical boards.
     /// No host caller may write servo positions through this observation API.
     fn motion_snapshot(&self) -> Option<String> { None }
+    /// Cold, bounded observations of firmware-driven hardware configuration.
+    /// No guest execution, fault injection, or claim of physical compatibility.
+    /// Appended to preserve existing hot-call vtable offsets.
+    fn hardware_diagnostics(&self) -> Option<String> { None }
 }
 
 pub type Board = Box<dyn BoardModel>;

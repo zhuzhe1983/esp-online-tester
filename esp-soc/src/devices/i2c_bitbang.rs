@@ -9,6 +9,7 @@ struct Adapter(Shared, Option<(u8,u8)>);
 impl I2cDevice for Adapter {
     fn pins(&self)->Option<(u8,u8)> {self.1}
     fn start(&mut self,read:bool)->bool {self.0.borrow_mut().start(read)}
+    fn start_address_with_clock(&mut self,configured:u8,address:u8,read:bool,hz:Option<u32>)->bool {self.0.borrow_mut().start_address_with_clock(configured,address,read,hz)}
     fn write(&mut self,b:u8)->bool {self.0.borrow_mut().write(b)}
     fn read(&mut self)->u8 {self.0.borrow_mut().read()}
     fn stop(&mut self) {self.0.borrow_mut().stop();}
@@ -38,7 +39,7 @@ impl I2cBitBang {
                         let read=address && value&1!=0;
                         let ack=if address {
                             self.selected=self.devices.iter().find(|(a,_)|*a==value>>1).map(|(_,d)|d.clone());
-                            self.selected.as_ref().is_some_and(|d|d.borrow_mut().start(read))
+                            self.selected.as_ref().is_some_and(|d|d.borrow_mut().start_address_with_clock(value>>1,value>>1,read,None))
                         } else {self.selected.as_ref().is_some_and(|d|d.borrow_mut().write(value))};
                         self.phase=Phase::Ack{low:ack,read_next:read,clocked:false};
                     } else {self.phase=Phase::Receive{value,bits:bits+1,address};}
@@ -78,5 +79,16 @@ mod tests {
         hardware.start(false);hardware.write(0x20);hardware.start(true);assert_eq!(hardware.read(),0xa5);
         start(&mut bus);assert!(send(&mut bus,0x64));assert!(send(&mut bus,0x20));start(&mut bus);assert!(send(&mut bus,0x65));
         assert_eq!(read(&mut bus,true),0xa5);assert_eq!(read(&mut bus,false),0x5a);stop(&mut bus);
+    }
+    #[test]
+    fn software_address_does_not_reuse_hardware_clock_observation() {
+        use esp_periph::i2c::m5::{M5pm1,M5pm1State};use std::sync::{Arc,Mutex};
+        let state=Arc::new(Mutex::new(M5pm1State::default()));let mut bus=I2cBitBang::new();
+        let _first=bus.attach(0x6e,Box::new(M5pm1::new(state.clone())));
+        let mut hardware=bus.controller_devices(Some((47,48)));
+        assert!(hardware[0].1.start_address_with_clock(0x6e,0x6e,false,Some(400_000)));hardware[0].1.stop();
+        {let s=state.lock().unwrap();assert_eq!(s.i2c_last_hz,Some(400_000));assert_eq!(s.i2c_speed_mismatches,1);}
+        start(&mut bus);assert!(send(&mut bus,0xdc));assert!(send(&mut bus,0));start(&mut bus);assert!(send(&mut bus,0xdd));assert_eq!(read(&mut bus,false),0x50);stop(&mut bus);
+        let s=state.lock().unwrap();assert_eq!(s.i2c_last_hz,None);assert_eq!(s.i2c_max_hz,400_000);assert_eq!(s.i2c_speed_mismatches,1);
     }
 }
