@@ -41,6 +41,10 @@ await espTester.loadFirmware({format:'segments', files:[
 
 写入成功表示 Flash 内容已通过校验，不代表应用已启动或产品功能已验收。多设备队列的自动化测试使用注入的串口替身，实际并行能力还受 USB 集线器供电、线材与设备状态影响。
 
+写入校验结束后，窗口依次显示复位、关闭连接，串口关闭成功才结束该设备任务。平台补齐 esptool-js 0.7.0 缺失的 RTS 复位脉冲；对于已确认使用原生 USB-Serial/JTAG、启动引脚仍锁存在下载模式的 ESP32-S3，按乐鑫的 RTC 看门狗复位流程重新采样启动状态。此路径只在写入校验完成后执行，不修改 eFuse；其他芯片与串口适配器使用普通复位。依据：[esptool S3 实现](https://github.com/espressif/esptool/blob/v5.3.0/esptool/targets/esp32s3.py)、[USB 复位无法退出手动下载模式的说明](https://github.com/espressif/esp-idf/issues/13287)。
+
+拔线或写入异常时会释放写锁，并给串口关闭设置总等待上限。若内容已校验但关闭失败，窗口保留这一事实并提示重新连接；不会将其当作全部成功，也不会让尚未释放的端口被另一任务重复打开。`node tools/platform-flash-batch-test.mjs` 覆盖真实 vendored loader 的复位调用、写流异常、延迟关闭及批次隔离。
+
 验证：
 
 - `node tools/platform-local-firmware-test.mjs`：路径冲突、缺文件、自定义分区地址、芯片、布局、取消检查通过。

@@ -4,8 +4,8 @@ import {burnerProjectUrl} from './firmware-download-access.js';
 
 const node=(tag,className,text)=>{const value=document.createElement(tag);if(className)value.className=className;if(text!==undefined)value.textContent=text;return value;};
 const button=(label,className='button')=>{const value=node('button',className,label);value.type='button';return value;};
-const activeItem=status=>['connecting','validating','writing','resetting','cancelling','preparing','choosing'].includes(status);
-const statusLabels={queued:'等待烧录',ready:'等待烧录',connecting:'连接中',validating:'检查设备',writing:'正在写入',resetting:'正在复位',cancelling:'正在停止',done:'写入已校验',error:'烧录失败',cancelled:'已取消',disconnected:'设备已拔出'};
+const activeItem=status=>['connecting','validating','writing','resetting','closing','cancelling','preparing','choosing'].includes(status);
+const statusLabels={queued:'等待烧录',ready:'等待烧录',connecting:'连接中',validating:'检查设备',writing:'正在写入',resetting:'正在复位',closing:'关闭连接',cancelling:'正在停止',done:'写入已校验',error:'烧录失败',cancelled:'已取消',disconnected:'设备已拔出'};
 const modeHints={single:'写入一台设备，完成后保留结果。',parallel:'先逐个添加设备，再一起开始。每台设备分别显示进度和结果，最多同时写入 4 台。',sequential:'保留本批固件，写完一台后换插下一台。点击“选择下一台”授权并继续，无需重新选择固件。'};
 
 // A batch owns its source snapshot and its chosen ports. Hiding the dialog does
