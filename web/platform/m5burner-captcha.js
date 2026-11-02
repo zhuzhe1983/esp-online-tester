@@ -3,28 +3,28 @@ import {M5BURNER_API,parseBurnerDownload} from './m5burner.js';
 
 const fail=(code,message)=>Object.assign(new Error(message),{code});
 const tokenValid=value=>typeof value==='string'&&/^[A-Za-z0-9_-]{16,256}$/.test(value);
-export const CAPTCHA_ATTEMPT_MS=10000, CAPTCHA_AUTO_ATTEMPTS=3;
+export const CAPTCHA_ATTEMPT_MS=10000, CAPTCHA_RESOURCE_MS=20000, CAPTCHA_AUTO_ATTEMPTS=3;
 // Bound the entire attempt, including readers that do not settle on abort.
 // Promise.race also consumes late rejections; stale results cannot win.
 export async function captchaAttempt(work,{signal,timeoutMs=CAPTCHA_ATTEMPT_MS}={}) {
-  const controller=new AbortController();let timer,abort;
+  const controller=new AbortController();let timer,abort,limit,finished=false;
   const interrupted=new Promise((_,reject)=>{
     const stop=error=>{reject(error);controller.abort(error);};
     abort=()=>stop(fail('FETCH_ABORTED','已取消下载验证。'));
-    timer=setTimeout(()=>stop(fail('CAPTCHA_TIMEOUT','本次验证超过 10 秒。')),timeoutMs);
+    limit=ms=>{if(finished||controller.signal.aborted)return;clearTimeout(timer);timer=setTimeout(()=>stop(fail('CAPTCHA_TIMEOUT',`本次操作超过 ${Math.ceil(ms/1000)} 秒。`)),ms);};limit(timeoutMs);
     signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
   });
-  try{return await Promise.race([interrupted,Promise.resolve().then(()=>{if(controller.signal.aborted)throw controller.signal.reason;return work(controller.signal);})]);}
-  finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);controller.abort();}
+  try{return await Promise.race([interrupted,Promise.resolve().then(()=>{if(controller.signal.aborted)throw controller.signal.reason;return work(controller.signal,limit);})]);}
+  finally{finished=true;clearTimeout(timer);signal?.removeEventListener('abort',abort);controller.abort();}
 }
 export function captchaPoint(event,rect,challenge) {
   if(!(rect.width>0&&rect.height>0))throw fail('CAPTCHA_INPUT','验证码图片尚未显示。');
   return {x:Math.max(0,Math.min(challenge.width,Math.round((event.clientX-rect.left)/rect.width*challenge.width))),y:Math.max(0,Math.min(challenge.height,Math.round((event.clientY-rect.top)/rect.height*challenge.height)))};
 }
 export function createBurnerCaptchaClient({fetchImpl=globalThis.fetch}={}) {
-  async function post(path,payload,signal) {
+  async function post(path,payload,signal,timeoutMs=CAPTCHA_ATTEMPT_MS) {
     let timedOut=false;
-    const controller=new AbortController(),abort=()=>controller.abort(),timer=setTimeout(()=>{timedOut=true;abort();},CAPTCHA_ATTEMPT_MS);
+    const controller=new AbortController(),abort=()=>controller.abort(),timer=setTimeout(()=>{timedOut=true;abort();},timeoutMs);
     signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
     let reader;
     try {
@@ -34,14 +34,14 @@ export function createBurnerCaptchaClient({fetchImpl=globalThis.fetch}={}) {
       reader=response.body?.getReader();
       if(reader){const chunks=[];let size=0;for(;;){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>max)throw fail('CAPTCHA_RESPONSE','验证码响应过大。');chunks.push(value);}const bytes=new Uint8Array(size);let at=0;for(const chunk of chunks){bytes.set(chunk,at);at+=chunk.length;}data=JSON.parse(new TextDecoder().decode(bytes));}
       else {const text=await response.text();if(text.length>max)throw fail('CAPTCHA_RESPONSE','验证码响应过大。');data=JSON.parse(text);}
-      if(controller.signal.aborted)throw fail(timedOut?'CAPTCHA_TIMEOUT':'FETCH_ABORTED',timedOut?'验证码请求超过 10 秒，请重试。':'已取消下载验证。');
+      if(controller.signal.aborted)throw fail(timedOut?'CAPTCHA_TIMEOUT':'FETCH_ABORTED',timedOut?`验证码请求超过 ${timeoutMs/1000} 秒，请重试。`:'已取消下载验证。');
       if(response.status===429)throw fail('CAPTCHA_RATE_LIMIT','请求过于频繁，请稍后再试。');
       // Do not echo provider messages, tokens or request IDs into diagnostics.
       if(!response.ok||data?.code!==200)throw fail('CAPTCHA_REJECTED','验证未通过或已过期，请换一张图片后重试。');
       if(!tokenValid(data?.data?.captchaToken))throw fail('CAPTCHA_RESPONSE','验证码响应格式有变，请前往官方页面。');
       return data.data;
     } catch(error) {
-      if(controller.signal.aborted)throw fail(timedOut?'CAPTCHA_TIMEOUT':'FETCH_ABORTED',timedOut?'验证码请求超过 10 秒，请重试。':'已取消下载验证。');
+      if(controller.signal.aborted)throw fail(timedOut?'CAPTCHA_TIMEOUT':'FETCH_ABORTED',timedOut?`验证码请求超过 ${timeoutMs/1000} 秒，请重试。`:'已取消下载验证。');
       if(typeof error.code==='string'&&error.code.startsWith('CAPTCHA_'))throw error;
       throw fail('CAPTCHA_UNAVAILABLE','无法读取验证码，请检查网络或前往官方页面。');
     } finally {await reader?.cancel().catch(()=>{});reader?.releaseLock();clearTimeout(timer);signal?.removeEventListener('abort',abort);}
@@ -49,7 +49,7 @@ export function createBurnerCaptchaClient({fetchImpl=globalThis.fetch}={}) {
   return {
     async issue(url,signal) {
       const ids=parseBurnerDownload(url);if(!ids)throw fail('INVALID_SOURCE','请选择 M5Burner 的固定版本下载地址。');
-      const c=await post('',ids,signal);
+      const c=await post('',ids,signal,CAPTCHA_RESOURCE_MS);
       if(!Number.isInteger(c.width)||!Number.isInteger(c.height)||c.width<1||c.height<1||c.width>2048||c.height>2048||!Number.isInteger(c.targetCount)||c.targetCount<1||c.targetCount>12||!Number.isFinite(c.expiresInSeconds)||c.expiresInSeconds<1||c.expiresInSeconds>600||typeof c.instruction!=='string'||c.instruction.length>500||typeof c.captchaImage!=='string'||!/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(c.captchaImage))throw fail('CAPTCHA_RESPONSE','验证码响应格式有变，请前往官方页面。');
       return c;
     },
@@ -75,7 +75,7 @@ export function requestBurnerVerification(url,{signal,client=createBurnerCaptcha
   const official=node('a','打开官方页面 ↗','text-link');official.href=`https://burner.m5stack.com/firmware/${parseBurnerDownload(url).firmwareId}`;official.target='_blank';official.rel='noopener noreferrer';
   const actions=node('div',null,'dialog-actions');const clear=node('button','清空选择','button'),refresh=node('button','换一张','button'),automatic=node('button','自动验证','button'),cancel=node('button','取消','button'),submit=node('button','验证并继续','button primary');for(const b of [clear,refresh,automatic,cancel,submit])b.type='button';actions.append(clear,refresh,automatic,cancel,submit);dialog.append(title,instruction,surface,status,feedback,official,actions);
   return new Promise((resolve,reject)=>{
-    let challenge=null,clicks=[],deadline=0,working=false,settled=false,position={x:0,y:0},generation=0,operation=null,autoMode=false,attempt=0,attemptDeadline=0;
+    let challenge=null,clicks=[],deadline=0,working=false,settled=false,position={x:0,y:0},generation=0,operation=null,autoMode=false,attempt=0,attemptDeadline=0,loadingResources=false;
     const current=id=>!settled&&generation===id;
     const begin=()=>{operation?.abort();operation=new AbortController();return ++generation;};
     const finish=(error,token)=>{if(settled)return;settled=true;generation++;operation?.abort();clearInterval(timer);signal?.removeEventListener('abort',abort);dialog.close();dialog.remove();challenge=null;clicks=[];img.removeAttribute('src');error?reject(error):resolve(token);};
@@ -83,12 +83,12 @@ export function requestBurnerVerification(url,{signal,client=createBurnerCaptcha
     function render() {
       const seconds=Math.max(0,Math.ceil((deadline-Date.now())/1000));submit.disabled=working||!challenge||!seconds||clicks.length!==challenge.targetCount;clear.disabled=working||!clicks.length;refresh.disabled=working;
       automatic.disabled=working&&!autoMode;automatic.textContent=autoMode?'改为手动':'自动验证';
-      status.textContent=autoMode?`自动验证 ${attempt}/${CAPTCHA_AUTO_ATTEMPTS} · ${attemptDeadline?`本次剩余 ${Math.max(0,Math.ceil((attemptDeadline-Date.now())/1000))} 秒`:'正在换图'}`:challenge?`${clicks.length}/${challenge.targetCount} · ${seconds?`验证码剩余 ${seconds} 秒`:'验证码已过期，请换一张'} · 自动验证每张最多 10 秒`:'';
+      status.textContent=autoMode?`自动验证 ${attempt}/${CAPTCHA_AUTO_ATTEMPTS} · ${attemptDeadline?`${loadingResources?'组件加载':'识别验证'}剩余 ${Math.max(0,Math.ceil((attemptDeadline-Date.now())/1000))} 秒`:'正在换图'}`:challenge?`${clicks.length}/${challenge.targetCount} · ${seconds?`验证码剩余 ${seconds} 秒`:'验证码已过期，请换一张'} · 组件加载最多 20 秒，识别验证最多 10 秒`:'';
       markers.replaceChildren(...clicks.map((p,i)=>{const mark=node('span',String(i+1),'burner-captcha-mark');mark.style.left=`${p.x/challenge.width*100}%`;mark.style.top=`${p.y/challenge.height*100}%`;return mark;}));
     }
     async function loadChallenge(id) {
       challenge=null;clicks=[];surface.hidden=true;cursor.hidden=true;attemptDeadline=0;instruction.textContent='正在获取验证码…';render();
-      const c=await captchaAttempt(s=>client.issue(url,s),{signal:operation.signal,timeoutMs:attemptTimeoutMs});
+      const c=await captchaAttempt(s=>client.issue(url,s),{signal:operation.signal,timeoutMs:CAPTCHA_RESOURCE_MS});
       if(!current(id))return;
       challenge=c;deadline=Date.now()+c.expiresInSeconds*1000;position={x:c.width/2,y:c.height/2};img.src=c.captchaImage;surface.style.aspectRatio=`${c.width}/${c.height}`;surface.hidden=false;
       const targets=instructionTargets(c.instruction);instruction.replaceChildren();
@@ -118,15 +118,17 @@ export function requestBurnerVerification(url,{signal,client=createBurnerCaptcha
         for(attempt=1;attempt<=CAPTCHA_AUTO_ATTEMPTS;attempt++) {
           if(attempt>1||!challenge||deadline<=Date.now())await loadChallenge(id);
           if(!current(id))return;
-          const image=challenge;attemptDeadline=Date.now()+attemptTimeoutMs;clicks=[];feedback.textContent='正在自动验证…';render();
+          const image=challenge;loadingResources=true;attemptDeadline=Date.now()+CAPTCHA_RESOURCE_MS;clicks=[];feedback.textContent='正在准备识图组件…';render();
           try {
-            const token=await captchaAttempt(async s=>{
-              const result=await readPoints(image,{signal:s,onProgress:text=>{if(current(id)&&!s.aborted)feedback.textContent=text;}});
+            const token=await captchaAttempt(async (s,limit)=>{
+              const ready=()=>{if(current(id)&&!s.aborted&&loadingResources){loadingResources=false;attemptDeadline=Date.now()+attemptTimeoutMs;limit(attemptTimeoutMs);render();}};
+              const result=await readPoints(image,{signal:s,onReady:ready,onProgress:text=>{if(current(id)&&!s.aborted)feedback.textContent=text;}});
               if(!current(id)||s.aborted)throw fail('FETCH_ABORTED','已取消下载验证。');
+              ready();
               if(deadline<=Date.now()||!result.complete||result.points.length!==image.targetCount)throw fail('CAPTCHA_INCOMPLETE','未能完成这张图片的验证。');
               clicks=result.points;feedback.textContent='正在验证…';render();
               return client.verify(image,clicks,s);
-            },{signal:operation.signal,timeoutMs:attemptTimeoutMs});
+            },{signal:operation.signal,timeoutMs:CAPTCHA_RESOURCE_MS});
             if(current(id))finish(null,token);return;
           }catch(e){
             if(!current(id))return;
