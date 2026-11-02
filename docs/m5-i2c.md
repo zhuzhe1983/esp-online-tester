@@ -4,6 +4,9 @@
 Both wrap `Reg8Device`: one-byte register pointers, repeated-start reads and
 auto-incrementing transfers. They ACK immediately, so the firmware's wake retry
 loop succeeds on its first attempt. No sleep delay or watchdog countdown runs.
+StopWatch exposes [hardware checks](platform/hardware-diagnostics.md) for
+nominal master/device rate mismatches, download-lock requests and LED state;
+these observations do not turn this register subset into a wake timing model.
 
 The original access sequence followed private StopWatch revision `85c991d`.
 The public [StopWatch UserDemo V0.5 source](https://github.com/m5stack/M5StopWatch-UserDemo/tree/6b4aa125288b6fe9dca661f10159f6e1e5ee785c/main/hal)
@@ -45,6 +48,10 @@ at `0x17`, including LED enable bit 4; the firmware can clear that bit without
 losing the other power bits. I2C config (`0x09`), watchdog (`0x0a`), GPIO
 function (`0x16`), GPIO mode (`0x10`), hold config (`0x07`) and button config
 (`0x49`, default `0x2a`) retain writes.
+`I2C_CFG` bit4 selects the 100/400 kHz slave setting. Cold address-phase
+observation records matching nominal master rates and retains mismatches.
+Unknown/GPIO-bitbang clocks do not produce a fabricated rate. DL_LOCK writes
+and clear attempts are observed without claiming physical unlock behavior.
 
 The board retains an `Arc<Mutex<M5pm1State>>` when it boxes the device for I2C.
 `battery_mv` supplies `VBAT_L/H` (`0x22/23`) in millivolts and `charging`

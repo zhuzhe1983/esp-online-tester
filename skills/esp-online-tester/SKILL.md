@@ -51,6 +51,15 @@ Full PaperMono exposes a digital SX1262 LoRa subset; T-Beam v1.2 exposes an SX12
 
 ## Configure, operate, verify
 
+For StopWatch, inspect `observe().hardwareDiagnostics` after firmware execution.
+It observes actual PM1 I²C rates/lock/LED writes and CO5300 display commands;
+the workbench and mini show the same findings above serial output. A visible
+frame or empty findings list is not hardware qualification: PM1 wake/retry and
+analog power remain unmodeled. Sleep/display-off and explicitly zero enabled
+brightness blank visible output while debug GRAM remains separate. See
+`docs/platform/hardware-diagnostics.md` for exact checks and manufacturer
+default conflicts. Never recommend writing DL_LOCK as ordinary startup.
+
 1. Obtain the catalog via `import('./catalog.js')` relative to the platform page. Use `loadCatalog()` and `createDefaultScene(catalog, productId)`; validate with `validateScene(scene,catalog)` before `espTester.configure(scene)`. Inspect warnings, not just `valid`.
 2. Unverified or partially compatible catalog firmware may be tried when the target board exists and the image is bootable; preserve the trial label and report actual failures. Do not make per-firmware boot validation a prerequisite for catalog availability. When the task asks only for metadata/default selection or explicitly says not to run firmware, limit work to those checks. `await espTester.loadFirmware()` fetches the scene's source; `await espTester.start()` boots it. Check firmware-specific serial output, a real frame, or another observable condition with a bounded wait. A queued input acknowledgment is not a test pass.
 3. Before an action, register a fresh observation: `const result = api.waitFor({serialIncludes:'BUTTON_A',fromNow:true,timeoutMs:15000}); await api.press('button-a'); await result;`. Otherwise old buffered output could make a new action appear successful.

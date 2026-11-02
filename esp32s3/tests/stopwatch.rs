@@ -15,7 +15,8 @@ fn fill_window(board: &mut StopWatch, window: [u16; 4], color: u16) {
 
 fn display_board() -> StopWatch {
     let mut board = StopWatch::new();
-    power_up(&mut board.i2c_devices());
+    legacy_power_up(&mut board.i2c_devices());
+    init_panel(&mut board);
     fill_window(&mut board, [6, 473, 0, 465], 0x001f);
     board
 }
@@ -65,12 +66,13 @@ fn abandoned_top_strip_has_bounded_idle_fallback_including_sleep_commands() {
         board.advance_to(start);
         fill_window(&mut board, [6, 473, 0, 59], 0xf800);
         if let Some(cmd) = command_after { command(&mut board, cmd, &[]); }
-        // CO5300 sleep/display-off optical behavior is outside the existing model;
-        // these commands must not leave its last real GRAM writes hidden forever.
         board.advance_to(start + esp32s3::periph::CPU_HZ / 50 - 1);
-        assert_eq!(board.display_for_ui().unwrap(), previous);
+        if command_after.is_none() { assert_eq!(board.display_for_ui().unwrap(), previous); }
+        else { assert!(board.display_for_ui().unwrap().2.iter().all(|&p|p==0)); }
         board.advance_to(start + esp32s3::periph::CPU_HZ / 50);
         assert_eq!(board.display_for_ui().unwrap(), board.display().unwrap());
+        assert_eq!(board.gram().unwrap().0[60 * 468], 0x001f, "off/sleep retains raw memory");
+        if command_after.is_some() { init_panel(&mut board); }
         assert_eq!(board.display_for_ui().unwrap().2[60 * 468], 0x001f);
     }
 }
@@ -174,7 +176,9 @@ fn update(devices: &mut Devices, address: u8, reg: u8, set: u8, clear: u8) {
     write(devices, address, reg, (value & !clear) | set);
 }
 
-fn power_up(devices: &mut Devices) {
+// Regression input only, NOT an example for physical hardware. This legacy sequence
+// disables LED_EN and sets DL_LOCK; the diagnostics below must expose both writes.
+fn legacy_power_up(devices: &mut Devices) {
     assert_eq!(read(devices, 0x6e, 0, 2), [0x50, 0x20]);
     assert_eq!(read(devices, 0x4f, 0, 2), [0, 0]);
     update(devices, 0x6e, 0x06, 0, 0x10);
@@ -200,10 +204,65 @@ fn command(board: &mut dyn BoardModel, command: u8, data: &[u8]) {
     assert_eq!(board.spi_transfer(2, &tx, 1), [0xff]);
 }
 
+fn init_panel(board: &mut dyn BoardModel) {
+    command(board, 0x11, &[]); command(board, 0x3a, &[0x55]);
+    command(board, 0x53, &[0x20]); command(board, 0x51, &[0xa0]); command(board, 0x29, &[]);
+}
+
 fn pixel(board: &mut dyn BoardModel, value: u16) {
     command(board, 0x2a, &[0, 6, 0, 6]);
     command(board, 0x2b, &[0, 0, 0, 0]);
     command(board, 0x2c, &value.to_be_bytes());
+}
+
+#[test]
+fn hardware_checks_expose_legacy_register_sequence_without_parsing_console() {
+    let mut board=StopWatch::new();
+    let mut devices=board.i2c_devices();
+    let initial=board.hardware_diagnostics().unwrap();
+    assert!(initial.contains("\"findings\":[]"));
+    let pmic=device(&mut devices,0x6e);
+    assert!(pmic.start_address_with_clock(0x6e,0x6e,false,Some(400_000)));
+    assert!(pmic.write(0)); pmic.stop();
+    legacy_power_up(&mut devices);
+    command(&mut board,0x11,&[]); command(&mut board,0x29,&[]);
+    command(&mut board,0x3a,&[0x55]); command(&mut board,0x51,&[0xff]);
+    pixel(&mut board,0xf800);
+    let checks=board.hardware_diagnostics().unwrap();
+    for code in ["PM1_I2C_CLOCK_MISMATCH","PM1_DOWNLOAD_LOCK","PM1_POWER_LED_DISABLED","CO5300_BRIGHTNESS_CONTROL"] {
+        assert!(checks.contains(code),"missing {code}: {checks}");
+    }
+    assert!(checks.contains("400000 Hz"));
+    assert_eq!(board.hardware_diagnostics().unwrap(),checks,"observation cannot mutate diagnostics");
+    let fresh=StopWatch::new().hardware_diagnostics().unwrap();
+    assert!(fresh.contains("\"findings\":[]"),"a new run must not inherit findings");
+}
+
+#[test]
+fn documented_initialization_has_no_findings_and_hidden_gram_stays_separate() {
+    let mut board=StopWatch::new(); let mut devices=board.i2c_devices();
+    let pmic=device(&mut devices,0x6e);
+    assert!(pmic.start_address_with_clock(0x6e,0x6e,false,Some(100_000)));
+    assert!(pmic.write(0));pmic.stop();
+    write(&mut devices,0x6e,0x06,0x17);
+    write(&mut devices,0x4f,0x13,0x62); write(&mut devices,0x4f,0x03,0x9d);
+    write(&mut devices,0x4f,0x05,0x9c);
+    init_panel(&mut board); pixel(&mut board,0x07e0);
+    assert_eq!(board.display().unwrap().2[0],0x07e0);
+    assert!(board.hardware_diagnostics().unwrap().contains("\"findings\":[]"));
+    for (off,on) in [(0x28,0x29),(0x10,0x11)] {
+        let before=board.display_version();command(&mut board,off,&[]);
+        assert!(board.display_version()>before,"command-only changes must publish");
+        assert_eq!(board.display().unwrap().2[0],0);
+        assert_eq!(board.display_for_ui().unwrap().2[0],0);
+        assert_eq!(board.gram().unwrap().0[0],0x07e0);
+        assert!(board.hardware_diagnostics().unwrap().contains("CO5300_PIXELS_WHILE_HIDDEN"));
+        command(&mut board,on,&[]);
+        assert_eq!(board.display_for_ui().unwrap().2[0],0x07e0);
+        assert!(!board.hardware_diagnostics().unwrap().contains("CO5300_PIXELS_WHILE_HIDDEN"));
+    }
+    command(&mut board,0x51,&[0]);assert_eq!(board.display().unwrap().2[0],0);
+    command(&mut board,0x51,&[0xa0]);assert_eq!(board.display_for_ui().unwrap().2[0],0x07e0);
 }
 
 #[test]
@@ -258,7 +317,8 @@ fn firmware_power_sequence_gates_spi_and_preserves_full_window_stride() {
     pixel(&mut board, 0xffff);
     assert_eq!(board.display_version(), 0);
     assert!(board.display().unwrap().2.iter().all(|&p| p == 0));
-    power_up(&mut devices);
+    legacy_power_up(&mut devices);
+    init_panel(&mut board);
     command(&mut board, 0x2a, &[0, 6, 1, 0xd9]);
     command(&mut board, 0x2b, &[0, 0, 1, 0xd1]);
     command(&mut board, 0x2c, &[0xf8]);
@@ -285,7 +345,8 @@ fn firmware_power_sequence_gates_spi_and_preserves_full_window_stride() {
 fn reset_pulse_between_board_callbacks_clears_pixels_and_tear_state() {
     let mut board = StopWatch::new();
     let mut devices = board.i2c_devices();
-    power_up(&mut devices);
+    legacy_power_up(&mut devices);
+    init_panel(&mut board);
     pixel(&mut board, 0xffff);
     command(&mut board, 0x35, &[0]);
     let us = esp32s3::periph::CPU_HZ / 1_000_000;
@@ -300,6 +361,7 @@ fn reset_pulse_between_board_callbacks_clears_pixels_and_tear_state() {
     assert!(board.display_version() > before);
     board.spi_transfer(2, &[0xff, 0xff], 0);
     assert!(board.display().unwrap().2.iter().all(|&p| p == 0));
+    init_panel(&mut board);
     pixel(&mut board, 0x1234);
     assert_eq!(board.display().unwrap().2[0], 0x1234);
 }
@@ -308,12 +370,14 @@ fn reset_pulse_between_board_callbacks_clears_pixels_and_tear_state() {
 fn rail_off_and_latched_pmic_shutdown_disable_panel_without_halting_cpu() {
     let mut board = StopWatch::new();
     let mut devices = board.i2c_devices();
-    power_up(&mut devices);
+    legacy_power_up(&mut devices);
+    init_panel(&mut board);
     pixel(&mut board, 0xffff);
     update(&mut devices, 0x4f, 0x05, 0, 0x80);
     pixel(&mut board, 0xffff);
     assert_eq!(board.display().unwrap().2[0], 0);
     update(&mut devices, 0x4f, 0x05, 0x80, 0);
+    init_panel(&mut board);
     pixel(&mut board, 0x1234);
     update(&mut devices, 0x6e, 0x06, 0, 0x10);
     write(&mut devices, 0x6e, 0x07, 0);
@@ -334,7 +398,8 @@ fn cst820_reports_clamped_touch_and_clears_it_on_expander_reset() {
     let mut devices = board.i2c_devices();
     board.touch(100, 200, true);
     assert_eq!(read(&mut devices, 0x15, 0x02, 1), [0]);
-    power_up(&mut devices);
+    legacy_power_up(&mut devices);
+    init_panel(&mut board);
     assert_eq!(read(&mut devices, 0x15, 0xa7, 3), [0xb7, 0x41, 2]);
     board.touch(999, 999, true);
     assert_eq!(read(&mut devices, 0x15, 0x02, 5), [1, 1, 0xd3, 1, 0xd1]);
@@ -350,11 +415,13 @@ fn cst820_reports_clamped_touch_and_clears_it_on_expander_reset() {
 fn synthetic_scan_uses_cpu_cycles_and_drives_gpio38_interrupts() {
     let mut board = StopWatch::new();
     let mut devices = board.i2c_devices();
-    power_up(&mut devices);
+    legacy_power_up(&mut devices);
+    init_panel(&mut board);
     let mut bus = esp32s3::bus::SocBus::new(1024, 1024, [0; 6]);
     bus.board = Box::new(board);
     bus.attach_board_devices();
-    power_up(&mut devices);
+    legacy_power_up(&mut devices);
+    init_panel(&mut *bus.board);
     bus.gpio_events = Some(Vec::new());
     bus.write32(0x6000_410c, (3 << 7) | (1 << 13)).unwrap();
     bus.write32(0x600c_2040, 9).unwrap();
@@ -379,7 +446,8 @@ fn software_cs_delimits_split_m5gfx_headers_and_command_like_pixel_data() {
     // one software CS assertion; framebuffer DMA then sends one row per transfer.
     let mut board = StopWatch::new();
     let mut devices = board.i2c_devices();
-    power_up(&mut devices);
+    legacy_power_up(&mut devices);
+    init_panel(&mut board);
     let cs_command = |board: &mut StopWatch, cmd: u8, args: &[u8]| {
         board.gpio_changes(&[(39, true), (39, false)]);
         for byte in [0x02, 0, cmd, 0] { board.spi_transfer(2, &[byte], 0); }
