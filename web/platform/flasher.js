@@ -8,6 +8,7 @@ import { firmwareCache } from './firmware-cache.js';
 import { assembleLocalFirmware, inspectLocalBuild } from './local-firmware.js';
 import {firmwareFlashPolicy} from './firmware-policy.js';
 import {validateAppImage} from './app-image.js';
+import {createFlashHardReset} from './flash-reset.js';
 
 const MIB = 1024 * 1024, MAX_FLASH = 32 * MIB;
 const problem = (code, message, details) => Object.assign(new Error(message), { code, details });
@@ -15,6 +16,42 @@ const check = (condition, code, message, details) => { if (!condition) throw pro
 const normalizedChip = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const clone = value => structuredClone(value);
 const cancelled = () => problem('FLASH_CANCELLED', 'Flashing was cancelled. If writing had begun, the device may contain a partial image; reconnect in bootloader mode and flash again.');
+// Bytes and port grants remain private to a prepared batch. Public receipts are
+// copies, so changing the scene or a receipt cannot change an in-progress batch.
+const preparedSessions = new WeakMap(), occupiedPorts = new WeakSet();
+const gesture = nav => check(nav?.userActivation?.isActive === true, 'USER_GESTURE_REQUIRED', 'Click the flash button to authorize this operation.');
+
+export async function prepareFlashSession(input, {navigator:nav=globalThis.navigator,fetchImpl=globalThis.fetch,baseUrl=globalThis.location?.href,signal,loadWatchlistData=options=>loadWatchlist({fetchImpl,...options})}={}) {
+  const source=input.source || input.scene?.firmware;
+  const policy=firmwareFlashPolicy(selectedProduct(input.scene,input.catalog),source);
+  check(policy.canFlash,policy.reason,policy.message);
+  const fixed={scene:clone(input.scene),catalog:clone(input.catalog),source:{...source},watchEntry:input.watchEntry && clone(input.watchEntry)};
+  if(source?.files)fixed.source.files=source.files.map(file=>file.file?{...file}:file);
+  const watchlist=await loadWatchlistData({signal});
+  const plan=await prepareFlashPlan({...fixed,watchlist,fetchImpl,baseUrl,signal});
+  if(signal?.aborted)throw cancelled();
+  const session=Object.freeze({product:clone(plan.product),receipt:clone(plan.receipt)});
+  preparedSessions.set(session,{plan,ports:new WeakSet(),active:false,nav});
+  return session;
+}
+
+export async function chooseFlashPort(session,{navigator:nav=globalThis.navigator,document:doc=globalThis.document,secureContext=globalThis.isSecureContext}={}) {
+  const record=preparedSessions.get(session);
+  check(record && record.nav===nav,'FLASH_SESSION_INVALID','Prepare a firmware batch first.');
+  const capability=flasherCapabilities({navigator:nav,document:doc,secureContext});
+  check(capability.supported,'WEB_SERIAL_UNAVAILABLE',capability.reason);gesture(nav);
+  // No asynchronous work may precede requestPort: the chooser needs this click.
+  const port=await nav.serial.requestPort();
+  check(preparedSessions.has(session),'FLASH_SESSION_INVALID','This firmware batch has been closed.');
+  record.ports.add(port);return port;
+}
+
+export function activateFlashSession(session,active,{navigator:nav=globalThis.navigator}={}) {
+  const record=preparedSessions.get(session);
+  check(record && record.nav===nav,'FLASH_SESSION_INVALID','Prepare a firmware batch first.');
+  if(active)gesture(nav);record.active=!!active;
+}
+export function releaseFlashSession(session) { if(session)preparedSessions.delete(session); }
 
 export function flasherCapabilities({ navigator: nav = globalThis.navigator, document: doc = globalThis.document, secureContext = globalThis.isSecureContext } = {}) {
   const policy = doc?.permissionsPolicy || doc?.featurePolicy;
@@ -204,27 +241,37 @@ export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, 
     capabilities,
     observe: () => clone(state),
     cancel() { if (active) { wantsCancel = true; aborter?.abort(); setState('cancelling', beganWrite ? '正在当前协议块结束后停止；设备可能需要重新刷写。' : '正在取消。'); } return clone(state); },
-    async flash({ scene, catalog, source = scene?.firmware, watchEntry } = {}) {
+    async flash({ scene, catalog, source = scene?.firmware, watchEntry, prepared, port: chosenPort } = {}) {
       check(!active, 'FLASH_BUSY', 'A flash operation is already active.');
       const capability = capabilities(); check(capability.supported, 'WEB_SERIAL_UNAVAILABLE', capability.reason);
-      check(nav.userActivation?.isActive === true, 'USER_GESTURE_REQUIRED', 'Click the flash button to choose a serial device. Background calls and replay cannot request a port.');
-      const product = selectedProduct(scene, catalog);
-      if (watchEntry) artifactTarget(source?.url || source?.manifestUrl, product, catalog, watchEntry);
-      const policy = firmwareFlashPolicy(product, source);
-      check(policy.canFlash, policy.reason, policy.message);
-      if (source.url || source.manifestUrl) artifactTarget(resolveFirmwareUrl(source.url || source.manifestUrl, baseUrl), product, catalog);
+      const session=prepared && preparedSessions.get(prepared);
+      if(prepared)check(session?.active && session.nav===nav && session.ports.has(chosenPort),'FLASH_SESSION_INVALID','Start an authorized batch and select this device before writing.');
+      else {
+        gesture(nav);
+        const product = selectedProduct(scene, catalog);
+        if (watchEntry) artifactTarget(source?.url || source?.manifestUrl, product, catalog, watchEntry);
+        const policy = firmwareFlashPolicy(product, source);
+        check(policy.canFlash, policy.reason, policy.message);
+        if (source.url || source.manifestUrl) artifactTarget(resolveFirmwareUrl(source.url || source.manifestUrl, baseUrl), product, catalog);
+        check(!chosenPort,'FLASH_SESSION_INVALID','Ports must be selected within a prepared batch.');
+      }
       active = true; wantsCancel = false; beganWrite = false; aborter = new AbortController();
       state = { status: 'choosing', message: '请选择要刷写的 USB 串口设备。', progress: 0, writtenBytes: 0 }; emit({ type: 'state', state: clone(state) });
-      let transport, port, plan;
+      let transport, port, plan, ownsPort=false;
       try {
         // This must be the first asynchronous call, directly inside the user's click.
-        port = await nav.serial.requestPort(); guard();
-        setState('preparing', '正在下载并校验固件；仅保留在本次操作的内存中。');
-        const watchlist = await loadWatchlistData({ signal: aborter.signal }); guard();
-        plan = await prepareFlashPlan({ scene, catalog, source, watchEntry, watchlist, fetchImpl, baseUrl, signal: aborter.signal }); guard();
+        port = prepared ? chosenPort : await nav.serial.requestPort(); guard();
+        check(!occupiedPorts.has(port),'FLASH_PORT_BUSY','This device is already being written by another operation.');
+        occupiedPorts.add(port);ownsPort=true;
+        if(prepared)plan=clone(session.plan);
+        else {
+          setState('preparing', '正在下载并校验固件；仅保留在本次操作的内存中。');
+          const watchlist = await loadWatchlistData({ signal: aborter.signal }); guard();
+          plan = await prepareFlashPlan({ scene, catalog, source, watchEntry, watchlist, fetchImpl, baseUrl, signal: aborter.signal }); guard();
+        }
         const { ESPLoader, Transport, md5 } = await loadTools(); guard();
         transport = new Transport(port, false);
-        const loader = new ESPLoader({ transport, baudrate: 115200, romBaudrate: 115200, debugLogging: false, terminal: { clean() {}, write: message => emit({ type: 'log', message: String(message) }), writeLine: message => emit({ type: 'log', message: String(message) }) } });
+        const loader = new ESPLoader({ transport, baudrate: 115200, romBaudrate: 115200, resetConstructors:{hardReset:createFlashHardReset}, debugLogging: false, terminal: { clean() {}, write: message => emit({ type: 'log', message: String(message) }), writeLine: message => emit({ type: 'log', message: String(message) }) } });
         setState('connecting', '正在连接 ROM 下载模式并识别芯片；此过程会复位设备。');
         await loader.main(); guard();
         const chip = normalizedChip(loader.chip?.CHIP_NAME), expected = normalizedChip(plan.product.chip);
@@ -260,6 +307,7 @@ export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, 
       } finally {
         // Do not reset after an interrupted or failed write. Close only this chosen port.
         if (transport) await transport.disconnect().catch(error => emit({ type: 'log', message: `串口关闭失败：${error.message}` }));
+        if(ownsPort)occupiedPorts.delete(port);
         plan = null; transport = null; port = null; aborter = null; active = false;
       }
     },
