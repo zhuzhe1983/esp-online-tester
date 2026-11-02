@@ -16,6 +16,7 @@ test('verification deadlines abort hanging work, discard late results and distin
   const task=captchaAttempt(signal=>{taskSignal=signal;return new Promise((_,reject)=>{late=reject;});},{timeoutMs:10});
   await assert.rejects(task,{code:'CAPTCHA_TIMEOUT'});assert.equal(taskSignal.aborted,true);
   late(Error('late worker rejection'));await new Promise(resolve=>setTimeout(resolve,0));
+  await assert.rejects(captchaAttempt(signal=>new Promise((_,reject)=>signal.addEventListener('abort',()=>reject(Object.assign(Error('aborted'),{code:'FETCH_ABORTED'})),{once:true})),{timeoutMs:10}),{code:'CAPTCHA_TIMEOUT'});
   const controller=new AbortController();let calls=0;
   const cancelled=captchaAttempt(()=>{calls++;return new Promise(()=>{});},{signal:controller.signal});controller.abort();
   await assert.rejects(cancelled,{code:'FETCH_ABORTED'});assert.equal(calls,0);

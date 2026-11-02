@@ -9,7 +9,7 @@ export const CAPTCHA_ATTEMPT_MS=10000, CAPTCHA_AUTO_ATTEMPTS=3;
 export async function captchaAttempt(work,{signal,timeoutMs=CAPTCHA_ATTEMPT_MS}={}) {
   const controller=new AbortController();let timer,abort;
   const interrupted=new Promise((_,reject)=>{
-    const stop=error=>{controller.abort(error);reject(error);};
+    const stop=error=>{reject(error);controller.abort(error);};
     abort=()=>stop(fail('FETCH_ABORTED','已取消下载验证。'));
     timer=setTimeout(()=>stop(fail('CAPTCHA_TIMEOUT','本次验证超过 10 秒。')),timeoutMs);
     signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
