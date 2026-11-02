@@ -1,5 +1,6 @@
 //! A packet-level BLE controller and one virtual peer, independent of the guest CPU.
 mod opcodes;
+mod privacy;
 pub mod peer;
 pub mod vhci;
 use opcodes::*;
@@ -78,6 +79,8 @@ pub struct Controller {
     scan_response: Vec<u8>,
     connected: bool,
     active_scan: bool,
+    scanning: bool,
+    privacy: privacy::ResolvingList,
     fragments: Vec<u8>,
     random: u64,
     local_name: [u8; 248],
@@ -96,6 +99,8 @@ impl Controller {
             scan_response: Vec::new(),
             connected: false,
             active_scan: false,
+            scanning: false,
+            privacy: privacy::ResolvingList::default(),
             fragments: Vec::new(),
             random: 0x3253_5045_424c_4531,
             local_name: [0; 248],
@@ -165,6 +170,8 @@ impl Controller {
             | LE_CLEAR_FILTER_ACCEPT_LIST
             | LE_RAND
             | LE_READ_SUPPORTED_STATES
+            | LE_CLEAR_RESOLVING_LIST
+            | LE_READ_RESOLVING_LIST_SIZE
             | ESP_CLEAR_LEGACY_ADVERTISING => Some(0),
             READ_LOCAL_EXTENDED_FEATURES
             | WRITE_SCAN_ENABLE
@@ -174,6 +181,7 @@ impl Controller {
             | WRITE_ERRONEOUS_DATA_REPORTING
             | WRITE_SECURE_CONNECTIONS_HOST_SUPPORT
             | LE_SET_ADVERTISING_ENABLE
+            | LE_SET_ADDRESS_RESOLUTION_ENABLE
             | SET_CONTROLLER_TO_HOST_FLOW_CONTROL
             | ESP_ENABLE_CSA2
             | VENDOR_FD82 => Some(1),
@@ -189,11 +197,12 @@ impl Controller {
             | ESP_UPDATE_ADV_REPORT_FLOW_CONTROL => Some(2),
             DISCONNECT | WRITE_CLASS_OF_DEVICE | VENDOR_FC82 => Some(3),
             ESP_SET_LE_EVENT_MASK => Some(4),
-            SET_EVENT_MASK | SET_EVENT_MASK_PAGE_2 | LE_SET_EVENT_MASK => Some(8),
-            LE_SET_RANDOM_ADDRESS => Some(6),
+            SET_EVENT_MASK | SET_EVENT_MASK_PAGE_2 | LE_SET_EVENT_MASK | LE_SET_PRIVACY_MODE => Some(8),
+            LE_ADD_RESOLVING_LIST => Some(39),
+            LE_SET_RANDOM_ADDRESS | LE_SET_DATA_LENGTH => Some(6),
             LE_SET_ADVERTISING_PARAMETERS => Some(15),
             LE_SET_ADVERTISING_DATA | LE_SET_SCAN_RESPONSE_DATA | LE_ENCRYPT => Some(32),
-            LE_SET_SCAN_PARAMETERS | HOST_BUFFER_SIZE | LE_ADD_FILTER_ACCEPT_LIST | LE_REMOVE_FILTER_ACCEPT_LIST => { Some(7) }
+            LE_SET_SCAN_PARAMETERS | HOST_BUFFER_SIZE | LE_ADD_FILTER_ACCEPT_LIST | LE_REMOVE_FILTER_ACCEPT_LIST | LE_REMOVE_RESOLVING_LIST => { Some(7) }
             LE_CREATE_CONNECTION => Some(25),
             LE_CONNECTION_UPDATE => Some(14),
             WRITE_LOCAL_NAME => Some(248),
@@ -214,6 +223,8 @@ impl Controller {
                 self.adv.clear();
                 self.scan_response.clear();
                 self.active_scan = false;
+                self.scanning = false;
+                self.privacy = privacy::ResolvingList::default();
                 self.packets.clear();
                 self.complete(op, &[0]);
             }
@@ -273,6 +284,23 @@ impl Controller {
             }
             LE_READ_BUFFER_SIZE => self.complete(op, &[0, 0xfb, 0, 8]),
             LE_READ_LOCAL_FEATURES => self.complete(op, &[0; 9]),
+            LE_SET_DATA_LENGTH => {
+                let status = if !self.connected || word(p) != HANDLE { 0x02 }
+                    else if !(27..=251).contains(&word(&p[2..])) || !(328..=17040).contains(&word(&p[4..])) { 0x12 }
+                    else { 0 };
+                // Core Vol 4 E 7.8.33: these are suggestions. Keep the legacy
+                // peer's unchanged limits and ATT MTU 23, so no Data Length
+                // Change event or DLE capability is claimed by this HCI subset.
+                self.complete(op, &[status, p[0], p[1]]);
+            }
+            // Compatibility configuration subset only. Core Vol 4 E C.9 ties
+            // advertised command support to LL Privacy, which is not implemented.
+            LE_READ_RESOLVING_LIST_SIZE => self.complete(op, &[0, privacy::CAPACITY as u8]),
+            LE_ADD_RESOLVING_LIST | LE_REMOVE_RESOLVING_LIST | LE_CLEAR_RESOLVING_LIST
+            | LE_SET_ADDRESS_RESOLUTION_ENABLE | LE_SET_PRIVACY_MODE => {
+                let status = self.privacy.command(op, p, self.advertising || self.scanning);
+                self.complete(op, &[status]);
+            }
             LE_READ_ADVERTISING_TX_POWER => self.complete(op, &[0, 0]),
             LE_READ_FILTER_ACCEPT_LIST_SIZE => self.complete(op, &[0, 8]),
             LE_READ_SUPPORTED_STATES => self.complete(op, &[0, 0xff, 0x07, 0, 0, 0, 0, 0, 0]),
@@ -313,6 +341,7 @@ impl Controller {
                     return;
                 }
                 self.complete(op, &[0]);
+                self.scanning = p[0] == 1;
                 if p[0] == 1 { self.emit(LinkEvent::Scan(self.active_scan)); } else { self.emit(LinkEvent::ScanStopped); }
             }
             LE_CREATE_CONNECTION => {
