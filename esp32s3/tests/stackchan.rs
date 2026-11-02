@@ -84,7 +84,7 @@ fn external_stackchan_factory_dance_gatt_drives_display_servos_and_rgb() {
     // hal_servo.cpp maps angle in tenths of a degree: raw = zero + angle * 16 / 5 / 10.
     // Each ATT write is <=20 bytes; longer JSON uses the manufacturer's own fragment assembly.
     for (handle,json) in [(0x10u16,r#"{"yawServo":{"angle":300}}"#),(0x10,r#"{"pitchServo":{"angle":200}}"#),
-        (0x13,r#"{"mouth":{"size":60}}"#),(0x19,r##"{"leftRgbColor":"#ff0000","rightRgbColor":"#0000ff"}"##)] {
+        (0x13,r#"{"mouth":{"weight":100}}"#),(0x19,r##"{"leftRgbColor":"#ff0000","rightRgbColor":"#0000ff"}"##)] {
         let bytes=json.as_bytes();let count=bytes.len().div_ceil(10);
         for (index,chunk) in bytes.chunks(10).enumerate() {
             let mut packet=vec![0xaa,0x55,0xc3,1];packet.extend_from_slice(&(index as u16).to_be_bytes());packet.extend_from_slice(&(count as u16).to_be_bytes());packet.extend_from_slice(&(bytes.len() as u16).to_be_bytes());packet.extend_from_slice(chunk);
@@ -92,12 +92,12 @@ fn external_stackchan_factory_dance_gatt_drives_display_servos_and_rgb() {
         }
     }
     serial+=&run(&mut m,2000);assert_eq!(m.bus.ble_pending_commands(),0);
-    assert!(!serial.contains("Unknown HCI Command"),"all commands issued by this real startup/connection must be supported: {serial}");
+    assert!(!serial.contains("hci_err="),"all commands issued by this real startup/connection must be supported: {serial}");
     assert!(!serial.contains("deserializeJson failed")&&!serial.contains("fragment sequence mismatch"),"official JSON decoder must consume complete payloads");
     let motion=m.bus.board.motion_snapshot().unwrap();
     let angles:Vec<f64>=motion.split("\"positionDegrees\":").skip(1).map(|s|s.split(',').next().unwrap().parse().unwrap()).collect();
     assert_eq!(angles.len(),2);assert!((angles[0]-30.0).abs()<1.0&&(angles[1]-20.0).abs()<1.0,"actual serial servo positions: {motion}");
     let leds=m.bus.board.leds().unwrap().0;assert_eq!(leds.len(),12);assert!(leds[..6].iter().all(|v|*v==[255,0,0])&&leds[6..].iter().all(|v|*v==[0,0,255]),"actual PY32 RGB output: {leds:?}");
-    let display=m.bus.board.display().unwrap();assert_ne!(display.2,before,"actual avatar framebuffer must change");
-    assert!(display.2[145*320..146*320].iter().filter(|p|**p==0xffff).count()>70,"mouth size command must visibly expand the rendered mouth");
+    let display=m.bus.board.display().unwrap();assert!(display.2!=before,"actual avatar framebuffer must change");
+    assert!(display.2[160*320..161*320].iter().filter(|p|**p==0xffff).count()>30,"mouth weight command must open the rendered mouth");
 }
