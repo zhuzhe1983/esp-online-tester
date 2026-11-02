@@ -2,7 +2,7 @@ import {buildRunIssueUrl,redactIssueText} from './firmware-run-ui.js';
 import {burnerProjectUrl} from './firmware-download-access.js';
 
 export function expectedCancellation(error) {
-  return ['FLASH_CANCELLED','RECOVERY_CANCELLED','SESSION_REPLACED'].includes(error?.code)||error?.name==='AbortError';
+  return ['FETCH_ABORTED','FLASH_CANCELLED','RECOVERY_CANCELLED','SESSION_REPLACED'].includes(error?.code)||error?.name==='AbortError';
 }
 let active=null;
 export function showErrorDialog({error,message,context={},kind='operation'}={}) {
