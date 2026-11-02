@@ -87,3 +87,6 @@ or a runtime firmware `source`; optional `expectCodes`, `absentCodes`,
 `noWarnings`, and `seconds` assert outcomes. It checks visible pixels and saves
 hashes and bounded observations. It does not flash USB hardware or publish
 private firmware, serial captures, server addresses or device identifiers.
+
+Results, input hashes, browser checks and CPU samples are retained in the
+[verification receipt](evidence/stopwatch-hardware-diagnostics/README.md).

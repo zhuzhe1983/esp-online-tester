@@ -5,7 +5,7 @@ export function parseHardwareDiagnostics(value) {
   const state=value?.state, display=state?.display;
   if(value?.schemaVersion!==1 || value.board!=='stopwatch' || !state || !display ||
     !['powerLedEnabled','downloadLocked'].every(key=>typeof state[key]==='boolean') ||
-    !integer(state.pm1ConfiguredHz,10_000_000) || !(state.pm1LastBusHz===null || integer(state.pm1LastBusHz,10_000_000)) ||
+    !integer(state.pm1ConfiguredHz,0xffff_ffff) || !(state.pm1LastBusHz===null || integer(state.pm1LastBusHz,0xffff_ffff)) ||
     !['sleepOut','displayOn','visible'].every(key=>typeof display[key]==='boolean') ||
     !(display.brightnessControlEnabled===null || typeof display.brightnessControlEnabled==='boolean') || !integer(display.brightness,255) ||
     !Array.isArray(value.findings) || value.findings.length>16 || !Array.isArray(value.limits) || value.limits.length>8 ||
@@ -27,9 +27,9 @@ export function parseHardwareDiagnostics(value) {
 const labels={
   PM1_I2C_CLOCK_MISMATCH:['电源芯片与主机的 I²C 速率不匹配','先使用电源芯片支持的速率通信；需要提速时，核对两端配置及初始化顺序。'],
   PM1_DOWNLOAD_LOCK:['固件设置了下载锁','核对 M5PM1 的 DL_LOCK 设置，它会影响实机长按进入下载模式。'],
-  PM1_DOWNLOAD_UNLOCK_UNVERIFIED:['固件清除了下载锁，解锁效果尚未验证','寄存器写入不能证明实机已经恢复长按下载；请核对电源芯片的锁定与解锁行为。'],
+  PM1_DOWNLOAD_UNLOCK_UNVERIFIED:['固件尝试清除下载锁，解锁效果尚未验证','寄存器写入不能证明实机已经恢复长按下载；请核对电源芯片的锁定与解锁行为。'],
   PM1_POWER_LED_DISABLED:['固件关闭了电源指示灯','关闭指示灯可以是正常设计，不代表设备已经断电。'],
-  CO5300_PIXELS_WHILE_HIDDEN:['屏幕不可见时收到了像素','核对屏幕供电、复位、退出休眠和显示开启命令，不能仅凭像素写入判断实机已亮屏。'],
+  CO5300_PIXELS_WHILE_HIDDEN:['显存有像素，但屏幕当前不可见','提前写入显存可以是正常操作。请核对供电、复位、退出休眠和显示开启命令，不能仅凭像素写入判断实机已亮屏。'],
   CO5300_PIXEL_FORMAT:['检测到 RGB565 以外的像素格式','核对像素格式设置与写入数据是否一致；当前模型仅覆盖 RGB565 的像素输出。'],
   CO5300_BRIGHTNESS_CONTROL:['屏幕亮度控制需要核对','核对亮度控制和亮度设置。参考资料中的默认值有差异，不能据此断言实机一定黑屏。'],
 };

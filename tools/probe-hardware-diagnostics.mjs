@@ -16,11 +16,13 @@ if(!casesPath||!output)throw Error('Usage: node tools/probe-hardware-diagnostics
 const cases=JSON.parse(await readFile(casesPath,'utf8'));
 assert.ok(Array.isArray(cases)&&cases.length>0&&cases.length<=12);
 const root=new URL('../',import.meta.url),origin='https://hardware-check.invalid',catalog={},assets=new Map();
+const romPath=process.env.ESP32SIM_ROM_DIR?join(process.env.ESP32SIM_ROM_DIR,'esp32s3_rev0_rom.elf'):new URL('web/wasm/fw/esp32s3_rev0_rom.elf',root);
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 for(const name of ['products','accessories','firmwares'])catalog[name]=JSON.parse(await readFile(new URL(`web/platform/catalog/${name}.json`,root))).items;
 const fetchImpl=async(value,options)=>{
   const url=new URL(value);
   if(url.origin!==origin)return fetch(value,options);
+  if(url.pathname==='/wasm/fw/esp32s3_rev0_rom.elf')return new Response(await readFile(romPath));
   try{return new Response(assets.get(url.pathname)||await readFile(new URL(`web${url.pathname}`,root)));}
   catch{return new Response('',{status:404});}
 };
@@ -35,7 +37,7 @@ const runtime=createPlatformRuntime({catalog,fetchImpl,workerFactory,baseUrl:ori
   if(event.type==='frame')frame=event;
   if(event.type==='hardware-diagnostics')events++;
 }});
-const receipt={backend:'actual-platform-worker-wasm',wasmSha256:hash(await readFile(new URL('web/wasm/esp32sim.wasm',root))),romSha256:hash(await readFile(new URL('web/wasm/fw/esp32s3_rev0_rom.elf',root))),cases:[]};
+const receipt={backend:'actual-platform-worker-wasm',wasmSha256:hash(await readFile(new URL('web/wasm/esp32sim.wasm',root))),romSha256:hash(await readFile(romPath)),cases:[]};
 const wait=async predicate=>{
   const until=Date.now()+180000;
   while(Date.now()<until){const state=await runtime.observe();if(predicate(state))return state;if(state.status==='error')throw Error(JSON.stringify(state.lastError));await new Promise(r=>setTimeout(r,40));}
@@ -45,7 +47,7 @@ try {
   for(const spec of cases){
     assert.match(spec.id,/^[a-z0-9-]{1,64}$/);
     const seconds=spec.seconds??8;assert.ok(seconds>=1&&seconds<=60);
-    assets.clear();let source=spec.source,inputSha256={};
+    assets.clear();let source=spec.source,inputSha256=source?.sha256?{source:source.sha256}:{};
     if(spec.mergedPath){
       const bytes=await readFile(resolve(spec.mergedPath));assets.set('/fixture/image.bin',bytes);
       source={url:origin+'/fixture/image.bin',sha256:hash(bytes)};inputSha256.merged=hash(bytes);
@@ -59,7 +61,12 @@ try {
       const bytes=Buffer.from(JSON.stringify(manifest));assets.set('/fixture/manifest.json',bytes);
       source={manifestUrl:origin+'/fixture/manifest.json',sha256:hash(bytes)};
     }
-    assert.ok(source);const scene=createDefaultScene(catalog,'m5stack-stopwatch');scene.firmware=source;
+    assert.ok(source);
+    if(spec.source&&!inputSha256.source){
+      const response=await fetchImpl(source.manifestUrl||source.url);assert.ok(response.ok);
+      inputSha256.source=hash(Buffer.from(await response.arrayBuffer()));
+    }
+    const scene=createDefaultScene(catalog,'m5stack-stopwatch');scene.firmware=source;
     await runtime.configure(scene);assert.equal((await runtime.observe()).hardwareDiagnostics,null,'new scene clears previous findings');
     frame=null;events=0;await runtime.loadFirmware(source);await runtime.start();
     await wait(state=>Number(state.stats.time)>=seconds&&state.hardwareDiagnostics);

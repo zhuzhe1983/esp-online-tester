@@ -19,13 +19,15 @@ test('diagnostic snapshot validates bounded fields and preserves unknown brightn
   const input=snapshot(),result=parseHardwareDiagnostics(input);assert.deepEqual(result,input);
   result.state.display.visible=false;result.findings[0].detail='edited';result.limits.push('edited');assert.equal(input.state.display.visible,true);assert.notEqual(input.findings[0].detail,'edited');assert.equal(input.limits.length,1);
   const mutations=[v=>v.schemaVersion=2,v=>v.board='stackchan',v=>v.state.powerLedEnabled=1,v=>v.state.pm1LastBusHz=NaN,
-    v=>v.state.pm1ConfiguredHz=-1,v=>v.state.display.brightness=256,v=>v.state.display.brightnessControlEnabled='unknown',v=>v.state.display=null,
+    v=>v.state.pm1ConfiguredHz=-1,v=>v.state.pm1LastBusHz=0x1_0000_0000,v=>v.state.display.brightness=256,v=>v.state.display.brightnessControlEnabled='unknown',v=>v.state.display=null,
     v=>v.findings.push(v.findings[0]),v=>v.findings[0].count=Infinity,v=>v.findings[0].count=-1,v=>v.findings[0].severity='success',
     v=>v.findings[0].code='x'.repeat(65),v=>v.findings[0].summary='x'.repeat(201),v=>v.findings[0].detail='x'.repeat(1537),
     v=>v.limits=Array(9).fill('x'),v=>v.limits[0]='x'.repeat(513),v=>v.findings=Array(17).fill(v.findings[0])];
   for(const change of mutations){const invalid=snapshot();change(invalid);assert.equal(parseHardwareDiagnostics(invalid),null);}
   const extra=snapshot();extra.state.untrusted='discard';extra.t='hardware-diagnostics';assert.equal(parseHardwareDiagnostics(extra).t,undefined);assert.equal(parseHardwareDiagnostics(extra).state.untrusted,undefined);
   const unknown=snapshot();unknown.state.pm1LastBusHz=null;assert.equal(parseHardwareDiagnostics(unknown).state.pm1LastBusHz,null);
+  const misconfigured=snapshot();misconfigured.state.pm1LastBusHz=40_000_000;
+  assert.equal(parseHardwareDiagnostics(misconfigured).state.pm1LastBusHz,40_000_000,'a bad guest divider must not suppress the warning snapshot');
 });
 
 // The transport double executes no firmware; its purpose is the public data/lifecycle boundary.

@@ -71,6 +71,7 @@ jobs:
           ESP32SIM_ROM_DIR=$PWD/roms node --test tools/platform-*-test.mjs
           ESP32SIM_ROM_DIR=$PWD/roms node tools/platform-recording-test.mjs --real
           ESP32SIM_ROM_DIR=$PWD/roms node tools/wasm-test.mjs demo-stopwatch
+          ESP32SIM_ROM_DIR=$PWD/roms node tools/probe-hardware-diagnostics.mjs tools/fixtures/stopwatch-hardware-checks.json /tmp/stopwatch-hardware-checks.json
       - name: Timing and BLE observation ABI (real wasm exports)
         run: |
           node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm

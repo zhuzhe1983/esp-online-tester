@@ -1,0 +1,46 @@
+{
+  "backend": "actual-platform-worker-wasm",
+  "wasmSha256": "ded487a996d12a2e83bf1a4e09bbb7a55a157e10a746842b1782dff414b0ebac",
+  "romSha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "cases": [
+    {
+      "id": "safe-stopwatch-fixture",
+      "inputSha256": {
+        "source": "b3c974be4655c280436a52f3932723257c2a9512eb5fd89fb55cb70b2d759fb4"
+      },
+      "guestSeconds": 8,
+      "insns": 46846393,
+      "diagnosticEvents": 3,
+      "checks": {
+        "schemaVersion": 1,
+        "board": "stopwatch",
+        "state": {
+          "powerLedEnabled": true,
+          "downloadLocked": false,
+          "pm1ConfiguredHz": 100000,
+          "pm1LastBusHz": 100000,
+          "display": {
+            "sleepOut": true,
+            "displayOn": true,
+            "brightness": 160,
+            "brightnessControlEnabled": true,
+            "visible": true
+          }
+        },
+        "findings": [],
+        "limits": [
+          "PM1 wake/sleep delays, retry tolerance and analog power are not simulated. A successful simulation does not verify real hardware startup.",
+          "I2C rates are nominal controller settings. GPIO bit-banged clock rates and electrical signal quality are not measured.",
+          "CO5300 sleep/display and explicitly zero brightness affect visible output; physical brightness curves and uncertain reset defaults are not modeled."
+        ]
+      },
+      "framebuffer": {
+        "width": 468,
+        "height": 466,
+        "sha256": "afbe070ac99cfd5f68f0bc5bb53436b441f3eda4e1b746c7da20b3828a70824e"
+      },
+      "panicSeen": false,
+      "applicationReady": true
+    }
+  ]
+}
