@@ -33,6 +33,8 @@ pub struct VirtualNet {
     pub arp_replies: u64,
     pub pings: u64,
     pub unhandled: u64,
+    /// Station MAC from frames the guest sent, so inbound NAT SYNs can be addressed.
+    pub sta_mac: [u8; 6],
     now_us: u64,
     /// the network's clock at power-on, microseconds since 1970: SNTP answers it plus emulated
     /// time, so a run that asks for the time is the same every time. Without one, the host's
@@ -50,7 +52,7 @@ impl VirtualNet {
     pub fn new(log: bool) -> Self {
         VirtualNet { gw_mac: GATEWAY_MAC, gw_ip: [10, 0, 2, 2], dns_ip: [10, 0, 2, 3],
                      sta_ip: [10, 0, 2, 15], mask: [255, 255, 255, 0],
-                     log, nat: None, dhcp_acks: 0, dns_answers: 0, ntp_answers: 0, tcp_rejects: 0, arp_replies: 0, pings: 0, unhandled: 0, now_us: 0, epoch_us: None }
+                     log, nat: None, dhcp_acks: 0, dns_answers: 0, ntp_answers: 0, tcp_rejects: 0, arp_replies: 0, pings: 0, unhandled: 0, sta_mac: [0; 6], now_us: 0, epoch_us: None }
     }
 
     /// Handle one Ethernet frame from the station; returns frames to send back to it.
@@ -58,6 +60,7 @@ impl VirtualNet {
         if eth.len() < 14 { return Vec::new(); }
         self.now_us = now_us;
         let mut src = [0u8; 6]; src.copy_from_slice(&eth[6..12]);
+        self.sta_mac = src;
         match be16(&eth[12..14]) {
             0x0806 => self.arp(&eth[14..], &src),
             0x0800 => self.ipv4(&eth[14..], &src),
@@ -189,7 +192,10 @@ impl VirtualNet {
     /// Pump the NAT's host sockets; returns frames for the guest.
     pub fn poll(&mut self, now_us: u64) -> Vec<Vec<u8>> {
         self.now_us = now_us;
-        match &mut self.nat { Some(n) => n.poll(now_us), None => Vec::new() }
+        match &mut self.nat {
+            Some(n) => { n.set_station(self.sta_mac); n.poll(now_us) }
+            None => Vec::new(),
+        }
     }
 
     /// Answer A queries with the local resolver address, so name lookups resolve to something that

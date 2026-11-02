@@ -46,7 +46,11 @@ jobs:
           dir="esp32sim-${tag#v}-${{ matrix.platform }}"
           mkdir -p "dist/$dir"
           mkdir -p "dist/$dir/docs" "dist/$dir/tools"
-          cp target/release/esp32sim target/release/esp32sim-c3 target/release/esp32sim-c6 LICENSE README.md "dist/$dir/"
+          # Every binary the esp32sim package declares, so a new chip alias cannot be left out again.
+          bins=$(cargo metadata --no-deps --format-version 1 | python3 -c 'import json, sys; print(" ".join(t["name"] for p in json.load(sys.stdin)["packages"] if p["name"] == "esp32sim" for t in p["targets"] if "bin" in t["kind"]))')
+          test -n "$bins" || { echo "no esp32sim binaries found"; exit 1; }
+          for bin in $bins; do cp "target/release/$bin" "dist/$dir/"; done
+          cp LICENSE README.md "dist/$dir/"
           cp docs/quick-start.md docs/getting-started.md docs/cli.md "dist/$dir/docs/"
           cp tools/fetch-rom-elfs.sh "dist/$dir/tools/"
           tar -czf "dist/$dir.tar.gz" -C dist "$dir"

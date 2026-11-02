@@ -1,11 +1,10 @@
 //! Official MicroPython v1.29.0 ESP32_GENERIC-SPIRAM image, unmodified.
 //! Download and SHA-256: docs/evidence/classic-psram-dclk/README.md.
 use esp_soc::SocBus;
-use std::{env, fs, path::PathBuf};
+use std::{env, fs};
 
 fn free_heap(mb: usize) -> usize {
-    let rom = PathBuf::from(env::var_os("ESP32SIM_ROM_DIR").expect("ESP32SIM_ROM_DIR"))
-        .join("esp32_rev300_rom.elf");
+    let rom = esp_soc::rom::require("esp32_rev300_rom.elf");
     let image = env::var_os("MICROPYTHON_SPIRAM_IMAGE").expect("MICROPYTHON_SPIRAM_IMAGE");
     let mut m = esp32::machine([0; 6], 4 << 20);
     m.bus.set_psram_size(mb << 20).unwrap();

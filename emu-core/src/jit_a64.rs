@@ -1,5 +1,6 @@
 //! A tiny AArch64 encoder: only the instructions the block compiler emits. Every encoding is
-//! checked against clang's assembler in `tests::encodings_match_clang`.
+//! checked against clang's assembler: `tests::encodings_match_fixture` compares with the fixture
+//! `tests::external_encodings_match_clang` regenerates.
 #![allow(dead_code)]
 
 pub type Reg = u32;
@@ -132,6 +133,10 @@ impl Asm {
     pub fn mul(&mut self, rd: Reg, rn: Reg, rm: Reg) { self.e(0x1b00_7c00 | rm << 16 | rn << 5 | rd); }
     pub fn umull(&mut self, rd: Reg, rn: Reg, rm: Reg) { self.e(0x9ba0_7c00 | rm << 16 | rn << 5 | rd); }
     pub fn smull(&mut self, rd: Reg, rn: Reg, rm: Reg) { self.e(0x9b20_7c00 | rm << 16 | rn << 5 | rd); }
+    pub fn udiv(&mut self, rd: Reg, rn: Reg, rm: Reg) { self.e(0x1ac0_0800 | rm << 16 | rn << 5 | rd); }
+    pub fn sdiv(&mut self, rd: Reg, rn: Reg, rm: Reg) { self.e(0x1ac0_0c00 | rm << 16 | rn << 5 | rd); }
+    /// rd = ra - rn * rm
+    pub fn msub(&mut self, rd: Reg, rn: Reg, rm: Reg, ra: Reg) { self.e(0x1b00_8000 | rm << 16 | ra << 10 | rn << 5 | rd); }
     pub fn clz(&mut self, rd: Reg, rn: Reg) { self.e(0x5ac0_1000 | rn << 5 | rd); }
     pub fn csel(&mut self, rd: Reg, rn: Reg, rm: Reg, c: Cond) { self.e(0x1a80_0000 | rm << 16 | (c as u32) << 12 | rn << 5 | rd); }
     pub fn csinc(&mut self, rd: Reg, rn: Reg, rm: Reg, c: Cond) { self.e(0x1a80_0400 | rm << 16 | (c as u32) << 12 | rn << 5 | rd); }
@@ -243,6 +248,9 @@ mod tests {
         t!("mul w9, w10, w11", a.mul(9, 10, 11));
         t!("umull x9, w10, w11", a.umull(9, 10, 11));
         t!("smull x9, w10, w11", a.smull(9, 10, 11));
+        t!("udiv w11, w9, w10", a.udiv(11, 9, 10));
+        t!("sdiv w11, w9, w10", a.sdiv(11, 9, 10));
+        t!("msub w12, w11, w10, w9", a.msub(12, 11, 10, 9));
         t!("clz w9, w10", a.clz(9, 10));
         t!("csel w9, w10, w11, lt", a.csel(9, 10, 11, Cond::Lt));
         t!("csinc w9, w10, w11, hs", a.csinc(9, 10, 11, Cond::Hs));

@@ -99,14 +99,16 @@ impl SocBus {
             self.commit_spi2_dma(completion);
             return;
         }
-        self.complete_gpspi_dma(2);
+        if self.periph.spi2.dma_tx_pending.is_some() { self.complete_gpspi_dma(2); }
     }
 
     /// SPI3's DMA data phase, through the GDMA OUT channel of trigger 1
     /// (SOC_GDMA_TRIG_PERIPH_SPI3). Always committed at once: the experimental wire timing
     /// (`spi2_timing`) is SPI2's only.
-    pub(super) fn complete_spi3_dma(&mut self) { self.complete_gpspi_dma(3); }
+    #[inline(always)]
+    pub(super) fn complete_spi3_dma(&mut self) { if self.periph.spi3.dma_tx_pending.is_some() { self.complete_gpspi_dma(3); } }
 
+    #[inline(never)]
     fn complete_gpspi_dma(&mut self, host: u8) {
         if self.periph.gpspi(host).dma_tx_pending.is_none() {
             return;
@@ -175,10 +177,15 @@ impl SocBus {
         self.irq_dirty = true;
     }
 
-    pub(super) fn deliver_spi2_transfer(&mut self) { self.deliver_gpspi_transfer(2); }
+    // EX255: every device flush and register write services both GP-SPI hosts, almost always
+    // with nothing queued. Test that inline; the out-of-line body keeps its own checks.
+    #[inline(always)]
+    pub(super) fn deliver_spi2_transfer(&mut self) { if self.periph.spi2.has_pending_transfer() { self.deliver_gpspi_transfer(2); } }
     /// The same for SPI3 (the board's `host` 3).
-    pub(super) fn deliver_spi3_transfer(&mut self) { self.deliver_gpspi_transfer(3); }
+    #[inline(always)]
+    pub(super) fn deliver_spi3_transfer(&mut self) { if self.periph.spi3.has_pending_transfer() { self.deliver_gpspi_transfer(3); } }
 
+    #[inline(never)]
     fn deliver_gpspi_transfer(&mut self, host: u8) {
         if self.periph.gpspi(host).dma_tx_pending.is_some() {
             return;

@@ -41,7 +41,7 @@ fn check(bus: &mut SocBus, seen: &Arc<Mutex<Vec<u8>>>) {
     assert_eq!(*seen.lock().unwrap(), [0x2c, 0xf8, 0x00, 0x07, 0xe0]);
     assert_eq!(bus.read32(SPI2 + 0x3c).unwrap() & (1 << 12), 1 << 12, "TRANS_DONE");
     assert_eq!(bus.read32(SPI2).unwrap() & (1 << 24), 0, "USR clear");
-    let ch = bus.periph.gdma.state.out[0];
+    let ch = bus.periph.gdma.gdma.out[0];
     assert_eq!(ch.int_raw & 0b1011, 0b1011, "OUT_DONE, OUT_EOF, OUT_TOTAL_EOF");
     assert_eq!((ch.running, ch.eof_desc), (false, RAM + 16));
     assert_eq!(bus.read32(RAM).unwrap() >> 31, 0, "owner handed back");
@@ -79,7 +79,7 @@ fn a_descriptor_the_cpu_owns_faults_the_transfer() {
     bus.write32(LINK, (1 << 21) | (RAM & 0xfffff)).unwrap();
     bus.write32(SPI2, 1 << 24).unwrap();
     assert!(seen.lock().unwrap().is_empty());
-    assert_eq!(bus.periph.gdma.state.out[0].int_raw & (1 << 2), 1 << 2, "OUT_DSCR_ERR");
+    assert_eq!(bus.periph.gdma.gdma.out[0].int_raw & (1 << 2), 1 << 2, "OUT_DSCR_ERR");
     assert_eq!(bus.read32(SPI2 + 0x3c).unwrap() & (1 << 12), 1 << 12, "the command still completes");
 }
 
@@ -91,5 +91,5 @@ fn the_owner_bit_is_ignored_unless_checked() {
     bus.write32(LINK, (1 << 21) | (RAM & 0xfffff)).unwrap();
     bus.write32(SPI2, 1 << 24).unwrap();
     assert_eq!(*seen.lock().unwrap(), [0x2c, 0xf8, 0x00, 0x07, 0xe0]);
-    assert_eq!(bus.periph.gdma.state.out[0].int_raw & (1 << 2), 0, "no OUT_DSCR_ERR");
+    assert_eq!(bus.periph.gdma.gdma.out[0].int_raw & (1 << 2), 0, "no OUT_DSCR_ERR");
 }

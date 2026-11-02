@@ -87,11 +87,25 @@ jobs:
         run: |
           . ./tools/wasm-rustflags.sh
           cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile
+  # The native JIT is compiled only for AArch64, so the test job above (x86) compares the
+  # interpreter with itself in the JIT-vs-interpreter goldens. Here they run with the JIT in.
   native-aarch64:
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - name: Native AArch64 core and JIT memory tests
-        run: cargo test --release -p xtensa-lx7
+      - uses: actions/cache@v4
+        with:
+          path: roms
+          key: rom-elfs-${{ hashFiles('tools/fetch-rom-elfs.sh') }}
+      - name: Fetch the mask ROM ELFs
+        run: tools/fetch-rom-elfs.sh roms
+      - name: Fetch the ESP32-P4 example images
+        run: tools/fetch-p4-firmware.sh
+      - name: Clippy (the AArch64-only JIT code)
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Native AArch64 core, JIT memory and encoder tests
+        run: cargo test --release -p xtensa-lx7 -p emu-core
+      - name: Golden outputs with the native JIT
+        run: ESP32SIM_ROM_DIR=$PWD/roms cargo test --release -p esp32sim --test goldens -- --include-ignored --skip external_

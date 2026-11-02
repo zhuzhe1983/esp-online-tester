@@ -1,0 +1,41 @@
+--- a/esp-periph/src/timg.rs
++++ b/esp-periph/src/timg.rs
+@@ -31,9 +31,12 @@
+     #[inline(always)]
+     pub fn step(&mut self, apb_ticks: u64, width_mask: u64, mut on_alarm: impl FnMut()) {
+         let t = self;
++        STEP.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+         if t.config & (1 << 31) == 0 { return; }   // TIMG_T0_EN
++        ENABLED.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+         let div = Self::divisor(t.config);
+         t.prescale_acc += apb_ticks;
++        if t.prescale_acc < div { SHORT.fetch_add(1, std::sync::atomic::Ordering::Relaxed); }
+         let inc = t.config & (1 << 30) != 0;   // TIMG_T0_INCREASE
+         let alarm = t.alarm;
+         // A one-shot alarm armed at or behind the counter fires at once ("If the current count
+@@ -52,6 +55,7 @@
+         // Below the divisor no counter step is due: keep the residual and skip the division,
+         // which a tick shorter than the divisor would otherwise pay for a zero quotient.
+         if t.prescale_acc < div { return; }
++        DIVS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+         let mut steps = t.prescale_acc / div;
+         t.prescale_acc %= div;
+         // Steps to the alarm from `c`, if counting reaches it (not already at or past it).
+@@ -152,6 +156,17 @@
+             best = Some(best.map_or(apb, |b| b.min(apb)));
+         }
+         best
++    }
++}
++
++
++static STEP: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
++static ENABLED: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
++static SHORT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
++static DIVS: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
++impl Drop for TimerGroup {
++    fn drop(&mut self) {
++        eprintln!("PRESCALER {} {} {} {}", STEP.load(std::sync::atomic::Ordering::Relaxed), ENABLED.load(std::sync::atomic::Ordering::Relaxed), SHORT.load(std::sync::atomic::Ordering::Relaxed), DIVS.load(std::sync::atomic::Ordering::Relaxed));
+     }
+ }
+ 

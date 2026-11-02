@@ -56,6 +56,17 @@ impl GpSpi {
         match off {
             0x00 => { self.regs.write(0, v & !((1 << 23) | (1 << 24))); if v & (1 << 24) != 0 && self.pending.is_none() { self.transfer(); } }
             0x34 => self.int_ena = v, 0x38 => self.int_raw &= !v,
+            // SPI_DMA_INT_SET_REG (0x44, bit 12 SPI_TRANS_DONE_INT_SET: "the software set bit for
+            // SPI_TRANS_DONE_INT"; components/soc/esp32s3/register/soc/spi_reg.h, IDF v5.5.2) raises
+            // raw status. The IDF driver depends on it: spi_hal_init forces TRANS_DONE through
+            // spi_ll_set_int_stat (components/hal/esp32s3/include/hal/spi_ll.h,
+            // `hw->dma_int_set.trans_done_int_set = 1`) with the interrupt allocated disabled, and
+            // spi_device_queue_trans only enqueues and lets the bus lock enable the interrupt; the ISR
+            // then starts the transaction (spi_new_trans -> spi_hal_user_start,
+            // components/esp_driver_spi/src/gpspi/spi_master.c, IDF v5.5.2). Without the set bit the
+            // ISR never runs and the first queued transfer never starts; polling transfers
+            // (spi_device_polling_transmit, Arduino's SPI) set USR themselves and never noticed.
+            0x44 => self.int_raw |= v,
             0x98..=0xd4 => self.w[((off - 0x98) / 4) as usize] = v,
             _ => self.regs.write(off, v),
         }
@@ -267,6 +278,23 @@ mod tests {
 
         let transfer = spi.take_transfer().expect("CPU transaction may start after abort");
         assert_eq!(transfer.tx, [0x5a]);
+    }
+    /// SPI_DMA_INT_SET_REG (0x44): the ISR kick ESP-IDF's spi_master relies on. The driver sets
+    /// TRANS_DONE here at init while its interrupt is disabled, so enabling the interrupt later
+    /// enters the ISR that starts the first queued transaction.
+    #[test]
+    fn dma_int_set_raises_raw_status_and_the_interrupt() {
+        let mut spi = GpSpi::new();
+        spi.write(0x34, 1 << 12);
+        assert_eq!(spi.read(0x3c), 0);
+        assert!(!spi.irq());
+        spi.write(0x44, 1 << 12);
+        assert_eq!(spi.read(0x3c) & (1 << 12), 1 << 12, "INT_RAW shows the set bit");
+        assert_eq!(spi.read(0x40) & (1 << 12), 1 << 12, "INT_ST shows it while enabled");
+        assert!(spi.irq());
+        spi.write(0x38, 1 << 12);
+        assert_eq!(spi.read(0x3c), 0, "INT_CLR clears it again");
+        assert!(!spi.irq());
     }
 }
 

@@ -155,7 +155,9 @@ counts and the interrupt count pinned.
 - **`--boot app`** (skipping the ROM and bootloader). The C3 has one 128-entry MMU table shared by
   the data and instruction buses, and software keeps their page ranges disjoint; a direct app boot
   needs the bootloader's split, which is not modelled. The flag fails with that message.
-- **Bluetooth** is not modelled.
+- **Bluetooth radio.** `--ble` is the virtual VHCI controller (it needs the application ELF) and
+  `--ble full` an experimental register-level controller with one virtual central
+  ([cli.md](cli.md)); neither models the radio.
 - **No board yet.** The C3 target is a bare module (`NoBoard`): console only. `BoardModel` lives
   in `esp-soc` now, so a C3 board is an `impl BoardModel` plus its devices; nothing else changes.
 - (superseded) `BoardModel` is an S3 concept

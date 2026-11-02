@@ -27,6 +27,7 @@ pub enum LoadKind {
     Symbols = 4,
     Flash = 5,
     Script = 6,
+    /// BMP/PPM, or baseline JPEG for boards whose camera accepts encoded input
     CameraPicture = 7,
     /// a card image for the SD socket, held in memory
     SdCard = 8,
@@ -72,6 +73,10 @@ impl<S: Soc> Machine<S> {
             LoadKind::Script => {
                 let text = std::str::from_utf8(data).map_err(|_| "script is not UTF-8")?;
                 self.load_script(text)
+            }
+            LoadKind::CameraPicture if data.starts_with(&[0xff, 0xd8]) => {
+                let jpeg = crate::picture::Jpeg::parse(data.to_vec()).map_err(|e| e.to_string())?;
+                self.bus.board().set_camera_jpeg(jpeg).map_err(|e| e.to_string())
             }
             LoadKind::CameraPicture => {
                 let picture = crate::picture::parse(data)?;

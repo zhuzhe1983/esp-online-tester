@@ -27,7 +27,8 @@ esp32sim runs untrusted firmware, so the following are in scope:
 - Guest-to-host escapes from the emulated SoC: the instruction decoders and interpreters, the
   AArch64 and WebAssembly JITs, and the peripheral models
 - The virtual network and NAT (`--net nat`): guest traffic reaching hosts or ports it should not,
-  or bypassing `--net none`
+  or bypassing `--net none`. `--hostfwd` listens on a host TCP port (loopback when the host
+  address is omitted) and forwards accepted connections into the guest
 - The live board UI (`--web PORT`) and its WebSocket protocol
 - The WebAssembly build and the hosted demo at <https://mikroverk.github.io/esp32sim/>
 

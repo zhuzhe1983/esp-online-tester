@@ -1,7 +1,8 @@
 # Adding things
 
-Four recipes. Each is one implementation plus one line in a table; nothing in the scheduler,
-the bus, or the front-ends changes.
+Four recipes. A peripheral or an observer is one implementation plus one line in a table and
+leaves the scheduler alone. A board or a chip also has to be named by hand in the front ends;
+each recipe lists the places.
 
 ## A peripheral
 
@@ -33,7 +34,8 @@ the bus, or the front-ends changes.
    the offset the device sees, `alias` mounts a further block of the same device.
 
 3. If it moves data through memory (a DMA engine, a frame source), the pump goes in the chip's
-   `bus.rs` next to the I2S/LCD/camera ones; the device exposes what the pump needs.
+   bus next to the I2S/camera ones (`esp32s3/src/bus/dma.rs` on the S3, `bus.rs` on the other
+   chips); the device exposes what the pump needs.
 
 4. If a reboot must keep some of its state (a strap, a JEDEC id, captured audio), copy it across
    in the chip's `SocBus::reboot`.
@@ -61,7 +63,8 @@ Say the new board has a BME280-style I2C sensor, a status LED on GPIO 5, and a b
    Reg8Device::new("bme280", &[(0xd0, 0x60), (0x88, 0x6e), (0x89, 0x6c) /* calibration... */])
    ```
    Anything with more logic (a FIFO, a measurement that changes) implements the trait itself;
-   `Gt911` (touch) and `Ov5640` (camera SCCB) in `esp32s3/src/i2c.rs` are the two shapes.
+   `Gt911` (touch, `esp32s3/src/i2c.rs`) and `Ov5640` (camera SCCB, `esp-soc/src/camera.rs`) are
+   the two shapes.
 
 2. **The board.**
 
@@ -88,8 +91,17 @@ Say the new board has a BME280-style I2C sensor, a status LED on GPIO 5, and a b
    Inputs are not board methods: a button is `press btn1 150` in a script (`docs/cli.md`) or a
    click in the page, both of which end up in `gpio_set_input` on the SoC.
 
-3. **Register it**: one arm in `make_board` (`"sensorboard" => Some(Box::new(Sensorboard::new()))`).
-   The CLI's `--board sensorboard` and the page's board list (`web/emu.js`) take the name.
+3. **Register it**: one arm in the chip's `make_board` (`"sensorboard" =>
+   Some(Box::new(Sensorboard::new()))`; `esp32s3/src/board/mod.rs`, `esp32/src/board/mod.rs`,
+   `esp32c6/src/board.rs`, `esp32p4/src/board.rs`). That is all `--board sensorboard` and
+   `esp32sim_new` need: the wasm build finds the chip by asking each chip's `make_board` (a P4
+   board implies rev ≥ 3). The names are also listed by hand, so add it to:
+   - `cli/src/lib.rs`: the `--board` help text, the chip's unknown-board message, and the memory
+     defaults in `setup_s3` if the module differs from 8 MB flash / 2 MB PSRAM (`stopwatch`);
+   - `web/emu.js`: the board `<select>`, `MEMORY` and, off the S3, `romFor`;
+   - `web/workbench.js`: the `BOARD` info and, off the S3, `CHIP`;
+   - `web/run.html`: the page title in the `board` message handler, and `PANEL_TEXT` /
+     `PANEL_ROTATE` for a panel.
 
 4. **Displays, cameras, audio.** A display fed pixel by pixel implements `display()`,
    `display_version()` and says `display_quiet_push() == true` (`Atech14`); one that receives whole
@@ -102,8 +114,8 @@ Say the new board has a BME280-style I2C sensor, a status LED on GPIO 5, and a b
    gets the event through a new `BoardModel` method with a default, as `spi_tx` and `lcd_frame` did.
 
 Run it: `esp32sim --board sensorboard --boot rom ... --log-periph` and watch which registers the
-firmware polls that nothing answers yet. Add a row to `docs/boards.md` and a run script under
-`examples/<board>/`.
+firmware polls that nothing answers yet. Add a row to `docs/boards.md`, the name to the
+`--board` row of `docs/cli.md`, and a run script under `examples/<board>/`.
 
 ## A CPU and a chip
 
@@ -116,8 +128,18 @@ firmware polls that nothing answers yet. Add a row to `docs/boards.md` and a run
    device), the interrupt controller, and `soc.rs`: `impl Soc` (cores, `irqs` per core, secondary
    core control) and `impl SocBus` (console streams, reset, app boot, board, audio, interrupt
    routing, flash size, strap, reset cause, report).
-3. `pub type Machine = esp_soc::Machine<C6>;` and a `machine()` constructor; a `setup_c6` in
-   `cli/src/lib.rs` and a `--chip` arm; the same board name switch in `wasm/src/lib.rs`.
+3. `pub type Machine = esp_soc::Machine<C6>;` and a `machine()` constructor. The front ends name
+   each chip by hand:
+   - the workspace `members` in `Cargo.toml`;
+   - the chip's `ChipPins` and `UartPins` in `esp-soc/src/pins.rs` and `esp-soc/src/uart.rs`;
+   - `cli/`: the dependency, a `setup_c6` in `src/lib.rs` with its list of flags the chip
+     refuses, the `--chip` arm in `run_cli`, the help text, and an `esp32sim-c6` alias in
+     `src/bin/` if the chip gets one;
+   - `wasm/`: the dependency, a branch in `esp32sim_new` (`src/lib.rs`), and a `MachineKind`
+     variant with its `Deref`/`DerefMut` arms (`src/machine.rs`);
+   - `web/emu.js` (`MEMORY`, `romFor`, the board `<select>`) and `web/workbench.js` (`CHIP`,
+     `BOARD`);
+   - `tools/fetch-rom-elfs.sh`: the ROM ELF and its SHA-256.
 
 This is exactly the path the ESP32-C6 took (`esp32c6/`, [esp32c6.md](esp32c6.md)): the C3 crate
 copied, the map and the interrupt controller rewritten, then `--log-periph` and the board's
@@ -125,7 +147,8 @@ console until hello_world matched. If the ROM's RAM-initialiser table has a diff
 `Soc` trait's `ROM_DATA_TABLE_END` / `ROM_DATA_TABLE_STRIDE` say so (12-byte entries on the C6).
 
 Everything else — scheduler, device time, console, scripts, stubs, observers, the web UI,
-reboot, image loading — is `esp_soc::Machine` and needs no change.
+reboot, image loading — is `esp_soc::Machine` and needs no change, unless the ROM initialises RAM
+outside its data table: the C3's BT initializer is copied by chip name in `Machine::load_rom`.
 
 ## An observer
 

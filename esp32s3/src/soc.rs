@@ -169,7 +169,8 @@ impl esp_soc::SocBus for SocBus {
         // resets it) or the PSRAM (MR2 is read-only and keeps its density).
         p.spi0.octal_flash = old.spi0.octal_flash; p.spi1.octal_flash = old.spi1.octal_flash; p.spi1.flash_cr2 = old.spi1.flash_cr2;
         p.spi0.psram_mr[2] = old.spi0.psram_mr[2]; p.spi1.psram_mr[2] = old.spi1.psram_mr[2];
-        p.rtc.ram = old.rtc.ram; p.rtc.slow_ticks = old.rtc.slow_ticks;
+        p.rtc.ram = old.rtc.ram; p.rtc.slow_ticks = old.rtc.slow_ticks; p.rtc.reset_cause = cause;
+        p.usb.connected = old.usb.connected;            // the host side of the USB cable is not reset
         p.rtc.ram.write(0x38, cause | (cause << 6));
         p.rtc.ram.write(0x98, 0);                       // watchdog disarmed by the reset; the ROM re-arms it
         p.i2s0.pcm = old.i2s0.pcm; p.i2s0.frames_out = old.i2s0.frames_out; p.i2s1.pcm = old.i2s1.pcm; p.i2s1.frames_out = old.i2s1.frames_out;   // keep the captured audio continuous

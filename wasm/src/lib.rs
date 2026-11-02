@@ -248,7 +248,8 @@ pub unsafe extern "C" fn esp32sim_delete(e: *mut Emu) {
 }
 
 /// kind: 0 mask-ROM ELF, 1 bootloader (chip-specific offset), 2 partition table (0x8000), 3 app (0x10000),
-/// 4 ELF for symbols, 5 whole flash image (0x0), 6 script text, 7 camera picture (BMP/PPM),
+/// 4 ELF for symbols, 5 whole flash image (0x0), 6 script text, 7 camera picture (BMP/PPM, or baseline JPEG
+/// delivered verbatim by cameras that accept it),
 /// 8 SD card image for the board's socket (P4; held in memory, at least 512 KiB).
 /// Returns 0, or 1 with the reason logged.
 ///

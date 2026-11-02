@@ -5,16 +5,20 @@ mod counts;
 
 fn flow() -> Tcp {
     Tcp { guest_mac: [2; 6], guest_ip: [10, 0, 2, 15], guest_port: 1234,
-        dst_ip: [127, 0, 0, 1], dst_port: 80, transport: Transport::Closed,
+        dst_ip: [127, 0, 0, 1], dst_port: 80, inbound: false, transport: Transport::Closed,
         guest_write: GuestWrite::Open, host_closed: false,
         our_seq: 100, guest_seq: 200, guest_window: WINDOW,
         to_host: VecDeque::new(), unacked: VecDeque::new(), last_activity_us: 0 }
 }
 
 fn segment(seq: u32, ack: u32, flags: u8, data: &[u8]) -> Vec<u8> {
+    segment_ports(1234, 80, seq, ack, flags, data)
+}
+
+fn segment_ports(sport: u16, dport: u16, seq: u32, ack: u32, flags: u8, data: &[u8]) -> Vec<u8> {
     let mut seg = vec![0; 20];
-    seg[..2].copy_from_slice(&1234u16.to_be_bytes());
-    seg[2..4].copy_from_slice(&80u16.to_be_bytes());
+    seg[..2].copy_from_slice(&sport.to_be_bytes());
+    seg[2..4].copy_from_slice(&dport.to_be_bytes());
     seg[4..8].copy_from_slice(&seq.to_be_bytes());
     seg[8..12].copy_from_slice(&ack.to_be_bytes());
     seg[12] = 0x50; seg[13] = flags;
@@ -275,4 +279,103 @@ fn udp_ignores_other_senders_and_preserves_dns_reply_address() {
     assert_eq!(frames.len(), 1);
     assert_eq!(&frames[0][26..30], &[10, 0, 2, 3]);
     assert_eq!(&frames[0][42..], b"answer");
+}
+
+#[test]
+fn hostfwd_spec_parses_the_documented_tcp_form() {
+    let spec = HostFwdSpec::parse("tcp:127.0.0.1:8080-:80").unwrap();
+    assert_eq!(spec.bind, SocketAddr::from((Ipv4Addr::LOCALHOST, 8080)));
+    assert_eq!(spec.guest_ip, [10, 0, 2, 15]);
+    assert_eq!(spec.guest_port, 80);
+    let spec = HostFwdSpec::parse("tcp::8099-10.0.2.15:443").unwrap();
+    assert_eq!(spec.bind, SocketAddr::from((Ipv4Addr::LOCALHOST, 8099)));
+    assert_eq!(spec.guest_ip, [10, 0, 2, 15]);
+    assert_eq!(spec.guest_port, 443);
+    let spec = HostFwdSpec::parse("tcp:0.0.0.0:0-:1").unwrap();
+    assert_eq!(spec.bind.ip(), IpAddr::V4(Ipv4Addr::UNSPECIFIED));
+    assert_eq!(spec.guest_port, 1);
+    for bad in ["udp:127.0.0.1:8080-:80", "tcp:127.0.0.1:8080:80", "tcp:127.0.0.1:8080-:0", "tcp:nope:8080-:80", "tcp::65536-:80", ""] {
+        assert!(HostFwdSpec::parse(bad).is_err(), "{bad}");
+    }
+}
+
+#[test]
+fn hostfwd_holds_until_the_station_mac_is_known_then_relays_both_ways() {
+    let mut nat = Nat::new(false);
+    let bound = nat.listen(&HostFwdSpec { bind: SocketAddr::from((Ipv4Addr::LOCALHOST, 0)), guest_ip: [10, 0, 2, 15], guest_port: 80 }).unwrap();
+    let connector = std::thread::spawn(move || {
+        let sock = TcpStream::connect(bound).unwrap();
+        sock.set_nonblocking(true).unwrap();
+        sock.set_nodelay(true).unwrap();
+        sock
+    });
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(1);
+    while !connector.is_finished() {
+        assert!(nat.poll(0).is_empty(), "no SYN before the station MAC is known");
+        assert!(std::time::Instant::now() < deadline, "host connect timed out");
+        std::thread::yield_now();
+    }
+    let mut host = connector.join().unwrap();
+    assert!(nat.poll(0).is_empty(), "accepted sockets wait for the station MAC");
+    nat.set_station([2; 6]);
+    let frames = poll_ready(&mut nat, 1);
+    assert_eq!(frames.len(), 1);
+    assert_eq!(frames[0][47], SYN);
+    assert_eq!(&frames[0][26..30], &[10, 0, 2, 2]);
+    assert_eq!(&frames[0][30..34], &[10, 0, 2, 15]);
+    let eph = u16::from_be_bytes(frames[0][34..36].try_into().unwrap());
+    let syn_seq = u32::from_be_bytes(frames[0][38..42].try_into().unwrap());
+    let ack = nat.tcp_in(&[2; 6], &[10, 0, 2, 15], &[10, 0, 2, 2], &segment_ports(80, eph, 1000, syn_seq + 1, SYN | ACK, &[]), 2);
+    assert_eq!(ack.len(), 1);
+    assert_eq!(ack[0][47], ACK);
+    assert_eq!(nat.tcp_accepted, 1);
+    let again = nat.tcp_in(&[2; 6], &[10, 0, 2, 15], &[10, 0, 2, 2], &segment_ports(80, eph, 1000, syn_seq + 1, SYN | ACK, &[]), 2);
+    assert_eq!(again.len(), 1);
+    assert_eq!(again[0][47], ACK);
+    assert_eq!(nat.tcp_accepted, 1);
+    host.write_all(b"GET /").unwrap();
+    let req = poll_ready(&mut nat, 3);
+    assert_eq!(req.len(), 1);
+    assert_eq!(&req[0][54..], b"GET /");
+    nat.tcp_in(&[2; 6], &[10, 0, 2, 15], &[10, 0, 2, 2], &segment_ports(80, eph, 1001, syn_seq + 1 + 5, ACK | PSH, b"ok"), 4);
+    nat.poll(5);
+    let mut got = [0; 8];
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(1);
+    let mut n = 0;
+    while n < 2 {
+        match host.read(&mut got[n..]) {
+            Ok(0) => break,
+            Ok(k) => n += k,
+            Err(e) if e.kind() == ErrorKind::WouldBlock && std::time::Instant::now() < deadline => {
+                nat.poll(6);
+                std::thread::yield_now();
+            }
+            Err(e) => panic!("{e}"),
+        }
+    }
+    assert_eq!(&got[..2], b"ok");
+}
+
+#[test]
+fn hostfwd_counts_a_guest_rst_to_the_forwarded_syn_as_refused() {
+    let mut nat = Nat::new(false);
+    let bound = nat.listen(&HostFwdSpec { bind: SocketAddr::from((Ipv4Addr::LOCALHOST, 0)), guest_ip: [10, 0, 2, 15], guest_port: 4444 }).unwrap();
+    let connector = std::thread::spawn(move || TcpStream::connect(bound).unwrap());
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(1);
+    while !connector.is_finished() {
+        nat.poll(0);
+        assert!(std::time::Instant::now() < deadline, "host connect timed out");
+        std::thread::yield_now();
+    }
+    let _host = connector.join().unwrap();
+    nat.set_station([2; 6]);
+    let frames = poll_ready(&mut nat, 1);
+    assert_eq!(frames.len(), 1);
+    assert_eq!(frames[0][47], SYN);
+    let eph = u16::from_be_bytes(frames[0][34..36].try_into().unwrap());
+    let syn_seq = u32::from_be_bytes(frames[0][38..42].try_into().unwrap());
+    assert_eq!(nat.tcp_refused, 0);
+    let out = nat.tcp_in(&[2; 6], &[10, 0, 2, 15], &[10, 0, 2, 2], &segment_ports(4444, eph, 0, syn_seq + 1, RST | ACK, &[]), 2);
+    assert!(out.is_empty());
+    assert_eq!((nat.tcp_refused, nat.tcp_accepted), (1, 0));
 }

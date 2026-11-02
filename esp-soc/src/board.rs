@@ -142,6 +142,12 @@ pub trait BoardModel {
     fn camera_frame_start(&mut self, _claim: bool) -> Option<VirtualCycle> { None }
     /// Physical route changes invalidate the fresh-frame opportunity.
     fn invalidate_camera_frame_start(&mut self) {}
+    /// Give the board's camera already-encoded baseline JPEG, delivered verbatim while the
+    /// sensor outputs JPEG. Refusal (malformed, wrong size) keeps the previous input.
+    fn set_camera_jpeg(&mut self, _jpeg: crate::picture::Jpeg) -> Result<(), crate::picture::JpegError> { Err(crate::picture::JpegError::Unsupported) }
+    /// Whether `camera_frame_with_clock` currently returns one whole JPEG file (its length
+    /// is the file's) rather than `w`x`h` raw pixels. Queried only by capture adapters.
+    fn camera_frame_is_jpeg(&self) -> bool { false }
 }
 
 pub type Board = Box<dyn BoardModel>;

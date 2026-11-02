@@ -96,7 +96,9 @@ Things that cost real time to find out, recorded so they do not have to be found
   the new head and retries that frame. Rewinding a *running* DMA is still wrong, for the reason above. An
   IDF 5.1 application needs this: before it, 314 of 315 frames were dropped and the station never
   authenticated; after it, association, DHCP and MQTT run (receipt:
-  [evidence/wifi-rx-handover](evidence/wifi-rx-handover/README.md)).
+  [evidence/wifi-rx-handover](evidence/wifi-rx-handover/README.md)). The S3 and the C3 share the MAC
+  model (`esp-soc/src/wifi/mac.rs`), so both follow this rule; the C6 and classic MACs restart only
+  from `rx_next == 0`.
   **Assumption of the latch:** `WifiMac::rx_handover` is cleared by the next frame that goes in, so the
   model assumes a driver publishes the next list's base *after* the current list is exhausted (the
   Arduino-ESP32 3.x blob does: 1 drop in 570 frames). A driver that published the base while the current
@@ -177,7 +179,8 @@ Things that cost real time to find out, recorded so they do not have to be found
   block interpreter it measured 1.23× (panel), 1.30× (detector), 1.37× (Atech), 1.46× (SID);
   the SID player now runs 193 Minsn/s, 2.1× real time. Decisions that mattered:
   a hand-written encoder for the ~90 instructions used, checked word-for-word against clang
-  (`cargo test encodings_match_clang`) rather than a dependency; anything not inlined calls
+  (`encodings_match_fixture`, against a fixture `external_encodings_match_clang` regenerates)
+  rather than a dependency; anything not inlined calls
   `exec_insn` for that one instruction and carries on natively, so coverage grew op by op
   with the oracle green at every step; the register window base is cached per block and
   reloaded after any helper that could rotate it; the window-overflow test is emitted once

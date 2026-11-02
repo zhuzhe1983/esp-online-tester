@@ -19,14 +19,15 @@ The default `cargo test --workspace` must run useful tests with no environment v
 downloaded firmware, ESP-IDF installation or hardware. A required test must never report
 success after silently skipping its work.
 
-## Status (2026-09-02)
+## Status (2026-10-29)
 
 Phase 1 is done (no silent skips; CI runs everything on every push, with the ROM ELFs
-fetched). Phase 2 has its first semantic suites (`*/tests/semantics.rs`, assembled with the
-Espressif toolchains and pasted as bytes; the oracle test covers step vs blocks vs JIT).
-Phase 4 has the register-level device tests (`esp-periph/tests/devices.rs`) and the machine
-tests (`esp32s3/tests/machine.rs`). Phase 5's goldens are in `tests/golden/` (both chips, with
-reboot). Phase 1 item 5 (parser robustness) found and fixed a panic in the BMP loader.
+fetched). Phase 2 has its first semantic suites (`xtensa-lx7/tests/semantics.rs`,
+`riscv-rv32/tests/semantics.rs`, assembled with the Espressif toolchains and pasted as bytes; the
+oracle test covers step vs blocks vs JIT). Phase 4 has the register-level device tests
+(`esp-periph/tests/devices.rs`) and the machine tests (`esp32s3/tests/machine.rs`). Phase 5's
+goldens are in `tests/golden/` (all five chips; with reboot on the S3, C3, C6 and P4). Phase 1
+item 5 (parser robustness) found and fixed a panic in the BMP loader.
 Open: Phase 3 (a checked-in binary suite), Phase 6 (conformance firmware), the external sets,
 and the silicon differential as a scheduled job. `tests/README.md` is the map.
 
