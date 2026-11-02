@@ -14,7 +14,7 @@ export function confirmFirmwareRun({product, firmware}) {
   return new Promise(resolve=>{
     let accepted=false;
     cancel.addEventListener('click',()=>dialog.close());
-    proceed.addEventListener('click',()=>{accepted=true;dialog.close();});
+    proceed.addEventListener('click',event=>{if(event.detail>1||accepted)return;accepted=true;proceed.disabled=true;cancel.disabled=true;dialog.close();});
     dialog.addEventListener('close',()=>{dialog.remove();resolve(accepted);},{once:true});
     dialog.showModal();cancel.focus();
   });

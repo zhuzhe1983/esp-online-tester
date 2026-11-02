@@ -52,24 +52,22 @@ export function captchaTextMasks({data,width,height}) {
   return results;
 }
 
-export async function readImagePoints(challenge,{signal,onProgress}={}) {
-  let worker;const cancelled=()=>{if(signal?.aborted)throw Object.assign(new Error('图片处理已取消。'),{code:'FETCH_ABORTED'});};
-  const stop=()=>{void worker?.terminate();};signal?.addEventListener('abort',stop,{once:true});
-  try {
-    cancelled();onProgress?.('正在准备验证…');
-    const {default:{createWorker}}=await import('./vendor/tesseract/tesseract.esm.min.js');cancelled();
-    const base=new URL('./vendor/tesseract/',import.meta.url).href;
-    worker=await createWorker('eng',1,{workerPath:base+'worker.min.js',corePath:base,langPath:base,workerBlobURL:false,cacheMethod:'none'});cancelled();
-    const img=new Image();img.src=challenge.captchaImage;await img.decode();cancelled();
-    if(img.naturalWidth!==challenge.width||img.naturalHeight!==challenge.height)throw Error('验证码图片尺寸有变，请手动点击。');
-    const canvas=document.createElement('canvas');canvas.width=challenge.width;canvas.height=challenge.height;const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0);
-    const masks=captchaTextMasks(ctx.getImageData(0,0,canvas.width,canvas.height)),candidates=[];
-    for(let i=0;i<masks.length;i++){
-      cancelled();onProgress?.(`正在处理图片 ${i+1}/${masks.length}…`);const mask=masks[i],crop=document.createElement('canvas');crop.width=mask.width;crop.height=mask.height;crop.getContext('2d').putImageData(new ImageData(mask.data,mask.width,mask.height),0,0);
-      let best={text:'',confidence:0};
-      for(const mode of ['7','13']){await worker.setParameters({tessedit_pageseg_mode:mode,tessedit_char_whitelist:'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'});const {data}=await worker.recognize(crop);cancelled();if(data.confidence>best.confidence)best=data;}
-      candidates.push({text:best.text.trim(),confidence:best.confidence,x:mask.x,y:mask.y});
-    }
-    return {...matchInstructionTargets(challenge.instruction,candidates),candidates};
-  } finally {signal?.removeEventListener('abort',stop);await worker?.terminate();}
+// Own the complete OCR worker tree, including slow initialization. Aborting the
+// attempt terminates it instead of leaving a pending library worker behind.
+export function readImagePoints(challenge,{signal,onProgress}={}) {
+  return new Promise((resolve,reject)=>{
+    const cancelled=()=>Object.assign(new Error('图片处理已取消。'),{code:'FETCH_ABORTED'});
+    if(signal?.aborted){reject(cancelled());return;}
+    const worker=new Worker(new URL('./m5burner-image-worker.js',import.meta.url),{type:'module'});let settled=false;
+    const finish=(error,result)=>{if(settled)return;settled=true;signal?.removeEventListener('abort',abort);worker.terminate();error?reject(error):resolve(result);};
+    const abort=()=>finish(cancelled());signal?.addEventListener('abort',abort,{once:true});
+    worker.onmessage=({data})=>{
+      if(settled)return;
+      if(data.type==='progress')onProgress?.(data.message);
+      else if(data.type==='result')finish(null,data.result);
+      else if(data.type==='error')finish(Object.assign(new Error('自动识图失败，可手动点选或换一张。'),{code:'CAPTCHA_IMAGE_ERROR'}));
+    };
+    worker.onerror=event=>{event.preventDefault();finish(Object.assign(new Error('自动识图暂时不可用，可手动点选或换一张。'),{code:'CAPTCHA_IMAGE_ERROR'}));};
+    const {captchaImage,width,height,instruction}=challenge;worker.postMessage({captchaImage,width,height,instruction});
+  });
 }

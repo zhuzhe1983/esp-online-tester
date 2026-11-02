@@ -178,6 +178,7 @@ async function downloadAndRun() {
   runAfterLoad = true;
   pendingRemoteHistory=null;
   try { await loadSelected(); await runtime.start(); if(pendingRemoteHistory)firmwareHistory?.remember({...pendingRemoteHistory,lastUsedAt:Date.now()}); }
+  catch(error) { if(!expectedCancellation(error))throw error; text('load-status','已取消启动，可重新开始。');return false; }
   finally { pendingRemoteHistory=null;runAfterLoad = false; renderDownloadProgress(); }
   return true;
 }
@@ -1067,10 +1068,11 @@ async function init() {
         finally { runAfterLoad = false; renderDownloadProgress(); }
       } else if (!await downloadAndRun()) describeStartup('已取消自动启动，可点击“启动”重新开始。');
     } catch (error) {
+      if(expectedCancellation(error)){describeStartup(`已取消自动${startup === 'replay' ? '回放' : '启动'}，可重新开始。`);return;}
       describeStartup(`自动${startup === 'replay' ? '回放' : '启动'}失败：${errorMessages[error.code] || error.message}。可重试或报告问题。`);
       throw error;
     }
-  });
+  },{kind:'startup'});
 }
 mountHeaderMenus();
 window.addEventListener('error',event=>{if(event.error||event.message)report(event.error||{code:'PAGE_ERROR',message:event.message},{kind:'page'});});

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createBurnerCaptchaClient,captchaPoint} from '../web/platform/m5burner-captcha.js';
+import {createBurnerCaptchaClient,captchaPoint,captchaAttempt,CAPTCHA_ATTEMPT_MS,CAPTCHA_AUTO_ATTEMPTS} from '../web/platform/m5burner-captcha.js';
+import {expectedCancellation} from '../web/platform/error-ui.js';
 import {prepareBurnerSource} from '../web/platform/m5burner-download-ui.js';
 import {createFirmwareCache} from '../web/platform/firmware-cache.js';
 import {sha256,fetchBytes} from '../web/platform/runtime.js';
@@ -8,6 +9,19 @@ const url='https://burner.m5stack.com/api/v1/firmwares/1897200000000001943/versi
 const token='test-token-for-a-single-challenge',data=new Uint8Array([0xe9,0,1,2]);
 const challenge={captchaToken:token,captchaImage:'data:image/png;base64,AAAA',width:520,height:300,targetCount:3,instruction:'Click in order: A, B, C',expiresInSeconds:120};
 const rejected=()=>Response.json({code:400,data:{errorCode:'BURN_CAPTCHA_INVALID'},requestId:'private-request-id'},{status:400});
+
+test('verification deadlines abort hanging work, discard late results and distinguish user cancellation',async()=>{
+  assert.equal(CAPTCHA_ATTEMPT_MS,10000);assert.equal(CAPTCHA_AUTO_ATTEMPTS,3);
+  let taskSignal,late;
+  const task=captchaAttempt(signal=>{taskSignal=signal;return new Promise((_,reject)=>{late=reject;});},{timeoutMs:10});
+  await assert.rejects(task,{code:'CAPTCHA_TIMEOUT'});assert.equal(taskSignal.aborted,true);
+  late(Error('late worker rejection'));await new Promise(resolve=>setTimeout(resolve,0));
+  const controller=new AbortController();let calls=0;
+  const cancelled=captchaAttempt(()=>{calls++;return new Promise(()=>{});},{signal:controller.signal});controller.abort();
+  await assert.rejects(cancelled,{code:'FETCH_ABORTED'});assert.equal(calls,0);
+  assert.equal(expectedCancellation({code:'FETCH_ABORTED'}),true);assert.equal(expectedCancellation({code:'CAPTCHA_TIMEOUT'}),false);
+  assert.equal(await captchaAttempt(async()=>token),token);
+});
 
 test('captcha uses anonymous CORS POST, string IDs and original image coordinates',async()=>{
   const calls=[];const client=createBurnerCaptchaClient({fetchImpl:async(u,o)=>{calls.push({url:u,...o});return Response.json({code:200,data:calls.length===1?challenge:{captchaToken:token}});}});
