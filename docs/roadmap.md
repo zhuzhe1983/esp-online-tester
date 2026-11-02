@@ -30,7 +30,8 @@ with tracking issues where available that list items and what "done" means:
    bit-identical with `--no-jit`). The inline TLB for loads/stores and the wasm backend for the
    browser build are in too. Left inside the JIT: register caching, inlined call/entry/retw; then
    NEON for the PIE lanes. `tools/bench.py` is the yardstick. The RISC-V chips (C3, C6, P4)
-   still fetch and decode every instruction. A per-PC decode memo did not pay (EX249 in #310:
+   still fetch and decode every instruction, though the C6's fetch and both RV32 decoders are
+   inlined into the step since #310. A per-PC decode memo did not pay (EX249 in #310:
    about as costly per hit as decoding), so their next step is a decoded-block cache like the
    LX7's ([EX001](experiments.md#ex001)/[EX003](experiments.md#ex003)), behind the same
    page-version checks.
@@ -46,8 +47,10 @@ with tracking issues where available that list items and what "done" means:
    in (`waveshare-c6-lcd147`: ST7789 on SPI2+GDMA, WS2812 on the C6 RMT, BOOT button) and its
    802.15.4 energy-scan firmware runs with a synthetic spectrum from the MAC model. Left: TF card,
    I2C on the C6 layout, watchdogs, real radios.
-6. **More boards** — Touch-LCD-4B done (`waveshare-lcd4b`: LVGL panel, touch/swipe, SID player audio).
-   Next candidates as firmware needs them; `--board waveshare-*` variants share the codec/PSRAM/I2C work.
+6. **More boards** — board models for the S3, C6, P4 and classic ESP32 are in; [boards.md](boards.md)
+   lists them and how to add one. The latest are the Ulanzi TC001 (#311) and the AI-Thinker
+   ESP32-CAM with host JPEG (#328). Next candidates as firmware needs them; `--board waveshare-*`
+   variants share the codec/PSRAM/I2C work.
 7. **Peripherals on demand** — LEDC, PCNT, ADC, SPI2/3 masters, I2S RX and the LCD side of
    LCD_CAM are in ([peripherals.md](peripherals.md)). Left: the RX sides of RMT and UART DMA, TWAI,
    LCD_CAM's i8080 mode. Each appears as "unknown register" in the log when a firmware needs it.
