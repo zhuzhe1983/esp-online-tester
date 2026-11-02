@@ -51,6 +51,15 @@ pub const LE_READ_REMOTE_FEATURES: u16 = 0x2016;
 pub const LE_ENCRYPT: u16 = 0x2017;
 pub const LE_RAND: u16 = 0x2018;
 pub const LE_READ_SUPPORTED_STATES: u16 = 0x201c;
+pub const LE_SET_DATA_LENGTH: u16 = 0x2022; // Core 5.4, Vol 4 E 7.8.33
+// Bluetooth Core 5.4, Vol 4, Part E, 7.8.38–44 and 7.8.77;
+// also esp-nimble@5c1a43c (ESP-IDF v5.5.4), nimble/include/nimble/hci_common.h.
+pub const LE_ADD_RESOLVING_LIST: u16 = 0x2027;
+pub const LE_REMOVE_RESOLVING_LIST: u16 = 0x2028;
+pub const LE_CLEAR_RESOLVING_LIST: u16 = 0x2029;
+pub const LE_READ_RESOLVING_LIST_SIZE: u16 = 0x202a;
+pub const LE_SET_ADDRESS_RESOLUTION_ENABLE: u16 = 0x202d;
+pub const LE_SET_PRIVACY_MODE: u16 = 0x204e;
 pub const VENDOR_FC82: u16 = 0xfc82;
 pub const ESP_SET_ADV_REPORT_FLOW_CONTROL: u16 = 0xfd09;
 pub const ESP_UPDATE_ADV_REPORT_FLOW_CONTROL: u16 = 0xfd0a;

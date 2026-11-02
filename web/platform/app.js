@@ -18,6 +18,7 @@ import {confirmFirmwareRun, buildRunIssueUrl} from './firmware-run-ui.js';
 import {recoverFirmwareDownload,firmwareRecoverySource} from './firmware-download-recovery.js';
 import {prepareBurnerSource} from './m5burner-download-ui.js';
 import {mountHeaderMenus} from './header-ui.js';
+import {prepareConsoleCopy} from './console-log.js';
 import {showErrorDialog,expectedCancellation} from './error-ui.js';
 import {configureFirmwareRelay} from './firmware-relay.js';
 import {burnerProjectUrl} from './firmware-download-access.js';
@@ -125,11 +126,12 @@ function download(name, value, type = 'application/json') {
   const url = URL.createObjectURL(blob), link = element('a'); link.href = url; link.download = name; link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-async function copy(value, confirmation) {
+async function copy(value, confirmation, failureMessage = '浏览器不允许复制，请导出场景 JSON。') {
   try { await navigator.clipboard.writeText(value); toast(confirmation); }
   catch {
-    const area = element('textarea'); area.value = value; area.style.position = 'fixed'; area.style.opacity = '0'; document.body.append(area); area.select();
-    const copied = document.execCommand('copy'); area.remove(); if (copied) toast(confirmation); else throw new Error('浏览器不允许复制，请导出场景 JSON。');
+    const focus=document.activeElement,area = element('textarea'); area.value = value; area.style.position = 'fixed'; area.style.opacity = '0'; document.body.append(area); area.select();
+    let copied;try { copied = document.execCommand('copy'); } finally { area.remove(); focus?.focus({preventScroll:true}); }
+    if (copied) toast(confirmation); else throw new Error(failureMessage);
   }
 }
 
@@ -928,6 +930,13 @@ function setupEvents() {
   }));
   bind('capture-frame', 'click', () => action(async () => { const frame = await runtime.capture({format: 'png'}); const link = element('a'); link.href = frame.dataUrl; link.download = `${scene.productId}-frame-${frame.frameNumber}.png`; link.click(); }));
   bind('clear-console', 'click', () => { for (const port of Object.keys(consoleBuffers)) consoleBuffers[port] = ''; text('serial-output', ''); });
+  for(const button of document.querySelectorAll('[data-copy-log]'))button.addEventListener('click',async()=>{
+    const port=$('serial-port')?.value||'uart0',limit=button.dataset.copyLog;
+    const result=prepareConsoleCopy(consoleBuffers[port]||'',limit==='all'?'all':Number(limit));
+    if(!result.count){toast('当前串口暂无可复制的日志。');return;}
+    try { await copy(result.text,`已复制 ${result.count} 条日志（${port.toUpperCase()}）。`,'浏览器不允许复制，请选中串口日志后手动复制。'); }
+    catch { toast('浏览器不允许复制，请选中串口日志后手动复制。',true); }
+  });
   bind('serial-port', 'change', () => { text('serial-output', consoleBuffers[$('serial-port').value] || ''); $('serial-output').scrollTop = $('serial-output').scrollHeight; });
   bind('serial-form', 'submit', event => { event.preventDefault(); action(async () => { const input = $('serial-input'); if (!input.value) return; await runtime.input({type: 'serial', port: $('serial-port').value, data: input.value + '\n'}); input.value = ''; }); });
   bind('add-accessory', 'click', () => action(() => addAccessory($('accessory-select').value)));

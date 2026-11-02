@@ -1,0 +1,104 @@
+{
+  "baseCommit": "2997b2f7",
+  "verifiedAtUtc": "2026-11-02T06:22:17Z",
+  "scope": "Workbench and standalone-player log copy UI; clipboard contents checked in a real headless Chromium browser.",
+  "definition": {
+    "source": "Current selected port retained buffer, including platform events duplicated into that view. No cross-port merge.",
+    "ranges": [
+      "all",
+      50,
+      100
+    ],
+    "record": "Nonempty logical line after ANSI removal; CR/CRLF normalize to LF; trailing partial record counts; internal blank separators retained.",
+    "timestamp": "Existing firmware text is preserved; no host timestamps added.",
+    "retention": "Existing per-port 65536-character cap remains unchanged."
+  },
+  "firmware": {
+    "manifest": "web/wasm/fw/demo-stopwatch.json",
+    "appSha256": "b4707bdae9a988a28c22ccb1546fef61ade4cf8923d7f9bbad45221287978694",
+    "method": "ROM boot to PLATFORM_READY stopwatch. Send 70 individually acknowledged UART1 lines containing controlled timestamps and ANSI colors; guest GPS_RX output appears on UART0. Pause before copying."
+  },
+  "checks": {
+    "workbenchActualClipboard": [
+      {
+        "range": "all",
+        "count": 128
+      },
+      {
+        "range": 50,
+        "count": 50
+      },
+      {
+        "range": 100,
+        "count": 100
+      }
+    ],
+    "timestampsRetained": true,
+    "ansiRemoved": true,
+    "portIsolation": true,
+    "clearThenEmptyPreservesClipboard": true,
+    "emptyToast": true,
+    "arrowEndEnterKeyboardCopy": true,
+    "escapeAndOutsideDismissal": true,
+    "clipboardApiRejectedLegacyFallback": true,
+    "bothClipboardPathsRejectedNotice": true,
+    "mobileWidthPixels": 390,
+    "mobileMenuWithinViewport": true,
+    "standaloneEnglish": {
+      "range": 100,
+      "actualCount": 58,
+      "translatedMenuAndToast": true
+    },
+    "consoleErrorsAfterSuccessfulPageLoad": 0,
+    "tests": [
+      "4 console-log tests passed",
+      "3 i18n tests passed, including all static HTML strings",
+      "platform-config, platform-input and platform-view passed",
+      "platform-runtime real worker/WASM suite passed"
+    ]
+  },
+  "reproduction": [
+    "Serve the checkout with a static server and open web/platform/index.html?lang=zh-CN. Supply the WASM and ROM artifacts described in the platform README.",
+    "Use the documented espTester API to configure m5stack-stopwatch with the local diagnostic manifest and start. Wait for PLATFORM_READY, send numbered UART1 lines, wait for each guest echo, then pause.",
+    "Grant test-context clipboard read/write permission. Click Copy logs and each range; compare navigator.clipboard.readText() with the selected raw buffer after ANSI removal, preserving original timestamps.",
+    "Check port change, clear/empty, ArrowDown/End/Enter/Escape, outside dismissal and a 390 px viewport. Force clipboard.writeText rejection for the legacy fallback, then reject execCommand too for the error notice. Restore both methods.",
+    "Open embed.html?lang=en in the same owned context, boot the same diagnostic and copy Last 100 entries from its 58-line boot log. Close the owned browser and preview server."
+  ],
+  "environmentNotes": [
+    "The first local server load reset one module connection; reloaded with a larger accept backlog before functional checks. No application code change was needed for that local-server failure."
+  ],
+  "lifecycle": {
+    "ownedBrowserClosedAndExitVerified": true,
+    "ownedPreviewServerStopped": true
+  },
+  "captures": [
+    {
+      "file": "output/playwright/serial-copy/desktop-menu.png",
+      "sha256": "24f3608392ecb59c89b83f1f662239164a2c232658f1635be5e420e71e514fd0",
+      "bytes": 224981,
+      "sizePixels": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "output/playwright/serial-copy/embed-menu.png",
+      "sha256": "0f1280c71181b9c0ae539ab9d3a4ae23f7450f9e4ae162c2b4714f6f16b19fd4",
+      "bytes": 168040,
+      "sizePixels": [
+        800,
+        900
+      ]
+    },
+    {
+      "file": "output/playwright/serial-copy/mobile-menu.png",
+      "sha256": "829fe4398860f6672324e65125a832da644b804c3f8c4d9a0eaf9cd60230ab56",
+      "bytes": 108551,
+      "sizePixels": [
+        390,
+        844
+      ]
+    }
+  ],
+  "evidenceRetention": "Raw screenshots and console/test logs remain in ignored output. No browser profile, host identity or unrelated process inventory retained; no external evidence upload."
+}

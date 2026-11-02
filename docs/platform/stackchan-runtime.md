@@ -81,6 +81,18 @@ node tools/probe-stackchan-ble.mjs --firmware FACTORY_BIN \
   --rom ROM_ELF --wasm web/wasm/esp32sim.wasm --receipt OUTPUT_JSON
 ```
 
+## DANCE 的 HCI 初始化与控制范围
+
+官方 V1.5.1 进入 DANCE 后出现的 `ogf=0x08, ocf=0x002d, hci_err=0x201` 对应 HCI `LE Set Address Resolution Enable`，不是舵机命令。原控制器返回 Unknown HCI Command；ESP-IDF 5.5.4 对应的 esp-nimble `ble_hs_startup_go()` 未检查 `ble_hs_pvcy_set_our_irk()` 的返回值，因此旧版仍会同步、广播和显示 Avatar。不能把继续广播等同于隐私初始化成功。
+
+控制器现接受 NimBLE 的配置序列：关闭地址解析、清空列表、重新启用、添加本机 IRK 项、设为 Device Privacy Mode。列表最多八项，检查参数、重复身份/非零 IRK、静态随机地址、容量、广播/扫描状态，并在 Reset 时清空。它是 **HCI 配置兼容子集**，没有实现 RPA 生成或解析；LL Privacy 特性及依赖该特性的 Supported Commands 位保持关闭，不宣称符合完整隐私控制器规范。物理射频、手机连接、配对及加密会话仍未模拟。
+
+虚拟连接后官方固件还发送 `LE Set Data Length` (`0x2022`)。控制器校验连接句柄和建议范围，再接受建议；虚拟对端维持原有 legacy 参数与 ATT MTU 23，不发生数据长度改变，不伪造 Data Length Change 事件，也不宣称支持 DLE。JSON 长于单次 ATT 写入时使用官方 HAL 的分片协议。舵机 `angle` 使用 0.1°：`yawServo.angle=300` 表示 30°，`pitchServo.angle=200` 表示 20°；默认皮肤的嘴形由 `mouth.weight` 控制，`mouth.size` 不会改变其绘制结果。
+
+DANCE 页面启动 BLE 服务后显示 Avatar，等待 `motion`、`avatar` 和 `rgb` 特征的 JSON 控制，不会仅因进入菜单就自动跳舞。从首次欢迎页选择 Skip，等待 Launcher 入场，向右翻五次，再点中间图标可进入；底边上滑后点 Home 会触发官方固件的 warm reboot。浏览器当前没有手机蓝牙桥接或 DANCE 控制面板，原生虚拟 GATT 测试与浏览器实际页面验收分别记录，不能互相替代。
+
+具体命令依据 [Bluetooth Core 5.4, Vol 4 Part E](https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Core-54/out/en/host-controller-interface/host-controller-interface-functional-specification.html) 的 C.9、7.8.33、7.8.38–44、7.8.77，以及 [ESP-IDF 5.5.4 所固定的 esp-nimble](https://github.com/espressif/esp-nimble/tree/5c1a43ca3d205c3d5183e57dedce335fb6a81155)。在前述 worker 探针命令中加 `--flow dance` 可运行进入、Home 退出、重启、重进及保存 Flash 恢复；`--expect-unknown-hci` 仅用于复现旧版负结果。DANCE 初始化与实际输出的复现结果见[本次回执](evidence/m5stack-k151/runtime/factory-dance-ble.json)和[来源清单](research/stackchan-dance-sources-2026-11-02.json)；未实机验证。
+
 ## 回归检查
 
 2026-11-01 在 macOS arm64、Rust stable 1.99.1、Node 26.8.2、Python 3.14.7 上完成。`ROM_DIR` 须为绝对路径；诊断程序使用 ESP-IDF 5.4.3。下表保留首次适配检查；后续舵机扭矩修复的增量结果见上节。以下是正确性检查，未据并行构建时的耗时作性能结论。

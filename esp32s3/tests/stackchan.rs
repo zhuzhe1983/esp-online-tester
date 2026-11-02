@@ -57,3 +57,47 @@ fn external_stackchan_factory_servo_test_moves_after_idle_torque_release() {
     assert!(!m.bus.board.motion_snapshot().unwrap().contains("\"enabled\":true"),"factory must release torque again at rest");
     let display=m.bus.board.display().unwrap();assert_eq!((display.0,display.1),(320,240));assert!(display.2.iter().any(|p|*p!=0));
 }
+
+// Protocol from m5stack/StackChan@f901cc2969189f3f0e96af1442c0f96e77e1e2c1:
+// firmware/main/hal/hal_ble.cpp (10-byte fragment header), hal/utils/bleprph/bleprph.h
+// (UUIDs), stackchan/json/json_helper.cpp and addons/neon_light/neon_light.cpp.
+#[test]
+#[ignore="requires ESP32SIM_STACKCHAN_FACTORY (official V1.5.1 merged BIN), ESP32SIM_STACKCHAN_SYMBOLS (verified profile ELF) and ESP32SIM_ROM_DIR"]
+fn external_stackchan_factory_dance_gatt_drives_display_servos_and_rgb() {
+    let image=std::env::var("ESP32SIM_STACKCHAN_FACTORY").expect("set ESP32SIM_STACKCHAN_FACTORY to the pinned official StackChan V1.5.1 merged BIN");
+    let symbols=std::env::var("ESP32SIM_STACKCHAN_SYMBOLS").expect("set ESP32SIM_STACKCHAN_SYMBOLS to the verified stackchan-factory-1.5.1/symbols.elf");
+    let elf=esp_soc::elf::parse(&std::fs::read(symbols).expect("ESP32SIM_STACKCHAN_SYMBOLS must name a readable ELF")).unwrap();
+    let mut m=machine(&image);m.bus.enable_ble(&elf).unwrap();
+    let mut serial=run(&mut m,3000);
+    let tap=|m:&mut esp32s3::Machine,x,y| {m.bus.touch_input(x,y,true);let mut out=run(m,300);m.bus.touch_input(x,y,false);out+=&run(m,700);out};
+    serial+=&tap(&mut m,88,188);
+    for _ in 0..5 {serial+=&tap(&mut m,294,120);}
+    serial+=&run(&mut m,1000);serial+=&tap(&mut m,160,120);serial+=&run(&mut m,1500);
+    assert!(serial.contains("[DANCE] on open")&&serial.contains("[HAL-BLE] init done"),"official DANCE must open and initialize BLE");
+    assert!(m.bus.ble.session.is_advertising(),"the real guest must enable advertising");
+    // No implicit phone: one explicit, unencrypted packet-level virtual central.
+    m.bus.ble_command("connect").unwrap();serial+=&run(&mut m,1000);
+    m.bus.ble_command("discover").unwrap();serial+=&run(&mut m,1000);
+    assert_eq!(m.bus.ble_pending_commands(),0,"real guest ATT discovery must finish");
+    let before=m.bus.board.display().unwrap().2.to_vec();
+    // Handles were obtained by discovery on this exact fixed image, not written into guest RAM.
+    // hal_servo.cpp maps angle in tenths of a degree: raw = zero + angle * 16 / 5 / 10.
+    // Each ATT write is <=20 bytes; longer JSON uses the manufacturer's own fragment assembly.
+    for (handle,json) in [(0x10u16,r#"{"yawServo":{"angle":300}}"#),(0x10,r#"{"pitchServo":{"angle":200}}"#),
+        (0x13,r#"{"mouth":{"weight":100}}"#),(0x19,r##"{"leftRgbColor":"#ff0000","rightRgbColor":"#0000ff"}"##)] {
+        let bytes=json.as_bytes();let count=bytes.len().div_ceil(10);
+        for (index,chunk) in bytes.chunks(10).enumerate() {
+            let mut packet=vec![0xaa,0x55,0xc3,1];packet.extend_from_slice(&(index as u16).to_be_bytes());packet.extend_from_slice(&(count as u16).to_be_bytes());packet.extend_from_slice(&(bytes.len() as u16).to_be_bytes());packet.extend_from_slice(chunk);
+            let hex=esp_soc::ble::peer::hex(&packet);m.bus.ble_command(&format!("write 0x{handle:04x} {hex}")).unwrap();serial+=&run(&mut m,200);
+        }
+    }
+    serial+=&run(&mut m,2000);assert_eq!(m.bus.ble_pending_commands(),0);
+    assert!(!serial.contains("hci_err="),"all commands issued by this real startup/connection must be supported: {serial}");
+    assert!(!serial.contains("deserializeJson failed")&&!serial.contains("fragment sequence mismatch"),"official JSON decoder must consume complete payloads");
+    let motion=m.bus.board.motion_snapshot().unwrap();
+    let angles:Vec<f64>=motion.split("\"positionDegrees\":").skip(1).map(|s|s.split(',').next().unwrap().parse().unwrap()).collect();
+    assert_eq!(angles.len(),2);assert!((angles[0]-30.0).abs()<1.0&&(angles[1]-20.0).abs()<1.0,"actual serial servo positions: {motion}");
+    let leds=m.bus.board.leds().unwrap().0;assert_eq!(leds.len(),12);assert!(leds[..6].iter().all(|v|*v==[255,0,0])&&leds[6..].iter().all(|v|*v==[0,0,255]),"actual PY32 RGB output: {leds:?}");
+    let display=m.bus.board.display().unwrap();assert!(display.2!=before,"actual avatar framebuffer must change");
+    assert!(display.2[160*320..161*320].iter().filter(|p|**p==0xffff).count()>30,"mouth weight command must open the rendered mouth");
+}
