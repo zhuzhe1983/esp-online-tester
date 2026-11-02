@@ -1,4 +1,4 @@
-// Shared keyboard and dismissal behavior for the two header menus.
+// Shared keyboard and dismissal behavior for header and console menus.
 export function mountHeaderMenus(doc=document) {
   const menus=[...doc.querySelectorAll('.header-dropdown')].map(root=>({root,button:root.querySelector('[data-menu-toggle]'),panel:root.querySelector('[data-menu-panel]')}));
   const close=(menu,focus=false)=>{menu.panel.hidden=true;menu.button.setAttribute('aria-expanded','false');if(focus)menu.button.focus();};
@@ -7,6 +7,7 @@ export function mountHeaderMenus(doc=document) {
   for(const menu of menus){
     menu.button.addEventListener('click',()=>{if(menu.panel.hidden)open(menu);else close(menu);});
     menu.root.addEventListener('keydown',event=>{
+      if(['Enter',' '].includes(event.key)){event.stopPropagation();return;}
       if(event.key==='Escape'&&!menu.panel.hidden){event.preventDefault();event.stopPropagation();close(menu,true);return;}
       if(!['ArrowDown','ArrowUp','Home','End'].includes(event.key))return;
       event.preventDefault();event.stopPropagation();const wasClosed=menu.panel.hidden;if(wasClosed)open(menu);
