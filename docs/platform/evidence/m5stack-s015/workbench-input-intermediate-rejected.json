@@ -1,0 +1,66 @@
+{
+  "productId": "m5stack-s015",
+  "firmware": "internal ESP-IDF 5.5.1 stamps3bat fixture",
+  "before": {
+    "serialLength": 8082,
+    "guestSeconds": 100.94,
+    "leds": [
+      [
+        255,
+        0,
+        0
+      ]
+    ]
+  },
+  "inputs": [
+    {
+      "kind": "3d-pointer-press",
+      "pixel": [
+        638,
+        309
+      ],
+      "guestSeconds": 100.94,
+      "leds": [
+        [
+          255,
+          0,
+          0
+        ]
+      ],
+      "serial": [],
+      "release": [
+        "S3BAT_BUTTON 0 FIRST 00 SECOND 00",
+        "S3BAT_BUTTON 0 FIRST 00 SECOND 00"
+      ]
+    },
+    {
+      "kind": "keyboard-press",
+      "key": "KeyA",
+      "guestSeconds": 117.76,
+      "leds": [
+        [
+          0,
+          255,
+          0
+        ]
+      ],
+      "serial": [],
+      "release": []
+    }
+  ],
+  "scope": "Actual workbench 3D PWR pointer hit and keyboard mapping, real WASM PM1 polling and guest RGB output; no factory or physical power claim.",
+  "checkedAt": "2026-11-03T21:11:59.357Z",
+  "status": "rejected-stale-observation",
+  "wasmSha256": "36d572dc61ef70c541f50ef4dbc11aaca021090369b30a9b0f2180d587ab449e",
+  "modelSha256": "64316a187d62077efbd652d8bf687553c3456f73fbeef4fabf9305b58060efca",
+  "fixtureSource": "tools/fixtures/stamps3bat-firmware",
+  "fixtureRuntimeCommit": "8f5fd3fa",
+  "fixtureInputs": {
+    "flasher_args.json": "9c71690300cedcc98a467a4daf1b9aecf10e09611726b06151248bef878fb9a2",
+    "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+    "stamps3bat_fixture.bin": "397c991e29f63532978e0377900f299dc733e90d90bdfbc67fd7c20c7e66a4bc"
+  },
+  "reason": "Async page.waitForFunction predicate resolved before updated observation was collected; empty fresh serial arrays and old LED values invalidate this intermediate input claim. Replaced by explicit awaited observe polling.",
+  "additionalObservation": "The combined serial stream may interleave USB/UART0 fragments (observed S3BAT_S3BAT_BUTTON... / BUTTON0 split), so an anchored line filter can lose a release line. Formal input checks use only serialByPort.uart0 and preserve fresh per-port lines."
+}
