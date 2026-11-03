@@ -103,6 +103,7 @@ function log(message) { for (const port of Object.keys(consoleBuffers)) consoleB
 function errorContext(error) {
   let source=scene?.firmware,firmware=null;
   if(catalog&&scene){try{source=sourceFromInputs();firmware=currentCatalogFirmware();}catch{}}
+  if(!embedded&&firmwareTab==='local'&&localFile){source={local:true};firmware=null;}
   if(source?.file||source?.files)source={local:true};
   return {product:product(),firmware,source,state:{status,version:api?.version,scene,firmware:loadedFirmware,serialByPort:{...consoleBuffers},lastError:error}};
 }
