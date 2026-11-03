@@ -25,6 +25,7 @@ mod stackchan_base;
 pub mod dinmeter;
 mod tembed_cc1101;
 mod stamps3;
+mod stampfly;
 pub mod stopwatch;
 pub mod papermono;
 pub mod paperdiy;
@@ -75,6 +76,8 @@ pub fn make_board(name: &str) -> Option<Board> {
         "dial" | "m5stack-dial" => Some(Box::new(Dial::new())),
         "stamps3" | "m5stack-s007" => Some(Box::new(stamps3::StampS3::new())),
         "stamps3a" | "m5stack-s007-v033" => Some(Box::new(stamps3::StampS3::s3a())),
+        "stampfly" | "m5stack-k138" => Some(Box::new(stampfly::StampFly::new())),
+        "stampfly-v11" | "m5stack-k138-v11" => Some(Box::new(stampfly::StampFly::v11())),
         "dinmeter" | "m5stack-dinmeter" => Some(Box::new(DinMeter::new())),
         "dinmeter-v11" | "m5stack-k134-v11" => Some(Box::new(DinMeter::v11())),
         "dial-v11" | "m5stack-dial-v11" => Some(Box::new(Dial::v11())),
