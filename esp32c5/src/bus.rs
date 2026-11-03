@@ -18,8 +18,11 @@ pub struct AccessFault { pub pc: u32, pub address: u32, pub write: bool, pub wid
 pub struct C5Bus {
     pub rom: Vec<u8>, pub sram: Vec<u8>, pub lp_sram: Vec<u8>,
     pub uart: [Uart; 2], pub gpio: Gpio, pub io_mux: RegRam, pub rmt: RmtCompact,
-    pub board: Board, pub clic: ClicCore, map: [u32; SOURCES], clic_config: u32, lp_ana_date: u32, reset_cause: u32,
+    pub board: Board, pub clic: ClicCore, pub(crate) map: [u32; SOURCES], clic_config: u32, lp_ana_date: u32, pub(crate) reset_cause: u32,
     pub first_fault: Option<AccessFault>, pc: u32, pub cycles: u64,
+    pub flash: Vec<u8>, pub(crate) app_off: Option<usize>, pub(crate) app_entry: Option<u32>,
+    pub(crate) irq_dirty: bool, pub(crate) reset_requested: bool, pub(crate) misc: esp_periph::Misc,
+    pub(crate) gpio_events: Option<Vec<(u64, u8, bool)>>, pub debug: esp_soc::DebugFlags,
 }
 impl Default for C5Bus { fn default() -> Self { Self::new() } }
 impl C5Bus {
@@ -29,10 +32,17 @@ impl C5Bus {
         let mut gpio = Gpio::with_pins(29); gpio.input_select = 0x100; gpio.func_in_sel.fill(96); gpio.strap = 0;
         Self { rom: vec![0; ROM_SIZE], sram: vec![0; SRAM_SIZE], lp_sram: vec![0; LP_SIZE],
             uart: [Uart::new(layout), Uart::new(layout)], gpio, io_mux: RegRam::new(), rmt: RmtCompact::new(CPU_HZ),
-            board: Box::new(NoBoard), clic: ClicCore::default(), map: [0; SOURCES], clic_config: 0, lp_ana_date: 36_774_528, reset_cause: 1, first_fault: None, pc: 0, cycles: 0 }
+            board: Box::new(NoBoard), clic: ClicCore::default(), map: [0; SOURCES], clic_config: 0, lp_ana_date: 36_774_528, reset_cause: 0x21, first_fault: None, pc: 0, cycles: 0,
+            flash: Vec::new(), app_off: None, app_entry: None, irq_dirty: true, reset_requested: false, misc: Default::default(), gpio_events: None, debug: Default::default() }
     }
     pub fn attach_board(&mut self, board: Board) { self.board = board; self.publish_gpio(); }
-    fn publish_gpio(&mut self) { self.board.gpio_waveform_at(self.cycles, PINS.routes(&self.gpio, &self.io_mux)); }
+    pub fn attach_board_devices(&mut self) { self.publish_gpio(); }
+    pub(crate) fn publish_gpio(&mut self) {
+        self.board.gpio_waveform_at(self.cycles, PINS.routes(&self.gpio, &self.io_mux));
+        if let Some(events) = &mut self.gpio_events { events.extend(self.gpio.changes.drain(..).map(|(p, l)| (self.cycles, p, l))); }
+        else { self.gpio.changes.clear(); }
+        self.gpio.input_changes.clear();
+    }
     fn range(address: u32, size: usize, base: u32, len: usize) -> Option<std::ops::Range<usize>> {
         let start = address.checked_sub(base)? as usize; let end = start.checked_add(size)?;
         (end <= len).then_some(start..end)
@@ -64,7 +74,7 @@ impl C5Bus {
             _ => return None,
         })
     }
-    fn sources(&self) -> [(usize, bool); 4] { [(31, self.gpio.irq()), (47, self.uart[0].irq()), (48, self.uart[1].irq()), (55, self.rmt.rmt.irq())] }
+    pub(crate) fn sources(&self) -> [(usize, bool); 4] { [(31, self.gpio.irq()), (47, self.uart[0].irq()), (48, self.uart[1].irq()), (55, self.rmt.rmt.irq())] }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
         let mut input = 0;
         for (source, asserted) in self.sources() { let id = self.map[source] as usize; if asserted && (16..48).contains(&id) { input |= 1u64 << id; } }
@@ -74,7 +84,9 @@ impl C5Bus {
     }
     pub fn interrupt_taken(&mut self, line: u32) { self.clic.taken(line as usize + 16); }
     pub fn advance(&mut self, cycles: u64) {
+        let before = self.rmt.rmt.irq();
         self.cycles = self.cycles.wrapping_add(cycles); self.rmt.tick(cycles);
+        self.irq_dirty |= before != self.rmt.rmt.irq();
         for (ch, bits) in std::mem::take(&mut self.rmt.rmt.done) {
             for pin in PINS.routes(&self.gpio, &self.io_mux).output_pins(64 + ch as u32) { self.board.rmt_frame(pin, &bits); }
         }
@@ -97,11 +109,18 @@ impl C5Bus {
         }
     }
     fn mmio_write(&mut self, a: u32, value: u32, lanes: u32) -> bool {
+        self.irq_dirty = true;
         if (0x2080_1000..=0x2080_10bc).contains(&a) { self.clic.write(a - 0x2080_0000, value, lanes); return true; }
         if lanes != 15 { return false; } // other subword MMIO deliberately unsupported
         match a {
             0x600b_2ffc => self.lp_ana_date = value & 0x7fff_ffff,
-            0x600b_0410 => { if value & (1 << 29) != 0 { self.reset_cause = 0; } }
+            // lp_clkrst_reg.h: CORE0_RESET_FLAG bit5 resets1; independent cause
+            // clear bit29, flag SET bit30 and CLR bit31 are write triggers.
+            0x600b_0410 => {
+                if value & (1 << 29) != 0 { self.reset_cause &= !0x1f; }
+                if value & (1 << 30) != 0 { self.reset_cause |= 1 << 5; }
+                if value & (1 << 31) != 0 { self.reset_cause &= !(1 << 5); }
+            }
             0x6000_0000..=0x6000_0098 => self.uart[0].write(a & 0xfff, value),
             0x6000_1000..=0x6000_1098 => self.uart[1].write(a & 0xfff, value),
             0x6000_6000..=0x6000_6070 | 0x6000_6400..=0x6000_66fc => { self.rmt.write(a & 0xfff, value); }
@@ -134,7 +153,9 @@ impl C5Bus {
 }
 impl Bus for C5Bus {
     fn note_code_page(&mut self, _addr: u32) {} // interpreter-only; no decoded block cache
-    fn note_pc(&mut self, pc: u32) { self.pc = pc; }
+    fn note_pc(&mut self, pc: u32) { self.pc = pc; self.misc.cur_pc = pc; }
+    fn block_break(&self) -> bool { self.irq_dirty }
+    fn tick(&mut self, cycles: u32) -> u32 { self.advance(cycles as u64); u32::from(self.irq_dirty) }
     fn read8(&mut self, a: u32) -> Result<u8, Fault> { self.read(a, 1).map(|v| v as u8) }
     fn read16(&mut self, a: u32) -> Result<u16, Fault> { self.read(a, 2).map(|v| v as u16) }
     fn read32(&mut self, a: u32) -> Result<u32, Fault> { self.read(a, 4) }

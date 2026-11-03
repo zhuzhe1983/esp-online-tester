@@ -1,6 +1,6 @@
 # ESP32-C5 independent bring-up (EX249)
 
-This checkpoint executes actual C5 SRAM-linked guest code on the shared RV32IMAC
+Checkpoint `c5b20387` executes actual C5 SRAM-linked guest code on the shared RV32IMAC
 interpreter, with a new C5 bus and separate Stamp-C5/S016-DIP board identities.
 Both variants receive UART bytes through the C5 source47/CLIC interrupt route;
 the guest ISR changes the active-low GPIO28 blue LED. A separate explicit
@@ -13,6 +13,10 @@ implemented. S016/S016-DIP catalog runtime remains unavailable. The board has
 one blue GPIO LED, no RGB or programmable button; the charger's red nCHG LED
 is not connected to a guest GPIO. DIP is a separate mechanical SKU with the
 same source-declared electrical mapping, not an independently verified binary.
+
+The later [Machine/app-image follow-up](machine-runtime.md) adds an explicit SRAM
+app-direct API and fixes the independently reviewed reset-flag omission, while
+retaining all checkpoint results below.
 
 ## Official sources and differences
 

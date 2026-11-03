@@ -69,6 +69,17 @@ fn c5_map_rejects_c6_aliases_bounds_and_wrong_gpio_routes() {
 }
 
 #[test]
+fn reset_cause_and_reset_flag_have_independent_write_triggers() {
+    let mut bus = esp32c5::C5Bus::new(); let reg = 0x600b_0410;
+    assert_eq!(bus.read32(reg).unwrap(), 0x21);
+    bus.write32(reg, 1 << 31).unwrap(); assert_eq!(bus.read32(reg).unwrap(), 1);
+    bus.write32(reg, 1 << 30).unwrap(); assert_eq!(bus.read32(reg).unwrap(), 0x21);
+    bus.write32(reg, 1 << 29).unwrap(); assert_eq!(bus.read32(reg).unwrap(), 0x20);
+    bus.write32(reg, 0x3f).unwrap(); assert_eq!(bus.read32(reg).unwrap(), 0x20, "RO fields do not accept direct stores");
+    bus.write32(reg, 1 << 31).unwrap(); assert_eq!(bus.read32(reg).unwrap(), 0);
+}
+
+#[test]
 #[ignore = "set C5_ROM_ELF to public esp-rom-elfs20260528 esp32c5_rev100_rom.elf"]
 fn external_c5_actual_rom_first_unsupported_access() {
     let p = std::env::var("C5_ROM_ELF").expect("set C5_ROM_ELF to public rev100 ROM ELF");

@@ -1,0 +1,115 @@
+{
+  "checkpoint": "c5b20387",
+  "experiment": "EX249",
+  "fixtures": {
+    "probe.S": {
+      "bytes": 2284,
+      "sha256": "c68e7953cfc69f73d254fb328659bde84a8fb5b34d435e13a08a6576cf902f7f"
+    },
+    "link.ld": {
+      "bytes": 161,
+      "sha256": "c42c6b39151ee2e3d9301b2f596a37122c4ded74232985f955f6c30115e98ad3"
+    },
+    "build.sh": {
+      "bytes": 337,
+      "sha256": "539053ecfb20ab3a390aded198da7ed42715dda35a4b715841fea8867959f08a"
+    },
+    "probe.elf": {
+      "bytes": 5512,
+      "sha256": "332e114f3d2b9f84e79eb5e0408090c2eeb12f650bdf1b43ed23ea901a1d5a98"
+    },
+    "probe.bin": {
+      "bytes": 560,
+      "sha256": "2db5f2a79411f8b529a690e6369bd65a32f270a204ce54806debeba3b3f5f7f3"
+    }
+  },
+  "packaging": {
+    "tool": "Espressif esptool5.4.0",
+    "chipId": 23,
+    "minRevisionFull": 100,
+    "maxRevisionFull": 199,
+    "entry": "0x40800000",
+    "segments": [
+      {
+        "address": "0x40800000",
+        "bytes": 492
+      }
+    ],
+    "descriptor": null,
+    "xorChecksum": "0xd8",
+    "appendedSha256": "9068b8b625c913149749332b691f10852a52b6380c94c209e8ccf19c8c2d0b50"
+  },
+  "machine": {
+    "boards": [
+      "stamp-c5",
+      "stamp-c5-dip"
+    ],
+    "nominalCycles": 14000,
+    "dispatchAndIdleSlots": 14000,
+    "retired": 437,
+    "interrupts": 5,
+    "resets": 1,
+    "exceptions": 0,
+    "uartBytes": 41,
+    "uartSha256": "fae71f01002b8798fb791b1235173fc0ce3eeadd4ee42b206f906aec4ffacc88",
+    "sequence": [
+      "ready",
+      "1:on",
+      "0:off",
+      "W:G27low-G28unchanged-off",
+      "1:on",
+      "host-reset:off",
+      "ready",
+      "1:on"
+    ]
+  },
+  "smoke": {
+    "input": "10W",
+    "cycles": 8000,
+    "slots": 8000,
+    "retired": 239,
+    "interrupts": 3,
+    "exceptions": 0,
+    "uartBytes": 21,
+    "uartSha256": "dfba7c240e548ca0d04217f3e4df54d61eaf983c8c4607b8698e8cc4cee1a9a9"
+  },
+  "bringupUpdatedFixture": {
+    "bootSlots": 140,
+    "onSlots": 30,
+    "offSlots": 33,
+    "totalSlots": 203,
+    "retired": 201,
+    "rmtTotalSlots": 548,
+    "rmtRetired": 547
+  },
+  "reviewCorrection": {
+    "register": "0x600b0410",
+    "initial": "0x21",
+    "sequenceAfterClearFlagSetFlagClearCauseWriteROClearFlag": [
+      "0x1",
+      "0x21",
+      "0x20",
+      "0x20",
+      "0x0"
+    ],
+    "romBoundaryUnchanged": {
+      "slots": 6575,
+      "pc": "0x400269b6",
+      "address": "0x600b2804",
+      "uartBytes": 0
+    }
+  },
+  "checks": {
+    "focusedTestsIncludingExternalRom": 11,
+    "nativeClippyWarningsDenied": "pass",
+    "wasm32CrateCheck": "pass",
+    "fullWorkspace": "delegated to integration",
+    "actualWasmAndBrowser": "not claimed by this receipt"
+  },
+  "limits": [
+    "Explicit SRAM app-direct only; no stock ROM/IDF boot.",
+    "No guest eFuse/JEDEC identity, flash MMU, RF, USB, charging or physical timing claim.",
+    "Host reset re-enters selected app-direct image; it does not execute ROM.",
+    "Shared frontend registration is a separate integration change."
+  ]
+}

@@ -51,6 +51,8 @@ handler:
     sw t2, 0(t0)
     li t1, 82
     beq t2, t1, rmt
+    li t1, 87
+    beq t2, t1, wrong_pin
     li t1, 49
     beq t2, t1, on
     li t1, 48
@@ -61,6 +63,19 @@ on:
     li t0, 0x6009100c
 drive:
     li t1, 0x10000000
+    sw t1, 0(t0)
+    j ack
+wrong_pin:
+    li t0, 0x60090070
+    li t1, 0x1000
+    sw t1, 0(t0)
+    li t0, 0x60091b40
+    li t1, 256
+    sw t1, 0(t0)
+    li t0, 0x60091038
+    li t1, 0x08000000
+    sw t1, 0(t0)
+    li t0, 0x6009100c
     sw t1, 0(t0)
     j ack
 rmt:

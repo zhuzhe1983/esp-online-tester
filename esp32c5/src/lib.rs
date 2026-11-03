@@ -3,9 +3,17 @@
 //! Unsupported MMIO faults; this is not yet an ESP-IDF/UIFlow product runtime.
 pub mod bus;
 pub mod board;
+pub mod soc;
+pub mod image;
 mod rom;
 use riscv_rv32::{Cpu, Trap};
 pub use bus::C5Bus;
+pub use soc::{machine, Machine, C5};
+
+pub(crate) fn core() -> Cpu {
+    let mut cpu = Cpu::new_rv32imac(); cpu.clic = true; cpu.clic_std = true; cpu.user_counters = true;
+    cpu.pc = bus::ROM_BASE; cpu
+}
 
 pub struct Bringup { pub cpu: Cpu, pub bus: C5Bus }
 #[derive(Debug, PartialEq, Eq)]
@@ -16,8 +24,7 @@ impl Bringup {
     pub fn new() -> Self {
         // IDF v5.5.4 esp32c5 soc_caps.h and riscv/interrupt_clic.h: RV32IMAC,
         // standard mintstatus/mintthresh, single HP hart. No F or custom ISA claimed.
-        let mut cpu = Cpu::new_rv32imac(); cpu.clic = true; cpu.clic_std = true; cpu.user_counters = true;
-        cpu.pc = bus::ROM_BASE;
+        let cpu = core();
         Self { cpu, bus: C5Bus::new() }
     }
     /// Explicit SRAM/LP-SRAM ELF loading, not synthetic success of a flash bootloader.

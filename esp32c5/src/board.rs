@@ -4,6 +4,14 @@
 use esp_soc::{BoardModel, pins::PinRoutes};
 pub struct StampC5 { dip: bool, leds: [[u8; 3]; 1], updates: u64 }
 impl StampC5 { pub fn new(dip: bool) -> Self { Self { dip, leds: [[0; 3]], updates: 0 } } }
+pub fn make_board(name: &str) -> Option<esp_soc::Board> {
+    match name {
+        "stamp-c5" | "m5stack-s016" => Some(Box::new(StampC5::new(false))),
+        "stamp-c5-dip" | "m5stack-s016-dip" => Some(Box::new(StampC5::new(true))),
+        "none" | "bare" => Some(Box::new(esp_soc::NoBoard)),
+        _ => None,
+    }
+}
 impl BoardModel for StampC5 {
     fn name(&self) -> &'static str { if self.dip { "stamp-c5-dip" } else { "stamp-c5" } }
     fn uses_gpio_routes(&self) -> bool { true }
