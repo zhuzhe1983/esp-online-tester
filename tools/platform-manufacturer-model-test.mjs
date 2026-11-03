@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {createManufacturerModel} from '../web/platform/manufacturer-model.js';
+import {applyShellAppearance} from '../web/platform/shell-appearance.js';
 const nativeFetch=globalThis.fetch;
+const nativeDocument=globalThis.document;
 const vertices=new Float32Array([-1,-1,0,0,0,1,1,-1,0,0,0,1,0,1,0,0,0,1]);
 const fixture={unit:'mm',strideFloats:6,binary:'geometry.bin',artifacts:{'geometry.bin':'a'.repeat(64)},parts:[{name:'main-board',role:'pcb',byteOffset:0,vertexCount:3,color:'#225522'}]};
 const product={id:'test-bare-board',model:{url:'./assets/test-bare-board/model.json'}};
@@ -41,5 +43,20 @@ try {
   metadata={...fixture,derivedParts:[{id:'pcb-main',kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],labelOffsetMm:value}}]};const invalid=createManufacturerModel(product,null);await assert.rejects(invalid.ready,/Invalid PCB placeholder label offset/);invalid.dispose();
  }
  metadata={...fixture,derivedParts:[{...port,housingVariant:'open-roof'},{id:'pcb-main',kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],labelOffsetMm:[0,-5]}}]};const light=createManufacturerModel(product,null);await light.ready;assert.equal(light.parts.grove.getObjectByName('socket-top'),undefined);assert.ok(light.parts.grove.getObjectByName('socket-top-rear'));light.dispose();
+ // Inspect the actual marker surfaces: the known photo face must remain clear,
+ // while turning the board over still exposes its unknown internal provenance.
+ globalThis.document={createElement:()=>({getContext:()=>({fillText(){}})})};
+ for(const [labelSide,sides] of [[undefined,[-1,1]],['front',[1]],['back',[-1]]]) {
+  metadata={...fixture,parts:[{...fixture.parts[0],name:'case',role:'shell'}],derivedParts:[{id:'exposed-pcb',kind:'pcb-placeholder',color:'#161e16',geometry:{sizeMm:[20,2,1],labelSide}}]};
+  const exposed=createManufacturerModel(product,null);await exposed.ready;const board=exposed.parts['exposed-pcb'],markers=board.children.filter(m=>m.material.map);
+  assert.deepEqual(markers.map(m=>Math.sign(m.position.z)).sort(),sides);
+  for(const marker of markers){marker.geometry.computeBoundingBox();assert.ok(marker.geometry.boundingBox.max.y<=1);assert.equal(marker.rotation.y,marker.position.z<0?Math.PI:0);}
+  for(const shell of exposed.group.userData.shellMeshes)applyShellAppearance(shell,{shell:{color:'#8054b3',opacity:.35,finish:'plastic'}});
+  assert.equal(board.children[0].material.color.getHexString(),'161e16');assert.equal(board.children[0].material.opacity,1);exposed.dispose();
+ }
+ for(const geometry of [{labelSide:'hidden'},{labelSide:0}]) {
+  metadata={...fixture,derivedParts:[{kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],...geometry}}]};const invalid=createManufacturerModel(product,null);await assert.rejects(invalid.ready,/Invalid PCB placeholder label side/);invalid.dispose();
+ }
+ metadata={...fixture,derivedParts:[{kind:'pcb-placeholder',color:'green',geometry:{sizeMm:[20,16,1]}}]};const invalidPcb=createManufacturerModel(product,null);await assert.rejects(invalidPcb.ready,/Invalid PCB placeholder color/);invalidPcb.dispose();
  console.log('ok manufacturer loader: bare-PCB material isolation, source-verified connector boundary, asset cache identity and invalid label rejection');
-} finally {globalThis.fetch=nativeFetch;}
+} finally {globalThis.fetch=nativeFetch;if(nativeDocument===undefined)delete globalThis.document;else globalThis.document=nativeDocument;}

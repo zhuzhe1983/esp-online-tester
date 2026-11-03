@@ -90,10 +90,13 @@ export function createManufacturerModel(product, screenTexture) {
         const anchor=new THREE.Object3D();anchor.name=`connector:${part.id}:mouth`;anchor.userData={kind:'connector-anchor',type:part.connectorType,visualOnly:true};socket.add(anchor);const connector={type:part.connectorType,anchor,normal:new THREE.Vector3(0,0,1),allowConnections:part.allowConnections,pinOrder:part.pinOrder,sourceIds:part.sourceIds};if(part.connectorType==='USB-C'||verifiedGrove(connector))connectors[part.id]=connector;continue;
       }
       if(part.kind!=='pcb-placeholder')continue;
+      if(part.color!==undefined&&!/^#[a-fA-F0-9]{6}$/.test(part.color))throw Error('Invalid PCB placeholder color');
+      const labelSide=part.geometry?.labelSide??'both';if(!['front','back','both'].includes(labelSide))throw Error('Invalid PCB placeholder label side');
       const pcb=new THREE.Group();pcb.name=part.id || 'pcb-main';pcb.position.set(...center);pcb.rotation.set(...vector(part.geometry?.rotation));pcb.userData={kind:'pcb-placeholder',label:'UNKNOWN',estimated:true};
-      pcb.add(new THREE.Mesh(createPcbPlaceholderGeometry(size,part.geometry?.shape),new THREE.MeshStandardMaterial({color:0x859188,roughness:.85})));
-      const width=Math.min(size[0]*.82,42),offset=part.geometry?.labelOffsetMm===undefined?[0,0]:part.geometry.labelOffsetMm;if(part.geometry?.labelOffsetMm!==undefined&&(!Array.isArray(offset)||offset.length!==2||offset.some((v,i)=>!Number.isFinite(v)||Math.abs(v)+(i?width/8:width/2)>size[i]/2)))throw Error('Invalid PCB placeholder label offset');
-      const label=flatLabel('UNKNOWN');if(label){textures.push(label);for(const back of [false,true]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,width/4),new THREE.MeshBasicMaterial({map:label,transparent:true,depthWrite:false}));mesh.position.set(offset[0],offset[1],(back?-1:1)*(size[2]/2+.015));if(back)mesh.rotation.y=Math.PI;pcb.add(mesh);}}
+      pcb.add(new THREE.Mesh(createPcbPlaceholderGeometry(size,part.geometry?.shape),new THREE.MeshStandardMaterial({color:part.color??0x859188,roughness:.85})));
+      const width=Math.min(size[0]*.82,size[1]*3.28,42),offset=part.geometry?.labelOffsetMm===undefined?[0,0]:part.geometry.labelOffsetMm;if(part.geometry?.labelOffsetMm!==undefined&&(!Array.isArray(offset)||offset.length!==2||offset.some((v,i)=>!Number.isFinite(v)||Math.abs(v)+(i?width/8:width/2)>size[i]/2)))throw Error('Invalid PCB placeholder label offset');
+      // A photographed exposed face can be known while its opposite remains unknown.
+      const label=flatLabel('UNKNOWN');if(label){textures.push(label);for(const back of labelSide==='both'?[false,true]:[labelSide==='back']){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,width/4),new THREE.MeshBasicMaterial({map:label,transparent:true,depthWrite:false}));mesh.name=`${pcb.name}-unknown-${back?'back':'front'}`;mesh.position.set(offset[0],offset[1],(back?-1:1)*(size[2]/2+.015));if(back)mesh.rotation.y=Math.PI;pcb.add(mesh);}}
       parts[pcb.name]=pcb;group.add(pcb);
     }
     // Derived optical windows can expose the same guest LED output as CAD parts.
