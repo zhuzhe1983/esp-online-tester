@@ -141,7 +141,7 @@ export function decodeFramebuffer(data) {
 
 // A URL ending in .bin does not establish that it contains a bootable flash image.
 export function validateMergedImage(data, board, flashBytes, {partitionTableOffset = 0x8000} = {}) {
-  const bytes = bytesOf(data), bootOffset = /^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|lilygo-t-beam-v1-2)$/.test(board) ? 0x1000 : chipIdForBoard(board) === 18 ? 0x2000 : 0;
+  const bytes = bytesOf(data), bootOffset = /^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2)$/.test(board) ? 0x1000 : chipIdForBoard(board) === 18 ? 0x2000 : 0;
   requireValue(Number.isSafeInteger(partitionTableOffset) && partitionTableOffset >= 0x8000 && partitionTableOffset % 0x1000 === 0 && partitionTableOffset + 0x1000 <= flashBytes, 'INVALID_PARTITION_TABLE', 'Partition-table offset is outside flash or not sector aligned.');
   requireValue(bytes.length <= flashBytes, 'FLASH_OVERFLOW', 'Merged firmware exceeds the selected product flash size.');
   requireValue(bytes.length > partitionTableOffset + 32 && bytes[bootOffset] === 0xe9 && bytes[partitionTableOffset] === 0xaa && bytes[partitionTableOffset + 1] === 0x50,
@@ -175,7 +175,7 @@ export function validateMergedImage(data, board, flashBytes, {partitionTableOffs
   return true;
 }
 
-const romFor = board => ['esp32c3','stampc3','stampc3u'].includes(board) ? 'esp32c3_rev3_rom.elf' : ['esp32p4','stamp-p4'].includes(board) ? 'esp32p4_rev0_rom.elf' : (board==='nesso-n1'||board.includes('c6')) ? 'esp32c6_rev0_rom.elf' : /^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|lilygo-t-beam-v1-2)$/.test(board) ? 'esp32_rev300_rom.elf' : 'esp32s3_rev0_rom.elf';
+const romFor = board => ['esp32c3','stampc3','stampc3u'].includes(board) ? 'esp32c3_rev3_rom.elf' : ['esp32p4','stamp-p4'].includes(board) ? 'esp32p4_rev0_rom.elf' : (board==='nesso-n1'||board.includes('c6')) ? 'esp32c6_rev0_rom.elf' : /^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2)$/.test(board) ? 'esp32_rev300_rom.elf' : 'esp32s3_rev0_rom.elf';
 
 export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000, deviceStorage = createDeviceStorage(), sdStorage = createSdCardStorage() } = {}) {
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;

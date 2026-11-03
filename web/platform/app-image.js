@@ -5,7 +5,7 @@
 // https://github.com/espressif/esp-idf/blob/v5.5.4/components/esp_app_format/include/esp_app_desc.h
 const fail=(code,message)=>{throw Object.assign(new Error(message),{code});};
 const check=(value,code,message)=>{if(!value)fail(code,message);};
-export const chipIdForBoard=board=>/^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|lilygo-t-beam-v1-2)$/.test(board)?0:['esp32c3','stampc3','stampc3u'].includes(board)?5:(board==='nesso-n1'||board.includes('c6'))?13:['esp32p4','stamp-p4'].includes(board)?18:9;
+export const chipIdForBoard=board=>/^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2)$/.test(board)?0:['esp32c3','stampc3','stampc3u'].includes(board)?5:(board==='nesso-n1'||board.includes('c6'))?13:['esp32p4','stamp-p4'].includes(board)?18:9;
 // S013's source-backed virtual profile is rev < 3; do not silently change ROM
 // families for an image targeting ECO5. ESP-IDF esp_image_header_t offsets 15/17.
 export function validateBoardRevision(bytes,board) {
