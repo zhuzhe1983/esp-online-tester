@@ -1,0 +1,36 @@
+<!doctype html><meta charset="utf-8"><title>C5 embed RPC validation</title><link rel="icon" href="data:,"><pre id="result">running</pre><script type="module">
+// Internal source-built fixture only; caller supplies all remote targets.
+const args=new URLSearchParams(location.search),r={};
+const platform=args.get('platform'),fixture=args.get('firmware'),sha256=args.get('sha256'),product=args.get('product');
+if(!platform||!fixture||!/^([a-f0-9]{64})$/.test(sha256||'')||!['m5stack-s016','m5stack-s016-dip'].includes(product))throw Error('Supply platform, firmware, sha256 and C5 product query parameters.');
+const {encodeScene}=await import(new URL('catalog.js',platform).href);
+const assert=(ok,m)=>{if(!ok)throw Error(m);};
+const waitLed=async(call)=>{for(let i=0;i<200;i++){const s=await call();if(JSON.stringify(s.leds)==='[[0,0,255]]')return s;await new Promise(x=>setTimeout(x,25));}throw Error('LED timeout');};
+const scene={schemaVersion:'1',productId:product,firmware:{url:fixture,sha256,bootMode:'app-direct'},accessories:[],keyMapping:{},view:{mode:'embed',deviceView:'3d'}};
+const url=new URL('embed.html',platform);url.hash=new URLSearchParams({scene:encodeScene(scene),autostart:'0'}).toString();
+try{
+ const frame=document.createElement('iframe');frame.src=url;frame.style.cssText='position:fixed;right:0;bottom:0;width:600px;height:500px;z-index:9';
+ const pending=new Map(),session='c5_rpc_validation';let next=0;const origin=new URL(url).origin;
+ const receive=e=>{const m=e.data;if(e.source!==frame.contentWindow||e.origin!==origin||m?.channel!=='esp-workbench'||m.session!==session)return;const p=pending.get(m.requestId);if(p){pending.delete(m.requestId);m.error?p.reject(Object.assign(new Error(m.error.message),m.error)):p.resolve(m.result);}};
+ const call=(method,args=[],hello=false)=>new Promise((resolve,reject)=>{
+  const requestId='r'+(++next);let retry;
+  const finish=callback=>value=>{clearTimeout(timer);clearInterval(retry);callback(value);};
+  const timer=setTimeout(()=>{pending.delete(requestId);clearInterval(retry);reject(Error('RPC timeout '+method));},15000);
+  pending.set(requestId,{resolve:finish(resolve),reject:finish(reject)});
+  const send=()=>frame.contentWindow.postMessage({channel:'esp-workbench',version:'1',type:hello?'hello':'call',session,requestId,method,args},origin);
+  send();if(hello)retry=setInterval(send,100);
+ });
+ window.addEventListener('message',receive);
+ try{
+  await new Promise((resolve,reject)=>{frame.onload=resolve;frame.onerror=reject;document.body.append(frame);});
+  const hello=await call(null,[],true);r.bridgeVersion=hello.version;
+  for(let i=0;i<100;i++){if((await call('observe')).product)break;await new Promise(x=>setTimeout(x,25));}
+  await call('loadFirmware');await call('start');await call('waitFor',[{serialIncludes:'C5 UART IRQ READY\n',port:'uart0'}]);
+  const echo=call('waitFor',[{serialIncludes:'1',port:'uart0',fromNow:true}]);await call('input',[{type:'serial',port:'uart0',data:'1'}]);await echo;
+  const s=await waitLed(()=>call('observe'));await call('pause');
+  r.embed={product:s.product.id,bootMode:s.firmware.bootMode,sha256:s.firmware.artifacts[0].sha256,leds:s.leds,uartReady:s.serialByPort.uart0.includes('C5 UART IRQ READY\n'),freshEcho:s.serialByPort.uart0.endsWith('1'),storage:s.storage.status,execution:s.firmware.executionMode};
+  try{await call('loadFirmware',[{url:fixture}]);}catch(e){r.embedImplicitRemote=e.code;}
+  assert(r.embedImplicitRemote==='C5_APP_DIRECT_REQUIRED','embed implicit remote');
+ }finally{window.removeEventListener('message',receive);frame.remove();}
+
+r.status='pass';}catch(e){r.status='failed';r.error={message:e.message,code:e.code};}window.c5EmbedReceipt=r;document.getElementById('result').textContent=JSON.stringify(r,null,2);</script>
