@@ -109,6 +109,14 @@ the diagnosis are retained here. Absolute machine paths and wall-clock speed
 lines are omitted. No throughput claim is made from correctness runs concurrent
 with unrelated build work.
 
+## Integrated StampFly CPU follow-up
+
+The [integrated comparison](integrated-cpu.md) measures the complete StampFly
+revision against the same main baseline with five alternating pairs on S3 hello,
+Pocket Tank, C3 hello and C6 hello, all at 30 guest seconds. It retains the initial
+S3 increase, a separate confirmation and substantial shared-host drift; it does
+not turn the original correctness-only runs into throughput evidence.
+
 ## Experiment relationship
 
 Search terms included coprocessor, CPENABLE, floating, LSI, exception and Xtensa.
