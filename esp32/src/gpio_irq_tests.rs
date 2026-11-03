@@ -296,3 +296,12 @@ fn a_pad_whose_function_0_is_not_gpio_stays_undriven_until_function_2() {
     g.write(IOMUX + IOMUX_OFFSETS[15], 2 << 12);
     assert_eq!(g.driven(15), Some(true));
 }
+
+#[test]
+fn the_shared_router_sees_a_pad_left_at_function_0_as_gpio_before_any_io_mux_write() {
+    let mut g = ClassicGpio::new();
+    g.write(0x24, 1 << 23 | 1 << 15);
+    g.write(0x08, 1 << 23 | 1 << 15);
+    assert_eq!(g.routes().software_output(23), Some(true));
+    assert_eq!(g.routes().software_output(15), None); // MTDO at function 0, io_mux_reg.h
+}
