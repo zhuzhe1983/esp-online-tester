@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-11-03T21:17:51.916Z",
+  "command": "node tools/probe-stamp-p4.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal source-built execution fixture",
+  "productId": "m5stack-s013",
+  "wasmSha256": "0811121833332d4e1c84fe28d64bbf7b36b5d6e2286b9567de7f2a281169c05c",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "53b78ec7ba502f9dec9f112ce92b41629f7ec9dd94a35ed363fbe0760e0985f3",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+    "stamp_p4_fixture.bin": "b01e567c2b0a28ff23ed40bfc7a1239ca97b3a5dfd06a3fd7575d5ff14a4839d"
+  },
+  "checks": [
+    "actual-rev-lt3-P4-boot-two-cores-32MiB-PSRAM-and-2MiB-spanning-memory-exercise",
+    "no-inherited-display-network-audio-input-or-LoRa",
+    "two-fresh-UART0-challenges-execute-4096-word-PSRAM-write-read-and-independent-xorshift-checksum",
+    "malformed-input-rejected-by-guest",
+    "pause-freezes-guest-clock-and-output",
+    "guest-software-restart-reboots-and-resets-guest-counter",
+    "platform-reset-recreates-machine-and-reboots-fixture"
+  ],
+  "outputs": [
+    {
+      "input": 305419896,
+      "sum": 1634359561,
+      "count": 1
+    },
+    {
+      "input": 2596069104,
+      "sum": 2144115711,
+      "count": 2
+    },
+    {
+      "input": 2271560481,
+      "sum": 3190970350,
+      "count": 3
+    },
+    {
+      "input": 305419896,
+      "sum": 1634359561,
+      "count": 1
+    },
+    {
+      "input": 2596069104,
+      "sum": 2144115711,
+      "count": 1
+    }
+  ],
+  "limitations": [
+    "Not official UIFlow compatibility or physical hardware validation.",
+    "Rev < 3 virtual profile selected from official source configuration; physical module revision is unknown.",
+    "UART0 input is explicit logical injection, not USB signaling or GPIO-routed serial.",
+    "No display, mapped user buttons, external C6, MIPI/SDIO/USB peripherals or analog power model."
+  ],
+  "serialEvidence": [
+    "P4_BOOT model=18 cores=2 revision=100 reset=1",
+    "P4_PSRAM bytes=33554432",
+    "P4_MEMORY_PASS bytes=2097152 stride=4096",
+    "P4_READY",
+    "P4_RESULT count=1 input=12345678 sum=616a5909",
+    "P4_RESULT count=2 input=9abcdef0 sum=7fcc9bff",
+    "P4_REJECT",
+    "P4_RESULT count=3 input=87654321 sum=be3257ee",
+    "P4_RESTART",
+    "P4_BOOT model=18 cores=2 revision=100 reset=3",
+    "P4_RESULT count=1 input=9abcdef0 sum=7fcc9bff"
+  ],
+  "status": "pass",
+  "sdk": "6.0.2",
+  "sdkEvidence": "IDF_VERSION in generated config.env and ESP-IDF v6.0.2 application boot log"
+}

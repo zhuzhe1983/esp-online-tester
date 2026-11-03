@@ -142,8 +142,8 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     // (`esp32p4::coproc`), whose images load with `COPROC_KIND` / `COPROC_FLASH`.
     let (p4_name, coproc) = board.strip_suffix("+c6").map_or((board.as_str(), false), |b| (b, true));
     let p4_board = esp32p4::board::make_board(p4_name).filter(|_| !matches!(p4_name, "none" | "bare"));
-    let p4_rev3 = p4_board.is_some() || matches!(p4_name, "esp32p4-rev3" | "p4-rev3");   // the board has a v3.2 chip
-    let p4 = p4_rev3 || matches!(p4_name, "esp32p4" | "p4");
+    let p4_rev3 = matches!(p4_name, "waveshare-p4-lcd35" | "p4-lcd35" | "lcd35" | "esp32p4-rev3" | "p4-rev3"); // Waveshare has a v3.2 chip; Stamp UIFlow selects rev < 3
+    let p4 = p4_board.is_some() || p4_rev3 || matches!(p4_name, "esp32p4" | "p4");
     let classic_board = if board == "esp32" {
         esp32::board::make_board("esp32dev")
     } else if p4 || c6_board.is_some() || matches!(board.as_str(), "none" | "bare") {

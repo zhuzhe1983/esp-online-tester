@@ -5,12 +5,21 @@
 // https://github.com/espressif/esp-idf/blob/v5.5.4/components/esp_app_format/include/esp_app_desc.h
 const fail=(code,message)=>{throw Object.assign(new Error(message),{code});};
 const check=(value,code,message)=>{if(!value)fail(code,message);};
-export const chipIdForBoard=board=>/^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|lilygo-t-beam-v1-2)$/.test(board)?0:['esp32c3','stampc3','stampc3u'].includes(board)?5:(board==='nesso-n1'||board.includes('c6'))?13:board==='esp32p4'?18:9;
+export const chipIdForBoard=board=>/^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|lilygo-t-beam-v1-2)$/.test(board)?0:['esp32c3','stampc3','stampc3u'].includes(board)?5:(board==='nesso-n1'||board.includes('c6'))?13:['esp32p4','stamp-p4'].includes(board)?18:9;
+// S013's source-backed virtual profile is rev < 3; do not silently change ROM
+// families for an image targeting ECO5. ESP-IDF esp_image_header_t offsets 15/17.
+export function validateBoardRevision(bytes,board) {
+  if(board!=='stamp-p4')return;
+  check(bytes.length>=24,'INCOMPLETE_IMAGE','Image header is truncated.');
+  const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+  check(view.getUint16(15,true)<300,'CHIP_REVISION_UNSUPPORTED','Stamp-P4 currently uses the rev < 3 runtime profile; this image requires rev >= 3.');
+}
 export async function validateAppImage(bytes,board,flashBytes) {
   check(bytes.length>=288&&bytes[0]===0xe9&&bytes[1]>0&&bytes[1]<=16,'APP_IMAGE_INVALID','Not a complete ESP application image.');
   const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
   check(view.getUint32(32,true)===0xabcd5432&&view.getUint32(28,true)>=256,'APP_IMAGE_INVALID','Application descriptor is missing; this is not an app-only image.');
   check(view.getUint16(12,true)===chipIdForBoard(board),'CHIP_MISMATCH','Application targets a different ESP32 chip.');
+  validateBoardRevision(bytes,board);
   check(bytes.length+0x10000<=flashBytes,'FLASH_OVERFLOW','Application exceeds the product flash size at the direct-boot offset.');
   check(bytes[23]===0||bytes[23]===1,'APP_IMAGE_INVALID','Invalid application digest flag.');
   let cursor=24,checksum=0xef;

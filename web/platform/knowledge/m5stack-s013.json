@@ -4,11 +4,11 @@
   "kind": "product",
   "catalogId": "m5stack-s013",
   "title": "M5Stack Stamp-P4 · S013",
-  "summary": "ESP32-P4 微型模块，16MB Flash、32MB PSRAM，提供 USB、MIPI 与扩展引脚；此模型使用官方 footprint 内嵌的板级 STEP，P4 运行内核尚未接入。",
+  "summary": "ESP32-P4 微型模块，16MB Flash、32MB PSRAM，提供 USB、MIPI 与扩展引脚；此模型使用官方 footprint 内嵌的板级 STEP，已接入 P4 rev < 3 裸模块运行配置，外接板行为仍待适配。",
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-11-03T21:04:52.189756+00:00",
+  "updatedAt": "2026-11-03T21:18:11Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -221,6 +221,28 @@
         "manufacturer-cad-bd8269ea3a"
       ],
       "notes": "Read through native XCAF GetColor/Search, not inferred from part names. Missing attributes remain null in the source plan."
+    },
+    {
+      "id": "runtime-p4-revision-profile",
+      "label": "Official UIFlow P4 build revision selection",
+      "value": "ESP32P4_SELECTS_REV_LESS_V3=y; ESP32P4_REV_MIN_0=y",
+      "basis": "official",
+      "sourceIds": [
+        "runtime-sdkconfig-p4",
+        "official-docs"
+      ],
+      "notes": "The platform selects its existing rev < 3 / v1.0 virtual profile from this build configuration. Physical user module revision is unknown; no silicon identification claim."
+    },
+    {
+      "id": "uiflow-external-c6-source",
+      "label": "UIFlow external ESP-Hosted setup",
+      "value": "SDIO CMD44/CLK43/D0..3=45..48, reset42; external C6 not automatically attached",
+      "basis": "official",
+      "sourceIds": [
+        "runtime-uiflow-board",
+        "runtime-uiflow-hosted"
+      ],
+      "notes": "Bare S013 has no onboard C6; source configuration is not proof of an attached A172 or working Wi-Fi."
     },
     {
       "id": "photo-corrected-soldermask",
@@ -579,6 +601,45 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "runtime-sdkconfig-p4",
+      "title": "sdkconfig-p4",
+      "url": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/f20d5a00e8c9106aae1d944f3d6f1128839f59cb/m5stack/boards/sdkconfig.p4",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/f20d5a00e8c9106aae1d944f3d6f1128839f59cb/m5stack/boards/sdkconfig.p4",
+      "fetchedAt": "2026-11-03T21:09:12Z",
+      "mediaType": "text/plain",
+      "bytes": 457,
+      "sha256": "5acd30ac44c94f3f27e2766c0d88ee78e6480c07440745c3c6e850214efa5b0a",
+      "status": "fetched",
+      "kind": "official-runtime-source",
+      "archiveName": "runtime-sdkconfig-p4.txt"
+    },
+    {
+      "id": "runtime-uiflow-board",
+      "title": "uiflow-board",
+      "url": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/f20d5a00e8c9106aae1d944f3d6f1128839f59cb/m5stack/boards/M5STACK_StampP4/mpconfigboard.cmake",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/f20d5a00e8c9106aae1d944f3d6f1128839f59cb/m5stack/boards/M5STACK_StampP4/mpconfigboard.cmake",
+      "fetchedAt": "2026-11-03T21:17:35Z",
+      "mediaType": "text/plain",
+      "bytes": 2445,
+      "sha256": "16c1c7b1d7f8243958fe3a81928d04825841553ead882b328231108111c58c3d",
+      "status": "fetched",
+      "kind": "official-runtime-source",
+      "archiveName": "runtime-uiflow-board.txt"
+    },
+    {
+      "id": "runtime-uiflow-hosted",
+      "title": "uiflow-hosted",
+      "url": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/f20d5a00e8c9106aae1d944f3d6f1128839f59cb/m5stack/boards/M5STACK_StampP4/sdkconfig.esp_hosted",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/f20d5a00e8c9106aae1d944f3d6f1128839f59cb/m5stack/boards/M5STACK_StampP4/sdkconfig.esp_hosted",
+      "fetchedAt": "2026-11-03T21:17:35Z",
+      "mediaType": "text/plain",
+      "bytes": 2790,
+      "sha256": "a0349ac2ca682f99dcce3b84f2b4f6a915f08e9bf584786a48b97b2ac5a990b1",
+      "status": "fetched",
+      "kind": "official-runtime-source",
+      "archiveName": "runtime-uiflow-hosted.txt"
     }
   ],
   "assets": [
@@ -723,6 +784,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "Runtime source/firmware audit and execution boundaries are retained in docs/platform/stamp-p4-runtime.md. Official UIFlow v2.5.4 remains trial; provider verification blocked download. No exact factory or Xiaozhi image identified."
   ]
 }

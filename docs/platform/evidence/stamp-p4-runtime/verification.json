@@ -1,0 +1,67 @@
+{
+  "checkedAt": "2026-11-03T21:24:57Z",
+  "scope": "S013 bare-module execution subset, not full workspace CI or hardware validation",
+  "checks": [
+    {
+      "command": "CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=<task-target> ESP32SIM_ROM_DIR=<roms> cargo test -p esp32p4 --lib -- --include-ignored --skip external_",
+      "passed": 34,
+      "failed": 0
+    },
+    {
+      "command": "CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=<task-target> cargo clippy -p esp32p4 -p esp32sim --all-targets -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "source tools/wasm-rustflags.sh; CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=<task-target> cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "node --test tools/platform-config-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs tools/platform-app-image-test.mjs tools/platform-local-firmware-test.mjs",
+      "passedFiles": 5,
+      "failed": 0
+    },
+    {
+      "command": "node --test tools/platform-runtime-test.mjs",
+      "passedFiles": 1,
+      "failed": 0,
+      "prerequisite": "Initial run lacked the S3 ROM; after copying the existing verified ROM, the test passed."
+    },
+    {
+      "command": "node --test tools/platform-knowledge-test.mjs",
+      "status": "pass",
+      "records": 222,
+      "downloadedSourceHashesCheckedByThisCommand": 0
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "status": "pass",
+      "products": 214,
+      "accessories": 10,
+      "firmwares": 167,
+      "watchlist": 113
+    }
+  ],
+  "fixture": {
+    "sdk": "ESP-IDF v6.0.2",
+    "sdkRevision": "7101770dc6db2667b3c477cc31365dd1acd6db4e",
+    "target": "esp32p4",
+    "minimumChipRevision": 100,
+    "maximumChipRevision": 199,
+    "bootloaderOffset": 8192,
+    "projectVersion": "1",
+    "sourceHashes": {
+      "tools/fixtures/stamp-p4-firmware/CMakeLists.txt": "4f4d917dbac84709a413b6d249f406d484bab87665afa5b6def630301fa36b74",
+      "tools/fixtures/stamp-p4-firmware/main/CMakeLists.txt": "adff38753fc75529851a465dc937f8ae41558f333191f575a9359f4c49104134",
+      "tools/fixtures/stamp-p4-firmware/main/main.c": "7e2ad25530dfc1ea7a7213a63baea6fcc7a58f67673385a31b65dd250ee9baa0",
+      "tools/fixtures/stamp-p4-firmware/sdkconfig.defaults": "87eb0add7e2404fab499903c77276057c3c755bc3fe40b02204da6a9010ed4de"
+    },
+    "binaryPublished": false
+  },
+  "wasmSha256": "0811121833332d4e1c84fe28d64bbf7b36b5d6e2286b9567de7f2a281169c05c",
+  "probeSourceSha256": "a5fb086337ca23e243a3e2ec9fa79c913af65fe32eb6bd0f8dc8cfc1a06826aa",
+  "romSha256": "948f2c7d108d04a9c3a982f9c1c498fb17f2c4a68abc51f87782592034d7ce44",
+  "limitations": [
+    "No full workspace CI or CPU benchmark claim; no bus or per-tick code changed.",
+    "IDF 5.5.1 ADC entropy wait remains unsupported; negative evidence retained."
+  ]
+}

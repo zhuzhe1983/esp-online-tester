@@ -1,4 +1,4 @@
-//! Boards around the ESP32-P4. One so far: Waveshare's ESP32-P4-WIFI6-Touch-LCD-3.5, the board the
+//! Boards around the ESP32-P4. Waveshare's ESP32-P4-WIFI6-Touch-LCD-3.5 is the board the
 //! rev >= 3 model was checked against (a v3.2 chip). Its wiring, from Waveshare's BSP
 //! `waveshare/esp32_p4_wifi6_touch_lcd_3_5` 2.0.2 (include/bsp/esp32_p4_wifi6_touch_lcd_3_5.h,
 //! esp32_p4_wifi6_touch_lcd_3_5.c): an ST7796 320 x 480 on GPSPI2 (MOSI 20, CLK 21, CS 23, D/C 26,
@@ -15,9 +15,21 @@ use esp_soc::{Board, BoardModel, NoBoard};
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
         "none" | "bare" => Some(Box::new(NoBoard)),
+        "stamp-p4" | "m5stack-s013" => Some(Box::new(StampP4)),
         "waveshare-p4-lcd35" | "p4-lcd35" | "lcd35" => Some(Box::new(WaveshareP4Lcd35::new())),
         _ => None,
     }
+}
+
+/// M5Stack S013 Stamp-P4: bare P4NRW32 module, 16 MiB Flash and 32 MiB PSRAM.
+/// SCH_Stamp-P4_2026_03_16_17_23_06.pdf has exposed GPIO/BTB connectors, not the
+/// Waveshare panel, touch, codec or an onboard C6. No external extension is attached.
+/// The platform uses rev < 3, matching M5Stack UIFlow's pinned sdkconfig.p4;
+/// this virtual profile does not identify the revision of every physical module.
+struct StampP4;
+impl BoardModel for StampP4 {
+    fn name(&self) -> &'static str { "stamp-p4" }
+    fn report(&self) -> String { "[emu] stamp-p4: bare module; external connectors and analog power are not modelled".into() }
 }
 
 pub const PIN_LCD_DC: u8 = 26;
@@ -156,6 +168,20 @@ impl BoardModel for WaveshareP4Lcd35 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn stamp_p4_does_not_inherit_carrier_devices() {
+        for name in ["stamp-p4", "m5stack-s013"] {
+            let mut board = make_board(name).unwrap();
+            assert_eq!(board.name(), "stamp-p4");
+            assert!(board.i2c_devices().is_empty());
+            assert!(board.input_levels().is_empty());
+            assert!(board.display().is_none());
+            assert!(board.next_deadline().is_none());
+            assert_eq!(board.spi_transfer(2, &[0x9f], 3), [0xff; 3]);
+        }
+        assert!(make_board("stamp-c5").is_none());
+    }
+
     /// The touch INT line: a pulse at the touch, one every report period while held, one after the
     /// release, high in between.
     #[test]

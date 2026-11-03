@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-11-03T21:14:49.698Z",
+  "command": "node tools/probe-stamp-p4.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 execution fixture",
+  "productId": "m5stack-s013",
+  "wasmSha256": "0811121833332d4e1c84fe28d64bbf7b36b5d6e2286b9567de7f2a281169c05c",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "f4184d272ed5bc0a741c22f083306d55b1bd4394e057bfafd75fe593b9d3df35",
+    "stamp_p4_fixture.bin": "7bf0b38adb19685f9000e0e99cec96c972b9e05f1dc175a878c8da20c9a09efb",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [],
+  "outputs": [],
+  "limitations": [
+    "Not official UIFlow compatibility or physical hardware validation.",
+    "Rev < 3 virtual profile selected from official source configuration; physical module revision is unknown.",
+    "UART0 input is explicit logical injection, not USB signaling or GPIO-routed serial.",
+    "No display, mapped user buttons, external C6, MIPI/SDIO/USB peripherals or analog power model."
+  ],
+  "status": "failed",
+  "error": "P4 boot and PSRAM exercise timed out; stats={\"t\":\"stat\",\"time\":19.84,\"insns\":7142450790,\"frames\":0,\"behind\":0.12396572222221948,\"resyncs\":193,\"speed\":0.17487441790970748,\"cam\":0,\"gpio_in\":\"1ffffffffffffff\",\"mips\":62.954790447494695}",
+  "serialEvidence": [],
+  "nativeConfirmation": {
+    "guestSeconds": 1,
+    "instructions": 360000000,
+    "pc": "0x4ff2de98",
+    "function": "bootloader_random_enable+0x100",
+    "dominantPcPercent": [
+      49.94,
+      49.94
+    ],
+    "cause": "ESP-IDF 5.5.1 waits for ADC_INT_RAW bit31 at ADC base+0x54 after enabling timer in CTRL2 bit24. P4 backend has no ADC conversion completion model. IDF 6.0.2 bootloader no longer polls that flag.",
+    "bootloaderSha256": "f4184d272ed5bc0a741c22f083306d55b1bd4394e057bfafd75fe593b9d3df35"
+  }
+}

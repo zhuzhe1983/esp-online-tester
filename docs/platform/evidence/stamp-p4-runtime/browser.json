@@ -1,0 +1,58 @@
+{
+  "checkedAt": "2026-11-03T21:24:57Z",
+  "browser": "HeadlessChrome/156.0.0.0",
+  "productId": "m5stack-s013",
+  "wasmSha256": "0811121833332d4e1c84fe28d64bbf7b36b5d6e2286b9567de7f2a281169c05c",
+  "firmwareHashes": {
+    "bootloader/bootloader.bin": "53b78ec7ba502f9dec9f112ce92b41629f7ec9dd94a35ed363fbe0760e0985f3",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+    "stamp_p4_fixture.bin": "b01e567c2b0a28ff23ed40bfc7a1239ca97b3a5dfd06a3fd7575d5ff14a4839d"
+  },
+  "firmwareTransport": "Browser File input; no firmware binaries hosted by preview server",
+  "status": "pass",
+  "workbench": {
+    "localBuildUiUpload": true,
+    "files": 4,
+    "actualGuestBoot": true,
+    "uiSerialInput": "C:12345678",
+    "uiSerialGuestResult": "P4_RESULT count=1 input=12345678 sum=616a5909",
+    "postResetApiInput": "C:87654321",
+    "postResetGuestResult": "P4_RESULT count=1 input=87654321 sum=be3257ee",
+    "pauseStableAfterAcknowledgement": true,
+    "pauseSampleGuestSeconds": 17.36,
+    "frame": null,
+    "userButtonCount": 0,
+    "networkAvailable": false
+  },
+  "embed": {
+    "shareRestore": true,
+    "autostart": false,
+    "firmwareIncludedInShare": false,
+    "sameOriginApiFileLoad": true,
+    "actualGuestBoot": true,
+    "input": "C:9abcdef0",
+    "guestResult": "P4_RESULT count=1 input=9abcdef0 sum=7fcc9bff",
+    "frame": null,
+    "networkAvailable": false,
+    "parentPostMessageBridgeRetested": false
+  },
+  "serialEvidence": [
+    "P4_BOOT model=18 cores=2 revision=100 reset=1",
+    "P4_PSRAM bytes=33554432",
+    "P4_MEMORY_PASS bytes=2097152 stride=4096",
+    "P4_READY"
+  ],
+  "harnessCorrections": [
+    "Used async polling inside page.evaluate to await actual guest markers and settled pause acknowledgement.",
+    "Corrected the send-button selector and treated share() return as a URL string; the initial mistaken iframe URL caused one local /undefined 404. No application error remained on the corrected path."
+  ],
+  "cleanup": {
+    "browserClosed": true,
+    "previewListenerStopped": true
+  },
+  "limitations": [
+    "Runtime/UI path check only; the independent model lane performs final asset/photo verification.",
+    "Same-origin embed API exercised; this is not a new cross-origin parent bridge acceptance.",
+    "No official UIFlow execution or physical hardware claim."
+  ]
+}

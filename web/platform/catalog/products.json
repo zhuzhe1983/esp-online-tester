@@ -10970,13 +10970,13 @@
       "name": "M5Stack Stamp-P4",
       "manufacturer": "M5Stack",
       "sku": "S013",
-      "summary": "ESP32-P4 微型模块，16MB Flash、32MB PSRAM，提供 USB、MIPI 与扩展引脚；此模型使用官方 footprint 内嵌的板级 STEP，P4 运行内核尚未接入。",
+      "summary": "ESP32-P4 微型模块，16MB Flash、32MB PSRAM，提供 USB、MIPI 与扩展引脚；此模型使用官方 footprint 内嵌的板级 STEP，已接入 P4 rev < 3 裸模块运行配置，外接板行为仍待适配。",
       "hardwareRevision": "unspecified",
       "chip": "esp32p4",
       "module": "ESP32-P4NRW32",
       "runtime": {
-        "board": null,
-        "status": "unavailable",
+        "board": "stamp-p4",
+        "status": "partial",
         "flashMb": 16,
         "psramMb": 32
       },
@@ -11013,6 +11013,9 @@
         }
       ],
       "limitations": [
+        "当前为 P4 rev < 3 裸模块数字运行配置；外接 MIPI、SDIO、USB 设备、模拟电源及物理接口连线尚未验收，无板载屏幕或用户按键。",
+        "官方 UIFlow2 依赖外接 ESP-Hosted C6 配置；此产品不自动接入 C6，镜像下载需厂商验证，尚未验证该固件运行兼容性。",
+        "已验证 IDF 6.0.2 内部固件的启动、PSRAM 与逻辑 UART0 输入；IDF 5.5.1 启动会等待尚未实现的 ADC 完成标志，详见运行报告。",
         "保留官方 KiCad 内嵌 STEP 的全部 216 个原生组件（含 3 个开放 USB 曲面），未以空白板替换。",
         "按官方照片修正近黑色 PCB，并将背面丝印与裸露正面纹理限定在真实板面；板孔和立体元件不被照片平面覆盖。",
         "补充照片可见的一个黄铜色孔套两端空心边缘；尺寸为照片估算，隐藏筒身、螺纹及型号未知。",
