@@ -33,11 +33,12 @@ def load_product(root,identity):
  supporting=plan.get('supportingAssets',[]);names=set()
  if not isinstance(supporting,list) or len(supporting)>32:raise ValueError('Invalid supporting assets')
  reserved={'model.json','model-plan.json','geometry.bin',plan.get('provenance',{}).get('licenseFile','LICENSE-M5Stack.txt'),*[t['file']for t in plan.get('textureSources',[])]}
+ reserved={name.casefold()for name in reserved}
  for entry in supporting:
   if not isinstance(entry,dict) or set(entry)!={'sourceId','file'} or not isinstance(entry['sourceId'],str):raise ValueError('Invalid supporting asset declaration')
   name=filename(entry['file'])
-  if name.startswith(('source.','source-','reference-')) or name in reserved or name in names:raise ValueError('Conflicting supporting asset filename')
-  names.add(name)
+  if name.casefold().startswith(('source.','source-','reference-')) or name.casefold() in reserved or name.casefold() in names:raise ValueError('Conflicting supporting asset filename')
+  names.add(name.casefold())
  required=list(dict.fromkeys([plan['sourceId'],*[p.get('sourceId',plan['sourceId'])for p in plan['parts']],*[p['sourceId']for p in plan.get('photos',[])],*[p['sourceId']for p in plan.get('textureSources',[])],*[p['sourceId']for p in supporting],'cad-license']))
  for sid in required:
   if sid not in by_id:raise ValueError(f'Missing pinned source receipt: {sid}')

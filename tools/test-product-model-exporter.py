@@ -42,10 +42,10 @@ class SourceMeshTest(unittest.TestCase):
    exporter.TEMP=root/'sources';output=root/'output';meta,_=exporter.build_model(prepared,plan,output,evidence_root=root/'evidence',license_path=source/'license.txt')
    self.assertEqual((output/'LICENSE-Upstream.txt').read_bytes(),(source/'third-party.txt').read_bytes())
    self.assertEqual(meta['artifacts']['LICENSE-Upstream.txt'],records[-1]['sha256']);self.assertEqual(meta['supportingAssets'],[{**plan['supportingAssets'][0],'sha256':records[-1]['sha256']}])
-   for bad in ['../escape.txt','/absolute.txt','sub/license.txt','geometry.bin','source.stl','reference-photo.webp','LICENSE-M5Stack.txt']:
+   for bad in ['../escape.txt','/absolute.txt','sub/license.txt','geometry.bin','source.stl','reference-photo.webp','LICENSE-M5Stack.txt','Geometry.bin','license-m5stack.TXT','Source-extra.stl','Reference-photo.webp']:
     plan['supportingAssets'][0]['file']=bad
     with self.assertRaisesRegex(ValueError,'supporting asset filename'):exporter.build_model(prepared,plan,root/'bad',evidence_root=root/'bad-evidence',license_path=source/'license.txt')
-   plan['supportingAssets'][0]['file']='LICENSE-Upstream.txt';plan['supportingAssets'].append(dict(plan['supportingAssets'][0]))
+   plan['supportingAssets'][0]['file']='LICENSE-Upstream.txt';plan['supportingAssets'].append({**plan['supportingAssets'][0],'file':'license-upstream.TXT'})
    with self.assertRaisesRegex(ValueError,'supporting asset filename'):exporter.build_model(prepared,plan,root/'duplicate',evidence_root=root/'duplicate-evidence',license_path=source/'license.txt')
    plan['supportingAssets'].pop();(source/'third-party.txt').write_bytes(b'Changed attribution')
    with self.assertRaisesRegex(ValueError,'source changed'):exporter.build_model(prepared,plan,root/'changed',evidence_root=root/'changed-evidence',license_path=source/'license.txt')

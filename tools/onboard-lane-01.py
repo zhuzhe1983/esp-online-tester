@@ -242,10 +242,11 @@ def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
  supporting=plan.get('supportingAssets',[]);supporting_records=[];supporting_names=set()
  if not isinstance(supporting,list) or len(supporting)>32:raise ValueError('Invalid supporting assets')
  reserved={'model.json','model-plan.json','geometry.bin','source'+Path(source['archiveName']).suffix.lower(),plan.get('provenance',{}).get('licenseFile','LICENSE-M5Stack.txt'),*[t['file']for t in plan.get('textureSources',[])]}
+ reserved={name.casefold()for name in reserved}
  for entry in supporting:
   if not isinstance(entry,dict) or set(entry)!={'sourceId','file'} or not isinstance(entry['sourceId'],str):raise ValueError('Invalid supporting asset declaration')
   name=entry['file']
-  if not isinstance(name,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*',name) or name.startswith(('source.','source-','reference-')) or name in reserved or name in supporting_names:raise ValueError('Unsafe or conflicting supporting asset filename')
+  if not isinstance(name,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*',name) or name.casefold().startswith(('source.','source-','reference-')) or name.casefold() in reserved or name.casefold() in supporting_names:raise ValueError('Unsafe or conflicting supporting asset filename')
   record=sources.get(entry['sourceId'])
   if not record or record.get('status')!='fetched':raise ValueError('Supporting asset needs a fetched source')
   archive=record.get('archiveName')
@@ -253,7 +254,7 @@ def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
   if (folder/archive).is_symlink() or (output/name).is_symlink():raise ValueError('Supporting asset path is a symlink')
   payload=(folder/archive).read_bytes()
   if len(payload)!=record.get('bytes') or sha(payload)!=record.get('sha256'):raise ValueError('Supporting asset source changed: '+entry['sourceId'])
-  supporting_names.add(name);supporting_records.append({**entry,'sha256':record['sha256']})
+  supporting_names.add(name.casefold());supporting_records.append({**entry,'sha256':record['sha256']})
  def source_parts(record):
   path=folder/record['archiveName']
   # Already classified STL parts can be open surfaces; splitting repairs holes

@@ -30,9 +30,11 @@ class RebuildInputs(unittest.TestCase):
    folder,receipt=r.hydrate(product,self.scratch);self.assertEqual((folder/'upstream-license.txt').read_bytes(),data);self.assertEqual(len(receipt['sources']),3)
    (self.assets/name).write_bytes(b'Changed upstream license')
    with self.assertRaisesRegex(ValueError,'changed'):r.hydrate(product,Path(self.temp.name)/'changed-scratch',True)
-  for unsafe in ['../license.txt','/absolute.txt','sub/license.txt','source.step','geometry.bin','LICENSE-M5Stack.txt']:
+  for unsafe in ['../license.txt','/absolute.txt','sub/license.txt','source.step','geometry.bin','LICENSE-M5Stack.txt','Geometry.bin','license-m5stack.TXT','Source-extra.stl','Reference-photo.webp']:
    self.plan['supportingAssets'][0]['file']=unsafe;(self.assets/'model-plan.json').write_text(json.dumps(self.plan))
    with self.assertRaises(ValueError):r.load_product(self.root,'test-device')
+  self.plan['supportingAssets']=[{'sourceId':'upstream-license','file':'LICENSE-Upstream.txt'},{'sourceId':'upstream-license','file':'license-upstream.TXT'}];(self.assets/'model-plan.json').write_text(json.dumps(self.plan))
+  with self.assertRaisesRegex(ValueError,'Conflicting'):r.load_product(self.root,'test-device')
  def test_missing_source_requires_explicit_network(self):
   (self.assets/'source.stl').unlink()
   with self.assertRaisesRegex(ValueError,'--allow-network'):r.hydrate(self.product,self.scratch)
