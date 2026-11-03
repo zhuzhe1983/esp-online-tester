@@ -10487,13 +10487,22 @@
       "summary": "ESP32-C3 4MB模块，13路GPIO与USB-C；C056-B官方包装为多模块组合，模型展示其中单个模块，贴纸与可拆塑料盖分开。",
       "knowledgeUrl": "./knowledge/m5stack-c056-b.json",
       "runtime": {
-        "board": null,
+        "board": "stampc3",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "name": "Button",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
       "interfaces": [],
       "model": {
         "type": "manufacturer-cad",
@@ -10509,7 +10518,7 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "部分板级模型：G3 用户键与 G2 单颗 SK6812 的 RMT 输出；不模拟 EN/USB 桥、软件 GPIO 灯时序、模拟电源或物理网络。官方示例只有源码，尚未找到完整出厂固件。",
         "保留厂家外盖原始尺寸；PCB 正面布局未知，拆开后显示 UNKNOWN。",
         "外露背面使用该 SKU 官方照片；原图中 PCB 像素较少，放大不能补出细节。",
         "已补齐一枚中心内六角沉头螺丝和可见黄铜螺柱；隐藏螺纹与内部结构未建模。",
@@ -10535,7 +10544,10 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "firmwareReferenceIds": [
+        "m5stack-stampc3-official-source"
+      ]
     },
     {
       "id": "m5stack-c122-b",

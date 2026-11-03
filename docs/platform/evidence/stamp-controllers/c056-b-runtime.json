@@ -1,0 +1,120 @@
+{
+  "checkedAt": "2026-11-03T21:16:39.462Z",
+  "command": "node tools/probe-stampc3.mjs --build <fixture-build-directory> --product <product-id>",
+  "productId": "m5stack-c056-b",
+  "board": "stampc3",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "wasmSha256": "ea4fb051f12ddbf8c3ada27251e189b7a516d378f2abf876c9b1d3bbbc8f9be4",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "1bab8cfa81c80f5ac298d7f0bb0a80acb542aed3cc4456bbd6562bdf128cca8c",
+    "stampc3_fixture.bin": "17015dfecf0eb2da7c05d181cef9fa79f421e235370fff600c20e4ae57e79afe",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [
+    "wrong-gpio4-white-frame-ignored",
+    "real-rom-boot-rmt2-red",
+    "guest-gpio3-press-release-drives-green-blue-off-red",
+    "no-invented-display-and-unknown-button-rejected",
+    "platform-reset-clears-old-output-before-new-rmt-frame",
+    "platform-reset-releases-button-and-fresh-guest-red"
+  ],
+  "inputSerialEvidence": [
+    "STAMPC3_WRONG_PIN 4 white",
+    "STAMPC3_WRONG_PIN 4 white",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_RMT 0 255 0",
+    "STAMPC3_RMT 0 255 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_RMT 0 0 255",
+    "STAMPC3_RMT 0 0 255",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_RMT 0 0 0",
+    "STAMPC3_RMT 0 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 1"
+  ],
+  "status": "pass",
+  "guestSeconds": 1.06,
+  "leds": [
+    [],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        255,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        0,
+        255
+      ]
+    ],
+    [
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        255,
+        0
+      ]
+    ],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ]
+  ],
+  "serialEvidence": [
+    "STAMPC3_WRONG_PSTAMPC3_WRONG_PIN 4 white",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1"
+  ],
+  "sourceRevision": "86c425a4",
+  "fixtureSource": "tools/fixtures/stampc3-firmware",
+  "limitations": [
+    "Internal independently authored protocol fixture only, not official/factory firmware.",
+    "No physical hardware validation, EN reset, CH9102 USB bridge, analog supply, GPIO bit-bang LED protocol or network/RF claim.",
+    "3D physical hotspot acceptance is recorded separately after model integration."
+  ]
+}
