@@ -58,6 +58,19 @@
       }
     ],
     "browserMethod": "Headless Chromium via tracked Playwright CLI; injected Serial and esptool fixtures; no physical USB access.",
-    "limits": "These checks validate download/error handling, catalog metadata and browser workflows. The replacement official firmware was not downloaded or executed on a simulator or physical device."
+    "limits": "These checks validate download/error handling, catalog metadata and browser workflows. The replacement official firmware was not downloaded or executed on a simulator or physical device.",
+    "native": {
+      "toolchain": "rustc 1.99.1 (stable, updated 2026-11-03)",
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_",
+      "passed": 1763,
+      "failed": 0
+    },
+    "clippy": {
+      "commands": [
+        "cargo clippy --workspace --all-targets -- -D warnings",
+        "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings"
+      ],
+      "result": "pass"
+    }
   }
 }
