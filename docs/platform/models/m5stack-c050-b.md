@@ -21,3 +21,5 @@ python tools/check-stamp-pico-surfaces.py m5stack-c050-b
 ```
 
 依赖与输出说明见[模型重建](../model-reproduction.md)。[计划](../../../web/platform/assets/m5stack-c050-b/model-plan.json)完整记录来源、孔洞、纸面边界、照片变换、遮罩和观察组。厂家 CAD 为 MIT；厂家照片与纹理仍归厂家所有，没有套用项目许可。
+
+实体 GPIO39 按键的点击面按官方尺寸图和盖板标识定位；直径 3 mm 是交互范围估算，不是厂家开关尺寸。正式页面的 3D 点击、键盘 A、分开查看后的点击及恢复装配后的点击，均由独立 IDF 测试固件输出新的 GPIO39 按下/松开记录与 G27 RGB 数值验证，见[交互记录](../evidence/m5stack-c050-b/public-control-review.json)。这项验证不等同于官方 UIFlow 应用兼容；原纸面和盖板遮挡保留，未为显示灯效额外开孔。
