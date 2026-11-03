@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-03T22:11:05.925081+00:00",
+  "fixtureReceiptSha256": "b996d047fc2ceec7566ce7f36992aa04faf6b8f366210a108ee5248950aa8e53",
+  "fixtureSourceHashes": {
+    "tools/fixtures/stampfly-firmware/CMakeLists.txt": "c1a880c90762c2cb310fb624e7f7edaf267550794c7df6ecf364a07a1a7766c5",
+    "tools/fixtures/stampfly-firmware/README.md": "712d3eba18ae0be3552f9252576e4c708a534c5e54fe18253a99e6878c98e906",
+    "tools/fixtures/stampfly-firmware/main/CMakeLists.txt": "5bebd771d238918b3c283440478b04cd1295282e5745e6835ee2dce8869bfe2e",
+    "tools/fixtures/stampfly-firmware/main/main.c": "203e3cf7b11ce3524644a80904236b1510e6a336e2f7df6385931142203826db",
+    "tools/fixtures/stampfly-firmware/sdkconfig.defaults": "aac493cf9cb4567da21f4dbc99a75826b3a3b4d21dd46dfea00392a7192e7233",
+    "tools/probe-stampfly.mjs": "d91da499aa5f417877fc991e33f200140f847b51af8aea0998a2e8482997ee93"
+  },
+  "flasherArgsSha256": "48597e1e63576617bbf63beb1a6e72cc68c621dd549c9c139107fd8d28351824",
+  "flasherArgs": {
+    "write_flash_args": [
+      "--flash_mode",
+      "dio",
+      "--flash_size",
+      "8MB",
+      "--flash_freq",
+      "80m"
+    ],
+    "flash_settings": {
+      "flash_mode": "dio",
+      "flash_size": "8MB",
+      "flash_freq": "80m"
+    },
+    "flash_files": {
+      "0x0": "bootloader/bootloader.bin",
+      "0x10000": "stampfly_fixture.bin",
+      "0x8000": "partition_table/partition-table.bin"
+    },
+    "bootloader": {
+      "offset": "0x0",
+      "file": "bootloader/bootloader.bin",
+      "encrypted": "false"
+    },
+    "app": {
+      "offset": "0x10000",
+      "file": "stampfly_fixture.bin",
+      "encrypted": "false"
+    },
+    "partition-table": {
+      "offset": "0x8000",
+      "file": "partition_table/partition-table.bin",
+      "encrypted": "false"
+    },
+    "extra_esptool_args": {
+      "after": "hard_reset",
+      "before": "default_reset",
+      "stub": true,
+      "chip": "esp32s3"
+    }
+  },
+  "scope": "Source-built internal protocol fixture, separate from original manufacturer firmware.",
+  "curation": [
+    "Receipt preserves numeric outputs from the existing probe. Combined serial may repeat fixture lines from USB and UART0; fresh-suffix input assertions ran in the source harness.",
+    "Source hashes captured immediately after execution; factory harness separately records and checks imported source modules and unchanged WASM before/after its run."
+  ],
+  "limits": [
+    "StampFly fixture probes INA3221, not M5PM1; this board has no M5PM1.",
+    "No performance result is inferred from concurrent correctness testing."
+  ]
+}
