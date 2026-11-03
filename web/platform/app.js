@@ -283,7 +283,7 @@ function onRuntimeEvent(event) {
   }
   else if (event.type === 'error') { text('load-status', errorMessages[event.error.code] || event.error.message); if(!busy)report(event.error); }
   else if (event.type === 'stats') {
-    text('runtime-speed', Number.isFinite(event.stats.mips) ? `${event.stats.mips.toFixed(2)} MIPS${event.stats.speed == null ? '' : ` · ${Math.round(event.stats.speed * 100)}% 实时`}` : '');
+    text('runtime-speed', c5Product() ? `SRAM 直启${Number.isFinite(event.stats.time)?` · 虚拟时间 ${event.stats.time.toFixed(2)} s`:''}` : Number.isFinite(event.stats.mips) ? `${event.stats.mips.toFixed(2)} MIPS${event.stats.speed == null ? '' : ` · ${Math.round(event.stats.speed * 100)}% 实时`}` : '');
   }
 }
 
