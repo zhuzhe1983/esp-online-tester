@@ -379,7 +379,7 @@ function renderProduct() {
     renderProductChoices(selected.manufacturer, {familyId:keepFilter ? productFamilyFilter : selected.family?.id || '',selectedId:selected.id});
   }
   text('stage-title', selected.name); text('product-name', selected.name.replace(/^M5Stack /, ''));
-  text('model-origin', selected.model?.type === 'source-derived' ? '照片与尺寸建模 · 内部结构有未知项' : selected.model || selected.id === 'm5stack-stopwatch' ? '官方 CAD · 外观来源可查' : '模型待建 · 来源资料可查');
+  text('model-origin', selected.model?.type === 'source-derived' ? '照片与尺寸建模 · 内部结构有未知项' : selected.model || selected.id === 'm5stack-stopwatch' ? '3D 模型 · 外观来源可查' : '模型待建 · 来源资料可查');
   text('product-model', productIdentityLabel(selected));
   text('product-symbol', selected.displayStatus === 'unknown' ? '?' : selected.display?.shape === 'round' ? '◉' : selected.display ? '▤' : '▧');
   if ($('product-select')) $('product-select').value = selected.id;
