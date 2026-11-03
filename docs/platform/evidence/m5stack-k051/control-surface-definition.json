@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-03T21:40:20.535318+00:00",
+  "productId": "m5stack-k051",
+  "scope": "Source-backed model control surface and offline reproducibility. Does not establish public pointer delivery or guest firmware execution.",
+  "modelSha256": "98b646fbba9e2f5a305b59568ec6e3c7f5e661c2aca6fd74965a120a6df621c1",
+  "planSha256": "38ce70e6adb147bc0541b6add88772d9e6ee3e7fb2dad601d7cf1897c8d5d169",
+  "previousModelSha256": "98c8e486cdda48448bcbf373e82dd88a36e6666aebc8676e208acbc34564cf00",
+  "control": {
+    "shape": "circle",
+    "sizeMm": [
+      3,
+      3
+    ],
+    "positionMm": [
+      -4.46,
+      2.64,
+      2.22
+    ],
+    "id": "button",
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "sourceIds": [
+      "official-docs",
+      "product-photo-290985ce46",
+      "product-photo-38a0f6f355",
+      "product-photo-ca6a676592"
+    ],
+    "notes": "GPIO39 button center from official dimension drawing (4.46mm left of screw,14.64mm above 24mm board bottom).3mm interaction diameter estimates the native cover cap, not a measured switch size; front Z is0.02mm above the retained bare cover. Invisible hit surface leaves the exact K051 bare-cover appearance unchanged."
+  },
+  "inspectionGroup": "cover",
+  "geometryAndTexturesUnchanged": true,
+  "artifacts": {
+    "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+    "reference-product-photo-649efe1c2a.jpg": "f36537bd4550aa5c0202265ffeab2e97d4146222ffa857db9fd3096f361d7447",
+    "pcb-back.png": "aa25cb40dfcc7a7800cfabe60761879427218cccd265de30bd22b29503a3f415",
+    "reference-product-photo-ca6a676592.jpg": "0afc95f21dde05a2172bef60836a39444765965abbae4b9f89b9e86631688016",
+    "geometry.bin": "21dfcc87e76322cbe22014a35faf79e968e7692e5467c70ad0df12ab90a13d9e",
+    "reference-product-photo-780d57ceb7.jpg": "6569e2de32f6aca8a61939a3dded6ceaf4e929f92f48eb5875650f3cdc43e8d1",
+    "source.stl": "d3cd7f66cb2d212135413771b484edd0c3d12d3a76ce6459d343a207b89f2662",
+    "reference-product-photo-38a0f6f355.jpg": "9570e8cf58827618c5b2457bc5b0075c01d72de44f35a8e5d6b932f4b38cd634"
+  },
+  "nativeSurfaceZAtButtonCenterMm": {
+    "shell-cover": [
+      1.15,
+      2.2
+    ],
+    "light-pipe": [
+      0.15,
+      1.15
+    ]
+  },
+  "optics": "G27 slot position is documented, but diffuser geometry/transmission remain unverified. No luminous geometry or additional cover opening is invented.",
+  "offlineRebuild": {
+    "passed": true,
+    "verifiedArtifacts": [
+      "LICENSE-M5Stack.txt",
+      "reference-product-photo-649efe1c2a.jpg",
+      "pcb-back.png",
+      "reference-product-photo-ca6a676592.jpg",
+      "geometry.bin",
+      "reference-product-photo-780d57ceb7.jpg",
+      "source.stl",
+      "reference-product-photo-38a0f6f355.jpg"
+    ],
+    "mismatches": [],
+    "unusedOriginalArtifacts": [],
+    "modelJsonByteIdentical": true,
+    "scope": "Exact regenerated geometry, source/reference files, textures and model contract. Metadata byte order and historical unused files are reported separately. No fresh browser, hardware or firmware acceptance."
+  },
+  "checks": {
+    "focusedModelNodeTests": 14,
+    "catalogSchema": "pass",
+    "sourceIdsResolve": true
+  },
+  "commands": [
+    "python tools/rebuild-product-model.py build m5stack-k051 --scratch <fresh-directory>",
+    "python tools/check-stamp-pico-surfaces.py m5stack-k051",
+    "node --test tools/platform-model-inspection-test.mjs tools/platform-manufacturer-model-test.mjs tools/platform-plate-geometry-test.mjs",
+    "uv run --with jsonschema python tools/validate-platform-catalog.py"
+  ],
+  "limitations": [
+    "3mm hit diameter estimates the usable cap/printed mark region; it is not a manufacturer switch dimension.",
+    "Z offset keeps an invisible hit surface0.02mm above the native bare cover; no visible geometry or texture changes.",
+    "Physical travel, switch bounce and optical transmission are unverified."
+  ]
+}
