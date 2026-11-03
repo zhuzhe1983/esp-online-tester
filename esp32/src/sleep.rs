@@ -149,6 +149,27 @@ mod tests {
     }
 
     #[test]
+    fn an_alarm_past_32_bits_waits_for_its_high_word() {
+        let mut b = SocBus::new(4 << 20, [0; 6]);
+        asleep_with_alarm_at(&mut b, 1 << 32 | 5);
+        b.periph.rtc.0.slow_ticks = 5;
+        b.tick(1);
+        assert!(!b.periph.rtc.0.sw_reset, "the low word alone is not the alarm");
+        b.periph.rtc.0.slow_ticks = 1 << 32 | 5;
+        b.tick(1);
+        assert!(b.periph.rtc.0.sw_reset);
+    }
+
+    #[test]
+    fn a_timer_wake_keeps_the_wake_enables() {
+        let mut b = SocBus::new(4 << 20, [0; 6]);
+        asleep_with_alarm_at(&mut b, 100);
+        b.periph.rtc.0.slow_ticks = 100;
+        b.tick(1);
+        assert_eq!(b.read32(0x3ff4_8038).unwrap(), 1 << (11 + 3) | 1 << 3, "WAKEUP_ENA kept, WAKEUP_CAUSE timer");
+    }
+
+    #[test]
     fn digital_engines_stop_on_power_down() {
         let mut b = SocBus::new(4 << 20, [0; 6]);
         b.write32(0x3ff0_00c0, (1 << 4) | (1 << 21) | (1 << 11) | (1 << 9))
