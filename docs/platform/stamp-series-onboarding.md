@@ -35,7 +35,7 @@
 
 尺寸与照片的偏差没有被改成通过：StampFly 的源装配外形与官方尺寸冲突、S3 的 USB 外伸范围、部分排针版本的拍摄角度差异仍有记录。StamPLC 的正反面对照 IoU 未达到 1:1 阈值，属于保留偏差的模型；S3A 的实体尺寸另行排除非实体贴图与交互标记，旧显示边界也继续保留。
 
-[最终集成检查](evidence/stamp-series-final/checks.json)记录 Rust、平台、WASM 与 CI 等价命令及结果；性能比较和独立浏览器审查各自保存回执。
+[最终集成检查](evidence/stamp-series-final/checks.json)记录 Rust、平台、WASM 与 CI 等价命令及结果；[独立审查](evidence/stamp-series-final/independent-review.json)覆盖 22 款实际加载、13 款拆分/精确复位和两款窄屏嵌入页；性能比较另存回执。
 
 ## 原始盘点记录（修正前）
 
