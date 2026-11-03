@@ -1,4 +1,4 @@
-//! GP-SPI2/3 master. The same register block on the S3, C3 and C6.
+//! GP-SPI2/3 master. S3/C6/P4 have INT_SET; C3 has writable RAW instead.
 use crate::device::{Device, WriteEffect};
 use crate::regram::RegRam;
 
@@ -32,13 +32,16 @@ pub struct GpSpiTransfer {
 /// supplies any DMA data, asks its board for the MISO response, then finishes the transfer.
 pub struct GpSpi { pub regs: RegRam, pub w: [u32; 16], pub int_raw: u32, pub int_ena: u32, pub transfers: u64, pub log: bool,
                    /// the controller's number in log lines: 2 (SPI2 / FSPI, the default) or 3 (the S3's SPI3 / HSPI)
-                   pub host: u8,
+                   pub host: u8, software_set: bool,
                    /// bit length of a MOSI phase that DMA must supply, until the bus completes it
                    pub dma_tx_pending: Option<u32>, pending: Option<GpSpiTransfer> }
 impl Default for GpSpi { fn default() -> Self { Self::new() } }
 
 impl GpSpi {
-    pub fn new() -> Self { GpSpi { regs: RegRam::new(), w: [0; 16], int_raw: 0, int_ena: 0, transfers: 0, log: false, host: 2, dma_tx_pending: None, pending: None } }
+    pub fn new() -> Self { GpSpi { regs: RegRam::new(), w: [0; 16], int_raw: 0, int_ena: 0, transfers: 0, log: false, host: 2, software_set: true, dma_tx_pending: None, pending: None } }
+    /// C3 has no DMA_INT_SET register. Its existing RAW write behavior is
+    /// deliberately unchanged here; do not alias a reserved address to SET.
+    pub fn new_c3() -> Self { Self { software_set: false, ..Self::new() } }
     /// The same block as GP-SPI `host` (2 or 3), for its log lines.
     pub fn with_host(host: u8) -> Self { GpSpi { host, ..Self::new() } }
     pub fn irq(&self) -> bool { self.int_raw & self.int_ena != 0 }
@@ -47,6 +50,7 @@ impl GpSpi {
             0x00 => (self.regs.read(0) & !((1 << 23) | (1 << 24)))
                 | if self.pending.is_some() { 1 << 24 } else { 0 }, // USR stays busy until completion
             0x34 => self.int_ena, 0x3c => self.int_raw, 0x40 => self.int_raw & self.int_ena,
+            0x44 if self.software_set => 0,
             0x98..=0xd4 => self.w[((off - 0x98) / 4) as usize],
             0xf0 => 0x2101_0100,
             _ => self.regs.read(off),
@@ -56,6 +60,10 @@ impl GpSpi {
         match off {
             0x00 => { self.regs.write(0, v & !((1 << 23) | (1 << 24))); if v & (1 << 24) != 0 && self.pending.is_none() { self.transfer(); } }
             0x34 => self.int_ena = v, 0x38 => self.int_raw &= !v,
+            // ESP-IDF v5.5.1 {esp32s3,esp32c6,esp32p4}/register/soc/spi_reg.h:
+            // DMA_INT_SET +0x44, WT bits0..20, TRANS_DONE bit12. The HAL uses
+            // this to kick the first queued transaction before any wire work.
+            0x44 if self.software_set => self.int_raw |= v & 0x1f_ffff,
             0x98..=0xd4 => self.w[((off - 0x98) / 4) as usize] = v,
             _ => self.regs.write(off, v),
         }
@@ -175,6 +183,20 @@ impl Device for GpSpi {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn software_interrupt_set_latches_raw_masks_status_and_clears_without_wire_work() {
+        let mut spi=GpSpi::new();let done=1<<12;let segment=1<<13;
+        spi.write(0x44,done);assert_eq!(spi.read(0x3c),done);assert_eq!(spi.read(0x40),0);assert!(!spi.irq());
+        assert_eq!(spi.read(0x44),0,"write-trigger register is not a stored command");assert_eq!(spi.transfers,0);assert!(spi.take_transfer().is_none());
+        spi.write(0x34,done);assert!(spi.irq());assert_eq!(spi.read(0x40),done);
+        spi.write(0x44,segment);spi.write(0x44,0);assert_eq!(spi.read(0x3c),done|segment,"SET accumulates; zero does not clear");
+        spi.write(0x38,done);assert!(!spi.irq());assert_eq!(spi.read(0x3c),segment);
+        spi.write(0x34,segment);assert!(spi.irq());spi.write(0x38,segment);assert!(!spi.irq());
+        spi.write(0x44,u32::MAX);assert_eq!(spi.read(0x3c),0x1f_ffff,"reserved SET bits cannot create interrupts");
+        spi.write(0x38,u32::MAX);assert_eq!(spi.read(0x3c),0);assert_eq!(spi.read(0x40),0);
+        let mut c3=GpSpi::new_c3();c3.write(0x34,done);c3.write(0x44,done);assert_eq!(c3.read(0x3c),0);assert!(!c3.irq(),"C3 reserved +0x44 is not S3/C6/P4 INT_SET");
+    }
 
     #[test]
     fn wire_time_uses_read_lanes_and_duplex_phase_order() {

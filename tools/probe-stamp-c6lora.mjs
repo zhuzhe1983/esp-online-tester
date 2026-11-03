@@ -32,6 +32,7 @@ const serialCommand=async(text,marker)=>{const at=(await observe()).serial.lengt
 try {
  const scene=createDefaultScene(catalog,'m5stack-s012');scene.firmware=null;await runtime.configure(scene);await runtime.loadFirmware({format:'build',files});await runtime.start();
  let state=await wait('C6 boot, routed Tx and RX mode',s=>s.serial.includes('C6LORA_RX_READY'));
+ const mode=argument('--spi-mode');if(mode)assert(state.serial.includes(`C6LORA_SPI_MODE ${mode}`));receipt.spiMode=mode||'unspecified';
  for(const line of ['C6LORA_IO_ID a2','C6LORA_WRONG_ADDRESS NACK','C6LORA_WRONG_SDA NACK','C6LORA_WRONG_CS ff','C6LORA_RADIO SX1261','C6LORA_TX_DONE irq=0001 dio1=1'])assert(state.serial.includes(line),line);
  assert.equal(state.frame,null);assert.equal((await runtime.capabilities()).lora.available,true);
  let radio=await runtime.readLoRa();assert.equal(radio.txCount,1);assert.equal(radio.rxCount,0);assert(radio.transmitted.some(p=>p.payloadHex==='5354414d502d43364c4f5241'));
@@ -50,4 +51,4 @@ try {
  await runtime.reset();state=await wait('fresh platform reboot',s=>s.serial.includes('C6LORA_RX_READY'));radio=await runtime.readLoRa();assert.equal(radio.txCount,1);assert.equal(radio.rxCount,0);receipt.checks.push('guest-reset-pin-clears-radio-and-platform-reset-recreates-fresh-state');
  await serialCommand('b','C6LORA_SOFTWARE_REBOOT');at=(await observe()).serial.indexOf('C6LORA_SOFTWARE_REBOOT');state=await wait('guest software reset reinitializes persistent expander',s=>s.serial.slice(at).includes('C6LORA_RX_READY'));receipt.checks.push('guest-software-reboot-reinitializes-existing-expander-and-radio');
  await runtime.pause();receipt.outputs.push({phase:'software-reboot',radio:await runtime.readLoRa()});receipt.serialEvidence=[...serialEvidence];receipt.status='pass';console.log(JSON.stringify(receipt,null,2));
-} finally {await runtime.dispose();}
+} catch(error) {receipt.status='failed';receipt.error=String(error.message).split('\n')[0];receipt.serialEvidence=[...serialEvidence];receipt.outputs.push({phase:'failure',radio:await runtime.readLoRa().catch(()=>null)});console.log(JSON.stringify(receipt,null,2));throw error;} finally {await runtime.dispose();}

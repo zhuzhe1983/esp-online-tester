@@ -82,7 +82,7 @@ mod tests {
         write(d.as_mut(),3,0xe0);write(d.as_mut(),7,0x1f);write(d.as_mut(),5,0xe0);b.advance_to(0);b.advance_to(crate::periph::CPU_HZ/100);(b,d)
     }
     #[test]
-    fn registration_external_flash_identity_and_gpio_mux_are_board_specific() {
+    fn registration_discrete_flash_identity_and_gpio_mux_are_board_specific() {
         assert_eq!(super::super::make_board("m5stack-s012").unwrap().name(),"stamp-c6lora");
         let mut m=crate::machine([0;6],16<<20);let before=m.bus.periph.efuse.read(0x50);
         m.bus.board=super::super::make_board("stamp-c6lora").unwrap();m.bus.attach_board_devices();assert_eq!(m.bus.periph.efuse.read(0x50)&(7<<24),0);

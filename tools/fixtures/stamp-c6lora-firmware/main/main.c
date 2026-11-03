@@ -14,13 +14,25 @@ static spi_device_handle_t radio;
 static void io_write(uint8_t reg,uint8_t value) {uint8_t bytes[]={reg,value};ESP_ERROR_CHECK(i2c_master_write_to_device(I2C_NUM_0,0x43,bytes,2,pdMS_TO_TICKS(100)));}
 static uint8_t io_read(uint8_t reg) {uint8_t value;ESP_ERROR_CHECK(i2c_master_write_read_device(I2C_NUM_0,0x43,&reg,1,&value,1,pdMS_TO_TICKS(100)));return value;}
 static void wait_ready(void) {for(int n=0;gpio_get_level(19);n++) {if(n>1000) {printf("C6LORA_BUSY_TIMEOUT\n");abort();}vTaskDelay(1);}}
-static void transfer(int cs,const uint8_t *tx,uint8_t *rx,size_t n) {spi_transaction_t t={.length=n*8,.tx_buffer=tx,.rx_buffer=rx};gpio_set_level(cs,0);ESP_ERROR_CHECK(spi_device_polling_transmit(radio,&t));gpio_set_level(cs,1);}
+static void transfer(int cs,const uint8_t *tx,uint8_t *rx,size_t n) {spi_transaction_t t={.length=n*8,.tx_buffer=tx,.rx_buffer=rx};gpio_set_level(cs,0);
+#ifdef STAMP_C6LORA_QUEUED_SPI
+    ESP_ERROR_CHECK(spi_device_transmit(radio,&t));
+#else
+    ESP_ERROR_CHECK(spi_device_polling_transmit(radio,&t));
+#endif
+    gpio_set_level(cs,1);
+}
 static void command(const uint8_t *tx,size_t n) {uint8_t rx[260];wait_ready();transfer(23,tx,rx,n);}
 #define CMD(...) do {const uint8_t bytes[]={__VA_ARGS__};command(bytes,sizeof(bytes));} while(0)
 static uint16_t irq(void) {uint8_t tx[]={0x12,0,0,0},rx[4];wait_ready();transfer(23,tx,rx,4);return ((uint16_t)rx[2]<<8)|rx[3];}
 static void receive(void) {CMD(0x02,0xff,0xff);CMD(0x82,0xff,0xff,0xff);wait_ready();printf("C6LORA_RX_READY\n");}
 void app_main(void) {
     setvbuf(stdout,NULL,_IONBF,0);
+#ifdef STAMP_C6LORA_QUEUED_SPI
+    printf("C6LORA_SPI_MODE queued\n");
+#else
+    printf("C6LORA_SPI_MODE polling\n");
+#endif
     i2c_config_t config={.mode=I2C_MODE_MASTER,.sda_io_num=10,.scl_io_num=8,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master.clk_speed=400000};
     ESP_ERROR_CHECK(i2c_param_config(I2C_NUM_0,&config));ESP_ERROR_CHECK(i2c_driver_install(I2C_NUM_0,I2C_MODE_MASTER,0,0,0));
     printf("C6LORA_IO_ID %02x\n",io_read(1));uint8_t reg=1,value=0;

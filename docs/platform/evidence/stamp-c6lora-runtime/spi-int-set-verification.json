@@ -1,0 +1,52 @@
+{
+  "checkedAt": "2026-11-03T21:07:07.419272+00:00",
+  "sourceBaseCommit": "b18b1a65",
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "checks": [
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=<task-target> cargo test -p esp-periph -p esp32c3 -p esp32c6 --lib -- --include-ignored --skip external_",
+      "results": {
+        "esp-periph": 150,
+        "esp32c3": 45,
+        "esp32c6": 71
+      },
+      "failed": 0,
+      "notes": "C6 package test renamed to avoid accidental external_ substring filtering and rerun: 71 passed, zero filtered."
+    },
+    {
+      "command": "CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=<task-target> cargo clippy -p esp-periph -p esp32c3 -p esp32c6 -p esp32s3 -p esp32p4 --all-targets -- -D warnings",
+      "status": "pass",
+      "notes": "Executed in two package groups."
+    },
+    {
+      "command": "source tools/wasm-rustflags.sh; CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=<task-target> cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "pass"
+    }
+  ],
+  "beforeAfter": {
+    "sameFirmwareHashes": true,
+    "inputHashes": {
+      "bootloader/bootloader.bin": "645073e5e647df38acb300eaac725e738573694c9ecdccf0724df4e37d96180b",
+      "stamp_c6lora_fixture.bin": "7ca04d6cbab595f2e796e4ffdbc271382e789be34cf78bfea89450d03ff5cf72",
+      "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    "beforeWasmSha256": "a1c52dfea61793013bc83fb59de7cab7f9a533c7dca31b275fa1979df9550544",
+    "afterWasmSha256": "0de44cbae1a0f48119678a2cb887888c920b22e569e89368331446035ce70bb9",
+    "before": "first queued SPI transaction never completed within 15 guest seconds",
+    "after": "all seven input/output/reset checks pass; C6LORA_SPI_MODE queued observed"
+  },
+  "sourceHashes": {
+    "esp-periph/src/gpspi.rs": "e48ccd28bb54b546033eab06333496d70780c032bfbfdff55e6afd3444167648",
+    "esp32c3/src/periph.rs": "bf14834878e4cf3315bcdef1cd9778eb29cb87754e4dc4ad758f4b92cbf98125",
+    "tools/fixtures/stamp-c6lora-firmware/CMakeLists.txt": "4d4c0200e6d7162b570a8f745e8592c6eaf0ed3ed4bb5750099b51e5d017cf16",
+    "tools/fixtures/stamp-c6lora-firmware/sdkconfig.defaults": "b16c9b222e50b57a0fa86a0e8f04266badb3aecddd4b7471bbc661f1ff7788a5",
+    "tools/fixtures/stamp-c6lora-firmware/main/CMakeLists.txt": "c466b1d054b201b25a3438486d836eb9ba79b5926d3b8cdc56cfc88086812f2e",
+    "tools/fixtures/stamp-c6lora-firmware/main/main.c": "bdd1cf7611e24b284f5ac707f6f7dc3e941c5c60fa8b5cba118950781f533af7"
+  },
+  "limits": [
+    "No full workspace CI or host CPU benchmark claim. No per-tick or interrupt-source routing changes.",
+    "S3/P4 register semantics checked from exact IDF5.5.1 headers; application-level queued transfer proof is C6 only.",
+    "C3 has no DMA_INT_SET. Its existing writable-RAW omission is unchanged.",
+    "Initial include-ignored invocation without ROM directory failed the existing C3 ROM-dependent test; rerun with supplied ROMs passed."
+  ]
+}
