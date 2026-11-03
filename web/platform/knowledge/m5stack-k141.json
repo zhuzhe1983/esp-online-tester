@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:21:56Z",
+  "updatedAt": "2026-11-03T21:47:25Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -810,6 +810,51 @@
       ],
       "method": "Fixed original-pixel masks and independent mm planes; source images are unmodified except alpha and crop. Recess plane selected from manufacturer CAD planar-face audit.",
       "uncertainty": "Paper boundary +/-0.3mm; optical cover diameter +/-0.5mm. Printed-paper images do not establish calibrated optics or firmware output."
+    },
+    {
+      "id": "rear-fasteners-and-rgb-optic",
+      "label": "Visible rear fasteners and front RGB optic",
+      "value": "4rear metal screw heads;4brassM3rims; front RGB belongs to the native top-notch light pipe, not the printedLED icon.",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-e38c32e489",
+        "product-photo-78481c3a59",
+        "manufacturer-cad-f927ebc348"
+      ],
+      "uncertainty": "Head/rim exterior dimensions +/-0.2mm; hidden hardware unknown; native hole positions retained.",
+      "method": "Native STL hole centers and recess seats cross-checked against exact front/back photographs and manufacturer feature arrows; visible head diameter3.4mm and rimdiameter4mm are photo estimates, not hidden CAD."
+    },
+    {
+      "id": "stamp-paper-front-registration",
+      "label": "Stamp paper carrier registration",
+      "value": "The72x77mm front face crop excludes the rear DIN latch; Stamp paper fits the unchanged24x18mm carrier. Four relay footers each occupy a separate15.8x4mm native seat atZ10.2mm.",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-f927ebc348",
+        "product-photo-d0a96a17d6"
+      ],
+      "method": "Independent fixed source pixel masks; no native geometry scale. Final browser pixel bounds and native-triangle support checks retained.",
+      "uncertainty": "Photo registration +/-0.3mm;0.015mm decal offset is rendering separation, not measured paper thickness."
+    },
+    {
+      "id": "stamp-board-envelope",
+      "label": "Stamp module PCB envelope only",
+      "value": {
+        "width": 24,
+        "height": 18,
+        "thickness": 1,
+        "color": "black"
+      },
+      "unit": "mm",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "dimension-drawing-512f8cd158",
+        "manufacturer-cad-f927ebc348",
+        "product-photo-d0a96a17d6"
+      ],
+      "notes": "Drawing establishes module envelope/thickness;0.05mm seating clearance is inferred in K141. Black visible edge follows exactK141photo. UNKNOWN stays on its hidden back; no copper/component/header layout fabricated.",
+      "method": "Use official Stamp-S3A24x18x1mm board dimensions and existing K141 cover bounds; infer0.05mm seating clearance and black visible edge from exact K141 photograph.",
+      "uncertainty": "Placement is inferred, not manufacturer assembly CAD; board topology and PIN1.27 mounting remain unknown."
     }
   ],
   "revisions": [],
@@ -1242,6 +1287,21 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "dimension-drawing-512f8cd158",
+      "title": "Stamp-S3A dimension drawing",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1150/STAMP-S3A_page_01.png",
+      "kind": "dimension-drawing",
+      "status": "fetched",
+      "discoveredFrom": "official-docs",
+      "archiveName": "dimension-drawing-512f8cd158.png",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1150/STAMP-S3A_page_01.png",
+      "fetchedAt": "2026-10-26T17:31:37Z",
+      "bytes": 339987,
+      "mediaType": "image/jpg",
+      "sha256": "1566e0fa389245c56668484efd198890e9ec1bdac90f7acbb741bf0af9643c2d",
+      "notes": "Stamp-S3A module drawing; K141 official description/overview identify its installed Stamp-S3A. Applied only to board envelope, not unseen PIN1.27 mount geometry."
     }
   ],
   "assets": [
@@ -1251,12 +1311,6 @@
       "role": "manufacturer-cad",
       "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K141_StamPLC/Structures/StamPLC.stl",
       "localUrl": "./assets/m5stack-k141/source.stl"
-    },
-    {
-      "id": "product-photo-e38c32e489",
-      "sourceId": "product-photo-e38c32e489",
-      "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1129/K141_01.webp"
     },
     {
       "id": "product-photo-d0a96a17d6",
@@ -1407,6 +1461,20 @@
       "sourceId": "datasheet-9956880e42",
       "role": "datasheet",
       "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1132/RX8130CE_cn-Register-Datasheet.pdf"
+    },
+    {
+      "id": "product-photo-e38c32e489",
+      "sourceId": "product-photo-e38c32e489",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1129/K141_01.webp",
+      "localUrl": "./assets/m5stack-k141/reference-product-photo-e38c32e489.webp"
+    },
+    {
+      "id": "dimension-drawing-512f8cd158",
+      "sourceId": "dimension-drawing-512f8cd158",
+      "role": "dimension-drawing",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1150/STAMP-S3A_page_01.png",
+      "localUrl": "./assets/m5stack-k141/reference-dimension-drawing-512f8cd158.png"
     }
   ],
   "unknowns": [
@@ -1439,11 +1507,23 @@
         "manufacturer-cad-f927ebc348"
       ],
       "notes": "No complete populated PCB layout or Gerber verified in the audited files. A manufacturer mechanical board outline, when present, does not establish every component or copper trace. Unknown internals remain a neutral UNKNOWN placeholder."
+    },
+    {
+      "id": "hidden-fasteners-and-module-headers",
+      "label": "Hidden fasteners and Stamp PIN1.27 assembly",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "manufacturer-cad-f927ebc348",
+        "product-photo-e38c32e489"
+      ],
+      "notes": "Exact rear photo and overview establish4heads/4M3collars, not unseen shafts/threads. K141 module PIN1.27 headers and internal PCB layouts are not supplied by current CAD."
     }
   ],
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-03 refresh: preserve all22496native triangles; separate existing key engravings/blind-hole floors by material. Correct carrier-bounded Stamp paper and4relay labels; add only source-visible rear hardware and bind actual native RGB light pipe. Main/module unknown PCBs remain explicit."
   ]
 }
