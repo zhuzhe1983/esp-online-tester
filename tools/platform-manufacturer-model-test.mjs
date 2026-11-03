@@ -12,6 +12,15 @@ try {
  const bare=createManufacturerModel(product,null);await bare.ready;
  assert.deepEqual(bare.group.userData.shellMeshes,[],'Explicit PCB roles must not turn into a recolorable case');assert.equal(bare.parts.shell,undefined);
  assert.equal(requests[0].options.cache,'no-store');assert.equal(requests[1].url.searchParams.get('sha256'),'a'.repeat(64),'Changed geometry gets an independent cache identity');bare.dispose();
+ metadata={...fixture,parts:[{...fixture.parts[0],name:'case',role:'shell'},{...fixture.parts[0],name:'blade',role:'propeller',material:{opacity:.38,roughness:.25,metalness:0}}]};
+ const translucent=createManufacturerModel(product,null);await translucent.ready;const blade=translucent.parts.blade.material;
+ assert.equal(blade.opacity,.38);assert.equal(blade.transparent,true);assert.equal(blade.depthWrite,false);assert.equal(blade.roughness,.25);assert.equal(blade.metalness,0);
+ assert.equal(translucent.parts.case.material.opacity,1);assert.equal(translucent.parts.case.material.depthWrite,true);
+ for(const shell of translucent.group.userData.shellMeshes)applyShellAppearance(shell,{shell:{color:'#8054b3',opacity:.35,finish:'plastic'}});
+ assert.equal(blade.opacity,.38);assert.equal(blade.color.getHexString(),'225522','Propeller tint stays independent of custom shell appearance');translucent.dispose();
+ for(const material of [null,[],{opacity:-.1},{opacity:1.1},{roughness:'0.5'},{metalness:null},{side:2}]) {
+  metadata={...fixture,parts:[{...fixture.parts[0],material}]};const malformed=createManufacturerModel(product,null);await assert.rejects(malformed.ready,/Invalid model part material/);malformed.dispose();
+ }
  const port={id:'grove',kind:'connector-visual',connectorType:'HY2.0-4P',geometry:{centerMm:[0,2,0]},sourceIds:['fixture'],pinOrder:['signal2','signal1','vcc','gnd']};
  metadata={...fixture,derivedParts:[port]};const unknown=createManufacturerModel(product,null);await unknown.ready;assert.ok(unknown.parts.grove);assert.equal(unknown.connectors.grove,undefined,'Visible socket is not automatically connectable');unknown.dispose();
  metadata={...fixture,derivedParts:[{...port,allowConnections:true}]};const verified=createManufacturerModel(product,null);await verified.ready;assert.deepEqual(verified.connectors.grove.pinOrder,port.pinOrder);verified.dispose();

@@ -39,7 +39,10 @@ export function createManufacturerModel(product, screenTexture) {
     for(const part of metadata.parts) {
       if(!Number.isInteger(part.byteOffset)||part.byteOffset<0||part.byteOffset%4||!Number.isInteger(part.vertexCount)||part.vertexCount<3||part.vertexCount%3||part.byteOffset+part.vertexCount*24>binary.byteLength)throw Error('Invalid model part bounds');
       const values=new Float32Array(binary,part.byteOffset,part.vertexCount*6);if(!values.every(Number.isFinite))throw Error('Invalid model coordinate');
-      const standard=new THREE.MeshStandardMaterial({color:part.color || '#737b79',roughness:.7,metalness:0});
+      const surface=part.material===undefined?{}:part.material;
+      if(!surface||typeof surface!=='object'||Array.isArray(surface)||Object.keys(surface).some(key=>!['opacity','roughness','metalness'].includes(key))||Object.values(surface).some(v=>!Number.isFinite(v)||v<0||v>1))throw Error('Invalid model part material');
+      const opacity=surface.opacity??1;
+      const standard=new THREE.MeshStandardMaterial({color:part.color || '#737b79',roughness:surface.roughness??.7,metalness:surface.metalness??0,opacity,transparent:opacity<1,depthWrite:opacity===1});
       let regular=values,painted=null,uv=null,texture,decal=false;
       if(part.texture) {
         const projection=part.texture,[xmin,ymin,xmax,ymax]=projection.boundsMm || [];decal=projection.mode==='decal';
