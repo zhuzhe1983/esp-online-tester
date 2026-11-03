@@ -6,7 +6,8 @@ export function createModelInspection(group, definitions, sources = []) {
   if (definitions === undefined || Array.isArray(definitions) && definitions.length === 0) return null;
   if (!Array.isArray(definitions) || definitions.length > 32) throw Error('Invalid model inspection groups');
   const ids = new Set(), claimed = new Set(), moves = [];
-  const companions = new Set(group.children.flatMap(part => part.userData.inspectionCompanions || []));
+  const companions = new Set();
+  group.traverse(part => { for (const companion of part.userData.inspectionCompanions || []) companions.add(companion); });
   const knownSources = new Set(sources.map(source => source.id));
   const label = value => typeof value === 'string' && value.length > 0 && value.length <= 128;
   for (const definition of definitions) {
@@ -23,7 +24,14 @@ export function createModelInspection(group, definitions, sources = []) {
       const part = matches[0];
       if (companions.has(part)) throw Error('Invalid model inspection companion ownership');
       // Photo twins come from the loader's actual projection, never a name guess.
-      for (const object of [part, ...(part.userData.inspectionCompanions || [])]) {
+      const members = new Set([part]);
+      part.traverse(source => {
+        for (const companion of source.userData.inspectionCompanions || []) {
+          let ancestor = companion; while (ancestor && ancestor !== part) ancestor = ancestor.parent;
+          if (!ancestor) members.add(companion); // Descendants already follow their declared assembly.
+        }
+      });
+      for (const object of members) {
         if (object.parent !== group || claimed.has(object)) throw Error('Invalid model inspection part ownership');
         claimed.add(object); moves.push({object, position: object.position.clone(), offset});
       }

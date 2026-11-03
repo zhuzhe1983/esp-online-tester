@@ -40,6 +40,17 @@ test('invalid inspection definitions reject atomically, including duplicate or n
   assert.equal(createModelInspection(group,undefined),null);assert.equal(createModelInspection(group,[]),null);
 });
 
+test('declared assembly carries registered photo twins of nested source parts exactly once',()=>{
+  const group=assembly(),source=group.children[0],pivot=new THREE.Group(),twin=new THREE.Mesh(source.geometry,source.material);
+  pivot.name='assembly';twin.name='projection';pivot.position.set(3,4,5);group.add(pivot,twin);pivot.add(source);source.userData.inspectionCompanions=[twin];
+  assert.throws(()=>createModelInspection(group,[{...definition,parts:['projection']}],sources),/companion ownership/);
+  const inspection=createModelInspection(group,[{...definition,parts:['assembly']}],sources),position=source.position.clone();
+  inspection.setExpanded(true);assert.deepEqual(pivot.position.toArray(),[7,2,17]);assert.deepEqual(twin.position.toArray(),definition.offsetMm);assert.deepEqual(source.position.toArray(),position.toArray());
+  inspection.setExpanded(false);assert.deepEqual(pivot.position.toArray(),[3,4,5]);assert.deepEqual(twin.position.toArray(),[0,0,0]);
+  pivot.add(twin);const nested=createModelInspection(group,[{...definition,parts:['assembly']}],sources);
+  nested.setExpanded(true);assert.deepEqual(twin.position.toArray(),[0,0,0],'an already nested twin follows its parent without double translation');nested.setExpanded(false);
+});
+
 test('loader moves actual projected photo twin, paper and control hit mesh with the cover only',async()=>{
   const fetch=globalThis.fetch,load=THREE.TextureLoader.prototype.loadAsync;
   const vertices=new Float32Array([-2,-2,0,0,0,1,2,-2,0,0,0,1,0,2,0,0,0,1]);
