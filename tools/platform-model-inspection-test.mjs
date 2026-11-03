@@ -69,3 +69,16 @@ test('malformed optional inspection keeps assembled model available and cannot i
     assert.equal(model.group.userData.inspection,undefined);assert.match(model.group.userData.inspectionError,/ownership/);assert.equal(warnings.length,1);assert.deepEqual(model.buttons,[]);assert.deepEqual(model.parts.cover.position.toArray(),[0,0,0]);
   } finally {model?.dispose();globalThis.fetch=fetch;console.warn=warn;}
 });
+
+test('loader rejects a generated photo twin claimed without its source part',async()=>{
+  const fetch=globalThis.fetch,load=THREE.TextureLoader.prototype.loadAsync,warn=console.warn;
+  const vertices=new Float32Array([-2,-2,0,0,0,1,2,-2,0,0,0,1,0,2,0,0,0,1]);let model;
+  try {
+    const metadata={provenance:{sources},unit:'mm',strideFloats:6,binary:'geometry.bin',parts:[{name:'cover',role:'shell',byteOffset:0,vertexCount:3,texture:{file:'photo.png',projection:'xy',boundsMm:[-2,-2,2,2],side:'front'}}],presentation:{inspectionGroups:[{...definition,parts:['cover-photo-surface']}]}};
+    THREE.TextureLoader.prototype.loadAsync=async()=>new THREE.Texture();globalThis.fetch=async url=>new Response(String(url).endsWith('model.json')?JSON.stringify(metadata):vertices.buffer);const warnings=[];console.warn=value=>warnings.push(value);
+    model=createManufacturerModel({id:'fixture',model:{url:'./assets/fixture/model.json'},controls:[]},null);await model.ready;
+    const twin=model.group.getObjectByName('cover-photo-surface');assert.ok(twin);assert.deepEqual(model.parts.cover.userData.inspectionCompanions,[twin]);
+    assert.equal(model.group.userData.inspection,undefined);assert.match(model.group.userData.inspectionError,/companion ownership/);assert.equal(warnings.length,1);
+    assert.deepEqual(twin.position.toArray(),[0,0,0]);assert.deepEqual(model.parts.cover.position.toArray(),[0,0,0]);
+  } finally {model?.dispose();globalThis.fetch=fetch;THREE.TextureLoader.prototype.loadAsync=load;console.warn=warn;}
+});

@@ -6,6 +6,7 @@ export function createModelInspection(group, definitions, sources = []) {
   if (definitions === undefined || Array.isArray(definitions) && definitions.length === 0) return null;
   if (!Array.isArray(definitions) || definitions.length > 32) throw Error('Invalid model inspection groups');
   const ids = new Set(), claimed = new Set(), moves = [];
+  const companions = new Set(group.children.flatMap(part => part.userData.inspectionCompanions || []));
   const knownSources = new Set(sources.map(source => source.id));
   const label = value => typeof value === 'string' && value.length > 0 && value.length <= 128;
   for (const definition of definitions) {
@@ -20,6 +21,7 @@ export function createModelInspection(group, definitions, sources = []) {
       const matches = group.children.filter(child => child.name === name);
       if (!label(name) || matches.length !== 1 || claimed.has(matches[0])) throw Error('Invalid model inspection part ownership');
       const part = matches[0];
+      if (companions.has(part)) throw Error('Invalid model inspection companion ownership');
       // Photo twins come from the loader's actual projection, never a name guess.
       for (const object of [part, ...(part.userData.inspectionCompanions || [])]) {
         if (object.parent !== group || claimed.has(object)) throw Error('Invalid model inspection part ownership');
