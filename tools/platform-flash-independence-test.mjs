@@ -64,7 +64,7 @@ test('a missing simulator ROM does not prevent a separate hardware write',async(
     class Transport {async disconnect(){calls.disconnect++;}}
     class ESPLoader {
       chip={CHIP_NAME:'ESP32-C6'};
-      async main(){} async getSecurityInfo(){return {flashCryptCnt:0,parsedFlags:{}};}
+      async main(){} async getSecurityInfo(){return {flashCryptCnt:0,parsedFlags:{SECURE_BOOT_EN:false,SECURE_DOWNLOAD_ENABLE:false}};}
       async detectFlashSize(){return '16MB';} flashSizeBytes(){return 16*1024*1024;}
       async writeFlash(options){calls.writes++;assert.deepEqual(options.fileArray[0].data,f.bytes);assert.equal(options.eraseAll,false);options.reportProgress(0,f.bytes.length,f.bytes.length);}
       async after(){calls.reset++;}

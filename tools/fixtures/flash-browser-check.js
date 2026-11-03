@@ -24,7 +24,7 @@ async page => {
     export class ESPLoader {
       constructor(options){this.options=options;this.port=options.transport.port;this.chip={CHIP_NAME:this.port.id==='wrong-chip'?'ESP32-S31':'ESP32-C6'};}
       async main(){this.options.terminal.writeLine('Connected to test ESP32-C6');}
-      async getSecurityInfo(){return {flashCryptCnt:0,parsedFlags:{}};}
+      async getSecurityInfo(){return {flashCryptCnt:0,parsedFlags:{SECURE_BOOT_EN:false,SECURE_DOWNLOAD_ENABLE:false}};}
       async detectFlashSize(){return '16MB';}flashSizeBytes(){return 16*1024*1024;}
       async writeFlash(options){
         if(options.eraseAll||options.flashMode!=='keep')throw Error('Unsafe test options');
