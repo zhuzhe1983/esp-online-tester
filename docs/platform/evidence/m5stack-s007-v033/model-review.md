@@ -1,0 +1,13 @@
+# Stamp-S3A S007-V033 model review
+
+The exact S3A cover STL remains unscaled. The exposed backside now uses the exact SKU's 1200-pixel official shop photo on a black 18 × 24 × 1 mm PCB estimate, with hole and chamfer masks. The unknown component face remains blank and carries UNKNOWN. The public viewer's separation control plus ordinary pointer rotation exposes the complete assembly and readable marker; reset restores identical canvas pixels.
+
+One M2 screw and one brass standoff, plus the USB/contact assembly, retain unscaled native parts from the older official S007 STEP. These are explicitly mechanical donor parts checked against the S3A drawing and photos; no old S3 PCB or antenna is adopted. Exact supplier identity, hidden mechanical fit, threads and solder remain unverified. The revised U-shaped antenna shows only the photo-supported face. Bare S007-V033 photos show no installed pin sticker or optional header assembly, so loose accessories are not attached.
+
+The drawing distinguishes 24 mm body length from 25.95 mm including USB; the shop's nominal length is 26 mm. The current assembly is 18 × 25.947933 × 4.750002 mm. These three drawing checks pass a declared 0.1 mm comparison tolerance, which is not a manufacturing tolerance. Front and back outside-silhouette IoU are 0.977662 and 0.982297. Back-oblique IoU is 0.558593 and is retained as qualitative-only because projection is not calibrated. Texture appearance does not validate electronic layout.
+
+`public-browser.json` records actual mouse press/release on the 3D cap and fresh guest UART0/RMT output, KeyA, public separation/reset, 2D/3D switching and gold appearance sharing into the mini player. Source-built fixture binaries stayed local. Loading local firmware prevents URL sharing as designed; presentation sharing was tested after clearing the local firmware.
+
+`rebuild.json` records twelve exact regenerated artifacts and a matching model contract. The metadata byte difference consists only of three retained historical unused reference-image entries. Original import reports, including earlier failures and limitations, are retained under `history/2026-10-26/`; they are superseded for current geometry.
+
+Manufacturer loader and inspection tests pass (7 tests); the current S3A knowledge record passes the repository validator. The whole knowledge suite in the isolated baseline fails on pre-existing fractional timestamps in S016 and S016-DIP, outside this model change. Catalog schemas pass (216 products,10 accessories,169 firmwares,115 watchlist entries). The four required platform test files pass (config/runtime/input/view). Privacy checks cover the retained source receipts and images; raw shop manifests, local file paths, full logs and session identifiers are omitted.
