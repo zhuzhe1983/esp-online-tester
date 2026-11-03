@@ -15,6 +15,7 @@ impl Soc for C5 {
     const ROM_ELF: &'static str = "esp32c5_rev100_rom.elf";
     const CPU_HZ: u64 = CPU_HZ; const CORES: usize = 1; const IDLE_CHUNK: u64 = 64;
     const ROM_BOOT_DEFAULT: bool = false;
+    const EXCEPTION_BUDGET_AFTER_RESET: Option<u64> = Some(1);
     const ROM_DATA_TABLE: &'static [&'static str] = &["_data_table_start"];
     const ROM_DATA_TABLE_END: &'static [&'static str] = &["_data_table_end"];
     const ROM_DATA_TABLE_STRIDE: u32 = 12;
@@ -56,6 +57,7 @@ impl SocBus for C5Bus {
         let copies: Vec<_> = image.segments.iter().map(|s| (s.load_addr, data[s.file_off as usize..(s.file_off + s.len) as usize].to_vec())).collect();
         for (addr, bytes) in copies { self.load_ram(addr, &bytes, bytes.len())?; }
         self.app_off = Some(app_off); self.app_entry = Some(image.entry); self.irq_dirty = true;
+        self.first_fault = None; self.reset_requested = false;
         Ok(image.entry)
     }
     fn reboot(&mut self, _mac: [u8; 6]) -> u32 {

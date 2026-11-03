@@ -55,6 +55,10 @@ pub trait Soc: 'static {
     /// Whether a run boots from the mask ROM and shows UART0 unless told otherwise; the others
     /// default to `--boot app` and both consoles.
     const ROM_BOOT_DEFAULT: bool = Self::CORES == 1;
+    /// Optional fresh exception allowance after a successful app-direct start or chip reset.
+    /// Totals remain cumulative; only the debug stop ceiling is rebased at these cold boundaries.
+    /// None preserves the existing lifetime ceiling for every chip that does not opt in.
+    const EXCEPTION_BUDGET_AFTER_RESET: Option<u64> = None;
     /// Symbols, in order of preference, that start the ROM's RAM-initialiser table.
     const ROM_DATA_TABLE: &'static [&'static str];
     /// Symbols, in order of preference, that end it.

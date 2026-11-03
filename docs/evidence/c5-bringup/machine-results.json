@@ -111,5 +111,27 @@
     "No guest eFuse/JEDEC identity, flash MMU, RF, USB, charging or physical timing claim.",
     "Host reset re-enters selected app-direct image; it does not execute ROM.",
     "Shared frontend registration is a separate integration change."
-  ]
+  ],
+  "restartFaultFollowup": {
+    "reviewedCommit": "af662aba",
+    "failure": "A cumulative exception count poisoned both reboot and later explicit boot_app when the fixed debug ceiling remained1.",
+    "guestOpcode": "0x00002283 (lw t0,0(zero))",
+    "firstStop": {
+      "exceptions": 1,
+      "nextCeilingAfterReboot": 2,
+      "readyAndUartLedRecovered": true
+    },
+    "secondStop": {
+      "exceptions": 2,
+      "nextCeilingAfterBootApp": 3,
+      "readyAndUartLedRecovered": true
+    },
+    "telemetry": "cumulative; never reset or fabricated",
+    "sharedPolicy": "Soc::EXCEPTION_BUDGET_AFTER_RESET defaultNone; C5Some1; cold boot/reboot only",
+    "checks": {
+      "c5IncludingPublicRom": 12,
+      "espSoc": 209,
+      "clippyWarningsDenied": "pass"
+    }
+  }
 }

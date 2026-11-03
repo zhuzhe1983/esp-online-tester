@@ -294,6 +294,7 @@ impl<S: Soc> Machine<S> {
         self.model_attach_error = Some("cost model attachment after synthetic app boot is unsupported without a configuration snapshot");
         let entry = self.bus.boot_app(app_off)?;
         S::boot_core(&mut self.cores[0], entry);
+        if let Some(budget) = S::EXCEPTION_BUDGET_AFTER_RESET { self.dbg.stop_after_exceptions = self.exceptions.saturating_add(budget); }
         Ok(entry)
     }
 
@@ -311,6 +312,7 @@ impl<S: Soc> Machine<S> {
         self.bus.note_core_pcs(&pcs);
         let cause = self.bus.reboot(self.mac);
         for (i, c) in self.cores.iter_mut().enumerate() { S::reset_core_with_bus(c, &mut self.bus, i); if i > 0 { self.core_held[i] = true; } }
+        if let Some(budget) = S::EXCEPTION_BUDGET_AFTER_RESET { self.dbg.stop_after_exceptions = self.exceptions.saturating_add(budget); }
         self.reboots += 1;
         self.model_ready_at.fill(self.bus.cycles());
         if let Some(model) = &mut self.cost {

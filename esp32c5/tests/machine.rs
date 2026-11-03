@@ -58,3 +58,28 @@ fn app_header_padding_alignment_and_trailing_data_are_bounded() {
     let mut bad = APP.to_vec(); bad[end] = 1; assert!(esp32c5::image::parse(&bad).err().unwrap().contains("padding"));
     for len in [0, 23, 24, end, check] { assert!(esp32c5::image::parse(&APP[..len]).is_err()); }
 }
+
+#[test]
+fn actual_guest_fault_stops_once_and_restart_preserves_totals_without_poisoning_app() {
+    let mut m = esp32c5::machine([0; 6], 4 << 20); m.console.capture = true; m.console.mask = 2;
+    m.bus.attach_board(esp32c5::board::make_board("stamp-c5").unwrap());
+    m.load_input(LoadKind::App, APP).unwrap(); m.boot_app(0x10000).unwrap();
+    for total in 1..=2 {
+        // Inject an actual faulting guest load, rather than host-changing telemetry.
+        m.bus.write32(0x4080_0000, 0x0000_2283).unwrap(); // lw t0,0(zero)
+        m.cores[0].pc = 0x4080_0000; m.cores[0].waiting = false;
+        m.max_cycles = m.bus.cycles() + 2000;
+        assert!(matches!(m.run(u64::MAX), esp_soc::Stop::Exceptions(n) if n == total));
+        assert_eq!(m.exceptions, total); assert_eq!(m.bus.first_fault.as_ref().unwrap().address, 0);
+        if total == 1 { m.bus.request_reset(3); m.reboot(); }
+        else { m.boot_app(0x10000).unwrap(); } // explicit app restart is a cold boundary too
+        assert_eq!(m.exceptions, total); assert!(m.bus.first_fault.is_none());
+        assert_eq!(m.dbg.stop_after_exceptions, total + 1);
+        m.max_cycles = m.bus.cycles() + 2000;
+        assert!(matches!(m.run(u64::MAX), esp_soc::Stop::MaxInsns | esp_soc::Stop::Halted));
+        assert_eq!(m.exceptions, total); assert!(m.console.uart0.ends_with(b"C5 UART IRQ READY\n"));
+        m.bus.uart_input(0, b"1"); m.max_cycles = m.bus.cycles() + 2000;
+        assert!(matches!(m.run(u64::MAX), esp_soc::Stop::MaxInsns | esp_soc::Stop::Halted));
+        assert_eq!(m.bus.board_ref().leds().unwrap().0, [[0, 0, 255]]); assert_eq!(m.exceptions, total);
+    }
+}

@@ -84,3 +84,26 @@ CARGO_TARGET_DIR=target/c5-build CARGO_BUILD_JOBS=2 cargo check --target wasm32-
 Eleven focused checks pass with the public ROM (ten without), nativeClippy
 passes with warningsdenied, and the crate compiles forwasm32. Wholeworkspace,
 actualWASM/browser and image-visibleLED acceptance remain integration work.
+
+## Restart after a real guest fault
+
+Review of `af662aba` found that `Machine.exceptions` is cumulative while the
+C5 debug stop ceiling was fixed at1. After one actual guest load fault,
+`reboot()` restored the correct app bytes but the old count immediately stopped
+the new execution before READY. Explicit `boot_app()` on the same Machine had
+the same problem. This negative result is preserved here.
+
+The follow-up adds only a cold lifecycle policy:
+`Soc::EXCEPTION_BUDGET_AFTER_RESET` defaults toNone; C5 opts intoSome(1).
+Successful `boot_app()` and `reboot()` rebase the debug ceiling to cumulative
+exceptions plus the requested budget. The total is never erased, and existing
+chips retain their original default. No instruction-path arithmetic or new
+Machine field is added. C5 clears its first-fault observation only after a
+successful image validation/copy.
+
+The regression executes an actual `lw t0,0(zero)` from SRAM and observes
+`Exceptions(1)`, then reset→READY→UART IRQ→blueLED. It executes a second real
+fault and observes `Exceptions(2)`, then explicit app boot→READY→UART IRQ→blueLED.
+Cumulative telemetry remains1and2 throughout the respective restart, while
+the next stop ceilings are2and3. Twelve C5 checks (including actual ROM),
+209shared `esp-soc` checks and Clippy with warnings denied pass after this fix.
