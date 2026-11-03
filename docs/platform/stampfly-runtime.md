@@ -10,6 +10,7 @@ The [official M5StampFly source at 2b96752c72c465c63b260996046c71c7675f81b2](htt
 | --- | --- | --- |
 | BMI270 | SPI CLK44, MOSI14, MISO43, CS46 | Register reads/writes, address and dummy phase, complete configuration upload, power/range and ideal samples |
 | INA3221 | SDA3/SCL4, address `0x40` | Identity/configuration, signed shunt and bus conversion registers, enabled channels, single/continuous conversion deadlines and CVRF |
+| Bottom/front VL53L3CX | SDA3/SCL4; XSHUT7/9, IRQ6/8 | Separate dynamic addresses, boot/NVM/patch sequence, timed raw histograms and latched GPIO interrupts |
 | Module RGB | G21, one GRB WS2812 | Completed RMT frames; v1.1 requires actively driven G38 supply enable |
 | Carrier RGB | G39, two GRB WS2812 | Completed RMT frames |
 | User button | G0 | Active-low GPIO input |
@@ -25,7 +26,9 @@ BMI270 shares the existing [polled register subset](stopwatch-imu.md). SPI reads
 
 INA3221 samples explicit ideal bus/shunt voltages at the completion of a configured channel cycle. Default virtual channel 2 is 4.0 V with zero shunt drop; other channels are zero. The model includes reset values, read-only IDs/data, channel masks, conversion/averaging duration, powerdown retention, 40 μs recovery and conversion-ready clearing. It does not model a battery, motor load, averaging noise, shunt summation or alert pins. Input changes affect the next completed conversion. Calibration and physical battery behavior are not implied.
 
-VL53L3CX, BMP280, BMM150 and PMW3901 are not provided by this initial board commit. The current official source does not read the last three sensors, but requires VL53L3CX interrupts before proceeding beyond sensor initialization. Buzzer audio and ESP-NOW control have not been verified.
+VL53L3CX supplies raw histograms to the original ST host driver. Both XSHUT lines have 4.7 kΩ pullups, so both devices initially respond at `0x29`; firmware must isolate and renumber the front sensor. The board attaches independent devices with actual dynamic address matching, physical pin pairs and IRQ edges at their scheduled completion cycles. Default optical input is **no target**, not an invented floor distance. The sensor model's optional ideal one-target stimulus and uncalibrated nominal NVM are documented and tested separately. No factory calibration or optical accuracy is claimed.
+
+BMP280, BMM150 and PMW3901 are not modeled. The current official source does not read them, but requires VL53L3CX interrupts before proceeding beyond sensor initialization. Buzzer audio and ESP-NOW control have not been verified.
 
 ## Sources and focused checks
 
@@ -38,6 +41,7 @@ Focused commands:
 ```sh
 cargo test --release -p esp-periph --lib i2c::bmi270
 cargo test --release -p esp-periph --lib i2c::ina3221
+cargo test --release -p esp-periph --lib i2c::vl53l3cx
 cargo test --release -p esp32s3 --lib stampfly
 cargo clippy -p esp-periph -p esp32s3 --all-targets -- -D warnings
 ```

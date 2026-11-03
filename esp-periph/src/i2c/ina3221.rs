@@ -6,16 +6,16 @@ use std::sync::{Arc,Mutex};
 
 pub struct Ina3221State {
     regs:[u16;18], sample:[[f64;2];3], clock_hz:u64, cycle:u64,
-    deadline:Option<u64>, pub conversions:u64,
+    deadline:Option<u64>, asleep:bool, pub conversions:u64,
 }
 impl Ina3221State {
     pub fn new(clock_hz:u64)->Self {
-        let mut s=Self{regs:[0;18],sample:[[0.0;2];3],clock_hz:clock_hz.max(1),cycle:0,deadline:None,conversions:0};s.reset();s
+        let mut s=Self{regs:[0;18],sample:[[0.0;2];3],clock_hz:clock_hz.max(1),cycle:0,deadline:None,asleep:false,conversions:0};s.reset();s
     }
     fn reset(&mut self) {
         self.regs.fill(0);self.regs[0]=0x7127;
         self.regs[7..=12].fill(0x7ff8);self.regs[14]=0x7ffe;
-        self.regs[15]=2;self.regs[16]=0x2710;self.regs[17]=0x2328;self.restart();
+        self.regs[15]=2;self.regs[16]=0x2710;self.regs[17]=0x2328;self.asleep=false;self.restart();
     }
     /// Bus V (0..26 V), shunt V (-163.84..163.8 mV), before the next conversion.
     pub fn set_sample(&mut self,channel:usize,bus_v:f64,shunt_v:f64)->bool {
@@ -41,7 +41,7 @@ impl Ina3221State {
             if mode&1!=0 {self.regs[1+channel*2]=(((self.sample[channel][1]/0.000040).round() as i16)<<3) as u16;}
             if mode&2!=0 {self.regs[2+channel*2]=(((self.sample[channel][0]/0.008).round() as i16)<<3) as u16;}
         }}
-        let count=if mode>=5 {let period=self.period().unwrap_or(1).max(1);let count=(self.cycle-at)/period+1;self.deadline=at.checked_add(count.saturating_mul(period)).filter(|next|*next>self.cycle);count}else{self.deadline=None;1};
+        let count=if mode>=5 {let period=self.period().unwrap_or(1).max(1);let count=(self.cycle-at)/period+1;self.deadline=at.checked_add(count.saturating_mul(period)).filter(|next|*next>self.cycle);count}else{self.deadline=None;self.asleep=true;1};
         self.conversions=self.conversions.saturating_add(count);self.regs[15]|=1;
     }
     fn read_register(&mut self,reg:u8)->u16 {
@@ -52,7 +52,7 @@ impl Ina3221State {
         match reg {
             0 if value&0x8000!=0=>self.reset(),
             0=>{
-                let waking=matches!(self.regs[0]&7,0|4);self.regs[0]=value&0x7fff;self.restart();
+                let waking=self.asleep;self.regs[0]=value&0x7fff;self.restart();self.asleep=self.deadline.is_none();
                 if waking {let recovery=(u128::from(self.clock_hz)*40).div_ceil(1_000_000).min(u128::from(u64::MAX)) as u64;self.deadline=self.deadline.map(|at|at.saturating_add(recovery));}
             },
             7..=12|14|16|17=>self.regs[usize::from(reg)]=value,
@@ -99,6 +99,7 @@ mod tests {
         assert!(state.lock().unwrap().set_sample(1,3.8,0.01));write(&mut d,0,0x2002);
         assert_eq!(state.lock().unwrap().next_deadline(),Some(140));state.lock().unwrap().advance_to(140);
         assert_eq!(read(&mut d,4),3800);assert_eq!(read(&mut d,3),0);assert_eq!(state.lock().unwrap().next_deadline(),None);
+        write(&mut d,0,0x2002);assert_eq!(state.lock().unwrap().next_deadline(),Some(320));state.lock().unwrap().advance_to(320);
         write(&mut d,0,0);state.lock().unwrap().advance_to(100000);assert_eq!(read(&mut d,4),3800);assert_eq!(read(&mut d,15)&1,1);
         write(&mut d,0,0x2002);assert_eq!(state.lock().unwrap().next_deadline(),Some(100180));
         write(&mut d,0,0x8000);assert_eq!(read(&mut d,0),0x7127);assert_eq!(read(&mut d,4),0);assert_eq!(state.lock().unwrap().next_deadline(),Some(106600));

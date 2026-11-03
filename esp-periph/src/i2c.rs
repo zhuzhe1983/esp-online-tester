@@ -16,6 +16,7 @@ pub mod pi4ioe5v6408;
 pub mod cst816s;
 pub mod bmi270;
 pub mod ina3221;
+pub mod vl53l3cx;
 pub mod mpu6886;
 pub mod lp5562;
 pub mod st25r3916;
