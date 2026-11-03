@@ -32,6 +32,8 @@ try {
  for(const invalid of [[[1,0],[2,-1]],[[0,0],[0,2]],[[1,0],[1,6000]],Array.from({length:129},(_,i)=>[1,i])]) {
   metadata={...fixture,derivedParts:[{id:'invalid',kind:'lathe',geometry:{profileMm:invalid}}]};const malformed=createManufacturerModel(product,null);await assert.rejects(malformed.ready,/Invalid lathe profile/);malformed.dispose();
  }
+ const plate={id:'paper-carrier',kind:'plate',color:'#eeeeee',geometry:{outlineMm:[[-5,-4],[5,-4],[5,4],[-5,4]],holesMm:[[[-1,-1],[1,-1],[1,1],[-1,1]]],depthMm:.08,centerMm:[0,0,3]}};
+ metadata={...fixture,derivedParts:[plate]};const paper=createManufacturerModel(product,null);await paper.ready;assert.ok(paper.parts['paper-carrier'].isMesh);assert.equal(paper.parts['paper-carrier'].position.z,3);assert.deepEqual(paper.group.userData.shellMeshes,[]);paper.dispose();
  const lens={id:'rgb-window',kind:'box',color:'#69746a',ledIndex:0,geometry:{sizeMm:[2.8,.4,.1],centerMm:[0,0,4.64]}};
  const recess={id:'hex-recess',kind:'cylinder',geometry:{radiusMm:1,depthMm:.1,radialSegments:6},color:'#111111'};
  metadata={...fixture,derivedParts:[recess]};const screw=createManufacturerModel(product,null);await screw.ready;
@@ -63,6 +65,8 @@ try {
   for(const shell of exposed.group.userData.shellMeshes)applyShellAppearance(shell,{shell:{color:'#8054b3',opacity:.35,finish:'plastic'}});
   assert.equal(board.children[0].material.color.getHexString(),'161e16');assert.equal(board.children[0].material.opacity,1);exposed.dispose();
  }
+ metadata={...fixture,derivedParts:[{id:'small-marker',kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],labelSide:'front',labelSizeMm:[5,1.25],labelOffsetMm:[0,6.5]}}]};const small=createManufacturerModel(product,null);await small.ready;const marker=small.parts['small-marker'].getObjectByName('small-marker-unknown-front');assert.equal(marker.geometry.parameters.width,5);assert.equal(marker.position.y,6.5);small.dispose();
+ for(const labelSizeMm of [null,[0,1],[4],[21,1],[4,17]]){metadata={...fixture,derivedParts:[{kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],labelSizeMm}}]};const invalid=createManufacturerModel(product,null);await assert.rejects(invalid.ready,/Invalid PCB placeholder label dimensions/);invalid.dispose();}
  for(const geometry of [{labelSide:'hidden'},{labelSide:0}]) {
   metadata={...fixture,derivedParts:[{kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],...geometry}}]};const invalid=createManufacturerModel(product,null);await assert.rejects(invalid.ready,/Invalid PCB placeholder label side/);invalid.dispose();
  }
