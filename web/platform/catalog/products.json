@@ -10720,13 +10720,13 @@
       "hardwareRevision": "unspecified",
       "chip": "esp32c5",
       "module": "ESP32-C5HF4",
-      "summary": "ESP32-C5HF4 双频 Wi-Fi 6 模块。保留官方 KiCad 内嵌的真实 PCB 与元件，按实物照片补充带 IPEX 缺口的 RF 屏蔽罩、裸板颜色及标识。",
+      "summary": "ESP32-C5HF4 双频 Wi-Fi 6 模块。保留官方 KiCad 内嵌的真实 PCB 与元件，按实物照片补充带 IPEX 缺口的 RF 屏蔽罩、裸板颜色及标识。 可直接运行 SRAM 裸机应用；完整原厂固件启动尚未实现。",
       "knowledgeUrl": "./knowledge/m5stack-s016.json",
       "runtime": {
-        "board": null,
+        "board": "stamp-c5",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [],
@@ -10745,8 +10745,9 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "Manufacturer populated mechanical STEP retained; CPU/board/peripheral runtime unavailable.",
+        "当前仅支持 ESP32-C5 rev 1.0 的 SRAM app-direct：逻辑 UART0、GPIO 与板载 G28 蓝灯；不是 ROM、Flash/MMU 或 ESP-IDF 启动。",
+        "复位重新载入同一 SRAM 应用；无线、USB、充电控制、模拟供电、PSRAM 和外接设备未实现。",
+        "官方 UIFlow2 尚未验证且不属于该 SRAM 加载范围；内部裸机测试不能代表原厂固件兼容。",
         "保留官方 KiCad 内嵌 STEP 全部 301 个原生组件及 USB 开放曲面，屏蔽罩下方仍有真实 PCB 和元件。",
         "按官方照片补充带 IPEX 缺口的金属屏蔽罩与其标识；罩体高度、壁厚和隐藏卡扣为估算，未作制造精度验证。",
         "红色裸板照片限定在真实板面，USB 与 IPEX 材质按照片区分。S016 背面为裸 FPC 焊盘，未按冲突侧图添加插座。",
@@ -10782,13 +10783,13 @@
       "hardwareRevision": "unspecified",
       "chip": "esp32c5",
       "module": "ESP32-C5HF4",
-      "summary": "独立 S016-DIP 型号，FPC 座出厂已焊。此模型展示官方照片中的排针装配示例；两条 7P 排针随盒散装，不能据此认定出厂已焊。",
+      "summary": "独立 S016-DIP 型号，FPC 座出厂已焊。此模型展示官方照片中的排针装配示例；两条 7P 排针随盒散装，不能据此认定出厂已焊。 可直接运行 SRAM 裸机应用；完整原厂固件启动尚未实现。",
       "knowledgeUrl": "./knowledge/m5stack-s016-dip.json",
       "runtime": {
-        "board": null,
+        "board": "stamp-c5-dip",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [],
@@ -10807,7 +10808,9 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无 ESP32-C5 板级模拟器，模型和资料不能证明固件兼容。",
+        "当前仅支持 ESP32-C5 rev 1.0 的 SRAM app-direct：逻辑 UART0、GPIO 与板载 G28 蓝灯；不是 ROM、Flash/MMU 或 ESP-IDF 启动。",
+        "复位重新载入同一 SRAM 应用；无线、USB、充电控制、模拟供电、PSRAM 和外接设备未实现。",
+        "官方 UIFlow2 尚未验证且不属于该 SRAM 加载范围；内部裸机测试不能代表原厂固件兼容。",
         "模型展示随盒散装排针的用户装配示例；FPC 座出厂已焊，排针不能据此认定出厂已焊。",
         "官方 17.6×19.1×3.4 mm 为模块本体尺寸；含排针示例约17.95×19.06×10.06 mm，属于照片估算。",
         "保留官方 301 个原生组件；屏蔽罩、FPC 与排针补件均记录照片依据及未测量部分。"
@@ -10831,7 +10834,11 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "firmwareReferenceIds": [
+        "m5stack-s016-dip-uiflow2"
+      ],
+      "defaultFirmwareId": "m5stack-s016-dip-uiflow2"
     },
     {
       "id": "m5stack-k151",

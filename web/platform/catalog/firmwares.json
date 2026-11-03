@@ -8933,7 +8933,8 @@
       "hardwareValidated": false,
       "limitations": [
         "官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256。浏览器加载时计算实际摘要，尚未核验镜像布局或运行兼容性。",
-        "启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。"
+        "启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。",
+        "当前 C5 只支持 SRAM app-direct 裸机应用；完整 ROM、Flash/MMU 与 ESP-IDF 启动尚未实现，本 UIFlow2 镜像没有运行兼容结论。"
       ],
       "sources": [
         {
@@ -11739,6 +11740,75 @@
           "checkedAt": "2026-11-03"
         }
       ]
+    },
+    {
+      "id": "m5stack-s016-dip-uiflow2",
+      "productIds": [
+        "m5stack-s016-dip"
+      ],
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "name": "Stamp-C5 DIP UIFlow2 · v2.5.4 · 共用镜像候选",
+      "revision": "v2.5.4",
+      "status": "trial",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001048/versions/2116031291738329089/download"
+      },
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "limitations": [
+        "官方项目明确命名 Stamp-C5，未明确命名 S016-DIP。DIP 与 S016 共用官方电气原理图和 Arduino 入口，此处仅列为共用镜像候选，不代表发布方明确支持 DIP。",
+        "该 UIFlow 镜像不是当前已验证的 C5 SRAM app-direct 测试程序。完整 ROM、IDF、Flash/MMU、无线和 USB 启动尚未实现，不能根据本地 UART/GPIO 测试认定 UIFlow 兼容。",
+        "固定 v2.5.4 下载地址需要 M5Burner 验证码；本次请求返回 HTTP400 / BURN_CAPTCHA_INVALID，未取得 BIN，未核验布局、SHA-256 或运行兼容性。"
+      ],
+      "sources": [
+        {
+          "title": "Device asset mapping basis; not validation of this version",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001048",
+          "checkedAt": "2026-11-01"
+        },
+        {
+          "title": "Automatic device release metadata",
+          "url": "https://burner.m5stack.com/firmware/1897200000000001048",
+          "checkedAt": "2026-11-01"
+        },
+        {
+          "title": "S016-DIP 官方产品页；共用原理图与 Arduino 入口，不是明确 DIP 固件项目声明",
+          "url": "https://docs.m5stack.com/en/core/Stamp-C5_DIP",
+          "checkedAt": "2026-11-04"
+        },
+        {
+          "title": "S016 官方产品页及共用电气依据",
+          "url": "https://docs.m5stack.com/en/core/Stamp-C5",
+          "checkedAt": "2026-11-04"
+        }
+      ],
+      "catalogUpdate": {
+        "watchlistId": "m5-official-uiflow2-s016-dip",
+        "channel": "stable",
+        "format": "merged",
+        "sourceType": "manufacturer-distribution",
+        "version": "v2.5.4",
+        "publishedAt": "2026-10-30T04:55:50Z",
+        "assetName": "uiflow-509a67aa-esp32c5-4mb-stampc5-v2.5.4-20261030.bin",
+        "upstreamUrl": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001048/versions/2116031291738329089/download",
+        "digestSource": "publisher-hash-unavailable",
+        "publisherIdentity": {
+          "provider": "m5burner-v1",
+          "sourceType": "OFFICIAL",
+          "firmwareId": "1897200000000001048",
+          "deviceId": "2093000000000000016",
+          "versionId": "2116031291738329089",
+          "visibility": "PUBLIC",
+          "status": "PUBLISHED"
+        },
+        "layoutVerified": false,
+        "checkedAt": "2026-11-01T03:21:53.928Z"
+      },
+      "watchlistId": "m5-official-uiflow2-s016-dip",
+      "version": "v2.5.4",
+      "compatibility": "unverified",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000001048"
     }
   ]
 }

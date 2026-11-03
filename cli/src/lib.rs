@@ -1,4 +1,4 @@
-//! esp32sim — the command line, one front end for every chip (`--chip esp32|s3|c3|c6|p4`; the `esp32sim-c3`,
+//! esp32sim — the command line, one front end for every chip (`--chip esp32|s3|c3|c5|c6|p4`; the `esp32sim-c3`,
 //! `esp32sim-c6` and `esp32sim-p4` binaries are `--chip c3` / `--chip c6` / `--chip p4`). Parsing and everything a run does are chip-agnostic over
 //! `Machine<S>`; the few flags a chip owns (board, WiFi, camera, PSRAM, register presets) live in
 //! its setup function.
@@ -16,7 +16,7 @@ fn usage(chip: &str) -> ! { help(chip, 2) }
 
 /// `--help` prints this and exits 0; a usage error prints it and exits 2.
 fn help(chip: &str, code: i32) -> ! {
-    eprintln!("usage: esp32sim [--chip esp32|s3|c3|c6|p4] --boot rom|app --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf]... [options]");
+    eprintln!("usage: esp32sim [--chip esp32|s3|c3|c5|c6|p4] --boot rom|app --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf]... [options]");
     eprintln!("       esp32sim --flash-image flash.bin --boot rom [options]            (a whole flash dump instead of the three images)");
     eprintln!("       default chip here: {}; esp32sim-c3, esp32sim-c6 and esp32sim-p4 are --chip c3 / --chip c6 / --chip p4", chip);
     eprintln!();
@@ -25,6 +25,7 @@ fn help(chip: &str, code: i32) -> ! {
     eprintln!("  --board NAME          board model (S3: atech14, waveshare-lcd4b, waveshare-amoled18-v2, waveshare-cam, none;");
     eprintln!("                        C6: waveshare-c6-lcd147, none; P4: waveshare-p4-lcd35, stamp-p4, none; classic: ttgo-tdisplay, esp32dev, none)");
     eprintln!("  --flash-mb N, --psram-mb N   memory sizes (S3 default 8 / 2, C3, C6 and classic 4 / 0, P4 16 / 0)");
+    eprintln!("  --chip c5 --board stamp-c5|stamp-c5-dip --boot app --app SRAM.bin (4 / 0 MiB; SRAM app-direct only)");
     eprintln!("  --max-seconds S       stop after S emulated seconds (always give one: the run returns)");
     eprintln!("  --console usb|uart0|both|none   which consoles to print (uart0 shows the ROM and bootloader)");
     eprintln!("  --wifi ssid=…,psk=…   a virtual access point with DHCP, DNS, NTP and NAT to the host network");
@@ -279,10 +280,11 @@ pub fn run_cli(default_chip: &str) {
         "esp32" => { let m = setup_esp32(&o); run(m, &o) }
         "s3" | "esp32s3" => { let m = setup_s3(&o); run(m, &o) }
         "c3" | "esp32c3" => { let m = setup_c3(&o); run(m, &o) }
+        "c5" | "esp32c5" => { let m = setup_c5(&o); run(m, &o) }
         "c6" | "esp32c6" => { let m = setup_c6(&o); run(m, &o) }
         "p4" | "esp32p4" if p4_rev3(&o) => { let m = setup_p4::<esp32p4::RevGe3>(&o); run(m, &o) }
         "p4" | "esp32p4" => { let m = setup_p4::<esp32p4::RevLt3>(&o); run(m, &o) }
-        c => { eprintln!("--chip {}: esp32, s3, c3, c6 or p4", c); std::process::exit(2) }
+        c => { eprintln!("--chip {}: esp32, s3, c3, c5, c6 or p4", c); std::process::exit(2) }
     }
 }
 
@@ -525,6 +527,22 @@ fn wifi_config(spec: &str, net: &str, net_log: bool) -> (esp_soc::wifi::ApConfig
     (cfg, nat)
 }
 
+fn setup_c5(o: &Opts) -> esp32c5::Machine {
+    if o.flash_mb.unwrap_or(4) != 4 || o.psram_mb.unwrap_or(0) != 0 { usage_error("Stamp-C5 supports exactly 4 MiB Flash and no PSRAM"); }
+    if o.boot.as_deref().is_some_and(|boot| boot != "app") || o.rom.is_some() || o.app.is_none() || o.bootloader.is_some() || o.ptable.is_some() || o.flash_image.is_some() || !o.flash_at.is_empty() {
+        usage_error("C5 currently requires --boot app --app SRAM.bin; ROM/Flash boot and ESP-IDF images are not supported");
+    }
+    for (flag, on) in [("--wifi", o.wifi.is_some()), ("--wifi-nearby", !o.wifi_nearby.is_empty()), ("--ble", o.ble || o.ble_full || !o.ble_nearby.is_empty()), ("--cam-image", o.cam_image.is_some()), ("--cam-stream", o.cam_stream.is_some()), ("--sd", o.sd.is_some()), ("--usb-host", o.usb_host.is_some()), ("--flash-octal", o.flash_octal), ("--efuse-regs", o.efuse_regs.is_some()), ("--regs-init", o.regs_init.is_some()), ("--regstat", o.regstat.is_some())] {
+        if on { usage_error(&format!("{flag} is not available on the C5 SRAM runtime")); }
+    }
+    let mut m = esp32c5::machine(o.mac.unwrap_or([0x30, 0xed, 0xa0, 0x00, 0x11, 0x25]), 4 << 20);
+    let board = if o.board == "atech14" { "stamp-c5" } else { &o.board };
+    m.bus.board = esp32c5::board::make_board(board).unwrap_or_else(|| usage_error(&format!("unknown C5 board '{board}' (stamp-c5, stamp-c5-dip)")));
+    m.bus.attach_board_devices();
+    if !o.debug.is_empty() { let mut f = esp_soc::DebugFlags::from_env(); for d in &o.debug { f.parse(d); } m.set_debug(&f); }
+    m
+}
+
 fn setup_c3(o: &Opts) -> esp32c3::Machine {
     let mut m = esp32c3::machine(o.mac.unwrap_or([0x60, 0x55, 0xf9, 0x00, 0x11, 0x22]), o.flash_mb.unwrap_or(4) << 20);
     let board=if o.board=="atech14" {"none"}else{&o.board};
@@ -743,7 +761,7 @@ fn prepare<S: Soc>(m: &mut Machine<S>, o: &Opts) -> String {
     m.bus.misc().log_unknown = o.log_periph;
     if !o.breaks.is_empty() { m.add_observer(Box::new(Breakpoints { pcs: o.breaks.clone() })); }
     if o.trace { m.add_observer(Box::new(Trace { from: o.trace_from })); }
-    let rom = o.rom.clone().or_else(|| find_rom(S::ROM_ELF));
+    let rom = if S::NAME == "esp32c5" && boot == "app" { None } else { o.rom.clone().or_else(|| find_rom(S::ROM_ELF)) };
     match &rom {
         Some(r) => match std::fs::read(r) { Ok(d) => { m.load_rom(&d).expect("rom"); eprintln!("[emu] ROM loaded from {}", r.display()); } Err(e) => eprintln!("[emu] no ROM ({}): {}", r.display(), e) },
         None if boot == "rom" => { eprintln!("[emu] no {} mask ROM ELF found (pass --rom, or use --boot app)", S::NAME); std::process::exit(2) }
@@ -807,7 +825,7 @@ fn prepare<S: Soc>(m: &mut Machine<S>, o: &Opts) -> String {
     if let Some(c) = o.reset_cause { m.bus.set_reset_cause(c); }
     if let Some(v) = o.strap { m.bus.set_strap(v); }
     for &(a, n) in &o.peeks { eprintln!("[peek before run]\n{}", m.peek(a, n)); }
-    m.dbg.stop_after_exceptions = o.stop_exc;
+    m.dbg.stop_after_exceptions = o.stop_exc.min(S::EXCEPTION_BUDGET_AFTER_RESET.unwrap_or(u64::MAX));
     m.console.mask = console_mask(&console);
     m.console.prefix = o.console_prefix;
     if let Some(p) = &o.regtrace { m.add_observer(Box::new(RegTrace::new(std::fs::File::create(p).expect("regtrace file"), o.regtrace_max, o.regtrace_from_pc))); }

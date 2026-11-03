@@ -225,7 +225,8 @@ onmessage = async (ev) => {
       if (emu !== 0 && wasm.esp32sim_cpu_hz) CPU_HZ = wasm.esp32sim_cpu_hz(emu);
       const audioAvailable=!!(emu&&wasm.esp32sim_audio_input_state&&wasm.esp32sim_audio_input_state(emu,0)>0);
       if(emu&&m.audioStreaming&&wasm.esp32sim_audio_output_streaming)wasm.esp32sim_audio_output_streaming(emu,1);
-      postMessage({ created: emu !== 0, audioAvailable, networkAvailable:!!wasm.esp32sim_softap_configure&&!!wasm.esp32sim_ethernet_relay, flashStorage: !!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
+      const c5 = ['stamp-c5','stamp-c5-dip'].includes(m.board);
+      postMessage({ created: emu !== 0, clockHz:CPU_HZ, audioAvailable, networkAvailable:!c5&&!!wasm.esp32sim_softap_configure&&!!wasm.esp32sim_ethernet_relay, flashStorage: !c5&&!!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
     }
     else if(m.op.startsWith('network-')) {
       try {
