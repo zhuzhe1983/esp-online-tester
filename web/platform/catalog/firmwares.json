@@ -22,12 +22,12 @@
       "simulationVerified": false,
       "hardwareValidated": false,
       "storage": "remote-links-only",
-      "compatibility": "unverified",
+      "compatibility": "partial",
       "publicationUrl": "https://docs.m5stack.com/en/app/StampFly_v1.1",
       "limitations": [
         "与 K138-V11 官网 Easyloader 内嵌的 861360 字节镜像完全相同，已核对 ESP32-S3 芯片、8MB 容量和完整启动布局。",
-        "本次未执行或刷写；只有该产品板级模型存在时才允许尝试。",
-        "硬件 v1.1 与固件版本 v1.0.0 分别记录；不能自动替换为通用 M5Burner v1.1.0。"
+        "原生及浏览器执行均完成双 ToF、BMI270 初始化；G0 可触发固件软件复位并再次启动。此版本未开启 G38，Stamp-S3A 模块 RGB 保持熄灭，载板 RGB 正常输出。",
+        "硬件 v1.1 与固件版本 v1.0.0 分别记录；不能自动替换为通用 M5Burner v1.1.0。未实现遥控飞行闭环，保留试运行，未实机验证。"
       ],
       "sources": [
         {
@@ -1691,11 +1691,12 @@
       "simulationVerified": false,
       "hardwareValidated": false,
       "storage": "remote-links-only",
-      "compatibility": "unverified",
+      "compatibility": "partial",
       "publicationUrl": "https://docs.m5stack.com/en/app/StampFly",
       "limitations": [
-        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+        "已核对官方镜像 SHA-256 与完整启动布局；原生及浏览器执行均完成双 ToF、BMI270 初始化，G0 按键可触发固件软件复位并再次启动。",
+        "未配对遥控器时四路电机 PWM 占空比为零；尚未实现 ESP-NOW 遥控、飞行动力学及完整传感器行为，因此保留试运行。",
+        "内部诊断固件另行验证按键、三颗 RGB、四路 PWM 与虚拟 IMU 输入；这不代表官方固件的飞行功能已通过。未实机验证。"
       ],
       "sources": [
         {
@@ -4707,8 +4708,8 @@
         }
       ],
       "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+        "官方源码与开发入口；已固定并测试的出厂镜像另列为默认固件，本条不提供可执行二进制。",
+        "不同分支或新构建仍须单独核对版本、分区与对应硬件；本条不继承出厂镜像的执行结果。"
       ]
     },
     {
