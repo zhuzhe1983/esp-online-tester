@@ -3667,17 +3667,19 @@
       "chip": "esp32s3",
       "module": "ESP32-S3-PICO-1-N8R8",
       "runtime": {
-        "board": null,
+        "board": "stamps3bat",
         "flashMb": 8,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial"
       },
       "display": null,
       "controls": [
         {
-          "id": "button",
-          "name": "Documented physical button",
-          "type": "button"
+          "id": "power",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "name": "PWR（状态读取）"
         }
       ],
       "interfaces": [
@@ -3774,7 +3776,7 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "部分板级模型：SDA48/SCL47 上的 M5PM1 寄存器、GPIO0 NeoPixel RGB565 刷新与 LED 电源；PWR 仅支持固件禁用自动单击复位及双击关机后的状态轮询。物理关机、复位、下载模式、模拟充电及网络未模拟。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-s015-dip.json",
@@ -3794,7 +3796,8 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-s015-dip-uiflow2"
     },
     {
       "id": "m5stack-k134",

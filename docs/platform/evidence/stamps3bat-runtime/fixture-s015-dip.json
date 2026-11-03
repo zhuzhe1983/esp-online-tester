@@ -1,0 +1,211 @@
+{
+  "checkedAt": "2026-11-03T20:57:53.927Z",
+  "command": "node tools/probe-stamps3bat.mjs --build <fixture-build-directory> --product m5stack-s015-dip",
+  "backend": "actual-wasm-worker",
+  "productId": "m5stack-s015-dip",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "wasmSha256": "36d572dc61ef70c541f50ef4dbc11aaca021090369b30a9b0f2180d587ab449e",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+    "stamps3bat_fixture.bin": "397c991e29f63532978e0377900f299dc733e90d90bdfbc67fd7c20c7e66a4bc",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [
+    "real-ROM-boot-with-8MB-Octal-PSRAM-memory-test",
+    "M5PM1-identity-default-rails-and-wrong-address-and-wrong-pins-NACK",
+    "RGB565-buffer-needs-refresh-gated-by-PM1-supply-and-GPIO0-mode",
+    "RMT21-does-not-drive-PM1-LED-and-restored-power-needs-fresh-refresh",
+    "fresh-physical-PM1-button-status-and-read-clear-flag-drive-guest-RGB",
+    "no-invented-G0-user-button-or-framebuffer",
+    "pause-halts-guest-time-output-and-rejects-new-press",
+    "platform-reset-clears-held-PM1-button-buffer-and-power-state"
+  ],
+  "stages": [
+    {
+      "name": "POWER_OFF",
+      "leds": [
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "name": "POWER_ON_NO_REFRESH",
+      "leds": [
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "name": "RED",
+      "leds": [
+        [
+          255,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "name": "BUFFER_GREEN_RMT21_IGNORED",
+      "leds": [
+        [
+          255,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "name": "POWER_CUT",
+      "leds": [
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "name": "RESTORED_NO_REFRESH",
+      "leds": [
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "name": "GREEN_REFRESH",
+      "leds": [
+        [
+          0,
+          255,
+          0
+        ]
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "step": 1,
+      "leds": [
+        [
+          0,
+          255,
+          0
+        ]
+      ],
+      "press": [
+        "S3BAT_BUTTON 1 FIRST 81 SECOND 01",
+        "S3BAT_BUTTON 1 FIRST 81 SECOND 01",
+        "S3BAT_OUTPUT 1",
+        "S3BAT_OUTPUT 1"
+      ],
+      "release": [
+        "S3BAT_BUTTON 0 FIRST 00 SECOND 00",
+        "S3BAT_BUTTON 0 FIRST 00 SECOND 00"
+      ]
+    },
+    {
+      "step": 2,
+      "leds": [
+        [
+          0,
+          0,
+          255
+        ]
+      ],
+      "press": [
+        "S3BAT_OUTPUT 2",
+        "S3BAT_OUTPUT 2"
+      ],
+      "release": [
+        "S3BAT_BUTTON 0 FIRST 00 SECOND 00",
+        "S3BAT_BUTTON 0 FIRST 00 SECOND 00"
+      ]
+    },
+    {
+      "step": 3,
+      "leds": [
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "press": [
+        "S3BAT_BUTTON 1 FIRST 81 SECOND 01",
+        "S3BAT_BUTTON 1 FIRST 81 SECOND 01",
+        "S3BAT_OUTPUT 3",
+        "S3BAT_OUTPUT 3"
+      ],
+      "release": [
+        "S3BAT_BUTTON 0 FIRST 00 SECOND 00",
+        "S3BAT_BUTTON 0 FIRST 00 SECOND 00"
+      ]
+    },
+    {
+      "step": 0,
+      "leds": [
+        [
+          255,
+          0,
+          0
+        ]
+      ],
+      "press": [
+        "S3BAT_BUTTON S3BAT_BUTTON 1 FIRST 81 SECOND 01",
+        "S3BAT_OUTPUT 0",
+        "S3BAT_OUTPUT 0"
+      ],
+      "release": [
+        "S3BAT_BUTTON 0 FIRST 00 SECOND 00",
+        "S3BAT_BUTTON 0 FIRST 00 SECOND 00"
+      ]
+    }
+  ],
+  "limitations": [
+    "This is not manufacturer firmware or a claim of official UIFlow compatibility.",
+    "PM1 physical-button polling requires guest disabling automatic reset/off. Autonomous PMIC reset, shutdown, download, IRQ/click timing, charging, optical response and networking are not modeled.",
+    "RGB565 is presented using full-range 8-bit channel expansion; this is not measured LED brightness."
+  ],
+  "guestSeconds": 7.04,
+  "serialEvidence": [
+    "I (79) esp_psram: SPI SRAM memory test OK",
+    "I (79) esp_psram: SPI SRAM memory test OK",
+    "S3BAT_PSRAM 8388608",
+    "S3BAT_PSRAM 8388608",
+    "S3BAT_IDENT 50 20 05 06 POWER 07",
+    "S3BAT_IDENT 50 20 05 06 POWER 07",
+    "S3BAT_WRONG_ADDRESS NACK",
+    "S3BAT_WRONG_PINS NACK",
+    "S3BAT_WRONG_ADDRESS NACK",
+    "S3BAT_WRONG_PINS NACK",
+    "S3BAT_STAGE POWER_OFF",
+    "S3BAT_STAGE POWER_OFF",
+    "S3BAT_STAGE POWER_ON_NO_REFRESH",
+    "S3BAT_STAGE POWER_ON_NO_REFRESH",
+    "S3BAT_STAGE RED",
+    "S3BAT_STAGE RED",
+    "S3BAT_STAGE BUFFER_GREEN_RMT21_IGNORED",
+    "S3BAT_STAGE BUFFER_GREEN_RMT21_IGNORED",
+    "S3BAT_STAGE POWER_CUT",
+    "S3BAT_STAGE POWER_CUT",
+    "S3BAT_STAGE RESTORED_NO_REFRESH",
+    "S3BAT_STAGE RESTORED_NO_REFRESH",
+    "S3BAT_STAGE GREEN_REFRESH",
+    "S3BAT_STAGE GREEN_REFRESH",
+    "S3BAT_READY",
+    "S3BAT_READY",
+    "S3BAT_BUTTON 0 FIRST 00 SECOND 00",
+    "S3BAT_BUTTON 0 FIRST 00 SECOND 00"
+  ],
+  "status": "pass"
+}
