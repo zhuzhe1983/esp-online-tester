@@ -2,6 +2,7 @@ import {hasMotorOutput,STAMPFLY_MOTORS} from './motor-state.js';
 
 // Read-only guest output. LED numbers identify chain order, not photo positions.
 export function mountMotorOutputs({container,runtime}) {
+  container.hidden=true;
   const panel=document.createElement('details');panel.className='motor-output-panel';panel.hidden=true;
   const title=document.createElement('summary');title.textContent='电机与灯光输出';panel.append(title);
   const rows=document.createElement('div');rows.className='motor-output-grid';panel.append(rows);
@@ -15,7 +16,7 @@ export function mountMotorOutputs({container,runtime}) {
   const updateMotors=values=>{for(let i=0;i<motors.length;i++){const value=values?.find(m=>m.id===STAMPFLY_MOTORS[i].id);motors[i].textContent=value?`${(value.duty*100).toFixed(1)}% · ${(value.frequencyHz/1000).toFixed(2)} kHz`:'等待固件输出';}};
   const updateLeds=values=>{for(let i=0;i<leds.length;i++){const rgb=values?.[i],{swatch,value}=leds[i];swatch.style.backgroundColor=rgb?`rgb(${rgb.join(',')})`:'transparent';value.textContent=rgb?rgb.join(', '):'—';}};
   const unsubscribe=runtime.subscribe(event=>{
-    if(event.type==='state'){active=hasMotorOutput(event.state.product?.runtime?.board);panel.hidden=!active;updateMotors(active?event.state.motors:[]);updateLeds(active?event.state.leds:[]);}
+    if(event.type==='state'){active=hasMotorOutput(event.state.product?.runtime?.board);container.hidden=panel.hidden=!active;updateMotors(active?event.state.motors:[]);updateLeds(active?event.state.leds:[]);}
     else if(active&&event.type==='motors')updateMotors(event.motors);
     else if(active&&event.type==='leds')updateLeds(event.leds);
   });
