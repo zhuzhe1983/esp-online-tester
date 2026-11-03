@@ -194,9 +194,10 @@ const IOMUX_OFFSETS: [u32; 40] = [
     0x1c, 0x20, 0x14, 0x18, 0x04, 0x08, 0x0c, 0x10,
 ];
 
-/// Pads whose IO_MUX function 0 is GPIO as function 2 is: `FUNC_GPIO18_GPIO18_0` and its kin in
-/// IDF v5.3.3 and v5.5.4 components/soc/esp32/include/soc/io_mux_reg.h. Reset leaves them at 0, and
-/// esp-idf-hal's `PinDriver::output` only calls `gpio_set_direction`, so firmware drives them there.
+/// Pads whose IO_MUX function 0 is GPIO as function 2 is: IDF v5.5.4
+/// register/soc/io_mux_reg.h:115-358, `FUNC_GPIO0_GPIO0_0` to `FUNC_GPIO39_GPIO39_0`.
+/// Reset leaves them at 0. Before IDF v5.5.2, `gpio_set_direction` never set the function, so
+/// esp-idf-hal's `PinDriver::output` on those IDFs drives them at 0; v5.5.4 gpio.c:222-229 sets 2.
 const GPIO_AT_FUNCTION_0: u64 = 1 | 1 << 2 | 0b11 << 4 | 0xfff << 16 | 0xff << 32;
 
 #[cfg(test)]
