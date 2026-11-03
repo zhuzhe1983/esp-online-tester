@@ -494,19 +494,20 @@ function renderControls() {
   }
   if (!controls.length && bindings) bindings.append(element('span', 'helper', '此设备没有可映射的按键。'));
   for (const control of controls) {
+    const name = (typeof control.name === 'string' && control.name.trim()) || control.id;
     const code = Object.keys(scene.keyMapping).find(key => scene.keyMapping[key] === control.id);
     if (bindings) {
-      const row = element('div', 'key-binding'); row.append(element('span', '', control.type==='matrix-key'||!Number.isInteger(control.pin)?control.name:`${control.name} · GPIO ${control.pin}`));
-      const binding = element('button', '', code ? code.replace(/^Key/, '') : '未映射'); binding.type = 'button'; binding.setAttribute('aria-label', `重新映射 ${control.name} 的键盘按键`);
+      const row = element('div', 'key-binding'); row.append(element('span', '', control.type==='matrix-key'||!Number.isInteger(control.pin)?name:`${name} · GPIO ${control.pin}`));
+      const binding = element('button', '', code ? code.replace(/^Key/, '') : '未映射'); binding.type = 'button'; binding.setAttribute('aria-label', `重新映射 ${name} 的键盘按键`);
       binding.addEventListener('click', () => {
         recordingControl = control.id; document.querySelectorAll('.key-binding button').forEach(node => node.classList.remove('recording'));
         binding.classList.add('recording'); binding.textContent = '请按键';
       }); row.append(binding); (control.type==='matrix-key'?matrixBindings:bindings).append(row);
     }
     if (buttons) {
-      const button = element('button', 'device-button'); button.dataset.control = control.id; button.setAttribute('aria-label', `按住 ${control.name}`);
-      const label=control.type==='matrix-key'?control.name.split(' / ')[0]:control.name.replace('Button ', '按键 ');
-      button.append(document.createTextNode(({Backspace:'⌫',Enter:'↵',Space:'␣',Shift:'⇧'})[label]||label));button.title=control.name+(code?` · ${code}`:''); if (code) button.append(element('kbd', '', code.replace(/^Key/, '')));
+      const button = element('button', 'device-button'); button.dataset.control = control.id; button.setAttribute('aria-label', `按住 ${name}`);
+      const label=control.type==='matrix-key'?name.split(' / ')[0]:name.replace('Button ', '按键 ');
+      button.append(document.createTextNode(({Backspace:'⌫',Enter:'↵',Space:'␣',Shift:'⇧'})[label]||label));button.title=name+(code?` · ${code}`:''); if (code) button.append(element('kbd', '', code.replace(/^Key/, '')));
       button.addEventListener('pointerdown', event => { if (event.button !== 0) return; event.preventDefault(); button.setPointerCapture(event.pointerId); sendInput({type: 'button', id: control.id, pressed: true}, `pointer:${event.pointerId}`); });
       for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(type, event => sendInput({type: 'button', id: control.id, pressed: false}, `pointer:${event.pointerId}`));
       button.addEventListener('click', event => { if (event.detail === 0) { void sendInput({type: 'button', id: control.id, pressed: true}, 'activation'); void sendInput({type: 'button', id: control.id, pressed: false}, 'activation'); } }); if(control.type==='matrix-key'){button.classList.add('matrix-key');button.style.gridRow=control.row+1;button.style.gridColumn=control.column+1;matrixButtons.append(button);}else buttonTarget.append(button);
