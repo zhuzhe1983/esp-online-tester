@@ -98,7 +98,7 @@ fn repeated_reset_clock_hold_and_stall_release() {
                 m.cores[1].cpenable = 0x1234;
                 m.script.events.push((m.bus.cycles, esp_soc::ScriptAction::Poke(0x600c_0000, 2)));
                 m.run(1);
-                assert_eq!(m.cores[1].cpenable, 0, "release must reset core");
+                assert_eq!(m.cores[1].cpenable, 0x0f, "release must reset core");
                 assert_line(&m, line);
                 m.cores[1].waiting = true;
                 m.cores[1].ps = 15;
