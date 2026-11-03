@@ -20,7 +20,7 @@ before capturing the public 3D canvas. No host API sets a lamp color.
 
 For each SKU, all five off captures are byte-identical and all three on
 captures are byte-identical. S016 changes 181 pixels (180 blue-dominant);
-S016-DIP changes 180 pixels (180 blue-dominant). Every changed pixel lies within
+S016-DIP changes 180 pixels (179 blue-dominant). Every changed pixel lies within
 the projected native D1 face with a two-pixel rounding/antialias allowance.
 The C/charging lamp and the rest of the canvas remain unchanged. Each SKU's
 `blue-led-runtime.json` retains guest output, input acknowledgements, actual
@@ -47,3 +47,13 @@ polls/asserts the actual expected LED state; a serial echo alone can arrive
 before the corresponding LED publication. This check does not establish
 hardware photometry, clock accuracy, RF operation, stock ROM boot or UIFlow
 compatibility. The protocol fixture is not a factory firmware substitute.
+
+The later runtime-note edits change only each model's `limitations`. Complete
+model objects, excluding only that key, compare identically. Both plans also
+refresh importer runtime defaults to the exact board, 4 MiB Flash, 0 PSRAM and
+partial status; the remaining complete plan objects are identical after
+excluding those two catalog fields and limitations. These are runtime-profile
+defaults, not new physical hardware measurements. Per-SKU
+`runtime-note-carry-forward.json` records all before/after hashes. Original
+tested hashes remain recorded with explicit applicability to the current
+models. No new browser capture or rebuild is claimed for these metadata edits.

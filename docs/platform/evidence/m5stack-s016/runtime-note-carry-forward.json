@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-03T22:01:54Z",
+  "productId": "m5stack-s016",
+  "change": "Clarify the verified SRAM app-direct boundary and refresh the plan import runtime defaults to prevent reimport restoring unavailable.",
+  "method": "Compare complete model objects after removing only top-level limitations. Compare complete plan objects after removing only limitations, catalog.runtime and catalog.psramMb. Hash canonical sorted UTF-8 JSON of every remaining field. This includes all geometry, source transforms, materials, textures, controls and review cameras; no selected-subset comparison.",
+  "files": {
+    "model.json": {
+      "beforeSha256": "47aa7a85e0828284ff50adfa37b125046a7fe43c9245bc1585a3e1b683c1a4b3",
+      "afterSha256": "84f474e24fd4cff4f4c2be2e4c3e42a99f58c5de1f2fa819a892a356d4a07239",
+      "excludedPaths": [
+        "limitations"
+      ],
+      "completeRemainingObjectSha256": "6751d6bb7420ab772319dc808a1db5e638dcbcf90eea8dabb75c0a5403542b25",
+      "allOtherPropertiesIdentical": true,
+      "beforeLimitation": "Manufacturer populated mechanical STEP retained; mechanical evidence does not establish firmware behavior.",
+      "afterLimitation": "Manufacturer populated PCB retained. ESP32-C5 has partial SRAM app-direct support; a source-built fixture verifies UART0 IRQ and the GPIO28 blue LED. Stock ROM/flash boot and stock UIFlow remain unsupported."
+    },
+    "model-plan.json": {
+      "beforeSha256": "d457e612bbfb27a3c61f45d4649431f752797f6e4afc3736d476dce43a4f78b3",
+      "afterSha256": "96037110edec1308801095ab189f7d50b6a6112ae48fd1255393fa0e379194e7",
+      "excludedPaths": [
+        "limitations",
+        "catalog.runtime",
+        "catalog.psramMb"
+      ],
+      "completeRemainingObjectSha256": "5612c1fcbcbe41b5373ef13d477854afbc5d1e68f1316b7da9083dd4a3df30c3",
+      "allOtherPropertiesIdentical": true,
+      "beforeLimitation": "Manufacturer populated mechanical STEP retained; mechanical evidence does not establish firmware behavior.",
+      "afterLimitation": "Manufacturer populated PCB retained. ESP32-C5 has partial SRAM app-direct support; a source-built fixture verifies UART0 IRQ and the GPIO28 blue LED. Stock ROM/flash boot and stock UIFlow remain unsupported.",
+      "runtimeDefaults": {
+        "before": null,
+        "after": {
+          "board": "stamp-c5",
+          "flashMb": 4,
+          "psramMb": 0,
+          "status": "partial"
+        },
+        "flatPsramMbBefore": null,
+        "flatPsramMbAfter": 0,
+        "scope": "Importer runtime profile only, not a new physical hardware measurement; SRAM-only scope is in limitations."
+      }
+    }
+  },
+  "geometrySha256": "bf2af24e5f4e43eade931cfc065e1b24e701b1188532e41c8cf069975682c196",
+  "evidenceScope": "Earlier browser captures and offline rebuild apply through complete model non-limitations equality and explicit non-rendering plan metadata equality. No fresh browser run or offline rebuild is claimed for these metadata edits. Actual tested hashes and original captures remain recorded.",
+  "baselineAssetCommit": "7ffe2997"
+}
