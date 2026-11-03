@@ -1,49 +1,26 @@
-# M5Stack Stamp-C3 Mate · K056 外观与知识入库
+# Stamp-C3 Mate（K056）模型核验
 
-ESP32-C3 控制模块套装，具有 USB-C 下载、按键、RGB LED、3D 天线与 2.54mm GPIO 扩展。
+K056 是包含一块 Stamp-C3 的套件。[官方说明](https://docs.m5stack.com/en/core/Stamp-C3_Mate)把模块、12P/10P 公母排针、HY2.0 插座和扳手分列；模型保留模块本体，散件没有被推断为已焊接。厂家 K056 外盖 STL 与 C056-B 外盖逐字节一致，但仍保留 K056 自己的来源 URL、4,172 个原始三角面和毫米比例。
 
-来源：[官方产品文档](https://docs.m5stack.com/en/core/Stamp-C3_Mate)，M5_Hardware 固定 `e29c139cbc7c80b5ccc5557e5ab8025a7a19a109`。逐源 URL、UTC、SHA-256、下载状态见 [knowledge](../../../web/platform/knowledge/m5stack-k056.json) 与 [source audit](../evidence/m5stack-k056/source-audit.json)。旧抓取保留原始时间，不伪造刷新日期。
+K056 的耐高温纸贴继续使用其独立官方照片，另有薄纸片承托；有效边界位于外盖内，中心孔遮罩避开螺丝。中央轴由 CAD 和独立尺寸图共同确定为 `[0,2] mm`，可见内六角沉头螺丝和黄铜螺柱与孔同心。隐藏螺纹、内部固定结构和照片无法确认的元件布局保持未知。
 
-Original manufacturer components selected from assembled cluster; other components excluded with reasons. One rigid global transform, no scaling.
+黑色 PCB 背面照片明确来自套件所含的 Stamp-C3 模块，原来源是 C056-B 图库。K056 和 C056-B 的裸板照片及外盖文件 hash 相同；这项复用不把 C056-B 包装图冒充 K056。背面按四个端部针孔和官方 2.54 mm 间距校正，中心孔独立误差约 0.15 mm。原图内板子只有约两百多像素，放大不会增加细节。正面布局保留 `UNKNOWN`，可在公开页面“分开查看”后旋转查看。
 
-[model-plan.json](../../../web/platform/assets/m5stack-k056/model-plan.json) 记录组件选择、刚体变换、照片裁切、纹理投影与估算表面；厂家几何不缩放。STL 保留源三角形；STEP 使用 OpenCascade7.8.1.1 以0.05mm弦偏差/0.2rad角度细分。UNKNOWN 是中性占位，未编造 PCB 走线或未核实电子元件。
+| 检查 | 结果 |
+| --- | --- |
+| 厂家外盖 | 20×34×4.5 mm；4,172 个三角面，源误差 0 mm |
+| 独立产品图 | 20×34×4.6 mm、1.0 mm 板厚；原 CAD 不缩放 |
+| 正面外形 | IoU 0.987673，通过 0.95 门槛；不代表内部 CAD 完整 |
+| 纸边、孔洞与硬件 | 原色、金色、紫透、侧视和拆开展示复核 |
+| 公开检查入口 | 分开查看、旋转、恢复视角、反复切换通过；局部位置十次恢复无漂移 |
+| 离线重建 | 13 个资源 hash 及模型 JSON 完全一致 |
 
-| 检查 | 实测或误差 mm | 目标 mm | 结果 |
-| --- | ---: | ---: | --- |
-| shell source-fidelity | 0.0 | 0 | 通过 |
-| width | 20.0 | 20 | 通过 |
-| height | 34.0 | 34 | 通过 |
-| depth | 4.525000095367432 | 4.6 | 通过 |
-
-实际平台 `manufacturer-model.js` 的 headless 渲染与原照片对照在 [verification.json](../evidence/m5stack-k056/verification.json)：
-
-- front-oblique: qualitative-only; IoU 0.6163887144997172
-- side: qualitative-only; IoU 0.7880807311500381
-
-正反视图只有照片确属近正投影且原始型号一致时才用0.95轮廓门槛。侧视/斜视保留为定性检查，不以轮廓掩盖标签、组件或装配差异。引用照片的纹理不是独立验证依据；未通过/缺失项不会改写成通过。
-
-厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 unavailable，官方固件入口仅参考，未验证版本/hash/镜像不填猜测值。
-
-重生成：
+[来源审计](../evidence/m5stack-k056/source-audit.json)、[机械记录](../evidence/m5stack-k056/mechanical-refresh.json)、[验证记录](../evidence/m5stack-k056/verification.json)和[外观对照](../evidence/m5stack-k056/appearance-review.webp)保留来源身份、照片误差与当前限制。官方链接的 LCEDA 元件页返回 HTTP 418，没有核实到完整板级实体，故未宣称有完整 PCB CAD。旧按键记录缺少名称造成公开页面切换报错，已最小补充 `Button`，保留原控件 ID，后续运行时映射单独迁移。
 
 ```sh
-python tools/onboard-lane-01.py prepare --ids m5stack-k056
-python tools/onboard-lane-01.py build --ids m5stack-k056
+python tools/rebuild-product-model.py plan m5stack-k056
+python tools/rebuild-product-model.py build m5stack-k056 --scratch /tmp/k056-model-rebuild
+node --test tools/platform-knowledge-test.mjs tools/platform-manufacturer-model-test.mjs tools/platform-plate-geometry-test.mjs tools/platform-model-inspection-test.mjs
 ```
 
-通过受跟踪的 headless 浏览器打开 `web/platform/review-lane-01.html?id=m5stack-k056`；按 model reviewViews 保存800×800正反侧画布到 `output/playwright/m5stack-k056-front.png` 等，再运行：
-
-```sh
-python tools/onboard-lane-01.py verify --ids m5stack-k056
-python tools/onboard-lane-01.py publish --ids m5stack-k056
-```
-
-当前限制：
-
-- Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.
-- No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.
-- PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.
-- Manufacturer STL is the shell only. PCB, USB connector and antenna details are absent; neutral UNKNOWN board replaces none of the unavailable components.
-- K056 is a Mate kit; loose headers/accessories are not shown as soldered parts.
-- Official4.6mm product depth differs from4.5mm cover; measured gap retained.
-- Visible USB body/antenna face are separately marked photo-informed estimates. PCB remains neutral UNKNOWN, with no invented components/traces.
+模型仍为 `partial`。厂家 CAD 保留其 MIT 许可；照片和衍生贴图没有已核实的独立开放许可，不套用项目 MIT。此处只验证外观、几何和查看交互，不作为固件执行证据。
