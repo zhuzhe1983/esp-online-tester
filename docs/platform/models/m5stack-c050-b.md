@@ -1,54 +1,23 @@
-# M5Stack Stamp-Pico · C050-B 外观与知识入库
+# Stamp-Pico · C050-B 模型
 
-ESP32-PICO-D4 Stamp 核心模块五件装；与含下载器的 K051-B DIY Kit 分开维护。
+C050-B 是五件装核心模块，本视图展示其中一件；K051 Mate 与 K051-B DIY Kit 的包装和散件保持独立。
 
-来源：[官方产品文档](https://docs.m5stack.com/en/core/Stamp-Pico)，M5_Hardware 固定 `e29c139cbc7c80b5ccc5557e5ab8025a7a19a109`。逐源 URL、UTC、SHA-256、下载状态见 [knowledge](../../../web/platform/knowledge/m5stack-c050-b.json) 与 [source audit](../evidence/m5stack-c050-b/source-audit.json)。旧抓取保留原始时间，不伪造刷新日期。
+厂家 [Stamp-Pico STL](https://github.com/m5stack/M5_Hardware/blob/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/C050-B_Stamp-Pico/Structures/Stamp-Pico.stl) 的原始三角形和刚体变换保留不变。模型补充了黑色 PCB 轮廓、通孔与背面官方照片、独立薄纸贴承载面，以及官网明确列出的 M2×4 沉头内六角螺丝。纸贴按真实照片跨过盖板下方槽口，螺丝孔保持通透；背面只补可见金属环，不猜测隐藏螺柱。
 
-Retained source assembled cluster; only the recorded rigid rotation and translation are applied. Original millimetres and relative positions preserved.
+PCB 厚度 1 mm、固定孔 Ø2.1 mm、焊盘孔 Ø0.85 mm 与 2.54 mm 孔距来自[官方尺寸图](https://static-cdn.m5stack.com/resource/docs/products/core/stamp_pico/stamp_pico_size_01.webp)。板形细节和 Z 位置、纸厚、螺丝头细节、背面金属环厚度仍有照片或装配估算。官方 Altium 文件是外部 PCB 模板，组件及 3D 模型流为空；它不能证明完整板级 CAD。照片只说明背面外观，未知元件面保留 `UNKNOWN`。
 
-[model-plan.json](../../../web/platform/assets/m5stack-c050-b/model-plan.json) 记录组件选择、刚体变换、照片裁切、纹理投影与估算表面；厂家几何不缩放。STL 保留源三角形；STEP 使用 OpenCascade7.8.1.1 以0.05mm弦偏差/0.2rad角度细分。UNKNOWN 是中性占位，未编造 PCB 走线或未核实电子元件。
+在正式页面点击“分开查看”，再拖动旋转，可读到板面上的 `UNKNOWN`；“恢复装配”、恢复视角、切换 2D 和更换产品均会归位。金色和半透明紫色只改变外壳，纸贴、PCB 与紧固件保留各自材质。展开距离 12 mm 是观察间距，不是实际拆解行程。
 
-| 检查 | 实测或误差 mm | 目标 mm | 结果 |
-| --- | ---: | ---: | --- |
-| cad-component-0 source-fidelity | 3.433227533378158e-07 | 0 | 通过 |
-| cad-component-1 source-fidelity | 1.0490417512443173e-07 | 0 | 通过 |
-| width | 18.0 | 18 | 通过 |
-| height | 24.027936935424805 | 24 | 通过 |
-| depth | 4.400000095367432 | 4.6 | 未通过 |
+[本次验证记录](../evidence/m5stack-c050-b/model-refresh-2026-11-04.json)保存最终资产哈希、照片对照、材质与紧固件近景、正式页面操作和逐像素承载面检查。两个纹理的有效像素均未超出承载面或进入通孔；仅允许一个纹理像素的取整余量（约 0.03 mm）。[旧验证记录](../evidence/m5stack-c050-b/verification-before-refresh.json)保留旧资产结果；未带 `refresh-` 前缀的旧对照图属于此前版本。
 
-实际平台 `manufacturer-model.js` 的 headless 渲染与原照片对照在 [verification.json](../evidence/m5stack-c050-b/verification.json)：
+原 CAD 宽 18 mm、高约 24.028 mm；原 CAD 厚 4.4 mm 与官方整机 4.6 mm 的差异保留，未拉伸厂家模型。本次仍为部分外观还原，没有完整制造级或实机验证，也不代表固件执行兼容。
 
-- covered-front: qualitative-only; IoU 0.44028638292140887
-- component-side: qualitative-only; IoU 0.9568273910499063
-- board-back: qualitative-only; IoU 0.9599687992111499
-- covered-angle: qualitative-only; IoU 0.19696218722519787
-
-正反视图只有照片确属近正投影且原始型号一致时才用0.95轮廓门槛。侧视/斜视保留为定性检查，不以轮廓掩盖标签、组件或装配差异。引用照片的纹理不是独立验证依据；未通过/缺失项不会改写成通过。
-
-厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 unavailable，官方固件入口仅参考，未验证版本/hash/镜像不填猜测值。
-
-重生成：
+复现使用固定输入，默认不访问网络：
 
 ```sh
-python tools/onboard-lane-01-extra.py prepare --ids m5stack-c050-b
-python tools/onboard-lane-01-extra.py build --ids m5stack-c050-b
+python tools/rebuild-product-model.py plan m5stack-c050-b
+python tools/rebuild-product-model.py build m5stack-c050-b --scratch <fresh-directory>
+python tools/check-stamp-pico-surfaces.py m5stack-c050-b
 ```
 
-通过受跟踪的 headless 浏览器打开 `web/platform/review-lane-01.html?id=m5stack-c050-b`；按 model reviewViews 保存800×800正反侧画布到 `output/playwright/m5stack-c050-b-front.png` 等，再运行：
-
-```sh
-python tools/onboard-lane-01-extra.py verify --ids m5stack-c050-b
-python tools/onboard-lane-01-extra.py publish --ids m5stack-c050-b
-```
-
-当前限制：
-
-- View displays one module, not all five loose units in the package.
-- Same module source geometry as DIY kit does not merge the SKU identity, package weight or included accessories.
-- CAD thickness 4.4 mm differs from documented 4.6 mm.
-- Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.
-- Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.
-- Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.
-- Browser inspection identifies the connected STL as a heat-resistant shield; actual populated PCB geometry and edge pad assignments remain unknown.
-- 本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。
-- Heat-resistant printed film uses an independently recorded four-corner perspective rectification; oblique-source uncertainty remains. Central fastening screw geometry is still absent, not painted into the film.
+依赖与输出说明见[模型重建](../model-reproduction.md)。[计划](../../../web/platform/assets/m5stack-c050-b/model-plan.json)完整记录来源、孔洞、纸面边界、照片变换、遮罩和观察组。厂家 CAD 为 MIT；厂家照片与纹理仍归厂家所有，没有套用项目许可。

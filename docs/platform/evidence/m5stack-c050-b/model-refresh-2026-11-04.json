@@ -1,0 +1,158 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-03T21:07:57Z",
+  "productId": "m5stack-c050-b",
+  "status": "partial",
+  "scope": "Model and public visualization only. No firmware execution or hardware claim. C050-B remains five modules per package; this view shows one core.",
+  "modelSha256": "9c0f91153caea07a5a467ab8a8922dd857b0e1954b1ac90b06a637ae56fc8fda",
+  "planSha256": "d7ba92c88e97b199b982d364cee25e2e7a66e9e9c5fdd48035404e9b70e2feab",
+  "nativeGeometrySha256": "0111a3211a8f30241b055b87342038b6826aadbef37997a6c861ee0a348c244a",
+  "nativeGeometryUnchanged": true,
+  "previousModelSha256": "ed84b23677bf44dbee9c37350af152cb7cfa494034e1c799b12a813a38d7e2f1",
+  "sources": {
+    "mechanicalDimensions": "dimension-drawing-290985ce46",
+    "frontFilm": "product-photo-d5facbf458",
+    "exposedPcbBack": "product-photo-2e8034d990",
+    "fastenerNominal": "official-docs",
+    "externalPcbTemplate": {
+      "sourceId": "pico-footprint-template",
+      "sha256": "e362c03cbae8ad96ea2038dc0894afe6fb1a409105e1b0fff42b98f1ffcf008e",
+      "streamBytes": {
+        "Components6/Data": 0,
+        "ComponentBodies6/Data": 0,
+        "ShapeBasedComponentBodies6/Data": 0,
+        "Models/Data": 0,
+        "ModelsNoEmbed/Data": 0
+      },
+      "finding": "External footprint/template, no populated components or embedded3D model. Raw source stays remote; private author/path strings were not retained."
+    }
+  },
+  "mechanicalReview": {
+    "officialBoardThicknessMm": 1,
+    "officialMountingHoleDiameterMm": 2.1,
+    "officialPadHoleDiameterMm": 0.85,
+    "officialPadPitchMm": 2.54,
+    "officialScrew": "M2x4 countersunk hex socket",
+    "estimated": [
+      "Board Z registration within original cover",
+      "Paper0.045mm thickness/corner inset",
+      "Screw head profile/recess depth",
+      "Visible rear annulus0.1mm relief; no hidden standoff body inferred"
+    ],
+    "photoPaperBridge": "Exact front photo shows paper spanning lower cover slots; separate perforated carrier retains it.",
+    "unknown": "Front/local+Z only at[0,6.5]mm on black board; back is exact official photo. Internal PCB still unknown."
+  },
+  "offlineRebuild": {
+    "passed": true,
+    "verifiedArtifacts": [
+      "LICENSE-M5Stack.txt",
+      "reference-product-photo-40e39804ff.jpg",
+      "reference-product-photo-fa479a5256.jpg",
+      "reference-product-photo-2e8034d990.jpg",
+      "pcb-back.png",
+      "geometry.bin",
+      "source.stl",
+      "reference-product-photo-d5facbf458.jpg",
+      "printed-film.png"
+    ],
+    "mismatches": [],
+    "unusedOriginalArtifacts": [],
+    "modelJsonByteIdentical": true,
+    "scope": "Exact regenerated geometry, source/reference files, textures and model contract. Metadata byte order and historical unused files are reported separately. No fresh browser, hardware or firmware acceptance."
+  },
+  "textureCarrierCheck": {
+    "productId": "m5stack-c050-b",
+    "method": "Alpha>=128 projected into the independently defined physical carrier outline minus its holes; one texture pixel allowance for raster/UV-edge rounding. Checks all opaque texture pixels, not only outer bounds.",
+    "parts": [
+      {
+        "partId": "printed-film",
+        "carrierId": "printed-film-carrier",
+        "opaquePixels": 461863,
+        "outsideCarrierBeyondOneTexturePixel": 0,
+        "oneTexturePixelMm": 0.029333333333333336
+      },
+      {
+        "partId": "pcb-back-photo",
+        "carrierId": "pcb-main",
+        "opaquePixels": 439656,
+        "outsideCarrierBeyondOneTexturePixel": 0,
+        "oneTexturePixelMm": 0.03
+      }
+    ],
+    "passed": true
+  },
+  "browser": {
+    "engine": "Headless Chromium through tracked Playwright wrapper",
+    "pages": [
+      "web/platform/",
+      "tools/fixtures/stamp-pico-model-review.html?id=m5stack-c050-b"
+    ],
+    "modelStatus": "ready",
+    "materialChecks": {
+      "shellOriginal": "252a2d",
+      "shellGold": "d7ab52",
+      "shellPurple": "8456cf",
+      "shellPurpleOpacity": 0.36,
+      "unchanged": {
+        "pcb": "171d1d",
+        "paperCarrier": "181b1c",
+        "screw": "b9bfc1",
+        "rearAnnulus": "bda752"
+      },
+      "paperAndPcbTexturesRemainOpaque": true
+    },
+    "publicInspection": {
+      "button": "#inspect-model",
+      "unknownReadableAfterButtonAndPointerRotation": true,
+      "reassemble": true,
+      "resetViewReassembles": true,
+      "twoDReassembles": true,
+      "productReplacementReassembles": true,
+      "appearancePreservesInspection": true
+    },
+    "closeups": [
+      "No film alpha outside carrier or inside screw hole beyond one texture pixel",
+      "PCB photograph no exterior white fringe; holes physically cut through board",
+      "Hex recess rotated into actual hex hole; no shell-color or white wedges through it",
+      "Lower real film bridges retain thin carrier and do not become added plastic"
+    ],
+    "console": "No model-loading/application error; first visit favicon404 only. After source updates HTTP cache was disabled for fresh-module verification."
+  },
+  "commands": [
+    "python tools/rebuild-product-model.py build m5stack-c050-b --scratch <fresh-directory>",
+    "python tools/check-stamp-pico-surfaces.py m5stack-c050-b",
+    "node --test tools/platform-model-inspection-test.mjs tools/platform-manufacturer-model-test.mjs tools/platform-plate-geometry-test.mjs",
+    "uv run --with jsonschema python tools/validate-platform-catalog.py",
+    "node tools/check-evidence-privacy.mjs"
+  ],
+  "checks": {
+    "focusedNodeTests": 12,
+    "catalog": "pass",
+    "privacyPatternCheck": "pass; manual review also performed"
+  },
+  "rendererHashes": {
+    "web/platform/manufacturer-model.js": "25ccb7bc8120b48cb239d9935489079adf17a3f597c2facb9e489c8c2cd19bb2",
+    "web/platform/plate-geometry.js": "944a267ed6b8ed735eab5132ac3d290628d08e6252e340f98d4032b2860ce050",
+    "web/platform/pcb-placeholder.js": "70de8a90e80458ef5be1b3a3b828c6508b038d40e9c377810cbb6804d0fbd5ac",
+    "web/platform/model-inspection.js": "6a33b20a75c164561632596849ce0f0c54a982bcfcc7acc736dce09921827ada",
+    "web/platform/scene-view.js": "6cb61e5492c67fc08932eb3ae812f9628174b20850a01c47717d78dcdf96a852"
+  },
+  "artifacts": {
+    "refresh-source-comparison.webp": "c58e12c4514bb1516a134e5a7717c1caa33a8476cb9bceb66a272d0d2dc9301d",
+    "refresh-public-inspection.webp": "ae2833bfd9534230059dbd9ffd158a45f149fe25d1717559cad4095eda77cd15",
+    "refresh-material-review.webp": "80ca3eabe2da6260a0d5cfd00208e0d58e75875f1d19cc7f0d7b972ca05bebe3",
+    "refresh-closeups.webp": "b4dfa95dfbe700152d97449ba2186b6ebf870ff2a8b7438c431b7a84d1deebe5"
+  },
+  "limitations": [
+    "View displays one module, not all five loose units in the package.",
+    "Same module source geometry as DIY kit does not merge the SKU identity, package weight or included accessories.",
+    "CAD thickness 4.4 mm differs from documented 4.6 mm.",
+    "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
+    "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+    "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+    "Manufacturer CAD remains the cover and small actuator only. Board outline/holes use mechanical drawing plus photograph; populated PCB, buried components and screw engagement are unknown.",
+    "Exact SKU back photograph documents visible artwork, not engineering PCB CAD. PCB and paper colors are uncalibrated under source lighting.",
+    "Cover paper has its own thin carrier because the real paper bridges plastic slots. Paper thickness, corner inset, small fastener head/recess details and rear plated relief are estimates.",
+    "No complete1:1 manufacturing or physical hardware verification; source CAD depth4.4mm is retained unchanged."
+  ]
+}
