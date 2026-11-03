@@ -1,6 +1,6 @@
 # StampFly runtime
 
-`stampfly` / `m5stack-k138` and `stampfly-v11` / `m5stack-k138-v11` are separate boards. This is a digital peripheral model, without flight dynamics or a radio controller. An official image reaching a sensor driver is a separate acceptance check; board registration and unit tests do not establish that the factory application finishes booting.
+`stampfly` / `m5stack-k138` and `stampfly-v11` / `m5stack-k138-v11` are separate boards. This is a digital peripheral model, without flight dynamics or a radio controller. Both complete official images now pass [native ROM-boot and G0 input acceptance](evidence/stampfly-runtime/factory.md): sensor initialization completes, a button click invokes the original firmware's software reset, and initialization completes again. This is not a claim of flight or browser acceptance.
 
 ## Wiring and output
 
@@ -26,7 +26,7 @@ BMI270 shares the existing [polled register subset](stopwatch-imu.md). SPI reads
 
 INA3221 samples explicit ideal bus/shunt voltages at the completion of a configured channel cycle. Default virtual channel 2 is 4.0 V with zero shunt drop; other channels are zero. The model includes reset values, read-only IDs/data, channel masks, conversion/averaging duration, powerdown retention, 40 μs recovery and conversion-ready clearing. It does not model a battery, motor load, averaging noise, shunt summation or alert pins. Input changes affect the next completed conversion. Calibration and physical battery behavior are not implied.
 
-VL53L3CX supplies raw histograms to the original ST host driver. Both XSHUT lines have 4.7 kΩ pullups, so both devices initially respond at `0x29`; firmware must isolate and renumber the front sensor. The board attaches independent devices with actual dynamic address matching, physical pin pairs and IRQ edges at their scheduled completion cycles. Default optical input is **no target**, not an invented floor distance. The sensor model's optional ideal one-target stimulus and uncalibrated nominal NVM are documented and tested separately. No factory calibration or optical accuracy is claimed.
+VL53L3CX supplies raw histograms to the original ST host driver. Both XSHUT lines have 4.7 kΩ pullups, so both devices initially respond at `0x29`; firmware must isolate and renumber the front sensor. The board attaches independent devices with actual dynamic address matching, physical pin pairs and IRQ edges at their scheduled completion cycles. Default optical input is **no target**, not an invented floor distance. The sensor model's optional ideal one-target stimulus and uncalibrated nominal NVM are [documented and tested separately](stampfly-tof.md). No factory calibration or optical accuracy is claimed.
 
 BMP280, BMM150 and PMW3901 are not modeled. The current official source does not read them, but requires VL53L3CX interrupts before proceeding beyond sensor initialization. Buzzer audio and ESP-NOW control have not been verified.
 
