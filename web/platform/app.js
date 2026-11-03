@@ -237,6 +237,7 @@ function onRuntimeEvent(event) {
     }
     if (status === 'loading' && previousStatus !== 'loading') loadProgress = null;
     if (['configured', 'loading'].includes(status) && status !== previousStatus) {
+      sceneView?.setInspection(false);
       sceneView?.updateLeds([]);sceneView?.updateServos([]);
       frameCount = 0; sceneView?.clearDisplay(); text('frame-count', '0 帧');
     }
@@ -551,6 +552,15 @@ function renderAppearance() {
   if ($('shell-opacity')) $('shell-opacity').value = Math.round(shell.opacity * 100);
   if ($('shell-finish')) $('shell-finish').value = shell.finish;
   text('shell-opacity-value', `${Math.round(shell.opacity * 100)}%`);
+}
+function renderInspection() {
+  const button = $('inspect-model'); if (!button) return;
+  const state = sceneView?.getInspection();
+  button.hidden = !state?.available || sceneView.mode !== '3d';
+  button.disabled = !!state?.blockedByAccessories;
+  button.title = state?.blockedByAccessories ? '移除外接配件后，可分开查看模型。' : '分开零件查看内部；仅用于模型观察，不代表真实拆解顺序。';
+  button.setAttribute('aria-pressed', String(!!state?.expanded));
+  button.textContent = state?.expanded ? '恢复装配' : '分开查看';
 }
 function appearanceFromInputs() {
   return {shell: {color: $('shell-color').value, opacity: Number($('shell-opacity').value) / 100, finish: $('shell-finish').value}};
@@ -931,6 +941,7 @@ function setupEvents() {
     const actual = sceneView.setMode(mode); const view = {...scene.view, deviceView: actual}; await runtime.updateSceneMetadata({view});
   }));
   bind('reset-view', 'click', () => action(async () => { await transportUi?.settleForConfiguration(); sceneView.resetView(); }));
+  bind('inspect-model', 'click', () => action(async () => { await releaseHumanInputs(); sceneView.setInspection(!sceneView.getInspection().expanded); }));
   bind('fullscreen', 'click', () => action(async () => {
     if (document.fullscreenElement) await document.exitFullscreen(); else if ($('device-stage').closest('.workspace').requestFullscreen) await $('device-stage').closest('.workspace').requestFullscreen(); else window.open(shareUrl('embed'), '_blank', 'noopener');
   }));
@@ -1018,7 +1029,7 @@ async function init() {
       if (!validation.valid) throw new Error(validation.errors.map(item => item.message).join(' ')); recordingDocument = recorded;
     } catch (error) { invalidRecording = true; report(error); log('[RECORDING] 共享录制无效，设备仍可手动操作。\n'); }
   }
-  sceneView = createSceneView($('scene-mount'), {onInput: sendInput, onModeChange: reflectMode, onUnsupported: message => toast(message), onOrientation: sendOrientation, onModelReady: renderAppearance});
+  sceneView = createSceneView($('scene-mount'), {onInput: sendInput, onModeChange: reflectMode, onUnsupported: message => toast(message), onOrientation: sendOrientation, onModelReady: renderAppearance, onInspectionChange: renderInspection});
   runtime = createPlatformRuntime({catalog, onEvent: onRuntimeEvent});
   humanButtons = createHumanButtonController({send: event => runtime.input(controlInput(event,product())), isRunning: () => status === 'running', onError: report,
     onVisual: (id, pressed) => document.querySelectorAll('.device-button').forEach(button => { if (button.dataset.control === id) button.classList.toggle('pressed', pressed); }),

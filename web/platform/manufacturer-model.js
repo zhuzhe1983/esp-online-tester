@@ -7,6 +7,7 @@ import {createPlateGeometry,plateSupportsRectangle} from './plate-geometry.js';
 import {addRgbLedGlow} from './rgb-led-view.js';
 import {createServoJoints} from './servo-view.js';
 import {createMotorRotors} from './motor-view.js';
+import {createModelInspection} from './model-inspection.js';
 const safeAsset = (name, root) => {
   if (typeof name !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._/-]*$/.test(name) || name.split('/').includes('..')) throw Error('Invalid local model asset');
   return new URL(name,root);
@@ -69,7 +70,7 @@ export function createManufacturerModel(product, screenTexture) {
       if(part.controlId){mesh.userData.control=part.controlId;buttons.push(mesh);}
       // Paper is opaque where the alpha mask exists: write depth so a later
       // transparent shell cannot tint it. Cut-out pixels preserve real holes.
-      if(painted?.length){const geom=geometry(painted);geom.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));const face=new THREE.Mesh(geom,new THREE.MeshBasicMaterial({map:texture,transparent:false,depthWrite:true,alphaTest:decal?.5:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));face.name=`${part.name}-photo-surface`;face.userData.inputOccluder=true;group.add(face);}
+      if(painted?.length){const geom=geometry(painted);geom.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));const face=new THREE.Mesh(geom,new THREE.MeshBasicMaterial({map:texture,transparent:false,depthWrite:true,alphaTest:decal?.5:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));face.name=`${part.name}-photo-surface`;face.userData.inputOccluder=true;group.add(face);mesh.userData.inspectionCompanions=[face];}
     }
     if(!shells.length&&metadata.parts.length&&metadata.parts.every(part=>!part.role)) shells.push(parts[metadata.parts[0].name]);
     parts.shell=shells[0];group.userData.shellMeshes=shells;
@@ -137,6 +138,8 @@ export function createManufacturerModel(product, screenTexture) {
     if(screen && display.controlId && product.controls?.some(control=>control.id===display.controlId && control.type==='button')){screen.userData.control=display.controlId;buttons.push(screen);}
     createServoJoints(group,metadata.presentation?.servoJoints);
     createMotorRotors(group,metadata.presentation?.rotors);
+    try {group.userData.inspection=createModelInspection(group,metadata.presentation?.inspectionGroups,metadata.provenance?.sources);}
+    catch(error) {group.userData.inspectionError=error.message;console.warn(`${product.id}: model inspection unavailable: ${error.message}`);}
     group.userData.provenance=metadata;return metadata;
   })();
   return {group,get screen(){return screen;},buttons,parts,connectors,ready,dispose(){disposed=true;aborter.abort();for(const texture of textures)texture.dispose();}};

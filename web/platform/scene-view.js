@@ -80,7 +80,7 @@ export function createHumanButtonController({send, isRunning, onVisual = () => {
 }
 
 // Product-specific CAD stays separate from runtime support; missing models stay empty.
-export function createSceneView(mount, {onInput = () => {}, onModeChange = () => {}, onUnsupported = () => {}, onOrientation = () => {}, onModelReady = () => {}} = {}) {
+export function createSceneView(mount, {onInput = () => {}, onModeChange = () => {}, onUnsupported = () => {}, onOrientation = () => {}, onModelReady = () => {}, onInspectionChange = () => {}} = {}) {
   const display = document.createElement('canvas');
   display.className = 'flat-display';
   display.setAttribute('aria-label', '设备实际帧缓冲；按住或拖动以发送触摸');
@@ -96,6 +96,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   texture.colorSpace = THREE.SRGBColorSpace; texture.minFilter = THREE.LinearFilter; texture.magFilter = THREE.NearestFilter;
   let renderer, mode = '3d', product, screen, buttons = [], accessoryGroup, accessoryCount = 0, zoom = 1, frameWidth = 466, frameHeight = 466;
   let paintPending = false, disposed = false, modelCleanup = null, productGeneration = 0, accessoryGeneration = 0, accessoryCleanups = [];
+  let inspection = null;
   let orientationTimer = null, orientationIdle = null, lastOrientationAt = -Infinity;
   const getOrientation = () => group.quaternion.toArray();
   function clearOrientationTimers() { clearTimeout(orientationTimer); clearTimeout(orientationIdle); orientationTimer = orientationIdle = null; }
@@ -158,6 +159,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   }
   const resizeObserver = new ResizeObserver(resize); resizeObserver.observe(mount);
   function clearGroup() {
+    inspection = null; onInspectionChange({available: false, expanded: false});
     accessoryGeneration++; for (const cleanup of accessoryCleanups) cleanup(); accessoryCleanups = [];
     clearOrientationTimers();
     productGeneration++; modelCleanup?.(); modelCleanup = null;
@@ -197,6 +199,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
         rgbLedMeshes = model.group.userData.rgbLedMeshes || []; applyRgbLedValues(rgbLedMeshes, rgbValues);
         servoJoints = model.group.userData.servoJoints || []; applyServoValues(servoJoints, servoValues);
         motorRotors = model.group.userData.motorRotors || []; applyMotorValues(motorRotors,motorValues,motorOutput,{running:motorsRunning});
+        inspection = model.group.userData.inspection || null; onInspectionChange(getInspection());
         for(const mesh of shellMeshes)mesh.userData.originalAppearance ||= {shell:{color:`#${mesh.material.color.getHexString()}`,opacity:1,finish:'plastic'}};
         if(product.model && product.id !== 'm5stack-papermono') { appearanceDefaults = shellMeshes[0]?.userData.originalAppearance || DEFAULT_STOPWATCH_APPEARANCE; if(!customizedAppearance)appearance=normalizeShellAppearance(null,appearanceDefaults); }
         mount.dataset.modelStatus = 'ready'; onModelReady(); applyAppearance(); setAccessories(accessoryDefinitions); frameCamera(); draw();
@@ -219,6 +222,8 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       group.remove(accessoryGroup);
     }
     accessoryCount = Math.min(accessories.length, 32);
+    if (accessoryCount) inspection?.setExpanded(false);
+    onInspectionChange(getInspection());
     accessoryGroup = new THREE.Group(); accessoryGroup.name = 'accessory-assembly'; group.add(accessoryGroup);
     const occupiedSockets = new Set();
     const loadedAccessories = [];
@@ -256,10 +261,17 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   function applyAppearance() { for(const mesh of shellMeshes.length?shellMeshes:[parts.shell].filter(Boolean))applyShellAppearance(mesh, customizedAppearance?appearance:mesh.userData.originalAppearance || appearance, {occluder: parts.occluder}); draw(); }
   function setAppearance(value) { customizedAppearance = value != null; appearance = normalizeShellAppearance(value, appearanceDefaults); applyAppearance(); return getAppearance(); }
   function getAppearance() { return {shell: {...appearance.shell}}; }
-  function resetView() { releaseInputs(); group.rotation.set(-.13, -.25, .025); zoom = 1; publishOrientation(false); resize(); }
+  function getInspection() { return {available: !!inspection, expanded: inspection?.expanded || false, blockedByAccessories: accessoryCount > 0}; }
+  function setInspection(expanded) {
+    if (typeof expanded !== 'boolean') throw Error('Model inspection state must be boolean');
+    releaseInputs(); inspection?.setExpanded(expanded && !accessoryCount); onInspectionChange(getInspection()); resize(); return getInspection();
+  }
+  function resetView() { releaseInputs(); inspection?.setExpanded(false); onInspectionChange(getInspection()); group.rotation.set(-.13, -.25, .025); zoom = 1; publishOrientation(false); resize(); }
   function setMode(next) {
     releaseInputs();
     mode = next === '3d' && renderer ? '3d' : '2d';
+    if (mode !== '3d') inspection?.setExpanded(false);
+    onInspectionChange(getInspection());
     if (renderer) renderer.domElement.hidden = mode !== '3d';
     display.hidden = mode !== '2d' || !product?.display || (!product.model && !product.runtime.board);
     onModeChange(mode, !renderer); draw(); return mode;
@@ -368,7 +380,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   window.addEventListener('blur', releaseInputs);
   function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setInspection, getInspection, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
     dispose() { disposed = true; releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup(); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }
