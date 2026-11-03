@@ -128,6 +128,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     let board = unsafe { text(board, board_len) }.to_string();
     let Some(flash_bytes) = mib_bytes(flash_mb.max(1)) else { log("[emu] flash size exceeds the supported memory range"); return std::ptr::null_mut() };
     let Some(psram_bytes) = mib_bytes(psram_mb) else { log("[emu] PSRAM size exceeds the supported memory range"); return std::ptr::null_mut() };
+    let c3_board=if matches!(board.as_str(),"esp32c3"|"c3") {esp32c3::board::make_board("none")}else if matches!(board.as_str(),"none"|"bare") {None}else{esp32c3::board::make_board(&board)};
     let c6_board = if matches!(board.as_str(), "esp32c6" | "c6") {
         esp32c6::board::make_board("none")
     } else if matches!(board.as_str(), "none" | "bare") {
@@ -168,8 +169,10 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         m.console.mask = 2;
         prepare(&mut m);
         MachineKind::Esp32(Box::new(m))
-    } else if board == "esp32c3" || board == "c3" {
+    } else if let Some(b) = c3_board {
         let mut m = esp32c3::machine([0x3c, 0x84, 0x27, 0xb6, 0xa7, 0x1c], flash_bytes);
+        m.bus.board=b;
+        m.bus.attach_board_devices();
         m.bus.set_flash_size(flash_bytes);
         m.console.mask = 2;                                  // the ROM mirrors its console to UART0 and USB-Serial/JTAG
         prepare(&mut m);
