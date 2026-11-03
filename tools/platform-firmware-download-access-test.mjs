@@ -81,3 +81,9 @@ test('sync invokes address checks before writing, dry-run stays read-only, snaps
     const again=await runCatalogSync({base,now:'2026-11-01T03:00:00Z',fetchImpl});assert.equal(calls,2);assert.deepEqual(again.changed,[]);
   }finally{await rm(directory,{recursive:true,force:true});}
 });
+
+test('missing M5Burner version has an actionable error without retaining provider response details',async()=>{
+  for(const status of [404,200])await assert.rejects(fetchBytes(URL,{fetchImpl:async()=>Response.json({code:404,msg:'private message',data:{errorCode:'VERSION_NOT_FOUND'},requestId:'private-request-id'},{status})}),error=>{
+    assert.equal(error.code,'FIRMWARE_VERSION_NOT_FOUND');assert.match(error.message,/刷新版本列表/);assert.equal(error.details.providerCode,'VERSION_NOT_FOUND');assert.ok(!JSON.stringify(error).includes('private'));return true;
+  });
+});

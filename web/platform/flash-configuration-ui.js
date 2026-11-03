@@ -42,5 +42,5 @@ export function createFlashConfigurationUI({apply,onChange,onError,profiles=brow
   }));
   remove.addEventListener('click',()=>safe(()=>{profiles.remove(current.id);apply(null);current=null;choices();refresh();onChange();}));
   choices();refresh();
-  return {root,editing:()=>enabled,update(state){formats=state.receipt?.configurationFormats||{};canEdit=!!state.receipt&&!state.choosing&&!state.counts?.active&&!['preparing','stopping'].includes(state.status)&&(!state.running||state.mode==='sequential');if(!Object.values(formats).some(Boolean))canEdit=false;hint.textContent=Object.values(formats).some(Boolean)?'只适用于读取相应格式的 UIFlow 固件。关闭此选项时，不额外写入配置。':'当前镜像不符合已支持的 UIFlow 配置布局，可直接烧录原始固件。';refresh();},dispose(){fields.password.value='';root.remove();}};
+  return {root,editing:()=>enabled,update(state){formats=state.receipt?.configurationFormats||{};canEdit=!!state.receipt&&!state.choosing&&!state.counts?.active&&!['preparing','stopping'].includes(state.status)&&(!state.running||state.mode==='sequential');if(!Object.values(formats).some(Boolean))canEdit=false;hint.textContent=!state.receipt?'固件准备完成后，将检查是否支持随固件写入配置。':Object.values(formats).some(Boolean)?'只适用于读取相应格式的 UIFlow 固件。关闭此选项时，不额外写入配置。':'当前镜像不符合已支持的 UIFlow 配置布局，可直接烧录原始固件。';refresh();},dispose(){fields.password.value='';root.remove();}};
 }

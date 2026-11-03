@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-03",
+  "downloadProbe": {
+    "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002172/versions/2116093081161424897/download",
+    "checkedAt": "2026-11-03T07:58:02Z",
+    "httpStatus": 404,
+    "contentType": "application/json",
+    "providerCode": "VERSION_NOT_FOUND",
+    "redactions": "Only HTTP status, media type and provider error code retained; request ID, headers and unrelated response fields omitted.",
+    "firmwareBinaryDownloaded": false
+  },
+  "validation": {
+    "platform": {
+      "command": "node --test tools/platform-*-test.mjs",
+      "passed": 277,
+      "failed": 0
+    },
+    "browser": [
+      {
+        "fixture": "tools/fixtures/flash-download-recovery-browser-check.js",
+        "result": "pass",
+        "checks": [
+          "source failure releases busy controls",
+          "retry prepares in the same window",
+          "configuration layout and byte pin claims wait for receipt",
+          "missing release never prompts CAPTCHA",
+          "same-project public versions filtered by device",
+          "replacement needs explicit selection",
+          "new download gets its own SHA",
+          "late cancelled source and metadata results discarded",
+          "390 px modal fits",
+          "cancel during batch file inspection waits for lock release before retry"
+        ]
+      },
+      {
+        "fixture": "tools/fixtures/flash-browser-check.js",
+        "result": "pass",
+        "checks": [
+          "parallel and continuous writing",
+          "wrong-device replacement",
+          "pinned batch isolation",
+          "cancellation",
+          "embedded player",
+          "390 px layout"
+        ]
+      },
+      {
+        "fixture": "tools/fixtures/flash-configuration-browser-check.js",
+        "result": "pass",
+        "checks": [
+          "7 mock ports concurrently",
+          "custom server and Wi-Fi profiles",
+          "NVS output",
+          "profile isolation and private credentials",
+          "mobile layout"
+        ]
+      }
+    ],
+    "browserMethod": "Headless Chromium via tracked Playwright CLI; injected Serial and esptool fixtures; no physical USB access.",
+    "limits": "These checks validate download/error handling, catalog metadata and browser workflows. The replacement official firmware was not downloaded or executed on a simulator or physical device."
+  }
+}

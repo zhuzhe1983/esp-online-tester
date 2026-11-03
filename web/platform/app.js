@@ -111,8 +111,8 @@ function showFirmwareIssue(error) {
   const issueLink = $('firmware-issue');
   if (!issueLink) return;
   const officialUrl=burnerProjectUrl(error.details?.url);
-  if (officialUrl&&['FIRMWARE_AUTH_REQUIRED','FIRMWARE_DOWNLOAD_RESPONSE'].includes(error.code)) {
-    issueLink.href=officialUrl;issueLink.textContent='前往 M5Burner 验证并下载，再导入本地文件 ↗';issueLink.hidden=false;return;
+  if (officialUrl&&['FIRMWARE_AUTH_REQUIRED','FIRMWARE_DOWNLOAD_RESPONSE','FIRMWARE_VERSION_NOT_FOUND'].includes(error.code)) {
+    issueLink.href=officialUrl;issueLink.textContent=error.code==='FIRMWARE_VERSION_NOT_FOUND'?'查看 M5Burner 当前可用版本 ↗':'前往 M5Burner 验证并下载，再导入本地文件 ↗';issueLink.hidden=false;return;
   }
   issueLink.hidden = true;
 }
