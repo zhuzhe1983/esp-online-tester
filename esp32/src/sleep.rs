@@ -38,7 +38,7 @@ impl SocBus {
     }
 
     /// Called only on entry and from the tick while asleep. RTC_TIMER_TRIG_EN is bit 3 of the cause:
-    /// esp_hw_support/port/esp32/include/soc/rtc.h, IDF v5.3.3.
+    /// ESP-IDF v5.5.4 esp_hw_support/port/esp32/include/soc/rtc.h:587.
     pub(crate) fn timer_wake(&mut self) {
         if self.deep_sleep && self.periph.rtc.sleep_ticks_left() == Some(0) { self.wake(1 << 3); }
     }
@@ -141,7 +141,7 @@ mod tests {
     }
 
     #[test]
-    fn a_chip_awake_has_no_alarm_deadline() {
+    fn a_chip_awake_has_no_alarm_pending() {
         let mut b = SocBus::new(4 << 20, [0; 6]);
         b.write32(0x3ff4_8004, 100).unwrap();
         b.write32(0x3ff4_8038, 1 << (11 + 3)).unwrap();
