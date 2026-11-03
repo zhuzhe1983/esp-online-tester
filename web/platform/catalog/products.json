@@ -10795,18 +10795,27 @@
       "name": "M5Stack StampFly",
       "manufacturer": "M5Stack",
       "sku": "K138",
-      "summary": "ESP32-S3四旋翼开发平台，StampS3、四个空心杯马达、IMU、ToF和气压计；本平台仅外观展示，不模拟飞行。",
+      "summary": "Stamp-S3 四旋翼开发平台；提供部分板级数字外设、按键、RGB 与电机 PWM 观测，飞行动力学尚未模拟。",
       "hardwareRevision": "unspecified",
       "chip": "esp32s3",
       "module": "ESP32-S3",
       "runtime": {
-        "board": null,
+        "board": "stampfly",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA",
+          "name": "用户／配对按键"
+        }
+      ],
       "interfaces": [
         {
           "id": "usb-c",
@@ -10856,8 +10865,9 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "板级数字外设为部分实现；官方固件兼容性须以对应版本的实际执行记录为准。",
+        "电机展示来自客体 PWM，占空比动画不代表实测转速；尚无飞行动力学、碰撞或 ESP-NOW 遥控闭环。",
+        "尺寸、材质、内部未知项和照片核验范围见模型报告；未进行实机验证。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k138.json",
       "model": {
@@ -10884,18 +10894,27 @@
       "name": "M5Stack StampFly v1.1",
       "manufacturer": "M5Stack",
       "sku": "K138-V11",
-      "summary": "Stamp-S3A 主控的 ESP32-S3 四旋翼，配 320mAh 电池、四个空心杯电机、IMU、光流、气压和双 ToF；作为 K138-V11 独立于原版 K138 收录。",
+      "summary": "Stamp-S3A 四旋翼开发平台；提供部分板级数字外设、按键、RGB 与电机 PWM 观测，飞行动力学尚未模拟。",
       "hardwareRevision": "v1.1",
       "chip": "esp32s3",
       "module": "Stamp-S3A",
       "runtime": {
-        "board": null,
+        "board": "stampfly-v11",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA",
+          "name": "用户／配对按键"
+        }
+      ],
       "interfaces": [
         {
           "id": "usb-c",
@@ -10945,9 +10964,9 @@
         }
       ],
       "limitations": [
-        "K138-V11 独立条目；板级运行适配及精确模型仍在核验，当前不能据资料收录认定飞行功能可用。",
-        "官方尺寸表与护桨外包络存在口径差异，保留图纸与照片，不缩放旧版CAD掩盖差异。",
-        "出厂默认固定为该型号官网 Easyloader 内嵌的 v1.0.0；没有用通用 StampFly v1.1.0 替换。"
+        "板级数字外设为部分实现；官方固件兼容性须以对应版本的实际执行记录为准。",
+        "电机展示来自客体 PWM，占空比动画不代表实测转速；尚无飞行动力学、碰撞或 ESP-NOW 遥控闭环。",
+        "尺寸、材质、内部未知项和照片核验范围见模型报告；未进行实机验证。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k138-v11.json",
       "dimensions": {
