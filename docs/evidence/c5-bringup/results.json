@@ -1,0 +1,109 @@
+{
+  "base": "02ad301783d2502fc4946a02050ff6bc1513ead8",
+  "experiment": "EX249",
+  "runtime": "independent C5 Bringup, interpreter-only; no shared Machine at checkpoint",
+  "toolchain": {
+    "rust": "rustc1.99.1(58cf8f9c3 2026-10-13)",
+    "guest": "riscv32-esp-elf-gcc esp-14.2.0_20241119 GCC14.2.0",
+    "guestIsa": "rv32imac_zicsr_zifencei",
+    "abi": "ilp32"
+  },
+  "fixture": {
+    "path": "firmware/c5-uart-probe/probe.elf",
+    "bytes": 5420,
+    "sha256": "b24cc60c66a1f963cc8d6c9bf9da1a5843390aacc074d5a6f42e31b6b21ea829"
+  },
+  "checks": {
+    "passed": 7,
+    "externalRom": 1,
+    "clippy": "pass, -D warnings",
+    "fullWorkspace": "not run by this lane"
+  },
+  "uartLed": {
+    "boards": [
+      "stamp-c5",
+      "stamp-c5-dip"
+    ],
+    "dispatchSlots": {
+      "boot": 140,
+      "on": 28,
+      "off": 31
+    },
+    "totalInsns": 199,
+    "retired": 197,
+    "cycles": 199,
+    "uartBytes": 20,
+    "uartSha256": "f1a38bae98bebd2022a83fe668471bad18599cf6ebc40d6bc103528f7cd58335",
+    "observedLedSequence": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        255
+      ],
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    "maskedInputRetained": true
+  },
+  "rmt": {
+    "dispatchSlots": {
+      "boot": 140,
+      "command": 408
+    },
+    "totalInsns": 548,
+    "retired": 547,
+    "cycles": 548,
+    "pin": 5,
+    "symbols": [
+      1,
+      0
+    ],
+    "uartBytes": 18,
+    "uartSha256": "25cfe79e6e72aba4a4f44a94515c266eaa99657c192528ab8a59bbe2b77df6b4"
+  },
+  "rom": {
+    "source": "esp32c5_rev100_rom.elf",
+    "initialProbe": {
+      "slots": 4,
+      "pc": "0x40001616",
+      "address": "0x600b2ffc",
+      "cause": "load access fault; LP_ANA_DATE"
+    },
+    "checkpointProbe": {
+      "slots": 6575,
+      "pc": "0x400269b6",
+      "address": "0x600b2804",
+      "cause": "load access fault; LPPERI_RESET_EN",
+      "uartBytes": 0,
+      "romBootSucceeded": false
+    }
+  },
+  "firmwareDownload": {
+    "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001048/versions/2116031291738329089/download",
+    "httpStatus": 400,
+    "providerCode": "BURN_CAPTCHA_INVALID",
+    "bytesDownloaded": 0,
+    "binaryCompatibility": "unverified"
+  },
+  "limits": [
+    "Functional dispatch slots are not silicon timing. IRQ acceptance slots count in insns, not retired.",
+    "RMT nominal240MHz CPU and80MHz source; no PCR clock-gating, dynamic clock or analog pulse accuracy.",
+    "Sources and ROM available; LP reset/eFuse/flash/MMU/clock implementation remains incomplete.",
+    "No stock ROM/IDF/UIFlow boot or platform runtime registration in checkpoint."
+  ],
+  "privacy": {
+    "removed": [
+      "private absolute paths",
+      "request identifier"
+    ],
+    "effect": "None on source hashes, guest counts or pass/failure outcomes."
+  }
+}
