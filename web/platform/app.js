@@ -221,6 +221,7 @@ function onRuntimeEvent(event) {
 
   if (event.type === 'state') {
     const previousStatus = status; status = event.state.status; loadedFirmware=event.state.firmware;
+    sceneView?.setMotorsRunning(status==='running');sceneView?.updateMotors(event.state.motors,event.state.motorOutput);
     accessoryInputState=event.state.accessoryInputs || [];accessoryOutputState=event.state.accessoryOutputs || [];sceneView?.updateAccessoryOutputs(accessoryOutputState);
     if (['configured', 'loading', 'error', 'disposed'].includes(status)) humanButtons?.invalidate();
     else if (status === 'paused') humanButtons?.suspend();
@@ -247,6 +248,8 @@ function onRuntimeEvent(event) {
     sceneView?.updateLeds(event.leds);
   } else if (event.type === 'servos') {
     sceneView?.updateServos(event.servos);
+  } else if (event.type === 'motors') {
+    sceneView?.updateMotors(event.motors,event.motorOutput);
   } else if (event.type === 'imu') {
     if (event.imu?.source === 'agent') sceneView?.setOrientation?.(event.imu.quaternion, {notify: false});
   } else if (event.type === 'load-progress') {

@@ -5,6 +5,7 @@ import {createGroveSocket,verifiedGrove} from './grove-geometry.js';
 import {createPcbPlaceholderGeometry} from './pcb-placeholder.js';
 import {addRgbLedGlow} from './rgb-led-view.js';
 import {createServoJoints} from './servo-view.js';
+import {createMotorRotors} from './motor-view.js';
 const safeAsset = (name, root) => {
   if (typeof name !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._/-]*$/.test(name) || name.split('/').includes('..')) throw Error('Invalid local model asset');
   return new URL(name,root);
@@ -130,6 +131,7 @@ export function createManufacturerModel(product, screenTexture) {
     // Some devices (AtomS3) use the whole non-touch display cover as a physical button.
     if(screen && display.controlId && product.controls?.some(control=>control.id===display.controlId && control.type==='button')){screen.userData.control=display.controlId;buttons.push(screen);}
     createServoJoints(group,metadata.presentation?.servoJoints);
+    createMotorRotors(group,metadata.presentation?.rotors);
     group.userData.provenance=metadata;return metadata;
   })();
   return {group,get screen(){return screen;},buttons,parts,connectors,ready,dispose(){disposed=true;aborter.abort();for(const texture of textures)texture.dispose();}};

@@ -26,7 +26,8 @@ function collectMotion(force=false) {
     if(n<=0||n>capacity)return;
     const json=dec.decode(mem().subarray(p,p+n));
     if(json!==motionLast){motionLast=json;postMessage({text:JSON.stringify({t:'motion',...JSON.parse(json)})});}
-  } finally {wasm.esp32sim_free(p,capacity);}
+  } catch { /* Malformed optional motion data must not interrupt firmware execution. */ }
+  finally {wasm.esp32sim_free(p,capacity);}
 }
 let hardwareChecksEnabled=false,hardwareChecksLast='',hardwareChecksAt=-Infinity;
 // Cold host observation only. This never changes guest registers or advances time.
@@ -211,7 +212,7 @@ onmessage = async (ev) => {
       // Keep credits for already posted frames until their ACKs arrive, but never send
       // a retained frame from the emulator being replaced.
       pendingFrame = null;sdShadow=null;sdWatchId=null;
-      motionEnabled=m.board==='stackchan';motionLast='';motionAt=0;
+      motionEnabled=['stackchan','stampfly','stampfly-v11'].includes(m.board);motionLast='';motionAt=0;
       hardwareChecksEnabled=m.board==='stopwatch';hardwareChecksLast='';hardwareChecksAt=-Infinity;
       pacing = createPacing(); catchupTurns = 0;
       pendingInputTrace = [];
