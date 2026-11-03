@@ -95,3 +95,9 @@ test('image points preserve requested order, accept only unique close matches, a
   assert.deepEqual(captchaTextMasks({width:520,height:300,data:new Uint8ClampedArray(520*300*4).fill(255)}),[]);
   assert.throws(()=>captchaTextMasks({width:1e6,height:300,data:[]}));
 });
+
+test('a removed version neither prompts for CAPTCHA nor caches JSON or chooses another version',async()=>{
+  let fetches=0,prompts=0,writes=0;
+  await assert.rejects(prepareBurnerSource({url},{fetchImpl:async u=>{fetches++;assert.equal(u,url);return Response.json({data:{errorCode:'VERSION_NOT_FOUND'}},{status:404});},verify:async()=>{prompts++;},cache:{get:async()=>null,putVerified:async()=>{writes++;}}}),{code:'FIRMWARE_VERSION_NOT_FOUND'});
+  assert.deepEqual({fetches,prompts,writes},{fetches:1,prompts:0,writes:0});
+});

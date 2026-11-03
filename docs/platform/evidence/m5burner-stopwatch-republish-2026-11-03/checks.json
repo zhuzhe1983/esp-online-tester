@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-03T08:09:22.327Z",
+  "scope": "Sync metadata and catalog only. Existing local WASM/ROM used for platform fixture tests; no publisher firmware downloaded or executed and no physical device accessed.",
+  "checks": [
+    {
+      "command": "node --test tools/platform-m5burner-v1-sync-test.mjs tools/platform-firmware-sync-test.mjs",
+      "result": "27 passed"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<existing-roms> node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs",
+      "result": "4 test files passed; config 15 groups, human input 11 checks, view 4 checks and real worker/WASM fixtures passed"
+    },
+    {
+      "command": "python3 tools/validate-platform-catalog.py",
+      "result": "Passed using isolated venv with tools/requirements-catalog.txt: 213 products, 10 accessories, 166 firmwares, 112 watchlist entries"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "Passed; also manually reviewed sanitized public metadata and source receipts"
+    },
+    {
+      "command": "git diff --check",
+      "result": "Passed"
+    },
+    {
+      "file": "web/platform/catalog/firmwares.json",
+      "onlyEntryChanged": "m5stack-stopwatch-uiflow2",
+      "passed": true
+    },
+    {
+      "file": "web/platform/catalog/firmware-watchlist.json",
+      "onlyEntryChanged": "m5-official-uiflow2-stopwatch",
+      "passed": true
+    },
+    {
+      "file": "web/platform/catalog/firmware-release-snapshot.json",
+      "onlyEntryChanged": "m5-official-uiflow2-stopwatch",
+      "passed": true
+    }
+  ],
+  "setupFailures": [
+    {
+      "check": "platform-runtime-test",
+      "reason": "Isolated worktree initially lacked the ROM",
+      "resolution": "Reused existing local ROM through ESP32SIM_ROM_DIR and existing WASM through an ignored symlink; rerun passed"
+    },
+    {
+      "check": "validate-platform-catalog.py",
+      "reason": "Default Python lacked jsonschema",
+      "resolution": "Installed pinned validation requirements in an ignored isolated venv; rerun passed"
+    }
+  ],
+  "testArtifacts": [
+    {
+      "name": "existing-wasm",
+      "bytes": 4668502,
+      "sha256": "ded487a996d12a2e83bf1a4e09bbb7a55a157e10a746842b1782dff414b0ebac"
+    },
+    {
+      "name": "existing-s3-rom",
+      "bytes": 949552,
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+    }
+  ],
+  "limitations": [
+    "No browser UI changes; these checks cover metadata sync, catalogs and existing platform fixtures.",
+    "No new publisher BIN validation, CAPTCHA solving, hardware flash or Rust changes."
+  ]
+}

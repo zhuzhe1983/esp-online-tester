@@ -29,6 +29,7 @@ export async function checkFirmwareDownloadResponse(response,url,{signal}={}) {
   let body;try{body=JSON.parse(new TextDecoder().decode(data));}catch{}
   const code=body?.data?.errorCode;
   if(typeof code==='string'&&/^[A-Z][A-Z_]{0,79}$/.test(code))details.providerCode=code;
+  if(code==='VERSION_NOT_FOUND')throw fail('FIRMWARE_VERSION_NOT_FOUND','M5Burner 上的这个固件版本已不存在，发布者可能已重新发布或撤下。请刷新版本列表，确认后选择其他版本。');
   if(code==='BURN_CAPTCHA_INVALID'||/^(?:BURN_)?CAPTCHA_/.test(code||'')||[401,403].includes(response.status))throw fail('FIRMWARE_AUTH_REQUIRED',M5BURNER_VERIFICATION_MESSAGE);
   throw fail('FIRMWARE_DOWNLOAD_RESPONSE','M5Burner 返回了 JSON 响应，并非固件文件。请前往官方页面检查下载状态。');
 }

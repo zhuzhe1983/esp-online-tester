@@ -32,6 +32,13 @@ function artifactSource(firmware,target,manifests){
   }
   return firmware.source;
 }
+function replacesWithdrawnOfficialVersion(entry,asset,firmware,currentSource,saved,now){
+  const old=firmware.catalogUpdate?.publisherIdentity,inventory=saved.versionInventory,age=Date.parse(now)-Date.parse(saved.checkedAt);
+  return !currentSource?.sha256&&isOfficialM5BurnerVersion(entry,{publisherIdentity:old,browser_download_url:currentSource?.url})&&old.versionId!==asset.publisherIdentity?.versionId
+    &&saved.sourceUrl===entry.metadataUrl&&age>=0&&age<24*3600*1000&&inventory?.provider==='m5burner-v1'&&inventory.firmwareId===entry.firmwareId&&inventory.deviceId===entry.deviceId
+    &&inventory.sourceUrl===entry.metadataUrl+'/versions?scope=PUBLIC'&&inventory.complete===true&&Array.isArray(inventory.versionIds)
+    &&inventory.versionIds.includes(asset.publisherIdentity.versionId)&&!inventory.versionIds.includes(old.versionId);
+}
 export function updateFirmwareCatalog({products,firmwares,watchlist,snapshot,manifests={},now=new Date().toISOString()}){
   validateWatchlist(watchlist);const result={firmwares:copy(firmwares),watchlist:copy(watchlist),manifests:copy(manifests),report:{schemaVersion:'1',checkedAt:now,policy:'Metadata only. Exact device/channel/format selectors; missing SHA-256 retains the pinned artifact except reviewed official M5Burner v1 fixed-version identities, updated as unverified trials. No firmware execution.',entries:[]}};
   const pids=new Set(products.items.map(p=>p.id)),usedTargets=new Set();
@@ -58,12 +65,13 @@ export function updateFirmwareCatalog({products,firmwares,watchlist,snapshot,man
       const{release,asset}=selected;const digest=sha(asset.digest),current=report.previousVersion,currentSource=artifactSource(firmware,target,result.manifests);
       report.candidate={version:release.tag_name,publishedAt:release.published_at,assetName:asset.name,url:asset.browser_download_url,sha256:digest};
       if(asset.format&&asset.format!==target.format){report.reason='artifact-format-mismatch';continue;}
-      if(norm(release.tag_name)===norm(current)){
+      const officialVersion=isOfficialM5BurnerVersion(entry,asset)&&target.sourceType==='manufacturer-distribution'&&target.format==='merged'&&target.updateMode==='source'&&!target.downloadUrl&&(!entry.versionNamePattern||new RegExp(entry.versionNamePattern).test(release.tag_name));
+      const sameVersion=norm(release.tag_name)===norm(current),republished=sameVersion&&officialVersion&&replacesWithdrawnOfficialVersion(entry,asset,firmware,currentSource,saved,now);
+      if(sameVersion&&!republished){
         report.reason=digest&&currentSource?.sha256&&digest!==currentSource.sha256?'same-version-different-artifact':'current-version';continue;
       }
-      const currentRelease=releases.find(r=>norm(r.tag_name)===norm(current)),currentDate=currentRelease?.published_at||firmware.catalogUpdate?.publishedAt;
-      if(older(release.tag_name,current)||currentDate&&Date.parse(release.published_at)<=Date.parse(currentDate)){report.reason='no-newer-matching-release';continue;}
-      const officialVersion=isOfficialM5BurnerVersion(entry,asset)&&target.sourceType==='manufacturer-distribution'&&target.format==='merged'&&target.updateMode==='source'&&!target.downloadUrl&&(!entry.versionNamePattern||new RegExp(entry.versionNamePattern).test(release.tag_name));
+      const currentRelease=republished?null:releases.find(r=>norm(r.tag_name)===norm(current)),currentDate=currentRelease?.published_at||firmware.catalogUpdate?.publishedAt;
+      if(older(release.tag_name,current)||republished&&!Number.isFinite(Date.parse(currentDate))||currentDate&&Date.parse(release.published_at)<=Date.parse(currentDate)){report.reason='no-newer-matching-release';continue;}
       if(entry.metadataProvider==='m5burner-v1'&&!officialVersion){report.reason='official-version-identity-mismatch';continue;}
       if(!digest&&!officialVersion){report.reason='candidate-missing-sha256';continue;}
       if(target.sourceType==='manufacturer-distribution'&&!['m5burner','m5burner-v1','cloudzao'].includes(entry.metadataProvider)){report.reason='distribution-source-mismatch';continue;}
@@ -82,7 +90,7 @@ export function updateFirmwareCatalog({products,firmwares,watchlist,snapshot,man
       firmware.limitations=[digest?'按明确设备资产规则更新远程发布元信息；SHA-256 来自发布源，未下载完整镜像或执行验证。':'官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256。浏览器加载时计算实际摘要，尚未核验镜像布局或运行兼容性。','启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。',...(target.format==='app'?['这是 app-only 实验直启清单，跳过 bootloader/分区初始化，不能作为完整镜像一键刷写硬件。']:[])];
       firmware.catalogUpdate={watchlistId:entry.id,channel:target.channel,format:target.format,sourceType:target.sourceType,version:release.tag_name,publishedAt:release.published_at,assetName:asset.name,upstreamUrl:asset.browser_download_url,digestSource:digest?'release-metadata':'publisher-hash-unavailable',...(officialVersion?{publisherIdentity:copy(asset.publisherIdentity)}:{}),layoutVerified:false,checkedAt:saved.checkedAt||now};
       firmware.sources=[{title:'Device asset mapping basis; not validation of this version',url:target.basis.url,checkedAt:(saved.checkedAt||now).slice(0,10)},{title:'Automatic device release metadata',url:release.html_url,checkedAt:(saved.checkedAt||now).slice(0,10)}];
-      report.status='updated';report.reason=digest?'new-device-release-with-sha256':'new-official-fixed-version-without-publisher-sha256';updated.push(target.firmwareId);
+      report.status='updated';report.reason=republished?(digest?'republished-official-version-with-sha256':'republished-official-version-without-publisher-sha256'):digest?'new-device-release-with-sha256':'new-official-fixed-version-without-publisher-sha256';updated.push(target.firmwareId);
     }
     if(updated.length){
       entry.artifactMetadataHistory=[...(entry.artifactMetadataHistory||[]),{version:entry.version,...Object.fromEntries(['description','browserNote','browserCheckedAt','browserAuditUrl','compatibility','publishedAt','checkedAt','assets'].filter(key=>entry[key]!==undefined).map(key=>[key,copy(entry[key])]))}].slice(-12);

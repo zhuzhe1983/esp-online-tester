@@ -12,13 +12,21 @@ export function validateM5BurnerV1Project(entry,response){
   const project=response?.data;
   if(response?.code!==200||project?.firmwareId!==entry.firmwareId||project.sourceType!=='OFFICIAL'||!supports(project.supportedDevices,entry.deviceId))throw Error('Official M5Burner project/device identity changed');
 }
-export function m5burnerV1Releases(entry,{project,versions}={}){
+export function m5burnerV1VersionInventory(entry,{project,versions}={}){
   validateM5BurnerV1Project(entry,project);
+  // This endpoint returns one complete array, not a page. Keep every ID before
+  // filtering editions/status or truncating release history: neither can prove
+  // that an old immutable artifact has disappeared from the publisher's list.
   if(versions?.code!==200||!Array.isArray(versions.data)||versions.data.length>1000)throw Error('Invalid M5Burner versions');
-  const pattern=entry.versionNamePattern?new RegExp(entry.versionNamePattern):null,seen=new Set();
+  const versionIds=versions.data.map(v=>v?.versionId);
+  if(versionIds.some(value=>!id(value))||new Set(versionIds).size!==versionIds.length)throw Error('Invalid or duplicate M5Burner version identity');
+  return {provider:'m5burner-v1',firmwareId:entry.firmwareId,deviceId:entry.deviceId,sourceUrl:m5burnerV1Request(entry,true).url,complete:true,versionIds};
+}
+export function m5burnerV1Releases(entry,{project,versions}={}){
+  m5burnerV1VersionInventory(entry,{project,versions});
+  const pattern=entry.versionNamePattern?new RegExp(entry.versionNamePattern):null;
   return versions.data.filter(v=>v.visibility==='PUBLIC'&&v.status==='PUBLISHED'&&supports(v.supportedDevices,entry.deviceId)).map(v=>{
-    if(!id(v.versionId)||seen.has(v.versionId)||typeof v.versionName!=='string'||v.versionName.length>160||!Number.isFinite(Date.parse(v.publishTime)))throw Error('Invalid or duplicate M5Burner version identity');
-    seen.add(v.versionId);
+    if(typeof v.versionName!=='string'||v.versionName.length>160||!Number.isFinite(Date.parse(v.publishTime)))throw Error('Invalid M5Burner version metadata');
     if(typeof v.binFileName!=='string'||v.binFileName.length>240||!/^[-\w.]+$/.test(v.binFileName)||v.binFileName==='.'||v.binFileName==='..')throw Error('Invalid M5Burner firmware filename');
     const digest=/^[a-f0-9]{64}$/i.test(v.sha256||'')?`sha256:${v.sha256.toLowerCase()}`:/^sha256:[a-f0-9]{64}$/i.test(v.digest||'')?v.digest.toLowerCase():null;
     return {tag_name:v.versionName,html_url:entry.releaseUrl,published_at:new Date(v.publishTime).toISOString().replace('.000Z','Z'),prerelease:false,draft:false,

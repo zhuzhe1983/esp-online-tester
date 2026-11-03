@@ -5,7 +5,7 @@ import {pathToFileURL,fileURLToPath} from 'node:url';
 import {releaseRequest,publicReleases,releaseMatchesChannel} from './firmware-release-source.mjs';
 import {validateWatchlist} from '../web/platform/watchlist.js';
 import {enrichMeshtasticReleases} from './meshtastic-release-metadata.mjs';
-import {m5burnerV1Request,validateM5BurnerV1Project} from './firmware-source-m5burner-v1.mjs';
+import {m5burnerV1Request,validateM5BurnerV1Project,m5burnerV1VersionInventory} from './firmware-source-m5burner-v1.mjs';
 const DAY=24*3600*1000;
 export function githubToken(args=process.argv) {
   let token=process.env.GITHUB_TOKEN||process.env.GH_TOKEN;
@@ -42,8 +42,9 @@ export async function syncReleaseMetadata(list,{previous={entries:[]},token,fetc
       const upstream=await enrichMeshtasticReleases(entry,publicReleases(entry,data),{fetchImpl});
       const releases=compactReleaseHistory(entry,upstream);const release=releases.find(value=>releaseMatchesChannel(value,entry.releaseChannel));
       if(!release)throw Error('No published release for configured channel');
-      result={id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:now,sourceUrl:request.url,release,releases,error:null};
-      if(saved&&!saved.error&&same(saved.releases||[saved.release],releases)&&same(saved.release,release)&&Date.parse(now)-Date.parse(saved.checkedAt)<DAY)result={...result,checkedAt:saved.checkedAt};
+      const versionInventory=entry.metadataProvider==='m5burner-v1'?m5burnerV1VersionInventory(entry,data):undefined;
+      result={id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:now,sourceUrl:request.url,release,releases,...(versionInventory?{versionInventory}:{}),error:null};
+      if(saved&&!saved.error&&same(saved.releases||[saved.release],releases)&&same(saved.release,release)&&same(saved.versionInventory,versionInventory)&&Date.parse(now)-Date.parse(saved.checkedAt)<DAY)result={...result,checkedAt:saved.checkedAt};
     }catch(error){
       result={id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:saved?.checkedAt||null,sourceUrl:entry.metadataUrl,release:saved?.release||null,releases:saved?.releases||[],error:{status:error.status||null,message:error.status?error.message:'发布元信息同步失败；保留上次结果。',attemptedAt:now}};
       if(saved?.error&&saved.error.status===result.error.status&&saved.error.message===result.error.message&&Date.parse(now)-Date.parse(saved.error.attemptedAt)<DAY)result.error=saved.error;
