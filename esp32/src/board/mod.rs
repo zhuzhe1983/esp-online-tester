@@ -10,11 +10,13 @@ pub mod atom_lite;
 pub mod atom_matrix;
 pub mod atom_voice;
 pub mod atom_matrix_v11;
+pub mod stamppico;
 
 pub use tdisplay::*;
 
 pub fn make_board(name: &str) -> Option<esp_soc::Board> {
     match name {
+        "stamppico" => Some(Box::new(stamppico::StampPico::new())),
         "lilygo-t-beam-v1-2" => Some(Box::new(tbeam::TBeam::new())),
         "atom-matrix-v11" | "m5stack-c008-b-v11" => Some(Box::new(atom_matrix_v11::AtomMatrixV11::new())),
         "atom-matrix" | "m5stack-c008-b" => Some(Box::new(atom_matrix::AtomMatrix::new())),
