@@ -3575,13 +3575,21 @@
       "summary": "ESP32-S3-PICO-1-N8R8 控制模块，配有电池管理、电池接口、BTB 扩展和 FPC 天线接口；此 SKU 不焊排针。",
       "knowledgeUrl": "./knowledge/m5stack-s015.json",
       "runtime": {
-        "board": null,
+        "board": "stamps3bat",
         "flashMb": 8,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "power",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "name": "PWR（状态读取）"
+        }
+      ],
       "interfaces": [
         {
           "id": "battery",
@@ -3616,9 +3624,8 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "部分板级模型：SDA48/SCL47 上的 M5PM1 寄存器、GPIO0 NeoPixel RGB565 刷新与 LED 电源；PWR 仅支持固件禁用自动单击复位及双击关机后的状态轮询。物理关机、复位、下载模式、模拟充电及网络未模拟。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
         "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
         "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
         "STL is the cover only,17.7556×29.6240×5.5mm; the official full module18×29.8mm envelope is larger. This difference is not removed by scaling.",
@@ -3647,7 +3654,8 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-s015-uiflow2"
     },
     {
       "id": "m5stack-s015-dip",

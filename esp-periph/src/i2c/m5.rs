@@ -56,11 +56,18 @@ impl M5pm1 {
     pub const ADDRESS: u8 = 0x6e;
 
     pub fn new(state: Arc<Mutex<M5pm1State>>) -> Self {
+        Self::with_power_config(state, 0x17)
+    }
+
+    /// Board-specific power-on rails. S015 starts with RGB and EXT_5V disabled.
+    /// Existing boards retain their historical 0x17 profile through `new`.
+    pub fn with_power_config(state: Arc<Mutex<M5pm1State>>, power_config:u8) -> Self {
         {let mut state=state.lock().expect("M5PM1 state mutex poisoned");*state=M5pm1State {battery_mv:state.battery_mv,charging:state.charging,input_mask:state.input_mask,input_high:state.input_high,..Default::default()};}
+        {let mut state=state.lock().expect("M5PM1 state mutex poisoned");state.led_enabled=power_config&0x10!=0;state.grove_5v_enabled=power_config&8!=0;state.ldo3v3_enabled=power_config&4!=0;}
         Self {
             registers: Reg8Device::new("m5pm1", &[
                 (0x00, 0x50), (0x01, 0x20), (0x02, 0x05), (0x03, 0x06),
-                (0x06, 0x17), (0x08, 0x40), (0x13, 0x1f), (0x49, 0x2a),
+                (0x06, power_config), (0x08, 0x40), (0x13, 0x1f), (0x49, 0x2a),
             ]),
             state,
         }

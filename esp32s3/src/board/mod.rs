@@ -25,6 +25,8 @@ mod stackchan_base;
 pub mod dinmeter;
 mod tembed_cc1101;
 mod stamps3;
+mod stamps3bat;
+mod stamps3bat_power;
 mod stampfly;
 pub mod stopwatch;
 pub mod papermono;
@@ -76,6 +78,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "dial" | "m5stack-dial" => Some(Box::new(Dial::new())),
         "stamps3" | "m5stack-s007" => Some(Box::new(stamps3::StampS3::new())),
         "stamps3a" | "m5stack-s007-v033" => Some(Box::new(stamps3::StampS3::s3a())),
+        "stamps3bat" | "m5stack-s015" => Some(Box::new(stamps3bat::StampS3Bat::new())),
         "stampfly" | "m5stack-k138" => Some(Box::new(stampfly::StampFly::new())),
         "stampfly-v11" | "m5stack-k138-v11" => Some(Box::new(stampfly::StampFly::v11())),
         "dinmeter" | "m5stack-dinmeter" => Some(Box::new(DinMeter::new())),
@@ -103,5 +106,5 @@ pub fn make_board(name: &str) -> Option<Board> {
 /// offset 0x50, PKG_VERSION bits 23:21; M5GFX 65c816a3 identifies PICO as 1.
 /// v4.4.8 defines the same offset/field. No changes for other products.
 pub fn configure_chip_identity(board:&str,efuse:&mut esp_periph::efuse::Efuse) {
-    if matches!(board,"atoms3r"|"atom-voices3r"|"atoms3r-chatbot") {let r=efuse.ram.read(0x50);efuse.ram.write(0x50,(r&!(7<<21))|(1<<21));}
+    if matches!(board,"atoms3r"|"atom-voices3r"|"atoms3r-chatbot"|"stamps3bat") {let r=efuse.ram.read(0x50);efuse.ram.write(0x50,(r&!(7<<21))|(1<<21));}
 }
