@@ -38,6 +38,61 @@ test('hashless exception cannot accept substituted URL, community identity, othe
 test('same-version pinned SHA/URL are never overwritten, with or without a publisher digest',()=>{
  for(const sha256 of [undefined,HASH,'b'.repeat(64)]){const {entry,metadata}=fixture();if(sha256)metadata.versions.data[0].sha256=sha256;const f=catalog(entry,publicReleases(entry,metadata));f.firmwares.items[0].revision='2.5.3';const r=updateFirmwareCatalog(f);assert.deepEqual(r.firmwares,f.firmwares);assert.equal(r.report.entries[0].reason,sha256&&sha256!==HASH?'same-version-different-artifact':'current-version');}
 });
+async function republishedFixture(mutate=()=>{}){
+ const {entry,metadata}=fixture(),oldId='2113079049317601280',oldDate='2026-10-21T00:00:00Z';entry.releaseHistoryLimit=1;
+ mutate(metadata,oldId);const f=catalog(entry,[]),firmware=f.firmwares.items[0];
+ firmware.revision='v2.5.3';firmware.source={url:`${entry.metadataUrl}/versions/${oldId}/download`};
+ firmware.catalogUpdate={publishedAt:oldDate,publisherIdentity:{provider:'m5burner-v1',sourceType:'OFFICIAL',firmwareId:P,deviceId:D,versionId:oldId,visibility:'PUBLIC',status:'PUBLISHED'}};
+ firmware.downloadAccess={url:firmware.source.url,status:'verification-required'};firmware.verification={passed:true};
+ f.snapshot=await syncReleaseMetadata(f.watchlist,{now:NOW,fetchImpl:async url=>Response.json(url===entry.metadataUrl?metadata.project:metadata.versions)});
+ return f;
+}
+test('a fresh complete version inventory permits a same-label official republish, preserving old evidence and clearing validation',async()=>{
+ const f=await republishedFixture(),r=updateFirmwareCatalog(f),firmware=r.firmwares.items[0];
+ assert.equal(r.report.entries[0].reason,'republished-official-version-without-publisher-sha256');assert.equal(firmware.revision,'v2.5.3');assert.equal(firmware.source.url,`${f.watchlist.entries[0].metadataUrl}/versions/${V}/download`);
+ assert.equal(firmware.status,'trial');assert.equal(firmware.simulationVerified,false);assert.equal(firmware.hardwareValidated,false);assert.equal(firmware.verification,undefined);assert.equal(firmware.downloadAccess,undefined);
+ assert.deepEqual(firmware.artifactHistory[0].source,f.firmwares.items[0].source);assert.deepEqual(firmware.artifactHistory[0].downloadAccess,f.firmwares.items[0].downloadAccess);assert.equal(firmware.artifactHistory[0].verification.passed,true);
+ assert.deepEqual(f.snapshot.entries[0].versionInventory.versionIds,[V]);assert.equal(r.report.summary.firmwareBodiesDownloaded,0);
+});
+test('old IDs retained outside compact history or excluded by status/device filters do not authorize replacement',async()=>{
+ for(const override of [{},{status:'DRAFT'},{visibility:'PRIVATE'},{supportedDevices:[{deviceId:'9'}]}]){
+  const f=await republishedFixture((metadata,oldId)=>metadata.versions.data.push({...metadata.versions.data[0],versionId:oldId,publishTime:'2026-10-21T00:00:00Z',...override}));
+  assert.equal(f.snapshot.entries[0].releases.length,1);assert.equal(f.snapshot.entries[0].versionInventory.versionIds.length,2);
+  assert.deepEqual(updateFirmwareCatalog(f).firmwares,f.firmwares);
+ }
+});
+test('same-label republishing needs fresh successful complete metadata, exact identities and an unpinned current source',async()=>{
+ for(const mutate of [
+  f=>f.firmwares.items[0].source.sha256=HASH,
+  f=>f.firmwares.items[0].source.url='https://example.com/old.bin',
+  f=>f.firmwares.items[0].catalogUpdate.publisherIdentity.deviceId='9',
+  f=>f.firmwares.items[0].catalogUpdate.publisherIdentity.provider='m5burner',
+  f=>delete f.firmwares.items[0].catalogUpdate.publishedAt,
+  f=>f.firmwares.items[0].catalogUpdate.publishedAt='2026-10-28T00:00:00Z',
+  f=>f.snapshot.entries[0].releases[0].assets[0].publisherIdentity.provider='m5burner',
+  f=>f.snapshot.entries[0].releases[0].assets[0].publisherIdentity.firmwareId='9',
+  f=>delete f.snapshot.entries[0].versionInventory,
+  f=>f.snapshot.entries[0].versionInventory.complete=false,
+  f=>f.snapshot.entries[0].versionInventory.versionIds=[],
+  f=>f.snapshot.entries[0].versionInventory.firmwareId='9',
+  f=>f.snapshot.entries[0].versionInventory.deviceId='9',
+  f=>f.snapshot.entries[0].versionInventory.sourceUrl+='&page=1',
+  f=>f.snapshot.entries[0].sourceUrl='https://example.com/metadata',
+  f=>f.snapshot.entries[0].checkedAt='2026-10-26T12:59:59Z',
+  f=>f.snapshot.entries[0].checkedAt='2026-10-28T00:00:00Z',
+  f=>f.snapshot.entries[0].error={status:503},
+ ]){const f=await republishedFixture();mutate(f);assert.deepEqual(updateFirmwareCatalog(f).firmwares,f.firmwares);}
+});
+test('complete inventory changes outside compact history refresh metadata and failed version fetches cannot reuse inventory',async()=>{
+ const f=await republishedFixture(),{entry,metadata}=fixture();entry.releaseHistoryLimit=1;
+ metadata.versions.data.push({...metadata.versions.data[0],versionId:'7',publishTime:'2020-01-01T00:00:00Z'});
+ const list={...f.watchlist,entries:[entry]},later='2026-10-27T14:00:00Z';
+ const next=await syncReleaseMetadata(list,{previous:f.snapshot,now:later,fetchImpl:async url=>Response.json(url===entry.metadataUrl?metadata.project:metadata.versions)});
+ assert.equal(next.entries[0].checkedAt,later);assert.deepEqual(next.entries[0].versionInventory.versionIds,[V,'7']);
+ const failed=await syncReleaseMetadata(list,{previous:next,now:later,fetchImpl:async url=>url===entry.metadataUrl?Response.json(metadata.project):new Response(null,{status:503})});
+ assert.ok(failed.entries[0].error);assert.equal(failed.entries[0].versionInventory,undefined);
+ metadata.versions={code:200,data:{records:metadata.versions.data,total:2}};assert.throws(()=>publicReleases(entry,metadata));
+});
 test('bad project response retains prior snapshot and does not fetch version list',async()=>{
  const {entry}=fixture(),list={schemaVersion:'1',categories:[{id:'development'}],entries:[entry]};let calls=0;const previous={entries:[{id:entry.id,upstreamRepo:entry.upstreamRepo,release:{tag_name:'old'},releases:[],checkedAt:NOW}]};const r=await syncReleaseMetadata(list,{previous,fetchImpl:async()=>{calls++;return Response.json({code:200,data:{sourceType:'COMMUNITY'}});},now:NOW});assert.equal(calls,1);assert.equal(r.entries[0].release.tag_name,'old');assert.ok(r.entries[0].error);
 });
