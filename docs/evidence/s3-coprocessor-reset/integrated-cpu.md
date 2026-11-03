@@ -143,3 +143,12 @@ receipts. All 506 candidate Rust/Cargo working-tree files still matched the
 pinned revision after measurement. `git diff --check` and
 `node tools/check-evidence-privacy.mjs` pass (2,213 tracked evidence files,
 including 22 gzip files); the new text and JSON were also manually reviewed.
+
+## Final Stamp integration follow-up
+
+The final candidate `aca1effd` is measured against the same frozen baseline in
+[the final comparison](integrated-cpu-final.md). It retains 48 additional fixed-work
+runs: median user CPU S3 +1.541%, Pocket Tank +0.110%, C3 −20.940%, C6 +0.183%.
+All signatures match this receipt. The lower load and large baseline drift
+between periods are recorded, without replacing the original samples or
+attributing the C3 decrease to a specific change.
