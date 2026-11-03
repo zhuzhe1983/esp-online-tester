@@ -4,11 +4,11 @@
   "kind": "product",
   "catalogId": "m5stack-s016",
   "title": "M5Stack Stamp-C5",
-  "summary": "ESP32-C5HF4 双频Wi-Fi6模块。模型来自官方KiCad封装内嵌STEP，保留真实USB开放曲面和已装配电子元件；RF屏蔽盖尚未包含。",
+  "summary": "ESP32-C5HF4 双频 Wi-Fi 6 模块。保留官方 KiCad 内嵌的真实 PCB 与元件，按实物照片补充带 IPEX 缺口的 RF 屏蔽罩、裸板颜色及标识。",
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:04:03Z",
+  "updatedAt": "2026-11-03T21:10:21.505634+00:00",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -347,6 +347,54 @@
         "manufacturer-cad-7cc4fe20bc"
       ],
       "method": "OpenCascade7.8.1.1 STEP solid traversal, followed by shells not inside solids and faces not inside shells. Native stable indices counted after explicit exclusions; read_step_styles preserves original XCAF names/colors and BRep bounds."
+    },
+    {
+      "id": "rf-shield-photo-supplement",
+      "group": "mechanical",
+      "label": "RF shield absent from embedded CAD",
+      "value": {
+        "estimatedFootprintMm": [
+          12.8,
+          11.2
+        ],
+        "estimatedLidThicknessMm": 0.15,
+        "estimatedWallThicknessMm": 0.12,
+        "estimatedLidTopModelZMm": 1.595,
+        "ipexCornerCutout": true
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-2c3a9a8113",
+        "product-photo-3ec997a801",
+        "product-photo-1cd8ca0889",
+        "manufacturer-cad-7cc4fe20bc"
+      ],
+      "notes": "All301 native parts remain. Notched lid and hollow rim follow board-scaled front/side photo silhouette; concealed clips and exact fabrication dimensions unknown. Marking photograph is supported by solid lid and masked inside boundary."
+    },
+    {
+      "id": "s016-fpc-assembly-audit",
+      "group": "mechanical",
+      "label": "Rear FPC assembly difference",
+      "value": "S016 bare FPC0.5mm-12P pads; no default-soldered connector or included headers.",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs",
+        "product-photo-40d5ab65d8",
+        "product-photo-1cd8ca0889"
+      ],
+      "notes": "Current official comparison and rear photo agree. Official side photo appears to have an FPC housing; retain source conflict rather than treating it as proof of S016 assembly."
+    },
+    {
+      "id": "photo-pcb-surface",
+      "group": "mechanical",
+      "label": "Exposed red PCB surface",
+      "value": "Original exact-SKU photo on native board flat faces; geometry clips all through-holes and board outline.",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-2c3a9a8113",
+        "product-photo-40d5ab65d8"
+      ],
+      "notes": "RF shield, USB, antenna and LED packages excluded. Photograph conveys appearance, not electrical verification. No UNKNOWN board used because populated CAD exists."
     }
   ],
   "revisions": [],
