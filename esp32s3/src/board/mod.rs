@@ -27,6 +27,8 @@ mod tembed_cc1101;
 mod stamps3;
 mod stamps3bat;
 mod stamps3bat_power;
+mod stamplc;
+mod stamplc_io;
 mod stampfly;
 pub mod stopwatch;
 pub mod papermono;
@@ -79,6 +81,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "stamps3" | "m5stack-s007" => Some(Box::new(stamps3::StampS3::new())),
         "stamps3a" | "m5stack-s007-v033" => Some(Box::new(stamps3::StampS3::s3a())),
         "stamps3bat" | "m5stack-s015" => Some(Box::new(stamps3bat::StampS3Bat::new())),
+        "stamplc" | "m5stack-k141" => Some(Box::new(stamplc::StamPlc::new())),
         "stampfly" | "m5stack-k138" => Some(Box::new(stampfly::StampFly::new())),
         "stampfly-v11" | "m5stack-k138-v11" => Some(Box::new(stampfly::StampFly::v11())),
         "dinmeter" | "m5stack-dinmeter" => Some(Box::new(DinMeter::new())),

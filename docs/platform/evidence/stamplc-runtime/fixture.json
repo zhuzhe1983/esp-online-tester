@@ -1,0 +1,191 @@
+{
+  "checkedAt": "2026-11-03T21:15:25.017Z",
+  "command": "node tools/probe-stamplc.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "productId": "m5stack-k141",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "wasmSha256": "2f9f297969d7ffabe3321ad5997b021f1a89ef3f66d84ad6bcdad61e009f679d",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+    "stamplc_fixture.bin": "df6188fa73b8aa8b7ea7b4cd776d62a658718f4a5c402edde2896f3e46790269",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [
+    "actual-ROM-and-IDF-boot",
+    "shared-G3-reset-holds-both-I2C-expanders",
+    "I2C13-15-identities-wrong-address-wrong-pins-and-SPI-CS10-rejection",
+    "all-32400-SPI-pixels-fixed-glass-rotation-and-expander-backlight",
+    "AW9523-address59-default-open-drain-and-fourth-output-readback",
+    "independent-G21-RMT-and-G38-Stamp-LED-supply",
+    "three-fresh-PI4IO-key-press-release-reads-and-latched-IRQ14-clear-drive-LCD-RGB-relay-readback",
+    "no-invented-power-key-or-touch",
+    "pause-stops-guest-time-and-input",
+    "platform-reset-releases-held-key-and-reinitializes-GRAM-expanders-and-LEDs"
+  ],
+  "frames": [
+    {
+      "label": "backlight-off",
+      "width": 240,
+      "height": 135,
+      "rgbaSha256": "17687967283c6d29f77b4b523eef2b8f3efc466e1100e2eb987f636a05ed9d46"
+    },
+    {
+      "label": "four-guest-SPI-quadrants",
+      "width": 240,
+      "height": 135,
+      "rgbaSha256": "863f414c933968ec49026f1839faf3b588fc0e5c5ea0033d2549b1352fd14b1a"
+    },
+    {
+      "label": "button-a",
+      "width": 240,
+      "height": 135,
+      "rgbaSha256": "f5e8ea2210417e4a24b2a7a34f34fc1295e22d51f206b97a1654ac43f2d0a3a0"
+    },
+    {
+      "label": "button-a-released",
+      "width": 240,
+      "height": 135,
+      "rgbaSha256": "863f414c933968ec49026f1839faf3b588fc0e5c5ea0033d2549b1352fd14b1a"
+    },
+    {
+      "label": "button-b",
+      "width": 240,
+      "height": 135,
+      "rgbaSha256": "4b07e53b7fbb5679b0216d22885b3076ac3d29de284f6f73d6e6ebd4038607a9"
+    },
+    {
+      "label": "button-b-released",
+      "width": 240,
+      "height": 135,
+      "rgbaSha256": "863f414c933968ec49026f1839faf3b588fc0e5c5ea0033d2549b1352fd14b1a"
+    },
+    {
+      "label": "button-c",
+      "width": 240,
+      "height": 135,
+      "rgbaSha256": "ffb0a50e7748f7efe3336833066eb6393bece9d495b03f8025574570316096ad"
+    },
+    {
+      "label": "button-c-released",
+      "width": 240,
+      "height": 135,
+      "rgbaSha256": "863f414c933968ec49026f1839faf3b588fc0e5c5ea0033d2549b1352fd14b1a"
+    },
+    {
+      "label": "platform-reset",
+      "width": 240,
+      "height": 135,
+      "rgbaSha256": "863f414c933968ec49026f1839faf3b588fc0e5c5ea0033d2549b1352fd14b1a"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "button-a",
+      "pressed": {
+        "buttonMask": 4,
+        "irqBefore": 0,
+        "pendingMask": 4,
+        "irqAfter": 1,
+        "relayReadback": 1
+      },
+      "leds": [
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          32,
+          0,
+          16
+        ]
+      ],
+      "released": {
+        "buttonMask": 0,
+        "irqBefore": 1,
+        "pendingMask": 0,
+        "irqAfter": 1,
+        "relayReadback": 0
+      }
+    },
+    {
+      "id": "button-b",
+      "pressed": {
+        "buttonMask": 2,
+        "irqBefore": 0,
+        "pendingMask": 2,
+        "irqAfter": 1,
+        "relayReadback": 2
+      },
+      "leds": [
+        [
+          0,
+          255,
+          0
+        ],
+        [
+          32,
+          0,
+          16
+        ]
+      ],
+      "released": {
+        "buttonMask": 0,
+        "irqBefore": 1,
+        "pendingMask": 0,
+        "irqAfter": 1,
+        "relayReadback": 0
+      }
+    },
+    {
+      "id": "button-c",
+      "pressed": {
+        "buttonMask": 1,
+        "irqBefore": 0,
+        "pendingMask": 1,
+        "irqAfter": 1,
+        "relayReadback": 4
+      },
+      "leds": [
+        [
+          0,
+          0,
+          255
+        ],
+        [
+          32,
+          0,
+          16
+        ]
+      ],
+      "released": {
+        "buttonMask": 0,
+        "irqBefore": 1,
+        "pendingMask": 0,
+        "irqAfter": 1,
+        "relayReadback": 0
+      }
+    }
+  ],
+  "limitations": [
+    "This is independent diagnostic firmware, not factory compatibility proof.",
+    "Relay digital GPIO drive/readback is modeled; physical contacts/load, optocoupler voltage thresholds and external input stimuli are not.",
+    "INA226/LM75/RX8130/SD/CAN/RS485/buzzer/physical power/network remain unsupported.",
+    "LCD analog initialization delays, optical response and RGB brightness are not physically calibrated."
+  ],
+  "guestSeconds": 4.1,
+  "status": "pass",
+  "serialCheckCount": 13,
+  "sourceFilesSha256": {
+    "esp32s3/src/board/stamplc.rs": "3a08b84db6e2de1acdfd1093307512339737abcd3e79d3cc651e6a7101a04a8c",
+    "esp32s3/src/board/stamplc_io.rs": "3e3dabfb9d5f782382d33987a8d48790446f90307b170a37a017a1e73bdc9eda",
+    "tools/fixtures/stamplc-firmware/main/main.c": "3b9ad64a0f4a70e99a5d7e15936f730381b72b63826d0e4559b5cea6897440e5",
+    "tools/probe-stamplc.mjs": "55350f506e89b3bd1b72dd258ed9f717eb644e75258d4293e77f9a8bd54dc0f2"
+  },
+  "environment": {
+    "node": "v26.8.2",
+    "idf": "v5.5.1",
+    "nativeRust": "1.99.1 (58cf8f9c3 2026-10-13)",
+    "buildJobs": 3
+  }
+}

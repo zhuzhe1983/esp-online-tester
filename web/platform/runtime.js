@@ -611,7 +611,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     booted = true; setStatus('running'); return snapshot();
   };
   const controls = () => Array.isArray(product?.controls) ? product.controls : product?.controls?.buttons || [];
-  const boardButton = control => control?.transport==='board' && ({'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB'],'lilygo-t-beam-v1-2':['power'],'stamps3bat':['power'],'stackchan':['touch-pad-front','touch-pad-middle','touch-pad-back']}[product?.runtime?.board] || []).includes(control.id);
+  const boardButton = control => control?.transport==='board' && ({'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB'],'lilygo-t-beam-v1-2':['power'],'stamps3bat':['power'],'stamplc':['button-a','button-b','button-c'],'stackchan':['touch-pad-front','touch-pad-middle','touch-pad-back']}[product?.runtime?.board] || []).includes(control.id);
   const input = async event => {
     const releaseWhilePaused = status === 'paused' && ((['button','matrix-key','accessory-button'].includes(event?.type) && event.pressed === false) || (event?.type==='accessory-connection' && event.connected===false) || (event?.type === 'touch' && event.down === false));
     requireValue(status === 'running' || releaseWhilePaused, 'NOT_RUNNING', 'Start the emulator before sending input.');

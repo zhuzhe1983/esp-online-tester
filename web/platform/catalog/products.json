@@ -2133,10 +2133,10 @@
       "summary": "以 Stamp-S3A 为主控的 DIN 导轨工业控制器，配备 8 路隔离输入、4 路继电器、CAN/RS485 与小尺寸彩屏。",
       "knowledgeUrl": "./knowledge/m5stack-k141.json",
       "runtime": {
-        "board": null,
+        "board": "stamplc",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": {
         "width": 240,
@@ -2150,19 +2150,28 @@
           "id": "button-a",
           "type": "button",
           "controller": "PI4IOE5V6408",
-          "controllerPin": "P2"
+          "controllerPin": "P2",
+          "transport": "board",
+          "name": "A",
+          "defaultKeyCode": "KeyA"
         },
         {
           "id": "button-b",
           "type": "button",
           "controller": "PI4IOE5V6408",
-          "controllerPin": "P1"
+          "controllerPin": "P1",
+          "transport": "board",
+          "name": "B",
+          "defaultKeyCode": "KeyB"
         },
         {
           "id": "button-c",
           "type": "button",
           "controller": "PI4IOE5V6408",
-          "controllerPin": "P0"
+          "controllerPin": "P0",
+          "transport": "board",
+          "name": "C",
+          "defaultKeyCode": "KeyC"
         }
       ],
       "interfaces": [
@@ -2227,9 +2236,8 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "部分板级模型：ST7789V2 显示、PI4IO 三按键/二值 RGB/背光，以及 AW9523 继电器 GPIO 驱动和读回；八路光耦输入固定为未接入。实际继电器触点/负载、传感器、RTC、SD、CAN、RS485、蜂鸣器、物理电源与网络未模拟。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
         "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
         "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
         "External screw heads, terminal block exteriors and Grove mouths are now separate image-measurement parts; their unseen internals and side CAN/RS485 connector details remain unverified.",
