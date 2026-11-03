@@ -1,6 +1,6 @@
 # Stamp-S3A S007-V033 运行范围
 
-`stamps3a` 是 S007-V033 的部分板级模型：8 MB Flash、未配置 PSRAM、G0 用户按键、G21 单颗 WS2812B 和 G38 数字供电控制。它依赖基础 Stamp-S3 的实现，但保留独立产品、板型和存储空间；S007-PIN127-V033 按其独立官网条目接入相同数字供电子集，并单独运行 fixture；[PIN1.27-V033 收据](evidence/stamp-controllers/s007-pin127-v033-runtime.json)保留来源和运行检查。该新SKU的专属模型仍在导入，最终几何与点击面验收待完成模型后进行。
+`stamps3a` 是 S007-V033 的部分板级模型：8 MB Flash、未配置 PSRAM、G0 用户按键、G21 单颗 WS2812B 和 G38 数字供电控制。它依赖基础 Stamp-S3 的实现，但保留独立产品、板型和存储空间；S007-PIN127-V033 按其独立官网条目接入相同数字供电子集，并单独运行 fixture；[PIN1.27-V033 收据](evidence/stamp-controllers/s007-pin127-v033-runtime.json)保留来源和运行检查。该新SKU的专属模型仍在导入，最终几何与点击面验收待完成模型后进行。S007-PIN254-V033 也已按其独立官方条目和相同 v0.3.3 电气设计接入；[PIN2.54-V033 收据](evidence/stamp-controllers/s007-pin254-v033-runtime.json)记录新 worker 的 G0/G38/RMT 测试。
 
 v0.3.3 原理图将 GPIO38 / DISP_BL 接到 AW35122FDR EN，BL_3V3 给 RGB 供电。官方 Arduino Quick Start 明确 `LED_EN 38` 并驱动高电平。只有 G38 作为输出且为高时，G21 的新 RMT 帧才可更新灯色；断电清除颜色，再上电不恢复旧帧。G38 改为输入也会断开虚拟灯电源。没有新增 SoC 寄存器常量，沿用既有 S3 GPIO/RMT 路由。
 

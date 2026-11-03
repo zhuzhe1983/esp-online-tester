@@ -3401,17 +3401,20 @@
       "chip": "esp32s3",
       "module": "ESP32-S3FN8",
       "runtime": {
-        "board": null,
+        "board": "stamps3a",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [
         {
           "id": "button",
-          "name": "Documented physical button",
-          "type": "button"
+          "name": "按键",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         }
       ],
       "interfaces": [],
@@ -3423,8 +3426,9 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "部分板级模型：G0按键、G21单颗WS2812B RMT、G38高电平数字灯电源；按本SKU单独验证客体输入输出。2.54mm排针保留独立机械身份，外接器件、FPC屏、软件GPIO灯时序与模拟供电未实现。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。",
+        "官方UIFlow2 v2.5.4仍为trial；Burner要求验证，GitHub地址受CORS限制且完整应用启动未证实，不能继承旧版本运行结论。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-s007-pin254-v033.json",
       "model": {
@@ -3443,7 +3447,8 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-s007-v033-uiflow2"
     },
     {
       "id": "m5stack-k122",
