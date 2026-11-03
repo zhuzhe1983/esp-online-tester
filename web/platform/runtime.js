@@ -701,12 +701,12 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   const api = {
     version: API_VERSION,
     readLoRa() {return exclusive(async()=>{
-      requireValue(['papermono','lilygo-t-beam-v1-2'].includes(product?.runtime?.board)&&worker,'LORA_UNSUPPORTED','Load firmware on a board with a digital LoRa model before inspecting its radio.');
+      requireValue(['papermono','lilygo-t-beam-v1-2','stamp-c6lora'].includes(product?.runtime?.board)&&worker,'LORA_UNSUPPORTED','Load firmware on a board with a digital LoRa model before inspecting its radio.');
       const requestId=++inputSequence,result=await ask(`lora:${requestId}`,{op:'lora-read',requestId});
       requireValue(result.ok,'LORA_UNSUPPORTED','This runtime does not expose a LoRa radio.');return {...result.state,guestTime:result.time};
     });},
     receiveLoRa(packet) {return exclusive(async()=>{
-      requireValue(['papermono','lilygo-t-beam-v1-2'].includes(product?.runtime?.board)&&worker,'LORA_UNSUPPORTED','This device does not have a digital LoRa model.');
+      requireValue(['papermono','lilygo-t-beam-v1-2','stamp-c6lora'].includes(product?.runtime?.board)&&worker,'LORA_UNSUPPORTED','This device does not have a digital LoRa model.');
       requireValue(['running','paused'].includes(status),'NOT_RUNNING','Start the firmware before supplying a LoRa peer packet.');
       const input=validateLoRaPacket(packet),requestId=++inputSequence,result=await ask(`lora:${requestId}`,{op:'lora-receive',requestId,packet:input});
       requireValue(result.ok,'LORA_PACKET_REJECTED','Radio power, receive state or channel configuration rejected this packet.');
@@ -760,7 +760,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         hardwareDiagnostics:{available:product?.runtime?.board==='stopwatch',source:'guest-registers',hardwareValidated:false},
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { mode: 'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },
-        lora:{available:['papermono','lilygo-t-beam-v1-2'].includes(product?.runtime?.board),model:product?.runtime?.board==='lilygo-t-beam-v1-2'?'sx1276-lora-digital':'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
+        lora:{available:['papermono','lilygo-t-beam-v1-2','stamp-c6lora'].includes(product?.runtime?.board),model:product?.runtime?.board==='lilygo-t-beam-v1-2'?'sx1276-lora-digital':'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
         imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: ['stopwatch','atom-matrix','atom-matrix-v11'].includes(product?.runtime?.board), orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: 'host-input', physicalMountingVerified: false },
         unsupported: ['arbitrary-dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input'] };
     },

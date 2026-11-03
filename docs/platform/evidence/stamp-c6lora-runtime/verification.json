@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-11-03T20:58:53.586549+00:00",
+  "scope": "S012 polling-SPI board subset; no full workspace CI or hardware claim",
+  "checks": [
+    {
+      "command": "CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=<task-target> cargo test -p esp32c6 --lib",
+      "passed": 71,
+      "failed": 0
+    },
+    {
+      "command": "CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=<task-target> cargo clippy -p esp32c6 --all-targets -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "source tools/wasm-rustflags.sh; CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=<task-target> cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm",
+      "status": "pass"
+    },
+    {
+      "command": "node --test tools/platform-config-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs",
+      "passedFiles": 3,
+      "failed": 0
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "status": "pass",
+      "products": 214,
+      "accessories": 10,
+      "firmwares": 167,
+      "watchlist": 113
+    }
+  ],
+  "firmwareBuild": {
+    "sdk": "ESP-IDF v5.5.1",
+    "target": "esp32c6",
+    "projectVersion": "1",
+    "source": "tools/fixtures/stamp-c6lora-firmware",
+    "binaryPublished": false,
+    "sourceHashes": {
+      "tools/fixtures/stamp-c6lora-firmware/CMakeLists.txt": "4d4c0200e6d7162b570a8f745e8592c6eaf0ed3ed4bb5750099b51e5d017cf16",
+      "tools/fixtures/stamp-c6lora-firmware/sdkconfig.defaults": "b16c9b222e50b57a0fa86a0e8f04266badb3aecddd4b7471bbc661f1ff7788a5",
+      "tools/fixtures/stamp-c6lora-firmware/main/CMakeLists.txt": "2490480db4711e431dd2af92ea01895162202a3d6b00399af74fbaf2309a6b23",
+      "tools/fixtures/stamp-c6lora-firmware/main/main.c": "ed1411dce517f34026f74907c4a77d4d7dec27cb540b3545b0930a03ab3b1d60"
+    }
+  }
+}

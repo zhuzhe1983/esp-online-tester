@@ -1,0 +1,234 @@
+{
+  "checkedAt": "2026-11-03T20:58:29.671Z",
+  "command": "node tools/probe-stamp-c6lora.mjs --build <fixture-build-directory>",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "productId": "m5stack-s012",
+  "wasmSha256": "a1c52dfea61793013bc83fb59de7cab7f9a533c7dca31b275fa1979df9550544",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "645073e5e647df38acb300eaac725e738573694c9ecdccf0724df4e37d96180b",
+    "stamp_c6lora_fixture.bin": "ddd0c306fa73335bfd3e0b91c6d0d41bc048890d42c0c267f96f6766c61bba8b",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [
+    "real-C6-boot-PI4IO-identity-address-and-SDA-negative-SPI-version-and-CS-negative-TX-DIO1",
+    "matching-explicit-peer-packet-reaches-guest-SPI-buffer-and-DIO1-mismatched-channel-and-malformed-payload-rejected",
+    "CRC-error-flag-is-guest-visible",
+    "guest-I2C-controls-antenna-switch-and-receive-LNA-recovery-requires-fresh-packet",
+    "pause-freezes-guest-clock-and-radio-state",
+    "guest-reset-pin-clears-radio-and-platform-reset-recreates-fresh-state",
+    "guest-software-reboot-reinitializes-existing-expander-and-radio"
+  ],
+  "outputs": [
+    {
+      "phase": "boot",
+      "radio": {
+        "model": "sx1262-lora-digital",
+        "physicalRf": false,
+        "powered": true,
+        "resetHigh": true,
+        "antennaEnabled": true,
+        "busy": false,
+        "mode": 80,
+        "irq": 0,
+        "config": {
+          "frequency": 910163968,
+          "sf": 7,
+          "bandwidth": 4,
+          "codingRate": 1,
+          "syncWord": 5156,
+          "implicitHeader": false,
+          "crc": true,
+          "invertIq": false
+        },
+        "transmitted": [
+          {
+            "config": {
+              "frequency": 910163968,
+              "sf": 7,
+              "bandwidth": 4,
+              "codingRate": 1,
+              "syncWord": 5156,
+              "implicitHeader": false,
+              "crc": true,
+              "invertIq": false
+            },
+            "payloadHex": "5354414d502d43364c4f5241",
+            "cycle": 36661308
+          }
+        ],
+        "txCount": 1,
+        "rxCount": 0,
+        "timeoutCount": 0,
+        "rejectedCommands": 0,
+        "droppedTx": 0,
+        "guestTime": 0.2551910875
+      }
+    },
+    {
+      "phase": "two-peer-packets",
+      "radio": {
+        "model": "sx1262-lora-digital",
+        "physicalRf": false,
+        "powered": true,
+        "resetHigh": true,
+        "antennaEnabled": true,
+        "busy": false,
+        "mode": 80,
+        "irq": 0,
+        "config": {
+          "frequency": 910163968,
+          "sf": 7,
+          "bandwidth": 4,
+          "codingRate": 1,
+          "syncWord": 5156,
+          "implicitHeader": false,
+          "crc": true,
+          "invertIq": false
+        },
+        "transmitted": [
+          {
+            "config": {
+              "frequency": 910163968,
+              "sf": 7,
+              "bandwidth": 4,
+              "codingRate": 1,
+              "syncWord": 5156,
+              "implicitHeader": false,
+              "crc": true,
+              "invertIq": false
+            },
+            "payloadHex": "5354414d502d43364c4f5241",
+            "cycle": 36661308
+          }
+        ],
+        "txCount": 1,
+        "rxCount": 2,
+        "timeoutCount": 0,
+        "rejectedCommands": 0,
+        "droppedTx": 0,
+        "guestTime": 0.37842329375
+      }
+    },
+    {
+      "phase": "reset-asserted",
+      "radio": {
+        "model": "sx1262-lora-digital",
+        "physicalRf": false,
+        "powered": true,
+        "resetHigh": false,
+        "antennaEnabled": true,
+        "busy": true,
+        "mode": 32,
+        "irq": 0,
+        "config": null,
+        "transmitted": [
+          {
+            "config": {
+              "frequency": 910163968,
+              "sf": 7,
+              "bandwidth": 4,
+              "codingRate": 1,
+              "syncWord": 5156,
+              "implicitHeader": false,
+              "crc": true,
+              "invertIq": false
+            },
+            "payloadHex": "5354414d502d43364c4f5241",
+            "cycle": 36661308
+          }
+        ],
+        "txCount": 1,
+        "rxCount": 3,
+        "timeoutCount": 0,
+        "rejectedCommands": 0,
+        "droppedTx": 0,
+        "guestTime": 0.52119441875
+      }
+    },
+    {
+      "phase": "software-reboot",
+      "radio": {
+        "model": "sx1262-lora-digital",
+        "physicalRf": false,
+        "powered": true,
+        "resetHigh": true,
+        "antennaEnabled": true,
+        "busy": false,
+        "mode": 80,
+        "irq": 0,
+        "config": {
+          "frequency": 910163968,
+          "sf": 7,
+          "bandwidth": 4,
+          "codingRate": 1,
+          "syncWord": 5156,
+          "implicitHeader": false,
+          "crc": true,
+          "invertIq": false
+        },
+        "transmitted": [
+          {
+            "config": {
+              "frequency": 910163968,
+              "sf": 7,
+              "bandwidth": 4,
+              "codingRate": 1,
+              "syncWord": 5156,
+              "implicitHeader": false,
+              "crc": true,
+              "invertIq": false
+            },
+            "payloadHex": "5354414d502d43364c4f5241",
+            "cycle": 36661412
+          },
+          {
+            "config": {
+              "frequency": 910163968,
+              "sf": 7,
+              "bandwidth": 4,
+              "codingRate": 1,
+              "syncWord": 5156,
+              "implicitHeader": false,
+              "crc": true,
+              "invertIq": false
+            },
+            "payloadHex": "5354414d502d43364c4f5241",
+            "cycle": 76002482
+          }
+        ],
+        "txCount": 2,
+        "rxCount": 0,
+        "timeoutCount": 0,
+        "rejectedCommands": 0,
+        "droppedTx": 0,
+        "guestTime": 0.51384575
+      }
+    }
+  ],
+  "limitations": [
+    "Not official factory firmware compatibility or physical hardware validation.",
+    "LoRa packets are explicit digital peer inputs; no RF propagation, receive gain, antenna loss, Wi-Fi association, LoRaWAN service or calibrated silicon timing.",
+    "The bare module has no framebuffer, RGB or mapped user button."
+  ],
+  "serialEvidence": [
+    "C6LORA_IO_ID a2",
+    "C6LORA_WRONG_ADDRESS NACK",
+    "C6LORA_WRONG_SDA NACK",
+    "C6LORA_RESET_HOLD",
+    "C6LORA_RF_ENABLED",
+    "C6LORA_SPI_INITIALIZED",
+    "C6LORA_WRONG_CS ff",
+    "C6LORA_RADIO SX1261",
+    "C6LORA_TX_DONE irq=0001 dio1=1",
+    "C6LORA_RX_READY",
+    "C6LORA_RX irq=0002 dio1=1 bytes=41434b",
+    "C6LORA_RX irq=0042 dio1=1 bytes=435243",
+    "C6LORA_ANT_OFF",
+    "C6LORA_LNA_OFF",
+    "C6LORA_RESET_LOW",
+    "C6LORA_SOFTWARE_REBOOT",
+    "C6LORA_IO_ID a0"
+  ],
+  "status": "pass"
+}
