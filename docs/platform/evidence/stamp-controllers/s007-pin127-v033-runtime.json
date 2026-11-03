@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "productId": "m5stack-s007-pin127-v033",
+  "sku": "S007-PIN127-V033",
+  "checkedAt": "2026-11-03T21:05:14.752Z",
+  "source": {
+    "url": "https://docs.m5stack.com/en/core/Stamp-S3A_PIN127",
+    "resolvedUrl": "https://docs.m5stack.com/en/core/Stamp-S3A_PIN1.27",
+    "fetchedAt": "2026-11-03T21:04:41.158786+00:00",
+    "bytes": 139200,
+    "sha256": "691358f0332696da0f41d71e2373f19cb34d2d0bda37c067c3adb3ba3c9669b0"
+  },
+  "electricalIdentity": {
+    "board": "stamps3a",
+    "chip": "ESP32-S3FN8",
+    "flashMb": 8,
+    "psramMb": 0,
+    "buttonGpio": 0,
+    "buttonActiveLow": true,
+    "rgbGpio": 21,
+    "rgbCount": 1,
+    "rgbOrder": "GRB",
+    "rgbPowerEnableGpio": 38,
+    "powerEnableActiveHigh": true,
+    "basis": "Exact S007-PIN127-V033 page links the same /1150/Sch_StampS3_v0.3.3.pdf and S3A Arduino tutorial as S007-V033; it explicitly describes shared RGB/FPC backlight supply. Separate pre-soldered1.27mm SMT header product."
+  },
+  "sharedSchematicReceipt": "s007-v033-runtime.json",
+  "dimensionsMm": {
+    "width": 18,
+    "height": 26,
+    "depth": 4.7
+  },
+  "firmware": {
+    "defaultFirmwareId": "m5stack-s007-v033-uiflow2",
+    "productTutorial": "https://docs.m5stack.com/en/uiflow2/stamps3/program",
+    "factoryStatus": "not-located",
+    "factoryFirmwareIds": [],
+    "uiflow1": "No exact target in checked official sources.",
+    "uiflow2": "Exact S3A page links StampS3 tutorial; Burner509a67aa and GitHube437118 v2.5.4 remain separate builds.",
+    "xiaozhi": "No exact standalone target located; source scope in s007-sources.json.",
+    "sourceReceipt": "s007-sources.json",
+    "downloadReceipt": "s007-runtime.json",
+    "officialExecutionForThisSku": "not-run; S3A body negative execution is a shared-board reference, not acceptance for this SKU"
+  },
+  "fixture": {
+    "command": "node tools/probe-stamps3a.mjs --build <fixture-build-directory> --product <product-id>",
+    "backend": "actual-wasm-worker",
+    "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+    "wasmSha256": "b1887a8b5f80a135191ddbbd79ebe2d0e7218d6081d8723a7e543f615df9844c",
+    "inputHashes": {
+      "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+      "stamps3a_fixture.bin": "1ada5586cf9d689d0a2a2e509e5e5f2883b50c5a7956fa6b84db5560fae63521",
+      "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    "checks": [
+      "g38-off-drops-real-rmt-white",
+      "real-rom-boot-rmt21-red",
+      "restored-g38-supply-does-not-replay-stale-blue",
+      "guest-gpio0-drives-green-g38-off-blue-g38-input-red",
+      "no-invented-display-and-unknown-button-rejected",
+      "platform-reset-releases-button-and-fresh-guest-red"
+    ],
+    "status": "pass",
+    "guestSeconds": 2.04
+  },
+  "model": {
+    "status": "pending-separate-exact-SKU-model",
+    "catalogModel": null,
+    "borrowedOtherProductGeometry": false,
+    "finalBrowserModelAcceptance": "pending completed model/catalog"
+  },
+  "limits": [
+    "The true guest GPIO/RMT fixture proves digital G38 supply gating and G0 input; it does not model analog power, leakage, delay, parasitic supply or current.",
+    "Officialv2.5.4 has no observed RGB output; v2.5.3 remains historical only. No physical RF, FPC screen or whole-application acceptance.",
+    "3D/model acceptance is separately owned and cannot be inferred from firmware execution."
+  ],
+  "rawReceiptSha256": "e320c18e55ea78ffc4a70e56c51c0f9d8ed0a08858f0f832d7dfac55f8cff801",
+  "curation": "Console/event streams omitted; source hash, exact product assertions and original fixture hashes retained."
+}
