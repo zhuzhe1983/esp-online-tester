@@ -14,7 +14,7 @@ const vector = (v, fallback=[0,0,0]) => Array.isArray(v)&&v.length===3&&v.every(
 function geometry(values) {const result=new THREE.BufferGeometry(),buffer=new THREE.InterleavedBuffer(new Float32Array(values),6);result.setAttribute('position',new THREE.InterleavedBufferAttribute(buffer,3,0));result.setAttribute('normal',new THREE.InterleavedBufferAttribute(buffer,3,3));result.computeBoundingSphere();return result;}
 function flatLabel(text) {
   if(typeof document==='undefined')return null;
-  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const context=canvas.getContext('2d');context.fillStyle='#f2f2e9';context.font='bold 68px monospace';context.textAlign='center';context.textBaseline='middle';context.fillText(text,256,64);const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
+  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const context=canvas.getContext('2d');context.fillStyle='#f2f2e9';context.font='bold 100px monospace';context.textAlign='center';context.textBaseline='middle';context.fillText(text,256,64);const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
 function visualConnector(type,housingColor,housingVariant) {
   const group=new THREE.Group(),standard=(color,metalness=0)=>new THREE.MeshStandardMaterial({color,metalness,roughness:.55});
