@@ -206,7 +206,7 @@ function clearLocalFiles() { localSelectionToken++; localFiles=[];localSource=nu
 async function selectLocalFiles(incoming, {replace=false}={}) {
   const token=++localSelectionToken, accepted=[...incoming].filter(file=>/\.bin$/i.test(file.name)||file.name==='flasher_args.json');
   const seen=new Set();for(const file of accepted){const path=file.webkitRelativePath||file.name;if(seen.has(path)){toast('所选文件存在重名，请选择整个构建目录以保留路径。',true);return;}seen.add(path);}
-  const existing=new Map((replace?[]:localFiles).map(file=>[file.webkitRelativePath||file.name,file]));for(const file of accepted)existing.set(file.webkitRelativePath||file.name,file);
+  const existing=new Map((replace||c5Product()?[]:localFiles).map(file=>[file.webkitRelativePath||file.name,file]));for(const file of accepted)existing.set(file.webkitRelativePath||file.name,file);
   localFiles=[...existing.values()];localFile=localFiles[0]||null;localSource=null;
   text('local-file-name',localFiles.length?`已选择 ${localFiles.length} 个文件`:'未选择固件文件');text('local-build-status','正在检查本地文件…');renderTransport();
   try {
@@ -388,6 +388,8 @@ function renderProduct() {
   const kind=$('firmware-kind');
   if(kind){const option=kind.querySelector('[value="c5-sram"]');if(c5Product()){if(!option)kind.append(new Option('C5 SRAM 应用直启','c5-sram'));}else{if(kind.value==='c5-sram')kind.value='merged';option?.remove();}}
   if($('serial-port')){for(const option of $('serial-port').options)option.disabled=c5Product()&&option.value!=='uart0';if(c5Product())$('serial-port').value='uart0';}
+  if($('firmware-file')){$('firmware-file').multiple=!c5Product();$('firmware-file').accept=c5Product()?'.bin,application/octet-stream':'.bin,.json,application/octet-stream';}
+  if($('firmware-folder'))$('firmware-folder').closest('label').hidden=c5Product();
   if(!localFiles.length){text('local-file-name',c5Product()?'C5 SRAM 应用 .bin':'merged .bin、应用 .bin 或 flasher_args.json');text('local-build-status',localFileHint());}
   if(kind){const option=kind.querySelector('[value="m5burner"]');if(isM5Stack(selected)){if(!option)kind.append(new Option('burner.m5stack.com','m5burner'));}else{if(kind.value==='m5burner')kind.value='merged';option?.remove();}}
   if(kind){const option=kind.querySelector('[value="lilygo-spark"]');if(isLilygo(selected)){if(!option)kind.append(new Option('LILYGO Spark','lilygo-spark'));}else{if(kind.value==='lilygo-spark')kind.value='merged';option?.remove();}}
@@ -479,7 +481,7 @@ function reflectFirmwareSource({preserveLocal = false} = {}) {
 function sourceFromInputs() {
   if (embedded) return scene.firmware;
   if (firmwareTab === 'local') {
-    if (!localSource) throw new Error('请补齐本地镜像与 flasher_args.json 所列文件。');
+    if (!localSource) throw new Error(c5Product()?'请选择一个通过校验的 C5 SRAM 应用 .bin。':'请补齐本地镜像与 flasher_args.json 所列文件。');
     return localSource;
   }
   if (firmwareTab === 'remote') {
