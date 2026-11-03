@@ -19,3 +19,7 @@ The unmodified GitHub image reaches the MicroPython V2.5.4 / M5STACK Stamp PICO 
 The exact GitHub asset is blocked by browser CORS (missing `Access-Control-Allow-Origin`). Official download plus local file import remains available; a local successful download does not establish browser access. [Transport receipt](evidence/stamp-controllers/pico-browser-sources.json). Firmware stays trial and is never mirrored into Git or the public site.
 
 EN/reset hardware, download cables, USB transport, analog/power, software-GPIO LED waveforms, physical networking and full firmware applications are outside this subset. No physical hardware measurement was performed. LED numeric output may be valid while a paper-covered LED remains visually occluded; no unsupported hole or paper transparency is invented. Physical front clicks are checked separately after the final model is integrated.
+
+## Stamp-Pico Mate K051
+
+The K051 page includes one Stamp-Pico and loose connectors/headers, repeats G39/G27, and links the same schematic and UIFlow1/2 tutorials. It shares the electrical board and exact remote firmware sources with C050-B while retaining its own model/package identity. Its [fresh fixture run](evidence/stamp-controllers/k051-runtime.json) independently verifies the K051 selection and guest GPIO/RMT/reset output. The official image startup failure above is shared-board evidence, not an additional claimed K051 official-image run. Loose kit accessories remain unattached electrically.

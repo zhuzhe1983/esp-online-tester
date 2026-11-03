@@ -1,0 +1,126 @@
+{
+  "checkedAt": "2026-11-03T21:32:21.523Z",
+  "command": "node tools/probe-stamppico.mjs --build <fixture-build-directory> --product <product-id>",
+  "productId": "m5stack-k051",
+  "board": "stamppico",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "wasmSha256": "0cd49e58ec4e811a85dd77d6463c4324d467292e5d4c0a7fe72b0beb585f2790",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "fa97eef4e6753b02f166b22a2d7938bd565e7e2aadca67744af233b973b9e290",
+    "stamppico_fixture.bin": "5fd12f3a78b935fee6e3992b7c4549d08bf3ef354c4d5e99998277cd35979b85",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [
+    "wrong-gpio4-white-frame-ignored",
+    "real-rom-boot-rmt27-red",
+    "guest-gpio39-press-release-drives-green-blue-off-red",
+    "no-invented-display-and-unknown-button-rejected",
+    "platform-reset-clears-old-output-before-new-rmt-frame",
+    "platform-reset-releases-button-and-fresh-guest-red"
+  ],
+  "inputSerialEvidence": [
+    "STAMPPICO_PINS 39 27",
+    "STAMPPICO_WRONG_PIN 4 white",
+    "STAMPPICO_RMT 255 0 0",
+    "STAMPPICO_BUTTON 1",
+    "STAMPPICO_BUTTON 0",
+    "STAMPPICO_RMT 0 255 0",
+    "STAMPPICO_BUTTON 1",
+    "STAMPPICO_BUTTON 0",
+    "STAMPPICO_RMT 0 0 255",
+    "STAMPPICO_BUTTON 1",
+    "STAMPPICO_BUTTON 0",
+    "STAMPPICO_RMT 0 0 0",
+    "STAMPPICO_BUTTON 1",
+    "STAMPPICO_BUTTON 0",
+    "STAMPPICO_RMT 255 0 0",
+    "STAMPPICO_BUTTON 1"
+  ],
+  "status": "pass",
+  "guestSeconds": 1.06,
+  "leds": [
+    [],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        255,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        0,
+        255
+      ]
+    ],
+    [
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        255,
+        0
+      ]
+    ],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ]
+  ],
+  "serialEvidence": [
+    "STAMPPICO_PINS 39 27",
+    "STAMPPICO_WRONG_PIN 4 white",
+    "STAMPPICO_RMT 255 0 0",
+    "STAMPPICO_BUTTON 1"
+  ],
+  "source": {
+    "url": "https://docs.m5stack.com/en/core/Stamp-Pico_Mate",
+    "resolvedUrl": "https://docs.m5stack.com/en/core/Stamp-Pico_Mate",
+    "fetchedAt": "2026-11-03T21:32:03.753523+00:00",
+    "mediaType": "text/html",
+    "bytes": 140157,
+    "sha256": "7ddd40edc4d10136f28f6ad27a5ba50628b20ce2b89526826fbf828cf95f3abf",
+    "relevantLinks": [
+      "https://static-cdn.m5stack.com/resource/docs/products/core/stamp_pico/stamp_pico_sch_01.webp"
+    ]
+  },
+  "electricalIdentity": "Official K051 explicitly includes one Stamp-Pico and repeats G39 user key / G27 SK6812 / 4MB; same schematic and UIFlow1/2 tutorials.",
+  "sourcesReference": "c050-b-sources.json",
+  "sourceRevision": "f022fd11",
+  "defaultFirmwareId": "m5stack-c050-b-uiflow2",
+  "firmwareScope": {
+    "factory": "not-located",
+    "uiflow1": "exact-source-mapped; Burner verification required",
+    "uiflow2": "Burner source mapped plus distinct GitHub source; inherited shared-board startup failure is not a fresh official-image execution",
+    "xiaozhi": "exact-target-not-located"
+  },
+  "limits": [
+    "Internal independently compiled protocol fixture; no hardware or full official app compatibility claim.",
+    "Loose kit headers/connectors not automatically wired.",
+    "Physical model click proof follows completed model integration."
+  ]
+}
