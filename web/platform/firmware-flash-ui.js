@@ -1,12 +1,13 @@
 import {createFlashBatch} from './flash-batch.js';
 import {prepareBurnerSource} from './m5burner-download-ui.js';
 import {burnerProjectUrl} from './firmware-download-access.js';
+import {createFlashConfigurationUI} from './flash-configuration-ui.js';
 
 const node=(tag,className,text)=>{const value=document.createElement(tag);if(className)value.className=className;if(text!==undefined)value.textContent=text;return value;};
 const button=(label,className='button')=>{const value=node('button',className,label);value.type='button';return value;};
 const activeItem=status=>['connecting','validating','writing','resetting','closing','cancelling','preparing','choosing'].includes(status);
 const statusLabels={queued:'等待烧录',ready:'等待烧录',connecting:'连接中',validating:'检查设备',writing:'正在写入',resetting:'正在复位',closing:'关闭连接',cancelling:'正在停止',done:'写入已校验',error:'烧录失败',cancelled:'已取消',disconnected:'设备已拔出'};
-const modeHints={single:'写入一台设备，完成后保留结果。',parallel:'先逐个添加设备，再一起开始。每台设备分别显示进度和结果，最多同时写入 4 台。',sequential:'保留本批固件，写完一台后换插下一台。点击“选择下一台”授权并继续，无需重新选择固件。'};
+const modeHints={single:'写入一台设备，完成后保留结果。',parallel:'先逐个添加设备，再一起开始。所有已选设备同时写入，平台不限制数量；实际速度取决于浏览器、USB 带宽和供电。',sequential:'保留本批固件，写完一台后换插下一台。点击“选择下一台”授权并继续，无需重新选择固件。'};
 
 // A batch owns its source snapshot and its chosen ports. Hiding the dialog does
 // not dispose that session; the workbench entry remains its visible status.
@@ -18,7 +19,7 @@ export function openFlashStation({product,source,scene,catalog,onChange,onClose,
   const identity=node('div','flash-station-identity');identity.append(node('strong','',product.name));
   const sourceName=source.file?.name||(source.files?`本地固件 · ${source.files.length} 个文件`:source.url||source.manifestUrl||'所选固件');
   const fingerprint=node('p','helper flash-fingerprint');fingerprint.hidden=true;
-  const origin=node('p','flash-source',sourceName),fixed=node('p','helper','本批固件会固定保存。切换工作台的设备或固件，不会改变本批次。');
+  const origin=node('p','flash-source',sourceName),fixed=node('p','helper','本批原始固件已固定；SHA-256 对应原始镜像。启用附加配置后，仅修改相应配置区域。切换工作台不会改变本批次。');
   const receiptDetails=node('details','flash-receipt'),receiptSummary=node('summary','','固件校验与写入范围'),receiptBody=node('div','flash-receipt-body');receiptDetails.append(receiptSummary,receiptBody);receiptDetails.hidden=true;identity.append(origin,fingerprint,fixed,receiptDetails);
   const modeGroup=node('fieldset','flash-mode-group'),legend=node('legend','','烧录方式');modeGroup.append(legend);
   const radios=new Map();
@@ -43,6 +44,7 @@ export function openFlashStation({product,source,scene,catalog,onChange,onClose,
   let state={status:'preparing',items:[],counts:{},running:false,choosing:false},mode='single',disposed=false,started=false,preparing=true,prepareError=null,closeFocus=null;
   const rows=new Map(),aborter=new AbortController();let receiptKey='';
   const batch=createBatch({onEvent(event){if(event.type==='state'&&!disposed){state=event.state;render();}}});
+  const configurationUI=createFlashConfigurationUI({apply:profile=>batch.setConfiguration(profile),onChange:render,onError:showError});modeGroup.before(configurationUI.root);
   const busy=()=>Boolean(preparing||state.running||state.choosing||['preparing','stopping'].includes(state.status));
   function showError(error){
     if(disposed||['FLASH_CANCELLED','FETCH_ABORTED'].includes(error?.code)||error?.name==='NotFoundError')return;
@@ -64,20 +66,21 @@ export function openFlashStation({product,source,scene,catalog,onChange,onClose,
   function deviceRow(item){
     let row=rows.get(item.id);if(row)return row;
     const root=node('article','flash-device'),header=node('div','flash-device-heading'),label=node('strong'),badge=node('span','flash-device-badge');header.append(label,badge);
-    const message=node('p','flash-device-message'),progress=node('progress','flash-progress');progress.max=1;progress.value=0;
+    const configuration=node('p','helper flash-device-configuration'),message=node('p','flash-device-message'),progress=node('progress','flash-progress');progress.max=1;progress.value=0;
     const controls=node('div','flash-device-actions'),cancel=button('取消','button quiet tiny'),retry=button('重试此设备','button quiet tiny'),replace=button('更换设备','button quiet tiny');
     cancel.addEventListener('click',()=>action(()=>batch.cancel(item.id)));retry.addEventListener('click',()=>action(()=>{const result=batch.retry(item.id);started=true;render();return result;}));
     replace.addEventListener('click',()=>action(()=>batch.replaceDevice(item.id)));controls.append(cancel,retry,replace);
-    const details=node('details','flash-device-log'),summary=node('summary','','查看日志'),log=node('pre');details.append(summary,log);root.append(header,message,progress,controls,details);
-    row={root,label,badge,message,progress,cancel,retry,replace,details,log};rows.set(item.id,row);return row;
+    const details=node('details','flash-device-log'),summary=node('summary','','查看日志'),log=node('pre');details.append(summary,log);root.append(header,configuration,message,progress,controls,details);
+    row={root,label,badge,configuration,message,progress,cancel,retry,replace,details,log};rows.set(item.id,row);return row;
   }
   function render(){
     if(disposed)return;
     const items=state.items||[],isBusy=busy();
+    configurationUI.update(state);
     modeHint.textContent=mode==='single'&&!started&&items.some(item=>item.status==='cancelled')?'已取消排队。勾选确认后可重试此设备，也可点击“更换设备”重新选择。':modeHints[mode];
     for(const input of radios.values())input.disabled=started||isBusy||items.length>1&&input.value==='single';
     add.textContent=mode==='sequential'&&started?'选择下一台':'添加设备';
-    add.disabled=!state.receipt||preparing||state.status==='preparing'||state.status==='stopping'||state.choosing||Boolean(prepareError)||mode==='single'&&items.length>=1||started&&mode!=='sequential'||started&&!state.running;
+    add.disabled=configurationUI.editing()||!state.receipt||preparing||state.status==='preparing'||state.status==='stopping'||state.choosing||Boolean(prepareError)||mode==='single'&&items.length>=1||started&&mode!=='sequential'||started&&!state.running;
     const labels={idle:'正在准备固件…',preparing:'正在下载并校验固件…',ready:started?'设备已更换，点击“烧录此设备”继续。':'固件已准备好，选择设备并勾选确认后即可开始。',running:mode==='sequential'?'连续烧录已开启。完成后换插设备，再点击“选择下一台”。':'正在烧录，请保持 USB 连接。',stopping:'正在停止本批次，等待各设备关闭连接…',stopped:'本批已停止，可查看结果或新建批次。',done:'本批次已完成。',error:'准备固件失败，可新建批次重试。'};
     status.textContent=preparing?'正在下载并校验固件…':prepareError?'固件未准备好，尚未连接或写入设备。':state.choosing?'请在浏览器中选择一台设备。':labels[state.status]||state.status;
     close.textContent=isBusy?'收起':'关闭';close.setAttribute('aria-label',isBusy?'收起烧录窗口':'关闭烧录窗口');
@@ -85,19 +88,20 @@ export function openFlashStation({product,source,scene,catalog,onChange,onClose,
       const row=deviceRow(item),isActive=activeItem(item.status),queued=['queued','ready'].includes(item.status);
       row.root.dataset.status=item.status;row.root.dataset.deviceId=item.id;row.label.textContent=item.label||item.id;
       row.badge.textContent=statusLabels[item.status]||item.status;
+      row.configuration.textContent=item.configuration?`配置：${item.configuration.name} · ${item.configuration.type==='uiflow1'?'UIFlow1':'UIFlow2'}`:'配置：不写入附加配置';
       row.message.textContent=item.message||(!item.connected?'设备未连接':'已选择设备');
       row.progress.setAttribute('aria-label',`${item.label||item.id} 写入进度`);row.progress.value=Math.max(0,Math.min(1,item.progress||0));row.progress.hidden=!isActive&&item.status!=='done';
       row.cancel.hidden=!isActive&&!queued;row.cancel.disabled=item.status==='cancelling'||state.choosing;row.cancel.textContent=queued?'取消排队':'取消';
       row.retry.textContent=item.status==='ready'?'烧录此设备':'重试此设备';
-      row.retry.hidden=!['error','cancelled'].includes(item.status)&&!(started&&item.status==='ready');row.retry.disabled=state.choosing||state.status==='stopping'||isBusy&&!state.running||!checked.checked||item.connected===false;
-      row.replace.hidden=!['queued','ready','error','cancelled'].includes(item.status);row.replace.disabled=state.choosing||state.status==='stopping'||preparing;
+      row.retry.hidden=!['error','cancelled'].includes(item.status)&&!(started&&item.status==='ready');row.retry.disabled=configurationUI.editing()||state.choosing||state.status==='stopping'||isBusy&&!state.running||!checked.checked||item.connected===false;
+      row.replace.hidden=!['queued','ready','error','cancelled'].includes(item.status);row.replace.disabled=configurationUI.editing()||state.choosing||state.status==='stopping'||preparing;
       const logs=Array.isArray(item.logs)?item.logs.map(entry=>typeof entry==='string'?entry:entry.message||'').join('\n'):String(item.logs||'');
       if(row.log.textContent!==logs)row.log.textContent=logs;row.details.hidden=!logs;return row.root;
     });
     if(!items.length)nextRows.push(empty);
     if(nextRows.length!==list.children.length||nextRows.some((row,index)=>row!==list.children[index]))list.replaceChildren(...nextRows);
     const total=state.counts||{};counts.textContent=`已选择 ${total.total??items.length} 台 · 成功 ${total.done||0} · 失败 ${total.error||0} · 等待 ${total.queued||0}${total.cancelled?` · 已取消 ${total.cancelled}`:''}`;
-    acknowledgement.hidden=started;checked.disabled=started;start.hidden=started;start.disabled=!checked.checked||isBusy||Boolean(prepareError)||(mode!=='sequential'&&!items.some(item=>['queued','ready'].includes(item.status)&&item.connected!==false));
+    acknowledgement.hidden=started;checked.disabled=started;start.hidden=started;start.disabled=configurationUI.editing()||!checked.checked||isBusy||Boolean(prepareError)||(mode!=='sequential'&&!items.some(item=>['queued','ready'].includes(item.status)&&item.connected!==false));
     start.textContent=mode==='sequential'?'开启连续烧录':mode==='parallel'?`开始烧录 ${items.filter(item=>['queued','ready'].includes(item.status)).length} 台`:'开始烧录';
     stop.hidden=!preparing&&!state.running&&state.status!=='stopping';stop.disabled=state.status==='stopping';stop.textContent=preparing?'取消准备':'停止本批';
     newBatch.disabled=isBusy;updateReceipt();
@@ -107,7 +111,7 @@ export function openFlashStation({product,source,scene,catalog,onChange,onClose,
   checked.addEventListener('change',render);
   start.addEventListener('click',()=>{
     if(start.disabled)return;
-    action(()=>{const result=batch.start({mode:mode==='sequential'?'sequential':'parallel',concurrency:mode==='single'?1:4});started=true;render();return result;});
+    action(()=>{const result=batch.start({mode:mode==='sequential'?'sequential':'parallel',...(mode==='single'?{concurrency:1}:{})});started=true;render();return result;});
   });
   stop.addEventListener('click',()=>action(()=>{if(preparing)aborter.abort();return batch.stop();}));
   newBatch.addEventListener('click',()=>{if(!busy())onNewBatch?.();});
@@ -125,6 +129,6 @@ export function openFlashStation({product,source,scene,catalog,onChange,onClose,
   return {
     show,
     observe:()=>({...state,busy:busy(),mode,started,visible:dialog.open}),
-    async dispose(){if(disposed)return;disposed=true;aborter.abort();window.removeEventListener('beforeunload',beforeUnload);if(dialog.open)dialog.close();dialog.remove();await batch.dispose();},
+    async dispose(){if(disposed)return;disposed=true;aborter.abort();configurationUI.dispose();window.removeEventListener('beforeunload',beforeUnload);if(dialog.open)dialog.close();dialog.remove();await batch.dispose();},
   };
 }

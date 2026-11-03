@@ -10,6 +10,8 @@ import {firmwareFlashPolicy} from './firmware-policy.js';
 import {validateAppImage} from './app-image.js';
 import {createFlashHardReset,resetFlashedDevice} from './flash-reset.js';
 import {createFlashTransport,waitForFlashClose} from './flash-transport.js';
+import {assertFlashSecurity} from './flash-security.js';
+import {inspectFlashConfiguration,validateFlashConfiguration,applyFlashConfiguration,configurationSummary} from './flash-configuration.js';
 
 const MIB = 1024 * 1024, MAX_FLASH = 32 * MIB;
 const problem = (code, message, details) => Object.assign(new Error(message), { code, details });
@@ -32,8 +34,15 @@ export async function prepareFlashSession(input, {navigator:nav=globalThis.navig
   const plan=await prepareFlashPlan({...fixed,watchlist,fetchImpl,baseUrl,signal});
   if(signal?.aborted)throw cancelled();
   const session=Object.freeze({product:clone(plan.product),receipt:clone(plan.receipt)});
-  preparedSessions.set(session,{plan,ports:new WeakSet(),active:false,nav});
+  preparedSessions.set(session,{plan,ports:new WeakSet(),configurations:new WeakMap(),identities:new Map(),active:false,nav});
   return session;
+}
+
+export function prepareFlashConfiguration(session,profile) {
+  const record=preparedSessions.get(session);
+  check(record,'FLASH_SESSION_INVALID','Prepare a firmware batch first.');
+  const value=validateFlashConfiguration(record.plan,profile);if(!value)return null;
+  const token=Object.freeze(configurationSummary(value));record.configurations.set(token,value);return token;
 }
 
 export async function chooseFlashPort(session,{navigator:nav=globalThis.navigator,document:doc=globalThis.document,secureContext=globalThis.isSecureContext}={}) {
@@ -65,7 +74,7 @@ function selectedProduct(scene, catalog) {
   const validation = validateScene(scene, catalog);
   check(validation.valid, 'INVALID_SCENE', 'Cannot flash an invalid scene.', validation);
   const product = catalog.products.find(item => item.id === scene.productId);
-  check(product && ['esp32s3', 'esp32c3', 'esp32c6'].includes(normalizedChip(product.chip)), 'FLASH_UNSUPPORTED_CHIP', 'This flasher currently accepts ESP32-S3, C3 and C6 product definitions with security-info support.');
+  check(product && ['esp32', 'esp32s3', 'esp32c3', 'esp32c6'].includes(normalizedChip(product.chip)), 'FLASH_UNSUPPORTED_CHIP', 'This flasher currently accepts ESP32, S3, C3 and C6 product definitions.');
   return product;
 }
 
@@ -227,7 +236,9 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
     }
     add(artifact, 0, 'flash');
   }
-  return { product: clone(product), files: validateFlashLayout(files, product, {partitionTableOffset}), receipt: { productId: product.id, chip: product.chip, flashBytes: product.runtime.flashMb * MIB, format, manifestHash, partitionTableOffset, artifacts: receipt, hardwareValidated: false, persistence: 'user-browser-cache-for-pinned-remote-artifacts' } };
+  const plan={ product: clone(product), files: validateFlashLayout(files, product, {partitionTableOffset}), receipt: { productId: product.id, chip: product.chip, flashBytes: product.runtime.flashMb * MIB, format, manifestHash, partitionTableOffset, artifacts: receipt, hardwareValidated: false, persistence: 'user-browser-cache-for-pinned-remote-artifacts' } };
+  plan.receipt.configurationFormats=inspectFlashConfiguration(plan);
+  return plan;
 }
 
 export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, document: doc = globalThis.document, secureContext = globalThis.isSecureContext, fetchImpl = globalThis.fetch, baseUrl = globalThis.location?.href,
@@ -242,10 +253,12 @@ export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, 
     capabilities,
     observe: () => clone(state),
     cancel() { if (active && state.status!=='closing') { wantsCancel = true; aborter?.abort(); setState('cancelling', beganWrite ? '正在当前协议块结束后停止；设备可能需要重新刷写。' : '正在取消。'); } return clone(state); },
-    async flash({ scene, catalog, source = scene?.firmware, watchEntry, prepared, port: chosenPort } = {}) {
+    async flash({ scene, catalog, source = scene?.firmware, watchEntry, prepared, configuration, port: chosenPort } = {}) {
       check(!active, 'FLASH_BUSY', 'A flash operation is already active.');
       const capability = capabilities(); check(capability.supported, 'WEB_SERIAL_UNAVAILABLE', capability.reason);
       const session=prepared && preparedSessions.get(prepared);
+      const profile=configuration && session?.configurations.get(configuration);
+      check(!configuration || profile,'FLASH_CONFIG_INVALID','此配置不属于当前烧录批次。');
       if(prepared)check(session?.active && session.nav===nav && session.ports.has(chosenPort),'FLASH_SESSION_INVALID','Start an authorized batch and select this device before writing.');
       else {
         gesture(nav);
@@ -280,11 +293,22 @@ export function createFlasher({ onEvent, navigator: nav = globalThis.navigator, 
         setState('validating', '正在核对芯片、安全配置、Flash 容量与写入范围。', { chip: loader.chip.CHIP_NAME });
         // This release intentionally excludes secured/encrypted devices rather than
         // attempting efuse changes, forced writes or security-mode workarounds.
-        const security = await loader.getSecurityInfo(); guard();
-        check(!loader.secureDownloadMode && !security.parsedFlags?.SECURE_BOOT_EN && !security.parsedFlags?.SECURE_DOWNLOAD_ENABLE && security.flashCryptCnt === 0, 'SECURED_DEVICE', 'Secure boot, flash encryption or secure download mode is enabled; this platform will not write the device.');
+        await assertFlashSecurity(loader,expected);guard();
         const detected = await loader.detectFlashSize(); guard();
         const flashBytes = loader.flashSizeBytes(detected || 'unknown');
         check(flashBytes === plan.receipt.flashBytes, 'FLASH_SIZE_MISMATCH', 'Detected flash capacity does not match the selected product.', { detectedBytes: flashBytes, expectedBytes: plan.receipt.flashBytes });
+        if(profile) {
+          let identity;
+          if(profile.type==='uiflow1') {
+            const mac=await loader.chip.readMac(loader);guard();
+            identity=session.identities.get(mac);
+            if(!identity) {
+              identity={mac,apiKey:Array.from(globalThis.crypto.getRandomValues(new Uint8Array(4)),byte=>byte.toString(16).padStart(2,'0')).join('').toUpperCase()};
+              session.identities.set(mac,identity);
+            }
+          }
+          applyFlashConfiguration(plan,profile,identity);guard();
+        }
         validateFlashLayout(plan.files, plan.product, {partitionTableOffset:plan.receipt.partitionTableOffset});
         const totalBytes = plan.files.reduce((sum, file) => sum + file.data.length, 0);
         setState('writing', plan.receipt.format==='merged' ? '正在写入完整 merged 镜像并校验 MD5。' : '正在按分区偏移逐段写入并校验 MD5；仅擦除对应写入范围。', { flashBytes, receipt: plan.receipt });

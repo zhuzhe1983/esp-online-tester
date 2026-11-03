@@ -1,0 +1,66 @@
+{
+  "implementationCommit": "b1937af9870e3d102437424d6395e184c479897a",
+  "testedAt": "2026-11-03",
+  "checks": [
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "passed": 271,
+      "failed": 0
+    },
+    {
+      "command": "rustup update stable",
+      "rustc": "1.99.1 (58cf8f9c3 2026-10-13)"
+    },
+    {
+      "command": "cargo +stable clippy --workspace --all-targets -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "cargo +stable clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo +stable test --release --workspace -- --include-ignored --skip external_",
+      "passed": 1763,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "playwright_cli.sh run-code --filename tools/fixtures/flash-configuration-browser-check.js",
+      "result": "passed",
+      "maxSimultaneousWrites": 7,
+      "browserErrors": []
+    },
+    {
+      "command": "playwright_cli.sh run-code --filename tools/fixtures/flash-browser-check.js",
+      "result": "passed"
+    },
+    {
+      "command": "node tools/stage-platform-pages.mjs web <new-output-directory>",
+      "result": "passed"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "passed"
+    }
+  ],
+  "nvsFixture": {
+    "sha256": "983a2992c2e118dc15320932ffea97038a7c54206c8d4ae7e8b1ccb902f184cf",
+    "bytes": 24576,
+    "comparison": "byte-identical to independently run M5Stack Python generator"
+  },
+  "parallelProtocolTest": {
+    "simultaneousDevices": 17,
+    "succeeded": 15,
+    "failed": 1,
+    "cancelled": 1,
+    "closed": 17
+  },
+  "hardwareValidated": false,
+  "limitations": [
+    "Serial ports and loaders were test doubles; no physical device was opened or written.",
+    "No actual Wi-Fi or UIFlow server connectivity was tested.",
+    "UIFlow1 tails overlapping any declared partition and UIFlow2 layouts other than nvs at 0x9000 size 0x6000 are refused."
+  ],
+  "privacy": "Only fictional test credentials and aggregate results retained. No original website bundles or third-party firmware binaries committed."
+}

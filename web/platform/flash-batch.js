@@ -1,5 +1,5 @@
 // A user-authorized firmware batch; no discovery event can authorize a write.
-import {createFlasher,flasherCapabilities,prepareFlashSession,chooseFlashPort,activateFlashSession,releaseFlashSession} from './flasher.js';
+import {createFlasher,flasherCapabilities,prepareFlashSession,prepareFlashConfiguration,chooseFlashPort,activateFlashSession,releaseFlashSession} from './flasher.js';
 
 const problem=(code,message)=>Object.assign(new Error(message),{code});
 const check=(value,code,message)=>{if(!value)throw problem(code,message);};
@@ -13,11 +13,11 @@ const deviceLabel=(id,port)=>{
 };
 export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,createDeviceFlasher=createFlasher,...options}={}) {
   const dependencies={...options,navigator:nav};
-  let session=null,prepareAbort=null,status='idle',mode='parallel',running=false,choosing=false,replacingId=null,disposed=false,generation=0,nextId=1,concurrency=4,error=null;
+  let session=null,configuration=null,prepareAbort=null,status='idle',mode='parallel',running=false,choosing=false,replacingId=null,disposed=false,generation=0,nextId=1,concurrency=Infinity,error=null;
   const items=[],ports=new Map(),jobs=new Map(),pending=new Set();
   const capabilities=()=>flasherCapabilities(dependencies);
-  const publicItem=item=>{const {port,...rest}=item;return copy(rest);};
-  const observe=()=>({status,mode,running,choosing,product:session?copy(session.product):null,receipt:session?copy(session.receipt):null,error:copy(error),
+  const publicItem=item=>{const {port,configuration:config,...rest}=item;return {...copy(rest),configuration:config?copy(config):null};};
+  const observe=()=>({status,mode,running,choosing,configuration:configuration?copy(configuration):null,product:session?copy(session.product):null,receipt:session?copy(session.receipt):null,error:copy(error),
     items:items.map(publicItem),counts:{total:items.length,queued:items.filter(waiting).length,active:jobs.size,done:items.filter(item=>item.status==='done').length,error:items.filter(item=>item.status==='error').length,cancelled:items.filter(item=>item.status==='cancelled').length}});
   const emit=()=>{try{onEvent?.({type:'state',state:observe()});}catch(e){console.error(e);}};
   const alive=()=>check(!disposed,'FLASH_SESSION_CLOSED','This flashing window has been closed.');
@@ -41,7 +41,7 @@ export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,cre
       emit();
     }});
     jobs.set(item.id,{flasher,disconnect(){disconnected=true;flasher.cancel();}});
-    const task=flasher.flash({prepared:session,port:item.port}).then(result=>{
+    const task=flasher.flash({prepared:session,configuration:item.configuration,port:item.port}).then(result=>{
       item.status='done';item.progress=1;item.message=result.message;item.error=null;
     },failure=>{
       item.status=failure.code==='FLASH_CANCELLED' && !disconnected?'cancelled':'error';
@@ -82,7 +82,7 @@ export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,cre
     capabilities,observe,
     async prepare(input) {
       alive();check(!running && !jobs.size && !choosing && !prepareAbort,'FLASH_BUSY','Stop the current batch before preparing another firmware.');
-      releaseFlashSession(session);session=null;items.length=0;ports.clear();error=null;status='preparing';
+      releaseFlashSession(session);session=null;configuration=null;items.length=0;ports.clear();error=null;status='preparing';
       const controller=new AbortController(),revision=++generation;prepareAbort=controller;emit();
       try {
         const prepared=await prepareFlashSession(input,{...dependencies,signal:controller.signal});
@@ -93,6 +93,15 @@ export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,cre
         throw failure;
       } finally {if(prepareAbort===controller)prepareAbort=null;emit();}
       return observe();
+    },
+    setConfiguration(profile) {
+      alive();check(session,'FLASH_SESSION_INVALID','请先等待固件准备完成。');
+      check(!jobs.size && !choosing && (!running || mode==='sequential'),'FLASH_BUSY','请等待当前设备写入完成后再切换配置。');
+      configuration=prepareFlashConfiguration(session,profile);
+      // Before Start, changes apply to waiting rows. Once continuous mode starts,
+      // only subsequently selected devices receive the new configuration.
+      if(!running)for(const item of items)if(waiting(item))item.configuration=configuration;
+      emit();return observe();
     },
     async addDevice() {
       alive();check(session,'FLASH_SESSION_INVALID','Prepare the firmware before selecting devices.');
@@ -105,7 +114,7 @@ export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,cre
         let item=ports.get(port);
         if(item) {item.connected=true;emit();return publicItem(item);}
         const id=`device-${nextId++}`;
-        item={id,label:deviceLabel(id,port),port,status:'queued',progress:0,message:'等待烧录',logs:[],error:null,connected:true,attempt:0,mayBePartial:false};
+        item={id,label:deviceLabel(id,port),port,configuration,status:'queued',progress:0,message:'等待烧录',logs:[],error:null,connected:true,attempt:0,mayBePartial:false};
         items.push(item);ports.set(port,item);if(!running)status='ready';else pump();
         emit();return publicItem(item);
       } finally {choosing=false;emit();}
@@ -129,11 +138,11 @@ export function createFlashBatch({onEvent,navigator:nav=globalThis.navigator,cre
         return publicItem(item);
       } finally {choosing=false;replacingId=null;if(running)pump();emit();}
     },
-    start({mode:nextMode='parallel',concurrency:nextConcurrency=4}={}) {
+    start({mode:nextMode='parallel',concurrency:nextConcurrency=Infinity}={}) {
       alive();check(session,'FLASH_SESSION_INVALID','Prepare a firmware batch first.');
       check(!running && !jobs.size && !choosing,'FLASH_BUSY','A flashing batch is already active.');
       check(['parallel','sequential'].includes(nextMode),'FLASH_MODE_INVALID','Choose parallel or sequential flashing.');
-      check(Number.isInteger(nextConcurrency) && nextConcurrency>=1 && nextConcurrency<=4,'FLASH_CONCURRENCY_INVALID','Choose between 1 and 4 simultaneous devices.');
+      check(nextConcurrency===Infinity || Number.isSafeInteger(nextConcurrency) && nextConcurrency>=1,'FLASH_CONCURRENCY_INVALID','并行数量必须为正整数，默认不限制数量。');
       check(items.some(item=>waiting(item) && item.connected) || nextMode==='sequential','FLASH_NO_DEVICES','Choose at least one connected device.');
       activateFlashSession(session,true,dependencies);for(const item of items)if(item.status==='ready')item.status='queued';
       mode=nextMode;concurrency=nextConcurrency;running=true;status='running';pump();return observe();

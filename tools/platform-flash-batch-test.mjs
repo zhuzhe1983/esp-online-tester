@@ -133,6 +133,19 @@ console.log('ok real vendor transport framing, rejected writer release, bounded 
 console.log('ok bounded parallel writes, immutable firmware, unique ports, independent failure/retry, per-device reset/cleanup');
 
 {
+  const f=fixture();await f.batch.prepare({scene,catalog,source:source()});
+  const devices=Array.from({length:17},(_,i)=>f.port(`parallel-${i}`,{fail:i===3}));
+  const rows=[];for(const port of devices)rows.push(await f.choose(port));
+  f.click(()=>f.batch.start());await until(()=>f.calls.writes===17);
+  assert.equal(f.calls.maxActive,17,'Default parallel mode must start every authorized device, with no four-device cap');
+  f.batch.cancel(rows[7].id);for(const port of devices)port.release();
+  await until(()=>f.batch.observe().status==='done');
+  assert.deepEqual(f.batch.observe().counts,{total:17,queued:0,active:0,done:15,error:1,cancelled:1});
+  assert.equal(f.calls.disconnects,17);await f.batch.dispose();
+}
+console.log('ok 17 simultaneous authorized devices without a platform cap, independent failure/cancel and cleanup');
+
+{
   const f=fixture();await f.batch.prepare({scene,catalog,source:source()});f.click(()=>f.batch.start({mode:'sequential'}));
   const ignored=f.port('unrelated');f.notify('connect',ignored);await tick();assert.equal(f.calls.writes,0);
   const a=f.port('a'),b=f.port('b'),first=await f.choose(a);await until(()=>f.calls.writes===1);
