@@ -528,7 +528,7 @@ fn wifi_config(spec: &str, net: &str, net_log: bool) -> (esp_soc::wifi::ApConfig
 fn setup_c3(o: &Opts) -> esp32c3::Machine {
     let mut m = esp32c3::machine(o.mac.unwrap_or([0x60, 0x55, 0xf9, 0x00, 0x11, 0x22]), o.flash_mb.unwrap_or(4) << 20);
     let board=if o.board=="atech14" {"none"}else{&o.board};
-    m.bus.board=esp32c3::board::make_board(board).unwrap_or_else(|| usage_error(&format!("unknown C3 board '{board}' (none, bare, stampc3)")));
+    m.bus.board=esp32c3::board::make_board(board).unwrap_or_else(|| usage_error(&format!("unknown C3 board '{board}' (none, bare, stampc3, stampc3u)")));
     m.bus.attach_board_devices();
     m.bus.set_flash_size(o.flash_mb.unwrap_or(4) << 20);   // the JEDEC capacity follows the size
     if !o.debug.is_empty() { let mut f = esp_soc::DebugFlags::from_env(); for d in &o.debug { f.parse(d); } m.set_debug(&f); }
