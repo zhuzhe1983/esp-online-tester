@@ -1,10 +1,49 @@
 # Stamp 系列适配清单
 
+本轮按用户确认的范围完成 **22 个 Stamp 主控和套件**的独立目录、模型与受限板级运行适配。StampFly 与 v1.1 分别建档；专用扩展板不在实施范围内。下表是集成结果；文末保留 `49a27787` 的原始盘点，描述的是修正前状态。
+
+厂家 CAD 的原始三角形和装配来源保留，裸露 PCB 按对应 SKU 照片校正颜色和贴图，未知层保留 `UNKNOWN`。缺失紧固件按可核验来源补全，隐藏长度、照片推导的几何及标准件装配估算均写明。纸贴按实际承载面、孔和高度裁切；真实纸张跨孔与错误贴图悬空分别记录。相关经验已写入[导入技能](../../skills/esp-product-onboarding/SKILL.md)及[模型验证规则](../../skills/esp-product-onboarding/references/model-verification.md)。
+
+所有条目仍如实保留 `partial` 支持范围。模型完成不代表所有官方固件兼容，模拟器测试也不等同实机验证。原厂镜像留在发布方；源码构建的测试程序与正式固件目录分开。
+
+| 产品 | 板型与运行证据 | 已验证行为及主要限制 | 模型证据 |
+| --- | --- | --- | --- |
+| StampFly · `m5stack-k138` | [`stampfly`](stampfly-runtime.md) | 原厂 ROM 启动及 G0 软件复位；BMI270、INA3221、双 ToF 初始化、四路 PWM；无飞行动力学或遥控射频 | [尺寸、照片与资产 hash](evidence/m5stack-k138/verification.json) |
+| StampFly v1.1 · `m5stack-k138-v11` | [`stampfly-v11`](stampfly-v11-onboarding.md) | 独立硬件版本与原厂镜像；包含 S3A G38 门控；同样不宣称飞行能力 | [尺寸、照片与资产 hash](evidence/m5stack-k138-v11/verification.json) |
+| Stamp-S3 · S007 · `m5stack-s007` | [`stamps3`](stamps3-runtime.md) | G0 按键与 G21 RGB；真实指针驱动固件输出；UIFlow2 v2.5.4 保留 trial | [尺寸、照片与资产 hash](evidence/m5stack-s007/verification.json) |
+| Stamp-S3 PIN1.27 · `m5stack-s007-pin127` | [`stamps3`](stamps3-runtime.md) | G0 按键与 G21 RGB；真实指针驱动固件输出；UIFlow2 v2.5.4 保留 trial | [尺寸、照片与资产 hash](evidence/m5stack-s007-pin127/verification.json) |
+| Stamp-S3 PIN2.54 · S007-PIN254 · `m5stack-s007-pin254` | [`stamps3`](stamps3-runtime.md) | G0 按键与 G21 RGB；真实指针驱动固件输出；UIFlow2 v2.5.4 保留 trial | [尺寸、照片与资产 hash](evidence/m5stack-s007-pin254/verification.json) |
+| Stamp-S3A · S007-V033 · `m5stack-s007-v033` | [`stamps3a`](stamps3a-runtime.md) | G0、G21 RGB 与 G38 供电门控；三种排针装配分别验收 | [尺寸、照片与资产 hash](evidence/m5stack-s007-v033/verification.json) |
+| Stamp-S3A PIN1.27 · S007-PIN127-V033 · `m5stack-s007-pin127-v033` | [`stamps3a`](stamps3a-runtime.md) | G0、G21 RGB 与 G38 供电门控；三种排针装配分别验收 | [尺寸、照片与资产 hash](evidence/m5stack-s007-pin127-v033/verification.json) |
+| Stamp-S3A PIN2.54 · `m5stack-s007-pin254-v033` | [`stamps3a`](stamps3a-runtime.md) | G0、G21 RGB 与 G38 供电门控；三种排针装配分别验收 | [尺寸、照片与资产 hash](evidence/m5stack-s007-pin254-v033/verification.json) |
+| Stamp-S3Bat · S015 · `m5stack-s015` | [`stamps3bat`](stamps3bat-runtime.md) | 8 MB OPI PSRAM、M5PM1 按键读取与 RGB 刷新；不模拟真实电源关机 | [尺寸、照片与资产 hash](evidence/m5stack-s015/verification.json) |
+| Stamp-S3Bat DIP · `m5stack-s015-dip` | [`stamps3bat`](stamps3bat-runtime.md) | 8 MB OPI PSRAM、M5PM1 按键读取与 RGB 刷新；不模拟真实电源关机 | [尺寸、照片与资产 hash](evidence/m5stack-s015-dip/verification.json) |
+| Stamp-C3 · `m5stack-c056-b` | [`stampc3`](stampc3-runtime.md) | G3 按键、G2 RGB；无 CH9102 / EN 电气时序 | [尺寸、照片与资产 hash](evidence/m5stack-c056-b/verification.json) |
+| Stamp-C3 Mate · K056 · `m5stack-k056` | [`stampc3`](stampc3-runtime.md) | G3 按键、G2 RGB；无 CH9102 / EN 电气时序 | [尺寸、照片与资产 hash](evidence/m5stack-k056/verification.json) |
+| Stamp-C3U · `m5stack-c122-b` | [`stampc3u`](stampc3-runtime.md) | G9 按键、G2 RGB；无原生 USB 电气行为 | [尺寸、照片与资产 hash](evidence/m5stack-c122-b/verification.json) |
+| Stamp-C3U Mate · `m5stack-k122` | [`stampc3u`](stampc3-runtime.md) | G9 按键、G2 RGB；无原生 USB 电气行为 | [尺寸、照片与资产 hash](evidence/m5stack-k122/verification.json) |
+| Stamp-Pico · C050-B · `m5stack-c050-b` | [`stamppico`](stamppico-runtime.md) | G39 按键、G27 RGB、PICO-D4 身份；UIFlow2 缺 M5Things 的失败结果保留 | [尺寸、照片与资产 hash](evidence/m5stack-c050-b/verification.json) |
+| Stamp-Pico Mate · `m5stack-k051` | [`stamppico`](stamppico-runtime.md) | G39 按键、G27 RGB、PICO-D4 身份；UIFlow2 缺 M5Things 的失败结果保留 | [尺寸、照片与资产 hash](evidence/m5stack-k051/verification.json) |
+| Stamp-Pico DIY Kit · K051-B · `m5stack-k051-b` | [`stamppico`](stamppico-runtime.md) | G39 按键、G27 RGB、PICO-D4 身份；UIFlow2 缺 M5Things 的失败结果保留 | [尺寸、照片与资产 hash](evidence/m5stack-k051-b/verification.json) |
+| Stamp-C6LoRa · `m5stack-s012` | [`stamp-c6lora`](stamp-c6lora-runtime.md) | PI4IO / SPI / SX1262 数字协议与明确注入的对端报文；无 RF 传播模拟 | [尺寸、照片与资产 hash](evidence/m5stack-s012/verification.json) |
+| Stamp-P4 · `m5stack-s013` | [`stamp-p4`](stamp-p4-runtime.md) | 16 MB Flash / 32 MB PSRAM，实际 IDF 6.0.2 测试镜像；不含 C6 SDIO 扩展 | [尺寸、照片与资产 hash](evidence/m5stack-s013/verification.json) |
+| Stamp-C5 · `m5stack-s016` | [`stamp-c5`](stamp-c5-runtime.md) | 独立 C5 内核，仅显式 SRAM app-direct；UART0 与 G28 蓝灯；不支持原厂 ROM / 通用 IDF 启动 | [尺寸、照片与资产 hash](evidence/m5stack-s016/verification.json) |
+| Stamp-C5 DIP · `m5stack-s016-dip` | [`stamp-c5-dip`](stamp-c5-runtime.md) | 同一受限 C5 运行范围；独立 FPC / 散装排针装配与浏览器验收 | [尺寸、照片与资产 hash](evidence/m5stack-s016-dip/verification.json) |
+| StamPLC · K141 · `m5stack-k141` | [`stamplc`](stamplc-runtime.md) | 原厂 v0.2 Dashboard / Launcher / LogMonitor，按键、LCD、继电器 GPIO；SD / RTC / 温度等仍有限制 | [尺寸、照片与资产 hash](evidence/m5stack-k141/verification.json) |
+
+最终联合 WASM 为 `bd1c688cff2cbd2ac608761dbe122d0c2346f65ea3d0a6e53d3034ee170ba3ef`（5,000,313 字节）。[两款 StampFly 最终回归](evidence/stampfly-runtime/final-regression/summary.json)记录同一 worker 内 G0 触发软件复位后的新输出；[C5 浏览器回执](evidence/stamp-c5-runtime/platform-browser.json)记录本地上传和 iframe RPC，[独立 C5 复核](evidence/stamp-c5-runtime/independent-review.json)记录边界与负例。各型号更早的指针、照片及固件回执保留原测试 hash；仅说明文字变化的延续关系有独立差异证明，不把旧回执重标为新测试。
+
+尺寸与照片的偏差没有被改成通过：StampFly 的源装配外形与官方尺寸冲突、S3 的 USB 外伸范围、部分排针版本的拍摄角度差异仍有记录。StamPLC 的正反面对照 IoU 未达到 1:1 阈值，属于保留偏差的模型；S3A 的实体尺寸另行排除非实体贴图与交互标记，旧显示边界也继续保留。
+
+## 原始盘点记录（修正前）
+
+以下内容固定描述基线 `49a27787`，其中“未接板型”“待新增”和“芯片后端缺失”等不是当前状态；当前结果以本页上表和对应型号的运行、模型回执为准。
+
 本清单记录 `49a27787` 的基线，核对日期为 2026-11-04。初始范围是目录中 **18 个 `m5-stamp` 条目，加 StamPLC K141，再新增 StampFly v1.1 K138-V11，共 20 个产品**。核对当前官方索引后，又确认缺少 **Stamp-S3A PIN1.27 S007-PIN127-V033** 和 **Stamp-C5 DIP S016-DIP**，因此主队列为 **22 个产品**；Stamp 专用扩展另见下表，不能把现有目录当作官方全集。K141 当前归在 `m5-other`，这里纳入工作范围，不据名称自动改动目录分类。每个 SKU 保留独立产品身份，不因芯片或盖板相似而继承运行验证。用户已确认本轮只处理这 22 个 Stamp 主控与套件；专用扩展板仅保留盘点，不进入实施队列。
 
 本轮盘点读取了目录、19 份模型计划与历史验收资料，检查了现存来源文件的 SHA-256，并目视复核了各类产品的已有照片对照。没有重新渲染浏览器、运行固件或测量实物；下列缺陷与待查项是后续逐台验收的输入。[结构化回执](evidence/stamp-series-audit-2026-11-04/receipt.json) 保存输入哈希、源文件可用性、旧验收状态与当前目录状态。
 
-## 顺序和产品边界
+## 基线：顺序和产品边界
 
 先完成原版 StampFly，并把 v1.1 作为单独型号验收；之后按下表顺序逐台推进。模型、资料与板级实现可以并行准备，最终验收仍逐产品记录。表中“未接板型”表示 `runtime.board=null`，不代表对应芯片完全没有模拟器；“trial”也不代表固件已运行。
 
@@ -70,7 +109,7 @@
 
 扩展实施建议接在相关主控验收之后：S3/S3A → A129/A144/A138；S3Bat → A178/A182；P4 → A172；K141 → A160/A176/A165；其余接口模块按电源、IO、串行、无线顺序推进。无线模块的协议与客体响应应单独验收，展示距离、信号强度或动画不是物理射频的实测证据。
 
-## 裸露 PCB、紧固件和贴纸的核对结果
+## 基线：裸露 PCB、紧固件和贴纸的问题
 
 - **裸板占位集中在 S3/S3A、S3Bat、C3/C3U、Pico。** 多数既有模型用统一灰绿底和双面 UNKNOWN，未利用对应型号的外露板面照片。按新规则补可见面纹理和正确底色，另一未知面保留 UNKNOWN；照片无法证明元件高度、层叠或电气布局。原厂板级 CAD 已知的部分继续保留。
 - **S3 PIN1.27、S3A 及 C3U 的已有背面对照清楚显示问题。** 产品照是带焊盘与丝印的近黑 PCB，模型却是空白灰绿面。需在相应 SKU 的原图上校正、遮罩，不能借同系列另一版本的丝印。
@@ -82,7 +121,7 @@
 
 以上基于保留的对照图、模型计划和几何元数据；未给出实物确认或精确制造公差。所有新增螺丝、螺柱和纸贴承载面应有来源与局部坐标，无法确认的隐藏长度保留为估算。
 
-## 运行适配的实际起点
+## 基线：运行适配的起点
 
 [Stamp-S3](stamps3-runtime.md) 与 [Stamp-S3A](stamps3a-runtime.md) 已有部分板型：G0 按键、G21 RMT RGB；S3A 另有 G38 数字供电门控。已有官方 UIFlow2 **v2.5.3** ROM 启动蓝灯及内部 fixture 的输入/输出证据。当前目录已更新到 **v2.5.4**，仍为 `trial / simulationVerified:false`，新版本不能继承旧版结果；PIN 版本也不能不核对就继承基础板型。
 
@@ -90,7 +129,7 @@
 
 StampFly 还需要其 I²C/SPI 传感器、PWM 电机输出、遥控协议和飞行反馈闭环。现有通用 Stamp-S3 GPIO/RMT 并不覆盖这些功能。S3Bat 的电池供电与按键、StamPLC 的显示/继电器/输入，以及 C6LoRa 的 SX1262 也须分别建立行为边界。启动日志、前端颜色或旋翼动画都不替代客体读数和输出。
 
-## 可复现来源与工具边界
+## 基线：当时的来源与工具边界
 
 19 个现有产品均可执行：
 

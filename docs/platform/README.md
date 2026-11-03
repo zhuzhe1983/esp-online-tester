@@ -16,6 +16,8 @@ The workbench filters devices by manufacturer and sorts names naturally without 
 
 The LILYGO inventory follows Spark’s stable series IDs and product IDs: 127 ESP32 product listings across 21 groups, with T-Deck, Plus, Pro and their Meshtastic-preloaded editions kept distinct. The workbench offers family filtering and grouped model choices. The initial six exact hardware variants remain the adaptation priority: original TTGO T-Display, T-Display-S3 (non-touch), original T-Deck, T-Embed CC1101, T-Beam V1.2 and T-Watch-S3. New listings retain unknown hardware fields and unavailable runtimes until individually investigated. Five exact variants now have partial board runtimes: original T-Display, non-touch T-Display-S3, original T-Deck, T-Embed CC1101 and T-Beam V1.2. Official firmware/input evidence is recorded separately; T-Display-S3 factory remains blocked despite a working official TFT demo. T-Watch S3 and the additionally requested T5 4.7-inch remain queued while work is paused. Manufacturer CAD is an independent visual asset and does not establish runtime compatibility. Factory images stay remote and the existing shared firmware watchlist includes the applicable community projects. See [LILYGO integration and limits](lilygo-onboarding.md).
 
+Stamp 系列已逐款接入 22 个主控和套件，StampFly v1.1 保持独立型号；模型、可运行行为与已知限制见 [Stamp 适配清单](stamp-series-onboarding.md)。C5 仅支持显式 SRAM app-direct，StampFly 不包含飞行动力学。
+
 ## Current scope
 
 “串口与事件”提供“复制日志 → 全部 / 最近 50 条 / 最近 100 条”，工作台与独立播放器共用。复制对象是当前所选 USB、UART0 或 UART1 的留存内容及该视图中的平台事件；每端口仍保留最近 65,536 个字符。“全部”不合并其他串口，也不恢复已被缓冲上限截去的历史。以去除 ANSI 控制序列后的非空逻辑行计数，CRLF/CR 统一为换行，串口传输分块和屏幕自动折行不增加条数，末尾尚未换行的文本计一条。原有固件时间戳和行内空白保留，记录间的空行保留但不计数，不添加宿主时间戳。复制后提示实际条数和端口；空日志不覆盖剪贴板，清空后复制也为空。
