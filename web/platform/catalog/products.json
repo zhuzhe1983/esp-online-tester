@@ -10639,13 +10639,22 @@
       "summary": "ESP32-PICO-D4 Stamp 核心模块五件装；与含下载器的 K051-B DIY Kit 分开维护。",
       "knowledgeUrl": "./knowledge/m5stack-c050-b.json",
       "runtime": {
-        "board": null,
+        "board": "stamppico",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "name": "Button",
+          "type": "button",
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
       "interfaces": [],
       "model": {
         "type": "manufacturer-cad",
@@ -10661,12 +10670,11 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "部分板级模型：G39 用户键与 G27 SK6812 的 GRB RMT 输出；EN、下载器、模拟电源、软件 GPIO 灯时序和物理网络未验证。固件保持 trial；旧 Arduino RGB 灯序配置与现行 UIFlow2 GRB 不同。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
         "View displays one module, not all five loose units in the package.",
         "Same module source geometry as DIY kit does not merge the SKU identity, package weight or included accessories.",
         "CAD thickness 4.4 mm differs from documented 4.6 mm.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
         "黑色裸露 PCB 背面采用该 SKU 官方照片；内部仍为 UNKNOWN，未声称完整板级 CAD。",
@@ -10693,7 +10701,8 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-c050-b-uiflow2"
     },
     {
       "id": "m5stack-s016",
