@@ -1,0 +1,145 @@
+{
+  "checkedAt": "2026-11-03T21:22:58.444Z",
+  "command": "node tools/probe-stampc3.mjs --build <fixture-build-directory> --product <product-id>",
+  "productId": "m5stack-k122",
+  "board": "stampc3u",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "wasmSha256": "46f938fa494134134c78a1cc88f840d0ee67671d8e7589484001dd2d06db18e4",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "1bab8cfa81c80f5ac298d7f0bb0a80acb542aed3cc4456bbd6562bdf128cca8c",
+    "stampc3_fixture.bin": "783ed82aed6931b421d46fc8fde7c92a58c2cbc280360ee65f407bda66f13842",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [
+    "wrong-gpio4-white-frame-ignored",
+    "real-rom-boot-rmt2-red",
+    "guest-gpio9-press-release-drives-green-blue-off-red",
+    "no-invented-display-and-unknown-button-rejected",
+    "platform-reset-clears-old-output-before-new-rmt-frame",
+    "platform-reset-releases-button-and-fresh-guest-red"
+  ],
+  "inputSerialEvidence": [
+    "STAMPC3_PINS 9 2",
+    "STAMPC3_PINS 9 2",
+    "STAMPC3_WRONG_PIN 4 white",
+    "STAMPC3_WRONG_PIN 4 white",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_RMT 0 255 0",
+    "STAMPC3_RMT 0 255 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_RMT 0 0 255",
+    "STAMPC3_RMT 0 0 255",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_RMT 0 0 0",
+    "STAMPC3_RMT 0 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 1"
+  ],
+  "status": "pass",
+  "guestSeconds": 1.06,
+  "leds": [
+    [],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        255,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        0,
+        255
+      ]
+    ],
+    [
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        255,
+        0
+      ]
+    ],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ]
+  ],
+  "serialEvidence": [
+    "STAMPC3_PINS 9 2",
+    "STAMPC3_PINS 9 2",
+    "STAMPC3_WRONG_PIN 4 white",
+    "STAMPC3_WRONG_PIN 4 white",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1"
+  ],
+  "source": {
+    "url": "https://docs.m5stack.com/en/core/Stamp-C3U_Mate",
+    "resolvedUrl": "https://docs.m5stack.com/en/core/Stamp-C3U_Mate",
+    "fetchedAt": "2026-11-03T21:22:58.377823+00:00",
+    "mediaType": "text/html",
+    "bytes": 133044,
+    "sha256": "b85bd2a9a3525eae3f5fb7e05cc4b8070e471d08abca97f7ee38de15395fddde",
+    "schematicLink": "https://static-cdn.m5stack.com/resource/docs/products/core/stamp_c3u/stamp_c3u_sch_01.webp"
+  },
+  "electricalIdentity": {
+    "basis": "Official K122 page explicitly includes one Stamp-C3U and repeats G9 button/G2 SK6812.",
+    "schematicReceipt": "c122-b-sources.json",
+    "scope": "Same module, no loose accessories electrically attached."
+  },
+  "sourceRevision": "9737fddf",
+  "firmwareSurvey": {
+    "factory": "not-located",
+    "reference": "m5stack-stampc3-official-source",
+    "officialBinaryExecuted": false
+  },
+  "limits": [
+    "Independent internal IDF fixture.",
+    "Physical 3D click acceptance follows model integration.",
+    "No EN, USB transport, analog power, GPIO bit-bang, hardware or physical networking validation."
+  ]
+}

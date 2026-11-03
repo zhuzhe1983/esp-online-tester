@@ -25,3 +25,7 @@ The official K056 page explicitly includes one Stamp-C3 plus loose headers/conne
 C122-B uses distinct board `stampc3u`: S2 is G9 with R6 10k pull-up, and its single U3 SK6812 remains on G2. G8 has R2 10k pull-up. S1 remains EN. The C3U schematic routes native USB D−/D+ to G18/G19 and omits CH9102; this subset does not claim USB transport or flashing. Its current page IO list says G22, which conflicts with the C3 pin range and schematic; no such GPIO is invented. [Source receipt](evidence/stamp-controllers/c122-b-sources.json).
 
 The independently compiled C3U fixture explicitly selects G9 and reports `STAMPC3_PINS 9 2`; the probe checks it against the selected `stampc3u` board. It repeats wrong-pin, real guest RGB, press/release and reset checks in [the C122-B receipt](evidence/stamp-controllers/c122-b-runtime.json). Source-only firmware references are shared only because the official source explicitly distinguishes C3/C3U, not because their names are similar.
+
+## Stamp-C3U Mate K122
+
+The K122 product page explicitly supplies one Stamp-C3U and links the identical C3U schematic. It uses the same G9/G2 board with an independent product and [fresh K122 execution receipt](evidence/stamp-controllers/k122-runtime.json). `button-user` is normalized to `button` for the real front user-key region; EN is not a GPIO action. Loose connectors and headers remain separate kit contents.

@@ -3466,18 +3466,20 @@
       "chip": "esp32c3",
       "module": "ESP32-C3",
       "runtime": {
-        "board": null,
+        "board": "stampc3u",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [
         {
-          "id": "button-user",
-          "name": "User button",
+          "id": "button",
+          "name": "Button",
           "type": "button",
-          "pin": 9
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         }
       ],
       "interfaces": [
@@ -3497,7 +3499,7 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "套装中的 Stamp-C3U 采用独立 stampc3u 板级模型，部分支持 G9 用户键和 G2 RGB RMT；EN、原生 USB、模拟电源和物理网络未验证，排针/Grove 散件未电气连接。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k122.json",
@@ -3517,7 +3519,10 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "firmwareReferenceIds": [
+        "m5stack-stampc3-official-source"
+      ]
     },
     {
       "id": "m5stack-k056",
