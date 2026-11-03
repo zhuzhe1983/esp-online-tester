@@ -23,6 +23,10 @@ class SourceMeshTest(unittest.TestCase):
    np.testing.assert_allclose(vertices,mesh.triangles.reshape(-1,3))
    self.assertEqual(meta['provenance']['repository'],'https://example.org/models');self.assertEqual(meta['provenance']['sourceLicense'],'Specific model author license')
    self.assertEqual(meta['artifacts']['LICENSE-Author.txt'],sha(source/'license.txt'));self.assertEqual(meta['artifacts']['source.stl'],sha(source/'open.stl'))
+   plan['surfaces']=[{'name':'translucent-blade','sizeMm':[2,3],'radiusMm':0,'positionMm':[0,0,2],'side':'front','role':'propeller','sourceIds':['cad'],'notes':'Photo-supported material fixture','material':{'opacity':.38,'roughness':.25,'metalness':0}}]
+   painted,_=exporter.build_model(prepared,plan,root/'painted',evidence_root=root/'painted-evidence',license_path=source/'license.txt')
+   self.assertNotIn('material',painted['parts'][0])
+   self.assertEqual(painted['parts'][1]['material'],{'opacity':.38,'roughness':.25,'metalness':0})
    plan['provenance']['licenseFile']='../escape.txt'
    with self.assertRaisesRegex(ValueError,'license filename'):exporter.build_model(prepared,plan,root/'bad',evidence_root=root/'bad-evidence',license_path=source/'license.txt')
    self.assertFalse((root/'escape.txt').exists())
