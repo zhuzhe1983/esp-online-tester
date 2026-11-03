@@ -23,7 +23,7 @@ import {firmwareDownloadUrl} from './firmware-relay.js';
 import {checkFirmwareDownloadResponse} from './firmware-download-access.js';
 import { assembleLocalFirmware } from './local-firmware.js';
 import {firmwareMetadata} from './firmware-metadata.js';
-import {chipIdForBoard,validateAppImage,validateBoardRevision} from './app-image.js';
+import {chipIdForBoard,validateAppImage,validateBoardRevision,isC5Board,C5_SRAM_RANGES} from './app-image.js';
 import { createDeviceStorage, deviceStorageScope } from './device-storage.js';
 
 export const API_VERSION = '1.0.0';
@@ -175,7 +175,7 @@ export function validateMergedImage(data, board, flashBytes, {partitionTableOffs
   return true;
 }
 
-const romFor = board => ['esp32c3','stampc3','stampc3u'].includes(board) ? 'esp32c3_rev3_rom.elf' : ['esp32p4','stamp-p4'].includes(board) ? 'esp32p4_rev0_rom.elf' : (board==='nesso-n1'||board.includes('c6')) ? 'esp32c6_rev0_rom.elf' : /^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2)$/.test(board) ? 'esp32_rev300_rom.elf' : 'esp32s3_rev0_rom.elf';
+const romFor = board => isC5Board(board) ? null : ['esp32c3','stampc3','stampc3u'].includes(board) ? 'esp32c3_rev3_rom.elf' : ['esp32p4','stamp-p4'].includes(board) ? 'esp32p4_rev0_rom.elf' : (board==='nesso-n1'||board.includes('c6')) ? 'esp32c6_rev0_rom.elf' : /^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2)$/.test(board) ? 'esp32_rev300_rom.elf' : 'esp32s3_rev0_rom.elf';
 
 export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000, deviceStorage = createDeviceStorage(), sdStorage = createSdCardStorage() } = {}) {
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;
@@ -361,6 +361,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   };
   const initializeStorage = async (bundle, supported, progress) => {
     detachStorage();
+    if(isC5Board(bundle.cfg.board)) {storage.status='unsupported';storage.pristine=null;storageEvent();return;}
     if (!supported) { storage.status='error'; storage.pristine=null; storage.error={code:'STORAGE_UNSUPPORTED',message:'This emulator build does not expose writable Flash snapshots.'}; storageEvent(); return; }
     storage.status='loading'; storageEvent(); progress.prepare('device-storage');
     const snapshot = await flashAsk('flash-snapshot'), baseline = new Uint8Array(snapshot.data);
@@ -443,7 +444,9 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     requireValue(runtime.board, 'UNSUPPORTED_PRODUCT', 'This product has catalog metadata but no executable board model yet.');
     // Official StopWatch V0.5 enters a non-responsive JIT path in its IMU page.
     // The same unmodified firmware passes through the WASM CPU interpreter.
-    return { board: runtime.board, flash_mb: runtime.flashMb ?? 8, psram_mb: runtime.psramMb ?? 2, ...(runtime.board === 'stopwatch' ? {jit: false} : {}) };
+    const c5=isC5Board(runtime.board);
+    const cfg={ board: runtime.board, flash_mb: runtime.flashMb ?? (c5?4:8), psram_mb: runtime.psramMb ?? (c5?0:2), ...(runtime.board === 'stopwatch'||c5 ? {jit: false} : {}) };
+    requireValue(!c5||cfg.flash_mb===4&&cfg.psram_mb===0,'MEMORY_MISMATCH','Stamp-C5 SRAM runtime uses 4 MiB Flash staging and no PSRAM.');return cfg;
   };
   const readArtifact = async (entry, root, progress, kind, maxBytes = MAX_FILE) => {
     const item = typeof entry === 'string' ? { url: entry } : entry;
@@ -470,10 +473,11 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   };
   const prepare = async (source, progress) => {
     requireValue(source && typeof source === 'object', 'FIRMWARE_REQUIRED', 'Select a firmware manifest or merged flash image first.');
+    const cfg = runtimeConfig(), c5=isC5Board(cfg.board), files = [], receipts = [];
     requireValue(source.bootMode===undefined||['rom','app-direct'].includes(source.bootMode),'INVALID_BOOT_MODE','Unknown firmware boot mode.');
-    requireValue(!source.bootMode||source.url&&!source.manifestUrl&&!source.file&&!source.files,'INVALID_BOOT_MODE','Explicit boot mode is only supported for a remote raw image.');
+    requireValue(!source.bootMode||!source.manifestUrl&&!source.files&&(source.url&&!source.file||c5&&source.file&&!source.url),'INVALID_BOOT_MODE','Explicit boot mode needs a remote raw image, or a local C5 SRAM application.');
     requireValue(source.archive===undefined||validFirmwareArchive(source)&&!source.file&&!source.files,'INVALID_FIRMWARE_ARCHIVE','ZIP 固件必须指定唯一 BIN 文件名及其 SHA-256。');
-    const cfg = runtimeConfig(), files = [], receipts = [];
+    requireValue(!c5||source.bootMode!=='rom'&&!['build','segments','merged'].includes(source.format),'C5_SRAM_REQUIRED','C5 currently accepts one SRAM application with app-direct startup. Merged ROM/IDF builds are unsupported.');
     let total = 0;
     const add = (kind, artifact, at) => {
       total += artifact.data.length;
@@ -481,7 +485,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       files.push({ kind, data: artifact.data, ...(at === undefined ? {} : { at }) });
       receipts.push({ kind, url: artifact.url, sha256: artifact.sha256, bytes: artifact.data.length, ...(at === undefined ? {} : { at }) });
     };
-    let manifest = null, manifestUrl = null, manifestHash = null, localLayout = null;
+    let manifest = null, manifestUrl = null, manifestHash = null, localLayout = null, sramApp = null;
     if (source.manifestUrl) {
       manifestUrl = resolveFirmwareUrl(source.manifestUrl, baseUrl);
       const artifact = await readArtifact({ url: manifestUrl, sha256: source.sha256 }, baseUrl, progress, 'manifest');
@@ -492,6 +496,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(!manifest.board || firmwareBoardMatches(manifest.board,cfg.board), 'BOARD_MISMATCH', 'Manifest board does not match the selected product.', { selected: cfg.board, manifest: manifest.board });
       for (const [key, expected] of [['flash_mb', cfg.flash_mb], ['psram_mb', cfg.psram_mb]]) if (manifest[key] != null) requireValue(manifest[key] === expected, 'MEMORY_MISMATCH', `Manifest ${key} does not match this product.`, { expected, actual: manifest[key] });
       requireValue(manifest.files && typeof manifest.files === 'object' && !Array.isArray(manifest.files), 'INVALID_MANIFEST', 'Manifest must list its firmware files.');
+      if(c5) {
+        requireValue(manifest.app_direct===true&&Object.keys(manifest.files).length===1&&[].concat(manifest.files.app||[]).length===1&&!Object.keys(manifest.flash_at||{}).length,'C5_SRAM_REQUIRED','A C5 manifest must declare app_direct:true and exactly one files.app SRAM image; no ROM or flash layout.');
+        requireValue(!manifest.wifi&&(!manifest.stubs||Array.isArray(manifest.stubs)&&manifest.stubs.length===0),'C5_FEATURE_UNSUPPORTED','C5 SRAM runtime does not support WiFi configuration or ROM stubs.');
+      }
       const pinned = entry => typeof entry === 'string' ? { url: entry, sha256: manifest.artifact_sha256?.[entry] } : entry;
       for (const [kind, entries] of Object.entries(manifest.files)) {
         requireValue(Object.hasOwn(KINDS, kind), 'INVALID_MANIFEST', `Unsupported firmware file kind: ${kind}.`);
@@ -509,6 +517,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       }
       requireValue(files.some(f => f.kind === 'app' || f.kind === 'flash'), 'INCOMPLETE_IMAGE', 'Manifest contains no app or flash image.');
       cfg.appDirect = manifest.app_direct === true;
+      if(c5)sramApp=await validateAppImage(files[0].data,cfg.board,cfg.flash_mb*MIB);
       if (!cfg.appDirect && !files.some(f => f.kind === 'flash')) requireValue(files.some(f => f.kind === 'bootloader') && files.some(f => f.kind === 'ptable'), 'INCOMPLETE_IMAGE', 'ROM boot needs both a bootloader and a partition table.');
       cfg.stubs = manifest.stubs || [];
       requireValue(Array.isArray(cfg.stubs) && cfg.stubs.length <= 64 && cfg.stubs.every(s => typeof s === 'string' && s.length < 256), 'INVALID_MANIFEST', 'Invalid manifest stub list.');
@@ -535,7 +544,11 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         progress.prepare('verify', 'flash');
         artifact = { data, url: null, sha256: await checkedHash(data, source.sha256) };
       } else artifact = await readArtifact(source, baseUrl, progress, 'flash',source.archive?cfg.flash_mb*MIB:MAX_FILE);
-      if(source.bootMode==='app-direct') {
+      if(c5) {
+        sramApp=await validateAppImage(artifact.data,cfg.board,cfg.flash_mb*MIB);
+        requireValue(source.file||source.bootMode==='app-direct'||sramApp.applicationDescriptor,'C5_APP_DIRECT_REQUIRED','For a bare-metal C5 URL, choose SRAM app-direct or set bootMode:"app-direct" explicitly.');
+        cfg.appDirect=true;
+      } else if(source.bootMode==='app-direct') {
         await validateAppImage(artifact.data,cfg.board,cfg.flash_mb*MIB);cfg.appDirect=true;
       } else {
         try {validateMergedImage(artifact.data,cfg.board,cfg.flash_mb*MIB);}
@@ -550,8 +563,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       }
       add(cfg.appDirect?'app':'flash', artifact);
     }
-    if ((!cfg.appDirect || !manifest) && !files.some(f => f.kind === 'rom')) add('rom', await readArtifact(new URL(`wasm/fw/${romFor(cfg.board)}`, assetBaseUrl).href, baseUrl, progress, 'rom'));
-    return { cfg, files, receipt: { manifestUrl, manifestHash, metadata:firmwareMetadata(files,manifest), source: source.file || localLayout ? 'local' : 'remote', ...(localLayout ? {localLayout} : {}), artifacts: receipts, appDirect: !!cfg.appDirect, stubs: cfg.stubs || [], executionMode: cfg.jit === false ? 'wasm-interpreter' : 'wasm-jit' } };
+    if (!c5 && (!cfg.appDirect || !manifest) && !files.some(f => f.kind === 'rom')) add('rom', await readArtifact(new URL(`wasm/fw/${romFor(cfg.board)}`, assetBaseUrl).href, baseUrl, progress, 'rom'));
+    return { cfg, files, receipt: { manifestUrl, manifestHash, metadata:firmwareMetadata(files,manifest), source: source.file || localLayout ? 'local' : 'remote', ...(localLayout ? {localLayout} : {}), ...(sramApp?{sramApp,bootMode:'app-direct',resetMode:'reload-same-sram-image'}:{}), artifacts: receipts, appDirect: !!cfg.appDirect, stubs: cfg.stubs || [], executionMode: cfg.jit === false ? 'wasm-interpreter' : 'wasm-jit' } };
   };
   const initialize = async (bundle, progress) => {
     stopWorker();
@@ -567,7 +580,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     await ask('ready', { op: 'init', wasm: wasmBuffer, frameAck: true }, [wasmBuffer]);
     const result = await ask('created', { op: 'create', ...bundle.cfg, audioStreaming:true });
     requireValue(result.created, 'CREATE_FAILED', 'Cannot create the selected emulator board.');
-    audio.reset(result.audioAvailable===true);
+    audio.reset(!isC5Board(bundle.cfg.board)&&result.audioAvailable===true);
     for (const file of bundle.files) {
       const data = file.data.slice().buffer;
       const result = await ask(`loaded:${file.at === undefined ? KINDS[file.kind] : `at${file.at}`}`, { op: 'load', ...(file.at === undefined ? { kind: KINDS[file.kind] } : { at: file.at }), data }, [data]);
@@ -588,7 +601,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       bundle.receipt.ble = adapter.receipt;
     }
     for (const spec of bundle.cfg.stubs || []) worker.postMessage({ op: 'stub', spec });
-    if(result.networkAvailable&&romFor(bundle.cfg.board)!=='esp32p4_rev0_rom.elf')await network.attach({available:true,manifestWifi:bundle.cfg.wifi});
+    if(isC5Board(bundle.cfg.board))await network.attach({available:false});
+    else if(result.networkAvailable&&romFor(bundle.cfg.board)!=='esp32p4_rev0_rom.elf')await network.attach({available:true,manifestWifi:bundle.cfg.wifi});
     else if(bundle.cfg.wifi)worker.postMessage({op:'wifi',spec:bundle.cfg.wifi});
     if (imuModel()) await applyImu();
     resetAccessoryInputs();
@@ -673,6 +687,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(Number.isInteger(event.x) && Number.isInteger(event.y) && event.x >= 0 && event.y >= 0 && event.x < width && event.y < height && typeof event.down === 'boolean', 'INVALID_INPUT', 'Touch coordinates must be integer native display pixels within the panel.');
       message = { t: 'touch', x: event.x, y: event.y, down: event.down ? 1 : 0 };
     } else if (event.type === 'serial') {
+      requireValue(!isC5Board(product?.runtime?.board)||event.port==='uart0','UNSUPPORTED_PORT','C5 SRAM runtime currently exposes UART0 input only.');
       requireValue(['usb', 'uart0', 'uart1'].includes(event.port), 'UNSUPPORTED_PORT', 'Supported input ports are usb, uart0 and uart1; UART2 input is not exposed by upstream.');
       const maxBytes = event.port === 'usb' ? 4096 : 128;
       requireValue(typeof event.data === 'string' && new TextEncoder().encode(event.data).length <= maxBytes, 'INVALID_INPUT', `Serial input must be a string of at most ${maxBytes} UTF-8 bytes; UART RX has a 128-byte FIFO.`);
@@ -747,20 +762,21 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     pushAudio(options){return exclusive(()=>audio.push(options));},
     readAudio(options){return exclusive(async()=>{await audio.refresh();return audio.read(options);});},
     async capabilities() {
+      const c5=isC5Board(product?.runtime?.board);
       return { version: API_VERSION, backend: 'esp32sim-wasm', static: true, executable: !!product?.runtime?.board,
-        execution: {mode: product?.runtime?.board === 'stopwatch' ? 'wasm-interpreter' : 'wasm-jit', reason: product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null},
+        execution: {mode: product?.runtime?.board === 'stopwatch'||c5 ? 'wasm-interpreter' : 'wasm-jit', reason: c5?'C5 SRAM app-direct only; no ROM/IDF startup or JIT.':product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null,...(c5?{bootModes:['app-direct'],romBoot:false,resetMode:'reload-same-sram-image',sramRanges:clone(C5_SRAM_RANGES)}:{})},
         sdCard:{available:hasSdCard(product?.runtime?.board),defaultBytes:64*MIB,maxBytes:MAX_SD_BYTES,formats:['fat32','raw-image'],scope:'product-board-canonical-flash-sha256',autoSaveIntervalMs:1500,crashSafe:false},
-        network:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',transport:'browser-softap+ethernet-websocket',helperRequired:false,externalConnectionRequired:true,modes:['public-relay','local-helper'],portMappingRequiresHelper:true,softAp:!!product?.runtime?.board&&romFor(product.runtime.board)==='esp32s3_rev0_rom.elf',automaticProvisioning:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
-        audio:{input:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&romFor(product.runtime.board)==='esp32s3_rev0_rom.elf',channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
+        network:c5?{available:false,transport:null,modes:[],softAp:false,automaticProvisioning:[],methods:[]}:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',transport:'browser-softap+ethernet-websocket',helperRequired:false,externalConnectionRequired:true,modes:['public-relay','local-helper'],portMappingRequiresHelper:true,softAp:!!product?.runtime?.board&&romFor(product.runtime.board)==='esp32s3_rev0_rom.elf',automaticProvisioning:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
+        audio:c5?{input:{available:false,ports:[]},output:{available:false},methods:[]}:{input:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&romFor(product.runtime.board)==='esp32s3_rev0_rom.elf',channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
-        firmware: { manifest: true, mergedImage: true, localFile: true, localSegments: true, localBuild: true, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true },
-        input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin,pins,addresses,control,hub,viaAccessoryId,portId})=>({accessoryId,model,port,...(pin===undefined?{}:{pin}),...(pins?{pins,addresses}:{}),controls:control?[control]:[],...(hub?{hub:true}:{}),...(viaAccessoryId?{viaAccessoryId,portId}:{})})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio) || boardButton(c)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv','tdeck'].includes(product?.runtime?.board)?{rows:4,columns:product.runtime.board==='tdeck'?10:14,model:product.runtime.board==='tdeck'?'esp32c3-i2c-raw':product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: ['usb', 'uart0', 'uart1'] },
+        firmware: { manifest: true, mergedImage: !c5, localFile: true, localSegments: !c5, localBuild: !c5, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true,...(c5?{sramAppDirect:true,ota:false,targetRevision:100}:{}) },
+        input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin,pins,addresses,control,hub,viaAccessoryId,portId})=>({accessoryId,model,port,...(pin===undefined?{}:{pin}),...(pins?{pins,addresses}:{}),controls:control?[control]:[],...(hub?{hub:true}:{}),...(viaAccessoryId?{viaAccessoryId,portId}:{})})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio) || boardButton(c)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv','tdeck'].includes(product?.runtime?.board)?{rows:4,columns:product.runtime.board==='tdeck'?10:14,model:product.runtime.board==='tdeck'?'esp32c3-i2c-raw':product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: c5?['uart0']:['usb', 'uart0', 'uart1'] },
         servos:{available:product?.runtime?.board==='stackchan',axes:product?.runtime?.board==='stackchan'?['pan','tilt']:[],source:'guest-uart-feedback',unit:'degrees',hardwareValidated:false},
         motors:{available:hasMotorOutput(product?.runtime?.board),axes:hasMotorOutput(product?.runtime?.board)?STAMPFLY_MOTORS.map(({id})=>id):[],source:'guest-routed-pwm',unit:'normalized-duty',rpmAvailable:false,flightSimulated:false,hardwareValidated:false},
         hardwareDiagnostics:{available:product?.runtime?.board==='stopwatch',source:'guest-registers',hardwareValidated:false},
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
-        gps: { mode: 'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },
+        gps: { ...(c5?{available:false}:{}),mode: c5?null:'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },
         lora:{available:['papermono','lilygo-t-beam-v1-2','stamp-c6lora'].includes(product?.runtime?.board),model:product?.runtime?.board==='lilygo-t-beam-v1-2'?'sx1276-lora-digital':'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
         imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: ['stopwatch','atom-matrix','atom-matrix-v11'].includes(product?.runtime?.board), orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: 'host-input', physicalMountingVerified: false },
         unsupported: ['arbitrary-dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input'] };
