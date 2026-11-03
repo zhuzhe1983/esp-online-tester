@@ -10,7 +10,7 @@
     "product-photo-90af827662",
     "product-photo-6900c2d27b"
   ],
-  "updatedAt": "2026-11-03T21:19:29Z",
+  "updatedAt": "2026-11-03T21:43:54Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -535,6 +535,36 @@
         "schematic-00cf102d13"
       ],
       "notes": "Conflict retained; no user hardware revision inferred."
+    },
+    {
+      "id": "native-blue-led-emitting-face",
+      "group": "mechanical",
+      "label": "Native D1 blue status LED emitting face",
+      "value": {
+        "designator": "D1",
+        "gpio": 28,
+        "activeLevel": "low",
+        "sourceComponent": 32,
+        "nativeFaceRange": [
+          248,
+          250
+        ],
+        "sizeMm": [
+          0.43,
+          0.78
+        ],
+        "partId": "status-blue-led",
+        "outputIndex": 0,
+        "chargingLedExcluded": "D2 / sourceComponent 19"
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "manufacturer-cad-7cc4fe20bc",
+        "schematic-00cf102d13",
+        "product-photo-2d79a059e2"
+      ],
+      "method": "Follow STEP PRODUCT D1 reference designator through PRODUCT_DEFINITION, SHAPE_DEFINITION_REPRESENTATION and NEXT_ASSEMBLY_USAGE_OCCURRENCE to the reused 0402 LED geometry. Apply existing sourceTransform and match the native component bounds. The front photo B mark corroborates the right-hand LED; C is the separate charging LED. No PcbDoc parsing claimed. Reproduce with python tools/audit-stamp-c5-blue-led.py; per-SKU entity IDs, hashes and face bounds in blue-led-source-audit.json.",
+      "notes": "Uses only the existing 0402 package top; no added light geometry or photo window. Electrical active-low connection follows the official schematic. Die geometry, brightness and beam pattern are unmeasured. This model-source fact alone does not establish guest execution."
     }
   ],
   "revisions": [],
