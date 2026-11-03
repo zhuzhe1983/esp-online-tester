@@ -1,0 +1,93 @@
+{
+  "fixture": "S007 geometry with test-only declared cover group; no firmware execution",
+  "checks": [
+    "workbench button separates declared model",
+    "actual rendered geometry changes",
+    "appearance update preserves inspection state",
+    "inspection leaves firmware lifecycle untouched",
+    "inspection absent from scene/share data",
+    "reset view restores assembly",
+    "reset restores original rendered pixels without drift",
+    "repeated public toggles return assembled",
+    "2D hides inspection",
+    "return from 2D is assembled",
+    "product without declarations has no control",
+    "product replacement clears inspection",
+    "external accessory restores assembly and disables inspection",
+    "removing accessories enables an assembled model",
+    "shared embed opens assembled",
+    "embed restores shared appearance",
+    "embedded public button separates model",
+    "embed 390px has no horizontal overflow",
+    "embed reset restores assembly",
+    "no browser page errors"
+  ],
+  "pageErrors": [],
+  "implementationCommit": "31d9ff5f",
+  "geometryDependencies": [
+    "4dd71bc6",
+    "17bba3c6"
+  ],
+  "browser": "headless Chromium through task-owned Playwright CLI session",
+  "viewports": [
+    {
+      "page": "workbench",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "page": "embed",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "limitations": [
+    "The route adds a test-only group to existing S007 assets. This receipt proves UI behavior, not the updated product model or UNKNOWN readability.",
+    "No firmware was loaded during the browser flow. The separate runtime test executes the existing WASM fixture.",
+    "A first mobile run exposed toolbar overflow. The final layout wraps controls and the 390px check passes.",
+    "The initial combined Node test lacked ignored ROM artifacts. Reusing existing WASM/ROM artifacts without rebuilding resolved setup; all six scripts passed."
+  ],
+  "tests": {
+    "command": "node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs tools/platform-model-inspection-test.mjs tools/platform-manufacturer-model-test.mjs",
+    "topLevelPassed": 9,
+    "failed": 0
+  },
+  "reproduction": {
+    "initialUrl": "Caller-supplied /web/platform/ URL served from repository root",
+    "steps": [
+      "Open the target in a task-owned headless Playwright CLI session.",
+      "Create output/playwright, then run the function from tools/fixtures/model-inspection-browser-check.js with run-code.",
+      "Close the same task-owned session and verify it exited."
+    ]
+  },
+  "artifacts": {
+    "tools/fixtures/model-inspection-browser-check.js": {
+      "sha256": "20db439acc3f69c20cc5b64480283a69a360c1280a6bc4e37bc87addb6829ac3",
+      "bytes": 6179
+    },
+    "web/platform/assets/m5stack-s007/model.json": {
+      "sha256": "5fe64e18603c917435d2e9ebca619f77b8007f37c625a3bdcfe33bc7fac3cd1b",
+      "bytes": 27590
+    },
+    "web/wasm/esp32sim.wasm": {
+      "sha256": "b1887a8b5f80a135191ddbbd79ebe2d0e7218d6081d8723a7e543f615df9844c",
+      "bytes": 4703854
+    },
+    "docs/platform/evidence/model-inspection/inspection-embed-mobile.png": {
+      "sha256": "41f03971ed86e8ba92b2978c1a13759b8311af3bd36321dfaa54652e140e9d01",
+      "bytes": 127718
+    },
+    "docs/platform/evidence/model-inspection/inspection-workbench-expanded.png": {
+      "sha256": "e40af8ae9a40cb72584c853d2f9fbd13f3ffcc696157e95024be6aea9a00d502",
+      "bytes": 117914
+    },
+    "docs/platform/evidence/model-inspection/inspection-workbench-restored.png": {
+      "sha256": "4ac400a791ec7017ce29538c52756cf5c6a6a7257b3eafb654b982e1eee2ac24",
+      "bytes": 118062
+    }
+  },
+  "cleanup": {
+    "taskBrowserClosedAndAbsent": true,
+    "taskPreviewStoppedAndPortClosed": true
+  }
+}
