@@ -26,3 +26,5 @@ node --test tools/platform-knowledge-test.mjs tools/platform-manufacturer-model-
 ```
 
 厂家 CAD 保留其 MIT 许可。厂家照片及衍生纹理没有已核实的独立开放许可，不套用项目 MIT。模型状态仍为 `partial`；本记录只验外观与几何，固件执行结论由板级运行时记录独立提供。
+
+G3 用户键采用源 CAD 弹片内侧 9 × 6 mm 命中区，位置 [0, -4.5, 2.285] mm，绑定运行时 `button`。按键面随外盖一起分开查看，EN 复位不绑定为 GPIO 用户键。实际 3D 点击与客体输出另见交互回执。
