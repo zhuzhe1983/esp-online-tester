@@ -16,7 +16,11 @@ This is an identity and layout check. The firmware remains `trial`, with both si
 
 The official specification says 73.6 × 73.6 × 32 mm. Its dimension drawing also gives a 65 mm diagonal motor spacing and 36.2 mm guard diameter, which imply an approximately 82.2 mm outer guard envelope for the shown square arrangement. The 73.6 mm dimension line does not span the outer guards. Preserve the manufacturer's fields and drawing separately; do not scale the Ecosystem's approximately 81.842 mm assembly to force agreement.
 
-The v1.1 structure section does not supply a complete v1.1 assembly. The Ecosystem mesh is named `stampfly_v1` and includes a Stamp-S3 component, so reuse requires explicit variant verification. Official 1200 × 1200 top and bottom photos show four-blade propellers, black exposed PCB, blue isolators and four visible screws. Photo references are retained locally with exact source hashes. Internal PCB layout and unobserved fastening details remain unknown.
+The v1.1 structure section does not supply a complete v1.1 assembly. This model retains the Ecosystem frame, carrier, motors and adapter without scaling, and replaces its coarse Stamp-S3 part with the exact S007-V033 Stamp-S3A cover STL. The cover is 18 × 24 × 4.7 mm; the separate printed sheet is 17.6 × 23.2 mm and remains inside its supporting face. Source coordinates, selections and transforms are recorded in [model-plan.json](../../web/platform/assets/m5stack-k138-v11/model-plan.json).
+
+Official 1200 × 1200 top and bottom photos supply separate masked PCB textures. Four mounting-hole centers rectify each PCB plane, and texture projection is limited to its actual source triangles. The bottom optical-flow daughterboard is absent from the simplified source: its visible 13.2 × 23.2 mm outline and exposed photographic face are added as an estimate, with ±1.5 mm uncertainty in seating height. Its unknown inner face remains marked `UNKNOWN`. This does not reconstruct hidden circuitry or certify component heights. Four visible screw heads use photograph-supported hex recesses; hidden screw threads and fittings remain unknown.
+
+The four propeller blades use a recorded v1.1 photo outline, with mirrored handedness for alternate rotors. Blade thickness, pitch, optical transparency and the hub remain visual approximations. The older battery is retained only as raw source material and omitted from the displayed assembly: the chosen official photos show no installed battery, and the source pack cannot establish the dimensions of the v1.1 320 mAh pack. The full source envelope is approximately 81.842 × 81.842 × 31.528 mm, so the manufacturer's size comparisons remain explicitly failed rather than being hidden by rescaling.
 
 Stamp-S3A's module RGB differs electrically from original Stamp-S3: in [schematic v0.3.3](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1150/Sch_StampS3_v0.3.3.pdf), G38 (`DISP_BL`) drives U2 AW35122FDR enable. Its `BL_3V3` output powers U3 WS2812; G21 is the data input. This is separate from the flight controller's G39 RGB. The older carrier schematic does not override this module-specific supply gate.
 
@@ -39,3 +43,12 @@ node tools/verify-stampfly-v11-sources.mjs --source-dir /tmp/stampfly-v11-audit
 Mutable HTML and API endpoints may now have different bytes; such a mismatch identifies a new source snapshot and must not be silently accepted. The command only reads bytes and validates image layout. It does not execute an EXE, emulate firmware or flash a device.
 
 Manufacturer photos, drawings and schematics retain their original rights; they are reference material, not relicensed under the repository's software license. Raw HTML/API responses, user profile fields, installer and firmware binaries are omitted from committed evidence. Hashes identify the original responses without retaining unrelated personal information.
+
+The model can be rebuilt without network access using the pinned local source files:
+
+```sh
+python tools/rebuild-product-model.py plan m5stack-k138-v11
+python tools/rebuild-product-model.py build m5stack-k138-v11 --scratch /tmp/stampfly-v11-rebuild
+```
+
+Use the dependencies in `tools/requirements-model.txt`. A fresh scratch directory preserves prior comparison results. The [verification receipt](evidence/m5stack-k138-v11/verification.json) distinguishes source-fidelity checks, dimensional discrepancies, photographs and browser interaction checks; it does not claim complete mechanical or flight validation.
