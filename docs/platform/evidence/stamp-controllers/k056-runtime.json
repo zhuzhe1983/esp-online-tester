@@ -1,0 +1,141 @@
+{
+  "checkedAt": "2026-11-03T21:18:24.229Z",
+  "command": "node tools/probe-stampc3.mjs --build <fixture-build-directory> --product <product-id>",
+  "productId": "m5stack-k056",
+  "board": "stampc3",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "wasmSha256": "ea4fb051f12ddbf8c3ada27251e189b7a516d378f2abf876c9b1d3bbbc8f9be4",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "1bab8cfa81c80f5ac298d7f0bb0a80acb542aed3cc4456bbd6562bdf128cca8c",
+    "stampc3_fixture.bin": "17015dfecf0eb2da7c05d181cef9fa79f421e235370fff600c20e4ae57e79afe",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [
+    "wrong-gpio4-white-frame-ignored",
+    "real-rom-boot-rmt2-red",
+    "guest-gpio3-press-release-drives-green-blue-off-red",
+    "no-invented-display-and-unknown-button-rejected",
+    "platform-reset-clears-old-output-before-new-rmt-frame",
+    "platform-reset-releases-button-and-fresh-guest-red"
+  ],
+  "inputSerialEvidence": [
+    "STAMPC3_WRONG_PIN 4 white",
+    "STAMPC3_WRONG_PIN 4 white",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_RMT 0 255 0",
+    "STAMPC3_RMT 0 255 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_RMT 0 0 255",
+    "STAMPC3_RMT 0 0 255",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_RMT 0STAMPC3_RMT 0 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_BUTTON 0",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_BUTTON 1"
+  ],
+  "status": "pass",
+  "guestSeconds": 1.02,
+  "leds": [
+    [],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        255,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        0,
+        255
+      ]
+    ],
+    [
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        255,
+        0
+      ]
+    ],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ]
+  ],
+  "serialEvidence": [
+    "STAMPC3_WRONG_PIN 4 white",
+    "STAMPC3_WRONG_PIN 4 white",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1",
+    "STAMPC3_RMT 255 0 0",
+    "STAMPC3_BUTTON 1"
+  ],
+  "source": {
+    "url": "https://docs.m5stack.com/en/core/Stamp-C3_Mate",
+    "resolvedUrl": "https://docs.m5stack.com/en/core/Stamp-C3_Mate",
+    "fetchedAt": "2026-11-03T21:18:12.819985+00:00",
+    "bytes": 133619,
+    "mediaType": "text/html",
+    "sha256": "efb7736720915e0d584488a9df82114ca50edaae964ad3e3b9abf672eca7ee15"
+  },
+  "electricalIdentity": {
+    "basis": "Official K056 page identifies included module as Stamp-C3 and its PinMap repeats G2 DI/G3 SW.",
+    "schematicUrl": "https://static-cdn.m5stack.com/resource/docs/products/core/stamp_c3/stamp_c3_sch_01.webp",
+    "schematicSha256": "873538e7cbc79bb65b630146e6d4ee81384269df9f2005cd0267017a96a9c982",
+    "scope": "Same core module, kit accessories not electrically attached."
+  },
+  "sourceRevision": "b4552e29",
+  "factorySurvey": {
+    "factory": "not-located",
+    "reference": "m5stack-stampc3-official-source",
+    "sourceReceipt": "c056-b-sources.json",
+    "officialBinaryExecuted": false
+  },
+  "limitations": [
+    "Independent internal fixture, not manufacturer firmware.",
+    "Physical 3D hotspot check follows model integration.",
+    "No EN, USB bridge, power/analog, bit-bang, physical network or loose-header connection claims."
+  ]
+}

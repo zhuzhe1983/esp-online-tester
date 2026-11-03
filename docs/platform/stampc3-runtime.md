@@ -15,3 +15,7 @@ node tools/probe-stampc3.mjs --build <fixture-build-directory> --product m5stack
 ```
 
 The harness creates and disposes the real platform worker, checks the exact catalog board before loading, and records hashes of every input image and the WASM artifact. Generated binaries stay outside Git and the public firmware catalog. Physical 3D hit-surface checks accompany the completed model separately.
+
+## Stamp-C3 Mate K056
+
+The official K056 page explicitly includes one Stamp-C3 plus loose headers/connectors and repeats G3 button/G2 SK6812. It links the identical schematic. K056 therefore uses `stampc3` with a separate catalog identity; loose kit contents do not imply connected electrical accessories. A fresh K056-scoped worker run repeats the GPIO/RMT/reset checks: [receipt](evidence/stamp-controllers/k056-runtime.json). Its old `button-a` catalog ID is deliberately normalized to `button`, matching the physical front control; EN remains separate and unbound.

@@ -3530,18 +3530,20 @@
       "summary": "ESP32-C3 控制模块套装，具有 USB-C 下载、按键、RGB LED、3D 天线与 2.54mm GPIO 扩展。",
       "knowledgeUrl": "./knowledge/m5stack-k056.json",
       "runtime": {
-        "board": null,
+        "board": "stampc3",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [
         {
-          "id": "button-a",
+          "id": "button",
+          "name": "Button",
           "type": "button",
           "pin": 3,
-          "name": "Button"
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         }
       ],
       "interfaces": [
@@ -3625,7 +3627,7 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "套装包含相同 Stamp-C3 核心模块；部分支持 G3 用户键和 G2 SK6812 RMT。附带排针/Grove 散件不自动连接；EN、USB 桥、模拟电源和物理网络未验证。",
         "保留厂家 K056 外盖；套件含同款 Stamp-C3，PCB 背面照片按共享模块来源注明，盖内正面保留 UNKNOWN。",
         "K056 自有贴纸另设薄纸支撑，孔洞遮罩与中心螺丝、黄铜螺柱对齐；隐藏螺纹未知。",
         "照片原始 PCB 分辨率有限；外观、孔位和材料检查不能证明完整内部 CAD 或固件兼容。",
@@ -3651,7 +3653,10 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "firmwareReferenceIds": [
+        "m5stack-stampc3-official-source"
+      ]
     },
     {
       "id": "m5stack-k051",
