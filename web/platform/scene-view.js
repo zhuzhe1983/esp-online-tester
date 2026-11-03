@@ -112,7 +112,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   }
   function setOrientation(value, {notify = true} = {}) {
     const normalized = normalizeOrientation(value); clearOrientationTimers(); group.quaternion.fromArray(normalized);
-    if (notify) publishOrientation(false); if (accessoryCount) frameCamera(); draw(); return getOrientation();
+    if (notify) publishOrientation(false); if (accessoryCount || inspection?.expanded) frameCamera(); draw(); return getOrientation();
   }
   let parts = {}, connectors = {}, shellMeshes = [], customizedAppearance = false, appearanceDefaults = DEFAULT_STOPWATCH_APPEARANCE, appearance = normalizeShellAppearance(null), accessoryDefinitions = [];
   let rgbLedMeshes = [], rgbValues = [], accessoryOutputs = [], servoJoints = [], servoValues = [], motorRotors = [], motorValues = [], motorOutput = null, motorsRunning = false;
@@ -140,11 +140,13 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     requestAnimationFrame(() => { paintPending = false; if (!disposed && renderer && mode === '3d') renderer.render(scene, camera); });
   }
   function frameCamera() {
+    camera.far = 3000;
     if (accessoryCount || product?.model && product.id !== 'm5stack-papermono') {
       group.updateMatrixWorld(true);
       const bounds = new THREE.Box3().setFromObject(group), size = bounds.getSize(new THREE.Vector3()), center = bounds.getCenter(new THREE.Vector3());
       const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
       const distance = Math.max(20, (Math.max(size.y / (2 * tangent), size.x / (2 * tangent * camera.aspect)) * 1.32 + size.z / 2) * zoom);
+      if (inspection?.expanded) camera.far = Math.max(camera.far, distance + size.z / 2 + 20);
       camera.position.set(center.x, center.y, center.z + distance); camera.lookAt(center);
     } else {
       const distance = (product?.id?.includes('paper') ? 205 : 158) * Math.max(1, 1 / camera.aspect) * zoom;
@@ -341,7 +343,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   const router = createScenePointerRouter({onInput, onUnsupported, onError: error => console.error('Scene input failed:', error), onOrbit(dx, dy) {
     group.rotation.y += dx * .01; group.rotation.x += dy * .01;
     orientationChanged();
-    if (accessoryCount) frameCamera(); draw();
+    if (accessoryCount || inspection?.expanded) frameCamera(); draw();
   }});
   const encoderMeshes = new Map();
   function encoderPoint(event, mesh) {

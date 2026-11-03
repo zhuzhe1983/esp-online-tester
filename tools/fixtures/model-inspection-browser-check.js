@@ -15,6 +15,7 @@ async page => {
   const button=page.locator('#inspect-model');await button.waitFor({state:'visible'});const canvas=page.locator('#scene-mount canvas').first();await page.waitForTimeout(100);
   const before=await canvas.screenshot();const runtimeBefore=await page.evaluate(async()=>{const s=await espTester.observe();return {status:s.status,firmware:s.firmware,scene:s.scene};});
   await button.click();await page.waitForTimeout(100);check(await state(page)==='true','workbench button separates declared model');const expanded=await canvas.screenshot({path:'output/playwright/inspection-workbench-expanded.png'});check(!before.equals(expanded),'actual rendered geometry changes');
+  const orbitRect=await canvas.boundingBox();await page.mouse.move(orbitRect.x+10,orbitRect.y+10);await page.mouse.down();await page.mouse.move(orbitRect.x+10+Math.PI*50,orbitRect.y+10,{steps:8});await page.mouse.up();await page.waitForTimeout(150);check(!expanded.equals(await canvas.screenshot({path:'output/playwright/inspection-workbench-orbit.png'})),'public pointer orbit changes the separated model view');
   await page.evaluate(async()=>{const {scene}=await espTester.observe();await espTester.updateSceneMetadata({view:{...scene.view,appearance:{shell:{color:'#8456cf',opacity:.4,finish:'plastic'}}}});});
   check(await state(page)==='true','appearance update preserves inspection state');
   const shared=await page.evaluate(()=>espTester.share({mode:'embed',autostart:false}));
