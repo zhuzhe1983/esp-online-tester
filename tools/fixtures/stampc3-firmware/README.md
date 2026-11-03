@@ -9,3 +9,5 @@ node tools/probe-stampc3.mjs --build <temporary-build-directory> --product m5sta
 ```
 
 The C056-B schematic connects user switch S2 to G3 and U4 SK6812 to G2; EN/S1 is separate. The official STAMP-C3 repository at `148c263fddcb7b61fef20b0cf6de8ab8c3475f73` uses `TYPE_GRB` in its Arduino example and G3 input pull-up in its IDF example (tested there with IDF4.4.1). This fixture uses IDF5.5.1: it first sends a white frame to wrong pin G4, then red to G2; each G3 press cycles green, blue, off and red. The probe checks actual guest GPIO prints and RMT colors, release and platform reset. CH9102 USB bridge, EN reset, analog power, wireless and software bit-banged LEDs are outside this test.
+
+C3U C122-B uses the same independent fixture with `sdkconfig.defaults;sdkconfig.c3u`, setting `CONFIG_STAMP_C3U_BUTTON=y`. Use a separate SDKCONFIG file/build directory so C3 and C3U binaries cannot silently overwrite each other. Boot prints `STAMPC3_PINS 9 2`; the probe verifies this against catalog board `stampc3u`. The default C3 binary prints `STAMPC3_PINS 3 2`. Rebuild after source changes; never relabel a G3 binary as C3U.
