@@ -6,7 +6,13 @@ V0.2 原理图中 G0 经 10 kΩ 上拉、按下接地，G46 默认下拉，WS281
 
 ## 官方固件与输入证据
 
-默认固件为官方 UIFlow2 v2.5.3，项目 `1897200000000000020`、版本 `2098280680509362178`。完整镜像 8,384,512 字节，SHA-256 `6e3b8a72ab7c0d46de2cc661cc2c47e178621161fc29fa34f6d0313fd7037d72`；应用描述为 `micropython / V2.5.3 / v5.5.4-dirty`。没有将第三方二进制提交到仓库或网站。
+当前 M5Burner 目录已更新为 UIFlow2 v2.5.4，项目 `1897200000000000020`、版本 `2116031339784081409`，构建名 `509a67aa`。2026-11-03 普通固定版本下载返回 HTTP 400 / `BURN_CAPTCHA_INVALID`，没有取得该构建，也没有继承旧版运行验证。
+
+另行收录 M5Stack 官方 GitHub 的 v2.5.4 / `e437118` 构建。其精确 StampS3 资产为 8,384,512 字节，实际 SHA-256 与发布方摘要均为 `7c0fcd8251c3765fd462347555fc70e351178bb9fef8d4d2fa0cde5d07f0d661`；发布标签指向 `e437118892520ba987c2d930a2428db1cab65ab1`，板级配置明确 ESP32-S3 / 8MB / 240MHz，应用描述为 `micropython / V2.5.4 / v5.5.4-dirty`。完整镜像布局已检查；该构建与 Burner 构建不能互相替代验证。见 [本轮来源和布局收据](evidence/stamp-controllers/s007-sources.json)。第三方二进制只保留远程链接，不提交到仓库或网站。
+
+本轮原生运行至 20 客体秒、实际页面 worker/WASM 至 21.02 客体秒，均只有 ROM/bootloader 控制台输出，没有 G21 RMT 更新；没有据此宣称完整应用启动。内部 IDF 5.5.1 fixture 在同一 WASM 验证了 G0 按下/释放→红、绿、蓝、灭、红，未知控件拒绝、无虚构屏幕、平台重启释放按键并生成新红灯。官方 GitHub 地址的浏览器请求被 CORS 拒绝（缺少 `Access-Control-Allow-Origin`）；可从官方页下载后经本地文件导入。固件保持 `trial / simulationVerified:false`，默认 Burner 构建没有被替换。见 [本轮运行、下载负结果与复现命令](evidence/stamp-controllers/s007-runtime.json)。
+
+以下为 2026-10-27 的 **v2.5.3 历史证据**，不代表当前 v2.5.4：当时版本为 `2098280680509362178`，完整镜像 8,384,512 字节，SHA-256 `6e3b8a72ab7c0d46de2cc661cc2c47e178621161fc29fa34f6d0313fd7037d72`，应用描述为 `micropython / V2.5.3 / v5.5.4-dirty`。
 
 原生及实际页面 WASM worker 均经真实 ROM 启动，收到 G21 RMT 蓝灯。浏览器从设备下拉框默认选中 UIFlow2，点击试运行确认后下载并执行；工作台 20.70、mini 75.40 客体秒时均为 `[0,0,255]`。无屏设备保持 `frame=null`。保留官方启动日志 `i2c.master: this port has not been initialized`；尚未证实官方应用按键行为、联网或 MicroPython 交互，因此固件仍为 `trial / simulationVerified:false`。见 [官方 worker 收据](evidence/stamps3/official-wasm.json)、[浏览器收据](evidence/stamps3/browser.json)。
 
@@ -32,4 +38,4 @@ node tools/probe-stamps3.mjs --build <fixture-build-directory>
 python tools/rebuild-product-model.py build m5stack-s007 --scratch <fresh-scratch>
 ```
 
-最新 stable Rust 1.99.1、双 Clippy、1434 项 Rust / 132 组（ignored 纳入、external 排除）、虚拟调度、11 个生产 WASM 场景、100 项平台测试、真实录制、BLE/timing、111126 JIT 差分、24 GPIO 波形、基准工具及目录检查通过；没有修改黄金输出。见 [完整检查](evidence/stamps3/checks.json)。CPU 五对对照最终中位数为 S3 0%、C3 +0.431%、C6 0%，指令、周期和 UART 一致；见 [收据](evidence/stamps3/cpu.json)；可能与一次独立 4.22 秒编译重叠的初轮已单独保留且不用于结论。
+2026-10-27 历史回归使用 stable Rust 1.99.1：双 Clippy、1434 项 Rust / 132 组（ignored 纳入、external 排除）、虚拟调度、11 个生产 WASM 场景、100 项平台测试、真实录制、BLE/timing、111126 JIT 差分、24 GPIO 波形、基准工具及目录检查通过；没有修改黄金输出。见 [历史完整检查](evidence/stamps3/checks.json)。当时 CPU 五对对照最终中位数为 S3 0%、C3 +0.431%、C6 0%，指令、周期和 UART 一致；见 [历史收据](evidence/stamps3/cpu.json)；可能与一次独立 4.22 秒编译重叠的初轮已单独保留且不用于结论。
