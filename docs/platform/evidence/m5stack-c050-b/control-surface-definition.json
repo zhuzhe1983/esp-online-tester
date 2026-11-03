@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-03T21:34:35.978834+00:00",
+  "productId": "m5stack-c050-b",
+  "scope": "Source-backed model control surface and offline reproducibility. Does not establish public pointer delivery or guest firmware execution.",
+  "modelSha256": "29fee62ace3baf97fe466a279c148f1b96b608a9786112d67d7503aa2b052095",
+  "planSha256": "b350f58b940af6e8a58b4fac1016055bc8bd776031191a3f1b2d404321bda212",
+  "previousModelSha256": "9c0f91153caea07a5a467ab8a8922dd857b0e1954b1ac90b06a637ae56fc8fda",
+  "control": {
+    "shape": "circle",
+    "sizeMm": [
+      3,
+      3
+    ],
+    "positionMm": [
+      -4.46,
+      2.64,
+      2.27
+    ],
+    "id": "button",
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "sourceIds": [
+      "official-docs",
+      "dimension-drawing-290985ce46",
+      "product-photo-fa479a5256",
+      "product-photo-d5facbf458"
+    ],
+    "notes": "GPIO39 button center from official dimension drawing (4.46mm left of screw,14.64mm above 24mm board bottom).3mm interaction diameter is a photo/CAD cap estimate, not a measured switch size; front Z is just above the existing cover/film. Invisible hit surface preserves original opaque artwork and does not imply an optical opening."
+  },
+  "inspectionGroup": "cover",
+  "geometryAndTexturesUnchanged": true,
+  "artifacts": {
+    "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+    "reference-product-photo-40e39804ff.jpg": "218459ae5d809c0949c391f4670eb808617083dfffe96751f1e1d6f42049a578",
+    "reference-product-photo-fa479a5256.jpg": "9570e8cf58827618c5b2457bc5b0075c01d72de44f35a8e5d6b932f4b38cd634",
+    "reference-product-photo-2e8034d990.jpg": "6569e2de32f6aca8a61939a3dded6ceaf4e929f92f48eb5875650f3cdc43e8d1",
+    "pcb-back.png": "aa25cb40dfcc7a7800cfabe60761879427218cccd265de30bd22b29503a3f415",
+    "geometry.bin": "0111a3211a8f30241b055b87342038b6826aadbef37997a6c861ee0a348c244a",
+    "source.stl": "d3cd7f66cb2d212135413771b484edd0c3d12d3a76ce6459d343a207b89f2662",
+    "reference-product-photo-d5facbf458.jpg": "657492ba9d11ebb9a59fac502f3a1716f0c27b9769c675f97452b6e97f948ee8",
+    "printed-film.png": "b470b1f87b7cb890cb4613b024c0d9713ce9dfb349d90dafc4b2160be92e406d"
+  },
+  "nativeSurfaceZAtButtonCenterMm": {
+    "cad-component-0": [
+      1.15,
+      2.2
+    ],
+    "cad-component-1": [
+      0.15,
+      1.15
+    ]
+  },
+  "paperPlaneZMm": 2.251,
+  "optics": "G27 electrical output is separate; no added opening or luminous layer through the opaque applied film.",
+  "offlineRebuild": {
+    "passed": true,
+    "verifiedArtifacts": [
+      "LICENSE-M5Stack.txt",
+      "reference-product-photo-40e39804ff.jpg",
+      "reference-product-photo-fa479a5256.jpg",
+      "reference-product-photo-2e8034d990.jpg",
+      "pcb-back.png",
+      "geometry.bin",
+      "source.stl",
+      "reference-product-photo-d5facbf458.jpg",
+      "printed-film.png"
+    ],
+    "mismatches": [],
+    "unusedOriginalArtifacts": [],
+    "modelJsonByteIdentical": true,
+    "scope": "Exact regenerated geometry, source/reference files, textures and model contract. Metadata byte order and historical unused files are reported separately. No fresh browser, hardware or firmware acceptance."
+  },
+  "checks": {
+    "focusedModelNodeTests": 14,
+    "catalogSchema": "pass",
+    "sourceIdsResolve": true
+  },
+  "commands": [
+    "python tools/rebuild-product-model.py build m5stack-c050-b --scratch <fresh-directory>",
+    "python tools/check-stamp-pico-surfaces.py m5stack-c050-b",
+    "node --test tools/platform-model-inspection-test.mjs tools/platform-manufacturer-model-test.mjs tools/platform-plate-geometry-test.mjs",
+    "uv run --with jsonschema python tools/validate-platform-catalog.py"
+  ],
+  "limitations": [
+    "3mm hit diameter estimates the usable cap/printed mark region; it is not a manufacturer switch dimension.",
+    "Z offset keeps an invisible hit surface above the retained film; no visible geometry or texture is changed.",
+    "Physical travel, switch bounce and optical transmission are unverified."
+  ]
+}
