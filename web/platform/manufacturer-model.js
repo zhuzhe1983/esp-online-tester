@@ -3,7 +3,7 @@
 import * as THREE from './vendor/three.module.min.js';
 import {createGroveSocket,verifiedGrove} from './grove-geometry.js';
 import {createPcbPlaceholderGeometry} from './pcb-placeholder.js';
-import {createPlateGeometry} from './plate-geometry.js';
+import {createPlateGeometry,plateSupportsRectangle} from './plate-geometry.js';
 import {addRgbLedGlow} from './rgb-led-view.js';
 import {createServoJoints} from './servo-view.js';
 import {createMotorRotors} from './motor-view.js';
@@ -100,6 +100,7 @@ export function createManufacturerModel(product, screenTexture) {
       const pcb=new THREE.Group();pcb.name=part.id || 'pcb-main';pcb.position.set(...center);pcb.rotation.set(...vector(part.geometry?.rotation));pcb.userData={kind:'pcb-placeholder',label:'UNKNOWN',estimated:true};
       pcb.add(new THREE.Mesh(createPcbPlaceholderGeometry(size,part.geometry?.shape,part.geometry),new THREE.MeshStandardMaterial({color:part.color??0x859188,roughness:.85})));
       const width=Math.min(size[0]*.82,size[1]*3.28,42),labelSize=part.geometry?.labelSizeMm===undefined?[width,width/4]:part.geometry.labelSizeMm;if(!Array.isArray(labelSize)||labelSize.length!==2||labelSize.some((v,i)=>!Number.isFinite(v)||v<=0||v>size[i]))throw Error('Invalid PCB placeholder label dimensions');const offset=part.geometry?.labelOffsetMm===undefined?[0,0]:part.geometry.labelOffsetMm;if(part.geometry?.labelOffsetMm!==undefined&&(!Array.isArray(offset)||offset.length!==2||offset.some((v,i)=>!Number.isFinite(v)||Math.abs(v)+labelSize[i]/2>size[i]/2)))throw Error('Invalid PCB placeholder label offset');
+      if(part.geometry?.shape==='polygon'&&!plateSupportsRectangle(part.geometry,offset,labelSize))throw Error('PCB placeholder label has no continuous support');
       // A photographed exposed face can be known while its opposite remains unknown.
       const label=flatLabel('UNKNOWN');if(label){textures.push(label);for(const back of labelSide==='both'?[false,true]:[labelSide==='back']){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(...labelSize),new THREE.MeshBasicMaterial({map:label,transparent:true,depthWrite:false}));mesh.name=`${pcb.name}-unknown-${back?'back':'front'}`;mesh.position.set(offset[0],offset[1],(back?-1:1)*(size[2]/2+.015));if(back)mesh.rotation.y=Math.PI;pcb.add(mesh);}}
       parts[pcb.name]=pcb;group.add(pcb);

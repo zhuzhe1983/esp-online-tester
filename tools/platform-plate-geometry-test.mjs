@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../web/platform/vendor/three.module.min.js';
-import {createPlateGeometry} from '../web/platform/plate-geometry.js';
+import {createPlateGeometry,plateSupportsRectangle} from '../web/platform/plate-geometry.js';
 import {createPcbPlaceholderGeometry} from '../web/platform/pcb-placeholder.js';
 
 const outlineMm=[[-5,-4],[5,-4],[5,4],[1,4],[1,2],[-1,2],[-1,4],[-5,4]];
@@ -26,6 +26,13 @@ test('ring winding does not fill holes or invert outer faces',()=>{
   const geometry=createPlateGeometry({...spec,outlineMm:[...outlineMm].reverse(),holesMm:[[...hole].reverse()]}),mesh=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial());
   assert.equal(hit(mesh,0,0),true);assert.equal(hit(mesh,0,0,true),true);assert.equal(hit(mesh,-2.5,0),false);geometry.dispose();mesh.material.dispose();
 });
+test('every contour winding retains front-sided hole walls',()=>{
+  for(const outerReversed of [false,true])for(const holeReversed of [false,true]) {
+    const outer=[[-5,-4],[5,-4],[5,4],[-5,4]],inner=[[-1,-1],[1,-1],[1,1],[-1,1]];if(outerReversed)outer.reverse();if(holeReversed)inner.reverse();
+    const geometry=createPlateGeometry({outlineMm:outer,holesMm:[inner],depthMm:1}),mesh=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial());
+    const intersections=new THREE.Raycaster(new THREE.Vector3(0,0,0),new THREE.Vector3(1,0,0)).intersectObject(mesh);assert.ok(intersections.length);assert.equal(intersections[0].point.x,1);geometry.dispose();mesh.material.dispose();
+  }
+});
 test('malformed, crossing, touching and nested plate contours are rejected',()=>{
   for(const replacement of [null,[],[[0,0],[1,0],[0,0]],[[0,0],[1,1],[0,1],[1,0]],[[0,0],[1,0],[2,0]],[[0,0],[1,0],[NaN,1]]])assert.throws(()=>createPlateGeometry({...spec,outlineMm:replacement}),/Invalid plate outline/);
   for(const holesMm of [null,[hole,hole],[[[-6,0],[-4,0],[-4,1]]],[[[-5,0],[-4,0],[-4,1]]],[[[-4,-2],[0,-2],[0,2],[-4,2]],hole]])assert.throws(()=>createPlateGeometry({...spec,holesMm}),/Invalid plate holes/);
@@ -35,4 +42,15 @@ test('PCB polygon stays within declared size and legacy envelopes remain availab
   const board=createPcbPlaceholderGeometry([10,8,1],'polygon',spec);board.computeBoundingBox();assert.equal(board.boundingBox.max.z,.5);board.dispose();
   assert.throws(()=>createPcbPlaceholderGeometry([9,8,1],'polygon',spec),/exceeds declared dimensions/);
   for(const shape of ['box','disc','capsule'])createPcbPlaceholderGeometry([10,10,1],shape).dispose();
+});
+
+test('marker support excludes holes, notch crossings and hole-enclosing rectangles',()=>{
+  assert.equal(plateSupportsRectangle(spec,[3,0],[2,1]),true);
+  assert.equal(plateSupportsRectangle(spec,[-2.5,0],[.5,.5]),false);
+  assert.equal(plateSupportsRectangle(spec,[-2.5,0],[2,3]),false);
+  assert.equal(plateSupportsRectangle(spec,[0,2.5],[3,2]),false);
+});
+test('declared millimetre envelope uses source precision, not Float32 rounding',()=>{
+  const outlineMm=[[-2499.995,-4],[2499.995,-4],[2499.995,4],[-2499.995,4]];
+  createPcbPlaceholderGeometry([4999.99,8,1],'polygon',{outlineMm}).dispose();
 });

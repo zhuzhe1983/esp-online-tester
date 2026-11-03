@@ -6,8 +6,8 @@ import {createPlateGeometry} from './plate-geometry.js';
 export function createPcbPlaceholderGeometry(size, shape = 'box', specification = {}) {
   if (!Array.isArray(size) || size.length !== 3 || !size.every(v => Number.isFinite(v) && v > 0 && v <= 5000)) throw Error('Invalid PCB placeholder dimensions');
   if (shape === 'polygon') {
-    const result=createPlateGeometry({...specification,depthMm:size[2]});result.computeBoundingBox();
-    if(['x','y'].some((axis,i)=>result.boundingBox.min[axis]<-size[i]/2-.00001||result.boundingBox.max[axis]>size[i]/2+.00001)){result.dispose();throw Error('PCB outline exceeds declared dimensions');}
+    const result=createPlateGeometry({...specification,depthMm:size[2]});
+    if(specification.outlineMm.some(point=>point.some((v,i)=>Math.abs(v)>size[i]/2+1e-8))){result.dispose();throw Error('PCB outline exceeds declared dimensions');}
     return result;
   }
   if (shape === 'box') return new THREE.BoxGeometry(...size);

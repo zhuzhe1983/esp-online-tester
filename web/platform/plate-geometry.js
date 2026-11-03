@@ -29,6 +29,12 @@ function validateRing(ring) {
   if(Math.abs(area)<epsilon)throw Error('Invalid plate outline');
 }
 function ringsCross(a,b) {return a.some((p,i)=>b.some((q,j)=>intersects(p,a[(i+1)%a.length],q,b[(j+1)%b.length])));}
+// Called after contour validation; reject even a supported-corner rectangle
+// when it crosses a concave edge or completely encloses a through-hole.
+export function plateSupportsRectangle({outlineMm,holesMm=[]},center,size) {
+  const [x,y]=center,[w,h]=size,ring=[[x-w/2,y-h/2],[x+w/2,y-h/2],[x+w/2,y+h/2],[x-w/2,y+h/2]];
+  return ring.every(p=>inside(p,outlineMm))&&!ringsCross(ring,outlineMm)&&!holesMm.some(hole=>ringsCross(ring,hole)||inside(hole[0],ring)||inside(ring[0],hole));
+}
 export function createPlateGeometry({outlineMm,holesMm=[],depthMm}={}) {
   if(!Number.isFinite(depthMm)||depthMm<=0||depthMm>5000)throw Error('Invalid plate depth');
   validateRing(outlineMm);
@@ -37,8 +43,8 @@ export function createPlateGeometry({outlineMm,holesMm=[],depthMm}={}) {
     validateRing(hole);
     if(!inside(hole[0],outlineMm)||ringsCross(hole,outlineMm)||holesMm.slice(0,i).some(other=>ringsCross(hole,other)||inside(hole[0],other)||inside(other[0],hole)))throw Error('Invalid plate holes');
   }
-  const points=ring=>ring.map(p=>new THREE.Vector2(...p));
-  const shape=new THREE.Shape(points(outlineMm));
-  shape.holes=holesMm.map(ring=>new THREE.Path(points(ring)));
+  const points=(ring,clockwise)=>{const result=ring.map(p=>new THREE.Vector2(...p));if(THREE.ShapeUtils.isClockWise(result)!==clockwise)result.reverse();return result;};
+  const shape=new THREE.Shape(points(outlineMm,true));
+  shape.holes=holesMm.map(ring=>new THREE.Path(points(ring,false)));
   return new THREE.ExtrudeGeometry(shape,{depth:depthMm,bevelEnabled:false,steps:1,curveSegments:1}).translate(0,0,-depthMm/2);
 }
