@@ -1661,13 +1661,22 @@
       "summary": "预焊 2.54mm 排针的 ESP32-S3FN8 控制模块，带 USB-C、按键、RGB LED 和 23 路 GPIO。",
       "knowledgeUrl": "./knowledge/m5stack-s007-pin254.json",
       "runtime": {
-        "board": null,
+        "board": "stamps3",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "name": "按键",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
       "interfaces": [
         {
           "id": "gpio",
@@ -1790,14 +1799,15 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "部分板级模型：G0按键、G21单颗WS2812B RMT；按本SKU单独验证客体输入输出。2.54mm排针保留独立机械身份，外接器件、FPC屏、软件GPIO灯时序与模拟供电未实现。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
+        "Manufacturer exterior CAD only; basic GPIO/RMT runtime is separate from mechanical completeness. Display and external peripheral expansion are not emulated.",
         "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
         "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
         "Official product text says4.6mm while the linked drawing says4.7mm; the conflict is retained, not treated as a known hardware revision.",
         "Mechanical STEP includes board outline/USB/antenna/screw; it does not provide complete populated PCB placement or copper traces.",
-        "Header XY centers/count/pitch are official footprint facts; metal/body width and vertical extension are photo-informed estimates. Full fitted header height is unverified; module4.7mm depth excludes this added header."
+        "Header XY centers/count/pitch are official footprint facts; metal/body width and vertical extension are photo-informed estimates. Full fitted header height is unverified; module4.7mm depth excludes this added header.",
+        "官方UIFlow2 v2.5.4仍为trial；Burner要求验证，GitHub地址受CORS限制且完整应用启动未证实，不能继承旧版本运行结论。"
       ],
       "sources": [
         {
@@ -1819,7 +1829,11 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-s007-uiflow2",
+      "firmwareReferenceIds": [
+        "m5stack-s007-official-reference"
+      ]
     },
     {
       "id": "m5stack-s007-pin127",

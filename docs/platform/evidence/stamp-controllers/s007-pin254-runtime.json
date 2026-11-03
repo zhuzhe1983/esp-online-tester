@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "productId": "m5stack-s007-pin254",
+  "sku": "S007-PIN254",
+  "checkedAt": "2026-11-03T21:00:00.963Z",
+  "sources": [
+    {
+      "url": "https://docs.m5stack.com/en/core/Stamp-S3_PIN2.54",
+      "fetchedAt": "2026-11-03T20:59:45.043881+00:00",
+      "bytes": 136070,
+      "sha256": "ab3b20dd05cd259d351864229c740f43fe76e1b3f600f28c0addd149b5592a8a"
+    },
+    {
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/510/Sch_M5StampS3_v0.2.pdf",
+      "fetchedAt": "2026-11-03T21:00:00.901689+00:00",
+      "bytes": 348884,
+      "sha256": "6d92e1aef6577838b9abffcf1adf6c86e1b0c8374fcd372af451bb58ef19eb94"
+    }
+  ],
+  "electricalIdentity": {
+    "board": "stamps3",
+    "chip": "ESP32-S3FN8",
+    "flashMb": 8,
+    "psramMb": 0,
+    "buttonGpio": 0,
+    "buttonActiveLow": true,
+    "rgbGpio": 21,
+    "rgbCount": 1,
+    "rgbOrder": "GRB",
+    "rgbSupply": "3V3",
+    "defaultGpio46": "pulldown",
+    "basis": "Exact PIN2.54 official page links a byte-identical v0.2 schematic to S007. Same official LED example; 2.54mm headers are a separate physical variant. The advertised ten header GPIOs are not inferred to be all23 module pads."
+  },
+  "firmware": {
+    "defaultFirmwareId": "m5stack-s007-uiflow2",
+    "productTutorial": "https://docs.m5stack.com/en/uiflow2/stamps3/program",
+    "factoryStatus": "not-located",
+    "factoryFirmwareIds": [],
+    "uiflow1": "No exact target in checked official sources.",
+    "uiflow2": "Exact product tutorial explicitly selects StampS3; shared fixed Burner509a67aa and separate GitHube437118 v2.5.4 assets.",
+    "xiaozhi": "No exact standalone target located; source scope in s007-sources.json.",
+    "versionEvidence": "s007-sources.json",
+    "officialExecutionForThisSku": "not-run; shared-board S007 negative result is reference, not product acceptance",
+    "downloadLimitations": "Burner CAPTCHA400 and GitHub CORS failure recorded in s007-runtime.json; no third-party mirror."
+  },
+  "fixture": {
+    "command": "node tools/probe-stamps3.mjs --build <fixture-build-directory> --product <product-id>",
+    "backend": "actual-wasm-worker",
+    "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+    "wasmSha256": "b1887a8b5f80a135191ddbbd79ebe2d0e7218d6081d8723a7e543f615df9844c",
+    "inputHashes": {
+      "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+      "stamps3_fixture.bin": "81062dcc3ebbf9caa35413c6f27fb6473b25d51296b4b9557a39f77bfea81926",
+      "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    "checks": [
+      "real-rom-boot-rmt21-red",
+      "guest-gpio0-press-release-drives-green-blue-off-red",
+      "no-invented-display-and-unknown-button-rejected",
+      "platform-reset-releases-button-and-fresh-guest-red"
+    ],
+    "status": "pass",
+    "guestSeconds": 1.02
+  },
+  "limits": [
+    "Fresh exact-product worker run proves G0 GPIO and G21 RMT path, release and reset. Fixture is internal source-built IDF5.5.1, not manufacturer firmware.",
+    "Header external connections, FPC screen, physical USB/RF, analog power, software GPIO LED timing and hardware flashing unverified.",
+    "Mechanical/photo validation belongs to the separate exact-SKU model record."
+  ],
+  "rawReceiptSha256": "b0cff65700e0d833a5d6b6178095b8e932d31cb0335fabfa08b2e3b74a6097fa",
+  "curation": "Full console and LED event streams omitted; exact assertions, input hashes and WASM identity retained.",
+  "browser": {
+    "checkedAt": "2026-11-03T21:01:16.295Z",
+    "engine": "headless Chromium via tracked Playwright CLI",
+    "selection": "Real product dropdown change",
+    "selectedProduct": "m5stack-s007-pin254",
+    "selectedDefaultFirmware": "m5stack-s007-uiflow2",
+    "githubAlternativeListed": true,
+    "board": "stamps3",
+    "control": "button / GPIO0 / active-low / KeyA",
+    "scope": "UI selection only; genuine guest behavior is the separate exact-product worker fixture receipt.",
+    "sessionClosed": true
+  }
+}

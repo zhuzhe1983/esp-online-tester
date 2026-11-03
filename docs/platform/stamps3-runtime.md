@@ -1,6 +1,6 @@
 # Stamp-S3 S007 运行范围
 
-`stamps3` 是基础 Stamp-S3 的部分板级模型：8 MB Flash、无 PSRAM，G0 用户按键和 G21 单颗 WS2812B-2020。S007-PIN127 已依据该 SKU 官方页所链接的相同原理图单独接入，保留 1.27 mm 排针机械身份；实际 worker 的按键/RGB/重启测试见 [PIN1.27 收据](evidence/stamp-controllers/s007-pin127-runtime.json)。PIN2.54 尚未启用。Stamp-S3A 使用独立的 G38 供电模型，见 [S3A 运行范围](stamps3a-runtime.md)。
+`stamps3` 是基础 Stamp-S3 的部分板级模型：8 MB Flash、无 PSRAM，G0 用户按键和 G21 单颗 WS2812B-2020。S007-PIN127 已依据该 SKU 官方页所链接的相同原理图单独接入，保留 1.27 mm 排针机械身份；实际 worker 的按键/RGB/重启测试见 [PIN1.27 收据](evidence/stamp-controllers/s007-pin127-runtime.json)。S007-PIN254 也已依据其独立官方页面和逐字节相同的原理图接入；[PIN2.54 收据](evidence/stamp-controllers/s007-pin254-runtime.json)保留该产品 ID 的新 worker 测试。Stamp-S3A 使用独立的 G38 供电模型，见 [S3A 运行范围](stamps3a-runtime.md)。
 
 V0.2 原理图中 G0 经 10 kΩ 上拉、按下接地，G46 默认下拉，WS2812B 的 DIN 接 G21、3V3 供电。固定官方 `m5stack/STAMP-S3` 提交 `6b64d431f930ff5e2bd770a07003ac983c24bc3f` 的 LED 例程同样使用 G0/G21、GRB 顺序。原理图、源码、下载元信息与抓取摘要见 [来源收据](evidence/stamps3/sources.json)。没有新增 SoC 寄存器常量，沿用既有 S3 GPIO/RMT 控制器。
 
