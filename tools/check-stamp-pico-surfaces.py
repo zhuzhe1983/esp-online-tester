@@ -16,6 +16,7 @@ def check(identity):
  if identity not in ['m5stack-c050-b','m5stack-k051','m5stack-k051-b']:raise ValueError('Unsupported product')
  folder=ROOT/'web/platform/assets'/identity;model=json.loads((folder/'model.json').read_text());parts={p['id']:p for p in model['derivedParts']};results=[]
  for label_id,carrier_id in [('printed-film','printed-film-carrier'),('pcb-back-photo','pcb-main')]:
+  if label_id=='printed-film' and identity=='m5stack-k051' and label_id not in parts:continue
   label=parts[label_id];carrier=parts[carrier_id]['geometry'];alpha=np.asarray(Image.open(folder/label['texture']).convert('RGBA'))[:,:,3];height,width=alpha.shape;size=label['geometry']['sizeMm'];mirror=-1 if label_id=='pcb-back-photo' else 1
   def project(ring):return np.int32([[round((mirror*x/size[0]+.5)*(width-1)),round((.5-y/size[1])*(height-1))]for x,y in ring])
   support=np.zeros((height,width),np.uint8);cv2.fillPoly(support,[project(carrier['outlineMm'])],255)

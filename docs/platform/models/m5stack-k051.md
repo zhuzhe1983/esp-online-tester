@@ -1,22 +1,16 @@
-# M5Stack Stamp-Pico Mate · K051
+# Stamp-Pico Mate · K051 模型
 
-ESP32-PICO-D4模块套装，4MB Flash，提供2.54mm排针/贴片焊接方式及Grove插座配件。
+保留 K051 未贴纸盖板的外观与原始厂家三角形，补充可见天线顶面、M2×4 沉头内六角螺丝、带通孔的黑色 PCB 及该 SKU 官方背面照片。盖板上的 M5 结构仍来自原始 CAD，随外壳材质变化；天线、螺丝和板面材质独立。
 
-厂家 CAD 以毫米和刚体变换导入；本产品外观状态仍为 **partial**，本次只核验外观，固件运行支持以产品库为准。
+K051 包含一块核心板、9P/6P 公母排针、90° HY2.0-4P 插座、1.5 mm 内六角匙和耐高温贴纸。官方照片分别展示了公母排针装法，模型不把这些散件同时预装，也未复制 C050-B 已贴纸外观。散件资料保留，但没有完整几何。
 
-装配：Selected manufacturer components retain their native assembled relationship; one common rigid transform only. Omitted components are separately recorded. No nonuniform scale or geometry fitting.
+板厚 1 mm、孔径和孔距来自该产品链接的官方尺寸图。外露天线顶面仅按该 SKU 正视照片建立轮廓；厚度、Z 位置、背面环厚度与螺丝细节仍有估算，隐藏的天线折脚、完整 PCB 元件布局和层叠未知。正面的 `UNKNOWN` 避开盖板按钮槽与真实孔洞，正式页面“分开查看”后拖动旋转可完整读到；恢复视角会还原装配。
 
-已检查正面、背面和侧面，以及原色/金色/半透明紫色正背对照。纸贴使用源照片的显式透明遮罩，独立于可换色外壳；照片不覆盖屏幕。缺失的字样、端子细节和内部板图不因本次检查而成为已还原。
+[验证记录](../evidence/m5stack-k051/model-refresh-2026-11-04.json)包含逐文件一致的离线重建、背面贴图逐像素承载面检查、原色/金色/半透明紫色、紧固件与天线近景，以及正式页面展开截图。照片贴图不是独立 PCB CAD 验证。原 CAD 厚 4.4 mm 与官方完整产品 4.6 mm 差异继续保留，整体仍为部分外观还原，不代表固件或实机兼容。
 
-几何检查共 5 项，1 项未通过；数值和照片轮廓测试的失败均保留在 [verification.json](../evidence/m5stack-k051/verification.json)。三种材质对照见 [appearance-comparison.webp](../evidence/m5stack-k051/appearance-comparison.webp)。侧面及斜拍只作定性核查，白底白壳、标注图和附带物可能使自动轮廓分割无效，不能用该指标证明整机1:1。
+```sh
+python tools/rebuild-product-model.py build m5stack-k051 --scratch <fresh-directory>
+python tools/check-stamp-pico-surfaces.py m5stack-k051
+```
 
-来源、抓取时间、hash与装配计划见 [source-audit.json](../evidence/m5stack-k051/source-audit.json)。复现：`python tools/onboard-lane-02.py prepare --ids m5stack-k051`、`build --ids m5stack-k051`，然后使用 `review-lane-02.html?id=m5stack-k051` 截取对应正背侧视，运行 `verify --ids m5stack-k051`。依赖见 `tools/requirements-model.txt`。
-
-限制：
-
-- Manufacturer exterior geometry only; exact product board/CPU/peripheral execution is unavailable.
-- Photograph-informed material colors are uncalibrated display approximations.
-- PCB UNKNOWN is an estimated blank placeholder, not a populated or manufacturing-ready board.
-- External connector/body inserts are photo-derived estimates where manufacturer CAD omits them.
-- No physical hardware measurements or flashing performed.
-- STL contains only cover/light guide (24.03mm length and4.4mm depth); official complete module depth4.6mm includes missing board. MATE loose headers/Grove accessory are not asserted preinstalled. No USB-C connector is present on this module.
+工具依赖见[模型重建](../model-reproduction.md)；[模型计划](../../../web/platform/assets/m5stack-k051/model-plan.json)固定来源、坐标、板形和观察组。[此前验证](../evidence/m5stack-k051/verification-before-refresh.json)及无 `refresh-` 前缀图片属于旧版本。CAD 为厂家 MIT；照片和派生纹理仍保留厂家权利。
