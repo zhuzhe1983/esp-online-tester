@@ -23,3 +23,7 @@ EN/reset hardware, download cables, USB transport, analog/power, software-GPIO L
 ## Stamp-Pico Mate K051
 
 The K051 page includes one Stamp-Pico and loose connectors/headers, repeats G39/G27, and links the same schematic and UIFlow1/2 tutorials. It shares the electrical board and exact remote firmware sources with C050-B while retaining its own model/package identity. Its [fresh fixture run](evidence/stamp-controllers/k051-runtime.json) independently verifies the K051 selection and guest GPIO/RMT/reset output. The official image startup failure above is shared-board evidence, not an additional claimed K051 official-image run. Loose kit accessories remain unattached electrically.
+
+## Stamp-Pico DIY Kit K051-B
+
+The DIY Kit official page separately includes the same Stamp-Pico, headers, Grove socket and an ESP32 Downloader. Its G39/G27 pin map, schematic and UIFlow tutorial targets match the module. It uses `stamppico` and the exact shared remote sources but keeps its own SKU. [Fresh K051-B worker evidence](evidence/stamp-controllers/k051-b-runtime.json) verifies guest GPIO/RMT/reset output; neither included tools nor visual insertion imply modeled electrical connections or flashing. The C050-B official-image startup failure is referenced as shared-board evidence, not a separate official-image run for this kit.

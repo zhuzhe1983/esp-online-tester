@@ -3738,13 +3738,22 @@
       "summary": "ESP32-PICO-D4 模块 DIY 套件，包含下载器和连接配件；与 C050-B 五件装分开维护。",
       "knowledgeUrl": "./knowledge/m5stack-k051-b.json",
       "runtime": {
-        "board": null,
+        "board": "stamppico",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "name": "Button",
+          "type": "button",
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
       "interfaces": [],
       "model": {
         "type": "manufacturer-cad",
@@ -3760,11 +3769,10 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "DIY Kit 的 Stamp-Pico 模块部分支持 G39 用户键与 G27 GRB RMT；附带下载器、排针和 Grove 不自动视为接线。官方 GitHub UIFlow2 v2.5.4 启动缺少 M5Things，仍为 trial；EN、电源模拟和物理网络未验证。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
         "Model covers the Stamp-Pico module only; downloader, headers and loose kit accessories have no matching assembly CAD in this directory.",
         "CAD thickness 4.4 mm differs from documented product 4.6 mm; retained as a failure rather than stretched.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
         "K051-B 纸贴使用该 SKU 自己的官方照片，独立承载面保留真实跨槽纸面并避开中心紧固件。",
@@ -3791,7 +3799,8 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-c050-b-uiflow2"
     },
     {
       "id": "m5stack-s015",
