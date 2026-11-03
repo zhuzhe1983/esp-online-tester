@@ -3,7 +3,11 @@
 //! The red nCHG lamp is charger-controlled; there is no RGB or user button here.
 use esp_soc::{BoardModel, pins::PinRoutes};
 pub struct StampC5 { dip: bool, leds: [[u8; 3]; 1], updates: u64 }
-impl StampC5 { pub fn new(dip: bool) -> Self { Self { dip, leds: [[0; 3]], updates: 0 } } }
+impl StampC5 {
+    // Generation 1 publishes the board's real initial off state to observers whose
+    // output cursor starts at 0. Later generations represent actual state changes.
+    pub fn new(dip: bool) -> Self { Self { dip, leds: [[0; 3]], updates: 1 } }
+}
 pub fn make_board(name: &str) -> Option<esp_soc::Board> {
     match name {
         "stamp-c5" | "m5stack-s016" => Some(Box::new(StampC5::new(false))),
@@ -20,5 +24,5 @@ impl BoardModel for StampC5 {
         if color != self.leds[0] { self.leds[0] = color; self.updates = self.updates.wrapping_add(1); }
     }
     fn leds(&self) -> Option<(&[[u8; 3]], u64)> { Some((&self.leds, self.updates)) }
-    fn report(&self) -> String { format!("[{}] blue={:?} changes={}; charger/RF/analog unimplemented", self.name(), self.leds[0], self.updates) }
+    fn report(&self) -> String { format!("[{}] blue={:?} generation={}; charger/RF/analog unimplemented", self.name(), self.leds[0], self.updates) }
 }

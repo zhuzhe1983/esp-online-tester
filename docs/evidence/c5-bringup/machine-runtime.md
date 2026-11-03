@@ -107,3 +107,28 @@ fault and observes `Exceptions(2)`, then explicit app boot→READY→UART IRQ→
 Cumulative telemetry remains1and2 throughout the respective restart, while
 the next stop ceilings are2and3. Twelve C5 checks (including actual ROM),
 209shared `esp-soc` checks and Clippy with warnings denied pass after this fix.
+
+## Initial board output and idle counter follow-up
+
+The first actual WASM integration probe executed the READY banner but exposed
+no initial lamp sample: the board's generation was 0, equal to the output
+consumer's initial cursor. Waiting for an explicit off state therefore timed
+out. The board now publishes its actual initial `[[0, 0, 0]]` at generation 1.
+No guest output is synthesized. Both SKU tests verify initial off generation 1,
+READY retaining 1, actual UART `1` changing the lamp to blue at 2, `0` changing
+it to off at 3, and wrong-pin `W` retaining off and generation 3. The existing
+reset and post-reset UART checks still pass. This native correction does not
+claim the subsequent public browser verification, which belongs to the
+integration receipt.
+
+The reported WASM `insns` uses the existing shared RV32 scheduling counter.
+`riscv-rv32/src/core.rs::idle_advance` adds waiting cycles to `insn_count` and
+`cycle_count`, while leaving `retired_count` unchanged. Its existing
+`timing_only_advance_separates_cycles_from_retirement` test explicitly checks
+this distinction. A 30-second run at the nominal 240 MHz can therefore report
+7.2 billion scheduling slots while the guest spends most of its time in WFI.
+That number is neither retired instructions nor a CPU performance result.
+The unchanged native interaction scenario above still records 14,000 slots
+and 437 retired instructions per SKU; UART and GPIO transitions prove guest
+execution. All 11 ordinary C5 tests and native Clippy with warnings denied pass
+for the initial output correction; the external ROM boundary was not changed.

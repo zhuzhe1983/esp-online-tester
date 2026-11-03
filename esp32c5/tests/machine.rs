@@ -11,10 +11,13 @@ fn espressif_app_image_uses_real_shared_machine_irq_gpio_and_restart() {
     for name in ["stamp-c5", "stamp-c5-dip"] {
         let mut m = esp32c5::machine([0; 6], 4 << 20); m.console.capture = true; m.console.mask = 2;
         m.bus.attach_board(esp32c5::board::make_board(name).unwrap());
+        assert_eq!(m.bus.board_ref().leds().unwrap(), (&[[0; 3]][..], 1), "Initial off is a real publishable board snapshot");
         m.load_input(LoadKind::App, APP).unwrap(); assert_eq!(m.boot_app(0x10000).unwrap(), 0x4080_0000);
         slice(&mut m); assert_eq!(m.console.uart0, b"C5 UART IRQ READY\n");
-        for (input, expected) in [(b"1", [0, 0, 255]), (b"0", [0; 3]), (b"W", [0; 3])] {
+        assert_eq!(m.bus.board_ref().leds().unwrap().1, 1, "Ready leaves the already-off baseline unchanged");
+        for (input, expected, generation) in [(b"1", [0, 0, 255], 2), (b"0", [0; 3], 3), (b"W", [0; 3], 3)] {
             m.bus.uart_input(0, input); slice(&mut m); assert_eq!(m.bus.board_ref().leds().unwrap().0, [expected]);
+            assert_eq!(m.bus.board_ref().leds().unwrap().1, generation);
         }
         assert_eq!(m.console.uart0, b"C5 UART IRQ READY\n10W"); assert_eq!(m.interrupts, 3);
         assert!(!m.bus.gpio_state(27).unwrap().output); assert!(m.bus.gpio_state(27).unwrap().output_enable);
