@@ -239,6 +239,21 @@ def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
  if not any(s['id']=='cad-license' for s in prepared['sources']):
   license_source=next(s for s in json.loads(Path('web/platform/knowledge/m5stack-gps-u032-v11.json').read_text())['sources'] if s['id']=='cad-license');prepared['sources'].append(license_source);shutil.copyfile(license_path,folder/license_source['archiveName'])
  sources={s['id']:s for s in prepared['sources']};source=sources[plan['sourceId']];raw=(folder/source['archiveName']).read_bytes();assert sha(raw)==source['sha256']
+ supporting=plan.get('supportingAssets',[]);supporting_records=[];supporting_names=set()
+ if not isinstance(supporting,list) or len(supporting)>32:raise ValueError('Invalid supporting assets')
+ reserved={'model.json','model-plan.json','geometry.bin','source'+Path(source['archiveName']).suffix.lower(),plan.get('provenance',{}).get('licenseFile','LICENSE-M5Stack.txt'),*[t['file']for t in plan.get('textureSources',[])]}
+ for entry in supporting:
+  if not isinstance(entry,dict) or set(entry)!={'sourceId','file'} or not isinstance(entry['sourceId'],str):raise ValueError('Invalid supporting asset declaration')
+  name=entry['file']
+  if not isinstance(name,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*',name) or name.startswith(('source.','source-','reference-')) or name in reserved or name in supporting_names:raise ValueError('Unsafe or conflicting supporting asset filename')
+  record=sources.get(entry['sourceId'])
+  if not record or record.get('status')!='fetched':raise ValueError('Supporting asset needs a fetched source')
+  archive=record.get('archiveName')
+  if not isinstance(archive,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*',archive):raise ValueError('Unsafe supporting source filename')
+  if (folder/archive).is_symlink() or (output/name).is_symlink():raise ValueError('Supporting asset path is a symlink')
+  payload=(folder/archive).read_bytes()
+  if len(payload)!=record.get('bytes') or sha(payload)!=record.get('sha256'):raise ValueError('Supporting asset source changed: '+entry['sourceId'])
+  supporting_names.add(name);supporting_records.append({**entry,'sha256':record['sha256']})
  def source_parts(record):
   path=folder/record['archiveName']
   # Already classified STL parts can be open surfaces; splitting repairs holes
@@ -290,6 +305,7 @@ def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
  license_file=plan.get('provenance',{}).get('licenseFile','LICENSE-M5Stack.txt')
  if not isinstance(license_file,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*',license_file):raise ValueError('Invalid model license filename')
  shutil.copyfile(license_path,output/license_file)
+ for entry in supporting_records:shutil.copyfile(folder/sources[entry['sourceId']]['archiveName'],output/entry['file'])
  joined=np.concatenate(allv);extent=joined.max(0)-joined.min(0)
  for target in plan.get('targets',[]):
   measured=float(extent[target['axis']]) if 'parts' not in target else float(np.max([records[i]['boundsMm'][1][target['axis']] for i in target['parts']])-np.min([records[i]['boundsMm'][0][target['axis']] for i in target['parts']]))
@@ -327,6 +343,9 @@ def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
    value=plan['provenance'][key]
    if not isinstance(value,str) or not value.strip():raise ValueError('Invalid model provenance override')
    meta['provenance'][key]=value
+ if supporting_records:
+  meta['supportingAssets']=supporting_records
+  meta['artifacts'].update({entry['file']:sha((output/entry['file']).read_bytes())for entry in supporting_records})
  write(output/'model.json',meta);report={'schemaVersion':'1','checkedAt':now(),'productId':prepared['id'],'modelSha256':sha((output/'model.json').read_bytes()),'geometrySha256':sha((output/'geometry.bin').read_bytes()),'sourceSha256':source['sha256'],'dimensions':checks,'photos':[{'sourceId':p['sourceId'],'view':p['view'],'status':'pending-browser-comparison'} for p in photo_records],'status':'partial','limitations':plan['limitations']};write(evidence_root/prepared['id']/'verification.json',report);write(evidence_root/prepared['id']/'source-audit.json',{'sources':prepared['sources'],'components':json.loads((folder/'components.json').read_text()),'plan':plan});return meta,report
 
 

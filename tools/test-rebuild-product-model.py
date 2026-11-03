@@ -21,6 +21,18 @@ class RebuildInputs(unittest.TestCase):
   (self.assets/'source.stl').write_bytes(b'changed CAD data')
   with patch.object(r,'fetch_exact',side_effect=AssertionError('must not fetch replacement')):
    with self.assertRaisesRegex(ValueError,'changed'):r.hydrate(self.product,self.scratch,True)
+ def test_supporting_source_hydrates_offline_and_checks_its_hash(self):
+  data=b'Pinned third-party attribution\n';name='LICENSE-Upstream.txt';(self.assets/name).write_bytes(data)
+  self.sources.append({'id':'upstream-license','status':'fetched','sha256':r.digest(data),'bytes':len(data),'archiveName':'upstream-license.txt','url':'https://example.org/upstream-license.txt','fetchedAt':'2026-01-01T00:00:00Z'})
+  self.meta['artifacts'][name]=r.digest(data);self.save_meta();self.plan['supportingAssets']=[{'sourceId':'upstream-license','file':name}];(self.assets/'model-plan.json').write_text(json.dumps(self.plan));product=r.load_product(self.root,'test-device')
+  self.assertIn('upstream-license',product['required'])
+  with patch.object(r,'fetch_exact',side_effect=AssertionError('network forbidden')):
+   folder,receipt=r.hydrate(product,self.scratch);self.assertEqual((folder/'upstream-license.txt').read_bytes(),data);self.assertEqual(len(receipt['sources']),3)
+   (self.assets/name).write_bytes(b'Changed upstream license')
+   with self.assertRaisesRegex(ValueError,'changed'):r.hydrate(product,Path(self.temp.name)/'changed-scratch',True)
+  for unsafe in ['../license.txt','/absolute.txt','sub/license.txt','source.step','geometry.bin','LICENSE-M5Stack.txt']:
+   self.plan['supportingAssets'][0]['file']=unsafe;(self.assets/'model-plan.json').write_text(json.dumps(self.plan))
+   with self.assertRaises(ValueError):r.load_product(self.root,'test-device')
  def test_missing_source_requires_explicit_network(self):
   (self.assets/'source.stl').unlink()
   with self.assertRaisesRegex(ValueError,'--allow-network'):r.hydrate(self.product,self.scratch)
@@ -51,4 +63,6 @@ class RebuildInputs(unittest.TestCase):
    with self.assertRaises(ValueError):r.secure_url(url)
  def test_comparison_detects_real_bytes_changed(self):
   output=Path(self.temp.name)/'build';output.mkdir();(output/'geometry.bin').write_bytes(b'tampered');expected={'artifacts':{'geometry.bin':r.digest(b'original')}};actual={'artifacts':dict(expected['artifacts'])};(output/'model.json').write_text(json.dumps(actual));result=r.compare_build(expected,actual,output);self.assertFalse(result['passed']);self.assertIn('artifact:geometry.bin',result['mismatches'])
+ def test_comparison_checks_supporting_source_identity_even_when_bytes_match(self):
+  output=Path(self.temp.name)/'build';output.mkdir();expected={'artifacts':{},'supportingAssets':[{'sourceId':'author-a','file':'LICENSE.txt','sha256':'a'*64}]};actual={'artifacts':{},'supportingAssets':[{**expected['supportingAssets'][0],'sourceId':'author-b'}]};(output/'model.json').write_text(json.dumps(actual));result=r.compare_build(expected,actual,output);self.assertFalse(result['passed']);self.assertIn('contract:supportingAssets',result['mismatches'])
 if __name__=='__main__':unittest.main()
