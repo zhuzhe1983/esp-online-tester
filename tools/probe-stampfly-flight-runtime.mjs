@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+// Real worker/ROM firmware proof of optional physics and lifecycle. No injected UART output.
+import assert from 'node:assert/strict';
+import {readFile,writeFile} from 'node:fs/promises';
+import {resolve,relative,dirname} from 'node:path';
+import {pathToFileURL,fileURLToPath} from 'node:url';
+import {Worker} from 'node:worker_threads';
+import {createHash} from 'node:crypto';
+const arg=name=>{const i=process.argv.indexOf(name);return i<0?null:process.argv[i+1];};
+for(const key of ['--root','--firmware','--out','--wasm-sha256'])assert(arg(key),`Supply ${key}`);
+const root=resolve(arg('--root')),out=resolve(arg('--out')),origin='https://stampfly-flight-proof.invalid',path=p=>resolve(root,p);
+const hash=b=>createHash('sha256').update(b).digest('hex'),sourceHashes={},modules=new Set();
+async function inspect(p){if(modules.has(p))return;modules.add(p);const b=await readFile(p);sourceHashes[relative(root,p)]=hash(b);for(const m of b.toString().matchAll(/(?:\bfrom\s*|\bimport\s*\(?\s*)['"](\.[^'"]+)['"]/g)){const t=resolve(dirname(p),m[1]);if(/\.(js|mjs)$/.test(t))await inspect(t);}}
+for(const p of ['web/platform/runtime.js','web/platform/catalog.js','web/platform/device-storage.js','web/wasm/worker.js'])await inspect(path(p));
+const {createPlatformRuntime}=await import(pathToFileURL(path('web/platform/runtime.js'))),{createDefaultScene}=await import(pathToFileURL(path('web/platform/catalog.js'))),{createDeviceStorage}=await import(pathToFileURL(path('web/platform/device-storage.js')));
+const catalog={};for(const key of ['products','accessories','firmwares']){const file=`web/platform/catalog/${key}.json`,bytes=await readFile(path(file));catalog[key]=JSON.parse(bytes).items;sourceHashes[file]=hash(bytes);}
+const wasm=await readFile(path('web/wasm/esp32sim.wasm'));assert.equal(hash(wasm),arg('--wasm-sha256'));
+const firmware=await readFile(arg('--firmware')),fetchHashes={};
+const fetchImpl=async value=>{const u=new URL(value);assert.equal(u.origin,origin);try{const file='web'+u.pathname,b=await readFile(path(file));fetchHashes[file]=hash(b);return new Response(b);}catch{return new Response('',{status:404});}};
+let created=0,terminated=0;
+const workerFactory=url=>{created++;const module=pathToFileURL(path('web'+url.pathname));assert(modules.has(fileURLToPath(module)));const thread=new Worker(new URL('data:text/javascript,'+encodeURIComponent(`import {parentPort} from 'node:worker_threads';globalThis.onmessage=null;globalThis.postMessage=(data,transfer)=>parentPort.postMessage(data,transfer);await import(${JSON.stringify(module.href)});parentPort.on('message',data=>globalThis.onmessage({data}));`)));const w={postMessage:(...a)=>thread.postMessage(...a),terminate:()=>{terminated++;return thread.terminate();}};thread.on('message',data=>w.onmessage?.({data}));thread.on('error',e=>w.onerror?.(e));return w;};
+const receipt={schemaVersion:1,checkedAt:new Date().toISOString(),command:'node tools/probe-stampfly-flight-runtime.mjs --root <integration-root> --firmware <demo-merged.bin> --wasm-sha256 <recorded-hash> --out <receipt.json>',harnessSha256:hash(await readFile(fileURLToPath(import.meta.url))),backend:'actual-platform-runtime-worker-WASM-full-ROM',nodeVersion:process.version,wasmSha256:hash(wasm),wasmBytes:wasm.length,firmwareSha256:hash(firmware),firmwareBytes:firmware.length,sourceHashes,fetchHashes,products:[],limitations:['Source-built UART demonstration, not manufacturer factory firmware.','Physics parameters/contact/optics are explicitly uncalibrated; this proof is not physical-flight qualification.','Checks manual real guest PWM and lifecycle; AUTO stability is independently tested by the firmware probe.','No browser/CORS/pointer interaction and no host CPU performance claim.']};
+const delay=ms=>new Promise(r=>setTimeout(r,ms)),uart=s=>s.serialByPort?.uart0||'',zero=s=>s.motors?.length===4&&s.motors.every(m=>m.duty===0);
+let api,last;
+async function wait(label,test){const until=Date.now()+180000;while(Date.now()<until){last=await api.observe();if(last.status==='error')throw Error(`${label}: ${JSON.stringify(last.lastError)}`);if(test(last))return last;await delay(20);}throw Error(`${label}: timeout ${JSON.stringify({status:last?.status,flight:last?.flight,serial:uart(last||{}).slice(-2000)})}`);}
+const sample=s=>({guestTime:s.flight?.guestTime,flight:s.flight,motors:s.motors,serial:uart(s).split(/\r?\n/).filter(l=>/^SF1 (READY|ACK|STATE|SENSOR )/.test(l)).slice(-10)});
+try{for(const id of ['m5stack-k138','m5stack-k138-v11']){
+ api=createPlatformRuntime({catalog,fetchImpl,workerFactory,baseUrl:origin+'/platform/',assetBaseUrl:origin+'/',deviceStorage:createDeviceStorage({indexedDB:null,dbName:'stampfly-flight-proof'})});
+ const scene=createDefaultScene(catalog,id);scene.firmware=null;const r={productId:id,checks:[],samples:[]};receipt.products.push(r);
+ await api.configure(scene);await api.configureFlight({enabled:true});const loaded=await api.loadFirmware({file:new File([firmware],'stampfly-uart-demo.bin')});assert.equal(loaded.firmware.appDirect,false);assert.deepEqual(loaded.firmware.stubs,[]);r.metadata=loaded.firmware.metadata;
+ await api.start();let state=await wait('actual READY and zero PWM on ground',s=>uart(s).includes('SF1 READY stampfly-uart-demo 0.1.0')&&zero(s)&&s.flight?.contact&&Math.abs(s.flight.heightM)<.001);
+ assert.equal(state.imu.source,'flight');assert.equal(state.flight.sensors.bottomDistanceM,null);r.samples.push({stage:'initial',...sample(state)});r.checks.push('full-ROM-demo-zero-output-ground-and-conservative-near-ToF-no-target');
+ await assert.rejects(api.setImu({quaternion:[0,0,0,1]}),{code:'FLIGHT_OWNS_IMU'});await assert.rejects(api.configureFlight({enabled:false}),{code:'FLIGHT_PAUSE_REQUIRED'});
+ const at=uart(state).length;await api.input({type:'serial',port:'uart0',data:'SF1 MOTOR 0.65 0.65 0.65 0.65\n'});
+ state=await wait('fresh guest ACK, actual PWM and causal lift',s=>uart(s).slice(at).includes('SF1 ACK MOTOR')&&s.motors.every(m=>m.duty>.64)&&s.flight.heightM>.05&&!s.flight.contact);
+ assert.ok(state.flight.sensors.bottomDistanceM>.05);assert.ok(state.flight.motors.every(m=>m.omegaRadS>0&&m.thrustN>0));r.samples.push({stage:'real-PWM-lift',...sample(state)});r.checks.push('fresh-guest-UART-ACK-plus-routed-PWM-causes-lift-and-valid-mounted-ray');
+ await api.pause();const paused=await api.observe();await delay(100);const frozen=await api.observe();assert.deepEqual(frozen.flight,paused.flight);assert.equal(uart(frozen),uart(paused));assert.deepEqual(frozen.motors,paused.motors);r.checks.push('pause-freezes-guest-physics-and-outputs');
+ await api.start();const stopAt=uart(await api.observe()).length;await api.input({type:'serial',port:'uart0',data:'SF1 STOP\n'});state=await wait('fresh STOP and zero PWM',s=>uart(s).slice(stopAt).includes('SF1 ACK STOP')&&zero(s));state=await wait('unpowered craft falls and contacts ground',s=>s.flight.contact&&Math.abs(s.flight.heightM)<.001&&s.flight.motors.every(m=>m.omegaRadS<1));r.samples.push({stage:'STOP-ground',...sample(state)});r.checks.push('STOP-is-real-zero-PWM-followed-by-coast-gravity-and-contact');
+ await api.pause();const epoch=state.flight.epoch;await api.reset();state=await wait('reset fresh READY and new ground epoch',s=>uart(s).includes('SF1 READY stampfly-uart-demo 0.1.0')&&zero(s)&&s.flight?.epoch>epoch&&s.flight.contact);assert(!uart(state).includes('SF1 ACK MOTOR'));r.checks.push('reset-retains-opt-in-clears-prior-UART-and-restarts-ground');
+ await api.pause();state=await api.configureFlight({enabled:false});assert.equal(state.status,'ready');assert.equal(state.flight,null);assert.equal(state.scene.flight,undefined);assert.equal(uart(state),'');await api.start();state=await wait('disabled fresh READY',s=>uart(s).includes('SF1 READY stampfly-uart-demo 0.1.0')&&zero(s));assert.equal(state.flight,null);assert.equal((await api.capabilities()).flight.enabled,false);r.checks.push('disable-recreates-ready-without-autostart-and-ordinary-guest-still-boots');
+ await api.dispose();api=null;r.status='pass';
+}receipt.status='pass';}catch(e){receipt.status='fail';receipt.error=e.message;receipt.lastState=last?sample(last):null;throw e;}finally{if(api)await api.dispose();receipt.workerCreations=created;receipt.workerTerminations=terminated;await writeFile(out,JSON.stringify(receipt,null,2)+'\n');console.log(JSON.stringify({status:receipt.status,products:receipt.products.map(p=>({product:p.productId,status:p.status,checks:p.checks.length})),workers:{created,terminated}}));}
