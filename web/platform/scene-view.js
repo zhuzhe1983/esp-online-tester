@@ -132,8 +132,13 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       flightActive=enabled;flightGround.visible=enabled;onInspectionChange(getInspection());
     }
     mount.dataset.flight=enabled?'approximate-physics':'disabled';
-    if(enabled){mount.dataset.flightHeightM=String(value.heightM);mount.dataset.flightGuestTime=String(value.guestTime);}
-    else{delete mount.dataset.flightHeightM;delete mount.dataset.flightGuestTime;}
+    if(enabled){
+      mount.dataset.flightHeightM=String(value.heightM);mount.dataset.flightGuestTime=String(value.guestTime);
+      // Follow horizontal translation with the camera, keeping a world-aligned
+      // 50 mm floor lattice below the vehicle. The physical pose is not scaled.
+      flightGround.position.x=Math.floor(flightGroup.position.x/50)*50;
+      flightGround.position.y=Math.floor(flightGroup.position.y/50)*50;
+    }else{flightGround.position.x=flightGround.position.y=0;delete mount.dataset.flightHeightM;delete mount.dataset.flightGuestTime;}
     clearHover();frameCamera();draw();
   }
   let accessoryPositions=[];
@@ -161,6 +166,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     if (accessoryCount || product?.model && product.id !== 'm5stack-papermono') {
       orbitGroup.updateMatrixWorld(true);
       const bounds = new THREE.Box3().setFromObject(group);
+      if(bounds.isEmpty()){camera.position.set(0,0,158);camera.lookAt(0,0,0);camera.updateProjectionMatrix();return;}
       if(flightActive)bounds.expandByPoint(flightGround.getWorldPosition(new THREE.Vector3()));
       const size = bounds.getSize(new THREE.Vector3()), center = bounds.getCenter(new THREE.Vector3());
       const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));

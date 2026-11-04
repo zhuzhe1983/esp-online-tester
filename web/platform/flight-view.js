@@ -19,6 +19,13 @@ export function applyFlightPose(group, board, flight) {
   if(!pose){group.position.set(0,0,0);group.quaternion.identity();return false;}
   group.position.fromArray(pose.positionMm);group.quaternion.fromArray(pose.quaternion);return true;
 }
+export function flightAttitudeDegrees(flight) {
+  if(!vector(flight?.quaternionXyzw,4))return null;
+  const quaternion=new THREE.Quaternion(...flight.quaternionXyzw);
+  if(Math.abs(quaternion.length()-1)>.001)return null;
+  const angles=new THREE.Euler().setFromQuaternion(quaternion.normalize(),'ZYX');
+  return [angles.x,angles.y,angles.z].map(THREE.MathUtils.radToDeg);
+}
 export function createFlightGround() {
   const ground=new THREE.Group();ground.name='flight-ground-reference';ground.visible=false;
   const grid=new THREE.GridHelper(1000,20,0x7b9685,0xb6c6bc);grid.rotation.x=Math.PI/2;

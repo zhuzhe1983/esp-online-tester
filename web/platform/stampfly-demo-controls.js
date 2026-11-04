@@ -1,4 +1,5 @@
 import {hasMotorOutput, STAMPFLY_MOTORS} from './motor-state.js';
+import {flightAttitudeDegrees} from './flight-view.js';
 
 const READY = 'SF1 READY stampfly-uart-demo 0.1.0';
 const modes = new Set(['STOP','MOTOR','AUTO','LAND']);
@@ -132,7 +133,9 @@ export function mountStampflyDemoControls({container,runtime}) {
   const note=element('p','螺旋桨转动仅按真实客体 PWM 示意，不是实测转速。停止按钮切断演示固件电机输出；暂停时点击停止会复位。','helper');body.append(note);
   let current={},dead=false;
   const controller=createStampflyDemoController({runtime,onChange:value=>{
-    if(dead)return;current=value;container.hidden=!value.active;body.hidden=!value.matched;
+    if(dead)return;
+    if((!value.ready && current.ready) || value.matched!==current.matched || value.active!==current.active)for(const input of inputs){input.value='0';input.dispatchEvent(new Event('input'));}
+    current=value;container.hidden=!value.active;body.hidden=!value.matched;
     const running=value.matched && value.ready && value.status==='running';
     message.textContent=!value.matched?'在固件列表选择「StampFly 网页演示」并运行，即可控制四个电机。原厂固件使用其自己的控制方式。':value.feedback || (value.status==='running'?'等待演示固件 READY…':'请点击运行；启动和复位时电机保持关闭。');
     stop.disabled=!value.matched || !['running','paused','ready'].includes(value.status);stop.textContent=value.status==='paused'?'停止并复位':'停止';
@@ -142,7 +145,9 @@ export function mountStampflyDemoControls({container,runtime}) {
     const flying=running && value.flight?.enabled===true && !value.pending;
     takeoff.disabled=land.disabled=!flying;target.disabled=!flying || value.telemetry?.mode!=='AUTO';
     actual.textContent='实际 PWM：'+STAMPFLY_MOTORS.map(({id},i)=>`${['左前','右前','左后','右后'][i]} ${Number.isFinite(value.motors.find(m=>m.id===id)?.duty)?(value.motors.find(m=>m.id===id).duty*100).toFixed(1)+'%':'—'}`).join(' · ');
-    flightOutput.textContent=value.flight?.enabled?`实际高度 ${Number.isFinite(value.flight.heightM)?value.flight.heightM.toFixed(3):'—'} m · ${value.flight.contact?'已接地':'未接地'} · ${value.status==='paused'?'已冻结':'由真实 PWM 驱动物理模型'}`:'飞行环境未启用；当前仅显示电机 PWM。';
+    const angles=flightAttitudeDegrees(value.flight),attitude=angles?` · 横滚 ${angles[0].toFixed(1)}° / 俯仰 ${angles[1].toFixed(1)}° / 偏航 ${angles[2].toFixed(1)}°`:'';
+    const position=value.flight?.positionM,translation=Array.isArray(position)&&position.slice(0,2).every(Number.isFinite)?` · 北 ${position[0].toFixed(2)} / 东 ${position[1].toFixed(2)} m`:'';
+    flightOutput.textContent=value.flight?.enabled?`实际高度 ${Number.isFinite(value.flight.heightM)?value.flight.heightM.toFixed(3):'—'} m${translation}${attitude} · ${value.flight.contact?'已接地':'未接地'} · ${value.status==='paused'?'已冻结':'由真实 PWM 驱动物理模型'}`:'飞行环境未启用；当前仅显示电机 PWM。';
   }});
   const act=work=>{Promise.resolve().then(work).catch(error=>{if(!dead)message.textContent=error.message;});};
   motor.onclick=()=>act(()=>controller.send('MOTOR',inputs.map(input=>Number(input.value)/100)));

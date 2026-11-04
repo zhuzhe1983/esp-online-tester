@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../web/platform/vendor/three.module.min.js';
 import {createStampflyDemoController,isStampflyDemo,parseStampflyDemoLine,stampflyCommand} from '../web/platform/stampfly-demo-controls.js';
-import {flightViewPose,applyFlightPose} from '../web/platform/flight-view.js';
+import {flightViewPose,applyFlightPose,flightAttitudeDegrees} from '../web/platform/flight-view.js';
 import {STAMPFLY_MOTORS} from '../web/platform/motor-state.js';
 
 // Transport doubles exercise UI boundaries, not firmware execution acceptance.
@@ -76,6 +76,7 @@ test('flight uses physical NED/FRD meters, preserves native local geometry and r
   assert.equal(applyFlightPose(flight,'stampfly',pose()),true);assert.deepEqual(flight.position.toArray(),[200,100,300]);
   assert.deepEqual(part.position.toArray(),[20,5,7]);assert.deepEqual(part.geometry.attributes.position.array,positions);assert.deepEqual(part.matrix.elements,before.elements);
   const p=pose();p.quaternionXyzw=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),Math.PI/2).toArray();
+  assert.ok(Math.abs(flightAttitudeDegrees(p)[0]-90)<1e-8);assert.equal(flightAttitudeDegrees({quaternionXyzw:[0,0,0,0]}),null);
   const q=new THREE.Quaternion(...flightViewPose('stampfly-v11',p).quaternion),up=new THREE.Vector3(0,0,1).applyQuaternion(q);assert.ok(up.distanceTo(new THREE.Vector3(1,0,0))<1e-9);
   const orbitBefore=orbit.quaternion.toArray();applyFlightPose(flight,'stampfly',null);assert.deepEqual(flight.position.toArray(),[0,0,0]);assert.deepEqual(flight.quaternion.toArray(),[0,0,0,1]);assert.deepEqual(orbit.quaternion.toArray(),orbitBefore);
   for(const change of [s=>s.enabled=false,s=>s.positionM[0]=NaN,s=>s.quaternionXyzw=[0,0,0,0],s=>s.worldFrame='ENU',s=>s.guestTime=-1]){const v=pose();change(v);assert.equal(flightViewPose('stampfly',v),null);}
