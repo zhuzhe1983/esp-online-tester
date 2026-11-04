@@ -346,7 +346,7 @@ function renderTransport() {
   document.querySelectorAll('[data-gps-action]').forEach(button => { button.disabled = busy; });
   const badge = $('runtime-badge');
   if (badge) { badge.className = `runtime-badge ${status}`; badge.replaceChildren(element('span'), document.createTextNode(statuses[status] || status)); }
-  document.querySelectorAll('.device-button').forEach(button => { button.disabled = status !== 'running'; });
+  document.querySelectorAll('.device-button').forEach(button => { button.disabled = status !== 'running' || !!sceneView?.previewOnly; });
   transportUi?.refresh();
 }
 function renderEmpty() {
@@ -555,8 +555,9 @@ function renderControls() {
   }
 }
 async function sendInput(event, source = 'scene') {
+  if (sceneView?.previewOnly) return;
   await transportUi?.beforeHumanInput();
-  if (status !== 'running') return;
+  if (status !== 'running' || sceneView?.previewOnly) return;
   if (event.type === 'button') return humanButtons.input(event, source);
   try { await runtime.input(event); } catch (error) { report(error); }
 }
@@ -1057,7 +1058,7 @@ function setupEvents() {
       action(async () => { const keyMapping = Object.fromEntries(Object.entries(scene.keyMapping).filter(([, value]) => value !== control)); keyMapping[event.code] = control; try { await runtime.updateSceneMetadata({keyMapping}); } finally { renderControls(); } }); return;
     }
     if (event.repeat || !shouldCaptureMappedKey(event,product(),scene?.keyMapping) || event.target.closest('input,select,textarea,[contenteditable="true"]') || ($('keyboard-enabled') && !$('keyboard-enabled').checked)) return;
-    const id = scene?.keyMapping[event.code]; if (!id || status !== 'running') return;
+    const id = scene?.keyMapping[event.code]; if (!id || status !== 'running' || sceneView?.previewOnly) return;
     event.preventDefault(); heldKeys.set(event.code, id); sendInput({type: 'button', id, pressed: true}, `key:${event.code}`);
   });
   document.addEventListener('keyup', event => { const id = heldKeys.get(event.code); if (!id) return; event.preventDefault(); heldKeys.delete(event.code); sendInput({type: 'button', id, pressed: false}, `key:${event.code}`); });
@@ -1085,7 +1086,7 @@ async function init() {
   }
   sceneView = createSceneView($('scene-mount'), {onInput: sendInput, onModeChange: reflectMode, onUnsupported: message => toast(message), onOrientation: sendOrientation, onModelReady: renderAppearance, onInspectionChange: renderInspection});
   runtime = createPlatformRuntime({catalog, onEvent: onRuntimeEvent});
-  humanButtons = createHumanButtonController({send: event => runtime.input(controlInput(event,product())), isRunning: () => status === 'running', onError: report,
+  humanButtons = createHumanButtonController({send: event => runtime.input(controlInput(event,product())), isRunning: () => status === 'running' && !sceneView?.previewOnly, onError: report,
     onVisual: (id, pressed) => document.querySelectorAll('.device-button').forEach(button => { if (button.dataset.control === id) button.classList.toggle('pressed', pressed); }),
   });
   api = installAutomation(runtime, {target: window});
