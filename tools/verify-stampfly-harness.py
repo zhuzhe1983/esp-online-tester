@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check explicit StampFly harness centerlines against retained native geometry.
+"""Measure explicit StampFly harness clearance to retained triangle surfaces.
 Requires tools/requirements-model.txt. Source/photo routing accuracy is separate.
 """
 import hashlib,json
@@ -32,5 +32,5 @@ def verify(sku):
  for i in range(6):
   for j in range(i+1,6):
    minimum=float(cdist(paths[i],paths[j]).min()-radii[i]-radii[j]-.08);assert minimum>0,(sku,'wires',i,j,minimum);pairs.append({'wires':[i,j],'conservativeClearanceMm':minimum})
- return {'productId':sku,'modelSha256':hashlib.sha256((a/'model.json').read_bytes()).hexdigest(),'geometrySha256':meta['artifacts']['geometry.bin'],'maximumSampleSpacingMm':.08,'nativeObstacles':receipts,'wirePairs':pairs,'passed':True,'scope':'Numerical nonintersection of authored geometry; not validation of unknown hidden real-world routing, actual wire length or manufacturing fit. Plug insertion is checked separately by verify-stampfly-optical-assembly.py.'}
+ return {'productId':sku,'modelSha256':hashlib.sha256((a/'model.json').read_bytes()).hexdigest(),'geometrySha256':meta['artifacts']['geometry.bin'],'maximumSampleSpacingMm':.08,'nativeObstacles':receipts,'wirePairs':pairs,'passed':True,'scope':'Unsigned distance of authored centerline samples to retained triangle surfaces, conservatively reduced by sample spacing; not a signed-volume collision certificate or validation of hidden real-world routing, wire length or manufacturing fit. Plug insertion is checked separately by verify-stampfly-optical-assembly.py.'}
 if __name__=='__main__':print(json.dumps([verify(x)for x in ['m5stack-k138','m5stack-k138-v11']],indent=2))

@@ -54,4 +54,14 @@ node --test tools/platform-manufacturer-model-test.mjs tools/platform-model-insp
 .venv-model/bin/python tools/test-product-model-exporter.py
 ```
 
-设计回执分别为 `evidence/m5stack-k138/optical-detail-design.json` 和 `evidence/m5stack-k138-v11/optical-detail-design.json`，保留每颗器件原图像素中心、映射、每根线的控制节点与已知/未知界限。线束数值检查只证明所绘几何未穿过保留的源结构，不证明隐藏真实结构准确。前一轮 `bottom-fix-review.json` 和图片保留为历史，不作为新增器件与线束的最终验收。
+设计回执分别为 `evidence/m5stack-k138/optical-detail-design.json` 和 `evidence/m5stack-k138-v11/optical-detail-design.json`，保留每颗器件原图像素中心、映射、每根线的控制节点与已知/未知界限。线束数值检查测量采样中心线到保留三角面的无符号距离，并扣除采样间距的保守余量；它不是 signed-volume 体积碰撞认证，也不证明隐藏真实结构准确。可见路径和两端插接另由浏览器近景核对。前一轮 `bottom-fix-review.json` 和图片保留为历史，不作为新增器件与线束的最终验收。
+
+
+最终新增证据（模型资产固定在 `234001cc`，不沿用前一轮截图）：
+
+- [K138 回执](evidence/m5stack-k138/optical-detail-review.json)：[官方源并排图](evidence/m5stack-k138/optical-detail/source-comparison.webp)、[低斜角](evidence/m5stack-k138/optical-detail/obliqueDetail.webp)、[插头近景](evidence/m5stack-k138/optical-detail/connectorDetail.webp)、[公开查看器的 UNKNOWN](evidence/m5stack-k138/optical-detail/public-unknown-readable.webp)。
+- [K138-V11 回执](evidence/m5stack-k138-v11/optical-detail-review.json)：[官方源并排图](evidence/m5stack-k138-v11/optical-detail/source-comparison.webp)、[低斜角](evidence/m5stack-k138-v11/optical-detail/obliqueDetail.webp)、[插头近景](evidence/m5stack-k138-v11/optical-detail/connectorDetail.webp)、[公开查看器的 UNKNOWN](evidence/m5stack-k138-v11/optical-detail/public-unknown-readable.webp)。
+
+两款各 25 个重建资产与提交内容逐字节相同。实际浏览器取得最终 metadata/geometry/纹理 hash，验证非外壳材质在金色和透明紫色下不变；107 个光流组件零件按声明移动，6 条固定导线隐藏，复位后位置一致。公开工作台通过实际按钮、全屏、拖拽和滚轮读取 UNKNOWN；未启动固件，不作新的运行或实机结论。通用几何/重建测试 16 项、模型/检查/view 测试 9 项、224 条知识记录检查通过。
+
+可从已打开的本地模型检查页运行 `tools/fixtures/stampfly-optical-detail-review.js`（Playwright CLI `run-code --filename`）；公开工作台另运行 `tools/fixtures/stampfly-optical-public-review.js`。运行器沿用调用方已打开页面的服务地址，截图写入 `output/playwright/optical-detail/`，结束后按项目约定关闭自己的浏览器会话。
