@@ -28,7 +28,7 @@ export function flightAttitudeDegrees(flight) {
 }
 export function createFlightGround() {
   const ground=new THREE.Group();ground.name='flight-ground-reference';ground.visible=false;
-  const grid=new THREE.GridHelper(1000,20,0x7b9685,0xb6c6bc);grid.rotation.x=Math.PI/2;
+  const grid=new THREE.GridHelper(10000,200,0x7b9685,0xb6c6bc);grid.rotation.x=Math.PI/2;
   for(const material of [].concat(grid.material)){material.transparent=true;material.opacity=.45;material.depthWrite=false;}
   ground.add(grid);
   return ground;

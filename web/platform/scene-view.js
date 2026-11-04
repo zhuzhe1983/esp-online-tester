@@ -167,11 +167,13 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       orbitGroup.updateMatrixWorld(true);
       const bounds = new THREE.Box3().setFromObject(group);
       if(bounds.isEmpty()){camera.position.set(0,0,158);camera.lookAt(0,0,0);camera.updateProjectionMatrix();return;}
-      if(flightActive)bounds.expandByPoint(flightGround.getWorldPosition(new THREE.Vector3()));
+      // Follow the unscaled aircraft at inspection distance. The floor remains
+      // at its true world height; its perspective changes during climb/descent.
+      // Including a metre of empty air in this box makes the 80 mm vehicle tiny.
       const size = bounds.getSize(new THREE.Vector3()), center = bounds.getCenter(new THREE.Vector3());
       const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
       const distance = Math.max(20, (Math.max(size.y / (2 * tangent), size.x / (2 * tangent * camera.aspect)) * 1.32 + size.z / 2) * zoom);
-      if (inspection?.expanded || flightActive) camera.far = Math.max(camera.far, distance + size.z / 2 + 1000);
+      if (inspection?.expanded || flightActive) camera.far = Math.max(camera.far, distance + size.z / 2 + (flightActive?Math.abs(flightGroup.position.z)*3+1000:1000));
       camera.position.set(center.x, center.y, center.z + distance); camera.lookAt(center);
     } else {
       const distance = (product?.id?.includes('paper') ? 205 : 158) * Math.max(1, 1 / camera.aspect) * zoom;
