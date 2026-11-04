@@ -94,12 +94,33 @@ impl BoardModel for StampFly {
         let motors=MOTORS.iter().zip(self.motors).map(|((id,pin),(hz,duty))|format!("{{\"id\":\"{id}\",\"gpio\":{pin},\"duty\":{:.8},\"frequencyHz\":{hz}}}",f64::from(duty)/65535.0)).collect::<Vec<_>>().join(",");
         Some(format!("{{\"type\":\"stampfly-motors\",\"version\":{},\"cycle\":{},\"clockHz\":{HZ},\"motors\":[{motors}],\"model\":\"latched-pwm\",\"flightSimulated\":false}}",self.motor_version.min((1<<53)-1),self.cycle.min((1<<53)-1)))
     }
+    fn flight_motor_pwm(&self)->Option<[(f64,u32);4]> {Some(self.motors)}
+    fn set_flight_sample(&mut self,accel_g:[f64;3],gyro_dps:[f64;3],bottom_mm:Option<f64>,front_mm:Option<f64>)->bool {
+        if !accel_g.iter().chain(&gyro_dps).all(|v|v.is_finite()) || [bottom_mm,front_mm].iter().flatten().any(|v|!v.is_finite() || !(0.0..=4000.0).contains(v)) {return false;}
+        self.set_imu_sample(accel_g,gyro_dps);
+        // Official tof.hpp: bottom XSHUT G7, front G9. These are external
+        // optical targets, still consumed by scheduled raw histogram conversion.
+        for (sensor,distance) in self.tof.iter().zip([bottom_mm,front_mm]) {sensor.lock().expect("StampFly ToF mutex poisoned").set_distance_mm(distance);}
+        true
+    }
     fn report(&self)->String {format!("[{}] BMI270 SPI={} RGB updates={} INA3221 conversions={} motor_updates={}; ideal IMU/battery inputs; VL53L3CX=raw-histogram-subset,no-target; BMP280/BMM150/PMW3901/flight/radio-controller unimplemented",self.name(),self.spi_transfers,self.stamp.updates+self.carrier.updates,self.power.lock().expect("StampFly INA3221 mutex poisoned").conversions,self.motor_version)}
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn flight_environment_is_cold_bounded_and_never_writes_motors() {
+        let mut b=StampFly::new();let initial=b.flight_motor_pwm().unwrap();
+        assert!(b.set_flight_sample([0.2,0.1,1.0],[2.0,1.0,-3.0],Some(500.0),None));
+        assert_eq!(b.sample.lock().unwrap().accel_g,[0.2,0.1,1.0]);assert_eq!(b.cycle,0);
+        assert_eq!(b.flight_motor_pwm().unwrap(),initial);
+        assert!(!b.set_flight_sample([0.0;3],[0.0;3],Some(f64::NAN),None));
+        assert!(!b.set_flight_sample([0.0;3],[0.0;3],None,Some(4001.0)));
+        assert!(!b.set_flight_sample([f64::INFINITY,0.0,0.0],[0.0;3],None,None));
+        assert_eq!(b.sample.lock().unwrap().accel_g,[0.2,0.1,1.0]);
+        let mut bare=esp_soc::board::NoBoard;assert!(bare.flight_motor_pwm().is_none());assert!(!bare.set_flight_sample([0.0;3],[0.0;3],None,None));
+    }
     fn pins()->SpiPins {SpiPins{sclk:1<<44,mosi:1<<14,miso:Some(43),cs:1<<46}}
     #[test]
     fn imu_requires_physical_routes_and_input_is_finite() {
