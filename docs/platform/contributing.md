@@ -14,6 +14,8 @@ Implement missing emulated hardware separately under the upstream Rust conventio
 
 Products are listed by default. Set optional `pickerVisible: false` only on reviewed assembly variants of the same main PCB to keep ordinary device dropdowns, global device search and counts compact. This is a UI policy, not a product alias: `loadCatalog()`, API configuration, knowledge, model assets and shared scenes retain the exact product ID. An explicitly opened variant appears as the current dropdown option; changing the family filter within its family preserves it. Choosing a different product removes that temporary option.
 
+Set `visualVariantOf` to the reviewed parent ID when that variant has a usable 3D model. The parent's “衍生模型” menu changes only the renderer and does not configure the runtime or persist the preview in a scene/share URL. Use a direct visible parent, retain each child's exact runtime identity, and test loading/start/reset transitions plus legacy scenes. Running/loading disables preview; pausing permits a new explicit preview.
+
 See the [Stamp picker audit](stamp-picker-variants.md) for the ten assembly/kit entries hidden under this policy, their retained base entries and manufacturer evidence.
 
 ## Accessories

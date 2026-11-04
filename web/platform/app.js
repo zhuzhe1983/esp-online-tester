@@ -28,6 +28,7 @@ import {configureFirmwareRelay} from './firmware-relay.js';
 import {burnerProjectUrl} from './firmware-download-access.js';
 import {productOptionLabel, productIdentityLabel, productFamilies, productFamilyGroups, manufacturerLabel, manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
 import {mountDeviceSearch, mountAccessorySearch} from './device-search.js';
+import {mountVisualVariantMenu} from './visual-variant-menu.js';
 import {encodeRecording, decodeRecording, validateRecording} from './recording.js';
 import {SHELL_DEFAULT, SHELL_PRESETS, SHELL_FINISHES, shellPreset} from './appearance.js';
 import {renderHintList, productHints, firmwareHints} from './hints.js';
@@ -53,6 +54,7 @@ const matchingHubFirmware = source => [burnerUi?.current(),sparkUi?.current()].f
 let preserveUnspecifiedFirmware = false;
 let productChoiceManufacturer = '', productFamilyFilter = '', productChoiceTarget = '';
 let orientationSettlement = null;
+let visualVariantMenu, lastRuntimeState;
 let localFiles = [], localSource = null, localSelectionToken = 0;
 const gpsLookups = new Map(), gpsMessages = new Map();
 const heldKeys = new Map();
@@ -239,6 +241,8 @@ function onRuntimeEvent(event) {
 
   if (event.type === 'state') {
     const previousStatus = status; status = event.state.status; loadedFirmware=event.state.firmware;
+    lastRuntimeState=event.state;
+    visualVariantMenu?.update({product:catalog.products.find(item=>item.id===event.state.scene?.productId),status,mode:event.state.scene?.view?.deviceView,busy});
     sceneView?.setMotorsRunning(status==='running');sceneView?.updateMotors(event.state.motors,event.state.motorOutput);
     accessoryInputState=event.state.accessoryInputs || [];accessoryOutputState=event.state.accessoryOutputs || [];sceneView?.updateAccessoryOutputs(accessoryOutputState);
     if (['configured', 'loading', 'error', 'disposed'].includes(status)) humanButtons?.invalidate();
@@ -273,7 +277,7 @@ function onRuntimeEvent(event) {
   } else if (event.type === 'flight') {
     sceneView?.updateFlight(event.flight);
   } else if (event.type === 'imu') {
-    if (event.imu?.source === 'agent') sceneView?.setOrientation?.(event.imu.quaternion, {notify: false});
+    if (!sceneView?.previewOnly && event.imu?.source === 'agent') sceneView?.setOrientation?.(event.imu.quaternion, {notify: false});
   } else if (event.type === 'load-progress') {
     if (status === 'loading' && (!loadProgress || event.loadId >= loadProgress.loadId)) { loadProgress = event; renderDownloadProgress(); }
   } else if (event.type === 'frame') {
@@ -297,6 +301,7 @@ function renderTransport() {
   const canLoad = Boolean(scene?.firmware || localSource);
   const sessionBusy = ['preparing', 'recording', 'playing'].includes(recordingState.status);
   const configurationBusy = busy || status === 'loading';
+  visualVariantMenu?.update({product:product(),status,mode:scene?.view?.deviceView,busy});
   for (const id of ['manufacturer-select','product-family-select','product-select','search-devices','firmware-select','firmware-kind','firmware-url','firmware-sha','firmware-history-select','accessory-brand','accessory-interface','accessory-select','search-accessories']) if ($(id)) $(id).disabled = configurationBusy;
   burnerUi?.setDisabled(configurationBusy);sparkUi?.setDisabled(configurationBusy);
   if ($('add-accessory')) $('add-accessory').disabled = configurationBusy || !$('accessory-select')?.value;
@@ -429,7 +434,7 @@ function renderProduct() {
   const source = selected.sources?.[0];
   if ($('product-source')) { $('product-source').hidden = !source; if (source) $('product-source').href = source.url; }
   if (renderedProduct !== selected.id) {
-    renderedProduct = selected.id; sceneView?.setProduct(selected); frameCount = 0; text('frame-count', '0 帧'); renderFirmwareLibrary();
+    renderedProduct = selected.id; showVisualProduct(selected); frameCount = 0; text('frame-count', '0 帧'); renderFirmwareLibrary();
     void knowledgePanel?.show(selected);
   }
   renderControls(); renderEmpty();
@@ -579,6 +584,17 @@ function renderScene() {
   sceneView?.setAppearance(scene.view.appearance);
   renderAppearance();
   if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false, autostart: false});
+}
+function showVisualProduct(selected, {previewOnly=false} = {}) {
+  sceneView?.setProduct(selected,{previewOnly});
+  if ($('scene-mount')) $('scene-mount').dataset.visualProductId=selected.id;
+  sceneView?.setAppearance(scene?.view?.appearance);
+  if (!previewOnly && lastRuntimeState?.product?.id===selected.id) {
+    sceneView?.updateLeds(lastRuntimeState.leds);sceneView?.updateServos(lastRuntimeState.servos);
+    sceneView?.setMotorsRunning(status==='running');sceneView?.updateMotors(lastRuntimeState.motors,lastRuntimeState.motorOutput);
+    sceneView?.updateFlight(lastRuntimeState.flight);renderAccessories();
+  }
+  renderAppearance();
 }
 function renderAppearance() {
   if ($('shell-settings')) $('shell-settings').hidden = scene.view.deviceView !== '3d' || sceneView?.hasShell === false || (!product()?.display && !product()?.model);
@@ -956,7 +972,7 @@ function setupEvents() {
   }});
   bind('firmware-kind','change',()=>{updateRemoteMode();renderTransport();});
   for (const id of ['firmware-url', 'firmware-sha']) bind(id, 'input', renderTransport);
-  const chooseProduct = async (id, keepFamily = false) => { clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, id)); productChoiceTarget = keepFamily ? id : ''; try { await configure(next, {reflectSource: true}); } finally { productChoiceTarget = ''; } };
+  const chooseProduct = async (id, keepFamily = false) => { visualVariantMenu?.reset(); clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, id)); productChoiceTarget = keepFamily ? id : ''; try { await configure(next, {reflectSource: true}); } finally { productChoiceTarget = ''; } };
   mountDeviceSearch({button:$('search-devices'),products:catalog.products,onSelect:id=>action(()=>chooseProduct(id)),onError:report});
   mountAccessorySearch({button:$('search-accessories'),getItems:allDefinitions,onSelect:id=>{const item=definition(id);if(!item)return;renderAccessoryChoices({brand:accessoryBrand(item),connector:accessoryInterface(item),id});$('add-accessory').focus();},onError:report});
   bind('manufacturer-select', 'change', () => action(async () => { const choices = renderProductChoices($('manufacturer-select').value); if (choices.length) await chooseProduct(choices[0].id, true); }));
@@ -1107,7 +1123,10 @@ async function init() {
     onError: report, onLog: log,
   });
   if ($('manufacturer-select')) { $('manufacturer-select').replaceChildren(...manufacturerNames(catalog.products).map(name => new Option(manufacturerLabel(name),name))); $('manufacturer-select').disabled = false; }
-  mountAppearance(); setupEvents(); await runtime.configure(scene); renderLocalAccessories(); reflectFirmwareSource(); transportUi.setRecording(recordingDocument);
+  mountAppearance();
+  visualVariantMenu=mountVisualVariantMenu({container:document.querySelector('.view-controls'),products:catalog.products,onSelect:showVisualProduct});
+  window.addEventListener('pagehide',()=>visualVariantMenu?.dispose(),{once:true});
+  setupEvents(); await runtime.configure(scene); renderLocalAccessories(); reflectFirmwareSource(); transportUi.setRecording(recordingDocument);
   firmwareUpdates = await mountFirmwareUpdates($('firmware-updates'), {getProductId: () => scene.productId, onError: report});
   firmwareUpdates.show(catalog.firmwares.find(item => item.id === $('firmware-select')?.value));
   if (embedded) {

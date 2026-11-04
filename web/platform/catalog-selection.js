@@ -18,6 +18,7 @@ export const productOptionLabel = product => product.runtime?.board ? product.na
 export const isPickerProduct = product => product.pickerVisible !== false;
 export const manufacturerNames = products => [...new Set(products.filter(isPickerProduct).map(item => item.manufacturer))].sort(compareManufacturers);
 export const productsForManufacturer = (products, manufacturer, familyId = '') => products.filter(item => isPickerProduct(item) && item.manufacturer === manufacturer && (!familyId || item.family?.id === familyId)).sort((a,b) => collator.compare(a.name.replace(/^M5Stack /,''),b.name.replace(/^M5Stack /,'')) || collator.compare(a.id,b.id));
+export const visualVariantsForProduct = (products, parentId) => products.filter(item => parentId && item.visualVariantOf === parentId && item.id !== parentId && item.model).sort((a,b) => collator.compare(a.name,b.name));
 export function productFamilies(products, manufacturer) {
   const families = new Map();
   for (const item of products) {
