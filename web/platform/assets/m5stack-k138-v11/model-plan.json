@@ -29,7 +29,7 @@
       1
     ]
   ],
-  "assemblyNotes": "Shared Ecosystem frame/carrier/motor coordinates retained without scaling, rigid X=-sourceX,Y=sourceZ,Z=sourceY. Exact S3A cover uses its own rigid local transform. Hardware v1.1 substitutions and unverified common-frame assumptions are explicit; older battery is not displayed.",
+  "assemblyNotes": "Shared Ecosystem frame/carrier/motor coordinates retained without scaling, rigid X=-sourceX,Y=sourceZ,Z=sourceY. Exact S3A cover uses its own rigid local transform. Hardware v1.1 substitutions and unverified common-frame assumptions are explicit; older battery is not displayed. Optical PCB seating corrected to native cradle bar bottoms; source frame and battery triangles remain unchanged. Board, package and socket photographs are separate levels.",
   "provenance": {
     "repository": "https://github.com/M5Fly-kanazawa/stampfly_ecosystem",
     "sourceLicense": "Ecosystem: MIT, Copyright (c) 2026 Kouhei Ito, see LICENSE-StampFly-Ecosystem.txt. Official-document-linked simulator geometry is not manufacturer production CAD. Stamp-S3A cover: MIT, Copyright (c) 2021 M5Stack, see source-m5stack-license.txt.",
@@ -515,6 +515,49 @@
         ],
         "notes": "S3A cap flexure over G0 button; position from exact module plan. Same G0 as carrier USER_A, not EN reset."
       }
+    ],
+    "inspectionGroups": [
+      {
+        "id": "optical-flow-assembly",
+        "parts": [
+          "optical-flow-pcb",
+          "optical-flow-pcb-photo",
+          "optical-flow-package",
+          "optical-flow-lens",
+          "optical-flow-socket-back",
+          "optical-flow-socket-wall--1",
+          "optical-flow-socket-wall-1",
+          "optical-flow-socket-roof",
+          "optical-flow-socket-floor",
+          "optical-flow-plug",
+          "optical-flow-contact-0",
+          "optical-flow-plug-entry-0",
+          "optical-flow-contact-1",
+          "optical-flow-plug-entry-1",
+          "optical-flow-contact-2",
+          "optical-flow-plug-entry-2",
+          "optical-flow-contact-3",
+          "optical-flow-plug-entry-3",
+          "optical-flow-contact-4",
+          "optical-flow-plug-entry-4",
+          "optical-flow-contact-5",
+          "optical-flow-plug-entry-5",
+          "optical-flow-package-photo",
+          "optical-flow-lens-photo",
+          "optical-flow-socket-photo"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -18
+        ],
+        "sourceIds": [
+          "product-photo-06",
+          "product-photo-08",
+          "ecosystem-frame-stl"
+        ],
+        "notes": "Explicit inspection arrangement: move the optical PCB, package, plug and their photo faces together to read the inward UNKNOWN and inspect its two cradle contacts. This 18 mm offset is a viewing separation, not documented physical disassembly travel or cable slack."
+      }
     ]
   },
   "photos": [
@@ -529,6 +572,11 @@
     {
       "sourceId": "product-photo-07",
       "view": "side"
+    },
+    {
+      "sourceId": "product-photo-08",
+      "view": "optical-profile",
+      "notes": "Battery removed in this official reference; establishes flow board under the two cradle crossbars and downward package/connector protrusion."
     }
   ],
   "reviewViews": {
@@ -1185,23 +1233,24 @@
       "label": "UNKNOWN",
       "geometry": {
         "sizeMm": [
-          13.2,
-          23.2,
+          12,
+          20,
           0.8
         ],
         "centerMm": [
           0,
-          -2.4,
-          -7.55
+          -1.3,
+          -7.647989654541016
         ],
         "labelSide": "front"
       },
-      "basis": "image-measurement",
+      "basis": "source-constrained-photo-estimate",
       "sourceIds": [
         "product-photo-06",
-        "product-photo-07"
+        "product-photo-08",
+        "ecosystem-frame-stl"
       ],
-      "notes": "Photographed exposed optical-flow daughterboard missing from simplified ecosystem model. Outline13.2×23.2mm estimated at9.7px/mm; thickness.8mm and seatingZ-7.55±1.5mm estimated against source frame. Hidden front face UNKNOWN; components shown by actual rear photo, not invented layout."
+      "notes": "12×20 mm outline estimated independently from the visible PCB perimeter, excluding protruding white plug. Thickness 0.8 mm remains estimated. Inward face Z=-7.247989654541016 sits exactly on both original cradle crossbar bottom faces, no source rescaling. UNKNOWN identifies the undocumented inward layout; inspect separation is a viewing arrangement, not a disassembly claim."
     },
     {
       "id": "s3a-pcb-placeholder",
@@ -1274,6 +1323,467 @@
         "product-photo-08"
       ],
       "notes": "Visible black module header housing approximated from side photos; not asserted to be a screw standoff, and no contact/connection simulation."
+    },
+    {
+      "id": "optical-flow-package",
+      "kind": "box",
+      "color": "#252b29",
+      "geometry": {
+        "sizeMm": [
+          6,
+          6,
+          1.8
+        ],
+        "centerMm": [
+          0,
+          -1.0,
+          -8.947989654541017
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "datasheet-fa6038d787"
+      ],
+      "notes": "PMW3901MB nominal 6×6×2.28 mm package including lens from PixArt v1.10 p7. This simplified body plus lens has that total height; division into 1.8 mm square body and 0.48 mm lens is estimated from photos, not source CAD."
+    },
+    {
+      "id": "optical-flow-lens",
+      "kind": "cylinder",
+      "color": "#101514",
+      "geometry": {
+        "radiusMm": 1.725,
+        "depthMm": 0.48,
+        "centerMm": [
+          0,
+          -1.0,
+          -10.087989654541017
+        ]
+      },
+      "basis": "datasheet-and-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "datasheet-fa6038d787"
+      ],
+      "notes": "Nominal diameter 3.45 mm from package drawing; optical shape is simplified, not a refractive sensor simulation."
+    },
+    {
+      "id": "optical-flow-socket-back",
+      "kind": "box",
+      "color": "#eeeedd",
+      "geometry": {
+        "sizeMm": [
+          8.8,
+          0.5,
+          2.8
+        ],
+        "centerMm": [
+          0,
+          -6.7,
+          -9.447989654541017
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Photo-derived KH-A1001WF-06A envelope; schematic identifies six contacts, exact connector CAD unavailable."
+    },
+    {
+      "id": "optical-flow-socket-wall--1",
+      "kind": "box",
+      "color": "#eeeedd",
+      "geometry": {
+        "sizeMm": [
+          0.5,
+          4.6,
+          2.8
+        ],
+        "centerMm": [
+          -4.15,
+          -8.75,
+          -9.447989654541017
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "product-photo-08",
+        "ecosystem-frame-stl"
+      ],
+      "notes": "Separate connector side wall; open mouth points toward -Y."
+    },
+    {
+      "id": "optical-flow-socket-wall-1",
+      "kind": "box",
+      "color": "#eeeedd",
+      "geometry": {
+        "sizeMm": [
+          0.5,
+          4.6,
+          2.8
+        ],
+        "centerMm": [
+          4.15,
+          -8.75,
+          -9.447989654541017
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "product-photo-08",
+        "ecosystem-frame-stl"
+      ],
+      "notes": "Separate connector side wall; open mouth points toward -Y."
+    },
+    {
+      "id": "optical-flow-socket-roof",
+      "kind": "box",
+      "color": "#eeeedd",
+      "geometry": {
+        "sizeMm": [
+          8.8,
+          4.6,
+          0.45
+        ],
+        "centerMm": [
+          0,
+          -8.75,
+          -10.622989654541017
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "product-photo-08",
+        "ecosystem-frame-stl"
+      ],
+      "notes": "Raised socket roof; does not become a flat white patch on the PCB."
+    },
+    {
+      "id": "optical-flow-socket-floor",
+      "kind": "box",
+      "color": "#eeeedd",
+      "geometry": {
+        "sizeMm": [
+          8.8,
+          4.6,
+          0.35
+        ],
+        "centerMm": [
+          0,
+          -8.75,
+          -8.222989654541017
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "product-photo-08",
+        "ecosystem-frame-stl"
+      ],
+      "notes": "Socket floor on the PCB; no electrical routing or contact fit claim."
+    },
+    {
+      "id": "optical-flow-plug",
+      "kind": "box",
+      "color": "#e3e6dc",
+      "geometry": {
+        "sizeMm": [
+          7.5,
+          2.2,
+          1.9
+        ],
+        "centerMm": [
+          0,
+          -11.55,
+          -9.397989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Visible six-way plug extends beyond actual PCB edge; this overhang is not PCB. Inserted into the open socket mouth; exact latch and wire routes remain unmodeled."
+    },
+    {
+      "id": "optical-flow-contact-0",
+      "kind": "box",
+      "color": "#a6aaa1",
+      "geometry": {
+        "sizeMm": [
+          0.35,
+          0.9,
+          0.18
+        ],
+        "centerMm": [
+          -2.5,
+          -6.15,
+          -8.137989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Six solder tails from schematic P1 (KH-A1001WF-06A); pitch/visible length from photo, no connector mechanical fit claim."
+    },
+    {
+      "id": "optical-flow-plug-entry-0",
+      "kind": "box",
+      "color": "#141816",
+      "geometry": {
+        "sizeMm": [
+          0.48,
+          0.02,
+          0.7
+        ],
+        "centerMm": [
+          -2.5,
+          -12.661,
+          -9.397989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Dark wire-entry recess visual; flexible cable loops omitted pending routed geometry, not a second PCB texture."
+    },
+    {
+      "id": "optical-flow-contact-1",
+      "kind": "box",
+      "color": "#a6aaa1",
+      "geometry": {
+        "sizeMm": [
+          0.35,
+          0.9,
+          0.18
+        ],
+        "centerMm": [
+          -1.5,
+          -6.15,
+          -8.137989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Six solder tails from schematic P1 (KH-A1001WF-06A); pitch/visible length from photo, no connector mechanical fit claim."
+    },
+    {
+      "id": "optical-flow-plug-entry-1",
+      "kind": "box",
+      "color": "#141816",
+      "geometry": {
+        "sizeMm": [
+          0.48,
+          0.02,
+          0.7
+        ],
+        "centerMm": [
+          -1.5,
+          -12.661,
+          -9.397989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Dark wire-entry recess visual; flexible cable loops omitted pending routed geometry, not a second PCB texture."
+    },
+    {
+      "id": "optical-flow-contact-2",
+      "kind": "box",
+      "color": "#a6aaa1",
+      "geometry": {
+        "sizeMm": [
+          0.35,
+          0.9,
+          0.18
+        ],
+        "centerMm": [
+          -0.5,
+          -6.15,
+          -8.137989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Six solder tails from schematic P1 (KH-A1001WF-06A); pitch/visible length from photo, no connector mechanical fit claim."
+    },
+    {
+      "id": "optical-flow-plug-entry-2",
+      "kind": "box",
+      "color": "#141816",
+      "geometry": {
+        "sizeMm": [
+          0.48,
+          0.02,
+          0.7
+        ],
+        "centerMm": [
+          -0.5,
+          -12.661,
+          -9.397989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Dark wire-entry recess visual; flexible cable loops omitted pending routed geometry, not a second PCB texture."
+    },
+    {
+      "id": "optical-flow-contact-3",
+      "kind": "box",
+      "color": "#a6aaa1",
+      "geometry": {
+        "sizeMm": [
+          0.35,
+          0.9,
+          0.18
+        ],
+        "centerMm": [
+          0.5,
+          -6.15,
+          -8.137989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Six solder tails from schematic P1 (KH-A1001WF-06A); pitch/visible length from photo, no connector mechanical fit claim."
+    },
+    {
+      "id": "optical-flow-plug-entry-3",
+      "kind": "box",
+      "color": "#141816",
+      "geometry": {
+        "sizeMm": [
+          0.48,
+          0.02,
+          0.7
+        ],
+        "centerMm": [
+          0.5,
+          -12.661,
+          -9.397989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Dark wire-entry recess visual; flexible cable loops omitted pending routed geometry, not a second PCB texture."
+    },
+    {
+      "id": "optical-flow-contact-4",
+      "kind": "box",
+      "color": "#a6aaa1",
+      "geometry": {
+        "sizeMm": [
+          0.35,
+          0.9,
+          0.18
+        ],
+        "centerMm": [
+          1.5,
+          -6.15,
+          -8.137989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Six solder tails from schematic P1 (KH-A1001WF-06A); pitch/visible length from photo, no connector mechanical fit claim."
+    },
+    {
+      "id": "optical-flow-plug-entry-4",
+      "kind": "box",
+      "color": "#141816",
+      "geometry": {
+        "sizeMm": [
+          0.48,
+          0.02,
+          0.7
+        ],
+        "centerMm": [
+          1.5,
+          -12.661,
+          -9.397989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Dark wire-entry recess visual; flexible cable loops omitted pending routed geometry, not a second PCB texture."
+    },
+    {
+      "id": "optical-flow-contact-5",
+      "kind": "box",
+      "color": "#a6aaa1",
+      "geometry": {
+        "sizeMm": [
+          0.35,
+          0.9,
+          0.18
+        ],
+        "centerMm": [
+          2.5,
+          -6.15,
+          -8.137989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Six solder tails from schematic P1 (KH-A1001WF-06A); pitch/visible length from photo, no connector mechanical fit claim."
+    },
+    {
+      "id": "optical-flow-plug-entry-5",
+      "kind": "box",
+      "color": "#141816",
+      "geometry": {
+        "sizeMm": [
+          0.48,
+          0.02,
+          0.7
+        ],
+        "centerMm": [
+          2.5,
+          -12.661,
+          -9.397989654541016
+        ]
+      },
+      "basis": "source-constrained-photo-estimate",
+      "sourceIds": [
+        "product-photo-06",
+        "schematic-optical-flow"
+      ],
+      "notes": "Dark wire-entry recess visual; flexible cable loops omitted pending routed geometry, not a second PCB texture."
     }
   ],
   "surfaces": [
@@ -3131,14 +3641,14 @@
       "name": "optical-flow-pcb-photo",
       "role": "pcb",
       "sizeMm": [
-        13.2,
-        23.2
+        12,
+        20
       ],
-      "radiusMm": 0.15,
+      "radiusMm": 0.1,
       "positionMm": [
         0,
-        -2.4,
-        -7.97
+        -1.3,
+        -8.057989654541016
       ],
       "side": "back",
       "color": "#141816",
@@ -3148,10 +3658,46 @@
         "mode": "decal",
         "file": "optical-flow-back.webp",
         "boundsMm": [
-          -6.6,
-          -14,
-          6.6,
-          9.2
+          -6,
+          -11.3,
+          6,
+          8.7
+        ],
+        "minNormalZ": 0.95
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-06",
+        "product-photo-08",
+        "ecosystem-frame-stl"
+      ],
+      "notes": "Optical PCB photograph only, 0.01 mm outside a real 0.8 mm board supported by native cradle bars. Lens/connector are excluded from this layer."
+    },
+    {
+      "name": "optical-flow-package-photo",
+      "role": "pcb",
+      "sizeMm": [
+        6,
+        6
+      ],
+      "radiusMm": 0.03,
+      "positionMm": [
+        0,
+        -1.0,
+        -9.857989654541017
+      ],
+      "side": "back",
+      "color": "#141816",
+      "texture": {
+        "projection": "xy",
+        "side": "back",
+        "mode": "decal",
+        "file": "optical-flow-package.webp",
+        "boundsMm": [
+          -3.0,
+          -4.0,
+          3.0,
+          2.0
         ],
         "minNormalZ": 0.95
       },
@@ -3159,7 +3705,333 @@
       "sourceIds": [
         "product-photo-06"
       ],
-      "notes": "Original exposed daughterboard photograph on independent estimated carrier plane. Texture represents observed exterior components only; hidden layout, component depths and optical behavior unknown."
+      "notes": "Gray package-top pixels sit on its own 6×6 mm body; the circular lens is excluded from this plane."
+    },
+    {
+      "name": "optical-flow-lens-photo",
+      "role": "pcb",
+      "sizeMm": [
+        3.45,
+        3.45
+      ],
+      "radiusMm": 0.03,
+      "positionMm": [
+        0,
+        -1.0,
+        -10.337989654541015
+      ],
+      "side": "back",
+      "color": "#141816",
+      "texture": {
+        "projection": "xy",
+        "side": "back",
+        "mode": "decal",
+        "file": "optical-flow-lens.webp",
+        "boundsMm": [
+          -1.725,
+          -2.725,
+          1.725,
+          0.7250000000000001
+        ],
+        "minNormalZ": 0.95
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-06"
+      ],
+      "notes": "Lens pixels map to the circular outer lens face at the datasheet total 2.28 mm protrusion. Carrier geometry is circular, matching the lens cylinder; transparent corner pixels do not hide an unsupported square.",
+      "outlineMm": [
+        [
+          1.725,
+          -1.0
+        ],
+        [
+          1.7166936535095398,
+          -0.830920432931508
+        ],
+        [
+          1.6918546086955726,
+          -0.6634691945221787
+        ],
+        [
+          1.6507220791380603,
+          -0.4992589317360524
+        ],
+        [
+          1.5936921935819697,
+          -0.3398710791702201
+        ],
+        [
+          1.5213141810009125,
+          -0.18684062897515408
+        ],
+        [
+          1.4342850812218906,
+          -0.041641348041186244
+        ],
+        [
+          1.3334430320507213,
+          0.09432841518228852
+        ],
+        [
+          1.2197591975467945,
+          0.21975919754679452
+        ],
+        [
+          1.0943284151822885,
+          0.33344303205072134
+        ],
+        [
+          0.958358651958814,
+          0.4342850812218906
+        ],
+        [
+          0.8131593710248463,
+          0.5213141810009123
+        ],
+        [
+          0.66012892082978,
+          0.5936921935819697
+        ],
+        [
+          0.5007410682639476,
+          0.6507220791380603
+        ],
+        [
+          0.3365308054778214,
+          0.6918546086955726
+        ],
+        [
+          0.16907956706849234,
+          0.7166936535095396
+        ],
+        [
+          1.0562578642645922e-16,
+          0.7250000000000001
+        ],
+        [
+          -0.16907956706849211,
+          0.7166936535095398
+        ],
+        [
+          -0.33653080547782116,
+          0.6918546086955726
+        ],
+        [
+          -0.5007410682639473,
+          0.6507220791380606
+        ],
+        [
+          -0.6601289208297798,
+          0.5936921935819697
+        ],
+        [
+          -0.813159371024846,
+          0.5213141810009125
+        ],
+        [
+          -0.9583586519588134,
+          0.4342850812218908
+        ],
+        [
+          -1.0943284151822883,
+          0.33344303205072157
+        ],
+        [
+          -1.2197591975467945,
+          0.21975919754679452
+        ],
+        [
+          -1.3334430320507213,
+          0.09432841518228852
+        ],
+        [
+          -1.4342850812218908,
+          -0.041641348041186244
+        ],
+        [
+          -1.5213141810009123,
+          -0.18684062897515363
+        ],
+        [
+          -1.5936921935819697,
+          -0.33987107917021986
+        ],
+        [
+          -1.6507220791380603,
+          -0.4992589317360524
+        ],
+        [
+          -1.6918546086955726,
+          -0.6634691945221781
+        ],
+        [
+          -1.7166936535095396,
+          -0.8309204329315076
+        ],
+        [
+          -1.725,
+          -0.9999999999999998
+        ],
+        [
+          -1.7166936535095398,
+          -1.1690795670684921
+        ],
+        [
+          -1.6918546086955726,
+          -1.3365308054778215
+        ],
+        [
+          -1.6507220791380606,
+          -1.500741068263947
+        ],
+        [
+          -1.59369219358197,
+          -1.6601289208297798
+        ],
+        [
+          -1.5213141810009125,
+          -1.813159371024846
+        ],
+        [
+          -1.434285081221891,
+          -1.9583586519588134
+        ],
+        [
+          -1.3334430320507216,
+          -2.094328415182288
+        ],
+        [
+          -1.2197591975467947,
+          -2.2197591975467947
+        ],
+        [
+          -1.0943284151822892,
+          -2.333443032050721
+        ],
+        [
+          -0.9583586519588138,
+          -2.4342850812218906
+        ],
+        [
+          -0.8131593710248465,
+          -2.5213141810009123
+        ],
+        [
+          -0.6601289208297809,
+          -2.593692193581969
+        ],
+        [
+          -0.5007410682639477,
+          -2.6507220791380606
+        ],
+        [
+          -0.33653080547782194,
+          -2.6918546086955724
+        ],
+        [
+          -0.16907956706849178,
+          -2.71669365350954
+        ],
+        [
+          -3.1687735927937765e-16,
+          -2.725
+        ],
+        [
+          0.16907956706849117,
+          -2.71669365350954
+        ],
+        [
+          0.3365308054778213,
+          -2.6918546086955724
+        ],
+        [
+          0.500741068263947,
+          -2.6507220791380606
+        ],
+        [
+          0.6601289208297803,
+          -2.5936921935819695
+        ],
+        [
+          0.8131593710248459,
+          -2.5213141810009123
+        ],
+        [
+          0.9583586519588132,
+          -2.434285081221891
+        ],
+        [
+          1.0943284151822887,
+          -2.333443032050721
+        ],
+        [
+          1.2197591975467943,
+          -2.2197591975467947
+        ],
+        [
+          1.333443032050721,
+          -2.0943284151822894
+        ],
+        [
+          1.4342850812218906,
+          -1.9583586519588136
+        ],
+        [
+          1.521314181000912,
+          -1.8131593710248466
+        ],
+        [
+          1.5936921935819692,
+          -1.660128920829781
+        ],
+        [
+          1.6507220791380603,
+          -1.500741068263948
+        ],
+        [
+          1.6918546086955724,
+          -1.336530805477822
+        ],
+        [
+          1.7166936535095398,
+          -1.169079567068492
+        ]
+      ]
+    },
+    {
+      "name": "optical-flow-socket-photo",
+      "role": "pcb",
+      "sizeMm": [
+        8.8,
+        4.6
+      ],
+      "radiusMm": 0.03,
+      "positionMm": [
+        0,
+        -8.75,
+        -10.857989654541017
+      ],
+      "side": "back",
+      "color": "#141816",
+      "texture": {
+        "projection": "xy",
+        "side": "back",
+        "mode": "decal",
+        "file": "optical-flow-socket.webp",
+        "boundsMm": [
+          -4.4,
+          -11.05,
+          4.4,
+          -6.45
+        ],
+        "minNormalZ": 0.95
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-06"
+      ],
+      "notes": "White socket photograph restricted to the supported raised socket roof. Plug below board edge is separate solid geometry."
     }
   ],
   "textureSources": [
@@ -3470,6 +4342,18 @@
             763,
             647,
             793
+          ],
+          [
+            519,
+            506,
+            676,
+            740
+          ],
+          [
+            479,
+            700,
+            731,
+            768
           ]
         ],
         "excludePolygons": [
@@ -3573,7 +4457,7 @@
           ]
         ]
       },
-      "mapping": "Back-camera X mirrored explicitly in source quadrilateral, matching renderer back projection. Only broad source underside planeZ4.252 receives PCB photo; raised optical module, wires, connectors and frame crossmembers excluded."
+      "mapping": "Back-camera X mirrored explicitly in source quadrilateral, matching renderer back projection. Only broad source underside planeZ4.252 receives PCB photo; raised optical module, wires, connectors and frame crossmembers excluded. The optical cradle edges and the complete foreground cable-loop envelope are also excluded: occluded carrier regions remain plain black, never a second flattened optical board or wire layer."
     },
     {
       "file": "stamp-top.webp",
@@ -3603,26 +4487,372 @@
       "file": "optical-flow-back.webp",
       "sourceId": "product-photo-06",
       "cropXYXY": [
-        532,
-        512,
-        658,
-        736
+        534,
+        514,
+        659,
+        718
       ],
       "alphaMask": {
         "includeRoundedRects": [
           {
             "xyxy": [
-              534,
-              514,
-              656,
-              734
+              535,
+              515,
+              658,
+              717
             ],
-            "radiusPx": 3
+            "radiusPx": 1.5
+          }
+        ],
+        "excludeRects": [
+          [
+            563,
+            578,
+            633,
+            648
+          ],
+          [
+            550,
+            666,
+            650,
+            740
+          ]
+        ]
+      },
+      "mapping": "Only the optical PCB perimeter maps to 12×20 mm, world X mirrored by the existing back-UV convention. Package and connector pixels are alpha-excluded and mapped separately at their own supported heights. White plug and wires are outside the board crop.",
+      "uncertainty": "PCB outline ±0.6 mm and thickness ±0.2 mm are photo estimates. The source cradle fixes seating height, not manufacturing tolerances. Raw image pixels are retained, no generated detail."
+    },
+    {
+      "file": "optical-flow-package.webp",
+      "sourceId": "product-photo-06",
+      "cropXYXY": [
+        565,
+        580,
+        631,
+        646
+      ],
+      "alphaMask": {
+        "includeRoundedRects": [
+          {
+            "xyxy": [
+              565,
+              580,
+              631,
+              646
+            ],
+            "radiusPx": 1
+          }
+        ],
+        "excludeEllipses": [
+          [
+            577,
+            593,
+            619,
+            635
+          ]
+        ]
+      },
+      "mapping": "Gray package-top pixels sit on its own 6×6 mm body; the circular lens is excluded from this plane. Back-face UV mirrors X; photo remains in original orientation relative to the M5 logo and plug.",
+      "uncertainty": "Camera parallax and crop registration are photo estimates; no new pixels synthesized."
+    },
+    {
+      "file": "optical-flow-lens.webp",
+      "sourceId": "product-photo-06",
+      "cropXYXY": [
+        577,
+        593,
+        619,
+        635
+      ],
+      "alphaMask": {
+        "includePolygons": [
+          [
+            [
+              618.4,
+              614.0
+            ],
+            [
+              618.3017684241128,
+              615.999549662723
+            ],
+            [
+              618.0080197202259,
+              617.979842569129
+            ],
+            [
+              617.5215828489371,
+              619.921807415991
+            ],
+            [
+              616.8471424632303,
+              621.8067420202478
+            ],
+            [
+              615.9911937927064,
+              623.6164934312503
+            ],
+            [
+              614.9619800909719,
+              625.3336327535999
+            ],
+            [
+              613.7694132485998,
+              626.9416229969383
+            ],
+            [
+              612.4249783362055,
+              628.4249783362055
+            ],
+            [
+              610.9416229969383,
+              629.7694132485998
+            ],
+            [
+              609.3336327535999,
+              630.9619800909719
+            ],
+            [
+              607.6164934312503,
+              631.9911937927064
+            ],
+            [
+              605.8067420202478,
+              632.8471424632303
+            ],
+            [
+              603.921807415991,
+              633.5215828489371
+            ],
+            [
+              601.979842569129,
+              634.0080197202259
+            ],
+            [
+              599.999549662723,
+              634.3017684241128
+            ],
+            [
+              598.0,
+              634.4
+            ],
+            [
+              596.000450337277,
+              634.3017684241128
+            ],
+            [
+              594.020157430871,
+              634.0080197202259
+            ],
+            [
+              592.078192584009,
+              633.5215828489371
+            ],
+            [
+              590.1932579797522,
+              632.8471424632303
+            ],
+            [
+              588.3835065687497,
+              631.9911937927064
+            ],
+            [
+              586.6663672464001,
+              630.9619800909719
+            ],
+            [
+              585.0583770030617,
+              629.7694132485998
+            ],
+            [
+              583.5750216637945,
+              628.4249783362055
+            ],
+            [
+              582.2305867514002,
+              626.9416229969383
+            ],
+            [
+              581.0380199090281,
+              625.3336327535999
+            ],
+            [
+              580.0088062072936,
+              623.6164934312503
+            ],
+            [
+              579.1528575367697,
+              621.8067420202478
+            ],
+            [
+              578.4784171510629,
+              619.921807415991
+            ],
+            [
+              577.9919802797741,
+              617.979842569129
+            ],
+            [
+              577.6982315758872,
+              615.999549662723
+            ],
+            [
+              577.6,
+              614.0
+            ],
+            [
+              577.6982315758872,
+              612.000450337277
+            ],
+            [
+              577.9919802797741,
+              610.020157430871
+            ],
+            [
+              578.4784171510629,
+              608.078192584009
+            ],
+            [
+              579.1528575367697,
+              606.1932579797522
+            ],
+            [
+              580.0088062072936,
+              604.3835065687497
+            ],
+            [
+              581.0380199090281,
+              602.6663672464001
+            ],
+            [
+              582.2305867514002,
+              601.0583770030617
+            ],
+            [
+              583.5750216637945,
+              599.5750216637945
+            ],
+            [
+              585.0583770030617,
+              598.2305867514002
+            ],
+            [
+              586.6663672464001,
+              597.0380199090281
+            ],
+            [
+              588.3835065687497,
+              596.0088062072936
+            ],
+            [
+              590.1932579797522,
+              595.1528575367697
+            ],
+            [
+              592.078192584009,
+              594.4784171510629
+            ],
+            [
+              594.020157430871,
+              593.9919802797741
+            ],
+            [
+              596.000450337277,
+              593.6982315758872
+            ],
+            [
+              598.0,
+              593.6
+            ],
+            [
+              599.999549662723,
+              593.6982315758872
+            ],
+            [
+              601.979842569129,
+              593.9919802797741
+            ],
+            [
+              603.921807415991,
+              594.4784171510629
+            ],
+            [
+              605.8067420202478,
+              595.1528575367697
+            ],
+            [
+              607.6164934312503,
+              596.0088062072936
+            ],
+            [
+              609.3336327535999,
+              597.0380199090281
+            ],
+            [
+              610.9416229969383,
+              598.2305867514002
+            ],
+            [
+              612.4249783362055,
+              599.5750216637945
+            ],
+            [
+              613.7694132485998,
+              601.0583770030617
+            ],
+            [
+              614.9619800909719,
+              602.6663672464001
+            ],
+            [
+              615.9911937927064,
+              604.3835065687497
+            ],
+            [
+              616.8471424632303,
+              606.1932579797522
+            ],
+            [
+              617.5215828489371,
+              608.078192584009
+            ],
+            [
+              618.0080197202259,
+              610.020157430871
+            ],
+            [
+              618.3017684241128,
+              612.000450337277
+            ]
+          ]
+        ]
+      },
+      "mapping": "Lens pixels map to the circular outer lens face at the datasheet total 2.28 mm protrusion. Back-face UV mirrors X; photo remains in original orientation relative to the M5 logo and plug.",
+      "uncertainty": "Camera parallax and crop registration are photo estimates; no new pixels synthesized."
+    },
+    {
+      "file": "optical-flow-socket.webp",
+      "sourceId": "product-photo-06",
+      "cropXYXY": [
+        552,
+        670,
+        646,
+        714
+      ],
+      "alphaMask": {
+        "includeRoundedRects": [
+          {
+            "xyxy": [
+              553,
+              671,
+              645,
+              713
+            ],
+            "radiusPx": 1
           }
         ]
       },
-      "mapping": "Back-facing independent13.2×23.2mm optical-flow PCB face; photo pixelleft is model+X, matching backUVflip. True photosurface stays inside estimated board. Hidden face markedUNKNOWN.",
-      "uncertainty": "Scale estimated from samephoto mounting-hole spacing; board position/depth are photo/source-envelope estimates, not a v1.1 PCB assemblyCAD."
+      "mapping": "White socket photograph restricted to the supported raised socket roof. Plug below board edge is separate solid geometry. Back-face UV mirrors X; photo remains in original orientation relative to the M5 logo and plug.",
+      "uncertainty": "Camera parallax and crop registration are photo estimates; no new pixels synthesized."
     }
   ],
   "targets": [
@@ -3656,7 +4886,9 @@
     "Visible PCB photography restores exterior appearance only. Black PCB remains black under shell presets; UNKNOWN on underside identifies hidden layout uncertainty.",
     "Hex-socket screw recesses, grommet cross-sections, connector mouths and four-blade profiles are photo estimates. Hidden screw shafts, standoffs, threads, propeller pitch and connector contact fit are unverified.",
     "Paper label is an independent bounded surface inside the exact cover. Camera lighting is not a calibrated material color.",
-    "Visual assets establish no firmware execution, RPM calibration, flight dynamics or physical hardware validation."
+    "Visual assets establish no firmware execution, RPM calibration, flight dynamics or physical hardware validation.",
+    "Optical PCB outline 12×20 mm and 0.8 mm thickness remain photo estimates; seating uses the unchanged source cradle bars at Z=-7.247989654541016. Package total 6×6×2.28 mm is from the linked PixArt datasheet; body/lens detail and six-way connector geometry are simplified estimates. Flexible cable loops and hidden solder details remain unmodeled.",
+    "The optical PCB photo excludes the raised lens, socket, protruding plug and wires. Separate supported surfaces preserve those visible components without claiming PCB layout or a complete manufacturing assembly. UNKNOWN stays on the unobserved inward face and is readable in the declared inspection separation."
   ],
   "omittedComponents": [
     {

@@ -1,0 +1,30 @@
+<!doctype html><meta charset="utf-8"><title>StampFly optical assembly review</title>
+<style>body{margin:0;background:white}canvas{display:block}</style><div id="render"></div>
+<script type="module">
+import * as THREE from '/web/platform/vendor/three.module.min.js';
+import {createManufacturerModel} from '/web/platform/manufacturer-model.js';
+import {applyShellAppearance} from '/web/platform/shell-appearance.js';
+const sku=new URL(location.href).searchParams.get('sku')||'m5stack-k138';
+if(!['m5stack-k138','m5stack-k138-v11'].includes(sku))throw Error('Unsupported review SKU');
+const product=(await(await fetch('/web/platform/catalog/products.json')).json()).items.find(x=>x.id===sku);
+const scene=new THREE.Scene();scene.background=new THREE.Color('white');scene.add(new THREE.HemisphereLight(0xffffff,0x64775b,2.5));
+const light=new THREE.DirectionalLight(0xffffff,3.1);scene.add(light);
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(800,800,false);renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;document.querySelector('#render').append(renderer.domElement);
+const camera=new THREE.OrthographicCamera(-44,44,44,-44,1,3000),model=createManufacturerModel(product,null);scene.add(model.group);await model.ready;
+const meta=model.group.userData.provenance;
+const views={
+ back:{span:88,position:[0,0,-250],target:[0,0,0],up:[0,1,0]},
+ bottomDetail:{span:32,position:[0,-1.3,-180],target:[0,-1.3,-5],up:[0,1,0]},
+ sideDetail:{span:34,position:[65,0,-10],target:[0,-1,-5],up:[0,0,1]},
+ obliqueDetail:{span:60,position:[40,-80,-65],target:[0,0,-2],up:[0,0,1]},
+ supportDetail:{span:31,position:[65,-35,-9],target:[0,-1,-5],up:[0,0,1]},
+ unknown:{span:32,position:[38,-18,-17],target:[0,-1,-25],up:[0,0,1]},
+};
+function render(){renderer.render(scene,camera);}
+function show(view='back',options={}){const d={...views[view],...options};if(!d.position)throw Error('Unknown view');camera.left=-d.span/2;camera.right=d.span/2;camera.top=d.span/2;camera.bottom=-d.span/2;camera.position.set(...d.position);camera.up.set(...d.up);camera.lookAt(...d.target);camera.updateProjectionMatrix();light.position.copy(camera.position).add(new THREE.Vector3(-90,100,60));render();return d;}
+function materials(){const names=['frame','pcb-main','pcb-back','optical-flow-pcb-photo','optical-flow-package','optical-flow-package-photo','optical-flow-lens','optical-flow-lens-photo','optical-flow-socket-roof','optical-flow-socket-photo','optical-flow-plug','stamp-paper'];return Object.fromEntries(names.map(name=>{const m=model.parts[name].material;return[name,{color:m.color.getHexString(),opacity:m.opacity,roughness:m.roughness,metalness:m.metalness,transparent:m.transparent,map:m.map?.image?.src?.split('/').pop()||null}];}));}
+function positions(){return Object.fromEntries(model.group.children.map(o=>[o.name,o.position.toArray()]));}
+function bounds(){const box=new THREE.Box3();model.group.updateMatrixWorld(true);model.group.traverse(o=>{if(!o.isMesh||o.name.startsWith('cover-key:')||o.name.includes('-unknown-')||o.material?.opacity===0)return;box.union(new THREE.Box3().setFromObject(o,true));});return{min:box.min.toArray(),max:box.max.toArray(),size:box.getSize(new THREE.Vector3()).toArray()};}
+window.review={sku,model,meta,renderer,camera,show,materials,positions,bounds,views,appearance(value){for(const shell of model.group.userData.shellMeshes)applyShellAppearance(shell,value);render();return materials();},inspection(value){if(!model.group.userData.inspection)throw Error(model.group.userData.inspectionError||'Inspection unavailable');model.group.userData.inspection.setExpanded(value);render();return{expanded:model.group.userData.inspection.expanded,positions:positions()};}};
+show();document.body.dataset.ready='true';window.addEventListener('pagehide',()=>{model.dispose();renderer.dispose();});
+</script>

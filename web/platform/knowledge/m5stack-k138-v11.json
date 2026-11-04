@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-11-03T20:17:10Z",
+  "updatedAt": "2026-11-04T03:15:13Z",
   "hardwareRevision": "v1.1",
   "identity": {
     "manufacturer": "M5Stack",
@@ -495,6 +495,33 @@
       ],
       "group": "pins",
       "notes": "载板 S1 的 USER_A 经 P2 pin3 接模块 G0/Boot；RST/EN 是独立网络，不能混用。"
+    },
+    {
+      "id": "optical-flow-mechanical-seating",
+      "label": "光流板与托架的相对位置",
+      "value": {
+        "boardSizeMm": [
+          12,
+          20,
+          0.8
+        ],
+        "boardTopZMm": -7.247989654541016,
+        "packageSizeMm": [
+          6,
+          6,
+          2.28
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "ecosystem-frame-stl",
+        "product-photo-06",
+        "product-photo-08",
+        "datasheet-fa6038d787"
+      ],
+      "group": "model",
+      "method": "光流板内侧与原始 frame 的两条底横梁接触；12×20 mm 板边和0.8 mm板厚为照片估算，剔除外伸插头。镜头封装名义尺寸来自 PixArt v1.10 第7页；外观分成板面、封装、镜片和插座四层。",
+      "uncertainty": "板长宽估算±0.6 mm，板厚±0.2 mm；托架坐标来自简化模拟器STL，不证明生产装配公差。封装内的台阶分配、连接器几何和装配横向位置仍为照片估计；柔性线束未建模。"
     }
   ],
   "revisions": [],
@@ -1260,6 +1287,20 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "m5stack-license.txt"
+    },
+    {
+      "id": "datasheet-fa6038d787",
+      "title": "PMW3901MB-TXQT(Optical Flow Sensor Chip)",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/app/Stamp%20Fly/PMW3901MB-TXQT.PDF",
+      "kind": "datasheet",
+      "status": "fetched",
+      "discoveredFrom": "official-docs",
+      "archiveName": "datasheet-fa6038d787.pdf",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/app/Stamp%20Fly/PMW3901MB-TXQT.PDF",
+      "fetchedAt": "2026-10-26T17:34:52Z",
+      "bytes": 1517121,
+      "mediaType": "application/pdf",
+      "sha256": "969cb363b5b2ed1590f503ae964e36d85fd465869cf233b06664bcc4d7bdbe68"
     }
   ],
   "assets": [
@@ -1389,6 +1430,7 @@
     "原版 K138 与 K138-V11 保留独立产品、固件默认和验证记录。",
     "实际下载的文档、API、EXE、BIN仅保留hash及必要事实；第三方固件不镜像入库。",
     "v1.1规格表73.6mm不用于把81.842mm的旧版Ecosystem装配缩放成合格；两条来源待独立核对。",
-    "四叶桨、黑色裸露PCB、蓝色减震件和四个螺钉可由官方1200×1200正背照片确认；几何细节需要模型验证。"
+    "四叶桨、黑色裸露PCB、蓝色减震件和四个螺钉可由官方1200×1200正背照片确认；几何细节需要模型验证。",
+    "2026-11-04 optical assembly repair: original source frame and battery triangles unchanged; board crop excludes plug overhang and raised components. See evidence/m5stack-k138-v11/bottom-fix-review.json for fresh underside/side/material/restore verification. Earlier screenshots do not validate this revised bottom assembly."
   ]
 }
