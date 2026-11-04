@@ -1,3 +1,4 @@
+import {createFlightRunner} from './stampfly-flight-runner.js';
 import {realtimeInputPlan} from './audio-input-policy.js';
 import { createJitHost } from './jit.mjs';
 import { createPacing } from './pacing.mjs';
@@ -13,6 +14,7 @@ let ethernetRelay=false,softApEnabled=false,softApLastStatus='',softApStatusAt=0
 let CPU_HZ = 240e6;   // replaced from the module once an emulator exists: the C3 runs at 160 MHz
 let wasm = null, emu = 0, running = false, t0 = 0, resyncs = 0, lastStat = { wall: 0, insns: 0, cycles: 0 };
 let loopGeneration = 0, booted = false, catchupTurns = 0;
+let runCycles=null,flight=null;
 let flashShadow = null, flashWatchId = null, flashScanAt = 0;
 const FLASH_PAGE = 4096;
 let sdShadow=null,sdWatchId=null,sdScanAt=0;
@@ -130,7 +132,7 @@ function loop(generation = loopGeneration) {
     const previous = cur;
     const inputTraceIds = pendingInputTrace;
     if (inputTraceIds.length) { postMessage({ touchTrace: { stage: 'run-entry', ids: inputTraceIds, atMs: traceNow(), cycles: cur } }); pendingInputTrace = []; }
-    const rc = wasm.esp32sim_run(emu, remaining, Date.now());
+    const rc = runCycles(emu, remaining, Date.now());
     cur = wasm.esp32sim_cycles(emu);
     if (inputTraceIds.length) postMessage({ touchTrace: { stage: 'run-exit', ids: inputTraceIds, atMs: traceNow(), cycles: cur } });
     pacing.observe(cur - previous, performance.now() - before);
@@ -216,6 +218,7 @@ onmessage = async (ev) => {
       hardwareChecksEnabled=m.board==='stopwatch';hardwareChecksLast='';hardwareChecksAt=-Infinity;
       pacing = createPacing(); catchupTurns = 0;
       pendingInputTrace = [];
+      flight?.dispose();flight=null;runCycles=wasm.esp32sim_run;
       if (emu) { wasm.esp32sim_delete(emu); emu = 0; }
       emu = withBytes(enc.encode(m.board), (p, n) => wasm.esp32sim_new(p, n, m.flash_mb | 0, m.psram_mb | 0));
       if (emu !== 0) wasm.esp32sim_set_jit(emu, m.jit === false ? 0 : 1);
@@ -225,6 +228,12 @@ onmessage = async (ev) => {
       if (emu !== 0 && wasm.esp32sim_cpu_hz) CPU_HZ = wasm.esp32sim_cpu_hz(emu);
       const audioAvailable=!!(emu&&wasm.esp32sim_audio_input_state&&wasm.esp32sim_audio_input_state(emu,0)>0);
       if(emu&&m.audioStreaming&&wasm.esp32sim_audio_output_streaming)wasm.esp32sim_audio_output_streaming(emu,1);
+      if(m.flight?.enabled){
+        if(!['stampfly','stampfly-v11'].includes(m.board)||m.flight.model!=='stampfly-rigid-body-v1')throw new Error('Unsupported flight configuration');
+        flight=createFlightRunner({wasm,emu,clockHz:CPU_HZ,epoch:m.flightEpoch||0,publish:flight=>postMessage({flight})});
+        runCycles=(...args)=>{try{return flight.run(...args);}catch(e){postMessage({flightError:e.message});return 1;}};
+        flight.publish(true);
+      }
       const c5 = ['stamp-c5','stamp-c5-dip'].includes(m.board);
       postMessage({ created: emu !== 0, clockHz:CPU_HZ, audioAvailable, networkAvailable:!c5&&!!wasm.esp32sim_softap_configure&&!!wasm.esp32sim_ethernet_relay, flashStorage: !c5&&!!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
     }
@@ -332,6 +341,7 @@ onmessage = async (ev) => {
       running = false; loopGeneration++; booted = false;
       pendingFrame = null;
       if (net) { wasm.esp32sim_net_delete(net); net = 0; }
+      flight?.dispose();flight=null;runCycles=wasm.esp32sim_run;
       if (emu) { wasm.esp32sim_delete(emu); emu = 0; }
       net = wasm.esp32sim_net_new(m.slice_ns || 0);
       netNodes = 0;
@@ -350,10 +360,10 @@ onmessage = async (ev) => {
     else if (m.op === 'net-load') { const rc = withBytes(new Uint8Array(m.data), (p, n) => wasm.esp32sim_net_load(net, m.node, m.kind, p, n)); postMessage({ loaded: 'n' + m.node + ':' + m.kind, ok: rc === 0 }); }
     else if (m.op === 'net-stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_net_stub_spec(net, m.node, p, n)) !== 0) setupError ||= 'invalid stub for node ' + m.node + ': ' + m.spec; }
     else if (m.op === 'net-start') { if (setupError) throw new Error(setupError); const rc = wasm.esp32sim_net_boot(net); if (rc === 0) { running = true; netT0 = performance.now(); netLoop(); } postMessage({ started: rc === 0 }); }
-    else if (m.op === 'stop') { if(emu&&wasm.esp32sim_audio_output_flush){wasm.esp32sim_audio_output_flush(emu);drain();} running = false; loopGeneration++; collectFlash(true);collectSd(true);collectMotion(true);collectHardwareDiagnostics(true); postMessage({ stopped: 0 }); }
+    else if (m.op === 'stop') { if(emu&&wasm.esp32sim_audio_output_flush){wasm.esp32sim_audio_output_flush(emu);drain();} running = false; loopGeneration++; collectFlash(true);collectSd(true);collectMotion(true);collectHardwareDiagnostics(true);flight?.publish(true); postMessage({ stopped: 0 }); }
     else if (m.op === 'imu') {
       const values = [...(m.accelG || []), ...(m.gyroDps || [])];
-      const ok = !!emu && values.length === 6 && values.every(Number.isFinite) && !!wasm.esp32sim_set_imu_sample
+      const ok = !flight && !!emu && values.length === 6 && values.every(Number.isFinite) && !!wasm.esp32sim_set_imu_sample
         && wasm.esp32sim_set_imu_sample(emu, ...values) === 0;
       postMessage({ imuApplied: m.inputId, ok, time: emu ? wasm.esp32sim_cycles(emu) / CPU_HZ : 0 });
     }

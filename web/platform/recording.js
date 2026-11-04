@@ -12,7 +12,7 @@ const object = value => value !== null && typeof value === 'object' && !Array.is
 const err = (code, message, details) => Object.assign(new Error(message), {code, details});
 const canonical = value => Array.isArray(value) ? value.map(canonical) : object(value) ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
 const json = value => JSON.stringify(canonical(value));
-const config = scene => ({schemaVersion:scene.schemaVersion,productId:scene.productId,firmware:scene.firmware,accessories:scene.accessories,localAccessories:scene.localAccessories || []});
+const config = scene => ({schemaVersion:scene.schemaVersion,productId:scene.productId,firmware:scene.firmware,accessories:scene.accessories,localAccessories:scene.localAccessories || [],flight:scene.flight||null});
 const sameScene = (a,b) => !!a && !!b && json(config(a)) === json(config(b));
 const hashPattern = /^[a-f0-9]{64}$/i;
 const pressInput=event=>event.type==='accessory-motion'?{type:event.type,accessoryId:event.accessoryId,motion:event.motion}:event.type==='accessory-illuminance'?{type:event.type,accessoryId:event.accessoryId,lux:event.lux}:event.type==='accessory-environment'?{type:event.type,accessoryId:event.accessoryId,...environmentParameters(event)}:event.type==='accessory-angle'?{type:event.type,accessoryId:event.accessoryId,id:event.id,value:event.value}:event.type==='encoder'?{type:'encoder',id:event.id,steps:event.steps}:event.type==='accessory-connection'?{type:event.type,accessoryId:event.accessoryId,connected:event.connected}:event.type==='accessory-button'?{type:event.type,accessoryId:event.accessoryId,id:event.id,pressed:event.pressed}:event.type==='matrix-key'?{type:'matrix-key',row:event.row,column:event.column,pressed:event.pressed}:{type:'button',id:event.id,pressed:event.pressed};
@@ -35,13 +35,14 @@ export function validateRecording(recording, {scene} = {}) {
   if (recording.schemaVersion !== '1') add('RECORDING_VERSION','/schemaVersion','Unsupported recording version.');
   if (!object(recording.scene) || recording.scene.schemaVersion !== '1' || typeof recording.scene.productId !== 'string' || !object(recording.scene.firmware)) add('RECORDING_SCENE','/scene','Recording needs its configured scene and remote firmware source.');
   else {
-    keys(recording.scene,['schemaVersion','productId','firmware','accessories','keyMapping','view','localAccessories'],'/scene');
+    keys(recording.scene,['schemaVersion','productId','firmware','accessories','keyMapping','view','localAccessories','flight'],'/scene');
     keys(recording.scene.firmware,['manifestUrl','url','sha256','bootMode'],'/scene/firmware');
     const source=recording.scene.firmware;
     if(source.bootMode!==undefined&&(!source.url||!['rom','app-direct'].includes(source.bootMode)))add('RECORDING_SOURCE','/scene/firmware/bootMode','Invalid raw-image boot mode.');
     if(Boolean(source.url)===Boolean(source.manifestUrl)||!sourceUrl(source.url||source.manifestUrl)||!hashPattern.test(source.sha256))add('RECORDING_SOURCE','/scene/firmware','A recording requires an absolute remote source with its SHA-256 pinned.');
     if(!Array.isArray(recording.scene.accessories)||!object(recording.scene.keyMapping)||!object(recording.scene.view))add('RECORDING_SCENE','/scene','Scene accessories, keyMapping and view are required.');
   }
+  if(scene?.flight?.enabled||recording.scene?.flight?.enabled)add('FLIGHT_RECORDING_UNSUPPORTED','/scene/flight','Flight UART commands are not recorded; disable flight before recording or replay.');
   if (scene && !sameScene(recording.scene,scene)) add('RECORDING_SCENE_MISMATCH','/scene','Product, firmware and accessories must match the recording.');
   if (!object(recording.clock) || recording.clock.unit !== 'guest-seconds' || recording.clock.origin !== 'reset' || recording.clock.delivery !== 'worker-acknowledgement') add('RECORDING_CLOCK','/clock','Use reset-relative guest time and worker acknowledgements.');
   else keys(recording.clock,['unit','origin','delivery'],'/clock');
@@ -220,6 +221,7 @@ export function createRecordingController(runtime) {
       async recordingStart(){
         await cancel('replaced');
         let state=await runtime.observe();
+        if(state.scene?.flight?.enabled)throw err('FLIGHT_RECORDING_UNSUPPORTED','Flight UART commands are not recorded; disable flight before recording.');
         if(state.storage?.scope && runtime.flushDeviceStorage){await runtime.flushDeviceStorage();state=await runtime.observe();}
         requirePristineStorage(state);
         if(!state.firmware||state.firmware.source!=='remote'||!state.scene?.firmware)throw err('RECORDING_NOT_READY','Load a remote firmware source before recording. Local firmware cannot be shared in a recording URL.');
