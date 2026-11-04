@@ -1,5 +1,7 @@
 # Remote BIN startup and history
 
+Stamp-C5 / DIP use a separate [SRAM-only contract](stamp-c5-runtime.md): a bare-metal remote image without an IDF descriptor requires explicit `bootMode:"app-direct"` or a single-app manifest with `app_direct:true`. No C5 ROM is requested. Local C5 single-file selection can identify this mode after validation; ordinary ROM/IDF images are rejected.
+
 Remote BIN sources first use the existing merged-image validator. A standalone
 ESP application can then use the existing application-direct loader if its chip
 ID, application descriptor, segment bounds, XOR checksum and optional appended

@@ -1,0 +1,15 @@
+<!doctype html><html><meta charset="utf-8"><title>StampFly motor transport fixture</title><style>body{margin:20px;background:#e8ece8;font:16px system-ui}#mount{width:660px;height:540px;background:#fff}button{margin:8px;padding:8px}#state{font:14px monospace}</style><h1>StampFly motor transport fixture</h1><p>Renderer contract check; this fixture executes no firmware and measures no real RPM.</p><div><button id="advance">Advance guest time</button><button id="pause">Pause</button><button id="resume">Resume</button><button id="reset">Reset observations</button></div><div id="mount"></div><p id="state"></p><script type="module">
+import * as THREE from '../../web/platform/vendor/three.module.min.js';
+import {createSceneView} from '../../web/platform/scene-view.js';
+const names=['front-left','front-right','rear-left','rear-right'],coords=[[-20,20],[20,20],[-20,-20],[20,-20]],raw=[],parts=[],rotors=[];
+function box(name,size,center,color){const geometry=new THREE.BoxGeometry(...size).toNonIndexed(),p=geometry.getAttribute('position'),n=geometry.getAttribute('normal'),offset=raw.length*4;for(let i=0;i<p.count;i++)raw.push(p.getX(i)+center[0],p.getY(i)+center[1],p.getZ(i)+center[2],n.getX(i),n.getY(i),n.getZ(i));parts.push({name,role:'component',byteOffset:offset,vertexCount:p.count,color});}
+box('body',[34,34,2],[0,0,-3],'#252e27');
+for(let i=0;i<4;i++){const [x,y]=coords[i];box(names[i],[28,3,1],[x,y,1],'#ed845f');rotors.push({id:names[i],parts:[names[i]],axis:[0,0,1],pivotMm:[x,y,1],direction:i%2?1:-1});}
+const metadata={unit:'mm',strideFloats:6,binary:'geometry.bin',parts,presentation:{rotors}},binary=new Float32Array(raw),nativeFetch=window.fetch;
+window.fetch=(value,...args)=>String(value).includes('/assets/motor-fixture/')?Promise.resolve(new Response(String(value).includes('model.json')?JSON.stringify(metadata):binary.buffer)):nativeFetch(value,...args);
+const view=createSceneView(document.getElementById('mount'),{onModelReady(){window.ready=true;}});view.setProduct({id:'motor-fixture',name:'Transport fixture',model:{url:'./assets/motor-fixture/model.json'},controls:[]});
+let time=0,running=true;const motors=names.map((id,i)=>({id,duty:(i+1)/4,frequencyHz:150000}));
+function update(){view.setMotorsRunning(running);view.updateMotors(motors,{guestTime:time});document.getElementById('state').textContent=JSON.stringify({time,running});}
+document.getElementById('advance').onclick=()=>{time+=.1;update();};document.getElementById('pause').onclick=()=>{running=false;update();};document.getElementById('resume').onclick=()=>{running=true;update();};document.getElementById('reset').onclick=()=>{time=0;view.updateMotors([],null);document.getElementById('state').textContent='reset';};
+window.view=view;window.state=()=>({time,running});window.addEventListener('beforeunload',()=>view.dispose());update();
+</script></html>

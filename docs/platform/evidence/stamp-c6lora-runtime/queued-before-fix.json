@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-11-03T21:03:02.626Z",
+  "command": "node tools/probe-stamp-c6lora.mjs --build <queued-fixture-build-directory> --spi-mode queued --timeout-ms 15000",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "productId": "m5stack-s012",
+  "wasmSha256": "a1c52dfea61793013bc83fb59de7cab7f9a533c7dca31b275fa1979df9550544",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "645073e5e647df38acb300eaac725e738573694c9ecdccf0724df4e37d96180b",
+    "stamp_c6lora_fixture.bin": "7ca04d6cbab595f2e796e4ffdbc271382e789be34cf78bfea89450d03ff5cf72",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [],
+  "outputs": [
+    {
+      "phase": "failure",
+      "radio": {
+        "model": "sx1262-lora-digital",
+        "physicalRf": false,
+        "powered": true,
+        "resetHigh": true,
+        "antennaEnabled": true,
+        "busy": false,
+        "mode": 32,
+        "irq": 0,
+        "config": null,
+        "transmitted": [],
+        "txCount": 0,
+        "rxCount": 0,
+        "timeoutCount": 0,
+        "rejectedCommands": 0,
+        "droppedTx": 0,
+        "guestTime": 15.0032249625
+      }
+    }
+  ],
+  "limitations": [
+    "Not official factory firmware compatibility or physical hardware validation.",
+    "LoRa packets are explicit digital peer inputs; no RF propagation, receive gain, antenna loss, Wi-Fi association, LoRaWAN service or calibrated silicon timing.",
+    "The bare module has no framebuffer, RGB or mapped user button."
+  ],
+  "status": "failed",
+  "error": "C6 boot, routed Tx and RX mode timed out; stats={\"t\":\"stat\",\"time\":15,\"insns\":2400024447,\"frames\":0,\"behind\":0.001974164249997557,\"resyncs\":0,\"speed\":0.9985104107501426,\"cam\":0,\"gpio_in\":\"1ffffff87f77f\",\"mips\":159.76166572002282} radio={\"model\":\"sx1262-lora-digital\",\"physicalRf\":false,\"powered\":true,\"resetHigh\":true,\"antennaEnabled\":true,\"busy\":false,\"mode\":32,\"irq\":0,\"config\":null,\"transmitted\":[],\"txCount\":0,\"rxCount\":0,\"timeoutCount\":0,\"rejectedCommands\":0,\"droppedTx\":0,\"guestTime\":15.0032249625}",
+  "serialEvidence": [
+    "C6LORA_SPI_MODE queued",
+    "C6LORA_IO_ID a2",
+    "C6LORA_WRONG_ADDRESS NACK",
+    "C6LORA_WRONG_SDA NACK",
+    "C6LORA_RESET_HOLD",
+    "C6LORA_RF_ENABLED",
+    "C6LORA_SPI_INITIALIZED"
+  ],
+  "spiMode": "queued"
+}

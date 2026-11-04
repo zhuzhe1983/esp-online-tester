@@ -18,6 +18,19 @@ const nessoBuild={format:'build',files:[config({extra_esptool_args:{chip:'esp32c
 const nesso=await assembleLocalFirmware(nessoBuild,nessoOpts);validateMergedImage(nesso.data,'nesso-n1',flashBytes,{partitionTableOffset:0x9000});
 await fail(()=>assembleLocalFirmware({format:'build',files:[config(),boot,part,app]},nessoOpts),'CHIP_MISMATCH');
 assert.throws(()=>validateMergedImage(nesso.data,'stopwatch',flashBytes,{partitionTableOffset:0x9000}),{code:'CHIP_MISMATCH'});
+// P4 boot ROM reads the bootloader at 0x2000, unlike C3/C6/S3 at zero.
+const p4Build={format:'build',files:[config({extra_esptool_args:{chip:'esp32p4'},flash_files:{'0x2000':'bootloader.bin','0x9000':'partition-table.bin','0x20000':'custom.bin'}}),file('bootloader.bin',image(18)),part,file('custom.bin',image(18))]};
+const p4=await assembleLocalFirmware(p4Build,{board:'stamp-p4',flashBytes});
+validateMergedImage(p4.data,'stamp-p4',flashBytes,{partitionTableOffset:0x9000});
+validateMergedImage(p4.data,'esp32p4',flashBytes,{partitionTableOffset:0x9000});
+assert.equal(p4.data[0],255);assert.equal(p4.data[0x2000],0xe9);
+assert.throws(()=>validateMergedImage(p4.data,'esp32c3',flashBytes,{partitionTableOffset:0x9000}),{code:'INCOMPLETE_IMAGE'});
+await fail(()=>assembleLocalFirmware({...p4Build,files:[config({extra_esptool_args:{chip:'esp32p4'}}),...p4Build.files.slice(1)]},{board:'stamp-p4',flashBytes}),'BOOTLOADER_REQUIRED');
+for(const offset of [0x2000,0x20000]) {
+  const rev3=p4.data.slice();new DataView(rev3.buffer).setUint16(offset+15,300,true);
+  assert.throws(()=>validateMergedImage(rev3,'stamp-p4',flashBytes,{partitionTableOffset:0x9000}),{code:'CHIP_REVISION_UNSUPPORTED'});
+}
+await fail(()=>assembleLocalFirmware(p4Build,{board:'stopwatch',flashBytes}),'CHIP_MISMATCH');
 const dirs=[file('flasher_args.json',await config().arrayBuffer(),'build/flasher_args.json'),file(boot.name,await boot.arrayBuffer(),'build/bootloader/bootloader.bin'),file(part.name,table,'build/partition_table/partition-table.bin'),file(app.name,image(),'build/custom.bin'),file(app.name,image(5),'build/unrelated/custom.bin')];inspect=await inspectLocalBuild(dirs);assert.equal(inspect.segments.at(-1).file.webkitRelativePath,'build/custom.bin');
 await fail(()=>inspectLocalBuild([config(),boot,file('bootloader.bin',image()),part,app]),'DUPLICATE_BUILD_PATH');
 await fail(()=>inspectLocalBuild([config({flash_files:{'0x0':'../bootloader.bin'}}),boot]),'INVALID_BUILD_PATH');

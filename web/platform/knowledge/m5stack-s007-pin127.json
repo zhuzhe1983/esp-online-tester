@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T19:15:39Z",
+  "updatedAt": "2026-11-03T21:24:20Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -208,6 +208,88 @@
         "dimension-drawing-babc288a85"
       ],
       "notes": "图纸与规格表厚度差0.1mm；保留差异，不缩放CAD。"
+    },
+    {
+      "id": "complete-mechanical-source-parts",
+      "label": "原厂机械装配",
+      "value": "保留独立 STL 外盖和 STEP 中 28 个非重复实体；补回铜柱及全部 USB 细节，原始毫米坐标不缩放。",
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "manufacturer-cad-a030f8363b",
+        "manufacturer-cad-2a9b25ea49"
+      ],
+      "method": "STEP 共 29 个实体，仅排除与单独 STL 重复的外盖 #27。统一 Z 平移 -1.3 mm。源 SHA、部件范围和尺寸误差见 model-plan/source-audit。",
+      "group": "model"
+    },
+    {
+      "id": "header-library-reference",
+      "label": "PIN1.27 排针来源",
+      "value": {
+        "longRowPins": 17,
+        "shortRowPins": 11,
+        "pitchMm": 1.27,
+        "rowXmm": [
+          -7.62,
+          7.62
+        ],
+        "geometrySource": "KiCad standard header library, not factory metrology"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "pin127-footprint",
+        "kicad-header-17",
+        "kicad-header-11"
+      ],
+      "notes": "官方 PIN1.27 页面链接的 socket footprint 明确引用两种标准排针模型和行位置。母座夹具的 Z 装配不能直接当作独立模块，长针朝下及背面贴合按本 SKU 照片复核。",
+      "group": "model"
+    },
+    {
+      "id": "header-standard-dimensions",
+      "label": "排针几何范围",
+      "value": {
+        "housingHeightMm": 1,
+        "matingPinLengthMm": 3,
+        "totalPinLengthMm": 6.3
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "kicad-header-17",
+        "kicad-header-11",
+        "product-photo-7fc1b67d20"
+      ],
+      "method": "KiCad STEP 原生包络 z=-2.3..4 mm、塑料座 z=0..1 mm；源三角形按塑料/金属表面分区，刚体旋转 X 180°，不缩放。",
+      "notes": "这是公开标准模型参数，未量测出厂针脚公差或焊接高度。",
+      "group": "model"
+    },
+    {
+      "id": "pcb-photo-face",
+      "label": "黑色 PCB 背面",
+      "value": "本 SKU 官方背面照片覆盖实际 CAD 板面，排针、铜柱和橙色壳体从平面遮罩排除；UNKNOWN 放在内侧。",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-ddf72297df",
+        "manufacturer-cad-2a9b25ea49"
+      ],
+      "method": "800×800 原图，明确四角透视校正为 360×480；投影仅在 z=-2.299998 mm 背面，CAD 孔洞/外形裁切。",
+      "uncertainty": "斜拍图边角配准约 ±0.8 mm；不证明电子布局、元件高度或材料反射率。",
+      "group": "model"
+    },
+    {
+      "id": "standoff-back-flange",
+      "label": "铜柱背面唇边",
+      "value": {
+        "outerDiameterMm": 3.9,
+        "holeDiameterMm": 1.84,
+        "depthMm": 0.14
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-ddf72297df",
+        "manufacturer-cad-2a9b25ea49"
+      ],
+      "method": "使用原厂铜柱中心；根据背面照片补充原 CAD 简化的环形唇边，明确为照片估计的附加几何。",
+      "uncertainty": "径向约 ±0.3 mm；厚度 .14 mm 只是外观估计，未取得制造尺寸。",
+      "group": "model"
     }
   ],
   "revisions": [],
@@ -458,6 +540,66 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "kicad-header-17",
+      "title": "KiCad official 3D library PinHeader_1x17_P1.27mm_Vertical.step",
+      "kind": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_1.27mm.3dshapes/PinHeader_1x17_P1.27mm_Vertical.step",
+      "status": "fetched",
+      "fetchedAt": "2026-11-03T21:10:56Z",
+      "archiveName": "kicad-header-17.step",
+      "bytes": 610591,
+      "sha256": "6d8d665016628840afb2ded405d0c7c3ea3274144f44094af059671632d2410a",
+      "notes": "Standard library geometry referenced by the exact M5Stack PIN1.27 footprint; not independently measured factory header CAD. KiCad library CC-BY-SA 4.0 with design exception, retained separately from M5Stack MIT."
+    },
+    {
+      "id": "kicad-header-11",
+      "title": "KiCad official 3D library PinHeader_1x11_P1.27mm_Vertical.step",
+      "kind": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_1.27mm.3dshapes/PinHeader_1x11_P1.27mm_Vertical.step",
+      "status": "fetched",
+      "fetchedAt": "2026-11-03T21:10:56Z",
+      "archiveName": "kicad-header-11.step",
+      "bytes": 390225,
+      "sha256": "b91aa439b8de855c84c521658b3438c8280070d60e984298f7c97454e48c7eff",
+      "notes": "Standard library geometry referenced by the exact M5Stack PIN1.27 footprint; not independently measured factory header CAD. KiCad library CC-BY-SA 4.0 with design exception, retained separately from M5Stack MIT."
+    },
+    {
+      "id": "kicad-header-credits",
+      "title": "KiCad official 3D library CREDITS.md",
+      "kind": "license",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_1.27mm.3dshapes/CREDITS.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-03T21:10:57Z",
+      "archiveName": "kicad-header-credits.md",
+      "bytes": 10863,
+      "sha256": "d2d30909a0733003355db01a52284feaf10e89bd2d7841a0b557c305a4d04cc0",
+      "notes": "Standard library geometry referenced by the exact M5Stack PIN1.27 footprint; not independently measured factory header CAD. KiCad library CC-BY-SA 4.0 with design exception, retained separately from M5Stack MIT."
+    },
+    {
+      "id": "kicad-header-license",
+      "title": "KiCad official 3D library LICENSE.md",
+      "kind": "license",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/LICENSE.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-03T21:10:57Z",
+      "archiveName": "kicad-header-license.md",
+      "bytes": 2105,
+      "sha256": "285b027a721577d0bc0198f36e948c6c282ddaa4b58fef8ed826749576eb0aef",
+      "notes": "Standard library geometry referenced by the exact M5Stack PIN1.27 footprint; not independently measured factory header CAD. KiCad library CC-BY-SA 4.0 with design exception, retained separately from M5Stack MIT."
+    },
+    {
+      "id": "pin127-footprint",
+      "title": "Official Stamp-S3 PIN1.27 socket footprint and declared 3D assembly",
+      "kind": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/KiCad/Footprints/M5Stack.pretty/Stamp-S3_PIN1.27_Socket.kicad_mod",
+      "status": "fetched",
+      "fetchedAt": "2026-11-03T21:10:57Z",
+      "archiveName": "pin127-footprint.kicad_mod",
+      "bytes": 366169,
+      "sha256": "57d751c094e0e9d31348b1c294ef87a78b5d617a236cd36fca93479b829c772c",
+      "notes": "Uses socket fixture coordinates; header offsets are converted relative to its Stamp-S3 model offset, and sockets are excluded from standalone product."
     }
   ],
   "assets": [
@@ -484,25 +626,29 @@
       "id": "product-photo-e070f0ccdc",
       "sourceId": "product-photo-e070f0ccdc",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/686/S007-PIN127_01.webp"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/686/S007-PIN127_01.webp",
+      "localUrl": "./assets/m5stack-s007-pin127/reference-product-photo-e070f0ccdc.webp"
     },
     {
       "id": "product-photo-7fc1b67d20",
       "sourceId": "product-photo-7fc1b67d20",
       "role": "product-photo",
-      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5StampS3%20PIN1.27/9.webp"
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5StampS3%20PIN1.27/9.webp",
+      "localUrl": "./assets/m5stack-s007-pin127/reference-product-photo-7fc1b67d20.webp"
     },
     {
       "id": "product-photo-a4f573468e",
       "sourceId": "product-photo-a4f573468e",
       "role": "product-photo",
-      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5StampS3%20PIN1.27/14.webp"
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5StampS3%20PIN1.27/14.webp",
+      "localUrl": "./assets/m5stack-s007-pin127/reference-product-photo-a4f573468e.webp"
     },
     {
       "id": "product-photo-ddf72297df",
       "sourceId": "product-photo-ddf72297df",
       "role": "product-photo",
-      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5StampS3%20PIN1.27/15.webp"
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5StampS3%20PIN1.27/15.webp",
+      "localUrl": "./assets/m5stack-s007-pin127/reference-product-photo-ddf72297df.webp"
     },
     {
       "id": "product-photo-a0404df116",
@@ -532,7 +678,8 @@
       "id": "manufacturer-cad-2a9b25ea49",
       "sourceId": "manufacturer-cad-2a9b25ea49",
       "role": "manufacturer-cad",
-      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/KiCad/3D/M5Stack.3dshapes/Stamp-S3.step"
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/KiCad/3D/M5Stack.3dshapes/Stamp-S3.step",
+      "localUrl": "./assets/m5stack-s007-pin127/source-manufacturer-cad-2a9b25ea49.step"
     },
     {
       "id": "datasheet-9749a18366",
@@ -545,6 +692,41 @@
       "sourceId": "datasheet-65c87b4908",
       "role": "datasheet",
       "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/Stamp/S007%20StampS3/MUN3CAD01-SC.pdf"
+    },
+    {
+      "id": "kicad-header-17",
+      "sourceId": "kicad-header-17",
+      "role": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_1.27mm.3dshapes/PinHeader_1x17_P1.27mm_Vertical.step",
+      "localUrl": "./assets/m5stack-s007-pin127/source-kicad-header-17.step"
+    },
+    {
+      "id": "kicad-header-11",
+      "sourceId": "kicad-header-11",
+      "role": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_1.27mm.3dshapes/PinHeader_1x11_P1.27mm_Vertical.step",
+      "localUrl": "./assets/m5stack-s007-pin127/source-kicad-header-11.step"
+    },
+    {
+      "id": "kicad-header-credits",
+      "sourceId": "kicad-header-credits",
+      "role": "license",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_1.27mm.3dshapes/CREDITS.md",
+      "localUrl": "./assets/m5stack-s007-pin127/CREDITS-KiCad.md"
+    },
+    {
+      "id": "kicad-header-license",
+      "sourceId": "kicad-header-license",
+      "role": "license",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/LICENSE.md",
+      "localUrl": "./assets/m5stack-s007-pin127/LICENSE-KiCad.txt"
+    },
+    {
+      "id": "pin127-footprint",
+      "sourceId": "pin127-footprint",
+      "role": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/KiCad/Footprints/M5Stack.pretty/Stamp-S3_PIN1.27_Socket.kicad_mod",
+      "localUrl": "./assets/m5stack-s007-pin127/official-pin127-footprint.kicad_mod"
     }
   ],
   "unknowns": [
@@ -564,14 +746,16 @@
       "value": null,
       "basis": "unknown",
       "sourceIds": [
-        "manufacturer-cad-a030f8363b"
+        "manufacturer-cad-2a9b25ea49",
+        "product-photo-ddf72297df"
       ],
-      "notes": "No complete populated PCB layout or Gerber verified in the audited files. A manufacturer mechanical board outline, when present, does not establish every component or copper trace. Unknown internals remain a neutral UNKNOWN placeholder."
+      "notes": "已知板面采用本型号官方照片，已知机械轮廓保留原厂 CAD；完整电子元件布局和高度仍未核实。UNKNOWN 位于 PCB 内侧，不覆盖外露已知图像，分开查看可以阅读。"
     }
   ],
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-04：补齐本型号 17+11 针排针与铜柱，区分厂家机械 CAD、官方封装引用的 KiCad 标准排针、照片估计的方向/唇边。分别保留 M5Stack MIT 与 KiCad CC-BY-SA4.0（设计例外）许可。只核验机械外观，固件行为见独立 runtime 回执。"
   ]
 }

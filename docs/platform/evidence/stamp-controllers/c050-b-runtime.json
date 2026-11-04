@@ -1,0 +1,107 @@
+{
+  "checkedAt": "2026-11-03T21:28:04.569Z",
+  "command": "node tools/probe-stamppico.mjs --build <fixture-build-directory> --product <product-id>",
+  "productId": "m5stack-c050-b",
+  "board": "stamppico",
+  "backend": "actual-wasm-worker",
+  "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+  "wasmSha256": "0cd49e58ec4e811a85dd77d6463c4324d467292e5d4c0a7fe72b0beb585f2790",
+  "inputHashes": {
+    "bootloader/bootloader.bin": "fa97eef4e6753b02f166b22a2d7938bd565e7e2aadca67744af233b973b9e290",
+    "stamppico_fixture.bin": "5fd12f3a78b935fee6e3992b7c4549d08bf3ef354c4d5e99998277cd35979b85",
+    "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+  },
+  "checks": [
+    "wrong-gpio4-white-frame-ignored",
+    "real-rom-boot-rmt27-red",
+    "guest-gpio39-press-release-drives-green-blue-off-red",
+    "no-invented-display-and-unknown-button-rejected",
+    "platform-reset-clears-old-output-before-new-rmt-frame",
+    "platform-reset-releases-button-and-fresh-guest-red"
+  ],
+  "inputSerialEvidence": [
+    "STAMPPICO_PINS 39 27",
+    "STAMPPICO_WRONG_PIN 4 white",
+    "STAMPPICO_RMT 255 0 0",
+    "STAMPPICO_BUTTON 1",
+    "STAMPPICO_BUTTON 0",
+    "STAMPPICO_RMT 0 255 0",
+    "STAMPPICO_BUTTON 1",
+    "STAMPPICO_BUTTON 0",
+    "STAMPPICO_RMT 0 0 255",
+    "STAMPPICO_BUTTON 1",
+    "STAMPPICO_BUTTON 0",
+    "STAMPPICO_RMT 0 0 0",
+    "STAMPPICO_BUTTON 1",
+    "STAMPPICO_BUTTON 0",
+    "STAMPPICO_RMT 255 0 0",
+    "STAMPPICO_BUTTON 1"
+  ],
+  "status": "pass",
+  "guestSeconds": 1.06,
+  "leds": [
+    [],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        255,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        0,
+        255
+      ]
+    ],
+    [
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        255,
+        0
+      ]
+    ],
+    [
+      [
+        255,
+        0,
+        0
+      ]
+    ]
+  ],
+  "serialEvidence": [
+    "STAMPPICO_PINS 39 27",
+    "STAMPPICO_WRONG_PIN 4 white",
+    "STAMPPICO_RMT 255 0 0",
+    "STAMPPICO_BUTTON 1"
+  ],
+  "sourceRevision": "cb49bcd7",
+  "fixtureSource": "tools/fixtures/stamppico-firmware",
+  "limits": [
+    "Internal protocol fixture, not official/factory firmware.",
+    "No physical color calibration, EN, download cable, analog power, GPIO bit-bang LED or physical network/RF test.",
+    "Model optical transmission under opaque film is not established; numeric LED output does not fabricate a hole."
+  ]
+}

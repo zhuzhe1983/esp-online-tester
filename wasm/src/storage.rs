@@ -80,7 +80,7 @@ mod tests {
                     assert_eq!(esp32sim_load_at(e, 0x80110000, [0x43, 0x36].as_ptr(), 2), 0);
                     assert_eq!(std::slice::from_raw_parts(esp32sim_flash_ptr(e).add(0x110000), data.len()), data, "co-processor writes must not replace primary flash");
                 }
-                match &mut (*e).m { MachineKind::S3(m) => { m.reboot(); }, MachineKind::Esp32(m) => { m.reboot(); }, MachineKind::C3(m) => { m.reboot(); }, MachineKind::C6(m) => { m.reboot(); }, MachineKind::P4(m) => { m.reboot(); },
+                match &mut (*e).m { MachineKind::S3(m) => { m.reboot(); }, MachineKind::Esp32(m) => { m.reboot(); }, MachineKind::C3(m) => { m.reboot(); }, MachineKind::C5(m) => { m.reboot(); }, MachineKind::C6(m) => { m.reboot(); }, MachineKind::P4(m) => { m.reboot(); },
                     MachineKind::P4Rev3(m) => { m.reboot(); }, MachineKind::P4C6(m) => { m.p4.reboot(); }, MachineKind::P4Rev3C6(m) => { m.p4.reboot(); } }
                 assert_eq!(std::slice::from_raw_parts(esp32sim_flash_ptr(e).add(0x110000), data.len()), data, "{board}: physical flash survives a chip reset");
                 esp32sim_delete(e);

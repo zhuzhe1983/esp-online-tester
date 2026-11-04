@@ -1,6 +1,10 @@
 // English UI strings keyed by the zh-CN source text (zh-CN is the source language).
 // Keep keys identical to the source text; edit values freely.
 export default {
+ "分开查看": "Inspect parts",
+ "移除外接配件后，可分开查看模型。": "Remove attached accessories before inspecting the separated model.",
+ "恢复装配": "Reassemble",
+ "分开零件查看内部；仅用于模型观察，不代表真实拆解顺序。": "Separate parts to inspect the interior. This viewing arrangement does not describe a physical disassembly sequence.",
  "ESP Workbench · 产品实验台": "ESP Workbench · Product Lab",
  "产品实验台": "Product Lab",
  "本地执行": "Runs locally",

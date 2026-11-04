@@ -1,0 +1,126 @@
+{
+  "baseImplementationCommit": "31d9ff5f",
+  "companionFixCommits": [
+    "ac833c8e",
+    "f00d8053"
+  ],
+  "browser": {
+    "fixture": "S007 geometry with test-only declared cover group; no firmware execution",
+    "checks": [
+      "workbench button separates declared model",
+      "actual rendered geometry changes",
+      "public pointer orbit changes the separated model view",
+      "appearance update preserves inspection state",
+      "inspection leaves firmware lifecycle untouched",
+      "inspection absent from scene/share data",
+      "reset view restores assembly",
+      "reset restores original rendered pixels without drift",
+      "repeated public toggles return assembled",
+      "2D hides inspection",
+      "return from 2D is assembled",
+      "product without declarations has no control",
+      "product replacement clears inspection",
+      "external accessory restores assembly and disables inspection",
+      "removing accessories enables an assembled model",
+      "shared embed opens assembled",
+      "embed restores shared appearance",
+      "embedded public button separates model",
+      "embed 390px has no horizontal overflow",
+      "embed reset restores assembly",
+      "no browser page errors"
+    ],
+    "pageErrors": []
+  },
+  "camera": {
+    "fixture": "Two 20×20×2 mm boxes; declared +30 mm and +5000 mm Z viewing offsets; no product or firmware evidence",
+    "checks": [
+      "expanded fixture initially fits 500×450 viewport",
+      "setOrientation reframes expanded parts after 90° Y turn",
+      "public canvas drag changes the model orientation",
+      "public 90° orbit keeps both separated boxes inside the camera",
+      "reset after orbit restores assembled state",
+      "declared 5000 mm offset fits the camera depth range",
+      "assembled reset restores the ordinary camera depth range"
+    ],
+    "extents": {
+      "initial": {
+        "x": 0.6744147327108652,
+        "y": 0.7225493431085046,
+        "zMin": 0.9317631662015131,
+        "zMax": 0.9595664937288769,
+        "far": 3000
+      },
+      "orientation": {
+        "x": 0.6808599879508047,
+        "y": 0.5203190477892965,
+        "zMin": 0.9477732791916689,
+        "zMax": 0.9628345582250333,
+        "far": 3000
+      },
+      "orbit": {
+        "x": 0.680859957290073,
+        "y": 0.5203190364548889,
+        "zMin": 0.9477732813752787,
+        "zMax": 0.9628345605374868,
+        "far": 3000
+      },
+      "maximumOffset": {
+        "x": 0.7555880144166769,
+        "y": 0.4341683096909705,
+        "zMin": 0.9990018222495702,
+        "zMax": 0.9999985496153642,
+        "far": 7437.834002992393
+      }
+    }
+  },
+  "tests": {
+    "command": "node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs tools/platform-model-inspection-test.mjs tools/platform-manufacturer-model-test.mjs",
+    "passed": 11,
+    "failed": 0
+  },
+  "priorBehavior": {
+    "30mmYOrbit90DegreesMaxAbsNdcX": 1.351075041,
+    "5000mmFarPlane": 3000,
+    "5000mmFirstPartCenterNdcZ": 1.0007943
+  },
+  "limitations": [
+    "Browser metadata declarations are UI fixtures, not evidence for the updated S007 model or firmware.",
+    "The camera fixture exposes existing renderer references in the test response only; repository code has no test globals.",
+    "Camera bounds are checked at the default zoom; intentional close-up zoom can crop geometry.",
+    "The initial browser receipt retains its original 20-check run and hashes. This amendment covers the later source and test revisions."
+  ],
+  "cleanup": {
+    "taskBrowserClosedAndAbsent": true,
+    "taskPreviewStoppedAndPortClosed": true
+  },
+  "artifacts": {
+    "web/platform/scene-view.js": {
+      "sha256": "6b720b67feec57bc0fe721a2817c21a9a32a6056a1a3c43e587f289f279c4a3f",
+      "bytes": 30846
+    },
+    "web/platform/model-inspection.js": {
+      "sha256": "34484677940cbdd5d058d600307b8a96a2d512dc54604aca2ef80e1ff12ec8f9",
+      "bytes": 3077
+    },
+    "tools/platform-model-inspection-test.mjs": {
+      "sha256": "6fabdbd4e5cf8a31105a877733d2405fd72c86819e9ef6304cfc03b0d33986a5",
+      "bytes": 9437
+    },
+    "tools/fixtures/model-inspection-browser-check.js": {
+      "sha256": "e5b60dcfcd91da55ebcfea889fd0d5cacea967b4b09a645966dcd4f1d1914abd",
+      "bytes": 6593
+    },
+    "tools/fixtures/model-inspection-camera-check.js": {
+      "sha256": "0212d85b736a0432641e3c82bb927cd3c60ef19586b5caffb692c87a9184a342",
+      "bytes": 5691
+    },
+    "docs/platform/evidence/model-inspection/inspection-workbench-orbit.png": {
+      "sha256": "3ad7f9ae792a27d38a42e9ba91ecb333dd1e1f22a1bd40b18be6dbabd5a06cf5",
+      "bytes": 122068
+    },
+    "docs/platform/evidence/model-inspection/inspection-camera-orbit.png": {
+      "sha256": "1ae4ab6216b8df25aeb4e2e2a5327531ca753b6cd3fad6e944ee0d377f3d65b6",
+      "bytes": 68143
+    }
+  }
+}

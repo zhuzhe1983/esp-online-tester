@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-03T22:11:37.499942+00:00",
+  "status": "pass",
+  "wasmSha256": "bd1c688cff2cbd2ac608761dbe122d0c2346f65ea3d0a6e53d3034ee170ba3ef",
+  "wasmBytes": 5000313,
+  "products": [
+    "m5stack-k138",
+    "m5stack-k138-v11"
+  ],
+  "runs": {
+    "internalSourceBuiltFixture": "Both products passed fresh GPIO0 press/release, product-specific G38 gate, three RGB outputs, four routed PWM channels including zero duty, complete BMI270 configuration/SPI/IMU sample path, INA3221 identity/voltage/NACK, pause/resume, and fresh worker reset.",
+    "officialFactory": "Both exact pinned complete images booted from ROM without stubs. Each had a first initialization, then G0 press at 5.02 guest s and release at 5.18 guest s yielded one fresh RTC_SW_CPU_RST followed by a second sensor/application initialization and Enjoy Flight at 11.2 guest s in the same worker."
+  },
+  "receiptHashes": {
+    "fixture.json": "b996d047fc2ceec7566ce7f36992aa04faf6b8f366210a108ee5248950aa8e53",
+    "fixture-provenance.json": "27d817f8ac4bbd023c824d0023ba6600c81830db48eb34bdc8d5fb4f5d509b89",
+    "factory.json": "0cf9d79259776ba537ccfd512737f9a57ae2c5c1e9fd2e614ba258457cd3c6b9",
+    "factory-probe.mjs": "a783692e16210dd8bd093474e0b2357de8c0cd811612f331ef3f3c04e7d899bc"
+  },
+  "cleanup": {
+    "factoryWorkersCreated": 2,
+    "factoryWorkersTerminated": 2,
+    "fixtureProcessExited": true,
+    "factoryProcessExited": true,
+    "browserOpened": false
+  },
+  "scope": [
+    "Correctness regression only, no builds or production code edits.",
+    "No CPU timing or performance claim.",
+    "No new browser/CORS, human pointer, flight, controller pairing, RF, thrust or physical sensor timing proof.",
+    "Manufacturer firmware bytes remain in temporary local storage and were not copied to the site or Git."
+  ],
+  "privacyReview": {
+    "absoluteUserPathsRetained": false,
+    "processInventoriesRetained": false,
+    "emulatedMacRetained": false,
+    "serialEvidence": "Only selected boot, status and reset lines; no numeric outputs were changed."
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "status": "failed",
+  "checkedAt": "2026-11-03T20:55:28.437902+00:00",
+  "backend": "actual-wasm-worker",
+  "input": "same S012 protocol fixture before changing spi_device_transmit to spi_device_polling_transmit; intermediate progress markers added",
+  "command": "node tools/probe-stamp-c6lora.mjs --build <queued-fixture-build> --timeout-ms 20000",
+  "wasmSha256": "a1c52dfea61793013bc83fb59de7cab7f9a533c7dca31b275fa1979df9550544",
+  "stats": {
+    "t": "stat",
+    "time": 20.02,
+    "insns": 3203232106,
+    "frames": 0,
+    "behind": 0.002216410750002979,
+    "resyncs": 0,
+    "speed": 0.9999845146607983,
+    "cam": 0,
+    "gpio_in": "1ffffff87f77f",
+    "mips": 159.99752234572773
+  },
+  "radio": {
+    "model": "sx1262-lora-digital",
+    "physicalRf": false,
+    "powered": true,
+    "resetHigh": true,
+    "antennaEnabled": true,
+    "busy": false,
+    "mode": 32,
+    "irq": 0,
+    "config": null,
+    "transmitted": [],
+    "txCount": 0,
+    "rxCount": 0,
+    "timeoutCount": 0,
+    "rejectedCommands": 0,
+    "droppedTx": 0,
+    "guestTime": 20.02085716875
+  },
+  "lastGuestMarkers": [
+    "C6LORA_IO_ID a2",
+    "C6LORA_WRONG_ADDRESS NACK",
+    "C6LORA_WRONG_SDA NACK",
+    "C6LORA_RESET_HOLD",
+    "C6LORA_RF_ENABLED",
+    "C6LORA_SPI_INITIALIZED"
+  ],
+  "result": "No C6LORA_WRONG_CS or following marker: first queued SPI transfer did not complete. No radio configuration/TX/RX.",
+  "candidateCause": "Inference from IDF5.5.1 C6 spi_ll.h and spi_reg.h: queue startup uses DMA_INT_SET (+0x44) TRANS_DONE bit12; current shared GpSpi write path does not raise int_raw for this register. No instruction trace was captured.",
+  "limitations": [
+    "Intermediate queued binary SHA256 was not retained before recompilation; reproduce from committed fixture by replacing polling transmit with queued transmit.",
+    "Raw duplicate USB/UART console omitted; numeric samples and relevant UART markers retained."
+  ]
+}

@@ -1661,13 +1661,22 @@
       "summary": "预焊 2.54mm 排针的 ESP32-S3FN8 控制模块，带 USB-C、按键、RGB LED 和 23 路 GPIO。",
       "knowledgeUrl": "./knowledge/m5stack-s007-pin254.json",
       "runtime": {
-        "board": null,
+        "board": "stamps3",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "name": "按键",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
       "interfaces": [
         {
           "id": "gpio",
@@ -1790,14 +1799,11 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
-        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
-        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-        "Official product text says4.6mm while the linked drawing says4.7mm; the conflict is retained, not treated as a known hardware revision.",
-        "Mechanical STEP includes board outline/USB/antenna/screw; it does not provide complete populated PCB placement or copper traces.",
-        "Header XY centers/count/pitch are official footprint facts; metal/body width and vertical extension are photo-informed estimates. Full fitted header height is unverified; module4.7mm depth excludes this added header."
+        "部分板级模型：G0按键、G21单颗WS2812B RMT；按本SKU单独验证客体输入输出。2.54mm排针保留独立机械身份，外接器件、FPC屏、软件GPIO灯时序与模拟供电未实现。",
+        "原厂盖/PCB机械件与螺柱保留，黑色PCB背面贴本型号照片，内侧UNKNOWN可分开查看。9+6排针位置来自官方封装，塑料体/短针端采用标准参考，焊接端另作估算；USB、铜柱唇边和完整电子布局仍属partial。",
+        "官网4.6mm与原厂机械装配4.750002mm厚度不符，排针还会增加整体高度；保留差异，不缩放源几何。",
+        "照片与标准排针只约束外观，不能证明工厂零件型号、焊点、插接公差或完整PCB布局；散装丝印贴纸未默认贴装。",
+        "官方UIFlow2 v2.5.4仍为trial；Burner要求验证，GitHub地址受CORS限制且完整应用启动未证实，不能继承旧版本运行结论。"
       ],
       "sources": [
         {
@@ -1819,7 +1825,11 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-s007-uiflow2",
+      "firmwareReferenceIds": [
+        "m5stack-s007-official-reference"
+      ]
     },
     {
       "id": "m5stack-s007-pin127",
@@ -1831,17 +1841,20 @@
       "chip": "esp32s3",
       "module": "ESP32-S3FN8",
       "runtime": {
-        "board": null,
+        "board": "stamps3",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [
         {
           "id": "button",
-          "name": "Programmable physical button",
-          "type": "button"
+          "name": "按键",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         }
       ],
       "interfaces": [
@@ -1969,8 +1982,9 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "部分板级模型：G0按键、G21单颗WS2812B RMT；按本SKU单独验证客体输入输出。1.27mm排针保留独立机械身份，外接器件、FPC屏、软件GPIO灯时序与模拟供电未实现。",
+        "外观保留原厂盖/PCB机械件，并按本型号官方封装引用补 17+11 个 1.27mm 标准排针；黑色 PCB 背面贴官方照片，内侧 UNKNOWN 可分开查看。排针方向/尺寸、铜柱唇边及 USB 细节仍属 partial，未声称制造精度。",
+        "官方UIFlow2 v2.5.4仍为trial；Burner要求验证，GitHub地址受CORS限制且完整应用启动未证实，不能继承旧版本运行结论。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-s007-pin127.json",
       "model": {
@@ -1990,7 +2004,11 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-s007-uiflow2",
+      "firmwareReferenceIds": [
+        "m5stack-s007-official-reference"
+      ]
     },
     {
       "id": "m5stack-k146",
@@ -2111,10 +2129,10 @@
       "summary": "以 Stamp-S3A 为主控的 DIN 导轨工业控制器，配备 8 路隔离输入、4 路继电器、CAN/RS485 与小尺寸彩屏。",
       "knowledgeUrl": "./knowledge/m5stack-k141.json",
       "runtime": {
-        "board": null,
+        "board": "stamplc",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": {
         "width": 240,
@@ -2128,19 +2146,28 @@
           "id": "button-a",
           "type": "button",
           "controller": "PI4IOE5V6408",
-          "controllerPin": "P2"
+          "controllerPin": "P2",
+          "transport": "board",
+          "name": "A",
+          "defaultKeyCode": "KeyA"
         },
         {
           "id": "button-b",
           "type": "button",
           "controller": "PI4IOE5V6408",
-          "controllerPin": "P1"
+          "controllerPin": "P1",
+          "transport": "board",
+          "name": "B",
+          "defaultKeyCode": "KeyB"
         },
         {
           "id": "button-c",
           "type": "button",
           "controller": "PI4IOE5V6408",
-          "controllerPin": "P0"
+          "controllerPin": "P0",
+          "transport": "board",
+          "name": "C",
+          "defaultKeyCode": "KeyC"
         }
       ],
       "interfaces": [
@@ -2205,14 +2232,10 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
-        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
-        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-        "External screw heads, terminal block exteriors and Grove mouths are now separate image-measurement parts; their unseen internals and side CAN/RS485 connector details remain unverified.",
-        "Back shell is untextured manufacturer CAD; small metal screw heads/inserts and underside detail remain incomplete. Bottom relay-label extent differs between photo and shell CAD and is not a passed dimension claim.",
-        "Paper/optical projection is isolated from molded shell; small printed markings and hidden hardware not supplied by source CAD may remain incomplete."
+        "部分板级模型：ST7789V2 显示、PI4IO 三按键/二值 RGB/背光，以及 AW9523 继电器 GPIO 驱动和读回；八路光耦输入固定为未接入。实际继电器触点/负载、传感器、RTC、SD、CAN、RS485、蜂鸣器、物理电源与网络未模拟。",
+        "原厂外壳、键帽和导光件保持原始几何；Stamp 纸贴与四组继电器标签已按各自承载面校正。后盖补齐照片确认的四颗螺丝头与四个 M3 铜套可见边缘，外形尺寸为明确标注的近似。",
+        "主板及 Stamp 小板仍保留 UNKNOWN；黑色 Stamp 板边有照片依据，隐藏 PCB 布局、PIN1.27 排针装配及紧固件内部未编造。",
+        "端子、Grove 与 USB 插口为有来源的外观近似，CAN/RS485 等侧面细节尚不完整；未实机或光学标定。"
       ],
       "sources": [
         {
@@ -2973,15 +2996,13 @@
         "basis": "official"
       },
       "limitations": [
-        "部分板级模型：G0 按键和 G21 单颗 WS2812B RMT 输出；不模拟 GPIO 软件波形灯驱动、FPC 屏幕、模拟电源或物理网络。官方 UIFlow2 启动蓝灯不代表全部功能兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer STL is a single connected heat-resistant shield; no separate PCB assembly or component identities can be certified from its connectivity.",
-        "Different official photographs show optional heat shield and pin headers. Those alternatives are not silently combined into this source configuration.",
-        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
-        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
-        "Browser inspection identifies the connected STL as a heat-resistant shield; actual populated PCB geometry and edge pad assignments remain unknown.",
-        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。",
-        "Officially linked mechanical STEP has board outline, USB, antenna and screw but lacks a full populated PCB. Exact component shapes retained; neutral UNKNOWN label remains on unverified board, no chip layout invented."
+        "部分板级模型：G0按键和G21单颗WS2812B RMT已用真实客体测试。GitHub UIFlow2 v2.5.4完整应用启动未证实；旧v2.5.3蓝灯为历史证据。不模拟软件GPIO灯时序、FPC屏、模拟电源或物理网络。",
+        "保留厂家机械 STEP 中的 PCB 外形、螺柱、螺丝、USB 和天线；并非完整电子元件布局。",
+        "外露背面采用有边界的官方照片，内侧未知区域保留 UNKNOWN，可用“分开查看”检查；PCB 和纸贴不随外壳改色。",
+        "原始文档照片为 800×800；未凭空补细节。USB、螺柱表面及镀孔仍有简化，未做实物材质标定。",
+        "原版默认保留未焊排针、未贴针脚纸贴的装配；套件里的可选零件不自动视为已安装。",
+        "官方 24 mm 长度与含 USB 的 CAD 25.948 mm 范围不同，尺寸偏差保留，未缩放掩盖。",
+        "厂家 CAD 与照片分别保留授权；轮廓核对不代表整机制造精度或实机兼容验证。"
       ],
       "sources": [
         {
@@ -3157,14 +3178,11 @@
         "basis": "official"
       },
       "limitations": [
-        "部分板级模型：G0 按键、G21 WS2812B RMT、G38 数字灯电源；网络、模拟电源、软件 GPIO 灯驱动和 FPC 屏幕未模拟。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
-        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-        "Exact SKU source STL is a24mm cover, not the26mm USB-inclusive module. The unmodeled board and connectors must not be confused with full mechanical coverage.",
-        "Old Stamp-S3 KiCad PCB STEP not adopted: S3A explicitly changes antenna and boot switch.",
-        "USB mouth is a generic dimension/photo-informed visual connector; body, solder joints and PCB routing unknown.",
-        "Visible USB body/antenna face are separately marked photo-informed estimates. PCB remains neutral UNKNOWN, with no invented components/traces."
+        "部分板级模型：G0按键、G21 WS2812B RMT、G38数字灯电源已用真实客体测试；网络、模拟电源、软件GPIO灯驱动和FPC屏未模拟。v2.5.3蓝灯仅为历史证据，v2.5.4完整应用启动未证实。",
+        "厂家原生外罩保留；S3A 黑色 PCB 背面采用该型号1200px官方照片，内侧 UNKNOWN 可通过分开查看读取，照片不代表电气布局。",
+        "补齐一颗 M2 螺丝、黄铜安装柱及 USB 组件；采用官方旧 S3 的机械件作可见形状参考，已按 S3A 自身图纸和照片核对位置，隐藏配合与供应商型号仍未知。",
+        "新版 U 形天线仅按照片还原可见面；未套用旧 S3 主板或天线。裸款不安装随附的贴纸与可选排针。",
+        "尺寸、相机对齐、材质、来源和未验证项见模型报告；没有实物测量。"
       ],
       "sources": [
         {
@@ -3190,6 +3208,203 @@
       }
     },
     {
+      "id": "m5stack-s007-pin127-v033",
+      "name": "M5Stack Stamp-S3A PIN1.27 · S007-PIN127-V033",
+      "manufacturer": "M5Stack",
+      "sku": "S007-PIN127-V033",
+      "hardwareRevision": "V033",
+      "chip": "esp32s3",
+      "module": "ESP32-S3FN8",
+      "summary": "Stamp-S3A 的1.27mm预焊SMT排针版本，8MB Flash；G0按键、G21 RGB及G38灯电源按本SKU独立保留。",
+      "runtime": {
+        "board": "stamps3a",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "display": null,
+      "controls": [
+        {
+          "id": "button",
+          "name": "按键",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "pins",
+          "type": "pin-header",
+          "name": "1.27 mm pre-soldered SMT headers",
+          "external": true,
+          "pitchMm": 1.27,
+          "pins": [
+            {
+              "name": "G0",
+              "gpio": 0
+            },
+            {
+              "name": "G1",
+              "gpio": 1
+            },
+            {
+              "name": "G2",
+              "gpio": 2
+            },
+            {
+              "name": "G3",
+              "gpio": 3
+            },
+            {
+              "name": "G4",
+              "gpio": 4
+            },
+            {
+              "name": "G5",
+              "gpio": 5
+            },
+            {
+              "name": "G6",
+              "gpio": 6
+            },
+            {
+              "name": "G7",
+              "gpio": 7
+            },
+            {
+              "name": "G8",
+              "gpio": 8
+            },
+            {
+              "name": "G9",
+              "gpio": 9
+            },
+            {
+              "name": "G10",
+              "gpio": 10
+            },
+            {
+              "name": "G11",
+              "gpio": 11
+            },
+            {
+              "name": "G12",
+              "gpio": 12
+            },
+            {
+              "name": "G13",
+              "gpio": 13
+            },
+            {
+              "name": "G14",
+              "gpio": 14
+            },
+            {
+              "name": "G15",
+              "gpio": 15
+            },
+            {
+              "name": "G39",
+              "gpio": 39
+            },
+            {
+              "name": "G40",
+              "gpio": 40
+            },
+            {
+              "name": "G41",
+              "gpio": 41
+            },
+            {
+              "name": "G42",
+              "gpio": 42
+            },
+            {
+              "name": "G43",
+              "gpio": 43
+            },
+            {
+              "name": "G44",
+              "gpio": 44
+            },
+            {
+              "name": "G46",
+              "gpio": 46
+            }
+          ]
+        },
+        {
+          "id": "lcd-fpc",
+          "type": "FPC",
+          "name": "0.5 mm 12P / 8P LCD interface",
+          "external": true,
+          "pins": []
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s007-pin127-v033/model.json",
+        "status": "partial"
+      },
+      "dimensions": {
+        "width": 18,
+        "height": 25.95,
+        "depth": 9.7,
+        "unit": "mm",
+        "sourceId": "dimension-drawing-s3a-pin127",
+        "basis": "official"
+      },
+      "limitations": [
+        "部分板级模型：G0按键、G21单颗WS2812B RMT、G38高电平数字灯电源；外接器件、FPC屏、软件GPIO灯时序与模拟供电未实现。",
+        "模型保留原厂S3A外壳；本SKU黑色裸PCB用高清官方照片，内侧UNKNOWN可分开查看；USB与M2固定件为明确标注的同系列机械参考。",
+        "1.27mm排针17+11，标准针座体保留原始尺寸；针尾按本SKU整体9.7mm图纸另行建立，型号、针尖及隐藏焊接结构未验证。",
+        "官方表格4.7mm是模块本体，图纸9.7mm包含预焊排针；内部PCB布局、实际公差与完整物理装配仍未知。",
+        "官方UIFlow2 v2.5.4仍为trial；Burner要求验证，GitHub地址受CORS限制且完整应用启动未证实，不能继承旧版本运行结论。"
+      ],
+      "sources": [
+        {
+          "id": "official-docs",
+          "title": "Stamp-S3A PIN1.27 exact SKU, specifications and tutorials",
+          "url": "https://docs.m5stack.com/en/core/Stamp-S3A_PIN127",
+          "resolvedUrl": "https://docs.m5stack.com/en/core/Stamp-S3A_PIN1.27",
+          "checkedAt": "2026-11-03",
+          "fetchedAt": "2026-11-03T21:04:41.158786+00:00",
+          "bytes": 139200,
+          "sha256": "691358f0332696da0f41d71e2373f19cb34d2d0bda37c067c3adb3ba3c9669b0"
+        },
+        {
+          "title": "Official Stamp-S3A 1.27 header product",
+          "url": "https://shop.m5stack.com/products/m5stamps3a-with-1-27-header-pin",
+          "checkedAt": "2026-11-03"
+        },
+        {
+          "id": "dimension-drawing-s3a-pin127",
+          "title": "Exact S007-PIN127-V033 dimension-drawing-s3a-pin127",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/686/STAMPS3A-127pin_page_01.png",
+          "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/686/STAMPS3A-127pin_page_01.png",
+          "fetchedAt": "2026-11-03T21:50:45Z",
+          "bytes": 414024,
+          "sha256": "ecbb4ccddbc2046ff7992a322185d52b920f0821bbb957966857c0fdeaeedbb1",
+          "checkedAt": "2026-11-03"
+        }
+      ],
+      "defaultFirmwareId": "m5stack-s007-v033-uiflow2",
+      "family": {
+        "id": "m5-stamp",
+        "name": "Stamp 系列"
+      },
+      "knowledgeUrl": "./knowledge/m5stack-s007-pin127-v033.json"
+    },
+    {
       "id": "m5stack-s007-pin254-v033",
       "name": "M5Stack Stamp-S3A PIN2.54",
       "manufacturer": "M5Stack",
@@ -3199,17 +3414,20 @@
       "chip": "esp32s3",
       "module": "ESP32-S3FN8",
       "runtime": {
-        "board": null,
+        "board": "stamps3a",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [
         {
           "id": "button",
-          "name": "Documented physical button",
-          "type": "button"
+          "name": "按键",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         }
       ],
       "interfaces": [],
@@ -3218,11 +3436,24 @@
           "title": "Stamp-S3A PIN2.54",
           "url": "https://docs.m5stack.com/en/core/Stamp-S3A_PIN2.54",
           "checkedAt": "2026-10-26"
+        },
+        {
+          "id": "dimension-drawing-2a8c60ede2",
+          "title": "Exact S007-PIN254-V033 dimension-drawing-2a8c60ede2",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1181/stamps3a-254_page_01.png",
+          "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1181/stamps3a-254_page_01.png",
+          "fetchedAt": "2026-11-03T21:57:44Z",
+          "bytes": 731897,
+          "sha256": "5dfa76fd9ff5d578ae378f62b0f5982637982375f799290101aab9f7dc8f5138",
+          "checkedAt": "2026-11-03"
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "部分板级模型：G0按键、G21单颗WS2812B RMT、G38高电平数字灯电源；按本SKU单独验证客体输入输出。2.54mm排针保留独立机械身份，外接器件、FPC屏、软件GPIO灯时序与模拟供电未实现。",
+        "保留本SKU原厂外壳网格；黑色PCB背面使用独立高清实拍，内侧UNKNOWN可分开查看；USB及M2固定件为注明来源的机械参考件。",
+        "2.54mm排针9+6，标准针座体保持原始尺寸；可见针尾按本SKU11.24mm含针总厚度建立。内部布局、针尖/焊接和实际装配公差未知。",
+        "官方图库USB端面照的薄针座与两张侧照/图纸不一致，保留冲突而不用于针高验收；商品表4.7mm仅为模块本体。",
+        "官方UIFlow2 v2.5.4仍为trial；Burner要求验证，GitHub地址受CORS限制且完整应用启动未证实，不能继承旧版本运行结论。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-s007-pin254-v033.json",
       "model": {
@@ -3232,16 +3463,17 @@
       },
       "dimensions": {
         "width": 18,
-        "height": 24,
-        "depth": 4.7,
-        "sourceId": "dimension-drawing-2a8c60ede2",
+        "height": 25.93,
+        "depth": 11.24,
         "unit": "mm",
+        "sourceId": "dimension-drawing-2a8c60ede2",
         "basis": "official"
       },
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-s007-v033-uiflow2"
     },
     {
       "id": "m5stack-k122",
@@ -3253,18 +3485,20 @@
       "chip": "esp32c3",
       "module": "ESP32-C3",
       "runtime": {
-        "board": null,
+        "board": "stampc3u",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [
         {
-          "id": "button-user",
-          "name": "User button",
+          "id": "button",
+          "name": "Button",
           "type": "button",
-          "pin": 9
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         }
       ],
       "interfaces": [
@@ -3284,8 +3518,11 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "套装中的 Stamp-C3U 采用独立 stampc3u 板级模型，部分支持 G9 用户键和 G2 RGB RMT；EN、原生 USB、模拟电源和物理网络未验证，排针/Grove 散件未电气连接。",
+        "厂家 K122 外盖保留原始尺寸；黑色 PCB 背面使用 K122 自有官方照片，盖内 UNKNOWN 可分开查看。",
+        "补齐中心 M2×4 螺丝、黄铜螺柱、独立纸贴承载面及孔洞；隐藏螺纹和完整板级 CAD 未验证。",
+        "套件排针、HY2.0 插座和扳手保持散件，未假定已焊接。",
+        "纸贴下 RGB 狭缝的透光效果未知，未用发光贴图伪造灯光。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k122.json",
       "model": {
@@ -3304,7 +3541,10 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "firmwareReferenceIds": [
+        "m5stack-stampc3-official-source"
+      ]
     },
     {
       "id": "m5stack-k056",
@@ -3317,17 +3557,20 @@
       "summary": "ESP32-C3 控制模块套装，具有 USB-C 下载、按键、RGB LED、3D 天线与 2.54mm GPIO 扩展。",
       "knowledgeUrl": "./knowledge/m5stack-k056.json",
       "runtime": {
-        "board": null,
+        "board": "stampc3",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [
         {
-          "id": "button-a",
+          "id": "button",
+          "name": "Button",
           "type": "button",
-          "pin": 3
+          "pin": 3,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         }
       ],
       "interfaces": [
@@ -3411,15 +3654,11 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
-        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
-        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-        "Manufacturer STL is the shell only. PCB, USB connector and antenna details are absent; neutral UNKNOWN board replaces none of the unavailable components.",
-        "K056 is a Mate kit; loose headers/accessories are not shown as soldered parts.",
-        "Official4.6mm product depth differs from4.5mm cover; measured gap retained.",
-        "Visible USB body/antenna face are separately marked photo-informed estimates. PCB remains neutral UNKNOWN, with no invented components/traces."
+        "套装包含相同 Stamp-C3 核心模块；部分支持 G3 用户键和 G2 SK6812 RMT。附带排针/Grove 散件不自动连接；EN、USB 桥、模拟电源和物理网络未验证。",
+        "保留厂家 K056 外盖；套件含同款 Stamp-C3，PCB 背面照片按共享模块来源注明，盖内正面保留 UNKNOWN。",
+        "K056 自有贴纸另设薄纸支撑，孔洞遮罩与中心螺丝、黄铜螺柱对齐；隐藏螺纹未知。",
+        "照片原始 PCB 分辨率有限；外观、孔位和材料检查不能证明完整内部 CAD 或固件兼容。",
+        "排针、HY2.0 插座和扳手是散件，模型未把它们推断为已安装。"
       ],
       "sources": [
         {
@@ -3441,7 +3680,10 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "firmwareReferenceIds": [
+        "m5stack-stampc3-official-source"
+      ]
     },
     {
       "id": "m5stack-k051",
@@ -3453,10 +3695,10 @@
       "chip": "esp32",
       "module": "ESP32-PICO-D4",
       "runtime": {
-        "board": null,
+        "board": "stamppico",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [
@@ -3464,7 +3706,9 @@
           "id": "button",
           "name": "Button",
           "type": "button",
-          "pin": 39
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         }
       ],
       "interfaces": [],
@@ -3476,8 +3720,11 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "Mate 含相同 Stamp-Pico 模块，部分支持 G39 用户键与 G27 GRB RMT；散装排针/Grove 未电气连接。官方 GitHub UIFlow2 v2.5.4 启动缺少 M5Things，仍为 trial；EN、下载器、模拟电源和网络未验证。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。",
+        "K051 保留未贴纸盖板外观；套件排针、Grove 插座、内六角匙及纸贴按散件记录，未声称预装。",
+        "黑色 PCB 背面使用该 SKU 官方照片，通孔与可见天线轮廓按尺寸图/照片补充；内部元件面仍为 UNKNOWN。",
+        "中心 M2×4 紧固件已补齐；螺丝细节、背面环厚度、天线隐藏折脚未做制造级还原。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k051.json",
       "model": {
@@ -3489,14 +3736,15 @@
         "width": 18,
         "height": 24,
         "depth": 4.6,
-        "sourceId": "dimension-drawing-290985ce46",
+        "sourceId": "product-photo-290985ce46",
         "unit": "mm",
         "basis": "official"
       },
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-c050-b-uiflow2"
     },
     {
       "id": "m5stack-k051-b",
@@ -3509,13 +3757,22 @@
       "summary": "ESP32-PICO-D4 模块 DIY 套件，包含下载器和连接配件；与 C050-B 五件装分开维护。",
       "knowledgeUrl": "./knowledge/m5stack-k051-b.json",
       "runtime": {
-        "board": null,
+        "board": "stamppico",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "name": "Button",
+          "type": "button",
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
       "interfaces": [],
       "model": {
         "type": "manufacturer-cad",
@@ -3531,16 +3788,15 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "DIY Kit 的 Stamp-Pico 模块部分支持 G39 用户键与 G27 GRB RMT；附带下载器、排针和 Grove 不自动视为接线。官方 GitHub UIFlow2 v2.5.4 启动缺少 M5Things，仍为 trial；EN、电源模拟和物理网络未验证。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
         "Model covers the Stamp-Pico module only; downloader, headers and loose kit accessories have no matching assembly CAD in this directory.",
         "CAD thickness 4.4 mm differs from documented product 4.6 mm; retained as a failure rather than stretched.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
-        "Browser inspection identifies the connected STL as a heat-resistant shield; actual populated PCB geometry and edge pad assignments remain unknown.",
-        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。",
-        "Heat-resistant printed film uses an independently recorded four-corner perspective rectification; oblique-source uncertainty remains. Central fastening screw geometry is still absent, not painted into the film."
+        "K051-B 纸贴使用该 SKU 自己的官方照片，独立承载面保留真实跨槽纸面并避开中心紧固件。",
+        "黑色 PCB 背面照片、通孔和中心 M2×4 螺丝已补充；内部仍为 UNKNOWN，纸厚及隐藏紧固件细节有估算。",
+        "下载器、排针、Grove 插座及其他套件散件未声称预装或完整建模。"
       ],
       "sources": [
         {
@@ -3562,7 +3818,8 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-c050-b-uiflow2"
     },
     {
       "id": "m5stack-s015",
@@ -3575,13 +3832,21 @@
       "summary": "ESP32-S3-PICO-1-N8R8 控制模块，配有电池管理、电池接口、BTB 扩展和 FPC 天线接口；此 SKU 不焊排针。",
       "knowledgeUrl": "./knowledge/m5stack-s015.json",
       "runtime": {
-        "board": null,
+        "board": "stamps3bat",
         "flashMb": 8,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "power",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "name": "PWR（状态读取）"
+        }
+      ],
       "interfaces": [
         {
           "id": "battery",
@@ -3616,16 +3881,10 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
-        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
-        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-        "STL is the cover only,17.7556×29.6240×5.5mm; the official full module18×29.8mm envelope is larger. This difference is not removed by scaling.",
-        "USB and battery receptacles/populated underside are absent from the mechanical source; generic USB mouth is explicitly approximate.",
-        "S015 has no soldered DIP headers; it is distinct from S015-DIP.",
-        "Visible USB body/antenna face are separately marked photo-informed estimates. PCB remains neutral UNKNOWN, with no invented components/traces.",
-        "Paper/optical projection is isolated from molded shell; small printed markings and hidden hardware not supplied by source CAD may remain incomplete."
+        "部分板级模型：SDA48/SCL47 上的 M5PM1 寄存器、GPIO0 NeoPixel RGB565 刷新与 LED 电源；PWR 仅支持固件禁用自动单击复位及双击关机后的状态轮询。物理关机、复位、下载模式、模拟充电及网络未模拟。",
+        "模型保留厂家外壳 STL，并加入 KiCad 内嵌的 PCB 装配 STEP；裸板背面照片仅补丝印，孔位及 USB-C、电池座、BTB 保留原厂几何。",
+        "外壳原始尺寸未缩放；整机与 PCB 尺寸分别核验。FPC 天线平面外形依据官方拆解视频补齐，其弯折、精确厚度及射频屏蔽罩仍未精确建模。",
+        "官方视频确认贴纸覆盖内部卡扣释放槽；这处实物已有的跨槽保留。贴纸外缘、按键及插口分别遮罩；没有凭空添加螺丝或螺柱。"
       ],
       "sources": [
         {
@@ -3647,7 +3906,8 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-s015-uiflow2"
     },
     {
       "id": "m5stack-s015-dip",
@@ -3659,17 +3919,19 @@
       "chip": "esp32s3",
       "module": "ESP32-S3-PICO-1-N8R8",
       "runtime": {
-        "board": null,
+        "board": "stamps3bat",
         "flashMb": 8,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial"
       },
       "display": null,
       "controls": [
         {
-          "id": "button",
-          "name": "Documented physical button",
-          "type": "button"
+          "id": "power",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "name": "PWR（状态读取）"
         }
       ],
       "interfaces": [
@@ -3766,8 +4028,8 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "部分板级模型：SDA48/SCL47 上的 M5PM1 寄存器、GPIO0 NeoPixel RGB565 刷新与 LED 电源；PWR 仅支持固件禁用自动单击复位及双击关机后的状态轮询。物理关机、复位、下载模式、模拟充电及网络未模拟。",
+        "保留官方外壳和共用原生 PCB STEP，补齐 DIP 纸贴及黑色裸板照片；排针节距与整机高度有图纸依据，塑料座和针脚截面为明确标注的近似。FPC 弯折、RF 屏蔽罩及制造细节未完整复原。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-s015-dip.json",
       "model": {
@@ -3786,7 +4048,8 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-s015-dip-uiflow2"
     },
     {
       "id": "m5stack-k134",
@@ -10263,13 +10526,22 @@
       "summary": "ESP32-C3 4MB模块，13路GPIO与USB-C；C056-B官方包装为多模块组合，模型展示其中单个模块，贴纸与可拆塑料盖分开。",
       "knowledgeUrl": "./knowledge/m5stack-c056-b.json",
       "runtime": {
-        "board": null,
+        "board": "stampc3",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "name": "Button",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
       "interfaces": [],
       "model": {
         "type": "manufacturer-cad",
@@ -10285,12 +10557,11 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
-        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
-        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-        "Source STL is removable cover only, not populated board. Actual documented heat-resistant film is separate from cover; no PCB photo substituted for CAD."
+        "部分板级模型：G3 用户键与 G2 单颗 SK6812 的 RMT 输出；不模拟 EN/USB 桥、软件 GPIO 灯时序、模拟电源或物理网络。官方示例只有源码，尚未找到完整出厂固件。",
+        "保留厂家外盖原始尺寸；PCB 正面布局未知，拆开后显示 UNKNOWN。",
+        "外露背面使用该 SKU 官方照片；原图中 PCB 像素较少，放大不能补出细节。",
+        "已补齐一枚中心内六角沉头螺丝和可见黄铜螺柱；隐藏螺纹与内部结构未建模。",
+        "独立薄纸面支撑贴纸，边界和中心孔已遮罩；包装数量及可选排针不表示默认安装。"
       ],
       "sources": [
         {
@@ -10312,7 +10583,10 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "firmwareReferenceIds": [
+        "m5stack-stampc3-official-source"
+      ]
     },
     {
       "id": "m5stack-c122-b",
@@ -10324,10 +10598,10 @@
       "chip": "esp32c3",
       "module": "ESP32-C3",
       "runtime": {
-        "board": null,
+        "board": "stampc3u",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [
@@ -10335,7 +10609,9 @@
           "id": "button",
           "name": "Button",
           "type": "button",
-          "pin": 9
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         }
       ],
       "interfaces": [
@@ -10355,8 +10631,11 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "部分板级模型：G9 用户键和 G2 SK6812 RMT；EN、原生 USB 传输、模拟电源、软件 GPIO 灯时序和物理网络未验证。官方示例只有源码，不冒充完整出厂固件。",
+        "厂家仅提供外盖 CAD；黑色 PCB 背面采用 C3U 自有照片，盖内保留 UNKNOWN，可通过分开查看检查。",
+        "中心螺丝、黄铜螺柱及纸贴承载面已补齐；隐藏螺纹和完整 PCB 布局未知。",
+        "官方 PCB 链接指向 C3 目录，未据此冒充 C3U 完整板级模型。",
+        "C122-B 五件装展示单个模块；未推断已安装排针。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-c122-b.json",
       "model": {
@@ -10375,7 +10654,10 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "firmwareReferenceIds": [
+        "m5stack-stampc3-official-source"
+      ]
     },
     {
       "id": "m5stack-c050-b",
@@ -10388,13 +10670,22 @@
       "summary": "ESP32-PICO-D4 Stamp 核心模块五件装；与含下载器的 K051-B DIY Kit 分开维护。",
       "knowledgeUrl": "./knowledge/m5stack-c050-b.json",
       "runtime": {
-        "board": null,
+        "board": "stamppico",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "name": "Button",
+          "type": "button",
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        }
+      ],
       "interfaces": [],
       "model": {
         "type": "manufacturer-cad",
@@ -10410,17 +10701,16 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "部分板级模型：G39 用户键与 G27 SK6812 的 GRB RMT 输出；EN、下载器、模拟电源、软件 GPIO 灯时序和物理网络未验证。固件保持 trial；旧 Arduino RGB 灯序配置与现行 UIFlow2 GRB 不同。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
         "View displays one module, not all five loose units in the package.",
         "Same module source geometry as DIY kit does not merge the SKU identity, package weight or included accessories.",
         "CAD thickness 4.4 mm differs from documented 4.6 mm.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
-        "Browser inspection identifies the connected STL as a heat-resistant shield; actual populated PCB geometry and edge pad assignments remain unknown.",
-        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。",
-        "Heat-resistant printed film uses an independently recorded four-corner perspective rectification; oblique-source uncertainty remains. Central fastening screw geometry is still absent, not painted into the film."
+        "黑色裸露 PCB 背面采用该 SKU 官方照片；内部仍为 UNKNOWN，未声称完整板级 CAD。",
+        "中心 M2×4 螺丝、薄纸贴承载面和可见背面金属环已补充；纸厚、紧固件细节及隐藏啮合仍有估算。",
+        "贴纸保留照片中的跨槽纸面，并避开螺丝孔；外观与装配仍为部分验证。"
       ],
       "sources": [
         {
@@ -10442,7 +10732,8 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
-      }
+      },
+      "defaultFirmwareId": "m5stack-c050-b-uiflow2"
     },
     {
       "id": "m5stack-s016",
@@ -10452,13 +10743,13 @@
       "hardwareRevision": "unspecified",
       "chip": "esp32c5",
       "module": "ESP32-C5HF4",
-      "summary": "ESP32-C5HF4 双频Wi-Fi6模块。模型来自官方KiCad封装内嵌STEP，保留真实USB开放曲面和已装配电子元件；RF屏蔽盖尚未包含。",
+      "summary": "ESP32-C5HF4 双频 Wi-Fi 6 模块。保留官方 KiCad 内嵌的真实 PCB 与元件，按实物照片补充带 IPEX 缺口的 RF 屏蔽罩、裸板颜色及标识。 可直接运行 SRAM 裸机应用；完整原厂固件启动尚未实现。",
       "knowledgeUrl": "./knowledge/m5stack-s016.json",
       "runtime": {
-        "board": null,
+        "board": "stamp-c5",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [],
@@ -10477,12 +10768,13 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer populated mechanical STEP retained; CPU/board/peripheral runtime unavailable.",
-        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
-        "Manufacturer embedded STEP has no RF shield cover shown in current official shielded photo. Unshielded official photo is also retained; no shield guessed from a generic box.",
-        "PCB silk text is absent; manufacturer STEP colors are visual CAD hints, not calibrated physical materials."
+        "当前仅支持 ESP32-C5 rev 1.0 的 SRAM app-direct：逻辑 UART0、GPIO 与板载 G28 蓝灯；不是 ROM、Flash/MMU 或 ESP-IDF 启动。",
+        "复位重新载入同一 SRAM 应用；无线、USB、充电控制、模拟供电、PSRAM 和外接设备未实现。",
+        "官方 UIFlow2 尚未验证且不属于该 SRAM 加载范围；内部裸机测试不能代表原厂固件兼容。",
+        "保留官方 KiCad 内嵌 STEP 全部 301 个原生组件及 USB 开放曲面，屏蔽罩下方仍有真实 PCB 和元件。",
+        "按官方照片补充带 IPEX 缺口的金属屏蔽罩与其标识；罩体高度、壁厚和隐藏卡扣为估算，未作制造精度验证。",
+        "红色裸板照片限定在真实板面，USB 与 IPEX 材质按照片区分。S016 背面为裸 FPC 焊盘，未按冲突侧图添加插座。",
+        "尺寸及正反面轮廓通过；侧图存在装配差异，仅定性对照。外观检查不代表固件兼容。"
       ],
       "sources": [
         {
@@ -10505,6 +10797,71 @@
         "id": "m5-stamp",
         "name": "Stamp 系列"
       }
+    },
+    {
+      "id": "m5stack-s016-dip",
+      "name": "M5Stack Stamp-C5 DIP",
+      "manufacturer": "M5Stack",
+      "sku": "S016-DIP",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "module": "ESP32-C5HF4",
+      "summary": "独立 S016-DIP 型号，FPC 座出厂已焊。此模型展示官方照片中的排针装配示例；两条 7P 排针随盒散装，不能据此认定出厂已焊。 可直接运行 SRAM 裸机应用；完整原厂固件启动尚未实现。",
+      "knowledgeUrl": "./knowledge/m5stack-s016-dip.json",
+      "runtime": {
+        "board": "stamp-c5-dip",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "display": null,
+      "controls": [],
+      "interfaces": [],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s016-dip/model.json",
+        "status": "partial"
+      },
+      "dimensions": {
+        "width": 17.6,
+        "height": 19.1,
+        "depth": 3.4,
+        "unit": "mm",
+        "sourceId": "dimension-drawing-d226a4e43f",
+        "basis": "official"
+      },
+      "limitations": [
+        "当前仅支持 ESP32-C5 rev 1.0 的 SRAM app-direct：逻辑 UART0、GPIO 与板载 G28 蓝灯；不是 ROM、Flash/MMU 或 ESP-IDF 启动。",
+        "复位重新载入同一 SRAM 应用；无线、USB、充电控制、模拟供电、PSRAM 和外接设备未实现。",
+        "官方 UIFlow2 尚未验证且不属于该 SRAM 加载范围；内部裸机测试不能代表原厂固件兼容。",
+        "模型展示随盒散装排针的用户装配示例；FPC 座出厂已焊，排针不能据此认定出厂已焊。",
+        "官方 17.6×19.1×3.4 mm 为模块本体尺寸；含排针示例约17.95×19.06×10.06 mm，属于照片估算。",
+        "保留官方 301 个原生组件；屏蔽罩、FPC 与排针补件均记录照片依据及未测量部分。"
+      ],
+      "sources": [
+        {
+          "id": "official-docs",
+          "title": "Stamp-C5 DIP official product documentation",
+          "url": "https://docs.m5stack.com/en/core/Stamp-C5_DIP",
+          "resolvedUrl": "https://docs.m5stack.com/en/core/Stamp-C5_DIP",
+          "fetchedAt": "2026-11-03T21:14:18.446455+00:00",
+          "mediaType": "text/html; charset=UTF-8",
+          "bytes": 138358,
+          "sha256": "caaf9f0babe82004e96f537b1955047307a15a1fc214f87d6720ad4a7a907fa0",
+          "status": "fetched",
+          "kind": "official-product-document",
+          "archiveName": "official-docs.html",
+          "checkedAt": "2026-11-03"
+        }
+      ],
+      "family": {
+        "id": "m5-stamp",
+        "name": "Stamp 系列"
+      },
+      "firmwareReferenceIds": [
+        "m5stack-s016-dip-uiflow2"
+      ],
+      "defaultFirmwareId": "m5stack-s016-dip-uiflow2"
     },
     {
       "id": "m5stack-k151",
@@ -10663,13 +11020,13 @@
       "name": "M5Stack Stamp-P4",
       "manufacturer": "M5Stack",
       "sku": "S013",
-      "summary": "ESP32-P4 微型模块，16MB Flash、32MB PSRAM，提供 USB、MIPI 与扩展引脚；此模型使用官方 footprint 内嵌的板级 STEP，P4 运行内核尚未接入。",
+      "summary": "ESP32-P4 微型模块，16MB Flash、32MB PSRAM，提供 USB、MIPI 与扩展引脚；此模型使用官方 footprint 内嵌的板级 STEP，已接入 P4 rev < 3 裸模块运行配置，外接板行为仍待适配。",
       "hardwareRevision": "unspecified",
       "chip": "esp32p4",
       "module": "ESP32-P4NRW32",
       "runtime": {
-        "board": null,
-        "status": "unavailable",
+        "board": "stamp-p4",
+        "status": "partial",
         "flashMb": 16,
         "psramMb": 32
       },
@@ -10706,8 +11063,13 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "当前为 P4 rev < 3 裸模块数字运行配置；外接 MIPI、SDIO、USB 设备、模拟电源及物理接口连线尚未验收，无板载屏幕或用户按键。",
+        "官方 UIFlow2 依赖外接 ESP-Hosted C6 配置；此产品不自动接入 C6，镜像下载需厂商验证，尚未验证该固件运行兼容性。",
+        "已验证 IDF 6.0.2 内部固件的启动、PSRAM 与逻辑 UART0 输入；IDF 5.5.1 启动会等待尚未实现的 ADC 完成标志，详见运行报告。",
+        "保留官方 KiCad 内嵌 STEP 的全部 216 个原生组件（含 3 个开放 USB 曲面），未以空白板替换。",
+        "按官方照片修正近黑色 PCB，并将背面丝印与裸露正面纹理限定在真实板面；板孔和立体元件不被照片平面覆盖。",
+        "补充照片可见的一个黄铜色孔套两端空心边缘；尺寸为照片估算，隐藏筒身、螺纹及型号未知。",
+        "尺寸及正反面轮廓结果见验证记录；侧面对照仅定性，外观检查不代表固件兼容。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-s013.json",
       "model": {
@@ -10739,10 +11101,10 @@
       "summary": "ESP32-C6 与SX1262组合的LoRa模块，16MB Flash、850–960MHz LoRa和Wi-Fi6。厂家STEP含PCB、屏蔽盖及元件，机械结构不等于已验证电路。",
       "knowledgeUrl": "./knowledge/m5stack-s012.json",
       "runtime": {
-        "board": null,
+        "board": "stamp-c6lora",
         "flashMb": 16,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
       "controls": [],
@@ -10761,12 +11123,13 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer populated mechanical STEP retained; CPU/board/peripheral runtime unavailable.",
-        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
-        "STEP component384 is an isolated cylinder at x≈-159,y≈-50mm, outside the15×18mm board; excluded with original bounds preserved. All other solids and27 orphan shells retained.",
-        "Shield etched text and PCB silk are absent from mechanical STEP; visual label coverage is partial."
+        "板级数字子集：C6、PI4IO 扩展器和 SX1262 SPI/BUSY/DIO1；LoRa 对端数据为显式输入，不模拟射频传播、LNA 增益或距离。",
+        "本轮未找到本型号预编译出厂/UIFlow 固件；可加载自行编译的本地 C6 固件。无板载屏幕、RGB 或已确认用户按键。",
+        "保留厂家完整PCB装配的500个组件；机械CAD不证明隐藏铜层、网表或BOM准确。",
+        "屏蔽罩标识和背面PCB使用有边界的官方照片贴图，未替换已知几何；颜色和光照未做实物标定。",
+        "天线座按照片分为黑色绝缘体、金色触点和银色焊接端；全部原始三角面完整保留。",
+        "厂家STEP中的离体圆柱缺少装配依据，保留排除记录，不作为螺柱移入主板。",
+        "正反面轮廓核对通过；侧视仅作定性对照，未声称全视角精确还原。"
       ],
       "sources": [
         {
@@ -10795,18 +11158,27 @@
       "name": "M5Stack StampFly",
       "manufacturer": "M5Stack",
       "sku": "K138",
-      "summary": "ESP32-S3四旋翼开发平台，StampS3、四个空心杯马达、IMU、ToF和气压计；本平台仅外观展示，不模拟飞行。",
+      "summary": "Stamp-S3 四旋翼开发平台；提供部分板级数字外设、按键、RGB 与电机 PWM 观测，飞行动力学尚未模拟。",
       "hardwareRevision": "unspecified",
       "chip": "esp32s3",
       "module": "ESP32-S3",
       "runtime": {
-        "board": null,
+        "board": "stampfly",
         "flashMb": 8,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": null,
-      "controls": [],
+      "controls": [
+        {
+          "id": "button",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA",
+          "name": "用户／配对按键"
+        }
+      ],
       "interfaces": [
         {
           "id": "usb-c",
@@ -10856,8 +11228,9 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "板级数字外设为部分实现；官方固件兼容性须以对应版本的实际执行记录为准。",
+        "电机展示来自客体 PWM，占空比动画不代表实测转速；尚无飞行动力学、碰撞或 ESP-NOW 遥控闭环。",
+        "尺寸、材质、内部未知项和照片核验范围见模型报告；未进行实机验证。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k138.json",
       "model": {
@@ -10877,6 +11250,108 @@
       "family": {
         "id": "m5-stamp",
         "name": "Stamp 系列"
+      }
+    },
+    {
+      "id": "m5stack-k138-v11",
+      "name": "M5Stack StampFly v1.1",
+      "manufacturer": "M5Stack",
+      "sku": "K138-V11",
+      "summary": "Stamp-S3A 四旋翼开发平台；提供部分板级数字外设、按键、RGB 与电机 PWM 观测，飞行动力学尚未模拟。",
+      "hardwareRevision": "v1.1",
+      "chip": "esp32s3",
+      "module": "Stamp-S3A",
+      "runtime": {
+        "board": "stampfly-v11",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "display": null,
+      "controls": [
+        {
+          "id": "button",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA",
+          "name": "用户／配对按键"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "StampS3 USB-C",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "grove-i2c",
+          "type": "HY2.0-4P",
+          "name": "Red Grove I2C",
+          "external": true,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 13
+            },
+            {
+              "name": "SCL",
+              "gpio": 15
+            }
+          ]
+        },
+        {
+          "id": "grove-gpio",
+          "type": "HY2.0-4P",
+          "name": "Black Grove GPIO",
+          "external": true,
+          "pins": [
+            {
+              "name": "GROVE I",
+              "gpio": 1
+            },
+            {
+              "name": "GROVE O",
+              "gpio": 2
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "title": "StampFly v1.1 official documentation",
+          "url": "https://docs.m5stack.com/en/app/StampFly_v1.1",
+          "checkedAt": "2026-11-03"
+        }
+      ],
+      "limitations": [
+        "板级数字外设为部分实现；官方固件兼容性须以对应版本的实际执行记录为准。",
+        "电机展示来自客体 PWM，占空比动画不代表实测转速；尚无飞行动力学、碰撞或 ESP-NOW 遥控闭环。",
+        "K138-V11 使用独立 S3A 外壳与照片纹理；共享机架仍为官方链接的简化模拟器几何，未完成精确机械验收。",
+        "官方尺寸表与护桨外包络存在口径差异，保留图纸与照片，不缩放旧版CAD掩盖差异。",
+        "当前外观不安装电池，与官方参考照片一致；旧版电池模型不能代替320mAh版次。",
+        "未进行实机验证。"
+      ],
+      "knowledgeUrl": "./knowledge/m5stack-k138-v11.json",
+      "dimensions": {
+        "width": 73.6,
+        "height": 73.6,
+        "depth": 32,
+        "unit": "mm",
+        "basis": "official",
+        "sourceId": "official-docs"
+      },
+      "defaultFirmwareId": "m5stack-k138-v11-official-factory",
+      "family": {
+        "id": "m5-stamp",
+        "name": "Stamp 系列"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k138-v11/model.json",
+        "status": "partial"
       }
     },
     {

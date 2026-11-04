@@ -1,51 +1,32 @@
-# M5Stack Stamp-S3Bat · S015 外观与知识入库
+# Stamp-S3Bat S015 模型核验
 
-ESP32-S3-PICO-1-N8R8 控制模块，配有电池管理、电池接口、BTB 扩展和 FPC 天线接口；此 SKU 不焊排针。
+S015 现在保留厂家外壳 STL，并加入官方 KiCad 文件内嵌的 PCB 装配 STEP：384 个原生实体／曲面，包括真实 PCB、通孔、USB-C、电池座、BTB 和电子元件。原来的 UNKNOWN 板和通用 USB 占位件已替换。S015 不焊排针，与 S015-DIP 分开维护。
 
-来源：[官方产品文档](https://docs.m5stack.com/en/core/Stamp-S3Bat)，M5_Hardware 固定 `e29c139cbc7c80b5ccc5557e5ab8025a7a19a109`。逐源 URL、UTC、SHA-256、下载状态见 [knowledge](../../../web/platform/knowledge/m5stack-s015.json) 与 [source audit](../evidence/m5stack-s015/source-audit.json)。旧抓取保留原始时间，不伪造刷新日期。
+来源为[官方产品资料](https://docs.m5stack.com/en/core/Stamp-S3Bat)、M5_Hardware `ec351c516644b44defc145728cc029ced77381ff` 的[官方 KiCad 容器](https://github.com/m5stack/M5_Hardware/blob/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod)，以及保留原始来源版本的外壳 STL。容器 SHA-256 `830babe06213a16070cf1361baac7ba2d73bf5164b43d8e77338e5ca57d414d3`；内嵌 STEP SHA-256 `b304eac5dc0129563800b7637ad97a6aeb1ca9ad25fd87f4775245365d354f95`。原始获取时间、下载与内嵌校验记录见 [source-audit.json](../evidence/m5stack-s015/source-audit.json)。
 
-Original manufacturer components selected from assembled cluster; other components excluded with reasons. One rigid global transform, no scaling.
+模型只采用刚体平移，没有缩放厂家几何。PCB 原点为板中心、器件面 Z=0；在外壳坐标下，PCB 中心 Y=+0.9 mm、器件面 Z=−1.75 mm。外壳原始 17.7556 × 29.6240 × 5.5 mm 与整机包络分别记录，不能将外壳尺寸当作整机尺寸。旧版失败结果保留在 [previous-cover-only-verification.json](../evidence/m5stack-s015/previous-cover-only-verification.json)。
 
-[model-plan.json](../../../web/platform/assets/m5stack-s015/model-plan.json) 记录组件选择、刚体变换、照片裁切、纹理投影与估算表面；厂家几何不缩放。STL 保留源三角形；STEP 使用 OpenCascade7.8.1.1 以0.05mm弦偏差/0.2rad角度细分。UNKNOWN 是中性占位，未编造 PCB 走线或未核实电子元件。
-
-| 检查 | 实测或误差 mm | 目标 mm | 结果 |
+| 检查 | 模型值 mm | 独立图纸值 mm | 结果 |
 | --- | ---: | ---: | --- |
-| shell source-fidelity | 6.713867195529133e-08 | 0 | 通过 |
-| width | 17.755598068237305 | 18 | 未通过 |
-| height | 29.624019622802734 | 29.8 | 未通过 |
-| depth | 5.5 | 5.5 | 通过 |
+| 整机宽度 | 18.0000 | 18 | 通过，容差 0.1 |
+| 含 USB 整机长度 | 29.77993 | 29.8 | 通过，容差 0.1 |
+| 整机厚度 | 5.5000 | 5.5 | 通过，容差 0.1 |
+| PCB 宽／长／厚 | 18 / 28 / 0.999998 | 18 / 28 / 1 | 通过，容差 0.05 |
 
-实际平台 `manufacturer-model.js` 的 headless 渲染与原照片对照在 [verification.json](../evidence/m5stack-s015/verification.json)：
+黑色 PCB 的背面照片只投影到原生 Z=−2.749998 mm 平面；6972 个投影顶点的最大平面偏差为 0.000000093 mm。孔洞由厂家几何保留，贴图不延伸到孔壁、侧壁或独立接口。金色和半透明紫色只改变外壳，PCB、丝印、纸贴、FPC 和接口材质保持不变。
 
-- front: fail; IoU 0.9393815545959284
-- back: pass; IoU 0.95296027206678
-- side: qualitative-only; IoU 0.4216892319931641
+前面纸贴的承载物需要分开说明。[官方拆解视频](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1222/Stamp-S3Bat-Housing-Disassembly-Tutorial.mp4) 9.8–12 秒先揭下纸贴，露出独立黑色 FPC 天线；24.5 秒的画面显示天线移除后的原生外壳槽孔。模型因此补上有照片／视频依据的 FPC 平面外形，而不填平外壳孔洞。FPC 的 0.2 mm 厚度关系来自 2.35/2.55 mm 台阶，属于估算；外形不确定性约 ±0.3 mm，弯折和隐藏铜箔未重建。实物纸贴本来跨过 FPC 下方的内部释放槽，该小范围跨槽保留；外缘及按键区单独遮罩，不能误剪掉真实印刷内容。参考帧裁切随证据保存。
 
-正反视图只有照片确属近正投影且原始型号一致时才用0.95轮廓门槛。侧视/斜视保留为定性检查，不以轮廓掩盖标签、组件或装配差异。引用照片的纹理不是独立验证依据；未通过/缺失项不会改写成通过。
+官方照片、图纸和拆解过程没有可确认的螺丝或螺柱，因此不添加猜测件。板级 CAD 缺少侧面可见 RF 屏蔽罩的精确几何；USB 内部不同材料的颜色也没有完整分组，保留明确限制。完整原生 PCB 几何不等于整机每层材料和制造细节均已核验。
 
-厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 unavailable，官方固件入口仅参考，未验证版本/hash/镜像不填猜测值。
+实际通用渲染器的正面轮廓 IoU 为 **0.972881**，背面为 **0.990810**；两项高于预先使用的 0.95 门槛。USB 边视图为 0.921411，仅作定性比较，未宣称正投影精度或光学材质校准。参考、渲染、叠图与差异图见 [verification.json](../evidence/m5stack-s015/verification.json)，材质、孔面、PWR 命中、LED 绑定与实际资产哈希见 [browser-review.json](../evidence/m5stack-s015/browser-review.json)。
 
-重生成：
+PWR 热点绑定产品目录中的 `power`，原生 WS2812 光学体绑定 LED 0。真实工作台上的鼠标按下／释放与 KeyA 按下／释放通过本地 ESP-IDF 5.5.1 测试固件验证：固件新读到 PM1 状态后依次输出绿色、蓝色。见 [workbench-input.json](../evidence/m5stack-s015/workbench-input.json)。初次异步等待取得了陈旧快照，被判无效并单独保留；正式回执使用明确等待每次 `observe()` 的循环，要求同一快照同时具有新增串口行和匹配 LED 值。本项不是出厂固件或物理开关机验证；板级边界见 [S3Bat runtime](../stamps3bat-runtime.md)。
 
-```sh
-python tools/onboard-lane-01.py prepare --ids m5stack-s015
-python tools/onboard-lane-01.py build --ids m5stack-s015
-```
-
-通过受跟踪的 headless 浏览器打开 `web/platform/review-lane-01.html?id=m5stack-s015`；按 model reviewViews 保存800×800正反侧画布到 `output/playwright/m5stack-s015-front.png` 等，再运行：
+使用 [model-plan.json](../../../web/platform/assets/m5stack-s015/model-plan.json) 和公开重建入口可离线复现：
 
 ```sh
-python tools/onboard-lane-01.py verify --ids m5stack-s015
-python tools/onboard-lane-01.py publish --ids m5stack-s015
+python tools/rebuild-product-model.py build m5stack-s015 --scratch <fresh-scratch-directory>
 ```
 
-当前限制：
-
-- Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.
-- No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.
-- PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.
-- STL is the cover only,17.7556×29.6240×5.5mm; the official full module18×29.8mm envelope is larger. This difference is not removed by scaling.
-- USB and battery receptacles/populated underside are absent from the mechanical source; generic USB mouth is explicitly approximate.
-- S015 has no soldered DIP headers; it is distinct from S015-DIP.
-- Visible USB body/antenna face are separately marked photo-informed estimates. PCB remains neutral UNKNOWN, with no invented components/traces.
-- Paper/optical projection is isolated from molded shell; small printed markings and hidden hardware not supplied by source CAD may remain incomplete.
+[重建回执](../evidence/m5stack-s015/rebuild.json) 核对 9 个生成资产及完整模型配置均一致。额外保留的 KiCad 容器单独核对哈希，因此元信息文件不要求逐字节相同。依赖按 `tools/requirements-model.txt` 固定，OCP 7.8.1.1 采用 0.05 mm / 0.2 rad 细分；STL 保留原始三角形。平台配置／视图测试通过。厂商照片及视频衍生帧仍归原作者，不套用项目 MIT；CAD 许可保留原文件。

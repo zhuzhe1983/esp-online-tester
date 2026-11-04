@@ -1,0 +1,292 @@
+{
+  "recordedAt": "2026-11-03T20:10:15.084924+00:00",
+  "sourceRevision": "d74084df",
+  "requiredChanges": [
+    "4b1457d1",
+    "8e4786ef",
+    "f0041b94",
+    "d74084df"
+  ],
+  "hostArchitecture": "arm64",
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "execution": "Native AArch64 JIT; complete flash image from ROM reset vector; no firmware modifications or host CPENABLE override",
+  "cliSha256": "632ead78d18922636b5790c613c99e95a3b27dd06688f277ca4ffe218273988b",
+  "rom": {
+    "name": "esp32s3_rev0_rom.elf",
+    "sourcePackage": "Espressif esp-rom-elfs 20241011",
+    "bytes": 949552,
+    "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+  },
+  "firmwares": {
+    "original": {
+      "version": "v1.1.0",
+      "url": "https://m5burner-cdn.m5stack.com/firmware/f62f9d3a62b18d530e8a5a1281312aac.bin",
+      "bytes": 861424,
+      "sha256": "0138cc333d05790f8804fabae223f4c7eb40d162ad1d23d8c8daead6412d4359"
+    },
+    "v11": {
+      "version": "v1.0.0 (official v1.1 Easyloader payload)",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StampFly/2b96752c72c465c63b260996046c71c7675f81b2/firmware/stampfly_firmware_v1.0.0_20240802.bin",
+      "bytes": 861360,
+      "sha256": "d903acc1815cb8b08224aa4e9a581bb23b69b606813f9edbf4af5002efda113b"
+    }
+  },
+  "redactions": [
+    "Home-directory label normalized to /Users/alice",
+    "Emulated MAC address replaced by a label; no effect on initialization, button or PWM checks"
+  ],
+  "measurementLimits": [
+    "These are correctness runs, not CPU benchmarks. Concurrent compilation can affect wall time; numeric console values are retained without performance conclusions.",
+    "No Wi-Fi peer input, arming, thrust or flight tested. Zero motor duty is the disarmed factory output.",
+    "No-target default optical input, ideal stationary IMU and fixed 4V supply.",
+    "Native execution is not WASM/browser validation."
+  ],
+  "runs": [
+    {
+      "id": "original-boot",
+      "board": "stampfly",
+      "firmware": "original",
+      "durationSeconds": 5,
+      "buttonScript": null,
+      "markers": {
+        "Start StampFly!": 1,
+        "Finish sensor init!": 1,
+        "Finish StampFly init!": 1,
+        "Enjoy Flight!": 1,
+        "#INIT Status:0": 1,
+        "#APP_STATUS:01": 1
+      },
+      "allReportedSensorStatusesZero": true,
+      "inputEdges": [],
+      "resets": [],
+      "pwm": [],
+      "boardCounters": {
+        "bmi270Spi": 8237,
+        "rgbUpdates": 6,
+        "ina3221Conversions": 757,
+        "motorSnapshotChanges": 0
+      },
+      "execution": {
+        "core0Instructions": 18393596,
+        "core1Instructions": 113355549,
+        "wallSeconds": 0.7,
+        "millionInstructionsPerWallSecond": 179.8,
+        "guestSeconds": 5.0,
+        "cycles": 1200000000,
+        "exceptions": 99438,
+        "interrupts": 13098
+      },
+      "capture": {
+        "rawBytes": 2949,
+        "rawSha256": "7b954c5817bdb7a30ff9174a341bcc47be783c08d0bd067a6384176fdbb19335",
+        "sanitizedBytes": 2953,
+        "sanitizedSha256": "c81fd06bdf264e7a28d0f0ec063b7e4d6b4b0d6598bde746c22f4cdc100cc369",
+        "retained": "Local temporary capture; curated fields above replace full console output in Git"
+      },
+      "initialNoTargetRangeResultCount": 10
+    },
+    {
+      "id": "v11-boot",
+      "board": "stampfly-v11",
+      "firmware": "v11",
+      "durationSeconds": 5,
+      "buttonScript": null,
+      "markers": {
+        "Start StampFly!": 1,
+        "Finish sensor init!": 1,
+        "Finish StampFly init!": 1,
+        "Enjoy Flight!": 1,
+        "#INIT Status:0": 1,
+        "#APP_STATUS:01": 1
+      },
+      "allReportedSensorStatusesZero": true,
+      "inputEdges": [],
+      "resets": [],
+      "pwm": [],
+      "boardCounters": {
+        "bmi270Spi": 8237,
+        "rgbUpdates": 3,
+        "ina3221Conversions": 757,
+        "motorSnapshotChanges": 0
+      },
+      "execution": {
+        "core0Instructions": 18394963,
+        "core1Instructions": 113190124,
+        "wallSeconds": 0.7,
+        "millionInstructionsPerWallSecond": 195.3,
+        "guestSeconds": 5.0,
+        "cycles": 1200000000,
+        "exceptions": 99124,
+        "interrupts": 13050
+      },
+      "capture": {
+        "rawBytes": 2813,
+        "rawSha256": "a96b9c3b9d9dc1beddc9e3b180fd5976d15fb9d1aec4243b812efba0a73aeddf",
+        "sanitizedBytes": 2817,
+        "sanitizedSha256": "42df530228341cc07843eed2f5d8ede5d1d8c75fd6c3c1912299d08d07ef9db8",
+        "retained": "Local temporary capture; curated fields above replace full console output in Git"
+      },
+      "initialNoTargetRangeResultCount": 10
+    },
+    {
+      "id": "original-button",
+      "board": "stampfly",
+      "firmware": "original",
+      "durationSeconds": 12,
+      "buttonScript": "button.script",
+      "markers": {
+        "Start StampFly!": 2,
+        "Finish sensor init!": 2,
+        "Finish StampFly init!": 2,
+        "Enjoy Flight!": 2,
+        "#INIT Status:0": 2,
+        "#APP_STATUS:01": 2
+      },
+      "allReportedSensorStatusesZero": true,
+      "inputEdges": [
+        {
+          "atSeconds": 5.0,
+          "gpio": 0,
+          "high": false
+        },
+        {
+          "atSeconds": 5.15,
+          "gpio": 0,
+          "high": true
+        }
+      ],
+      "resets": [
+        {
+          "atSeconds": 6.231,
+          "causeHex": "0xc"
+        }
+      ],
+      "pwm": [
+        {
+          "gpio": 5,
+          "frequencyHz": 149812.734,
+          "dutyPercent": 0.0
+        },
+        {
+          "gpio": 42,
+          "frequencyHz": 149812.734,
+          "dutyPercent": 0.0
+        },
+        {
+          "gpio": 10,
+          "frequencyHz": 149812.734,
+          "dutyPercent": 0.0
+        },
+        {
+          "gpio": 41,
+          "frequencyHz": 149812.734,
+          "dutyPercent": 0.0
+        }
+      ],
+      "boardCounters": {
+        "bmi270Spi": 16640,
+        "rgbUpdates": 342,
+        "ina3221Conversions": 1817,
+        "motorSnapshotChanges": 0
+      },
+      "execution": {
+        "core0Instructions": 40738245,
+        "core1Instructions": 324475592,
+        "wallSeconds": 2.0,
+        "millionInstructionsPerWallSecond": 180.1,
+        "guestSeconds": 12.0,
+        "cycles": 2880000000,
+        "exceptions": 241907,
+        "interrupts": 33977
+      },
+      "capture": {
+        "rawBytes": 4978,
+        "rawSha256": "6d618fe245c4659bdd91585833030f0400fe7ccb0e8a09e9c6c1025af08e0010",
+        "sanitizedBytes": 4987,
+        "sanitizedSha256": "d24071d3606cbc678d5753394774ef4b32e553e77cce6d7129eaf4e79e1bbe4b",
+        "retained": "Local temporary capture; curated fields above replace full console output in Git"
+      },
+      "initialNoTargetRangeResultCount": 20
+    },
+    {
+      "id": "v11-button",
+      "board": "stampfly-v11",
+      "firmware": "v11",
+      "durationSeconds": 12,
+      "buttonScript": "button.script",
+      "markers": {
+        "Start StampFly!": 2,
+        "Finish sensor init!": 2,
+        "Finish StampFly init!": 2,
+        "Enjoy Flight!": 2,
+        "#INIT Status:0": 2,
+        "#APP_STATUS:01": 2
+      },
+      "allReportedSensorStatusesZero": true,
+      "inputEdges": [
+        {
+          "atSeconds": 5.0,
+          "gpio": 0,
+          "high": false
+        },
+        {
+          "atSeconds": 5.15,
+          "gpio": 0,
+          "high": true
+        }
+      ],
+      "resets": [
+        {
+          "atSeconds": 6.231,
+          "causeHex": "0xc"
+        }
+      ],
+      "pwm": [
+        {
+          "gpio": 5,
+          "frequencyHz": 149812.734,
+          "dutyPercent": 0.0
+        },
+        {
+          "gpio": 42,
+          "frequencyHz": 149812.734,
+          "dutyPercent": 0.0
+        },
+        {
+          "gpio": 10,
+          "frequencyHz": 149812.734,
+          "dutyPercent": 0.0
+        },
+        {
+          "gpio": 41,
+          "frequencyHz": 149812.734,
+          "dutyPercent": 0.0
+        }
+      ],
+      "boardCounters": {
+        "bmi270Spi": 16640,
+        "rgbUpdates": 171,
+        "ina3221Conversions": 1817,
+        "motorSnapshotChanges": 0
+      },
+      "execution": {
+        "core0Instructions": 40740239,
+        "core1Instructions": 324144473,
+        "wallSeconds": 2.0,
+        "millionInstructionsPerWallSecond": 178.4,
+        "guestSeconds": 12.0,
+        "cycles": 2880000000,
+        "exceptions": 241497,
+        "interrupts": 33886
+      },
+      "capture": {
+        "rawBytes": 4702,
+        "rawSha256": "aa0e273ba5beeabb7ffacd31ccadfb6294a64cc2d5e5a4d08f7aa3c37f43c3c4",
+        "sanitizedBytes": 4711,
+        "sanitizedSha256": "4530482edd1aaba43a85ce1a450f0e230bbab50585a615cf4dcaba479bcea825",
+        "retained": "Local temporary capture; curated fields above replace full console output in Git"
+      },
+      "initialNoTargetRangeResultCount": 20
+    }
+  ]
+}

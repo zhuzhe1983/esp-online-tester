@@ -1,0 +1,27 @@
+async (page) => {
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const cdp=await page.context().newCDPSession(page);await cdp.send('Network.enable');await cdp.send('Network.clearBrowserCache');await cdp.send('Network.setCacheDisabled',{cacheDisabled:true});
+  await page.reload();await page.waitForFunction(()=>document.body.dataset.ready==='true');
+  await page.addStyleTag({content:'#render,#render canvas{width:800px!important;height:800px!important}#render{position:fixed;left:0;top:0;z-index:999}'});
+  await page.evaluate(async()=>{
+    const {current}=laneReview;if(current.id!=='m5stack-s015')throw Error('Load the S015 review page first');
+    const digest=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('');
+    const raw=await(await fetch(new URL('model.json',current.base),{cache:'no-store'})).arrayBuffer(),meta=JSON.parse(new TextDecoder().decode(raw)),loaded={};
+    for(const name of ['geometry.bin','front-paper.png','back-pcb.png']){const hash=await digest(await(await fetch(new URL(name,current.base),{cache:'no-store'})).arrayBuffer());if(hash!==meta.artifacts[name])throw Error('Asset mismatch '+name);loaded[name]=hash;}
+    const shells=new Set(current.group.userData.shellMeshes);
+    const materials=()=>{const rows=[];current.group.traverse(o=>{if(shells.has(o)||!o.material)return;for(const m of [].concat(o.material))rows.push({name:o.name,color:m.color?.getHexString(),opacity:m.opacity,roughness:m.roughness,metalness:m.metalness,map:m.map?.image?.currentSrc||null});});return rows;};
+    window.poweredMaterials=materials;window.poweredInitialMaterials=materials();
+    window.poweredReceipt={productId:current.id,checkedAt:new Date().toISOString(),cacheClearedAndDisabled:true,modelSha256:await digest(raw),loadedArtifacts:loaded,renderer:'actual manufacturer-model.js',images:[],checks:[],nonShellMaterialChecks:[],limitations:['Appearance checks do not prove firmware execution; see separate PM1 runtime fixture receipt.','Native populated board CAD replaces UNKNOWN; FPC shape is a source-backed approximation.','USB cavity native topology is retained; per-face material coloration remains approximate.']};
+    const photo=current.group.getObjectByName('pcb-main-photo-surface'),pos=photo.geometry.attributes.position,normal=photo.geometry.attributes.normal;let maxPlaneError=0,minBackNormal=1;for(let i=0;i<pos.count;i++){maxPlaneError=Math.max(maxPlaneError,Math.abs(pos.getZ(i)+2.749998));minBackNormal=Math.min(minBackNormal,-normal.getZ(i));}
+    poweredReceipt.checks.push({name:'back-photo-planar-only',vertices:pos.count,maxPlaneErrorMm:maxPlaneError,minBackNormalZ:minBackNormal,passed:maxPlaneError<.002&&minBackNormal>.85});
+    const THREE=await import('./vendor/three.module.min.js'),ray=new THREE.Raycaster(new THREE.Vector3(0,-5.1,250),new THREE.Vector3(0,0,-1));current.group.updateMatrixWorld(true);const hits=ray.intersectObject(current.group,true).filter(h=>h.object.userData.inputOccluder);poweredReceipt.checks.push({name:'physical-PWR-hit',first: hits[0]?.object.name,control:hits[0]?.object.userData.control,passed:hits[0]?.object.userData.control==='power'});
+    const optic=current.model.parts['rgb-led-optic'];poweredReceipt.checks.push({name:'native-WS2812-optic-binding',ledIndex:optic.userData.ledIndex,passed:optic.userData.ledIndex===0});
+    let unknowns=0;current.group.traverse(o=>{if(o.userData.kind==='pcb-placeholder'||o.name.includes('-unknown-'))unknowns++;});poweredReceipt.checks.push({name:'native-board-no-placeholder',unknownCount:unknowns,passed:unknowns===0});
+  });
+  for(const view of ['front','back','side']){await page.evaluate(view=>{poweredReceipt.images.push({view,kind:'photo-comparison',camera:laneReview.show(view)});},view);await page.locator('#render canvas').screenshot({path:`output/playwright/m5stack-s015-${view}.png`});await page.evaluate(()=>laneReview.mask());await page.locator('#render canvas').screenshot({path:`output/playwright/m5stack-s015-${view}-mask.png`});}
+  for(const [view,options] of [['front-close',{span:35,position:[0,0,250],target:[0,0,0]}],['back-oblique',{span:37,position:[90,70,-180],target:[0,0,0]}],['usb-close',{span:24,position:[0,-250,0],target:[0,-14.9,0],up:[0,0,1]}],['battery-close',{span:24,position:[0,250,0],target:[0,13,0],up:[0,0,1]}]]){await page.evaluate(({view,options})=>poweredReceipt.images.push({view,kind:'detail',camera:laneReview.show(view,options)}),{view,options});await page.locator('#render canvas').screenshot({path:`docs/platform/evidence/m5stack-s015/${view}.png`});}
+  for(const [mode,shell] of [['gold',{color:'#c7a148',opacity:1,finish:'metal'}],['purple',{color:'#9c72cb',opacity:.4,finish:'plastic'}]]){await page.evaluate(({mode,shell})=>{laneReview.appearance({shell});const camera=laneReview.show('oblique',{span:37,position:[90,65,180],target:[0,0,0]});poweredReceipt.images.push({view:'oblique',mode,kind:'material',camera});poweredReceipt.nonShellMaterialChecks.push({mode,passed:JSON.stringify(poweredMaterials())===JSON.stringify(poweredInitialMaterials)});},{mode,shell});await page.locator('#render canvas').screenshot({path:`docs/platform/evidence/m5stack-s015/${mode}-oblique.png`});}
+  await page.evaluate(()=>{poweredReceipt.passed=poweredReceipt.checks.every(x=>x.passed)&&poweredReceipt.nonShellMaterialChecks.every(x=>x.passed);});
+  if(errors.length)throw Error(errors.join('\n'));
+  await cdp.detach();
+}

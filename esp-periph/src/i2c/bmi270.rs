@@ -23,6 +23,21 @@ impl Bmi270 {
             config: Box::new([0; 8192]), written: Box::new([false; 8192]), sample, version: 0 };
         device.reset(); device
     }
+    /// One SPI CS assertion. Bosch DS000-08 section 6.4: bit 7 selects
+    /// a read; a dummy byte follows the address before register data.
+    pub fn spi_transfer(&mut self, tx: &[u8], rx_len: usize) -> Vec<u8> {
+        let mut rx = vec![0xff; rx_len];
+        let Some(&address) = tx.first() else { return rx; };
+        self.start(false); self.write(address & 0x7f);
+        if address & 0x80 != 0 {
+            self.start(true);
+            if let Some(dummy) = rx.get_mut(1) { *dummy = 0; }
+            for byte in rx.iter_mut().skip(2) { *byte = self.read(); }
+        } else {
+            for &byte in tx.iter().skip(1) { self.write(byte); }
+        }
+        rx
+    }
     fn reset(&mut self) {
         self.regs.fill(0); self.written.fill(false); self.init_at = 0; self.version = 0;
         for (reg, value) in [(0x00, 0x24), (0x03, 0x10), (0x40, 0xa8), (0x41, 0x02),
@@ -95,6 +110,23 @@ mod tests {
     fn read(device: &mut Bmi270, reg: u8, len: usize) -> Vec<u8> { write(device, reg, &[]); device.start(true); (0..len).map(|_| device.read()).collect() }
     fn ready(device: &mut Bmi270) { write(device, 0x59, &[0]); write(device, 0x5e, &[0; 8192]); write(device, 0x59, &[1]); write(device, 0x7d, &[6]); }
     fn vector(bytes: &[u8]) -> Vec<i16> { bytes.as_chunks::<2>().0.iter().map(|b| i16::from_le_bytes(*b)).collect() }
+    #[test]
+    fn spi_dummy_config_and_samples() {
+        let sample = Arc::new(Mutex::new(Bmi270Sample { accel_g: [0.0, 0.0, 1.0], gyro_dps: [125.0, 0.0, 0.0], version: 1 }));
+        let mut d = Bmi270::new(sample);
+        assert_eq!(d.spi_transfer(&[], 3), [0xff; 3]);
+        assert_eq!(d.spi_transfer(&[0x80, 0, 0], 3), [0xff, 0, 0x24]);
+        d.spi_transfer(&[0x59, 1], 0);
+        assert_eq!(d.spi_transfer(&[0xa1, 0, 0], 3)[2], 2);
+        d.spi_transfer(&[0x59, 0], 0);
+        let mut config = vec![0; 8193]; config[0] = 0x5e;
+        d.spi_transfer(&config, 0); d.spi_transfer(&[0x59, 1], 0);
+        d.spi_transfer(&[0x7d, 6], 0);
+        assert_eq!(d.spi_transfer(&[0xa1, 0, 0], 3)[2], 1);
+        assert_eq!(vector(&d.spi_transfer(&[0x8c], 14)[2..]), [0, 0, 4096, 2048, 0, 0]);
+        d.spi_transfer(&[0x7e, 0xb6], 0);
+        assert_eq!(d.spi_transfer(&[0xa1], 3)[2], 0);
+    }
     #[test]
     fn datasheet_reset_range_is_eight_g() {
         // Bosch BST-BMI270-DS000-08 section5.2.42, page102: ACC_RANGE reset=0x02.

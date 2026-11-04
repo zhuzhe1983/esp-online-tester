@@ -3,6 +3,51 @@
   "revision": "2026-11-03-device-release-sync",
   "items": [
     {
+      "id": "m5stack-k138-v11-official-factory",
+      "productIds": [
+        "m5stack-k138-v11"
+      ],
+      "name": "StampFly v1.1 官方出厂固件 · v1.0.0",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/m5stack/M5StampFly/2b96752c72c465c63b260996046c71c7675f81b2/firmware/stampfly_firmware_v1.0.0_20240802.bin",
+        "sha256": "d903acc1815cb8b08224aa4e9a581bb23b69b606813f9edbf4af5002efda113b"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v1.0.0-20240802",
+      "version": "v1.0.0",
+      "watchlistId": "stampfly-v11-official-factory",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://docs.m5stack.com/en/app/StampFly_v1.1",
+      "limitations": [
+        "与 K138-V11 官网 Easyloader 内嵌的 861360 字节镜像完全相同，已核对 ESP32-S3 芯片、8MB 容量和完整启动布局。",
+        "原生及浏览器执行均完成双 ToF、BMI270 初始化；G0 可触发固件软件复位并再次启动。此版本未开启 G38，Stamp-S3A 模块 RGB 保持熄灭，载板 RGB 正常输出。",
+        "硬件 v1.1 与固件版本 v1.0.0 分别记录；不能自动替换为通用 M5Burner v1.1.0。未实现遥控飞行闭环，保留试运行，未实机验证。"
+      ],
+      "sources": [
+        {
+          "title": "StampFly v1.1 official product documentation",
+          "url": "https://docs.m5stack.com/en/app/StampFly_v1.1",
+          "checkedAt": "2026-11-03"
+        },
+        {
+          "title": "K138-V11 official factory Easyloader",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1247/K138-V11-StampFly-V1.1-user-demo_0x0.exe",
+          "checkedAt": "2026-11-03"
+        },
+        {
+          "title": "Official v1.0.0 image identical to K138-V11 Easyloader payload",
+          "url": "https://raw.githubusercontent.com/m5stack/M5StampFly/2b96752c72c465c63b260996046c71c7675f81b2/firmware/stampfly_firmware_v1.0.0_20240802.bin",
+          "checkedAt": "2026-11-03"
+        }
+      ]
+    },
+    {
       "id": "m5stack-stopwatch-official",
       "name": "StopWatch 官方 User Demo · V0.5",
       "productIds": [
@@ -662,8 +707,8 @@
       "version": "v0.2",
       "compatibility": "unverified",
       "limitations": [
-        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+        "已在真实 worker/WASM 通过 ROM 启动至 Dashboard；新按键输入可返回 Launcher 并进入 LogMonitor。保留试运行状态，未完成全部应用功能或实机验证。",
+        "本轮保留 SD、RTC、温度与电流监测初始化失败。继电器仅模拟 GPIO 驱动/读回，光耦输入固定未接入；CAN、RS485、蜂鸣器、物理电源与网络功能未验证或未模拟。"
       ],
       "sources": [
         {
@@ -1646,11 +1691,12 @@
       "simulationVerified": false,
       "hardwareValidated": false,
       "storage": "remote-links-only",
-      "compatibility": "unverified",
+      "compatibility": "partial",
       "publicationUrl": "https://docs.m5stack.com/en/app/StampFly",
       "limitations": [
-        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+        "已核对官方镜像 SHA-256 与完整启动布局；原生及浏览器执行均完成双 ToF、BMI270 初始化，G0 按键可触发固件软件复位并再次启动。",
+        "未配对遥控器时四路电机 PWM 占空比为零；尚未实现 ESP-NOW 遥控、飞行动力学及完整传感器行为，因此保留试运行。",
+        "内部诊断固件另行验证按键、三颗 RGB、四路 PWM 与虚拟 IMU 输入；这不代表官方固件的飞行功能已通过。未实机验证。"
       ],
       "sources": [
         {
@@ -4662,8 +4708,8 @@
         }
       ],
       "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
+        "官方源码与开发入口；已固定并测试的出厂镜像另列为默认固件，本条不提供可执行二进制。",
+        "不同分支或新构建仍须单独核对版本、分区与对应硬件；本条不继承出厂镜像的执行结果。"
       ]
     },
     {
@@ -6348,7 +6394,8 @@
       ],
       "limitations": [
         "官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256。浏览器加载时计算实际摘要，尚未核验镜像布局或运行兼容性。",
-        "启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。"
+        "启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。",
+        "2026-11-04 固定下载入口返回 BURN_CAPTCHA_INVALID；本轮未取得镜像。公开源码使用 P4 rev < 3 和外接 ESP-Hosted C6；裸 S013 不自动接入外接无线板。"
       ],
       "revision": "v2.5.4",
       "simulationVerified": false,
@@ -6441,7 +6488,7 @@
       "downloadAccess": {
         "sourceUrl": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001079/versions/2116031422202155010/download",
         "officialUrl": "https://burner.m5stack.com/firmware/1897200000000001079",
-        "checkedAt": "2026-11-03T07:20:22.066Z",
+        "checkedAt": "2026-11-03T21:09:13.451521Z",
         "status": "verification-required",
         "providerCode": "BURN_CAPTCHA_INVALID",
         "httpStatus": 400
@@ -6708,7 +6755,9 @@
     {
       "id": "m5stack-s007-uiflow2",
       "productIds": [
-        "m5stack-s007"
+        "m5stack-s007",
+        "m5stack-s007-pin127",
+        "m5stack-s007-pin254"
       ],
       "publisher": "M5Stack",
       "role": "alternative",
@@ -6815,10 +6864,75 @@
       "downloadAccess": {
         "sourceUrl": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000020/versions/2116031339784081409/download",
         "officialUrl": "https://burner.m5stack.com/firmware/1897200000000000020",
-        "checkedAt": "2026-11-03T07:20:22.066Z",
+        "checkedAt": "2026-11-03T20:40:53.738158+00:00",
         "status": "verification-required",
         "providerCode": "BURN_CAPTCHA_INVALID",
         "httpStatus": 400
+      }
+    },
+    {
+      "id": "m5stack-stamps3-uiflow2-github",
+      "productIds": [
+        "m5stack-s007",
+        "m5stack-s007-pin127",
+        "m5stack-s007-pin254",
+        "m5stack-s007-v033",
+        "m5stack-s007-pin127-v033",
+        "m5stack-s007-pin254-v033"
+      ],
+      "name": "Stamp-S3 UIFlow2 · v2.5.4 · GitHub e437118",
+      "status": "trial",
+      "source": {
+        "url": "https://github.com/m5stack/uiflow-micropython/releases/download/2.5.4/uiflow-e437118-esp32s3-8mb-stamps3-v2.5.4-20261030.bin",
+        "sha256": "7c0fcd8251c3765fd462347555fc70e351178bb9fef8d4d2fa0cde5d07f0d661"
+      },
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "revision": "v2.5.4",
+      "version": "v2.5.4",
+      "watchlistId": "m5-official-uiflow2-github-stamps3",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.4",
+      "sdk": "ESP-IDF v5.5.4-dirty",
+      "limitations": [
+        "M5Stack GitHub 2.5.4 / e437118 独立官方替代构建；实际 SHA-256、ESP32-S3 芯片和 8MB 完整镜像布局已核对。",
+        "实际 ROM 启动后，原生20秒及页面WASM21.02秒客体时间均未产生G21 RGB输出，完整应用启动与操作尚未证实；不继承v2.5.3证据。",
+        "浏览器直载实测被GitHub CORS策略拒绝。请从官方发布页下载后通过本地文件导入；本站不转存第三方镜像。",
+        "与M5Burner的v2.5.4 / 509a67aa构建分开记录；未找到可证明出厂用途的固定镜像，不标为factory。"
+      ],
+      "sources": [
+        {
+          "title": "Official UIFlow2 2.5.4 release / StampS3 asset",
+          "url": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.4",
+          "checkedAt": "2026-11-03"
+        },
+        {
+          "title": "Exact release commit e437118892520ba987c2d930a2428db1cab65ab1",
+          "url": "https://github.com/m5stack/uiflow-micropython/tree/e437118892520ba987c2d930a2428db1cab65ab1",
+          "checkedAt": "2026-11-03"
+        },
+        {
+          "title": "Official S007 product and UIFlow2 tutorial mapping",
+          "url": "https://docs.m5stack.com/en/core/Stamp-S3",
+          "checkedAt": "2026-11-03"
+        }
+      ],
+      "catalogUpdate": {
+        "watchlistId": "m5-official-uiflow2-github-stamps3",
+        "channel": "stable",
+        "format": "merged",
+        "sourceType": "upstream-release",
+        "version": "2.5.4",
+        "publishedAt": "2026-10-30T06:14:32Z",
+        "assetName": "uiflow-e437118-esp32s3-8mb-stamps3-v2.5.4-20261030.bin",
+        "upstreamUrl": "https://github.com/m5stack/uiflow-micropython/releases/download/2.5.4/uiflow-e437118-esp32s3-8mb-stamps3-v2.5.4-20261030.bin",
+        "digestSource": "release-metadata",
+        "layoutVerified": true,
+        "checkedAt": "2026-11-03T20:41:55.518960+00:00"
       }
     },
     {
@@ -6827,7 +6941,9 @@
       "role": "alternative",
       "publisher": "M5Stack",
       "productIds": [
-        "m5stack-s007"
+        "m5stack-s007",
+        "m5stack-s007-pin127",
+        "m5stack-s007-pin254"
       ],
       "status": "reference",
       "source": null,
@@ -8817,7 +8933,8 @@
       "hardwareValidated": false,
       "limitations": [
         "官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256。浏览器加载时计算实际摘要，尚未核验镜像布局或运行兼容性。",
-        "启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。"
+        "启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。",
+        "当前 C5 只支持 SRAM app-direct 裸机应用；完整 ROM、Flash/MMU 与 ESP-IDF 启动尚未实现，本 UIFlow2 镜像没有运行兼容结论。"
       ],
       "sources": [
         {
@@ -8918,7 +9035,9 @@
     {
       "id": "m5stack-c050-b-uiflow2",
       "productIds": [
-        "m5stack-c050-b"
+        "m5stack-c050-b",
+        "m5stack-k051",
+        "m5stack-k051-b"
       ],
       "publisher": "M5Stack",
       "role": "alternative",
@@ -10207,7 +10326,9 @@
     {
       "id": "m5stack-c050-b-uiflow1",
       "productIds": [
-        "m5stack-c050-b"
+        "m5stack-c050-b",
+        "m5stack-k051",
+        "m5stack-k051-b"
       ],
       "publisher": "M5Stack",
       "role": "alternative",
@@ -10925,7 +11046,9 @@
     {
       "id": "m5stack-s007-v033-uiflow2",
       "productIds": [
-        "m5stack-s007-v033"
+        "m5stack-s007-v033",
+        "m5stack-s007-pin127-v033",
+        "m5stack-s007-pin254-v033"
       ],
       "publisher": "M5Stack",
       "role": "alternative",
@@ -11549,6 +11672,143 @@
         "上游明确支持此板型，镜像已通过 hash、芯片、容量和布局校验；尚未验证模拟兼容或实机刷写。",
         "LoRa/GNSS/无线链路尚未模拟；factory.bin 是项目完整安装镜像命名，不代表 LILYGO 出厂固件。"
       ]
+    },
+    {
+      "id": "m5stack-stampc3-official-source",
+      "name": "Stamp-C3 官方 RGB 源码示例",
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "productIds": [
+        "m5stack-c056-b",
+        "m5stack-k056",
+        "m5stack-c122-b",
+        "m5stack-k122"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://github.com/m5stack/STAMP-C3/blob/148c263fddcb7b61fef20b0cf6de8ab8c3475f73/idf/RGB_LED_Control/main/main.c",
+      "version": null,
+      "compatibility": "unavailable",
+      "limitations": [
+        "官方 IDF / Arduino RGB 示例源码，未找到预编译完整镜像；没有证据说明它是出厂固件。内部协议测试固件不在公共固件列表。"
+      ],
+      "sources": [
+        {
+          "title": "Official STAMP-C3 examples at immutable commit",
+          "url": "https://github.com/m5stack/STAMP-C3/tree/148c263fddcb7b61fef20b0cf6de8ab8c3475f73",
+          "checkedAt": "2026-11-03",
+          "status": "fetched"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-stamppico-uiflow2-github",
+      "name": "Stamp-Pico UIFlow2 · GitHub v2.5.4",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-c050-b",
+        "m5stack-k051",
+        "m5stack-k051-b"
+      ],
+      "revision": "v2.5.4",
+      "version": "v2.5.4",
+      "status": "trial",
+      "source": {
+        "url": "https://github.com/m5stack/uiflow-micropython/releases/download/2.5.4/uiflow-e437118-esp32-4mb-stamppico-v2.5.4-20261030.bin",
+        "sha256": "a9a76061b62fe99ad0a95f10ca021c9ae8f9ceec8265d2e023b6f97d967e424a"
+      },
+      "compatibility": "unverified",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "publicationUrl": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.4",
+      "watchlistId": "m5-official-uiflow2-github-stamppico",
+      "limitations": [
+        "官方 GitHub e437118 构建，与 M5Burner 509a67aa 构建分别记录；4MB 完整镜像与发布方 SHA-256 已核对。",
+        "原始 v2.5.4 在实际 WASM 到达 MicroPython REPL，但 startup/headless.py 报缺少 M5Things；21.04 客体秒内无 RGB 输出，完整应用未通过。",
+        "GitHub 下载受浏览器 CORS 阻止；可从官方页面下载后本地导入，本站不镜像二进制。"
+      ],
+      "sources": [
+        {
+          "title": "Official GitHub release and publisher digest",
+          "url": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.4",
+          "checkedAt": "2026-11-03"
+        },
+        {
+          "title": "Exact Stamp PICO build target",
+          "url": "https://github.com/m5stack/uiflow-micropython/tree/e437118892520ba987c2d930a2428db1cab65ab1/m5stack/boards/M5STACK_Stamp_PICO",
+          "checkedAt": "2026-11-03"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-s016-dip-uiflow2",
+      "productIds": [
+        "m5stack-s016-dip"
+      ],
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "name": "Stamp-C5 DIP UIFlow2 · v2.5.4 · 共用镜像候选",
+      "revision": "v2.5.4",
+      "status": "trial",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001048/versions/2116031291738329089/download"
+      },
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "limitations": [
+        "官方项目明确命名 Stamp-C5，未明确命名 S016-DIP。DIP 与 S016 共用官方电气原理图和 Arduino 入口，此处仅列为共用镜像候选，不代表发布方明确支持 DIP。",
+        "该 UIFlow 镜像不是当前已验证的 C5 SRAM app-direct 测试程序。完整 ROM、IDF、Flash/MMU、无线和 USB 启动尚未实现，不能根据本地 UART/GPIO 测试认定 UIFlow 兼容。",
+        "固定 v2.5.4 下载地址需要 M5Burner 验证码；本次请求返回 HTTP400 / BURN_CAPTCHA_INVALID，未取得 BIN，未核验布局、SHA-256 或运行兼容性。"
+      ],
+      "sources": [
+        {
+          "title": "Device asset mapping basis; not validation of this version",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001048",
+          "checkedAt": "2026-11-01"
+        },
+        {
+          "title": "Automatic device release metadata",
+          "url": "https://burner.m5stack.com/firmware/1897200000000001048",
+          "checkedAt": "2026-11-01"
+        },
+        {
+          "title": "S016-DIP 官方产品页；共用原理图与 Arduino 入口，不是明确 DIP 固件项目声明",
+          "url": "https://docs.m5stack.com/en/core/Stamp-C5_DIP",
+          "checkedAt": "2026-11-04"
+        },
+        {
+          "title": "S016 官方产品页及共用电气依据",
+          "url": "https://docs.m5stack.com/en/core/Stamp-C5",
+          "checkedAt": "2026-11-04"
+        }
+      ],
+      "catalogUpdate": {
+        "watchlistId": "m5-official-uiflow2-s016-dip",
+        "channel": "stable",
+        "format": "merged",
+        "sourceType": "manufacturer-distribution",
+        "version": "v2.5.4",
+        "publishedAt": "2026-10-30T04:55:50Z",
+        "assetName": "uiflow-509a67aa-esp32c5-4mb-stampc5-v2.5.4-20261030.bin",
+        "upstreamUrl": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001048/versions/2116031291738329089/download",
+        "digestSource": "publisher-hash-unavailable",
+        "publisherIdentity": {
+          "provider": "m5burner-v1",
+          "sourceType": "OFFICIAL",
+          "firmwareId": "1897200000000001048",
+          "deviceId": "2093000000000000016",
+          "versionId": "2116031291738329089",
+          "visibility": "PUBLIC",
+          "status": "PUBLISHED"
+        },
+        "layoutVerified": false,
+        "checkedAt": "2026-11-01T03:21:53.928Z"
+      },
+      "watchlistId": "m5-official-uiflow2-s016-dip",
+      "version": "v2.5.4",
+      "compatibility": "unverified",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000001048"
     }
   ]
 }

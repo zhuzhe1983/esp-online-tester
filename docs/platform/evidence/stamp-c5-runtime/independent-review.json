@@ -1,0 +1,141 @@
+{
+  "reviewedCommit": "cce4aa92813ea0778fb7e266f455d05834149fbf",
+  "fixCommits": [
+    "4373cc96a65dc07ebb3b43b7e51c26dae5653aba",
+    "a3957cb63d886be36c8edd9558ac0e9b7a339aa7"
+  ],
+  "glueCommits": [
+    "2d20859cde4057f9e649a45b07ec2a09b767b9ae",
+    "e4153723ff193e650960d592faf67d3b77a67e30",
+    "cce4aa92813ea0778fb7e266f455d05834149fbf"
+  ],
+  "followupReviewed": [
+    "ac8951c44f18eb8e1b78db5d002a4ca52bc0a8d5",
+    "c7c4e89601fd413d94c3a52b34a555f74f2b48be"
+  ],
+  "scope": "Focused C5 exception-restart and initial-output fixes, CLI/WASM/worker registration, SRAM image framing, explicit boot mode and capability boundaries. Fixed commit archive used for source and isolated five-crate tests. No production files modified.",
+  "toolchain": {
+    "rust": "1.99.1 stable",
+    "rustJobs": 2,
+    "rustProfile": "test/debug",
+    "nodeAbi": "22.23.1",
+    "nodeFocusedJs": "26.8.2"
+  },
+  "artifacts": {
+    "wasm": {
+      "sha256": "bd1c688cff2cbd2ac608761dbe122d0c2346f65ea3d0a6e53d3034ee170ba3ef",
+      "bytes": 5000313
+    },
+    "probe": {
+      "sha256": "2db5f2a79411f8b529a690e6369bd65a32f270a204ce54806debeba3b3f5f7f3",
+      "bytes": 560
+    },
+    "cliBefore": {
+      "sha256": "f0a6060a597094e4339b7f16f79a5920e619f85bb46479ffeee360e94af9b6a1",
+      "bytes": 4637032
+    },
+    "cliAfter": {
+      "sha256": "2aa15b1f6cb45802697f287d85317df6b06a6e5fe0ddbea91aa44130e9a04f44",
+      "bytes": 4637032
+    },
+    "paddedApp": {
+      "sha256": "d6af3fc9809fdeabbbe13d8ac5c768e6323bd0f3c70f48bd0f08d882a4ba6106",
+      "bytes": 4194304,
+      "recipe": "Append 0xff to the unmodified 560-byte probe.bin until the file is exactly 4 MiB."
+    },
+    "faultApp": {
+      "sha256": "c47a8da487486f8fcf7fcdb1111c1166bca186b7fc1f4882d3930dc101b0d26d",
+      "bytes": 560,
+      "recipe": "Replace first SRAM instruction at file offset 32 with actual opcode 0x00002283 (lw t0,0(zero)); recompute XOR byte 527 and appended SHA-256 bytes 528..560."
+    }
+  },
+  "findings": [
+    {
+      "priority": "P2",
+      "status": "fixed and independently reproduced",
+      "commit": "cce4aa92813ea0778fb7e266f455d05834149fbf",
+      "file": "cli/src/lib.rs",
+      "line": 775,
+      "title": "Oversized valid C5 application panics at CLI staging write",
+      "trigger": "esp32sim --chip c5 --boot app --app <probe padded to 4 MiB> --max-insns 1",
+      "before": {
+        "exit": 101,
+        "panic": "called Result::unwrap() on Err: C5 app staging exceeds configured flash capacity"
+      },
+      "fix": "ac8951c44f18eb8e1b78db5d002a4ca52bc0a8d5",
+      "after": {
+        "exit": 2,
+        "message": "C5 app staging exceeds configured flash capacity",
+        "panic": false
+      },
+      "impact": "CLI application-file boundary only; WASM returns an error and JS rejects FLASH_OVERFLOW."
+    }
+  ],
+  "checks": {
+    "machine": {
+      "command": "CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=<isolated-target> cargo +stable test -p esp32c5 --test machine -- --nocapture",
+      "passed": 4,
+      "exceptionRecovery": "Actual lw-at-zero causes Exceptions(1); reboot restores staged app, READY and UART IRQ/LED. A second actual fault causes Exceptions(2); boot_app restores READY/IRQ. Totals remain cumulative; ceilings renew to 2/3.",
+      "initialOutput": "Both Stamp-C5 boards start with actual off LEDs and generation 1; READY keeps 1, UART0 byte '1' gives blue at 2, byte '0' gives off at 3, wrong-pin 'W' keeps 3.",
+      "perSku": {
+        "cycles": 14000,
+        "slots": 14000,
+        "retiredInstructions": 437,
+        "interrupts": 5,
+        "resets": 1,
+        "uartBytes": 41
+      }
+    },
+    "wasmAbi": {
+      "boards": [
+        "stamp-c5",
+        "stamp-c5-dip"
+      ],
+      "memoryRejections": 14,
+      "loaderErrors": "Truncated header, wrong chip, bad XOR, unknown kind 999, valid oversized app and load_at 0xffffffff all return error without a WASM trap.",
+      "rom": "Boot returns error before and after app loading; actual official ROM ELF load also returns a bounded SRAM-range error. No ROM execution attempted.",
+      "initialOutput": "Each board emits real UART READY and ring [[0,0,0]] after the normal web-push deadline.",
+      "faultRecovery": "Each board executes 2 rounds of actual lw-at-zero fault (run stop 4), reloads original app and emits fresh READY, then UART0 bytes '1'/'0' yield blue/off rings.",
+      "cleanup": "Each emulator deleted in finally; ABI allocations freed. JIT compilation throws if unexpectedly invoked; none occurred."
+    },
+    "cli": {
+      "command": "esp32sim --chip c5 --app <probe.bin> --max-insns 2000 [--board stamp-c5|stamp-c5-dip]",
+      "positive": "Both boards execute real READY using the default app-direct mode; exit 0.",
+      "rejections": [
+        "flash0",
+        "flash8",
+        "psram1",
+        "ROM mode",
+        "ROM path",
+        "bootloader",
+        "merged flash",
+        "WiFi"
+      ],
+      "rejectionExit": 2,
+      "exceptionCeiling": "Actual fault image stops at Exceptions(1), with 1 dispatched instruction, read fault 0 and no fabricated READY; generic prepare preserves the C5 default ceiling."
+    },
+    "javascript": {
+      "command": "node --test tools/platform-c5-test.mjs tools/platform-local-firmware-test.mjs",
+      "passed": 6,
+      "scope": "C5 framing/ranges/entry/revision/integrity, both SKU loadkind3/app-direct reset, remote explicit mode, manifest restrictions and disabled ROM/storage/audio/network; ordinary local build/merged-image validation for S3/C6/P4. Worker doubles used in C5 protocol tests are not execution evidence."
+    },
+    "sourceReview": "Ordinary Socs retain EXCEPTION_BUDGET_AFTER_RESET=None; added branches in runtime, worker, memory configuration and capabilities are C5-only. Source identifies limited SRAM execution and does not claim stock ROM/IDF, RF, audio, SD, OTA, persistent Flash or physical UART timing."
+  },
+  "conclusion": "No remaining P0/P1/P2 found within this focused scope after ac8951c4. The CLI P2 and its failing input are retained.",
+  "limits": [
+    "Not a whole-task acceptance or full CI review.",
+    "No browser run in this review; public UI flow is covered by separate receipts.",
+    "Did not repeat previous register audit, ROM boundary run or randomized parser stress.",
+    "Native cold reset and explicit boot_app tested; WASM explicit app restart tested. Platform worker lifecycle receipt was inspected separately, not rerun here.",
+    "Ordinary-chip conditional source review and local-image parser tests do not establish full ordinary-chip execution compatibility."
+  ],
+  "retainedLocalEvidence": {
+    "abiHarness": "/tmp/c5-glue-review-abi.mjs",
+    "abiReceipt": "/tmp/c5-glue-review-abi.json",
+    "cliNegative": "/tmp/c5-glue-review-cli-negative.log",
+    "cliFixed": "/tmp/c5-glue-review-cli-fixed.json",
+    "cliModes": "/tmp/c5-glue-review-cli-modes.json",
+    "focusedJs": "/tmp/c5-glue-review-js-focused.log"
+  },
+  "privacy": "Curated facts only; no home-directory names, host identity, process inventory, agent-session narrative, raw event arrays or unrelated logs included. Temporary paths identify reproducibility artifacts."
+}

@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {createManufacturerModel} from '../web/platform/manufacturer-model.js';
+import {applyShellAppearance} from '../web/platform/shell-appearance.js';
 const nativeFetch=globalThis.fetch;
+const nativeDocument=globalThis.document;
 const vertices=new Float32Array([-1,-1,0,0,0,1,1,-1,0,0,0,1,0,1,0,0,0,1]);
 const fixture={unit:'mm',strideFloats:6,binary:'geometry.bin',artifacts:{'geometry.bin':'a'.repeat(64)},parts:[{name:'main-board',role:'pcb',byteOffset:0,vertexCount:3,color:'#225522'}]};
 const product={id:'test-bare-board',model:{url:'./assets/test-bare-board/model.json'}};
@@ -10,6 +12,15 @@ try {
  const bare=createManufacturerModel(product,null);await bare.ready;
  assert.deepEqual(bare.group.userData.shellMeshes,[],'Explicit PCB roles must not turn into a recolorable case');assert.equal(bare.parts.shell,undefined);
  assert.equal(requests[0].options.cache,'no-store');assert.equal(requests[1].url.searchParams.get('sha256'),'a'.repeat(64),'Changed geometry gets an independent cache identity');bare.dispose();
+ metadata={...fixture,parts:[{...fixture.parts[0],name:'case',role:'shell'},{...fixture.parts[0],name:'blade',role:'propeller',material:{opacity:.38,roughness:.25,metalness:0}}]};
+ const translucent=createManufacturerModel(product,null);await translucent.ready;const blade=translucent.parts.blade.material;
+ assert.equal(blade.opacity,.38);assert.equal(blade.transparent,true);assert.equal(blade.depthWrite,false);assert.equal(blade.roughness,.25);assert.equal(blade.metalness,0);
+ assert.equal(translucent.parts.case.material.opacity,1);assert.equal(translucent.parts.case.material.depthWrite,true);
+ for(const shell of translucent.group.userData.shellMeshes)applyShellAppearance(shell,{shell:{color:'#8054b3',opacity:.35,finish:'plastic'}});
+ assert.equal(blade.opacity,.38);assert.equal(blade.color.getHexString(),'225522','Propeller tint stays independent of custom shell appearance');translucent.dispose();
+ for(const material of [null,[],{opacity:-.1},{opacity:1.1},{roughness:'0.5'},{metalness:null},{side:2}]) {
+  metadata={...fixture,parts:[{...fixture.parts[0],material}]};const malformed=createManufacturerModel(product,null);await assert.rejects(malformed.ready,/Invalid model part material/);malformed.dispose();
+ }
  const port={id:'grove',kind:'connector-visual',connectorType:'HY2.0-4P',geometry:{centerMm:[0,2,0]},sourceIds:['fixture'],pinOrder:['signal2','signal1','vcc','gnd']};
  metadata={...fixture,derivedParts:[port]};const unknown=createManufacturerModel(product,null);await unknown.ready;assert.ok(unknown.parts.grove);assert.equal(unknown.connectors.grove,undefined,'Visible socket is not automatically connectable');unknown.dispose();
  metadata={...fixture,derivedParts:[{...port,allowConnections:true}]};const verified=createManufacturerModel(product,null);await verified.ready;assert.deepEqual(verified.connectors.grove.pinOrder,port.pinOrder);verified.dispose();
@@ -21,6 +32,9 @@ try {
  for(const invalid of [[[1,0],[2,-1]],[[0,0],[0,2]],[[1,0],[1,6000]],Array.from({length:129},(_,i)=>[1,i])]) {
   metadata={...fixture,derivedParts:[{id:'invalid',kind:'lathe',geometry:{profileMm:invalid}}]};const malformed=createManufacturerModel(product,null);await assert.rejects(malformed.ready,/Invalid lathe profile/);malformed.dispose();
  }
+ const plate={id:'paper-carrier',kind:'plate',color:'#eeeeee',geometry:{outlineMm:[[-5,-4],[5,-4],[5,4],[-5,4]],holesMm:[[[-1,-1],[1,-1],[1,1],[-1,1]]],depthMm:.08,centerMm:[0,0,3]}};
+ metadata={...fixture,derivedParts:[plate]};const paper=createManufacturerModel(product,null);await paper.ready;assert.ok(paper.parts['paper-carrier'].isMesh);assert.equal(paper.parts['paper-carrier'].position.z,3);assert.deepEqual(paper.group.userData.shellMeshes,[]);paper.dispose();
+ metadata={...fixture,derivedParts:[{id:'unsupported-marker',kind:'pcb-placeholder',geometry:{shape:'polygon',sizeMm:[10,8,1],outlineMm:plate.geometry.outlineMm,holesMm:plate.geometry.holesMm,labelSizeMm:[1,.5]}}]};const unsupportedMarker=createManufacturerModel(product,null);await assert.rejects(unsupportedMarker.ready,/no continuous support/);unsupportedMarker.dispose();
  const lens={id:'rgb-window',kind:'box',color:'#69746a',ledIndex:0,geometry:{sizeMm:[2.8,.4,.1],centerMm:[0,0,4.64]}};
  const recess={id:'hex-recess',kind:'cylinder',geometry:{radiusMm:1,depthMm:.1,radialSegments:6},color:'#111111'};
  metadata={...fixture,derivedParts:[recess]};const screw=createManufacturerModel(product,null);await screw.ready;
@@ -41,5 +55,22 @@ try {
   metadata={...fixture,derivedParts:[{id:'pcb-main',kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],labelOffsetMm:value}}]};const invalid=createManufacturerModel(product,null);await assert.rejects(invalid.ready,/Invalid PCB placeholder label offset/);invalid.dispose();
  }
  metadata={...fixture,derivedParts:[{...port,housingVariant:'open-roof'},{id:'pcb-main',kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],labelOffsetMm:[0,-5]}}]};const light=createManufacturerModel(product,null);await light.ready;assert.equal(light.parts.grove.getObjectByName('socket-top'),undefined);assert.ok(light.parts.grove.getObjectByName('socket-top-rear'));light.dispose();
+ // Inspect the actual marker surfaces: the known photo face must remain clear,
+ // while turning the board over still exposes its unknown internal provenance.
+ globalThis.document={createElement:()=>({getContext:()=>({fillText(){}})})};
+ for(const [labelSide,sides] of [[undefined,[-1,1]],['front',[1]],['back',[-1]]]) {
+  metadata={...fixture,parts:[{...fixture.parts[0],name:'case',role:'shell'}],derivedParts:[{id:'exposed-pcb',kind:'pcb-placeholder',color:'#161e16',geometry:{sizeMm:[20,2,1],labelSide}}]};
+  const exposed=createManufacturerModel(product,null);await exposed.ready;const board=exposed.parts['exposed-pcb'],markers=board.children.filter(m=>m.material.map);
+  assert.deepEqual(markers.map(m=>Math.sign(m.position.z)).sort(),sides);
+  for(const marker of markers){marker.geometry.computeBoundingBox();assert.ok(marker.geometry.boundingBox.max.y<=1);assert.equal(marker.rotation.y,marker.position.z<0?Math.PI:0);}
+  for(const shell of exposed.group.userData.shellMeshes)applyShellAppearance(shell,{shell:{color:'#8054b3',opacity:.35,finish:'plastic'}});
+  assert.equal(board.children[0].material.color.getHexString(),'161e16');assert.equal(board.children[0].material.opacity,1);exposed.dispose();
+ }
+ metadata={...fixture,derivedParts:[{id:'small-marker',kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],labelSide:'front',labelSizeMm:[5,1.25],labelOffsetMm:[0,6.5]}}]};const small=createManufacturerModel(product,null);await small.ready;const marker=small.parts['small-marker'].getObjectByName('small-marker-unknown-front');assert.equal(marker.geometry.parameters.width,5);assert.equal(marker.position.y,6.5);small.dispose();
+ for(const labelSizeMm of [null,[0,1],[4],[21,1],[4,17]]){metadata={...fixture,derivedParts:[{kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],labelSizeMm}}]};const invalid=createManufacturerModel(product,null);await assert.rejects(invalid.ready,/Invalid PCB placeholder label dimensions/);invalid.dispose();}
+ for(const geometry of [{labelSide:'hidden'},{labelSide:0}]) {
+  metadata={...fixture,derivedParts:[{kind:'pcb-placeholder',geometry:{sizeMm:[20,16,1],...geometry}}]};const invalid=createManufacturerModel(product,null);await assert.rejects(invalid.ready,/Invalid PCB placeholder label side/);invalid.dispose();
+ }
+ metadata={...fixture,derivedParts:[{kind:'pcb-placeholder',color:'green',geometry:{sizeMm:[20,16,1]}}]};const invalidPcb=createManufacturerModel(product,null);await assert.rejects(invalidPcb.ready,/Invalid PCB placeholder color/);invalidPcb.dispose();
  console.log('ok manufacturer loader: bare-PCB material isolation, source-verified connector boundary, asset cache identity and invalid label rejection');
-} finally {globalThis.fetch=nativeFetch;}
+} finally {globalThis.fetch=nativeFetch;if(nativeDocument===undefined)delete globalThis.document;else globalThis.document=nativeDocument;}

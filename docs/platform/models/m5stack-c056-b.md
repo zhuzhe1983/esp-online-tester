@@ -1,47 +1,30 @@
-# M5Stack Stamp-C3 外观与知识入库
+# Stamp-C3（C056-B）模型核验
 
-ESP32-C3 4MB模块，13路GPIO与USB-C；C056-B官方包装为多模块组合，模型展示其中单个模块，贴纸与可拆塑料盖分开。
+模型展示五件包装中的一块 Stamp-C3，保留厂家外盖的 4,172 个原始 STL 三角面；没有按包装数量复制装配，也没有把可选排针预装到板上。[官方文档](https://docs.m5stack.com/en/core/Stamp-C3)与固定源提交 `e29c139cbc7c80b5ccc5557e5ab8025a7a19a109` 的来源、时间和 SHA-256 见[知识记录](../../../web/platform/knowledge/m5stack-c056-b.json)及[来源审计](../evidence/m5stack-c056-b/source-audit.json)。
 
-来源：[官方产品文档](https://docs.m5stack.com/en/core/Stamp-C3)，M5_Hardware 固定 `e29c139cbc7c80b5ccc5557e5ab8025a7a19a109`。逐源 URL、UTC、SHA-256、下载状态见 [knowledge](../../../web/platform/knowledge/m5stack-c056-b.json) 与 [source audit](../evidence/m5stack-c056-b/source-audit.json)。旧抓取保留原始时间，不伪造刷新日期。
+PCB 的外露背面采用同 SKU 官方照片，按四个针孔中心和 2.54 mm 间距校正透视，另用中心孔核对，误差约 0.15 mm。原图为 800×800 多产品照片，板子只占约两百多像素；输出贴图不会补出原图没有的细节。黑色板材、通孔及板边有独立几何，照片不延伸到孔壁、侧壁或 USB 插口。盖内正面布局仍然未知，保留 `UNKNOWN`，可通过分开展示查看。照片外观不等于 PCB 布局或电气验证。
 
-Original manufacturer components selected from assembled cluster; other components excluded with reasons. One rigid global transform, no scaling.
+中心轴按厂家 CAD 和尺寸图改为 `[0,2] mm`，螺丝头、六角凹孔、黄铜螺柱和贴纸孔共用该轴。官方注明一枚 M2×4 内六角沉头螺丝；照片确认一枚黄铜支撑。模型补齐可见部分，螺柱高度和可见头部尺寸属于照片估算，隐藏螺纹与安装结构未建模。耐高温纸贴是独立薄片，承托印刷贴图并跨越实际外盖开口；有效纸边在外盖边界内，中心孔不覆盖螺丝。
 
-[model-plan.json](../../../web/platform/assets/m5stack-c056-b/model-plan.json) 记录组件选择、刚体变换、照片裁切、纹理投影与估算表面；厂家几何不缩放。STL 保留源三角形；STEP 使用 OpenCascade7.8.1.1 以0.05mm弦偏差/0.2rad角度细分。UNKNOWN 是中性占位，未编造 PCB 走线或未核实电子元件。
+| 检查 | 结果 |
+| --- | --- |
+| 厂家外盖包围盒 | 20×34×4.5 mm，保持原值；源三角面误差 0 mm |
+| 独立产品尺寸图 | 20×34×4.6 mm；板厚 1.0 mm，未把两种厚度强行拉成一致 |
+| 正面照片轮廓 | IoU 0.989164，通过 0.95 门槛；不代表内部结构或贴图独立验收 |
+| 背面孔位 | 四个端部针孔校准；中心孔独立误差约 0.15 mm，小于 0.3 mm 照片估算容差 |
+| 纸边、中心硬件、支撑 | 原色、金色、紫透及斜侧近景复核，见[外观对照](../evidence/m5stack-c056-b/appearance-review.webp) |
+| 原文件离线重建 | 13 个资源 hash 一致，几何与模型契约一致 |
 
-| 检查 | 实测或误差 mm | 目标 mm | 结果 |
-| --- | ---: | ---: | --- |
-| heat-resistant-cover source-fidelity | 0.0 | 0 | 通过 |
-| width | 20.0 | 20 | 通过 |
-| height | 34.0 | 34 | 通过 |
-| depth | 4.525000095367432 | 4.6 | 通过 |
+[机械记录](../evidence/m5stack-c056-b/mechanical-refresh.json)保留估算值、旧验证失败及来源身份冲突。官方 C3 的 PcbDoc 链接实际包含一个 `M5STAMP-C3U_SMD_ONLY` footprint，且无实体或内嵌模型；KiCad footprint 也没有三维模型，因此没有将它们冒充完整 C3 板级 CAD。正面、背面、拆盖未知面及支撑近景见[验证记录](../evidence/m5stack-c056-b/verification.json)和[背面对照](../evidence/m5stack-c056-b/back-comparison.webp)。斜视仅作定性检查，未宣称完整 1:1 验收。
 
-实际平台 `manufacturer-model.js` 的 headless 渲染与原照片对照在 [verification.json](../evidence/m5stack-c056-b/verification.json)：
-
-- front: fail; IoU 0.7353848421959877
-- front-oblique: qualitative-only; IoU 0.2338020580156606
-- side-oblique: qualitative-only; IoU 0.2081921240404084
-
-正反视图只有照片确属近正投影且原始型号一致时才用0.95轮廓门槛。侧视/斜视保留为定性检查，不以轮廓掩盖标签、组件或装配差异。引用照片的纹理不是独立验证依据；未通过/缺失项不会改写成通过。
-
-厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 unavailable，官方固件入口仅参考，未验证版本/hash/镜像不填猜测值。
-
-重生成：
+重建使用仓库中的固定计划，不依赖私有缓存：
 
 ```sh
-python tools/onboard-lane-01.py prepare --ids m5stack-c056-b
-python tools/onboard-lane-01.py build --ids m5stack-c056-b
+python tools/rebuild-product-model.py plan m5stack-c056-b
+python tools/rebuild-product-model.py build m5stack-c056-b --scratch /tmp/c056-model-rebuild
+node --test tools/platform-knowledge-test.mjs tools/platform-manufacturer-model-test.mjs tools/platform-plate-geometry-test.mjs
 ```
 
-通过受跟踪的 headless 浏览器打开 `web/platform/review-lane-01.html?id=m5stack-c056-b`；按 model reviewViews 保存800×800正反侧画布到 `output/playwright/m5stack-c056-b-front.png` 等，再运行：
+厂家 CAD 保留其 MIT 许可。厂家照片及衍生纹理没有已核实的独立开放许可，不套用项目 MIT。模型状态仍为 `partial`；本记录只验外观与几何，固件执行结论由板级运行时记录独立提供。
 
-```sh
-python tools/onboard-lane-01.py verify --ids m5stack-c056-b
-python tools/onboard-lane-01.py publish --ids m5stack-c056-b
-```
-
-当前限制：
-
-- Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.
-- No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.
-- PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.
-- Source STL is removable cover only, not populated board. Actual documented heat-resistant film is separate from cover; no PCB photo substituted for CAD.
+G3 用户键采用源 CAD 弹片内侧 9 × 6 mm 命中区，位置 [0, -4.5, 2.285] mm，绑定运行时 `button`。按键面随外盖一起分开查看，EN 复位不绑定为 GPIO 用户键。实际 3D 点击与客体输出另见交互回执。

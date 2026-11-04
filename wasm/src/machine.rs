@@ -33,7 +33,10 @@ impl<S: Soc> MachineApi for Machine<S> {
         self.load_input(esp_soc::LoadKind::try_from(kind)?, d)
     }
     fn write_flash(&mut self, off: usize, d: &[u8]) -> Result<(), String> { Machine::write_flash(self, off, d) }
-    fn boot(&mut self, app_direct: bool) -> Result<(), String> { if app_direct { self.boot_app(0x10000).map(|_| ()) } else { self.boot_rom(); Ok(()) } }
+    fn boot(&mut self, app_direct: bool) -> Result<(), String> {
+        if S::NAME == "esp32c5" && !app_direct { return Err("Stamp-C5 currently supports SRAM app-direct images; ROM/Flash boot is not implemented".into()); }
+        if app_direct { self.boot_app(0x10000).map(|_| ()) } else { self.boot_rom(); Ok(()) }
+    }
     fn board_name(&self) -> String { self.bus.board_ref().name().to_string() }
     fn chip(&self) -> &'static str { S::NAME }
     fn web(&self) -> Option<&WebServer> { self.web.as_ref() }
@@ -143,6 +146,7 @@ impl<R: esp32p4::Revision> MachineApi for esp32p4::coproc::CoSim<R> {
 pub(super) enum MachineKind {
     S3(Box<esp32s3::Machine>),
     C3(Box<esp32c3::Machine>),
+    C5(Box<esp32c5::Machine>),
     C6(Box<esp32c6::Machine>),
     Esp32(Box<esp32::Machine>),
     P4(Box<esp32p4::Machine>),
@@ -155,7 +159,7 @@ impl MachineKind {
     /// Read-only primary-chip flash export; a co-processor has its own flash and is not
     /// included. No guest instruction, tick or cache state changes.
     pub fn flash(&self) -> &[u8] {
-        match self { Self::S3(m) => &m.bus.flash, Self::C3(m) => &m.bus.flash, Self::C6(m) => &m.bus.flash, Self::Esp32(m) => &m.bus.flash, Self::P4(m) => &m.bus.flash,
+        match self { Self::S3(m) => &m.bus.flash, Self::C3(m) => &m.bus.flash, Self::C5(m) => &m.bus.flash, Self::C6(m) => &m.bus.flash, Self::Esp32(m) => &m.bus.flash, Self::P4(m) => &m.bus.flash,
             Self::P4Rev3(m) => &m.bus.flash, Self::P4C6(m) => &m.p4.bus.flash, Self::P4Rev3C6(m) => &m.p4.bus.flash }
     }
     pub fn s3_mut(&mut self) -> Option<&mut esp32s3::Machine> {
@@ -166,14 +170,14 @@ impl MachineKind {
 impl std::ops::Deref for MachineKind {
     type Target = dyn MachineApi;
     fn deref(&self) -> &Self::Target {
-        match self { Self::S3(m) => m.as_ref(), Self::C3(m) => m.as_ref(), Self::C6(m) => m.as_ref(), Self::Esp32(m) => m.as_ref(), Self::P4(m) => m.as_ref(),
+        match self { Self::S3(m) => m.as_ref(), Self::C3(m) => m.as_ref(), Self::C5(m) => m.as_ref(), Self::C6(m) => m.as_ref(), Self::Esp32(m) => m.as_ref(), Self::P4(m) => m.as_ref(),
             Self::P4Rev3(m) => m.as_ref(), Self::P4C6(m) => m.as_ref(), Self::P4Rev3C6(m) => m.as_ref() }
     }
 }
 
 impl std::ops::DerefMut for MachineKind {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        match self { Self::S3(m) => m.as_mut(), Self::C3(m) => m.as_mut(), Self::C6(m) => m.as_mut(), Self::Esp32(m) => m.as_mut(), Self::P4(m) => m.as_mut(),
+        match self { Self::S3(m) => m.as_mut(), Self::C3(m) => m.as_mut(), Self::C5(m) => m.as_mut(), Self::C6(m) => m.as_mut(), Self::Esp32(m) => m.as_mut(), Self::P4(m) => m.as_mut(),
             Self::P4Rev3(m) => m.as_mut(), Self::P4C6(m) => m.as_mut(), Self::P4Rev3C6(m) => m.as_mut() }
     }
 }

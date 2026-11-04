@@ -52,6 +52,17 @@ cat "$MODEL_REBUILD_DIR/comparison/m5stack-c008.json"
 
 只恢复构建实际使用的 CAD、参考照片、纹理源和许可文件，不抓取所有历史页面/PDF，更不会下载固件。来源原始抓取时间保持不变，临时目录中的 hydration 回执另记本次取得或核对时间。
 
+产品使用另一个上游的标准机械件时，可在计划中声明 `supportingAssets`，保留其许可、作者说明或实际引用装配坐标的原始封装文件：
+
+```json
+"supportingAssets": [
+  {"sourceId": "upstream-license", "file": "LICENSE-Upstream.txt"},
+  {"sourceId": "official-footprint", "file": "official-footprint.kicad_mod"}
+]
+```
+
+每项必须指向已有成功下载且固定哈希的来源。`hydrate` 离线校验这些输入，导出器按原字节复制，输出哈希和来源 ID 纳入重建比较；不会把第三方许可改成厂家或项目 MIT。目标只能是无路径的文件名，不能与几何、主许可、纹理、源文件或参考照片的输出名冲突，也不能通过符号链接写出目录。未声明此字段的旧计划保持原有行为和元信息格式。
+
 ## 输出与通过条件
 
 所有新文件都写入指定临时目录：

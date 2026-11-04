@@ -1,13 +1,13 @@
 {
   "schemaVersion": "1",
-  "checkedAt": "2026-10-26T20:27:09Z",
+  "checkedAt": "2026-11-03T21:55:10Z",
   "productId": "m5stack-k141",
-  "modelSha256": "589cb06209ffb56600da9cb21b00f0674e09da06e5b4e603abca67690c2c9e88",
-  "geometrySha256": "c5764bb423e4c76c0f632ceadb8f1df8c570772c3a3924f608bf4297994c6565",
+  "modelSha256": "3b998d866e4e6ca9e16b75503731aa3bb171bd0404f3e514da15eac7bf9f6009",
+  "geometrySha256": "8eada24face950933c7ee7d2d649a1bcc2caf48c74402dbde4e583ad48565e31",
   "sourceSha256": "91745b5fc0d2a4bb7ac866271b03bcbd5324fbde2b7e51c220cb66fdfe4470d6",
   "dimensions": [
     {
-      "name": "upper-latch source-fidelity",
+      "name": "front-rgb-light-pipe source-fidelity",
       "errorMm": 1.9073486328125e-06,
       "toleranceMm": 0.05,
       "pass": true,
@@ -56,6 +56,20 @@
       "sourceId": "manufacturer-cad-f927ebc348"
     },
     {
+      "name": "native-key-engravings source-fidelity",
+      "errorMm": 1.7881393432617188e-07,
+      "toleranceMm": 0.05,
+      "pass": true,
+      "sourceId": "manufacturer-cad-f927ebc348"
+    },
+    {
+      "name": "native-m3-blind-bore-floors source-fidelity",
+      "errorMm": 0.0,
+      "toleranceMm": 0.05,
+      "pass": true,
+      "sourceId": "manufacturer-cad-f927ebc348"
+    },
+    {
       "name": "width",
       "axis": 0,
       "valueMm": 72,
@@ -91,7 +105,7 @@
       "view": "front",
       "sourceId": "product-photo-d0a96a17d6",
       "sourceSha256": "e760135ad901a3604cb79188aa8609cb86a89fdbef28c2d52d910e5f59c3258c",
-      "renderSha256": "aa1072e2f9f339718cadddfa8a4a6890b6e292d66c018d191e910f0b322b7b17",
+      "renderSha256": "c4f793a3449e9619573fcb71993faf2d0b424b2e6cbbeecf8226bcd55dc78c50",
       "renderMaskSha256": "7eae797e21c7149565371d95e079c572cb9ea2883e19124d83ca84a7c8f27e2d",
       "silhouetteIoU": 0.9354648960943732,
       "status": "fail",
@@ -134,7 +148,7 @@
       "view": "back",
       "sourceId": "product-photo-78481c3a59",
       "sourceSha256": "8f9b0990b46f5228a7241291eb1e7551454d263e451ccd7fd7398a0ce846f167",
-      "renderSha256": "29ce01d35ad53d30e5303d8f494d5faaff341e24023806caf794f2b96fb33af0",
+      "renderSha256": "084fb4a1a71ebbd6ded2ae3bd8f04504a9a2af49e4620d143e533b4b614e12c7",
       "renderMaskSha256": "1550c2f8d1bfe9f22e1c1cf914f76c69e70fe54efeb6d83a75fcafa3ac91d078",
       "silhouetteIoU": 0.9222302979960544,
       "status": "fail",
@@ -177,9 +191,9 @@
       "view": "side",
       "sourceId": "product-photo-52c55c8576",
       "sourceSha256": "3efb1512ab4af3fc17a0e8c097a19c07e1e0201b05eb13dc19ab37ca76072c67",
-      "renderSha256": "575a733718ec1237d38ccf45725da3ddf69558ffe6a1a3bfbbd957f20187895b",
-      "renderMaskSha256": "c8fec1a56ed093f085104be51da67c95e53fb2a086428c5887ad5247b5ece397",
-      "silhouetteIoU": 0.8904653884498129,
+      "renderSha256": "abb7ece53f8c846aa1c57a57ab99afb315319607d31a40fb034efa8a5605741b",
+      "renderMaskSha256": "48b8d4d9033c5a0587f00146ce87966834d438b5c2a9d4198bdc3f864e90d8c1",
+      "silhouetteIoU": 0.8920944877340709,
       "status": "qualitative-only",
       "minimum": null,
       "camera": {
@@ -202,19 +216,24 @@
         "basis": "Side camera from80mm assembled height, labels not projected onto unverified connector details."
       },
       "method": "Render mask uses unchanged geometry and per-material black while retaining texture alpha/alpha-test; transparent decal canvas never becomes an opaque silhouette. 800x800; min RGB<245; largest external filled contour. Image-derived scale/center and rigid camera only; labels, controls, internal surfaces are not certified by silhouette."
+    },
+    {
+      "view": "annotated-reference",
+      "sourceId": "product-photo-e38c32e489",
+      "status": "unmeasured"
     }
   ],
   "status": "partial",
   "limitations": [
-    "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
-    "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
-    "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-    "External screw heads, terminal block exteriors and Grove mouths are now separate image-measurement parts; their unseen internals and side CAN/RS485 connector details remain unverified.",
-    "Back shell is untextured manufacturer CAD; small metal screw heads/inserts and underside detail remain incomplete. Bottom relay-label extent differs between photo and shell CAD and is not a passed dimension claim.",
-    "Paper/optical projection is isolated from molded shell; small printed markings and hidden hardware not supplied by source CAD may remain incomplete."
+    "Native manufacturer enclosure/Stamp cover/key/light-pipe geometry retained without scaling; model appearance does not establish runtime support.",
+    "Main enclosure PCB layout is unknown and stays neutral UNKNOWN. Stamp module adds a black1mm board envelope with UNKNOWN on hidden back; PIN1.27 mounting details are not fabricated.",
+    "Only externally visible rear screw heads and brass M3collars added from exact photographs/native hole centers. Head dimensions and materials are approximate; hidden shafts, threads and standoffs remain unverified.",
+    "External terminal bodies/heads and Grove/USB mouths are source-backed simplified geometry. Side CAN/RS485 and industrial terminal internals remain incomplete.",
+    "No physical hardware or calibrated optical measurements. Front RGB is bound to the native light pipe identified by official annotation; internal Stamp LED remains covered/unmapped in3D.",
+    "Stamp paper registration uses77mm front shell, separately from80mm rear-latch envelope. The unchanged paper intentionally spans native cover pockets as in the photograph; its alpha-visible outer boundary remains within the carrier."
   ],
-  "reviewScriptSha256": "a004aa92d36cb0ba8bf9ec3dc71832ba8c6eaefb2d72aef0c6dd7c0343f753bf",
-  "buildScriptSha256": "7a9e872c27689850aa88c2a9cc0225105259d586808c99bb39ba00c7d4ee0e38",
-  "genericRendererSha256": "80b8ecf69506eb6f7a60e213e1a68f8241964a9c31548985ba8eccc0f9977788",
+  "reviewScriptSha256": "03d90679ae6252b2cd9e65e61aa81b4a0fab25168c8bfc74aa61c251c5cb9800",
+  "buildScriptSha256": "0eaf235a441016d033c59f162ccc6ebc851deb7137aa4ef2d4526e0324a028d7",
+  "genericRendererSha256": "7293a86c1c57513747ab62d6034faa5389b7b469bce2d017913ee57822f4c8cd",
   "cameraNotes": "Camera scale/center calibrated to original official silhouette and independent body dimensions; no geometry rescaling."
 }

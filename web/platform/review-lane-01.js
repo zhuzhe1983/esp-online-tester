@@ -10,13 +10,12 @@ function dispose() { if (!current) return; current.model?.dispose(); current.gro
 async function load(id) {
  if (!/^[a-z0-9][a-z0-9-]{0,79}$/.test(id)) throw new Error('Invalid product id'); const mine = ++token; dispose(); hidden = false; document.body.dataset.ready = 'false';
  const base = new URL(`./assets/${id}/`, import.meta.url), response = await fetch(new URL('model.json', base),{cache:'no-store'}); if (!response.ok) throw new Error(`Model HTTP${response.status}`); const meta = await response.json();
- const planResponse=await fetch(new URL('model-plan.json',base),{cache:'no-store'}),plan=planResponse.ok?await planResponse.json():{};
- const display=plan.catalog?.display || (meta.presentation?.screen?{width:1,height:1}:null);
+ const catalog=await (await fetch(new URL('./catalog/products.json',import.meta.url),{cache:'no-store'})).json(),product=catalog.items.find(p=>p.id===id);
+ if(!product)throw Error('Missing catalog product');const display=product.display;
  const canvas = document.createElement('canvas'); canvas.width = canvas.height = 2; const context = canvas.getContext('2d'); context.fillStyle = /e-?paper|eink/i.test(display?.type || display?.technology || '') ? '#deded4' : '#111719'; context.fillRect(0,0,2,2); const screenTexture = new THREE.CanvasTexture(canvas); screenTexture.colorSpace = THREE.SRGBColorSpace;
- const product = {id, model: {url: `./assets/${id}/model.json`}, display};
  const model = createManufacturerModel(product, screenTexture), group = model.group, textures = new Map([['screen', screenTexture]]); current = {id, group, meta, textures, base, model}; scene.add(group); await model.ready;
  for (const object of group.children) if (object.name !== 'pcb-main') object.userData.exterior = true;
- if (mine !== token) return; document.body.dataset.ready = 'true'; document.querySelector('#status').textContent = `${id} · 实际通用渲染器 / ${meta.provenance?.kind === 'source-derived' ? '照片估算模型 · 未完成 1:1 验收' : '厂家 CAD'} / 板级模拟未实现`; show('front'); return meta;
+ if (mine !== token) return; document.body.dataset.ready = 'true'; document.querySelector('#status').textContent = `${id} · 实际通用渲染器 / 外观来源见模型记录 / ${product.runtime?.board ? '板级模型范围见产品目录' : '板级模拟未实现'}`; show('front'); return meta;
 }
 function show(id, options = {}) {
  if (!current) return; view = id; const {meta, base} = current, def = meta.reviewViews?.[id] || {}, body = meta.presentation?.bodySizeMm || [50, 50, 20], span = options.span || def.span || Math.max(...body) * 1.45, target = options.target || def.target || [0, 0, 0]; const position = options.position || def.position || (id === 'front' ? [0, 0, 250] : id === 'back' ? [0, 0, -250] : [250, 0, 0]), up = options.up || def.up || (id === 'side' ? [0, 0, 1] : [0, 1, 0]);

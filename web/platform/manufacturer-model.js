@@ -3,8 +3,11 @@
 import * as THREE from './vendor/three.module.min.js';
 import {createGroveSocket,verifiedGrove} from './grove-geometry.js';
 import {createPcbPlaceholderGeometry} from './pcb-placeholder.js';
+import {createPlateGeometry,plateSupportsRectangle} from './plate-geometry.js';
 import {addRgbLedGlow} from './rgb-led-view.js';
 import {createServoJoints} from './servo-view.js';
+import {createMotorRotors} from './motor-view.js';
+import {createModelInspection} from './model-inspection.js';
 const safeAsset = (name, root) => {
   if (typeof name !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._/-]*$/.test(name) || name.split('/').includes('..')) throw Error('Invalid local model asset');
   return new URL(name,root);
@@ -13,7 +16,7 @@ const vector = (v, fallback=[0,0,0]) => Array.isArray(v)&&v.length===3&&v.every(
 function geometry(values) {const result=new THREE.BufferGeometry(),buffer=new THREE.InterleavedBuffer(new Float32Array(values),6);result.setAttribute('position',new THREE.InterleavedBufferAttribute(buffer,3,0));result.setAttribute('normal',new THREE.InterleavedBufferAttribute(buffer,3,3));result.computeBoundingSphere();return result;}
 function flatLabel(text) {
   if(typeof document==='undefined')return null;
-  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const context=canvas.getContext('2d');context.fillStyle='#f2f2e9';context.font='bold 68px monospace';context.textAlign='center';context.textBaseline='middle';context.fillText(text,256,64);const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
+  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const context=canvas.getContext('2d');context.fillStyle='#f2f2e9';context.font='bold 100px monospace';context.textAlign='center';context.textBaseline='middle';context.fillText(text,256,64);const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
 function visualConnector(type,housingColor,housingVariant) {
   const group=new THREE.Group(),standard=(color,metalness=0)=>new THREE.MeshStandardMaterial({color,metalness,roughness:.55});
@@ -38,7 +41,10 @@ export function createManufacturerModel(product, screenTexture) {
     for(const part of metadata.parts) {
       if(!Number.isInteger(part.byteOffset)||part.byteOffset<0||part.byteOffset%4||!Number.isInteger(part.vertexCount)||part.vertexCount<3||part.vertexCount%3||part.byteOffset+part.vertexCount*24>binary.byteLength)throw Error('Invalid model part bounds');
       const values=new Float32Array(binary,part.byteOffset,part.vertexCount*6);if(!values.every(Number.isFinite))throw Error('Invalid model coordinate');
-      const standard=new THREE.MeshStandardMaterial({color:part.color || '#737b79',roughness:.7,metalness:0});
+      const surface=part.material===undefined?{}:part.material;
+      if(!surface||typeof surface!=='object'||Array.isArray(surface)||Object.keys(surface).some(key=>!['opacity','roughness','metalness'].includes(key))||Object.values(surface).some(v=>!Number.isFinite(v)||v<0||v>1))throw Error('Invalid model part material');
+      const opacity=surface.opacity??1;
+      const standard=new THREE.MeshStandardMaterial({color:part.color || '#737b79',roughness:surface.roughness??.7,metalness:surface.metalness??0,opacity,transparent:opacity<1,depthWrite:opacity===1});
       let regular=values,painted=null,uv=null,texture,decal=false;
       if(part.texture) {
         const projection=part.texture,[xmin,ymin,xmax,ymax]=projection.boundsMm || [];decal=projection.mode==='decal';
@@ -64,7 +70,7 @@ export function createManufacturerModel(product, screenTexture) {
       if(part.controlId){mesh.userData.control=part.controlId;buttons.push(mesh);}
       // Paper is opaque where the alpha mask exists: write depth so a later
       // transparent shell cannot tint it. Cut-out pixels preserve real holes.
-      if(painted?.length){const geom=geometry(painted);geom.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));const face=new THREE.Mesh(geom,new THREE.MeshBasicMaterial({map:texture,transparent:false,depthWrite:true,alphaTest:decal?.5:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));face.name=`${part.name}-photo-surface`;face.userData.inputOccluder=true;group.add(face);}
+      if(painted?.length){const geom=geometry(painted);geom.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));const face=new THREE.Mesh(geom,new THREE.MeshBasicMaterial({map:texture,transparent:false,depthWrite:true,alphaTest:decal?.5:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));face.name=`${part.name}-photo-surface`;face.userData.inputOccluder=true;group.add(face);mesh.userData.inspectionCompanions=[face];}
     }
     if(!shells.length&&metadata.parts.length&&metadata.parts.every(part=>!part.role)) shells.push(parts[metadata.parts[0].name]);
     parts.shell=shells[0];group.userData.shellMeshes=shells;
@@ -77,7 +83,7 @@ export function createManufacturerModel(product, screenTexture) {
         if(Object.keys(surface).some(key=>!['metalness','roughness'].includes(key))||Object.values(surface).some(v=>!Number.isFinite(v)||v<0||v>1))throw Error('Invalid derived material');
         const mesh=new THREE.Mesh(new THREE.LatheGeometry(points.map(p=>new THREE.Vector2(...p)),64),new THREE.MeshStandardMaterial({color:part.color || '#666d69',roughness:surface.roughness??.7,metalness:surface.metalness??0}));mesh.name=part.id;mesh.position.set(...center);mesh.rotation.set(...vector(part.geometry?.rotation));mesh.userData.inputOccluder=true;parts[part.id]=mesh;group.add(mesh);continue;
       }
-      if(['box','cylinder','torus'].includes(part.kind)) {const g=part.geometry || {},surface=part.material || {};if(Object.keys(surface).some(key=>!['metalness','roughness'].includes(key))||Object.values(surface).some(v=>!Number.isFinite(v)||v<0||v>1))throw Error('Invalid derived material');const dimensions=part.kind==='box'?size:part.kind==='cylinder'?[g.radiusMm,g.depthMm]:[g.radiusMm,g.tubeMm];if(!dimensions.every(v=>Number.isFinite(v)&&v>0&&v<=5000))throw Error('Invalid derived part dimensions');const radialSegments=g.radialSegments??48;if(part.kind==='cylinder'&&(!Number.isInteger(radialSegments)||radialSegments<3||radialSegments>128))throw Error('Invalid cylinder radial segments');const shape=part.kind==='torus'?new THREE.TorusGeometry(g.radiusMm,g.tubeMm,16,64):part.kind==='cylinder'?new THREE.CylinderGeometry(g.radiusMm,g.radiusMm,g.depthMm,radialSegments).rotateX(Math.PI/2):new THREE.BoxGeometry(...size);const mesh=new THREE.Mesh(shape,new THREE.MeshStandardMaterial({color:part.color || '#666d69',roughness:surface.roughness??.7,metalness:surface.metalness??0}));mesh.name=part.id;mesh.position.set(...center);mesh.rotation.set(...vector(part.geometry?.rotation));mesh.userData.inputOccluder=true;parts[part.id]=mesh;group.add(mesh);continue;}
+      if(['box','cylinder','torus','plate'].includes(part.kind)) {const g=part.geometry || {},surface=part.material || {};if(Object.keys(surface).some(key=>!['metalness','roughness'].includes(key))||Object.values(surface).some(v=>!Number.isFinite(v)||v<0||v>1))throw Error('Invalid derived material');const dimensions=part.kind==='box'?size:part.kind==='plate'?[g.depthMm]:part.kind==='cylinder'?[g.radiusMm,g.depthMm]:[g.radiusMm,g.tubeMm];if(!dimensions.every(v=>Number.isFinite(v)&&v>0&&v<=5000))throw Error('Invalid derived part dimensions');const radialSegments=g.radialSegments??48;if(part.kind==='cylinder'&&(!Number.isInteger(radialSegments)||radialSegments<3||radialSegments>128))throw Error('Invalid cylinder radial segments');const shape=part.kind==='plate'?createPlateGeometry(g):part.kind==='torus'?new THREE.TorusGeometry(g.radiusMm,g.tubeMm,16,64):part.kind==='cylinder'?new THREE.CylinderGeometry(g.radiusMm,g.radiusMm,g.depthMm,radialSegments).rotateX(Math.PI/2):new THREE.BoxGeometry(...size);const mesh=new THREE.Mesh(shape,new THREE.MeshStandardMaterial({color:part.color || '#666d69',roughness:surface.roughness??.7,metalness:surface.metalness??0}));mesh.name=part.id;mesh.position.set(...center);mesh.rotation.set(...vector(part.geometry?.rotation));mesh.userData.inputOccluder=true;parts[part.id]=mesh;group.add(mesh);continue;}
       if(part.kind==='label') {
         if(!Array.isArray(part.geometry?.sizeMm)||part.geometry.sizeMm.length!==2||!part.geometry.sizeMm.every(v=>Number.isFinite(v)&&v>0&&v<=5000))throw Error('Invalid label dimensions');
         const map=await new THREE.TextureLoader().loadAsync(asset(part.texture).href);if(disposed){map.dispose();return;}textures.push(map);map.colorSpace=THREE.SRGBColorSpace;map.anisotropy=4;
@@ -90,10 +96,14 @@ export function createManufacturerModel(product, screenTexture) {
         const anchor=new THREE.Object3D();anchor.name=`connector:${part.id}:mouth`;anchor.userData={kind:'connector-anchor',type:part.connectorType,visualOnly:true};socket.add(anchor);const connector={type:part.connectorType,anchor,normal:new THREE.Vector3(0,0,1),allowConnections:part.allowConnections,pinOrder:part.pinOrder,sourceIds:part.sourceIds};if(part.connectorType==='USB-C'||verifiedGrove(connector))connectors[part.id]=connector;continue;
       }
       if(part.kind!=='pcb-placeholder')continue;
+      if(part.color!==undefined&&!/^#[a-fA-F0-9]{6}$/.test(part.color))throw Error('Invalid PCB placeholder color');
+      const labelSide=part.geometry?.labelSide??'both';if(!['front','back','both'].includes(labelSide))throw Error('Invalid PCB placeholder label side');
       const pcb=new THREE.Group();pcb.name=part.id || 'pcb-main';pcb.position.set(...center);pcb.rotation.set(...vector(part.geometry?.rotation));pcb.userData={kind:'pcb-placeholder',label:'UNKNOWN',estimated:true};
-      pcb.add(new THREE.Mesh(createPcbPlaceholderGeometry(size,part.geometry?.shape),new THREE.MeshStandardMaterial({color:0x859188,roughness:.85})));
-      const width=Math.min(size[0]*.82,42),offset=part.geometry?.labelOffsetMm===undefined?[0,0]:part.geometry.labelOffsetMm;if(part.geometry?.labelOffsetMm!==undefined&&(!Array.isArray(offset)||offset.length!==2||offset.some((v,i)=>!Number.isFinite(v)||Math.abs(v)+(i?width/8:width/2)>size[i]/2)))throw Error('Invalid PCB placeholder label offset');
-      const label=flatLabel('UNKNOWN');if(label){textures.push(label);for(const back of [false,true]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,width/4),new THREE.MeshBasicMaterial({map:label,transparent:true,depthWrite:false}));mesh.position.set(offset[0],offset[1],(back?-1:1)*(size[2]/2+.015));if(back)mesh.rotation.y=Math.PI;pcb.add(mesh);}}
+      pcb.add(new THREE.Mesh(createPcbPlaceholderGeometry(size,part.geometry?.shape,part.geometry),new THREE.MeshStandardMaterial({color:part.color??0x859188,roughness:.85})));
+      const width=Math.min(size[0]*.82,size[1]*3.28,42),labelSize=part.geometry?.labelSizeMm===undefined?[width,width/4]:part.geometry.labelSizeMm;if(!Array.isArray(labelSize)||labelSize.length!==2||labelSize.some((v,i)=>!Number.isFinite(v)||v<=0||v>size[i]))throw Error('Invalid PCB placeholder label dimensions');const offset=part.geometry?.labelOffsetMm===undefined?[0,0]:part.geometry.labelOffsetMm;if(part.geometry?.labelOffsetMm!==undefined&&(!Array.isArray(offset)||offset.length!==2||offset.some((v,i)=>!Number.isFinite(v)||Math.abs(v)+labelSize[i]/2>size[i]/2)))throw Error('Invalid PCB placeholder label offset');
+      if(part.geometry?.shape==='polygon'&&!plateSupportsRectangle(part.geometry,offset,labelSize))throw Error('PCB placeholder label has no continuous support');
+      // A photographed exposed face can be known while its opposite remains unknown.
+      const label=flatLabel('UNKNOWN');if(label){textures.push(label);for(const back of labelSide==='both'?[false,true]:[labelSide==='back']){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(...labelSize),new THREE.MeshBasicMaterial({map:label,transparent:true,depthWrite:false}));mesh.name=`${pcb.name}-unknown-${back?'back':'front'}`;mesh.position.set(offset[0],offset[1],(back?-1:1)*(size[2]/2+.015));if(back)mesh.rotation.y=Math.PI;pcb.add(mesh);}}
       parts[pcb.name]=pcb;group.add(pcb);
     }
     // Derived optical windows can expose the same guest LED output as CAD parts.
@@ -127,6 +137,9 @@ export function createManufacturerModel(product, screenTexture) {
     // Some devices (AtomS3) use the whole non-touch display cover as a physical button.
     if(screen && display.controlId && product.controls?.some(control=>control.id===display.controlId && control.type==='button')){screen.userData.control=display.controlId;buttons.push(screen);}
     createServoJoints(group,metadata.presentation?.servoJoints);
+    createMotorRotors(group,metadata.presentation?.rotors);
+    try {group.userData.inspection=createModelInspection(group,metadata.presentation?.inspectionGroups,metadata.provenance?.sources);}
+    catch(error) {group.userData.inspectionError=error.message;console.warn(`${product.id}: model inspection unavailable: ${error.message}`);}
     group.userData.provenance=metadata;return metadata;
   })();
   return {group,get screen(){return screen;},buttons,parts,connectors,ready,dispose(){disposed=true;aborter.abort();for(const texture of textures)texture.dispose();}};

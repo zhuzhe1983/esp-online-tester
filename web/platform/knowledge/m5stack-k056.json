@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:19:41Z",
+  "updatedAt": "2026-11-03T21:07:36Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -285,6 +285,43 @@
         "product-photo-bcfff5f496",
         "product-photo-2849521917"
       ]
+    },
+    {
+      "id": "pcb-visible-color",
+      "label": "Visible PCB finish",
+      "value": "black",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-5f3965fcd6",
+        "product-photo-59cc778fb4"
+      ],
+      "method": "Inspect exact K056 bare-board photo and shared Stamp-C3 underside.",
+      "uncertainty": "Black finish classification; RGB/material values uncalibrated."
+    },
+    {
+      "id": "center-fastener-axis",
+      "label": "Cover center fastener axis",
+      "value": [
+        0,
+        2
+      ],
+      "unit": "mm",
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "manufacturer-cad-8c2f44cf35",
+        "dimension-drawing-9fce13bc60"
+      ],
+      "method": "Original STL circular opening vertices;19mm from bottom in official size drawing."
+    },
+    {
+      "id": "shared-stamp-c3-module",
+      "label": "Module supplied in kit",
+      "value": "Stamp-C3",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "Kit contents explicitly distinguish module from loose12P/10P male/female headers, HY2.0 sockets and wrench."
     }
   ],
   "revisions": [],
@@ -521,6 +558,45 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "stamp-c3-module-docs",
+      "title": "Stamp-C3 module supplied in K056",
+      "url": "https://docs.m5stack.com/en/core/Stamp-C3",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Stamp-C3",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "fetchedAt": "2026-10-26T15:19:17Z",
+      "sha256": "207193b90920ed70af6d4c3dccb9937e86283f3b54d8000ebd1ec42bf8ac58b9",
+      "bytes": 134243,
+      "mediaType": "text/html",
+      "archiveName": "stamp-c3-module-docs.html",
+      "notes": "Reused actual corpus receipt 2026-10-26T15:19:17.435546Z; no new fetch timestamp invented."
+    },
+    {
+      "id": "product-photo-59cc778fb4",
+      "title": "Stamp-C3 official photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/524/C056-B_03.jpg",
+      "kind": "product-photo",
+      "status": "fetched",
+      "discoveredFrom": "stamp-c3-module-docs",
+      "archiveName": "product-photo-59cc778fb4.jpg",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/524/C056-B_03.jpg",
+      "fetchedAt": "2026-10-26T17:32:19Z",
+      "bytes": 179709,
+      "mediaType": "image/jpg",
+      "sha256": "e1e39e406c12a112d4d16f40edde1d521c95f2490fcfaebb266e436929089222",
+      "notes": "Official C056-B module photo. K056 docs explicitly include Stamp-C3; K056/C056-B bare-board photos and cover STL hashes are identical."
+    },
+    {
+      "id": "pcb-library-lceda-stamp-c3",
+      "title": "Officially linked LCEDA Stamp-C3 component",
+      "url": "https://lceda.cn/component/ee6fad8d8f804a09bdb2aa6b9766fdcf",
+      "kind": "pcb-source",
+      "status": "failed",
+      "discoveredFrom": "official-docs",
+      "attemptedAt": "2026-11-03T21:07:36Z",
+      "error": "HTTP418 returned by public component page; no populated board or3D payload verified."
     }
   ],
   "assets": [
@@ -535,7 +611,8 @@
       "id": "product-photo-bcfff5f496",
       "sourceId": "product-photo-bcfff5f496",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/523/K056_01.jpg"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/523/K056_01.jpg",
+      "localUrl": "./assets/m5stack-k056/reference-product-photo-bcfff5f496.jpg"
     },
     {
       "id": "product-photo-5b36f68439",
@@ -553,7 +630,8 @@
       "id": "product-photo-ffe8c1bb4e",
       "sourceId": "product-photo-ffe8c1bb4e",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/523/K056_04.jpg"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/523/K056_04.jpg",
+      "localUrl": "./assets/m5stack-k056/reference-product-photo-ffe8c1bb4e.jpg"
     },
     {
       "id": "product-photo-861f411d32",
@@ -565,25 +643,29 @@
       "id": "product-photo-54338dcdb0",
       "sourceId": "product-photo-54338dcdb0",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/523/K056_06.jpg"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/523/K056_06.jpg",
+      "localUrl": "./assets/m5stack-k056/reference-product-photo-54338dcdb0.jpg"
     },
     {
       "id": "product-photo-2849521917",
       "sourceId": "product-photo-2849521917",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/523/K056_07.jpg"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/523/K056_07.jpg",
+      "localUrl": "./assets/m5stack-k056/reference-product-photo-2849521917.jpg"
     },
     {
       "id": "product-photo-5f3965fcd6",
       "sourceId": "product-photo-5f3965fcd6",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/523/K056_08.jpg"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/523/K056_08.jpg",
+      "localUrl": "./assets/m5stack-k056/reference-product-photo-5f3965fcd6.jpg"
     },
     {
       "id": "product-photo-6dc89145f8",
       "sourceId": "product-photo-6dc89145f8",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/523/K056_09.jpg"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/523/K056_09.jpg",
+      "localUrl": "./assets/m5stack-k056/reference-product-photo-6dc89145f8.jpg"
     },
     {
       "id": "product-photo-fe6c6d22d4",
@@ -602,6 +684,13 @@
       "sourceId": "datasheet-96dcbba919",
       "role": "datasheet",
       "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/525/esp32-c3_datasheet_en.pdf"
+    },
+    {
+      "id": "shared-module-back-photo",
+      "sourceId": "product-photo-59cc778fb4",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/524/C056-B_03.jpg",
+      "localUrl": "./assets/m5stack-k056/reference-product-photo-59cc778fb4.jpg"
     }
   ],
   "unknowns": [
@@ -649,6 +738,8 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "K056 cover hash and bare-board photo hashes match C056-B. Shared Stamp-C3 back photo retains original source identity; K056 paper artwork remains separate.",
+    "Male/female headers and HY2.0 connectors are loose kit items; no invented installed geometry. LCEDA component page returnedHTTP418, so no complete PCB CAD claimed."
   ]
 }

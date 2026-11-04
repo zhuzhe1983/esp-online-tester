@@ -1,0 +1,146 @@
+{
+  "productId": "m5stack-c050-b",
+  "checkedAt": "2026-11-03T21:36:14.599Z",
+  "model": {
+    "sha256": "29fee62ace3baf97fe466a279c148f1b96b608a9786112d67d7503aa2b052095",
+    "bytes": 190892
+  },
+  "wasm": {
+    "sha256": "fb3f3e469e467058785f10d6d8c2ca84ca06498b065db52d6043f68837f4ad41",
+    "bytes": 4763541
+  },
+  "checks": [
+    "public-3d-pointer-fresh-gpio39-press-release-green",
+    "public-keyboard-KeyA-fresh-gpio39-press-release-blue",
+    "expanded-cover-pointer-fresh-gpio39-off",
+    "public-inspection-and-orbit-UNKNOWN-readable",
+    "reset-view-reassembles-and-pointer-restored-red"
+  ],
+  "boot": {
+    "status": "running",
+    "board": "stamppico",
+    "guestSeconds": 17.32,
+    "leds": [
+      [
+        255,
+        0,
+        0
+      ]
+    ],
+    "frame": null,
+    "serial": [
+      "STAMPPICO_PINS 39 27",
+      "STAMPPICO_WRONG_PIN 4 white",
+      "STAMPPICO_RMT 255 0 0",
+      "STAMPPICO_BUTTON 1"
+    ]
+  },
+  "pointerCycle": {
+    "positionPx": [
+      636,
+      423
+    ],
+    "serial": "STAMPPICO_BUTTON 0\r\nSTAMPPICO_RMT 0 255 0\r\nSTAMPPICO_BUTTON 1\r\n",
+    "leds": [
+      [
+        0,
+        255,
+        0
+      ]
+    ],
+    "guestSeconds": 64.98
+  },
+  "keyboardDown": {
+    "key": "KeyA",
+    "serial": "STAMPPICO_BUTTON 0\r\nSTAMPPICO_RMT 0 0 255\r\n",
+    "leds": [
+      [
+        0,
+        0,
+        255
+      ]
+    ],
+    "guestSeconds": 65.02
+  },
+  "keyboardCycle": {
+    "serial": "STAMPPICO_BUTTON 0\r\nSTAMPPICO_RMT 0 0 255\r\nSTAMPPICO_BUTTON 1\r\n",
+    "leds": [
+      [
+        0,
+        0,
+        255
+      ]
+    ]
+  },
+  "expandedPointer": {
+    "positionPx": [
+      617,
+      413
+    ],
+    "serial": "STAMPPICO_BUTTON 0\r\nSTAMPPICO_RMT 0 0 0\r\nSTAMPPICO_BUTTON 1\r\n",
+    "leds": [
+      [
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "resetPointer": {
+    "serial": "STAMPPICO_BUTTON 0\r\nSTAMPPICO_RMT 255 0 0\r\nSTAMPPICO_BUTTON 1\r\n",
+    "leds": [
+      [
+        255,
+        0,
+        0
+      ]
+    ]
+  },
+  "finalModelSha256": "29fee62ace3baf97fe466a279c148f1b96b608a9786112d67d7503aa2b052095",
+  "finalWasmSha256": "fb3f3e469e467058785f10d6d8c2ca84ca06498b065db52d6043f68837f4ad41",
+  "rendererHashes": {
+    "manufacturer-model.js": "25ccb7bc8120b48cb239d9935489079adf17a3f597c2facb9e489c8c2cd19bb2",
+    "scene-view.js": "6b720b67feec57bc0fe721a2817c21a9a32a6056a1a3c43e587f289f279c4a3f",
+    "model-inspection.js": "34484677940cbdd5d058d600307b8a96a2d512dc54604aca2ef80e1ff12ec8f9"
+  },
+  "completedAt": "2026-11-03T21:38:49.274Z",
+  "status": "pass",
+  "schemaVersion": "1",
+  "scope": "Public workbench with original product assets and source-built internal ESP-IDF5.5.1 fixture. Actual guest GPIO39/RMT27 evidence; not official factory/UIFlow or physical hardware acceptance.",
+  "page": "web/platform/",
+  "backend": "headless Chromium, actual WASM worker",
+  "fixture": {
+    "source": "tools/fixtures/stamppico-firmware",
+    "inputHashes": {
+      "bootloader/bootloader.bin": "fa97eef4e6753b02f166b22a2d7938bd565e7e2aadca67744af233b973b9e290",
+      "stamppico_fixture.bin": "5fd12f3a78b935fee6e3992b7c4549d08bf3ef354c4d5e99998277cd35979b85",
+      "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    "buildInstructions": "tools/fixtures/stamppico-firmware/README.md"
+  },
+  "controls": {
+    "id": "button",
+    "gpio": 39,
+    "activeLow": true,
+    "keyboard": "KeyA",
+    "sourceDefinition": "control-surface-definition.json"
+  },
+  "observedOptics": "Original cover/film opacity retained. Electrical RGB tuple is verified; no optical opening, luminous sticker or light transmission is inferred.",
+  "acceptanceNotes": [
+    "Capture a fresh UART0 suffix for every input; wait for both the guest input record and RMT output tuple. The RMT event can arrive after the button UART record.",
+    "Pointer and keyboard events were delivered through the public page. No direct espTester.input/press call was used for these checks.",
+    "A distinct inspection-stage pointer location succeeds after cover separation; reset returns the hit surface with the cover."
+  ],
+  "limitations": [
+    "Internal protocol fixture verifies the declared digital subset; official UIFlow2 startup remains separately documented as unsuccessful.",
+    "Hit-region diameter, physical key travel, bounce, brightness and optical transmission are uncalibrated."
+  ],
+  "browserConsole": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "visualArtifact": {
+    "file": "public-control-review.webp",
+    "sha256": "1a8830c40018bfe55db9ba693e3ba9b664db7f622946280369eee916ea79cd8e"
+  }
+}

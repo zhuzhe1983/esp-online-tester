@@ -1,4 +1,5 @@
 import {MAX_FIRMWARE_FILE_BYTES as MAX_FILE, MAX_FIRMWARE_BUNDLE_BYTES as MAX_TOTAL} from './firmware-limits.js';
+import {isC5Board} from './app-image.js';
 // ESP-IDF flasher_args.json is data, never a command to execute.
 // Format: espressif/esp-idf components/esptool_py/flasher_args.json.in (v5.5.1).
 const MIB = 1024 * 1024;
@@ -79,7 +80,7 @@ export async function inspectLocalBuild(selectedFiles, {signal} = {}) {
   return {layoutFile, chip, flashSizeBytes, segments:segments.sort((a,b)=>a.offset-b.offset), missingFiles, warnings:[]};
 }
 
-const chipForBoard = board => /^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|lilygo-t-beam-v1-2)$/.test(board) ? 'esp32' : board === 'esp32c3' ? 'esp32c3' : (board==='nesso-n1'||board.includes('c6')) ? 'esp32c6' : board === 'esp32p4' ? 'esp32p4' : 'esp32s3';
+const chipForBoard = board => isC5Board(board) ? 'esp32c5' : /^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2)$/.test(board) ? 'esp32' : ['esp32c3','stampc3','stampc3u'].includes(board) ? 'esp32c3' : (board==='nesso-n1'||board.includes('c6')) ? 'esp32c6' : ['esp32p4','stamp-p4'].includes(board) ? 'esp32p4' : 'esp32s3';
 /** Return a temporary merged buffer with erased 0xff gaps, never app-direct. */
 export async function assembleLocalFirmware(source, {board, flashBytes, signal, onRead} = {}) {
   ensure(object(source) && ['build','segments'].includes(source.format), 'UNSUPPORTED_FORMAT', 'Choose a build directory or explicit local flash segments.');
@@ -113,7 +114,7 @@ export async function assembleLocalFirmware(source, {board, flashBytes, signal, 
   ensure(tables.length === 1, 'PARTITION_TABLE_REQUIRED', 'Select exactly one binary partition table with its actual flash offset. An app.bin alone is not bootable.');
   const table = tables[0], partitionTableOffset = table.offset;
   ensure(partitionTableOffset >= 0x8000 && table.data.length <= 0x1000, 'INVALID_PARTITION_TABLE', 'Partition table must occupy at most one 4096-byte sector at offset 0x8000 or above.');
-  const bootOffset = chipForBoard(board) === 'esp32' ? 0x1000 : 0;
+  const bootOffset = chipForBoard(board) === 'esp32' ? 0x1000 : chipForBoard(board) === 'esp32p4' ? 0x2000 : 0;
   const boot = segments.find(s => s.offset === bootOffset);
   ensure(boot && boot.data[0] === 0xe9 && boot.offset + boot.data.length <= partitionTableOffset, 'BOOTLOADER_REQUIRED', `A complete matching bootloader at 0x${bootOffset.toString(16)} is required; app-direct boot is not used.`);
   const partitions = [], dv = new DataView(table.data.buffer, table.data.byteOffset, table.data.byteLength);

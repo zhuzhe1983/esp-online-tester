@@ -1,0 +1,201 @@
+{
+  "checkedAt": "2026-11-03T22:13:11.088764+00:00",
+  "status": "pass",
+  "method": "headless Chromium, ordinary workbench file chooser and UART form; separate embedded parent uses public origin/session-bound RPC",
+  "sourceCommits": {
+    "snapshotBase": "7ffe2997",
+    "uiFixes": [
+      "b595859e",
+      "e6b50719",
+      "830f3d24"
+    ]
+  },
+  "wasm": {
+    "bytes": 5000313,
+    "sha256": "bd1c688cff2cbd2ac608761dbe122d0c2346f65ea3d0a6e53d3034ee170ba3ef"
+  },
+  "fixture": {
+    "source": "firmware/c5-uart-probe/probe.bin",
+    "bytes": 560,
+    "sha256": "2db5f2a79411f8b529a690e6369bd65a32f270a204ce54806debeba3b3f5f7f3",
+    "kind": "source-built GCC/esptool bare-metal SRAM diagnostic, not factory firmware",
+    "idFApplicationDescriptor": false
+  },
+  "assetsSha256": {
+    "platform/app.js": "a027996dbcdb16f10866b34de361c2e1cb52458edd21a26db173abc10f72bf9b",
+    "platform/runtime.js": "4cf4f5eae0676434d6a75d8f05761bf679e1b891c4632cb8874f0d68cf08326f",
+    "platform/app-image.js": "2c32dfdd7d6de1b1d33d166423035a5a0e53aaf48189bac16ecdd0b99afa97fd",
+    "platform/local-firmware.js": "9c6be4ce2e8938db9d7fec044e40a967d2b488ca143b47a78dcf6886a990f6dc",
+    "wasm/worker.js": "633eb9f7ecd85e89c1c836490d1f44f50d8b2a34026e0c8b899aeacabc0eaca4",
+    "wasm/esp32sim.wasm": "bd1c688cff2cbd2ac608761dbe122d0c2346f65ea3d0a6e53d3034ee170ba3ef",
+    "platform/catalog/products.json": "06abf970a9b9a6a416d3787bfc0cc7c00ba330cebde142a64032726cc3e209b3",
+    "platform/catalog/firmwares.json": "54658ef688d462ed7fd93a4e5c56b2cff6f20b4bc319f3182ea561051d66efd2",
+    "platform/assets/m5stack-s016/model.json": "47aa7a85e0828284ff50adfa37b125046a7fe43c9245bc1585a3e1b683c1a4b3",
+    "platform/assets/m5stack-s016/geometry.bin": "bf2af24e5f4e43eade931cfc065e1b24e701b1188532e41c8cf069975682c196",
+    "platform/assets/m5stack-s016-dip/model.json": "519af48c714fd5d51b939ef38dc75d22322a9a9bafb5fd1c4492a3673a025e14",
+    "platform/assets/m5stack-s016-dip/geometry.bin": "bf2af24e5f4e43eade931cfc065e1b24e701b1188532e41c8cf069975682c196"
+  },
+  "localUi": {
+    "products": [
+      "m5stack-s016",
+      "m5stack-s016-dip"
+    ],
+    "actions": [
+      "Select Local File tab",
+      "Use native file chooser to select probe.bin",
+      "Read explicit C5 SRAM/app-direct prompt",
+      "Click Load and Run, observe C5 UART IRQ READY and initial [0,0,0]",
+      "Enter 1 in UART0 form and click Send; observe new echo and [0,0,255]"
+    ],
+    "originalFinalSample": {
+      "product": "m5stack-s016",
+      "status": "paused",
+      "uart": "C5 UART IRQ READY\n1\n",
+      "leds": [
+        [
+          0,
+          0,
+          255
+        ]
+      ],
+      "mode": "app-direct",
+      "sha256": "2db5f2a79411f8b529a690e6369bd65a32f270a204ce54806debeba3b3f5f7f3",
+      "hint": "已校验 C5 SRAM 应用：probe.bin。直接启动，重启会重新加载同一镜像；不使用 ROM/IDF 启动。",
+      "fileCount": 1,
+      "speed": "SRAM 直启 · 虚拟时间 11.62 s",
+      "noRomRequest": true
+    },
+    "dipObserved": {
+      "uart": "C5 UART IRQ READY\n1\n",
+      "leds": [
+        [
+          0,
+          0,
+          255
+        ]
+      ],
+      "selectedFiles": 1,
+      "mode": "app-direct"
+    },
+    "pause": {
+      "status": "paused",
+      "wallObservationMs": 120,
+      "guestTimeUnchanged": true,
+      "serialUnchanged": true,
+      "inputError": "NOT_RUNNING"
+    },
+    "resetWhileLit": {
+      "status": "running",
+      "uart": "C5 UART IRQ READY\n",
+      "leds": [
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "resetMode": "reload-same-sram-image"
+    },
+    "replacement": {
+      "invalidInput": "fixture with image chip field changed to C6 (13)",
+      "error": "CHIP_MISMATCH",
+      "loadDisabled": true,
+      "selectedFiles": 1,
+      "errorReportSource": "local file; no file content",
+      "thenValidSelectionReplacesInvalid": true
+    }
+  },
+  "api": {
+    "localShare": "LOCAL_FIRMWARE_NOT_SHAREABLE",
+    "usb": "UNSUPPORTED_PORT",
+    "implicitRemote": "C5_APP_DIRECT_REQUIRED",
+    "remote": {
+      "bootMode": "app-direct",
+      "sha256": "2db5f2a79411f8b529a690e6369bd65a32f270a204ce54806debeba3b3f5f7f3",
+      "leds": [
+        [
+          0,
+          0,
+          255
+        ]
+      ],
+      "uartReady": true,
+      "freshEcho": true
+    }
+  },
+  "embedRpc": {
+    "harness": "tools/fixtures/c5-embed-probe.html",
+    "harnessSha256": "4e239c4f301a5065de8dc94dddeded91f4b9ec10cad16beab0ed5e1dc8288ee5",
+    "results": [
+      {
+        "bridgeVersion": "1.0.0",
+        "embed": {
+          "product": "m5stack-s016",
+          "bootMode": "app-direct",
+          "sha256": "2db5f2a79411f8b529a690e6369bd65a32f270a204ce54806debeba3b3f5f7f3",
+          "leds": [
+            [
+              0,
+              0,
+              255
+            ]
+          ],
+          "uartReady": true,
+          "freshEcho": true,
+          "storage": "unsupported",
+          "execution": "wasm-interpreter"
+        },
+        "embedImplicitRemote": "C5_APP_DIRECT_REQUIRED",
+        "status": "pass"
+      },
+      {
+        "bridgeVersion": "1.0.0",
+        "embed": {
+          "product": "m5stack-s016-dip",
+          "bootMode": "app-direct",
+          "sha256": "2db5f2a79411f8b529a690e6369bd65a32f270a204ce54806debeba3b3f5f7f3",
+          "leds": [
+            [
+              0,
+              0,
+              255
+            ]
+          ],
+          "uartReady": true,
+          "freshEcho": true,
+          "storage": "unsupported",
+          "execution": "wasm-interpreter"
+        },
+        "embedImplicitRemote": "C5_APP_DIRECT_REQUIRED",
+        "status": "pass"
+      }
+    ],
+    "cleanup": "iframe removed after pause or failure"
+  },
+  "screenshotsReviewed": [
+    {
+      "product": "m5stack-s016",
+      "sha256": "c171b2b32573944bc944b523c1bdd826c2d59c6fa607971bc68d1b197fd3e169",
+      "scope": "local SRAM prompt, one file, virtual-time label, visible board; UART and LED state also captured through actual runtime"
+    },
+    {
+      "product": "m5stack-s016-dip",
+      "sha256": "dbbacce6cc289bf14f86e9bdfc365f908ecab76ab36b9ba6c85a32096468f913",
+      "scope": "local SRAM prompt, one file, virtual-time label, UART READY plus 1, visible blue D1"
+    }
+  ],
+  "initialFailure": {
+    "receipt": "platform-initial-led-negative.json",
+    "receiptSha256": "57c6126d2e032592fd75d2fa65296c17be9ce5cdc0eeaa2243776851cdd2091d",
+    "assertion": "initial LEDs must equal [[0,0,0]] after READY",
+    "result": "retained failure; assertion unchanged after backend initial generation fix"
+  },
+  "harnessCorrection": "Initial one-shot hello was sent before async bridge installation and timed out. The retained RPC harness retries hello and never invokes child espTester directly. Both product results above come from that final harness.",
+  "limitations": [
+    "No official ROM/IDF/factory compatibility claim.",
+    "HTTP source was on the same local server; external HTTPS and cross-origin CORS were not exercised.",
+    "Interpretation counters include WFI idle slots and are not retired-instruction or physical-cycle measurements.",
+    "No physical UART timing, USB console, WiFi, audio, SD, OTA or persistent Flash verification.",
+    "Screenshot hashes retained; raw captures and browser/session/host details omitted."
+  ]
+}

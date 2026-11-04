@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-27T18:37:29Z",
+  "updatedAt": "2026-11-03T20:55:33Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -225,6 +225,57 @@
         "runtime-schematic-v02"
       ],
       "group": "io"
+    },
+    {
+      "id": "model-source-assembly",
+      "label": "可复现机械装配",
+      "value": {
+        "retainedParts": 29,
+        "stepSolidsRetained": 28,
+        "stepSolidsOmitted": [
+          27
+        ],
+        "standoffs": 1,
+        "screws": 1,
+        "sourceScale": 1,
+        "usbInclusiveEnvelopeMm": [
+          18.000023,
+          25.947933,
+          4.750002
+        ]
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "manufacturer-cad-86c80a31be",
+        "manufacturer-cad-2a9b25ea49"
+      ],
+      "method": "固定原厂 STL 外盖，加 KiCad STEP 原始 29 个实体中的 28 个；仅排除重复外盖 #27，统一 Z 平移 -1.3 mm，不缩放。按模型二进制计算包络。",
+      "group": "model"
+    },
+    {
+      "id": "exposed-pcb-appearance",
+      "label": "外露 PCB 背面",
+      "value": "黑色阻焊；官方背面照片覆盖实际 CAD 板面，孔洞和边缘由原模型裁切。已知外观与未知内部布局分开标记。",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-9d81044ab3",
+        "manufacturer-cad-2a9b25ea49"
+      ],
+      "method": "原图 800×800；明确四角透视校正为 365×485 纹理，投影到 Z=-2.299998 mm 的板背面，独立遮罩排除铜柱。参数见 model-plan.json。",
+      "uncertainty": "照片颜色未校准；轻微镜头和拍摄透视误差仍存在。贴图不证明铜层、隐蔽元件或元件高度。",
+      "group": "model"
+    },
+    {
+      "id": "bare-s007-default-assembly",
+      "label": "S007 默认外观",
+      "value": "保留黑色外盖，默认不焊接包装中的可选排针、不贴附送引脚贴纸。原厂正面照片与装配概览分别核对。",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs",
+        "product-photo-3b428f17a9",
+        "product-photo-61263b2a2c"
+      ],
+      "group": "model"
     }
   ],
   "revisions": [],
@@ -544,6 +595,15 @@
       "kind": "schematic",
       "status": "fetched",
       "archiveName": "Sch_M5StampS3_v0.2.pdf"
+    },
+    {
+      "id": "official-shop-product-json-20261103",
+      "title": "S007 official shop image manifest lookup",
+      "url": "https://shop.m5stack.com/products/m5stamp-esp32s3-module.json",
+      "kind": "official-product-manifest",
+      "status": "failed",
+      "attemptedAt": "2026-11-03T20:41:50Z",
+      "error": "HTTP429 Too Many Requests; higher-resolution shop source was not obtained. Existing official documentation800px source retained."
     }
   ],
   "assets": [
@@ -558,13 +618,15 @@
       "id": "product-photo-3b428f17a9",
       "sourceId": "product-photo-3b428f17a9",
       "role": "product-photo",
-      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-964c4df6-26ff-49e0-9950-87ee1a0f3b18.webp"
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-964c4df6-26ff-49e0-9950-87ee1a0f3b18.webp",
+      "localUrl": "./assets/m5stack-s007/reference-product-photo-3b428f17a9.webp"
     },
     {
       "id": "product-photo-deb392a1b8",
       "sourceId": "product-photo-deb392a1b8",
       "role": "product-photo",
-      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-97fc4580-17dd-4deb-8103-6823bd7e76b2.webp"
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-97fc4580-17dd-4deb-8103-6823bd7e76b2.webp",
+      "localUrl": "./assets/m5stack-s007/reference-product-photo-deb392a1b8.webp"
     },
     {
       "id": "product-photo-96adfa38b1",
@@ -576,13 +638,15 @@
       "id": "product-photo-1d2a45ea57",
       "sourceId": "product-photo-1d2a45ea57",
       "role": "product-photo",
-      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-a8f7e59f-bd84-470a-99f3-172b38d3ec6f.webp"
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-a8f7e59f-bd84-470a-99f3-172b38d3ec6f.webp",
+      "localUrl": "./assets/m5stack-s007/reference-product-photo-1d2a45ea57.webp"
     },
     {
       "id": "product-photo-61263b2a2c",
       "sourceId": "product-photo-61263b2a2c",
       "role": "product-photo",
-      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-4fe7e00d-6a3e-414c-bd03-805fb0089f0d.webp"
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-4fe7e00d-6a3e-414c-bd03-805fb0089f0d.webp",
+      "localUrl": "./assets/m5stack-s007/reference-product-photo-61263b2a2c.webp"
     },
     {
       "id": "product-photo-170f3c3bf5",
@@ -594,19 +658,22 @@
       "id": "product-photo-31b74d1c4e",
       "sourceId": "product-photo-31b74d1c4e",
       "role": "product-photo",
-      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-4aaf7195-c36f-4576-aba4-e30405195f3b.webp"
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-4aaf7195-c36f-4576-aba4-e30405195f3b.webp",
+      "localUrl": "./assets/m5stack-s007/reference-product-photo-31b74d1c4e.webp"
     },
     {
       "id": "product-photo-9d81044ab3",
       "sourceId": "product-photo-9d81044ab3",
       "role": "product-photo",
-      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-c69bd4fd-8ca3-43b5-b8cb-aa9c6e1b941e.webp"
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-c69bd4fd-8ca3-43b5-b8cb-aa9c6e1b941e.webp",
+      "localUrl": "./assets/m5stack-s007/reference-product-photo-9d81044ab3.webp"
     },
     {
       "id": "product-photo-ea5854bf64",
       "sourceId": "product-photo-ea5854bf64",
       "role": "product-photo",
-      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-75d61153-2094-4567-8076-dc60a6d02c72.webp"
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/StampS3/img-75d61153-2094-4567-8076-dc60a6d02c72.webp",
+      "localUrl": "./assets/m5stack-s007/reference-product-photo-ea5854bf64.webp"
     },
     {
       "id": "product-photo-7eb0156be3",
@@ -630,7 +697,8 @@
       "id": "manufacturer-cad-2a9b25ea49",
       "sourceId": "manufacturer-cad-2a9b25ea49",
       "role": "manufacturer-cad",
-      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/KiCad/3D/M5Stack.3dshapes/Stamp-S3.step"
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/KiCad/3D/M5Stack.3dshapes/Stamp-S3.step",
+      "localUrl": "./assets/m5stack-s007/source-manufacturer-cad-2a9b25ea49.step"
     },
     {
       "id": "datasheet-9749a18366",
@@ -662,15 +730,17 @@
       "value": null,
       "basis": "unknown",
       "sourceIds": [
-        "manufacturer-cad-86c80a31be"
+        "manufacturer-cad-2a9b25ea49",
+        "product-photo-31b74d1c4e"
       ],
-      "notes": "No complete populated PCB layout or Gerber verified in the audited files. A manufacturer mechanical board outline, when present, does not establish every component or copper trace. Unknown internals remain a neutral UNKNOWN placeholder."
+      "notes": "PCB 机械轮廓、铜柱和部分机械件已有原厂 CAD；背面外观由官方照片覆盖。完整电子元件高度与内部布局仍未获核实，在实际板的内侧设置 UNKNOWN，小标记不遮住外侧已知图像。分开查看可见。"
     }
   ],
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
     "Model import does not establish CPU/board/peripheral firmware support.",
-    "2026-10-28：按 v0.2 原理图适配 G0/G21；固定官方 UIFlow2 2.5.3 真实 ROM/RMT 蓝灯通过，非整机兼容。官方出厂 BIN 本轮仍未定位；保留 LED 源码示例，默认选可尝试运行的官方 UIFlow2。详见 docs/platform/stamps3-runtime.md。"
+    "2026-10-28：按 v0.2 原理图适配 G0/G21；固定官方 UIFlow2 2.5.3 真实 ROM/RMT 蓝灯通过，非整机兼容。官方出厂 BIN 本轮仍未定位；保留 LED 源码示例，默认选可尝试运行的官方 UIFlow2。详见 docs/platform/stamps3-runtime.md。",
+    "2026-11-04 外观复核：补回原 STEP 铜柱和全部非重复机械实体，保留原坐标；800px 官方背面贴图不冒充更高分辨率。高分辨率商店 JSON 请求 HTTP 429 的失败回执保留。官方 24 mm 与 USB 包络 25.948 mm 差异仍记录为失败项。"
   ]
 }

@@ -6,6 +6,7 @@ import {pickVisibleSurface, createScenePointerRouter, createSurfaceHalo} from '.
 import {createIllustrativeAccessory, createGroveCable} from './accessory-view.js';
 import {applyRgbLedValues} from './rgb-led-view.js';
 import {applyServoValues} from './servo-view.js';
+import {applyMotorValues} from './motor-view.js';
 import {normalizeShellAppearance, applyShellAppearance, DEFAULT_STOPWATCH_APPEARANCE} from './shell-appearance.js';
 import {normalizeOrientation} from './imu.js';
 
@@ -79,7 +80,7 @@ export function createHumanButtonController({send, isRunning, onVisual = () => {
 }
 
 // Product-specific CAD stays separate from runtime support; missing models stay empty.
-export function createSceneView(mount, {onInput = () => {}, onModeChange = () => {}, onUnsupported = () => {}, onOrientation = () => {}, onModelReady = () => {}} = {}) {
+export function createSceneView(mount, {onInput = () => {}, onModeChange = () => {}, onUnsupported = () => {}, onOrientation = () => {}, onModelReady = () => {}, onInspectionChange = () => {}} = {}) {
   const display = document.createElement('canvas');
   display.className = 'flat-display';
   display.setAttribute('aria-label', '设备实际帧缓冲；按住或拖动以发送触摸');
@@ -95,6 +96,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   texture.colorSpace = THREE.SRGBColorSpace; texture.minFilter = THREE.LinearFilter; texture.magFilter = THREE.NearestFilter;
   let renderer, mode = '3d', product, screen, buttons = [], accessoryGroup, accessoryCount = 0, zoom = 1, frameWidth = 466, frameHeight = 466;
   let paintPending = false, disposed = false, modelCleanup = null, productGeneration = 0, accessoryGeneration = 0, accessoryCleanups = [];
+  let inspection = null;
   let orientationTimer = null, orientationIdle = null, lastOrientationAt = -Infinity;
   const getOrientation = () => group.quaternion.toArray();
   function clearOrientationTimers() { clearTimeout(orientationTimer); clearTimeout(orientationIdle); orientationTimer = orientationIdle = null; }
@@ -110,11 +112,13 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   }
   function setOrientation(value, {notify = true} = {}) {
     const normalized = normalizeOrientation(value); clearOrientationTimers(); group.quaternion.fromArray(normalized);
-    if (notify) publishOrientation(false); if (accessoryCount) frameCamera(); draw(); return getOrientation();
+    if (notify) publishOrientation(false); if (accessoryCount || inspection?.expanded) frameCamera(); draw(); return getOrientation();
   }
   let parts = {}, connectors = {}, shellMeshes = [], customizedAppearance = false, appearanceDefaults = DEFAULT_STOPWATCH_APPEARANCE, appearance = normalizeShellAppearance(null), accessoryDefinitions = [];
-  let rgbLedMeshes = [], rgbValues = [], accessoryOutputs = [], servoJoints = [], servoValues = [];
+  let rgbLedMeshes = [], rgbValues = [], accessoryOutputs = [], servoJoints = [], servoValues = [], motorRotors = [], motorValues = [], motorOutput = null, motorsRunning = false;
   function updateServos(values) { servoValues = values || []; applyServoValues(servoJoints, servoValues); clearHover(); draw(); }
+  function updateMotors(values,output) {motorValues=values||[];motorOutput=output||null;applyMotorValues(motorRotors,motorValues,motorOutput,{running:motorsRunning});clearHover();draw();}
+  function setMotorsRunning(running) {if(motorsRunning===running)return;motorsRunning=running;applyMotorValues(motorRotors,motorValues,motorOutput,{running});}
   let accessoryPositions=[];
   function updateAccessoryPositions(values) {accessoryPositions=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryPositions.find(item=>child.name===`accessory:${item.accessoryId}`);for(const pivot of child.userData.potentiometers||[]){const value=Number.isFinite(state?.value)?state.value:.5;pivot.userData.value=value;pivot.rotation.z=(.5-value)*pivot.userData.visualSweepRadians;}}draw();}
   function updateAccessoryOutputs(values) {accessoryOutputs=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryOutputs.find(item=>child.name===`accessory:${item.accessoryId}`);applyRgbLedValues(child.userData.rgbLedMeshes||[],state?.leds);}draw();}
@@ -136,11 +140,13 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     requestAnimationFrame(() => { paintPending = false; if (!disposed && renderer && mode === '3d') renderer.render(scene, camera); });
   }
   function frameCamera() {
+    camera.far = 3000;
     if (accessoryCount || product?.model && product.id !== 'm5stack-papermono') {
       group.updateMatrixWorld(true);
       const bounds = new THREE.Box3().setFromObject(group), size = bounds.getSize(new THREE.Vector3()), center = bounds.getCenter(new THREE.Vector3());
       const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
       const distance = Math.max(20, (Math.max(size.y / (2 * tangent), size.x / (2 * tangent * camera.aspect)) * 1.32 + size.z / 2) * zoom);
+      if (inspection?.expanded) camera.far = Math.max(camera.far, distance + size.z / 2 + 20);
       camera.position.set(center.x, center.y, center.z + distance); camera.lookAt(center);
     } else {
       const distance = (product?.id?.includes('paper') ? 205 : 158) * Math.max(1, 1 / camera.aspect) * zoom;
@@ -155,6 +161,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   }
   const resizeObserver = new ResizeObserver(resize); resizeObserver.observe(mount);
   function clearGroup() {
+    inspection = null; onInspectionChange({available: false, expanded: false});
     accessoryGeneration++; for (const cleanup of accessoryCleanups) cleanup(); accessoryCleanups = [];
     clearOrientationTimers();
     productGeneration++; modelCleanup?.(); modelCleanup = null;
@@ -163,7 +170,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       if (object.material) for (const material of [].concat(object.material)) material.dispose();
     });
     group.clear(); buttons = []; screen = null; parts = {}; connectors = {}; shellMeshes = []; accessoryGroup = null; accessoryCount = 0;
-    rgbLedMeshes = []; rgbValues = []; servoJoints = []; servoValues = [];
+    rgbLedMeshes = []; rgbValues = []; servoJoints = []; servoValues = []; motorRotors = []; motorValues = []; motorOutput = null;
   }
   function clearDisplay() {
     frameWidth = product?.display?.framebufferWidth || product?.display?.width || 320;
@@ -193,6 +200,8 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
         shellMeshes = model.group.userData.shellMeshes || [parts.shell].filter(Boolean);
         rgbLedMeshes = model.group.userData.rgbLedMeshes || []; applyRgbLedValues(rgbLedMeshes, rgbValues);
         servoJoints = model.group.userData.servoJoints || []; applyServoValues(servoJoints, servoValues);
+        motorRotors = model.group.userData.motorRotors || []; applyMotorValues(motorRotors,motorValues,motorOutput,{running:motorsRunning});
+        inspection = model.group.userData.inspection || null; onInspectionChange(getInspection());
         for(const mesh of shellMeshes)mesh.userData.originalAppearance ||= {shell:{color:`#${mesh.material.color.getHexString()}`,opacity:1,finish:'plastic'}};
         if(product.model && product.id !== 'm5stack-papermono') { appearanceDefaults = shellMeshes[0]?.userData.originalAppearance || DEFAULT_STOPWATCH_APPEARANCE; if(!customizedAppearance)appearance=normalizeShellAppearance(null,appearanceDefaults); }
         mount.dataset.modelStatus = 'ready'; onModelReady(); applyAppearance(); setAccessories(accessoryDefinitions); frameCamera(); draw();
@@ -215,6 +224,8 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       group.remove(accessoryGroup);
     }
     accessoryCount = Math.min(accessories.length, 32);
+    if (accessoryCount) inspection?.setExpanded(false);
+    onInspectionChange(getInspection());
     accessoryGroup = new THREE.Group(); accessoryGroup.name = 'accessory-assembly'; group.add(accessoryGroup);
     const occupiedSockets = new Set();
     const loadedAccessories = [];
@@ -252,10 +263,17 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   function applyAppearance() { for(const mesh of shellMeshes.length?shellMeshes:[parts.shell].filter(Boolean))applyShellAppearance(mesh, customizedAppearance?appearance:mesh.userData.originalAppearance || appearance, {occluder: parts.occluder}); draw(); }
   function setAppearance(value) { customizedAppearance = value != null; appearance = normalizeShellAppearance(value, appearanceDefaults); applyAppearance(); return getAppearance(); }
   function getAppearance() { return {shell: {...appearance.shell}}; }
-  function resetView() { releaseInputs(); group.rotation.set(-.13, -.25, .025); zoom = 1; publishOrientation(false); resize(); }
+  function getInspection() { return {available: !!inspection, expanded: inspection?.expanded || false, blockedByAccessories: accessoryCount > 0}; }
+  function setInspection(expanded) {
+    if (typeof expanded !== 'boolean') throw Error('Model inspection state must be boolean');
+    releaseInputs(); inspection?.setExpanded(expanded && !accessoryCount); onInspectionChange(getInspection()); resize(); return getInspection();
+  }
+  function resetView() { releaseInputs(); inspection?.setExpanded(false); onInspectionChange(getInspection()); group.rotation.set(-.13, -.25, .025); zoom = 1; publishOrientation(false); resize(); }
   function setMode(next) {
     releaseInputs();
     mode = next === '3d' && renderer ? '3d' : '2d';
+    if (mode !== '3d') inspection?.setExpanded(false);
+    onInspectionChange(getInspection());
     if (renderer) renderer.domElement.hidden = mode !== '3d';
     display.hidden = mode !== '2d' || !product?.display || (!product.model && !product.runtime.board);
     onModeChange(mode, !renderer); draw(); return mode;
@@ -325,7 +343,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   const router = createScenePointerRouter({onInput, onUnsupported, onError: error => console.error('Scene input failed:', error), onOrbit(dx, dy) {
     group.rotation.y += dx * .01; group.rotation.x += dy * .01;
     orientationChanged();
-    if (accessoryCount) frameCamera(); draw();
+    if (accessoryCount || inspection?.expanded) frameCamera(); draw();
   }});
   const encoderMeshes = new Map();
   function encoderPoint(event, mesh) {
@@ -364,7 +382,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   window.addEventListener('blur', releaseInputs);
   function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateServos, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setInspection, getInspection, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
     dispose() { disposed = true; releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup(); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }

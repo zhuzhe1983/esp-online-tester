@@ -1,0 +1,209 @@
+{
+  "productId": "m5stack-c056-b",
+  "board": "stampc3",
+  "executionMode": "wasm-jit",
+  "firmware": {
+    "manifestUrl": null,
+    "manifestHash": null,
+    "metadata": {
+      "name": "stampc3_fixture",
+      "version": "v0.3.0-596-g78c2bb04-dirty",
+      "source": "esp-app-description"
+    },
+    "source": "local",
+    "localLayout": {
+      "format": "build",
+      "partitionTableOffset": 32768,
+      "segments": [
+        {
+          "name": "bootloader.bin",
+          "offset": 0,
+          "bytes": 20928,
+          "sha256": "1bab8cfa81c80f5ac298d7f0bb0a80acb542aed3cc4456bbd6562bdf128cca8c"
+        },
+        {
+          "name": "partition-table.bin",
+          "offset": 32768,
+          "bytes": 3072,
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+        },
+        {
+          "name": "stampc3_fixture.bin",
+          "offset": 65536,
+          "bytes": 152960,
+          "sha256": "39ebd910a3bbab04bcf9b1486070f00b0857317d87cc7076a919e93e0d434e42"
+        }
+      ]
+    },
+    "artifacts": [
+      {
+        "kind": "flash",
+        "url": null,
+        "sha256": "2651672556a7541b61eed7aa1c6c0d2b1c0a48634e7e75123540b05f41fffa01",
+        "bytes": 218496
+      },
+      {
+        "kind": "rom",
+        "url": "web/wasm/fw/esp32c3_rev3_rom.elf",
+        "sha256": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c",
+        "bytes": 556332
+      }
+    ],
+    "appDirect": false,
+    "stubs": [],
+    "executionMode": "wasm-jit"
+  },
+  "wasm": {
+    "bytes": 4760177,
+    "sha256": "91ae7b787862d39b0dc54dc3a9d6c2ce2aa70dd79e0831a118a7ce1cb936760e"
+  },
+  "before": {
+    "leds": [
+      [
+        0,
+        255,
+        0
+      ]
+    ],
+    "serialLength": 5688,
+    "guestSeconds": 81.46
+  },
+  "pressed": {
+    "leds": [
+      [
+        0,
+        0,
+        255
+      ]
+    ],
+    "newSerial": "STAMPC3_BUTTON 0\r\nSTAMPC3_BUTTON 0\r\nSTAMPC3_RMT 0 0 255\r\nSTAMPC3_RMT 0 0 255\r\n",
+    "guestSeconds": 90.06,
+    "serialLength": 5766
+  },
+  "released": {
+    "leds": [
+      [
+        0,
+        0,
+        255
+      ]
+    ],
+    "newSerial": "STAMPC3_BUTTON 1\r\nSTAMPC3_BUTTON 1\r\n",
+    "guestSeconds": 109.58
+  },
+  "events": [
+    {
+      "type": "input",
+      "event": {
+        "type": "button",
+        "id": "button",
+        "pressed": true
+      },
+      "receipt": {
+        "delivery": "queued",
+        "guestTime": 81.49740000625,
+        "frame": {}
+      }
+    },
+    {
+      "type": "serial",
+      "source": "usb",
+      "data": "STAMPC3_BUTTON 0\r\n"
+    },
+    {
+      "type": "serial",
+      "source": "uart0",
+      "data": "STAMPC3_BUTTON 0\r\n"
+    },
+    {
+      "type": "serial",
+      "source": "usb",
+      "data": "STAMPC3_RMT 0 0 255\r\n"
+    },
+    {
+      "type": "serial",
+      "source": "uart0",
+      "data": "STAMPC3_RMT 0 0 255\r\n"
+    },
+    {
+      "type": "leds",
+      "leds": [
+        [
+          0,
+          0,
+          255
+        ]
+      ]
+    },
+    {
+      "type": "input",
+      "event": {
+        "type": "button",
+        "id": "button",
+        "pressed": false
+      },
+      "receipt": {
+        "delivery": "queued",
+        "guestTime": 95.63440000625,
+        "frame": {}
+      }
+    },
+    {
+      "type": "serial",
+      "source": "usb",
+      "data": "STAMPC3_BUTTON 1\r\n"
+    },
+    {
+      "type": "serial",
+      "source": "uart0",
+      "data": "STAMPC3_BUTTON 1\r\n"
+    }
+  ],
+  "modelSha256": "aa94d55f2919023040c4bdebb3165dfaf2d05ff6d7d8454c57f99057f3947dfd",
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-03T21:29:34Z",
+  "browser": "Chromium headless, wrapper-managed task session",
+  "entryPoint": "web/platform/",
+  "inputMethod": "Real Playwright mouse move/down/up on visible model flexure. Separate host commands hold until new guest output is observed; no espTester.input/press call used.",
+  "pointer": {
+    "canvasPixels": [
+      335,
+      151
+    ],
+    "canvasSize": [
+      676,
+      267
+    ],
+    "hover": "button"
+  },
+  "fixtureSource": {
+    "path": "tools/fixtures/stampc3-firmware/main/main.c",
+    "sha256": "0a5fe98f06a706711b91f0c5a4c8bb2426d6a3132f189e2444e6869539b0e683",
+    "chip": "esp32c3",
+    "buttonGpio": 3,
+    "ledGpio": 2,
+    "scope": "Independent IDF diagnostic fixture, not official factory firmware."
+  },
+  "rendererSha256": "25ccb7bc8120b48cb239d9935489079adf17a3f597c2facb9e489c8c2cd19bb2",
+  "scope": "3D pointer→public control→real guest GPIO poll→serial/RMT output. No calibrated LED optical appearance or physical hardware verification.",
+  "loadedWasmPolicy": "Cache disabled. Actual routed WASM response body SHA-256 retained before fulfilling the request; no installed-asset-only hash substituted.",
+  "negativeResults": [
+    {
+      "case": "initial-navigation-during-catalog-update",
+      "result": "INVALID_JSON initialization; current catalog bodies parsed and reload succeeded. No input/firmware loaded in failed page."
+    },
+    {
+      "case": "same-call-short-pointer-pulse",
+      "result": "No fresh guest output observed; not accepted as pass. Subsequent held input was verified using separate command observations."
+    },
+    {
+      "case": "combined-hold-and-async-wait",
+      "result": "15-second API wait timed out, later separate observation found fresh G3/RMT output. Final retained successful cycle uses explicit before/pressed/released samples and event sequence; timeout is not silently treated as pass."
+    }
+  ],
+  "images": {
+    "pointer-before.webp": "b4c94d79c4f6eaa08eb7b1ae416bf61c0fb6b41504d9f81fa27f5939b512ef8b",
+    "pointer-hover.webp": "11879bfa6b5aff78d288fdfdcded1e1f0b9bd4dee34a70e9198ed83f40949dfa",
+    "pointer-after.webp": "151ff34f9b1c00130c789471c1b81b5875734d39b0b290c6ae234c943bbcabd0"
+  }
+}

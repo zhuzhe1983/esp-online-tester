@@ -1,53 +1,20 @@
-# M5Stack Stamp-Pico DIY Kit · K051-B 外观与知识入库
+# Stamp-Pico DIY Kit · K051-B 模型
 
-ESP32-PICO-D4 模块 DIY 套件，包含下载器和连接配件；与 C050-B 五件装分开维护。
+K051-B 保留独立 DIY Kit 身份：一块 Stamp-Pico、下载器、排针、Grove 插座、内六角匙和纸贴；模型展示其中已贴纸的核心板，散件未声称预装或完整建模。
 
-来源：[官方产品文档](https://docs.m5stack.com/en/core/Stamp-Pico_DIY_Kit)，M5_Hardware 固定 `e29c139cbc7c80b5ccc5557e5ab8025a7a19a109`。逐源 URL、UTC、SHA-256、下载状态见 [knowledge](../../../web/platform/knowledge/m5stack-k051-b.json) 与 [source audit](../evidence/m5stack-k051-b/source-audit.json)。旧抓取保留原始时间，不伪造刷新日期。
+纸贴使用 K051-B 自己的官方照片，顶部标识与 C050-B 不同。独立的 17.6×22.4 mm 薄纸承载面保留真实跨槽纸面，并在中心螺丝处开孔；校正四角和孔位、透明遮罩均写入[模型计划](../../../web/platform/assets/m5stack-k051-b/model-plan.json)。纸厚 0.045 mm 和边界仍为照片估算，约 ±0.35 mm。
 
-Retained source assembled cluster; only the recorded rigid rotation and translation are applied. Original millimetres and relative positions preserved.
+中心 M2×4 沉头内六角螺丝有独立实体及真实六角开口；背面金属环保留照片中的可见细节。黑色 PCB 背面使用该 SKU 官方照片，板厚 1 mm 与通孔受官方尺寸图约束；内部元件面仍是 `UNKNOWN`，没有用照片冒充完整板级 CAD。隐藏螺纹啮合、背环厚度和小尺寸细节仍有估算。
 
-[model-plan.json](../../../web/platform/assets/m5stack-k051-b/model-plan.json) 记录组件选择、刚体变换、照片裁切、纹理投影与估算表面；厂家几何不缩放。STL 保留源三角形；STEP 使用 OpenCascade7.8.1.1 以0.05mm弦偏差/0.2rad角度细分。UNKNOWN 是中性占位，未编造 PCB 走线或未核实电子元件。
+正式页面“分开查看”后旋转可以完整读到 `UNKNOWN`，恢复装配和恢复视角会归位；金色、半透明紫色只改变外壳，纸面、PCB 和螺丝不受影响。原始厂家三角形未改动，原 CAD 厚 4.4 mm 与官方整机 4.6 mm 的差异继续保留。
 
-| 检查 | 实测或误差 mm | 目标 mm | 结果 |
-| --- | ---: | ---: | --- |
-| cad-component-0 source-fidelity | 3.433227533378158e-07 | 0 | 通过 |
-| cad-component-1 source-fidelity | 1.0490417512443173e-07 | 0 | 通过 |
-| width | 18.0 | 18 | 通过 |
-| height | 24.027936935424805 | 24 | 通过 |
-| depth | 4.400000095367432 | 4.6 | 未通过 |
-
-实际平台 `manufacturer-model.js` 的 headless 渲染与原照片对照在 [verification.json](../evidence/m5stack-k051-b/verification.json)：
-
-- covered-front: qualitative-only; IoU 0.44323880502747426
-- component-side: qualitative-only; IoU 0.9568273910499063
-- board-back: qualitative-only; IoU 0.9599687992111499
-- covered-angle: qualitative-only; IoU 0.48199784877371893
-
-正反视图只有照片确属近正投影且原始型号一致时才用0.95轮廓门槛。侧视/斜视保留为定性检查，不以轮廓掩盖标签、组件或装配差异。引用照片的纹理不是独立验证依据；未通过/缺失项不会改写成通过。
-
-厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 unavailable，官方固件入口仅参考，未验证版本/hash/镜像不填猜测值。
-
-重生成：
+[本次验证](../evidence/m5stack-k051-b/model-refresh-2026-11-04.json)记录最终哈希、离线重建、两个纹理的逐像素承载面检查、照片对照、近景、材质及正式页面展开截图。[此前验证](../evidence/m5stack-k051-b/verification-before-refresh.json)与未带 `refresh-` 前缀图片属于旧版本。整体为部分外观还原，没有固件执行或实机兼容结论。
 
 ```sh
-python tools/onboard-lane-01-extra.py prepare --ids m5stack-k051-b
-python tools/onboard-lane-01-extra.py build --ids m5stack-k051-b
+python tools/rebuild-product-model.py build m5stack-k051-b --scratch <fresh-directory>
+python tools/check-stamp-pico-surfaces.py m5stack-k051-b
 ```
 
-通过受跟踪的 headless 浏览器打开 `web/platform/review-lane-01.html?id=m5stack-k051-b`；按 model reviewViews 保存800×800正反侧画布到 `output/playwright/m5stack-k051-b-front.png` 等，再运行：
+依赖见[模型重建](../model-reproduction.md)。厂家 CAD 为 MIT；照片与派生纹理保留厂家权利。后续运行适配使用[按键与 RGB 位置记录](../evidence/stamp-pico-control-surfaces.json)：已贴纸型号的透光情况未证实，不为灯效凭空开孔。
 
-```sh
-python tools/onboard-lane-01-extra.py verify --ids m5stack-k051-b
-python tools/onboard-lane-01-extra.py publish --ids m5stack-k051-b
-```
-
-当前限制：
-
-- Model covers the Stamp-Pico module only; downloader, headers and loose kit accessories have no matching assembly CAD in this directory.
-- CAD thickness 4.4 mm differs from documented product 4.6 mm; retained as a failure rather than stretched.
-- Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.
-- Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.
-- Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.
-- Browser inspection identifies the connected STL as a heat-resistant shield; actual populated PCB geometry and edge pad assignments remain unknown.
-- 本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。
-- Heat-resistant printed film uses an independently recorded four-corner perspective rectification; oblique-source uncertainty remains. Central fastening screw geometry is still absent, not painted into the film.
+实体 GPIO39 按键的点击面按官方尺寸图和盖板标识定位；直径 3 mm 是交互范围估算，不是厂家开关尺寸。正式页面的 3D 点击、键盘 A、分开查看后的点击及恢复装配后的点击，均由独立 IDF 测试固件输出新的 GPIO39 按下/松开记录与 G27 RGB 数值验证，见[交互记录](../evidence/m5stack-k051-b/public-control-review.json)。这项验证不等同于官方 UIFlow 应用兼容；盖板及该型号实际纸面的遮挡保留，未为显示灯效额外开孔。

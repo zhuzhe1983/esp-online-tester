@@ -1,22 +1,13 @@
-# M5Stack Stamp-C3U Mate · K122
+# Stamp-C3U Mate · K122
 
-ESP32-C3 核心模块，原生 USB-C、两个按键和 RGB LED；Mate 套件含排针与 Grove 接插件。
+保留 M5Stack 官方 `K122_Stamp-C3U_Mate/Structures/Stamp-C3U_Mate.stl` 的 4172 个原始三角形和毫米坐标。该文件只含外盖，尺寸 20 × 34 × 4.5 mm；产品标注 20 × 34 × 4.6 mm，未缩放 CAD 消除差异。K122 套件包含一个 Stamp-C3U 及散装排针、HY2.0 插座和扳手；模型未推断它们已焊接。
 
-厂家 CAD 以毫米和刚体变换导入；本产品外观状态仍为 **partial**，本次只核验外观，固件运行支持以产品库为准。
+PCB 底色按 C3U 自有照片设为黑色。背面采用官方 `K122_08.jpg` 的 301 × 513 原始像素区域，记录固定裁切及孔洞遮罩；盖内未知元件面保留 UNKNOWN。板边凹口、22 个边缘孔和 8 个内部插座孔均按本型号照片估算，不能作为制造布局。K122 的 LCEDA 元件入口返回 HTTP418；配套 C122-B 页面链接指向 C3 的 footprint 目录，两者均未被当成完整 C3U PCB CAD。
 
-装配：Retained source assembled cluster; only the recorded rigid rotation and translation are applied. Original millimetres and relative positions preserved.
+中心轴为 CAD 和尺寸图确认的 [0, 2] mm。补齐单颗 M2×4 沉头内六角螺丝、黄铜支撑柱及独立薄纸承载面；纸贴外沿和中心开孔单独裁切，不把金属头或外盖颜色烘焙进贴图。螺丝内段用无螺纹的简化实体表示，支撑柱高度和隐藏固定方式未实测。
 
-已检查正面、背面和侧面，以及原色/金色/半透明紫色正背对照。纸贴使用源照片的显式透明遮罩，独立于可换色外壳；照片不覆盖屏幕。缺失的字样、端子细节和内部板图不因本次检查而成为已还原。
+“分开查看”将外盖、纸贴、螺丝和按键命中面共同移动 12 mm，方便检查 UNKNOWN；这是查看偏移，不是厂商拆解尺寸。恢复装配或恢复视角可回到原位。USB 和天线只补可见外形估算，不表示内部电气连接。
 
-几何检查共 4 项，0 项未通过；数值和照片轮廓测试的失败均保留在 [verification.json](../evidence/m5stack-k122/verification.json)。三种材质对照见 [appearance-comparison.webp](../evidence/m5stack-k122/appearance-comparison.webp)。侧面及斜拍只作定性核查，白底白壳、标注图和附带物可能使自动轮廓分割无效，不能用该指标证明整机1:1。
+G9 用户键的命中面覆盖 CAD 弹片内侧 9 × 6 mm，位置 [0, -4.5, 2.285] mm；左上 EN 复位键不冒充 GPIO 用户键。RGB 灯可在裸板照片中定位，但纸贴遮住了盖板狭缝，透光率未知，因此未添加发光印刷面。运行时和实际客体输出由单独的板级证据验证，机械模型不证明固件兼容。
 
-来源、抓取时间、hash与装配计划见 [source-audit.json](../evidence/m5stack-k122/source-audit.json)。复现：`python tools/onboard-lane-02-extra.py prepare --ids m5stack-k122`、`build --ids m5stack-k122`，然后使用 `review-lane-02.html?id=m5stack-k122` 截取对应正背侧视，运行 `verify --ids m5stack-k122`。依赖见 `tools/requirements-model.txt`。
-
-限制：
-
-- Single connected manufacturer STL provides source geometry only; no separately certified PCB/component placement.
-- 4.5 mm CAD thickness differs from 4.6 mm documented envelope. Optional loose headers/connector kit are not assembled by inference.
-- Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.
-- Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.
-- Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.
-- Browser inspection identifies the connected STL as a heat-resistant shield; actual populated PCB geometry and edge pad assignments remain unknown.
+来源、坐标、裁切与估算见 `model-plan.json`；尺寸、照片叠图、材质、纸贴侧面和公开分开查看验证见对应 evidence 目录。可用 `python tools/rebuild-product-model.py build m5stack-k122 --scratch <新的临时目录>` 离线复现。

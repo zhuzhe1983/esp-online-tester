@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "productId": "m5stack-s007",
+  "sku": "S007",
+  "checkedAt": "2026-11-03T20:54:36.789Z",
+  "sourceReceipt": "s007-sources.json",
+  "sourceBaseline": "a721212e",
+  "board": "stamps3",
+  "rom": {
+    "name": "esp32s3_rev0_rom.elf",
+    "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+  },
+  "wasmSha256": "b1887a8b5f80a135191ddbbd79ebe2d0e7218d6081d8723a7e543f615df9844c",
+  "official": {
+    "build": "m5stack/uiflow-micropython@e437118892520ba987c2d930a2428db1cab65ab1",
+    "version": "v2.5.4",
+    "url": "https://github.com/m5stack/uiflow-micropython/releases/download/2.5.4/uiflow-e437118-esp32s3-8mb-stamps3-v2.5.4-20261030.bin",
+    "sha256": "7c0fcd8251c3765fd462347555fc70e351178bb9fef8d4d2fa0cde5d07f0d661",
+    "transport": "caller-downloaded-original-image",
+    "status": "partial",
+    "guestSeconds": 21.02,
+    "rgbUpdatesObserved": 0,
+    "framebuffer": null,
+    "checks": [
+      "actual-page-worker-rom-startup",
+      "no-invented-framebuffer",
+      "button-transport-only-not-official-application-acceptance"
+    ],
+    "limits": [
+      "No expected blue RGB output after 20 guest seconds; full application startup is not established.",
+      "Official application interaction and networking not verified; button electrical behavior is independently tested by source-built fixture.",
+      "Transport does not establish browser CORS access."
+    ],
+    "consoleSummary": {
+      "rom": "esp32s3-20210327",
+      "reset": "POWERON",
+      "boot": "SPI_FAST_FLASH_BOOT",
+      "bootloaderEntry": "0x403c8890",
+      "applicationConsoleObserved": false,
+      "guruMeditationObserved": false,
+      "softwareResetMessageObserved": false
+    },
+    "rawReceiptSha256": "14f1b1ce1186958a3e1b54288889df3cca1ca93136b79d15042ff4ba4117d3f9",
+    "native": {
+      "sourceRevision": "d74084df",
+      "binarySha256": "632ead78d18922636b5790c613c99e95a3b27dd06688f277ca4ffe218273988b",
+      "command": "esp32sim --chip s3 --board stamps3 --flash-mb 8 --psram-mb 0 --flash-image <downloaded-original-image> --boot rom --rom <esp32s3_rev0_rom.elf> --max-seconds 20 --console both",
+      "guestSeconds": 20,
+      "cycles": 4800000000,
+      "core0Instructions": 84383172,
+      "core1Instructions": 212055758,
+      "exceptions": 863464,
+      "interrupts": 62408,
+      "rmtUpdates": 0,
+      "rgb": [
+        0,
+        0,
+        0
+      ],
+      "lastCore0": {
+        "pc": "0x403828f6",
+        "epc1": "0x421c94bf",
+        "exccause": 4
+      },
+      "lastCore1": {
+        "pc": "0x420359af",
+        "epc1": "0x40385ed3",
+        "exccause": 4
+      },
+      "rawLogSha256": "8ce756096d3c6eed2af3baece63532da9837b8dfe0d3df80683d7876df7d3304",
+      "diagnosis": "No release ELF supplied; terminal PCs are not assigned invented symbols. Cause4 can be the retained interrupt cause and does not alone establish a crash. The missing application RGB remains unresolved."
+    },
+    "negativeAttempts": [
+      {
+        "path": "previous blue-required worker probe",
+        "result": "120-second host timeout without expected blue; replaced with bounded 20-guest-second observation, not counted as pass"
+      },
+      {
+        "path": "Node remote fetch probe",
+        "result": "terminated while no output was available; execution proof uses explicitly supplied downloaded original bytes and digest, not a claimed remote success"
+      }
+    ]
+  },
+  "fixture": {
+    "checkedAt": "2026-11-03T20:50:25.907Z",
+    "command": "node tools/probe-stamps3.mjs --build <fixture-build-directory> --product <product-id>",
+    "backend": "actual-wasm-worker",
+    "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+    "inputHashes": {
+      "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+      "stamps3_fixture.bin": "81062dcc3ebbf9caa35413c6f27fb6473b25d51296b4b9557a39f77bfea81926",
+      "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    "checks": [
+      "real-rom-boot-rmt21-red",
+      "guest-gpio0-press-release-drives-green-blue-off-red",
+      "no-invented-display-and-unknown-button-rejected",
+      "platform-reset-releases-button-and-fresh-guest-red"
+    ],
+    "status": "pass",
+    "guestSeconds": 1.02,
+    "expectedColors": [
+      [
+        255,
+        0,
+        0
+      ],
+      [
+        0,
+        255,
+        0
+      ],
+      [
+        0,
+        0,
+        255
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        255,
+        0,
+        0
+      ]
+    ],
+    "rawReceiptSha256": "971bdbc9fc0e313f8e3d4baa02e6ac285b3cccb6cea745a3068007d12792c49d",
+    "sourceHashes": {
+      "tools/fixtures/stamps3-firmware/.gitignore": "3b5f86aa29d81168d780f64ef664853d1ca431fd23de1f55a82ab6918f617d3d",
+      "tools/fixtures/stamps3-firmware/CMakeLists.txt": "fd69efa6be94e0829056c7c668893a11c644d0473f3cb1184ea93fb7e2e13112",
+      "tools/fixtures/stamps3-firmware/README.md": "fc1039c5b3527a0339a1502c547eb682b4c71138236898de40956a0b015fe215",
+      "tools/fixtures/stamps3-firmware/main/CMakeLists.txt": "128968288830b02501a69970b7414859996e88b85dc414b810ef3084dc7054f0",
+      "tools/fixtures/stamps3-firmware/main/main.c": "d9cd96c195b8f4b2990cbf3ecede3844d03e68b96264ebbf3321a5700e279da4",
+      "tools/fixtures/stamps3-firmware/sdkconfig.defaults": "aac493cf9cb4567da21f4dbc99a75826b3a3b4d21dd46dfea00392a7192e7233"
+    }
+  },
+  "browser": {
+    "checkedAt": "2026-11-03T20:50:27.306Z",
+    "engine": "headless Chromium via tracked Playwright CLI",
+    "origin": "http://127.0.0.1:8788",
+    "requestMode": "cors",
+    "credentials": "omit",
+    "sourceUrl": "https://github.com/m5stack/uiflow-micropython/releases/download/2.5.4/uiflow-e437118-esp32s3-8mb-stamps3-v2.5.4-20261030.bin",
+    "result": "rejected",
+    "error": "TypeError: Failed to fetch",
+    "consoleCause": "No Access-Control-Allow-Origin header on GitHub release download response.",
+    "downloadedBytes": null,
+    "firmwareExecutedByRemoteBrowserPath": false,
+    "ui": {
+      "checkedAt": "2026-11-03T20:56:18.178Z",
+      "selectedProduct": "m5stack-s007",
+      "selectedFirmware": "m5stack-stamps3-uiflow2-github",
+      "defaultBeforeManualSelection": "m5stack-s007-uiflow2",
+      "trialConfirmationShown": true,
+      "errorCode": "FETCH_FAILED",
+      "fallbackDialog": "无法直接下载固件",
+      "fallbackMaintainsSourceAndHash": true,
+      "offersOfficialDownloadAndLocalFile": true,
+      "firmwareExecuted": false
+    }
+  },
+  "checks": {
+    "catalogTests": "4 test files; 25 Node test cases passed, zero failures",
+    "diffCheck": "pass",
+    "privacy": "Configured-pattern check passed; manual review omits raw logs and identities."
+  },
+  "limits": [
+    "Internal source-built fixture proves GPIO0/RMT21 board behavior only; it is not public/default firmware and not proof of UIFlow application compatibility.",
+    "No physical hardware, networking, MicroPython REPL, FPC screen, analog power or software GPIO LED timing verified.",
+    "Native and WASM observations are correctness checks; concurrent model work means no CPU performance conclusion."
+  ],
+  "curation": "Full console/event streams omitted. Public URLs, hashes, numeric execution counts, final PCs and exact assertions retained. No signed asset redirect, request ID, MAC, local username or personal host identity retained."
+}

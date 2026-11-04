@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "productId": "m5stack-s007-v033",
+  "sku": "S007-V033",
+  "checkedAt": "2026-11-03T21:02:52.970Z",
+  "sources": [
+    {
+      "url": "https://docs.m5stack.com/en/core/Stamp-S3A",
+      "fetchedAt": "2026-11-03T21:02:25.918092+00:00",
+      "bytes": 138967,
+      "sha256": "aeb000dc45f0d83104b2b5c1dac96265dfd7e11027453b8d36175339f64751ca"
+    },
+    {
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1150/Sch_StampS3_v0.3.3.pdf",
+      "fetchedAt": "2026-11-03T21:02:26.156320+00:00",
+      "bytes": 369766,
+      "sha256": "2f9610aecc5a5d2ee51b33c75df31cf90c7639d2997e7a2bb147ba8d46b46966"
+    },
+    {
+      "url": "https://docs.m5stack.com/en/arduino/m5stamps3a/program",
+      "fetchedAt": "2026-11-03T21:02:26.424471+00:00",
+      "bytes": 339197,
+      "sha256": "004fa9342066f487a0069114dd988c064d8bf6062511709046bf1f7a25d1e41a"
+    }
+  ],
+  "electricalIdentity": {
+    "board": "stamps3a",
+    "chip": "ESP32-S3FN8",
+    "flashMb": 8,
+    "psramMb": 0,
+    "buttonGpio": 0,
+    "buttonActiveLow": true,
+    "rgbGpio": 21,
+    "rgbCount": 1,
+    "rgbOrder": "GRB",
+    "rgbPowerEnableGpio": 38,
+    "powerEnableActiveHigh": true,
+    "basis": "v0.3.3 schematic: GPIO38/DISP_BL to AW35122FDR EN, BL_3V3 to U3 WS2812 VDD. Exact official Arduino tutorial enables LED_EN38 before FastLED WS2812/G21/GRB."
+  },
+  "firmware": {
+    "defaultFirmwareId": "m5stack-s007-v033-uiflow2",
+    "productTutorial": "https://docs.m5stack.com/en/uiflow2/stamps3/program",
+    "factoryStatus": "not-located",
+    "factoryFirmwareIds": [],
+    "uiflow1": "No exact target in checked official sources.",
+    "uiflow2": "Exact S3A page links StampS3 tutorial; Burner509a67aa and GitHube437118 v2.5.4 remain separate builds.",
+    "xiaozhi": "No exact standalone target located; source scope in s007-sources.json.",
+    "sourceReceipt": "s007-sources.json",
+    "downloadReceipt": "s007-runtime.json"
+  },
+  "official": {
+    "checkedAt": "2026-11-03T21:02:47.418Z",
+    "command": "node tools/probe-stamps3-official.mjs <official-https-url> <sha256> --product <product-id> --binary <downloaded-original-image>",
+    "productId": "m5stack-s007-v033",
+    "url": "https://github.com/m5stack/uiflow-micropython/releases/download/2.5.4/uiflow-e437118-esp32s3-8mb-stamps3-v2.5.4-20261030.bin",
+    "sha256": "7c0fcd8251c3765fd462347555fc70e351178bb9fef8d4d2fa0cde5d07f0d661",
+    "transport": "caller-downloaded-original-image",
+    "wasmSha256": "b1887a8b5f80a135191ddbbd79ebe2d0e7218d6081d8723a7e543f615df9844c",
+    "guestSeconds": 21.04,
+    "checks": [
+      "actual-page-worker-rom-startup",
+      "no-invented-framebuffer",
+      "button-transport-only-not-official-application-acceptance"
+    ],
+    "status": "partial",
+    "limitations": [
+      "No expected blue RGB output after 20 guest seconds; full application startup is not established.",
+      "Official application interaction and networking not verified; button electrical behavior is independently tested by source-built fixture.",
+      "Transport does not establish browser CORS access."
+    ]
+  },
+  "fixture": {
+    "command": "node tools/probe-stamps3a.mjs --build <fixture-build-directory> --product <product-id>",
+    "backend": "actual-wasm-worker",
+    "firmware": "internal ESP-IDF 5.5.1 protocol fixture",
+    "wasmSha256": "b1887a8b5f80a135191ddbbd79ebe2d0e7218d6081d8723a7e543f615df9844c",
+    "inputHashes": {
+      "bootloader/bootloader.bin": "6abee46664092973223c6b567a6c2e57f97cc0323e8b93d95480e1162a6bdce6",
+      "stamps3a_fixture.bin": "1ada5586cf9d689d0a2a2e509e5e5f2883b50c5a7956fa6b84db5560fae63521",
+      "partition_table/partition-table.bin": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    "checks": [
+      "g38-off-drops-real-rmt-white",
+      "real-rom-boot-rmt21-red",
+      "restored-g38-supply-does-not-replay-stale-blue",
+      "guest-gpio0-drives-green-g38-off-blue-g38-input-red",
+      "no-invented-display-and-unknown-button-rejected",
+      "platform-reset-releases-button-and-fresh-guest-red"
+    ],
+    "status": "pass",
+    "guestSeconds": 2.04,
+    "sourceHashes": {
+      "tools/fixtures/stamps3a-firmware/.gitignore": "3b5f86aa29d81168d780f64ef664853d1ca431fd23de1f55a82ab6918f617d3d",
+      "tools/fixtures/stamps3a-firmware/CMakeLists.txt": "f8388ef5b2728c020ac5a0fbd075bf197cef55ebf29a53f1d890ddb2c76b3544",
+      "tools/fixtures/stamps3a-firmware/README.md": "5b08aaafb1681267cb35620ae3871fac1751fe785e46784e08bf5b621e63df55",
+      "tools/fixtures/stamps3a-firmware/main/CMakeLists.txt": "128968288830b02501a69970b7414859996e88b85dc414b810ef3084dc7054f0",
+      "tools/fixtures/stamps3a-firmware/main/main.c": "97f5793d55454880a528957d7a9f886de2757c4780cdc0e4d6f38d9c5bf43c84",
+      "tools/fixtures/stamps3a-firmware/sdkconfig.defaults": "aac493cf9cb4567da21f4dbc99a75826b3a3b4d21dd46dfea00392a7192e7233"
+    }
+  },
+  "limits": [
+    "The true guest GPIO/RMT fixture proves digital G38 supply gating and G0 input; it does not model analog power, leakage, delay, parasitic supply or current.",
+    "Officialv2.5.4 has no observed RGB output; v2.5.3 remains historical only. No physical RF, FPC screen or whole-application acceptance.",
+    "3D/model acceptance is separately owned and cannot be inferred from firmware execution."
+  ],
+  "rawReceiptSha256": {
+    "fixture": "21e94cb8a1c9a7f66d9a97bc1225bf6a009a70db7ca07f78873be76f3255dc67",
+    "official": "28ec1cb90d49de5e852ce36aa5aa5ec5fa2c6b87861656dd48d06c89d653c91c"
+  },
+  "curation": "Full console and LED event streams omitted; exact assertions, input hashes and WASM identity retained."
+}

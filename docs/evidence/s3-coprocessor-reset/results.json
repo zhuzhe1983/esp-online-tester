@@ -1,0 +1,215 @@
+{
+  "experiment": "EX248",
+  "baseline_revision": "49a277876d7f276d4b7d576e2bc167ffa9078482",
+  "fix_revision": "f0041b94",
+  "toolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "target": "aarch64-apple-darwin",
+  "profile": "release",
+  "rom_sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+  "baseline_binary_sha256": "6e7b6cf8adcb8f442b9a6879afc556eb38d8372e2d3023ff01152fee35be5a34",
+  "fix_binary_sha256": "81b55c734ae65fea2a6d1892629788b88d13526d7d004907dc21cda801c884b8",
+  "original_firmware_results": [
+    {
+      "input": "v1.0.0",
+      "engine": "native-jit",
+      "core0_insns": 7722427,
+      "core1_insns": 3312017,
+      "seconds": 1.0,
+      "cycles": 240000000,
+      "exceptions": 11478,
+      "interrupts": 2210,
+      "coprocessor_panic": false,
+      "chip_reboots": 0,
+      "ws2812_updates": 3,
+      "final_rgb": [
+        2,
+        0,
+        0
+      ],
+      "rmt_tx": 6,
+      "local_raw_sha256": "f9a7f43b1f51045ec14caa7d7a69577cb9ad8b1bf0fb09651da0d51638a09511",
+      "local_raw_bytes": 1429
+    },
+    {
+      "input": "v1.1.0",
+      "engine": "native-jit",
+      "core0_insns": 7720443,
+      "core1_insns": 3310616,
+      "seconds": 1.0,
+      "cycles": 240000000,
+      "exceptions": 11478,
+      "interrupts": 2209,
+      "coprocessor_panic": false,
+      "chip_reboots": 0,
+      "ws2812_updates": 3,
+      "final_rgb": [
+        2,
+        0,
+        0
+      ],
+      "rmt_tx": 6,
+      "local_raw_sha256": "3c2e100ab53d7557d2fdcf9b7cce9fceb97316293d7d79272757f473566632fd",
+      "local_raw_bytes": 1429
+    },
+    {
+      "input": "v1.1.0",
+      "engine": "interpreter",
+      "core0_insns": 7720443,
+      "core1_insns": 3310616,
+      "seconds": 1.0,
+      "cycles": 240000000,
+      "exceptions": 11478,
+      "interrupts": 2209,
+      "coprocessor_panic": false,
+      "chip_reboots": 0,
+      "ws2812_updates": 3,
+      "final_rgb": [
+        2,
+        0,
+        0
+      ],
+      "rmt_tx": 6,
+      "local_raw_sha256": "5cac4a95a393730f2291151fd2c57c9a357d878b75701621e4662d2de5d23543",
+      "local_raw_bytes": 1422
+    }
+  ],
+  "targeted_tests": {
+    "passed": 5,
+    "failed": 0
+  },
+  "omitted": "Raw consoles, full instruction trace, local absolute paths and concurrent-run wall-clock speed. Local raw hashes identify original captures without publishing their contents.",
+  "workload_comparison": [
+    {
+      "workload": "hello",
+      "revision": "49a27787",
+      "core0_insns": 11990305,
+      "core1_insns": 6798164,
+      "emulated_seconds": 30.0,
+      "cycles": 7200000000,
+      "exceptions": 27229,
+      "interrupts": 6031,
+      "console_bytes": 10454,
+      "console_sha256": "c74f198e19e94c47772b3403433b5532057180aa63df46ff90ffe9a51710966f"
+    },
+    {
+      "workload": "hello",
+      "revision": "f0041b94",
+      "core0_insns": 11990305,
+      "core1_insns": 6798164,
+      "emulated_seconds": 30.0,
+      "cycles": 7200000000,
+      "exceptions": 27229,
+      "interrupts": 6031,
+      "console_bytes": 10454,
+      "console_sha256": "c74f198e19e94c47772b3403433b5532057180aa63df46ff90ffe9a51710966f"
+    },
+    {
+      "workload": "pocket-tank",
+      "revision": "49a27787",
+      "core0_insns": 4595734479,
+      "core1_insns": 6171560740,
+      "emulated_seconds": 30.0,
+      "cycles": 7200000000,
+      "exceptions": 1048080,
+      "interrupts": 100430,
+      "console_bytes": 11096,
+      "console_sha256": "5f9d2aecbb20769a9f076516c33955f82a9fa13fba79249edde134aed8986e0a"
+    },
+    {
+      "workload": "pocket-tank",
+      "revision": "f0041b94",
+      "core0_insns": 4595734479,
+      "core1_insns": 6171560740,
+      "emulated_seconds": 30.0,
+      "cycles": 7200000000,
+      "exceptions": 1048080,
+      "interrupts": 100430,
+      "console_bytes": 11096,
+      "console_sha256": "5f9d2aecbb20769a9f076516c33955f82a9fa13fba79249edde134aed8986e0a"
+    }
+  ],
+  "comparison_command": {
+    "common_args": [
+      "--boot",
+      "rom",
+      "--rom",
+      "$ROM",
+      "--max-seconds",
+      "30",
+      "--no-dump",
+      "--console",
+      "uart0"
+    ],
+    "workload_options": "board, flash_mb, psram_mb, bootloader, ptable, app and flash_at from web/wasm/fw/{hello,pocket-tank}.json; same verified files supplied to each binary",
+    "run_order": [
+      "hello:49a27787",
+      "hello:f0041b94",
+      "pocket-tank:49a27787",
+      "pocket-tank:f0041b94"
+    ]
+  },
+  "workload_inputs": [
+    {
+      "workload": "hello",
+      "input": "web/wasm/fw/public/hello-bootloader.bin",
+      "bytes": 20832,
+      "sha256": "7efecb4df4463ece11ab286068a505ecd174f66fd4aacc53d887fcb9c18f0579"
+    },
+    {
+      "workload": "hello",
+      "input": "web/wasm/fw/public/hello-ptable.bin",
+      "bytes": 3072,
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    {
+      "workload": "hello",
+      "input": "web/wasm/fw/public/hello_world.bin",
+      "bytes": 161712,
+      "sha256": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9"
+    },
+    {
+      "workload": "pocket-tank",
+      "input": "web/wasm/fw/public/pocket-tank-bootloader.bin",
+      "bytes": 22464,
+      "sha256": "9556d59f3a10f6b04fa6d75f3142a66034339afafffbd4bbc3d9a127eaa73859"
+    },
+    {
+      "workload": "pocket-tank",
+      "input": "web/wasm/fw/public/pocket-tank-ptable.bin",
+      "bytes": 3072,
+      "sha256": "7af5b28608c91167e00778b7f20622f3b47849efebeb3e64117162d73f3e0508"
+    },
+    {
+      "workload": "pocket-tank",
+      "input": "web/wasm/fw/public/pocket-tank.bin",
+      "bytes": 470096,
+      "sha256": "443dd24aed14a509e6df597eb3a02635cc07e0fbee6f04db85a62f4d4dadb113"
+    },
+    {
+      "workload": "pocket-tank",
+      "input": "web/wasm/fw/local/model_q4.bin (tools/fetch-pocket-tank.sh)",
+      "bytes": 7557640,
+      "sha256": "b200bf87c78dc85c4d727f68941ac0b83cced9827037cc169cd2122d71002c2a"
+    }
+  ],
+  "baseline_logs": [
+    {
+      "image": "v1.0.0",
+      "coprocessor_panic": true,
+      "local_raw_sha256": "cce1a9a6925cbb39c97a4f49ac49622671711a759ea028528b49d6bdfe1e9b59",
+      "local_raw_bytes": 11393
+    },
+    {
+      "image": "v1.1.0",
+      "coprocessor_panic": true,
+      "local_raw_sha256": "71a185d051e76917e5f7479403e8fbae55315b71995095009d037eebc4705ccd",
+      "local_raw_bytes": 11393
+    },
+    {
+      "image": "v1.1.0-interpreter",
+      "coprocessor_panic": true,
+      "local_raw_sha256": "c0dc5909c5d2752564aeebae108329e0ea4a4c720c0c8b3fe7a46760ea44aaa4",
+      "local_raw_bytes": 11384
+    }
+  ]
+}

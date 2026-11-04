@@ -26,7 +26,8 @@ function collectMotion(force=false) {
     if(n<=0||n>capacity)return;
     const json=dec.decode(mem().subarray(p,p+n));
     if(json!==motionLast){motionLast=json;postMessage({text:JSON.stringify({t:'motion',...JSON.parse(json)})});}
-  } finally {wasm.esp32sim_free(p,capacity);}
+  } catch { /* Malformed optional motion data must not interrupt firmware execution. */ }
+  finally {wasm.esp32sim_free(p,capacity);}
 }
 let hardwareChecksEnabled=false,hardwareChecksLast='',hardwareChecksAt=-Infinity;
 // Cold host observation only. This never changes guest registers or advances time.
@@ -211,7 +212,7 @@ onmessage = async (ev) => {
       // Keep credits for already posted frames until their ACKs arrive, but never send
       // a retained frame from the emulator being replaced.
       pendingFrame = null;sdShadow=null;sdWatchId=null;
-      motionEnabled=m.board==='stackchan';motionLast='';motionAt=0;
+      motionEnabled=['stackchan','stampfly','stampfly-v11'].includes(m.board);motionLast='';motionAt=0;
       hardwareChecksEnabled=m.board==='stopwatch';hardwareChecksLast='';hardwareChecksAt=-Infinity;
       pacing = createPacing(); catchupTurns = 0;
       pendingInputTrace = [];
@@ -224,7 +225,8 @@ onmessage = async (ev) => {
       if (emu !== 0 && wasm.esp32sim_cpu_hz) CPU_HZ = wasm.esp32sim_cpu_hz(emu);
       const audioAvailable=!!(emu&&wasm.esp32sim_audio_input_state&&wasm.esp32sim_audio_input_state(emu,0)>0);
       if(emu&&m.audioStreaming&&wasm.esp32sim_audio_output_streaming)wasm.esp32sim_audio_output_streaming(emu,1);
-      postMessage({ created: emu !== 0, audioAvailable, networkAvailable:!!wasm.esp32sim_softap_configure&&!!wasm.esp32sim_ethernet_relay, flashStorage: !!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
+      const c5 = ['stamp-c5','stamp-c5-dip'].includes(m.board);
+      postMessage({ created: emu !== 0, clockHz:CPU_HZ, audioAvailable, networkAvailable:!c5&&!!wasm.esp32sim_softap_configure&&!!wasm.esp32sim_ethernet_relay, flashStorage: !c5&&!!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
     }
     else if(m.op.startsWith('network-')) {
       try {

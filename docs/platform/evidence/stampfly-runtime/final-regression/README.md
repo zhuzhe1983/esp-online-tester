@@ -1,0 +1,5 @@
+# Final integrated StampFly regression
+
+The final production WASM `bd1c688cff2cbd2ac608761dbe122d0c2346f65ea3d0a6e53d3034ee170ba3ef` passed both product fixtures and both exact official factory images. Inputs, source fingerprints, loader decisions, fresh output after G0 software reset, and worker disposal are retained in the JSON receipts. This is an actual Node worker/WASM regression; the earlier browser, pointer and CORS evidence remains separate. It proves neither flight nor RF pairing.
+
+Reproduce the fixture using `node tools/probe-stampfly.mjs --build <source-built-fixture-directory>` as documented in the parent evidence. Reproduce factory boot with `node docs/platform/evidence/stampfly-runtime/final-regression/factory-probe.mjs --root <checkout> --original <exact-original-factory.bin> --v11 <exact-v11-factory.bin> --out <receipt.json>`. The harness checks the pinned hashes before loading. Fetch the original public URLs listed in `factory.json` into temporary local storage; their binary payloads are not included in this repository.

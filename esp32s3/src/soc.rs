@@ -10,6 +10,13 @@ use xtensa_lx7::Cpu;
 pub struct S3;
 pub type Machine = esp_soc::Machine<S3>;
 
+// Cadence LX7 Data Book (2017), section 9.1 and table 9-15: CPENABLE resets to
+// (1 << CoprocCount) - 1, where CoprocCount is the highest CP ID plus one.
+// ESP-IDF v4.4.5 components/xtensa/esp32s3/include/xtensa/config/tie.h:
+// XCHAL_CP_MAX=4, with CP0=FPU and CP3=cop_ai. This is an S3 reset value;
+// the shared Xtensa core's architectural default and the LX6 are unchanged.
+const CPENABLE_RESET: u32 = 0x0f;
+
 /// A machine with the default 8 MB flash / 2 MB PSRAM and no board (`bus.board` selects one).
 pub fn machine(mac: [u8; 6]) -> Machine { let mut m = Machine::new(mac, SocBus::new(8 << 20, 2 << 20, mac)); m.set_debug(&esp_soc::DebugFlags::from_env()); m }
 
@@ -22,7 +29,7 @@ impl Soc for S3 {
     const CORES: usize = 2;
     const IDLE_CHUNK: u64 = 64 * 8;
     const ROM_DATA_TABLE: &'static [&'static str] = &["_data_start"];
-    fn new_core(i: usize) -> Cpu { Cpu::new(if i == 0 { 0xCDCD } else { 0xABAB }) }
+    fn new_core(i: usize) -> Cpu { let mut c = Cpu::new(if i == 0 { 0xCDCD } else { 0xABAB }); c.cpenable = CPENABLE_RESET; c }
     fn new_core_with_bus(i: usize, bus: &SocBus) -> Cpu {
         let mut core = Self::new_core(i);
         core.fetch_cache = bus.fetch_cache.clone();
@@ -30,7 +37,7 @@ impl Soc for S3 {
     }
     fn function_hooks(bus: &SocBus) -> &[u32] { &bus.ble.hooks }
     fn function_hook(core: &mut Cpu, bus: &mut SocBus) -> bool { crate::ble::intercept(core, bus) }
-    fn reset_core(c: &mut Cpu, i: usize) { Cpu::reset(c); if i == 1 { c.prid = 0xABAB; } }
+    fn reset_core(c: &mut Cpu, i: usize) { Cpu::reset(c); c.cpenable = CPENABLE_RESET; if i == 1 { c.prid = 0xABAB; } }
     #[inline]
     fn reset_core_with_bus(c: &mut Cpu, bus: &mut SocBus, i: usize) {
         Self::reset_core(c, i);
@@ -40,7 +47,7 @@ impl Soc for S3 {
         bus.periph.intmatrix_dirty = true;
     }
     fn boot_core(c: &mut Cpu, entry: u32) {
-        Cpu::reset(c);
+        Self::reset_core(c, 0);
         c.pc = entry;
         c.ps = ps::WOE | ps::UM;      // windows enabled, user vector; INTLEVEL 0
         c.vecbase = 0x4000_0000;

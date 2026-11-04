@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-11-03T21:28:26.854Z",
+  "command": "node tools/probe-stamppico-official.mjs <official-https-url> <sha256> --product <product-id> --binary <downloaded-original-image>",
+  "productId": "m5stack-c050-b",
+  "url": "https://github.com/m5stack/uiflow-micropython/releases/download/2.5.4/uiflow-e437118-esp32-4mb-stamppico-v2.5.4-20261030.bin",
+  "sha256": "a9a76061b62fe99ad0a95f10ca021c9ae8f9ceec8265d2e023b6f97d967e424a",
+  "transport": "caller-downloaded-original-image",
+  "wasmSha256": "0cd49e58ec4e811a85dd77d6463c4324d467292e5d4c0a7fe72b0beb585f2790",
+  "firmware": {
+    "manifestUrl": null,
+    "manifestHash": null,
+    "metadata": {
+      "name": "micropython",
+      "version": "V2.5.4",
+      "source": "esp-app-description"
+    },
+    "source": "remote",
+    "artifacts": [
+      {
+        "kind": "flash",
+        "url": "https://github.com/m5stack/uiflow-micropython/releases/download/2.5.4/uiflow-e437118-esp32-4mb-stamppico-v2.5.4-20261030.bin",
+        "sha256": "a9a76061b62fe99ad0a95f10ca021c9ae8f9ceec8265d2e023b6f97d967e424a",
+        "bytes": 4186112
+      },
+      {
+        "kind": "rom",
+        "url": "https://stamppico-fixture.invalid/wasm/fw/esp32_rev300_rom.elf",
+        "sha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+        "bytes": 857500
+      }
+    ],
+    "appDirect": false,
+    "stubs": [],
+    "executionMode": "wasm-jit"
+  },
+  "guestSeconds": 21.04,
+  "checks": [
+    "actual-page-worker-rom-startup",
+    "no-invented-framebuffer",
+    "button-transport-only-not-official-application-acceptance"
+  ],
+  "leds": [
+    []
+  ],
+  "serial": "[emu] virtual AP 'esp32sim' (WPA2-PSK), subnet 10.0.2.0/24, no NAT in the browser\n[emu] SoftAP: SoftAP client is unsupported on this chip\nets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0xee\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:DIO, clock div:1\r\nload:0x3fff0030,len:4336\r\nload:0x40078000,len:16088\r\nload:0x40080400,len:3680\r\nentry 0x400805c0\r\nW (11) rtc_clk_init: Bogus XTAL freq: 8MHz\r\nW (11) rtc_clk_init: Can't estimate XTAL freq, assuming 26MHz\r\nE (467) i2c.master: this port has not been initialized, please initialize it first\r\n\r\n       _  __ _               \r\n _   _(_)/ _| | _____      __\r\n| | | | | |_| |/ _ \\ \\ /\\ / /\r\n| |_| | |  _| | (_) \\ V  V / \r\n \\__,_|_|_| |_|\\___/ \\_/\\_/  V2.5.4\r\n\r\nTraceback (most recent call last):\r\n  File \"boot.py\", line 44, in <module>\r\n  File \"startup/__init__.py\", line 1, in startup\r\n  File \"startup/headless.py\", line 1, in <module>\r\nImportError: no module named 'M5Things'\r\nMicroPython v1.27.0-dirty on 2026-10-30; M5STACK Stamp PICO with ESP32\r\nType \"help()\" for more information.\r\n>>> ",
+  "status": "partial",
+  "limitations": [
+    "No expected blue RGB output after 20 guest seconds; full application startup is not established.",
+    "Official application interaction and networking not verified; button electrical behavior is independently tested by source-built fixture.",
+    "Transport does not establish browser CORS access."
+  ],
+  "sourceRevision": "cb49bcd7",
+  "startupFailure": "ImportError: no module named 'M5Things' at boot.py44 -> startup/headless.py",
+  "romPolicy": "Existing classic ECO3 ROM execution model with PICO-D4 package identity, not hardware revision calibration."
+}

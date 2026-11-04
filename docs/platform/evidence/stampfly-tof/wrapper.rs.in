@@ -1,0 +1,15 @@
+#![allow(dead_code)]
+use std::sync::{Arc,Mutex};
+trait I2cDevice { fn address(&self,c:u8)->u8{c} fn start_address(&mut self,c:u8,a:u8,r:bool)->bool{self.address(c)==a&&self.start(r)} fn pins(&self)->Option<(u8,u8)>{None} fn start(&mut self,_r:bool)->bool{true} fn write(&mut self,b:u8)->bool; fn read(&mut self)->u8; }
+#[path="@MODULE_PATH@"] mod vl53l3cx;
+use vl53l3cx::*;
+struct Harness { state:Arc<Mutex<Vl53l3cxState>>, bus:Vl53l3cx, cycle:u64 }
+#[no_mangle] extern "C" fn model_new()->*mut Harness {let state=Arc::new(Mutex::new(Vl53l3cxState::new(1_000_000))); state.lock().unwrap().set_enabled(0,true); Box::into_raw(Box::new(Harness{bus:Vl53l3cx::with_pins(state.clone(),(3,4)),state,cycle:0}))}
+#[no_mangle] unsafe extern "C" fn model_wait(h:*mut Harness,us:u64){let h=&mut *h;h.cycle+=us;h.state.lock().unwrap().advance_to(h.cycle);}
+#[no_mangle] unsafe extern "C" fn model_start(h:*mut Harness,a:u8,r:bool)->bool{let h=&mut *h;h.bus.address(0)==a&&h.bus.start(r)}
+#[no_mangle] unsafe extern "C" fn model_write(h:*mut Harness,b:u8)->bool{(*h).bus.write(b)}
+#[no_mangle] unsafe extern "C" fn model_read(h:*mut Harness)->u8{(*h).bus.read()}
+
+#[no_mangle] unsafe extern "C" fn model_distance(h:*mut Harness,mm:f64){(*h).state.lock().unwrap().set_distance_mm((mm>=0.0).then_some(mm));}
+
+#[no_mangle] unsafe extern "C" fn model_free(h:*mut Harness) { drop(Box::from_raw(h)); }

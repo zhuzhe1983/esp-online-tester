@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T19:02:31Z",
+  "updatedAt": "2026-11-03T21:28:27Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -392,6 +392,62 @@
         "official-docs"
       ],
       "group": "pinmap"
+    },
+    {
+      "id": "product-envelope-drawing",
+      "label": "Documented product envelope",
+      "value": {
+        "width": 18,
+        "height": 29.8,
+        "depth": 12
+      },
+      "unit": "mm",
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing-4a95d4285f"
+      ]
+    },
+    {
+      "id": "populated-pcb-cad",
+      "label": "Manufacturer populated PCB assembly",
+      "value": "384 native STEP components/shells, including true 18x28x1mm PCB, USB-C, SH1.0 battery socket and BTB; replaces cover-only UNKNOWN board.",
+      "basis": "official",
+      "sourceIds": [
+        "manufacturer-cad-f68c68a7c3",
+        "manufacturer-footprint-s015-830babe062"
+      ],
+      "method": "Hash-checked KiCad embedded STEP extraction; all native topology retained without scale; independent cover/board assembly transform documented."
+    },
+    {
+      "id": "paper-fpc-carrier",
+      "label": "Front paper support",
+      "value": "Official disassembly reveals a separate black FPC antenna under the paper; it deliberately covers cover relief holes. Paper rests on FPC and the adjacent molded seat at Z2.55mm.",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-housing-disassembly",
+        "product-photo-61e9a4b99a",
+        "manufacturer-cad-72a59c1532"
+      ],
+      "uncertainty": "FPC planar outline +/-0.3mm;0.2mm thickness inferred from cover recess, bend and hidden copper path unknown.",
+      "method": "Official disassembly9.8-12s and24.5s identifies separate FPC; native STL recess planes constrain the unscaled planar carrier and fixed photo mask."
+    },
+    {
+      "id": "dip-header-geometry",
+      "label": "DIP header placement",
+      "value": {
+        "rows": 2,
+        "pinsPerRow": 9,
+        "pitchMm": 2.54,
+        "rowDistanceMm": 15.24,
+        "lowestHoleFromBoardEdgeMm": 1.3,
+        "totalDepthMm": 12
+      },
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing-4a95d4285f",
+        "official-docs"
+      ],
+      "notes": "Pin placement and total envelope official; plastic cells and pin section are image-measured approximations, not manufacturer geometry."
     }
   ],
   "revisions": [],
@@ -746,6 +802,65 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "manufacturer-footprint-s015-830babe062",
+      "title": "Official Stamp-S3Bat KiCad footprint with embedded assembly STEP",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "archiveName": "Stamp-S3Bat.kicad_mod",
+      "bytes": 3451127,
+      "sha256": "830babe06213a16070cf1361baac7ba2d73bf5164b43d8e77338e5ca57d414d3",
+      "fetchedAt": "2026-11-03T20:42:35Z",
+      "mediaType": "text/plain",
+      "discoveredFrom": "official-docs",
+      "revision": {
+        "sourceCommit": "ec351c516644b44defc145728cc029ced77381ff"
+      }
+    },
+    {
+      "id": "manufacturer-cad-f68c68a7c3",
+      "title": "Embedded manufacturer STEP: Stamp-S3BAT.step",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod#embedded=Stamp-S3BAT.step",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod#embedded=Stamp-S3BAT.step",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "fetchedAt": "2026-11-03T20:42:35Z",
+      "mediaType": "application/step",
+      "archiveName": "manufacturer-cad-f68c68a7c3.step",
+      "bytes": 19171422,
+      "sha256": "b304eac5dc0129563800b7637ad97a6aeb1ca9ad25fd87f4775245365d354f95",
+      "discoveredFrom": "manufacturer-footprint-s015-830babe062",
+      "notes": "Fetch time is the actual enclosing official file acquisition. URL fragment identifies the embedded record; payload bytes/hash are distinct from the retained container receipt.",
+      "revision": {
+        "acquisition": {
+          "method": "base64+zstd embedded payload; not a separate HTTP request",
+          "containerId": "manufacturer-footprint-s015-830babe062",
+          "containerSha256": "830babe06213a16070cf1361baac7ba2d73bf5164b43d8e77338e5ca57d414d3",
+          "embeddedName": "Stamp-S3BAT.step",
+          "checksumAlgorithm": "MurmurHash3-x64-128-KiCad-V1-tail-padding",
+          "declaredChecksum": "6675F6D2031E26E0C4CC317602F9A7A0",
+          "verifiedChecksum": "6675F6D2031E26E0C4CC317602F9A7A0",
+          "decoder": "zstandard0.25.0"
+        }
+      }
+    },
+    {
+      "id": "official-housing-disassembly",
+      "title": "Stamp-S3Bat Housing Disassembly Tutorial",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1222/Stamp-S3Bat-Housing-Disassembly-Tutorial.mp4",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1222/Stamp-S3Bat-Housing-Disassembly-Tutorial.mp4",
+      "kind": "official-video",
+      "status": "fetched",
+      "archiveName": "Stamp-S3Bat-Housing-Disassembly-Tutorial.mp4",
+      "bytes": 45032473,
+      "sha256": "640e84cd151ed6028a8e65a335c485ae6e6655f4cae9e0e21c13cc2e16612b51",
+      "fetchedAt": "2026-11-03T20:57:35Z",
+      "mediaType": "video/mp4",
+      "discoveredFrom": "official-docs",
+      "notes": "9.8-12.0 s: paper peels away from separate black FPC antenna. 24.5 s: relief holes visible after FPC removal. Video remains remote; exact device crops retained as comparison evidence."
     }
   ],
   "assets": [
@@ -881,6 +996,20 @@
       "sourceId": "datasheet-445ea3821f",
       "role": "datasheet",
       "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1222/BTB0.408-XPLBDR-M41.pdf"
+    },
+    {
+      "id": "manufacturer-footprint-s015-830babe062",
+      "sourceId": "manufacturer-footprint-s015-830babe062",
+      "role": "manufacturer-source",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod",
+      "localUrl": "./assets/m5stack-s015-dip/Stamp-S3Bat.kicad_mod"
+    },
+    {
+      "id": "manufacturer-cad-f68c68a7c3",
+      "sourceId": "manufacturer-cad-f68c68a7c3",
+      "role": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod#embedded=Stamp-S3BAT.step",
+      "localUrl": "./assets/m5stack-s015-dip/source-manufacturer-cad-f68c68a7c3.step"
     }
   ],
   "unknowns": [
@@ -895,19 +1024,21 @@
       "notes": "Catalog identity does not infer the revision owned by the user."
     },
     {
-      "id": "pcb-layout",
-      "label": "PCB physical layout",
+      "id": "dip-header-exact-cad",
+      "label": "Exact pin-header CAD and RF shield geometry",
       "value": null,
       "basis": "unknown",
       "sourceIds": [
-        "manufacturer-cad-72a59c1532"
+        "manufacturer-cad-f68c68a7c3",
+        "dimension-drawing-4a95d4285f"
       ],
-      "notes": "No complete populated PCB layout or Gerber verified in the audited files. A manufacturer mechanical board outline, when present, does not establish every component or copper trace. Unknown internals remain a neutral UNKNOWN placeholder."
+      "notes": "Official populated PCB omits the DIP headers and precise visible RF shield. Header pitch, row spacing and full height are official; plastic and pin section are photo approximations. No hidden components, screws or standoffs invented."
     }
   ],
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-03 refresh: shared manufacturer populated STEP plus exact DIP photos replaces UNKNOWN/generic connectors; two9-pin rows derive from the DIP drawing. Printed paper and PCB are independent materials; source acquisition dates are preserved."
   ]
 }

@@ -1,58 +1,40 @@
-# M5Stack Stamp-S3 · S007 外观与知识入库
+# M5Stack Stamp-S3 · S007
 
-ESP32-S3FN8 核心模块，提供 23 路引脚、USB-C、按键和 RGB LED；支持 SMT/DIP 与飞线连接。
+S007 采用原厂 STL 外盖和 KiCad STEP 机械装配。保留 29 个部件：原 STEP 中 28 个非重复实体，加单独发布的 STL 外盖；补回了铜柱和 USB 细节。只排除 STEP 中与 STL 重叠的另一版外盖，全部部件沿用原始毫米坐标及统一 Z 平移 −1.3 mm，不缩放。
 
-来源：[官方产品文档](https://docs.m5stack.com/en/core/Stamp-S3)，M5_Hardware 固定 `e29c139cbc7c80b5ccc5557e5ab8025a7a19a109`。逐源 URL、UTC、SHA-256、下载状态见 [knowledge](../../../web/platform/knowledge/m5stack-s007.json) 与 [source audit](../evidence/m5stack-s007/source-audit.json)。旧抓取保留原始时间，不伪造刷新日期。
+[官方文档](https://docs.m5stack.com/en/core/Stamp-S3)和无排针的正面照片确认，S007 默认外观没有焊接附送排针，也没有贴附送的引脚贴纸。照片中的黑色 PCB 背面经过明确四角校正，只覆盖实际 CAD 板背面；孔洞、板边及铜柱独立处理。原图为 800×800，板面有效区域约 365×485，没有虚构高分辨率。尝试取得商店高清资源清单的 HTTP 429 失败回执已保留。
 
-Retained source assembled cluster; only the recorded rigid rotation and translation are applied. Original millimetres and relative positions preserved. Secondary exact official STEP shares native coordinate system with STL cover; USB/antenna/screw retained without scaling. Front references include bare-board states while preview retains optional mechanical cover, so photo coverage remains partial.
+未知内部用实际 PCB 内侧的小型 `UNKNOWN` 标记表示；“分开查看”只按明确组定义将外盖、M2 螺丝和相应点击面沿 Z 轴移开 10 mm。铜柱和 PCB 留在原位置。此偏移是查看安排，不是已验证的拆卸路径。盖上 G0 点击面沿用实际盖帽位置，固件行为见独立运行证据。
 
-[model-plan.json](../../../web/platform/assets/m5stack-s007/model-plan.json) 记录组件选择、刚体变换、照片裁切、纹理投影与估算表面；厂家几何不缩放。STL 保留源三角形；STEP 使用 OpenCascade7.8.1.1 以0.05mm弦偏差/0.2rad角度细分。UNKNOWN 是中性占位，未编造 PCB 走线或未核实电子元件。
+| 核对项目 | 结果 |
+| --- | --- |
+| 原始机械部件 | 29 项尺寸误差均小于 0.000001 mm |
+| 宽度 | 18.000023 mm，官方目标 18 mm |
+| 含 USB 长度 | 25.947933 mm；官方 24 mm 目标仍记为失败，不能用缩放掩盖范围差异 |
+| 厚度 | 4.750002 mm，官方目标 4.7 mm，0.1 mm 容差内 |
+| 正面照片轮廓 | IoU 0.984708，通过 0.95 门槛 |
+| 背面照片轮廓 | IoU 0.985757，通过 0.95 门槛 |
+| 原色、金色、半透明紫色 | PCB、USB、天线、螺丝与铜柱材质保持独立 |
+| 离线重建 | 13 个生成资产及模型配置一致，model.json 字节一致 |
 
-| 检查 | 实测或误差 mm | 目标 mm | 结果 |
-| --- | ---: | ---: | --- |
-| cad-component-0 source-fidelity | 7.152557390810443e-08 | 0 | 通过 |
-| board-outline source-fidelity | 4.7328850527605937e-07 | 0 | 通过 |
-| usb-tongue source-fidelity | 4.5377086266285005e-07 | 0 | 通过 |
-| usb-shell source-fidelity | 4.7617376353059626e-07 | 0 | 通过 |
-| usb-insulator source-fidelity | 4.766015493373743e-07 | 0 | 通过 |
-| antenna source-fidelity | 4.7563936789174477e-07 | 0 | 通过 |
-| cover-screw source-fidelity | 2.3741007737498876e-07 | 0 | 通过 |
-| width | 18.000022888183594 | 18 | 通过 |
-| height | 25.947933197021484 | 24 | 未通过 |
-| depth | 4.750001907348633 | 4.7 | 通过 |
+照片裁图等比例放入 800×800 对照画布；没有拉伸照片，也没有改变 CAD。斜视仅做定性检查，不把相机差异算成制造精度。背面照片同时用作纹理，外观对照不能独立证明电路布局。完整报告见 [verification.json](../evidence/m5stack-s007/verification.json)，原失败记录保留在 [history](../evidence/m5stack-s007/history/2026-10-26/verification.json)。
 
-实际平台 `manufacturer-model.js` 的 headless 渲染与原照片对照在 [verification.json](../evidence/m5stack-s007/verification.json)：
+模型状态仍为 **partial**。厂家机械 CAD 没有完整的已识别电子元件和精确镀层；浅刻字的可见性受视角、照明影响。源螺丝缺少六角凹槽，新增薄六角视觉标记仅表达官方照片中的外观，不声称已建出可加工凹孔。铜柱底部细节与照片仍有差异。照片颜色不是经校准的材料反射率。
 
-- component-side: qualitative-only; IoU 0.9168698555873984
-- label-side: qualitative-only; IoU 0.9162908522602491
-- USB-end: qualitative-only; IoU 0.2530992665256716
-- shield-and-headers: qualitative-only; IoU 0.4491614537360402
+固定来源为 M5_Hardware `e29c139cbc7c80b5ccc5557e5ab8025a7a19a109`，源 URL、UTC 和 SHA-256 在 [source-audit.json](../evidence/m5stack-s007/source-audit.json) 与 [knowledge](../../../web/platform/knowledge/m5stack-s007.json)。厂家 CAD 的 MIT 许可与照片版权分开保留。几何验证不证明 CPU、外设或固件执行。
 
-正反视图只有照片确属近正投影且原始型号一致时才用0.95轮廓门槛。侧视/斜视保留为定性检查，不以轮廓掩盖标签、组件或装配差异。引用照片的纹理不是独立验证依据；未通过/缺失项不会改写成通过。
-
-厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 unavailable，官方固件入口仅参考，未验证版本/hash/镜像不填猜测值。
-
-重生成：
+从仓库根目录重建，依赖 `tools/requirements-model.txt`：
 
 ```sh
-python tools/onboard-lane-01-extra.py prepare --ids m5stack-s007
-python tools/onboard-lane-01-extra.py build --ids m5stack-s007
+python tools/rebuild-product-model.py plan m5stack-s007
+python tools/rebuild-product-model.py build m5stack-s007 --scratch <fresh-directory>
 ```
 
-通过受跟踪的 headless 浏览器打开 `web/platform/review-lane-01.html?id=m5stack-s007`；按 model reviewViews 保存800×800正反侧画布到 `output/playwright/m5stack-s007-front.png` 等，再运行：
+照片复核：通过受跟踪的 Playwright wrapper 在任务专用 headless 会话打开 `web/platform/review-lane-02.html?id=m5stack-s007`，然后执行：
 
 ```sh
-python tools/onboard-lane-01-extra.py verify --ids m5stack-s007
-python tools/onboard-lane-01-extra.py publish --ids m5stack-s007
+python docs/platform/evidence/stamp-s3-model-review.py capture m5stack-s007 --session <task-session>
+python docs/platform/evidence/stamp-s3-model-review.py verify m5stack-s007
 ```
 
-当前限制：
-
-- Manufacturer STL is a single connected heat-resistant shield; no separate PCB assembly or component identities can be certified from its connectivity.
-- Different official photographs show optional heat shield and pin headers. Those alternatives are not silently combined into this source configuration.
-- Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.
-- Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.
-- Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.
-- Browser inspection identifies the connected STL as a heat-resistant shield; actual populated PCB geometry and edge pad assignments remain unknown.
-- 本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。
-- Officially linked mechanical STEP has board outline, USB, antenna and screw but lacks a full populated PCB. Exact component shapes retained; neutral UNKNOWN label remains on unverified board, no chip layout invented.
+完成后用同一 wrapper 和 session 名称关闭浏览器。相机、纹理遮罩和分组均来自 [model-plan.json](../../../web/platform/assets/m5stack-s007/model-plan.json)。

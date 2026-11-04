@@ -1,5 +1,6 @@
 import {mountHardwareDiagnostics} from './hardware-diagnostics.js';
 import {mountAudioControls} from './audio-controls.js';
+import {mountMotorOutputs} from './motor-output-ui.js';
 import {mountNetworkControls} from './network-ui.js';
 import {illuminanceParameter} from './illuminance-input.js';
 import {ENVIRONMENT_FIELDS,environmentParameters} from './environment-input.js';
@@ -10,6 +11,7 @@ import {isPressControl,controlInput,shouldCaptureMappedKey} from './control-inpu
 import {loadCatalog, createDefaultScene, validateScene, encodeScene, decodeScene, createLocalAccessory, importLocalAccessory, exportLocalAccessory, saveLocalAccessory, listLocalAccessories, removeLocalAccessory, firmwareSourceMatches} from './catalog.js';
 import {createPlatformRuntime, validateMergedImage} from './runtime.js';
 import {inspectLocalBuild} from './local-firmware.js';
+import {isC5Board,validateAppImage} from './app-image.js';
 import {installAutomation} from './automation.js';
 import {createSceneView, createHumanButtonController} from './scene-view.js';
 import {installEmbedBridge} from './embed.js';
@@ -64,6 +66,12 @@ const errorMessages = {
   FETCH_FAILED: '固件下载失败：网络或上游跨域限制。可下载原始文件后通过“本地文件”加载；本站无法修改上游 CORS 设置。',
   FIRMWARE_RELAY_FAILED: '固件下载中继暂时不可用，可稍后重试，或下载原文件后校验导入。',
   INCOMPLETE_IMAGE: '需要从地址 0 开始的完整 Flash 镜像。单独 app.bin 请改用包含启动镜像的清单。',
+  C5_SRAM_REQUIRED: 'C5 当前只支持 SRAM 应用直启。请选择专为 SRAM 编译的单个 .bin；官方 UIFlow、普通 IDF 和合并镜像尚不能运行。',
+  C5_APP_DIRECT_REQUIRED: '此 C5 裸机镜像需要明确选择“C5 SRAM 应用直启”地址类型，或在 API 中指定 bootMode:"app-direct"。',
+  C5_SRAM_SEGMENT_INVALID: 'C5 应用段必须非空，地址和长度均须按 4 字节对齐。请重新生成 SRAM 应用镜像。',
+  C5_SRAM_OVERLAP: 'C5 应用的 SRAM 段重叠，请检查链接脚本并重新生成镜像。',
+  C5_SRAM_ENTRY_INVALID: 'C5 入口必须按 2 字节对齐，并位于已加载的 SRAM 段内。',
+  C5_FEATURE_UNSUPPORTED: 'C5 SRAM 运行暂不支持 WiFi 或 ROM stub，请从固件清单移除这些配置。',
   HASH_MISMATCH: '下载内容与 SHA-256 校验值不一致。',
   APP_IMAGE_CHECKSUM: '应用镜像校验失败，不能切换启动模式。',
   APP_IMAGE_DIGEST: '应用镜像内置 SHA-256 校验失败。',
@@ -95,6 +103,7 @@ function log(message) { for (const port of Object.keys(consoleBuffers)) consoleB
 function errorContext(error) {
   let source=scene?.firmware,firmware=null;
   if(catalog&&scene){try{source=sourceFromInputs();firmware=currentCatalogFirmware();}catch{}}
+  if(!embedded&&firmwareTab==='local'&&localFile){source={local:true};firmware=null;}
   if(source?.file||source?.files)source={local:true};
   return {product:product(),firmware,source,state:{status,version:api?.version,scene,firmware:loadedFirmware,serialByPort:{...consoleBuffers},lastError:error}};
 }
@@ -192,25 +201,33 @@ function currentCatalogFirmware() {
     || (source?.url || source?.manifestUrl ? {name:'远程固件',source,simulationVerified:false,status:'trial'} : null);
 }
 const confirmSelectedRun = () => confirmFirmwareRun({product:product(),firmware:currentCatalogFirmware()});
-function clearLocalFiles() { localSelectionToken++; localFiles=[];localSource=null;localFile=null;for(const id of ['firmware-file','firmware-folder'])if($(id))$(id).value='';text('local-file-name','merged .bin、应用 .bin 或 flasher_args.json');text('local-build-status','完整镜像可直接加载；应用镜像需要 flasher_args.json 和其中列出的文件。');renderTransport(); }
+const c5Product=()=>isC5Board(product()?.runtime?.board||product()?.chip);
+const localFileHint=()=>c5Product()?'选择单个 C5 SRAM 应用 .bin。采用 SRAM 直接启动；官方 ROM/普通 IDF 镜像尚不支持。':'完整镜像可直接加载；应用镜像需要 flasher_args.json 和其中列出的文件。';
+function clearLocalFiles() { localSelectionToken++; localFiles=[];localSource=null;localFile=null;for(const id of ['firmware-file','firmware-folder'])if($(id))$(id).value='';text('local-file-name',c5Product()?'C5 SRAM 应用 .bin':'merged .bin、应用 .bin 或 flasher_args.json');text('local-build-status',localFileHint());renderTransport(); }
 async function selectLocalFiles(incoming, {replace=false}={}) {
   const token=++localSelectionToken, accepted=[...incoming].filter(file=>/\.bin$/i.test(file.name)||file.name==='flasher_args.json');
   const seen=new Set();for(const file of accepted){const path=file.webkitRelativePath||file.name;if(seen.has(path)){toast('所选文件存在重名，请选择整个构建目录以保留路径。',true);return;}seen.add(path);}
-  const existing=new Map((replace?[]:localFiles).map(file=>[file.webkitRelativePath||file.name,file]));for(const file of accepted)existing.set(file.webkitRelativePath||file.name,file);
+  const existing=new Map((replace||c5Product()?[]:localFiles).map(file=>[file.webkitRelativePath||file.name,file]));for(const file of accepted)existing.set(file.webkitRelativePath||file.name,file);
   localFiles=[...existing.values()];localFile=localFiles[0]||null;localSource=null;
   text('local-file-name',localFiles.length?`已选择 ${localFiles.length} 个文件`:'未选择固件文件');text('local-build-status','正在检查本地文件…');renderTransport();
   try {
     if(!localFiles.length)throw Error('请选择 .bin 或 flasher_args.json 文件。');
+    if(c5Product()&&(localFiles.length!==1||localFiles[0].name==='flasher_args.json'))throw Object.assign(new Error(errorMessages.C5_SRAM_REQUIRED),{code:'C5_SRAM_REQUIRED'});
     if(localFiles.some(file=>file.name==='flasher_args.json')) {
       const layout=await inspectLocalBuild(localFiles);if(token!==localSelectionToken)return;
       if(layout.missingFiles.length){text('local-build-status',`还需要：${layout.missingFiles.join('、')}。可继续选择文件，或直接选择整个构建目录。`);return;}
       localSource={format:'build',files:[...localFiles]};text('local-build-status',`${layout.chip || '芯片待校验'} · ${layout.segments.length} 个镜像：${layout.segments.map(s=>`0x${s.offset.toString(16)} ${s.file.name}`).join('；')}。启动前还会校验芯片、分区及完整性。`);
     } else if(localFiles.length===1) {
       const file=localFiles[0];if(file.size>MAX_FIRMWARE_FILE_BYTES)throw Error('固件文件不能超过 256 MiB。');const data=new Uint8Array(await file.arrayBuffer());if(token!==localSelectionToken)return;
-      try {validateMergedImage(data,product().runtime.board || product().chip,(product().runtime.flashMb || 32)*1024*1024);localSource={format:'merged',file};text('local-build-status',`已识别完整合并镜像：${file.name}，可直接加载。`);}
+      try {
+        if(c5Product()) {
+          await validateAppImage(data,product().runtime.board||product().chip,(product().runtime.flashMb||4)*1024*1024);if(token!==localSelectionToken)return;
+          localSource={file,bootMode:'app-direct'};text('local-build-status',`已校验 C5 SRAM 应用：${file.name}。直接启动，重启会重新加载同一镜像；不使用 ROM/IDF 启动。`);
+        } else {validateMergedImage(data,product().runtime.board || product().chip,(product().runtime.flashMb || 32)*1024*1024);localSource={format:'merged',file};text('local-build-status',`已识别完整合并镜像：${file.name}，可直接加载。`);}
+      }
       catch(error){if(error.code!=='INCOMPLETE_IMAGE')throw error;text('local-build-status',`这不是完整合并镜像。请继续选择 flasher_args.json，再补齐其中列出的启动镜像和分区表；也可直接选择构建目录。`);}
     } else text('local-build-status','已选择多个镜像，请补选对应的 flasher_args.json，以读取实际烧录偏移。');
-  } catch(error){if(token===localSelectionToken){text('local-build-status',error.message);localSource=null;report(error);}}
+  } catch(error){if(token===localSelectionToken){text('local-build-status',errorMessages[error.code]||error.message);localSource=null;report(error);}}
   finally {if(token===localSelectionToken)renderTransport();}
 }
 
@@ -221,6 +238,7 @@ function onRuntimeEvent(event) {
 
   if (event.type === 'state') {
     const previousStatus = status; status = event.state.status; loadedFirmware=event.state.firmware;
+    sceneView?.setMotorsRunning(status==='running');sceneView?.updateMotors(event.state.motors,event.state.motorOutput);
     accessoryInputState=event.state.accessoryInputs || [];accessoryOutputState=event.state.accessoryOutputs || [];sceneView?.updateAccessoryOutputs(accessoryOutputState);
     if (['configured', 'loading', 'error', 'disposed'].includes(status)) humanButtons?.invalidate();
     else if (status === 'paused') humanButtons?.suspend();
@@ -235,18 +253,21 @@ function onRuntimeEvent(event) {
     }
     if (status === 'loading' && previousStatus !== 'loading') loadProgress = null;
     if (['configured', 'loading'].includes(status) && status !== previousStatus) {
+      sceneView?.setInspection(false);
       sceneView?.updateLeds([]);sceneView?.updateServos([]);
       frameCount = 0; sceneView?.clearDisplay(); text('frame-count', '0 帧');
     }
     if (['configured', 'loading', 'error', 'disposed'].includes(status)) text('runtime-speed', '');
     renderTransport(); renderEmpty(); renderDownloadProgress();
-    if (status === 'ready') text('load-status', event.state.firmware?.appDirect?'应用镜像已校验，将跳过 bootloader 直接启动。':'固件已加载并校验，可以启动。');
-    else if (status === 'running') text('load-status', event.state.firmware?.appDirect?'应用直启运行中；未提供 bootloader 和分区表，存储初始化与重启可能失败。':'固件正在本地 WebAssembly 中执行。');
+    if (status === 'ready') text('load-status', event.state.firmware?.sramApp?'C5 SRAM 应用已校验，可直接启动；重启将重新加载同一镜像。':event.state.firmware?.appDirect?'应用镜像已校验，将跳过 bootloader 直接启动。':'固件已加载并校验，可以启动。');
+    else if (status === 'running') text('load-status', event.state.firmware?.sramApp?'C5 SRAM 应用正在本地 WebAssembly 解释执行。':event.state.firmware?.appDirect?'应用直启运行中；未提供 bootloader 和分区表，存储初始化与重启可能失败。':'固件正在本地 WebAssembly 中执行。');
     else if (status === 'loading') text('load-status', '正在读取固件并初始化 WebAssembly…');
   } else if (event.type === 'leds') {
     sceneView?.updateLeds(event.leds);
   } else if (event.type === 'servos') {
     sceneView?.updateServos(event.servos);
+  } else if (event.type === 'motors') {
+    sceneView?.updateMotors(event.motors,event.motorOutput);
   } else if (event.type === 'imu') {
     if (event.imu?.source === 'agent') sceneView?.setOrientation?.(event.imu.quaternion, {notify: false});
   } else if (event.type === 'load-progress') {
@@ -263,7 +284,7 @@ function onRuntimeEvent(event) {
   }
   else if (event.type === 'error') { text('load-status', errorMessages[event.error.code] || event.error.message); if(!busy)report(event.error); }
   else if (event.type === 'stats') {
-    text('runtime-speed', Number.isFinite(event.stats.mips) ? `${event.stats.mips.toFixed(2)} MIPS${event.stats.speed == null ? '' : ` · ${Math.round(event.stats.speed * 100)}% 实时`}` : '');
+    text('runtime-speed', c5Product() ? `SRAM 直启${Number.isFinite(event.stats.time)?` · 虚拟时间 ${event.stats.time.toFixed(2)} s`:''}` : Number.isFinite(event.stats.mips) ? `${event.stats.mips.toFixed(2)} MIPS${event.stats.speed == null ? '' : ` · ${Math.round(event.stats.speed * 100)}% 实时`}` : '');
   }
 }
 
@@ -366,6 +387,12 @@ function renderProductChoices(manufacturer, {familyId = '', selectedId} = {}) {
 function renderProduct() {
   const selected = product(); if (!selected) return;
   const kind=$('firmware-kind');
+  if(kind){const option=kind.querySelector('[value="c5-sram"]');if(c5Product()){if(!option)kind.append(new Option('C5 SRAM 应用直启','c5-sram'));}else{if(kind.value==='c5-sram')kind.value='merged';option?.remove();}}
+  if($('serial-port')){for(const option of $('serial-port').options)option.disabled=c5Product()&&option.value!=='uart0';if(c5Product())$('serial-port').value='uart0';}
+  if($('firmware-file')){$('firmware-file').multiple=!c5Product();$('firmware-file').accept=c5Product()?'.bin,application/octet-stream':'.bin,.json,application/octet-stream';}
+  if($('firmware-folder'))$('firmware-folder').closest('label').hidden=c5Product();
+  const localTitle=document.querySelector('#firmware-local .upload-area strong');if(localTitle)localTitle.textContent=c5Product()?'选择 SRAM 应用镜像':'选择镜像或构建文件';
+  if(!localFiles.length){text('local-file-name',c5Product()?'C5 SRAM 应用 .bin':'merged .bin、应用 .bin 或 flasher_args.json');text('local-build-status',localFileHint());}
   if(kind){const option=kind.querySelector('[value="m5burner"]');if(isM5Stack(selected)){if(!option)kind.append(new Option('burner.m5stack.com','m5burner'));}else{if(kind.value==='m5burner')kind.value='merged';option?.remove();}}
   if(kind){const option=kind.querySelector('[value="lilygo-spark"]');if(isLilygo(selected)){if(!option)kind.append(new Option('LILYGO Spark','lilygo-spark'));}else{if(kind.value==='lilygo-spark')kind.value='merged';option?.remove();}}
   burnerUi?.setProduct(selected);sparkUi?.setProduct(selected);updateRemoteMode();
@@ -375,7 +402,7 @@ function renderProduct() {
     renderProductChoices(selected.manufacturer, {familyId:keepFilter ? productFamilyFilter : selected.family?.id || '',selectedId:selected.id});
   }
   text('stage-title', selected.name); text('product-name', selected.name.replace(/^M5Stack /, ''));
-  text('model-origin', selected.model?.type === 'source-derived' ? '照片与尺寸建模 · 内部结构有未知项' : selected.model || selected.id === 'm5stack-stopwatch' ? '官方 CAD · 外观来源可查' : '模型待建 · 来源资料可查');
+  text('model-origin', selected.model?.type === 'source-derived' ? '照片与尺寸建模 · 内部结构有未知项' : selected.model || selected.id === 'm5stack-stopwatch' ? '3D 模型 · 外观来源可查' : '模型待建 · 来源资料可查');
   text('product-model', productIdentityLabel(selected));
   text('product-symbol', selected.displayStatus === 'unknown' ? '?' : selected.display?.shape === 'round' ? '◉' : selected.display ? '▤' : '▧');
   if ($('product-select')) $('product-select').value = selected.id;
@@ -410,6 +437,7 @@ function updateRemoteMode() {
   if($('firmware-url-fields'))$('firmware-url-fields').hidden=burner||spark;
   if($('firmware-burner'))$('firmware-burner').hidden=!burner;
   if($('firmware-spark'))$('firmware-spark').hidden=!spark;
+  const hint=document.querySelector('#firmware-url-fields .helper');if(hint)hint.textContent=c5Product()?'远程服务器需允许 CORS。裸机 BIN 请选择“C5 SRAM 应用直启”；清单须指定 app_direct:true 与唯一 app 镜像。':'远程服务器需允许 CORS。自动识别完整镜像或 app.bin；完整启动环境请提供烧录清单。';
   if(burner&&firmwareTab==='remote')burnerUi?.activate();else burnerUi?.deactivate();
   if(spark&&firmwareTab==='remote')sparkUi?.activate();else sparkUi?.deactivate();
 }
@@ -441,7 +469,7 @@ function reflectFirmwareSource({preserveLocal = false} = {}) {
     if (preserveLocal && localFile && firmwareTab === 'local') return;
     clearLocalFiles();
     if ($('firmware-file')) $('firmware-file').value = '';
-    text('local-file-name', 'merged .bin · 文件留在本机'); setFirmwareTab('library'); return;
+    text('local-file-name', c5Product()?'C5 SRAM 应用 .bin · 文件留在本机':'merged .bin · 文件留在本机'); setFirmwareTab('library'); return;
   }
   const known = catalog.firmwares.find(item => item.productIds.includes(scene.productId) && firmwareSourceMatches(item.source, scene.firmware));
   if (known && $('firmware-select')) { $('firmware-select').value = known.id; renderFirmwareNote(known); setFirmwareTab('library'); }
@@ -449,13 +477,13 @@ function reflectFirmwareSource({preserveLocal = false} = {}) {
     remoteModeSelection=scene.firmware.bootMode||scene.firmware.archive?{url:scene.firmware.url,sha256:scene.firmware.sha256||'',bootMode:scene.firmware.bootMode,...(scene.firmware.archive?{archive:clone(scene.firmware.archive)}:{})}:null;
     $('firmware-url').value = scene.firmware.manifestUrl || scene.firmware.url || '';
     const provider=matchingHubFirmware(scene.firmware)?.provider;
-    $('firmware-kind').value = provider|| (scene.firmware.manifestUrl ? 'manifest' : 'merged'); $('firmware-sha').value = scene.firmware.sha256 || ''; setFirmwareTab('remote');
+    $('firmware-kind').value = provider|| (scene.firmware.manifestUrl ? 'manifest' : c5Product()&&scene.firmware.bootMode==='app-direct'?'c5-sram':'merged'); $('firmware-sha').value = scene.firmware.sha256 || ''; setFirmwareTab('remote');
   }
 }
 function sourceFromInputs() {
   if (embedded) return scene.firmware;
   if (firmwareTab === 'local') {
-    if (!localSource) throw new Error('请补齐本地镜像与 flasher_args.json 所列文件。');
+    if (!localSource) throw new Error(c5Product()?'请选择一个通过校验的 C5 SRAM 应用 .bin。':'请补齐本地镜像与 flasher_args.json 所列文件。');
     return localSource;
   }
   if (firmwareTab === 'remote') {
@@ -464,8 +492,9 @@ function sourceFromInputs() {
     }
     const url = $('firmware-url').value.trim(); if (!url) throw new Error('请输入固件地址。');
     const result = {[ $('firmware-kind').value === 'manifest' ? 'manifestUrl' : 'url' ]: url};
+    if($('firmware-kind').value==='c5-sram')result.bootMode='app-direct';
     const hash = $('firmware-sha').value.trim(); if (hash) result.sha256 = hash;
-    if(result.url&&remoteModeSelection?.url===url&&remoteModeSelection.sha256===hash){if(remoteModeSelection.bootMode)result.bootMode=remoteModeSelection.bootMode;if(remoteModeSelection.archive)result.archive=clone(remoteModeSelection.archive);}
+    if(result.url&&remoteModeSelection?.url===url&&remoteModeSelection.sha256===hash){if(remoteModeSelection.bootMode&&$('firmware-kind').value!=='c5-sram')result.bootMode=remoteModeSelection.bootMode;if(remoteModeSelection.archive)result.archive=clone(remoteModeSelection.archive);}
     return result;
   }
   const selected = catalog.firmwares.find(item => item.id === $('firmware-select')?.value);
@@ -489,19 +518,20 @@ function renderControls() {
   }
   if (!controls.length && bindings) bindings.append(element('span', 'helper', '此设备没有可映射的按键。'));
   for (const control of controls) {
+    const name = (typeof control.name === 'string' && control.name.trim()) || control.id;
     const code = Object.keys(scene.keyMapping).find(key => scene.keyMapping[key] === control.id);
     if (bindings) {
-      const row = element('div', 'key-binding'); row.append(element('span', '', control.type==='matrix-key'||!Number.isInteger(control.pin)?control.name:`${control.name} · GPIO ${control.pin}`));
-      const binding = element('button', '', code ? code.replace(/^Key/, '') : '未映射'); binding.type = 'button'; binding.setAttribute('aria-label', `重新映射 ${control.name} 的键盘按键`);
+      const row = element('div', 'key-binding'); row.append(element('span', '', control.type==='matrix-key'||!Number.isInteger(control.pin)?name:`${name} · GPIO ${control.pin}`));
+      const binding = element('button', '', code ? code.replace(/^Key/, '') : '未映射'); binding.type = 'button'; binding.setAttribute('aria-label', `重新映射 ${name} 的键盘按键`);
       binding.addEventListener('click', () => {
         recordingControl = control.id; document.querySelectorAll('.key-binding button').forEach(node => node.classList.remove('recording'));
         binding.classList.add('recording'); binding.textContent = '请按键';
       }); row.append(binding); (control.type==='matrix-key'?matrixBindings:bindings).append(row);
     }
     if (buttons) {
-      const button = element('button', 'device-button'); button.dataset.control = control.id; button.setAttribute('aria-label', `按住 ${control.name}`);
-      const label=control.type==='matrix-key'?control.name.split(' / ')[0]:control.name.replace('Button ', '按键 ');
-      button.append(document.createTextNode(({Backspace:'⌫',Enter:'↵',Space:'␣',Shift:'⇧'})[label]||label));button.title=control.name+(code?` · ${code}`:''); if (code) button.append(element('kbd', '', code.replace(/^Key/, '')));
+      const button = element('button', 'device-button'); button.dataset.control = control.id; button.setAttribute('aria-label', `按住 ${name}`);
+      const label=control.type==='matrix-key'?name.split(' / ')[0]:name.replace('Button ', '按键 ');
+      button.append(document.createTextNode(({Backspace:'⌫',Enter:'↵',Space:'␣',Shift:'⇧'})[label]||label));button.title=name+(code?` · ${code}`:''); if (code) button.append(element('kbd', '', code.replace(/^Key/, '')));
       button.addEventListener('pointerdown', event => { if (event.button !== 0) return; event.preventDefault(); button.setPointerCapture(event.pointerId); sendInput({type: 'button', id: control.id, pressed: true}, `pointer:${event.pointerId}`); });
       for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(type, event => sendInput({type: 'button', id: control.id, pressed: false}, `pointer:${event.pointerId}`));
       button.addEventListener('click', event => { if (event.detail === 0) { void sendInput({type: 'button', id: control.id, pressed: true}, 'activation'); void sendInput({type: 'button', id: control.id, pressed: false}, 'activation'); } }); if(control.type==='matrix-key'){button.classList.add('matrix-key');button.style.gridRow=control.row+1;button.style.gridColumn=control.column+1;matrixButtons.append(button);}else buttonTarget.append(button);
@@ -547,6 +577,15 @@ function renderAppearance() {
   if ($('shell-opacity')) $('shell-opacity').value = Math.round(shell.opacity * 100);
   if ($('shell-finish')) $('shell-finish').value = shell.finish;
   text('shell-opacity-value', `${Math.round(shell.opacity * 100)}%`);
+}
+function renderInspection() {
+  const button = $('inspect-model'); if (!button) return;
+  const state = sceneView?.getInspection();
+  button.hidden = !state?.available || sceneView.mode !== '3d';
+  button.disabled = !!state?.blockedByAccessories;
+  button.title = state?.blockedByAccessories ? '移除外接配件后，可分开查看模型。' : '分开零件查看内部；仅用于模型观察，不代表真实拆解顺序。';
+  button.setAttribute('aria-pressed', String(!!state?.expanded));
+  button.textContent = state?.expanded ? '恢复装配' : '分开查看';
 }
 function appearanceFromInputs() {
   return {shell: {color: $('shell-color').value, opacity: Number($('shell-opacity').value) / 100, finish: $('shell-finish').value}};
@@ -634,7 +673,8 @@ async function loadSelected() {
       pendingRemoteHistory={...history,sha256:digest};(history.provider==='m5burner'?burnerUi:sparkUi)?.pin(digest,history.bootMode);
     }else firmwareHistory?.remember({...history, name:catalogMatch ? history.name : metadata?.name || firmwareHistoryName(history.url), version:catalogMatch ? history.version || metadata?.version : metadata?.version || ''});
   }
-  if(state.firmware?.appDirect)toast('已识别为应用镜像，采用应用直启；未提供 bootloader 和分区表，部分功能可能不可用。');
+  if(state.firmware?.sramApp)toast('C5 SRAM 应用已加载；重启将重新加载同一镜像。');
+  else if(state.firmware?.appDirect)toast('已识别为应用镜像，采用应用直启；未提供 bootloader 和分区表，部分功能可能不可用。');
   return source;
 }
 function defaultFirmware(next) {
@@ -900,6 +940,7 @@ function setupEvents() {
     remoteModeSelection=entry.bootMode||entry.archive?{url:entry.url,sha256:entry.sha256,bootMode:entry.bootMode,...(entry.archive?{archive:clone(entry.archive)}:{})}:null;
     if(isM5Stack(product())&&burnerUi?.restore(entry))$('firmware-kind').value='m5burner';
     else if(isLilygo(product())&&sparkUi?.restore(entry))$('firmware-kind').value='lilygo-spark';
+    else if(c5Product()&&entry.bootMode==='app-direct')$('firmware-kind').value='c5-sram';
     updateRemoteMode();renderTransport();text('load-status','已选取历史地址，点击“下载并运行”加载。');
   }});
   bind('firmware-kind','change',()=>{updateRemoteMode();renderTransport();});
@@ -927,6 +968,7 @@ function setupEvents() {
     const actual = sceneView.setMode(mode); const view = {...scene.view, deviceView: actual}; await runtime.updateSceneMetadata({view});
   }));
   bind('reset-view', 'click', () => action(async () => { await transportUi?.settleForConfiguration(); sceneView.resetView(); }));
+  bind('inspect-model', 'click', () => action(async () => { await releaseHumanInputs(); sceneView.setInspection(!sceneView.getInspection().expanded); }));
   bind('fullscreen', 'click', () => action(async () => {
     if (document.fullscreenElement) await document.exitFullscreen(); else if ($('device-stage').closest('.workspace').requestFullscreen) await $('device-stage').closest('.workspace').requestFullscreen(); else window.open(shareUrl('embed'), '_blank', 'noopener');
   }));
@@ -1014,7 +1056,7 @@ async function init() {
       if (!validation.valid) throw new Error(validation.errors.map(item => item.message).join(' ')); recordingDocument = recorded;
     } catch (error) { invalidRecording = true; report(error); log('[RECORDING] 共享录制无效，设备仍可手动操作。\n'); }
   }
-  sceneView = createSceneView($('scene-mount'), {onInput: sendInput, onModeChange: reflectMode, onUnsupported: message => toast(message), onOrientation: sendOrientation, onModelReady: renderAppearance});
+  sceneView = createSceneView($('scene-mount'), {onInput: sendInput, onModeChange: reflectMode, onUnsupported: message => toast(message), onOrientation: sendOrientation, onModelReady: renderAppearance, onInspectionChange: renderInspection});
   runtime = createPlatformRuntime({catalog, onEvent: onRuntimeEvent});
   humanButtons = createHumanButtonController({send: event => runtime.input(controlInput(event,product())), isRunning: () => status === 'running', onError: report,
     onVisual: (id, pressed) => document.querySelectorAll('.device-button').forEach(button => { if (button.dataset.control === id) button.classList.toggle('pressed', pressed); }),
@@ -1022,6 +1064,9 @@ async function init() {
   api = installAutomation(runtime, {target: window});
   const browserAudio=mountAudioControls({container:$('browser-audio-controls'),runtime:api});
   window.addEventListener('pagehide',()=>browserAudio.dispose(),{once:true});
+  const motorMount=document.createElement('div');document.querySelector('.transport')?.after(motorMount);
+  const motorOutputs=mountMotorOutputs({container:motorMount,runtime:api});
+  window.addEventListener('pagehide',()=>motorOutputs.dispose(),{once:true});
   const checksMount=document.createElement('section');
   document.querySelector('.console-panel, .embed-console')?.before(checksMount);
   const hardwareChecks=mountHardwareDiagnostics({container:checksMount,runtime:api});

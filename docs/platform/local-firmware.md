@@ -2,6 +2,8 @@
 
 可以在浏览器选择完整 merged BIN，也可以读取同一次构建的 `flasher_args.json` 与其引用的文件。文件只由浏览器读取；不上传到本站服务器，也不写入远程固件缓存。单独的应用 BIN 缺少启动链，不能当作完整 Flash 镜像启动。
 
+Stamp-C5 / DIP 有独立的 [SRAM 应用直启路径](stamp-c5-runtime.md)：可选择一个经过严格 SRAM 地址/入口/完整性校验的裸机应用 BIN，界面明确说明直接启动。该路径不支持 ROM/普通 IDF 启动，也不改变其他芯片的本地构建加载规则。
+
 布局依据是 ESP-IDF 官方生成的 [`flasher_args.json`](https://github.com/espressif/esp-idf/blob/v5.5.1/components/esptool_py/flasher_args.json.in) 中的 `flash_files`。命令行参数只作数据检查，不执行。浏览器目录选择保留相对路径；普通文件多选只在文件名唯一时匹配。不同构建目录、同名冲突、缺少文件均需先解决。
 
 ```js

@@ -30,7 +30,16 @@ def load_product(root,identity):
  if len(by_id)!=len(sources):raise ValueError('Duplicate source IDs')
  for old in audit.get('sources',[]):
   if old['id']in by_id and old.get('sha256') and by_id[old['id']].get('sha256')!=old['sha256']:raise ValueError(f"Source receipt disagreement: {old['id']}")
- required=list(dict.fromkeys([plan['sourceId'],*[p.get('sourceId',plan['sourceId'])for p in plan['parts']],*[p['sourceId']for p in plan.get('photos',[])],*[p['sourceId']for p in plan.get('textureSources',[])],'cad-license']))
+ supporting=plan.get('supportingAssets',[]);names=set()
+ if not isinstance(supporting,list) or len(supporting)>32:raise ValueError('Invalid supporting assets')
+ reserved={'model.json','model-plan.json','geometry.bin',plan.get('provenance',{}).get('licenseFile','LICENSE-M5Stack.txt'),*[t['file']for t in plan.get('textureSources',[])]}
+ reserved={name.casefold()for name in reserved}
+ for entry in supporting:
+  if not isinstance(entry,dict) or set(entry)!={'sourceId','file'} or not isinstance(entry['sourceId'],str):raise ValueError('Invalid supporting asset declaration')
+  name=filename(entry['file'])
+  if name.casefold().startswith(('source.','source-','reference-')) or name.casefold() in reserved or name.casefold() in names:raise ValueError('Conflicting supporting asset filename')
+  names.add(name.casefold())
+ required=list(dict.fromkeys([plan['sourceId'],*[p.get('sourceId',plan['sourceId'])for p in plan['parts']],*[p['sourceId']for p in plan.get('photos',[])],*[p['sourceId']for p in plan.get('textureSources',[])],*[p['sourceId']for p in supporting],'cad-license']))
  for sid in required:
   if sid not in by_id:raise ValueError(f'Missing pinned source receipt: {sid}')
   validate_source(by_id[sid])
@@ -124,7 +133,7 @@ def compare_build(expected,actual,output):
  for name,actual_hash in actual['artifacts'].items():
   if digest((output/name).read_bytes())!=actual_hash or expected['artifacts'].get(name)!=actual_hash:mismatches.append('artifact:'+name)
   else:verified.append(name)
- for field in ['unit','binary','strideFloats','parts','sourceTransform','omittedComponents','dimensions','presentation','derivedParts','derivedSurfaces','referencePhotos','textures','reviewViews']:
+ for field in ['unit','binary','strideFloats','parts','sourceTransform','omittedComponents','dimensions','presentation','derivedParts','derivedSurfaces','referencePhotos','textures','reviewViews','supportingAssets']:
   if expected.get(field)!=actual.get(field):mismatches.append('contract:'+field)
  return {'passed':not mismatches,'verifiedArtifacts':verified,'mismatches':mismatches,'unusedOriginalArtifacts':sorted(set(expected['artifacts'])-set(actual['artifacts'])),'modelJsonByteIdentical':digest(json.dumps(expected,ensure_ascii=False,indent=2).encode()+b'\n')==digest((output/'model.json').read_bytes()),'scope':'Exact regenerated geometry, source/reference files, textures and model contract. Metadata byte order and historical unused files are reported separately. No fresh browser, hardware or firmware acceptance.'}
 

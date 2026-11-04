@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:06:32Z",
+  "updatedAt": "2026-11-03T20:43:23Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -275,6 +275,104 @@
         "manufacturer-cad-a7d64b6f3a"
       ],
       "method": "OpenCascade7.8.1.1 STEP solid traversal, followed by shells not inside solids and faces not inside shells. Native stable indices counted after explicit exclusions; read_step_styles preserves original XCAF names/colors and BRep bounds."
+    },
+    {
+      "id": "sx1262-board-routing",
+      "label": "SX1262 physical routes",
+      "value": {
+        "host": 2,
+        "sclk": 20,
+        "mosi": 21,
+        "miso": 22,
+        "cs": 23,
+        "busy": 19,
+        "dio1": 7
+      },
+      "basis": "official",
+      "sourceIds": [
+        "s012-schematic-v023",
+        "s012-arduino-radiolib"
+      ],
+      "group": "interfaces"
+    },
+    {
+      "id": "pi4io-board-routing",
+      "label": "PI4IOE5V6408 physical routes and RF controls",
+      "value": {
+        "i2c": {
+          "host": 0,
+          "sda": 10,
+          "scl": 8,
+          "address": 67,
+          "interrupt": 3
+        },
+        "controls": {
+          "5": "SX_LNA_EN",
+          "6": "SX_ANT_SW FM8625H VDD",
+          "7": "SX_NRST"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "s012-schematic-v023",
+        "s012-arduino-radiolib"
+      ],
+      "group": "interfaces"
+    },
+    {
+      "id": "external-flash-package",
+      "label": "C6 external flash package",
+      "value": "QFN40 with external W25Q128 16MiB; schematic page 2",
+      "basis": "official",
+      "sourceIds": [
+        "s012-schematic-v023"
+      ],
+      "group": "compute"
+    },
+    {
+      "id": "cad-detached-cylinder-audit",
+      "label": "Unplaced source cylinder audit",
+      "value": {
+        "sourceComponent": 384,
+        "assemblyPath": "Free-Models/11133974320/Cylinder",
+        "radiusMm": 2.54,
+        "heightMm": 1.27,
+        "nativePositionMm": [
+          -158.99999696,
+          -50.19999866,
+          0
+        ],
+        "closedFaces": 3,
+        "bore": false,
+        "thread": false,
+        "assembled": false
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "manufacturer-cad-a7d64b6f3a"
+      ],
+      "method": "STEP entity graph: PRODUCT71294, CLOSED_SHELL71233 and CYLINDRICAL_SURFACE71262. No photograph-backed placement; retained as an excluded source primitive, not inferred to be a standoff."
+    },
+    {
+      "id": "pcb-and-shield-photo-surface",
+      "label": "Exposed PCB and shield surface evidence",
+      "value": {
+        "pcbColor": "near-black",
+        "pcbGeometry": "manufacturer CAD retained",
+        "shieldMarking": "bounded official photograph on existing shield face",
+        "backAppearance": "bounded official photograph on existing PCB face",
+        "separatePaperSticker": false,
+        "visibleAssemblyFasteners": 0
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-a6a084013f",
+        "product-photo-887fd79f7e",
+        "product-photo-c72f8b68b4"
+      ],
+      "notes": "No screw or standoff is visible in these module views. Color is uncalibrated; photo texture does not establish hidden copper, circuitry or exact albedo. Existing pads and IPEX connector geometry remain separate.",
+      "method": "Rectify the pinned official front and back photographs with model-plan.json perspectiveQuad coordinates. Apply the documented alpha polygons/exclusions to existing shield and PCB flat CAD triangles only. Verify mask corners against selected CAD faces, compare front/back/oblique renders, and retain exact source triangle multiset; see browser-review.json and verification.json.",
+      "uncertainty": "Photo light, exposure and white balance are uncalibrated. Homography and mask edges are manual photo alignment, without lens calibration or a measured registration error. No hidden copper, material albedo, screw specification or internal layout precision follows from these pixels."
     }
   ],
   "revisions": [],
@@ -537,6 +635,48 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "s012-schematic-v023",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1223/S012-SCH_Sch_M5_C6_Lora_v0.2.3_2025_12_02_19_14_35.pdf",
+      "finalUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1223/S012-SCH_Sch_M5_C6_Lora_v0.2.3_2025_12_02_19_14_35.pdf",
+      "fetchedAt": "2026-11-03T20:43:13Z",
+      "mediaType": "application/pdf",
+      "bytes": 489288,
+      "sha256": "2dafe92c5090a01aa948c1ce88b17d1237421d09701c1e0a15a122bd9d844d35",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1223/S012-SCH_Sch_M5_C6_Lora_v0.2.3_2025_12_02_19_14_35.pdf",
+      "title": "S012 schematic v0.2.3, pages 1–2",
+      "status": "fetched",
+      "kind": "official-runtime-source",
+      "archiveName": "s012-schematic-v023.pdf"
+    },
+    {
+      "id": "s012-arduino-radiolib",
+      "url": "https://docs.m5stack.com/en/arduino/m5stamp_c6lora/program",
+      "finalUrl": "https://docs.m5stack.com/en/arduino/m5stamp_c6lora/program",
+      "fetchedAt": "2026-11-03T20:43:13Z",
+      "mediaType": "text/html",
+      "bytes": 359248,
+      "sha256": "d02813eeaf11be777bd7c40586109a4380b6a530b9063ab4f1d5870c811967ee",
+      "resolvedUrl": "https://docs.m5stack.com/en/arduino/m5stamp_c6lora/program",
+      "title": "Stamp C6LoRa official Arduino RadioLib example",
+      "status": "fetched",
+      "kind": "official-runtime-source",
+      "archiveName": "s012-arduino-radiolib.html"
+    },
+    {
+      "id": "s012-burner-empty-category",
+      "url": "https://burner.m5stack.com/api/v1/firmwares?deviceId=2093000000000000017&pageNum=1&pageSize=100&sort=LATEST",
+      "finalUrl": "https://burner.m5stack.com/api/v1/firmwares?deviceId=2093000000000000017&pageNum=1&pageSize=100&sort=LATEST",
+      "fetchedAt": "2026-11-03T20:37:41Z",
+      "mediaType": "application/json",
+      "bytes": 100,
+      "sha256": "865671a5470c258094510e9afdd9ade0e9582b8be408a14f7b3b5320e4ce4239",
+      "resolvedUrl": "https://burner.m5stack.com/api/v1/firmwares?deviceId=2093000000000000017&pageNum=1&pageSize=100&sort=LATEST",
+      "title": "M5Burner exact C6LoRa category, zero entries",
+      "status": "fetched",
+      "kind": "official-runtime-source",
+      "archiveName": "s012-burner-empty-category.json"
     }
   ],
   "assets": [
@@ -659,9 +799,10 @@
       "value": null,
       "basis": "unknown",
       "sourceIds": [
-        "official-docs"
+        "s012-burner-empty-category",
+        "s012-arduino-radiolib"
       ],
-      "notes": "No pinned binary/layout/hash verified. Software documentation remains linked in source records."
+      "notes": "2026-11-04 exact C6LoRa M5Burner category is complete with zero entries; official Arduino RadioLib source is available but is not a precompiled factory image. No exact UIFlow or Xiaozhi target found in this audit."
     },
     {
       "id": "user-hardware-revision",
@@ -687,6 +828,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "Runtime support is a separately verified digital subset; see docs/platform/evidence/stamp-c6lora-runtime. Continuous 3.3V supply profile, no RF propagation/gain, battery path or physical hardware validation."
   ]
 }

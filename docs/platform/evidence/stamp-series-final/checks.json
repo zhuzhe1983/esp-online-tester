@@ -1,0 +1,566 @@
+{
+  "schemaVersion": 1,
+  "checkedSourceCommit": "f51bd8ae8fb6ab397545567c88046003591bccfc",
+  "rustSourceLastChange": "f27e234014ad2c91049ed5e4f798ae11520969a5",
+  "rustSourceUnchangedSince": true,
+  "environment": {
+    "os": "Darwin",
+    "architecture": "arm64",
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "node": "v24.11.1",
+    "cargoBuildJobs": 3,
+    "romDirectory": "web/wasm/fw",
+    "rustToolchain": "stable (updated before checks)"
+  },
+  "wasm": {
+    "path": "web/wasm/esp32sim.wasm",
+    "sha256": "bd1c688cff2cbd2ac608761dbe122d0c2346f65ea3d0a6e53d3034ee170ba3ef",
+    "bytes": 5000313,
+    "productionBuildCommand": "RUSTUP_TOOLCHAIN=stable CARGO_BUILD_JOBS=3 sh tools/wasm-build.sh",
+    "postProfilingBuildHashUnchanged": true
+  },
+  "checks": [
+    {
+      "command": [
+        "sh",
+        "tools/fetch-rom-elfs.sh",
+        "web/wasm/fw"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.076,
+      "logSha256": "673809ae7cf66c13563f7f539a8f4bdc01f2976344c0ba8fdaf89d72fe8d51e8"
+    },
+    {
+      "command": [
+        "sh",
+        "tools/fetch-micropython.sh"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.022,
+      "logSha256": "cc24ab8cbf543d7ce868f8c0dd7155e19c563bbe1a86f5f36fb85ddef39cefe5"
+    },
+    {
+      "command": [
+        "sh",
+        "tools/fetch-p4-firmware.sh"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.344,
+      "logSha256": "0df01d00117ad0677055a838f8757b07b8278ef87e82d17a87a59e1b6343bd26"
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--workspace"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 46.603,
+      "logSha256": "025780d426ade6da14a04279d0d791515ad681cdb1b5029a1b86359c7fdc6771"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 3.57,
+      "logSha256": "33a1b951fa0ca580e6f6615be3c9a9397dc49af71b9c33d968d87c2a6a0adfdb"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--target",
+        "wasm32-unknown-unknown",
+        "-p",
+        "esp32sim-wasm",
+        "--features",
+        "jit-tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 1.934,
+      "logSha256": "f4df8466bede7144bf12bd69c9eee91665dd257d5028e65413eea67253e9105c"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--workspace",
+        "--",
+        "--include-ignored",
+        "--skip",
+        "external_"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 391.968,
+      "logSha256": "ae589f6424f0fcd8b7acd65287b82ce2afe90d0768d244c740861ae1204f4644"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tools/platform-app-image-test.mjs",
+        "tools/platform-audio-browser-test.mjs",
+        "tools/platform-audio-live-test.mjs",
+        "tools/platform-audio-playback-test.mjs",
+        "tools/platform-audio-stream-test.mjs",
+        "tools/platform-audio-wasm-test.mjs",
+        "tools/platform-ble-profile-test.mjs",
+        "tools/platform-c5-test.mjs",
+        "tools/platform-catalog-loading-test.mjs",
+        "tools/platform-catalog-selection-test.mjs",
+        "tools/platform-cloudzao-test.mjs",
+        "tools/platform-config-test.mjs",
+        "tools/platform-console-log-test.mjs",
+        "tools/platform-controller-registry-test.mjs",
+        "tools/platform-cores3-front-test.mjs",
+        "tools/platform-device-storage-test.mjs",
+        "tools/platform-dial-model-test.mjs",
+        "tools/platform-encoder-test.mjs",
+        "tools/platform-firmware-archive-test.mjs",
+        "tools/platform-firmware-cache-test.mjs",
+        "tools/platform-firmware-download-access-test.mjs",
+        "tools/platform-firmware-history-test.mjs",
+        "tools/platform-firmware-limits-test.mjs",
+        "tools/platform-firmware-policy-test.mjs",
+        "tools/platform-firmware-recovery-test.mjs",
+        "tools/platform-firmware-relay-test.mjs",
+        "tools/platform-firmware-run-ui-test.mjs",
+        "tools/platform-firmware-sync-test.mjs",
+        "tools/platform-flash-batch-test.mjs",
+        "tools/platform-flash-configuration-test.mjs",
+        "tools/platform-flash-independence-test.mjs",
+        "tools/platform-flash-security-test.mjs",
+        "tools/platform-flasher-test.mjs",
+        "tools/platform-gps-model-test.mjs",
+        "tools/platform-guest-network-test.mjs",
+        "tools/platform-guest-page-test.mjs",
+        "tools/platform-hardware-diagnostics-test.mjs",
+        "tools/platform-hints-test.mjs",
+        "tools/platform-i18n-test.mjs",
+        "tools/platform-imu-test.mjs",
+        "tools/platform-input-test.mjs",
+        "tools/platform-ip-location-test.mjs",
+        "tools/platform-knowledge-test.mjs",
+        "tools/platform-lilygo-catalog-test.mjs",
+        "tools/platform-lilygo-runtime-test.mjs",
+        "tools/platform-lilygo-spark-test.mjs",
+        "tools/platform-local-firmware-test.mjs",
+        "tools/platform-lora-test.mjs",
+        "tools/platform-m5burner-captcha-test.mjs",
+        "tools/platform-m5burner-test.mjs",
+        "tools/platform-m5burner-v1-sync-test.mjs",
+        "tools/platform-manufacturer-model-test.mjs",
+        "tools/platform-meshtastic-test.mjs",
+        "tools/platform-model-inspection-test.mjs",
+        "tools/platform-model-test.mjs",
+        "tools/platform-motor-test.mjs",
+        "tools/platform-network-test.mjs",
+        "tools/platform-pcb-placeholder-test.mjs",
+        "tools/platform-plate-geometry-test.mjs",
+        "tools/platform-recording-test.mjs",
+        "tools/platform-rgb-led-view-test.mjs",
+        "tools/platform-runtime-test.mjs",
+        "tools/platform-scene-test.mjs",
+        "tools/platform-sd-card-test.mjs",
+        "tools/platform-servo-view-test.mjs",
+        "tools/platform-shared-startup-test.mjs",
+        "tools/platform-stackchan-runtime-test.mjs",
+        "tools/platform-unit-angle-test.mjs",
+        "tools/platform-unit-button-test.mjs",
+        "tools/platform-unit-dlight-test.mjs",
+        "tools/platform-unit-env4-test.mjs",
+        "tools/platform-unit-hub-test.mjs",
+        "tools/platform-unit-pir-test.mjs",
+        "tools/platform-unit-rgb-test.mjs",
+        "tools/platform-view-test.mjs",
+        "tools/platform-watchlist-test.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 5.452,
+      "logSha256": "079fffb2c28e237eba1510168bacaaa69926898ff26859f231eb08a1664fd723"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.075,
+      "logSha256": "2f0d44a10d0120107646031b1dbb3585a4d37716e2385c54c965716583a66caf"
+    },
+    {
+      "command": [
+        "node",
+        "docs/evidence/perf-x5-2026-09-22/verify-results.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.025,
+      "logSha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.069,
+      "logSha256": "f12eae432ff64cd22be435f717e8d1b091044341b67ed3060cc9583ca5d8a30f"
+    },
+    {
+      "command": [
+        "node",
+        "docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.023,
+      "logSha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.071,
+      "logSha256": "47242c812974335da74a51f7cda1b6ddf139acdcf2a4d5531cda12f903e83654"
+    },
+    {
+      "command": [
+        "node",
+        "docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.025,
+      "logSha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4"
+    },
+    {
+      "command": [
+        "node",
+        "tools/network-helper-test.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 1.042,
+      "logSha256": "18dc4bc02cb5191c5c981adbc373a5a80eccdb7fbd861240f4f329ba91023c30"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tools/network-relay-test.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.259,
+      "logSha256": "16d8420af44c63c41498a2a4afda6a17e4e899d8d142328c6f1cd094d9629d38"
+    },
+    {
+      "command": [
+        "cargo",
+        "+stable",
+        "test",
+        "--release",
+        "-p",
+        "esp32s3",
+        "--test",
+        "machine",
+        "--test",
+        "virtual_stops"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 15.905,
+      "logSha256": "61a07b26fac5d0e09b61cdb2b3c1d808f000751b46b826b18a0ca11d8801c489"
+    },
+    {
+      "command": [
+        "node",
+        "tools/check-wasm-sections.mjs",
+        "web/wasm/esp32sim.wasm"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.028,
+      "logSha256": "3ca4926448700a2159e659c6e48e12d24518a0beb2e592e6749a5c92ebba31f8"
+    },
+    {
+      "command": [
+        "node",
+        "tools/wasm-test.mjs",
+        "hello",
+        "c3-hello",
+        "c6-hello",
+        "p4-hello",
+        "p4-c6-hosted",
+        "p4-lcd35-synth",
+        "c6-energy-scan",
+        "c6-contiki",
+        "c6-contiki-net",
+        "c6-rpl-net",
+        "panel",
+        "tdisplay-prices",
+        "tdisplay-schematik"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 58.902,
+      "logSha256": "5fcf18f808ae089b156eb514ddea2ae9b4afc745b708c296f858ff542faf3eef"
+    },
+    {
+      "command": [
+        "node",
+        "tools/platform-recording-test.mjs",
+        "--real"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 4.258,
+      "logSha256": "fb28a4151c78da3e7407c93f247df0d879a64cac193458d9256b0667fb64233d"
+    },
+    {
+      "command": [
+        "node",
+        "tools/wasm-test.mjs",
+        "demo-stopwatch"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.692,
+      "logSha256": "78cfa12b3efe742e66285e4b7ac4d235c53811b150183aaf3a8a7a6d1c28f6d1"
+    },
+    {
+      "command": [
+        "node",
+        "tools/probe-hardware-diagnostics.mjs",
+        "tools/fixtures/stopwatch-hardware-checks.json",
+        "/tmp/stamp-series-final-stopwatch-checks.json"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 8.155,
+      "logSha256": "5fbad15c761bd2c614b1707bb466e4703c9946363806d0f2b3d8f25cacafbd8f"
+    },
+    {
+      "command": [
+        "node",
+        "wasm/tests/timing-api.mjs",
+        "web/wasm/esp32sim.wasm"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.032,
+      "logSha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3"
+    },
+    {
+      "command": [
+        "node",
+        "wasm/tests/ble-api.mjs",
+        "web/wasm/esp32sim.wasm",
+        "web/wasm/fw/public",
+        "web/wasm/fw/esp32c3_rev3_rom.elf"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.76,
+      "logSha256": "7181dfc2294ff9f14d41fb202873b762641a363c0f8d5b8b83c44b54e46ea59a"
+    },
+    {
+      "command": [
+        "node",
+        "wasm/tests/ble-connection.mjs",
+        "web/wasm/esp32sim.wasm",
+        "web/wasm/fw/public",
+        "web/wasm/fw/esp32c3_rev3_rom.elf"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 2.53,
+      "logSha256": "eb65fb96c84443e95c004b8280d625f429feda7814eff9a47bc28e1691de5821"
+    },
+    {
+      "command": [
+        "node",
+        "tools/worker-pacing-test.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.026,
+      "logSha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158"
+    },
+    {
+      "command": [
+        "node",
+        "tools/worker-channel-test.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.096,
+      "logSha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tools/touch-input-test.mjs",
+        "tools/stopwatch-ui-test.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.061,
+      "logSha256": "44ca8720f22b0cfe55de120df8dab6186d020ca93fa72b4fd19a4a58ba25f668"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tools/wasm-build-policy.test.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.074,
+      "logSha256": "ac32213f0188fa9aeabd3306300b37e4b4932473b54f56707e291f79f08154d6"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tools/browser-benchmark/battery-failure.test.mjs",
+        "tools/browser-benchmark/verdict.test.mjs",
+        "tools/browser-benchmark/experiments.test.mjs",
+        "tools/browser-benchmark/battery-workload.test.mjs"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.067,
+      "logSha256": "74eea5782cc2ef3405d0e8cdab9fff86bf9c140a40f5cb3ecb71c0caae6a0434"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/browser-benchmark",
+        "-p",
+        "test_*.py"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 0.085,
+      "logSha256": "36e632bbf6589bac8037ace7030ead9f8c8947bdb0f34d0e4b025484e5464ee7"
+    },
+    {
+      "command": [
+        "tools/wasm-jit-test.sh"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 38.425,
+      "logSha256": "fc7d5be9738595d6fb87c0a1bb0f36897442fd0656f24e19d4b071e92c342a68"
+    },
+    {
+      "command": [
+        "sh",
+        "-c",
+        ". ./tools/wasm-rustflags.sh; cargo +stable build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile"
+      ],
+      "status": "pass",
+      "exitCode": 0,
+      "elapsedSeconds": 22.33,
+      "logSha256": "c410e367242305c6923c3d16c3eef22d4f3ffd30f99be24a56ec2c786ff25096"
+    }
+  ],
+  "totals": {
+    "releaseRustTests": 1806,
+    "platformTests": 302,
+    "extraCiGroups": 25,
+    "wasmDifferentialCases": 111126,
+    "wasmDifferentialGroups": 78,
+    "gpioWaveformCases": 24
+  },
+  "additionalChecks": {
+    "catalogSchema": "216 products / 10 accessories / 171 firmwares / 117 watchlist entries passed",
+    "knowledge": "224 records passed; exact local source files independently audited by model review",
+    "privacy": "tracked evidence pattern check passed; manually reviewed new curated receipts",
+    "goldenChanges": "None; no UPDATE_GOLDENS used",
+    "diffWhitespace": "Passed excluding four byte-exact third-party CREDITS-KiCad.md source files; original Markdown hard-break trailing spaces retained"
+  },
+  "upstreamWhitespaceExceptions": [
+    {
+      "path": "web/platform/assets/m5stack-s007-pin127-v033/CREDITS-KiCad.md",
+      "sha256": "d2d30909a0733003355db01a52284feaf10e89bd2d7841a0b557c305a4d04cc0"
+    },
+    {
+      "path": "web/platform/assets/m5stack-s007-pin127/CREDITS-KiCad.md",
+      "sha256": "d2d30909a0733003355db01a52284feaf10e89bd2d7841a0b557c305a4d04cc0"
+    },
+    {
+      "path": "web/platform/assets/m5stack-s007-pin254-v033/CREDITS-KiCad.md",
+      "sha256": "ade826b0bb2159aa1b488020aa4134dd97b05656f32de842f342998beba3cb79"
+    },
+    {
+      "path": "web/platform/assets/m5stack-s007-pin254/CREDITS-KiCad.md",
+      "sha256": "ade826b0bb2159aa1b488020aa4134dd97b05656f32de842f342998beba3cb79"
+    }
+  ],
+  "retainedFailures": [
+    {
+      "check": "workspace/all-targets Clippy",
+      "reason": "cfg(test) MachineKind match omitted new C5 arm",
+      "fixCommit": "f27e2340",
+      "originalLogSha256": "4294d67ed2ede87e6b1538a211798de9d57f875e2d5d86b5552cfbc0735d1bf7",
+      "rerun": "passed"
+    },
+    {
+      "check": "full platform tests",
+      "reason": "retained UIFlow mapping omitted new header/kit SKU targets",
+      "fixCommit": "7521719b",
+      "originalLogSha256": "ea57b3c9c25c3ec2d7dd2ff667674c2e67ce4e531593eac61993b842194242df",
+      "rerun": "all 302 passed; exact-mapping assertion preserved"
+    }
+  ],
+  "scope": [
+    "These are local CI-equivalent commands, not a GitHub-hosted CI result.",
+    "Browser, source/model review and CPU measurements are separate receipts.",
+    "Original build logs remain local; only hashes, commands, results and relevant environment are retained here.",
+    "No real hardware, physical flight, RF or analog timing validation."
+  ],
+  "postValidationIntegration": {
+    "mergedMainCommit": "c2c7ddd07a8f96e23ce1b35a87cde21fe037b49f",
+    "mergeCommit": "98b783f6593a06b0cf524d0d5a92cd45500407b4",
+    "scope": "Only upstream StackChan release metadata and sync-report timestamps/status; no Stamp definition, rendering, runtime or Rust source changed.",
+    "recheckCommand": "node --test tools/platform-m5burner-v1-sync-test.mjs tools/platform-firmware-sync-test.mjs tools/platform-watchlist-test.mjs",
+    "passed": 28
+  }
+}

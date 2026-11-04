@@ -128,6 +128,11 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     let board = unsafe { text(board, board_len) }.to_string();
     let Some(flash_bytes) = mib_bytes(flash_mb.max(1)) else { log("[emu] flash size exceeds the supported memory range"); return std::ptr::null_mut() };
     let Some(psram_bytes) = mib_bytes(psram_mb) else { log("[emu] PSRAM size exceeds the supported memory range"); return std::ptr::null_mut() };
+    let c3_board=if matches!(board.as_str(),"esp32c3"|"c3") {esp32c3::board::make_board("none")}else if matches!(board.as_str(),"none"|"bare") {None}else{esp32c3::board::make_board(&board)};
+    let c5_board = if matches!(board.as_str(), "stamp-c5" | "stamp-c5-dip") { esp32c5::board::make_board(&board) } else { None };
+    if c5_board.is_some() && (flash_mb != 4 || psram_mb != 0) {
+        log("[emu] Stamp-C5 supports exactly 4 MiB Flash and no PSRAM"); return std::ptr::null_mut();
+    }
     let c6_board = if matches!(board.as_str(), "esp32c6" | "c6") {
         esp32c6::board::make_board("none")
     } else if matches!(board.as_str(), "none" | "bare") {
@@ -141,8 +146,8 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     // (`esp32p4::coproc`), whose images load with `COPROC_KIND` / `COPROC_FLASH`.
     let (p4_name, coproc) = board.strip_suffix("+c6").map_or((board.as_str(), false), |b| (b, true));
     let p4_board = esp32p4::board::make_board(p4_name).filter(|_| !matches!(p4_name, "none" | "bare"));
-    let p4_rev3 = p4_board.is_some() || matches!(p4_name, "esp32p4-rev3" | "p4-rev3");   // the board has a v3.2 chip
-    let p4 = p4_rev3 || matches!(p4_name, "esp32p4" | "p4");
+    let p4_rev3 = matches!(p4_name, "waveshare-p4-lcd35" | "p4-lcd35" | "lcd35" | "esp32p4-rev3" | "p4-rev3"); // Waveshare has a v3.2 chip; Stamp UIFlow selects rev < 3
+    let p4 = p4_board.is_some() || p4_rev3 || matches!(p4_name, "esp32p4" | "p4");
     let classic_board = if board == "esp32" {
         esp32::board::make_board("esp32dev")
     } else if p4 || c6_board.is_some() || matches!(board.as_str(), "none" | "bare") {
@@ -168,12 +173,21 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         m.console.mask = 2;
         prepare(&mut m);
         MachineKind::Esp32(Box::new(m))
-    } else if board == "esp32c3" || board == "c3" {
+    } else if let Some(b) = c3_board {
         let mut m = esp32c3::machine([0x3c, 0x84, 0x27, 0xb6, 0xa7, 0x1c], flash_bytes);
+        m.bus.board=b;
+        m.bus.attach_board_devices();
         m.bus.set_flash_size(flash_bytes);
         m.console.mask = 2;                                  // the ROM mirrors its console to UART0 and USB-Serial/JTAG
         prepare(&mut m);
         MachineKind::C3(Box::new(m))
+    } else if let Some(b) = c5_board {
+        let mut m = esp32c5::machine([0x30, 0xed, 0xa0, 0x00, 0x11, 0x25], flash_bytes);
+        m.bus.board = b;
+        m.bus.attach_board_devices();
+        m.console.mask = 2;
+        prepare(&mut m);
+        MachineKind::C5(Box::new(m))
     } else if p4 {
         fn p4_machine<R: esp32p4::Revision>(flash_bytes: usize, psram_bytes: usize, board: Option<esp_soc::Board>) -> Machine<esp32p4::Esp32p4<R>> {
             let mut m = esp32p4::machine_rev::<R>([0x30, 0xed, 0xa0, 0x00, 0x11, 0x22], flash_bytes);

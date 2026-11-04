@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T19:31:01Z",
+  "updatedAt": "2026-11-03T21:38:18Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -216,6 +216,45 @@
         "pitchMm": 2.54,
         "rowSpacingMm": 15.24
       }
+    },
+    {
+      "id": "header-visual-substitute",
+      "label": "Header visual substitute scope",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-pin254-footprint",
+        "kicad-header-9",
+        "kicad-header-6",
+        "product-photo-e5fd4058a1",
+        "product-photo-56385ac7e6"
+      ],
+      "value": {
+        "count": [
+          9,
+          6
+        ],
+        "pitchMm": 2.54,
+        "bodyHeightMm": 2.54,
+        "retainedOuterEndLengthMm": 3,
+        "outerLengthUncertaintyMm": 1,
+        "solderNeckHeightUncertaintyMm": 0.5
+      },
+      "notes": "官方 footprint 只引用模块 STEP，未指定排针型号。采用 KiCad 标准塑料体/短端为照片参考替代件；原长6mm端明确排除，焊接端单独估算。没有缩放原网格，也没有声称原厂型号、焊点或插接公差准确。",
+      "method": "Official footprint pad centers/count; selected KiCad native body and 3 mm end dimensions; exact-SKU oblique photographs constrain short contact appearance, without a calibrated factory pin length.",
+      "uncertainty": "Pin outward length ±1 mm; solder side height ±0.5 mm. Standard body dimensions are source dimensions, not measured factory hardware."
+    },
+    {
+      "id": "pcb-photo-face",
+      "label": "Known PCB surface",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-56385ac7e6",
+        "manufacturer-cad-2a9b25ea49"
+      ],
+      "value": "本 SKU 官方背面照片覆盖原厂板面，排针、铜柱与壳体遮罩排除；UNKNOWN 位于内侧。",
+      "notes": "800×800斜视原图，仅可见外观；投影约±0.8mm，元件高度未验证。",
+      "method": "Perspective quad and pixel alpha masks declared in model-plan.json, projected only to the native PCB underside and clipped by source CAD holes; image registration uncertainty about ±0.8 mm.",
+      "uncertainty": "Photo-plane registration approximately ±0.8 mm; no component height or electronic connectivity validation."
     }
   ],
   "revisions": [],
@@ -480,6 +519,59 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "kicad-header-9",
+      "title": "Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x09_P2.54mm_Vertical.step",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x09_P2.54mm_Vertical.step",
+      "resolvedUrl": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x09_P2.54mm_Vertical.step",
+      "kind": "standard-component-cad",
+      "status": "fetched",
+      "archiveName": "kicad-header-9.step",
+      "fetchedAt": "2026-11-03T21:32:51Z",
+      "bytes": 321409,
+      "sha256": "b6918cc1bb482afe2d2f27f4d0daa20d605a2000e4770aac8f454efd643879a4",
+      "mediaType": "text/plain",
+      "notes": "Selected standard geometry for documented 9/6 count and 2.54 mm pitch; NOT referenced by M5Stack footprint and NOT factory part identification. KiCad body and original 3 mm end retained; source 6 mm opposite end is excluded because exact-SKU photographs show shorter exposed contacts. Copyright 2017 kicad StepUp, CC-BY-SA 4.0 with design exception."
+    },
+    {
+      "id": "kicad-header-6",
+      "title": "Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x06_P2.54mm_Vertical.step",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x06_P2.54mm_Vertical.step",
+      "resolvedUrl": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x06_P2.54mm_Vertical.step",
+      "kind": "standard-component-cad",
+      "status": "fetched",
+      "archiveName": "kicad-header-6.step",
+      "fetchedAt": "2026-11-03T21:32:52Z",
+      "bytes": 215953,
+      "sha256": "d6113af109a14a67c50dcefd1cfc7b43b59b59afa85d808b2319e2452da91318",
+      "mediaType": "text/plain",
+      "notes": "Selected standard geometry for documented 9/6 count and 2.54 mm pitch; NOT referenced by M5Stack footprint and NOT factory part identification. KiCad body and original 3 mm end retained; source 6 mm opposite end is excluded because exact-SKU photographs show shorter exposed contacts. Copyright 2017 kicad StepUp, CC-BY-SA 4.0 with design exception."
+    },
+    {
+      "id": "kicad-header-license",
+      "title": "KiCad official 3D library LICENSE.md",
+      "kind": "license",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/LICENSE.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-03T21:10:57Z",
+      "archiveName": "kicad-header-license.md",
+      "bytes": 2105,
+      "sha256": "285b027a721577d0bc0198f36e948c6c282ddaa4b58fef8ed826749576eb0aef",
+      "notes": "KiCad 2.54 mm standard library reference, CC-BY-SA 4.0 with design exception. Selected source body/end geometry is a photo-informed substitute, not a part specified by M5Stack."
+    },
+    {
+      "id": "kicad-header-credits",
+      "title": "KiCad official 3D library CREDITS.md",
+      "kind": "license",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_2.54mm.3dshapes/CREDITS.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-03T21:35:56Z",
+      "archiveName": "kicad-header-credits.md",
+      "bytes": 10863,
+      "sha256": "ade826b0bb2159aa1b488020aa4134dd97b05656f32de842f342998beba3cb79",
+      "notes": "KiCad 2.54 mm standard library reference, CC-BY-SA 4.0 with design exception. Selected source body/end geometry is a photo-informed substitute, not a part specified by M5Stack.",
+      "resolvedUrl": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_2.54mm.3dshapes/CREDITS.md"
     }
   ],
   "assets": [
@@ -506,25 +598,29 @@
       "id": "product-photo-53dda4c35d",
       "sourceId": "product-photo-53dda4c35d",
       "role": "product-photo",
-      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/685/S007-PIN254-01.webp"
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/685/S007-PIN254-01.webp",
+      "localUrl": "./assets/m5stack-s007-pin254/reference-product-photo-53dda4c35d.webp"
     },
     {
       "id": "product-photo-e5fd4058a1",
       "sourceId": "product-photo-e5fd4058a1",
       "role": "product-photo",
-      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5StampS3%20PIN2.54/9.webp"
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5StampS3%20PIN2.54/9.webp",
+      "localUrl": "./assets/m5stack-s007-pin254/reference-product-photo-e5fd4058a1.webp"
     },
     {
       "id": "product-photo-76f4394de0",
       "sourceId": "product-photo-76f4394de0",
       "role": "product-photo",
-      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5StampS3%20PIN2.54/14.webp"
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5StampS3%20PIN2.54/14.webp",
+      "localUrl": "./assets/m5stack-s007-pin254/reference-product-photo-76f4394de0.webp"
     },
     {
       "id": "product-photo-56385ac7e6",
       "sourceId": "product-photo-56385ac7e6",
       "role": "product-photo",
-      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5StampS3%20PIN2.54/15.webp"
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5StampS3%20PIN2.54/15.webp",
+      "localUrl": "./assets/m5stack-s007-pin254/reference-product-photo-56385ac7e6.webp"
     },
     {
       "id": "product-photo-9ec6fb8ae0",
@@ -566,7 +662,43 @@
       "id": "manufacturer-cad-2a9b25ea49",
       "sourceId": "manufacturer-cad-2a9b25ea49",
       "role": "manufacturer-cad",
-      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/KiCad/3D/M5Stack.3dshapes/Stamp-S3.step"
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/KiCad/3D/M5Stack.3dshapes/Stamp-S3.step",
+      "localUrl": "./assets/m5stack-s007-pin254/source-manufacturer-cad-2a9b25ea49.step"
+    },
+    {
+      "id": "kicad-header-9",
+      "sourceId": "kicad-header-9",
+      "role": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x09_P2.54mm_Vertical.step",
+      "localUrl": "./assets/m5stack-s007-pin254/source-kicad-header-9.step"
+    },
+    {
+      "id": "kicad-header-6",
+      "sourceId": "kicad-header-6",
+      "role": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x06_P2.54mm_Vertical.step",
+      "localUrl": "./assets/m5stack-s007-pin254/source-kicad-header-6.step"
+    },
+    {
+      "id": "kicad-header-license",
+      "sourceId": "kicad-header-license",
+      "role": "license",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/LICENSE.md",
+      "localUrl": "./assets/m5stack-s007-pin254/LICENSE-KiCad.txt"
+    },
+    {
+      "id": "kicad-header-credits",
+      "sourceId": "kicad-header-credits",
+      "role": "license",
+      "url": "https://raw.githubusercontent.com/KiCad/kicad-packages3D/b8b3cfdfad88ba66f21002b3de51dc6f7d55ba5a/Connector_PinHeader_2.54mm.3dshapes/CREDITS.md",
+      "localUrl": "./assets/m5stack-s007-pin254/CREDITS-KiCad.md"
+    },
+    {
+      "id": "official-pin254-footprint",
+      "sourceId": "official-pin254-footprint",
+      "role": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/KiCad/Footprints/M5Stack.pretty/Stamp-S3_PIN2.54_DIP.kicad_mod",
+      "localUrl": "./assets/m5stack-s007-pin254/official-pin254-footprint.kicad_mod"
     }
   ],
   "unknowns": [
@@ -606,14 +738,16 @@
       "value": null,
       "basis": "unknown",
       "sourceIds": [
-        "manufacturer-cad-ddad7c70a0"
+        "manufacturer-cad-2a9b25ea49",
+        "product-photo-56385ac7e6"
       ],
-      "notes": "No complete populated PCB layout or Gerber verified in the audited files. A manufacturer mechanical board outline, when present, does not establish every component or copper trace. Unknown internals remain a neutral UNKNOWN placeholder."
+      "notes": "板形、孔位和已知机械件保留厂家 CAD；本型号黑色 PCB 背面使用独立官方照片，内侧 UNKNOWN 可分开查看。完整电子布局与器件高度未知。"
     }
   ],
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-04：原始 PIN2.54 独立核验 9+6 焊盘/黑色 PCB/铜柱和散装贴纸；保留原厂机械件、KiCad 标准参考片段与估算焊接端的区别。M5Stack MIT 与 KiCad CC-BY-SA4.0（设计例外）及2.54mm目录credits分开保留。固件运行证据独立维护。"
   ]
 }

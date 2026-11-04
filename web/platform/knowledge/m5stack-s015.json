@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T19:31:05Z",
+  "updatedAt": "2026-11-03T21:04:15Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -408,15 +408,28 @@
       ]
     },
     {
-      "id": "paper-material-separation",
-      "label": "Paper and optical face isolation",
-      "value": "Only manually selected original photograph paper/glass ROIs are retained. All molded shell areas, screws, ports, keys and live displays are excluded from photograph projection.",
+      "id": "populated-pcb-cad",
+      "label": "Manufacturer populated PCB assembly",
+      "value": "384 native STEP components/shells, including true 18x28x1mm PCB, USB-C, SH1.0 battery socket and BTB; replaces cover-only UNKNOWN board.",
+      "basis": "official",
+      "sourceIds": [
+        "manufacturer-cad-f68c68a7c3",
+        "manufacturer-footprint-s015-830babe062"
+      ],
+      "method": "Hash-checked KiCad embedded STEP extraction; all native topology retained without scale; independent cover/board assembly transform documented."
+    },
+    {
+      "id": "paper-fpc-carrier",
+      "label": "Front paper support",
+      "value": "Official disassembly reveals a separate black FPC antenna under the paper; it deliberately covers cover relief holes. Paper rests on FPC and the adjacent molded seat at Z2.55mm.",
       "basis": "image-measurement",
       "sourceIds": [
-        "product-photo-6cb78cf6ce"
+        "official-housing-disassembly",
+        "product-photo-6cb78cf6ce",
+        "manufacturer-cad-06d598408d"
       ],
-      "method": "Fixed original-pixel masks and independent mm planes; source images are unmodified except alpha and crop. Recess plane selected from manufacturer CAD planar-face audit.",
-      "uncertainty": "Paper boundary +/-0.3mm; optical cover diameter +/-0.5mm. Printed-paper images do not establish calibrated optics or firmware output."
+      "uncertainty": "FPC planar outline +/-0.3mm;0.2mm thickness inferred from cover recess, bend and hidden copper path unknown.",
+      "method": "Official disassembly9.8-12s and24.5s identifies separate FPC; native STL recess planes constrain the unscaled planar carrier and fixed photo mask."
     }
   ],
   "revisions": [],
@@ -757,6 +770,65 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "manufacturer-footprint-s015-830babe062",
+      "title": "Official Stamp-S3Bat KiCad footprint with embedded assembly STEP",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "archiveName": "Stamp-S3Bat.kicad_mod",
+      "bytes": 3451127,
+      "sha256": "830babe06213a16070cf1361baac7ba2d73bf5164b43d8e77338e5ca57d414d3",
+      "fetchedAt": "2026-11-03T20:42:35Z",
+      "mediaType": "text/plain",
+      "discoveredFrom": "official-docs",
+      "revision": {
+        "sourceCommit": "ec351c516644b44defc145728cc029ced77381ff"
+      }
+    },
+    {
+      "id": "manufacturer-cad-f68c68a7c3",
+      "title": "Embedded manufacturer STEP: Stamp-S3BAT.step",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod#embedded=Stamp-S3BAT.step",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod#embedded=Stamp-S3BAT.step",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "fetchedAt": "2026-11-03T20:42:35Z",
+      "mediaType": "application/step",
+      "archiveName": "manufacturer-cad-f68c68a7c3.step",
+      "bytes": 19171422,
+      "sha256": "b304eac5dc0129563800b7637ad97a6aeb1ca9ad25fd87f4775245365d354f95",
+      "discoveredFrom": "manufacturer-footprint-s015-830babe062",
+      "notes": "Fetch time is the actual enclosing official file acquisition. URL fragment identifies the embedded record; payload bytes/hash are distinct from the retained container receipt.",
+      "revision": {
+        "acquisition": {
+          "method": "base64+zstd embedded payload; not a separate HTTP request",
+          "containerId": "manufacturer-footprint-s015-830babe062",
+          "containerSha256": "830babe06213a16070cf1361baac7ba2d73bf5164b43d8e77338e5ca57d414d3",
+          "embeddedName": "Stamp-S3BAT.step",
+          "checksumAlgorithm": "MurmurHash3-x64-128-KiCad-V1-tail-padding",
+          "declaredChecksum": "6675F6D2031E26E0C4CC317602F9A7A0",
+          "verifiedChecksum": "6675F6D2031E26E0C4CC317602F9A7A0",
+          "decoder": "zstandard0.25.0"
+        }
+      }
+    },
+    {
+      "id": "official-housing-disassembly",
+      "title": "Stamp-S3Bat Housing Disassembly Tutorial",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1222/Stamp-S3Bat-Housing-Disassembly-Tutorial.mp4",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1222/Stamp-S3Bat-Housing-Disassembly-Tutorial.mp4",
+      "kind": "official-video",
+      "status": "fetched",
+      "archiveName": "Stamp-S3Bat-Housing-Disassembly-Tutorial.mp4",
+      "bytes": 45032473,
+      "sha256": "640e84cd151ed6028a8e65a335c485ae6e6655f4cae9e0e21c13cc2e16612b51",
+      "fetchedAt": "2026-11-03T20:57:35Z",
+      "mediaType": "video/mp4",
+      "discoveredFrom": "official-docs",
+      "notes": "9.8-12.0 s: paper peels away from separate black FPC antenna. 24.5 s: relief holes visible after FPC removal. Video remains remote; exact device crops retained as comparison evidence."
     }
   ],
   "assets": [
@@ -886,6 +958,20 @@
       "sourceId": "datasheet-445ea3821f",
       "role": "datasheet",
       "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1222/BTB0.408-XPLBDR-M41.pdf"
+    },
+    {
+      "id": "manufacturer-footprint-s015-830babe062",
+      "sourceId": "manufacturer-footprint-s015-830babe062",
+      "role": "manufacturer-source",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod",
+      "localUrl": "./assets/m5stack-s015/Stamp-S3Bat.kicad_mod"
+    },
+    {
+      "id": "manufacturer-cad-f68c68a7c3",
+      "sourceId": "manufacturer-cad-f68c68a7c3",
+      "role": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/KiCad/Footprints/M5Stack.pretty/Stamp-S3Bat.kicad_mod#embedded=Stamp-S3BAT.step",
+      "localUrl": "./assets/m5stack-s015/source-manufacturer-cad-f68c68a7c3.step"
     }
   ],
   "unknowns": [
@@ -910,19 +996,22 @@
       "notes": "Catalog identity does not infer the revision owned by the user."
     },
     {
-      "id": "pcb-layout",
-      "label": "PCB physical layout",
+      "id": "unmodeled-antenna-flex-shield",
+      "label": "Antenna flex and RF shield precision",
       "value": null,
       "basis": "unknown",
       "sourceIds": [
-        "manufacturer-cad-06d598408d"
+        "official-housing-disassembly",
+        "product-photo-bcea6d6714",
+        "product-photo-761396bcb4"
       ],
-      "notes": "No complete populated PCB layout or Gerber verified in the audited files. A manufacturer mechanical board outline, when present, does not establish every component or copper trace. Unknown internals remain a neutral UNKNOWN placeholder."
+      "notes": "Native board assembly is known. FPC visible planar shape is photo-supported; exact thickness/bend, cable route and RF shield geometry are not supplied by audited CAD. This is not an UNKNOWN PCB placeholder."
     }
   ],
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-03 refresh replaces the cover-only UNKNOWN/generic-USB assembly with all384 native populated-PCB STEP components from official KiCad. Original cover and failed historical envelope comparison remain available; source dates are preserved."
   ]
 }

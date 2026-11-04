@@ -10,19 +10,21 @@ import {createDeviceStorage} from '../web/platform/device-storage.js';
 import {inspectLocalBuild} from '../web/platform/local-firmware.js';
 import {createDefaultScene} from '../web/platform/catalog.js';
 const index=process.argv.indexOf('--build');if(index<0||!process.argv[index+1])throw Error('Build tools/fixtures/stamps3a-firmware with ESP-IDF 5.5.1 and supply --build <build-directory>.');
+const productIndex=process.argv.indexOf('--product'),productId=productIndex<0?'m5stack-s007-v033':process.argv[productIndex+1];
 const folder=resolve(process.argv[index+1]),root=new URL('../',import.meta.url),baseUrl='https://stamps3a-fixture.invalid/platform/';
 const files=[new File([await readFile(join(folder,'flasher_args.json'))],'flasher_args.json')],inputHashes={};
 for(const path of (await inspectLocalBuild(files)).missingFiles){const bytes=await readFile(join(folder,path)),file=new File([bytes],basename(path));inputHashes[path]=createHash('sha256').update(bytes).digest('hex');Object.defineProperty(file,'webkitRelativePath',{value:path});files.push(file);}
 const catalog={};for(const key of ['products','accessories','firmwares'])catalog[key]=JSON.parse(await readFile(new URL(`web/platform/catalog/${key}.json`,root))).items;
+assert.equal(catalog.products.find(p=>p.id===productId)?.runtime?.board,'stamps3a','Select an explicitly mapped Stamp-S3A SKU; this probe must not enable unsupported products.');
 const fetchImpl=async value=>{const url=new URL(value);assert.equal(url.origin,'https://stamps3a-fixture.invalid');try{return new Response(await readFile(new URL('web'+url.pathname,root)));}catch{return new Response('',{status:404});}};
 const workerFactory=url=>{const real=new URL('web'+url.pathname,root);const thread=new Worker(new URL('data:text/javascript,'+encodeURIComponent(`import {parentPort} from 'node:worker_threads';globalThis.onmessage=null;globalThis.postMessage=(data,transfer)=>parentPort.postMessage(data,transfer);await import(${JSON.stringify(String(real))});parentPort.on('message',data=>globalThis.onmessage({data}));`)));const adapter={postMessage:(message,...args)=>thread.postMessage(message.op==='create'&&process.argv.includes('--no-jit')?{...message,jit:false}:message,...args),terminate:()=>thread.terminate()};thread.on('message',data=>adapter.onmessage?.({data}));thread.on('error',e=>adapter.onerror?.(e));return adapter;};
 const runtime=createPlatformRuntime({catalog,fetchImpl,workerFactory,baseUrl,assetBaseUrl:'https://stamps3a-fixture.invalid/',deviceStorage:createDeviceStorage({indexedDB:null,dbName:'stamps3a-probe'})});
-const receipt={checkedAt:new Date().toISOString(),command:'node tools/probe-stamps3a.mjs --build <fixture-build-directory>',backend:'actual-wasm-worker',firmware:'internal ESP-IDF 5.5.1 protocol fixture',inputHashes,checks:[]};
+const receipt={checkedAt:new Date().toISOString(),command:'node tools/probe-stamps3a.mjs --build <fixture-build-directory> --product <product-id>',productId,board:'stamps3a',backend:'actual-wasm-worker',firmware:'internal ESP-IDF 5.5.1 protocol fixture',wasmSha256:createHash('sha256').update(await readFile(new URL('web/wasm/esp32sim.wasm',root))).digest('hex'),inputHashes,checks:[]};
 const wait=async predicate=>{const end=Date.now()+90000;while(Date.now()<end){const state=await runtime.observe();if(predicate(state))return state;if(state.status==='error')throw Error(JSON.stringify(state.lastError));await new Promise(r=>setTimeout(r,50));}throw Error(`Fixture timed out LEDs=${JSON.stringify(seen)}: ${(await runtime.observe()).serial.slice(-1000)}`);};
 const seen=[];runtime.subscribe(e=>{if(e.type==='leds')seen.push(e.leds);});
 const color=s=>s.leds?.[0];
 try {
- const scene=createDefaultScene(catalog,'m5stack-s007-v033');scene.firmware=null;await runtime.configure(scene);await runtime.loadFirmware({format:'build',files});await runtime.start();
+ const scene=createDefaultScene(catalog,productId);scene.firmware=null;await runtime.configure(scene);await runtime.loadFirmware({format:'build',files});await runtime.start();
  await wait(s=>s.serial.includes('STAMPS3A_SUPPLY 0 ignored-white')&&(!s.leds.length||JSON.stringify(color(s))==='[0,0,0]'));
  receipt.checks.push('g38-off-drops-real-rmt-white');
  await wait(s=>s.serial.includes('STAMPS3A_RMT 255 0 0')&&s.serial.includes('STAMPS3A_BUTTON 1')&&JSON.stringify(color(s))==='[255,0,0]');

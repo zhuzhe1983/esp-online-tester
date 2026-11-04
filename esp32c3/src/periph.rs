@@ -254,7 +254,7 @@ impl Peripherals {
     pub fn new(mac: [u8; 6]) -> Self {
         Peripherals {
             ble_lc: Default::default(),
-            i2c: Box::new(I2c::new()), spi2: Box::new(GpSpi::new()), rmt: Box::new(RmtCompact::new(CPU_HZ)), io_mux: RegRam::new(),
+            i2c: Box::new(I2c::new()), spi2: Box::new(GpSpi::new_c3()), rmt: Box::new(RmtCompact::new(CPU_HZ)), io_mux: RegRam::new(),
             adc: esp_periph::sar_adc::SarAdc::new(false, CPU_HZ),
             wifi: Default::default(), fe_iq: Default::default(), i2c_mst: Default::default(),
             uart: [Uart::new(UartLayout::C3), Uart::new(UartLayout::C3)], usb: UsbSerialJtag::new(CPU_HZ), systimer: Systimer::new(),

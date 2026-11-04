@@ -238,13 +238,38 @@ def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
  output=Path(output);output.mkdir(parents=True,exist_ok=True);folder=TEMP/prepared['id'];evidence_root=Path(evidence_root) if evidence_root is not None else Path('docs/platform/evidence');license_path=Path(license_path) if license_path is not None else Path('web/platform/assets/m5stack-gps-u032-v11/LICENSE-M5Stack.txt')
  if not any(s['id']=='cad-license' for s in prepared['sources']):
   license_source=next(s for s in json.loads(Path('web/platform/knowledge/m5stack-gps-u032-v11.json').read_text())['sources'] if s['id']=='cad-license');prepared['sources'].append(license_source);shutil.copyfile(license_path,folder/license_source['archiveName'])
- sources={s['id']:s for s in prepared['sources']};source=sources[plan['sourceId']];raw=(folder/source['archiveName']).read_bytes();assert sha(raw)==source['sha256'];parts=load_parts(folder/source['archiveName']);part_sources={source['id']:parts}
+ sources={s['id']:s for s in prepared['sources']};source=sources[plan['sourceId']];raw=(folder/source['archiveName']).read_bytes();assert sha(raw)==source['sha256']
+ supporting=plan.get('supportingAssets',[]);supporting_records=[];supporting_names=set()
+ if not isinstance(supporting,list) or len(supporting)>32:raise ValueError('Invalid supporting assets')
+ reserved={'model.json','model-plan.json','geometry.bin','source'+Path(source['archiveName']).suffix.lower(),plan.get('provenance',{}).get('licenseFile','LICENSE-M5Stack.txt'),*[t['file']for t in plan.get('textureSources',[])]}
+ reserved={name.casefold()for name in reserved}
+ for entry in supporting:
+  if not isinstance(entry,dict) or set(entry)!={'sourceId','file'} or not isinstance(entry['sourceId'],str):raise ValueError('Invalid supporting asset declaration')
+  name=entry['file']
+  if not isinstance(name,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*',name) or name.casefold().startswith(('source.','source-','reference-')) or name.casefold() in reserved or name.casefold() in supporting_names:raise ValueError('Unsafe or conflicting supporting asset filename')
+  record=sources.get(entry['sourceId'])
+  if not record or record.get('status')!='fetched':raise ValueError('Supporting asset needs a fetched source')
+  archive=record.get('archiveName')
+  if not isinstance(archive,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*',archive):raise ValueError('Unsafe supporting source filename')
+  if (folder/archive).is_symlink() or (output/name).is_symlink():raise ValueError('Supporting asset path is a symlink')
+  payload=(folder/archive).read_bytes()
+  if len(payload)!=record.get('bytes') or sha(payload)!=record.get('sha256'):raise ValueError('Supporting asset source changed: '+entry['sourceId'])
+  supporting_names.add(name.casefold());supporting_records.append({**entry,'sha256':record['sha256']})
+ def source_parts(record):
+  path=folder/record['archiveName']
+  # Already classified STL parts can be open surfaces; splitting repairs holes
+  # by default. Opt in explicitly to retaining every original source triangle.
+  if plan.get('preserveMesh',False):
+   if path.suffix.lower()!='.stl':raise ValueError('preserveMesh requires STL sources')
+   return [trimesh.load(path,process=False)]
+  return load_parts(path)
+ parts=source_parts(source);part_sources={source['id']:parts}
  matrix=np.array(plan['matrixRows'],dtype=float);r=matrix[:3,:3];assert np.allclose(r.T@r,np.eye(3),atol=1e-7) and np.isclose(np.linalg.det(r),1), 'Only rigid right-handed transforms permitted'
  records=[];buffers=[];offset=0;allv=[];checks=[]
  for item in plan['parts']:
   item_source=sources[item.get('sourceId',source['id'])]
   if item_source['id'] not in part_sources:
-   item_path=folder/item_source['archiveName'];assert sha(item_path.read_bytes())==item_source['sha256'];part_sources[item_source['id']]=load_parts(item_path)
+   item_path=folder/item_source['archiveName'];assert sha(item_path.read_bytes())==item_source['sha256'];part_sources[item_source['id']]=source_parts(item_source)
   part=part_sources[item_source['id']][item['sourceComponent']];local=np.array(item.get('matrixRows',np.eye(4)),dtype=float);lr=local[:3,:3];assert np.allclose(lr.T@lr,np.eye(3),atol=1e-7) and np.isclose(np.linalg.det(lr),1), 'Component transforms must be rigid';effective=matrix@local;pr=effective[:3,:3];v=part.vertices@pr.T+effective[:3,3];n=part.face_normals@pr.T;corners=[]
   face_indices=np.arange(len(part.faces))
   if 'sourceFaceRanges' in item:
@@ -274,11 +299,14 @@ def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
    triangle=[[cx,cy,z],points[i],points[(i+1)%len(points)]]
    if normal[2]<0:triangle.reverse()
    corners.extend([[*v,*normal] for v in triangle])
-  data=np.array(corners,dtype='<f4');binary=data.tobytes();buffers.append(binary);allv.append(data[:,:3]);records.append({'name':surface['name'],'sourceComponent':None,'role':surface.get('role','glass'),**{key:surface[key] for key in ['texture','controlId','encoderId'] if surface.get(key)},'color':surface.get('color','#111719'),'byteOffset':offset,'vertexCount':len(data),'boundsMm':[data[:,:3].min(0).tolist(),data[:,:3].max(0).tolist()],'basis':surface.get('basis','image-measurement'),'sourceIds':surface['sourceIds'],'notes':surface['notes']});offset+=len(binary)
+  data=np.array(corners,dtype='<f4');binary=data.tobytes();buffers.append(binary);allv.append(data[:,:3]);records.append({'name':surface['name'],'sourceComponent':None,'role':surface.get('role','glass'),**{key:surface[key] for key in ['texture','controlId','encoderId','material'] if surface.get(key)},'color':surface.get('color','#111719'),'byteOffset':offset,'vertexCount':len(data),'boundsMm':[data[:,:3].min(0).tolist(),data[:,:3].max(0).tolist()],'basis':surface.get('basis','image-measurement'),'sourceIds':surface['sourceIds'],'notes':surface['notes']});offset+=len(binary)
  (output/'geometry.bin').write_bytes(b''.join(buffers));source_file='source'+Path(source['archiveName']).suffix.lower();shutil.copyfile(folder/source['archiveName'],output/source_file);
  for sid in part_sources:
   if sid!=source['id']:shutil.copyfile(folder/sources[sid]['archiveName'],output/('source-'+sources[sid]['archiveName']))
- shutil.copyfile(license_path,output/'LICENSE-M5Stack.txt')
+ license_file=plan.get('provenance',{}).get('licenseFile','LICENSE-M5Stack.txt')
+ if not isinstance(license_file,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*',license_file):raise ValueError('Invalid model license filename')
+ shutil.copyfile(license_path,output/license_file)
+ for entry in supporting_records:shutil.copyfile(folder/sources[entry['sourceId']]['archiveName'],output/entry['file'])
  joined=np.concatenate(allv);extent=joined.max(0)-joined.min(0)
  for target in plan.get('targets',[]):
   measured=float(extent[target['axis']]) if 'parts' not in target else float(np.max([records[i]['boundsMm'][1][target['axis']] for i in target['parts']])-np.min([records[i]['boundsMm'][0][target['axis']] for i in target['parts']]))
@@ -310,7 +338,15 @@ def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
   else:
    im=im.crop(texture['cropXYXY']);method='Fixed axis-aligned crop; original-coordinate explicit alpha ROI at4x supersampling when alphaMask supplied; exclusions remove fasteners/holes/shell. No generated pixels or perspective warp.'
   im.save(output/texture['file'],lossless=True);texture_records.append({**texture,'sourceSha256':s['sha256'],'outputPixels':list(im.size),'method':method})
- meta={'schemaVersion':'1','id':prepared['id'],'unit':'mm','binary':'geometry.bin','strideFloats':6,'parts':records,'sourceTransform':{'matrixRows':plan['matrixRows'],'scale':1,'note':plan['assemblyNotes']},'omittedComponents':plan.get('omittedComponents',[]),'dimensions':plan.get('dimensions',{}),'presentation':plan.get('presentation',{}),'derivedParts':plan.get('derivedParts',[]),'derivedSurfaces':plan.get('surfaces',[]),'referencePhotos':photo_records,'textures':texture_records,'reviewViews':plan.get('reviewViews',{}),'provenance':{'repository':'https://github.com/m5stack/M5_Hardware','commit':REV,'sourceUrl':source['url'],'sourceSha256':source['sha256'],'tessellation':{'step':'OpenCascade 7.8.1.1; absolute deflection0.05mm, angle0.2rad, native solids plus orphan shells/faces; units converted by STEP reader to millimetres','stl':'Original triangles'},'sourceLicense':'MIT; Copyright (c) 2021 M5Stack; see LICENSE-M5Stack.txt','photoRights':'Official product photographs copyright M5Stack / named manufacturer. No separate open photo license verified; retained for product reference, not relicensed under project MIT.','sources':prepared['sources']},'limitations':plan['limitations'],'artifacts':{f.name:sha(f.read_bytes()) for f in output.iterdir() if f.name in ['source.stl','source.step','source.stp','geometry.bin','LICENSE-M5Stack.txt'] or f.name.startswith('source-') or f.name.startswith('reference-') or f.name in [t['file'] for t in texture_records]}}
+ meta={'schemaVersion':'1','id':prepared['id'],'unit':'mm','binary':'geometry.bin','strideFloats':6,'parts':records,'sourceTransform':{'matrixRows':plan['matrixRows'],'scale':1,'note':plan['assemblyNotes']},'omittedComponents':plan.get('omittedComponents',[]),'dimensions':plan.get('dimensions',{}),'presentation':plan.get('presentation',{}),'derivedParts':plan.get('derivedParts',[]),'derivedSurfaces':plan.get('surfaces',[]),'referencePhotos':photo_records,'textures':texture_records,'reviewViews':plan.get('reviewViews',{}),'provenance':{'repository':'https://github.com/m5stack/M5_Hardware','commit':REV,'sourceUrl':source['url'],'sourceSha256':source['sha256'],'tessellation':{'step':'OpenCascade 7.8.1.1; absolute deflection0.05mm, angle0.2rad, native solids plus orphan shells/faces; units converted by STEP reader to millimetres','stl':'Original triangles'},'sourceLicense':'MIT; Copyright (c) 2021 M5Stack; see LICENSE-M5Stack.txt','photoRights':'Official product photographs copyright M5Stack / named manufacturer. No separate open photo license verified; retained for product reference, not relicensed under project MIT.','sources':prepared['sources']},'limitations':plan['limitations'],'artifacts':{f.name:sha(f.read_bytes()) for f in output.iterdir() if f.name in ['source.stl','source.step','source.stp','geometry.bin',license_file] or f.name.startswith('source-') or f.name.startswith('reference-') or f.name in [t['file'] for t in texture_records]}}
+ for key in ['repository','sourceLicense']:
+  if key in plan.get('provenance',{}):
+   value=plan['provenance'][key]
+   if not isinstance(value,str) or not value.strip():raise ValueError('Invalid model provenance override')
+   meta['provenance'][key]=value
+ if supporting_records:
+  meta['supportingAssets']=supporting_records
+  meta['artifacts'].update({entry['file']:sha((output/entry['file']).read_bytes())for entry in supporting_records})
  write(output/'model.json',meta);report={'schemaVersion':'1','checkedAt':now(),'productId':prepared['id'],'modelSha256':sha((output/'model.json').read_bytes()),'geometrySha256':sha((output/'geometry.bin').read_bytes()),'sourceSha256':source['sha256'],'dimensions':checks,'photos':[{'sourceId':p['sourceId'],'view':p['view'],'status':'pending-browser-comparison'} for p in photo_records],'status':'partial','limitations':plan['limitations']};write(evidence_root/prepared['id']/'verification.json',report);write(evidence_root/prepared['id']/'source-audit.json',{'sources':prepared['sources'],'components':json.loads((folder/'components.json').read_text()),'plan':plan});return meta,report
 
 

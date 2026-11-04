@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-03T21:15:45Z",
+  "productId": "m5stack-k051",
+  "status": "partial",
+  "scope": "Bare-cover Mate core. Loose kit headers/socket/key/paper are documented, not preinstalled. No firmware/hardware acceptance.",
+  "modelSha256": "98c8e486cdda48448bcbf373e82dd88a36e6666aebc8676e208acbc34564cf00",
+  "planSha256": "1b9bf0db4bc9469a9433d10856e982c88f2b79c957ac16541581ef02556ea04f",
+  "nativeGeometrySha256": "21dfcc87e76322cbe22014a35faf79e968e7692e5467c70ad0df12ab90a13d9e",
+  "nativeGeometryUnchanged": true,
+  "previousModelSha256": "52dec4b2042a54b5c4e95eac7923a90b04c4b313e913f181ee94e70d066e0ae4",
+  "offlineRebuild": {
+    "passed": true,
+    "verifiedArtifacts": [
+      "LICENSE-M5Stack.txt",
+      "reference-product-photo-649efe1c2a.jpg",
+      "pcb-back.png",
+      "reference-product-photo-ca6a676592.jpg",
+      "geometry.bin",
+      "reference-product-photo-780d57ceb7.jpg",
+      "source.stl",
+      "reference-product-photo-38a0f6f355.jpg"
+    ],
+    "mismatches": [],
+    "unusedOriginalArtifacts": [],
+    "modelJsonByteIdentical": true,
+    "scope": "Exact regenerated geometry, source/reference files, textures and model contract. Metadata byte order and historical unused files are reported separately. No fresh browser, hardware or firmware acceptance."
+  },
+  "textureCarrierCheck": {
+    "productId": "m5stack-k051",
+    "method": "Alpha>=128 projected into the independently defined physical carrier outline minus its holes; one texture pixel allowance for raster/UV-edge rounding. Checks all opaque texture pixels, not only outer bounds.",
+    "parts": [
+      {
+        "partId": "pcb-back-photo",
+        "carrierId": "pcb-main",
+        "opaquePixels": 439656,
+        "outsideCarrierBeyondOneTexturePixel": 0,
+        "oneTexturePixelMm": 0.03
+      }
+    ],
+    "passed": true
+  },
+  "sourceReview": {
+    "exactPcbPhoto": "product-photo-780d57ceb7",
+    "visibleAntennaPhoto": "product-photo-38a0f6f355",
+    "mechanicalDrawing": "product-photo-290985ce46",
+    "nominalScrew": "M2x4; official-docs",
+    "visibleAntenna": "Only visible top foil silhouette is modeled;±0.2mm photo outline,0.15mm thickness/topZ estimates, hidden folds/support and RF structure unknown.",
+    "paper": "Exact Mate source configuration has a bare cover; included sticker remains loose rather than inheriting C050-B applied film.",
+    "unknown": "Front local+Z, center[0,-6.95]mm,13.4x2.8mm. Avoids central hole, antenna and cover button slots."
+  },
+  "browser": {
+    "engine": "Headless Chromium via tracked wrapper",
+    "modelStatus": "ready",
+    "materialIsolation": {
+      "shellGold": "d7ab52",
+      "shellPurple": "8456cf",
+      "purpleOpacity": 0.36,
+      "unchanged": {
+        "pcb": "171d1d",
+        "antenna": "bbc0c2",
+        "screw": "b9bfc1",
+        "rearAnnulus": "bda752"
+      }
+    },
+    "publicInspectionButton": true,
+    "unknownReadableAfterPublicRotation": true,
+    "appearancePreservesInspection": true,
+    "resetReassembles": true,
+    "modelErrors": 0
+  },
+  "rendererHashes": {
+    "web/platform/manufacturer-model.js": "25ccb7bc8120b48cb239d9935489079adf17a3f597c2facb9e489c8c2cd19bb2",
+    "web/platform/plate-geometry.js": "944a267ed6b8ed735eab5132ac3d290628d08e6252e340f98d4032b2860ce050",
+    "web/platform/pcb-placeholder.js": "70de8a90e80458ef5be1b3a3b828c6508b038d40e9c377810cbb6804d0fbd5ac",
+    "web/platform/model-inspection.js": "34484677940cbdd5d058d600307b8a96a2d512dc54604aca2ef80e1ff12ec8f9",
+    "web/platform/scene-view.js": "6b720b67feec57bc0fe721a2817c21a9a32a6056a1a3c43e587f289f279c4a3f"
+  },
+  "artifacts": {
+    "refresh-source-comparison.webp": "94376cf9e8575c11870cebe8705a0222c3d8eff1f792681df48a4a13f9fd2c1d",
+    "refresh-public-inspection.webp": "275ad16e7a3fdb7a36ee0c45151bd21e8fd794c8bf8097d550e4fce55f7d8f4e",
+    "refresh-material-review.webp": "9297674722af2245a436c78794712d8839f0ceabdea647e724e80f257421d157",
+    "refresh-closeups.webp": "046cbfdcdb2876334598f66914266f9f98bf7d28e9ba4167b1cdb7d0b79d87b2"
+  },
+  "commands": [
+    "python tools/rebuild-product-model.py build m5stack-k051 --scratch <fresh-directory>",
+    "python tools/check-stamp-pico-surfaces.py m5stack-k051",
+    "uv run --with jsonschema python tools/validate-platform-catalog.py",
+    "node tools/check-evidence-privacy.mjs"
+  ],
+  "limitations": [
+    "The native STL covers the heat-resistant shield and small insert; its4.4mm depth is retained, not stretched to documented4.6mm product depth.",
+    "MATE identity retained: one module plus loose9P/6P male/female headers,90-degree HY2.0-4P socket,1.5mm key and high-temperature sticker. Assembly-example photos do not make those parts preinstalled in this view.",
+    "Model uses the photographed bare-cover configuration; no applied C050-B film is copied onto this kit. Loose accessories are documented but not modeled.",
+    "Black exposed PCB back uses this exact SKU official photograph. Opposite internal component layout remains UNKNOWN; outline/holes do not establish populated CAD.",
+    "Visible antenna foil silhouette is photo-derived; hidden folded support, solder joints and RF geometry remain unknown.",
+    "Central screw nominalM2x4 is official; head/recess profile, hidden engagement and rear annulus relief are estimated.",
+    "Manufacturer CAD MIT and photographs have separate rights; no separate open photo license verified.",
+    "Model/appearance checks do not establish firmware or physical hardware compatibility."
+  ]
+}
