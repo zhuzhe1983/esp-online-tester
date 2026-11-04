@@ -91,6 +91,7 @@ export default {
  "复制 iframe 代码": "Copy iframe code",
  "在独立窗口打开": "Open in a new window",
  "Agent 调用示例": "Agent usage example",
+ "智能体开发指南 · 两个 skill ↗": "Agent guide · two skills ↗",
  "查看 skill 与调用约定 ↗": "See the skill and calling conventions ↗",
  "设计自己的配件": "Design your own accessory",
  "保存配件元信息与接线定义。自定义硬件模型需要另外实现，不会自动模拟电路。": "Saves accessory metadata and wiring. Custom hardware models must be implemented separately; circuits are not simulated automatically.",

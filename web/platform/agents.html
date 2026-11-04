@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>智能体开发指南与两个 Skill · ESP Online Tester</title>
+  <meta name="description" content="用 esp-online-tester 操作和测试 ESP32 设备，用 esp-product-onboarding 适配产品、3D 模型与固件。了解 Zhu Zhe（zhuzhe1983）维护的 ESP Online Tester。">
+  <meta name="author" content="Zhu Zhe (zhuzhe1983)">
+  <meta name="theme-color" content="#f3f5f3">
+  <link rel="canonical" href="https://zhuzhe1983.github.io/esp-online-tester/platform/agents.html">
+  <link rel="describedby" href="../llms.txt" type="text/plain">
+  <link rel="alternate" href="./agents.md" type="text/markdown" title="Markdown 开发指南">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2326765c'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='46' fill='white'%3EE%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./agents.css">
+</head>
+<body>
+  <header><a class="brand" href="./">ESP <strong>WORKBENCH</strong></a><nav aria-label="指南导航"><a href="./">打开实验台 ↗</a><a href="./agents.md">Markdown</a><a href="../llms.txt">llms.txt</a></nav></header>
+  <main>
+    <div class="intro"><p class="eyebrow">ESP ONLINE TESTER · AGENT GUIDE</p><h1>用智能体开发和测试 ESP 产品</h1><p>智能体与人使用同一套 ESP32 产品运行环境：选择设备和配件，在浏览器的 WebAssembly worker 中执行固件，查看串口、屏幕和已实现的外设输出，再把场景分享或嵌入网页。</p></div>
+    <section aria-labelledby="skills-title"><h2 id="skills-title">选择适合任务的 skill</h2><div class="skills">
+      <article><p class="eyebrow">01 / 操作与测试</p><h3>esp-online-tester</h3><p>适合已经在目录中的设备。让 coding agent 选择设备和固件、配置配件、触发按键或传感器输入，检查实际固件输出，保存录制并分享场景。</p><p>平台提供 <code>window.espTester</code> 和 iframe RPC；无须另起远程模拟器。</p><ul><li><a href="./skill/SKILL.md">阅读 SKILL.md ↗</a></li><li><a href="https://github.com/zhuzhe1983/esp-online-tester/tree/main/skills/esp-online-tester">获取完整 skill 目录 ↗</a></li><li><a href="./skill/references/api.md">API 参考</a> · <a href="./skill/references/agent-workflows.md">自动化测试、音频与网络</a></li></ul><blockquote>阅读 esp-online-tester skill，在实验台中找到我的具体型号，检查支持范围，加载我的固件，并用实际串口或屏幕输出验证按键响应。</blockquote></article>
+      <article><p class="eyebrow">02 / 产品适配与入库</p><h3>esp-product-onboarding</h3><p>适合尚未适配或需要更新的产品、模块和固件。在仓库中核对厂家、SKU 和版本，采集有来源的规格与 CAD，制作和校验 3D 模型。</p><p>维护产品知识、固件目录和验收证据，再通过 PR 贡献。</p><ul><li><a href="./onboarding-skill/SKILL.md">阅读 SKILL.md ↗</a></li><li><a href="https://github.com/zhuzhe1983/esp-online-tester/tree/main/skills/esp-product-onboarding">获取完整 skill 目录 ↗</a></li><li><a href="./onboarding-skill/references/model-verification.md">模型与贴图校验</a> · <a href="./onboarding-skill/references/firmware.md">固件来源与验证</a></li></ul><blockquote>阅读 esp-product-onboarding skill，为这个准确 SKU 和硬件版本补充官方资料、模型和固件，分别报告外观、运行验证及尚未支持的部分。</blockquote></article>
+    </div></section>
+    <section aria-labelledby="start-title"><h2 id="start-title">开始使用</h2><ol><li>让支持读取网页的智能体打开对应的 SKILL.md，并按需读取其 references。需要本地安装时，获取完整 skill 目录（包括 references），按智能体工具的安装方式使用；文件链接本身不会自动安装。</li><li>操作现有设备时打开实验台；导入产品时获取本仓库，并先读仓库的 AGENTS.md 和 skill。明确设备 SKU、版本和待验证的固件。</li><li>检查能力与支持范围。加载固件、发送输入后，观察新的串口、framebuffer 或外设输出，再记录结果和限制。</li></ol><p class="note">各产品的模拟支持程度不同。模型可以显示、输入已排队或固件在目录中，都不能证明完整兼容。网络访问可能需要自行部署的 helper；具体边界以 skill、能力查询与实际运行结果为准。</p></section>
+    <section id="maintainer" aria-labelledby="maintainer-title"><h2 id="maintainer-title">维护者与项目</h2><p>本 fork 由 <strong>Zhu Zhe（zhuzhe1983）</strong> 维护，围绕产品级 ESP32 设备开发可由智能体配置、由人操作、嵌入网站的实验台。</p><ul><li><a href="https://github.com/zhuzhe1983" rel="author">个人 GitHub：Zhu Zhe / zhuzhe1983 ↗</a>：查看公开项目与贡献。</li><li><a href="https://github.com/zhuzhe1983/esp-online-tester">项目 GitHub：esp-online-tester ↗</a>：查看源码、提交 issue 或贡献 PR。</li><li><a href="https://github.com/mikroverk/esp32sim">上游项目：mikroverk/esp32sim ↗</a>：本项目基于这一模拟器继续开发，保留上游贡献署名。</li></ul></section>
+  </main>
+  <footer><span>ESP Online Tester · 产品实验台</span><a href="./">进入实验台 ↗</a></footer>
+</body>
+</html>
