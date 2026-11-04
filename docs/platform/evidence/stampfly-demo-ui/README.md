@@ -1,0 +1,9 @@
+# StampFly demo UI baseline
+
+`motor-browser.json` retains real browser evidence for both StampFly revisions with the exact pre-release `52e3f564…` sensor demo and production `03c006a5…` WASM. The visible controls send UART0 SF1 commands; fresh guest acknowledgement and independently sampled PWM must both arrive before the UI reports success. The actual public 3D canvas changes while guest time progresses and is byte-identical while paused.
+
+This is not flight acceptance and does not certify the later published `dba1e1b0…` firmware. A separate explicit renderer test supplies synthetic output and confirms that `setProduct(product,{previewOnly:true})` ignores it and sends no input. That test must not be presented as guest execution evidence.
+
+Reproduce the UI checks with a local static server, the retained ROM/WASM hashes and the stated merged demo image: choose the exact product, select the merged image under Local file, load/run, wait for SF1 READY, click Four rotors 20%, compare UART0 ACK and `observe().motors`, pause and compare canvas captures, then stop. Repeat on v1.1 and at 390 px width. For iframe restoration, use a caller-owned HTTP firmware URL pinned to the same image hash; accept its normal trial dialog, first verify all duties zero, then click its controls and read the parent bridge. No firmware bytes were added by this UI evidence change.
+
+Focused automated checks: `node --test tools/platform-stampfly-demo-ui-test.mjs tools/platform-view-test.mjs tools/platform-motor-test.mjs tools/platform-model-inspection-test.mjs` — 19 tests passed. The source-state tests use transport doubles for lifecycle/protocol boundaries, while the browser receipt supplies the actual guest evidence. Config, input and view baselines passed; the full runtime prerequisite suite is a separate integration check.
