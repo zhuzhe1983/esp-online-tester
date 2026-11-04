@@ -99,14 +99,14 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   const rim = new THREE.DirectionalLight(0xc6dece, 1.3); rim.position.set(80, -20, -80); scene.add(rim);
   let texture = new THREE.CanvasTexture(display);
   texture.colorSpace = THREE.SRGBColorSpace; texture.minFilter = THREE.LinearFilter; texture.magFilter = THREE.NearestFilter;
-  let renderer, mode = '3d', product, screen, buttons = [], accessoryGroup, accessoryCount = 0, zoom = 1, frameWidth = 466, frameHeight = 466;
+  let renderer, mode = '3d', product, screen, buttons = [], accessoryGroup, accessoryCount = 0, zoom = 1, frameWidth = 466, frameHeight = 466, previewOnly = false;
   let paintPending = false, disposed = false, modelCleanup = null, productGeneration = 0, accessoryGeneration = 0, accessoryCleanups = [];
   let inspection = null;
   let orientationTimer = null, orientationIdle = null, lastOrientationAt = -Infinity;
   const getOrientation = () => orbitGroup.quaternion.toArray();
   function clearOrientationTimers() { clearTimeout(orientationTimer); clearTimeout(orientationIdle); orientationTimer = orientationIdle = null; }
   function publishOrientation(rotating = false) {
-    if (disposed) return;
+    if (disposed || previewOnly) return;
     lastOrientationAt = performance.now();
     Promise.resolve(onOrientation({quaternion: getOrientation(), rotating})).catch(error => console.error('Scene orientation failed:', error));
   }
@@ -121,11 +121,11 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   }
   let parts = {}, connectors = {}, shellMeshes = [], customizedAppearance = false, appearanceDefaults = DEFAULT_STOPWATCH_APPEARANCE, appearance = normalizeShellAppearance(null), accessoryDefinitions = [];
   let rgbLedMeshes = [], rgbValues = [], accessoryOutputs = [], servoJoints = [], servoValues = [], motorRotors = [], motorValues = [], motorOutput = null, motorsRunning = false;
-  function updateServos(values) { servoValues = values || []; applyServoValues(servoJoints, servoValues); clearHover(); draw(); }
-  function updateMotors(values,output) {motorValues=values||[];motorOutput=output||null;applyMotorValues(motorRotors,motorValues,motorOutput,{running:motorsRunning});clearHover();draw();}
-  function setMotorsRunning(running) {if(motorsRunning===running)return;motorsRunning=running;applyMotorValues(motorRotors,motorValues,motorOutput,{running});}
+  function updateServos(values) {if(previewOnly)return;servoValues = values || []; applyServoValues(servoJoints, servoValues); clearHover(); draw(); }
+  function updateMotors(values,output) {if(previewOnly)return;motorValues=values||[];motorOutput=output||null;applyMotorValues(motorRotors,motorValues,motorOutput,{running:motorsRunning});clearHover();draw();}
+  function setMotorsRunning(running) {if(previewOnly)return;if(motorsRunning===running)return;motorsRunning=running;applyMotorValues(motorRotors,motorValues,motorOutput,{running});}
   function updateFlight(value) {
-    const enabled=applyFlightPose(flightGroup,product?.runtime?.board,value);
+    const enabled=applyFlightPose(flightGroup,product?.runtime?.board,previewOnly?null:value);
     if(enabled!==flightActive){
       if(enabled){preflightOrientation=orbitGroup.quaternion.clone();orbitGroup.rotation.set(-1,-.2,0);inspection?.setExpanded(false);}
       else if(preflightOrientation){orbitGroup.quaternion.copy(preflightOrientation);preflightOrientation=null;}
@@ -137,9 +137,9 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     clearHover();frameCamera();draw();
   }
   let accessoryPositions=[];
-  function updateAccessoryPositions(values) {accessoryPositions=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryPositions.find(item=>child.name===`accessory:${item.accessoryId}`);for(const pivot of child.userData.potentiometers||[]){const value=Number.isFinite(state?.value)?state.value:.5;pivot.userData.value=value;pivot.rotation.z=(.5-value)*pivot.userData.visualSweepRadians;}}draw();}
-  function updateAccessoryOutputs(values) {accessoryOutputs=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryOutputs.find(item=>child.name===`accessory:${item.accessoryId}`);applyRgbLedValues(child.userData.rgbLedMeshes||[],state?.leds);}draw();}
-  function updateLeds(values) { rgbValues = values || []; applyRgbLedValues(rgbLedMeshes, rgbValues); draw(); }
+  function updateAccessoryPositions(values) {if(previewOnly)return;accessoryPositions=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryPositions.find(item=>child.name===`accessory:${item.accessoryId}`);for(const pivot of child.userData.potentiometers||[]){const value=Number.isFinite(state?.value)?state.value:.5;pivot.userData.value=value;pivot.rotation.z=(.5-value)*pivot.userData.visualSweepRadians;}}draw();}
+  function updateAccessoryOutputs(values) {if(previewOnly)return;accessoryOutputs=values||[];for(const child of accessoryGroup?.children || []){const state=accessoryOutputs.find(item=>child.name===`accessory:${item.accessoryId}`);applyRgbLedValues(child.userData.rgbLedMeshes||[],state?.leds);}draw();}
+  function updateLeds(values) {if(previewOnly)return;rgbValues = values || []; applyRgbLedValues(rgbLedMeshes, rgbValues); draw(); }
   const halo = createSurfaceHalo();
   try {
     renderer = new THREE.WebGLRenderer({alpha: true, antialias: true, powerPreference: 'low-power'});
@@ -199,15 +199,15 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     context.fillStyle = /paper|ink/i.test(product?.display?.type || '') ? '#d2d5c6' : '#111a18';
     context.fillRect(0, 0, frameWidth, frameHeight); texture.needsUpdate = true; draw();
   }
-  function setProduct(value) {
-    releaseInputs(); product = value; clearGroup(); clearDisplay();
+  function setProduct(value, options = {}) {
+    releaseInputs();previewOnly=options.previewOnly===true;mount.dataset.previewOnly=String(previewOnly);product = value; clearGroup(); clearDisplay();
     accessoryDefinitions = [];
     appearanceDefaults = product.id === 'm5stack-papermono' ? {shell: {color: '#888d8e', opacity: 1, finish: 'plastic'}} : DEFAULT_STOPWATCH_APPEARANCE;
     appearance = normalizeShellAppearance(null, appearanceDefaults); customizedAppearance = false;
     mount.dataset.modelStatus = 'illustrative';
     const generic = !product.display;
     display.classList.toggle('round', product.display?.shape === 'round');
-    display.hidden = mode !== '2d' || generic;
+    display.hidden = previewOnly || mode !== '2d' || generic;
     if (!product.model && !['m5stack-stopwatch','m5stack-papermono'].includes(product.id)) {
       mount.dataset.modelStatus = 'unavailable'; display.hidden = true; onModelReady();
     } else {
@@ -241,6 +241,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     resetView();
   }
   function setAccessories(accessories = []) {
+    if(previewOnly)accessories=[];
     releaseInputs();
     const token = ++accessoryGeneration;
     for (const cleanup of accessoryCleanups) cleanup(); accessoryCleanups = [];
@@ -301,10 +302,11 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     if (mode !== '3d') inspection?.setExpanded(false);
     onInspectionChange(getInspection());
     if (renderer) renderer.domElement.hidden = mode !== '3d';
-    display.hidden = mode !== '2d' || !product?.display || (!product.model && !product.runtime.board);
+    display.hidden = previewOnly || mode !== '2d' || !product?.display || (!product.model && !product.runtime.board);
     onModeChange(mode, !renderer); draw(); return mode;
   }
   function updateFrame({width, height, pixels}) {
+    if(previewOnly)return;
     if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1 || width * height > 4_000_000 || pixels?.length !== width * height * 4) return;
     texture = resizeFramebufferTexture(display, texture, width, height, screen?.material);
     frameWidth = width; frameHeight = height;
@@ -336,6 +338,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     return nativePoint((point.x - bounds.min.x) / (bounds.max.x - bounds.min.x), (bounds.max.y - point.y) / (bounds.max.y - bounds.min.y));
   }
   function surface(intersection) {
+    if(previewOnly)return {kind:'orbit'};
     const object = intersection?.object;
     if(object?.userData.potentiometer){const knob=object.userData.potentiometer;return {kind:'potentiometer',id:knob.id,accessoryId:knob.accessoryId,value:knob.pivot.userData.value,sweep:knob.pivot.userData.visualSweepRadians,message:'拖动旋钮调整官方标称曲线；显示转角未按实物校准。'};}
     if (object?.userData.encoder) {
@@ -408,7 +411,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   window.addEventListener('blur', releaseInputs);
   function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateFlight, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setInspection, getInspection, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateFlight, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setInspection, getInspection, get previewOnly() { return previewOnly; }, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
     dispose() { disposed = true; releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup();flightGround.traverse(object=>{object.geometry?.dispose();for(const material of [].concat(object.material||[]))material.dispose();}); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }
