@@ -1,0 +1,230 @@
+{
+  "sourceCommit": "58824a076758cada02325d58ed7477e2f7a7e065",
+  "firmwareSha256": "b5f9665ed7a879396c75171c02e699e4e02f0b0686f942721c1cedebde74381b",
+  "firmwareBytes": 349328,
+  "wasmSha256": "4d8d85eb406e4c3641e5166ac1318d5d7b3ec5f4b7e5230ed5c8c406e7f762d6",
+  "sourceHashes": {
+    "worker": "32467cdd23801285f1fbf0cd02c48d0bcdecf5c6dc0f0c96528caa48ad552a38",
+    "runner": "5bb925c07818c96b3f839452cc55edd526b3a50d0c13bc5e2f5c8119b80990b0",
+    "plant": "cc53fddc996ffd4954dd70e16100638fca15d62b0257033bd241e7eefbdfe644",
+    "parameters": "07d5518ce480f9f6e76c3c9c0414723bda444882beca4414525cf1aeac5f1b56"
+  },
+  "probe": "tools/probe-stampfly-flight-demo.mjs",
+  "probeSha256": "f75dea66224da509d5805ae120569c9aae4420dcad123d18e46b6900b6e77f6f",
+  "method": "Normal S3 ROM boot; UART commands into the real guest; BMI270 SPI and original ST VL53L3CX I2C feedback; guest LEDC PWM drives opt-in rigid-body model. Host observes state, never supplies control output.",
+  "results": [
+    {
+      "product": "m5stack-k138",
+      "scenario": "controls",
+      "trace": "flight-original.json.gz",
+      "traceSha256": "c089d44a1e4c5ee5e77380f19b4946428c221aa4e74702019095d40cc1d098f6",
+      "decodedSha256": "b161a9f6cfd383234aaf0efc0f97c6adaa25a5fd713b2f0b12181d3ff8ebdefd",
+      "status": "passed",
+      "checks": [
+        {
+          "label": "takeoff settle",
+          "target": 0.35,
+          "maximumError": 0.027520414558148576,
+          "span": 0.02211764907377628,
+          "sampleCount": 38
+        },
+        {
+          "label": "height target settle",
+          "target": 0.6,
+          "maximumError": 0.040633244249149936,
+          "span": 0.03326113141075571,
+          "sampleCount": 38
+        },
+        {
+          "label": "combined tilt/yaw",
+          "target": [
+            5,
+            -3,
+            20
+          ],
+          "maximumErrors": [
+            0.10923259607652991,
+            0.2092280644576876,
+            1.1586201949721442
+          ],
+          "sampleCount": 9
+        },
+        {
+          "label": "return level",
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "maximumErrors": [
+            0.12581588360303572,
+            0.2694132117123982,
+            0.26423613959781267
+          ],
+          "sampleCount": 10
+        },
+        {
+          "label": "landed/contact with guest STOP and exact four-channel zero PWM"
+        }
+      ],
+      "final": {
+        "heightM": 2.0868048305511453e-06,
+        "contact": true,
+        "motorDuty": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "product": "m5stack-k138-v11",
+      "scenario": "controls",
+      "trace": "flight-v11.json.gz",
+      "traceSha256": "3802f97fce89a0acd458d23defe5bae75a961eda3022629315fb1626a30faf28",
+      "decodedSha256": "1ad44406c5ef4cfe4b7a3914f3f16147af58ef88c9df21596607e98dd97ff42d",
+      "status": "passed",
+      "checks": [
+        {
+          "label": "takeoff settle",
+          "target": 0.35,
+          "maximumError": 0.030974841897542404,
+          "span": 0.029144115543052906,
+          "sampleCount": 38
+        },
+        {
+          "label": "height target settle",
+          "target": 0.6,
+          "maximumError": 0.0403098571895768,
+          "span": 0.031161551006956945,
+          "sampleCount": 38
+        },
+        {
+          "label": "combined tilt/yaw",
+          "target": [
+            5,
+            -3,
+            20
+          ],
+          "maximumErrors": [
+            0.4179195707873715,
+            0.8791914329102837,
+            1.4232325468168092
+          ],
+          "sampleCount": 9
+        },
+        {
+          "label": "return level",
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "maximumErrors": [
+            0.8442252770403551,
+            0.14846356662941285,
+            0.4253886467235209
+          ],
+          "sampleCount": 10
+        },
+        {
+          "label": "landed/contact with guest STOP and exact four-channel zero PWM"
+        }
+      ],
+      "final": {
+        "heightM": 2.9912027350462142e-06,
+        "contact": true,
+        "motorDuty": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "product": "m5stack-k138",
+      "scenario": "bounds",
+      "trace": "flight-height-bounds.json.gz",
+      "traceSha256": "286871b0375312e8537d8bfb53fdc1fdfbbdcbebd75e75244d9934758662efd2",
+      "decodedSha256": "7cbb2a168066f38f1f275a9a12675edb8f6243a8549699c73b06a3e0928a07ee",
+      "status": "passed",
+      "checks": [
+        {
+          "label": "takeoff settle",
+          "target": 0.1,
+          "maximumError": 0.01588201102266802,
+          "span": 0.004999484204576049,
+          "sampleCount": 39
+        },
+        {
+          "label": "height target settle",
+          "target": 1.5,
+          "maximumError": 0.049997483907160634,
+          "span": 0.03881986520017411,
+          "sampleCount": 38
+        },
+        {
+          "label": "landed/contact with guest STOP and exact four-channel zero PWM"
+        }
+      ],
+      "final": {
+        "heightM": -4.577154288725425e-19,
+        "contact": true,
+        "motorDuty": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "product": "m5stack-k138",
+      "scenario": "tof-loss",
+      "trace": "flight-tof-loss.json.gz",
+      "traceSha256": "bc5a8ec80d3bb8fc9be4c8e50e76f10ededbfbb11c321671711bfad945183fd3",
+      "decodedSha256": "e856aab28a0b00f701837de2b4312004a163d5f5e2b06908e346b0da76ecb01e",
+      "status": "passed",
+      "checks": [
+        {
+          "label": "ToF target removed after established hover; actual ST no-object result stops routed PWM",
+          "stopAt": 10.521
+        },
+        {
+          "label": "landed/contact with guest STOP and exact four-channel zero PWM"
+        }
+      ],
+      "final": {
+        "heightM": -3.7089455177897676e-19,
+        "contact": true,
+        "motorDuty": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "testOnlyStimulus": {
+        "atGuestTime": 10,
+        "bottomTarget": null,
+        "find": "const s=plant.sensors();",
+        "replace": "const s=plant.sensors();if(next/clockHz>=10)s.bottomDistanceM=null;",
+        "modifiedRunnerSha256": "9bd722ac188defccb64bca22315079689c1e22c606daa9e2a6fe2c838bfb7688",
+        "scope": "Test-only ESM transform; unchanged firmware, WASM, ST algorithm, physics and guest PWM. Production assets are not modified."
+      }
+    }
+  ],
+  "status": "passed",
+  "limitations": [
+    "Simulation-only functional demonstration; no physical flight, hardware safety or parameter calibration claim.",
+    "No horizontal position hold; commanded roll/pitch produce translation.",
+    "Only the listed command sequence and sampled height bounds are qualified, not every simultaneous command extreme.",
+    "ToF no-target stimulus uses an explicitly recorded test-only runner transformation; normal two-SKU flight uses unchanged production assets.",
+    "IMU-stale behavior has a controller unit check, not an injected guest sensor-fault proof.",
+    "Published samples depend on asynchronous host observation; values are not a timing benchmark."
+  ],
+  "negativeHistory": "control-negative-01.json",
+  "rebuild": "rebuild-final.json"
+}
