@@ -1,0 +1,700 @@
+{
+  "checkedAt": "2026-11-04T03:38:25.246Z",
+  "method": "actual-wasm-worker-full-ROM",
+  "firmwareSha256": "dba1e1b0658789c13571b617ea21fff3b9626be96e840fec56f7803e5450e128",
+  "firmwareBytes": 348416,
+  "wasmSha256": "bd1c688cff2cbd2ac608761dbe122d0c2346f65ea3d0a6e53d3034ee170ba3ef",
+  "products": [
+    {
+      "product": "m5stack-k138",
+      "initialMotors": [
+        {
+          "id": "front-left",
+          "gpio": 5,
+          "duty": 0,
+          "frequencyHz": 150093.808630394
+        },
+        {
+          "id": "front-right",
+          "gpio": 42,
+          "duty": 0,
+          "frequencyHz": 150093.808630394
+        },
+        {
+          "id": "rear-left",
+          "gpio": 10,
+          "duty": 0,
+          "frequencyHz": 150093.808630394
+        },
+        {
+          "id": "rear-right",
+          "gpio": 41,
+          "duty": 0,
+          "frequencyHz": 150093.808630394
+        }
+      ],
+      "sensorsInitialized": [
+        "SF1 SENSOR_INIT BMI270=1 VL53L3CX=1 code=0"
+      ],
+      "checks": [
+        "real UART0 command parsing to four correctly routed independent LEDC duties",
+        "nonfinite/range/arity/long-line errors preserve prior motor outputs",
+        "pause freezes guest and rejects new input",
+        "STOP writes all motor duties zero",
+        "platform reset boots same firmware with zero motors",
+        "no framebuffer"
+      ],
+      "commands": [
+        {
+          "line": "SF1 MOTOR 0.125 0.25 0.5 0.75",
+          "response": "SF1 ACK MOTOR",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 MOTOR NaN 0 0 0",
+          "response": "SF1 ERR RANGE",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 MOTOR 1.1 0 0 0",
+          "response": "SF1 ERR RANGE",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 MOTOR 0 0 0",
+          "response": "SF1 ERR FORMAT",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 MOTOR 0 0 0 0 extra",
+          "response": "SF1 ERR FORMAT",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 STOP extra",
+          "response": "SF1 ERR FORMAT",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 LAND",
+          "response": "SF1 ERR MODE",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "response": "SF1 ERR LINE_TOO_LONG",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 STOP",
+          "response": "SF1 ACK STOP",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 MOTOR 0.125 0.25 0.5 0.75",
+          "response": "SF1 ACK MOTOR",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        }
+      ],
+      "status": "pass"
+    },
+    {
+      "product": "m5stack-k138-v11",
+      "initialMotors": [
+        {
+          "id": "front-left",
+          "gpio": 5,
+          "duty": 0,
+          "frequencyHz": 150093.808630394
+        },
+        {
+          "id": "front-right",
+          "gpio": 42,
+          "duty": 0,
+          "frequencyHz": 150093.808630394
+        },
+        {
+          "id": "rear-left",
+          "gpio": 10,
+          "duty": 0,
+          "frequencyHz": 150093.808630394
+        },
+        {
+          "id": "rear-right",
+          "gpio": 41,
+          "duty": 0,
+          "frequencyHz": 150093.808630394
+        }
+      ],
+      "sensorsInitialized": [
+        "SF1 SENSOR_INIT BMI270=1 VL53L3CX=1 code=0"
+      ],
+      "checks": [
+        "real UART0 command parsing to four correctly routed independent LEDC duties",
+        "nonfinite/range/arity/long-line errors preserve prior motor outputs",
+        "pause freezes guest and rejects new input",
+        "STOP writes all motor duties zero",
+        "platform reset boots same firmware with zero motors",
+        "no framebuffer"
+      ],
+      "commands": [
+        {
+          "line": "SF1 MOTOR 0.125 0.25 0.5 0.75",
+          "response": "SF1 ACK MOTOR",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 MOTOR NaN 0 0 0",
+          "response": "SF1 ERR RANGE",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 MOTOR 1.1 0 0 0",
+          "response": "SF1 ERR RANGE",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 MOTOR 0 0 0",
+          "response": "SF1 ERR FORMAT",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 MOTOR 0 0 0 0 extra",
+          "response": "SF1 ERR FORMAT",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 STOP extra",
+          "response": "SF1 ERR FORMAT",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 LAND",
+          "response": "SF1 ERR MODE",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "response": "SF1 ERR LINE_TOO_LONG",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 STOP",
+          "response": "SF1 ACK STOP",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        },
+        {
+          "line": "SF1 MOTOR 0.125 0.25 0.5 0.75",
+          "response": "SF1 ACK MOTOR",
+          "motors": [
+            {
+              "id": "front-left",
+              "gpio": 5,
+              "duty": 0.12500191,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "front-right",
+              "gpio": 42,
+              "duty": 0.25000381,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-left",
+              "gpio": 10,
+              "duty": 0.50000763,
+              "frequencyHz": 150093.808630394
+            },
+            {
+              "id": "rear-right",
+              "gpio": 41,
+              "duty": 0.74999619,
+              "frequencyHz": 150093.808630394
+            }
+          ]
+        }
+      ],
+      "status": "pass"
+    }
+  ],
+  "limitations": [
+    "Independent public UART demo, not official factory firmware or physical-flight qualification.",
+    "This probe qualifies MOTOR/STOP, UART and sensor initialization; closed-loop flight requires separate dynamics evidence."
+  ],
+  "status": "pass"
+}
