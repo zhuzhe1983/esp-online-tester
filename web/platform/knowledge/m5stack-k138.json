@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-11-04T03:15:13Z",
+  "updatedAt": "2026-11-04T03:53:56Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -466,6 +466,27 @@
       "group": "model",
       "method": "光流板内侧与原始 frame 的两条底横梁接触；12×20 mm 板边和0.8 mm板厚为照片估算，剔除外伸插头。镜头封装名义尺寸来自 PixArt v1.10 第7页；外观分成板面、封装、镜片和插座四层。",
       "uncertainty": "板长宽估算±0.6 mm，板厚±0.2 mm；托架坐标来自简化模拟器STL，不证明生产装配公差。封装内的台阶分配、连接器几何和装配横向位置仍为照片估计；柔性线束未建模。"
+    },
+    {
+      "id": "optical-populated-board-visual",
+      "label": "光流板可见元件与六芯线束",
+      "value": {
+        "visibleComponents": 16,
+        "exposedPads": 10,
+        "wireCount": 6,
+        "wireColor": "black",
+        "inspection": "fixed harness hidden while optical assembly separated"
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-f6c38dffa4",
+        "product-photo-9947ad7259",
+        "schematic-3b06f6a5de",
+        "schematic-a15f1234af"
+      ],
+      "notes": "逐款照片定位的独立SMD本体/端头/焊盘，未由外观推断位号与电气值。不是厂家完整PCB CAD。",
+      "method": "逐款底面照片记录像素中心，以独立光流PCB的12×20mm估计轮廓映射到板面；导线以侧面和底面轮廓约束显式曲线路径。详见optical-detail-design.json。",
+      "uncertainty": "SMD footprint ±0.2mm, height ±0.2–0.25mm; wire radius ±0.1mm, visible path ±1mm, hidden main P4 endpoint/route ±3mm; not production CAD."
     }
   ],
   "revisions": [],
@@ -1329,6 +1350,19 @@
         "product-photo-f6c38dffa4"
       ],
       "notes": "Source carrier outline and simplified component blocks retained. Optical PCB is supported by native cradle bars; its outward photograph excludes the separately modeled package and socket. Hidden electronics, exact board outline/thickness, detailed lens optics and connector fit remain unverified. UNKNOWN is on the inward face, visible through the declared inspection separation."
+    },
+    {
+      "id": "optical-harness-hidden-route",
+      "label": "光流线束隐藏段与主板遮挡布局",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "product-photo-f6c38dffa4",
+        "product-photo-9947ad7259",
+        "schematic-a15f1234af",
+        "schematic-3b06f6a5de"
+      ],
+      "notes": "P4↔P1六线连接由原理图确认；照片只约束可见两侧线束。主板P4机械坐标/末段路线估计±3mm，不能确定线芯实际针序。被挡主板走线无独立来源，保留UNKNOWN。"
     }
   ],
   "collectionNotes": [
@@ -1337,6 +1371,7 @@
     "Model import does not establish CPU/board/peripheral firmware support.",
     "StampFly visual sources now include the pinned official-document-linked Ecosystem simulator assembly under its own MIT provenance; the M5Stack battery-protection-only source is retained separately.",
     "Official orthographic photos show the battery removed; photo comparisons hide only the source battery. Default visual assembly retains the original 300mAh-source battery.",
-    "2026-11-04 optical assembly repair: original source frame and battery triangles unchanged; board crop excludes plug overhang and raised components. See evidence/m5stack-k138/bottom-fix-review.json for fresh underside/side/material/restore verification. Earlier screenshots do not validate this revised bottom assembly."
+    "2026-11-04 optical assembly repair: original source frame and battery triangles unchanged; board crop excludes plug overhang and raised components. See evidence/m5stack-k138/bottom-fix-review.json for fresh underside/side/material/restore verification. Earlier screenshots do not validate this revised bottom assembly.",
+    "Optical detail follow-up retains the preceding bottom-fix evidence as history. New independent component geometry and harness require optical-detail-review.json at their final model hash; old screenshots are not acceptance for the new geometry."
   ]
 }

@@ -38,12 +38,27 @@ def verify(sku):
  assert face.get('outlineMm'),'A transparent texture must not conceal an unsupported square lens carrier'
  for x,y in face['outlineMm']:assert math.hypot(x-lens['centerMm'][0],y-lens['centerMm'][1])<=lens['radiusMm']+1e-8
  near(bottom-(lens['centerMm'][2]-lens['depthMm']/2),2.28)
- tex=next(t for t in plan['textureSources']if t['file']=='optical-flow-back.webp');assert len(tex['alphaMask']['excludeRects'])==2
+ tex=next(t for t in plan['textureSources']if t['file']=='optical-flow-back.webp');assert len(tex['alphaMask']['excludeRects'])>=2
  assert board['labelSide']=='front';group=plan['presentation']['inspectionGroups'][0];required={p for p in derived if p.startswith('optical-flow-')}|{p for p in surfaces if p.startswith('optical-flow-')};required.add('optical-flow-pcb'if sku.endswith('v11')else'pcb-unknown-marker');assert required<=set(group['parts'])
  for name in meta['artifacts']:assert hashlib.sha256((assets/name).read_bytes()).hexdigest()==meta['artifacts'][name],name
  battery=next((p for p in meta['parts']if p['name']=='battery'),None);gap=None
  if battery:gap=battery['boundsMm'][0][2]-top;assert gap>=.74
  assert meta['sourceTransform']['scale']==1
+ tubes=plan.get('tubes',[])
+ if tubes:
+  assert len(tubes)==6;assert set(group['hideParts'])=={t['name']for t in tubes}
+  assert len([p for p in derived if p.startswith('optical-flow-unpopulated-pad-')])==10
+  assert len([p for p in derived if p.startswith('optical-flow-passive-')and '-end-'not in p and '-pad-'not in p])==13
+  assert len(tex['alphaMask']['excludeRects'])==28
+  plug=derived['optical-flow-plug']['geometry'];main=derived['carrier-optical-plug']['geometry']
+  for tube in tubes:
+   for point,body in [(tube['pointsMm'][0],plug),(tube['pointsMm'][-1],main)]:
+    assert all(abs(point[i]-body['centerMm'][i])<=body['sizeMm'][i]/2+1e-6 for i in range(3)),('Cable endpoint outside physical plug',tube['name'])
+   assert tube['basis']=='source-constrained-photo-estimate' and 'unknown' in tube['notes']
+  for part in derived.values():
+   if part['id'].startswith(('optical-flow-passive-','optical-flow-small-ic-','optical-flow-indicator-','optical-flow-unpopulated-pad-')):
+    g=part['geometry'];assert all(abs(g['centerMm'][i]-center[i])+g['sizeMm'][i]/2<=size[i]/2+1e-5 for i in [0,1]),part['id']
+    assert g['centerMm'][2]+g['sizeMm'][2]/2<=bottom+1e-5,part['id']
  assert plan==read(ROOT/'docs/platform/evidence'/sku/'source-audit.json')['plan']
  return {'productId':sku,'sourceFrameSha256':source['sha256'],'cradleContactFaces':faces,'cradleContactAreaMm2':contact,'boardTopZMm':top,'boardPhotoOffsetMm':.01,'packageTotalProtrusionMm':2.28,'nativeBatteryToBoardGapMm':gap,'inspectionParts':len(group['parts']),'passed':True}
 if __name__=='__main__':print(json.dumps([verify(sku)for sku in ['m5stack-k138','m5stack-k138-v11']],indent=2))
