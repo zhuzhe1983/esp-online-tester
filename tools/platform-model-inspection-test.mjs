@@ -51,6 +51,20 @@ test('declared assembly carries registered photo twins of nested source parts ex
   nested.setExpanded(true);assert.deepEqual(twin.position.toArray(),[0,0,0],'an already nested twin follows its parent without double translation');nested.setExpanded(false);
 });
 
+test('inspection hides only declared fixed harnesses and photo companions, restoring original visibility without moving them',()=>{
+  const group=assembly(),harness=group.getObjectByName('pcb'),photo=new THREE.Mesh(harness.geometry,harness.material);
+  photo.name='harness-photo';photo.visible=false;group.add(photo);harness.userData.inspectionCompanions=[photo];
+  const position=harness.position.clone(),geometry=harness.geometry.attributes.position.array.slice();
+  const inspection=createModelInspection(group,[{...definition,hideParts:['pcb']}],sources);
+  for(let i=0;i<3;i++){
+    inspection.setExpanded(true);assert.equal(harness.visible,false);assert.equal(photo.visible,false);assert.deepEqual(harness.position.toArray(),position.toArray());
+    inspection.setExpanded(false);assert.equal(harness.visible,true);assert.equal(photo.visible,false);assert.deepEqual(harness.geometry.attributes.position.array,geometry);
+  }
+  const invalid=[{...definition,hideParts:['cover']},{...definition,hideParts:['pcb','pcb']},{...definition,hideParts:['harness-photo']},{...definition,hideParts:['missing']},{...definition,hideParts:'pcb'}];
+  for(const d of invalid){assert.throws(()=>createModelInspection(group,[d],sources),/Invalid/);assert.equal(harness.visible,true);assert.equal(photo.visible,false);}
+  assert.throws(()=>createModelInspection(group,[{...definition,hideParts:['pcb']},{...definition,id:'conflicting',parts:['pcb']}],sources),/ownership/);
+});
+
 test('loader moves actual projected photo twin, paper and control hit mesh with the cover only',async()=>{
   const fetch=globalThis.fetch,load=THREE.TextureLoader.prototype.loadAsync;
   const vertices=new Float32Array([-2,-2,0,0,0,1,2,-2,0,0,0,1,0,2,0,0,0,1]);
