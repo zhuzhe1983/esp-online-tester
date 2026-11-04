@@ -20,7 +20,7 @@ The workbench filters devices by manufacturer and sorts names naturally without 
 
 The LILYGO inventory follows Spark’s stable series IDs and product IDs: 127 ESP32 product listings across 21 groups, with T-Deck, Plus, Pro and their Meshtastic-preloaded editions kept distinct. The workbench offers family filtering and grouped model choices. The initial six exact hardware variants remain the adaptation priority: original TTGO T-Display, T-Display-S3 (non-touch), original T-Deck, T-Embed CC1101, T-Beam V1.2 and T-Watch-S3. New listings retain unknown hardware fields and unavailable runtimes until individually investigated. Five exact variants now have partial board runtimes: original T-Display, non-touch T-Display-S3, original T-Deck, T-Embed CC1101 and T-Beam V1.2. Official firmware/input evidence is recorded separately; T-Display-S3 factory remains blocked despite a working official TFT demo. T-Watch S3 and the additionally requested T5 4.7-inch remain queued while work is paused. Manufacturer CAD is an independent visual asset and does not establish runtime compatibility. Factory images stay remote and the existing shared firmware watchlist includes the applicable community projects. See [LILYGO integration and limits](lilygo-onboarding.md).
 
-Stamp 系列已逐款接入 22 个主控和套件，StampFly v1.1 保持独立型号；模型、可运行行为与已知限制见 [Stamp 适配清单](stamp-series-onboarding.md)。C5 仅支持显式 SRAM app-direct，StampFly 不包含飞行动力学。
+Stamp 系列已逐款接入 22 个主控和套件，StampFly v1.1 保持独立型号；模型、可运行行为与已知限制见 [Stamp 适配清单](stamp-series-onboarding.md)。同 PCB 的排针、DIP 和套装变体从常用设备列表收起，原 ID 与模型保留。C5 仅支持显式 SRAM app-direct。StampFly 另有独立 UART 演示固件和需主动开启的近似飞行环境，见[操作说明](stampfly-demo.md)与[模型边界](stampfly-flight.md)。
 
 ## Current scope
 
