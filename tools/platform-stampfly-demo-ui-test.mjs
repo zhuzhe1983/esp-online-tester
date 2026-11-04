@@ -61,10 +61,11 @@ test('pause cancels pending confirmation, stop resets paused demo, reset and dev
 test('takeoff remains pending until a fresh physical snapshot leaves the ground; timeout is honest',async()=>{
   const f=fixture();try{
     f.serial('SF1 READY stampfly-uart-demo 0.1.0\n');await assert.rejects(f.c.send('TAKEOFF',[.3]));
-    f.emit({type:'flight',flight:{enabled:true,cycle:10,heightM:0,contact:true}});await f.c.send('TAKEOFF',[.3]);
+    f.emit({type:'flight',flight:{enabled:true,cycle:10,heightM:0,contact:true}});
+    await assert.rejects(f.c.send('TAKEOFF',[.3]),/STOP/);f.serial(telemetry());await assert.rejects(f.c.send('LAND'),/自动飞行/);await f.c.send('TAKEOFF',[.3]);
     f.serial('SF1 ACK TAKEOFF\n');assert.ok(f.c.snapshot().pending);
     f.emit({type:'flight',flight:{enabled:true,cycle:11,heightM:.1,contact:false}});assert.equal(f.c.snapshot().pending,null);
-    await f.c.send('LAND');f.serial('SF1 ACK LAND\n');assert.ok(f.c.snapshot().pending);
+    f.serial(telemetry(2).replace('STATE STOP','STATE AUTO'));await f.c.send('LAND');f.serial('SF1 ACK LAND\n');assert.ok(f.c.snapshot().pending);
     [...f.timers.values()][0]();assert.equal(f.c.snapshot().pending,null);assert.match(f.c.snapshot().feedback,/未确认/);
   }finally{f.c.dispose();}
 });

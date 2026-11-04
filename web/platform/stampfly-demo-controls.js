@@ -86,6 +86,8 @@ export function createStampflyDemoController({runtime, onChange = () => {}, setT
     if(!isStampflyDemo(state) || !ready || state.status!=='running')throw Error('请启动网页演示固件，并等待 READY。');
     if(pending && command!=='STOP')throw Error('请等待当前命令的固件回执与实际输出。');
     if(['TAKEOFF','LAND','TARGET'].includes(command) && state.flight?.enabled!==true)throw Error('请先暂停并启用近似物理飞行环境。');
+    if(command==='TAKEOFF' && telemetry?.mode!=='STOP')throw Error('请先停止电机，等待固件进入 STOP 模式后起飞。');
+    if(command==='LAND' && !['AUTO','LAND'].includes(telemetry?.mode))throw Error('当前固件未处于自动飞行模式。');
     if(command==='TARGET' && telemetry?.mode!=='AUTO')throw Error('请先起飞，再调整目标。');
     cancel();const token=generation;
     pending={command,values:[...values],acknowledged:false,cycle:state.motorOutput?.cycle ?? -1,flightCycle:state.flight?.cycle ?? -1,telemetryTime:telemetry?.milliseconds ?? -1};
@@ -143,7 +145,7 @@ export function mountStampflyDemoControls({container,runtime}) {
     motor.disabled=preset.disabled=!running || !!value.pending;
     enable.disabled=!['ready','paused'].includes(value.status) || typeof runtime.configureFlight!=='function';enable.textContent=value.flight?.enabled?'关闭飞行环境':'启用飞行环境';
     const flying=running && value.flight?.enabled===true && !value.pending;
-    takeoff.disabled=land.disabled=!flying;target.disabled=!flying || value.telemetry?.mode!=='AUTO';
+    takeoff.disabled=!flying || value.telemetry?.mode!=='STOP';land.disabled=!flying || !['AUTO','LAND'].includes(value.telemetry?.mode);target.disabled=!flying || value.telemetry?.mode!=='AUTO';
     actual.textContent='实际 PWM：'+STAMPFLY_MOTORS.map(({id},i)=>`${['左前','右前','左后','右后'][i]} ${Number.isFinite(value.motors.find(m=>m.id===id)?.duty)?(value.motors.find(m=>m.id===id).duty*100).toFixed(1)+'%':'—'}`).join(' · ');
     const angles=flightAttitudeDegrees(value.flight),attitude=angles?` · 横滚 ${angles[0].toFixed(1)}° / 俯仰 ${angles[1].toFixed(1)}° / 偏航 ${angles[2].toFixed(1)}°`:'';
     const position=value.flight?.positionM,translation=Array.isArray(position)&&position.slice(0,2).every(Number.isFinite)?` · 北 ${position[0].toFixed(2)} / 东 ${position[1].toFixed(2)} m`:'';
