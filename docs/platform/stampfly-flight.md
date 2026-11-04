@@ -14,7 +14,7 @@ const unsubscribe = api.subscribe(event => {
 });
 ```
 
-`configureFlight` accepts exactly `{enabled:boolean}` on StampFly and StampFly v1.1. It rejects running/loading devices. Changing the value with loaded firmware recreates the guest at the ground in `ready`, preserves persisted Flash, releases inputs, and requires an explicit start. An unchanged setting is idempotent. Configuration before loading is allowed. `reset()` keeps the setting and starts a new ground state; pause/resume freezes/continues both guest and plant. Firmware replacement starts at ground; product configuration uses the new scene setting. Dispose clears the state. Disabled `readFlight()`/`observe().flight` is `null`. `setImu()` is rejected while flight owns sensor input.
+`configureFlight` accepts exactly `{enabled:boolean}` on StampFly and StampFly v1.1. It rejects running/loading devices. Changing the value with loaded firmware recreates the guest at the ground in `ready`, preserves persisted Flash, releases inputs, and requires an explicit start. An unchanged setting is idempotent. Configuration before loading is allowed. `reset()` keeps the setting and starts a new ground state; pause/resume freezes/continues both guest and plant. Firmware replacement starts at ground; product configuration uses the new scene setting. Dispose clears the state. Disabled `readFlight()`/`observe().flight` is `null`. `setImu()` is rejected while flight owns sensor input. `observe().imu` reports `source:flight`, the actual raw inputs and guest time; its generic display-orientation quaternion is `null` (use the explicitly FRD/NED flight quaternion instead). Before the first flight sample its arrays are `null`.
 
 Portable scene configuration is optional:
 
