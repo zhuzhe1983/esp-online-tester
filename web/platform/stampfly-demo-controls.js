@@ -112,7 +112,7 @@ export function mountStampflyDemoControls({container,runtime}) {
   container.hidden=true;
   const element=(tag,text,className)=>{const n=document.createElement(tag);if(text)n.textContent=text;if(className)n.className=className;return n;};
   const panel=element('section',null,'stampfly-demo');panel.setAttribute('aria-label','StampFly 网页演示');container.append(panel);
-  const heading=element('div',null,'stampfly-demo-heading'),title=element('strong','StampFly 网页演示'),stop=element('button','停止','button stampfly-stop');stop.type='button';stop.dataset.demoAction='stop';heading.append(title,stop);panel.append(heading);
+  const heading=element('div',null,'stampfly-demo-heading'),title=element('strong','StampFly UART 遥控演示'),stop=element('button','停止','button stampfly-stop');stop.type='button';stop.dataset.demoAction='stop';heading.append(title,stop);panel.append(heading);
   const message=element('p',null,'stampfly-demo-message');message.setAttribute('role','status');panel.append(message);
   const body=element('div',null,'stampfly-demo-body');panel.append(body);
   const motorFields=element('div',null,'stampfly-motor-fields');body.append(motorFields);
@@ -137,7 +137,7 @@ export function mountStampflyDemoControls({container,runtime}) {
     if((!value.ready && current.ready) || value.matched!==current.matched || value.active!==current.active)for(const input of inputs){input.value='0';input.dispatchEvent(new Event('input'));}
     current=value;container.hidden=!value.active;body.hidden=!value.matched;
     const running=value.matched && value.ready && value.status==='running';
-    message.textContent=!value.matched?'在固件列表选择「StampFly 网页演示」并运行，即可控制四个电机。原厂固件使用其自己的控制方式。':value.feedback || (value.status==='running'?'等待演示固件 READY…':'请点击运行；启动和复位时电机保持关闭。');
+    message.textContent=!value.matched?'在固件列表选择「UART 遥控演示」并运行，即可控制四个电机。原厂固件使用其自己的控制方式。':value.feedback || (value.status==='running'?'等待演示固件 READY…':'请点击运行；启动和复位时电机保持关闭。');
     stop.disabled=!value.matched || !['running','paused','ready'].includes(value.status);stop.textContent=value.status==='paused'?'停止并复位':'停止';
     for(const input of inputs)input.disabled=!running;
     motor.disabled=preset.disabled=!running || !!value.pending;
