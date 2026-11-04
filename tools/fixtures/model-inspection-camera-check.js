@@ -7,7 +7,9 @@ async page => {
   const check=(ok,message)=>{if(!ok)throw Error(message);result.checks.push(message);};
   await context.route(scenePattern,async route=>{
     const response=await route.fetch();let source=await response.text();
-    source=source.replace('const group = new THREE.Group(); scene.add(group);','const group = new THREE.Group(); scene.add(group); window.__inspectionCameraTest={group,camera};').replace('return {setProduct, setAccessories','return window.__inspectionCameraTest.view = {setProduct, setAccessories');
+    const anchor='scene.add(orbitGroup);orbitGroup.add(flightGroup);flightGroup.add(group);';
+    if(!source.includes(anchor))throw Error('The scene-view camera fixture anchor changed; update the test before interpreting its result');
+    source=source.replace(anchor,anchor+' window.__inspectionCameraTest={group:orbitGroup,camera};').replace('return {setProduct, setAccessories','return window.__inspectionCameraTest.view = {setProduct, setAccessories');
     await route.fulfill({response,body:source});
   });
   await context.route(modelPattern,async route=>{
