@@ -1,3 +1,4 @@
+import {validFlightConfig,hasFlight} from './flight-state.js';
 import {validFirmwareArchive} from './firmware-archive.js';
 import {validIlluminance,illuminanceParameter} from './illuminance-input.js';
 import {validEnvironment,environmentParameters} from './environment-input.js';
@@ -129,12 +130,13 @@ export function validateScene(scene, catalog) {
   const errors = [], warnings = [];
   try { checkedJson(scene); } catch (error) { return {valid: false, errors: [issue(error.code, '/', error.message)], warnings}; }
   if (!record(scene)) return {valid: false, errors: [issue('SCENE', '/', 'Scene must be an object.')], warnings};
-  allowedKeys(scene, ['schemaVersion', 'productId', 'firmware', 'accessories', 'keyMapping', 'view', 'localAccessories'], '', errors);
+  allowedKeys(scene, ['schemaVersion', 'productId', 'firmware', 'accessories', 'keyMapping', 'view', 'localAccessories', 'flight'], '', errors);
   if (scene.schemaVersion !== SCHEMA_VERSION) errors.push(issue('SCHEMA_VERSION', '/schemaVersion', 'Only scene schema version 1 is supported.'));
   const product = catalog.products.find(item => item.id === scene.productId);
   if (!product) errors.push(issue('UNKNOWN_PRODUCT', '/productId', `Unknown product: ${scene.productId}`));
   else if (product.runtime.status === 'unavailable') warnings.push(issue('MODEL_UNAVAILABLE', '/productId', product.model ? 'This product has metadata and a visual preview; its board model is not implemented.' : 'This product has catalog metadata; its board model and visual preview are not implemented.'));
   else if (product.runtime.status === 'partial') warnings.push(issue('PARTIAL_MODEL', '/productId', 'The board model is partial. Firmware compatibility requires an actual execution test.'));
+  if(scene.flight!==undefined&&(!validFlightConfig(scene.flight)||!hasFlight(product?.runtime?.board)))errors.push(issue('FLIGHT_CONFIG','/flight','Flight requires StampFly and a valid explicit model configuration.'));
   if (scene.firmware === null) warnings.push(issue('FIRMWARE_MISSING', '/firmware', 'Choose a firmware artifact before running.'));
   else if (!record(scene.firmware)) errors.push(issue('FIRMWARE', '/firmware', 'Firmware must be null or a source object.'));
   else {

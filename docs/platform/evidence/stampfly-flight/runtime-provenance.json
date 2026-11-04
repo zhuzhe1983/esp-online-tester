@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "runtimeCommits": [
+    "cb545f60",
+    "7e9e11b4",
+    "7f7e437e"
+  ],
+  "integrationCommitAtRun": "c585216b",
+  "physicsSource": {
+    "repository": "https://github.com/M5Fly-kanazawa/stampfly_ecosystem",
+    "commit": "ac0ed6f67d609a6f7e989f61be0a6d1e0e311906",
+    "files": [
+      {
+        "path": "simulator/sils/plant/generated_params.hpp",
+        "sha256": "64dd783558531e8a585a800b145677a7d9fb72482a9ead537a663d3d1406ea02"
+      },
+      {
+        "path": "simulator/sils/plant/plant.cpp",
+        "sha256": "73933792d9af3a5746db5a9162e663152e63508cc0479f9f812f87100755e039"
+      },
+      {
+        "path": "LICENSE",
+        "sha256": "e64acb0b26caf02ea672e1553857b597b49a1a650cf056ea2cd8488197a6a832"
+      }
+    ]
+  },
+  "postRunSourceVerification": {
+    "method": "sha256 of all runtime-lifecycle.sourceHashes paths against the same integration root after both SKU workers terminated",
+    "changedPaths": [],
+    "result": "identical"
+  },
+  "negativeResult": {
+    "receipt": "runtime-lifecycle-first-negative.json",
+    "cause": "Probe required combined serial to be empty at ready, but valid host virtual-AP initialization log was already present. Guest UART0 remained empty.",
+    "correction": "Test the UART0 buffer for the fresh-guest assertion. No runtime or firmware change.",
+    "reconstructEarlierHarness": "In tools/probe-stampfly-flight-runtime.mjs replace assert.equal(uart(state),'') with assert.equal(state.serial,''); the first receipt preserves its actual harness hash."
+  },
+  "privacy": {
+    "redactions": "Receipts already use relative source paths, placeholder commands and filtered guest serial. No host login, process inventory or private firmware retained. Factory filters emulated MAC strings to <emulated-mac>.",
+    "numericSamplesChanged": false
+  },
+  "receipts": {
+    "factory-disabled-harness.mjs": {
+      "sha256": "d06f93f0bed59e7677a1a3708210f1b73f41b6d37af351c251f3e7590cde0bdb",
+      "bytes": 10544
+    },
+    "runtime-lifecycle-first-negative.json": {
+      "sha256": "e53535c86d4db215455d0d9a3a119394f4669bc77dd52c771fab38c920371909",
+      "bytes": 20814
+    },
+    "factory-disabled.json": {
+      "sha256": "9af58ce4abe7315b7e48f5f1e80ef39154a8c6fc137109145dc18ba5d36bc41a",
+      "bytes": 17136
+    },
+    "legacy-fixture-disabled.json": {
+      "sha256": "1eb275ce292fd06420b5f980c925b958a51e963af47f0be87572e89080712198",
+      "bytes": 15784
+    },
+    "runtime-lifecycle.json": {
+      "sha256": "6d0b7f92318d26f7e62054dbe8f72cc72a28f39acc86a641f64c073e072a5f48",
+      "bytes": 30296
+    }
+  }
+}

@@ -1,0 +1,14 @@
+// Run with the tracked Playwright CLI run-code command on the workbench.
+async page => {
+  const check=(ok,message)=>{if(!ok)throw Error(message);};
+  const prepare=async target=>{await target.waitForFunction(()=>window.espTester);await target.evaluate(async()=>{const {loadCatalog,createDefaultScene}=await import('./catalog.js');await espTester.configure(createDefaultScene(await loadCatalog(),'m5stack-s007'));});await target.waitForFunction(()=>document.querySelector('#scene-mount').dataset.modelStatus==='ready');};
+  const select=async target=>{if(await target.locator('#visual-variant-menu').getAttribute('open')===null)await target.locator('#visual-variant-menu summary').click();await target.getByRole('combobox',{name:'衍生模型',exact:true}).selectOption('m5stack-s007-pin254');await target.waitForFunction(()=>document.querySelector('#scene-mount').dataset.modelStatus==='ready');};
+  await page.setViewportSize({width:1280,height:900});await prepare(page);await select(page);await page.screenshot({path:'output/playwright/stamp-visual-desktop.png'});
+  const share=await page.evaluate(()=>espTester.share({mode:'embed',autostart:false})),mini=await page.context().newPage();
+  try {
+    await mini.setViewportSize({width:390,height:844});await mini.goto(share);await mini.waitForFunction(()=>window.espTester&&document.querySelector('#scene-mount').dataset.modelStatus==='ready');await select(mini);
+    const result=await mini.evaluate(async()=>{const s=await espTester.observe(),root=document.querySelector('#visual-variant-menu'),rect=root.querySelector('.shell-settings-body').getBoundingClientRect(),controls=[...document.querySelector('.view-controls').children].filter(e=>!e.hidden).map(e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom};});return {productId:s.scene.productId,visualId:document.querySelector('#scene-mount').dataset.visualProductId,previewOnly:document.querySelector('#scene-mount').dataset.previewOnly,popup:{left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom},viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,controls,menuStylesheet:[...document.styleSheets].some(sheet=>sheet.href?.endsWith('/visual-variant-menu.css'))};});
+    check(result.productId==='m5stack-s007'&&result.visualId==='m5stack-s007-pin254'&&result.previewOnly==='true','mini keeps runtime parent and visual child');check(result.menuStylesheet,'mini loads menu stylesheet');check(result.popup.left>=0&&result.popup.right<=390&&result.popup.bottom<=844,'popup fits mini viewport');check(result.controls.every(rect=>rect.left>=0&&rect.right<=390),'toolbar controls fit mini width');check(result.scrollWidth<=390,'no horizontal document overflow');
+    await mini.screenshot({path:'output/playwright/stamp-visual-mini.png'});return {status:'pass',desktop:[1280,900],mini:result};
+  } finally {await mini.close();}
+}

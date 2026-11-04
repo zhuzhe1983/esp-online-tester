@@ -231,6 +231,34 @@ def clip_source_triangle(corners,clip):
   result.extend(triangle)
  return result
 
+def tube_corners(item):
+ """A capped sweep through explicit model-mm samples, never an inferred cable route."""
+ points=np.asarray(item.get('pointsMm'),dtype=float);radius=item.get('radiusMm');segments=item.get('radialSegments',12)
+ if points.ndim!=2 or points.shape[1]!=3 or not 2<=len(points)<=1024 or not np.isfinite(points).all() or np.max(np.abs(points))>5000:raise ValueError('Invalid tube points')
+ if isinstance(radius,bool) or not isinstance(radius,(int,float)) or not np.isfinite(radius) or not 0<radius<=50 or not isinstance(segments,int) or isinstance(segments,bool) or not 6<=segments<=64:raise ValueError('Invalid tube radius/segments')
+ delta=np.diff(points,axis=0);length=np.linalg.norm(delta,axis=1)
+ if np.any(length<1e-6):raise ValueError('Duplicate tube points')
+ directions=delta/length[:,None];tangents=np.vstack([directions[0],directions[:-1]+directions[1:],directions[-1]]);norm=np.linalg.norm(tangents,axis=1)
+ if np.any(norm<1e-6):raise ValueError('Reversing tube tangent')
+ tangents/=norm[:,None];rings=[];normals=[];u=None
+ for point,tangent in zip(points,tangents):
+  if u is not None:u=u-tangent*np.dot(u,tangent)
+  if u is None or np.linalg.norm(u)<1e-6:
+   axis=np.eye(3)[np.argmin(np.abs(tangent))];u=np.cross(tangent,axis)
+  u/=np.linalg.norm(u);v=np.cross(tangent,u);angles=np.arange(segments)*2*np.pi/segments;normal=np.cos(angles)[:,None]*u+np.sin(angles)[:,None]*v;rings.append(point+radius*normal);normals.append(normal)
+ corners=[]
+ for i in range(len(points)-1):
+  for j in range(segments):
+   k=(j+1)%segments
+   for a,b in [(i,j),(i,k),(i+1,k),(i,j),(i+1,k),(i+1,j)]:corners.append([*rings[a][b],*normals[a][b]])
+ for end,sign in [(0,-1),(-1,1)]:
+  normal=sign*tangents[end]
+  for j in range(segments):
+   k=(j+1)%segments;triangle=[points[end],rings[end][j],rings[end][k]]
+   if sign<0:triangle.reverse()
+   corners.extend([[*point,*normal]for point in triangle])
+ return np.asarray(corners,dtype='<f4')
+
 def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
  """Stable reusable API. prepared is prepare JSON; plan uses parts/sourceId/matrixRows/targets. output Path.
  Only selected manufacturer triangles are exported. Plans are reviewed evidence, never auto-fit geometry.
@@ -286,6 +314,10 @@ def build_model(prepared,plan,output,*,evidence_root=None,license_path=None):
     for corner in clip_source_triangle(native_corners,clip):corners.append([*(corner[:3]@pr.T+effective[:3,3]),*corner[3:]])
   if not corners:raise ValueError('Source plane clip selects an empty surface')
   data=np.asarray(corners,dtype='<f4');expected=np.asarray(corners)[:,:3]if clip is not None else v[part.faces[face_indices]].reshape(-1,3);error=float(np.abs(data[:,:3]-expected).max());checks.append({'name':item['name']+' source-fidelity','errorMm':error,'toleranceMm':.05,'pass':error<=.05,'sourceId':item_source['id']});binary=data.tobytes();buffers.append(binary);allv.append(data[:,:3]);records.append({**item,'byteOffset':offset,'vertexCount':len(corners),'boundsMm':[expected.min(0).tolist(),expected.max(0).tolist()]});offset+=len(binary)
+ for tube in plan.get('tubes',[]):
+  if not isinstance(tube.get('name'),str) or not tube['name'] or any(p['name']==tube['name']for p in records):raise ValueError('Invalid/duplicate tube name')
+  if not tube.get('sourceIds') or any(sid not in sources for sid in tube['sourceIds']) or not tube.get('basis') or not tube.get('notes'):raise ValueError('Tube requires explicit source and estimate basis')
+  data=tube_corners(tube);buffers.append(data.tobytes());allv.append(data[:,:3]);records.append({'name':tube['name'],'sourceComponent':None,'role':tube.get('role','pcb'),'color':tube.get('color','#191b1c'),'byteOffset':offset,'vertexCount':len(data),'boundsMm':[data[:,:3].min(0).tolist(),data[:,:3].max(0).tolist()],'basis':tube['basis'],'sourceIds':tube['sourceIds'],'notes':tube['notes'],**({'material':tube['material']}if tube.get('material')else{})});offset+=data.nbytes
  for surface in plan.get('surfaces',[]):
   w,h=surface['sizeMm'];radius=surface['radiusMm'];cx,cy,z=surface['positionMm'];points=[]
   for x,y,start in [(w/2-radius,h/2-radius,0),(-w/2+radius,h/2-radius,90),(-w/2+radius,-h/2+radius,180),(w/2-radius,-h/2+radius,270)]:

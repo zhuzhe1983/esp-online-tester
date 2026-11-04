@@ -28,6 +28,13 @@ class SourceMeshTest(unittest.TestCase):
    painted,_=exporter.build_model(prepared,plan,root/'painted',evidence_root=root/'painted-evidence',license_path=source/'license.txt')
    self.assertNotIn('material',painted['parts'][0])
    self.assertEqual(painted['parts'][1]['material'],{'opacity':.38,'roughness':.25,'metalness':0})
+   plan['tubes']=[{'name':'wire','pointsMm':[[0,0,0],[0,0,3],[1,0,4]],'radiusMm':.2,'sourceIds':['cad'],'basis':'photo-estimate','notes':'Test explicit route'}]
+   wired,_=exporter.build_model(prepared,plan,root/'wired',evidence_root=root/'wired-evidence',license_path=source/'license.txt')
+   wire=next(p for p in wired['parts']if p['name']=='wire');self.assertEqual(wire['sourceComponent'],None);self.assertEqual(wire['sourceIds'],['cad']);self.assertEqual(wire['vertexCount'],216)
+   self.assertEqual(wired['artifacts']['source.stl'],meta['artifacts']['source.stl']);self.assertNotEqual(wired['artifacts']['geometry.bin'],painted['artifacts']['geometry.bin'])
+   plan['tubes'][0]['sourceIds']=['missing']
+   with self.assertRaisesRegex(ValueError,'explicit source'):exporter.build_model(prepared,plan,root/'missing-source',evidence_root=root/'missing-evidence',license_path=source/'license.txt')
+   plan.pop('tubes')
    plan['provenance']['licenseFile']='../escape.txt'
    with self.assertRaisesRegex(ValueError,'license filename'):exporter.build_model(prepared,plan,root/'bad',evidence_root=root/'bad-evidence',license_path=source/'license.txt')
    self.assertFalse((root/'escape.txt').exists())
@@ -53,5 +60,18 @@ class SourceMeshTest(unittest.TestCase):
    with self.assertRaisesRegex(ValueError,'symlink'):exporter.build_model(prepared,plan,linked,evidence_root=root/'linked-evidence',license_path=source/'license.txt')
    self.assertEqual(outside.read_bytes(),b'keep')
    self.assertFalse((root/'escape.txt').exists())
+
+class TubeTest(unittest.TestCase):
+ def test_endpoints_radius_caps_and_determinism(self):
+  item={'pointsMm':[[1,2,3],[1,2,8]],'radiusMm':.25,'radialSegments':12};data=exporter.tube_corners(item)
+  self.assertEqual(data.shape,(144,6));self.assertTrue(np.isfinite(data).all());np.testing.assert_allclose(np.linalg.norm(data[:,3:],axis=1),1,atol=1e-6)
+  mesh=trimesh.Trimesh(vertices=data[:,:3],faces=np.arange(len(data)).reshape(-1,3),process=True)
+  self.assertTrue(mesh.is_watertight);self.assertTrue(mesh.is_winding_consistent);self.assertGreater(mesh.volume,0)
+  np.testing.assert_allclose(mesh.bounds,[[.75,1.75,3],[1.25,2.25,8]])
+  self.assertEqual(data.tobytes(),exporter.tube_corners(item).tobytes())
+ def test_invalid_paths_rejected(self):
+  base={'pointsMm':[[0,0,0],[0,0,1]],'radiusMm':.2}
+  for patch in [{'pointsMm':[[0,0,float('nan')],[0,0,1]]},{'pointsMm':[[0,0,0]]},{'pointsMm':[[0,0,0],[0,0,0]]},{'pointsMm':[[0,0,0],[0,0,1],[0,0,0]]},{'radiusMm':0},{'radiusMm':True},{'radialSegments':2}]:
+   with self.assertRaises(ValueError):exporter.tube_corners({**base,**patch})
 
 if __name__=='__main__':unittest.main()

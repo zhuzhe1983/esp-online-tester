@@ -1,0 +1,8 @@
+set(ST_DIR "$ENV{STAMPFLY_SOURCE}/lib/vl53l3c")
+if(NOT EXISTS "${ST_DIR}/vl53lx_api.c")
+    message(FATAL_ERROR "Set STAMPFLY_SOURCE to the verified M5StampFly checkout")
+endif()
+file(GLOB ST_SOURCES "${ST_DIR}/*.c")
+list(FILTER ST_SOURCES EXCLUDE REGEX "vl53lx_platform(_init|_log)?\\.c$")
+idf_component_register(SRCS "main.c" "control.c" "sensors.c" "tof_platform.c" ${ST_SOURCES} INCLUDE_DIRS "." "../vendor" "${ST_DIR}" REQUIRES esp_driver_gpio esp_driver_rmt esp_driver_ledc esp_driver_uart esp_driver_spi driver esp_timer)
+target_compile_definitions(${COMPONENT_LIB} PRIVATE STDINT_H)

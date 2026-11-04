@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-04T03:46:06.795009+00:00",
+  "scope": "Real MOTOR/STOP UI baseline; does not accept takeoff or flight dynamics. Preview isolation uses explicitly synthetic renderer inputs.",
+  "code": {
+    "base": "8b20e74a",
+    "uiMotorCheckpoint": "fecef3bc",
+    "previewIsolation": "a8e31a98",
+    "laterPresentationAmendment": "8aba0afd",
+    "amendmentScope": "Attitude readout, horizontal camera follow, reset target clearing and no-screen overlay suppression. MOTOR protocol unchanged; final integrated flight remains separately pending."
+  },
+  "inputs": {
+    "firmware": {
+      "name": "stampfly_uart_demo",
+      "version": "0.1.0",
+      "source": "Local source-built pre-release sensor demo; not official factory",
+      "sha256": "52e3f5649841528fe54a6f31e47cc09e217e8d27a24ea2590038268cbf11caae",
+      "bytes": 348400,
+      "notTheLaterPublishedArtifact": "dba1e1b0658789c13571b617ea21fff3b9626be96e840fec56f7803e5450e128"
+    },
+    "wasm": {
+      "sha256": "03c006a5b7e0e92ebe12c69879dc974953811b3efa4797652c6062bb223c612e",
+      "bytes": 4999337,
+      "flightBridge": false
+    },
+    "romSha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+    "models": {
+      "m5stack-k138": {
+        "modelSha256": "b9f759a0b894438e79c723695ca20ef3e0b44423bccf86b684873088f0700a0d",
+        "geometrySha256": "9b40bcbd7de56900d6786c3f04b70b8f7f0a2ca200db1ed8d0009c726b6c93a8"
+      },
+      "m5stack-k138-v11": {
+        "modelSha256": "e4d33855a4f08262d6ce2fae97646bf8730318a12cfb1fa2cdc82acefab4ad9e",
+        "geometrySha256": "01c1d3b476f3ccc0b7df08de5b7b58cb0cfbfda72c507ac1678622f19b69ae73"
+      }
+    }
+  },
+  "browser": {
+    "engine": "Headless Chrome via tracked Playwright wrapper",
+    "desktop": [
+      1280,
+      720
+    ],
+    "mobile": [
+      390,
+      844
+    ]
+  },
+  "motorOrder": [
+    "front-left",
+    "front-right",
+    "rear-left",
+    "rear-right"
+  ],
+  "workbench": {
+    "products": [
+      "m5stack-k138",
+      "m5stack-k138-v11"
+    ],
+    "input": "Actual public UI local file load; actual pointer clicks on preset, sliders, Apply and Stop",
+    "ready": "SF1 READY stampfly-uart-demo 0.1.0",
+    "preset": {
+      "requested": [
+        0.2,
+        0.2,
+        0.2,
+        0.2
+      ],
+      "actualDuty": [
+        0.19922179,
+        0.19922179,
+        0.19922179,
+        0.19922179
+      ],
+      "actualFrequencyHz": [
+        150093.808630394,
+        150093.808630394,
+        150093.808630394,
+        150093.808630394
+      ],
+      "freshAck": "SF1 ACK MOTOR",
+      "ui": "已收到 MOTOR 回执，实际 PWM 已更新。"
+    },
+    "v11IndividualSliders": {
+      "requested": [
+        0.08,
+        0.26,
+        0.44,
+        0.62
+      ],
+      "actualDuty": [
+        0.07812619,
+        0.26172274,
+        0.44141299,
+        0.62108797
+      ]
+    },
+    "runningStop": {
+      "freshAck": "SF1 ACK STOP",
+      "actualDuty": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ui": "已收到 STOP 回执，实际 PWM 已归零。"
+    },
+    "pause": {
+      "status": "paused",
+      "preservesObservedDuty": true,
+      "nonStopCommandsDisabled": true,
+      "canvasIdentical": true,
+      "observedCycle": 18141768000
+    },
+    "pausedStop": {
+      "action": "Reset same guest through runtime.reset; runtime automatically boots again",
+      "resultStatus": "running",
+      "freshReady": true,
+      "actualDuty": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "rotorRendering": {
+      "runningCanvasHashesDiffer": true,
+      "pausedCanvasHashesEqual": true,
+      "separationHostMilliseconds": 350,
+      "source": "Actual guest PWM and guest cycle; no host-set motor values",
+      "rotorOnlyRegion": {
+        "canvasPixelRect": [
+          250,
+          40,
+          330,
+          115
+        ],
+        "excludes": "DOM status/speed and no-display text overlays",
+        "comparison": {
+          "running": {
+            "changedPixelsOver2": 817,
+            "totalPixels": 6000
+          },
+          "paused": {
+            "changedPixelsOver2": 0,
+            "totalPixels": 6000
+          }
+        }
+      }
+    },
+    "mobile": {
+      "viewportWidth": 390,
+      "documentScrollWidth": 390
+    }
+  },
+  "iframe": {
+    "configuration": "share({mode:embed}) with pinned local development HTTP URL; native unverified-source dialog accepted via visible Continue button",
+    "automaticStartupDuty": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "manualPresetDuty": [
+      0.19922179,
+      0.19922179,
+      0.19922179,
+      0.19922179
+    ],
+    "originBoundParentBridgeObserve": {
+      "productId": "m5stack-k138-v11",
+      "status": "running",
+      "actualDuty": [
+        0.19922179,
+        0.19922179,
+        0.19922179,
+        0.19922179
+      ],
+      "error": null
+    },
+    "manualStopDuty": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "viewportWidth": 390,
+    "documentScrollWidth": 390,
+    "pausedResetTargets": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "pausedResetActualDuty": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "previewIsolation": {
+    "kind": "Synthetic renderer guard test, not firmware proof",
+    "normalPointer": {
+      "pixel": [
+        290,
+        225
+      ],
+      "events": [
+        {
+          "type": "button",
+          "id": "button",
+          "pressed": true
+        },
+        {
+          "type": "button",
+          "id": "button",
+          "pressed": false
+        }
+      ]
+    },
+    "previewPointerSamePixelEvents": [],
+    "ignoredInputs": [
+      "RGB",
+      "PWM at two guest times",
+      "flight pose",
+      "accessory routing"
+    ],
+    "previewCanvasUnchanged": true,
+    "flightDataset": "disabled"
+  },
+  "captureHashes": {
+    "rotors-running-a": "48570f358dbbc5f9267beadb3f374d10290dd64bbe80e3ad44ec53e48285a873",
+    "rotors-running-b": "a3b73e9edfcb02edc9d1c9df41d43357bf0517e26becfaeec98fbad96c12d9fc",
+    "rotors-paused-a": "e9e7c1e682780d8180cc209b6008874f999e45d8ed6273f9868615a0736234be",
+    "rotors-paused-b": "e9e7c1e682780d8180cc209b6008874f999e45d8ed6273f9868615a0736234be",
+    "preview-static-before": "a1061bab4633f70087b8e23c42022ce7850ca3605789359c408b355d8bbe80c0",
+    "preview-static-after": "a1061bab4633f70087b8e23c42022ce7850ca3605789359c408b355d8bbe80c0",
+    "stampfly-v11-mobile": "294e2491d4004f9d3f11cc0159702524ab72d877cbde0cb735f5a3679c186de5",
+    "stampfly-motor-demo": "2030a4133672e3a71f7053e31d02632a28de135208314b6ff1569a0ac9c6628a"
+  },
+  "negativeResults": [
+    "The first baseline runtime-test invocation was blocked by the new worktree missing its ROM prerequisite; separate real browser used the copied hash-verified ROM and production WASM.",
+    "A probe attempted Start after paused Stop had already reset and automatically booted; the disabled Start timed out. Subsequent checks observed running with fresh READY and actual zero PWM.",
+    "An API product switch retained existing local upload selections; a second filename accumulated into an incomplete build. Clearing the file selection then selecting one merged image succeeded.",
+    "The iframe remote source correctly waited at its unverified-source confirmation dialog; continuing through the visible dialog booted with actual zero motor duty."
+  ],
+  "notAccepted": [
+    "Public catalog selection of the later dba1 artifact",
+    "Real TAKEOFF/LAND/hover/translation",
+    "Physical hardware behavior or calibrated rotor RPM"
+  ],
+  "privacy": "Only curated commands, artifact hashes, output values and public-product screenshots retained. Local fixture URLs, absolute paths, session IDs and full console omitted."
+}

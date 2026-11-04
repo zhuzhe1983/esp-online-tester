@@ -14,12 +14,15 @@ const compareManufacturers = (a,b) => {
   return Number(!/^[A-Za-z0-9]/.test(left))-Number(!/^[A-Za-z0-9]/.test(right)) || manufacturerCollator.compare(left,right);
 };
 export const productOptionLabel = product => product.runtime?.board ? product.name : `${product.name} × 尚未适配`;
-export const manufacturerNames = products => [...new Set(products.map(item => item.manufacturer))].sort(compareManufacturers);
-export const productsForManufacturer = (products, manufacturer, familyId = '') => products.filter(item => item.manufacturer === manufacturer && (!familyId || item.family?.id === familyId)).sort((a,b) => collator.compare(a.name.replace(/^M5Stack /,''),b.name.replace(/^M5Stack /,'')) || collator.compare(a.id,b.id));
+// Picker visibility never changes the full catalog or scene identity.
+export const isPickerProduct = product => product.pickerVisible !== false;
+export const manufacturerNames = products => [...new Set(products.filter(isPickerProduct).map(item => item.manufacturer))].sort(compareManufacturers);
+export const productsForManufacturer = (products, manufacturer, familyId = '') => products.filter(item => isPickerProduct(item) && item.manufacturer === manufacturer && (!familyId || item.family?.id === familyId)).sort((a,b) => collator.compare(a.name.replace(/^M5Stack /,''),b.name.replace(/^M5Stack /,'')) || collator.compare(a.id,b.id));
+export const visualVariantsForProduct = (products, parentId) => products.filter(item => parentId && item.visualVariantOf === parentId && item.id !== parentId && item.model).sort((a,b) => collator.compare(a.name,b.name));
 export function productFamilies(products, manufacturer) {
   const families = new Map();
   for (const item of products) {
-    if (item.manufacturer !== manufacturer || !item.family?.id || !item.family?.name) continue;
+    if (!isPickerProduct(item) || item.manufacturer !== manufacturer || !item.family?.id || !item.family?.name) continue;
     const family = families.get(item.family.id) || {id:item.family.id,name:item.family.name,count:0};
     family.count++; families.set(family.id,family);
   }
@@ -27,7 +30,7 @@ export function productFamilies(products, manufacturer) {
 }
 export function productFamilyGroups(products) {
   const groups = new Map();
-  for (const item of products) {
+  for (const item of products.filter(isPickerProduct)) {
     const id = item.family?.id || '';
     if (!groups.has(id)) groups.set(id,{id,name:item.family?.name || '未分类',products:[]});
     groups.get(id).products.push(item);
@@ -41,7 +44,7 @@ export function productIdentityLabel(product) {
 }
 export function searchProducts(products, query) {
   const words = String(query).normalize('NFKC').toLowerCase().trim().split(/\s+/).filter(Boolean);
-  return products.filter(item => { const text = [item.name,item.manufacturer,item.family?.name,item.family?.id,item.sku,item.id,item.module,item.chip,item.hardwareRevision,item.providers?.['lilygo-spark']?.productId,...(Array.isArray(item.aliases)?item.aliases:[])].filter(Boolean).join(' ').normalize('NFKC').toLowerCase(); return words.every(word => text.includes(word)); }).sort((a,b) => collator.compare(a.name,b.name));
+  return products.filter(isPickerProduct).filter(item => { const text = [item.name,item.manufacturer,item.family?.name,item.family?.id,item.sku,item.id,item.module,item.chip,item.hardwareRevision,item.providers?.['lilygo-spark']?.productId,...(Array.isArray(item.aliases)?item.aliases:[])].filter(Boolean).join(' ').normalize('NFKC').toLowerCase(); return words.every(word => text.includes(word)); }).sort((a,b) => collator.compare(a.name,b.name));
 }
 export const accessoryBrand = item => item.manufacturer || 'DIY';
 export const accessoryInterface = item => item.connector?.type || '未标注';

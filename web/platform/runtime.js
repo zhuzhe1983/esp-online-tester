@@ -1,3 +1,4 @@
+import {hasFlight,FLIGHT_MODEL,parseFlightSnapshot} from './flight-state.js';
 import {parseHardwareDiagnostics} from './hardware-diagnostics.js';
 import {validServoSnapshot} from './servo-state.js';
 import {hasMotorOutput,parseMotorSnapshot,STAMPFLY_MOTORS} from './motor-state.js';
@@ -183,6 +184,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   const emptyStorage = () => ({status:'unloaded', scope:null, backend:null, restored:false, pristine:true, revision:0, epoch:0, lastSavedAt:null, changedPages:0, error:null});
   const emptySd=()=>({supported:false,present:false,bytes:0,format:null,status:'unloaded',backend:null,restored:false,pristine:true,changedPages:0,error:null});
   let sdCard=emptySd(),sdSession=null,leds=[],servos=[],servoSupply=null,motors=[],motorOutput=null,hardwareDiagnostics=null;
+  let flight=null,flightEpoch=0;
+  const flightEnabled=()=>scene?.flight?.enabled===true;
   let accessoryInputs = [], accessoryOutputs = [];
   const resetAccessoryInputs=()=>{accessoryInputs=routedAccessories(scene,product,catalog).map(route=>({...route,connected:true,...(route.viaAccessoryId?{effectiveConnected:true}:{}),...(route.control==='button'?{pressed:false}:route.control==='knob'?{value:scene.accessories.find(item=>item.id===route.accessoryId)?.parameters?.position??0.5}:route.control==='motion'?{motion:motionParameter(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters)}:route.control==='environment'?environmentParameters(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters):route.control==='illuminance'?{lux:illuminanceParameter(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters)}:{})}));accessoryOutputs=accessoryInputs.filter(route=>route.output).map(({accessoryId,model,port})=>({accessoryId,model,port,leds:[[0,0,0],[0,0,0],[0,0,0]]}));};
   let storage = emptyStorage(), storageSession = null, storageSequence = 0;
@@ -190,9 +193,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   const imuModel = () => ({stopwatch:'bmi270-register-subset',atoms3:'mpu6886-register-subset','atom-matrix':'mpu6886-register-subset','atom-matrix-v11':'bmi270-register-subset',atoms3r:'bmi270-register-subset','atoms3r-chatbot':'bmi270-register-subset',papers3:'bmi270-register-subset',stampfly:'bmi270-register-subset','stampfly-v11':'bmi270-register-subset'}[product?.runtime?.board] || null);
   const defaultImu = () => ({enabled: true, source: product?.runtime?.board === 'stopwatch' ? 'scene' : 'agent', ...orientationSample([0,0,0,1]), delivery: 'configured', guestTime: null});
   let imu = defaultImu(), imuPreviousAt = null, imuGeneration = 0;
+  const observedImu=()=>!imuModel()?null:!flightEnabled()?clone(imu):{enabled:true,source:'flight',quaternion:null,accelG:flight?clone(flight.sensors.rawAccelG):null,gyroDps:flight?clone(flight.sensors.rawGyroDps):null,delivery:flight?'register-state':'configured',guestTime:flight?.guestTime??null};
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
-  const snapshot = () => ({ version: API_VERSION, status, audio:audio.snapshot(), network:network.snapshot(), scene: clone(scene), accessoryInputs: clone(accessoryInputs), accessoryOutputs: clone(accessoryOutputs), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), sdCard:clone(sdCard),leds:clone(leds),servos:clone(servos),servoSupply,motors:clone(motors),motorOutput:clone(motorOutput),hardwareDiagnostics:clone(hardwareDiagnostics), imu: imuModel() ? clone(imu) : null, frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
-  const emit = event => { for (const listener of listeners) { try { listener(['hardware-diagnostics','motors'].includes(event.type)?clone(event):event); } catch (e) { console.error('ESP tester event handler:', e); } } };
+  const snapshot = () => ({ version: API_VERSION, status, audio:audio.snapshot(), network:network.snapshot(), scene: clone(scene), accessoryInputs: clone(accessoryInputs), accessoryOutputs: clone(accessoryOutputs), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), sdCard:clone(sdCard),leds:clone(leds),servos:clone(servos),servoSupply,motors:clone(motors),motorOutput:clone(motorOutput),flight:clone(flight),hardwareDiagnostics:clone(hardwareDiagnostics), imu: observedImu(), frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
+  const emit = event => { for (const listener of listeners) { try { listener(['hardware-diagnostics','motors','flight'].includes(event.type)?clone(event):event); } catch (e) { console.error('ESP tester event handler:', e); } } };
   const loadReporter = (loadId, signal) => {
     let fileIndex = 0;
     const send = event => {
@@ -219,7 +223,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   const rejectPending = e => { for (const item of pending.values()) { clearTimeout(item.timeout); item.reject(e); } pending.clear(); };
   const clearHardwareDiagnostics = () => { if(hardwareDiagnostics!==null){hardwareDiagnostics=null;emit({type:'hardware-diagnostics',hardwareDiagnostics:null});} };
   const clearMotors = () => {motors=[];motorOutput=null;emit({type:'motors',motors:[],motorOutput:null});};
-  const stopWorker = () => { clearMotors(); clearHardwareDiagnostics();network.detach(); audio.reset(); worker?.terminate(); worker = null; rejectPending(error('SESSION_REPLACED', 'The emulator session was replaced.')); booted = false; imuPreviousAt = null; imu.gyroDps = [0,0,0]; imu.delivery = 'configured'; imu.guestTime = null; };
+  const clearFlight=()=>{flight=null;emit({type:'flight',flight:null});};
+  const stopWorker = () => { clearFlight();clearMotors(); clearHardwareDiagnostics();network.detach(); audio.reset(); worker?.terminate(); worker = null; rejectPending(error('SESSION_REPLACED', 'The emulator session was replaced.')); booted = false; imuPreviousAt = null; imu.gyroDps = [0,0,0]; imu.delivery = 'configured'; imu.guestTime = null; };
   const ask = (key, message, transfer = []) => new Promise((resolveRequest, reject) => {
     requireValue(worker, 'NOT_READY', 'The emulator worker is not ready.');
     requireValue(!pending.has(key), 'BUSY', 'A worker command is already pending.');
@@ -241,6 +246,12 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     emit({ type: 'serial', source, data });
   };
   const receive = message => {
+    if(message.flight&&flightEnabled()&&hasFlight(product?.runtime?.board)){
+      const next=parseFlightSnapshot(message.flight);
+      if(next&&next.epoch===flightEpoch&&(!flight||next.cycle>=flight.cycle)){flight=next;emit({type:'flight',flight:clone(flight)});}
+    }
+    if(message.flightError){const e=error('FLIGHT_FAILED',message.flightError);report(e);setStatus('error');}
+
     if(message.networkFrame||message.softAp||message.networkError)network.receive(message);
     if(message.networkReply!==undefined)resolve(`network:${message.networkReply}`,message);
     if (message.text !== undefined) {
@@ -578,7 +589,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     current.onerror = event => { const e = error('WORKER_ERROR', event.message || 'WebAssembly worker failed.'); rejectPending(e); report(e); setStatus('error'); };
     const wasmBuffer = wasm.buffer.slice(wasm.byteOffset, wasm.byteOffset + wasm.byteLength);
     await ask('ready', { op: 'init', wasm: wasmBuffer, frameAck: true }, [wasmBuffer]);
-    const result = await ask('created', { op: 'create', ...bundle.cfg, audioStreaming:true });
+    const result = await ask('created', { op: 'create', ...bundle.cfg, audioStreaming:true, ...(flightEnabled()?{flight:scene.flight,flightEpoch:++flightEpoch}:{}) });
     requireValue(result.created, 'CREATE_FAILED', 'Cannot create the selected emulator board.');
     audio.reset(!isC5Board(bundle.cfg.board)&&result.audioAvailable===true);
     for (const file of bundle.files) {
@@ -604,7 +615,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     if(isC5Board(bundle.cfg.board))await network.attach({available:false});
     else if(result.networkAvailable&&romFor(bundle.cfg.board)!=='esp32p4_rev0_rom.elf')await network.attach({available:true,manifestWifi:bundle.cfg.wifi});
     else if(bundle.cfg.wifi)worker.postMessage({op:'wifi',spec:bundle.cfg.wifi});
-    if (imuModel()) await applyImu();
+    if (imuModel()&&!flightEnabled()) await applyImu();
     resetAccessoryInputs();
     for(const route of accessoryInputs.filter(route=>!route.hub)) await sendAccessory(route);
     emit({type:'accessories',accessoryInputs:clone(accessoryInputs)});
@@ -774,11 +785,12 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin,pins,addresses,control,hub,viaAccessoryId,portId})=>({accessoryId,model,port,...(pin===undefined?{}:{pin}),...(pins?{pins,addresses}:{}),controls:control?[control]:[],...(hub?{hub:true}:{}),...(viaAccessoryId?{viaAccessoryId,portId}:{})})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio) || boardButton(c)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv','tdeck'].includes(product?.runtime?.board)?{rows:4,columns:product.runtime.board==='tdeck'?10:14,model:product.runtime.board==='tdeck'?'esp32c3-i2c-raw':product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: c5?['uart0']:['usb', 'uart0', 'uart1'] },
         servos:{available:product?.runtime?.board==='stackchan',axes:product?.runtime?.board==='stackchan'?['pan','tilt']:[],source:'guest-uart-feedback',unit:'degrees',hardwareValidated:false},
         motors:{available:hasMotorOutput(product?.runtime?.board),axes:hasMotorOutput(product?.runtime?.board)?STAMPFLY_MOTORS.map(({id})=>id):[],source:'guest-routed-pwm',unit:'normalized-duty',rpmAvailable:false,flightSimulated:false,hardwareValidated:false},
+        flight:{available:hasFlight(product?.runtime?.board),enabled:flightEnabled(),model:FLIGHT_MODEL,calibrated:false,source:'guest-pwm-rigid-body',methods:['configureFlight','readFlight'],recording:false,shares:'configuration-only',worldFrame:'NED',bodyFrame:'FRD'},
         hardwareDiagnostics:{available:product?.runtime?.board==='stopwatch',source:'guest-registers',hardwareValidated:false},
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { ...(c5?{available:false}:{}),mode: c5?null:'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },
         lora:{available:['papermono','lilygo-t-beam-v1-2','stamp-c6lora'].includes(product?.runtime?.board),model:product?.runtime?.board==='lilygo-t-beam-v1-2'?'sx1276-lora-digital':'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
-        imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: ['stopwatch','atom-matrix','atom-matrix-v11'].includes(product?.runtime?.board), orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: 'host-input', physicalMountingVerified: false },
+        imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: ['stopwatch','atom-matrix','atom-matrix-v11'].includes(product?.runtime?.board), orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: flightEnabled()?'guest-cycles':'host-input', inputOwner:flightEnabled()?'flight':'host', physicalMountingVerified: false },
         unsupported: ['arbitrary-dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input'] };
     },
     configure(nextScene) { progressGeneration++; imuGeneration++; return exclusive(async () => {
@@ -792,6 +804,23 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       resetAccessoryInputs(); imu = defaultImu(); imuPreviousAt = null;
       setStatus('configured'); return { ...snapshot(), warnings: validation.warnings };
     }); },
+    configureFlight(options) { return exclusive(async () => {
+      requireValue(scene&&hasFlight(product?.runtime?.board),'FLIGHT_UNSUPPORTED','Flight mode requires StampFly or StampFly v1.1.');
+      requireValue(options&&typeof options==='object'&&!Array.isArray(options)&&Object.keys(options).length===1&&typeof options.enabled==='boolean','INVALID_FLIGHT','Specify only enabled: true or false.');
+      requireValue(!['running','loading'].includes(status),'FLIGHT_PAUSE_REQUIRED','Pause the device before changing flight mode.');
+      if(options.enabled===flightEnabled())return snapshot();
+      await preserveStorage();
+      if(options.enabled)scene.flight={enabled:true,model:FLIGHT_MODEL};else delete scene.flight;
+      imuGeneration++;imu=defaultImu();imuPreviousAt=null;
+      if(loaded){
+        const loadId=++progressGeneration;loadCancelled=false;aborter=new AbortController();
+        serial='';serialByPort={};stats={};hostPace={};frame=null;frameNumber=0;lastError=null;leds=[];servos=[];servoSupply=null;setStatus('loading');
+        try{await initialize(loaded,loadReporter(loadId,aborter.signal));setStatus('ready');}
+        catch(e){stopWorker();if(status!=='disposed')setStatus('error');throw e;}
+      }else{clearFlight();emit({type:'state',state:snapshot()});}
+      return snapshot();
+    }); },
+    async readFlight(){alive();return clone(flight);},
     updateSceneMetadata(changes) { return exclusive(async () => {
       requireValue(scene, 'NOT_CONFIGURED', 'Configure a scene before updating its presentation.');
       requireValue(changes && typeof changes === 'object' && Object.keys(changes).every(key => ['keyMapping', 'view'].includes(key)), 'INVALID_SCENE', 'Only keyMapping and view can be changed without reconfiguring the emulator.');
@@ -826,7 +855,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     start() { return exclusive(start); },
     pause() { return exclusive(async () => {
       requireValue(['running', 'paused'].includes(status), 'NOT_RUNNING', 'Only a running emulator can be paused.');
-      if (imuModel()) { imu.gyroDps = [0,0,0]; imuPreviousAt = null; await applyImu(); }
+      if (imuModel()&&!flightEnabled()) { imu.gyroDps = [0,0,0]; imuPreviousAt = null; await applyImu(); }
       if (status === 'running') await ask('stopped', { op: 'stop' });
       await preserveStorage(); setStatus('paused'); return snapshot();
     }); },
@@ -840,6 +869,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     }); },
     input(event) { return exclusive(() => input(event)); },
     setImu(options = {}) { const generation = imuGeneration, requestedAt = performance.now(); return exclusive(async () => {
+      requireValue(!flightEnabled(), 'FLIGHT_OWNS_IMU', 'Disable flight mode before supplying independent IMU samples.');
       requireValue(imuModel(), 'IMU_UNSUPPORTED', 'This product does not have a host-fed IMU model.');
       requireValue(generation === imuGeneration, 'SESSION_REPLACED', 'The device changed before its orientation was applied.');
       requireValue(options && typeof options === 'object' && !Array.isArray(options) && Object.keys(options).every(key => ['enabled','quaternion','source','angularVelocityDps'].includes(key)), 'INVALID_IMU', 'IMU options contain unknown fields.');

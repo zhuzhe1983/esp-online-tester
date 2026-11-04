@@ -1,6 +1,7 @@
 import {mountHardwareDiagnostics} from './hardware-diagnostics.js';
 import {mountAudioControls} from './audio-controls.js';
 import {mountMotorOutputs} from './motor-output-ui.js';
+import {mountStampflyDemoControls} from './stampfly-demo-controls.js';
 import {mountNetworkControls} from './network-ui.js';
 import {illuminanceParameter} from './illuminance-input.js';
 import {ENVIRONMENT_FIELDS,environmentParameters} from './environment-input.js';
@@ -27,6 +28,7 @@ import {configureFirmwareRelay} from './firmware-relay.js';
 import {burnerProjectUrl} from './firmware-download-access.js';
 import {productOptionLabel, productIdentityLabel, productFamilies, productFamilyGroups, manufacturerLabel, manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
 import {mountDeviceSearch, mountAccessorySearch} from './device-search.js';
+import {mountVisualVariantMenu} from './visual-variant-menu.js';
 import {encodeRecording, decodeRecording, validateRecording} from './recording.js';
 import {SHELL_DEFAULT, SHELL_PRESETS, SHELL_FINISHES, shellPreset} from './appearance.js';
 import {renderHintList, productHints, firmwareHints} from './hints.js';
@@ -52,6 +54,7 @@ const matchingHubFirmware = source => [burnerUi?.current(),sparkUi?.current()].f
 let preserveUnspecifiedFirmware = false;
 let productChoiceManufacturer = '', productFamilyFilter = '', productChoiceTarget = '';
 let orientationSettlement = null;
+let visualVariantMenu, lastRuntimeState;
 let localFiles = [], localSource = null, localSelectionToken = 0;
 const gpsLookups = new Map(), gpsMessages = new Map();
 const heldKeys = new Map();
@@ -238,6 +241,8 @@ function onRuntimeEvent(event) {
 
   if (event.type === 'state') {
     const previousStatus = status; status = event.state.status; loadedFirmware=event.state.firmware;
+    lastRuntimeState=event.state;
+    visualVariantMenu?.update({product:catalog.products.find(item=>item.id===event.state.scene?.productId),status,mode:event.state.scene?.view?.deviceView,busy});
     sceneView?.setMotorsRunning(status==='running');sceneView?.updateMotors(event.state.motors,event.state.motorOutput);
     accessoryInputState=event.state.accessoryInputs || [];accessoryOutputState=event.state.accessoryOutputs || [];sceneView?.updateAccessoryOutputs(accessoryOutputState);
     if (['configured', 'loading', 'error', 'disposed'].includes(status)) humanButtons?.invalidate();
@@ -251,6 +256,7 @@ function onRuntimeEvent(event) {
       if (signature !== renderedScene) { renderedScene = signature; renderScene(); }
       if (previousFirmware !== JSON.stringify(scene.firmware)) reflectFirmwareSource({preserveLocal: uiConfiguring});
     }
+    sceneView?.updateFlight(event.state.flight);
     if (status === 'loading' && previousStatus !== 'loading') loadProgress = null;
     if (['configured', 'loading'].includes(status) && status !== previousStatus) {
       sceneView?.setInspection(false);
@@ -268,8 +274,10 @@ function onRuntimeEvent(event) {
     sceneView?.updateServos(event.servos);
   } else if (event.type === 'motors') {
     sceneView?.updateMotors(event.motors,event.motorOutput);
+  } else if (event.type === 'flight') {
+    sceneView?.updateFlight(event.flight);
   } else if (event.type === 'imu') {
-    if (event.imu?.source === 'agent') sceneView?.setOrientation?.(event.imu.quaternion, {notify: false});
+    if (!sceneView?.previewOnly && event.imu?.source === 'agent') sceneView?.setOrientation?.(event.imu.quaternion, {notify: false});
   } else if (event.type === 'load-progress') {
     if (status === 'loading' && (!loadProgress || event.loadId >= loadProgress.loadId)) { loadProgress = event; renderDownloadProgress(); }
   } else if (event.type === 'frame') {
@@ -293,6 +301,7 @@ function renderTransport() {
   const canLoad = Boolean(scene?.firmware || localSource);
   const sessionBusy = ['preparing', 'recording', 'playing'].includes(recordingState.status);
   const configurationBusy = busy || status === 'loading';
+  visualVariantMenu?.update({product:product(),status,mode:scene?.view?.deviceView,busy});
   for (const id of ['manufacturer-select','product-family-select','product-select','search-devices','firmware-select','firmware-kind','firmware-url','firmware-sha','firmware-history-select','accessory-brand','accessory-interface','accessory-select','search-accessories']) if ($(id)) $(id).disabled = configurationBusy;
   burnerUi?.setDisabled(configurationBusy);sparkUi?.setDisabled(configurationBusy);
   if ($('add-accessory')) $('add-accessory').disabled = configurationBusy || !$('accessory-select')?.value;
@@ -337,7 +346,7 @@ function renderTransport() {
   document.querySelectorAll('[data-gps-action]').forEach(button => { button.disabled = busy; });
   const badge = $('runtime-badge');
   if (badge) { badge.className = `runtime-badge ${status}`; badge.replaceChildren(element('span'), document.createTextNode(statuses[status] || status)); }
-  document.querySelectorAll('.device-button').forEach(button => { button.disabled = status !== 'running'; });
+  document.querySelectorAll('.device-button').forEach(button => { button.disabled = status !== 'running' || !!sceneView?.previewOnly; });
   transportUi?.refresh();
 }
 function renderEmpty() {
@@ -369,6 +378,9 @@ function renderProductChoices(manufacturer, {familyId = '', selectedId} = {}) {
     $('product-family-select').value = productFamilyFilter;
   }
   const choices = productsForManufacturer(catalog.products, manufacturer, productFamilyFilter);
+  // Keep an explicitly restored/API-selected assembly variant without listing it elsewhere.
+  const current = catalog.products.find(item => item.id === selectedId && item.pickerVisible === false && item.manufacturer === manufacturer && (!productFamilyFilter || item.family?.id === productFamilyFilter));
+  const selectable = current ? [...choices, current] : choices;
   if ($('product-select')) {
     const select = $('product-select'); select.replaceChildren();
     if (families.length && !productFamilyFilter) {
@@ -377,12 +389,13 @@ function renderProductChoices(manufacturer, {familyId = '', selectedId} = {}) {
         group.append(...family.products.map(item=>new Option(productOptionLabel(item),item.id))); select.append(group);
       }
     } else select.append(...choices.map(item=>new Option(productOptionLabel(item),item.id)));
-    if (choices.some(item=>item.id===selectedId)) select.value = selectedId;
-    select.disabled = !choices.length;
+    if (current) select.append(new Option(productOptionLabel(current), current.id));
+    if (selectable.some(item=>item.id===selectedId)) select.value = selectedId;
+    select.disabled = !selectable.length;
   }
   text('product-count', `${choices.filter(item=>item.runtime?.board).length} / ${choices.length} 款`);
   if ($('product-count')) $('product-count').title = `已有板级适配（含部分支持） / 当前${productFamilyFilter ? '系列' : '厂商'}设备总数`;
-  return choices;
+  return selectable;
 }
 function renderProduct() {
   const selected = product(); if (!selected) return;
@@ -397,6 +410,9 @@ function renderProduct() {
   if(kind){const option=kind.querySelector('[value="lilygo-spark"]');if(isLilygo(selected)){if(!option)kind.append(new Option('LILYGO Spark','lilygo-spark'));}else{if(kind.value==='lilygo-spark')kind.value='merged';option?.remove();}}
   burnerUi?.setProduct(selected);sparkUi?.setProduct(selected);updateRemoteMode();
   if ($('manufacturer-select')) {
+    const manufacturers = manufacturerNames(catalog.products);
+    if (!manufacturers.includes(selected.manufacturer)) manufacturers.push(selected.manufacturer);
+    $('manufacturer-select').replaceChildren(...manufacturers.map(name => new Option(manufacturerLabel(name), name)));
     $('manufacturer-select').value = selected.manufacturer;
     const keepFilter = (renderedProduct === selected.id || productChoiceTarget === selected.id) && productChoiceManufacturer === selected.manufacturer && (!productFamilyFilter || productFamilyFilter === selected.family?.id);
     renderProductChoices(selected.manufacturer, {familyId:keepFilter ? productFamilyFilter : selected.family?.id || '',selectedId:selected.id});
@@ -418,7 +434,7 @@ function renderProduct() {
   const source = selected.sources?.[0];
   if ($('product-source')) { $('product-source').hidden = !source; if (source) $('product-source').href = source.url; }
   if (renderedProduct !== selected.id) {
-    renderedProduct = selected.id; sceneView?.setProduct(selected); frameCount = 0; text('frame-count', '0 帧'); renderFirmwareLibrary();
+    renderedProduct = selected.id; showVisualProduct(selected); frameCount = 0; text('frame-count', '0 帧'); renderFirmwareLibrary();
     void knowledgePanel?.show(selected);
   }
   renderControls(); renderEmpty();
@@ -539,8 +555,9 @@ function renderControls() {
   }
 }
 async function sendInput(event, source = 'scene') {
+  if (sceneView?.previewOnly) return;
   await transportUi?.beforeHumanInput();
-  if (status !== 'running') return;
+  if (status !== 'running' || sceneView?.previewOnly) return;
   if (event.type === 'button') return humanButtons.input(event, source);
   try { await runtime.input(event); } catch (error) { report(error); }
 }
@@ -568,6 +585,17 @@ function renderScene() {
   sceneView?.setAppearance(scene.view.appearance);
   renderAppearance();
   if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false, autostart: false});
+}
+function showVisualProduct(selected, {previewOnly=false} = {}) {
+  sceneView?.setProduct(selected,{previewOnly});
+  if ($('scene-mount')) $('scene-mount').dataset.visualProductId=selected.id;
+  sceneView?.setAppearance(scene?.view?.appearance);
+  if (!previewOnly && lastRuntimeState?.product?.id===selected.id) {
+    sceneView?.updateLeds(lastRuntimeState.leds);sceneView?.updateServos(lastRuntimeState.servos);
+    sceneView?.setMotorsRunning(status==='running');sceneView?.updateMotors(lastRuntimeState.motors,lastRuntimeState.motorOutput);
+    sceneView?.updateFlight(lastRuntimeState.flight);renderAccessories();
+  }
+  renderAppearance();
 }
 function renderAppearance() {
   if ($('shell-settings')) $('shell-settings').hidden = scene.view.deviceView !== '3d' || sceneView?.hasShell === false || (!product()?.display && !product()?.model);
@@ -945,7 +973,7 @@ function setupEvents() {
   }});
   bind('firmware-kind','change',()=>{updateRemoteMode();renderTransport();});
   for (const id of ['firmware-url', 'firmware-sha']) bind(id, 'input', renderTransport);
-  const chooseProduct = async (id, keepFamily = false) => { clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, id)); productChoiceTarget = keepFamily ? id : ''; try { await configure(next, {reflectSource: true}); } finally { productChoiceTarget = ''; } };
+  const chooseProduct = async (id, keepFamily = false) => { visualVariantMenu?.reset(); clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, id)); productChoiceTarget = keepFamily ? id : ''; try { await configure(next, {reflectSource: true}); } finally { productChoiceTarget = ''; } };
   mountDeviceSearch({button:$('search-devices'),products:catalog.products,onSelect:id=>action(()=>chooseProduct(id)),onError:report});
   mountAccessorySearch({button:$('search-accessories'),getItems:allDefinitions,onSelect:id=>{const item=definition(id);if(!item)return;renderAccessoryChoices({brand:accessoryBrand(item),connector:accessoryInterface(item),id});$('add-accessory').focus();},onError:report});
   bind('manufacturer-select', 'change', () => action(async () => { const choices = renderProductChoices($('manufacturer-select').value); if (choices.length) await chooseProduct(choices[0].id, true); }));
@@ -1030,7 +1058,7 @@ function setupEvents() {
       action(async () => { const keyMapping = Object.fromEntries(Object.entries(scene.keyMapping).filter(([, value]) => value !== control)); keyMapping[event.code] = control; try { await runtime.updateSceneMetadata({keyMapping}); } finally { renderControls(); } }); return;
     }
     if (event.repeat || !shouldCaptureMappedKey(event,product(),scene?.keyMapping) || event.target.closest('input,select,textarea,[contenteditable="true"]') || ($('keyboard-enabled') && !$('keyboard-enabled').checked)) return;
-    const id = scene?.keyMapping[event.code]; if (!id || status !== 'running') return;
+    const id = scene?.keyMapping[event.code]; if (!id || status !== 'running' || sceneView?.previewOnly) return;
     event.preventDefault(); heldKeys.set(event.code, id); sendInput({type: 'button', id, pressed: true}, `key:${event.code}`);
   });
   document.addEventListener('keyup', event => { const id = heldKeys.get(event.code); if (!id) return; event.preventDefault(); heldKeys.delete(event.code); sendInput({type: 'button', id, pressed: false}, `key:${event.code}`); });
@@ -1058,7 +1086,7 @@ async function init() {
   }
   sceneView = createSceneView($('scene-mount'), {onInput: sendInput, onModeChange: reflectMode, onUnsupported: message => toast(message), onOrientation: sendOrientation, onModelReady: renderAppearance, onInspectionChange: renderInspection});
   runtime = createPlatformRuntime({catalog, onEvent: onRuntimeEvent});
-  humanButtons = createHumanButtonController({send: event => runtime.input(controlInput(event,product())), isRunning: () => status === 'running', onError: report,
+  humanButtons = createHumanButtonController({send: event => runtime.input(controlInput(event,product())), isRunning: () => status === 'running' && !sceneView?.previewOnly, onError: report,
     onVisual: (id, pressed) => document.querySelectorAll('.device-button').forEach(button => { if (button.dataset.control === id) button.classList.toggle('pressed', pressed); }),
   });
   api = installAutomation(runtime, {target: window});
@@ -1067,6 +1095,9 @@ async function init() {
   const motorMount=document.createElement('div');document.querySelector('.transport')?.after(motorMount);
   const motorOutputs=mountMotorOutputs({container:motorMount,runtime:api});
   window.addEventListener('pagehide',()=>motorOutputs.dispose(),{once:true});
+  const demoMount=document.createElement('div');motorMount.before(demoMount);
+  const stampflyDemo=mountStampflyDemoControls({container:demoMount,runtime:api});
+  window.addEventListener('pagehide',()=>stampflyDemo.dispose(),{once:true});
   const checksMount=document.createElement('section');
   document.querySelector('.console-panel, .embed-console')?.before(checksMount);
   const hardwareChecks=mountHardwareDiagnostics({container:checksMount,runtime:api});
@@ -1093,7 +1124,10 @@ async function init() {
     onError: report, onLog: log,
   });
   if ($('manufacturer-select')) { $('manufacturer-select').replaceChildren(...manufacturerNames(catalog.products).map(name => new Option(manufacturerLabel(name),name))); $('manufacturer-select').disabled = false; }
-  mountAppearance(); setupEvents(); await runtime.configure(scene); renderLocalAccessories(); reflectFirmwareSource(); transportUi.setRecording(recordingDocument);
+  mountAppearance();
+  visualVariantMenu=mountVisualVariantMenu({container:document.querySelector('.view-controls'),products:catalog.products,onSelect:showVisualProduct});
+  window.addEventListener('pagehide',()=>visualVariantMenu?.dispose(),{once:true});
+  setupEvents(); await runtime.configure(scene); renderLocalAccessories(); reflectFirmwareSource(); transportUi.setRecording(recordingDocument);
   firmwareUpdates = await mountFirmwareUpdates($('firmware-updates'), {getProductId: () => scene.productId, onError: report});
   firmwareUpdates.show(catalog.firmwares.find(item => item.id === $('firmware-select')?.value));
   if (embedded) {

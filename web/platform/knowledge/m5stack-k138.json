@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-11-03T20:09:15Z",
+  "updatedAt": "2026-11-04T03:53:56Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -426,8 +426,8 @@
         "ecosystem-pcb-stl"
       ],
       "group": "model",
-      "method": "Front260×372pixel crop and back286×397rectification from800×800official photos; source topZ5.752mm and undersideZ4.252mm remain unscaled. Optical board13.2×21.6mm atZ-7.97 is photograph-estimated.",
-      "uncertainty": "Uncalibrated photo colors, remaining lens/height error; optical board seating uncertainty±1.5mm. Texture is exterior appearance, not reconstructed electronics."
+      "method": "Main carrier photographs remain on unchanged source planes. Optical board is 12×20×0.8 mm with its inward face seated exactly at the native cradle bottom Z=-7.247989654541016. Package, lens and socket photos have independent supported surfaces; no plug or wire is counted as PCB.",
+      "uncertainty": "Photo colors and board outline/thickness are estimated. PMW3901MB total 6×6×2.28 mm is datasheet-backed; detailed lens shape, connector fit, wire routes and PCB layout remain unverified."
     },
     {
       "id": "carrier-button-visual-binding",
@@ -439,6 +439,54 @@
       ],
       "group": "model",
       "notes": "Main schematic S1 connects USER_A to GND; P2.3 connects USER_A to Stamp G0. The photo-aligned carrier cap shares control button with the StampS3 cover."
+    },
+    {
+      "id": "optical-flow-mechanical-seating",
+      "label": "光流板与托架的相对位置",
+      "value": {
+        "boardSizeMm": [
+          12,
+          20,
+          0.8
+        ],
+        "boardTopZMm": -7.247989654541016,
+        "packageSizeMm": [
+          6,
+          6,
+          2.28
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "ecosystem-frame-stl",
+        "product-photo-f6c38dffa4",
+        "product-photo-9947ad7259",
+        "datasheet-fa6038d787"
+      ],
+      "group": "model",
+      "method": "光流板内侧与原始 frame 的两条底横梁接触；12×20 mm 板边和0.8 mm板厚为照片估算，剔除外伸插头。镜头封装名义尺寸来自 PixArt v1.10 第7页；外观分成板面、封装、镜片和插座四层。",
+      "uncertainty": "板长宽估算±0.6 mm，板厚±0.2 mm；托架坐标来自简化模拟器STL，不证明生产装配公差。封装内的台阶分配、连接器几何和装配横向位置仍为照片估计；柔性线束未建模。"
+    },
+    {
+      "id": "optical-populated-board-visual",
+      "label": "光流板可见元件与六芯线束",
+      "value": {
+        "visibleComponents": 16,
+        "exposedPads": 10,
+        "wireCount": 6,
+        "wireColor": "black",
+        "inspection": "fixed harness hidden while optical assembly separated"
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-f6c38dffa4",
+        "product-photo-9947ad7259",
+        "schematic-3b06f6a5de",
+        "schematic-a15f1234af"
+      ],
+      "notes": "逐款照片定位的独立SMD本体/端头/焊盘，未由外观推断位号与电气值。不是厂家完整PCB CAD。",
+      "method": "逐款底面照片记录像素中心，以独立光流PCB的12×20mm估计轮廓映射到板面；导线以侧面和底面轮廓约束显式曲线路径。详见optical-detail-design.json。",
+      "uncertainty": "SMD footprint ±0.2mm, height ±0.2–0.25mm; wire radius ±0.1mm, visible path ±1mm, hidden main P4 endpoint/route ±3mm; not production CAD."
     }
   ],
   "revisions": [],
@@ -1301,7 +1349,20 @@
         "ecosystem-pcb-stl",
         "product-photo-f6c38dffa4"
       ],
-      "notes": "Source carrier outline and simplified component blocks retained. Both exterior carrier faces and optical-flow board have separate official-photo surfaces. Hidden electronics, exact component heights and optical lens geometry remain unverified. UNKNOWN marks the daughterboard inward face; a readable rear-carrier annotation also identifies the unknown internal layout."
+      "notes": "Source carrier outline and simplified component blocks retained. Optical PCB is supported by native cradle bars; its outward photograph excludes the separately modeled package and socket. Hidden electronics, exact board outline/thickness, detailed lens optics and connector fit remain unverified. UNKNOWN is on the inward face, visible through the declared inspection separation."
+    },
+    {
+      "id": "optical-harness-hidden-route",
+      "label": "光流线束隐藏段与主板遮挡布局",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "product-photo-f6c38dffa4",
+        "product-photo-9947ad7259",
+        "schematic-a15f1234af",
+        "schematic-3b06f6a5de"
+      ],
+      "notes": "P4↔P1六线连接由原理图确认；照片只约束可见两侧线束。主板P4机械坐标/末段路线估计±3mm，不能确定线芯实际针序。被挡主板走线无独立来源，保留UNKNOWN。"
     }
   ],
   "collectionNotes": [
@@ -1309,6 +1370,8 @@
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
     "Model import does not establish CPU/board/peripheral firmware support.",
     "StampFly visual sources now include the pinned official-document-linked Ecosystem simulator assembly under its own MIT provenance; the M5Stack battery-protection-only source is retained separately.",
-    "Official orthographic photos show the battery removed; photo comparisons hide only the source battery. Default visual assembly retains the original 300mAh-source battery."
+    "Official orthographic photos show the battery removed; photo comparisons hide only the source battery. Default visual assembly retains the original 300mAh-source battery.",
+    "2026-11-04 optical assembly repair: original source frame and battery triangles unchanged; board crop excludes plug overhang and raised components. See evidence/m5stack-k138/bottom-fix-review.json for fresh underside/side/material/restore verification. Earlier screenshots do not validate this revised bottom assembly.",
+    "Optical detail follow-up retains the preceding bottom-fix evidence as history. New independent component geometry and harness require optical-detail-review.json at their final model hash; old screenshots are not acceptance for the new geometry."
   ]
 }

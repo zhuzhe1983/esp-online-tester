@@ -207,6 +207,11 @@ pub trait BoardModel {
     /// No guest execution, fault injection, or claim of physical compatibility.
     /// Appended to preserve existing hot-call vtable offsets.
     fn hardware_diagnostics(&self) -> Option<String> { None }
+    /// Cold opt-in flight environment input, in raw sensor axes; no actuator writes.
+    /// Appended so disabled/non-flight boards retain all existing hot vtable offsets.
+    fn set_flight_sample(&mut self, _accel_g:[f64;3], _gyro_dps:[f64;3], _bottom_mm:Option<f64>, _front_mm:Option<f64>) -> bool { false }
+    /// Routed guest PWM, FL/FR/RL/RR, (Hz, duty/65535). Observation only.
+    fn flight_motor_pwm(&self) -> Option<[(f64,u32);4]> { None }
 }
 
 pub type Board = Box<dyn BoardModel>;

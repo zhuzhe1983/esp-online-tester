@@ -10,6 +10,14 @@ Add a stable product ID, manufacturer, model/revision, chip, memory, display, co
 
 Implement missing emulated hardware separately under the upstream Rust conventions in `CONTRIBUTING.md` and `AGENTS.md`. State which behavior came from documentation, tests or physical hardware. Include firmware and an observable result when changing support claims.
 
+### Assembly variants in device pickers
+
+Products are listed by default. Set optional `pickerVisible: false` only on reviewed assembly variants of the same main PCB to keep ordinary device dropdowns, global device search and counts compact. This is a UI policy, not a product alias: `loadCatalog()`, API configuration, knowledge, model assets and shared scenes retain the exact product ID. An explicitly opened variant appears as the current dropdown option; changing the family filter within its family preserves it. Choosing a different product removes that temporary option.
+
+Set `visualVariantOf` to the reviewed parent ID when that variant has a usable 3D model. The parent's “衍生模型” menu changes only the renderer and does not configure the runtime or persist the preview in a scene/share URL. Use a direct visible parent, retain each child's exact runtime identity, and test loading/start/reset transitions plus legacy scenes. Running/loading disables preview; pausing permits a new explicit preview.
+
+See the [Stamp picker audit](stamp-picker-variants.md) for the ten assembly/kit entries hidden under this policy, their retained base entries and manufacturer evidence.
+
 ## Accessories
 
 Give each revision its own ID, connector signals, voltage requirements, protocol, parameters and provenance. State whether an accessory is metadata-only, logically injected, or modeled on an actual bus. The first executable template is NMEA input on logical UART1; this does not validate GPIO routing, baud rate, voltage or RF reception. Arbitrary uploaded JavaScript or native plugins are not accepted by the browser designer.

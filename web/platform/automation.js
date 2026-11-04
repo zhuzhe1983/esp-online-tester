@@ -21,6 +21,7 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
     async input(event) { await recorder.beforeInput(); return runtime.input(event); },
     async setGpsFix(options) { await recorder.beforeLifecycle('gps-fix'); return runtime.setGpsFix(options); },
     async injectGps(options) { await recorder.beforeLifecycle('gps-input'); return runtime.injectGps(options); },
+    async configureFlight(options){await recorder.beforeLifecycle('flight-configure');return runtime.configureFlight(options);},
     async setImu(options) { await recorder.beforeLifecycle('imu-input'); return runtime.setImu(options); },
     async receiveLoRa(packet) { await recorder.beforeLifecycle('lora-input'); return runtime.receiveLoRa(packet); },
     async configure(scene) { await recorder.beforeLifecycle('configure'); return runtime.configure(scene); },
