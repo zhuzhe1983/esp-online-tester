@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {loadCatalog,createDefaultScene,validateScene,encodeScene,decodeScene} from '../web/platform/catalog.js';
 import {manufacturerNames,productsForManufacturer,productFamilies,productFamilyGroups,productIdentityLabel,productOptionLabel,searchProducts,firmwareGroups,firstFirmware,filterAccessories,searchAccessories} from '../web/platform/catalog-selection.js';
 const products=[{id:'m10',manufacturer:'M5Stack',name:'M5Stack Device 10',sku:'C010',chip:'esp32s3'},{id:'m2',manufacturer:'M5Stack',name:'M5Stack Device 2',sku:'C002',chip:'esp32s3'},{id:'a',manufacturer:'Arduino',name:'Arduino Nesso N1',sku:'DK001',chip:'esp32c6'}];
 test('manufacturer selection filters while device names use natural order',()=>{
@@ -58,4 +60,45 @@ test('cross-family search returns exact local product IDs and reports unavailabl
   assert.equal(productIdentityLabel(lilygo[0]),'LILYGO / T-Deck 系列 / T-Deck Plus / 硬件：Plus');
   assert.equal(productIdentityLabel(lilygo[2]),'LILYGO / T-Display 系列');
   assert.equal(productIdentityLabel({...lilygo[2],hardwareRevision:'unknown; Spark product listing'}),'LILYGO / T-Display 系列');
+});
+
+
+test('picker visibility filters brands, families, groups, search and counts without mutating entries',()=>{
+  const entries=[
+    {...products[0],family:{id:'main',name:'Main'}},
+    {...products[1],pickerVisible:true,family:{id:'main',name:'Main'}},
+    {id:'header',manufacturer:'M5Stack',name:'Header',pickerVisible:false,family:{id:'main',name:'Main'}},
+    {id:'hidden-only',manufacturer:'Hidden brand',name:'Hidden',pickerVisible:false,family:{id:'hidden',name:'Hidden'}},
+  ];
+  const before=structuredClone(entries);
+  assert.deepEqual(manufacturerNames(entries),['M5Stack']);
+  assert.deepEqual(productFamilies(entries,'M5Stack'),[{id:'main',name:'Main',count:2}]);
+  assert.deepEqual(productFamilies(entries,'Hidden brand'),[]);
+  assert.deepEqual(productsForManufacturer(entries,'M5Stack','main').map(p=>p.id),['m2','m10']);
+  assert.deepEqual(productFamilyGroups(entries).map(group=>group.products.map(p=>p.id)),[['m10','m2']]);
+  assert.deepEqual(searchProducts(entries,'').map(p=>p.id),['m2','m10']);
+  assert.deepEqual(searchProducts(entries,'Header'),[]);
+  assert.deepEqual(entries,before);
+});
+
+test('ten Stamp assembly and kit variants remain exact catalog and portable scene identities',async()=>{
+  const fetchOriginal=globalThis.fetch;
+  let catalog;
+  try { globalThis.fetch=async url=>new Response(await readFile(url,'utf8'));catalog=await loadCatalog(); }
+  finally { globalThis.fetch=fetchOriginal; }
+  const variants=['m5stack-s007-pin127','m5stack-s007-pin254','m5stack-s007-pin127-v033','m5stack-s007-pin254-v033','m5stack-s015-dip','m5stack-s016-dip','m5stack-k051-b','m5stack-k051','m5stack-k056','m5stack-k122'];
+  assert.deepEqual(catalog.products.filter(p=>p.pickerVisible===false).map(p=>p.id).sort(),[...variants].sort());
+  assert.equal(searchProducts(catalog.products,'').length,catalog.products.length-variants.length);
+  for(const id of variants){
+    const product=catalog.products.find(p=>p.id===id),scene=createDefaultScene(catalog,id);
+    assert.ok(product.model.url.includes(id),'each assembly keeps its own model');
+    assert.ok(product.knowledgeUrl.includes(id));
+    assert.equal(validateScene(scene,catalog).valid,true);
+    assert.equal(decodeScene(encodeScene(scene,catalog),catalog).productId,id);
+    assert.deepEqual(searchProducts(catalog.products,id),[]);
+    assert.equal(productsForManufacturer(catalog.products,product.manufacturer,product.family.id).some(p=>p.id===id),false);
+  }
+  for(const id of ['m5stack-s007','m5stack-s007-v033','m5stack-s015','m5stack-s016','m5stack-c050-b','m5stack-c056-b','m5stack-c122-b','m5stack-k138','m5stack-k138-v11','m5stack-stopwatch']){
+    assert.ok(searchProducts(catalog.products,'').some(p=>p.id===id),id);
+  }
 });

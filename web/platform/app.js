@@ -369,6 +369,9 @@ function renderProductChoices(manufacturer, {familyId = '', selectedId} = {}) {
     $('product-family-select').value = productFamilyFilter;
   }
   const choices = productsForManufacturer(catalog.products, manufacturer, productFamilyFilter);
+  // Keep an explicitly restored/API-selected assembly variant without listing it elsewhere.
+  const current = catalog.products.find(item => item.id === selectedId && item.pickerVisible === false && item.manufacturer === manufacturer && (!productFamilyFilter || item.family?.id === productFamilyFilter));
+  const selectable = current ? [...choices, current] : choices;
   if ($('product-select')) {
     const select = $('product-select'); select.replaceChildren();
     if (families.length && !productFamilyFilter) {
@@ -377,12 +380,13 @@ function renderProductChoices(manufacturer, {familyId = '', selectedId} = {}) {
         group.append(...family.products.map(item=>new Option(productOptionLabel(item),item.id))); select.append(group);
       }
     } else select.append(...choices.map(item=>new Option(productOptionLabel(item),item.id)));
-    if (choices.some(item=>item.id===selectedId)) select.value = selectedId;
-    select.disabled = !choices.length;
+    if (current) select.append(new Option(productOptionLabel(current), current.id));
+    if (selectable.some(item=>item.id===selectedId)) select.value = selectedId;
+    select.disabled = !selectable.length;
   }
   text('product-count', `${choices.filter(item=>item.runtime?.board).length} / ${choices.length} 款`);
   if ($('product-count')) $('product-count').title = `已有板级适配（含部分支持） / 当前${productFamilyFilter ? '系列' : '厂商'}设备总数`;
-  return choices;
+  return selectable;
 }
 function renderProduct() {
   const selected = product(); if (!selected) return;
@@ -397,6 +401,9 @@ function renderProduct() {
   if(kind){const option=kind.querySelector('[value="lilygo-spark"]');if(isLilygo(selected)){if(!option)kind.append(new Option('LILYGO Spark','lilygo-spark'));}else{if(kind.value==='lilygo-spark')kind.value='merged';option?.remove();}}
   burnerUi?.setProduct(selected);sparkUi?.setProduct(selected);updateRemoteMode();
   if ($('manufacturer-select')) {
+    const manufacturers = manufacturerNames(catalog.products);
+    if (!manufacturers.includes(selected.manufacturer)) manufacturers.push(selected.manufacturer);
+    $('manufacturer-select').replaceChildren(...manufacturers.map(name => new Option(manufacturerLabel(name), name)));
     $('manufacturer-select').value = selected.manufacturer;
     const keepFilter = (renderedProduct === selected.id || productChoiceTarget === selected.id) && productChoiceManufacturer === selected.manufacturer && (!productFamilyFilter || productFamilyFilter === selected.family?.id);
     renderProductChoices(selected.manufacturer, {familyId:keepFilter ? productFamilyFilter : selected.family?.id || '',selectedId:selected.id});

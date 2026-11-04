@@ -1,0 +1,127 @@
+{
+  "baseCommit": "55b508acd6f956b26a573e8d933ba9a8e8a57850",
+  "scope": "Picker visibility, exact scene identity and model loading; no new firmware execution claim",
+  "browserCheck": {
+    "status": "pass",
+    "checkedAt": "2026-11-04T03:24:37.223Z",
+    "browser": "156.0.8078.80",
+    "catalogCount": 216,
+    "searchCount": 206,
+    "stampCount": 11,
+    "restored": [
+      {
+        "id": "m5stack-s007-pin127",
+        "model": "./assets/m5stack-s007-pin127/model.json",
+        "api": true,
+        "share": true,
+        "familyFilter": true,
+        "modelReady": true
+      },
+      {
+        "id": "m5stack-s007-pin254",
+        "model": "./assets/m5stack-s007-pin254/model.json",
+        "api": true,
+        "share": true,
+        "familyFilter": true,
+        "modelReady": true
+      },
+      {
+        "id": "m5stack-s007-pin127-v033",
+        "model": "./assets/m5stack-s007-pin127-v033/model.json",
+        "api": true,
+        "share": true,
+        "familyFilter": true,
+        "modelReady": true
+      },
+      {
+        "id": "m5stack-s007-pin254-v033",
+        "model": "./assets/m5stack-s007-pin254-v033/model.json",
+        "api": true,
+        "share": true,
+        "familyFilter": true,
+        "modelReady": true
+      },
+      {
+        "id": "m5stack-s015-dip",
+        "model": "./assets/m5stack-s015-dip/model.json",
+        "api": true,
+        "share": true,
+        "familyFilter": true,
+        "modelReady": true
+      },
+      {
+        "id": "m5stack-s016-dip",
+        "model": "./assets/m5stack-s016-dip/model.json",
+        "api": true,
+        "share": true,
+        "familyFilter": true,
+        "modelReady": true
+      },
+      {
+        "id": "m5stack-k051-b",
+        "model": "./assets/m5stack-k051-b/model.json",
+        "api": true,
+        "share": true,
+        "familyFilter": true,
+        "modelReady": true
+      },
+      {
+        "id": "m5stack-k051",
+        "model": "./assets/m5stack-k051/model.json",
+        "api": true,
+        "share": true,
+        "familyFilter": true,
+        "modelReady": true
+      },
+      {
+        "id": "m5stack-k056",
+        "model": "./assets/m5stack-k056/model.json",
+        "api": true,
+        "share": true,
+        "familyFilter": true,
+        "modelReady": true
+      },
+      {
+        "id": "m5stack-k122",
+        "model": "./assets/m5stack-k122/model.json",
+        "api": true,
+        "share": true,
+        "familyFilter": true,
+        "modelReady": true
+      }
+    ],
+    "errors": []
+  },
+  "checks": {
+    "catalogSchema": "pass: products216/accessories10/firmwares171/watchlist117",
+    "nodeTests": "pass: platform-catalog-selection/config/runtime/input/view, 13 test entries",
+    "catalogMutation": "Only pickerVisible:false added to 10 entries; all other catalog fields unchanged",
+    "diffCheck": "pass",
+    "privacy": "pass: 2225 tracked evidence files, 22 gzip files; manual review found no private inputs"
+  },
+  "reproduce": [
+    "python3 tools/serve-platform.py --port 8088",
+    "playwright_cli.sh -s=product-picker-check open http://127.0.0.1:8088/platform/",
+    "playwright_cli.sh -s=product-picker-check run-code \"$(cat tools/fixtures/product-picker-browser-check.cjs)\"",
+    "playwright_cli.sh -s=product-picker-check close",
+    "playwright_cli.sh list --all",
+    "python tools/validate-platform-catalog.py",
+    "node --test tools/platform-catalog-selection-test.mjs tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs",
+    "node tools/check-evidence-privacy.mjs",
+    "git diff --check"
+  ],
+  "initialFailures": [
+    "First node runtime-test run lacked local ROM assets; existing WASM and ROMs copied into ignored local paths, then all required tests passed.",
+    "Initial browser harness used the visible label 系列 instead of its accessible name 选择产品系列; selector corrected before the complete passing run."
+  ],
+  "privacy": "No screenshots, local absolute paths, clipboard images, device identifiers or raw browser logs retained.",
+  "localTestArtifacts": {
+    "wasmSha256": "ded487a996d12a2e83bf1a4e09bbb7a55a157e10a746842b1782dff414b0ebac",
+    "note": "Existing local WASM/ROM artifacts reused for the standard runtime checks; no Rust or firmware changes."
+  },
+  "cleanup": {
+    "taskBrowserClosed": true,
+    "taskServerStopped": true,
+    "otherSessionsPreserved": true
+  }
+}
