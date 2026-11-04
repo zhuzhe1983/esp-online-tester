@@ -42,7 +42,7 @@ void app_main(void){
                 length=0;overflow=false;
             }else if(!overflow){if(length+1<sizeof line&&bytes[i]!=0)line[length++]=bytes[i];else overflow=true;}
         }
-        int64_t now=esp_timer_get_time();float dt=(now-last)*1e-6f;sf_sensors_update(&sample,dt,now);sf_step(&control,&sample,dt);last=now;motors();
+        int64_t now=esp_timer_get_time();float dt=(now-last)*1e-6f;sf_sensors_update(&sample,dt,now,control.mode==SF_STOP);sf_step(&control,&sample,dt);last=now;motors();
         if(shown!=control.mode){shown=control.mode;color(shown);}
         if(now-last_state>=200000){last_state=now;printf("SF1 STATE %s %llu %.3f %.2f %.2f %.2f %.4f %.4f %.4f %.4f %d %d\n",sf_mode_name(control.mode),(unsigned long long)(now/1000),sample.height,sample.roll,sample.pitch,sample.r,control.duty[0],control.duty[1],control.duty[2],control.duty[3],sample.imu_valid,sample.tof_valid);}
         if(now-last_sensor>=1000000){last_sensor=now;sf_sensors_report();}

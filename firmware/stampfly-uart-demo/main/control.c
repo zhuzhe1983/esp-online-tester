@@ -38,8 +38,8 @@ void sf_step(sf_control *s,const sf_sample *v,float dt){
     float error=s->height_setpoint-v->height;s->height_integral=clamp(s->height_integral+error*dt,-1,1);
     float collective=clamp(.612459f+.10f*error-.10f*v->vertical_speed+.02f*s->height_integral,.25f,.90f);
     if(!s->height_locked)collective=.50f+fminf(.16f,s->flight_seconds*.20f);
-    float roll=clamp(.006f*(s->roll_target-v->roll)-.0015f*v->p,-.15f,.15f);
-    float pitch=clamp(.008f*(s->pitch_target-v->pitch)-.0020f*v->q,-.15f,.15f);
+    float roll=clamp( .0008f*(s->roll_target-v->roll)-.0002f*v->p,-.15f,.15f);
+    float pitch=clamp( .0010f*(s->pitch_target-v->pitch)-.00025f*v->q,-.15f,.15f);
     float yaw=clamp(.0007f*(s->yaw_target-v->r),-.08f,.08f);
     s->duty[0]=clamp(collective+roll+pitch-yaw,0,1);s->duty[1]=clamp(collective-roll+pitch+yaw,0,1);
     s->duty[2]=clamp(collective+roll-pitch+yaw,0,1);s->duty[3]=clamp(collective-roll-pitch-yaw,0,1);

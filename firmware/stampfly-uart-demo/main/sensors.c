@@ -49,7 +49,7 @@ void sf_sensors_init(void){
     }
 }
 static int16_t signed_le(const uint8_t *p){return (int16_t)((p[1]<<8)|p[0]);}
-void sf_sensors_update(sf_sample *s,float dt,int64_t now){
+void sf_sensors_update(sf_sample *s,float dt,int64_t now,bool gravity_reference){
     uint8_t raw[12],status=0;
     if(imu_started&&imu_read(3,&status,1)==ESP_OK&&(status&0xc0)==0xc0&&imu_read(0x0c,raw,12)==ESP_OK){
         // Sensor axes -> FRD: x=rawY, y=rawX, z=-rawZ. Static specific force z=-1g.
@@ -57,7 +57,17 @@ void sf_sensors_update(sf_sample *s,float dt,int64_t now){
         s->p=signed_le(raw+8)/16.384f;s->q=signed_le(raw+6)/16.384f;s->r=-signed_le(raw+10)/16.384f;
         float roll=atan2f(-ay,-az)*57.2957795f,pitch=atan2f(ax,sqrtf(ay*ay+az*az))*57.2957795f;
         if(!attitude_started){s->roll=roll;s->pitch=pitch;attitude_started=true;}
-        else {float correction=fminf(.02f,dt*2);s->roll=(s->roll+s->p*dt)*(1-correction)+roll*correction;s->pitch=(s->pitch+s->q*dt)*(1-correction)+pitch*correction;}
+        else {
+            // FRD body p/q/r are not Euler derivatives when axes are combined.
+            // In powered flight specific force includes vehicle acceleration; do
+            // not interpret thrust along body Z as a world-gravity reference.
+            float phi=s->roll*.0174532925f,theta=fmaxf(-1.48353f,fminf(1.48353f,s->pitch*.0174532925f));
+            float roll_rate=s->p+(sinf(phi)*s->q+cosf(phi)*s->r)*tanf(theta);
+            float pitch_rate=cosf(phi)*s->q-sinf(phi)*s->r;
+            float correction=gravity_reference?fminf(.02f,dt*2):0;
+            s->roll=(s->roll+roll_rate*dt)*(1-correction)+roll*correction;
+            s->pitch=(s->pitch+pitch_rate*dt)*(1-correction)+pitch*correction;
+        }
         last_imu=now;imu_reads++;
     }
     if(tof_started&&now-last_tof_poll>=5000){

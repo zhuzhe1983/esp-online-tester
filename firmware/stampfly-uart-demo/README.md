@@ -41,9 +41,9 @@ The last four floats are requested duties; independently observed peripheral out
 
 ## Sensor/control boundaries
 
-BMI270 uses CLK44/MOSI14/MISO43/CS46, 8g and 2000°/s ranges. Sensor raw axes become FRD body axes `x=rawY, y=rawX, z=-rawZ`; static specific force is body z = −1g. Gyroscope integration with a small accelerometer correction estimates roll/pitch. Only the bottom VL53L3CX is enabled (XSHUT7, I²C3/4, address0x29); front XSHUT9 remains low. ST MEDIUM mode and 33000 µs timing budget retain the original histogram history. A processed object must have status0; no object is never interpreted as a valid zero distance.
+BMI270 uses CLK44/MOSI14/MISO43/CS46, 8g and 2000°/s ranges. Sensor raw axes become FRD body axes `x=rawY, y=rawX, z=-rawZ`; static specific force is body z = −1g. FRD body-rate integration includes the Euler cross-axis terms. A small accelerometer gravity correction is applied only in STOP; during powered motion the measured specific force includes vehicle acceleration and cannot be treated as pure gravity. This uses the ideal sensor model without a real-aircraft bias/attitude observer. Only the bottom VL53L3CX is enabled (XSHUT7, I²C3/4, address0x29); front XSHUT9 remains low. ST MEDIUM mode and 33000 µs timing budget retain the original histogram history. A processed object must have status0; no object is never interpreted as a valid zero distance.
 
-Control nominally runs at 200 Hz of guest time. ToF readiness is polled every5 ms, and its original history may delay rising ranges by about360 ms. Height uses `range × cos(roll) × cos(pitch) − 0.035 m`; the mounting offset is an explicitly approximate dynamics parameter, not hardware calibration. Valid measurements expire after350 ms, IMU after50 ms. A controller interval over100 ms, excessive tilt (50°) or lost established feedback stops motor output.
+Control nominally runs at 200 Hz of guest time. ToF readiness is polled every5 ms, and its original history may delay rising ranges by about360–400 ms. Height uses `range × cos(roll) × cos(pitch) − 0.035 m`; the mounting offset is an explicitly approximate dynamics parameter, not hardware calibration. Valid measurements expire after350 ms, IMU after50 ms. A controller interval over100 ms, excessive tilt (50°) or lost established feedback stops motor output.
 
 When the optional dynamics scene returns no near-ground ToF target, TAKEOFF has a bounded two-second acquisition phase: stabilize attitude and ramp collective from0.50 toward0.66. It must acquire a real valid ST result before continuing. No valid distance or contact sensor is invented. Once acquired, altitude uses conservative PI/velocity feedback around the dynamics model's nominal hover duty0.612459, with a 0.30 m/s rising setpoint. Initial release qualification of the motor path is separate from closed-loop flight qualification; consult the final evidence for the accepted modes and numeric behavior.
 
@@ -62,3 +62,18 @@ node tools/probe-stampfly-demo.mjs --firmware /private/build/stampfly-uart-demo.
 ```
 
 The C test covers parsing, mixer signs and control failure boundaries; it is not execution evidence. The Node probe uses actual worker/WASM plus S3 ROM on both SKUs and checks fresh UART input against routed PWM, invalid commands, pause, STOP and reset. Browser rendering and enabled rigid-body flight require their separate checks. Never replace the public demonstration's identity with the older internal protocol fixture.
+
+The flight qualification probe uses unchanged production worker/plant assets for both SKUs:
+
+```sh
+node tools/probe-stampfly-flight-demo.mjs --firmware /private/build/stampfly-uart-demo.bin --assets-root /built/repository
+node tools/probe-stampfly-flight-demo.mjs --firmware /private/build/stampfly-uart-demo.bin --assets-root /built/repository --product m5stack-k138-v11
+node tools/probe-stampfly-flight-demo.mjs --firmware /private/build/stampfly-uart-demo.bin --assets-root /built/repository --scenario bounds
+node tools/probe-stampfly-flight-demo.mjs --firmware /private/build/stampfly-uart-demo.bin --assets-root /built/repository --scenario tof-loss
+```
+
+The normal sequence checks takeoff/hover at0.35m, height change to0.60m, combined roll5°/pitch−3°/yaw rate20°/s, return to level and LAND. Settled height error/span must remain below6cm over the final4s; final1s roll/pitch errors below2° and residual roll/pitch rates below20°/s. Yaw rate error must remain below10°/s during the combined command and5°/s after returning level. LAND must finish with ground contact, guest STOP and exact zero in all four routed PWM outputs. The boundary sequence separately samples the accepted0.10/1.50m height limits, without claiming every combination of command extremes.
+
+`--scenario tof-loss` is an explicit test-only fault. Its ESM import transform replaces only the bottom sensor target with no-object after10s of guest time; it retains the original firmware, WASM, ST algorithm, dynamics and motor output route. The receipt records the original source hashes, replacement text and modified runner hash. No production asset or normal API gains this fault control. Stale IMU handling is also checked at the controller-unit boundary; a stationary environment by itself is not an IMU fault.
+
+The initial controller's combined-axis oscillation is preserved in `docs/platform/evidence/stampfly-uart-demo/control-negative-01.json` and its compressed complete trace. It is a failed qualification, not a successful hover/landing result.
