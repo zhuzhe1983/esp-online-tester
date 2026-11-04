@@ -6,6 +6,10 @@ The product is the unit of configuration: chip, memory, display, controls, conne
 
 ## Try it
 
+[Agent guide and both skills](https://zhuzhe1983.github.io/esp-online-tester/platform/agents.html) · [Markdown guide](https://zhuzhe1983.github.io/esp-online-tester/platform/agents.md) · [llms.txt](https://zhuzhe1983.github.io/esp-online-tester/llms.txt)
+
+The discovery guide links the runtime and product-onboarding skills, their references, the maintainer and upstream. Keep `web/platform/agents.html` and `agents.md` in sync when changing their content; `web/llms.txt` stays a short index. Pages publishes both complete skill directories from `skills/`, so edit those sources rather than copying skill text into the guide. The llms.txt file covers this project subpath; it is a documentation discovery proposal, not a ranking guarantee or a crawler access policy. A robots.txt inside this repository subpath would not govern the GitHub Pages origin.
+
 [Workbench](https://zhuzhe1983.github.io/esp-online-tester/platform/) · [Standalone player](https://zhuzhe1983.github.io/esp-online-tester/platform/embed.html) · [Parent-page integration example](https://zhuzhe1983.github.io/esp-online-tester/platform/integration.html)
 
 StopWatch defaults to M5Stack's official User Demo V0.5, downloaded directly from its CORS-enabled M5Burner CDN with a pinned SHA-256. Hold A+B together to open the menu, use A/B to choose a feature, then tap its icon. In Stopwatch, B starts/stops and A records a lap while running or resets while stopped. The original official binary runs through ROM and bootloader without app-direct mode or stubs; RTC, IMU, full audio and physical power behavior remain limited, and no hardware flash validation is claimed.
