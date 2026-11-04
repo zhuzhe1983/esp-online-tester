@@ -88,3 +88,7 @@ python3 tools/test-rebuild-product-model.py
 ```
 
 该组测试不访问网络、不导入 CAD，覆盖离线恢复与缓存、修改后的源、来源回执冲突、缺源时默认禁网、HTTPS/凭据限制、目录和符号链接越界，以及生成文件的真实字节比较。另已实际离线重建 `m5stack-c008`：5 个生成资产及模型配置一致；原产品的 14 个资产、证据、知识文件哈希保持不变。
+
+## Photo-constrained cable geometry
+
+An optional `plan.tubes` list exports ordinary non-shell mesh parts from explicit model-mm `pointsMm` (2–1024 samples), `radiusMm` and optional `radialSegments` (6–64, default 12). Each requires a unique `name`, `sourceIds`, `basis` and `notes`; `color`, `role` and material may be declared. The exporter sweeps capped rings with transported frames through those samples. It never chooses endpoints, infers routing, stretches cables in inspection mode, or labels this geometry manufacturer CAD. Product plans must retain the photo constraints, uncertain hidden path, endpoint and interference checks. No generated cable STL is presented as an upstream download. Existing plans without tubes produce the same artifacts.
