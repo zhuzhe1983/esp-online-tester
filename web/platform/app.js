@@ -1,6 +1,7 @@
 import {mountHardwareDiagnostics} from './hardware-diagnostics.js';
 import {mountAudioControls} from './audio-controls.js';
 import {mountMotorOutputs} from './motor-output-ui.js';
+import {mountStampflyDemoControls} from './stampfly-demo-controls.js';
 import {mountNetworkControls} from './network-ui.js';
 import {illuminanceParameter} from './illuminance-input.js';
 import {ENVIRONMENT_FIELDS,environmentParameters} from './environment-input.js';
@@ -251,6 +252,7 @@ function onRuntimeEvent(event) {
       if (signature !== renderedScene) { renderedScene = signature; renderScene(); }
       if (previousFirmware !== JSON.stringify(scene.firmware)) reflectFirmwareSource({preserveLocal: uiConfiguring});
     }
+    sceneView?.updateFlight(event.state.flight);
     if (status === 'loading' && previousStatus !== 'loading') loadProgress = null;
     if (['configured', 'loading'].includes(status) && status !== previousStatus) {
       sceneView?.setInspection(false);
@@ -268,6 +270,8 @@ function onRuntimeEvent(event) {
     sceneView?.updateServos(event.servos);
   } else if (event.type === 'motors') {
     sceneView?.updateMotors(event.motors,event.motorOutput);
+  } else if (event.type === 'flight') {
+    sceneView?.updateFlight(event.flight);
   } else if (event.type === 'imu') {
     if (event.imu?.source === 'agent') sceneView?.setOrientation?.(event.imu.quaternion, {notify: false});
   } else if (event.type === 'load-progress') {
@@ -1074,6 +1078,9 @@ async function init() {
   const motorMount=document.createElement('div');document.querySelector('.transport')?.after(motorMount);
   const motorOutputs=mountMotorOutputs({container:motorMount,runtime:api});
   window.addEventListener('pagehide',()=>motorOutputs.dispose(),{once:true});
+  const demoMount=document.createElement('div');motorMount.before(demoMount);
+  const stampflyDemo=mountStampflyDemoControls({container:demoMount,runtime:api});
+  window.addEventListener('pagehide',()=>stampflyDemo.dispose(),{once:true});
   const checksMount=document.createElement('section');
   document.querySelector('.console-panel, .embed-console')?.before(checksMount);
   const hardwareChecks=mountHardwareDiagnostics({container:checksMount,runtime:api});
