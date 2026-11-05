@@ -1,3 +1,4 @@
+import {t} from './i18n.js';
 import {configurationDefaults} from './flash-configuration.js';
 import {browserFlashProfiles} from './flash-profiles.js';
 const node=(tag,text)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;return el;};
@@ -30,7 +31,7 @@ export function createFlashConfigurationUI({apply,onChange,onError,profiles=brow
     edit.hidden=remove.hidden=!current;summary.textContent=current?`已应用：${current.name} · ${current.server}。每台设备开始写入后固定配置；连续模式切换配置只影响后续添加的设备。`:'未启用附加配置。';
     for(const option of fields.type.options)option.disabled=!formats[option.value];
   }
-  function begin(value){editing=value?.id||null;enabled=true;form.hidden=false;for(const key of Object.keys(fields))fields[key].value=value?.[key]??(key==='type'?(formats.uiflow2?'uiflow2':'uiflow1'):key==='name'?'新配置':'');if(!value)fields.server.value=configurationDefaults[fields.type.value];remember.checked=!!value?.persistent;fields.password.type='password';reveal.textContent='显示密码';refresh();onChange();fields.name.focus();}
+  function begin(value){editing=value?.id||null;enabled=true;form.hidden=false;for(const key of Object.keys(fields))fields[key].value=value?.[key]??(key==='type'?(formats.uiflow2?'uiflow2':'uiflow1'):key==='name'?t('新配置'):'');if(!value)fields.server.value=configurationDefaults[fields.type.value];remember.checked=!!value?.persistent;fields.password.type='password';reveal.textContent='显示密码';refresh();onChange();fields.name.focus();}
   function end(){enabled=false;editing=null;form.hidden=true;fields.password.value='';refresh();onChange();}
   fields.type.addEventListener('change',()=>{if(Object.values(configurationDefaults).includes(fields.server.value)||!fields.server.value)fields.server.value=configurationDefaults[fields.type.value];});
   add.addEventListener('click',()=>begin(null));edit.addEventListener('click',()=>begin(current));cancel.addEventListener('click',end);

@@ -1,3 +1,4 @@
+import {currentLocale} from './i18n.js';
 // Observations from the board model only; a rendered frame is not hardware validation.
 const text = (value, limit) => typeof value === 'string' && value.length <= limit;
 const integer = (value, max) => Number.isSafeInteger(value) && value >= 0 && value <= max;
@@ -54,7 +55,7 @@ export function mountHardwareDiagnostics({container,runtime}) {
     if(status.textContent!==statusText)status.textContent=statusText;
     if(hint.textContent!==hintText)hint.textContent=hintText;
     const state=snapshot.state,display=state.display,rows=element('dl','hardware-check-state');
-    const hz=value=>value===null?'未知':`${(value/1000).toLocaleString('zh-CN',{maximumFractionDigits:2})} kHz`;
+    const hz=value=>value===null?'未知':`${(value/1000).toLocaleString(currentLocale(),{maximumFractionDigits:2})} kHz`;
     for(const [name,value] of [['电源灯',state.powerLedEnabled?'已启用':'已关闭'],['下载锁',state.downloadLocked?'已锁定':'未锁定'],
       ['I²C 主机 / 电源芯片',`${hz(state.pm1LastBusHz)} / ${hz(state.pm1ConfiguredHz)}`],
       ['屏幕状态',display.visible?'可见':'不可见'],['退出休眠 / 显示开启',`${display.sleepOut?'是':'否'} / ${display.displayOn?'是':'否'}`],
