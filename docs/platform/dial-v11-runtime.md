@@ -14,9 +14,9 @@ K130-V11 现在使用独立身份 `dial-v11`，共享已核对引脚的 Dial 屏
 - **官方出厂 UserDemo**：官方产品页提供 EasyLoader EXE。只读取 .NET 资源，不运行 EXE；`MiniBurner.Resource1.resources` 的 `firmware` 是 3,170,128 字节的完整镜像，`StartAddress=0x0`，SHA-256 为 `a61edfd7c2f6ece2e1570968b931b809545372b8bdac20864f03093a57b1276e`。原字节启动后，GPIO42 进入/退出 LCD TEST、旋钮切换图样、FT3267 在客体坐标 (100,120) 画出蓝点均已通过。
 - M5Burner 名为 M5Dial-UserDemo 的 0.1 由 F4HWN 社区上传，其 8 MiB 镜像与官方 EXE 资源不同，不能当作同一官方镜像。该差异已保留。
 
-当前网页加载器不读取 EXE 资源容器，出厂条目仍为 `reference` 并继续排第一，产品 `defaultFirmwareId` 保持出厂恢复入口；没有把 EXE URL 填成 BIN，也没有把提取的厂家镜像发布到本站。浏览器可直接运行的是 UIFlow2；用户手工提取的完整出厂镜像可按本地文件加载。未来网页支持经过校验的 EasyLoader 资源提取后，再将同一出厂条目改为可直载。
+当前网页加载器不读取 EXE 资源容器，出厂恢复入口仅保留在本页资料中，不再作为没有固件地址的选择项。官方 UIFlow2 仍可在固件库选择；用户手工提取的完整出厂镜像可按本地文件加载。没有把 EXE URL 填成 BIN，也没有把提取的厂家镜像发布到本站。
 
-固件库另列 `Dial UserDemo · 0.1（社区备份）`，直接引用 M5Burner CDN，不在本站托管 BIN。它由 F4HWN 为原版 Dial 上传；v1.1 按已核对的共同载板接口提供试用，发布者未单独声明 v1.1 适配。这份镜像仅通过下载、hash、芯片和布局核验，保持 `trial`，不继承上述官方镜像的运行结论。[来源与布局核验](evidence/dial-community-catalog/source.json)。
+默认选择 `Dial UserDemo · 0.1（社区备份）`，直接引用 M5Burner CDN，不在本站托管 BIN。它由 F4HWN 为原版 Dial 上传；v1.1 按已核对的共同载板接口提供试用，发布者未单独声明 v1.1 适配。这份镜像仅通过下载、hash、芯片和布局核验，保持 `trial`，不继承上述官方镜像的运行结论。[来源与布局核验](evidence/dial-community-catalog/source.json)。
 
 ## 复现真实执行
 
