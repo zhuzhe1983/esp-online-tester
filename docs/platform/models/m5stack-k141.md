@@ -32,3 +32,16 @@ python tools/rebuild-product-model.py build m5stack-k141 --scratch <fresh-scratc
 ```
 
 [重建回执](../evidence/m5stack-k141/rebuild.json)保留依赖、工具、输入和最终资产哈希。独立 Stamp-S3A 尺寸图作为额外来源保留；来源抓取时间未冒充刷新时间。平台配置、知识、视图测试及知识 JSON schema 通过。任务浏览器已关闭并确认退出；CAD 与照片分别保留各自许可和版权说明。
+
+
+## 屏幕居中与内嵌修正（2026-11-05）
+
+屏幕此前没有旋转，但 framebuffer 平面比原厂开孔中心向左偏 **0.75 mm**、向上偏 **0.30 mm**，左边越过开孔外缘约 **0.37 mm**。旧 Z=14.035 mm 还略高于 Z=14 mm 的前壳口沿，因此在斜视时看起来像浮在外壳上的一块歪屏。
+
+现在从原生 CAD 开孔倒角提取外缘 X=−22.7…3.3、Y=8…24 mm，把屏幕移到 **[−9.7, 16, 13.8] mm**。宽高仍为 25.24 × 14.2 mm，旋转仍为零；原生 CAD、贴图和真实 framebuffer 内容均未变化。0.2 mm 内嵌深度是为了保持合理显示层次的装配估算，不是实测 LCD 玻璃位置。
+
+[本次回执](../evidence/stamplc-screen-20261105/validation.json)绑定最终模型和生成计划哈希。正视及左右斜视各检查 132 个边缘像素中心，均能直接看到屏幕；带一像素白边的彩色图仅用于几何检查，不冒充固件输出。同镜头保留 [修正前](../evidence/stamplc-screen-20261105/before-front.png)、[修正后](../evidence/stamplc-screen-20261105/front.png)与左右斜视，另检查原色、金色、半透明紫色。13 项生成资产及完整模型合同离线重建一致。
+
+真实工作台另行加载上述固定官方出厂镜像，经原始 ROM/bootloader 启动到 `Dashboard onResume`；实际帧缓冲为 240 × 135、129 种颜色，保留[默认视角](../evidence/stamplc-screen-20261105/workbench-default.png)、[旋转后](../evidence/stamplc-screen-20261105/workbench-oblique.png)和 [2D](../evidence/stamplc-screen-20261105/workbench-2d.png)画面。这项检查只验证修正后的屏幕正确承载真实输出，不扩大固件兼容结论。
+
+可复用浏览器脚本：`tools/fixtures/stamplc-screen-browser-check.js` 从当前平台页解析地址；`tools/fixtures/stamplc-screen-workbench-check.js` 要求调用者先在工作台的 `#firmware-file` 选择上述 hash 匹配的官方 BIN，随后在 WASM 中运行，结束时暂停。二进制只保留在本地，不加入仓库。
