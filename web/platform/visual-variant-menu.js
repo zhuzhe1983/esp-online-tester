@@ -39,7 +39,7 @@ export function mountVisualVariantMenu({container,products,onSelect}) {
     select.value=state.selectedId;select.disabled=state.disabled;summary.setAttribute('aria-disabled',String(state.disabled));
     summary.textContent=state.previewOnly?'衍生模型 · 预览':'衍生模型';
     hint.textContent=state.disabled?(['running','loading'].includes(state.status)?'运行或加载期间使用本体模型；暂停后可查看衍生外观。':'正在处理设备操作，请稍候。'):'仅查看外观，可旋转、改色和分开查看。设备配置保持不变，运行时自动回到本体。';
-    root.title=state.previewOnly?`仅预览：${state.variants.find(item=>item.id===state.selectedId)?.name}`:state.disabled?'暂停运行后可查看衍生模型':'查看同一主板的排针、连接器装配或套装外观';
+    root.title=state.previewOnly?`仅预览：${state.variants.find(item=>item.id===state.selectedId)?.name}`:state.disabled?'暂停运行后可查看衍生模型':'查看相关产品的衍生外观';
     if(state.disabled||!state.visible)root.open=false;
   }});
   const onToggle=event=>{if(controller.snapshot().disabled)event.preventDefault();};

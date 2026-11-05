@@ -81,12 +81,12 @@ test('picker visibility filters brands, families, groups, search and counts with
   assert.deepEqual(entries,before);
 });
 
-test('ten Stamp assembly and kit variants remain exact catalog and portable scene identities',async()=>{
+test('hidden visual variants remain exact catalog and portable scene identities',async()=>{
   const fetchOriginal=globalThis.fetch;
   let catalog;
   try { globalThis.fetch=async url=>new Response(await readFile(url,'utf8'));catalog=await loadCatalog(); }
   finally { globalThis.fetch=fetchOriginal; }
-  const variants=['m5stack-s007-pin127','m5stack-s007-pin254','m5stack-s007-pin127-v033','m5stack-s007-pin254-v033','m5stack-s015-dip','m5stack-s016-dip','m5stack-k051-b','m5stack-k051','m5stack-k056','m5stack-k122'];
+  const variants=['m5stack-triviapod','m5stack-s007-pin127','m5stack-s007-pin254','m5stack-s007-pin127-v033','m5stack-s007-pin254-v033','m5stack-s015-dip','m5stack-s016-dip','m5stack-k051-b','m5stack-k051','m5stack-k056','m5stack-k122'];
   assert.deepEqual(catalog.products.filter(p=>p.pickerVisible===false).map(p=>p.id).sort(),[...variants].sort());
   assert.equal(searchProducts(catalog.products,'').length,catalog.products.length-variants.length);
   for(const id of variants){

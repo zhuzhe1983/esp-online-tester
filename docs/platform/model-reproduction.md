@@ -79,6 +79,8 @@ cat "$MODEL_REBUILD_DIR/comparison/m5stack-c008.json"
 
 这证明可从固定输入重建现有模型，不会把原有尺寸失败或 `partial` 状态变成通过，也不替代重新做浏览器照片对照、固件或真实硬件测试。没有通用计划的旧定制渲染器，以及没有模型的 FacesKit，会明确拒绝此入口，应使用各自记录的生成流程。
 
+TriviaPOD 使用官网 glTF 的独立导入器：`python tools/build-triviapod-model.py --output /tmp/triviapod-rebuilt`。固定源、单位推定和逐字节比较见 [TriviaPOD 模型说明](triviapod-model.md)；它不是 STL/STEP 通用计划，也不是生产 CAD。
+
 原 `onboard-lane-*.py prepare/publish` 是首次批量资料收集和提交的历史编排入口，依赖当时的队列和网页语料，不是公开模型重建入口。新建产品仍按 `skills/esp-product-onboarding/SKILL.md` 完成来源、模型、知识和行为审核；已有模型复现使用本页命令。
 
 ## 测试

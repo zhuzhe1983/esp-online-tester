@@ -1,0 +1,28 @@
+<!doctype html><meta charset="utf-8"><title>TriviaPOD official model review</title>
+<style>body{margin:0;background:white}canvas{display:block}</style><div id="render"></div>
+<script type="module">
+import * as THREE from '../../web/platform/vendor/three.module.min.js';
+import {createManufacturerModel} from '../../web/platform/manufacturer-model.js';
+import {applyShellAppearance} from '../../web/platform/shell-appearance.js';
+const scene=new THREE.Scene();scene.background=new THREE.Color('white');
+scene.add(new THREE.HemisphereLight(0xffffff,0x64775b,2.5));
+const light=new THREE.DirectionalLight(0xffffff,3.1);scene.add(light);
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+renderer.setSize(800,800,false);renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;
+document.querySelector('#render').append(renderer.domElement);
+const camera=new THREE.OrthographicCamera(-34,34,34,-34,2,3000);
+const model=createManufacturerModel({id:'m5stack-triviapod',model:{url:'assets/m5stack-triviapod/model.json'}},null);
+scene.add(model.group);await model.ready;
+// Match scene-view's default plastic appearance; source material remains in metadata.
+for(const shell of model.group.userData.shellMeshes)applyShellAppearance(shell,{shell:{color:shell.material.color.getHexString().replace(/^/,'#'),opacity:1,finish:'plastic'}});
+const views={front:[0,0,250],back:[0,0,-250],left:[-250,0,0],right:[250,0,0],bottom:[0,-250,0],frontOblique:[-100,100,250],backOblique:[100,70,-250]};
+function show(view='front',options={}){
+  const span=options.span||68;camera.left=-span/2;camera.right=span/2;camera.top=span/2;camera.bottom=-span/2;
+  camera.position.set(...(options.position||views[view]));camera.up.set(...(options.up||(view==='bottom'?[0,0,1]:[0,1,0])));
+  camera.lookAt(...(options.target||[0,0,0]));camera.updateProjectionMatrix();
+  light.position.copy(camera.position).add(new THREE.Vector3(-90,100,60));renderer.render(scene,camera);
+}
+window.review={model,renderer,camera,show,appearance(value){for(const shell of model.group.userData.shellMeshes)applyShellAppearance(shell,value);renderer.render(scene,camera);},materials(){const result={};model.group.traverse(o=>{if(o.material)result[o.name||o.parent?.name]={color:o.material.color?.getHexString(),opacity:o.material.opacity};});return result;}};
+show();document.body.dataset.ready='true';
+window.addEventListener('pagehide',()=>{model.dispose();renderer.dispose();});
+</script>
