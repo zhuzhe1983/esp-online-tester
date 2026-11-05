@@ -1,0 +1,135 @@
+{
+  "checkedAt": "2026-11-05T17:31:29.494877+00:00",
+  "result": {
+    "geometry": {
+      "bezel": {
+        "samples": 128,
+        "visible": 128
+      },
+      "displayOverlayClearanceMm": {
+        "min": 0.05765323134929101,
+        "max": 0.05806645391903853
+      },
+      "screen": {
+        "name": "live-display",
+        "shape": "CircleGeometry",
+        "diameter": 44.45,
+        "z": 7.78,
+        "usesSuppliedTexture": true
+      },
+      "edges": [
+        {
+          "view": "front",
+          "samples": 128,
+          "visible": 128
+        },
+        {
+          "view": "oblique",
+          "samples": 128,
+          "visible": 128
+        },
+        {
+          "view": "side",
+          "samples": 128,
+          "visible": 128
+        }
+      ],
+      "buttons": {
+        "button-blue": {
+          "control": "button-a",
+          "visibleSamples": 339
+        },
+        "button-green": {
+          "control": "button-b",
+          "visibleSamples": 305
+        }
+      },
+      "powerEmitsInput": false,
+      "connectorNames": [],
+      "sourceTriangles": 81532
+    },
+    "inputs": {
+      "buttons": [
+        {
+          "type": "button",
+          "id": "button-a",
+          "pressed": true
+        },
+        {
+          "type": "button",
+          "id": "button-a",
+          "pressed": false
+        },
+        {
+          "type": "button",
+          "id": "button-b",
+          "pressed": true
+        },
+        {
+          "type": "button",
+          "id": "button-b",
+          "pressed": false
+        }
+      ],
+      "touch": [
+        {
+          "type": "touch",
+          "x": 234,
+          "y": 233,
+          "down": true
+        },
+        {
+          "type": "touch",
+          "x": 265,
+          "y": 256,
+          "down": true
+        },
+        {
+          "type": "touch",
+          "x": 265,
+          "y": 256,
+          "down": false
+        }
+      ],
+      "flat": [
+        {
+          "type": "touch",
+          "x": 234,
+          "y": 234,
+          "down": true
+        },
+        {
+          "type": "touch",
+          "x": 234,
+          "y": 234,
+          "down": false
+        }
+      ],
+      "previewOnlyBlocked": true,
+      "outsideCircleBlocked": true
+    },
+    "scope": "Model geometry and input delivery only; diagnostic pattern, no firmware execution or hardware validation."
+  },
+  "sourceSha256": {
+    "tools/build-triviapod-model.py": "9ede8870477a7098edfc695b8c5f8ee699a4c7c38107ddcb8d76a5ab98f37bb9",
+    "tools/fixtures/triviapod-runtime-model-review.html": "f44404d777114c52607ff58d96fc02024c3bfb48f02facdfa6e453148880e68a",
+    "tools/fixtures/triviapod-runtime-model-check.js": "933bb50236c303c492d166ab3b76c6f773e67ed67e4bb04bac59a0f8c6c9dc28",
+    "web/platform/assets/m5stack-triviapod/model.json": "8f21a1623cd4666a98dfcd80292628c00d67086e459f342e90a4305314bd0225",
+    "web/platform/assets/m5stack-triviapod/geometry.bin": "f5db9047b3d85bf54e3ece5aa621ae2740af1a1cc35902152511c2e3f4e48e6b",
+    "web/platform/assets/m5stack-triviapod/reference-photo-08.webp": "b704853b19a433b74cce045f6f159a6ce4759725de3a94f36d60c91ff5c168ff"
+  },
+  "reproduction": {
+    "python": "3.14",
+    "numpy": "2.4.6",
+    "command": "python tools/build-triviapod-model.py --output <scratch-directory>",
+    "assetFilesCompared": 9,
+    "allByteIdentical": true,
+    "originalGeometryUnchanged": true
+  },
+  "limitations": [
+    "The color quadrants are a diagnostic texture supplied to the production renderer, not a guest screenshot. Real firmware execution is checked by the integrating change.",
+    "Model units remain inferred; 44.45 mm is derived from the official nominal 1.75-inch panel diameter, not a physical dimension measurement.",
+    "The planar framebuffer overlays the curved cover glass. The source mesh and perimeter are retained; only a visual simulation of the active area is claimed.",
+    "A/B mappings describe the requested compatible simulator profile; actual TriviaPOD GPIO routing and physical hardware were not verified."
+  ]
+}
