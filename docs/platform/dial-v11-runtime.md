@@ -16,6 +16,8 @@ K130-V11 现在使用独立身份 `dial-v11`，共享已核对引脚的 Dial 屏
 
 当前网页加载器不读取 EXE 资源容器，出厂条目仍为 `reference` 并继续排第一，产品 `defaultFirmwareId` 保持出厂恢复入口；没有把 EXE URL 填成 BIN，也没有把提取的厂家镜像发布到本站。浏览器可直接运行的是 UIFlow2；用户手工提取的完整出厂镜像可按本地文件加载。未来网页支持经过校验的 EasyLoader 资源提取后，再将同一出厂条目改为可直载。
 
+固件库另列 `Dial UserDemo · 0.1（社区备份）`，直接引用 M5Burner CDN，不在本站托管 BIN。它由 F4HWN 为原版 Dial 上传；v1.1 按已核对的共同载板接口提供试用，发布者未单独声明 v1.1 适配。这份镜像仅通过下载、hash、芯片和布局核验，保持 `trial`，不继承上述官方镜像的运行结论。[来源与布局核验](evidence/dial-community-catalog/source.json)。
+
 ## 复现真实执行
 
 从 [官方恢复入口](https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/M5Dial/M5dial%20Factory%20Demo.exe)取得 EXE，放入忽略的 `output/`。下面的提取器不会执行 Windows 程序，只接受显式双 hash，拒绝已有输出和网站资产目录。
