@@ -66,6 +66,7 @@ test('old string selection remains scoped while product selection includes share
   assert.deepEqual(firmwareGroups(entries,'sibling').flatMap(([,items])=>items.map(item=>item.id)),['own-application']);
   const shared=firmwareGroups(entries,sibling).flatMap(([,items])=>items).find(item=>item.id==='base-factory');
   assert.ok(shared);assert.equal(shared.simulationVerified,false);assert.equal(shared.role,undefined);
+  assert.equal(firmwaresForProduct([originalFirmware,{...direct,source:originalFirmware.source}],sibling)[0].id,'own-application','Source restoration must prefer a direct entry even when the URL/hash is shared');
   assert.equal(firstFirmware(entries,sibling).id,'own-application','Direct firmware takes priority over a canonical target factory entry');
   assert.equal(firstFirmware([originalFirmware],sibling).sharedTargetId,'base');
   assert.equal(firstFirmware(entries,{id:'absent',chip:'esp32s3'}),null);

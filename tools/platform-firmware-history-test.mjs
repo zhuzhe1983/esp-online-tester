@@ -32,3 +32,8 @@ assert.equal(firmwareMetadata([{kind:'flash',data:flash}]).source,'multiple-app-
 assert.equal(firmwareMetadata([{kind:'app',data:bytes.subarray(0,200)}],{name:'Manifest',version:'1.0'}).name,'Manifest');
 assert.equal(firmwareMetadata([{kind:'rom',data:bytes}]).name,'');
 console.log('ok firmware history: reload, device isolation, bounded ordering, hash variants, storage denial, URL safety, ESP-IDF metadata and ambiguous OTA images');
+
+const sharedHistory=createFirmwareHistory(()=>storage);
+sharedHistory.remember({...first,productId:'sibling',firmwareTargetId:'paper',lastUsedAt:10000});
+assert.equal(createFirmwareHistory(()=>storage).list('sibling')[0].firmwareTargetId,'paper');
+assert.equal(sharedHistory.list('paper').some(item=>item.firmwareTargetId==='paper'),false,'A shared target does not merge product histories');

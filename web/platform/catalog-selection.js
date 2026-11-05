@@ -1,3 +1,4 @@
+import {firmwaresForProduct} from './firmware-target.js';
 const collator = new Intl.Collator('zh-CN', {numeric:true,sensitivity:'base'});
 const manufacturerCollator = new Intl.Collator('en', {numeric:true,sensitivity:'base'});
 export function manufacturerLabel(name) {
@@ -56,14 +57,16 @@ export function filterAccessories(items, {brand='', connector=''} = {}) {
 export function searchAccessories(items, query) {
   return searchProducts(items.map(item => ({...item, manufacturer:accessoryBrand(item), module:[item.controller,accessoryInterface(item),item.connector?.protocol].filter(Boolean).join(' ')})),query);
 }
-export function firmwareGroups(firmwares, productId, defaultId) {
+export function firmwareGroups(firmwares, productOrId, defaultId) {
+  const product=typeof productOrId==='string'?{id:productOrId}:productOrId;
   const groups = new Map();
-  const entries = firmwares.filter(firmware => firmware.productIds.includes(productId)).sort((a,b) => Number(b.role === 'factory')-Number(a.role === 'factory') || Number(b.id === defaultId)-Number(a.id === defaultId));
+  const entries = firmwaresForProduct(firmwares,product).sort((a,b) => Number(!!a.sharedTargetId)-Number(!!b.sharedTargetId) || Number(b.role === 'factory')-Number(a.role === 'factory') || Number(b.id === defaultId)-Number(a.id === defaultId));
   for (const item of entries) {
-    const label = item.publisherGroup || (item.publisher === 'M5Stack' || item.role === 'factory' ? '官方' : item.publisher || '社区');
+    const publisher = item.publisherGroup || (item.publisher === 'M5Stack' || item.role === 'factory' ? '官方' : item.publisher || '社区');
+    const label = item.sharedTargetId ? `共享目标 · ${publisher}` : publisher;
     if (!groups.has(label)) groups.set(label,[]);
     groups.get(label).push(item);
   }
-  return [...groups].sort(([a],[b]) => a === '官方' ? -1 : b === '官方' ? 1 : collator.compare(a,b));
+  return [...groups].sort(([a,as],[b,bs]) => Number(!!as[0].sharedTargetId)-Number(!!bs[0].sharedTargetId) || (a === '官方' ? -1 : b === '官方' ? 1 : collator.compare(a,b)));
 }
-export const firstFirmware = (firmwares, product) => firmwareGroups(firmwares,product.id,product.defaultFirmwareId)[0]?.[1][0] || null;
+export const firstFirmware = (firmwares, product) => firmwareGroups(firmwares,product,product.defaultFirmwareId)[0]?.[1][0] || null;

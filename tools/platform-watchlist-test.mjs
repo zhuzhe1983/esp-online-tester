@@ -92,3 +92,9 @@ selectedProbes=[];
 const unmapped=await checkWatchEntry(dualEntry,{fetchImpl:dualFetch,firmwareId:'missing',productId:'two',currentVersion:'1.4.0'});
 assert.equal(unmapped.latestVersion,null);assert.equal(unmapped.updateAvailable,false);assert.equal(unmapped.metadata.matchReason,'no-device-target');assert.deepEqual(selectedProbes,[]);
 console.log('ok device-scoped release history, independent versions and isolated selected-artifact probes');
+
+selectedProbes=[];
+const sharedTargetReport=await checkWatchEntry(dualEntry,{fetchImpl:dualFetch,firmwareId:'one-firmware',productId:'sibling',firmwareTargetId:'one',currentVersion:'1.0.0',source:{url:'https://example.com/one-2.0.bin'}});
+assert.equal(sharedTargetReport.productId,'sibling');assert.equal(sharedTargetReport.latestVersion,'2.0.0');
+assert.match(new URL(sharedTargetReport.issueUrl).searchParams.get('body'),/sibling/,'Issue reports retain the actual product, not its firmware target');
+assert.deepEqual(selectedProbes,['https://example.com/one-2.0.bin']);

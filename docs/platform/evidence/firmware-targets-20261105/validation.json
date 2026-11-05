@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-11-05T14:21:14Z",
+  "baseCommit": "f49bec4834a4aab5199fd40ee62d2656704c9477",
+  "mapping": {
+    "productId": "m5stack-triviapod",
+    "firmwareTargetId": "m5stack-stopwatch",
+    "purpose": "shared candidate discovery",
+    "compatibilityVerified": false,
+    "basisURL": "https://docs.m5stack.com/en/core/TriviaPOD",
+    "basisScope": "Official comparison supports investigating shared drivers, not identical binary firmware or pin assignments."
+  },
+  "checks": {
+    "catalogSchema": "217 products, 10 accessories, 173 firmwares, 117 watchlist entries passed; canonical same-chip targets validated",
+    "platformTests": {
+      "command": "ESP32SIM_ROM_DIR=<roms> node --test tools/platform-*-test.mjs",
+      "passed": 341,
+      "failed": 0
+    },
+    "fullCi": {
+      "result": "passed locally",
+      "rust": "1.99.1 stable",
+      "commands": [
+        "rustup update stable",
+        "cargo build --release --workspace",
+        "cargo clippy --workspace --all-targets -- -D warnings",
+        "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+        "cargo test --release --workspace -- --include-ignored --skip external_",
+        "node tools/check-evidence-privacy.mjs",
+        "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+        "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+        "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+        "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+        "tools/fetch-rom-elfs.sh roms",
+        "tools/fetch-micropython.sh",
+        "tools/fetch-p4-firmware.sh",
+        "node tools/network-helper-test.mjs",
+        "node --test tools/network-relay-test.mjs",
+        "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+        "tools/wasm-build.sh",
+        "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+        "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik",
+        "node tools/platform-recording-test.mjs --real",
+        "node tools/wasm-test.mjs demo-stopwatch",
+        "node tools/probe-hardware-diagnostics.mjs tools/fixtures/stopwatch-hardware-checks.json <receipt.json>",
+        "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+        "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf",
+        "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf",
+        "node tools/worker-pacing-test.mjs",
+        "node tools/worker-channel-test.mjs",
+        "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+        "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+        "tools/wasm-jit-test.sh",
+        ". ./tools/wasm-rustflags.sh",
+        "cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+        "cargo test --release -p xtensa-lx7"
+      ],
+      "goldensUpdated": false
+    },
+    "browser": {
+      "catalogCandidates": [
+        "m5stack-stopwatch-official",
+        "m5stack-stopwatch-uiflow2",
+        "m5stack-stopwatch-xiaozhi"
+      ],
+      "productId": "m5stack-triviapod",
+      "flashMb": 32,
+      "runtimeBoard": null,
+      "version": "V0.5",
+      "m5burnerTarget": "StopWatch",
+      "sharedTrial": true,
+      "historyIsolation": true,
+      "studioAndMiniRestore": true,
+      "hardwareFlashing": false,
+      "pageErrors": []
+    },
+    "browserScope": "Headless Chromium on the real workbench and mini. M5Burner metadata and artifact HEAD responses are synthetic. No firmware is downloaded/flashed by the browser fixture, and TriviaPOD execution is not claimed."
+  },
+  "sourceSha256": {
+    "web/platform/firmware-target.js": "cc3cea0cabd944ab7b09b8096f52a8f93e7efc24805d45ebc60a53c21b2047b2",
+    "web/platform/catalog/products.json": "077f500ca4814108b022e9736c30c72d3f613d1574594d34cdc95f80d9b30fd9",
+    "web/platform/catalog/firmwares.json": "6917ead5dcc0972b4061282ae257f3b303d760c6199401e52f2722ae1f9fbdcd",
+    "web/platform/app.js": "4cce5fa7c3bac3ffe9d4cff405411efe22e53dea1c5b72018e3dbc3c408d950f",
+    "web/platform/m5burner-ui.js": "84aec69d30bc831611b63a15d1d3592a57173119ff45d1a495109877ffe003fb",
+    "web/platform/watchlist.js": "a6e4bb67deb38eeec053b6d2ec03a35cd0b58b29e6ac9b776e320596f47e9385",
+    "web/platform/transport-ui.js": "1315f0543cb6202847cfe597333d4c4d73aaed7bf1f4ccf50c6a1254d8e81627",
+    "tools/fixtures/firmware-target-browser-check.js": "dac6febbf78d3827088eadd6997da3dcd3bcfed47da09cbf7d3e3183e06f669b"
+  },
+  "screenshots": {
+    "firmware-target-triviapod.png": "69c68e3c99c4e6e3b910fc92ac89813defb5dff6b36562a59f8fa17691ffa311"
+  },
+  "privacy": "Raw browser/CI logs and local session/path metadata are omitted; retained screenshot contains product UI and synthetic/public firmware metadata only."
+}

@@ -1,3 +1,4 @@
+import {firmwaresForProduct,firmwareTargetProduct} from './firmware-target.js';
 import {mountHardwareDiagnostics} from './hardware-diagnostics.js';
 import {mountAudioControls} from './audio-controls.js';
 import {mountMotorOutputs} from './motor-output-ui.js';
@@ -195,13 +196,14 @@ async function downloadAndRun() {
   finally { pendingRemoteHistory=null;runAfterLoad = false; renderDownloadProgress(); }
   return true;
 }
+const scopedFirmwares=()=>firmwaresForProduct(catalog.firmwares,product());
 function currentCatalogFirmware() {
   if (!embedded && firmwareTab === 'local') return null;
-  if (!embedded && firmwareTab === 'library') return catalog.firmwares.find(item=>item.id===$('firmware-select')?.value);
+  if (!embedded && firmwareTab === 'library') return scopedFirmwares().find(item=>item.id===$('firmware-select')?.value);
   if (!embedded && firmwareTab === 'remote' && remoteHub()) return remoteHub().current();
   let source=scene.firmware;
   if (!embedded && firmwareTab === 'remote') { try { source=sourceFromInputs(); } catch { return null; } }
-  return catalog.firmwares.find(item=>item.productIds.includes(scene.productId)&&firmwareSourceMatches(item.source,source))
+  return scopedFirmwares().find(item=>firmwareSourceMatches(item.source,source))
     || (source?.url || source?.manifestUrl ? {name:'远程固件',source,simulationVerified:false,status:'trial'} : null);
 }
 const confirmSelectedRun = () => confirmFirmwareRun({product:product(),firmware:currentCatalogFirmware()});
@@ -315,11 +317,11 @@ function renderTransport() {
   }
   if ($('pause-runtime')) $('pause-runtime').disabled = busy || sessionBusy || status !== 'running';
   if ($('reset-runtime')) $('reset-runtime').disabled = busy || sessionBusy || !['running', 'paused', 'ready'].includes(status);
-  if ($('load-firmware')) $('load-firmware').disabled = busy || sessionBusy || status === 'loading' || !executable || (firmwareTab === 'library' && !catalog.firmwares.find(item => item.id === $('firmware-select')?.value)?.source);
+  if ($('load-firmware')) $('load-firmware').disabled = busy || sessionBusy || status === 'loading' || !executable || (firmwareTab === 'library' && !scopedFirmwares().find(item => item.id === $('firmware-select')?.value)?.source);
   if ($('load-firmware')) {
     $('load-firmware').hidden = !executable;
     $('load-firmware').textContent = firmwareTab === 'local' ? '加载并运行' : '下载并运行';
-    if (firmwareTab === 'library' && firmwareRunPolicy(product(), catalog.firmwares.find(item => item.id === $('firmware-select')?.value)).trial) $('load-firmware').textContent = '下载并尝试运行';
+    if (firmwareTab === 'library' && firmwareRunPolicy(product(), scopedFirmwares().find(item => item.id === $('firmware-select')?.value)).trial) $('load-firmware').textContent = '下载并尝试运行';
     if (firmwareTab === 'local' && !localSource) $('load-firmware').disabled = true;
     if (firmwareTab === 'remote' && remoteHub()) {
       $('load-firmware').textContent='下载并尝试运行';
@@ -365,7 +367,7 @@ function renderEmpty() {
   } else if (status === 'running') {
     text('empty-title', '固件运行中，等待屏幕帧'); text('empty-description', '屏幕仅显示模拟器的实际输出。更多状态请查看串口。');
   } else {
-    const selected = catalog.firmwares.find(item => item.productIds.includes(scene.productId) && firmwareSourceMatches(item.source, scene.firmware));
+    const selected = scopedFirmwares().find(item => firmwareSourceMatches(item.source, scene.firmware));
     text('empty-title', '按下启动，让固件点亮屏幕');
     text('empty-description', selected?.id === 'm5stack-stopwatch-official' ? '官方固件：同时长按 A+B 进入菜单，A/B 切换，点击图标进入。' : '加载所选固件；操作行为以该固件的说明为准。');
   }
@@ -410,7 +412,7 @@ function renderProduct() {
   if(!localFiles.length){text('local-file-name',c5Product()?'C5 SRAM 应用 .bin':'merged .bin、应用 .bin 或 flasher_args.json');text('local-build-status',localFileHint());}
   if(kind){const option=kind.querySelector('[value="m5burner"]');if(isM5Stack(selected)){if(!option)kind.append(new Option('burner.m5stack.com','m5burner'));}else{if(kind.value==='m5burner')kind.value='merged';option?.remove();}}
   if(kind){const option=kind.querySelector('[value="lilygo-spark"]');if(isLilygo(selected)){if(!option)kind.append(new Option('LILYGO Spark','lilygo-spark'));}else{if(kind.value==='lilygo-spark')kind.value='merged';option?.remove();}}
-  burnerUi?.setProduct(selected);sparkUi?.setProduct(selected);updateRemoteMode();
+  burnerUi?.setProduct(selected,{firmwareProduct:firmwareTargetProduct(selected,catalog.products)});sparkUi?.setProduct(selected);updateRemoteMode();
   if ($('manufacturer-select')) {
     const manufacturers = manufacturerNames(catalog.products);
     if (!manufacturers.includes(selected.manufacturer)) manufacturers.push(selected.manufacturer);
@@ -462,17 +464,17 @@ function updateRemoteMode() {
 function renderFirmwareLibrary() {
   const select = $('firmware-select'); if (!select) return;
   select.replaceChildren();
-  for (const [label, firmwares] of firmwareGroups(catalog.firmwares, scene.productId, product()?.defaultFirmwareId)) {
+  for (const [label, firmwares] of firmwareGroups(catalog.firmwares, product(), product()?.defaultFirmwareId)) {
     const group = element('optgroup'); group.label = label;
     for (const firmware of firmwares) group.append(new Option(firmware.name, firmware.id));
     select.append(group);
   }
-  const current = catalog.firmwares.find(item => item.productIds.includes(scene.productId) && firmwareSourceMatches(item.source, scene.firmware));
+  const current = scopedFirmwares().find(item => firmwareSourceMatches(item.source, scene.firmware));
   if (current) select.value = current.id;
   else if (scene.firmware) { select.prepend(new Option('当前使用自定义固件', '')); select.value = ''; }
   else if (preserveUnspecifiedFirmware) { select.prepend(new Option('此配置未指定固件', '')); select.value = ''; }
   if (!select.options.length) select.append(new Option('暂无收录固件', ''));
-  renderFirmwareNote(catalog.firmwares.find(item => item.id === select.value));
+  renderFirmwareNote(scopedFirmwares().find(item => item.id === select.value));
 }
 function renderFirmwareNote(firmware) {
   const node = $('firmware-note'); if (!node) return;
@@ -489,7 +491,7 @@ function reflectFirmwareSource({preserveLocal = false} = {}) {
     if ($('firmware-file')) $('firmware-file').value = '';
     text('local-file-name', c5Product()?'C5 SRAM 应用 .bin · 文件留在本机':'merged .bin · 文件留在本机'); setFirmwareTab('library'); return;
   }
-  const known = catalog.firmwares.find(item => item.productIds.includes(scene.productId) && firmwareSourceMatches(item.source, scene.firmware));
+  const known = scopedFirmwares().find(item => firmwareSourceMatches(item.source, scene.firmware));
   if (known && $('firmware-select')) { $('firmware-select').value = known.id; renderFirmwareNote(known); setFirmwareTab('library'); }
   else if ($('firmware-url')) {
     remoteModeSelection=scene.firmware.bootMode||scene.firmware.archive?{url:scene.firmware.url,sha256:scene.firmware.sha256||'',bootMode:scene.firmware.bootMode,...(scene.firmware.archive?{archive:clone(scene.firmware.archive)}:{})}:null;
@@ -515,7 +517,7 @@ function sourceFromInputs() {
     if(result.url&&remoteModeSelection?.url===url&&remoteModeSelection.sha256===hash){if(remoteModeSelection.bootMode&&$('firmware-kind').value!=='c5-sram')result.bootMode=remoteModeSelection.bootMode;if(remoteModeSelection.archive)result.archive=clone(remoteModeSelection.archive);}
     return result;
   }
-  const selected = catalog.firmwares.find(item => item.id === $('firmware-select')?.value);
+  const selected = scopedFirmwares().find(item => item.id === $('firmware-select')?.value);
   if (!selected?.source) throw new Error('当前条目仅收录资料链接，尚未配置固件文件。请选择其他固件，或通过远程地址、本地文件加载。');
   const source = clone(selected.source);
   if (firmwareSourceMatches(scene.firmware, source) && scene.firmware.sha256) source.sha256 = scene.firmware.sha256;
@@ -678,7 +680,7 @@ async function loadSelected() {
   const history = !embedded && firmwareTab === 'remote' ? {
     url:source.manifestUrl || source.url, kind:source.manifestUrl ? 'manifest' : 'merged', sha256:source.sha256 || '',
     ...(source.bootMode?{bootMode:source.bootMode}:{}),...(source.archive?{archive:clone(source.archive)}:{}),
-    productId:scene.productId, lastUsedAt:Date.now(), name:known?.name || firmwareHistoryName(source.manifestUrl || source.url), version:known?.version || known?.revision || '',
+    productId:scene.productId, ...(known?.sharedTargetId?{firmwareTargetId:known.sharedTargetId}:{}), lastUsedAt:Date.now(), name:known?.name || firmwareHistoryName(source.manifestUrl || source.url), version:known?.version || known?.revision || '',
     ...(['m5burner','lilygo-spark'].includes(known?.provider)?{provider:known.provider,deviceId:known.deviceId,firmwareId:known.firmwareId}:{}),
   } : null;
   if (history && !history.provider) firmwareHistory?.remember(history);
@@ -923,7 +925,7 @@ function portableScene({forSharing=false}={}) {
     else if (firmwareTab === 'remote' && remoteHub()) next.firmware = clone(remoteHub().current()?.source || null);
     else if (firmwareTab === 'remote' && !$('firmware-url').value.trim()) next.firmware = null;
     else if (firmwareTab === 'library' && preserveUnspecifiedFirmware && !scene.firmware) next.firmware = null;
-    else if (firmwareTab === 'library' && !catalog.firmwares.find(item => item.id === $('firmware-select').value)?.source) next.firmware = null;
+    else if (firmwareTab === 'library' && !scopedFirmwares().find(item => item.id === $('firmware-select').value)?.source) next.firmware = null;
     else next.firmware = sourceFromInputs();
   }
   if(forSharing)next.firmware=shareFirmwareSource({scene,status,firmware:loadedFirmware,selectedSource:next.firmware});
@@ -965,7 +967,7 @@ async function releaseHumanInputs() {
 }
 
 function setupEvents() {
-  burnerUi=mountM5Burner({mount:$('firmware-burner'),onChange:renderTransport});burnerUi?.setProduct(product());
+  burnerUi=mountM5Burner({mount:$('firmware-burner'),onChange:renderTransport});burnerUi?.setProduct(product(),{firmwareProduct:firmwareTargetProduct(product(),catalog.products)});
   sparkUi=mountLilygoSpark({mount:$('firmware-spark'),onChange:renderTransport});sparkUi?.setProduct(product());
   firmwareHistory = mountFirmwareHistory({input:$('firmware-url'),kindInput:$('firmware-kind'),shaInput:$('firmware-sha'),mount:$('firmware-history-mount'),productId:()=>scene.productId,onSelect:entry=>{
     remoteModeSelection=entry.bootMode||entry.archive?{url:entry.url,sha256:entry.sha256,bootMode:entry.bootMode,...(entry.archive?{archive:clone(entry.archive)}:{})}:null;
@@ -986,7 +988,7 @@ function setupEvents() {
   }));
   bind('product-select', 'change', () => action(() => chooseProduct($('product-select').value, true)));
   document.querySelectorAll('[data-firmware-tab]').forEach(button => button.addEventListener('click', () => setFirmwareTab(button.dataset.firmwareTab)));
-  bind('firmware-select', 'change', () => action(async () => { preserveUnspecifiedFirmware = false; const selected = catalog.firmwares.find(item => item.id === $('firmware-select').value); const next = clone(scene); next.firmware = selected?.source ? clone(selected.source) : null; await configure(next); $('firmware-select').value = selected?.id || ''; renderFirmwareNote(selected); }));
+  bind('firmware-select', 'change', () => action(async () => { preserveUnspecifiedFirmware = false; const selected = scopedFirmwares().find(item => item.id === $('firmware-select').value); const next = clone(scene); next.firmware = selected?.source ? clone(selected.source) : null; await configure(next); $('firmware-select').value = selected?.id || ''; renderFirmwareNote(selected); }));
   bind('firmware-file', 'change', () => { void selectLocalFiles($('firmware-file').files); });
   bind('firmware-folder', 'change', () => { void selectLocalFiles($('firmware-folder').files,{replace:true}); });
   bind('clear-local-files', 'click', clearLocalFiles);
@@ -1118,7 +1120,7 @@ async function init() {
 
   detachBridge = installEmbedBridge(api);
   knowledgePanel = createKnowledgePanel($('product-knowledge'));
-  transportUi = createTransportUi({mount: $('session-tools-mount'), flashMount:document.querySelector(embedded ? '.transport-main' : '.firmware-actions'), catalog, getScene: () => clone(scene), getSource: sourceFromInputs, getApi: () => api,
+  transportUi = createTransportUi({mount: $('session-tools-mount'), flashMount:document.querySelector(embedded ? '.transport-main' : '.firmware-actions'), catalog, getScene: () => clone(scene), getSource: sourceFromInputs, getApi: () => api, getFirmware:currentCatalogFirmware,
     prepareRecording: async () => { await releaseHumanInputs(); if (!['ready', 'running', 'paused'].includes(status)) await loadSelected(); },
     releaseInputs: releaseHumanInputs,
     recordingMatchesScene: recorded => validateRecording(recorded, {scene}).valid,
@@ -1132,7 +1134,7 @@ async function init() {
   window.addEventListener('pagehide',()=>visualVariantMenu?.dispose(),{once:true});
   setupEvents(); await runtime.configure(scene); renderLocalAccessories(); reflectFirmwareSource(); transportUi.setRecording(recordingDocument);
   firmwareUpdates = await mountFirmwareUpdates($('firmware-updates'), {getProductId: () => scene.productId, onError: report});
-  firmwareUpdates.show(catalog.firmwares.find(item => item.id === $('firmware-select')?.value));
+  firmwareUpdates.show(scopedFirmwares().find(item => item.id === $('firmware-select')?.value));
   if (embedded) {
     if (product().runtime.status !== 'unavailable') text('empty-description', scene.firmware ? '点击启动，执行此场景中的固件。' : '此场景未指定固件，可点击“编辑”进行配置。');
   }

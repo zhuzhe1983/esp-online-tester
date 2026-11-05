@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {firmwareRunPolicy} from '../web/platform/firmware-policy.js';
+import {firmwareRunPolicy,firmwareFlashPolicy} from '../web/platform/firmware-policy.js';
 
 const board = {runtime: {board: 'papermono', status: 'partial'}};
 const source = {url: 'https://example.com/merged.bin'};
@@ -20,4 +20,11 @@ test('missing board and missing startup artifacts remain distinct', () => {
 test('available never implies verification; evidence is explicit', () => {
   assert.equal(firmwareRunPolicy(board, {status:'available',source}).trial,true);
   assert.equal(firmwareRunPolicy(board, {source,simulationVerified:true}).trial,false);
+});
+test('shared discovery cannot inherit simulation verification or permit hardware flashing',()=>{
+  const product={id:'sibling',chip:'esp32s3',runtime:{board:'base',flashMb:32}};
+  const firmware={source,productIds:['base'],simulationVerified:true};
+  assert.equal(firmwareRunPolicy(product,firmware).trial,true);
+  assert.equal(firmwareFlashPolicy(product,source,{...firmware,sharedTargetId:'base'}).reason,'FIRMWARE_TARGET_UNVERIFIED');
+  assert.equal(firmwareFlashPolicy(product,source,{...firmware,productIds:['sibling']}).canFlash,true);
 });
