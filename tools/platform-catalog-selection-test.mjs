@@ -86,7 +86,7 @@ test('hidden visual variants remain exact catalog and portable scene identities'
   let catalog;
   try { globalThis.fetch=async url=>new Response(await readFile(url,'utf8'));catalog=await loadCatalog(); }
   finally { globalThis.fetch=fetchOriginal; }
-  const variants=['m5stack-triviapod','m5stack-s007-pin127','m5stack-s007-pin254','m5stack-s007-pin127-v033','m5stack-s007-pin254-v033','m5stack-s015-dip','m5stack-s016-dip','m5stack-k051-b','m5stack-k051','m5stack-k056','m5stack-k122'];
+  const variants=['m5stack-s007-pin127','m5stack-s007-pin254','m5stack-s007-pin127-v033','m5stack-s007-pin254-v033','m5stack-s015-dip','m5stack-s016-dip','m5stack-k051-b','m5stack-k051','m5stack-k056','m5stack-k122'];
   assert.deepEqual(catalog.products.filter(p=>p.pickerVisible===false).map(p=>p.id).sort(),[...variants].sort());
   assert.equal(searchProducts(catalog.products,'').length,catalog.products.length-variants.length);
   for(const id of variants){
@@ -98,7 +98,20 @@ test('hidden visual variants remain exact catalog and portable scene identities'
     assert.deepEqual(searchProducts(catalog.products,id),[]);
     assert.equal(productsForManufacturer(catalog.products,product.manufacturer,product.family.id).some(p=>p.id===id),false);
   }
-  for(const id of ['m5stack-s007','m5stack-s007-v033','m5stack-s015','m5stack-s016','m5stack-c050-b','m5stack-c056-b','m5stack-c122-b','m5stack-k138','m5stack-k138-v11','m5stack-stopwatch']){
+  for(const id of ['m5stack-s007','m5stack-s007-v033','m5stack-s015','m5stack-s016','m5stack-c050-b','m5stack-c056-b','m5stack-c122-b','m5stack-k138','m5stack-k138-v11','m5stack-stopwatch','m5stack-triviapod']){
     assert.ok(searchProducts(catalog.products,'').some(p=>p.id===id),id);
   }
+});
+
+test('TriviaPOD is discoverable as its own unavailable product and preserves its scene identity',async()=>{
+  const [products,accessories,firmwares]=await Promise.all(['products','accessories','firmwares'].map(async name=>JSON.parse(await readFile(new URL(`../web/platform/catalog/${name}.json`,import.meta.url),'utf8')).items));
+  const catalog={products,accessories,firmwares},trivia=products.find(item=>item.id==='m5stack-triviapod');
+  assert.deepEqual(searchProducts(products,'TP-01-A').map(item=>item.id),[trivia.id]);
+  assert.ok(productsForManufacturer(products,'M5Stack','m5-other').some(item=>item.id===trivia.id));
+  assert.match(productOptionLabel(trivia),/尚未适配$/);
+  assert.equal(firstFirmware(firmwares,trivia),null,'an independent TriviaPOD never receives the StopWatch default firmware');
+  const scene=createDefaultScene(catalog,trivia.id);
+  assert.equal(validateScene(scene,catalog).valid,true);
+  assert.equal(scene.firmware,null);
+  assert.equal(decodeScene(encodeScene(scene,catalog),catalog).productId,trivia.id);
 });

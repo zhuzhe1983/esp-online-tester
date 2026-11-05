@@ -2738,12 +2738,10 @@
     },
     {
       "id": "m5stack-triviapod",
-      "pickerVisible": false,
-      "visualVariantOf": "m5stack-stopwatch",
       "name": "M5Stack TriviaPOD TP-01-A · 白色",
       "manufacturer": "M5Stack",
       "sku": "TP-01-A",
-      "summary": "白色圆屏问答设备，32 MB Flash、8 MB PSRAM；作为 StopWatch 下的独立外观预览，无 Grove、后部扩展总线或背部磁吸。",
+      "summary": "白色圆屏问答设备，32 MB Flash、8 MB PSRAM，配备 USB-C 充电接口；无 Grove、后部扩展总线或背部磁吸。当前提供独立产品资料与 3D 外观预览。",
       "knowledgeUrl": "./knowledge/m5stack-triviapod.json",
       "hardwareRevision": "unspecified",
       "chip": "esp32s3",
@@ -2761,14 +2759,27 @@
         "shape": "round"
       },
       "controls": [],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C（充电）",
+          "external": true,
+          "voltage": 5,
+          "pins": [],
+          "sourceIds": [
+            "triviapod-docs"
+          ],
+          "notes": "官方资料确认 USB Type-C、DC 5V 输入与充电。USB 数据、Host 能力、内部路由和引脚尚未核实；不作为扩展外设支持声明。"
+        }
+      ],
       "model": {
         "type": "manufacturer-display-model",
         "url": "./assets/m5stack-triviapod/model.json",
         "status": "partial"
       },
       "limitations": [
-        "仅提供外观预览；未完成 TriviaPOD 板级适配，不运行或继承 StopWatch 固件、GPIO、触摸及外设模型。",
+        "独立产品条目，当前仅提供资料与 3D 外观；未完成 TriviaPOD 板级适配，不运行或继承 StopWatch 固件、GPIO、触摸及外设模型。",
         "官方产品尺寸与重量仍为 Work in progress；源模型数值按毫米展示属于单位推定，不代表已核验实物尺寸。",
         "显示屏可视分辨率为 466×466；本型号显示与触摸控制器、总线、帧缓冲布局和引脚尚未确认。",
         "官方软件由 Etermax 专有开发，通过机内 Wi-Fi 更新；本轮未找到公开的固定出厂镜像或该型号 UIFlow/小智映射。",

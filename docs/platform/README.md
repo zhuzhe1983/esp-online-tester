@@ -22,6 +22,8 @@ The LILYGO inventory follows Spark’s stable series IDs and product IDs: 127 ES
 
 Stamp 系列已逐款接入 22 个主控和套件，StampFly v1.1 保持独立型号；模型、可运行行为与已知限制见 [Stamp 适配清单](stamp-series-onboarding.md)。同 PCB 的排针、DIP 和套装变体从常用设备列表收起，原 ID 与模型保留。C5 仅支持显式 SRAM app-direct。StampFly 另有独立 UART 演示固件和需主动开启的近似飞行环境，见[操作说明](stampfly-demo.md)与[模型边界](stampfly-flight.md)。
 
+TriviaPOD TP-01-A 作为 M5Stack「其他主控」中的独立产品列出，提供官方 3D 模型与硬件资料，板级运行尚未适配。USB-C 仅确认充电用途，不继承 StopWatch 的固件、Grove 或后部扩展接口，见 [TriviaPOD 模型说明](triviapod-model.md)。
+
 ## Current scope
 
 “串口与事件”提供“复制日志 → 全部 / 最近 50 条 / 最近 100 条”，工作台与独立播放器共用。复制对象是当前所选 USB、UART0 或 UART1 的留存内容及该视图中的平台事件；每端口仍保留最近 65,536 个字符。“全部”不合并其他串口，也不恢复已被缓冲上限截去的历史。以去除 ANSI 控制序列后的非空逻辑行计数，CRLF/CR 统一为换行，串口传输分块和屏幕自动折行不增加条数，末尾尚未换行的文本计一条。原有固件时间戳和行内空白保留，记录间的空行保留但不计数，不添加宿主时间戳。复制后提示实际条数和端口；空日志不覆盖剪贴板，清空后复制也为空。
