@@ -22,7 +22,7 @@ async page => {
   await page.locator('#product-select').selectOption('m5stack-triviapod');
   await page.waitForFunction(()=>document.querySelector('#firmware-select')?.value==='m5stack-stopwatch-official');
   const state=await observeProduct('m5stack-triviapod');
-  assert(state.scene.productId==='m5stack-triviapod'&&state.product.runtime.flashMb===32&&state.product.runtime.board===null,'Firmware target leaves the physical product and runtime unchanged');
+  assert(state.scene.productId==='m5stack-triviapod'&&state.product.runtime.flashMb===32&&state.product.runtime.board==='stopwatch'&&state.product.runtime.status==='partial','Shared firmware selection preserves TriviaPOD identity, capacity and explicit compatible runtime');
   const options=await page.locator('#firmware-select option').evaluateAll(items=>items.map(o=>o.value));
   assert(options.length===3&&options.every(id=>id.startsWith('m5stack-stopwatch-')),'TriviaPOD discovers the three StopWatch catalog candidates');
   assert((await page.locator('#firmware-select optgroup').first().getAttribute('label')).startsWith('共享目标'),'Shared entries have their own group');

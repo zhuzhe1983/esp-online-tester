@@ -33,3 +33,9 @@ node tools/probe-official-stopwatch.mjs \
 - 最终模型、目录与 UI 另经平台测试及真实浏览器检查。来源及最终文件摘要见验证 JSON。
 
 原始网页、固件和包含本地路径的日志留在忽略目录，不提交到仓库；只保留可复核结果、公开来源摘要、虚拟设备输入和实际帧图。这里验证的是兼容模拟配置上的所列操作，不代表 TriviaPOD 实机、专有问答软件或共享固件全部功能通过。
+
+## 线上验收
+
+[PR #21](https://github.com/zhuzhe1983/esp-online-tester/pull/21) 合并为 `0d1e8979c62aa3d7160ba331c886ed648d1196c7`，[Pages 发布成功](https://github.com/zhuzhe1983/esp-online-tester/actions/runs/42077495444)后，直接在公开 `/platform/` 页面运行上述真实固件浏览器检查。五个更新文件的线上 SHA-256 均与合并版本一致，UserDemo 在 32 MB 配置上启动，3D/2D 显示真实菜单，嵌入链接恢复正确。结果、截图摘要和部署版本见 [public-result.json](public-result.json)，画面见 [3D](public-official-3d.png)、[2D](public-official-2d.png)。
+
+另将既有 `firmware-target-browser-check.js` 的旧 `board === null` 断言改为显式的 `stopwatch` 兼容运行配置；容量和产品身份仍须保持 TriviaPOD。该脚本也在线上通过，使用受控 M5Burner 元数据验证共享目标查询、独立历史和链接恢复，不下载或刷写固件。它与前一项真实固件执行检查分别记录，不能相互替代。
