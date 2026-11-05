@@ -27,8 +27,8 @@ node tools/probe-official-stopwatch.mjs \
 
 ## 回归与复现
 
-- 347 项平台测试通过，包含容量/存储身份隔离、固件可试运行、物理接口与 GPS 隔离。
-- 目录 schema 通过：217 产品、10 配件、174 固件、118 watchlist。
+- 348 项平台测试通过，包含容量/存储身份隔离、固件可试运行、物理接口与 GPS 隔离。
+- 目录 schema 通过：217 产品、10 配件、172 固件、118 watchlist。
 - 完整本地 CI 通过，含最新稳定 Rust、两个 warnings-denied Clippy、release workspace（包含 ignored、排除 external 输入）、WASM/native/JIT。命令与原日志摘要见 [ci-result.json](ci-result.json)。未改 Rust、寄存器、执行循环或 golden 输出。
 - 最终模型、目录与 UI 另经平台测试及真实浏览器检查。来源及最终文件摘要见验证 JSON。
 
