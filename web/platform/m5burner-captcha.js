@@ -67,13 +67,14 @@ export function requestBurnerVerification(url,{signal,client=createBurnerCaptcha
   const dialog=node('dialog',null,'firmware-run-confirm burner-captcha');dialog.setAttribute('aria-labelledby','burner-captcha-title');
   const title=node('h2','完成 M5Burner 下载验证');title.id='burner-captcha-title';
   const instruction=node('div','正在获取验证码…','burner-captcha-instruction');instruction.id='burner-captcha-instruction';
+  const submitHelp=node('p','请按顺序点完全部文字，再单击“验证并继续”。','helper');submitHelp.id='burner-captcha-submit-help';
   const surface=node('div',null,'burner-captcha-image');surface.tabIndex=0;surface.setAttribute('role','group');surface.setAttribute('aria-describedby',instruction.id);surface.setAttribute('aria-label','验证码图片；方向键移动光标，Enter 选择');
   const img=node('img');img.alt='M5Burner 验证码';img.draggable=false;
   const markers=node('div'),cursor=node('span',null,'burner-captcha-cursor');cursor.hidden=true;surface.append(img,markers,cursor);surface.hidden=true;
   const status=node('p',null,'helper');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
   const feedback=node('p',null,'form-error');feedback.setAttribute('role','alert');
   const official=node('a','打开官方页面 ↗','text-link');official.href=`https://burner.m5stack.com/firmware/${parseBurnerDownload(url).firmwareId}`;official.target='_blank';official.rel='noopener noreferrer';
-  const actions=node('div',null,'dialog-actions');const clear=node('button','清空选择','button'),refresh=node('button','换一张','button'),cancel=node('button','取消','button'),submit=node('button','验证并继续','button primary');for(const b of [clear,refresh,cancel,submit])b.type='button';actions.append(clear,refresh,cancel,submit);dialog.append(title,instruction,surface,status,feedback,official,actions);
+  const actions=node('div',null,'dialog-actions');const clear=node('button','清空选择','button'),refresh=node('button','换一张','button'),cancel=node('button','取消','button'),submit=node('button','验证并继续','button primary');for(const b of [clear,refresh,cancel,submit])b.type='button';submit.setAttribute('aria-describedby',submitHelp.id);actions.append(clear,refresh,cancel,submit);dialog.append(title,instruction,submitHelp,surface,status,feedback,official,actions);
   return new Promise((resolve,reject)=>{
     let challenge=null,clicks=[],deadline=0,working=false,settled=false,position={x:0,y:0},generation=0,operation=null;
     const current=id=>!settled&&generation===id;
@@ -82,6 +83,7 @@ export function requestBurnerVerification(url,{signal,client=createBurnerCaptcha
     const abort=()=>finish(fail('FETCH_ABORTED','已取消下载验证。'));
     function render() {
       const seconds=Math.max(0,Math.ceil((deadline-Date.now())/1000));submit.disabled=working||!challenge||!seconds||clicks.length!==challenge.targetCount;clear.disabled=working||!clicks.length;refresh.disabled=working;
+      submit.title=working?'正在处理验证，请稍候。':!challenge?'请先获取验证码图片。':!seconds?'验证码已过期，请换一张':clicks.length!==challenge.targetCount?'请按提示点完全部文字。':'单击提交已点选的结果';
       status.textContent=challenge?`${clicks.length}/${challenge.targetCount} · ${seconds?`验证码剩余 ${seconds} 秒`:'验证码已过期，请换一张'}`:'';
       markers.replaceChildren(...clicks.map((p,i)=>{const mark=node('span',String(i+1),'burner-captcha-mark');mark.style.left=`${p.x/challenge.width*100}%`;mark.style.top=`${p.y/challenge.height*100}%`;return mark;}));
     }

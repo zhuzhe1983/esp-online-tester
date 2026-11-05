@@ -1,3 +1,4 @@
+import {currentLocale} from './i18n.js';
 import {firmwaresForProduct,firmwareTargetProduct} from './firmware-target.js';
 import {mountHardwareDiagnostics} from './hardware-diagnostics.js';
 import {mountAudioControls} from './audio-controls.js';
@@ -877,7 +878,7 @@ function createGpsControls(instance, item) {
   const source = values.positionSource, provenance = element('div', 'gps-provenance');
   provenance.append(element('p', '', source?.kind === 'ip-estimate' ? `来源：城市级 IP 估算 · ${source.provider || IP_LOCATION_PROVIDER.id}` : '来源：手动输入 / 默认模拟值'));
   if (source?.kind === 'ip-estimate') { const locality = [source.city, source.region, source.country].filter(Boolean); if (locality.length) provenance.append(element('p', '', [...new Set(locality)].join(' · '))); }
-  if (source?.fetchedAt) { const time = element('time', '', `获取时间：${new Date(source.fetchedAt).toLocaleString()}`); time.dateTime = source.fetchedAt; time.title = source.fetchedAt; provenance.append(time); }
+  if (source?.fetchedAt) { const time = element('time', '', `获取时间：${new Date(source.fetchedAt).toLocaleString(currentLocale())}`); time.dateTime = source.fetchedAt; time.title = source.fetchedAt; provenance.append(time); }
   const feedback = element('p', 'gps-feedback'); feedback.dataset.gpsFeedback = instance.id; feedback.setAttribute('role', 'status'); feedback.hidden = true;
   const saved = gpsMessages.get(instance.id); if (saved?.signature === JSON.stringify(instance.parameters)) { feedback.textContent = saved.message; feedback.hidden = false; feedback.classList.toggle('error', saved.error); }
   root.append(fields, note, apply, locate, ipNote, provenance, feedback); return root;

@@ -1,3 +1,4 @@
+import {currentLocale} from './i18n.js';
 import {createFlashBatch} from './flash-batch.js';
 import {prepareBurnerSource} from './m5burner-download-ui.js';
 import {burnerProjectUrl} from './firmware-download-access.js';
@@ -62,7 +63,7 @@ export function openFlashStation({product,source,scene,catalog,onChange,onClose,
     const artifacts=receipt.artifacts||[];fingerprint.hidden=false;fingerprint.textContent=artifacts.length===1&&artifacts[0].sha256?`已固定 · SHA-256 ${artifacts[0].sha256.slice(0,16)}…`:`已固定 · ${artifacts.length} 个镜像已校验`;
     for(const artifact of receipt.artifacts||[]) {
       const item=node('div','flash-artifact');const offset=artifact.address??artifact.offset??0;
-      item.append(node('p','',`0x${Number(offset).toString(16)} · ${(artifact.bytes??artifact.size??artifact.byteLength??0).toLocaleString()} 字节`));
+      item.append(node('p','',`0x${Number(offset).toString(16)} · ${(artifact.bytes??artifact.size??artifact.byteLength??0).toLocaleString(currentLocale())} 字节`));
       if(artifact.sha256)item.append(node('code','',`SHA-256 ${artifact.sha256}`));receiptBody.append(item);
     }
     if(!receiptBody.childNodes.length)receiptBody.append(node('p','helper','固件内容与芯片、分区布局已校验。'));

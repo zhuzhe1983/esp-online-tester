@@ -1,4 +1,5 @@
 // Confirmation belongs to the human UI, not to the agent/runtime execution API.
+import {t} from './i18n.js';
 export function confirmFirmwareRun({product, firmware}) {
   if (!firmware || firmware.simulationVerified === true) return Promise.resolve(true);
   const node = (tag, text) => { const value=document.createElement(tag);if(text)value.textContent=text;return value; };
@@ -37,22 +38,22 @@ export function redactIssueText(value) {
 }
 export function buildRunIssueUrl({product, firmware, source, state = {}}) {
   const issue=new URL('https://github.com/zhuzhe1983/esp-online-tester/issues/new');
-  const title=redactIssueText(`[固件运行] ${product?.name||product?.id||'设备'} · ${firmware?.name||'自定义固件'}`).slice(0,150);
+  const title=redactIssueText(`[${t('固件运行')}] ${product?.name||product?.id||t('设备')} · ${firmware?.name||t('自定义固件')}`).slice(0,150);
   issue.searchParams.set('title',title);
-  let errors=redactIssueText(state.lastError?`${state.lastError.code||''}: ${state.lastError.message||''}`:'未捕获运行错误').slice(0,700);
-  let logs=redactIssueText(Object.entries(state.serialByPort||{}).map(([port,text])=>`[${port}]\n${String(text).slice(-1600)}`).join('\n')||state.serial||'暂无串口日志').slice(-2400);
+  let errors=redactIssueText(state.lastError?`${state.lastError.code||''}: ${state.lastError.message||''}`:t('未捕获运行错误')).slice(0,700);
+  let logs=redactIssueText(Object.entries(state.serialByPort||{}).map(([port,text])=>`[${port}]\n${String(text).slice(-1600)}`).join('\n')||state.serial||t('暂无串口日志')).slice(-2400);
   let identity=redactIssueText([
-    `设备：${product?.name||''} (${product?.id||''})`,
-    `厂商 / 型号：${product?.manufacturer||''} / ${product?.sku||''}`,
-    `芯片 / 板级模型：${product?.chip||''} / ${product?.runtime?.board||'尚未完成适配'}`,
-    `固件：${firmware?.name||'自定义固件'} (${firmware?.id||''})`,
-    `版本：${firmware?.revision||'未标注'}`,
-    `固件来源：${source?.local||state.firmware?.source==='local'?'本地文件（不包含文件内容）':publicSource(source?.url||source?.manifestUrl)}`,
-    `SHA-256：${source?.sha256||state.firmware?.manifestHash||state.firmware?.artifacts?.find(a=>['flash','app'].includes(a.kind))?.sha256||'未加载或未提供'}`,
-    `状态 / 执行模式：${state.status||'未启动'} / ${state.firmware?.executionMode||'未启动'}`,
-    `平台 API：${state.version||'未知'}`,
-  ].join('\n')).slice(0,1800);
-  const body=()=>`## 问题描述\n请补充：操作步骤、预期结果、实际现象。\n\n## 设备与固件\n${identity}\n\n## 报错\n${errors}\n\n## 最近日志（已截断并移除常见凭据和设备标识）\n\n\`\`\`text\n${logs}\n\`\`\`\n`;
+    ['当前设备',`${product?.name||''} (${product?.id||''})`],
+    ['厂商 / 型号',`${product?.manufacturer||''} / ${product?.sku||''}`],
+    ['芯片 / 板级模型',`${product?.chip||''} / ${product?.runtime?.board||t('尚未完成适配')}`],
+    ['固件',`${firmware?.name||t('自定义固件')} (${firmware?.id||''})`],
+    ['版本',firmware?.revision||t('未标注')],
+    ['固件来源',source?.local||state.firmware?.source==='local'?t('本地文件（不包含文件内容）'):publicSource(source?.url||source?.manifestUrl)],
+    ['SHA-256',source?.sha256||state.firmware?.manifestHash||state.firmware?.artifacts?.find(a=>['flash','app'].includes(a.kind))?.sha256||t('未加载或未提供')],
+    ['状态 / 执行模式',`${state.status||t('未启动')} / ${state.firmware?.executionMode||t('未启动')}`],
+    ['平台 API',state.version||t('未知')],
+  ].map(([label,value])=>`${t(label)}: ${value}`).join('\n')).slice(0,1800);
+  const body=()=>`## ${t('问题描述')}\n${t('请补充：操作步骤、预期结果、实际现象。')}\n\n## ${t('设备与固件')}\n${identity}\n\n## ${t('报错')}\n${errors}\n\n## ${t('最近日志（已截断并移除常见凭据和设备标识）')}\n\n\`\`\`text\n${logs}\n\`\`\`\n`;
   issue.searchParams.set('body',body());
   while(issue.href.length>7500&&logs.length){logs=logs.slice(Math.max(1,Math.ceil(logs.length*.2)));issue.searchParams.set('body',body());}
   // Non-ASCII names and error messages can also exhaust the encoded URL budget.
