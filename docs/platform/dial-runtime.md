@@ -14,9 +14,9 @@
 | 旋转 | A41/B40，复用既有 `BoardModel::encoder()` 和 Machine 四相 GPIO 队列 | 16 格/圈；方向为平台约定，未校准真实轴方向；不模拟接点抖动 |
 | RTC/RFID/蜂鸣器/电源 | 来源和接口仍可查 | BM8563、WS1850S、音频、电源保持/深睡均未实现 |
 
-官方出厂来源仍默认排第一；当前只有官方源码/EasyLoader EXE 的资料入口，未定位可固定校验值的完整远程 BIN，故保留 `reference`，不把 EXE 标成固件。完整本地构建或用户提供的完整远程镜像可经相同板级模型尝试运行。本轮没有遍历或认证官方固件。
+官方出厂源码/EasyLoader EXE 保留为本页资料；网页尚不支持 EXE 资源提取，因此不再把这个没有固件地址的资料项放进固件选择器。完整本地构建或用户提供的完整远程镜像可经相同板级模型尝试运行。
 
-另提供 `Dial UserDemo · 0.1（社区备份）`：浏览器直接读取 M5Burner CDN 的完整 BIN，并校验固定 SHA-256；本站只发布链接和元信息。该镜像由 F4HWN 上传，已核对下载、芯片和布局，尚未执行验证，目录标为 `trial`。它与官方 EasyLoader 内的镜像不同，不替换官方出厂默认项。[来源与布局核验](evidence/dial-community-catalog/source.json)。
+默认选择 `Dial UserDemo · 0.1（社区备份）`：浏览器直接读取 M5Burner CDN 的完整 BIN，并校验固定 SHA-256；本站只发布链接和元信息。该镜像由 F4HWN 上传，已核对下载、芯片和布局，尚未执行验证，目录标为 `trial`。它与官方 EasyLoader 内的镜像不同，保留社区发布身份；官方 UIFlow2 仍作为其他选项。[来源与布局核验](evidence/dial-community-catalog/source.json)。
 
 ## 编码器合同
 

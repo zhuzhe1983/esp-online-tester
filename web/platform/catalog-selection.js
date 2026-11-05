@@ -67,6 +67,6 @@ export function firmwareGroups(firmwares, productOrId, defaultId) {
     if (!groups.has(label)) groups.set(label,[]);
     groups.get(label).push(item);
   }
-  return [...groups].sort(([a,as],[b,bs]) => Number(!!as[0].sharedTargetId)-Number(!!bs[0].sharedTargetId) || (a === '官方' ? -1 : b === '官方' ? 1 : collator.compare(a,b)));
+  return [...groups].sort(([a,as],[b,bs]) => Number(!!as[0].sharedTargetId)-Number(!!bs[0].sharedTargetId) || Number(bs.some(item=>item.role==='factory'))-Number(as.some(item=>item.role==='factory')) || Number(bs.some(item=>item.id===defaultId))-Number(as.some(item=>item.id===defaultId)) || (a === '官方' ? -1 : b === '官方' ? 1 : collator.compare(a,b)));
 }
 export const firstFirmware = (firmwares, product) => firmwareGroups(firmwares,product,product.defaultFirmwareId)[0]?.[1][0] || null;
