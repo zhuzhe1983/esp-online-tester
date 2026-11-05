@@ -94,10 +94,10 @@ test('TriviaPOD shares StopWatch firmware discovery while keeping its own hardwa
   const expected=firmwares.filter(firmware=>firmware.productIds.includes(watch.id));
   const shared=firmwaresForProduct(firmwares,trivia).filter(firmware=>firmware.sharedTargetId===watch.id);
   assert.ok(expected.length>0);assert.deepEqual(new Set(shared.map(firmware=>firmware.id)),new Set(expected.map(firmware=>firmware.id)));
-  for(const firmware of shared){assert.equal(firmware.simulationVerified,false);assert.equal(firmware.role,undefined);assert.equal(firmwareRunPolicy(trivia,firmware).canRun,false);}
+  for(const firmware of shared){assert.equal(firmware.simulationVerified,false);assert.equal(firmware.role,undefined);assert.equal(firmwareRunPolicy(trivia,firmware).canRun,true);assert.equal(firmwareRunPolicy(trivia,firmware).trial,true);}
   assert.deepEqual(trivia,before);
   assert.equal(trivia.id,'m5stack-triviapod');assert.equal(trivia.runtime.flashMb,32);assert.equal(watch.runtime.flashMb,16);
-  assert.equal(trivia.runtime.board,null);assert.equal(trivia.runtime.status,'unavailable');
+  assert.equal(trivia.runtime.board,'stopwatch');assert.equal(trivia.runtime.status,'partial');
   assert.equal(trivia.visualVariantOf,undefined);
   assert.deepEqual(trivia.interfaces.filter(port=>port.external).map(port=>port.type),['USB-C']);
   assert.ok(watch.interfaces.some(port=>port.external&&port.type==='HY2.0-4P'));

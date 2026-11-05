@@ -1,6 +1,6 @@
 # TriviaPOD：独立产品与官方外观模型
 
-在左侧选择 **M5Stack → 其他主控 → TriviaPOD TP-01-A · 白色**，即可查看独立产品资料与 3D 模型。它不再放在 StopWatch 的衍生模型菜单中，场景 ID 保持 `m5stack-triviapod`。目前板级运行尚未适配；`firmwareTargetId: m5stack-stopwatch` 提供共用固件候选，不代表已确认兼容。
+在左侧选择 **M5Stack → 其他主控 → TriviaPOD TP-01-A · 白色**，即可查看独立产品资料与 3D 模型。它不再放在 StopWatch 的衍生模型菜单中，场景 ID 保持 `m5stack-triviapod`。`firmwareTargetId: m5stack-stopwatch` 提供共用固件目录；运行采用显式的 StopWatch 兼容模拟配置，保留 32 MB Flash、8 MB PSRAM，并支持真实帧缓冲、触摸与 A/B 按键。共享固件仍按试运行显示。
 
 目录列出官方已确认的 **USB-C 充电接口（DC 5V 输入）**。USB 数据、Host 能力、内部路由与引脚尚未核实；接口名称不代表可连接某种 USB 配件或已实现电气行为。
 
@@ -39,4 +39,6 @@ cmp web/platform/assets/m5stack-triviapod/geometry.bin /tmp/triviapod-rebuilt/ge
 
 当前独立条目的目录/知识校验、可检索与场景往返检查，以及模型重建哈希见 [standalone-update.json](evidence/triviapod-20261105/standalone-update.json)。本次只更新目录关系、USB-C 资料与模型限制文字；原网格、材质、图片和源文件均未变化。
 
-TriviaPOD 条目保持 `runtime.board: null`、`status: unavailable`，没有登记本产品的默认出厂固件，也不继承 GPIO、触摸控制器或附件接口。固件库按独立目标字段列出 StopWatch 候选，并标为待验证，详见[固件目标规则](firmware-targets.md)。官方软件由 Etermax 专有开发，当前只确认机内 Wi-Fi 更新入口，未找到公开出厂镜像或该 SKU 的官方 UIFlow/小智映射。本次没有运行 TriviaPOD 固件，也没有实机测试。
+TriviaPOD 已显式设置 `runtime.board: stopwatch`、`status: partial`，保留自身 32 MB Flash 和 8 MB PSRAM。显示、触摸、电源与 A/B 引脚采用 StopWatch 兼容模拟配置；这是模型约定，官方 TriviaPOD 原理图和内部引脚仍未独立核验。物理 Grove/后部接口及 GPS 测试通道不随 board 名继承，存储与分享仍以 TriviaPOD 标识隔离。
+
+固件库按[固件目标规则](firmware-targets.md)列出 StopWatch UserDemo、UIFlow 和小智候选；首次选择以 UserDemo 开始试运行。没有将这些条目登记为 TriviaPOD 出厂软件。官方问答软件由 Etermax 专有开发，当前只确认机内 Wi-Fi 更新入口，未找到公开固定出厂镜像。模拟运行验收另见 [2026-11-06 记录](evidence/triviapod-runtime-20261106/README.md)，未做实机刷写。

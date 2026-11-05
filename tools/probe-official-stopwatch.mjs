@@ -9,13 +9,15 @@ import {deflateSync} from 'node:zlib';
 import {createPlatformRuntime} from '../web/platform/runtime.js';
 import {createDefaultScene} from '../web/platform/catalog.js';
 
-const [url, expectedHash, output = 'output/official-stopwatch', duration = '30', scenario] = process.argv.slice(2);
-if (!url || !/^[a-f0-9]{64}$/.test(expectedHash || '') || !/^https:\/\//.test(url)) throw new Error('Usage: node tools/probe-official-stopwatch.mjs <https-url> <sha256> [output-dir] [guest-seconds]');
+const [url, expectedHash, output = 'output/official-stopwatch', duration = '30', scenario, productId = 'm5stack-stopwatch'] = process.argv.slice(2);
+if (!url || !/^[a-f0-9]{64}$/.test(expectedHash || '') || !/^https:\/\//.test(url)) throw new Error('Usage: node tools/probe-official-stopwatch.mjs <https-url> <sha256> [output-dir] [guest-seconds] [controls|imu] [product-id]');
 const seconds = Number(duration); if (!(seconds > 0 && seconds <= 300)) throw new Error('Guest seconds must be 0…300');
 const clockTimeout = Number(process.env.ESP32SIM_PROBE_CLOCK_TIMEOUT_MS || 10000);
 if (!(clockTimeout >= 1000 && clockTimeout <= 120000)) throw new Error('Clock timeout must be 1000…120000 ms');
 const root = new URL('../', import.meta.url), catalog = {};
 for (const name of ['products','accessories','firmwares']) catalog[name] = JSON.parse(await readFile(new URL(`web/platform/catalog/${name}.json`,root))).items;
+const product=catalog.products.find(item=>item.id===productId);
+assert.equal(product?.runtime?.board,'stopwatch','This probe requires an explicitly configured StopWatch-compatible model');
 await mkdir(output,{recursive:true});
 const fetchImpl = async (value,options) => new URL(value).hostname === 'platform.example' ? new Response(await readFile(new URL(`web${new URL(value).pathname}`,root))) : fetch(value,options);
 let queryClock;
@@ -70,7 +72,7 @@ const tap=async(x,y)=>{
   await waitGuest((await queryClock())+1);
 };
 try{
-  await runtime.configure(createDefaultScene(catalog,'m5stack-stopwatch'));
+  await runtime.configure(createDefaultScene(catalog,productId));
   await runtime.loadFirmware({url,sha256:expectedHash});await runtime.start();
   await waitGuest(seconds);await checkpoint('boot');
   if(scenario==='imu'){
@@ -129,7 +131,7 @@ finally{
   const state=await runtime.observe();
   await writeFile(`${output}/serial.log`,serial);
   if(latestFrame)await writeFile(`${output}/frame.png`,png(latestFrame));
-  await writeFile(`${output}/receipt.json`,JSON.stringify({url,expectedHash,firmware:state.firmware,stats:state.stats,frame:latestFrame?{width:latestFrame.width,height:latestFrame.height,frameNumber:latestFrame.frameNumber,sha256:createHash('sha256').update(latestFrame.pixels).digest('hex')}:null,lastError:state.lastError,inputs,stages,failure,elapsedMs:Date.now()-started},null,2)+'\n');
+  await writeFile(`${output}/receipt.json`,JSON.stringify({url,expectedHash,product:{id:product.id,board:product.runtime.board,flashMb:product.runtime.flashMb,psramMb:product.runtime.psramMb},storageScope:state.storage.scope,firmware:state.firmware,stats:state.stats,frame:latestFrame?{width:latestFrame.width,height:latestFrame.height,frameNumber:latestFrame.frameNumber,sha256:createHash('sha256').update(latestFrame.pixels).digest('hex')}:null,lastError:state.lastError,inputs,stages,failure,elapsedMs:Date.now()-started},null,2)+'\n');
   await runtime.dispose();
 }
 if(failure)process.exitCode=1;

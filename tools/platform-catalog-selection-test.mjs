@@ -103,12 +103,12 @@ test('hidden visual variants remain exact catalog and portable scene identities'
   }
 });
 
-test('TriviaPOD is discoverable as its own unavailable product and preserves its scene identity',async()=>{
+test('TriviaPOD is discoverable as its own runnable product and preserves its scene identity',async()=>{
   const [products,accessories,firmwares]=await Promise.all(['products','accessories','firmwares'].map(async name=>JSON.parse(await readFile(new URL(`../web/platform/catalog/${name}.json`,import.meta.url),'utf8')).items));
   const catalog={products,accessories,firmwares},trivia=products.find(item=>item.id==='m5stack-triviapod');
   assert.deepEqual(searchProducts(products,'TP-01-A').map(item=>item.id),[trivia.id]);
   assert.ok(productsForManufacturer(products,'M5Stack','m5-other').some(item=>item.id===trivia.id));
-  assert.match(productOptionLabel(trivia),/尚未适配$/);
+  assert.doesNotMatch(productOptionLabel(trivia),/尚未适配$/);
   const candidate=firstFirmware(firmwares,trivia);
   assert.equal(candidate.sharedTargetId,'m5stack-stopwatch');assert.equal(candidate.simulationVerified,false);assert.equal(candidate.role,undefined,'shared firmware is not the TriviaPOD factory image');
   const scene=createDefaultScene(catalog,trivia.id);

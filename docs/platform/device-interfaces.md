@@ -9,7 +9,7 @@
 2026-11-05 核对了全部 217 个产品条目，为 41 个产品补入 69 项记录，其中 67 项为追加、2 项为保留引脚的类型修正。TriviaPOD 另行作为独立产品补入 USB-C 充电口。目前 121 个 LILYGO 条目只有商品身份资料，外部接口仍待核实；其他设备已记录的接口也不代表穷尽所有插口。
 
 - StopWatch：Grove、USB-C、后部 2.54 mm 排针；未推断后部各硬件版本的引脚映射。
-- TriviaPOD：仅确认 USB-C 充电，不继承 StopWatch 的 Grove、后部总线或固件支持。
+- TriviaPOD：仅确认 USB-C 充电，不继承 StopWatch 的 Grove 或后部总线；共享固件和兼容模拟配置独立维护。
 - Stamp-C5：裸 FPC 焊盘；C5 DIP：已安装的 FPC 插座，两者分别记录。
 - Stamp-Pico / Mate / DIY Kit：主板按焊盘记录；套件散装 Grove 插座、排针和独立下载器不算主板已安装接口。
 - Station-485：六个 Grove 分别记录，A1/A2 共用信号；USB-A 为电源输出；内部预留口不列为外部接口。

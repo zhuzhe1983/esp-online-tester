@@ -4,11 +4,11 @@
   "kind": "product",
   "catalogId": "m5stack-triviapod",
   "title": "M5Stack TriviaPOD TP-01-A · 白色",
-  "summary": "M5Stack 与 Etermax 的白色圆屏问答设备，采用 ESP32-S3R8、32 MB Flash、8 MB PSRAM 和 1.75 英寸 AMOLED 触摸屏。与 StopWatch 相比取消 Grove、后部扩展总线和背部磁吸；本平台仅提供外观预览。",
+  "summary": "M5Stack 与 Etermax 的白色圆屏问答设备，采用 ESP32-S3R8、32 MB Flash、8 MB PSRAM 和 1.75 英寸 AMOLED 触摸屏。与 StopWatch 相比取消 Grove、后部扩展总线和背部磁吸；本平台提供独立外观，并以 StopWatch 兼容模拟配置运行共享固件。",
   "summarySourceIds": [
     "triviapod-docs"
   ],
-  "updatedAt": "2026-11-05T12:28:16Z",
+  "updatedAt": "2026-11-05T17:26:07Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -712,7 +712,7 @@
       "sourceIds": [
         "triviapod-docs"
       ],
-      "notes": "已知 466×466 可视分辨率；未取得本型号控制器、总线、帧缓冲宽度或列偏移依据。"
+      "notes": "已知 466×466 可视分辨率；模拟采用 StopWatch 的 CO5300/QSPI、468×466 帧缓冲、列偏移6。本型号实机控制器、总线及帧缓冲布局仍未独立确认。"
     },
     {
       "id": "touch-controller",
@@ -723,7 +723,7 @@
       "sourceIds": [
         "triviapod-docs"
       ],
-      "notes": "触摸屏存在，但本型号控制器、地址、GPIO 与中断路由未确认。"
+      "notes": "触摸屏存在；模拟采用 StopWatch 的 CST820B/0x15 配置。本型号实机控制器、地址、GPIO 与中断路由未独立确认。"
     },
     {
       "id": "gpio-routing",
@@ -734,7 +734,7 @@
       "sourceIds": [
         "triviapod-docs"
       ],
-      "notes": "未取得本型号原理图或 GPIO 映射；不继承 StopWatch 的按键、I²C、QSPI 或电源控制。"
+      "notes": "未取得本型号原理图或 GPIO 映射；运行时明确采用 StopWatch 兼容模拟配置，A=GPIO2、B=GPIO1。该模型约定不作为 TriviaPOD 已核验实机引脚。"
     },
     {
       "id": "pcb-layout",
@@ -786,7 +786,7 @@
         "triviapod-docs",
         "m5burner-triviapod-search"
       ],
-      "notes": "当前仅外观预览，未建立 TriviaPOD 板级模型；无运行、实机或刷写验证。"
+      "notes": "已接入 StopWatch 兼容模拟配置，保留 TriviaPOD 32 MB Flash、8 MB PSRAM 与无扩展接口的独立身份。共享固件以试运行提供；原厂 Etermax 软件及实机兼容性未验证。"
     },
     {
       "id": "content-availability",
@@ -803,11 +803,11 @@
     }
   ],
   "collectionNotes": [
-    "本记录按 TP-01-A 单独核对，并作为独立产品列入 M5Stack「其他主控」。不再通过 visualVariantOf 关联 StopWatch，也不继承其固件、GPIO、连接器或运行能力。",
+    "本记录按 TP-01-A 单独核对，并作为独立产品列入 M5Stack「其他主控」。firmwareTargetId 指向 StopWatch，运行明确复用 StopWatch 兼容模拟配置；接口、容量、外观、存储及分享身份均按 TriviaPOD 保留。",
     "fetchedAt 为每次公开资源下载完成时读取的 UTC，截取到秒；每项保留原始 URL、最终 URL、字节数、SHA-256 与归档名。归档名标识调查原件，并不表示所有第三方网页都复制进站点。",
     "source.gltf.gz 保存 window.GLTF_B64 解码后的原 glTF；解压后 SHA-256 为 d2870244aa86264b14f44932bb47d78a7f0b0b5ecf5c3e2844b28a7dc672d07a，源 JavaScript 的不同哈希另在来源记录保留。",
     "官网展示模型保留独立材料与 USB-C 节点。白壳、封闭后盖、彩色按键和背面浮雕需要对应几何，不能通过给 StopWatch 外壳换贴图完整表达。",
     "公开网站可访问不等于已授予开放许可。模型、照片与展示代码的许可范围保持未声明；未将无关仓库许可套用于这些资产。",
-    "固件调查仅记录该型号在本轮官方资料和 M5Burner 中的结果。不添加虚构镜像、默认固件或 UIFlow/小智 watchlist 映射；不把目录资料当作固件运行证据。"
+    "出厂固件调查保留该型号官方资料与 M5Burner 的原始结果。共享的 StopWatch UserDemo/UIFlow/小智条目不改标为 TriviaPOD 原厂问答固件；模拟运行证据与实机兼容性分别记录。"
   ]
 }

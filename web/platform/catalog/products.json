@@ -3343,24 +3343,64 @@
       "name": "M5Stack TriviaPOD TP-01-A · 白色",
       "manufacturer": "M5Stack",
       "sku": "TP-01-A",
-      "summary": "白色圆屏问答设备，32 MB Flash、8 MB PSRAM，配备 USB-C 充电接口；无 Grove、后部扩展总线或背部磁吸。当前提供独立产品资料与 3D 外观预览。",
+      "summary": "白色圆屏设备，32 MB Flash、8 MB PSRAM；共用 StopWatch 固件目录与兼容模拟模型，支持屏幕、触摸和双按键。仅有 USB-C，无 Grove、后部扩展总线或背部磁吸。",
       "knowledgeUrl": "./knowledge/m5stack-triviapod.json",
       "hardwareRevision": "unspecified",
       "chip": "esp32s3",
       "module": "ESP32-S3R8",
       "runtime": {
-        "board": null,
+        "board": "stopwatch",
         "flashMb": 32,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial",
+        "touch": true,
+        "imu": {
+          "controller": "BMI270",
+          "address": 104,
+          "support": "register-subset-host-pose",
+          "physicalMountingVerified": false,
+          "hardwareValidated": false
+        },
+        "notes": "采用 StopWatch 兼容模拟配置；内部控制器和 GPIO 映射属于模型约定，尚未实机核验 TriviaPOD。"
       },
       "display": {
         "width": 466,
         "height": 466,
         "type": "AMOLED",
-        "shape": "round"
+        "shape": "round",
+        "controller": "CO5300",
+        "bus": "QSPI",
+        "framebufferWidth": 468,
+        "framebufferHeight": 466,
+        "columnOffset": 6,
+        "notes": "466×466 可视分辨率来自 TriviaPOD 官方规格；控制器、总线、帧缓冲宽度和偏移沿用 StopWatch 模拟配置，未核验本型号实机。"
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "button-a",
+          "name": "Button A",
+          "type": "button",
+          "pin": 2,
+          "activeLow": true,
+          "notes": "沿用 StopWatch 兼容模拟配置；未实机核验 TriviaPOD 引脚。"
+        },
+        {
+          "id": "button-b",
+          "name": "Button B",
+          "type": "button",
+          "pin": 1,
+          "activeLow": true,
+          "notes": "沿用 StopWatch 兼容模拟配置；未实机核验 TriviaPOD 引脚。"
+        },
+        {
+          "id": "touch",
+          "name": "Touch",
+          "type": "touch",
+          "controller": "CST820B",
+          "address": 21,
+          "notes": "沿用 StopWatch 兼容模拟配置；未实机核验 TriviaPOD 引脚。"
+        }
+      ],
       "interfaces": [
         {
           "id": "usb-c",
@@ -3381,11 +3421,12 @@
         "status": "partial"
       },
       "limitations": [
-        "独立产品条目，当前仅提供资料与 3D 外观；未完成 TriviaPOD 板级适配，不运行或继承 StopWatch 固件、GPIO、触摸及外设模型。",
+        "共用 StopWatch 兼容模拟模型，保留 32 MB Flash、8 MB PSRAM 与独立产品身份；可尝试运行共享固件，不代表全部功能或实机兼容性通过。",
         "官方产品尺寸与重量仍为 Work in progress；源模型数值按毫米展示属于单位推定，不代表已核验实物尺寸。",
-        "显示屏可视分辨率为 466×466；本型号显示与触摸控制器、总线、帧缓冲布局和引脚尚未确认。",
+        "屏幕、触摸和 A/B 按键采用 StopWatch 模拟配置；本型号的内部引脚、显示/触摸控制器及电源芯片仍缺独立原理图核验。RTC、完整音频和物理电源键沿用当前模型限制。",
         "官方软件由 Etermax 专有开发，通过机内 Wi-Fi 更新；本轮未找到公开的固定出厂镜像或该型号 UIFlow/小智映射。",
-        "使用官网展示网格与官方照片作为外观来源，未发现独立开放许可；内部结构及制造精度未验证。"
+        "使用官网展示网格与官方照片作为外观来源，未发现独立开放许可；内部结构及制造精度未验证。",
+        "无 Grove 或后部扩展接口，不开放 StopWatch 的物理配件路由与 GPS 测试通道。32 MB 容量保持独立；共享固件不是 TriviaPOD 原厂问答软件。"
       ],
       "sources": [
         {
