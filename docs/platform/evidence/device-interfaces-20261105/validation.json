@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-11-05T12:57:03Z",
+  "baseCommit": "f2d06a4a",
+  "scope": [
+    "TriviaPOD standalone product identity, unchanged geometry and explicit unavailable runtime",
+    "Physical connector inventory and device-driven accessory filtering",
+    "Variant menu placement in workbench and embedded player",
+    "Manual download verification UI with synthetic local provider/transport doubles"
+  ],
+  "toolchain": {
+    "rust": "1.99.1",
+    "node": "26.8.2",
+    "browser": "headless Chromium"
+  },
+  "checks": {
+    "catalogSchemas": "217 products, 10 accessories, 173 firmwares, 117 watchlist entries passed",
+    "knowledgeChangedRecords": "6 records passed JSON Schema and format validation",
+    "knowledgeSemanticValidation": "225 indexed records passed",
+    "knowledgeStrictSchemaBaseline": {
+      "beforeErrorCount": 99,
+      "afterErrorCount": 96,
+      "newErrors": 0,
+      "remaining": {
+        "web/platform/knowledge/m5stack-k128.json": 1,
+        "web/platform/knowledge/m5stack-dk001.json": 2,
+        "web/platform/knowledge/m5stack-c008-b-v11.json": 2,
+        "web/platform/knowledge/m5stack-s016-dip.json": 8,
+        "web/platform/knowledge/m5stack-k130-v11.json": 2,
+        "web/platform/knowledge/m5stack-s013.json": 1,
+        "web/platform/knowledge/m5stack-unit-pir-u004.json": 14,
+        "web/platform/knowledge/m5stack-s007-pin127-v033.json": 1,
+        "web/platform/knowledge/m5stack-u202.json": 2,
+        "web/platform/knowledge/m5stack-k134-v11.json": 1,
+        "web/platform/knowledge/m5stack-k129-v11.json": 1,
+        "web/platform/knowledge/m5stack-k005.json": 3,
+        "web/platform/knowledge/m5stack-s007-v033.json": 1,
+        "web/platform/knowledge/m5stack-k151.json": 5,
+        "web/platform/knowledge/m5stack-k147.json": 1,
+        "web/platform/knowledge/m5stack-s016.json": 1,
+        "web/platform/knowledge/m5stack-k138-v11.json": 34,
+        "web/platform/knowledge/m5stack-unit-dlight-u136.json": 16
+      },
+      "limitation": "Unrelated pre-existing strict-schema errors remain; full-repository strict knowledge validation is not claimed."
+    },
+    "platformTests": {
+      "command": "ESP32SIM_ROM_DIR=<roms> node --test tools/platform-*-test.mjs",
+      "passed": 333,
+      "failed": 0
+    },
+    "nativeBuild": "cargo build --release --workspace passed",
+    "clippy": [
+      "cargo clippy --workspace --all-targets -- -D warnings passed",
+      "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings passed"
+    ],
+    "rustTests": {
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_",
+      "passed": 1807,
+      "failed": 0
+    },
+    "otherCiChecks": {
+      "workflow": ".github/workflows/ci.yml",
+      "result": "passed locally",
+      "commands": [
+        "node tools/check-evidence-privacy.mjs",
+        "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+        "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+        "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+        "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+        "tools/fetch-rom-elfs.sh roms",
+        "tools/fetch-micropython.sh",
+        "tools/fetch-p4-firmware.sh",
+        "node tools/network-helper-test.mjs",
+        "node --test tools/network-relay-test.mjs",
+        "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+        "tools/wasm-build.sh",
+        "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+        "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik",
+        "node tools/platform-recording-test.mjs --real",
+        "node tools/wasm-test.mjs demo-stopwatch",
+        "node tools/probe-hardware-diagnostics.mjs tools/fixtures/stopwatch-hardware-checks.json <receipt.json>",
+        "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+        "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf",
+        "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf",
+        "node tools/worker-pacing-test.mjs",
+        "node tools/worker-channel-test.mjs",
+        "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+        "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+        "tools/wasm-jit-test.sh",
+        ". ./tools/wasm-rustflags.sh",
+        "cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+        "cargo test --release -p xtensa-lx7"
+      ],
+      "goldensUpdated": false
+    },
+    "accessoryAndVariantBrowser": [
+      "Real product picker: StopWatch → TriviaPOD, connector defaults reset, USB charging only, no inherited variants or accessory choices",
+      "Unknown LILYGO interfaces remain explicit and all-interface browsing remains available",
+      {
+        "variantMenuOrder": {
+          "workbench": {
+            "variantX": 779,
+            "shellX": 853
+          },
+          "mini": {
+            "variantX": 916.390625,
+            "shellX": 990.390625
+          }
+        },
+        "previewKeepsParentProduct": true
+      }
+    ],
+    "manualVerificationBrowser": [
+      "Workbench and mini autoplay: one ordered confirmation/verification, rapid continue guarded, cancel has no error popup",
+      {
+        "manualSubmissionStartsFirmware": true,
+        "status": "running",
+        "productId": "m5stack-stopwatch",
+        "frame": {
+          "width": 468,
+          "height": 466,
+          "frameNumber": 2
+        },
+        "readySerial": true
+      },
+      "Manual submission timeout/cancel, stale response disposal, explicit refresh, no retries, mobile layout"
+    ],
+    "browserScope": "Provider responses and firmware download are stubbed locally. Actual StopWatch firmware executes through the normal browser worker after manual submission. No live CAPTCHA is solved or submitted; TriviaPOD firmware is not run."
+  },
+  "screenshotSha256": {
+    "triviapod-independent-interfaces.png": "96e9ee9a490a2857f8c059dc447235532f935cd2b5c90d488a4a1ce0f4aea467",
+    "variant-left-of-shell.png": "09b263f3cd70638d4fcd39867656d93c689fb6d84c8d999ce41f8c710c7ae3d0",
+    "startup-verification-manual.png": "20340bb89f862b64e13c39cffbddf6627247ba9a8a332d011f5e80c2f62d616d"
+  },
+  "testedSourceSha256": {
+    "web/platform/accessory-selection.js": "0adedd05f6a61d08c5ca877c133293f78e3c009bb5180e55b044d9cf36eac01b",
+    "web/platform/app.js": "786ffe5ca5930a11d321a8bd5269f10934dcc0fedc4d58896cf6bc4eccfe631c",
+    "web/platform/catalog/products.json": "865accbb7a7298eaa1558654079254db396b3d79dde94e8d4da2a78913782834",
+    "web/platform/m5burner-captcha.js": "28f48ee89f8ef5a0b11368ffc216576075aee5c28ff7e1813ee86f9f7f524c5d",
+    "web/platform/visual-variant-menu.js": "e4b95f35223c9595367fedbe24d57f4a0bbe553860c1b8a942e99adac2d3d527",
+    "tools/fixtures/device-accessory-browser-check.js": "3faace82ba0e588b3d86eae7f5cc8c3132f0e39f304f2405bb970678ac39effa",
+    "tools/fixtures/startup-verification-browser-check.js": "8321ae0d903a8758c4e9dae8f2ef011eddfe008f63aec3206c83399d665d02d0"
+  },
+  "privacy": "Only synthetic UI and product data retained. Raw browser logs, local paths, session identifiers and full source HTML omitted."
+}

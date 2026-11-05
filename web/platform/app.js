@@ -26,8 +26,9 @@ import {prepareConsoleCopy} from './console-log.js';
 import {showErrorDialog,expectedCancellation} from './error-ui.js';
 import {configureFirmwareRelay} from './firmware-relay.js';
 import {burnerProjectUrl} from './firmware-download-access.js';
-import {productOptionLabel, productIdentityLabel, productFamilies, productFamilyGroups, manufacturerLabel, manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware, accessoryBrand, accessoryInterface, accessoryBrands, accessoryInterfaces, filterAccessories} from './catalog-selection.js';
+import {productOptionLabel, productIdentityLabel, productFamilies, productFamilyGroups, manufacturerLabel, manufacturerNames, productsForManufacturer, firmwareGroups, firstFirmware} from './catalog-selection.js';
 import {mountDeviceSearch, mountAccessorySearch} from './device-search.js';
+import {ALL_ACCESSORY_INTERFACES,accessoryChoicesForProduct,accessorySearchPreference} from './accessory-selection.js';
 import {mountVisualVariantMenu} from './visual-variant-menu.js';
 import {encodeRecording, decodeRecording, validateRecording} from './recording.js';
 import {SHELL_DEFAULT, SHELL_PRESETS, SHELL_FINISHES, shellPreset} from './appearance.js';
@@ -303,6 +304,7 @@ function renderTransport() {
   const configurationBusy = busy || status === 'loading';
   visualVariantMenu?.update({product:product(),status,mode:scene?.view?.deviceView,busy});
   for (const id of ['manufacturer-select','product-family-select','product-select','search-devices','firmware-select','firmware-kind','firmware-url','firmware-sha','firmware-history-select','accessory-brand','accessory-interface','accessory-select','search-accessories']) if ($(id)) $(id).disabled = configurationBusy;
+  for (const id of ['accessory-brand','accessory-select']) if ($(id)&&!$(id).value) $(id).disabled=true;
   burnerUi?.setDisabled(configurationBusy);sparkUi?.setDisabled(configurationBusy);
   if ($('add-accessory')) $('add-accessory').disabled = configurationBusy || !$('accessory-select')?.value;
   if ($('clear-accessories')) $('clear-accessories').disabled = configurationBusy || !scene?.accessories.length;
@@ -715,25 +717,26 @@ function defaultFirmware(next) {
 function allDefinitions() {
   const items = new Map([...catalog.accessories, ...localDefinitions, ...(scene.localAccessories || [])].map(item => [item.id, item])); return [...items.values()];
 }
+let accessoryChoiceProductId = '';
 function renderAccessoryChoices(preferred = {}) {
-  const items = allDefinitions();
-  const selectValue = (id, values, value, label = value=>value) => {
-    const select=$(id); if (!select) return;
-    const previous=value ?? select.value;
-    select.replaceChildren(...values.map(value=>new Option(label(value),value)));
-    if (values.includes(previous)) select.value=previous;
-  };
-  selectValue('accessory-brand',accessoryBrands(items),preferred.brand,manufacturerLabel);
-  const branded=filterAccessories(items,{brand:$('accessory-brand')?.value});
-  selectValue('accessory-interface',accessoryInterfaces(branded),preferred.connector);
-  const selector = $('accessory-select');
-  if (selector) {
-    const previous=preferred.id ?? selector.value,items=filterAccessories(branded,{connector:$('accessory-interface')?.value});
-    selector.replaceChildren(...items.map(item=>new Option(item.name,item.id)));
-    if (items.some(item=>item.id===previous)) selector.value=previous;
-    if (!items.length) selector.append(new Option('没有符合条件的配件',''));
-    $('add-accessory').disabled=!items.length;
+  if (!$('accessory-select')) return;
+  const sameProduct=accessoryChoiceProductId===scene.productId;
+  const previous=sameProduct?{connector:$('accessory-interface')?.value,brand:$('accessory-brand')?.value,id:$('accessory-select')?.value}:{};
+  const choices=accessoryChoicesForProduct(product(),allDefinitions(),{...previous,...preferred});
+  accessoryChoiceProductId=scene.productId;
+  const interfaces=$('accessory-interface');
+  if(interfaces){
+    interfaces.replaceChildren(...choices.interfaces.map(port=>new Option(port.label,port.type)));
+    if(!choices.interfaces.length)interfaces.append(new Option('外部接口资料待核对',''));
+    interfaces.append(new Option('所有接口（仅浏览）',ALL_ACCESSORY_INTERFACES));interfaces.value=choices.connector;
   }
+  const brands=$('accessory-brand');
+  if(brands){brands.replaceChildren(...choices.brands.map(brand=>new Option(manufacturerLabel(brand),brand)));if(!choices.brands.length)brands.append(new Option('暂无配件',''));brands.value=choices.brand;brands.disabled=busy||status==='loading'||!choices.brands.length;}
+  const selector=$('accessory-select');selector.replaceChildren(...choices.choices.map(item=>new Option(item.name,item.id)));
+  if(!choices.choices.length)selector.append(new Option(choices.interfaces.length?'此接口暂无收录配件':'请先选择接口或浏览全部配件',''));
+  selector.value=choices.id;selector.disabled=busy||status==='loading'||!choices.choices.length;
+  $('add-accessory').disabled=busy||status==='loading'||!choices.id;
+  text('accessory-filter-note',choices.notice);
 }
 function renderAccessories() {
   renderAccessoryChoices();
@@ -975,7 +978,7 @@ function setupEvents() {
   for (const id of ['firmware-url', 'firmware-sha']) bind(id, 'input', renderTransport);
   const chooseProduct = async (id, keepFamily = false) => { visualVariantMenu?.reset(); clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, id)); productChoiceTarget = keepFamily ? id : ''; try { await configure(next, {reflectSource: true}); } finally { productChoiceTarget = ''; } };
   mountDeviceSearch({button:$('search-devices'),products:catalog.products,onSelect:id=>action(()=>chooseProduct(id)),onError:report});
-  mountAccessorySearch({button:$('search-accessories'),getItems:allDefinitions,onSelect:id=>{const item=definition(id);if(!item)return;renderAccessoryChoices({brand:accessoryBrand(item),connector:accessoryInterface(item),id});$('add-accessory').focus();},onError:report});
+  mountAccessorySearch({button:$('search-accessories'),getItems:allDefinitions,onSelect:id=>{const item=definition(id);if(!item)return;renderAccessoryChoices(accessorySearchPreference(product(),item));$('add-accessory').focus();},onError:report});
   bind('manufacturer-select', 'change', () => action(async () => { const choices = renderProductChoices($('manufacturer-select').value); if (choices.length) await chooseProduct(choices[0].id, true); }));
   bind('product-family-select', 'change', () => action(async () => {
     const choices = renderProductChoices($('manufacturer-select').value, {familyId:$('product-family-select').value,selectedId:scene.productId});
@@ -1012,8 +1015,8 @@ function setupEvents() {
   bind('serial-port', 'change', () => { text('serial-output', consoleBuffers[$('serial-port').value] || ''); $('serial-output').scrollTop = $('serial-output').scrollHeight; });
   bind('serial-form', 'submit', event => { event.preventDefault(); action(async () => { const input = $('serial-input'); if (!input.value) return; await runtime.input({type: 'serial', port: $('serial-port').value, data: input.value + '\n'}); input.value = ''; }); });
   bind('add-accessory', 'click', () => action(() => addAccessory($('accessory-select').value)));
-  bind('accessory-brand','change',renderAccessoryChoices);
-  bind('accessory-interface','change',renderAccessoryChoices);
+  bind('accessory-brand','change',()=>renderAccessoryChoices());
+  bind('accessory-interface','change',()=>renderAccessoryChoices());
   bind('clear-accessories','click',()=>action(async()=>{const next=clone(scene);next.accessories=[];pruneDefinitions(next);await configure(next);toast('已移除当前场景的全部配件。');}));
   bind('open-diy', 'click', () => { editingAccessoryId = null; $('diy-form').reset(); text('diy-error', ''); $('diy-dialog').showModal(); });
   bind('close-diy', 'click', () => $('diy-dialog').close());

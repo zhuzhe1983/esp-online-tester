@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createBurnerCaptchaClient,captchaPoint,captchaAttempt,CAPTCHA_ATTEMPT_MS,CAPTCHA_RESOURCE_MS,CAPTCHA_AUTO_ATTEMPTS} from '../web/platform/m5burner-captcha.js';
+import {createBurnerCaptchaClient,captchaPoint,captchaAttempt,CAPTCHA_ATTEMPT_MS,CAPTCHA_RESOURCE_MS} from '../web/platform/m5burner-captcha.js';
 import {expectedCancellation} from '../web/platform/error-ui.js';
 import {prepareBurnerSource} from '../web/platform/m5burner-download-ui.js';
 import {createFirmwareCache} from '../web/platform/firmware-cache.js';
@@ -26,7 +26,7 @@ test('vendored OCR assets match their pins and retain the original OEM 1 compone
 });
 
 test('verification deadlines abort hanging work, discard late results and distinguish user cancellation',async()=>{
-  assert.equal(CAPTCHA_ATTEMPT_MS,10000);assert.equal(CAPTCHA_RESOURCE_MS,20000);assert.equal(CAPTCHA_AUTO_ATTEMPTS,3);
+  assert.equal(CAPTCHA_ATTEMPT_MS,10000);assert.equal(CAPTCHA_RESOURCE_MS,20000);
   let taskSignal,late;
   const task=captchaAttempt(signal=>{taskSignal=signal;return new Promise((_,reject)=>{late=reject;});},{timeoutMs:10});
   await assert.rejects(task,{code:'CAPTCHA_TIMEOUT'});assert.equal(taskSignal.aborted,true);

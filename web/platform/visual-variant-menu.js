@@ -45,6 +45,6 @@ export function mountVisualVariantMenu({container,products,onSelect}) {
   const onToggle=event=>{if(controller.snapshot().disabled)event.preventDefault();};
   const onSelectChange=()=>{if(!controller.select(select.value))select.value=controller.snapshot().selectedId;};
   summary.addEventListener('click',onToggle);select.addEventListener('change',onSelectChange);
-  const shell=container.querySelector('#shell-settings');if(shell)shell.after(root);else container.prepend(root);
+  const shell=container.querySelector('#shell-settings');if(shell)shell.before(root);else container.prepend(root);
   return {...controller,dispose(){controller.dispose();summary.removeEventListener('click',onToggle);select.removeEventListener('change',onSelectChange);root.remove();}};
 }
