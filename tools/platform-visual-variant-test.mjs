@@ -31,9 +31,9 @@ test('product/mode changes reset previews, metadata refresh preserves an idle pr
 });
 test('catalog parent links are complete, distinct, directly reference visible same-manufacturer models and preserve versions',async()=>{
   const catalog=JSON.parse(await readFile(new URL('../web/platform/catalog/products.json',import.meta.url),'utf8')).items;
-  const expected={'m5stack-s007-pin127':'m5stack-s007','m5stack-s007-pin254':'m5stack-s007','m5stack-s007-pin127-v033':'m5stack-s007-v033','m5stack-s007-pin254-v033':'m5stack-s007-v033','m5stack-s015-dip':'m5stack-s015','m5stack-s016-dip':'m5stack-s016','m5stack-k051-b':'m5stack-c050-b','m5stack-k051':'m5stack-c050-b','m5stack-k056':'m5stack-c056-b','m5stack-k122':'m5stack-c122-b'};
+  const expected={'m5stack-triviapod':'m5stack-stopwatch','m5stack-s007-pin127':'m5stack-s007','m5stack-s007-pin254':'m5stack-s007','m5stack-s007-pin127-v033':'m5stack-s007-v033','m5stack-s007-pin254-v033':'m5stack-s007-v033','m5stack-s015-dip':'m5stack-s015','m5stack-s016-dip':'m5stack-s016','m5stack-k051-b':'m5stack-c050-b','m5stack-k051':'m5stack-c050-b','m5stack-k056':'m5stack-c056-b','m5stack-k122':'m5stack-c122-b'};
   assert.deepEqual(Object.fromEntries(catalog.filter(p=>p.visualVariantOf).map(p=>[p.id,p.visualVariantOf])),expected);
-  for(const [id,parentId] of Object.entries(expected)){const child=catalog.find(p=>p.id===id),parent=catalog.find(p=>p.id===parentId);assert.ok(parent?.model&&child.model);assert.equal(parent.visualVariantOf,undefined);assert.notEqual(parent.pickerVisible,false);assert.equal(parent.manufacturer,child.manufacturer);}
+  for(const [id,parentId] of Object.entries(expected)){const child=catalog.find(p=>p.id===id),parent=catalog.find(p=>p.id===parentId);assert.ok(parent&&(parent.model||parent.id==='m5stack-stopwatch')&&child.model,'StopWatch uses the existing dedicated renderer; other parents declare a model');assert.equal(parent.visualVariantOf,undefined);assert.notEqual(parent.pickerVisible,false);assert.equal(parent.manufacturer,child.manufacturer);}
   for(const id of ['m5stack-k138','m5stack-k138-v11','m5stack-s007','m5stack-s007-v033'])assert.equal(catalog.find(p=>p.id===id).visualVariantOf,undefined);
 });
 
