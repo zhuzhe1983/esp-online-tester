@@ -18,7 +18,7 @@ const describe = value => {
   return String(value);
 };
 
-export function createTransportUi({mount, flashMount, catalog, getScene, getSource, getApi, prepareRecording, releaseInputs, recordingMatchesScene, onRecordingState, onRecordingChange, onError, onLog}) {
+export function createTransportUi({mount, flashMount, catalog, getScene, getSource, getApi, getFirmware, prepareRecording, releaseInputs, recordingMatchesScene, onRecordingState, onRecordingChange, onError, onLog}) {
   const root = node('section', 'session-tools'); root.setAttribute('aria-label', '操作录制与实体刷机');
   const row = node('div', 'session-tool-row');
   const storageButton = button('设备存储'); storageButton.dataset.action = 'device-storage';
@@ -85,7 +85,7 @@ export function createTransportUi({mount, flashMount, catalog, getScene, getSour
     const capability = flasherCapabilities();
     let source = null, sourceError = '';
     try { source = getSource(); } catch (error) { sourceError = error.message; }
-    const policy = firmwareFlashPolicy(catalog.products.find(product => product.id === getScene().productId), source);
+    const policy = firmwareFlashPolicy(catalog.products.find(product => product.id === getScene().productId), source, getFirmware?.());
     const unavailable = !capability.supported ? capability.reason : !policy.canFlash ? sourceError || policy.message : '';
     flash.disabled = !flashStation && Boolean(unavailable);
     flash.textContent = flashStation ? flashActive() ? '烧录中 · 查看进度' : '查看烧录窗口' : '烧录到设备';
@@ -265,13 +265,13 @@ export async function mountFirmwareUpdates(mount, {getProductId} = {}) {
     if (selected?.id === firmware?.id && selectedProductId===productId) return;
     selected = firmware || null; selectedProductId=productId; entry = null; checkSequence++; checkController?.abort(); result.replaceChildren(); actions.replaceChildren(); renderHintList(hints, []);
     downloadDetails.open=false;downloadDetails.hidden=true;copyDownload.textContent='复制地址';downloadLink.removeAttribute('href');downloadLink.textContent='';
-    body.hidden = !firmware || !firmware.productIds.includes(getProductId?.()); if (body.hidden) return;
+    body.hidden = !firmware || !firmware.productIds.includes(firmware.sharedTargetId||getProductId?.()); if (body.hidden) return;
     const downloadUrl=safeUrl(firmware.source?.url||firmware.source?.manifestUrl);
     if(downloadUrl){downloadDetails.hidden=false;downloadSummary.textContent=firmware.source?.manifestUrl?'固件清单地址':'固件下载地址';downloadLink.href=downloadUrl;downloadLink.textContent=downloadUrl;}
     entry = list?.entries.find(item => item.id === firmware.watchlistId) || null;
-    const role = firmware.role === 'factory' ? '官方出厂' : firmware.role === 'third-party' ? '第三方项目' : '已收录项目';
-    identity.textContent = `${firmwareRunPolicy(null, firmware).label} · ${role}${firmware.revision || entry?.version ? ` · ${firmware.revision || entry.version}` : ''}`;
-    const facts = [firmware.publisher ? `发布者：${firmware.publisher}` : null, entry?.description, entry?.compatibility?.note, entry?.browserNote, entry?.checkedAt ? `元信息核对于 ${entry.checkedAt}` : null].filter(Boolean);
+    const role = firmware.sharedTargetId ? '共用固件 · 当前型号待验证' : firmware.role === 'factory' ? '官方出厂' : firmware.role === 'third-party' ? '第三方项目' : '已收录项目';
+    identity.textContent = `${firmware.sharedTargetId?role:`${firmwareRunPolicy(null, firmware).label} · ${role}`}${firmware.revision || entry?.version ? ` · ${firmware.revision || entry.version}` : ''}`;
+    const facts = [firmware.publisher ? `发布者：${firmware.publisher}` : null, ...([entry?.description,entry?.compatibility?.note,entry?.browserNote].filter(Boolean).map(note=>firmware.sharedTargetId?`原适配型号说明：${note}`:note)), entry?.checkedAt ? `元信息核对于 ${entry.checkedAt}` : null].filter(Boolean);
     const hintItems = facts.length ? [{id: 'source-detail', icon: 'cloud', label: '来源说明', title: '发布来源与访问条件', paragraphs: facts}] : [];
     if (entry) hintItems.push({id: 'update-check', icon: 'clock', label: '版本核对', title: '发布版本与同步时间', paragraphs: ['发布前按产品、渠道和镜像格式同步版本；缺少匹配文件或可信 hash 时保留原镜像。检查版本只核对当前设备的固件，读取本站快照，不直接调用 GitHub API，也不下载固件正文。运行所需固件可缓存在当前浏览器，服务器不保存。', '资源链接核对可能受上游 CORS 设置限制。版本快照过期或同步失败不代表固件链接已经失效。']});
     renderHintList(hints, hintItems);
@@ -285,7 +285,7 @@ export async function mountFirmwareUpdates(mount, {getProductId} = {}) {
     if (!entry) return; const requested = entry, token = ++checkSequence; checkController?.abort(); checkController = new AbortController();
     check.disabled = true; result.replaceChildren(node('p', 'helper', '正在读取发布信息…'));
     try {
-      const report = await checkWatchEntry(requested, {signal: checkController.signal,firmwareId:selected?.id,productId:selectedProductId,currentVersion:selected?.revision||selected?.version,source:selected?.source}); if (!active || token !== checkSequence) return;
+      const report = await checkWatchEntry(requested, {signal: checkController.signal,firmwareId:selected?.id,productId:selectedProductId,firmwareTargetId:selected?.sharedTargetId,currentVersion:selected?.revision||selected?.version,source:selected?.source}); if (!active || token !== checkSequence) return;
       result.replaceChildren(node('p', 'watch-version', report.latestVersion ? `${report.updateAvailable ? '发现新版本' : report.metadata?.source === 'site-snapshot' ? '已同步版本' : '上游版本'}：${report.latestVersion}` : '暂时无法确认最新版本'));
       if (report.metadata?.source === 'site-snapshot') {
         result.append(node('p', 'helper', report.metadata.checkedAt ? `发布信息同步：${report.metadata.checkedAt}` : '本站暂无成功同步记录。'));

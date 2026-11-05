@@ -109,7 +109,8 @@ test('TriviaPOD is discoverable as its own unavailable product and preserves its
   assert.deepEqual(searchProducts(products,'TP-01-A').map(item=>item.id),[trivia.id]);
   assert.ok(productsForManufacturer(products,'M5Stack','m5-other').some(item=>item.id===trivia.id));
   assert.match(productOptionLabel(trivia),/尚未适配$/);
-  assert.equal(firstFirmware(firmwares,trivia),null,'an independent TriviaPOD never receives the StopWatch default firmware');
+  const candidate=firstFirmware(firmwares,trivia);
+  assert.equal(candidate.sharedTargetId,'m5stack-stopwatch');assert.equal(candidate.simulationVerified,false);assert.equal(candidate.role,undefined,'shared firmware is not the TriviaPOD factory image');
   const scene=createDefaultScene(catalog,trivia.id);
   assert.equal(validateScene(scene,catalog).valid,true);
   assert.equal(scene.firmware,null);

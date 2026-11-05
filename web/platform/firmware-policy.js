@@ -3,7 +3,7 @@
 export function firmwareRunPolicy(product, firmware) {
   const boardReady = Boolean(product?.runtime?.board);
   const hasSource = Boolean(firmware?.source?.url || firmware?.source?.manifestUrl);
-  const verified = firmware?.simulationVerified === true;
+  const verified = firmware?.simulationVerified === true && !firmware.sharedTargetId && (!product?.id||!firmware.productIds||firmware.productIds.includes(product.id));
   return {
     canRun: boardReady && hasSource,
     trial: hasSource && !verified,
@@ -14,10 +14,12 @@ export function firmwareRunPolicy(product, firmware) {
 
 // Hardware flashing uses the selected source, never the emulator's board or state.
 // The downloaded bytes and the connected chip still need the flasher's validation.
-export function firmwareFlashPolicy(product, source) {
+export function firmwareFlashPolicy(product, source, firmware) {
   let reason = null, message = '';
   const chip = String(product?.chip || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-  if (!['esp32', 'esp32s3', 'esp32c3', 'esp32c6'].includes(chip)) {
+  if (firmware?.sharedTargetId) {
+    reason = 'FIRMWARE_TARGET_UNVERIFIED'; message = '此固件来自共享目标，尚未确认适用于本产品的实机刷写。';
+  } else if (!['esp32', 'esp32s3', 'esp32c3', 'esp32c6'].includes(chip)) {
     reason = 'FLASH_UNSUPPORTED_CHIP'; message = '当前在线刷机支持 ESP32、S3、C3 和 C6。';
   } else if (!Number.isSafeInteger(product?.runtime?.flashMb) || product.runtime.flashMb <= 0 || product.runtime.flashMb > 32) {
     reason = 'FLASH_SIZE'; message = '此型号的 Flash 容量尚未核对，暂不能在线刷机。';

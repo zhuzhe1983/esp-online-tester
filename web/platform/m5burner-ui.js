@@ -1,3 +1,4 @@
+import {sharedFirmware} from './firmware-target.js';
 import {createM5BurnerClient,matchBurnerDevice,burnerFirmware,burnerHistoryFirmware} from './m5burner.js';
 
 export function mountM5Burner(options) {
@@ -21,7 +22,7 @@ export function mountFirmwareHub({mount,onChange,client,provider}) {
   const sourceNote=node('p');sourceNote.className='helper';
   mount.append(identity,searchRow,message,firmwareLabel,firmwareSelect,next,versionLabel,versionSelect,sourceNote,detail);
   if(provider.home){const home=node('a',`打开 ${provider.name} ↗`);home.className='text-link';home.href=provider.home;home.target='_blank';home.rel='noopener noreferrer';mount.append(home);}
-  let product=null,device=null,rows=[],versions=[],selected=null,page=0,received=0,total=0,searchText='',timer;
+  let product=null,firmwareProduct=null,device=null,rows=[],versions=[],selected=null,page=0,received=0,total=0,searchText='',timer;
   let requestController=null,versionController=null,generation=0,versionGeneration=0,locked=false,loading=false,versionLoading=false;
   const notify=()=>{onChange?.();};
   function controls() {
@@ -31,11 +32,11 @@ export function mountFirmwareHub({mount,onChange,client,provider}) {
   }
   function cancel() {clearTimeout(timer);generation++;versionGeneration++;requestController?.abort();versionController?.abort();loading=false;versionLoading=false;}
   function emptySelection() {selected=null;versions=[];versionSelect.replaceChildren(new Option('请选择固件',''));detail.hidden=true;}
-  function setProduct(value) {
-    if(product?.id===value?.id)return;
-    cancel();product=value;device=null;rows=[];emptySelection();query.value='';page=0;next.hidden=true;
+  function setProduct(value,{firmwareProduct:target=value}={}) {
+    if(product?.id===value?.id&&firmwareProduct?.id===target?.id)return;
+    cancel();product=value;firmwareProduct=target;device=null;rows=[];emptySelection();query.value='';page=0;next.hidden=true;
     firmwareSelect.replaceChildren(new Option('搜索当前设备的固件',''));
-    identity.textContent=value?`仅搜索 ${value.name} 的固件。`:'';query.placeholder=value?`在 ${value.name.replace(/^(M5Stack|LILYGO) /i,'')} 中搜索`:'搜索固件';message.textContent='';controls();
+    identity.textContent=value?target?.id!==value.id?`${value.name} 共用 ${target?.name} 的固件目录；兼容性待验证。`:`仅搜索 ${value.name} 的固件。`:'';query.placeholder=value?`在 ${(target||value).name.replace(/^(M5Stack|LILYGO) /i,'')} 中搜索`:'搜索固件';message.textContent='';controls();
   }
   function chooseVersion() {
     const project=rows.find(item=>item.firmwareId===firmwareSelect.value),version=versions.find(item=>item.versionId===versionSelect.value);
@@ -60,9 +61,9 @@ export function mountFirmwareHub({mount,onChange,client,provider}) {
     if(!more){rows=[];page=0;received=0;total=0;searchText=query.value;emptySelection();firmwareSelect.replaceChildren(new Option('正在搜索…',''));next.hidden=true;notify();}
     controls();message.textContent=`正在查询 ${provider.name}…`;
     try {
-      if(!device){const devices=await client.devices(controller.signal);if(token!==generation)return;device=provider.match(product,devices);}
+      if(!device){const devices=await client.devices(controller.signal);if(token!==generation)return;device=provider.match(firmwareProduct,devices);}
       if(!device){firmwareSelect.replaceChildren(new Option('没有找到对应型号',''));message.textContent=`${provider.name} 尚未单列此型号。可改用 HTTPS 地址或本地文件。`;return;}
-      identity.textContent=`${provider.name} · ${device.deviceName}${client.describe?.()?' · '+client.describe():''}`;
+      identity.textContent=`${provider.name} · ${device.deviceName}${firmwareProduct?.id!==product.id?` · ${product.name} 共用目录 · 兼容性待验证`:''}${client.describe?.()?' · '+client.describe():''}`;
       const result=await client.search(device.deviceId,searchText,page+1,controller.signal);if(token!==generation)return;
       page=result.page;received+=result.received;total=result.total;const previous=firmwareSelect.value;
       rows=[...new Map([...rows,...result.rows].map(item=>[item.firmwareId,item])).values()];
@@ -80,9 +81,9 @@ export function mountFirmwareHub({mount,onChange,client,provider}) {
   firmwareSelect.addEventListener('change',()=>{void chooseFirmware();});versionSelect.addEventListener('change',chooseVersion);
   return {
     setProduct,activate(){if(product&&!loading&&!versionLoading&&!selected){if(rows.length)void chooseFirmware();else void runSearch();}},deactivate(){cancel();controls();},
-    current:()=>selected, setDisabled(value){locked=value;controls();},
+    current:()=>firmwareProduct?.id!==product?.id?sharedFirmware(selected,firmwareProduct?.id):selected, setDisabled(value){locked=value;controls();},
     pin(hash,bootMode){if(selected?.source){selected.source.sha256=hash;if(bootMode)selected.source.bootMode=bootMode;}},
-    restore(entry){const firmware=provider.history(entry);if(!firmware||entry.productId!==product?.id)return false;cancel();selected=firmware;device=null;rows=[];versions=[];next.hidden=true;
-      firmwareSelect.replaceChildren(new Option(firmware.name,firmware.firmwareId));versionSelect.replaceChildren(new Option(firmware.revision,firmware.versionId));identity.textContent=`${provider.name} · ${product.name}`;message.textContent='已恢复历史版本，可直接运行，也可重新搜索。';controls();notify();return true;},
+    restore(entry){const firmware=provider.history(entry);if(!firmware||entry.productId!==product?.id||(entry.firmwareTargetId||entry.productId)!==firmwareProduct?.id)return false;cancel();selected=firmware;device=null;rows=[];versions=[];next.hidden=true;
+      firmwareSelect.replaceChildren(new Option(firmware.name,firmware.firmwareId));versionSelect.replaceChildren(new Option(firmware.revision,firmware.versionId));identity.textContent=`${provider.name} · ${product.name}${firmwareProduct?.id!==product.id?` · 共用 ${firmwareProduct.name} 的固件`:""}`;message.textContent='已恢复历史版本，可直接运行，也可重新搜索。';controls();notify();return true;},
   };
 }

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Validate public catalogs against their local JSON Schemas; never resolve remote refs."""
 import json
+import subprocess
 from pathlib import Path
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
@@ -30,4 +31,5 @@ for error in watchlist_validator.iter_errors(watchlist):
 print(f'watchlist: {len(watchlist["entries"])} entries')
 if errors:
     raise SystemExit('\n'.join(errors))
+subprocess.run(['node', '--input-type=module', '-e', "import {readFile} from 'node:fs/promises'; import {validateFirmwareTargets} from './web/platform/firmware-target.js'; validateFirmwareTargets(JSON.parse(await readFile('web/platform/catalog/products.json','utf8')).items);"], cwd=root.parent.parent, check=True)
 print('Catalog schemas and unique entry IDs passed.')

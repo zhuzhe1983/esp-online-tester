@@ -17,7 +17,7 @@ function normalized(entry) {
   const burner=entry.provider==='m5burner'&&parseBurnerDownload(url.href);
   const spark=entry.provider==='lilygo-spark'&&sparkHistoryFirmware({...entry,url:url.href,sha256});
   return {url:url.href, kind:entry.kind, sha256, productId:clean(entry.productId), name:clean(entry.name), version:clean(entry.version), lastUsedAt:entry.lastUsedAt,
-    ...(entry.bootMode?{bootMode:entry.bootMode}:{}),...(entry.archive?{archive:{...entry.archive}}:{}),...(burner?{provider:'m5burner',deviceId:typeof entry.deviceId==='string'&&/^\d{1,30}$/.test(entry.deviceId)?entry.deviceId:''}:{}),...(spark?{provider:'lilygo-spark',deviceId:spark.deviceId,firmwareId:spark.firmwareId}:{})};
+    ...(typeof entry.firmwareTargetId==='string'&&/^[a-z0-9][a-z0-9:-]{0,79}$/.test(entry.firmwareTargetId)?{firmwareTargetId:entry.firmwareTargetId}:{}),...(entry.bootMode?{bootMode:entry.bootMode}:{}),...(entry.archive?{archive:{...entry.archive}}:{}),...(burner?{provider:'m5burner',deviceId:typeof entry.deviceId==='string'&&/^\d{1,30}$/.test(entry.deviceId)?entry.deviceId:''}:{}),...(spark?{provider:'lilygo-spark',deviceId:spark.deviceId,firmwareId:spark.firmwareId}:{})};
 }
 const key = entry => JSON.stringify([entry.productId, entry.kind, entry.url, entry.archive?.entry||'', entry.provider==='m5burner'?'':entry.sha256]);
 export function createFirmwareHistory(getStorage = () => globalThis.localStorage) {

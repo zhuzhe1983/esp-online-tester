@@ -22,7 +22,7 @@ The LILYGO inventory follows Spark’s stable series IDs and product IDs: 127 ES
 
 Stamp 系列已逐款接入 22 个主控和套件，StampFly v1.1 保持独立型号；模型、可运行行为与已知限制见 [Stamp 适配清单](stamp-series-onboarding.md)。同 PCB 的排针、DIP 和套装变体从常用设备列表收起，原 ID 与模型保留。C5 仅支持显式 SRAM app-direct。StampFly 另有独立 UART 演示固件和需主动开启的近似飞行环境，见[操作说明](stampfly-demo.md)与[模型边界](stampfly-flight.md)。
 
-TriviaPOD TP-01-A 作为 M5Stack「其他主控」中的独立产品列出，提供官方 3D 模型与硬件资料，板级运行尚未适配。USB-C 仅确认充电用途，不继承 StopWatch 的固件、Grove 或后部扩展接口，见 [TriviaPOD 模型说明](triviapod-model.md)。
+TriviaPOD TP-01-A 作为 M5Stack「其他主控」中的独立产品列出，提供官方 3D 模型与硬件资料，板级运行尚未适配。USB-C 仅确认充电用途，通过独立的 `firmwareTargetId` 共用 StopWatch 的候选固件目录，但不继承验证结论、Grove 或后部扩展接口，见 [TriviaPOD 模型说明](triviapod-model.md)和[固件目标规则](firmware-targets.md)。
 
 ## Current scope
 

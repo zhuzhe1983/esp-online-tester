@@ -155,11 +155,11 @@ export function selectWatchRelease(entry,saved,{firmwareId,productId,currentVers
   return result;
 }
 
-export async function checkWatchEntry(entry, { fetchImpl = globalThis.fetch, timeoutMs = 20000, signal, firmwareId, productId, currentVersion, source } = {}) {
+export async function checkWatchEntry(entry, { fetchImpl = globalThis.fetch, timeoutMs = 20000, signal, firmwareId, productId, firmwareTargetId, currentVersion, source } = {}) {
   const controller = new AbortController(), abort = () => controller.abort();
   signal?.addEventListener('abort', abort, { once: true }); if (signal?.aborted) abort();
   const timer = setTimeout(abort, timeoutMs), checkedAt = new Date().toISOString();
-  const selection={firmwareId,productId,currentVersion,source};
+  const selection={firmwareId,productId:firmwareTargetId||productId,currentVersion,source};
   const previousVersion=currentVersion||(entry.deviceVersions||[]).find(item=>firmwareId&&item.firmwareId===firmwareId)?.version||entry.version;
   try {
     // Visitors read the static snapshot; never consume anonymous API quotas.

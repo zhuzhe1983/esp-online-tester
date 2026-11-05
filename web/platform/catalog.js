@@ -7,6 +7,7 @@ import {motionParameter} from './motion-input.js';
 import {isPressControl} from './control-input.js';
 // Static catalog and portable scene contract. No application server is required.
 import {isShellFinish} from './appearance.js';
+import {validateFirmwareTargets} from './firmware-target.js';
 export const SCHEMA_VERSION = '1';
 export const MAX_SCENE_BYTES = 64 * 1024;
 const STORAGE_KEY = 'esp-online-tester:accessories:v1';
@@ -81,7 +82,7 @@ export async function loadCatalog() {
     }
     return [name, document.items];
   }));
-  return Object.fromEntries(entries);
+  const catalog=Object.fromEntries(entries);validateFirmwareTargets(catalog.products);return catalog;
 }
 
 export function createDefaultScene(catalog, productId = 'm5stack-stopwatch') {
