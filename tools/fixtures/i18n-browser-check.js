@@ -2,10 +2,16 @@
 // metadata below are synthetic UI inputs; no ports, writes or CAPTCHA solving.
 async page => {
  const root=new URL('./',page.url()),errors=[],assert=(ok,message)=>{if(!ok)throw Error(message);};
+ let phase='initial';try {
+ const ready=async language=>{
+  await page.waitForFunction(lang=>document.documentElement.lang===lang&&!!window.espTester,language);
+  for(let attempt=0;attempt<100;attempt++){if(await page.evaluate(async()=>Boolean(window.espTester&&(await window.espTester.observe()).scene)))return;await page.waitForTimeout(100);}
+  throw Error('The workbench scene did not initialize');
+ };
  page.on('pageerror',error=>errors.push(error.message));
  await page.evaluate(()=>localStorage.removeItem('esp-online-tester.locale'));
  await page.setViewportSize({width:1440,height:1100});await page.goto(new URL('?lang=en',root).href);
- await page.waitForFunction(()=>document.documentElement.lang==='en'&&window.espTester);
+ await ready('en');
  const settled=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  const untranslated=async selector=>page.locator(selector).evaluate(root=>{
   const result=[],walker=document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT);
@@ -26,9 +32,11 @@ async page => {
   button.textContent='暂停';opaque.title='暂停';await new Promise(resolve=>setTimeout(resolve,30));
   const result=first&&button.textContent==='Pause'&&opaque.title==='暂停';root.remove();return result;
  });assert(boundary,'Inherited skip boundaries, opaque interpolation and dynamic nodes must be preserved');
+ phase='configure';
  await page.evaluate(async()=>{const {loadCatalog,createDefaultScene}=await import('./catalog.js'),c=await loadCatalog(),scene=createDefaultScene(c,'m5stack-triviapod');scene.firmware=c.firmwares.find(item=>item.id==='m5stack-stopwatch-official').source;await espTester.configure(scene);});
  await page.waitForFunction(()=>document.querySelector('.firmware-update-identity')?.textContent.includes('Current model unverified'));
  assert((await page.locator('#firmware-select optgroup').first().getAttribute('label')).includes('Shared target'),'Shared firmware group is translated');
+ phase='configure';
  await page.evaluate(async()=>{const {loadCatalog,createDefaultScene}=await import('./catalog.js'),c=await loadCatalog(),scene=createDefaultScene(c,'m5stack-s013');scene.firmware=c.firmwares.find(item=>item.productIds?.includes('m5stack-s013')&&item.source?.url).source;await espTester.configure(scene);});
  await settled();assert(await page.locator('#flash-device').isDisabled(),'P4 flashing support remains unchanged');
  assert((await page.locator('#flash-device').getAttribute('title')||'').includes('Online flashing currently supports'),'P4 disabled explanation is translated');
@@ -70,13 +78,15 @@ async page => {
  assert((await page.locator('#burner-captcha-submit-help').innerText()).includes('once'),'The manual single-click submission instruction is visible');
  missing=await untranslated('.burner-captcha');assert(!missing.length,'Verification UI missing translations: '+missing.join(' | '));
  await page.locator('.burner-captcha').getByRole('button',{name:'Cancel',exact:true}).click();
- await page.locator('#language-select').selectOption('zh-CN');await page.waitForFunction(()=>document.documentElement.lang==='zh-CN'&&window.espTester);await settled();
+ await Promise.all([page.waitForURL(url=>url.searchParams.get('lang')==='zh-CN',{waitUntil:'load'}),page.locator('#language-select').selectOption('zh-CN')]);await ready('zh-CN');await settled();
  assert((await page.locator('#flash-device').innerText()).includes('烧录到设备'),'Chinese source returns after switching language');
- await page.locator('#language-select').selectOption('en');await page.waitForFunction(()=>document.documentElement.lang==='en'&&window.espTester);
- const mini=await page.evaluate(()=>espTester.share({mode:'embed',autostart:false,autoplay:false}));await page.goto(mini);
- await page.waitForFunction(()=>document.documentElement.lang==='en'&&window.espTester);await settled();
+ await Promise.all([page.waitForURL(url=>url.searchParams.get('lang')==='en',{waitUntil:'load'}),page.locator('#language-select').selectOption('en')]);await ready('en');
+ phase='share';
+ const mini=await page.evaluate(()=>window.espTester.share({mode:'embed',autostart:false,autoplay:false}));await page.goto(mini);
+ await ready('en');await settled();
  assert(await page.locator('#language-select').inputValue()==='en','Mini respects the saved language');
  assert((await page.locator('#flash-device').innerText()).includes('Flash to device'),'Mini translates the flashing entry');
+ phase='guide';
  await page.goto(new URL('agents.html?lang=en',root).href);await page.waitForFunction(()=>document.documentElement.lang==='en'&&document.querySelector('#language-select'));await settled();
  missing=await untranslated('body');assert(!missing.length,'Agent guide missing translations: '+missing.join(' | '));
  assert(!/[\u4e00-\u9fff]/.test(await page.title()),'Guide title is translated');
@@ -86,8 +96,9 @@ async page => {
  await page.screenshot({path:'output/playwright/i18n-agents-en.png'});await page.setViewportSize({width:390,height:844});await settled();
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'English guide fits narrow screens');
  await page.screenshot({path:'output/playwright/i18n-agents-en-mobile.png'});
- await page.locator('#language-select').selectOption('zh-CN');await page.waitForFunction(()=>document.documentElement.lang==='zh-CN');
+ await Promise.all([page.waitForURL(url=>url.searchParams.get('lang')==='zh-CN',{waitUntil:'load'}),page.locator('#language-select').selectOption('zh-CN')]);await page.waitForFunction(()=>document.documentElement.lang==='zh-CN');
  assert((await page.locator('h1').innerText()).includes('用智能体开发和测试 ESP 产品'),'Guide can return to Chinese');
  assert(!errors.length,errors.join('\n'));
  return {localeRoundTrip:true,mini:true,agentGuide:true,sharedFirmware:true,p4DisabledReason:true,flashDialog:true,narrowLayout:true,configurationDefault:true,dynamicAttributes:true,skipInheritance:true,opaqueData:true,verificationWordsPreserved:true,serialOutputPreserved:true,hardwareWrites:0,verificationSubmissions:0,pageErrors:errors};
+ } catch(error) {throw Error(phase+': '+error.message);}
 }

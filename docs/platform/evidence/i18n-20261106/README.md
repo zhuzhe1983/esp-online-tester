@@ -20,3 +20,9 @@ Build WASM and fetch ROMs as documented in the platform README, serve `web/`, an
 The source scan excludes diagnostic model-review pages, vendored libraries and catalog prose. Arbitrary runtime combinations are not exhaustively enumerated. Unknown product prose remains unchanged. P4 and S31 flashing stays disabled; the [support investigation](../../flash-chip-support.md) records the integration gaps.
 
 Only curated results, public-source hashes and synthetic screenshots are retained. Raw logs with local paths and browser session details are excluded. The original CI log digest identifies the private local log without publishing it.
+
+## Published verification
+
+[public-validation.json](public-validation.json) records the successful Pages publication and a complete browser rerun against the public repository subpath. All 14 changed website files matched their expected SHA-256 hashes; the browser checks passed with zero page errors, hardware writes or verification submissions.
+
+The original fixture shared a scene before initialization completed on the public site. The follow-up fixture waits for language navigation, the API and an observed scene before continuing. Intermediate attempts using an asynchronous wait predicate did not reliably wait in the CLI harness; explicit readiness polling passed. The earlier local receipt and fixture hash are retained, and the public receipt identifies the corrected fixture. This follow-up changes only the verification script and evidence.
