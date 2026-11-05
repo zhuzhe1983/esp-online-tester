@@ -1,9 +1,9 @@
-import {instructionTargets,readImagePoints} from './m5burner-image-points.js';
+import {instructionTargets} from './m5burner-image-points.js';
 import {M5BURNER_API,parseBurnerDownload} from './m5burner.js';
 
 const fail=(code,message)=>Object.assign(new Error(message),{code});
 const tokenValid=value=>typeof value==='string'&&/^[A-Za-z0-9_-]{16,256}$/.test(value);
-export const CAPTCHA_ATTEMPT_MS=10000, CAPTCHA_RESOURCE_MS=20000, CAPTCHA_AUTO_ATTEMPTS=3;
+export const CAPTCHA_ATTEMPT_MS=10000, CAPTCHA_RESOURCE_MS=20000;
 // Bound the entire attempt, including readers that do not settle on abort.
 // Promise.race also consumes late rejections; stale results cannot win.
 export async function captchaAttempt(work,{signal,timeoutMs=CAPTCHA_ATTEMPT_MS}={}) {
@@ -61,7 +61,7 @@ export function createBurnerCaptchaClient({fetchImpl=globalThis.fetch}={}) {
 }
 
 // UI only. Tokens remain in this dialog's closure and the following request.
-export function requestBurnerVerification(url,{signal,client=createBurnerCaptchaClient(),readPoints=readImagePoints,attemptTimeoutMs=CAPTCHA_ATTEMPT_MS}={}) {
+export function requestBurnerVerification(url,{signal,client=createBurnerCaptchaClient(),attemptTimeoutMs=CAPTCHA_ATTEMPT_MS}={}) {
   if(!parseBurnerDownload(url))return Promise.reject(fail('INVALID_SOURCE','请选择 M5Burner 的固定版本下载地址。'));
   const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(cls)e.className=cls;return e;};
   const dialog=node('dialog',null,'firmware-run-confirm burner-captcha');dialog.setAttribute('aria-labelledby','burner-captcha-title');
@@ -73,21 +73,20 @@ export function requestBurnerVerification(url,{signal,client=createBurnerCaptcha
   const status=node('p',null,'helper');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
   const feedback=node('p',null,'form-error');feedback.setAttribute('role','alert');
   const official=node('a','打开官方页面 ↗','text-link');official.href=`https://burner.m5stack.com/firmware/${parseBurnerDownload(url).firmwareId}`;official.target='_blank';official.rel='noopener noreferrer';
-  const actions=node('div',null,'dialog-actions');const clear=node('button','清空选择','button'),refresh=node('button','换一张','button'),automatic=node('button','自动验证','button'),cancel=node('button','取消','button'),submit=node('button','验证并继续','button primary');for(const b of [clear,refresh,automatic,cancel,submit])b.type='button';actions.append(clear,refresh,automatic,cancel,submit);dialog.append(title,instruction,surface,status,feedback,official,actions);
+  const actions=node('div',null,'dialog-actions');const clear=node('button','清空选择','button'),refresh=node('button','换一张','button'),cancel=node('button','取消','button'),submit=node('button','验证并继续','button primary');for(const b of [clear,refresh,cancel,submit])b.type='button';actions.append(clear,refresh,cancel,submit);dialog.append(title,instruction,surface,status,feedback,official,actions);
   return new Promise((resolve,reject)=>{
-    let challenge=null,clicks=[],deadline=0,working=false,settled=false,position={x:0,y:0},generation=0,operation=null,autoMode=false,attempt=0,attemptDeadline=0,loadingResources=false;
+    let challenge=null,clicks=[],deadline=0,working=false,settled=false,position={x:0,y:0},generation=0,operation=null;
     const current=id=>!settled&&generation===id;
     const begin=()=>{operation?.abort();operation=new AbortController();return ++generation;};
     const finish=(error,token)=>{if(settled)return;settled=true;generation++;operation?.abort();clearInterval(timer);signal?.removeEventListener('abort',abort);dialog.close();dialog.remove();challenge=null;clicks=[];img.removeAttribute('src');error?reject(error):resolve(token);};
     const abort=()=>finish(fail('FETCH_ABORTED','已取消下载验证。'));
     function render() {
       const seconds=Math.max(0,Math.ceil((deadline-Date.now())/1000));submit.disabled=working||!challenge||!seconds||clicks.length!==challenge.targetCount;clear.disabled=working||!clicks.length;refresh.disabled=working;
-      automatic.disabled=working&&!autoMode;automatic.textContent=autoMode?'改为手动':'自动验证';
-      status.textContent=autoMode?`自动验证 ${attempt}/${CAPTCHA_AUTO_ATTEMPTS} · ${attemptDeadline?`${loadingResources?'组件加载':'识别验证'}剩余 ${Math.max(0,Math.ceil((attemptDeadline-Date.now())/1000))} 秒`:'正在换图'}`:challenge?`${clicks.length}/${challenge.targetCount} · ${seconds?`验证码剩余 ${seconds} 秒`:'验证码已过期，请换一张'} · 组件加载最多 20 秒，识别验证最多 10 秒`:'';
+      status.textContent=challenge?`${clicks.length}/${challenge.targetCount} · ${seconds?`验证码剩余 ${seconds} 秒`:'验证码已过期，请换一张'}`:'';
       markers.replaceChildren(...clicks.map((p,i)=>{const mark=node('span',String(i+1),'burner-captcha-mark');mark.style.left=`${p.x/challenge.width*100}%`;mark.style.top=`${p.y/challenge.height*100}%`;return mark;}));
     }
     async function loadChallenge(id) {
-      challenge=null;clicks=[];surface.hidden=true;cursor.hidden=true;attemptDeadline=0;instruction.textContent='正在获取验证码…';render();
+      challenge=null;clicks=[];surface.hidden=true;cursor.hidden=true;instruction.textContent='正在获取验证码…';render();
       const c=await captchaAttempt(s=>client.issue(url,s),{signal:operation.signal,timeoutMs:CAPTCHA_RESOURCE_MS});
       if(!current(id))return;
       challenge=c;deadline=Date.now()+c.expiresInSeconds*1000;position={x:c.width/2,y:c.height/2};img.src=c.captchaImage;surface.style.aspectRatio=`${c.width}/${c.height}`;surface.hidden=false;
@@ -111,41 +110,6 @@ export function requestBurnerVerification(url,{signal,client=createBurnerCaptcha
       catch(e){if(current(id)){challenge=null;clicks=[];surface.hidden=true;feedback.textContent=e.message;}}
       finally{if(current(id)){working=false;render();}}
     }
-    async function verifyAutomatically() {
-      if(working||settled)return;
-      const id=begin();working=true;autoMode=true;
-      try {
-        for(attempt=1;attempt<=CAPTCHA_AUTO_ATTEMPTS;attempt++) {
-          if(attempt>1||!challenge||deadline<=Date.now())await loadChallenge(id);
-          if(!current(id))return;
-          const image=challenge;loadingResources=true;attemptDeadline=Date.now()+CAPTCHA_RESOURCE_MS;clicks=[];feedback.textContent='正在准备识图组件…';render();
-          try {
-            const token=await captchaAttempt(async (s,limit)=>{
-              const ready=()=>{if(current(id)&&!s.aborted&&loadingResources){loadingResources=false;attemptDeadline=Date.now()+attemptTimeoutMs;limit(attemptTimeoutMs);render();}};
-              const result=await readPoints(image,{signal:s,onReady:ready,onProgress:text=>{if(current(id)&&!s.aborted)feedback.textContent=text;}});
-              if(!current(id)||s.aborted)throw fail('FETCH_ABORTED','已取消下载验证。');
-              ready();
-              if(deadline<=Date.now()||!result.complete||result.points.length!==image.targetCount)throw fail('CAPTCHA_INCOMPLETE','未能完成这张图片的验证。');
-              clicks=result.points;feedback.textContent='正在验证…';render();
-              return client.verify(image,clicks,s);
-            },{signal:operation.signal,timeoutMs:CAPTCHA_RESOURCE_MS});
-            if(current(id))finish(null,token);return;
-          }catch(e){
-            if(!current(id))return;
-            if(e.code==='CAPTCHA_REJECTED'){challenge=null;clicks=[];surface.hidden=true;}
-            if(['FETCH_ABORTED','CAPTCHA_RATE_LIMIT','CAPTCHA_RESPONSE','CAPTCHA_UNAVAILABLE'].includes(e.code))throw e;
-            if(attempt===CAPTCHA_AUTO_ATTEMPTS){feedback.textContent='已尝试 3 张图片，自动验证仍未完成。可手动点选、换一张，或再次自动验证。';break;}
-            feedback.textContent='本次未完成，正在换一张继续…';
-          }
-        }
-      }catch(e){if(current(id))feedback.textContent=e.message;}
-      finally{if(current(id)){working=false;autoMode=false;attemptDeadline=0;render();}}
-    }
-    automatic.onclick=event=>{
-      if(event.detail>1)return;
-      if(autoMode){generation++;operation?.abort();working=false;autoMode=false;attemptDeadline=0;feedback.textContent='已停止自动验证，可手动点选或换一张。';render();}
-      else void verifyAutomatically();
-    };
     submit.onclick=event=>{if(event.detail<2)void verify();};
     const timer=setInterval(render,250);signal?.addEventListener('abort',abort,{once:true});document.body.append(dialog);dialog.showModal();cancel.focus();if(signal?.aborted)abort();else void issue();
   });

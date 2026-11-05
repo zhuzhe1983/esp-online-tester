@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1",
-  "revision": "2026-11-05-triviapod-preview",
+  "revision": "2026-11-05-device-interfaces",
   "items": [
     {
       "id": "m5stack-k132-adv",
@@ -505,6 +505,37 @@
             }
           ],
           "voltage": 5
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "spec-0-2",
+            "table-7"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "ext-14p",
+          "type": "2.54mm-14P",
+          "name": "EXT 2.54-14P",
+          "pitchMm": 2.54,
+          "pinCount": 14,
+          "knowledgeFactIds": [
+            "spec-0-6"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "不额外推断排数、接头性别或自动线序。"
         }
       ],
       "model": {
@@ -672,6 +703,36 @@
               "address": 79
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "usb-input"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "sensors",
+            "sd-pins"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "limitations": [
@@ -878,7 +939,159 @@
           "defaultKeyCode": "KeyB"
         }
       ],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C · 5V 供电",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-6"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "external": true,
+          "pins": [
+            {
+              "name": "G5 (SCLK)",
+              "gpio": 5
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "PY_G0"
+            },
+            {
+              "name": "G41 (SYS_SDA)",
+              "gpio": 41
+            },
+            {
+              "name": "G42 (SYS_SCL)",
+              "gpio": 42
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "G2 (LRCK)",
+              "gpio": 2
+            },
+            {
+              "name": "G1 (DSDIN)",
+              "gpio": 1
+            },
+            {
+              "name": "G0 (DOUT)",
+              "gpio": 0
+            },
+            {
+              "name": "G45 (MCLK)",
+              "gpio": 45
+            },
+            {
+              "name": "3V3_AU"
+            },
+            {
+              "name": "3V3_AU"
+            }
+          ],
+          "id": "fpc-i2s",
+          "type": "FPC-0.5mm-12P",
+          "name": "FPC I2S · 0.5 mm 12P",
+          "pitchMm": 0.5,
+          "pinCount": 12,
+          "knowledgeFactIds": [
+            "spec-0-10",
+            "table-9"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "针序按官方 Pin1→Pin12；不据此声明任意同规格 FPC 可互换。"
+        },
+        {
+          "external": true,
+          "pins": [
+            {
+              "name": "G39 (SCK)",
+              "gpio": 39
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "G21 (CS)",
+              "gpio": 21
+            },
+            {
+              "name": "G38 (MOSI)",
+              "gpio": 38
+            },
+            {
+              "name": "G40 (MISO)",
+              "gpio": 40
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "PY_G4 (RST)"
+            },
+            {
+              "name": "G43 (BUSY)",
+              "gpio": 43
+            },
+            {
+              "name": "G44 (IRQ)",
+              "gpio": 44
+            },
+            {
+              "name": "PY_G1 (SW)"
+            },
+            {
+              "name": "3V3_L2"
+            },
+            {
+              "name": "3V3_L2"
+            }
+          ],
+          "id": "fpc-spi",
+          "type": "FPC-0.5mm-12P",
+          "name": "FPC SPI · 0.5 mm 12P",
+          "pitchMm": 0.5,
+          "pinCount": 12,
+          "knowledgeFactIds": [
+            "spec-0-10",
+            "table-10"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "针序按官方 Pin1→Pin12；不据此声明任意同规格 FPC 可互换。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "spec-0-5",
+            "table-3"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
+        }
+      ],
       "model": {
         "type": "manufacturer-cad",
         "url": "./assets/m5stack-k159-b/model.json",
@@ -1006,6 +1219,21 @@
           "name": "USB2.0 OTG",
           "external": true,
           "pins": []
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "spec-0-15",
+            "table-9"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "model": {
@@ -1315,7 +1543,241 @@
         "psramMb": null
       },
       "controls": [],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "spec-0-7"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "external": true,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "G32",
+              "gpio": 32
+            },
+            {
+              "name": "G33",
+              "gpio": 33
+            }
+          ],
+          "id": "port-a1",
+          "type": "HY2.0-4P",
+          "name": "PORT.A1",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-7",
+            "table-11"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "A1/A2 共用信号；同形插座不保证总线、电压或模拟器功能兼容。"
+        },
+        {
+          "external": true,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "G32",
+              "gpio": 32
+            },
+            {
+              "name": "G33",
+              "gpio": 33
+            }
+          ],
+          "id": "port-a2",
+          "type": "HY2.0-4P",
+          "name": "PORT.A2",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-7",
+            "table-11"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "A1/A2 共用信号；同形插座不保证总线、电压或模拟器功能兼容。"
+        },
+        {
+          "external": true,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "G25",
+              "gpio": 25
+            },
+            {
+              "name": "G35",
+              "gpio": 35
+            }
+          ],
+          "id": "port-b1",
+          "type": "HY2.0-4P",
+          "name": "PORT.B1",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-7",
+            "table-11"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "A1/A2 共用信号；同形插座不保证总线、电压或模拟器功能兼容。"
+        },
+        {
+          "external": true,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "G26",
+              "gpio": 26
+            },
+            {
+              "name": "G36",
+              "gpio": 36
+            }
+          ],
+          "id": "port-b2",
+          "type": "HY2.0-4P",
+          "name": "PORT.B2",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-7",
+            "table-11"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "A1/A2 共用信号；同形插座不保证总线、电压或模拟器功能兼容。"
+        },
+        {
+          "external": true,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "G14",
+              "gpio": 14
+            },
+            {
+              "name": "G13",
+              "gpio": 13
+            }
+          ],
+          "id": "port-c1",
+          "type": "HY2.0-4P",
+          "name": "PORT.C1",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-7",
+            "table-11"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "A1/A2 共用信号；同形插座不保证总线、电压或模拟器功能兼容。"
+        },
+        {
+          "external": true,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "G17",
+              "gpio": 17
+            },
+            {
+              "name": "G16",
+              "gpio": 16
+            }
+          ],
+          "id": "port-c2",
+          "type": "HY2.0-4P",
+          "name": "PORT.C2",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-7",
+            "table-11"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "A1/A2 共用信号；同形插座不保证总线、电压或模拟器功能兼容。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-a-power",
+          "type": "USB-A",
+          "name": "USB-A · 仅 5V 电源输出",
+          "voltage": 5,
+          "powerOnly": true,
+          "knowledgeFactIds": [
+            "spec-0-7",
+            "usb-a-power-only"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "pwr485",
+          "type": "HT3.96-4P",
+          "name": "PWR485 · HT3.96-4P · 9–24V 输入",
+          "knowledgeFactIds": [
+            "spec-0-6",
+            "spec-0-7",
+            "pwr485-physical-connector"
+          ],
+          "sourceIds": [
+            "official-docs",
+            "interface-audit-station-485"
+          ],
+          "notes": "连接器针序与 RS485 接线未据说明补全。"
+        }
+      ],
       "model": {
         "type": "manufacturer-cad",
         "url": "./assets/m5stack-k123/model.json",
@@ -1616,7 +2078,53 @@
           "defaultKeyCode": "KeyA"
         }
       ],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C · 5V 供电",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-9"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "external": true,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "G2",
+              "gpio": 2
+            },
+            {
+              "name": "G1",
+              "gpio": 1
+            }
+          ],
+          "id": "grove",
+          "type": "HY2.0-4P",
+          "name": "PORT.CUSTOM",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-8",
+            "table-2"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
+        }
+      ],
       "model": {
         "type": "manufacturer-cad",
         "url": "./assets/m5stack-c125/model.json",
@@ -2220,6 +2728,63 @@
               "gpio": 4
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "spec-0-14",
+            "table-4"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "dc",
+          "type": "DC5.5x2.1",
+          "name": "DC5521 · 6–36V 输入 · 内正外负",
+          "knowledgeFactIds": [
+            "spec-0-7"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "不自动接线，不推断适配器/终端电阻/供电能力。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "pwr-can",
+          "type": "XT30-2+2",
+          "name": "PWR-CAN · XT30 (2+2) PW-M",
+          "knowledgeFactIds": [
+            "spec-0-10"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "不自动接线，不推断适配器/终端电阻/供电能力。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "pwr485",
+          "type": "HT3.96-4P",
+          "name": "PWR-485 · HT3.96-4P",
+          "knowledgeFactIds": [
+            "spec-0-11"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "不自动接线，不推断适配器/终端电阻/供电能力。"
         }
       ],
       "model": {
@@ -2701,6 +3266,42 @@
               "address": 21
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "input-power"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "rear-header",
+          "type": "pin-header",
+          "name": "后部扩展排针 · 2.54 mm · 7P + 6P",
+          "pitchMm": 2.54,
+          "rows": [
+            7,
+            6
+          ],
+          "knowledgeFactIds": [
+            "rear-connector",
+            "rear-pinmap",
+            "rear-multiplexer"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "复用信号由硬件/固件控制，未自动接线。"
         }
       ],
       "limitations": [
@@ -2738,12 +3339,10 @@
     },
     {
       "id": "m5stack-triviapod",
-      "pickerVisible": false,
-      "visualVariantOf": "m5stack-stopwatch",
       "name": "M5Stack TriviaPOD TP-01-A · 白色",
       "manufacturer": "M5Stack",
       "sku": "TP-01-A",
-      "summary": "白色圆屏问答设备，32 MB Flash、8 MB PSRAM；作为 StopWatch 下的独立外观预览，无 Grove、后部扩展总线或背部磁吸。",
+      "summary": "白色圆屏问答设备，32 MB Flash、8 MB PSRAM，配备 USB-C 充电接口；无 Grove、后部扩展总线或背部磁吸。当前提供独立产品资料与 3D 外观预览。",
       "knowledgeUrl": "./knowledge/m5stack-triviapod.json",
       "hardwareRevision": "unspecified",
       "chip": "esp32s3",
@@ -2761,14 +3360,27 @@
         "shape": "round"
       },
       "controls": [],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C（充电）",
+          "external": true,
+          "voltage": 5,
+          "pins": [],
+          "sourceIds": [
+            "triviapod-docs"
+          ],
+          "notes": "官方资料确认 USB Type-C、DC 5V 输入与充电。USB 数据、Host 能力、内部路由和引脚尚未核实；不作为扩展外设支持声明。"
+        }
+      ],
       "model": {
         "type": "manufacturer-display-model",
         "url": "./assets/m5stack-triviapod/model.json",
         "status": "partial"
       },
       "limitations": [
-        "仅提供外观预览；未完成 TriviaPOD 板级适配，不运行或继承 StopWatch 固件、GPIO、触摸及外设模型。",
+        "独立产品条目，当前仅提供资料与 3D 外观；未完成 TriviaPOD 板级适配，不运行或继承 StopWatch 固件、GPIO、触摸及外设模型。",
         "官方产品尺寸与重量仍为 Work in progress；源模型数值按毫米展示属于单位推定，不代表已核验实物尺寸。",
         "显示屏可视分辨率为 466×466；本型号显示与触摸控制器、总线、帧缓冲布局和引脚尚未确认。",
         "官方软件由 Etermax 专有开发，通过机内 Wi-Fi 更新；本轮未找到公开的固定出厂镜像或该型号 UIFlow/小智映射。",
@@ -2874,6 +3486,36 @@
               "gpio": 5
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-5"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "spec-0-11",
+            "table-12"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "model": {
@@ -3056,7 +3698,23 @@
           "name": "按键"
         }
       ],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C · 5V 供电",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-5"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        }
+      ],
       "model": {
         "type": "manufacturer-cad",
         "url": "./assets/m5stack-s007/model.json",
@@ -3509,7 +4167,31 @@
           "defaultKeyCode": "KeyA"
         }
       ],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "pins",
+          "type": "pin-header",
+          "name": "2.54 mm 排针 · 9P + 6P",
+          "pitchMm": 2.54,
+          "rows": [
+            9,
+            6
+          ],
+          "knowledgeFactIds": [
+            "preinstalled-headers",
+            "spec-0-9"
+          ],
+          "sourceIds": [
+            "official-docs",
+            "official-pin254-footprint",
+            "shop-s3a-pin254-photo-8",
+            "shop-s3a-pin254-photo-4"
+          ],
+          "notes": "引脚顺序、针座厂牌与配对规格未由该 fact 完整给出；不自动接线。"
+        }
+      ],
       "sources": [
         {
           "title": "Stamp-S3A PIN2.54",
@@ -3796,7 +4478,26 @@
           "defaultKeyCode": "KeyA"
         }
       ],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "io-pads",
+          "type": "2.54mm-solder-pad",
+          "name": "2.54 mm I/O 焊盘 · 需自行装配",
+          "pitchMm": 2.54,
+          "knowledgeFactIds": [
+            "spec-0-13",
+            "spec-0-14",
+            "io-mounting-and-loose-parts"
+          ],
+          "sourceIds": [
+            "official-docs",
+            "interface-audit-stamp-pico-mate"
+          ],
+          "notes": "非已焊接排针或 Grove 插座；不记录散件下载器的 USB 为主板接口。 GPIO 清单不代表完整实体脚位顺序，pins 留空。"
+        }
+      ],
       "sources": [
         {
           "title": "Stamp-Pico Mate",
@@ -3860,7 +4561,26 @@
           "defaultKeyCode": "KeyA"
         }
       ],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "io-pads",
+          "type": "2.54mm-solder-pad",
+          "name": "2.54 mm I/O 焊盘 · 需自行装配",
+          "pitchMm": 2.54,
+          "knowledgeFactIds": [
+            "spec-0-13",
+            "spec-0-14",
+            "io-mounting-and-loose-parts"
+          ],
+          "sourceIds": [
+            "official-docs",
+            "interface-audit-stamp-pico-diy-kit"
+          ],
+          "notes": "非已焊接排针或 Grove 插座；不记录散件下载器的 USB 为主板接口。 GPIO 清单不代表完整实体脚位顺序，pins 留空。"
+        }
+      ],
       "model": {
         "type": "manufacturer-cad",
         "url": "./assets/m5stack-k051-b/model.json",
@@ -3952,6 +4672,19 @@
           "type": "USB-C",
           "external": true,
           "pins": []
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "antenna",
+          "type": "IPEX-4",
+          "name": "天线 · IPEX-4",
+          "knowledgeFactIds": [
+            "spec-0-10"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
         }
       ],
       "model": {
@@ -4773,6 +5506,21 @@
               "gpio": 1
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-4"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
         }
       ],
       "model": {
@@ -5162,6 +5910,20 @@
           "type": "2x9-2.54mm",
           "external": true,
           "pins": []
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "table-3"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "model": {
@@ -5266,6 +6028,22 @@
               "gpio": 1
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "ext-14p",
+          "type": "2.54mm-14P",
+          "name": "EXT 2.54-14P",
+          "pitchMm": 2.54,
+          "pinCount": 14,
+          "knowledgeFactIds": [
+            "spec-0-5"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "不额外推断排数、接头性别或自动线序。"
         }
       ],
       "sources": [
@@ -6742,6 +7520,20 @@
               "gpio": 1
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "spec-0-8"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
         }
       ],
       "model": {
@@ -7902,6 +8694,20 @@
               "gpio": 32
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "spec-0-6"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
         }
       ],
       "model": {
@@ -8204,6 +9010,20 @@
               "gpio": 32
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "spec-0-6"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
         }
       ],
       "model": {
@@ -8460,6 +9280,21 @@
             "official-docs"
           ],
           "notes": "Official Black/Red/Yellow/White mapping. This is not model-localX order; visual connection stays disabled until socket-local orientation is independently audited."
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "voltage": 5,
+          "knowledgeFactIds": [
+            "spec-0-6"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
         }
       ],
       "model": {
@@ -8563,6 +9398,20 @@
             "official-docs"
           ],
           "notes": "Official Black/Red/Yellow/White mapping. This is not model-localX order; visual connection stays disabled until socket-local orientation is independently audited."
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "spec-0-6"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
         }
       ],
       "model": {
@@ -8983,6 +9832,36 @@
             "official-docs"
           ],
           "notes": "Official Black/Red/Yellow/White mapping. This is not model-localX order; visual connection stays disabled until socket-local orientation is independently audited. Mapping via expansion bus; independent physical socket not established in current body."
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "spec-0-7"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "table-1",
+            "table-2",
+            "table-3"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "model": {
@@ -9298,6 +10177,34 @@
             "official-docs"
           ],
           "notes": "Official Black/Red/Yellow/White mapping. This is not model-localX order; visual connection stays disabled until socket-local orientation is independently audited. Mapping via expansion bus; independent physical socket not established in current body."
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "spec-0-7"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "table-3"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "model": {
@@ -9467,6 +10374,34 @@
             "official-docs"
           ],
           "notes": "Official Black/Red/Yellow/White mapping. This is not model-localX order; visual connection stays disabled until socket-local orientation is independently audited."
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "spec-0-7"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "table-1"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "model": {
@@ -9627,6 +10562,20 @@
               "gpio": 16
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "table-1"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "sources": [
@@ -10036,6 +10985,20 @@
               "gpio": 18
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "table-4"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "sources": [
@@ -10186,6 +11149,22 @@
             "official-docs"
           ],
           "notes": "Official Black/Red/Yellow/White mapping. This is not model-localX order; visual connection stays disabled until socket-local orientation is independently audited. Mapping via expansion bus; independent physical socket not established in current body."
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "table-1",
+            "table-2",
+            "table-3"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "model": {
@@ -10294,6 +11273,20 @@
             "official-docs"
           ],
           "notes": "Official Black/Red/Yellow/White mapping. This is not model-localX order; visual connection stays disabled until socket-local orientation is independently audited."
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "table-4"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "model": {
@@ -10411,6 +11404,20 @@
               "gpio": 33
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "table-3"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "sources": [
@@ -10631,7 +11638,22 @@
           "defaultKeyCode": "KeyA"
         }
       ],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "spec-0-8"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        }
+      ],
       "model": {
         "type": "manufacturer-cad",
         "url": "./assets/m5stack-c056-b/model.json",
@@ -10775,7 +11797,26 @@
           "defaultKeyCode": "KeyA"
         }
       ],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "io-pads",
+          "type": "2.54mm-solder-pad",
+          "name": "2.54 mm I/O 焊盘 · 需自行装配",
+          "pitchMm": 2.54,
+          "knowledgeFactIds": [
+            "spec-0-13",
+            "spec-0-14",
+            "io-mounting-and-loose-parts"
+          ],
+          "sourceIds": [
+            "official-docs",
+            "interface-audit-stamp-pico"
+          ],
+          "notes": "非已焊接排针或 Grove 插座；不记录散件下载器的 USB 为主板接口。 GPIO 清单不代表完整实体脚位顺序，pins 留空。"
+        }
+      ],
       "model": {
         "type": "manufacturer-cad",
         "url": "./assets/m5stack-c050-b/model.json",
@@ -10842,7 +11883,54 @@
       },
       "display": null,
       "controls": [],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "spec-0-6"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "antenna",
+          "type": "IPEX-1",
+          "name": "双频天线 · IPEX-1",
+          "knowledgeFactIds": [
+            "spec-0-8"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "fpc-pads",
+          "type": "FPC-pad",
+          "name": "FPC 焊盘 · 0.5 mm 12P · 不可直插",
+          "pitchMm": 0.5,
+          "pinCount": 12,
+          "knowledgeFactIds": [
+            "spec-0-16",
+            "s016-fpc-assembly-audit"
+          ],
+          "sourceIds": [
+            "official-docs",
+            "product-photo-40d5ab65d8",
+            "product-photo-1cd8ca0889"
+          ],
+          "notes": "只记录焊盘，不归入可直插 FPC 插座筛选；不自动接线。"
+        }
+      ],
       "model": {
         "type": "manufacturer-cad",
         "url": "./assets/m5stack-s016/model.json",
@@ -10907,7 +11995,52 @@
       },
       "display": null,
       "controls": [],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "official-table-0-6"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "antenna",
+          "type": "IPEX-1",
+          "name": "双频天线 · IPEX-1",
+          "knowledgeFactIds": [
+            "official-table-0-8"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "fpc",
+          "type": "FPC-0.5mm-12P",
+          "name": "FPC 插座 · 0.5 mm 12P",
+          "pitchMm": 0.5,
+          "pinCount": 12,
+          "knowledgeFactIds": [
+            "official-table-0-16",
+            "official-table-2-0"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "同针数/间距不等于同触点面、线序或协议；附赠 7P 排针未据此声称已焊接。"
+        }
+      ],
       "model": {
         "type": "manufacturer-cad",
         "url": "./assets/m5stack-s016-dip/model.json",
@@ -11051,6 +12184,20 @@
           "name": "Grove 3",
           "external": true,
           "pins": []
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "spec-1-7"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "sources": [
@@ -11199,7 +12346,40 @@
       },
       "display": null,
       "controls": [],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "wifi-antenna",
+          "type": "IPEX-4",
+          "name": "Wi-Fi 天线 · IPEX-4",
+          "knowledgeFactIds": [
+            "spec-0-6",
+            "rf-connectors"
+          ],
+          "sourceIds": [
+            "official-docs",
+            "interface-audit-stamp-c6lora"
+          ],
+          "notes": "不根据 USB 下载能力添加 USB-C 插座；GPIO/USB 信号焊盘的具体封装待核。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "lora-antenna",
+          "type": "IPEX-4",
+          "name": "LoRa 天线 · IPEX-4",
+          "knowledgeFactIds": [
+            "spec-0-6",
+            "rf-connectors"
+          ],
+          "sourceIds": [
+            "official-docs",
+            "interface-audit-stamp-c6lora"
+          ],
+          "notes": "不根据 USB 下载能力添加 USB-C 插座；GPIO/USB 信号焊盘的具体封装待核。"
+        }
+      ],
       "model": {
         "type": "manufacturer-cad",
         "url": "./assets/m5stack-s012/model.json",
@@ -11500,6 +12680,20 @@
             "official-docs"
           ],
           "notes": "Official Black/Red/Yellow/White mapping. This is not model-localX order; visual connection stays disabled until socket-local orientation is independently audited."
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "spec-0-6"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
         }
       ],
       "model": {
@@ -11574,7 +12768,37 @@
         "touch": false
       },
       "controls": [],
-      "interfaces": [],
+      "interfaces": [
+        {
+          "external": true,
+          "pins": [],
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "knowledgeFactIds": [
+            "spec-0-6"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "grove",
+          "type": "HY2.0-4P",
+          "name": "主机 Grove · 端口信号待核",
+          "knowledgeFactIds": [
+            "spec-0-6",
+            "table-2"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "数量按主机规格；不从通用表任意指定物理口或接线。"
+        }
+      ],
       "dimensions": {
         "width": 58.2,
         "height": 54.2,
@@ -11685,6 +12909,20 @@
               "gpio": 22
             }
           ]
+        },
+        {
+          "external": true,
+          "pins": [],
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "knowledgeFactIds": [
+            "table-1"
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
         }
       ],
       "sources": [
@@ -12064,7 +13302,7 @@
         },
         {
           "id": "microsd",
-          "type": "SDMMC",
+          "type": "microSD",
           "name": "microSD · 1-bit",
           "external": true,
           "pins": [
@@ -12084,7 +13322,16 @@
               "name": "DAT3/CD",
               "gpio": 46
             }
-          ]
+          ],
+          "protocol": "SDMMC",
+          "knowledgeFactIds": [
+            "sd"
+          ],
+          "sourceIds": [
+            "readme",
+            "config"
+          ],
+          "notes": "保留原有信号，不把协议改名当作运行验证。"
         }
       ],
       "model": {
@@ -12203,7 +13450,7 @@
         },
         {
           "id": "microsd",
-          "type": "SDMMC",
+          "type": "microSD",
           "name": "microSD · 4-bit",
           "external": true,
           "pins": [
@@ -12231,7 +13478,16 @@
               "name": "CMD",
               "gpio": 25
             }
-          ]
+          ],
+          "protocol": "SDMMC",
+          "knowledgeFactIds": [
+            "sd"
+          ],
+          "sourceIds": [
+            "readme",
+            "config"
+          ],
+          "notes": "保留原有信号，不把协议改名当作运行验证。"
         }
       ],
       "model": {

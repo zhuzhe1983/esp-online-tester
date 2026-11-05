@@ -145,7 +145,7 @@ def build(source_dir, output):
             'Model units are inferred for display; actual product dimensions and weight are still WIP on the official page.',
             'All six source primitive meshes and their original node assembly transforms are retained. White identity vertex colors and unused UVs are omitted.',
             'Original source material definitions are retained in sourceMaterial. The white shell uses a #d5d5d5 display albedo to avoid clipping its relief under the platform lights; this is not measured plastic color. Other base colors, roughness and metalness are retained. The viewer approximates clearcoat and screen transmission with its standard opaque materials; no game screenshot or simulated TriviaPOD framebuffer is added.',
-            'TriviaPOD is a visual-only child of StopWatch. Its 32 MB flash and proprietary Etermax firmware do not inherit the StopWatch runtime, default firmware, pins or expansion interfaces.',
+            'TriviaPOD is an independent catalog product with a visual-only model and no implemented board runtime. Its 32 MB flash and proprietary Etermax firmware do not inherit the StopWatch runtime, default firmware, pins or expansion interfaces.',
         ],
     }
     metadata['artifacts'] = {p.name: sha(p.read_bytes()) for p in sorted(output.iterdir())

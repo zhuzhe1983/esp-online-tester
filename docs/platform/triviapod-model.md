@@ -1,6 +1,8 @@
-# TriviaPOD：StopWatch 下的外观衍生预览
+# TriviaPOD：独立产品与官方外观模型
 
-在左侧选择 **M5Stack StopWatch**，打开 3D 区域的 **衍生模型**，选择 **TriviaPOD TP-01-A · 白色**。查看外观不会改变设备配置；加载或运行固件时自动切回 StopWatch 本体，暂停后可再次选择预览。TriviaPOD 不单独占用左侧设备列表，但完整产品和知识记录仍保留。
+在左侧选择 **M5Stack → 其他主控 → TriviaPOD TP-01-A · 白色**，即可查看独立产品资料与 3D 模型。它不再放在 StopWatch 的衍生模型菜单中，场景 ID 保持 `m5stack-triviapod`。目前板级运行尚未适配，不提供 StopWatch 固件作为替代。
+
+目录列出官方已确认的 **USB-C 充电接口（DC 5V 输入）**。USB 数据、Host 能力、内部路由与引脚尚未核实；接口名称不代表可连接某种 USB 配件或已实现电气行为。
 
 TriviaPOD 有独立的官方模型，不能只给 StopWatch 换贴图。[官方比较表](https://docs.m5stack.com/en/core/TriviaPOD)确认其 Flash 为 32 MB，取消 Grove、后部扩展总线与背部磁吸。官网[旋转展示的 glTF](https://triviapod.com/assets/models/TriviaPod3D.gltf.js)包含白色封闭后盖、浮雕、扬声器孔、三颗按键、黑色屏幕和独立 USB-C。这里保留全部 6 组源网格、81,532 个三角形，未拼入 StopWatch 的连接器或后部结构。
 
@@ -33,6 +35,8 @@ cmp web/platform/assets/m5stack-triviapod/geometry.bin /tmp/triviapod-rebuilt/ge
 ![USB-C 底侧](evidence/triviapod-20261105/final-bottom.png)
 ![透明壳的未知内部占位](evidence/triviapod-20261105/final-transparent.png)
 
-浏览器实测覆盖工作台、独立 mini 和 iframe：预览时场景仍为 StopWatch，加载/启动后自动回本体并禁用衍生选择；官方 StopWatch V0.5 真正启动，输出 468×466 帧缓冲和引导页；暂停后可恢复 TriviaPOD 预览。完整截图、最终资产哈希和检查结果见 [verification.json](evidence/triviapod-20261105/verification.json)。全部 326 项平台测试、目录/知识校验，以及当前稳定 Rust 的本地 CI 命令通过。
+首次导入时曾采用 StopWatch 衍生预览，工作台、独立 mini 和 iframe 的旧版本检查保留在 [verification.json](evidence/triviapod-20261105/verification.json)。其中的菜单切换、StopWatch V0.5 启动与 468×466 引导页结论仅适用于该旧版本，不代表 TriviaPOD 固件运行。原始截图与哈希不改写为新版本证据。
+
+当前独立条目的目录/知识校验、可检索与场景往返检查，以及模型重建哈希见 [standalone-update.json](evidence/triviapod-20261105/standalone-update.json)。本次只更新目录关系、USB-C 资料与模型限制文字；原网格、材质、图片和源文件均未变化。
 
 TriviaPOD 条目保持 `runtime.board: null`、`status: unavailable`，没有默认固件或继承的 GPIO、触摸控制器、附件接口。官方软件由 Etermax 专有开发，当前只确认机内 Wi-Fi 更新入口，未找到公开出厂镜像或该 SKU 的官方 UIFlow/小智映射。本次没有运行 TriviaPOD 固件，也没有实机测试。

@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "auditedAt": "2026-11-05T12:42:43Z",
+  "repository": "esp-online-tester",
+  "sourceCommit": "7b7cda0b230acab7275601edfba91a7967834727",
+  "productCatalogPath": "web/platform/catalog/products.json",
+  "productCatalogSha256": "d5d48e99c91ff57b42e77d8afddbe96345be6971a6df94a281ff8756d1493135",
+  "method": "Read-only catalog/knowledge/model audit. Exact-SKU explicit evidence only; no sibling inheritance or runtime/attachment claim. All 217 items inventoried; not all hardware source docs independently revalidated.",
+  "safeDisplayAliases": [
+    {
+      "canonical": "USB-C",
+      "aliases": [
+        "USB Type-C",
+        "USB type C",
+        "Type-C",
+        "USB‑C"
+      ],
+      "conditions": [
+        "Explicitly physical connector, not USB peripheral mode or a separate downloader."
+      ],
+      "notImplied": [
+        "Host/Device role",
+        "PD voltage",
+        "connector location",
+        "USB data emulation"
+      ]
+    },
+    {
+      "canonical": "microSD",
+      "aliases": [
+        "microSD card slot",
+        "micro SD",
+        "TF card slot"
+      ],
+      "conditions": [
+        "Physical card slot explicitly evidenced."
+      ],
+      "separateProtocolField": [
+        "SPI",
+        "SDMMC",
+        "SDIO"
+      ]
+    },
+    {
+      "canonical": "HY2.0-4P",
+      "aliases": [
+        "Grove"
+      ],
+      "conditions": [
+        "Exact product identifies Grove as HY2.0-4P; generic four-pin wiring is insufficient."
+      ],
+      "notImplied": [
+        "I2C/UART/GPIO routing",
+        "voltage",
+        "current capability",
+        "runtime support"
+      ]
+    }
+  ],
+  "doNotMerge": [
+    {
+      "types": [
+        "HY2.0-4P",
+        "Qwiic",
+        "JST-SH-4P"
+      ],
+      "reason": "Grove and 1.0 mm JST-SH/Qwiic are mechanically different. Qwiic convention is not generic JST-SH pin order; verify exact SKU."
+    },
+    {
+      "types": [
+        "FPC-pad",
+        "FPC",
+        "FPC-0.5mm-12P"
+      ],
+      "reason": "Unpopulated pads are not sockets; pitch, pin count, contact side and signal mapping must match independently."
+    },
+    {
+      "types": [
+        "IPEX-1",
+        "IPEX-4"
+      ],
+      "reason": "Different RF connector families."
+    },
+    {
+      "types": [
+        "pin-header",
+        "2.54mm",
+        "2x15-2.54mm",
+        "2.54mm 2x8 female header",
+        "2.54mm-solder-pad"
+      ],
+      "reason": "Pitch alone omits row/count/gender/keying. Bare pads and populated headers differ."
+    },
+    {
+      "types": [
+        "BTB",
+        "BTB0.408-24PLBDR-M41"
+      ],
+      "reason": "BTB is an assembly family. Stamp-P4 AXE516127D and HC-PBB40C-20DS-0.4V-2.5-02 are not interchangeable by type equality."
+    },
+    {
+      "types": [
+        "USB",
+        "USB-C",
+        "Micro-USB",
+        "USB-A"
+      ],
+      "reason": "Unknown USB shape stays unknown. USB-A power-only does not imply USB Host."
+    },
+    {
+      "types": [
+        "GPIO",
+        "I2C",
+        "SPI",
+        "SDMMC"
+      ],
+      "reason": "Signals/protocols cannot stand in for an independently verified physical connector."
+    }
+  ],
+  "existingTypeCorrections": [
+    {
+      "productId": "metalio-ink4",
+      "interfaceId": "microsd",
+      "beforeType": "SDMMC",
+      "afterType": "microSD"
+    },
+    {
+      "productId": "metalio-ink4-plus",
+      "interfaceId": "microsd",
+      "beforeType": "SDMMC",
+      "afterType": "microSD"
+    }
+  ],
+  "uiRules": [
+    "Filter physical external interfaces with external === true. Internal false never enters external options.",
+    "Empty arrays and internal-only metadata mean external interface information pending, unless explicit no-external-connector fact exists.",
+    "Selecting a product must rebuild options from that product and reset stale selection; do not infer device ports from accessory catalog.",
+    "Type filter is a browse filter, not a compatibility/auto-wiring claim. Ports of same type can have different signals and voltage.",
+    "Unknown GPIO/USB family entries and FPC-pad may be shown as incomplete/non-pluggable physical information, but should not match ready-to-plug accessories.",
+    "Explicit browse-all is useful when the device has no known matching official accessories; keep attachment validation separate."
+  ]
+}
