@@ -1,0 +1,61 @@
+{
+  "checkedAt": "2026-11-05T14:54:39.819808+00:00",
+  "modelCommit": "b31e60bdef7d5fcbf6785cc405885d0d433a7141",
+  "fullCi": {
+    "verifiedAt": "2026-11-05T14:45:46.268757+00:00",
+    "checkoutCommit": "805ce7a8843ea83315b94c64f84a24b6bd7a5d1a",
+    "result": "passed",
+    "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "commands": [
+      "rustup update stable",
+      "cargo build --release --workspace",
+      "cargo clippy --workspace --all-targets -- -D warnings",
+      "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "cargo test --release --workspace -- --include-ignored --skip external_",
+      "node tools/check-evidence-privacy.mjs",
+      "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+      "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+      "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+      "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "tools/fetch-rom-elfs.sh roms",
+      "tools/fetch-micropython.sh",
+      "tools/fetch-p4-firmware.sh",
+      "node tools/network-helper-test.mjs",
+      "node --test tools/network-relay-test.mjs",
+      "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "tools/wasm-build.sh",
+      "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik",
+      "node tools/platform-recording-test.mjs --real",
+      "node tools/wasm-test.mjs demo-stopwatch",
+      "node tools/probe-hardware-diagnostics.mjs tools/fixtures/stopwatch-hardware-checks.json <receipt.json>",
+      "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf",
+      "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf",
+      "node tools/worker-pacing-test.mjs",
+      "node tools/worker-channel-test.mjs",
+      "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+      "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "tools/wasm-jit-test.sh",
+      ". ./tools/wasm-rustflags.sh",
+      "cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "cargo test --release -p xtensa-lx7"
+    ],
+    "goldensUpdated": false,
+    "logSha256": "be0dfa7f773c1e9537ae0baf2de85e04f469dac4158832788fceff5337f48810"
+  },
+  "fullCiScope": "Full CI ran before the model-only cherry-pick; simulator, WASM, runtime and shared UI sources are identical. Final catalog/platform/evidence checks below include the model correction.",
+  "finalChecks": {
+    "catalog": "217 products, 10 accessories, 173 firmwares, 117 watchlist entries passed",
+    "platform": {
+      "command": "ESP32SIM_ROM_DIR=<roms> node --test tools/platform-*-test.mjs",
+      "passed": 341,
+      "failed": 0
+    },
+    "evidencePrivacy": "passed configured pattern check and manual review",
+    "gitDiffCheck": "passed"
+  },
+  "modelSha256": "c807aadf276de29bdb37b0dfac00d2dc705c6ae51391adaacbc27d8e92632cb2",
+  "browserEvidence": "validation.json",
+  "privacy": "Raw local CI logs and machine paths are not included."
+}

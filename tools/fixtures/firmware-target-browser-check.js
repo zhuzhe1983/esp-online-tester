@@ -57,7 +57,7 @@ async page => {
     const restored=await observeProduct('m5stack-triviapod');
     assert(restored.scene.productId==='m5stack-triviapod'&&restored.scene.firmware.url===state.scene.firmware.url,`${mode} restores the actual product and selected source`);
     assert(await page.locator('#flash-device').isDisabled(),`${mode} cannot bypass shared firmware flashing policy`);
-    if(mode==='studio')assert((await page.locator('.firmware-update-identity').innerText()).includes('当前型号待验证'),'Shared source restore retains trial status');
+    if(mode==='studio')await page.waitForFunction(()=>document.querySelector('.firmware-update-identity')?.textContent.includes('当前型号待验证'));
   }
   assert(!errors.length,errors.join('\n'));
   return {catalogCandidates:options,productId:state.scene.productId,flashMb:state.product.runtime.flashMb,runtimeBoard:state.product.runtime.board,version:'V0.5',m5burnerTarget:device.deviceName,sharedTrial:true,historyIsolation,studioAndMiniRestore:true,hardwareFlashing:false,pageErrors:errors};
