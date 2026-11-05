@@ -27,6 +27,14 @@ test('factory firmware leads the menu and is selected even before compatibility 
   assert.equal(entries[0].id,'community');
   assert.equal(firstFirmware(entries,{id:'absent'}),null);
 });
+test('an explicit community default leads official alternatives when no factory entry exists',()=>{
+  const entries=[{id:'official',productIds:['m2'],publisher:'M5Stack',role:'alternative',source:{url:'https://example.org/official.bin'}},{id:'demo',productIds:['m2'],publisherGroup:'社区',role:'demo',status:'trial',source:{url:'https://example.org/demo.bin'}}];
+  const product={id:'m2',defaultFirmwareId:'demo'};
+  assert.equal(firstFirmware(entries,product).id,'demo');
+  assert.deepEqual(firmwareGroups(entries,product,product.defaultFirmwareId).map(([name,items])=>[name,items[0].id]),[['社区','demo'],['官方','official']]);
+  assert.equal(firstFirmware(entries,{id:'m2',defaultFirmwareId:'missing'}).id,'official');
+  assert.equal(entries[0].id,'official','selection does not change catalog order');
+});
 test('accessory filters combine brand and connector; search crosses filters and includes local definitions',()=>{
   const entries=[{id:'gps',name:'GPS',sku:'U032',manufacturer:'M5Stack',connector:{type:'HY2.0-4P'}},{id:'other',name:'Other sensor',manufacturer:'Acme',connector:{type:'USB-C'}},{id:'local:knob',name:'Private knob',connector:{type:'custom'}}];
   assert.deepEqual(filterAccessories(entries,{brand:'Acme',connector:'USB-C'}).map(x=>x.id),['other']);
