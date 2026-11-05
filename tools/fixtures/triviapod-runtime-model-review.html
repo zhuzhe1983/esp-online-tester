@@ -1,0 +1,29 @@
+<!doctype html><meta charset="utf-8"><title>TriviaPOD framebuffer surface and input review</title>
+<style>body{margin:0;background:#f7f8f5;font:14px sans-serif}h1{font-size:18px;margin:16px}p{margin:16px}.panels{display:flex;gap:12px;margin:16px}.panel{width:540px;height:540px;background:white;position:relative}.panel canvas{display:block}.flat-display{position:absolute;left:37px;top:37px;max-width:466px;max-height:466px}.flat-display.round{border-radius:50%}[hidden]{display:none!important}</style>
+<h1>TriviaPOD display geometry and input check</h1><p>Diagnostic color pattern only. This fixture checks geometry and input delivery; it does not execute firmware.</p><div class="panels"><div id="geometry" class="panel"></div><div id="view" class="panel"></div></div>
+<script type="module">
+import * as THREE from '../../web/platform/vendor/three.module.min.js';
+import {createManufacturerModel} from '../../web/platform/manufacturer-model.js';
+import {createSceneView} from '../../web/platform/scene-view.js';
+import {pickVisibleSurface} from '../../web/platform/scene-interaction.js';
+import {applyShellAppearance} from '../../web/platform/shell-appearance.js';
+const product={id:'m5stack-triviapod',name:'TriviaPOD simulator model check',model:{url:'assets/m5stack-triviapod/model.json'},runtime:{board:'stopwatch',flashMb:32,psramMb:8,touch:true},display:{width:466,height:466,framebufferWidth:468,framebufferHeight:466,shape:'round'},controls:[{id:'button-a',type:'button',pin:2,activeLow:true},{id:'button-b',type:'button',pin:1,activeLow:true},{id:'touch',type:'touch'}],interfaces:[]};
+const width=468,height=466,pixels=new Uint8ClampedArray(width*height*4);
+for(let y=0;y<height;y++)for(let x=0;x<width;x++){const at=(y*width+x)*4,color=x<width/2?(y<height/2?[238,72,72]:[58,120,238]):(y<height/2?[75,198,103]:[246,199,62]);pixels.set([...color,255],at);}
+const texture=new THREE.DataTexture(pixels,width,height);texture.colorSpace=THREE.SRGBColorSpace;texture.flipY=true;texture.needsUpdate=true;
+const scene=new THREE.Scene();scene.background=new THREE.Color('white');scene.add(new THREE.HemisphereLight(0xffffff,0x64775b,2.5));const light=new THREE.DirectionalLight(0xffffff,3.1);scene.add(light);
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(540,540,false);renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;document.querySelector('#geometry').append(renderer.domElement);
+const camera=new THREE.OrthographicCamera(-34,34,34,-34,2,3000);const model=createManufacturerModel(product,texture);scene.add(model.group);await model.ready;
+const views={front:[0,0,250],oblique:[-100,100,250],side:[-220,0,80],back:[0,0,-250]};
+function show(view='front'){camera.position.set(...views[view]);camera.up.set(0,1,0);camera.lookAt(0,0,0);camera.updateProjectionMatrix();light.position.copy(camera.position).add(new THREE.Vector3(-90,100,60));renderer.render(scene,camera);}
+function nearest(x,y,z=7.78){camera.updateMatrixWorld();model.group.updateMatrixWorld(true);const point=new THREE.Vector3(x,y,z),direction=point.clone().sub(camera.position).normalize(),ray=new THREE.Raycaster(camera.position,direction);return pickVisibleSurface(ray,model.group)?.object;}
+function check(){
+ const edges=[];for(const view of ['front','oblique','side']){show(view);let hit=0;for(let i=0;i<128;i++){const a=2*Math.PI*i/128;if(nearest(Math.cos(a)*22.18,Math.sin(a)*22.18)===model.screen)hit++;}edges.push({view,samples:128,visible:hit});}
+ show('front');const buttons={};for(const name of ['button-blue','button-green']){const part=model.parts[name],positions=part.geometry.attributes.position;let visible=0;for(let i=0;i<positions.count;i+=3){const p=new THREE.Vector3().fromBufferAttribute(positions,i);if(nearest(p.x,p.y,p.z)===part)visible++;}buttons[name]={control:part.userData.control,visibleSamples:visible};}
+ show('front');let bezelVisible=0;const clearance=[];for(let i=0;i<128;i++){const a=2*Math.PI*i/128;if(nearest(Math.cos(a)*23,Math.sin(a)*23)?.name==='screen-glass')bezelVisible++;const ray=new THREE.Raycaster(new THREE.Vector3(Math.cos(a)*22.18,Math.sin(a)*22.18,100),new THREE.Vector3(0,0,-1)),hit=ray.intersectObject(model.parts['screen-glass'])[0];if(hit)clearance.push(7.78-hit.point.z);}
+ const result={bezel:{samples:128,visible:bezelVisible},displayOverlayClearanceMm:{min:Math.min(...clearance),max:Math.max(...clearance)},screen:{name:model.screen?.name,shape:model.screen?.geometry.type,diameter:model.screen.geometry.parameters.radius*2,z:model.screen.position.z,usesSuppliedTexture:model.screen.material.map===texture},edges,buttons,powerEmitsInput:!!model.parts['power-button'].userData.control,connectorNames:Object.keys(model.connectors),sourceTriangles:model.group.userData.provenance.parts.reduce((sum,p)=>sum+p.vertexCount/3,0)};show();return result;
+}
+const inputs=[];let resolved;const modelReady=new Promise(resolve=>{resolved=resolve;});const view=createSceneView(document.querySelector('#view'),{onInput:event=>inputs.push(event),onModelReady:()=>resolved()});view.setProduct(product);await modelReady;view.setOrientation([0,0,0,1],{notify:false});window.dispatchEvent(new Event('resize'));view.updateFrame({width,height,pixels});
+window.review={model,renderer,camera,show,check,inputs,view,product,pixels,appearance(value){for(const shell of model.group.userData.shellMeshes)applyShellAppearance(shell,value);renderer.render(scene,camera);view.setAppearance(value);}};show();document.body.dataset.ready='true';
+window.addEventListener('pagehide',()=>{model.dispose();view.dispose();texture.dispose();renderer.dispose();});
+</script>

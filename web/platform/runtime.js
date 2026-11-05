@@ -191,6 +191,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   let storage = emptyStorage(), storageSession = null, storageSequence = 0;
   let booted = false, inputSequence = 0, loadCancelled = false, progressGeneration = 0, disposing = false;
   const imuModel = () => ({stopwatch:'bmi270-register-subset',atoms3:'mpu6886-register-subset','atom-matrix':'mpu6886-register-subset','atom-matrix-v11':'bmi270-register-subset',atoms3r:'bmi270-register-subset','atoms3r-chatbot':'bmi270-register-subset',papers3:'bmi270-register-subset',stampfly:'bmi270-register-subset','stampfly-v11':'bmi270-register-subset'}[product?.runtime?.board] || null);
+  const gpsSupported = () => product?.id === 'm5stack-stopwatch' && product.runtime?.board === 'stopwatch';
   const defaultImu = () => ({enabled: true, source: product?.runtime?.board === 'stopwatch' ? 'scene' : 'agent', ...orientationSample([0,0,0,1]), delivery: 'configured', guestTime: null});
   let imu = defaultImu(), imuPreviousAt = null, imuGeneration = 0;
   const observedImu=()=>!imuModel()?null:!flightEnabled()?clone(imu):{enabled:true,source:'flight',quaternion:null,accelG:flight?clone(flight.sensors.rawAccelG):null,gyroDps:flight?clone(flight.sensors.rawGyroDps):null,delivery:flight?'register-state':'configured',guestTime:flight?.guestTime??null};
@@ -788,7 +789,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         flight:{available:hasFlight(product?.runtime?.board),enabled:flightEnabled(),model:FLIGHT_MODEL,calibrated:false,source:'guest-pwm-rigid-body',methods:['configureFlight','readFlight'],recording:false,shares:'configuration-only',worldFrame:'NED',bodyFrame:'FRD'},
         hardwareDiagnostics:{available:product?.runtime?.board==='stopwatch',source:'guest-registers',hardwareValidated:false},
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
-        gps: { ...(c5?{available:false}:{}),mode: c5?null:'logical-uart1-nmea', physicalRouting: false, baudTiming: false, hardwareValidated: false },
+        gps: { available:gpsSupported(),mode: gpsSupported()?'logical-uart1-nmea':null, physicalRouting: false, baudTiming: false, hardwareValidated: false },
         lora:{available:['papermono','lilygo-t-beam-v1-2','stamp-c6lora'].includes(product?.runtime?.board),model:product?.runtime?.board==='lilygo-t-beam-v1-2'?'sx1276-lora-digital':'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
         imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: ['stopwatch','atom-matrix','atom-matrix-v11'].includes(product?.runtime?.board), orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: flightEnabled()?'guest-cycles':'host-input', inputOwner:flightEnabled()?'flight':'host', physicalMountingVerified: false },
         unsupported: ['arbitrary-dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input'] };
@@ -916,7 +917,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       const attached = scene?.accessories.find(item => item.id === options?.accessoryId);
       const definition = scene?.localAccessories?.find(item => item.id === attached?.catalogId) || catalog?.accessories.find(item => item.id === attached?.catalogId);
       requireValue(attached && definition?.model?.id === 'uart-nmea', 'ACCESSORY_NOT_ATTACHED', 'Attach a GPS accessory using the UART NMEA model before injecting a fix.');
-      requireValue(product?.runtime?.board === 'stopwatch', 'UNSUPPORTED_WIRING', 'This release provides the documented GPS test path only for StopWatch.');
+      requireValue(gpsSupported(), 'UNSUPPORTED_WIRING', 'This release provides the documented GPS test path only for StopWatch.');
       requireValue(attached.wiring?.mode === 'logical' && attached.wiring?.port === 'uart1', 'UNSUPPORTED_WIRING', 'GPS injection requires explicit logical UART1 wiring; physical routing is not simulated.');
       const sentences = createGpsNmea({ ...definition.parameters, ...attached.parameters, ...options });
       for (let offset = 0; offset < sentences.length; offset += 64) {

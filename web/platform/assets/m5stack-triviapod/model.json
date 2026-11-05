@@ -74,6 +74,7 @@
     {
       "name": "button-blue",
       "role": "source-part",
+      "controlId": "button-a",
       "sourceNode": 0,
       "sourceMesh": 0,
       "sourcePrimitive": 1,
@@ -211,6 +212,7 @@
     {
       "name": "button-green",
       "role": "source-part",
+      "controlId": "button-b",
       "sourceNode": 0,
       "sourceMesh": 0,
       "sourcePrimitive": 3,
@@ -431,6 +433,43 @@
     "note": "Apply each original glTF node transform first, then (-Y,-Z,X-7.75). Numeric authoring units are displayed as mm without scaling, inferred from the StopWatch-size enclosure. glTF normally uses metres, but this website model has a 51.947-unit diameter and its viewer normalizes the size. TriviaPOD official physical dimensions remain WIP; this is not a verified metric CAD model."
   },
   "omittedComponents": [],
+  "presentation": {
+    "screen": {
+      "shape": "circle",
+      "sizeMm": [
+        44.45,
+        44.45
+      ],
+      "positionMm": [
+        0,
+        0,
+        7.78
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "basis": "nominal-display-size-and-source-mesh",
+      "sourceIds": [
+        "triviapod-docs",
+        "triviapod-official-model",
+        "triviapod-photo-08"
+      ],
+      "notes": "The official 1.75-inch round display gives a nominal active diameter of 44.45 mm. Use this inner circle rather than the roughly 49 mm curved cover glass. Center follows the source glass symmetry; Z=7.78 is a rendering overlay 0.03 above its highest front surface. Source units are inferred; the flat display overlay approximates the curved glass and is not a measured panel mounting height. Its texture is supplied only by the runtime framebuffer."
+    },
+    "controls": {
+      "button-a": {
+        "part": "button-blue",
+        "basis": "StopWatch-compatible simulation mapping"
+      },
+      "button-b": {
+        "part": "button-green",
+        "basis": "StopWatch-compatible simulation mapping"
+      },
+      "notes": "Use the original colored button meshes as hit surfaces. This declares the requested compatible simulator controls, not independently verified TriviaPOD GPIO wiring. The red power button has no controlId and does not emit GPIO input."
+    }
+  },
   "derivedParts": [
     {
       "id": "pcb-main",
@@ -540,8 +579,8 @@
     "Only the official exterior display meshes are known. No PCB layout, board assembly, internal battery or wiring geometry was supplied.",
     "Model units are inferred for display; actual product dimensions and weight are still WIP on the official page.",
     "All six source primitive meshes and their original node assembly transforms are retained. White identity vertex colors and unused UVs are omitted.",
-    "Original source material definitions are retained in sourceMaterial. The white shell uses a #d5d5d5 display albedo to avoid clipping its relief under the platform lights; this is not measured plastic color. Other base colors, roughness and metalness are retained. The viewer approximates clearcoat and screen transmission with its standard opaque materials; no game screenshot or simulated TriviaPOD framebuffer is added.",
-    "TriviaPOD is an independent catalog product with a visual-only model and no implemented board runtime. Its 32 MB flash and proprietary Etermax firmware do not inherit the StopWatch runtime, default firmware, pins or expansion interfaces."
+    "Original source material definitions are retained in sourceMaterial. The white shell uses a #d5d5d5 display albedo to avoid clipping its relief under the platform lights; this is not measured plastic color. Other base colors, roughness and metalness are retained. The viewer approximates clearcoat and screen transmission with its standard opaque materials; the active inner circle receives the real runtime framebuffer, never a static game screenshot.",
+    "TriviaPOD retains its independent exterior, 32 MB flash and absent expansion interfaces. Blue/green keys and the circular display expose the requested StopWatch-compatible simulator controls. Electrical equivalence and physical GPIO routing have not been verified on a TriviaPOD device; proprietary Etermax firmware is not included."
   ],
   "artifacts": {
     "SOURCE-RIGHTS.txt": "032ce02eeb5644db7a2046a04a4492bbf947dc3780b0efa53a1b7f84b29103d1",
