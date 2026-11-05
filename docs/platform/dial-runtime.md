@@ -16,6 +16,8 @@
 
 官方出厂来源仍默认排第一；当前只有官方源码/EasyLoader EXE 的资料入口，未定位可固定校验值的完整远程 BIN，故保留 `reference`，不把 EXE 标成固件。完整本地构建或用户提供的完整远程镜像可经相同板级模型尝试运行。本轮没有遍历或认证官方固件。
 
+另提供 `Dial UserDemo · 0.1（社区备份）`：浏览器直接读取 M5Burner CDN 的完整 BIN，并校验固定 SHA-256；本站只发布链接和元信息。该镜像由 F4HWN 上传，已核对下载、芯片和布局，尚未执行验证，目录标为 `trial`。它与官方 EasyLoader 内的镜像不同，不替换官方出厂默认项。[来源与布局核验](evidence/dial-community-catalog/source.json)。
+
 ## 编码器合同
 
 ```js

@@ -1,0 +1,79 @@
+{
+  "checkedAt": "2026-11-05T16:11:25.610Z",
+  "scope": "Remote catalog entry and selection UI only; no Dial firmware execution or physical flashing.",
+  "checks": [
+    {
+      "command": "rustup update stable",
+      "result": "pass",
+      "rustc": "1.99.1"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "passed": 1807
+    },
+    {
+      "command": "uv run --with-requirements tools/requirements-catalog.txt python tools/validate-platform-catalog.py",
+      "result": "pass",
+      "products": 217,
+      "firmwares": 174,
+      "watchlist": 118
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "result": "pass",
+      "tests": 341
+    },
+    {
+      "command": "tools/wasm-build.sh",
+      "result": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<roms> node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel",
+      "result": "pass",
+      "scenarios": 8
+    },
+    {
+      "command": "node tools/sync-firmware-catalog.mjs --dry-run",
+      "result": "pass",
+      "note": "Only snapshot/report updates; pinned Dial community source unchanged."
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass"
+    }
+  ],
+  "browser": {
+    "engine": "headless Chromium through Playwright CLI",
+    "products": [
+      "m5stack-k130",
+      "m5stack-k130-v11"
+    ],
+    "checks": [
+      "Factory reference remains the initial selection for each product.",
+      "Community UserDemo option is visible for each product.",
+      "Selecting it preserves the exact remote CDN URL and expected SHA-256.",
+      "Trial-run and hardware-flash buttons are enabled.",
+      "Trial confirmation can be cancelled without requesting the remote firmware BIN.",
+      "Runtime remains configured; no firmware is executed."
+    ],
+    "screenshotSha256": "fcfe4f371b1612bab729004be757776dd794f96662783e49e3b2b0e79f35ca21",
+    "sessionClosed": true
+  },
+  "initialFailures": [
+    {
+      "check": "Rust corpus tests",
+      "cause": "Reused test binaries embedded an obsolete checkout path through CARGO_MANIFEST_DIR.",
+      "resolution": "Recompile the RISC-V and Xtensa objdump corpus test binaries without changing source contents; repeat full workspace tests."
+    }
+  ],
+  "privacy": "No firmware bytes, raw browser captures, local paths, session identifiers, or publisher account IDs are committed."
+}
