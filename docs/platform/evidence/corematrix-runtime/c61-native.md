@@ -35,3 +35,19 @@ Through actual USB raw REPL, `M5.Display.fillScreen(0xffffff)` reports a 16 × 1
 The CPU instruction budget is functional execution, not calibrated wall-clock performance or a silicon timing claim. ADC input is an ideal digital/nominal calibration model. The PMIC uses guest time for digital button qualification; analog rail transients and electrical debounce are not simulated. C61 I2S capture, Bluetooth and undocumented peripherals outside the exercised boot/device paths remain unqualified. WiFi has a separate evidence file and its own real firmware qualification; linking a virtual AP by itself does not prove networking.
 
 This receipt contains public input identities and technical observations only; machine-specific paths and raw process/session inventories are omitted.
+
+## Original-firmware BLE negative result
+
+The same original 2.5.4 binary was also given this USB raw REPL program, with no HCI intercepts or flash trampoline:
+
+```python
+import bluetooth
+print('BLE_BEGIN')
+ble = bluetooth.BLE()
+ble.active(True)
+print('BLE_ACTIVE', ble.active())
+ble.gap_scan(1000, 30000, 30000)
+print('BLE_SCAN_STARTED')
+```
+
+With 100,000,000 initial instructions and 1,500,000,000 script instructions, the run ended at the explicit budget (1,607,000,000 total), having printed `BLE_BEGIN` but neither later marker. First-access tracing shows C61 controller/BB accesses in `0x600a1800`, `0x600a2000`, `0x600a7000` and modem-control windows that are not implemented. The controller diagnostic path reads `0x600a1904` at guest PC `0x40806030`; its low 20 bits are interpreted as a descriptor address. This is a negative execution result, not a qualified BLE scan or connection. Existing C6 HCI interception is not used: that path modifies guest flash and does not establish C61 controller MMIO equivalence.
