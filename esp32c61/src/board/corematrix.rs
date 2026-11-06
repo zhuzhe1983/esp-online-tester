@@ -150,7 +150,7 @@ impl BoardModel for CoreMatrix {
     fn gpio_events(&self)->u64 {self.gpio_events}
     fn hardware_diagnostics(&self)->Option<String> {
         let m=self.wiring.matrix.lock().expect("CoreMatrix matrix poisoned");let ioe=*self.wiring.ioe.lock().expect("CoreMatrix IOE poisoned");
-        Some(format!("{{\"matrix\":{{\"powered\":{},\"enabled\":{},\"pwmSteps\":{},\"frames\":{},\"bytesWritten\":{}}},\"buzzer\":{{\"frequencyHz\":{},\"duty4095\":{},\"supplyEnabled\":{}}},\"grove5vEnabled\":{},\"sdPresent\":{}}}",m.powered(),m.enabled(),m.pwm_steps(),m.frames,m.bytes_written,ioe.pwm_frequency_hz,ioe.pwm[2],ioe.driven_high&2!=0,self.wiring.main_powered()&&ioe.driven_high&16!=0,self.sd_present))
+        Some(format!("{{\"schemaVersion\":1,\"board\":\"corematrix\",\"state\":{{\"controllerPowered\":{},\"matrix\":{{\"powered\":{},\"enabled\":{},\"pwmSteps\":{},\"frames\":{},\"bytesWritten\":{}}},\"buzzer\":{{\"frequencyHz\":{},\"duty4095\":{},\"supplyEnabled\":{}}},\"grove5vEnabled\":{},\"sdPresent\":{}}}}}",self.wiring.main_powered(),m.powered(),m.enabled(),m.pwm_steps(),m.frames,m.bytes_written,ioe.pwm_frequency_hz,ioe.pwm[2],self.wiring.main_powered()&&ioe.driven_high&2!=0,self.wiring.main_powered()&&ioe.driven_high&16!=0,self.sd_present))
     }
     fn report(&self)->String {format!("[corematrix] TM1680={} frames; SD={}; PWM buzzer=48kHz digital; IMU=polled samples",self.display_frames(),self.wiring.sd.lock().expect("CoreMatrix SD poisoned").as_ref().map_or_else(||"absent".into(),|sd|sd.report()))}
 }
