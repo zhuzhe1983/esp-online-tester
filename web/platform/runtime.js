@@ -26,6 +26,7 @@ import { assembleLocalFirmware } from './local-firmware.js';
 import {firmwareMetadata} from './firmware-metadata.js';
 import {chipIdForBoard,validateAppImage,validateBoardRevision,isC5Board,isC61Board,C5_SRAM_RANGES} from './app-image.js';
 import { createDeviceStorage, deviceStorageScope } from './device-storage.js';
+import {UIFLOW2_PARTITION,virtualConfigurationPlan,encodeVirtualConfiguration,replaceConfigurationPages} from './virtual-firmware-configuration.js';
 
 export const API_VERSION = '1.0.0';
 const MIB = 1024 * 1024;
@@ -190,6 +191,9 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   let accessoryInputs = [], accessoryOutputs = [];
   const resetAccessoryInputs=()=>{accessoryInputs=routedAccessories(scene,product,catalog).map(route=>({...route,connected:true,...(route.viaAccessoryId?{effectiveConnected:true}:{}),...(route.control==='button'?{pressed:false}:route.control==='knob'?{value:scene.accessories.find(item=>item.id===route.accessoryId)?.parameters?.position??0.5}:route.control==='motion'?{motion:motionParameter(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters)}:route.control==='environment'?environmentParameters(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters):route.control==='illuminance'?{lux:illuminanceParameter(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters)}:{})}));accessoryOutputs=accessoryInputs.filter(route=>route.output).map(({accessoryId,model,port})=>({accessoryId,model,port,leds:[[0,0,0],[0,0,0],[0,0,0]]}));};
   let storage = emptyStorage(), storageSession = null, storageSequence = 0;
+  const configurationSessionPrefix=globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random()}`;
+  let configurationSequence=0;
+  const configurationReceipts=new Map(),configurationReceipt=()=>clone(configurationReceipts.get(storage.scope?.key)||null);
   let booted = false, inputSequence = 0, loadCancelled = false, progressGeneration = 0, disposing = false;
   const imuModel = () => imuModelForBoard(product?.runtime?.board);
   const gpsSupported = () => product?.id === 'm5stack-stopwatch' && product.runtime?.board === 'stopwatch';
@@ -197,7 +201,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   let imu = defaultImu(), imuPreviousAt = null, imuGeneration = 0;
   const observedImu=()=>!imuModel()?null:!flightEnabled()?clone(imu):{enabled:true,source:'flight',quaternion:null,accelG:flight?clone(flight.sensors.rawAccelG):null,gyroDps:flight?clone(flight.sensors.rawGyroDps):null,delivery:flight?'register-state':'configured',guestTime:flight?.guestTime??null};
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
-  const snapshot = () => ({ version: API_VERSION, status, audio:audio.snapshot(), network:network.snapshot(), scene: clone(scene), accessoryInputs: clone(accessoryInputs), accessoryOutputs: clone(accessoryOutputs), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), sdCard:clone(sdCard),leds:clone(leds),servos:clone(servos),servoSupply,motors:clone(motors),motorOutput:clone(motorOutput),flight:clone(flight),hardwareDiagnostics:clone(hardwareDiagnostics), imu: observedImu(), frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
+  const snapshot = () => ({ version: API_VERSION, status, audio:audio.snapshot(), network:network.snapshot(), scene: clone(scene), accessoryInputs: clone(accessoryInputs), accessoryOutputs: clone(accessoryOutputs), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), firmwareConfiguration:configurationReceipt(), sdCard:clone(sdCard),leds:clone(leds),servos:clone(servos),servoSupply,motors:clone(motors),motorOutput:clone(motorOutput),flight:clone(flight),hardwareDiagnostics:clone(hardwareDiagnostics), imu: observedImu(), frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
   const emit = event => { for (const listener of listeners) { try { listener(['hardware-diagnostics','motors','flight'].includes(event.type)?clone(event):event); } catch (e) { console.error('ESP tester event handler:', e); } } };
   const loadReporter = (loadId, signal) => {
     let fileIndex = 0;
@@ -383,7 +387,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     const result = await deviceStorage.read(scope);
     requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
     const pages = new Map(result.row.pages.map(page=>[page.offset,page.data]));
-    const session = {scope,baseline,pages,version:0,savedVersion:0,saving:null,closed:false,watchId:null};
+    const session = {id:`${configurationSessionPrefix}:${++configurationSequence}`,scope,baseline,pages,version:0,savedVersion:0,saving:null,closed:false,watchId:null};
     storageSession=session;
     storage={status:result.persistent?'clean':'memory-only', scope, backend:result.backend, restored:pages.size>0, pristine:pages.size===0, revision:result.row.revision, epoch:result.row.epoch, lastSavedAt:result.row.savedAt, changedPages:pages.size, error:result.warning?{code:'STORAGE_MEMORY_ONLY',message:result.warning}:null};
     if (pages.size) {
@@ -751,6 +755,51 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     clearSdCard() {return exclusive(()=>replaceSd(null));},
     exportSdCard() {return exclusive(async()=>{await flushSd();const result=await sdAsk('sd-export');return {bytes:new Uint8Array(result.data),filename:`${product.id}-sd.img`};});},
     flushSdCard() {return exclusive(flushSd);},
+    inspectFirmwareConfiguration() {const requested=storageSession,generation=progressGeneration;return exclusive(async()=>{
+      const unavailable=reason=>({available:false,type:'uiflow2',partition:clone(UIFLOW2_PARTITION),replacesPartition:true,sessionId:storageSession?.id||null,reason});
+      if(!loaded || !worker || !storageSession || storageSession.closed)return unavailable({code:'STORAGE_NOT_LOADED',message:'请先加载完整固件。'});
+      if(requested!==storageSession||generation!==progressGeneration)return unavailable({code:'SESSION_REPLACED',message:'检查前设备已更换，请重新检查。'});
+      const session=storageSession;
+      try {
+        const result=await flashAsk('flash-snapshot');
+        requireValue(session===storageSession&&!session.closed,'SESSION_REPLACED','The device changed while inspecting its Flash.');
+        const bytes=new Uint8Array(result.data),options={flashBytes:loaded.cfg.flash_mb*MIB,partitionTableOffset:loaded.receipt.localLayout?.partitionTableOffset??0x8000,appDirect:loaded.cfg.appDirect};
+        virtualConfigurationPlan(bytes,options);
+        validateMergedImage(bytes,loaded.cfg.board,options.flashBytes,options);
+        return {available:true,type:'uiflow2',partition:clone(UIFLOW2_PARTITION),replacesPartition:true,sessionId:session.id,lastWrite:configurationReceipt()};
+      } catch(e) {return unavailable(failure(e));}
+    });},
+    writeFirmwareConfiguration(profile,{sessionId}={}) {
+      // Capture before entering the queue: an already queued configure/load must
+      // never redirect this write to a different device, even without a UI token.
+      const session=storageSession,bundle=loaded,generation=progressGeneration,value=clone(profile);
+      return exclusive(async()=>{
+        const active=()=>{alive();requireValue(session&&bundle,'STORAGE_NOT_LOADED','Load firmware before writing its configuration.');requireValue(session===storageSession&&!session.closed&&bundle===loaded&&generation===progressGeneration&&(sessionId===undefined||sessionId===session.id),'SESSION_REPLACED','The device changed before its configuration was written.');};
+        active();requireValue(['ready','running','paused'].includes(status),'NOT_READY','Load firmware before writing its configuration.');
+        if(status==='running'){await ask('stopped',{op:'stop'});active();setStatus('paused');}
+        await preserveStorage();active();
+        const result=await flashAsk('flash-snapshot');active();
+        const bytes=new Uint8Array(result.data),options={flashBytes:bundle.cfg.flash_mb*MIB,partitionTableOffset:bundle.receipt.localLayout?.partitionTableOffset??0x8000,appDirect:bundle.cfg.appDirect};
+        const plan=virtualConfigurationPlan(bytes,options);validateMergedImage(bytes,bundle.cfg.board,options.flashBytes,options);
+        const configuration=encodeVirtualConfiguration(plan,value),pages=replaceConfigurationPages(session.baseline,session.pages,configuration);
+        active();
+        // One CAS transaction commits exactly six NVS pages plus the untouched
+        // existing dirty pages. The scope is the immutable original-image hash.
+        let saved;
+        try {saved=await deviceStorage.save(session.scope,{epoch:storage.epoch,revision:storage.revision,pages:[...pages].map(([offset,data])=>({offset,data}))});}
+        catch(e){storageFailure(session,e);throw e;}
+        configurationReceipts.set(session.scope.key,{type:'uiflow2',partition:clone(UIFLOW2_PARTITION),namespace:'uiflow',writtenAt:saved.row.savedAt});
+        // The commit is durable (or explicitly memory-only) before reloading.
+        // Closing the old session prevents a late worker delta overwriting it.
+        session.pages=pages;session.closed=true;
+        Object.assign(storage,{revision:saved.row.revision,epoch:saved.row.epoch,pristine:pages.size===0,changedPages:pages.size,lastSavedAt:saved.row.savedAt});
+        if(disposing || generation!==progressGeneration){stopWorker();throw error('SESSION_REPLACED','Firmware configuration was saved; the requested session changed.',{configurationCommitted:true});}
+        const loadId=++progressGeneration;loadCancelled=false;aborter=new AbortController();const signal=aborter.signal;
+        serial='';serialByPort={};stats={};hostPace={};frame=null;frameNumber=0;lastError=null;leds=[];servos=[];servoSupply=null;setStatus('loading');
+        try {await initialize(bundle,loadReporter(loadId,signal));alive();requireValue(!signal.aborted&&!loadCancelled,'FETCH_ABORTED','Firmware configuration was saved; restarting was cancelled.');requireValue(loadId===progressGeneration,'SESSION_REPLACED','Firmware configuration was saved; the requested session changed.');setStatus('ready');return snapshot();}
+        catch(e){stopWorker();if(status!=='disposed')setStatus(loadCancelled?'configured':'error');throw error(loadCancelled?'FETCH_ABORTED':e.code||'RUNTIME_ERROR',loadCancelled?'Firmware configuration was saved; restarting was cancelled.':e.message,{configurationCommitted:true});}
+      });
+    },
     async clearFirmwareCache() { return firmwareCache.clear(); },
     flushDeviceStorage() { return exclusive(flushStorage); },
     clearDeviceStorage() { const loadId=++progressGeneration; return exclusive(async () => {
@@ -761,7 +810,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       if(sdSession&&!sdSession.closed)await flushSd();
       stopWorker(); session.closed=true;
       await session.saving?.catch(()=>{});
-      try { await deviceStorage.clear(scope); }
+      try { await deviceStorage.clear(scope); configurationReceipts.delete(scope.key); }
       catch(e) { session.closed=false; storageFailure(session,e); setStatus('error'); throw e; }
       loadCancelled=false; aborter=new AbortController(); serial=''; serialByPort={}; stats={}; hostPace={}; frame=null; frameNumber=0; lastError=null; setStatus('loading');
       try { await initialize(bundle,loadReporter(loadId,aborter.signal)); setStatus('ready'); return snapshot(); }

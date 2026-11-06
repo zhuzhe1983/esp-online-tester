@@ -29,6 +29,15 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
     async pause() { await recorder.beforeLifecycle('pause'); return runtime.pause(); },
     async reset() { await recorder.beforeLifecycle('reset'); return runtime.reset(); },
     async clearDeviceStorage() { await recorder.beforeLifecycle('clear-device-storage'); return runtime.clearDeviceStorage(); },
+    async writeFirmwareConfiguration(profile,options={}) {
+      // Capture the target before recording shutdown can yield to another load.
+      const selected=structuredClone(profile),targetOptions={...options},inspection=runtime.inspectFirmwareConfiguration();
+      inspection.catch(()=>{});
+      await recorder.beforeLifecycle('firmware-configuration');
+      const target=await inspection;
+      if(!target.available)throw Object.assign(new Error(target.reason.message),{code:target.reason.code});
+      return runtime.writeFirmwareConfiguration(selected,{...targetOptions,sessionId:targetOptions.sessionId??target.sessionId});
+    },
     async attachSdCard(options) { await recorder.beforeLifecycle('attach-sd-card'); return runtime.attachSdCard(options); },
     async clearSdCard() { await recorder.beforeLifecycle('clear-sd-card'); return runtime.clearSdCard(); },
     async dispose() { await recorder.dispose(); return runtime.dispose(); },
