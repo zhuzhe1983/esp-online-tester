@@ -58,6 +58,8 @@ pub struct Ble {
     task_created: bool,
     receive: Receive,
     pub(crate) original_flash: Option<(usize, Vec<u8>)>,
+    /// `[ble]` lines: stderr, or kept for the browser build (`BleLog::keep`)
+    pub lines: esp_soc::ble::log::BleLog,
 }
 
 impl Ble {
@@ -110,6 +112,7 @@ impl Ble {
         next.kinds.insert(base + INIT_NEXT, Hook::InitNext);
         next.kinds.insert(base + TASK_NEXT, Hook::TaskNext);
         next.hooks = next.kinds.keys().copied().collect();
+        next.lines = std::mem::take(&mut self.lines);
         *self = next;
         Ok(())
     }
@@ -138,7 +141,7 @@ impl Ble {
         Ok(())
     }
     fn log(&mut self, cycles: u64) {
-        for line in self.session.drain_log() { eprintln!("[ble] t={:.6}s {line}", cycles as f64 / crate::periph::CPU_HZ as f64); }
+        for line in self.session.drain_log() { self.lines.note(format!("t={:.6}s {line}", cycles as f64 / crate::periph::CPU_HZ as f64)); }
     }
 }
 
@@ -203,7 +206,7 @@ fn init_next(cpu: &mut Cpu, bus: &mut SocBus) {
     let step = bus.ble.init_step;
     let result = cpu.x[10];
     if matches!(step, 3 | 4 | 8 | 9 | 10) && result != 0 {
-        eprintln!("[ble] native initialization step {step} failed: {result:#x}");
+        bus.ble.lines.note(format!("native initialization step {step} failed: {result:#x}"));
         finish(cpu, bus, result);
         return;
     }
@@ -235,14 +238,14 @@ fn init_next(cpu: &mut Cpu, bus: &mut SocBus) {
             finish(cpu, bus, 0);
         }
         _ => {
-            eprintln!("[ble] native initialization step {step} returned invalid result {result:#x}");
+            bus.ble.lines.note(format!("native initialization step {step} returned invalid result {result:#x}"));
             finish(cpu, bus, 0x101);
         }
     }
 }
 fn receive(cpu: &mut Cpu, bus: &mut SocBus, kind: u8, bytes: Vec<u8>) {
     if bytes.len() > 260 {
-        eprintln!("[ble] native packet exceeds 260 bytes; dropping");
+        bus.ble.lines.note("native packet exceeds 260 bytes; dropping".into());
         bus.ble.receive = Receive::Poll;
         call(cpu, bus, "vTaskDelay", &[1]);
         return;
@@ -305,7 +308,7 @@ fn task_next(cpu: &mut Cpu, bus: &mut SocBus) {
                 bus.ble.receive = Receive::Delivered;
                 redirect(cpu, cpu.x[1]);
             } else {
-                eprintln!("[ble] native ACL append failed: {result}");
+                bus.ble.lines.note(format!("native ACL append failed: {result}"));
                 bus.ble.receive = Receive::Freed;
                 call(cpu, bus, "r_os_mbuf_free_chain", &[mbuf]);
             }
@@ -316,14 +319,14 @@ fn task_next(cpu: &mut Cpu, bus: &mut SocBus) {
             return;
         }
         Receive::Event(bytes) => {
-            eprintln!("[ble] native event allocation failed; retrying");
+            bus.ble.lines.note("native event allocation failed; retrying".into());
             bus.ble.receive = Receive::Retry(4, bytes);
         }
         Receive::Acl(bytes) => {
-            eprintln!("[ble] native ACL allocation failed; retrying");
+            bus.ble.lines.note("native ACL allocation failed; retrying".into());
             bus.ble.receive = Receive::Retry(2, bytes);
         }
-        Receive::Delivered if result != 0 => { eprintln!("[ble] native receive callback failed: {result}") }
+        Receive::Delivered if result != 0 => bus.ble.lines.note(format!("native receive callback failed: {result}")),
         _ => {}
     }
     // Let the host finish command processing before the next asynchronous event.
@@ -348,7 +351,7 @@ pub fn intercept(cpu: &mut Cpu, bus: &mut SocBus) -> bool {
             } else if bus.ble.init_step != 0 {
                 result = INVALID_STATE;
             } else if let Err(error) = install(bus) {
-                eprintln!("[ble] {error}");
+                bus.ble.lines.note(error);
                 result = INVALID_ARG;
             } else {
                 bus.ble.init_step = 0;
@@ -425,7 +428,7 @@ pub fn intercept(cpu: &mut Cpu, bus: &mut SocBus) -> bool {
                     bus.ble.log(bus.cycles);
                 }
                 Err(error) => {
-                    eprintln!("[ble] {error}");
+                    bus.ble.lines.note(error);
                     result = INVALID_ARG;
                 }
                 _ => result = INVALID_STATE,

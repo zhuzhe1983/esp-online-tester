@@ -81,6 +81,8 @@ pub struct Ble {
     yield_to_host: bool,
     pub task_created: bool,
     pub original_flash: Option<(usize, Vec<u8>)>,
+    /// `[ble]` lines: stderr, or kept for the browser build (`BleLog::keep`)
+    pub lines: crate::ble::log::BleLog,
 }
 
 impl Ble {
@@ -130,6 +132,7 @@ impl Ble {
         next.kinds.insert(init + POLL, Hook::Poll);
         next.kinds.insert(init + CREATED, Hook::Created);
         next.hooks = next.kinds.keys().copied().collect();
+        next.lines = std::mem::take(&mut self.lines);
         *self = next;
         Ok(())
     }
@@ -161,7 +164,7 @@ impl Ble {
     }
 
     fn log(&mut self, cycles: u64, hz: u64) {
-        for line in self.session.drain_log() { eprintln!("[ble] t={:.6}s {line}", cycles as f64 / hz as f64); }
+        for line in self.session.drain_log() { self.lines.note(format!("t={:.6}s {line}", cycles as f64 / hz as f64)); }
     }
 }
 
@@ -215,7 +218,7 @@ pub fn intercept<C: Core, B: VhciBus>(cpu: &mut C, bus: &mut B, redirect: impl F
                         return true;
                     }
                     Err(error) => {
-                        eprintln!("[ble] {error}");
+                        bus.ble().lines.note(error);
                         result = u32::MAX;
                     }
                 }
@@ -226,7 +229,7 @@ pub fn intercept<C: Core, B: VhciBus>(cpu: &mut C, bus: &mut B, redirect: impl F
                 bus.ble().task_created = true;
                 bus.ble().status = 1;
             } else {
-                eprintln!("[ble] controller task creation failed: {arg:#x}");
+                bus.ble().lines.note(format!("controller task creation failed: {arg:#x}"));
                 result = u32::MAX;
             }
         }
@@ -277,7 +280,7 @@ pub fn intercept<C: Core, B: VhciBus>(cpu: &mut C, bus: &mut B, redirect: impl F
                 || len > (BUFFER_SIZE - 16) as usize
                 || !bus.valid_packet_range(arg, len)
             {
-                eprintln!("[ble] rejected invalid VHCI packet pointer, length or controller state");
+                bus.ble().lines.note("rejected invalid VHCI packet pointer, length or controller state".into());
             } else {
                 let packet: Result<Vec<u8>, _> = (0..len).map(|i| bus.read8_unpriced(arg + i as u32)).collect();
                 if let Ok(packet) = packet {
@@ -306,7 +309,7 @@ pub fn intercept<C: Core, B: VhciBus>(cpu: &mut C, bus: &mut B, redirect: impl F
                         if bus.ble_debug() { eprintln!("[ble] rx {:02x?}", packet); }
                         bus.ble().yield_to_host = true;
                         result = bus.ble().callbacks[1];
-                    } else { eprintln!("[ble] rejected oversized or unmapped controller packet"); }
+                    } else { bus.ble().lines.note("rejected oversized or unmapped controller packet".into()); }
                 } else if bus.ble().send_ready {
                     bus.ble().send_ready = false;
                     result = bus.ble().callbacks[0];

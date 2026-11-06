@@ -1,0 +1,93 @@
+{
+  "base": "upstream main 3d276edf (Merge pull request #323)",
+  "toolchain": "Rust 1.99.1 (58cf8f9c3 2026-10-13); Node 24.22.1; Windows 11 (10.0.26200), x86_64",
+  "mask_roms": {
+    "source": "tools/fetch-rom-elfs.sh roms (espressif/esp-rom-elfs, pinned by SHA-256 in the script)",
+    "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+    "esp32c3_rev3_rom.elf": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c",
+    "esp32c6_rev0_rom.elf": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551",
+    "esp32_rev300_rom.elf": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31"
+  },
+  "firmware": {
+    "sketch": "ble-server.ino (this directory)",
+    "build": "arduino-cli 1.5.1, Arduino-ESP32 core 3.3.12 (ESP-IDF v5.5.5); fqbn esp32:esp32:esp32s3, esp32:esp32:esp32c3, esp32:esp32:esp32c6, esp32:esp32:esp32 with default options",
+    "esp32s3": {
+      "ble-server.ino.bin": {
+        "bytes": 564128,
+        "sha256": "7fefab98c7d38c7025af5035c337675083dfb77d1f98e7f4896431534d7d1a04"
+      },
+      "ble-server.ino.bootloader.bin": {
+        "bytes": 19968,
+        "sha256": "66cf6c060fc857c8ea6d6812aab8e9b27448431846426218b6fb81526b31e564"
+      },
+      "ble-server.ino.partitions.bin": {
+        "bytes": 3072,
+        "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+      },
+      "ble-server.ino.elf": {
+        "bytes": 11076764,
+        "sha256": "3a72cb64add5887fcb3435d7a1d1b2da5e67d0ced7f698faa4475c82835da4d2"
+      }
+    },
+    "esp32c3": {
+      "ble-server.ino.bin": {
+        "bytes": 610784,
+        "sha256": "284277fd8484798549604e750ff8e4ab65000baadd3c76a21f507d9301252863"
+      },
+      "ble-server.ino.bootloader.bin": {
+        "bytes": 19536,
+        "sha256": "9b2fa5e4af7cf282b2db5ed726b26bcca0aec7946eb3fdacc14444195ba754b3"
+      },
+      "ble-server.ino.partitions.bin": {
+        "bytes": 3072,
+        "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+      },
+      "ble-server.ino.elf": {
+        "bytes": 11040572,
+        "sha256": "b231f4207f30081a2faab5a232f0291d140e3897b54df3954711b5e8a218b133"
+      }
+    },
+    "esp32c6": {
+      "ble-server.ino.bin": {
+        "bytes": 712016,
+        "sha256": "6e65af313fc25e78ad6607819310e60fda4796d504915301fa75d4166d231850"
+      },
+      "ble-server.ino.bootloader.bin": {
+        "bytes": 20720,
+        "sha256": "a2ebc2b16ef67609d6bbbe542195b07f449c708943b5cf5307d4bef05e56d200"
+      },
+      "ble-server.ino.partitions.bin": {
+        "bytes": 3072,
+        "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+      },
+      "ble-server.ino.elf": {
+        "bytes": 11203600,
+        "sha256": "1b902bdc73a7b6f1f636753c60e34704a4e9e7c21dc6670122e5b2a07b6f7869"
+      }
+    },
+    "esp32": {
+      "ble-server.ino.bin": {
+        "bytes": 1092320,
+        "sha256": "a98e3f1913859b1c80c3df151f576abb02d7d203452565399ab110bfe57ba1a8"
+      },
+      "ble-server.ino.bootloader.bin": {
+        "bytes": 24992,
+        "sha256": "47bbbfca119fe87190f63a67af9d85adff6433bcf3812ec92a9b9c9416a53ad1"
+      },
+      "ble-server.ino.partitions.bin": {
+        "bytes": 3072,
+        "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+      },
+      "ble-server.ino.elf": {
+        "bytes": 11571748,
+        "sha256": "f4d112f8a3c916d0d2064e174c1c1ef0e5a67ed4ce12dbea4a671d9d2f0c0011"
+      }
+    },
+    "not_committed": "Plain Arduino builds of the sketch; not added to the repository."
+  },
+  "runs": {
+    "cli": "esp32sim --chip {s3|c3|c6|esp32} --rom roms/<chip ROM> --boot rom --flash-mb 4 --no-dump --console uart0 --bootloader ble-server.ino.bootloader.bin --ptable ble-server.ino.partitions.bin --app ble-server.ino.bin --elf ble-server.ino.elf --ble --script runs/script-{nimble|classic}.txt --max-seconds 4 (S3 with --board none, classic with --board esp32dev); runs/cli-<chip>.txt are its [ble] lines and UART0 ble: lines",
+    "page": "node ble-virtual-run.mjs web/wasm/esp32sim.wasm {none|esp32c3|esp32c6|esp32} roms/<chip ROM> ble-server.ino.bootloader.bin ble-server.ino.partitions.bin ble-server.ino.bin ble-server.ino.elf runs/script-{nimble|classic}.txt 4, with the module from tools/wasm-build.sh; runs/page-<chip>.txt is its output",
+    "compare": "the [ble] lines of each pair compared with their t=...s stripped, and the times compared line by line"
+  }
+}
