@@ -1,5 +1,7 @@
 # StamPLC K141 模型修正与核验
 
+当前外观已于 **2026-11-06** 修正 Type-C 方向、23 颗端子螺钉的嵌入高度、四侧连接器与贴纸，以及屏幕尺寸和深度。最新照片对照、来源、尺寸及验证结果见 [本次外观报告](../evidence/stamplc-exterior-20261106/README.md)。当前模型仍为 `partial`；以下保留此前的修正记录，其中屏幕尺寸／位置及侧面接口状态以最新报告为准。
+
 StamPLC 现在保留原厂全部已选装配几何，修正 Stamp 小板纸贴和四组继电器标签，补齐照片确认的四颗后盖螺丝头、四个 M3 铜套可见边缘，并将 A/B/C 按键与真实 RGB 导光件接入已有运行时。主板和 Stamp 小板的未知布局仍明确保留；整机模型状态为 `partial`。
 
 原厂 [StamPLC STL](https://github.com/m5stack/M5_Hardware/blob/e29c139cbc7c80b5ccc5557e5ab8025a7a19a109/Products/K141_StamPLC/Structures/StamPLC.stl) SHA-256 为 `91745b5fc0d2a4bb7ac866271b03bcbd5324fbde2b7e51c220cb66fdfe4470d6`。厂家当前公开结构目录仍只有该外壳文件，未找到完整 K141 板级 CAD。所选装配包含 **22496 个原生三角形**，没有缩放、删除或补猜原生零件。A/B/C 刻字底面和原生盲孔底面只重新分组着色；排序后的完整位置／法线记录哈希完全一致，见 [native-face-partitions.json](../evidence/m5stack-k141/native-face-partitions.json)。原始装配之外的排版副本仍按原记录排除。

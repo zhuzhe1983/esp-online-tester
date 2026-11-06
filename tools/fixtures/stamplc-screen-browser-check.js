@@ -10,13 +10,13 @@ async page => {
   const hash=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');
   const modelBytes=await(await fetch(new URL('model.json',current.base),{cache:'no-store'})).arrayBuffer(),binary=await(await fetch(new URL(meta.binary,current.base),{cache:'no-store'})).arrayBuffer();
   if(await hash(binary)!==meta.artifacts[meta.binary])throw Error('Geometry hash mismatch');
-  const part=meta.parts.find(p=>p.name==='shell-front'),data=new Float32Array(binary,part.byteOffset,part.vertexCount*6),lip=[];
+  const part=meta.parts.find(p=>p.name==='shell-front'),data=new Float32Array(binary,part.byteOffset,part.vertexCount*6),lip=[],innerLip=[];
   // Extract the original CAD bevel triangles around the window, independently
   // of presentation.screen. Their Z=14 vertices define the opening's outer lip.
-  for(let i=0;i<data.length;i+=18){const v=[0,6,12].map(j=>[...data.slice(i+j,i+j+3)]);if(v.every(([x,y,z])=>x>-23&&x<4&&y>7&&y<25&&z>13.4&&z<14.001)&&v.some(p=>p[2]<13.9))for(const p of v)if(Math.abs(p[2]-14)<.001)lip.push(p);}
+  for(let i=0;i<data.length;i+=18){const v=[0,6,12].map(j=>[...data.slice(i+j,i+j+3)]);if(v.every(([x,y,z])=>x>-23&&x<4&&y>7&&y<25&&z>13.4&&z<14.001)&&v.some(p=>p[2]<13.9)){innerLip.push(...v.map(p=>p[2]));for(const p of v)if(Math.abs(p[2]-14)<.001)lip.push(p);}}
   const low=[0,1,2].map(i=>Math.min(...lip.map(p=>p[i]))),high=[0,1,2].map(i=>Math.max(...lip.map(p=>p[i]))),center=low.map((v,i)=>(v+high[i])/2),position=screen.position.toArray(),size=meta.presentation.screen.sizeMm;
   if(!lip.length||Math.abs(position[0]-center[0])>.001||Math.abs(position[1]-center[1])>.001)throw Error('Display is not centered on the native CAD opening');
-  if(position[2]>=low[2]||low[2]-position[2]>.3)throw Error('Display must sit just behind the lip');
+  if(position[2]>=low[2]||position[2]<Math.min(...innerLip))throw Error('Display must sit between the native outer and inner lip planes');
   if(screen.rotation.toArray().slice(0,3).some(v=>Math.abs(v)>.000001))throw Error('Display is tilted relative to the native front plane');
   current.group.updateMatrixWorld(true);
   const edgePoints=[];for(let i=0;i<=32;i++){const t=i/32;for(const [u,v] of [[t,0],[t,1],[0,t],[1,t]])edgePoints.push(new THREE.Vector3(position[0]+((.5+u*239)/240-.5)*size[0],position[1]+((.5+v*134)/135-.5)*size[1],position[2]));}
