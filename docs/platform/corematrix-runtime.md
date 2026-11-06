@@ -38,6 +38,8 @@ GitHub Release 下载受浏览器 CORS 限制。可导入官方原始 BIN，或�
 
 生产 Worker 的14项原版固件检查见 [WASM 回执](evidence/corematrix-runtime/wasm.json)；工作台、独立播放器、iframe、父页面接口、BLE 和页面刷新后的 TF 保存见[浏览器回执](evidence/corematrix-runtime/browser.json)。BLE 的 `configureBle({nearby:[...]})` / `readBle()` 使用同一运行内核，具体参数与限制见[接口说明](../../skills/esp-online-tester/references/api.md#corematrix-legacy-ble)。没有通过主机直接插入扫描回调或修改点阵像素。
 
+CI 对应命令在本地通过：1,881 项 Rust 测试、354 项平台测试、两组禁止警告的 Clippy、13 个生产 WASM 固件场景及 111,126 个 WASM 差分用例。命令、工具版本、原始日志哈希及已修正的旧测试假设见[检查回执](evidence/corematrix-runtime/checks.json)；共享代码的现有芯片性能对照见[EX251](../evidence/corematrix-cpu/README.md)。
+
 ## 复现
 
 ```sh
@@ -54,6 +56,6 @@ node tools/probe-corematrix-uiflow.mjs /path/to/original-corematrix.bin \
 
 ## 边界
 
-没有实机刷写、RF、模拟电压/耗电、声音响度或光学校准。蜂鸣器是数字 PWM 波形，音频原始时基不变。PM1 外部断电/唤醒与 ESP32-C61 内部 light/deep sleep 是不同机制；SoC 目前实现定时唤醒子集，GPIO/USB/UART/BLE 唤醒及详细掉电保持未覆盖。BLE 连接、GATT 和配网未验证，不能由同系列 C6/C3 的结果代替。
+没有实机刷写、RF、模拟电压/耗电、声音响度或光学校准。蜂鸣器是数字 PWM 波形，音频原始时基不变。PM1 外部断电/唤醒与 ESP32-C61 内部 light/deep sleep 是不同机制；SoC 目前实现定时唤醒子集，GPIO/USB/UART/BLE 唤醒及详细掉电保持未覆盖。尚不支持 BLE 连接、GATT 和配网，不能由同系列 C6/C3 的结果代替。
 
 M5PM1/IOE1/BMI270 使用有来源的寄存器子集。FIFO、计步等未覆盖的 BMI 功能、任意第三方固件和全部外部 M-Bus 模块不属于当前兼容承诺。内部 PCB 占位、连接器隐藏深度、贴纸光照及 LED 扩散仍有估算，模型不声明各视角 100% 实物等价。

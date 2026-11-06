@@ -1,0 +1,183 @@
+{
+  "checkedAt": "2026-11-06T05:51:43.868502+00:00",
+  "sourceRevision": "4573f5d36eca3db26f89ecbbe231e3fb68217605",
+  "productionImplementationRevision": "42840d1a",
+  "frontendRevision": "1c16c863",
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "node": "v26.8.2",
+  "host": "macOS arm64; local equivalents of CI commands, not a hosted CI run",
+  "productionWasm": {
+    "bytes": 5483981,
+    "sha256": "a2b39656b576e79abb308dd32091091eaaef8b6c0dcbbd8ab09a666c1631f61b"
+  },
+  "checks": [
+    {
+      "check": "Workspace native CI policy",
+      "command": "ESP32SIM_ROM_DIR=$ROMS cargo test --release --workspace -- --include-ignored --skip external_",
+      "status": "pass",
+      "result": {
+        "passed": 1881,
+        "failed": 0,
+        "ignored": 0,
+        "suites": 165
+      },
+      "rawLogSha256": "3d9ee6c11765bb2dda53217d235a1ed0ea302fc6cbb4a57db192f8b57211ce6b"
+    },
+    {
+      "check": "Clippy native",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "status": "pass",
+      "result": "warnings denied",
+      "rawLogSha256": "617343d426afe41b1a1b1e9490c9c08b8341367f6b1fd8a8975efaef774fcb78"
+    },
+    {
+      "check": "Clippy WASM",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "pass",
+      "result": "warnings denied",
+      "rawLogSha256": "56ba0560962fea6dc5cb9a1635f6a1a4a2ccde05c287248e7f3aac150fe665a4"
+    },
+    {
+      "check": "Original UIFlow BLE, sleep, Grove and PM1",
+      "command": "ESP32SIM_ROM_DIR=$ROMS ESP32SIM_COREMATRIX_FIRMWARE=$ORIGINAL_IMAGE cargo test --release -p esp32c61 --test ble --test sleep --test corematrix_grove_firmware --test corematrix_power_firmware -- --include-ignored",
+      "status": "pass",
+      "result": {
+        "passed": 5,
+        "failed": 0
+      },
+      "rawLogSha256": "f36b58b141f8f2dc3f6c3cbd6ab86eeebb3743ef4f6326c6379c83a784454d96"
+    },
+    {
+      "check": "Native virtual quantum",
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "status": "pass",
+      "result": {
+        "passed": 44,
+        "failed": 0
+      },
+      "rawLogSha256": "e3ff01ada1f9294024e96c8376355aaf91db2f762d9517c6f1c5d3428639a344"
+    },
+    {
+      "check": "Platform",
+      "command": "ESP32SIM_ROM_DIR=$ROMS node --test tools/platform-*-test.mjs",
+      "status": "pass",
+      "result": {
+        "passed": 354,
+        "failed": 0
+      },
+      "rawLogSha256": "725553c59c09bd92543b6a92970cea2191fae4044959884b0e79fbfc2d51686b"
+    },
+    {
+      "check": "Production WASM manifests",
+      "command": "ESP32SIM_ROM_DIR=$ROMS node tools/wasm-test.mjs hello c3-hello c6-hello p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik",
+      "status": "pass",
+      "result": {
+        "passed": 13
+      },
+      "rawLogSha256": "7ab25056f40dc8c6931353070b0a53fb0c82f57dc883a3504059a7f5df787fc4"
+    },
+    {
+      "check": "Timing and legacy BLE ABI",
+      "command": "node wasm/tests/timing-api.mjs $WASM; node wasm/tests/ble-api.mjs $WASM web/wasm/fw/public $C3_ROM; node wasm/tests/ble-connection.mjs $WASM web/wasm/fw/public $C3_ROM",
+      "status": "pass",
+      "result": "passed real exports",
+      "rawLogSha256": "f8de765e8aea89dd490f5101402b92d181d8b36eb61a7943f1c279d95a9d65b2"
+    },
+    {
+      "check": "Real recording, StopWatch and diagnostics",
+      "command": "ESP32SIM_ROM_DIR=$ROMS node tools/platform-recording-test.mjs --real; ESP32SIM_ROM_DIR=$ROMS node tools/wasm-test.mjs demo-stopwatch; ESP32SIM_ROM_DIR=$ROMS node tools/probe-hardware-diagnostics.mjs tools/fixtures/stopwatch-hardware-checks.json $OUTPUT",
+      "status": "pass",
+      "result": {
+        "replayEvents": 18,
+        "frameEqual": true,
+        "stopwatch": true,
+        "diagnostics": true
+      },
+      "rawLogSha256": "13fab3624053a672bc688c8618da3c64c7633544c4051b7665d8705662f64e2e"
+    },
+    {
+      "check": "WASM differential",
+      "command": "tools/wasm-jit-test.sh",
+      "status": "pass",
+      "result": {
+        "cases": 111126,
+        "groups": 78,
+        "compiledModulesReleased": 99679,
+        "gpioWaveformCases": 24
+      },
+      "rawLogSha256": "eb633c784cf891ba72d9b9915da65e5cd05615fb684636cddb3f7ce563fa644a"
+    },
+    {
+      "check": "Profiling feature compile",
+      "command": ". ./tools/wasm-rustflags.sh; cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "status": "pass",
+      "result": "production flags compile passed; this artifact is not the published production module",
+      "rawLogSha256": "f89a2fce41baef0d7ee4a059675a9bcf0bd1ee6783808210273c8b0675b4a38c"
+    },
+    {
+      "check": "Worker and browser benchmark contracts",
+      "command": "node tools/worker-pacing-test.mjs; node tools/worker-channel-test.mjs; node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs; python3 -m unittest discover -s tools/browser-benchmark -p test_*.py",
+      "status": "pass",
+      "result": "passed",
+      "rawLogSha256": "bd564de242da18fa38ed5285fa36625727a467dfc202c24b12b42d93031fb2f9"
+    },
+    {
+      "check": "Network helper and relay",
+      "command": "node tools/network-helper-test.mjs; node --test tools/network-relay-test.mjs",
+      "status": "pass",
+      "result": "real TCP/TLS/UDP and port mapping passed; relay 8 passed, 2 explicit external skips",
+      "rawLogSha256": "872881fbc6902bc4035f44d9c9877e96d84526089cd374d6ed3cd647db15d7b5"
+    },
+    {
+      "check": "Retained evidence contracts",
+      "command": "Run retained x5, m1-before-after and historical-before-after verify test and script pairs from .github/workflows/ci.yml",
+      "status": "pass",
+      "result": "passed",
+      "rawLogSha256": "4b9e306aab8c9f591869f5b33a8a6043ff7ae6ff9ff40d6ee1b0fa5ab2bb21c1"
+    },
+    {
+      "check": "Release CLI build",
+      "command": "cargo +stable build --release --locked --bin esp32sim --bin esp32sim-c3 --bin esp32sim-c6",
+      "status": "pass",
+      "result": "passed",
+      "rawLogSha256": "deb427be0c3a7186c7d1fcd0c54f45f194cbd6b423a4664ab456bd16c7c6fc98"
+    },
+    {
+      "check": "Production WASM sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "status": "pass",
+      "result": "no DWARF; profile names retained",
+      "rawLogSha256": "07425a28d67bb71685a5f3709d4111463ef1d5bdab73d96283ebaee6b8adaf83"
+    },
+    {
+      "check": "Catalog schema",
+      "command": "python3 tools/validate-platform-catalog.py",
+      "status": "pass",
+      "result": "218 products, 10 accessories, 174 firmware entries, 120 watchlist entries",
+      "rawLogSha256": "60f9faa1a5f9fbaa2918c14f0512428b24dab840f081c96a2ef50fe39ce6e9f8"
+    },
+    {
+      "check": "Knowledge boundaries",
+      "command": "node --test tools/platform-knowledge-test.mjs",
+      "status": "pass",
+      "result": "226 product records",
+      "rawLogSha256": "fff8b5d087575830ded6cb26e46ed526e419ef3084ec44046708f638649f5a75"
+    }
+  ],
+  "productEvidence": [
+    "wasm.json",
+    "browser.json"
+  ],
+  "fixedRegression": {
+    "test": "matrix_uses_real_i2c_power_nibbles_and_shared_cpu_reset_state",
+    "previousFailure": "Old assertion required exactly four registered I2C handlers; optional Grove routes add three handlers.",
+    "correction": "Assert actual ACK responders 0x4f, 0x68, 0x6e; absent Grove and unpowered matrix NACK. Production behavior unchanged."
+  },
+  "limitations": [
+    "External tests requiring other local firmware/hardware remain excluded by CI policy.",
+    "No physical-device equivalence, RF, or complete UIFlow startup claim.",
+    "Original missing M5Things and upstream TLS epoch defects remain; see corematrix-runtime.md."
+  ],
+  "curation": "Full logs remain outside Git; their hashes identify measured outputs. No local paths, process inventories, identity or raw guest consoles retained.",
+  "performanceEvidence": "../../../evidence/corematrix-cpu/results.json"
+}
