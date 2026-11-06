@@ -11886,14 +11886,15 @@
       "simulationVerified": false,
       "hardwareValidated": false,
       "storage": "remote-links-only",
-      "compatibility": "unverified",
+      "compatibility": "partial",
       "publicationUrl": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.4",
       "sdk": "ESP-IDF v5.5.4-dirty",
       "limitations": [
         "M5Stack GitHub 2.5.4 / e437118 官方 CoreMatrix 构建；完整镜像 SHA-256、ESP32-C61 芯片 ID 20、16MB Flash 和启动布局已核对。",
-        "此条目的固件启动与外设功能尚未验证；LED 点阵须通过固件的 TM1680 I²C 输出验收。未实机验证。",
+        "已从真实 ESP32-C61 ROM 和原镜像 bootloader 启动至 MicroPython；原启动脚本报 M5Things 模块缺失。内部 REPL 程序已验证 TM1680 非对称像素输出及部分外设寄存器操作；不是原 UIFlow 应用完整兼容，未实机验证。",
         "官方 GitHub 下载响应未提供 Access-Control-Allow-Origin；网页直载受 CORS 限制，可从官方发布页下载后本地导入。本站不镜像第三方固件。",
-        "与 M5Burner v2.5.4 / 509a67aa 构建分别记录；本轮未找到可证明 CoreMatrix 出厂用途的固定镜像，UIFlow2 不标为 factory。"
+        "与 M5Burner v2.5.4 / 509a67aa 构建分别记录；本轮未找到可证明 CoreMatrix 出厂用途的固定镜像，UIFlow2 不标为 factory。",
+        "另核对 GitHub 2.5.3、2.5.2，均出现相同缺失模块；原镜像文件系统离线挂载正常且未包含 M5Things。M5Burner 构建尚未下载，不推断其运行结果。"
       ],
       "sources": [
         {
