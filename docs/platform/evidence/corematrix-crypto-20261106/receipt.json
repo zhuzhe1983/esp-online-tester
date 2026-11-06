@@ -1,0 +1,63 @@
+{
+  "recordedAt": "2026-11-06T05:06:06Z",
+  "outcome": "pass",
+  "sourceCommits": {
+    "baseline": [
+      "5d67a6ae",
+      "6e9fca40"
+    ],
+    "fix": "fac00a34"
+  },
+  "originalFirmwareSha256": "8d5b8d4e22ebc293937086b2f9f218aa5a5ebda27b5ccb32b3f8f580ee02939b",
+  "romSha256": "c4ee94d3a8e335da4ef5f30a8a1ebb9691e639f1c773f484e9ba721aa1557c2e",
+  "nativeBinaryBeforeSha256": "a3b8a5532d98f4dc2fc4bd4fa8e7d94d64bcf252e9decd1811a53bdc3ad88b05",
+  "nativeBinaryAfterSha256": "d523f466477ad6c674fce4f90dbd92afdd9218b46bf5b96473e3c0796984f2a8",
+  "fixtures": {
+    "tools/fixtures/corematrix-crypto/known-answer.py": "f7c54e1eeb1d2aec5f97db5e2519f18f34627a2755d38bc50392132cf139a01f",
+    "tools/fixtures/corematrix-crypto/hash-vectors.json": "1c9734a492bf53d9853316e5801809359599db83126f1c081abfd9a4823348f0"
+  },
+  "execution": {
+    "bootInstructionBudget": 100000000,
+    "scriptInstructionBudget": 100000000,
+    "rawReplChunkBytes": 64,
+    "instructionsPerChunk": 1000000,
+    "totalInstructions": 335000000,
+    "completeMarker": "CM_CRYPTO_PASS",
+    "rawCpuExceptionCounter": "not printed by this example snapshot; no exception count claim is made",
+    "firmwareBytesPatched": false,
+    "rtcChanged": false,
+    "networkUsed": false
+  },
+  "results": {
+    "hashKnownAnswers": 99,
+    "rfc4231HmacSha256": 3,
+    "tls12PSha256PublicComposition": 1,
+    "aesEcbCbcKnownAnswers": 6,
+    "totalMatchingResults": 109,
+    "mismatches": 0,
+    "apiUnavailable": [
+      "cryptolib CTR mode6 raises ValueError: mode in original firmware"
+    ],
+    "notDirectlyExercised": [
+      "native mbedTLS HMAC/PRF entrypoints",
+      "AES-GCM/GHASH record protection",
+      "certificate verification and TLS Finished (covered by the separate network lane)"
+    ]
+  },
+  "beforeFix": {
+    "result": "sha256 mismatch",
+    "publicInput": "bytes(range(256)) * 32",
+    "inputBytes": 8192,
+    "expected": "dc404a613fedaeb54034514bc6505f56b933caa5250299ba7d094377a51caa46",
+    "actual": "1322c28eb5f9fa9043d40f1dac099aec15ffefe06aa04bd836b8776c08f891e8",
+    "rawLogSha256": "a9ad462b1db932017ef781259250b0b82d9bd1544f56319a1dc1497fed9d2347",
+    "curatedLog": "before-fix.txt",
+    "curatedLogSha256": "5dac739e3f97bf0880f39292edfc02cb432a932807727eb220b1921851a4dba8"
+  },
+  "afterFix": {
+    "rawLogSha256": "30d54fcc719cab979fc85c732dcd52ff21e2b0620d9b079a88b39075a516f684",
+    "curatedLog": "guest-output.txt",
+    "curatedLogSha256": "c498e37ff1d5652f17a131bffaeeb4eb6eb521eb989e7ca4be40287d669341aa"
+  },
+  "curation": "Kept all guest CM_CRYPTO markers and the initial known-answer assertion. Removed boot text, REPL control bytes, register dumps and board LED arrays. All retained keys and messages are public or explicitly fixed test constants. No TLS traffic, session keys, certificate private keys, host paths or user identifiers are retained."
+}
