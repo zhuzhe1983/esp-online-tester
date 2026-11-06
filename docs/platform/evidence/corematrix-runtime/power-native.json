@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-11-06T04:54:06.377436Z",
+  "kind": "native-original-firmware-functional-acceptance",
+  "runtimeBaseCommit": "e70532a7",
+  "correspondingImplementationCommits": [
+    "69cb066c",
+    "f2353419",
+    "6e9fca40"
+  ],
+  "environment": {
+    "hostOS": "Darwin",
+    "architecture": "arm64",
+    "rustc": "1.99.1 (58cf8f9c3 2026-10-13)",
+    "profile": "release",
+    "cpuHz": 160000000,
+    "flashBytes": 16777216,
+    "psramBytes": 8388608,
+    "buildJobs": 2
+  },
+  "inputs": [
+    {
+      "name": "uiflow-e437118-esp32c61-16mb-corematrix-v2.5.4-20261030.bin",
+      "byteLength": 16773120,
+      "sha256": "8d5b8d4e22ebc293937086b2f9f218aa5a5ebda27b5ccb32b3f8f580ee02939b"
+    },
+    {
+      "name": "esp32c61_rev100_rom.elf",
+      "byteLength": 452980,
+      "sha256": "c4ee94d3a8e335da4ef5f30a8a1ebb9691e639f1c773f484e9ba721aa1557c2e"
+    }
+  ],
+  "testSources": [
+    {
+      "name": "esp32c61/tests/corematrix_power_firmware.rs",
+      "byteLength": 7845,
+      "sha256": "2debe8920cc4def26f81dd887709724fea463eefc6776faf775be044717c29f2"
+    },
+    {
+      "name": "tools/fixtures/corematrix-uiflow/power-wake.py",
+      "byteLength": 1276,
+      "sha256": "b892f2d91cd6c180d50fe35e67d5da72f19d4afd96d3ab2894ac15415b9bf3ae"
+    }
+  ],
+  "m5UnifiedCommit": "b67ea7bd2d187d3fa8719edf1b915fd34a128c0d",
+  "batterySamplesMv": [
+    -1,
+    -1,
+    3900
+  ],
+  "vbusSamplesMv": [
+    5000,
+    5000,
+    5000
+  ],
+  "sampleIntervalMs": 1300,
+  "checks": [
+    {
+      "id": "powerKeyOff",
+      "guestDurationMs": 500,
+      "retiredBefore": 732000000,
+      "retiredAfter": 732000000,
+      "pcUnchanged": true,
+      "controllerPowered": false
+    },
+    {
+      "id": "noLdoMotion",
+      "guestDurationMs": 150,
+      "retiredBefore": 941089424,
+      "retiredAfter": 941089424,
+      "pcUnchanged": true,
+      "controllerPowered": false
+    },
+    {
+      "id": "retainedLdoMotion",
+      "stimulusRawAccelG": [
+        0.5,
+        0,
+        1
+      ],
+      "latencyCycles": 13945112,
+      "latencyMs": 87.15695,
+      "retiredBefore": 1070178976,
+      "retiredAfter": 1070178976,
+      "wakeSourceReadByGuest": 32,
+      "resetRequestedBeforeRetirement": true
+    }
+  ],
+  "romAndOriginalApplicationBoots": 4,
+  "requestedReboots": 3,
+  "cpuExceptions": 0,
+  "testResult": "passed",
+  "clippyWarningsDenied": "passed",
+  "initialFailedAttempt": {
+    "reason": "M5.begin left INT_MAP_DATA 0x58=0xff, holding INT1 low before the motion event",
+    "resolution": "guest explicitly writes 0x58=0, checks PM1 GPIO4 is high before shutdown",
+    "emulatorChangesRequired": false
+  },
+  "limits": [
+    "Digital emulator; no physical device or analog calibration.",
+    "Five 50Hz feature samples allow 80–100ms initial-phase latency; no silicon timing claim.",
+    "Original distribution M5Things startup import error remains."
+  ],
+  "privacy": {
+    "retained": "public artifact hashes, selected numeric outputs and source identities",
+    "omitted": "raw console log, local user paths and process/session details"
+  },
+  "runtimeSources": [
+    {
+      "path": "esp32c61/src/board/corematrix.rs",
+      "sha256": "9608b5c264028b39403ed06cc788ef7dd5368769fc6b835a1bce2ef27a027e2f"
+    },
+    {
+      "path": "esp32c61/src/bus.rs",
+      "sha256": "21218776371336d86220c3a774c89d41f01ec0138413c0e573fe3a1e13fa0928"
+    },
+    {
+      "path": "esp32c61/src/soc.rs",
+      "sha256": "cd54c0833a9b5373069334f41e430d5961c1b3b87e4ac0093b0e63a97ade0cfd"
+    },
+    {
+      "path": "esp32c61/src/periph.rs",
+      "sha256": "2e443a608c2e09ab96e2b5bec193ab48e0ca261ac4e0862cef0be973b6f28d45"
+    },
+    {
+      "path": "esp-periph/src/i2c/m5.rs",
+      "sha256": "00dff44626d406c233e9da65aadb6dbc56116651cf2dc2e12a33a29440d790a2"
+    },
+    {
+      "path": "esp-periph/src/i2c/bmi270.rs",
+      "sha256": "410c8573b16fd516a4c16512a0e31735fe682bc572c7c8d4b1cb2186b963dcc8"
+    },
+    {
+      "path": "esp-soc/src/machine.rs",
+      "sha256": "3acbf2da0a6e5968ef5c09d11abb82ec7f58f2b9db476423604c14c9d0f151e6"
+    }
+  ]
+}
