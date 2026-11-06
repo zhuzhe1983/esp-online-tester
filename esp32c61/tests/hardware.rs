@@ -91,3 +91,28 @@ fn c61_pmic_download_command_enters_actual_mask_rom_loader() {
     m.reboot();m.run(1_000_000);let text=String::from_utf8_lossy(&m.console.all);
     assert_eq!(m.exceptions,0,"{text}");assert!(text.contains("ESP-ROM:esp32c61"),"{text}");assert!(text.contains("waiting for download"),"{text}");
 }
+
+#[test]
+fn c61_uart_matrix_native_pins_and_source_clock_are_not_c6_values() {
+    let mut b=Bus61::new(4<<20,[0;6]);
+    b.write32(0x60090028,1<<9).unwrap();b.write32(0x60000014,80).unwrap();
+    assert_eq!(b.periph.uart_route(0).tx_pins,1<<11);assert_eq!(b.periph.uart_route(0).rx_pin,Some(10));assert_eq!(b.periph.uart_route(0).baud,Some(500_000));
+    for pin in [21,22] {b.write32(0x60090000+pin*4,(1<<12)|(1<<9)).unwrap();}
+    b.write32(0x60091ad4+21*4,72).unwrap();b.write32(0x600912d4+72*4,0x100|22).unwrap();b.write32(0x60091038,1<<21).unwrap();
+    b.write32(0x60006014,160).unwrap();b.write32(0x6009601c,(1<<22)|(2<<20)).unwrap();
+    let route=b.periph.uart_route(2);assert_eq!(route.tx_pins,1<<21);assert_eq!(route.rx_pin,Some(22));assert_eq!(route.baud,Some(500_000));
+    b.periph.uart_pin_input(&esp_soc::uart::UartInput::new(22,500_000,b"C61".to_vec()));assert_eq!(b.read32(0x60006000).unwrap(),b'C' as u32);
+    b.periph.uart_pin_input(&esp_soc::uart::UartInput::new(22,115_200,vec![1]));assert_ne!(b.periph.uart[2].int_raw&esp_periph::uart::INT_FRM_ERR,0);
+    b.write32(0x60091ad4+21*4,72|(1<<9)).unwrap();assert_eq!(b.periph.uart_route(2).tx_pins,0);
+    b.write32(0x6009601c,0).unwrap();assert_eq!(b.periph.uart_route(2).baud,None);
+}
+
+#[test]
+fn c61_ledc_clock_gate_and_nine_bit_matrix_inversion_control_pwm() {
+    let mut b=Bus61::new(4<<20,[0;6]);b.write32(0x60090054,1<<12).unwrap();b.write32(0x60091ad4+21*4,0).unwrap();b.write32(0x60091038,1<<21).unwrap();
+    for (off,value) in [(0xa0,8|(256<<5)|(1<<26)),(8,64<<4),(12,1<<31),(0,4|(1<<4))] {b.write32(0x60007000+off,value).unwrap();}b.tick(10000);
+    assert_eq!(b.pwm_output(21),Some((156250.,16384)));b.write32(0x60091ad4+21*4,1<<9).unwrap();assert_eq!(b.pwm_output(21),Some((156250.,49151)));
+    b.write32(0x60096038,(1<<22)|(2<<20)).unwrap();assert_eq!(b.pwm_output(21),Some((312500.,49151)));
+    b.write32(0x60096038,(1<<22)|(1<<20)).unwrap();assert_eq!(b.pwm_output(21),Some((68359.375,49151)));
+    b.write32(0x60096038,0).unwrap();assert!(b.pwm_output(21).is_none());b.write32(0x60096038,1<<22).unwrap();b.write32(0x60096034,3).unwrap();assert!(b.pwm_output(21).is_none());
+}

@@ -286,7 +286,7 @@ pub fn run_cli(default_chip: &str) {
         "c6" | "esp32c6" => { let m = setup_c6(&o); run(m, &o) }
         "p4" | "esp32p4" if p4_rev3(&o) => { let m = setup_p4::<esp32p4::RevGe3>(&o); run(m, &o) }
         "p4" | "esp32p4" => { let m = setup_p4::<esp32p4::RevLt3>(&o); run(m, &o) }
-        c => { eprintln!("--chip {}: esp32, s3, c3, c5, c6 or p4", c); std::process::exit(2) }
+        c => { eprintln!("--chip {}: esp32, s3, c3, c5, c6, c61 or p4", c); std::process::exit(2) }
     }
 }
 

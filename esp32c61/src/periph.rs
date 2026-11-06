@@ -206,6 +206,8 @@ impl Default for Pcr { fn default() -> Self { Self::new() } }
 impl Pcr {
     pub fn new() -> Self {
         let mut p = Pcr { ram: RegRam::new() };
+        for offset in [0x00,0x0c,0x18,0x34] { p.ram.write(offset,1); }
+        for offset in [0x04,0x10,0x1c,0x30,0x38] { p.ram.write(offset,1<<22); }
         p.ram.write(0x11c, 0x300);
         p.ram.write(0x100, 0xff);
         p
@@ -344,16 +346,47 @@ impl Peripherals {
         timg: [TimerGroup::new(), TimerGroup::new()], gpio: GpioC61 { gpio: { let mut g = Gpio::with_pins(30); g.input_select = 0x100; g.func_in_sel.fill(0x60); g } }, io_mux: RegRam::new(), i2c: esp_periph::i2c::I2c::new(),
         efuse: efuse_c61(mac, 1, 0, 0, 0, 0), spi0: SpiMemC61(SpiMem::new(false)), spi1: SpiMemC61(SpiMem::new(true)), sha: Sha::new(),
         gdma: GdmaC61::new(), spi2: GpSpi::new(), intmtx: IntMatrix::new(), intc: Intc::new(), cache: Cache::new(), lpsys: LpSys::new(), pcr: Pcr::new(),
-        ana_mst: AnaMst::new(), rng: Rng::new(), misc: Misc::new(), spi_exec: false, clock: Self::new_clock(), ledc: Ledc::new(LedcLayout::C6),
+        ana_mst: AnaMst::new(), rng: Rng::new(), misc: Misc::new(), spi_exec: false, clock: Self::new_clock(), ledc: { let mut d=Ledc::new(LedcLayout::C6); d.external_clock_hz=40_000_000; d },
     } }
     pub fn block_name(_block: u32) -> &'static str { "C61" }
+    // ESP-IDF v5.5.4 C61 gpio_sig_map.h, io_mux_reg.h and pcr_reg.h:
+    // U0/U1/U2 signals 6/9/72, U0 native TX/RX GPIO11/10 function0.
+    // C61's source encoding differs from the shared UART divider arithmetic.
+    pub fn uart_route(&self, port: usize) -> esp_soc::uart::UartRoute {
+        let Some(&signal)=[6usize,9,72].get(port) else { return esp_soc::uart::UartRoute::new(port,0,None,None); };
+        let clock=self.pcr.read(4+port as u32*12);let source=match (clock>>20)&3 {0=>3,1=>2,2=>1,_=>0};
+        let baud=if self.pcr.read(port as u32*12)&3==1 && clock&(1<<22)!=0 {self.uart[port].baud((clock&!(3<<20))|(source<<20),17_500_000)} else {None};
+        let pins=PINS.routes(&self.gpio,&self.io_mux);let mut tx=0;
+        for pin in 0..30 {if (port==0&&pin==11&&pins.function(pin,0)) || (self.gpio.enable&(1<<pin)!=0&&pins.matrix_output(pin,signal as u32)) {tx|=1<<pin;}}
+        let rx=if self.gpio.func_in_sel[signal]&0x100!=0 {pins.input_pin(signal)} else if port==0&&pins.input_function(10,0) {Some(10)} else {None};
+        esp_soc::uart::UartRoute::new(port,tx,rx,baud)
+    }
+    pub fn uart_pin_input(&mut self,input:&esp_soc::uart::UartInput) {
+        let routes:[_;3]=std::array::from_fn(|port|self.uart_route(port));esp_soc::uart::uart_pin_input(&mut self.uart,input,&routes);
+    }
+    pub fn pwm_output(&self,pin:u8)->Option<(f64,u32)> {
+        if pin>=30 || self.gpio.enable&(1<<pin)==0 || !PINS.routes(&self.gpio,&self.io_mux).function(pin as usize,1) {return None;}
+        let matrix=self.gpio.func_out_sel[pin as usize];let signal=matrix&0x1ff;if signal>=6 {return None;}
+        // Host observation only: adapt C61's nine-bit selector plus inversion bit9
+        // to the common six-channel LEDC arithmetic, without changing other chips.
+        let mut gpio=Gpio::with_pins(1);gpio.enable=1;gpio.func_out_sel[0]=signal|((matrix>>1)&(1<<8));
+        self.ledc.output(&gpio,0)
+    }
     pub fn read32(&mut self, addr: u32) -> u32 { mmio::read32(self, addr) }
     pub fn write32(&mut self, addr: u32, v: u32) {
         if (0x60090000..=0x60090074).contains(&addr) { self.gpio.set_pad(((addr - 0x60090000) / 4) as u8, v); }
         if addr == 0x60004004 && v & (1 << 5) != 0 && self.i2c.has_pinned_devices() {
             let route = PINS.routes(&self.gpio, &self.io_mux); self.i2c.set_pins(route.i2c_pin(47).zip(route.i2c_pin(46)));
         }
+        if addr==0x60096034 && v&2!=0 {self.ledc=Ledc::new(LedcLayout::C6);}
         let fx = mmio::write32(self, addr, v); self.spi_exec |= fx.contains(WriteEffect::SPI_EXEC);
+        // C61 LEDC register fields match the shared six-channel layout; PCR
+        // source 0/1/2 is XTAL/RC_FAST/PLL_F80M (v5.5.4 pcr_reg.h).
+        if matches!(addr,0x60096034|0x60096038) {
+            let conf=self.pcr.read(0x34);let clock=self.pcr.read(0x38);
+            self.ledc.external_clock_hz=if conf&3!=1 || clock&(1<<22)==0 {0} else {match (clock>>20)&3 {0=>40_000_000,1=>17_500_000,2=>80_000_000,_=>0}};
+            self.refresh_optional(0x07);
+        }
     }
     pub fn cpu_sub_read(&self, off: u32) -> u32 { self.intc.cpu_read(off) }
     pub fn cpu_sub_write(&mut self, off: u32, v: u32, lanes: u32) { self.intc.cpu_write(off, v, lanes); }
