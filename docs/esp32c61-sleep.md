@@ -62,7 +62,9 @@ CPU unless an implemented PMU wake source is enabled.
 Seven release unit tests cover the exact 200 ms boundary, fractional accounting,
 48-bit wrap/high word, independent wake and IRQ masks, read-only/W1C registers,
 snapshot history, immediate rejection, reset5 and retained LP state. Release
-Clippy with all targets and `-D warnings` passes in the standalone module harness.
+Clippy with all targets and `-D warnings` passes in the standalone module harness
+and the integrated C61 crate. The integrated crate release suite passes 43 tests;
+the original-firmware sleep fixture is run separately.
 
 The ignored external fixture `external_official_uiflow_timed_light_and_deep_sleep`
 uses an unchanged UIFlow image. It checks CPU execution and SYSTIMER freeze during
@@ -75,6 +77,31 @@ ESP32SIM_ROM_DIR=<rom-directory> ESP32SIM_COREMATRIX_FIRMWARE=<original-image> \
 CARGO_BUILD_JOBS=2 cargo test --release -p esp32c61 --test sleep \
   external_official_uiflow_timed_light_and_deep_sleep -- --ignored --nocapture
 ```
+
+## Original-firmware acceptance
+
+With SoC scheduling integration `d8c912d2` and C61 eFuse idle-state handling
+`55a6b792`, the external fixture passed against these unchanged inputs:
+
+- UIFlow 2.5.4 merged image SHA-256:
+  `8d5b8d4e22ebc293937086b2f9f218aa5a5ebda27b5ccb32b3f8f580ee02939b`.
+- C61 rev100 ROM ELF SHA-256:
+  `c4ee94d3a8e335da4ef5f30a8a1ebb9691e639f1c773f484e9ba721aa1557c2e`.
+- `lightsleep(200)` reported **199 ms** of guest elapsed time. During an observed
+  100 ms sleep interval, PC, integer registers, instruction count and SYSTIMER
+  stayed unchanged. The same CPU resumed without reset.
+- `deepsleep(200)` raised reset cause5 at the LP alarm, did not return to the
+  caller, rebooted through the original ROM once, and then printed
+  `C61_DEEP_RESET_OK True` from the guest's own reset-cause comparison.
+- No CPU exceptions were observed. The fixture does not patch firmware,
+  replace sleep functions, or inject a successful guest result.
+
+The initial integration run retained the CPU hold correctly but did not wake:
+its incorrect bit3 assumption was exposed by the original firmware's `0x10`
+wake-enable write and corrected from the C61 PMU-specific header. The next run
+woke but waited at `pmu_sleep_finish` for eFuse idle status. C61's read-only
+`EFUSE_STATUS +0x1d0` state1 is required; the former generic state0 meant reset.
+These negative outcomes are distinct from the final passing acceptance.
 
 ## Source receipt
 
@@ -94,3 +121,5 @@ Sources retrieved 2026-11-06; hashes are SHA-256 of the original source bytes.
 | [rtc_time.c](https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/esp_hw_support/port/esp32c61/rtc_time.c) | `c4f269b3c52686682d42684fdb2f4f1ecf5df81c2852b098e5360f34c0f237d9` |
 | [pmu_bit_defs.h](https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/esp_hw_support/port/esp32c61/private_include/pmu_bit_defs.h) | `c7804ec266f82899b5e628a211a496b7c7e67ff5ac06d5380b1261e781c62ba7` |
 | [esp_pmu.h](https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/esp_hw_support/include/esp_private/esp_pmu.h) | `cfa4ec9dab6f88fa37e264058389fdecdf55a4a1744182d503694a6445055366` |
+| [efuse_reg.h](https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c61/register/soc/efuse_reg.h) | `5d2e25bc2a473d337caf9a170377c2de46fdc4ed9cfb5f4eb49e4cfe066a1556` |
+| [efuse_ll.h](https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/hal/esp32c61/include/hal/efuse_ll.h) | `ab384a6f4df5848260c160eee3546642fac85b69156effdbdb074d6a305e2f3d` |

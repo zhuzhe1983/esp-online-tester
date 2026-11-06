@@ -68,4 +68,5 @@ fn external_official_uiflow_timed_light_and_deep_sleep() {
     m.run(20_000_000);
     assert!(String::from_utf8_lossy(&m.console.all).contains("C61_DEEP_RESET_OK True"));
     assert_eq!(m.exceptions, 0); assert_eq!(m.reboots, 1);
+    eprintln!("C61_SLEEP_ACCEPT light_elapsed_ms={elapsed} held_cpu_and_systimer=true deep_reset=5 guest_deepsleep_reset=true rom_reboots={}", m.reboots);
 }
