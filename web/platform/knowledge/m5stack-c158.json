@@ -1,0 +1,1028 @@
+{
+  "schemaVersion": "1",
+  "id": "m5stack-c158",
+  "kind": "product",
+  "catalogId": "m5stack-c158",
+  "title": "M5Stack CoreMatrix · C158",
+  "summary": "ESP32-C61 白色16×16点阵主控，配16MB Flash、8MB PSRAM、BMI270、三个用户键及独立电源管理。",
+  "summarySourceIds": [
+    "official-docs"
+  ],
+  "updatedAt": "2026-11-06T04:20:50Z",
+  "hardwareRevision": "User unit unspecified; downloaded main schematic V0.7 dated2026-06-09",
+  "identity": {
+    "manufacturer": "M5Stack",
+    "sku": "C158",
+    "directory": "C158_CoreMatrix"
+  },
+  "facts": [
+    {
+      "id": "soc",
+      "label": "主控",
+      "value": "ESP32-C61HR8",
+      "group": "compute",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "cpu",
+      "label": "CPU",
+      "value": {
+        "architecture": "RISC-V 32-bit",
+        "cores": 1,
+        "frequencyMHz": 160
+      },
+      "group": "compute",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "flash",
+      "label": "Flash",
+      "value": 16,
+      "group": "memory",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "unit": "MiB"
+    },
+    {
+      "id": "psram",
+      "label": "Quad PSRAM",
+      "value": 8,
+      "group": "memory",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "unit": "MiB"
+    },
+    {
+      "id": "wireless",
+      "label": "无线",
+      "value": "2.4 GHz Wi-Fi 6",
+      "group": "connectivity",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "display",
+      "label": "点阵",
+      "value": {
+        "width": 16,
+        "height": 16,
+        "color": "white",
+        "driver": "TM1680",
+        "touch": false
+      },
+      "group": "display",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "tm1680-address",
+      "label": "点阵地址",
+      "value": {
+        "sevenBit": "0x72",
+        "schematicEightBit": "0xE4",
+        "sda": 0,
+        "scl": 1
+      },
+      "group": "pinmap",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "0xE4包括读写位；模拟器设备地址应使用7位0x72。"
+    },
+    {
+      "id": "imu",
+      "label": "姿态传感器",
+      "value": {
+        "controller": "BMI270",
+        "axes": 6,
+        "i2cAddress": "0x68",
+        "sda": 0,
+        "scl": 1
+      },
+      "group": "sensors",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "i2c",
+      "label": "内部I2C",
+      "value": {
+        "sda": 0,
+        "scl": 1,
+        "devices": [
+          {
+            "name": "BMI270",
+            "address": "0x68"
+          },
+          {
+            "name": "TM1680",
+            "address": "0x72"
+          },
+          {
+            "name": "M5IOE1",
+            "address": "0x4F"
+          },
+          {
+            "name": "M5PM1",
+            "address": "0x6E"
+          }
+        ]
+      },
+      "group": "pinmap",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "sd",
+      "label": "microSD SPI",
+      "value": {
+        "mosi": 27,
+        "miso": 26,
+        "sck": 25,
+        "cs": 28,
+        "power": "M5IOE1 IO1",
+        "cardDetect": "M5IOE1 IO10",
+        "detectedLevel": "low"
+      },
+      "group": "storage",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "buzzer",
+      "label": "蜂鸣器",
+      "value": {
+        "model": "MLT-8530",
+        "kind": "passive",
+        "power": "M5IOE1 IO2",
+        "pwm": "M5IOE1 IO11"
+      },
+      "group": "audio",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "buttons",
+      "label": "按键",
+      "value": {
+        "button-a": {
+          "label": "KEY1",
+          "controller": "M5PM1",
+          "gpio": 0
+        },
+        "button-b": {
+          "label": "KEY2",
+          "controller": "M5PM1",
+          "gpio": 1
+        },
+        "button-c": {
+          "label": "KEY3",
+          "controller": "M5PM1",
+          "gpio": 2
+        },
+        "power": {
+          "controller": "Stamp Timer Power2 / M5PM1",
+          "singleClick": "power on / reset",
+          "doubleClick": "power off",
+          "hold": "download mode"
+        }
+      },
+      "group": "controls",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "power-irqs",
+      "label": "电源管理中断",
+      "value": {
+        "pm1Gpio3": "ESP32-C61 GPIO2 IRQ",
+        "pm1Gpio4": "BMI270 IMU interrupt"
+      },
+      "group": "pinmap",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "ioe1",
+      "label": "M5IOE1引脚",
+      "value": {
+        "IO1": "TF power",
+        "IO2": "buzzer power",
+        "IO3": "charge current",
+        "IO4": "LED matrix power",
+        "IO5": "Grove power",
+        "IO8": "charge status active-low",
+        "IO10": "TF detect active-low",
+        "IO11": "buzzer PWM"
+      },
+      "group": "pinmap",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "power",
+      "label": "输入电源",
+      "value": {
+        "USB": {
+          "voltage": 5,
+          "unit": "V"
+        },
+        "battery": {
+          "voltage": 3.7,
+          "unit": "V"
+        },
+        "M5Bus": {
+          "voltage": 5,
+          "direction": "IN/OUT",
+          "unit": "V"
+        }
+      },
+      "group": "power",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "charging",
+      "label": "充电电流",
+      "value": {
+        "M5IOE1_IO3_low_mA": 650,
+        "M5IOE1_IO3_high_mA": 180,
+        "default": "high"
+      },
+      "group": "power",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "consumption",
+      "label": "功耗",
+      "value": {
+        "supplyVoltageV": 4.2,
+        "offMicroamp": 8.21,
+        "fullLoadMilliamp": 128.06
+      },
+      "group": "power",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "grove",
+      "label": "PORT.A",
+      "value": {
+        "connector": "HY2.0-4P",
+        "pinsByWireColor": {
+          "black": "GND",
+          "red": "5V",
+          "yellow": "G0 SDA",
+          "white": "G1 SCL"
+        },
+        "powerEnable": "M5IOE1 IO5",
+        "unloadedVoltageV": 5,
+        "loadedVoltageV": 4.79,
+        "testedLoadmA": 470
+      },
+      "group": "pinmap",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "usb-port",
+      "label": "USB.PORT",
+      "value": {
+        "connector": "MX1.25-4P",
+        "pins": [
+          "GPIO12 USB_D-",
+          "GPIO13 USB_D+",
+          "GND",
+          "5V"
+        ]
+      },
+      "group": "pinmap",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "battery-connector",
+      "label": "电池连接器",
+      "value": "MX1.25-2P",
+      "group": "connectivity",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "m5bus",
+      "label": "M5-Bus逐针",
+      "value": {
+        "oddPins": [
+          "GND",
+          "GND",
+          "GND",
+          "G27 MOSI",
+          "G26 MISO",
+          "G25 SCK",
+          "G10 RXD0",
+          "G7 RXD2",
+          "G0 SDA",
+          "G0 SDA",
+          "G23 GPIO",
+          "G24 GPIO",
+          "NC",
+          "NC",
+          "NC"
+        ],
+        "evenPins": [
+          "G3 ADC",
+          "G4 ADC",
+          "ESP_EN",
+          "G5 DAC",
+          "G6 DAC",
+          "M5BUS_3V3_L0",
+          "G11 TXD0",
+          "G8 TXD2",
+          "G1 SCL",
+          "G1 SCL",
+          "G22 GPIO",
+          "G9 BOOT",
+          "G29 GPIO",
+          "5V_INOUT",
+          "BAT"
+        ]
+      },
+      "group": "pinmap",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "按官方文档的功能别名原样记录；DAC标签不独立证明SoC具有模拟DAC，实际功能应依芯片资料及具体固件核对。"
+    },
+    {
+      "id": "dimensions",
+      "label": "外形尺寸",
+      "value": [
+        54,
+        54,
+        11.6
+      ],
+      "group": "mechanical",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs",
+        "dimension-drawing"
+      ],
+      "unit": "mm"
+    },
+    {
+      "id": "weight",
+      "label": "产品重量",
+      "value": 28.9,
+      "group": "mechanical",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "unit": "g"
+    },
+    {
+      "id": "packaging",
+      "label": "包装",
+      "value": {
+        "dimensionsMm": [
+          132,
+          95,
+          16
+        ],
+        "grossWeightG": 45.1,
+        "contents": [
+          "CoreMatrix",
+          "2.0mm L-shaped hex key"
+        ]
+      },
+      "group": "mechanical",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "drawing-features",
+      "label": "厂家图纸独立尺寸",
+      "value": {
+        "frontInsetMm": [
+          51.23,
+          51.23
+        ],
+        "frontInsetRadiusMm": 3.62,
+        "outerCornerRadiusMm": 5,
+        "mountCentersMm": [
+          44,
+          44
+        ],
+        "mountThread": "M3",
+        "buttonPitchMm": 13
+      },
+      "group": "mechanical",
+      "basis": "official",
+      "sourceIds": [
+        "dimension-drawing"
+      ]
+    },
+    {
+      "id": "cad-envelope",
+      "label": "原厂STL外壳包围盒",
+      "value": [
+        54,
+        54.00000143,
+        11.60000038
+      ],
+      "group": "mechanical",
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "manufacturer-cad"
+      ],
+      "method": "Original17152 triangle mesh; min/max native vertex coordinates before one rigid translation. No scale or geometry fitting.",
+      "unit": "mm"
+    },
+    {
+      "id": "led-optical-layout",
+      "label": "照片中的LED窗口",
+      "value": {
+        "columns": 16,
+        "rows": 16,
+        "pitchMm": [
+          3,
+          2.93
+        ],
+        "windowMm": [
+          0.95,
+          0.95
+        ]
+      },
+      "group": "model",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-09",
+        "dimension-drawing"
+      ],
+      "method": "Bright-component centroids in front1600×1600 photo;54mm body silhouette sets scale. Row0 near +Y and col0 near -X in front-view model.",
+      "uncertainty": "Pitch uncertainty approximately0.12mm; optical bloom, slight perspective and lens distortion are uncalibrated. Not PCB placement or firmware orientation evidence."
+    },
+    {
+      "id": "schematic-version",
+      "label": "已下载原理图版本",
+      "value": "CoreMatrix V0.7,2026-06-09",
+      "group": "revision",
+      "basis": "official",
+      "sourceIds": [
+        "schematic-main"
+      ],
+      "notes": "资料文件名版次；不推断用户实物版次。"
+    },
+    {
+      "id": "frameworks",
+      "label": "官方开发入口",
+      "value": [
+        "Arduino (M5Unified/M5GFX)",
+        "UiFlow2"
+      ],
+      "group": "software",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "imu-orientation-diagram",
+      "label": "官方IMU方向图",
+      "value": {
+        "X": "toward microSD edge",
+        "Y": "toward opposite edge from USB / Grove",
+        "Z": "out of front LED face"
+      },
+      "group": "sensors",
+      "basis": "official",
+      "sourceIds": [
+        "imu-axes"
+      ],
+      "notes": "Diagram axis labels are visible product orientation, not independent proof of BMI270 raw-axis wiring. Driver coordinate remapping must be verified separately."
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "official-docs",
+      "title": "official-docs.html",
+      "url": "https://docs.m5stack.com/zh_CN/core/CoreMatrix",
+      "resolvedUrl": "https://docs.m5stack.com/zh_CN/core/CoreMatrix",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "d3fe7f47b2834d234d76c7bb1bbf671bc712a373532b5b36245e5139b30766b0",
+      "bytes": 148063,
+      "mediaType": "text/html",
+      "archiveName": "official-docs.html",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "manufacturer-cad",
+      "title": "manufacturer-cad.stl",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/Products/C158_CoreMatrix/Structures/CoreMatrix.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/Products/C158_CoreMatrix/Structures/CoreMatrix.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "177902e9d3c1ebf61fdf71c985e278aab8d09ae9a4caeef800b3bae715400c80",
+      "bytes": 857684,
+      "mediaType": "application/octet-stream",
+      "archiveName": "manufacturer-cad.stl",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "cad-license",
+      "title": "cad-license.txt",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/LICENSE",
+      "kind": "license",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+      "bytes": 1063,
+      "mediaType": "text/plain",
+      "archiveName": "cad-license.txt",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "dimension-drawing",
+      "title": "dimension-drawing.png",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_model_size_page_01.png",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_model_size_page_01.png",
+      "kind": "dimension-drawing",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "ae340dd697e2f7db705ad72f79bdf2662254ccca2fa6c0d228cb45c69b02f7e2",
+      "bytes": 599075,
+      "mediaType": "image/jpg",
+      "archiveName": "dimension-drawing.png",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "dimension-pdf",
+      "title": "dimension-pdf.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_model_size.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_model_size.pdf",
+      "kind": "dimension-drawing",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "6483ab2cc7eabb4c991684c17afab52da10553e2436c68fa06c16f802d84bcf2",
+      "bytes": 82084,
+      "mediaType": "application/pdf",
+      "archiveName": "dimension-pdf.pdf",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "schematic-main",
+      "title": "schematic-main.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/CoreMatrix_V0.7_SCH_PDF_20260609.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/CoreMatrix_V0.7_SCH_PDF_20260609.pdf",
+      "kind": "schematic",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "0cbe160858540460618c9487c5c95a9eaa320bdfb30a09efaf1c362674723328",
+      "bytes": 515181,
+      "mediaType": "application/pdf",
+      "archiveName": "schematic-main.pdf",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "schematic-led",
+      "title": "schematic-led.pdf",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/CoreMatrix_SCH_LED.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/CoreMatrix_SCH_LED.pdf",
+      "kind": "schematic",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "a36efe04d0ba8e2b8fac6f625daa025e75bc41102cb80678ee3f3e5064d5e926",
+      "bytes": 885677,
+      "mediaType": "application/pdf",
+      "archiveName": "schematic-led.pdf",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-01",
+      "title": "product-photo-01.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_01.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_01.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "e3d68d787c3f24363a027f591bbb98fa3e46f535982d1e694245ac4d0687e9d0",
+      "bytes": 289970,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-01.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-02",
+      "title": "product-photo-02.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_02.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_02.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "7027562ae0cc1137eb6ac7dac2f8073206d3d768801987469431f1a5bfa894a1",
+      "bytes": 99730,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-02.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-03",
+      "title": "product-photo-03.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_03.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_03.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "948cdca3bde46481fd5816407b6b1aecbe6a66d47fe77dafb57f7ec161d44aff",
+      "bytes": 71582,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-03.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-04",
+      "title": "product-photo-04.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_04.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_04.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "df5305118491542f6dc7ebfbaa300e902c0ab73e2635cb3131a0fd7c011fcb45",
+      "bytes": 224182,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-04.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-05",
+      "title": "product-photo-05.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_05.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_05.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "d9c72b3dd91c75479cc4fce8a91061eb4aa7549b92a832d9976ea05746baf38b",
+      "bytes": 233522,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-05.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-06",
+      "title": "product-photo-06.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_06.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_06.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "bafd3417d6f444e52fcebabf505464e9e29b29e615894422f6ba20f4cccf110a",
+      "bytes": 47934,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-06.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-07",
+      "title": "product-photo-07.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_07.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_07.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "01bae95a9f223ac2f4f52f77c022149672c35ed0ec93dd9592d94cee2cdeac1d",
+      "bytes": 128428,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-07.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-08",
+      "title": "product-photo-08.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_08.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_08.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "db52e2b9b2269047bc17381eaaa5c8229852b07dc5b14a659a49a62af1d9e381",
+      "bytes": 148434,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-08.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-09",
+      "title": "product-photo-09.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_09.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_09.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "8a7933610da4cc245f162b5479c7d8bc7d628cbe7689d944ae4c0e7caa791712",
+      "bytes": 90154,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-09.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-10",
+      "title": "product-photo-10.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_10.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_10.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:28Z",
+      "sha256": "1d0f14a41f80c8ecc31715d3e84935dc18a3d27a2ef822ddd95d9051d25f65cc",
+      "bytes": 216014,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-10.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-11",
+      "title": "product-photo-11.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_11.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_11.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:27Z",
+      "sha256": "a60d196096f9873830fa8e371ba55d224fcc3e665d5081ef7fd114cf12b03066",
+      "bytes": 32414,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-11.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-12",
+      "title": "product-photo-12.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_12.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_12.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:28Z",
+      "sha256": "0cf7706aecbb4fe926c9911cfaeda5a7331189787843406162039ddf3c619d83",
+      "bytes": 35668,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-12.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-13",
+      "title": "product-photo-13.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_13.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_13.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:28Z",
+      "sha256": "2a2d40b49dcbd80cea58867bb8873e9ca5a4f0249b90846ffc38e5338bde2cbf",
+      "bytes": 36598,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-13.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "product-photo-14",
+      "title": "product-photo-14.webp",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_14.webp",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_14.webp",
+      "kind": "product-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:09:28Z",
+      "sha256": "08985fc740d9b4d3c3352a85738102dcfbc41754348e94c442d386bbe09036aa",
+      "bytes": 55118,
+      "mediaType": "image/webp",
+      "archiveName": "product-photo-14.webp",
+      "discoveredFrom": "official-docs"
+    },
+    {
+      "id": "imu-axes",
+      "title": "CoreMatrix official IMU orientation diagram",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_IMU.jpg",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_IMU.jpg",
+      "kind": "orientation-diagram",
+      "status": "fetched",
+      "fetchedAt": "2026-11-06T04:20:42Z",
+      "sha256": "e3022115ac98c4da6cc008b1aff2da620b0eaac7b7c33cc9617a67bd9a2e4003",
+      "bytes": 580723,
+      "mediaType": "image/jpg",
+      "archiveName": "imu-axes.jpg",
+      "discoveredFrom": "official-docs"
+    }
+  ],
+  "assets": [
+    {
+      "id": "manufacturer-cad",
+      "sourceId": "manufacturer-cad",
+      "role": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/ec351c516644b44defc145728cc029ced77381ff/Products/C158_CoreMatrix/Structures/CoreMatrix.stl",
+      "localUrl": "./assets/m5stack-c158/source.stl"
+    },
+    {
+      "id": "dimension-drawing",
+      "sourceId": "dimension-drawing",
+      "role": "dimension-drawing",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_model_size_page_01.png"
+    },
+    {
+      "id": "dimension-pdf",
+      "sourceId": "dimension-pdf",
+      "role": "dimension-drawing",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_model_size.pdf"
+    },
+    {
+      "id": "schematic-main",
+      "sourceId": "schematic-main",
+      "role": "schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/CoreMatrix_V0.7_SCH_PDF_20260609.pdf"
+    },
+    {
+      "id": "schematic-led",
+      "sourceId": "schematic-led",
+      "role": "schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/CoreMatrix_SCH_LED.pdf"
+    },
+    {
+      "id": "product-photo-01",
+      "sourceId": "product-photo-01",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_01.webp"
+    },
+    {
+      "id": "product-photo-02",
+      "sourceId": "product-photo-02",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_02.webp"
+    },
+    {
+      "id": "product-photo-03",
+      "sourceId": "product-photo-03",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_03.webp"
+    },
+    {
+      "id": "product-photo-04",
+      "sourceId": "product-photo-04",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_04.webp"
+    },
+    {
+      "id": "product-photo-05",
+      "sourceId": "product-photo-05",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_05.webp"
+    },
+    {
+      "id": "product-photo-06",
+      "sourceId": "product-photo-06",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_06.webp"
+    },
+    {
+      "id": "product-photo-07",
+      "sourceId": "product-photo-07",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_07.webp"
+    },
+    {
+      "id": "product-photo-08",
+      "sourceId": "product-photo-08",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_08.webp"
+    },
+    {
+      "id": "product-photo-09",
+      "sourceId": "product-photo-09",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_09.webp"
+    },
+    {
+      "id": "product-photo-10",
+      "sourceId": "product-photo-10",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_10.webp"
+    },
+    {
+      "id": "product-photo-11",
+      "sourceId": "product-photo-11",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_11.webp"
+    },
+    {
+      "id": "product-photo-12",
+      "sourceId": "product-photo-12",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_12.webp"
+    },
+    {
+      "id": "product-photo-13",
+      "sourceId": "product-photo-13",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_13.webp"
+    },
+    {
+      "id": "product-photo-14",
+      "sourceId": "product-photo-14",
+      "role": "product-photo",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1274/C158_CoreMatrix_main_pictures_14.webp"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "pcb-layout",
+      "label": "内部PCB制造布局及器件高度",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "manufacturer-cad",
+        "product-photo-05"
+      ],
+      "notes": "厂家目录仅公开外壳STL；照片展示的PCB布局不等于可测量的板级CAD。内部保留蓝色UNKNOWN主板，连接器及外露结构分别标明估算。"
+    },
+    {
+      "id": "hardware-revision",
+      "label": "用户实物硬件版次",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-docs",
+        "schematic-main"
+      ],
+      "notes": "2026-06-09 V0.7为下载原理图的标记；不能据此断言出货设备版次。"
+    },
+    {
+      "id": "radio-hardware-validation",
+      "label": "射频及真实硬件测试",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "未连接实物；知识记录、模型与固件模拟验收分开。"
+    },
+    {
+      "id": "optical-calibration",
+      "label": "LED光度、扩散及光学一致性",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "product-photo-09"
+      ],
+      "notes": "独立发光窗口采用固件输出；未测量亮度、光谱、PWM可见响应或外壳透光率。"
+    }
+  ],
+  "collectionNotes": [
+    "逐来源保留原始URL、最终URL、UTC、字节数和SHA-256；原厂照片不重新标为MIT。",
+    "厂家STL全部17152三角形一次保留，只有中心平移；PCB内部和缺失器件并未通过外壳尺寸验证。",
+    "接口/芯片事实与模拟功能状态分别记录；本知识记录不宣称固件或实机全部兼容。",
+    "参考照片中点阵全亮仅供可见窗口位置核对，不作为运行画面。"
+  ]
+}
