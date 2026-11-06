@@ -67,7 +67,7 @@ node tools/probe-atoms3r-factory.mjs \
 | 按钮 | GPIO41低有效，`button`，默认键盘A；3D屏幕与2D输入共用该GPIO | 非触摸屏；机械行程/抖动与真实复位键下载模式未验证 |
 | BMI270 | 复用现有0x68轮询寄存器模型，SDA45/SCL0；ID、复位、完整8192-byte配置传输门槛、量程/电源与主机输入读数 | 配置程序不执行、不校验内容；FIFO/中断/ODR、滤波、温度、自测未建模 |
 | BMM150 | 保留正确硬件资料：经BMI270 AUX连接，主控I2C不伪造直连地址 | AUX桥与磁力计未实现，依赖九轴初始化的固件可能失败 |
-| 姿态API | agent指定虚拟轴的加速度/角速度；暂停清gyro，保持accel | 未校准物理装配坐标；拒绝`source:'scene'`，3D拖动暂不驱动IMU |
+| 姿态API | agent指定虚拟轴的加速度/角速度；暂停清gyro，保持accel | 物理安装轴未校准；可手动开启[3D IMU 联动](scene-imu.md)，采用明确的虚拟轴，默认关闭 |
 | 3D | 保留厂家几何，屏幕平面标记按钮命中，外壳保持拖动 | 旧照片轮廓失败、估算屏幕/端子、UNKNOWN PCB保持原有边界；本轮未重新认证1:1外观 |
 
 ST7735窗口依据 M5GFX 的 `memory_width=132 / memory_height=132`、offset `(2,1)` 和

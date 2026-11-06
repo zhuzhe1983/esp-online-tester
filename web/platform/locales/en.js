@@ -4,6 +4,16 @@ import flash from './en-flash.js';
 import agents from './en-agents.js';
 
 export default {
+  "IMU 联动": "IMU link",
+  "IMU 联动：开": "IMU link: on",
+  "飞行环境正在控制 IMU，请先关闭飞行环境。": "The flight environment controls the IMU. Disable flight mode first.",
+  "外观预览不影响运行中的设备。": "Visual previews do not affect the running device.",
+  "录制和回放不包含 IMU 联动，请结束后再开启。": "IMU linking is not recorded. Finish recording or playback before enabling it.",
+  "切换到 3D 后可开启 IMU 联动。": "Switch to 3D to enable IMU linking.",
+  "启动固件后可开启 IMU 联动。": "Start the firmware to enable IMU linking.",
+  "拖动模型改变虚拟 IMU；关闭后保留当前姿态。虚拟轴不代表实物安装方向。": "Drag the model to change its virtual IMU. Turning this off keeps the current pose. Virtual axes are not the physical sensor mounting.",
+  "开启后拖动模型同步虚拟 IMU。默认关闭，虚拟轴未按实物校准。": "Enable to link model dragging to the virtual IMU. Off by default; virtual axes are not physically calibrated.",
+
  ...flash,
  ...agents,
  "可由智能体配置、由人操作的 ESP32 产品实验台：在浏览器中运行固件、验证输入输出、分享和嵌入场景。由 Zhu Zhe（zhuzhe1983）维护。": "An ESP32 product workbench that agents can configure and people can operate: run firmware in the browser, verify inputs and outputs, and share or embed scenes. Maintained by Zhu Zhe (zhuzhe1983).",

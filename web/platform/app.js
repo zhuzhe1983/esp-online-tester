@@ -1,3 +1,4 @@
+import {createSceneImuLink, imuModelForBoard} from './imu.js';
 import {currentLocale} from './i18n.js';
 import {firmwaresForProduct,firmwareTargetProduct} from './firmware-target.js';
 import {mountHardwareDiagnostics} from './hardware-diagnostics.js';
@@ -57,7 +58,7 @@ const remoteHub = () => ({m5burner:burnerUi,'lilygo-spark':sparkUi})[$('firmware
 const matchingHubFirmware = source => [burnerUi?.current(),sparkUi?.current()].find(item=>item?.source&&firmwareSourceMatches(item.source,source));
 let preserveUnspecifiedFirmware = false;
 let productChoiceManufacturer = '', productFamilyFilter = '', productChoiceTarget = '';
-let orientationSettlement = null;
+let imuLink, imuSceneSession = 0;
 let visualVariantMenu, lastRuntimeState;
 let localFiles = [], localSource = null, localSelectionToken = 0;
 const gpsLookups = new Map(), gpsMessages = new Map();
@@ -246,6 +247,7 @@ function onRuntimeEvent(event) {
 
   if (event.type === 'state') {
     const previousStatus = status; status = event.state.status; loadedFirmware=event.state.firmware;
+    if ((['configured','loading','error','disposed'].includes(status) && status !== previousStatus) || (event.state.scene && scene?.productId !== event.state.scene.productId)) { imuSceneSession++; renderImuLink({reset:true}); }
     lastRuntimeState=event.state;
     visualVariantMenu?.update({product:catalog.products.find(item=>item.id===event.state.scene?.productId),status,mode:event.state.scene?.view?.deviceView,busy});
     sceneView?.setMotorsRunning(status==='running');sceneView?.updateMotors(event.state.motors,event.state.motorOutput);
@@ -282,7 +284,7 @@ function onRuntimeEvent(event) {
   } else if (event.type === 'flight') {
     sceneView?.updateFlight(event.flight);
   } else if (event.type === 'imu') {
-    if (!sceneView?.previewOnly && event.imu?.source === 'agent') sceneView?.setOrientation?.(event.imu.quaternion, {notify: false});
+    if (event.imu?.source === 'agent') { imuLink?.invalidate(); renderImuLink(); if (!sceneView?.previewOnly) sceneView?.setOrientation?.(event.imu.quaternion, {notify: false}); }
   } else if (event.type === 'load-progress') {
     if (status === 'loading' && (!loadProgress || event.loadId >= loadProgress.loadId)) { loadProgress = event; renderDownloadProgress(); }
   } else if (event.type === 'frame') {
@@ -302,6 +304,7 @@ function onRuntimeEvent(event) {
 }
 
 function renderTransport() {
+  renderImuLink();
   const executable = Boolean(product()?.runtime.board);
   const canLoad = Boolean(scene?.firmware || localSource);
   const sessionBusy = ['preparing', 'recording', 'playing'].includes(recordingState.status);
@@ -567,16 +570,24 @@ async function sendInput(event, source = 'scene') {
   if (event.type === 'button') return humanButtons.input(event, source);
   try { await runtime.input(event); } catch (error) { report(error); }
 }
-async function sendOrientation({quaternion, rotating}) {
-  if (!runtime || !['stopwatch','atom-matrix','atom-matrix-v11'].includes(product()?.runtime.board)) return;
-  const productId = scene.productId;
-  try {
-    // Pose changes are not part of button/touch recordings. Initial model setup is harmless.
-    if (rotating && ['preparing', 'playing', 'recording'].includes(recordingState.status)) orientationSettlement ||= transportUi.settleForConfiguration().finally(() => { orientationSettlement = null; });
-    if (orientationSettlement) await orientationSettlement;
-    if (scene.productId === productId) await runtime.setImu({quaternion, source: 'scene', angularVelocityDps: rotating ? undefined : [0, 0, 0]});
-  } catch (error) { if (error.code !== 'SESSION_REPLACED') report(error); }
+function imuLinkContext() {
+  return {session:imuSceneSession, available:!!imuModelForBoard(product()?.runtime?.board), status, mode:sceneView?.mode,
+    preview:sceneView?.previewOnly, flight:scene?.flight?.enabled === true,
+    recording:['preparing','playing','recording'].includes(recordingState.status), hidden:document.hidden};
 }
+function renderImuLink({reset = false} = {}) {
+  if (!imuLink) return;
+  const state = imuLink.sync({reset}), button = $('imu-scene-link');
+  sceneView?.setOrientationEnabled(state.enabled && !state.reason);
+  if (!button) return;
+  button.hidden = !state.available; button.disabled = !!state.reason;
+  button.setAttribute('aria-pressed', String(state.enabled)); button.classList.toggle('active', state.enabled);
+  button.textContent = state.enabled ? 'IMU 联动：开' : 'IMU 联动';
+  button.title = ({flight:'飞行环境正在控制 IMU，请先关闭飞行环境。', preview:'外观预览不影响运行中的设备。', recording:'录制和回放不包含 IMU 联动，请结束后再开启。', '2d':'切换到 3D 后可开启 IMU 联动。', 'not-running':'启动固件后可开启 IMU 联动。'})[state.reason]
+    || (state.enabled ? '拖动模型改变虚拟 IMU；关闭后保留当前姿态。虚拟轴不代表实物安装方向。' : '开启后拖动模型同步虚拟 IMU。默认关闭，虚拟轴未按实物校准。');
+}
+function sendOrientation(sample) { return imuLink?.offer(sample); }
+
 function renderValidation() {
   const node = $('validation-notes'); if (!node) return;
   const validation = validateScene(scene, catalog); node.replaceChildren();
@@ -593,6 +604,7 @@ function renderScene() {
   if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false, autostart: false});
 }
 function showVisualProduct(selected, {previewOnly=false} = {}) {
+  renderImuLink({reset:true});
   sceneView?.setProduct(selected,{previewOnly});
   if ($('scene-mount')) $('scene-mount').dataset.visualProductId=selected.id;
   sceneView?.setAppearance(scene?.view?.appearance);
@@ -601,7 +613,7 @@ function showVisualProduct(selected, {previewOnly=false} = {}) {
     sceneView?.setMotorsRunning(status==='running');sceneView?.updateMotors(lastRuntimeState.motors,lastRuntimeState.motorOutput);
     sceneView?.updateFlight(lastRuntimeState.flight);renderAccessories();
   }
-  renderAppearance();
+  renderAppearance(); renderImuLink();
 }
 function renderAppearance() {
   if ($('shell-settings')) $('shell-settings').hidden = scene.view.deviceView !== '3d' || sceneView?.hasShell === false || (!product()?.display && !product()?.model);
@@ -656,6 +668,7 @@ function mountAppearance() {
   bind('reset-shell', 'click', () => action(() => updateAppearance(null)));
 }
 function reflectMode(mode, unavailable = false) {
+  renderImuLink();
   for (const candidate of ['2d', '3d']) { const button = $(`view-${candidate}`); if (button) { button.classList.toggle('active', mode === candidate); button.setAttribute('aria-pressed', String(mode === candidate)); } }
   if ($('view-3d')) $('view-3d').disabled = unavailable;
   const touch = product()?.runtime?.board && (product()?.runtime?.touch || product()?.display?.touch);
@@ -965,7 +978,7 @@ async function releaseKeys() {
   for (const [code, id] of held) await sendInput({type: 'button', id, pressed: false}, `key:${code}`);
 }
 async function releaseHumanInputs() {
-  heldKeys.clear(); sceneView?.releaseInputs(); await humanButtons?.releaseAll();
+  heldKeys.clear(); sceneView?.releaseInputs(); await imuLink?.stop(); await humanButtons?.releaseAll();
 }
 
 function setupEvents() {
@@ -1003,6 +1016,7 @@ function setupEvents() {
     const actual = sceneView.setMode(mode); const view = {...scene.view, deviceView: actual}; await runtime.updateSceneMetadata({view});
   }));
   bind('reset-view', 'click', () => action(async () => { await transportUi?.settleForConfiguration(); sceneView.resetView(); }));
+  bind('imu-scene-link', 'click', () => { if (imuLink.toggle()) { renderImuLink(); void sendOrientation({quaternion:sceneView.getOrientation(),rotating:false}); } else renderImuLink(); });
   bind('inspect-model', 'click', () => action(async () => { await releaseHumanInputs(); sceneView.setInspection(!sceneView.getInspection().expanded); }));
   bind('fullscreen', 'click', () => action(async () => {
     if (document.fullscreenElement) await document.exitFullscreen(); else if ($('device-stage').closest('.workspace').requestFullscreen) await $('device-stage').closest('.workspace').requestFullscreen(); else window.open(shareUrl('embed'), '_blank', 'noopener');
@@ -1093,6 +1107,7 @@ async function init() {
   }
   sceneView = createSceneView($('scene-mount'), {onInput: sendInput, onModeChange: reflectMode, onUnsupported: message => toast(message), onOrientation: sendOrientation, onModelReady: renderAppearance, onInspectionChange: renderInspection});
   runtime = createPlatformRuntime({catalog, onEvent: onRuntimeEvent});
+  imuLink = createSceneImuLink({getContext:imuLinkContext, send:sample => runtime.setImu(sample), onError:report});
   humanButtons = createHumanButtonController({send: event => runtime.input(controlInput(event,product())), isRunning: () => status === 'running' && !sceneView?.previewOnly, onError: report,
     onVisual: (id, pressed) => document.querySelectorAll('.device-button').forEach(button => { if (button.dataset.control === id) button.classList.toggle('pressed', pressed); }),
   });

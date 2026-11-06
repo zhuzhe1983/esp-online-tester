@@ -17,7 +17,7 @@ import {createSdCardStorage} from './sd-card-storage.js';
 // Browser-only adapter for the upstream ESP32 WASM worker. No server or mock device state.
 import { loadCatalog, validateScene } from './catalog.js';
 import { buildFirmwareIssueUrl } from './watchlist.js';
-import { orientationSample } from './imu.js';
+import {imuModelForBoard, orientationSample} from './imu.js';
 import { validateLoRaPacket } from './lora-input.js';
 import { firmwareCache } from './firmware-cache.js';
 import {firmwareDownloadUrl} from './firmware-relay.js';
@@ -191,9 +191,9 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   const resetAccessoryInputs=()=>{accessoryInputs=routedAccessories(scene,product,catalog).map(route=>({...route,connected:true,...(route.viaAccessoryId?{effectiveConnected:true}:{}),...(route.control==='button'?{pressed:false}:route.control==='knob'?{value:scene.accessories.find(item=>item.id===route.accessoryId)?.parameters?.position??0.5}:route.control==='motion'?{motion:motionParameter(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters)}:route.control==='environment'?environmentParameters(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters):route.control==='illuminance'?{lux:illuminanceParameter(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters)}:{})}));accessoryOutputs=accessoryInputs.filter(route=>route.output).map(({accessoryId,model,port})=>({accessoryId,model,port,leds:[[0,0,0],[0,0,0],[0,0,0]]}));};
   let storage = emptyStorage(), storageSession = null, storageSequence = 0;
   let booted = false, inputSequence = 0, loadCancelled = false, progressGeneration = 0, disposing = false;
-  const imuModel = () => ({stopwatch:'bmi270-register-subset',corematrix:'bmi270-register-subset',atoms3:'mpu6886-register-subset','atom-matrix':'mpu6886-register-subset','atom-matrix-v11':'bmi270-register-subset',atoms3r:'bmi270-register-subset','atoms3r-chatbot':'bmi270-register-subset',papers3:'bmi270-register-subset',stampfly:'bmi270-register-subset','stampfly-v11':'bmi270-register-subset'}[product?.runtime?.board] || null);
+  const imuModel = () => imuModelForBoard(product?.runtime?.board);
   const gpsSupported = () => product?.id === 'm5stack-stopwatch' && product.runtime?.board === 'stopwatch';
-  const defaultImu = () => ({enabled: true, source: product?.runtime?.board === 'stopwatch' ? 'scene' : 'agent', ...orientationSample([0,0,0,1]), delivery: 'configured', guestTime: null});
+  const defaultImu = () => ({enabled: true, source: 'agent', ...orientationSample([0,0,0,1]), delivery: 'configured', guestTime: null});
   let imu = defaultImu(), imuPreviousAt = null, imuGeneration = 0;
   const observedImu=()=>!imuModel()?null:!flightEnabled()?clone(imu):{enabled:true,source:'flight',quaternion:null,accelG:flight?clone(flight.sensors.rawAccelG):null,gyroDps:flight?clone(flight.sensors.rawGyroDps):null,delivery:flight?'register-state':'configured',guestTime:flight?.guestTime??null};
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
@@ -812,7 +812,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { available:gpsSupported(),mode: gpsSupported()?'logical-uart1-nmea':null, physicalRouting: false, baudTiming: false, hardwareValidated: false },
         lora:{available:['papermono','lilygo-t-beam-v1-2','stamp-c6lora'].includes(product?.runtime?.board),model:product?.runtime?.board==='lilygo-t-beam-v1-2'?'sx1276-lora-digital':'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
-        imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: ['stopwatch','atom-matrix','atom-matrix-v11'].includes(product?.runtime?.board), orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: flightEnabled()?'guest-cycles':'host-input', inputOwner:flightEnabled()?'flight':'host', physicalMountingVerified: false },
+        imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: !!imuModel(), sceneMapping: 'virtual-model-xyz', sceneLinkDefault: false, orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: flightEnabled()?'guest-cycles':'host-input', inputOwner:flightEnabled()?'flight':'host', physicalMountingVerified: false },
         unsupported: ['arbitrary-dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input'] };
     },
     configure(nextScene) { progressGeneration++; imuGeneration++; return exclusive(async () => {
@@ -899,7 +899,6 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(options.enabled === undefined || typeof options.enabled === 'boolean', 'INVALID_IMU', 'IMU enabled must be a boolean.');
       const source = options.source || 'agent';
       requireValue(['agent', 'scene'].includes(source), 'INVALID_IMU', 'IMU source must be agent or scene.');
-      requireValue(source !== 'scene' || ['stopwatch','atom-matrix','atom-matrix-v11'].includes(product.runtime.board), 'IMU_SCENE_UNSUPPORTED', 'This product has no scene-to-sensor orientation mapping; use agent input with explicit virtual axes.');
       if (source === 'scene' && !imu.enabled && options.enabled !== true) return clone(imu);
       const now = requestedAt;
       const sample = orientationSample(options.quaternion || imu.quaternion, {previous: imu.quaternion,

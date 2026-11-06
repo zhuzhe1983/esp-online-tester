@@ -32,11 +32,11 @@ test('AtomS3 accepts explicit virtual IMU input without claiming a scene mountin
     await runtime.configure(createDefaultScene(catalog,'m5stack-c123'));
     const capability=(await runtime.capabilities()).imu;
     assert.equal(capability.available,true);assert.equal(capability.model,'mpu6886-register-subset');
-    assert.equal(capability.sceneOrientation,false);assert.equal(capability.physicalMountingVerified,false);
+    assert.equal(capability.sceneOrientation,true);assert.equal(capability.physicalMountingVerified,false);
     const sample=await runtime.setImu({quaternion:[0,0,Math.SQRT1_2,Math.SQRT1_2]});
     close(sample.accelG,[1,0,0]);assert.equal(sample.source,'agent');assert.equal(sample.delivery,'configured');
-    await assert.rejects(runtime.setImu({source:'scene',quaternion:[0,0,0,1]}),{code:'IMU_SCENE_UNSUPPORTED'});
-    close((await runtime.observe()).imu.accelG,[1,0,0]);
+    close((await runtime.setImu({source:'scene',quaternion:[0,0,0,1]})).accelG,[0,1,0]);
+    close((await runtime.observe()).imu.accelG,[0,1,0]);
     await runtime.configure(createDefaultScene(catalog,'m5stack-papermono'));
     assert.equal((await runtime.observe()).imu,null);
     await assert.rejects(runtime.setImu({quaternion:[0,0,0,1]}),{code:'IMU_UNSUPPORTED'});
@@ -51,8 +51,8 @@ test('AtomS3R exposes its own BMI270 virtual input without aliasing AtomS3 or ca
   const runtime=createPlatformRuntime({catalog});try {
     await runtime.configure(createDefaultScene(catalog,'m5stack-c126'));
     assert.equal((await runtime.observe()).imu.source,'agent');
-    const cap=(await runtime.capabilities()).imu;assert.equal(cap.model,'bmi270-register-subset');assert.equal(cap.sceneOrientation,false);
+    const cap=(await runtime.capabilities()).imu;assert.equal(cap.model,'bmi270-register-subset');assert.equal(cap.sceneOrientation,true);
     close((await runtime.setImu({quaternion:[0,0,Math.SQRT1_2,Math.SQRT1_2]})).accelG,[1,0,0]);
-    await assert.rejects(runtime.setImu({source:'scene',quaternion:[0,0,0,1]}),{code:'IMU_SCENE_UNSUPPORTED'});
+    close((await runtime.setImu({source:'scene',quaternion:[0,0,0,1]})).accelG,[0,1,0]);
   } finally {await runtime.dispose();}
 });

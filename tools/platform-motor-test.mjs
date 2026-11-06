@@ -60,15 +60,15 @@ test('runtime protects motor observations across malformed messages, pause, rese
  }finally{await f.runtime.dispose();}
 });
 
-test('both StampFly versions expose explicit BMI270 host input without a flight or scene mounting model',async()=>{
+test('both StampFly versions expose explicit BMI270 host input without claiming physical mounting calibration',async()=>{
  const f=fixture();try{
   for(const id of ['m5stack-k138','m5stack-k138-v11']) {
    await f.runtime.configure(createDefaultScene(catalog,id));
-   const cap=(await f.runtime.capabilities()).imu;assert.equal(cap.model,'bmi270-register-subset');assert.equal(cap.sceneOrientation,false);assert.equal(cap.physicalMountingVerified,false);
+   const cap=(await f.runtime.capabilities()).imu;assert.equal(cap.model,'bmi270-register-subset');assert.equal(cap.sceneOrientation,true);assert.equal(cap.physicalMountingVerified,false);
    await f.load();const result=await f.runtime.setImu({source:'agent',quaternion:[0,0,Math.SQRT1_2,Math.SQRT1_2]});
    assert.ok(Math.abs(result.accelG[0]-1)<1e-8);assert.ok(Math.abs(result.accelG[1])<1e-8);assert.equal(result.delivery,'register-state');
    assert.deepEqual(f.messages.at(-1).gyroDps,[0,0,0]);assert.equal(f.messages.at(-1).op,'imu');
-   await assert.rejects(f.runtime.setImu({source:'scene',quaternion:[0,0,0,1]}),{code:'IMU_SCENE_UNSUPPORTED'});
+   assert.deepEqual((await f.runtime.setImu({source:'scene',quaternion:[0,0,0,1]})).accelG,[0,1,0]);
   }
  }finally{await f.runtime.dispose();}
 });

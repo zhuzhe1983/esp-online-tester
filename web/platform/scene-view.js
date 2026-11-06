@@ -102,19 +102,21 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   let renderer, mode = '3d', product, screen, buttons = [], accessoryGroup, accessoryCount = 0, zoom = 1, frameWidth = 466, frameHeight = 466, previewOnly = false;
   let paintPending = false, disposed = false, modelCleanup = null, productGeneration = 0, accessoryGeneration = 0, accessoryCleanups = [];
   let inspection = null;
-  let orientationTimer = null, orientationIdle = null, lastOrientationAt = -Infinity;
+  let orientationTimer = null, orientationIdle = null, lastOrientationAt = -Infinity, orientationEnabled = false;
   const getOrientation = () => orbitGroup.quaternion.toArray();
   function clearOrientationTimers() { clearTimeout(orientationTimer); clearTimeout(orientationIdle); orientationTimer = orientationIdle = null; }
   function publishOrientation(rotating = false) {
-    if (disposed || previewOnly) return;
+    if (disposed || previewOnly || !orientationEnabled || mode !== '3d' || flightActive) return;
     lastOrientationAt = performance.now();
     Promise.resolve(onOrientation({quaternion: getOrientation(), rotating})).catch(error => console.error('Scene orientation failed:', error));
   }
   function orientationChanged() {
+    if (!orientationEnabled || previewOnly || mode !== '3d' || flightActive) return;
     clearTimeout(orientationIdle);
     if (orientationTimer === null) orientationTimer = setTimeout(() => { orientationTimer = null; publishOrientation(true); }, Math.max(0, 1000 / 30 - (performance.now() - lastOrientationAt)));
     orientationIdle = setTimeout(() => { clearTimeout(orientationTimer); orientationTimer = null; publishOrientation(false); }, 100);
   }
+  function setOrientationEnabled(enabled) { orientationEnabled = enabled === true; if (!orientationEnabled) clearOrientationTimers(); }
   function setOrientation(value, {notify = true} = {}) {
     const normalized = normalizeOrientation(value); clearOrientationTimers(); orbitGroup.quaternion.fromArray(normalized);
     if (notify) publishOrientation(false); if (accessoryCount || inspection?.expanded) frameCamera(); draw(); return getOrientation();
@@ -208,7 +210,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     context.fillRect(0, 0, frameWidth, frameHeight); texture.needsUpdate = true; draw();
   }
   function setProduct(value, options = {}) {
-    releaseInputs();previewOnly=options.previewOnly===true;mount.dataset.previewOnly=String(previewOnly);product = value; clearGroup(); clearDisplay();
+    setOrientationEnabled(false); releaseInputs();previewOnly=options.previewOnly===true;mount.dataset.previewOnly=String(previewOnly);product = value; clearGroup(); clearDisplay();
     accessoryDefinitions = [];
     appearanceDefaults = product.id === 'm5stack-papermono' ? {shell: {color: '#888d8e', opacity: 1, finish: 'plastic'}} : DEFAULT_STOPWATCH_APPEARANCE;
     appearance = normalizeShellAppearance(null, appearanceDefaults); customizedAppearance = false;
@@ -420,7 +422,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   window.addEventListener('blur', releaseInputs);
   function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateFlight, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setInspection, getInspection, get previewOnly() { return previewOnly; }, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateFlight, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setOrientationEnabled, setInspection, getInspection, get previewOnly() { return previewOnly; }, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
     dispose() { disposed = true; releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup();flightGround.traverse(object=>{object.geometry?.dispose();for(const material of [].concat(object.material||[]))material.dispose();}); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }
