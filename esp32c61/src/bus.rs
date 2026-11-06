@@ -6,8 +6,6 @@ pub const ROM_LOW: u32 = 0x4000_0000;
 pub const ROM_HIGH: u32 = 0x4004_0000;
 pub const SRAM_LOW: u32 = 0x4080_0000;
 pub const SRAM_HIGH: u32 = 0x4085_0000;
-pub const LP_SRAM_LOW: u32 = 0x5000_0000;
-pub const LP_SRAM_HIGH: u32 = 0x5000_4000;
 pub const FLASH_LOW: u32 = 0x4200_0000;
 pub const FLASH_HIGH: u32 = 0x4400_0000;
 pub const MMU_ENTRIES: usize = 512;
@@ -21,7 +19,6 @@ pub const SPI_MMU_POWER_CTRL: u32 = 0x384;
 pub struct SocBus {
     pub rom: Vec<u8>,
     pub sram: Vec<u8>,
-    pub lp_sram: Vec<u8>,
     pub flash: Vec<u8>,
     pub psram: Vec<u8>,
     pub mmu: [u32; MMU_ENTRIES],
@@ -63,7 +60,6 @@ impl SocBus {
         SocBus {
             rom: vec![0; (ROM_HIGH - ROM_LOW) as usize],
             sram: vec![0; (SRAM_HIGH - SRAM_LOW) as usize],
-            lp_sram: vec![0; (LP_SRAM_HIGH - LP_SRAM_LOW) as usize],
             flash: vec![0xff; flash_size], psram: Vec::new(),
             mmu: [0; MMU_ENTRIES], mmu_index: 0, mmu_power_ctrl: 0,
             periph: Peripherals::new(mac), board: Box::new(esp_soc::NoBoard), uart_pins: false,
@@ -78,7 +74,6 @@ impl SocBus {
         match addr {
             SRAM_LOW..=0x4084_FFFF => Some((&mut self.sram, (addr - SRAM_LOW) as usize, true)),
             ROM_LOW..=0x4003_FFFF => Some((&mut self.rom, (addr - ROM_LOW) as usize, false)),
-            LP_SRAM_LOW..=0x5000_3FFF => Some((&mut self.lp_sram, (addr - LP_SRAM_LOW) as usize, true)),
             FLASH_LOW..=0x43FF_FFFF => {
                 let shift = self.page_shift();
                 let idx = ((addr - FLASH_LOW) >> shift) as usize;
@@ -224,7 +219,7 @@ impl SocBus {
             let rx = if self.board.uses_spi_pins() {
 
                 let pins = crate::periph::PINS.routes(&self.periph.gpio, &self.periph.io_mux)
-                    .spi_pins(&self.periph.spi2, [64, 65, 66, 69, 70, 71, 72, 73, 74], 256, &[]);
+                    .spi_pins(&self.periph.spi2, [64, 65, 66, 69, 102, 103, 104, 105, 106], 256, &[(2, 6, 7, 2, &[8])]);
                 self.board.spi_transfer_pins(2, pins, &transfer.tx, transfer.rx_len)
             } else {
                 self.board.spi_transfer(2, &transfer.tx, transfer.rx_len)
@@ -236,7 +231,6 @@ impl SocBus {
 
     #[cold]
     #[inline(never)]
-
     fn run_spi(&mut self) {
         self.periph.spi_exec = false;
         self.periph.spi1.0.execute(&mut self.flash, &mut self.psram);
@@ -254,7 +248,7 @@ impl SocBus {
 
     pub fn load_bytes(&mut self, addr: u32, data: &[u8]) -> Result<(), String> {
 
-        if addr == 0 || (FLASH_LOW..FLASH_HIGH).contains(&addr) { return Ok(()); }
+        if addr < 0x10000 || (FLASH_LOW..FLASH_HIGH).contains(&addr) { return Ok(()); }
         for (i, b) in data.iter().enumerate() {
             let a = addr.wrapping_add(i as u32);
             match self.resolve(a) {

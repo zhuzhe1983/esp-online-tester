@@ -108,7 +108,7 @@ impl LpSys {
         match off {
             0x010 => (self.ram.read(off) & !0x1f) | (self.reset_cause & 0x1f),
             0xc14 => self.time_latch as u32, 0xc18 => (self.time_latch >> 32) as u32,
-            0xc10 => self.ram.read(off) & !(1 << 28),
+            0xc10 => self.ram.read(off) & !(1 << 27),
             0x3fc | 0x7fc | 0xbfc | 0xffc => 0x2207_0400,
             _ => self.ram.read(off),
         }
@@ -117,7 +117,7 @@ impl LpSys {
         match off {
             0x434 => { if v & (1 << 31) != 0 { self.request_reset(RST_SW_SYS); } self.ram.write(off, v & !(1 << 31)); }
             0x438 => { if v & (1 << 28) != 0 { self.request_reset(RST_SW_CPU); } self.ram.write(off, v & !(1 << 28)); }
-            0xc10 => { if v & (1 << 28) != 0 { self.time_latch = self.slow_ticks; } self.ram.write(off, v); }
+            0xc10 => { if v & (1 << 27) != 0 { self.time_latch = self.slow_ticks; } self.ram.write(off, v); }
             _ => self.ram.write(off, v),
         }
     }
@@ -133,7 +133,7 @@ pub struct SpiMemC61(pub SpiMem);
 impl Device for SpiMemC61 {
     fn read(&mut self, off: u32) -> u32 {
         match off {
-            0x170 => 0xfc00_0000,
+            0x178 => 0xfc00_0000,
             _ => Device::read(&mut self.0, off),
         }
     }
@@ -183,10 +183,10 @@ impl GdmaC61 {
     pub(crate) fn map(off: u32) -> Option<u32> {
 
         const T: [u32; 13] = [0x00, 0x04, 0x18, 0x1c, 0x20, 0x24, 0x28, 0x2c, 0x30, 0x34, 0x38, 0x44, 0x48];
-        if off < 0x30 { return Some((off / 0x10) * 0xc0 + 0x08 + off % 0x10); }
-        if off < 0x60 { let o = off - 0x30; return Some((o / 0x10) * 0xc0 + 0x68 + o % 0x10); }
+        if off < 0x20 { return Some((off / 0x10) * 0xc0 + 0x08 + off % 0x10); }
+        if (0x30..0x50).contains(&off) { let o = off - 0x30; return Some((o / 0x10) * 0xc0 + 0x68 + o % 0x10); }
         if off == 0x64 { return Some(0x3c8); }
-        if (0x70..0x70 + 3 * 0xc0).contains(&off) {
+        if (0x70..0x70 + 2 * 0xc0).contains(&off) {
             let rel = off - 0x70; let (n, k) = (rel / 0xc0, rel % 0xc0);
             if k <= 0x30 { return Some(n * 0xc0 + T[(k / 4) as usize]); }
             if (0x60..=0x90).contains(&k) { return Some(n * 0xc0 + 0x60 + T[((k - 0x60) / 4) as usize]); }
@@ -213,7 +213,30 @@ impl Pcr {
     pub fn read(&self, off: u32) -> u32 {
         let v = self.ram.read(off);
         match off {
-            0xe8 => (v & 0x00ff_ffff) | 40 << 24,
+            0x0 => v | 4,
+            0xc => v | 4,
+            0x18 => v | 4,
+            0x24 => v | 8,
+            0x34 => v | 4,
+            0x40 => v | 28,
+            0x4c => v | 28,
+            0x58 => v | 4,
+            0x60 => v | 12,
+            0x80 => v | 4,
+            0x84 => v | 4,
+            0x94 => v | 4,
+            0x9c => v | 4,
+            0xa0 => v | 4,
+            0xa4 => v | 4,
+            0xac => v | 4,
+            0xb4 => v | 4,
+            0xb8 => v | 4,
+            0xbc => v | 4,
+            0xc8 => v | 4,
+            0xcc => v | 4,
+            0x13c => v | 4,
+            0x120 => v & !1,
+            0xe8 => (v & 0x00ff_0000) | 40 << 24 | 2 << 8,
             0xec => v,
             0xfc => 480 << 8 | 20,
             0xffc => 0x2207_0400,
@@ -260,8 +283,9 @@ impl Device for GpioC61 {
     fn write(&mut self, off: u32, v: u32) -> WriteEffect { self.gpio.write(Self::map(off), v); WriteEffect::NONE }
     fn irq_sources(&self) -> u64 { self.gpio.irq() as u64 }
 }
-pub const PINS: esp_soc::pins::ChipPins = esp_soc::pins::ChipPins { valid: (1 << 30) - 1, input_select: 0x80, output_mask: 0x3ff };
+pub const PINS: esp_soc::pins::ChipPins = esp_soc::pins::ChipPins { valid: (1 << 30) - 1, input_select: 0x100, output_mask: 0x3ff };
 pub struct Peripherals {
+    pub adc: crate::adc::SarAdc,
     pub uart: [Uart; 3], pub usb: UsbSerialJtag, pub systimer: Systimer, pub timg: [TimerGroup; 2],
     pub gpio: GpioC61, pub io_mux: RegRam, pub i2c: esp_periph::i2c::I2c, pub efuse: Efuse,
     pub spi0: SpiMemC61, pub spi1: SpiMemC61, pub sha: Sha, pub gdma: GdmaC61, pub spi2: GpSpi,
@@ -279,12 +303,13 @@ device_set! { Peripherals; inline always; clock: (clock) CPU_HZ, [(ClockDomain::
     0x08 "TIMG0" (timg[0]) => [src::TG0_T0];
     0x09 "TIMG1" (timg[1]) => [src::TG1_T0];
     0x0a "SYSTIMER" (systimer) => [src::SYSTIMER_T0, src::SYSTIMER_T1, src::SYSTIMER_T2];
+    0x0e "SARADC" (adc) => [];
     0x0f "USB_SERIAL_JTAG" (usb) => [src::USB_SERIAL_JTAG];
     0x10 "INTMTX" (intmtx) => [];
     0x80 "GDMA" (gdma) => [src::DMA_OUT_CH0, src::DMA_OUT_CH0 + 1, NO_SOURCE, NO_SOURCE, NO_SOURCE, src::DMA_IN_CH0, src::DMA_IN_CH0 + 1, NO_SOURCE, NO_SOURCE, NO_SOURCE];
     0x81 "SPI2" (spi2) => [src::GPSPI2];
     0x89 "SHA" (sha) => [];
-    0x90 "IO_MUX" (io_mux) => [];
+    0x90 "IO_MUX" (io_mux) delta 4 => [];
     0x91 "GPIO" (gpio) => [src::GPIO];
     0x96 "PCR" (pcr) => [];
     0xaf "I2C_ANA_MST" (ana_mst) delta -0x800 @ 0x800..=0xfff => [];
@@ -293,6 +318,7 @@ device_set! { Peripherals; inline always; clock: (clock) CPU_HZ, [(ClockDomain::
     0xb1 "LP_AON" alias (lpsys) delta 0x400 @ 0x000..=0x3ff => [];
     0xb1 "LP_WDT" alias (lpsys) delta -0x400 @ 0xc00..=0xfff => [];
     0xb2 "LPPERI_RNG" (rng) @ 0x808..=0x80b => [];
+    0xb2 "LPPERI_RNG_SYNC" alias (rng) @ 0x828..=0x82b => [];
     0xb4 "EFUSE" (efuse) delta -0x800 @ 0x800..=0xbff => [];
     0xc5 "INTPRI" (intc) => [src::FROM_CPU0, src::FROM_CPU0 + 1, src::FROM_CPU0 + 2, src::FROM_CPU0 + 3];
     0xc8 "CACHE" (cache) => [];
@@ -304,13 +330,14 @@ impl DeviceSet for Peripherals {
     fn misc_mut(&mut self) -> &mut Misc { &mut self.misc }
     fn pre_access(&mut self, block: u32, _off: u32, _write: bool) {
         if block == 4 { let c = self.pcr.read(0x30); self.i2c.set_external_clock_config(Some(((c >> 12) & 255) | ((c & 63) << 8) | (((c >> 6) & 63) << 14) | (c & (1 << 20)))); }
+        if block == 0x0e { self.adc.now_cycles = self.clock.cycles(); self.adc.ground = self.ana_mst.ana.read(0, 0x0769, |_| &0) & (1 << 21) != 0; }
         if block == 0xb2 { self.rng.now = self.clock.cycles() as u32; }
     }
 }
 impl Peripherals {
     pub fn new(mac: [u8; 6]) -> Self { Self {
-        uart: std::array::from_fn(|_| Uart::new(UartLayout::C6)), usb: UsbSerialJtag::new(CPU_HZ), systimer: Systimer::new(),
-        timg: [TimerGroup::new(), TimerGroup::new()], gpio: GpioC61 { gpio: Gpio::with_pins(30) }, io_mux: RegRam::new(), i2c: esp_periph::i2c::I2c::new(),
+        adc: crate::adc::SarAdc::new(CPU_HZ), uart: std::array::from_fn(|_| Uart::new(UartLayout::C6)), usb: UsbSerialJtag::new(CPU_HZ), systimer: Systimer::new(),
+        timg: [TimerGroup::new(), TimerGroup::new()], gpio: GpioC61 { gpio: { let mut g = Gpio::with_pins(30); g.input_select = 0x100; g.func_in_sel.fill(0x60); g } }, io_mux: RegRam::new(), i2c: esp_periph::i2c::I2c::new(),
         efuse: efuse_c61(mac, 1, 0, 0, 0, 0), spi0: SpiMemC61(SpiMem::new(false)), spi1: SpiMemC61(SpiMem::new(true)), sha: Sha::new(),
         gdma: GdmaC61::new(), spi2: GpSpi::new(), intmtx: IntMatrix::new(), intc: Intc::new(), cache: Cache::new(), lpsys: LpSys::new(), pcr: Pcr::new(),
         ana_mst: AnaMst::new(), rng: Rng::new(), misc: Misc::new(), spi_exec: false, clock: Self::new_clock(), ledc: Ledc::new(LedcLayout::C6),
@@ -318,7 +345,7 @@ impl Peripherals {
     pub fn block_name(_block: u32) -> &'static str { "C61" }
     pub fn read32(&mut self, addr: u32) -> u32 { mmio::read32(self, addr) }
     pub fn write32(&mut self, addr: u32, v: u32) {
-        if (0x60090004..=0x60090078).contains(&addr) { self.gpio.set_pad(((addr - 0x60090004) / 4) as u8, v); }
+        if (0x60090000..=0x60090074).contains(&addr) { self.gpio.set_pad(((addr - 0x60090000) / 4) as u8, v); }
         if addr == 0x60004004 && v & (1 << 5) != 0 && self.i2c.has_pinned_devices() {
             let route = PINS.routes(&self.gpio, &self.io_mux); self.i2c.set_pins(route.i2c_pin(47).zip(route.i2c_pin(46)));
         }

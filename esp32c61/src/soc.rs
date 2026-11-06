@@ -32,7 +32,14 @@ impl Soc for C61 {
     }
     fn irqs(bus: &SocBus, out: &mut [Option<u32>]) { out[0] = bus.periph.intc.clic.candidate().filter(|&(id, _)| id >= 16).map(|(id, level)| (id as u32 - 16) | level << riscv_rv32::exec::CLIC_IRQ_LEVEL_SHIFT | if bus.periph.intc.clic.vectored(id) { riscv_rv32::exec::CLIC_IRQ_SHV } else { 0 }); }
     fn interrupt_taken(bus: &mut SocBus, _core: usize, line: u32) { bus.periph.intc.clic.taken(line as usize + 16); bus.irq_dirty = true; }
-    fn check_image(data: &[u8]) -> Result<(), String> { if data.len() < 14 || u16::from_le_bytes([data[12], data[13]]) != 20 { Err("Image is not ESP32-C61 (chip ID 20)".into()) } else { esp_soc::image::parse(data).map(|_| ()) } }
+    fn check_image(data: &[u8]) -> Result<(), String> {
+        // ESP-IDF v5.5.4 bootloader_support/include/esp_app_format.h.
+        let h = data.get(..24).ok_or("C61 requires a complete ESP image header")?;
+        if u16::from_le_bytes([h[12], h[13]]) != 20 { return Err("Image is not ESP32-C61 (chip ID 20)".into()); }
+        let min = u16::from_le_bytes([h[15], h[16]]); let max = u16::from_le_bytes([h[17], h[18]]);
+        if min > 100 || (max != 0 && max < 100) { return Err("C61 models revision 1.0; the image excludes revision 100".into()); }
+        esp_soc::image::parse(data).map(|_| ())
+    }
 }
 
 impl esp_soc::SocBus for SocBus {
@@ -41,9 +48,7 @@ impl esp_soc::SocBus for SocBus {
     fn next_deadline(&self) -> Option<u64> {
         let timer = match self.periph.cycles_until_timer() { u32::MAX => None, cycles => Some(cycles.max(1) as u64) };
         let board = self.board.next_deadline().map(|at| at.saturating_sub(self.cycles).max(1));
-        let deadline = timer.into_iter().chain(board).min();
-
-        deadline
+        timer.into_iter().chain(board).min()
     }
     fn irq_dirty(&mut self) -> &mut bool { &mut self.irq_dirty }
     fn refresh_irq(&mut self) -> bool { self.periph.refresh_lines(); true }
@@ -54,6 +59,7 @@ impl esp_soc::SocBus for SocBus {
 
     fn boot_app(&mut self, app_off: usize) -> Result<u32, String> {
         let image = self.flash.get(app_off..).ok_or("app offset beyond flash")?;
+        C61::check_image(image)?;
         let img = esp_soc::image::parse(image)?;
         let shift = self.page_shift();
         for s in &img.segments {
@@ -89,6 +95,8 @@ impl esp_soc::SocBus for SocBus {
         let old = std::mem::replace(&mut self.periph, periph::Peripherals::new(mac));
         let p = &mut self.periph;
         p.efuse = old.efuse;
+        p.adc.analog = old.adc.analog; p.adc.analog.set_stream_clock_offset(self.cycles);
+        p.spi0.0.has_psram = !self.psram.is_empty(); p.spi1.0.has_psram = !self.psram.is_empty();
 
         p.misc.log_unknown = old.misc.log_unknown;
         p.usb.connected = old.usb.connected;
@@ -127,6 +135,9 @@ impl esp_soc::SocBus for SocBus {
         self.irq_dirty |= before != u.irq();
     }
 
+    fn analog_set(&mut self, pin: u8, source: esp_periph::AnalogSource) { if crate::adc::PINS.contains(&pin) { self.periph.adc.analog.set(pin, source); } }
+    fn adc_set_raw(&mut self, pin: u8, raw: u16) -> bool { crate::adc::PINS.contains(&pin) && self.periph.adc.analog.set_raw(pin, raw) }
+    fn adc_observation(&self, pin: u8) -> Option<esp_periph::AdcObservation> { crate::adc::PINS.contains(&pin).then(|| self.periph.adc.analog.observation(pin)) }
     fn gpio_release_input(&mut self, pin: u8) {
         self.irq_dirty |= esp_soc::gpio::release_and_report(&mut self.periph.gpio, &mut self.gpio_events, self.cycles, pin);
     }
