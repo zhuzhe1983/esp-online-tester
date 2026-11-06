@@ -10,6 +10,7 @@ pub struct M5pm1Control {
     regs: [u8;256],
     initial_power_config:u8,
     last_inputs:u8,
+    last_known:u8,
     power_pressed:bool,
     power_event:bool,
     press_started:Option<u64>,
@@ -22,7 +23,7 @@ impl Default for M5pm1Control {
     fn default()->Self {
         let mut regs=[0;256];
         for (r,v) in [(0,0x50),(1,0x20),(2,5),(3,6),(6,0x17),(8,0x40),(0x13,0x1f),(0x49,0x2a)] {regs[r]=v;}
-        Self {regs,initial_power_config:0x17,last_inputs:0,power_pressed:false,power_event:false,press_started:None,click_due:None,first_release:None,second_press:false,long_fired:false}
+        Self {regs,initial_power_config:0x17,last_inputs:0,last_known:0,power_pressed:false,power_event:false,press_started:None,click_due:None,first_release:None,second_press:false,long_fired:false}
     }
 }
 
@@ -30,6 +31,10 @@ impl Default for M5pm1Control {
 #[derive(Debug)]
 pub struct M5pm1State {
     pub battery_mv:u16,
+    /// Explicit nominal host voltages, not measured ADC/charger output.
+    pub vref_mv:u16,
+    pub vin_mv:u16,
+    pub ext5v_mv:u16,
     pub charging:bool,
     pub power_off_requested:bool,
     pub led_enabled:bool,
@@ -66,7 +71,7 @@ pub struct M5pm1State {
 }
 impl Default for M5pm1State {
     fn default()->Self {
-        Self {battery_mv:3900,charging:false,power_off_requested:false,led_enabled:true,dcdc_enabled:true,grove_5v_enabled:false,ldo3v3_enabled:true,input_mask:0,input_high:0,driven_high:0,
+        Self {battery_mv:3900,vref_mv:0,vin_mv:0,ext5v_mv:0,charging:false,power_off_requested:false,led_enabled:true,dcdc_enabled:true,grove_5v_enabled:false,ldo3v3_enabled:true,input_mask:0,input_high:0,driven_high:0,
             irq_pins:0,irq_low:false,wake_requested:false,reset_requested:false,download_requested:false,control:Default::default(),
             i2c_first_hz:None,i2c_last_hz:None,i2c_max_hz:0,i2c_speed_hz:100_000,i2c_address_phases:0,i2c_speed_mismatches:0,i2c_last_mismatch_hz:None,i2c_last_mismatch_limit_hz:None,
             download_locked:false,download_lock_writes:0,download_unlock_attempts:0}
@@ -79,6 +84,24 @@ impl M5pm1State {
         self.input_mask|=1<<pin;
         if high {self.input_high|=1<<pin;} else {self.input_high&=!(1<<pin);}
         self.refresh(true);
+    }
+    /// Release an external driver. A configured pull resolves the pin; an
+    /// unconnected, unpulled input is unknown and cannot create a wake edge.
+    pub fn release_input(&mut self,pin:u8) {
+        if pin>=5 {return;}self.input_mask&=!(1<<pin);self.refresh(true);
+    }
+    fn input_levels(&self)->(u8,u8) {
+        let mut known=self.input_mask&0x1f;let mut high=self.input_high&known;
+        let pulls=u16::from_le_bytes([self.control.regs[0x14],self.control.regs[0x15]]);
+        for pin in 0..5 {
+            if known&(1<<pin)!=0 {continue;}
+            match (pulls>>(pin*2))&3 {
+                1=>{known|=1<<pin;high|=1<<pin;},2=>known|=1<<pin,
+                _ if pin==2=>{known|=4;if !self.charging {high|=4;}}, // legacy StopWatch CHG_STAT wiring
+                _=>{}
+            }
+        }
+        (known,high)
     }
     /// Current digital WAKE_SRC flags. Guest clearing uses write-zero-to-clear.
     pub fn wake_source(&self)->u8 {self.control.regs[5]&0x7f}
@@ -144,8 +167,8 @@ impl M5pm1State {
         let funcs=u16::from_le_bytes([self.control.regs[0x16],self.control.regs[0x17]]);
         self.irq_pins=0;let mut ordinary=0;
         for pin in 0..5 {match (funcs>>(pin*2))&3 {0=>ordinary|=1<<pin,1=>self.irq_pins|=1<<pin,_=>{}}}
-        let inputs=self.input_high&self.input_mask&0x1f;
-        let changed=(inputs^self.control.last_inputs)&self.input_mask&!self.control.regs[0x10]&0x1f;
+        let (known,inputs)=self.input_levels();
+        let changed=(inputs^self.control.last_inputs)&known&self.control.last_known&!self.control.regs[0x10]&0x1f;
         if edges {
             if self.irq_pins!=0 {self.control.regs[0x40]|=changed&ordinary;}
             // Manual v1.9: GPIO1 cannot wake. A simultaneous pair 0/2 or 3/4
@@ -158,7 +181,7 @@ impl M5pm1State {
                 self.restart(0x20);self.wake_requested=true;
                 self.irq_pins=0;ordinary=0x1f;
             }
-            self.control.last_inputs=inputs;
+            self.control.last_inputs=inputs;self.control.last_known=known;
         }
         let r=&mut self.control.regs;
         if self.irq_pins==0 {r[0x40..=0x42].fill(0);} else if r[5]&0x7f!=0 {r[0x42]|=2;}
@@ -174,9 +197,8 @@ impl M5pm1State {
     }
     fn gpio_input(&self)->u8 {
         let r=&self.control.regs;
-        let pins=self.input_mask&0x1f;let input=pins&!r[0x10];
-        let legacy=u8::from(!self.charging)<<2;
-        let mut value=(legacy&!pins)|(self.input_high&input)|(self.driven_high&pins);
+        let (_,high)=self.input_levels();
+        let mut value=(high&!r[0x10])|self.driven_high;
         value&=!self.irq_pins;if !self.irq_low {value|=self.irq_pins;}
         value
     }
@@ -189,8 +211,8 @@ impl M5pm1 {
     /// Explicit PMIC cold start. A CPU-only reset should retain this device.
     pub fn with_power_config(state:Arc<Mutex<M5pm1State>>,power_config:u8)->Self {
         {let mut s=state.lock().expect("M5PM1 state mutex poisoned");
-            *s=M5pm1State {battery_mv:s.battery_mv,charging:s.charging,input_mask:s.input_mask,input_high:s.input_high,..Default::default()};
-            s.control.initial_power_config=power_config;s.control.regs[6]=power_config;s.control.last_inputs=s.input_high&s.input_mask&0x1f;s.refresh(false);}
+            *s=M5pm1State {battery_mv:s.battery_mv,vref_mv:s.vref_mv,vin_mv:s.vin_mv,ext5v_mv:s.ext5v_mv,charging:s.charging,input_mask:s.input_mask,input_high:s.input_high,..Default::default()};
+            s.control.initial_power_config=power_config;s.control.regs[6]=power_config;(s.control.last_known,s.control.last_inputs)=s.input_levels();s.refresh(false);}
         Self {ptr:0,first:true,state}
     }
     fn observe_clock(&mut self,hz:Option<u32>) {
@@ -232,7 +254,8 @@ impl I2cDevice for M5pm1 {
     fn read(&mut self)->u8 {
         let mut s=self.state.lock().expect("M5PM1 state mutex poisoned");s.refresh(true);
         let value=match self.ptr {
-            0x12=>s.gpio_input(),0x22=>s.battery_mv as u8,0x23=>(s.battery_mv>>8) as u8,
+            0x12=>s.gpio_input(),
+            0x20..=0x27=>{let v=[s.vref_mv,s.battery_mv,s.vin_mv,s.ext5v_mv][((self.ptr-0x20)/2) as usize];v.to_le_bytes()[(self.ptr&1) as usize]},
             0x48=>{let v=u8::from(s.control.power_pressed)|(u8::from(s.control.power_event)<<7);s.control.power_event=false;v},
             _=>s.control.regs[self.ptr as usize]
         };

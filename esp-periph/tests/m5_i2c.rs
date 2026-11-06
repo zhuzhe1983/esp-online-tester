@@ -379,3 +379,44 @@ fn expander_pwm_frequency_and_corematrix_buzzer_channel_follow_guest_registers()
     write(&mut device,0x25,&[0,0]);assert_eq!(state.lock().unwrap().pwm,[0;4]);
     assert_eq!(state.lock().unwrap().pwm_frequency_hz,0);
 }
+
+
+#[test]
+fn pmic_floating_int1_release_never_fabricates_wake_and_internal_pull_resolves_it() {
+    let state=Arc::new(Mutex::new(M5pm1State{input_mask:7,input_high:7,..Default::default()}));
+    let mut device=M5pm1::new(state.clone());
+    write(&mut device,0x18,&[0x10]);write(&mut device,0x07,&[0x20]);write(&mut device,0x0c,&[0xa1]);
+    state.lock().unwrap().release_input(4); // BMI INT1 disabled, R37 is NC
+    state.lock().unwrap().set_input(4,false);assert!(!state.lock().unwrap().wake_requested);
+    state.lock().unwrap().release_input(4);assert!(!state.lock().unwrap().wake_requested);
+    write(&mut device,0x15,&[1]); // PM1 GPIO4 pull-up establishes known high
+    assert_eq!(read(&mut device,0x12,1)[0]&0x10,0x10);
+    state.lock().unwrap().set_input(4,false);assert!(state.lock().unwrap().wake_requested);
+    assert_eq!(state.lock().unwrap().wake_source(),0x20);
+}
+
+#[test]
+fn pmic_release_restores_pulls_preserves_other_drivers_and_obeys_output_mode() {
+    let state=Arc::new(Mutex::new(M5pm1State{input_mask:0x17,input_high:0x13,..Default::default()}));
+    let mut device=M5pm1::new(state.clone());write(&mut device,0x15,&[2]); // pull-down GPIO4
+    state.lock().unwrap().release_input(4);assert_eq!(state.lock().unwrap().input_mask,7);
+    assert_eq!(read(&mut device,0x12,1),[3]);
+    state.lock().unwrap().set_input(4,true);assert_eq!(read(&mut device,0x12,1),[0x13]);
+    write(&mut device,0x10,&[0x10]);write(&mut device,0x13,&[0]);write(&mut device,0x11,&[0]);
+    assert_eq!(read(&mut device,0x12,1),[3]); // push-pull output overrides external high
+    write(&mut device,0x11,&[0x10]);state.lock().unwrap().release_input(4);
+    assert_eq!(read(&mut device,0x12,1),[0x13]);
+    state.lock().unwrap().release_input(255);assert_eq!(state.lock().unwrap().input_mask,7);
+    let mut cold=M5pm1::new(state.clone());assert_eq!(state.lock().unwrap().input_mask,7);assert_eq!(read(&mut cold,0x12,1),[3]);
+}
+
+
+#[test]
+fn pmic_nominal_voltage_inputs_are_little_endian_read_only_and_survive_reset() {
+    let state=Arc::new(Mutex::new(M5pm1State{vref_mv:3300,battery_mv:4000,vin_mv:5000,ext5v_mv:4900,..Default::default()}));
+    let expected:Vec<u8>=[3300u16,4000,5000,4900].into_iter().flat_map(u16::to_le_bytes).collect();
+    let mut d=M5pm1::new(state.clone());assert_eq!(read(&mut d,0x20,8),expected);
+    write(&mut d,0x20,&[0;8]);assert_eq!(read(&mut d,0x20,8),expected);
+    write(&mut d,0x0c,&[0xa2]);assert_eq!(read(&mut d,0x20,8),expected);
+    let mut d=M5pm1::new(state);assert_eq!(read(&mut d,0x20,8),expected);
+}

@@ -59,6 +59,11 @@ The board retains an `Arc<Mutex<M5pm1State>>` when it boxes the device for I2C.
 supplies the active-low GPIO2 bit at `0x12`. The default 3900 mV, not charging,
 is synthetic host input, not a battery discharge or charger model. Zero volts
 lets the firmware report an invalid battery reading.
+Explicit host `vref_mv`, `vin_mv`, and `ext5v_mv` supply the read-only
+little-endian pairs at `0x20/21`, `0x24/25`, and `0x26/27`. They default to
+zero to preserve existing boards; a board can declare its nominal virtual USB
+supply independently. These values survive PMIC construction/reset along with
+the battery input and do not imply analog ADC or charging simulation.
 
 Writing `SYS_CMD` (`0x0c`) with `0xa1` latches `power_off_requested` in that
 shared state. Clearing LED enable and hold config alone does not request
@@ -128,6 +133,12 @@ configures GPIO2 as an ordinary input and GPIO3 as the IRQ output.
 
 `M5pm1State::set_input(pin, high)` supplies a physical digital level immediately.
 Direct legacy writes to `input_high` are sampled at the next addressed transfer.
+`release_input(pin)` removes that external driver and resolves GPIO pull-up/down
+from registers `0x14/15`. An unpulled floating input reads conservatively low
+but is unknown for edge detection; only known-to-known changes can wake or
+interrupt. This prevents an unconnected BMI270 INT1/R37 NC from inventing a
+falling edge. External drive overrides a pull; GPIO output direction overrides
+the input level. The legacy StopWatch charging-status fallback on GPIO2 remains.
 When at least one GPIO has function `01` (IRQ output), changes on ordinary
 input-mode GPIOs latch in `IRQ_STATUS1` (`0x40`). Output pins, alternate
 functions, invalid pin numbers and the IRQ-output pins do not generate these
