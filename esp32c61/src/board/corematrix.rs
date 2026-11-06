@@ -193,7 +193,9 @@ mod tests {
     fn enable(ds:&mut Devices,mask:u16) {for (reg,value) in [(3,mask as u8),(4,(mask>>8) as u8),(0x13,0),(0x14,0),(5,mask as u8),(6,(mask>>8) as u8)] {write(ds,0x4f,&[reg,value]);}}
     #[test]
     fn matrix_uses_real_i2c_power_nibbles_and_shared_cpu_reset_state() {
-        let mut b=CoreMatrix::new();let mut ds=b.i2c_devices();assert_eq!(ds.len(),4);assert!(ds.iter().all(|(bus,_,d)|*bus==0&&d.pins()==Some((0,1))));
+        let mut b=CoreMatrix::new();let mut ds=b.i2c_devices();assert!(ds.iter().all(|(bus,_,d)|*bus==0&&d.pins()==Some((0,1))));
+        let mut responding:Vec<u8>=ds.iter_mut().filter_map(|(_,address,d)|{let ack=d.start(false);d.stop();ack.then_some(*address)}).collect();responding.sort_unstable();
+        assert_eq!(responding,[0x4f,0x68,0x6e],"unattached Grove routes and the unpowered matrix must NACK");
         assert!(!device(&mut ds,0x72).start(false));write(&mut ds,0x4f,&[5,8]);assert!(!device(&mut ds,0x72).start(false),"an output latch alone doesn't power the LEDs");
         enable(&mut ds,8);assert!(!device(&mut ds,0x72).start(true));write(&mut ds,0x72,&[0xa4,0x98,0x81,0xbf,0x83,0,0x10]);b.advance_to(1);
         assert_eq!(b.leds().unwrap().0[0],[255;3]);assert_eq!(b.leds().unwrap().0.iter().filter(|x|**x!=[0;3]).count(),1);assert_eq!(b.display().unwrap().2[0],0xffff);

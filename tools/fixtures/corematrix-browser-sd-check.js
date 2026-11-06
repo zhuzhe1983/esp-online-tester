@@ -14,7 +14,10 @@ async page => {
   return {phase:write?'write':'reload-read',firmwareSha256:done.scene.firmware.sha256,sdCard:done.sdCard,guestSeconds:done.stats.time};
  },write);
  const first=await phase(true),url=new URL(child.url());url.searchParams.set('storage-check',String(Date.now()));await child.goto(url.href);await child.waitForFunction(async()=>window.espTester&&(await window.espTester.observe()).product?.id==='m5stack-c158',null,{timeout:60000});
- await child.evaluate(async()=>{const {configureFirmwareRelay}=await import('./firmware-relay.js');configureFirmwareRelay(new URL(location.href).searchParams.get('test-relay'));await window.espTester.loadFirmware();});
+ await child.waitForLoadState('networkidle');
+ await child.evaluate(async()=>{const {configureFirmwareRelay}=await import('./firmware-relay.js');configureFirmwareRelay(new URL(location.href).searchParams.get('test-relay'));});
+ await child.waitForFunction(async()=>window.espTester&&(await window.espTester.observe()).product?.id==='m5stack-c158',null,{timeout:60000});
+ await child.evaluate(()=>window.espTester.loadFirmware());
  const second=await phase(false);if(!second.sdCard.restored)throw Error('Reload did not restore the saved SD pages');
  return {productId:'m5stack-c158',firmwarePatched:false,backend:'production-browser-worker-WASM',pageReloadPersistence:true,phases:[first,second]};
 }

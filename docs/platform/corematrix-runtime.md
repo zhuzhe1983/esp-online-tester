@@ -30,10 +30,13 @@ GitHub Release 下载受浏览器 CORS 限制。可导入官方原始 BIN，或�
 | Wi-Fi STA / SoftAP | 原固件 open/WPA2 扫描、关联、DHCP、DNS、NTP、HTTP 上传/下载和重连；错误密码拒绝；SoftAP 双模式 ARP/UDP；生产 Worker 经浏览器本地网络栈完成 DHCP、TCP 和 4096 字节 HTTP 响应比对 |
 | TLS / 密码运算 | TLS1.2 ECDHE-ECDSA-AES128-GCM-SHA256，4096 字节响应比对与错误主机名拒绝；109 组客体 SHA/MD5/HMAC/P_SHA256/AES 答案核对；证书日期 workaround 见上文及[网络回执](../evidence/c61-wifi/runtime.json) |
 | C61 定时睡眠 | `lightsleep(200)` 返回约199 ms；睡眠期间 CPU、寄存器与数字计时器保持；`deepsleep(200)` 经原厂 ROM 重启并读回深睡复位原因；原生和生产 Worker 均执行通过 |
+| BLE 广播 / 被动扫描 | 原版控制器经真实描述符、DMA 与 IRQ 收发；37/38/39 三信道广播字节与100–110 ms间隔；扫描回调的地址、RSSI、广播内容一致；移除附近设备后无扫描结果；原生、生产 Worker 和真实浏览器均通过 |
 
 `observe().hardwareDiagnostics` 显示主电源、矩阵供电/使能/PWM、蜂鸣器频率/占空比/供电、Grove 5V 和 TF 在位。这是客体寄存器的观测值，不能替代固件实际输出验收。
 
 默认 `A/B/C/P` 对应三个按键和电源键。电源键由 PM1 处理，不能用普通 GPIO 高低代替。IMU 可通过 `setImu()` 注入明确的虚拟轴；模型的物理安装轴尚未实物校准，因此没有开启拖动模型即改变传感器的隐式映射。
+
+生产 Worker 的14项原版固件检查见 [WASM 回执](evidence/corematrix-runtime/wasm.json)；工作台、独立播放器、iframe、父页面接口、BLE 和页面刷新后的 TF 保存见[浏览器回执](evidence/corematrix-runtime/browser.json)。BLE 的 `configureBle({nearby:[...]})` / `readBle()` 使用同一运行内核，具体参数与限制见[接口说明](../../skills/esp-online-tester/references/api.md#corematrix-legacy-ble)。没有通过主机直接插入扫描回调或修改点阵像素。
 
 ## 复现
 
@@ -45,7 +48,7 @@ node tools/probe-corematrix-uiflow.mjs /path/to/original-corematrix.bin \
   --receipt /tmp/corematrix-runtime.json
 ```
 
-程序使用独立虚拟存储并检查原始镜像 hash。`--checks matrix,buttons,imu,sd,buzzer,power,grove,network,sleep` 可缩小检查范围。SD 分支会验证 reset 与重新加载后的文件读回；没有验证突然终止宿主进程时的数据完整性。`network` 使用客体 RAM 中的单次 HTTP 服务与浏览器本地网络栈，不连接外部服务器。
+程序使用独立虚拟存储并检查原始镜像 hash。`--checks matrix,buttons,imu,sd,buzzer,power,grove,network,ble,sleep` 可缩小检查范围。SD 分支会验证 reset 与重新加载后的文件读回；没有验证突然终止宿主进程时的数据完整性。`network` 使用客体 RAM 中的单次 HTTP 服务与浏览器本地网络栈，不连接外部服务器。
 
 浏览器检查使用 `tools/fixtures/corematrix-browser-check.js`，通过 Playwright wrapper 在 headless 工作台或分享后的 embed 页运行，并通过 `?test-relay=` 指定自有流式中继地址。原厂启动错误会单独记录，不能把 RAM 测试程序成功解释为 UIFlow 启动应用完整兼容。
 

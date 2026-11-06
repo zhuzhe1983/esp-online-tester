@@ -1,0 +1,257 @@
+{
+  "checkedAt": "2026-11-06T05:38:13.221Z",
+  "productId": "m5stack-c158",
+  "source": {
+    "sha256": "8d5b8d4e22ebc293937086b2f9f218aa5a5ebda27b5ccb32b3f8f580ee02939b",
+    "bytes": 16773120,
+    "kind": "caller-supplied-local-official-image"
+  },
+  "wasmSha256": "a2b39656b576e79abb308dd32091091eaaef8b6c0dcbbd8ab09a666c1631f61b",
+  "backend": "production-page-worker-WASM-interpreter",
+  "firmwarePatched": false,
+  "guestProgram": "RAM-only MicroPython raw-REPL source; original boot image and filesystem are unchanged.",
+  "status": "pass",
+  "requestedChecks": [
+    "matrix",
+    "buttons",
+    "imu",
+    "sd",
+    "buzzer",
+    "power",
+    "grove",
+    "network",
+    "ble",
+    "sleep"
+  ],
+  "checks": [
+    "official-image-boot-and-MicroPython-guest-execution",
+    "real-TM1680-256-white-pixels-coordinate-halves-PWM-power-and-wrong-address",
+    "PM1-three-buttons-press-and-release",
+    "BMI270-three-axes-raw-and-M5Unified-correction",
+    "SPI-SD-FAT-write-and-read",
+    "guest-IOE1-PWM-and-M5Speaker-real-audio-with-power-gate",
+    "guest-power-register-read-after-battery-detection",
+    "routed-Grove-ENV4-DLight-Hub-wrong-pins-address-and-switched-power",
+    "browser-SoftAP-DHCP-TCP-HTTP-guest-response-byte-comparison",
+    "BLE-original-controller-scan-callbacks-and-three-channel-DMA-advertisements",
+    "PMU-timed-light-sleep-resumes",
+    "PMU-timed-deep-sleep-ROM-reboot-and-guest-reset-cause",
+    "SPI-SD-file-preserved-after-reset",
+    "SPI-SD-file-preserved-after-reload"
+  ],
+  "imuSamples": [
+    {
+      "quaternion": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "raw": [
+        0,
+        0,
+        0,
+        16,
+        0,
+        0
+      ],
+      "range": 2,
+      "enabled": true,
+      "accel": [
+        1,
+        0,
+        0
+      ],
+      "gyro": [
+        0,
+        0,
+        0
+      ],
+      "rawAccelG": [
+        0,
+        1,
+        0
+      ],
+      "expectedApiAccelG": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "quaternion": [
+        0,
+        0,
+        0.7071067811865476,
+        0.7071067811865476
+      ],
+      "raw": [
+        0,
+        16,
+        0,
+        0,
+        0,
+        0
+      ],
+      "range": 2,
+      "enabled": true,
+      "accel": [
+        0,
+        -1,
+        0
+      ],
+      "gyro": [
+        0,
+        0,
+        0
+      ],
+      "rawAccelG": [
+        1,
+        0,
+        0
+      ],
+      "expectedApiAccelG": [
+        0,
+        -1,
+        0
+      ]
+    },
+    {
+      "quaternion": [
+        0.7071067811865476,
+        0,
+        0,
+        0.7071067811865476
+      ],
+      "raw": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        240
+      ],
+      "range": 2,
+      "enabled": true,
+      "accel": [
+        0,
+        0,
+        -1
+      ],
+      "gyro": [
+        0,
+        0,
+        0
+      ],
+      "rawAccelG": [
+        0,
+        0,
+        -1
+      ],
+      "expectedApiAccelG": [
+        0,
+        0,
+        -1
+      ]
+    }
+  ],
+  "audioSamples": [
+    {
+      "phase": "pwm1200",
+      "frames": 4800,
+      "activeFrames": 4800,
+      "sampleRate": 48000,
+      "signEdges": 240,
+      "measuredHz": 1200,
+      "pcmSha256": "4be5c191918fecb6fbb372d1c8c6a85926778f0a74c741f1a5044850f9a487fc"
+    }
+  ],
+  "limitations": [
+    "No physical device tested.",
+    "Buzzer check measures digital PWM frequency; audio timbre and physical loudness are not calibrated. Power readback is not analog calibration.",
+    "SD uses an isolated virtual card; reset and firmware reload are tested, not abrupt host/browser crashes.",
+    "Source-program checks do not prove all unmodified UIFlow application features or physical wireless connectivity."
+  ],
+  "implementationRevision": "42840d1a1c9e101d693a0f2f2b2356a08199189a",
+  "frontendRevision": "1c16c863",
+  "rom": {
+    "file": "esp32c61_rev100_rom.elf",
+    "sha256": "c4ee94d3a8e335da4ef5f30a8a1ebb9691e639f1c773f484e9ba721aa1557c2e"
+  },
+  "wasmBytes": 5483981,
+  "frameHashes": {
+    "full-white": "5f4ecdb7b71c3e403983fe405cddcdc2f2576b655fdb3e80d94a6f7c32e58bc2",
+    "asymmetric-pixels": "c4310744cedefcb298665f53c530bac8364040a4db383205bec1f019b8cdd911",
+    "low-duty": "5b944dc85b81391852fe978db70415799f79a963e3c50efc601f1d6e4d27d750",
+    "brightness-off": "9503245a0161a939de15c2414db2d336e761822fa6cff8136e4148f58f1f782e",
+    "brightness-restore": "c4310744cedefcb298665f53c530bac8364040a4db383205bec1f019b8cdd911",
+    "wrong-address-unchanged": "c4310744cedefcb298665f53c530bac8364040a4db383205bec1f019b8cdd911",
+    "supply-off": "9503245a0161a939de15c2414db2d336e761822fa6cff8136e4148f58f1f782e",
+    "supply-restored-before-write": "9503245a0161a939de15c2414db2d336e761822fa6cff8136e4148f58f1f782e",
+    "supply-restored-new-frame": "c4310744cedefcb298665f53c530bac8364040a4db383205bec1f019b8cdd911"
+  },
+  "network": {
+    "protocol": "SoftAP-DHCP-TCP-HTTP",
+    "responseBytes": 4096,
+    "responseSha256": "a282010cd57afcc76a291b6da5b3eb3e0d14e9879feba54649008f6b54d8a0a9",
+    "dhcpLeaseReady": true,
+    "externalConnection": false
+  },
+  "ble": {
+    "scanCallbackCount": 3,
+    "scanExample": [
+      0,
+      "123456789abc",
+      2,
+      -42,
+      "0201061009436f72654d61747269782d70656572"
+    ],
+    "advertisements": 9,
+    "channels": [
+      37,
+      38,
+      39,
+      37,
+      38,
+      39,
+      37,
+      38,
+      39
+    ],
+    "firstPdu": "200e631100a0ed300201060409433631",
+    "intervalsUs": [
+      103429,
+      101846
+    ],
+    "removedPeersProduceNoScanResult": true,
+    "addresses": "synthetic test peer and emulator identity, no physical-device capture"
+  },
+  "guestReadbacks": {
+    "powerMv": [
+      3900,
+      5000
+    ],
+    "grove": {
+      "temperatureC": 22.00122,
+      "humidityPercent": 59.999084,
+      "pressureHpa": 990.00072,
+      "bh1750Raw": 1200
+    },
+    "lightSleepElapsedMs": 199,
+    "deepSleepReset": true,
+    "sdAfterReset": "PERSISTED_READ",
+    "sdAfterFirmwareReload": "PERSISTED_READ"
+  },
+  "fixtures": {
+    "tools/probe-corematrix-uiflow.mjs": "867cc92f6c044e6ce8c309e0ee0bf79057dba94a4c22eef6381cc8110e799db9",
+    "tools/fixtures/corematrix-uiflow/raw-repl.mjs": "14a29fb76d64865d7afe4a05b05eebb853cd36817d97ef6d1eb0d216f877ea64",
+    "tools/fixtures/corematrix-uiflow/exercise.py": "2f927851969a060f5fab02c49992c8c8cb172003b02e83b19fce754c094d963e",
+    "tools/fixtures/corematrix-uiflow/grove.py": "1fc1122dd57508fddf9273a3316a064c0516be11429df4f8db5648abe79a8810",
+    "tools/fixtures/corematrix-uiflow/softap.py": "2fa13090c927b66c757de99cdefc9ab5b90b78019903f85388c953a7544b7d15",
+    "tools/fixtures/corematrix-uiflow/ble.py": "5d631e84d8dcbf44e5d71994712847349e36453e7a50e2f45842f04bff678d45"
+  },
+  "curation": {
+    "rawReceiptSha256": "d5b5b7d5ee688a09fee7af526ad34ad8fdf81d0e8deccd81f46dd75ae4789e3c",
+    "omitted": "Raw input acknowledgements, serial log, repetitive callback/packet records and local network state; numerical comparisons, compact samples and hashes retained. Raw receipt remains local and is reproducible with the committed probe."
+  }
+}
