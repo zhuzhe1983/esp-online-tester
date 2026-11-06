@@ -289,6 +289,7 @@ impl SocBus {
         if self.periph.spi2.dma_tx_pending.is_some() { self.spi2_dma_tx(); }
 
         if self.uart_pins {for input in self.board.uart_rx(self.cycles) {self.periph.uart_pin_input(&input);self.irq_dirty=true;}}
+        if self.periph.ble_mac.running {self.irq_dirty|=self.periph.ble_mac.service(&mut self.sram,self.cycles);}
         if self.periph.wifi_mac.has_pending_work() { self.irq_dirty |= self.periph.wifi_mac.service(&mut self.sram, self.cycles / (crate::periph::CPU_HZ / 1_000_000)); }
         if self.board_power {
             self.controller_powered = self.board.power_state().is_none_or(|state| state.controller_powered);

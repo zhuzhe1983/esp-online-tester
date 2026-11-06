@@ -306,7 +306,7 @@ device_set! { Peripherals; inline always; clock: (clock) CPU_HZ, [(ClockDomain::
     0x91 "GPIO" (gpio) => [src::GPIO];
     0x96 "PCR" (pcr) => [];
     0xa0 "MODEM_BB" (modem_bb) => [];
-    0xa1 "BLE_MAC" (ble_mac) => [];
+    0xa1 "BLE_MAC" (ble_mac) => [4];
     0xa4 "WIFI_MAC" (wifi_mac) => [0];
     0xa5 "WIFI_RESULTS" alias (wifi_mac) delta 0x1000 => [];
     0xa9 "BLE_SECURITY" (ble_security) delta -0x800 @ 0x800..=0x8ff => [];

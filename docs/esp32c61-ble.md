@@ -72,3 +72,28 @@ With the latch implemented, the original 2.5.4 image runs activation,
 It completes with zero CPU exceptions within an 800M script budget. This
 still does **not** establish reception or on-air advertising: the hardware
 scheduler descriptor execution and packet delivery are the next boundary.
+
+## Scheduler boundary
+
+The controller's `r_ble_phy_init` calls `intr_alloc` with source4 and
+`r_ble_phy_isr`; the C61 digital MAC is connected to that source.
+`r_ble_lll_sched_restart_link` writes the first schedule pointer to
+`0x600a18fc`, followed by `r_ble_lll_sched_run` writing START at `0x600a1028`.
+STOP is `0x600a102c`. A 72-byte schedule carries its next low20-bit pointer at
++0, operation in +4 bits20..23, start/end microseconds at +8/+12 and pending
+bit13 at +40. Operations6/12/13 are the exercised advertising/passive/active
+scan families. Other operations do not fabricate successful completion.
+
+The scheduler makes current/prefetched pointers visible through 0x600a1900
+(running31, current29, pointer19..0) and 0x600a1904. At an interval's end it
+clears the completed item's status, advances pointers and raises the observed
+completion/recycle path (0x600a130c bit28, and 0x600a131c bit3 at list end).
+Masks are 0x600a1304/1314; W1C is 0x600a1308/1318. Public archive symbols
+prove software consumption of these bits; the undocumented hardware event
+names are not asserted. Error bits15 and7/8 are not substituted for completion.
+
+The original firmware recycles and reschedules descriptors through its real
+ISR. A 250 ms advertising program produces three-channel schedule groups
+repeated at its configured 100 ms interval; scan/start/duration callback/stop
+and BLE deactivation still finish with zero CPU exceptions. Packet parsing
+and delivery remain a separate qualification step.
