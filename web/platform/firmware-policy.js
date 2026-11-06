@@ -19,8 +19,8 @@ export function firmwareFlashPolicy(product, source, firmware) {
   const chip = String(product?.chip || '').toLowerCase().replace(/[^a-z0-9]/g, '');
   if (firmware?.sharedTargetId) {
     reason = 'FIRMWARE_TARGET_UNVERIFIED'; message = '此固件来自共享目标，尚未确认适用于本产品的实机刷写。';
-  } else if (!['esp32', 'esp32s3', 'esp32c3', 'esp32c6'].includes(chip)) {
-    reason = 'FLASH_UNSUPPORTED_CHIP'; message = '当前在线刷机支持 ESP32、S3、C3 和 C6。';
+  } else if (!['esp32', 'esp32s3', 'esp32c3', 'esp32c6', 'esp32c61'].includes(chip)) {
+    reason = 'FLASH_UNSUPPORTED_CHIP'; message = '当前在线刷机支持 ESP32、S3、C3、C6 和 C61。';
   } else if (!Number.isSafeInteger(product?.runtime?.flashMb) || product.runtime.flashMb <= 0 || product.runtime.flashMb > 32) {
     reason = 'FLASH_SIZE'; message = '此型号的 Flash 容量尚未核对，暂不能在线刷机。';
   } else if (!source || !(source.url || source.manifestUrl || source.file || ['build', 'segments'].includes(source.format) && source.files?.length)) {

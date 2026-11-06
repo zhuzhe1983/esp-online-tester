@@ -24,8 +24,10 @@ Definitions checked on 2026-11-03 against these pinned primary sources:
 
 The hardware definitions agree across the IDF 4.4 and 5.5 sources; they do not depend on the firmware being written. `readReg` may return signed int32 values in vendored esptool-js 0.7.0, so the guard validates then normalizes them to unsigned words. Missing values, strings, fractional numbers, out-of-range values and read errors cannot become an implicit zero.
 
-## ESP32-S3, C3 and C6
+## ESP32-S3, C3, C6 and C61
 
 These targets retain `getSecurityInfo()`. Both `SECURE_BOOT_EN` and `SECURE_DOWNLOAD_ENABLE` must be explicit booleans and `flashCryptCnt` must be an unsigned byte. A set flag or nonzero counter is refused; malformed/missing fields are refused separately. Raw flags, when supplied, must agree with the two parsed flags. This follows the existing ordinary-unsecured-device-only policy rather than attempting security-mode workarounds.
 
 Run `node --test tools/platform-flash-security-test.mjs` for all 127 classic encryption states, individual protection bits, signed register transport values, malformed/failed reads, modern reply validation and chip isolation. Integration still needs to run this guard before Flash writes and retain cancellation/connection cleanup.
+
+CoreMatrix C158 adds ESP32-C61 with the same GET_SECURITY_INFO guard. The locally vendored esptool-js 0.7.0 already includes its C61 target and stub. Firmware image chip ID 20 and rev100 are checked separately from C6 (13). Source: [esptool-js v0.7.0 C61 target](https://github.com/espressif/esptool-js/blob/v0.7.0/src/targets/esp32c61.ts). Protocol tests cover rejection of secure boot, download protection and nonzero encryption counters; physical USB flashing has not been tested.

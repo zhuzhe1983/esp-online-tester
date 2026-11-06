@@ -6,14 +6,20 @@
 const fail=(code,message)=>{throw Object.assign(new Error(message),{code});};
 const check=(value,code,message)=>{if(!value)fail(code,message);};
 export const isC5Board=board=>['esp32c5','stamp-c5','stamp-c5-dip'].includes(board);
-export const chipIdForBoard=board=>isC5Board(board)?23:/^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2)$/.test(board)?0:['esp32c3','stampc3','stampc3u'].includes(board)?5:(board==='nesso-n1'||board.includes('c6'))?13:['esp32p4','stamp-p4'].includes(board)?18:9;
+export const isC61Board=board=>['esp32c61','corematrix'].includes(board);
+// ESP-IDF v5.5.4 esp_app_format.h: C61 is chip 20, distinct from C6 (13).
+export const chipIdForBoard=board=>isC61Board(board)?20:isC5Board(board)?23:/^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2)$/.test(board)?0:['esp32c3','stampc3','stampc3u'].includes(board)?5:(board==='nesso-n1'||board.includes('c6'))?13:['esp32p4','stamp-p4'].includes(board)?18:9;
 export const C5_SRAM_RANGES=Object.freeze([Object.freeze({start:0x40800000,end:0x40860000}),Object.freeze({start:0x50000000,end:0x50004000})]);
 // S013's source-backed virtual profile is rev < 3; do not silently change ROM
 // families for an image targeting ECO5. ESP-IDF esp_image_header_t offsets 15/17.
 export function validateBoardRevision(bytes,board) {
-  if(board!=='stamp-p4')return;
+  if(board!=='stamp-p4'&&!isC61Board(board))return;
   check(bytes.length>=24,'INCOMPLETE_IMAGE','Image header is truncated.');
   const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+  if(isC61Board(board)) {
+    check(view.getUint16(15,true)<=100&&(view.getUint16(17,true)===0||view.getUint16(17,true)>=100),'CHIP_REVISION_UNSUPPORTED','CoreMatrix uses ESP32-C61 rev100; this image excludes that revision.');
+    return;
+  }
   check(view.getUint16(15,true)<300,'CHIP_REVISION_UNSUPPORTED','Stamp-P4 currently uses the rev < 3 runtime profile; this image requires rev >= 3.');
 }
 export async function validateAppImage(bytes,board,flashBytes) {

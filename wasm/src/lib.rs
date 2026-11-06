@@ -130,6 +130,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     let Some(psram_bytes) = mib_bytes(psram_mb) else { log("[emu] PSRAM size exceeds the supported memory range"); return std::ptr::null_mut() };
     let c3_board=if matches!(board.as_str(),"esp32c3"|"c3") {esp32c3::board::make_board("none")}else if matches!(board.as_str(),"none"|"bare") {None}else{esp32c3::board::make_board(&board)};
     let c5_board = if matches!(board.as_str(), "stamp-c5" | "stamp-c5-dip") { esp32c5::board::make_board(&board) } else { None };
+    let c61_board = if board == "esp32c61" { esp32c61::board::make_board("none") } else if board == "corematrix" { esp32c61::board::make_board(&board) } else { None };
     if c5_board.is_some() && (flash_mb != 4 || psram_mb != 0) {
         log("[emu] Stamp-C5 supports exactly 4 MiB Flash and no PSRAM"); return std::ptr::null_mut();
     }
@@ -150,7 +151,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     let p4 = p4_board.is_some() || p4_rev3 || matches!(p4_name, "esp32p4" | "p4");
     let classic_board = if board == "esp32" {
         esp32::board::make_board("esp32dev")
-    } else if p4 || c6_board.is_some() || matches!(board.as_str(), "none" | "bare") {
+    } else if p4 || c6_board.is_some() || c61_board.is_some() || matches!(board.as_str(), "none" | "bare") {
         None
     } else {
         esp32::board::make_board(&board)
@@ -188,6 +189,17 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         m.console.mask = 2;
         prepare(&mut m);
         MachineKind::C5(Box::new(m))
+    } else if let Some(b) = c61_board {
+        let mut m = esp32c61::machine([0x30, 0xed, 0xa0, 0x00, 0x11, 0x61], flash_bytes);
+        m.bus.board = b;
+        m.bus.attach_board_devices();
+        m.bus.set_flash_size(flash_bytes);
+        if let Err(reason) = m.bus.set_psram_size(psram_bytes) {
+            log(&format!("[emu] {}", reason)); return std::ptr::null_mut();
+        }
+        m.console.mask = 2;
+        prepare(&mut m);
+        MachineKind::C61(Box::new(m))
     } else if p4 {
         fn p4_machine<R: esp32p4::Revision>(flash_bytes: usize, psram_bytes: usize, board: Option<esp_soc::Board>) -> Machine<esp32p4::Esp32p4<R>> {
             let mut m = esp32p4::machine_rev::<R>([0x30, 0xed, 0xa0, 0x00, 0x11, 0x22], flash_bytes);

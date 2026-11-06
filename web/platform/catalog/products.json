@@ -1,7 +1,341 @@
 {
   "schemaVersion": "1",
-  "revision": "2026-11-05-firmware-targets",
+  "revision": "2026-11-06",
   "items": [
+    {
+      "id": "m5stack-c158",
+      "name": "M5Stack CoreMatrix · C158",
+      "manufacturer": "M5Stack",
+      "sku": "C158",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c61",
+      "module": "ESP32-C61HR8",
+      "summary": "ESP32-C61 主控，配备 16×16 白色 LED 点阵、BMI270 六轴传感器、三个用户按键、蜂鸣器和 microSD；M5PM1 与 M5IOE1 管理供电和外设。",
+      "knowledgeUrl": "./knowledge/m5stack-c158.json",
+      "runtime": {
+        "board": "corematrix",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "display": {
+        "width": 16,
+        "height": 16,
+        "type": "white-led-matrix",
+        "controller": "TM1680",
+        "bus": "I2C",
+        "touch": false
+      },
+      "controls": [
+        {
+          "id": "button-a",
+          "name": "按键 A（KEY1）",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "button-b",
+          "name": "按键 B（KEY2）",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "button-c",
+          "name": "按键 C（KEY3）",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyC"
+        },
+        {
+          "id": "power",
+          "name": "电源按键",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB Type-C · 串口 / 供电",
+          "external": true,
+          "voltage": 5,
+          "pins": [
+            {
+              "name": "D−",
+              "gpio": 12
+            },
+            {
+              "name": "D+",
+              "gpio": 13
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
+        },
+        {
+          "id": "grove",
+          "type": "HY2.0-4P",
+          "name": "PORT.A · I2C",
+          "external": true,
+          "voltage": 5,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "SDA",
+              "gpio": 0
+            },
+            {
+              "name": "SCL",
+              "gpio": 1
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "黑 GND、红 5V、黄 G0、白 G1；5V 由 M5IOE1 IO5 控制，与板载设备共用 I2C。"
+        },
+        {
+          "id": "usb-port",
+          "type": "MX1.25-4P",
+          "name": "USB.PORT",
+          "external": true,
+          "voltage": 5,
+          "pins": [
+            {
+              "name": "USB_DM",
+              "gpio": 12
+            },
+            {
+              "name": "USB_DP",
+              "gpio": 13
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
+        },
+        {
+          "id": "m5-bus",
+          "type": "2.54mm",
+          "name": "M5-Bus",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "G3",
+              "gpio": 3
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "G4",
+              "gpio": 4
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "ESP_EN"
+            },
+            {
+              "name": "G27",
+              "gpio": 27
+            },
+            {
+              "name": "G5",
+              "gpio": 5
+            },
+            {
+              "name": "G26",
+              "gpio": 26
+            },
+            {
+              "name": "G6",
+              "gpio": 6
+            },
+            {
+              "name": "G25",
+              "gpio": 25
+            },
+            {
+              "name": "M5BUS_3V3_L0"
+            },
+            {
+              "name": "G10",
+              "gpio": 10
+            },
+            {
+              "name": "G11",
+              "gpio": 11
+            },
+            {
+              "name": "G7",
+              "gpio": 7
+            },
+            {
+              "name": "G8",
+              "gpio": 8
+            },
+            {
+              "name": "G0",
+              "gpio": 0
+            },
+            {
+              "name": "G1",
+              "gpio": 1
+            },
+            {
+              "name": "G0",
+              "gpio": 0
+            },
+            {
+              "name": "G1",
+              "gpio": 1
+            },
+            {
+              "name": "G23",
+              "gpio": 23
+            },
+            {
+              "name": "G22",
+              "gpio": 22
+            },
+            {
+              "name": "G24",
+              "gpio": 24
+            },
+            {
+              "name": "G9",
+              "gpio": 9
+            },
+            {
+              "name": "NC"
+            },
+            {
+              "name": "G29",
+              "gpio": 29
+            },
+            {
+              "name": "NC"
+            },
+            {
+              "name": "5V_INOUT"
+            },
+            {
+              "name": "NC"
+            },
+            {
+              "name": "BAT"
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
+        },
+        {
+          "id": "battery",
+          "type": "MX1.25-2P",
+          "name": "电池接口",
+          "external": true,
+          "voltage": 3.7,
+          "pins": [
+            {
+              "name": "BAT"
+            },
+            {
+              "name": "GND"
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "信号列表不声明未核实的三维针位。"
+        },
+        {
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD 卡槽",
+          "external": true,
+          "pins": [
+            {
+              "name": "MOSI",
+              "gpio": 27
+            },
+            {
+              "name": "MISO",
+              "gpio": 26
+            },
+            {
+              "name": "SCK",
+              "gpio": 25
+            },
+            {
+              "name": "CS",
+              "gpio": 28
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c158/model.json",
+        "status": "partial"
+      },
+      "dimensions": {
+        "width": 54,
+        "height": 54,
+        "depth": 11.6,
+        "unit": "mm",
+        "sourceId": "official-docs",
+        "basis": "official"
+      },
+      "defaultFirmwareId": "m5stack-c158-uiflow2-github",
+      "family": {
+        "id": "m5-core",
+        "name": "Core / Basic / FIRE / M5GO"
+      },
+      "sources": [
+        {
+          "id": "official-docs",
+          "title": "CoreMatrix C158 官方产品资料",
+          "url": "https://docs.m5stack.com/zh_CN/core/CoreMatrix",
+          "checkedAt": "2026-11-06"
+        }
+      ],
+      "limitations": [
+        "芯片、外设和官方 UIFlow 固件的验证范围见 CoreMatrix 运行报告；尚未进行实机验证。",
+        "未发现独立公开的官方出厂恢复镜像，默认提供官方 UIFlow2，未将其标作出厂固件。"
+      ]
+    },
     {
       "id": "m5stack-k132-adv",
       "name": "M5Stack Cardputer-Adv · K132-Adv",

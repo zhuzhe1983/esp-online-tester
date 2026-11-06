@@ -22,7 +22,7 @@ function registerWord(value) {
 
 export async function assertFlashSecurity(loader,chip=loader?.chip?.CHIP_NAME) {
   const target=normalized(chip);
-  if(!['esp32','esp32s3','esp32c3','esp32c6'].includes(target))throw problem('FLASH_UNSUPPORTED_CHIP','此芯片尚无可用的烧录安全检查。');
+  if(!['esp32','esp32s3','esp32c3','esp32c6','esp32c61'].includes(target))throw problem('FLASH_UNSUPPORTED_CHIP','此芯片尚无可用的烧录安全检查。');
   if(normalized(loader?.chip?.CHIP_NAME)!==target)throw invalid();
   if(loader.secureDownloadMode===true)throw secured();
   if(loader.secureDownloadMode!==undefined&&typeof loader.secureDownloadMode!=='boolean')throw invalid();

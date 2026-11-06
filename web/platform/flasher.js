@@ -74,7 +74,7 @@ function selectedProduct(scene, catalog) {
   const validation = validateScene(scene, catalog);
   check(validation.valid, 'INVALID_SCENE', 'Cannot flash an invalid scene.', validation);
   const product = catalog.products.find(item => item.id === scene.productId);
-  check(product && ['esp32', 'esp32s3', 'esp32c3', 'esp32c6'].includes(normalizedChip(product.chip)), 'FLASH_UNSUPPORTED_CHIP', 'This flasher currently accepts ESP32, S3, C3 and C6 product definitions.');
+  check(product && ['esp32', 'esp32s3', 'esp32c3', 'esp32c6', 'esp32c61'].includes(normalizedChip(product.chip)), 'FLASH_UNSUPPORTED_CHIP', 'This flasher currently accepts ESP32, S3, C3, C6 and C61 product definitions.');
   return product;
 }
 

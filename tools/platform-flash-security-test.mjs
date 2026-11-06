@@ -41,8 +41,8 @@ test('classic ESP32 never treats missing, malformed or failed reads as an unprot
   await assert.rejects(()=>assertFlashSecurity(loader),failure);
 });
 
-test('S3/C3/C6 keep GET_SECURITY_INFO and reject encryption or either secure-mode flag',async()=>{
-  for(const chip of ['ESP32-S3','ESP32-C3','ESP32-C6']) {
+test('S3/C3/C6/C61 keep GET_SECURITY_INFO and reject encryption or either secure-mode flag',async()=>{
+  for(const chip of ['ESP32-S3','ESP32-C3','ESP32-C6','ESP32-C61']) {
     await assertFlashSecurity(modern(chip));
     for(const flag of ['SECURE_BOOT_EN','SECURE_DOWNLOAD_ENABLE']) {
       const info=securityInfo();info.parsedFlags[flag]=true;info.flags=flag==='SECURE_BOOT_EN'?1:4;

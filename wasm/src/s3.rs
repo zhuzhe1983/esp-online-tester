@@ -331,6 +331,7 @@ pub unsafe extern "C" fn esp32sim_set_imu_sample(e: *mut Emu, ax: f64, ay: f64, 
     let supported = match &mut e.m {
         super::MachineKind::S3(m) => m.bus.board.set_imu_sample([ax, ay, az], [gx, gy, gz]),
         super::MachineKind::Esp32(m) => m.bus.board.set_imu_sample([ax, ay, az], [gx, gy, gz]),
+        super::MachineKind::C61(m) => m.bus.board.set_imu_sample([ax, ay, az], [gx, gy, gz]),
         _ => false,
     };
     if supported { 0 } else { 1 }
