@@ -2,7 +2,7 @@
 use emu_core::{ClockDomain, ClockTree};
 use esp_periph::{device_set, mmio, Device, DeviceSet, Dispatch, Misc, RegRam, WriteEffect, NO_SOURCE};
 use esp_periph::{Efuse, Gdma, Gpio, GpSpi, Ledc, LedcLayout, Sha, SpiMem, Systimer, TimerGroup, Uart, UartLayout, UsbSerialJtag};
-use esp_periph::{RST_POWERON, RST_SW_CPU, RST_SW_SYS};
+pub use crate::sleep::LpSys;
 
 pub const CPU_HZ: u64 = 160_000_000;
 pub const PERIPH_BASE: u32 = 0x6000_0000;
@@ -89,44 +89,6 @@ impl Cache {
 impl Device for Cache {
     fn read(&mut self, off: u32) -> u32 { Cache::read(self, off) }
     fn write(&mut self, off: u32, v: u32) -> WriteEffect { Cache::write(self, off, v); WriteEffect::NONE }
-}
-
-pub struct LpSys {
-    pub ram: RegRam,
-    pub reset_cause: u32,
-    pub sw_reset: bool,
-
-    pub slow_ticks: u64,
-    pub time_latch: u64,
-}
-impl Default for LpSys { fn default() -> Self { Self::new() } }
-impl LpSys {
-    pub const CLKRST: u32 = 0x000; pub const AON: u32 = 0x400; pub const WDT: u32 = 0x800; pub const TIMER: u32 = 0xc00;
-    pub fn new() -> Self { LpSys { ram: RegRam::new(), reset_cause: RST_POWERON, sw_reset: false, slow_ticks: 0, time_latch: 0 } }
-    fn request_reset(&mut self, cause: u32) { self.reset_cause = cause; self.sw_reset = true; }
-    pub fn read(&self, off: u32) -> u32 {
-        match off {
-            0x010 => (self.ram.read(off) & !0x1f) | (self.reset_cause & 0x1f),
-            0xc14 => self.time_latch as u32, 0xc18 => (self.time_latch >> 32) as u32,
-            0xc10 => self.ram.read(off) & !(1 << 27),
-            0x3fc | 0x7fc | 0xbfc | 0xffc => 0x2207_0400,
-            _ => self.ram.read(off),
-        }
-    }
-    pub fn write(&mut self, off: u32, v: u32) {
-        match off {
-            0x434 => { if v & (1 << 31) != 0 { self.request_reset(RST_SW_SYS); } self.ram.write(off, v & !(1 << 31)); }
-            0x438 => { if v & (1 << 28) != 0 { self.request_reset(RST_SW_CPU); } self.ram.write(off, v & !(1 << 28)); }
-            0xc10 => { if v & (1 << 27) != 0 { self.time_latch = self.slow_ticks; } self.ram.write(off, v); }
-            _ => self.ram.write(off, v),
-        }
-    }
-}
-impl Device for LpSys {
-    fn read(&mut self, off: u32) -> u32 { LpSys::read(self, off) }
-    fn write(&mut self, off: u32, v: u32) -> WriteEffect { LpSys::write(self, off, v); WriteEffect::NONE }
-    fn clock(&self) -> Option<ClockDomain> { Some(ClockDomain::RtcSlow) }
-    fn tick(&mut self, ticks: u64) { self.slow_ticks += ticks; }
 }
 
 pub struct SpiMemC61(pub SpiMem);
@@ -348,7 +310,8 @@ device_set! { Peripherals; inline always; clock: (clock) CPU_HZ, [(ClockDomain::
     0xa5 "WIFI_RESULTS" alias (wifi_mac) delta 0x1000 => [];
     0xa9 "BLE_SECURITY" (ble_security) delta -0x800 @ 0x800..=0x8ff => [];
     0xaf "I2C_ANA_MST" (ana_mst) delta -0x800 @ 0x800..=0xfff => [];
-    0xb0 "LP_CLKRST" (lpsys) delta -0x400 @ 0x400..=0x7ff => [];
+    0xb0 "PMU" (lpsys) delta 0x1000 @ 0x000..=0x3ff => [13,15];
+    0xb0 "LP_CLKRST" alias (lpsys) delta -0x400 @ 0x400..=0x7ff => [];
     0xb0 "LP_TIMER" alias (lpsys) @ 0xc00..=0xfff => [];
     0xb1 "LP_AON" alias (lpsys) delta 0x400 @ 0x000..=0x3ff => [];
     0xb1 "LP_WDT" alias (lpsys) delta -0x400 @ 0xc00..=0xfff => [];
@@ -401,7 +364,15 @@ impl Peripherals {
         let mut gpio=Gpio::with_pins(1);gpio.enable=1;gpio.func_out_sel[0]=signal|((matrix>>1)&(1<<8));
         self.ledc.output(&gpio,0)
     }
-    pub fn read32(&mut self, addr: u32) -> u32 { mmio::read32(self, addr) }
+    pub fn read32(&mut self, addr: u32) -> u32 {
+        if matches!(addr,0x6000806c|0x6000906c) {return crate::sleep::rtc_calibration_value(self.timg[((addr>>12)&1) as usize].read(0x68),self.pcr.read(0x10c));}
+        mmio::read32(self, addr)
+    }
+    pub fn tick_sleep(&mut self,cycles:u64)->bool {
+        let before=self.lpsys.sleeping();let irq=self.lpsys.irq_sources();
+        self.clock.advance(&Self::CLOCKS,cycles,|_,_|{});self.lpsys.advance_cycles(cycles);
+        before!=self.lpsys.sleeping() || irq!=self.lpsys.irq_sources()
+    }
     pub fn write32(&mut self, addr: u32, v: u32) {
         if (0x60090000..=0x60090074).contains(&addr) { self.gpio.set_pad(((addr - 0x60090000) / 4) as u8, v); }
         if addr == 0x60004004 && v & (1 << 5) != 0 && self.i2c.has_pinned_devices() {

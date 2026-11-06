@@ -24,7 +24,7 @@ impl Soc for C61 {
     const ROM_DATA_TABLE_STRIDE: u32 = 12;
     fn new_core(_i: usize) -> Cpu { let mut c = Cpu::new_rv32imac(); c.clic = true; c.clic_std = true; c.user_counters = true; c }
 
-    fn core_state(bus: &SocBus, _core: usize) -> esp_soc::CoreState { if bus.controller_powered { esp_soc::CoreState::Running } else { esp_soc::CoreState::Held } }
+    fn core_state(bus: &SocBus, _core: usize) -> esp_soc::CoreState { if bus.controller_powered && !bus.periph.lpsys.sleeping() { esp_soc::CoreState::Running } else { esp_soc::CoreState::Held } }
     fn reset_core(c: &mut Cpu, _i: usize) { Cpu::reset(c); }
     fn boot_core(c: &mut Cpu, entry: u32) {
         Cpu::reset(c);
@@ -57,7 +57,7 @@ impl esp_soc::SocBus for SocBus {
 
     fn cycles(&self) -> u64 { self.cycles }
     fn next_deadline(&self) -> Option<u64> {
-        let timer = match self.periph.cycles_until_timer() { u32::MAX => None, cycles => Some(cycles.max(1) as u64) };
+        let timer = if self.periph.lpsys.sleeping() {self.periph.lpsys.sleep_deadline_cycles()} else {match self.periph.cycles_until_timer() { u32::MAX => None, cycles => Some(cycles.max(1) as u64) }};
         let board = self.board.next_deadline().map(|at| at.saturating_sub(self.cycles).max(1));
         timer.into_iter().chain(board).min()
     }
@@ -114,7 +114,7 @@ impl esp_soc::SocBus for SocBus {
         p.usb.connected = old.usb.connected;
 
         p.lpsys = old.lpsys;
-        p.lpsys.sw_reset = false;
+        p.lpsys.finish_reboot();
         p.lpsys.reset_cause = cause;
 
         p.spi0.0.jedec = old.spi0.0.jedec;

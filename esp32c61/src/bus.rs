@@ -281,7 +281,7 @@ impl SocBus {
 
         if self.board_edges { self.board.advance_to(self.cycles); }
 
-        self.irq_dirty |= esp_periph::Dispatch::tick(&mut self.periph, cycles as u64);
+        self.irq_dirty |= if self.periph.lpsys.sleeping() {self.periph.tick_sleep(cycles as u64)} else {esp_periph::Dispatch::tick(&mut self.periph, cycles as u64)};
         self.periph.gpio.input_changes.clear();
         if self.board_edges { self.irq_dirty |= esp_soc::gpio::drain_board_inputs(&mut *self.board, &mut self.periph.gpio, &mut self.gpio_events, self.cycles); }
 

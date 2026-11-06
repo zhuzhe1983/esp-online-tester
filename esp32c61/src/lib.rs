@@ -9,3 +9,4 @@ mod adc;
 pub mod wifi;
 pub mod ecc;
 pub mod ble;
+pub mod sleep;
