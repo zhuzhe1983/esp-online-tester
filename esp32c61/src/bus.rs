@@ -163,7 +163,8 @@ impl SocBus {
     fn sha_dma_write(&mut self, a: u32) {
         if !matches!(a & !0xfff, 0x6008_9000 | 0x6008_0000) { return; }
         if let Some(ch) = self.periph.gdma.gdma.out_channel_for(7) {
-            let mut memory = esp_periph::gdma::SramOut { base: SRAM_LOW, bytes: &mut self.sram, channel: &mut self.periph.gdma.gdma.out[ch] };
+            let shift=self.page_shift();
+            let mut memory = C61DmaOut { sram: &mut self.sram, psram: &mut self.psram, mmu: &self.mmu, shift, channel: &mut self.periph.gdma.gdma.out[ch] };
             self.periph.sha.dma_step(&mut memory);
         }
     }
@@ -365,4 +366,32 @@ impl Bus for SocBus {
 
     #[inline(always)]
     fn block_break(&self) -> bool { self.irq_dirty }
+}
+// ESP-IDF v5.5.4 esp32c61/soc_caps.h: SOC_AHB_GDMA_SUPPORT_PSRAM and
+// SOC_PSRAM_DMA_CAPABLE. DMA sees the MMU's PSRAM mapping, including page
+// boundaries; flash and MMIO are not DMA RAM. No CPU bus timing is charged.
+struct C61DmaOut<'a> {
+    sram: &'a mut [u8], psram: &'a mut [u8], mmu: &'a [u32; MMU_ENTRIES], shift: u32,
+    channel: &'a mut esp_periph::gdma::GdmaOutCh,
+}
+impl C61DmaOut<'_> {
+    fn chunk(&mut self,address:u32)->Result<&mut [u8],Fault> {
+        if (SRAM_LOW..SRAM_HIGH).contains(&address) {return self.sram.get_mut((address-SRAM_LOW) as usize..).ok_or(Fault::Unmapped);}
+        if !(FLASH_LOW..FLASH_HIGH).contains(&address) {return Err(Fault::Unmapped);}
+        let page=(address-FLASH_LOW)>>self.shift;let entry=*self.mmu.get(page as usize).ok_or(Fault::Unmapped)?;
+        if entry&(MMU_VALID|1<<9)!=(MMU_VALID|1<<9) {return Err(Fault::Unmapped);}
+        let page_size=1usize<<self.shift;let within=address as usize&(page_size-1);
+        let start=((entry&0x1ff) as usize)*page_size+within;
+        let end=(start+page_size-within).min(self.psram.len());
+        self.psram.get_mut(start..end).filter(|s|!s.is_empty()).ok_or(Fault::Unmapped)
+    }
+}
+impl esp_periph::gdma::OutMemory for C61DmaOut<'_> {
+    fn out_channel(&mut self)->&mut esp_periph::gdma::GdmaOutCh {self.channel}
+    fn word(&mut self,address:u32)->Result<u32,Fault> {if address&3!=0 {return Err(Fault::Misaligned);}let bytes=self.chunk(address)?.get(..4).ok_or(Fault::Unmapped)?;Ok(u32::from_le_bytes(bytes.try_into().unwrap()))}
+    fn append(&mut self,mut address:u32,mut count:usize,out:&mut Vec<u8>)->Result<(),(u32,Fault)> {
+        while count!=0 {let bytes=self.chunk(address).map_err(|fault|(address,fault))?;let take=count.min(bytes.len());out.extend_from_slice(&bytes[..take]);count-=take;if count!=0 {address=address.checked_add(take as u32).ok_or((address,Fault::Unmapped))?;}}
+        Ok(())
+    }
+    fn writeback(&mut self,address:u32,value:u32)->Result<(),Fault> {if address&3!=0 {return Err(Fault::Misaligned);}self.chunk(address)?.get_mut(..4).ok_or(Fault::Unmapped)?.copy_from_slice(&value.to_le_bytes());Ok(())}
 }
