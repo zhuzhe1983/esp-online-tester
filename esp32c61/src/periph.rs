@@ -285,6 +285,7 @@ impl Device for GpioC61 {
 }
 pub const PINS: esp_soc::pins::ChipPins = esp_soc::pins::ChipPins { valid: (1 << 30) - 1, input_select: 0x100, output_mask: 0x3ff };
 pub struct Peripherals {
+    pub modem_bb: crate::wifi::ModemBb, pub wifi_mac: crate::wifi::WifiMac,
     pub adc: crate::adc::SarAdc,
     pub uart: [Uart; 3], pub usb: UsbSerialJtag, pub systimer: Systimer, pub timg: [TimerGroup; 2],
     pub gpio: GpioC61, pub io_mux: RegRam, pub i2c: esp_periph::i2c::I2c, pub efuse: Efuse,
@@ -312,6 +313,9 @@ device_set! { Peripherals; inline always; clock: (clock) CPU_HZ, [(ClockDomain::
     0x90 "IO_MUX" (io_mux) delta 4 => [];
     0x91 "GPIO" (gpio) => [src::GPIO];
     0x96 "PCR" (pcr) => [];
+    0xa0 "MODEM_BB" (modem_bb) => [];
+    0xa4 "WIFI_MAC" (wifi_mac) => [0];
+    0xa5 "WIFI_RESULTS" alias (wifi_mac) delta 0x1000 => [];
     0xaf "I2C_ANA_MST" (ana_mst) delta -0x800 @ 0x800..=0xfff => [];
     0xb0 "LP_CLKRST" (lpsys) delta -0x400 @ 0x400..=0x7ff => [];
     0xb0 "LP_TIMER" alias (lpsys) @ 0xc00..=0xfff => [];
@@ -336,7 +340,7 @@ impl DeviceSet for Peripherals {
 }
 impl Peripherals {
     pub fn new(mac: [u8; 6]) -> Self { Self {
-        adc: crate::adc::SarAdc::new(CPU_HZ), uart: std::array::from_fn(|_| Uart::new(UartLayout::C6)), usb: UsbSerialJtag::new(CPU_HZ), systimer: Systimer::new(),
+        modem_bb: crate::wifi::ModemBb::new(), wifi_mac: crate::wifi::WifiMac::new(), adc: crate::adc::SarAdc::new(CPU_HZ), uart: std::array::from_fn(|_| Uart::new(UartLayout::C6)), usb: UsbSerialJtag::new(CPU_HZ), systimer: Systimer::new(),
         timg: [TimerGroup::new(), TimerGroup::new()], gpio: GpioC61 { gpio: { let mut g = Gpio::with_pins(30); g.input_select = 0x100; g.func_in_sel.fill(0x60); g } }, io_mux: RegRam::new(), i2c: esp_periph::i2c::I2c::new(),
         efuse: efuse_c61(mac, 1, 0, 0, 0, 0), spi0: SpiMemC61(SpiMem::new(false)), spi1: SpiMemC61(SpiMem::new(true)), sha: Sha::new(),
         gdma: GdmaC61::new(), spi2: GpSpi::new(), intmtx: IntMatrix::new(), intc: Intc::new(), cache: Cache::new(), lpsys: LpSys::new(), pcr: Pcr::new(),

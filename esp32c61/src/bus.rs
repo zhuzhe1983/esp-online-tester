@@ -37,6 +37,7 @@ pub struct SocBus {
     pub gpio_events: Option<Vec<(u64, u8, bool)>>,
     pub debug: esp_soc::DebugFlags,
     board_edges: bool,
+    board_power: bool, pub controller_powered: bool,
 }
 
 impl SocBus {
@@ -47,6 +48,8 @@ impl SocBus {
         }
         self.uart_pins = self.board.uses_uart_pins();
         self.board_edges = self.board.uses_gpio_edges();
+        self.board_power = self.board.power_state().is_some();
+        self.controller_powered = self.board.power_state().is_none_or(|state| state.controller_powered);
         for (bus, address, device) in self.board.i2c_devices() {
             if bus == 0 { self.periph.i2c.attach(address, device); }
         }
@@ -63,7 +66,7 @@ impl SocBus {
             flash: vec![0xff; flash_size], psram: Vec::new(),
             mmu: [0; MMU_ENTRIES], mmu_index: 0, mmu_power_ctrl: 0,
             periph: Peripherals::new(mac), board: Box::new(esp_soc::NoBoard), uart_pins: false,
-            cycles: 0, last_fault: None, irq_dirty: true, gpio_events: None, debug: Default::default(), board_edges: false,
+            cycles: 0, last_fault: None, irq_dirty: true, gpio_events: None, debug: Default::default(), board_edges: false, board_power: false, controller_powered: true,
         }
     }
 
@@ -269,6 +272,16 @@ impl SocBus {
 
         if self.periph.spi2.dma_tx_pending.is_some() { self.spi2_dma_tx(); }
 
+        if self.periph.wifi_mac.has_pending_work() { self.irq_dirty |= self.periph.wifi_mac.service(&mut self.sram, self.cycles / (crate::periph::CPU_HZ / 1_000_000)); }
+        if self.board_power {
+            self.controller_powered = self.board.power_state().is_none_or(|state| state.controller_powered);
+            if let Some(esp_soc::board::BoardPowerEvent::Reset { download }) = self.board.take_power_event() {
+                // GPIO_STRAP boot bit3 (GPIO9); C61 ROM get_boot_mode tests bits2/3.
+                self.periph.gpio.strap = if download { 7 } else { 15 };
+                self.periph.lpsys.reset_cause = esp_periph::RST_POWERON; self.periph.lpsys.sw_reset = true;
+                self.irq_dirty = true;
+            }
+        }
         self.deliver_board_events();
     }
 }

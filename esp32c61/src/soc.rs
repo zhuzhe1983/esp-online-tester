@@ -24,6 +24,7 @@ impl Soc for C61 {
     const ROM_DATA_TABLE_STRIDE: u32 = 12;
     fn new_core(_i: usize) -> Cpu { let mut c = Cpu::new_rv32imac(); c.clic = true; c.clic_std = true; c.user_counters = true; c }
 
+    fn core_state(bus: &SocBus, _core: usize) -> esp_soc::CoreState { if bus.controller_powered { esp_soc::CoreState::Running } else { esp_soc::CoreState::Held } }
     fn reset_core(c: &mut Cpu, _i: usize) { Cpu::reset(c); }
     fn boot_core(c: &mut Cpu, entry: u32) {
         Cpu::reset(c);
@@ -43,6 +44,11 @@ impl Soc for C61 {
 }
 
 impl esp_soc::SocBus for SocBus {
+    fn attach_wifi(&mut self, cfg: esp_soc::wifi::ApConfig, nat: Option<esp_soc::nat::Nat>) -> Result<(), String> { self.periph.wifi_mac.link.attach_new(cfg, nat, &self.debug); Ok(()) }
+    fn set_ethernet_relay(&mut self, enabled: bool) -> Result<(), String> { self.periph.wifi_mac.link.set_relay(enabled); Ok(()) }
+    fn take_ethernet_frames(&mut self) -> Vec<Vec<u8>> { self.periph.wifi_mac.link.take_relay_frames() }
+    fn receive_ethernet_frame(&mut self, frame: &[u8]) -> Result<(), String> { self.periph.wifi_mac.link.receive_relay_frame(frame) }
+
 
     fn cycles(&self) -> u64 { self.cycles }
     fn next_deadline(&self) -> Option<u64> {
@@ -95,6 +101,7 @@ impl esp_soc::SocBus for SocBus {
         let old = std::mem::replace(&mut self.periph, periph::Peripherals::new(mac));
         let p = &mut self.periph;
         p.efuse = old.efuse;
+        p.wifi_mac.link = old.wifi_mac.link.surviving_reboot();
         p.adc.analog = old.adc.analog; p.adc.analog.set_stream_clock_offset(self.cycles);
         p.spi0.0.has_psram = !self.psram.is_empty(); p.spi1.0.has_psram = !self.psram.is_empty();
 
@@ -178,7 +185,9 @@ impl esp_soc::SocBus for SocBus {
     fn board(&mut self) -> &mut dyn BoardModel { &mut *self.board }
     fn board_ref(&self) -> &dyn BoardModel { &*self.board }
 
-    fn audio(&self) -> (&[i16], u32) { (&[], 44100) }
+    fn audio(&self) -> (&[i16], u32) { self.board.audio() }
+    fn clear_audio_capture(&mut self) { self.board.clear_audio_capture(); }
+    fn report(&self) -> String { format!("{}\n{}", self.board.report(), self.periph.wifi_mac.link.report()) }
     fn irq_sources_of(&self, _core: usize, line: u32) -> Vec<usize> { (0..src::COUNT).filter(|&s| self.periph.intmtx.map[s] == line).collect() }
 
 }
