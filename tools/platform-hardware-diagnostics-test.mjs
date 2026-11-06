@@ -9,6 +9,16 @@ import {createPacing} from '../web/wasm/pacing.mjs';
 import {applyExperiments} from '../web/wasm/experiments.mjs';
 
 const catalog=Object.fromEntries(await Promise.all(['products','accessories','firmwares'].map(async name=>[name,JSON.parse(await readFile(new URL(`../web/platform/catalog/${name}.json`,import.meta.url))).items])));
+const coreMatrixSnapshot=()=>({schemaVersion:1,board:'corematrix',state:{controllerPowered:true,matrix:{powered:true,enabled:true,pwmSteps:16,frames:12,bytesWritten:512},buzzer:{frequencyHz:1000,duty4095:2048,supplyEnabled:true},grove5vEnabled:false,sdPresent:true}});
+test('CoreMatrix observation preserves independent supplies and validates bounded live output',()=>{
+  const input=coreMatrixSnapshot(),parsed=parseHardwareDiagnostics(input);assert.deepEqual(parsed,input);
+  input.state.matrix.powered=false;assert.equal(parsed.state.matrix.powered,true,'retained output is a copy');
+  for(const change of [s=>s.state.controllerPowered=1,s=>s.state.matrix.pwmSteps=17,s=>s.state.matrix.bytesWritten=-1,s=>s.state.buzzer.frequencyHz=NaN,s=>s.state.buzzer.duty4095=4096,s=>delete s.state.sdPresent]) {
+    const s=coreMatrixSnapshot();change(s);assert.equal(parseHardwareDiagnostics(s),null);
+  }
+  const off=coreMatrixSnapshot();off.state.controllerPowered=false;off.state.matrix.powered=false;off.state.buzzer.supplyEnabled=false;
+  assert.deepEqual(parseHardwareDiagnostics(off),off,'power off retains the actual register configuration, not fabricated zero settings');
+});
 const snapshot=()=>({schemaVersion:1,board:'stopwatch',state:{powerLedEnabled:false,downloadLocked:true,pm1ConfiguredHz:100000,pm1LastBusHz:400000,
   display:{sleepOut:true,displayOn:true,brightness:160,brightnessControlEnabled:null,visible:true}},
   findings:[{code:'PM1_I2C_CLOCK_MISMATCH',severity:'warning',count:2,summary:'Clock mismatch',detail:'Host 400000 Hz, PM1 100000 Hz'},
@@ -55,6 +65,7 @@ test('runtime keeps findings immutable, ignores malformed/duplicate messages, an
     assert.equal((await f.runtime.observe()).hardwareDiagnostics,null);assert.equal((await f.runtime.capabilities()).hardwareDiagnostics.available,true);
     f.runtime.subscribe(e=>{if(e.type==='hardware-diagnostics'&&e.hardwareDiagnostics)e.hardwareDiagnostics.state.downloadLocked=false;});
     const received=[];f.runtime.subscribe(e=>{if(e.type==='hardware-diagnostics')received.push(e.hardwareDiagnostics);});
+    f.send(coreMatrixSnapshot());assert.equal((await f.runtime.observe()).hardwareDiagnostics,null,'other product diagnostics cannot enter this session');
     f.send(snapshot());assert.equal(received[0].state.downloadLocked,true,'subscriber mutation cannot change another subscriber observation');const state=await f.runtime.observe();assert.deepEqual(state.hardwareDiagnostics,snapshot());assert.equal(state.serial,'');
     state.hardwareDiagnostics.findings[0].count=99;f.events.find(e=>e.type==='hardware-diagnostics').hardwareDiagnostics.state.downloadLocked=false;
     assert.equal((await f.runtime.observe()).hardwareDiagnostics.findings[0].count,2);assert.equal((await f.runtime.observe()).hardwareDiagnostics.state.downloadLocked,true);

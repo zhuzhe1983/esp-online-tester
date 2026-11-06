@@ -3,6 +3,15 @@ import {currentLocale} from './i18n.js';
 const text = (value, limit) => typeof value === 'string' && value.length <= limit;
 const integer = (value, max) => Number.isSafeInteger(value) && value >= 0 && value <= max;
 export function parseHardwareDiagnostics(value) {
+  if(value?.board==='corematrix') {
+    const s=value.state,m=s?.matrix,b=s?.buzzer;
+    if(value.schemaVersion!==1||!s||!m||!b||!['controllerPowered','grove5vEnabled','sdPresent'].every(key=>typeof s[key]==='boolean')||
+      !['powered','enabled'].every(key=>typeof m[key]==='boolean')||!integer(m.pwmSteps,16)||!integer(m.frames,Number.MAX_SAFE_INTEGER)||!integer(m.bytesWritten,Number.MAX_SAFE_INTEGER)||
+      typeof b.supplyEnabled!=='boolean'||!integer(b.frequencyHz,0xffff_ffff)||!integer(b.duty4095,4095))return null;
+    return {schemaVersion:1,board:'corematrix',state:{controllerPowered:s.controllerPowered,
+      matrix:{powered:m.powered,enabled:m.enabled,pwmSteps:m.pwmSteps,frames:m.frames,bytesWritten:m.bytesWritten},
+      buzzer:{frequencyHz:b.frequencyHz,duty4095:b.duty4095,supplyEnabled:b.supplyEnabled},grove5vEnabled:s.grove5vEnabled,sdPresent:s.sdPresent}};
+  }
   const state=value?.state, display=state?.display;
   if(value?.schemaVersion!==1 || value.board!=='stopwatch' || !state || !display ||
     !['powerLedEnabled','downloadLocked'].every(key=>typeof state[key]==='boolean') ||
@@ -44,11 +53,21 @@ export function mountHardwareDiagnostics({container,runtime}) {
   status.setAttribute('role','status');summary.append(title,status,hint);details.append(summary,body);container.append(details);
   let revision=0,last='',currentBoard=null;
   function update(snapshot,board) {
-    currentBoard=board;const supported=board==='stopwatch';container.hidden=!supported;
+    currentBoard=board;const supported=['stopwatch','corematrix'].includes(board);container.hidden=!supported;
+    title.textContent=board==='corematrix'?'硬件状态':'硬件检查';
     const signature=JSON.stringify([board,snapshot]);if(signature===last)return;last=signature;
     if(!supported || !snapshot) {
       details.open=false;container.classList.remove('has-warning');status.textContent='等待固件运行';hint.textContent='';
       body.replaceChildren(element('p','hardware-check-limit','仅覆盖已建模检查，仍需实机验证。'));return;
+    }
+    if(board==='corematrix') {
+      const {matrix,buzzer,...state}=snapshot.state,rows=element('dl','hardware-check-state');
+      container.classList.remove('has-warning');status.textContent=state.controllerPowered?'运行供电已开启':'主控已断电';hint.textContent='';
+      for(const [name,value] of [['LED 点阵供电',matrix.powered?'已开启':'已关闭'],['LED 点阵显示',matrix.enabled?'已开启':'休眠'],
+        ['点阵亮度',`${matrix.pwmSteps} / 16`],['点阵更新次数',String(matrix.frames)],
+        ['蜂鸣器供电',buzzer.supplyEnabled?'已开启':'已关闭'],['蜂鸣器频率',`${buzzer.frequencyHz} Hz`],['PWM 占空比',`${(100*buzzer.duty4095/4095).toFixed(1)}%`],
+        ['Grove 5V',state.grove5vEnabled?'已开启':'已关闭'],['microSD',state.sdPresent?'已插入':'未插入']])rows.append(element('dt','',name),element('dd','',value));
+      body.replaceChildren(rows,element('p','hardware-check-limit','状态来自固件控制的模拟器件。'));return;
     }
     const warnings=snapshot.findings.filter(item=>item.severity==='warning');container.classList.toggle('has-warning',warnings.length>0);
     const statusText=warnings.length?`${warnings.length} 项需检查`:'当前未发现已覆盖的问题',hintText=warnings.length?(labels[warnings[0].code]?.[0]||warnings[0].summary):'';

@@ -215,7 +215,7 @@ onmessage = async (ev) => {
       // a retained frame from the emulator being replaced.
       pendingFrame = null;sdShadow=null;sdWatchId=null;
       motionEnabled=['stackchan','stampfly','stampfly-v11'].includes(m.board);motionLast='';motionAt=0;
-      hardwareChecksEnabled=m.board==='stopwatch';hardwareChecksLast='';hardwareChecksAt=-Infinity;
+      hardwareChecksEnabled=m.board==='stopwatch'||m.board==='corematrix';hardwareChecksLast='';hardwareChecksAt=-Infinity;
       pacing = createPacing(); catchupTurns = 0;
       pendingInputTrace = [];
       flight?.dispose();flight=null;runCycles=wasm.esp32sim_run;

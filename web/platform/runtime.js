@@ -270,9 +270,9 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
           motors=next.motors;motorOutput=next.motorOutput;emit({type:'motors',motors:clone(motors),motorOutput:clone(motorOutput)});
         }
       }
-      else if (text.t === 'hardware-diagnostics' && product?.runtime?.board==='stopwatch') {
+      else if (text.t === 'hardware-diagnostics' && ['stopwatch','corematrix'].includes(product?.runtime?.board)) {
         const next=parseHardwareDiagnostics(text);
-        if(next && JSON.stringify(next)!==JSON.stringify(hardwareDiagnostics)) {hardwareDiagnostics=next;emit({type:'hardware-diagnostics',hardwareDiagnostics:clone(next)});}
+        if(next?.board===product.runtime.board && JSON.stringify(next)!==JSON.stringify(hardwareDiagnostics)) {hardwareDiagnostics=next;emit({type:'hardware-diagnostics',hardwareDiagnostics:clone(next)});}
       }
       else if (text.t === 'grid') {
         const route=accessoryInputs.find(item=>item.output===text.id);
@@ -787,7 +787,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         servos:{available:product?.runtime?.board==='stackchan',axes:product?.runtime?.board==='stackchan'?['pan','tilt']:[],source:'guest-uart-feedback',unit:'degrees',hardwareValidated:false},
         motors:{available:hasMotorOutput(product?.runtime?.board),axes:hasMotorOutput(product?.runtime?.board)?STAMPFLY_MOTORS.map(({id})=>id):[],source:'guest-routed-pwm',unit:'normalized-duty',rpmAvailable:false,flightSimulated:false,hardwareValidated:false},
         flight:{available:hasFlight(product?.runtime?.board),enabled:flightEnabled(),model:FLIGHT_MODEL,calibrated:false,source:'guest-pwm-rigid-body',methods:['configureFlight','readFlight'],recording:false,shares:'configuration-only',worldFrame:'NED',bodyFrame:'FRD'},
-        hardwareDiagnostics:{available:product?.runtime?.board==='stopwatch',source:'guest-registers',hardwareValidated:false},
+        hardwareDiagnostics:{available:['stopwatch','corematrix'].includes(product?.runtime?.board),source:'guest-registers',hardwareValidated:false},
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { available:gpsSupported(),mode: gpsSupported()?'logical-uart1-nmea':null, physicalRouting: false, baudTiming: false, hardwareValidated: false },
         lora:{available:['papermono','lilygo-t-beam-v1-2','stamp-c6lora'].includes(product?.runtime?.board),model:product?.runtime?.board==='lilygo-t-beam-v1-2'?'sx1276-lora-digital':'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
