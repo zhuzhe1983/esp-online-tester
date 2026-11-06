@@ -1,0 +1,59 @@
+{
+  "imageSha256": "8d5b8d4e22ebc293937086b2f9f218aa5a5ebda27b5ccb32b3f8f580ee02939b",
+  "romSha256": "c4ee94d3a8e335da4ef5f30a8a1ebb9691e639f1c773f484e9ba721aa1557c2e",
+  "integrationBase": "9c7538cf",
+  "testCommand": "C61_ROM_ELF=<rom> COREMATRIX_FIRMWARE=<image> C61_TEST_HTTP_BIND=<caller host IPv4> cargo test --release -p esp32c61 --test firmware_wifi -- --ignored --nocapture",
+  "cases": [
+    {
+      "accessPoint": "open",
+      "ssid": "c61-test",
+      "channel": 6,
+      "rssiDbm": -40,
+      "guestIpv4": "10.0.2.15",
+      "gatewayIpv4": "10.0.2.2",
+      "dnsIpv4": "10.0.2.3",
+      "dhcpLeases": 1,
+      "dnsAnswers": 1,
+      "ntpAnswers": 1,
+      "ntpResponseBytes": 48,
+      "httpRequestBodyBytes": 4096,
+      "httpResponseBodyBytes": 8192,
+      "httpBodiesComparedByteForByte": true,
+      "natBytesToHost": 4145,
+      "natBytesToGuest": 8252,
+      "tcpOpened": 1,
+      "tcpFailed": 0,
+      "wpaState": "not applicable",
+      "outcome": "passed"
+    },
+    {
+      "accessPoint": "wpa2-psk",
+      "ssid": "c61-test",
+      "channel": 6,
+      "rssiDbm": -40,
+      "guestIpv4": "10.0.2.15",
+      "gatewayIpv4": "10.0.2.2",
+      "dnsIpv4": "10.0.2.3",
+      "dhcpLeases": 1,
+      "dnsAnswers": 1,
+      "ntpAnswers": 1,
+      "ntpResponseBytes": 48,
+      "httpRequestBodyBytes": 4096,
+      "httpResponseBodyBytes": 8192,
+      "httpBodiesComparedByteForByte": true,
+      "natBytesToHost": 4145,
+      "natBytesToGuest": 8252,
+      "tcpOpened": 1,
+      "tcpFailed": 0,
+      "wpaState": "Installed",
+      "outcome": "passed"
+    }
+  ],
+  "limitations": [
+    "Guest reaches USB REPL after official startup ImportError: no module named M5Things.",
+    "WPA2 four-way handshake checked; shared digital MAC data boundary uses plaintext with CCMP headers, not radio encryption.",
+    "No physical RF timing/accuracy or hardware validation.",
+    "TLS, WPA3, SoftAP and external Internet not covered by these two cases."
+  ],
+  "redactions": "Raw logs were not committed. Local host IPv4, ephemeral TCP ports, process/thread identifiers and local paths are omitted; payload sizes, protocol outputs and binary hashes are retained."
+}
