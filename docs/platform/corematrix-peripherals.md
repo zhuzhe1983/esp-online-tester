@@ -48,8 +48,10 @@ physical optical orientation still needs the product model/photo validation.
 All four devices attach at physical SDA0/SCL1 on I²C0: PM1 `0x6e`, IOE1
 `0x4f`, BMI270 `0x68`, and TM1680 `0x72`. Hardware and GPIO bit-banged
 transfers share the same device instances. A peripheral address cannot bypass
-its physical route or power gate. PM1 survives L3A removal; IOE1/BMI270 and
-the downstream LED/SD rails reset when that supply is lost.
+its physical route or power gate. PM1 survives L3A removal; IOE1 and the downstream LED/SD rails reset when
+that supply is lost. BMI270 VDD/VDDIO are on the independent L1 LDO rail,
+so clearing DCDC enable does not reset the IMU. Its INT1 pin4 connects to
+PM1 GPIO4; INT2 only reaches test point TP10. LDO removal resets the sensor.
 
 PM1 GPIO0/1/2 read A/B/C. GPIO3 IRQ drives ESP GPIO2 active-low. The semantic
 power key calls PM1's actual digital button state machine; PM1 reset, wake and

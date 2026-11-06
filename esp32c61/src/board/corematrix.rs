@@ -10,24 +10,25 @@ const AUDIO_HZ:u32=48_000;
 
 struct Wiring {
     pmic:Arc<Mutex<M5pm1State>>,ioe:Arc<Mutex<M5ioe1State>>,ioe_device:Arc<Mutex<M5ioe1>>,matrix:Arc<Mutex<Tm1680State>>,
-    imu:Arc<Mutex<Bmi270>>,sample:Arc<Mutex<Bmi270Sample>>,sd:Mutex<Option<Box<SpiSdCard>>>,rails:Mutex<(bool,bool)>,
+    imu:Arc<Mutex<Bmi270>>,sample:Arc<Mutex<Bmi270Sample>>,sd:Mutex<Option<Box<SpiSdCard>>>,rails:Mutex<(bool,bool,bool)>,
 }
 impl Wiring {
     fn main_powered(&self)->bool {let pm=self.pmic.lock().expect("CoreMatrix PM1 poisoned");pm.dcdc_enabled&&!pm.power_off_requested}
+    fn imu_powered(&self)->bool {self.pmic.lock().expect("CoreMatrix PM1 poisoned").ldo3v3_enabled}
     fn reset_peripherals(&self) {
         *self.ioe_device.lock().expect("CoreMatrix IOE device poisoned")=M5ioe1::new(self.ioe.clone(),0);
         self.matrix.lock().expect("CoreMatrix matrix poisoned").set_power(false);
-        *self.imu.lock().expect("CoreMatrix IMU poisoned")=Bmi270::new(self.sample.clone());
         if let Some(card)=&mut *self.sd.lock().expect("CoreMatrix SD poisoned"){card.power_cycle();}
     }
     fn sync(&self) {
-        let main=self.main_powered();let old=*self.rails.lock().expect("CoreMatrix rails poisoned");
+        let main=self.main_powered();let imu=self.imu_powered();let old=*self.rails.lock().expect("CoreMatrix rails poisoned");
         if old.0&&!main {self.reset_peripherals();}
+        if old.2&&!imu {*self.imu.lock().expect("CoreMatrix IMU poisoned")=Bmi270::new(self.sample.clone());}
         let high=self.ioe.lock().expect("CoreMatrix IOE poisoned").driven_high;
         self.matrix.lock().expect("CoreMatrix matrix poisoned").set_power(main&&high&8!=0);
         let sd=main&&high&1!=0;
         if old.1&&!sd {if let Some(card)=&mut *self.sd.lock().expect("CoreMatrix SD poisoned"){card.power_cycle();}}
-        *self.rails.lock().expect("CoreMatrix rails poisoned")=(main,sd);
+        *self.rails.lock().expect("CoreMatrix rails poisoned")=(main,sd,imu);
     }
 }
 struct RailDevice {inner:Box<dyn I2cDevice>,wiring:Rc<Wiring>,always:bool}
@@ -48,9 +49,9 @@ impl<T:I2cDevice> I2cDevice for SharedDevice<T> {
 }
 struct ImuDevice(Rc<Wiring>);
 impl I2cDevice for ImuDevice {
-    fn start(&mut self,read:bool)->bool {self.0.main_powered()&&self.0.imu.lock().expect("CoreMatrix IMU poisoned").start(read)}
-    fn write(&mut self,b:u8)->bool {self.0.main_powered()&&self.0.imu.lock().expect("CoreMatrix IMU poisoned").write(b)}
-    fn read(&mut self)->u8 {if self.0.main_powered(){self.0.imu.lock().expect("CoreMatrix IMU poisoned").read()}else{0xff}}
+    fn start(&mut self,read:bool)->bool {self.0.imu_powered()&&self.0.imu.lock().expect("CoreMatrix IMU poisoned").start(read)}
+    fn write(&mut self,b:u8)->bool {self.0.imu_powered()&&self.0.imu.lock().expect("CoreMatrix IMU poisoned").write(b)}
+    fn read(&mut self)->u8 {if self.0.imu_powered(){self.0.imu.lock().expect("CoreMatrix IMU poisoned").read()}else{0xff}}
 }
 
 pub struct CoreMatrix {
@@ -64,7 +65,7 @@ impl CoreMatrix {
         let pmic=Arc::new(Mutex::new(M5pm1State{input_mask:0x17,input_high:7,..Default::default()}));
         let ioe=Arc::new(Mutex::new(M5ioe1State{input_mask:0x280,input_high:0x280,..Default::default()}));
         let ioe_device=Arc::new(Mutex::new(M5ioe1::new(ioe.clone(),0)));
-        Self{pmic_device:Arc::new(Mutex::new(M5pm1::new(pmic.clone()))),ioe_device:ioe_device.clone(),wiring:Rc::new(Wiring{pmic,ioe,ioe_device,matrix:Arc::new(Mutex::new(Tm1680State::new(CPU_HZ))),imu:Arc::new(Mutex::new(Bmi270::new(sample.clone()))),sample,sd:Mutex::new(None),rails:Mutex::new((true,false))}),i2c:I2cBitBang::new(),levels:[true;2],edges:Vec::new(),irq:true,cycle:0,leds:[[0;3];256],led_version:0,pcm:Vec::new(),audio_remainder:0,buzzer_phase:0,gpio_events:0,sd_present:false}
+        Self{pmic_device:Arc::new(Mutex::new(M5pm1::new(pmic.clone()))),ioe_device:ioe_device.clone(),wiring:Rc::new(Wiring{pmic,ioe,ioe_device,matrix:Arc::new(Mutex::new(Tm1680State::new(CPU_HZ))),imu:Arc::new(Mutex::new(Bmi270::new(sample.clone()))),sample,sd:Mutex::new(None),rails:Mutex::new((true,false,true))}),i2c:I2cBitBang::new(),levels:[true;2],edges:Vec::new(),irq:true,cycle:0,leds:[[0;3];256],led_version:0,pcm:Vec::new(),audio_remainder:0,buzzer_phase:0,gpio_events:0,sd_present:false}
     }
     fn synchronize(&mut self) {
         self.wiring.sync();let mut m=self.wiring.matrix.lock().expect("CoreMatrix matrix poisoned");m.advance_to(self.cycle);
@@ -207,6 +208,6 @@ mod tests {
         let mut b=CoreMatrix::new();let mut ds=b.i2c_devices();assert_eq!(read(&mut ds,0x68,0,1),[0x24]);
         write(&mut ds,0x68,&[0x59,0]);let mut config=vec![0;8193];config[0]=0x5e;write(&mut ds,0x68,&config);write(&mut ds,0x68,&[0x59,1]);assert_eq!(read(&mut ds,0x68,0x21,1),[1]);
         write(&mut ds,0x68,&[0x7d,6]);assert!(b.set_imu_sample([1.,0.,-1.],[0.,125.,0.]));assert_eq!(read(&mut ds,0x68,0x0c,6),[0,16,0,0,0,240]);
-        assert!(!b.set_imu_sample([f64::NAN,0.,0.],[0.;3]));write(&mut ds,0x6e,&[6,0x15]);assert!(!device(&mut ds,0x68).start(true));write(&mut ds,0x6e,&[6,0x17]);assert_eq!(read(&mut ds,0x68,0x21,1),[0],"lost L3A supply resets sensor protocol");
+        assert!(!b.set_imu_sample([f64::NAN,0.,0.],[0.;3]));write(&mut ds,0x6e,&[6,0x15]);assert_eq!(read(&mut ds,0x68,0x21,1),[1],"IMU has independent L1 LDO supply while core DCDC is off");write(&mut ds,0x6e,&[6,0x13]);assert!(!device(&mut ds,0x68).start(true));write(&mut ds,0x6e,&[6,0x17]);assert_eq!(read(&mut ds,0x68,0x21,1),[0],"lost L1 supply resets sensor protocol");
     }
 }
