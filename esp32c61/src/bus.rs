@@ -105,7 +105,7 @@ impl SocBus {
                 SPI_MMU_ITEM_INDEX => self.mmu_index,
                 _ => self.mmu_power_ctrl,
             }
-        } else if matches!(addr & !3,0x6008_00d8|0x6008_0198|0x6008_0258) {
+        } else if matches!(addr & !3,0x6008_00d8|0x6008_0198) {
             self.spi2_out_ready(((addr-0x6008_00d8)/0xc0) as usize)
         } else {
 

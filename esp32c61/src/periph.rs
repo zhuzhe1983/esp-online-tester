@@ -17,7 +17,7 @@ pub mod src {
     pub const I2S: usize = 39; pub const UART0: usize = 40; pub const UART1: usize = 41; pub const UART2: usize = 42;
     pub const LEDC: usize = 43; pub const USB_SERIAL_JTAG: usize = 44; pub const I2C_EXT0: usize = 45;
     pub const TG0_T0: usize = 46; pub const TG1_T0: usize = 49;
-    pub const SYSTIMER_T0: usize = 52; pub const SYSTIMER_T1: usize = 53; pub const SYSTIMER_T2: usize = 54;
+    pub const SYSTIMER_T0: usize = 52; pub const SYSTIMER_T1: usize = 53; pub const SYSTIMER_T2: usize = 54; pub const APB_ADC: usize = 55;
     pub const DMA_IN_CH0: usize = 58; pub const DMA_OUT_CH0: usize = 60; pub const GPSPI2: usize = 62;
     pub const SHA: usize = 63; pub const ECC: usize = 64; pub const COUNT: usize = 66;
 }
@@ -304,7 +304,7 @@ device_set! { Peripherals; inline always; clock: (clock) CPU_HZ, [(ClockDomain::
     0x08 "TIMG0" (timg[0]) => [src::TG0_T0];
     0x09 "TIMG1" (timg[1]) => [src::TG1_T0];
     0x0a "SYSTIMER" (systimer) => [src::SYSTIMER_T0, src::SYSTIMER_T1, src::SYSTIMER_T2];
-    0x0e "SARADC" (adc) => [];
+    0x0e "SARADC" (adc) => [src::APB_ADC];
     0x0f "USB_SERIAL_JTAG" (usb) => [src::USB_SERIAL_JTAG];
     0x10 "INTMTX" (intmtx) => [];
     0x80 "GDMA" (gdma) => [src::DMA_OUT_CH0, src::DMA_OUT_CH0 + 1, NO_SOURCE, NO_SOURCE, NO_SOURCE, src::DMA_IN_CH0, src::DMA_IN_CH0 + 1, NO_SOURCE, NO_SOURCE, NO_SOURCE];

@@ -1,4 +1,4 @@
-//! esp32sim — the command line, one front end for every chip (`--chip esp32|s3|c3|c5|c6|p4`; the `esp32sim-c3`,
+//! esp32sim — the command line, one front end for every chip (`--chip esp32|s3|c3|c5|c6|c61|p4`; the `esp32sim-c3`,
 //! `esp32sim-c6` and `esp32sim-p4` binaries are `--chip c3` / `--chip c6` / `--chip p4`). Parsing and everything a run does are chip-agnostic over
 //! `Machine<S>`; the few flags a chip owns (board, WiFi, camera, PSRAM, register presets) live in
 //! its setup function.
@@ -16,15 +16,16 @@ fn usage(chip: &str) -> ! { help(chip, 2) }
 
 /// `--help` prints this and exits 0; a usage error prints it and exits 2.
 fn help(chip: &str, code: i32) -> ! {
-    eprintln!("usage: esp32sim [--chip esp32|s3|c3|c5|c6|p4] --boot rom|app --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf]... [options]");
+    eprintln!("usage: esp32sim [--chip esp32|s3|c3|c5|c6|c61|p4] --boot rom|app --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf]... [options]");
     eprintln!("       esp32sim --flash-image flash.bin --boot rom [options]            (a whole flash dump instead of the three images)");
     eprintln!("       default chip here: {}; esp32sim-c3, esp32sim-c6 and esp32sim-p4 are --chip c3 / --chip c6 / --chip p4", chip);
     eprintln!();
     eprintln!("  --rom F               the chip's mask ROM ELF; default: $ESP32SIM_ROM_DIR, then ~/.espressif/tools/esp-rom-elfs/*/");
-    eprintln!("                        (Espressif's, not in the tarball: tools/fetch-rom-elfs.sh DIR downloads all five)");
+    eprintln!("                        (Espressif's, not in the tarball: tools/fetch-rom-elfs.sh DIR downloads supported ROMs)");
     eprintln!("  --board NAME          board model (S3: atech14, waveshare-lcd4b, waveshare-amoled18-v2, waveshare-cam, none;");
     eprintln!("                        C6: waveshare-c6-lcd147, none; P4: waveshare-p4-lcd35, stamp-p4, none; classic: ttgo-tdisplay, esp32dev, none)");
     eprintln!("  --flash-mb N, --psram-mb N   memory sizes (S3 default 8 / 2, C3, C6 and classic 4 / 0, P4 16 / 0)");
+    eprintln!("  --chip c61 --board corematrix --boot rom --flash-image FLASH.bin (16 / 8 MiB)");
     eprintln!("  --chip c5 --board stamp-c5|stamp-c5-dip --boot app --app SRAM.bin (4 / 0 MiB; SRAM app-direct only)");
     eprintln!("  --max-seconds S       stop after S emulated seconds (always give one: the run returns)");
     eprintln!("  --console usb|uart0|both|none   which consoles to print (uart0 shows the ROM and bootloader)");
@@ -614,7 +615,12 @@ fn setup_c61(o: &Opts) -> esp32c61::Machine {
     let name = if o.board == "atech14" { "none" } else { o.board.as_str() };   // the S3 default means "bare module" here
     match esp32c61::board::make_board(name) { Some(b) => m.bus.board = b, None => { eprintln!("--board {}: none or corematrix on the C61", name); std::process::exit(2) } }
     m.bus.attach_board_devices();
-    m.bus.set_psram_size(o.psram_mb.unwrap_or(8) << 20).unwrap();
+    m.bus.set_psram_size(o.psram_mb.unwrap_or(8) << 20).unwrap_or_else(|e| usage_error(&e));
+    if let Some(spec) = &o.wifi {
+        let (cfg, nat) = wifi_config(spec, &o.net, m.bus.debug.has("net"));
+        m.bus.attach_wifi(cfg, nat).unwrap_or_else(|e| usage_error(&format!("--wifi: {e}")));
+    }
+    attach_nearby_networks(&mut m.bus.periph.wifi_mac.link, o);
     for (flag, on) in [("--cam-image", o.cam_image.is_some()), ("--cam-stream", o.cam_stream.is_some()), ("--cam-size", o.cam_size.is_some()), ("--flash-octal", o.flash_octal), ("--efuse-regs", o.efuse_regs.is_some()), ("--regs-init", o.regs_init.is_some()), ("--regstat", o.regstat.is_some())] {
         if on { eprintln!("{} is not available on the C61", flag); std::process::exit(2); }
     }

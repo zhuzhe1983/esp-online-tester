@@ -160,6 +160,7 @@ impl esp_soc::SocBus for SocBus {
         if !matches!(bytes, 0 | 0x20_0000 | 0x40_0000 | 0x80_0000) { return Err("C61 Quad PSRAM supports 0, 2, 4 or 8 MiB".into()); }
         self.psram.resize(bytes, 0); self.periph.spi0.0.has_psram = bytes != 0; self.periph.spi1.0.has_psram = bytes != 0; Ok(())
     }
+    fn attach_sd_card(&mut self, image: Box<dyn esp_periph::sdmmc::SdStore>, config: esp_periph::sdmmc::SdCardConfig) -> Result<String, String> { self.board.attach_spi_sd_card(image, config) }
     fn set_strap(&mut self, v: u32) { self.periph.gpio.strap = v; }
     fn set_reset_cause(&mut self, c: u32) { self.periph.lpsys.reset_cause = c; }
     fn set_debug(&mut self, f: &esp_soc::DebugFlags) {
@@ -171,7 +172,7 @@ impl esp_soc::SocBus for SocBus {
     fn take_gpio_events(&mut self) -> Vec<(u64, u8, bool)> { self.gpio_events.as_mut().map(std::mem::take).unwrap_or_default() }
     fn gpio_input(&self) -> u64 { self.periph.gpio.input }
     fn gpio_state(&self, pin: u8) -> Option<esp_soc::GpioState> {
-        if pin > 30 { return None; }
+        if pin >= 30 { return None; }
         let mux = self.periph.io_mux.read(4 + u32::from(pin) * 4);
         Some(esp_soc::GpioState::new(
             self.periph.gpio.out & (1u64 << pin) != 0,
@@ -188,6 +189,6 @@ impl esp_soc::SocBus for SocBus {
     fn audio(&self) -> (&[i16], u32) { self.board.audio() }
     fn clear_audio_capture(&mut self) { self.board.clear_audio_capture(); }
     fn report(&self) -> String { format!("{}\n{}", self.board.report(), self.periph.wifi_mac.link.report()) }
-    fn irq_sources_of(&self, _core: usize, line: u32) -> Vec<usize> { (0..src::COUNT).filter(|&s| self.periph.intmtx.map[s] == line).collect() }
+    fn irq_sources_of(&self, _core: usize, line: u32) -> Vec<usize> { (0..src::COUNT).filter(|&s| self.periph.intmtx.map[s] == line + 16).collect() }
 
 }

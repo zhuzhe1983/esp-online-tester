@@ -53,3 +53,41 @@ fn c61_rejects_wrong_chip_or_revision_before_loading_application() {
     let mut b = Bus61::new(4 << 20,[0;6]); b.write_flash(0x10000,&d).unwrap(); b.sram[0] = 0xa5;
     assert!(b.boot_app(0x10000).is_err()); assert_eq!(b.sram[0],0xa5);
 }
+
+#[test]
+fn c61_adc_interrupt_uses_its_own_matrix_source_and_gpio_limit() {
+    let mut b=Bus61::new(4<<20,[0;6]);
+    assert!(b.gpio_state(29).is_some());assert!(b.gpio_state(30).is_none());
+    b.write32(0x60010000+55*4,21).unwrap();b.write8(0x20801000+21*4+1,1).unwrap();b.write8(0x20801000+21*4+3,0x80).unwrap();
+    assert!(b.adc_set_raw(1,123));b.write32(0x6000e040,1<<31).unwrap();b.write32(0x6000e020,(1<<31)|(1<<29)).unwrap();b.refresh_irq();
+    let mut lines=[None];C61::irqs(&b,&mut lines);assert_eq!(lines[0].unwrap()&31,5);assert_eq!(b.irq_sources_of(0,5),[55]);
+    b.write32(0x6000e04c,1<<31).unwrap();b.refresh_irq();C61::irqs(&b,&mut lines);assert!(lines[0].is_none());
+}
+
+#[test]
+fn corematrix_power_removes_cpu_execution_and_wake_requests_real_reset() {
+    let mut m=esp32c61::machine([0;6],4<<20);m.bus.board=esp32c61::board::make_board("corematrix").unwrap();m.bus.attach_board_devices();
+    assert!(m.bus.attach_sd_card(Box::new(esp_periph::sdmmc::MemStore(vec![0;1<<20])),Default::default()).is_ok());
+    // A real SRAM loop is held while the PMIC's CPU DCDC rail is off.
+    m.bus.write32(0x40800000,0x00128293).unwrap();m.bus.write32(0x40800004,0xffdff06f).unwrap();m.cores[0].pc=0x40800000;
+    m.run(100);let before=m.cores[0].x[5];assert!(before>0);
+    let mut devices=m.bus.board.i2c_devices();let pm=devices.iter_mut().find(|x|x.1==0x6e).unwrap().2.as_mut();
+    assert!(pm.start(false));for b in [0x0c,0xa1] {assert!(pm.write(b));}pm.stop();m.bus.tick(1);
+    assert_eq!(C61::core_state(&m.bus,0),esp_soc::CoreState::Held);
+    let target=m.bus.cycles+160_000;assert!(matches!(m.run_until_cycle(target),esp_soc::RunUntil::Reached));assert_eq!(m.bus.cycles,target);assert_eq!(m.cores[0].x[5],before);
+    assert!(m.bus.board.button_at(target,"power",true));m.bus.tick(1);
+    assert_eq!(C61::core_state(&m.bus,0),esp_soc::CoreState::Running);assert!(m.bus.sw_reset());assert_eq!(m.bus.periph.gpio.strap,15);
+    m.bus.reboot([0;6]);assert!(!m.bus.sw_reset());assert!(m.bus.controller_powered);
+}
+
+#[test]
+#[ignore="requires ESP32SIM_ROM_DIR containing the public esp32c61_rev100_rom.elf fetched by CI"]
+fn c61_pmic_download_command_enters_actual_mask_rom_loader() {
+    let rom=std::path::PathBuf::from(std::env::var_os("ESP32SIM_ROM_DIR").expect("set ESP32SIM_ROM_DIR to the fetched ROM directory")).join("esp32c61_rev100_rom.elf");
+    let mut m=esp32c61::machine([0;6],4<<20);m.console.capture=true;m.console.mask=0;
+    m.bus.board=esp32c61::board::make_board("corematrix").unwrap();m.bus.attach_board_devices();m.load_rom(&std::fs::read(rom).expect("read esp32c61_rev100_rom.elf")).unwrap();
+    let mut devices=m.bus.board.i2c_devices();let pm=devices.iter_mut().find(|x|x.1==0x6e).unwrap().2.as_mut();
+    assert!(pm.start(false));for b in [0x0c,0xa3] {assert!(pm.write(b));}pm.stop();m.bus.tick(1);assert!(m.bus.sw_reset());assert_eq!(m.bus.periph.gpio.strap,7);
+    m.reboot();m.run(1_000_000);let text=String::from_utf8_lossy(&m.console.all);
+    assert_eq!(m.exceptions,0,"{text}");assert!(text.contains("ESP-ROM:esp32c61"),"{text}");assert!(text.contains("waiting for download"),"{text}");
+}
