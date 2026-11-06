@@ -281,6 +281,7 @@ pub fn run_cli(default_chip: &str) {
         "s3" | "esp32s3" => { let m = setup_s3(&o); run(m, &o) }
         "c3" | "esp32c3" => { let m = setup_c3(&o); run(m, &o) }
         "c5" | "esp32c5" => { let m = setup_c5(&o); run(m, &o) }
+        "c61" | "esp32c61" => { let m = setup_c61(&o); run(m, &o) }
         "c6" | "esp32c6" => { let m = setup_c6(&o); run(m, &o) }
         "p4" | "esp32p4" if p4_rev3(&o) => { let m = setup_p4::<esp32p4::RevGe3>(&o); run(m, &o) }
         "p4" | "esp32p4" => { let m = setup_p4::<esp32p4::RevLt3>(&o); run(m, &o) }
@@ -602,6 +603,20 @@ fn setup_c6(o: &Opts) -> esp32c6::Machine {
     attach_nearby_networks(&mut m.bus.periph.wifi_mac.link, o);
     for (flag, on) in [("--cam-image", o.cam_image.is_some()), ("--cam-stream", o.cam_stream.is_some()), ("--cam-size", o.cam_size.is_some()), ("--psram-mb", o.psram_mb.is_some()), ("--flash-octal", o.flash_octal), ("--efuse-regs", o.efuse_regs.is_some()), ("--regs-init", o.regs_init.is_some()), ("--regstat", o.regstat.is_some())] {
         if on { eprintln!("{} is not available on the C6", flag); std::process::exit(2); }
+    }
+    m
+}
+
+fn setup_c61(o: &Opts) -> esp32c61::Machine {
+    let mut m = esp32c61::machine(o.mac.unwrap_or([0xdc, 0x1e, 0xd5, 0x6e, 0x8c, 0xdc]), o.flash_mb.unwrap_or(16) << 20);
+    m.bus.set_flash_size(o.flash_mb.unwrap_or(16) << 20);   // the JEDEC capacity follows the size
+    if !o.debug.is_empty() { let mut f = esp_soc::DebugFlags::from_env(); for d in &o.debug { f.parse(d); } m.set_debug(&f); }
+    let name = if o.board == "atech14" { "none" } else { o.board.as_str() };   // the S3 default means "bare module" here
+    match esp32c61::board::make_board(name) { Some(b) => m.bus.board = b, None => { eprintln!("--board {}: none or corematrix on the C61", name); std::process::exit(2) } }
+    m.bus.attach_board_devices();
+    m.bus.set_psram_size(o.psram_mb.unwrap_or(8) << 20).unwrap();
+    for (flag, on) in [("--cam-image", o.cam_image.is_some()), ("--cam-stream", o.cam_stream.is_some()), ("--cam-size", o.cam_size.is_some()), ("--flash-octal", o.flash_octal), ("--efuse-regs", o.efuse_regs.is_some()), ("--regs-init", o.regs_init.is_some()), ("--regstat", o.regstat.is_some())] {
+        if on { eprintln!("{} is not available on the C61", flag); std::process::exit(2); }
     }
     m
 }
