@@ -62,12 +62,16 @@ pub struct CoreMatrix {
 impl CoreMatrix {
     pub fn new()->Self {
         let sample=Arc::new(Mutex::new(Bmi270Sample{accel_g:[0.0,0.0,1.0],..Default::default()}));
-        let pmic=Arc::new(Mutex::new(M5pm1State{input_mask:0x17,input_high:7,..Default::default()}));
+        let pmic=Arc::new(Mutex::new(M5pm1State{input_mask:7,input_high:7,vin_mv:5000,..Default::default()}));
         let ioe=Arc::new(Mutex::new(M5ioe1State{input_mask:0x280,input_high:0x280,..Default::default()}));
         let ioe_device=Arc::new(Mutex::new(M5ioe1::new(ioe.clone(),0)));
         Self{pmic_device:Arc::new(Mutex::new(M5pm1::new(pmic.clone()))),ioe_device:ioe_device.clone(),wiring:Rc::new(Wiring{pmic,ioe,ioe_device,matrix:Arc::new(Mutex::new(Tm1680State::new(CPU_HZ))),imu:Arc::new(Mutex::new(Bmi270::new(sample.clone()))),sample,sd:Mutex::new(None),rails:Mutex::new((true,false,true))}),i2c:I2cBitBang::new(),levels:[true;2],edges:Vec::new(),irq:true,cycle:0,leds:[[0;3];256],led_version:0,pcm:Vec::new(),audio_remainder:0,buzzer_phase:0,gpio_events:0,sd_present:false}
     }
     fn synchronize(&mut self) {
+        self.wiring.sync();
+        let level=if self.wiring.imu_powered() {let mut imu=self.wiring.imu.lock().expect("CoreMatrix IMU poisoned");imu.advance_to_us(self.cycle/(CPU_HZ/1_000_000));imu.interrupt_pins()[0]}else{None};
+        {let mut pm=self.wiring.pmic.lock().expect("CoreMatrix PM1 poisoned");if let Some(high)=level {pm.set_input(4,high);}else{pm.release_input(4);}}
+        // An IMU edge may wake the PMIC and restore its DCDC output.
         self.wiring.sync();let mut m=self.wiring.matrix.lock().expect("CoreMatrix matrix poisoned");m.advance_to(self.cycle);
         if self.led_version!=m.version {for (i,led) in self.leds.iter_mut().enumerate(){*led=[m.pixel(i/16,i%16);3];}self.led_version=m.version;}
         drop(m);let pm=self.wiring.pmic.lock().expect("CoreMatrix PM1 poisoned");let irq=!(pm.irq_low&&pm.irq_pins&8!=0);drop(pm);
@@ -115,8 +119,20 @@ impl BoardModel for CoreMatrix {
     fn gpio_output_at(&mut self,_cycle:u64,changes:&[(u8,bool)],_enabled:u64,_output:u64) {self.gpio_events=self.gpio_events.wrapping_add(changes.len() as u64);}
     fn input_levels(&self)->Vec<(u8,bool)> {vec![(0,self.levels[0]),(1,self.levels[1]),(2,self.irq),(9,true)]}
     fn take_edges(&mut self)->Vec<BoardEdge> {self.synchronize();std::mem::take(&mut self.edges)}
-    fn advance_to(&mut self,cycle:u64) {let cycle=self.cycle.max(cycle);self.synthesize(cycle-self.cycle);self.cycle=cycle;self.wiring.pmic.lock().expect("CoreMatrix PM1 poisoned").advance_to_ms(cycle/(CPU_HZ/1000));self.synchronize();}
-    fn next_deadline(&self)->Option<u64> {let matrix=self.wiring.matrix.lock().expect("CoreMatrix matrix poisoned").next_deadline();let power=self.wiring.pmic.lock().expect("CoreMatrix PM1 poisoned").next_deadline_ms().and_then(|ms|ms.checked_mul(CPU_HZ/1000));matrix.into_iter().chain(power).min()}
+    fn advance_to(&mut self,cycle:u64) {
+        let cycle=self.cycle.max(cycle);
+        loop {
+            let at=self.next_deadline().filter(|next|*next>self.cycle&&*next<cycle).unwrap_or(cycle);
+            self.synthesize(at-self.cycle);self.cycle=at;self.wiring.pmic.lock().expect("CoreMatrix PM1 poisoned").advance_to_ms(at/(CPU_HZ/1000));self.synchronize();
+            if at==cycle {break;}
+        }
+    }
+    fn next_deadline(&self)->Option<u64> {
+        let matrix=self.wiring.matrix.lock().expect("CoreMatrix matrix poisoned").next_deadline();
+        let power=self.wiring.pmic.lock().expect("CoreMatrix PM1 poisoned").next_deadline_ms().and_then(|ms|ms.checked_mul(CPU_HZ/1000));
+        let imu=if self.wiring.imu_powered(){self.wiring.imu.lock().expect("CoreMatrix IMU poisoned").next_deadline_us().and_then(|us|us.checked_mul(CPU_HZ/1_000_000))}else{None};
+        matrix.into_iter().chain(power).chain(imu).filter(|at|*at>self.cycle).min()
+    }
     fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {let m=self.wiring.matrix.lock().expect("CoreMatrix matrix poisoned");Some((16,16,(0..256).map(|i|{let v=u16::from(m.pixel(i/16,i%16));((v>>3)<<11)|((v>>2)<<5)|(v>>3)}).collect(),m.version))}
     fn display_frames(&self)->u64 {self.wiring.matrix.lock().expect("CoreMatrix matrix poisoned").frames}
     fn display_version(&self)->u64 {self.wiring.matrix.lock().expect("CoreMatrix matrix poisoned").version}
@@ -128,6 +144,7 @@ impl BoardModel for CoreMatrix {
     }
     fn set_imu_sample(&mut self,accel_g:[f64;3],gyro_dps:[f64;3])->bool {
         if !accel_g.iter().chain(gyro_dps.iter()).all(|v|v.is_finite()){return false;}
+        self.synchronize(); // sample the old stimulus through the current guest horizon
         let mut sample=self.wiring.sample.lock().expect("CoreMatrix sample poisoned");sample.accel_g=accel_g;sample.gyro_dps=gyro_dps;sample.version=sample.version.wrapping_add(1);true
     }
     fn uses_spi_pins(&self)->bool {true}
@@ -152,7 +169,7 @@ impl BoardModel for CoreMatrix {
         let m=self.wiring.matrix.lock().expect("CoreMatrix matrix poisoned");let ioe=*self.wiring.ioe.lock().expect("CoreMatrix IOE poisoned");
         Some(format!("{{\"schemaVersion\":1,\"board\":\"corematrix\",\"state\":{{\"controllerPowered\":{},\"matrix\":{{\"powered\":{},\"enabled\":{},\"pwmSteps\":{},\"frames\":{},\"bytesWritten\":{}}},\"buzzer\":{{\"frequencyHz\":{},\"duty4095\":{},\"supplyEnabled\":{}}},\"grove5vEnabled\":{},\"sdPresent\":{}}}}}",self.wiring.main_powered(),m.powered(),m.enabled(),m.pwm_steps(),m.frames,m.bytes_written,ioe.pwm_frequency_hz,ioe.pwm[2],self.wiring.main_powered()&&ioe.driven_high&2!=0,self.wiring.main_powered()&&ioe.driven_high&16!=0,self.sd_present))
     }
-    fn report(&self)->String {format!("[corematrix] TM1680={} frames; SD={}; PWM buzzer=48kHz digital; IMU=polled samples",self.display_frames(),self.wiring.sd.lock().expect("CoreMatrix SD poisoned").as_ref().map_or_else(||"absent".into(),|sd|sd.report()))}
+    fn report(&self)->String {format!("[corematrix] TM1680={} frames; SD={}; PWM buzzer=48kHz digital; IMU=clocked data-ready/motion IRQ",self.display_frames(),self.wiring.sd.lock().expect("CoreMatrix SD poisoned").as_ref().map_or_else(||"absent".into(),|sd|sd.report()))}
 }
 
 #[cfg(test)]
@@ -234,10 +251,30 @@ mod tests {
         write(&mut ds,0x4f,&[5,0]);b.advance_to(CPU_HZ/50);assert_eq!(b.audio().0,vec![0;480]);
     }
     #[test]
+    fn imu_int1_wakes_only_with_l1_hold_and_actual_feature_duration() {
+        for hold in [false,true] {
+            let mut b=CoreMatrix::new();let mut ds=b.i2c_devices();b.set_imu_sample([0.;3],[0.;3]);
+            write(&mut ds,0x68,&[0x59,0]);let mut config=vec![0;8193];config[0]=0x5e;write(&mut ds,0x68,&config);write(&mut ds,0x68,&[0x59,1]);write(&mut ds,0x68,&[0x7d,4]);
+            // Bosch standard any-motion:100ms,XYZ,83mg,out_conf7 -> statusbit6.
+            for bytes in [&[0x2f,1][..],&[0x3c,5,0xe0,0xaa,0xb8],&[0x53,8],&[0x55,1],&[0x56,0x40]] {write(&mut ds,0x68,bytes);}
+            write(&mut ds,0x6e,&[0x18,0x10,0]);write(&mut ds,0x6e,&[7,if hold {0x20}else{0}]);b.advance_to(0);
+            write(&mut ds,0x6e,&[0x0c,0xa1]);assert!(!b.power_state().unwrap().controller_powered);
+            b.set_imu_sample([0.5,0.,0.],[0.;3]);b.advance_to(CPU_HZ*8/100);assert!(!b.power_state().unwrap().controller_powered,"the sensor's100ms duration must elapse");
+            b.advance_to(CPU_HZ/10);assert_eq!(b.power_state().unwrap().controller_powered,hold);
+            assert_eq!(b.take_power_event(),if hold {Some(BoardPowerEvent::Reset{download:false})}else{None});
+            if hold {assert_eq!(read(&mut ds,0x68,0x21,1),[1],"L1 retains initialized BMI over MCU power-off");assert_ne!(read(&mut ds,0x6e,5,1)[0]&0x20,0);}
+        }
+    }
+    #[test]
+    fn nominal_usb_voltage_is_a_read_only_sensor_input() {
+        let mut b=CoreMatrix::new();let mut ds=b.i2c_devices();assert_eq!(read(&mut ds,0x6e,0x24,2),5000u16.to_le_bytes());
+        write(&mut ds,0x6e,&[0x24,0,0]);assert_eq!(read(&mut ds,0x6e,0x24,2),5000u16.to_le_bytes());assert_eq!(read(&mut ds,0x6e,0x22,2),3900u16.to_le_bytes());
+    }
+    #[test]
     fn imu_sample_flows_through_real_init_range_and_power_registers() {
         let mut b=CoreMatrix::new();let mut ds=b.i2c_devices();assert_eq!(read(&mut ds,0x68,0,1),[0x24]);
         write(&mut ds,0x68,&[0x59,0]);let mut config=vec![0;8193];config[0]=0x5e;write(&mut ds,0x68,&config);write(&mut ds,0x68,&[0x59,1]);assert_eq!(read(&mut ds,0x68,0x21,1),[1]);
-        write(&mut ds,0x68,&[0x7d,6]);assert!(b.set_imu_sample([1.,0.,-1.],[0.,125.,0.]));assert_eq!(read(&mut ds,0x68,0x0c,6),[0,16,0,0,0,240]);
+        write(&mut ds,0x68,&[0x7d,6]);assert!(b.set_imu_sample([1.,0.,-1.],[0.,125.,0.]));b.advance_to(CPU_HZ/100);assert_eq!(read(&mut ds,0x68,0x0c,6),[0,16,0,0,0,240]);
         assert!(!b.set_imu_sample([f64::NAN,0.,0.],[0.;3]));write(&mut ds,0x6e,&[6,0x15]);assert_eq!(read(&mut ds,0x68,0x21,1),[1],"IMU has independent L1 LDO supply while core DCDC is off");write(&mut ds,0x6e,&[6,0x13]);assert!(!device(&mut ds,0x68).start(true));write(&mut ds,0x6e,&[6,0x17]);assert_eq!(read(&mut ds,0x68,0x21,1),[0],"lost L1 supply resets sensor protocol");
     }
 }

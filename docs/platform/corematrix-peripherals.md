@@ -2,7 +2,8 @@
 
 `esp32c61::board::corematrix::CoreMatrix` models the C158 v0.7 schematic's
 physical I²C bus, power-gated TM1680 white matrix, three PM1 buttons,
-PM1 IRQ/power events, BMI270 polled samples, SPI microSD and IOE1 PWM buzzer.
+PM1 IRQ/power events, BMI270 clocked samples and motion wake, SPI microSD
+and IOE1 PWM buzzer.
 This document describes protocol tests; it is not proof that a particular
 unmodified firmware boots. Firmware integration evidence is recorded separately.
 
@@ -64,7 +65,12 @@ button timing. The button model does not reproduce analog debounce.
 IOE1 IO4 gates the matrix; IO1 gates SD; IO2 gates the buzzer; IO5 gates
 Grove 5V. GPIO direction/output/push-pull must all agree before a rail rises.
 IO8 reads a default not-charging input; IO10 is active-low card detect.
-Charge-current selection and connector 5V state are digital observations,
+The default CoreMatrix virtual supply explicitly supplies VIN=5000mV and
+VBAT=3900mV through read-only PM1 registers. These are synthetic nominal
+inputs; VREF and external M5-Bus 5V remain unknown/default zero. The pinned
+M5Unified battery-presence logic may report unknown initially while it waits
+for consecutive stable samples; the emulator does not bypass that firmware
+logic. Charge-current selection and connector 5V state are digital observations,
 not a charger, battery discharge, regulator or cable electrical model.
 
 SPI SD uses SCK25/MOSI27/MISO26/CS28. Wrong routes/selects, removal or a
@@ -80,11 +86,19 @@ output produces silence. Capture draining preserves fractional sample time
 and phase. There is no host-time stretch or speed change. This is a preview
 of the electrical PWM, not a calibrated MLT-8530 acoustic or analog model.
 
-BMI270 uses the existing Bosch register engine and complete 8192-byte
-configuration-transfer check. Host acceleration/gyro samples pass through
-power and range registers. FIFO, feature-engine execution and IMU wake
-interrupts are outside this implementation; a successful WHOAMI/readout must
-not be described as their validation.
+BMI270 uses the Bosch register engine and complete 8192-byte configuration
+transfer check. Samples are latched at guest-time ODR deadlines, including
+data-ready mapping, pulse/latch and polarity. Standard Bosch any-motion and
+no-motion fields use the documented 50Hz digital detector; INT1 is resolved
+through PM1 GPIO4, including high impedance and the PM1 internal pulls.
+Holding the L1 LDO during shutdown permits a configured motion edge to wake
+the MCU; without that retained supply the IMU cannot wake it. The board
+advances each scheduled edge before a later guest-time horizon, so a pulse
+is not lost during an idle jump. Microsecond board deadlines round the
+sensor's quarter-microsecond pulse end upward by at most0.75us.
+See [BMI270 protocol evidence](../bmi270.md) for the supported profile and
+limits. FIFO, arbitrary downloaded feature firmware, analog sensor filters
+and vibration mechanics are outside this digital model.
 
 ## Reproduction
 
