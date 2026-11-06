@@ -367,6 +367,9 @@ impl Peripherals {
         self.ledc.output(&gpio,0)
     }
     pub fn read32(&mut self, addr: u32) -> u32 {
+        // IDF v5.5.4 C61 efuse_reg.h +1d0 STATE[3:0], efuse_ll.h IDLE=1.
+        // The model completes OTP reads synchronously, including PMU wake reload.
+        if addr==0x600b49d0 {return (self.efuse.read(0x1d0)&!15)|1;}
         if matches!(addr,0x6000806c|0x6000906c) {return crate::sleep::rtc_calibration_value(self.timg[((addr>>12)&1) as usize].read(0x68),self.pcr.read(0x10c));}
         mmio::read32(self, addr)
     }
@@ -376,6 +379,7 @@ impl Peripherals {
         before!=self.lpsys.sleeping() || irq!=self.lpsys.irq_sources()
     }
     pub fn write32(&mut self, addr: u32, v: u32) {
+        if addr==0x600b49d0 {return;} // EFUSE_STATUS is read-only.
         if (0x60090000..=0x60090074).contains(&addr) { self.gpio.set_pad(((addr - 0x60090000) / 4) as u8, v); }
         if addr == 0x60004004 && v & (1 << 5) != 0 && self.i2c.has_pinned_devices() {
             let route = PINS.routes(&self.gpio, &self.io_mux); self.i2c.set_pins(route.i2c_pin(47).zip(route.i2c_pin(46)));

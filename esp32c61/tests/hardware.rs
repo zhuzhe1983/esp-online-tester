@@ -126,3 +126,12 @@ fn c61_ecc_source64_and_pcr_reset_clear_accelerator_state() {
     b.write32(0x600960ac,3).unwrap();b.write32(0x600960ac,1).unwrap();b.refresh_irq();assert_eq!(b.periph.intmtx.status[2]&1,0);
     assert_eq!(b.read32(0x6008b100).unwrap(),0);assert_eq!(b.read32(0x6008b014).unwrap(),0);assert_eq!(b.read32(0x6008b00c).unwrap(),0);
 }
+
+#[test]
+fn c61_efuse_idle_state_is_read_only_after_synchronous_reload() {
+    use emu_core::Bus;
+    let mut b=esp32c61::bus::SocBus::new(1<<20,[0;6]);
+    assert_eq!(b.read32(0x600b49d0).unwrap()&15,1);
+    b.write32(0x600b49d0,0).unwrap();b.write32(0x600b49d4,1).unwrap();
+    assert_eq!(b.read32(0x600b49d0).unwrap()&15,1);assert_eq!(b.read32(0x600b49d4).unwrap(),0);
+}
