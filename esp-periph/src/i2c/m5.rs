@@ -1,151 +1,242 @@
-//! M5Stack StopWatch's I2C register subset, not analog power or sleep timing simulation.
-//! Register sources: M5PM1 Chip User Manual v1.9, pp. 4–10, 12–18, 23;
-//! M5IOE1 Chip User Manual, sections III and IV (links and wiring in docs/m5-i2c.md).
+//! M5Stack PM1/IOE1 digital register behavior; analog power and bus wake delays are not simulated.
+//! Sources: M5PM1 manual v1.9 and official driver 315d2899; see docs/m5-i2c.md.
 use super::{I2cDevice, Reg8Device};
 use std::sync::{Arc, Mutex};
 
-/// Host inputs and a latched shutdown request, shared with the board after I2C attachment.
+/// Register/event storage for the shared PMIC. Board inputs must use `set_input`
+/// when an edge must be visible before the next addressed I2C transfer.
+#[derive(Debug)]
+pub struct M5pm1Control {
+    regs: [u8;256],
+    initial_power_config:u8,
+    last_inputs:u8,
+    power_pressed:bool,
+    power_event:bool,
+    press_started:Option<u64>,
+    click_due:Option<u64>,
+    first_release:Option<u64>,
+    second_press:bool,
+    long_fired:bool,
+}
+impl Default for M5pm1Control {
+    fn default()->Self {
+        let mut regs=[0;256];
+        for (r,v) in [(0,0x50),(1,0x20),(2,5),(3,6),(6,0x17),(8,0x40),(0x13,0x1f),(0x49,0x2a)] {regs[r]=v;}
+        Self {regs,initial_power_config:0x17,last_inputs:0,power_pressed:false,power_event:false,press_started:None,click_due:None,first_release:None,second_press:false,long_fired:false}
+    }
+}
+
+/// Host inputs and digital outputs shared with the board after I2C attachment.
 #[derive(Debug)]
 pub struct M5pm1State {
-    pub battery_mv: u16,
-    pub charging: bool,
-    pub power_off_requested: bool,
-    pub led_enabled: bool,
-    /// PWR_CFG bit3, retaining output after shutdown only with HOLD_CFG bit6.
-    pub grove_5v_enabled: bool,
-    /// PWR_CFG bit2; HOLD_CFG bit5 retains this output after shutdown.
-    pub ldo3v3_enabled: bool,
-    /// Board-wired GPIO inputs. Zero mask preserves legacy board behavior.
-    pub input_mask: u8,
-    pub input_high: u8,
-    /// Standard GPIO0..4 driven high in push-pull mode (not open-drain release).
-    pub driven_high: u8,
-    /// Nominal master rates at addressed transfers; unknown software-I2C does not
-    /// supply a rate. The first/max values refer only to known observations.
-    pub i2c_first_hz: Option<u32>,
-    pub i2c_last_hz: Option<u32>,
-    pub i2c_max_hz: u32,
-    /// I2C_CFG[4]: 100/400 kHz, not a claim that slower transfers must fail.
-    pub i2c_speed_hz: u32,
-    pub i2c_address_phases: u64,
-    pub i2c_speed_mismatches: u64,
-    pub i2c_last_mismatch_hz: Option<u32>,
-    pub i2c_last_mismatch_limit_hz: Option<u32>,
-    pub download_locked: bool,
-    /// Guest writes requesting DL_LOCK=1, including repeated writes of that value.
-    pub download_lock_writes: u64,
-    /// Attempts to clear a previously set lock; silicon latch clearing is not modeled.
-    pub download_unlock_attempts: u64,
+    pub battery_mv:u16,
+    pub charging:bool,
+    pub power_off_requested:bool,
+    pub led_enabled:bool,
+    /// PWR_CFG[1], the CoreMatrix 3V3_L3A rail; always off during shutdown.
+    pub dcdc_enabled:bool,
+    /// PWR_CFG[3], retaining output after shutdown only with HOLD_CFG[6].
+    pub grove_5v_enabled:bool,
+    /// PWR_CFG[2], retaining output after shutdown only with HOLD_CFG[5].
+    pub ldo3v3_enabled:bool,
+    pub input_mask:u8,
+    pub input_high:u8,
+    /// Ordinary GPIO0..4 driven high in push-pull mode, excluding IRQ functions.
+    pub driven_high:u8,
+    /// GPIOs assigned the IRQ output function; `irq_low` is their active level.
+    pub irq_pins:u8,
+    pub irq_low:bool,
+    /// Board consumes these requests after applying a PMIC wake/reset/download.
+    pub wake_requested:bool,
+    pub reset_requested:bool,
+    pub download_requested:bool,
+    pub control:M5pm1Control,
+    pub i2c_first_hz:Option<u32>,
+    pub i2c_last_hz:Option<u32>,
+    pub i2c_max_hz:u32,
+    /// I2C_CFG[4]: nominal slave setting, not an electrical ACK threshold.
+    pub i2c_speed_hz:u32,
+    pub i2c_address_phases:u64,
+    pub i2c_speed_mismatches:u64,
+    pub i2c_last_mismatch_hz:Option<u32>,
+    pub i2c_last_mismatch_limit_hz:Option<u32>,
+    pub download_locked:bool,
+    pub download_lock_writes:u64,
+    pub download_unlock_attempts:u64,
 }
-
 impl Default for M5pm1State {
-    fn default() -> Self {
-        Self { battery_mv: 3900, charging: false, power_off_requested: false, led_enabled: true, grove_5v_enabled: false, ldo3v3_enabled:true, input_mask:0, input_high:0, driven_high: 0,
-            i2c_first_hz:None, i2c_last_hz:None, i2c_max_hz:0, i2c_speed_hz:100_000, i2c_address_phases:0,
-            i2c_speed_mismatches:0, i2c_last_mismatch_hz:None, i2c_last_mismatch_limit_hz:None,
-            download_locked:false, download_lock_writes:0, download_unlock_attempts:0 }
+    fn default()->Self {
+        Self {battery_mv:3900,charging:false,power_off_requested:false,led_enabled:true,dcdc_enabled:true,grove_5v_enabled:false,ldo3v3_enabled:true,input_mask:0,input_high:0,driven_high:0,
+            irq_pins:0,irq_low:false,wake_requested:false,reset_requested:false,download_requested:false,control:Default::default(),
+            i2c_first_hz:None,i2c_last_hz:None,i2c_max_hz:0,i2c_speed_hz:100_000,i2c_address_phases:0,i2c_speed_mismatches:0,i2c_last_mismatch_hz:None,i2c_last_mismatch_limit_hz:None,
+            download_locked:false,download_lock_writes:0,download_unlock_attempts:0}
+    }
+}
+impl M5pm1State {
+    /// Physical, board-wired input. Invalid pin numbers have no effect.
+    pub fn set_input(&mut self,pin:u8,high:bool) {
+        if pin>=5 {return;}
+        self.input_mask|=1<<pin;
+        if high {self.input_high|=1<<pin;} else {self.input_high&=!(1<<pin);}
+        self.refresh(true);
+    }
+    /// Current digital WAKE_SRC flags. Guest clearing uses write-zero-to-clear.
+    pub fn wake_source(&self)->u8 {self.control.regs[5]&0x7f}
+    /// PWR_BTN state and guest-millisecond clock. Click qualification is an ideal
+    /// digital model, not the PMIC's analog debounce or 100 ms internal scan.
+    pub fn power_button(&mut self,pressed:bool,now_ms:u64) {
+        self.advance_to_ms(now_ms);
+        if self.control.power_pressed==pressed {return;}
+        self.control.power_pressed=pressed;
+        if pressed {
+            self.control.power_event=true;
+            self.control.press_started=Some(now_ms);
+            self.control.long_fired=false;
+            let gap=125u64<<((self.control.regs[0x49]>>5)&3);
+            self.control.second_press=self.control.first_release.is_some_and(|t| now_ms.saturating_sub(t)<=gap);
+            if self.control.second_press {self.control.click_due=None;}
+            if self.power_off_requested || !self.dcdc_enabled {
+                self.restart(4);self.wake_requested=true;self.control.long_fired=true;
+            }
+        } else if !self.control.long_fired {
+            if self.control.second_press {
+                self.control.first_release=None;self.control.click_due=None;
+                if self.control.regs[0x4a]&1==0 {self.power_off_requested=true;} else {self.control.regs[0x42]|=4;}
+            } else {
+                let single=125u64<<((self.control.regs[0x49]>>1)&3);
+                let double=125u64<<((self.control.regs[0x49]>>5)&3);
+                self.control.first_release=Some(now_ms);self.control.click_due=Some(now_ms.saturating_add(single.max(double)));
+            }
+        }
+        self.refresh(false);
+    }
+    /// Next power-key qualification deadline in the same guest millisecond domain.
+    pub fn next_deadline_ms(&self)->Option<u64> {
+        let long=if self.control.power_pressed && !self.control.long_fired {
+            self.control.press_started.map(|t| t.saturating_add(1000*(u64::from((self.control.regs[0x49]>>3)&3)+1)))
+        } else {None};
+        self.control.click_due.into_iter().chain(long).min()
+    }
+    /// The board advances this only with guest time; no wall-clock timer is used.
+    pub fn advance_to_ms(&mut self,now_ms:u64) {
+        if self.control.power_pressed && !self.control.long_fired && self.control.press_started.is_some_and(|t| now_ms.saturating_sub(t)>=1000*(u64::from((self.control.regs[0x49]>>3)&3)+1)) {
+            self.control.long_fired=true;self.control.click_due=None;self.control.first_release=None;
+            if !self.download_locked {self.restart(0);self.download_requested=true;}
+        }
+        if self.control.click_due.is_some_and(|t| now_ms>=t) {
+            self.control.click_due=None;self.control.first_release=None;
+            if self.control.regs[0x49]&1==0 {self.restart(8);self.reset_requested=true;} else {self.control.regs[0x42]|=1;}
+        }
+        self.refresh(true);
+    }
+    fn restart(&mut self,cause:u8) {
+        // Manual register map: reset clears GPIO/functions and holds; WAKE_EN,
+        // WAKE_CFG and RTC RAM survive. Physical host levels are not reset.
+        let old=self.control.regs;
+        let defaults=M5pm1Control::default();self.control.regs=defaults.regs;
+        self.control.regs[5]=(old[5]|cause)&0x7f;
+        self.control.regs[6]=(self.control.initial_power_config&!1)|(old[6]&1);
+        self.control.regs[0x18]=old[0x18];self.control.regs[0x19]=old[0x19];
+        self.control.regs[0xa0..0xc0].copy_from_slice(&old[0xa0..0xc0]);
+        self.power_off_requested=false;
+    }
+    fn refresh(&mut self,edges:bool) {
+        let funcs=u16::from_le_bytes([self.control.regs[0x16],self.control.regs[0x17]]);
+        self.irq_pins=0;let mut ordinary=0;
+        for pin in 0..5 {match (funcs>>(pin*2))&3 {0=>ordinary|=1<<pin,1=>self.irq_pins|=1<<pin,_=>{}}}
+        let inputs=self.input_high&self.input_mask&0x1f;
+        let changed=(inputs^self.control.last_inputs)&self.input_mask&!self.control.regs[0x10]&0x1f;
+        if edges {
+            if self.irq_pins!=0 {self.control.regs[0x40]|=changed&ordinary;}
+            // Manual v1.9: GPIO1 cannot wake. A simultaneous pair 0/2 or 3/4
+            // shares one hardware interrupt; reject an ambiguous pair.
+            let mut enabled=self.control.regs[0x18]&0x1d;
+            if enabled&5==5 {enabled&=!5;}
+            if enabled&0x18==0x18 {enabled&=!0x18;}
+            let matched=changed&enabled&!(inputs^self.control.regs[0x19]);
+            if (self.power_off_requested || !self.dcdc_enabled) && matched!=0 {
+                self.restart(0x20);self.wake_requested=true;
+                self.irq_pins=0;ordinary=0x1f;
+            }
+            self.control.last_inputs=inputs;
+        }
+        let r=&mut self.control.regs;
+        if self.irq_pins==0 {r[0x40..=0x42].fill(0);} else if r[5]&0x7f!=0 {r[0x42]|=2;}
+        self.irq_low=self.irq_pins!=0 && ((r[0x40]&!r[0x43]&0x1f)|(r[0x41]&!r[0x44]&0x3f)|(r[0x42]&!r[0x45]&7))!=0;
+        self.led_enabled=r[6]&0x10!=0 && !self.power_off_requested;
+        self.dcdc_enabled=r[6]&2!=0 && !self.power_off_requested;
+        self.grove_5v_enabled=r[6]&8!=0 && (!self.power_off_requested||r[7]&0x40!=0);
+        self.ldo3v3_enabled=r[6]&4!=0 && (!self.power_off_requested||r[7]&0x20!=0);
+        self.driven_high=r[0x10]&r[0x11]&!r[0x13]&ordinary&0x1f;
+        if self.power_off_requested {self.driven_high&=r[7]&0x1f;}
+        self.i2c_speed_hz=if r[9]&0x10!=0 {400_000}else{100_000};
+        self.download_locked=r[0x49]&0x80!=0;
+    }
+    fn gpio_input(&self)->u8 {
+        let r=&self.control.regs;
+        let pins=self.input_mask&0x1f;let input=pins&!r[0x10];
+        let legacy=u8::from(!self.charging)<<2;
+        let mut value=(legacy&!pins)|(self.input_high&input)|(self.driven_high&pins);
+        value&=!self.irq_pins;if !self.irq_low {value|=self.irq_pins;}
+        value
     }
 }
 
-pub struct M5pm1 {
-    registers: Reg8Device,
-    state: Arc<Mutex<M5pm1State>>,
-}
-
+pub struct M5pm1 {ptr:u8,first:bool,state:Arc<Mutex<M5pm1State>>}
 impl M5pm1 {
-    pub const ADDRESS: u8 = 0x6e;
-
-    pub fn new(state: Arc<Mutex<M5pm1State>>) -> Self {
-        Self::with_power_config(state, 0x17)
+    pub const ADDRESS:u8=0x6e;
+    pub fn new(state:Arc<Mutex<M5pm1State>>)->Self {Self::with_power_config(state,0x17)}
+    /// Explicit PMIC cold start. A CPU-only reset should retain this device.
+    pub fn with_power_config(state:Arc<Mutex<M5pm1State>>,power_config:u8)->Self {
+        {let mut s=state.lock().expect("M5PM1 state mutex poisoned");
+            *s=M5pm1State {battery_mv:s.battery_mv,charging:s.charging,input_mask:s.input_mask,input_high:s.input_high,..Default::default()};
+            s.control.initial_power_config=power_config;s.control.regs[6]=power_config;s.control.last_inputs=s.input_high&s.input_mask&0x1f;s.refresh(false);}
+        Self {ptr:0,first:true,state}
     }
-
-    /// Board-specific power-on rails. S015 starts with RGB and EXT_5V disabled.
-    /// Existing boards retain their historical 0x17 profile through `new`.
-    pub fn with_power_config(state: Arc<Mutex<M5pm1State>>, power_config:u8) -> Self {
-        {let mut state=state.lock().expect("M5PM1 state mutex poisoned");*state=M5pm1State {battery_mv:state.battery_mv,charging:state.charging,input_mask:state.input_mask,input_high:state.input_high,..Default::default()};}
-        {let mut state=state.lock().expect("M5PM1 state mutex poisoned");state.led_enabled=power_config&0x10!=0;state.grove_5v_enabled=power_config&8!=0;state.ldo3v3_enabled=power_config&4!=0;}
-        Self {
-            registers: Reg8Device::new("m5pm1", &[
-                (0x00, 0x50), (0x01, 0x20), (0x02, 0x05), (0x03, 0x06),
-                (0x06, power_config), (0x08, 0x40), (0x13, 0x1f), (0x49, 0x2a),
-            ]),
-            state,
-        }
-    }
-
-    fn observe_clock(&mut self, hz: Option<u32>) {
-        let mut state=self.state.lock().expect("M5PM1 state mutex poisoned");
-        state.i2c_address_phases=state.i2c_address_phases.saturating_add(1);
-        state.i2c_last_hz=hz;
+    fn observe_clock(&mut self,hz:Option<u32>) {
+        let mut s=self.state.lock().expect("M5PM1 state mutex poisoned");s.refresh(true);
+        s.i2c_address_phases=s.i2c_address_phases.saturating_add(1);s.i2c_last_hz=hz;
         if let Some(hz)=hz {
-            state.i2c_first_hz.get_or_insert(hz);
-            state.i2c_max_hz=state.i2c_max_hz.max(hz);
-            // A diagnostic, never an ACK rule. Allow 1% nominal-divider rounding;
-            // this is not an electrical tolerance or a measured failure threshold.
-            if hz > state.i2c_speed_hz + state.i2c_speed_hz/100 {
-                state.i2c_speed_mismatches=state.i2c_speed_mismatches.saturating_add(1);
-                state.i2c_last_mismatch_hz=Some(hz);
-                state.i2c_last_mismatch_limit_hz=Some(state.i2c_speed_hz);
+            s.i2c_first_hz.get_or_insert(hz);s.i2c_max_hz=s.i2c_max_hz.max(hz);
+            if hz>s.i2c_speed_hz+s.i2c_speed_hz/100 {
+                s.i2c_speed_mismatches=s.i2c_speed_mismatches.saturating_add(1);s.i2c_last_mismatch_hz=Some(hz);s.i2c_last_mismatch_limit_hz=Some(s.i2c_speed_hz);
             }
         }
     }
 }
-
 impl I2cDevice for M5pm1 {
-    fn start(&mut self, read: bool) -> bool { self.observe_clock(None); self.registers.start(read) }
-
-    fn start_address_with_clock(&mut self, configured: u8, address: u8, read: bool, hz: Option<u32>) -> bool {
-        if self.address(configured)!=address {return false;}
-        self.observe_clock(hz);
-        self.registers.start(read)
+    fn start(&mut self,read:bool)->bool {self.observe_clock(None);if !read {self.first=true;}true}
+    fn start_address_with_clock(&mut self,configured:u8,address:u8,read:bool,hz:Option<u32>)->bool {
+        if self.address(configured)!=address {return false;}self.observe_clock(hz);if !read {self.first=true;}true
     }
-
-    fn write(&mut self, byte: u8) -> bool {
-        if !self.registers.first {
-            let reg = self.registers.ptr;
-            if matches!(reg, 0x00..=0x03 | 0x12 | 0x22..=0x23) {
-                self.registers.ptr = reg.wrapping_add(1);
-                return true;
-            }
-            if reg == 0x0c && byte == 0xa1 {
-                self.state.lock().expect("M5PM1 state mutex poisoned").power_off_requested = true;
-            }
-            // M5PM1 315d2899 src/M5PM1.h: BTN_CFG_1[7] is DL_LOCK. The
-            // manufacturer's library refuses clearing a set lock; no silicon
-            // power-cycle/latch enforcement is inferred from that library check.
-            if reg == 0x49 {
-                let mut state=self.state.lock().expect("M5PM1 state mutex poisoned");
-                if byte & 0x80 != 0 {state.download_lock_writes=state.download_lock_writes.saturating_add(1);}
-                else if self.registers.regs[0x49] & 0x80 != 0 {state.download_unlock_attempts=state.download_unlock_attempts.saturating_add(1);}
-            }
+    fn write(&mut self,byte:u8)->bool {
+        if self.first {self.ptr=byte;self.first=false;return true;}
+        let reg=self.ptr;self.ptr=self.ptr.wrapping_add(1);
+        let mut s=self.state.lock().expect("M5PM1 state mutex poisoned");s.refresh(true);
+        if matches!(reg,0x00..=0x04|0x12|0x20..=0x27|0x48) {return true;}
+        if reg==0x49 {
+            if byte&0x80!=0 {s.download_lock_writes=s.download_lock_writes.saturating_add(1);}
+            else if s.control.regs[0x49]&0x80!=0 {s.download_unlock_attempts=s.download_unlock_attempts.saturating_add(1);}
         }
-        let ack = self.registers.write(byte);
-        let mut state=self.state.lock().expect("M5PM1 state mutex poisoned");
-        state.led_enabled = self.registers.regs[0x06] & 0x10 != 0;
-        // M5PM1 315d2899 src/M5PM1.h I2C_CFG (0x09), SPD bit4; manual v1.9 §System.
-        state.i2c_speed_hz = if self.registers.regs[0x09] & 0x10 != 0 {400_000} else {100_000};
-        state.download_locked = self.registers.regs[0x49] & 0x80 != 0;
-        // M5PM1 v1.9 pp.13-14: PWR_CFG[3] boost, HOLD_CFG[6] keeps it at shutdown.
-        state.grove_5v_enabled = self.registers.regs[0x06] & 8 != 0 && (!state.power_off_requested || self.registers.regs[0x07] & 0x40 != 0);
-        state.ldo3v3_enabled = self.registers.regs[0x06] & 4 != 0 && (!state.power_off_requested || self.registers.regs[0x07] & 0x20 != 0);
-        // M5PM1 manual pp.15–17: MODE/OUT/DRV and two-bit FUNC fields.
-        let r=&self.registers.regs;let funcs=u16::from_le_bytes([r[0x16],r[0x17]]);
-        let mut high=r[0x10]&r[0x11]&!r[0x13]&0x1f;
-        for pin in 0..5 {if funcs & (3<<(pin*2))!=0 {high&=!(1<<pin);}}
-        if state.power_off_requested {high&=r[0x07]&0x1f;}
-        state.driven_high=high;
-        ack
+        // Driver 315d2899 irqGet*Status(CLEAN_ONCE) writes ~status. This is
+        // write-zero-to-clear; writing one cannot manufacture an interrupt.
+        if matches!(reg,0x05|0x40..=0x42) {s.control.regs[reg as usize]&=byte;} else {s.control.regs[reg as usize]=byte;}
+        if reg==0x0c {match byte {
+            0xa1=>s.power_off_requested=true,
+            0xa2=>{s.restart(0x10);s.reset_requested=true;},
+            0xa3 if !s.download_locked=>{s.restart(0);s.download_requested=true;},
+            _=>{}
+        }}
+        s.refresh(false);true
     }
-
-    fn read(&mut self) -> u8 {
-        let state = self.state.lock().expect("M5PM1 state mutex poisoned");
-        self.registers.regs[0x12] = (self.registers.regs[0x12] & !4) | (u8::from(!state.charging) << 2);
-        // M5PM1 v1.9 pp.15–16 GPIO_IN: board inputs override only input-mode GPIOs.
-        // A configured push-pull output overrides the external input observation.
-        let pins=state.input_mask&0x1f;let input=pins&!self.registers.regs[0x10];
-        self.registers.regs[0x12]=(self.registers.regs[0x12]&!pins)|(state.input_high&input)|(state.driven_high&pins);
-        [self.registers.regs[0x22], self.registers.regs[0x23]] = state.battery_mv.to_le_bytes();
-        self.registers.read()
+    fn read(&mut self)->u8 {
+        let mut s=self.state.lock().expect("M5PM1 state mutex poisoned");s.refresh(true);
+        let value=match self.ptr {
+            0x12=>s.gpio_input(),0x22=>s.battery_mv as u8,0x23=>(s.battery_mv>>8) as u8,
+            0x48=>{let v=u8::from(s.control.power_pressed)|(u8::from(s.control.power_event)<<7);s.control.power_event=false;v},
+            _=>s.control.regs[self.ptr as usize]
+        };
+        self.ptr=self.ptr.wrapping_add(1);value
     }
 }
 
@@ -160,6 +251,8 @@ pub struct M5ioe1State {
     pub input_high: u16,
     /// PWM1..4 effective high duty, 0..4095, after direction/drive/enable/polarity.
     pub pwm: [u16; 4],
+    /// Shared PWM1..4 frequency in Hz (PWM_FREQ_L/H, 0x25/26).
+    pub pwm_frequency_hz:u16,
     pub oled_rail: bool,
     pub oled_reset_high: bool,
     pub touch_reset_high: bool,
@@ -203,7 +296,7 @@ impl I2cDevice for M5ioe1 {
         let pwm=std::array::from_fn(|ch| {let lo=0x1b+ch*2;let duty=u16::from_le_bytes([regs[lo],regs[lo+1]&15]);
             if regs[lo+1]&0x80==0 || output & (1 << [8,7,10,9][ch])==0 || regs[0x25]==0 && regs[0x26]==0 {0} else if regs[lo+1]&0x40!=0 {4095-duty} else {duty}});
         *state = M5ioe1State {
-            input_mask:state.input_mask,input_high:state.input_high,pwm,
+            input_mask:state.input_mask,input_high:state.input_high,pwm,pwm_frequency_hz:u16::from_le_bytes([regs[0x25],regs[0x26]]),
             driven_high: u16::from(high) | (u16::from(regs[0x04] & regs[0x06] & !regs[0x14] & 0x3f) << 8),
             oled_rail: high & 0x80 != 0,
             oled_reset_high: high & 0x10 != 0,

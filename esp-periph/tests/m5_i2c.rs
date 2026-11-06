@@ -241,3 +241,141 @@ fn pmic_board_input_and_ldo_hold_do_not_override_output_direction() {
     write(&mut device,0x07,&[0]);assert!(!state.lock().unwrap().ldo3v3_enabled);
     let mut device=M5pm1::new(state.clone());assert_eq!(read(&mut device,0x12,1)[0]&2,2);assert!(state.lock().unwrap().ldo3v3_enabled);
 }
+
+#[test]
+fn pmic_gpio_irq_is_latched_on_both_edges_and_clears_with_zero() {
+    // CoreMatrix KEY1..3 -> PM1 GPIO0..2; PM1 GPIO3 -> ESP32-C61 GPIO2.
+    let state=Arc::new(Mutex::new(M5pm1State{input_mask:0x17,input_high:7,..Default::default()}));
+    let mut device=M5pm1::new(state.clone());
+    state.lock().unwrap().set_input(2,false);
+    assert_eq!(read(&mut device,0x40,1),[0]); // no IRQ output configured
+    write(&mut device,0x10,&[8]);write(&mut device,0x13,&[0]);
+    write(&mut device,0x16,&[0x40]); // GPIO3=IRQ, GPIO0..2=ordinary input
+    assert_eq!(state.lock().unwrap().irq_pins,8);assert_eq!(read(&mut device,0x40,1),[0]);
+    state.lock().unwrap().set_input(2,true);
+    assert_eq!(read(&mut device,0x40,1),[4]);assert!(state.lock().unwrap().irq_low);
+    assert_eq!(read(&mut device,0x12,1)[0]&8,0);
+    write(&mut device,0x40,&[0xff]);assert_eq!(read(&mut device,0x40,1),[4]);
+    state.lock().unwrap().set_input(1,false);
+    assert_eq!(read(&mut device,0x40,1),[6]);
+    write(&mut device,0x40,&[!4]);assert_eq!(read(&mut device,0x40,1),[2]);
+    write(&mut device,0x40,&[!2]);assert!(!state.lock().unwrap().irq_low);
+    assert_eq!(read(&mut device,0x12,1)[0]&8,8);
+    write(&mut device,0x40,&[0xff]);assert_eq!(read(&mut device,0x40,1),[0]);
+    state.lock().unwrap().set_input(0,false);
+    write(&mut device,0x16,&[0]);assert_eq!(read(&mut device,0x40,3),[0,0,0]);
+}
+
+#[test]
+fn pmic_gpio_irq_masks_gate_output_without_discarding_pending_edges() {
+    let state=Arc::new(Mutex::new(M5pm1State{input_mask:0x17,input_high:7,..Default::default()}));
+    let mut device=M5pm1::new(state.clone());
+    write(&mut device,0x16,&[0x40]);write(&mut device,0x43,&[4]);
+    state.lock().unwrap().set_input(2,false);
+    assert_eq!(read(&mut device,0x40,1),[4]);assert!(!state.lock().unwrap().irq_low);
+    write(&mut device,0x43,&[0]);assert!(state.lock().unwrap().irq_low);
+    write(&mut device,0x40,&[0]);
+    write(&mut device,0x10,&[4]); // output KEY3 isn't scanned
+    state.lock().unwrap().set_input(2,true);
+    state.lock().unwrap().set_input(3,false); // IRQ output isn't scanned
+    state.lock().unwrap().set_input(31,true); // invalid guest/host pin ignored
+    assert_eq!(read(&mut device,0x40,1),[0]);
+    write(&mut device,0x10,&[0]);write(&mut device,0x16,&[0x70]); // GPIO2=other
+    state.lock().unwrap().set_input(2,false);
+    assert_eq!(read(&mut device,0x40,1),[0]);
+}
+
+#[test]
+fn pmic_dcdc_shutdown_hold_and_gpio_wake_preserve_wake_configuration() {
+    let state=Arc::new(Mutex::new(M5pm1State{input_mask:7,input_high:7,..Default::default()}));
+    let mut device=M5pm1::new(state.clone());
+    write(&mut device,0x18,&[4]);write(&mut device,0x19,&[0]); // KEY3 falling wake
+    write(&mut device,0xa0,&[0x12,0x34]);
+    write(&mut device,0x06,&[0x1f]);write(&mut device,0x07,&[0x60]);
+    write(&mut device,0x0c,&[0xa1]);
+    {let s=state.lock().unwrap();assert!(!s.dcdc_enabled);assert!(!s.led_enabled);assert!(s.ldo3v3_enabled);assert!(s.grove_5v_enabled);}
+    state.lock().unwrap().set_input(1,false);assert!(state.lock().unwrap().power_off_requested);
+    state.lock().unwrap().set_input(2,false);
+    {let s=state.lock().unwrap();assert!(s.wake_requested);assert!(!s.power_off_requested);assert!(s.dcdc_enabled);assert_eq!(s.wake_source(),0x20);}
+    assert_eq!(read(&mut device,0x18,2),[4,0]);assert_eq!(read(&mut device,0xa0,2),[0x12,0x34]);
+    assert_eq!(read(&mut device,0x07,1),[0]); // wake restart clears output holds
+    write(&mut device,0x16,&[0x40]);assert_eq!(read(&mut device,0x42,1),[2]);
+    write(&mut device,0x42,&[0]);assert_eq!(read(&mut device,0x42,1),[2]); // wake source still asserted
+    write(&mut device,0x05,&[0]);write(&mut device,0x42,&[0]);assert!(!state.lock().unwrap().irq_low);
+    write(&mut device,0x05,&[0xff]);assert_eq!(read(&mut device,0x05,1),[0]);
+}
+
+#[test]
+fn pmic_gpio_wake_rejects_wrong_edge_gpio1_and_conflicting_pairs() {
+    for (enabled,edge,pin,level,wakes) in [(4,4,2,false,false),(4,4,2,true,true),(2,0,1,false,false),(5,0,2,false,false),(0x18,0,4,false,false)] {
+        let initial=if level {0}else{0x1f};
+        let state=Arc::new(Mutex::new(M5pm1State{input_mask:0x1f,input_high:initial,..Default::default()}));
+        let mut device=M5pm1::new(state.clone());
+        write(&mut device,0x18,&[enabled,edge]);write(&mut device,0x0c,&[0xa1]);
+        state.lock().unwrap().set_input(pin,level);
+        assert_eq!(state.lock().unwrap().wake_requested,wakes,"enable={enabled} edge={edge} pin={pin}");
+    }
+}
+
+#[test]
+fn pmic_power_button_status_irq_double_click_and_long_lock() {
+    let state=Arc::new(Mutex::new(M5pm1State::default()));let mut device=M5pm1::new(state.clone());
+    write(&mut device,0x49,&[0x2b]);write(&mut device,0x4a,&[1]);write(&mut device,0x16,&[0x40]);
+    state.lock().unwrap().power_button(true,100);
+    assert_eq!(state.lock().unwrap().next_deadline_ms(),Some(2100));
+    assert_eq!(read(&mut device,0x48,1),[0x81]);assert_eq!(read(&mut device,0x48,1),[1]);
+    write(&mut device,0x48,&[0xff]);assert_eq!(read(&mut device,0x48,1),[1]);
+    state.lock().unwrap().power_button(false,150);assert_eq!(read(&mut device,0x48,1),[0]);
+    assert_eq!(state.lock().unwrap().next_deadline_ms(),Some(400));
+    state.lock().unwrap().advance_to_ms(399);assert_eq!(read(&mut device,0x42,1),[0]);
+    state.lock().unwrap().advance_to_ms(400);assert_eq!(read(&mut device,0x42,1),[1]);assert!(state.lock().unwrap().irq_low);
+    write(&mut device,0x42,&[0]);
+    for (pressed,t) in [(true,500),(false,550),(true,650),(false,700)] {state.lock().unwrap().power_button(pressed,t);}
+    assert_eq!(read(&mut device,0x42,1),[4]);assert!(!state.lock().unwrap().power_off_requested);
+    write(&mut device,0x42,&[0]);write(&mut device,0x49,&[0xab]);
+    state.lock().unwrap().power_button(true,1000);state.lock().unwrap().advance_to_ms(3000);
+    assert!(!state.lock().unwrap().download_requested);
+    state.lock().unwrap().power_button(false,3001);state.lock().unwrap().advance_to_ms(4000);
+    assert_eq!(read(&mut device,0x42,1),[0]); // locked long press isn't a short click
+    assert_eq!(state.lock().unwrap().next_deadline_ms(),None);
+}
+
+#[test]
+fn pmic_power_button_reset_shutdown_and_wake_use_guest_time() {
+    let state=Arc::new(Mutex::new(M5pm1State::default()));let mut device=M5pm1::new(state.clone());
+    state.lock().unwrap().power_button(true,0);state.lock().unwrap().power_button(false,50);
+    state.lock().unwrap().advance_to_ms(299);assert!(!state.lock().unwrap().reset_requested);
+    state.lock().unwrap().advance_to_ms(300);assert!(state.lock().unwrap().reset_requested);
+    assert_eq!(read(&mut device,0x05,1),[8]);
+    for (pressed,t) in [(true,400),(false,450),(true,550),(false,600)] {state.lock().unwrap().power_button(pressed,t);}
+    assert!(state.lock().unwrap().power_off_requested);assert!(!state.lock().unwrap().dcdc_enabled);
+    state.lock().unwrap().power_button(true,800);
+    assert!(state.lock().unwrap().wake_requested);assert!(state.lock().unwrap().dcdc_enabled);
+    state.lock().unwrap().power_button(false,850);state.lock().unwrap().advance_to_ms(2000);
+    assert_eq!(read(&mut device,0x05,1),[12]); // a wake press doesn't become another click
+}
+
+#[test]
+fn pmic_commands_require_key_and_preserve_rtc_and_wake_config_on_reset() {
+    let state=Arc::new(Mutex::new(M5pm1State::default()));let mut device=M5pm1::new(state.clone());
+    write(&mut device,0xa0,&[0x55]);write(&mut device,0x18,&[4,4]);write(&mut device,0x16,&[0x40]);
+    for command in [2,0x92,0xb2,0xa0] {write(&mut device,0x0c,&[command]);assert!(!state.lock().unwrap().reset_requested);}
+    write(&mut device,0x0c,&[0xa2]);assert!(state.lock().unwrap().reset_requested);assert_eq!(read(&mut device,0x05,1),[0x10]);
+    assert_eq!(read(&mut device,0x16,4),[0,0,4,4]);assert_eq!(read(&mut device,0xa0,1),[0x55]);
+    write(&mut device,0x49,&[0xaa]);write(&mut device,0x0c,&[0xa3]);assert!(!state.lock().unwrap().download_requested);
+    let mut device=M5pm1::new(state.clone());assert!(!state.lock().unwrap().reset_requested);assert_eq!(read(&mut device,0xa0,1),[0]);
+    write(&mut device,0x0c,&[0xa3]);assert!(state.lock().unwrap().download_requested);
+}
+
+#[test]
+fn expander_pwm_frequency_and_corematrix_buzzer_channel_follow_guest_registers() {
+    let state=Arc::new(Mutex::new(M5ioe1State::default()));let mut device=M5ioe1::new(state.clone(),0);
+    write(&mut device,0x25,&1500u16.to_le_bytes());
+    write(&mut device,0x1f,&[0xff,0x87]); // PWM3/IO11, ~50% duty, enabled
+    assert_eq!(state.lock().unwrap().pwm,[0;4]);
+    write(&mut device,0x04,&[4]);write(&mut device,0x14,&[0x3b]);
+    {let s=state.lock().unwrap();assert_eq!(s.pwm_frequency_hz,1500);assert_eq!(s.pwm[2],2047);}
+    write(&mut device,0x20,&[0xc7]);assert_eq!(state.lock().unwrap().pwm[2],2048);
+    write(&mut device,0x25,&[0,0]);assert_eq!(state.lock().unwrap().pwm,[0;4]);
+    assert_eq!(state.lock().unwrap().pwm_frequency_hz,0);
+}
