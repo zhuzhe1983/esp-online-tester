@@ -19,7 +19,7 @@ export function mountVirtualConfiguration({container,runtime,run=fn=>fn(),onErro
   const inspect=async({keepMessage=false}={})=>{
     const token=++epoch;inspection=null;render();
     if(!usable()){$('[data-result]').textContent='加载 UIFlow2 固件后，可选择配置并写入。';return;}
-    try{const result=await runtime.inspectFirmwareConfiguration();if(!alive||token!==epoch)return;inspection=result;if(!keepMessage)$('[data-result]').textContent=result.available?'尚未写入配置。':result.reason||'当前固件不支持此配置格式。';render();}
+    try{const result=await runtime.inspectFirmwareConfiguration();if(!alive||token!==epoch)return;inspection=result;if(!keepMessage)$('[data-result]').textContent=result.available?'尚未写入配置。':result.reason?.message||'当前固件不支持此配置格式。';render();}
     catch(e){if(alive&&token===epoch){$('[data-result]').textContent=e.message;render();}}
   };
   const update=next=>{state=next;if(!usable()){epoch++;inspection=null;render();if(details.open)void inspect();}else if(details.open&&!pending)void inspect();else render();};
