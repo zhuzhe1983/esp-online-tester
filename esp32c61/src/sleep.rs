@@ -8,7 +8,7 @@ use esp_periph::{Device, RegRam, WriteEffect, RST_POWERON, RST_SW_CPU, RST_SW_SY
 const CPU_HZ: u64 = 160_000_000;
 pub const RC_SLOW_HZ: u64 = 136_000; // soc/esp32c61/include/soc/clk_tree_defs.h
 const TIMER_MASK: u64 = (1 << 48) - 1;
-const TIMER_WAKE: u32 = 8; // esp32c61/rom/rtc.h TIMER_EXPIRE
+const TIMER_WAKE: u32 = 16; // C61 private_include/pmu_bit_defs.h PMU_LP_TIMER_WAKEUP_EN (not ROM enum bit3)
 const WAKE_RAW: u32 = 1 << 31;
 const REJECT_RAW: u32 = 1 << 30;
 const DEEP_SLEEP_RESET: u32 = 5;
@@ -209,7 +209,7 @@ mod tests {
         lp.advance_cycles(1_600_000); assert!(lp.sw_reset); assert!(!lp.sleeping());
         assert_eq!(lp.reset_cause, 5); assert_eq!(lp.read(0x10) & 31, 5);
         lp.finish_reboot(); assert!(!lp.sw_reset); assert_eq!(lp.read(0x408), 0x12345678);
-        assert_eq!(lp.slow_ticks, 1360); assert_eq!(lp.read(0x1144), 8);
+        assert_eq!(lp.slow_ticks, 1360); assert_eq!(lp.read(0x1144), TIMER_WAKE);
         // Writing read-only reset-cause bits cannot forge a power-on reason.
         lp.write(0x10, 1); assert_eq!(lp.reset_cause, 5);
         lp.write(0x10, 1 << 29); assert_eq!(lp.reset_cause, 0);

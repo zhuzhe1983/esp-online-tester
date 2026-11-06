@@ -9,14 +9,19 @@ off the board's PM1 rails or reset its I2C peripherals.
 
 | Block | Address | Implemented sleep behavior |
 | --- | --- | --- |
-| PMU | `0x600b0000` | `+0x124` bit31 requests sleep; `+0x12c` bit3 enables timer wake. `+0x128` bit31 and source mask control immediate rejection. |
-| PMU status | `+0x144/148` | Read-only wake/reject causes, timer bit3. `+0x134` bit31 clears rejection cause. |
+| PMU | `0x600b0000` | `+0x124` bit31 requests sleep; `+0x12c` bit4 enables timer wake. `+0x128` bit31 and source mask control immediate rejection. |
+| PMU status | `+0x144/148` | Read-only wake/reject causes, timer bit4. `+0x134` bit31 clears rejection cause. |
 | PMU HP interrupt | `+0x160/164/168/16c` | RAW/ST/ENA/W1C; wake bit31, reject bit30. CPU interrupt masking does not disable the PMU wake input. |
 | LP_TIMER | `0x600b0c00` | Two 48-bit target registers at `+0/4` and `+8/c`; target-enable is a write trigger at high-word bit31. Comparator0 wakes the HP system. |
 | LP_TIMER snapshots | `+0x10/14/18/1c/20` | UPDATE bit27 shifts current counter to buffer0 and previous buffer0 to buffer1; each high word is 16 bits. |
 | LP_TIMER interrupt | `+0x28/2c/30/34` | HP RAW/ST/ENA/W1C; alarm bit31, 48-bit overflow bit30. Comparator1 has separate LP status at `+0x38..44`. |
 | LP_AON | `0x600b1000` | STORE0..9 remain across CPU resets. STORE8 bit0 selects deep vs light wake in the pinned driver. |
 | LP_CLKRST | `0x600b0400` | `+0x10` reset cause is hardware-owned; deep wake sets cause5, plus documented cause-clear and flag controls. |
+
+The ROM header's legacy `TIMER_EXPIRE` enum is bit3, but C61's actual
+`pmu_bit_defs.h` defines `PMU_LP_TIMER_WAKEUP_EN` as **bit4** and
+`esp_pmu.h` maps `RTC_TIMER_TRIG_EN` to it. Original UIFlow writes `0x10`
+to PMU wake-enable; bit3 is the Wi-Fi beacon wake source.
 
 The ROM header's prose says STORE9 holds sleep mode, but its
 `RTC_SLEEP_MODE_REG` macro and `lp_aon_ll_inform_wakeup_type` use **STORE8**.
@@ -87,3 +92,5 @@ Sources retrieved 2026-11-06; hashes are SHA-256 of the original source bytes.
 | [rtc.h](https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/esp_rom/esp32c61/include/esp32c61/rom/rtc.h) | `3a4ac558733be12853cd105c2c0b79af3cccdc761f7d81e87bbbd28179e2ff8d` |
 | [clk_tree_defs.h](https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c61/include/soc/clk_tree_defs.h) | `c4f69a1a12f35167646c0a469b037fcc233129002eff9236d2650378025767e9` |
 | [rtc_time.c](https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/esp_hw_support/port/esp32c61/rtc_time.c) | `c4f269b3c52686682d42684fdb2f4f1ecf5df81c2852b098e5360f34c0f237d9` |
+| [pmu_bit_defs.h](https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/esp_hw_support/port/esp32c61/private_include/pmu_bit_defs.h) | `c7804ec266f82899b5e628a211a496b7c7e67ff5ac06d5380b1261e781c62ba7` |
+| [esp_pmu.h](https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/esp_hw_support/include/esp_private/esp_pmu.h) | `cfa4ec9dab6f88fa37e264058389fdecdf55a4a1744182d503694a6445055366` |

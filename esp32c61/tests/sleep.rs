@@ -44,10 +44,10 @@ fn external_official_uiflow_timed_light_and_deep_sleep() {
     assert_eq!((m.cores[0].pc, m.cores[0].insn_count, m.cores[0].x), state);
     assert_eq!(m.bus.periph.systimer.unit[0], systime, "digital timer advanced during sleep");
     let remaining = m.bus.periph.lpsys.sleep_deadline_cycles().expect("armed LP alarm");
-    advance(&mut m, remaining + 1); assert!(!m.bus.periph.lpsys.sleeping()); assert!(!m.bus.sw_reset());
+    advance(&mut m, remaining + 1); assert!(!m.bus.periph.lpsys.sleeping(), "remaining={remaining}, ticks={}, wake_en={:08x}, raw={:08x}, target={:08x}:{:08x}, lp_target={:08x}:{:08x}", m.bus.periph.lpsys.slow_ticks, m.bus.periph.lpsys.read(0x112c), m.bus.periph.lpsys.read(0xc28), m.bus.periph.lpsys.read(0xc04), m.bus.periph.lpsys.read(0xc00), m.bus.periph.lpsys.read(0xc0c), m.bus.periph.lpsys.read(0xc08)); assert!(!m.bus.sw_reset());
     m.run(20_000_000);
     let text = String::from_utf8_lossy(&m.console.all);
-    let elapsed: i32 = text.lines().find_map(|line| line.strip_prefix("C61_LIGHT_DONE ").and_then(|v| v.trim().parse().ok())).expect("light sleep must return and print elapsed milliseconds");
+    let elapsed: i32 = text.lines().find_map(|line| line.split_once("C61_LIGHT_DONE ").and_then(|(_, v)| v.trim().parse().ok())).unwrap_or_else(|| panic!("light sleep must return and print elapsed milliseconds, PC={:#x}; {text}", m.cores[0].pc));
     assert!((180..=220).contains(&elapsed), "elapsed={elapsed}; {text}");
     let before = m.console.all.len();
     raw_program(&mut m, b"import machine\nprint('C61_DEEP_START')\nmachine.deepsleep(200)\nprint('C61_DEEP_MUST_NOT_RETURN')\n");
