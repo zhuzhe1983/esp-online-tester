@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {encodeUIFlow1,encodeUIFlow2,normalizeFlashConfiguration,inspectFlashConfiguration,applyFlashConfiguration} from '../web/platform/flash-configuration.js';
 import {createFlashProfiles} from '../web/platform/flash-profiles.js';
+import {SIMULATOR_UIFLOW2_PROFILE} from '../web/platform/simulation-network.js';
 import {prepareFlashPlan,prepareFlashSession,prepareFlashConfiguration,chooseFlashPort,activateFlashSession,createFlasher,releaseFlashSession,validateFlashLayout} from '../web/platform/flasher.js';
 import {createFlashBatch} from '../web/platform/flash-batch.js';
 import {createDefaultScene} from '../web/platform/catalog.js';
@@ -30,6 +31,13 @@ test('UIFlow2 bytes equal the independent official Python NVS generator fixture'
   assert.deepEqual(Buffer.from(encodeUIFlow2(profile)),await readFile(new URL('./fixtures/flash-configuration/uiflow2-nvs.bin',import.meta.url)));
   const unicode={...profile,server:'flow.example',ssid:'产线,WiFi',password:'测试密码123456'};
   const values=readNvs(encodeUIFlow2(unicode));assert.equal(values.server,unicode.server);assert.equal(values.ssid0,unicode.ssid);assert.equal(values.pswd0,unicode.password);assert.equal(values.boot_option,1);
+});
+test('simulator profile uses real UIFlow2 Wi-Fi keys and explicit network-only boot',()=>{
+  const values=readNvs(encodeUIFlow2(SIMULATOR_UIFLOW2_PROFILE));
+  assert.equal(values.ssid0,'esp32_online_tester');assert.equal(values.pswd0,'rilakkuma_cool');assert.equal(values.boot_option,2);
+  assert.equal(values.net_mode,'WIFI');assert.equal(values.protocol,'DHCP');
+  assert.equal(readNvs(encodeUIFlow2(profile)).boot_option,1,'Existing menu profiles retain their original default');
+  for(const bootOption of [0,3,'2',null,NaN])assert.throws(()=>encodeUIFlow2({...profile,bootOption}),{code:'FLASH_CONFIG_INVALID'});
 });
 test('UIFlow1 JSON length/checksum, UTF-8 Wi-Fi blocks and per-device identity',()=>{
   const p={...profile,type:'uiflow1',server:'flow-cn.m5stack.com',ssid:'产线,测试'};
@@ -72,6 +80,15 @@ test('profiles stay in page memory unless explicitly saved, and persistence/dele
   store.put({...profile,server:'custom.example'},{id:p.id,persistent:true});assert.equal(createFlashProfiles({storage}).list()[0].server,'custom.example');
   store.put(profile,{id:p.id});assert.equal(createFlashProfiles({storage}).list().length,0);store.remove(p.id);assert.equal(store.list().length,0);
   const unavailable=createFlashProfiles();assert.throws(()=>unavailable.put(profile,{persistent:true}));assert.equal(unavailable.list().length,0);
+});
+test('built-in virtual-network profile cannot overwrite private profiles or persist credentials implicitly',()=>{
+  const rows=new Map(),storage={getItem:k=>rows.get(k),setItem:(k,v)=>rows.set(k,v)},builtins=[SIMULATOR_UIFLOW2_PROFILE];
+  const store=createFlashProfiles({storage,builtins}),fixed=store.list()[0];assert.equal(fixed.builtin,true);assert.equal(rows.size,0);
+  fixed.password='mutated-local-copy';assert.equal(store.list()[0].password,SIMULATOR_UIFLOW2_PROFILE.password);
+  assert.throws(()=>store.put(profile,{id:fixed.id}));assert.throws(()=>store.remove(fixed.id));
+  const copy=store.put({...fixed,name:'Private edited profile'},{persistent:true});assert.notEqual(copy.id,fixed.id);
+  const reopened=createFlashProfiles({storage,builtins}).list();assert.equal(reopened.length,2);assert.equal(reopened[0].password,SIMULATOR_UIFLOW2_PROFILE.password);assert.equal(reopened[1].password,'mutated-local-copy');
+  assert.equal(JSON.stringify([...rows.values()]).includes(SIMULATOR_UIFLOW2_PROFILE.password),false);
 });
 
 test('classic ESP32 + UIFlow1 checks eFuses before writing; opaque profiles, unique identity, retry stability and no secrets in state',async()=>{

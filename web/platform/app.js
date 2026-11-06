@@ -5,6 +5,7 @@ import {mountAudioControls} from './audio-controls.js';
 import {mountMotorOutputs} from './motor-output-ui.js';
 import {mountStampflyDemoControls} from './stampfly-demo-controls.js';
 import {mountNetworkControls} from './network-ui.js';
+import {mountVirtualConfiguration} from './virtual-configuration-ui.js';
 import {illuminanceParameter} from './illuminance-input.js';
 import {ENVIRONMENT_FIELDS,environmentParameters} from './environment-input.js';
 import {motionParameter} from './motion-input.js';
@@ -1129,6 +1130,14 @@ async function init() {
     onRecordingChange: value => { recordingDocument = value; if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false, autostart: false}); },
     onError: report, onLog: log,
   });
+  const virtualConfigMount=document.createElement('section');
+  if(embedded)$('session-tools-mount')?.after(virtualConfigMount);else $('clear-firmware-cache')?.after(virtualConfigMount);
+  const virtualConfig=mountVirtualConfiguration({container:virtualConfigMount,runtime:api,run:async callback=>{
+    if(busy)throw new Error('请等待当前操作完成。');busy=true;renderTransport();
+    try{await transportUi.settleForConfiguration();await releaseHumanInputs();return await callback();}
+    finally{busy=false;renderTransport();}
+  },onError:report});
+  window.addEventListener('pagehide',()=>virtualConfig.dispose(),{once:true});
   if ($('manufacturer-select')) { $('manufacturer-select').replaceChildren(...manufacturerNames(catalog.products).map(name => new Option(manufacturerLabel(name),name))); $('manufacturer-select').disabled = false; }
   mountAppearance();
   visualVariantMenu=mountVisualVariantMenu({container:document.querySelector('.view-controls'),products:catalog.products,onSelect:showVisualProduct});

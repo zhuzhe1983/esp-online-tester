@@ -1,6 +1,8 @@
 // Rendered UI templates. Captures are opaque unless their slot is listed in the
 // third item; those slots contain UI fragments, never user data or guest output.
 export default [
+  ['{0} · Wi-Fi：{1} · {2}','{0} · Wi-Fi: {1} · {2}',[2]],
+  ['{0} · UIFlow2 · 内置','{0} · UIFlow2 · Built-in'],
  ['{0} · {1} 个镜像：{2}。启动前还会校验芯片、分区及完整性。', '{0} · {1} images: {2}. Chip, partition and integrity checks also run before startup.', [0]],
  ['已校验 C5 SRAM 应用：{0}。直接启动，重启会重新加载同一镜像；不使用 ROM/IDF 启动。', 'C5 SRAM app verified: {0}. Starts directly; restarting reloads the same image without ROM/IDF boot.'],
  ['SRAM 直启{0}', 'Direct SRAM boot{0}', [0]],

@@ -9,6 +9,14 @@ class Socket {
   close(){this.readyState=3;this.onclose?.();}
 }
 const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
+test('platform virtual AP uses the requested defaults while explicit manifests keep their own network',async()=>{
+  const commands=[],n=createNetworkSession({emit(){},command:async(op,options)=>commands.push({op,...options}),sendFrame(){},WebSocketImpl:Socket});
+  await n.attach({available:true});assert.equal(n.snapshot().router.ssid,'esp32_online_tester');
+  assert.equal(commands.find(c=>c.op==='setup').spec,'ssid=esp32_online_tester,psk=rilakkuma_cool');
+  assert.equal(JSON.stringify(n.snapshot()).includes('rilakkuma_cool'),false);n.detach();commands.length=0;
+  await n.attach({available:true,manifestWifi:'ssid=explicit-demo,psk=explicit-password'});
+  assert.equal(n.snapshot().router.ssid,'explicit-demo');assert.equal(commands.find(c=>c.op==='setup').spec,'ssid=explicit-demo,psk=explicit-password');n.detach();
+});
 test('choosing a self-hosted helper updates idle status without opening a network connection',async()=>{
   const n=createNetworkSession({emit(){},command:async()=>{},sendFrame(){},WebSocketImpl:class {constructor(){throw Error('Firmware is not attached');}}});
   assert.equal(n.snapshot().connection,'relay-unconfigured');

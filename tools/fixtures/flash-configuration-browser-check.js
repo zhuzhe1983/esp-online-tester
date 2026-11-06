@@ -38,6 +38,14 @@ async page => {
   const dialog=page.getByRole('dialog',{name:'烧录到设备'}),section=dialog.getByRole('region',{name:'随固件写入配置'});
   await section.getByRole('button',{name:'新建配置',exact:true}).waitFor();await page.waitForFunction(()=>!document.querySelector('.flash-config-toolbar button').disabled);
   assert(await section.getByRole('combobox',{name:'使用配置',exact:true}).inputValue()==='','Configuration is opt-in');
+  const profileSelect=section.getByRole('combobox',{name:'使用配置',exact:true});
+  await profileSelect.selectOption('builtin-uiflow2-simulator');
+  assert(await section.getByRole('button',{name:'删除配置',exact:true}).isHidden(),'Built-in profile cannot be deleted');
+  await section.getByRole('button',{name:'复制并编辑',exact:true}).click();
+  assert(await section.getByRole('textbox',{name:'Wi-Fi 名称（SSID）',exact:true}).inputValue()==='esp32_online_tester','Built-in SSID');
+  assert(await section.getByLabel('Wi-Fi 密码',{exact:true}).inputValue()==='rilakkuma_cool','Built-in password');
+  assert(await section.getByRole('combobox',{name:'UIFlow2 启动方式',exact:true}).inputValue()==='2','Official network-only boot mode');
+  await section.getByRole('button',{name:'取消编辑',exact:true}).click();await profileSelect.selectOption('');
   await section.getByRole('button',{name:'新建配置',exact:true}).click();
   const fill=async(name,server)=>{await section.getByRole('textbox',{name:'配置名称',exact:true}).fill(name);await section.getByRole('combobox',{name:'固件格式',exact:true}).selectOption('uiflow2');await section.getByRole('textbox',{name:'数据服务器',exact:true}).fill(server);await section.getByRole('textbox',{name:'Wi-Fi 名称（SSID）',exact:true}).fill('Production-Test');await section.getByLabel('Wi-Fi 密码',{exact:true}).fill('fixture-secret-123');};
   await fill('产线 A','flow.example');
@@ -57,8 +65,8 @@ async page => {
   const writes=await page.evaluate(()=>configTest.writes);assert(writes.every(w=>w.server==='flow.example'&&w.ssid==='Production-Test'&&w.password==='fixture-secret-123'),'Actual emitted NVS contains selected custom server and credentials on every port');
   assert(!(await page.evaluate(()=>JSON.stringify(configStation.observe()))).includes('fixture-secret-123'),'Public station observation excludes credentials');
   await page.evaluate(()=>newConfigStation());await page.waitForFunction(()=>!document.querySelector('.flash-config-toolbar button').disabled);
-  assert(await section.getByRole('combobox',{name:'使用配置'}).locator('option').count()===2,'Memory profile reusable in next batch');
-  const id=await section.getByRole('combobox',{name:'使用配置'}).locator('option').nth(1).getAttribute('value');await section.getByRole('combobox',{name:'使用配置'}).selectOption(id);
+  assert(await section.getByRole('combobox',{name:'使用配置'}).locator('option').count()===3,'Memory profile reusable in next batch');
+  const id=await section.getByRole('combobox',{name:'使用配置'}).locator('option').filter({hasText:'产线 A'}).getAttribute('value');await section.getByRole('combobox',{name:'使用配置'}).selectOption(id);
   await dialog.getByRole('radio',{name:'逐台连续'}).check();await dialog.locator('.flash-acknowledgement input').check();await dialog.getByRole('button',{name:'开启连续烧录'}).click();
   await page.evaluate(()=>configTest.delay=50);await choose('continuous-a');await page.waitForFunction(()=>configTest.writes.length===8&&configTest.closed===8);
   await section.getByRole('button',{name:'编辑配置',exact:true}).click();await fill('产线 B','custom.example');

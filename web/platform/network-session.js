@@ -1,8 +1,8 @@
 import {createGuestNetwork} from './guest-network.js';
+import {DEFAULT_VIRTUAL_ROUTER} from './simulation-network.js';
 // Session-local network credentials and bounded Ethernet gateway transport.
 const fail=(code,message)=>Object.assign(new Error(message),{code});
 const copy=value=>structuredClone(value);
-const DEFAULT_ROUTER={ssid:'esp32sim',password:'esp32sim-pass'};
 export function validateNetworkOptions(options={}) {
   if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(k=>!['enabled','autoProvision','ssid','password','endpoint','mode','relayUrl','softApSsid','softApPassword'].includes(k)))throw fail('INVALID_NETWORK','Unknown network configuration field.');
   for(const k of ['enabled','autoProvision'])if(options[k]!==undefined&&typeof options[k]!=='boolean')throw fail('INVALID_NETWORK',`${k} must be boolean.`);
@@ -25,7 +25,7 @@ export function networkService({interface:iface=0,protocol='tcp',guestPort,label
 }
 
 export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globalThis.WebSocket,fetchImpl=globalThis.fetch,guestFactory=createGuestNetwork,requestTimeout=120000}={}) {
-  let config={enabled:true,autoProvision:true,...DEFAULT_ROUTER,endpoint:'',mode:'public-relay',relayUrl:'',softApSsid:'',softApPassword:''};
+  let config={enabled:true,autoProvision:true,...DEFAULT_VIRTUAL_ROUTER,endpoint:'',mode:'public-relay',relayUrl:'',softApSsid:'',softApPassword:''};
   let socket=null,epoch=0,sequence=0,attached=false,supported=false,softapStarted=false,autoAttempted=false;
   let guest=null,bootstrapController=null,heartbeat=null;
   let connection='relay-unconfigured',lastError=null,interfaces={},softAp=null,services=[],txFrames=0,rxFrames=0,droppedFrames=0,provisioning='idle';

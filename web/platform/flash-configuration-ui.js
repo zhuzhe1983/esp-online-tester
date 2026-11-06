@@ -12,32 +12,33 @@ export function createFlashConfigurationUI({apply,onChange,onError,profiles=brow
   const summary=node('p');summary.className='helper flash-config-summary';
   const form=node('form');form.addEventListener('submit',event=>event.preventDefault());form.className='flash-config-editor';form.hidden=true;
   const fields={};
-  for(const [key,title,type] of [['name','配置名称','text'],['type','固件格式','select'],['server','数据服务器','text'],['ssid','Wi-Fi 名称（SSID）','text'],['password','Wi-Fi 密码','password']]) {
+  for(const [key,title,type] of [['name','配置名称','text'],['type','固件格式','select'],['bootOption','UIFlow2 启动方式','select'],['server','数据服务器','text'],['ssid','Wi-Fi 名称（SSID）','text'],['password','Wi-Fi 密码','password']]) {
     const label=node('label',title),input=node(type==='select'?'select':'input');input.setAttribute('aria-label',title);
-    if(type==='select')for(const value of ['uiflow2','uiflow1']){const option=node('option',value==='uiflow2'?'UIFlow2':'UIFlow1');option.value=value;input.append(option);}
+    if(type==='select')for(const [value,title] of key==='type'?[['uiflow2','UIFlow2'],['uiflow1','UIFlow1']]:[['1','UIFlow 菜单'],['2','仅连接网络']]){const option=node('option',title);option.value=value;input.append(option);}
     else {input.type=type;input.autocomplete=key==='password'?'new-password':'off';input.spellcheck=false;}
     if(key==='server')input.placeholder='uiflow2.m5stack.com';label.append(input);form.append(label);fields[key]=input;
   }
   const reveal=button('显示密码');reveal.addEventListener('click',()=>{fields.password.type=fields.password.type==='password'?'text':'password';reveal.textContent=fields.password.type==='password'?'显示密码':'隐藏密码';});
   const rememberLabel=node('label'),remember=node('input');remember.type='checkbox';rememberLabel.className='flash-config-remember';rememberLabel.append(remember,document.createTextNode('保存到此浏览器（包含 Wi-Fi 密码）'));
-  const note=node('p','默认仅在当前页面保留。UIFlow2 将重建网络配置，启用 Wi-Fi / DHCP 和启动菜单；其他已保存的 NVS 设置会被替换。UIFlow1 密码最多 48 字节。');note.className='helper';
+  const note=node('p','默认仅在当前页面保留。UIFlow2 将重建 NVS 配置并启用 Wi-Fi / DHCP；仅连接网络模式不加载 UIFlow 云菜单。其他已保存的 NVS 设置会被替换。UIFlow1 密码最多 48 字节。');note.className='helper';
   const buttons=node('div'),save=button('应用此配置'),cancel=button('取消编辑');buttons.className='flash-config-buttons';save.className='button primary tiny';buttons.append(reveal,cancel,save);form.append(rememberLabel,note,buttons);root.append(toolbar,hint,summary,form);
   let current=null,editing=null,enabled=false,canEdit=false,formats={};
   const safe=fn=>{try{fn();}catch(error){onError(error);}};
-  function choices(){const values=profiles.list();select.replaceChildren();const none=node('option','不写入配置');none.value='';select.append(none);for(const value of values){const option=node('option',`${value.name} · ${value.type==='uiflow1'?'UIFlow1':'UIFlow2'}${value.persistent?'':' · 本页'}`);option.value=value.id;select.append(option);}select.value=current?.id||'';}
+  function choices(){const values=profiles.list();select.replaceChildren();const none=node('option','不写入配置');none.value='';select.append(none);for(const value of values){const option=node('option',`${value.name} · ${value.type==='uiflow1'?'UIFlow1':'UIFlow2'}${value.builtin?' · 内置':value.persistent?'':' · 本页'}`);option.value=value.id;select.append(option);}select.value=current?.id||'';}
   function refresh(){
     for(const el of [select,add,edit,remove,...Object.values(fields),remember,reveal,save,cancel])el.disabled=!canEdit;
     select.disabled=add.disabled=!canEdit||enabled;edit.disabled=remove.disabled=!canEdit||enabled||!current;
-    edit.hidden=remove.hidden=!current;summary.textContent=current?`已应用：${current.name} · ${current.server}。每台设备开始写入后固定配置；连续模式切换配置只影响后续添加的设备。`:'未启用附加配置。';
+    edit.hidden=!current;remove.hidden=!current||!!current.builtin;edit.textContent=current?.builtin?'复制并编辑':'编辑配置';summary.textContent=current?`已应用：${current.name} · ${current.server}。每台设备开始写入后固定配置；连续模式切换配置只影响后续添加的设备。`:'未启用附加配置。';
     for(const option of fields.type.options)option.disabled=!formats[option.value];
+    fields.bootOption.parentElement.hidden=fields.type.value!=='uiflow2';
   }
-  function begin(value){editing=value?.id||null;enabled=true;form.hidden=false;for(const key of Object.keys(fields))fields[key].value=value?.[key]??(key==='type'?(formats.uiflow2?'uiflow2':'uiflow1'):key==='name'?t('新配置'):'');if(!value)fields.server.value=configurationDefaults[fields.type.value];remember.checked=!!value?.persistent;fields.password.type='password';reveal.textContent='显示密码';refresh();onChange();fields.name.focus();}
+  function begin(value){editing=value?.builtin?null:value?.id||null;enabled=true;form.hidden=false;for(const key of Object.keys(fields))fields[key].value=value?.[key]??(key==='type'?(formats.uiflow2?'uiflow2':'uiflow1'):key==='bootOption'?1:key==='name'?t('新配置'):'');if(value?.builtin)fields.name.value+=` · ${t('副本')}`;if(!value)fields.server.value=configurationDefaults[fields.type.value];remember.checked=!!value?.persistent;fields.password.type='password';reveal.textContent='显示密码';refresh();onChange();fields.name.focus();}
   function end(){enabled=false;editing=null;form.hidden=true;fields.password.value='';refresh();onChange();}
-  fields.type.addEventListener('change',()=>{if(Object.values(configurationDefaults).includes(fields.server.value)||!fields.server.value)fields.server.value=configurationDefaults[fields.type.value];});
+  fields.type.addEventListener('change',()=>{if(Object.values(configurationDefaults).includes(fields.server.value)||!fields.server.value)fields.server.value=configurationDefaults[fields.type.value];refresh();});
   add.addEventListener('click',()=>begin(null));edit.addEventListener('click',()=>begin(current));cancel.addEventListener('click',end);
   select.addEventListener('change',()=>safe(()=>{const value=profiles.list().find(p=>p.id===select.value)||null;try{apply(value);current=value;refresh();onChange();}catch(error){select.value=current?.id||'';throw error;}}));
   save.addEventListener('click',()=>safe(()=>{
-    const value=Object.fromEntries(Object.entries(fields).map(([key,input])=>[key,input.value]));
+    const value=Object.fromEntries(Object.entries(fields).map(([key,input])=>[key,key==='bootOption'?Number(input.value):input.value]));
     // Validate the image layout before storing credentials or changing the choice.
     apply(value);try{current=profiles.put(value,{...(editing?{id:editing}:{}),persistent:remember.checked});}catch(error){apply(current);throw error;}choices();end();
   }));
