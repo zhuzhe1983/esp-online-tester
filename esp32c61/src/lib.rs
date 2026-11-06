@@ -7,3 +7,4 @@ pub use esp_soc::Stop;
 pub use soc::{machine, Machine, C61};
 mod adc;
 pub mod wifi;
+pub mod ecc;

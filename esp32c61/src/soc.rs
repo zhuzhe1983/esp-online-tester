@@ -45,6 +45,11 @@ impl Soc for C61 {
 
 impl esp_soc::SocBus for SocBus {
     fn attach_wifi(&mut self, cfg: esp_soc::wifi::ApConfig, nat: Option<esp_soc::nat::Nat>) -> Result<(), String> { self.periph.wifi_mac.link.attach_new(cfg, nat, &self.debug); Ok(()) }
+    fn configure_softap_client(&mut self,cfg:Option<esp_soc::wifi::softap::ClientConfig>)->Result<(),String> {self.periph.wifi_mac.link.configure_softap(cfg)}
+    fn poll_softap_client(&mut self) {self.periph.wifi_mac.link.poll_softap(self.cycles/(periph::CPU_HZ/1_000_000));}
+    fn softap_client_status(&mut self)->String {self.periph.wifi_mac.link.softap_status()}
+    fn take_softap_frames(&mut self)->Vec<Vec<u8>> {self.periph.wifi_mac.link.take_softap_frames()}
+    fn receive_softap_frame(&mut self,frame:&[u8])->Result<(),String> {self.periph.wifi_mac.link.receive_softap_frame(frame,self.cycles/(periph::CPU_HZ/1_000_000))}
     fn set_ethernet_relay(&mut self, enabled: bool) -> Result<(), String> { self.periph.wifi_mac.link.set_relay(enabled); Ok(()) }
     fn take_ethernet_frames(&mut self) -> Vec<Vec<u8>> { self.periph.wifi_mac.link.take_relay_frames() }
     fn receive_ethernet_frame(&mut self, frame: &[u8]) -> Result<(), String> { self.periph.wifi_mac.link.receive_relay_frame(frame) }

@@ -314,6 +314,7 @@ pub const PINS: esp_soc::pins::ChipPins = esp_soc::pins::ChipPins { valid: (1 <<
 pub struct Peripherals {
     pub modem_bb: crate::wifi::ModemBb, pub wifi_mac: crate::wifi::WifiMac,
     pub adc: crate::adc::SarAdc,
+    pub ecc: crate::ecc::Ecc,
     pub uart: [Uart; 3], pub usb: UsbSerialJtag, pub systimer: Systimer, pub timg: [TimerGroup; 2],
     pub gpio: GpioC61, pub io_mux: RegRam, pub i2c: esp_periph::i2c::I2c, pub efuse: Efuse,
     pub spi0: SpiMemC61, pub spi1: SpiMemC61, pub sha: Sha, pub gdma: GdmaC61, pub spi2: GpSpi,
@@ -337,6 +338,7 @@ device_set! { Peripherals; inline always; clock: (clock) CPU_HZ, [(ClockDomain::
     0x80 "GDMA" (gdma) => [src::DMA_OUT_CH0, src::DMA_OUT_CH0 + 1, NO_SOURCE, NO_SOURCE, NO_SOURCE, src::DMA_IN_CH0, src::DMA_IN_CH0 + 1, NO_SOURCE, NO_SOURCE, NO_SOURCE];
     0x81 "SPI2" (spi2) => [src::GPSPI2];
     0x89 "SHA" (sha) => [];
+    0x8b "ECC_MULT" optional (ecc) => [src::ECC];
     0x90 "IO_MUX" (io_mux) delta 4 => [];
     0x91 "GPIO" (gpio) => [src::GPIO];
     0x96 "PCR" (pcr) => [];
@@ -367,7 +369,7 @@ impl DeviceSet for Peripherals {
 }
 impl Peripherals {
     pub fn new(mac: [u8; 6]) -> Self { Self {
-        modem_bb: crate::wifi::ModemBb::new(), wifi_mac: crate::wifi::WifiMac::new(), adc: crate::adc::SarAdc::new(CPU_HZ), uart: std::array::from_fn(|_| Uart::new(UartLayout::C6)), usb: UsbSerialJtag::new(CPU_HZ), systimer: Systimer::new(),
+        ecc: Default::default(), modem_bb: crate::wifi::ModemBb::new(), wifi_mac: crate::wifi::WifiMac::new(), adc: crate::adc::SarAdc::new(CPU_HZ), uart: std::array::from_fn(|_| Uart::new(UartLayout::C6)), usb: UsbSerialJtag::new(CPU_HZ), systimer: Systimer::new(),
         timg: [TimerGroup::new(), TimerGroup::new()], gpio: GpioC61 { gpio: { let mut g = Gpio::with_pins(30); g.input_select = 0x100; g.func_in_sel.fill(0x60); g } }, io_mux: RegRam::new(), i2c: esp_periph::i2c::I2c::new(),
         efuse: efuse_c61(mac, 1, 0, 0, 0, 0), spi0: SpiMemC61(SpiMem::new(false)), spi1: SpiMemC61(SpiMem::new(true)), sha: Sha::new(),
         gdma: GdmaC61::new(), spi2: GpSpi::new(), intmtx: IntMatrix::new(), intc: Intc::new(), cache: Cache::new(), lpsys: LpSys::new(), pcr: Pcr::new(),
@@ -403,6 +405,7 @@ impl Peripherals {
         if addr == 0x60004004 && v & (1 << 5) != 0 && self.i2c.has_pinned_devices() {
             let route = PINS.routes(&self.gpio, &self.io_mux); self.i2c.set_pins(route.i2c_pin(47).zip(route.i2c_pin(46)));
         }
+        if addr==0x600960ac && v&2!=0 {self.ecc.reset();self.refresh_optional(0x8b);}
         if addr==0x60096034 && v&2!=0 {self.ledc=Ledc::new(LedcLayout::C6);}
         let fx = mmio::write32(self, addr, v); self.spi_exec |= fx.contains(WriteEffect::SPI_EXEC);
         // C61 LEDC register fields match the shared six-channel layout; PCR

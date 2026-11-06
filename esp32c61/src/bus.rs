@@ -60,12 +60,14 @@ impl SocBus {
     }
 
     pub fn new(flash_size: usize, mac: [u8; 6]) -> Self {
+        let mut periph=Peripherals::new(mac);let capacity=flash_size.trailing_zeros() as u8;
+        periph.spi0.0.jedec[2]=capacity;periph.spi1.0.jedec[2]=capacity;
         SocBus {
             rom: vec![0; (ROM_HIGH - ROM_LOW) as usize],
             sram: vec![0; (SRAM_HIGH - SRAM_LOW) as usize],
             flash: vec![0xff; flash_size], psram: Vec::new(),
             mmu: [0; MMU_ENTRIES], mmu_index: 0, mmu_power_ctrl: 0,
-            periph: Peripherals::new(mac), board: Box::new(esp_soc::NoBoard), uart_pins: false,
+            periph, board: Box::new(esp_soc::NoBoard), uart_pins: false,
             cycles: 0, last_fault: None, irq_dirty: true, gpio_events: None, debug: Default::default(), board_edges: false, board_power: false, controller_powered: true,
         }
     }

@@ -116,3 +116,13 @@ fn c61_ledc_clock_gate_and_nine_bit_matrix_inversion_control_pwm() {
     b.write32(0x60096038,(1<<22)|(1<<20)).unwrap();assert_eq!(b.pwm_output(21),Some((68359.375,49151)));
     b.write32(0x60096038,0).unwrap();assert!(b.pwm_output(21).is_none());b.write32(0x60096038,1<<22).unwrap();b.write32(0x60096034,3).unwrap();assert!(b.pwm_output(21).is_none());
 }
+
+#[test]
+fn c61_ecc_source64_and_pcr_reset_clear_accelerator_state() {
+    let mut b=Bus61::new(16<<20,[0;6]);assert_eq!(b.periph.spi0.0.jedec[2],24);assert_eq!(b.periph.spi1.0.jedec[2],24);
+    b.write32(0x6008b100,42).unwrap();b.write32(0x6008b014,1).unwrap();b.write32(0x6008b01c,0x25).unwrap();
+    assert_eq!(b.read32(0x6008b00c).unwrap(),1);b.refresh_irq();assert_eq!(b.periph.intmtx.status[2]&1,1);
+    b.write32(0x600960ac,1).unwrap();assert_eq!(b.read32(0x6008b100).unwrap(),42);
+    b.write32(0x600960ac,3).unwrap();b.write32(0x600960ac,1).unwrap();b.refresh_irq();assert_eq!(b.periph.intmtx.status[2]&1,0);
+    assert_eq!(b.read32(0x6008b100).unwrap(),0);assert_eq!(b.read32(0x6008b014).unwrap(),0);assert_eq!(b.read32(0x6008b00c).unwrap(),0);
+}
