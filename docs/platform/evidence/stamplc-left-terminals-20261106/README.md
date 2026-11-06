@@ -2,7 +2,7 @@
 
 本次修正橙色 PWR485、黑色 PWR-CAN 及两枚终端电阻开关的装配偏移。旧模型把它们放在 Y=13.2／13.3／13.25 mm，原厂外壳的对应开孔中心实际均为 **Y=12 mm**，导致插座一侧被外壳挡住。PWR485 和 PWR-CAN 的上缘还分别进入孔沿约 0.134 和 0.128 mm。
 
-[正左修正前后](left.webp) · [左前修正前后](left-front.webp) · [左后修正前后](left-back.webp) · [官方左侧照片与当前模型](official-left.webp)
+[正左修正前后](left.webp) · [左前修正前后](left-front.webp) · [左后修正前后](left-back.webp) · [官方左侧照片（外部来源）](https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1129/K141_12.webp)
 
 ## 依据与改动
 
@@ -27,7 +27,7 @@ PWR485 口沿保持 X=−35.8 mm，PWR-CAN 保持 X=−35.7 mm；朝外法向均
 - 配置、输入、视图、知识四组平台检查及目录 schema 校验通过。这个独立工作树的首次 runtime 检查因缺少预置 ROM/WASM 未启动，完整平台运行时检查由集成工作树执行。本次没有改动运行时，也不以外观检查扩大固件兼容结论。
 - 三视角使用相同相机对比修正前后。官方照片与模型的并排图只作定性外观核对，未重新标定实物相机或宣称照片级 100% 还原。当前连接器尺寸和隐藏深度仍沿用约 ±0.4 mm 的照片估算；模型保持 `partial`，未知 PCB 布局仍保留。
 
-原始截图不进入 Git；压缩并排图均小于 50 KiB。[images.json](images.json) 记录原始截图、来源照片与压缩图的 SHA-256；`make-comparisons.py` 只做等比缩小和白边排版，不改动照片内容。
+原始截图不进入 Git；提交的三张并排图均由模型渲染截图制作，小于 50 KiB，没有额外嵌入厂商照片面板。渲染沿用模型既有的贴纸纹理。含厂商照片的 `official-left.webp` 只保留在被忽略的 `output/playwright/stamplc-left/`，不作为站点证据资产。[images.json](images.json) 保留外部照片 URL、来源 SHA-256、已核对的本地面板哈希及三张渲染对比图的记录；`make-comparisons.py` 只做等比缩小和白边排版。
 
 ## 复现
 
@@ -41,3 +41,5 @@ python tools/rebuild-product-model.py build m5stack-k141 --scratch <fresh-scratc
 ```
 
 本地静态服务打开平台页后，用任务专属 Playwright 包装器运行 `tools/fixtures/stamplc-left-connector-check.js`。脚本禁用缓存，核验实际加载模型和原生几何哈希，截图写入被忽略的 `output/playwright/stamplc-left/`。完成后关闭该会话并确认退出。
+
+`make-comparisons.py --before <before-captures> --after <after-captures>` 默认只生成三张模型渲染对比图；两个输入目录分别提供 `left.png`、`left-front.png`、`left-back.png`。如需在本地重做官方照片比较，先把上面的外部照片下载到 ignored `output/`，再添加 `--official-photo <downloaded-K141_12.webp> --full-left <orthographic-render.png>`。脚本核对来源 SHA-256 为 `e47b69f889acb70bc8b312ff781eb25d5c05a09a8334868c7b03a1fcc00fd7f3`，仅将含照片面板写入 `output/playwright/stamplc-left/official-left.webp`。
