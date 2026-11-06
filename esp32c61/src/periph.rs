@@ -179,7 +179,7 @@ impl Device for AssistDebug {
 pub struct GdmaC61 { pub gdma: Gdma, ram: RegRam }
 impl Default for GdmaC61 { fn default() -> Self { Self::new() } }
 impl GdmaC61 {
-    pub fn new() -> Self { let mut g = Gdma::new(); g.addr_base = 0x4080_0000; GdmaC61 { gdma: g, ram: RegRam::new() } }
+    pub fn new() -> Self { let mut g = Gdma::new(); g.addr_base = 0x4080_0000; for ch in &mut g.out {ch.peri_sel=63;} for ch in &mut g.inp {ch.peri_sel=63;} GdmaC61 { gdma: g, ram: RegRam::new() } }
     pub(crate) fn map(off: u32) -> Option<u32> {
 
         const T: [u32; 13] = [0x00, 0x04, 0x18, 0x1c, 0x20, 0x24, 0x28, 0x2c, 0x30, 0x34, 0x38, 0x44, 0x48];
@@ -195,8 +195,33 @@ impl GdmaC61 {
     }
 }
 impl Device for GdmaC61 {
-    fn read(&mut self, off: u32) -> u32 { match Self::map(off) { Some(o) => self.gdma.read(o), None => self.ram.read(off) } }
-    fn write(&mut self, off: u32, v: u32) -> WriteEffect { match Self::map(off) { Some(o) => self.gdma.write(o, v), None => self.ram.write(off, v) } WriteEffect::NONE }
+    fn read(&mut self, off: u32) -> u32 {
+        match off {
+            0x80|0x140 => self.ram.read(off)&1 | if self.gdma.inp[((off-0x80)/0xc0) as usize].running {0} else {1<<4},
+            0xe0|0x1a0 => if self.gdma.out[((off-0xe0)/0xc0) as usize].running {0} else {1<<3},
+            0xb0|0x170 => self.gdma.inp[((off-0xb0)/0xc0) as usize].eof_desc,
+            0x110|0x1d0 => self.gdma.out[((off-0x110)/0xc0) as usize].eof_desc,
+            _ => match Self::map(off) {Some(o)=>self.gdma.read(o),None=>self.ram.read(off)},
+        }
+    }
+    fn write(&mut self, off: u32, v: u32) -> WriteEffect {
+        // C61 AHB_GDMA v2 (IDF v5.5.4 ahb_dma_reg.h): full 32-bit
+        // descriptor pointers live separately; LINK start/restart/stop are low bits.
+        match off {
+            0x80|0x140 => {
+                let n=((off-0x80)/0xc0) as usize;let r=&mut self.gdma.inp[n];self.ram.write(off,v&1);
+                if v&12!=0 {r.link=self.ram.read(0x3ac+n as u32*4);r.desc=r.link;r.buf_pos=0;r.rx_eof_pos=0;r.running=true;}
+                if v&2!=0 {r.running=false;}
+            }
+            0xe0|0x1a0 => {
+                let n=((off-0xe0)/0xc0) as usize;let c=&mut self.gdma.out[n];
+                if v&6!=0 {c.link=self.ram.read(0x3b8+n as u32*4);c.desc=c.link;c.buf_pos=0;c.running=true;}
+                if v&1!=0 {c.running=false;}
+            }
+            _=>match Self::map(off) {Some(o)=>self.gdma.write(o,v),None=>self.ram.write(off,v)},
+        }
+        WriteEffect::NONE
+    }
     fn irq_sources(&self) -> u64 { Device::irq_sources(&self.gdma) }
     fn debug(&mut self, on: bool) { self.gdma.dbg = on; }
 }

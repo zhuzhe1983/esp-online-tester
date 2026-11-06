@@ -169,7 +169,7 @@ impl SocBus {
     #[cold]
     fn spi2_out_ready(&self,ch:usize)->u32 {
         let c=&self.periph.gdma.gdma.out[ch];
-        if c.peri_sel!=0 {return self.periph.gdma.gdma.read(ch as u32*0xc0+0x78);}
+        if c.peri_sel!=1 {return self.periph.gdma.gdma.read(ch as u32*0xc0+0x78);}
         let mut available=0;
         if c.running && c.desc&3==0 {
             let mut walk=esp_periph::gdma::DescriptorWalk::new(1);
@@ -187,7 +187,7 @@ impl SocBus {
     fn spi2_dma_tx(&mut self) {
         let Some(bits)=self.periph.spi2.dma_tx_pending else {return};
         let want=(bits as usize).div_ceil(8);
-        let Some(ch)=self.periph.gdma.gdma.out_channel_for(0) else {return};
+        let Some(ch)=self.periph.gdma.gdma.out_channel_for(1) else {return};
         let mut c=self.periph.gdma.gdma.out[ch];let mut data=Vec::with_capacity(want);let mut visited=std::collections::HashSet::new();
         let mut walk=esp_periph::gdma::DescriptorWalk::new(esp_periph::gdma::GDMA_DESCRIPTOR_STEP_BUDGET);
         let mut failed=false;
@@ -224,10 +224,20 @@ impl SocBus {
 
                 let pins = crate::periph::PINS.routes(&self.periph.gpio, &self.periph.io_mux)
                     .spi_pins(&self.periph.spi2, [64, 65, 66, 69, 102, 103, 104, 105, 106], 256, &[(2, 6, 7, 2, &[8])]);
+                if self.periph.spi2.log {eprintln!("[C61 SPI ROUTE] {:?} tx {} {:?} rx {}",pins,transfer.tx.len(),&transfer.tx[..transfer.tx.len().min(12)],transfer.rx_len);}
                 self.board.spi_transfer_pins(2, pins, &transfer.tx, transfer.rx_len)
             } else {
                 self.board.spi_transfer(2, &transfer.tx, transfer.rx_len)
             };
+            // C61 AHB_GDMA peripheral selector1 is SPI2. RX DMA writes the
+            // descriptor chain before the SPI completion interrupt is observed.
+            if transfer.rx_len!=0 && self.periph.spi2.regs.read(0x30)&(1<<27)!=0 {
+                if let Some(n)=(0..2).find(|&n|{let r=&self.periph.gdma.gdma.inp[n];r.running&&r.peri_sel==1}) {
+                    let mut r=self.periph.gdma.gdma.inp[n];let mut changed=false;
+                    r.receive(self,&rx,Some(transfer.rx_len as u32),true,Self::is_periph,&mut changed);
+                    self.periph.gdma.gdma.inp[n]=r;self.irq_dirty|=changed;
+                }
+            }
             self.periph.spi2.finish_transfer(transfer, &rx);
         }
 
