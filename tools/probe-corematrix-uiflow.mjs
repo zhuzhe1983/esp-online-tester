@@ -67,7 +67,7 @@ try {
  if(checks.includes('sd')) {assert.match(await exec('cm_sd()'),/CM_SD WRITE_READ/);outcomes.push('SPI-SD-FAT-write-and-read');}
  if(checks.includes('buzzer')) {
   await runtime.audioConfigure({output:{enabled:true}});await runtime.readAudio();
-  assert.match(await exec('cm_buzzer_pwm()'),/CM_PWM 1200 34816/);await repl.advance(.1);
+  assert.match(await exec('cm_buzzer_pwm()'),/CM_PWM 1200 34816/);await runtime.readAudio();await repl.advance(.1);
   const audio=await runtime.readAudio(),samples=audio.chunks.flatMap(chunk=>Array.from(chunk.samples));assert.ok(samples.some(x=>x!==0),'IOE1 PWM must produce real audio output');
   let edges=0;for(let i=1;i<samples.length;i++)if((samples[i]>=0)!==(samples[i-1]>=0))edges++;
   const rates=[...new Set(audio.chunks.map(chunk=>chunk.sampleRate))];assert.deepEqual(rates,[48000]);const measuredHz=edges*48000/(2*samples.length);assert.ok(Math.abs(measuredHz-1200)<100,'PWM audio frequency must follow guest setting');
@@ -76,12 +76,20 @@ try {
   await exec('cm_buzzer_power(True);cm_buzzer()');await repl.advance(.1);const tone=await runtime.readAudio();assert.ok(tone.chunks.some(chunk=>chunk.samples.some(x=>x!==0)),'Official M5.Speaker.tone must generate guest audio');
   await exec('cm_buzzer_power(False)');outcomes.push('guest-IOE1-PWM-and-M5Speaker-real-audio-with-power-gate');
  }
- if(checks.includes('power')) {assert.match(await exec('cm_power()'),/CM_POWER/);outcomes.push('guest-power-register-read');}
+ if(checks.includes('power')) {const power=await exec('for _ in range(3):\n cm_power()\n time.sleep_ms(1300)');assert.match(power,/CM_POWER 3900 5000 True/);outcomes.push('guest-power-register-read-after-battery-detection');}
+ if(checks.includes('sd')) {
+  for(const kind of ['reset','reload']) {
+   if(kind==='reset')await runtime.reset();else {await runtime.loadFirmware({file:new File([bytes],'original-corematrix.bin')});await runtime.start();}
+   await repl.wait(state=>state.serial.includes('MicroPython')&&state.stats.time>1);await repl.enter();
+   await exec(await readFile(new URL('tools/fixtures/corematrix-uiflow/exercise.py',root),'utf8'));
+   assert.match(await exec('cm_sd(False)'),/CM_SD PERSISTED_READ/);outcomes.push('SPI-SD-file-preserved-after-'+kind);
+  }
+ }
  await runtime.pause();
 } catch(error) {failure=String(error.message);process.exitCode=1;}
 finally {
  const state=await runtime.observe().catch(()=>({}));
- const receipt={checkedAt:new Date().toISOString(),productId:'m5stack-c158',source:{sha256,bytes:bytes.length,kind:'caller-supplied-local-official-image'},wasmSha256:await readFile(new URL('web/wasm/esp32sim.wasm',root)).then(hash).catch(()=>null),backend:'production-page-worker-WASM-interpreter',firmwarePatched:false,guestProgram:'RAM-only MicroPython raw-REPL source; original boot image and filesystem are unchanged.',status:failure?'failed':'pass',requestedChecks:checks,checks:outcomes,frames,inputs,imuSamples,audioSamples,serialEvidence,guestSeconds:state.stats?.time,failure,limitations:['No physical device tested.','Buzzer check measures digital PWM frequency; audio timbre and physical loudness are not calibrated. Power readback is not analog calibration.','SD check writes and reads an isolated virtual card; reset persistence requires a separate run.','Source-program checks do not prove all unmodified UIFlow application features or wireless connectivity.']};
+ const receipt={checkedAt:new Date().toISOString(),productId:'m5stack-c158',source:{sha256,bytes:bytes.length,kind:'caller-supplied-local-official-image'},wasmSha256:await readFile(new URL('web/wasm/esp32sim.wasm',root)).then(hash).catch(()=>null),backend:'production-page-worker-WASM-interpreter',firmwarePatched:false,guestProgram:'RAM-only MicroPython raw-REPL source; original boot image and filesystem are unchanged.',status:failure?'failed':'pass',requestedChecks:checks,checks:outcomes,frames,inputs,imuSamples,audioSamples,serialEvidence,guestSeconds:state.stats?.time,hardwareDiagnostics:state.hardwareDiagnostics,audioState:state.audio,sdState:state.sdCard,failure,limitations:['No physical device tested.','Buzzer check measures digital PWM frequency; audio timbre and physical loudness are not calibrated. Power readback is not analog calibration.','SD uses an isolated virtual card; reset and firmware reload are tested, not abrupt host/browser crashes.','Source-program checks do not prove all unmodified UIFlow application features or wireless connectivity.']};
  if(option('--receipt'))await writeFile(option('--receipt'),JSON.stringify(receipt,null,2)+'\n');
  console.log(JSON.stringify(receipt,null,2));await runtime.dispose();
 }

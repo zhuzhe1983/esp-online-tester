@@ -67,9 +67,14 @@ def cm_buzzer(hz=1200, duration_ms=250):
 
 
 def cm_buzzer_pwm(hz=1200):
+    # Stop the official speaker task before testing independent expander PWM.
+    # Otherwise its idle cleanup may overwrite the manually configured output.
+    M5.Speaker.end()
     # The product's IO11 is M5IOE1 PWM channel 2, not an ESP GPIO.
     _cm_ioe.set_pin_mode(2, 1)
+    _cm_ioe.set_pin_drive(2, 0)
     _cm_ioe.set_pin_value(2, True)
+    _cm_ioe.set_pin_mode(11, 1)
     _cm_ioe.set_pwm_frequency(hz)
     _cm_ioe.set_pwm_duty_u12(2, 2048)
     print("CM_PWM", _cm_ioe.read_reg16(0x25), _cm_ioe.read_reg16(0x1F))
@@ -77,6 +82,7 @@ def cm_buzzer_pwm(hz=1200):
 
 def cm_buzzer_power(enabled):
     _cm_ioe.set_pin_mode(2, 1)
+    _cm_ioe.set_pin_drive(2, 0)
     _cm_ioe.set_pin_value(2, bool(enabled))
     print("CM_BUZZER_POWER", int(bool(enabled)))
 

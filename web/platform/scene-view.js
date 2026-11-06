@@ -215,6 +215,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     mount.dataset.modelStatus = 'illustrative';
     const generic = !product.display;
     display.classList.toggle('round', product.display?.shape === 'round');
+    display.classList.toggle('led-matrix', /led-matrix$/.test(product.display?.type || ''));
     display.hidden = previewOnly || mode !== '2d' || generic;
     if (!product.model && !['m5stack-stopwatch','m5stack-papermono'].includes(product.id)) {
       mount.dataset.modelStatus = 'unavailable'; display.hidden = true; onModelReady();

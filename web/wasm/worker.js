@@ -226,8 +226,8 @@ onmessage = async (ev) => {
       experiments = m.experiments === undefined ? [] : m.experiments;
       smoothDisplay = m.smoothDisplay === true;
       if (emu !== 0 && wasm.esp32sim_cpu_hz) CPU_HZ = wasm.esp32sim_cpu_hz(emu);
-      const audioAvailable=!!(emu&&wasm.esp32sim_audio_input_state&&wasm.esp32sim_audio_input_state(emu,0)>0);
-      if(emu&&m.audioStreaming&&wasm.esp32sim_audio_output_streaming)wasm.esp32sim_audio_output_streaming(emu,1);
+      const audioOutputAvailable=!!(emu&&wasm.esp32sim_audio_output_streaming&&wasm.esp32sim_audio_output_streaming(emu,m.audioStreaming?1:0)===0);
+      const audioAvailable=audioOutputAvailable||!!(emu&&wasm.esp32sim_audio_input_state&&wasm.esp32sim_audio_input_state(emu,0)>0);
       if(m.flight?.enabled){
         if(!['stampfly','stampfly-v11'].includes(m.board)||m.flight.model!=='stampfly-rigid-body-v1')throw new Error('Unsupported flight configuration');
         flight=createFlightRunner({wasm,emu,clockHz:CPU_HZ,epoch:m.flightEpoch||0,publish:flight=>postMessage({flight})});
