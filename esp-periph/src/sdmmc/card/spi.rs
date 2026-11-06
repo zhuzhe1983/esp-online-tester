@@ -102,6 +102,15 @@ mod tests {
         assert_eq!(command(&mut s,17,2048),[255,0x20]);assert_eq!(s.transfer(true,&[],2),[255,255]);
     }
     #[test]
+    fn supply_loss_clears_spi_state_and_incomplete_write_but_retains_flash_blocks() {
+        let mut s=ready();assert_eq!(command(&mut s,24,3),[255,0]);let mut bytes=vec![0xfe];bytes.extend([0x5a;512]);bytes.extend([255,255]);s.transfer(true,&bytes,0);assert_eq!(s.transfer(true,&[],1),[5]);
+        assert_eq!(command(&mut s,24,3),[255,0]);s.transfer(true,&[0xfe,1,2,3],0);s.power_cycle();
+        assert_eq!(command(&mut s,0,0),[255,255],"startup clocks are lost with supply");
+        s.transfer(false,&[255;10],0);assert_eq!(command(&mut s,0,0),[255,1]);assert_eq!(command(&mut s,8,0x1aa),[255,1]);s.transfer(true,&[],4);
+        for _ in 0..2 {command(&mut s,55,0);command(&mut s,41,1<<30);}
+        assert_eq!(command(&mut s,17,3),[255,0]);assert_eq!(s.transfer(true,&[],2),[255,0xfe]);assert_eq!(s.transfer(true,&[],512),vec![0x5a;512]);
+    }
+    #[test]
     fn startup_select_command_crc_and_multi_block_stop() {
         let mut s=SpiSdCard::new(Box::new(MemStore(vec![0;1<<20])),Default::default()).unwrap();assert_eq!(command(&mut s,0,0),[255,255]);s.transfer(false,&[255;10],0);s.transfer(true,&[0x40,0,0,0,0,0],0);assert_eq!(s.transfer(true,&[],2),[255,9]);
         let mut s=ready();assert_eq!(command(&mut s,25,0),[255,0]);for value in [1,2] {let mut data=vec![0xfc];data.extend([value;512]);data.extend([255,255]);s.transfer(true,&data,0);assert_eq!(s.transfer(true,&[],1),[5]);}s.transfer(true,&[0xfd],0);assert_eq!(s.card.blocks_written,2);
