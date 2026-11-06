@@ -141,6 +141,7 @@ impl SocBus {
         let v = if size == 4 { v } else { merge(self.periph.read32(a)) };
         let old_drive = (self.periph.gpio.enable, self.periph.gpio.out);
         self.periph.write32(a, v);
+        if a==0x600a1028 && self.periph.ble_mac.trace {self.periph.ble_mac.trace_descriptors(&self.sram);}
         if self.periph.ble_security.pending() {self.periph.ble_security.service(&mut self.sram);}
         if matches!(a & !0xfff, 0x6009_0000 | 0x6009_1000) && self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, crate::periph::PINS.routes(&self.periph.gpio, &self.periph.io_mux));

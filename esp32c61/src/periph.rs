@@ -274,7 +274,7 @@ impl Device for GpioC61 {
 }
 pub const PINS: esp_soc::pins::ChipPins = esp_soc::pins::ChipPins { valid: (1 << 30) - 1, input_select: 0x100, output_mask: 0x3ff };
 pub struct Peripherals {
-    pub ble_security: crate::ble::BleSecurity,
+    pub ble_security: crate::ble::BleSecurity, pub ble_mac: crate::ble::BleMac,
     pub modem_bb: crate::wifi::ModemBb, pub wifi_mac: crate::wifi::WifiMac,
     pub adc: crate::adc::SarAdc,
     pub ecc: crate::ecc::Ecc,
@@ -306,6 +306,7 @@ device_set! { Peripherals; inline always; clock: (clock) CPU_HZ, [(ClockDomain::
     0x91 "GPIO" (gpio) => [src::GPIO];
     0x96 "PCR" (pcr) => [];
     0xa0 "MODEM_BB" (modem_bb) => [];
+    0xa1 "BLE_MAC" (ble_mac) => [];
     0xa4 "WIFI_MAC" (wifi_mac) => [0];
     0xa5 "WIFI_RESULTS" alias (wifi_mac) delta 0x1000 => [];
     0xa9 "BLE_SECURITY" (ble_security) delta -0x800 @ 0x800..=0x8ff => [];
@@ -329,12 +330,13 @@ impl DeviceSet for Peripherals {
     fn pre_access(&mut self, block: u32, _off: u32, _write: bool) {
         if block == 4 { let c = self.pcr.read(0x30); self.i2c.set_external_clock_config(Some(((c >> 12) & 255) | ((c & 63) << 8) | (((c >> 6) & 63) << 14) | (c & (1 << 20)))); }
         if block == 0x0e { self.adc.now_cycles = self.clock.cycles(); self.adc.ground = self.ana_mst.ana.read(0, 0x0769, |_| &0) & (1 << 21) != 0; }
+        if block == 0xa1 {self.ble_mac.now_cycles=self.clock.cycles();}
         if block == 0xb2 { self.rng.now = self.clock.cycles() as u32; }
     }
 }
 impl Peripherals {
     pub fn new(mac: [u8; 6]) -> Self { Self {
-        ble_security: Default::default(), ecc: Default::default(), modem_bb: crate::wifi::ModemBb::new(), wifi_mac: crate::wifi::WifiMac::new(), adc: crate::adc::SarAdc::new(CPU_HZ), uart: std::array::from_fn(|_| Uart::new(UartLayout::C6)), usb: UsbSerialJtag::new(CPU_HZ), systimer: Systimer::new(),
+        ble_mac: Default::default(), ble_security: Default::default(), ecc: Default::default(), modem_bb: crate::wifi::ModemBb::new(), wifi_mac: crate::wifi::WifiMac::new(), adc: crate::adc::SarAdc::new(CPU_HZ), uart: std::array::from_fn(|_| Uart::new(UartLayout::C6)), usb: UsbSerialJtag::new(CPU_HZ), systimer: Systimer::new(),
         timg: [TimerGroup::new(), TimerGroup::new()], gpio: GpioC61 { gpio: { let mut g = Gpio::with_pins(30); g.input_select = 0x100; g.func_in_sel.fill(0x60); g } }, io_mux: RegRam::new(), i2c: esp_periph::i2c::I2c::new(),
         efuse: efuse_c61(mac, 1, 0, 0, 0, 0), spi0: SpiMemC61(SpiMem::new(false)), spi1: SpiMemC61(SpiMem::new(true)), sha: Sha::new(),
         gdma: GdmaC61::new(), spi2: GpSpi::new(), intmtx: IntMatrix::new(), intc: Intc::new(), cache: Cache::new(), lpsys: LpSys::new(), pcr: Pcr::new(),

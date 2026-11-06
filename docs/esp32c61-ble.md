@@ -57,3 +57,18 @@ is progress evidence, not a successful scan or radio-support claim.
 
 Unit checks cover empty/exact/type-mismatch searches, malformed cyclic lists,
 NIST AES128 (`001122...eeff`, key `000102...0e0f`) and prohibited output DMA.
+
+## Timer and control-loop progression
+
+`r_ble_lll_sleep_timer_tick_get` waits for `0x600a1928` bit27 to self-clear and
+reads the latched microsecond counter at `0x600a1924`.
+`r_ble_lll_sleep_time_sync_set` loads a replacement counter from `0x600a192c`
+with bit31. The microsecond unit is explicit in its RTC conversion arithmetic
+(division by 1,000,000). These commands now operate on the C61 160 MHz clock.
+
+With the latch implemented, the original 2.5.4 image runs activation,
+`gap_scan(1000,30000,30000)`, receives the software scan-duration IRQ6 after
+1500 ms, starts/stops a 100 ms advertising interval, and deactivates BLE.
+It completes with zero CPU exceptions within an 800M script budget. This
+still does **not** establish reception or on-air advertising: the hardware
+scheduler descriptor execution and packet delivery are the next boundary.

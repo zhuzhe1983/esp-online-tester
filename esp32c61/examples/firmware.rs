@@ -8,6 +8,7 @@ fn main() {
     m.bus.set_flash_size(16 << 20); m.bus.set_psram_size(8 << 20).unwrap();
     m.bus.periph.usb.connected = true;
     m.bus.periph.misc.log_unknown=std::env::var_os("COREMATRIX_UNKNOWN_TRACE").is_some();
+    m.bus.periph.ble_mac.trace=std::env::var_os("COREMATRIX_BLE_TRACE").is_some();
     m.bus.periph.spi2.log = std::env::var_os("COREMATRIX_SPI_TRACE").is_some();
     m.bus.board = esp32c61::board::make_board("corematrix").unwrap(); m.bus.attach_board_devices();
     if let Some(path)=args.get(5) {m.bus.attach_sd_card(Box::new(esp_periph::sdmmc::MemStore(std::fs::read(path).unwrap())),Default::default()).unwrap();}

@@ -72,3 +72,40 @@ mod tests {
         engine.write(0x24,0x60091000);engine.write(4,1);engine.service(&mut sram);assert_eq!(engine.read(0xc4),0);
     }
 }
+
+/// Link-layer registers at 0x600a1000. The controller's sleep_timer_tick_get
+/// latches a 1 MHz counter with +0x928 bit27, then reads +0x924. Its
+/// sleep_time_sync_set writes +0x92c and requests a load with bit31.
+#[derive(Default)]
+pub struct BleMac {ram:RegRam,pub trace:bool,pub now_cycles:u64,epoch_cycles:u64,epoch_ticks:u32}
+impl BleMac {
+    fn ticks(&self)->u32 {self.epoch_ticks.wrapping_add((self.now_cycles.saturating_sub(self.epoch_cycles)/160) as u32)}
+    pub fn trace_descriptors(&self,sram:&[u8]) {
+        let mut ptr=self.ram.read(0x8fc)&0xfffff;
+        for _ in 0..8 {if ptr==0 {break;}let Some(data)=sram.get(ptr as usize..ptr as usize+72) else {break};let words:Vec<_>=data.as_chunks::<4>().0.iter().map(|w|u32::from_le_bytes(*w)).collect();eprintln!("[C61 BLE DESC] {ptr:05x} {words:08x?}");ptr=words[0]&0xfffff;}
+    }
+}
+impl Device for BleMac {
+    fn read(&mut self,off:u32)->u32 {self.ram.read(off)}
+    fn write(&mut self,off:u32,value:u32)->WriteEffect {
+        if self.trace && off!=0x928 {eprintln!("[C61 BLE] W {:03x} {:08x} at {}",off,value,self.now_cycles);}
+        if off==0x928 {
+            if value&(1<<31)!=0 {self.epoch_ticks=self.ram.read(0x92c);self.epoch_cycles=self.now_cycles;}
+            if value&(1<<27)!=0 {self.ram.write(0x924,self.ticks());}
+            self.ram.write(off,value&!((1<<27)|(1<<31)));
+        } else {self.ram.write(off,value);}
+        WriteEffect::NONE
+    }
+}
+#[cfg(test)]
+mod timer_tests {
+    use super::*;
+    #[test]
+    fn c61_timer_latches_microseconds_loads_and_wraps() {
+        let mut mac=BleMac{now_cycles:160*1234+159,..Default::default()};mac.write(0x928,4|1<<27);
+        assert_eq!(mac.read(0x928),4);assert_eq!(mac.read(0x924),1234);
+        mac.now_cycles+=160;assert_eq!(mac.read(0x924),1234,"latch is stable until triggered");
+        mac.write(0x92c,u32::MAX);mac.write(0x928,4|1<<31);mac.now_cycles+=320;mac.write(0x928,4|1<<27);
+        assert_eq!(mac.read(0x924),1);assert_eq!(mac.read(0x928),4);
+    }
+}
