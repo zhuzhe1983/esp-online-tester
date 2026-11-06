@@ -44,6 +44,8 @@ impl Soc for C61 {
 }
 
 impl esp_soc::SocBus for SocBus {
+    fn enable_ble_full(&mut self,_observe:bool)->Result<(),String> {Ok(())}
+    fn ble_nearby(&mut self,list:Vec<esp_soc::ble::peer::Nearby>)->Result<(),String> {self.periph.ble_mac.set_nearby(list)}
     fn attach_wifi(&mut self, cfg: esp_soc::wifi::ApConfig, nat: Option<esp_soc::nat::Nat>) -> Result<(), String> { self.periph.wifi_mac.link.attach_new(cfg, nat, &self.debug); Ok(()) }
     fn configure_softap_client(&mut self,cfg:Option<esp_soc::wifi::softap::ClientConfig>)->Result<(),String> {self.periph.wifi_mac.link.configure_softap(cfg)}
     fn poll_softap_client(&mut self) {self.periph.wifi_mac.link.poll_softap(self.cycles/(periph::CPU_HZ/1_000_000));}
@@ -107,6 +109,7 @@ impl esp_soc::SocBus for SocBus {
         let p = &mut self.periph;
         p.efuse = old.efuse;
         p.wifi_mac.link = old.wifi_mac.link.surviving_reboot();
+        let _=p.ble_mac.set_nearby(old.ble_mac.surviving_nearby());
         p.adc.analog = old.adc.analog; p.adc.analog.set_stream_clock_offset(self.cycles);
         p.spi0.0.has_psram = !self.psram.is_empty(); p.spi1.0.has_psram = !self.psram.is_empty();
 
