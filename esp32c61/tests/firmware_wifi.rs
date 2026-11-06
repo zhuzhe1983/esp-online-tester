@@ -25,6 +25,16 @@ fn external_official_uiflow_wifi_dns_ntp_http() { let _ = official_wifi(None); }
 #[ignore = "needs C61_ROM_ELF, COREMATRIX_FIRMWARE and C61_TEST_HTTP_BIND (host IPv4 reachable by guest NAT)"]
 fn external_official_uiflow_wpa2_wifi_dns_ntp_http() { let _ = official_wifi(Some("c61-test-password")); }
 
+#[test]
+#[ignore = "needs C61_ROM_ELF, COREMATRIX_FIRMWARE and C61_TEST_HTTP_BIND (host IPv4 reachable by guest NAT)"]
+fn external_official_uiflow_rejects_wrong_wpa2_password() {
+    let mut m = official_wifi(Some("c61-test-password"));
+    let previous_replay = m.bus.periph.wifi_mac.link.ap().unwrap().wpa.replay;
+    python(&mut m, "w.disconnect()\nw.active(False)\nw.active(True)\nw.connect('c61-test','wrong-password')\ntime.sleep_ms(2500)\nassert not w.isconnected(),w.ifconfig()\nprint('C61_WRONG_PASSWORD_REJECTED',w.status())\n", "C61_WRONG_PASSWORD_REJECTED");
+    assert!(m.bus.periph.wifi_mac.link.ap().unwrap().wpa.replay > previous_replay, "wrong-password attempt did not reach the four-way handshake");
+    assert_ne!(m.bus.periph.wifi_mac.link.ap().unwrap().wpa.state, esp_soc::wifi::WpaState::Installed);
+}
+
 fn official_wifi(password: Option<&str>) -> esp32c61::Machine {
     let input = |name| std::fs::read(std::env::var(name).unwrap_or_else(|_| panic!("set {name} to the caller-provided input"))).unwrap();
     let host: Ipv4Addr = std::env::var("C61_TEST_HTTP_BIND").expect("set C61_TEST_HTTP_BIND to a host IPv4 address reachable by guest NAT").parse().unwrap();
@@ -147,32 +157,64 @@ fn external_official_uiflow_wpa2_tls() {
     let epoch: u64 = std::env::var("C61_TEST_TLS_EPOCH").expect("set C61_TEST_TLS_EPOCH to Unix seconds within the fixture certificate's validity").parse().unwrap();
     let cert_hex: String = cert.iter().map(|b| format!("{b:02x}")).collect();
     let mut m = official_wifi(Some("c61-test-password"));
+    // UIFlow2 issue #120, confirmed by its maintainer for a 2.5.5 fix: the
+    // image's TLS time callback adds the 1970-to-2000 epoch offset twice.
+    // Reproduce the original failure, then adjust only this guest test's RTC;
+    // the emulator clock and certificate/hostname verification stay unchanged.
     let script = format!(r#"import ssl, machine
-print('C61_TLS_IMPORT')
 t=time.gmtime({epoch})
-print('C61_TLS_GMT',t)
 machine.RTC().datetime((t[0],t[1],t[2],t[6],t[3],t[4],t[5],0))
-print('C61_TLS_RTC')
 ctx=ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-print('C61_TLS_CONTEXT')
 ctx.verify_mode=ssl.CERT_REQUIRED
 ctx.load_verify_locations(cadata=bytes.fromhex('{cert_hex}'))
-print('C61_TLS_CA')
 s=socket.socket()
 s.settimeout(10)
 s.connect(('{host}',{port}))
-print('C61_TLS_CONNECT')
+try:
+ ctx.wrap_socket(s,server_hostname='corematrix.test')
+ raise AssertionError('expected pinned UIFlow2 TLS epoch bug')
+except ValueError as e:
+ assert 'certificate validity has expired' in str(e),e
+ print('C61_TLS_ORIGINAL_EPOCH_BUG')
+s.close()
+t=time.gmtime({epoch}-946684800)
+machine.RTC().datetime((t[0],t[1],t[2],t[6],t[3],t[4],t[5],0))
+ctx=ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+ctx.verify_mode=ssl.CERT_REQUIRED
+ctx.load_verify_locations(cadata=bytes.fromhex('{cert_hex}'))
+s=socket.socket()
+s.settimeout(10)
+s.connect(('{host}',{port}))
 tls=ctx.wrap_socket(s,server_hostname='corematrix.test')
 print('C61_TLS_HANDSHAKE')
-tls.write(b'GET / HTTP/1.0\r\nHost: corematrix.test\r\n\r\n')
+tls.write(b'GET /c61-wifi HTTP/1.0\r\nHost: corematrix.test\r\n\r\n')
 response=b''
-while True:
- chunk=tls.read(1024)
- if not chunk: break
+while b'\r\n\r\n' not in response:
+ chunk=tls.read(128)
+ assert chunk
  response+=chunk
+header,body=response.split(b'\r\n\r\n',1)
+assert header.startswith(b'HTTP/1.0 200 OK'),header
+assert b'Content-Length: 4096' in header,header
+while len(body)<4096:
+ chunk=tls.read(min(1024,4096-len(body)))
+ assert chunk
+ body+=chunk
 tls.close()
-assert response.startswith(b'HTTP/1.0 200 ok'), response[:80]
-print('C61_TLS_HTTP',len(response))
+assert body==bytes(range(256))*16,len(body)
+print('C61_TLS_HTTP',len(body))
+s=socket.socket()
+s.settimeout(10)
+s.connect(('{host}',{port}))
+try:
+ ctx.wrap_socket(s,server_hostname='wrong.invalid')
+ raise AssertionError('TLS accepted the wrong hostname')
+except ValueError as e:
+ assert 'CN' in str(e) or 'name' in str(e).lower(),e
+ print('C61_TLS_WRONG_HOST_REJECTED')
+s.close()
+t=time.gmtime({epoch})
+machine.RTC().datetime((t[0],t[1],t[2],t[6],t[3],t[4],t[5],0))
 print('C61_NETWORK_TLS_PASS')
 "#, host = address.ip(), port = address.port());
     python(&mut m, &script, "C61_NETWORK_TLS_PASS");
@@ -191,25 +233,24 @@ fn external_official_uiflow_wpa2_softap_arp_udp() {
 }
 fn official_softap(password: Option<&str>) {
     let mut m = official_wifi(None);
-    m.bus.periph.wifi_mac.link.configure_softap(Some(esp_soc::wifi::softap::ClientConfig { ssid: Some("c61-softap".into()), password: password.map(str::to_string) })).unwrap();
+    m.bus.configure_softap_client(Some(esp_soc::wifi::softap::ClientConfig { ssid: Some("c61-softap".into()), password: password.map(str::to_string) })).unwrap();
     let config = format!("ap=network.WLAN(network.AP_IF)\nap.active(True)\nap.config(ssid='c61-softap',security={},key='{}')\nprint('C61_SOFTAP',ap.ifconfig())\nu=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)\nu.settimeout(2)\nu.bind(('192.168.4.1',18080))\nprint('C61_SOFTAP_READY')\n", if password.is_some() { 3 } else { 0 }, password.unwrap_or(""));
     python(&mut m, &config, "C61_SOFTAP_READY");
     let mut sent = false; let mut reply = false;
     for _ in 0..300 {
-        let now = m.bus.cycles / (esp32c61::periph::CPU_HZ / 1_000_000);
-        m.bus.periph.wifi_mac.link.poll_softap(now); m.run(5_000_000);
-        if m.bus.periph.wifi_mac.link.softap_status().contains("\"state\":\"connected\"") && !sent {
+        m.bus.poll_softap_client(); m.run(5_000_000);
+        if m.bus.softap_client_status().contains("\"state\":\"connected\"") && !sent {
             let mac = esp_soc::wifi::softap::CLIENT_MAC;
             let mut frame = vec![255; 6]; frame.extend_from_slice(&mac); frame.extend_from_slice(&[8, 6, 0, 1, 8, 0, 6, 4, 0, 1]);
             frame.extend_from_slice(&mac); frame.extend_from_slice(&[192, 168, 4, 2]); frame.extend_from_slice(&[0; 6]); frame.extend_from_slice(&[192, 168, 4, 1]);
-            m.bus.periph.wifi_mac.link.receive_softap_frame(&frame, now).unwrap(); sent = true;
+            m.bus.receive_softap_frame(&frame).unwrap(); sent = true;
         }
-        for frame in m.bus.periph.wifi_mac.link.take_softap_frames() {
+        for frame in m.bus.take_softap_frames() {
             if frame.len() >= 42 && frame[12..14] == [8, 6] && frame[20..22] == [0, 2] && frame[28..32] == [192, 168, 4, 1] { reply = true; }
         }
         if reply { break; }
     }
-    let status = m.bus.periph.wifi_mac.link.softap_status(); println!("{status}");
+    let status = m.bus.softap_client_status(); println!("{status}");
     assert!(sent, "SoftAP association failed: {status}"); assert!(reply, "guest SoftAP did not answer ARP: {status}");
     // RFC 791 / 768: IPv4 UDP with no options; an IPv4 UDP zero checksum is
     // permitted. This goes through the virtual peer's 802.11 TX and guest lwIP.
@@ -220,8 +261,8 @@ fn official_softap(password: Option<&str>) {
     ip.extend_from_slice(&18081u16.to_be_bytes()); ip.extend_from_slice(&18080u16.to_be_bytes());
     ip.extend_from_slice(&((8 + payload.len()) as u16).to_be_bytes()); ip.extend_from_slice(&[0, 0]); ip.extend_from_slice(payload);
     let mut frame = vec![2, 0, 0, 0, 0, 0x62]; frame.extend_from_slice(&esp_soc::wifi::softap::CLIENT_MAC); frame.extend_from_slice(&[8, 0]); frame.extend_from_slice(&ip);
-    let now = m.bus.cycles / (esp32c61::periph::CPU_HZ / 1_000_000); m.bus.periph.wifi_mac.link.receive_softap_frame(&frame, now).unwrap();
+    m.bus.receive_softap_frame(&frame).unwrap();
     python(&mut m, "data,peer=u.recvfrom(128)\nassert data==b'c61-softap-udp',data\nu.sendto(b'c61-reply:'+data,peer)\nu.close()\nprint('C61_SOFTAP_UDP_PASS')\n", "C61_SOFTAP_UDP_PASS");
-    let returned = m.bus.periph.wifi_mac.link.take_softap_frames(); let expected = [b"c61-reply:".as_slice(), payload].concat();
+    let returned = m.bus.take_softap_frames(); let expected = [b"c61-reply:".as_slice(), payload].concat();
     assert!(returned.iter().any(|frame| frame.len() >= 42 && frame[12..14] == [8, 0] && frame[23] == 17 && frame[34..36] == 18080u16.to_be_bytes() && frame[42..] == expected), "guest UDP response missing: {returned:02x?}");
 }

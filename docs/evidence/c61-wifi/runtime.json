@@ -2,7 +2,7 @@
   "imageSha256": "8d5b8d4e22ebc293937086b2f9f218aa5a5ebda27b5ccb32b3f8f580ee02939b",
   "romSha256": "c4ee94d3a8e335da4ef5f30a8a1ebb9691e639f1c773f484e9ba721aa1557c2e",
   "integrationBase": "9c7538cf",
-  "testCommand": "C61_ROM_ELF=<rom> COREMATRIX_FIRMWARE=<image> C61_TEST_HTTP_BIND=<caller host IPv4> cargo test --release -p esp32c61 --test firmware_wifi -- --ignored --skip external_official_uiflow_wpa2_tls --nocapture",
+  "testCommand": "C61_ROM_ELF=<rom> COREMATRIX_FIRMWARE=<image> C61_TEST_HTTP_BIND=<caller host IPv4> C61_TEST_TLS_ADDRESS=<caller fixture IPv4:port> C61_TEST_TLS_CA_DER=<test certificate DER> C61_TEST_TLS_EPOCH=<Unix seconds within certificate validity> cargo test --release -p esp32c61 --test firmware_wifi -- --ignored --nocapture --test-threads=1",
   "cases": [
     {
       "accessPoint": "open",
@@ -53,11 +53,13 @@
   ],
   "limitations": [
     "Guest reaches USB REPL after official startup ImportError: no module named M5Things.",
-    "WPA2 four-way handshake checked; shared digital MAC data boundary uses plaintext with CCMP headers, not radio encryption.",
+    "Guest WPA2 four-way handshake checked; shared digital MAC data boundary uses plaintext with CCMP headers, not radio encryption.",
+    "Shared AP logs message-2 MIC mismatch without rejection and does not validate message-4 MIC; test peer is not a security boundary or complete authenticator. Guest rejects wrong password.",
     "No physical RF timing/accuracy or hardware validation.",
-    "TLS pending ECC implementation; WPA3, guest DHCP-server leases and external Internet not covered."
+    "Unmodified UIFlow2 2.5.4 with correct RTC fails current TLS certificate validity; explicit fixture RTC workaround is required until upstream firmware fix.",
+    "General TLS close-notify/EOF behavior, Python SSL-server interoperability, WPA3, guest DHCP-server leases and external Internet not qualified."
   ],
-  "redactions": "Raw logs were not committed. Local host IPv4, ephemeral TCP ports, process/thread identifiers and local paths are omitted; payload sizes, protocol outputs and binary hashes are retained.",
+  "redactions": "Raw logs were not committed. Local host IPv4, ephemeral TCP ports, process/thread identifiers and local paths are omitted; payload sizes, protocol outputs and binary hashes are retained. Generated private key, ephemeral ECC operands/shared secrets and raw TLS/SHA traces are not committed; only aggregate equality-check results and non-secret DMA addresses are retained.",
   "softapCases": [
     {
       "security": "open",
@@ -85,6 +87,65 @@
   "negativeResults": [
     "macOS accepted socket inherited nonblocking mode; explicit blocking fixed HTTP fixture before application traffic passed.",
     "SoftAP UDP first byte comparison found four TX FCS reservation bytes leaking into relayed Ethernet; MAC now strips the reservation and all four non-TLS firmware cases pass.",
-    "P-256 TLS CA load stops at unimplemented C61 ECC status 0x6008b00c, guest PC 0x420ff224."
-  ]
+    "P-256 TLS CA load stops at unimplemented C61 ECC status 0x6008b00c, guest PC 0x420ff224.",
+    "After ECC integration, TLS rejected a current certificate with correct guest RTC; reproduced manufacturer issue 120, which adds the Unix-to-2000 epoch offset twice. Test explicitly adjusts only guest RTC for positive qualification.",
+    "TLS server rejected client Finished with bad_record_mac before fac00a34; SHA DMA ignored 384-byte PSRAM tail at dynamically mapped virtual address 0x42340e97 after 64-byte SRAM block. MMU-aware read fixes handshake; independent 8192-byte SHA256 KAT also transitions from mismatch to pass.",
+    "Exploratory OpenSSL -www fixture decrypted 1805 HTTP bytes then guest read returned OSError -116 instead of EOF despite server close-notify. Qualified fixture uses explicit Content-Length; timeout is not accepted as EOF.",
+    "Python stdlib SSL server variant timed out during corrected-time handshake; qualified OpenSSL 3.6.4 s_server -HTTP command completes. No Python server interoperability claim."
+  ],
+  "latestQualificationBase": "fac00a34",
+  "latestQualificationDate": "2026-11-06",
+  "testResult": {
+    "passed": 6,
+    "failed": 0,
+    "ignored": 0,
+    "elapsedSeconds": 19.59
+  },
+  "wrongPassword": {
+    "fourWayHandshakeAttempted": true,
+    "guestRemainedDisconnected": true,
+    "peerReachedInstalled": false,
+    "guestStatus": 1000,
+    "outcome": "passed"
+  },
+  "tls": {
+    "fixture": "tools/fixtures/corematrix-wifi/tls-server.py",
+    "opensslVersion": "3.6.4",
+    "version": "TLS 1.2",
+    "cipher": "ECDHE-ECDSA-AES128-GCM-SHA256",
+    "curve": "P-256",
+    "testCertificate": "generated self-signed EC P-256, CN and SAN DNS corematrix.test; private key not committed",
+    "verifyMode": "ssl.CERT_REQUIRED",
+    "hostname": "corematrix.test",
+    "originalCorrectRtc": "rejected current certificate as expired; upstream UIFlow2 issue 120",
+    "testOnlyRtcOffsetSeconds": -946684800,
+    "restoresCorrectRtc": true,
+    "bothFinishedMessagesValidated": true,
+    "httpsBodyBytes": 4096,
+    "httpsBodyComparedByteForByte": true,
+    "wrongHostname": "wrong.invalid rejected by guest certificate verification",
+    "tcpConnectionsIncludingHttpSetupAndNegativeTls": 4,
+    "tcpFailed": 0,
+    "totalNatBytesToHost": 5081,
+    "totalNatBytesToGuest": 14715,
+    "outcome": "passed with explicit pinned-firmware RTC workaround",
+    "dependencies": [
+      "56541d89 independent C61 ECC",
+      "5d67a6ae ECC integration",
+      "fac00a34 MMU-aware PSRAM SHA DMA"
+    ],
+    "cryptoKnownAnswerEvidenceCommit": "423352ed",
+    "sharedSecretIndependentChecks": {
+      "pointVerifications": 7,
+      "scalarMultiplications": 4,
+      "matched": true,
+      "privateTraceCommitted": false
+    },
+    "testCertificateDerSha256": "8fbf92829dd6f33c15561a7be68c0a769a72e6af4f3bb8cfa1be0928eee86296",
+    "testCertificateDerBytes": 424,
+    "testCertificateValidityUtc": {
+      "notBefore": "2026-11-06T04:37:46Z",
+      "notAfter": "2026-11-08T04:37:46Z"
+    }
+  }
 }
