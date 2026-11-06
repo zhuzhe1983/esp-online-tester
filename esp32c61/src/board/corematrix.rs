@@ -185,6 +185,19 @@ mod tests {
         b.button_at(6,"button-c",true);assert!(b.power_state().unwrap().controller_powered);assert_eq!(b.take_power_event(),Some(BoardPowerEvent::Reset{download:false}));assert_eq!(b.take_power_event(),None);
     }
     #[test]
+    fn power_key_double_click_stops_supply_and_release_then_wake_does_not_retrigger() {
+        let mut b=CoreMatrix::new();let _ds=b.i2c_devices();let ms=CPU_HZ/1000;
+        b.button_at(10*ms,"power",true);b.button_at(30*ms,"power",false);
+        b.button_at(100*ms,"power",true);b.button_at(120*ms,"power",false);
+        assert!(!b.power_state().unwrap().controller_powered);assert_eq!(b.take_power_event(),None);
+        b.button_at(300*ms,"power",true);assert!(b.power_state().unwrap().controller_powered);
+        assert_eq!(b.take_power_event(),Some(BoardPowerEvent::Reset{download:false}));
+        b.button_at(320*ms,"power",false);b.advance_to(1000*ms);assert_eq!(b.take_power_event(),None,"releasing a wake press must not enqueue a second reset");
+        b.button_at(1100*ms,"power",true);b.button_at(1120*ms,"power",false);
+        let deadline=b.next_deadline().unwrap();assert!(deadline>1120*ms);b.advance_to(deadline);
+        assert_eq!(b.take_power_event(),Some(BoardPowerEvent::Reset{download:false}));
+    }
+    #[test]
     fn sd_detect_power_routing_and_protocol_reset_preserve_storage() {
         let mut b=CoreMatrix::new();let mut ds=b.i2c_devices();let pins=SpiPins{sclk:1<<25,mosi:1<<27,miso:Some(26),cs:1<<28};let cmd=[0x40,0,0,0,0,0x95];
         assert_eq!(read(&mut ds,0x4f,8,1)[0]&2,2);b.attach_spi_sd_card(Box::new(esp_periph::sdmmc::MemStore(vec![0;1<<20])),Default::default()).unwrap();assert_eq!(read(&mut ds,0x4f,8,1)[0]&2,0);
