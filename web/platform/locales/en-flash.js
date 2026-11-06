@@ -16,7 +16,7 @@ export default {
  "会替换当前设备的 NVS 设置，保留固件程序和 TF 文件。仅连接网络模式不加载 UIFlow 云菜单。": "Replaces this device's NVS settings while retaining the firmware application and TF files. Network-only mode does not load the UIFlow cloud menu.",
  "写入并重启": "Write and restart",
  "加载 UIFlow2 固件后，可选择配置并写入。": "Load UIFlow2 firmware, then select and write a profile.",
- "尚未写入配置。": "Configuration has not been written.",
+ "点击写入后应用所选配置。": "Click Write to apply the selected profile.",
  "当前固件不支持此配置格式。": "This firmware does not support this configuration format.",
  "正在写入虚拟配置…": "Writing virtual configuration…",
  "设备或固件已改变，未自动启动。": "The device or firmware changed. Automatic startup was cancelled.",

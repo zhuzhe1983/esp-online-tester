@@ -32,3 +32,5 @@ node tools/probe-virtual-uiflow-configuration.mjs <original-corematrix.bin> <sha
 专属测试覆盖实际分区结构、当前表被修改、加密/重叠/越界/容量拒绝、原镜像不变、VFS/TF 保留、重复写入、重启和重新加载、排队换板、旧 sessionId、版本冲突、提交后取消及凭据隔离。生产 WASM 探针需要已构建的 `web/wasm/esp32sim.wasm` 和 C61 rev100 ROM，运行原始 CoreMatrix UIFlow2 镜像；通过 USB raw REPL 的 `esp32.NVS.get_str/get_u8` 断言实际值，客体文件读写验证 VFS 和 TF 保留，并检查原 `boot.py` 哈希。探针只保留断言名称与哈希，不保存串口内容或凭据。NVS 读回通过不代表 M5Things、UIFlow 云服务或实体网络已经可用。
 
 CoreMatrix 原版 UIFlow2 2.5.4（SHA-256 `8d5b8d4e22ebc293937086b2f9f218aa5a5ebda27b5ccb32b3f8f580ee02939b`）与部署用生产 WASM（`2a399f6347d719b2324336ff2e7807f3f43d735f72498b955506e8ab637e53c2`）的[实测回执](evidence/virtual-firmware-configuration/corematrix-production.json)记录了上述验证。`bootOption:2` 时，原始启动程序自动连接与配置匹配的虚拟 WPA2 路由器，客体读到 DHCP 地址 `10.0.2.15`；测试代码只等待和检查网络状态，没有调用 `WLAN.connect()`，未修改 `boot.py`。同一行为在 host reset 和同源镜像重新加载后再次通过。
+
+`tools/fixtures/virtual-configuration-browser-check.js` 在实际网页点击内置配置的“写入并重启”，验证真实客体自动关联、DHCP、重启与整页刷新后的 IndexedDB 恢复。每一步都通过原版固件 `esp32.NVS` 读回，不通过直接调用 `WLAN.connect()` 帮助联网。浏览器检查另覆盖默认不写入、源身份不变、无凭据回执、未加载的 iframe 禁用写入和 390px 布局；见 [浏览器收据](evidence/virtual-firmware-configuration/browser.json)。
