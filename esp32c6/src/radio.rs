@@ -19,8 +19,8 @@
 //!   `RX_ACK`, arms TIMER0 for 200 ms with a NO_ACK callback, and waits for `ACK_RX_DONE`, on
 //!   which it reads the ACK from the RX buffer (`[len incl. FCS][frame][RSSI][LQI]`, as any
 //!   frame) and reports `transmit_done(frame, ack, ack_info)`. Hardware has its own
-//!   `ACK_TIMEOUT` register (0x5c, units of 16 µs, `TX_ABORT` reason `RX_ACK_TIMEOUT`); the
-//!   driver never programs it, so the 200 ms timer is what fires without an ACK.
+//!   `ACK_TIMEOUT` register (0x5c, units of 16 µs, `TX_ABORT` reason `RX_ACK_TIMEOUT`), which the
+//!   driver never programs; see [`ACK_TIMEOUT_IDF_DEFAULT`].
 //! - **receive**: the same teardown, `DMA_RX_ADDR` = a free 129-byte buffer, `RX_START`. A
 //!   frame that passes the address filter raises `RX_SFD_DONE` and then `RX_DONE`; one that
 //!   does not is dropped by hardware (`RX_ABORT` reason `FILTER_FAIL`, an event the driver does
@@ -93,6 +93,14 @@ pub const CONF_AUTO_ACK_TX: u32 = 1 << 0;
 pub const CONF_AUTO_ACK_RX: u32 = 1 << 3;
 pub const CONF_COORDINATOR: u32 = 1 << 6;
 pub const CONF_PROMISCUOUS: u32 = 1 << 7;
+
+/// `ACK_TIMEOUT` out of reset, in units of 16 µs: 1728 µs, the default that IDF v5.5.4 documents
+/// for `esp_ieee802154_set_ack_timeout` (`components/ieee802154/include/esp_ieee802154.h:204`).
+/// Nothing in IDF's 802.15.4 driver or its OpenThread port calls that setter, so a frame nobody
+/// acknowledges waits for whatever the register holds. With zero, the wait is the driver's 200 ms
+/// TIMER0 fallback. The esp-rs PAC (`esp32c6` 0.24.0) lists a raw reset value of 0 and silicon's
+/// raw value is unverified, so the model takes the documented effective default as its reset value.
+pub const ACK_TIMEOUT_IDF_DEFAULT: u32 = 108;
 
 /// 802.15.4 O-QPSK at 2.4 GHz: 250 kbit/s, 32 µs per byte.
 pub const NS_PER_BYTE: u64 = 32_000;
@@ -269,7 +277,7 @@ impl Ieee802154 {
         // WiFi channels 1, 6 and 11 overlap 802.15.4 channels 11-14, 16-19 and 21-24
         let mut level_dbm = [-93i8; 16];
         for (i, l) in [(0, -68), (1, -52), (2, -49), (3, -66), (5, -63), (6, -47), (7, -45), (8, -60), (10, -74), (11, -56), (12, -58), (13, -71), (15, -90)] { level_dbm[i] = l; }
-        Ieee802154 {
+        let mut r = Ieee802154 {
             ram: RegRam::new(), state: RadioState::Idle, events: 0, event_en: 0, freq: 3, txpower: 0, duration: 0,
             dma_tx_addr: 0, dma_rx_addr: 0, rx_length: 0, rx_abort_reason: 0, tx_abort_reason: 0,
             tx_request: None, tx_frame: Vec::new(), tx_sfd: Countdown::default(), tx_done: Countdown::default(), tx_started: false, tx_count: 0,
@@ -279,7 +287,9 @@ impl Ieee802154 {
             timer: [RadioTimer::default(); 2],
             ed_rss: -92, ed_left: None, scans: 0, level_dbm, target_dbm: level_dbm, noise: 0x9e37_79b9, scene_acc: 0, scene_ticks: 0, live: false,
             dbg: false, log_unknown: false, seen: HashSet::new(),
-        }
+        };
+        r.ram.write(0x5c, ACK_TIMEOUT_IDF_DEFAULT);
+        r
     }
 
     /// the channel the frequency register selects: freq = 3 + 5 * (channel - 11)
@@ -588,7 +598,7 @@ impl Device for Ieee802154 {
             if self.state == RadioState::Tx {
                 let h = parse_header(&self.tx_frame).unwrap_or_default();
                 if h.ack_request && self.conf(CONF_AUTO_ACK_RX) {
-                    // wait for the acknowledgement; hardware's own timeout only if the driver set one
+                    // wait for the acknowledgement; hardware's own timeout unless ACK_TIMEOUT is zero
                     self.state = RadioState::RxAck;
                     self.ack_wait_seq = h.seq;
                     let timeout = self.ram.read(0x5c) & 0xffff;
@@ -888,7 +898,7 @@ mod tests {
     }
 
     /// No ACK: with ACK_TIMEOUT programmed (units of 16 µs) hardware gives up with TX_ABORT
-    /// reason RX_ACK_TIMEOUT; without it the wait lasts until the driver's own timer and STOP.
+    /// reason RX_ACK_TIMEOUT; with it zero the wait lasts until the driver's own timer and STOP.
     #[test]
     fn ar_transmit_times_out() {
         let mut r = configured(); r.write(0x5c, 54);   // 864 µs
@@ -899,7 +909,7 @@ mod tests {
         assert_eq!(r.events & EVENT_TX_ABORT, 0);
         r.tick(1);
         assert_eq!((r.events & EVENT_TX_ABORT, r.read(0x84) >> 4 & 0x1f, r.state), (EVENT_TX_ABORT, TX_ABORT_BY_RX_ACK_TIMEOUT, RadioState::Idle));
-        let mut r = configured();
+        let mut r = configured(); r.write(0x5c, 0);
         r.write(0x00, CMD_TX_START); r.tx_loaded(UNICAST_AR.to_vec()); r.tick(1); r.tick(air_cycles(6 + 17 + 2));
         r.tick(ns_cycles(300_000_000));
         assert_eq!((r.state, r.events & EVENT_TX_ABORT), (RadioState::RxAck, 0), "no hardware timeout: the driver's TIMER0 decides");
@@ -907,6 +917,21 @@ mod tests {
         assert_eq!(r.state, RadioState::Idle);
         r.write(0x00, CMD_RX_START);
         assert!(r.receive(&BROADCAST, -60, 200, None), "listening again");
+    }
+
+    /// Out of reset, with nothing written to ACK_TIMEOUT, a frame nobody acknowledges ends in
+    /// TX_ABORT reason RX_ACK_TIMEOUT 1728 µs after TX_DONE, not at the driver's 200 ms timer.
+    #[test]
+    fn an_unacknowledged_transmit_aborts_at_the_idf_default_ack_timeout() {
+        let mut r = configured();
+        assert_eq!(r.read(0x5c), 108, "ACK_TIMEOUT out of reset");
+        r.write(0x00, CMD_TX_START); r.tx_loaded(UNICAST_AR.to_vec()); r.tick(1); r.tick(air_cycles(6 + 17 + 2));
+        assert_eq!((r.events & EVENT_TX_DONE, r.state), (EVENT_TX_DONE, RadioState::RxAck));
+        assert_eq!(r.next_deadline(), Some(ns_cycles(1_728_000)));
+        r.tick(ns_cycles(1_728_000) - 1);
+        assert_eq!(r.events & EVENT_TX_ABORT, 0, "still waiting one cycle short of 1728 µs");
+        r.tick(1);
+        assert_eq!((r.events & EVENT_TX_ABORT, r.read(0x84) >> 4 & 0x1f, r.state), (EVENT_TX_ABORT, TX_ABORT_BY_RX_ACK_TIMEOUT, RadioState::Idle));
     }
 
     /// An acknowledgement still on the air when the hardware timeout fires is not ours to
