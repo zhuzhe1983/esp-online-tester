@@ -349,6 +349,22 @@ mod tests {
         assert_eq!((cpu.insn_count, cpu.ccount), (1, 1));
     }
 
+    /// #220: a CPU reset starts CCOUNT again, and a comparator left set counts from there.
+    #[test]
+    fn reset_restarts_ccount_and_the_comparators_count_from_it() {
+        let mut cpu = crate::Cpu::new(0);
+        cpu.write_sr(sr::CCOUNT, 0x1234_5678); cpu.write_sr(sr::CCOMPARE0, 100);
+        cpu.reset();
+        assert_eq!(cpu.ccount, 0);
+        assert_eq!(cpu.read_sr(sr::CCOUNT), Some(0));
+        cpu.ps = 0; cpu.waiting = true; cpu.intenable = 1 << TIMER_INTERRUPT[0];
+        assert_eq!(cpu.cycles_until_wake(), Some(100));
+        cpu.advance_cycles(99);
+        assert_eq!(cpu.interrupt & (1 << TIMER_INTERRUPT[0]), 0);
+        cpu.advance_cycles(1);
+        assert_ne!(cpu.interrupt & (1 << TIMER_INTERRUPT[0]), 0);
+    }
+
     #[test]
     fn step_facts_report_cache_and_tlb_effective_addresses() {
         let base = 0x4037_0000;
