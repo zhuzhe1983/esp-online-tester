@@ -11,6 +11,8 @@ impl SpiSdCard {
         if config.timed_bus || config.prg_ns!=0 {return Err("SPI SD currently supports immediate digital transfers only".into());}
         Ok(Self{card:SdCard::with_config(store,config)?,command:Vec::with_capacity(6),reply:VecDeque::new(),write:Vec::with_capacity(514),write_token:false,multi_read:false,multi_write:false,crc:false,spi:false,clocks:0})
     }
+    /// Remove socket supply while retaining the nonvolatile backing store.
+    pub fn power_cycle(&mut self) {self.deselect();self.card.reset();self.crc=false;self.spi=false;self.clocks=0;}
     pub fn describe(&self)->String {self.card.describe()}
     pub fn report(&self)->String {format!("commands={} read-blocks={} written-blocks={}",self.card.commands,self.card.blocks_read,self.card.blocks_written)}
     pub fn deselect(&mut self) {

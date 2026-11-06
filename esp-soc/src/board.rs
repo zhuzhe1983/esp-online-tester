@@ -28,6 +28,12 @@ pub struct SpiPins {
 #[derive(Clone, Copy, Debug, Default)]
 pub struct LcdI80Pins { pub data: [u64; 16], pub clock: u64, pub select: u64, pub width: u8, pub dc: u64, pub dc_high: bool }
 
+/// Cold optional board supply, e.g. a PMIC independently powering the MCU.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct BoardPowerState { pub controller_powered: bool }
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum BoardPowerEvent { Reset { download: bool } }
+
 /// What a board does with the SoC's pin-level activity.
 pub trait BoardModel {
     fn name(&self) -> &'static str;
@@ -212,6 +218,15 @@ pub trait BoardModel {
     fn set_flight_sample(&mut self, _accel_g:[f64;3], _gyro_dps:[f64;3], _bottom_mm:Option<f64>, _front_mm:Option<f64>) -> bool { false }
     /// Routed guest PWM, FL/FR/RL/RR, (Hz, duty/65535). Observation only.
     fn flight_motor_pwm(&self) -> Option<[(f64,u32);4]> { None }
+    /// Board-owned digital audio such as an I2C expander PWM buzzer. Cold capture
+    /// only; synthesis follows guest time in the board, never browser animation.
+    fn audio(&self) -> (&[i16], u32) { (&[], 0) }
+    /// Drain published samples without changing PWM phase or guest hardware.
+    fn clear_audio_capture(&mut self) {}
+    /// Opt-in independent controller supply. Consumers cache support at attachment.
+    fn power_state(&self) -> Option<BoardPowerState> { None }
+    /// Consume a PMIC-origin reset/wake, distinct from an MCU software reset.
+    fn take_power_event(&mut self) -> Option<BoardPowerEvent> { None }
 }
 
 pub type Board = Box<dyn BoardModel>;

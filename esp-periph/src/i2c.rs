@@ -8,6 +8,7 @@ use std::collections::VecDeque;
 use emu_core::ClockDomain;
 
 pub mod m5;
+pub mod tm1680;
 pub mod air_quality;
 pub mod ft6336;
 pub mod tca8418;
