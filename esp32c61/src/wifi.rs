@@ -73,7 +73,10 @@ impl WifiMac {
             let packet_addr = read32(sram, desc.wrapping_add(4));
             let packet = region(sram, packet_addr, ((word >> 14) & 0x3fff) as usize).unwrap_or_default();
             let length = packet.get(..4).map_or(0, |v| (u32::from_le_bytes(v.try_into().unwrap()) & 0x3fff) as usize);
-            let frame = packet.get(8..8 + length).unwrap_or_default(); // C61 hal_mac_get_txq_pmd uses an 8-byte TX header
+            // C61 dbg_read_tx_ppdu skips this prefix when ebuf flag 0x2000 is
+            // set. This path handles prefixed, unaggregated packets only; the
+            // live firmware must qualify which TX modes it actually selects.
+            let frame = packet.get(8..8 + length).unwrap_or_default();
             if !frame.is_empty() {
                 if self.log { eprintln!("[c61-wifi] TX queue {queue} desc {desc:#010x} {}", esp_soc::wifi::describe(frame)); }
                 self.link.station_tx(frame, now_us);
@@ -200,5 +203,59 @@ mod tests {
         for queue in 0..TXQ_COUNT { mac.write(TXQ0 - queue as u32 * TXQ_STRIDE, 0xc00f_ffff); }
         assert!(mac.has_pending_work()); assert!(mac.service(&mut ram, 0)); assert_eq!(mac.read(0xcb8), 0x7ff);
         assert!(!mac.has_pending_work()); mac.write(0xcb4, 0x7ff); assert_eq!(mac.read(0xcb8), 0);
+    }
+    #[test] fn dma_roundtrip_probe_auth_association_and_ethernet_relay() {
+        use esp_soc::wifi::{ApConfig, StaState};
+        let mut mac = WifiMac::new(); let mut ram = vec![0; 8192];
+        let cfg = ApConfig::parse("ssid=c61-test").unwrap(); let bssid = cfg.bssid;
+        let sta = [2, 0xca, 0x61, 0, 0, 1];
+        mac.link.attach_new(cfg, None, &Default::default()); mac.link.set_relay(true);
+        mac.write(0xc40, EVENT_RX | EVENT_TX);
+        // Guest-visible descriptors and frame bytes drive the MAC. Nothing
+        // changes the AP state or calls its management handlers from the test.
+        fn tx(mac: &mut WifiMac, ram: &mut [u8], frame: &[u8], now: u64) {
+            store(ram, SRAM_BASE + 0x200, &(((frame.len() as u32 + 8) << 14) | 1 << 31).to_le_bytes());
+            store(ram, SRAM_BASE + 0x204, &(SRAM_BASE + 0x1000).to_le_bytes());
+            store(ram, SRAM_BASE + 0x1000, &(frame.len() as u32).to_le_bytes());
+            store(ram, SRAM_BASE + 0x1008, frame);
+            mac.write(TXQ0, 0xc000_0200); mac.service(ram, now);
+            assert_eq!(mac.read(0xcb8), 1); mac.write(0xcb4, 1); mac.write(0xc4c, EVENT_TX);
+        }
+        fn rx(mac: &mut WifiMac, ram: &mut [u8], now: u64) -> Vec<u8> {
+            store(ram, SRAM_BASE + 0x100, &(1u32 << 31 | 1700).to_le_bytes());
+            store(ram, SRAM_BASE + 0x104, &(SRAM_BASE + 0x400).to_le_bytes());
+            mac.write(0x84, 0x100); mac.service(ram, now);
+            assert_ne!(mac.read(0xc48) & EVENT_RX, 0); mac.write(0xc4c, EVENT_RX);
+            let length = (read32(ram, SRAM_BASE + 0x438) & 0x3fff) as usize - 4;
+            let frame = ram[0x440..0x440 + length].to_vec();
+            assert_eq!(read32(ram, SRAM_BASE + 0x440 + length as u32), esp_soc::wifi::fcs(&frame));
+            store(ram, SRAM_BASE + 0x100, &0u32.to_le_bytes()); frame
+        }
+        let header = |fc: u16, dst: [u8; 6], a3: [u8; 6]| {
+            let mut frame = fc.to_le_bytes().to_vec(); frame.extend_from_slice(&[0, 0]);
+            frame.extend_from_slice(&dst); frame.extend_from_slice(&sta); frame.extend_from_slice(&a3);
+            frame.extend_from_slice(&[0, 0]); frame
+        };
+        let mut probe = header(0x40, [0xff; 6], [0xff; 6]); probe.extend_from_slice(b"\x00\x08c61-test\x01\x01\x82");
+        tx(&mut mac, &mut ram, &probe, 1000); let response = rx(&mut mac, &mut ram, 2600);
+        assert_eq!(response[0], 0x50); assert_eq!(&response[4..10], sta);
+        assert!(response.windows(8).any(|s| s == b"c61-test"));
+        let mut auth = header(0xb0, bssid, bssid); auth.extend_from_slice(&[0, 0, 1, 0, 0, 0]);
+        tx(&mut mac, &mut ram, &auth, 3000); let response = rx(&mut mac, &mut ram, 3400);
+        assert_eq!(response[0], 0xb0); assert_eq!(&response[24..30], &[0, 0, 2, 0, 0, 0]);
+        assert_eq!(mac.link.ap().unwrap().state, StaState::Authenticated);
+        let mut assoc = header(0, bssid, bssid); assoc.extend_from_slice(b"\x01\x04\x01\x00\x00\x08c61-test\x01\x01\x82");
+        tx(&mut mac, &mut ram, &assoc, 4000); let response = rx(&mut mac, &mut ram, 4400);
+        assert_eq!(response[0], 0x10); assert_eq!(&response[26..28], &[0, 0]);
+        assert_eq!(mac.link.ap().unwrap().state, StaState::Associated);
+        let peer = [2, 3, 4, 5, 6, 7]; let mut data = header(0x0108, bssid, peer);
+        data.extend_from_slice(b"\xaa\xaa\x03\x00\x00\x00\x08\x00c61-data");
+        tx(&mut mac, &mut ram, &data, 5000);
+        let eth = mac.link.take_relay_frames(); assert_eq!(eth.len(), 1);
+        assert_eq!(&eth[0][..6], peer); assert_eq!(&eth[0][6..12], sta); assert_eq!(&eth[0][12..], b"\x08\x00c61-data");
+        let mut incoming = Vec::from(sta); incoming.extend_from_slice(&peer); incoming.extend_from_slice(b"\x08\x00reply-data");
+        mac.link.receive_relay_frame(&incoming).unwrap(); let response = rx(&mut mac, &mut ram, 5600);
+        assert_eq!(&response[4..10], sta); assert_eq!(&response[16..22], peer);
+        assert!(response.ends_with(b"reply-data")); assert_eq!(mac.link.tx_frames(), 4); assert_eq!(mac.link.rx_frames(), 4);
     }
 }
