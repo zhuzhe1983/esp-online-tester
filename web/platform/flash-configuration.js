@@ -16,7 +16,9 @@ export function normalizeFlashConfiguration(value) {
   check(!server.includes('..'),'数据服务器地址或端口无效。');
   check(password.length===0 || encoder.encode(password).length>=8,'Wi-Fi 密码至少 8 字节；开放网络可留空。');
   check(encoder.encode(password).length!==64 || /^[0-9a-f]{64}$/i.test(password),'64 字节的 Wi-Fi 密码必须是十六进制 PSK。');
-  return {name,type:value.type,server,ssid,password};
+  const bootOption=value.bootOption===undefined?1:value.bootOption;
+  if(value.type==='uiflow2')check([1,2].includes(bootOption),'UIFlow2 启动方式须为菜单或仅连接网络。');
+  return {name,type:value.type,server,ssid,password,...(value.type==='uiflow2'?{bootOption}:{})};
 }
 export function configurationSummary(value) {return value?{name:value.name,type:value.type}:null;}
 
@@ -63,7 +65,7 @@ export function encodeUIFlow2(profile) {
     for(let i=0;i<span;i++,slot++)bytes[32+Math.floor(slot/4)]&=~(1<<((slot%4)*2));
   };
   entry(0,'uiflow',1);
-  for(const [key,value] of Object.entries({server:p.server,ssid0:p.ssid,pswd0:p.password,ssid1:'',pswd1:'',ssid2:'',pswd2:'',sntp0:'ntp.aliyun.com',sntp1:'jp.pool.ntp.org',sntp2:'pool.ntp.org',tz:'GMT0',boot_option:1,net_mode:'WIFI',protocol:'DHCP',ip_addr:'',netmask:'255.255.255.0',gateway:'',dns:'8.8.8.8'}))entry(1,key,value);
+  for(const [key,value] of Object.entries({server:p.server,ssid0:p.ssid,pswd0:p.password,ssid1:'',pswd1:'',ssid2:'',pswd2:'',sntp0:'ntp.aliyun.com',sntp1:'jp.pool.ntp.org',sntp2:'pool.ntp.org',tz:'GMT0',boot_option:p.bootOption,net_mode:'WIFI',protocol:'DHCP',ip_addr:'',netmask:'255.255.255.0',gateway:'',dns:'8.8.8.8'}))entry(1,key,value);
   return bytes;
 }
 export function encodeUIFlow1(profile,{mac,apiKey}) {
