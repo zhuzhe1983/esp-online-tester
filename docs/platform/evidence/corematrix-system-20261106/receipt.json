@@ -1,0 +1,119 @@
+{
+  "recordedAt": "2026-11-06T04:57:06Z",
+  "outcome": "pass",
+  "runtime": {
+    "sourceCommit": "5d67a6ae",
+    "rustc": "1.99.1 (58cf8f9c3 2026-10-13)",
+    "target": "aarch64-apple-darwin",
+    "optimization": "release library; standalone harness -O -C lto=fat",
+    "c61RlibSha256": "1c34f1534a1aca1d7f74b687abac32c29d0e76cc19591f93c2a933b9276fa090",
+    "socRlibSha256": "c18f2886e941bb39000ef16e14cb1b62f8d90a04bf2034fede34f8adbe55ef57",
+    "harnessBinarySha256": "8baf30e8b594b7a3b0087a8b3ff7e67eb1355280b37c1c302b38c5823786080a"
+  },
+  "inputs": {
+    "firmwareUrl": "https://github.com/m5stack/uiflow-micropython/releases/download/2.5.4/uiflow-e437118-esp32c61-16mb-corematrix-v2.5.4-20261030.bin",
+    "firmwareSha256": "8d5b8d4e22ebc293937086b2f9f218aa5a5ebda27b5ccb32b3f8f580ee02939b",
+    "firmwareSizeBytes": 16773120,
+    "romRelease": "https://github.com/espressif/esp-rom-elfs/releases/tag/20260528",
+    "romFile": "esp32c61_rev100_rom.elf",
+    "romSha256": "c4ee94d3a8e335da4ef5f30a8a1ebb9691e639f1c773f484e9ba721aa1557c2e"
+  },
+  "fixtureSha256": {
+    "tools/fixtures/corematrix-uiflow/system-audit.rs": "853212c39db41d09c589aaecd0d72c260338305fdb1bfd9d908e5f5a9c736140",
+    "tools/fixtures/corematrix-uiflow/system-write.py": "021f8ea48b808b72561411b83e9b59210e70149c7a8ef9d9fbad0458e29700ac",
+    "tools/fixtures/corematrix-uiflow/system-read.py": "778d598509c1696b5f241afdb9adad7f189bd6e61d46b78a55165153ff39238d"
+  },
+  "configuration": {
+    "board": "corematrix",
+    "flashBytes": 16777216,
+    "psramBytes": 8388608,
+    "usbSerialJtagConnected": true,
+    "sdCardAttached": false,
+    "bootInstructionBudget": 100000000,
+    "scriptInstructionBudget": 500000000,
+    "rawReplChunkBytes": 64,
+    "instructionsPerChunk": 1000000,
+    "flashImageModifiedOnDisk": false
+  },
+  "observed": {
+    "flashPayloadBytes": 16420,
+    "flashPayloadByteSum": 2092427,
+    "flashPayloadSha256": "3a43326f7bbd193d441c26c6fad4abc3b154602d4cd87de75dfce30b2902db0f",
+    "fileOperationChecks": [
+      "write return length",
+      "flush",
+      "rename",
+      "sync",
+      "full byte comparison before reset",
+      "full byte comparison after reset",
+      "temporary source absent after rename",
+      "delete and sync"
+    ],
+    "resetOrigin": "guest machine.reset()",
+    "hostStop": "SwReset",
+    "romResetCause": 12,
+    "microPythonResetCause": 2,
+    "microPythonHardResetConstant": 2,
+    "rtcStart": [
+      2026,
+      11,
+      6,
+      4,
+      12,
+      34,
+      10,
+      62
+    ],
+    "rtcAfter1250ms": [
+      2026,
+      11,
+      6,
+      4,
+      12,
+      34,
+      11,
+      250117
+    ],
+    "ticksElapsedMs": 1250,
+    "rtcAfterHardwareReset": [
+      2026,
+      11,
+      6,
+      4,
+      12,
+      34,
+      12,
+      57201
+    ],
+    "i2cScanAddresses": [
+      79,
+      104,
+      110,
+      114
+    ],
+    "hardwareReboots": 1,
+    "totalInstructions": 961445122,
+    "cpuExceptions": 0
+  },
+  "output": {
+    "curatedFile": "guest-output.txt",
+    "rawStdoutSha256": "f73c74bf422acde800576cea47df00f48fedd4fd4e8e4edac2dcc22745b2f47c",
+    "curatedSha256": "e956144106a1318c6eae0dfa592a6234efb7f1ef4604aee648d9eda92165c663",
+    "curation": "Keep every CM_SYSTEM result line; remove raw REPL prompts, control bytes and empty lines. Numeric results are unchanged. No host paths or personal identifiers were in the retained lines."
+  },
+  "preliminaryNegative": {
+    "scriptInstructionBudget": 100000000,
+    "observedMarkers": [
+      "CM_SYSTEM_BOOT",
+      "CM_SYSTEM_FLASH_WRITTEN"
+    ],
+    "failure": "Harness budget exhausted after the file-write result and before the RTC result or hardware-reset request. Increased the explicit script budget; no device implementation or firmware byte was changed.",
+    "rawStdoutSha256": "3182f2e14a4688fd3fe56f61abfa11ba547dc1806963401f08444747e43d6116"
+  },
+  "limitations": [
+    "Native same-machine reset persistence only; browser storage across worker/process reload not exercised here.",
+    "No RTC alarm, deep/light sleep, SNTP, timer callbacks, physical clock drift or battery current measurement.",
+    "Original UIFlow startup still lacks M5Things; the test program is uploaded after its ordinary interpreter startup.",
+    "No physical hardware is flashed or tested."
+  ]
+}
