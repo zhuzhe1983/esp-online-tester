@@ -11891,10 +11891,11 @@
       "sdk": "ESP-IDF v5.5.4-dirty",
       "limitations": [
         "M5Stack GitHub 2.5.4 / e437118 官方 CoreMatrix 构建；完整镜像 SHA-256、ESP32-C61 芯片 ID 20、16MB Flash 和启动布局已核对。",
-        "已从真实 ESP32-C61 ROM 和原镜像 bootloader 启动至 MicroPython；原启动脚本报 M5Things 模块缺失。内部 REPL 程序已验证 TM1680 非对称像素输出及部分外设寄存器操作；不是原 UIFlow 应用完整兼容，未实机验证。",
+        "已从原厂 ESP32-C61 ROM 和原镜像 bootloader 启动至 MicroPython；原启动脚本缺少 M5Things。原版固件的 RAM 测试程序已验证白光矩阵、按键、IMU、蜂鸣器、TF、供电、Grove、网络及定时睡眠；官方云端启动应用仍未通过，未实机验证。",
         "官方 GitHub 下载响应未提供 Access-Control-Allow-Origin；网页直载受 CORS 限制，可从官方发布页下载后本地导入。本站不镜像第三方固件。",
         "与 M5Burner v2.5.4 / 509a67aa 构建分别记录；本轮未找到可证明 CoreMatrix 出厂用途的固定镜像，UIFlow2 不标为 factory。",
-        "另核对 GitHub 2.5.3、2.5.2，均出现相同缺失模块；原镜像文件系统离线挂载正常且未包含 M5Things。M5Burner 构建尚未下载，不推断其运行结果。"
+        "另核对 GitHub 2.5.3、2.5.2，均出现相同缺失模块；原镜像文件系统离线挂载正常且未包含 M5Things。M5Burner 构建尚未下载，不推断其运行结果。",
+        "UIFlow2 2.5.4 的 TLS 证书时间基准另有上游缺陷（issue #120）；正确 RTC 日期会导致证书日期校验失败。HTTPS 验收显式采用客体日期 workaround，保持证书与主机名校验，不修改模拟器 RTC。"
       ],
       "sources": [
         {
@@ -11910,6 +11911,11 @@
         {
           "title": "Official CoreMatrix UIFlow2 installation tutorial",
           "url": "https://docs.m5stack.com/en/uiflow2/corematrix/program",
+          "checkedAt": "2026-11-06"
+        },
+        {
+          "title": "UIFlow2 certificate verification time-base issue",
+          "url": "https://github.com/m5stack/uiflow-micropython/issues/120",
           "checkedAt": "2026-11-06"
         }
       ],

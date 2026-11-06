@@ -1,4 +1,4 @@
-//! Explicit BLE modes: the symbol-backed virtual HCI controller, or C3 full link observation.
+//! Explicit BLE modes: symbol-backed virtual HCI, C3 full link, or C61 digital radio observation.
 use super::{log, Emu, MachineKind};
 use esp_soc::SocBus;
 
@@ -58,10 +58,16 @@ pub unsafe extern "C" fn esp32sim_ble_hci_flash_ptr(e: *const Emu) -> *const u8 
 pub unsafe extern "C" fn esp32sim_ble_full(e: *mut Emu) -> u32 {
     let e = unsafe { &mut *e };
     if e.booted { log("[emu] full BLE must be enabled before boot"); return 1 }
-    let MachineKind::C3(m) = &mut e.m else { log("[emu] full BLE requires C3"); return 1 };
-    if let Err(reason) = m.bus.enable_ble_full(true) { log(&format!("[emu] {reason}")); return 1 }
-
-    0
+    match &mut e.m {
+        MachineKind::C3(m) => match m.bus.enable_ble_full(true) {
+            Ok(()) => 0,
+            Err(reason) => { log(&format!("[emu] {reason}")); 1 }
+        },
+        // C61 executes its actual MMIO controller without an HCI overlay. Its
+        // bounded DMA observation queue exists independently of this opt-in.
+        MachineKind::C61(_) => 0,
+        _ => { log("[emu] full BLE requires C3 or C61; C61 supports legacy radio observation only"); 1 }
+    }
 }
 
 /// Take one UTF-8 observation, returning its byte length (zero when empty).
@@ -72,6 +78,7 @@ pub unsafe extern "C" fn esp32sim_ble_take(e: *mut Emu) -> usize {
     let e = unsafe { &mut *e };
     e.ble_out = match &mut e.m {
         MachineKind::C3(m) => m.bus.periph.ble_lc.take_observation().unwrap_or_default(),
+        MachineKind::C61(m) => m.bus.periph.ble_mac.take_tx().map(|frame|format!("[ble-c61] us={} channel={} pdu={}",frame.timestamp_us,frame.channel,esp_soc::ble::peer::hex(&frame.pdu))).unwrap_or_default(),
         _ => String::new(),
     };
     e.ble_out.len()
@@ -83,6 +90,23 @@ pub unsafe extern "C" fn esp32sim_ble_take(e: *mut Emu) -> usize {
 #[no_mangle]
 pub unsafe extern "C" fn esp32sim_ble_ptr(e: *const Emu) -> *const u8 {
     unsafe { &*e }.ble_out.as_ptr()
+}
+
+/// Replace C61's virtual nearby legacy advertisers, one `Nearby::parse` spec
+/// per line; an empty buffer removes all peers. At most 32 peers / 16 KiB.
+/// Inputs enter real controller RX DMA; this does not inject HCI/guest callbacks.
+/// # Safety
+/// `e` must be live and exclusive; `ptr` must be readable for `len` bytes.
+#[no_mangle]
+pub unsafe extern "C" fn esp32sim_ble_nearby(e: *mut Emu, ptr: *const u8, len: usize) -> u32 {
+    let e = unsafe { &mut *e };
+    let MachineKind::C61(m) = &mut e.m else { return 1 };
+    if len > 16 * 1024 { return 1 }
+    // SAFETY: the caller supplies a readable buffer, bounded above before access.
+    let Ok(spec) = std::str::from_utf8(unsafe { super::bytes(ptr,len) }) else { return 1 };
+    let specs: Vec<String> = spec.lines().map(str::to_owned).collect();
+    let result = esp_soc::ble::peer::Nearby::parse_all(&specs).and_then(|peers|m.bus.ble_nearby(peers));
+    match result { Ok(()) => 0, Err(reason) => { log(&format!("[emu] C61 nearby: {reason}")); 1 } }
 }
 
 

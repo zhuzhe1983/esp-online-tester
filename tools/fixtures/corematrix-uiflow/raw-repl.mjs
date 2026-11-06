@@ -14,18 +14,21 @@ export function createCoreMatrixRepl(runtime, {timeoutMs=120000}={}) {
   };
   const send=data=>runtime.input({type:'serial',port:'usb',data});
   const advance=async seconds=>{const at=(await runtime.observe()).stats.time;return wait(state=>state.stats.time>=at+seconds);};
+  const submit=async source=>{
+    const start=(await runtime.observe()).serial.length;
+    for(let offset=0;offset<source.length;offset+=64) {await send(source.slice(offset,offset+64));await advance(.002);}
+    await send('\x04');return start;
+  };
   return {
-    wait,advance,
+    wait,advance,submit,
     async enter() {
       const start=(await runtime.observe()).serial.length;
       await send('\r\x03\x03');await advance(.15);await send('\x01');
       await wait(state=>state.serial.slice(start).includes('raw REPL; CTRL-B to exit\r\n>'));
     },
     async exec(source) {
-      const start=(await runtime.observe()).serial.length;
-      for(let offset=0;offset<source.length;offset+=64) {await send(source.slice(offset,offset+64));await advance(.002);}
-      await send('\x04');
-      const state=await wait(state=>state.serial.slice(start).includes('\x04\x04>'));
+      const start=await submit(source);
+      const state=await wait(state=>/\x04[^\x04]*\x04>/.test(state.serial.slice(start)));
       const result=state.serial.slice(start),ok=result.indexOf('OK'),eot=result.indexOf('\x04',ok+2);
       if(ok<0||eot<0)throw Error('Invalid raw-REPL response.');
       const stdout=result.slice(ok+2,eot),stderr=result.slice(eot+1,result.indexOf('\x04',eot+1));

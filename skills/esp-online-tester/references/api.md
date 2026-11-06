@@ -124,6 +124,32 @@ await api.start(); // attach/clear leaves ready, not running.
 
 RGB output is `observe().leds`, an array of `[red,green,blue]` byte triples, and the same `{type:'leds',leds}` subscription event. PaperMono's first LED uses PM1 LED_EN for red and M5IOE1 PWM2/PWM1 for green/blue; it is not a WS2812. The viewer consumes these actual guest-driven channels. There is no host API that changes their color as a substitute for firmware behavior. A changed LED tuple proves the modeled digital output, not real-world brightness or timing.
 
+## CoreMatrix legacy BLE
+
+Check `capabilities().ble.available` after selecting CoreMatrix. With firmware loaded,
+`configureBle({nearby:[spec,...]})` supplies up to 32 virtual legacy advertisers. Each
+single-line spec is at most 512 UTF-8 bytes, using the native `Nearby` syntax:
+
+```js
+await api.configureBle({nearby:[
+  'name=CoreMatrix-peer,addr=12:34:56:78:9a:bc,type=public,rssi=-42'
+]});
+// The guest still must call bluetooth.BLE().active(True) and gap_scan(...).
+const output = await api.readBle();
+// output.packets: {timestampUs,channel,pduHex}[] from guest controller DMA.
+await api.configureBle({nearby:[]});
+```
+
+`readBle()` drains at most 256 queued transmitted PDUs; oldest packets are dropped
+when full. `timestampUs` is the controller's wrapping 32-bit microsecond clock.
+Nearby configuration survives platform reset / firmware reload in the current
+runtime, and clears when configuring a scene. It is not recorded or shared.
+Only legacy 1M advertisements and passive scanning are qualified; nonempty scan
+responses are rejected. There is no physical Bluetooth connection, active-scan
+response, GATT, pairing, encrypted link or RF propagation. Verify the guest's
+scan callback bytes; successful configuration alone is not reception evidence.
+The iframe bridge exposes the same two methods.
+
 ## Virtual LoRa packets
 
 Full `papermono` (SX1262) and `lilygo-t-beam-v1-2` (SX1276) expose `capabilities().lora.available`; PaperMono Lite returns false. Select behavior through `capabilities().lora.model`. `readLoRa()` reports model-specific state, normalized channel config, counters and the last 16 completed transmissions (`payloadHex`, config, guest cycle). SX1262 includes power/reset/antenna/BUSY/mode/IRQ; do not assume every field exists on SX1276. Old TX entries are dropped when the queue fills; reset/power loss clears hardware configuration and FIFO while diagnostic counters/history remain until a new board is constructed. No received packet is generated without explicit input. No RF power, range, collision, remote relay or radio network is simulated.

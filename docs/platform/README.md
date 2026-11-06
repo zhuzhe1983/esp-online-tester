@@ -24,6 +24,8 @@ Stamp 系列已逐款接入 22 个主控和套件，StampFly v1.1 保持独立�
 
 TriviaPOD TP-01-A 作为 M5Stack「其他主控」中的独立产品列出，提供官方 3D 模型与硬件资料，并显式采用 StopWatch 兼容模拟配置（32 MB Flash、8 MB PSRAM）。通过独立的 `firmwareTargetId` 共用 StopWatch 固件目录，提供试运行；USB-C 仅确认充电用途，不继承原厂固件身份、实机验证结论、Grove 或后部扩展接口，见 [TriviaPOD 模型说明](triviapod-model.md)和[固件目标规则](firmware-targets.md)。
 
+CoreMatrix C158 已增加独立 ESP32-C61 运行器、16×16 白色 LED 矩阵与原厂 CAD 模型；官方 UIFlow 原始镜像的外设验收、启动缺失模块及未实现能力见 [CoreMatrix 运行报告](corematrix-runtime.md)。
+
 ## Current scope
 
 “串口与事件”提供“复制日志 → 全部 / 最近 50 条 / 最近 100 条”，工作台与独立播放器共用。复制对象是当前所选 USB、UART0 或 UART1 的留存内容及该视图中的平台事件；每端口仍保留最近 65,536 个字符。“全部”不合并其他串口，也不恢复已被缓冲上限截去的历史。以去除 ANSI 控制序列后的非空逻辑行计数，CRLF/CR 统一为换行，串口传输分块和屏幕自动折行不增加条数，末尾尚未换行的文本计一条。原有固件时间戳和行内空白保留，记录间的空行保留但不计数，不添加宿主时间戳。复制后提示实际条数和端口；空日志不覆盖剪贴板，清空后复制也为空。
@@ -187,7 +189,7 @@ Unit Angle U005 已支持 StopWatch Port A 的标称模拟电压输入与真实 
 
 ## Browser network and audio
 
-The workbench accesses S3 SoftAP pages inside the browser. For external sockets, users [deploy their own local or cloud helper](network-setup.md) and enter its address in the network panel; the site supplies no default public relay. The [local helper](network-helper.md) also supplies LAN access and HTTP/TCP/UDP port mappings. The [cloud helper](public-network-relay.md) provides public Internet egress only. Automatic provisioning is enabled by default and waits for an external transport. See [implemented scope](wifi-platform-plan.md).
+The workbench accesses S3 and CoreMatrix C61 SoftAP pages inside the browser. For external sockets, users [deploy their own local or cloud helper](network-setup.md) and enter its address in the network panel; the site supplies no default public relay. The [local helper](network-helper.md) also supplies LAN access and HTTP/TCP/UDP port mappings. The [cloud helper](public-network-relay.md) provides public Internet egress only. Automatic provisioning is enabled by default and waits for an external transport. See [implemented scope](wifi-platform-plan.md).
 
 The 3D stage has microphone and speaker controls. Agents use `audioConfigure`, `pushAudio`, and `readAudio` for bounded PCM streaming without a sound device. See [audio formats, lifecycle and model limitations](audio-runtime.md).
 

@@ -14,6 +14,8 @@ async page => {
   const receipt=await page.evaluate(async relay=>{
     const {loadCatalog,createDefaultScene}=await import('./catalog.js');
     const {configureFirmwareRelay}=await import('./firmware-relay.js');configureFirmwareRelay(relay);
+    const wasmBytes=await (await fetch('../wasm/esp32sim.wasm',{cache:'no-store'})).arrayBuffer();
+    const wasmSha256=[...new Uint8Array(await crypto.subtle.digest('SHA-256',wasmBytes))].map(x=>x.toString(16).padStart(2,'0')).join('');
     const api=window.espTester,catalog=await loadCatalog(),firmware=catalog.firmwares.find(f=>f.id==='m5stack-c158-uiflow2-github');
     if(location.hash.includes('scene=')){const shared=await api.observe();if(shared.product?.id!=='m5stack-c158'||shared.scene?.firmware?.sha256!==firmware.source.sha256)throw Error('Shared CoreMatrix source was not restored');}
     else await api.configure(createDefaultScene(catalog,'m5stack-c158'));
@@ -37,7 +39,7 @@ async page => {
     if(frame.width!==16||frame.height!==16)throw Error('Incorrect framebuffer size');
     const frameHash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('');
     await api.pause();
-    return {productId:state.product.id,firmwareId:firmware.id,sha256:firmware.source.sha256,source:state.firmware,firmwarePatched:false,guestProgram:'RAM-only USB raw REPL',startupMissingM5Things:startup,guestSeconds:state.stats.time,litIndices:lit,frame:{width:frame.width,height:frame.height,sha256:frameHash},hardwareDiagnostics:state.hardwareDiagnostics,capabilities:await api.capabilities(),share:await api.share({mode:'embed',autostart:false})};
+    return {wasmSha256,productId:state.product.id,firmwareId:firmware.id,sha256:firmware.source.sha256,source:state.firmware,firmwarePatched:false,guestProgram:'RAM-only USB raw REPL',startupMissingM5Things:startup,guestSeconds:state.stats.time,litIndices:lit,frame:{width:frame.width,height:frame.height,sha256:frameHash},hardwareDiagnostics:state.hardwareDiagnostics,capabilities:await api.capabilities(),share:await api.share({mode:'embed',autostart:false})};
   },relay);
   await page.locator('#view-3d').click();await hostPage.screenshot({path:`output/playwright/corematrix-${surface}-3d.png`,fullPage:true});
   await page.locator('#view-2d').click();

@@ -313,6 +313,25 @@ onmessage = async (ev) => {
         postMessage({bleReply: m.requestId, ok: true});
       } catch (error) { postMessage({bleReply: m.requestId, ok: false, error: error.message}); }
     }
+    else if (m.op === 'ble-nearby' || m.op === 'ble-read') {
+      try {
+        if (!emu || !wasm.esp32sim_ble_nearby || !wasm.esp32sim_ble_take) throw new Error('Digital BLE radio is unavailable');
+        if (m.op === 'ble-nearby') {
+          if (typeof m.spec !== 'string' || enc.encode(m.spec).length > 16384) throw new Error('Invalid nearby BLE specification');
+          if (withBytes(enc.encode(m.spec),(p,n)=>wasm.esp32sim_ble_nearby(emu,p,n)) !== 0) throw new Error('Nearby BLE configuration rejected');
+          postMessage({bleReply:m.requestId,ok:true});
+        } else {
+          const packets=[];
+          for(let i=0;i<256;i++) {
+            const n=wasm.esp32sim_ble_take(emu);if(!n)break;
+            const p=wasm.esp32sim_ble_ptr(emu),line=dec.decode(mem().subarray(p,p+n));
+            const match=/^\[ble-c61\] us=(\d+) channel=(\d+) pdu=([0-9a-f]+)$/.exec(line);
+            if(match)packets.push({timestampUs:Number(match[1]),channel:Number(match[2]),pduHex:match[3]});
+          }
+          postMessage({bleReply:m.requestId,ok:true,packets});
+        }
+      } catch(error) {postMessage({bleReply:m.requestId,ok:false,error:error.message});}
+    }
     else if (m.op === 'stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_stub_spec(emu, p, n)) !== 0) setupError ||= 'invalid stub: ' + m.spec; }
     else if (m.op === 'wifi') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_wifi(emu, p, n)) !== 0) setupError ||= 'invalid WiFi configuration (see console)'; }
     else if (m.op === 'start') {

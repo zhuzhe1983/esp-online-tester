@@ -84,6 +84,8 @@ def cm_buzzer_power(enabled):
     _cm_ioe.set_pin_mode(2, 1)
     _cm_ioe.set_pin_drive(2, 0)
     _cm_ioe.set_pin_value(2, bool(enabled))
+    level = _cm_ioe.read_reg16(5) & 2
+    assert bool(level) == bool(enabled), (_cm_ioe.read_reg16(3), _cm_ioe.read_reg16(5), _cm_ioe.read_reg16(0x13))
     print("CM_BUZZER_POWER", int(bool(enabled)))
 
 

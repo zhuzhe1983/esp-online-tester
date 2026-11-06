@@ -220,10 +220,10 @@ impl<S: Soc> Machine<S> {
                 "accessory-angle" if S::NAME=="esp32s3" => {
                     let cycle=self.bus.cycles();if let Some((pin,source))=accessory_analog_input(self.bus.board(),cycle,&message) {self.bus.analog_set(pin,source);}
                 }
-                "accessory-environment" if S::NAME=="esp32s3" => {
+                "accessory-environment" if matches!(S::NAME,"esp32s3"|"esp32c61") => {
                     let cycle=self.bus.cycles();accessory_environment_input(self.bus.board(),cycle,&message);
                 }
-                "accessory-illuminance" if S::NAME=="esp32s3" => {
+                "accessory-illuminance" if matches!(S::NAME,"esp32s3"|"esp32c61") => {
                     let cycle=self.bus.cycles();accessory_illuminance_input(self.bus.board(),cycle,&message);
                 }
                 "accessory-motion" if S::NAME=="esp32s3" => {

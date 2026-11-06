@@ -19,6 +19,7 @@ The implemented entry points are `window.espTester` and the origin-bound iframe 
 | Run and verify firmware | `start`, `pause`, `reset`, `observe`, `waitFor`, framebuffer `capture` |
 | Exercise controls and sensors | `input`, `press`, `setGpsFix`, `injectGps`, `setImu`; check per-product capabilities |
 | Exchange virtual LoRa packets | `readLoRa`, `receiveLoRa`; explicit peer, supported radio only |
+| Observe CoreMatrix BLE / supply nearby advertisers | `readBle`, `configureBle`; C61 legacy digital broadcast/passive scan only; no physical RF or GATT |
 | Demonstrate StampFly flight | Explicit `configureFlight`, `readFlight`; UART demo firmware controls real PWM through sensor feedback; see the API reference |
 | Stream audio | `audioConfigure`, `pushAudio`, `readAudio`, `audio` events; browser mic/speaker controls share PCM transport |
 | Connect and provision networks | `configureNetwork`, `readNetwork`, `connectNetwork`, `provisionNetwork`; browser-local SoftAP HTTP; public relay or optional local helper supplies external sockets |

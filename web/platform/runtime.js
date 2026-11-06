@@ -185,6 +185,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   const emptySd=()=>({supported:false,present:false,bytes:0,format:null,status:'unloaded',backend:null,restored:false,pristine:true,changedPages:0,error:null});
   let sdCard=emptySd(),sdSession=null,leds=[],servos=[],servoSupply=null,motors=[],motorOutput=null,hardwareDiagnostics=null;
   let flight=null,flightEpoch=0;
+  let bleNearby=[];
   const flightEnabled=()=>scene?.flight?.enabled===true;
   let accessoryInputs = [], accessoryOutputs = [];
   const resetAccessoryInputs=()=>{accessoryInputs=routedAccessories(scene,product,catalog).map(route=>({...route,connected:true,...(route.viaAccessoryId?{effectiveConnected:true}:{}),...(route.control==='button'?{pressed:false}:route.control==='knob'?{value:scene.accessories.find(item=>item.id===route.accessoryId)?.parameters?.position??0.5}:route.control==='motion'?{motion:motionParameter(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters)}:route.control==='environment'?environmentParameters(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters):route.control==='illuminance'?{lux:illuminanceParameter(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters)}:{})}));accessoryOutputs=accessoryInputs.filter(route=>route.output).map(({accessoryId,model,port})=>({accessoryId,model,port,leds:[[0,0,0],[0,0,0],[0,0,0]]}));};
@@ -617,9 +618,14 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     else if(result.networkAvailable&&romFor(bundle.cfg.board)!=='esp32p4_rev0_rom.elf')await network.attach({available:true,manifestWifi:bundle.cfg.wifi});
     else if(bundle.cfg.wifi)worker.postMessage({op:'wifi',spec:bundle.cfg.wifi});
     if (imuModel()&&!flightEnabled()) await applyImu();
+    if (isC61Board(bundle.cfg.board)&&bleNearby.length) await applyBleNearby(bleNearby);
     resetAccessoryInputs();
     for(const route of accessoryInputs.filter(route=>!route.hub)) await sendAccessory(route);
     emit({type:'accessories',accessoryInputs:clone(accessoryInputs)});
+  };
+  const applyBleNearby=async nearby=>{
+    const requestId=++inputSequence,reply=await ask(`ble:${requestId}`,{op:'ble-nearby',requestId,spec:nearby.join('\n')});
+    requireValue(reply.ok,'BLE_CONFIG_REJECTED',reply.error||'Nearby BLE configuration rejected.');
   };
   const applyImu = async () => {
     if (!worker) return;
@@ -762,6 +768,19 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     }); },
     subscribe(listener) { requireValue(typeof listener === 'function', 'INVALID_LISTENER', 'Event listener must be a function.'); listeners.add(listener); return () => listeners.delete(listener); },
     async observe() { return snapshot(); },
+    configureBle(options){return exclusive(async()=>{
+      requireValue(isC61Board(product?.runtime?.board),'BLE_UNSUPPORTED','Digital legacy BLE input currently requires ESP32-C61.');
+      requireValue(loaded&&worker,'NOT_LOADED','Load firmware before configuring nearby BLE advertisers.');
+      requireValue(options&&typeof options==='object'&&!Array.isArray(options)&&Object.keys(options).length===1&&Array.isArray(options.nearby)&&options.nearby.length<=32&&options.nearby.every(spec=>typeof spec==='string'&&spec.length>0&&new TextEncoder().encode(spec).length<=512&&!/[\r\n]/.test(spec)),'INVALID_BLE','Supply nearby as at most 32 single-line advertiser specifications of at most 512 bytes.');
+      await applyBleNearby(options.nearby);bleNearby=[...options.nearby];return {nearbyCount:bleNearby.length,physicalRf:false};
+    });},
+    readBle(){return exclusive(async()=>{
+      requireValue(isC61Board(product?.runtime?.board),'BLE_UNSUPPORTED','Digital legacy BLE observations currently require ESP32-C61.');
+      requireValue(loaded&&worker,'NOT_LOADED','Load firmware before reading BLE output.');
+      const requestId=++inputSequence,reply=await ask(`ble:${requestId}`,{op:'ble-read',requestId});
+      requireValue(reply.ok,'BLE_READ_FAILED',reply.error||'BLE output unavailable.');
+      return {packets:reply.packets,nearbyCount:bleNearby.length,source:'guest-controller-DMA',physicalRf:false};
+    });},
     configureNetwork(options){return exclusive(()=>network.configure(options));},
     async readNetwork(){alive();return network.snapshot();},
     connectNetwork(){return exclusive(()=>network.connect());},
@@ -776,9 +795,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     async capabilities() {
       const c5=isC5Board(product?.runtime?.board),c61=isC61Board(product?.runtime?.board);
       return { version: API_VERSION, backend: 'esp32sim-wasm', static: true, executable: !!product?.runtime?.board,
-        execution: {mode: product?.runtime?.board === 'stopwatch'||c5 ? 'wasm-interpreter' : 'wasm-jit', reason: c5?'C5 SRAM app-direct only; no ROM/IDF startup or JIT.':product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null,...(c5?{bootModes:['app-direct'],romBoot:false,resetMode:'reload-same-sram-image',counterSemantics:'interpreter-slots-including-wfi-idle',sramRanges:clone(C5_SRAM_RANGES)}:{})},
+        execution: {mode: product?.runtime?.board === 'stopwatch'||c5||c61 ? 'wasm-interpreter' : 'wasm-jit', reason: c5?'C5 SRAM app-direct only; no ROM/IDF startup or JIT.':c61?'C61 uses the RV32 interpreter.':product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null,...(c5?{bootModes:['app-direct'],romBoot:false,resetMode:'reload-same-sram-image',counterSemantics:'interpreter-slots-including-wfi-idle',sramRanges:clone(C5_SRAM_RANGES)}:{})},
         sdCard:{available:hasSdCard(product?.runtime?.board),defaultBytes:64*MIB,maxBytes:MAX_SD_BYTES,formats:['fat32','raw-image'],scope:'product-board-canonical-flash-sha256',autoSaveIntervalMs:1500,crashSafe:false},
-        network:c5?{available:false,transport:null,modes:[],softAp:false,automaticProvisioning:[],methods:[]}:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',transport:'browser-softap+ethernet-websocket',helperRequired:false,externalConnectionRequired:true,modes:['public-relay','local-helper'],portMappingRequiresHelper:true,softAp:!!product?.runtime?.board&&romFor(product.runtime.board)==='esp32s3_rev0_rom.elf',automaticProvisioning:c61?[]:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
+        ble:{available:c61,model:c61?'c61-legacy-digital-radio':null,physicalRf:false,connections:false,recording:false,shares:false,maxNearby:32,maxQueuedPackets:256,methods:c61?['configureBle','readBle']:[]},
+        network:c5?{available:false,transport:null,modes:[],softAp:false,automaticProvisioning:[],methods:[]}:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',transport:'browser-softap+ethernet-websocket',helperRequired:false,externalConnectionRequired:true,modes:['public-relay','local-helper'],portMappingRequiresHelper:true,softAp:!!product?.runtime?.board&&(c61||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),automaticProvisioning:c61?[]:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
         audio:c5?{input:{available:false,ports:[]},output:{available:false},methods:[]}:{input:{available:!!product?.runtime?.board&&!isC61Board(product.runtime.board)&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:isC61Board(product?.runtime?.board)?[]:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&(product.runtime.board==='corematrix'||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
@@ -798,6 +818,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       catalog ||= await loadCatalog();
       const validation = validateScene(nextScene, catalog);
       requireValue(validation.valid, 'INVALID_SCENE', 'Scene configuration is invalid.', validation);
+      bleNearby=[];
       if (worker && status==='running') await ask('stopped',{op:'stop'});
       await preserveStorage(); alive(); aborter?.abort(); stopWorker(); detachStorage(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; hostPace = {}; lastError = null;
       if(sdSession)sdSession.closed=true;sdSession=null;sdCard=emptySd();leds=[];servos=[];servoSupply=null;
