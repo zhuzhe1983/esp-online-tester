@@ -8,3 +8,4 @@ pub use soc::{machine, Machine, C61};
 mod adc;
 pub mod wifi;
 pub mod ecc;
+pub mod ble;
