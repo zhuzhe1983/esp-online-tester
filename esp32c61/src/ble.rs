@@ -76,32 +76,53 @@ mod tests {
 /// Link-layer registers at 0x600a1000. The controller's sleep_timer_tick_get
 /// latches a 1 MHz counter with +0x928 bit27, then reads +0x924. Its
 /// sleep_time_sync_set writes +0x92c and requests a load with bit31.
+#[derive(Debug,Clone,PartialEq,Eq)]
+pub struct BleFrame {pub timestamp_us:u32,pub channel:u8,pub pdu:Vec<u8>}
 #[derive(Default)]
-pub struct BleMac {ram:RegRam,pub trace:bool,pub now_cycles:u64,epoch_cycles:u64,epoch_ticks:u32,current:u32,started:bool,pub running:bool,deadline_us:u32,pub events:u64}
+pub struct BleMac {ram:RegRam,pub trace:bool,pub now_cycles:u64,epoch_cycles:u64,epoch_ticks:u32,current:u32,started:bool,pub running:bool,deadline_us:u32,pub events:u64,tx:std::collections::VecDeque<BleFrame>}
 impl BleMac {
     fn ticks(&self)->u32 {self.epoch_ticks.wrapping_add((self.now_cycles.saturating_sub(self.epoch_cycles)/160) as u32)}
     pub fn service(&mut self,sram:&mut [u8],cycles:u64)->bool {
         self.now_cycles=cycles;let before=self.irq_sources();
         if !self.running {return false;}
         let ptr=self.current as usize;
-        let Some(data)=sram.get_mut(ptr..ptr+72) else {self.running=false;return false};
-        let word=|off:usize|u32::from_le_bytes(data[off..off+4].try_into().unwrap());
+        let Some(data)=sram.get(ptr..ptr+72) else {self.running=false;return false};
+        let words:[u32;18]=std::array::from_fn(|i|u32::from_le_bytes(data[i*4..i*4+4].try_into().unwrap()));let word=|off:usize|words[off/4];
         if !matches!((word(4)>>20)&15,6|12|13) {self.running=false;return false;}
         if !self.started {
             self.deadline_us=word(8);
             if (self.ticks().wrapping_sub(self.deadline_us) as i32) < 0 {return false;}
             self.started=true;self.deadline_us=word(12);
+            if (word(4)>>20)&15==6 {self.transmit(sram,&words);}
             self.ram.write(0x900,self.current|1<<31|1<<29);self.ram.write(0x904,self.current);
         }
         if (self.ticks().wrapping_sub(self.deadline_us) as i32) < 0 {return false;}
         let next=word(0)&0xfffff;
-        data[40..44].copy_from_slice(&0u32.to_le_bytes());self.events+=1;
+        sram[ptr+40..ptr+44].copy_from_slice(&0u32.to_le_bytes());self.events+=1;
         if self.trace {eprintln!("[C61 BLE END] {:05x} next {:05x} at {}",self.current,next,self.ticks());}
         self.current=next;self.started=false;
         self.ram.write(0x900,if next==0 {0}else{next|1<<31|1<<29});self.ram.write(0x904,next);
         self.ram.write(0x30c,self.ram.read(0x30c)|1<<28);
         if next==0 {self.running=false;self.ram.write(0x31c,self.ram.read(0x31c)|8);}
         before!=self.irq_sources()
+    }
+    pub fn take_tx(&mut self)->Option<BleFrame> {self.tx.pop_front()}
+    fn transmit(&mut self,sram:&[u8],schedule:&[u32;18]) {
+        let link=(schedule[1]&0xfffff) as usize;let Some(l)=sram.get(link..link+120) else {return};
+        let lw=|off:usize|u32::from_le_bytes(l[off..off+4].try_into().unwrap());
+        let Some(header)=(lw(0)&0xfffff).checked_sub(4) else {return};let Some(h)=sram.get(header as usize..header as usize+16) else {return};
+        let ptr=(u32::from_le_bytes(h[8..12].try_into().unwrap())&0xfffff) as usize;if ptr==0 {return;}
+        let Some(t)=sram.get(ptr..ptr+18) else {return};let kind=t[16]&15;let length=t[17] as usize;
+        if !matches!(kind,0|2|4|6) || !(6..=37).contains(&length) {return;}
+        let Some(data)=sram.get(ptr+18..ptr+18+length-6) else {return};
+        let mut address=[0u8;6];match (lw(28)>>28)&3 {
+            0=>{let base=if t[16]&64==0 {0x80c}else{0x814};address[..4].copy_from_slice(&self.ram.read(base).to_le_bytes());address[4..].copy_from_slice(&self.ram.read(base+4).to_le_bytes()[..2]);},
+            1=>address.copy_from_slice(&l[52..58]),_=>return,
+        }
+        let channel=match (schedule[5]>>8)&127 {0=>37,24=>38,78=>39,_=>return};
+        let mut pdu=Vec::with_capacity(length+2);pdu.extend_from_slice(&[t[16],t[17]]);pdu.extend_from_slice(&address);pdu.extend_from_slice(data);
+        if self.trace {eprintln!("[C61 BLE TX] us={} channel={} pdu={}",schedule[2],channel,esp_soc::ble::peer::hex(&pdu));}
+        if self.tx.len()==256 {self.tx.pop_front();}self.tx.push_back(BleFrame{timestamp_us:schedule[2],channel,pdu});
     }
     pub fn trace_descriptors(&self,sram:&[u8]) {
         let mut ptr=self.ram.read(0x8fc)&0xfffff;

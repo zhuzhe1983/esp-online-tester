@@ -97,3 +97,28 @@ ISR. A 250 ms advertising program produces three-channel schedule groups
 repeated at its configured 100 ms interval; scan/start/duration callback/stop
 and BLE deactivation still finish with zero CPU exceptions. Packet parsing
 and delivery remain a separate qualification step.
+
+## Original legacy advertising packets
+
+The TX buffer format is distinct from RX. `r_ble_lll_adv_reset_link_state`
+and `r_ble_lll_adv_pri_chan_txbuf_alloc_and_make` establish link-state +0
+(low20 pointer to TX header+4), header +8 (low20 TX buffer pointer), buffer
++16/+17 (PDU header/length) and +18 (advertising data). Legacy advertising
+inserts the six-byte advertiser address separately. Address selector0 in
+link-state +28 bits29:28 uses `r_ble_phy_set_dev_address`'s public registers
+0x600a180c/1810; selector1 uses link-state +52..57. These are not inferred
+from C3 descriptors.
+
+The original firmware's 250 ms program with 100 ms advertising interval and
+AD bytes `0201060409433631` produces nine frames in three groups of channels
+37/38/39. Every PDU is `200e6300000000020201060409433631`: ChSel header,
+length14, six advertiser bytes programmed by the guest, and its exact AD
+payload. Consecutive groups have the controller's interval plus advertising
+random delay. The external test asserts byte identity, channels, repetition,
+completed guest disable and zero CPU exceptions. No synthetic HCI event or
+host-selected payload enters this TX path.
+
+```sh
+ESP32SIM_ROM_DIR="$ROM_DIR" ESP32SIM_COREMATRIX_FIRMWARE="$COREMATRIX_BIN" \
+  cargo test --release -p esp32c61 --test ble -- --include-ignored
+```
