@@ -74,9 +74,11 @@ impl WifiMac {
             let packet = region(sram, packet_addr, ((word >> 14) & 0x3fff) as usize).unwrap_or_default();
             let length = packet.get(..4).map_or(0, |v| (u32::from_le_bytes(v.try_into().unwrap()) & 0x3fff) as usize);
             // C61 dbg_read_tx_ppdu skips this prefix when ebuf flag 0x2000 is
-            // set. This path handles prefixed, unaggregated packets only; the
-            // live firmware must qualify which TX modes it actually selects.
-            let frame = packet.get(8..8 + length).unwrap_or_default();
+            // set. The length includes the four-byte FCS reservation (libpp
+            // ppAddTimCount+0x3a subtracts 4); MAC computes it on the air. Do
+            // not forward the guest's uninitialised reservation as payload.
+            // This path handles prefixed, unaggregated packets only.
+            let frame = length.checked_sub(4).and_then(|len| packet.get(8..8 + len)).unwrap_or_default();
             if !frame.is_empty() {
                 if self.log { eprintln!("[c61-wifi] TX queue {queue} desc {desc:#010x} {}", esp_soc::wifi::describe(frame)); }
                 self.link.station_tx(frame, now_us);
@@ -114,9 +116,12 @@ impl WifiMac {
         let desc = Self::addr(self.rx_next); let word = read32(sram, desc);
         let buffer = read32(sram, desc.wrapping_add(4)); let next = read32(sram, desc.wrapping_add(8));
         let group = frame.get(4).is_some_and(|v| v & 1 != 0);
-        let rssi = self.link.ap().map_or(-40, |ap| ap.rx_meta(frame).1);
+        let (_, rssi, softap) = self.link.rx_meta(frame);
         let mut bytes = vec![0u8; total];
-        let flags = rssi as u8 as u32 | 1 << 28 | if group { 0 } else { 1 << 29 };
+        // C61 libpp ppRxPkt+0x98 selects STA callback at bit28, else the
+        // SoftAP callback at +0x14a for bit29. A peer frame selects AP alone.
+        let matches = if softap { 1 << 29 } else { 1 << 28 | if group { 0 } else { 1 << 29 } };
+        let flags = rssi as u8 as u32 | matches;
         bytes[0..4].copy_from_slice(&flags.to_le_bytes());
         bytes[11] = if group { 0x80 } else { 0 };
         bytes[12..16].copy_from_slice(&(now_us as u32).to_le_bytes());
@@ -214,10 +219,11 @@ mod tests {
         // Guest-visible descriptors and frame bytes drive the MAC. Nothing
         // changes the AP state or calls its management handlers from the test.
         fn tx(mac: &mut WifiMac, ram: &mut [u8], frame: &[u8], now: u64) {
-            store(ram, SRAM_BASE + 0x200, &(((frame.len() as u32 + 8) << 14) | 1 << 31).to_le_bytes());
+            store(ram, SRAM_BASE + 0x200, &(((frame.len() as u32 + 12) << 14) | 1 << 31).to_le_bytes());
             store(ram, SRAM_BASE + 0x204, &(SRAM_BASE + 0x1000).to_le_bytes());
-            store(ram, SRAM_BASE + 0x1000, &(frame.len() as u32).to_le_bytes());
+            store(ram, SRAM_BASE + 0x1000, &(frame.len() as u32 + 4).to_le_bytes());
             store(ram, SRAM_BASE + 0x1008, frame);
+            store(ram, SRAM_BASE + 0x1008 + frame.len() as u32, &[0xde, 0xad, 0xbe, 0xef]);
             mac.write(TXQ0, 0xc000_0200); mac.service(ram, now);
             assert_eq!(mac.read(0xcb8), 1); mac.write(0xcb4, 1); mac.write(0xc4c, EVENT_TX);
         }

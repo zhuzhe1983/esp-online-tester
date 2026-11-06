@@ -20,12 +20,12 @@ fn python(m: &mut esp32c61::Machine, script: &str, marker: &str) {
 
 #[test]
 #[ignore = "needs C61_ROM_ELF, COREMATRIX_FIRMWARE and C61_TEST_HTTP_BIND (host IPv4 reachable by guest NAT)"]
-fn external_official_uiflow_wifi_dns_ntp_http() { official_wifi(None); }
+fn external_official_uiflow_wifi_dns_ntp_http() { let _ = official_wifi(None); }
 #[test]
 #[ignore = "needs C61_ROM_ELF, COREMATRIX_FIRMWARE and C61_TEST_HTTP_BIND (host IPv4 reachable by guest NAT)"]
-fn external_official_uiflow_wpa2_wifi_dns_ntp_http() { official_wifi(Some("c61-test-password")); }
+fn external_official_uiflow_wpa2_wifi_dns_ntp_http() { let _ = official_wifi(Some("c61-test-password")); }
 
-fn official_wifi(password: Option<&str>) {
+fn official_wifi(password: Option<&str>) -> esp32c61::Machine {
     let input = |name| std::fs::read(std::env::var(name).unwrap_or_else(|_| panic!("set {name} to the caller-provided input"))).unwrap();
     let host: Ipv4Addr = std::env::var("C61_TEST_HTTP_BIND").expect("set C61_TEST_HTTP_BIND to a host IPv4 address reachable by guest NAT").parse().unwrap();
     assert!(!host.is_loopback() && !host.is_unspecified(), "guest loopback stays inside lwIP; supply the host interface IPv4");
@@ -120,4 +120,108 @@ print('C61_NETWORK_HTTP_PASS')
     let nat = m.bus.periph.wifi_mac.link.net().unwrap().nat.as_ref().unwrap();
     assert_eq!(nat.tcp_opened, 1); assert!(nat.bytes_to_host >= 4096 && nat.bytes_to_guest >= 8192);
     println!("{}", m.bus.report());
+    let reconnect = format!(r#"w.disconnect()
+w.active(False)
+assert not w.active() and not w.isconnected()
+time.sleep_ms(200)
+w.active(True)
+w.connect('c61-test','{}')
+for i in range(50):
+ if w.isconnected(): break
+ time.sleep_ms(100)
+assert w.isconnected(),w.status()
+assert w.ifconfig()[0]=='10.0.2.15',w.ifconfig()
+print('C61_RECONNECT',w.ifconfig())
+print('C61_NETWORK_RECONNECT_PASS')
+"#, password.unwrap_or(""));
+    python(&mut m, &reconnect, "C61_NETWORK_RECONNECT_PASS");
+    if password.is_some() { assert_eq!(m.bus.periph.wifi_mac.link.ap().unwrap().wpa.state, esp_soc::wifi::WpaState::Installed); }
+    m
+}
+
+#[test]
+#[ignore = "needs the firmware WiFi inputs plus C61_TEST_TLS_ADDRESS, C61_TEST_TLS_CA_DER and C61_TEST_TLS_EPOCH; server name corematrix.test"]
+fn external_official_uiflow_wpa2_tls() {
+    let address: std::net::SocketAddrV4 = std::env::var("C61_TEST_TLS_ADDRESS").expect("set C61_TEST_TLS_ADDRESS to caller-owned TLS fixture IPv4:port").parse().unwrap();
+    let cert = std::fs::read(std::env::var("C61_TEST_TLS_CA_DER").expect("set C61_TEST_TLS_CA_DER to the fixture's trusted certificate DER")).unwrap();
+    let epoch: u64 = std::env::var("C61_TEST_TLS_EPOCH").expect("set C61_TEST_TLS_EPOCH to Unix seconds within the fixture certificate's validity").parse().unwrap();
+    let cert_hex: String = cert.iter().map(|b| format!("{b:02x}")).collect();
+    let mut m = official_wifi(Some("c61-test-password"));
+    let script = format!(r#"import ssl, machine
+print('C61_TLS_IMPORT')
+t=time.gmtime({epoch})
+print('C61_TLS_GMT',t)
+machine.RTC().datetime((t[0],t[1],t[2],t[6],t[3],t[4],t[5],0))
+print('C61_TLS_RTC')
+ctx=ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+print('C61_TLS_CONTEXT')
+ctx.verify_mode=ssl.CERT_REQUIRED
+ctx.load_verify_locations(cadata=bytes.fromhex('{cert_hex}'))
+print('C61_TLS_CA')
+s=socket.socket()
+s.settimeout(10)
+s.connect(('{host}',{port}))
+print('C61_TLS_CONNECT')
+tls=ctx.wrap_socket(s,server_hostname='corematrix.test')
+print('C61_TLS_HANDSHAKE')
+tls.write(b'GET / HTTP/1.0\r\nHost: corematrix.test\r\n\r\n')
+response=b''
+while True:
+ chunk=tls.read(1024)
+ if not chunk: break
+ response+=chunk
+tls.close()
+assert response.startswith(b'HTTP/1.0 200 ok'), response[:80]
+print('C61_TLS_HTTP',len(response))
+print('C61_NETWORK_TLS_PASS')
+"#, host = address.ip(), port = address.port());
+    python(&mut m, &script, "C61_NETWORK_TLS_PASS");
+    println!("{}", m.bus.report());
+}
+
+#[test]
+#[ignore = "needs C61_ROM_ELF, COREMATRIX_FIRMWARE and C61_TEST_HTTP_BIND (host IPv4 reachable by guest NAT)"]
+fn external_official_uiflow_softap_arp_udp() {
+    official_softap(None);
+}
+#[test]
+#[ignore = "needs C61_ROM_ELF, COREMATRIX_FIRMWARE and C61_TEST_HTTP_BIND (host IPv4 reachable by guest NAT)"]
+fn external_official_uiflow_wpa2_softap_arp_udp() {
+    official_softap(Some("c61-softap-password"));
+}
+fn official_softap(password: Option<&str>) {
+    let mut m = official_wifi(None);
+    m.bus.periph.wifi_mac.link.configure_softap(Some(esp_soc::wifi::softap::ClientConfig { ssid: Some("c61-softap".into()), password: password.map(str::to_string) })).unwrap();
+    let config = format!("ap=network.WLAN(network.AP_IF)\nap.active(True)\nap.config(ssid='c61-softap',security={},key='{}')\nprint('C61_SOFTAP',ap.ifconfig())\nu=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)\nu.settimeout(2)\nu.bind(('192.168.4.1',18080))\nprint('C61_SOFTAP_READY')\n", if password.is_some() { 3 } else { 0 }, password.unwrap_or(""));
+    python(&mut m, &config, "C61_SOFTAP_READY");
+    let mut sent = false; let mut reply = false;
+    for _ in 0..300 {
+        let now = m.bus.cycles / (esp32c61::periph::CPU_HZ / 1_000_000);
+        m.bus.periph.wifi_mac.link.poll_softap(now); m.run(5_000_000);
+        if m.bus.periph.wifi_mac.link.softap_status().contains("\"state\":\"connected\"") && !sent {
+            let mac = esp_soc::wifi::softap::CLIENT_MAC;
+            let mut frame = vec![255; 6]; frame.extend_from_slice(&mac); frame.extend_from_slice(&[8, 6, 0, 1, 8, 0, 6, 4, 0, 1]);
+            frame.extend_from_slice(&mac); frame.extend_from_slice(&[192, 168, 4, 2]); frame.extend_from_slice(&[0; 6]); frame.extend_from_slice(&[192, 168, 4, 1]);
+            m.bus.periph.wifi_mac.link.receive_softap_frame(&frame, now).unwrap(); sent = true;
+        }
+        for frame in m.bus.periph.wifi_mac.link.take_softap_frames() {
+            if frame.len() >= 42 && frame[12..14] == [8, 6] && frame[20..22] == [0, 2] && frame[28..32] == [192, 168, 4, 1] { reply = true; }
+        }
+        if reply { break; }
+    }
+    let status = m.bus.periph.wifi_mac.link.softap_status(); println!("{status}");
+    assert!(sent, "SoftAP association failed: {status}"); assert!(reply, "guest SoftAP did not answer ARP: {status}");
+    // RFC 791 / 768: IPv4 UDP with no options; an IPv4 UDP zero checksum is
+    // permitted. This goes through the virtual peer's 802.11 TX and guest lwIP.
+    let payload = b"c61-softap-udp"; let mut ip = vec![0x45, 0, 0, (28 + payload.len()) as u8, 0, 0, 0, 0, 64, 17, 0, 0, 192, 168, 4, 2, 192, 168, 4, 1];
+    let mut sum: u32 = ip.as_chunks::<2>().0.iter().map(|v| u16::from_be_bytes(*v) as u32).sum();
+    while sum >> 16 != 0 { sum = (sum & 0xffff) + (sum >> 16); }
+    ip[10..12].copy_from_slice(&(!(sum as u16)).to_be_bytes());
+    ip.extend_from_slice(&18081u16.to_be_bytes()); ip.extend_from_slice(&18080u16.to_be_bytes());
+    ip.extend_from_slice(&((8 + payload.len()) as u16).to_be_bytes()); ip.extend_from_slice(&[0, 0]); ip.extend_from_slice(payload);
+    let mut frame = vec![2, 0, 0, 0, 0, 0x62]; frame.extend_from_slice(&esp_soc::wifi::softap::CLIENT_MAC); frame.extend_from_slice(&[8, 0]); frame.extend_from_slice(&ip);
+    let now = m.bus.cycles / (esp32c61::periph::CPU_HZ / 1_000_000); m.bus.periph.wifi_mac.link.receive_softap_frame(&frame, now).unwrap();
+    python(&mut m, "data,peer=u.recvfrom(128)\nassert data==b'c61-softap-udp',data\nu.sendto(b'c61-reply:'+data,peer)\nu.close()\nprint('C61_SOFTAP_UDP_PASS')\n", "C61_SOFTAP_UDP_PASS");
+    let returned = m.bus.periph.wifi_mac.link.take_softap_frames(); let expected = [b"c61-reply:".as_slice(), payload].concat();
+    assert!(returned.iter().any(|frame| frame.len() >= 42 && frame[12..14] == [8, 0] && frame[23] == 17 && frame[34..36] == 18080u16.to_be_bytes() && frame[42..] == expected), "guest UDP response missing: {returned:02x?}");
 }
