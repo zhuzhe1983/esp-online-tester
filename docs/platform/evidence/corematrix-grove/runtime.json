@@ -1,0 +1,58 @@
+{
+  "checkedAt": "2026-11-06T04:53:38.725867+00:00",
+  "productId": "m5stack-c158",
+  "kind": "native-original-firmware",
+  "firmware": {
+    "url": "https://github.com/m5stack/uiflow-micropython/releases/download/2.5.4/uiflow-e437118-esp32c61-16mb-corematrix-v2.5.4-20261030.bin",
+    "sha256": "8d5b8d4e22ebc293937086b2f9f218aa5a5ebda27b5ccb32b3f8f580ee02939b",
+    "patched": false
+  },
+  "rom": {
+    "file": "esp32c61_rev100_rom.elf",
+    "sha256": "c4ee94d3a8e335da4ef5f30a8a1ebb9691e639f1c773f484e9ba721aa1557c2e"
+  },
+  "fixture": {
+    "file": "tools/fixtures/corematrix-uiflow/grove.py",
+    "sha256": "1fc1122dd57508fddf9273a3316a064c0516be11429df4f8db5648abe79a8810",
+    "deployment": "RAM-only USB raw REPL"
+  },
+  "status": "pass",
+  "sample": {
+    "input": {
+      "temperatureC": 22,
+      "humidityPercent": 60,
+      "pressureHpa": 990,
+      "lux": 1000
+    },
+    "sht40BytesHex": "62035e872a51",
+    "temperatureC": 22.00122,
+    "humidityPercent": 59.999084,
+    "pressureHpa": 990.00072,
+    "bh1750Raw": 1200
+  },
+  "checks": [
+    "actual-hardware-I2C0-GPIO0-SDA-GPIO1-SCL",
+    "SHT40-guest-CRC-and-conversion",
+    "BMP280-guest-calibration-and-compensation",
+    "BH1750-single-shot-conversion",
+    "wrong-address-0x45-NACK",
+    "wrong-pins-GPIO3-4-NACK",
+    "IOE1-IO5-power-off-NACK-and-conversion-reset",
+    "independent-leaf-disconnection",
+    "all-accessories-disconnected-internal-PM1-still-available",
+    "CPU-reset-retains-attachment-and-repeats-measurements"
+  ],
+  "validation": {
+    "boardTests": 2,
+    "platformTests": 11,
+    "officialFirmwareTests": 1
+  },
+  "limitations": [
+    "No physical device tested.",
+    "Existing nominal digital sensor models; no analog supply or sensor calibration.",
+    "One passive U006 Hub layer, at most one instance per supported sensor model/address.",
+    "Original UIFlow boot.py still lacks M5Things; no replacement module is installed.",
+    "Native receipt does not establish production WASM or browser behavior."
+  ],
+  "curation": "Only public firmware/ROM identity and numerical fixture outputs retained; local paths and raw console output omitted."
+}

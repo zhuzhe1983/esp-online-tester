@@ -5,12 +5,13 @@ use std::{rc::Rc,sync::{Arc,Mutex}};
 use esp_periph::i2c::{I2cDevice,bmi270::{Bmi270,Bmi270Sample},m5::{M5pm1,M5pm1State,M5ioe1,M5ioe1State},tm1680::{Tm1680,Tm1680State}};
 use esp_periph::sdmmc::{SdStore,SdCardConfig,card::spi::SpiSdCard};
 use esp_soc::{BoardModel,board::{BoardEdge,SpiPins,BoardPowerState,BoardPowerEvent},pins::PinRoutes,devices::i2c_bitbang::I2cBitBang};
+mod grove;
 const CPU_HZ:u64=160_000_000;
 const AUDIO_HZ:u32=48_000;
 
 struct Wiring {
     pmic:Arc<Mutex<M5pm1State>>,ioe:Arc<Mutex<M5ioe1State>>,ioe_device:Arc<Mutex<M5ioe1>>,matrix:Arc<Mutex<Tm1680State>>,
-    imu:Arc<Mutex<Bmi270>>,sample:Arc<Mutex<Bmi270Sample>>,sd:Mutex<Option<Box<SpiSdCard>>>,rails:Mutex<(bool,bool,bool)>,
+    imu:Arc<Mutex<Bmi270>>,sample:Arc<Mutex<Bmi270Sample>>,sd:Mutex<Option<Box<SpiSdCard>>>,grove:Mutex<grove::Grove>,rails:Mutex<(bool,bool,bool)>,
 }
 impl Wiring {
     fn main_powered(&self)->bool {let pm=self.pmic.lock().expect("CoreMatrix PM1 poisoned");pm.dcdc_enabled&&!pm.power_off_requested}
@@ -26,6 +27,7 @@ impl Wiring {
         if old.2&&!imu {*self.imu.lock().expect("CoreMatrix IMU poisoned")=Bmi270::new(self.sample.clone());}
         let high=self.ioe.lock().expect("CoreMatrix IOE poisoned").driven_high;
         self.matrix.lock().expect("CoreMatrix matrix poisoned").set_power(main&&high&8!=0);
+        self.grove.lock().expect("CoreMatrix Grove poisoned").set_power(main&&high&16!=0);
         let sd=main&&high&1!=0;
         if old.1&&!sd {if let Some(card)=&mut *self.sd.lock().expect("CoreMatrix SD poisoned"){card.power_cycle();}}
         *self.rails.lock().expect("CoreMatrix rails poisoned")=(main,sd,imu);
@@ -65,7 +67,7 @@ impl CoreMatrix {
         let pmic=Arc::new(Mutex::new(M5pm1State{input_mask:7,input_high:7,vin_mv:5000,..Default::default()}));
         let ioe=Arc::new(Mutex::new(M5ioe1State{input_mask:0x280,input_high:0x280,..Default::default()}));
         let ioe_device=Arc::new(Mutex::new(M5ioe1::new(ioe.clone(),0)));
-        Self{pmic_device:Arc::new(Mutex::new(M5pm1::new(pmic.clone()))),ioe_device:ioe_device.clone(),wiring:Rc::new(Wiring{pmic,ioe,ioe_device,matrix:Arc::new(Mutex::new(Tm1680State::new(CPU_HZ))),imu:Arc::new(Mutex::new(Bmi270::new(sample.clone()))),sample,sd:Mutex::new(None),rails:Mutex::new((true,false,true))}),i2c:I2cBitBang::new(),levels:[true;2],edges:Vec::new(),irq:true,cycle:0,leds:[[0;3];256],led_version:0,pcm:Vec::new(),audio_remainder:0,buzzer_phase:0,gpio_events:0,sd_present:false}
+        Self{pmic_device:Arc::new(Mutex::new(M5pm1::new(pmic.clone()))),ioe_device:ioe_device.clone(),wiring:Rc::new(Wiring{pmic,ioe,ioe_device,matrix:Arc::new(Mutex::new(Tm1680State::new(CPU_HZ))),imu:Arc::new(Mutex::new(Bmi270::new(sample.clone()))),sample,sd:Mutex::new(None),grove:Mutex::new(grove::Grove::default()),rails:Mutex::new((true,false,true))}),i2c:I2cBitBang::new(),levels:[true;2],edges:Vec::new(),irq:true,cycle:0,leds:[[0;3];256],led_version:0,pcm:Vec::new(),audio_remainder:0,buzzer_phase:0,gpio_events:0,sd_present:false}
     }
     fn synchronize(&mut self) {
         self.wiring.sync();
@@ -104,6 +106,7 @@ impl BoardModel for CoreMatrix {
         ] {self.i2c.attach(address,Box::new(RailDevice{inner,wiring:self.wiring.clone(),always}));}
         self.i2c.attach(0x68,Box::new(ImuDevice(self.wiring.clone())));
         self.i2c.attach(0x72,Box::new(Tm1680::new(self.wiring.matrix.clone())));
+        grove::attach(&mut self.i2c,self.wiring.clone());
         // A CPU-only reset does not cycle independent PM1/IOE/LED/SD supplies.
         self.pcm.clear();self.synchronize();
         self.i2c.controller_devices(Some((0,1))).into_iter().map(|(address,device)|(0,address,device)).collect()
@@ -123,7 +126,7 @@ impl BoardModel for CoreMatrix {
         let cycle=self.cycle.max(cycle);
         loop {
             let at=self.next_deadline().filter(|next|*next>self.cycle&&*next<cycle).unwrap_or(cycle);
-            self.synthesize(at-self.cycle);self.cycle=at;self.wiring.pmic.lock().expect("CoreMatrix PM1 poisoned").advance_to_ms(at/(CPU_HZ/1000));self.synchronize();
+            self.synthesize(at-self.cycle);self.cycle=at;self.wiring.grove.lock().expect("CoreMatrix Grove poisoned").advance_to(at);self.wiring.pmic.lock().expect("CoreMatrix PM1 poisoned").advance_to_ms(at/(CPU_HZ/1000));self.synchronize();
             if at==cycle {break;}
         }
     }
@@ -141,6 +144,14 @@ impl BoardModel for CoreMatrix {
         if id=="power"||id=="button-power" {self.advance_to(cycle);self.wiring.pmic.lock().expect("CoreMatrix PM1 poisoned").power_button(pressed,cycle/(CPU_HZ/1000));self.synchronize();return true;}
         let pin=match id {"button-a"|"btnA"=>0,"button-b"|"btnB"=>1,"button-c"|"btnC"=>2,_=>return false};
         self.advance_to(cycle);self.wiring.pmic.lock().expect("CoreMatrix PM1 poisoned").set_input(pin,!pressed);self.synchronize();true
+    }
+    fn accessory_environment_at(&mut self,cycle:u64,model:&str,port:&str,connected:bool,sample:esp_periph::i2c::env4::Environment)->bool {
+        if model!="sht40-bmp280-u001d"||port!="grove"||!sample.valid(){return false;}self.advance_to(cycle);
+        self.wiring.grove.lock().expect("CoreMatrix Grove poisoned").environment(cycle,connected,sample);self.wiring.sync();true
+    }
+    fn accessory_illuminance_at(&mut self,cycle:u64,model:&str,port:&str,connected:bool,lux:f64)->bool {
+        if model!="bh1750fvi-u136"||port!="grove"||!esp_periph::i2c::bh1750::Bh1750::valid(lux){return false;}self.advance_to(cycle);
+        self.wiring.grove.lock().expect("CoreMatrix Grove poisoned").illuminance(cycle,connected,lux);self.wiring.sync();true
     }
     fn set_imu_sample(&mut self,accel_g:[f64;3],gyro_dps:[f64;3])->bool {
         if !accel_g.iter().chain(gyro_dps.iter()).all(|v|v.is_finite()){return false;}
