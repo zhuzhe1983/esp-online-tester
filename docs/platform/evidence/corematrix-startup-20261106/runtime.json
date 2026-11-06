@@ -1,0 +1,87 @@
+{
+  "sourceSha256": "8d5b8d4e22ebc293937086b2f9f218aa5a5ebda27b5ccb32b3f8f580ee02939b",
+  "wasmSha256": "2a399f6347d719b2324336ff2e7807f3f43d735f72498b955506e8ab637e53c2",
+  "romSha256": "c4ee94d3a8e335da4ef5f30a8a1ebb9691e639f1c773f484e9ba721aa1557c2e",
+  "bootScriptSha256": "dfc76de173d2afee2bc5a94a293346b898a76e5ee6e544f6f7f3edac14657efb",
+  "partitions": [
+    {
+      "name": "nvs",
+      "type": 1,
+      "subtype": 2,
+      "offset": 36864,
+      "size": 24576
+    },
+    {
+      "name": "phy_init",
+      "type": 1,
+      "subtype": 1,
+      "offset": 61440,
+      "size": 4096
+    },
+    {
+      "name": "factory",
+      "type": 0,
+      "subtype": 0,
+      "offset": 65536,
+      "size": 7405568
+    },
+    {
+      "name": "sys",
+      "type": 1,
+      "subtype": 129,
+      "offset": 7471104,
+      "size": 1048576
+    },
+    {
+      "name": "vfs",
+      "type": 1,
+      "subtype": 129,
+      "offset": 8519680,
+      "size": 8253440
+    }
+  ],
+  "firmwareCodePatched": false,
+  "configurationWrittenBy": "original guest esp32.NVS",
+  "bootOption": 2,
+  "checks": [
+    "original-default-cloud-menu-missing-module-reproduced",
+    "guest-reset-original-ROM-boot-network-only-without-M5Things-import",
+    "original-startup-NVS-WPA2-association-and-DHCP",
+    "guest-NVS-typed-readback-after-reset",
+    "original-boot.py-hash-preserved",
+    "cloud-module-absence-not-hidden"
+  ],
+  "limitations": [
+    "Network-only startup does not supply the absent M5Things cloud module.",
+    "The original I2C port-not-initialized startup warning remains.",
+    "Virtual WPA2 AP and DHCP, no physical RF or cloud service.",
+    "The separate upstream RTC epoch issue #120 is not changed or tested here."
+  ],
+  "guest": {
+    "ifconfig": [
+      "10.0.2.15",
+      "255.255.255.0",
+      "10.0.2.2",
+      "10.0.2.3"
+    ],
+    "status": 1010,
+    "connected": true,
+    "bootOption": 2
+  },
+  "startupSerial": [
+    "E (890) i2c.master: this port has not been initialized, please initialize it first",
+    "Startup with network type: WIFI",
+    "WiFi initialized"
+  ],
+  "status": "pass",
+  "checkedAt": "2026-11-06T07:32:50.192Z",
+  "guestSeconds": 5.72,
+  "hostNetwork": {
+    "mode": "public-relay",
+    "relayConfigured": false,
+    "helperConfigured": false,
+    "connection": "relay-unconfigured",
+    "interfaces": {},
+    "note": "Without a helper/relay, host interface 0 lease metadata is absent; guest WLAN state and ifconfig provide the DHCP evidence."
+  }
+}
