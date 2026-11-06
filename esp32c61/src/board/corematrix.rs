@@ -174,6 +174,23 @@ mod tests {
         write(&mut ds,0x4f,&[5,0]);b.advance_to(3);assert_eq!(b.leds().unwrap().0[0],[0;3]);enable(&mut ds,8);write(&mut ds,0x72,&[0xa4,0x81,0xbf,0x83]);b.advance_to(4);assert_eq!(b.leds().unwrap().0[0],[0;3],"rail recovery needs a fresh frame");
     }
     #[test]
+    fn controller_register_commands_nack_wrong_route_and_feed_actual_matrix_ram() {
+        use esp_periph::i2c::{I2c,INT_NACK};
+        fn send(master:&mut I2c,address:u8,bytes:&[u8])->bool {
+            master.write(0x24,u32::MAX);master.write(0x18,3<<12);master.write(0x1c,u32::from(address));
+            for &v in bytes {master.write(0x1c,u32::from(v));}
+            master.write(0x58,6<<11);master.write(0x5c,(1<<11)|(1<<8)|(bytes.len() as u32+1));master.write(0x60,2<<11);
+            master.write(4,1<<5);esp_periph::device::Device::tick(master,u64::MAX);master.int_raw&INT_NACK==0
+        }
+        let mut b=CoreMatrix::new();let mut master=I2c::new();for (_,a,d) in b.i2c_devices(){master.attach(a,d);}
+        assert!(!send(&mut master,0x9e,&[3,8]));master.set_pins(Some((1,0)));assert!(!send(&mut master,0x9e,&[3,8]));
+        master.set_pins(Some((0,1)));for bytes in [&[3,8][..],&[0x13,0],&[5,8]] {assert!(send(&mut master,0x9e,bytes));}
+        master.set_pins(Some((1,0)));assert!(!send(&mut master,0xe4,&[0xa4,0x81,0xbf,0x83,0,0x10]));assert!(b.display().unwrap().2.iter().all(|v|*v==0));
+        master.set_pins(Some((0,1)));assert!(!send(&mut master,0xe2,&[0xa4,0x81,0xbf,0x83,0,0x10]));
+        assert!(send(&mut master,0xe4,&[0xa4,0x81,0xbf,0x83,0,0x10]));b.advance_to(1);assert_eq!(b.leds().unwrap().0[0],[255;3]);
+        assert!(!send(&mut master,0xe5,&[]),"TM1680 read address NACKs even on the correct powered bus");
+    }
+    #[test]
     fn pmic_button_input_irq_and_power_wake_have_physical_routes() {
         let mut b=CoreMatrix::new();let mut ds=b.i2c_devices();assert_eq!(read(&mut ds,0x6e,0x12,1)[0]&7,7);
         assert!(b.button_at(1,"button-c",true));assert_eq!(read(&mut ds,0x6e,0x12,1)[0]&7,3);assert!(!b.button_at(2,"button-d",true));
