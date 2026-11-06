@@ -23,9 +23,9 @@ const workerFactory=url=>{const real=new URL('web'+url.pathname,root);const thre
 const runtime=createPlatformRuntime({catalog,fetchImpl,workerFactory,baseUrl,assetBaseUrl:origin+'/',deviceStorage:createDeviceStorage({indexedDB:null,dbName:'corematrix-isolated-test'})});
 const repl=createCoreMatrixRepl(runtime),frames=[],serialEvidence=[],outcomes=[],inputs=[],imuSamples=[],audioSamples=[];
 const exec=async source=>{const out=await repl.exec(source);serialEvidence.push(...out.trim().split(/\r?\n/).filter(line=>/^CM_/.test(line)));return out;};
-const capture=async label=>{await repl.advance(.025);const f=await runtime.capture({format:'rgba'});assert.equal(f.width,16);assert.equal(f.height,16);const pixels=new Uint8Array(f.pixels);frames.push({label,width:f.width,height:f.height,rgbaSha256:hash(pixels)});return pixels;};
+const capture=async label=>{await repl.advance(.025);const f=await runtime.capture({format:'rgba'});assert.equal(f.width,16);assert.equal(f.height,16);const pixels=new Uint8Array(f.pixels);const state=await runtime.observe();assert.equal(state.leds.length,256);for(const pixel of state.leds){assert.equal(pixel[0],pixel[1],'White LED output has equalR/G');assert.equal(pixel[0],pixel[2],'White LED output has equalR/B');}frames.push({label,width:f.width,height:f.height,rgbaSha256:hash(pixels)});return pixels;};
 const lit=pixels=>Array.from({length:256},(_,i)=>i).filter(i=>pixels[i*4]>0||pixels[i*4+1]>0||pixels[i*4+2]>0);
-const expectLit=(pixels,indices)=>{assert.deepEqual(lit(pixels),indices.toSorted((a,b)=>a-b));for(let i=0;i<256;i++){assert.equal(pixels[4*i],pixels[4*i+1],'White matrix has equal R/G');assert.equal(pixels[4*i],pixels[4*i+2],'White matrix has equal R/B');}};
+const expectLit=(pixels,indices)=>{assert.deepEqual(lit(pixels),indices.toSorted((a,b)=>a-b));for(let i=0;i<256;i++){assert.ok(Math.abs(pixels[4*i]-pixels[4*i+1])<=4,'White RGB565 frame has at most4levels R/G quantization difference');assert.equal(pixels[4*i],pixels[4*i+2],'White matrix has equal R/B');}};
 let failure=null;
 try {
  const scene=createDefaultScene(catalog,'m5stack-c158');scene.firmware=null;await runtime.configure(scene);await runtime.loadFirmware({file:new File([bytes],'original-corematrix.bin')});await runtime.start();
