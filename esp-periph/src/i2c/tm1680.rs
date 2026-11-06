@@ -28,7 +28,7 @@ impl Tm1680State {
     fn phase(&self)->bool {self.half_period().is_none_or(|half|(self.cycle.saturating_sub(self.epoch)/half)&1==0)}
     pub fn next_deadline(&self)->Option<u64> {
         if !self.enabled() {return None;}
-        self.half_period().and_then(|half|self.epoch.checked_add((self.cycle.saturating_sub(self.epoch)/half).saturating_add(1).saturating_mul(half)))
+        self.half_period().and_then(|half|self.epoch.checked_add((self.cycle.saturating_sub(self.epoch)/half).saturating_add(1).saturating_mul(half))).filter(|next|*next>self.cycle)
     }
     pub fn advance_to(&mut self,cycle:u64) {let phase=self.phase();self.cycle=self.cycle.max(cycle);if self.enabled()&&phase!=self.phase(){self.version=self.version.wrapping_add(1);}}
     /// Average white intensity, not an optical luminance calibration. The board
@@ -67,8 +67,9 @@ impl I2cDevice for Tm1680 {
         if let Some(address)=self.address {
             // Invalid/out-of-range pointers are ignored. No unverified wrap back
             // into LED0 when a malformed guest overruns the 96-nibble memory.
-            for (offset,nibble) in [(0,byte>>4),(1,byte&15)] {if let Some(cell)=state.ram.get_mut(address.saturating_add(offset)) {if *cell!=nibble {*cell=nibble;state.version=state.version.wrapping_add(1);}self.dirty=true;}}
-            self.address=Some(address.saturating_add(2));state.bytes_written=state.bytes_written.wrapping_add(1);
+            let mut written=false;
+            for (offset,nibble) in [(0,byte>>4),(1,byte&15)] {if let Some(cell)=state.ram.get_mut(address.saturating_add(offset)) {if *cell!=nibble {*cell=nibble;state.version=state.version.wrapping_add(1);}self.dirty=true;written=true;}}
+            self.address=Some(address.saturating_add(2));if written {state.bytes_written=state.bytes_written.wrapping_add(1);}
         } else if byte&0x80!=0 {state.command(byte);}else{self.address=Some(byte as usize);}
         true
     }
@@ -113,7 +114,8 @@ mod tests {
     fn addressed_partial_writes_high_bit_data_and_invalid_overrun_stay_bounded() {
         let (s,mut d)=device();s.lock().unwrap().set_power(true);send(&mut d,&[0xa4,0x81,0xbf,0x83]);
         send(&mut d,&[4,0x81]);{let s=s.lock().unwrap();assert_eq!((s.pixel(1,3),s.pixel(1,4)),(255,255));}
-        send(&mut d,&[95,0xf1,0xff,0xff]);send(&mut d,&[127,0xff]);assert_eq!(s.lock().unwrap().pixel(0,0),0);
+        send(&mut d,&[95,0xf1,0xff,0xff]);send(&mut d,&[127,0xff]);{let s=s.lock().unwrap();assert_eq!(s.pixel(0,0),0);assert_eq!(s.bytes_written,2);}
         send(&mut d,&[0x90]);assert_eq!(s.lock().unwrap().pixel(1,3),0,"no external clock wired");
+        send(&mut d,&[0x98,0x89]);{let mut s=s.lock().unwrap();s.advance_to(u64::MAX);assert_eq!(s.next_deadline(),None);}
     }
 }
