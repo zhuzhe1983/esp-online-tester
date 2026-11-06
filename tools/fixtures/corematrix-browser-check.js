@@ -33,6 +33,7 @@ async page => {
     if(!output.includes('CM_BROWSER 152 16 16')||output.includes('Traceback'))throw Error(output);
     const expected=[0,35,52,71,88,107,124,255];
     const state=await wait(s=>s.leds.length===256&&s.leds.filter(rgb=>rgb.some(v=>v>0)).length===8);
+    if(state.firmware.executionMode!=='wasm-interpreter')throw Error('C61 execution receipt must identify the RV32 interpreter');
     const lit=state.leds.flatMap((rgb,i)=>rgb.some(v=>v>0)?[i]:[]);
     if(JSON.stringify(lit)!==JSON.stringify(expected)||state.leds.some(rgb=>rgb[0]!==rgb[1]||rgb[0]!==rgb[2]))throw Error('Matrix position/white channel mismatch');
     const frame=await api.capture({format:'rgba'}),bytes=new Uint8Array(frame.pixels);

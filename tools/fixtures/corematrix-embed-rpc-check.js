@@ -9,7 +9,9 @@ async page => page.evaluate(async()=>{
   window.addEventListener('message',receive);frame.contentWindow.postMessage({channel:'esp-workbench',version:'1',session,requestId,type,method,args},origin);
  });
  const hello=await request('hello'),state=await request('call','observe'),capture=await request('call','capture',[{format:'rgba'}]);
+ const bleConfig=await request('call','configureBle',[{nearby:[]}]),ble=await request('call','readBle');
+ if(bleConfig.nearbyCount!==0||ble.source!=='guest-controller-DMA')throw Error('BLE methods are not exposed through the parent bridge');
  const indices=state.leds.flatMap((rgb,i)=>rgb.some(v=>v>0)?[i]:[]);
  if(state.product.id!=='m5stack-c158'||JSON.stringify(indices)!=='[0,35,52,71,88,107,124,255]'||capture.width!==16||capture.height!==16)throw Error('Embedded guest output differs');
- return {productId:state.product.id,bridgeVersion:hello.version,display:[capture.width,capture.height],litIndices:indices,sourceSha256:state.scene.firmware.sha256,originAndSessionHandshake:true};
+ return {productId:state.product.id,bridgeVersion:hello.version,display:[capture.width,capture.height],litIndices:indices,sourceSha256:state.scene.firmware.sha256,originAndSessionHandshake:true,bleMethods:true};
 })

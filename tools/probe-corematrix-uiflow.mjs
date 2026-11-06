@@ -12,7 +12,7 @@ import {createCoreMatrixRepl} from './fixtures/corematrix-uiflow/raw-repl.mjs';
 const args=process.argv.slice(2),[file,sha256]=args;
 if(!file||!/^[a-f0-9]{64}$/.test(sha256||''))throw Error('Supply <local-original-corematrix.bin> <sha256> [--checks matrix,buttons,imu,sd,buzzer,power,grove,network,ble,sleep] [--receipt file.json].');
 const option=name=>{const i=args.indexOf(name);return i<0?undefined:args[i+1];};
-const checks=(option('--checks')||'matrix,buttons,imu,sd,buzzer,power,grove,network,sleep').split(',');
+const checks=(option('--checks')||'matrix,buttons,imu,sd,buzzer,power,grove,network,ble,sleep').split(',');
 assert.ok(checks.every(name=>['matrix','buttons','imu','sd','buzzer','power','grove','network','ble','sleep'].includes(name)),'Unknown check name');
 const root=new URL('../',import.meta.url),origin='https://corematrix-fixture.invalid',baseUrl=origin+'/platform/';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
