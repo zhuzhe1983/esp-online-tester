@@ -10,6 +10,8 @@
 
 每个页面加载一次 `page_view`；GA4 提供其标准访问者、会话与互动统计。后台已关闭增强型衡量，代码关闭自动 page view，避免 History API 更新产生额外计数或自动读取页面表单、链接和下载地址。切换设备、运行固件、按键和传感器输入没有新增埋点。
 
+Google 新版容器可在加载时自行初始化，忽略网页中的旧式 `config` 参数。因此所有限制先通过 `gtag('set', settings)` 入队，再初始化并发送经过清理的浏览事件。不要把这些全局设置移到加载脚本或首个事件之后。
+
 上报的 `page_location` 只包含固定的正式页面路径，移除所有查询参数和 fragment；页面标题使用固定名称，来源只保留协议和域名。固件 URL、场景/录制、DIY 内容、串口输出、设备存档、Wi-Fi 凭据均不传给统计代码。Google 的常规网络和浏览器统计仍按其服务处理；这不是匿名化或零数据收集声明。
 
 关闭 Google Signals 和广告个性化；统计 Cookie 使用 `eot` 前缀，并限于本站 `/esp-online-tester/` 路径。浏览器开启 DNT、Global Privacy Control 或该衡量 ID 的 Google 禁用标记时不加载。广告拦截器或网络不可达时，统计可能缺失，网站仍可使用。
@@ -29,5 +31,6 @@ node --test tools/platform-analytics-test.mjs
 - [GA4 页面浏览量配置](https://developers.google.com/analytics/devguides/collection/ga4/views)：`send_page_view` 与手动 `page_view`，包括增强型衡量历史事件独立触发的行为。
 - [Google tag 配置参数](https://developers.google.com/analytics/devguides/collection/ga4/reference/config)：`page_location`、`page_referrer`、广告功能开关与 Cookie 配置。
 - [增强型衡量事件](https://support.google.com/analytics/answer/9216061)：自动互动测量的内容与范围。
+- [新版容器与旧式 config 的初始化行为](https://support.google.com/tagmanager/answer/18411054)：新版容器自行初始化时可能忽略网页配置，并产生重复浏览事件。
 
 文档核对日期：2026-11-06。

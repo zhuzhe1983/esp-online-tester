@@ -27,11 +27,15 @@ export function installAnalytics(win,doc) {
   win.__espWebsiteAnalytics=true;
   win.dataLayer=win.dataLayer||[];
   win.gtag=win.gtag||function(){win.dataLayer.push(arguments);};
-  win.gtag('js',new Date());
-  win.gtag('config',MEASUREMENT_ID,{
+  const settings={
     ...page,send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,
     cookie_domain:'zhuzhe1983.github.io',cookie_path:base,cookie_prefix:'eot',cookie_flags:'SameSite=Lax;Secure',
-  });
+  };
+  // New Google containers initialize independently of config commands. Set these
+  // defaults before the first event and before loading Google's script.
+  win.gtag('set',settings);
+  win.gtag('js',new Date());
+  win.gtag('config',MEASUREMENT_ID,settings);
   win.gtag('event','page_view',{...page,send_to:MEASUREMENT_ID});
   const script=doc.createElement('script');script.async=true;script.referrerPolicy='strict-origin';
   script.src=`https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`;
