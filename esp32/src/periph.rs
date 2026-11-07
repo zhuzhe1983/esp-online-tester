@@ -914,6 +914,7 @@ impl Peripherals {
             thrhd_mask: 0x7f,
             rxfifo_rst: 1 << 17,
             rxfifo_cnt_mask: 0xff,
+            autobaud_en: 0, // the classic chip has its own detector (ClassicUart)
         };
         let mut gpio = ClassicGpio::new();
         gpio.gpio.strap = 0x13; // normal SPI-fast-flash boot, with ROM messages enabled

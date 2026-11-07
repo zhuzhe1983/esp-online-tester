@@ -29,24 +29,64 @@ pub struct UartLayout {
     pub rxfifo_rst: u32,
     /// STATUS rxfifo_cnt: mask of the field at bit 0
     pub rxfifo_cnt_mask: u32,
+    /// CONF0 autobaud_en bit, or 0 where the autobaud detector is not modelled. The mask ROM's UART download mode
+    /// polls RXD_CNT (0x30) for edges and derives the divisor from LOWPULSE/HIGHPULSE (0x28/0x2c).
+    pub autobaud_en: u32,
 }
 impl UartLayout {
-    pub const S3: UartLayout = UartLayout { thrhd_mask: 0x3ff, rxfifo_rst: 1 << 17, rxfifo_cnt_mask: 0x3ff };
-    pub const C3: UartLayout = UartLayout { thrhd_mask: 0x1ff, rxfifo_rst: 1 << 17, rxfifo_cnt_mask: 0x3ff };
-    pub const C6: UartLayout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff };
+    pub const S3: UartLayout = UartLayout { thrhd_mask: 0x3ff, rxfifo_rst: 1 << 17, rxfifo_cnt_mask: 0x3ff, autobaud_en: 1 << 27 };
+    pub const C3: UartLayout = UartLayout { thrhd_mask: 0x1ff, rxfifo_rst: 1 << 17, rxfifo_cnt_mask: 0x3ff, autobaud_en: 1 << 27 };
+    pub const C6: UartLayout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff, autobaud_en: 0 };
 }
 
 // ------------------------------------------------------------------ UART
-pub struct Uart { pub tx_out: Vec<u8>, pub int_raw: u32, pub int_ena: u32, layout: UartLayout, rx: VecDeque<u8>, ram: RegRam }
+pub struct Uart { pub tx_out: Vec<u8>, pub int_raw: u32, pub int_ena: u32, layout: UartLayout, rx: VecDeque<u8>, ram: RegRam, edges: u32, queue: VecDeque<u8>, credit: u64 }
 impl Uart {
-    pub fn new(layout: UartLayout) -> Self { Uart { tx_out: Vec::new(), int_raw: INT_ALWAYS, int_ena: 0, layout, rx: VecDeque::new(), ram: RegRam::new() } }
+    pub fn new(layout: UartLayout) -> Self { Uart { tx_out: Vec::new(), int_raw: INT_ALWAYS, int_ena: 0, layout, rx: VecDeque::new(), ram: RegRam::new(), edges: 0, queue: VecDeque::new(), credit: 0 } }
     /// Bytes from the host into the receive FIFO; what does not fit is dropped and flagged RXFIFO_OVF.
     pub fn host_input(&mut self, data: &[u8]) {
+        if self.autobaud_on() { self.edges = self.edges.saturating_add(9 * data.len() as u32).min(0x3ff); }
         for &b in data {
             if self.rx.len() >= RX_FIFO_SIZE { self.int_raw |= INT_RXFIFO_OVF; break; }
             self.rx.push_back(b);
         }
         self.refresh_rx_full();
+    }
+    /// Bytes injected by the host (a console, esptool through a bridge). The host has no line rate and can send far more
+    /// than the 128-byte FIFO holds (an esptool stub upload is 6 KiB per packet), and firmware sized its buffers for bytes
+    /// arriving at the baud rate. What fits goes into the FIFO now; the rest waits and `advance` releases it at the line
+    /// rate, instead of being dropped with RXFIFO_OVF as `host_input` (a real wire) does. Chips that call this must call
+    /// `advance` from their device tick.
+    pub fn host_input_queued(&mut self, data: &[u8]) {
+        if self.autobaud_on() { self.edges = self.edges.saturating_add(9 * data.len() as u32).min(0x3ff); }
+        self.queue.extend(data);
+        self.pump(usize::MAX);
+    }
+    /// Host bytes waiting for room in the FIFO: the only case in which `advance` has work.
+    pub fn has_queued(&self) -> bool { !self.queue.is_empty() }
+    fn pump(&mut self, max: usize) -> usize {
+        let mut moved = 0;
+        while moved < max && self.rx.len() < RX_FIFO_SIZE {
+            let Some(b) = self.queue.pop_front() else { break };
+            self.rx.push_back(b);
+            moved += 1;
+        }
+        if moved > 0 { self.refresh_rx_full(); }
+        moved
+    }
+    /// Release queued host bytes at 10 bits per byte. `baud` is the configured rate (115200 when none is set). Credit
+    /// only accrues while a byte could move, so a full FIFO holds the line and no burst follows when it drains.
+    /// Returns whether any byte moved.
+    pub fn advance(&mut self, cycles: u64, cpu_hz: u64, baud: Option<u32>) -> bool {
+        if self.queue.is_empty() || self.rx.len() >= RX_FIFO_SIZE { self.credit = 0; return false; }
+        let baud = baud.filter(|b| *b > 0).unwrap_or(115_200) as u64;
+        let per_byte = (cpu_hz * 10 / baud).max(1);
+        self.credit += cycles;
+        let due = (self.credit / per_byte) as usize;
+        if due == 0 { return false; }
+        let moved = self.pump(due);
+        self.credit = if moved < due { 0 } else { self.credit - moved as u64 * per_byte };
+        moved > 0
     }
     /// CONF1 rxfifo_full_thrhd (the layout says how wide); the silicon reset value is 0x60, a
     /// driver that wants every byte sets 1. RXFIFO_FULL is a level here: it stays raised while the count is at or
@@ -90,8 +130,20 @@ impl Uart {
         let source = if self.ram.read(0x20) & (1 << 27) != 0 { 80_000_000u64 } else { 1_000_000 };
         (divisor != 0).then(|| (source * 16 / divisor) as u32)
     }
+    fn autobaud_on(&self) -> bool { self.layout.autobaud_en != 0 && self.ram.read(0x20) & self.layout.autobaud_en != 0 }
+    /// One bit time of the sender, in UART core-clock cycles, less one: the ROM's `((low + high) << 3) + 16` is then
+    /// 16 * clock / baud. Host bytes have no line rate, so this reports esptool's sync rate, 115200.
+    fn autobaud_pulse(&self) -> u32 {
+        let clock = self.clock_config();
+        let src = match (clock >> 20) & 3 { 2 => 17_500_000u32, 3 => 40_000_000, _ => 80_000_000 };
+        let core = src / (((clock >> 12) & 255) + 1);
+        (core / 115_200).saturating_sub(1).min(0xfff)
+    }
     pub fn read(&mut self, off: u32) -> u32 {
         match off {
+            0x28 | 0x2c if self.autobaud_on() || self.edges > 0 => self.autobaud_pulse(),   // LOWPULSE / HIGHPULSE
+            0x30 if self.layout.autobaud_en != 0 => self.edges,                               // RXD_CNT
+            0x20 => self.ram.read(off),
             0x0 => self.rx.pop_front().map(|b| b as u32).unwrap_or(0),
             0x4 => self.int_raw,
             0x8 => self.int_raw & self.int_ena,
@@ -106,7 +158,12 @@ impl Uart {
             0x0 => self.tx_out.push(v as u8),
             0xc => self.int_ena = v,
             0x10 => { self.int_raw &= !v | INT_ALWAYS; self.refresh_rx_full(); }
-            0x20 => { if v & self.layout.rxfifo_rst != 0 { self.rx.clear(); } self.ram.write(off, v); }   // CONF0 rxfifo_rst
+            0x20 => {
+                if v & self.layout.rxfifo_rst != 0 { self.rx.clear(); }
+                let ab = self.layout.autobaud_en;
+                if ab != 0 && v & ab != 0 && self.ram.read(off) & ab == 0 { self.edges = 0; }   // detector restarts
+                self.ram.write(off, v);
+            }   // CONF0 rxfifo_rst
             0x24 => { self.ram.write(off, v); self.refresh_rx_full(); }
             _ => self.ram.write(off, v),
         }
@@ -154,6 +211,42 @@ mod tests {
         assert!(!u.irq()); assert_eq!(u.read(0x1c) & 0x3ff, 0); assert_eq!(u.read(0x0), 0);
         assert_eq!(u.read(0x4) & INT_ALWAYS, INT_ALWAYS);
     }
+    #[test]
+    fn queued_host_input_is_released_at_the_line_rate_instead_of_overflowing() {
+        let mut u = Uart::new(UartLayout::C3);
+        let data: Vec<u8> = (0..300u32).map(|i| i as u8).collect();
+        u.host_input_queued(&data);
+        assert_eq!(u.read(0x1c) & 0x3ff, RX_FIFO_SIZE as u32);
+        assert_eq!(u.read(0x4) & INT_RXFIFO_OVF, 0);
+        let per_byte = 160_000_000 * 10 / 115_200;
+        assert!(!u.advance(per_byte * 5, 160_000_000, None), "a full FIFO holds the line");
+        let mut got: Vec<u8> = (0..10).map(|_| u.read(0) as u8).collect();
+        assert!(!u.advance(per_byte - 1, 160_000_000, None));
+        assert!(u.advance(1, 160_000_000, None));
+        assert_eq!(u.read(0x1c) & 0x3ff, RX_FIFO_SIZE as u32 - 9, "exactly one byte per byte time, nothing banked");
+        while u.has_queued() || u.read(0x1c) & 0x3ff != 0 {
+            while u.read(0x1c) & 0x3ff != 0 { got.push(u.read(0) as u8); }
+            u.advance(per_byte * 200, 160_000_000, None);
+        }
+        assert_eq!(got, data);
+    }
+
+    #[test]
+    fn autobaud_counts_edges_and_reports_a_115200_bit_time() {
+        let mut u = Uart::new(UartLayout::C3);
+        u.write(0x78, 1 << 20);                 // CLK_CONF: APB (80 MHz), divider 1
+        u.write(0x20, 1 << 27);                 // AUTOBAUD_EN
+        assert_eq!(u.read(0x30), 0);
+        u.host_input_queued(&[0x07, 0x07, 0x12, 0x20].repeat(4));
+        assert!(u.read(0x30) > 127, "the ROM's connection check needs more than 127 edges");
+        let div = ((u.read(0x28) + u.read(0x2c)) << 3) + 16;   // uart_baudrate_detect
+        assert_eq!(div, 16 * 80_000_000 / 115_200 / 16 * 16);
+        u.write(0x20, 0);
+        u.write(0x20, 1 << 27);                 // re-enabled: the detector starts over
+        assert_eq!(u.read(0x30), 0);
+        assert_eq!(Uart::new(UartLayout::C6).read(0x30), 0);
+    }
+
     #[test]
     fn receive_fifo_overflow_is_flagged_and_reset_by_conf0() {
         let mut u = Uart::new(UartLayout::S3);

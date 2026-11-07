@@ -167,7 +167,7 @@ impl esp_soc::SocBus for SocBus {
     fn uart_input(&mut self, n: usize, data: &[u8]) {
         let Some(u) = self.periph.uart.get_mut(n) else { return };
         let before = u.irq();
-        u.host_input(data);
+        u.host_input_queued(data);
         self.irq_dirty |= before != u.irq();
     }
     fn analog_set(&mut self, pin: u8, src: esp_periph::AnalogSource) {
