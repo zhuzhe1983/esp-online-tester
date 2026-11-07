@@ -638,6 +638,7 @@ impl Bus for SocBus {
         }
         let irq_changed = self.periph.tick(elapsed);
         self.irq_dirty |= irq_changed;
+        if self.deep_sleep { self.timer_wake(); }
         self.i2s_step(elapsed);
         self.flush_rmt();
         self.flush_gpio();

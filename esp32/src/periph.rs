@@ -611,6 +611,19 @@ impl ClassicRtc {
         self.0.ram.write(0x104, crc);
         self.0.ram.write(0x100, conf | (1 << 31));
     }
+    /// RTC slow ticks left on the main timer, while asleep with it as a wake source. ESP-IDF v5.5.4
+    /// hal/esp32/include/hal/rtc_cntl_ll.h:19-23 rtc_cntl_ll_set_wakeup_timer writes SLP_TIMER0/1
+    /// (0x04/0x08, the high word 16 bits wide) and leaves MAIN_TIMER_ALARM_EN (0x08 bit 16) clear:
+    /// soc/esp32/register/soc/rtc_cntl_reg.h:194-214. WAKEUP_ENA's RTC_TIMER_TRIG_EN, bit 3 of
+    /// [21:11], is what arms it: rtc_cntl_reg.h:505-523, esp_hw_support/port/esp32/include/soc/
+    /// rtc.h:584,587. SLEEP_EN is 0x18 bit 31; wake clears it, so the timer fires once.
+    /// WAKEUP_ENA resets with that bit set (0b1100), so a target of 0 means none was written: a
+    /// model choice, since what silicon does with an unwritten target is not measured.
+    pub(crate) fn sleep_ticks_left(&self) -> Option<u64> {
+        if self.0.ram.read(0x34) & (1 << (11 + 3)) == 0 || self.0.ram.read(0x18) & (1 << 31) == 0 { return None; }
+        let target = u64::from(self.0.ram.read(0x08) & 0xffff) << 32 | u64::from(self.0.ram.read(0x04));
+        (target != 0).then(|| target.saturating_sub(self.0.slow_ticks))
+    }
     fn off(off: u32) -> u32 {
         match off {
             0x34 => 0x38,

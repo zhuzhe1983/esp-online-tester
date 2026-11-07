@@ -65,8 +65,9 @@ while instruction counts and PCs stay fixed; these are not physical running CPUs
 RTC pad analog input gating, full RTC GPIO hold behavior, all digital-domain
 power sequencing, and retention of powered-down RTC peripheral registers are
 not modeled. The existing reboot path retains RTC IO configuration. This scope
-models deep sleep with EXT0 only: no light-sleep resume, RTC timer alarm wake,
-EXT1, touch, ULP, GPIO/SDIO wake/rejection, or automatic host reboot policy change.
+models deep sleep with EXT0 and, since #336, the RTC timer alarm (see "RTC timer
+wake" below): no light-sleep resume, EXT1, touch, ULP, GPIO/SDIO wake/rejection,
+or automatic host reboot policy change.
 Other enabled wake bits do not acquire fabricated wake behavior.
 
 ## Reproduction
@@ -240,3 +241,67 @@ rebased binary and not a hardware sleep-timing claim.
 
 Not measured on the rebased head. No local CPU timing was run for this rebase;
 the independent night-window table remains separate from the upstream result.
+
+## RTC timer wake (#336)
+
+[#336](https://github.com/mikroverk/esp32sim/pull/336) adds the RTC timer as a
+deep-sleep wake source. While `deep_sleep` holds, `SocBus::tick` compares the
+RTC slow counter, which keeps running through sleep, with SLP_TIMER0/1 when
+WAKEUP_ENA has RTC_TIMER_TRIG_EN. At or past the target it wakes through the
+EXT0 path's reset: cause bit 3, reset cause 5, SLEEP_EN cleared, so it fires
+once. Awake, the tick pays one `deep_sleep` branch. A target of 0 counts as none
+written, because WAKEUP_ENA resets with the timer bit set; that is a model
+choice, not a silicon measurement. There is no device deadline: the idle step
+is already capped at `IDLE_CHUNK` (512 cycles on classic) and a deadline can
+only shorten it.
+
+| Meaning | Source (ESP-IDF v5.5.4) |
+| --- | --- |
+| `rtc_cntl_ll_set_wakeup_timer` writes SLP_TIMER0/1 only, not MAIN_TIMER_ALARM_EN | components/hal/esp32/include/hal/rtc_cntl_ll.h:19-23 |
+| SLP_TIMER0 +0x04, SLP_TIMER1 +0x08 (16-bit high word, ALARM_EN bit16) | components/soc/esp32/register/soc/rtc_cntl_reg.h:194-214 |
+| WAKEUP_ENA [21:11], reset 0b1100; WAKEUP_CAUSE [10:0] | rtc_cntl_reg.h:505-523 |
+| RTC_EXT0_TRIG_EN bit0, RTC_TIMER_TRIG_EN bit3 | components/esp_hw_support/port/esp32/include/soc/rtc.h:584,587 |
+
+### Upstream review (November 3, 2026)
+
+By joakimeriksson in the [upstream review](https://github.com/mikroverk/esp32sim/pull/336#issuecomment-6599264367)
+of head `512f9bd4`:
+
+- ESP-IDF v5.5.4 `examples/system/deep_sleep` for classic (sdkconfig defaults:
+  RC slow clock, RTC HRT time, EXT1 off), `--board none --max-seconds 50`. Base
+  `04f07602` logs "Entering deep sleep" and never wakes. The branch resets at
+  t=21.046 s and t=42.072 s with `rst:0x5 (DEEPSLEEP_RESET)` and prints "Wake up
+  from timer. Time spent in deep sleep: 20021ms". With `CONFIG_EXAMPLE_EXT0_WAKEUP=y`
+  and GPIO25 driven high at 6 s: "Wake up from ext0" at t=6.000 s, then "Wake up
+  from timer" at t=27.026 s.
+- The modeled 150 kHz slow clock matches the TIMG calibration, about 2.4 ppm
+  short with 1024 calibration cycles (about 1.4 ms over 600 s).
+- Without the target-0 guard, the eight `late_*` tests and
+  `secondary_release_cannot_escape_power_down` in `esp32/tests/deep_sleep.rs`
+  fail, plus `a_target_never_written_wakes_nothing`.
+- Sleep time is skipped, not paced: the 50 s run takes 0.19 s user CPU;
+  `--realtime --max-seconds 23` takes 23.0 s wall and 0.15 s CPU.
+- Rust 1.99.1: both Clippy runs clean; `--include-ignored --skip external_`
+  1464 passed, 0 failed; evidence privacy check passes.
+
+CPU: classic hello, 30 s, new `512f9bd4` vs base `04f07602`, one warmup and
+seven alternating pairs, user CPU, Apple M5 Max, 1-minute load 4.34 → 4.31,
+identical instruction counts and console hashes in all 16 runs.
+
+| Workload | Base median (range) | New median (range) | Change | New slower |
+| --- | --- | --- | --- | --- |
+| Classic hello, 30 s | 0.380 s (0.380–0.400) | 0.390 s (0.380–0.390) | +2.6% | 1/7 |
+
+Not flagged: one 10 ms rusage tick is 2.6% here. The firmware never sleeps, so
+this times the `deep_sleep` branch in the tick, not the wake. Samples:
+[`336-512f9bd4-04f07602.json`](336-512f9bd4-04f07602.json), the reviewer's file
+with the ROM directory written as `$ESP32SIM_ROM_DIR`; raw SHA-256 `b6b08bd2…`,
+sanitized `519c3987…` (this file).
+
+### After the review
+
+The device deadline (`ClassicRtc::next_deadline`) was removed after the review:
+it keyed off SLEEP_EN rather than deep sleep, so an attempted light sleep left
+the bus deadline at `Some(1)`, and `idle_budget` only takes the minimum of it
+and `IDLE_CHUNK`, so it could not skip time. Not re-measured on the classic
+hello workload.
