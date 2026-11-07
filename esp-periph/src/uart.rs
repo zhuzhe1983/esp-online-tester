@@ -32,11 +32,15 @@ pub struct UartLayout {
     /// CONF0 autobaud_en bit, or 0 where the autobaud detector is not modelled. The mask ROM's UART download mode
     /// polls RXD_CNT (0x30) for edges and derives the divisor from LOWPULSE/HIGHPULSE (0x28/0x2c).
     pub autobaud_en: u32,
+    /// Offset of LOWPULSE; HIGHPULSE and RXD_CNT follow at +4 and +8 (0x28 on S3/C3, 0x7c on C6).
+    pub autobaud_regs: u32,
+    /// UART core clock the ROM runs the detector on when it is not in CLK_CONF (0x78), as on the C6 (PCR); 0 = CLK_CONF.
+    pub autobaud_clock_hz: u32,
 }
 impl UartLayout {
-    pub const S3: UartLayout = UartLayout { thrhd_mask: 0x3ff, rxfifo_rst: 1 << 17, rxfifo_cnt_mask: 0x3ff, autobaud_en: 1 << 27 };
-    pub const C3: UartLayout = UartLayout { thrhd_mask: 0x1ff, rxfifo_rst: 1 << 17, rxfifo_cnt_mask: 0x3ff, autobaud_en: 1 << 27 };
-    pub const C6: UartLayout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff, autobaud_en: 0 };
+    pub const S3: UartLayout = UartLayout { thrhd_mask: 0x3ff, rxfifo_rst: 1 << 17, rxfifo_cnt_mask: 0x3ff, autobaud_en: 1 << 27, autobaud_regs: 0x28, autobaud_clock_hz: 0 };
+    pub const C3: UartLayout = UartLayout { thrhd_mask: 0x1ff, rxfifo_rst: 1 << 17, rxfifo_cnt_mask: 0x3ff, autobaud_en: 1 << 27, autobaud_regs: 0x28, autobaud_clock_hz: 0 };
+    pub const C6: UartLayout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff, autobaud_en: 1 << 19, autobaud_regs: 0x7c, autobaud_clock_hz: 40_000_000 };
 }
 
 // ------------------------------------------------------------------ UART
@@ -134,15 +138,20 @@ impl Uart {
     /// One bit time of the sender, in UART core-clock cycles, less one: the ROM's `((low + high) << 3) + 16` is then
     /// 16 * clock / baud. Host bytes have no line rate, so this reports esptool's sync rate, 115200.
     fn autobaud_pulse(&self) -> u32 {
-        let clock = self.clock_config();
-        let src = match (clock >> 20) & 3 { 2 => 17_500_000u32, 3 => 40_000_000, _ => 80_000_000 };
-        let core = src / (((clock >> 12) & 255) + 1);
+        let core = if self.layout.autobaud_clock_hz != 0 { self.layout.autobaud_clock_hz } else {
+            let clock = self.clock_config();
+            let src = match (clock >> 20) & 3 { 2 => 17_500_000u32, 3 => 40_000_000, _ => 80_000_000 };
+            src / (((clock >> 12) & 255) + 1)
+        };
         (core / 115_200).saturating_sub(1).min(0xfff)
     }
     pub fn read(&mut self, off: u32) -> u32 {
         match off {
-            0x28 | 0x2c if self.autobaud_on() || self.edges > 0 => self.autobaud_pulse(),   // LOWPULSE / HIGHPULSE
-            0x30 if self.layout.autobaud_en != 0 => self.edges,                               // RXD_CNT
+            o if self.layout.autobaud_en != 0 && o >= self.layout.autobaud_regs && o <= self.layout.autobaud_regs + 8 => {
+                if o == self.layout.autobaud_regs + 8 { self.edges }                            // RXD_CNT
+                else if self.autobaud_on() || self.edges > 0 { self.autobaud_pulse() }          // LOWPULSE / HIGHPULSE
+                else { self.ram.read(o) }
+            }
             0x20 => self.ram.read(off),
             0x0 => self.rx.pop_front().map(|b| b as u32).unwrap_or(0),
             0x4 => self.int_raw,
@@ -244,7 +253,11 @@ mod tests {
         u.write(0x20, 0);
         u.write(0x20, 1 << 27);                 // re-enabled: the detector starts over
         assert_eq!(u.read(0x30), 0);
-        assert_eq!(Uart::new(UartLayout::C6).read(0x30), 0);
+        let mut c6 = Uart::new(UartLayout::C6);
+        c6.write(0x20, 1 << 19);
+        c6.host_input_queued(&[0x55; 16]);
+        assert!(c6.read(0x84) > 127);
+        assert_eq!(((c6.read(0x7c) + c6.read(0x80)) << 3) + 16, 16 * (40_000_000 / 115_200));
     }
 
     #[test]
