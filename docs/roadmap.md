@@ -45,8 +45,9 @@ with tracking issues where available that list items and what "done" means:
    the C6's unified map and MMU, PLIC/INTPRI, PCR and the LP blocks; hello_world verified against
    a Waveshare ESP32-C6-LCD-1.47, 203/204 console lines identical over three boots. The board is
    in (`waveshare-c6-lcd147`: ST7789 on SPI2+GDMA, WS2812 on the C6 RMT, BOOT button) and its
-   802.15.4 energy-scan firmware runs with a synthetic spectrum from the MAC model. Left: TF card,
-   I2C on the C6 layout, watchdogs, real radios.
+   802.15.4 energy-scan firmware runs with a synthetic spectrum from the MAC model. A second
+   board is in (`xiao-esp32c6`: low-active user LED on GPIO 15, BOOT button, RF switch). Left: TF
+   card, I2C on the C6 layout, watchdogs, real radios.
 6. **More boards** — board models for the S3, C6, P4 and classic ESP32 are in; [boards.md](boards.md)
    lists them and how to add one. The latest are the Ulanzi TC001 (#311) and the AI-Thinker
    ESP32-CAM with host JPEG (#328). Next candidates as firmware needs them; `--board waveshare-*`

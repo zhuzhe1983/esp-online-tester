@@ -11,7 +11,8 @@ dark in both. `index.html?wasm&fw=…` links from before the split redirect to `
 `--web PORT` serves `web/run.html` (no build step, no dependencies) and a WebSocket on the
 same port. The page shows the board (Atech: 14-port drawing with knob, ring, buttons,
 speaker VU, the TFT in its physical orientation plus a readable copy; Waveshare: camera
-panel with picture upload / webcam and speaker meter; bare: console only), the USB-CDC and
+panel with picture upload / webcam and speaker meter; XIAO ESP32-C6: the user LED and the
+BOOT button; bare: console only), the USB-CDC and
 UART0 consoles, an action box for the SDK's JSON protocol, and audio through WebAudio
 (click 🔇 once — browsers require a user gesture).
 

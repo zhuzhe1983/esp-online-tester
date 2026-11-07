@@ -1,18 +1,12 @@
-//! Boards around the ESP32-C6. One so far: the Waveshare ESP32-C6-LCD-1.47 the model was brought
-//! up against — an ST7789 172×320 panel on SPI2, one WS2812 on GPIO 8 (RMT), a BOOT button on
-//! GPIO 9 and a TF card slot on the same SPI bus (not modelled).
+//! The Waveshare ESP32-C6-LCD-1.47: the board the C6 model was brought up against — an ST7789
+//! 172×320 panel on SPI2, one WS2812 on GPIO 8 (RMT), a BOOT button on GPIO 9 and a TF card slot
+//! on the same SPI bus (not modelled).
 use esp_soc::devices::{DcsPanel, Ws2812Chain};
-use esp_soc::{Board, BoardModel, NoBoard};
+use esp_soc::BoardModel;
 
-pub fn make_board(name: &str) -> Option<Board> {
-    match name {
-        "none" | "bare" => Some(Box::new(NoBoard)),
-        "waveshare-c6-lcd147" | "c6-lcd147" | "lcd147" => Some(Box::new(WaveshareC6Lcd147::new())),
-        _ => None,
-    }
-}
-
+/// The WS2812 on GPIO 8.
 pub const PIN_LED: u8 = 8;
+/// The BOOT button on GPIO 9.
 pub const PIN_BOOT: u8 = 9;
 pub const PIN_LCD_CS: u8 = 14;
 pub const PIN_LCD_DC: u8 = 15;
