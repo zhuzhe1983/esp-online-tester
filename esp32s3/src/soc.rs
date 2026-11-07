@@ -199,8 +199,9 @@ impl esp_soc::SocBus for SocBus {
     fn uart_input(&mut self, n: usize, data: &[u8]) {
         let Some(u) = self.periph.uart.get_mut(n) else { return };
         let before = u.irq();
-        u.host_input(data);
+        u.host_input_queued(data);   // paced by the bus tick (`pace_uart_input`)
         self.irq_dirty |= before != u.irq();
+        self.refresh_tick_budget();
     }
     fn analog_set(&mut self, pin: u8, src: esp_periph::AnalogSource) {
         let offset = self.peripheral_clock_offset();

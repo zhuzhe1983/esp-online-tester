@@ -66,6 +66,8 @@ pub struct SocBus {
     spi3_pins: Option<esp_soc::board::SpiPins>,
     /// set by any peripheral write: interrupt lines must be re-evaluated before the next instruction
     pub irq_dirty: bool,
+    /// A UART interrupt enable was written: present the new level at the next tick (see `periph_write_inner`).
+    irq_deferred: bool,
     /// GPIO edges for observers, while one wants them: (cycle, pin, level)
     pub gpio_events: Option<Vec<(u64, u8, bool)>>,
     pub debug: esp_soc::DebugFlags,
@@ -142,6 +144,9 @@ fn tlb_idx(addr: u32) -> usize { xtensa_lx7::bus::tlb_index(addr) }
 /// another bus's epoch; 2^32 flash-version changes per bus before bases could meet.
 static BUS_EPOCHS: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
 
+/// UART0/1/2 FIFO registers (IDF v5.5.4 components/soc/esp32s3/register/soc/reg_base.h).
+const UART_FIFOS: [u32; 3] = [0x6000_0000, 0x6001_0000, 0x6002_e000];
+
 impl SocBus {
     pub(crate) fn cancel_spi2_timing(&mut self) { self.spi2_scheduled = None; self.spi2_pins = None; self.spi3_pins = None; }
 
@@ -151,7 +156,7 @@ impl SocBus {
             ble: Default::default(),
             sram: vec![0; SRAM_SIZE], irom: vec![0; (IROM_MASK_HIGH - IROM_MASK_LOW) as usize], drom: vec![0; (DROM_MASK_HIGH - DROM_MASK_LOW) as usize],
             rtc_fast: vec![0; 8192], rtc_slow: vec![0; 8192], flash: vec![0xff; flash_size], psram: vec![0; psram_size],
-            mmu: [MMU_INVALID; MMU_ENTRIES], periph: Peripherals::new(mac), board: Box::new(crate::board::Atech14::new()), uart_pins: false, cycles: 0, last_fault: None, spi2_dma_fault: None, irq_dirty: false, gpio_events: None, debug: Default::default(), board_edges: true,
+            mmu: [MMU_INVALID; MMU_ENTRIES], periph: Peripherals::new(mac), board: Box::new(crate::board::Atech14::new()), uart_pins: false, cycles: 0, last_fault: None, spi2_dma_fault: None, irq_dirty: false, irq_deferred: false, gpio_events: None, debug: Default::default(), board_edges: true,
             spi2_timing: false, spi2_scheduled: None, spi2_pins: None, spi3_dma_fault: None, spi3_pins: None,
             tlb: vec![TlbEntry::EMPTY; TLB_SIZE], page_ver: Vec::new(), ver_base: [0; 7], flash_epoch: BUS_EPOCHS.fetch_add(1, std::sync::atomic::Ordering::Relaxed) << 32, code_blk: Vec::new(), tick_pending: 0, tick_budget: 0, defer_mmio: false, mmio_deferred: false, vq_violations: 0,
             approximate_cache: None, approximate_cache_pending: 0, approximate_cache_fast_internal: false, approximate_cache_inline: false,
@@ -465,7 +470,15 @@ impl SocBus {
             self.irq_dirty |= esp_soc::gpio::deliver_board_inputs(&mut *self.board, &mut self.periph.gpio, &mut self.gpio_events, self.cycles);
             self.refresh_tick_budget();
         }
-        self.periph.read32(addr)
+        let a = addr & !3;
+        let Some(port) = UART_FIFOS.iter().position(|&f| f == a) else { return self.periph.read32(addr) };
+        // RXFIFO_FULL follows the FIFO level (as on the classic ESP32 and the C3): the mask ROM's shared UART handler reads
+        // one FIFO and never clears the interrupt, so a stale level would re-enter it with nothing to read.
+        let before = self.periph.uart[port].irq();
+        let w = self.periph.read32(addr);
+        self.periph.uart[port].lower_rx_full_when_drained();
+        if self.periph.uart[port].irq() != before { self.irq_dirty = true; }
+        w
     }
     /// EX133: every device-register access must have been deferred out of a multi-quantum run.
     /// One that was not (a PIE or MAC16 word access; nothing real does this) saw early time.
@@ -553,6 +566,10 @@ impl SocBus {
         // Resolved output changes can raise edge or level input interrupts.
         if spi {
             self.irq_dirty |= before != sources(&self.periph);
+        } else if UART_FIFOS.iter().any(|&f| f + 0xc == a) {
+            // Interrupt delivery has latency on silicon. The mask ROM's uart_buff_switch enables a UART's interrupt just
+            // before it stores which UART its handler serves; an immediate interrupt runs the handler for the old one.
+            self.irq_deferred = true;
         } else if !(0x6000_4004..=0x6000_4018).contains(&a) {
             self.irq_dirty = true;
         } else {
@@ -850,7 +867,9 @@ impl Bus for SocBus {
     fn tick(&mut self, cycles: u32) -> u32 {
         self.cycles += cycles as u64;
         self.tick_pending += cycles;
-        if self.tick_pending < self.tick_budget { return 0; }
+        let deferred = std::mem::take(&mut self.irq_deferred);
+        if deferred { self.irq_dirty = true; }
+        if self.tick_pending < self.tick_budget { return u32::from(deferred); }
         self.flush_ticks();
         u32::from(self.irq_dirty)
     }
@@ -890,7 +909,22 @@ impl SocBus {
                 .clamp(1, u64::from(cap));
             budget = budget.min(until_deadline as u32);
         }
+        // Queued host UART bytes are released at the line rate: tick at least every ~10 µs while any wait.
+        if self.periph.uart.iter().any(|u| u.has_queued()) { budget = budget.min(2_400); }
         self.tick_budget = budget;
+    }
+
+    /// Release host bytes queued by `uart_input` at the configured baud rate.
+    #[cold]
+    #[inline(never)]
+    fn pace_uart_input(&mut self, cycles: u32) {
+        for port in 0..self.periph.uart.len() {
+            let baud = self.periph.uart_route(port).baud;
+            let before = self.periph.uart[port].irq();
+            if self.periph.uart[port].advance(cycles as u64, crate::periph::CPU_HZ, baud) {
+                self.irq_dirty |= before != self.periph.uart[port].irq();
+            }
+        }
     }
 
     /// Bus cycles at which the current peripheral clock started (deferred ticks excluded).
@@ -920,6 +954,7 @@ impl SocBus {
         // Reads may flush before the periodic backstop. Refresh for either edge
         // of a clocked source, without breaking every block that polls MMIO.
         self.irq_dirty |= self.periph.tick(cycles as u64);
+        if self.periph.uart.iter().any(|u| u.has_queued()) { self.pace_uart_input(cycles); }
         if self.uart_pins {
             for input in self.board.uart_rx(self.cycles) {
                 self.periph.uart_pin_input(&input);
