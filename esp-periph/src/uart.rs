@@ -52,6 +52,13 @@ impl Uart {
     /// driver that wants every byte sets 1. RXFIFO_FULL is a level here: it stays raised while the count is at or
     /// over the threshold, so a driver that clears it before draining is woken again.
     fn rx_full_threshold(&self) -> usize { ((self.ram.read(0x24) & self.layout.thrhd_mask) as usize).max(1) }
+    /// RXFIFO_FULL follows the FIFO level on classic silicon: it falls when a read leaves fewer bytes than the threshold,
+    /// without software writing INT_CLR. The mask ROM's UART interrupt handler relies on it: when the other UART of the
+    /// pair interrupts, it only reads that UART's FIFO and never clears the interrupt. (`refresh_rx_full` still re-raises it
+    /// on the next arrival or when INT_CLR leaves the count at or above the threshold.)
+    pub fn lower_rx_full_when_drained(&mut self) {
+        if self.rx.len() < self.rx_full_threshold() { self.int_raw &= !INT_RXFIFO_FULL; }
+    }
     fn refresh_rx_full(&mut self) {
         if self.rx.len() >= self.rx_full_threshold() { self.int_raw |= INT_RXFIFO_FULL; }
         if !self.rx.is_empty() { self.int_raw |= INT_RXFIFO_TOUT; }

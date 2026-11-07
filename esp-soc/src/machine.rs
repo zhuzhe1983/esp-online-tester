@@ -356,7 +356,12 @@ impl<S: Soc> Machine<S> {
                 backlog.extend_from_slice(&d);
                 if backlog.len() > 65536 { let cut = backlog.len() - 49152; backlog.drain(..cut); }
             }
-            if let Some(w) = &self.web { if !d.is_empty() { w.send_text(&format!("{{\"t\":\"serial\",\"src\":\"{}\",\"data\":\"{}\"}}", src, crate::web::json_escape(&String::from_utf8_lossy(&d)))); } }
+            if let Some(w) = &self.web { if !d.is_empty() { {
+                // `data` is text; when the bytes are not valid UTF-8 (a binary protocol, or a character split across
+                // two drains) `hex` carries them exactly, so a client can tell and use the raw bytes.
+                let hex = if std::str::from_utf8(&d).is_err() { format!(",\"hex\":\"{}\"", crate::web::hex_encode(&d)) } else { String::new() };
+                w.send_text(&format!("{{\"t\":\"serial\",\"src\":\"{}\",\"data\":\"{}\"{}}}", src, crate::web::json_escape(&String::from_utf8_lossy(&d)), hex));
+            } } }
             let (bit, tag) = [(1, "[usb]  "), (2, "[uart0] "), (4, "[uart1] "), (4, "[uart2] ")][i];
             emit(bit, tag, d, &mut self.console.all);
         }
