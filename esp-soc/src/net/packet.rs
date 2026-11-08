@@ -56,3 +56,42 @@ pub(crate) fn udp_packet(src: &[u8; 4], dst: &[u8; 4], sport: u16, dport: u16, p
     packet[6..8].copy_from_slice(&if check == 0 { 0xffff } else { check }.to_be_bytes());
     packet
 }
+
+/// The question of a DNS query: its name, its type and where the question ends
+/// (the header and the question are `&query[..end]`). None for a response or a malformed query.
+pub(crate) struct DnsQuestion { pub name: String, pub qtype: u16, pub end: usize }
+
+pub(crate) fn dns_question(q: &[u8]) -> Option<DnsQuestion> {
+    if q.len() < 12 || u16::from_be_bytes([q[2], q[3]]) & 0x8000 != 0 { return None; }
+    let mut i = 12;
+    let mut name = String::new();
+    while i < q.len() && q[i] != 0 {
+        let l = q[i] as usize;
+        if l > 63 || i + 1 + l > q.len() { return None; }
+        if !name.is_empty() { name.push('.'); }
+        name.push_str(&String::from_utf8_lossy(&q[i + 1..i + 1 + l]));
+        i += 1 + l;
+    }
+    if i + 5 > q.len() { return None; }
+    Some(DnsQuestion { name, qtype: u16::from_be_bytes([q[i + 1], q[i + 2]]), end: i + 5 })
+}
+
+/// The response to `query` (its header and first question, `dns_question`'s
+/// `end`): `rcode` 0 with an A record per address for an A question (none for any other type), or
+/// the error `rcode` without records.
+pub(crate) fn dns_reply(query: &[u8], qtype: u16, addrs: &[[u8; 4]], ttl: u32, rcode: u8) -> Vec<u8> {
+    let addrs = if qtype == 1 && rcode == 0 { addrs } else { &[] };
+    let mut r = Vec::with_capacity(query.len() + 16 * addrs.len());
+    r.extend_from_slice(&query[0..2]);                               // transaction id
+    r.extend_from_slice(&[0x81, 0x80 | (rcode & 0x0f), 0, 1]);       // response, recursion available
+    r.extend_from_slice(&(addrs.len() as u16).to_be_bytes());        // answer count
+    r.extend_from_slice(&[0, 0, 0, 0]);
+    r.extend_from_slice(&query[12..]);
+    for addr in addrs {
+        r.extend_from_slice(&[0xc0, 0x0c, 0, 1, 0, 1]);              // the question's name, A, IN
+        r.extend_from_slice(&ttl.to_be_bytes());
+        r.extend_from_slice(&[0, 4]);
+        r.extend_from_slice(addr);
+    }
+    r
+}

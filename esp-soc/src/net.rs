@@ -9,7 +9,7 @@
 //! answers everything on the local subnet.
 
 pub(crate) mod packet;
-use packet::{checksum, ethernet, ip_packet, transport_checksum, udp_packet, GATEWAY_MAC};
+use packet::{checksum, dns_question, dns_reply, ethernet, ip_packet, transport_checksum, udp_packet, GATEWAY_MAC};
 
 /// `epoch=S` as `--wifi` and `--net` take it: seconds since 1970, at most 32 bits of them
 /// (2106-02-07), so the network's clock in microseconds never overflows.
@@ -26,6 +26,8 @@ pub struct VirtualNet {
     pub log: bool,
     /// user-mode NAT to the host's network; None keeps everything inside the emulated subnet
     pub nat: Option<crate::nat::Nat>,
+    /// answer SNTP here even with a NAT (the host's clock), instead of relaying it
+    pub local_ntp: bool,
     pub dhcp_acks: u64,
     pub dns_answers: u64,
     pub ntp_answers: u64,
@@ -52,7 +54,7 @@ impl VirtualNet {
     pub fn new(log: bool) -> Self {
         VirtualNet { gw_mac: GATEWAY_MAC, gw_ip: [10, 0, 2, 2], dns_ip: [10, 0, 2, 3],
                      sta_ip: [10, 0, 2, 15], mask: [255, 255, 255, 0],
-                     log, nat: None, dhcp_acks: 0, dns_answers: 0, ntp_answers: 0, tcp_rejects: 0, arp_replies: 0, pings: 0, unhandled: 0, sta_mac: [0; 6], now_us: 0, epoch_us: None }
+                     log, nat: None, local_ntp: false, dhcp_acks: 0, dns_answers: 0, ntp_answers: 0, tcp_rejects: 0, arp_replies: 0, pings: 0, unhandled: 0, sta_mac: [0; 6], now_us: 0, epoch_us: None }
     }
 
     /// Handle one Ethernet frame from the station; returns frames to send back to it.
@@ -109,12 +111,15 @@ impl VirtualNet {
         let mut dip = [0u8; 4]; dip.copy_from_slice(&p[16..20]);
         match proto {
             17 if body.len() >= 8 && be16(&body[2..4]) == 67 => self.dhcp(&body[8..], src),
+            17 if body.len() >= 8 && self.local_ntp && be16(&body[2..4]) == 123 => self.ntp(&body[8..], src, &sip, &dip, be16(&body[0..2])),
             // with NAT the flow goes out through a host socket; DNS is redirected to the host's own
             // resolver but still looks like it came from the emulated one
             17 if body.len() >= 8 && self.nat.is_some() => {
                 let (sport, dport) = (be16(&body[0..2]), be16(&body[2..4]));
-                let (host_dst, reply_src) = if dport == 53 { (self.nat.as_ref().unwrap().resolver, dip) } else { (dip, dip) };
                 let now = self.now_us;
+                // a transport that resolves names itself answers DNS
+                if dport == 53 && self.nat.as_mut().unwrap().dns_query(src, &sip, sport, &dip, &body[8..], now) { return Vec::new(); }
+                let (host_dst, reply_src) = if dport == 53 { (self.nat.as_ref().unwrap().resolver, dip) } else { (dip, dip) };
                 self.nat.as_mut().unwrap().udp_out(src, &sip, sport, &host_dst, &reply_src, dport, &body[8..], now);
                 Vec::new()
             }
@@ -201,31 +206,11 @@ impl VirtualNet {
     /// Answer A queries with the local resolver address, so name lookups resolve to something that
     /// exists in the emulated network (NTP in particular). AAAA is answered empty so IPv6 is skipped.
     fn dns(&mut self, q: &[u8], src: &[u8; 6], sip: &[u8; 4], dip: &[u8; 4], sport: u16) -> Vec<Vec<u8>> {
-        if q.len() < 12 || be16(&q[2..4]) & 0x8000 != 0 { return Vec::new(); }
-        let mut i = 12;
-        let mut name = String::new();
-        while i < q.len() && q[i] != 0 {
-            let l = q[i] as usize;
-            if l > 63 || i + 1 + l > q.len() { return Vec::new(); }
-            if !name.is_empty() { name.push('.'); }
-            name.push_str(&String::from_utf8_lossy(&q[i + 1..i + 1 + l]));
-            i += 1 + l;
-        }
-        if i + 5 > q.len() { return Vec::new(); }
-        let qtype = be16(&q[i + 1..i + 3]);
-        let qend = i + 5;
-        let mut r = Vec::with_capacity(qend + 16);
-        r.extend_from_slice(&q[0..2]);                                  // transaction id
-        r.extend_from_slice(&[0x81, 0x80, 0, 1]);                        // response, recursion available
-        r.extend_from_slice(&(if qtype == 1 { 1u16 } else { 0 }).to_be_bytes());   // answer count
-        r.extend_from_slice(&[0, 0, 0, 0]);
-        r.extend_from_slice(&q[12..qend]);
-        if qtype == 1 {
-            r.extend_from_slice(&[0xc0, 0x0c, 0, 1, 0, 1, 0, 0, 0, 60, 0, 4]);      // A, TTL 60
-            r.extend_from_slice(&self.dns_ip);
-        }
+        let Some(question) = dns_question(q) else { return Vec::new() };
+        let qtype = question.qtype;
+        let r = dns_reply(&q[..question.end], qtype, &[self.dns_ip], 60, 0);
         self.dns_answers += 1;
-        if self.log { eprintln!("[net] DNS {} {} -> {}", name, if qtype == 1 { "A" } else { "AAAA" },
+        if self.log { eprintln!("[net] DNS {} {} -> {}", question.name, if qtype == 1 { "A" } else { "AAAA" },
                                 if qtype == 1 { format!("{}.{}.{}.{}", self.dns_ip[0], self.dns_ip[1], self.dns_ip[2], self.dns_ip[3]) } else { "(none)".into() }); }
         let udp = udp_packet(dip, sip, 53, sport, &r);
         vec![self.frame(src, 0x0800, &ip_packet(17, dip, sip, &udp))]

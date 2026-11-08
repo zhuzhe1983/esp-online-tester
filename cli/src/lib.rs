@@ -527,15 +527,21 @@ fn wifi_config(spec: &str, net: &str, net_log: bool, hostfwd: &[String]) -> (esp
     }
     let nat = mode == "nat" || mode == "user";
     eprintln!("[emu] virtual AP '{}' bssid {} channel {} ({})", cfg.ssid, esp_soc::wifi::mac_str(&cfg.bssid), cfg.channel, if cfg.psk.is_some() { "WPA2-PSK" } else { "open" });
-    let mut nat = nat.then(|| esp_soc::nat::Nat::new(net_log));
-    if let Some(nat) = &mut nat {
-        eprintln!("[emu] NAT to the host network enabled (DNS via {}.{}.{}.{})", nat.resolver[0], nat.resolver[1], nat.resolver[2], nat.resolver[3]);
+    // `--hostfwd` listens on the host sockets, so the NAT takes a `StdTransport` that already listens.
+    let nat = nat.then(|| {
+        let mut transport = esp_soc::nat::StdTransport::new();
+        let r = esp_soc::nat::NatTransport::resolver(&transport);
+        eprintln!("[emu] NAT to the host network enabled (DNS via {}.{}.{}.{})", r[0], r[1], r[2], r[3]);
         for spec in hostfwd {
             let parsed = esp_soc::nat::HostFwdSpec::parse(spec).unwrap_or_else(|e| usage_error(&format!("--hostfwd: {e}")));
-            let bound = nat.listen(&parsed).unwrap_or_else(|e| usage_error(&format!("--hostfwd {spec}: {e}")));
+            let bound = transport.listen(&parsed).unwrap_or_else(|e| usage_error(&format!("--hostfwd {spec}: {e}")));
+            if net_log { eprintln!("[nat] hostfwd tcp {} -> {}:{}", bound, std::net::Ipv4Addr::from(parsed.guest_ip), parsed.guest_port); }
             eprintln!("[emu] hostfwd tcp {} -> {}.{}.{}.{}:{}", bound, parsed.guest_ip[0], parsed.guest_ip[1], parsed.guest_ip[2], parsed.guest_ip[3], parsed.guest_port);
         }
-    }
+        let mut nat = esp_soc::nat::Nat::with_transport(net_log, Box::new(transport));
+        nat.hostfwd = hostfwd.len() as u64;
+        nat
+    });
     let net = esp_soc::net::VirtualNet::new(false);   // its fixed addresses, for the line below
     eprintln!("[emu] virtual network: station {}.{}.{}.{}, gateway {}.{}.{}.{} (DHCP, ARP, ICMP, DNS, NTP)", net.sta_ip[0], net.sta_ip[1], net.sta_ip[2], net.sta_ip[3], net.gw_ip[0], net.gw_ip[1], net.gw_ip[2], net.gw_ip[3]);
     (cfg, nat)
