@@ -5,11 +5,13 @@
 //! (active high); touch CLK 25, MOSI 32, MISO 39, CS 33, IRQ 36. The two devices are told apart by
 //! their chip-select lines, not by SPI host: TFT_eSPI and a second `SPIClass` may both be on VSPI.
 //!
-//! The panel is shown as the firmware uses it, landscape 320×240: with MADCTL.MV set (TFT_eSPI
-//! rotations 1 and 3) the controller's RAM is transposed, so the visible frame is the RAM
-//! transposed back. Red and blue are exchanged unless MADCTL's BGR bit is set. Touch coordinates
-//! from the UI/`touch` script are landscape pixels; the XPT2046's 12-bit X/Y are an approximate
-//! linear map of them (not a calibrated transfer curve).
+//! The panel is shown as the firmware uses it: with MADCTL.MV set (TFT_eSPI rotations 1 and 3) the
+//! controller's RAM is transposed, so the visible frame is the RAM transposed back, landscape
+//! 320×240; with MV clear (rotations 0 and 2) it is the RAM as it is, portrait 240×320. Red and
+//! blue are exchanged unless MADCTL's BGR bit is set. Touch coordinates from the UI/`touch` script
+//! are pixels of that frame; the XPT2046's 12-bit X/Y are an approximate linear map of the same
+//! spot on the glass in landscape (not a calibrated transfer curve), so they do not change with
+//! the rotation, as on the real panel.
 use esp_soc::devices::DcsPanel;
 use esp_soc::BoardModel;
 
@@ -71,18 +73,23 @@ impl Cyd {
     }
 }
 
-/// Landscape frame (320×240) of what the glass shows: the RAM transposed (the board is used with
-/// the long edge horizontal), colours exchanged unless BGR, black while asleep or off.
-pub fn lcd_visible(p: &DcsPanel) -> Vec<u16> {
+/// Whether the firmware addresses the panel in landscape (MADCTL.MV set: TFT_eSPI rotations 1, 3).
+pub fn landscape(p: &DcsPanel) -> bool { p.madctl & 0x20 != 0 }
+
+/// What the glass shows, as the firmware addresses it: landscape 320×240 (the RAM transposed) when
+/// MADCTL.MV is set, otherwise portrait 240×320 (the RAM as it is); colours exchanged unless BGR,
+/// black while asleep or off. Returns (width, height, pixels).
+pub fn lcd_visible(p: &DcsPanel) -> (usize, usize, Vec<u16>) {
     let exchange = p.madctl & 0x08 == 0;
     let blank = !p.on || p.sleeping;
-    let mut out = Vec::with_capacity(LCD_W * LCD_H);
-    for y in 0..LCD_H { for x in 0..LCD_W {
-        let mut px = p.gram[x * p.cols + y];
+    let (w, h) = if landscape(p) { (LCD_W, LCD_H) } else { (LCD_H, LCD_W) };
+    let mut out = Vec::with_capacity(w * h);
+    for y in 0..h { for x in 0..w {
+        let mut px = if landscape(p) { p.gram[x * p.cols + y] } else { p.gram[y * p.cols + x] };
         if exchange { px = (px & 0x07e0) | ((px & 0xf800) >> 11) | ((px & 0x001f) << 11); }
         out.push(if blank { 0 } else { px });
     } }
-    out
+    (w, h, out)
 }
 
 impl BoardModel for Cyd {
@@ -111,12 +118,20 @@ impl BoardModel for Cyd {
         }
         vec![0xff; rx_len]
     }
-    fn touch(&mut self, x: u16, y: u16, down: bool) { self.touch.x = x.min(LCD_W as u16 - 1); self.touch.y = y.min(LCD_H as u16 - 1); self.touch.down = down; }
+    /// (x, y) are pixels of the frame `display()` shows; a portrait point is the landscape point
+    /// (y, x) on the glass, so the raw X/Y follow the glass, not the rotation.
+    fn touch(&mut self, x: u16, y: u16, down: bool) {
+        let (x, y) = if landscape(&self.panel) { (x, y) } else { (y, x) };
+        self.touch.x = x.min(LCD_W as u16 - 1); self.touch.y = y.min(LCD_H as u16 - 1); self.touch.down = down;
+    }
     /// T_IRQ is active low while the panel is pressed (the library's `tirqTouched()` waits for its edge).
     fn touch_irq(&self) -> Option<(u8, bool)> { Some((PIN_TOUCH_IRQ, !self.touch.down)) }
     fn input_levels(&self) -> Vec<(u8, bool)> { vec![(PIN_TOUCH_IRQ, !self.touch.down)] }
     fn gpio_events(&self) -> u64 { self.gpio_events }
-    fn display(&self) -> Option<(u32, u32, Vec<u16>, u64)> { Some((LCD_W as u32, LCD_H as u32, lcd_visible(&self.panel), self.panel.pixels_written)) }
+    fn display(&self) -> Option<(u32, u32, Vec<u16>, u64)> {
+        let (w, h, px) = lcd_visible(&self.panel);
+        Some((w as u32, h as u32, px, self.panel.pixels_written))
+    }
     fn display_version(&self) -> u64 { self.panel.pixels_written }
     fn display_frames(&self) -> u64 { self.panel.frames }
     fn report(&self) -> String {
@@ -161,6 +176,28 @@ mod tests {
         assert_eq!((w, h), (320, 240));
         assert_eq!(px[20 * 320 + 10], 0xf800, "landscape (10, 20)");
     }
+    #[test]
+    fn portrait_is_the_ram_as_it_is_and_touch_follows_the_glass() {
+        let mut b = Cyd::new();
+        b.panel.on = true; b.panel.sleeping = false; b.panel.madctl = 0x08;   // BGR, MV clear: TFT_eSPI rotation 0
+        for (cmd, args) in [(0x2au8, [0u8, 10, 0, 239]), (0x2b, [0, 20, 1, 63])] {
+            b.gpio_changes(&[(PIN_LCD_CS, false), (PIN_LCD_DC, false)]); b.spi_transfer(3, &[cmd], 0);
+            b.gpio_changes(&[(PIN_LCD_DC, true)]); b.spi_transfer(3, &args, 0);
+        }
+        b.gpio_changes(&[(PIN_LCD_DC, false)]); b.spi_transfer(3, &[0x2c], 0);
+        b.gpio_changes(&[(PIN_LCD_DC, true)]); b.spi_transfer(3, &[0xf8, 0x00], 0);
+        let (w, h, px, _) = b.display().unwrap();
+        assert_eq!((w, h), (240, 320));
+        assert_eq!(px[20 * 240 + 10], 0xf800, "portrait (10, 20)");
+        assert_eq!(px.iter().filter(|&&p| p != 0).count(), 1);
+        // portrait (10, 20) is landscape (20, 10) on the glass: the same raw X/Y either way
+        b.touch(10, 20, true);
+        let portrait = (b.touch.x, b.touch.y);
+        b.panel.madctl = 0x28;
+        b.touch(20, 10, true);
+        assert_eq!(portrait, (b.touch.x, b.touch.y));
+        assert_eq!(portrait, (20, 10));
+    }
 
     /// The whole path through the classic SoC bus: CS 15 / D/C 2 / CS 33 as plain GPIO outputs, the TFT on SPI2
     /// (HSPI) and the touch controller on SPI3 (VSPI), CPU transfers out of W0, and a touch pulling GPIO 36 low.
@@ -175,7 +212,7 @@ mod tests {
         let mut b = crate::bus::SocBus::new(4 << 20, [0; 6]);
         b.board = Box::new(Cyd::new());
         b.attach_board_devices();
-        // IO_MUX: GPIO2 0x40, GPIO15 0x3c, GPIO33 0x20 (soc/esp32/register/soc/io_mux_reg.h, IDF v4.4); MCU_SEL = 2 (GPIO)
+        // IO_MUX: GPIO2 0x40, GPIO15 0x3c, GPIO33 0x20 (soc/esp32/register/soc/io_mux_reg.h, IDF v5.5.4; same offsets in v4.4); MCU_SEL = 2 (GPIO)
         for off in [0x40, 0x3c, 0x20] { b.write32(IO_MUX + off, 2 << 12).unwrap(); }
         for pin in [2, 15, 33] { b.write32(GPIO + 0x530 + 4 * pin, 256).unwrap(); }
         b.write32(IO_MUX + 0x04, (2 << 12) | (1 << 9)).unwrap();                       // GPIO36 (T_IRQ, 0x04): input enabled

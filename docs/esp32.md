@@ -135,13 +135,15 @@ ILI9341 on SPI (SCLK 14, MOSI 13, MISO 12, CS 15, D/C 2, backlight GPIO 21) and 
 resistive touch controller on a second bus (CLK 25, MOSI 32, MISO 39, CS 33, T_IRQ 36).
 `esp32/src/board/cyd.rs` tells the two apart by their chip-select GPIOs, so TFT_eSPI on HSPI or
 VSPI and a separate `SPIClass` for the touch controller all work. The panel is a
-`DcsPanel::new(240, 320)`; the frame shown (`--tft-png`, the page's panel) is the landscape 320×240
-that MADCTL.MV rotations give, with red and blue exchanged unless MADCTL's BGR bit is set.
+`DcsPanel::new(240, 320)`; the frame shown (`--tft-png`, the page's panel) follows MADCTL.MV: landscape
+320×240 (the RAM transposed) when it is set, as in TFT_eSPI rotations 1 and 3, portrait 240×320 when it
+is clear (rotations 0 and 2), with red and blue exchanged unless MADCTL's BGR bit is set. Other
+"CYD" boards with an ST7789 or inverted colours (e.g. the two-USB variant) are not modelled.
 
 The XPT2046 model follows the control-byte protocol the Paul Stoffregen library uses: a byte with
 bit 7 set starts a conversion, whose 12-bit result is clocked out on the next two bytes
 (`transfer16() >> 3`). Z1/Z2 give a pressure above the library's threshold while pressed, X/Y are a
-linear map of the landscape pixel to 200..3900, and GPIO 36 is pulled low while pressed
+linear map of the spot on the glass (the landscape pixel; a portrait touch is transposed onto it) to 200..3900, and GPIO 36 is pulled low while pressed
 (`BoardModel::touch_irq`) so `tirqTouched()` sees its falling edge. The raw values are not a
 calibration curve. The backlight, LDR, SD card, RGB LED and speaker are not modelled.
 
