@@ -71,6 +71,7 @@ impl esp_soc::SocBus for SocBus {
         let timer = if self.pins_active { self.pin_deadline() } else {
             match self.periph.cycles_until_timer() { u32::MAX => None, cycles => Some(cycles.max(1) as u64) }
         };
+        let timer = timer.into_iter().chain(self.uart_deadline()).min();
         if self.periph.i2s_rx { Some(timer.unwrap_or(u64::MAX).min(256)) } else { timer }
     }
     fn irq_dirty(&mut self) -> &mut bool { &mut self.irq_dirty }

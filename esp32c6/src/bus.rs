@@ -44,8 +44,8 @@ pub struct SocBus {
     pub last_fault: Option<(u32, bool)>,
     /// a peripheral write may have moved an interrupt line: re-derive before the next instruction
     pub irq_dirty: bool,
-    /// A UART interrupt enable was written: present the new level at the next tick (see `periph_write`).
-    irq_deferred: bool,
+    /// A UART interrupt enable was written: its level is presented after the delivery latency (see `periph_write`).
+    ena_latency: esp_periph::uart::EnaLatency,
     /// GPIO edges for observers, while one wants them: (cycle, pin, level)
     pub gpio_events: Option<Vec<(u64, u8, bool)>>,
     pub debug: esp_soc::DebugFlags,
@@ -78,7 +78,7 @@ impl SocBus {
             flash: vec![0xff; flash_size],
             mmu: [0; MMU_ENTRIES], mmu_index: 0, mmu_power_ctrl: 0,
             periph: Peripherals::new(mac), board: Box::new(esp_soc::NoBoard), uart_pins: false,
-            cycles: 0, last_fault: None, irq_dirty: true, irq_deferred: false, gpio_events: None, debug: Default::default(), board_edges: false,
+            cycles: 0, last_fault: None, irq_dirty: true, ena_latency: Default::default(), gpio_events: None, debug: Default::default(), board_edges: false,
         }
     }
 
@@ -127,12 +127,9 @@ impl SocBus {
             let uart = match addr & !3 { 0x6000_0000 => Some(0), 0x6000_1000 => Some(1), _ => None };
             let before = uart.map(|i| self.periph.uart[i].irq());
             let w = self.periph.read32(addr & !3);
-            // RXFIFO_FULL follows the FIFO level (as on the other chips): the mask ROM's shared UART handler reads one
-            // FIFO and never clears the interrupt.
-            if let (Some(i), Some(before)) = (uart, before) {
-                self.periph.uart[i].lower_rx_full_when_drained();
-                if self.periph.uart[i].irq() != before { self.irq_dirty = true; }
-            }
+            // RXFIFO_FULL follows the FIFO level (`Uart::read`): the mask ROM's shared UART handler reads one FIFO and
+            // never clears the interrupt, so a falling level must reach the CPU.
+            if let (Some(i), Some(before)) = (uart, before) { self.irq_dirty |= self.periph.uart[i].irq() != before; }
             w
         };
         match size { 1 => (w >> ((addr & 3) * 8)) & 0xff, 2 => (w >> ((addr & 2) * 8)) & 0xffff, _ => w }
@@ -159,7 +156,8 @@ impl SocBus {
                 _ => {}
             }
         }
-        let v = if size == 4 { v } else { merge(self.periph.read32(a)) };
+        // A sub-word store to a UART FIFO must not read (pop) a received byte to merge into.
+        let v = if size == 4 { v } else if matches!(a, 0x6000_0000 | 0x6000_1000) { merge(0) } else { merge(self.periph.read32(a)) };
         let old_drive = (self.periph.gpio.enable, self.periph.gpio.out);
         self.periph.write32(a, v);
         if matches!(a & !0xfff, 0x6009_0000 | 0x6009_1000) && self.board.uses_gpio_waveform() {
@@ -185,7 +183,7 @@ impl SocBus {
         if self.periph.spi2.has_pending_transfer() || !self.periph.gpio.changes.is_empty() { self.deliver_board_events(); }
         // Interrupt delivery has latency on silicon. The mask ROM's uart_buff_switch enables a UART's interrupt just before
         // it stores which UART its handler serves; an immediate interrupt runs the handler for the previous one.
-        if matches!(a, 0x6000_000c | 0x6000_100c) { self.irq_deferred = true; } else { self.irq_dirty = true; }
+        if matches!(a, 0x6000_000c | 0x6000_100c) { self.ena_latency.arm(); } else { self.irq_dirty = true; }
     }
 
     /// SHA DMA after a write, out of line so idle MMIO writes test only `dma_pending`.
@@ -539,17 +537,21 @@ impl SocBus {
         if self.periph.optional.i2s0.rx_running() { self.i2s_rx_step(u64::from(cycles)); }
     }
 
+    /// Each UART's configured baud rate, for pacing queued host input.
+    fn uart_bauds(&self) -> [Option<u32>; 2] { std::array::from_fn(|port| self.periph.uart_route(port).baud) }
     /// Release host bytes queued by `uart_input` at the configured baud rate.
     #[cold]
     #[inline(never)]
     fn pace_uart_input(&mut self, cycles: u32) {
-        for port in 0..self.periph.uart.len() {
-            let baud = self.periph.uart_route(port).baud;
-            let before = self.periph.uart[port].irq();
-            if self.periph.uart[port].advance(cycles as u64, crate::periph::CPU_HZ, baud) {
-                self.irq_dirty |= before != self.periph.uart[port].irq();
-            }
-        }
+        let bauds = self.uart_bauds();
+        self.irq_dirty |= esp_periph::uart::pace_input(self.periph.uart.iter_mut().zip(bauds), cycles as u64, crate::periph::CPU_HZ);
+    }
+    /// Cycles an idle core may skip before queued UART input or a pending INT_ENA level is due.
+    pub(crate) fn uart_deadline(&self) -> Option<u64> {
+        let input = if self.periph.uart.iter().any(|u| u.has_queued()) {
+            esp_periph::uart::input_deadline(self.periph.uart.iter().zip(self.uart_bauds()), crate::periph::CPU_HZ)
+        } else { None };
+        input.into_iter().chain(self.ena_latency.deadline()).min()
     }
 
     fn devices(&mut self, cycles: u32) {
@@ -639,7 +641,7 @@ impl Bus for SocBus {
     }
     fn tick(&mut self, cycles: u32) -> u32 {
         self.cycles += cycles as u64;
-        if self.irq_deferred { self.irq_deferred = false; self.irq_dirty = true; }
+        if self.ena_latency.tick(cycles as u64) { self.irq_dirty = true; }
         self.devices(cycles);
         u32::from(self.irq_dirty)
     }

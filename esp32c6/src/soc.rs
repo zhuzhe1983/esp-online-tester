@@ -58,7 +58,7 @@ impl esp_soc::SocBus for SocBus {
     fn next_deadline(&self) -> Option<u64> {
         let timer = match self.periph.cycles_until_timer() { u32::MAX => None, cycles => Some(cycles.max(1) as u64) };
         let board = self.board.next_deadline().map(|at| at.saturating_sub(self.cycles).max(1));
-        let deadline = timer.into_iter().chain(board).min();
+        let deadline = timer.into_iter().chain(board).chain(self.uart_deadline()).min();
         // work_pending is false on idle rounds; it covers both SPI and RX.
         if self.periph.work_pending && self.periph.optional.i2s0.rx_running() { Some(deadline.unwrap_or(u64::MAX).min(256)) } else { deadline }
     }

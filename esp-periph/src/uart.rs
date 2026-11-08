@@ -60,11 +60,17 @@ impl Uart {
     /// than the 128-byte FIFO holds (an esptool stub upload is 6 KiB per packet), and firmware sized its buffers for bytes
     /// arriving at the baud rate. What fits goes into the FIFO now; the rest waits and `advance` releases it at the line
     /// rate, instead of being dropped with RXFIFO_OVF as `host_input` (a real wire) does. Chips that call this must call
-    /// `advance` from their device tick.
+    /// `advance` from their device tick (`pace_input`) and count `input_deadline` in their idle deadline.
     pub fn host_input_queued(&mut self, data: &[u8]) {
         if self.autobaud_on() { self.edges = self.edges.saturating_add(9 * data.len() as u32).min(0x3ff); }
         self.queue.extend(data);
         self.pump(usize::MAX);
+    }
+    /// Bytes from a board's wire (pin-driven input, already at line rate): straight into the FIFO, overflowing as on
+    /// silicon. Only while host bytes are still queued do they wait behind them, so the order the two sources sent in
+    /// is kept (the overflow check then happens when they are released).
+    pub fn wire_input(&mut self, data: &[u8]) {
+        if self.queue.is_empty() { self.host_input(data); } else { self.queue.extend(data); }
     }
     /// Host bytes waiting for room in the FIFO: the only case in which `advance` has work.
     pub fn has_queued(&self) -> bool { !self.queue.is_empty() }
@@ -78,19 +84,29 @@ impl Uart {
         if moved > 0 { self.refresh_rx_full(); }
         moved
     }
+    /// CPU cycles per byte at `baud` (10 bits per byte; 115200 when none is configured).
+    fn cycles_per_byte(cpu_hz: u64, baud: Option<u32>) -> u64 {
+        let baud = baud.filter(|b| *b > 0).unwrap_or(115_200) as u64;
+        (cpu_hz * 10 / baud).max(1)
+    }
     /// Release queued host bytes at 10 bits per byte. `baud` is the configured rate (115200 when none is set). Credit
     /// only accrues while a byte could move, so a full FIFO holds the line and no burst follows when it drains.
-    /// Returns whether any byte moved.
+    /// Returns whether any byte moved (the receive interrupt level may have changed).
     pub fn advance(&mut self, cycles: u64, cpu_hz: u64, baud: Option<u32>) -> bool {
         if self.queue.is_empty() || self.rx.len() >= RX_FIFO_SIZE { self.credit = 0; return false; }
-        let baud = baud.filter(|b| *b > 0).unwrap_or(115_200) as u64;
-        let per_byte = (cpu_hz * 10 / baud).max(1);
+        let per_byte = Self::cycles_per_byte(cpu_hz, baud);
         self.credit += cycles;
         let due = (self.credit / per_byte) as usize;
         if due == 0 { return false; }
         let moved = self.pump(due);
         self.credit = if moved < due { 0 } else { self.credit - moved as u64 * per_byte };
         moved > 0
+    }
+    /// CPU cycles until `advance` would release the next queued byte, or None when nothing can move (no queue, or a full
+    /// FIFO that only a read can open). An idle core must not be fast-forwarded past it.
+    pub fn input_deadline(&self, cpu_hz: u64, baud: Option<u32>) -> Option<u64> {
+        if self.queue.is_empty() || self.rx.len() >= RX_FIFO_SIZE { return None; }
+        Some(Self::cycles_per_byte(cpu_hz, baud).saturating_sub(self.credit).max(1))
     }
     /// CONF1 rxfifo_full_thrhd (the layout says how wide); the silicon reset value is 0x60, a
     /// driver that wants every byte sets 1. RXFIFO_FULL is a level here: it stays raised while the count is at or
@@ -100,7 +116,7 @@ impl Uart {
     /// without software writing INT_CLR. The mask ROM's UART interrupt handler relies on it: when the other UART of the
     /// pair interrupts, it only reads that UART's FIFO and never clears the interrupt. (`refresh_rx_full` still re-raises it
     /// on the next arrival or when INT_CLR leaves the count at or above the threshold.)
-    pub fn lower_rx_full_when_drained(&mut self) {
+    fn lower_rx_full_when_drained(&mut self) {
         if self.rx.len() < self.rx_full_threshold() { self.int_raw &= !INT_RXFIFO_FULL; }
     }
     fn refresh_rx_full(&mut self) {
@@ -152,8 +168,11 @@ impl Uart {
                 else if self.autobaud_on() || self.edges > 0 { self.autobaud_pulse() }          // LOWPULSE / HIGHPULSE
                 else { self.ram.read(o) }
             }
-            0x20 => self.ram.read(off),
-            0x0 => self.rx.pop_front().map(|b| b as u32).unwrap_or(0),
+            0x0 => {
+                let b = self.rx.pop_front().map(|b| b as u32).unwrap_or(0);
+                self.lower_rx_full_when_drained();
+                b
+            }
             0x4 => self.int_raw,
             0x8 => self.int_raw & self.int_ena,
             0xc => self.int_ena,
@@ -183,6 +202,41 @@ impl Device for Uart {
     fn read(&mut self, off: u32) -> u32 { Uart::read(self, off) }
     fn write(&mut self, off: u32, v: u32) -> WriteEffect { Uart::write(self, off, v); WriteEffect::NONE }
     fn irq_sources(&self) -> u64 { self.irq() as u64 }
+}
+
+/// Release queued host input on every UART (`Uart::advance`), each at its own baud. Returns whether a receive
+/// interrupt level may have changed. One call per device tick, only while `Uart::has_queued` holds for some port.
+pub fn pace_input<'a>(ports: impl IntoIterator<Item = (&'a mut Uart, Option<u32>)>, cycles: u64, cpu_hz: u64) -> bool {
+    ports.into_iter().fold(false, |moved, (u, baud)| u.advance(cycles, cpu_hz, baud) | moved)
+}
+/// The earliest `Uart::input_deadline` of any port, for the chip's idle deadline.
+pub fn input_deadline<'a>(ports: impl IntoIterator<Item = (&'a Uart, Option<u32>)>, cpu_hz: u64) -> Option<u64> {
+    ports.into_iter().filter_map(|(u, baud)| u.input_deadline(cpu_hz, baud)).min()
+}
+
+/// Interrupt-delivery latency after a UART INT_ENA write. On silicon the interrupt matrix and the CPU's controller
+/// take a few cycles; the mask ROMs' `uart_buff_switch` enables a UART's interrupt and stores which UART its handler
+/// serves in the next instructions, so an interrupt taken in between runs the handler for the previous UART and faults.
+/// The bus arms this on the write and presents the new level once `CYCLES` have passed, counted from the tick after
+/// the one that ends the block holding the write: that tick can carry cycles spent before the write, so it does not
+/// count, which makes the delay independent of where blocks and quanta end.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct EnaLatency(Option<(bool, u64)>);
+impl EnaLatency {
+    pub const CYCLES: u64 = 16;
+    pub fn arm(&mut self) { self.0 = Some((false, Self::CYCLES)); }
+    pub fn pending(&self) -> bool { self.0.is_some() }
+    /// Advance by a tick of `cycles`; true when the level is due now (the bus re-derives its interrupt lines).
+    pub fn tick(&mut self, cycles: u64) -> bool {
+        match self.0 {
+            None => false,
+            Some((false, left)) => { self.0 = Some((true, left)); false }
+            Some((true, left)) if cycles >= left => { self.0 = None; true }
+            Some((true, left)) => { self.0 = Some((true, left - cycles)); false }
+        }
+    }
+    /// Cycles an idle core may skip before the level is due.
+    pub fn deadline(&self) -> Option<u64> { self.0.map(|(_, left)| left.max(1)) }
 }
 
 #[cfg(test)]
@@ -238,6 +292,38 @@ mod tests {
             u.advance(per_byte * 200, 160_000_000, None);
         }
         assert_eq!(got, data);
+    }
+
+    #[test]
+    fn input_deadline_is_the_next_byte_time_and_wire_input_keeps_order() {
+        let mut u = Uart::new(UartLayout::C3);
+        let per_byte = 160_000_000 * 10 / 115_200;
+        assert_eq!(u.input_deadline(160_000_000, None), None);
+        u.host_input_queued(&[1; 130]);
+        assert_eq!(u.input_deadline(160_000_000, None), None, "full FIFO: only a read can make room");
+        u.wire_input(&[2]);
+        assert_eq!(u.read(0x4) & INT_RXFIFO_OVF, 0, "behind the queue, not overflowing it");
+        let _ = u.read(0);
+        assert_eq!(u.input_deadline(160_000_000, None), Some(per_byte));
+        u.advance(per_byte - 10, 160_000_000, None);
+        assert_eq!(u.input_deadline(160_000_000, None), Some(10));
+        while u.rx_pending() > 0 { let _ = u.read(0); }
+        for _ in 0..3 { u.advance(per_byte, 160_000_000, None); }
+        let tail: Vec<u32> = (0..3).map(|_| u.read(0)).collect();
+        assert_eq!(tail, [1, 1, 2], "the wire byte arrives after the host bytes queued before it");
+        u.wire_input(&[3; RX_FIFO_SIZE + 1]);
+        assert_ne!(u.read(0x4) & INT_RXFIFO_OVF, 0, "with nothing queued, wire input overflows as on silicon");
+    }
+
+    #[test]
+    fn ena_latency_does_not_count_the_tick_that_ends_the_writing_block() {
+        let mut l = EnaLatency::default();
+        assert!(!l.tick(1_000));
+        l.arm();
+        assert!(!l.tick(1_000), "the block that wrote INT_ENA may have spent these cycles before the write");
+        for _ in 0..EnaLatency::CYCLES - 1 { assert!(!l.tick(1)); }
+        assert!(l.tick(1));
+        assert!(!l.pending());
     }
 
     #[test]

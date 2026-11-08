@@ -249,7 +249,13 @@ pub fn hex_decode(s: &str) -> Option<Vec<u8>> {
     let nibble = |c: u8| (c as char).to_digit(16).map(|d| d as u8);
     s.chunks(2).map(|p| Some(nibble(p[0])? << 4 | nibble(p[1])?)).collect()
 }
-pub fn hex_encode(b: &[u8]) -> String { b.iter().map(|x| format!("{x:02x}")).collect() }
+/// Bytes to lowercase hex text, without separators.
+pub fn hex_encode(b: &[u8]) -> String {
+    const DIGITS: &[u8; 16] = b"0123456789abcdef";
+    let mut o = String::with_capacity(b.len() * 2);
+    for &x in b { o.push(DIGITS[(x >> 4) as usize] as char); o.push(DIGITS[(x & 15) as usize] as char); }
+    o
+}
 
 pub fn json_escape(s: &str) -> String {
     let mut o = String::with_capacity(s.len());

@@ -549,10 +549,10 @@ impl Device for ClassicGpio {
 // bits 13-23 hold the receive FIFO write pointer, modelled as the queued count mod 128.
 /// `.1` is the autobaud edge count: edges the detector has measured since it was enabled. Latched like the
 /// silicon's counters: it keeps its value after the ROM's receive interrupt has drained the FIFO, and clears when the
-/// detector is disabled. `.2` holds host bytes that did not fit the 128-byte FIFO, and `.3` is the CPU-cycle credit
-/// with which they are released at the baud rate. `.4` is set while software has cleared TX_DONE and nothing has
-/// been transmitted since. (A tuple struct, so existing `uart.0` callers keep working.)
-pub struct ClassicUart(pub Uart, u32, std::collections::VecDeque<u8>, u64, bool);
+/// detector is disabled. `.2` is set while software has cleared TX_DONE and nothing has been transmitted since.
+/// Host bytes that do not fit the 128-byte FIFO wait in the shared `Uart`'s queue (`Uart::host_input_queued`).
+/// (A tuple struct, so existing `uart.0` callers keep working.)
+pub struct ClassicUart(pub Uart, u32, bool);
 impl ClassicUart {
     const MEM_RX_STATUS: u32 = 0x60;
     // The UART's baud-rate auto-detector, which the mask ROM's download boot depends on. `UartConnCheck` calls
@@ -576,7 +576,7 @@ impl ClassicUart {
     // uart_tx_wait_idle clears TX_DONE and then spins `while (INT_RAW & TX_DONE)`, right before the download protocol
     // jumps into a loaded stub. Here a clear holds TX_DONE down until the next byte is written to the FIFO.
     const TX_DONE: u32 = 1 << 14;
-    fn tx_done_mask(&self) -> u32 { if self.4 { !Self::TX_DONE } else { !0 } }
+    fn tx_done_mask(&self) -> u32 { if self.2 { !Self::TX_DONE } else { !0 } }
     fn autobaud_sampling(&mut self) -> bool {
         self.0.read(Self::AUTOBAUD) & 1 != 0 && self.1 > 0
     }
@@ -587,46 +587,30 @@ impl ClassicUart {
         (80_000_000 / baud).saturating_sub(9) as u32
     }
     fn new(layout: UartLayout) -> Self {
-        Self(Uart::new(layout), 0, Default::default(), 0, false)
+        Self(Uart::new(layout), 0, false)
     }
-    /// Host-injected bytes. While the autobaud detector is enabled they are also what it "measures".
+    /// While the autobaud detector is enabled, received bytes are also what it "measures".
+    fn count_edges(&mut self, n: usize) {
+        if self.0.read(Self::AUTOBAUD) & 1 != 0 { self.1 = self.1.saturating_add(9 * n as u32).min(1023); }
+    }
+    /// Host-injected bytes: what fits is available at once, the rest is released at the baud rate by `advance`
+    /// (esptool sends several KB per packet; see `Uart::host_input_queued`).
     pub fn host_input(&mut self, data: &[u8]) {
-        if self.0.read(Self::AUTOBAUD) & 1 != 0 {
-            self.1 = self.1.saturating_add(9 * data.len() as u32).min(1023);
-        }
-        self.2.extend(data);
-        self.pump(usize::MAX); // what fits is available at once; the rest is released by `advance`
+        self.count_edges(data.len());
+        self.0.host_input_queued(data);
     }
-    const FIFO_SIZE: usize = 128;
-    /// Host bytes waiting for room in the FIFO: the only case in which `advance` has work.
-    pub fn has_queued(&self) -> bool { !self.2.is_empty() }
-    /// Move up to `max` queued host bytes into the receive FIFO, as far as it has room. Returns how many moved.
-    fn pump(&mut self, max: usize) -> usize {
-        let n = Self::FIFO_SIZE.saturating_sub(self.0.rx_pending()).min(self.2.len()).min(max);
-        if n > 0 {
-            let chunk: Vec<u8> = self.2.drain(..n).collect();
-            self.0.host_input(&chunk);
-        }
-        n
+    /// Bytes from a board's wire, already at line rate: straight into the FIFO, overflowing as on silicon.
+    pub fn wire_input(&mut self, data: &[u8]) {
+        self.count_edges(data.len());
+        self.0.wire_input(data);
     }
-    /// Release queued host bytes at the baud rate (10 bits per byte), in emulated time. A packet that does not fit the
-    /// 128-byte FIFO (esptool sends several KB at once) arrives on hardware paced by the line, so the firmware's receive
-    /// interrupt always drains the FIFO faster than it fills. Delivering it in one burst instead makes that interrupt
-    /// handler pull the whole packet into the ROM's 256-byte receive ring before the main loop can consume any of it.
-    /// Returns whether the receive interrupt level may have changed.
+    /// Release queued host bytes at the configured baud. Returns whether any moved.
     pub fn advance(&mut self, cycles: u64, cpu_hz: u64) -> bool {
-        // Credit only accrues while a byte could actually move; a full FIFO holds the line (the host waits), so
-        // nothing is banked and no burst follows when the firmware drains it.
-        if self.2.is_empty() || self.0.rx_pending() >= Self::FIFO_SIZE { self.3 = 0; return false; }
-        let baud = self.0.classic_baud().filter(|b| *b > 0).unwrap_or(115_200) as u64;
-        let per_byte = (cpu_hz * 10 / baud).max(1);
-        self.3 += cycles;
-        let due = (self.3 / per_byte) as usize;
-        if due == 0 { return false; }
-        let moved = self.pump(due);
-        self.3 = if moved < due { 0 } else { self.3 - moved as u64 * per_byte };
-        moved > 0
+        let baud = self.0.classic_baud();
+        self.0.advance(cycles, cpu_hz, baud)
     }
+    /// CPU cycles until the next queued byte is due, for the idle deadline.
+    pub fn input_deadline(&self, cpu_hz: u64) -> Option<u64> { self.0.input_deadline(cpu_hz, self.0.classic_baud()) }
 }
 impl std::ops::Deref for ClassicUart {
     type Target = Uart;
@@ -646,18 +630,13 @@ impl Device for ClassicUart {
             Self::RXD_CNT if self.autobaud_sampling() => self.1,
             Self::LOWPULSE | Self::HIGHPULSE if self.autobaud_sampling() => self.pulse_width(),
             Self::INT_RAW | Self::INT_ST => self.0.read(off) & self.tx_done_mask(),
-            Self::FIFO => {
-                let byte = self.0.read(off);
-                self.0.lower_rx_full_when_drained();
-                byte
-            }
             _ => self.0.read(off),
         }
     }
     fn write(&mut self, off: u32, v: u32) -> WriteEffect {
         if off == Self::AUTOBAUD && v & 1 == 0 { self.1 = 0; } // detector off: measurements are discarded
-        if off == Self::INT_CLR && v & Self::TX_DONE != 0 { self.4 = true; }
-        if off == Self::FIFO { self.4 = false; } // a transmitted byte completes at once, raising TX_DONE again
+        if off == Self::INT_CLR && v & Self::TX_DONE != 0 { self.2 = true; }
+        if off == Self::FIFO { self.2 = false; } // a transmitted byte completes at once, raising TX_DONE again
         self.0.write(off, v);
         WriteEffect::NONE
     }
@@ -962,12 +941,12 @@ impl Peripherals {
     }
     pub fn uart_pin_input(&mut self, input: &esp_soc::uart::UartInput) {
         let routes = std::array::from_fn::<_, 3, _>(|port| self.uart_route(port));
-        // Same routing as esp_soc::uart::uart_pin_input, but delivered through ClassicUart::host_input so pin-driven
-        // bytes get the same autobaud counting and baud-rate pacing as host-injected ones.
+        // Same routing as esp_soc::uart::uart_pin_input, through ClassicUart::wire_input so pin-driven bytes are also
+        // counted by the autobaud detector (they are at line rate already: no pacing, and overflow as on silicon).
         if input.data.is_empty() { return; }
         for (uart, route) in self.uart.iter_mut().zip(&routes) {
             if route.rx_pin != Some(input.pin) { continue; }
-            if route.matches_baud(input.baud) { uart.host_input(&input.data); }
+            if route.matches_baud(input.baud) { uart.wire_input(&input.data); }
             else { uart.0.int_raw |= esp_periph::uart::INT_FRM_ERR; }
         }
     }
@@ -1112,11 +1091,8 @@ impl Peripherals {
         // Pace queued host bytes. Only when some UART has any (off the hot path); cpu_scale_half() is half reference
         // ticks per CPU clock (12/6/3/2 = 40/80/160/240 MHz), so this is the current CPU clock.
         if self.uart.iter().any(|u| u.has_queued()) {
-            let cpu_hz = 480_000_000 / self.cpu_scale_half().max(1);
-            for uart in self.uart.iter_mut().filter(|u| u.has_queued()) {
-                let before = uart.irq_sources();
-                if uart.advance(cycles, cpu_hz) { irq_changed |= before != uart.irq_sources(); }
-            }
+            let cpu_hz = self.uart_pace_hz();
+            for uart in self.uart.iter_mut() { irq_changed |= uart.advance(cycles, cpu_hz); }
         }
         let ledc_before = self.ledc.irq_sources();
         let rmt_before = self.rmt.irq_sources();
@@ -1171,6 +1147,14 @@ impl Peripherals {
         for (core, lines) in out.iter_mut().enumerate() {
             *lines = self.dport.cpu_lines(core, &self.with_gpio_sources(core, &all));
         }
+    }
+    /// The clock `tick`'s cycles run at for UART pacing (the current CPU clock).
+    fn uart_pace_hz(&self) -> u64 { 480_000_000 / self.cpu_scale_half().max(1) }
+    /// Cycles (of `tick`) until queued host UART input is due, so an idle core is not fast-forwarded past it.
+    pub fn uart_input_deadline(&self) -> Option<u64> {
+        if !self.uart.iter().any(|u| u.has_queued()) { return None; }
+        let hz = self.uart_pace_hz();
+        self.uart.iter().filter_map(|u| u.input_deadline(hz)).min()
     }
     pub fn cycles_until_timer(&self) -> u32 {
         let mut best = self.rtc.next_deadline().map_or(u64::MAX, |t| t.saturating_sub(1) * 1600);

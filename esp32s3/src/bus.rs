@@ -66,8 +66,8 @@ pub struct SocBus {
     spi3_pins: Option<esp_soc::board::SpiPins>,
     /// set by any peripheral write: interrupt lines must be re-evaluated before the next instruction
     pub irq_dirty: bool,
-    /// A UART interrupt enable was written: present the new level at the next tick (see `periph_write_inner`).
-    irq_deferred: bool,
+    /// A UART interrupt enable was written: its level is presented after the delivery latency (see `periph_write_inner`).
+    ena_latency: esp_periph::uart::EnaLatency,
     /// GPIO edges for observers, while one wants them: (cycle, pin, level)
     pub gpio_events: Option<Vec<(u64, u8, bool)>>,
     pub debug: esp_soc::DebugFlags,
@@ -156,7 +156,7 @@ impl SocBus {
             ble: Default::default(),
             sram: vec![0; SRAM_SIZE], irom: vec![0; (IROM_MASK_HIGH - IROM_MASK_LOW) as usize], drom: vec![0; (DROM_MASK_HIGH - DROM_MASK_LOW) as usize],
             rtc_fast: vec![0; 8192], rtc_slow: vec![0; 8192], flash: vec![0xff; flash_size], psram: vec![0; psram_size],
-            mmu: [MMU_INVALID; MMU_ENTRIES], periph: Peripherals::new(mac), board: Box::new(crate::board::Atech14::new()), uart_pins: false, cycles: 0, last_fault: None, spi2_dma_fault: None, irq_dirty: false, irq_deferred: false, gpio_events: None, debug: Default::default(), board_edges: true,
+            mmu: [MMU_INVALID; MMU_ENTRIES], periph: Peripherals::new(mac), board: Box::new(crate::board::Atech14::new()), uart_pins: false, cycles: 0, last_fault: None, spi2_dma_fault: None, irq_dirty: false, ena_latency: Default::default(), gpio_events: None, debug: Default::default(), board_edges: true,
             spi2_timing: false, spi2_scheduled: None, spi2_pins: None, spi3_dma_fault: None, spi3_pins: None,
             tlb: vec![TlbEntry::EMPTY; TLB_SIZE], page_ver: Vec::new(), ver_base: [0; 7], flash_epoch: BUS_EPOCHS.fetch_add(1, std::sync::atomic::Ordering::Relaxed) << 32, code_blk: Vec::new(), tick_pending: 0, tick_budget: 0, defer_mmio: false, mmio_deferred: false, vq_violations: 0,
             approximate_cache: None, approximate_cache_pending: 0, approximate_cache_fast_internal: false, approximate_cache_inline: false,
@@ -319,7 +319,11 @@ impl SocBus {
 
     /// Time until deferred device work must run. The bounded fallback covers devices without
     /// an explicit timer deadline.
-    pub fn next_deadline(&self) -> u64 { self.tick_budget.saturating_sub(self.tick_pending).max(1) as u64 }
+    /// A pending UART INT_ENA level also bounds it: it is counted in `tick`, not in the deferred work.
+    pub fn next_deadline(&self) -> u64 {
+        let work = self.tick_budget.saturating_sub(self.tick_pending).max(1) as u64;
+        self.ena_latency.deadline().map_or(work, |d| work.min(d))
+    }
 
     /// Size the per-page version table to the buffers. Call after replacing `flash` or `psram`.
     pub fn rebuild_page_table(&mut self) {
@@ -472,12 +476,11 @@ impl SocBus {
         }
         let a = addr & !3;
         let Some(port) = UART_FIFOS.iter().position(|&f| f == a) else { return self.periph.read32(addr) };
-        // RXFIFO_FULL follows the FIFO level (as on the classic ESP32 and the C3): the mask ROM's shared UART handler reads
-        // one FIFO and never clears the interrupt, so a stale level would re-enter it with nothing to read.
+        // RXFIFO_FULL follows the FIFO level (`Uart::read`): the mask ROM's shared UART handler reads one FIFO and never
+        // clears the interrupt, so a falling level must reach the CPU.
         let before = self.periph.uart[port].irq();
         let w = self.periph.read32(addr);
-        self.periph.uart[port].lower_rx_full_when_drained();
-        if self.periph.uart[port].irq() != before { self.irq_dirty = true; }
+        self.irq_dirty |= self.periph.uart[port].irq() != before;
         w
     }
     /// EX133: every device-register access must have been deferred out of a multi-quantum run.
@@ -569,7 +572,7 @@ impl SocBus {
         } else if UART_FIFOS.iter().any(|&f| f + 0xc == a) {
             // Interrupt delivery has latency on silicon. The mask ROM's uart_buff_switch enables a UART's interrupt just
             // before it stores which UART its handler serves; an immediate interrupt runs the handler for the old one.
-            self.irq_deferred = true;
+            self.ena_latency.arm();
         } else if !(0x6000_4004..=0x6000_4018).contains(&a) {
             self.irq_dirty = true;
         } else {
@@ -867,9 +870,9 @@ impl Bus for SocBus {
     fn tick(&mut self, cycles: u32) -> u32 {
         self.cycles += cycles as u64;
         self.tick_pending += cycles;
-        let deferred = std::mem::take(&mut self.irq_deferred);
-        if deferred { self.irq_dirty = true; }
-        if self.tick_pending < self.tick_budget { return u32::from(deferred); }
+        let due = self.ena_latency.tick(cycles as u64);
+        if due { self.irq_dirty = true; }
+        if self.tick_pending < self.tick_budget { return u32::from(due); }
         self.flush_ticks();
         u32::from(self.irq_dirty)
     }
@@ -909,22 +912,24 @@ impl SocBus {
                 .clamp(1, u64::from(cap));
             budget = budget.min(until_deadline as u32);
         }
-        // Queued host UART bytes are released at the line rate: tick at least every ~10 µs while any wait.
-        if self.periph.uart.iter().any(|u| u.has_queued()) { budget = budget.min(2_400); }
+        // Queued host UART bytes are released at the line rate: flush by the next byte time (counted, like the UART's
+        // credit, from the last flush).
+        if self.periph.uart.iter().any(|u| u.has_queued()) {
+            if let Some(due) = esp_periph::uart::input_deadline(self.periph.uart.iter().zip(self.uart_bauds()), crate::periph::CPU_HZ) {
+                budget = budget.min(due.clamp(1, u64::from(cap)) as u32);
+            }
+        }
         self.tick_budget = budget;
     }
 
+    /// Each UART's configured baud rate, for pacing queued host input.
+    fn uart_bauds(&self) -> [Option<u32>; 3] { std::array::from_fn(|port| self.periph.uart_route(port).baud) }
     /// Release host bytes queued by `uart_input` at the configured baud rate.
     #[cold]
     #[inline(never)]
     fn pace_uart_input(&mut self, cycles: u32) {
-        for port in 0..self.periph.uart.len() {
-            let baud = self.periph.uart_route(port).baud;
-            let before = self.periph.uart[port].irq();
-            if self.periph.uart[port].advance(cycles as u64, crate::periph::CPU_HZ, baud) {
-                self.irq_dirty |= before != self.periph.uart[port].irq();
-            }
-        }
+        let bauds = self.uart_bauds();
+        self.irq_dirty |= esp_periph::uart::pace_input(self.periph.uart.iter_mut().zip(bauds), cycles as u64, crate::periph::CPU_HZ);
     }
 
     /// Bus cycles at which the current peripheral clock started (deferred ticks excluded).
