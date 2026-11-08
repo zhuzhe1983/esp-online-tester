@@ -250,8 +250,10 @@ C6 is **ESP-IDF 5.5.x only**. Enable reads `esp_app_desc.idf_ver` from the appli
 ELF and refuses missing, malformed or other versions before installing hooks.
 Its native transport uses that version's `os_mbuf` layout and NPL initialization.
 S3/C3 accept builds exposing the required VHCI/lifecycle symbols, controller BSS
-and function sizes; there is no IDF version gate. Arduino 3.3.8 with IDF 5.5.4 is
-validated. IDF 4.4 Bluedroid is unsupported and fails with a missing-symbol error.
+and function sizes; there is no IDF version gate. Enable takes the mode of the
+config given to init, as IDF does: BLE (1) on S3/C3, whose init takes nothing
+else, and 1, 2 or 3 on the classic ESP32 ([esp32.md](esp32.md)). Arduino 3.3.8
+with IDF 5.5.4 is validated. IDF 4.4 Bluedroid is unsupported and fails with a missing-symbol error.
 Other IDF releases have not been validated.
 
 S3 VHCI transmit packets may also reside in mapped PSRAM, as used by
