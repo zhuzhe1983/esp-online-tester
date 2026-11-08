@@ -74,7 +74,7 @@ pub fn uart_pin_input(uarts: &mut [Uart], input: &UartInput, routes: &[UartRoute
     if input.data.is_empty() { return; }
     for (uart, route) in uarts.iter_mut().zip(routes) {
         if route.rx_pin != Some(input.pin) { continue; }
-        if route.matches_baud(input.baud) { uart.host_input(&input.data); }
+        if route.matches_baud(input.baud) { uart.wire_input(&input.data); }
         else { uart.int_raw |= INT_FRM_ERR; }
     }
 }

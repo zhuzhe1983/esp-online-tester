@@ -59,6 +59,8 @@ impl esp_soc::SocBus for SocBus {
         let timer = match self.periph.cycles_until_timer() { u32::MAX => None, cycles => Some(cycles.max(1) as u64) };
         let board = self.board.next_deadline().map(|at| at.saturating_sub(self.cycles).max(1));
         let deadline = timer.into_iter().chain(board).min();
+        // Only while UART input is queued or an INT_ENA latency is pending (one flag test otherwise).
+        let deadline = if self.uart_busy { deadline.into_iter().chain(self.uart_deadline()).min() } else { deadline };
         // work_pending is false on idle rounds; it covers both SPI and RX.
         if self.periph.work_pending && self.periph.optional.i2s0.rx_running() { Some(deadline.unwrap_or(u64::MAX).min(256)) } else { deadline }
     }
@@ -150,7 +152,8 @@ impl esp_soc::SocBus for SocBus {
     fn uart_input(&mut self, n: usize, data: &[u8]) {
         let Some(u) = self.periph.uart.get_mut(n) else { return };
         let before = u.irq();
-        u.host_input(data);
+        self.uart_busy = true;
+        u.host_input_queued(data);   // paced by the bus tick (`pace_uart_input`)
         self.irq_dirty |= before != u.irq();
     }
     fn analog_set(&mut self, pin: u8, src: esp_periph::AnalogSource) {

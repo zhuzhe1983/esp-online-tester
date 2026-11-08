@@ -59,8 +59,10 @@ macro_rules! check_chip {
                 // Changing pins before the tick must not relabel an earlier byte.
                 bus.write32($gpio + 0x554 + 5 * 4, 0x100).unwrap();
                 bus.tick(256);
-                assert_eq!(bus.read32($uart).unwrap(), (b'A' + reset) as u32);
+                assert_eq!(bus.read32($uart + 0x1c).unwrap() & 0xff, 1, "one byte received (a register read also flushes the S3's deferred ticks)");
                 assert!(bus.periph.uart[1].irq());
+                assert_eq!(bus.read32($uart).unwrap(), (b'A' + reset) as u32);
+                assert!(!bus.periph.uart[1].irq(), "RXFIFO_FULL follows the FIFO level: the read that drains it lowers it");
                 bus.write32($uart + 0x10, u32::MAX).unwrap();
                 assert!(!bus.periph.uart[1].irq());
                 assert_eq!(*state.borrow().tx_cycles.last().unwrap(), cycle);
@@ -220,8 +222,8 @@ fn s3_uart2_receive_has_an_interrupt_source() {
     p.io_mux.write(4 + 4 * 4, 1 << 9);
     p.gpio.write(0x154 + 4 * 18, 0x80 | 4);
     p.uart_pin_input(&UartInput::new(4, 9600, vec![42]));
-    assert_eq!(p.uart[2].read(0), 42);
     assert_ne!(p.source_status()[0] & (1 << 29), 0);
+    assert_eq!(p.uart[2].read(0), 42);
 }
 
 #[test]

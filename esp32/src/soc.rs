@@ -108,6 +108,8 @@ impl esp_soc::SocBus for SocBus {
             u32::MAX => None,
             n => Some(self.cpu_cycles_for_bus(u64::from(n)).max(1)),
         };
+        let uart = self.periph.uart_input_deadline().map(|n| self.cpu_cycles_for_bus(n).max(1));
+        let timer = timer.into_iter().chain(uart).min();
         if !self.pins_active { return timer; }
         timer.into_iter().chain(self.board.next_deadline().map(|n| self.cpu_cycles_for_bus(n.saturating_sub(self.cycles)).max(1))).min()
     }
