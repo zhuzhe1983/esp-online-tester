@@ -140,6 +140,9 @@ pub struct Cpu {
     pub hartid: u32,
     /// mintstatus.mil: the level of the interrupt being handled, 0 outside any handler
     pub mil: u32,
+    /// CLINT mode (mtvec mode 0/1) on a CLIC core: the level each open trap interrupted, restored by its `mret`. Hidden
+    /// state, because mcause there reads as written and has no MPIL field software would preserve.
+    pub clint_levels: Vec<u32>,
     /// the address an `lr.w` reserved, until the next `sc.w`
     pub reservation: Option<u32>,
     /// pcs the machine intercepts (stubs, probes), as a bloom over `emu_core::pc_bit`: `run` stops there
@@ -159,7 +162,7 @@ impl Cpu {
             mstatus: 0x1800,          // MPP = machine
             mtvec: 0, mepc: 0, mcause: 0, mtval: 0, mie: 0, mscratch: 0,
             insn_count: 0, retired_count: 0, cycle_count: 0, cycle_base: 0, instret_base: 0, waiting: false, irq: None, misa: MISA_RV32IMC,
-            has_ext_ill: false, f: [0; 32], fcsr: 0, ext_ill: 0, ext_ill_all_fp: false, user_counters: false, clic: false, clic_std: false, mintthresh: 0, mtvt: 0, hartid: 0, mil: 0, reservation: None, boundary_bloom: 0, csr_other: HashMap::new(),
+            has_ext_ill: false, f: [0; 32], fcsr: 0, ext_ill: 0, ext_ill_all_fp: false, user_counters: false, clic: false, clic_std: false, mintthresh: 0, mtvt: 0, hartid: 0, mil: 0, clint_levels: Vec::new(), reservation: None, boundary_bloom: 0, csr_other: HashMap::new(),
         }
     }
     pub fn new_rv32imac() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAC; c }
@@ -297,6 +300,12 @@ impl Cpu {
         // P4's IDF vectors issue no SC to break the reservation, so the trap does.
         if self.clic { self.reservation = None; }
         self.mepc = epc;
+        // Every trap pushes, so each `mret` (exception or interrupt) pops its own. Capped: a handler that never returns
+        // must not grow it without bound.
+        if self.clic && !self.clic_mode() {
+            if self.clint_levels.len() >= 32 { self.clint_levels.remove(0); }
+            self.clint_levels.push(self.mil);
+        }
         self.mcause = if self.clic_mode() { (cause & (mcause::INTERRUPT | mcause::CODE)) | self.mil << mcause::MPIL_SHIFT } else { cause };
         self.mtval = tval;
         let mpie = if self.mstatus & mstatus::MIE != 0 { mstatus::MPIE } else { 0 };
@@ -314,6 +323,8 @@ impl Cpu {
     /// from mcause.MPIL.
     pub fn mret(&mut self) {
         if self.clic_mode() { self.mil = (self.mcause & mcause::MPIL) >> mcause::MPIL_SHIFT; }
+        // CLINT mode on a CLIC core keeps the level too (exec.rs), in hidden state pushed by `trap`.
+        else if self.clic { if let Some(l) = self.clint_levels.pop() { self.mil = l; } }
         let mpie = self.mstatus & mstatus::MPIE != 0;
         self.mstatus = (self.mstatus & !mstatus::MIE) | if mpie { mstatus::MIE } else { 0 } | mstatus::MPIE;
         self.pc = self.mepc;

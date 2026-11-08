@@ -80,10 +80,28 @@ pub fn step_outcome<B: Bus>(cpu: &mut Cpu, bus: &mut B) -> StepOutcome {
     // only gates on mstatus.MIE, or with a CLIC on MIE and its own level too.
     if cpu.waiting || cpu.mie_enabled() {
         if let Some(line) = cpu.irq {
-            if cpu.clic {
-                // In mtvec modes 0 and 1 (CLINT mode) interrupts are mie/mip's, not the CLIC's,
-                // and nothing raises mip on this chip; the ROM runs there with mie = 0.
-                if cpu.clic_mode() {
+            if cpu.clic && !cpu.clic_mode() {
+                // mtvec modes 0 and 1 (CLINT mode) on a CLIC core: what the CLIC presents (enabled, pending, above
+                // its threshold) is still delivered, with the CLIC ID as its cause, and enters at the mtvec base. The
+                // ESP32-P4 mask ROM depends on it in UART download mode: ets_isr_unmask sets only the CLIC enable
+                // byte, and the ROM waits for uart_rx_intr_handler with MIE set and mtvec = _vector_table | 1, whose
+                // only interrupt entry is the first (j _interrupt_handler, which dispatches on mcause; base + 4 * 5
+                // is reset code). IDF switches to mode 3 before it enables interrupts, so applications never get here.
+                cpu.waiting = false;
+                // The CLIC still arbitrates by level here: the interrupt in service masks its own level and below
+                // (the ROM's _interrupt_handler sets MIE again at once), so its level is kept in `mil`; `trap` saves
+                // the previous one in hidden state for `mret`. mcause stays the plain ID software expects.
+                let level = (line >> CLIC_IRQ_LEVEL_SHIFT) & 0xff;
+                if cpu.mie_enabled() && level > cpu.mil.max(cpu.mintthresh) {
+                    let line = line & 0x1f;
+                    cpu.insn_count += 1; cpu.cycle_count += 1;
+                    cpu.trap(0x8000_0000 | (line + CLIC_EXT_OFFSET), 0, pc);   // the CLIC ID: _global_interrupt_handler subtracts 16
+                    cpu.mil = level;
+                    cpu.pc = cpu.mtvec & !3;
+                    return StepOutcome { pc, next_pc: cpu.pc, bytes: None, length: 0, kind: StepKind::TrapBefore(Trap::Interrupt(line)), control: None };
+                }
+            } else if cpu.clic {
+                {
                     // any presented interrupt ends a WFI: the privileged ISA lets WFI resume for
                     // any reason, and a core left asleep could not be woken by a lower one
                     cpu.waiting = false;
