@@ -262,7 +262,13 @@ pub fn intercept<C: Core, B: VhciBus>(cpu: &mut C, bus: &mut B, redirect: impl F
                 // "mode should be equal to the mode which set in esp_bt_controller_init()"
                 // (IDF v5.3.6 components/bt/controller/esp32/bt.c:1918; esp32c3/bt.c:2073 likewise)
                 result = INVALID_ARG;
-            } else { bus.ble().status = 2; }
+            } else {
+                // BR/EDR only, so nothing the firmware does reaches this controller: say why
+                if arg == 2 {
+                    eprintln!("[ble] the virtual controller is LE-only: enabled in mode 2 (BR/EDR), its commands get Unknown HCI Command");
+                }
+                bus.ble().status = 2;
+            }
         }
         Hook::Disable => {
             if bus.ble().status != 2 {
