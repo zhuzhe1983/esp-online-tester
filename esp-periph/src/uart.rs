@@ -225,6 +225,12 @@ pub struct EnaLatency(Option<(bool, u64)>);
 impl EnaLatency {
     pub const CYCLES: u64 = 16;
     pub fn arm(&mut self) { self.0 = Some((false, Self::CYCLES)); }
+    /// An INT_ENA write from `old` to `new`. Only newly enabled bits wait for the latency (the ROM's case); a write that
+    /// only disables or keeps sources is presented at once, so a driver that masks an interrupt takes no late one.
+    /// Returns whether the bus should re-derive its interrupt lines now.
+    pub fn on_write(&mut self, old: u32, new: u32) -> bool {
+        if new & !old != 0 { self.arm(); false } else { true }
+    }
     pub fn pending(&self) -> bool { self.0.is_some() }
     /// Advance by a tick of `cycles`; true when the level is due now (the bus re-derives its interrupt lines).
     pub fn tick(&mut self, cycles: u64) -> bool {

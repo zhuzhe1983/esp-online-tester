@@ -71,7 +71,8 @@ impl esp_soc::SocBus for SocBus {
         let timer = if self.pins_active { self.pin_deadline() } else {
             match self.periph.cycles_until_timer() { u32::MAX => None, cycles => Some(cycles.max(1) as u64) }
         };
-        let timer = timer.into_iter().chain(self.uart_deadline()).min();
+        // Only while UART input is queued or an INT_ENA latency is pending (one flag test otherwise).
+        let timer = if self.uart_busy { timer.into_iter().chain(self.uart_deadline()).min() } else { timer };
         if self.periph.i2s_rx { Some(timer.unwrap_or(u64::MAX).min(256)) } else { timer }
     }
     fn irq_dirty(&mut self) -> &mut bool { &mut self.irq_dirty }
@@ -168,6 +169,7 @@ impl esp_soc::SocBus for SocBus {
     fn uart_input(&mut self, n: usize, data: &[u8]) {
         let Some(u) = self.periph.uart.get_mut(n) else { return };
         let before = u.irq();
+        self.uart_busy = true;
         u.host_input_queued(data);
         self.irq_dirty |= before != u.irq();
     }

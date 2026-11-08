@@ -541,6 +541,8 @@ impl SocBus {
         let old_input = self.periph.gpio.input;
         let old_gpio_out = self.periph.gpio.out;
         let old_gpio_enable = self.periph.gpio.enable;
+        let ena_port = UART_FIFOS.iter().position(|&f| f + 0xc == a);
+        let old_ena = ena_port.map_or(0, |i| self.periph.uart[i].int_ena);
         if a == PERIPH_BASE + 0x24_000 && v & (1 << 24) != 0 && !self.periph.spi2.has_pending_transfer() {
             self.spi2_pins = self.board.uses_spi_pins().then(|| self.periph.spi2_pins());
         }
@@ -569,10 +571,11 @@ impl SocBus {
         // Resolved output changes can raise edge or level input interrupts.
         if spi {
             self.irq_dirty |= before != sources(&self.periph);
-        } else if UART_FIFOS.iter().any(|&f| f + 0xc == a) {
+        } else if let Some(i) = ena_port {
             // Interrupt delivery has latency on silicon. The mask ROM's uart_buff_switch enables a UART's interrupt just
             // before it stores which UART its handler serves; an immediate interrupt runs the handler for the old one.
-            self.ena_latency.arm();
+            // Only newly enabled sources wait (`EnaLatency::on_write`); a mask takes effect at once.
+            if self.ena_latency.on_write(old_ena, self.periph.uart[i].int_ena) { self.irq_dirty = true; }
         } else if !(0x6000_4004..=0x6000_4018).contains(&a) {
             self.irq_dirty = true;
         } else {

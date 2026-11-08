@@ -46,6 +46,9 @@ pub struct SocBus {
     pub irq_dirty: bool,
     /// A UART interrupt enable was written: its level is presented after the delivery latency (see `periph_write`).
     ena_latency: esp_periph::uart::EnaLatency,
+    /// Host input is queued on a UART or an INT_ENA latency is pending: the only time the tick and the idle
+    /// deadline look at the UARTs, so an ordinary run pays one flag test for them.
+    pub(crate) uart_busy: bool,
     /// GPIO edges for observers, while one wants them: (cycle, pin, level)
     pub gpio_events: Option<Vec<(u64, u8, bool)>>,
     pub debug: esp_soc::DebugFlags,
@@ -78,7 +81,7 @@ impl SocBus {
             flash: vec![0xff; flash_size],
             mmu: [0; MMU_ENTRIES], mmu_index: 0, mmu_power_ctrl: 0,
             periph: Peripherals::new(mac), board: Box::new(esp_soc::NoBoard), uart_pins: false,
-            cycles: 0, last_fault: None, irq_dirty: true, ena_latency: Default::default(), gpio_events: None, debug: Default::default(), board_edges: false,
+            cycles: 0, last_fault: None, irq_dirty: true, ena_latency: Default::default(), uart_busy: false, gpio_events: None, debug: Default::default(), board_edges: false,
         }
     }
 
@@ -158,6 +161,8 @@ impl SocBus {
         }
         // A sub-word store to a UART FIFO must not read (pop) a received byte to merge into.
         let v = if size == 4 { v } else if matches!(a, 0x6000_0000 | 0x6000_1000) { merge(0) } else { merge(self.periph.read32(a)) };
+        let ena_port = match a { 0x6000_000c => Some(0), 0x6000_100c => Some(1), _ => None };
+        let old_ena = ena_port.map_or(0, |i| self.periph.uart[i].int_ena);
         let old_drive = (self.periph.gpio.enable, self.periph.gpio.out);
         self.periph.write32(a, v);
         if matches!(a & !0xfff, 0x6009_0000 | 0x6009_1000) && self.board.uses_gpio_waveform() {
@@ -183,7 +188,10 @@ impl SocBus {
         if self.periph.spi2.has_pending_transfer() || !self.periph.gpio.changes.is_empty() { self.deliver_board_events(); }
         // Interrupt delivery has latency on silicon. The mask ROM's uart_buff_switch enables a UART's interrupt just before
         // it stores which UART its handler serves; an immediate interrupt runs the handler for the previous one.
-        if matches!(a, 0x6000_000c | 0x6000_100c) { self.ena_latency.arm(); } else { self.irq_dirty = true; }
+        match ena_port {
+            Some(i) => { if self.ena_latency.on_write(old_ena, self.periph.uart[i].int_ena) { self.irq_dirty = true; } else { self.uart_busy = true; } }
+            None => self.irq_dirty = true,
+        }
     }
 
     /// SHA DMA after a write, out of line so idle MMIO writes test only `dma_pending`.
@@ -545,9 +553,13 @@ impl SocBus {
     fn pace_uart_input(&mut self, cycles: u32) {
         let bauds = self.uart_bauds();
         self.irq_dirty |= esp_periph::uart::pace_input(self.periph.uart.iter_mut().zip(bauds), cycles as u64, crate::periph::CPU_HZ);
+        self.uart_busy = self.ena_latency.pending() || self.periph.uart.iter().any(|u| u.has_queued());
     }
     /// Cycles an idle core may skip before queued UART input or a pending INT_ENA level is due.
+    #[cold]
+    #[inline(never)]
     pub(crate) fn uart_deadline(&self) -> Option<u64> {
+        if !self.uart_busy { return None; }
         let input = if self.periph.uart.iter().any(|u| u.has_queued()) {
             esp_periph::uart::input_deadline(self.periph.uart.iter().zip(self.uart_bauds()), crate::periph::CPU_HZ)
         } else { None };
@@ -562,7 +574,7 @@ impl SocBus {
         // optional devices. Preserve write/board/DMA invalidations and refresh only
         // when a source can have moved; time still advances on every round.
         self.irq_dirty |= esp_periph::Dispatch::tick(&mut self.periph, cycles as u64);
-        if self.periph.uart.iter().any(|u| u.has_queued()) { self.pace_uart_input(cycles); }
+        if self.uart_busy { self.pace_uart_input(cycles); }
         self.periph.gpio.input_changes.clear();
         if self.board_edges { self.irq_dirty |= esp_soc::gpio::drain_board_inputs(&mut *self.board, &mut self.periph.gpio, &mut self.gpio_events, self.cycles); }
         if self.uart_pins {
@@ -641,7 +653,7 @@ impl Bus for SocBus {
     }
     fn tick(&mut self, cycles: u32) -> u32 {
         self.cycles += cycles as u64;
-        if self.ena_latency.tick(cycles as u64) { self.irq_dirty = true; }
+        if self.uart_busy && self.ena_latency.tick(cycles as u64) { self.irq_dirty = true; }
         self.devices(cycles);
         u32::from(self.irq_dirty)
     }
