@@ -18,6 +18,9 @@ impl VhciBus for SocBus {
             code: CODE,
             ram: DRAM_LOW..DRAM_HIGH,
             hz: crate::periph::CPU_HZ,
+            // `esp_bt_controller_config_t.mode`, at 20 from IDF v4.3 to v6.0
+            // (components/bt/include/esp32/include/esp_bt.h)
+            config_mode: Some(20),
         }
     }
     fn ble(&mut self) -> &mut Ble {
@@ -93,6 +96,8 @@ mod tests {
     #[test]
     fn trampoline_creates_guest_task_with_windowed_abi_and_returns_esp_ok() {
         let (mut bus, _) = fixture();
+        // a config at DRAM_LOW whose `mode` is BLE
+        bus.load_bytes(DRAM_LOW + 20, &[1]).unwrap();
         let mut cpu = caller(BASE, DRAM_LOW);
         let before = cpu.ccount;
         assert!(intercept(&mut cpu, &mut bus));
@@ -128,6 +133,64 @@ mod tests {
         assert_eq!(bus.ble.status, 0);
         assert!(!bus.ble.task_created);
         assert_eq!(bus.ble.hooks, hooks);
+    }
+
+    /// Init's config names the mode, and enable takes that one only, as IDF's bt.c does (v5.3.6
+    /// components/bt/controller/esp32/bt.c:1918); the classic ESP32's config may name 1, 2 or 3.
+    #[test]
+    fn enable_takes_the_mode_of_the_config_init_took() {
+        const INVALID_STATE: u32 = 0x103;
+        let call = |bus: &mut SocBus, pc: u32, arg: u32| {
+            let mut cpu = caller(pc, arg);
+            assert!(intercept(&mut cpu, bus));
+            cpu.get_ar(10)
+        };
+        for mode in 1..=3u32 {
+            let (mut bus, symbols) = fixture();
+            // the task exists already: init returns at once, as after a deinit
+            bus.ble.task_created = true;
+            bus.load_bytes(DRAM_LOW + 20, &[mode as u8]).unwrap();
+            assert_eq!(call(&mut bus, BASE, DRAM_LOW), 0);
+            assert_eq!((bus.ble.status, bus.ble.mode), (1, mode));
+            for other in (1..=3).filter(|&m| m != mode) {
+                assert_eq!(
+                    call(&mut bus, symbols["esp_bt_controller_enable"], other),
+                    INVALID_ARG,
+                    "mode {mode}, enable {other}"
+                );
+                assert_eq!(bus.ble.status, 1);
+            }
+            assert_eq!(call(&mut bus, symbols["esp_bt_controller_enable"], mode), 0);
+            assert_eq!(bus.ble.status, 2);
+        }
+        for mode in [0u8, 4, 0xff] {
+            let (mut bus, _) = fixture();
+            bus.ble.task_created = true;
+            bus.load_bytes(DRAM_LOW + 20, &[mode]).unwrap();
+            assert_eq!(call(&mut bus, BASE, DRAM_LOW), INVALID_ARG, "config mode {mode}");
+            assert_eq!(bus.ble.status, 0);
+        }
+        // an init refused for its state leaves the mode of the one that was taken
+        let (mut bus, symbols) = fixture();
+        bus.ble.task_created = true;
+        bus.load_bytes(DRAM_LOW + 20, &[2]).unwrap();
+        assert_eq!(call(&mut bus, BASE, DRAM_LOW), 0);
+        bus.load_bytes(DRAM_LOW + 20, &[1]).unwrap();
+        assert_eq!(call(&mut bus, BASE, DRAM_LOW), INVALID_STATE);
+        assert_eq!(call(&mut bus, symbols["esp_bt_controller_enable"], 2), 0);
+        // a config that cannot be read, and one whose mode would wrap the address space
+        let (mut bus, _) = fixture();
+        bus.ble.task_created = true;
+        assert_eq!(call(&mut bus, BASE, 0x1000), INVALID_ARG);
+        assert_eq!(bus.last_fault, Some((0x1014, false)), "the mode's read missed");
+        let (mut bus, _) = fixture();
+        bus.ble.task_created = true;
+        assert_eq!(call(&mut bus, BASE, 0xffff_fff0), INVALID_ARG);
+        assert_eq!(bus.last_fault, None);
+        // init(NULL) is refused without reading the guest's memory
+        let (mut bus, _) = fixture();
+        assert_eq!(call(&mut bus, BASE, 0), INVALID_ARG);
+        assert_eq!(bus.last_fault, None);
     }
 
     #[test]
