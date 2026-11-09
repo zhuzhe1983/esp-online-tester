@@ -19,7 +19,7 @@ impl emu_core::Core for Cpu {
     fn insn_count(&self) -> u64 { self.insn_count }
     fn set_irq(&mut self, line: Option<u32>) { self.irq = line; }
     /// A CLIC core in CLINT mode takes nothing the SoC presents (`exec::step_outcome`).
-    fn irq_pending(&self) -> bool { self.irq.is_some() && (!self.clic || self.clic_mode()) }
+    fn irq_pending(&self) -> bool { self.irq.is_some() }   // CLINT mode on a CLIC core delivers too (exec.rs)
     fn irq_bits(irq: &Option<u32>) -> u32 { irq.map_or(0, |l| 1 << (l & 31)) }
     fn advance_cycles(&mut self, cycles: u32) { self.cycle_count += cycles as u64; }
     fn idle_advance(&mut self, cycles: u32) { self.insn_count += cycles as u64; self.cycle_count += cycles as u64; }

@@ -442,22 +442,39 @@ fn clic_irq(line: u32, level: u32, shv: bool) -> Option<u32> {
     Some(line | level << CLIC_IRQ_LEVEL_SHIFT | if shv { CLIC_IRQ_SHV } else { 0 })
 }
 
-/// In mtvec modes 0 and 1 the P4 core takes no CLIC candidate, even with MIE set, does not wake
-/// from WFI for it and does not count it as pending; mcause reads as written there.
+/// In mtvec modes 0 and 1 the P4 core still takes a CLIC candidate above its level with MIE set (the mask ROM's UART
+/// download mode depends on it): at the mtvec base, not vectored, with the CLIC ID as mcause and its level in service
+/// until `mret`. mcause reads as written there (no MPP/MPIE alias outside CLIC mode).
 #[test]
-fn clint_mode_takes_no_clic_candidate() {
+fn clint_mode_takes_a_clic_candidate_at_the_base() {
     let (mut cpu, mut ram) = machine_on(Cpu::new_esp32p4(), &asm("0001 0001 10500073 0001"), "nop");
     cpu.write_csr(csr::MTVEC, BASE + 0x101);
-    cpu.write_csr(csr::MSTATUS, cpu.mstatus | mstatus::MIE);
     cpu.set_irq(clic_irq(2, 0x3f, false));
-    assert!(!cpu.irq_pending());
-    for _ in 0..3 { assert_eq!(step(&mut cpu, &mut ram), Ok(())); }   // nop, nop, wfi
-    assert!(cpu.waiting);
-    assert_eq!(Core::step(&mut cpu, &mut ram).kind, emu_core::StepKind::Idle, "the WFI goes on");
+    assert!(cpu.irq_pending());
+    assert_eq!(step(&mut cpu, &mut ram), Ok(()), "MIE clear: not taken");
+    cpu.write_csr(csr::MSTATUS, cpu.mstatus | mstatus::MIE);
+    let pc = cpu.pc;
+    let _ = Core::step(&mut cpu, &mut ram);
+    assert_eq!((cpu.pc, cpu.mepc), (BASE + 0x100, pc));
+    assert_eq!(cpu.read_csr(csr::MCAUSE), 0x8000_0000 | (2 + 16), "the plain CLIC ID: no MPIL bits in CLINT mode");
+    assert_eq!(cpu.mil, 0x3f);
+    cpu.write_csr(csr::MSTATUS, cpu.mstatus | mstatus::MIE);
+    let again = Core::step(&mut cpu, &mut ram);
+    assert!(!matches!(again.kind, emu_core::StepKind::TrapBefore(Trap::Interrupt(_))), "the same level does not re-enter");
+    // That step ran the (illegal) word at the base: return from that exception first, back at the handler's level.
+    cpu.mret();
+    assert_eq!(cpu.mil, 0x3f);
+    // An exception inside the handler, and its mret, leave the level in service alone; mcause is plain.
+    cpu.trap(11, 0, cpu.pc);
+    assert_eq!((cpu.read_csr(csr::MCAUSE), cpu.mil), (11, 0x3f));
+    cpu.mret();
+    assert_eq!(cpu.mil, 0x3f, "the exception's mret restores the handler's level, not 0");
+    // Software may overwrite mcause (the ROM does not save it around nesting): the interrupt's mret still restores 0.
+    cpu.write_csr(csr::MCAUSE, 0x8000_0000 | 0xff << 16 | 0x12);
+    cpu.mret();
+    assert_eq!(cpu.mil, 0, "the level comes from hidden state, not mcause");
     cpu.write_csr(csr::MCAUSE, 0x8000_0000 | 3 << 28 | 0x12);
     assert_eq!(cpu.read_csr(csr::MCAUSE), 0x8000_0000 | 3 << 28 | 0x12, "no MPP/MPIE alias outside CLIC mode");
-    cpu.write_csr(csr::MTVEC, BASE + 0x103);
-    assert!(cpu.irq_pending());
 }
 
 /// MIE alone blocks a take; a WFI ends for any presented candidate, takeable or not.

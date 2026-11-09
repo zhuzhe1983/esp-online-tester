@@ -96,16 +96,27 @@ fn taking_a_vectored_edge_interrupt_clears_it() {
     assert_eq!(m.cores[0].pc(), BASE + 0x100 + 4 * 20);
 }
 
-/// The ROM's mode 1: a presented interrupt is not taken and does not keep the core from idling.
+/// The ROM's mode 1 (UART download mode waits for its UART interrupt there): a presented CLIC interrupt is taken
+/// at the mtvec base, not vectored, with the CLIC ID as mcause (the ROM's dispatcher subtracts 16). The level in
+/// service masks its own level, so the handler setting MIE again does not re-enter it, and `mret` restores it.
 #[test]
-fn clint_mode_leaves_clic_interrupts_alone() {
+fn clint_mode_takes_clic_interrupts_at_the_base_by_level() {
     let mut m = clic_machine();
     m.cores[0].write_csr(csr::MTVEC, BASE | 1);
     route(&mut m, 0, 17, 1, true, false);
     m.bus.write32(FROM_CPU, 1).unwrap();
-    m.run(200);
-    assert_eq!((m.interrupts, m.cores[0].pc()), (0, PROG));
-    assert!(!m.cores[0].irq_pending());
+    m.run(64);
+    assert_eq!((m.interrupts, m.cores[0].pc()), (1, BASE));
+    assert_eq!(m.cores[0].read_csr(csr::MCAUSE), 0x8000_0000 | 17);
+    let c = &mut m.cores[0];
+    c.write_csr(csr::MSTATUS, c.mstatus | mstatus::MIE);             // the ROM's handler does this at once
+    m.run(64);
+    assert_eq!(m.interrupts, 1, "the level in service masks itself");
+    route(&mut m, 1, 18, 5, false, false);                           // a higher level nests
+    m.bus.write32(FROM_CPU + 4, 1).unwrap();
+    m.run(64);
+    assert_eq!((m.interrupts, m.cores[0].pc()), (2, BASE));
+    assert_eq!(m.cores[0].read_csr(csr::MCAUSE), 0x8000_0000 | 18, "nested: still the plain ID, no previous level in it");
 }
 
 /// Every instruction costs one cycle, so the modeled scheduler interleaves the cores one
