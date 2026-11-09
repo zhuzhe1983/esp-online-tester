@@ -4,8 +4,17 @@ target
 node_modules
 **/node_modules
 roms
-web
 output
 **/.env
 **/.env.*
 *.log
+# The relay runtime reads exactly web/platform/firmware-relay.js and the
+# catalog allowlist (tools/firmware-relay.mjs). Keep those two paths in the
+# build context, but exclude the rest of the platform bundle from the image.
+web/*
+!web/platform/
+web/platform/*
+!web/platform/firmware-relay.js
+!web/platform/catalog/
+web/platform/catalog/*
+!web/platform/catalog/firmwares.json
