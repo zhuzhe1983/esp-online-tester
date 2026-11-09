@@ -238,7 +238,7 @@ impl DeviceSet for Peripherals {
     fn block_name(block: u32) -> &'static str { Peripherals::block_name(block) }
     fn misc(&self) -> &Misc { &self.misc }
     fn misc_mut(&mut self) -> &mut Misc { &mut self.misc }
-    fn pre_access(&mut self, block: u32, off: u32, _write: bool) {
+    fn pre_access(&mut self, block: u32, off: u32, write: bool) {
         if block == 0x31 && self.ble_lc.enabled() {
             // IDF v5.5.5 soc/esp32c3/register/soc/{syscon,rtc_cntl}_reg.h.
             // Checked on C3 rev v0.3: pre-init BT is powered down and isolated,
@@ -251,13 +251,16 @@ impl DeviceSet for Peripherals {
         }
         if block == 0x40 { self.adc.now_cycles = self.clock.cycles(); }
         if (0x33..=0x35).contains(&block) { self.wifi.now_cycles = self.clock.cycles(); }
-        // WIFI_RST_EN: MAC_RST is set and cleared by two read-modify-writes, so the access that
-        // clears it still sees it set (see `WifiMac::reset_mac`).
-        if block == 0x26 && off == 0x18 && self.misc.generic.get(&0x26).is_some_and(|s| s.read(0x18) & (1 << 2) != 0) {
-            self.wifi.reset_mac();
-        }
         if block == 0x06 { self.fe_iq.now_cycles = self.clock.cycles(); }
-        if block == 0x26 { self.rng.now = self.clock.cycles() as u32; }
+        if block == 0x26 {
+            self.rng.now = self.clock.cycles() as u32;
+            // WIFI_RST_EN: MAC_RST is set and cleared by two read-modify-writes. This runs before the
+            // access, so the write that clears the bit is the one that still finds it set; the write
+            // that sets it and the reads in between do not reset (see `WifiMac::reset_mac`).
+            if write && off == 0x18 && self.misc.generic.get(&0x26).is_some_and(|s| s.read(0x18) & (1 << 2) != 0) {
+                self.wifi.reset_mac();
+            }
+        }
     }
 }
 
@@ -466,7 +469,9 @@ mod tests {
         let rst = p.read32(0x6002_6018);
         p.write32(0x6002_6018, rst | 1 << 2);
         let rst = p.read32(0x6002_6018);
+        assert_eq!(p.wifi.rx_next, 0x9_1040, "setting the bit and reading it back do not reset");
         p.write32(0x6002_6018, rst & !(1 << 2));
+        assert_eq!(p.wifi.rx_next, 0, "the write that clears it does");
         p.write32(0x6003_3088, 0x3fca_2000);
         assert_eq!(p.read32(0x6003_308c), 0xa_2000, "the new driver's ring");
     }

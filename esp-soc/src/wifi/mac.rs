@@ -73,6 +73,9 @@ impl WifiMac {
     /// its transmit work; the driver then writes a new ring base, which must take effect even though a
     /// ring was in use before. Without this a restarted driver (esp-radio drops and re-creates the
     /// controller) never sees another frame: they go into the old, freed ring.
+    ///
+    /// Only the C3 bus calls this. The S3 uses the same bit through esp-radio, but nothing here
+    /// exercises it, so it is not wired.
     pub fn reset_mac(&mut self) {
         self.rx_base = 0;
         self.rx_next = 0;
