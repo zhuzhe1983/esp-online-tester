@@ -155,6 +155,26 @@ impl<S: Soc> Machine<S> {
                         _ => self.bus.serial_input(data.as_bytes()),
                     }
                 }
+                // Raw bytes, hex-encoded, for binary protocols (esptool's SLIP over the ROM's UART download mode).
+                // `key` carries a JSON string, which cannot hold arbitrary bytes: a byte >= 0x80 would arrive as
+                // two UTF-8 bytes. At most 64 KiB per message; malformed hex is ignored.
+                "bytes" => {
+                    let Some(raw) = crate::web::hex_decode(&field("hex").unwrap_or_default()) else { continue };
+                    if raw.len() > 64 << 10 { continue; }
+                    match field("src").as_deref() {
+                        Some("uart0") => self.bus.uart_input(0, &raw),
+                        Some("uart1") => self.bus.uart_input(1, &raw),
+                        _ => self.bus.serial_input(&raw),
+                    }
+                }
+                // The boot-mode pins (GPIO_STRAP_REG) the ROM samples at the next reset: what a board's auto-reset
+                // circuit sets with DTR/RTS. "v" is a number or 0x-prefixed hex (classic ESP32: 0x13 = SPI flash boot,
+                // 0x3 = UART download boot).
+                "strap" => {
+                    let v = field("v").unwrap_or_default();
+                    let n = v.strip_prefix("0x").map(|h| u32::from_str_radix(h, 16).ok()).unwrap_or_else(|| v.parse().ok());
+                    if let Some(n) = n { self.bus.set_strap(n); }
+                }
                 // the page's Restart on a native run: the board's reset button
                 "reset" if self.web_restart => { self.button_reset = true; self.bus.request_reset(esp_periph::RST_POWERON); *self.bus.irq_dirty() = true; }
                 "touch" => { let x: u16 = field("x").and_then(|v| v.parse().ok()).unwrap_or(0); let y: u16 = field("y").and_then(|v| v.parse().ok()).unwrap_or(0);

@@ -31,7 +31,7 @@ default too, with 16 MB of flash ([esp32p4.md](esp32p4.md)).
 | `--sd-timing` | (P4) commands and data take their time on the SD bus at the slot's card clock and width: CMD_DONE, DATA_OVER and the auto-stop come when the bits are through (default: at once); with `--coproc` the SDIO link's too. See [esp32p4.md](esp32p4.md), "The host" |
 | `--usb-host F` | (P4) a USB host on the high-speed USB-OTG port, running the commands in F (below) from power-up; the run then goes on to `--max-seconds`. See [esp32p4.md](esp32p4.md), "USB" |
 | `--coproc c6:KEY=VALUE,...` | (P4) an ESP32-C6 co-processor on SDIO slot 1, run in lock-step with the P4 (below); `--wifi` and `--net` then go to the C6's radio |
-| `--board atech14\|waveshare-cam\|waveshare-lcd4b\|waveshare-amoled18-v2\|stopwatch\|none` | board model (default atech14); on the C6: `waveshare-c6-lcd147` or `none`; on the P4: `waveshare-p4-lcd35` (rev ≥ 3) or `none`; on the classic ESP32: `ttgo-tdisplay` (alias `tdisplay`), `ulanzi-tc001` (alias `tc001`), `esp32dev-loopback` or `none`/`esp32dev` |
+| `--board atech14\|waveshare-cam\|waveshare-lcd4b\|waveshare-amoled18-v2\|stopwatch\|none` | board model (default atech14); on the C6: `waveshare-c6-lcd147`, `xiao-esp32c6` or `none`; on the P4: `waveshare-p4-lcd35` (rev ≥ 3) or `none`; on the classic ESP32: `ttgo-tdisplay` (alias `tdisplay`), `ulanzi-tc001` (alias `tc001`), `esp32dev-loopback` or `none`/`esp32dev` |
 | `--strap HEX`, `--reset-cause HEX`, `--efuse-regs F`, `--regs-init F` | reproduce a real chip's boot state (used by the differential tests) |
 | `--no-reboot` | stop at the first chip reset instead of rebooting from ROM |
 | `--flash-at OFFSET=FILE` (repeatable) | write a file into flash at a hex offset — a data partition's contents (the panel's `demo` partition takes `energydata.json`) |
@@ -250,8 +250,10 @@ C6 is **ESP-IDF 5.5.x only**. Enable reads `esp_app_desc.idf_ver` from the appli
 ELF and refuses missing, malformed or other versions before installing hooks.
 Its native transport uses that version's `os_mbuf` layout and NPL initialization.
 S3/C3 accept builds exposing the required VHCI/lifecycle symbols, controller BSS
-and function sizes; there is no IDF version gate. Arduino 3.3.8 with IDF 5.5.4 is
-validated. IDF 4.4 Bluedroid is unsupported and fails with a missing-symbol error.
+and function sizes; there is no IDF version gate. Enable takes the mode of the
+config given to init, as IDF does: BLE (1) on S3/C3, whose init takes nothing
+else, and 1, 2 or 3 on the classic ESP32 ([esp32.md](esp32.md)). Arduino 3.3.8
+with IDF 5.5.4 is validated. IDF 4.4 Bluedroid is unsupported and fails with a missing-symbol error.
 Other IDF releases have not been validated.
 
 S3 VHCI transmit packets may also reside in mapped PSRAM, as used by

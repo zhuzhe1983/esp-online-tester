@@ -34,7 +34,8 @@ esp-soc/      Machine<S: Soc>, written once for every chip: the scheduler (256-i
   wifi.rs     the virtual 802.11 access point (beacons, probe/auth/assoc, WPA2 four-way
               handshake) and StationLink, the station's side of the air every chip's MAC shares
   net.rs      the emulated subnet 10.0.2.0/24: ARP, DHCP, ICMP, DNS, SNTP
-  nat.rs      user-mode NAT: guest TCP/UDP relayed over ordinary host sockets
+  nat.rs      user-mode NAT: guest TCP/UDP relayed through a host transport (`NatTransport`;
+              `StdTransport` = ordinary host sockets)
 esp32s3/      the SoC and boards
   soc.rs      the S3 as a Soc: two LX7 cores, core-1 reset/stall state, interrupt lines per core,
               app boot, reboot (what survives), console streams, audio, board
@@ -252,7 +253,7 @@ esp_wifi + libpp/libnet80211        unmodified blob, drives the MAC registers
   VirtualAp (esp-soc wifi.rs)       beacons, probe/auth/assoc responses, WPA2 four-way handshake,
                                     802.11 <-> Ethernet conversion, CCMP framing
   VirtualNet (net.rs)               10.0.2.0/24: ARP, DHCP, ICMP echo, DNS, SNTP from the host clock
-  Nat (nat.rs)                      everything past the gateway -> host sockets
+  Nat (nat.rs)                      everything past the gateway -> a NatTransport (host sockets)
 ```
 
 - **The air**: `StationLink::next_rx` (`esp-soc/src/wifi.rs`) picks one frame at a time —
@@ -265,10 +266,16 @@ esp_wifi + libpp/libnet80211        unmodified blob, drives the MAC registers
 - **Encryption**: the four-way handshake is real (PMK, PTK, MIC, AES-key-wrapped GTK), but data
   frames carry plaintext *framed* as CCMP — protected bit, 8-byte CCMP header with the right key
   id, 8 bytes of MIC space — which is exactly what firmware sees when silicon encrypts in place.
-- **Off the subnet**: `Nat` terminates each guest flow. A SYN starts `TcpStream::connect` on a
-  worker thread and the SYN/ACK waits for it; guest payload is written to the socket; socket
-  reads come back as segments the emulator sequences, acknowledges, retransmits and closes.
-  UDP is a bound socket per flow with an idle reaper. Name lookups go to the host's own resolver.
+- **Off the subnet**: `Nat` terminates each guest flow and hands its host side to a
+  `NatTransport` (`nat/transport.rs`). With the native `StdTransport` a SYN starts
+  `TcpStream::connect` on a worker thread and the SYN/ACK waits for it; guest payload is written
+  to the socket; socket reads come back as segments the emulator sequences, acknowledges,
+  retransmits and closes. UDP is a bound socket per flow with an idle reaper. Name lookups go to
+  the host's own resolver, unless the transport resolves names itself, in which case the NAT
+  answers the guest's A/AAAA queries from the emulated resolver's address. `--hostfwd` listeners
+  live on `StdTransport`; it hands each accepted connection to the NAT (`tcp_accept`), which sends
+  the station a SYN from the gateway once it knows the station's MAC. A guest reboot aborts the
+  NAT's flows (`Nat::abort_all`).
 - **Crypto accelerators**: mbedTLS drives AES (block + GDMA, ECB/CBC/CTR/OFB), SHA (block + GDMA,
   SHA-1 through SHA-512) and the RSA/MPI unit; the WPA supplicant unwraps the group key on AES.
   All three are modelled at the register level, so a TLS session exercises the same peripherals

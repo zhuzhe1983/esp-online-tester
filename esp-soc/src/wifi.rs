@@ -544,8 +544,13 @@ impl StationLink {
         self.attach(Some(VirtualAp::new(cfg, debug.has("wifi-frames"))), Some(net));
     }
     /// What a guest reboot keeps: the host's access point, network and relay mode. The queues, the
-    /// pacing and the counts start again.
-    pub fn surviving_reboot(self) -> Self { StationLink { ap: self.ap, net: self.net, relay: self.relay, ..Default::default() } }
+    /// pacing and the counts start again. The NAT's flows belonged to the old
+    /// guest's sockets, so they are aborted.
+    pub fn surviving_reboot(self) -> Self {
+        let mut net = self.net;
+        if let Some(nat) = net.as_mut().and_then(|net| net.nat.as_mut()) { nat.abort_all(); }
+        StationLink { ap: self.ap, net, relay: self.relay, ..Default::default() }
+    }
 
     pub fn ap(&self) -> Option<&VirtualAp> { self.ap.as_ref() }
     pub fn ap_mut(&mut self) -> Option<&mut VirtualAp> { self.ap.as_mut() }

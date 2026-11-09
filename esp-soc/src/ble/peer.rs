@@ -50,7 +50,7 @@ impl Nearby {
     /// both.
     pub fn parse(spec: &str) -> Result<Nearby, String> {
         let (mut name, mut adv, mut rsp, mut addr, mut public, mut rssi) = (None, None, Vec::new(), None, false, -60i8);
-        let data = |key: &str, value: &str| hex_bytes(value).filter(|d| d.len() <= 31)
+        let data = |key: &str, value: &str| crate::web::hex_decode(value).filter(|d| d.len() <= 31)
             .ok_or_else(|| format!("invalid nearby-device {key} '{value}': expected hex, at most 31 bytes"));
         for entry in spec.split(',') {
             let (key, value) = entry.split_once('=').ok_or_else(|| format!("invalid nearby-device option '{entry}': expected key=value"))?;
@@ -116,7 +116,7 @@ fn parse_addr(text: &str) -> Option<[u8; 6]> {
 
 /// An address as printed (most significant byte first), from its HCI order.
 pub fn addr_text(a: &[u8; 6]) -> String { a.iter().rev().map(|b| format!("{b:02x}")).collect::<Vec<_>>().join(":") }
-pub fn hex(b: &[u8]) -> String { b.iter().map(|v| format!("{v:02x}")).collect() }
+pub fn hex(b: &[u8]) -> String { crate::web::hex_encode(b) }
 fn uuid(b: &[u8]) -> String {
     let s = hex(&b.iter().rev().copied().collect::<Vec<_>>());
     if b.len() == 16 {
@@ -166,20 +166,16 @@ impl std::str::FromStr for Command {
             "subscribe" => Self::Write(handle, vec![1, 0]),
             _ => {
                 let value = parts[2];
-                let bytes = hex_bytes(value).filter(|b| b.len() <= 20)
+                let bytes = crate::web::hex_decode(value).filter(|b| b.len() <= 20)
                     .ok_or("BLE write requires at most 20 bytes of hexadecimal data")?;
                 Self::Write(handle, bytes)
             }
         })
     }
 }
-fn hex_bytes(text: &str) -> Option<Vec<u8>> {
-    if !text.len().is_multiple_of(2) || !text.bytes().all(|b| b.is_ascii_hexdigit()) { return None }
-    (0..text.len()).step_by(2).map(|i| u8::from_str_radix(&text[i..i + 2], 16).ok()).collect()
-}
 fn parse_uuid(text: &str) -> Result<[u8; 16], String> {
     let digits: String = text.chars().filter(|c| *c != '-').collect();
-    let mut bytes: [u8; 16] = hex_bytes(&digits).and_then(|b| b.try_into().ok())
+    let mut bytes: [u8; 16] = crate::web::hex_decode(&digits).and_then(|b| b.try_into().ok())
         .ok_or("expected a 128-bit BLE UUID")?;
     bytes.reverse();
     Ok(bytes)
@@ -639,8 +635,8 @@ mod tests {
 
     #[test]
     fn hex_bytes_and_read_by_type_preserve_wire_values() {
-        assert_eq!(hex_bytes("00aAFF"), Some(vec![0,170,255]));
-        for bad in ["0", "0g", "é0"] { assert_eq!(hex_bytes(bad), None); }
+        assert_eq!(crate::web::hex_decode("00aAFF"), Some(vec![0,170,255]));
+        for bad in ["0", "0g", "é0"] { assert_eq!(crate::web::hex_decode(bad), None); }
         assert_eq!("write 1 00aAFF".parse::<Command>().unwrap(), Command::Write(1, vec![0,170,255]));
         for bad in ["write 1 0", "write 1 zz", "write 1 é0", "write 1 000000000000000000000000000000000000000000"] { assert!(bad.parse::<Command>().is_err()); }
         assert_eq!(read_by_type(0x1234, 0x5678), [8,0x34,0x12,0x78,0x56,3,0x28]);

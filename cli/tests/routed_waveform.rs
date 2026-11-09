@@ -30,7 +30,7 @@ fn check<B: SocBus>(mut bus: B, gpio: u32, mux: u32, selector: u32, signal: u32,
     write(&mut bus, selector, 12, None); // peripheral output, not software drive
     write(&mut bus, selector, signal, None);
     write(&mut bus, gpio + 0x20, 1 << 4, Some(true));
-    write(&mut bus, mux, 0, None); // mux-only disconnect
+    write(&mut bus, mux, if classic { 1 << 12 } else { 0 }, None); // mux-only disconnect; classic function 0 is GPIO here
     write(&mut bus, mux, (if classic { 2 } else { 1 }) << 12, Some(true));
     // Non-pin writes do not notify. Existing raw GPIO notifications remain independent.
     samples.lock().unwrap().clear();

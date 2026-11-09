@@ -396,7 +396,7 @@ fn c6_physical_routes_inversion_and_reconfiguration() {
     put(&mut bus, 0x3ff4_9004, 2 << 12); // disable D4 pad input
     assert!(bus.camera_routed_frame().is_none());
     dvp(&mut bus);
-    put(&mut bus, 0x3ff4_9070, 1 << 9); // wrong D1 pad function
+    put(&mut bus, 0x3ff4_9070, (1 << 12) | (1 << 9)); // wrong D1 pad function: FUNC_GPIO18_VSPICLK, as function 0 is GPIO here
     assert!(bus.camera_routed_frame().is_none());
     dvp(&mut bus);
     put(&mut bus, 0x3ff4_4530, 256);

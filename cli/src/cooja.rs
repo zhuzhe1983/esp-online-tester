@@ -41,15 +41,7 @@ pub fn cycle_of_ns(ns: u64) -> u64 { (ns as u128 * NS_DEN as u128).div_ceil(NS_N
 
 pub use esp_soc::json::{parse_json, Json};
 
-fn hex_decode(s: &str) -> Option<Vec<u8>> {
-    if !s.len().is_multiple_of(2) { return None; }
-    s.as_bytes().as_chunks::<2>().0.iter().map(|pair| {
-        let high = char::from(pair[0]).to_digit(16)?;
-        let low = char::from(pair[1]).to_digit(16)?;
-        Some(((high << 4) | low) as u8)
-    }).collect()
-}
-fn hex_encode(b: &[u8]) -> String { b.iter().map(|x| format!("{:02x}", x)).collect() }
+use esp_soc::web::{hex_decode, hex_encode};
 
 // ------------------------------------------------------------------ the peer
 /// What `hello` told us.

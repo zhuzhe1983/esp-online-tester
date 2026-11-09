@@ -1,0 +1,90 @@
+[
+  {
+    "check": "clippy-native",
+    "command": "cargo +1.99.1 clippy --workspace --all-targets -- -D warnings",
+    "exit_code": 0
+  },
+  {
+    "check": "clippy-wasm",
+    "command": "cargo +1.99.1 clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "exit_code": 0
+  },
+  {
+    "check": "workspace-ci",
+    "command": "cargo +1.99.1 test --release --workspace --no-fail-fast -- --include-ignored --skip external_",
+    "environment": "ESP32SIM_ROM_DIR=roms (tools/fetch-rom-elfs.sh, with the P4 ROMs); tools/fetch-p4-firmware.sh; Rust 1.99.1 (58cf8f9c3 2026-10-13); Windows 11; this branch with main dd4796a0 merged in",
+    "exit_code": 0,
+    "tests": {
+      "passed": 1467,
+      "failed": 0,
+      "ignored": 0
+    },
+    "note": "every golden passed byte-identical; none regenerated"
+  },
+  {
+    "check": "virtual",
+    "command": "ESP32SIM_VQ_NATIVE=1 cargo +1.99.1 test --release -p esp32s3 --test machine --test virtual_stops",
+    "exit_code": 0,
+    "tests": {
+      "passed": 43,
+      "failed": 0
+    }
+  },
+  {
+    "check": "esp-soc",
+    "command": "cargo +1.99.1 test --release -p esp-soc",
+    "exit_code": 0,
+    "tests": {
+      "passed": 193,
+      "failed": 0
+    },
+    "notes": "154 lib tests (the 14 NAT socket tests and #278's three --hostfwd tests on StdTransport, the 15 mock-transport tests and #288's 8 count tests among them), 18 + 7 + 13 + 1 integration tests"
+  },
+  {
+    "check": "wasm",
+    "command": "tools/wasm-build.sh && node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm && node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel",
+    "exit_code": 0,
+    "notes": "esp32sim.wasm 4051212 bytes, dwarfAbsent, nameRetained; all eight demos ok"
+  },
+  {
+    "check": "wasm-abi",
+    "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm; node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf; node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf",
+    "exit_code": 0
+  },
+  {
+    "check": "privacy",
+    "command": "node tools/check-evidence-privacy.mjs",
+    "exit_code": 0
+  },
+  {
+    "check": "firmware",
+    "command": "see inputs.json runs.wifi-net: 40 emulated seconds on main dd4796a0 and on this branch, with 8.8.8.8 as the resolver",
+    "exit_code": 0,
+    "notes": "Both: DHCP ip=10.0.2.15, example.org -> 104.20.26.136 through the relayed DNS, SNTP time from pool.ntp.org (the host wall clock), http GET http://example.org/ -> 200, 577 bytes; [emu] nat: 1 TCP connections (0 failed), 3 UDP flows (0 evicted, 0 send errors), 278 bytes out, 1263 bytes in on both"
+  },
+  {
+    "check": "firmware-hostfwd",
+    "command": "see inputs.json runs.hostfwd, on main dd4796a0 and on this branch",
+    "exit_code": 0,
+    "notes": "Both: the five host connections (three in a row, two at once) answered by the guest, which logs each from 10.0.2.2; [emu] nat: 5 TCP connections (0 failed, 5 inbound, 1 hostfwd), 0 UDP flows (0 evicted, 0 send errors), 160 bytes out, 55 bytes in on both"
+  },
+  {
+    "check": "cli-hostfwd",
+    "command": "cargo +1.99.1 test --release -p esp32sim --test hostfwd",
+    "exit_code": 0,
+    "tests": {
+      "passed": 2,
+      "failed": 0
+    }
+  },
+  {
+    "check": "accept-mutations",
+    "command": "five mutations of the accepted-flow code in esp-soc/src/nat.rs, each with cargo +1.99.1 test --release -p esp-soc --lib nat",
+    "result": "each fails at least one test: no close on abort_all, no close past MAX_PENDING, no wait for the station MAC, no refused count for the guest's RST, a read before the SYN-ACK"
+  },
+  {
+    "check": "not-run",
+    "command": "tools/wasm-jit-test.sh; the profiling-features build; the Linux x5 receipt contracts; native-aarch64 job; the CPU comparison",
+    "notes": "Linux/macOS-only steps of ci.yml, left to CI; this change touches none of their inputs. No CPU comparison: no bus, device_set!, interrupt routing or per-tick code."
+  }
+]

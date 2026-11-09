@@ -242,6 +242,21 @@ fn handle_client(mut stream: TcpStream, shared: Arc<Mutex<Shared>>) {
 pub fn json_str(msg: &str, key: &str) -> Option<String> {
     crate::json::parse_json(msg).ok()?.get(key)?.scalar_text()
 }
+/// Hex text to bytes (no separators, either case). None for an odd length or a non-hex character.
+pub fn hex_decode(s: &str) -> Option<Vec<u8>> {
+    let s = s.as_bytes();
+    if !s.len().is_multiple_of(2) { return None; }
+    let nibble = |c: u8| (c as char).to_digit(16).map(|d| d as u8);
+    s.chunks(2).map(|p| Some(nibble(p[0])? << 4 | nibble(p[1])?)).collect()
+}
+/// Bytes to lowercase hex text, without separators.
+pub fn hex_encode(b: &[u8]) -> String {
+    const DIGITS: &[u8; 16] = b"0123456789abcdef";
+    let mut o = String::with_capacity(b.len() * 2);
+    for &x in b { o.push(DIGITS[(x >> 4) as usize] as char); o.push(DIGITS[(x & 15) as usize] as char); }
+    o
+}
+
 pub fn json_escape(s: &str) -> String {
     let mut o = String::with_capacity(s.len());
     for c in s.chars() { match c { '"' => o.push_str("\\\""), '\\' => o.push_str("\\\\"), '\n' => o.push_str("\\n"), '\r' => o.push_str("\\r"), c if (c as u32) < 0x20 => o.push_str(&format!("\\u{:04x}", c as u32)), c => o.push(c) } }
@@ -250,3 +265,18 @@ pub fn json_escape(s: &str) -> String {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod hex_tests {
+    use super::{hex_decode, hex_encode};
+    #[test]
+    fn hex_round_trips_every_byte_and_rejects_bad_input() {
+        let all: Vec<u8> = (0..=255).collect();
+        assert_eq!(hex_decode(&hex_encode(&all)).unwrap(), all);
+        assert_eq!(hex_decode("C0dB").unwrap(), vec![0xc0, 0xdb], "either case");
+        assert_eq!(hex_decode(""), Some(vec![]));
+        assert_eq!(hex_decode("abc"), None, "odd length");
+        assert_eq!(hex_decode("zz"), None, "not hex");
+        assert_eq!(hex_decode("é1"), None, "non-ASCII must not be sliced as bytes");
+    }
+}
