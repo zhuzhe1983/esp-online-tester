@@ -1,4 +1,5 @@
-//! Passive observation of the C3 full link controller.
+//! Passive observation of the C3 full link controller, and the virtual VHCI controller (`--ble`)
+//! with its peer, driven from the page.
 use super::{log, Emu, MachineKind};
 use esp_soc::SocBus;
 
@@ -61,4 +62,53 @@ pub unsafe extern "C" fn esp32sim_ble_command(e: *mut Emu, ptr: *const u8, len: 
     let command = unsafe { super::text(ptr, len) };
     let MachineKind::C3(m) = &mut e.m else { return 1 };
     u32::from(m.bus.periph.ble_lc.command(command).is_err())
+}
+
+/// Enable the virtual BLE controller (the CLI's `--ble`) on the S3, C3, C6 or classic ESP32
+/// before boot. `elf` is the application ELF, whose symbols locate the guest's controller
+/// functions. The controller's `[ble]` lines are kept for `esp32sim_ble_virtual_take`. Returns 0,
+/// or 1 after boot, for a bad ELF, another chip or an ELF the controller cannot use; the reason
+/// goes to `host_log`.
+/// # Safety
+/// `e` must be live and exclusive; `ptr` must be readable for `len` bytes.
+#[no_mangle]
+pub unsafe extern "C" fn esp32sim_ble_virtual(e: *mut Emu, ptr: *const u8, len: usize) -> u32 {
+    let e = unsafe { &mut *e };
+    if e.booted { log("[emu] the virtual BLE controller must be enabled before boot"); return 1 }
+    let elf = match esp_soc::elf::parse(unsafe { super::bytes(ptr, len) }) {
+        Ok(elf) => elf,
+        Err(reason) => { log(&format!("[emu] ble: {reason}")); return 1 }
+    };
+    let bus = e.m.bus();
+    if let Err(reason) = bus.enable_ble(&elf) { log(&format!("[emu] ble: {reason}")); return 1 }
+    bus.ble_keep_log();
+    0
+}
+
+/// Give the virtual peer a command, as the CLI script's `ble` commands take it: `connect`,
+/// `discover`, `read HANDLE`, `write HANDLE HEX` or `subscribe CCC_HANDLE` (the others are full
+/// BLE's). It runs from the current emulated time; the results come as `[ble]` lines. Returns 0,
+/// or 1 for a bad command or no virtual controller (the reason goes to `host_log`).
+/// # Safety
+/// `e` must be live and exclusive; `ptr` must be readable for `len` bytes.
+#[no_mangle]
+pub unsafe extern "C" fn esp32sim_ble_virtual_command(e: *mut Emu, ptr: *const u8, len: usize) -> u32 {
+    let e = unsafe { &mut *e };
+    let command = unsafe { super::text(ptr, len) };
+    match e.m.bus().ble_command(command) {
+        Ok(()) => 0,
+        Err(reason) => { log(&format!("[emu] ble: {reason}")); 1 }
+    }
+}
+
+/// Take the oldest kept `[ble]` line of the virtual controller (without the prefix), returning
+/// its UTF-8 byte length (zero when none). The bytes are at `esp32sim_ble_ptr`, valid until the
+/// next take or emulator deletion. Lines lost to the 1024-line bound come first as `dropped=N`.
+/// # Safety
+/// `e` must be a live emulator with exclusive access for this call.
+#[no_mangle]
+pub unsafe extern "C" fn esp32sim_ble_virtual_take(e: *mut Emu) -> usize {
+    let e = unsafe { &mut *e };
+    e.ble_out = e.m.bus().ble_log_take().unwrap_or_default();
+    e.ble_out.len()
 }

@@ -39,6 +39,16 @@ for (const [kind, path] of [[0, rom], [1, join(build, 'c3-ble-bootloader.bin')],
 assert.equal(w.esp32sim_boot(emu, 0), 0);
 assert.equal(w.esp32sim_ble_full(emu), 1);
 assert(logs.at(-1).includes('before boot'));
+// The virtual VHCI controller is enabled from an application ELF before boot, on a chip that has it.
+const notElf = new TextEncoder().encode('not an ELF');
+assert.equal(bytes(notElf, (p, n) => w.esp32sim_ble_virtual(emu, p, n)), 1);
+assert(logs.at(-1).includes('before boot'));
+const p4 = bytes(new TextEncoder().encode('esp32p4'), (p, n) => w.esp32sim_new(p, n, 2, 0));
+assert.equal(bytes(notElf, (p, n) => w.esp32sim_ble_virtual(p4, p, n)), 1);
+assert.equal(bytes(new TextEncoder().encode('connect'), (p, n) => w.esp32sim_ble_virtual_command(p4, p, n)), 1);
+assert(logs.at(-1).includes('BLE is not enabled'));
+assert.equal(w.esp32sim_ble_virtual_take(p4), 0);
+w.esp32sim_delete(p4);
 const observations = [];
 while (w.esp32sim_cycles(emu) < 320_000_000) {
   assert.equal(w.esp32sim_run(emu, 2_000_000, 0), 0);

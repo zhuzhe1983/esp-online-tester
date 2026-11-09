@@ -120,6 +120,11 @@ pub trait SocBus: Bus {
     fn ble_enabled(&self) -> bool { false }
     fn ble_pending_commands(&self) -> usize { 0 }
     fn ble_command(&mut self, _command: &str) -> Result<(), String> { Err("BLE is not enabled".into()) }
+    /// Keep the virtual controller's `[ble]` lines for `ble_log_take` instead of printing them (a
+    /// host without stderr, the browser). A chip without the virtual controller has none.
+    fn ble_keep_log(&mut self) {}
+    /// The oldest kept `[ble]` line, without the prefix.
+    fn ble_log_take(&mut self) -> Option<String> { None }
     /// The Bluetooth devices around the station (`--ble-nearby`) the virtual controller's scans report.
     fn ble_nearby(&mut self, _list: Vec<crate::ble::peer::Nearby>) -> Result<(), String> { Err("BLE is not enabled".into()) }
     /// Put a virtual access point (`--wifi`) and the network behind it, with `nat` to the host if

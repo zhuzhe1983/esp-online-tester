@@ -292,3 +292,20 @@ success or 1 for invalid commands/state/chip. Reads use the guest ATT server.
 The central models one unencrypted 1M CSA#1 connection with a 30 ms interval,
 2 s supervision timeout and ATT MTU 23. See [EX213](evidence/ble-c3-connection/README.md)
 for model limits and the production-module reconnect test.
+
+### Virtual BLE controller and its peer
+
+The CLI's `--ble` (the VHCI controller and its virtual central, [cli.md](cli.md)) on the S3, C3,
+C6 and classic ESP32. Load the images, then call `esp32sim_ble_virtual(emu, elf_ptr, elf_len)`
+with the application ELF before boot: its symbols locate the guest's controller functions. It
+returns 0, or 1 after boot, for a bad ELF, a chip without the controller or an ELF it cannot use;
+the reason goes to `host_log`. `esp32sim_ble_virtual_command(emu, ptr, len)` gives the peer one of
+the CLI script's `ble` commands (`connect`, `discover`, `read HANDLE`, `write HANDLE HEX`,
+`subscribe CCC_HANDLE`) at the current emulated time; 0, or 1 with the reason on `host_log`.
+The controller's `[ble]` lines (`t=<s>s ...`: advertising, discovery, reads, writes,
+notifications) are kept rather than printed: after each run slice call
+`esp32sim_ble_virtual_take(emu)` until it returns zero. Each nonzero return is the UTF-8 byte
+length at `esp32sim_ble_ptr(emu)`, valid until the next take or emulator deletion. At most 1024
+lines wait; lines lost to the bound come first as `dropped=N`. A line's time is when the
+controller hands it over, so it can differ by microseconds from the CLI's, which slices
+differently; the lines and their order are the same ([EX264](evidence/ble-wasm-api/README.md)).

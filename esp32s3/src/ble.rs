@@ -244,6 +244,24 @@ mod tests {
             assert_eq!(bus.ble.session.pop_packet().is_some(), len == 496);
         }
     }
+    /// The browser build keeps the `[ble]` lines; keeping survives a new `enable` and a reset.
+    #[test]
+    fn kept_lines_go_to_ble_log_take_instead_of_stderr() {
+        use esp_soc::SocBus as _;
+        let (mut bus, symbols) = fixture();
+        assert_eq!(bus.ble_log_take(), None);
+        bus.ble_keep_log();
+        bus.ble.enable(&symbols, 0x400, &SocBus::abi()).unwrap();
+        bus.ble.reset();
+        bus.ble.status = 2;
+        let data = DRAM_LOW + 0x2000;
+        bus.load_bytes(data, &[1, 3, 12, 0]).unwrap();
+        let mut cpu = caller(symbols["esp_vhci_host_send_packet"], data);
+        cpu.set_ar(11, 497);
+        assert!(intercept(&mut cpu, &mut bus));
+        assert_eq!(bus.ble_log_take().as_deref(), Some("rejected invalid VHCI packet pointer, length or controller state"));
+        assert_eq!(bus.ble_log_take(), None);
+    }
     #[test]
     fn vhci_accepts_mapped_psram_packets_without_accepting_flash_or_unmapped_pages() {
         use crate::bus::{DBUS_LOW, MMU_INVALID, MMU_SPIRAM};
