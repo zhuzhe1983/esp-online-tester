@@ -268,7 +268,7 @@ pub fn intercept<C: Core, B: VhciBus>(cpu: &mut C, bus: &mut B, redirect: impl F
             } else {
                 // BR/EDR only, so nothing the firmware does reaches this controller: say why
                 if arg == 2 {
-                    eprintln!("[ble] the virtual controller is LE-only: enabled in mode 2 (BR/EDR), its commands get Unknown HCI Command");
+                    bus.ble().lines.note("the virtual controller is LE-only: enabled in mode 2 (BR/EDR), its commands get Unknown HCI Command".into());
                 }
                 bus.ble().status = 2;
             }
