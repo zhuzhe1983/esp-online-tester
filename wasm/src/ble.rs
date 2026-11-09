@@ -64,7 +64,6 @@ pub unsafe extern "C" fn esp32sim_ble_command(e: *mut Emu, ptr: *const u8, len: 
     u32::from(m.bus.periph.ble_lc.command(command).is_err())
 }
 
-
 /// Enable the virtual BLE controller (the CLI's `--ble`) on the S3, C3, C6 or classic ESP32
 /// before boot. `elf` is the application ELF, whose symbols locate the guest's controller
 /// functions. The controller's `[ble]` lines are kept for `esp32sim_ble_virtual_take`. Returns 0,
