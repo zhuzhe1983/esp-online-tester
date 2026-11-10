@@ -1,0 +1,65 @@
+[
+  {
+    "check": "clippy-native",
+    "command": "cargo +1.99.1 clippy --workspace --all-targets -- -D warnings",
+    "exit_code": 0
+  },
+  {
+    "check": "clippy-wasm",
+    "command": "cargo +1.99.1 clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "exit_code": 0
+  },
+  {
+    "check": "workspace-ci",
+    "command": "cargo +1.99.1 test --release --workspace --no-fail-fast -- --include-ignored --skip external_",
+    "environment": "ESP32SIM_ROM_DIR=roms (tools/fetch-rom-elfs.sh, with the P4 ROMs); tools/fetch-p4-firmware.sh; Rust 1.99.1 (58cf8f9c3 2026-10-13); Windows 11",
+    "exit_code": 0,
+    "tests": {
+      "passed": 1505,
+      "failed": 0,
+      "ignored": 0
+    },
+    "note": "every golden passed byte-identical; none regenerated"
+  },
+  {
+    "check": "virtual",
+    "command": "ESP32SIM_VQ_NATIVE=1 cargo +1.99.1 test --release -p esp32s3 --test machine --test virtual_stops",
+    "exit_code": 0,
+    "tests": {
+      "passed": 43,
+      "failed": 0
+    }
+  },
+  {
+    "check": "wasm",
+    "command": "tools/wasm-build.sh && node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm && node tools/wasm-test.mjs hello c3-hello c6-hello c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel",
+    "exit_code": 0,
+    "notes": "esp32sim.wasm 3751850 bytes, dwarfAbsent, nameRetained; all eight demos ok"
+  },
+  {
+    "check": "wasm-abi",
+    "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm; node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf; node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public roms/esp32c3_rev3_rom.elf",
+    "exit_code": 0,
+    "notes": "ble-api.mjs with the new esp32sim_ble_nearby refusals"
+  },
+  {
+    "check": "privacy",
+    "command": "node tools/check-evidence-privacy.mjs",
+    "exit_code": 0
+  },
+  {
+    "check": "mutations",
+    "command": "each mutation of wasm/src/ble.rs, then cargo +1.99.1 test --release -p esp32sim-wasm --test abi ble_nearby",
+    "result": "6 of 6 killed: the list not handed to SocBus::ble_nearby, the specs parsed one by one without parse_all's checks, text that is not UTF-8 read as empty, lines not trimmed, blank lines kept, the bus's refusal answered 0"
+  },
+  {
+    "check": "firmware",
+    "command": "see inputs.json runs: EX246's scanner on the S3 and C3 under the CLI's --ble-nearby and under ble-nearby-run.mjs with the production module",
+    "result": "UART0 identical through the CLI and the page on both chips (S3 19 lines, C3 18; two scans of esp32sim, Thermo and Scale, n=3). Changes from the page on both chips: Lamp set during the second scan is in that scan (n=4) and the next (n=2); a list with one address twice is refused with the reason on host_log and the next scan is unchanged; no lines leaves esp32sim alone (n=1). Logs in runs/"
+  },
+  {
+    "check": "not-run",
+    "command": "tools/wasm-jit-test.sh; the profiling-features build; the Linux x5 receipt contracts; native-aarch64 job; the CPU comparison",
+    "notes": "Linux/macOS-only steps of ci.yml, left to CI. No CPU comparison: no bus, device_set!, interrupt routing or per-tick code."
+  }
+]

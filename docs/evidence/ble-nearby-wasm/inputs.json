@@ -1,0 +1,33 @@
+{
+  "base": "upstream main 3d049f5c (Merge pull request #343)",
+  "toolchain": "Rust 1.99.1 (58cf8f9c3 2026-10-13); Node 24.22.1; Windows 11 (10.0.26200), x86_64",
+  "mask_roms": {
+    "source": "tools/fetch-rom-elfs.sh roms (espressif/esp-rom-elfs, pinned by SHA-256 in the script)",
+    "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+    "esp32c3_rev3_rom.elf": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c"
+  },
+  "firmware": {
+    "sketch": "docs/evidence/ble-nearby/ble-scan-probe.ino (EX246), the same builds as EX246's inputs.json",
+    "build": "arduino-cli 1.5.1, Arduino-ESP32 core 3.3.12 (ESP-IDF v5.5.5); fqbn esp32:esp32:esp32s3 and esp32:esp32:esp32c3",
+    "images": {
+      "ble-scan.bin": { "bytes": 557408, "sha256": "de20f459424b28c6fef29999fdbfc9462ba155e8c4c60683fad80dd3f712d0ab" },
+      "ble-scan.elf": { "bytes": 862376, "sha256": "75df592bed8c2a3992f98938a6f5387ac4877e21716ed0e17aabc15c04955e06" },
+      "bootloader.bin": { "bytes": 19968, "sha256": "66cf6c060fc857c8ea6d6812aab8e9b27448431846426218b6fb81526b31e564" },
+      "partitions.bin": { "bytes": 3072, "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1" },
+      "c3-ble-scan.bin": { "bytes": 602000, "sha256": "9fa37d20634ab7e60bd1ebf050693c3b7bd3f6d60a050cc453874a12a51893d2" },
+      "c3-ble-scan.elf": { "bytes": 1464472, "sha256": "9f8e9cdcb73746edf772a24b4ea85d029ec0dad98b16ba522468ddd7709d9c66" },
+      "c3-ble-scan.bootloader.bin": { "bytes": 19536, "sha256": "9b2fa5e4af7cf282b2db5ed726b26bcca0aec7946eb3fdacc14444195ba754b3" },
+      "c3-ble-scan.partitions.bin": { "bytes": 3072, "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1" }
+    },
+    "not_committed": "Plain Arduino builds of the sketch; not added to the repository."
+  },
+  "runs": {
+    "cli-s3": "esp32sim --rom roms/esp32s3_rev0_rom.elf --boot rom --board none --flash-mb 4 --bootloader bootloader.bin --ptable partitions.bin --app ble-scan.bin --elf ble-scan.elf --ble --ble-nearby name=Thermo,rssi=-70,addr=c4:aa:01:02:03:04,type=public,rsp=03030f18 --ble-nearby name=Scale,rssi=-82 --console uart0 --max-seconds 8 --no-dump > runs/cli-s3.txt",
+    "cli-c3": "esp32sim --chip c3 --rom roms/esp32c3_rev3_rom.elf --boot rom --flash-mb 4 --bootloader c3-ble-scan.bootloader.bin --ptable c3-ble-scan.partitions.bin --app c3-ble-scan.bin --elf c3-ble-scan.elf --ble --ble-nearby name=Thermo,rssi=-70,addr=c4:aa:01:02:03:04,type=public,rsp=03030f18 --ble-nearby name=Scale,rssi=-82 --console uart0 --max-seconds 8 --no-dump > runs/cli-c3.txt",
+    "page-s3": "node ble-nearby-run.mjs web/wasm/esp32sim.wasm none roms/esp32s3_rev0_rom.elf bootloader.bin partitions.bin ble-scan.bin ble-scan.elf plan-static.json 8 > runs/page-s3.txt",
+    "page-c3": "node ble-nearby-run.mjs web/wasm/esp32sim.wasm esp32c3 roms/esp32c3_rev3_rom.elf c3-ble-scan.bootloader.bin c3-ble-scan.partitions.bin c3-ble-scan.bin c3-ble-scan.elf plan-static.json 8 > runs/page-c3.txt",
+    "page-changes": "TIMES=1 node ble-nearby-run.mjs ... plan-changes.json 15 > runs/page-{s3|c3}-changes.txt, with the S3 and C3 images as above",
+    "compare": "the CLI's stdout against the page's uart: lines, CR and empty lines dropped: identical on both chips",
+    "module": "web/wasm/esp32sim.wasm from tools/wasm-build.sh on this commit"
+  }
+}

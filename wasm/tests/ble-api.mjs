@@ -48,6 +48,12 @@ assert.equal(bytes(notElf, (p, n) => w.esp32sim_ble_virtual(p4, p, n)), 1);
 assert.equal(bytes(new TextEncoder().encode('connect'), (p, n) => w.esp32sim_ble_virtual_command(p4, p, n)), 1);
 assert(logs.at(-1).includes('BLE is not enabled'));
 assert.equal(w.esp32sim_ble_virtual_take(p4), 0);
+// The devices around: the --ble-nearby specs, refused without the virtual controller or as the option refuses them.
+const nearby = (e, text) => bytes(new TextEncoder().encode(text), (p, n) => w.esp32sim_ble_nearby(e, p, n));
+assert.equal(nearby(p4, 'name=Thermo'), 1);
+assert(logs.at(-1).includes('BLE is not enabled'));
+assert.equal(nearby(p4, 'name=Thermo\nname=Thermo'), 1);
+assert(logs.at(-1).includes('share the address'));
 w.esp32sim_delete(p4);
 const observations = [];
 while (w.esp32sim_cycles(emu) < 320_000_000) {
