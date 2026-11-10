@@ -35,13 +35,13 @@ fn sram_miss_dispatch_preserves_window_and_absent_faults() {
 }
 
 // Literal addresses/stride intentionally independent of translator constants.
-fn map(b: &mut SocBus, slot: u32, page: u32) {
+pub(crate) fn map(b: &mut SocBus, slot: u32, page: u32) {
     for base in [0x3ff11200, 0x3ff13200] {
         b.write32(base + slot * 4, page).unwrap();
         assert_eq!(b.read32(base + slot * 4), Ok(page));
     }
 }
-fn configured() -> SocBus {
+pub(crate) fn configured() -> SocBus {
     let mut b = SocBus::new(4 << 20, [0; 6]);
     b.set_psram_size(4 << 20).unwrap();
     b.write32(0x3ff00030, 1).unwrap();

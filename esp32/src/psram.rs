@@ -69,6 +69,24 @@ impl SocBus {
         }
         Ok(())
     }
+    /// Whether `len` bytes at `address` read now as `psram_load` would read them: every page
+    /// of the range mapped to installed PSRAM, and the cache able to read. The VHCI hooks ask it
+    /// before they copy a packet out of the guest (`ble.rs`).
+    pub(crate) fn psram_readable(&self, address: u32, len: usize) -> bool {
+        let Some(last) = u32::try_from(len).ok().and_then(|len| len.checked_sub(1)).and_then(|n| address.checked_add(n))
+        else { return false };
+        if !(LOW..HIGH).contains(&address) || !(LOW..HIGH).contains(&last) { return false; }
+        // What psram_offsets checks is the same for every byte of a 32 KiB page, and the
+        // installed PSRAM is whole pages (0 or 4 MiB), so one byte of each page stands for it.
+        let mut page = address;
+        loop {
+            if self.psram_offsets::<1>(page).is_err() { return false; }
+            let next = (page | (SRAM_PAGE as u32 - 1)) + 1;
+            if next > last { break; }
+            page = next;
+        }
+        self.psram_cache_gate(false).is_ok()
+    }
     #[cold]
     pub(crate) fn psram_load<const N: usize>(&mut self, addr: u32) -> Result<[u8; N], Fault> {
         match self.psram_offsets::<N>(addr).and_then(|o| self.psram_cache_gate(false).map(|()| o)) {
@@ -109,4 +127,4 @@ impl SocBus {
 
 #[cfg(test)]
 #[path = "psram_tests.rs"]
-mod tests;
+pub(crate) mod tests;

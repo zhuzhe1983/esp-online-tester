@@ -36,6 +36,15 @@ impl VhciBus for SocBus {
     fn ble_debug(&self) -> bool {
         self.debug.has("ble")
     }
+    // Bluedroid built with CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST takes its HCI buffers from
+    // PSRAM first (IDF v5.3.6 components/bt/common/osi/include/osi/allocator.h:38), so the
+    // packets it sends lie in the external RAM window when there is PSRAM. The controller BSS,
+    // which holds the receive buffer, stays in DRAM
+    // (components/bt/controller/linker_rw_bt_controller.lf:31).
+    fn valid_packet_range(&self, address: u32, len: usize) -> bool {
+        let Some(end) = address.checked_add(len as u32) else { return false };
+        (address >= DRAM_LOW && end <= DRAM_HIGH) || self.psram_readable(address, len)
+    }
 }
 
 #[cfg(test)]
@@ -54,7 +63,10 @@ mod tests {
     const RECV_CB: u32 = BASE + 0x710;
 
     fn fixture() -> (SocBus, HashMap<String, u32>) {
-        let mut bus = SocBus::new(0x400000, [0; 6]);
+        fixture_on(SocBus::new(0x400000, [0; 6]))
+    }
+
+    fn fixture_on(mut bus: SocBus) -> (SocBus, HashMap<String, u32>) {
         let symbols: HashMap<String, u32> = [
             ("esp_bt_controller_init", BASE),
             ("xTaskCreatePinnedToCore", BASE + 0x400),
@@ -262,6 +274,54 @@ mod tests {
             .enable(&symbols, 0x400, &SocBus::abi())
             .unwrap_err()
             .contains("vTaskDelay"));
+    }
+
+    /// Bluedroid built with CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST sends from PSRAM. A packet
+    /// there reaches the controller when PSRAM is installed and every page the packet touches is
+    /// mapped and readable, as a load would find it; otherwise it is refused.
+    #[test]
+    fn vhci_accepts_packets_in_mapped_psram_and_refuses_them_without_psram() {
+        use crate::psram::tests::{configured, map};
+        use crate::psram::{HIGH, LOW};
+        // HCI_Reset, across the boundary of the window's first two 32 KiB pages
+        let data = LOW + 0x7ffe;
+        let send = |bus: &mut SocBus, symbols: &HashMap<String, u32>| {
+            bus.ble.status = 2;
+            bus.ble.send_ready = false;
+            let mut cpu = caller(symbols["esp_vhci_host_send_packet"], data);
+            cpu.set_ar(11, 4);
+            assert!(intercept(&mut cpu, bus));
+            let sent = bus.ble.send_ready;
+            assert_eq!(bus.ble.session.pop_packet().is_some(), sent);
+            // the hook takes a packet exactly when the read of its last byte, in its second page,
+            // succeeds
+            assert_eq!(bus.read8_unpriced(data + 3).is_ok(), sent);
+            sent
+        };
+        let (mut bus, symbols) = fixture_on(configured());
+        map(&mut bus, 0, 5);
+        map(&mut bus, 1, 9);
+        bus.load_bytes(data, &[1, 3, 12, 0]).unwrap();
+        assert!(send(&mut bus, &symbols), "mapped PSRAM");
+        // the packet's second page unmapped, then mapped past the 4 MiB installed
+        map(&mut bus, 1, 0x100);
+        assert!(!send(&mut bus, &symbols), "invalid entry");
+        map(&mut bus, 1, 128);
+        assert!(!send(&mut bus, &symbols), "past the installed PSRAM");
+        map(&mut bus, 1, 9);
+        // the PRO cache, which IDF enables before PSRAM is used, off
+        bus.write32(0x3ff0_0040, 0).unwrap();
+        assert!(!send(&mut bus, &symbols), "cache disabled");
+        // no PSRAM installed, with the same pages mapped
+        let (mut bus, symbols) = fixture();
+        map(&mut bus, 0, 5);
+        map(&mut bus, 1, 9);
+        assert!(!send(&mut bus, &symbols), "no PSRAM");
+        let bus = configured();
+        assert!(!bus.valid_packet_range(HIGH - 2, 4), "crosses the window's end");
+        assert!(!bus.valid_packet_range(LOW - 2, 4), "crosses the window's start");
+        assert!(!bus.valid_packet_range(u32::MAX - 1, 4));
+        assert!(bus.valid_packet_range(DRAM_LOW, 4) && !bus.valid_packet_range(DRAM_HIGH - 2, 4));
     }
 
     #[test]
