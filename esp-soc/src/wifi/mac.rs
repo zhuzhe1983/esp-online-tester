@@ -67,6 +67,26 @@ impl WifiMac {
         }
     }
     pub fn irq(&self) -> bool { self.events != 0 || self.pwr_events != 0 }
+    /// SYSCON `WIFI_RST_EN` (+0x018) `MAC_RST`, bit 2 (`SYSTEM_WIFIMAC_RST`; IDF v5.5.4
+    /// soc/esp32c3/register/soc/syscon_reg.h; esp-radio `reset_wifi_mac`, called by the blob's
+    /// `wifi_reset_mac` on every driver init). The hardware forgets its place in the receive ring and
+    /// its transmit work; the driver then writes a new ring base, which must take effect even though a
+    /// ring was in use before. Without this a restarted driver (esp-radio drops and re-creates the
+    /// controller) never sees another frame: they go into the old, freed ring.
+    ///
+    /// Only the C3 bus calls this. The S3 uses the same bit through esp-radio, but nothing here
+    /// exercises it, so it is not wired.
+    pub fn reset_mac(&mut self) {
+        self.rx_base = 0;
+        self.rx_next = 0;
+        self.rx_last = 0;
+        self.rx_handover = false;
+        self.events = 0;
+        self.txq_complete = 0;
+        self.txq_error = 0;
+        self.tx_pending.clear();
+        self.link.rx_reset();
+    }
     /// The transmit queue whose PLCP0 register is at `off`, if any.
     fn txq_of(off: u32) -> Option<u8> {
         if off <= 0xd08 && (0xd08 - off).is_multiple_of(8) && (0xd08 - off) / 8 < TXQ_COUNT { Some(((0xd08 - off) / 8) as u8) } else { None }
