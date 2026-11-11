@@ -7,7 +7,7 @@
 //! `PATH` is (`std::env::split_paths`: `:`, or `;` on Windows, where `:` is in every path).
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
-use riscv_rv32::decode::{decode, decode_for, Op};
+use riscv_rv32::decode::{decode, decode_for, Op, ISA_ZB, ISA_ZC};
 use riscv_rv32::disasm;
 use riscv_rv32::state::{MISA_RV32IMAC, MISA_RV32IMAFC};
 
@@ -118,6 +118,7 @@ fn is_f_text(m: &str) -> bool {
 
 const C3_C6: &[&str] = &["rom.dis", "hello_world.dis", "c6-rom.dis", "c6-hello_world.dis"];
 const P4: &[&str] = &["p4-rom.dis", "p4-idf.dis", "rv32f.dis"];
+const S31: u32 = MISA_RV32IMAFC | ISA_ZB | ISA_ZC;
 
 fn corpus(names: &[&str]) -> Vec<PathBuf> {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/corpus");
@@ -165,6 +166,36 @@ fn cores_without_f_reject_every_f_instruction() {
         }
     }
     assert!(f > 2000, "only {} F instructions in the P4 corpora", f);
+}
+
+/// Every Zba/Zbb/Zbs and Zcb/Zcmp form assembled from `zbc.S`, decoded as the ESP32-S31 core.
+#[test]
+fn s31_decoder_matches_corpus() {
+    let n = check(&corpus(&["zbc.dis"]), S31);
+    assert!(n >= 1400, "only {} corpus cases — the corpus file is incomplete", n);
+}
+
+/// Without `ISA_ZB`/`ISA_ZC` every new form is illegal with its raw bits and length, and with them
+/// every older corpus decodes the same: the extensions only take encodings that were illegal.
+#[test]
+fn cores_without_zb_zc_reject_them_and_older_code_decodes_the_same() {
+    let mut new = 0;
+    for file in corpus(&["zbc.dis"]) {
+        for l in lines(&read(&file)) {
+            let (with, plain) = (decode_for(S31, l.addr, l.bytes), decode_for(MISA_RV32IMAFC, l.addr, l.bytes));
+            if with.op == Op::Illegal { assert!(plain.is_illegal(), "{:08x} {}", l.addr, l.theirs); continue; }
+            // c.zext.b and c.not expand to andi/xori; they are new encodings all the same
+            assert_eq!((plain.op, plain.raw, plain.len), (Op::Illegal, with.raw, with.len), "{:08x} {}", l.addr, l.theirs);
+            new += 1;
+        }
+    }
+    assert!(new >= 1400, "only {} new instructions", new);
+    for file in [corpus(P4), corpus(C3_C6)].concat() {
+        for l in lines(&read(&file)) {
+            let plain = decode_for(MISA_RV32IMAFC, l.addr, l.bytes);
+            if !plain.is_illegal() { assert_eq!(decode_for(S31, l.addr, l.bytes), plain, "{:08x} {}", l.addr, l.theirs); }
+        }
+    }
 }
 
 /// The full listings of whatever `RISCV_DIS_FILES` points at.
