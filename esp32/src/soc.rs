@@ -205,6 +205,10 @@ impl esp_soc::SocBus for SocBus {
             gpio.gpio.enable & (1 << pin) != 0,
             pin < 34 && mux & (1 << 8) != 0, pin < 34 && mux & (1 << 7) != 0))
     }
+    fn touch_input(&mut self, x: u16, y: u16, down: bool) {
+        self.board.touch(x, y, down);
+        if let Some((pin, level)) = self.board.touch_irq() { self.gpio_set_input(pin, level); }
+    }
     fn gpio_set_input(&mut self, pin: u8, level: bool) {
         self.periph.gpio.set_input(pin, level);
         self.ext0_wake();

@@ -128,6 +128,28 @@ The JPEG fixture (20 MHz XCLK, quality 12, VGA then QVGA, DRAM and PSRAM
 framebuffers) is [EX256](experiments.md#ex256) with its
 [recipe](../examples/classic-camera/jpeg.md).
 
+## The board: `--board cyd`
+
+The ESP32-2432S028 "Cheap Yellow Display" (ESP32-WROOM-32, 4 MB flash, no PSRAM) has a 2.8"
+ILI9341 on SPI (SCLK 14, MOSI 13, MISO 12, CS 15, D/C 2, backlight GPIO 21) and an XPT2046
+resistive touch controller on a second bus (CLK 25, MOSI 32, MISO 39, CS 33, T_IRQ 36).
+`esp32/src/board/cyd.rs` tells the two apart by their chip-select GPIOs, so TFT_eSPI on HSPI or
+VSPI and a separate `SPIClass` for the touch controller all work. The panel is a
+`DcsPanel::new(240, 320)`; the frame shown (`--tft-png`, the page's panel) follows MADCTL.MV: landscape
+320×240 (the RAM transposed) when it is set, as in TFT_eSPI rotations 1 and 3, portrait 240×320 when it
+is clear (rotations 0 and 2), with red and blue exchanged unless MADCTL's BGR bit is set. Other
+"CYD" boards with an ST7789 or inverted colours (e.g. the two-USB variant) are not modelled.
+
+The XPT2046 model follows the control-byte protocol the Paul Stoffregen library uses: a byte with
+bit 7 set starts a conversion, whose 12-bit result is clocked out on the next two bytes
+(`transfer16() >> 3`). Z1/Z2 give a pressure above the library's threshold while pressed, X/Y are a
+linear map of the spot on the glass (the landscape pixel; a portrait touch is transposed onto it) to 200..3900, and GPIO 36 is pulled low while pressed
+(`BoardModel::touch_irq`) so `tirqTouched()` sees its falling edge. The raw values are not a
+calibration curve. The backlight, LDR, SD card, RGB LED and speaker are not modelled.
+
+Checked with the [`examples/cyd-touchtest`](../examples/cyd-touchtest/README.md) sketch
+(witnessmenow/ESP32-Cheap-Yellow-Display, MIT; Arduino-ESP32 2.0.x, IDF 4.4, TFT_eSPI 2.5.43).
+
 ## The board: `--board ttgo-tdisplay`
 
 The LilyGO TTGO T-Display (ESP32-D0WDQ6-V3, 4 MB flash, no PSRAM) wires an ST7789V 1.14"

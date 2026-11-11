@@ -252,6 +252,19 @@ firmware is also a browser demo (`?wasm&fw=c6-xiao`).
 
 Selected with `--chip esp32 --board ttgo-tdisplay` (alias `tdisplay`); [esp32.md](esp32.md#the-board---board-ttgo-tdisplay).
 
+## `cyd` — ESP32-2432S028 "Cheap Yellow Display" (classic ESP32)
+
+| Device | Bus | Model |
+| --- | --- | --- |
+| ILI9341 240×320 panel | SPI (SCLK 14, MOSI 13, MISO 12), CS 15, D/C 2, no RST | `DcsPanel::new(240, 320)`: bytes of transactions while CS 15 is low, from either SPI host; shown as the firmware addresses it: 320×240 landscape (the RAM transposed) with MADCTL.MV set (TFT_eSPI rotations 1 and 3), 240×320 portrait (the RAM as it is) with MV clear (rotations 0 and 2); red/blue exchanged unless MADCTL BGR; readback returns 0xff |
+| XPT2046 touch | its own SPI (CLK 25, MOSI 32, MISO 39), CS 33, T_IRQ GPIO 36 | answers the pressure and X/Y reads of the PaulStoffregen library while CS 33 is low; `touch x y 1` / the page's pointer (landscape pixels) press it and pull GPIO 36 low; raw values are an approximate linear map (200..3900) of the spot on the glass, the same in either rotation, not a calibrated curve |
+| Backlight | GPIO 21, active high | level tracked, in the report; LEDC duty via `--pwm 21`; the picture is not dimmed |
+| LDR, SD card, RGB LED, speaker | GPIO 34, SPI, GPIO 4/16/17, GPIO 26 | not modelled |
+
+Selected with `--chip esp32 --board cyd` (alias `esp32-2432s028`); [esp32.md](esp32.md#the-board---board-cyd).
+Only the original single-USB ESP32-2432S028 (ILI9341) is modelled: some boards sold as "CYD", such as
+the two-USB (micro-USB and USB-C) variant, have an ST7789 or need inverted colours, and show wrong colours here.
+
 ## `ulanzi-tc001` — Ulanzi TC001 pixel clock (classic ESP32)
 
 | Device | Bus | Model |
