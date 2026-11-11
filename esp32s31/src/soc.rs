@@ -125,6 +125,8 @@ pub struct SocBus {
     rom_image: Option<Vec<u8>>,
     /// Board-level inputs replayed after every chip reset (they model the PCB, not the SoC).
     pub board_inputs: Option<BoardInputs>,
+    /// The pad levels last given to the board (`Pads::board_levels`).
+    pin_levels: u64,
 }
 
 /// Explicit board-level inputs needed to run an IDF v6.1 image from the mask ROM. None of
@@ -222,6 +224,7 @@ impl SocBus {
             mac,
             rom_image: None,
             board_inputs: None,
+            pin_levels: !0,
         }
     }
 
@@ -280,6 +283,27 @@ impl SocBus {
         if let Some(f) = &self.inner.first_fault {
             self.last_fault = Some((f.address, write || f.write));
         }
+    }
+
+    /// After a store: pad level changes, then a finished GP-SPI2 transaction, to the board. Only
+    /// GPIO stores and a started transfer do any work here.
+    fn deliver_board_events(&mut self, address: u32) {
+        if address >> 24 != 0x20 { return; }
+        if crate::pads::Pads::is_mmio(address) { self.deliver_pin_levels(); }
+        if let Some(transfer) = self.inner.spi2.take_transfer() {
+            let rx = self.board.spi_transfer(2, &transfer.tx, transfer.rx_len);
+            self.inner.spi2.finish_transfer(transfer, &rx);
+        }
+    }
+
+    fn deliver_pin_levels(&mut self) {
+        let levels = self.inner.pads.board_levels();
+        let diff = levels ^ self.pin_levels;
+        if diff == 0 { return; }
+        self.pin_levels = levels;
+        let changes: Vec<(u8, bool)> = (0..64u8).filter(|&p| diff >> p & 1 != 0).map(|p| (p, levels >> p & 1 != 0)).collect();
+        if let Some(ev) = &mut self.gpio_events { for &(pin, level) in &changes { ev.push((self.cycles, pin, level)); } }
+        self.board.gpio_changes(&changes);
     }
 
     fn refresh_clic_inputs(&mut self) {
@@ -427,6 +451,7 @@ impl esp_soc::SocBus for SocBus {
         inner.periph.efuse = efuse;
         inner.pads.strap = strap;
         inner.periph.usb.attach_host(usb_attached);
+        inner.spi2.log = self.inner.spi2.log;
         // Publish the cause the ROM reads (HPCOREn_RESET_CAUSE[6:1]).
         inner.interrupts.reset_cause = [cause << 1; 2];
         // Non-volatile across a chip reset: NOR contents (with guest writes), mask ROM, PCB.
@@ -439,6 +464,7 @@ impl esp_soc::SocBus for SocBus {
         }
         if let Some(b) = &self.board_inputs { let _ = b.apply(&mut inner); }
         self.inner = inner;
+        self.deliver_pin_levels();                       // the pads are back to their reset state
         self.mac = mac;
         self.misc.log_unknown = log_unknown;
         self.misc.log_all = log_all;
@@ -554,6 +580,7 @@ impl esp_soc::SocBus for SocBus {
         self.debug = f.clone();
         self.misc.log_all = f.has("mmio");
         self.misc.log_unknown = f.has("mmio");
+        self.inner.spi2.log = f.has("spi");
     }
 
     fn set_flash_size(&mut self, bytes: usize) {
@@ -570,6 +597,7 @@ impl esp_soc::SocBus for SocBus {
     }
 
     fn report(&self) -> String {
+        let board = self.board.report();
         let u = &self.inner.unmodelled;
         let list: Vec<String> = u.iter().take(48).map(|(a, v)| format!("{a:#010x}={v:#x}")).collect();
         format!(
@@ -581,7 +609,7 @@ impl esp_soc::SocBus for SocBus {
             list.join(" "),
             self.inner.refused.len(),
             self.inner.refused.iter().take(48).map(|(a, (n, v))| format!("{a:#010x}x{n}(last write {v:#x})")).collect::<Vec<_>>().join(" ")
-        )
+        ) + &format!("\nesp32s31: GP-SPI2 {} transfers", self.inner.spi2.transfers) + if board.is_empty() { "" } else { "\n" } + &board
     }
 }
 
@@ -629,6 +657,7 @@ impl Bus for SocBus {
     fn write8(&mut self, a: u32, v: u8) -> Result<(), Fault> {
         match self.inner.write8(a, v) {
             Ok(()) => {
+                self.deliver_board_events(a);
                 self.irq_dirty = true;
                 Ok(())
             }
@@ -641,6 +670,7 @@ impl Bus for SocBus {
     fn write16(&mut self, a: u32, v: u16) -> Result<(), Fault> {
         match self.inner.write16(a, v) {
             Ok(()) => {
+                self.deliver_board_events(a);
                 self.irq_dirty = true;
                 Ok(())
             }
@@ -653,6 +683,7 @@ impl Bus for SocBus {
     fn write32(&mut self, a: u32, v: u32) -> Result<(), Fault> {
         match self.inner.write32(a, v) {
             Ok(()) => {
+                self.deliver_board_events(a);
                 self.irq_dirty = true;
                 Ok(())
             }
@@ -788,5 +819,43 @@ mod tests {
         bus.write32(bus::UART0_BASE, b'A' as u32).unwrap();
         let cons = esp_soc::SocBus::console_take(&mut bus);
         assert_eq!(cons[1], b"A");
+    }
+
+    /// GP-SPI2 at DR_REG_GPSPI2_BASE reaches the Mosaico's CO5300 the way esp_lcd_co5300 talks
+    /// to it in QSPI mode: a 32-bit address phase (0x02 command / 0x32 pixel write, then the DCS
+    /// command byte) and data from the W buffer, the panel powered by GPIO 60 low and out of reset.
+    #[test]
+    fn gpspi2_qspi_transfers_reach_the_mosaico_panel() {
+        use crate::pads::{GPIO_BASE, IO_MUX_BASE};
+        use emu_core::Bus;
+        let mut bus = SocBus::new(1 << 20, [0; 6]);
+        bus.board = crate::board::make_board("mosaico").unwrap();
+        for pin in [44u32, 60] { bus.write32(IO_MUX_BASE + 4 * pin, 0x1200).unwrap(); }
+        bus.write32(GPIO_BASE + 0x14, 1 << (44 - 32)).unwrap();           // RESET high, power enable low
+        bus.write32(GPIO_BASE + 0x44, 1 << (44 - 32) | 1 << (60 - 32)).unwrap();
+        let spi = bus::GPSPI2;
+        let send = |bus: &mut SocBus, lead: u32, cmd: u32, data: &[u8]| {
+            bus.write32(spi + 0x10, 1 << 30 | if data.is_empty() { 0 } else { 1 << 27 | 1 << 13 }).unwrap();
+            bus.write32(spi + 0x14, 31 << 27).unwrap();
+            bus.write32(spi + 0x04, lead << 24 | cmd << 8).unwrap();
+            bus.write32(spi + 0x1c, (data.len() as u32 * 8).max(1) - 1).unwrap();
+            for (i, w) in data.chunks(4).enumerate() {
+                let mut b = [0u8; 4]; b[..w.len()].copy_from_slice(w);
+                bus.write32(spi + 0x98 + 4 * i as u32, u32::from_le_bytes(b)).unwrap();
+            }
+            bus.write32(spi, 1 << 24).unwrap();
+            assert_eq!(bus.read32(spi).unwrap() & 1 << 24, 0, "USR done");
+        };
+        send(&mut bus, 0x02, 0x2a, &[0, 10, 0, 11]);
+        send(&mut bus, 0x02, 0x2b, &[0, 20, 0, 20]);
+        send(&mut bus, 0x32, 0x2c, &[0xf8, 0x00, 0x07, 0xe0]);
+        let (w, h, frame, written) = bus.board.display().unwrap();
+        assert_eq!((w, h, written), (480, 480, 2));
+        assert_eq!(&frame[20 * 480 + 10..20 * 480 + 12], [0xf800, 0x07e0]);
+        assert_ne!(bus.inner.spi2.int_raw & 1 << 12, 0, "TRANS_DONE");
+        // GPIO 60 high cuts the panel's supply: the next window is not taken
+        bus.write32(GPIO_BASE + 0x14, 1 << (60 - 32)).unwrap();
+        send(&mut bus, 0x32, 0x2c, &[0x12, 0x34]);
+        assert_eq!(bus.board.display().unwrap().3, 0, "an unpowered panel lost its RAM");
     }
 }

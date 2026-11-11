@@ -70,6 +70,11 @@ impl Pads {
         Electrical { drive, input: mux & (1 << 9) != 0, pull_up: mux & (1 << 8) != 0, pull_down: mux & (1 << 7) != 0 }
     }
     fn electrical(&self, pin: usize) -> Electrical { self.held[pin].unwrap_or_else(|| self.live(pin)) }
+    /// Each pin's level as a board sees it: low only where the pad drives low (high-Z,
+    /// unrouted and unbonded pins read high, as through the board's pull-ups).
+    pub fn board_levels(&self) -> u64 {
+        (0..PINS).filter(|&p| Self::valid(p) && self.electrical(p).drive == Drive::Low).fold(!0u64, |m, p| m & !(1u64 << p))
+    }
     pub fn drive(&self, pin: usize) -> Result<Drive, Fault> {
         if !Self::valid(pin) { return Err(Fault::Unmapped); }
         Ok(self.electrical(pin).drive)

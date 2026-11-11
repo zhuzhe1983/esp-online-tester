@@ -23,7 +23,8 @@ fn help(chip: &str, code: i32) -> ! {
     eprintln!("  --rom F               the chip's mask ROM ELF; default: $ESP32SIM_ROM_DIR, then ~/.espressif/tools/esp-rom-elfs/*/");
     eprintln!("                        (Espressif's, not in the tarball: tools/fetch-rom-elfs.sh DIR downloads all five)");
     eprintln!("  --board NAME          board model (S3: atech14, waveshare-lcd4b, waveshare-amoled18-v2, waveshare-cam, none;");
-    eprintln!("                        C6: waveshare-c6-lcd147, none; P4: waveshare-p4-lcd35, none; classic: ttgo-tdisplay, cyd, ulanzi-tc001, esp32dev, none)");
+    eprintln!("                        C6: waveshare-c6-lcd147, none; P4: waveshare-p4-lcd35, none; S31: mosaico, none;");
+    eprintln!("                        classic: ttgo-tdisplay, cyd, ulanzi-tc001, esp32dev, none)");
     eprintln!("  --flash-mb N, --psram-mb N   memory sizes (S3 default 8 / 2, C3, C6 and classic 4 / 0, P4 16 / 0)");
     eprintln!("  --max-seconds S       stop after S emulated seconds (always give one: the run returns)");
     eprintln!("  --console usb|uart0|both|none   which consoles to print (uart0 shows the ROM and bootloader)");
@@ -674,6 +675,7 @@ fn setup_s31(o: &Opts) -> esp32s31::Machine {
     if let Some(inputs) = inputs {
         m.bus.set_board_inputs(inputs).unwrap_or_else(|e| usage_error(&e));
     }
+    if let Some(board) = esp32s31::board::make_board(&o.board) { m.bus.board = board; }
     // SPI_FAST_FLASH_BOOT; prepare() may override with --strap.
     if o.strap.is_none() {
         m.bus.set_strap(0x10);
