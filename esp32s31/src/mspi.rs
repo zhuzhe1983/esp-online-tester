@@ -18,10 +18,10 @@ const SPI1_CONFIG: &[(u32, u32, u32)] = &[
     (0x20, 0x70000000, 0xf000ffff), (0x24, 0, 0x3ff), (0x28, 0, 0x3ff), (0x34, 2, 0x603),
     (0x3c, 0, 0x1fa), (0x98, 0x00050001, 0xfffffe1f), (0x9c, 0x08002000, u32::MAX), (0xa0, 0x57575, u32::MAX), (0xa4, 0x7a7a0000, 0xffff80ff), (0xd4, 0x20, 0),
 ];
-pub struct Mspi { spi0: [u32; 64], spi1: SpiMem, clock: u32, descriptor: Option<([u8; 3], u16)>, read_status: u32, powered_down: bool, legacy_rom_lengths: Option<[u32; 2]>, sfdp: Option<(u32, Vec<u8>)>, bbpll_input: Option<u64>, bbpll_gate: bool, pub commands: u64, pub waiti_polls: u64, pub last_waiti_status: Option<u8>, pub last_command: Option<u32> }
+pub struct Mspi { spi0: [u32; 64], spi1: SpiMem, clock: u32, descriptor: Option<([u8; 3], u16)>, read_status: u32, powered_down: bool, legacy_rom_lengths: Option<[u32; 2]>, sfdp: Option<(u32, Vec<u8>)>, bbpll_input: Option<u64>, bbpll_gate: bool, cpll_input: Option<u64>, unrecognised: bool, pub commands: u64, pub waiti_polls: u64, pub last_waiti_status: Option<u8>, pub last_command: Option<u32> }
 impl Default for Mspi {
     fn default() -> Self {
-        let mut m = Self { spi0: [0; 64], spi1: SpiMem::new(true), clock: 0x781, descriptor: None, read_status: 0, powered_down: false, legacy_rom_lengths: None, sfdp: None, bbpll_input: None, bbpll_gate: true, commands: 0, waiti_polls: 0, last_waiti_status: None, last_command: None };
+        let mut m = Self { spi0: [0; 64], spi1: SpiMem::new(true), clock: 0x781, descriptor: None, read_status: 0, powered_down: false, legacy_rom_lengths: None, sfdp: None, bbpll_input: None, bbpll_gate: true, cpll_input: None, unrecognised: false, commands: 0, waiti_polls: 0, last_waiti_status: None, last_command: None };
         m.reset_registers(); m
     }
 }
@@ -37,8 +37,11 @@ impl Mspi {
     /// This subset supports ordinary 8-bit quad-NOR commands only; no OPI/security.
     /// Optional SFDP data is an independent explicit input, never derived from JEDEC ID.
     /// Winbond W25Qxx (0xef40xx): capacity byte varies (0x15=2MiB, 0x18=16MiB, …).
+    /// Winbond W25Q (EF 40 xx) or GigaDevice GD25Q (C8 40 xx): the same standard quad-NOR
+    /// commands this subset covers (01/05/35/31/06/04/02/20/d8/9f/5a/03/0b/3b/6b/bb/eb/7a,
+    /// SR2 QE = bit 1, WEL required for program/erase, program ANDs within a 256-byte page).
     fn is_winbond_flash(&self) -> bool {
-        matches!(self.descriptor.map(|d| d.0), Some([0xef, 0x40, _]))
+        matches!(self.descriptor.map(|d| d.0), Some([0xef | 0xc8, 0x40, _]))
     }
 
     pub fn attach_flash(&mut self, jedec: [u8; 3], status: u16) -> Result<(), Fault> {
@@ -66,22 +69,27 @@ impl Mspi {
     pub fn set_bbpll_gate(&mut self, on: bool) { self.bbpll_gate = on; }
     /// The same explicitly supplied BBPLL root feeds documented peripheral taps.
     /// No additional ready/lock state is inferred from a requested divider.
+    /// The CPLL rate the SoC's clock tree currently produces (None while it is off).
+    pub fn set_cpll_input(&mut self, hz: Option<u64>) { self.cpll_input = hz; }
     pub fn bbpll_root_hz(&self) -> Option<u64> { if self.bbpll_gate { self.bbpll_input } else { None } }
     fn core_hz_for(&self, clock: u32) -> Option<u64> {
         if clock & 0x105 != 0x101 { return None; }
         match (clock >> 5) & 3 {
             0 => Some(40_000_000 / (u64::from((clock >> 9) & 255) + 1)),
             1 if clock & 0x80 != 0 && self.bbpll_gate => self.bbpll_input.map(|hz| hz / (u64::from((clock >> 9) & 255) + 1)),
+            // IDF master esp_hal_mspi/esp32s31 mspi_ll.h:225-234: CLK_SRC_SEL 2 is FLASH_CLK_SRC_CPLL.
+            2 if clock & 0x80 != 0 => self.cpll_input.map(|hz| hz / (u64::from((clock >> 9) & 255) + 1)),
             _ => None,
         }
     }
     pub fn core_hz(&self) -> Option<u64> { self.core_hz_for(self.clock) }
     pub fn clock_read(&self) -> u32 { self.clock }
     pub fn clock_write(&mut self, value: u32) -> Result<(), Fault> {
-        // XTAL or explicit BBPLL input only. CPLL mux and force-reset overrides
-        // remain unsupported. Selecting an absent root cannot create a ready clock.
-        if value & 0x18 != 0 || (value >> 5) & 3 > 1 { return Err(Fault::Prohibited); }
-        if value & 0x105 == 0x101 && (value >> 5) & 3 == 1 && self.core_hz_for(value).is_none() { return Err(Fault::Prohibited); }
+        // XTAL, BBPLL or CPLL (mux 0/1/2). Bits 3-4 are the AXI/APB force-no-reset controls
+        // (hp_sys_clkrst_reg.h FLASH_CTRL0): stored, no effect here. Selecting an absent root
+        // cannot create a ready clock.
+        if (value >> 5) & 3 > 2 { return Err(Fault::Prohibited); }
+        if value & 0x105 == 0x101 && (value >> 5) & 3 != 0 && self.core_hz_for(value).is_none() { return Err(Fault::Prohibited); }
         self.clock = value & 0x1ffff;
         if value & 4 != 0 {
             let status = self.spi1.status; self.reset_registers(); self.spi1.status = status; // APB reset does not reset the external NOR die.
@@ -127,7 +135,7 @@ impl Mspi {
             let old = self.spi1.regs.read(off); self.spi1.regs.write(off, (old & !mask) | (value & mask)); return Ok(());
         }
         match off {
-            0 => self.execute(value, flash),
+            0 => self.execute_or_shared(value, flash),
             0x58..=0x94 => { self.spi1.write(off, value); Ok(()) }
             0x2c => { self.read_status = value & 0x0fffffff; Ok(()) } // Controller latch only; not a NOR status write.
             0x54 => Err(Fault::Prohibited),
@@ -151,6 +159,31 @@ impl Mspi {
         // RD_STATUS is latched only by explicit RDSR/RES per the header; no
         // invented public status register alias for this internal auto sample.
         self.commands = self.commands.wrapping_add(1);
+    }
+    /// The validated subset first. Only a command it does not recognise at all (a controller
+    /// command bit or a USER opcode outside its whitelist, e.g. a GigaDevice WRSR2 0x31) on a
+    /// clocked, awake, idle Winbond/GigaDevice CS0 die goes to the shared `SpiMem` engine (the
+    /// S3/P4 one), which shares these SPI1 registers and W buffer. A known opcode refused for
+    /// device state or framing (no WEL, BUSY, powered down, address range) is never retried
+    /// there, and a program/erase the subset does not know still needs WEL, as on the die.
+    fn execute_or_shared(&mut self, value: u32, flash: &mut [u8]) -> Result<(), Fault> {
+        self.unrecognised = false;
+        match self.execute(value, flash) {
+            Err(Fault::Prohibited) if self.unrecognised && self.is_winbond_flash() && self.spi1.status & 1 == 0 => {
+                let opcode = (value == 1 << 18).then(|| self.spi1.regs.read(0x20) as u8);
+                let modifies = value & (0xf << 22 | 1 << 17) != 0 || matches!(opcode, Some(0x02 | 0x32 | 0x38 | 0x20 | 0x52 | 0xd8 | 0xc7 | 0x60));
+                let writes_status = value & (1 << 26) != 0 || matches!(opcode, Some(0x01 | 0x31 | 0x11));
+                if (modifies || writes_status) && self.spi1.status & 2 == 0 { return Err(Fault::Prohibited); }
+                let mosi = self.spi1.regs.read(0x18) & (1 << 27) != 0; let w0 = self.spi1.w[0];
+                let bits = (self.spi1.regs.read(0x24) & 0x3ff) + 1;
+                self.spi1.write(0, value); self.spi1.execute(flash, &mut []);
+                // SR2 QE (bit 9 of the 16-bit status) follows what WRSR2 / two-byte WRSR wrote.
+                let sr2 = match opcode { Some(0x31) if mosi => Some(w0 as u8), Some(0x01) if mosi && bits >= 16 => Some((w0 >> 8) as u8), _ => None };
+                if let Some(sr2) = sr2 { self.spi1.status = (self.spi1.status & !0x200) | (u32::from(sr2 & 2) << 8); }
+                self.commands = self.commands.wrapping_add(1); Ok(())
+            }
+            r => r,
+        }
     }
     fn execute(&mut self, value: u32, flash: &mut [u8]) -> Result<(), Fault> {
         if value == 0 { return Ok(()); }
@@ -200,13 +233,15 @@ impl Mspi {
         // No multiple commands, other writes/erase, auto-suspend or unknown commands
         // are sent into the older shared model's permissive fallbacks.
         let allowed = (1 << 31) | (1 << 30) | (1 << 29) | (1 << 28) | (1 << 27) | (1 << 18);
-        if value & !allowed != 0 || value.count_ones() != 1 { return Err(Fault::Prohibited); }
+        if value.count_ones() != 1 { return Err(Fault::Prohibited); }
+        if value & !allowed != 0 { self.unrecognised = true; return Err(Fault::Prohibited); }
         let user = self.spi1.regs.read(0x18); let user1 = self.spi1.regs.read(0x1c); let user2 = self.spi1.regs.read(0x20);
         let miso_bits = (self.spi1.regs.read(0x28) & 0x3ff) + 1;
         if miso_bits > 512 || (self.spi1.regs.read(0x24) & 0x3ff) > 511 { return Err(Fault::Prohibited); }
         let mut read_bytes = None;
         if value == 1 << 18 {
             let command = user2 as u8;
+            if !matches!(command, 0x03 | 0x0b | 0x3b | 0x6b | 0xbb | 0xeb | 0x9f | 0x05 | 0x35 | 0x06 | 0x04 | 0x02 | 0x5a | 0x7a) { self.unrecognised = true; return Err(Fault::Prohibited); }
             if user & (1 << 31) == 0 || user2 >> 28 != 7 || user & (1 << 27) != 0 { return Err(Fault::Prohibited); }
             if command == 0x7a {
                 // Winbond W25Q128JV RevF2018/RevI2021 §8.2.20: an idle die
@@ -227,7 +262,7 @@ impl Mspi {
                 for (i, byte) in bytes.iter().enumerate() { self.spi1.w[i / 4] |= u32::from(*byte) << ((i % 4) * 8); }
                 self.commands += 1; return Ok(());
             }
-            if !matches!(command, 0x03 | 0x0b | 0x3b | 0x6b | 0xbb | 0xeb | 0x9f | 0x05 | 0x35 | 0x06 | 0x04) { return Err(Fault::Prohibited); }
+            if command == 0x02 { return Err(Fault::Prohibited); } // Page program is only the USER+PE form above.
             let array_read = matches!(command, 0x03 | 0x0b | 0x3b | 0x6b | 0xbb | 0xeb);
             let returns_data = !matches!(command, 0x06 | 0x04);
             if (user & (1 << 30) != 0) != array_read || (user & (1 << 28) != 0) != returns_data { return Err(Fault::Prohibited); }
@@ -406,5 +441,35 @@ mod tests {
         m.write(1, 0x28, 31, &mut flash).unwrap(); m.write(1, 0x20, 0x7000006b, &mut flash).unwrap();
         assert_eq!(m.write(1, 0, 1 << 18, &mut flash), Err(Fault::Prohibited)); // No invented QE.
         assert_eq!(m.commands, 1); assert_eq!(flash, vec![0xa5; 128]);
+    }
+    #[test]
+    fn cpll_flash_clock_divides_the_supplied_cpll_and_needs_it_running() {
+        let mut m = Mspi::default(); let cpll = 0x101 | 0x80 | 2 << 5 | 4 << 9;
+        assert_eq!(m.clock_write(cpll), Err(Fault::Prohibited)); assert_eq!(m.core_hz(), Some(10_000_000));
+        m.set_cpll_input(Some(400_000_000)); m.clock_write(cpll | 0x18).unwrap();
+        assert_eq!(m.core_hz(), Some(80_000_000)); assert_eq!(m.clock_read(), cpll | 0x18); // force-no-reset bits stored
+        assert_eq!(m.clock_write(3 << 5 | 0x181), Err(Fault::Prohibited)); assert_eq!(m.clock_read(), cpll | 0x18);
+    }
+    fn user(m: &mut Mspi, flash: &mut [u8], user: u32, opcode: u32, mosi_bits: u32, w0: u32) -> Result<(), Fault> {
+        m.write(1, 0x18, user, flash).unwrap(); m.write(1, 0x20, 0x7000_0000 | opcode, flash).unwrap();
+        m.write(1, 0x24, mosi_bits.saturating_sub(1), flash).unwrap(); m.write(1, 0x58, w0, flash).unwrap();
+        m.write(1, 0, 1 << 18, flash)
+    }
+    #[test]
+    fn gigadevice_status2_write_goes_to_the_shared_engine_only_with_wel() {
+        let mut m = Mspi::default(); let mut flash = vec![0xa5; 0x2000]; m.attach_flash([0xc8, 0x40, 0x18], 0).unwrap();
+        // WRSR2 (0x31) is not in the validated subset; without WEL the die ignores it.
+        assert_eq!(user(&mut m, &mut flash, 0x8800_0000, 0x31, 8, 2), Err(Fault::Prohibited)); assert_eq!(m.spi1.status & 0x200, 0);
+        m.write(1, 0, 1 << 30, &mut flash).unwrap(); user(&mut m, &mut flash, 0x8800_0000, 0x31, 8, 2).unwrap();
+        assert_eq!(m.spi1.status, 0x200); // QE set, WEL consumed
+        // Quad read now passes the validated subset's QE check.
+        m.write(1, 0x1c, 23 << 26, &mut flash).unwrap(); m.write(1, 0x28, 7, &mut flash).unwrap(); m.write(1, 4, 0, &mut flash).unwrap();
+        user(&mut m, &mut flash, 0xd000_0000, 0x6b, 0, 0).unwrap(); assert_eq!(m.read(1, 0x58), Ok(0xa5));
+        // An unknown-to-the-subset erase opcode still needs WEL; the known SE path is GigaDevice-capable.
+        assert_eq!(user(&mut m, &mut flash, 0xc000_0000, 0xd8, 0, 0), Err(Fault::Prohibited)); assert!(flash.iter().all(|&b| b == 0xa5));
+        m.write(1, 4, 0x1000, &mut flash).unwrap(); m.write(1, 0, 1 << 30, &mut flash).unwrap(); m.write(1, 0, 1 << 24, &mut flash).unwrap();
+        assert!(flash[0x1000..].iter().all(|&b| b == 0xff)); assert!(flash[..0x1000].iter().all(|&b| b == 0xa5));
+        // An unknown vendor gets no fallback.
+        m.attach_flash([0x20, 0x40, 0x18], 0x2).unwrap(); assert_eq!(user(&mut m, &mut flash, 0x8800_0000, 0x31, 8, 2), Err(Fault::Prohibited));
     }
 }

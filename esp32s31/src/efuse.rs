@@ -31,6 +31,9 @@ impl Efuse {
     pub fn set_read_image(&mut self, image: ReadImage) -> Result<(), String> {
         if image.block0_valid_bits > 1023 { return Err("S31 eFuse block0 valid-bit count exceeds 10-bit field".into()); }
         if image.words[1] & 0x7f != 0 { return Err("S31 eFuse read-protected block images are not supported".into()); }
+        // The controller loads the shadows itself at power-up, before the ROM runs; a later READ
+        // command reloads them from the same image.
+        self.shadow = image.words; self.errors = image.errors; self.status = 1 | (image.block0_valid_bits as u32) << 10;
         self.image = Some(image); Ok(())
     }
     pub fn has_read_image(&self) -> bool { self.image.is_some() }
@@ -85,13 +88,15 @@ impl Efuse {
 mod tests {
     use super::*;
     #[test]
-    fn read_needs_explicit_image_and_real_command_then_shadows_are_read_only() {
+    fn image_loads_at_power_on_read_command_reloads_and_shadows_are_read_only() {
         let mut e = Efuse::default(); assert!(!e.has_read_image());
         e.write(0x1d8, 1).unwrap(); assert_eq!(e.read(0x1dc), Ok(0)); // Wrong opcode has no effect.
         e.write(0x1cc, 0x5aa5).unwrap(); assert_eq!(e.write(0x1d8, 1), Err(Fault::Unmapped));
         let mut image = ReadImage::blank_development(); image.words[2] = 0x12345678;
         image.errors[3] = 0x01020304; image.block0_valid_bits = 177; e.set_read_image(image).unwrap();
-        assert_eq!(e.read(0x34), Ok(0)); e.write(0x1e4, 1).unwrap(); e.write(0x1d8, 1).unwrap();
+        // Power-on auto-read: the shadows show the image without any READ command.
+        assert_eq!(e.read(0x34), Ok(0x12345678)); assert_eq!(e.read(0x1d4), Ok(1 | 177 << 10)); assert!(!e.irq());
+        e.write(0x1e4, 1).unwrap(); e.write(0x1d8, 1).unwrap();
         assert_eq!(e.read(0x34), Ok(0x12345678)); assert_eq!(e.read(0x174), Ok(0x01020304));
         assert_eq!(e.read(0x1d4), Ok(1 | 177 << 10)); assert_eq!(e.read(0x1d8), Ok(0)); assert!(e.irq());
         e.write(0x34, 0).unwrap(); assert_eq!(e.read(0x34), Ok(0x12345678));

@@ -9,9 +9,9 @@ pub const UART0_CTRL: u32 = BASE + 0x88;
 pub const UART0_MEM: u32 = 0x2058_628c;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Rates { pub cpu_hz: u64, pub mem_hz: u64, pub sys_hz: u64, pub apb_hz: u64 }
-pub struct Clocks { pub mpll: crate::mpll::Mpll, pending: [u32; 5], active: [u32; 5], uart0: u32, ref_240m: u32, uart_pad_sleep: u8, aux_uart: [u32; 3], uart_mem: u32, modem: u32, psram: u32, lp_root: u32, fosc: bool, cpll_div: u32, cpll_powered: bool, cal_stop: bool, cal_done: bool, cal_left: Option<u8> }
+pub struct Clocks { pub mpll: crate::mpll::Mpll, pending: [u32; 5], active: [u32; 5], uart0: u32, ref_240m: u32, uart_pad_sleep: u8, aux_uart: [u32; 3], uart_mem: u32, modem: u32, psram: u32, lp_root: u32, fosc: bool, cpll_div: u32, cpll_powered: bool, cal_stop: bool, cal_done: bool, cal_left: Option<u8>, locked: bool }
 impl Default for Clocks {
-    fn default() -> Self { Self { mpll: crate::mpll::Mpll::default(), pending: [0, 0, 1, 2, 1], active: [0, 0, 1, 2, 1], uart0: 0x83, ref_240m: 0x101, uart_pad_sleep: 15, aux_uart: [0x83; 3], uart_mem: 0, modem: 1, psram: 0x181, lp_root: 1 << 26, fosc: true, cpll_div: 0xf2, cpll_powered: false, cal_stop: false, cal_done: false, cal_left: None } }
+    fn default() -> Self { Self { mpll: crate::mpll::Mpll::default(), pending: [0, 0, 1, 2, 1], active: [0, 0, 1, 2, 1], uart0: 0x83, ref_240m: 0x101, uart_pad_sleep: 15, aux_uart: [0x83; 3], uart_mem: 0, modem: 1, psram: 0x181, lp_root: 1 << 26, fosc: true, cpll_div: 0xf2, cpll_powered: false, cal_stop: false, cal_done: false, cal_left: None, locked: false } }
 }
 impl Clocks {
     // lp_clkrst_reg.h: reset source selectors and RO XTAL40MHz field. Selecting
@@ -29,7 +29,7 @@ impl Clocks {
             }
             0x54 => self.mpll.write_divider(value)?,
             0x48 => {}, // documented RO, firmware cannot change the physical XTAL field
-            0x4c => { if self.using_cpll() { return Err(Fault::Prohibited); } self.cpll_div = value & 0xfff; self.cal_done = false; self.cal_left = None; }
+            0x4c => { if self.using_cpll() { return Err(Fault::Prohibited); } self.cpll_div = value & 0xfff; self.cal_done = false; self.cal_left = None; self.locked = false; }
             _ => return Err(Fault::Unmapped),
         }
         Ok(())
@@ -70,7 +70,7 @@ impl Clocks {
         let pll = self.psram & 0x80 != 0;
         let root = match (self.psram >> 5) & 3 {
             0 => 40_000_000, 1 if pll => self.mpll.output_hz()?,
-            2 if pll && self.cpll_powered && self.cal_done => self.cpll_hz()?, _ => return None,
+            2 if pll && self.cpll_powered && self.locked => self.cpll_hz()?, _ => return None,
         };
         Some(root / u64::from(((self.psram >> 9) & 255) + 1))
     }
@@ -99,15 +99,19 @@ impl Clocks {
     pub fn calibration_hz(&self, source: u32) -> u64 {
         let rates = self.rates();
         match source { 0 => self.mpll.output_hz().unwrap_or(0),
-            2 if self.cpll_powered && self.cal_done => self.cpll_hz().unwrap_or(0),
+            2 if self.cpll_powered && self.locked => self.cpll_hz().unwrap_or(0),
             4 => rates.sys_hz, 5 => rates.apb_hz, 6 => rates.mem_hz,
             8 => self.rtc_slow_hz(), 12 => 40_000_000, _ => 0 }
     }
     pub fn using_cpll(&self) -> bool { self.active[0] == 1 }
     pub fn set_cpll_power(&mut self, on: bool) {
         self.cpll_powered = on;
-        if !on { self.cal_done = false; self.cal_left = None; }
+        if !on { self.cal_done = false; self.cal_left = None; self.locked = false; }
     }
+    /// The CPLL output while powered and once calibrated, as the MSPI and other muxes see it.
+    /// A later recalibration (CAL_STOP cleared again) clears CAL_END but keeps the locked output:
+    /// the PLL keeps running at the same ratio while the calibration logic retunes it.
+    pub fn cpll_rate(&self) -> Option<u64> { if self.cpll_powered && self.locked { self.cpll_hz() } else { None } }
     fn cpll_hz(&self) -> Option<u64> {
         let reference = self.cpll_div & 15; let feedback = (self.cpll_div >> 4) & 255;
         if reference == 0 || feedback == 0 { None } else { Some(40_000_000 * u64::from(feedback) / u64::from(reference)) }
@@ -118,7 +122,7 @@ impl Clocks {
     pub fn advance_calibration(&mut self, cycles: u32) {
         if !self.cpll_powered || self.cal_stop || self.cpll_hz() != Some(320_000_000) { return; }
         if let Some(left) = self.cal_left {
-            if cycles >= u32::from(left) { self.cal_left = None; self.cal_done = true; }
+            if cycles >= u32::from(left) { self.cal_left = None; self.cal_done = true; self.locked = true; }
             else { self.cal_left = Some(left - cycles as u8); }
         }
     }
@@ -127,7 +131,7 @@ impl Clocks {
         // header's older “PLL_F300M” prose is not used to invent a fixed PLL rate.
         let source = match regs[0] {
             0 => 40_000_000,
-            1 if self.cpll_powered && self.cal_done => self.cpll_hz().ok_or(Fault::Prohibited)?,
+            1 if self.cpll_powered && self.locked => self.cpll_hz().ok_or(Fault::Prohibited)?,
             _ => return Err(Fault::Prohibited),
         };
         let div = u64::from((regs[1] & 255) + 1);
@@ -165,9 +169,8 @@ impl Clocks {
             // MODEM_CTRL0 has only the documented RW clock gate, reset1. This does
             // not implement RF or wireless operation.
             0x174 => {
-                // Other PLL controls still unsupported; RO END bits never become host data.
-                if value & 0xa2 != 0 { return Err(Fault::Prohibited); }
-                if self.using_cpll() && value & 8 == 0 { return Err(Fault::Prohibited); }
+                // RO END bits never become host data. PLLA/SDIO/BBPLL CAL_STOP (bits 1/5/7) are
+                // accepted and have no modelled PLL behind them.
                 self.mpll.write_control(value);
                 self.cal_stop = value & 8 != 0;
                 if self.cal_stop { self.cal_left = None; }
@@ -227,7 +230,10 @@ mod tests {
         c.advance_calibration(100); assert_eq!(c.read(0x174), Ok(8));
         c.lp_write(LP_BASE + 0x4c, 0).unwrap(); c.write(0x174, 0).unwrap();
         c.advance_calibration(u32::MAX); assert_eq!(c.read(0x174), Ok(0));
-        assert_eq!(c.write(0x174, 0x20), Err(Fault::Prohibited)); // SDIO PLL is not implemented.
+        // SDIO PLL CAL_STOP (bit 5) is accepted like silicon; with CPLL CAL_STOP clear it
+        // restarts the CPLL calibration, which then completes on the normal schedule.
+        c.lp_write(LP_BASE + 0x4c, 0x81).unwrap(); c.write(0x174, 0x20).unwrap(); assert_eq!(c.read(0x174), Ok(0));
+        c.advance_calibration(16); assert_eq!(c.read(0x174), Ok(4));
     }
     #[test]
     fn cpll_clock_latch_uses_completed_ratio_and_preserves_active_clock_on_invalid_writes() {
@@ -237,7 +243,9 @@ mod tests {
         c.set_cpll_power(true); c.write(0x174, 0).unwrap(); c.advance_calibration(16); c.write(0x174, 8).unwrap();
         c.write(0x14, 1).unwrap(); assert_eq!(c.rates(), Rates { cpu_hz: 80_000_000, mem_hz: 80_000_000, sys_hz: 80_000_000, apb_hz: 40_000_000 });
         assert_eq!(c.lp_write(LP_BASE + 0x4c, 0), Err(Fault::Prohibited));
-        assert_eq!(c.write(0x174, 0), Err(Fault::Prohibited)); assert_eq!(c.rates().cpu_hz, 80_000_000);
+        // Recalibrating the CPLL the CPU runs from clears CAL_END but keeps the locked clock.
+        c.write(0x174, 0).unwrap(); assert_eq!(c.read(0x174), Ok(0)); assert_eq!(c.rates().cpu_hz, 80_000_000);
+        c.advance_calibration(16); assert_eq!(c.read(0x174), Ok(4)); assert_eq!(c.cpll_rate(), Some(320_000_000));
         c.write(0, 0).unwrap(); c.write(4, 0).unwrap(); c.write(0x14, 1).unwrap();
         c.set_cpll_power(false); assert_eq!(c.rates().cpu_hz, 40_000_000);
     }
