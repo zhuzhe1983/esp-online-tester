@@ -145,6 +145,12 @@ pub struct BoardInputs {
     pub idle_level: Option<bool>,
     /// Explicit per-pin input levels applied after `idle_level`.
     pub inputs: Vec<(usize, bool)>,
+    /// In-package PSRAM behind the MSPI (0 = none).
+    pub psram_bytes: usize,
+    /// NOR status registers 1-2 at power-up (SR2 bit 1 = QE is non-volatile on GigaDevice/Winbond).
+    pub flash_status: u16,
+    /// eFuse BLOCK3 USER_DATA word 0, where a board can record its revision (0 = none).
+    pub efuse_user_data0: u32,
 }
 
 impl BoardInputs {
@@ -155,7 +161,7 @@ impl BoardInputs {
         let mut sfdp = vec![0x53, 0x46, 0x44, 0x50, 0x05, 0x01, 0x00, 0xff, 0x00, 0x05, 0x01, 0x10, 0x80, 0x00, 0x00, 0xff];
         sfdp.extend([0xff; 0x70]);
         Self { flash_id: [0xef, 0x40, 0x18], sfdp, bias: [0; 2], perif_glitch: 0, dig_reg: [0; 4], bod: 0,
-            bbpll_hz: 480_000_000, idle_level: Some(false), inputs: vec![(36, true)] }
+            bbpll_hz: 480_000_000, idle_level: Some(false), inputs: vec![(36, true)], psram_bytes: 0, flash_status: 0, efuse_user_data0: 0 }
     }
 
     /// Winbond W25Q16 (0xef4015) — 2 MiB, matching the IDF hello_world image header
@@ -165,21 +171,32 @@ impl BoardInputs {
         let mut sfdp = vec![0x53, 0x46, 0x44, 0x50, 0x05, 0x01, 0x00, 0xff, 0x00, 0x05, 0x01, 0x10, 0x80, 0x00, 0x00, 0xff];
         sfdp.extend([0xff; 0x70]);
         Self { flash_id: [0xef, 0x40, 0x15], sfdp, bias: [0; 2], perif_glitch: 0, dig_reg: [0; 4], bod: 0,
-            bbpll_hz: 480_000_000, idle_level: Some(false), inputs: vec![(36, true)] }
+            bbpll_hz: 480_000_000, idle_level: Some(false), inputs: vec![(36, true)], psram_bytes: 0, flash_status: 0, efuse_user_data0: 0 }
     }
     /// ESP-Mosaico CoreBoard: GigaDevice GD25Q128E (JEDEC 0xc84018, read from the board with
-    /// esptool 5.6.0 `flash-id`), 16 MiB. The SFDP header and the regi2c, SPLL and GPIO36
-    /// choices are the devkit's until the board's own are measured.
+    /// esptool 5.6.0 `flash-id`), 16 MiB, and the ESP32-S31NRV16's 16 MiB in-package PSRAM. The
+    /// SFDP header and the regi2c, SPLL and GPIO36 choices are the devkit's until the board's
+    /// own are measured.
     pub fn mosaico_gd25q128() -> Self {
-        Self { flash_id: [0xc8, 0x40, 0x18], ..Self::devkit_w25q128() }
+        // Read from the user's board (2026-11-11, esptool 5.6.0): flash status 0x0200 (QE set),
+        // eFuse USER_DATA word 0 = 0x0102.
+        Self { flash_id: [0xc8, 0x40, 0x18], psram_bytes: 16 << 20, flash_status: 0x0200,
+            // USER_DATA = 0x0102: board v1.2 as esp-mosaico-bsp reads it (onboard/esp_mosaico.c).
+            efuse_user_data0: 0x0102, ..Self::devkit_w25q128() }
     }
     pub fn apply(&self, b: &mut S31Bus) -> Result<(), String> {
         let a = &mut b.analog; a.set_bias(self.bias); a.set_perif_glitch(self.perif_glitch); a.set_dig_reg(self.dig_reg); a.set_bod_register(self.bod);
-        b.mspi.attach_flash(self.flash_id, 0).map_err(|e| format!("{e:?}"))?;
+        b.mspi.attach_flash(self.flash_id, self.flash_status).map_err(|e| format!("{e:?}"))?;
         b.mspi.attach_sfdp(0, &self.sfdp).map_err(|e| format!("{e:?}"))?;
         if let Some(level) = self.idle_level { for pin in 0..62 { let _ = b.pads.set_unresolved_sample(pin, Some(level)); } }
         for &(pin, level) in &self.inputs { b.pads.set_input(pin, Some(level)).map_err(|e| format!("{e:?}"))?; }
         b.mspi.set_bbpll_input(Some(self.bbpll_hz)).map_err(|e| format!("{e:?}"))?;
+        if self.psram_bytes != 0 { b.cache.set_psram_size(self.psram_bytes)?; }
+        if self.efuse_user_data0 != 0 {
+            // efuse_reg.h RD_USR_DATA0 at 0x88: shadow word (0x88 - 0x2c) / 4.
+            let mut image = crate::efuse::ReadImage::blank_development(); image.words[(0x88 - 0x2c) / 4] = self.efuse_user_data0;
+            b.periph.efuse.set_read_image(image)?;
+        }
         Ok(())
     }
 }
