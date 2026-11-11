@@ -39,6 +39,9 @@ const LP_STORE0: u32 = 0x2070_002c;
 pub struct AccessFault { pub hart: usize, pub pc: u32, pub address: u32, pub bytes: usize, pub write: bool, pub fetch: bool, pub reason: Fault }
 /// reg_base.h DR_REG_USB_OTGHS_BASE.
 pub const USB_OTG: u32 = 0x2030_0000;
+/// reg_base.h DR_REG_GPSPI2_BASE. IDF master spi_reg.h for the S31 has the P4/S3 GP-SPI register
+/// offsets (one extra field, CTRL.CLK_EDGE_SEL bit 30, kept as storage), so the shared `GpSpi` serves it.
+pub const GPSPI2: u32 = 0x2038_f000;
 
 struct UsbDma<'a> { sram: &'a mut [u8], lp: &'a mut [u8] }
 impl UsbDma<'_> {
@@ -86,6 +89,8 @@ pub struct S31Bus {
     pub refused: std::collections::BTreeMap<u32, (u64, u32)>,
     /// The high-speed USB-OTG core (DWC2) at DR_REG_USB_OTGHS_BASE, IRQ source 99.
     pub usb_otg: esp_periph::usb_otg::Dwc2,
+    /// GP-SPI2 (FSPI) at DR_REG_GPSPI2_BASE, IRQ source 4; the chip bus hands its transfers to the board.
+    pub spi2: esp_periph::GpSpi,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
     let off = address.checked_sub(base)? as usize;
@@ -111,7 +116,8 @@ impl S31Bus {
             periph: Peripherals::new(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), clocks: Clocks::default(), startup_clocks: StartupClocks::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), key_manager: crate::key_manager::KeyManager::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), cores: CoreControl::default(), hart: 0, reservations: [None; 2], rtc_timer: RtcTimer::default(), rtc_calibration: crate::rtc_calibration::Calibration::default(), pc: 0, first_fault: None, unmodelled: Default::default(), refused: Default::default(),
             // Same HS UTMI DWC2 instance as the P4 (esp_hal_usb/esp32s31/usb_dwc_periph.c); its
             // GHWCFG words are assumed equal to the P4's until read from an S31.
-            usb_otg: esp_periph::usb_otg::Dwc2::new(esp_periph::usb_otg::Dwc2Config::esp32p4_hs(crate::periph::CPU_HZ)) }
+            usb_otg: esp_periph::usb_otg::Dwc2::new(esp_periph::usb_otg::Dwc2Config::esp32p4_hs(crate::periph::CPU_HZ)),
+            spi2: esp_periph::GpSpi::new() }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -159,7 +165,7 @@ impl S31Bus {
         let mut dma = UsbDma { sram: &mut self.sram, lp: &mut self.lp };
         self.usb_otg.run(&mut dma);
     }
-    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq() } }
+    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq() } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
@@ -227,6 +233,10 @@ impl S31Bus {
         if (USB_OTG..USB_OTG + 0x4_0000).contains(&address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(esp_periph::Device::read(&mut self.usb_otg, address - USB_OTG));
+        }
+        if let Some(off) = offset(address, GPSPI2, bytes, 0x100) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(self.spi2.read(off as u32));
         }
         if address & !3 == crate::rtc_timer::RESET || address & !0xfff == crate::rtc_timer::BASE {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -432,6 +442,11 @@ impl S31Bus {
             if self.usb_otg.pending() { self.run_usb_otg(); }
             return Ok(());
         }
+        if let Some(off) = offset(address, GPSPI2, bytes, 0x100) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            self.spi2.write(off as u32, value);
+            return Ok(());
+        }
         if address & !3 == crate::rtc_timer::RESET || address & !0xfff == crate::rtc_timer::BASE {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             if address == crate::rtc_timer::RESET { self.rtc_timer.reset_write(value); return Ok(()); }
@@ -568,6 +583,7 @@ impl S31Bus {
         }
         if StartupClocks::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if address == StartupClocks::GPSPI2_CTRL0 && value & 1 << 2 != 0 { let log = self.spi2.log; self.spi2 = esp_periph::GpSpi::new(); self.spi2.log = log; }   // RST_EN held: registers to reset
             return match self.startup_clocks.write(address,value) { Ok(())=>Ok(()),Err(e)=>self.fault(address,bytes,true,false,e) };
         }
         if MspiPads::is_mmio(address) {
