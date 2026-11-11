@@ -666,10 +666,13 @@ fn setup_s31(o: &Opts) -> esp32s31::Machine {
     m.bus.set_flash_size(flash);
     // Prefer the hello image's JEDEC / SFDP when flash is the default 2 MiB; larger sizes keep
     // BoardInputs unset so callers can supply their own NOR identity.
-    if o.flash_mb.unwrap_or(2) == 2 {
-        m.bus
-            .set_board_inputs(esp32s31::soc::BoardInputs::hello_w25q16())
-            .unwrap_or_else(|e| usage_error(&e));
+    let inputs = match (o.board.as_str(), o.flash_mb.unwrap_or(2)) {
+        ("mosaico", _) => Some(esp32s31::soc::BoardInputs::mosaico_gd25q128()),
+        (_, 2) => Some(esp32s31::soc::BoardInputs::hello_w25q16()),
+        _ => None,
+    };
+    if let Some(inputs) = inputs {
+        m.bus.set_board_inputs(inputs).unwrap_or_else(|e| usage_error(&e));
     }
     // SPI_FAST_FLASH_BOOT; prepare() may override with --strap.
     if o.strap.is_none() {
@@ -682,7 +685,7 @@ fn setup_s31(o: &Opts) -> esp32s31::Machine {
     }
     for (flag, on) in [
         ("--wifi", o.wifi.is_some()),
-        ("--board", o.board != "atech14" && o.board != "none"),
+        ("--board", o.board != "atech14" && o.board != "none" && o.board != "mosaico"),
         ("--cam-image", o.cam_image.is_some()),
         ("--cam-stream", o.cam_stream.is_some()),
         ("--cam-size", o.cam_size.is_some()),

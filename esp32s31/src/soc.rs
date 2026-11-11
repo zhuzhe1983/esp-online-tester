@@ -167,6 +167,12 @@ impl BoardInputs {
         Self { flash_id: [0xef, 0x40, 0x15], sfdp, bias: [0; 2], perif_glitch: 0, dig_reg: [0; 4], bod: 0,
             bbpll_hz: 480_000_000, idle_level: Some(false), inputs: vec![(36, true)] }
     }
+    /// ESP-Mosaico CoreBoard: GigaDevice GD25Q128E (JEDEC 0xc84018, read from the board with
+    /// esptool 5.6.0 `flash-id`), 16 MiB. The SFDP header and the regi2c, SPLL and GPIO36
+    /// choices are the devkit's until the board's own are measured.
+    pub fn mosaico_gd25q128() -> Self {
+        Self { flash_id: [0xc8, 0x40, 0x18], ..Self::devkit_w25q128() }
+    }
     pub fn apply(&self, b: &mut S31Bus) -> Result<(), String> {
         let a = &mut b.analog; a.set_bias(self.bias); a.set_perif_glitch(self.perif_glitch); a.set_dig_reg(self.dig_reg); a.set_bod_register(self.bod);
         b.mspi.attach_flash(self.flash_id, 0).map_err(|e| format!("{e:?}"))?;
@@ -724,7 +730,7 @@ mod tests {
         bus.write_flash(0, &flash).unwrap();
         let entry = bus.boot_app(hdr_off).unwrap();
         assert_eq!(entry, 0x4000_0000);
-        let vpage = (0x4000_0000u32 - 0x4000_0000) / 0x8000;
+        let vpage = 0; // the app maps at the flash window base, virtual page 0
         bus.write32(FLASH_MMU + 0x380, vpage).unwrap();
         let got = bus.read32(FLASH_MMU + 0x37c).unwrap();
         assert_eq!(got, (1 << 12) | (payload_off as u32 / 0x8000), "{got:#x}");

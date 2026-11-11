@@ -333,6 +333,10 @@ fn new_uart() -> Uart {
         thrhd_mask: 0xff,
         rxfifo_rst: 1 << 22,
         rxfifo_cnt_mask: 0xff,
+        // ROM UART download mode is not modelled on the S31 yet.
+        autobaud_en: 0,
+        autobaud_regs: 0,
+        autobaud_clock_hz: 0,
     });
     // S31 v6.1 uart_reg.h defaults.
     for (off, value) in [
