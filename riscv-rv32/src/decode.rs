@@ -20,6 +20,13 @@ pub enum Op {
     Mul, Mulh, Mulhsu, Mulhu, Div, Divu, Rem, Remu,
     // RV32A (the C6); `imm` carries the aq/rl bits for the disassembler
     LrW, ScW, AmoSwapW, AmoAddW, AmoXorW, AmoAndW, AmoOrW, AmoMinW, AmoMaxW, AmoMinuW, AmoMaxuW,
+    // Zba, Zbb, Zbs (bit-manipulation v1.0.0), when the core has `ISA_ZB`; shift amounts in `imm`
+    Sh1add, Sh2add, Sh3add,
+    Andn, Orn, Xnor, Clz, Ctz, Cpop, Max, Maxu, Min, Minu, SextB, SextH, ZextH, Rol, Ror, Rori, OrcB, Rev8,
+    Bclr, Bclri, Bext, Bexti, Binv, Binvi, Bset, Bseti,
+    // Zcmp (Zc v1.0.0), when the core has `ISA_ZC`: `rs2` = rlist (4-15), `imm` = the stack
+    // adjustment in bytes; the moves name s-registers r1s' in `rs1`, r2s' in `rs2`
+    CmPush, CmPop, CmPopret, CmPopretz, CmMvsa01, CmMva01s,
     // RV32F; `imm` carries the rm field (funct3) of the computational ones, rs3 stays in `raw`.
     // Kept last: `is_f` compares discriminants.
     Flw, Fsw,
@@ -45,6 +52,8 @@ pub enum Comp {
     Nop, Addi, Jal, Li, Addi16sp, Lui, Srli, Srai, Andi, Sub, Xor, Or, And, J, Beqz, Bnez,
     Slli, Lwsp, Jr, Mv, Ebreak, Jalr, Add, Swsp,
     Flw, Fsw, Flwsp, Fswsp,
+    // Zcb; Zcmp prints only as itself
+    Lbu, Lhu, Lh, Sb, Sh, ZextB, SextB, ZextH, SextH, Not, Mul,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -78,24 +87,32 @@ const ILL2: Insn = Insn { op: Op::Illegal, rd: 0, rs1: 0, rs2: 0, imm: 0, len: 2
 #[inline(always)]
 fn sext(v: u32, bits: u32) -> i32 { ((v << (32 - bits)) as i32) >> (32 - bits) }
 
+/// Not `misa` bits (26-29 are reserved zero there): extensions `misa` cannot report, OR-ed into
+/// the ISA word `decode_for` takes (`Cpu::isa`). Zba+Zbb+Zbs, and Zcb+Zcmp (the ESP32-S31).
+pub const ISA_ZB: u32 = 1 << 26;
+pub const ISA_ZC: u32 = 1 << 27;
+const MISA_M: u32 = 1 << 12;
+
 /// Decode the instruction at `pc` for a core without F (the C3 and C6). `bytes` is up to 4 bytes
 /// little-endian; only the first two are read for a compressed instruction.
 pub fn decode(pc: u32, bytes: [u8; 4]) -> Insn { decode_for(0, pc, bytes) }
 
-/// Decode for a core whose `misa` is `misa`: the F encodings, compressed ones included, decode only
-/// when it has F and are illegal otherwise, so a core without F decodes exactly as `decode`.
+/// Decode for a core whose ISA word is `isa` (`misa`, plus `ISA_ZB`/`ISA_ZC`): the F encodings,
+/// compressed ones included, decode only when it has F and are illegal otherwise, so a core
+/// without F decodes exactly as `decode`; likewise Zb* and Zc*. Those are reached only from
+/// encodings that are otherwise illegal, so a core without them pays nothing.
 #[inline]
-pub fn decode_for(misa: u32, pc: u32, bytes: [u8; 4]) -> Insn {
+pub fn decode_for(isa: u32, pc: u32, bytes: [u8; 4]) -> Insn {
     let raw = u32::from_le_bytes(bytes);
-    let f = misa & crate::state::MISA_F != 0;
-    if raw & 3 != 3 { return decode_compressed(pc, raw & 0xffff, f); }
-    decode32(pc, raw, f)
+    let f = isa & crate::state::MISA_F != 0;
+    if raw & 3 != 3 { return decode_compressed(pc, raw & 0xffff, f, isa); }
+    decode32(pc, raw, f, isa & ISA_ZB != 0)
 }
 
 // Both decoders inline into `decode_for`, so the step decodes without a call and an Insn
 // returned through memory.
 #[inline(always)]
-fn decode32(pc: u32, w: u32, f: bool) -> Insn {
+fn decode32(pc: u32, w: u32, f: bool, zb: bool) -> Insn {
     let (rd, rs1, rs2) = (((w >> 7) & 0x1f) as u8, ((w >> 15) & 0x1f) as u8, ((w >> 20) & 0x1f) as u8);
     let f3 = (w >> 12) & 7;
     let f7 = w >> 25;
@@ -132,6 +149,7 @@ fn decode32(pc: u32, w: u32, f: bool) -> Insn {
             1 if f7 == 0 => mk(Op::Slli, (rs2 & 0x1f) as i32),
             5 if f7 == 0 => mk(Op::Srli, (rs2 & 0x1f) as i32),
             5 if f7 == 0x20 => mk(Op::Srai, (rs2 & 0x1f) as i32),
+            _ if zb => decode_zb(w),
             _ => mk(Op::Illegal, 0),
         },
         0x33 => {
@@ -142,6 +160,7 @@ fn decode32(pc: u32, w: u32, f: bool) -> Insn {
                 (0x00, 6) => Op::Or, (0x00, 7) => Op::And,
                 (0x01, 0) => Op::Mul, (0x01, 1) => Op::Mulh, (0x01, 2) => Op::Mulhsu, (0x01, 3) => Op::Mulhu,
                 (0x01, 4) => Op::Div, (0x01, 5) => Op::Divu, (0x01, 6) => Op::Rem, (0x01, 7) => Op::Remu,
+                _ if zb => return decode_zb(w),
                 _ => Op::Illegal,
             };
             mk(op, 0)
@@ -171,6 +190,100 @@ fn decode32(pc: u32, w: u32, f: bool) -> Insn {
         _ => mk(Op::Illegal, 0),
     }
 }
+
+/// Zba/Zbb/Zbs in OP and OP-IMM (RISC-V bit-manipulation v1.0.0, RV32 encodings): only what
+/// the base decoder found illegal comes here.
+#[inline(never)]
+fn decode_zb(w: u32) -> Insn {
+    use Op::*;
+    let (rd, rs1, rs2) = (((w >> 7) & 0x1f) as u8, ((w >> 15) & 0x1f) as u8, ((w >> 20) & 0x1f) as u8);
+    let (f3, f7) = ((w >> 12) & 7, w >> 25);
+    let mk = |op: Op, imm: i32| Insn::new(op, rd, rs1, rs2, imm, 4, w);
+    let sh = rs2 as i32;
+    let op = if w & 0x7f == 0x13 {
+        match (f3, f7) {
+            (1, 0x30) => return match rs2 { 0 => mk(Clz, 0), 1 => mk(Ctz, 0), 2 => mk(Cpop, 0), 4 => mk(SextB, 0), 5 => mk(SextH, 0), _ => mk(Illegal, 0) },
+            (1, 0x24) => return mk(Bclri, sh), (1, 0x34) => return mk(Binvi, sh), (1, 0x14) => return mk(Bseti, sh),
+            (5, 0x24) => return mk(Bexti, sh), (5, 0x30) => return mk(Rori, sh),
+            (5, 0x14) if rs2 == 7 => OrcB, (5, 0x34) if rs2 == 0x18 => Rev8,
+            _ => Illegal,
+        }
+    } else {
+        match (f7, f3) {
+            (0x10, 2) => Sh1add, (0x10, 4) => Sh2add, (0x10, 6) => Sh3add,
+            (0x20, 7) => Andn, (0x20, 6) => Orn, (0x20, 4) => Xnor,
+            (0x05, 4) => Min, (0x05, 5) => Minu, (0x05, 6) => Max, (0x05, 7) => Maxu,
+            (0x30, 1) => Rol, (0x30, 5) => Ror, (0x04, 4) if rs2 == 0 => ZextH,
+            (0x24, 1) => Bclr, (0x24, 5) => Bext, (0x34, 1) => Binv, (0x14, 1) => Bset,
+            _ => Illegal,
+        }
+    };
+    mk(op, 0)
+}
+
+/// Zcb (quadrant 0 funct3 100, quadrant 1 funct6 100111) and Zcmp (quadrant 2 funct3 101, the
+/// C.FSDSP slot without D) per the Zc v1.0.0 specification. Reserved encodings are illegal;
+/// c.mul needs M, and c.sext.b/c.sext.h/c.zext.h need Zbb.
+#[inline(never)]
+fn decode_zc(c: u32, isa: u32) -> Insn {
+    use Op::*;
+    let rdp = (((c >> 2) & 7) + 8) as u8;
+    let rs1p = (((c >> 7) & 7) + 8) as u8;
+    let mk = |op: Op, rd: u8, rs1: u8, rs2: u8, imm: i32, comp: Comp| Insn::new(op, rd, rs1, rs2, imm, 2, c).c(comp);
+    let ill = Insn { raw: c, ..ILL2 };
+    let zb = isa & ISA_ZB != 0;
+    match (c & 3, (c >> 13) & 7) {
+        (0, 4) => {
+            let (b0, b1) = (((c >> 6) & 1) as i32, ((c >> 5) & 1) as i32);
+            match ((c >> 10) & 7, b0) {
+                (0, _) => mk(Lbu, rdp, rs1p, 0, b1 << 1 | b0, Comp::Lbu),
+                (1, 0) => mk(Lhu, rdp, rs1p, 0, b1 << 1, Comp::Lhu),
+                (1, _) => mk(Lh, rdp, rs1p, 0, b1 << 1, Comp::Lh),
+                (2, _) => mk(Sb, 0, rs1p, rdp, b1 << 1 | b0, Comp::Sb),
+                (3, 0) => mk(Sh, 0, rs1p, rdp, b1 << 1, Comp::Sh),
+                _ => ill,
+            }
+        }
+        (1, 4) if (c >> 10) & 7 == 7 => match ((c >> 5) & 3, (c >> 2) & 7) {
+            (2, _) if isa & MISA_M != 0 => mk(Mul, rs1p, rs1p, rdp, 0, Comp::Mul),
+            (3, 0) => mk(Andi, rs1p, rs1p, 0, 255, Comp::ZextB),
+            (3, 1) if zb => mk(SextB, rs1p, rs1p, 0, 0, Comp::SextB),
+            (3, 2) if zb => mk(ZextH, rs1p, rs1p, 0, 0, Comp::ZextH),
+            (3, 3) if zb => mk(SextH, rs1p, rs1p, 0, 0, Comp::SextH),
+            (3, 5) => mk(Xori, rs1p, rs1p, 0, -1, Comp::Not),
+            _ => ill,
+        },
+        (2, 5) => {
+            let sreg = |n: u32| (if n < 2 { 8 + n } else { 16 + n }) as u8;
+            let rlist = (c >> 4) & 0xf;
+            match (c >> 8) & 0x1f {
+                0x18 | 0x1a | 0x1c | 0x1e if rlist >= 4 => {
+                    let op = match (c >> 9) & 3 { 0 => CmPush, 1 => CmPop, 2 => CmPopretz, _ => CmPopret };
+                    let adj = stack_adj_base(rlist) + ((c >> 2) & 3) * 16;
+                    mk(op, 0, 0, rlist as u8, adj as i32, Comp::None)
+                }
+                _ if (c >> 10) & 7 == 3 && (c >> 5) & 1 == 1 => {
+                    let (r1, r2) = ((c >> 7) & 7, (c >> 2) & 7);
+                    let op = if (c >> 6) & 1 == 0 { CmMvsa01 } else { CmMva01s };
+                    if r1 == r2 && op == CmMvsa01 { return ill; }   // two writes to one register: reserved
+                    mk(op, 0, sreg(r1), sreg(r2), 0, Comp::None)
+                }
+                _ => ill,
+            }
+        }
+        _ => ill,
+    }
+}
+
+/// How many registers rlist 4-15 names: ra, then s0.. (rlist 15 adds s10 and s11 together).
+#[inline(always)]
+pub fn rlist_regs(rlist: u32) -> u32 { if rlist == 15 { 13 } else { rlist - 3 } }
+/// Zc v1.0.0 "stack_adj_base": the saved registers rounded up to 16 bytes (RV32).
+#[inline(always)]
+fn stack_adj_base(rlist: u32) -> u32 { (rlist_regs(rlist) * 4 + 15) & !15 }
+/// The `n`th register (0 = ra) an rlist names: ra, s0, s1, s2-s11.
+#[inline(always)]
+pub fn rlist_reg(n: u32) -> u8 { match n { 0 => 1, 1 | 2 => (7 + n) as u8, _ => (15 + n) as u8 } }
 
 /// FLW/FSW, the fused multiply-adds and OP-FP. Without D only fmt = S (00) exists, and the
 /// encodings objdump does not know (rs2 or funct3 out of range) are illegal. Reserved rm values
@@ -208,7 +321,7 @@ fn decode_f(w: u32) -> Insn {
 }
 
 #[inline(always)]
-fn decode_compressed(pc: u32, c: u32, f: bool) -> Insn {
+fn decode_compressed(pc: u32, c: u32, f: bool, isa: u32) -> Insn {
     let f3 = (c >> 13) & 7;
     let rd = ((c >> 7) & 0x1f) as u8;             // also rs1 in the CI/CR formats
     let rs2 = ((c >> 2) & 0x1f) as u8;
@@ -232,6 +345,7 @@ fn decode_compressed(pc: u32, c: u32, f: bool) -> Insn {
         }
         (0, 2) => mk(Op::Lw, rdp, rs1p, 0, lw_off, Comp::Lw),
         (0, 3) if f => mk(Op::Flw, rdp, rs1p, 0, lw_off, Comp::Flw),
+        (0, 4) | (2, 5) if isa & ISA_ZC != 0 => decode_zc(c, isa),
         (0, 6) => mk(Op::Sw, 0, rs1p, rdp, lw_off, Comp::Sw),
         (0, 7) if f => mk(Op::Fsw, 0, rs1p, rdp, lw_off, Comp::Fsw),
         // ---- quadrant 1
@@ -261,6 +375,7 @@ fn decode_compressed(pc: u32, c: u32, f: bool) -> Insn {
                     let comp = match (c >> 5) & 3 { 0 => Comp::Sub, 1 => Comp::Xor, 2 => Comp::Or, _ => Comp::And };
                     mk(op, rs1p, rs1p, rdp, 0, comp)
                 }
+                3 if isa & ISA_ZC != 0 => decode_zc(c, isa),
                 _ => Insn { raw: c, ..ILL2 }, // RV64-only arithmetic or unsupported custom shifts.
             }
         }
@@ -307,7 +422,7 @@ mod tests {
         for f in [false, true] {
             for raw in 0..=u16::MAX as u32 {
                 if raw & 3 == 3 { continue; }
-                let insn = decode_compressed(0, raw, f);
+                let insn = decode_compressed(0, raw, f, if f { crate::state::MISA_F } else { 0 });
                 assert_eq!(insn.raw, raw, "encoding {raw:04x}");
                 assert_eq!(insn.len, 2);
             }
@@ -320,7 +435,7 @@ mod tests {
     fn f_adds_only_the_compressed_fp_loads_and_stores() {
         for raw in 0..=u16::MAX as u32 {
             if raw & 3 == 3 { continue; }
-            let (plain, with_f) = (decode_compressed(0, raw, false), decode_compressed(0, raw, true));
+            let (plain, with_f) = (decode_compressed(0, raw, false, 0), decode_compressed(0, raw, true, crate::state::MISA_F));
             let slot = (raw & 3, (raw >> 13) & 7);
             if matches!(slot, (0, 3) | (0, 7) | (2, 3) | (2, 7)) {
                 assert_eq!(plain.op, Op::Illegal, "{raw:04x}");
@@ -338,7 +453,7 @@ mod tests {
         for _ in 0..200_000 {
             seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5;
             let w = seed | 3;
-            let (plain, with_f) = (decode32(0x4000_0000, w, false), decode32(0x4000_0000, w, true));
+            let (plain, with_f) = (decode32(0x4000_0000, w, false, false), decode32(0x4000_0000, w, true, false));
             if matches!(w & 0x7f, 0x07 | 0x27 | 0x43 | 0x47 | 0x4b | 0x4f | 0x53) {
                 assert_eq!(plain.op, Op::Illegal, "{w:08x}");
                 assert!(with_f.op == Op::Illegal || with_f.op.is_f(), "{w:08x}");
@@ -346,6 +461,20 @@ mod tests {
                 assert_eq!(plain, with_f, "{w:08x}");
                 assert!(!plain.op.is_f(), "{w:08x}");
             }
+        }
+    }
+
+    /// Zcb and Zcmp take only quadrant 0 funct3 100, quadrant 1 funct6 100111 and quadrant 2
+    /// funct3 101; every other compressed encoding decodes the same, and every one keeps its bits.
+    #[test]
+    fn zc_adds_only_its_three_slots() {
+        let s31 = crate::state::MISA_RV32IMAFC | ISA_ZB | ISA_ZC;
+        for raw in 0..=u16::MAX as u32 {
+            if raw & 3 == 3 { continue; }
+            let (plain, zc) = (decode_compressed(0, raw, true, crate::state::MISA_RV32IMAFC), decode_compressed(0, raw, true, s31));
+            assert_eq!((zc.raw, zc.len), (raw, 2), "{raw:04x}");
+            let slot = matches!((raw & 3, (raw >> 13) & 7), (0, 4) | (2, 5)) || (raw & 3 == 1 && raw >> 10 == 0b100111);
+            if slot { assert_eq!(plain.op, Op::Illegal, "{raw:04x}"); } else { assert_eq!(plain, zc, "{raw:04x}"); }
         }
     }
 
@@ -361,7 +490,7 @@ mod tests {
         for (base, op) in [(0x0082, Op::Slli), (0x8001, Op::Srli), (0x8401, Op::Srai)] {
             for shamt in 0..64 {
                 let raw = base | (shamt & 31) << 2 | (shamt >> 5) << 12;
-                let insn = decode_compressed(0, raw, false);
+                let insn = decode_compressed(0, raw, false, 0);
                 assert_eq!(insn.raw, raw);
                 assert_eq!(insn.len, 2);
                 assert_eq!(insn.op, if shamt < 32 { op } else { Op::Illegal }, "{raw:04x}");

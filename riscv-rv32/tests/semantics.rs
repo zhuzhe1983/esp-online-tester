@@ -2,7 +2,8 @@
 //! `step` against `Core::run`, vectored interrupts through the C3's `mtvec` mode, `ecall`,
 //! `ebreak`, `mret`; RV32A on the C6 core and RV32F with its lazy-FPU traps on the P4 core.
 //! Programs assembled with `riscv32-esp-elf-as -march=rv32imc_zicsr` (`rv32imac_zicsr`,
-//! `rv32imafc_zicsr` for the A and F programs).
+//! `rv32imafc_zicsr` for the A and F programs, `rv32imafc_zicsr_zba_zbb_zbs_zcb_zcmp` for the S31
+//! bit-manipulation and Zc ones).
 use emu_core::Core;
 use riscv_rv32::state::{csr, mstatus, MISA_RV32IMAFC};
 use riscv_rv32::{decode, decode_for, disasm, step, Cpu, FlatRam, Trap};
@@ -581,4 +582,164 @@ fn clic_vector_table_fault_is_an_access_fault() {
     let entry = 0x2000_0000 + 4 * 21;
     assert_eq!((cpu.pc, cpu.mepc, cpu.mtval), (BASE + 0x200, entry, entry));
     assert_eq!(cpu.read_csr(csr::MCAUSE) & (1 << 30 | 0xfff), 1 << 30 | 1, "MINHV and the access-fault code");
+}
+
+/// One instruction (objdump hex) on a fresh S31 core with `regs` set; the trap, if any, and the core.
+fn s31_one(hex: &str, regs: &[(usize, u32)]) -> (Cpu, FlatRam, Result<(), Trap>) {
+    let mut cpu = Cpu::new_esp32s31();
+    let mut ram = FlatRam::new(BASE, 64 * 1024);
+    let p = asm(hex); ram.mem[..p.len()].copy_from_slice(&p);
+    cpu.pc = BASE; cpu.mtvec = BASE + 0x100;
+    for &(r, v) in regs { cpu.x[r] = v; }
+    let t = step(&mut cpu, &mut ram);
+    (cpu, ram, t)
+}
+
+/// `a0 = op(a1, a2)` for each Zba/Zbb/Zbs instruction (bit-manipulation v1.0.0), edge cases included.
+#[test]
+fn s31_zba_zbb_zbs_compute() {
+    const A0: usize = 10;
+    let cases: &[(&str, u32, u32, u32)] = &[
+        ("20c5a533", 3, 10, 16), ("20c5c533", 3, 10, 22), ("20c5e533", 3, 10, 34),            // sh1add sh2add sh3add
+        ("20c5e533", 0x8000_0001, 1, 9),                                                         // the shift drops bit 31
+        ("40c5f533", 0xff00_ff0f, 0x0f0f_0f0f, 0xf000_f000), ("40c5e533", 0, 0xffff_0000, 0x0000_ffff), ("40c5c533", 0xf0f0, 0xff00, 0xffff_f00f), // andn orn xnor
+        ("60059513", 0, 0, 32), ("60059513", 1, 0, 31), ("60059513", 0x8000_0000, 0, 0),        // clz
+        ("60159513", 0, 0, 32), ("60159513", 0x8000_0000, 0, 31), ("60159513", 6, 0, 1),        // ctz
+        ("60259513", 0, 0, 0), ("60259513", u32::MAX, 0, 32), ("60259513", 0x8000_0101, 0, 3), // cpop
+        ("0ac5e533", (-5i32) as u32, 3, 3), ("0ac5f533", (-5i32) as u32, 3, (-5i32) as u32),    // max maxu
+        ("0ac5c533", (-5i32) as u32, 3, (-5i32) as u32), ("0ac5d533", (-5i32) as u32, 3, 3),    // min minu
+        ("60459513", 0x1234_5680, 0, 0xffff_ff80), ("60459513", 0x7f, 0, 0x7f),                 // sext.b
+        ("60559513", 0x1234_8000, 0, 0xffff_8000), ("60559513", 0xffff_7fff, 0, 0x7fff),        // sext.h
+        ("0805c533", 0xffff_8001, 0, 0x8001),                                                    // zext.h
+        ("60c59533", 0x8000_0001, 33, 3), ("60c5d533", 0x8000_0001, 1, 0xc000_0000),            // rol ror (shift mod 32)
+        ("6005d513", 0x1234_5678, 0, 0x1234_5678), ("6045d513", 0x1234_5678, 0, 0x8123_4567),  // rori by 0 and 4
+        ("2875d513", 0x0010_8000, 0, 0x00ff_ff00), ("2875d513", 0, 0, 0),                       // orc.b
+        ("6985d513", 0x1234_5678, 0, 0x7856_3412),                                               // rev8
+        ("48c59533", u32::MAX, 31, 0x7fff_ffff), ("49f59513", u32::MAX, 0, 0x7fff_ffff),        // bclr bclri
+        ("48c5d533", 0x8000_0000, 63, 1), ("49f5d513", 0x8000_0000, 0, 1), ("49f5d513", 0x7fff_ffff, 0, 0), // bext bexti, bit 31
+        ("68c59533", 0, 4, 16), ("68059513", 1, 0, 0),                                           // binv binvi
+        ("28c59533", 0, 31, 0x8000_0000), ("29f59513", 1, 0, 0x8000_0001),                       // bset bseti
+    ];
+    for &(hex, a, b, want) in cases {
+        let (cpu, _, t) = s31_one(hex, &[(11, a), (12, b)]);
+        assert_eq!(t, Ok(()), "{hex}");
+        assert_eq!(cpu.x[A0], want, "{hex} a1={a:#x} a2={b:#x}");
+        assert_eq!(cpu.pc, BASE + 4);
+    }
+}
+
+/// Zcb: the byte and half-word loads and stores, the unary forms and c.mul.
+#[test]
+fn s31_zcb_compute_and_move_memory() {
+    let mut cpu = Cpu::new_esp32s31();
+    let mut ram = FlatRam::new(BASE, 64 * 1024);
+    let p = asm("81e8 85a8 85e8 89c8 8da8"); ram.mem[..p.len()].copy_from_slice(&p);
+    ram.mem[0x200..0x204].copy_from_slice(&[0x11, 0x22, 0x80, 0xf0]);
+    cpu.pc = BASE; cpu.x[11] = BASE + 0x200;
+    step(&mut cpu, &mut ram).unwrap(); assert_eq!(cpu.x[10], 0xf0);         // c.lbu a0,3(a1)
+    step(&mut cpu, &mut ram).unwrap(); assert_eq!(cpu.x[10], 0xf080);       // c.lhu a0,2(a1)
+    step(&mut cpu, &mut ram).unwrap(); assert_eq!(cpu.x[10], 0xffff_f080);  // c.lh a0,2(a1)
+    cpu.x[10] = 0x1234_56ab;
+    step(&mut cpu, &mut ram).unwrap(); assert_eq!(ram.mem[0x200..0x204], [0x11, 0xab, 0x80, 0xf0]); // c.sb a0,1(a1)
+    step(&mut cpu, &mut ram).unwrap(); assert_eq!(ram.mem[0x200..0x204], [0x11, 0xab, 0xab, 0x56]); // c.sh a0,2(a1)
+    assert_eq!(cpu.pc, BASE + 10);
+    for (hex, a, want) in [("9d61", 0x1234_5680u32, 0x80u32), ("9d65", 0x1234_5680, 0xffff_ff80), ("9d69", 0xffff_8001, 0x8001),
+                           ("9d6d", 0x1234_8000, 0xffff_8000), ("9d75", 0x0f0f_0000, 0xf0f0_ffff)] {
+        let (cpu, _, t) = s31_one(hex, &[(10, a)]);
+        assert_eq!((t, cpu.x[10], cpu.pc), (Ok(()), want, BASE + 2), "{hex}");
+    }
+    let (cpu, _, _) = s31_one("9d4d", &[(10, 0x1_0001), (11, 0x1_0003)]);   // c.mul a0,a1
+    assert_eq!(cpu.x[10], 0x1_0001u32.wrapping_mul(0x1_0003));
+}
+
+/// cm.push then cm.pop for every rlist and stack adjustment (Zc v1.0.0): ra at sp-4, s0.. below
+/// it, sp moved by the rounded size plus spimm*16, and every register restored.
+#[test]
+fn s31_zcmp_push_pop_round_trip_every_rlist() {
+    use riscv_rv32::decode::{rlist_reg, rlist_regs};
+    for rlist in 4u32..16 {
+        for spimm in 0u32..4 {
+            let push = 0xb802 | rlist << 4 | spimm << 2;
+            let pop = 0xba02 | rlist << 4 | spimm << 2;
+            let mut cpu = Cpu::new_esp32s31();
+            let mut ram = FlatRam::new(BASE, 64 * 1024);
+            ram.mem[..4].copy_from_slice(&[(push & 0xff) as u8, (push >> 8) as u8, (pop & 0xff) as u8, (pop >> 8) as u8]);
+            cpu.pc = BASE;
+            let sp = BASE + 0x8000;
+            cpu.x[2] = sp;
+            for r in 1..32 { if r != 2 { cpu.x[r] = 0x1000 * r as u32 + 7; } }
+            let saved = cpu.x;
+            let n = rlist_regs(rlist);
+            let adj = ((n * 4 + 15) & !15) + spimm * 16;
+            step(&mut cpu, &mut ram).unwrap();
+            assert_eq!(cpu.x[2], sp - adj, "push rlist {rlist} spimm {spimm}");
+            for k in 0..n {
+                let off = (sp - 4 * (k + 1) - BASE) as usize;
+                let v = u32::from_le_bytes(ram.mem[off..off + 4].try_into().unwrap());
+                assert_eq!(v, saved[rlist_reg(k) as usize], "slot {k} of rlist {rlist}");
+            }
+            let below = (sp - 4 * (n + 1) - BASE) as usize;
+            assert_eq!(ram.mem[below..below + 4], [0; 4], "nothing stored past the list");
+            for k in 0..n { cpu.x[rlist_reg(k) as usize] = 0xdead; }
+            step(&mut cpu, &mut ram).unwrap();
+            assert_eq!(cpu.x, saved, "pop rlist {rlist} spimm {spimm}");
+            assert_eq!(cpu.pc, BASE + 4);
+        }
+    }
+    assert_eq!(rlist_regs(15), 13, "rlist 15 is ra, s0-s11: s10 never without s11");
+}
+
+/// cm.popret returns through the restored ra; cm.popretz also zeroes a0. mvsa01/mva01s move a0/a1.
+#[test]
+fn s31_zcmp_popret_popretz_and_moves() {
+    for (hex, a0) in [("be42", 0x55u32), ("bc42", 0)] {
+        let sp = BASE + 0x1000;
+        let mut cpu = Cpu::new_esp32s31();
+        let mut ram = FlatRam::new(BASE, 64 * 1024);
+        let p = asm(hex); ram.mem[..2].copy_from_slice(&p);
+        ram.mem[0x1000 + 16 - 4..0x1000 + 16].copy_from_slice(&(BASE + 0x301).to_le_bytes());   // ra at new sp - 4
+        cpu.pc = BASE; cpu.x[2] = sp; cpu.x[10] = 0x55;
+        step(&mut cpu, &mut ram).unwrap();
+        assert_eq!((cpu.pc, cpu.x[1], cpu.x[2], cpu.x[10]), (BASE + 0x300, BASE + 0x301, sp + 16, a0), "{hex}");
+    }
+    let (cpu, _, t) = s31_one("acaa", &[(10, 1), (11, 2)]);                // cm.mvsa01 s1,s2
+    assert_eq!((t, cpu.x[9], cpu.x[18]), (Ok(()), 1, 2));
+    let (cpu, _, t) = s31_one("ac62", &[(8, 9)]);                          // cm.mva01s s0,s0
+    assert_eq!((t, cpu.x[10], cpu.x[11]), (Ok(()), 9, 9));
+}
+
+/// A push or pop that faults leaves sp and the registers as they were, so it can be re-executed.
+#[test]
+fn s31_zcmp_faults_are_precise() {
+    // cm.push {ra,s0-s11},-64 with only 8 bytes of RAM below sp: the third store faults
+    let (cpu, _, t) = s31_one("b8f2", &[(2, BASE + 8), (1, 0x11)]);
+    assert_eq!(t, Err(Trap::Exception(7)));
+    assert_eq!((cpu.x[2], cpu.mepc, cpu.mtval, cpu.x[1]), (BASE + 8, BASE, BASE - 4, 0x11));
+    // cm.pop {ra,s0-s11},64 reaching past the end of RAM: nothing is written
+    let (cpu, _, t) = s31_one("baf2", &[(2, BASE + 0x1_0000 - 16), (1, 0x11), (8, 0x22)]);
+    assert_eq!(t, Err(Trap::Exception(5)));
+    assert_eq!((cpu.x[2], cpu.x[1], cpu.x[8], cpu.mepc), (BASE + 0x1_0000 - 16, 0x11, 0x22, BASE));
+}
+
+/// Reserved encodings are illegal on the S31; with the extensions off (C3/C6/P4) every new
+/// encoding, the C.FLD/C.FSD/C.FLDSP/C.FSDSP slots included, stays illegal.
+#[test]
+fn s31_reserved_and_flag_off_encodings_are_illegal() {
+    // rlist 0-3 for push/pop/popretz/popret, cm.mvsa01 s0,s0, c.lh/c.sh holes, c.zext.w (RV64)
+    for hex in ["b802", "ba12", "bc22", "be32", "ac22", "8c40", "8c60", "9c71"] {
+        let (cpu, _, t) = s31_one(hex, &[]);
+        assert_eq!(t, Err(Trap::Exception(2)), "{hex}");
+        assert_eq!(cpu.mtval, u32::from_str_radix(hex, 16).unwrap(), "{hex}");
+    }
+    let p4 = Cpu::new_esp32p4();
+    for hex in ["b876", "ba76", "be42", "bc42", "acaa", "ac62", "81e8", "85a8", "85e8", "89c8", "8da8", "9d61", "9d65", "9d69", "9d6d", "9d75", "9d4d",
+                "20c5a533", "40c5f533", "60059513", "0ac5e533", "0805c533", "60c59533", "6005d513", "2875d513", "6985d513", "48c5d533", "29f59513",
+                "2000", "a000", "3002", "b002"] {                         // c.fld, c.fsd, c.fldsp, c.fsdsp
+        for misa in [p4.misa, Cpu::new().misa, Cpu::new_rv32imac().misa] {
+            assert!(decode_for(misa, BASE, asm(hex).try_into().unwrap_or_else(|v: Vec<u8>| [v[0], v[1], 0, 0])).is_illegal(), "{hex} misa {misa:#x}");
+        }
+    }
+    // the C.FLD and C.FLDSP slots stay illegal on the S31 too (no D, and Zcmp uses only quadrant 2 funct3 101)
+    for hex in ["2000", "a000", "3002"] { assert_eq!(s31_one(hex, &[]).2, Err(Trap::Exception(2)), "{hex}"); }
+    assert!(decode(BASE, [0x6e, 0xb8, 0, 0]).is_illegal());
 }

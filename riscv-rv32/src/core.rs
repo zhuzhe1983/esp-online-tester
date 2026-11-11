@@ -38,7 +38,7 @@ impl emu_core::Core for Cpu {
     fn regs(&self, out: &mut Vec<(&'static str, u32)>) { for (&name, &value) in X[1..].iter().zip(&self.x[1..]) { out.push((name, value)); } out.push(("mstatus", self.mstatus)); }
     fn arg<B: emu_core::Bus>(&self, _bus: &mut B, n: usize) -> u32 { self.x[10 + n] }
     fn return_from_stub<B: emu_core::Bus>(&mut self, _bus: &mut B, v: u32) { self.x[10] = v; self.pc = self.x[1]; self.insn_count += 1; self.retired_count += 1; self.cycle_count += 1; }
-    fn disasm(&self, pc: u32, bytes: [u8; 4]) -> String { crate::disasm::format_for(self.misa, &crate::decode::decode_for(self.misa, pc, bytes)).replace('\t', " ") }
+    fn disasm(&self, pc: u32, bytes: [u8; 4]) -> String { crate::disasm::format_for(self.misa, &crate::decode::decode_for(self.isa(), pc, bytes)).replace('\t', " ") }
     fn insn_len(bytes: [u8; 4]) -> u32 { crate::decode::decode(0, bytes).len as u32 }
     const TRACE_WIDTH: usize = 28;
     fn trace_regs(&self) -> String { format!("ra={:08x} sp={:08x} a0={:08x} a1={:08x}", self.x[1], self.x[2], self.x[10], self.x[11]) }

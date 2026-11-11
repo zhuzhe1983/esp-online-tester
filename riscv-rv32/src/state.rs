@@ -111,6 +111,9 @@ pub struct Cpu {
     /// which ISA `misa` reports: IMC on the C3, IMAC on the C6 (execution accepts A on both).
     /// F here is what enables the F extension, so a core without it decodes F encodings as illegal.
     pub misa: u32,
+    /// extensions `misa` cannot show (`decode::ISA_ZB`, `decode::ISA_ZC`), OR-ed into it for the
+    /// decoder (`isa`); none on the C3, C6 and P4, so they decode exactly as before
+    pub isa_ext: u32,
     /// the core has the ESP32-P4's EXT_ILL CSR (0x7F0); without it 0x7F0 is an unmodelled CSR
     pub has_ext_ill: bool,
     /// f0-f31 as binary32 bit patterns (FLEN = 32, so no NaN-boxing)
@@ -163,7 +166,7 @@ impl Cpu {
             pc: RESET_VECTOR, x: [0; 32],
             mstatus: 0x1800,          // MPP = machine
             mtvec: 0, mepc: 0, mcause: 0, mtval: 0, mie: 0, mscratch: 0,
-            insn_count: 0, retired_count: 0, cycle_count: 0, cycle_base: 0, instret_base: 0, waiting: false, irq: None, misa: MISA_RV32IMC,
+            insn_count: 0, retired_count: 0, cycle_count: 0, cycle_base: 0, instret_base: 0, waiting: false, irq: None, misa: MISA_RV32IMC, isa_ext: 0,
             has_ext_ill: false, f: [0; 32], fcsr: 0, ext_ill: 0, ext_ill_all_fp: false, user_counters: false, clic: false, clic_std: false, mintthresh: 0, mtvt: 0, hartid: 0, mil: 0, clint_levels: Vec::new(), reservation: None, boundary_bloom: 0, csr_other: HashMap::new(),
         }
     }
@@ -184,7 +187,9 @@ impl Cpu {
         // SOC_CPU_HAS_FPU_EXT_ILL_BUG && CONFIG_ESP32P4_SELECTS_REV_LESS_V3
         // (components/riscv/vectors.S). An S31 build never takes that branch, so
         // EXT_ILL.FPU must be set for FP memory ops, as on P4 rev >= 3.
-        let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.has_ext_ill = true; c.ext_ill_all_fp = true; c.user_counters = true; c.clic = true; c.clic_std = true; c
+        // Zba/Zbb/Zbs and Zcb/Zcmp: IDF master builds the S31 with
+        // -march=rv32imafcb_zicsr_zifencei_zcb_zcmp_zcmt_xesploop_xespv (Zcmt is not modelled).
+        let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.isa_ext = crate::decode::ISA_ZB | crate::decode::ISA_ZC; c.has_ext_ill = true; c.ext_ill_all_fp = true; c.user_counters = true; c.clic = true; c.clic_std = true; c
     }
 
     pub fn reset(&mut self) {
@@ -193,13 +198,16 @@ impl Cpu {
         // report a negative instruction rate). The architectural cycle counter is separately
         // monotonic and firmware reads its reset-relative value.
         let (insns, retired, cycles, misa, ext_ill, counters, clic, clic_std, hart, bloom) = (self.insn_count, self.retired_count, self.cycle_count, self.misa, self.has_ext_ill, self.user_counters, self.clic, self.clic_std, self.hartid, self.boundary_bloom);
-        let all_fp = self.ext_ill_all_fp;
+        let (all_fp, isa_ext) = (self.ext_ill_all_fp, self.isa_ext);
         *self = Cpu::new();
         self.insn_count = insns; self.retired_count = retired; self.cycle_count = cycles;
         self.cycle_base = cycles; self.instret_base = retired;
-        self.misa = misa; self.has_ext_ill = ext_ill; self.user_counters = counters; self.clic = clic; self.clic_std = clic_std; self.hartid = hart; self.boundary_bloom = bloom; self.ext_ill_all_fp = all_fp;
+        self.misa = misa; self.has_ext_ill = ext_ill; self.user_counters = counters; self.clic = clic; self.clic_std = clic_std; self.hartid = hart; self.boundary_bloom = bloom; self.ext_ill_all_fp = all_fp; self.isa_ext = isa_ext;
     }
 
+    /// The ISA word the decoder takes: `misa` and `isa_ext`.
+    #[inline(always)]
+    pub fn isa(&self) -> u32 { self.misa | self.isa_ext }
     #[inline(always)]
     pub fn has_f(&self) -> bool { self.misa & MISA_F != 0 }
     /// FS = Off: every F instruction and FP CSR access is illegal (privileged ISA v1.13,

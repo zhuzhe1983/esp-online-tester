@@ -131,7 +131,7 @@ pub fn step_outcome<B: Bus>(cpu: &mut Cpu, bus: &mut B) -> StepOutcome {
             return StepOutcome { pc, next_pc: cpu.pc, bytes: None, length: 0, kind: StepKind::TrapBefore(Trap::Exception(exc::INSN_ACCESS_FAULT)), control: None };
         }
     };
-    let i = decode_for(cpu.misa, pc, bytes);
+    let i = decode_for(cpu.isa(), pc, bytes);
     cpu.insn_count += 1; cpu.cycle_count += 1;
     let control = if i.op == Op::FenceI {
         Some(ControlEvent { kind: ControlEventKind::Cache(CacheOperation::FenceInstruction), address: 0 })
@@ -231,6 +231,41 @@ pub fn exec_insn<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc: u32) -> Resul
             cpu.set(i.rd, old);
         }
 
+        // Zba, Zbb, Zbs (bit-manipulation v1.0.0)
+        Sh1add => cpu.set(i.rd, (a << 1).wrapping_add(b)),
+        Sh2add => cpu.set(i.rd, (a << 2).wrapping_add(b)),
+        Sh3add => cpu.set(i.rd, (a << 3).wrapping_add(b)),
+        Andn => cpu.set(i.rd, a & !b),
+        Orn => cpu.set(i.rd, a | !b),
+        Xnor => cpu.set(i.rd, !(a ^ b)),
+        Clz => cpu.set(i.rd, a.leading_zeros()),
+        Ctz => cpu.set(i.rd, a.trailing_zeros()),
+        Cpop => cpu.set(i.rd, a.count_ones()),
+        Max => cpu.set(i.rd, (a as i32).max(b as i32) as u32),
+        Maxu => cpu.set(i.rd, a.max(b)),
+        Min => cpu.set(i.rd, (a as i32).min(b as i32) as u32),
+        Minu => cpu.set(i.rd, a.min(b)),
+        SextB => cpu.set(i.rd, a as i8 as i32 as u32),
+        SextH => cpu.set(i.rd, a as i16 as i32 as u32),
+        ZextH => cpu.set(i.rd, a & 0xffff),
+        Rol => cpu.set(i.rd, a.rotate_left(b & 31)),
+        Ror => cpu.set(i.rd, a.rotate_right(b & 31)),
+        Rori => cpu.set(i.rd, a.rotate_right(immu & 31)),
+        OrcB => cpu.set(i.rd, (0..4).fold(0, |v, k| if a & (0xff << (8 * k)) != 0 { v | 0xff << (8 * k) } else { v })),
+        Rev8 => cpu.set(i.rd, a.swap_bytes()),
+        Bclr => cpu.set(i.rd, a & !(1 << (b & 31))),
+        Bclri => cpu.set(i.rd, a & !(1 << (immu & 31))),
+        Bext => cpu.set(i.rd, (a >> (b & 31)) & 1),
+        Bexti => cpu.set(i.rd, (a >> (immu & 31)) & 1),
+        Binv => cpu.set(i.rd, a ^ (1 << (b & 31))),
+        Binvi => cpu.set(i.rd, a ^ (1 << (immu & 31))),
+        Bset => cpu.set(i.rd, a | (1 << (b & 31))),
+        Bseti => cpu.set(i.rd, a | (1 << (immu & 31))),
+
+        CmPush | CmPop | CmPopret | CmPopretz => return zcmp_stack(cpu, bus, i, pc),
+        CmMvsa01 => { let (a0, a1) = (cpu.x[10], cpu.x[11]); cpu.set(i.rs1, a0); cpu.set(i.rs2, a1); }
+        CmMva01s => { let (s1, s2) = (cpu.get(i.rs1), cpu.get(i.rs2)); cpu.x[10] = s1; cpu.x[11] = s2; }
+
         Ecall => { cpu.trap(exc::ECALL_M, 0, pc); return Err(Trap::Exception(exc::ECALL_M)); }
         Ebreak => { cpu.trap(exc::BREAKPOINT, pc, pc); return Err(Trap::Ebreak(pc)); }
         Mret => { cpu.mret(); return Ok(()); }
@@ -264,6 +299,32 @@ pub fn exec_insn<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc: u32) -> Resul
         | FeqS | FltS | FleS | FclassS => return crate::fpu::exec(cpu, bus, i, pc),
     }
     cpu.pc = new_pc;
+    Ok(())
+}
+
+/// cm.push/cm.pop/cm.popret/cm.popretz (Zc v1.0.0, Zcmp): ra is stored at sp-4 and the rest
+/// below it; sp moves by `imm` bytes. Precise: a faulting push leaves sp as it was (the stores it
+/// made are below sp, so re-executing repeats them), and a pop loads every register before it
+/// writes any, so a fault leaves the registers and sp untouched.
+#[cold]
+#[inline(never)]
+fn zcmp_stack<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc: u32) -> Result<(), Trap> {
+    use crate::decode::{rlist_reg, rlist_regs};
+    let (sp, n) = (cpu.x[2], rlist_regs(i.rs2 as u32));
+    let adj = i.imm as u32;
+    if i.op == Op::CmPush {
+        for k in 0..n { let ad = sp.wrapping_sub(4 * (k + 1)); let v = cpu.x[rlist_reg(k) as usize]; st!(cpu, bus, write32, ad, v, pc); }
+        cpu.x[2] = sp.wrapping_sub(adj);
+        cpu.pc = pc.wrapping_add(2);
+        return Ok(());
+    }
+    let top = sp.wrapping_add(adj);
+    let mut v = [0u32; 13];
+    for (k, slot) in v.iter_mut().enumerate().take(n as usize) { let ad = top.wrapping_sub(4 * (k as u32 + 1)); *slot = ld!(cpu, bus, read32, ad, pc); }
+    for (k, &val) in v.iter().enumerate().take(n as usize) { cpu.x[rlist_reg(k as u32) as usize] = val; }
+    cpu.x[2] = top;
+    if i.op == Op::CmPopretz { cpu.x[10] = 0; }
+    cpu.pc = if i.op == Op::CmPop { pc.wrapping_add(2) } else { cpu.x[1] & !1 };
     Ok(())
 }
 

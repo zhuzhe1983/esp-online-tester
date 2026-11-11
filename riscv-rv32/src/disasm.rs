@@ -166,6 +166,27 @@ pub fn format_for(misa: u32, i: &Insn) -> String {
                 _ => format!("csrrci\t{},{},{}", rd, n, imm5),
             }
         }
+        Sh1add | Sh2add | Sh3add | Andn | Orn | Xnor | Max | Maxu | Min | Minu | Rol | Ror | Bclr | Bext | Binv | Bset => {
+            let n = match i.op { Sh1add => "sh1add", Sh2add => "sh2add", Sh3add => "sh3add", Andn => "andn", Orn => "orn", Xnor => "xnor",
+                                 Max => "max", Maxu => "maxu", Min => "min", Minu => "minu", Rol => "rol", Ror => "ror",
+                                 Bclr => "bclr", Bext => "bext", Binv => "binv", _ => "bset" };
+            format!("{}\t{},{},{}", n, rd, rs1, rs2)
+        }
+        Clz | Ctz | Cpop | SextB | SextH | ZextH | OrcB | Rev8 => {
+            let n = match i.op { Clz => "clz", Ctz => "ctz", Cpop => "cpop", SextB => "sext.b", SextH => "sext.h", ZextH => "zext.h", OrcB => "orc.b", _ => "rev8" };
+            format!("{}\t{},{}", n, rd, rs1)
+        }
+        Rori | Bclri | Bexti | Binvi | Bseti => {
+            let n = match i.op { Rori => "rori", Bclri => "bclri", Bexti => "bexti", Binvi => "binvi", _ => "bseti" };
+            format!("{}\t{},{},{:#x}", n, rd, rs1, i.imm)
+        }
+        CmPush | CmPop | CmPopret | CmPopretz => {
+            let n = match i.op { CmPush => "cm.push", CmPop => "cm.pop", CmPopret => "cm.popret", _ => "cm.popretz" };
+            let list = match i.rs2 { 4 => "{ra}".to_string(), 5 => "{ra,s0}".to_string(), 15 => "{ra,s0-s11}".to_string(), l => format!("{{ra,s0-s{}}}", l - 5) };
+            format!("{}\t{},{}", n, list, if i.op == CmPush { -i.imm } else { i.imm })
+        }
+        CmMvsa01 => format!("cm.mvsa01\t{},{}", rs1, rs2),
+        CmMva01s => format!("cm.mva01s\t{},{}", rs1, rs2),
         Flw => format!("flw\t{},{}({})", fr(i.rd), i.imm, rs1),
         Fsw => format!("fsw\t{},{}({})", fr(i.rs2), i.imm, rs1),
         FmaddS | FmsubS | FnmsubS | FnmaddS => {
@@ -230,6 +251,17 @@ pub fn format_compressed(i: &Insn) -> String {
         Comp::Fsw => format!("c.fsw\t{},{}({})", fr(i.rs2), i.imm, rs1),
         Comp::Flwsp => format!("c.flwsp\t{},{}(sp)", fr(i.rd), i.imm),
         Comp::Fswsp => format!("c.fswsp\t{},{}(sp)", fr(i.rs2), i.imm),
+        Comp::Lbu => format!("c.lbu\t{},{}({})", rd, i.imm, rs1),
+        Comp::Lhu => format!("c.lhu\t{},{}({})", rd, i.imm, rs1),
+        Comp::Lh => format!("c.lh\t{},{}({})", rd, i.imm, rs1),
+        Comp::Sb => format!("c.sb\t{},{}({})", rs2, i.imm, rs1),
+        Comp::Sh => format!("c.sh\t{},{}({})", rs2, i.imm, rs1),
+        Comp::ZextB => format!("c.zext.b\t{}", rd),
+        Comp::SextB => format!("c.sext.b\t{}", rd),
+        Comp::ZextH => format!("c.zext.h\t{}", rd),
+        Comp::SextH => format!("c.sext.h\t{}", rd),
+        Comp::Not => format!("c.not\t{}", rd),
+        Comp::Mul => format!("c.mul\t{},{}", rd, rs2),
         Comp::None => format(i),
     }
 }
