@@ -19,14 +19,15 @@ pub const CACHE_SOURCE: usize = 69; // Fixed S31 interrupt_core0_reg.h CACHE_INT
 pub const USB_SERIAL_SOURCE: usize = 2; // v6.1 interrupts.h / interrupt_core0_reg.h offset8.
 pub const MONITOR_SOURCE: usize = 119; // v6.1 interrupts.h: ETS_ASSIST_DEBUG_INTR_SOURCE.
 pub const RTC_WDT_SOURCE: usize = 136; // interrupt_core0_reg.h: LP_WDT_INTR_MAP at 0x220.
+pub const USB_OTG_SOURCE: usize = 99; // IDF master interrupts.h: ETS_USB_OTGHS_INTR_SOURCE.
 pub const EFUSE_SOURCE: usize = 152; // interrupt_core0_reg.h: LP_EFUSE_INTR_MAP at 0x260.
 pub(crate) const SOURCE_COUNT: usize = 169;
 const SOURCES: usize = SOURCE_COUNT;
 #[derive(Clone, Copy, Default)]
-pub struct Irqs { pub uart: bool, pub wdt: bool, pub efuse: bool, pub usb: bool, pub monitor: bool, pub cache: bool, pub mwdt: [bool; 2], pub systimer: [bool; 3], pub psram: bool, pub brownout: bool, pub from_cpu: [bool; 4] }
+pub struct Irqs { pub uart: bool, pub wdt: bool, pub efuse: bool, pub usb: bool, pub monitor: bool, pub cache: bool, pub mwdt: [bool; 2], pub systimer: [bool; 3], pub psram: bool, pub brownout: bool, pub from_cpu: [bool; 4], pub usb_otg: bool }
 impl Irqs {
     // Fixed S31 interrupts.h: TIMERGRP0_WDT27,TIMERGRP1_WDT30,SYSTIMER_TARGET0..2 sources33..35,LP_ANAPERI143.
-    fn sources(self) -> [(usize, bool); 17] { [(UART0_SOURCE, self.uart), (RTC_WDT_SOURCE, self.wdt), (EFUSE_SOURCE, self.efuse), (USB_SERIAL_SOURCE, self.usb), (MONITOR_SOURCE, self.monitor), (CACHE_SOURCE, self.cache), (27, self.mwdt[0]), (30, self.mwdt[1]), (33, self.systimer[0]), (34, self.systimer[1]), (35, self.systimer[2]), (112, self.psram), (143, self.brownout), (65, self.from_cpu[0]), (66, self.from_cpu[1]), (67, self.from_cpu[2]), (68, self.from_cpu[3])] }
+    fn sources(self) -> [(usize, bool); 18] { [(UART0_SOURCE, self.uart), (RTC_WDT_SOURCE, self.wdt), (EFUSE_SOURCE, self.efuse), (USB_SERIAL_SOURCE, self.usb), (MONITOR_SOURCE, self.monitor), (CACHE_SOURCE, self.cache), (27, self.mwdt[0]), (30, self.mwdt[1]), (33, self.systimer[0]), (34, self.systimer[1]), (35, self.systimer[2]), (112, self.psram), (143, self.brownout), (65, self.from_cpu[0]), (66, self.from_cpu[1]), (67, self.from_cpu[2]), (68, self.from_cpu[3]), (USB_OTG_SOURCE, self.usb_otg)] }
 }
 
 pub struct Interrupts {

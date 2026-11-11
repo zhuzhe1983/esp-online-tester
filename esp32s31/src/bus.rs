@@ -37,6 +37,23 @@ const UART_SIZE: usize = 0xa0;
 const LP_STORE0: u32 = 0x2070_002c;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AccessFault { pub hart: usize, pub pc: u32, pub address: u32, pub bytes: usize, pub write: bool, pub fetch: bool, pub reason: Fault }
+/// reg_base.h DR_REG_USB_OTGHS_BASE.
+pub const USB_OTG: u32 = 0x2030_0000;
+
+struct UsbDma<'a> { sram: &'a mut [u8], lp: &'a mut [u8] }
+impl UsbDma<'_> {
+    fn span(&mut self, addr: u32, n: usize) -> Result<&mut [u8], Fault> {
+        for (base, data) in [(SRAM_BASE, &mut *self.sram), (LP_BASE, &mut *self.lp)] {
+            if let Some(o) = offset(addr, base, n, data.len()) { return Ok(&mut data[o..o + n]); }
+        }
+        Err(Fault::Unmapped)
+    }
+}
+impl esp_periph::sdmmc::SdmmcMemory for UsbDma<'_> {
+    fn read(&mut self, addr: u32, buf: &mut [u8]) -> Result<(), Fault> { let n = buf.len(); buf.copy_from_slice(self.span(addr, n)?); Ok(()) }
+    fn write(&mut self, addr: u32, data: &[u8]) -> Result<(), Fault> { self.span(addr, data.len())?.copy_from_slice(data); Ok(()) }
+}
+
 pub struct S31Bus {
     sram: Vec<u8>, lp: Vec<u8>, rom: Vec<u8>, lp_store: [u32; 16],
     pub periph: Peripherals,
@@ -63,6 +80,12 @@ pub struct S31Bus {
     pub rtc_calibration: crate::rtc_calibration::Calibration,
     pub rtc_timer: RtcTimer,
     pc: u32, pub first_fault: Option<AccessFault>,
+    /// Peripheral registers no model claims: plain storage, as silicon accepts them. Word-addressed.
+    pub unmodelled: std::collections::BTreeMap<u32, u32>,
+    /// Peripheral accesses a model refused (`Prohibited`) outside APM/PMS: word address -> count.
+    pub refused: std::collections::BTreeMap<u32, (u64, u32)>,
+    /// The high-speed USB-OTG core (DWC2) at DR_REG_USB_OTGHS_BASE, IRQ source 99.
+    pub usb_otg: esp_periph::usb_otg::Dwc2,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
     let off = address.checked_sub(base)? as usize;
@@ -85,7 +108,10 @@ impl S31Bus {
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16],
-            periph: Peripherals::new(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), clocks: Clocks::default(), startup_clocks: StartupClocks::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), key_manager: crate::key_manager::KeyManager::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), cores: CoreControl::default(), hart: 0, reservations: [None; 2], rtc_timer: RtcTimer::default(), rtc_calibration: crate::rtc_calibration::Calibration::default(), pc: 0, first_fault: None }
+            periph: Peripherals::new(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), clocks: Clocks::default(), startup_clocks: StartupClocks::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), key_manager: crate::key_manager::KeyManager::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), cores: CoreControl::default(), hart: 0, reservations: [None; 2], rtc_timer: RtcTimer::default(), rtc_calibration: crate::rtc_calibration::Calibration::default(), pc: 0, first_fault: None, unmodelled: Default::default(), refused: Default::default(),
+            // Same HS UTMI DWC2 instance as the P4 (esp_hal_usb/esp32s31/usb_dwc_periph.c); its
+            // GHWCFG words are assumed equal to the P4's until read from an S31.
+            usb_otg: esp_periph::usb_otg::Dwc2::new(esp_periph::usb_otg::Dwc2Config::esp32p4_hs(crate::periph::CPU_HZ)) }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -128,7 +154,12 @@ impl S31Bus {
         let conf = self.periph.uart0.read(0x20); self.periph.uart0.write(0x20, conf | 1 << 22); self.periph.uart0.write(0x20, conf);
         self.periph.uart0.int_raw = (1 << 14) | 2;
     }
-    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs() } }
+    /// Let the DWC2 move what its DMA owes, against internal SRAM and LP RAM.
+    pub(crate) fn run_usb_otg(&mut self) {
+        let mut dma = UsbDma { sram: &mut self.sram, lp: &mut self.lp };
+        self.usb_otg.run(&mut dma);
+    }
+    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq() } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
@@ -143,9 +174,60 @@ impl S31Bus {
         off.checked_add(bytes as u32).filter(|&end| end <= 0x2000).map(|_| (self.hart, off))
     }
     fn clic_register(off: u32) -> bool { matches!(off & !3, 0 | 4 | 0x1000..=0x10bc) }
+    /// HP and LP peripheral space (soc/reg_base.h: DR_REG_*_BASE between 0x2000_0000 and 0x20ff_ffff).
+    fn peripheral(address: u32) -> bool { (0x2000_0000..0x2100_0000).contains(&address) }
+    /// An access no model claims in peripheral space reads what was last written there (0 at
+    /// first) instead of faulting: silicon answers every decoded register, and IDF touches many
+    /// we do not model. `unmodelled` lists them for `--debug` reports.
+    /// A model's `Prohibited` in peripheral space that the APM and PMS would let through: a value
+    /// or clock state the model does not cover, which silicon accepts. Real permission faults stay.
+    fn refusal_only(&mut self, address: u32, bytes: usize, write: bool) -> bool {
+        Self::peripheral(address) && self.apm.check(address, bytes, if write { 1 } else { 2 }).is_ok() && self.permissions.check(address, write).is_ok()
+    }
     fn read(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
+        let had = self.first_fault.is_some();
+        match self.read_modelled(address, bytes) {
+            Err(Fault::Prohibited) if self.refusal_only(address, bytes, false) => {
+                if !had { self.first_fault = None; }
+                self.refused.entry(address & !3).or_insert((0, 0)).0 += 1;
+                Ok(0)
+            }
+            Err(Fault::Unmapped) if Self::peripheral(address) => {
+                if !had { self.first_fault = None; }
+                let word = *self.unmodelled.entry(address & !3).or_insert(0);
+                let shift = (address & 3) * 8;
+                Ok(if bytes == 4 { word } else { (word >> shift) & ((1u32 << (bytes * 8)) - 1) })
+            }
+            r => r,
+        }
+    }
+    fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
+        let had = self.first_fault.is_some();
+        match self.write_modelled(address, value, bytes) {
+            Err(Fault::Prohibited) if self.refusal_only(address, bytes, true) => {
+                if !had { self.first_fault = None; }
+                let e = self.refused.entry(address & !3).or_insert((0, 0)); e.0 += 1; e.1 = value;
+                Ok(())
+            }
+            Err(Fault::Unmapped) if Self::peripheral(address) => {
+                if !had { self.first_fault = None; }
+                let word = self.unmodelled.entry(address & !3).or_insert(0);
+                if bytes == 4 { *word = value; } else {
+                    let shift = (address & 3) * 8; let mask = ((1u32 << (bytes * 8)) - 1) << shift;
+                    *word = (*word & !mask) | ((value << shift) & mask);
+                }
+                Ok(())
+            }
+            r => r,
+        }
+    }
+    fn read_modelled(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
         if let Err(e) = self.apm.check(address, bytes, 2) { return self.fault(address, bytes, false, false, e); }
         if let Err(e) = self.permissions.check(address, false) { return self.fault(address, bytes, false, false, e); }
+        if (USB_OTG..USB_OTG + 0x4_0000).contains(&address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(esp_periph::Device::read(&mut self.usb_otg, address - USB_OTG));
+        }
         if address & !3 == crate::rtc_timer::RESET || address & !0xfff == crate::rtc_timer::BASE {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             if address == crate::rtc_timer::RESET { return Ok(self.rtc_timer.reset_read()); }
@@ -341,9 +423,15 @@ impl S31Bus {
         }
         self.fault(address, bytes, false, false, Fault::Unmapped)
     }
-    fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
+    fn write_modelled(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         if let Err(e) = self.apm.check(address, bytes, 1) { return self.fault(address, bytes, true, false, e); }
         if let Err(e) = self.permissions.check(address, true) { return self.fault(address, bytes, true, false, e); }
+        if (USB_OTG..USB_OTG + 0x4_0000).contains(&address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            esp_periph::Device::write(&mut self.usb_otg, address - USB_OTG, value);
+            if self.usb_otg.pending() { self.run_usb_otg(); }
+            return Ok(());
+        }
         if address & !3 == crate::rtc_timer::RESET || address & !0xfff == crate::rtc_timer::BASE {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             if address == crate::rtc_timer::RESET { self.rtc_timer.reset_write(value); return Ok(()); }
@@ -393,6 +481,7 @@ impl S31Bus {
         if let Some(dest) = self.memory_mut(address, bytes, false) { dest.copy_from_slice(&value.to_le_bytes()[..bytes]); return Ok(()); }
         if address & !3 == crate::mspi::CLOCK {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            self.mspi.set_cpll_input(self.clocks.cpll_rate());
             return match self.mspi.clock_write(value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
         if address & !3 == crate::key_manager::CLOCK {
@@ -458,9 +547,8 @@ impl S31Bus {
         }
         if Power::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
-            if self.clocks.using_cpll() && (address == 0x2070_40f4 && value & 0x111 != 0 || address == 0x2058_9000 && value & (1 << 29) == 0) {
-                return self.fault(address, bytes, true, false, Fault::Prohibited); // CPU-clock loss/suspend not modeled.
-            }
+            // IDF sequences PLL power around the CPU clock switch itself; a write that would stop
+            // the running CPU clock is not refused here (silicon would stall; IDF never does it).
             return match self.power.write(address, value) {
                 Ok(()) => { self.clocks.set_cpll_power(self.power.cpll_enabled()); self.clocks.mpll.set_power(self.power.mpll_enabled()); self.clocks.set_fosc_power(self.power.fosc_enabled()); self.mspi.set_bbpll_gate(self.power.bbpll_output_enabled()); Ok(()) }
                 Err(e) => self.fault(address, bytes, true, false, e),
@@ -590,7 +678,8 @@ mod tests {
         let mut b = super::S31Bus::new(); let ctrl = crate::sha::CLOCK; let sha = crate::sha::BASE;
         assert_eq!(b.read32(0x2058717c), Ok(0x101));
         b.write32(ctrl, 0x200045).unwrap(); assert_eq!(b.crypto_clock_hz(), None);
-        assert_eq!(b.write32(sha + 0x10, 1), Err(emu_core::Fault::Prohibited)); assert_eq!(b.sha.blocks(), 0);
+        // A write to the gated SHA is dropped (silicon: no clock, no effect) and counted, not a bus fault.
+        assert_eq!(b.write32(sha + 0x10, 1), Ok(())); assert_eq!(b.sha.blocks(), 0); assert_eq!(b.refused.get(&(sha + 0x10)), Some(&(1, 1)));
         b.mspi.set_bbpll_input(Some(480_000_000)).unwrap(); assert_eq!(b.crypto_clock_hz(), Some(240_000_000));
         for (source, hz) in [(0, 40_000_000), (1, 17_500_000), (2, 240_000_000)] {
             b.write32(ctrl, source << 20 | 0x45 | 0x80).unwrap(); b.write32(ctrl, source << 20 | 0x45).unwrap();
@@ -599,18 +688,43 @@ mod tests {
             b.write32(sha + 0x10, 1).unwrap(); assert_eq!(b.read32(sha + 0x40), Ok(0xbf1678ba)); assert_eq!(b.sha.blocks(), 1);
         }
         b.write32(0x2058717c, 7).unwrap(); assert_eq!(b.crypto_clock_hz(), None);
-        assert_eq!(b.read32(sha + 0x40), Err(emu_core::Fault::Prohibited));
+        assert_eq!(b.read32(sha + 0x40), Ok(0)); // gated: reads 0, counted
         b.write32(0x2058717c, 0x107).unwrap(); assert_eq!(b.crypto_clock_hz(), Some(60_000_000));
         assert_eq!(b.read32(sha + 0x40), Ok(0xbf1678ba)); // Gating never invents a reset or a digest.
         b.mspi.set_bbpll_gate(false); assert_eq!(b.crypto_clock_hz(), None);
-        assert_eq!(b.write32(sha + 0x10, 1), Err(emu_core::Fault::Prohibited)); assert_eq!(b.sha.blocks(), 1);
+        assert_eq!(b.write32(sha + 0x10, 1), Ok(())); assert_eq!(b.sha.blocks(), 1); assert_eq!(b.refused.get(&(sha + 0x10)).map(|r| r.0), Some(2));
         b.write32(ctrl, 0x100045).unwrap(); b.clocks.set_fosc_power(false);
-        assert_eq!(b.crypto_clock_hz(), None); assert_eq!(b.read32(sha), Err(emu_core::Fault::Prohibited));
-        let before = b.read32(ctrl).unwrap(); assert_eq!(b.write32(ctrl, 0x300045), Err(emu_core::Fault::Prohibited));
+        assert_eq!(b.crypto_clock_hz(), None); assert_eq!(b.read32(sha), Ok(0));
+        let before = b.read32(ctrl).unwrap(); assert_eq!(b.write32(ctrl, 0x300045), Ok(())); // invalid source: dropped
         assert_eq!(b.read32(ctrl), Ok(before));
         b.write32(0x2058705c, 7).unwrap(); assert_eq!(b.read32(0x2058705c), Ok(7));
         b.write32(0x2058705c, 5).unwrap(); assert_eq!(b.read32(0x2058705c), Ok(5));
-        assert_eq!(b.write32(0x20506024, 1), Err(emu_core::Fault::Prohibited)); // No key-manager engine claimed.
+        assert_eq!(b.write32(0x20506024, 1), Ok(())); assert_eq!(b.refused.get(&0x20506024), Some(&(1, 1))); // No key-manager engine: the start is dropped.
+    }
+    #[test]
+    fn unmodelled_peripheral_registers_are_storage_and_listed() {
+        let mut b = S31Bus::new(); let reg = 0x20ff_0010;
+        assert_eq!(b.read32(reg), Ok(0)); b.write32(reg, 0x1234_5678).unwrap(); assert_eq!(b.read32(reg), Ok(0x1234_5678));
+        b.write8(reg + 2, 0xab).unwrap(); assert_eq!(b.read32(reg), Ok(0x12ab_5678)); assert_eq!(b.read8(reg + 1), Ok(0x56));
+        b.write16(reg + 2, 0xbeef).unwrap(); assert_eq!(b.read16(reg + 2), Ok(0xbeef)); assert_eq!(b.read32(reg + 4), Ok(0));
+        assert_eq!(b.unmodelled.get(&reg), Some(&0xbeef_5678)); assert!(b.unmodelled.contains_key(&(reg + 4)));
+        assert!(b.first_fault.is_none()); assert!(b.refused.is_empty());
+        // Outside peripheral space an unclaimed address still faults.
+        assert_eq!(b.read32(0x1000_0000), Err(Fault::Unmapped));
+    }
+    #[test]
+    fn refused_peripheral_writes_are_dropped_and_counted_but_permission_faults_stay() {
+        use crate::clocks::UART0_CTRL;
+        let mut b = S31Bus::new(); b.write32(UART0_CTRL, 0x80).unwrap(); // UART0 clock off
+        b.write32(UART0_BASE, 1).unwrap(); b.write32(UART0_BASE, 2).unwrap(); assert!(b.periph.uart0.tx_out.is_empty());
+        assert_eq!(b.refused.get(&UART0_BASE), Some(&(2, 2))); assert!(b.first_fault.is_none());
+        b.permissions.write(crate::pms::HP0 + 0xff0, 1).unwrap(); b.permissions.write(crate::pms::HP0 + 0x6c, 1).unwrap();
+        assert_eq!(b.write32(0x20506018, 31), Err(Fault::Prohibited)); assert!(!b.refused.contains_key(&0x20506018));
+    }
+    #[test]
+    fn usb_otg_core_identifies_itself() {
+        let mut b = S31Bus::new(); assert_eq!(b.read32(USB_OTG + 0x40), Ok(0x4f54_430a));
+        assert_eq!(b.read8(USB_OTG + 0x40), Err(Fault::Misaligned));
     }
     #[test]
     fn key_manager_permission_denial_cannot_change_the_locked_policy() {
@@ -714,8 +828,10 @@ mod tests {
         for n in 0..16 { assert_eq!(b.read32(LP_STORE0 + n * 4), Ok(0)); b.write32(LP_STORE0 + n * 4, 0x8123_4567 ^ n).unwrap(); }
         for n in 0..16 { assert_eq!(b.read32(LP_STORE0 + n * 4), Ok(0x8123_4567 ^ n)); }
         assert_eq!(b.read8(LP_STORE0), Err(Fault::Misaligned));
-        assert_eq!(b.write32(LP_STORE0 - 4, 0), Err(Fault::Unmapped));
-        assert_eq!(b.read32(LP_STORE0 + 64), Err(Fault::Unmapped));
+        // Neighbours are not scratch words: they are separate (unmodelled) storage, no aliasing.
+        b.write32(LP_STORE0 - 4, 0xdead_beef).unwrap(); assert_eq!(b.read32(LP_STORE0 + 64), Ok(0));
+        assert_eq!(b.read32(LP_STORE0 - 4), Ok(0xdead_beef)); assert_eq!(b.read32(LP_STORE0), Ok(0x8123_4567));
+        assert!(b.unmodelled.contains_key(&(LP_STORE0 - 4)) && b.unmodelled.contains_key(&(LP_STORE0 + 64)));
     }
     #[test]
     fn uart_clocks_and_reset_control_real_fifo_output_and_irq() {
@@ -723,14 +839,15 @@ mod tests {
         let mut b = S31Bus::new(); b.write32(UART0_BASE + 0x24, 1).unwrap(); b.write32(UART0_BASE + 0xc, 1).unwrap();
         b.uart_input(b"A").unwrap(); assert!(b.uart_irq());
         b.write32(UART0_CTRL, 0x80).unwrap(); assert!(!b.uart_irq());
-        assert_eq!(b.uart_input(b"B"), Err(Fault::Prohibited)); assert_eq!(b.write32(UART0_BASE, 88), Err(Fault::Prohibited)); assert!(b.periph.uart0.tx_out.is_empty());
+        assert_eq!(b.uart_input(b"B"), Err(Fault::Prohibited)); assert_eq!(b.write32(UART0_BASE, 88), Ok(())); assert!(b.periph.uart0.tx_out.is_empty()); assert_eq!(b.refused.get(&UART0_BASE), Some(&(1, 88)));
         b.write32(UART0_CTRL, 0x83).unwrap(); assert!(b.uart_irq()); assert_eq!(b.read32(UART0_BASE), Ok(65));
         b.write32(UART0_CTRL, 0x87).unwrap(); assert!(!b.uart_irq()); b.write32(UART0_CTRL, 0x83).unwrap(); assert_eq!(b.periph.uart0.rx_pending(), 0);
         b.write32(UART0_BASE, 67).unwrap(); b.write32(UART0_CTRL, 0x8b).unwrap(); b.write32(UART0_CTRL, 0x83).unwrap();
         assert_eq!(b.periph.uart0.tx_out, b"C"); assert_eq!(b.read32(UART0_BASE + 0xc), Ok(0)); assert_eq!(b.uart_baud(), Some(57636));
         b.write32(UART0_CTRL, 0x183).unwrap(); assert_eq!(b.uart_baud(), Some(28818));
-        b.write32(UART0_BASE + 0x88, 1 << 25).unwrap(); assert_eq!(b.write32(UART0_BASE, 68), Err(Fault::Prohibited));
-        assert_eq!(b.write32(UART0_CTRL, 0xa3), Err(Fault::Prohibited)); assert_eq!(b.write32(UART0_MEM, 12), Err(Fault::Prohibited));
+        b.write32(UART0_BASE + 0x88, 1 << 25).unwrap(); assert_eq!(b.write32(UART0_BASE, 68), Ok(())); assert_eq!(b.periph.uart0.tx_out, b"C");
+        assert_eq!(b.write32(UART0_CTRL, 0xa3), Ok(())); assert_eq!(b.uart_baud(), Some(28818)); // unsupported value dropped
+        assert_eq!(b.write32(UART0_MEM, 12), Ok(())); assert!(b.refused.contains_key(&UART0_CTRL) && b.refused.contains_key(&UART0_MEM));
     }
     #[test]
     fn instruction_fetch_requires_the_real_length_across_mmu_boundaries() {
@@ -802,7 +919,7 @@ mod tests {
         assert_eq!(b.read32(MATRIX_BASE + 0x2a8), Ok(1 << 9));
         b.write32(MATRIX_BASE + 0x24, 0x211).unwrap();
         assert_eq!(b.read32(MATRIX_BASE + 0x24), Ok(0x211)); assert_eq!(b.read32(MATRIX_BASE + 0x824), Ok(0));
-        assert_eq!(b.read8(MATRIX_BASE), Err(Fault::Misaligned)); assert_eq!(b.read32(MATRIX_BASE + 0x2a4), Err(Fault::Unmapped));
+        assert_eq!(b.read8(MATRIX_BASE), Err(Fault::Misaligned)); assert_eq!(b.read32(MATRIX_BASE + 0x2a4), Ok(0)); assert!(b.unmodelled.contains_key(&(MATRIX_BASE + 0x2a4)));
         assert_eq!(b.read32(RESET_CAUSE0), Ok(2)); b.write32(RESET_CAUSE0, 1 << 30).unwrap();
         assert_eq!(b.read32(RESET_CAUSE0), Ok(0)); assert_eq!(b.read32(RESET_CAUSE1), Ok(2));
     }

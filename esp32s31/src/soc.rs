@@ -553,10 +553,17 @@ impl esp_soc::SocBus for SocBus {
     }
 
     fn report(&self) -> String {
+        let u = &self.inner.unmodelled;
+        let list: Vec<String> = u.iter().take(48).map(|(a, v)| format!("{a:#010x}={v:#x}")).collect();
         format!(
-            "esp32s31: cycles={} flash={}KiB CLI Machine path (ROM boot + --boot app MMU map)",
+            "esp32s31: cycles={} flash={}KiB CLI Machine path (ROM boot + --boot app MMU map)\nesp32s31: {} unmodelled peripheral registers used as storage{}{}\nesp32s31: {} peripheral registers whose model refused an access (dropped; last value written): {}",
             self.cycles,
-            self.flash.len() / 1024
+            self.flash.len() / 1024,
+            u.len(),
+            if u.is_empty() { "" } else { ": " },
+            list.join(" "),
+            self.inner.refused.len(),
+            self.inner.refused.iter().take(48).map(|(a, (n, v))| format!("{a:#010x}x{n}(last write {v:#x})")).collect::<Vec<_>>().join(" ")
         )
     }
 }
@@ -665,6 +672,8 @@ impl Bus for SocBus {
             self.inner.analog.master_enabled() && self.inner.clocks.modem_on(),
         );
         self.inner.clocks.advance_calibration(cycles);
+        esp_periph::Device::tick(&mut self.inner.usb_otg, u64::from(cycles));
+        if self.inner.usb_otg.pending() { self.inner.run_usb_otg(); }
         // Machine time drives the RTC domains (timer + calibration) that were formerly opt-in:
         // TIMG0 RTC_CALI counter both count from the modeled source rates.
         self.inner.rtc_timer.advance_cpu_cycles(cycles as u64, hz, self.inner.clocks.rtc_slow_hz());
