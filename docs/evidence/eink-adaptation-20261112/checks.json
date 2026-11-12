@@ -1,0 +1,83 @@
+{
+  "baseline": "7f0498df83fb48bbc62816eac5f276baf4e00a5e",
+  "candidateRustSource": "2891d72c7efeebbb4e82be62ea2d494e7effb444",
+  "productionWasm": {
+    "bytes": 5568210,
+    "sha256": "8d8ccce696666eeb7a355cdbe15fd398eaec9ddb9ae9ade85544d91639b4fb20"
+  },
+  "scope": [
+    "PaperS3 official UserDemo v0.5",
+    "PaperMono and PaperMono-Lite official UserDemo 1.2.0",
+    "Ordinary INK4 official 2.0.53"
+  ],
+  "checks": {
+    "rust": {
+      "command": "ESP32SIM_ROM_DIR=<complete ROM directory> cargo +stable test --release --workspace -- --include-ignored --skip external_",
+      "groups": 171,
+      "passed": 1957,
+      "failed": 0
+    },
+    "clippy": [
+      {
+        "command": "cargo +stable clippy --workspace --all-targets -- -D warnings",
+        "passed": true
+      },
+      {
+        "command": "cargo +stable clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+        "passed": true
+      }
+    ],
+    "platform": {
+      "command": "node --test tools/platform-*-test.mjs",
+      "passed": 387,
+      "failed": 0
+    },
+    "productionBuild": {
+      "command": "tools/wasm-build.sh",
+      "passed": true,
+      "dwarfAbsent": true,
+      "nameRetained": true
+    },
+    "nativeBuild": {
+      "command": "cargo +stable build --release --locked --bin esp32sim --bin esp32sim-c3 --bin esp32sim-c6",
+      "passed": true
+    },
+    "goldensRegenerated": false,
+    "browser": "Real headless INK4 workbench and mini TF persistence, recording/replay and automatic provisioning with actual OTA response; task-owned sessions closed. See product receipts."
+  },
+  "productEvidence": {
+    "papers3": [
+      "../../platform/evidence/papers3-factory-tf/README.md",
+      "../../platform/evidence/papers3-rtc/factory-clock-pass.json",
+      "../../platform/evidence/papers3-rtc/factory-regression.json",
+      "../../platform/papers3-display.md"
+    ],
+    "papermonoAndLite": [
+      "../../platform/evidence/papermono-imu/README.md",
+      "../../platform/evidence/papermono-imu/core-regression.json",
+      "../../platform/evidence/papermono-network-display/README.md"
+    ],
+    "ink4": [
+      "../../platform/evidence/ink4-tf/README.md",
+      "../../platform/evidence/ink4-display/README.md",
+      "../../platform/evidence/ink4-network/README.md"
+    ]
+  },
+  "negativeResults": [
+    "Initial BM8563 hardware I2C read never released the calendar lock: final GPIO STOP now reaches attached physical devices; repeated START does not act as STOP.",
+    "INK4 old Mode 2 only toggled face metadata and retained stale RAM; actual refresh-completion RAM swap fixes stale title and page.",
+    "INK4 provisioning initially rejected official /reboot success-page POST; supports explicit literal /exit or /reboot with regression coverage.",
+    "PaperMono full-size BMP guest stack overflow, network scan failure and partial-refresh expectation correction retained in its receipt; no hardware cause claimed.",
+    "EDCBook 3.1.2 download returned BURN_CAPTCHA_INVALID. Existing deployed OCR flow timed out after 20000 ms without an image; PaperS3 EDCBook boot/read/network untested.",
+    "Local-origin public relay denied CORS; configured Pages origin returned an allowed preflight and created a session. Product Internet acceptance uses the explicitly configured local helper.",
+    "Initial Clippy findings in test chunk iteration and BCD expression parentheses were fixed; both complete Clippy checks passed afterward."
+  ],
+  "privacy": "Only fixed public inputs, source revisions, hashes, numbers, commands and limitations retained. No raw UART, account activation code, helper tokens, browser storage, process inventories or local identity paths committed.",
+  "limitations": [
+    "Digital framebuffer/controller behavior is not physical optical calibration.",
+    "PaperS3 networking verified only scan; EDCBook download unavailable.",
+    "Mono SNTP does not implement RX8130 autonomous timekeeping or prove HTTP.",
+    "INK4 response does not prove account activation or voice/chat.",
+    "Checks use clean integration source; existing unrelated Dial/NFC/relay edits on main are preserved separately."
+  ]
+}

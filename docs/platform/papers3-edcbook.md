@@ -2,7 +2,7 @@
 
 [EDCBook 官网](https://edcbook.cn/)推荐的 3.1.2 在官方 M5Burner API 中是 COMMUNITY 项目 `1897200000000000015` 的 PUBLIC/PUBLISHED 版本 `2113660506860756993`，文件名 `edcbook_20261023.bin`，发布时间 `2026-10-24T12:43:07+08:00`。项目和版本的 `supportedDevices` 均明确列出 `PAPER_S3` 与 `PAPER_MONO`；详见[元数据来源和下载结果](evidence/papers3-edcbook/sources-and-blocker.json)。这说明同一镜像适用于两个型号，不能把 PaperMono 的运行结论继承给 PaperS3。
 
-固定镜像为 16 MiB，历史下载 SHA-256 为 `06eb3b595fc47bc5d35f760a16cdc5795ea8c0fad6295bcee8db5268cf906986`（[原有收据](../evidence/s3-light-sleep-edcbook/receipt.json)）；官方元数据未提供发布方 SHA。2026-11-12 访问该固定下载地址返回 HTTP 400 / `BURN_CAPTCHA_INVALID`，本轮未取得镜像。**PaperS3 的 EDCBook 启动、阅读、翻页、局刷和联网均尚未验收。** 官方 v0.5 的黑白显示、TF 和 RTC 结果只属于 v0.5。
+固定镜像为 16 MiB，历史下载 SHA-256 为 `06eb3b595fc47bc5d35f760a16cdc5795ea8c0fad6295bcee8db5268cf906986`（[原有收据](../evidence/s3-light-sleep-edcbook/receipt.json)）；官方元数据未提供发布方 SHA。2026-11-12 访问该固定下载地址返回 HTTP 400 / `BURN_CAPTCHA_INVALID`，随后按现有站点接口调用 OCR，识图步骤在 20 秒上限内未完成（`CAPTCHA_TIMEOUT`），仍未取得镜像。**PaperS3 的 EDCBook 启动、阅读、翻页、局刷和联网均尚未验收。** 官方 v0.5 的黑白显示、TF 和 RTC 结果只属于 v0.5。
 
 `tools/probe-papers3-edcbook.mjs` 使用真实页面 worker/WASM、PaperS3 板型和隔离 Flash/TF 存储，先核对镜像 SHA，再从 ROM 启动。镜像可通过调用方提供的本地文件输入；原始远程出处仍须显式传入：
 
@@ -10,7 +10,7 @@
 node tools/probe-papers3-edcbook.mjs \
   --url 'https://burner.m5stack.com/api/v1/firmwares/1897200000000000015/versions/2113660506860756993/download' \
   --sha256 06eb3b595fc47bc5d35f760a16cdc5795ea8c0fad6295bcee8db5268cf906986 \
-  --file <legally-downloaded-local-image> \
+  --file <local-image.bin> \
   --output <local-output-directory>
 ```
 

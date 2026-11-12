@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1",
-  "revision": "2026-11-03-device-release-sync",
+  "revision": "2026-11-12-eink-adaptation",
   "items": [
     {
       "id": "m5stack-k138-v11-official-factory",
@@ -286,10 +286,12 @@
       ],
       "limitations": [
         "M5Stack 官方完整镜像；从官方 CDN 直接加载，可缓存到当前浏览器，本站服务器与仓库不保存二进制。",
-        "已在官方 User Demo 1.2.0 验证 ROM 启动、480×800 墨水屏、A/B 调节亮度、触摸加亮与静音按钮切换。",
+        "官方 User Demo 1.2.0 已验证启动、A/B 调节亮度、触摸加亮/静音；两型号四灰阶、方向及局刷后恢复通过全部 384,000 像素比较。",
+        "两型号均通过实际 Wi-Fi 关联、DHCP 和双向 SNTP，原固件显示 TIME UPDATED；官方此流程没有 HTTP 路径，未作 HTTP 验收。",
+        "120×200 BMP 放大显示通过；480×800 大 BMP 曾触发客体栈溢出，该次构建身份不确定，兼容性仍待排查。数字灰阶不代表实物反射率、温度或残影标定。",
         "SSD1677、FT6336G、M5PM1/M5IOE1 为所需寄存器子集；不代表任意固件或完整时序兼容。",
-        "完整版通过 ST25R3916 识别 Pro，无卡扫描显示 NO CARD；SX1262 数字报文已验证发送 Hello! 与显式虚拟对端 PEER 接收。Lite 不含 NFC/LoRa；不模拟真实射频传播，尚不支持 NFC 卡片交互、Wi-Fi 网络、音频输出及深睡唤醒。",
-        "RTC 目前仅寄存器存储，没有真实计时；BMI270 官方初始化尚未通过，不能据仪表盘默认数值认定传感器正常。",
+        "完整版通过 ST25R3916 识别 Pro，无卡扫描显示 NO CARD；SX1262 数字报文已验证发送 Hello! 与显式虚拟对端 PEER 接收。Lite 不含 NFC/LoRa；不模拟真实射频传播，尚不支持 NFC 卡片交互、音频输出及深睡唤醒。",
+        "BMI270 已分别在完整版和 Lite 官方 1.2.0 验证首次初始化、姿态/角速度读数与恢复；采样由客体时钟推进，虚拟轴不代表实机安装方向。RX8130 RTC 仍仅寄存器存储，没有日历计时。",
         "未连接真实硬件或执行刷机；实机行为仍需验证。"
       ],
       "revision": "1.2.0",
@@ -363,8 +365,8 @@
       ],
       "limitations": [
         "固定官方 UserDemo v0.5 已验证完整 ROM 启动、真实测试界面、GT911 两次点击切换蜂鸣器图标、扫描按钮与显式 BMI270 虚拟样本。",
-        "屏幕目前是黑白数字模型；16 级灰阶及局刷边缘未校准，蜂鸣器图标响应不代表声音。BM8563 RTC、TF、PMS150G 电源按键和真实网络尚未实现。",
-        "GT911 仅单点默认扫描/读取/清除；多点、配置、休眠和手势未验证。IMU 未校准实体坐标，不随 3D 旋转。未实机验证。"
+        "屏幕目前是黑白数字模型；16 级灰阶及局刷边缘未校准，蜂鸣器图标响应不代表声音。已验证 BM8563 日历随客体时间递增、官方 TF 写文件及复位/重载保存；RTC 闹钟/唤醒、PMS150G 电源按键及完整网络流程尚未验收。",
+        "GT911 仅单点默认扫描/读取/清除；多点、配置、休眠和手势未验证。IMU 使用虚拟轴，3D 姿态联动默认关闭，未校准实体安装方向。未实机验证。"
       ],
       "publisherGroup": "官方",
       "revision": "v0.5",
@@ -375,6 +377,56 @@
       "storage": "remote-links-only",
       "compatibility": "partial",
       "publicationUrl": "https://docs.m5stack.com/en/core/PaperS3"
+    },
+    {
+      "id": "papers3-edcbook",
+      "name": "PaperS3 EDC Book · 3.1.2",
+      "publisher": "EDC Book",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-c139"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000015/versions/2113660506860756993/download",
+        "sha256": "06eb3b595fc47bc5d35f760a16cdc5795ea8c0fad6295bcee8db5268cf906986"
+      },
+      "revision": "3.1.2",
+      "version": "3.1.2",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "compatibility": "unverified",
+      "publicationUrl": "https://edcbook.cn/",
+      "sources": [
+        {
+          "title": "EDC Book 官网：PaperS3 支持与版本说明",
+          "url": "https://edcbook.cn/",
+          "checkedAt": "2026-11-12"
+        },
+        {
+          "title": "M5Burner 社区项目：明确列出 PAPER_S3 与 PAPER_MONO",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000015",
+          "checkedAt": "2026-11-12"
+        },
+        {
+          "title": "3.1.2 固定版本与支持设备映射",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000015/versions?scope=PUBLIC",
+          "checkedAt": "2026-11-12"
+        }
+      ],
+      "limitations": [
+        "EDC Book 原发布项目的 3.1.2 完整镜像；发布元信息明确支持 PaperS3，SHA-256 来自同一固定镜像的既有审计，发布方未提供摘要。",
+        "PaperS3 尚未完成此固件的启动、阅读、翻页、灰阶及联网验收；PaperMono 的历史通过结果不能作为 PaperS3 的兼容性结论。",
+        "本轮下载需要 M5Burner 验证，站点现有 OCR 处理超时，未取得镜像。可完成官方下载验证后导入同版本文件；不修改固件或跳过芯片、容量与 hash 校验。"
+      ],
+      "downloadAccess": {
+        "sourceUrl": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000015/versions/2113660506860756993/download",
+        "officialUrl": "https://burner.m5stack.com/firmware/1897200000000000015",
+        "checkedAt": "2026-11-12T12:24:34Z",
+        "status": "verification-required",
+        "providerCode": "BURN_CAPTCHA_INVALID",
+        "httpStatus": 400
+      }
     },
     {
       "id": "m5stack-k131-factory-reference",
@@ -7345,7 +7397,7 @@
       ],
       "limitations": [
         "官方完整镜像已核对芯片、分区与镜像校验；2.0.53 已在模拟器启动至主页，未实机刷写。",
-        "在普通 INK4 部分板级模型上尝试运行；电量计、RTC、IMU、音频、无线网络与 4G 尚未实现。",
+        "普通 INK4 的主页、触摸、连续局刷、TF、录放及经网络助手自动配网/OTA 响应已验证；账号激活、语音、电量计、RTC、IMU、蓝牙及 4G 未完成。",
         "发布 API 未提供 SHA-256，当前 hash 来自一次 RAM 内审计；后续新版本仅报告候选，复核 hash 前保留此版本。"
       ],
       "integrityNotes": {
