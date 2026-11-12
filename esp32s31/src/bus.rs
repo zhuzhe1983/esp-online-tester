@@ -86,9 +86,10 @@ impl esp_periph::sdmmc::SdmmcMemory for Dma2dMem<'_> {
     }
     fn write(&mut self, addr: u32, data: &[u8]) -> Result<(), Fault> {
         if Cache::is_memory(addr) {
-            self.cache.dma_access(addr, Some(data), &mut [])?;
+            // A write that faults part-way has still changed the pages before the fault.
+            let r = self.cache.dma_access(addr, Some(data), &mut []);
             bump_psram_range(self.mem.ver, self.cache, addr, data.len());
-            return Ok(());
+            return r;
         }
         esp_periph::sdmmc::SdmmcMemory::write(&mut self.mem, addr, data)
     }
@@ -583,7 +584,7 @@ impl S31Bus {
     /// code `fetch` would read. Memory: its pages. The cache windows: the MMU, L1-enable and
     /// cache clock registers (`Cache::affects_fetch`). The flash window also: an SPI1 command that may have changed the array
     /// (`Mspi::flash_generation`), and any write that changes whether the flash is readable. Everything: the APM and PMS, which gate fetches
-    /// everywhere. PSRAM is not versioned (`code_page`).
+    /// everywhere. PSRAM is versioned per physical page through the MMU (`bump_psram_range`).
     #[inline]
     fn note_code_write(&mut self, address: u32, bytes: usize, (flash_fetch, flash_generation): (bool, u64)) {
         if (SRAM_BASE..ROM_BASE).contains(&address) || (LP_BASE..LP_BASE + LP_SIZE as u32).contains(&address) { bump_code(&mut self.code_ver, address, bytes); return; }
@@ -1586,4 +1587,18 @@ mod tests {
         b.reserve(addr); assert_eq!(b.write32(0, 0), Err(Fault::Unmapped)); assert!(b.reservation_held(addr));
     }
 
+    #[test]
+    fn a_partial_dma_write_to_psram_still_moves_code_versions() {
+        use crate::cache::{PSRAM_MMU, PSRAM_VADDR};
+        let mut b = S31Bus::new(); b.set_psram_size(2 * 65536).unwrap();
+        b.cache.write_register(PSRAM_MMU + 0x380, 0).unwrap(); b.cache.write_register(PSRAM_MMU + 0x37c, 0xc00).unwrap(); // vpage 0 -> ppage 0; vpage 1 unmapped
+        let a = PSRAM_VADDR + 65536 - 4;
+        let phys = b.cache.psram_phys(a).unwrap();
+        let before = b.code_ver[PSRAM_CODE + (phys >> CODE_PAGE_SHIFT)];
+        let r = { let mut m = Dma2dMem { mem: UsbDma { sram: &mut b.sram, lp: &mut b.lp, ver: &mut b.code_ver }, cache: &mut b.cache };
+            esp_periph::sdmmc::SdmmcMemory::write(&mut m, a, &[0x13; 8]) };
+        assert!(r.is_err());
+        assert_eq!(b.cache.psram_bytes_mut()[phys], 0x13, "the first page was written");
+        assert_ne!(b.code_ver[PSRAM_CODE + (phys >> CODE_PAGE_SHIFT)], before, "a written page must move its version");
+    }
 }
