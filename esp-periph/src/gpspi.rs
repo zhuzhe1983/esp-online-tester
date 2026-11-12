@@ -34,11 +34,13 @@ pub struct GpSpi { pub regs: RegRam, pub w: [u32; 16], pub int_raw: u32, pub int
                    /// the controller's number in log lines: 2 (SPI2 / FSPI, the default) or 3 (the S3's SPI3 / HSPI)
                    pub host: u8,
                    /// bit length of a MOSI phase that DMA must supply, until the bus completes it
-                   pub dma_tx_pending: Option<u32>, pending: Option<GpSpiTransfer> }
+                   pub dma_tx_pending: Option<u32>, pending: Option<GpSpiTransfer>,
+                   /// MISO bytes of a finished transfer with DMA_RX_ENA: the bus scatters them through GDMA.
+                   pub dma_rx: Option<Vec<u8>> }
 impl Default for GpSpi { fn default() -> Self { Self::new() } }
 
 impl GpSpi {
-    pub fn new() -> Self { GpSpi { regs: RegRam::new(), w: [0; 16], int_raw: 0, int_ena: 0, transfers: 0, log: false, host: 2, dma_tx_pending: None, pending: None } }
+    pub fn new() -> Self { GpSpi { regs: RegRam::new(), w: [0; 16], int_raw: 0, int_ena: 0, transfers: 0, log: false, host: 2, dma_tx_pending: None, pending: None, dma_rx: None } }
     /// The same block as GP-SPI `host` (2 or 3), for its log lines.
     pub fn with_host(host: u8) -> Self { GpSpi { host, ..Self::new() } }
     pub fn irq(&self) -> bool { self.int_raw & self.int_ena != 0 }
@@ -168,9 +170,11 @@ impl GpSpi {
     /// Complete a transfer with the board's MISO response.
     pub fn finish_transfer(&mut self, transfer: GpSpiTransfer, rx: &[u8]) {
         if transfer.rx_len != 0 {
-            fill_spi_w!(self.w, transfer.rx_word_base, transfer.rx_len, rx);
+            // DMA_CONF (0x30) bit 27 DMA_RX_ENA: MISO goes to the GDMA IN channel, not W0..W15.
+            if self.regs.read(0x30) & (1 << 27) != 0 { self.dma_rx = Some(rx[..transfer.rx_len.min(rx.len())].to_vec()); }
+            else { fill_spi_w!(self.w, transfer.rx_word_base, transfer.rx_len, rx); }
         }
-        if self.log { eprintln!("[spi{}] transfer tx={} rx={}: {:02x?}", self.host, transfer.tx.len(), transfer.rx_len, &transfer.tx[..transfer.tx.len().min(16)]); }
+        if self.log { eprintln!("[spi{}] transfer tx={} rx={}: {:02x?} (dma_conf {:#x}, user {:#x})", self.host, transfer.tx.len(), transfer.rx_len, &transfer.tx[..transfer.tx.len().min(16)], self.regs.read(0x30), self.regs.read(0x10)); }
         self.transfers += 1;
         self.int_raw |= 1 << 12;                                          // TRANS_DONE
     }
