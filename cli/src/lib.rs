@@ -634,7 +634,7 @@ fn setup_c61(o: &Opts) -> esp32c61::Machine {
     m.bus.attach_board_devices();
     m.bus.set_psram_size(o.psram_mb.unwrap_or(8) << 20).unwrap_or_else(|e| usage_error(&e));
     if let Some(spec) = &o.wifi {
-        let (cfg, nat) = wifi_config(spec, &o.net, m.bus.debug.has("net"));
+        let (cfg, nat) = wifi_config(spec, &o.net, m.bus.debug.has("net"), &o.hostfwd);
         m.bus.attach_wifi(cfg, nat).unwrap_or_else(|e| usage_error(&format!("--wifi: {e}")));
     }
     attach_nearby_networks(&mut m.bus.periph.wifi_mac.link, o);

@@ -1,5 +1,7 @@
 # EX248: LL Privacy and the resolving list on the virtual BLE controller (#296)
 
+This is an upstream historical receipt. The product fork retains its existing resolving-list configuration model, validation and reset/scan restrictions; it does not advertise LL Privacy or implement RPA generation/resolution. The capability bits and 10-entry behavior described below were not adopted during the upstream merge.
+
 Base: upstream/main `2718410a`. The final source is the commit containing this receipt.
 Inputs, hashes and the exact commands are in [inputs.json](inputs.json); the checks that ran and
 their results in [checks.json](checks.json).
