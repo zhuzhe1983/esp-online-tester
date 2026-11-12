@@ -1,5 +1,7 @@
 # 普通 Metalio INK4 首批运行支持
 
+当前进展（2026-11-12）：普通 INK4 已通过官方 2.0.53 的 TF 持久化、触摸/按键录制回放、连续局刷与自动联网到真实 OTA 待激活状态。下文按阶段保留早期限制和验证结果；最新范围见文末三项补充。仍为 partial/trial，未实机验证，不适用于 INK4 Plus/S31。
+
 2026-10-27。普通 INK4 使用独立 `metalio-ink4` 板型；官方 2.0.53 已从远程地址下载、校验、通过 S3 ROM 启动，在实际浏览器 WASM 中显示 480×800 主页，并通过触摸进入设置。目录从 unavailable 改为 partial，官方稳定版保持默认；两条完整官方镜像均可确认后尝试运行。INK4 Plus 的 S31 仍保持独立、不可运行，不使用此板型代替。
 
 依据是 [固定厂家源码](https://github.com/CloudZao/Metalio-E-INK4/tree/d12f481f4a42420634bb56a928f3959a977367d4) 的 config.h、IOExpander.hpp、metalio_touch.c、显示驱动和 LUT，及 TI TCA9555 SCPS200E、SSD1677 rev1.0、Espressif CST816S component 1.0.6。实际抓取 URL、时间与 hash 见 [来源收据](evidence/ink4-runtime/sources.json)。
@@ -42,3 +44,9 @@ CPU 对照：相对 df198a74 同机 release 二进制，S3/C3/C6 hello各交替�
 ## 2026-11-12：连续局刷旧画面修正
 
 已修复 SSD1677 Mode 2 未推进旧图 RAM 的遗漏。同一官方 2.0.53 在实际 WASM 中，设置页顶部的旧字被擦除，按 Home 后恢复时钟和六个应用图标。此前仅凭帧 hash 改变，漏掉了设置内容仍残留的情况；专属探针现直接比较主页主体像素。修复遵循固件 SPI RAM 写入和刷新，不由前端换页。默认 ping-pong 仍是支持面板的模型假设，真实 OTP 未读取；光学灰阶、温度与物理残影未校准。详见 [显示修正证据](evidence/ink4-display/README.md)。
+
+## 2026-11-12：自动联网与真实 OTA 待激活状态
+
+固定官方 2.0.53 已通过本地网络助手，在 Node WASM 与无头 Chromium 中自动完成配网、固件重启、STA 获取地址与真实外部 TCP 通信。固件解析 OTA 响应后显示待激活主页，未操作账户激活。修复依据是其成功页明确声明的 `POST /reboot`；旧流程只识别 `/exit`，曾保存凭据后停止。现在按实际页面完成，不跳过固件重启，也不伪造联网结果。测试浏览器已关闭。详见 [联网证据与复现](evidence/ink4-network/README.md)。
+
+此结果只覆盖配置正确的本地助手和固定版本，公共 relay 的可用性、账户激活后语音/对话、音频、BLE、4G、RF 与物理硬件仍未验证。官方镜像、默认顺序、trial 标记和 PSRAM 测试配置均保持原样。

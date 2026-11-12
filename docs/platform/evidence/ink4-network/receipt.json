@@ -1,0 +1,122 @@
+{
+  "date": "2026-11-12",
+  "productId": "metalio-ink4",
+  "board": "metalio-ink4",
+  "firmwareVersion": "2.0.53",
+  "firmwareUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/eca923cb-7e07-45d6-9e83-0aefe6e48a46.bin",
+  "firmwareSha256": "1d02cba522fe1aec5b2c160973c6a15d89cbf0e13a5794a42faf6e3f15587919",
+  "wasmSha256": "8d8ccce696666eeb7a355cdbe15fd398eaec9ddb9ae9ade85544d91639b4fb20",
+  "runtimeNetworkRevision": "b6d133dd",
+  "localCherryPick": "9409a71f",
+  "physicalValidation": false,
+  "configuration": {
+    "networkMode": "local-helper",
+    "helperOrigin": "same origin as browser platform page",
+    "autoProvision": true,
+    "router": "platform default virtual router",
+    "manualRebootRequestInAcceptance": false,
+    "accountActivationPerformed": false
+  },
+  "negativeBaseline": {
+    "guestSeconds": 45.02,
+    "connection": "connected",
+    "provisioning": "error",
+    "errorCode": "PROVISIONING_UNSUPPORTED",
+    "explanation": "Old completion recognizer only accepted POST /exit. INK4 success page explicitly calls POST /reboot; credentials were saved but automatic completion stopped. The initial observation probe did not assert this condition, so its null failure field is not acceptance.",
+    "rawReceiptSha256": "08052846773947077b4f21b01665b7172581c9b954ea1a0b1e08e32ec4de42e1"
+  },
+  "firmwareSuccessPage": {
+    "status": 200,
+    "completionExpression": "fetch('/reboot', { method: 'POST' })",
+    "bodySha256": "3cac165a0bffde3ec3102146b251557d1c59be2f332609275e3852bc71f3d98b",
+    "manualDiagnostic": {
+      "postRebootStatus": 200,
+      "result": "Guest rebooted, associated and parsed a real OTA response; old provisioning status remained error. Diagnostic only, not automatic acceptance.",
+      "rawReceiptSha256": "d6236fc2f7ccf9616b6d9f903dd547a5a3873a9af998178d620a0bc99a6ddebc"
+    }
+  },
+  "nodeAcceptance": {
+    "failure": null,
+    "stats": {
+      "time": 30,
+      "insns": 1810419033,
+      "frames": 13
+    },
+    "connection": "connected",
+    "provisioning": "connected",
+    "staLeaseReady": true,
+    "staCounters": {
+      "framesIn": 44,
+      "framesOut": 44,
+      "tcpOpened": 6,
+      "tcpRefused": 0,
+      "udpFlows": 0,
+      "bytesOut": 3230,
+      "bytesIn": 1584
+    },
+    "lastError": null,
+    "markers": {
+      "otaResponseParsed": true,
+      "activationRequired": true
+    },
+    "frame": {
+      "name": "network",
+      "guestSeconds": 30.019641016666668,
+      "frameNumber": 13,
+      "blackPixels": 39916,
+      "sha256": "7bc22c9f268fcc2676e87a8f10e68f93fce67bc0e6b448c4765f773e83bf8ceb",
+      "status": "running"
+    },
+    "rawReceiptSha256": "4e05d78c88494a91a58ecd58a570919e362ea3d9ac8ebb1069aed036dfb8f956"
+  },
+  "browserAcceptance": {
+    "engine": "Chromium, headless, wrapper-managed isolated session",
+    "wasmSha256": "8d8ccce696666eeb7a355cdbe15fd398eaec9ddb9ae9ade85544d91639b4fb20",
+    "stats": {
+      "time": 33.74,
+      "insns": 1902843832,
+      "frames": 12
+    },
+    "status": "paused",
+    "connection": "connected",
+    "provisioning": "connected",
+    "staLeaseReady": true,
+    "staCounters": {
+      "framesIn": 48,
+      "framesOut": 50,
+      "tcpOpened": 7,
+      "tcpRefused": 0,
+      "udpFlows": 0,
+      "bytesOut": 3542,
+      "bytesIn": 1765
+    },
+    "lastError": null,
+    "markers": {
+      "otaResponseParsed": true,
+      "activationRequired": true
+    },
+    "frame": {
+      "format": "png",
+      "width": 480,
+      "height": 800,
+      "frameNumber": 12
+    },
+    "framePngSha256": "3f5f4725cbc18476daeb560aae7e85389629c98ea63809399ecf7a9c43e8ad1a",
+    "visualInspection": "Actual guest pixels show a clear activation-required title, Wi-Fi icon, clock/date and six home applications, without overlaid old title strokes. Activation text is private and is not reproduced.",
+    "rawReceiptSha256": "b78e4f11dd7d9da38630bf3378f7a1efab1a5826550e9b38ae4fdd22ee0bfba0",
+    "runtimeDisposed": true,
+    "sessionClosed": true,
+    "wrapperListVerifiedAbsent": true
+  },
+  "limitations": [
+    "Real application response was tested through a caller-configured local helper. Public relay availability or arbitrary browser Origins were not qualified.",
+    "Account activation, authenticated voice/chat, audio, BLE, 4G, RF and physical hardware were not validated.",
+    "This does not certify service behavior after the fixed test date or other firmware versions.",
+    "Optical e-paper response and physical PSRAM capacity remain unverified."
+  ],
+  "privacy": {
+    "retained": "Hashes, protocol endpoint path, statuses, counters, fixed firmware identity and numeric frame receipts.",
+    "omitted": "Helper token/endpoint, full success HTML, serial logs, device/network identifiers, activation code and screenshot bytes. Raw observations remain only in ignored output/.",
+    "effect": "No activation secret or identity can be recovered from this receipt; exact raw artifacts can be hash-checked locally."
+  }
+}
