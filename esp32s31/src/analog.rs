@@ -76,6 +76,14 @@ impl Analog {
     fn phy_transaction(&mut self, host: usize, value: u32) {
         self.phy.write(host as u32, value);
         self.ctrl[host] = self.phy.read(host as u32, value & 0x0100_ffff, |key| match key & 0xffff { 0x0063 => &0x5b, k if k & 0xff == 0x63 => &0xff, _ => &0 });
+        // The RF PLL's done flags in block 0x62, as `phy_i2c_readReg_Mask(block, host, reg, msb, lsb)`
+        // reads them: register 7 bit 1 (`phy_wait_rfpll_cal_end`, "pll_cal exceeds 2ms") and
+        // register 14 bit 7 (`phy_rfpll_chgp_cal`, "chgp_cal no done"). The ROM polls them on the
+        // calibration path that reuses stored data (a boot after the first); calibrations finish at
+        // once here, so a read shows them set.
+        if value & (1 << 24) == 0 {
+            match value & 0xffff { 0x0762 => self.ctrl[host] |= 0x02 << 16, 0x0e62 => self.ctrl[host] |= 0x80 << 16, _ => {} }
+        }
         self.transactions += 1;
     }
     pub fn read(&self, address: u32, parent_clock: bool) -> Result<u32, Fault> {
@@ -150,6 +158,9 @@ mod tests {
         let mut a = super::Analog::default(); a.write(LP_CLK, 4, true).unwrap();
         // phy_wait_i2c_sdm_stable: block 0x63, register 0, through host 0
         a.write(super::BASE, 0x0000_0063, true).unwrap(); assert_eq!(a.read(super::BASE, true), Ok(0x5b_0063));
+        // phy_wait_rfpll_cal_end: block 0x62 register 7 bit 1; phy_rfpll_chgp_cal: register 14 bit 7
+        a.write(super::BASE, 0x0000_0762, true).unwrap(); assert_eq!(a.read(super::BASE, true).map(|v| v >> 16 & 0x02), Ok(0x02));
+        a.write(super::BASE, 0x0000_0e62, true).unwrap(); assert_eq!(a.read(super::BASE, true).map(|v| v >> 16 & 0x80), Ok(0x80));
         a.write(super::BASE, 0x0000_0163, true).unwrap(); assert_eq!(a.read(super::BASE, true), Ok(0xff_0163));
         a.write(super::BASE, 0x0000_026b, true).unwrap(); assert_eq!(a.read(super::BASE, true), Ok(0x026b));
         a.write(super::BASE, 0x01a5_026b, true).unwrap(); a.write(super::BASE, 0x026b, true).unwrap();
