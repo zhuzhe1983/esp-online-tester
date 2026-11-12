@@ -7,7 +7,7 @@
 //! `PATH` is (`std::env::split_paths`: `:`, or `;` on Windows, where `:` is in every path).
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
-use riscv_rv32::decode::{decode, decode_for, Op, ISA_ZB, ISA_ZC};
+use riscv_rv32::decode::{decode, decode_for, Op, ISA_PIE, ISA_ZB, ISA_ZC};
 use riscv_rv32::disasm;
 use riscv_rv32::state::{MISA_RV32IMAC, MISA_RV32IMAFC};
 
@@ -57,7 +57,8 @@ fn read(file: &Path) -> String { std::fs::read_to_string(file).unwrap_or_else(|e
 
 /// Every instruction in the listings must decode, for a core whose `misa` is `misa`, to objdump's
 /// mnemonic and operands, and every `.insn` word objdump could not decode must be illegal. Xesppie
-/// (`esp.*`) is not modelled and is counted, not compared. Returns the case count.
+/// (`esp.*`) is compared on a core with `ISA_PIE` where the decoder models the form; the forms it
+/// leaves illegal, and every `esp.*` on other cores, are counted, not compared. Returns the case count.
 fn check(files: &[PathBuf], misa: u32) -> usize {
     let (mut total, mut bad, mut unknown, mut xesppie) = (0usize, 0usize, 0usize, 0usize);
     let mut by_mnemonic: BTreeMap<String, (usize, usize, String)> = BTreeMap::new();
@@ -65,8 +66,8 @@ fn check(files: &[PathBuf], misa: u32) -> usize {
         let text = read(file);
         for Line { addr, hex, bytes, len, theirs } in lines(&text) {
             if theirs.is_empty() { continue; }
-            if theirs.starts_with("esp.") { xesppie += 1; continue; }
             let insn = decode_for(misa, addr, bytes);
+            if theirs.starts_with("esp.") && (misa & ISA_PIE == 0 || insn.is_illegal()) { xesppie += 1; continue; }
             if theirs.starts_with(".insn") {
                 unknown += 1;
                 let e = by_mnemonic.entry(".insn".to_string()).or_insert((0, 0, String::new()));
@@ -118,7 +119,7 @@ fn is_f_text(m: &str) -> bool {
 
 const C3_C6: &[&str] = &["rom.dis", "hello_world.dis", "c6-rom.dis", "c6-hello_world.dis"];
 const P4: &[&str] = &["p4-rom.dis", "p4-idf.dis", "rv32f.dis"];
-const S31: u32 = MISA_RV32IMAFC | ISA_ZB | ISA_ZC;
+const S31: u32 = MISA_RV32IMAFC | ISA_ZB | ISA_ZC | ISA_PIE;
 
 fn corpus(names: &[&str]) -> Vec<PathBuf> {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/corpus");
@@ -195,6 +196,40 @@ fn cores_without_zb_zc_reject_them_and_older_code_decodes_the_same() {
             let plain = decode_for(MISA_RV32IMAFC, l.addr, l.bytes);
             if !plain.is_illegal() { assert_eq!(decode_for(S31, l.addr, l.bytes), plain, "{:08x} {}", l.addr, l.theirs); }
         }
+    }
+}
+
+/// Every modelled Xespv2p2 form, operand value and sat/rm pair assembled from `pie.S`, decoded as
+/// the ESP32-S31 core; each `esp.*` line of the subset must decode (none skipped), and the
+/// flipped-bit words objdump leaves as `.insn` must be illegal.
+#[test]
+fn s31_pie_decoder_matches_corpus() {
+    let n = check(&corpus(&["pie.dis"]), S31);
+    assert!(n >= 1600, "only {} corpus cases — the corpus file is incomplete", n);
+    let subset = ["esp.vmul.u16", "esp.vmul.u16.ld.incp", "esp.vadd.u16", "esp.vadd.u16.ld.incp", "esp.vsub.u16", "esp.vsub.u8",
+        "esp.vmin.u16", "esp.vcmp.eq.u16", "esp.andq", "esp.orq", "esp.xorq", "esp.zero.q", "esp.vext.u8", "esp.vunzip.8",
+        "esp.vzipt.8", "esp.vunzipt.8", "esp.src.q", "esp.vld.128.ip", "esp.vst.128.ip", "esp.vldbc.16.ip", "esp.ld.128.usar.ip",
+        "esp.movx.w.sar", "esp.movx.r.sar", "esp.movx.w.cfg", "esp.movx.r.cfg", "esp.movi.32.a"];
+    let (mut seen, text) = (std::collections::BTreeSet::new(), read(&corpus(&["pie.dis"])[0]));
+    for l in lines(&text) {
+        let m = l.theirs.split_whitespace().next().unwrap_or("");
+        if subset.contains(&m) { assert!(!decode_for(S31, l.addr, l.bytes).is_illegal(), "{:08x} {}", l.addr, l.theirs); seen.insert(m); }
+    }
+    assert_eq!(seen.len(), subset.len(), "pie.dis lacks some of the subset");
+}
+
+/// Without `ISA_PIE` every PIE word is illegal with its raw bits, and with it the older corpora
+/// decode the same.
+#[test]
+fn cores_without_pie_reject_it_and_older_code_decodes_the_same() {
+    let (without, text) = (S31 & !ISA_PIE, read(&corpus(&["pie.dis"])[0]));
+    for l in lines(&text) {
+        let (with, plain) = (decode_for(S31, l.addr, l.bytes), decode_for(without, l.addr, l.bytes));
+        if with.op.is_pie() { assert_eq!((plain.op, plain.raw, plain.len), (Op::Illegal, with.raw, with.len), "{:08x} {}", l.addr, l.theirs); }
+        else { assert_eq!(plain, with, "{:08x} {}", l.addr, l.theirs); }
+    }
+    for file in [corpus(P4), corpus(C3_C6), corpus(&["zbc.dis"])].concat() {
+        for l in lines(&read(&file)) { assert_eq!(decode_for(S31, l.addr, l.bytes), decode_for(without, l.addr, l.bytes), "{:08x} {}", l.addr, l.theirs); }
     }
 }
 

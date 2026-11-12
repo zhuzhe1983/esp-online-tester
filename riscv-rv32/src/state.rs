@@ -33,6 +33,9 @@ pub mod csr {
     /// ESP32-P4 EXT_ILL: why the last illegal-instruction trap was taken
     /// (ESP-IDF v5.5.3 `components/riscv/vectors.S`, `EXT_ILL_CSR`).
     pub const EXT_ILL: u32 = 0x7F0;
+    /// mext_pie_status: the PIE extension's Off/Initial/Clean/Dirty state in bits 1:0, reset Off
+    /// (ESP32-P4 TRM, Register 2.65; ESP-IDF v5.5.4 riscv/include/riscv/csr_pie.h `CSR_PIE_STATE_REG`).
+    pub const MEXT_PIE_STATUS: u32 = 0x7F2;
 }
 
 /// EXT_ILL reason bits (ESP-IDF v5.5.3 `components/riscv/vectors.S`, `EXT_ILL_RSN_*`).
@@ -69,6 +72,9 @@ pub mod mstatus {
     pub const FS_CLEAN: u32 = 2 << 13;
     pub const FS_DIRTY: u32 = 3 << 13;
     pub const SD: u32 = 1 << 31;
+    /// The custom extensions' combined state, read-only (ESP32-P4 TRM, mstatus.XS): on the S31
+    /// core it mirrors `mext_pie_status` (the hardware loops are not modelled).
+    pub const XS: u32 = 3 << 15;
 }
 
 /// Reset vector: the C3 and the C6 start executing in the mask ROM.
@@ -154,6 +160,13 @@ pub struct Cpu {
     pub boundary_bloom: u64,
     /// CSRs we do not model: read back what was written, like the SoC's unknown registers
     pub csr_other: HashMap<u32, u32>,
+    /// PIE (Xespv2p2, `decode::ISA_PIE`) state: the eight 128-bit Q registers, lane 0 in the low
+    /// bits; SAR (6 bits), SAR_BYTE (4 bits), CFG (ESP32-P4 TRM 4.4.1) and mext_pie_status.STATE.
+    pub q: [u128; 8],
+    pub pie_sar: u32,
+    pub pie_sar_byte: u32,
+    pub pie_cfg: u32,
+    pub pie_state: u32,
 }
 
 impl Default for Cpu {
@@ -168,6 +181,7 @@ impl Cpu {
             mtvec: 0, mepc: 0, mcause: 0, mtval: 0, mie: 0, mscratch: 0,
             insn_count: 0, retired_count: 0, cycle_count: 0, cycle_base: 0, instret_base: 0, waiting: false, irq: None, misa: MISA_RV32IMC, isa_ext: 0,
             has_ext_ill: false, f: [0; 32], fcsr: 0, ext_ill: 0, ext_ill_all_fp: false, user_counters: false, clic: false, clic_std: false, mintthresh: 0, mtvt: 0, hartid: 0, mil: 0, clint_levels: Vec::new(), reservation: None, boundary_bloom: 0, csr_other: HashMap::new(),
+            q: [0; 8], pie_sar: 0, pie_sar_byte: 0, pie_cfg: 0, pie_state: 0,
         }
     }
     pub fn new_rv32imac() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAC; c }
@@ -181,7 +195,8 @@ impl Cpu {
     /// ESP-IDF v5.5.4 riscv/vectors.S:279).
     pub fn new_esp32p4_rev3() -> Self { let mut c = Cpu::new_esp32p4(); c.clic_std = true; c.ext_ill_all_fp = true; c }
     /// S31's RV32IMAFC subset and standard CLIC CSRs (IDF v6.1 soc_caps.h, interrupt_reg.h).
-    /// Custom PIE/HWLOOP instructions remain unimplemented. The SoC supplies its own reset PC.
+    /// A subset of PIE (Xespv2p2, `decode::ISA_PIE`) is modelled; HWLOOP is not. The SoC
+    /// supplies its own reset PC.
     pub fn new_esp32s31() -> Self {
         // IDF v6.1 lazy-FPU applies the FLW/FSW opcode workaround only under
         // SOC_CPU_HAS_FPU_EXT_ILL_BUG && CONFIG_ESP32P4_SELECTS_REV_LESS_V3
@@ -189,7 +204,7 @@ impl Cpu {
         // EXT_ILL.FPU must be set for FP memory ops, as on P4 rev >= 3.
         // Zba/Zbb/Zbs and Zcb/Zcmp: IDF master builds the S31 with
         // -march=rv32imafcb_zicsr_zifencei_zcb_zcmp_zcmt_xesploop_xespv (Zcmt is not modelled).
-        let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.isa_ext = crate::decode::ISA_ZB | crate::decode::ISA_ZC; c.has_ext_ill = true; c.ext_ill_all_fp = true; c.user_counters = true; c.clic = true; c.clic_std = true; c
+        let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.isa_ext = crate::decode::ISA_ZB | crate::decode::ISA_ZC | crate::decode::ISA_PIE; c.has_ext_ill = true; c.ext_ill_all_fp = true; c.user_counters = true; c.clic = true; c.clic_std = true; c
     }
 
     pub fn reset(&mut self) {
@@ -210,6 +225,21 @@ impl Cpu {
     pub fn isa(&self) -> u32 { self.misa | self.isa_ext }
     #[inline(always)]
     pub fn has_f(&self) -> bool { self.misa & MISA_F != 0 }
+    #[inline(always)]
+    pub fn has_pie(&self) -> bool { self.isa_ext & crate::decode::ISA_PIE != 0 }
+    /// Set mext_pie_status.STATE and mirror it in mstatus.XS, SD following FS and XS (ESP32-P4
+    /// TRM, mstatus.SD/XS and Register 2.65).
+    pub fn set_pie_state(&mut self, state: u32) {
+        self.pie_state = state & 3;
+        let xs = self.pie_state << 15;
+        let dirty = xs == mstatus::XS || self.mstatus & mstatus::FS == mstatus::FS_DIRTY;
+        self.mstatus = (self.mstatus & !(mstatus::XS | mstatus::SD)) | xs | if dirty { mstatus::SD } else { 0 };
+    }
+    /// CFG as written by esp.movx.w.cfg: vxsat_en (8), vxrm (7:4), mis_ld (1) and mis_st (0) are
+    /// writable; rm_exc (3) and vxsat (2) are read-only; 31:9 are reserved (ESP32-P4 TRM, Register 4.1).
+    pub fn write_pie_cfg(&mut self, v: u32) { self.pie_cfg = (v & 0x1f3) | (self.pie_cfg & 0xc); }
+    /// CFG as esp.movx.r.cfg reads it: reading clears vxsat (ESP32-P4 TRM 4.4.4).
+    pub fn read_pie_cfg(&mut self) -> u32 { let v = self.pie_cfg; self.pie_cfg &= !4; v }
     /// FS = Off: every F instruction and FP CSR access is illegal (privileged ISA v1.13,
     /// "Extension Context Status in mstatus Register").
     #[inline(always)]
@@ -259,6 +289,7 @@ impl Cpu {
             FRM if self.has_f() => (self.fcsr >> 5) & 7,
             FCSR if self.has_f() => self.fcsr,
             EXT_ILL if self.has_ext_ill => self.ext_ill,
+            MEXT_PIE_STATUS if self.has_pie() => self.pie_state,
             _ => self.csr_other.get(&n).copied().unwrap_or(0),
         }
     }
@@ -271,12 +302,15 @@ impl Cpu {
             MSTATUS if self.has_f() => {
                 let sd = if v & mstatus::FS == mstatus::FS_DIRTY { mstatus::SD } else { 0 };
                 self.mstatus = (v & !mstatus::SD) | sd;
+                // XS is read-only, the PIE state's mirror
+                if self.has_pie() { self.set_pie_state(self.pie_state); }
             }
             MSTATUS => self.mstatus = v,
             FFLAGS if self.has_f() => { self.fcsr = (self.fcsr & !0x1f) | (v & 0x1f); self.set_fs_dirty(); }
             FRM if self.has_f() => { self.fcsr = (self.fcsr & 0x1f) | ((v & 7) << 5); self.set_fs_dirty(); }
             FCSR if self.has_f() => { self.fcsr = v & 0xff; self.set_fs_dirty(); }
             EXT_ILL if self.has_ext_ill => self.ext_ill = v,
+            MEXT_PIE_STATUS if self.has_pie() => self.set_pie_state(v),
             MIE => self.mie = v,
             MTVEC => self.mtvec = v,
             MSCRATCH => self.mscratch = v,

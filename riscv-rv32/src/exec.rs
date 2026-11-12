@@ -266,6 +266,11 @@ pub fn exec_insn<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc: u32) -> Resul
         CmMvsa01 => { let (a0, a1) = (cpu.x[10], cpu.x[11]); cpu.set(i.rs1, a0); cpu.set(i.rs2, a1); }
         CmMva01s => { let (s1, s2) = (cpu.get(i.rs1), cpu.get(i.rs2)); cpu.x[10] = s1; cpu.x[11] = s2; }
 
+        EspVmulU16 | EspVmulU16LdIncp | EspVaddU16 | EspVaddU16LdIncp | EspVsubU16 | EspVsubU8 | EspVminU16
+        | EspVcmpEqU16 | EspAndq | EspOrq | EspXorq | EspZeroQ | EspVextU8 | EspVunzip8 | EspVzipt8 | EspVunzipt8
+        | EspSrcQ | EspVld128Ip | EspVst128Ip | EspVldbc16Ip | EspLd128UsarIp
+        | EspMovxWSar | EspMovxRSar | EspMovxWCfg | EspMovxRCfg | EspMovi32A => return crate::pie::exec(cpu, bus, i, pc),
+
         Ecall => { cpu.trap(exc::ECALL_M, 0, pc); return Err(Trap::Exception(exc::ECALL_M)); }
         Ebreak => { cpu.trap(exc::BREAKPOINT, pc, pc); return Err(Trap::Ebreak(pc)); }
         Mret => { cpu.mret(); return Ok(()); }

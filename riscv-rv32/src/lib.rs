@@ -3,7 +3,8 @@
 //! the Zicntr counters, CLIC mode and a hart ID. `Cpu::new_esp32s31` selects the
 //! same base ISA subset with the standard CLIC CSR placement used by S31 IDF v6.1.
 //! The S31 core also has Zba/Zbb/Zbs and Zcb/Zcmp (`decode::ISA_ZB`, `decode::ISA_ZC`, in
-//! `Cpu::isa_ext`); the other cores decode those encodings as illegal.
+//! `Cpu::isa_ext`) and a subset of Espressif's PIE v2.2 SIMD extension (`decode::ISA_PIE`,
+//! `pie`); the other cores decode those encodings as illegal.
 //!
 //! Machine mode only, no MMU, no D extension. The C3 and C6 have no F, and decode its encodings
 //! as illegal.
@@ -18,6 +19,7 @@ pub mod decode;
 pub mod disasm;
 pub mod exec;
 mod fpu;
+pub mod pie;
 pub mod softfloat;
 pub mod state;
 

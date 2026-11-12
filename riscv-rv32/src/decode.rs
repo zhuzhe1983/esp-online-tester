@@ -27,6 +27,14 @@ pub enum Op {
     // Zcmp (Zc v1.0.0), when the core has `ISA_ZC`: `rs2` = rlist (4-15), `imm` = the stack
     // adjustment in bytes; the moves name s-registers r1s' in `rs1`, r2s' in `rs2`
     CmPush, CmPop, CmPopret, CmPopretz, CmMvsa01, CmMva01s,
+    // Xespv2p2 (Espressif PIE v2.2), when the core has `ISA_PIE`; a subset. The Q-register fields
+    // stay in `raw` (`pie_q`, `pie_qw`); `rs1`/`rd` hold the general register (x8-x15, x24-x31),
+    // `imm` the byte offset of an `.ip` form or movi's lane. Kept contiguous: `is_pie` compares
+    // discriminants.
+    EspVmulU16, EspVmulU16LdIncp, EspVaddU16, EspVaddU16LdIncp, EspVsubU16, EspVsubU8, EspVminU16,
+    EspVcmpEqU16, EspAndq, EspOrq, EspXorq, EspZeroQ, EspVextU8, EspVunzip8, EspVzipt8, EspVunzipt8,
+    EspSrcQ, EspVld128Ip, EspVst128Ip, EspVldbc16Ip, EspLd128UsarIp,
+    EspMovxWSar, EspMovxRSar, EspMovxWCfg, EspMovxRCfg, EspMovi32A,
     // RV32F; `imm` carries the rm field (funct3) of the computational ones, rs3 stays in `raw`.
     // Kept last: `is_f` compares discriminants.
     Flw, Fsw,
@@ -41,6 +49,9 @@ impl Op {
     /// An F instruction, which a core reaches only when its `misa` has F.
     #[inline(always)]
     pub fn is_f(self) -> bool { (self as u8) >= (Op::Flw as u8) }
+    /// A PIE (Xespv2p2) instruction, which a core reaches only with `ISA_PIE`.
+    #[inline(always)]
+    pub fn is_pie(self) -> bool { (Op::EspVmulU16 as u8..Op::Flw as u8).contains(&(self as u8)) }
 }
 
 /// Which compressed form an instruction was written as (`None` = a real 32-bit instruction).
@@ -91,6 +102,9 @@ fn sext(v: u32, bits: u32) -> i32 { ((v << (32 - bits)) as i32) >> (32 - bits) }
 /// the ISA word `decode_for` takes (`Cpu::isa`). Zba+Zbb+Zbs, and Zcb+Zcmp (the ESP32-S31).
 pub const ISA_ZB: u32 = 1 << 26;
 pub const ISA_ZC: u32 = 1 << 27;
+/// Xespv2p2, Espressif's PIE v2.2 SIMD extension (ESP32-P4 TRM v1.x, chapter 4; the ESP32-S31
+/// builds with `_xespv`). Only the subset in `decode_pie` is modelled.
+pub const ISA_PIE: u32 = 1 << 28;
 const MISA_M: u32 = 1 << 12;
 
 /// Decode the instruction at `pc` for a core without F (the C3 and C6). `bytes` is up to 4 bytes
@@ -106,13 +120,13 @@ pub fn decode_for(isa: u32, pc: u32, bytes: [u8; 4]) -> Insn {
     let raw = u32::from_le_bytes(bytes);
     let f = isa & crate::state::MISA_F != 0;
     if raw & 3 != 3 { return decode_compressed(pc, raw & 0xffff, f, isa); }
-    decode32(pc, raw, f, isa & ISA_ZB != 0)
+    decode32(pc, raw, f, isa & ISA_ZB != 0, isa & ISA_PIE != 0)
 }
 
 // Both decoders inline into `decode_for`, so the step decodes without a call and an Insn
 // returned through memory.
 #[inline(always)]
-fn decode32(pc: u32, w: u32, f: bool, zb: bool) -> Insn {
+fn decode32(pc: u32, w: u32, f: bool, zb: bool, pie: bool) -> Insn {
     let (rd, rs1, rs2) = (((w >> 7) & 0x1f) as u8, ((w >> 15) & 0x1f) as u8, ((w >> 20) & 0x1f) as u8);
     let f3 = (w >> 12) & 7;
     let f7 = w >> 25;
@@ -187,8 +201,88 @@ fn decode32(pc: u32, w: u32, f: bool, zb: bool) -> Insn {
             _ => mk(Op::Illegal, 0),
         },
         0x07 | 0x27 | 0x43 | 0x47 | 0x4b | 0x4f | 0x53 if f => decode_f(w),
+        0x1b | 0x1f | 0x5f if pie => decode_pie(w),
         _ => mk(Op::Illegal, 0),
     }
+}
+
+/// The Xespv2p2 forms modelled, as (mask, match) over the whole word. Every bit outside an
+/// operand field is fixed: the TRM's encoding figures mark some as "X", but objdump decodes other
+/// instructions there (flipping an X bit of esp.andq gives esp.src.q.ld.ip, for one), so they are
+/// matched exactly. Derived by assembling every operand variant with
+/// `riscv32-esp-elf-as-xespv2p2` (esp-14.2.0_20260121) and diffing; `tests/corpus/pie.dis` holds them.
+pub const PIE_FORMS: &[(u32, u32, Op)] = &[
+    (0x03fe_647f, 0x03c4_001f, Op::EspVmulU16),
+    (0x0380_607f, 0x0100_205f, Op::EspVmulU16LdIncp),
+    (0x038e_ffff, 0x0284_231b, Op::EspVaddU16),
+    (0x0380_63ff, 0x0100_411f, Op::EspVaddU16LdIncp),
+    (0x038e_ffff, 0x0284_271b, Op::EspVsubU16),
+    (0x038e_ffff, 0x0280_271b, Op::EspVsubU8),
+    (0x03ff_fc7f, 0x0344_981f, Op::EspVminU16),
+    (0x03ff_fc7f, 0x0341_001f, Op::EspVcmpEqU16),
+    (0x03ff_fc7f, 0x0180_001f, Op::EspAndq),
+    (0x03ff_fc7f, 0x0100_001f, Op::EspOrq),
+    (0x03ff_fc7f, 0x0104_001f, Op::EspXorq),
+    (0xffff_fc7f, 0x0000_101b, Op::EspZeroQ),
+    (0xfc87_fc7f, 0x0004_201b, Op::EspVextU8),
+    (0x03ff_ffff, 0x0284_201b, Op::EspVunzip8),
+    (0x00f7_ffff, 0x0040_211b, Op::EspVzipt8),
+    (0x00f7_ffff, 0x0040_251b, Op::EspVunzipt8),
+    (0xe0f7_fc7f, 0x8000_401b, Op::EspSrcQ),
+    (0x83f8_607f, 0x0310_001f, Op::EspVld128Ip),
+    (0x83f8_607f, 0x8310_001f, Op::EspVst128Ip),
+    (0x03f8_60ff, 0x0390_001f, Op::EspVldbc16Ip),
+    (0x03f8_60ff, 0x03a0_001f, Op::EspLd128UsarIp),
+    (0xfff8_7fff, 0x90c0_201b, Op::EspMovxWSar),
+    (0xffff_f87f, 0x80c0_201b, Op::EspMovxRSar),
+    (0xfff8_7fff, 0x9080_201b, Op::EspMovxWCfg),
+    (0xffff_f87f, 0x8080_201b, Op::EspMovxRCfg),
+    (0xe3bb_f87f, 0x00a0_201b, Op::EspMovi32A),
+];
+
+/// A PIE general-register field: 4 bits naming x8-x15 or x24-x31 (TRM 4.4.1.1.1; the encoding
+/// figures split it as rs1[4] and rs1[2:0], rs1[3] being always 1).
+#[inline(always)]
+pub fn pie_x(w: u32, lo: u32) -> u8 { let f = (w >> lo) & 0xf; (8 | (f & 7) | (f >> 3) << 4) as u8 }
+/// A 3-bit Q-register field at bit `lo` (7, 10, 20, 26 or 29).
+#[inline(always)]
+pub fn pie_q(w: u32, lo: u32) -> usize { ((w >> lo) & 7) as usize }
+/// The split Q-register field of vext.u8, vzipt.8, vunzipt.8 and src.q: qw[1:0] at 25:24, qw[2] at 19.
+#[inline(always)]
+pub fn pie_qw(w: u32) -> usize { (((w >> 24) & 3) | ((w >> 19) & 1) << 2) as usize }
+/// The rounding mode of vmul.u16 (rm[0] bit 11, rm[1] bit 12, rm[2] bit 15) and of its .ld.incp
+/// form (bits 21:19), and the saturation bits (16, 22, and 19 for vadd.u16.ld.incp).
+pub fn pie_rm(op: Op, w: u32) -> u32 {
+    if op == Op::EspVmulU16 { ((w >> 11) & 3) | ((w >> 15) & 1) << 2 } else { (w >> 19) & 7 }
+}
+pub fn pie_sat(op: Op, w: u32) -> bool {
+    let bit = match op { Op::EspVmulU16LdIncp => 22, Op::EspVaddU16LdIncp => 19, _ => 16 };
+    (w >> bit) & 1 != 0
+}
+
+/// Xespv2p2 in its opcodes 0x1b, 0x1f and 0x5f (all otherwise illegal on RV32).
+#[inline(never)]
+fn decode_pie(w: u32) -> Insn {
+    use Op::*;
+    let Some(&(_, _, op)) = PIE_FORMS.iter().find(|&&(m, v, _)| w & m == v) else {
+        // as the base decoder leaves an illegal word, so a core without PIE decodes it the same
+        return Insn::new(Illegal, ((w >> 7) & 0x1f) as u8, ((w >> 15) & 0x1f) as u8, ((w >> 20) & 0x1f) as u8, 0, 4, w);
+    };
+    let (mut rd, mut rs1, mut imm) = (0u8, 0u8, 0i32);
+    match op {
+        EspVmulU16LdIncp | EspVaddU16LdIncp | EspMovxWSar | EspMovxWCfg => rs1 = pie_x(w, 15),
+        EspMovxRSar | EspMovxRCfg => rd = pie_x(w, 7),
+        EspMovi32A => { rd = pie_x(w, 7); imm = ((w >> 18) & 1 | ((w >> 22) & 1) << 1) as i32; }
+        // imm16[7:3] at 30:26 and imm16[2:0] at 9:7 (bit 31 tells the load from the store)
+        EspVld128Ip | EspVst128Ip => { rs1 = pie_x(w, 15); imm = sext(((w >> 26) & 0x1f) << 3 | (w >> 7) & 7, 8) * 16; }
+        // imm[7:2] at 31:26 and imm[1:0] at 9:8, scaled by 2 (vldbc.16) or 16 (ld.128.usar)
+        EspVldbc16Ip | EspLd128UsarIp => {
+            rs1 = pie_x(w, 15);
+            imm = sext((w >> 26) << 2 | (w >> 8) & 3, 8) * if op == EspVldbc16Ip { 2 } else { 16 };
+        }
+        _ => {}
+    }
+    Insn::new(op, rd, rs1, 0, imm, 4, w)
 }
 
 /// Zba/Zbb/Zbs in OP and OP-IMM (RISC-V bit-manipulation v1.0.0, RV32 encodings): only what
@@ -453,7 +547,7 @@ mod tests {
         for _ in 0..200_000 {
             seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5;
             let w = seed | 3;
-            let (plain, with_f) = (decode32(0x4000_0000, w, false, false), decode32(0x4000_0000, w, true, false));
+            let (plain, with_f) = (decode32(0x4000_0000, w, false, false, false), decode32(0x4000_0000, w, true, false, false));
             if matches!(w & 0x7f, 0x07 | 0x27 | 0x43 | 0x47 | 0x4b | 0x4f | 0x53) {
                 assert_eq!(plain.op, Op::Illegal, "{w:08x}");
                 assert!(with_f.op == Op::Illegal || with_f.op.is_f(), "{w:08x}");
@@ -475,6 +569,31 @@ mod tests {
             assert_eq!((zc.raw, zc.len), (raw, 2), "{raw:04x}");
             let slot = matches!((raw & 3, (raw >> 13) & 7), (0, 4) | (2, 5)) || (raw & 3 == 1 && raw >> 10 == 0b100111);
             if slot { assert_eq!(plain.op, Op::Illegal, "{raw:04x}"); } else { assert_eq!(plain, zc, "{raw:04x}"); }
+        }
+    }
+
+    /// No word matches two PIE forms, every form's match lies inside its mask, and the forms take
+    /// only the three opcodes that were illegal.
+    #[test]
+    fn pie_forms_are_disjoint() {
+        for (k, &(m1, v1, o1)) in PIE_FORMS.iter().enumerate() {
+            assert_eq!(v1 & !m1, 0, "{o1:?}");
+            assert!(matches!(v1 & 0x7f, 0x1b | 0x1f | 0x5f), "{o1:?}");
+            assert!(o1.is_pie(), "{o1:?}");
+            for &(m2, v2, o2) in &PIE_FORMS[k + 1..] { assert_ne!(v1 & m2 & m1, v2 & m1 & m2, "{o1:?} overlaps {o2:?}"); }
+        }
+    }
+
+    /// Without `ISA_PIE` the PIE opcodes stay illegal; with it, nothing else changes.
+    #[test]
+    fn pie_takes_only_its_opcodes() {
+        let mut seed = 0x9e37_79b9u32;
+        for _ in 0..200_000 {
+            seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5;
+            let w = seed | 3;
+            let (plain, pie) = (decode32(0, w, true, true, false), decode32(0, w, true, true, true));
+            if matches!(w & 0x7f, 0x1b | 0x1f | 0x5f) { assert_eq!(plain.op, Op::Illegal, "{w:08x}"); assert!(pie.op == Op::Illegal || pie.op.is_pie(), "{w:08x}"); }
+            else { assert_eq!(plain, pie, "{w:08x}"); }
         }
     }
 

@@ -39,6 +39,48 @@ fn csr_name(n: u32) -> String {
     s.to_string()
 }
 
+/// Xespv2p2 as objdump prints it: operands in the syntax's order, and the `sat`/`dyn` defaults of
+/// the saturating and rounding forms left out (`trunc` and a named rounding mode printed).
+fn format_pie(i: &Insn) -> String {
+    use crate::decode::{pie_q, pie_qw, pie_rm, pie_sat};
+    use Op::*;
+    let w = i.raw;
+    let q = |lo: u32| format!("q{}", pie_q(w, lo));
+    let qw = format!("q{}", pie_qw(w));
+    let sat = if pie_sat(i.op, w) { "" } else { ",trunc" };
+    let rm = || match pie_rm(i.op, w) { 0 => ",rdn", 1 => ",rup", 2 => ",raz", 3 => ",rtz", 4 => ",rhaz", 5 => ",rhtz", 6 => ",rne", _ => "" };
+    let (rs1, rd) = (r(i.rs1), r(i.rd));
+    match i.op {
+        EspVmulU16 => format!("esp.vmul.u16\t{},{},{}{}{}", q(7), q(29), q(26), sat, rm()),
+        EspVmulU16LdIncp => format!("esp.vmul.u16.ld.incp\t{},{},{},{},{}{}{}", q(10), rs1, q(7), q(29), q(26), sat, rm()),
+        EspVaddU16 | EspVsubU16 | EspVsubU8 => {
+            let n = match i.op { EspVaddU16 => "esp.vadd.u16", EspVsubU16 => "esp.vsub.u16", _ => "esp.vsub.u8" };
+            format!("{}\t{},{},{}{}", n, q(20), q(29), q(26), sat)
+        }
+        EspVaddU16LdIncp => format!("esp.vadd.u16.ld.incp\t{},{},{},{},{}{}", q(10), rs1, q(20), q(29), q(26), sat),
+        EspVminU16 | EspVcmpEqU16 | EspAndq | EspOrq | EspXorq => {
+            let n = match i.op { EspVminU16 => "esp.vmin.u16", EspVcmpEqU16 => "esp.vcmp.eq.u16", EspAndq => "esp.andq", EspOrq => "esp.orq", _ => "esp.xorq" };
+            format!("{}\t{},{},{}", n, q(7), q(29), q(26))
+        }
+        EspZeroQ => format!("esp.zero.q\t{}", q(7)),
+        EspVextU8 => format!("esp.vext.u8\t{},{},{}", q(7), q(20), qw),
+        EspVunzip8 => format!("esp.vunzip.8\t{},{}", q(29), q(26)),
+        EspVzipt8 => format!("esp.vzipt.8\t{},{},{}", q(29), q(26), qw),
+        EspVunzipt8 => format!("esp.vunzipt.8\t{},{},{}", q(29), q(26), qw),
+        EspSrcQ => format!("esp.src.q\t{},{},{}", q(7), qw, q(26)),
+        EspVld128Ip => format!("esp.vld.128.ip\t{},{},{}", q(10), rs1, i.imm),
+        EspVst128Ip => format!("esp.vst.128.ip\t{},{},{}", q(10), rs1, i.imm),
+        EspVldbc16Ip => format!("esp.vldbc.16.ip\t{},{},{}", q(10), rs1, i.imm),
+        EspLd128UsarIp => format!("esp.ld.128.usar.ip\t{},{},{}", q(10), rs1, i.imm),
+        EspMovxWSar => format!("esp.movx.w.sar\t{}", rs1),
+        EspMovxRSar => format!("esp.movx.r.sar\t{}", rd),
+        EspMovxWCfg => format!("esp.movx.w.cfg\t{}", rs1),
+        EspMovxRCfg => format!("esp.movx.r.cfg\t{}", rd),
+        EspMovi32A => format!("esp.movi.32.a\t{},{},{}", q(26), rd, i.imm),
+        _ => unreachable!(),
+    }
+}
+
 /// objdump (and GNU as) print a compressed instruction as the 32-bit instruction it expands to,
 /// so that is what `format` does; `format_compressed` gives the literal `c.*` form instead.
 /// This is the text for a core without F (the C3 and C6).
@@ -64,6 +106,10 @@ pub fn format_for(misa: u32, i: &Insn) -> String {
     let (rd, rs1, rs2) = (r(i.rd), r(i.rs1), r(i.rs2));
     let m = |s: &str| s.to_string();
     match i.op {
+        EspVmulU16 | EspVmulU16LdIncp | EspVaddU16 | EspVaddU16LdIncp | EspVsubU16 | EspVsubU8 | EspVminU16
+        | EspVcmpEqU16 | EspAndq | EspOrq | EspXorq | EspZeroQ | EspVextU8 | EspVunzip8 | EspVzipt8 | EspVunzipt8
+        | EspSrcQ | EspVld128Ip | EspVst128Ip | EspVldbc16Ip | EspLd128UsarIp
+        | EspMovxWSar | EspMovxRSar | EspMovxWCfg | EspMovxRCfg | EspMovi32A => format_pie(i),
         Illegal => m("unimp"),
         Lui => format!("lui\t{},{:#x}", rd, (i.imm as u32) >> 12),
         Auipc => format!("auipc\t{},{:#x}", rd, (i.imm as u32) >> 12),
