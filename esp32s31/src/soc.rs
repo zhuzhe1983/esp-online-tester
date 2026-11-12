@@ -818,6 +818,9 @@ impl Bus for SocBus {
     }
     fn tick(&mut self, cycles: u32) -> u32 {
         self.cycles += cycles as u64;
+        // The lines the models advanced here can raise without flagging `irq_dirty` themselves.
+        let lines = |b: &S31Bus| (b.usb_otg.irq(), b.rtc_wdt.irq(), b.periph.timg[0].irq_wdt(), b.periph.timg[1].irq_wdt());
+        let lines_before = lines(&self.inner);
         let hz = TIME_HZ;
         let before = self.inner.periph.systimer.irqs();
         self.inner.periph.systimer.advance_cpu(
@@ -863,7 +866,10 @@ impl Bus for SocBus {
         self.inner.rtc_calibration.advance_cpu(cycles as u64, hz, source, group);
         self.wifi_step();
         self.poll_chip_reset();
-        1
+        // Non-zero only when an interrupt line may have moved (emu_core Bus::tick): every other
+        // change sets `irq_dirty`, which the machine checks too. Returning 1 unconditionally made
+        // the machine re-derive every line after every round (about 60 % of a Mosaico run).
+        u32::from(lines(&self.inner) != lines_before || self.sw_reset)
     }
     fn block_break(&self) -> bool {
         self.irq_dirty
