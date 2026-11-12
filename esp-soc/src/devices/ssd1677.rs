@@ -19,7 +19,7 @@ pub struct Ssd1677 {
     planes: [Vec<u8>; 2], command: u8, params: [u8; 105], count: usize,
     entry: u8, x_start: u16, x_end: u16, y_start: u16, y_end: u16, x: u16, y: u16,
     control1: u8, control2: u8, lut: [u8; 105], lut_written: bool,
-    mode2_face_odd: bool, asleep: bool, clock: bool, analog: bool,
+    mode2_face_odd: bool, ping_pong: bool, asleep: bool, clock: bool, analog: bool,
     cycle: VirtualCycle, busy_until: Option<VirtualCycle>, pending_refresh: bool, edges: Vec<BoardEdge>,
 }
 impl Ssd1677 {
@@ -28,13 +28,13 @@ impl Ssd1677 {
         Self {frame:vec![0xffff;width*height],frames:0,version:0,ram_bytes_written:0,width,height,busy_pin,cycles_per_ms,
             planes:[vec![0xff;RAM_BYTES],vec![0xff;RAM_BYTES]],command:0,params:[0;105],count:0,
             entry:3,x_start:0,x_end:959,y_start:0,y_end:679,x:0,y:0,control1:0,control2:0xff,lut:[0;105],lut_written:false,
-            mode2_face_odd:false,asleep:false,clock:false,analog:false,cycle:0,busy_until:None,pending_refresh:false,edges:Vec::new()}
+            mode2_face_odd:false,ping_pong:true,asleep:false,clock:false,analog:false,cycle:0,busy_until:None,pending_refresh:false,edges:Vec::new()}
     }
     /// Reset controller state, retaining the bistable optical image and RAM. RAM
     /// power-loss behavior is unspecified here; firmware must initialize its RAM.
     pub fn reset(&mut self) {
         self.command=0; self.count=0; self.entry=3; self.x_start=0; self.x_end=959; self.y_start=0; self.y_end=679; self.x=0; self.y=0;
-        self.control1=0; self.control2=0xff; self.lut_written=false; self.mode2_face_odd=false;
+        self.control1=0; self.control2=0xff; self.lut_written=false; self.mode2_face_odd=false; self.ping_pong=true;
         self.asleep=false; self.clock=false; self.analog=false; self.pending_refresh=false;
         if self.busy_until.take().is_some() { self.edges.push(BoardEdge{cycle:self.cycle,pin:self.busy_pin,level:false}); }
     }
@@ -86,6 +86,10 @@ impl Ssd1677 {
             (0x21,1) => self.control1=byte,
             (0x22,1) => self.control2=byte,
             (0x32,105) => { self.lut=self.params; self.lut_written=true; }
+            // SSD1677 rev1.0 p32, R37h F[6]: explicit Mode 2 RAM ping-pong.
+            // The supported panel subset defaults to enabled, matching the
+            // existing Mode 2 face contract; no physical OTP dump is claimed.
+            (0x37,10) => self.ping_pong=self.params[5]&0x40!=0,
             (0x44,4) => { self.x_start=self.word(0); self.x_end=self.word(2); }
             (0x45,4) => { self.y_start=self.word(0); self.y_end=self.word(2); }
             (0x4e,2) => self.x=self.word(0),
@@ -175,7 +179,12 @@ impl Ssd1677 {
             let pixel=&mut self.frame[(self.height-1-gate)*self.width+source];
             if let Some(gray)=levels[group] {let g=gray as u16;*pixel=((g>>3)<<11)|((g>>2)<<5)|(g>>3);}
         }}
-        self.mode2_face_odd=mode2 && !self.mode2_face_odd;
+        // Mode 2 makes the displayed current bank the next previous bank.
+        // CloudZao INK4 2.0.53 writes only 0x24 after its dual-bank boot frame;
+        // leaving 0x26 at that first frame preserves obsolete black glyphs.
+        // Swap ownership only after BUSY completes; do not copy pixels or RAM.
+        if mode2 && self.ping_pong {self.planes.swap(0,1);}
+        self.mode2_face_odd=mode2 && self.ping_pong && !self.mode2_face_odd;
         self.frames+=1;self.version+=1;
     }
 }
@@ -234,6 +243,33 @@ mod tests {
         send(&mut panel,0x24,&[0xa0]);send(&mut panel,0x26,&[0x50]);send(&mut panel,0x32,&partial);
         send(&mut panel,0x22,&[0xcf]);send(&mut panel,0x20,&[]);panel.advance_to(40);
         assert_eq!(&panel.frame[..4],&[0xffff,0,0xffff,0]);
+    }
+    #[test]
+    fn consecutive_mode2_current_only_writes_erase_old_pixels_after_busy() {
+        let mut panel=Ssd1677::new(8,1,9,1);send(&mut panel,0x44,&[0,0,7,0]);send(&mut panel,0x45,&[0,0,0,0]);
+        // Official INK4 2.0.53: one full C7 with both banks, then only 24h/CFh.
+        send(&mut panel,0x24,&[0xf0]);send(&mut panel,0x26,&[0xf0]);
+        send(&mut panel,0x22,&[0xc7]);send(&mut panel,0x20,&[]);panel.advance_to(20);
+        let mut partial=[0;105];partial[1]=0xcc;partial[10]=0x80;partial[20]=0x40;partial[50]=1;partial[55]=1;partial[56]=1;
+        send(&mut panel,0x32,&partial);
+        for (i,current) in [0x0f,0xf0,0xff,0x81].into_iter().enumerate() {
+            let previous=panel.planes[1][0];send(&mut panel,0x24,&[current]);send(&mut panel,0x22,&[0xcf]);send(&mut panel,0x20,&[]);
+            panel.advance_to(39+i as u64*20);assert_eq!(panel.planes[1][0],previous,"BUSY retains the previous bank");
+            panel.advance_to(40+i as u64*20);assert_eq!(panel.planes[1][0],current,"completed refresh advances the previous bank");
+            for x in 0..8 {assert_eq!(panel.frame[x],if current&(0x80>>x)!=0 {0xffff}else{0},"refresh {i}, pixel {x}");}
+        }
+    }
+    #[test]
+    fn display_option_disables_ping_pong_without_affecting_mode1_or_ram_writes() {
+        let mut panel=Ssd1677::new(8,1,9,1);send(&mut panel,0x44,&[0,0,7,0]);send(&mut panel,0x45,&[0,0,0,0]);
+        send(&mut panel,0x37,&[0;10]);send(&mut panel,0x24,&[0x80]);send(&mut panel,0x26,&[0x40]);
+        send(&mut panel,0x22,&[0xcf]);send(&mut panel,0x20,&[]);panel.advance_to(20);
+        assert_eq!((panel.planes[0][0],panel.planes[1][0]),(0x80,0x40));assert!(!panel.mode2_face_odd);
+        let mut option=[0;10];option[5]=0x40;send(&mut panel,0x37,&option);send(&mut panel,0x22,&[0xc7]);send(&mut panel,0x20,&[]);panel.advance_to(40);
+        assert_eq!((panel.planes[0][0],panel.planes[1][0]),(0x80,0x40),"Mode 1 never swaps RAM");
+        send(&mut panel,0x22,&[0xcf]);send(&mut panel,0x20,&[]);panel.advance_to(60);
+        assert_eq!((panel.planes[0][0],panel.planes[1][0]),(0x40,0x80));assert!(panel.mode2_face_odd);
+        panel.reset();assert!(panel.ping_pong);assert!(!panel.mode2_face_odd);
     }
     #[test]
     fn field_free_and_zero_duration_phases_retain_the_optical_image() {
