@@ -20,7 +20,8 @@ for (const name of ['products','accessories','firmwares']) catalog[name] = JSON.
 assert.ok(['m5stack-papermono','m5stack-c153-lite'].includes(productId),'Choose full PaperMono or Lite');
 const product=catalog.products.find(p=>p.id===productId);assert.ok(product.runtime.board,'Catalog must declare the real board');
 await mkdir(output,{recursive:true});
-const fetchImpl = async (value,options) => new URL(value).hostname === 'platform.example' ? new Response(await readFile(new URL(`web${new URL(value).pathname}`,root))) : fetch(value,options);
+let loadedWasmSha256=null;
+const fetchImpl = async (value,options) => {const source=new URL(value);if(source.hostname!=='platform.example')return fetch(value,options);const bytes=await readFile(new URL(`web${source.pathname}`,root));if(source.pathname.endsWith('/esp32sim.wasm'))loadedWasmSha256=createHash('sha256').update(bytes).digest('hex');return new Response(bytes);};
 let queryClock;
 const workerFactory = path => {
   path = new URL(`web${new URL(path).pathname}`,root);
@@ -48,19 +49,19 @@ const runtime=createPlatformRuntime({catalog,fetchImpl,workerFactory,baseUrl:'ht
   if(event.type==='input')inputs.push(event);
   if(event.type==='stats'){const second=Math.floor(Number(event.stats.time));if(second!==lastSecond){lastSecond=second;console.log(JSON.stringify({guestSeconds:second,insns:event.stats.insns}));}}
 }});
-const started=Date.now();let failure=null;const stages=[],imuInputs=[];
+const started=Date.now();let failure=null;const stages=[],imuInputs=[],networkStages=[];let grayFixture=null;
 const regionHash=(frame,x,y,w,h)=>{const hash=createHash('sha256');for(let row=y;row<y+h;row++)hash.update(frame.pixels.subarray((row*frame.width+x)*4,(row*frame.width+x+w)*4));return hash.digest('hex');};
 const checkpoint=async name=>{
   if(!latestFrame)throw new Error(`No frame at ${name}`);
   const nonBlack=latestFrame.pixels.reduce((n,v,i)=>n+(i%4!==3&&v!==0?1:0),0);
   const state=await runtime.observe(),sha256=createHash('sha256').update(latestFrame.pixels).digest('hex');
   await writeFile(`${output}/${name}.png`,png(latestFrame));
-  stages.push({name,guestSeconds:await queryClock(),lastStatSeconds:state.stats.time,frameNumber:latestFrame.frameNumber,nonBlackChannels:nonBlack,sha256,leds:state.leds,sdCard:state.sdCard,nfc:regionHash(latestFrame,122,361,230,49),loraRx:regionHash(latestFrame,140,45,330,50),brightness:regionHash(latestFrame,0,118,94,28),mute:regionHash(latestFrame,366,480,107,42),imu:regionHash(latestFrame,75,543,145,89)});
+  stages.push({name,guestSeconds:await queryClock(),lastStatSeconds:state.stats.time,frameNumber:latestFrame.frameNumber,nonBlackChannels:nonBlack,sha256,leds:state.leds,sdCard:state.sdCard,nfc:regionHash(latestFrame,122,361,230,49),loraRx:regionHash(latestFrame,140,45,330,50),brightness:regionHash(latestFrame,0,118,94,28),mute:regionHash(latestFrame,366,480,107,42),imu:regionHash(latestFrame,75,543,145,89),ntpStatus:regionHash(latestFrame,40,510,400,30)});
   console.log('CHECKPOINT',JSON.stringify(stages.at(-1)));
 };
 const waitGuest=async target=>{
   const wall=Date.now();
-  while(true){const state=await runtime.observe();if(state.status!=='running')throw new Error(`Runtime entered ${state.status}: ${JSON.stringify(state.lastError)}`);if(serial.includes('Guru Meditation Error'))throw new Error('Official firmware panicked; see serial.log');if(await queryClock()>=target)return;if(Date.now()-wall>240000)throw new Error(`Wall timeout waiting for guest ${target}s`);await new Promise(resolve=>setTimeout(resolve,10));}
+  while(true){const state=await runtime.observe();if(state.status!=='running')throw new Error(`Runtime entered ${state.status}: ${JSON.stringify(state.lastError)}`);if(serial.includes('Guru Meditation Error')||serial.includes('A stack overflow in task'))throw new Error('Official firmware panicked or overflowed its task stack; see serial.log');if(await queryClock()>=target)return;if(Date.now()-wall>240000)throw new Error(`Wall timeout waiting for guest ${target}s`);await new Promise(resolve=>setTimeout(resolve,10));}
 };
 const button=async(ids,seconds)=>{
   let receipt;
@@ -73,9 +74,34 @@ const tap=async(x,y)=>{
   finally{await runtime.input({type:'touch',x,y,down:false});}
   await waitGuest((await queryClock())+1);
 };
+const grayLevelAt=(x,y)=>x<24&&y<24?3:x>=456&&y>=776?0:Math.floor(x/120);
+const makeGrayCard=()=>{
+  // 120x200 uncompressed 24-bit BMP, scaled by the guest to 480x800: four source grays. These
+  // stable M5GFX Bayer representatives select 0/1/2/3, not measured panel reflectance.
+  const width=scenario==='gray-display-fullsize'?480:120,height=width*5/3,scale=480/width,levels=[0,96,160,255],bmp=new Uint8Array(54+width*height*3),b=new DataView(bmp.buffer);
+  bmp.set([0x42,0x4d]);b.setUint32(2,bmp.length,true);b.setUint32(10,54,true);b.setUint32(14,40,true);b.setInt32(18,width,true);b.setInt32(22,height,true);b.setUint16(26,1,true);b.setUint16(28,24,true);b.setUint32(34,width*height*3,true);
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++){const at=54+((height-1-y)*width+x)*3;bmp.fill(levels[grayLevelAt(x*scale,y*scale)],at,at+3);}
+  const bytes=createFat32Image(),v=new DataView(bytes.buffer),start=v.getUint32(454,true),boot=start*512,reserved=v.getUint16(boot+14,true),fat=v.getUint32(boot+36,true),root=(start+reserved+2*fat)*512,clusters=Math.ceil(bmp.length/512);
+  bytes.set(new TextEncoder().encode('GRAYS   BMP'),root+32);bytes[root+43]=0x20;v.setUint16(root+58,3,true);v.setUint32(root+60,bmp.length,true);bytes.set(bmp,root+512);
+  for(let f=0;f<2;f++)for(let i=0;i<clusters;i++)v.setUint32((start+reserved+f*fat)*512+(3+i)*4,i===clusters-1?0x0fffffff:4+i,true);
+  for(const offset of [512,7*512]){v.setUint32(boot+offset+488,v.getUint32(boot+offset+488,true)-clusters,true);v.setUint32(boot+offset+492,3+clusters,true);}
+  return {bytes,bmpSha256:createHash('sha256').update(bmp).digest('hex'),imageSha256:createHash('sha256').update(bytes).digest('hex'),bmpBytes:bmp.length,sourceDimensions:[width,height],sourceGrayLevels:levels};
+};
+const checkGrayPixels=(frame,top=0,bottom=800,mono=false)=>{
+  const expected=[[0,0,0,255],[82,85,82,255],[173,170,173,255],[255,255,255,255]];let mismatches=0;const counts=[0,0,0,0];
+  for(let y=top;y<bottom;y++)for(let x=0;x<480;x++){const source=grayLevelAt(x,y),level=mono?(source>=2?3:0):source,at=(y*480+x)*4;counts[level]++;if(expected[level].some((value,c)=>frame.pixels[at+c]!==value))mismatches++;}
+  return {region:{x:0,y:top,width:480,height:bottom-top},monochromeThreshold:mono,expectedRgba:expected,expectedCounts:counts,mismatches};
+};
 try{
   const scene=createDefaultScene(catalog,productId);scene.firmware=null;
-  await runtime.configure(scene);await runtime.loadFirmware({url,sha256:expectedHash});
+  await runtime.configure(scene);
+  if(['network-inspect','network'].includes(scenario)) {
+    assert.ok(process.env.ESP32SIM_NETWORK_ENDPOINT_FILE,'Supply a private helper JSON file via ESP32SIM_NETWORK_ENDPOINT_FILE');
+    const {endpoint}=JSON.parse(await readFile(process.env.ESP32SIM_NETWORK_ENDPOINT_FILE,'utf8'));
+    await runtime.configureNetwork({enabled:true,autoProvision:false,mode:'local-helper',endpoint,ssid:'eink',password:''});
+  }
+  await runtime.loadFirmware({url,sha256:expectedHash});
+  if(['gray-display','gray-display-fullsize'].includes(scenario)) {const generated=makeGrayCard();grayFixture={...generated,bytes:undefined,checks:[]};await runtime.attachSdCard({bytes:generated.bytes});}
   if(scenario==='sd-rgb') {
     // Public generated data only: a short root-directory file proves guest directory reads.
     const bytes=createFat32Image(),v=new DataView(bytes.buffer),start=v.getUint32(454,true),b=start*512,reserved=v.getUint16(b+14,true),fat=v.getUint32(b+36,true),root=(start+reserved+2*fat)*512;
@@ -85,6 +111,23 @@ try{
   }
   await runtime.start();
   await waitGuest(seconds);await checkpoint('boot');
+  if(['gray-display','gray-display-fullsize'].includes(scenario)) {
+    await tap(100,700);await checkpoint('gray-directory');await tap(110,98);await waitGuest((await queryClock())+3);await checkpoint('gray-image');
+    grayFixture.checks.push({stage:'gray-image',...checkGrayPixels(latestFrame)});assert.equal(grayFixture.checks.at(-1).mismatches,0,'Every official BMP-decoded pixel must match the four expected digital levels and corner orientation marks');
+    await tap(240,400);await checkpoint('gray-overlay');
+    // M5GFX rotates the dirty range, then aligns native X to bytes:
+    // the 52-row header covers 0..55 and footer 732..799 covers 728..799.
+    // Fastest uses new_msb, so the eight extra rows become black/white.
+    for(const [top,bottom,mono] of [[56,728,false],[52,56,true],[728,732,true]]){grayFixture.checks.push({stage:'gray-overlay',...checkGrayPixels(latestFrame,top,bottom,mono)});assert.equal(grayFixture.checks.at(-1).mismatches,0,'Official byte-aligned partial refresh must preserve the middle and threshold only the known edge rows');}
+    await tap(240,400);await waitGuest((await queryClock())+2);await checkpoint('gray-restored');grayFixture.checks.push({stage:'gray-restored',...checkGrayPixels(latestFrame)});assert.equal(grayFixture.checks.at(-1).mismatches,0,'Hiding the overlay must restore all four levels from the guest cache');
+  }
+  if(['network-inspect','network'].includes(scenario)) {
+    await tap(425,640);await checkpoint('ntp-dialog');await tap(115,484);await waitGuest((await queryClock())+4);await checkpoint('ntp-scan');
+    await tap(100,267);await checkpoint('ntp-ssid-keyboard');for(const [x,y] of [[126,572],[354,572],[342,687],[377,629]])await tap(x,y);await checkpoint('ntp-ssid-entered');await tap(240,420);await checkpoint('ntp-credentials');await tap(360,484);await checkpoint('ntp-start');
+    for(let i=0;i<15;i++){await waitGuest((await queryClock())+1);await checkpoint(`ntp-progress-${i}`);networkStages.push({stage:stages.at(-1).name,network:await runtime.readNetwork()});}
+    assert.ok(networkStages.some(s=>s.network.interfaces[0]?.leaseReady),'Guest station must obtain DHCP through the actual helper');
+    if(scenario==='network') {assert.match(serial,/wifi:connected with eink/);assert.ok(networkStages.some(s=>{const c=s.network.interfaces[0]?.counters;return c?.udpFlows>0&&c.bytesOut>0&&c.bytesIn>0;}),'Real outbound and inbound UDP data must pass through the helper');assert.ok(stages.some(s=>s.ntpStatus==='0cef249cd8d9db5cabe2d57373435206ba720570568501cf4f78678fc022928d'),'Official SNTP completion must render the visually checked TIME UPDATED status');}
+  }
   if(scenario==='imu') {
     assert.match(serial,/IMU ready type=6 attempt=1/,'Official HAL must receive accel and gyro ready during initialization');
     assert.doesNotMatch(serial,/IMU not ready|IMU init failed/);
@@ -156,10 +199,11 @@ try{
   await runtime.pause();
 }catch(e){failure={message:e.message,code:e.code};process.exitCode=1;}
 finally{
+  try{
   const state=await runtime.observe();
   await writeFile(`${output}/serial.log`,serial);
   await writeFile(`${output}/emulator.log`,emulator);
   if(latestFrame)await writeFile(`${output}/frame.png`,png(latestFrame));
-  await writeFile(`${output}/receipt.json`,JSON.stringify({productId,board:product.runtime.board,url,expectedHash,wasmSha256:createHash('sha256').update(await readFile(new URL('web/wasm/esp32sim.wasm',root))).digest('hex'),firmware:state.firmware,storage:state.storage,sdCard:state.sdCard,leds:state.leds,stats:state.stats,frame:latestFrame?{width:latestFrame.width,height:latestFrame.height,frameNumber:latestFrame.frameNumber,sha256:createHash('sha256').update(latestFrame.pixels).digest('hex')}:null,lastError:state.lastError,inputs,imuInputs,stages,failure,elapsedMs:Date.now()-started},null,2)+'\n');
-  await runtime.dispose();
+  await writeFile(`${output}/receipt.json`,JSON.stringify({productId,board:product.runtime.board,url,expectedHash,wasmSha256:loadedWasmSha256,firmware:state.firmware,storage:state.storage,sdCard:state.sdCard,leds:state.leds,stats:state.stats,frame:latestFrame?{width:latestFrame.width,height:latestFrame.height,frameNumber:latestFrame.frameNumber,sha256:createHash('sha256').update(latestFrame.pixels).digest('hex')}:null,lastError:state.lastError,inputs,imuInputs,networkStages,grayFixture,stages,failure,elapsedMs:Date.now()-started},null,2)+'\n');
+  }finally{await runtime.dispose();}
 }
