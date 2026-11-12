@@ -4,6 +4,9 @@
 //! (shared with the touch controller's), and the display supply enabled by GPIO 60 driven low.
 //! Modelled: the panel and its reset and power gates, the CST9220 touch on I2C0 (0x5A, SDA 56,
 //! SCL 3, INT 6), the AI button on GPIO 7, and the BQ27220 fuel gauge (0x55) on I2C0, and the panel's TE output on GPIO 43: a 60 Hz frame with a 1 ms high blanking pulse.
+//! Audio: the ES8311 codec (0x19) on I2C0 as a register file with its chip ID, serving the factory
+//! firmware's `audio_dac` and `audio_adc` both (no ES7210 is addressed), full duplex on I2S0 (the factory firmware logs BCLK 37, WS 49, DOUT 52, DIN 40) with the
+//! speaker amplifier enabled by GPIO 45; what I2S0 transmits is the run's audio (`--wav`).
 use esp_soc::devices::co5300::Co5300;
 use esp_soc::{Board, BoardModel, NoBoard};
 
@@ -18,6 +21,11 @@ pub fn make_board(name: &str) -> Option<Board> {
 pub const PIN_LCD_RESET: u8 = 44;
 pub const PIN_LCD_POWER_N: u8 = 60;
 pub const PIN_LCD_TE: u8 = 43;
+/// The speaker amplifier's enable (the factory firmware's `gpio_pa_control`), active high.
+pub const PIN_PA: u8 = 45;
+/// The ES8311 DAC on I2C0: the factory firmware addresses it as 0x32 (8-bit), CE high.
+/// Chip ID registers 0xFD/0xFE read 0x83/0x11 as on the other boards' ES8311.
+pub const ES8311_ADDRESS: u8 = 0x19;
 /// CST9220 INT, active low: low while a finger is down, and for 1 ms after it lifts so the
 /// driver reads the release report.
 pub const PIN_TOUCH_INT: u8 = 6;
@@ -35,6 +43,8 @@ pub struct Mosaico {
     /// the supply enable (GPIO 60, active low) and the reset line (GPIO 44, active low)
     pub powered: bool,
     pub in_reset: bool,
+    /// the speaker amplifier's enable (GPIO 45)
+    pub amp: bool,
     pub gpio_events: u64,
     /// transactions the panel could not take: unpowered or held in reset
     pub dropped: u64,
@@ -55,7 +65,7 @@ impl Mosaico {
     pub const WIDTH: usize = 480;
     pub const HEIGHT: usize = 480;
     pub fn new() -> Self {
-        Mosaico { panel: Co5300::new(Self::WIDTH, Self::HEIGHT, 0), powered: false, in_reset: false, gpio_events: 0, dropped: 0, touch: Default::default(), nand: crate::spi_nand::SpiNand::new(), te_level: false, te_now: 0, touch_int_low: false, touch_release_at: None, te_edges: Vec::new() }
+        Mosaico { panel: Co5300::new(Self::WIDTH, Self::HEIGHT, 0), powered: false, in_reset: false, amp: false, gpio_events: 0, dropped: 0, touch: Default::default(), nand: crate::spi_nand::SpiNand::new(), te_level: false, te_now: 0, touch_int_low: false, touch_release_at: None, te_edges: Vec::new() }
     }
 }
 impl BoardModel for Mosaico {
@@ -67,6 +77,7 @@ impl BoardModel for Mosaico {
             match pin {
                 PIN_LCD_POWER_N => { if level && self.powered { self.panel.reset(); } self.powered = !level; }
                 PIN_LCD_RESET => { if !level { self.panel.reset(); } self.in_reset = !level; }
+                PIN_PA => self.amp = level,
                 _ => {}
             }
         }
@@ -100,7 +111,8 @@ impl BoardModel for Mosaico {
     }
     fn i2c_devices(&mut self) -> Vec<(u8, u8, Box<dyn esp_periph::i2c::I2cDevice>)> {
         vec![(0, crate::cst9220::ADDRESS, Box::new(crate::cst9220::Cst9220::new(self.touch.clone(), Self::WIDTH as u16, Self::HEIGHT as u16))),
-             (0, crate::bq27220::ADDRESS, Box::new(crate::bq27220::Bq27220::new()))]
+             (0, crate::bq27220::ADDRESS, Box::new(crate::bq27220::Bq27220::new())),
+             (0, ES8311_ADDRESS, Box::new(esp_periph::i2c::Reg8Device::new("es8311", &[(0xfd, 0x83), (0xfe, 0x11)])))]
     }
     fn touch(&mut self, x: u16, y: u16, down: bool) {
         *self.touch.lock().unwrap() = crate::cst9220::Touch { down, x, y };
@@ -124,9 +136,9 @@ impl BoardModel for Mosaico {
     fn display_frames(&self) -> u64 { self.panel.frames }
     fn report(&self) -> String {
         let n = self.nand.stats;
-        format!("[emu] mosaico: CO5300 {} RAMWR, {} pixels; power {}, reset {}; {} transactions dropped; gpio events {}\n[emu] mosaico: NAND {} page reads, {} programs, {} erases, {} refused",
+        format!("[emu] mosaico: CO5300 {} RAMWR, {} pixels; power {}, reset {}; {} transactions dropped; gpio events {}; speaker amp {}\n[emu] mosaico: NAND {} page reads, {} programs, {} erases, {} refused",
                 self.panel.frames, self.panel.pixels_written, if self.powered { "on" } else { "off" },
-                if self.in_reset { "held" } else { "released" }, self.dropped, self.gpio_events, n.reads, n.programs, n.erases, n.refused)
+                if self.in_reset { "held" } else { "released" }, self.dropped, self.gpio_events, if self.amp { "on" } else { "off" }, n.reads, n.programs, n.erases, n.refused)
     }
 }
 

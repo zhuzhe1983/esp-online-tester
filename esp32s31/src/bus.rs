@@ -52,6 +52,13 @@ pub const AXI_DMA: u32 = 0x2034_8000;
 /// reg_base.h DR_REG_PPA_BASE / DR_REG_DMA2D_BASE: the P4's PPA and 2D-DMA (esp_periph::ppa / dma2d).
 pub const PPA: u32 = 0x2034_5000;
 pub const DMA2D: u32 = 0x2034_6000;
+/// reg_base.h DR_REG_AHB_DMA_BASE: the AHB-GDMA, `esp_periph::gdma::AhbDmaV2` (five channel pairs; I2S0 triggers 1-4, I2S1 5-8).
+pub const AHB_DMA: u32 = 0x2034_3000;
+/// reg_base.h DR_REG_I2S0_BASE / DR_REG_I2S1_BASE: the P4's I2S layout (`esp_periph::I2s::new_v2`).
+pub const I2S: [u32; 2] = [0x2038_7000, 0x2038_8000];
+/// HP_SYS_CLKRST I2Sn_TX_CTRL0 (clock enable, source, integer divider) and I2Sn_TX_DIV_CTRL0
+/// (fractional divider) of I2S0 and I2S1 (IDF master hp_sys_clkrst_reg.h 0xf0/0xf4, 0x104/0x108).
+const I2S_TX_CLOCK: [(u32, u32); 2] = [(0x2058_70f0, 0x2058_70f4), (0x2058_7104, 0x2058_7108)];
 
 struct UsbDma<'a> { sram: &'a mut [u8], lp: &'a mut [u8] }
 impl UsbDma<'_> {
@@ -145,6 +152,10 @@ pub struct S31Bus {
     /// 2D-DMA (IRQ sources 105-107 IN, 108-111 OUT) and the PPA (source 102) it feeds.
     pub dma2d: esp_periph::dma2d::Dma2d,
     pub ppa: esp_periph::ppa::Ppa,
+    /// AHB-GDMA (IRQ sources 36-40 IN, 41-45 OUT): the I2S controllers' DMA.
+    pub ahb_dma: esp_periph::gdma::AhbDmaV2,
+    /// I2S0 and I2S1 (IRQ sources 6 and 7).
+    pub i2s: [esp_periph::I2s; 2],
     /// XTAL-domain remainder carried between ticks for the I2C controllers.
     pub i2c_frac: u64,
 }
@@ -173,7 +184,8 @@ impl S31Bus {
             // Same HS UTMI DWC2 instance as the P4 (esp_hal_usb/esp32s31/usb_dwc_periph.c); its
             // GHWCFG words are assumed equal to the P4's until read from an S31.
             usb_otg: esp_periph::usb_otg::Dwc2::new(esp_periph::usb_otg::Dwc2Config::esp32p4_hs(crate::periph::CPU_HZ)),
-            spi2: esp_periph::GpSpi::new(), spi3: esp_periph::GpSpi::with_host(3), i2c: [esp_periph::i2c::I2c::new(), esp_periph::i2c::I2c::new()], i2c_frac: 0, axi_dma: esp_periph::gdma::AxiDma::new(), dma2d: esp_periph::dma2d::Dma2d::new(), ppa: esp_periph::ppa::Ppa::new() }
+            spi2: esp_periph::GpSpi::new(), spi3: esp_periph::GpSpi::with_host(3), i2c: [esp_periph::i2c::I2c::new(), esp_periph::i2c::I2c::new()], i2c_frac: 0, axi_dma: esp_periph::gdma::AxiDma::new(), dma2d: esp_periph::dma2d::Dma2d::new(), ppa: esp_periph::ppa::Ppa::new(),
+            ahb_dma: esp_periph::gdma::AhbDmaV2::new(), i2s: [esp_periph::I2s::new_v2(crate::periph::CPU_HZ), esp_periph::I2s::new_v2(crate::periph::CPU_HZ)] }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -232,6 +244,59 @@ impl S31Bus {
         match result { Ok(next) => { c.desc = next; c.int_raw |= 1 << 3; } Err(_) => c.int_raw |= 1 << 2 }
         let spi = if host == 2 { &mut self.spi2 } else { &mut self.spi3 };
         spi.complete_dma_tx(&data);
+        true
+    }
+    /// I2Sn's transmit DMA through the AHB-GDMA, paced by the frame rate, as the P4 runs its
+    /// I2S1 (esp32p4 bus.rs `i2s1_tx`): the frames due since the last call are taken from the OUT
+    /// channel bound to one of the controller's four triggers (I2S0 1-4, I2S1 5-8; IDF's driver
+    /// uses the first), a descriptor at a time, each written back to the CPU when AUTO_WRBACK is
+    /// set, with OUT_DONE, OUT_EOF on a SUC_EOF one and OUT_TOTAL_EOF when it ends the chain. The
+    /// buffers may be in PSRAM: the memory view is the 2D-DMA's. The first slot of each frame
+    /// goes to the audio sink. True when a channel interrupt may have changed.
+    pub(crate) fn i2s_tx(&mut self, n: usize, cycles: u64) -> bool {
+        let (frames, bpf, sample_bytes) = { let i = &mut self.i2s[n]; (i.frames_due(cycles), i.bytes_per_frame as usize, i.sample_bytes()) };
+        if frames == 0 || bpf == 0 { return false; }
+        let first = 1 + 4 * n as u32;
+        let Some(ch) = (first..first + 4).find_map(|t| self.ahb_dma.gdma.out_channel_for(t)) else { return false };
+        let mut need = frames as usize * bpf;
+        let mut stream: Vec<u8> = Vec::with_capacity(need);
+        let mut mem = Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, cache: &mut self.cache };
+        let mut walk = esp_periph::gdma::DescriptorWalk::new(esp_periph::gdma::GDMA_DESCRIPTOR_STEP_BUDGET);
+        let gdma = &mut self.ahb_dma.gdma;
+        while need != 0 {
+            let c = gdma.out[ch];
+            if !c.running || c.desc == 0 { break; }
+            let read = walk.read_with(c.desc, |a| { let mut b = [0u8; 4]; esp_periph::sdmmc::SdmmcMemory::read(&mut mem, a, &mut b).map(|_| u32::from_le_bytes(b)) });
+            let (dw0, d) = match read {
+                Ok(read) => read,
+                Err(esp_periph::gdma::DmaDescriptorFault::StepBudgetExceeded { .. }) => break,
+                Err(_) => { let c = &mut gdma.out[ch]; c.running = false; c.int_raw |= 1 << 2; break; }   // OUT_DSCR_ERR
+            };
+            let remaining = d.length.saturating_sub(c.buf_pos) as usize;
+            if remaining == 0 {
+                if c.conf0 & (1 << 2) != 0 { let _ = esp_periph::sdmmc::SdmmcMemory::write(&mut mem, c.desc, &(dw0 & !(1 << 31)).to_le_bytes()); }   // AUTO_WRBACK: owner -> CPU
+                let c = &mut gdma.out[ch];
+                c.int_raw |= 1 << 0;                                                    // OUT_DONE
+                if dw0 & (1 << 30) != 0 { c.int_raw |= 1 << 1; c.eof_desc = c.desc; }   // OUT_EOF
+                if d.next == 0 { c.running = false; c.desc = 0; if d.eof { c.int_raw |= 1 << 3; } break; }   // OUT_TOTAL_EOF
+                c.desc = d.next; c.buf_pos = 0;
+                continue;
+            }
+            let take = remaining.min(need);
+            let start = stream.len();
+            stream.resize(start + take, 0);
+            if esp_periph::sdmmc::SdmmcMemory::read(&mut mem, d.buf.wrapping_add(c.buf_pos), &mut stream[start..]).is_err() {
+                stream.truncate(start);
+                let c = &mut gdma.out[ch]; c.running = false; c.int_raw |= 1 << 2; break;
+            }
+            gdma.out[ch].buf_pos += take as u32;
+            need -= take;
+        }
+        let samples: Vec<i16> = stream.chunks_exact(bpf)
+            .map(|f| if sample_bytes == 1 { (f[0] as i8 as i16) << 8 } else { i16::from_le_bytes([f[sample_bytes - 2], f[sample_bytes - 1]]) })
+            .collect();
+        let i = &mut self.i2s[n];
+        i.frames_out += samples.len() as u64; i.pcm.extend_from_slice(&samples);
         true
     }
     /// Run the 2D-DMA transfers (M2M, PPA) whose channels are all started; count refusals.
@@ -311,7 +376,7 @@ impl S31Bus {
         let mut dma = UsbDma { sram: &mut self.sram, lp: &mut self.lp };
         self.usb_otg.run(&mut dma);
     }
-    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], gpio: self.pads.irq_lines(), axi_dma: esp_periph::Device::irq_sources(&self.axi_dma), dma2d: self.dma2d.irq_bits() as u8, ppa: self.ppa.irq(), wifi_mac: self.wifi_mac.irq() } }
+    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], gpio: self.pads.irq_lines(), axi_dma: esp_periph::Device::irq_sources(&self.axi_dma), dma2d: self.dma2d.irq_bits() as u8, ppa: self.ppa.irq(), wifi_mac: self.wifi_mac.irq(), ahb_dma: esp_periph::Device::irq_sources(&self.ahb_dma), i2s: [self.i2s[0].irq(), self.i2s[1].irq()] } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
@@ -354,6 +419,15 @@ impl S31Bus {
         }
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
+        let r = self.write_unhooked(address, value, bytes);
+        if let Some(n) = I2S_TX_CLOCK.iter().position(|&(c, d)| address & !3 == c || address & !3 == d) {
+            let (c, d) = I2S_TX_CLOCK[n];
+            let (ctrl0, div) = (self.read(c, 4).unwrap_or(0), self.read(d, 4).unwrap_or(0));
+            self.i2s[n].set_v2_clock(ctrl0, div);
+        }
+        r
+    }
+    fn write_unhooked(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         let had = self.first_fault.is_some();
         match self.write_modelled(address, value, bytes) {
             Err(Fault::Prohibited) if self.refusal_only(address, bytes, true) => {
@@ -395,6 +469,16 @@ impl S31Bus {
         if let Some(off) = offset(address, DMA2D, bytes, 0x1000) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(esp_periph::Device::read(&mut self.dma2d, off as u32));
+        }
+        if let Some(off) = offset(address, AHB_DMA, bytes, 0x1000) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(esp_periph::Device::read(&mut self.ahb_dma, off as u32));
+        }
+        for (n, base) in I2S.into_iter().enumerate() {
+            if let Some(off) = offset(address, base, bytes, 0x100) {
+                if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+                return Ok(self.i2s[n].read(off as u32));
+            }
         }
         if let Some(off) = offset(address, PPA, bytes, 0x1000) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -636,6 +720,18 @@ impl S31Bus {
             esp_periph::Device::write(&mut self.dma2d, off as u32, value);
             self.run_dma2d();
             return Ok(());
+        }
+        if let Some(off) = offset(address, AHB_DMA, bytes, 0x1000) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            esp_periph::Device::write(&mut self.ahb_dma, off as u32, value);
+            return Ok(());
+        }
+        for (n, base) in I2S.into_iter().enumerate() {
+            if let Some(off) = offset(address, base, bytes, 0x100) {
+                if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+                self.i2s[n].write(off as u32, value);
+                return Ok(());
+            }
         }
         if let Some(off) = offset(address, PPA, bytes, 0x1000) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
@@ -897,6 +993,34 @@ impl Bus for S31Bus {
 
 #[cfg(test)]
 mod tests {
+    /// I2S0 TX through the AHB-GDMA (OUT ch1 on trigger 1) from a descriptor in SRAM: the frames
+    /// due go to the audio sink, the channel ends with OUT_EOF/OUT_TOTAL_EOF on source 42, and the
+    /// rate comes from the HP_SYS_CLKRST divider words.
+    #[test]
+    fn i2s0_transmits_through_the_ahb_gdma() {
+        let mut b = S31Bus::new();
+        let (desc, buf) = (SRAM_BASE + 0x1000, SRAM_BASE + 0x2000);
+        for (k, s) in [0x1111u16, 0x2222, 0x3333, 0x4444].iter().enumerate() { b.write(buf + 2 * k as u32, u32::from(*s), 2).unwrap(); }
+        b.write32(desc, (1 << 31) | (1 << 30) | (8 << 12) | 8).unwrap();   // owner DMA, SUC_EOF, 8 bytes
+        b.write32(desc + 4, buf).unwrap(); b.write32(desc + 8, 0).unwrap();
+        let out1 = AHB_DMA + 0x200 + 0x80;
+        b.write32(AHB_DMA + 0x68, 0xf).unwrap();                            // OUT_INT_ENA_CH1
+        b.write32(out1 + 0x38, 1).unwrap();                                 // OUT_PERI_SEL_CH1: I2S0CH0
+        b.write32(out1 + 0x14, desc).unwrap(); b.write32(out1 + 0x10, 1 << 1).unwrap();   // OUT_LINK_ADDR, START
+        b.write32(I2S_TX_CLOCK[0].0, 1 | (9 << 3)).unwrap();                // XTAL, DIV_N 9
+        b.write32(I2S_TX_CLOCK[0].1, 3 | (4 << 9) | (15 << 18) | (1 << 27)).unwrap();
+        b.write32(I2S[0] + 0x2c, (15 << 14) | (15 << 19)).unwrap();         // 16-bit, 32-bit frames
+        b.write32(I2S[0] + 0x54, (1 << 16) | 3).unwrap();                   // two slots
+        b.write32(I2S[0] + 0x24, (7 << 21) | (1 << 2)).unwrap();            // BCK /8, TX_START
+        assert_eq!(b.i2s[0].sample_rate, 16000);
+        assert!(b.i2s_tx(0, crate::periph::CPU_HZ));
+        assert_eq!(b.i2s[0].pcm, [0x1111, 0x3333]);
+        assert_eq!(b.read32(AHB_DMA + 0x60).unwrap() & 0b1010, 0b1010, "OUT_EOF, OUT_TOTAL_EOF");
+        assert_eq!(b.read32(desc).unwrap() >> 31, 1, "no AUTO_WRBACK: the owner stays");
+        let irq = b.peripheral_irqs();
+        assert!(irq.ahb_dma & (1 << 1) != 0);
+        assert!(irq.sources().contains(&(crate::interrupts::AHB_DMA_IN_SOURCE + 6, true)));
+    }
     #[test]
     fn crypto_roots_preserve_real_sha_data_and_obey_source_gates() {
         use emu_core::Bus;

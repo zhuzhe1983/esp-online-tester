@@ -8,6 +8,8 @@ mod ahb;
 pub use ahb::{AhbLayout, GdmaAhb};
 mod axi;
 pub use axi::AxiDma;
+mod ahb_v2;
+pub use ahb_v2::AhbDmaV2;
 
 // ------------------------------------------------------------------ GDMA (out/TX channels only for now) + I2S0 TX
 pub const GDMA_CHANNELS: usize = 5;

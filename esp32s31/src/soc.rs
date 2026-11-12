@@ -672,8 +672,11 @@ impl esp_soc::SocBus for SocBus {
         &*self.board
     }
 
+    /// The I2S controller that has sent the most frames (the Mosaico's speaker codec is on I2S0).
     fn audio(&self) -> (&[i16], u32) {
-        (&[], 44100)
+        let i = &self.inner.i2s;
+        let a = if i[1].frames_out > i[0].frames_out { &i[1] } else { &i[0] };
+        (&a.pcm, a.sample_rate)
     }
 
     fn irq_sources_of(&self, core: usize, line: u32) -> Vec<usize> {
@@ -840,6 +843,7 @@ impl Bus for SocBus {
             self.irq_dirty = true;
         }
         if self.inner.spi2.dma_tx_pending.is_some() || self.inner.spi3.dma_tx_pending.is_some() { self.deliver_spi(); }
+        for n in 0..2 { if self.inner.i2s[n].poll_active() && self.inner.i2s_tx(n, u64::from(cycles)) { self.irq_dirty = true; } }
         // Emulated time for the board (TE), in nanoseconds.
         let t = u128::from(cycles) * 1_000_000_000 + u128::from(self.board_ns_frac);
         self.board_ns += (t / u128::from(hz)) as u64; self.board_ns_frac = (t % u128::from(hz)) as u64;
