@@ -369,8 +369,7 @@ impl SocBus {
 
     /// The modem's TSF timers (802.11 timing synchronization, microseconds). The Wi-Fi library
     /// reads timer n (0-3) by setting bit n of 0x2010D814, reading the latched value from
-    /// 0x2010D820 (low) and 0x2010D824 (high), then clearing the bit (IRAM helper at 0x2f021c2a in
-    /// the Mosaico firmware). With the block as plain storage the latch never moved, so every
+    /// 0x2010D820 (low) and 0x2010D824 (high), then clearing the bit (`hal_get_tsf_time`). With the block as plain storage the latch never moved, so every
     /// caller waiting for time to pass spun on it (half the host time of a Wi-Fi session). A
     /// request bit latches emulated time; the four timers share one count (no per-timer offset or
     /// TSF adjustment is modelled).
