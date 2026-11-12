@@ -19,8 +19,9 @@ seconds, `--no-dump`. The image, the USB script and everything derived from them
 console hashes) stay out of this receipt; the harness takes them from `S31_FLASH_IMAGE` and
 `S31_USB_HOST`. Work check: both cores' instruction counts (core0 3,200,000,000, core1
 3,125,158,720), the console's SHA-256 (compared, not recorded) and, in separate runs, the whole
-end-of-run report minus wall time and the block statistics line (exceptions 917, interrupts
-125,800, the per-line interrupt histogram) are identical for base, new and new `--no-jit`.
+end-of-run report minus wall time and the block statistics line (exception and interrupt
+counts and the per-line interrupt histogram; compared, not recorded) are identical for base, new
+and new `--no-jit`.
 
 The C3 and C6 workloads are the public `c3-hello`, `c6-hello`, `c3-wifi-station` and
 `c6-wifi-station` of the earlier CPU tables (firmware in `web/wasm/fw/public`).
@@ -63,9 +64,8 @@ Round 1 (`df53d825`, `exec_insn` forced inline everywhere) flagged the C3: c3-he
   samples, `present_irqs` 772, `peripheral_irqs` 568, USB `gintsts_now` 356); instruction fetch
   ~24% (`fetch` 2480, cache `read_byte_core`, MMU `translate`, APM checks); `step_outcome` 20%;
   the device dispatch chain of loads and stores most of the rest.
-- `--profile`: 83.5% of the 6.33 G instructions are the idle `wfi` pc (idle skip); of the
-  ~1.0 G executed, ~300 M are ROM `ets_delay_us` (a `csrr`/`sub`/`bltu` busy loop) and ~270 M
-  run from the PSRAM window.
+- The guest profile of the private image (`--profile`) was read to steer the work and is not
+  recorded here.
 - New: the block loop and `exec_insn` ~40%; device time per round (`tick`, USB OTG) ~10%;
   interrupt refresh at dispatch starts ~15%; `Power::is_mmio` and the rest of the chain for
   device accesses ~10%.
@@ -100,6 +100,10 @@ some under load: indicative only.
 
 ## Round 4: music playback on the Mosaico (2026-11-12)
 
+**This round measures the TSF latch fix of #354 (`19386788`), not the block engine:** base and
+new do different guest work, so its gain is not an EX265 speed result. It is kept here because it
+answers the question that followed EX265 (does music play at real time?) on the EX265 build.
+
 Question: does the Mosaico play music at real time or faster on one host core? Base `38920eed`
 (the EX265 branch as recorded above); new `39ca9022`, the same plus `s31/takeover`'s `19386788`
 cherry-picked (a write setting bit n of 0x2010D814 latches emulated microseconds into
@@ -108,9 +112,8 @@ cherry-picked (a write setting bit n of 0x2010D814 latches emulated microseconds
 behaviour fix, and with it the Wi-Fi library stops spinning on a TSF that never moved.
 
 Workloads (private, as above, plus a touch script `S31_SCRIPT`/`S31_MUSIC_SCRIPT` that opens the
-music app at ~20.5 s): the app starts playing on its own at ~21.4 s.
-The caller's original script then touches the play/pause button at 23 s, which **pauses** playback
-at ~23.8 s; so `s31-music` (that script, 40 s) is a whole-run figure, not a playback figure. The
+music app and starts playback). An earlier `s31-music` script paused playback part-way, so it is a
+whole-run figure, not a playback figure. The
 playback phase is measured with the same script minus that last touch (playing until the end of
 every run): `play_pairs.py` runs each side to 23 s and to 40 s back to back and takes the
 difference (17 emulated seconds of playback). A 40 s `--wav` of the new build has music of
