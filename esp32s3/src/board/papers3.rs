@@ -59,7 +59,7 @@ impl BoardModel for PaperS3 {
         // byte per row, and rounds 540 gate rows to 544. D8..15 are wired to
         // panel D6,D7,D4,D5,D2,D3,D0,D1, so reverse the four two-bit pairs.
         let mut words=[0u16;240];
-        for line in bytes.chunks_exact(241).take(540) {
+        for line in bytes.as_chunks::<241>().0.iter().take(540) {
             for (word,&v) in words.iter_mut().zip(&line[1..]) {*word=u16::from((v>>6)|((v>>2)&12)|((v<<2)&48)|(v<<6));}
             self.panel.line(&words);self.panel.latch();
         }
@@ -146,7 +146,8 @@ mod tests {
             let mut b=PaperS3::new();rgb_route(&mut b,None);if bad!=0 {rgb_begin(&mut b);}
             let (w,h,bpp)=match bad {1=>(240,544,1),2=>(241,540,1),3=>(241,544,2),_=>(241,544,1)};
             b.lcd_rgb_start(3,w,h,bpp,&|_|match bad {4=>None,5=>Some((5280,543)),_=>Some((5280,546))});
-            if bad==6 {b.gpio_output_at(4,&[],0,0);}if bad==7 {rgb_route(&mut b,Some(16));}
+            if bad==6 {b.gpio_output_at(4,&[],0,0);}
+            if bad==7 {rgb_route(&mut b,Some(16));}
             b.lcd_frame(241,544,&bytes);assert_eq!(b.panel.frames,0,"invalid scan {bad}");
         }
     }
