@@ -1,0 +1,55 @@
+{
+  "status": "pass",
+  "method": "PNG decode plus fixed M5GFX Bayer quantization and last non-hold drive endpoint; compared to actual WASM physical framebuffer.",
+  "nativeRegion": [
+    298,
+    380,
+    88,
+    85
+  ],
+  "sourceGrayDifferencePixels": 1148,
+  "actualChangedPixels": 429,
+  "blackToWhite": 284,
+  "whiteToBlack": 145,
+  "comparisons": [
+    {
+      "frame": "first",
+      "asset": "img_bg.png",
+      "mode": "quality",
+      "pixels": 7480,
+      "mismatches": 0,
+      "frameRgbaSha256": "91129d06e859ebecd2d4f73f5c9a54e04c8e54afe54ae8680ae5a348e9e2d61f",
+      "regionGraySha256": "6c769443f80193e87d764a632fd76cf217ecfabc49649d72cada3cd01af73265",
+      "expectedGraySha256": "6c769443f80193e87d764a632fd76cf217ecfabc49649d72cada3cd01af73265"
+    },
+    {
+      "frame": "buzzer",
+      "asset": "img_icon_mute_off.png",
+      "mode": "fastest",
+      "pixels": 7480,
+      "mismatches": 0,
+      "frameRgbaSha256": "094fbd77990bfe900eb8fe6eba9801faa3a6e2ac0f2f8829ed3e2c914f53ef3d",
+      "regionGraySha256": "e49cb32fd62fc7083f1763c530b095a70ebf8b49d3986c6b9b0835a7f0d3278e",
+      "expectedGraySha256": "e49cb32fd62fc7083f1763c530b095a70ebf8b49d3986c6b9b0835a7f0d3278e"
+    },
+    {
+      "frame": "returned",
+      "asset": "img_icon_mute_on.png",
+      "mode": "fastest",
+      "pixels": 7480,
+      "mismatches": 0,
+      "frameRgbaSha256": "687492738e6c59f4ca6326a2989bd758d4215045d73a7431cee747cf7e7d02cb",
+      "regionGraySha256": "e231f4e77783bbedb8739eaf3825c87e4b82d062c0457ff86e79f8544a054b3c",
+      "expectedGraySha256": "e231f4e77783bbedb8739eaf3825c87e4b82d062c0457ff86e79f8544a054b3c"
+    }
+  ],
+  "limitations": [
+    "quality is the current uncalibrated black/white endpoint, not the physical 16-gray result.",
+    "Exact equality covers the 88x85 mute icon region and these three actual captures; it is not a whole-screen or EDCBook correctness claim."
+  ],
+  "wasmSha256": "8d8ccce696666eeb7a355cdbe15fd398eaec9ddb9ae9ade85544d91639b4fb20",
+  "firmwareSha256": "d6733a0ca378f95335fa5fba4d4d992fb1dd97c17557b20e9aebfca08ba6d624",
+  "runtimeReceipt": "docs/platform/evidence/papers3-rtc/factory-regression.json",
+  "command": "node tools/check-papers3-factory-display.mjs --assets <fixed-factory-main/assets> --panel-source <fixed-Panel_EPD.cpp> --frames <factory-probe-output>",
+  "conclusion": "The 429 changed pixels are fully explained by the distinct official background/icon assets and quality versus fastest quantization. No residual or shifted rows remain unexplained inside this icon region."
+}
