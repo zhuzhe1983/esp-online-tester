@@ -32,3 +32,9 @@ CPU 对照：相对 df198a74 同机 release 二进制，S3/C3/C6 hello各交替�
 后续触摸/UI 修正：目录补齐 `runtime.touch`，修复浏览器3D/2D输入开关与已实现触摸器件不一致。透明盖板印刷的现有 alpha-aware 命中逻辑实测正常，未修改。三个盖板键按保留照片印刷位置增加独立圆形/胶囊命中区，CST816S原生坐标仍由板型发送；CAD三角形、位置与印刷纹理不变，四个重建文件逐字节一致。六枚备用按钮改成中文，超过三枚时收进「按键」菜单；工作台和480px mini无水平溢出。
 
 真实鼠标点3D设置图标产生客体(392,675)按下/释放，官方进入SettingsScreen；点击橙色主页盖板键，官方处理vk_home并回到主页。新探针同时采集USB控制台，覆盖音量上键的实际 `volume=80` 日志与刷新输出。首轮Home探针只等1.5客体秒，捕捉到固件已切页但尚未刷新的旧帧；延长观察至其刷新完成后通过。保留 [首轮失败](evidence/ink4-runtime/official-wasm-initial.json)，修正后的 [WASM收据](evidence/ink4-runtime/official-wasm.json) 和 [3D/UI收据](evidence/ink4-runtime/touch-ui.json) 分别记录观察范围。长按Home在设置页会由固件报告no-op，释放后的默认返回才回主页；不把固件本身的菜单规则改成前端强制跳转。新设备录制导出已能保存触摸和语义键事件，但使用旧stats观察时间的浏览器脚本曾在重启初始阶段发送输入，本轮不将其计为有效回放通过。
+
+## 2026-11-12：TF 接卡与录制闭环
+
+普通 INK4 现已开放工作台、mini 和 agent 共用的虚拟 TF 卡入口。默认插入 64 MiB FAT32；固定官方 2.0.53 已验证挂载、读取预置根目录文件、创建应用目录、reset/重新加载保留，以及 Chromium IndexedDB 整页重载恢复。GPIO46 保持 DAT3 上拉，不当作机械卡检测；原有 MAIN_PWR/SCREEN_SOCKET_PWR 电源门控和 1-bit 路由不变。应用文件内容写入、USB MSC、卡线时序和物理硬件尚未验收。
+
+真实触摸设置/存储页、Home 返回和音量加减通过固件输出核实；6 事件录制在另一个干净实例回放后最终帧 hash 一致。开始录制须使用未写入的存储状态；既有 Flash/TF 数据仍受 pristine 检查保护，不会自动清空。官方 2.0.53、默认顺序、trial 标记和 8 MiB PSRAM 测试配置未改。设置页顶栏叠字仍是已知缺陷，联网另行验证。复现与精简结果见 [TF/录制证据](evidence/ink4-tf/README.md)。

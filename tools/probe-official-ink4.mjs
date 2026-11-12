@@ -8,9 +8,11 @@ import {createHash} from 'node:crypto';
 import {deflateSync} from 'node:zlib';
 import {createPlatformRuntime} from '../web/platform/runtime.js';
 import {createDefaultScene} from '../web/platform/catalog.js';
+import {installAutomation} from '../web/platform/automation.js';
 
-const [url, expectedHash, output = 'output/official-ink4', duration = '8'] = process.argv.slice(2);
-if (!url || !/^[a-f0-9]{64}$/.test(expectedHash || '') || !/^https:\/\//.test(url)) throw new Error('Usage: node tools/probe-official-ink4.mjs <https-url> <sha256> [output-dir] [guest-seconds]');
+const [url, expectedHash, output = 'output/official-ink4', duration = '8', recordingMode = 'none', recordingPath] = process.argv.slice(2);
+if (!url || !/^[a-f0-9]{64}$/.test(expectedHash || '') || !/^https:\/\//.test(url)) throw new Error('Usage: node tools/probe-official-ink4.mjs <https-url> <sha256> [output-dir] [guest-seconds] [none|record|replay] [recording-json]');
+if(!['none','record','replay'].includes(recordingMode)||recordingMode==='replay'&&!recordingPath)throw new Error('Recording mode must be none, record, or replay with a recording JSON path');
 const seconds = Number(duration); if (!(seconds > 0 && seconds <= 300)) throw new Error('Guest seconds must be 0…300');
 const clockTimeout = Number(process.env.ESP32SIM_PROBE_CLOCK_TIMEOUT_MS || 10000);
 if (!(clockTimeout >= 1000 && clockTimeout <= 120000)) throw new Error('Clock timeout must be 1000…120000 ms');
@@ -47,7 +49,8 @@ const runtime=createPlatformRuntime({catalog,fetchImpl,workerFactory,baseUrl:'ht
   if(event.type==='input')inputs.push(event);
   if(event.type==='stats'){const second=Math.floor(Number(event.stats.time));if(second!==lastSecond){lastSecond=second;console.log(JSON.stringify({guestSeconds:second,insns:event.stats.insns}));}}
 }});
-const started=Date.now();let failure=null;const stages=[];
+const api=installAutomation(runtime,{target:{location:{href:'https://platform.example/platform/index.html'}}});
+const started=Date.now();let failure=null,recording=null,replay=null;const stages=[];
 const checkpoint=async name=>{
   assert.ok(latestFrame,`No frame at ${name}`);assert.equal(latestFrame.width,480);assert.equal(latestFrame.height,800);
   const state=await runtime.observe(),sha256=createHash('sha256').update(latestFrame.pixels).digest('hex');
@@ -72,20 +75,30 @@ const tap=async(x,y)=>{
   await waitGuest((await queryClock())+1);
 };
 try {
-  const scene=createDefaultScene(catalog,productId);await runtime.configure(scene);await runtime.loadFirmware({url,sha256:expectedHash});await runtime.start();
+  const scene=createDefaultScene(catalog,productId);await runtime.configure(scene);await runtime.loadFirmware({url,sha256:expectedHash});
+  if(recordingMode==='replay'){
+    recording=JSON.parse(await readFile(recordingPath,'utf8'));replay=await api.recordingPlay(recording);assert.equal(replay.result,'completed');assert.equal(replay.frameComparison,'equal','Replay final pixels must match the recording');
+    assert.ok(serial.includes('SettingsScreen: settings ready'),'Replay touch must open settings');
+    assert.ok(serial.includes('ScreenCommon: -> home'),'Replay Home must return');
+    assert.ok(serial.includes('VOLUME_UP (P1.0): volume='),'Replay volume button must reach firmware');await checkpoint('replayed');
+  }else{
+  if(recordingMode==='record')await api.recordingStart();else await runtime.start();
   await waitGuest(seconds);await checkpoint('home');await tap(395,670);await checkpoint('settings');
   assert.notEqual(stages[0].sha256,stages[1].sha256,'Touch must change actual guest output');
   await button(['home'],0.7);await waitGuest((await queryClock())+3);await checkpoint('cover-home');
   assert.notEqual(stages[1].sha256,stages[2].sha256,'Home hold must change actual guest output');
   await button(['volume-up'],0.15);await checkpoint('volume-up');
   assert.ok(inputs.some(e=>e.event?.id==='home'&&e.receipt?.delivery==='queued'),'Semantic board button must reach the worker');
+  if(recordingMode==='record'){recording=await api.recordingStop();assert.ok(recording.events.length>=6);await writeFile(`${output}/recording.json`,JSON.stringify(recording,null,2)+'\n');}
+  }
   await runtime.pause();
 }catch(e){failure={message:e.message,code:e.code};process.exitCode=1;}
 finally {
+  try {
   const state=await runtime.observe();
   await writeFile(`${output}/serial.log`,serial);await writeFile(`${output}/emulator.log`,emulator);
   await writeFile(`${output}/receipt.json`,JSON.stringify({productId,board:product.runtime.board,url,expectedHash,
     wasmSha256:createHash('sha256').update(await readFile(new URL('web/wasm/esp32sim.wasm',root))).digest('hex'),
-    firmware:state.firmware,stats:state.stats,stages,inputs,failure,elapsedMs:Date.now()-started},null,2)+'\n');
-  await runtime.dispose();
+    firmware:state.firmware,stats:state.stats,stages,inputs,recordingMode,replay,failure,elapsedMs:Date.now()-started},null,2)+'\n');
+  } finally { await api.dispose(); }
 }
