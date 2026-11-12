@@ -80,7 +80,7 @@ impl esp_periph::sdmmc::SdmmcMemory for Dma2dMem<'_> {
     }
 }
 
-struct AxiOut<'a> { mem: UsbDma<'a>, channel: &'a mut esp_periph::gdma::GdmaOutCh }
+struct AxiOut<'a> { mem: Dma2dMem<'a>, channel: &'a mut esp_periph::gdma::GdmaOutCh }
 impl esp_periph::gdma::OutMemory for AxiOut<'_> {
     fn out_channel(&mut self) -> &mut esp_periph::gdma::GdmaOutCh { self.channel }
     fn word(&mut self, address: u32) -> Result<u32, Fault> {
@@ -221,7 +221,7 @@ impl S31Bus {
         let Some(bits) = spi.dma_tx_pending else { return false };
         let Some(ch) = self.axi_dma.gdma.out_channel_for(trigger) else { return false };
         let mut data = Vec::with_capacity((bits as usize).div_ceil(8));
-        let mut memory = AxiOut { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, channel: &mut self.axi_dma.gdma.out[ch] };
+        let mut memory = AxiOut { mem: Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, cache: &mut self.cache }, channel: &mut self.axi_dma.gdma.out[ch] };
         let result = esp_periph::gdma::gather_out(&mut memory, (bits as usize).div_ceil(8), &mut data);
         let c = &mut self.axi_dma.gdma.out[ch];
         c.running = false; c.buf_pos = 0;
