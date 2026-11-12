@@ -3,7 +3,7 @@
 //! AMOLED on GP-SPI2 in QSPI mode (CLK 42, CS 50, D0-D3 36/51/35/9, TE 43), its RESET on GPIO 44
 //! (shared with the touch controller's), and the display supply enabled by GPIO 60 driven low.
 //! Modelled: the panel and its reset and power gates, the CST9220 touch on I2C0 (0x5A, SDA 56,
-//! SCL 3, INT 6) and the BQ27220 fuel gauge (0x55) on I2C0, and the panel's TE output on GPIO 43: a 60 Hz frame with a 1 ms high blanking pulse.
+//! SCL 3, INT 6), the AI button on GPIO 7, and the BQ27220 fuel gauge (0x55) on I2C0, and the panel's TE output on GPIO 43: a 60 Hz frame with a 1 ms high blanking pulse.
 use esp_soc::devices::co5300::Co5300;
 use esp_soc::{Board, BoardModel, NoBoard};
 
@@ -21,6 +21,8 @@ pub const PIN_LCD_TE: u8 = 43;
 /// CST9220 INT, active low: low while a finger is down, and for 1 ms after it lifts so the
 /// driver reads the release report.
 pub const PIN_TOUCH_INT: u8 = 6;
+/// The AI button (esp-mosaico-bsp), active low with the board's pull-up: high until pressed.
+pub const PIN_AI_BUTTON: u8 = 7;
 const TOUCH_RELEASE_NS: u64 = 1_000_000;
 /// CO5300 TE: one frame every 1/60 s, high for the first 1 ms (the blanking interval).
 const TE_PERIOD_NS: u64 = 16_666_667;
@@ -70,7 +72,7 @@ impl BoardModel for Mosaico {
         }
     }
     fn gpio_events(&self) -> u64 { self.gpio_events }
-    fn input_levels(&self) -> Vec<(u8, bool)> { vec![(PIN_LCD_TE, self.te_level), (PIN_TOUCH_INT, !self.touch_int_low)] }
+    fn input_levels(&self) -> Vec<(u8, bool)> { vec![(PIN_LCD_TE, self.te_level), (PIN_TOUCH_INT, !self.touch_int_low), (PIN_AI_BUTTON, true)] }
     /// The S31 machine passes emulated time in nanoseconds. TE runs only while the panel is powered
     /// and out of reset; a jump over several frames yields the level at `now` (one edge pair at most).
     fn advance_to(&mut self, now: esp_soc::board::VirtualCycle) {
@@ -85,6 +87,7 @@ impl BoardModel for Mosaico {
             self.te_edges.push(esp_soc::board::BoardEdge { cycle: now, pin: PIN_LCD_TE, level });
         }
     }
+    fn named_pin(&self, name: &str) -> Option<u8> { matches!(name, "ai" | "btn1" | "button").then_some(PIN_AI_BUTTON) }
     fn take_edges(&mut self) -> Vec<esp_soc::board::BoardEdge> { std::mem::take(&mut self.te_edges) }
     /// The next TE edge, in the same emulated nanoseconds `advance_to` takes, so an idle machine
     /// wakes for it instead of jumping over the 1 ms blanking pulse.
