@@ -44,10 +44,18 @@ fn boot_hello(rom: &[u8], dir: &str) -> esp_soc::Machine<esp32s31::S31> {
     m
 }
 
+/// `S31_ROM_ELF`, else `$ESP32SIM_ROM_DIR/esp32s31_rev0_rom.elf` (what the project gate sets).
+fn rom_elf() -> String {
+    std::env::var("S31_ROM_ELF").unwrap_or_else(|_| {
+        let dir = std::env::var("ESP32SIM_ROM_DIR").expect("S31_ROM_ELF or ESP32SIM_ROM_DIR");
+        format!("{dir}/esp32s31_rev0_rom.elf")
+    })
+}
+
 #[test]
-#[ignore = "needs S31_ROM_ELF and tools/fetch-s31-firmware.sh images"]
+#[ignore = "needs S31_ROM_ELF or ESP32SIM_ROM_DIR and tools/fetch-s31-firmware.sh images"]
 fn idf61_hello_world_prints_from_mask_rom_spi_boot() {
-    let rom = std::fs::read(std::env::var("S31_ROM_ELF").expect("S31_ROM_ELF")).unwrap();
+    let rom = std::fs::read(rom_elf()).unwrap();
     let dir = std::env::var("S31_FIRMWARE_DIR").unwrap_or_else(|_| {
         concat!(env!("CARGO_MANIFEST_DIR"), "/firmware").into()
     });
