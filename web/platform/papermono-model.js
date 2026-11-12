@@ -4,7 +4,7 @@ const material = (color, extra = {}) => new THREE.MeshStandardMaterial({color, r
 function cube(w,h,d,mat,x=0,y=0,z=0) { const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);mesh.position.set(x,y,z);return mesh; }
 function capsule(w,h) { const s=new THREE.Shape(),r=h/2,l=(w-h)/2;s.moveTo(-l,-r);s.lineTo(l,-r);s.absarc(l,0,r,-Math.PI/2,Math.PI/2);s.lineTo(-l,r);s.absarc(-l,0,r,Math.PI/2,Math.PI*1.5);return s; }
 export function createPapermonoModel(screenTexture) {
-  const group=new THREE.Group();group.name='m5stack-papermono';const parts={},buttons=[],connectors={},aborter=new AbortController();let disposed=false,labelTexture,pcbTexture;
+  const group=new THREE.Group();group.name='m5stack-papermono';const parts={},buttons=[],connectors={},aborter=new AbortController();let disposed=false,labelTexture,pcbTexture,nfcTexture;
   // Official drawing: 59 x 99 mm front cover, R2 corners, seated within the CAD rim.
   const coverShape=new THREE.Shape(),w=29.5,h=49.5,r=2;coverShape.moveTo(-w+r,-h);coverShape.lineTo(w-r,-h);coverShape.quadraticCurveTo(w,-h,w,-h+r);coverShape.lineTo(w,h-r);coverShape.quadraticCurveTo(w,h,w-r,h);coverShape.lineTo(-w+r,h);coverShape.quadraticCurveTo(-w,h,-w,h-r);coverShape.lineTo(-w,-h+r);coverShape.quadraticCurveTo(-w,-h,-w+r,-h);
   const cover=new THREE.Mesh(new THREE.ShapeGeometry(coverShape),material(0x888d8e,{roughness:.55}));cover.name='front-cover';cover.position.z=3.8;group.add(cover);parts.glass=cover;
@@ -26,7 +26,7 @@ export function createPapermonoModel(screenTexture) {
   const ledGeometry=new THREE.ExtrudeGeometry(capsule(8,2),{depth:.35,bevelEnabled:false,curveSegments:24});ledGeometry.rotateZ(Math.PI/2);ledGeometry.rotateY(Math.PI/2);
   const led=new THREE.Mesh(ledGeometry,material(0x858a85,{roughness:.55,emissive:0x000000,emissiveIntensity:1}));led.position.set(-30.515,10,0);led.name='rgb-led-diffuser';led.userData={kind:'rgb-led',ledIndex:0,sourceIds:['official-cad-stl','photo-10'],unlitColor:0x858a85};group.add(led);parts['rgb-led-diffuser']=led;const rgbLeds=[led];group.userData.rgbLedMeshes=rgbLeds;
   const ready=(async()=>{
-    const r=await fetch(new URL('model.json',base),{signal:aborter.signal});if(!r.ok)throw Error(`PaperMono model HTTP ${r.status}`);const metadata=await r.json();
+    const r=await fetch(new URL('model.json',base),{signal:aborter.signal,cache:'no-store'});if(!r.ok)throw Error(`PaperMono model HTTP ${r.status}`);const metadata=await r.json();
     const b=await fetch(new URL(metadata.binary,base),{signal:aborter.signal});if(!b.ok)throw Error(`PaperMono geometry HTTP ${b.status}`);const binary=await b.arrayBuffer();if(disposed)return;
     for(const part of metadata.parts) {
       const geometry=new THREE.BufferGeometry(),ib=new THREE.InterleavedBuffer(new Float32Array(binary,part.byteOffset,part.vertexCount*6),6);geometry.setAttribute('position',new THREE.InterleavedBufferAttribute(ib,3,0));geometry.setAttribute('normal',new THREE.InterleavedBufferAttribute(ib,3,3));geometry.computeBoundingSphere();
@@ -36,7 +36,20 @@ export function createPapermonoModel(screenTexture) {
       if(part.name==='power-button')mesh.userData.unsupported='PaperMono 尚无板级运行模型，电源键仅展示外观。';parts[part.name]=mesh;group.add(mesh);
     }
     const loaded=await new THREE.TextureLoader().loadAsync(new URL('rear-label.webp',base).href);if(disposed){loaded.dispose();return;}labelTexture=loaded;loaded.colorSpace=THREE.SRGBColorSpace;loaded.anisotropy=4;
-    const label=new THREE.Mesh(new THREE.PlaneGeometry(58.9,99),new THREE.MeshBasicMaterial({map:loaded}));label.name='rear-product-label';label.position.z=-4.015;label.rotation.y=Math.PI;group.add(label);group.userData.provenance=metadata;return metadata;
+    // Keep the original printed label pixels. The lower black NFC pad is a
+    // separate, lit surface: a photograph's fixed glare is not its albedo.
+    const pad=metadata.texture.nfcPad,[width,height]=metadata.texture.planeMm,cut=1-pad.sourceTopPx/loaded.image.height;
+    const labelGeometry=new THREE.PlaneGeometry(width,height*(1-cut)),uv=labelGeometry.attributes.uv;
+    for(let i=0;i<uv.count;i++)uv.setY(i,cut+uv.getY(i)*(1-cut));
+    const label=new THREE.Mesh(labelGeometry,new THREE.MeshBasicMaterial({map:loaded}));label.name='rear-product-label';label.position.set(0,height*cut/2,-4.015);label.rotation.y=Math.PI;group.add(label);parts[label.name]=label;
+    const padUrl=new URL(pad.file,base);padUrl.searchParams.set('sha256',metadata.artifacts[pad.file]);
+    const corrected=await new THREE.TextureLoader().loadAsync(padUrl.href);if(disposed){corrected.dispose();return;}nfcTexture=corrected;corrected.colorSpace=THREE.SRGBColorSpace;corrected.anisotropy=4;
+    const pw=width/2,ph=height*cut/2,pr=pad.cornerRadiusMm,shape=new THREE.Shape();
+    shape.moveTo(-pw+pr,-ph);shape.lineTo(pw-pr,-ph);shape.quadraticCurveTo(pw,-ph,pw,-ph+pr);shape.lineTo(pw,ph-pr);shape.quadraticCurveTo(pw,ph,pw-pr,ph);shape.lineTo(-pw+pr,ph);shape.quadraticCurveTo(-pw,ph,-pw,ph-pr);shape.lineTo(-pw,-ph+pr);shape.quadraticCurveTo(-pw,-ph,-pw+pr,-ph);
+    const padGeometry=new THREE.ShapeGeometry(shape),padUv=padGeometry.attributes.uv,position=padGeometry.attributes.position;
+    for(let i=0;i<padUv.count;i++)padUv.setXY(i,(position.getX(i)+pw)/(2*pw),(position.getY(i)+ph)/(2*ph));
+    const nfc=new THREE.Mesh(padGeometry,material(0xffffff,{map:corrected,roughness:.92,metalness:0}));nfc.name='rear-nfc-pad';nfc.position.set(0,-height*(1-cut)/2,-4.015);nfc.rotation.y=Math.PI;nfc.userData.inputOccluder=true;group.add(nfc);parts[nfc.name]=nfc;
+    group.userData.provenance=metadata;return metadata;
   })();
-  return {group,screen,buttons,parts,connectors,rgbLeds,ready,dispose(){disposed=true;aborter.abort();labelTexture?.dispose();pcbTexture?.dispose();}};
+  return {group,screen,buttons,parts,connectors,rgbLeds,ready,dispose(){disposed=true;aborter.abort();labelTexture?.dispose();pcbTexture?.dispose();nfcTexture?.dispose();}};
 }
