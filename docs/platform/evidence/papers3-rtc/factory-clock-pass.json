@@ -1,0 +1,65 @@
+{
+  "checkedAt": "2026-11-12T12:23:47.472Z",
+  "modelRevision": "6aef3308",
+  "gpioStopFixRevision": "44569397",
+  "integratedFixRevision": "2891d72c",
+  "wasmSha256": "8d8ccce696666eeb7a355cdbe15fd398eaec9ddb9ae9ade85544d91639b4fb20",
+  "firmware": {
+    "url": "https://m5burner-cdn.m5stack.com/firmware/16287f6984f8ec7fe8058a6c3497b3b4.bin",
+    "resolvedUrl": "https://m5burner-cdn.m5stack.com/firmware/16287f6984f8ec7fe8058a6c3497b3b4.bin",
+    "input": "download",
+    "bytes": 1439168,
+    "sha256": "d6733a0ca378f95335fa5fba4d4d992fb1dd97c17557b20e9aebfca08ba6d624"
+  },
+  "firmwarePatched": false,
+  "backend": "actual-page-worker-wasm-jit",
+  "status": "pass",
+  "frames": [
+    {
+      "name": "boot",
+      "width": 540,
+      "height": 960,
+      "rgbaSha256": "58c3018d784357315c4a4fdbca20d2c50c11072f376d79431b47501ece39bafe",
+      "pngSha256": "e6e14eb5a1e23c1d0d02a0179800c392b4aa1473e7160023d706f7234f498b90",
+      "guestSeconds": 30.02,
+      "insns": 3043080193,
+      "panelScans": 765,
+      "romBoots": 1,
+      "displayedDate": "2077/01/01",
+      "displayedTime": "12:00:29"
+    },
+    {
+      "name": "clock-after-three-seconds",
+      "width": 540,
+      "height": 960,
+      "rgbaSha256": "3f9661f8e602cb275ecf9ce1ded76404a1696085db6e957610522988efc439b9",
+      "pngSha256": "d9fc0115826c4681f3f9b4905da2cebb06f0d01c9d08e5738374d6d9abf648f5",
+      "guestSeconds": 33.02,
+      "insns": 3250802748,
+      "panelScans": 831,
+      "romBoots": 1,
+      "displayedDate": "2077/01/01",
+      "displayedTime": "12:00:32"
+    }
+  ],
+  "result": "The same official v0.5 ROM boot displays three elapsed seconds after three guest seconds. The date and starting time are set by the firmware, never supplied by the host.",
+  "actions": [
+    {
+      "op": "wait",
+      "seconds": 3
+    },
+    {
+      "op": "capture",
+      "name": "clock-after-three-seconds"
+    },
+    {
+      "op": "quit"
+    }
+  ],
+  "rawReceiptSha256": "eb3ef09c9704a64a6cfdd01bb5565fbfd41998243a88b901467a280a8031d81a",
+  "privacy": "Raw images and serial retained locally, not committed. Omitted GPIO/state inventories, storage identifiers and serial; retained frame hashes, exact guest work and visual readings.",
+  "limitations": [
+    "Digital calendar, STOP and VL subset only. No host clock sync, alarm, timer, INT, CLKOUT, battery backup or PMS150G power control.",
+    "No physical display calibration; grayscale and optical residuals are not verified."
+  ]
+}
