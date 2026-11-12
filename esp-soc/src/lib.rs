@@ -18,6 +18,7 @@ pub mod load;
 pub mod machine;
 pub mod nat;
 pub mod net;
+pub mod netcap;
 pub mod observe;
 pub mod observers;
 pub mod picture;

@@ -135,6 +135,9 @@ pub trait SocBus: Bus {
     /// One more joinable access point (a further `--wifi`) beside the one `attach_wifi` put on the
     /// air, behind the same network (`StationLink::add_ap`).
     fn add_wifi_ap(&mut self, _cfg: crate::wifi::ApConfig) -> Result<(), String> { Err("this chip has no WiFi".into()) }
+    /// Record every Ethernet frame the WiFi station sends and receives into `tap` (`--pcap`, the
+    /// board page's Network panel). It survives `attach_wifi` and a guest reboot.
+    fn set_net_tap(&mut self, _tap: crate::netcap::NetTap) -> Result<(), String> { Err("this chip has no WiFi".into()) }
     /// Select host Ethernet transport instead of the built-in virtual network. Off by default.
     /// Changing modes clears queued Ethernet frames; the selection survives chip reset.
     fn set_ethernet_relay(&mut self, _enabled: bool) -> Result<(), String> { Err("this chip has no Ethernet transport".into()) }

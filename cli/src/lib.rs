@@ -28,6 +28,7 @@ fn help(chip: &str, code: i32) -> ! {
     eprintln!("  --max-seconds S       stop after S emulated seconds (always give one: the run returns)");
     eprintln!("  --console usb|uart0|both|none   which consoles to print (uart0 shows the ROM and bootloader)");
     eprintln!("  --wifi ssid=…,psk=…   a virtual access point with DHCP, DNS, NTP and NAT to the host network");
+    eprintln!("  --pcap F              write the station's Ethernet frames (both ways) to pcap F (needs --wifi)");
     eprintln!("  --hostfwd tcp:H:HP-G:GP  publish a guest TCP port on the host (repeatable; needs --wifi)");
     eprintln!("  --script F            host actions at emulated times (button presses, touches, serial input, stop)");
     eprintln!("  --tft-png F, --wav F  save the display / the audio at the end of the run");
@@ -113,6 +114,8 @@ pub struct Opts {
     pub sd: Option<(String, bool)>, pub sd_prg_us: Option<u64>, pub sd_serial: Option<u32>, pub sd_timing: bool,
     /// `--usb-host FILE`: a USB host on the chip's USB-OTG port, running the commands in FILE
     pub usb_host: Option<String>,
+    /// `--pcap FILE`: every Ethernet frame the WiFi station sends and receives, as a pcap
+    pub pcap: Option<String>,
     pub board: String, pub wifi: Vec<String>, pub wifi_nearby: Vec<String>, pub ble_nearby: Vec<String>, pub ble: bool, pub ble_full: bool, pub ble_observe: bool, pub ble_scan: bool, pub net: String, pub hostfwd: Vec<String>, pub cam_image: Option<String>, pub cam_stream: Option<String>, pub cam_size: Option<String>, pub cam_fps: f64,
     pub spi2_timing: bool, pub measured_te: bool,
     pub max_insns: u64, pub max_seconds: Option<f64>, pub script: Option<String>, pub serial: Option<String>,
@@ -190,6 +193,7 @@ pub fn parse(args: &[String], default_chip: &str) -> Opts {
             "--realtime" => o.realtime = true,
             "--web" => o.web_port = Some(next().parse().expect("port")),
             "--web-dir" => o.web_dir = Some(next()),
+            "--pcap" => o.pcap = Some(next()),
             "--no-reboot" => o.no_reboot = true,
             "--i2s-tone" => o.i2s_tone.push(next()),
             "--wav" => o.wav = Some(next()),
@@ -240,6 +244,7 @@ pub fn parse(args: &[String], default_chip: &str) -> Opts {
         i += 1;
     }
     if !o.hostfwd.is_empty() && o.wifi.is_empty() { usage_error("--hostfwd requires --wifi"); }
+    if o.pcap.is_some() && o.wifi.is_empty() { usage_error("--pcap requires --wifi"); }
     if !o.hostfwd.is_empty() && !matches!(o.net.split(',').next(), Some("nat" | "user")) { usage_error("--hostfwd requires --net nat"); }
     for spec in &o.hostfwd {
         if let Err(e) = esp_soc::nat::HostFwdSpec::parse(spec) { usage_error(&format!("--hostfwd: {e}")); }
@@ -412,6 +417,7 @@ fn setup_coproc(o: &Opts, spec: &cosim::CoprocSpec) -> esp32c6::Machine {
     if !o.wifi.is_empty() {
         let net_log = m.bus.debug.has("net");
         attach_wifi(&mut m.bus, o, net_log);
+        attach_net_tap(&mut m, o);
     }
     let rom = spec.rom.as_ref().map(PathBuf::from).or_else(|| find_rom(<esp32c6::C6 as Soc>::ROM_ELF))
         .unwrap_or_else(|| usage_error("--coproc: no esp32c6_rev0_rom.elf found (rom=FILE)"));
@@ -768,6 +774,23 @@ fn run_with_reboots<S: Soc>(m: &mut Machine<S>, mut remaining: u64, reboot: bool
 }
 
 /// Images, boot, observers, scripts: everything before the first instruction. Returns the boot mode.
+/// The network monitor: with `--pcap` the station's Ethernet frames go to the file, and with
+/// `--wifi` and `--web` to the board page's Network panel. On a P4 run the co-processor's C6 has
+/// the station (`setup_coproc`), and only `--pcap` applies to it.
+fn attach_net_tap<S: Soc>(m: &mut Machine<S>, o: &Opts) {
+    if o.wifi.is_empty() || (o.pcap.is_none() && m.web.is_none()) { return; }
+    let mut cap = esp_soc::netcap::NetCapture::default();
+    if let Some(path) = &o.pcap {
+        let file = std::fs::File::create(path).unwrap_or_else(|e| usage_error(&format!("--pcap {path}: {e}")));
+        cap.set_pcap(Box::new(file)).unwrap_or_else(|e| usage_error(&format!("--pcap {path}: {e}")));
+        eprintln!("[emu] capturing the station's Ethernet frames to {path}");
+    }
+    if m.web.is_some() { cap.enable_live(); }
+    let tap = std::sync::Arc::new(std::sync::Mutex::new(cap));
+    if let Err(e) = m.bus.set_net_tap(tap.clone()) { usage_error(&format!("--pcap: {e}")); }
+    m.net_tap = Some(tap);
+}
+
 fn prepare<S: Soc>(m: &mut Machine<S>, o: &Opts) -> String {
     let rom_boot = S::ROM_BOOT_DEFAULT;
     let boot = o.boot.clone().unwrap_or_else(|| if rom_boot { "rom".into() } else { "app".into() });
@@ -849,6 +872,7 @@ fn prepare<S: Soc>(m: &mut Machine<S>, o: &Opts) -> String {
         eprintln!("[emu] board UI: http://127.0.0.1:{}/  (serving {})", port, dir);
         m.web = Some(w); m.rt.enabled = true;
     }
+    if o.coproc.is_none() { attach_net_tap(m, o); }
     if let Some(path) = &o.cam_stream {
         let (width, height) = camera::size(o.cam_size.as_deref().unwrap()).unwrap();
         let input = std::sync::Arc::new(std::sync::Mutex::new(None));

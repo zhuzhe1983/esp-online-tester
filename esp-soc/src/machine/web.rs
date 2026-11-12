@@ -70,6 +70,11 @@ impl<S: Soc> Machine<S> {
             w.send_binary(&b);
             self.ws.audio_sent = pcm.len();
         }
+        if let Some(tap) = &self.net_tap {
+            let live = tap.lock().unwrap().take_live();
+            // nobody to show them to: a page that connects later sees the frames from then on
+            if w.needs_hello() && w.clients() == 0 { drop(live); } else { for m in live { w.send_binary(&m); } }
+        }
         let board = self.bus.board_ref();
         let grids: Vec<(&'static str, Vec<[u8; 3]>, u64)> =
             board.led_grids().into_iter().map(|(id, leds, updates)| (id, leds.to_vec(), updates)).collect();
@@ -90,6 +95,7 @@ impl<S: Soc> Machine<S> {
             hello.push(frame(1, format!("{{\"t\":\"serial\",\"src\":\"uart0\",\"data\":\"{}\"}}", json_escape(&String::from_utf8_lossy(&self.console.uart0))).as_bytes()));
             hello.push(frame(1, format!("{{\"t\":\"serial\",\"src\":\"usb\",\"data\":\"{}\"}}", json_escape(&String::from_utf8_lossy(&self.console.usb))).as_bytes()));
             hello.push(frame(1, format!("{{\"t\":\"board\",\"name\":\"{}\",\"chip\":\"{}\"}}", board.name(), S::NAME).as_bytes()));
+            if self.net_tap.as_ref().is_some_and(|t| t.lock().unwrap().live_enabled()) { hello.push(frame(1, b"{\"t\":\"netmon\",\"linktype\":1}")); }
             if let Some((w_, h_, px, _)) = board.display() { hello.push(frame(2, &display_message(w_, h_, &px))); }
             if let Some(rgb) = board.camera_preview(320, 240) { hello.push(frame(2, &camera_message(&rgb))); }
             if let Some((leds, _)) = board.leds() { hello.push(frame(1, format!("{{\"t\":\"ring\",\"leds\":[{}]}}", leds_json(leds)).as_bytes())); }

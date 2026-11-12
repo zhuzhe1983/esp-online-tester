@@ -49,6 +49,10 @@ impl esp_soc::SocBus for SocBus {
     fn ble_keep_log(&mut self) { self.ble.lines.keep(); }
     fn ble_log_take(&mut self) -> Option<String> { self.ble.lines.take() }
     fn ble_nearby(&mut self, list: Vec<esp_soc::ble::peer::Nearby>) -> Result<(), String> { self.ble.set_nearby(list, self.cycles, periph::CPU_HZ) }
+    fn set_net_tap(&mut self, tap: esp_soc::netcap::NetTap) -> Result<(), String> {
+        self.periph.wifi.link.set_tap(tap);
+        Ok(())
+    }
     fn add_wifi_ap(&mut self, cfg: esp_soc::wifi::ApConfig) -> Result<(), String> {
         self.periph.wifi.link.add_ap(cfg, &self.debug)
     }

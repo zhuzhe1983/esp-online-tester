@@ -550,6 +550,9 @@ pub struct StationLink {
     rx_unarmed: u64,
     /// relayed frames that were too long or found the relay queue full
     tx_dropped: u64,
+    /// the network monitor (`--pcap`, the board page's Network panel): every Ethernet frame the
+    /// station sends and receives; it survives `attach` and a guest reboot
+    tap: Option<crate::netcap::NetTap>,
 }
 
 /// A receive descriptor's `has_data` bit (word 0 bit 30), the same on the S3, C3 and C6 MACs: the
@@ -571,7 +574,7 @@ impl StationLink {
     /// Put an access point and the network behind it on the air, replacing any there were. The
     /// queues, pacing and counts start again; the relay mode stays.
     pub fn attach(&mut self, ap: Option<VirtualAp>, net: Option<crate::net::VirtualNet>) {
-        *self = StationLink { aps: ap.into_iter().collect(), net, relay: self.relay, ..Default::default() };
+        *self = StationLink { aps: ap.into_iter().collect(), net, relay: self.relay, tap: self.tap.take(), ..Default::default() };
     }
     /// One more joinable access point for `cfg`, beside the ones attached, behind the same network.
     /// It needs an access point attached first and shares no SSID or BSSID with one there. Its
@@ -598,7 +601,13 @@ impl StationLink {
     pub fn surviving_reboot(self) -> Self {
         let mut net = self.net;
         if let Some(nat) = net.as_mut().and_then(|net| net.nat.as_mut()) { nat.abort_all(); }
-        StationLink { aps: self.aps, net, relay: self.relay, ..Default::default() }
+        StationLink { aps: self.aps, net, relay: self.relay, tap: self.tap, ..Default::default() }
+    }
+
+    /// Record every Ethernet frame the station sends and receives into `tap`.
+    pub fn set_tap(&mut self, tap: crate::netcap::NetTap) { self.tap = Some(tap); }
+    fn capture(&self, dir: crate::netcap::Dir, now_us: u64, eth: &[u8]) {
+        if let Some(t) = &self.tap { t.lock().unwrap().record(dir, now_us, eth); }
     }
 
     /// The first access point, the one `--wifi` named first.
@@ -648,7 +657,10 @@ impl StationLink {
     pub fn station_tx(&mut self, frame: &[u8], now_us: u64) {
         self.tx_frames += 1;
         let Some(eth) = self.route_station_tx(frame, now_us).and_then(|data| data_to_eth(&data)) else { return };
-        if !self.relay || (eth.len() <= RELAY_FRAME_MAX && self.eth_tx.len() < RELAY_QUEUE) { self.eth_tx.push(eth); } else { self.tx_dropped += 1; }
+        if !self.relay || (eth.len() <= RELAY_FRAME_MAX && self.eth_tx.len() < RELAY_QUEUE) {
+            self.capture(crate::netcap::Dir::FromStation, now_us, &eth);
+            self.eth_tx.push(eth);
+        } else { self.tx_dropped += 1; }
     }
 
     /// Hand a frame from the station to the access points it is for: a probe request to every one
@@ -717,7 +729,10 @@ impl StationLink {
         } else { std::mem::take(&mut self.eth_rx) };
         // the network is behind whichever access point the station is associated with
         let cur = self.current().unwrap_or(0);
-        for e in eth_in { if let Some(f) = self.aps[cur].data_from_ds(&e) { due.push((cur, AirFrame { at_us: now_us, frame: f })); } }
+        for e in eth_in { if let Some(f) = self.aps[cur].data_from_ds(&e) {
+            self.capture(crate::netcap::Dir::ToStation, now_us, &e);
+            due.push((cur, AirFrame { at_us: now_us, frame: f }));
+        } }
         if due.is_empty() { return None; }
         due.sort_by_key(|(_, a)| (is_beacon(&a.frame), a.at_us));
         let (_, first) = due.remove(0);
