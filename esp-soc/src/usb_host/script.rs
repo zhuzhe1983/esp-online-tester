@@ -27,6 +27,8 @@
 //!                                 every gap_ms from the start (`fat32::write_paced`)
 //! fat-read <name>                 read it back; compared with `file_bytes` if this script wrote it
 //! uart0 <text>                    a line typed at the firmware's console
+//! cdc <ms>                        open the CDC-ACM interface (line coding 115200 8N1, DTR+RTS
+//!                                 raised) and print what its bulk IN endpoint sends, for that long
 //! ```
 use super::fat32::{file_bytes, write_paced, Fat32};
 use super::msc::{Msc, MscError, Recovery};
@@ -42,6 +44,7 @@ pub enum Cmd {
     Ready(u64, u64), Poll(u64, u64), Capacity, ModeSense, Prevent(bool), Sync, Eject,
     Read(u64, u32), Write(u64, u32, u8), Verify(u64, u32, u8), Mount, Ls, FatWrite { name: String, bytes: usize, chunk: usize, gap_ms: u64, fat_every: u32 }, FatRead(String),
     Uart0(String),
+    Cdc(u64),
     /// `?`: a failure is logged and the script goes on
     Tolerate(Box<Cmd>),
 }
@@ -95,6 +98,7 @@ pub fn parse(text: &str) -> Result<Vec<(usize, Cmd)>, String> {
             "fat-write" => Cmd::FatWrite { name: args.first().ok_or_else(|| format!("line {ln}: fat-write <name> <bytes> <chunk_kib>"))?.to_string(), bytes: at_most(1, "a size", MAX_FILE)? as usize,
                                            chunk: at_most(2, "a chunk size", MAX_FILE >> 10)? as usize * 1024, gap_ms: opt(3, 0, "milliseconds", MAX_MS)?, fat_every: opt(4, 1, "a FAT interval", u32::MAX as u64)? as u32 },
             "fat-read" => Cmd::FatRead(args.first().ok_or_else(|| format!("line {ln}: fat-read <name>"))?.to_string()),
+            "cdc" => Cmd::Cdc(ms(0, "a duration")?),
             "uart0" => Cmd::Uart0(line["uart0".len()..].trim().to_string()),
             _ => return Err(format!("line {ln}: unknown command {cmd}")),
         };
@@ -164,6 +168,28 @@ impl<'p> Runner<'p> {
                 let l = self.host().port().link().ok_or("no USB host attached")?;
                 l.timing = l.timing.with_rate(bytes);
                 self.say(format_args!("bulk rate capped at {mbps} MB/s"));
+            }
+            Cmd::Cdc(dur) => {
+                let h = self.host();
+                let cfg = h.config.clone().ok_or("no configured device (attach)")?;
+                let comm = cfg.interfaces.iter().find(|f| f.class == 0x02 && f.subclass == 0x02).map(|f| f.number).ok_or("the device has no CDC-ACM interface")?;
+                let ep = cfg.interfaces.iter().filter(|f| f.class == 0x0a).flat_map(|f| f.endpoints.iter())
+                    .find(|e| e.address & 0x80 != 0 && e.attributes & 3 == 2).cloned().ok_or("the CDC data interface has no bulk IN endpoint")?;
+                // CDC PSTN 1.2 §6.3.10 SET_LINE_CODING, §6.3.12 SET_CONTROL_LINE_STATE (DTR | RTS).
+                let mut coding = 115_200u32.to_le_bytes().to_vec(); coding.extend([0, 0, 8]);
+                h.control(super::setup_packet(0x21, 0x20, 0, comm as u16, 7), coding).map_err(u)?;
+                h.control(super::setup_packet(0x21, 0x22, 3, comm as u16, 0), Vec::new()).map_err(u)?;
+                h.say(format_args!("CDC-ACM interface {comm}: DTR+RTS up, reading endpoint {:02x}", ep.address));
+                let end = h.now_ns() + dur * ms;
+                let mut total = 0usize;
+                while h.now_ns() < end {
+                    match h.bulk_in(ep.address, ep.mps, ep.mps as usize * 8, 2 * ms) {
+                        Ok(d) => { total += d.len(); use std::io::Write; let mut o = std::io::stdout().lock(); let _ = o.write_all(&d); let _ = o.flush(); }
+                        Err(UsbError::Timeout) => {}
+                        Err(x) => return Err(x.to_string()),
+                    }
+                }
+                h.say(format_args!("CDC: {total} bytes received"));
             }
             Cmd::Msc => {
                 let host = self.host.take().ok_or("mass storage is open already")?;
