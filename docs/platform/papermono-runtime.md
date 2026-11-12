@@ -65,7 +65,7 @@ ESP32SIM_PROBE_CLOCK_TIMEOUT_MS=60000 node tools/probe-official-papermono.mjs \
 ## 当前限制
 
 - RX8130 仅提供寄存器 RAM，供板型探测和本次会话的固件设置使用。日期/时钟、闹钟、掉电保持和唤醒未实现；启动画面可见无效日期，不校正为主机时间。
-- BMI270 的识别、配置和寄存器子集存在，但 PaperMono 没有持续采样时钟或姿态 API；UserDemo 的三次初始化检测失败。画面上的默认向量不是已验证传感器采样。
+- BMI270 已在两个板型接入客体采样时钟和显式虚拟轴输入，固定 UserDemo 的首次初始化与真实数值显示已验证，见下方补充。物理安装方向、IMU INT1 → PM1 GPIO4 唤醒、独立供电轨、FIFO 和模拟噪声仍未验收。
 - NFC 已验证读卡器无卡路径；RF peer、卡内容/防冲突、卡模拟、模拟测量/校准与唤醒未实现。LoRa 仅支持上述数字报文子集。音频、深睡复位唤醒、Wi-Fi 扫描/NTP 和外接附件尚未在此板上验收；EDC Book 的轻睡眠范围见下方补充。TF/SD 与 RGB 的新增范围见下方补充。未实现功能的 INIT FAIL 或 NO DATA 保留，不伪造成功。
 - M5IOE1 只对已接线的 TF 插卡检测提供数字输入，未实现通用输入上拉的电气网络；软件 I2C 使用理想上拉，不模拟总线争用、时钟拉伸或模拟电气特性。
 - FT6336G 只支持单点报告；手势、第二触点、精确扫描节奏和面板固件版本未知。芯片/固件版本寄存器不伪造实测值。
@@ -109,3 +109,12 @@ VSH2 波形仍沿用原有四灰阶处理；EDC Book 短脉冲产生的光学灰
 版本与完整版 PaperMono；深睡、整机电源、网络功能、其他书籍格式及 Lite 上的
 EDC Book 尚未验收。来源、负面结果和复现命令见
 [轻睡眠与显示修复记录](../evidence/s3-light-sleep-edcbook/README.md)。
+
+
+## BMI270 周期采样与虚拟轴（2026-11-12）
+
+PaperMono 和 PaperMono-Lite 使用相同的 BMI270 数字寄存器模型，现按固件设置的 ODR 和 power-control 在客体时钟上产生数据就绪。软件 I²C 与两个硬件控制器共用同一器件状态；有限值检查后的外部轴数据在下一个传感器采样点生效，不由 UI 绘制向量或伪造就绪。
+
+固定官方 UserDemo 1.2.0 在两个型号上均从原来的三次 `mask=0x00` 失败变为第一次 `IMU ready type=6 attempt=1`。通过 `setImu({source:'agent',quaternion,angularVelocityDps})` 输入虚拟轴，再触摸固件 IMU 区域触发刷新，实际 framebuffer 显示 AX 1.0、GX 10.0、GY -20.0、GZ 30.0；恢复单位姿态和零角速度后，IMU 数值区域与参考图逐字节一致。完整版仍识别为 Pro，Lite 仍无 NFC/LoRa。
+
+平台的 `sampleTiming: host-input` 指姿态输入到达时间，传感器寄存器中的周期采样则使用客体时间。场景旋转联动默认关闭；轴约定不代表实测 PCB 朝向。此处没有新增 IMU 中断唤醒、电源域或深睡验收。复现、正负对照、来源和边界见 [BMI270 记录](evidence/papermono-imu/README.md)。
