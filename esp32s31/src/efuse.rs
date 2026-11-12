@@ -30,7 +30,14 @@ impl Default for Efuse {
 impl Efuse {
     pub fn set_read_image(&mut self, image: ReadImage) -> Result<(), String> {
         if image.block0_valid_bits > 1023 { return Err("S31 eFuse block0 valid-bit count exceeds 10-bit field".into()); }
-        if image.words[1] & 0x7f != 0 { return Err("S31 eFuse read-protected block images are not supported".into()); }
+        // RD_DIS bit n protects block 4 + n (KEY0..KEY4 at 0xa8 + 0x20 * n, SYS_PART2 at 0x148): its
+        // shadow reads zero on silicon, so a protected block's words must be zero in the image.
+        for n in 0..6 {
+            let first = (0xa8 + 0x20 * n - 0x2c) / 4;
+            if image.words[1] >> n & 1 != 0 && image.words[first..first + 8].iter().any(|&w| w != 0) {
+                return Err(format!("S31 eFuse block {} is read-protected but its image words are not zero", 4 + n));
+            }
+        }
         // The controller loads the shadows itself at power-up, before the ROM runs; a later READ
         // command reloads them from the same image.
         self.shadow = image.words; self.errors = image.errors; self.status = 1 | (image.block0_valid_bits as u32) << 10;

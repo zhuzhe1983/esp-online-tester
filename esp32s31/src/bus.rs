@@ -42,6 +42,13 @@ pub const USB_OTG: u32 = 0x2030_0000;
 /// reg_base.h DR_REG_GPSPI2_BASE. IDF master spi_reg.h for the S31 has the P4/S3 GP-SPI register
 /// offsets (one extra field, CTRL.CLK_EDGE_SEL bit 30, kept as storage), so the shared `GpSpi` serves it.
 pub const GPSPI2: u32 = 0x2038_f000;
+/// reg_base.h DR_REG_I2C0_BASE / DR_REG_I2C1_BASE: the S3/P4 I2C master register layout.
+/// reg_base.h DR_REG_GPSPI3_BASE: a second instance of the same GP-SPI block (IRQ source 5).
+pub const GPSPI3: u32 = 0x2039_0000;
+pub const I2C0: u32 = 0x2038_5000;
+pub const I2C1: u32 = 0x2038_6000;
+/// reg_base.h DR_REG_AXI_DMA_BASE: the P4's AXI-GDMA layout (three channel pairs, SPI2 trigger 1).
+pub const AXI_DMA: u32 = 0x2034_8000;
 
 struct UsbDma<'a> { sram: &'a mut [u8], lp: &'a mut [u8] }
 impl UsbDma<'_> {
@@ -55,6 +62,24 @@ impl UsbDma<'_> {
 impl esp_periph::sdmmc::SdmmcMemory for UsbDma<'_> {
     fn read(&mut self, addr: u32, buf: &mut [u8]) -> Result<(), Fault> { let n = buf.len(); buf.copy_from_slice(self.span(addr, n)?); Ok(()) }
     fn write(&mut self, addr: u32, data: &[u8]) -> Result<(), Fault> { self.span(addr, data.len())?.copy_from_slice(data); Ok(()) }
+}
+
+struct AxiOut<'a> { mem: UsbDma<'a>, channel: &'a mut esp_periph::gdma::GdmaOutCh }
+impl esp_periph::gdma::OutMemory for AxiOut<'_> {
+    fn out_channel(&mut self) -> &mut esp_periph::gdma::GdmaOutCh { self.channel }
+    fn word(&mut self, address: u32) -> Result<u32, Fault> {
+        let mut b = [0u8; 4];
+        esp_periph::sdmmc::SdmmcMemory::read(&mut self.mem, address, &mut b)?;
+        Ok(u32::from_le_bytes(b))
+    }
+    fn append(&mut self, address: u32, count: usize, out: &mut Vec<u8>) -> Result<(), (u32, Fault)> {
+        let start = out.len();
+        out.resize(start + count, 0);
+        esp_periph::sdmmc::SdmmcMemory::read(&mut self.mem, address, &mut out[start..]).map_err(|f| { out.truncate(start); (address, f) })
+    }
+    fn writeback(&mut self, address: u32, value: u32) -> Result<(), Fault> {
+        esp_periph::sdmmc::SdmmcMemory::write(&mut self.mem, address, &value.to_le_bytes())
+    }
 }
 
 pub struct S31Bus {
@@ -91,6 +116,14 @@ pub struct S31Bus {
     pub usb_otg: esp_periph::usb_otg::Dwc2,
     /// GP-SPI2 (FSPI) at DR_REG_GPSPI2_BASE, IRQ source 4; the chip bus hands its transfers to the board.
     pub spi2: esp_periph::GpSpi,
+    /// GP-SPI3 at DR_REG_GPSPI3_BASE; its transfers go to the board as host 3.
+    pub spi3: esp_periph::GpSpi,
+    /// I2C0 and I2C1 (IRQ sources 23 and 24); the board attaches its bus devices.
+    pub i2c: [esp_periph::i2c::I2c; 2],
+    /// AXI-GDMA: GP-SPI2's DMA (IRQ sources 48-50 IN, 51-53 OUT).
+    pub axi_dma: esp_periph::gdma::AxiDma,
+    /// XTAL-domain remainder carried between ticks for the I2C controllers.
+    pub i2c_frac: u64,
 }
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
     let off = address.checked_sub(base)? as usize;
@@ -117,7 +150,7 @@ impl S31Bus {
             // Same HS UTMI DWC2 instance as the P4 (esp_hal_usb/esp32s31/usb_dwc_periph.c); its
             // GHWCFG words are assumed equal to the P4's until read from an S31.
             usb_otg: esp_periph::usb_otg::Dwc2::new(esp_periph::usb_otg::Dwc2Config::esp32p4_hs(crate::periph::CPU_HZ)),
-            spi2: esp_periph::GpSpi::new() }
+            spi2: esp_periph::GpSpi::new(), spi3: esp_periph::GpSpi::with_host(3), i2c: [esp_periph::i2c::I2c::new(), esp_periph::i2c::I2c::new()], i2c_frac: 0, axi_dma: esp_periph::gdma::AxiDma::new() }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -160,12 +193,30 @@ impl S31Bus {
         let conf = self.periph.uart0.read(0x20); self.periph.uart0.write(0x20, conf | 1 << 22); self.periph.uart0.write(0x20, conf);
         self.periph.uart0.int_raw = (1 << 14) | 2;
     }
+    /// A GP-SPI's DMA data phase: the AXI-GDMA OUT channel on its trigger (SPI2 1, SPI3 2) gathers the bytes from
+    /// internal SRAM / LP RAM, then the transfer goes on as on the P4 (esp32p4 bus.rs spi2_dma_tx).
+    /// A channel not started yet is retried at the next tick.
+    pub(crate) fn spi_dma_tx(&mut self, host: u8) -> bool {
+        let trigger = u32::from(host - 1);
+        let spi = if host == 2 { &mut self.spi2 } else { &mut self.spi3 };
+        let Some(bits) = spi.dma_tx_pending else { return false };
+        let Some(ch) = self.axi_dma.gdma.out_channel_for(trigger) else { return false };
+        let mut data = Vec::with_capacity((bits as usize).div_ceil(8));
+        let mut memory = AxiOut { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, channel: &mut self.axi_dma.gdma.out[ch] };
+        let result = esp_periph::gdma::gather_out(&mut memory, (bits as usize).div_ceil(8), &mut data);
+        let c = &mut self.axi_dma.gdma.out[ch];
+        c.running = false; c.buf_pos = 0;
+        match result { Ok(next) => { c.desc = next; c.int_raw |= 1 << 3; } Err(_) => c.int_raw |= 1 << 2 }
+        let spi = if host == 2 { &mut self.spi2 } else { &mut self.spi3 };
+        spi.complete_dma_tx(&data);
+        true
+    }
     /// Let the DWC2 move what its DMA owes, against internal SRAM and LP RAM.
     pub(crate) fn run_usb_otg(&mut self) {
         let mut dma = UsbDma { sram: &mut self.sram, lp: &mut self.lp };
         self.usb_otg.run(&mut dma);
     }
-    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq() } }
+    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], axi_dma: esp_periph::Device::irq_sources(&self.axi_dma) } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
@@ -237,6 +288,20 @@ impl S31Bus {
         if let Some(off) = offset(address, GPSPI2, bytes, 0x100) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(self.spi2.read(off as u32));
+        }
+        if let Some(off) = offset(address, GPSPI3, bytes, 0x100) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(self.spi3.read(off as u32));
+        }
+        if let Some(off) = offset(address, AXI_DMA, bytes, 0x1000) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(esp_periph::Device::read(&mut self.axi_dma, off as u32));
+        }
+        for (n, base) in [I2C0, I2C1].into_iter().enumerate() {
+            if let Some(off) = offset(address, base, bytes, 0x100) {
+                if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+                return Ok(self.i2c[n].read(off as u32));
+            }
         }
         if address & !3 == crate::rtc_timer::RESET || address & !0xfff == crate::rtc_timer::BASE {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -446,6 +511,23 @@ impl S31Bus {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             self.spi2.write(off as u32, value);
             return Ok(());
+        }
+        if let Some(off) = offset(address, GPSPI3, bytes, 0x100) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            self.spi3.write(off as u32, value);
+            return Ok(());
+        }
+        if let Some(off) = offset(address, AXI_DMA, bytes, 0x1000) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            esp_periph::Device::write(&mut self.axi_dma, off as u32, value);
+            return Ok(());
+        }
+        for (n, base) in [I2C0, I2C1].into_iter().enumerate() {
+            if let Some(off) = offset(address, base, bytes, 0x100) {
+                if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+                self.i2c[n].write(off as u32, value);
+                return Ok(());
+            }
         }
         if address & !3 == crate::rtc_timer::RESET || address & !0xfff == crate::rtc_timer::BASE {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }

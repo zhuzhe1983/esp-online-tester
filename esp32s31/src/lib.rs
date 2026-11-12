@@ -1,6 +1,8 @@
 //! ESP32-S31 on `esp_soc::Machine` / `Soc` (same path as C3/C6/P4).
 //! Dual HP harts, SRAM/ROM, UART0/USB console and CLIC; not a product runtime.
 pub mod board;
+pub mod cst9220;
+pub mod spi_nand;
 pub mod bus;
 pub mod soc;
 pub mod interrupts;

@@ -151,8 +151,9 @@ pub struct BoardInputs {
     pub psram_bytes: usize,
     /// NOR status registers 1-2 at power-up (SR2 bit 1 = QE is non-volatile on GigaDevice/Winbond).
     pub flash_status: u16,
-    /// eFuse BLOCK3 USER_DATA word 0, where a board can record its revision (0 = none).
-    pub efuse_user_data0: u32,
+    /// eFuse read-register values (register offset, value) the board was programmed with at the
+    /// factory, e.g. USER_DATA word 0 at 0x88 where a board records its revision. Empty = blank chip.
+    pub efuse: Vec<(u32, u32)>,
 }
 
 impl BoardInputs {
@@ -163,7 +164,7 @@ impl BoardInputs {
         let mut sfdp = vec![0x53, 0x46, 0x44, 0x50, 0x05, 0x01, 0x00, 0xff, 0x00, 0x05, 0x01, 0x10, 0x80, 0x00, 0x00, 0xff];
         sfdp.extend([0xff; 0x70]);
         Self { flash_id: [0xef, 0x40, 0x18], sfdp, bias: [0; 2], perif_glitch: 0, dig_reg: [0; 4], bod: 0,
-            bbpll_hz: 480_000_000, idle_level: Some(false), inputs: vec![(36, true)], psram_bytes: 0, flash_status: 0, efuse_user_data0: 0 }
+            bbpll_hz: 480_000_000, idle_level: Some(false), inputs: vec![(36, true)], psram_bytes: 0, flash_status: 0, efuse: Vec::new() }
     }
 
     /// Winbond W25Q16 (0xef4015) — 2 MiB, matching the IDF hello_world image header
@@ -173,7 +174,7 @@ impl BoardInputs {
         let mut sfdp = vec![0x53, 0x46, 0x44, 0x50, 0x05, 0x01, 0x00, 0xff, 0x00, 0x05, 0x01, 0x10, 0x80, 0x00, 0x00, 0xff];
         sfdp.extend([0xff; 0x70]);
         Self { flash_id: [0xef, 0x40, 0x15], sfdp, bias: [0; 2], perif_glitch: 0, dig_reg: [0; 4], bod: 0,
-            bbpll_hz: 480_000_000, idle_level: Some(false), inputs: vec![(36, true)], psram_bytes: 0, flash_status: 0, efuse_user_data0: 0 }
+            bbpll_hz: 480_000_000, idle_level: Some(false), inputs: vec![(36, true)], psram_bytes: 0, flash_status: 0, efuse: Vec::new() }
     }
     /// ESP-Mosaico CoreBoard: GigaDevice GD25Q128E (JEDEC 0xc84018, read from the board with
     /// esptool 5.6.0 `flash-id`), 16 MiB, and the ESP32-S31NRV16's 16 MiB in-package PSRAM. The
@@ -183,8 +184,14 @@ impl BoardInputs {
         // Read from the user's board (2026-11-11, esptool 5.6.0): flash status 0x0200 (QE set),
         // eFuse USER_DATA word 0 = 0x0102.
         Self { flash_id: [0xc8, 0x40, 0x18], psram_bytes: 16 << 20, flash_status: 0x0200,
-            // USER_DATA = 0x0102: board v1.2 as esp-mosaico-bsp reads it (onboard/esp_mosaico.c).
-            efuse_user_data0: 0x0102, ..Self::devkit_w25q128() }
+            efuse: vec![
+                // USER_DATA (0x88) = 0x0102: board v1.2 as esp-mosaico-bsp reads it (onboard/esp_mosaico.c).
+                (0x88, 0x0102),
+                // RD_DIS (0x30 bits 0-6) bit 1: key block 5 (KEY1) is read-protected, and
+                // KEY_PURPOSE_1 (0x38 bits 5-9) = 8, HMAC_UP. The factory app's
+                // trial_provider_validate_hmac_efuse_key() requires both (HMAC key ID 1).
+                (0x30, 1 << 1), (0x38, 8 << 5),
+            ], ..Self::devkit_w25q128() }
     }
     pub fn apply(&self, b: &mut S31Bus) -> Result<(), String> {
         let a = &mut b.analog; a.set_bias(self.bias); a.set_perif_glitch(self.perif_glitch); a.set_dig_reg(self.dig_reg); a.set_bod_register(self.bod);
@@ -194,9 +201,14 @@ impl BoardInputs {
         for &(pin, level) in &self.inputs { b.pads.set_input(pin, Some(level)).map_err(|e| format!("{e:?}"))?; }
         b.mspi.set_bbpll_input(Some(self.bbpll_hz)).map_err(|e| format!("{e:?}"))?;
         if self.psram_bytes != 0 { b.cache.set_psram_size(self.psram_bytes)?; }
-        if self.efuse_user_data0 != 0 {
-            // efuse_reg.h RD_USR_DATA0 at 0x88: shadow word (0x88 - 0x2c) / 4.
-            let mut image = crate::efuse::ReadImage::blank_development(); image.words[(0x88 - 0x2c) / 4] = self.efuse_user_data0;
+        if !self.efuse.is_empty() {
+            // The shadow words start at RD_WR_DIS0 (0x2c): register `off` is word (off - 0x2c) / 4.
+            let mut image = crate::efuse::ReadImage::blank_development();
+            for &(off, value) in &self.efuse {
+                let word = off.checked_sub(0x2c).map(|d| d as usize / 4).filter(|&w| w < image.words.len() && off % 4 == 0)
+                    .ok_or_else(|| format!("eFuse register {off:#x} is not a read register"))?;
+                image.words[word] |= value;
+            }
             b.periph.efuse.set_read_image(image)?;
         }
         Ok(())
@@ -254,6 +266,13 @@ impl SocBus {
     }
 
     /// Install board inputs now and after every reset.
+    /// The board's I2C devices: bus 0 on I2C0, bus 1 on I2C1.
+    pub fn attach_board_devices(&mut self) {
+        for i in &mut self.inner.i2c { i.clear_devices(); }
+        for (bus, address, device) in self.board.i2c_devices() {
+            if let Some(i) = self.inner.i2c.get_mut(bus as usize) { i.attach(address, device); }
+        }
+    }
     pub fn set_board_inputs(&mut self, inputs: BoardInputs) -> Result<(), String> {
         inputs.apply(&mut self.inner)?;
         self.board_inputs = Some(inputs);
@@ -290,10 +309,43 @@ impl SocBus {
     fn deliver_board_events(&mut self, address: u32) {
         if address >> 24 != 0x20 { return; }
         if crate::pads::Pads::is_mmio(address) { self.deliver_pin_levels(); }
+        self.deliver_spi();
+    }
+
+    /// GP-SPI2 and GP-SPI3 transactions: the DMA data phase first (when the channel runs), then the board.
+    fn deliver_spi(&mut self) {
+        if self.inner.spi2.dma_tx_pending.is_some() && self.inner.spi_dma_tx(2) { self.irq_dirty = true; }
+        if self.inner.spi3.dma_tx_pending.is_some() && self.inner.spi_dma_tx(3) { self.irq_dirty = true; }
         if let Some(transfer) = self.inner.spi2.take_transfer() {
             let rx = self.board.spi_transfer(2, &transfer.tx, transfer.rx_len);
             self.inner.spi2.finish_transfer(transfer, &rx);
+            self.irq_dirty = true;
         }
+        if let Some(transfer) = self.inner.spi3.take_transfer() {
+            let rx = self.board.spi_transfer(3, &transfer.tx, transfer.rx_len);
+            self.inner.spi3.finish_transfer(transfer, &rx);
+            self.irq_dirty = true;
+        }
+        for host in [2u8, 3] {
+            let spi = if host == 2 { &mut self.inner.spi2 } else { &mut self.inner.spi3 };
+            if let Some(data) = spi.dma_rx.take() { self.spi_dma_rx(host, &data); }
+        }
+    }
+
+    /// MISO bytes of a DMA-receiving GP-SPI transfer into its AXI-GDMA IN channel (SPI2 trigger 1,
+    /// SPI3 trigger 2), ended with SUC_EOF as the SPI's RX EOF does.
+    fn spi_dma_rx(&mut self, host: u8, data: &[u8]) {
+        let trigger = u32::from(host - 1);
+        let Some(ch) = self.inner.axi_dma.gdma.in_channel_for(trigger) else {
+            let running: Vec<(usize, u32)> = (0..3).filter(|&i| self.inner.axi_dma.gdma.inp[i].running).map(|i| (i, self.inner.axi_dma.gdma.inp[i].peri_sel)).collect();
+            eprintln!("[spi{host}] {} MISO bytes by DMA, but no AXI-GDMA IN channel on trigger {trigger} runs (running: {running:?})", data.len());
+            return;
+        };
+        let mut channel = self.inner.axi_dma.gdma.inp[ch];
+        let mut irq_changed = false;
+        let _ = channel.receive(self, data, Some(data.len() as u32), true, |a| a >> 24 == 0x20, &mut irq_changed);
+        self.inner.axi_dma.gdma.inp[ch] = channel;
+        self.irq_dirty = true;
     }
 
     fn deliver_pin_levels(&mut self) {
@@ -370,6 +422,16 @@ impl esp_soc::SocBus for SocBus {
     fn irq_dirty(&mut self) -> &mut bool {
         &mut self.irq_dirty
     }
+    /// The host on the other end of the high-speed USB-OTG port (DR_REG_USB_OTGHS_BASE).
+    fn attach_usb_host(&mut self, timing: esp_periph::usb_otg::UsbTiming) -> Result<(), String> {
+        let now = self.cycles;
+        let mut link = esp_periph::usb_otg::UsbLink::new(timing, crate::periph::CPU_HZ, now);
+        link.log = self.inner.usb_otg.logging();
+        self.inner.usb_otg.attach(now, link);
+        self.irq_dirty = true;
+        Ok(())
+    }
+    fn usb_link(&mut self) -> Option<&mut esp_periph::usb_otg::UsbLink> { self.inner.usb_otg.link.as_deref_mut() }
 
     fn refresh_irq(&mut self) -> bool {
         self.refresh_clic_inputs();
@@ -464,6 +526,7 @@ impl esp_soc::SocBus for SocBus {
         }
         if let Some(b) = &self.board_inputs { let _ = b.apply(&mut inner); }
         self.inner = inner;
+        self.attach_board_devices();                     // the board's I2C devices, on the new controllers
         self.deliver_pin_levels();                       // the pads are back to their reset state
         self.mac = mac;
         self.misc.log_unknown = log_unknown;
@@ -580,7 +643,9 @@ impl esp_soc::SocBus for SocBus {
         self.debug = f.clone();
         self.misc.log_all = f.has("mmio");
         self.misc.log_unknown = f.has("mmio");
-        self.inner.spi2.log = f.has("spi");
+        self.inner.spi2.log = f.has("spi"); self.inner.spi3.log = f.has("spi");
+        esp_periph::Device::debug(&mut self.inner.axi_dma, f.has("dma"));
+        for i in &mut self.inner.i2c { i.log = f.has("i2c"); }
     }
 
     fn set_flash_size(&mut self, bytes: usize) {
@@ -720,6 +785,15 @@ impl Bus for SocBus {
             self.inner.analog.master_enabled() && self.inner.clocks.modem_on(),
         );
         self.inner.clocks.advance_calibration(cycles);
+        if self.inner.i2c.iter().any(|i| i.is_active()) {
+            // The controllers count their source clock (XTAL, 40 MHz) in CLK_CONF's divider.
+            let t = u64::from(cycles) * 40_000_000 + self.inner.i2c_frac;
+            let (ticks, frac) = (t / hz, t % hz);
+            self.inner.i2c_frac = frac;
+            for i in &mut self.inner.i2c { if i.is_active() { esp_periph::Device::tick(i, ticks); } }
+            self.irq_dirty = true;
+        }
+        if self.inner.spi2.dma_tx_pending.is_some() || self.inner.spi3.dma_tx_pending.is_some() { self.deliver_spi(); }
         esp_periph::Device::tick(&mut self.inner.usb_otg, u64::from(cycles));
         if self.inner.usb_otg.pending() { self.inner.run_usb_otg(); }
         // Machine time drives the RTC domains (timer + calibration) that were formerly opt-in:

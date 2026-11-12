@@ -2,7 +2,8 @@
 //! from esp-mosaico-bsp (`esp_mosaico.h`) and the Wokwi board-esp-mosaico docs: a CO5300 480 x 480
 //! AMOLED on GP-SPI2 in QSPI mode (CLK 42, CS 50, D0-D3 36/51/35/9, TE 43), its RESET on GPIO 44
 //! (shared with the touch controller's), and the display supply enabled by GPIO 60 driven low.
-//! Modelled: the panel and its reset and power gates. Not yet: TE, the CST9220 touch (I2C 0x5A).
+//! Modelled: the panel and its reset and power gates, the CST9220 touch on I2C0 (0x5A, SDA 56,
+//! SCL 3). Not yet: TE.
 use esp_soc::devices::co5300::Co5300;
 use esp_soc::{Board, BoardModel, NoBoard};
 
@@ -27,13 +28,17 @@ pub struct Mosaico {
     pub gpio_events: u64,
     /// transactions the panel could not take: unpowered or held in reset
     pub dropped: u64,
+    /// the finger the CST9220 reports
+    pub touch: std::sync::Arc<std::sync::Mutex<crate::cst9220::Touch>>,
+    /// the storage NAND on GP-SPI3 (the BSP's MOSAICO_NAND)
+    pub nand: crate::spi_nand::SpiNand,
 }
 impl Default for Mosaico { fn default() -> Self { Self::new() } }
 impl Mosaico {
     pub const WIDTH: usize = 480;
     pub const HEIGHT: usize = 480;
     pub fn new() -> Self {
-        Mosaico { panel: Co5300::new(Self::WIDTH, Self::HEIGHT, 0), powered: false, in_reset: false, gpio_events: 0, dropped: 0 }
+        Mosaico { panel: Co5300::new(Self::WIDTH, Self::HEIGHT, 0), powered: false, in_reset: false, gpio_events: 0, dropped: 0, touch: Default::default(), nand: crate::spi_nand::SpiNand::new() }
     }
 }
 impl BoardModel for Mosaico {
@@ -50,7 +55,12 @@ impl BoardModel for Mosaico {
         }
     }
     fn gpio_events(&self) -> u64 { self.gpio_events }
+    fn i2c_devices(&mut self) -> Vec<(u8, u8, Box<dyn esp_periph::i2c::I2cDevice>)> {
+        vec![(0, crate::cst9220::ADDRESS, Box::new(crate::cst9220::Cst9220::new(self.touch.clone(), Self::WIDTH as u16, Self::HEIGHT as u16)))]
+    }
+    fn touch(&mut self, x: u16, y: u16, down: bool) { *self.touch.lock().unwrap() = crate::cst9220::Touch { down, x, y }; }
     fn spi_transfer(&mut self, host: u8, tx: &[u8], rx_len: usize) -> Vec<u8> {
+        if host == 3 { return self.nand.transaction(tx, rx_len); }
         if host == 2 {
             if self.powered && !self.in_reset { self.panel.transaction(tx); } else { self.dropped += 1; }
         }
@@ -62,9 +72,10 @@ impl BoardModel for Mosaico {
     fn display_version(&self) -> u64 { self.panel.pixels_written }
     fn display_frames(&self) -> u64 { self.panel.frames }
     fn report(&self) -> String {
-        format!("[emu] mosaico: CO5300 {} RAMWR, {} pixels; power {}, reset {}; {} transactions dropped; gpio events {}",
+        let n = self.nand.stats;
+        format!("[emu] mosaico: CO5300 {} RAMWR, {} pixels; power {}, reset {}; {} transactions dropped; gpio events {}\n[emu] mosaico: NAND {} page reads, {} programs, {} erases, {} refused",
                 self.panel.frames, self.panel.pixels_written, if self.powered { "on" } else { "off" },
-                if self.in_reset { "held" } else { "released" }, self.dropped, self.gpio_events)
+                if self.in_reset { "held" } else { "released" }, self.dropped, self.gpio_events, n.reads, n.programs, n.erases, n.refused)
     }
 }
 

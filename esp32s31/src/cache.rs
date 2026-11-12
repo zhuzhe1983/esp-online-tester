@@ -227,7 +227,9 @@ impl Cache {
         if hart >= 2 { return Err(Fault::Prohibited); }
         let iclock = 14 + hart as u32 * 2;
         if !self.domain_on(9, 11) || !self.domain_on(6, 8) || !self.domain_on(if fetch { iclock } else { 12 }, if fetch { iclock + 1 } else { 13 }) { return Err(Fault::Prohibited); }
-        if self.freeze & (if fetch { 1 << (hart * 4) } else { 1 << 16 }) != 0 { return Err(Fault::Prohibited); }
+        // A frozen L1 cache (FREEZE mode 0) holds a miss until it is unfrozen; it does not fault.
+        // This model keeps no lines, so the access completes at once: the backing store cannot
+        // change while frozen (the firmware freezes around its own flash writes), only timing differs.
         if (if fetch { self.icache >> hart } else { self.dcache }) & 1 != 0 { return Err(Fault::Prohibited); }
         if (FLASH_VADDR..PSRAM_VADDR).contains(&address) {
             if write { return Err(Fault::Prohibited); }
@@ -316,7 +318,8 @@ mod tests {
         assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Prohibited)); assert_eq!(c.read_byte(FLASH_VADDR, true), Ok(0xa7));
         c.clock_write(0x15249); c.write_register(CACHE_BASE + 0x30, 1 << 16).unwrap();
         assert_eq!(c.read_register(CACHE_BASE + 0x30), Ok(5 << 16));
-        assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Prohibited)); assert_eq!(c.read_byte(FLASH_VADDR, true), Ok(0xa7));
+        // frozen: a miss waits for the unfreeze on silicon; with no lines kept it completes here
+        assert_eq!(c.read_byte(FLASH_VADDR, false), Ok(0xa7)); assert_eq!(c.read_byte(FLASH_VADDR, true), Ok(0xa7));
         assert_eq!(c.write_register(CACHE_BASE + 0x30, 3 << 16), Err(Fault::Prohibited));
         assert_eq!(c.read_register(CACHE_BASE + 0x30), Ok(5 << 16));
         c.write_register(CACHE_BASE + 0x30, 4 << 16).unwrap(); // RO DONE cannot keep freeze enabled.
@@ -357,7 +360,7 @@ mod tests {
         assert_eq!(c.read_byte_core(FLASH_VADDR, true, 1), Err(Fault::Prohibited));
         c.clock_write(c.clock_read() | 1 << 16); c.write_register(CACHE_BASE + 0x30, 1 << 4).unwrap();
         assert_eq!(c.read_byte_core(FLASH_VADDR, true, 0), Ok(0x6f));
-        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 1), Err(Fault::Prohibited));
+        assert_eq!(c.read_byte_core(FLASH_VADDR, true, 1), Ok(0x6f), "ICache1 frozen: the fetch waits, it does not fault");
         c.write_register(CACHE_BASE + 4, 1).unwrap();
         for core in 0..2 { assert_eq!(c.read_byte_core(FLASH_VADDR, false, core), Err(Fault::Prohibited)); }
     }
@@ -389,7 +392,7 @@ mod tests {
         c.write_register(CACHE_BASE + 0x170, 31).unwrap(); map(&mut c, false, 0, 0x1000);
         assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Unmapped)); assert!(!c.irq());
         c.set_flash(&[1]).unwrap(); c.write_register(CACHE_BASE + 0x30, 1 << 16).unwrap();
-        assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Prohibited)); assert!(!c.irq());
+        assert_eq!(c.read_byte(FLASH_VADDR, false), Ok(1)); assert!(!c.irq());
         c.write_register(CACHE_BASE + 4, 1).unwrap();
         assert_eq!(c.read_byte(FLASH_VADDR, false), Err(Fault::Prohibited)); assert!(!c.irq());
         c.write_register(CACHE_BASE + 0x30, 0).unwrap(); c.clock_write(c.clock_read() & !(1 << 12));

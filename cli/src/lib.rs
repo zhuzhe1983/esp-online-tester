@@ -676,6 +676,7 @@ fn setup_s31(o: &Opts) -> esp32s31::Machine {
         m.bus.set_board_inputs(inputs).unwrap_or_else(|e| usage_error(&e));
     }
     if let Some(board) = esp32s31::board::make_board(&o.board) { m.bus.board = board; }
+    m.bus.attach_board_devices();
     // SPI_FAST_FLASH_BOOT; prepare() may override with --strap.
     if o.strap.is_none() {
         m.bus.set_strap(0x10);
