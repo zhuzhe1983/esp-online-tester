@@ -37,12 +37,22 @@ impl I2cDevice for PowerDevice {
     fn read(&mut self)->u8 {self.device.read()}
     fn stop(&mut self) {self.device.stop();}
 }
-pub struct PaperMono {i2c:I2cBitBang, i2c_levels:[bool;2], wiring:Arc<Wiring>,dc:bool,cs:Option<bool>,cycle:u64,touch_irq_high:bool,nfc_irq_high:bool,lora_levels:[bool;2],edges:Vec<BoardEdge>,gpio_events:u64,leds:[[u8;3];1],led_updates:u64,imu:Arc<Mutex<Bmi270Sample>>}
+// Both hardware controllers and software I2C access the same clocked sensor.
+struct ImuDevice(Arc<Mutex<Bmi270>>);
+impl I2cDevice for ImuDevice {
+    fn start(&mut self,read:bool)->bool {self.0.lock().expect("PaperMono IMU mutex poisoned").start(read)}
+    fn write(&mut self,b:u8)->bool {self.0.lock().expect("PaperMono IMU mutex poisoned").write(b)}
+    fn read(&mut self)->u8 {self.0.lock().expect("PaperMono IMU mutex poisoned").read()}
+    fn stop(&mut self) {self.0.lock().expect("PaperMono IMU mutex poisoned").stop();}
+}
+pub struct PaperMono {i2c:I2cBitBang, i2c_levels:[bool;2], wiring:Arc<Wiring>,dc:bool,cs:Option<bool>,cycle:u64,touch_irq_high:bool,nfc_irq_high:bool,lora_levels:[bool;2],edges:Vec<BoardEdge>,gpio_events:u64,leds:[[u8;3];1],led_updates:u64,imu:Arc<Mutex<Bmi270Sample>>,imu_device:Arc<Mutex<Bmi270>>}
 impl PaperMono {
     pub const WIDTH:usize=480;pub const HEIGHT:usize=800;
     pub fn new()->Self {Self::with_nfc(true)}
     pub fn lite()->Self {Self::with_nfc(false)}
-    fn with_nfc(nfc:bool)->Self {Self {i2c:I2cBitBang::new(),i2c_levels:[true,true],wiring:Arc::new(Wiring{panel:Mutex::new(Ssd1677::new(800,480,18,crate::periph::CPU_HZ/1000)),pmic:Default::default(),expander:Default::default(),touch:Default::default(),active:Mutex::new(false),nfc:nfc.then(||Arc::new(Mutex::new(St25r3916State::new(crate::periph::CPU_HZ)))),lora:nfc.then(||Mutex::new(Sx1262::new(crate::periph::CPU_HZ)))}),dc:false,cs:None,cycle:0,touch_irq_high:true,nfc_irq_high:false,lora_levels:[false,false],edges:Vec::new(),gpio_events:0,leds:[[0;3]],led_updates:0,imu:Default::default()}}
+    fn with_nfc(nfc:bool)->Self {
+        let imu=Arc::new(Mutex::new(Bmi270Sample::default()));let mut device=Bmi270::new(imu.clone());device.advance_to_us(0);
+        Self {i2c:I2cBitBang::new(),i2c_levels:[true,true],wiring:Arc::new(Wiring{panel:Mutex::new(Ssd1677::new(800,480,18,crate::periph::CPU_HZ/1000)),pmic:Default::default(),expander:Default::default(),touch:Default::default(),active:Mutex::new(false),nfc:nfc.then(||Arc::new(Mutex::new(St25r3916State::new(crate::periph::CPU_HZ)))),lora:nfc.then(||Mutex::new(Sx1262::new(crate::periph::CPU_HZ)))}),dc:false,cs:None,cycle:0,touch_irq_high:true,nfc_irq_high:false,lora_levels:[false,false],edges:Vec::new(),gpio_events:0,leds:[[0;3]],led_updates:0,imu,imu_device:Arc::new(Mutex::new(device))}}
     fn sync_leds(&mut self) {let pm=self.wiring.pmic.lock().expect("PaperMono PMIC mutex poisoned");let ioe=self.wiring.expander.lock().expect("PaperMono IOE mutex poisoned");
         let rgb=if pm.power_off_requested {[0;3]} else {[if pm.led_enabled {255}else{0},((u32::from(ioe.pwm[1])*255+2047)/4095) as u8,((u32::from(ioe.pwm[0])*255+2047)/4095) as u8]};
         if self.leds[0]!=rgb {self.leds[0]=rgb;self.led_updates+=1;}}
@@ -73,11 +83,13 @@ impl BoardModel for PaperMono {
             return vec![0xff;rx_len];
         }}self.spi_transfer(host,tx,rx_len)
     }
-    fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)> {if self.wiring.expander.lock().unwrap().input_mask&1==0 {self.set_sd_card_present(false);}self.wiring.sync();self.i2c.clear();let devices:Vec<(u8,u8,Box<dyn I2cDevice>)>=vec![
+    fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)> {
+        let mut imu=Bmi270::new(self.imu.clone());imu.advance_to_us(self.cycle/(crate::periph::CPU_HZ/1_000_000));*self.imu_device.lock().expect("PaperMono IMU mutex poisoned")=imu;
+        if self.wiring.expander.lock().unwrap().input_mask&1==0 {self.set_sd_card_present(false);}self.wiring.sync();self.i2c.clear();let devices:Vec<(u8,u8,Box<dyn I2cDevice>)>=vec![
         (0,0x6e,Box::new(PowerDevice{device:Box::new(M5pm1::new(self.wiring.pmic.clone())),wiring:self.wiring.clone()})),
         (0,0x4f,Box::new(PowerDevice{device:Box::new(M5ioe1::new(self.wiring.expander.clone(),0)),wiring:self.wiring.clone()})),
         (0,0x38,Box::new(Ft6336g::new(self.wiring.touch.clone()))),
-        (0,0x68,Box::new(Bmi270::new(self.imu.clone()))),
+        (0,0x68,Box::new(ImuDevice(self.imu_device.clone()))),
         // RX8130 RAM is needed for board identification and app settings. Calendar,
         // alarms, battery-domain retention and wake are not implemented by this subset.
         (0,0x32,Box::new(Reg8Device::new("rx8130-register-ram",&[]))),
@@ -96,11 +108,18 @@ impl BoardModel for PaperMono {
     fn display_frames(&self)->u64 {self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").frames}
     fn input_levels(&self)->Vec<(u8,bool)> {let mut levels=vec![(18,self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").busy()),(4,self.touch_irq_high),(6,self.nfc_irq_high),(2,true),(3,true),(47,self.i2c_levels[0]),(48,self.i2c_levels[1])];if self.wiring.lora.is_some() {levels.extend([(21,self.lora_levels[0]),(5,self.lora_levels[1])]);}levels}
     fn touch(&mut self,x:u16,y:u16,down:bool) {self.wiring.sync();let mut state=self.wiring.touch.lock().expect("PaperMono touch mutex poisoned");if state.powered {state.update(x.min(479),y.min(799),down);}drop(state);self.sync_touch_irq();}
-    fn advance_to(&mut self,cycle:VirtualCycle) {self.cycle=cycle;self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").advance_to(cycle);self.sync_touch_irq();self.sync_leds();if let Some(nfc)=&self.wiring.nfc {nfc.lock().expect("PaperMono NFC mutex poisoned").advance_to(cycle);}
+    fn advance_to(&mut self,cycle:VirtualCycle) {self.cycle=cycle;self.imu_device.lock().expect("PaperMono IMU mutex poisoned").advance_to_us(cycle/(crate::periph::CPU_HZ/1_000_000));self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").advance_to(cycle);self.sync_touch_irq();self.sync_leds();if let Some(nfc)=&self.wiring.nfc {nfc.lock().expect("PaperMono NFC mutex poisoned").advance_to(cycle);}
         if let Some(lora)=&self.wiring.lora {lora.lock().expect("PaperMono LoRa mutex poisoned").advance_to(cycle);}}
-    fn next_deadline(&self)->Option<VirtualCycle> {self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").next_deadline().into_iter().chain(self.wiring.nfc.as_ref().and_then(|n|n.lock().expect("PaperMono NFC mutex poisoned").next_deadline())).chain(self.wiring.lora.as_ref().and_then(|l|l.lock().expect("PaperMono LoRa mutex poisoned").next_deadline())).min()}
+    fn next_deadline(&self)->Option<VirtualCycle> {self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").next_deadline().into_iter().chain(self.wiring.nfc.as_ref().and_then(|n|n.lock().expect("PaperMono NFC mutex poisoned").next_deadline())).chain(self.wiring.lora.as_ref().and_then(|l|l.lock().expect("PaperMono LoRa mutex poisoned").next_deadline())).chain(self.imu_device.lock().expect("PaperMono IMU mutex poisoned").next_deadline_us().and_then(|us|us.checked_mul(crate::periph::CPU_HZ/1_000_000))).min()}
     fn take_edges(&mut self)->Vec<BoardEdge> {self.sync_touch_irq();if let Some(nfc)=&self.wiring.nfc {let high=nfc.lock().expect("PaperMono NFC mutex poisoned").irq();if high!=self.nfc_irq_high {self.nfc_irq_high=high;self.edges.push(BoardEdge{cycle:self.cycle,pin:6,level:high});}}
         if let Some(lora)=&self.wiring.lora {let l=lora.lock().expect("PaperMono LoRa mutex poisoned");for (i,(pin,level)) in [(21,l.busy()),(5,l.irq())].into_iter().enumerate(){if self.lora_levels[i]!=level {self.lora_levels[i]=level;self.edges.push(BoardEdge{cycle:self.cycle,pin,level});}}}let mut edges=std::mem::take(&mut self.edges);edges.extend(self.wiring.panel.lock().expect("PaperMono panel mutex poisoned").take_edges());edges.sort_by_key(|e|e.cycle);edges}
+    fn set_imu_sample(&mut self,accel_g:[f64;3],gyro_dps:[f64;3])->bool {
+        if !accel_g.iter().chain(&gyro_dps).all(|v|v.is_finite()) {return false;}
+        // Finish the old held sample through the board's current guest time;
+        // new values become data-ready on the next programmed sensor tick.
+        self.imu_device.lock().expect("PaperMono IMU mutex poisoned").advance_to_us(self.cycle/(crate::periph::CPU_HZ/1_000_000));
+        let mut imu=self.imu.lock().expect("PaperMono IMU sample mutex poisoned");imu.accel_g=accel_g;imu.gyro_dps=gyro_dps;imu.version=imu.version.wrapping_add(1);true
+    }
     fn leds(&self)->Option<(&[[u8;3]],u64)> {Some((&self.leds,self.led_updates))}
     fn lora_receive_at(&mut self,cycle:VirtualCycle,p:&esp_soc::devices::sx1262::LoRaInput)->bool {self.wiring.sync();let Some(l)=&self.wiring.lora else{return false};let mut l=l.lock().expect("PaperMono LoRa mutex poisoned");l.advance_to(cycle);l.receive(&p.config,&p.payload,p.rssi_dbm,p.snr_quarter_db,p.crc_error)}
     fn lora_snapshot(&self)->Option<String> {self.wiring.lora.as_ref().map(|l|l.lock().expect("PaperMono LoRa mutex poisoned").snapshot())}
@@ -116,6 +135,25 @@ mod tests {
     fn write(device:&mut dyn I2cDevice,reg:u8,value:u8) {assert!(device.start(false));assert!(device.write(reg));assert!(device.write(value));device.stop();}
     fn read(device:&mut dyn I2cDevice,reg:u8,count:usize)->Vec<u8> {assert!(device.start(false));assert!(device.write(reg));assert!(device.start(true));let bytes=(0..count).map(|_|device.read()).collect();device.stop();bytes}
     fn send(board:&mut PaperMono,command:u8,data:&[u8]) {board.gpio_changes(&[(16,false),(17,false)]);board.spi_transfer(2,&[command],0);board.gpio_changes(&[(17,true)]);board.spi_transfer(2,data,0);}
+    #[test]
+    fn full_and_lite_imu_clock_repeats_ready_and_samples_only_at_guest_deadlines() {
+        for mut board in [PaperMono::new(),PaperMono::lite()] {
+            let mut devices=board.i2c_devices();let imu0=devices.iter().position(|(b,a,_)|*b==0&&*a==0x68).unwrap();let imu1=devices.iter().position(|(b,a,_)|*b==1&&*a==0x68).unwrap();
+            assert_eq!(devices[imu0].2.pins(),Some((47,48)));assert_eq!(read(devices[imu1].2.as_mut(),0,1),[0x24]);
+            assert_eq!(board.next_deadline(),None);write(devices[imu0].2.as_mut(),0x59,1);write(devices[imu0].2.as_mut(),0x7d,6);
+            board.advance_to(crate::periph::CPU_HZ);assert_eq!(read(devices[imu1].2.as_mut(),0x1d,1),[0]);assert_eq!(board.next_deadline(),None,"incomplete config must not sample");
+            write(devices[imu0].2.as_mut(),0x59,0);let d=devices[imu0].2.as_mut();assert!(d.start(false));assert!(d.write(0x5e));for _ in 0..8192 {assert!(d.write(0));}d.stop();
+            for (reg,value) in [(0x59,1),(0x40,0xa8),(0x42,0xa8),(0x7d,6)] {write(devices[imu0].2.as_mut(),reg,value);}
+            let tick=crate::periph::CPU_HZ+crate::periph::CPU_HZ/100;assert_eq!(board.next_deadline(),Some(tick));
+            assert!(board.set_imu_sample([1.0,-0.5,0.25],[125.0,-250.0,0.0]));assert!(!board.set_imu_sample([f64::NAN,0.0,0.0],[0.0;3]));
+            board.advance_to(tick-1);assert_eq!(read(devices[imu0].2.as_mut(),0x1d,1),[0]);board.advance_to(tick);
+            assert_eq!(read(devices[imu0].2.as_mut(),0x1d,1),[0xc0]);assert_eq!(read(devices[imu1].2.as_mut(),0x1d,1),[0],"controller reads share clear-on-read status");
+            let bytes=read(devices[imu1].2.as_mut(),0x0c,12);let values:Vec<i16>=bytes.chunks_exact(2).map(|b|i16::from_le_bytes([b[0],b[1]])).collect();assert_eq!(values,[4096,-2048,1024,2048,-4096,0]);
+            board.advance_to(tick+crate::periph::CPU_HZ/100);assert_eq!(read(devices[imu0].2.as_mut(),0x1d,1),[0xc0],"unchanged host sample still produces periodic ready");
+            write(devices[imu0].2.as_mut(),0x7d,0);assert_eq!(board.next_deadline(),None);board.advance_to(2*crate::periph::CPU_HZ);assert_eq!(read(devices[imu1].2.as_mut(),0x1d,1),[0]);
+            write(devices[imu1].2.as_mut(),0x7e,0xb6);assert_eq!(read(devices[imu0].2.as_mut(),0x21,1),[0]);assert_eq!(board.next_deadline(),None);
+        }
+    }
     #[test]
     fn full_nfc_is_physical_shared_bus_lite_has_none_and_spare_ioe_is_not_a_gate() {
         let mut full=super::super::make_board("papermono").unwrap();let mut lite=super::super::make_board("papermono-lite").unwrap();
