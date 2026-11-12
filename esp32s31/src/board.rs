@@ -3,7 +3,7 @@
 //! AMOLED on GP-SPI2 in QSPI mode (CLK 42, CS 50, D0-D3 36/51/35/9, TE 43), its RESET on GPIO 44
 //! (shared with the touch controller's), and the display supply enabled by GPIO 60 driven low.
 //! Modelled: the panel and its reset and power gates, the CST9220 touch on I2C0 (0x5A, SDA 56,
-//! SCL 3, INT 6), and the panel's TE output on GPIO 43: a 60 Hz frame with a 1 ms high blanking pulse.
+//! SCL 3, INT 6) and the BQ27220 fuel gauge (0x55) on I2C0, and the panel's TE output on GPIO 43: a 60 Hz frame with a 1 ms high blanking pulse.
 use esp_soc::devices::co5300::Co5300;
 use esp_soc::{Board, BoardModel, NoBoard};
 
@@ -96,7 +96,8 @@ impl BoardModel for Mosaico {
         Some(self.touch_release_at.map_or(te, |t| t.min(te)))
     }
     fn i2c_devices(&mut self) -> Vec<(u8, u8, Box<dyn esp_periph::i2c::I2cDevice>)> {
-        vec![(0, crate::cst9220::ADDRESS, Box::new(crate::cst9220::Cst9220::new(self.touch.clone(), Self::WIDTH as u16, Self::HEIGHT as u16)))]
+        vec![(0, crate::cst9220::ADDRESS, Box::new(crate::cst9220::Cst9220::new(self.touch.clone(), Self::WIDTH as u16, Self::HEIGHT as u16))),
+             (0, crate::bq27220::ADDRESS, Box::new(crate::bq27220::Bq27220::new()))]
     }
     fn touch(&mut self, x: u16, y: u16, down: bool) {
         *self.touch.lock().unwrap() = crate::cst9220::Touch { down, x, y };
