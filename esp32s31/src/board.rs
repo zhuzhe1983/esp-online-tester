@@ -3,7 +3,7 @@
 //! AMOLED on GP-SPI2 in QSPI mode (CLK 42, CS 50, D0-D3 36/51/35/9, TE 43), its RESET on GPIO 44
 //! (shared with the touch controller's), and the display supply enabled by GPIO 60 driven low.
 //! Modelled: the panel and its reset and power gates, the CST9220 touch on I2C0 (0x5A, SDA 56,
-//! SCL 3, INT 6), the AI button on GPIO 7, and the BQ27220 fuel gauge (0x55) on I2C0, and the panel's TE output on GPIO 43: a 60 Hz frame with a 1 ms high blanking pulse.
+//! SCL 3, INT 6), the top button on GPIO 7 and the Boot key on GPIO 61, and the BQ27220 fuel gauge (0x55) on I2C0, and the panel's TE output on GPIO 43: a 60 Hz frame with a 1 ms high blanking pulse.
 //! Audio: the ES8311 codec (0x19) on I2C0 as a register file with its chip ID, serving the factory
 //! firmware's `audio_dac` and `audio_adc` both (no ES7210 is addressed), full duplex on I2S0 (the factory firmware logs BCLK 37, WS 49, DOUT 52, DIN 40) with the
 //! speaker amplifier enabled by GPIO 45; what I2S0 transmits is the run's audio (`--wav`).
@@ -29,8 +29,11 @@ pub const ES8311_ADDRESS: u8 = 0x19;
 /// CST9220 INT, active low: low while a finger is down, and for 1 ms after it lifts so the
 /// driver reads the release report.
 pub const PIN_TOUCH_INT: u8 = 6;
-/// The AI button (esp-mosaico-bsp), active low with the board's pull-up: high until pressed.
+/// The top button: the factory firmware's board manager calls it `button_power` (gpio_config_t mask
+/// bit 7; single click sleep/back, long press chat). Active low with the board's pull-up.
 pub const PIN_AI_BUTTON: u8 = 7;
+/// The Boot key: `button_boot` in the same table (mask bit 61), active low.
+pub const PIN_BOOT_BUTTON: u8 = 61;
 const TOUCH_RELEASE_NS: u64 = 1_000_000;
 /// CO5300 TE: one frame every 1/60 s, high for the first 1 ms (the blanking interval).
 const TE_PERIOD_NS: u64 = 16_666_667;
@@ -83,7 +86,7 @@ impl BoardModel for Mosaico {
         }
     }
     fn gpio_events(&self) -> u64 { self.gpio_events }
-    fn input_levels(&self) -> Vec<(u8, bool)> { vec![(PIN_LCD_TE, self.te_level), (PIN_TOUCH_INT, !self.touch_int_low), (PIN_AI_BUTTON, true)] }
+    fn input_levels(&self) -> Vec<(u8, bool)> { vec![(PIN_LCD_TE, self.te_level), (PIN_TOUCH_INT, !self.touch_int_low), (PIN_AI_BUTTON, true), (PIN_BOOT_BUTTON, true)] }
     /// The S31 machine passes emulated time in nanoseconds. TE runs only while the panel is powered
     /// and out of reset; a jump over several frames yields the level at `now` (one edge pair at most).
     fn advance_to(&mut self, now: esp_soc::board::VirtualCycle) {
@@ -98,7 +101,9 @@ impl BoardModel for Mosaico {
             self.te_edges.push(esp_soc::board::BoardEdge { cycle: now, pin: PIN_LCD_TE, level });
         }
     }
-    fn named_pin(&self, name: &str) -> Option<u8> { matches!(name, "ai" | "btn1" | "button").then_some(PIN_AI_BUTTON) }
+    fn named_pin(&self, name: &str) -> Option<u8> {
+        match name { "ai" | "power" | "btn1" | "button" => Some(PIN_AI_BUTTON), "boot" | "btn2" => Some(PIN_BOOT_BUTTON), _ => None }
+    }
     fn take_edges(&mut self) -> Vec<esp_soc::board::BoardEdge> { std::mem::take(&mut self.te_edges) }
     /// The next TE edge, in the same emulated nanoseconds `advance_to` takes, so an idle machine
     /// wakes for it instead of jumping over the 1 ms blanking pulse.
