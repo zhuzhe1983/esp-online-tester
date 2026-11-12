@@ -114,6 +114,8 @@ pub struct SocBus {
     pub misc: Misc,
     pub board: esp_soc::Board,
     pub cycles: u64,
+    /// emulated nanoseconds the board has been advanced to, and the sub-nanosecond remainder
+    board_ns: u64, board_ns_frac: u64,
     pub last_fault: Option<(u32, bool)>,
     pub irq_dirty: bool,
     pub gpio_events: Option<Vec<(u64, u8, bool)>>,
@@ -183,7 +185,9 @@ impl BoardInputs {
     pub fn mosaico_gd25q128() -> Self {
         // Read from the user's board (2026-11-11, esptool 5.6.0): flash status 0x0200 (QE set),
         // eFuse USER_DATA word 0 = 0x0102.
-        Self { flash_id: [0xc8, 0x40, 0x18], psram_bytes: 16 << 20, flash_status: 0x0200,
+        // No GPIO36 strap: on the Mosaico GPIO36 is the CO5300's QSPI D1 (driven by GP-SPI2), and a
+        // board driver on it would contend with the panel bus.
+        Self { flash_id: [0xc8, 0x40, 0x18], psram_bytes: 16 << 20, flash_status: 0x0200, inputs: Vec::new(),
             efuse: vec![
                 // USER_DATA (0x88) = 0x0102: board v1.2 as esp-mosaico-bsp reads it (onboard/esp_mosaico.c).
                 (0x88, 0x0102),
@@ -225,7 +229,7 @@ impl SocBus {
             flash: vec![0xff; flash_size],
             misc: Misc::new(),
             board: Box::new(NoBoard),
-            cycles: 0,
+            cycles: 0, board_ns: 0, board_ns_frac: 0,
             last_fault: None,
             irq_dirty: true,
             gpio_events: None,
@@ -268,6 +272,7 @@ impl SocBus {
     /// Install board inputs now and after every reset.
     /// The board's I2C devices: bus 0 on I2C0, bus 1 on I2C1.
     pub fn attach_board_devices(&mut self) {
+        for (pin, level) in self.board.input_levels() { let _ = self.inner.pads.set_input(usize::from(pin), Some(level)); }
         for i in &mut self.inner.i2c { i.clear_devices(); }
         for (bus, address, device) in self.board.i2c_devices() {
             if let Some(i) = self.inner.i2c.get_mut(bus as usize) { i.attach(address, device); }
@@ -308,7 +313,7 @@ impl SocBus {
     /// GPIO stores and a started transfer do any work here.
     fn deliver_board_events(&mut self, address: u32) {
         if address >> 24 != 0x20 { return; }
-        if crate::pads::Pads::is_mmio(address) { self.deliver_pin_levels(); }
+        if crate::pads::Pads::is_mmio(address) { self.deliver_pin_levels(); self.irq_dirty = true; }
         self.deliver_spi();
     }
 
@@ -645,6 +650,7 @@ impl esp_soc::SocBus for SocBus {
         self.misc.log_unknown = f.has("mmio");
         self.inner.spi2.log = f.has("spi"); self.inner.spi3.log = f.has("spi");
         esp_periph::Device::debug(&mut self.inner.axi_dma, f.has("dma"));
+        esp_periph::Device::debug(&mut self.inner.dma2d, f.has("dma2d")); esp_periph::Device::debug(&mut self.inner.ppa, f.has("ppa"));
         for i in &mut self.inner.i2c { i.log = f.has("i2c"); }
     }
 
@@ -794,6 +800,15 @@ impl Bus for SocBus {
             self.irq_dirty = true;
         }
         if self.inner.spi2.dma_tx_pending.is_some() || self.inner.spi3.dma_tx_pending.is_some() { self.deliver_spi(); }
+        // Emulated time for the board (TE): nanoseconds at the current CPU clock.
+        let t = u128::from(cycles) * 1_000_000_000 + u128::from(self.board_ns_frac);
+        self.board_ns += (t / u128::from(hz)) as u64; self.board_ns_frac = (t % u128::from(hz)) as u64;
+        self.board.advance_to(self.board_ns);
+        let edges = self.board.take_edges();
+        if !edges.is_empty() {
+            for e in edges { let _ = self.inner.pads.set_input(usize::from(e.pin), Some(e.level)); }
+            self.irq_dirty = true;
+        }
         esp_periph::Device::tick(&mut self.inner.usb_otg, u64::from(cycles));
         if self.inner.usb_otg.pending() { self.inner.run_usb_otg(); }
         // Machine time drives the RTC domains (timer + calibration) that were formerly opt-in:

@@ -3,7 +3,7 @@
 //! AMOLED on GP-SPI2 in QSPI mode (CLK 42, CS 50, D0-D3 36/51/35/9, TE 43), its RESET on GPIO 44
 //! (shared with the touch controller's), and the display supply enabled by GPIO 60 driven low.
 //! Modelled: the panel and its reset and power gates, the CST9220 touch on I2C0 (0x5A, SDA 56,
-//! SCL 3). Not yet: TE.
+//! SCL 3), and the panel's TE output on GPIO 43: a 60 Hz frame with a 1 ms high blanking pulse.
 use esp_soc::devices::co5300::Co5300;
 use esp_soc::{Board, BoardModel, NoBoard};
 
@@ -17,6 +17,10 @@ pub fn make_board(name: &str) -> Option<Board> {
 
 pub const PIN_LCD_RESET: u8 = 44;
 pub const PIN_LCD_POWER_N: u8 = 60;
+pub const PIN_LCD_TE: u8 = 43;
+/// CO5300 TE: one frame every 1/60 s, high for the first 1 ms (the blanking interval).
+const TE_PERIOD_NS: u64 = 16_666_667;
+const TE_HIGH_NS: u64 = 1_000_000;
 
 /// The ESP-Mosaico v1.2.
 pub struct Mosaico {
@@ -32,13 +36,16 @@ pub struct Mosaico {
     pub touch: std::sync::Arc<std::sync::Mutex<crate::cst9220::Touch>>,
     /// the storage NAND on GP-SPI3 (the BSP's MOSAICO_NAND)
     pub nand: crate::spi_nand::SpiNand,
+    /// TE: the level now and the edges not yet delivered (`advance_to` takes emulated nanoseconds)
+    te_level: bool,
+    te_edges: Vec<esp_soc::board::BoardEdge>,
 }
 impl Default for Mosaico { fn default() -> Self { Self::new() } }
 impl Mosaico {
     pub const WIDTH: usize = 480;
     pub const HEIGHT: usize = 480;
     pub fn new() -> Self {
-        Mosaico { panel: Co5300::new(Self::WIDTH, Self::HEIGHT, 0), powered: false, in_reset: false, gpio_events: 0, dropped: 0, touch: Default::default(), nand: crate::spi_nand::SpiNand::new() }
+        Mosaico { panel: Co5300::new(Self::WIDTH, Self::HEIGHT, 0), powered: false, in_reset: false, gpio_events: 0, dropped: 0, touch: Default::default(), nand: crate::spi_nand::SpiNand::new(), te_level: false, te_edges: Vec::new() }
     }
 }
 impl BoardModel for Mosaico {
@@ -55,6 +62,17 @@ impl BoardModel for Mosaico {
         }
     }
     fn gpio_events(&self) -> u64 { self.gpio_events }
+    fn input_levels(&self) -> Vec<(u8, bool)> { vec![(PIN_LCD_TE, self.te_level)] }
+    /// The S31 machine passes emulated time in nanoseconds. TE runs only while the panel is powered
+    /// and out of reset; a jump over several frames yields the level at `now` (one edge pair at most).
+    fn advance_to(&mut self, now: esp_soc::board::VirtualCycle) {
+        let level = self.powered && !self.in_reset && now % TE_PERIOD_NS < TE_HIGH_NS;
+        if level != self.te_level {
+            self.te_level = level;
+            self.te_edges.push(esp_soc::board::BoardEdge { cycle: now, pin: PIN_LCD_TE, level });
+        }
+    }
+    fn take_edges(&mut self) -> Vec<esp_soc::board::BoardEdge> { std::mem::take(&mut self.te_edges) }
     fn i2c_devices(&mut self) -> Vec<(u8, u8, Box<dyn esp_periph::i2c::I2cDevice>)> {
         vec![(0, crate::cst9220::ADDRESS, Box::new(crate::cst9220::Cst9220::new(self.touch.clone(), Self::WIDTH as u16, Self::HEIGHT as u16)))]
     }

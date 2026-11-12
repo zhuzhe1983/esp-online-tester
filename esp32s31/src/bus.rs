@@ -49,6 +49,9 @@ pub const I2C0: u32 = 0x2038_5000;
 pub const I2C1: u32 = 0x2038_6000;
 /// reg_base.h DR_REG_AXI_DMA_BASE: the P4's AXI-GDMA layout (three channel pairs, SPI2 trigger 1).
 pub const AXI_DMA: u32 = 0x2034_8000;
+/// reg_base.h DR_REG_PPA_BASE / DR_REG_DMA2D_BASE: the P4's PPA and 2D-DMA (esp_periph::ppa / dma2d).
+pub const PPA: u32 = 0x2034_5000;
+pub const DMA2D: u32 = 0x2034_6000;
 
 struct UsbDma<'a> { sram: &'a mut [u8], lp: &'a mut [u8] }
 impl UsbDma<'_> {
@@ -62,6 +65,19 @@ impl UsbDma<'_> {
 impl esp_periph::sdmmc::SdmmcMemory for UsbDma<'_> {
     fn read(&mut self, addr: u32, buf: &mut [u8]) -> Result<(), Fault> { let n = buf.len(); buf.copy_from_slice(self.span(addr, n)?); Ok(()) }
     fn write(&mut self, addr: u32, data: &[u8]) -> Result<(), Fault> { self.span(addr, data.len())?.copy_from_slice(data); Ok(()) }
+}
+
+/// 2D-DMA's AXI view: internal SRAM and LP RAM directly, flash and PSRAM through the MMU.
+struct Dma2dMem<'a> { mem: UsbDma<'a>, cache: &'a mut Cache }
+impl esp_periph::sdmmc::SdmmcMemory for Dma2dMem<'_> {
+    fn read(&mut self, addr: u32, buf: &mut [u8]) -> Result<(), Fault> {
+        if Cache::is_memory(addr) { return self.cache.dma_access(addr, None, buf); }
+        esp_periph::sdmmc::SdmmcMemory::read(&mut self.mem, addr, buf)
+    }
+    fn write(&mut self, addr: u32, data: &[u8]) -> Result<(), Fault> {
+        if Cache::is_memory(addr) { return self.cache.dma_access(addr, Some(data), &mut []); }
+        esp_periph::sdmmc::SdmmcMemory::write(&mut self.mem, addr, data)
+    }
 }
 
 struct AxiOut<'a> { mem: UsbDma<'a>, channel: &'a mut esp_periph::gdma::GdmaOutCh }
@@ -122,6 +138,9 @@ pub struct S31Bus {
     pub i2c: [esp_periph::i2c::I2c; 2],
     /// AXI-GDMA: GP-SPI2's DMA (IRQ sources 48-50 IN, 51-53 OUT).
     pub axi_dma: esp_periph::gdma::AxiDma,
+    /// 2D-DMA (IRQ sources 105-107 IN, 108-111 OUT) and the PPA (source 102) it feeds.
+    pub dma2d: esp_periph::dma2d::Dma2d,
+    pub ppa: esp_periph::ppa::Ppa,
     /// XTAL-domain remainder carried between ticks for the I2C controllers.
     pub i2c_frac: u64,
 }
@@ -150,7 +169,7 @@ impl S31Bus {
             // Same HS UTMI DWC2 instance as the P4 (esp_hal_usb/esp32s31/usb_dwc_periph.c); its
             // GHWCFG words are assumed equal to the P4's until read from an S31.
             usb_otg: esp_periph::usb_otg::Dwc2::new(esp_periph::usb_otg::Dwc2Config::esp32p4_hs(crate::periph::CPU_HZ)),
-            spi2: esp_periph::GpSpi::new(), spi3: esp_periph::GpSpi::with_host(3), i2c: [esp_periph::i2c::I2c::new(), esp_periph::i2c::I2c::new()], i2c_frac: 0, axi_dma: esp_periph::gdma::AxiDma::new() }
+            spi2: esp_periph::GpSpi::new(), spi3: esp_periph::GpSpi::with_host(3), i2c: [esp_periph::i2c::I2c::new(), esp_periph::i2c::I2c::new()], i2c_frac: 0, axi_dma: esp_periph::gdma::AxiDma::new(), dma2d: esp_periph::dma2d::Dma2d::new(), ppa: esp_periph::ppa::Ppa::new() }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
         for (base, data) in [(SRAM_BASE, &self.sram), (LP_BASE, &self.lp), (ROM_BASE, &self.rom)] {
@@ -211,12 +230,19 @@ impl S31Bus {
         spi.complete_dma_tx(&data);
         true
     }
+    /// Run the 2D-DMA transfers (M2M, PPA) whose channels are all started; count refusals.
+    fn run_dma2d(&mut self) {
+        let mut mem = Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, cache: &mut self.cache };
+        for r in self.dma2d.service(&mut self.ppa, &mut mem) {
+            self.refused.entry(if r.ppa { PPA } else { DMA2D } + r.off).or_insert((0, 0)).0 += 1;
+        }
+    }
     /// Let the DWC2 move what its DMA owes, against internal SRAM and LP RAM.
     pub(crate) fn run_usb_otg(&mut self) {
         let mut dma = UsbDma { sram: &mut self.sram, lp: &mut self.lp };
         self.usb_otg.run(&mut dma);
     }
-    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], axi_dma: esp_periph::Device::irq_sources(&self.axi_dma) } }
+    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], gpio: self.pads.irq_lines(), axi_dma: esp_periph::Device::irq_sources(&self.axi_dma), dma2d: self.dma2d.irq_bits() as u8, ppa: self.ppa.irq() } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
@@ -296,6 +322,14 @@ impl S31Bus {
         if let Some(off) = offset(address, AXI_DMA, bytes, 0x1000) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(esp_periph::Device::read(&mut self.axi_dma, off as u32));
+        }
+        if let Some(off) = offset(address, DMA2D, bytes, 0x1000) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(esp_periph::Device::read(&mut self.dma2d, off as u32));
+        }
+        if let Some(off) = offset(address, PPA, bytes, 0x1000) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(esp_periph::Device::read(&mut self.ppa, off as u32));
         }
         for (n, base) in [I2C0, I2C1].into_iter().enumerate() {
             if let Some(off) = offset(address, base, bytes, 0x100) {
@@ -520,6 +554,18 @@ impl S31Bus {
         if let Some(off) = offset(address, AXI_DMA, bytes, 0x1000) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             esp_periph::Device::write(&mut self.axi_dma, off as u32, value);
+            return Ok(());
+        }
+        if let Some(off) = offset(address, DMA2D, bytes, 0x1000) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            esp_periph::Device::write(&mut self.dma2d, off as u32, value);
+            self.run_dma2d();
+            return Ok(());
+        }
+        if let Some(off) = offset(address, PPA, bytes, 0x1000) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            esp_periph::Device::write(&mut self.ppa, off as u32, value);
+            self.run_dma2d();
             return Ok(());
         }
         for (n, base) in [I2C0, I2C1].into_iter().enumerate() {
@@ -890,6 +936,22 @@ mod tests {
         assert_eq!(b.read32(PSRAM_VADDR), Err(Fault::Prohibited)); assert_eq!(b.fetch(PSRAM_VADDR), Err(Fault::Prohibited));
         assert_eq!(b.write32(PSRAM_VADDR, 0), Err(Fault::Prohibited));
         b.write32(0x207041e8, 1 << 31).unwrap(); assert_eq!(b.read32(PSRAM_VADDR), Ok(0x00500013));
+    }
+    #[test]
+    fn dma2d_m2m_reads_psram_through_the_mmu_and_raises_its_sources() {
+        use crate::cache::{PSRAM_MMU, PSRAM_VADDR};
+        let mut b = S31Bus::new(); b.cache.set_psram_size(2 * 65536).unwrap();
+        b.cache.write_register(PSRAM_MMU + 0x380, 0).unwrap(); b.cache.write_register(PSRAM_MMU + 0x37c, 0xc01).unwrap(); // vpage 0 -> ppage 1
+        b.cache.psram_bytes_mut()[65536 + 16..65536 + 24].copy_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8]);
+        let (tx, rx, dst) = (SRAM_BASE + 0x100, SRAM_BASE + 0x200, SRAM_BASE + 0x300);
+        for (i, w) in [8 << 14 | 3 << 30, 0, 0, PSRAM_VADDR + 16, 0].into_iter().enumerate() { b.write32(tx + 4 * i as u32, w).unwrap(); }
+        for (i, w) in [16 | 1 << 31, 0, 0, dst, 0].into_iter().enumerate() { b.write32(rx + 4 * i as u32, w).unwrap(); }
+        b.write32(DMA2D + 0x608, 2).unwrap(); b.write32(DMA2D + 0x600, 1).unwrap(); b.write32(DMA2D + 0x63c, 3).unwrap();
+        b.write32(DMA2D + 0x620, rx).unwrap(); b.write32(DMA2D + 0x61c, 1 << 22).unwrap();
+        b.write32(DMA2D + 0x138, 4).unwrap(); b.write32(DMA2D + 0x120, tx).unwrap(); b.write32(DMA2D + 0x11c, 1 << 21).unwrap();
+        assert_eq!((b.read32(dst), b.read32(dst + 4), b.read32(dst + 8)), (Ok(0x04030201), Ok(0x08070605), Ok(0)));
+        assert!(b.peripheral_irqs().dma2d == 1 << 1 && b.refused.is_empty());
+        assert_eq!(b.read32(DMA2D + 0x124).map(|v| v >> 24 & 1), Ok(1), "RESET_AVAIL while idle");
     }
     #[test]
     fn actual_invalid_psram_translation_routes_error_but_gating_and_missing_input_do_not() {
