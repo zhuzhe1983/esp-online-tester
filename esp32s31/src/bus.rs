@@ -276,6 +276,11 @@ impl S31Bus {
     pub fn check_load(&self, address: u32, bytes: usize) -> Result<(), String> {
         self.memory(address, bytes).map(|_| ()).ok_or_else(|| format!("S31 ELF segment outside SRAM/ROM: {address:#010x}, {bytes} bytes"))
     }
+    /// HP SRAM, LP RAM or the mask ROM.
+    #[inline(always)]
+    pub fn is_ram_or_rom(address: u32) -> bool {
+        (SRAM_BASE..SRAM_BASE + SRAM_SIZE as u32).contains(&address) || (LP_BASE..LP_BASE + LP_SIZE as u32).contains(&address) || (ROM_BASE..ROM_BASE + ROM_SIZE as u32).contains(&address)
+    }
     /// Decoded code may no longer match anything: after loading or changing memory or the
     /// configuration an instruction fetch depends on from outside the guest's own accesses.
     pub fn invalidate_code(&mut self) { for v in &mut self.code_ver { *v = v.wrapping_add(1); } }

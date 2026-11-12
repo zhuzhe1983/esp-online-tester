@@ -72,6 +72,8 @@ impl Soc for S31 {
         Self::reset_core(c, i);
         bus.inner.reset_hart(i);
         bus.irq_dirty = true;
+        // the core's input is gone until the machine presents it again
+        bus.presented = None;
     }
 
     fn boot_core(c: &mut Cpu, entry: u32) {
@@ -82,18 +84,8 @@ impl Soc for S31 {
 
     /// Each core's CLIC candidate in `clic_std` packing (`riscv_rv32::exec::CLIC_IRQ_*`).
     fn irqs(bus: &SocBus, out: &mut [Option<u32>]) {
-        for (core, o) in out.iter_mut().enumerate() {
-            if !bus.inner.cores.clic_on(core) {
-                *o = None;
-                continue;
-            }
-            let c = &bus.inner.interrupts.clic[core];
-            *o = c.candidate().filter(|&(id, _)| id >= CLIC_EXT_OFFSET as usize).map(|(id, level)| {
-                (id as u32 - CLIC_EXT_OFFSET)
-                    | level << CLIC_IRQ_LEVEL_SHIFT
-                    | if c.vectored(id) { CLIC_IRQ_SHV } else { 0 }
-            });
-        }
+        let irqs = bus.core_irqs();
+        for (o, irq) in out.iter_mut().zip(irqs) { *o = irq; }
     }
 
     fn interrupt_taken(bus: &mut SocBus, core: usize, line: u32) {
@@ -104,6 +96,8 @@ impl Soc for S31 {
 
     fn select_core(bus: &mut SocBus, core: usize) {
         bus.inner.set_hart(core);
+        // Whatever the machine or the host did since the last dispatch may have moved a line.
+        bus.dev_dirty = true;
     }
 
     fn core_state(bus: &SocBus, core: usize) -> CoreState {
@@ -137,6 +131,13 @@ pub struct SocBus {
     pub board_inputs: Option<BoardInputs>,
     /// The pad levels last given to the board (`Pads::board_levels`).
     pin_levels: u64,
+    /// Device state may differ from what the last interrupt refresh saw: set at every dispatch
+    /// (`select_core`) and by every access that is not plain memory or that faults; cleared by a
+    /// refresh. See `memory_written`.
+    dev_dirty: bool,
+    /// What the machine last presented to each core (`Soc::irqs` after `refresh_irq`), until a
+    /// core reset drops it.
+    presented: Option<[Option<u32>; 2]>,
 }
 
 /// Explicit board-level inputs needed to run an IDF v6.1 image from the mask ROM. None of
@@ -245,6 +246,8 @@ impl SocBus {
             cycles: 0, board_ns: 0, board_ns_frac: 0,
             last_fault: None,
             irq_dirty: true,
+            dev_dirty: true,
+            presented: None,
             gpio_events: None,
             debug: Default::default(),
             // POWERON (reset_reasons.h); mirrors the POR latch in `Interrupts::default`.
@@ -408,6 +411,40 @@ impl SocBus {
         }
     }
 
+    /// Each core's CLIC candidate in `clic_std` packing (`riscv_rv32::exec::CLIC_IRQ_*`).
+    fn core_irqs(&self) -> [Option<u32>; 2] {
+        std::array::from_fn(|core| {
+            if !self.inner.cores.clic_on(core) { return None; }
+            let c = &self.inner.interrupts.clic[core];
+            c.candidate().filter(|&(id, _)| id >= CLIC_EXT_OFFSET as usize).map(|(id, level)| {
+                (id as u32 - CLIC_EXT_OFFSET)
+                    | level << CLIC_IRQ_LEVEL_SHIFT
+                    | if c.vectored(id) { CLIC_IRQ_SHV } else { 0 }
+            })
+        })
+    }
+
+    /// After a store to plain memory (SRAM, LP RAM, the cache windows). It used to set
+    /// `irq_dirty` like any store, which ended every dispatch at every store so the machine could
+    /// refresh the interrupt lines (about a third of a Mosaico run). A memory store changes no
+    /// device, so the refresh the machine would make now sees what the last one saw unless some
+    /// device access, the host or the machine moved something since (`dev_dirty`); then it is
+    /// made here, from the same state, and the dispatch ends only if what the machine would
+    /// present differs from what it presented. Unchanged, its present is a no-op.
+    #[inline]
+    fn memory_written(&mut self) {
+        if !self.dev_dirty { return; }
+        self.refresh_clic_inputs();
+        self.dev_dirty = false;
+        if self.presented != Some(self.core_irqs()) { self.irq_dirty = true; }
+    }
+
+    /// Plain memory, which no device sees on a CPU access (`memory_written`).
+    #[inline(always)]
+    fn plain_memory(address: u32) -> bool {
+        address >> 24 != 0x20 && (bus::S31Bus::is_ram_or_rom(address) || crate::cache::Cache::is_memory(address))
+    }
+
     fn refresh_clic_inputs(&mut self) {
         let irq = self.inner.peripheral_irqs();
         // Threshold 0: `clic_std` CPUs apply `mintthresh` themselves (same as P4 rev ≥ 3).
@@ -503,6 +540,8 @@ impl esp_soc::SocBus for SocBus {
 
     fn refresh_irq(&mut self) -> bool {
         self.refresh_clic_inputs();
+        self.dev_dirty = false;
+        self.presented = Some(self.core_irqs());
         true
     }
 
@@ -603,6 +642,8 @@ impl esp_soc::SocBus for SocBus {
         self.misc.log_all = log_all;
         self.sw_reset = false;
         self.irq_dirty = true;
+        self.dev_dirty = true;
+        self.presented = None;
         self.last_fault = None;
         cause
     }
@@ -780,27 +821,33 @@ impl Bus for SocBus {
         self.inner.fetch_ahead(pc)
     }
     fn read8(&mut self, a: u32) -> Result<u8, Fault> {
+        if !Self::plain_memory(a) { self.dev_dirty = true; }
         match self.inner.read8(a) {
             Ok(v) => Ok(v),
             Err(e) => {
+                self.dev_dirty = true;
                 self.note_access_fault(false);
                 Err(e)
             }
         }
     }
     fn read16(&mut self, a: u32) -> Result<u16, Fault> {
+        if !Self::plain_memory(a) { self.dev_dirty = true; }
         match self.inner.read16(a) {
             Ok(v) => Ok(v),
             Err(e) => {
+                self.dev_dirty = true;
                 self.note_access_fault(false);
                 Err(e)
             }
         }
     }
     fn read32(&mut self, a: u32) -> Result<u32, Fault> {
+        if !Self::plain_memory(a) { self.dev_dirty = true; }
         match self.inner.read32(a) {
             Ok(v) => Ok(v),
             Err(e) => {
+                self.dev_dirty = true;
                 self.note_access_fault(false);
                 Err(e)
             }
@@ -808,12 +855,18 @@ impl Bus for SocBus {
     }
     fn write8(&mut self, a: u32, v: u8) -> Result<(), Fault> {
         match self.inner.write8(a, v) {
+            Ok(()) if Self::plain_memory(a) => {
+                self.memory_written();
+                Ok(())
+            }
             Ok(()) => {
                 self.deliver_board_events(a);
                 self.irq_dirty = true;
+                self.dev_dirty = true;
                 Ok(())
             }
             Err(e) => {
+                self.dev_dirty = true;
                 self.note_access_fault(true);
                 Err(e)
             }
@@ -821,12 +874,18 @@ impl Bus for SocBus {
     }
     fn write16(&mut self, a: u32, v: u16) -> Result<(), Fault> {
         match self.inner.write16(a, v) {
+            Ok(()) if Self::plain_memory(a) => {
+                self.memory_written();
+                Ok(())
+            }
             Ok(()) => {
                 self.deliver_board_events(a);
                 self.irq_dirty = true;
+                self.dev_dirty = true;
                 Ok(())
             }
             Err(e) => {
+                self.dev_dirty = true;
                 self.note_access_fault(true);
                 Err(e)
             }
@@ -834,12 +893,18 @@ impl Bus for SocBus {
     }
     fn write32(&mut self, a: u32, v: u32) -> Result<(), Fault> {
         match self.inner.write32(a, v) {
+            Ok(()) if Self::plain_memory(a) => {
+                self.memory_written();
+                Ok(())
+            }
             Ok(()) => {
                 self.deliver_board_events(a);
                 self.irq_dirty = true;
+                self.dev_dirty = true;
                 Ok(())
             }
             Err(e) => {
+                self.dev_dirty = true;
                 self.note_access_fault(true);
                 Err(e)
             }
@@ -849,6 +914,7 @@ impl Bus for SocBus {
         match self.inner.fetch(pc) {
             Ok(v) => Ok(v),
             Err(e) => {
+                self.dev_dirty = true;
                 self.note_access_fault(false);
                 Err(e)
             }
@@ -925,6 +991,31 @@ impl Bus for SocBus {
 mod tests {
     use super::*;
     use esp_soc::SocBus as _;
+
+    /// EX265: a store to plain memory no longer ends the dispatch when the interrupt refresh it
+    /// would have caused cannot change anything; after a device access it refreshes on the spot.
+    #[test]
+    fn memory_stores_refresh_interrupts_only_when_a_device_may_have_moved() {
+        use emu_core::Bus as _;
+        let mut m = machine([0; 6], 1 << 20);
+        let b = &mut m.bus;
+        b.irq_dirty = false;
+        let _ = esp_soc::SocBus::refresh_irq(b);
+        b.write32(bus::SRAM_BASE + 0x100, 1).unwrap();
+        assert!(!b.irq_dirty && !b.dev_dirty, "nothing moved since the refresh");
+        let _ = b.read32(bus::UART0_BASE + 0x1c);
+        assert!(b.dev_dirty, "a device read may have side effects");
+        b.write32(bus::SRAM_BASE + 0x104, 1).unwrap();
+        assert!(!b.dev_dirty && !b.irq_dirty, "refreshed at the store, and nothing to present");
+        S31::select_core(b, 0);
+        assert!(b.dev_dirty, "a new dispatch may follow host input");
+        b.presented = None;
+        b.write32(bus::SRAM_BASE + 0x108, 1).unwrap();
+        assert!(b.irq_dirty, "a core whose input was dropped must be presented again");
+        b.irq_dirty = false;
+        b.write32(bus::UART0_BASE + 0x10, 0).unwrap();
+        assert!(b.irq_dirty, "a device store still ends the dispatch");
+    }
 
     #[test]
     fn machine_constructs_loads_sram_and_steps() {
