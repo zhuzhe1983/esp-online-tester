@@ -203,7 +203,7 @@ impl BoardInputs {
                 (0x30, 1 << 1), (0x38, 8 << 5),
             ], ..Self::devkit_w25q128() }
     }
-    pub fn apply(&self, b: &mut S31Bus) -> Result<(), String> {
+    pub fn apply(&self, b: &mut S31Bus, mac: [u8; 6]) -> Result<(), String> {
         let a = &mut b.analog; a.set_bias(self.bias); a.set_perif_glitch(self.perif_glitch); a.set_dig_reg(self.dig_reg); a.set_bod_register(self.bod);
         b.mspi.attach_flash(self.flash_id, self.flash_status).map_err(|e| format!("{e:?}"))?;
         b.mspi.attach_sfdp(0, &self.sfdp).map_err(|e| format!("{e:?}"))?;
@@ -219,6 +219,11 @@ impl BoardInputs {
                     .ok_or_else(|| format!("eFuse register {off:#x} is not a read register"))?;
                 image.words[word] |= value;
             }
+            // BLOCK1 MAC (efuse_reg.h RD_MAC_SYS0/1, 0x50/0x54): bytes 2-5 big-endian, then bytes 0-1
+            // and MAC_EXT ff:fe, as the C6 model and esp_efuse_mac_get_default read them. The address
+            // is the run's (--mac), never the board's own.
+            image.words[(0x50 - 0x2c) / 4] = u32::from_be_bytes([mac[2], mac[3], mac[4], mac[5]]);
+            image.words[(0x54 - 0x2c) / 4] = u32::from(mac[0]) << 8 | u32::from(mac[1]) | 0xfffe << 16;
             b.periph.efuse.set_read_image(image)?;
         }
         Ok(())
@@ -285,7 +290,7 @@ impl SocBus {
         }
     }
     pub fn set_board_inputs(&mut self, inputs: BoardInputs) -> Result<(), String> {
-        inputs.apply(&mut self.inner)?;
+        inputs.apply(&mut self.inner, self.mac)?;
         self.board_inputs = Some(inputs);
         Ok(())
     }
@@ -561,7 +566,7 @@ impl esp_soc::SocBus for SocBus {
             inner.mspi.enable_legacy_rom_lengths();
             let _ = inner.load(bus::ROM_BASE, image, image.len());
         }
-        if let Some(b) = &self.board_inputs { let _ = b.apply(&mut inner); }
+        if let Some(b) = &self.board_inputs { let _ = b.apply(&mut inner, mac); }
         self.inner = inner;
         self.attach_board_devices();                     // the board's I2C devices, on the new controllers
         self.deliver_pin_levels();                       // the pads are back to their reset state
