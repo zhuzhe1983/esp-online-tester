@@ -49,7 +49,7 @@ impl Bm8563State {
     }
     fn stop(&mut self) {self.access=false;if self.pending {self.pending=false;self.add_seconds(1);}}
 }
-fn encode(value:u8)->u8 {(value/10)<<4|value%10}
+fn encode(value:u8)->u8 {((value/10)<<4)|(value%10)}
 fn month_days(month:u8,year:u8)->u8 {match month {2=>if year.is_multiple_of(4){29}else{28},4|6|9|11=>30,_=>31}}
 
 pub struct Bm8563 {state:Arc<Mutex<Bm8563State>>,pointer:u8,first:bool}
