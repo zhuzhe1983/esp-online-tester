@@ -28,7 +28,11 @@ impl I2cBitBang {
     /// resolved SDA level, including a selected slave's data/ACK low drive.
     pub fn drive(&mut self,scl:bool,sda:bool)->bool {
         if self.scl && scl && !self.slave_low && self.sda!=sda {
-            if let Some(device)=&self.selected {device.borrow_mut().stop();}
+            // STOP is a physical-bus broadcast, including devices most recently
+            // addressed by a hardware controller through an Adapter. M5GFX
+            // c6f92dc common.cpp::i2c_stop ends hardware reads with GPIO STOP.
+            // A repeated START does not end the transfer (UM10204 rev7 §3.1.4).
+            if sda {for (_,device) in &self.devices {device.borrow_mut().stop();}}
             self.selected=None;self.slave_low=false;
             self.phase=if sda {Phase::Idle} else {Phase::Receive{value:0,bits:0,address:true}};
         } else if !self.scl && scl {
@@ -91,4 +95,25 @@ mod tests {
         start(&mut bus);assert!(send(&mut bus,0xdc));assert!(send(&mut bus,0));start(&mut bus);assert!(send(&mut bus,0xdd));assert_eq!(read(&mut bus,false),0x50);stop(&mut bus);
         let s=state.lock().unwrap();assert_eq!(s.i2c_last_hz,None);assert_eq!(s.i2c_max_hz,400_000);assert_eq!(s.i2c_speed_mismatches,1);
     }
+    #[test]
+    fn gpio_stop_releases_a_hardware_addressed_rtc_burst() {
+        use crate::devices::bm8563::{Bm8563,Bm8563State};use std::sync::{Arc,Mutex};
+        let state=Arc::new(Mutex::new(Bm8563State::new(1000)));let mut bus=I2cBitBang::new();let mut hw=bus.attach(0x51,Box::new(Bm8563::new(state.clone())));
+        hw.start(false);for byte in [2,0,0,0x12,1,1,1,0x77] {assert!(hw.write(byte));}hw.stop();
+        hw.start(false);hw.write(2);hw.start(true);assert_eq!(hw.read(),0);state.lock().unwrap().advance_to(1000);
+        // No software address phase: M5GFX switches the controller's pins to
+        // open-drain GPIO, emits STOP, then resets its hardware I2C FSM.
+        stop(&mut bus);
+        hw.start(false);hw.write(2);hw.start(true);assert_eq!(hw.read(),1);hw.stop();
+    }
+    #[test]
+    fn repeated_start_does_not_release_a_clock_register_burst() {
+        use crate::devices::bm8563::{Bm8563,Bm8563State};use std::sync::{Arc,Mutex};
+        let state=Arc::new(Mutex::new(Bm8563State::new(1000)));let mut bus=I2cBitBang::new();let mut hw=bus.attach(0x51,Box::new(Bm8563::new(state.clone())));
+        hw.start(false);for byte in [2,0x59,0x59,0x23,0x31,6,0x12,0x77] {hw.write(byte);}hw.stop();
+        start(&mut bus);assert!(send(&mut bus,0xa2));assert!(send(&mut bus,2));state.lock().unwrap().advance_to(1000);
+        start(&mut bus);assert!(send(&mut bus,0xa3));assert_eq!(read(&mut bus,true),0x59);assert_eq!(read(&mut bus,false),0x59);stop(&mut bus);
+        hw.start(false);hw.write(2);hw.start(true);assert_eq!((0..7).map(|_|hw.read()).collect::<Vec<_>>(),[0,0,0,1,0,1,0x78]);hw.stop();
+    }
+
 }
