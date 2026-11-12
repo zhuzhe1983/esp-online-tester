@@ -686,9 +686,9 @@ fn setup_s31(o: &Opts) -> esp32s31::Machine {
         for d in &o.debug { f.parse(d); }
         m.set_debug(&f);
     }
-    if let Some(spec) = &o.wifi {
-        let (cfg, nat) = wifi_config(spec, &o.net, m.bus.debug.has("net"), &o.hostfwd);
-        m.bus.attach_wifi(cfg, nat).unwrap_or_else(|e| usage_error(&format!("--wifi: {e}")));
+    if !o.wifi.is_empty() {
+        let net_log = m.bus.debug.has("net");
+        attach_wifi(&mut m.bus, o, net_log);
     }
     for (flag, on) in [
         ("--board", o.board != "atech14" && o.board != "none" && o.board != "mosaico"),

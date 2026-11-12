@@ -356,7 +356,7 @@ impl S31Bus {
         if dw0 & (1 << 31) == 0 || dw0 & (1 << 30) != 0 || ((dw0 & 0x3fff) as usize) < total { self.wifi_mac.link.drop_rx(); return; }
         let group = frame.len() >= 5 && frame[4] & 1 == 1;
         let mut words = [0u32; RX_CTRL / 4];
-        let rssi = self.wifi_mac.link.ap().map_or(-40i8, |ap| ap.rx_meta(frame).1);
+        let rssi = self.wifi_mac.link.rx_meta(frame).1;
         words[0] = (rssi as u8 as u32) | 1 << 28 | if group { 0 } else { 1 << 29 };
         words[3] = now_us as u32;
         words[5] = 0xa6;

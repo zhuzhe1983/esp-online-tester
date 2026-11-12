@@ -460,6 +460,13 @@ impl esp_soc::SocBus for SocBus {
     fn irq_dirty(&mut self) -> &mut bool {
         &mut self.irq_dirty
     }
+    fn set_net_tap(&mut self, tap: esp_soc::netcap::NetTap) -> Result<(), String> {
+        self.inner.wifi_mac.link.set_tap(tap);
+        Ok(())
+    }
+    fn add_wifi_ap(&mut self, cfg: esp_soc::wifi::ApConfig) -> Result<(), String> {
+        self.inner.wifi_mac.link.add_ap(cfg, &self.debug)
+    }
     fn attach_wifi(&mut self, cfg: esp_soc::wifi::ApConfig, nat: Option<esp_soc::nat::Nat>) -> Result<(), String> {
         self.inner.wifi_mac.link.attach_new(cfg, nat, &self.debug);
         Ok(())
