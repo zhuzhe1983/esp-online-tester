@@ -33,6 +33,12 @@ impl BoardModel for PaperS3 {
         self.i2c.clear();self.i2c.attach(0x51,Box::new(Bm8563::new(self.rtc.clone())));self.i2c.attach(0x5d,Box::new(Gt911::new(self.touch.clone())));self.i2c.attach(0x68,Box::new(Bmi270::new(self.imu.clone())));
         (0..2).flat_map(|bus|self.i2c.controller_devices(Some((41,42))).into_iter().map(move |(address,device)|(bus,address,device))).collect()
     }
+    fn default_analog_inputs(&self)->Vec<(u8,esp_periph::AnalogSource)> {
+        // C139 V1.0: SYS_BAT -> R24 22k -> ADC_VBAT/G3 -> R25 22k -> GND.
+        // M5Unified 5580ff6 Power_Class.cpp uses ADC1_CH2 and a 2.0 divider ratio.
+        // Nominal charged 4.0V battery, not a discharge/charger model; G4 remains not charging.
+        vec![(3,esp_periph::AnalogSource::Const(2.0))]
+    }
     fn input_levels(&self)->Vec<(u8,bool)> {vec![(0,true),(4,true),(5,true),(41,self.levels[0]),(42,self.levels[1]),(48,self.touch_irq)]}
     fn take_edges(&mut self)->Vec<BoardEdge> {self.sync_touch();std::mem::take(&mut self.edges)}
     fn advance_to(&mut self,cycle:VirtualCycle) {self.rtc.lock().expect("PaperS3 RTC poisoned").advance_to(cycle);self.cycle=cycle;self.sync_touch();}
@@ -74,7 +80,7 @@ impl BoardModel for PaperS3 {
         if !accel_g.iter().chain(gyro_dps.iter()).all(|v|v.is_finite()){return false;}
         let mut imu=self.imu.lock().expect("PaperS3 IMU poisoned");imu.accel_g=accel_g;imu.gyro_dps=gyro_dps;imu.version=imu.version.wrapping_add(1);true
     }
-    fn report(&self)->String {format!("[papers3] ET047TC1 bw frames={} row={} powered={} GT911=single-contact RTC=calendar-only audio/power-key=absent gray/network=unverified RGB-scans={} SPI-SD={}",self.panel.frames,self.panel.row,self.powered(),self.rgb_frames,self.sd.as_ref().map_or_else(||"absent".into(),|sd|sd.report()))}
+    fn report(&self)->String {format!("[papers3] ET047TC1 bw frames={} row={} powered={} GT911=single-contact RTC=calendar-only audio/power-key=absent gray/network=unverified RGB-scans={} battery=nominal-4.0V-overridable SPI-SD={}",self.panel.frames,self.panel.row,self.powered(),self.rgb_frames,self.sd.as_ref().map_or_else(||"absent".into(),|sd|sd.report()))}
 }
 #[cfg(test)]
 mod tests {

@@ -238,7 +238,10 @@ pub trait BoardModel {
     /// Appended to preserve hot vtable slots; boards without a gate clock do no work.
     fn lcd_rgb_start(&mut self, _cycle: VirtualCycle, _w: u32, _h: u32, _bytes_per_pixel: u32,
         _clock: &dyn Fn(u8) -> Option<(u64, u32)>) {}
-
+    /// Nominal physical analog pad sources, installed only on otherwise undriven pads
+    /// when attaching the board. Host voltage/stream/raw overrides survive reset and reattachment.
+    /// Cold attachment only; appended to preserve the existing hot vtable slots.
+    fn default_analog_inputs(&self) -> Vec<(u8, esp_periph::AnalogSource)> { Vec::new() }
 }
 
 pub type Board = Box<dyn BoardModel>;

@@ -299,6 +299,10 @@ impl SocBus {
 
     /// Attach fresh peripheral-side devices and restore the levels driven by the persistent board.
     pub fn attach_board_devices(&mut self) {
+        for (pin,source) in self.board.default_analog_inputs() {
+            if (1..=20).contains(&pin) { self.periph.rtc.analog.set_default(pin,source); }
+        }
+
         if self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, esp_soc::pins::ChipPins::S3.routes(&self.periph.gpio, &self.periph.io_mux));
         }

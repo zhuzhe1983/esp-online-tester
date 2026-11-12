@@ -38,6 +38,13 @@ pub struct AnalogInputs { pins: HashMap<u8, AnalogSource>, raw: HashMap<u8, u16>
 impl AnalogInputs {
     pub fn new(cpu_hz: u64) -> Self { AnalogInputs { cpu_hz, ..Default::default() } }
     pub fn set(&mut self, pin: u8, src: AnalogSource) { self.raw.remove(&pin); self.pins.insert(pin, src); }
+    /// Attach a board's nominal source only while the pad has no explicit source.
+    /// Reattachment and reboot must preserve host voltages, streams and raw counts (including zero).
+    /// This does not sample the ADC or change its observation generation.
+    pub fn set_default(&mut self, pin: u8, src: AnalogSource) {
+        if !self.raw.contains_key(&pin) { self.pins.entry(pin).or_insert(src); }
+    }
+
     /// Replace the voltage source with a post-attenuation 12-bit count. Invalid counts leave it intact.
     pub fn set_raw(&mut self, pin: u8, raw: u16) -> bool {
         if raw > 4095 { return false; }
@@ -95,4 +102,15 @@ mod tests {
         assert_eq!(a.volts(4, 99_000), 0.3);   // after the end: last sample
         assert_eq!(a.volts(5, 600), 0.0);      // nobody drives GPIO5
     }
+    #[test]
+    fn board_defaults_preserve_explicit_zero_raw_voltage_and_observation() {
+        let mut a=AnalogInputs::new(1_000);a.set_default(3,AnalogSource::Const(2.0));
+        assert_eq!(a.volts(3,0),2.0);assert_eq!(a.observation(3).generation,0);
+        a.set(3,AnalogSource::Const(0.0));a.set_default(3,AnalogSource::Const(2.0));assert_eq!(a.volts(3,0),0.0);
+        assert!(a.set_raw(3,0));a.set_default(3,AnalogSource::Const(2.0));
+        assert_eq!(a.convert(3,0,|_|4095),0);let sample=a.observation(3);
+        a.set_default(3,AnalogSource::Const(2.0));assert_eq!(a.observation(3),sample);
+        assert_eq!(a.volts(4,0),0.0,"no source added to neighbouring pads");
+    }
+
 }

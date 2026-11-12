@@ -2057,3 +2057,31 @@ fn mmio_write_delivers_pending_time_and_leaves_the_post_write_budget() {
         assert_eq!(bus.periph.usb.int_raw & 2, raw, "write {reg:#x}={value}");
     }
 }
+
+#[test]
+fn papers3_battery_default_reaches_sar_and_keeps_host_overrides_across_reset_and_wake() {
+    use esp_soc::SocBus as _;
+    use esp_periph::{AnalogSource,sar_adc::{millivolts,Calibration}};
+    fn sample(bus:&mut SocBus)->u32 {
+        // IDF v5.5.2 S3 sens_reg.h: SAR_ATTEN1 +0x814, channel2 bits4..5;
+        // SAR_MEAS1_CTRL2 +0x80c, pad2 bit21 and START bit17. GPIO3 = ADC1_CH2.
+        bus.write32(0x6000_8814,3<<4).unwrap();bus.write32(0x6000_880c,1<<21).unwrap();
+        bus.write32(0x6000_880c,(1<<21)|(1<<17)).unwrap();bus.read32(0x6000_880c).unwrap()&4095
+    }
+    let mut bus=SocBus::new(1<<20,0,[0;6]);bus.attach_board_devices();
+    assert_eq!(bus.periph.rtc.analog.volts(3,0),0.0,"bare boards do not acquire a battery source");
+    bus.board=crate::board::make_board("papers3").unwrap();bus.attach_board_devices();
+    assert_eq!(bus.adc_observation(3).unwrap().generation,0,"attaching is not a conversion");
+    let raw=sample(&mut bus);let mv=millivolts(raw,3,Calibration::S3Adc1);
+    assert!(mv.abs_diff(2000)<=1,"the physical divider output is 2.0V, got {mv}mV");
+    assert!((mv*2).abs_diff(4000)<=2);assert_ne!(bus.periph.gpio.input&(1<<4),0,"CHG_STAT remains not charging");
+    assert_eq!(bus.periph.rtc.analog.volts(2,0),0.0);assert_eq!(bus.periph.rtc.analog.volts(4,0),0.0);
+    bus.analog_set(3,AnalogSource::Const(1.65));bus.attach_board_devices();bus.reboot([0;6]);
+    let low=millivolts(sample(&mut bus),3,Calibration::S3Adc1);assert!(low.abs_diff(1650)<=1,"explicit low battery is preserved");
+    bus.enter_light_sleep();assert!(bus.light_sleep);bus.periph.rtc.ram.write(0x3c,8<<15); // RTC timer wake selected.
+    bus.periph.rtc.ram.write(4,0);bus.periph.rtc.ram.write(8,0);bus.check_sleep_wake();
+    assert!(!bus.light_sleep);assert!(millivolts(sample(&mut bus),3,Calibration::S3Adc1).abs_diff(1650)<=1);
+    assert!(bus.adc_set_raw(3,0));bus.attach_board_devices();bus.reboot([0;6]);assert_eq!(sample(&mut bus),0,"explicit zero raw input is not replaced");
+    let mut before=SocBus::new(1<<20,0,[0;6]);before.analog_set(3,AnalogSource::Const(1.0));
+    before.board=crate::board::make_board("papers3").unwrap();before.attach_board_devices();assert_eq!(before.periph.rtc.analog.volts(3,0),1.0,"pre-attachment host source wins");
+}
