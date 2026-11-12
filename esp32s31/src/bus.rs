@@ -523,6 +523,17 @@ impl S31Bus {
         Self::peripheral(address) && self.apm.check(address, bytes, if write { 1 } else { 2 }).is_ok() && self.permissions.check(address, write).is_ok()
     }
     fn read(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
+        // SRAM, LP RAM and ROM first: with no APM route, `read_modelled` passes the APM, the PMS
+        // has no target there and no device before `memory` claims these addresses, so it would
+        // return the same bytes after a dozen range tests.
+        // The cache windows likewise: no device before `Cache::is_memory` in the chain claims
+        // them either, and a fault there is not a peripheral's, so `read` returns it unchanged.
+        if self.apm.unrouted() {
+            if let Some(data) = self.memory(address, bytes) {
+                let mut value = [0; 4]; value[..bytes].copy_from_slice(data); return Ok(u32::from_le_bytes(value));
+            }
+            if Cache::is_memory(address) { return self.cache_window_read(address, bytes); }
+        }
         let had = self.first_fault.is_some();
         match self.read_modelled(address, bytes) {
             Err(Fault::Prohibited) if self.refusal_only(address, bytes, false) => {
@@ -540,6 +551,19 @@ impl S31Bus {
         }
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
+        // SRAM, LP RAM and the cache windows first, as in `read`; no I2S clock word lives there.
+        if self.apm.unrouted() {
+            if let Some(dest) = self.memory_mut(address, bytes, false) {
+                dest.copy_from_slice(&value.to_le_bytes()[..bytes]);
+                bump_code(&mut self.code_ver, address, bytes);
+                return Ok(());
+            }
+            if Cache::is_memory(address) {
+                self.cache_window_write(address, value, bytes)?;
+                for a in [address, address + bytes as u32 - 1] { if let Some(phys) = self.cache.psram_phys(a) { bump_psram(&mut self.code_ver, phys); } }
+                return Ok(());
+            }
+        }
         let flash = (self.mspi.flash_accessible(), self.mspi.flash_generation);
         let r = self.write_unhooked(address, value, bytes);
         if r.is_ok() { self.note_code_write(address, bytes, flash); }
@@ -598,6 +622,23 @@ impl S31Bus {
             }
             r => r,
         }
+    }
+    /// A CPU load from the flash or PSRAM window of the cache.
+    fn cache_window_read(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
+        if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(self.psram_controller.mode().is_some()).is_err() || self.psram_controller.memory_ready(false).is_err()) { return self.fault(address, bytes, false, false, Fault::Prohibited); }
+        if address < crate::cache::PSRAM_VADDR && !self.mspi.flash_accessible() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
+        let mut value = [0; 4];
+        for (i, byte) in value.iter_mut().take(bytes).enumerate() {
+            match address.checked_add(i as u32).ok_or(Fault::Unmapped).and_then(|a| self.cache.read_byte_core(a, false, self.hart)) {
+                Ok(v) => *byte = v, Err(e) => { self.psram_address_error(address, bytes, false, e); return self.fault(address, bytes, false, false, e); },
+            }
+        }
+        Ok(u32::from_le_bytes(value))
+    }
+    /// A CPU store to the cache windows (the flash window refuses it).
+    fn cache_window_write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
+        if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(self.psram_controller.mode().is_some()).is_err() || self.psram_controller.memory_ready(true).is_err()) { return self.fault(address, bytes, true, false, Fault::Prohibited); }
+        match self.cache.write(address, value, bytes) { Ok(()) => Ok(()), Err(e) => { self.psram_address_error(address, bytes, true, e); self.fault(address, bytes, true, false, e) } }
     }
     fn read_modelled(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
         if let Err(e) = self.apm.check(address, bytes, 2) { return self.fault(address, bytes, false, false, e); }
@@ -780,17 +821,7 @@ impl S31Bus {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return match self.pads.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
-        if Cache::is_memory(address) {
-            if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(self.psram_controller.mode().is_some()).is_err() || self.psram_controller.memory_ready(false).is_err()) { return self.fault(address, bytes, false, false, Fault::Prohibited); }
-            if address < crate::cache::PSRAM_VADDR && !self.mspi.flash_accessible() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
-            let mut value = [0; 4];
-            for (i, byte) in value.iter_mut().take(bytes).enumerate() {
-                match address.checked_add(i as u32).ok_or(Fault::Unmapped).and_then(|a| self.cache.read_byte_core(a, false, self.hart)) {
-                    Ok(v) => *byte = v, Err(e) => { self.psram_address_error(address, bytes, false, e); return self.fault(address, bytes, false, false, e); },
-                }
-            }
-            return Ok(u32::from_le_bytes(value));
-        }
+        if Cache::is_memory(address) { return self.cache_window_read(address, bytes); }
         if Cache::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return match self.cache.read_register(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
@@ -1051,10 +1082,7 @@ impl S31Bus {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             return match self.pads.write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
         }
-        if Cache::is_memory(address) {
-            if address >= crate::cache::PSRAM_VADDR && (!self.clocks.psram_on() || !self.power.policy.psram_enabled() || self.mspi_pads.check_transfer(self.psram_controller.mode().is_some()).is_err() || self.psram_controller.memory_ready(true).is_err()) { return self.fault(address, bytes, true, false, Fault::Prohibited); }
-            return match self.cache.write(address, value, bytes) { Ok(()) => Ok(()), Err(e) => { self.psram_address_error(address, bytes, true, e); self.fault(address, bytes, true, false, e) } };
-        }
+        if Cache::is_memory(address) { return self.cache_window_write(address, value, bytes); }
         if Cache::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             return match self.cache.write_register(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };

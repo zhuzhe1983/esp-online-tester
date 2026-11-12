@@ -448,8 +448,7 @@ impl SocBus {
     fn refresh_clic_inputs(&mut self) {
         let irq = self.inner.peripheral_irqs();
         // Threshold 0: `clic_std` CPUs apply `mintthresh` themselves (same as P4 rev ≥ 3).
-        let _ = self.inner.interrupts.refresh_core(0, irq, 0);
-        self.inner.interrupts.clic[1].thresh = 0;
+        self.inner.interrupts.refresh_inputs(irq);
     }
 
     fn poll_chip_reset(&mut self) {

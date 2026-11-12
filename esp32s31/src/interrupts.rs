@@ -36,7 +36,7 @@ pub const GPIO_SOURCE: usize = 61; // ETS_I2C0_INTR_SOURCE; ETS_I2C1_INTR_SOURCE
 pub const EFUSE_SOURCE: usize = 152; // interrupt_core0_reg.h: LP_EFUSE_INTR_MAP at 0x260.
 pub(crate) const SOURCE_COUNT: usize = 169;
 const SOURCES: usize = SOURCE_COUNT;
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Default, PartialEq, Eq)]
 pub struct Irqs { pub uart: bool, pub wdt: bool, pub efuse: bool, pub usb: bool, pub monitor: bool, pub cache: bool, pub mwdt: [bool; 2], pub systimer: [bool; 3], pub psram: bool, pub brownout: bool, pub from_cpu: [bool; 4], pub usb_otg: bool, pub spi2: bool, pub spi3: bool, pub i2c: [bool; 2], pub gpio: [bool; 4], pub axi_dma: u64,
     /// DMA2D: bit i = IN ch0-2, then OUT ch0-3; PPA.
     pub dma2d: u8, pub ppa: bool,
@@ -60,13 +60,16 @@ impl Irqs {
 pub struct Interrupts {
     map: [[u32; SOURCES]; 2], clock: [u32; 2], date: [u32; 2],
     pub clic: [ClicCore; 2], pub(crate) reset_cause: [u32; 2],
+    /// The CLIC inputs the last `refresh_inputs` derived and from which sources; a MAP write
+    /// forgets them.
+    inputs: Option<(Irqs, [u64; 2])>,
 }
 impl Default for Interrupts {
     fn default() -> Self {
         // HPCOREn_RESET_CAUSE[6:1] = 1 for POR. RESET_FLAG retains its documented reset 0;
         // no software-reset, watchdog or power-domain state machine is implied here.
         Self { map: [[0; SOURCES]; 2], clock: [0; 2], date: [38_834_448; 2],
-            clic: [ClicCore::default(), ClicCore::default()], reset_cause: [1 << 1; 2] }
+            clic: [ClicCore::default(), ClicCore::default()], reset_cause: [1 << 1; 2], inputs: None }
     }
 }
 impl Interrupts {
@@ -89,6 +92,7 @@ impl Interrupts {
         }
     }
     pub fn matrix_write(&mut self, core: usize, off: u32, value: u32) -> bool {
+        self.inputs = None;
         match off {
             // Unlike the old P4, S31 also has PASS_LEVEL bits 9:8. interrupt_core0_reg.h:
             // zero disables the privilege *remap* feature (plain routing, as ROM/IDF
@@ -102,15 +106,30 @@ impl Interrupts {
         true
     }
     pub fn refresh(&mut self, irq: Irqs, threshold: u32) -> Option<u32> { self.refresh_core(0, irq, threshold) }
+    /// `refresh_core(0, irq, 0)` and a zero threshold on hart 1, without the candidate: what the
+    /// SoC does with both cores' CLIC inputs after every device change. The routing of the
+    /// sources is remembered while the sources and the MAP stay the same.
+    pub fn refresh_inputs(&mut self, irq: Irqs) {
+        let inputs = match self.inputs {
+            Some((last, inputs)) if last == irq => inputs,
+            _ => { let inputs = std::array::from_fn(|core| self.input(core, irq)); self.inputs = Some((irq, inputs)); inputs }
+        };
+        for (clic, input) in self.clic.iter_mut().zip(inputs) { clic.set_input(input); clic.thresh = 0; }
+    }
+    /// The CLIC input word of `core` for these sources.
+    fn input(&self, core: usize, irq: Irqs) -> u64 {
+        let mut input = 0;
+        for (source, active) in irq.sources() {
+            let route = self.map[core][source]; let id = (route & 0x3f) as usize;
+            let m_mode = (route >> 8) & 3 != 1;
+            if active && m_mode && (CLIC_EXT_OFFSET as usize..CLIC_IDS).contains(&id) { input |= 1u64 << id; }
+        }
+        input
+    }
     pub fn refresh_core(&mut self, hart: usize, irq: Irqs, threshold: u32) -> Option<u32> {
         if hart >= 2 { return None; }
         for core in 0..2 {
-            let mut input = 0;
-            for (source, active) in irq.sources() {
-                let route = self.map[core][source]; let id = (route & 0x3f) as usize;
-                let m_mode = (route >> 8) & 3 != 1;
-                if active && m_mode && (CLIC_EXT_OFFSET as usize..CLIC_IDS).contains(&id) { input |= 1u64 << id; }
-            }
+            let input = self.input(core, irq);
             self.clic[core].set_input(input);
         }
         // Standard S31 threshold is the executing hart's CSR, not P4's MMIO register.

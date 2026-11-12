@@ -100,6 +100,9 @@ impl Apm {
     }
     /// One HP CPU in reset TEE mode only. Restrictive configurations have an
     /// explicit host route, so permission failures cannot invent master mappings.
+    /// No route is wired, so `check` passes every access without looking (the CLI's case).
+    #[inline(always)]
+    pub fn unrouted(&self) -> bool { !self.routes_present }
     /// Whether `check` would let a one-byte access through, without latching a denial: for
     /// reading instructions ahead of execution (`Bus::fetch_ahead`).
     pub fn allows(&self, address: u32, access: u32) -> bool {
