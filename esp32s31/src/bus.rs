@@ -204,7 +204,7 @@ impl S31Bus {
             // Same HS UTMI DWC2 instance as the P4 (esp_hal_usb/esp32s31/usb_dwc_periph.c); its
             // GHWCFG words are assumed equal to the P4's until read from an S31.
             usb_otg: esp_periph::usb_otg::Dwc2::new(esp_periph::usb_otg::Dwc2Config::esp32p4_hs(crate::periph::CPU_HZ)),
-            spi2: esp_periph::GpSpi::new(), spi3: esp_periph::GpSpi::with_host(3), i2c: [esp_periph::i2c::I2c::new(), esp_periph::i2c::I2c::new()], i2c_frac: 0, axi_dma: esp_periph::gdma::AxiDma::new(), dma2d: esp_periph::dma2d::Dma2d::new(), ppa: esp_periph::ppa::Ppa::new(),
+            spi2: esp_periph::GpSpi::new().diverting_dma_rx(), spi3: esp_periph::GpSpi::with_host(3).diverting_dma_rx(), i2c: [esp_periph::i2c::I2c::new(), esp_periph::i2c::I2c::new()], i2c_frac: 0, axi_dma: esp_periph::gdma::AxiDma::new(), dma2d: esp_periph::dma2d::Dma2d::new(), ppa: esp_periph::ppa::Ppa::new(),
             ahb_dma: esp_periph::gdma::AhbDmaV2::new(), i2s: [esp_periph::I2s::new_v2(crate::periph::CPU_HZ), esp_periph::I2s::new_v2(crate::periph::CPU_HZ)] }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
@@ -933,7 +933,7 @@ impl S31Bus {
         }
         if StartupClocks::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
-            if address == StartupClocks::GPSPI2_CTRL0 && value & 1 << 2 != 0 { let log = self.spi2.log; self.spi2 = esp_periph::GpSpi::new(); self.spi2.log = log; }   // RST_EN held: registers to reset
+            if address == StartupClocks::GPSPI2_CTRL0 && value & 1 << 2 != 0 { let log = self.spi2.log; self.spi2 = esp_periph::GpSpi::new().diverting_dma_rx(); self.spi2.log = log; }   // RST_EN held: registers to reset
             return match self.startup_clocks.write(address,value) { Ok(())=>Ok(()),Err(e)=>self.fault(address,bytes,true,false,e) };
         }
         if MspiPads::is_mmio(address) {

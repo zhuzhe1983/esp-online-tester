@@ -36,13 +36,18 @@ pub struct GpSpi { pub regs: RegRam, pub w: [u32; 16], pub int_raw: u32, pub int
                    /// bit length of a MOSI phase that DMA must supply, until the bus completes it
                    pub dma_tx_pending: Option<u32>, pending: Option<GpSpiTransfer>,
                    /// MISO bytes of a finished transfer with DMA_RX_ENA: the bus scatters them through GDMA.
-                   pub dma_rx: Option<Vec<u8>> }
+                   pub dma_rx: Option<Vec<u8>>,
+                   /// The chip's bus collects `dma_rx` and scatters it through its GDMA (the S31). Off,
+                   /// MISO always lands in W0..W15 as before, whatever DMA_RX_ENA says.
+                   pub dma_rx_divert: bool }
 impl Default for GpSpi { fn default() -> Self { Self::new() } }
 
 impl GpSpi {
-    pub fn new() -> Self { GpSpi { regs: RegRam::new(), w: [0; 16], int_raw: 0, int_ena: 0, transfers: 0, log: false, host: 2, dma_tx_pending: None, pending: None, dma_rx: None } }
+    pub fn new() -> Self { GpSpi { regs: RegRam::new(), w: [0; 16], int_raw: 0, int_ena: 0, transfers: 0, log: false, host: 2, dma_tx_pending: None, pending: None, dma_rx: None, dma_rx_divert: false } }
     /// The same block as GP-SPI `host` (2 or 3), for its log lines.
     pub fn with_host(host: u8) -> Self { GpSpi { host, ..Self::new() } }
+    /// The bus collects DMA-received MISO (`dma_rx`) instead of W0..W15 (see `dma_rx_divert`).
+    pub fn diverting_dma_rx(self) -> Self { GpSpi { dma_rx_divert: true, ..self } }
     pub fn irq(&self) -> bool { self.int_raw & self.int_ena != 0 }
     pub fn read(&self, off: u32) -> u32 {
         match off {
@@ -171,7 +176,7 @@ impl GpSpi {
     pub fn finish_transfer(&mut self, transfer: GpSpiTransfer, rx: &[u8]) {
         if transfer.rx_len != 0 {
             // DMA_CONF (0x30) bit 27 DMA_RX_ENA: MISO goes to the GDMA IN channel, not W0..W15.
-            if self.regs.read(0x30) & (1 << 27) != 0 { self.dma_rx = Some(rx[..transfer.rx_len.min(rx.len())].to_vec()); }
+            if self.dma_rx_divert && self.regs.read(0x30) & (1 << 27) != 0 { self.dma_rx = Some(rx[..transfer.rx_len.min(rx.len())].to_vec()); }
             else { fill_spi_w!(self.w, transfer.rx_word_base, transfer.rx_len, rx); }
         }
         if self.log { eprintln!("[spi{}] transfer tx={} rx={}: {:02x?} (dma_conf {:#x}, user {:#x})", self.host, transfer.tx.len(), transfer.rx_len, &transfer.tx[..transfer.tx.len().min(16)], self.regs.read(0x30), self.regs.read(0x10)); }
@@ -332,4 +337,17 @@ mod octal_timing_tests {
             assert_eq!(spi.wire_source_cycles(), 8);
         }
     }
+    #[test]
+    fn dma_rx_ena_keeps_miso_in_the_buffer_unless_the_bus_diverts_it() {
+        // S3/C3/C6/P4 buses do not collect `dma_rx`: their MISO must stay in W0..W15.
+        for divert in [false, true] {
+            let mut spi = GpSpi { dma_rx_divert: divert, ..GpSpi::new() };
+            spi.write(0x30, 1 << 27);                                     // DMA_RX_ENA
+            let t = GpSpiTransfer { tx: vec![0x9f], rx_len: 2, data_len: 0, rx_word_base: 0 };
+            spi.finish_transfer(t, &[0x12, 0x34]);
+            if divert { assert_eq!(spi.dma_rx.as_deref(), Some(&[0x12, 0x34][..])); }
+            else { assert_eq!(spi.dma_rx, None); assert_eq!(spi.read(0x98) & 0xffff, 0x3412); }
+        }
+    }
+
 }

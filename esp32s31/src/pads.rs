@@ -174,7 +174,14 @@ impl Pads {
             _ => Err(Fault::Unmapped),
         }
     }
+    /// A register write, then the interrupt conditions re-checked: OUT, ENABLE, OUT_SEL, IO_MUX and
+    /// the holds change pad levels too, so the chip's own output can raise an edge.
     pub fn write(&mut self, address: u32, value: u32) -> Result<(), Fault> {
+        self.write_register(address, value)?;
+        self.evaluate_interrupts();
+        Ok(())
+    }
+    fn write_register(&mut self, address: u32, value: u32) -> Result<(), Fault> {
         if address & 3 != 0 { return Err(Fault::Misaligned); }
         if matches!(address, HP_PIN_HOLD_HIGH | HP_PIN_HOLD_LOW) {
             // v6.1 lp_system_reg.h: high bits map GPIO40..62, low GPIO8..39.
@@ -196,9 +203,9 @@ impl Pads {
         let (data, base) = match off {
             4..=0x18 => (&mut self.out, 4), 0x34..=0x48 => (&mut self.enable, 0x34),
             0 | 0x64 | 0x68 => return Ok(()),
-            0x74 => { self.status = self.status & !0xffff_ffff | u64::from(value); return Ok(()); }
+            0x74 => { self.status = self.status & !0xffff_ffff | u64::from(value) & VALID; return Ok(()); }
             0x80 => { self.status = self.status & 0xffff_ffff | (u64::from(value) << 32) & VALID; return Ok(()); }
-            0x78 => { self.status |= u64::from(value); return Ok(()); }
+            0x78 => { self.status |= u64::from(value) & VALID; return Ok(()); }
             0x84 => { self.status |= (u64::from(value) << 32) & VALID; return Ok(()); }
             0x7c => { self.status &= !u64::from(value); self.evaluate_interrupts(); return Ok(()); }
             0x88 => { self.status &= !(u64::from(value) << 32); self.evaluate_interrupts(); return Ok(()); }
@@ -295,6 +302,20 @@ mod tests {
         p.set_input(10, None).unwrap(); p.write(GPIO_BASE + 0xaf4 + 40, 1).unwrap();
         assert_eq!(p.drive(10), Ok(Drive::Unsupported)); assert_eq!(p.read(GPIO_BASE + 0x64), Err(Fault::Prohibited));
         assert_eq!(p.write(GPIO_BASE + 0xf4 + 40, 1 << 10), Err(Fault::Prohibited), "wakeup is not modelled");
+    }
+    #[test]
+    fn the_chips_own_output_raises_an_edge_and_unbonded_pins_never_latch() {
+        let mut p = Pads::default();
+        p.write(IO_MUX_BASE + 4 * 4, 0x1200).unwrap();                        // GPIO4: GPIO function, input enabled
+        p.write(GPIO_BASE + 0x38, 1 << 4).unwrap();                           // output enabled, driving low
+        p.write(GPIO_BASE + 0xf4 + 4 * 4, 1 << 7 | 1 << 13).unwrap();         // rising edge, line 0
+        assert_eq!(p.irq_lines(), [false; 4]);
+        p.write(GPIO_BASE + 8, 1 << 4).unwrap();                              // OUT_W1TS: the pad rises
+        assert_eq!(p.irq_lines(), [true, false, false, false]);
+        let mut q = Pads::default();
+        q.write(GPIO_BASE + 0x78, 1 << 29).unwrap();                          // STATUS_W1TS on unbonded GPIO29
+        q.write(GPIO_BASE + 0x74, 1 << 29).unwrap();
+        assert_eq!(q.read(GPIO_BASE + 0x74), Ok(0));
     }
     #[test]
     fn pin_interrupts_latch_edges_raise_their_line_and_clear_by_w1tc() {
