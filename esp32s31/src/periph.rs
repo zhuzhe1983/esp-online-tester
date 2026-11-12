@@ -21,7 +21,9 @@ use emu_core::Fault;
 use crate::efuse::Efuse;
 use crate::mwdt::Mwdt;
 
-pub const CPU_HZ: u64 = 40_000_000;
+/// The machine's clock: the 320 MHz CPLL clock an IDF app runs the S31 at (the Mosaico factory
+/// firmware logs `CPU 320 MHz`). The 40 MHz domains divide it by 8.
+pub const CPU_HZ: u64 = 320_000_000;
 
 /// PCR clock words that gate IP in this set (HP_SYS_CLKRST).
 pub const SYSTIMER_CLOCK: u32 = 0x2058_7120;
@@ -410,7 +412,7 @@ impl Peripherals {
     }
 }
 
-device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::Xtal, 1), (ClockDomain::Apb, 1), (ClockDomain::Systimer, 1), (ClockDomain::Cpu, 1)];
+device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::Xtal, 8), (ClockDomain::Apb, 8), (ClockDomain::Systimer, 8), (ClockDomain::Cpu, 1)];
     0x2038a "UART0" (uart0) => [src::UART0];
     0x20391 "USB_SERIAL_JTAG" (usb) => [src::USB_SERIAL_JTAG];
     0x20399 "SYSTIMER" (systimer) => [src::SYSTIMER_TARGET0, src::SYSTIMER_TARGET1, src::SYSTIMER_TARGET2];

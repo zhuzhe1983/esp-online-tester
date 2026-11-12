@@ -19,7 +19,7 @@ pub const RESET_VECTOR: u32 = bus::ROM_BASE;
 /// Stack the ROM leaves the bootloader (IDF v6.1 `SOC_ROM_STACK_START`).
 pub const ROM_STACK: u32 = 0x2f07_cfb0;
 /// Default XTAL-rooted CPU rate before guest clock configuration (`Clocks::default`).
-pub const CPU_HZ: u64 = 40_000_000;
+pub const CPU_HZ: u64 = crate::periph::CPU_HZ;
 
 pub struct S31;
 pub type Machine = esp_soc::Machine<S31>;
@@ -29,6 +29,12 @@ pub fn machine(mac: [u8; 6], flash_size: usize) -> Machine {
     m.set_debug(&esp_soc::DebugFlags::from_env());
     m
 }
+
+/// The machine's time base: one cycle is one tick of `periph::CPU_HZ` (320 MHz), whatever CPU
+/// clock the firmware selects. Timers, the board and the peripherals advance by emulated time, so a
+/// firmware still in the 40 MHz ROM/bootloader clock runs faster than on silicon, not with a faster clock: its delays,
+/// timeouts and FreeRTOS ticks keep their length.
+const TIME_HZ: u64 = crate::periph::CPU_HZ;
 
 impl Soc for S31 {
     type Core = Cpu;
@@ -426,7 +432,7 @@ impl esp_soc::SocBus for SocBus {
         // can skip FreeRTOS vTaskDelay (hello_world's 10 s countdown) instead of
         // burning one cycle per idle round when next_deadline is None.
         let stalled = self.inner.cores.stalled();
-        let hz = self.inner.clocks.rates().cpu_hz.max(1);
+        let hz = TIME_HZ;
         // The board's next input edge (the Mosaico's TE), in emulated nanoseconds.
         let board = self.board.next_deadline().map(|ns| {
             let dt = u128::from(ns.saturating_sub(self.board_ns)) * u128::from(hz);
@@ -802,7 +808,7 @@ impl Bus for SocBus {
     }
     fn tick(&mut self, cycles: u32) -> u32 {
         self.cycles += cycles as u64;
-        let hz = self.inner.clocks.rates().cpu_hz.max(1);
+        let hz = TIME_HZ;
         let before = self.inner.periph.systimer.irqs();
         self.inner.periph.systimer.advance_cpu(
             cycles as u64,
@@ -827,7 +833,7 @@ impl Bus for SocBus {
             self.irq_dirty = true;
         }
         if self.inner.spi2.dma_tx_pending.is_some() || self.inner.spi3.dma_tx_pending.is_some() { self.deliver_spi(); }
-        // Emulated time for the board (TE): nanoseconds at the current CPU clock.
+        // Emulated time for the board (TE), in nanoseconds.
         let t = u128::from(cycles) * 1_000_000_000 + u128::from(self.board_ns_frac);
         self.board_ns += (t / u128::from(hz)) as u64; self.board_ns_frac = (t % u128::from(hz)) as u64;
         self.board.advance_to(self.board_ns);
@@ -863,7 +869,7 @@ mod tests {
         let mut m = machine([0; 6], 1 << 20);
         assert_eq!(S31::NAME, "esp32s31");
         assert_eq!(S31::CORES, 2);
-        assert_eq!(S31::CPU_HZ, 40_000_000);
+        assert_eq!(S31::CPU_HZ, 320_000_000);
         assert_eq!(S31::ROM_ELF, "esp32s31_rev0_rom.elf");
         assert_eq!(m.cores[0].pc, RESET_VECTOR);
         assert_eq!(m.cores[0].hartid, 0);
