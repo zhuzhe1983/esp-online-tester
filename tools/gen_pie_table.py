@@ -5,10 +5,10 @@ import json, re, sys
 src, dst = sys.argv[1], sys.argv[2]
 trm = json.load(open(src))
 ROLES = set()
-def role_of(name):
+def role_of(name, distinct_selectors=False):
     n = name.lower()
     if n.startswith('imm'): r = 'Imm'
-    elif n.startswith('sel'): r = 'Sel'
+    elif n.startswith('sel'): r = n.capitalize() if distinct_selectors else 'Sel'
     elif n.startswith('upd'): r = 'Upd'
     elif n.startswith('sar'): r = 'Sar'
     else: r = n[0].upper() + n[1:]
@@ -25,6 +25,7 @@ def kind(mn):
     if x := r(r'ld\.128\.usar\.(ip|xp)'): return f'Kind::LdUsar({mode(x[1])})'
     if x := r(r'vldbc\.(8|16|32)(?:\.(ip|xp))?'): return f'Kind::Ldbc {{ w: {x[1]}, mode: {mode(x[2])} }}'
     if r(r'vldhbc\.16\.incp'): return 'Kind::Ldhbc16'
+    if r(r'ldxq\.32'): return 'Kind::Ldxq32'
     if x := r(r'ldqa\.(s8|s16|u8|u16)\.128\.(ip|xp)'): return f'Kind::Ldqa {{ w: {x[1][1:]}, signed: {str(x[1][0]=="s").lower()}, mode: {mode(x[2])} }}'
     if r(r'ld\.accx\.ip'): return 'Kind::LdAccx'
     if r(r'st\.accx\.ip'): return 'Kind::StAccx'
@@ -99,11 +100,13 @@ for name in sorted(trm):
     for k in fields:
         if k not in used: order.append(k)
     mn = name.lower()
+    distinct_selectors = len([k for k in fields if k.lower().startswith('sel')]) > 1
     fl = []
     for k in order:
         pieces = ', '.join(f'({hi}, {lo}, {wp})' for hi, lo, wp in fields[k])
-        signed, scale = imm_spec(k) if role_of(k) in ('Imm',) else (False, 1)
-        fl.append(f'Field {{ role: Role::{role_of(k)}, pieces: &[{pieces}], signed: {str(signed).lower()}, scale: {scale} }}')
+        role = role_of(k, distinct_selectors)
+        signed, scale = imm_spec(k) if role == 'Imm' else (False, 1)
+        fl.append(f'Field {{ role: Role::{role}, pieces: &[{pieces}], signed: {str(signed).lower()}, scale: {scale} }}')
     out.append(f'    PieInsn {{ name: "{mn}", len: {ln}, mask: 0x{mask:x}, value: 0x{value:x}, fields: &[{", ".join(fl)}], kind: {kind(mn)} }},')
     n += 1
 out.append('];')

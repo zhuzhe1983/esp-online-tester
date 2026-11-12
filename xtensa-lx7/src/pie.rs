@@ -27,7 +27,7 @@ pub enum Kind {
     Andq, Orq, Xorq, Notq, Vsl32, Vsr32, Slcxxp, Srcxxp, Slci, Srci, SrcQ { qup: bool, ld: Mode }, Srcmb { w: u8 }, SrsAccx,
     Arith { op: ArithOp, w: u8, ld: bool, st: bool }, Vcmp { cmp: Cmp, w: u8 }, Vrelu { w: u8 }, Vprelu { w: u8 }, Vzip { w: u8 }, Vunzip { w: u8 },
     Vmulas { signed: bool, w: u8, accx: bool, ld: LdKind, qup: bool }, Vsmulas { w: u8, ld: bool }, Cmul { store: bool },
-    LdQr, StQr, MvQr, Unimpl,
+    LdQr, StQr, MvQr, Ldxq32, Unimpl,
 }
 
 /// Decode a PIE instruction word (bytes 0..3 of the fetch, little-endian). Returns the table index.
@@ -134,6 +134,10 @@ fn accx_set(cpu: &mut Cpu, v: i64) { cpu.accx[0] = v as u32; cpu.accx[1] = ((v >
 fn src(qs0: u128, qs1: u128, sh_bytes: u32) -> u128 { let sh = (sh_bytes & 0xf) * 8; if sh == 0 { qs0 } else { (qs0 >> sh) | (qs1 << (128 - sh)) } }
 
 // ------------------------------------------------------------------ memory
+pub(crate) fn ldxq_address(cpu: &Cpu, o: &Ops) -> u32 {
+    let index = lane_u(cpu.qr[o.get(Role::Qs) as usize & 7], 16, o.get(Role::Sel8) as u32) as u32;
+    cpu.get_ar(o.get(Role::As) as u8).wrapping_add(index * 4) & !3
+}
 fn ld<B: Bus>(cpu: &mut Cpu, bus: &mut B, a: u32, bytes: u32) -> Result<u128, Trap> {
     let a = a & !(bytes - 1);
     let mut v = 0u128;
@@ -288,6 +292,13 @@ fn exec_table<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn) -> Result<(), Trap> 
             post!(Mode::Xp);
         }
         Kind::LdQr => { let v = ld(cpu, bus, ar!(As).wrapping_add(o.get(Imm) as u32), 16)?; setq!(Qu, v); }
+        Kind::Ldxq32 => {
+            // ESP32-S3 TRM v1.8 §1.8.37: unsigned 16-bit index, wrapping byte
+            // address then word alignment. Commit only after a successful read,
+            // retaining the other lanes even when the source and destination alias.
+            let v = ld(cpu, bus, ldxq_address(cpu, &o), 4)? as u64;
+            let mut q = q!(Qu); set_lane(&mut q, 32, o.get(Sel4) as u32, v); setq!(Qu, q);
+        }
         Kind::StQr => { st(cpu, bus, ar!(As).wrapping_add(o.get(Imm) as u32), 16, q!(Qs))?; }
         Kind::MvQr => { let s = if o.has(Qs) { q!(Qs) } else { q!(Qx) }; let dst = if o.has(Qu) { Qu } else { Qa }; setq!(dst, s); }
         Kind::Unimpl => return Err(Trap::Unimplemented(cpu.pc, w)),

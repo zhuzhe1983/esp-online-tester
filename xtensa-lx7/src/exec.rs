@@ -193,6 +193,7 @@ impl Cpu {
 #[cfg(test)]
 mod tests {
     use super::Cpu;
+    use crate::{Bus, Fault};
 
     #[test]
     fn lx6_dfp_context_registers_round_trip() {
@@ -200,6 +201,32 @@ mod tests {
         for (register, value) in (234..=236).zip([0x1234, 0x5678, 0x9abc]) {
             assert_eq!(cpu.write_ur(register, value), Some(()));
             assert_eq!(cpu.read_ur(register), Some(value));
+        }
+    }
+
+    struct DeferProbe { armed: bool, address: u32, seen: Vec<u32> }
+    impl Bus for DeferProbe {
+        fn note_code_page(&mut self, _: u32) {}
+        fn read8(&mut self, _: u32) -> Result<u8, Fault> { panic!("deferral must precede memory access") }
+        fn read16(&mut self, _: u32) -> Result<u16, Fault> { panic!("deferral must precede memory access") }
+        fn read32(&mut self, _: u32) -> Result<u32, Fault> { panic!("deferral must precede memory access") }
+        fn write8(&mut self, _: u32, _: u8) -> Result<(), Fault> { panic!("deferral must precede memory access") }
+        fn write16(&mut self, _: u32, _: u16) -> Result<(), Fault> { panic!("deferral must precede memory access") }
+        fn write32(&mut self, _: u32, _: u32) -> Result<(), Fault> { panic!("deferral must precede memory access") }
+        fn fetch(&mut self, _: u32) -> Result<[u8; 4], Fault> { panic!("already decoded") }
+        fn defer_armed(&self) -> bool { self.armed }
+        fn defer_access(&mut self, a: u32) -> bool { self.seen.push(a); a == self.address }
+    }
+
+    #[test]
+    fn ldxq_defers_the_indexed_aligned_address_before_any_access() {
+        let i = crate::decode(0x4037_0000, 0xe072_3d4e_u32.to_le_bytes());
+        for (base, index, address) in [(0x5ffc_0007, 0xffff_u128, 0x6000_0000), (0xffff_fff3, 8, 0x10)] {
+            let mut c = Cpu::new(0); c.set_ar(4, base); c.qr[0] = index << 96;
+            let mut bus = DeferProbe { armed: true, address, seen: Vec::new() };
+            assert!(super::defer_instruction(&c, &mut bus, &i)); assert_eq!(bus.seen, [address]);
+            bus.armed = false; bus.seen.clear();
+            assert!(!super::defer_instruction(&c, &mut bus, &i)); assert!(bus.seen.is_empty());
         }
     }
 }
@@ -343,10 +370,15 @@ pub(crate) fn word_access(cpu: &Cpu, i: &Insn) -> Option<u32> {
 /// Stop before a potentially observable access while executing virtual quanta.
 /// PIE and MAC16 load bases are visible ARs. Conservatively scan them rather than
 /// extracting extension operands again; the bus includes their small pre-offsets.
+/// LDXQ's 16-bit index can reach far beyond that margin, so check its actual address.
 #[inline]
 pub(crate) fn defer_instruction<B: Bus>(cpu: &Cpu, bus: &mut B, i: &Insn) -> bool {
     if !bus.defer_armed() { return false; }
     if let Some(addr) = word_access(cpu, i) { return bus.defer_access(addr); }
+    if i.op == Op::Pie && crate::pie::OPS[i.imm as usize].kind == crate::pie::Kind::Ldxq32 {
+        let o = crate::pie::extract(i.raw, &crate::pie::OPS[i.imm as usize]);
+        return bus.defer_access(crate::pie::ldxq_address(cpu, &o));
+    }
     if i.op == Op::Pie || (i.op == Op::Mac16 && matches!((i.raw >> 20) & 15, 0 | 1 | 4 | 5 | 8 | 9)) {
         return (0..16).any(|r| bus.defer_access(cpu.get_ar(r)));
     }

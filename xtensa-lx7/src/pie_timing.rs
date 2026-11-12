@@ -22,6 +22,7 @@ pub fn effects(p: &PieInsn, o: &Ops) -> QEffects {
         Kind::Vld128(_) | Kind::LdUsar(_) => { e.writes = bits(&[Qu]); e.delayed = e.writes; }
         Kind::Vld64 { .. } | Kind::MoviQ => { e.reads = bits(&[Qu]); e.writes = e.reads; }
         Kind::Ldbc { .. } | Kind::LdQr => e.writes = bits(&[Qu]),
+        Kind::Ldxq32 => { e.reads = bits(&[Qs, Qu]); e.writes = bits(&[Qu]); }
         Kind::Ldhbc16 => e.writes = bits(&[Qu, Qu1]),
         Kind::Vst128(_) | Kind::Vst64 { .. } => e.reads = bits(&[Qv]),
         Kind::MoviA | Kind::MovQacc { .. } | Kind::StQr => e.reads = bits(&[Qs]),
