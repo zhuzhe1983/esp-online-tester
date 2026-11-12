@@ -3,7 +3,7 @@
 //! AMOLED on GP-SPI2 in QSPI mode (CLK 42, CS 50, D0-D3 36/51/35/9, TE 43), its RESET on GPIO 44
 //! (shared with the touch controller's), and the display supply enabled by GPIO 60 driven low.
 //! Modelled: the panel and its reset and power gates, the CST9220 touch on I2C0 (0x5A, SDA 56,
-//! SCL 3, INT 6), the top button on GPIO 7 and the Boot key on GPIO 61, and the BQ27220 fuel gauge (0x55) on I2C0, and the panel's TE output on GPIO 43: a 60 Hz frame with a 1 ms high blanking pulse.
+//! SCL 3, INT 6), the top button on GPIO 7 and the Boot key on GPIO 61, the BQ27220 fuel gauge (0x55), the BMI270 IMU (0x69) and two BMM150 magnetometers (0x11, 0x12) on I2C0, and the panel's TE output on GPIO 43: a 60 Hz frame with a 1 ms high blanking pulse.
 //! Audio: the ES8311 codec (0x19) on I2C0 as a register file with its chip ID, serving the factory
 //! firmware's `audio_dac` and `audio_adc` both (no ES7210 is addressed), full duplex on I2S0 (the factory firmware logs BCLK 37, WS 49, DOUT 52, DIN 40) with the
 //! speaker amplifier enabled by GPIO 45; what I2S0 transmits is the run's audio (`--wav`).
@@ -34,6 +34,13 @@ pub const PIN_TOUCH_INT: u8 = 6;
 pub const PIN_AI_BUTTON: u8 = 7;
 /// The Boot key: `button_boot` in the same table (mask bit 61), active low.
 pub const PIN_BOOT_BUTTON: u8 = 61;
+/// The BMI270 IMU (`imu_sensor`) on I2C0: the factory firmware's board-manager entry
+/// {"imu_sensor", "custom", "bmi270", addr 0x69, "i2c_master"} (SDO high).
+pub const BMI270_ADDRESS: u8 = esp_soc::devices::BMI270_ADDRESS;
+/// Two BMM150 magnetometers on I2C0, directly on the bus (not behind the BMI270's AUX
+/// interface): `magnetometer_1` and `magnetometer_2` list 8-bit addresses 0x22 and 0x24, which
+/// the firmware logs as yaml_addr and shifts to the 7-bit i2c_addr.
+pub const BMM150_ADDRESSES: [u8; 2] = [0x11, 0x12];
 const TOUCH_RELEASE_NS: u64 = 1_000_000;
 /// CO5300 TE: one frame every 1/60 s, high for the first 1 ms (the blanking interval).
 const TE_PERIOD_NS: u64 = 16_666_667;
@@ -62,13 +69,15 @@ pub struct Mosaico {
     touch_int_low: bool,
     touch_release_at: Option<u64>,
     te_edges: Vec<esp_soc::board::BoardEdge>,
+    /// Scripted motion for the BMI270 (clock: emulated nanoseconds, stored by `advance_to`)
+    pub imu: std::sync::Arc<esp_soc::devices::imu_motion::ImuMotion>,
 }
 impl Default for Mosaico { fn default() -> Self { Self::new() } }
 impl Mosaico {
     pub const WIDTH: usize = 480;
     pub const HEIGHT: usize = 480;
     pub fn new() -> Self {
-        Mosaico { panel: Co5300::new(Self::WIDTH, Self::HEIGHT, 0), powered: false, in_reset: false, amp: false, gpio_events: 0, dropped: 0, touch: Default::default(), nand: crate::spi_nand::SpiNand::new(), te_level: false, te_now: 0, touch_int_low: false, touch_release_at: None, te_edges: Vec::new() }
+        Mosaico { panel: Co5300::new(Self::WIDTH, Self::HEIGHT, 0), powered: false, in_reset: false, amp: false, gpio_events: 0, dropped: 0, touch: Default::default(), nand: crate::spi_nand::SpiNand::new(), te_level: false, te_now: 0, touch_int_low: false, touch_release_at: None, te_edges: Vec::new(), imu: Default::default() }
     }
 }
 impl BoardModel for Mosaico {
@@ -91,6 +100,7 @@ impl BoardModel for Mosaico {
     /// and out of reset; a jump over several frames yields the level at `now` (one edge pair at most).
     fn advance_to(&mut self, now: esp_soc::board::VirtualCycle) {
         self.te_now = now;
+        self.imu.cycle.store(now, std::sync::atomic::Ordering::Relaxed);
         if self.touch_release_at.is_some_and(|t| now >= t) {
             self.touch_release_at = None; self.touch_int_low = false;
             self.te_edges.push(esp_soc::board::BoardEdge { cycle: now, pin: PIN_TOUCH_INT, level: true });
@@ -117,8 +127,13 @@ impl BoardModel for Mosaico {
     fn i2c_devices(&mut self) -> Vec<(u8, u8, Box<dyn esp_periph::i2c::I2cDevice>)> {
         vec![(0, crate::cst9220::ADDRESS, Box::new(crate::cst9220::Cst9220::new(self.touch.clone(), Self::WIDTH as u16, Self::HEIGHT as u16))),
              (0, crate::bq27220::ADDRESS, Box::new(crate::bq27220::Bq27220::new())),
-             (0, ES8311_ADDRESS, Box::new(esp_periph::i2c::Reg8Device::new("es8311", &[(0xfd, 0x83), (0xfe, 0x11)])))]
+             (0, ES8311_ADDRESS, Box::new(esp_periph::i2c::Reg8Device::new("es8311", &[(0xfd, 0x83), (0xfe, 0x11)]))),
+             (0, BMI270_ADDRESS, Box::new(esp_soc::devices::Bmi270::new(self.imu.clone(), 1_000_000_000))),
+             (0, BMM150_ADDRESSES[0], Box::new(esp_soc::devices::Bmm150::new(Default::default()))),
+             (0, BMM150_ADDRESSES[1], Box::new(esp_soc::devices::Bmm150::new(Default::default())))]
     }
+    fn set_imu_motion(&mut self, mode: u32) -> bool { self.imu.mode.store(mode, std::sync::atomic::Ordering::Relaxed); true }
+    fn imu_motion(&self) -> u32 { self.imu.mode.load(std::sync::atomic::Ordering::Relaxed) }
     fn touch(&mut self, x: u16, y: u16, down: bool) {
         *self.touch.lock().unwrap() = crate::cst9220::Touch { down, x, y };
         // A new report: INT falls (again, for a move while down) and, on release, rises 1 ms later.
