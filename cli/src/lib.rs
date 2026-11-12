@@ -686,8 +686,11 @@ fn setup_s31(o: &Opts) -> esp32s31::Machine {
         for d in &o.debug { f.parse(d); }
         m.set_debug(&f);
     }
+    if let Some(spec) = &o.wifi {
+        let (cfg, nat) = wifi_config(spec, &o.net, m.bus.debug.has("net"), &o.hostfwd);
+        m.bus.attach_wifi(cfg, nat).unwrap_or_else(|e| usage_error(&format!("--wifi: {e}")));
+    }
     for (flag, on) in [
-        ("--wifi", o.wifi.is_some()),
         ("--board", o.board != "atech14" && o.board != "none" && o.board != "mosaico"),
         ("--cam-image", o.cam_image.is_some()),
         ("--cam-stream", o.cam_stream.is_some()),

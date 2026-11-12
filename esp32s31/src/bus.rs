@@ -115,6 +115,10 @@ pub struct S31Bus {
     pub sha: ShaEngine,
     pub key_manager: crate::key_manager::KeyManager,
     pub analog: Analog,
+    /// the modem baseband (`wifi.rs`)
+    pub modem_bb: crate::wifi::ModemBb,
+    /// the WiFi MAC and the virtual access point behind it (`wifi.rs`)
+    pub wifi_mac: crate::wifi::WifiMac,
     pub power: Power,
     pub permissions: Permissions,
     pub apm: Apm,
@@ -165,7 +169,7 @@ impl S31Bus {
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
         Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16],
-            periph: Peripherals::new(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), clocks: Clocks::default(), startup_clocks: StartupClocks::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), key_manager: crate::key_manager::KeyManager::default(), analog: Analog::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), cores: CoreControl::default(), hart: 0, reservations: [None; 2], rtc_timer: RtcTimer::default(), rtc_calibration: crate::rtc_calibration::Calibration::default(), pc: 0, first_fault: None, unmodelled: Default::default(), refused: Default::default(),
+            periph: Peripherals::new(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), clocks: Clocks::default(), startup_clocks: StartupClocks::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), key_manager: crate::key_manager::KeyManager::default(), analog: Analog::default(), modem_bb: Default::default(), wifi_mac: Default::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), cores: CoreControl::default(), hart: 0, reservations: [None; 2], rtc_timer: RtcTimer::default(), rtc_calibration: crate::rtc_calibration::Calibration::default(), pc: 0, first_fault: None, unmodelled: Default::default(), refused: Default::default(),
             // Same HS UTMI DWC2 instance as the P4 (esp_hal_usb/esp32s31/usb_dwc_periph.c); its
             // GHWCFG words are assumed equal to the P4's until read from an S31.
             usb_otg: esp_periph::usb_otg::Dwc2::new(esp_periph::usb_otg::Dwc2Config::esp32p4_hs(crate::periph::CPU_HZ)),
@@ -237,12 +241,77 @@ impl S31Bus {
             self.refused.entry(if r.ppa { PPA } else { DMA2D } + r.off).or_insert((0, 0)).0 += 1;
         }
     }
+    /// What the WiFi MAC's DMA sees: internal SRAM and LP RAM, PSRAM and flash through the MMU.
+    fn wifi_mem(&mut self) -> Dma2dMem<'_> { Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, cache: &mut self.cache } }
+    fn wifi_word(&mut self, addr: u32) -> u32 {
+        let mut b = [0u8; 4];
+        let _ = esp_periph::sdmmc::SdmmcMemory::read(&mut self.wifi_mem(), addr, &mut b);
+        u32::from_le_bytes(b)
+    }
+    /// WiFi transmit, as on the C6 (`esp32c6::bus`): the frames the library queued come out of
+    /// their descriptors (word 0 bits 27:14 the packet's length, word 1 the packet: an 8-byte
+    /// header, the frame's length in its first word's bits 13:0, then the frame), complete at
+    /// once, and go to the access point.
+    pub(crate) fn wifi_tx_step(&mut self, now_us: u64, frames_log: bool) {
+        for (queue, low) in std::mem::take(&mut self.wifi_mac.tx_pending) {
+            let desc = self.wifi_mac.addr(low);
+            let (dw0, pkt) = (self.wifi_word(desc), self.wifi_word(desc.wrapping_add(4)));
+            const TX_HEADER: usize = 8;
+            let mut packet = vec![0u8; ((dw0 >> 14) & 0x3fff) as usize];
+            if esp_periph::sdmmc::SdmmcMemory::read(&mut self.wifi_mem(), pkt, &mut packet).is_err() { packet.clear(); }
+            let len = packet.get(..4).map_or(0, |w| (u32::from_le_bytes(w.try_into().unwrap()) & 0x3fff) as usize);
+            let frame = packet.get(TX_HEADER..TX_HEADER + len).unwrap_or_default().to_vec();
+            if frame.is_empty() && !packet.is_empty() { eprintln!("[wifi] TX queue {queue}: a {}-byte packet whose header says {len} bytes of frame; not sent", packet.len()); }
+            if self.wifi_mac.log || frames_log { eprintln!("[wifi] {:.6}s TX queue {queue} desc {desc:#010x} {}", now_us as f64 / 1e6, esp_soc::wifi::describe(&frame)); }
+            self.wifi_mac.tx_done(queue);
+            self.wifi_mac.link.station_tx(&frame, now_us);
+        }
+    }
+    /// The virtual air: what the access point has due and what the network sends the station, one
+    /// frame at a time into the RX ring (`StationLink::next_rx`). True when a frame went in.
+    pub(crate) fn wifi_air_step(&mut self, now_us: u64) -> bool {
+        if self.wifi_mac.link.nothing_due(now_us) { return false; }
+        let last_desc = self.wifi_mac.link.last_rx_desc();
+        let busy = last_desc != 0 && self.wifi_word(last_desc) & esp_soc::wifi::RX_DESC_HAS_DATA != 0;
+        match self.wifi_mac.link.next_rx(now_us, busy) { Some(frame) => { self.wifi_rx_deliver(&frame, now_us); true } None => false }
+    }
+    /// One received frame into the next RX descriptor behind the control header the S31's
+    /// `wDev_ProcessRxSucData` reads (`rxctrl:64`): 56 fixed bytes (the C6's first 21 at the same
+    /// places: byte 0 the RSSI, byte 3 bits 4 and 5 the address match, bytes 12..15 the
+    /// timestamp; byte 43 bit 7 announces a channel-estimate dump, none here), then 8 bytes
+    /// (`get_sublen_offset`: 56 without a dump) with the frame's length, FCS included, in bits
+    /// 13:0 and the receive state in byte 4 (0, good), then the frame and its FCS.
+    fn wifi_rx_deliver(&mut self, frame: &[u8], now_us: u64) {
+        const RX_CTRL: usize = 64;
+        if self.wifi_mac.rx_next == 0 { self.wifi_mac.link.drop_rx_unarmed(); return; }
+        let desc = self.wifi_mac.addr(self.wifi_mac.rx_next);
+        let log = self.wifi_mac.link.ap().is_some_and(|ap| ap.log);
+        let (dw0, buf, next) = (self.wifi_word(desc), self.wifi_word(desc.wrapping_add(4)), self.wifi_word(desc.wrapping_add(8)));
+        let total = RX_CTRL + frame.len() + 4;
+        if dw0 & (1 << 31) == 0 || dw0 & (1 << 30) != 0 || ((dw0 & 0x3fff) as usize) < total { self.wifi_mac.link.drop_rx(); return; }
+        let group = frame.len() >= 5 && frame[4] & 1 == 1;
+        let mut words = [0u32; RX_CTRL / 4];
+        let rssi = self.wifi_mac.link.ap().map_or(-40i8, |ap| ap.rx_meta(frame).1);
+        words[0] = (rssi as u8 as u32) | 1 << 28 | if group { 0 } else { 1 << 29 };
+        words[3] = now_us as u32;
+        words[5] = 0xa6;
+        words[14] = (frame.len() as u32 + 4) & 0x3fff;
+        words[15] = 0;
+        let mut b: Vec<u8> = words.iter().flat_map(|w| w.to_le_bytes()).collect();
+        b.extend_from_slice(frame);
+        b.extend_from_slice(&esp_soc::wifi::fcs(frame).to_le_bytes());
+        if esp_periph::sdmmc::SdmmcMemory::write(&mut self.wifi_mem(), buf, &b).is_err() { self.wifi_mac.link.drop_rx(); return; }
+        let filled = (dw0 & !(0x3fff << 14)) | (total as u32) << 14 | 1 << 30;
+        let _ = esp_periph::sdmmc::SdmmcMemory::write(&mut self.wifi_mem(), desc, &filled.to_le_bytes());
+        self.wifi_mac.rx_filled(desc, next);
+        if log { eprintln!("[wifi] RX -> desc {desc:#010x} (was {dw0:#010x}, next {next:#010x}) buf {buf:#010x} {}", esp_soc::wifi::describe(frame)); }
+    }
     /// Let the DWC2 move what its DMA owes, against internal SRAM and LP RAM.
     pub(crate) fn run_usb_otg(&mut self) {
         let mut dma = UsbDma { sram: &mut self.sram, lp: &mut self.lp };
         self.usb_otg.run(&mut dma);
     }
-    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], gpio: self.pads.irq_lines(), axi_dma: esp_periph::Device::irq_sources(&self.axi_dma), dma2d: self.dma2d.irq_bits() as u8, ppa: self.ppa.irq() } }
+    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], gpio: self.pads.irq_lines(), axi_dma: esp_periph::Device::irq_sources(&self.axi_dma), dma2d: self.dma2d.irq_bits() as u8, ppa: self.ppa.irq(), wifi_mac: self.wifi_mac.irq() } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
@@ -444,6 +513,12 @@ impl S31Bus {
         if Power::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return match self.power.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
+        if (crate::wifi::BB_BASE..crate::wifi::BB_END).contains(&address) {
+            return Ok(crate::wifi::read_sized(&mut self.modem_bb, address - crate::wifi::BB_BASE, bytes));
+        }
+        if (crate::wifi::MAC_BASE..crate::wifi::MAC_END).contains(&address) {
+            return Ok(crate::wifi::read_sized(&mut self.wifi_mac, address - crate::wifi::MAC_BASE, bytes));
         }
         if Analog::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
@@ -696,6 +771,12 @@ impl S31Bus {
                 Ok(()) => { self.clocks.set_cpll_power(self.power.cpll_enabled()); self.clocks.mpll.set_power(self.power.mpll_enabled()); self.clocks.set_fosc_power(self.power.fosc_enabled()); self.mspi.set_bbpll_gate(self.power.bbpll_output_enabled()); Ok(()) }
                 Err(e) => self.fault(address, bytes, true, false, e),
             };
+        }
+        if (crate::wifi::BB_BASE..crate::wifi::BB_END).contains(&address) {
+            crate::wifi::write_sized(&mut self.modem_bb, address - crate::wifi::BB_BASE, value, bytes); return Ok(());
+        }
+        if (crate::wifi::MAC_BASE..crate::wifi::MAC_END).contains(&address) {
+            crate::wifi::write_sized(&mut self.wifi_mac, address - crate::wifi::MAC_BASE, value, bytes); return Ok(());
         }
         if Analog::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }

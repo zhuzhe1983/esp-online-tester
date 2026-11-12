@@ -363,6 +363,22 @@ impl SocBus {
         self.board.gpio_changes(&changes);
     }
 
+    /// Emulated microseconds, on the run's time base (`cycles` at `periph::CPU_HZ`).
+    fn now_us(&self) -> u64 { self.cycles / (crate::periph::CPU_HZ / 1_000_000) }
+    /// The WiFi MAC's queued transmissions, then the virtual air and the network (`wifi.rs`).
+    fn wifi_step(&mut self) {
+        let now_us = self.now_us();
+        if !self.inner.wifi_mac.tx_pending.is_empty() {
+            let frames = self.debug.has("wifi-frames");
+            self.inner.wifi_tx_step(now_us, frames);
+            self.irq_dirty = true;
+        }
+        if self.inner.wifi_mac.link.ap().is_some() {
+            if self.inner.wifi_air_step(now_us) { self.irq_dirty = true; }
+            self.inner.wifi_mac.link.net_step(now_us);
+        }
+    }
+
     fn refresh_clic_inputs(&mut self) {
         let irq = self.inner.peripheral_irqs();
         // Threshold 0: `clic_std` CPUs apply `mintthresh` themselves (same as P4 rev ≥ 3).
@@ -432,6 +448,10 @@ impl esp_soc::SocBus for SocBus {
 
     fn irq_dirty(&mut self) -> &mut bool {
         &mut self.irq_dirty
+    }
+    fn attach_wifi(&mut self, cfg: esp_soc::wifi::ApConfig, nat: Option<esp_soc::nat::Nat>) -> Result<(), String> {
+        self.inner.wifi_mac.link.attach_new(cfg, nat, &self.debug);
+        Ok(())
     }
     /// The host on the other end of the high-speed USB-OTG port (DR_REG_USB_OTGHS_BASE).
     fn attach_usb_host(&mut self, timing: esp_periph::usb_otg::UsbTiming) -> Result<(), String> {
@@ -658,6 +678,7 @@ impl esp_soc::SocBus for SocBus {
         esp_periph::Device::debug(&mut self.inner.axi_dma, f.has("dma"));
         esp_periph::Device::debug(&mut self.inner.dma2d, f.has("dma2d")); esp_periph::Device::debug(&mut self.inner.ppa, f.has("ppa"));
         for i in &mut self.inner.i2c { i.log = f.has("i2c"); }
+        esp_periph::Device::debug(&mut self.inner.wifi_mac, f.has("wifi"));
     }
 
     fn set_flash_size(&mut self, bytes: usize) {
@@ -823,6 +844,7 @@ impl Bus for SocBus {
         let source = self.inner.clocks.calibration_hz(self.inner.rtc_calibration.source());
         let group = self.inner.periph.timg[0].wdt.clock_read();
         self.inner.rtc_calibration.advance_cpu(cycles as u64, hz, source, group);
+        self.wifi_step();
         self.poll_chip_reset();
         1
     }

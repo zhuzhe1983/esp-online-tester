@@ -32,6 +32,7 @@ pub mod mwdt;
 pub mod rtc_timer;
 pub mod rtc_calibration;
 pub mod modem_lpcon;
+pub mod wifi;
 pub mod startup_clocks;
 pub mod periph;
 mod rom;
