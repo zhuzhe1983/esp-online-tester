@@ -100,6 +100,8 @@ try{
     }
     assert.notEqual(stages[2].imu,stages[1].imu,'Fresh virtual axes must change actual official IMU glyphs');
     assert.equal(stages[3].imu,stages[1].imu,'Restoring virtual axes must restore the same official IMU glyphs');
+    assert.equal(stages[1].imu,'a687ffec0dc4497c98182d81ba4d6b54ce23b433195dc1c4dac18d564879fb8a','Fixed UserDemo must display the visually checked reference vectors');
+    assert.equal(stages[2].imu,'56a31916f29e72b9f7d7cd7161713bd7fcca02463c504d2af7fa24edd20729a5','Fixed UserDemo must display AX1 / GX10 GY-20 GZ30');
   }
   if(scenario==='lora') {
     assert.equal(productId,'m5stack-papermono');console.log('LORA_BOOT',JSON.stringify(await runtime.readLoRa()));assert.match(serial,/LoRa init OK rx_state=0/);
@@ -135,9 +137,10 @@ try{
     await tap(65,300);await checkpoint('rgb-red-off');assert.deepEqual((await runtime.observe()).leds[0],[0,0,0]);
     await tap(65,332);await checkpoint('rgb-green-on');assert.deepEqual((await runtime.observe()).leds[0],[0,255,0]);
     await tap(65,364);await checkpoint('rgb-blue-on');assert.deepEqual((await runtime.observe()).leds[0],[0,255,255]);
-    await tap(100,700);await checkpoint('sd-directory');assert.notEqual(stages.at(-1).sha256,stages.at(-2).sha256);
+    await tap(100,700);await checkpoint('sd-directory');assert.equal(stages.at(-1).sha256,'c229c0df4c822b7de89167faf27670c55d52ca8d7ce374e176f92d8cf53e53d9','Fixed UserDemo must read and render HELLO.TXT / 17B from the generated FAT32 image');
     const exported=await runtime.exportSdCard();assert.equal(exported.bytes.length,64*1024*1024);assert.ok(new TextDecoder().decode(exported.bytes).includes('HELLO   TXT'));
     await runtime.pause();await runtime.reset();assert.equal((await runtime.observe()).sdCard.restored,true);await runtime.start();await waitGuest(seconds);await checkpoint('sd-after-reset');
+    await tap(100,700);await checkpoint('sd-directory-after-reset');assert.equal(stages.at(-1).sha256,'c229c0df4c822b7de89167faf27670c55d52ca8d7ce374e176f92d8cf53e53d9','The reset guest must reread the retained TF directory');
   }
   if(scenario==='edcbook') {
     await tap(425,625);await checkpoint('reading-menu');
