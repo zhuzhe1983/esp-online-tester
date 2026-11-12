@@ -648,3 +648,24 @@ fn i80_dummy_priming_clock_rgb_and_bad_dma_do_not_fake_data() {
         assert_eq!(bus.periph.lcd_cam.int_raw&2,0);assert_eq!(bus.periph.gdma.out[0].int_raw&4,4);assert!(!bus.periph.gdma.out[0].running);
     }
 }
+
+#[test]
+fn rgb_start_observes_only_running_finite_clock_on_its_physical_gpio() {
+    use esp_soc::board::BoardModel;
+    type Sample=(u32,u32,u32,Option<(u64,u32)>,Option<(u64,u32)>);
+    struct Capture(std::sync::Arc<std::sync::Mutex<Vec<Sample>>>);
+    impl BoardModel for Capture {
+        fn name(&self)->&'static str {"rgb-clock-test"}
+        fn lcd_rgb_start(&mut self,_cycle:u64,w:u32,h:u32,bpp:u32,clock:&dyn Fn(u8)->Option<(u64,u32)>) {self.0.lock().unwrap().push((w,h,bpp,clock(18),clock(19)));}
+    }
+    let samples=std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));let mut bus=SocBus::new(1024,0,[0;6]);bus.board=Box::new(Capture(samples.clone()));
+    bus.periph.gpio.func_out_sel[18]=82;bus.periph.io_mux.write(4+4*18,1<<12);
+    bus.periph.lcd_cam.lcd_ctrl=(1<<31)|(543<<11);bus.periph.lcd_cam.lcd_ctrl1=240<<8;
+    let conf=(8<<8)|(1<<16)|(1<<3);bus.periph.rmt.write(0x8c0,0x8000|100|(120<<16));bus.periph.rmt.write(0xa4,(549<<9)|(1<<19)|(1<<21));bus.periph.rmt.write(0x24,conf);
+    bus.write32(0x6004_1014,(1<<27)|(1<<24)).unwrap();assert_eq!(samples.lock().unwrap()[0],(241,544,1,None,None));
+    bus.periph.rmt.write(0x24,conf|1);bus.write32(0x6004_1014,(1<<27)|(1<<24)).unwrap();
+    assert_eq!(samples.lock().unwrap()[1],(241,544,1,Some((5280,549)),None));
+    bus.periph.gpio.func_out_sel[18]|=512;bus.write32(0x6004_1014,(1<<27)|(1<<24)).unwrap();assert_eq!(samples.lock().unwrap()[2].3,None,"inverted route");
+    bus.write32(0x6004_1014,0).unwrap();assert_eq!(samples.lock().unwrap().len(),3,"stopping is not a new scan");
+    bus.write32(0x6004_1014,(1<<28)|(1<<27)).unwrap();assert_eq!(samples.lock().unwrap().len(),3,"reset is not a new scan");
+}

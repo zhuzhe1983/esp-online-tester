@@ -60,6 +60,23 @@ impl Rmt {
     pub fn new(cpu_hz: u64) -> Self { Rmt { running: 0, dma_fifo: None, cpu_per_apb: u8::try_from(cpu_hz / crate::APB_HZ).expect("CPU clock ratio fits u8"), ch: Default::default(), mem: [0; RMT_MEM_WORDS * 8], int_raw: 0, int_ena: 0, sys_conf: 0, ram: RegRam::new(), done: Vec::new(), tx_count: 0 } }
     pub fn is_running(&self) -> bool { self.running != 0 }
     pub fn irq(&self) -> bool { self.int_raw & self.int_ena != 0 }
+    /// Observe a running finite one-symbol high/low clock, without advancing it.
+    /// IDF v5.5.1 S3 rmt_reg.h: CONTI bit3, DIV bits8..15, MEM_SIZE bits16..19;
+    /// TX_LIM LOOP_NUM bits9..18, LOOP_CNT_EN bit19, LOOP_STOP_EN bit21.
+    /// DMA, carrier modulation and multi-symbol periods are outside this digital subset.
+    pub fn finite_clock(&self, channel: usize) -> Option<(u64, u32)> {
+        let c=self.ch.get(channel)?;
+        let base=channel*RMT_MEM_WORDS;
+        if !c.running || c.conf0&(1<<3)==0 || c.conf0&((1<<21)|(1<<25))!=0
+            || c.tx_lim&((1<<19)|(1<<21))!=((1<<19)|(1<<21)) || c.rd>1 {return None;}
+        let symbol=self.mem[base];let high=symbol&0x7fff;let low=(symbol>>16)&0x7fff;
+        if high==0 || low==0 || symbol&0x8000==0 || symbol&0x8000_0000!=0 || self.mem[base+1]!=0 {return None;}
+        let count=((c.tx_lim>>9)&0x3ff).max(1);
+        let remaining=count.saturating_sub(c.loop_count).saturating_sub(u32::from(c.rd!=0));
+        let period=u64::from(high+low)*u64::from(((c.conf0>>8)&255).max(1))*u64::from(self.cpu_per_apb);
+        Some((period,remaining))
+    }
+
     pub fn read(&self, off: u32) -> u32 {
         match off {
             // TX_START / MEM_RD_RST / APB_MEM_RST / TX_STOP / AFIFO_RST / CONF_UPDATE are self-clearing command bits: they read as 0
@@ -331,5 +348,27 @@ mod rgb_bit_tests {
             for first in [true,false] {assert_eq!(symbol_bit(symbol(high,low,first)),bit,"high={high} low={low}");}
         }
         assert!(!symbol_bit(0));assert!(!symbol_bit(800|(800<<16)),"low reset is not a data one");
+    }
+}
+
+#[cfg(test)]
+mod finite_clock_tests {
+    use super::*;
+    #[test]
+    fn clock_requires_running_finite_bipolar_pulses_and_counts_remaining_time() {
+        let mut r=Rmt::new(240_000_000);
+        r.write(0x800,0x8000|10|(20<<16));r.write(0xa0,(6<<9)|(1<<19)|(1<<21));
+        let conf=(8<<8)|(1<<16)|(1<<3);
+        r.write(0x20,conf);assert_eq!(r.finite_clock(0),None,"configured but never started");
+        r.write(0x20,conf|1);assert_eq!(r.finite_clock(0),Some((720,6)));
+        r.tick(1);assert_eq!(r.finite_clock(0),Some((720,5)),"exclude the in-flight pulse");
+        r.tick(720);assert_eq!(r.finite_clock(0),Some((720,4)));
+        r.tick(720*6);assert_eq!(r.finite_clock(0),None,"autostopped clock cannot drive a new scan");
+        for bad in [conf&!(1<<3),conf|(1<<21),conf|(1<<25)] {r.write(0x20,bad|1);assert_eq!(r.finite_clock(0),None);}
+        r.write(0x20,conf|1);r.write(0xa0,6<<9);assert_eq!(r.finite_clock(0),None);
+        r.write(0xa0,(6<<9)|(1<<19)|(1<<21));
+        for symbol in [10|(20<<16),0x8000|10|(20<<16)|0x8000_0000,0x8000|10,20<<16] {r.write(0x800,symbol);assert_eq!(r.finite_clock(0),None);}
+        r.write(0x800,0x8000|10|(20<<16));r.write(0x804,1);assert_eq!(r.finite_clock(0),None,"not a one-symbol period");
+        assert_eq!(r.finite_clock(usize::MAX),None);
     }
 }

@@ -233,6 +233,12 @@ pub trait BoardModel {
     /// Whether `camera_frame_with_clock` currently returns one whole JPEG file (its length
     /// is the file's) rather than `w`x`h` raw pixels. Queried only by capture adapters.
     fn camera_frame_is_jpeg(&self) -> bool { false }
+    /// Cold LCD RGB START observation. The optional GPIO query describes an already-running
+    /// finite pulse clock: (CPU cycles per pulse, complete pulses remaining). No time advances.
+    /// Appended to preserve hot vtable slots; boards without a gate clock do no work.
+    fn lcd_rgb_start(&mut self, _cycle: VirtualCycle, _w: u32, _h: u32, _bytes_per_pixel: u32,
+        _clock: &dyn Fn(u8) -> Option<(u64, u32)>) {}
+
 }
 
 pub type Board = Box<dyn BoardModel>;

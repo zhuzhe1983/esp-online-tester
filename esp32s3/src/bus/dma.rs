@@ -36,6 +36,17 @@ impl SocBus {
     #[cold]
     #[inline(never)]
     pub(super) fn lcd_i80_start(&mut self) {
+        // RGB EPD gate clocks are sampled only at a real START write. The existing
+        // RGB DMA service still supplies every source byte and completion interrupt.
+        if self.periph.lcd_cam.lcd_running() && self.periph.lcd_cam.lcd_user&(1<<28)==0 {
+            let (w,h,bpp,_)=self.periph.lcd_cam.lcd_geometry();
+            let routes=esp_soc::pins::ChipPins::S3.routes(&self.periph.gpio,&self.periph.io_mux);
+            let rmt=&self.periph.rmt;
+            self.board.lcd_rgb_start(self.cycles,w,h,bpp,&|pin| {
+                (0..4).find_map(|ch|routes.matrix_output(pin as usize,81+ch as u32).then(||rmt.finite_clock(ch)).flatten())
+            });
+            return;
+        }
         if !self.periph.lcd_cam.i80_started() { return; }
         let user = self.periph.lcd_cam.lcd_user;
         if user & (1 << 28) != 0 { return; }
