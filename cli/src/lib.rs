@@ -33,6 +33,7 @@ fn help(chip: &str, code: i32) -> ! {
     eprintln!("  --hostfwd tcp:H:HP-G:GP  publish a guest TCP port on the host (repeatable; needs --wifi)");
     eprintln!("  --script F            host actions at emulated times (button presses, touches, serial input, stop)");
     eprintln!("  --tft-png F, --wav F  save the display / the audio at the end of the run");
+    eprintln!("  --mic-wav [PORT:]F    play a 16-bit PCM WAV once into I2S RX (default controller 0), resampled");
     eprintln!("  --web PORT            serve the board UI at http://127.0.0.1:PORT/ in real time");
     eprintln!("  --elf F               symbols for logs, traces and profiles (repeatable)");
     eprintln!("  --trace-fn PREFIX, --break PC, --watch ADDR, --peek ADDR,N, --profile, --vcd F, --debug AREAS, --no-jit");
@@ -122,6 +123,7 @@ pub struct Opts {
     pub max_insns: u64, pub max_seconds: Option<f64>, pub script: Option<String>, pub serial: Option<String>,
     pub console: Option<String>, pub console_prefix: bool, pub realtime: bool, pub web_port: Option<u16>, pub web_dir: Option<String>, pub no_reboot: bool,
     pub i2s_tone: Vec<String>,
+    pub mic_wav: Vec<String>,
     pub wav: Option<String>, pub tft_png: Option<String>, pub gram_png: Option<String>, pub dump: bool,
     pub trace: bool, pub trace_from: u64, pub breaks: Vec<u32>, pub watch: Option<u32>, pub peeks: Vec<(u32, usize)>, pub pwm_pins: Vec<u8>, pub adc_pins: Vec<u8>, pub adc_raw: Vec<(u8, u16)>, pub disasms: Vec<(u32, usize)>,
     pub profile: bool, pub profile_blocks: bool, pub coverage: Option<Option<String>>, pub irq_latency: bool, pub vcd: Option<String>,
@@ -197,6 +199,7 @@ pub fn parse(args: &[String], default_chip: &str) -> Opts {
             "--pcap" => o.pcap = Some(next()),
             "--no-reboot" => o.no_reboot = true,
             "--i2s-tone" => o.i2s_tone.push(next()),
+            "--mic-wav" => o.mic_wav.push(next()),
             "--wav" => o.wav = Some(next()),
             "--tft-png" => o.tft_png = Some(next()),
             "--gram-png" => o.gram_png = Some(next()),
@@ -956,6 +959,14 @@ fn prepare<S: Soc>(m: &mut Machine<S>, o: &Opts) -> String {
             m.bus.i2s_input(port).ok_or_else(|| "controller absent".to_string())?.tone(hz, amplitude).map_err(String::from)
         });
         if let Err(e) = result { eprintln!("--i2s-tone: {e}"); std::process::exit(2); }
+    }
+    for spec in &o.mic_wav {
+        // A leading "0:" or "1:" names the controller; anything else is the path.
+        let (port, path) = match spec.split_once(':') { Some((p @ ("0" | "1"), f)) => (p.parse().unwrap(), f), _ => (0usize, spec.as_str()) };
+        let result = std::fs::read(path).map_err(|e| e.to_string())
+            .and_then(|bytes| esp_periph::i2s::parse_wav(&bytes))
+            .and_then(|(rate, frames)| m.bus.i2s_input(port).ok_or_else(|| "controller absent".to_string())?.play(frames, rate).map_err(String::from));
+        if let Err(e) = result { eprintln!("--mic-wav {spec}: {e}"); std::process::exit(2); }
     }
 
     if let Some(sec) = o.max_seconds { m.max_cycles = (sec * S::CPU_HZ as f64) as u64; }

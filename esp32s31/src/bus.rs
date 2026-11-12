@@ -59,6 +59,9 @@ pub const I2S: [u32; 2] = [0x2038_7000, 0x2038_8000];
 /// HP_SYS_CLKRST I2Sn_TX_CTRL0 (clock enable, source, integer divider) and I2Sn_TX_DIV_CTRL0
 /// (fractional divider) of I2S0 and I2S1 (IDF master hp_sys_clkrst_reg.h 0xf0/0xf4, 0x104/0x108).
 const I2S_TX_CLOCK: [(u32, u32); 2] = [(0x2058_70f0, 0x2058_70f4), (0x2058_7104, 0x2058_7108)];
+/// HP_SYS_CLKRST I2Sn_RX_CTRL0 / I2Sn_RX_DIV_CTRL0 (IDF master hp_sys_clkrst_reg.h 0xe8/0xec,
+/// 0xfc/0x100; the TX words' field layout).
+const I2S_RX_CLOCK: [(u32, u32); 2] = [(0x2058_70e8, 0x2058_70ec), (0x2058_70fc, 0x2058_7100)];
 
 struct UsbDma<'a> { sram: &'a mut [u8], lp: &'a mut [u8] }
 impl UsbDma<'_> {
@@ -85,6 +88,23 @@ impl esp_periph::sdmmc::SdmmcMemory for Dma2dMem<'_> {
         if Cache::is_memory(addr) { return self.cache.dma_access(addr, Some(data), &mut []); }
         esp_periph::sdmmc::SdmmcMemory::write(&mut self.mem, addr, data)
     }
+}
+
+/// The DMA memory view as a `Bus`, for the shared IN-descriptor scatter (`GdmaInCh::receive`).
+struct DmaBus<'a>(Dma2dMem<'a>);
+impl DmaBus<'_> {
+    fn get<const N: usize>(&mut self, a: u32) -> Result<[u8; N], Fault> { let mut b = [0u8; N]; esp_periph::sdmmc::SdmmcMemory::read(&mut self.0, a, &mut b).map(|_| b) }
+    fn put(&mut self, a: u32, b: &[u8]) -> Result<(), Fault> { esp_periph::sdmmc::SdmmcMemory::write(&mut self.0, a, b) }
+}
+impl Bus for DmaBus<'_> {
+    fn read8(&mut self, a: u32) -> Result<u8, Fault> { self.get::<1>(a).map(|b| b[0]) }
+    fn read16(&mut self, a: u32) -> Result<u16, Fault> { self.get(a).map(u16::from_le_bytes) }
+    fn read32(&mut self, a: u32) -> Result<u32, Fault> { self.get(a).map(u32::from_le_bytes) }
+    fn write8(&mut self, a: u32, v: u8) -> Result<(), Fault> { self.put(a, &[v]) }
+    fn write16(&mut self, a: u32, v: u16) -> Result<(), Fault> { self.put(a, &v.to_le_bytes()) }
+    fn write32(&mut self, a: u32, v: u32) -> Result<(), Fault> { self.put(a, &v.to_le_bytes()) }
+    fn fetch(&mut self, _pc: u32) -> Result<[u8; 4], Fault> { Err(Fault::Unmapped) }
+    fn note_code_page(&mut self, _vidx: u32) {}
 }
 
 struct AxiOut<'a> { mem: Dma2dMem<'a>, channel: &'a mut esp_periph::gdma::GdmaOutCh }
@@ -299,6 +319,26 @@ impl S31Bus {
         i.frames_out += samples.len() as u64; i.pcm.extend_from_slice(&samples);
         true
     }
+    /// I2Sn's receive DMA through the AHB-GDMA: the frames due since the last call (the RX clock,
+    /// or the TX clock for a full-duplex slave) from the controller's input (`rx_input`: silence,
+    /// `--i2s-tone`, `--mic-wav`) into the IN channel bound to one of its triggers, through the
+    /// shared scatter: IN_DONE per filled descriptor, IN_SUC_EOF every RX_EOF_NUM bytes. Input
+    /// pauses while no IN channel runs. True when a channel interrupt may have changed.
+    pub(crate) fn i2s_rx(&mut self, n: usize, cycles: u64) -> bool {
+        let first = 1 + 4 * n as u32;
+        let Some(ch) = (first..first + 4).find_map(|t| self.ahb_dma.gdma.in_channel_for(t)) else { return false };
+        let bytes = self.i2s[n].receive_input(cycles, false);
+        if bytes.is_empty() { self.i2s[n].recycle_rx_buffer(bytes); return false; }
+        let eof = self.i2s[n].read(0x64) & 0xfff;
+        let mut channel = self.ahb_dma.gdma.inp[ch];
+        let mut changed = false;
+        let mut mem = DmaBus(Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, cache: &mut self.cache });
+        let _ = channel.receive(&mut mem, &bytes, Some(eof), false, Self::peripheral, &mut changed);
+        self.ahb_dma.gdma.inp[ch] = channel;
+        self.i2s[n].bytes_in += bytes.len() as u64;
+        self.i2s[n].recycle_rx_buffer(bytes);
+        changed
+    }
     /// Run the 2D-DMA transfers (M2M, PPA) whose channels are all started; count refusals.
     fn run_dma2d(&mut self) {
         let mut mem = Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, cache: &mut self.cache };
@@ -424,6 +464,11 @@ impl S31Bus {
             let (c, d) = I2S_TX_CLOCK[n];
             let (ctrl0, div) = (self.read(c, 4).unwrap_or(0), self.read(d, 4).unwrap_or(0));
             self.i2s[n].set_v2_clock(ctrl0, div);
+        }
+        if let Some(n) = I2S_RX_CLOCK.iter().position(|&(c, d)| address & !3 == c || address & !3 == d) {
+            let (c, d) = I2S_RX_CLOCK[n];
+            let (ctrl0, div) = (self.read(c, 4).unwrap_or(0), self.read(d, 4).unwrap_or(0));
+            self.i2s[n].set_v2_rx_clock(ctrl0, div);
         }
         r
     }
@@ -1020,6 +1065,43 @@ mod tests {
         let irq = b.peripheral_irqs();
         assert!(irq.ahb_dma & (1 << 1) != 0);
         assert!(irq.sources().contains(&(crate::interrupts::AHB_DMA_IN_SOURCE + 6, true)));
+    }
+    /// I2S0 RX into the AHB-GDMA (IN ch2 on trigger 1) as the Mosaico's duplex capture runs it:
+    /// the RX a full-duplex slave on the TX clock, 16-bit mono at 16 kHz. Host input fills two
+    /// 4-byte descriptors in SRAM (IN_DONE each, owner and length written back) and RX_EOF_NUM
+    /// = 8 bytes ends the second with IN_SUC_EOF on IN source 36 + 2; with no IN channel the
+    /// input waits.
+    #[test]
+    fn i2s0_receives_through_the_ahb_gdma() {
+        let mut b = S31Bus::new();
+        let (d0, d1, buf) = (SRAM_BASE + 0x1000, SRAM_BASE + 0x1010, SRAM_BASE + 0x2000);
+        for (d, next, off) in [(d0, d1, 0), (d1, 0, 4)] {
+            b.write32(d, (1 << 31) | 4).unwrap();                           // owner DMA, size 4
+            b.write32(d + 4, buf + off).unwrap(); b.write32(d + 8, next).unwrap();
+        }
+        b.write32(I2S_TX_CLOCK[0].0, 1 | (9 << 3)).unwrap();
+        b.write32(I2S_TX_CLOCK[0].1, 3 | (4 << 9) | (15 << 18) | (1 << 27)).unwrap();
+        b.write32(I2S[0] + 0x2c, (15 << 14) | (15 << 19)).unwrap();
+        b.write32(I2S[0] + 0x24, (1 << 30) | (7 << 21)).unwrap();           // TX: SIG_LOOPBACK, BCK /8 (not started)
+        b.write32(I2S[0] + 0x28, (15 << 14) | (15 << 19)).unwrap();         // RX_CONF1: 16-bit, 32-bit frames
+        b.write32(I2S[0] + 0x50, (1 << 16) | 1).unwrap();                   // RX_TDM_CTRL: left slot
+        b.write32(I2S[0] + 0x64, 8).unwrap();                               // RX_EOF_NUM: 8 bytes
+        b.write32(I2S[0] + 0x20, (7 << 21) | (1 << 6) | (1 << 3) | (1 << 2)).unwrap();   // slave, MONO, RX_START
+        b.i2s[0].rx_input().push(&[[0x1111, 0], [0x2222, 0], [0x3333, 0], [0x4444, 0], [0x5555, 0]]);
+        let frame = crate::periph::CPU_HZ / 16000;
+        assert!(!b.i2s_rx(0, 4 * frame), "no IN channel: nothing taken");
+        let in2 = AHB_DMA + 0x100 + 0x100 * 2;
+        b.write32(AHB_DMA + 0x28, 0xf).unwrap();                            // IN_INT_ENA_CH2
+        b.write32(in2 + 0x38, 1).unwrap();                                  // IN_PERI_SEL_CH2: I2S0CH0
+        b.write32(in2 + 0x14, d0).unwrap(); b.write32(in2 + 0x10, 1 << 2).unwrap();   // IN_LINK_ADDR, START
+        assert!(b.i2s_rx(0, 4 * frame));
+        assert_eq!([b.read32(buf).unwrap(), b.read32(buf + 4).unwrap()], [0x2222_1111, 0x4444_3333]);
+        assert_eq!(b.read32(d0).unwrap() >> 12 & 0xfff, 4, "length written back");
+        assert_eq!(b.read32(d1).unwrap() >> 30, 1, "SUC_EOF, owner back to the CPU");
+        assert_eq!(b.read32(AHB_DMA + 0x20).unwrap() & 3, 3, "IN_DONE, IN_SUC_EOF");
+        assert_eq!(b.i2s[0].bytes_in, 8);
+        let irq = b.peripheral_irqs();
+        assert!(irq.sources().contains(&(crate::interrupts::AHB_DMA_IN_SOURCE + 2, true)));
     }
     #[test]
     fn crypto_roots_preserve_real_sha_data_and_obey_source_gates() {

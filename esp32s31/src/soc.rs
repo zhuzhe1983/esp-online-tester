@@ -428,6 +428,7 @@ impl SocBus {
 }
 
 impl esp_soc::SocBus for SocBus {
+    fn i2s_input(&mut self, port: usize) -> Option<&mut esp_periph::i2s::PcmInput> { self.inner.i2s.get_mut(port).map(|i| i.rx_input()) }
     fn cycles(&self) -> u64 {
         self.cycles
     }
@@ -730,7 +731,8 @@ impl esp_soc::SocBus for SocBus {
             list.join(" "),
             self.inner.refused.len(),
             self.inner.refused.iter().take(48).map(|(a, (n, v))| format!("{a:#010x}x{n}(last write {v:#x})")).collect::<Vec<_>>().join(" ")
-        ) + &format!("\nesp32s31: GP-SPI2 {} transfers", self.inner.spi2.transfers) + if board.is_empty() { "" } else { "\n" } + &board
+        ) + &format!("\nesp32s31: GP-SPI2 {} transfers", self.inner.spi2.transfers) + &self.inner.i2s.iter().enumerate().filter(|(_, i)| i.frames_out != 0 || i.bytes_in != 0 || i.rx_running())
+            .map(|(n, i)| format!("\nesp32s31: I2S{n} TX {} frames at {} Hz, RX {} bytes to DMA (RX rate {:?}, RX_CONF {:#x}, RX_CONF1 {:#x})", i.frames_out, i.sample_rate, i.bytes_in, i.rx_rate(), i.read(0x20), i.read(0x28))).collect::<String>() + if board.is_empty() { "" } else { "\n" } + &board
     }
 }
 
@@ -853,7 +855,13 @@ impl Bus for SocBus {
             self.irq_dirty = true;
         }
         if self.inner.spi2.dma_tx_pending.is_some() || self.inner.spi3.dma_tx_pending.is_some() { self.deliver_spi(); }
-        for n in 0..2 { if self.inner.i2s[n].poll_active() && self.inner.i2s_tx(n, u64::from(cycles)) { self.irq_dirty = true; } }
+        for n in 0..2 {
+            if self.inner.i2s[n].poll_active() {
+                let mut changed = self.inner.i2s_tx(n, u64::from(cycles));
+                if self.inner.i2s[n].rx_running() { changed |= self.inner.i2s_rx(n, u64::from(cycles)); }
+                if changed { self.irq_dirty = true; }
+            }
+        }
         // Emulated time for the board (TE), in nanoseconds.
         let t = u128::from(cycles) * 1_000_000_000 + u128::from(self.board_ns_frac);
         self.board_ns += (t / u128::from(hz)) as u64; self.board_ns_frac = (t % u128::from(hz)) as u64;
