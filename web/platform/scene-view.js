@@ -121,7 +121,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     const normalized = normalizeOrientation(value); clearOrientationTimers(); orbitGroup.quaternion.fromArray(normalized);
     if (notify) publishOrientation(false); if (accessoryCount || inspection?.expanded) frameCamera(); draw(); return getOrientation();
   }
-  let parts = {}, connectors = {}, shellMeshes = [], customizedAppearance = false, appearanceDefaults = DEFAULT_STOPWATCH_APPEARANCE, appearance = normalizeShellAppearance(null), accessoryDefinitions = [];
+  let parts = {}, connectors = {}, shellMeshes = [], customizedAppearance = false, appearanceReady = false, appearanceValue = null, appearanceDefaults = DEFAULT_STOPWATCH_APPEARANCE, appearance = normalizeShellAppearance(null), accessoryDefinitions = [];
   let rgbLedMeshes = [], rgbValues = [], accessoryOutputs = [], servoJoints = [], servoValues = [], motorRotors = [], motorValues = [], motorOutput = null, motorsRunning = false;
   function updateServos(values) {if(previewOnly)return;servoValues = values || []; applyServoValues(servoJoints, servoValues); clearHover(); draw(); }
   function updateMotors(values,output) {if(previewOnly)return;motorValues=values||[];motorOutput=output||null;applyMotorValues(motorRotors,motorValues,motorOutput,{running:motorsRunning});clearHover();draw();}
@@ -199,7 +199,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       object.geometry?.dispose();
       if (object.material) for (const material of [].concat(object.material)) material.dispose();
     });
-    group.clear(); buttons = []; screen = null; parts = {}; connectors = {}; shellMeshes = []; accessoryGroup = null; accessoryCount = 0;
+    group.clear(); buttons = []; screen = null; parts = {}; connectors = {}; shellMeshes = []; appearanceReady = false; accessoryGroup = null; accessoryCount = 0;
     rgbLedMeshes = []; rgbValues = []; servoJoints = []; servoValues = []; motorRotors = []; motorValues = []; motorOutput = null;
   }
   function clearDisplay() {
@@ -213,7 +213,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     setOrientationEnabled(false); releaseInputs();previewOnly=options.previewOnly===true;mount.dataset.previewOnly=String(previewOnly);product = value; clearGroup(); clearDisplay();
     accessoryDefinitions = [];
     appearanceDefaults = product.id === 'm5stack-papermono' ? {shell: {color: '#888d8e', opacity: 1, finish: 'plastic'}} : DEFAULT_STOPWATCH_APPEARANCE;
-    appearance = normalizeShellAppearance(null, appearanceDefaults); customizedAppearance = false;
+    appearance = normalizeShellAppearance(null, appearanceDefaults); appearanceValue = null; customizedAppearance = false;
     mount.dataset.modelStatus = 'illustrative';
     const generic = !product.display;
     display.classList.toggle('round', product.display?.shape === 'round');
@@ -240,7 +240,10 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
         group.traverse(object=>{if(object.isMesh&&object.geometry){object.geometry.computeBoundingBox();localBounds.union(object.geometry.boundingBox.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(inverse,object.matrixWorld)));}});
         flightGround.position.z=localBounds.isEmpty()?0:localBounds.min.z;
         for(const mesh of shellMeshes)mesh.userData.originalAppearance ||= {shell:{color:`#${mesh.material.color.getHexString()}`,opacity:1,finish:'plastic'}};
-        if(product.model && product.id !== 'm5stack-papermono') { appearanceDefaults = shellMeshes[0]?.userData.originalAppearance || DEFAULT_STOPWATCH_APPEARANCE; if(!customizedAppearance)appearance=normalizeShellAppearance(null,appearanceDefaults); }
+        if(product.model && product.id !== 'm5stack-papermono') appearanceDefaults = shellMeshes[0]?.userData.originalAppearance || DEFAULT_STOPWATCH_APPEARANCE;
+        // Parts can be exposed while the loader still awaits textures. Capture their
+        // untouched colors first, then resolve even partial pending preferences.
+        appearance = normalizeShellAppearance(appearanceValue, appearanceDefaults); appearanceReady = true;
         mount.dataset.modelStatus = 'ready'; onModelReady(); applyAppearance(); setAccessories(accessoryDefinitions); frameCamera(); draw();
       }).catch(error => {
         if (disposed || productGeneration !== token) return;
@@ -298,8 +301,8 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     }
     attachCables();
   }
-  function applyAppearance() { for(const mesh of shellMeshes.length?shellMeshes:[parts.shell].filter(Boolean))applyShellAppearance(mesh, customizedAppearance?appearance:mesh.userData.originalAppearance || appearance, {occluder: parts.occluder}); draw(); }
-  function setAppearance(value) { customizedAppearance = value != null; appearance = normalizeShellAppearance(value, appearanceDefaults); applyAppearance(); return getAppearance(); }
+  function applyAppearance() { if(!appearanceReady)return; for(const mesh of shellMeshes)applyShellAppearance(mesh, customizedAppearance?appearance:mesh.userData.originalAppearance || appearance, {occluder: parts.occluder}); draw(); }
+  function setAppearance(value) { const normalized = normalizeShellAppearance(value, appearanceDefaults); appearanceValue = value == null ? null : {shell: {...value.shell}}; customizedAppearance = value != null; appearance = normalized; applyAppearance(); return getAppearance(); }
   function getAppearance() { return {shell: {...appearance.shell}}; }
   function getInspection() { return {available: !!inspection && !flightActive, expanded: inspection?.expanded || false, blockedByAccessories: accessoryCount > 0}; }
   function setInspection(expanded) {
