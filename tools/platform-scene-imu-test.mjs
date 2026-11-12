@@ -79,7 +79,7 @@ test('all host-fed runtime IMUs accept the same documented virtual axes, with no
       assert.equal((await runtime.observe()).imu.source,'agent');
       const result=await runtime.setImu({source:'scene',quaternion:tilted});assert.ok(Math.abs(result.accelG[0]-1)<1e-8);assert.deepEqual(result.gyroDps,[0,0,0]);
     }
-    assert.equal(seen.size,10);
+    assert.equal(seen.size,12);
     await runtime.configure({...createDefaultScene(catalog,'m5stack-k138'),flight:{enabled:true,model:'stampfly-rigid-body-v1'}});
     assert.equal((await runtime.capabilities()).imu.inputOwner,'flight');
     await assert.rejects(runtime.setImu({source:'scene',quaternion:q}),{code:'FLIGHT_OWNS_IMU'});

@@ -37,13 +37,26 @@ test('AtomS3 accepts explicit virtual IMU input without claiming a scene mountin
     close(sample.accelG,[1,0,0]);assert.equal(sample.source,'agent');assert.equal(sample.delivery,'configured');
     close((await runtime.setImu({source:'scene',quaternion:[0,0,0,1]})).accelG,[0,1,0]);
     close((await runtime.observe()).imu.accelG,[0,1,0]);
-    await runtime.configure(createDefaultScene(catalog,'m5stack-papermono'));
+    await runtime.configure(createDefaultScene(catalog,'metalio-ink4'));
     assert.equal((await runtime.observe()).imu,null);
     await assert.rejects(runtime.setImu({quaternion:[0,0,0,1]}),{code:'IMU_UNSUPPORTED'});
     await runtime.configure(createDefaultScene(catalog,'m5stack-stopwatch'));
     assert.equal((await runtime.capabilities()).imu.sceneOrientation,true);
     close((await runtime.setImu({source:'scene',quaternion:[0,0,0,1]})).accelG,[0,1,0]);
   } finally {await runtime.dispose();}
+});
+
+for(const product of ['m5stack-papermono','m5stack-c153-lite'])test(`${product} accepts virtual orientation and keeps gyro stopped before execution`,async()=>{
+  const catalog={};for(const name of ['products','accessories','firmwares'])catalog[name]=JSON.parse(await readFile(new URL(`../web/platform/catalog/${name}.json`,import.meta.url),'utf8')).items;
+  const runtime=createPlatformRuntime({catalog});try {
+    await runtime.configure(createDefaultScene(catalog,product));
+    const cap=(await runtime.capabilities()).imu;
+    assert.equal(cap.available,true);assert.equal(cap.model,'bmi270-register-subset');assert.equal(cap.sceneLinkDefault,false);assert.equal(cap.physicalMountingVerified,false);
+    assert.equal(cap.sampleTiming,'host-input');assert.equal(cap.inputOwner,'host');
+    const sample=await runtime.setImu({quaternion:[0,0,Math.SQRT1_2,Math.SQRT1_2],angularVelocityDps:[125,-250,0]});
+    close(sample.accelG,[1,0,0]);close(sample.gyroDps,[0,0,0]);assert.equal(sample.delivery,'configured');
+    close((await runtime.setImu({source:'scene',quaternion:[0,0,0,1],angularVelocityDps:[0,0,0]})).accelG,[0,1,0]);
+  }finally{await runtime.dispose();}
 });
 
 test('AtomS3R exposes its own BMI270 virtual input without aliasing AtomS3 or calibrating scene axes', async () => {

@@ -1,7 +1,7 @@
 // Virtual sensor axes: +X model right, +Y model top, +Z out of the display.
 // This registration is explicit, not a claim about the unmeasured PCB mounting.
 // Official StopWatch HAL swaps sensor X/Y for its labels; firmware performs that swap.
-export const imuModelForBoard = board => ({stopwatch:'bmi270-register-subset',corematrix:'bmi270-register-subset',atoms3:'mpu6886-register-subset','atom-matrix':'mpu6886-register-subset','atom-matrix-v11':'bmi270-register-subset',atoms3r:'bmi270-register-subset','atoms3r-chatbot':'bmi270-register-subset',papers3:'bmi270-register-subset',stampfly:'bmi270-register-subset','stampfly-v11':'bmi270-register-subset'}[board] || null);
+export const imuModelForBoard = board => ({stopwatch:'bmi270-register-subset',corematrix:'bmi270-register-subset',atoms3:'mpu6886-register-subset','atom-matrix':'mpu6886-register-subset','atom-matrix-v11':'bmi270-register-subset',atoms3r:'bmi270-register-subset','atoms3r-chatbot':'bmi270-register-subset',papers3:'bmi270-register-subset',papermono:'bmi270-register-subset','papermono-lite':'bmi270-register-subset',stampfly:'bmi270-register-subset','stampfly-v11':'bmi270-register-subset'}[board] || null);
 
 // UI choice is deliberately ephemeral, separate from the agent IMU API and
 // shared scene. At most one request runs and one latest sample waits for it.
