@@ -35,6 +35,8 @@ pub fn machine(mac: [u8; 6], flash_size: usize) -> Machine {
 /// firmware still in the 40 MHz ROM/bootloader clock runs faster than on silicon, not with a faster clock: its delays,
 /// timeouts and FreeRTOS ticks keep their length.
 const TIME_HZ: u64 = crate::periph::CPU_HZ;
+/// Modem TSF timer latch request (bits 0-3); the latched value follows at +0xC/+0x10.
+const TSF_LATCH: u32 = 0x2010_d814;
 
 impl Soc for S31 {
     type Core = Cpu;
@@ -324,6 +326,7 @@ impl SocBus {
     /// GPIO stores and a started transfer do any work here.
     fn deliver_board_events(&mut self, address: u32) {
         if address >> 24 != 0x20 { return; }
+        if address & !3 == TSF_LATCH { self.latch_tsf(); }
         if crate::pads::Pads::is_mmio(address) { self.deliver_pin_levels(); self.irq_dirty = true; }
         self.deliver_spi();
     }
@@ -362,6 +365,21 @@ impl SocBus {
         let _ = channel.receive(self, data, Some(data.len() as u32), true, |a| a >> 24 == 0x20, &mut irq_changed);
         self.inner.axi_dma.gdma.inp[ch] = channel;
         self.irq_dirty = true;
+    }
+
+    /// The modem's TSF timers (802.11 timing synchronization, microseconds). The Wi-Fi library
+    /// reads timer n (0-3) by setting bit n of 0x2010D814, reading the latched value from
+    /// 0x2010D820 (low) and 0x2010D824 (high), then clearing the bit (IRAM helper at 0x2f021c2a in
+    /// the Mosaico firmware). With the block as plain storage the latch never moved, so every
+    /// caller waiting for time to pass spun on it (half the host time of a Wi-Fi session). A
+    /// request bit latches emulated time; the four timers share one count (no per-timer offset or
+    /// TSF adjustment is modelled).
+    fn latch_tsf(&mut self) {
+        let req = self.inner.unmodelled.get(&TSF_LATCH).copied().unwrap_or(0);
+        if req & 0xf == 0 { return; }
+        let us = self.now_us();
+        self.inner.unmodelled.insert(TSF_LATCH + 0xc, us as u32);
+        self.inner.unmodelled.insert(TSF_LATCH + 0x10, (us >> 32) as u32);
     }
 
     fn deliver_pin_levels(&mut self) {
