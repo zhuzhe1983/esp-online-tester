@@ -1030,4 +1030,24 @@ mod tests {
         send(&mut bus, 0x32, 0x2c, &[0x12, 0x34]);
         assert_eq!(bus.board.display().unwrap().3, 0, "an unpowered panel lost its RAM");
     }
+
+    /// hal_get_tsf_time: setting bit n of 0x2010D814 latches emulated microseconds into
+    /// 0x2010D820/0x2010D824; with no request bit set the latched value stays put.
+    #[test]
+    fn modem_tsf_request_latches_emulated_microseconds() {
+        use emu_core::Bus;
+        let mut bus = SocBus::new(1 << 20, [0; 6]);
+        bus.cycles = 5 * TIME_HZ + 7 * (TIME_HZ / 1_000_000);
+        bus.write32(TSF_LATCH, 1 << 2).unwrap();
+        assert_eq!(bus.read32(TSF_LATCH + 0xc).unwrap(), 5_000_007);
+        assert_eq!(bus.read32(TSF_LATCH + 0x10).unwrap(), 0);
+        bus.write32(TSF_LATCH, 0).unwrap();
+        bus.cycles += 10 * TIME_HZ;
+        bus.write32(TSF_LATCH, 1 << 4).unwrap();
+        assert_eq!(bus.read32(TSF_LATCH + 0xc).unwrap(), 5_000_007, "no request, no latch");
+        bus.cycles = 5000 * TIME_HZ;
+        bus.write32(TSF_LATCH, 1).unwrap();
+        assert_eq!(bus.read32(TSF_LATCH + 0xc).unwrap(), 5_000_000_000u64 as u32);
+        assert_eq!(bus.read32(TSF_LATCH + 0x10).unwrap(), 1, "the high word carries");
+    }
 }
