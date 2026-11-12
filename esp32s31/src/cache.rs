@@ -145,6 +145,32 @@ impl Cache {
     pub(crate) fn take_flash(&mut self) -> Vec<u8> { std::mem::take(&mut self.flash) }
     pub(crate) fn flash_bytes_mut(&mut self) -> &mut [u8] { &mut self.flash }
     pub(crate) fn psram_bytes_mut(&mut self) -> &mut [u8] { &mut self.psram }
+    /// A DMA master's view of the external-memory window: the AXI request goes through the same
+    /// MMU entries as the cache (IDF dma2d/PPA drivers pass cache virtual addresses as buffers),
+    /// but not through the L1 cache, so the cache clock/freeze state does not apply. This model
+    /// keeps no cache lines, so the CPU's writes are already in the backing store. Flash is read-only.
+    pub(crate) fn dma_access(&mut self, address: u32, write: Option<&[u8]>, read: &mut [u8]) -> Result<(), Fault> {
+        let n = write.map_or(read.len(), |d| d.len());
+        let mut done = 0;
+        while done < n {
+            let a = address.checked_add(done as u32).ok_or(Fault::Unmapped)?;
+            let psram = (PSRAM_VADDR..0x5400_0000).contains(&a);
+            if !psram && !(FLASH_VADDR..PSRAM_VADDR).contains(&a) { return Err(Fault::Unmapped); }
+            if !psram && write.is_some() { return Err(Fault::Prohibited); }
+            let rel = (a - if psram { PSRAM_VADDR } else { FLASH_VADDR }) as usize;
+            let mmu = if psram { &self.psram_mmu } else { &self.flash_mmu };
+            let page = mmu.page_size(psram);
+            let size = if psram { self.psram.len() } else { self.flash.len() };
+            let phys = mmu.translate(rel, psram, size)?;
+            let chunk = (page - rel % page).min(n - done).min(size - phys);
+            match write {
+                Some(d) => self.psram[phys..phys + chunk].copy_from_slice(&d[done..done + chunk]),
+                None => read[done..done + chunk].copy_from_slice(&(if psram { &self.psram } else { &self.flash })[phys..phys + chunk]),
+            }
+            done += chunk;
+        }
+        Ok(())
+    }
     /// Distinguish an invalid MMU address from absent development backing or an
     /// unsupported encrypted/alternate target. Only the former is AXI_ADDR_ERR.
     pub(crate) fn invalid_psram_mapping(&self, address: u32, bytes: usize) -> bool {
