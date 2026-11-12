@@ -212,7 +212,7 @@ impl BoardInputs {
         if let Some(level) = self.idle_level { for pin in 0..62 { let _ = b.pads.set_unresolved_sample(pin, Some(level)); } }
         for &(pin, level) in &self.inputs { b.pads.set_input(pin, Some(level)).map_err(|e| format!("{e:?}"))?; }
         b.mspi.set_bbpll_input(Some(self.bbpll_hz)).map_err(|e| format!("{e:?}"))?;
-        if self.psram_bytes != 0 { b.cache.set_psram_size(self.psram_bytes)?; }
+        if self.psram_bytes != 0 { b.set_psram_size(self.psram_bytes)?; }
         if !self.efuse.is_empty() {
             // The shadow words start at RD_WR_DIS0 (0x2c): register `off` is word (off - 0x2c) / 4.
             let mut image = crate::efuse::ReadImage::blank_development();
@@ -264,6 +264,7 @@ impl SocBus {
             .and_then(|tail| tail.get_mut(..data.len()))
             .ok_or("flash image too large")?;
         target.copy_from_slice(data);
+        self.inner.invalidate_code();
         // SPI0 cache reads and SPI1 commands see the same NOR array.
         self.inner.cache.set_flash(&self.flash)
     }
@@ -767,6 +768,17 @@ impl Bus for SocBus {
     fn note_code_page(&mut self, vidx: u32) {
         self.inner.note_code_page(vidx);
     }
+    #[inline(always)]
+    fn page_versions(&self) -> &[u32] {
+        self.inner.page_versions()
+    }
+    #[inline(always)]
+    fn code_page(&mut self, pc: u32) -> u32 {
+        self.inner.code_page(pc)
+    }
+    fn fetch_ahead(&mut self, pc: u32) -> Option<[u8; 4]> {
+        self.inner.fetch_ahead(pc)
+    }
     fn read8(&mut self, a: u32) -> Result<u8, Fault> {
         match self.inner.read8(a) {
             Ok(v) => Ok(v),
@@ -893,6 +905,7 @@ impl Bus for SocBus {
         // Machine time drives the RTC domains (timer + calibration) that were formerly opt-in:
         // TIMG0 RTC_CALI counter both count from the modeled source rates.
         self.inner.rtc_timer.advance_cpu_cycles(cycles as u64, hz, self.inner.clocks.rtc_slow_hz());
+        self.inner.check_psram_fetch();
         let source = self.inner.clocks.calibration_hz(self.inner.rtc_calibration.source());
         let group = self.inner.periph.timg[0].wdt.clock_read();
         self.inner.rtc_calibration.advance_cpu(cycles as u64, hz, source, group);

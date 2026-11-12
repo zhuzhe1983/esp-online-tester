@@ -100,6 +100,16 @@ impl Apm {
     }
     /// One HP CPU in reset TEE mode only. Restrictive configurations have an
     /// explicit host route, so permission failures cannot invent master mappings.
+    /// Whether `check` would let a one-byte access through, without latching a denial: for
+    /// reading instructions ahead of execution (`Bus::fetch_ahead`).
+    pub fn allows(&self, address: u32, access: u32) -> bool {
+        if !self.routes_present { return true; }
+        if !matches!(access, 0..=2) { return false; }
+        self.domains.iter().all(|d| match &d.route {
+            Some(route) if !(address < route.start || address > route.end || d.func & (1 << route.path) == 0) => d.regions[0].attr & (1 << (12 + access)) != 0,
+            _ => true,
+        })
+    }
     pub fn check(&mut self, address: u32, bytes: usize, access: u32) -> Result<(), Fault> {
         if !self.routes_present { return Ok(()); }
         if !matches!(access, 0..=2) { return Err(Fault::Prohibited); }

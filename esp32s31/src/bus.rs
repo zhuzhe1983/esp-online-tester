@@ -63,7 +63,7 @@ const I2S_TX_CLOCK: [(u32, u32); 2] = [(0x2058_70f0, 0x2058_70f4), (0x2058_7104,
 /// 0xfc/0x100; the TX words' field layout).
 const I2S_RX_CLOCK: [(u32, u32); 2] = [(0x2058_70e8, 0x2058_70ec), (0x2058_70fc, 0x2058_7100)];
 
-struct UsbDma<'a> { sram: &'a mut [u8], lp: &'a mut [u8] }
+struct UsbDma<'a> { sram: &'a mut [u8], lp: &'a mut [u8], ver: &'a mut [u32] }
 impl UsbDma<'_> {
     fn span(&mut self, addr: u32, n: usize) -> Result<&mut [u8], Fault> {
         for (base, data) in [(SRAM_BASE, &mut *self.sram), (LP_BASE, &mut *self.lp)] {
@@ -74,7 +74,7 @@ impl UsbDma<'_> {
 }
 impl esp_periph::sdmmc::SdmmcMemory for UsbDma<'_> {
     fn read(&mut self, addr: u32, buf: &mut [u8]) -> Result<(), Fault> { let n = buf.len(); buf.copy_from_slice(self.span(addr, n)?); Ok(()) }
-    fn write(&mut self, addr: u32, data: &[u8]) -> Result<(), Fault> { self.span(addr, data.len())?.copy_from_slice(data); Ok(()) }
+    fn write(&mut self, addr: u32, data: &[u8]) -> Result<(), Fault> { self.span(addr, data.len())?.copy_from_slice(data); bump_code(self.ver, addr, data.len()); Ok(()) }
 }
 
 /// 2D-DMA's AXI view: internal SRAM and LP RAM directly, flash and PSRAM through the MMU.
@@ -85,7 +85,11 @@ impl esp_periph::sdmmc::SdmmcMemory for Dma2dMem<'_> {
         esp_periph::sdmmc::SdmmcMemory::read(&mut self.mem, addr, buf)
     }
     fn write(&mut self, addr: u32, data: &[u8]) -> Result<(), Fault> {
-        if Cache::is_memory(addr) { return self.cache.dma_access(addr, Some(data), &mut []); }
+        if Cache::is_memory(addr) {
+            self.cache.dma_access(addr, Some(data), &mut [])?;
+            bump_psram_range(self.mem.ver, self.cache, addr, data.len());
+            return Ok(());
+        }
         esp_periph::sdmmc::SdmmcMemory::write(&mut self.mem, addr, data)
     }
 }
@@ -127,6 +131,10 @@ impl esp_periph::gdma::OutMemory for AxiOut<'_> {
 
 pub struct S31Bus {
     sram: Vec<u8>, lp: Vec<u8>, rom: Vec<u8>, lp_store: [u32; 16],
+    /// `Bus::page_versions`: see `CODE_PAGES`
+    code_ver: Vec<u32>,
+    /// whether the PSRAM window can be fetched from (`psram_fetch_ok`), as last checked
+    psram_fetch: bool,
     pub periph: Peripherals,
     pub interrupts: Interrupts,
     pub trng: Trng,
@@ -179,6 +187,50 @@ pub struct S31Bus {
     /// XTAL-domain remainder carried between ticks for the I2C controllers.
     pub i2c_frac: u64,
 }
+/// Decoded-code versions (`Bus::page_versions`): one counter per 256-byte page of HP SRAM and LP
+/// RAM, one for the mask ROM, one for everything the flash window of the cache shows, then one
+/// per 256-byte physical page of PSRAM (a page seen through any virtual alias has one version).
+const CODE_PAGE_SHIFT: u32 = emu_core::bus::VPAGE_SHIFT;
+const SRAM_PAGES: usize = SRAM_SIZE >> CODE_PAGE_SHIFT;
+const LP_PAGES: usize = LP_SIZE >> CODE_PAGE_SHIFT;
+const ROM_CODE: usize = SRAM_PAGES + LP_PAGES;
+const FLASH_CODE: usize = ROM_CODE + 1;
+const PSRAM_CODE: usize = FLASH_CODE + 1;
+const CODE_PAGES: usize = PSRAM_CODE;
+/// Every bus starts its versions where no earlier bus's (before a chip reset) can still be.
+static CODE_EPOCH: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+/// A write of `n` bytes at `addr` may have changed code: move the versions of the SRAM or LP RAM
+/// pages it touches, and of the page before when it reaches into the first three bytes (a
+/// four-byte instruction there starts on that page).
+#[inline]
+fn bump_code(ver: &mut [u32], addr: u32, n: usize) {
+    let (index, size) = if (SRAM_BASE..SRAM_BASE + SRAM_SIZE as u32).contains(&addr) { (addr - SRAM_BASE, 0) }
+        else if (LP_BASE..LP_BASE + LP_SIZE as u32).contains(&addr) { (addr - LP_BASE, SRAM_PAGES) }
+        else { return; };
+    let pages = if size == 0 { SRAM_PAGES } else { LP_PAGES };
+    let first = (index.saturating_sub(emu_core::bus::PREV_PAGE_BYTES) >> CODE_PAGE_SHIFT) as usize;
+    let last = ((index as usize + n.max(1) - 1) >> CODE_PAGE_SHIFT).min(pages - 1);
+    for v in &mut ver[size + first..=size + last] { *v = v.wrapping_add(1); }
+}
+/// A write at physical PSRAM offset `phys`: its page, and the page before when it reaches into
+/// the first three bytes.
+#[inline]
+fn bump_psram(ver: &mut [u32], phys: usize) {
+    for p in [phys.saturating_sub(emu_core::bus::PREV_PAGE_BYTES as usize) >> CODE_PAGE_SHIFT, phys >> CODE_PAGE_SHIFT] {
+        if let Some(v) = ver.get_mut(PSRAM_CODE + p) { *v = v.wrapping_add(1); }
+    }
+}
+/// A write of `n` bytes at PSRAM-window address `addr`, page by page through the MMU.
+fn bump_psram_range(ver: &mut [u32], cache: &Cache, addr: u32, n: usize) {
+    let page = 1usize << CODE_PAGE_SHIFT;
+    let mut a = addr as usize;
+    let end = addr as usize + n.max(1);
+    while a < end {
+        if let Some(phys) = cache.psram_phys(a as u32) { bump_psram(ver, phys); }
+        a = (a & !(page - 1)) + page;
+    }
+    if let Some(phys) = cache.psram_phys((end - 1) as u32) { bump_psram(ver, phys); }
+}
 fn offset(address: u32, base: u32, bytes: usize, size: usize) -> Option<usize> {
     let off = address.checked_sub(base)? as usize;
     off.checked_add(bytes).filter(|&end| end <= size).map(|_| off)
@@ -199,7 +251,8 @@ impl S31Bus {
         // S31 v6.1 uart_reg.h: RX threshold/count 8 bits, RXFIFO_RST bit 22 at 0x20;
         // FIFO=0, STATUS=0x1c, REG_UPDATE=0x98. Same functional layout as C6, checked
         // against S31 headers. This reuses FIFO behavior, not C6's address map/clock tree.
-        Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16],
+        let epoch = CODE_EPOCH.fetch_add(1 << 20, std::sync::atomic::Ordering::Relaxed);
+        Self { sram: vec![0; SRAM_SIZE], lp: vec![0; LP_SIZE], rom: vec![0; ROM_SIZE], lp_store: [0; 16], code_ver: vec![epoch; CODE_PAGES], psram_fetch: false,
             periph: Peripherals::new(), interrupts: Interrupts::default(), trng: Trng::default(), rtc_wdt: RtcWdt::default(), cache: Cache::default(), pads: Pads::default(), clocks: Clocks::default(), startup_clocks: StartupClocks::default(), bus_monitor: BusMonitor::default(), mspi: Mspi::default(), mspi_pads: MspiPads::default(), psram_controller: PsramController::default(), sha: ShaEngine::default(), key_manager: crate::key_manager::KeyManager::default(), analog: Analog::default(), modem_bb: Default::default(), wifi_mac: Default::default(), power: Power::default(), permissions: Permissions::default(), apm: Apm::default(), reset: ResetControl::default(), cores: CoreControl::default(), hart: 0, reservations: [None; 2], rtc_timer: RtcTimer::default(), rtc_calibration: crate::rtc_calibration::Calibration::default(), pc: 0, first_fault: None, unmodelled: Default::default(), refused: Default::default(),
             // Same HS UTMI DWC2 instance as the P4 (esp_hal_usb/esp32s31/usb_dwc_periph.c); its
             // GHWCFG words are assumed equal to the P4's until read from an S31.
@@ -223,8 +276,31 @@ impl S31Bus {
     pub fn check_load(&self, address: u32, bytes: usize) -> Result<(), String> {
         self.memory(address, bytes).map(|_| ()).ok_or_else(|| format!("S31 ELF segment outside SRAM/ROM: {address:#010x}, {bytes} bytes"))
     }
+    /// Decoded code may no longer match anything: after loading or changing memory or the
+    /// configuration an instruction fetch depends on from outside the guest's own accesses.
+    pub fn invalidate_code(&mut self) { for v in &mut self.code_ver { *v = v.wrapping_add(1); } }
+    fn invalidate_psram_code(&mut self) { for v in &mut self.code_ver[PSRAM_CODE..] { *v = v.wrapping_add(1); } }
+    /// In-package PSRAM of `bytes` (0 = none), with a code version per page.
+    pub fn set_psram_size(&mut self, bytes: usize) -> Result<(), String> {
+        self.cache.set_psram_size(bytes)?;
+        let epoch = self.code_ver[0];
+        self.code_ver.resize(PSRAM_CODE + bytes.div_ceil(1 << CODE_PAGE_SHIFT), epoch);
+        self.invalidate_code();
+        Ok(())
+    }
+    /// What `fetch` requires of the PSRAM side before it reads the window through the cache.
+    fn psram_fetch_ok(&self) -> bool {
+        self.clocks.psram_on() && self.power.policy.psram_enabled() && self.mspi_pads.check_transfer(self.psram_controller.mode().is_some()).is_ok() && self.psram_controller.memory_ready(false).is_ok()
+    }
+    /// Move every PSRAM code version when `psram_fetch_ok` changes. After every device write,
+    /// and from `SocBus::tick`, because the PLL behind the PSRAM clock settles with time.
+    pub fn check_psram_fetch(&mut self) {
+        let ok = self.psram_fetch_ok();
+        if ok != self.psram_fetch { self.psram_fetch = ok; self.invalidate_psram_code(); }
+    }
     pub fn load(&mut self, address: u32, data: &[u8], memsz: usize) -> Result<(), String> {
         if data.len() > memsz { return Err("S31 ELF data exceeds segment size".into()); }
+        self.invalidate_code();
         let dest = self.memory_mut(address, memsz, true).ok_or("S31 ELF segment outside SRAM/ROM")?;
         dest.fill(0); dest[..data.len()].copy_from_slice(data); Ok(())
     }
@@ -257,7 +333,7 @@ impl S31Bus {
         let Some(bits) = spi.dma_tx_pending else { return false };
         let Some(ch) = self.axi_dma.gdma.out_channel_for(trigger) else { return false };
         let mut data = Vec::with_capacity((bits as usize).div_ceil(8));
-        let mut memory = AxiOut { mem: Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, cache: &mut self.cache }, channel: &mut self.axi_dma.gdma.out[ch] };
+        let mut memory = AxiOut { mem: Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver }, cache: &mut self.cache }, channel: &mut self.axi_dma.gdma.out[ch] };
         let result = esp_periph::gdma::gather_out(&mut memory, (bits as usize).div_ceil(8), &mut data);
         let c = &mut self.axi_dma.gdma.out[ch];
         c.running = false; c.buf_pos = 0;
@@ -280,7 +356,7 @@ impl S31Bus {
         let Some(ch) = (first..first + 4).find_map(|t| self.ahb_dma.gdma.out_channel_for(t)) else { return false };
         let mut need = frames as usize * bpf;
         let mut stream: Vec<u8> = Vec::with_capacity(need);
-        let mut mem = Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, cache: &mut self.cache };
+        let mut mem = Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver }, cache: &mut self.cache };
         let mut walk = esp_periph::gdma::DescriptorWalk::new(esp_periph::gdma::GDMA_DESCRIPTOR_STEP_BUDGET);
         let gdma = &mut self.ahb_dma.gdma;
         while need != 0 {
@@ -332,7 +408,7 @@ impl S31Bus {
         let eof = self.i2s[n].read(0x64) & 0xfff;
         let mut channel = self.ahb_dma.gdma.inp[ch];
         let mut changed = false;
-        let mut mem = DmaBus(Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, cache: &mut self.cache });
+        let mut mem = DmaBus(Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver }, cache: &mut self.cache });
         let _ = channel.receive(&mut mem, &bytes, Some(eof), false, Self::peripheral, &mut changed);
         self.ahb_dma.gdma.inp[ch] = channel;
         self.i2s[n].bytes_in += bytes.len() as u64;
@@ -341,13 +417,13 @@ impl S31Bus {
     }
     /// Run the 2D-DMA transfers (M2M, PPA) whose channels are all started; count refusals.
     fn run_dma2d(&mut self) {
-        let mut mem = Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, cache: &mut self.cache };
+        let mut mem = Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver }, cache: &mut self.cache };
         for r in self.dma2d.service(&mut self.ppa, &mut mem) {
             self.refused.entry(if r.ppa { PPA } else { DMA2D } + r.off).or_insert((0, 0)).0 += 1;
         }
     }
     /// What the WiFi MAC's DMA sees: internal SRAM and LP RAM, PSRAM and flash through the MMU.
-    fn wifi_mem(&mut self) -> Dma2dMem<'_> { Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp }, cache: &mut self.cache } }
+    fn wifi_mem(&mut self) -> Dma2dMem<'_> { Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver }, cache: &mut self.cache } }
     fn wifi_word(&mut self, addr: u32) -> u32 {
         let mut b = [0u8; 4];
         let _ = esp_periph::sdmmc::SdmmcMemory::read(&mut self.wifi_mem(), addr, &mut b);
@@ -413,7 +489,7 @@ impl S31Bus {
     }
     /// Let the DWC2 move what its DMA owes, against internal SRAM and LP RAM.
     pub(crate) fn run_usb_otg(&mut self) {
-        let mut dma = UsbDma { sram: &mut self.sram, lp: &mut self.lp };
+        let mut dma = UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver };
         self.usb_otg.run(&mut dma);
     }
     pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], gpio: self.pads.irq_lines(), axi_dma: esp_periph::Device::irq_sources(&self.axi_dma), dma2d: self.dma2d.irq_bits() as u8, ppa: self.ppa.irq(), wifi_mac: self.wifi_mac.irq(), ahb_dma: esp_periph::Device::irq_sources(&self.ahb_dma), i2s: [self.i2s[0].irq(), self.i2s[1].irq()] } }
@@ -459,7 +535,9 @@ impl S31Bus {
         }
     }
     fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
+        let flash = (self.mspi.flash_accessible(), self.mspi.flash_generation);
         let r = self.write_unhooked(address, value, bytes);
+        if r.is_ok() { self.note_code_write(address, bytes, flash); }
         if let Some(n) = I2S_TX_CLOCK.iter().position(|&(c, d)| address & !3 == c || address & !3 == d) {
             let (c, d) = I2S_TX_CLOCK[n];
             let (ctrl0, div) = (self.read(c, 4).unwrap_or(0), self.read(d, 4).unwrap_or(0));
@@ -471,6 +549,30 @@ impl S31Bus {
             self.i2s[n].set_v2_rx_clock(ctrl0, div);
         }
         r
+    }
+    /// After a successful guest write: move the versions of what it may have changed of the
+    /// code `fetch` would read. Memory: its pages. The cache windows: the MMU, L1-enable and
+    /// cache clock registers (`Cache::affects_fetch`). The flash window also: an SPI1 command that may have changed the array
+    /// (`Mspi::flash_generation`), and any write that changes whether the flash is readable. Everything: the APM and PMS, which gate fetches
+    /// everywhere. PSRAM is not versioned (`code_page`).
+    #[inline]
+    fn note_code_write(&mut self, address: u32, bytes: usize, (flash_fetch, flash_generation): (bool, u64)) {
+        if (SRAM_BASE..ROM_BASE).contains(&address) || (LP_BASE..LP_BASE + LP_SIZE as u32).contains(&address) { bump_code(&mut self.code_ver, address, bytes); return; }
+        if (crate::cache::PSRAM_VADDR..0x5400_0000).contains(&address) {
+            for a in [address, address + bytes as u32 - 1] { if let Some(phys) = self.cache.psram_phys(a) { bump_psram(&mut self.code_ver, phys); } }
+            return;
+        }
+        if !Self::peripheral(address) && !Cache::is_mmio(address) { return; }
+        if Apm::is_mmio(address) || Permissions::is_mmio(address) { self.invalidate_code(); return; }
+        if Cache::affects_fetch(address) || address & !3 == crate::cache::CLOCK_CTRL {
+            self.code_ver[FLASH_CODE] = self.code_ver[FLASH_CODE].wrapping_add(1);
+            self.invalidate_psram_code();
+        } else if flash_generation != self.mspi.flash_generation || flash_fetch != self.mspi.flash_accessible() {
+            self.code_ver[FLASH_CODE] = self.code_ver[FLASH_CODE].wrapping_add(1);
+        }
+        // An MSPI2 command may move PSRAM contents.
+        if address & !3 == crate::psram_controller::BASE || address & !3 == crate::psram_controller::BASE + 0x1000 { self.invalidate_psram_code(); }
+        self.check_psram_fetch();
     }
     fn write_unhooked(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         let had = self.first_fault.is_some();
@@ -1010,7 +1112,37 @@ impl Bus for S31Bus {
     fn reserve(&mut self, address: u32) { self.reservations[self.hart] = Some(address); }
     fn reservation_held(&mut self, address: u32) -> bool { self.reservations[self.hart].take() == Some(address) }
     fn note_pc(&mut self, pc: u32) { self.pc = pc; }
-    fn note_code_page(&mut self, _vidx: u32) {} // Only the interpreter is used; no decode cache.
+    fn note_code_page(&mut self, _vidx: u32) {} // Every write that can change code moves its version (`note_code_write`).
+    #[inline(always)]
+    fn page_versions(&self) -> &[u32] { &self.code_ver }
+    /// `CODE_PAGES`; `u32::MAX` (no version) outside SRAM, LP RAM, ROM, the flash window and
+    /// mapped PSRAM. A PSRAM pc has its physical page's version under the current mapping; any
+    /// change to the PSRAM MMU moves them all.
+    #[inline(always)]
+    fn code_page(&mut self, pc: u32) -> u32 {
+        if (SRAM_BASE..SRAM_BASE + SRAM_SIZE as u32).contains(&pc) { (pc - SRAM_BASE) >> CODE_PAGE_SHIFT }
+        else if (LP_BASE..LP_BASE + LP_SIZE as u32).contains(&pc) { SRAM_PAGES as u32 + ((pc - LP_BASE) >> CODE_PAGE_SHIFT) }
+        else if (ROM_BASE..ROM_BASE + ROM_SIZE as u32).contains(&pc) { ROM_CODE as u32 }
+        else if (crate::cache::FLASH_VADDR..crate::cache::PSRAM_VADDR).contains(&pc) { FLASH_CODE as u32 }
+        else if let Some(phys) = self.cache.psram_phys(pc) { let i = PSRAM_CODE + (phys >> CODE_PAGE_SHIFT); if i < self.code_ver.len() { i as u32 } else { u32::MAX } }
+        else { u32::MAX }
+    }
+    /// `fetch` without its fault records: the same APM gate, memories and cache paths.
+    fn fetch_ahead(&mut self, pc: u32) -> Option<[u8; 4]> {
+        let mut data = [0; 4];
+        for i in 0..4 {
+            if i == 2 && data[0] & 3 != 3 { break; }
+            let address = pc.checked_add(i as u32)?;
+            if !self.apm.allows(address, 0) { return None; }
+            if let Some(src) = self.memory(address, 1) { data[i] = src[0]; }
+            else if Cache::is_memory(address) {
+                if address >= crate::cache::PSRAM_VADDR { if !self.psram_fetch_ok() { return None; } }
+                else if !self.mspi.flash_accessible() { return None; }
+                data[i] = self.cache.fetch_byte_quietly(address, self.hart)?;
+            } else { return None; }
+        }
+        Some(data)
+    }
     fn read8(&mut self, a: u32) -> Result<u8, Fault> { self.read(a, 1).map(|v| v as u8) }
     fn read16(&mut self, a: u32) -> Result<u16, Fault> { self.read(a, 2).map(|v| v as u16) }
     fn read32(&mut self, a: u32) -> Result<u32, Fault> { self.read(a, 4) }
@@ -1332,6 +1464,43 @@ mod tests {
         b.write32(0x207041e8, 1 << 31).unwrap();
         assert_eq!(b.read32(0x500c_a000), Err(Fault::Unmapped)); // Power alone does not create a backing chip or map.
         assert!(b.check_load(SRAM_BASE, usize::MAX).is_err());
+    }
+    /// EX265: `fetch_ahead` returns exactly what `fetch` returns where it succeeds, `None` where
+    /// it faults, and records no fault itself.
+    #[test]
+    fn fetch_ahead_is_fetch_without_its_fault_records() {
+        use crate::cache::{FLASH_MMU, FLASH_VADDR, PSRAM_VADDR};
+        let mut b = S31Bus::new(); b.write32(FLASH_MMU + 0x3c, 0x40000001).unwrap(); let page = 32768;
+        let mut flash = vec![0x13; page]; flash[page - 2..].copy_from_slice(&[0x13, 0]);
+        b.cache.set_flash(&flash).unwrap(); b.write32(FLASH_MMU + 0x384, 3 << 3).unwrap(); b.write32(FLASH_MMU + 0x37c, 0x1000).unwrap();
+        b.write16(SRAM_BASE + SRAM_SIZE as u32 - 2, 0x13).unwrap();
+        b.write32(LP_BASE + 8, 0x0050_0513).unwrap();
+        for pc in [SRAM_BASE, SRAM_BASE + 6, SRAM_BASE + SRAM_SIZE as u32 - 2, LP_BASE + 8, LP_BASE + LP_SIZE as u32 - 2, ROM_BASE + 0x40,
+                   FLASH_VADDR, FLASH_VADDR + page as u32 - 2, FLASH_VADDR + page as u32, PSRAM_VADDR, 0x1000_0000, 0x2038_a000, u32::MAX - 1] {
+            b.first_fault = None;
+            let ahead = b.fetch_ahead(pc);
+            assert!(b.first_fault.is_none(), "{pc:#x}: fetch_ahead recorded a fault");
+            assert_eq!(ahead, b.fetch(pc).ok(), "{pc:#x}");
+        }
+    }
+    /// EX265: what moves the code versions (`Bus::page_versions`) and what leaves them alone.
+    #[test]
+    fn code_versions_move_with_every_write_that_can_change_fetched_code() {
+        use crate::cache::{CACHE_BASE, FLASH_MMU, FLASH_VADDR};
+        let mut b = S31Bus::new();
+        let ver = |b: &mut S31Bus, pc: u32| { let i = b.code_page(pc); b.page_versions()[i as usize] };
+        let pc = SRAM_BASE + 0x1000;
+        let moves = |b: &mut S31Bus, pc: u32, f: &mut dyn FnMut(&mut S31Bus)| { let v = ver(b, pc); f(b); ver(b, pc) != v };
+        assert!(moves(&mut b, pc, &mut |b| b.write32(pc + 8, 1).unwrap()), "a store on the page");
+        assert!(moves(&mut b, pc, &mut |b| b.write8(pc + 0x100, 1).unwrap()), "a store in the first bytes of the next page");
+        assert!(!moves(&mut b, pc, &mut |b| b.write32(pc + 0x400, 1).unwrap()), "a store elsewhere");
+        assert!(moves(&mut b, pc, &mut |b| { let mut d = UsbDma { sram: &mut b.sram, lp: &mut b.lp, ver: &mut b.code_ver }; esp_periph::sdmmc::SdmmcMemory::write(&mut d, pc + 4, &[1, 2]).unwrap(); }), "a DMA write");
+        assert!(moves(&mut b, pc, &mut |b| b.invalidate_code()), "loading");
+        assert!(moves(&mut b, pc, &mut |b| b.write32(0x20706020, 1).unwrap()), "an APM write");
+        assert!(moves(&mut b, FLASH_VADDR, &mut |b| b.write32(FLASH_MMU + 0x380, 1).unwrap()), "a flash MMU write");
+        assert!(!moves(&mut b, FLASH_VADDR, &mut |b| b.write32(CACHE_BASE + 0xa0, 1).unwrap()), "cache maintenance");
+        assert!(!moves(&mut b, FLASH_VADDR, &mut |b| b.write32(pc, 1).unwrap()), "an SRAM store");
+        assert_eq!(b.code_page(0x1000_0000), u32::MAX, "no version outside code memory");
     }
     #[test]
     fn uart_uses_s31_fifo_and_reset_fields() {

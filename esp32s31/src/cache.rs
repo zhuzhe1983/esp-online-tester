@@ -199,6 +199,16 @@ impl Cache {
             || (FLASH_MMU + 0x37c..FLASH_MMU + 0x388).contains(&address)
             || (PSRAM_MMU + 0x37c..PSRAM_MMU + 0x388).contains(&address)
     }
+    /// The registers whose writes can change what an instruction fetch through the cache reads
+    /// or whether it faults (`physical`): the L1 enables, both MMUs' entry, index and page-size
+    /// ports and their low-power control. The clock gates are at `CLOCK_CTRL`. Maintenance,
+    /// freeze, tracing and error registers change neither (this model keeps no lines).
+    pub fn affects_fetch(address: u32) -> bool {
+        matches!(address.wrapping_sub(CACHE_BASE), 0..=7)
+            || (MMU_LP_CTRL..MMU_LP_CTRL + 8).contains(&address)
+            || (FLASH_MMU + 0x37c..FLASH_MMU + 0x388).contains(&address)
+            || (PSRAM_MMU + 0x37c..PSRAM_MMU + 0x388).contains(&address)
+    }
     pub fn read_register(&self, address: u32) -> Result<u32, Fault> {
         if address == MMU_LP_CTRL { return Ok(self.flash_mmu.lp_ctrl); }
         if address == MMU_LP_CTRL + 4 { return Ok(self.psram_mmu.lp_ctrl); }
@@ -270,6 +280,16 @@ impl Cache {
             Ok(v) => v, Err(e) => { if hart < 2 { self.failed_access(address, fetch, hart); } return Err(e); }
         };
         Ok(if psram { self.psram[off] } else { self.flash[off] })
+    }
+    /// The physical PSRAM offset a PSRAM-window address maps to now, if any.
+    pub fn psram_phys(&self, address: u32) -> Option<usize> {
+        if !(PSRAM_VADDR..0x5400_0000).contains(&address) { return None; }
+        self.psram_mmu.translate((address - PSRAM_VADDR) as usize, true, self.psram.len()).ok()
+    }
+    /// `read_byte_core` for an instruction fetch, without latching a failure (`Bus::fetch_ahead`).
+    pub fn fetch_byte_quietly(&self, address: u32, hart: usize) -> Option<u8> {
+        let (psram, off) = self.physical(address, true, false, hart).ok()?;
+        Some(if psram { self.psram[off] } else { self.flash[off] })
     }
     pub fn write(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         if bytes > 4 { return Err(Fault::Unmapped); }
