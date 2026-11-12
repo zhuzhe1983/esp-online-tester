@@ -148,7 +148,7 @@ mod tests {
             assert!(board.set_imu_sample([1.0,-0.5,0.25],[125.0,-250.0,0.0]));assert!(!board.set_imu_sample([f64::NAN,0.0,0.0],[0.0;3]));
             board.advance_to(tick-1);assert_eq!(read(devices[imu0].2.as_mut(),0x1d,1),[0]);board.advance_to(tick);
             assert_eq!(read(devices[imu0].2.as_mut(),0x1d,1),[0xc0]);assert_eq!(read(devices[imu1].2.as_mut(),0x1d,1),[0],"controller reads share clear-on-read status");
-            let bytes=read(devices[imu1].2.as_mut(),0x0c,12);let values:Vec<i16>=bytes.chunks_exact(2).map(|b|i16::from_le_bytes([b[0],b[1]])).collect();assert_eq!(values,[4096,-2048,1024,2048,-4096,0]);
+            let bytes=read(devices[imu1].2.as_mut(),0x0c,12);let values:Vec<i16>=bytes.as_chunks::<2>().0.iter().map(|b|i16::from_le_bytes(*b)).collect();assert_eq!(values,[4096,-2048,1024,2048,-4096,0]);
             board.advance_to(tick+crate::periph::CPU_HZ/100);assert_eq!(read(devices[imu0].2.as_mut(),0x1d,1),[0xc0],"unchanged host sample still produces periodic ready");
             write(devices[imu0].2.as_mut(),0x7d,0);assert_eq!(board.next_deadline(),None);board.advance_to(2*crate::periph::CPU_HZ);assert_eq!(read(devices[imu1].2.as_mut(),0x1d,1),[0]);
             write(devices[imu1].2.as_mut(),0x7e,0xb6);assert_eq!(read(devices[imu0].2.as_mut(),0x21,1),[0]);assert_eq!(board.next_deadline(),None);
