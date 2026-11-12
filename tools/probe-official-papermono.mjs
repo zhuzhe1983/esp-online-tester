@@ -48,14 +48,14 @@ const runtime=createPlatformRuntime({catalog,fetchImpl,workerFactory,baseUrl:'ht
   if(event.type==='input')inputs.push(event);
   if(event.type==='stats'){const second=Math.floor(Number(event.stats.time));if(second!==lastSecond){lastSecond=second;console.log(JSON.stringify({guestSeconds:second,insns:event.stats.insns}));}}
 }});
-const started=Date.now();let failure=null;const stages=[];
+const started=Date.now();let failure=null;const stages=[],imuInputs=[];
 const regionHash=(frame,x,y,w,h)=>{const hash=createHash('sha256');for(let row=y;row<y+h;row++)hash.update(frame.pixels.subarray((row*frame.width+x)*4,(row*frame.width+x+w)*4));return hash.digest('hex');};
 const checkpoint=async name=>{
   if(!latestFrame)throw new Error(`No frame at ${name}`);
   const nonBlack=latestFrame.pixels.reduce((n,v,i)=>n+(i%4!==3&&v!==0?1:0),0);
   const state=await runtime.observe(),sha256=createHash('sha256').update(latestFrame.pixels).digest('hex');
   await writeFile(`${output}/${name}.png`,png(latestFrame));
-  stages.push({name,guestSeconds:await queryClock(),lastStatSeconds:state.stats.time,frameNumber:latestFrame.frameNumber,nonBlackChannels:nonBlack,sha256,leds:state.leds,sdCard:state.sdCard,nfc:regionHash(latestFrame,122,361,230,49),loraRx:regionHash(latestFrame,140,45,330,50),brightness:regionHash(latestFrame,0,118,94,28),mute:regionHash(latestFrame,366,480,107,42)});
+  stages.push({name,guestSeconds:await queryClock(),lastStatSeconds:state.stats.time,frameNumber:latestFrame.frameNumber,nonBlackChannels:nonBlack,sha256,leds:state.leds,sdCard:state.sdCard,nfc:regionHash(latestFrame,122,361,230,49),loraRx:regionHash(latestFrame,140,45,330,50),brightness:regionHash(latestFrame,0,118,94,28),mute:regionHash(latestFrame,366,480,107,42),imu:regionHash(latestFrame,75,543,145,89)});
   console.log('CHECKPOINT',JSON.stringify(stages.at(-1)));
 };
 const waitGuest=async target=>{
@@ -85,6 +85,22 @@ try{
   }
   await runtime.start();
   await waitGuest(seconds);await checkpoint('boot');
+  if(scenario==='imu') {
+    assert.match(serial,/IMU ready type=6 attempt=1/,'Official HAL must receive accel and gyro ready during initialization');
+    assert.doesNotMatch(serial,/IMU not ready|IMU init failed/);
+    assert.match(serial,productId==='m5stack-papermono'?/Board variant detected: Pro/:/Board variant detected: Lite/);
+    assert.equal((await runtime.capabilities()).imu.available,true);
+    for(const [name,quaternion,angularVelocityDps] of [
+      ['imu-reference',[0,0,0,1],[0,0,0]],
+      ['imu-tilted',[0,0,Math.SQRT1_2,Math.SQRT1_2],[10,-20,30]],
+      ['imu-restored',[0,0,0,1],[0,0,0]],
+    ]) {
+      const applied=await runtime.setImu({source:'agent',quaternion,angularVelocityDps});imuInputs.push({name,...applied});
+      await waitGuest((await queryClock())+0.5);await tap(100,580);await checkpoint(name);
+    }
+    assert.notEqual(stages[2].imu,stages[1].imu,'Fresh virtual axes must change actual official IMU glyphs');
+    assert.equal(stages[3].imu,stages[1].imu,'Restoring virtual axes must restore the same official IMU glyphs');
+  }
   if(scenario==='lora') {
     assert.equal(productId,'m5stack-papermono');console.log('LORA_BOOT',JSON.stringify(await runtime.readLoRa()));assert.match(serial,/LoRa init OK rx_state=0/);
     const boot=await runtime.readLoRa();assert.equal(boot.rxCount,0);assert.equal(boot.txCount,0);
@@ -141,6 +157,6 @@ finally{
   await writeFile(`${output}/serial.log`,serial);
   await writeFile(`${output}/emulator.log`,emulator);
   if(latestFrame)await writeFile(`${output}/frame.png`,png(latestFrame));
-  await writeFile(`${output}/receipt.json`,JSON.stringify({productId,board:product.runtime.board,url,expectedHash,wasmSha256:createHash('sha256').update(await readFile(new URL('web/wasm/esp32sim.wasm',root))).digest('hex'),firmware:state.firmware,storage:state.storage,sdCard:state.sdCard,leds:state.leds,stats:state.stats,frame:latestFrame?{width:latestFrame.width,height:latestFrame.height,frameNumber:latestFrame.frameNumber,sha256:createHash('sha256').update(latestFrame.pixels).digest('hex')}:null,lastError:state.lastError,inputs,stages,failure,elapsedMs:Date.now()-started},null,2)+'\n');
+  await writeFile(`${output}/receipt.json`,JSON.stringify({productId,board:product.runtime.board,url,expectedHash,wasmSha256:createHash('sha256').update(await readFile(new URL('web/wasm/esp32sim.wasm',root))).digest('hex'),firmware:state.firmware,storage:state.storage,sdCard:state.sdCard,leds:state.leds,stats:state.stats,frame:latestFrame?{width:latestFrame.width,height:latestFrame.height,frameNumber:latestFrame.frameNumber,sha256:createHash('sha256').update(latestFrame.pixels).digest('hex')}:null,lastError:state.lastError,inputs,imuInputs,stages,failure,elapsedMs:Date.now()-started},null,2)+'\n');
   await runtime.dispose();
 }
