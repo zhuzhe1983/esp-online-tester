@@ -98,6 +98,58 @@ some under load: indicative only.
 - `#[inline(always)]` on `exec_insn` everywhere slowed the C3 interpreter (round 1 below); the
   block loop alone gets the forced inlining now.
 
+## Round 4: music playback on the Mosaico (2026-11-12)
+
+Question: does the Mosaico play music at real time or faster on one host core? Base `38920eed`
+(the EX265 branch as recorded above); new `39ca9022`, the same plus `s31/takeover`'s `19386788`
+cherry-picked (a write setting bit n of 0x2010D814 latches emulated microseconds into
+0x2010D820/0x2010D824, the modem TSF timer read of the Wi-Fi library's `hal_get_tsf_time`).
+`c66cd31c` adds only a unit test. No emulator speed change was made in this round: the latch is a
+behaviour fix, and with it the Wi-Fi library stops spinning on a TSF that never moved.
+
+Workloads (private, as above, plus a touch script `S31_SCRIPT`/`S31_MUSIC_SCRIPT` that opens the
+music app at ~20.5 s): the app starts playing on its own at ~21.4 s.
+The caller's original script then touches the play/pause button at 23 s, which **pauses** playback
+at ~23.8 s; so `s31-music` (that script, 40 s) is a whole-run figure, not a playback figure. The
+playback phase is measured with the same script minus that last touch (playing until the end of
+every run): `play_pairs.py` runs each side to 23 s and to 40 s back to back and takes the
+difference (17 emulated seconds of playback). A 40 s `--wav` of the new build has music of
+non-zero RMS in every second after playback starts.
+
+Work check: the TSF fix changes what the guest does, so base and new do different work (same
+instruction counts, which the clock fixes; different exception and interrupt counts, compared but
+not recorded). Within each side every run was identical (both cores' instruction counts, exception
+and interrupt counts, console hash; compared, not recorded).
+New against new `--no-jit`, 40 s of playback: console and the whole end-of-run report identical.
+
+Median child user CPU, 7 alternating pairs, same machine and method as above (load 3.5-4.6):
+
+| Workload | Base s | New s | Change | New slower | Speed (emulated/CPU) |
+| --- | --- | --- | --- | --- | --- |
+| playback phase, 23 -> 40 s | 18.53 | 8.73 | -52.89% | 0/7 | 0.92x -> **1.95x** |
+| to 23 s (boot, UI, open app) | 30.36 | 21.35 | -29.68% | 0/7 | 0.76x -> 1.08x |
+| to 40 s, playing | 49.19 | 30.07 | -38.87% | 0/7 | 0.81x -> 1.33x |
+| s31-music (40 s, paused at 23.8 s) | 47.06 | 28.46 | -39.52% | 0/7 | 0.85x -> 1.41x |
+| s31-mosaico (10 s boot, no script) | 14.04 | 12.46 | -11.25% | 0/7 | 0.71x -> 0.80x |
+| c3-hello | 2.50 | 2.50 | +0.00% | 2/7 | |
+| c6-hello | 1.58 | 1.56 | -1.27% | 3/7 | |
+| c3-wifi-station | 1.54 | 1.54 | +0.00% | 3/7 | |
+| c6-wifi-station | 1.08 | 1.07 | -0.93% | 2/7 | |
+
+Phase ranges: base 18.29-19.38 s, new 8.31-9.08 s (1.87x-2.05x). C3/C6 did identical work on both
+sides; their code did not change, so those rows are a no-regression check only.
+
+Host profile of the new build during playback (macOS `sample`, 6 s, top of stack, ~1,350
+samples): block loop 21%, `SocBus::tick` 14%, USB OTG `gintsts_now` 12%, `next_deadline` 4%, I2S
+`receive_input` 3%, `run_unmodeled` 3%, USB OTG `tick` 3%, `core_irqs` 3%, `Clocks::rates_of` 2%,
+`refresh_inputs` 2%. The guest idles most of playback, so per-round device time (`tick`, USB
+OTG, deadlines, I2S) is now the largest cost (~40%); that, not the device dispatch chain, is the
+next lever if more margin is wanted. Not tried in this round: table-driven device dispatch, a TSF
+page fast path (its earlier -8.6% was measured while the library spun on the frozen TSF).
+
+Files: `play_pairs.py` (the phase harness), `pairs-play.json` (phase pairs), `pairs-r4.json`
+(whole runs, S31 console hashes removed and paths replaced). `cpu_pairs.py` gained `s31-music`.
+
 ## Correctness evidence
 
 - `riscv-rv32/tests/blocks_differential.rs`: random programs on C3, C6, P4 rev 3 and S31 cores,

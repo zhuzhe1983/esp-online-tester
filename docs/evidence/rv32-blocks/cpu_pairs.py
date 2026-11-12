@@ -29,6 +29,10 @@ def workloads():
         # EX265: a private flash dump; the caller names it and the USB-host script (never committed)
         's31-mosaico': ('esp32sim-s31', ['--flash-image', os.environ.get('S31_FLASH_IMAGE', ''), '--boot', 'rom', '--rom', r('esp32s31_rev0_rom.elf'),
                                           '--board', 'mosaico', '--flash-mb', '16', '--max-seconds', '10', '--usb-host', os.environ.get('S31_USB_HOST', ''), '--no-dump']),
+        # EX265 round 4: the same, to 40 s, with a touch script that opens the music app (S31_MUSIC_SCRIPT, private)
+        's31-music': ('esp32sim-s31', ['--flash-image', os.environ.get('S31_FLASH_IMAGE', ''), '--boot', 'rom', '--rom', r('esp32s31_rev0_rom.elf'),
+                                        '--board', 'mosaico', '--flash-mb', '16', '--max-seconds', '40', '--usb-host', os.environ.get('S31_USB_HOST', ''),
+                                        '--script', os.environ.get('S31_MUSIC_SCRIPT', ''), '--no-dump']),
         'c3-wifi-station': ('esp32sim-c3', ['--rom', r('esp32c3_rev3_rom.elf'), '--boot', 'rom', '--flash-mb', '4', '--no-dump',
                                             '--bootloader', f'{FW}/c3-wifi-bootloader.bin', '--ptable', f'{FW}/c3-wifi-ptable.bin', '--app', f'{FW}/c3-wifi_station.bin',
                                             '--wifi', 'ssid=esp32sim,psk=esp32sim-pass', '--net', 'none', '--max-seconds', '14']),
