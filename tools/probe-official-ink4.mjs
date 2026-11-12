@@ -83,9 +83,10 @@ try {
     assert.ok(serial.includes('VOLUME_UP (P1.0): volume='),'Replay volume button must reach firmware');await checkpoint('replayed');
   }else{
   if(recordingMode==='record')await api.recordingStart();else await runtime.start();
-  await waitGuest(seconds);await checkpoint('home');await tap(395,670);await checkpoint('settings');
+  await waitGuest(seconds);await checkpoint('home');const homeBody=latestFrame.pixels.slice(480*44*4);await tap(395,670);await checkpoint('settings');
   assert.notEqual(stages[0].sha256,stages[1].sha256,'Touch must change actual guest output');
   await button(['home'],0.7);await waitGuest((await queryClock())+3);await checkpoint('cover-home');
+  assert.deepEqual(latestFrame.pixels.slice(480*44*4),homeBody,'Home must restore the actual clock and app grid, not merely change a header pixel');
   assert.notEqual(stages[1].sha256,stages[2].sha256,'Home hold must change actual guest output');
   await button(['volume-up'],0.15);await checkpoint('volume-up');
   assert.ok(inputs.some(e=>e.event?.id==='home'&&e.receipt?.delivery==='queued'),'Semantic board button must reach the worker');

@@ -1,0 +1,197 @@
+{
+  "date": "2026-11-12",
+  "implementationRevision": "1dd47f40",
+  "firmwareUrl": "https://cloudzaoai.oss-rg-china-mainland.aliyuncs.com/OTA/xiaozhi/eca923cb-7e07-45d6-9e83-0aefe6e48a46.bin",
+  "firmwareSha256": "1d02cba522fe1aec5b2c160973c6a15d89cbf0e13a5794a42faf6e3f15587919",
+  "firmwareVersion": "2.0.53",
+  "beforeWasmSha256": "0d5dc1d9cd45e2bc4648c5f52d09876b3f7ec2d7fb3f7224f5ecba74ffa9d0a1",
+  "afterWasmSha256": "d72a0a9468263b7c9538d6536c47518c2be90cf62bcdb9cef98e495b9ab57595",
+  "physicalValidation": false,
+  "capturedSequence": {
+    "method": "Existing native CLI SPI3 transaction log, ROM boot, no firmware changes.",
+    "firmwareBytes": 16302090,
+    "nativeBinarySha256": "181e69c4df2a195c26542f4b199e4a61d9f98c7bd7e2e3694f8f4c1e70edde65",
+    "nativeBinarySourceLimitation": "Preexisting binary; source revision not independently established for the trace. The WASM comparison hashes are separately recorded.",
+    "rawLog": "output/ink4-display-native.log",
+    "rawLogSha256": "4664834e18236db10c6acc16161167af7bae4c29a1a0f9b04e2a98f2bf85f3d6",
+    "script": "8.0 touch 395 670 1\n8.15 touch 395 670 0\n10 stop\n",
+    "ram24Writes": 4,
+    "ram26Writes": 1,
+    "explicit37Writes": 0,
+    "writeChunksBytes": [
+      32768,
+      15232
+    ],
+    "activations": [
+      "C7",
+      "CF",
+      "CF",
+      "CF"
+    ]
+  },
+  "cause": "Mode 2 toggled the bookkeeping face but never exchanged the RAM banks. A firmware writing only current RAM kept comparing against its first frame; old black pixels stayed visible.",
+  "change": "Swap bank ownership after the completed Mode 2 refresh, without copying RAM or painting pixels. Honor R37h F[6] enable/disable; retain the existing supported-panel default-enabled face assumption and M5GFX Mode 1 face mapping.",
+  "otpLimitation": "No physical panel OTP was read. Default-enabled is the existing supported-panel Mode 2 contract, consistent with the fixed drivers; it is not a new hardware measurement.",
+  "visualInspection": {
+    "settings": "Header now displays one clear 配网模式 label; previous 设置 strokes removed. Firmware selects this title while AP configuration is active.",
+    "homeReturn": "Before correction, the settings page remained after Home despite changed framebuffer hash. After correction, the clock and six-app home grid return.",
+    "comparison": [
+      {
+        "stage": "home",
+        "changedPixels": 362,
+        "blackToWhite": 335,
+        "whiteToBlack": 27,
+        "headerChangedPixels": 362
+      },
+      {
+        "stage": "settings",
+        "changedPixels": 362,
+        "blackToWhite": 335,
+        "whiteToBlack": 27,
+        "headerChangedPixels": 362
+      },
+      {
+        "stage": "cover-home",
+        "changedPixels": 80161,
+        "blackToWhite": 44445,
+        "whiteToBlack": 35716,
+        "headerChangedPixels": 362
+      },
+      {
+        "stage": "volume-up",
+        "changedPixels": 80608,
+        "blackToWhite": 44884,
+        "whiteToBlack": 35724,
+        "headerChangedPixels": 809
+      }
+    ],
+    "notOpticalCalibration": true
+  },
+  "checkpoints": {
+    "before": [
+      {
+        "name": "home",
+        "guestSeconds": 8.033715925,
+        "frameNumber": 3,
+        "blackPixels": 41646,
+        "sha256": "47c75a5ec03e9aac16a9ecd8498a24ec5e7a70f298be2db135f7f4b3f5459274",
+        "status": "running"
+      },
+      {
+        "name": "settings",
+        "guestSeconds": 9.206613420833333,
+        "frameNumber": 4,
+        "blackPixels": 50067,
+        "sha256": "1534640625ca97463dad70ecead1f956f681bf5664903c7365601b5a5b501122",
+        "status": "running"
+      },
+      {
+        "name": "cover-home",
+        "guestSeconds": 14.456062795833333,
+        "frameNumber": 6,
+        "blackPixels": 50237,
+        "sha256": "d459d32fab8976a8bdfd09cdff335dc04eecbce1991fb359121b6432100a19aa",
+        "status": "running"
+      },
+      {
+        "name": "volume-up",
+        "guestSeconds": 16.140463383333334,
+        "frameNumber": 7,
+        "blackPixels": 50495,
+        "sha256": "c35f3ed2fe01d3b520afe0648452921c4a496f50db48fe27b02d1a174702aa69",
+        "status": "running"
+      }
+    ],
+    "after": [
+      {
+        "name": "home",
+        "guestSeconds": 8.0293668875,
+        "frameNumber": 3,
+        "blackPixels": 41338,
+        "sha256": "c88916b9194fd0af22f234cfa98e3cfd7a3b74dfd6f102cd2990a2f1df1761b8",
+        "status": "running"
+      },
+      {
+        "name": "settings",
+        "guestSeconds": 9.228690095833333,
+        "frameNumber": 4,
+        "blackPixels": 49759,
+        "sha256": "5000e08f568a92a999895ab3e3a169a4d784562f897b03966cfe8e4fcf827f75",
+        "status": "running"
+      },
+      {
+        "name": "cover-home",
+        "guestSeconds": 14.475181845833333,
+        "frameNumber": 6,
+        "blackPixels": 41508,
+        "sha256": "3729a4dd4ac373d2eb042f256f23f63ad885fd93a93142e511d574baab0b18ac",
+        "status": "running"
+      },
+      {
+        "name": "volume-up",
+        "guestSeconds": 16.146652595833334,
+        "frameNumber": 7,
+        "blackPixels": 41335,
+        "sha256": "2fb26679aaa35449d43fd643223ee5d2e5335c77179d68fe2ee36a81b684eba5",
+        "status": "running"
+      }
+    ]
+  },
+  "checks": {
+    "unitTests": "cargo test -p esp-soc --lib ssd1677: 9 passed, including M5GFX gray and EDC Book segmented waveform regressions",
+    "clippy": "cargo clippy -p esp-soc --lib --tests -- -D warnings: passed",
+    "mutation": "Omitting the bank swap causes consecutive_mode2_current_only_writes_erase_old_pixels_after_busy to fail; restored candidate passes.",
+    "wasmProbeFailure": null
+  },
+  "artifacts": [
+    {
+      "path": "output/ink4-baseline/home.png",
+      "sha256": "42fa3a9358ec1ab39373b50a893c5bd0520407f174297f81e946cf37765758bf"
+    },
+    {
+      "path": "output/ink4-baseline/settings.png",
+      "sha256": "87ed218cb8a1e9bad73e6f392aa8006251c7faba5bd4aa84e862749d1c9e7044"
+    },
+    {
+      "path": "output/ink4-baseline/cover-home.png",
+      "sha256": "18492c4626128f8a9a4c847c05d32cee48aa941fb17daa1be87c661c829eab3f"
+    },
+    {
+      "path": "output/ink4-baseline/volume-up.png",
+      "sha256": "3b414f262c554bcca5ad34dbc94251d8d40b0735544435a5ba2110163d60c1f5"
+    },
+    {
+      "path": "output/ink4-display-fixed/home.png",
+      "sha256": "eb3ce78234673b2cb148ada5da49d8ec5d6ab1ce68cf44a7e15ddbcf85b24887"
+    },
+    {
+      "path": "output/ink4-display-fixed/settings.png",
+      "sha256": "2a1e36e4b836d00e8ee0a0c0eeddc08615d9dce42185e11fa9259c626354be13"
+    },
+    {
+      "path": "output/ink4-display-fixed/cover-home.png",
+      "sha256": "7e3599a7f482d4d743da5c34a220676531b3882532a17f54f19edba96a5dd522"
+    },
+    {
+      "path": "output/ink4-display-fixed/volume-up.png",
+      "sha256": "16c324f8bda66098442e03fc02d370cb7b20333a7378911f64afd2ae9bdd6114"
+    }
+  ],
+  "privacy": "Raw native serial, screenshots, and emulated identifiers remain in ignored output/. Only hashes, commands, numeric pixel comparisons and fixed-source facts retained.",
+  "finalIntegratedWasm": {
+    "sha256": "8d8ccce696666eeb7a355cdbe15fd398eaec9ddb9ae9ade85544d91639b4fb20",
+    "includes": "Shared GPIO I2C STOP, SSD1677, RTC and PaperMono changes",
+    "recordFailure": null,
+    "replayFailure": null,
+    "homeBodyEqualityAssertion": "passed",
+    "finalFrame": {
+      "sha256": "2fb26679aaa35449d43fd643223ee5d2e5335c77179d68fe2ee36a81b684eba5",
+      "width": 480,
+      "height": 800
+    },
+    "frameComparison": "equal",
+    "eventCount": 6,
+    "recordReceiptSha256": "0b840bb21dc9e429d5cc8be1f95ec8d5e19514d0bd5b357371ddb8c16f9c3380",
+    "replayReceiptSha256": "83f903a7d4cd826d11e3352fc40ae2a528260b9fc7cda66df79abc21b1cc0592"
+  }
+}
