@@ -14,6 +14,8 @@ ESP32-S3R8、16 MiB Flash / 8 MiB OPI PSRAM。ET047TC1 原生 960×540，竖置�
 
 提取原 PaperDIY 的 ET047TC1 数字模型为共用器件，不改变原有驱动符号语义。LCD_CAM i80 / GDMA 从真实客体事务获得每行 960 个两位命令；1/2 写黑/白，0/3 保持。并行路由、供电、扫描和锁存决定是否更新。保留掉电后的画面，但没有校准 16 灰阶的多脉冲光学积分。首次与恢复后的静音图标不同，已逐像素对应到官方两张不同素材及 quality/fastest 模式，见 [显示差异核查](papers3-display.md)；此区域没有无法解释的漏擦或错行，不代表整屏灰阶通过。
 
+电池为可覆盖的标称电压输入：C139 V1.0 的 R24/R25=22k 分压把 4.0V 电池对应到 GPIO3 的 2.0V，走真实 ADC1_CH2/SAR 转换和客体校准；GPIO4 充电状态保持高电平（未充电）。默认源只填未驱动通道，显式 host 电压/流/原始码及复位后保留的输入优先。没有建立放电、充电或容量模型；[定向证据](evidence/papers3-edcbook/battery-default-20261112.json)不替代物理电池标定。
+
 GT911 使用 I²C SDA41/SCL42、IRQ48，模型选择 0x5d 地址；实际地址 strap 没有额外实机测量。16 位寄存器寻址、0x814e ready/count、0x8150 起坐标、写 0 清除和后续扫描通过独立器件实现，支持一个接触点。5 ms 数字扫描周期包含无接触报告，便于驱动丢弃旧报告后读取释放；这不是空闲功耗或中断时序校准。配置区有限 RAM 不代表配置生效；多点、手势、固件升级、休眠与唤醒未实现。原 Waveshare fixture 的旧 GT911 端点不变，防止扩大既有兼容声明。
 
 BMI270 地址 0x68 复用显式样本寄存器子集；agent 可输入虚拟加速度与角速度，未建立实体安装方向与 3D 旋转的映射。BM8563 0x51 已接入共享数字日历子集，初始 VL/无效日期由客体自行处理；按客体周期推进，不读取宿主时钟。官方程序设置的时间已从 `12:00:29` 推进到 `12:00:32`；见 [RTC 实现、修复负例与边界](papers3-rtc.md)。SPI TF 的 SCK39/MOSI38/MISO40/CS47 已接入共享 SDHC 卡存储；详见下方 TF 验收。蜂鸣器 G21 只验证固件图标，不输出声音。PMS150G 控制的电源键不伪造为普通 GPIO；虚拟 USB 检测 G5 和充电状态 G4 固定为高，未连接电池模型。电池 ADC、物理电源睡眠、USB 及无线网络未验收，空扫描不等于可联网。
@@ -47,4 +49,4 @@ PaperS3 的卡槽走 SPI，不是 PaperMono 的原生 SDMMC。V1.0 原理图 J3 
 
 2026-11-12 固定官方 v0.5 的 TF 路径已单独闭环：原始镜像挂载默认 FAT32 卡，实际写出 `TEST.TXT` 的 13 字节 `Hello, World!`；复位及新 worker 重载后文件和整卡摘要一致，重载启动前也核对完整卡恢复。真实画面显示卡型与容量，未发现新的官方 TF 缺陷。见 [官方固件 TF 收据与边界](evidence/papers3-factory-tf/README.md)；该 Node/WASM 验收不新增浏览器 IndexedDB 或物理卡时序结论。
 
-同日加入 BM8563 并修复 GPIO STOP 后，最终 WASM 的 [RTC 显示](evidence/papers3-rtc/factory-clock-pass.json)和 [factory 回归](evidence/papers3-rtc/factory-regression.json)通过；时钟、双次触摸、扫描任务和 TF 均在最终产物复核。[EDCBook 3.1.2](papers3-edcbook.md) 已核对 PaperS3 的官方元数据映射，但本轮下载受验证阻挡，阅读、翻页、局刷及联网仍未验收。
+同日加入 BM8563 并修复 GPIO STOP 后，最终 WASM 的 [RTC 显示](evidence/papers3-rtc/factory-clock-pass.json)和 [factory 回归](evidence/papers3-rtc/factory-regression.json)通过；时钟、双次触摸、扫描任务和 TF 均在最终产物复核。[EDCBook 3.1.2](papers3-edcbook.md) 随后使用调用方的原始完整镜像验收：首页、内置指南和触屏前后翻页已在真实 Worker 运行。返回页保留了 388 像素差异负例，灰阶/局刷一致性、EDC 文件读写及联网未继承通过。重载出现的低电提示另由标称电池输入修复，见该页的来源、测试和限制。

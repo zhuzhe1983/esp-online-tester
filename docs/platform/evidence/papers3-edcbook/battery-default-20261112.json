@@ -1,0 +1,109 @@
+{
+  "checkedOn": "2026-11-12",
+  "code": "f9ef5fe0",
+  "sources": [
+    {
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/517/sch_papers3_V1.0.pdf",
+      "sha256": "f6a2abd5ae19f0ea4f9bdd5003306194308962db5f65d30754b2cbbea2a081c6",
+      "bytes": 496381,
+      "facts": "C139 V1.0: SYS_BAT R24=22k, ADC_VBAT GPIO3, R25=22k to GND; CHG_STAT GPIO4."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/m5stack/M5Unified/5580ff6923a868cc71d5b30c962186bde2c85b67/src/utility/Power_Class.cpp",
+      "sha256": "d3927d5eae29571bb712f23df8e7b7f59c1643010af30d9052f66cbaef64887d",
+      "bytes": 44981,
+      "facts": "PaperS3 ADC1 GPIO3 channel2, adc_ratio=2.0; GPIO4 low means charging. getBatteryLevel clamps low voltage to 0."
+    }
+  ],
+  "negativeBrowserObservation": {
+    "sourceRevision": "d328c087",
+    "wasmSha256": "ce0c28f724fe0cd67ff65d98d211707df4a08f120f3860814c6e81686c768b18",
+    "firmwareSha256": "06eb3b595fc47bc5d35f760a16cdc5795ea8c0fad6295bcee8db5268cf906986",
+    "rawReceiptSha256": "8343b6fbbc585dc68ee3f4ba64779c684c6f943d42884a973e313f4a2b09e3e8",
+    "screenshotSha256": "e93aa83403797baeb77544fd7b29885440907acff1dded6ccab9cb005e8cd3df",
+    "screenshotBytes": 25239,
+    "message": "请及时充电",
+    "frames": [
+      {
+        "name": "boot",
+        "width": 540,
+        "height": 960,
+        "rgbaSha256": "9f6b5b88dc3ff637c573af5d259ac11e2a916ce5030de75f81ce34dad0b50e4c",
+        "guestTime": 12.04,
+        "instructions": 4431705232,
+        "scans": 82,
+        "lastError": null,
+        "romBoots": 1
+      },
+      {
+        "name": "reader-page-1",
+        "width": 540,
+        "height": 960,
+        "rgbaSha256": "9f6b5b88dc3ff637c573af5d259ac11e2a916ce5030de75f81ce34dad0b50e4c",
+        "guestTime": 16.28,
+        "instructions": 6466928900,
+        "scans": 82,
+        "lastError": null,
+        "romBoots": 1
+      },
+      {
+        "name": "reader-page-2",
+        "width": 540,
+        "height": 960,
+        "rgbaSha256": "9f6b5b88dc3ff637c573af5d259ac11e2a916ce5030de75f81ce34dad0b50e4c",
+        "guestTime": 20.54,
+        "instructions": 8511753192,
+        "scans": 82,
+        "lastError": null,
+        "romBoots": 1
+      },
+      {
+        "name": "reader-page-1-return",
+        "width": 540,
+        "height": 960,
+        "rgbaSha256": "9f6b5b88dc3ff637c573af5d259ac11e2a916ce5030de75f81ce34dad0b50e4c",
+        "guestTime": 24.8,
+        "instructions": 10556577092,
+        "scans": 82,
+        "lastError": null,
+        "romBoots": 1
+      }
+    ],
+    "scope": "Observed after Chromium reload. G3 had no battery source and G4 was not charging. The role of saved NVS in the earlier trigger was not isolated."
+  },
+  "change": {
+    "pad": 3,
+    "unit": "ADC1",
+    "channel": 2,
+    "padVolts": 2.0,
+    "divider": 2.0,
+    "nominalBatteryVolts": 4.0,
+    "chargingPin4": true,
+    "charging": false,
+    "transport": "Board attachment supplies AnalogSource::Const only on an undriven pad. Guest SAR conversion and normal IDF calibration still produce the reading.",
+    "overrides": "Host voltage/stream/raw input including zero survives attachment, reset and retained sleep. Other boards provide no defaults. No forced charging, firmware/NVS modification, threshold override, new tick work or analog state fields."
+  },
+  "tests": [
+    {
+      "command": "cargo test --release -p esp-periph board_defaults_preserve --lib",
+      "passed": 1
+    },
+    {
+      "command": "cargo test --release -p esp32s3 papers3_battery_default --lib",
+      "passed": 1
+    }
+  ],
+  "testCoverage": [
+    "Actual SENS SAR conversion calibrates G3 to 2000mV within 1mV, corresponding to 4000mV battery within 2mV.",
+    "Attachment performs no conversion; G2/G4 analog and bare board inputs unchanged. G4 stays high/not charging.",
+    "Explicit 1.65V low battery and raw zero survive reattachment/reset; voltage survives retained light sleep wake. Pre-attachment host source wins."
+  ],
+  "limits": [
+    "Constant nominal battery only; no charging/discharge, sag, noise, thermal, capacity or independent power-key controller model.",
+    "4.0V is a declared simulation default, not measured hardware voltage. Existing Espressif calibration approximation is retained.",
+    "Final browser first-boot/reload and full CI are recorded in integration evidence."
+  ],
+  "initialTestCorrection": "Initial S3 test referenced a non-exported type; changed to public make_board factory before the passing run.",
+  "openPullRequests": "Upstream PR354 only changes S3 WiFi rx_meta; its inspected patch has no analog/default-source overlap. Fork has no matching open PR.",
+  "privacy": "Curated hashes, public sources and numeric observations only. No firmware, UART, saved device pages or personal paths included."
+}
