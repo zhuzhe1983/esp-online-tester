@@ -8,7 +8,7 @@
 
 | 产品 | 已有基础能力 | 本轮新增或补充验收 | 主要待完成项 |
 | --- | --- | --- | --- |
-| [PaperS3 C139](papers3-runtime.md) | 官方 UserDemo v0.5、540×960 黑白帧、GT911 单点触摸、BMI270 虚拟输入、SPI TF | 官方固件实际写出 `TEST.TXT`，复位和重载保持；BM8563 日历按客体时间递增；静音图标三帧各 7,480 像素与官方素材/抖动逐点一致；Wi-Fi 扫描通过 | EDC Book 下载验证/OCR 超时，尚未运行；应用联网、16 灰阶/实物光学校准、蜂鸣器、PMS150G 电源和 RTC 唤醒 |
+| [PaperS3 C139](papers3-runtime.md) | 官方 UserDemo v0.5、540×960 黑白帧、GT911 单点触摸、BMI270 虚拟输入、SPI TF | 官方固件写出 `TEST.TXT` 并保持复位/重载数据，RTC 递增、图标逐点比较和 Wi-Fi 扫描通过；[EDCBook 3.1.2](papers3-edcbook.md) 原始 BIN 已启动，首页、触屏阅读和前后翻页通过 | EDCBook 返回同页仍有 388/518,400 字形像素差异，TF/联网未验收；应用联网、16 灰阶/光学校准、蜂鸣器、PMS150G 电源和 RTC 唤醒 |
 | [PaperMono C153](papermono-runtime.md) | 官方 1.2.0、480×800 显示、A/B、触摸、TF、RGB；NFC 无卡扫描及 LoRa 显式虚拟对端 | BMI270 首次初始化、姿态/角速度读数及恢复；四灰阶全部 384,000 像素和局刷恢复吻合；关联、DHCP、双向 SNTP 与 TIME UPDATED 通过 | RX8130 自主走时、音频、深睡、实物坐标/光学标定；大 BMP 栈溢出待排查 |
 | [PaperMono-Lite C153-Lite](papermono-runtime.md) | 与完整版独立的板型和存储身份；显示、A/B、触摸、TF、RGB | 独立验证 BMI270、四灰阶/局刷恢复、按键/触摸及 TF；实际关联、DHCP、双向 SNTP 与 TIME UPDATED 通过 | RX8130 自主走时、音频、深睡与实物标定；Lite 没有 NFC/LoRa；EDC Book 未独立验收 |
 | [Metalio INK4](ink4-runtime.md) | 官方 2.0.53、480×800 黑白显示、触摸、主页/音量等语义键 | 开放网页 TF；官方挂载、读文件/写目录、复位和浏览器重载持久化；真实录制回放；修正连续局刷旧字/旧页残留，自动配网及实际 OTA 响应通过 | 账号激活与语音未完成；电量计、RTC、IMU、音频及 4G 缺失；普通版结论不适用于 Plus |

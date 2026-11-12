@@ -1,0 +1,30 @@
+{
+  "source": {
+    "url": "https://m5burner-cdn.m5stack.com/firmware/16287f6984f8ec7fe8058a6c3497b3b4.bin",
+    "resolvedUrl": "https://m5burner-cdn.m5stack.com/firmware/16287f6984f8ec7fe8058a6c3497b3b4.bin",
+    "bytes": 1439168,
+    "sha256": "d6733a0ca378f95335fa5fba4d4d992fb1dd97c17557b20e9aebfca08ba6d624"
+  },
+  "backend": "actual-page-worker-wasm-jit",
+  "firmwarePatched": false,
+  "wasmSha256": "f0f3925e54876db21a77a1a62b1fa73c8ac29621bc81cace460a43670020b8fe",
+  "checks": [
+    "rom-boot-real-factory-test-ui",
+    "official-factory-SPI-SDHC-mount-and-public-test-file-write",
+    "GT911-read-clear-press-release-toggles-official-buzzer-icon-no-audio-claim",
+    "second-GT911-tap-restores-official-icon",
+    "explicit-virtual-BMI270-sample-changes-official-text",
+    "physical-GT911-scan-touch-starts-fresh-guest-WiFi-task",
+    "official-factory-reset-restores-card-remounts-and-rewrites-test-file",
+    "official-factory-fresh-worker-restores-exact-card-then-remounts-and-writes"
+  ],
+  "status": "pass",
+  "guestSeconds": 14.04,
+  "limitations": [
+    "Digital black/white endpoint, not calibrated 16-gray optical pulse integration.",
+    "One contact; only default GT911 scan/ready/clear and polling input are covered, not multi-touch/config/gesture firmware. A short scan tap can be missed; the bounded probe records every attempted tap.",
+    "RTC progression requires its separate capture check. Audio and PMS150G physical power key are absent; this empty Wi-Fi scan does not verify host networking or RF.",
+    "TF uses the shared immediate SPI SDHC subset; this probe covers official FAT32 mount/write and memory-backed reset/reload, not physical card timing or browser IndexedDB.",
+    "Explicit BMI270 samples use virtual axes; physical mounting/scene rotation not calibrated. No physical hardware used."
+  ]
+}

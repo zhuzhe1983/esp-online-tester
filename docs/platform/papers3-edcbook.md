@@ -4,7 +4,7 @@
 
 固定镜像为 16 MiB，下载 SHA-256 为 `06eb3b595fc47bc5d35f760a16cdc5795ea8c0fad6295bcee8db5268cf906986`（[原有收据](../evidence/s3-light-sleep-edcbook/receipt.json)）；官方元数据未提供发布方 SHA。2026-11-12 访问该固定下载地址返回 HTTP 400 / `BURN_CAPTCHA_INVALID`，随后按现有站点接口调用 OCR，识图步骤在 20 秒上限内未完成（`CAPTCHA_TIMEOUT`），当时未取得镜像。随后调用方提供了相同 SHA-256 的原始完整 BIN，按原有 ROM 启动链完成了本页的实际验收；早期下载失败保留在来源记录中。官方 v0.5 的 TF、RTC 和联网结果仍只属于 v0.5。
 
-2026-11-12 的固定镜像在 CPU 修复 `43792396` 与显示适配 `583d9a8d` 后，真实页面 Worker 已显示 540×960 首页，并通过触屏进入内置“快速入门指南”、翻到“按键功能”、返回第一页。四次观察的累计扫描数为 76、148、197、246，始终只有一次 ROM 启动，没有客体停机或 panic。[运行收据](evidence/papers3-edcbook/rgb-runtime-20261112.json)保留镜像/WASM/截图 hash、指令数、输入及负例；截图和原始串口仅保留在忽略的输出目录。
+2026-11-12 的固定镜像在 CPU 修复 `43792396` 与显示适配 `e358441d` 后，真实页面 Worker 已显示 540×960 首页，并通过触屏进入内置“快速入门指南”、翻到“按键功能”、返回第一页。四次观察的累计扫描数为 76、148、197、246，始终只有一次 ROM 启动，没有客体停机或 panic。[运行收据](evidence/papers3-edcbook/rgb-runtime-20261112.json)保留镜像/WASM/截图 hash、指令数、输入及负例；截图和原始串口仅保留在忽略的输出目录。
 
 原故障分为两层：`EE.LDXQ.32` 未实现使固件停在 `0x420a0da0`；补齐指令后，固件已输出 LCD_CAM RGB 流，但 PaperS3 只有 i80 显示入口。EDCBook 使用 EPDiy 的 RGB+RMT 接口，与已验收官方 v0.5 的 M5GFX i80 不同。显示适配依据厂家文档固定的 [EPDiy d84d26eb](https://github.com/vroland/epdiy/blob/d84d26ebebd780c4c9d4218d76fbe2727ee42b47/src/output_lcd/lcd_driver.c)：每行一个 dummy 字节加 240 个四像素驱动字节，540 行向 8 对齐为 544 行；LCD D8..D15 按物理两位组路由至面板，PCLK/HSYNC/DE 分别接 G16/G15/G13，G18 接有限循环 RMT CKV。S3 GPIO/RMT 值按 IDF 5.5.1 检查，并与这份固件的 5.5.2 头文件交叉核对。
 
@@ -15,6 +15,8 @@
 随后 Chromium 重载暴露了独立的电池输入缺口：屏幕显示“请及时充电”，扫描停在 82 次，触摸不再进入阅读。原模型把充电状态 G4 保持为高（未充电），却未给电池分压 ADC 提供输入；未驱动的 ADC 默认 0V。厂家 C139 V1.0 原理图的 R24/R25 均为 22k，电池电压经 2:1 分压接到 GPIO3；固定 M5Unified 源码对应 ADC1_CH2 和 2.0 倍还原。重载后为何更早进入低电分支尚未单独隔离，不能把 NVS 持久化或前一次渲染修复当成已证实的原因。
 
 `f9ef5fe0` 为 PaperS3 声明了可覆盖的标称 4.0V 电池：在板级装配时，仅向未驱动的 G3 提供 2.0V 模拟源，经既有 SAR 转换和客体校准得到电压；不强制充电，也不改固件的低电阈值或 NVS。显式 host 电压、波形流和原始码（包括零）不会被默认值覆盖，重挂、客体重启和保留式轻睡唤醒均维持已有输入。两个定向测试覆盖实际 ADC 读数与这些边界；[电池来源和负例收据](evidence/papers3-edcbook/battery-default-20261112.json)记录详情。它是固定电压的模拟初始状态，没有实现充放电曲线、容量消耗、压降或独立电源控制器；浏览器首启及重载结果由整合验收补充。
+
+最终 Chromium 157 验收使用生产 WASM `f0f3925e54876db21a77a1a62b1fa73c8ac29621bc81cace460a43670020b8fe`，完成首次启动、内置阅读和前后翻页。保留 16 个已修改 Flash 页重载后，固件会走开机确认流程：**开机画面出现后尽快长按屏幕 LOGO 约 2 秒**，即可进入首页并继续阅读；未确认时会显示关机封面。没有清空设备存储或改写 NVS。[只读 NVS 样本](evidence/papers3-edcbook/reload-nvs-20261112.json)中不存在 `boot_guard` / `skip_welcome` 配置键，不能把该行为归因于用户开启了 Boot Guard；具体启动重试分支仍未单独隔离。[浏览器帧、输入和存储收据](../evidence/papers3-edc-ldxq-20261112/browser-final.json)保留未确认的对照结果。
 
 `tools/probe-papers3-edcbook.mjs` 使用真实页面 worker/WASM、PaperS3 板型和隔离 Flash/TF 存储，先核对镜像 SHA，再从 ROM 启动。镜像可通过调用方提供的本地文件输入；原始远程出处仍须显式传入：
 
