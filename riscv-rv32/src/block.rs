@@ -2,7 +2,7 @@
 //! block is up to `MAX_LEN` instructions decoded once, read ahead with `Bus::fetch_ahead`, and
 //! kept while the bus's code versions (`Bus::page_versions`) of the pages its bytes lie on stay
 //! put. Running one skips the per-instruction fetch, decode and interrupt test of `exec::step`;
-//! each instruction still goes through `exec::exec_insn`, the interpreter's own execution.
+//! each instruction still goes through `exec::exec_insn`'s body, the interpreter's own execution.
 //!
 //! Exactness against a loop over `step` (the oracle, `--no-jit`):
 //! - The interrupt test is made before a block, with the predicate `step_outcome` applies. Only
@@ -22,7 +22,7 @@
 //!   faults and all.
 use crate::bus::Bus;
 use crate::decode::{decode_for, Comp, Insn, Op};
-use crate::exec::{exec_insn, step_outcome, Trap};
+use crate::exec::{exec_insn_inline, step_outcome, Trap};
 use crate::state::Cpu;
 use emu_core::core::pc_bit;
 
@@ -214,7 +214,7 @@ pub fn run<B: Bus>(cpu: &mut Cpu, bus: &mut B, budget: u32) -> (u32, Option<Trap
             bus.note_pc(pc);
             cpu.insn_count += 1; cpu.cycle_count += 1;
             done += 1;
-            if let Err(t) = exec_insn(cpu, bus, &i, pc) { return (used + done, Some(t)); }
+            if let Err(t) = exec_insn_inline(cpu, bus, &i, pc) { return (used + done, Some(t)); }
             cpu.retired_count += 1;
             // a hardware loop's back-edge after its last instruction, as `step_outcome` takes it;
             // the rest of the block is then not where execution goes
