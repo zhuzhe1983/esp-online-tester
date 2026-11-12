@@ -17,6 +17,7 @@ pub mod airquality;
 pub mod atoms3;
 pub mod atoms3_lite;
 pub mod atoms3r;
+pub mod atoms3r_cam;
 pub mod atom_voices3r;
 pub mod dial;
 pub mod stackchan;
@@ -74,6 +75,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "none" | "bare" => Some(Box::new(NoBoard)),
         "atom-voices3r" | "m5stack-c126-echo" => Some(Box::new(atom_voices3r::AtomVoiceS3R::new())),
         "atoms3r-chatbot" | "m5stack-k147" => Some(Box::new(AtomS3R::chatbot())),
+        "atoms3r-cam-chatbot" | "m5stack-k147-cam" => Some(Box::new(atoms3r_cam::AtomS3RCam::new())),
         "atoms3r" | "m5stack-atoms3r" => Some(Box::new(AtomS3R::new())),
         "atoms3" | "m5stack-atoms3" => Some(Box::new(AtomS3::new())),
         "stackchan" | "m5stack-k151" => Some(Box::new(stackchan::StackChan::new())),
@@ -109,5 +111,5 @@ pub fn make_board(name: &str) -> Option<Board> {
 /// offset 0x50, PKG_VERSION bits 23:21; M5GFX 65c816a3 identifies PICO as 1.
 /// v4.4.8 defines the same offset/field. No changes for other products.
 pub fn configure_chip_identity(board:&str,efuse:&mut esp_periph::efuse::Efuse) {
-    if matches!(board,"atoms3r"|"atom-voices3r"|"atoms3r-chatbot"|"stamps3bat") {let r=efuse.ram.read(0x50);efuse.ram.write(0x50,(r&!(7<<21))|(1<<21));}
+    if matches!(board,"atoms3r"|"atom-voices3r"|"atoms3r-chatbot"|"stamps3bat"|"atoms3r-cam-chatbot") {let r=efuse.ram.read(0x50);efuse.ram.write(0x50,(r&!(7<<21))|(1<<21));}
 }

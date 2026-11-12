@@ -2,6 +2,8 @@
 //! OV5640 register encodings and its 2624 x 1952 array remain sensor-specific;
 //! this module does not model LCD_CAM, I2S, DMA, board wiring or capture timing.
 mod ov2640;
+mod gc0308;
+pub use gc0308::{Gc0308,Gc0308State};
 pub use ov2640::{Ov2640, Ov2640State};
 
 use esp_periph::i2c::I2cDevice;
