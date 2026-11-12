@@ -410,9 +410,14 @@ impl esp_soc::SocBus for SocBus {
         // can skip FreeRTOS vTaskDelay (hello_world's 10 s countdown) instead of
         // burning one cycle per idle round when next_deadline is None.
         let stalled = self.inner.cores.stalled();
-        let ticks = self.inner.periph.systimer.ticks_until_irq(stalled)?;
-        if ticks == 0 { return Some(1); }
         let hz = self.inner.clocks.rates().cpu_hz.max(1);
+        // The board's next input edge (the Mosaico's TE), in emulated nanoseconds.
+        let board = self.board.next_deadline().map(|ns| {
+            let dt = u128::from(ns.saturating_sub(self.board_ns)) * u128::from(hz);
+            (dt.div_ceil(1_000_000_000).min(u128::from(u64::MAX)) as u64).max(1)
+        });
+        let Some(ticks) = self.inner.periph.systimer.ticks_until_irq(stalled) else { return board };
+        if ticks == 0 { return Some(1); }
         let source = if self.inner.periph.systimer.source_rc_fast() {
             self.inner.clocks.rc_fast_hz().max(1)
         } else {
@@ -421,7 +426,8 @@ impl esp_soc::SocBus for SocBus {
         // Inverse of Systimer::advance_cpu: ticks ≈ cycles * source * 2 / (cpu_hz * 5)
         // => cycles ≈ ticks * cpu_hz * 5 / (source * 2), ceil.
         let cycles = (u128::from(ticks) * u128::from(hz) * 5).div_ceil(u128::from(source) * 2);
-        Some(cycles.min(u128::from(u64::MAX)).max(1) as u64)
+        let timer = cycles.min(u128::from(u64::MAX)).max(1) as u64;
+        Some(board.map_or(timer, |b| b.min(timer)))
     }
 
     fn irq_dirty(&mut self) -> &mut bool {

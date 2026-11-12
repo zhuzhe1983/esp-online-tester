@@ -38,6 +38,7 @@ pub struct Mosaico {
     pub nand: crate::spi_nand::SpiNand,
     /// TE: the level now and the edges not yet delivered (`advance_to` takes emulated nanoseconds)
     te_level: bool,
+    te_now: u64,
     te_edges: Vec<esp_soc::board::BoardEdge>,
 }
 impl Default for Mosaico { fn default() -> Self { Self::new() } }
@@ -45,7 +46,7 @@ impl Mosaico {
     pub const WIDTH: usize = 480;
     pub const HEIGHT: usize = 480;
     pub fn new() -> Self {
-        Mosaico { panel: Co5300::new(Self::WIDTH, Self::HEIGHT, 0), powered: false, in_reset: false, gpio_events: 0, dropped: 0, touch: Default::default(), nand: crate::spi_nand::SpiNand::new(), te_level: false, te_edges: Vec::new() }
+        Mosaico { panel: Co5300::new(Self::WIDTH, Self::HEIGHT, 0), powered: false, in_reset: false, gpio_events: 0, dropped: 0, touch: Default::default(), nand: crate::spi_nand::SpiNand::new(), te_level: false, te_now: 0, te_edges: Vec::new() }
     }
 }
 impl BoardModel for Mosaico {
@@ -66,6 +67,7 @@ impl BoardModel for Mosaico {
     /// The S31 machine passes emulated time in nanoseconds. TE runs only while the panel is powered
     /// and out of reset; a jump over several frames yields the level at `now` (one edge pair at most).
     fn advance_to(&mut self, now: esp_soc::board::VirtualCycle) {
+        self.te_now = now;
         let level = self.powered && !self.in_reset && now % TE_PERIOD_NS < TE_HIGH_NS;
         if level != self.te_level {
             self.te_level = level;
@@ -73,6 +75,14 @@ impl BoardModel for Mosaico {
         }
     }
     fn take_edges(&mut self) -> Vec<esp_soc::board::BoardEdge> { std::mem::take(&mut self.te_edges) }
+    /// The next TE edge, in the same emulated nanoseconds `advance_to` takes, so an idle machine
+    /// wakes for it instead of jumping over the 1 ms blanking pulse.
+    fn next_deadline(&self) -> Option<esp_soc::board::VirtualCycle> {
+        if !self.powered || self.in_reset { return None; }
+        let now = self.te_now;
+        let phase = now % TE_PERIOD_NS;
+        Some(now - phase + if phase < TE_HIGH_NS { TE_HIGH_NS } else { TE_PERIOD_NS })
+    }
     fn i2c_devices(&mut self) -> Vec<(u8, u8, Box<dyn esp_periph::i2c::I2cDevice>)> {
         vec![(0, crate::cst9220::ADDRESS, Box::new(crate::cst9220::Cst9220::new(self.touch.clone(), Self::WIDTH as u16, Self::HEIGHT as u16)))]
     }
