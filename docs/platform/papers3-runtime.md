@@ -44,3 +44,5 @@ PaperS3 的卡槽走 SPI，不是 PaperMono 的原生 SDMMC。V1.0 原理图 J3 
 一份用户提供的原始完整镜像（输入 SHA、大小见 [收据](evidence/papers3-tf/private-firmware-result.json)）在修复前停于 CMD0、报告 SD 未检测到；修复后原生与真实页面 WASM 均成功挂载，客体写出 2,389 字节、跨 5 个簇的文件。reset、新 worker 和 IndexedDB 页面重载后文件及整卡 SHA 一致，mini 重新挂载同一镜像。该私人固件、文件名/内容、源代码、完整串口和画面不公开；可用 [调用方输入探针](../../tools/probe-papers3-sd.mjs) 在本机复核，不修改镜像。
 
 这是 SPI **SDHC 即时数字子集**：命令/响应、CRC7/CRC16、单/多块读写与停止令牌复用既有块存储。没有校准供电/编程忙时间、模拟信号或物理拔插，也未支持 SDSC、任意半双工驱动和全部 SD 标准命令。不据此声明整个私人应用、灰阶显示或网络可用。来源、负例、浏览器和 CPU 检查见 [证据说明](evidence/papers3-tf/README.md)。
+
+2026-11-12 固定官方 v0.5 的 TF 路径已单独闭环：原始镜像挂载默认 FAT32 卡，实际写出 `TEST.TXT` 的 13 字节 `Hello, World!`；复位及新 worker 重载后文件和整卡摘要一致，重载启动前也核对完整卡恢复。真实画面显示卡型与容量，未发现新的官方 TF 缺陷。见 [官方固件 TF 收据与边界](evidence/papers3-factory-tf/README.md)；该 Node/WASM 验收不新增浏览器 IndexedDB 或物理卡时序结论。
