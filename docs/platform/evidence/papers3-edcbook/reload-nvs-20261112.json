@@ -1,0 +1,46 @@
+{
+  "checkedOn": "2026-11-12",
+  "sourceRevision": "cad3ddd2",
+  "firmwareSha256": "06eb3b595fc47bc5d35f760a16cdc5795ea8c0fad6295bcee8db5268cf906986",
+  "wasmSha256": "f0f3925e54876db21a77a1a62b1fa73c8ac29621bc81cace460a43670020b8fe",
+  "capture": {
+    "path": "output/playwright/papers3-edc/saved-pages.json",
+    "sha256": "7e528b74ce0a4c9fdc9934ebe0c37f206baed8f8171b7535e1bf85c5d276dbb3",
+    "bytes": 87944,
+    "pageCount": 16,
+    "pageBytes": 4096,
+    "point": "Isolated Chromium test storage after reload reached the shutdown cover and a later touch left it unchanged; emulator paused at guest 16.28 seconds, 6466951975 instructions, 82 scans.",
+    "scope": "One changed NVS page at 0x9000; the other 15 changed pages are in the SPIFFS partition. The original firmware NVS pages 0xa000 through 0xd000 remain erased.",
+    "nvsPageSha256": "9afa9683e5aa6de931537280685d3df183c489f5c753fe3f489168dd9c7c948a"
+  },
+  "method": {
+    "mutation": "None. Read the original BIN and overlay exported saved pages in memory only.",
+    "partition": { "offset": "0x9000", "bytes": 20480 },
+    "formatSources": [
+      "https://github.com/espressif/esp-idf/blob/v5.5.2/components/nvs_flash/src/nvs_page.hpp",
+      "https://github.com/espressif/esp-idf/blob/v5.5.2/components/nvs_flash/src/nvs_types.hpp"
+    ],
+    "versionScope": "ESP-IDF v5.5.2 NVS format; guest boot identifies ESP-IDF 5.5.2.260206.",
+    "decode": "For each 4096-byte page: header occupies bytes 0..31; entry-state bitmap bytes 32..63; entry n begins at 64+32*n. State=(page[32+n//4]>>((n%4)*2))&3. Accept WRITTEN state 2; skip variable-length spans. Namespace index is entry[0], type entry[1], key entry[8:24] before NUL, scalar data entry[24:32]. Resolve namespaces from namespace-zero U8 entries. Reported scalar type 0x14 is signed 32-bit little-endian.",
+    "integrity": "The three reported scalar entry CRCs match Python zlib.crc32(entry[:4]+entry[8:], 0xffffffff). Each is a single-entry WRITTEN item in namespace 2, named system."
+  },
+  "values": [
+    { "namespace": "system", "key": "first_boot", "value": 0, "entry": 18, "entryCrc32": "741cac97" },
+    { "namespace": "system", "key": "boot_retry", "value": 1, "entry": 34, "entryCrc32": "6717f965" },
+    { "namespace": "system", "key": "shutdown", "value": 3, "entry": 37, "entryCrc32": "59e23808" }
+  ],
+  "absentKeys": ["boot_guard", "skip_welcome"],
+  "absenceScope": "No NVS item for either key exists in the captured partition, including erased historical entries. Absence does not determine the firmware's compiled defaults or prove a configuration option is enabled.",
+  "browserControl": {
+    "negative": "Reload with retained storage reached the ordinary shutdown cover at 12.04 guest seconds / 82 scans. A touch after that did not resume the UI.",
+    "negativeScreenshot": { "path": "output/playwright/papers3-edc/reload-reader.png", "sha256": "482676643ce68b102395f8fdbdb540e1d3f2521f15140e3b33a438da7ee1f055", "bytes": 41766 },
+    "positive": "Reload the same stored firmware; at guest 2.5 seconds, hold touch at (270,250) for 2 seconds, then release. The home screen appears; continuing reading succeeds with saved data retained.",
+    "positiveScreenshot": { "path": "output/playwright/papers3-edc/reload-logo-confirm.png", "sha256": "a7d384655c6b267b0016442b6b1f335de43196ccc44f2f5538aae8331466c5ea", "bytes": 23835 },
+    "conclusion": "Early screen confirmation passes the observed startup-confirmation or abnormal-startup protection path. No firmware patch, storage clearing, reset-reason override or new power-button model was needed."
+  },
+  "limits": [
+    "The meanings of shutdown=3 and boot_retry=1, and the exact branch selecting startup confirmation, were not isolated. This is not evidence that the boot_guard setting was enabled.",
+    "The exported page was captured after the negative reload; it is not a pre-reload snapshot and may contain values written by that boot.",
+    "Raw firmware, saved flash pages, UART and screenshots remain outside Git. Only the relevant keys, hashes, numeric observations and reproduction method are retained."
+  ]
+}
