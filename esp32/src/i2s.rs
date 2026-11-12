@@ -56,6 +56,8 @@ impl ClassicI2s {
         Self { inner: I2s::new(CPU_HZ), ram, dma: esp_periph::gdma::GdmaInCh { conf1: LC_CONF_RESET & CHECK_OWNER, ..Default::default() }, clock_enabled: false,
             #[cfg(test)] step_calls: 0, camera_capable: port == 0, camera: None, camera_mode: false }
     }
+    /// RXEOF_NUM (0x24) in words: IDF v5.5.4 hal/esp32/include/hal/i2s_ll.h:639-643.
+    pub(crate) fn rx_eof_words(&self) -> u32 { self.ram.read(0x24) }
     /// ESP-IDF v4.4.7 components/soc/esp32/include/soc/i2s_reg.h:
     /// CONF2 0xa8, LCD_EN bit 5 and CAMERA_EN bit 0 (1298-1346);
     /// FIFO_CONF 0x20, force/mode/descriptor bits (640-670);

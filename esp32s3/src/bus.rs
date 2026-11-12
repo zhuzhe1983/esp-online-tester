@@ -493,7 +493,9 @@ impl SocBus {
             if self.mmu[i] != v & 0xffff { self.mmu[i] = v & 0xffff; self.invalidate_tlb(); }
             return;
         }
-        self.flush_ticks();
+        // EX254: `periph_write` re-derives the tick budget after this write, and nothing in
+        // between reads it, so the flush skips its own refresh.
+        self.flush_ticks_unbudgeted();
         let a = addr & !3;
         // mmio-s1: SPI2 and GDMA writes reach only those two devices' sources (and RAM, the board),
         // so they re-derive interrupt lines only when one of those sources moved; SPI3 (0x60025)
@@ -928,6 +930,14 @@ impl SocBus {
         if c == 0 { return; }
         self.tick_impl(c);
         self.refresh_tick_budget();
+    }
+
+    /// `flush_ticks` for a caller that refreshes the tick budget itself before anything reads
+    /// it (`tick` and `next_deadline` are its only readers).
+    #[inline]
+    fn flush_ticks_unbudgeted(&mut self) {
+        let c = std::mem::take(&mut self.tick_pending);
+        if c != 0 { self.tick_impl(c); }
     }
 
     fn tick_impl(&mut self, cycles: u32) -> u32 {

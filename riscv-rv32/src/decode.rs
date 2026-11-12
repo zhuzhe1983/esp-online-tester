@@ -92,6 +92,9 @@ pub fn decode_for(misa: u32, pc: u32, bytes: [u8; 4]) -> Insn {
     decode32(pc, raw, f)
 }
 
+// Both decoders inline into `decode_for`, so the step decodes without a call and an Insn
+// returned through memory.
+#[inline(always)]
 fn decode32(pc: u32, w: u32, f: bool) -> Insn {
     let (rd, rs1, rs2) = (((w >> 7) & 0x1f) as u8, ((w >> 15) & 0x1f) as u8, ((w >> 20) & 0x1f) as u8);
     let f3 = (w >> 12) & 7;
@@ -204,6 +207,7 @@ fn decode_f(w: u32) -> Insn {
     }
 }
 
+#[inline(always)]
 fn decode_compressed(pc: u32, c: u32, f: bool) -> Insn {
     let f3 = (c >> 13) & 7;
     let rd = ((c >> 7) & 0x1f) as u8;             // also rs1 in the CI/CR formats

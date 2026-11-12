@@ -1,13 +1,12 @@
 use emu_core::Bus;
 use esp_soc::SocBus;
-use std::{env, fs, path::PathBuf};
+use std::{fs, path::PathBuf};
 
 // Genuine ROM -> stock IDF startup -> guest allocator. No register preconfiguration,
 // symbol stubs, host-side allocator, or direct PSRAM writes in this harness.
 fn boot(present: bool) -> String {
     let firmware = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../web/wasm/fw/public");
-    let rom = PathBuf::from(env::var_os("ESP32SIM_ROM_DIR").expect("set ESP32SIM_ROM_DIR to the fetched ROM directory"))
-        .join("esp32_rev300_rom.elf");
+    let rom = esp_soc::rom::require("esp32_rev300_rom.elf");
     let mut m = esp32::machine([0; 6], 4 << 20);
     m.bus.set_psram_size(if present { 4 << 20 } else { 0 }).unwrap();
     m.console.capture = true;
@@ -29,7 +28,7 @@ fn boot(present: bool) -> String {
     assert_eq!(m.stub_hits, 0);
     assert_eq!(m.reboots, 0, "harness must not hide failed startup behind a reboot");
     if present && serial.contains("P4 result=pass") {
-        assert_eq!((m.insns(), m.exceptions, m.interrupts), (26_944_062, 399, 15));
+        assert_eq!((m.insns(), m.exceptions, m.interrupts), (26_944_072, 399, 15));
         let mut irq = [[0; 32]; 2];
         irq[0][6] = 13;
         irq[0][9] = 2;
@@ -42,7 +41,7 @@ fn boot(present: bool) -> String {
         }
     }
     if !present && serial.contains("Failed to init external RAM!") {
-        assert_eq!((m.insns(), m.exceptions, m.interrupts), (2_431_527, 22, 0));
+        assert_eq!((m.insns(), m.exceptions, m.interrupts), (2_431_535, 22, 0));
         assert_eq!(m.irq_hist.as_slice(), [[0; 32]; 2]);
     }
     serial

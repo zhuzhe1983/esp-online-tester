@@ -17,8 +17,12 @@ impl ClassicTimer {
         Self { timer: TimerGroup::new(), lact: Timer::default(), lact_rtc: 0 }
     }
 
+    // Lines follow INT_RAW and the per-timer EDGE/LEVEL_INT_EN bits; INT_ENA masks only INT_ST.
+    // esp-hal 1.1.2 src/timer/timg.rs:520 says INT_ENA is ineffective on ESP32; a T0 level
+    // interrupt masking test confirms this on silicon (PR #314). Edge lines and LACT extrapolate
+    // the rule. IDF 5.x can mask an armed alarm with INT_ENA alone and leave the line asserted.
     fn irq_bits(&self) -> u64 {
-        let pending = self.timer.int_raw & self.timer.int_ena;
+        let pending = self.timer.int_raw;
         let mut bits = 0;
         for n in 0..2 {
             if pending & (1 << n) != 0 {
@@ -121,6 +125,64 @@ mod tests {
             assert_ne!(t.read(0x9c), 0);
             assert_eq!(t.next_deadline(), None);
         }
+    }
+
+    const RUN: u32 = (1 << 31) | (1 << 30) | (2 << 13);
+
+    /// Arms alarm 1 on each (config, alarm) timer with `int_en` (LEVEL bit 11 / EDGE bit 12),
+    /// INT_ENA left 0, and runs until every alarm has fired.
+    fn fire(armed: &[(u32, u32)], int_en: u32) -> ClassicTimer {
+        let mut t = ClassicTimer::new(0);
+        for &(config, alarm) in armed {
+            t.write(alarm, 1);
+            t.write(config, RUN | (1 << 10) | int_en);
+        }
+        for _ in 0..4 {
+            if let Some(d) = t.next_deadline() { t.tick(d.max(1)); }
+        }
+        assert_eq!(t.next_deadline(), None, "every armed alarm fired");
+        t
+    }
+
+    /// esp-hal 1.x arms a classic alarm with LEVEL_INT_EN only and never writes INT_ENA: the
+    /// line follows INT_RAW and the timer's own EDGE/LEVEL_INT_EN bits, whatever INT_ENA holds.
+    #[test]
+    fn alarm_lines_follow_raw_status_and_int_en_bits_not_int_ena() {
+        for (config, alarm, raw, level, edge) in [(0x00, 0x10, 1u32, 1u64, 1u64 << 4), (0x24, 0x34, 2, 2, 1 << 5), (0x70, 0x84, 8, 8, 1 << 7)] {
+            let mut t = fire(&[(config, alarm)], 1 << 11);
+            assert_eq!(t.read(0x9c), raw, "INT_RAW at {config:#x}");
+            for ena in [0, raw, 0xf & !raw, 0xf] {
+                t.write(0x98, ena);
+                t.write(config, RUN | (1 << 11));
+                assert_eq!(t.irq_sources(), level, "level line, INT_ENA {ena:#x} at {config:#x}");
+                t.write(config, RUN | (1 << 12));
+                assert_eq!(t.irq_sources(), edge, "edge line, INT_ENA {ena:#x} at {config:#x}");
+                t.write(config, RUN | (1 << 11) | (1 << 12));
+                assert_eq!(t.irq_sources(), level | edge, "both lines, INT_ENA {ena:#x} at {config:#x}");
+                t.write(config, RUN);
+                assert_eq!(t.irq_sources(), 0, "no line without EDGE/LEVEL_INT_EN, INT_ENA {ena:#x} at {config:#x}");
+            }
+            t.write(config, RUN | (1 << 11) | (1 << 12));
+            t.write(0xa4, raw);
+            assert_eq!((t.read(0x9c), t.irq_sources()), (0, 0), "INT_CLR with INT_ENA set at {config:#x}");
+        }
+    }
+
+    /// INT_ST is INT_RAW masked by INT_ENA; INT_ENA reads back as written. Raw T0, T1 and LACT
+    /// (0b1011) against every enable mask, then INT_ENA still set with the raw bits cleared.
+    #[test]
+    fn int_st_is_raw_masked_by_int_ena() {
+        let mut t = fire(&[(0x00, 0x10), (0x24, 0x34), (0x70, 0x84)], 1 << 11);
+        assert_eq!(t.read(0x9c), 0b1011);
+        for ena in 0..16 {
+            t.write(0x98, ena);
+            assert_eq!((t.read(0x98), t.read(0xa0)), (ena, 0b1011 & ena), "INT_ENA {ena:#x}");
+            assert_eq!(t.irq_sources(), 0b1011, "lines unchanged by INT_ENA {ena:#x}");
+        }
+        t.write(0xa4, 0b0001);
+        assert_eq!((t.read(0x9c), t.read(0xa0)), (0b1010, 0b1010), "INT_CLR T0");
+        t.write(0xa4, 0b1010);
+        assert_eq!((t.read(0x98), t.read(0x9c), t.read(0xa0), t.irq_sources()), (0xf, 0, 0, 0), "INT_ENA set, raw clear");
     }
 
     #[test]

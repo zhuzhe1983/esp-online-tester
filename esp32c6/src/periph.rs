@@ -10,7 +10,7 @@ use crate::radio::Ieee802154;
 use crate::wifi::{ModemBb, WifiMac};
 use emu_core::{ClockDomain, ClockTree};
 use esp_periph::{device_set, mmio, Device, DeviceSet, Dispatch, Misc, RegRam, WriteEffect, NO_SOURCE};
-use esp_periph::{Aes, Efuse, Gdma, Gpio, GpSpi, Ledc, LedcLayout, Mcpwm, Rsa, Sha, SpiMem, Systimer, TimerGroup, Uart, UartLayout, UsbSerialJtag};
+use esp_periph::{Aes, Efuse, Gpio, GpSpi, Ledc, LedcLayout, Mcpwm, Rsa, Sha, SpiMem, Systimer, TimerGroup, Uart, UartLayout, UsbSerialJtag};
 use esp_periph::{RST_POWERON, RST_SW_CPU, RST_SW_SYS};
 
 pub const CPU_HZ: u64 = 160_000_000;
@@ -266,35 +266,9 @@ impl Device for AssistDebug {
 
 pub use esp_periph::rmt_compact::RmtCompact as RmtC6;
 
-/// The C6's GDMA: three channels with the S3's per-channel registers but the interrupt registers
-/// gathered at the front of the block (IN at 0x00 + 0x10n, OUT at 0x30 + 0x10n) and the channel
-/// blocks starting at 0x70. Mapped onto the shared model; descriptors live in SRAM.
-pub struct GdmaC6 { pub gdma: Gdma, ram: RegRam }
-impl Default for GdmaC6 { fn default() -> Self { Self::new() } }
-impl GdmaC6 {
-    pub fn new() -> Self { let mut g = Gdma::new(); g.addr_base = 0x4080_0000; GdmaC6 { gdma: g, ram: RegRam::new() } }
-    pub(crate) fn map(off: u32) -> Option<u32> {
-        // the shared (S3) layout per channel: IN conf0 0x00, conf1 0x04, [int 0x08..0x14], fifo 0x18, pop 0x1c,
-        // link 0x20, state 0x24, suc_eof 0x28, err_eof 0x2c, dscr 0x30, bf0 0x34, bf1 0x38, pri 0x44, peri_sel 0x48;
-        // OUT the same at +0x60. The C6 orders a channel block conf0, conf1, fifo, push, link, state, eof, eof_bfr, dscr, bf0, bf1, pri, peri_sel.
-        const T: [u32; 13] = [0x00, 0x04, 0x18, 0x1c, 0x20, 0x24, 0x28, 0x2c, 0x30, 0x34, 0x38, 0x44, 0x48];
-        if off < 0x30 { return Some((off / 0x10) * 0xc0 + 0x08 + off % 0x10); }
-        if off < 0x60 { let o = off - 0x30; return Some((o / 0x10) * 0xc0 + 0x68 + o % 0x10); }
-        if off == 0x64 { return Some(0x3c8); }
-        if (0x70..0x70 + 3 * 0xc0).contains(&off) {
-            let rel = off - 0x70; let (n, k) = (rel / 0xc0, rel % 0xc0);
-            if k <= 0x30 { return Some(n * 0xc0 + T[(k / 4) as usize]); }
-            if (0x60..=0x90).contains(&k) { return Some(n * 0xc0 + 0x60 + T[((k - 0x60) / 4) as usize]); }
-        }
-        None
-    }
-}
-impl Device for GdmaC6 {
-    fn read(&mut self, off: u32) -> u32 { match Self::map(off) { Some(o) => self.gdma.read(o), None => self.ram.read(off) } }
-    fn write(&mut self, off: u32, v: u32) -> WriteEffect { match Self::map(off) { Some(o) => self.gdma.write(o, v), None => self.ram.write(off, v) } WriteEffect::NONE }
-    fn irq_sources(&self) -> u64 { Device::irq_sources(&self.gdma) }
-    fn debug(&mut self, on: bool) { self.gdma.dbg = on; }
-}
+/// The C6's GDMA: three channels in the AHB layout (`esp_periph::gdma::AhbLayout::C6`),
+/// descriptors in SRAM.
+pub use esp_periph::gdma::GdmaAhb as GdmaC6;
 
 /// PCR: peripheral clock and reset control. Configuration reads back; the hardware-fixed clock
 /// tree fields read their silicon values, because the clock code derives the current CPU
@@ -480,7 +454,7 @@ impl Peripherals {
             spi0: SpiMemC6({ let mut s = SpiMem::new(false); s.has_psram = false; s }),
             spi1: SpiMemC6({ let mut s = SpiMem::new(true); s.has_psram = false; s }),   // no PSRAM on the C6
             sha: Sha::new(), aes: Aes::new(), rsa: Rsa::new(),
-            rmt: RmtC6::new(CPU_HZ), gdma: GdmaC6::new(), spi2: GpSpi::new(), radio: Ieee802154::new(), modem_bb: ModemBb::new(), wifi_mac: WifiMac::new(),
+            rmt: RmtC6::new(CPU_HZ), gdma: GdmaC6::new(esp_periph::gdma::AhbLayout::C6, 0x4080_0000), spi2: GpSpi::new(), radio: Ieee802154::new(), modem_bb: ModemBb::new(), wifi_mac: WifiMac::new(),
             intmtx: IntMatrix::new(), intc: Intc::new(), cache: Cache::new(), lpsys: LpSys::new(), pcr: Pcr::new(), ana_mst: AnaMst::new(), assist_debug: AssistDebug::new(),
             rng: Rng::new(), cpu_sub: RegRam::new(),
             misc: Misc::new(), spi_exec: false, clock: Self::new_clock(),

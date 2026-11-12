@@ -15,7 +15,12 @@ const DMA_BASE: u32 = 0x3ff0_0000;
 const TXQ0: u32 = 0xd20;
 const EVENT_TX: u32 = 1 << 7;
 
-const EVENT_RX: u32 = 1 << 24;
+// A received frame raises cause bits 24, 5 and 2 together (inferred, not checked on hardware):
+// the esp32-open-mac QEMU model sets 0x1000024 on RX (esp32-open-mac/qemu esp-develop 4a5c772a,
+// hw/xtensa/esp32_wifi.c:481); the Espressif blob takes RX on bit 24; esp-wifi-hal 0.3.1
+// src/ll.rs:182 is `rx => [0x100020, @chip(esp32) 0x4]`, so on the ESP32 it tests 0x100024
+// (bits 20, 5, 2).
+const EVENT_RX: u32 = (1 << 24) | (1 << 5) | (1 << 2);
 
 #[derive(Default)]
 pub struct WifiMac {
@@ -499,6 +504,27 @@ mod tests {
         assert_eq!(b.periph.wifi.link.rx_frames(), 0);
         assert_eq!(b.periph.wifi.link.last_rx_desc(), 0);
         assert!(b.take_ethernet_frames().is_empty());
+    }
+
+    /// A received frame sets cause 0x0100_0024. 0x01e839e0 is the enable mask both an IDF blob
+    /// and an esp-wifi-hal 0.3.1 firmware write (bits 24 and 5, not 2); bit 24, 5 or 2 alone each
+    /// raise the line; INT_CLR of all three bits clears it.
+    #[test]
+    fn rx_cause_raises_bits_24_5_and_2() {
+        let mut w = WifiMac::default();
+        w.write(0x088, 0x3ffb_0000);
+        w.rx_filled(0x3ffb_0000, 0x3ffb_000c);
+        assert_eq!(w.read(0xc48), 0x0100_0024);
+        assert_eq!(w.irq_sources(), 0);
+        for mask in [0x01e8_39e0, 1 << 24, 1 << 5, 1 << 2] {
+            w.write(0xc40, mask);
+            assert_eq!(w.irq_sources(), 1, "{mask:#x}");
+        }
+        w.write(0xc40, !0x0100_0024);
+        assert_eq!(w.irq_sources(), 0);
+        w.write(0xc40, 0x01e8_39e0);
+        w.write(0xc4c, 0x0100_0024);
+        assert_eq!((w.read(0xc48), w.irq_sources()), (0, 0));
     }
 
     #[test]

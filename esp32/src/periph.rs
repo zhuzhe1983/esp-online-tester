@@ -646,6 +646,10 @@ impl Device for ClassicRtc {
     }
 }
 
+// ESP-IDF v5.5.4 register/soc/syscon_reg.h:273-274: SYSCON_DATE_REG resets to 0x16042000. Bit 31 is
+// ECO3's third revision bit, which hal/esp32/efuse_hal.c:20 combines with the two eFuse ones below.
+const SYSCON_DATE_ECO3: u32 = 0x1604_2000 | 1 << 31;
+
 // Read-only factory eFuses include revision bits and the MAC address.
 pub struct ClassicEfuse {
     pub ram: RegRam,
@@ -662,7 +666,9 @@ impl ClassicEfuse {
         }
         r.write(0x08, (crc as u32) << 16 | (mac[0] as u32) << 8 | mac[1] as u32);
         r.write(0x0c, 1 << 15); // ECO1+
-        r.write(0x14, 1 << 20); // Revision 2; the loaded ECO3 ROM is selected independently.
+        // IDF v5.5.4 register/soc/efuse_reg.h:221,251: CHIP_VER_REV2 in EFUSE_BLK0_RDATA5_REG. With
+        // CHIP_VER_REV1 above (efuse_reg.h:88,156) and SYSCON_DATE bit 31: v3.0, the ECO3 the ROM is for.
+        r.write(0x14, 1 << 20);
         // IDF v5.5.4 register/soc/efuse_reg.h:169,177-183: EFUSE_BLK0_RDATA4_REG EFUSE_RD_ADC_VREF
         // [12:8]. 0x10 is nominal 1100 mV Vref, sign-magnitude negative zero.
         r.write(0x10, 0x10 << 8);
@@ -697,6 +703,7 @@ pub struct Peripherals {
     pub rmt: ClassicRmt,
     pub rtc: ClassicRtc,
     pub efuse: ClassicEfuse,
+    pub syscon: RegRam,
     pub sha: ClassicSha,
     pub timg: [ClassicTimer; 2],
     pub frc2: crate::frc::Frc2,
@@ -747,6 +754,7 @@ device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::RtcSlow, 1600)]
     0x60 "TIMG1" (timg[1]) => [SRC_TG1_T0, SRC_TG1_T1, SRC_TG1_WDT, SRC_TG1_LACT, SRC_TG1_T0_EDGE, SRC_TG1_T0_EDGE + 1, SRC_TG1_T0_EDGE + 2, SRC_TG1_T0_EDGE + 3];
     0x64 "SPI2" (spi[0]) => [SRC_SPI2, SRC_SPI2_DMA];
     0x65 "SPI3" (spi[1]) => [SRC_SPI3, SRC_SPI3_DMA];
+    0x66 "SYSCON" (syscon) => [];
     0x67 "I2C1" (i2c[1]) => [SRC_I2C1];
     0x6e "UART2" (uart[2]) => [SRC_UART2];
 }
@@ -788,6 +796,7 @@ impl Peripherals {
             rmt: ClassicRmt::new(),
             rtc: ClassicRtc::new(),
             efuse: ClassicEfuse::new(mac),
+            syscon: { let mut r = RegRam::new(); r.write(0x7c, SYSCON_DATE_ECO3); r },
             sha: ClassicSha::new(),
             timg: [ClassicTimer::new(0), ClassicTimer::new(1)],
             frc2: crate::frc::Frc2::default(),
@@ -1074,6 +1083,18 @@ impl Peripherals {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn classic_reports_eco3_silicon_revision_v3_0() {
+        // ESP-IDF v5.5.4 hal/esp32/efuse_hal.c:16-46: rev1, rev2 and SYSCON_DATE bit 31; 0b111 is v3.
+        let mut p = Peripherals::new([0; 6]);
+        let eco = (p.read32(0x3ff6_607c) >> 31) << 2 | (p.read32(0x3ff5_a014) >> 20 & 1) << 1 | p.read32(0x3ff5_a00c) >> 15 & 1;
+        assert_eq!(eco, 0b111);
+        assert_eq!(p.read32(0x3ff5_a014) >> 24 & 3, 0, "wafer minor version: v3.0, not v3.1");
+        assert_eq!(p.read32(0x3ff6_607c), 0x9604_2000);
+        p.write32(0x3ff6_6000, 0x1234);
+        assert_eq!(p.read32(0x3ff6_6000), 0x1234, "the rest of SYSCON stays register RAM");
+    }
 
     #[test]
     fn classic_factory_mac_includes_rom_crc8() {

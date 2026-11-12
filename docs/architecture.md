@@ -1,11 +1,12 @@
 # Architecture
 
-esp32sim emulates three ESP32 SoCs across both of Espressif's CPU architectures: the **ESP32-S3**
-(two Xtensa LX7 cores), **ESP32-C3** (one RISC-V RV32IMC core, see
-[esp32c3.md](esp32c3.md)) and **ESP32-C6** (one RISC-V RV32IMAC core, see
-[esp32c6.md](esp32c6.md)). They share the SoC peripheral models wherever the IP is identical and
+esp32sim emulates five ESP32 SoCs across both of Espressif's CPU architectures: the **ESP32-S3**
+(two Xtensa LX7 cores), the classic **ESP32** (two Xtensa LX6 cores, see [esp32.md](esp32.md)),
+**ESP32-C3** (one RISC-V RV32IMC core, see [esp32c3.md](esp32c3.md)), **ESP32-C6** (one RISC-V
+RV32IMAC core, see [esp32c6.md](esp32c6.md)) and **ESP32-P4** (two RISC-V RV32IMAFC cores, see
+[esp32p4.md](esp32p4.md)). They share the SoC peripheral models wherever the IP is identical and
 differ in their CPU crate, memory map and interrupt controller. This document describes the S3,
-which has the most complete model; the C3 and C6 follow the same shape.
+which has the most complete model; the other chips follow the same shape.
 
 esp32sim is an instruction-level emulator of the ESP32-S3: it executes the real mask ROM, the
 real second-stage bootloader and an unmodified application image on two emulated Xtensa LX7
@@ -19,11 +20,17 @@ cli/          esp32sim binary, every chip (`esp32sim-c3`, `esp32sim-c6`, `esp32s
               parsing, image loading, run loop, reports
               (`--chip esp32|s3|c3|c6|p4`; the setup that is chip-specific is one function per chip)
 esp-soc/      Machine<S: Soc>, written once for every chip: the scheduler (256-instruction quanta
-              on wasm32, 64 natively; idle skipping, per-core reset state), lazy device time,
+              on wasm32, 64 natively; idle skipping, per-core reset state), device time,
               console capture, action scripts, function stubs/probes, tracing and watchpoints,
               the web UI protocol, real-time pacing, ROM/app image loading, reboot; the
               Soc/SocBus traits a chip implements; the BoardModel trait; elf/image/picture
               loaders; the web server
+  observers/  the analyses that attach to a run (observe.rs: the hooks they ask for)
+  devices/    chip-neutral parts boards are built from: DCS panels, CO5300, FT5x06, WS2812,
+              a bit-banged SPI slave
+  camera.rs   OV5640 and OV2640 sensors and host frames, independent of the capture block
+  ble.rs      a packet-level BLE controller and virtual peer behind each chip's VHCI glue
+  usb_host.rs the host on the other end of the USB cable: enumeration, mass storage, FAT32
   wifi.rs     the virtual 802.11 access point (beacons, probe/auth/assoc, WPA2 four-way
               handshake) and StationLink, the station's side of the air every chip's MAC shares
   net.rs      the emulated subnet 10.0.2.0/24: ARP, DHCP, ICMP, DNS, SNTP
@@ -31,27 +38,31 @@ esp-soc/      Machine<S: Soc>, written once for every chip: the scheduler (256-i
 esp32s3/      the SoC and boards
   soc.rs      the S3 as a Soc: two LX7 cores, core-1 reset/stall state, interrupt lines per core,
               app boot, reboot (what survives), console streams, audio, board
-  bus.rs      SocBus: memory map, cache MMU, peripheral dispatch, DMA pumps (I2S, camera)
+  bus.rs      SocBus: memory map, cache MMU, software TLB, peripheral dispatch; bus/dma.rs the
+              GDMA pumps (I2S, SPI2/3, RMT, camera, memory-to-memory)
   periph.rs   the S3's device table (`device_set!`) and its S3-only models (interrupt matrix,
-              WiFi MAC, PCNT, GP-SPI, LCD_CAM, EXTMEM, WDEV, regi2c); the rest come from esp-periph
-              — formerly: register models (UART, USB-Serial/JTAG, systimer, TIMG, interrupt matrix, GPIO,
-              RTC_CNTL + WDT, efuse, SPI0/1 flash + PSRAM, SHA, AES, RSA/MPI, RNG, regi2c,
-              GDMA, I2S, RMT, LCD_CAM, WiFi MAC)
-  i2c.rs      I2C master controller + bus devices (CH32V003, OV5640, ES8311/ES7210)
-  board/      one file per board: Atech14, WaveshareCam, WaveshareLcd4b, WaveshareAmoled18V2 (BoardModel from esp-soc)
+              WiFi MAC, PCNT, LCD_CAM, EXTMEM, WDEV, the I2C_MST front of esp-periph's regi2c);
+              the rest come from esp-periph
+  i2c.rs      the I2C devices boards hang on esp-periph's controller (CH32V003, TCA9554, GT911,
+              CST820, QMI8658)
+  board/      one file per board: Atech14, WaveshareCam, WaveshareLcd4b, WaveshareAmoled18V2,
+              Stopwatch (BoardModel from esp-soc)
 esp-periph/   the peripheral IP Espressif chips share, one file each (UART, USB-Serial/JTAG,
-              systimer, TIMG, GPIO, RTC_CNTL, efuse, SYSTEM, SPI_MEM, GDMA, SHA/AES/RSA, I2S, RMT,
-              I2C), the `Device` trait they implement, and `device_set!`: the one table per chip
-              that generates dispatch, interrupt sources, clock ticks and timer deadlines
+              systimer, TIMG, GPIO, LEDC, MCPWM, RTC_CNTL, SAR ADC, efuse, SYSTEM, SPI_MEM, GDMA,
+              SHA/AES/RSA, I2S, RMT, GP-SPI, I2C, SDMMC, USB-OTG), the `Device` trait they
+              implement, and `device_set!`: the one table per chip that generates dispatch,
+              interrupt sources, clock ticks and timer deadlines
 emu-core/     what every core shares: the Bus contract (with the TLB/page-version hooks a JIT
               needs), the Core trait a machine drives, Trap, ClockTree, and the AArch64 encoder
+              (jit_a64.rs)
 xtensa-lx7/   the core
   decode.rs   instruction decoder (24/16-bit base ISA, FPU, MAC16, booleans) -> Insn
   pie.rs      PIE SIMD (ee.*) decode/format/execute; pie_table.rs is generated from the TRM
   exec.rs     interpreter: windowed registers, loops, XEA2 exceptions/interrupts, CP enable
   block.rs    basic-block cache and block interpreter (the normal execution path)
   core.rs     the `emu_core::Core` implementation the machine drives
-  jit/        native code generation for blocks: mod.rs compiler + helpers (encoder in emu-core)
+  jit/        code generation for blocks: mod.rs the AArch64 compiler + helpers (encoder in
+              emu-core), wasm*.rs the WebAssembly backend of the browser build
   state.rs    Cpu: registers, special registers, user registers (ACCX/QACC/…), interrupt levels
   disasm.rs   objdump-compatible formatter (used by the differential decoder test)
 web/          index.html: the landing page; run.html: board drawing, console, WebAudio, camera panel (no build step)
@@ -68,13 +79,17 @@ esp32c6/      the C6 SoC: unified memory map and MMU, interrupt matrix + PLIC/IN
 esp32p4/      the P4 SoC (rev < 3 and rev >= 3, two cores): memory map with L2MEM and the flash and PSRAM MMUs,
               interrupt matrices and per-core CLICs, HP/LP system blocks, PSRAM (esp32p4.md)
               and `coproc`, the P4 with an ESP32-C6 on SDIO in lock-step (`--coproc`, the browser demo)
+esp32/        the classic ESP32 SoC (two LX6 cores on xtensa-lx7): memory map and flash-cache MMUs,
+              DPORT interrupt matrix, adapters from the classic register layouts onto esp-periph
+              models, WiFi MAC, boards (esp32.md)
 tests/        golden-output regression tests and their fixtures (tests/README.md)
 hw/           JTAG differential-test scripts against a real board, captured C3 and C6 consoles
               (hardware-testing.md)
 examples/     firmware sources: hello_world (S3, C3, C6), waveshare-cam, wifi-station,
               c6-wifi-station, c6-radio-dashboard, ttgo-tdisplay, …
 tools/        PIE table generator (TRM-derived), bench.py (interleaved A/B benchmark),
-              wasm-build.sh (the WebAssembly module), fetch-demo-assets.sh
+              wasm-build.sh (the WebAssembly module), wasm-test.mjs, fetch-rom-elfs.sh,
+              fetch-demo-assets.sh, …
 ```
 
 ## CPU core (`xtensa-lx7`)
@@ -97,7 +112,8 @@ tools/        PIE table generator (TRM-derived), bench.py (interleaved A/B bench
 - **Interpreter**: `exec_insn` executes one decoded instruction. Register windows are modelled
   with the 64-entry physical file and WindowBase/WindowStart, including overflow/underflow
   exceptions raised at the *instruction that would touch* the missing window (see
-  decisions.md). Timing is 1 instruction = 1 cycle.
+  decisions.md). Timing is 1 instruction = 1 cycle unless a timing model is on (the S3's
+  `--approximate-timing` family, or a `CostModel`).
 - **Basic-block interpreter** (`block.rs`, the normal path): a block is a straight-line run of
   up to 32 pre-decoded instructions ending at a control transfer or at anything that changes
   interrupt, timer or window state. The interrupt check, cache validation and CCOUNT/insn
@@ -114,8 +130,11 @@ tools/        PIE table generator (TRM-derived), bench.py (interleaved A/B bench
   bus's TLB (`Bus::fast_mem`) are native; misses and peripheral addresses call bus helpers; everything else (calls, returns, `entry`, special registers, FPU, PIE, MAC16) calls
   back into `exec_insn` for that one instruction and continues natively. Guest registers are
   addressed as `ar[(windowbase*4 + n) & 63]` from the window base cached at block entry;
-  the window-overflow pre-check is emitted once per frame count per block. `jit/a64.rs` is a
-  ~90-instruction encoder checked against clang's assembler; code lives in a `MAP_JIT` region.
+  the window-overflow pre-check is emitted once per frame count per block. The encoder,
+  `emu-core/src/jit_a64.rs`, covers about 100 instructions and is checked against a fixture clang
+  assembled; code lives in a `MAP_JIT` region. The browser build has a second backend
+  (`jit/wasm*.rs`): hot blocks become WebAssembly functions in the module's function table, with
+  the same exit rules and the interpreter's instruction-count timing.
 - **Traps**: `Exception(cause)`, `Interrupt(n)`, `Unimplemented(pc, raw)`, `Simcall`. The
   machine counts them; `--stop-after-exceptions` and unimplemented instructions stop the run.
 
@@ -135,15 +154,17 @@ tools/        PIE table generator (TRM-derived), bench.py (interleaved A/B bench
   the macro generates the read/write match, the source-status scan, tick delivery per clock
   domain and the timer-deadline query as static calls, so a device costs what a hand-written
   arm did. Unknown registers land in a generic register RAM and are logged on first touch with
-  `--log-periph`. The three registers whose value depends on another device (interrupt status,
-  the MAC's TSF timestamp, the FE's IQ-done bit) are handled in `DeviceSet::pre_access`.
+  `--log-periph`. Registers whose value depends on another device or on the current cycle
+  (interrupt status, the MAC's TSF timestamp, the time the SENS ADC samples) are prepared in
+  `DeviceSet::pre_access`; the other chips add their own arms there.
 - **Interrupts**: every source has a level computed by its model (`Peripherals::source_status`);
   the per-core interrupt matrix maps sources to the 32 Xtensa interrupt lines. Lines are
   recomputed after delivered device ticks or a change flags `irq_dirty`, then presented to
   the core before execution continues. The scheduler does not poll them every 32 cycles.
-- **DMA**: GDMA out-channels feed I2S0/I2S1 (audio → `pcm` samples at the configured rate),
-  in-channels are fed by the LCD_CAM camera engine (one frame per sensor period). Descriptor
-  chains are walked in guest memory exactly as the driver builds them.
+- **DMA** (`bus/dma.rs`): GDMA out-channels feed I2S0/I2S1 (audio → `pcm` samples at the
+  configured rate), SPI2/SPI3 and RMT; in-channels are fed by I2S RX and the LCD_CAM camera
+  engine (one frame per sensor period); memory-to-memory pairs copy. Descriptor chains are walked
+  in guest memory exactly as the driver builds them.
 - **Reset**: `Machine::reboot()` re-creates the digital peripherals, keeps SRAM, RTC memories,
   efuses and the captured audio, sets `RESET_CAUSE`, and restarts both cores at the ROM reset
   vector — the path used by `esp_restart()` (RTC watchdog) and `SW_PROCPU_RST`.
@@ -170,20 +191,22 @@ trap timing and next pc. The model may refuse any event it cannot price.
 
 ## Scheduling and time
 
-Without a cost model, `Machine::run` interleaves the cores in quanta of 256 instructions in the browser (wasm32) build and 64 natively ([EX047](experiments.md#ex047)); `esp32sim_set_quantum` selects 64–4096 in multiples of 64. A core sitting in `waiti`
+Without a cost model, `Machine::run` interleaves the cores in quanta of 256 instructions in the browser (wasm32) build and 64 natively ([EX047](experiments.md#ex047)); on the S3, `esp32sim_set_quantum` selects 64–4096 in multiples of 64. A core sitting in `waiti`
 with nothing pending costs nothing. When both cores are idle, each advance is at most
 512 cycles and is shortened to the earliest enabled-core wakeup, bus deadline, script event,
 cycle limit or remaining instruction allowance. The S3 bus deadline also bounds idle steps to
-its pending device-time flush. Device models see time lazily: cycles accumulate in the bus and are delivered in one
+its pending device-time flush. On the S3, device models see time lazily: cycles accumulate in the bus and are delivered in one
 batch when a timer alarm is due, when a peripheral register is accessed (so registers always
-read exact time), or after 256 cycles at most. Peripheral clocks (APB 80 MHz, systimer 16 MHz,
+read exact time), or after 256 cycles at most. The classic ESP32, C3, C6 and P4 deliver device
+time every round. Peripheral clocks (APB 80 MHz, systimer 16 MHz,
 RTC slow 150 kHz) are derived from the 240 MHz cycle counter with delivered-tick accounting.
 With `--web` the machine is paced to wall time (sleeping when ahead, resynchronising rather
 than bursting if it falls > 0.5 s behind). Work that costs host syscalls — reading the NAT's
 sockets — runs on its own emulated-time cadence rather than every round, because at 240 MHz a
 per-round syscall costs more than the instructions it interleaves with.
 
-**Virtual quanta.** When exactly one core is busy and every other core is idle, the per-quantum
+**Virtual quanta** (S3 only: no other bus arms deferral, `SocBus::can_defer`; the same holds for
+round batching, [EX177](experiments.md#ex177)). When exactly one core is busy and every other core is idle, the per-quantum
 cut serves nobody: no other core runs between the quanta, and nothing else can change until the
 next device deadline. `run_unmodeled` then gives the busy core one budget of up to `vq_max` quanta
 (`Machine::vq_max`, 1024 in the browser build, 1 natively) and afterwards closes the rounds it
@@ -222,8 +245,8 @@ Six layers turn those into packets on the host's network:
 
 ```
 esp_wifi + libpp/libnet80211        unmodified blob, drives the MAC registers
-  WifiMac (each chip)               TX queues, RX descriptor ring, interrupt events, TSF (S3/C3);
-                                    the S3's in periph.rs, the C3's and C6's in their wifi.rs
+  WifiMac (each chip)               TX queues, RX descriptor ring, interrupt events, TSF (S3, C3,
+                                    classic); the S3's in periph.rs, the others' in their wifi.rs
   StationLink (esp-soc wifi.rs)     shared by the chips: RX pacing, network step, Ethernet relay
   VirtualAp (esp-soc wifi.rs)       beacons, probe/auth/assoc responses, WPA2 four-way handshake,
                                     802.11 <-> Ethernet conversion, CCMP framing

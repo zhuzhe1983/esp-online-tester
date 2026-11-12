@@ -1,0 +1,41 @@
+{
+  "base": "upstream main 2718410a (Merge pull request #286)",
+  "toolchain": "Rust 1.99.1 (58cf8f9c3 2026-10-13), cargo +1.99.1 build --release; Windows 11 (10.0.26200), x86_64",
+  "mask_roms": {
+    "source": "tools/fetch-rom-elfs.sh roms (espressif/esp-rom-elfs, pinned by SHA-256 in the script)",
+    "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+    "esp32c3_rev3_rom.elf": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c"
+  },
+  "silicon_probe": {
+    "sketch": "hci-privacy-probe.ino (this directory), sha256 9d49f272ad8e05238c1350b9dd3ef8ab90bd21acae455a6ef212230d2585fef4",
+    "build": "arduino-cli 1.5.1, Arduino-ESP32 core 3.3.7 (ESP-IDF v5.5.2-729-g87912cd291, from the image), fqbn esp32:esp32:esp32s3:CDCOnBoot=cdc",
+    "images": {
+      "hci-privacy-probe.ino.bin": { "bytes": 461424, "sha256": "7972a8f2d2b38e5cd0abb4438e9fe5f1db659701f6e52ea655b1b1647d22a5d8" },
+      "hci-privacy-probe.ino.elf": { "bytes": 7173324, "sha256": "a4144f521ff3eb18c852dc5434c6f16574464db68855a3878b02a4c4748576cd" }
+    },
+    "run": "flashed with arduino-cli upload to an ESP32-S3 board; one byte written to its USB-Serial/JTAG port starts the probe; the port's output is s3-answers.txt (line endings normalised to LF)",
+    "controller": "Read Local Version Information: HCI version 0x09, HCI revision 0x0016, manufacturer 0x02E5 (Espressif), subversion 0x0016"
+  },
+  "firmware": {
+    "gatt_client": {
+      "source": "ESP-IDF v5.5.4 examples/bluetooth/bluedroid/ble/gatt_client, unmodified, default sdkconfig (CONFIG_BT_BLUEDROID_ENABLED=y, CONFIG_BT_BLE_SMP_ENABLE=y)",
+      "build": "docker espressif/idf:v5.5.4 (espressif/idf@sha256:b9f2d6ea1c19e0c9f7959bdb74a9e3c775642f9d0f3b841937c5fa3363db892b): idf.py set-target esp32s3 && idf.py build",
+      "images": {
+        "gatt_client_demo.bin": { "bytes": 683760, "sha256": "acac152c704e1850b4bd9e7c65f6004d8b05e6db92a075c51c340e503261a04a" },
+        "gatt_client_demo.elf": { "bytes": 8124548, "sha256": "b656518e4e8459767d0bd3136427e1bade188d0ecba9489989e9dfdf6548deda" },
+        "bootloader.bin": { "bytes": 20832, "sha256": "c262955751e8d8d043b11a3afa0109872066c7f4873c2f284381ffe5b3a8feca" },
+        "partition-table.bin": { "bytes": 3072, "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820" },
+        "sdkconfig": { "bytes": 81385, "sha256": "e7a2d3d0b4cffd228d6d21ac1049b9dbe8625507366f0fcdada107c16d47446f" }
+      }
+    },
+    "nimble_scan": "the EX246 images of docs/evidence/ble-nearby/ble-scan-probe.ino (hashes in docs/evidence/ble-nearby/inputs.json)",
+    "not_committed": "Plain builds; not added to the repository."
+  },
+  "runs": {
+    "gatt_client": "esp32sim --rom roms/esp32s3_rev0_rom.elf --boot rom --board none --bootloader bootloader.bin --ptable partition-table.bin --app gatt_client_demo.bin --elf gatt_client_demo.elf --ble --console uart0 --max-seconds 8 --no-dump",
+    "nimble_s3": "esp32sim --rom roms/esp32s3_rev0_rom.elf --boot rom --board none --flash-mb 4 --bootloader bootloader.bin --ptable partitions.bin --app ble-scan.bin --elf ble-scan.elf --ble --console uart0 --max-seconds 8 --no-dump",
+    "nimble_c3": "esp32sim --chip c3 --rom roms/esp32c3_rev3_rom.elf --boot rom --flash-mb 4 --bootloader c3-ble-scan.bootloader.bin --ptable c3-ble-scan.partitions.bin --app c3-ble-scan.bin --elf c3-ble-scan.elf --ble --console uart0 --max-seconds 8 --no-dump",
+    "hci_log": "the same commands with --debug ble for the HCI exchange",
+    "compared": "each run on main 2718410a and on this change"
+  }
+}

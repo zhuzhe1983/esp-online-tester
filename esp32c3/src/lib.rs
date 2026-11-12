@@ -14,4 +14,3 @@ mod ble;
 pub mod ble_lc;
 
 pub mod wifi;
-mod gdma;

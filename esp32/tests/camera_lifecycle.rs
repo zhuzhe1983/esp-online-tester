@@ -19,14 +19,13 @@ fn picture(replacement: bool) -> esp_soc::picture::Picture {
 }
 
 #[test]
-#[ignore = "ESP32SIM_ROM_DIR must contain esp32_rev300_rom.elf"]
+#[ignore = "needs esp32_rev300_rom.elf (ESP32SIM_ROM_DIR or ESP-IDF)"]
 fn public_driver_camera_lifecycle() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap();
-    let roms = std::env::var_os("ESP32SIM_ROM_DIR").expect("set ESP32SIM_ROM_DIR");
     let mut m = esp32::machine([2, 0, 0, 0, 0, 1], 4 << 20);
     m.bus.board = esp32::board::make_board("ai-thinker-cam").unwrap();
     m.bus.attach_board_devices();
-    m.load_rom(&fs::read(Path::new(&roms).join("esp32_rev300_rom.elf")).unwrap())
+    m.load_rom(&fs::read(esp_soc::rom::require("esp32_rev300_rom.elf")).unwrap())
         .unwrap();
     for (offset, name) in [
         (0x1000, "bootloader/bootloader.bin"),

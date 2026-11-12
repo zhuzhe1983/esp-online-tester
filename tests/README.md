@@ -1,6 +1,6 @@
 # Tests
 
-Five layers, base to top. `cargo test --workspace` runs the hermetic ones (no toolchain, no
+Eight layers, base to top. `cargo test --workspace` runs the hermetic ones (no toolchain, no
 download, no hardware); the goldens and the ABI tests need the mask ROM ELFs and run with
 `--include-ignored` (CI fetches the ELFs). Nothing skips silently: a test either has a
 checked-in oracle or is `#[ignore]`d with the reason in its name.
@@ -13,7 +13,7 @@ checked-in oracle or is `#[ignore]`d with the reason in its name.
 | audio source clocks | `cli/tests/pcm_sources.rs`, `cli/tests/adc_stream.rs` | pin routing, independent source clocks, DMA stalls, resets and exact ADC raw counts at all attenuations; no local firmware required |
 | microphone input | `cli/tests/i2s_rx.rs`, `esp-periph/src/i2s/rx.rs` | three-chip MMIO to guest DMA, C3 interrupt layout, descriptor ownership/EOF, stereo packing, clocks, reset persistence and unsupported modes; no firmware or home-directory inputs |
 | machine | `esp32s3/tests/machine.rs`, `esp-soc/tests/parsers.rs`, `esp32p4/tests/harts.rs`, `esp32p4/tests/revision.rs`, `cli/tests/p4_revision.rs` | idle cores skip time, core 1 runs when SYSTEM releases it, what a chip reset keeps, scripts against the board's pin names and encoder, console backlogs and masks, observers on both paths; the ELF/app-image/picture loaders never panic on random, truncated or hostile input; the P4's CLIC take rule and cross-hart reservations through `Machine`, and an image built for P4 rev ≥ 3 refused by the loaders and the CLI before it runs |
-| whole runs | `cli/tests/goldens.rs`, `wasm/tests/abi.rs` | the goldens below; the wasm C ABI driven natively for both chips, checking the web protocol's `board`, `serial`, `stat`, frame, audio and ring messages |
+| whole runs | `cli/tests/goldens.rs`, `wasm/tests/abi.rs` | the goldens below; the wasm C ABI driven natively for the S3, C3 and C6, checking the web protocol's `board`, `serial`, `stat`, frame, audio and ring messages |
 | the wasm build itself | `tools/wasm-test.mjs` | the real `esp32sim.wasm` under Node, driven through the page's firmware manifests (`web/wasm/fw/*.json`): boot, run, drain the outbox, expect the board message and the console line, no panic — the only layer that sees a wasm-only abort (a std that panics where it used to return nothing took every demo down once) |
 
 The generated WASM JIT differential suite runs with `tools/wasm-jit-test.sh`.
@@ -54,9 +54,14 @@ audio sample is a failure, not noise (see `docs/decisions.md`, "Performance").
 
 They need the mask ROM ELFs, which ship with ESP-IDF (`~/.espressif/tools/esp-rom-elfs/`) or
 can be pointed at with `ESP32SIM_ROM_DIR`, so they are `#[ignore]`d by default and never skip
-silently: without a ROM they fail with the path they looked for. Without ESP-IDF,
+silently: without a ROM they fail naming the file and both places. Every test and the CLI find
+them the same way (`esp_soc::rom`: `ESP32SIM_ROM_DIR` first, then the newest ESP-IDF copy); three
+external tests still take the older names their evidence receipts use (`ADC_ROM_DIR`, `HOOKS_ROM`,
+`CLASSIC_I2C_ROM`) ahead of that. Without ESP-IDF,
 `tools/fetch-demo-assets.sh --no-linux` fetches them into `web/wasm/fw/`, where `tools/wasm-test.mjs`
-finds them by itself; for the cargo tests set `ESP32SIM_ROM_DIR=web/wasm/fw`.
+finds them by itself; for the cargo tests set `ESP32SIM_ROM_DIR=$PWD/web/wasm/fw`
+(absolute: `cargo test` runs each test from its own crate's directory). A set directory that lacks
+the file falls through to ESP-IDF's copy, so for evidence runs record which one was used.
 
 ```sh
 cargo test --release --workspace -- --include-ignored --skip external_      # ~15 s for the whole set
@@ -118,7 +123,8 @@ output is left next to the golden as `*.actual` for diffing.
 | `hello-classic.*` | classic ECO3 ROM → bootloader → app; console and interrupt totals/per-source counts at the selected CPU frequency, reproducible IDF 5.5.4 fixture; `classic_reset_clock_and_flash_size` additionally checks 25 emulated seconds and 16 MB JEDEC retention through two resets |
 | `esp32/tests/camera_fixture.rs` | public esp32-camera on the AI-Thinker classic ESP32: normal ROM boot, OV2640 initialization, two 160 × 120 RGB565 frames, guest SHA-256 against the independent host-source oracle; reproducible IDF 5.4.3 inputs and recipe in `examples/classic-camera`. Requires the fetched classic ROM; no PSRAM or JPEG. |
 | `esp32/tests/camera_lifecycle.rs` | same public driver/configuration, two initial frames, live host-image replacement, deinit/reinit and a second full sequence after same-machine reboot; pins per-phase hashes and reset IRQ state. `esp32/tests/fixtures/classic-camera/lifecycle.bin` shares the first fixture's bootloader and partition table; [recipe](../examples/classic-camera/lifecycle.md). |
-| `cli/tests/classic_camera.rs` | real `--chip esp32 --board ai-thinker-cam --cam-image` run, normal ROM boot and two non-zero RGB565 frame hashes; same committed fixture and independent image oracle as the library test. Requires the fetched classic ROM. |
+| `cli/tests/classic_camera.rs` | real `--chip esp32 --board ai-thinker-cam --cam-image` run, normal ROM boot and two non-zero RGB565 frame hashes; same committed fixture and independent image oracle as the library test. Requires the fetched classic ROM. `classic_camera_jpeg_file_reaches_framebuffer_verbatim` runs `--cam-image vga-a.jpg` with `jpeg.bin` and pins the first two VGA frames' length and hash; a truncated JPEG is a usage error. |
+| `esp32/tests/camera_jpeg.rs` | public esp32-camera with `PIXFORMAT_JPEG`, 20 MHz XCLK, quality 12: host JPEG reaches `fb->buf`/`fb->len` byte for byte across two host changes at VGA and QVGA, size-mismatch and malformed refusals, a raw RGB565 phase in between and JPEG after reinit; one DRAM framebuffer (`jpeg.bin`) and two PSRAM framebuffers with 4 MiB PSRAM (`jpeg-psram.bin`). Independent `make-jpeg.py` inputs; [recipe](../examples/classic-camera/jpeg.md). Requires the fetched classic ROM. |
 | `classic_psram_idf` | standalone unicore IDF 4.4.7 ROM boot, authentic PSRAM memory test and heap registration, 1 MiB/33-page bytewise readback/hash, DMA/exhaustion controls, repeated creation and absent device; committed firmware and recipe in `docs/fixtures/classic-psram-idf`, requires ECO3 ROM only |
 | `hello-s3.*` | stock ESP-IDF hello_world on UART0, ROM → bootloader → app_main |
 | `hello-c3.*` | the same on the ESP32-C3 (RISC-V), with the MAC/reset cause/straps of the real module in `hw/c3-hello-world-real.txt`, through `esp32sim-c3` and `esp32sim --chip c3` |

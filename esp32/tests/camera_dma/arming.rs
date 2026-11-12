@@ -181,3 +181,95 @@ fn c71_initially_invalid_route_waits_instead_of_aborting() {
     assert_eq!(raw(&mut b), DONE | EOF);
     assert_eq!(bytes(&mut b, B, 64), [0,0,248,0].repeat(16));
 }
+#[test]
+fn jpeg_large_guest_eof_delivers_unpadded_frame() {
+    let host = jpeg(4, 4, 7);
+    let stream: Vec<u8> = host.iter().flat_map(|&x| [0, 0, x, 0]).collect();
+    for eof in [0x0400_0000, u32::MAX] {
+        let mut b = setup(3);
+        write(&mut b, 0xda, 0x12);
+        b.board.set_camera_jpeg(Jpeg::parse(host.clone()).unwrap()).unwrap();
+        descriptor(&mut b, 0, 256, 0);
+        falling(&mut b);
+        arm(&mut b, eof);
+        tick_bus(&mut b, FRAME_CYCLES - VSYNC_CYCLES);
+        if eof.checked_mul(4).is_some() {
+            assert_eq!(&bytes(&mut b, B, stream.len() as u32)[..], &stream, "RXEOF_NUM={eof:#x}");
+        } else {
+            // Existing DMA policy rejects byte counts that overflow u32.
+            assert_ne!(raw(&mut b) & ERR, 0);
+        }
+        assert_eq!(raw(&mut b) & EOF, 0, "RXEOF_NUM={eof:#x}");
+    }
+}
+#[test]
+fn jpeg_claims_the_frame_with_its_first_word() {
+    // cam_hal with a second free framebuffer: RX still runs across the falling
+    // edge, then the driver stops, resets and restarts it. Inside the arm window
+    // the restart takes the whole frame only while no word has been delivered.
+    let small = jpeg(4, 4, 7);
+    let mut large = small.clone();
+    large.splice(large.len() - 2..large.len() - 2, std::iter::repeat_n(0x11, 2000));
+    // One word per byte in mode 3, zero-padded to 8k + 7 words with RXEOF_NUM 8;
+    // word n is due once elapsed * words / span reaches n + 1.
+    let first_word = |host: &Vec<u8>| (FRAME_CYCLES - VSYNC_CYCLES).div_ceil((host.len().max(8) / 8 * 8 + 7) as u64);
+    let (first_small, first_large) = (first_word(&small), first_word(&large));
+    assert!(first_large * 2 < ARM_WINDOW && first_small > ARM_WINDOW * 3, "{first_small} {first_large}");
+    for (host, delay, delivered) in [
+        (&small, 0, true), (&small, ARM_WINDOW / 2, true), (&small, ARM_WINDOW, true),
+        (&small, ARM_WINDOW + 1, false), (&small, first_small * 2, false),
+        (&large, 0, true), (&large, first_large / 2, true),
+        (&large, first_large * 2, false), (&large, ARM_WINDOW, false),
+    ] {
+        let mut b = setup(3);
+        write(&mut b, 0xda, 0x12);
+        b.board.set_camera_jpeg(Jpeg::parse(host.clone()).unwrap()).unwrap();
+        for j in 0..8 { descriptor(&mut b, j, 32, if j == 7 { 0 } else { D + (j + 1) * 12 }); }
+        arm(&mut b, 8);
+        let at = falling(&mut b);
+        tick_bus(&mut b, delay);
+        let old = bytes(&mut b, B, 256);
+        let expected: &[u8] = if delay >= first_word(host) { &[0, 0, 0xff, 0] } else { &[0; 4] };
+        assert_eq!(old[..4], *expected, "old RX words follow the falling edge (len {}, delay {delay})", host.len());
+        stop_reset(&mut b);
+        put(&mut b, I + 0x18, u32::MAX); // the old RX's interrupts
+        for j in 0..8 { descriptor(&mut b, j, 32, if j == 7 { 0 } else { D + (j + 1) * 12 }); }
+        for a in (B..B + 8 * 64).step_by(4) { put(&mut b, a, 0xaaaa_aaaa); }
+        arm(&mut b, 8);
+        let remaining = at + FRAME_CYCLES - VSYNC_CYCLES - esp_soc::SocBus::cycles(&b);
+        tick_bus(&mut b, remaining);
+        let first = bytes(&mut b, B, 32);
+        if delivered {
+            assert_eq!(raw(&mut b) & EOF, EOF, "len {}, delay {delay}", host.len());
+            let stream: Vec<u8> = host.iter().flat_map(|&x| [0, 0, x, 0]).collect();
+            assert_eq!(first, stream[..32], "whole frame from SOI, len {}, delay {delay}", host.len());
+        } else {
+            assert_eq!(raw(&mut b) & EOF, 0, "len {}, delay {delay}", host.len());
+            assert_eq!(first, [0xaa; 32], "no replay, len {}, delay {delay}", host.len());
+        }
+    }
+}
+#[test]
+fn first_word_claims_only_its_own_frame_edge() {
+    // One long bus step crosses the next VSYNC pulse before the frame's first
+    // word: that word may claim only the edge its frame started on, so the newer
+    // edge stays pending for raw and JPEG frames alike.
+    let mut large = jpeg(4, 4, 7);
+    large.splice(large.len() - 2..large.len() - 2, std::iter::repeat_n(0x11, 2000));
+    for jpeg_mode in [false, true] {
+        let mut b = setup(3);
+        if jpeg_mode {
+            write(&mut b, 0xda, 0x12);
+            b.board.set_camera_jpeg(Jpeg::parse(large.clone()).unwrap()).unwrap();
+        }
+        for j in 0..8 { descriptor(&mut b, j, 32, if j == 7 { 0 } else { D + (j + 1) * 12 }); }
+        arm(&mut b, 8);
+        let at = falling(&mut b);
+        tick_bus(&mut b, 1);
+        assert_eq!(bytes(&mut b, B, 4), [0; 4], "no word yet, jpeg {jpeg_mode}");
+        assert_eq!(b.board.camera_frame_start(false), if jpeg_mode { Some(at) } else { None }, "jpeg {jpeg_mode}");
+        tick_bus(&mut b, FRAME_CYCLES);
+        assert_ne!(bytes(&mut b, B, 4), [0; 4], "words delivered, jpeg {jpeg_mode}");
+        assert_eq!(b.board.camera_frame_start(false), Some(at + FRAME_CYCLES), "newer edge kept, jpeg {jpeg_mode}");
+    }
+}

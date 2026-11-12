@@ -21,7 +21,7 @@ pub fn capture(build: &Path, rom: &Path) {
                 .collect(),
         })
         .unwrap();
-    m.load_rom(&fs::read(rom).expect("classic ROM ELF; set ESP32SIM_ROM_DIR"))
+    m.load_rom(&fs::read(rom).expect("readable classic ROM ELF"))
         .unwrap();
     for (offset, name) in [
         (0x1000, "bootloader/bootloader.bin"),

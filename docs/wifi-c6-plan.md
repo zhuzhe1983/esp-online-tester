@@ -212,7 +212,8 @@ The C6 bus code should convert completed WiFi data frames to Ethernet payloads a
 that common network module. NAT remains unavailable in browser builds where host sockets are not
 available; the browser can still exercise association and the isolated virtual subnet.
 
-Inbound port forwarding, multicast/mDNS, roaming, and real LAN bridging are follow-up features.
+UDP inbound, multicast/mDNS, roaming, and real LAN bridging are follow-up features. TCP inbound
+uses the shared `--hostfwd` NAT option.
 
 ## Phase 5: coexistence and performance
 

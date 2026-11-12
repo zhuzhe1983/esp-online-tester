@@ -12,12 +12,11 @@ fn machine_api_excludes_hci_and_full_ble_in_both_orders() {
 }
 
 #[test]
-#[ignore = "needs the ESP32-C3 mask ROM ELF fetched by CI; set ESP32SIM_ROM_DIR"]
+#[ignore = "needs the ESP32-C3 mask ROM ELF (ESP32SIM_ROM_DIR or ESP-IDF)"]
 fn guest_esp_restart_preserves_full_ble_and_advertises_again() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap();
-    let roms = std::env::var_os("ESP32SIM_ROM_DIR").expect("set ESP32SIM_ROM_DIR to the fetched mask ROM directory");
     let mut m = esp32c3::machine([2, 0, 0, 0, 0, 1], 4 << 20);
-    m.load_rom(&std::fs::read(std::path::Path::new(&roms).join("esp32c3_rev3_rom.elf")).unwrap()).unwrap();
+    m.load_rom(&std::fs::read(esp_soc::rom::require("esp32c3_rev3_rom.elf")).unwrap()).unwrap();
     for (off, name) in [(0, "c3-ble-bootloader.bin"), (0x8000, "c3-ble-ptable.bin"), (0x10000, "c3-ble-advertiser.bin")] {
         m.write_flash(off, &std::fs::read(root.join("web/wasm/fw/public").join(name)).unwrap()).unwrap();
     }
@@ -40,11 +39,10 @@ fn guest_esp_restart_preserves_full_ble_and_advertises_again() {
 }
 
 #[test]
-#[ignore = "needs the ESP32-C3 mask ROM ELF fetched by CI; set ESP32SIM_ROM_DIR"]
+#[ignore = "needs the ESP32-C3 mask ROM ELF (ESP32SIM_ROM_DIR or ESP-IDF)"]
 fn bluetooth_rom_initializer_has_its_rom_source_copy() {
     use emu_core::Bus;
-    let dir = std::env::var_os("ESP32SIM_ROM_DIR").expect("set ESP32SIM_ROM_DIR to the fetched mask ROM directory");
-    let bytes = std::fs::read(std::path::Path::new(&dir).join("esp32c3_rev3_rom.elf")).unwrap();
+    let bytes = std::fs::read(esp_soc::rom::require("esp32c3_rev3_rom.elf")).unwrap();
     let elf = esp_soc::elf::parse(&bytes).unwrap();
     let data = elf.sections.iter().find(|s| s.name == ".data_btdm").unwrap();
     assert!(data.data.iter().any(|&b| b != 0));

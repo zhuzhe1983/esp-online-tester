@@ -1,10 +1,9 @@
 use std::{path::PathBuf, process::Command};
 
 #[test]
-#[ignore = "needs ESP32SIM_ROM_DIR containing the classic ECO3 mask ROM ELF"]
+#[ignore = "needs the classic ECO3 mask ROM ELF (ESP32SIM_ROM_DIR or ESP-IDF)"]
 fn classic_psram_cli_reaches_guest_allocator() {
-    let rom = PathBuf::from(std::env::var_os("ESP32SIM_ROM_DIR").expect("ESP32SIM_ROM_DIR"))
-        .join("esp32_rev300_rom.elf");
+    let rom = esp_soc::rom::require("esp32_rev300_rom.elf");
     let fw = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../web/wasm/fw/public");
     let run = |size: Option<&str>| {
         let mut cmd = Command::new(env!("CARGO_BIN_EXE_esp32sim"));
