@@ -44,7 +44,8 @@ pub enum Cmd {
     Ready(u64, u64), Poll(u64, u64), Capacity, ModeSense, Prevent(bool), Sync, Eject,
     Read(u64, u32), Write(u64, u32, u8), Verify(u64, u32, u8), Mount, Ls, FatWrite { name: String, bytes: usize, chunk: usize, gap_ms: u64, fat_every: u32 }, FatRead(String),
     Uart0(String),
-    Cdc(u64),
+    /// Read the CDC-ACM console for a while, first sending a line (CR LF appended) when given.
+    Cdc(u64, Option<String>),
     /// `?`: a failure is logged and the script goes on
     Tolerate(Box<Cmd>),
 }
@@ -98,7 +99,7 @@ pub fn parse(text: &str) -> Result<Vec<(usize, Cmd)>, String> {
             "fat-write" => Cmd::FatWrite { name: args.first().ok_or_else(|| format!("line {ln}: fat-write <name> <bytes> <chunk_kib>"))?.to_string(), bytes: at_most(1, "a size", MAX_FILE)? as usize,
                                            chunk: at_most(2, "a chunk size", MAX_FILE >> 10)? as usize * 1024, gap_ms: opt(3, 0, "milliseconds", MAX_MS)?, fat_every: opt(4, 1, "a FAT interval", u32::MAX as u64)? as u32 },
             "fat-read" => Cmd::FatRead(args.first().ok_or_else(|| format!("line {ln}: fat-read <name>"))?.to_string()),
-            "cdc" => Cmd::Cdc(ms(0, "a duration")?),
+            "cdc" => Cmd::Cdc(ms(0, "a duration")?, (args.len() > 1).then(|| args[1..].join(" "))),
             "uart0" => Cmd::Uart0(line["uart0".len()..].trim().to_string()),
             _ => return Err(format!("line {ln}: unknown command {cmd}")),
         };
@@ -169,7 +170,7 @@ impl<'p> Runner<'p> {
                 l.timing = l.timing.with_rate(bytes);
                 self.say(format_args!("bulk rate capped at {mbps} MB/s"));
             }
-            Cmd::Cdc(dur) => {
+            Cmd::Cdc(dur, send) => {
                 let h = self.host();
                 let cfg = h.config.clone().ok_or("no configured device (attach)")?;
                 let comm = cfg.interfaces.iter().find(|f| f.class == 0x02 && f.subclass == 0x02).map(|f| f.number).ok_or("the device has no CDC-ACM interface")?;
@@ -180,6 +181,12 @@ impl<'p> Runner<'p> {
                 h.control(super::setup_packet(0x21, 0x20, 0, comm as u16, 7), coding).map_err(u)?;
                 h.control(super::setup_packet(0x21, 0x22, 3, comm as u16, 0), Vec::new()).map_err(u)?;
                 h.say(format_args!("CDC-ACM interface {comm}: DTR+RTS up, reading endpoint {:02x}", ep.address));
+                if let Some(text) = send {
+                    let out = cfg.interfaces.iter().filter(|f| f.class == 0x0a).flat_map(|f| f.endpoints.iter())
+                        .find(|e| e.address & 0x80 == 0 && e.attributes & 3 == 2).cloned().ok_or("the CDC data interface has no bulk OUT endpoint")?;
+                    h.bulk_out(out.address, out.mps, format!("{text}\r\n").into_bytes(), 1000 * ms).map_err(u)?;
+                    h.say(format_args!("CDC: sent {:?}", text));
+                }
                 let end = h.now_ns() + dur * ms;
                 let mut total = 0usize;
                 while h.now_ns() < end {
