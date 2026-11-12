@@ -3,7 +3,7 @@
 //! AMOLED on GP-SPI2 in QSPI mode (CLK 42, CS 50, D0-D3 36/51/35/9, TE 43), its RESET on GPIO 44
 //! (shared with the touch controller's), and the display supply enabled by GPIO 60 driven low.
 //! Modelled: the panel and its reset and power gates, the CST9220 touch on I2C0 (0x5A, SDA 56,
-//! SCL 3), and the panel's TE output on GPIO 43: a 60 Hz frame with a 1 ms high blanking pulse.
+//! SCL 3, INT 6), and the panel's TE output on GPIO 43: a 60 Hz frame with a 1 ms high blanking pulse.
 use esp_soc::devices::co5300::Co5300;
 use esp_soc::{Board, BoardModel, NoBoard};
 
@@ -18,6 +18,10 @@ pub fn make_board(name: &str) -> Option<Board> {
 pub const PIN_LCD_RESET: u8 = 44;
 pub const PIN_LCD_POWER_N: u8 = 60;
 pub const PIN_LCD_TE: u8 = 43;
+/// CST9220 INT, active low: low while a finger is down, and for 1 ms after it lifts so the
+/// driver reads the release report.
+pub const PIN_TOUCH_INT: u8 = 6;
+const TOUCH_RELEASE_NS: u64 = 1_000_000;
 /// CO5300 TE: one frame every 1/60 s, high for the first 1 ms (the blanking interval).
 const TE_PERIOD_NS: u64 = 16_666_667;
 const TE_HIGH_NS: u64 = 1_000_000;
@@ -39,6 +43,9 @@ pub struct Mosaico {
     /// TE: the level now and the edges not yet delivered (`advance_to` takes emulated nanoseconds)
     te_level: bool,
     te_now: u64,
+    /// INT level and, after a release, when it goes back high
+    touch_int_low: bool,
+    touch_release_at: Option<u64>,
     te_edges: Vec<esp_soc::board::BoardEdge>,
 }
 impl Default for Mosaico { fn default() -> Self { Self::new() } }
@@ -46,7 +53,7 @@ impl Mosaico {
     pub const WIDTH: usize = 480;
     pub const HEIGHT: usize = 480;
     pub fn new() -> Self {
-        Mosaico { panel: Co5300::new(Self::WIDTH, Self::HEIGHT, 0), powered: false, in_reset: false, gpio_events: 0, dropped: 0, touch: Default::default(), nand: crate::spi_nand::SpiNand::new(), te_level: false, te_now: 0, te_edges: Vec::new() }
+        Mosaico { panel: Co5300::new(Self::WIDTH, Self::HEIGHT, 0), powered: false, in_reset: false, gpio_events: 0, dropped: 0, touch: Default::default(), nand: crate::spi_nand::SpiNand::new(), te_level: false, te_now: 0, touch_int_low: false, touch_release_at: None, te_edges: Vec::new() }
     }
 }
 impl BoardModel for Mosaico {
@@ -63,11 +70,15 @@ impl BoardModel for Mosaico {
         }
     }
     fn gpio_events(&self) -> u64 { self.gpio_events }
-    fn input_levels(&self) -> Vec<(u8, bool)> { vec![(PIN_LCD_TE, self.te_level)] }
+    fn input_levels(&self) -> Vec<(u8, bool)> { vec![(PIN_LCD_TE, self.te_level), (PIN_TOUCH_INT, !self.touch_int_low)] }
     /// The S31 machine passes emulated time in nanoseconds. TE runs only while the panel is powered
     /// and out of reset; a jump over several frames yields the level at `now` (one edge pair at most).
     fn advance_to(&mut self, now: esp_soc::board::VirtualCycle) {
         self.te_now = now;
+        if self.touch_release_at.is_some_and(|t| now >= t) {
+            self.touch_release_at = None; self.touch_int_low = false;
+            self.te_edges.push(esp_soc::board::BoardEdge { cycle: now, pin: PIN_TOUCH_INT, level: true });
+        }
         let level = self.powered && !self.in_reset && now % TE_PERIOD_NS < TE_HIGH_NS;
         if level != self.te_level {
             self.te_level = level;
@@ -81,12 +92,20 @@ impl BoardModel for Mosaico {
         if !self.powered || self.in_reset { return None; }
         let now = self.te_now;
         let phase = now % TE_PERIOD_NS;
-        Some(now - phase + if phase < TE_HIGH_NS { TE_HIGH_NS } else { TE_PERIOD_NS })
+        let te = now - phase + if phase < TE_HIGH_NS { TE_HIGH_NS } else { TE_PERIOD_NS };
+        Some(self.touch_release_at.map_or(te, |t| t.min(te)))
     }
     fn i2c_devices(&mut self) -> Vec<(u8, u8, Box<dyn esp_periph::i2c::I2cDevice>)> {
         vec![(0, crate::cst9220::ADDRESS, Box::new(crate::cst9220::Cst9220::new(self.touch.clone(), Self::WIDTH as u16, Self::HEIGHT as u16)))]
     }
-    fn touch(&mut self, x: u16, y: u16, down: bool) { *self.touch.lock().unwrap() = crate::cst9220::Touch { down, x, y }; }
+    fn touch(&mut self, x: u16, y: u16, down: bool) {
+        *self.touch.lock().unwrap() = crate::cst9220::Touch { down, x, y };
+        // A new report: INT falls (again, for a move while down) and, on release, rises 1 ms later.
+        if self.touch_int_low { self.te_edges.push(esp_soc::board::BoardEdge { cycle: self.te_now, pin: PIN_TOUCH_INT, level: true }); }
+        self.touch_int_low = true;
+        self.te_edges.push(esp_soc::board::BoardEdge { cycle: self.te_now, pin: PIN_TOUCH_INT, level: false });
+        self.touch_release_at = (!down).then_some(self.te_now + TOUCH_RELEASE_NS);
+    }
     fn spi_transfer(&mut self, host: u8, tx: &[u8], rx_len: usize) -> Vec<u8> {
         if host == 3 { return self.nand.transaction(tx, rx_len); }
         if host == 2 {
