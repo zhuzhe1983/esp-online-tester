@@ -138,7 +138,7 @@ pub fn step_outcome<B: Bus>(cpu: &mut Cpu, bus: &mut B) -> StepOutcome {
     } else { None };
     let result = exec_insn(cpu, bus, &i, pc);
     let kind = match result {
-        Ok(()) => { cpu.retired_count += 1; StepKind::Retired }
+        Ok(()) => { cpu.retired_count += 1; crate::hwlp::retire(cpu, pc); StepKind::Retired }
         Err(trap) => StepKind::TrapDuring(trap),
     };
     StepOutcome { pc, next_pc: cpu.pc, bytes: Some(bytes), length: i.len, kind, control }
@@ -270,6 +270,7 @@ pub fn exec_insn<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc: u32) -> Resul
         | EspVcmpEqU16 | EspAndq | EspOrq | EspXorq | EspZeroQ | EspVextU8 | EspVunzip8 | EspVzipt8 | EspVunzipt8
         | EspSrcQ | EspVld128Ip | EspVst128Ip | EspVldbc16Ip | EspLd128UsarIp
         | EspMovxWSar | EspMovxRSar | EspMovxWCfg | EspMovxRCfg | EspMovi32A => return crate::pie::exec(cpu, bus, i, pc),
+        EspLpSetup | EspLpSetupi | EspLpStarti | EspLpEndi | EspLpCount | EspLpCounti => return crate::hwlp::exec(cpu, i, pc),
 
         Ecall => { cpu.trap(exc::ECALL_M, 0, pc); return Err(Trap::Exception(exc::ECALL_M)); }
         Ebreak => { cpu.trap(exc::BREAKPOINT, pc, pc); return Err(Trap::Ebreak(pc)); }
@@ -286,6 +287,8 @@ pub fn exec_insn<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc: u32) -> Resul
                 cpu.trap(exc::ILLEGAL_INSN, i.raw, pc);
                 return Err(Trap::Exception(exc::ILLEGAL_INSN));
             }
+            // the loop CSRs are illegal with the hardware loops Off (ESP32-P4 TRM 2.7.1.3)
+            if cpu.has_hwlp() && cpu.hwlp_state & 3 == 0 && crate::hwlp::is_loop_csr(n) { return Err(crate::hwlp::off(cpu, i.raw, pc)); }
             let src = if matches!(i.op, Csrrwi | Csrrsi | Csrrci) { i.rs1 as u32 } else { a };
             // A read is only skipped for csrrw with rd = x0; a write only for set/clear with a
             // zero source operand — which is how firmware reads a CSR without disturbing it.

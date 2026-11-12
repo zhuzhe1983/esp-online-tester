@@ -39,6 +39,24 @@ fn csr_name(n: u32) -> String {
     s.to_string()
 }
 
+/// Xesploop as objdump prints it: the loop, then the operands, offsets in decimal and relative to
+/// the instruction (objdump's `# target` comment is not part of them).
+fn format_hwlp(i: &Insn) -> String {
+    use crate::decode::hwlp_count_imm;
+    use Op::*;
+    let (w, l) = (i.raw, i.rd);
+    let off12 = (w >> 20) << 1;
+    match i.op {
+        EspLpSetup => format!("esp.lp.setup\t{},{},{}", l, r(i.rs1), off12),
+        EspLpSetupi => format!("esp.lp.setupi\t{},{},{}", l, hwlp_count_imm(w), ((w >> 15) & 0x1f) << 1 | ((w >> 8) & 0xf) << 6),
+        EspLpStarti => format!("esp.lp.starti\t{},{}", l, off12),
+        EspLpEndi => format!("esp.lp.endi\t{},{}", l, off12),
+        EspLpCount => format!("esp.lp.count\t{},{}", l, r(i.rs1)),
+        EspLpCounti => format!("esp.lp.counti\t{},{}", l, i.imm),
+        _ => unreachable!(),
+    }
+}
+
 /// Xespv2p2 as objdump prints it: operands in the syntax's order, and the `sat`/`dyn` defaults of
 /// the saturating and rounding forms left out (`trunc` and a named rounding mode printed).
 fn format_pie(i: &Insn) -> String {
@@ -110,6 +128,7 @@ pub fn format_for(misa: u32, i: &Insn) -> String {
         | EspVcmpEqU16 | EspAndq | EspOrq | EspXorq | EspZeroQ | EspVextU8 | EspVunzip8 | EspVzipt8 | EspVunzipt8
         | EspSrcQ | EspVld128Ip | EspVst128Ip | EspVldbc16Ip | EspLd128UsarIp
         | EspMovxWSar | EspMovxRSar | EspMovxWCfg | EspMovxRCfg | EspMovi32A => format_pie(i),
+        EspLpSetup | EspLpSetupi | EspLpStarti | EspLpEndi | EspLpCount | EspLpCounti => format_hwlp(i),
         Illegal => m("unimp"),
         Lui => format!("lui\t{},{:#x}", rd, (i.imm as u32) >> 12),
         Auipc => format!("auipc\t{},{:#x}", rd, (i.imm as u32) >> 12),

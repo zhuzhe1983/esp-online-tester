@@ -959,3 +959,130 @@ fn pie_is_lazily_enabled_like_the_fpu() {
     assert_eq!(disasm::format_for(p4.misa, &decode_for(p4.isa(), BASE, [0x9b, 0x13, 0, 0])), "unimp");
     assert_eq!(disasm::format_for(cpu.misa, &decode_for(cpu.isa(), BASE, [0x9b, 0x13, 0, 0])), "esp.zero.q\tq7");
 }
+
+// ---- Xesploop (hardware loops) on the S31 and P4 cores. Encodings from riscv32-esp-elf-as
+// -march=rv32imafc_zicsr_zifencei_xesploop (esp-14.2.0_20260121); behaviour from the ESP32-P4 TRM
+// 2.7.1 (the start/end/count model, loop 0 before loop 1 on a shared end, Table 2.7-2).
+
+/// esp.lp.setup 0,a0 over `addi a1,a1,3; c.addi a1,1` with a0 = 5, the end a compressed
+/// instruction as in the factory firmware.
+const LP_SETUP: &str = "4515 4581 0035402b 058d 0585 a001";
+/// esp.lp.setupi 1,3 and 0,4 sharing the end `addi a2,a2,1`: loop 1's body re-arms loop 0.
+const LP_NESTED: &str = "00000593 00000613 003350ab 0042502b 00158593 00160613 0000006f";
+/// starti/endi/counti for loop 1 and count/starti/endi for loop 0, both over the same two
+/// instructions (a1 += 1; a1 += 16) with counts 2 and 3.
+const LP_PARTS: &str = "00000593 00e000ab 00e010ab 002030ab 00300693 0006a02b 0040002b 0040102b 00158593 01058593 0000006f";
+
+/// A core with the hardware loops on (mhwloop_state_reg = Initial, as IDF's port.c sets it).
+fn lp_machine(mut cpu: Cpu, prog: &str, first: &str) -> (Cpu, FlatRam) {
+    cpu.write_csr(csr::MHWLOOP_STATE, 1);
+    machine_on(cpu, &asm(prog), first)
+}
+
+fn run_to(cpu: &mut Cpu, ram: &mut FlatRam, pc: u32) {
+    for _ in 0..200 { if cpu.pc == pc { return; } step(cpu, ram).unwrap(); }
+    panic!("never reached {pc:#x}");
+}
+
+/// A count of 5 runs the body 5 times: 13 instructions, one count each, and the count ends at 0.
+#[test]
+fn hwlp_setup_runs_the_body_count_times() {
+    for cpu in [Cpu::new_esp32s31(), Cpu::new_esp32p4(), Cpu::new_esp32p4_rev3()] {
+        let (mut cpu, mut ram) = lp_machine(cpu, LP_SETUP, "li a0,5");
+        let n0 = cpu.insn_count;
+        run_to(&mut cpu, &mut ram, BASE + 0xc);
+        assert_eq!(cpu.x[11], 20);
+        assert_eq!((cpu.insn_count - n0, cpu.retired_count), (13, 13));
+        assert_eq!((cpu.hwlp_start[0], cpu.hwlp_end[0], cpu.hwlp_count[0]), (BASE + 8, BASE + 0xa, 0));
+        assert_eq!(cpu.read_csr(csr::MHWLOOP_STATE), 3, "executing the loop made the state Dirty");
+        assert_eq!(cpu.mstatus & mstatus::XS, mstatus::XS);
+    }
+    // a count of 0 or 1 runs the body once
+    for n in [0, 1] {
+        let (mut cpu, mut ram) = lp_machine(Cpu::new_esp32s31(), LP_SETUP, "li a0,5");
+        step(&mut cpu, &mut ram).unwrap(); cpu.x[10] = n;
+        run_to(&mut cpu, &mut ram, BASE + 0xc);
+        assert_eq!(cpu.x[11], 4, "count {n}");
+    }
+}
+
+/// Loop 0 (inner) takes the shared end first; when it falls through there, loop 1 (outer) jumps.
+#[test]
+fn hwlp_nested_loops_share_an_end_inner_first() {
+    let (mut cpu, mut ram) = lp_machine(Cpu::new_esp32s31(), LP_NESTED, "li a1,0");
+    run_to(&mut cpu, &mut ram, BASE + 0x18);
+    assert_eq!((cpu.x[11], cpu.x[12]), (12, 12));
+    assert_eq!(cpu.retired_count, 2 + 1 + 3 * (1 + 4 * 2));
+    assert_eq!(cpu.hwlp_count, [0, 0]);
+    assert_eq!((cpu.hwlp_start[1], cpu.hwlp_start[0], cpu.hwlp_end), (BASE + 0xc, BASE + 0x10, [BASE + 0x14; 2]));
+
+    let (mut cpu, mut ram) = lp_machine(Cpu::new_esp32s31(), LP_PARTS, "li a1,0");
+    run_to(&mut cpu, &mut ram, BASE + 0x28);
+    // loop 0 three passes, loop 1 two more (its second re-entry finds loop 0 spent)
+    assert_eq!(cpu.x[11], 4 * 17);
+    assert_eq!(cpu.retired_count, 8 + 4 * 2);
+}
+
+/// An interrupt taken inside the body saves the next pc (the start, after a back-edge) in mepc;
+/// IDF's handler turns the loops Off and back on (Clean), and the loop resumes where it was.
+#[test]
+fn hwlp_interrupt_inside_the_body_resumes() {
+    let mut cpu = Cpu::new();
+    cpu.isa_ext = riscv_rv32::decode::ISA_HWLP;
+    let (mut cpu, mut ram) = lp_machine(cpu, LP_SETUP, "li a0,5");
+    ram.mem[0x100..0x10c].copy_from_slice(&asm("7f105073 7f115073 30200073"));   // csrwi 0x7f1,0; csrwi 0x7f1,2; mret
+    cpu.mtvec = BASE + 0x100;
+    cpu.mstatus |= mstatus::MIE;
+    for _ in 0..7 { step(&mut cpu, &mut ram).unwrap(); }   // two passes: back at the start
+    assert_eq!((cpu.pc, cpu.hwlp_count[0], cpu.x[11]), (BASE + 8, 3, 8));
+    cpu.set_irq(Some(3));
+    assert_eq!(step(&mut cpu, &mut ram), Err(Trap::Interrupt(3)));
+    assert_eq!(cpu.mepc, BASE + 8);
+    cpu.set_irq(None);
+    for _ in 0..3 { step(&mut cpu, &mut ram).unwrap(); }
+    assert_eq!((cpu.pc, cpu.read_csr(csr::MHWLOOP_STATE)), (BASE + 8, 2));
+    run_to(&mut cpu, &mut ram, BASE + 0xc);
+    assert_eq!(cpu.x[11], 20);
+    assert_eq!(cpu.retired_count, 13 + 3);
+}
+
+/// With the state Off (reset) an HWLP instruction or loop CSR access is illegal, sets
+/// EXT_ILL.HWLP and leaves mtval = the instruction; the state CSR itself stays accessible. With
+/// it on, a loop CSR write makes the state Dirty, the count keeps 24 bits, and the user CSRs
+/// alias the machine ones. Cores without Xesploop decode the opcode as illegal.
+#[test]
+fn hwlp_off_traps_and_the_csrs_alias() {
+    let mut cpu = Cpu::new_esp32s31();
+    let mut ram = FlatRam::new(BASE, 64 * 1024);
+    ram.mem[..12].copy_from_slice(&asm("0035402b 7c802573 8c251073"));
+    cpu.pc = BASE; cpu.mtvec = BASE + 0x100;
+    assert_eq!(step(&mut cpu, &mut ram), Err(Trap::Exception(2)));
+    assert_eq!((cpu.mepc, cpu.mtval, cpu.ext_ill, cpu.hwlp_count[0]), (BASE, 0x0035_402b, 2, 0));
+    cpu.ext_ill = 0; cpu.pc = BASE + 4;
+    assert_eq!(step(&mut cpu, &mut ram), Err(Trap::Exception(2)));
+    assert_eq!((cpu.mtval, cpu.ext_ill), (0x7c80_2573, 2));
+    cpu.write_csr(csr::MHWLOOP_STATE, 0b110);   // URW, Clean
+    assert_eq!((cpu.read_csr(csr::MHWLOOP_STATE), cpu.read_csr(csr::UHWLOOP_STATE), cpu.mstatus & mstatus::XS), (6, 2, 2 << 15));
+    cpu.pc = BASE + 4; cpu.hwlp_count[0] = 7;
+    step(&mut cpu, &mut ram).unwrap();
+    assert_eq!(cpu.x[10], 7);
+    cpu.x[10] = 0x1234_5678;
+    step(&mut cpu, &mut ram).unwrap();
+    assert_eq!((cpu.hwlp_count[0], cpu.read_csr(0x7c8), cpu.read_csr(csr::MHWLOOP_STATE)), (0x34_5678, 0x34_5678, 7));
+    assert_eq!(cpu.mstatus & (mstatus::XS | mstatus::SD), mstatus::XS | mstatus::SD);
+    for (k, v) in [0x7c6, 0x7c7, 0x7c8, 0x7c9, 0x7ca, 0x7cb].into_iter().enumerate() { cpu.write_csr(v, 0x100 + k as u32); }
+    assert_eq!((cpu.hwlp_start, cpu.hwlp_end, cpu.hwlp_count), ([0x100, 0x103], [0x101, 0x104], [0x102, 0x105]));
+    assert_eq!((cpu.read_csr(0x8c0), cpu.read_csr(0x8c4)), (0x100, 0x104));
+    // the PIE state still shows through XS: the larger of the two
+    cpu.write_csr(csr::MHWLOOP_STATE, 1);
+    cpu.write_csr(csr::MEXT_PIE_STATUS, 2);
+    assert_eq!(cpu.mstatus & mstatus::XS, 2 << 15);
+    // a loop is not run while the state is Off (an ISR passing a task's loop end)
+    let (mut cpu, mut ram) = lp_machine(Cpu::new_esp32s31(), LP_SETUP, "li a0,5");
+    for _ in 0..3 { step(&mut cpu, &mut ram).unwrap(); }
+    cpu.write_csr(csr::MHWLOOP_STATE, 0);
+    run_to(&mut cpu, &mut ram, BASE + 0xc);
+    assert_eq!((cpu.x[11], cpu.hwlp_count[0]), (4, 5));
+    // the C6 core
+    assert!(decode(BASE, 0x0035_402bu32.to_le_bytes()).is_illegal());
+}

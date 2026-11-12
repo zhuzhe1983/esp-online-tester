@@ -7,7 +7,7 @@
 //! `PATH` is (`std::env::split_paths`: `:`, or `;` on Windows, where `:` is in every path).
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
-use riscv_rv32::decode::{decode, decode_for, Op, ISA_PIE, ISA_ZB, ISA_ZC};
+use riscv_rv32::decode::{decode, decode_for, Op, ISA_HWLP, ISA_PIE, ISA_ZB, ISA_ZC};
 use riscv_rv32::disasm;
 use riscv_rv32::state::{MISA_RV32IMAC, MISA_RV32IMAFC};
 
@@ -57,7 +57,7 @@ fn read(file: &Path) -> String { std::fs::read_to_string(file).unwrap_or_else(|e
 
 /// Every instruction in the listings must decode, for a core whose `misa` is `misa`, to objdump's
 /// mnemonic and operands, and every `.insn` word objdump could not decode must be illegal. Xesppie
-/// (`esp.*`) is compared on a core with `ISA_PIE` where the decoder models the form; the forms it
+/// (`esp.*`; `esp.lp.*` with `ISA_HWLP`) is compared on a core with `ISA_PIE` where the decoder models the form; the forms it
 /// leaves illegal, and every `esp.*` on other cores, are counted, not compared. Returns the case count.
 fn check(files: &[PathBuf], misa: u32) -> usize {
     let (mut total, mut bad, mut unknown, mut xesppie) = (0usize, 0usize, 0usize, 0usize);
@@ -67,7 +67,8 @@ fn check(files: &[PathBuf], misa: u32) -> usize {
         for Line { addr, hex, bytes, len, theirs } in lines(&text) {
             if theirs.is_empty() { continue; }
             let insn = decode_for(misa, addr, bytes);
-            if theirs.starts_with("esp.") && (misa & ISA_PIE == 0 || insn.is_illegal()) { xesppie += 1; continue; }
+            let ext = if theirs.starts_with("esp.lp.") { ISA_HWLP } else { ISA_PIE };
+            if theirs.starts_with("esp.") && (misa & ext == 0 || insn.is_illegal()) { xesppie += 1; continue; }
             if theirs.starts_with(".insn") {
                 unknown += 1;
                 let e = by_mnemonic.entry(".insn".to_string()).or_insert((0, 0, String::new()));
@@ -119,7 +120,7 @@ fn is_f_text(m: &str) -> bool {
 
 const C3_C6: &[&str] = &["rom.dis", "hello_world.dis", "c6-rom.dis", "c6-hello_world.dis"];
 const P4: &[&str] = &["p4-rom.dis", "p4-idf.dis", "rv32f.dis"];
-const S31: u32 = MISA_RV32IMAFC | ISA_ZB | ISA_ZC | ISA_PIE;
+const S31: u32 = MISA_RV32IMAFC | ISA_ZB | ISA_ZC | ISA_PIE | ISA_HWLP;
 
 fn corpus(names: &[&str]) -> Vec<PathBuf> {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/corpus");
@@ -245,4 +246,36 @@ fn external_decoder_matches_objdump() {
 #[ignore = "set RISCV_P4_DIS_FILES=/path/p4rom.dis:/path/app.dis (riscv32-esp-elf-objdump -d)"]
 fn external_p4_decoder_matches_objdump() {
     check(&listed("RISCV_P4_DIS_FILES"), MISA_RV32IMAFC);
+}
+
+/// Every Xesploop form, operand value and offset bit assembled from `hwlp.S`, decoded as the
+/// ESP32-S31 core: each `esp.lp.*` line must decode (none skipped), every form must appear, and
+/// the flipped-bit words objdump leaves as `.insn` must be illegal. `check` asserts > 1000 cases,
+/// so the hwlp corpus runs together with the zbc one.
+#[test]
+fn s31_hwlp_decoder_matches_corpus() {
+    check(&corpus(&["hwlp.dis", "zbc.dis"]), S31);
+    let forms = ["esp.lp.setup", "esp.lp.setupi", "esp.lp.starti", "esp.lp.endi", "esp.lp.count", "esp.lp.counti"];
+    let (mut seen, mut n, text) = (std::collections::BTreeSet::new(), 0, read(&corpus(&["hwlp.dis"])[0]));
+    for l in lines(&text) {
+        let m = l.theirs.split_whitespace().next().unwrap_or("");
+        if forms.contains(&m) { assert!(!decode_for(S31, l.addr, l.bytes).is_illegal(), "{:08x} {}", l.addr, l.theirs); seen.insert(m); n += 1; }
+    }
+    assert_eq!(seen.len(), forms.len(), "hwlp.dis lacks some forms");
+    assert!(n >= 290, "only {n} esp.lp cases");
+}
+
+/// Without `ISA_HWLP` every hardware-loop word is illegal with its raw bits, and with it the older
+/// corpora decode the same.
+#[test]
+fn cores_without_hwlp_reject_it_and_older_code_decodes_the_same() {
+    let (without, text) = (S31 & !ISA_HWLP, read(&corpus(&["hwlp.dis"])[0]));
+    for l in lines(&text) {
+        let (with, plain) = (decode_for(S31, l.addr, l.bytes), decode_for(without, l.addr, l.bytes));
+        if with.op.is_hwlp() { assert_eq!((plain.op, plain.raw, plain.len), (Op::Illegal, with.raw, with.len), "{:08x} {}", l.addr, l.theirs); }
+        else { assert_eq!(plain, with, "{:08x} {}", l.addr, l.theirs); }
+    }
+    for file in [corpus(P4), corpus(C3_C6), corpus(&["zbc.dis", "pie.dis"])].concat() {
+        for l in lines(&read(&file)) { assert_eq!(decode_for(S31, l.addr, l.bytes), decode_for(without, l.addr, l.bytes), "{:08x} {}", l.addr, l.theirs); }
+    }
 }

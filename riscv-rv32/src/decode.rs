@@ -27,6 +27,11 @@ pub enum Op {
     // Zcmp (Zc v1.0.0), when the core has `ISA_ZC`: `rs2` = rlist (4-15), `imm` = the stack
     // adjustment in bytes; the moves name s-registers r1s' in `rs1`, r2s' in `rs2`
     CmPush, CmPop, CmPopret, CmPopretz, CmMvsa01, CmMva01s,
+    // Xesploop (Espressif hardware loops), when the core has `ISA_HWLP`: `rd` = the loop (0/1),
+    // `rs1` the count register of esp.lp.setup/esp.lp.count, `imm` the absolute start or end
+    // address (pc + offset), or esp.lp.counti's count; esp.lp.setupi's count stays in `raw`
+    // (`hwlp_count_imm`). Kept contiguous and just before PIE: `is_hwlp` compares discriminants.
+    EspLpSetup, EspLpSetupi, EspLpStarti, EspLpEndi, EspLpCount, EspLpCounti,
     // Xespv2p2 (Espressif PIE v2.2), when the core has `ISA_PIE`; a subset. The Q-register fields
     // stay in `raw` (`pie_q`, `pie_qw`); `rs1`/`rd` hold the general register (x8-x15, x24-x31),
     // `imm` the byte offset of an `.ip` form or movi's lane. Kept contiguous: `is_pie` compares
@@ -52,6 +57,9 @@ impl Op {
     /// A PIE (Xespv2p2) instruction, which a core reaches only with `ISA_PIE`.
     #[inline(always)]
     pub fn is_pie(self) -> bool { (Op::EspVmulU16 as u8..Op::Flw as u8).contains(&(self as u8)) }
+    /// A hardware-loop (Xesploop) instruction, which a core reaches only with `ISA_HWLP`.
+    #[inline(always)]
+    pub fn is_hwlp(self) -> bool { (Op::EspLpSetup as u8..Op::EspVmulU16 as u8).contains(&(self as u8)) }
 }
 
 /// Which compressed form an instruction was written as (`None` = a real 32-bit instruction).
@@ -105,6 +113,9 @@ pub const ISA_ZC: u32 = 1 << 27;
 /// Xespv2p2, Espressif's PIE v2.2 SIMD extension (ESP32-P4 TRM v1.x, chapter 4; the ESP32-S31
 /// builds with `_xespv`). Only the subset in `decode_pie` is modelled.
 pub const ISA_PIE: u32 = 1 << 28;
+/// Xesploop, Espressif's hardware loops (ESP32-P4 TRM v1.x, 2.7.1; the ESP32-S31 builds with
+/// `_xesploop`).
+pub const ISA_HWLP: u32 = 1 << 29;
 const MISA_M: u32 = 1 << 12;
 
 /// Decode the instruction at `pc` for a core without F (the C3 and C6). `bytes` is up to 4 bytes
@@ -120,13 +131,13 @@ pub fn decode_for(isa: u32, pc: u32, bytes: [u8; 4]) -> Insn {
     let raw = u32::from_le_bytes(bytes);
     let f = isa & crate::state::MISA_F != 0;
     if raw & 3 != 3 { return decode_compressed(pc, raw & 0xffff, f, isa); }
-    decode32(pc, raw, f, isa & ISA_ZB != 0, isa & ISA_PIE != 0)
+    decode32(pc, raw, f, isa & ISA_ZB != 0, isa & ISA_PIE != 0, isa & ISA_HWLP != 0)
 }
 
 // Both decoders inline into `decode_for`, so the step decodes without a call and an Insn
 // returned through memory.
 #[inline(always)]
-fn decode32(pc: u32, w: u32, f: bool, zb: bool, pie: bool) -> Insn {
+fn decode32(pc: u32, w: u32, f: bool, zb: bool, pie: bool, hwlp: bool) -> Insn {
     let (rd, rs1, rs2) = (((w >> 7) & 0x1f) as u8, ((w >> 15) & 0x1f) as u8, ((w >> 20) & 0x1f) as u8);
     let f3 = (w >> 12) & 7;
     let f7 = w >> 25;
@@ -202,8 +213,46 @@ fn decode32(pc: u32, w: u32, f: bool, zb: bool, pie: bool) -> Insn {
         },
         0x07 | 0x27 | 0x43 | 0x47 | 0x4b | 0x4f | 0x53 if f => decode_f(w),
         0x1b | 0x1f | 0x5f if pie => decode_pie(w),
+        0x2b if hwlp => decode_hwlp(pc, w),
         _ => mk(Op::Illegal, 0),
     }
+}
+
+/// The Xesploop forms, as (mask, match) over the whole word; bit 7 is the loop. The TRM's Table
+/// 2.7-2 marks the unused fields "X", but objdump decodes a word only with them zero (and gives
+/// esp.lp.setup's 11:8 to the TRM's lp.setup.beqz, which it does not know), so they are matched
+/// exactly. Derived by assembling every operand with `riscv32-esp-elf-as
+/// -march=rv32imafc_zicsr_zifencei_xesploop` (esp-14.2.0_20260121) and diffing, and by flipping
+/// each fixed bit under objdump; `tests/corpus/hwlp.dis` holds them.
+pub const HWLP_FORMS: &[(u32, u32, Op)] = &[
+    (0x000f_ff7f, 0x0000_002b, Op::EspLpStarti),   // uimm_StartOffset[12:1] at 31:20
+    (0x000f_ff7f, 0x0000_102b, Op::EspLpEndi),     // uimm_EndOffset[12:1] at 31:20
+    (0xfff0_7f7f, 0x0000_202b, Op::EspLpCount),    // rs1 at 19:15
+    (0x000f_ff7f, 0x0000_302b, Op::EspLpCounti),   // uimm_Count[11:0] at 31:20
+    (0x0000_7f7f, 0x0000_402b, Op::EspLpSetup),    // uimm_EndOffset[12:1] at 31:20, rs1 at 19:15
+    (0x0000_707f, 0x0000_502b, Op::EspLpSetupi),   // uimm_Count at 31:20, EndOffset[5:1] at 19:15, [9:6] at 11:8
+];
+
+/// esp.lp.setupi's count, uimm_Count[11:0] at bits 31:20 (TRM Table 2.7-2).
+#[inline(always)]
+pub fn hwlp_count_imm(w: u32) -> u32 { w >> 20 }
+
+/// Xesploop in opcode 0x2b (custom-1, otherwise illegal on RV32). The offsets are unsigned.
+#[inline(never)]
+fn decode_hwlp(pc: u32, w: u32) -> Insn {
+    use Op::*;
+    let Some(&(_, _, op)) = HWLP_FORMS.iter().find(|&&(m, v, _)| w & m == v) else {
+        return Insn::new(Illegal, ((w >> 7) & 0x1f) as u8, ((w >> 15) & 0x1f) as u8, ((w >> 20) & 0x1f) as u8, 0, 4, w);
+    };
+    let (l, rs) = (((w >> 7) & 1) as u8, ((w >> 15) & 0x1f) as u8);
+    let (rs1, imm) = match op {
+        EspLpStarti | EspLpEndi => (0, pc.wrapping_add((w >> 20) << 1)),
+        EspLpSetup => (rs, pc.wrapping_add((w >> 20) << 1)),
+        EspLpSetupi => (0, pc.wrapping_add(((w >> 15) & 0x1f) << 1 | ((w >> 8) & 0xf) << 6)),
+        EspLpCount => (rs, 0),
+        _ => (0, w >> 20),
+    };
+    Insn::new(op, l, rs1, 0, imm as i32, 4, w)
 }
 
 /// The Xespv2p2 forms modelled, as (mask, match) over the whole word. Every bit outside an
@@ -547,7 +596,7 @@ mod tests {
         for _ in 0..200_000 {
             seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5;
             let w = seed | 3;
-            let (plain, with_f) = (decode32(0x4000_0000, w, false, false, false), decode32(0x4000_0000, w, true, false, false));
+            let (plain, with_f) = (decode32(0x4000_0000, w, false, false, false, false), decode32(0x4000_0000, w, true, false, false, false));
             if matches!(w & 0x7f, 0x07 | 0x27 | 0x43 | 0x47 | 0x4b | 0x4f | 0x53) {
                 assert_eq!(plain.op, Op::Illegal, "{w:08x}");
                 assert!(with_f.op == Op::Illegal || with_f.op.is_f(), "{w:08x}");
@@ -584,6 +633,39 @@ mod tests {
         }
     }
 
+    /// No word matches two hardware-loop forms, and each form's match lies inside its mask.
+    #[test]
+    fn hwlp_forms_are_disjoint() {
+        for (k, &(m1, v1, o1)) in HWLP_FORMS.iter().enumerate() {
+            assert_eq!(v1 & !m1, 0, "{o1:?}");
+            assert_eq!(v1 & 0x7f, 0x2b, "{o1:?}");
+            assert!(o1.is_hwlp() && !o1.is_pie(), "{o1:?}");
+            for &(m2, v2, o2) in &HWLP_FORMS[k + 1..] { assert_ne!(v1 & m2 & m1, v2 & m1 & m2, "{o1:?} overlaps {o2:?}"); }
+        }
+    }
+
+    /// Without `ISA_HWLP` opcode 0x2b stays illegal; with it, nothing else changes.
+    #[test]
+    fn hwlp_takes_only_its_opcode() {
+        let mut seed = 0x2545_f491u32;
+        for _ in 0..200_000 {
+            seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5;
+            let w = seed | 3;
+            let (plain, lp) = (decode32(0, w, true, true, true, false), decode32(0, w, true, true, true, true));
+            if w & 0x7f == 0x2b { assert_eq!(plain.op, Op::Illegal, "{w:08x}"); assert!(lp.op == Op::Illegal || lp.op.is_hwlp(), "{w:08x}"); }
+            else { assert_eq!(plain, lp, "{w:08x}"); }
+        }
+    }
+
+    /// The firmware's loop: esp.lp.setup 0,t6,76 at 0x5029af2a ends at 0x5029af76.
+    #[test]
+    fn hwlp_setup_decodes_its_end_address() {
+        let i = decode32(0x5029_af2a, 0x026f_c02b, true, true, true, true);
+        assert_eq!((i.op, i.rd, i.rs1, i.imm as u32), (Op::EspLpSetup, 0, 31, 0x5029_af76));
+        let i = decode32(0x1000, 0x000f_df2b | 1 << 7, true, true, true, true);
+        assert_eq!((i.op, i.rd, i.imm as u32, hwlp_count_imm(i.raw)), (Op::EspLpSetupi, 1, 0x1000 + 1022, 0));
+    }
+
     /// Without `ISA_PIE` the PIE opcodes stay illegal; with it, nothing else changes.
     #[test]
     fn pie_takes_only_its_opcodes() {
@@ -591,7 +673,7 @@ mod tests {
         for _ in 0..200_000 {
             seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5;
             let w = seed | 3;
-            let (plain, pie) = (decode32(0, w, true, true, false), decode32(0, w, true, true, true));
+            let (plain, pie) = (decode32(0, w, true, true, false, false), decode32(0, w, true, true, true, false));
             if matches!(w & 0x7f, 0x1b | 0x1f | 0x5f) { assert_eq!(plain.op, Op::Illegal, "{w:08x}"); assert!(pie.op == Op::Illegal || pie.op.is_pie(), "{w:08x}"); }
             else { assert_eq!(plain, pie, "{w:08x}"); }
         }
