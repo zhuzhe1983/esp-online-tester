@@ -58,6 +58,28 @@ test('automatic provisioning uses original HTTP service and can be disabled inde
   await n.configure({autoProvision:false});assert.equal(n.snapshot().connection,'connected');assert.equal(ws.readyState,1);
   ws.deliver({type:'network-status',interface:0,leaseReady:true,guestAddress:'10.0.2.15'});assert.equal(n.snapshot().provisioning,'connected');n.detach();
 });
+for(const [body,path] of [
+  ["fetch('/exit', {method:'POST'})",'/exit'],
+  ['fetch ( "/reboot", { method: "POST" } )','/reboot'],
+  ["fetch('/exit', {method:'GET'}); const unrelated='POST'",null],
+  ["fetch('/reset-all', {method:'POST'})",null],
+  ["fetch('https://example.invalid/reboot', {method:'POST'})",null],
+  ["fetch('/exit', {method:'POST'}); fetch('/reboot', {method:'POST'})",null],
+])test(`success page only invokes its unambiguous known POST: ${body}`,async()=>{
+  class DoneSocket extends Socket {send(data){
+    const m=typeof data==='string'?JSON.parse(data):{};
+    if(m.path==='/done.html'||m.path==='/reboot'){this.sent.push(data);queueMicrotask(()=>this.deliver({id:m.id,result:{status:200,body:m.path==='/done.html'?body:'{"success":true}'}}));}
+    else super.send(data);
+  }}
+  const n=createNetworkSession({emit(){},command:async()=>{},sendFrame(){},WebSocketImpl:DoneSocket});
+  try{
+    await n.configure({endpoint:'ws://localhost/network',autoProvision:false});await n.attach({available:true});
+    const ws=Socket.instances.at(-1);ws.deliver({type:'network-status',interface:1,leaseReady:true});
+    if(path)assert.equal((await n.provision()).submitted,true);else await assert.rejects(n.provision(),{code:'PROVISIONING_UNSUPPORTED'});
+    const calls=ws.sent.filter(x=>typeof x==='string').map(x=>JSON.parse(x)).filter(x=>x.op==='http'&&x.method==='POST');
+    assert.deepEqual(calls.map(x=>x.path),path?['/submit',path]:['/submit']);
+  }finally{n.detach();}
+});
 test('mapping deduplication preserves handles and rejects competing local ports',async()=>{
   const n=createNetworkSession({emit(){},command:async()=>{},sendFrame(){},WebSocketImpl:Socket});
   await n.configure({endpoint:'ws://localhost/network'});await n.attach({available:true});const ws=Socket.instances.at(-1);

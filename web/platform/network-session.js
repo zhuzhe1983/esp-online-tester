@@ -90,8 +90,12 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
       if(body.includes('/done.html')) {
         const done=await http({interface:1,path:'/done.html',method:'GET'});
         check();
-        if(done.status!==200||!done.body?.includes("fetch('/exit'")||!done.body?.includes('POST'))throw fail('PROVISIONING_UNSUPPORTED','Saved credentials; finish through the firmware success page.');
-        const exited=await http({interface:1,path:'/exit',method:'POST'});
+        // Older esp-wifi-connect (including INK4 2.0.53) posts /reboot;
+        // newer pages post /exit. Require a literal known POST in this page,
+        // never evaluate guest JavaScript or follow an arbitrary supplied URL.
+        const exits=new Set(Array.from((done.body||'').matchAll(/\bfetch\s*\(\s*(['"])(\/(?:exit|reboot))\1\s*,\s*\{[^{}]{0,1024}?\bmethod\s*:\s*(['"])POST\3/g),match=>match[2]));
+        if(done.status!==200||exits.size!==1)throw fail('PROVISIONING_UNSUPPORTED','Saved credentials; finish through the firmware success page.');
+        const exited=await http({interface:1,path:[...exits][0],method:'POST'});
         check();
         let exitResult;try{exitResult=JSON.parse(exited.body);}catch{}
         if(exited.status!==200||exitResult?.success!==true)throw fail('PROVISIONING_FAILED','Firmware did not confirm exit from config mode.');
