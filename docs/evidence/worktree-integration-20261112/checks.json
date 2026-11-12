@@ -1,0 +1,94 @@
+{
+  "baseline": "4932dcd1803381fb64c0dd6252707c0176e8ac9e",
+  "candidate": "3a0a9a0084d6f2e70612f3f777ebeaf79e140b93",
+  "mergedHeads": [
+    "ae8cca5ea94d7c8756b33adc968a7347f79942fe",
+    "4c9c53fda1b3090598794c31f85e1a90fbd91505"
+  ],
+  "deferredHead": "e20ddee749c5b0dbda3036d060d38a0d85dbabe6",
+  "deferredReason": "S31 DeviceSet/Machine migration replaces the Bringup bus, timer and FPU policy; existing fork diagnostics require a separately validated migration. No S31 runtime change is included.",
+  "changes": [
+    "Upstream classic JPEG camera, GDMA/AES, host forwarding, RMT bounds, RV32 and Xtensa execution improvements.",
+    "K147-CAM GC0308 SCCB and BMI270 configuration subset only; public runtime remains unavailable.",
+    "C61 Wi-Fi receives the new hostfwd argument; existing product boards and stricter BLE privacy behavior preserved."
+  ],
+  "checks": {
+    "rust": {
+      "command": "ESP32SIM_ROM_DIR=<absolute ROM directory including C61> cargo +stable test --release --workspace -- --include-ignored --skip external_",
+      "groups": 171,
+      "passed": 1945,
+      "failed": 0
+    },
+    "clippy": [
+      "cargo +stable clippy --workspace --all-targets -- -D warnings",
+      "cargo +stable clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings"
+    ],
+    "platform": {
+      "command": "node --test tools/platform-*-test.mjs",
+      "passed": 377
+    },
+    "wasmScenarios": 13,
+    "jitDifferential": 111126,
+    "gpioWaveform": 24,
+    "recording": "18 real-WASM events, final framebuffer equal",
+    "headlessBrowser": {
+      "product": "m5stack-stopwatch",
+      "firmware": "internal diagnostic fixture",
+      "ready": true,
+      "freshButtonAResponse": true,
+      "framebuffer": [
+        468,
+        466
+      ],
+      "nonzeroPixels": true,
+      "pausedAndClosed": true,
+      "screenshotSha256": "333471724c41b852dbdc5358474f0dc5d43cec968c7c77409ec07610c12a85e6"
+    },
+    "profileFeatures": "jit-profile,cpu-profile build passed",
+    "otherCommands": [
+      "node tools/network-helper-test.mjs",
+      "node --test tools/network-relay-test.mjs",
+      "node tools/worker-pacing-test.mjs",
+      "node tools/worker-channel-test.mjs",
+      "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs tools/wasm-build-policy.test.mjs tools/browser-benchmark/*.test.mjs",
+      "python3 -m unittest discover -s tools/browser-benchmark -p test_*.py",
+      "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "ESP32SIM_VQ_NATIVE=1 cargo +stable test --release -p esp32s3 --test machine --test virtual_stops"
+    ]
+  },
+  "negativeResults": [
+    {
+      "stage": "initial native suite",
+      "cause": "The chosen ROM directory lacked C61; retry with the complete ROM directory passed."
+    },
+    {
+      "stage": "initial platform suite",
+      "cause": "Missing local S3 ROM in the new checkout; retried after provisioning assets and production WASM."
+    },
+    {
+      "stage": "browser network",
+      "cause": "Public relay session endpoint denied local-origin CORS. No Internet acceptance claim."
+    }
+  ],
+  "goldens": {
+    "regenerated": false,
+    "inheritedChange": "hello-classic.console.txt reports ESP32 v3.0 instead of v2.0, matching the upstream ECO3 ROM revision fix."
+  },
+  "privacy": "No raw browser storage, UART, device identifiers, process inventory or local paths retained; this limits inspection to assertions, hashes, and reproducible input commands.",
+  "productionWasm": {
+    "bytes": 5560018,
+    "sha256": "0d5dc1d9cd45e2bc4648c5f52d09876b3f7ec2d7fb3f7224f5ecba74ffa9d0a1"
+  },
+  "environment": {
+    "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "os": "Darwin",
+    "osRelease": "27.2.0",
+    "architecture": "arm64",
+    "loadAverageSample": [
+      3.96728515625,
+      10.013671875,
+      10.39306640625
+    ],
+    "loadSampleScope": "one aggregate observation while Pocket Tank samples were running; not a full-run range"
+  }
+}
