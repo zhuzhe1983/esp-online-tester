@@ -14,9 +14,9 @@ fn external_arduino_classic_i2c_routes() {
     for (offset, name) in [(0x1000, "bootloader.bin"), (0x8000, "partitions.bin"), (0x10000, "firmware.bin")] {
         m.write_flash(offset, &fs::read(firmware.join(name)).unwrap()).unwrap();
     }
-    for port in 0..2 {
+    for i2c in &mut m.bus.periph.i2c {
         for pins in [(21, 22), (18, 19)] {
-            m.bus.periph.i2c[port].attach(0x29, Box::new(Pinned { pins, seen: Arc::new(Mutex::new(Vec::new())) }));
+            i2c.attach(0x29, Box::new(Pinned { pins, seen: Arc::new(Mutex::new(Vec::new())) }));
         }
     }
     m.boot_rom();

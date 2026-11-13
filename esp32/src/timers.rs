@@ -24,9 +24,9 @@ impl ClassicTimer {
     fn irq_bits(&self) -> u64 {
         let pending = self.timer.int_raw;
         let mut bits = 0;
-        for n in 0..2 {
+        for (n, timer) in self.timer.t.iter().enumerate() {
             if pending & (1 << n) != 0 {
-                let config = self.timer.t[n].config;
+                let config = timer.config;
                 if config & (1 << 11) != 0 {
                     bits |= 1 << n;
                 }

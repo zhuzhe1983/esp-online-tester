@@ -135,7 +135,7 @@ pub(super) fn regions() -> u32 {
         assert_ne!(slot, 0, "large region module with {} exit sites", sites.len());
         type Run = extern "C" fn(*mut Cpu, *mut Ram, *const Helpers, u32, u32, *const TlbEntry, *mut u32) -> u32;
         let f: Run = unsafe { std::mem::transmute(slot as usize) };
-        for entry in 0..40 {
+        for (entry, chunk) in formed.chunks.iter().enumerate() {
             // Budgets 9..15 cut a copy of the next chunk at every one of its indices; 8 and 16
             // land exactly on a chunk end.
             for budget in [8, 9, 10, 11, 12, 13, 14, 15, 16, 23, 63, 300, 511] {
@@ -144,7 +144,7 @@ pub(super) fn regions() -> u32 {
                     let (mut ra, mut rb) = (Ram::new(true, false), Ram::new(true, false));
                     for r in [&mut ra, &mut rb] { r.ram.mem[..large.len()].copy_from_slice(&large); }
                     for c in [&mut a, &mut b] {
-                        c.pc = formed.chunks[entry].pc; c.ps = 0;
+                        c.pc = chunk.pc; c.ps = 0;
                         c.set_ar(3, 0x42); c.set_ar(4, dst);
                     }
                     CONTEXT.with(|c| *c.borrow_mut() = format!("large region entry {entry} budget {budget} dst {dst:x} copies {:?}", copies.map(|c| c.len())));
