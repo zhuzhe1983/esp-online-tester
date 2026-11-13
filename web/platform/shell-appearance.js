@@ -14,9 +14,10 @@ const finishes = {
   rubber: {roughness: .94, metalness: 0, specularIntensity: .32, ior: 1.42},
   metal: {roughness: .3, metalness: .78},
   'brushed-metal': {roughness: .43, metalness: .92},
+  'iridescent-titanium': {roughness: .29, metalness: .76, iridescence: 1, iridescenceIOR: 1.38, iridescenceThicknessRange: [180, 620], clearcoat: .28, clearcoatRoughness: .22},
   ceramic: {roughness: .23, metalness: 0, clearcoat: .62, clearcoatRoughness: .15, ior: 1.52},
 };
-const physicalDefaults = {clearcoat: 0, clearcoatRoughness: 0, transmission: 0, thickness: 0, ior: 1.5, specularIntensity: 1};
+const physicalDefaults = {clearcoat: 0, clearcoatRoughness: 0, transmission: 0, thickness: 0, ior: 1.5, specularIntensity: 1, iridescence: 0, iridescenceIOR: 1.3, iridescenceThicknessRange: [100, 400]};
 
 export function normalizeShellAppearance(value, defaults = DEFAULT_STOPWATCH_APPEARANCE) {
   if (value != null && (!record(value) || Object.keys(value).some(key => key !== 'shell'))) throw new Error('外观仅支持 shell 配置。');
@@ -47,21 +48,31 @@ function shellMaterial(shell) {
   THREE.MeshStandardMaterial.prototype.copy.call(material, source);
   material.defines = {STANDARD: '', PHYSICAL: ''};
   const sourceCompile = source.onBeforeCompile, sourceCacheKey = source.customProgramCacheKey();
-  const state = {material, brushed: false};
+  const state = {material, brushed: false, titanium: false};
   material.onBeforeCompile = function(shader, renderer) {
     sourceCompile.call(this, shader, renderer);
-    if (!state.brushed) return;
+    if (!state.brushed && !state.titanium) return;
     // Object-space procedural grain needs neither UVs nor texture allocations on the CAD shell.
     shader.vertexShader = 'varying vec3 vShellGrainPosition;\n' + shader.vertexShader;
     shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvShellGrainPosition = position;');
     shader.fragmentShader = 'varying vec3 vShellGrainPosition;\n' + shader.fragmentShader;
+    if (state.titanium) shader.fragmentShader = shader.fragmentShader.replace('#include <lights_physical_fragment>', `
+      // Display-only oxide tint, plus the physical angular thin-film response below.
+      float titaniumPhase = vShellGrainPosition.y * 0.055 + vShellGrainPosition.x * 0.026;
+      vec3 titaniumTint = 0.46 + 0.34 * cos(titaniumPhase + vec3(0.0, 2.1, 4.2));
+      diffuseColor.rgb *= titaniumTint;
+      #include <lights_physical_fragment>
+      #ifdef USE_IRIDESCENCE
+        float titaniumBand = 0.5 + 0.5 * sin(vShellGrainPosition.y * 0.055 + vShellGrainPosition.x * 0.026);
+        material.iridescenceThickness = mix(180.0, 620.0, titaniumBand);
+      #endif`);
     shader.fragmentShader = shader.fragmentShader.replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
       float shellGrainPhase = vShellGrainPosition.y * 8.0;
       float shellGrainWidth = fwidth(shellGrainPhase);
       float shellGrain = sin(shellGrainPhase + sin(vShellGrainPosition.x * 0.45) * 0.4) / (1.0 + shellGrainWidth * shellGrainWidth);
       roughnessFactor = clamp(roughnessFactor * (1.0 + 0.18 * shellGrain), 0.04, 1.0);`);
   };
-  material.customProgramCacheKey = () => `${sourceCacheKey}|shell-grain:${state.brushed ? 1 : 0}`;
+  material.customProgramCacheKey = () => `${sourceCacheKey}|shell-grain:${state.brushed ? 1 : 0}|titanium:${state.titanium ? 1 : 0}`;
   const release = () => {
     if (ownedMaterials.get(shell) === state) ownedMaterials.delete(shell);
     material.removeEventListener('dispose', release);
@@ -81,7 +92,7 @@ export function applyShellAppearance(shell, value, {occluder} = {}) {
   const appearance = normalizeShellAppearance(value).shell, state = shellMaterial(shell), material = state.material;
   Object.assign(material, physicalDefaults, finishes[appearance.finish]);
   if (appearance.finish === 'plastic' && appearance.opacity < 1) material.roughness = .32;
-  state.brushed = appearance.finish === 'brushed-metal';
+  state.brushed = appearance.finish === 'brushed-metal'; state.titanium = appearance.finish === 'iridescent-titanium';
   material.color.set(appearance.color); material.opacity = appearance.opacity;
   const seeThrough = appearance.opacity < 1 || material.transmission > 0;
   material.transparent = appearance.opacity < 1; material.depthWrite = !seeThrough;

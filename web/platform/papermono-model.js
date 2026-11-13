@@ -41,14 +41,14 @@ export function createPapermonoModel(screenTexture) {
     const pad=metadata.texture.nfcPad,[width,height]=metadata.texture.planeMm,cut=1-pad.sourceTopPx/loaded.image.height;
     const labelGeometry=new THREE.PlaneGeometry(width,height*(1-cut)),uv=labelGeometry.attributes.uv;
     for(let i=0;i<uv.count;i++)uv.setY(i,cut+uv.getY(i)*(1-cut));
-    const label=new THREE.Mesh(labelGeometry,new THREE.MeshBasicMaterial({map:loaded}));label.name='rear-product-label';label.position.set(0,height*cut/2,-4.015);label.rotation.y=Math.PI;group.add(label);parts[label.name]=label;
+    const label=new THREE.Mesh(labelGeometry,new THREE.MeshBasicMaterial({map:loaded}));label.name='rear-product-label';label.userData.stickerSurface=true;label.position.set(0,height*cut/2,-4.015);label.rotation.y=Math.PI;group.add(label);parts[label.name]=label;
     const padUrl=new URL(pad.file,base);padUrl.searchParams.set('sha256',metadata.artifacts[pad.file]);
     const corrected=await new THREE.TextureLoader().loadAsync(padUrl.href);if(disposed){corrected.dispose();return;}nfcTexture=corrected;corrected.colorSpace=THREE.SRGBColorSpace;corrected.anisotropy=4;
     const pw=width/2,ph=height*cut/2,pr=pad.cornerRadiusMm,shape=new THREE.Shape();
     shape.moveTo(-pw+pr,-ph);shape.lineTo(pw-pr,-ph);shape.quadraticCurveTo(pw,-ph,pw,-ph+pr);shape.lineTo(pw,ph-pr);shape.quadraticCurveTo(pw,ph,pw-pr,ph);shape.lineTo(-pw+pr,ph);shape.quadraticCurveTo(-pw,ph,-pw,ph-pr);shape.lineTo(-pw,-ph+pr);shape.quadraticCurveTo(-pw,-ph,-pw+pr,-ph);
     const padGeometry=new THREE.ShapeGeometry(shape),padUv=padGeometry.attributes.uv,position=padGeometry.attributes.position;
     for(let i=0;i<padUv.count;i++)padUv.setXY(i,(position.getX(i)+pw)/(2*pw),(position.getY(i)+ph)/(2*ph));
-    const nfc=new THREE.Mesh(padGeometry,material(0xffffff,{map:corrected,roughness:.92,metalness:0}));nfc.name='rear-nfc-pad';nfc.position.set(0,-height*(1-cut)/2,-4.015);nfc.rotation.y=Math.PI;nfc.userData.inputOccluder=true;group.add(nfc);parts[nfc.name]=nfc;
+    const nfc=new THREE.Mesh(padGeometry,material(0xffffff,{map:corrected,roughness:.92,metalness:0}));nfc.name='rear-nfc-pad';nfc.userData.stickerSurface=true;nfc.position.set(0,-height*(1-cut)/2,-4.015);nfc.rotation.y=Math.PI;nfc.userData.inputOccluder=true;group.add(nfc);parts[nfc.name]=nfc;
     group.userData.provenance=metadata;return metadata;
   })();
   return {group,screen,buttons,parts,connectors,rgbLeds,ready,dispose(){disposed=true;aborter.abort();labelTexture?.dispose();pcbTexture?.dispose();nfcTexture?.dispose();}};

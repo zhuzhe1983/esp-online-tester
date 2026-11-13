@@ -100,7 +100,7 @@ check('appearance changes only shell and restores opaque occlusion; invalid valu
   applyShellAppearance(shell, normalizeShellAppearance({shell: {color: '#C8A65A', finish: 'metal'}})); assert.equal(shell.material.metalness, .78); assert.equal(shell.material.color.getHexString(), 'c8a65a');
   for (const shell of [{color: 'red'}, {opacity: -1}, {opacity: Infinity}, {finish: 'glass'}]) assert.throws(() => normalizeShellAppearance({shell}));
 });
-check('eight finishes have distinct optical responses while color and opacity remain independent', () => {
+check('all finishes have distinct optical responses while color and opacity remain independent', () => {
   const shell = cube(0), occluder = cube(-1), signatures = new Set(), materials = {};
   for (const {id} of SHELL_FINISHES) {
     const value = normalizeShellAppearance({shell: {color: '#A376CA', opacity: .37, finish: id}});
@@ -108,10 +108,10 @@ check('eight finishes have distinct optical responses while color and opacity re
     const m = shell.material;
     assert.equal(m.isMeshPhysicalMaterial, true); assert.equal(m.color.getHexString(), 'a376ca'); near(m.opacity, .37);
     assert.equal(value.shell.finish, id); assert.equal(occluder.visible, false); assert.equal(shell.userData.inputOccluder, true);
-    materials[id] = {roughness: m.roughness, metalness: m.metalness, transmission: m.transmission, clearcoat: m.clearcoat, specularIntensity: m.specularIntensity};
+    materials[id] = {roughness: m.roughness, metalness: m.metalness, transmission: m.transmission, clearcoat: m.clearcoat, specularIntensity: m.specularIntensity, iridescence: m.iridescence};
     signatures.add(JSON.stringify(materials[id]));
   }
-  assert.equal(signatures.size, 8);
+  assert.equal(signatures.size, SHELL_FINISHES.length);
   assert.ok(materials['glossy-plastic'].roughness < materials.plastic.roughness);
   assert.ok(materials.rubber.roughness > materials.plastic.roughness && materials.rubber.specularIntensity < materials.plastic.specularIntensity);
   assert.ok(materials['clear-resin'].transmission > materials['frosted-plastic'].transmission && materials['frosted-plastic'].roughness > materials['clear-resin'].roughness);
@@ -122,7 +122,7 @@ check('eight finishes have distinct optical responses while color and opacity re
     assert.equal(shell.material.opacity, 1); assert.ok(shell.material.transmission > 0); assert.equal(occluder.visible, false);
   }
   applyShellAppearance(shell, normalizeShellAppearance(null), {occluder});
-  near(shell.material.roughness, .66); near(shell.material.metalness, 0); near(shell.material.transmission, 0); near(shell.material.clearcoat, 0);
+  near(shell.material.roughness, .66); near(shell.material.metalness, 0); near(shell.material.transmission, 0); near(shell.material.clearcoat, 0); near(shell.material.iridescence, 0);
   assert.equal(shell.material.depthWrite, true); assert.equal(shell.material.side, THREE.FrontSide); assert.equal(occluder.visible, true);
   for (const [id, preset] of Object.entries(SHELL_PRESETS)) assert.equal(shellPreset(preset), id);
   shell.material.dispose();

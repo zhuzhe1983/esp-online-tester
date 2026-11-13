@@ -36,7 +36,8 @@ import {mountDeviceSearch, mountAccessorySearch} from './device-search.js';
 import {ALL_ACCESSORY_INTERFACES,accessoryChoicesForProduct,accessorySearchPreference} from './accessory-selection.js';
 import {mountVisualVariantMenu} from './visual-variant-menu.js';
 import {encodeRecording, decodeRecording, validateRecording} from './recording.js';
-import {SHELL_DEFAULT, SHELL_PRESETS, SHELL_FINISHES, shellPreset} from './appearance.js';
+import {mountStickerControls} from './sticker-ui.js';
+import {SHELL_DEFAULT, SHELL_PRESETS, SHELL_FINISHES, SHELL_PRESET_LABELS, shellPreset} from './appearance.js';
 import {renderHintList, productHints, firmwareHints} from './hints.js';
 import {lookupIpLocation, IP_LOCATION_PROVIDER} from './ip-geolocation.js';
 import {sharedStartup, setSharedPlayback, shareFirmwareSource} from './shared-startup.js';
@@ -644,9 +645,10 @@ function updateAppearance(appearance) {
 }
 function mountAppearance() {
   const controls = document.querySelector('.view-controls'); if (!controls) return;
+  const stylesheet=document.createElement('link');stylesheet.rel='stylesheet';stylesheet.href=new URL('./shell-design.css',import.meta.url).href;document.head.append(stylesheet);
   const details = element('details', 'shell-settings'); details.id = 'shell-settings';
   details.innerHTML = `<summary>外壳</summary><div class="shell-settings-body">
-    <label for="shell-preset">展示预设</label><select id="shell-preset"><option value="original">原色</option><option value="black-clear">黑透</option><option value="purple-clear">紫透</option><option value="gold">金色</option><option value="custom" disabled>自定义</option></select>
+    <label for="shell-preset">展示预设</label><select id="shell-preset">${Object.entries(SHELL_PRESET_LABELS).map(([id,label])=>`<option value="${id}">${label}</option>`).join('')}<option value="custom" disabled>自定义</option></select>
     <label for="shell-color">外壳颜色</label><input id="shell-color" type="color" value="#080a0b">
     <label for="shell-opacity">不透明度 <output id="shell-opacity-value" for="shell-opacity">100%</output></label><input id="shell-opacity" type="range" min="0" max="100" step="1" value="100">
     <label for="shell-finish">表面效果</label><select id="shell-finish"></select>
@@ -667,6 +669,8 @@ function mountAppearance() {
     bind(id, 'change', () => action(() => updateAppearance(appearanceFromInputs())));
   }
   bind('reset-shell', 'click', () => action(() => updateAppearance(null)));
+  const detachStickers=mountStickerControls({container:details.querySelector('.shell-settings-body'),view:sceneView,onError:report,onMessage:toast});
+  window.addEventListener('pagehide',detachStickers,{once:true});
 }
 function reflectMode(mode, unavailable = false) {
   renderImuLink();

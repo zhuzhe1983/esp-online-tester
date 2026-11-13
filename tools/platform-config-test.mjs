@@ -114,7 +114,7 @@ test('shell presentation survives sharing while legacy scenes remain valid', () 
 
 test('all shell finishes share through schema v1 without changing independent color or opacity', () => {
   const ids = SHELL_FINISHES.map(item => item.id);
-  assert.equal(ids.length, 8); assert.equal(new Set(ids).size, 8);
+  assert.equal(ids.length, 9); assert.equal(new Set(ids).size, 9);
   assert.ok(SHELL_FINISHES.every(item => typeof item.label === 'string' && item.label.length));
   assert.deepEqual(sceneSchema.$defs.appearance.properties.shell.properties.finish.enum, ids);
   for (const finish of ids) for (const opacity of [0, .37, 1]) {
@@ -127,7 +127,7 @@ test('all shell finishes share through schema v1 without changing independent co
     const scene = base(); scene.view.appearance = {shell: {color: '#a376ca', opacity: .37, finish}};
     assert.ok(has(validateScene(scene, catalog), 'SHELL_FINISH'));
   }
-  assert.deepEqual(SHELL_PRESETS, {
+  assert.deepEqual(Object.fromEntries(['original','black-clear','purple-clear','gold'].map(id=>[id,SHELL_PRESETS[id]])), {
     original: {color: '#080a0b', opacity: 1, finish: 'plastic'},
     'black-clear': {color: '#171923', opacity: .32, finish: 'plastic'},
     'purple-clear': {color: '#8456cf', opacity: .36, finish: 'plastic'},

@@ -70,7 +70,7 @@ export function createManufacturerModel(product, screenTexture) {
       if(part.controlId){mesh.userData.control=part.controlId;buttons.push(mesh);}
       // Paper is opaque where the alpha mask exists: write depth so a later
       // transparent shell cannot tint it. Cut-out pixels preserve real holes.
-      if(painted?.length){const geom=geometry(painted);geom.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));const face=new THREE.Mesh(geom,new THREE.MeshBasicMaterial({map:texture,transparent:false,depthWrite:true,alphaTest:decal?.5:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));face.name=`${part.name}-photo-surface`;face.userData.inputOccluder=true;group.add(face);mesh.userData.inspectionCompanions=[face];}
+      if(painted?.length){const geom=geometry(painted);geom.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));const face=new THREE.Mesh(geom,new THREE.MeshBasicMaterial({map:texture,transparent:false,depthWrite:true,alphaTest:decal?.5:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));face.name=`${part.name}-photo-surface`;face.userData.inputOccluder=true;face.userData.stickerSurface=shells.includes(mesh);group.add(face);mesh.userData.inspectionCompanions=[face];}
     }
     if(!shells.length&&metadata.parts.length&&metadata.parts.every(part=>!part.role)) shells.push(parts[metadata.parts[0].name]);
     parts.shell=shells[0];group.userData.shellMeshes=shells;
@@ -87,7 +87,7 @@ export function createManufacturerModel(product, screenTexture) {
       if(part.kind==='label') {
         if(!Array.isArray(part.geometry?.sizeMm)||part.geometry.sizeMm.length!==2||!part.geometry.sizeMm.every(v=>Number.isFinite(v)&&v>0&&v<=5000))throw Error('Invalid label dimensions');
         const map=await new THREE.TextureLoader().loadAsync(asset(part.texture).href);if(disposed){map.dispose();return;}textures.push(map);map.colorSpace=THREE.SRGBColorSpace;map.anisotropy=4;
-        const face=new THREE.Mesh(new THREE.PlaneGeometry(...part.geometry.sizeMm),new THREE.MeshBasicMaterial({map,transparent:false,depthWrite:true,alphaTest:.5,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));face.name=part.id;face.position.set(...center);face.rotation.set(...vector(part.geometry.rotation));face.userData.inputOccluder=true;parts[part.id]=face;group.add(face);continue;
+        const face=new THREE.Mesh(new THREE.PlaneGeometry(...part.geometry.sizeMm),new THREE.MeshBasicMaterial({map,transparent:false,depthWrite:true,alphaTest:.5,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));face.name=part.id;face.userData.stickerSurface=!/pcb|unknown/i.test(part.id);face.position.set(...center);face.rotation.set(...vector(part.geometry.rotation));face.userData.inputOccluder=true;parts[part.id]=face;group.add(face);continue;
       }
       if(part.kind==='connector-visual'&&['USB-C','HY2.0-4P'].includes(part.connectorType)) {
         if(part.housingColor!==undefined&&!/^#[a-fA-F0-9]{6}$/.test(part.housingColor))throw Error('Invalid connector housing color');

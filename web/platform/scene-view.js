@@ -9,6 +9,7 @@ import {applyServoValues} from './servo-view.js';
 import {applyMotorValues} from './motor-view.js';
 import {applyFlightPose, createFlightGround} from './flight-view.js';
 import {normalizeShellAppearance, applyShellAppearance, DEFAULT_STOPWATCH_APPEARANCE} from './shell-appearance.js';
+import {createStickerController} from './sticker-view.js';
 import {normalizeOrientation} from './imu.js';
 import {frameAssembly} from './viewer-camera.js';
 
@@ -164,6 +165,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     paintPending = true;
     requestAnimationFrame(() => { paintPending = false; if (!disposed && renderer && mode === '3d') renderer.render(scene, camera); });
   }
+  const stickers = createStickerController({draw,onChange:state=>mount.dispatchEvent?.(new CustomEvent('stickerschange',{detail:state}))});
   function frameCamera() {
     frameAssembly(camera,group,{zoom,fill:mount.closest?.('.viewer-immersive') ? .92 : .86});
   }
@@ -174,6 +176,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   }
   const resizeObserver = new ResizeObserver(resize); resizeObserver.observe(mount);
   function clearGroup() {
+    void stickers.setModel(null);
     updateFlight(null);
     inspection = null; onInspectionChange({available: false, expanded: false});
     accessoryGeneration++; for (const cleanup of accessoryCleanups) cleanup(); accessoryCleanups = [];
@@ -228,6 +231,8 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
         // Parts can be exposed while the loader still awaits textures. Capture their
         // untouched colors first, then resolve even partial pending preferences.
         appearance = normalizeShellAppearance(appearanceValue, appearanceDefaults); appearanceReady = true;
+        const stickerSurfaces=[...shellMeshes];model.group.traverse(mesh=>{if(mesh.userData.stickerSurface&&!stickerSurfaces.includes(mesh))stickerSurfaces.push(mesh);});
+        void stickers.setModel(product.id,stickerSurfaces);
         mount.dataset.modelStatus = 'ready'; onModelReady(); applyAppearance(); setAccessories(accessoryDefinitions); frameCamera(); draw();
       }).catch(error => {
         if (disposed || productGeneration !== token) return;
@@ -362,6 +367,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
       clearHover(); if (inside && product?.runtime?.touch) { display.style.outline = '2px solid #ee857f55'; mount.dataset.hover = 'touch'; mount.style.cursor = 'crosshair'; } return;
     }
     const intersection = hit(event), role = surface(intersection);
+    if(stickers.placing){clearHover();if(intersection){halo.show(intersection.object,'orbit');mount.style.cursor=stickers.accepts(intersection.object)?'crosshair':'not-allowed';draw();}return;}
     if (!intersection) { clearHover(); return; }
     halo.show(intersection.object, role.kind); mount.dataset.hover = role.kind;
     mount.style.cursor = {button: 'pointer', touch: 'crosshair', unsupported: 'not-allowed', orbit: 'grab', encoder:'grab',potentiometer:'grab'}[role.kind];
@@ -384,9 +390,11 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     if (!point) return null; mesh.worldToLocal(point).sub(center);
     return point.lengthSq() < .001 ? null : {angle:Math.atan2(point.y,point.x)};
   }
+  let stickerPointer=null;
   function down(event) {
     if (event.button !== 0) return;
     const flat = event.currentTarget === display, intersection = flat ? {object: screen} : hit(event), role = surface(intersection);
+    if(stickers.placing&&!flat){stickerPointer={id:event.pointerId,x:event.clientX,y:event.clientY};event.preventDefault();event.currentTarget.setPointerCapture(event.pointerId);router.down({pointerId:event.pointerId,x:event.clientX,y:event.clientY,surface:{kind:'orbit'}});return;}
     const point = role.kind === 'touch' ? screenPoint(event, intersection) : ['encoder','potentiometer'].includes(role.kind) ? encoderPoint(event,intersection.object) : null;
     if (['encoder','potentiometer'].includes(role.kind)) encoderMeshes.set(event.pointerId,intersection.object);
     if (flat && point && product?.display?.shape === 'round' && (point.u - .5) ** 2 + (point.v - .5) ** 2 > .25) return;
@@ -400,8 +408,8 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     const next = router.move({pointerId: event.pointerId, x: event.clientX, y: event.clientY, point: kind === 'touch' ? screenPoint(event) : ['encoder','potentiometer'].includes(kind) ? encoderPoint(event,encoderMeshes.get(event.pointerId)) : null});
     if (next === 'orbit') mount.style.cursor = 'grabbing';
   }
-  function up(event) { const orbit = router.kind(event.pointerId) === 'orbit'; router.up(event.pointerId, event.type !== 'pointerup'); encoderMeshes.delete(event.pointerId); if (orbit) { clearOrientationTimers(); publishOrientation(false); } if (!router.activeCount) clearHover(); }
-  function releaseInputs() { const hadMotion = orientationTimer !== null || orientationIdle !== null; clearOrientationTimers(); router.releaseAll(); encoderMeshes.clear(); if (hadMotion) publishOrientation(false); clearHover(); }
+  function up(event) { if(stickerPointer?.id===event.pointerId){const tap=event.type==='pointerup'&&Math.hypot(event.clientX-stickerPointer.x,event.clientY-stickerPointer.y)<6;stickerPointer=null;if(tap)stickers.placeAt(hit(event));} const orbit = router.kind(event.pointerId) === 'orbit'; router.up(event.pointerId, event.type !== 'pointerup'); encoderMeshes.delete(event.pointerId); if (orbit) { clearOrientationTimers(); publishOrientation(false); } if (!router.activeCount) clearHover(); }
+  function releaseInputs() { stickerPointer=null; const hadMotion = orientationTimer !== null || orientationIdle !== null; clearOrientationTimers(); router.releaseAll(); encoderMeshes.clear(); if (hadMotion) publishOrientation(false); clearHover(); }
   for (const canvas of [display, renderer?.domElement].filter(Boolean)) {
     canvas.addEventListener('pointerdown', down); canvas.addEventListener('pointermove', move); canvas.addEventListener('pointerleave', clearHover); canvas.addEventListener('blur', releaseInputs);
     canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up); canvas.addEventListener('lostpointercapture', up);
@@ -409,7 +417,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   window.addEventListener('blur', releaseInputs);
   function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {setProduct, setAccessories, setMode, resetView, resize, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateFlight, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setOrientationEnabled, setInspection, getInspection, get previewOnly() { return previewOnly; }, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
-    dispose() { disposed = true; releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup();flightGround.traverse(object=>{object.geometry?.dispose();for(const material of [].concat(object.material||[]))material.dispose();}); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
+  return {stickers,setProduct, setAccessories, setMode, resetView, resize, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateFlight, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setOrientationEnabled, setInspection, getInspection, get previewOnly() { return previewOnly; }, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+    dispose() { disposed = true; stickers.dispose(); releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup();flightGround.traverse(object=>{object.geometry?.dispose();for(const material of [].concat(object.material||[]))material.dispose();}); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }
