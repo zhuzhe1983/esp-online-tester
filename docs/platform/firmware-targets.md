@@ -20,3 +20,5 @@
 - 共用目录不增加板级运行支持，不放宽镜像芯片、容量及布局检查，也不放宽实机刷写的直接产品映射约束。TriviaPOD 已单独接入兼容模拟配置，共享条目可以试运行；不同产品的持久化数据与分享身份仍隔离。
 
 修改映射后运行 `python tools/validate-platform-catalog.py` 和 `node --test tools/platform-firmware-target-test.mjs tools/platform-catalog-selection-test.mjs tools/platform-firmware-policy-test.mjs tools/platform-firmware-history-test.mjs`，并检查实际设备切换、远程搜索、版本查询及分享恢复。
+
+PaperMono-Lite（C153-Lite）显式指向 `m5stack-papermono`。两款官方产品页的出厂恢复均指向 [PaperMono UserDemo](https://burner.m5stack.com/firmware/2089640807996628993/)，CrossPoint 均指向[同一项目](https://burner.m5stack.com/firmware/2091144466157694978/)；[官方 UserDemo 源码](https://github.com/m5stack/M5PaperMono-UserDemo)明确列出 C153 和 C153-LITE。2026-11-13 核对的 Burner 设备 API 只有 `PAPER_MONO`（`2093000000000000020`），未单列 Lite，见[目录核对记录](evidence/papermono-lite-burner/receipt.json)。Lite 继续使用独立板型；现有明确映射到两款的 User Demo 保留原验收范围，其余共用候选不继承完整版的兼容结论。

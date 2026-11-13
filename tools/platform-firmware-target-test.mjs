@@ -102,3 +102,16 @@ test('TriviaPOD shares StopWatch firmware discovery while keeping its own hardwa
   assert.deepEqual(trivia.interfaces.filter(port=>port.external).map(port=>port.type),['USB-C']);
   assert.ok(watch.interfaces.some(port=>port.external&&port.type==='HY2.0-4P'));
 });
+
+test('PaperMono Lite discovers the shared catalog without losing its verified direct factory mapping',async()=>{
+  const products=(await readJson('../web/platform/catalog/products.json')).items;
+  const firmwares=(await readJson('../web/platform/catalog/firmwares.json')).items;
+  const lite=products.find(product=>product.id==='m5stack-c153-lite');
+  const target=firmwareTargetProduct(lite,products);
+  assert.equal(target.id,'m5stack-papermono');assert.equal(lite.runtime.board,'papermono-lite');
+  const candidates=firmwaresForProduct(firmwares,lite);
+  const factory=candidates.find(firmware=>firmware.id===lite.defaultFirmwareId);
+  assert.equal(factory.role,'factory');assert.equal(factory.simulationVerified,true);assert.equal(factory.sharedTargetId,undefined);
+  const shared=candidates.filter(firmware=>firmware.sharedTargetId===target.id);assert.ok(shared.length);
+  for(const firmware of shared){assert.equal(firmware.simulationVerified,false);assert.equal(firmware.hardwareValidated,false);assert.equal(firmware.role,undefined);}
+});
