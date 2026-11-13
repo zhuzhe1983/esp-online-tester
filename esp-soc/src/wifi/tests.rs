@@ -245,7 +245,7 @@ fn a_busy_ring_holds_the_air_for_50_ms_only() {
 #[test]
 fn a_reboot_keeps_the_host_side_only() {
     let mut l = link_with_queue(&[(0, 0x80)]);
-    let ap = l.ap.take();
+    let ap = l.aps.pop();
     l.attach(ap, Some(crate::net::VirtualNet::new(false)));
     l.set_relay(true);
     l.eth_tx.push(vec![1]); l.eth_rx.push(vec![2]);
@@ -391,4 +391,244 @@ fn a_nearby_network_answers_only_probes_addressed_to_it() {
         assert!(ap.on_station_tx(&probe, 1000).is_none());
         assert_eq!(ap.queue.len(), usize::from(answers), "a1 {a1:02x?} a3 {a3:02x?}");
     }
+}
+
+// ------------------------------------------------------------------ several joinable access points
+
+const STA: [u8; 6] = [2, 3, 4, 5, 6, 7];
+
+/// An open network and a WPA2-PSK one, as `--wifi ssid=esp32sim-open --wifi ssid=esp32sim,psk=…`,
+/// with the network behind them.
+fn two_ap_link() -> StationLink {
+    let cfgs = ApConfig::parse_all(&["ssid=esp32sim-open".into(), "ssid=esp32sim,psk=esp32sim-pass".into()]).unwrap();
+    let mut l = StationLink::default();
+    let mut it = cfgs.into_iter();
+    l.attach(Some(VirtualAp::new(it.next().unwrap(), false)), Some(crate::net::VirtualNet::new(false)));
+    for cfg in it { l.add_ap(cfg, &crate::DebugFlags::default()).unwrap(); }
+    l
+}
+
+/// A management or data frame from the station to `bssid`.
+fn frame_to(fc: u16, bssid: [u8; 6], payload: &[u8]) -> Vec<u8> {
+    let mut f = vec![0; 24];
+    f[..2].copy_from_slice(&fc.to_le_bytes());
+    f[4..10].copy_from_slice(&bssid);
+    f[10..16].copy_from_slice(&STA);
+    f[16..22].copy_from_slice(&bssid);
+    f.extend_from_slice(payload);
+    f
+}
+
+/// Every frame the air delivers from `from_us` to `to_us`, one per airtime gap.
+fn drain(l: &mut StationLink, from_us: u64, to_us: u64) -> Vec<Vec<u8>> {
+    let mut got = Vec::new();
+    let mut t = from_us;
+    while t < to_us {
+        l.net_step(t);
+        if let Some(f) = l.next_rx(t, false) { got.push(f); l.rx_delivered(0x1000); }
+        t += 100;
+    }
+    got
+}
+
+/// Open-system authentication and association with `bssid`, then what the air brings for 50 ms.
+fn join(l: &mut StationLink, bssid: [u8; 6], t: u64) -> Vec<Vec<u8>> {
+    l.station_tx(&frame_to(11 << 4, bssid, &[0, 0, 1, 0, 0, 0]), t);
+    l.station_tx(&frame_to(0, bssid, &[1, 0, 0, 0]), t + 1_000);
+    drain(l, t + 1_000, t + 50_000)
+}
+
+fn dhcp_discover() -> Vec<u8> {
+    let mut d = vec![0u8; 240];
+    d[0] = 1; d[1] = 1; d[2] = 6;
+    d[4..8].copy_from_slice(&[1, 2, 3, 4]);
+    d[28..34].copy_from_slice(&STA);
+    d[236..240].copy_from_slice(&[0x63, 0x82, 0x53, 0x63]);
+    d.extend_from_slice(&[53, 1, 1, 255]);
+    let udp = crate::net::packet::udp_packet(&[0; 4], &[255; 4], 68, 67, &d);
+    let ip = crate::net::packet::ip_packet(17, &[0; 4], &[255; 4], &udp);
+    let mut payload = vec![0xaa, 0xaa, 3, 0, 0, 0, 0x08, 0x00];
+    payload.extend_from_slice(&ip);
+    payload
+}
+
+#[test]
+fn several_access_points_parse_with_distinct_bssids_and_no_duplicates() {
+    let cfgs = ApConfig::parse_all(&["ssid=a".into(), "ssid=b,psk=12345678".into(), "ssid=c,bssid=02:00:00:00:00:09".into()]).unwrap();
+    assert_eq!(cfgs[0].bssid, [0x02, 0x53, 0x49, 0x4d, 0x00, 0x01], "the first keeps today's default");
+    assert_eq!(cfgs[1].bssid, derived_bssid("b"), "a later one derives its own from the SSID");
+    assert_eq!(cfgs[2].bssid, [2, 0, 0, 0, 0, 9]);
+    assert_eq!(ApConfig::parse_all(&["ssid=a".into()]).unwrap()[0].bssid, ApConfig::parse("ssid=a").unwrap().bssid, "one spec parses as before");
+    assert!(ApConfig::parse_all(&["ssid=a".into(), "ssid=a,psk=12345678".into()]).is_err(), "one SSID twice");
+    assert!(ApConfig::parse_all(&["ssid=a".into(), "ssid=b,bssid=02:53:49:4d:00:01".into()]).is_err(), "one BSSID twice");
+    let mut l = two_ap_link();
+    assert!(l.add_ap(ApConfig::parse("ssid=esp32sim").unwrap(), &crate::DebugFlags::default()).is_err());
+    assert!(StationLink::default().add_ap(ApConfig::parse("").unwrap(), &crate::DebugFlags::default()).is_err(), "needs the first one");
+}
+
+#[test]
+fn a_scan_hears_both_access_points() {
+    let mut l = two_ap_link();
+    let (open, psk) = (l.aps()[0].cfg.bssid, l.aps()[1].cfg.bssid);
+    // beacons from both within the first 300 ms
+    let beacons: Vec<[u8; 6]> = drain(&mut l, 0, 300_000).iter().filter(|f| is_beacon(f)).map(|f| f[10..16].try_into().unwrap()).collect();
+    assert!(beacons.contains(&open) && beacons.contains(&psk), "{beacons:x?}");
+    // and a wildcard probe gets a response from each, with its own security
+    l.station_tx(&probe_request(&[0, 0]), 400_000);
+    let resp: Vec<_> = drain(&mut l, 400_000, 420_000).into_iter().filter(|f| f[0] == 0x50).map(|f| response_summary(&f)).collect();
+    assert_eq!(resp.len(), 2, "{resp:x?}");
+    assert!(resp.iter().any(|r| r.0 == open && !r.3) && resp.iter().any(|r| r.0 == psk && r.3));
+    // a frame from the second carries its channel
+    let mut f = vec![0x80, 0, 0, 0]; f.resize(24, 0); f[10..16].copy_from_slice(&psk);
+    assert_eq!(l.rx_meta(&f), (6, -40));
+}
+
+#[test]
+fn the_open_network_associates_and_leases_without_a_handshake() {
+    let mut l = two_ap_link();
+    let open = l.aps()[0].cfg.bssid;
+    let got = join(&mut l, open, 0);
+    assert_eq!(l.aps()[0].state, StaState::Associated);
+    assert_eq!(l.aps()[1].state, StaState::Idle);
+    assert_eq!(l.aps()[0].wpa.state, WpaState::Idle, "no four-way handshake on an open network");
+    assert!(!got.iter().any(|f| describe(f).contains("888e")), "no EAPOL frames");
+    l.station_tx(&frame_to(0x0108, open, &dhcp_discover()), 60_000);
+    let offer = drain(&mut l, 60_000, 70_000).into_iter().find(|f| f[0] == 0x08 && f[10..16] == open);
+    assert!(offer.is_some(), "a DHCP offer from the open access point");
+}
+
+#[test]
+fn the_psk_network_runs_the_wpa2_handshake() {
+    let mut l = two_ap_link();
+    let psk = l.aps()[1].cfg.bssid;
+    let got = join(&mut l, psk, 0);
+    assert_eq!(l.aps()[1].state, StaState::Associated);
+    assert_eq!(l.aps()[1].wpa.state, WpaState::AwaitingMessage2);
+    assert!(got.iter().any(|f| f[10..16] == psk && describe(f).contains("888e")), "message 1 from the PSK access point");
+    let mut m2 = eapol_message4();
+    m2[5..7].copy_from_slice(&0x010au16.to_be_bytes());
+    let mut payload = vec![0xaa, 0xaa, 3, 0, 0, 0, 0x88, 0x8e];
+    payload.extend_from_slice(&m2);
+    l.station_tx(&frame_to(0x0108, psk, &payload), 60_000);
+    assert_eq!(l.aps()[1].wpa.state, WpaState::AwaitingMessage4);
+    let mut payload = vec![0xaa, 0xaa, 3, 0, 0, 0, 0x88, 0x8e];
+    payload.extend_from_slice(&eapol_message4());
+    l.station_tx(&frame_to(0x0108, psk, &payload), 70_000);
+    assert_eq!(l.aps()[1].wpa.state, WpaState::Installed);
+    assert_eq!(l.aps()[0].state, StaState::Idle, "the open one never heard the station");
+}
+
+#[test]
+fn associating_with_another_access_point_leaves_the_first() {
+    let mut l = two_ap_link();
+    let (open, psk) = (l.aps()[0].cfg.bssid, l.aps()[1].cfg.bssid);
+    join(&mut l, psk, 0);
+    assert_eq!(l.aps()[1].state, StaState::Associated);
+    join(&mut l, open, 100_000);
+    assert_eq!((l.aps()[0].state, l.aps()[1].state), (StaState::Associated, StaState::Idle));
+    assert_eq!(l.aps()[1].wpa.state, WpaState::Idle);
+    // data to the one left is not passed on; to the joined one it reaches the network
+    l.station_tx(&frame_to(0x0108, psk, &dhcp_discover()), 200_000);
+    assert_eq!(l.eth_tx_pending(), 0);
+    l.station_tx(&frame_to(0x0108, open, &dhcp_discover()), 200_100);
+    assert_eq!(l.eth_tx_pending(), 1);
+    // and back again
+    join(&mut l, psk, 300_000);
+    assert_eq!((l.aps()[0].state, l.aps()[1].state), (StaState::Idle, StaState::Associated));
+    // both survive a reboot
+    let l = l.surviving_reboot();
+    assert_eq!(l.aps().len(), 2);
+}
+
+/// A capture tap that keeps frames for the page: each record as (direction byte, frame).
+fn live_tap() -> crate::netcap::NetTap {
+    let tap = crate::netcap::NetTap::default();
+    tap.lock().unwrap().enable_live();
+    tap
+}
+fn taken(tap: &crate::netcap::NetTap) -> Vec<(u8, Vec<u8>)> {
+    tap.lock().unwrap().take_live().into_iter().map(|m| (m[1], m[10..].to_vec())).collect()
+}
+/// `payload` in a data frame to `bssid`, ending in the 4-byte FCS slot as the MAC hands it over.
+fn data_with_fcs(bssid: [u8; 6], payload: &[u8]) -> Vec<u8> {
+    let mut f = frame_to(0x0108, bssid, payload);
+    f.extend_from_slice(&[0xde, 0xad, 0xbe, 0xef]);
+    f
+}
+
+#[test]
+fn the_tap_records_a_dhcp_exchange_both_ways_without_the_fcs() {
+    let mut l = two_ap_link();
+    let tap = live_tap();
+    l.set_tap(tap.clone());
+    let open = l.aps()[0].cfg.bssid;
+    join(&mut l, open, 0);
+    assert!(taken(&tap).is_empty(), "management frames are not Ethernet frames");
+    l.station_tx(&data_with_fcs(open, &dhcp_discover()), 60_000);
+    drain(&mut l, 60_000, 70_000);
+    let got = taken(&tap);
+    let up: Vec<_> = got.iter().filter(|(d, _)| *d == crate::netcap::Dir::FromStation as u8).collect();
+    let down: Vec<_> = got.iter().filter(|(d, _)| *d == crate::netcap::Dir::ToStation as u8).collect();
+    assert_eq!((up.len(), down.len()), (1, 1), "one discover, one offer: {got:x?}");
+    let discover = &up[0].1;
+    assert_eq!(discover[..6], open, "addr3 of the data frame");
+    assert_eq!(discover[6..12], STA);
+    assert_eq!(discover[12..14], [0x08, 0x00]);
+    assert_eq!(discover.len(), 14 + dhcp_discover().len() - 8, "the FCS slot is left out");
+    assert_eq!(down[0].1[..6], STA, "the offer is for the station");
+    // the tap survives a reboot and a new attach
+    let mut l = l.surviving_reboot();
+    l.attach(Some(VirtualAp::new(config(), false)), None);
+    assert!(l.tap.is_some());
+}
+
+#[test]
+fn in_relay_mode_the_tap_skips_dropped_frames_and_records_delivered_ones() {
+    let mut l = two_ap_link();
+    l.set_relay(true);
+    let tap = live_tap();
+    l.set_tap(tap.clone());
+    let open = l.aps()[0].cfg.bssid;
+    join(&mut l, open, 0);
+    taken(&tap);
+    // too long for the relay: dropped, so not captured
+    let mut big = dhcp_discover();
+    big.resize(RELAY_FRAME_MAX + 64, 0);
+    l.station_tx(&data_with_fcs(open, &big), 60_000);
+    assert!(l.take_relay_frames().is_empty());
+    assert!(taken(&tap).is_empty(), "a dropped frame is not captured");
+    l.station_tx(&data_with_fcs(open, &dhcp_discover()), 60_100);
+    assert_eq!(l.take_relay_frames().len(), 1);
+    assert_eq!(taken(&tap).len(), 1, "a relayed frame is");
+    // a frame from the host is captured when it is delivered, not when it is queued
+    let mut eth = vec![0u8; 60];
+    eth[..6].copy_from_slice(&STA); eth[6..12].copy_from_slice(&[2, 0, 0, 0, 0, 2]); eth[12..14].copy_from_slice(&[0x08, 0x00]);
+    l.receive_relay_frame(&eth).unwrap();
+    assert!(taken(&tap).is_empty(), "queued, not yet delivered");
+    let rx = drain(&mut l, 70_000, 80_000);
+    assert!(rx.iter().any(|f| f[0] == 0x08), "delivered to the station");
+    assert_eq!(taken(&tap), vec![(crate::netcap::Dir::ToStation as u8, eth)]);
+}
+
+#[test]
+fn leaving_an_access_point_drops_what_it_still_had_queued_for_the_station() {
+    let mut l = two_ap_link();
+    let (open, psk) = (l.aps()[0].cfg.bssid, l.aps()[1].cfg.bssid);
+    // the association with the PSK network queues EAPOL message 1 a little later
+    l.station_tx(&frame_to(11 << 4, psk, &[0, 0, 1, 0, 0, 0]), 0);
+    l.station_tx(&frame_to(0, psk, &[1, 0, 0, 0]), 1_000);
+    assert!(l.aps()[1].queue.iter().any(|a| !is_beacon(&a.frame)), "something queued for the station");
+    // the station associates with the open one before it is delivered
+    l.station_tx(&frame_to(11 << 4, open, &[0, 0, 1, 0, 0, 0]), 1_100);
+    l.station_tx(&frame_to(0, open, &[1, 0, 0, 0]), 1_200);
+    assert!(l.aps()[1].queue.iter().all(|a| is_beacon(&a.frame)), "only beacons left");
+    let got = drain(&mut l, 1_200, 100_000);
+    assert!(!got.iter().any(|f| !is_beacon(f) && f[10..16] == psk), "nothing more from the PSK network to the station");
+}
+
+#[test]
+fn epoch_belongs_in_the_first_wifi_spec_only() {
+    assert_eq!(ApConfig::parse_all(&["ssid=a,epoch=1000".into(), "ssid=b".into()]).unwrap()[0].epoch_s, Some(1000));
+    let e = ApConfig::parse_all(&["ssid=a".into(), "ssid=b,epoch=1000".into()]).unwrap_err();
+    assert!(e.contains("epoch"), "{e}");
 }

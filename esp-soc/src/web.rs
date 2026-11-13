@@ -1,5 +1,6 @@
 //! Minimal HTTP + WebSocket (RFC 6455) server for the board UI — no external crates.
-//! Text frames carry JSON; binary frames carry TFT frames (type 1) and audio (type 2).
+//! Text frames carry JSON; binary frames carry TFT frames (type 1), audio (type 2), the camera
+//! preview (type 4) and the WiFi station's Ethernet frames (type 5, `netcap`).
 use std::collections::VecDeque;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};

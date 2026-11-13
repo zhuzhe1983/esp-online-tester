@@ -220,7 +220,7 @@ impl SocBus {
         let total = 28 + frame.len() + 4;
         if !d.owner_dma || d.eof || d.buf == 0 || d.size < total as u32 { return None; }
         let range = dma_range(d.buf, total)?;
-        let (chan, rssi) = { let (c, r) = self.periph.wifi.link.ap().unwrap().rx_meta(frame); (c as u32, i32::from(r)) };
+        let (chan, rssi) = { let (c, r) = self.periph.wifi.link.rx_meta(frame); (c as u32, i32::from(r)) };
         let broadcast = frame.get(4).is_some_and(|v| v & 1 != 0);
         // wDev_ProcessRxSucData subtracts the classic 96 dB RSSI offset.
         let w0 = ((rssi + 96) as u32 & 0xff) | (1 << 28) | if broadcast { 0 } else { 1 << 29 };
