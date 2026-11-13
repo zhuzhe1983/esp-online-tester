@@ -1,11 +1,12 @@
 // The board page's Network panel: the Ethernet frames the emulated WiFi station sends and
 // receives, streamed by `--web` runs with `--wifi` as binary messages
 //   [5][dir u8: 0 = from the station, 1 = to it][emulated time, µs, u64 le][Ethernet frame…]
-// after a {"t":"netmon","linktype":1} hello. Frames are dissected with dpkt-js (BSD-3-Clause),
-// loaded from a pinned CDN URL when the panel first appears; offline, rows show length and hex.
+// after a {"t":"netmon","linktype":1} hello. Frames are dissected with dpkt-js 0.1.0 (BSD-3-Clause),
+// vendored under vendor/dpkt-js and loaded the first time the panel is opened or a row clicked;
+// until then, or if it fails to load, rows show length and hex.
 (function () {
   'use strict';
-  const DPKT_URL = 'https://cdn.jsdelivr.net/npm/dpkt-js@0.1.0/dist/index.js';
+  const DPKT_URL = new URL('vendor/dpkt-js/index.js', (document.currentScript && document.currentScript.src) || document.baseURI).href;
   const KEEP = 5000;                 // frames kept in the page; the oldest go first
   const ETHERTYPES = { 0x0800: 'IPv4', 0x0806: 'ARP', 0x86dd: 'IPv6', 0x888e: 'EAPOL', 0x8100: '802.1Q' };
   let frames = [], seq = 0, dissector = null, dpkt = null, dpktState = 'idle', panel = null;
@@ -17,7 +18,7 @@
   function build() {
     const card = document.createElement('div');
     card.className = 'card'; card.id = 'netmonpanel';
-    card.innerHTML = `<details open id="netmondetails"><summary class="row" style="cursor:pointer;list-style:revert"><strong>Network</strong><span class="st" id="netmonstat">the station's Ethernet frames, both ways</span></summary>
+    card.innerHTML = `<details id="netmondetails"><summary class="row" style="cursor:pointer;list-style:revert"><strong>Network</strong><span class="st" id="netmonstat">the station's Ethernet frames, both ways</span></summary>
       <div class="row" style="margin-top:8px"><input type="text" id="netmonfilter" placeholder="filter: dhcp, icmp, 10.0.2.2, ↑…" style="flex:1;min-width:120px">
         <label class="st"><input type="checkbox" id="netmonscroll" checked> auto-scroll</label>
         <button class="act" id="netmonpause">pause</button><button class="act" id="netmonclear">clear</button><button class="act" id="netmonpcap">download pcap</button></div>
@@ -31,7 +32,8 @@
     $('netmonpause').onclick = () => { paused = !paused; $('netmonpause').textContent = paused ? 'resume' : 'pause'; if (!paused) render(); };
     $('netmonclear').onclick = () => { frames = []; selected = null; $('netmontree').style.display = 'none'; render(); };
     $('netmonpcap').onclick = download;
-    $('netmonlist').onclick = e => { const r = e.target.closest('[data-seq]'); if (r) select(+r.dataset.seq); };
+    $('netmondetails').ontoggle = () => { if ($('netmondetails').open) { loadDpkt(); render(); } };
+    $('netmonlist').onclick = e => { loadDpkt(); const r = e.target.closest('[data-seq]'); if (r) select(+r.dataset.seq); };
     return card;
   }
 
@@ -43,9 +45,10 @@
       try { dissector = new m.Dissector(1); } catch (e) { dissector = null; }
       frames.forEach(f => { f.summary = summarize(f); });
       render();
+      if (selected !== null) select(selected);
     }).catch(() => {
       dpktState = 'failed';
-      $('netmonstat').textContent = 'dpkt-js could not load (offline?): frames are shown as length and hex';
+      $('netmonstat').textContent = 'dpkt-js could not load: frames are shown as length and hex';
     });
   }
 
@@ -126,7 +129,7 @@
 
   window.NetMon = {
     // the server's {"t":"netmon"} hello: this run has a WiFi station
-    show() { if (!panel) { panel = build(); loadDpkt(); status(); } },
+    show() { if (!panel) { panel = build(); status(); } },
     // one binary message of type 5
     frame(buf) {
       if (!panel) this.show();
