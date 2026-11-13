@@ -87,6 +87,9 @@ impl ApConfig {
         for (i, spec) in specs.iter().enumerate() {
             let (mut cfg, given) = Self::parse_spec(spec)?;
             if i > 0 && !given { cfg.bssid = derived_bssid(&cfg.ssid); }
+            if i > 0 && cfg.epoch_s.is_some() {
+                return Err(format!("access point '{}': epoch= belongs in the first --wifi spec (or --net), which sets the network's clock", cfg.ssid));
+            }
             check_new_ap(&list, &cfg)?;
             list.push(cfg);
         }

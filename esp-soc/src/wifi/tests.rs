@@ -625,3 +625,10 @@ fn leaving_an_access_point_drops_what_it_still_had_queued_for_the_station() {
     let got = drain(&mut l, 1_200, 100_000);
     assert!(!got.iter().any(|f| !is_beacon(f) && f[10..16] == psk), "nothing more from the PSK network to the station");
 }
+
+#[test]
+fn epoch_belongs_in_the_first_wifi_spec_only() {
+    assert_eq!(ApConfig::parse_all(&["ssid=a,epoch=1000".into(), "ssid=b".into()]).unwrap()[0].epoch_s, Some(1000));
+    let e = ApConfig::parse_all(&["ssid=a".into(), "ssid=b,epoch=1000".into()]).unwrap_err();
+    assert!(e.contains("epoch"), "{e}");
+}
