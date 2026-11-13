@@ -55,6 +55,7 @@ default too, with 16 MB of flash ([esp32p4.md](esp32p4.md)).
 | --- | --- |
 | `--version`, `-V` | print `esp32sim <version>` and exit |
 | `--help`, `-h` | print the usage line and exit |
+| `--imu-motion N` | scripted IMU motion: 0 at rest, 1 the shared 30 s tilt, flip and shake script on guest time. Boards with an IMU model only: `waveshare-amoled18-v2` (QMI8658, S3) and `mosaico` (BMI270, S31) |
 | `--max-seconds S` | stop after this much emulated time, including all reboots; also applies to `--cooja` |
 | `--max-insns N` | cap scheduler work across all reboots (details below); unavailable with `--cooja`, which uses `--max-seconds` |
 | `--i2s-tone PORT:HZ:AMPLITUDE` | continuous RX sine on I2S controller 0 or 1; amplitude 0..1, for example `0:1000:0.5`; repeat for multiple controllers |

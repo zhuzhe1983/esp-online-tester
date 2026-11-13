@@ -96,7 +96,8 @@ Needs `--flash-mb 16 --psram-mb 8`; `examples/waveshare-lcd4b/run-energy-panel.s
 | Panel tear signal | GPIO 13 input | approximate compatibility signal with its intended transition timestamps; no timing claim is adopted |
 | CST820 touch at 0x15 | I2C0: SCL 14, SDA 15; active-low interrupt on GPIO 21 | identity and point reports; browser pointer input is latched until firmware reads it |
 | TCA9554 at 0x20 | I2C0 | disconnected register-RAM initialization stub; output, power, and reset effects are outside this model |
-| AXP2101 at 0x34, PCF85063A at 0x51, QMI8658 at 0x6B | I2C0 | initialization-compatible register stubs, not behavioral models |
+| AXP2101 at 0x34, PCF85063A at 0x51 | I2C0 | initialization-compatible register stubs, not behavioral models |
+| QMI8658 at 0x6B | I2C0 | motion mode 0 (default): the initialization-compatible register stub; mode 1 (`--imu-motion 1`, or the page's motion selector): accelerometer and gyro samples of the shared 30 s tilt, flip and shake script, on guest time |
 
 This model applies only to V2, which carries CO5300 and CST820. The V1 SH8601 and FT3168
 combination is not selected by this board name. It needs `--flash-mb 16 --psram-mb 8`.
@@ -179,7 +180,7 @@ The directed `esp32s3 --test stopwatch` tests cover factory selection, bus-0
 attachments, firmware register initialization, reset/rail/shutdown gating,
 framebuffer stride, CST820 reports and GPIO38 interrupt routing. The scan
 parameters are not hardware measurements. Physical scanout, touch IRQs,
-BMI270 and RX8130 are not modeled. These tests do not establish firmware boot,
+its BMI270 (a model exists, used by `mosaico`) and the RX8130 are not attached. These tests do not establish firmware boot,
 relay connectivity or tear-free rendering. Native `--web` keeps native
 networking; browser-only WASM has no NAT for external relay connections.
 
@@ -189,6 +190,20 @@ observation, not a checked-in test or a public firmware fixture. That run cannot
 be reproduced from this repository alone; no public build or private relay
 configuration is included. CI covers the directed board and UI tests above,
 not that firmware's boot or relay connection.
+
+## `mosaico` — Espressif ESP-Mosaico v1.2 (ESP32-S31)
+
+Wiring from esp-mosaico-bsp (`esp_mosaico.h`); details in `esp32s31/src/board.rs` and [esp32s31.md](esp32s31.md).
+
+| Device | Bus | Model |
+| --- | --- | --- |
+| CO5300 480×480 AMOLED | GP-SPI2 in QSPI mode (CLK 42, CS 50, D0-D3 36/51/35/9), RST 44, supply GPIO 60 low, TE 43 | `Co5300`; TE: 60 Hz with a 1 ms pulse |
+| CST9220 touch | I2C0 (SDA 56, SCL 3) at 0x5A, INT 6 | touch reports, INT low while touched |
+| BMI270 IMU, two BMM150 | I2C0 at 0x69, 0x11, 0x12 | `--imu-motion` drives the BMI270 |
+| BQ27220 fuel gauge | I2C0 at 0x55 | synthetic battery |
+| ES8311 codec | I2C0 at 0x19, I2S0 full duplex, amplifier GPIO 45 | a register file; I2S0 output is the run's audio (`--wav`) |
+| W25N01GV SPI NAND | GP-SPI3 | `spi_nand.rs`, command level |
+| Top / Boot buttons | GPIO 7 / 61, active low | `press power`, `press boot` |
 
 ## `waveshare-c6-lcd147` — Waveshare ESP32-C6-LCD-1.47 (ESP32-C6)
 

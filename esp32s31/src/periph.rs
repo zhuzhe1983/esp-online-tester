@@ -13,7 +13,7 @@
 
 use emu_core::{ClockDomain, ClockTree};
 use esp_periph::{
-    device_set, mmio, Device, DeviceSet, Misc, WriteEffect, NO_SOURCE, Systimer,
+    device_set, mmio, Aes, Device, DeviceSet, Misc, WriteEffect, NO_SOURCE, Systimer,
     TimerGroup, Uart, UartLayout, UsbSerialJtag,
 };
 use emu_core::Fault;
@@ -360,6 +360,10 @@ pub struct Peripherals {
     pub systimer: SystimerS31,
     pub timg: [TimgS31; 2],
     pub efuse: Efuse,
+    /// AES accelerator (DR_REG_AES_BASE 0x2050_8000): same register map as the C6, routed by
+    /// `S31Bus` behind the crypto clock. The WPA supplicant unwraps the group key of four-way
+    /// handshake message 3 with it.
+    pub aes: Aes,
     pub misc: Misc,
     pub clock: ClockTree<{ Peripherals::CLOCKS.len() }>,
 }
@@ -378,6 +382,7 @@ impl Peripherals {
             systimer: SystimerS31::default(),
             timg: [TimgS31::default(), TimgS31::default()],
             efuse: Efuse::default(),
+            aes: Aes::new(),
             misc: Misc::new(),
             clock: Self::new_clock(),
         }

@@ -217,3 +217,16 @@ fn analog_scripts_reach_classic_adc_and_touch_registers() {
         assert_eq!(m.bus.read32(0x3ff4_8870).unwrap() >> 16, touch);
     }
 }
+
+#[test]
+fn imu_motion_reaches_the_s3_and_s31_imu_boards() {
+    let args = |board: &str| -> Vec<String> { ["esp32sim", "--board", board, "--imu-motion", "1"].map(String::from).to_vec() };
+    let o = parse(&args("waveshare-amoled18-v2"), "esp32s3");
+    assert_eq!(o.imu_motion, Some(1));
+    assert_eq!(setup_s3(&o).bus.board.imu_motion(), 1);
+    let o = parse(&args("mosaico"), "esp32s31");
+    assert_eq!(setup_s31(&o).bus.board.imu_motion(), 1);
+    // without the flag the IMU stays at rest
+    let o = parse(&["esp32sim", "--board", "mosaico"].map(String::from), "esp32s31");
+    assert_eq!(setup_s31(&o).bus.board.imu_motion(), 0);
+}
