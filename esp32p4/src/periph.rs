@@ -392,7 +392,7 @@ impl GpioP4 {
         let mut g = Gpio::with_pins(57);
         g.strap = 0x30f;
         g.func_in_sel = [0x3f; 256];
-        for (lo, hi) in IN_SEL_LOW { for s in lo..=hi { g.func_in_sel[s] = 0x3e; } }
+        for (lo, hi) in IN_SEL_LOW { g.func_in_sel[lo..=hi].fill(0x3e); }
         GpioP4 { g }
     }
     /// The level an input signal sees: FUNCn_IN_SEL bits 5:0 pick a pin or a constant (0x3F

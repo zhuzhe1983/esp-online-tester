@@ -26,7 +26,7 @@ impl BusMonitor {
         // FORCE_NORST interacts with global reset domains which are not implemented.
         if value & 0x88 != 0 { return Err(Fault::Prohibited); }
         self.clock = value & 0xff;
-        for core in 0..2 { if value & (4 << (core * 4)) != 0 { self.cores[core] = Core::default(); } }
+        for (core, state) in self.cores.iter_mut().enumerate() { if value & (4 << (core * 4)) != 0 { *state = Core::default(); } }
         Ok(())
     }
     pub fn irq(&self) -> bool { (0..2).any(|i| self.enabled(i) && self.cores[i].raw & self.cores[i].ena != 0) }

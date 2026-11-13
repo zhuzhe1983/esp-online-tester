@@ -312,7 +312,7 @@ mod tests {
         fn read32(&mut self, address: u32) -> Result<u32, Fault> { let o = self.off(address, 4)?; Ok(u32::from_le_bytes(self.mem[o..o + 4].try_into().unwrap())) }
         fn write8(&mut self, address: u32, value: u8) -> Result<(), Fault> { let o = self.off(address, 1)?; self.mem[o] = value; self.versions[o >> 8] += 1; Ok(()) }
         fn write16(&mut self, address: u32, value: u16) -> Result<(), Fault> { let o = self.off(address, 2)?; self.mem[o..o + 2].copy_from_slice(&value.to_le_bytes()); self.versions[o >> 8] += 1; self.versions[(o + 1) >> 8] += 1; Ok(()) }
-        fn write32(&mut self, address: u32, value: u32) -> Result<(), Fault> { let o = self.off(address, 4)?; self.mem[o..o + 4].copy_from_slice(&value.to_le_bytes()); for p in o >> 8..=(o + 3) >> 8 { self.versions[p] += 1; } Ok(()) }
+        fn write32(&mut self, address: u32, value: u32) -> Result<(), Fault> { let o = self.off(address, 4)?; self.mem[o..o + 4].copy_from_slice(&value.to_le_bytes()); for version in &mut self.versions[o >> 8..=(o + 3) >> 8] { *version += 1; } Ok(()) }
         fn fetch(&mut self, pc: u32) -> Result<[u8; 4], Fault> { let o = self.off(pc, 4)?; Ok(self.mem[o..o + 4].try_into().unwrap()) }
         fn page_versions(&self) -> &[u32] { &self.versions }
         fn code_page(&mut self, pc: u32) -> u32 { pc.wrapping_sub(self.base) >> 8 }

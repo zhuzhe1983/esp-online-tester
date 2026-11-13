@@ -71,7 +71,7 @@ impl PsramController {
     fn config(port: usize) -> &'static [(u32, u32, u32)] { if port == 0 { SYSTEM_CONFIG } else { PERIPHERAL_CONFIG } }
     pub fn reset(&mut self) {
         self.regs = [[0; 256]; 2]; self.raw = 0; self.system_raw = 0; self.system_ena = 0; self.last_command = None; // controller reset leaves the external die intact
-        for p in 0..2 { for &(off, reset, _) in Self::config(p) { self.regs[p][off as usize / 4] = reset; } }
+        for (p, regs) in self.regs.iter_mut().enumerate() { for &(off, reset, _) in Self::config(p) { regs[off as usize / 4] = reset; } }
     }
     /// Fixed S31 mspi_periph.c assigns source112 only to system MSPI2. MSPI3
     /// has irq=-1; do not invent an additional line or OR in its local raw bank.

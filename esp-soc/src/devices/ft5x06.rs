@@ -38,7 +38,7 @@ impl Ft5x06 {
             self.regs[r + 5] = 0x10;                                // area
             n += 1;
         }
-        for r in 3 + 6 * n..3 + 6 * FT5X06_POINTS { self.regs[r] = 0xff; }
+        self.regs[3 + 6 * n..3 + 6 * FT5X06_POINTS].fill(0xff);
         self.regs[2] = n as u8;
     }
 }

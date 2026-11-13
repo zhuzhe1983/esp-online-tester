@@ -202,7 +202,7 @@ impl Pcnt {
         match off {
             0x00..=0x2c => { let u = (off / 12) as usize; self.conf[u][((off % 12) / 4) as usize] = v; }
             0x48 => self.int_ena = v, 0x4c => self.int_raw &= !v,
-            0x60 => { self.ctrl = v; for u in 0..4 { if v & (1 << (2 * u)) != 0 { self.cnt[u] = 0; } } }
+            0x60 => { self.ctrl = v; for (u, count) in self.cnt.iter_mut().enumerate() { if v & (1 << (2 * u)) != 0 { *count = 0; } } }
             _ => self.ram.write(off, v),
         }
     }

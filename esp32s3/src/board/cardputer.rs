@@ -14,7 +14,7 @@ impl Cardputer {
             // onto physical 4x14 keys: even columns use Y4..7, odd use Y0..3.
             // No switch closes => release, preserving the MCU's selected pulls.
             let mut drive=None;
-            if let Some(selected)=self.selector {for row in 0..4 {for parity in 0..2 {if self.keys[row][2*j+parity] {
+            if let Some(selected)=self.selector {for (row,keys) in self.keys.iter().enumerate() {for parity in 0..2 {if keys[2*j+parity] {
                 let y=(3-row+if parity==0 {4} else {0}) as u8;
                 drive=Some(drive.unwrap_or(true) && y!=selected);
             }}}}

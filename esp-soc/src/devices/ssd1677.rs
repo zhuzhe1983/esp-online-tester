@@ -256,7 +256,7 @@ mod tests {
             let previous=panel.planes[1][0];send(&mut panel,0x24,&[current]);send(&mut panel,0x22,&[0xcf]);send(&mut panel,0x20,&[]);
             panel.advance_to(39+i as u64*20);assert_eq!(panel.planes[1][0],previous,"BUSY retains the previous bank");
             panel.advance_to(40+i as u64*20);assert_eq!(panel.planes[1][0],current,"completed refresh advances the previous bank");
-            for x in 0..8 {assert_eq!(panel.frame[x],if current&(0x80>>x)!=0 {0xffff}else{0},"refresh {i}, pixel {x}");}
+            for (x,&pixel) in panel.frame[..8].iter().enumerate() {assert_eq!(pixel,if current&(0x80>>x)!=0 {0xffff}else{0},"refresh {i}, pixel {x}");}
         }
     }
     #[test]
