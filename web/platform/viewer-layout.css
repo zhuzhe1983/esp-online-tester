@@ -1,0 +1,56 @@
+.workspace{min-width:0}
+.viewer-area{display:grid;grid-template-columns:minmax(0,1fr);flex:1;min-width:0;min-height:240px}
+.viewer-area.shell-editing{grid-template-columns:minmax(0,1fr) 276px}
+.viewer-area .device-stage{width:auto;height:auto;min-height:0;min-width:0;flex:none}
+.shell-editor{display:flex;flex-direction:column;min-height:0;overflow:hidden;border:1px solid var(--line);border-radius:8px;margin-right:16px;background:#fff}
+.shell-editor-heading{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);flex:none;font-size:11px}
+.shell-editor-heading .icon-button{min-width:30px;height:30px;font-size:20px}
+.workspace .shell-editor .shell-settings-body{position:static;width:auto;min-height:0;overflow:auto;overscroll-behavior:contain;border:0;border-radius:0;box-shadow:none;padding:12px;gap:10px;align-content:start}
+.workspace-toolbar{min-width:0}
+.workspace-toolbar .workspace-title{min-width:0;flex:1}
+.workspace-title strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.workspace-toolbar .view-controls{min-width:0;flex-wrap:wrap;justify-content:flex-end}
+.workspace .viewer-chrome-toggle{position:absolute;right:max(12px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));z-index:12;border:1px solid #d8e1d8;background:#fffffff0;backdrop-filter:blur(12px);font-size:11px;min-height:36px;padding:7px 11px}
+.workspace.viewer-immersive,.workbench>.workspace.viewer-immersive{position:fixed;inset:0;top:0;width:var(--viewer-width,100vw);height:var(--viewer-height,100dvh);min-height:0;max-height:none;z-index:1000;background:#f3f5f2;display:flex;flex-direction:column;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);isolation:isolate}
+.workspace.viewer-immersive .workspace-toolbar{flex:0 0 auto;min-height:48px;height:auto;padding:7px 14px;gap:8px}
+.workspace.viewer-immersive .workspace-title .eyebrow{display:none}
+.workspace.viewer-immersive .viewer-area{min-height:0;flex:1}
+.workspace.viewer-immersive .device-stage{margin:0;border:0;border-radius:0;min-height:0;height:auto}
+.workspace.viewer-immersive .stage-grid{opacity:.35}
+.workspace.viewer-immersive .screen-empty{bottom:55px}
+.workspace.viewer-immersive .stage-caption{display:none}
+.workspace.viewer-immersive>.transport{flex:0 0 auto;min-height:48px;padding:7px 110px 7px 14px;background:#f3f5f2}
+.workspace.viewer-immersive>.transport .button{font-size:11px;min-height:30px}
+.workspace.viewer-immersive>:is(.console-panel,.embed-console,.embed-knowledge,#session-tools-mount,#firmware-run-boundary){display:none!important}
+.workspace.viewer-immersive>section{display:none}
+.workspace.viewer-immersive .shell-editor{margin:0 10px 10px 0}
+.workspace.viewer-immersive.viewer-chrome-hidden>:is(.workspace-toolbar,.transport){display:none}
+.workspace.viewer-immersive.viewer-chrome-hidden .stage-topline,.workspace.viewer-immersive.viewer-chrome-hidden .screen-empty{display:none}
+.workspace.viewer-immersive.viewer-chrome-hidden .viewer-chrome-toggle{opacity:.65}
+.workspace.viewer-immersive .flat-display{top:50%;max-width:92%;max-height:90%}
+@media(max-width:850px){
+  .viewer-area.shell-editing{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(200px,1fr) minmax(0,240px)}
+  .shell-editor{margin:8px 10px 0}
+  .workspace.viewer-immersive .viewer-area.shell-editing{grid-template-rows:minmax(0,1fr) minmax(0,32dvh)}
+  .workspace.viewer-immersive .shell-editor{margin:0 8px 4px}
+}
+@media(max-width:640px){
+  .viewer-area{height:390px;flex:none}
+  .viewer-area.shell-editing{height:620px}
+  .workspace-toolbar{padding:8px 12px!important;height:auto!important;min-height:61px!important;flex-wrap:wrap;gap:6px}
+  .workspace-toolbar .workspace-title{flex-basis:100%}
+  .workspace-toolbar .view-controls{width:100%;justify-content:flex-start;gap:6px}
+  .workspace-toolbar .view-controls .button,.workspace-toolbar .view-controls .icon-button{min-height:34px}
+  .workspace.viewer-immersive .workspace-toolbar{min-height:44px!important;flex-wrap:nowrap}
+  .workspace.viewer-immersive .workspace-title{display:none}
+  .workspace.viewer-immersive .view-controls{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .workspace.viewer-immersive .view-controls>*{flex-shrink:0}
+  .workspace.viewer-immersive .view-controls #edit-scene{display:none}
+  .workspace.viewer-immersive>.transport{flex-wrap:wrap;gap:6px;min-height:48px;padding-left:9px}
+  .workspace.viewer-immersive>.transport .device-buttons{margin-left:0}
+}
+@media(max-height:500px) and (min-width:641px){
+  .workspace.viewer-immersive .workspace-toolbar{position:absolute;top:env(safe-area-inset-top);left:0;right:0;z-index:10;background:#f3f5f2dc}
+  .workspace.viewer-immersive>.transport{position:absolute;bottom:env(safe-area-inset-bottom);left:0;right:0;z-index:10;background:#f3f5f2dc}
+  .workspace.viewer-immersive .stage-topline{top:54px}
+}

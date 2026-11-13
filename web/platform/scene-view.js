@@ -10,6 +10,7 @@ import {applyMotorValues} from './motor-view.js';
 import {applyFlightPose, createFlightGround} from './flight-view.js';
 import {normalizeShellAppearance, applyShellAppearance, DEFAULT_STOPWATCH_APPEARANCE} from './shell-appearance.js';
 import {normalizeOrientation} from './imu.js';
+import {frameAssembly} from './viewer-camera.js';
 
 // Uploaded WebGL textures have fixed storage dimensions. A resized canvas needs a fresh
 // texture, even though the canvas object itself is unchanged (e.g. StopWatch -> PaperMono).
@@ -119,7 +120,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   function setOrientationEnabled(enabled) { orientationEnabled = enabled === true; if (!orientationEnabled) clearOrientationTimers(); }
   function setOrientation(value, {notify = true} = {}) {
     const normalized = normalizeOrientation(value); clearOrientationTimers(); orbitGroup.quaternion.fromArray(normalized);
-    if (notify) publishOrientation(false); if (accessoryCount || inspection?.expanded) frameCamera(); draw(); return getOrientation();
+    if (notify) publishOrientation(false); frameCamera(); draw(); return getOrientation();
   }
   let parts = {}, connectors = {}, shellMeshes = [], customizedAppearance = false, appearanceReady = false, appearanceValue = null, appearanceDefaults = DEFAULT_STOPWATCH_APPEARANCE, appearance = normalizeShellAppearance(null), accessoryDefinitions = [];
   let rgbLedMeshes = [], rgbValues = [], accessoryOutputs = [], servoJoints = [], servoValues = [], motorRotors = [], motorValues = [], motorOutput = null, motorsRunning = false;
@@ -164,24 +165,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     requestAnimationFrame(() => { paintPending = false; if (!disposed && renderer && mode === '3d') renderer.render(scene, camera); });
   }
   function frameCamera() {
-    camera.far = 3000;
-    if (accessoryCount || product?.model && product.id !== 'm5stack-papermono') {
-      orbitGroup.updateMatrixWorld(true);
-      const bounds = new THREE.Box3().setFromObject(group);
-      if(bounds.isEmpty()){camera.position.set(0,0,158);camera.lookAt(0,0,0);camera.updateProjectionMatrix();return;}
-      // Follow the unscaled aircraft at inspection distance. The floor remains
-      // at its true world height; its perspective changes during climb/descent.
-      // Including a metre of empty air in this box makes the 80 mm vehicle tiny.
-      const size = bounds.getSize(new THREE.Vector3()), center = bounds.getCenter(new THREE.Vector3());
-      const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-      const distance = Math.max(20, (Math.max(size.y / (2 * tangent), size.x / (2 * tangent * camera.aspect)) * 1.32 + size.z / 2) * zoom);
-      if (inspection?.expanded || flightActive) camera.far = Math.max(camera.far, distance + size.z / 2 + (flightActive?Math.abs(flightGroup.position.z)*3+1000:1000));
-      camera.position.set(center.x, center.y, center.z + distance); camera.lookAt(center);
-    } else {
-      const distance = (product?.id?.includes('paper') ? 205 : 158) * Math.max(1, 1 / camera.aspect) * zoom;
-      camera.position.set(0, 0, distance); camera.lookAt(0, 0, 0);
-    }
-    camera.updateProjectionMatrix();
+    frameAssembly(camera,group,{zoom,fill:mount.closest?.('.viewer-immersive') ? .92 : .86});
   }
   function resize() {
     const width = mount.clientWidth || 500, height = mount.clientHeight || 450;
@@ -386,7 +370,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   const router = createScenePointerRouter({onInput, onUnsupported, onError: error => console.error('Scene input failed:', error), onOrbit(dx, dy) {
     orbitGroup.rotation.y += dx * .01; orbitGroup.rotation.x += dy * .01;
     orientationChanged();
-    if (accessoryCount || inspection?.expanded || flightActive) frameCamera(); draw();
+    frameCamera(); draw();
   }});
   const encoderMeshes = new Map();
   function encoderPoint(event, mesh) {
@@ -425,7 +409,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   window.addEventListener('blur', releaseInputs);
   function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {setProduct, setAccessories, setMode, resetView, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateFlight, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setOrientationEnabled, setInspection, getInspection, get previewOnly() { return previewOnly; }, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+  return {setProduct, setAccessories, setMode, resetView, resize, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateFlight, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setOrientationEnabled, setInspection, getInspection, get previewOnly() { return previewOnly; }, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
     dispose() { disposed = true; releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup();flightGround.traverse(object=>{object.geometry?.dispose();for(const material of [].concat(object.material||[]))material.dispose();}); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }

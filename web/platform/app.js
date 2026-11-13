@@ -19,6 +19,7 @@ import {inspectLocalBuild} from './local-firmware.js';
 import {isC5Board,validateAppImage} from './app-image.js';
 import {installAutomation} from './automation.js';
 import {createSceneView, createHumanButtonController} from './scene-view.js';
+import {mountViewerLayout} from './viewer-layout.js';
 import {installEmbedBridge} from './embed.js';
 import {createTransportUi, createKnowledgePanel, mountFirmwareUpdates} from './transport-ui.js';
 import {firmwareRunPolicy} from './firmware-policy.js';
@@ -59,7 +60,7 @@ const matchingHubFirmware = source => [burnerUi?.current(),sparkUi?.current()].f
 let preserveUnspecifiedFirmware = false;
 let productChoiceManufacturer = '', productFamilyFilter = '', productChoiceTarget = '';
 let imuLink, imuSceneSession = 0;
-let visualVariantMenu, lastRuntimeState;
+let visualVariantMenu, lastRuntimeState, viewerLayout;
 let localFiles = [], localSource = null, localSelectionToken = 0;
 const gpsLookups = new Map(), gpsMessages = new Map();
 const heldKeys = new Map();
@@ -1018,9 +1019,7 @@ function setupEvents() {
   bind('reset-view', 'click', () => action(async () => { await transportUi?.settleForConfiguration(); sceneView.resetView(); }));
   bind('imu-scene-link', 'click', () => { if (imuLink.toggle()) { renderImuLink(); void sendOrientation({quaternion:sceneView.getOrientation(),rotating:false}); } else renderImuLink(); });
   bind('inspect-model', 'click', () => action(async () => { await releaseHumanInputs(); sceneView.setInspection(!sceneView.getInspection().expanded); }));
-  bind('fullscreen', 'click', () => action(async () => {
-    if (document.fullscreenElement) await document.exitFullscreen(); else if ($('device-stage').closest('.workspace').requestFullscreen) await $('device-stage').closest('.workspace').requestFullscreen(); else window.open(shareUrl('embed'), '_blank', 'noopener');
-  }));
+  bind('fullscreen', 'click', () => action(() => viewerLayout?.toggle()));
   bind('capture-frame', 'click', () => action(async () => { const frame = await runtime.capture({format: 'png'}); const link = element('a'); link.href = frame.dataUrl; link.download = `${scene.productId}-frame-${frame.frameNumber}.png`; link.click(); }));
   bind('clear-console', 'click', () => { for (const port of Object.keys(consoleBuffers)) consoleBuffers[port] = ''; text('serial-output', ''); });
   for(const button of document.querySelectorAll('[data-copy-log]'))button.addEventListener('click',async()=>{
@@ -1155,6 +1154,8 @@ async function init() {
   window.addEventListener('pagehide',()=>virtualConfig.dispose(),{once:true});
   if ($('manufacturer-select')) { $('manufacturer-select').replaceChildren(...manufacturerNames(catalog.products).map(name => new Option(manufacturerLabel(name),name))); $('manufacturer-select').disabled = false; }
   mountAppearance();
+  viewerLayout=mountViewerLayout({workspace:$('device-stage').closest('.workspace'),button:$('fullscreen'),onChange:()=>sceneView?.resize()});
+  window.addEventListener('pagehide',()=>viewerLayout.dispose(),{once:true});
   visualVariantMenu=mountVisualVariantMenu({container:document.querySelector('.view-controls'),products:catalog.products,onSelect:showVisualProduct});
   window.addEventListener('pagehide',()=>visualVariantMenu?.dispose(),{once:true});
   setupEvents(); await runtime.configure(scene); renderLocalAccessories(); reflectFirmwareSource(); transportUi.setRecording(recordingDocument);
