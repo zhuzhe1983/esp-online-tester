@@ -28,6 +28,7 @@ fn help(chip: &str, code: i32) -> ! {
     eprintln!("  --flash-mb N, --psram-mb N   memory sizes (S3 default 8 / 2, C3, C6 and classic 4 / 0, P4 16 / 0)");
     eprintln!("  --max-seconds S       stop after S emulated seconds (always give one: the run returns)");
     eprintln!("  --console usb|uart0|both|none   which consoles to print (uart0 shows the ROM and bootloader)");
+    eprintln!("  --imu-motion N        scripted IMU motion: 0 at rest, 1 the 30 s tilt/flip/shake script (amoled18-v2, mosaico)");
     eprintln!("  --wifi ssid=…,psk=…   a virtual access point with DHCP, DNS, NTP and NAT to the host network");
     eprintln!("  --pcap F              write the station's Ethernet frames (both ways) to pcap F (needs --wifi)");
     eprintln!("  --hostfwd tcp:H:HP-G:GP  publish a guest TCP port on the host (repeatable; needs --wifi)");
@@ -120,6 +121,8 @@ pub struct Opts {
     pub pcap: Option<String>,
     pub board: String, pub wifi: Vec<String>, pub wifi_nearby: Vec<String>, pub ble_nearby: Vec<String>, pub ble: bool, pub ble_full: bool, pub ble_observe: bool, pub ble_scan: bool, pub net: String, pub hostfwd: Vec<String>, pub cam_image: Option<String>, pub cam_stream: Option<String>, pub cam_size: Option<String>, pub cam_fps: f64,
     pub spi2_timing: bool, pub measured_te: bool,
+    /// `--imu-motion N`: scripted IMU motion mode for boards with an IMU model (0 at rest, 1 the 30 s handling script)
+    pub imu_motion: Option<u32>,
     pub max_insns: u64, pub max_seconds: Option<f64>, pub script: Option<String>, pub serial: Option<String>,
     pub console: Option<String>, pub console_prefix: bool, pub realtime: bool, pub web_port: Option<u16>, pub web_dir: Option<String>, pub no_reboot: bool,
     pub i2s_tone: Vec<String>,
@@ -172,6 +175,7 @@ pub fn parse(args: &[String], default_chip: &str) -> Opts {
             "--board" => o.board = next(),
             "--spi2-timing" => o.spi2_timing = true,
             "--measured-te" => o.measured_te = true,
+            "--imu-motion" => o.imu_motion = Some(next().parse().unwrap_or_else(|_| usage_error("--imu-motion: expected a mode number (0 rest, 1 handling script)"))),
             "--wifi" => o.wifi.push(next()),
             "--hostfwd" => o.hostfwd.push(next()),
             "--wifi-nearby" => o.wifi_nearby.push(next()),
@@ -467,6 +471,7 @@ fn setup_s3(o: &Opts) -> esp32s3::Machine {
     }
     attach_nearby_networks(&mut m.bus.periph.wifi.link, o);
     set_camera_image(&mut m.bus.board, o.cam_image.as_deref());
+    set_imu_motion(m.bus.board.as_mut(), o);
     m.bus.periph.lcd_cam.frame_cycles = (esp32s3::periph::CPU_HZ as f64 / o.cam_fps) as u64;
     let stopwatch = m.bus.board.name() == "stopwatch";
     let flash_mb = o.flash_mb.unwrap_or(if stopwatch { 16 } else { 8 });
@@ -680,6 +685,7 @@ fn setup_s31(o: &Opts) -> esp32s31::Machine {
     }
     if let Some(board) = esp32s31::board::make_board(&o.board) { m.bus.board = board; }
     m.bus.attach_board_devices();
+    set_imu_motion(m.bus.board.as_mut(), o);
     // SPI_FAST_FLASH_BOOT; prepare() may override with --strap.
     if o.strap.is_none() {
         m.bus.set_strap(0x10);
@@ -711,6 +717,13 @@ fn setup_s31(o: &Opts) -> esp32s31::Machine {
         }
     }
     m
+}
+
+/// `--imu-motion`: select the board's scripted IMU motion, or refuse on a board without an IMU model.
+fn set_imu_motion(board: &mut dyn esp_soc::BoardModel, o: &Opts) {
+    let Some(mode) = o.imu_motion else { return };
+    if mode > 1 { usage_error("--imu-motion: modes are 0 (at rest) and 1 (the 30 s handling script)"); }
+    if !board.set_imu_motion(mode) { usage_error(&format!("--imu-motion: board '{}' has no IMU model (waveshare-amoled18-v2 on the S3, mosaico on the S31)", board.name())); }
 }
 
 /// Everything after the chip is set up: images, boot, observers, the run, the reports.
