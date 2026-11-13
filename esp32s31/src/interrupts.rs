@@ -23,6 +23,8 @@ pub const USB_OTG_SOURCE: usize = 99; // IDF master interrupts.h: ETS_USB_OTGHS_
 pub const SPI2_SOURCE: usize = 4; // IDF master interrupts.h: ETS_SPI2_INTR_SOURCE.
 /// ETS_AXI_PDMA_IN_CH0_INTR_SOURCE; IN ch1-2, then OUT ch0-2 follow.
 pub const AXI_DMA_IN_SOURCE: usize = 48;
+/// v6.1 interrupts.h: ETS_AES_INTR_SOURCE (the DMA-mode completion interrupt).
+pub const AES_SOURCE: usize = 55;
 pub const PPA_SOURCE: usize = 102; // IDF master interrupts.h: ETS_PPA_INTR_SOURCE.
 /// ETS_DMA2D_IN_CH0_INTR_SOURCE; IN ch1-2, then OUT ch0-3 follow.
 pub const DMA2D_IN_SOURCE: usize = 105;
@@ -38,6 +40,8 @@ pub(crate) const SOURCE_COUNT: usize = 169;
 const SOURCES: usize = SOURCE_COUNT;
 #[derive(Clone, Copy, Default, PartialEq, Eq)]
 pub struct Irqs { pub uart: bool, pub wdt: bool, pub efuse: bool, pub usb: bool, pub monitor: bool, pub cache: bool, pub mwdt: [bool; 2], pub systimer: [bool; 3], pub psram: bool, pub brownout: bool, pub from_cpu: [bool; 4], pub usb_otg: bool, pub spi2: bool, pub spi3: bool, pub i2c: [bool; 2], pub gpio: [bool; 4], pub axi_dma: u64,
+    /// AES DMA-mode completion (INT_ENA bit 0).
+    pub aes: bool,
     /// DMA2D: bit i = IN ch0-2, then OUT ch0-3; PPA.
     pub dma2d: u8, pub ppa: bool,
     /// ETS_MODEM_WIFI_MAC_INTR_SOURCE (`wifi.rs`)
@@ -47,7 +51,7 @@ pub struct Irqs { pub uart: bool, pub wdt: bool, pub efuse: bool, pub usb: bool,
     pub i2s: [bool; 2] }
 impl Irqs {
     // Fixed S31 interrupts.h: TIMERGRP0_WDT27,TIMERGRP1_WDT30,SYSTIMER_TARGET0..2 sources33..35,LP_ANAPERI143.
-    pub(crate) fn sources(self) -> [(usize, bool); 53] { [(UART0_SOURCE, self.uart), (RTC_WDT_SOURCE, self.wdt), (EFUSE_SOURCE, self.efuse), (USB_SERIAL_SOURCE, self.usb), (MONITOR_SOURCE, self.monitor), (CACHE_SOURCE, self.cache), (27, self.mwdt[0]), (30, self.mwdt[1]), (33, self.systimer[0]), (34, self.systimer[1]), (35, self.systimer[2]), (112, self.psram), (143, self.brownout), (65, self.from_cpu[0]), (66, self.from_cpu[1]), (67, self.from_cpu[2]), (68, self.from_cpu[3]), (USB_OTG_SOURCE, self.usb_otg), (SPI2_SOURCE, self.spi2), (SPI2_SOURCE + 1, self.spi3), (I2C0_SOURCE, self.i2c[0]), (I2C0_SOURCE + 1, self.i2c[1]), (GPIO_SOURCE, self.gpio[0]), (GPIO_SOURCE + 1, self.gpio[1]), (GPIO_SOURCE + 2, self.gpio[2]), (GPIO_SOURCE + 3, self.gpio[3]),
+    pub(crate) fn sources(self) -> [(usize, bool); 54] { [(UART0_SOURCE, self.uart), (AES_SOURCE, self.aes), (RTC_WDT_SOURCE, self.wdt), (EFUSE_SOURCE, self.efuse), (USB_SERIAL_SOURCE, self.usb), (MONITOR_SOURCE, self.monitor), (CACHE_SOURCE, self.cache), (27, self.mwdt[0]), (30, self.mwdt[1]), (33, self.systimer[0]), (34, self.systimer[1]), (35, self.systimer[2]), (112, self.psram), (143, self.brownout), (65, self.from_cpu[0]), (66, self.from_cpu[1]), (67, self.from_cpu[2]), (68, self.from_cpu[3]), (USB_OTG_SOURCE, self.usb_otg), (SPI2_SOURCE, self.spi2), (SPI2_SOURCE + 1, self.spi3), (I2C0_SOURCE, self.i2c[0]), (I2C0_SOURCE + 1, self.i2c[1]), (GPIO_SOURCE, self.gpio[0]), (GPIO_SOURCE + 1, self.gpio[1]), (GPIO_SOURCE + 2, self.gpio[2]), (GPIO_SOURCE + 3, self.gpio[3]),
         (AXI_DMA_IN_SOURCE, self.axi_dma >> 5 & 1 != 0), (AXI_DMA_IN_SOURCE + 1, self.axi_dma >> 6 & 1 != 0), (AXI_DMA_IN_SOURCE + 2, self.axi_dma >> 7 & 1 != 0),
         (AXI_DMA_IN_SOURCE + 3, self.axi_dma & 1 != 0), (AXI_DMA_IN_SOURCE + 4, self.axi_dma >> 1 & 1 != 0), (AXI_DMA_IN_SOURCE + 5, self.axi_dma >> 2 & 1 != 0),
         (PPA_SOURCE, self.ppa), (DMA2D_IN_SOURCE, self.dma2d & 1 != 0), (DMA2D_IN_SOURCE + 1, self.dma2d >> 1 & 1 != 0), (DMA2D_IN_SOURCE + 2, self.dma2d >> 2 & 1 != 0),

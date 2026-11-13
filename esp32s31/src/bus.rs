@@ -350,6 +350,31 @@ impl S31Bus {
         spi.complete_dma_tx(&data);
         true
     }
+    /// AES DMA mode (IDF v6.1 esp_crypto_shared_gdma.c): the AXI-GDMA OUT channel on trigger 4
+    /// (esp_hal_dma esp32s31 gdma_channel.h SOC_GDMA_TRIG_PERIPH_AES0) gathers the input, the engine
+    /// transforms it in its block mode, the IN channel on trigger 4 scatters the result (SUC_EOF at
+    /// the end). Done in one step, as on the C3 (esp32c3 bus.rs aes_dma_step); while a channel is not
+    /// started yet the operation waits for the next AES or AXI-GDMA write.
+    fn aes_dma_step(&mut self) {
+        const TRIGGER: u32 = 4;
+        let (Some(out_ch), Some(in_ch)) = (self.axi_dma.gdma.out_channel_for(TRIGGER), self.axi_dma.gdma.in_channel_for(TRIGGER)) else { return };
+        self.periph.aes.dma_pending = false;
+        let mut input = Vec::new();
+        let mut memory = AxiOut { mem: Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver }, cache: &mut self.cache }, channel: &mut self.axi_dma.gdma.out[out_ch] };
+        let result = esp_periph::gdma::gather_out(&mut memory, usize::MAX, &mut input);
+        let c = &mut self.axi_dma.gdma.out[out_ch];
+        c.running = false; c.buf_pos = 0;
+        match result { Ok(next) => { c.desc = next; c.int_raw |= 1 << 3; } Err(_) => c.int_raw |= 1 << 2 }   // OUT_TOTAL_EOF / OUT_DSCR_ERR
+        let output = self.periph.aes.transform_blocks(&input);
+        let mut channel = self.axi_dma.gdma.inp[in_ch];
+        let mut changed = false;
+        let mut mem = DmaBus(Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver }, cache: &mut self.cache });
+        if channel.receive(&mut mem, &output, Some(output.len() as u32), false, Self::peripheral, &mut changed) { channel.running = false; channel.desc = 0; }
+        self.axi_dma.gdma.inp[in_ch] = channel;
+        self.periph.aes.state = 2;                                       // DONE until DMA_EXIT
+        self.periph.aes.int_raw |= 1;
+    }
+
     /// I2Sn's transmit DMA through the AHB-GDMA, paced by the frame rate, as the P4 runs its
     /// I2S1 (esp32p4 bus.rs `i2s1_tx`): the frames due since the last call are taken from the OUT
     /// channel bound to one of the controller's four triggers (I2S0 1-4, I2S1 5-8; IDF's driver
@@ -500,7 +525,7 @@ impl S31Bus {
         let mut dma = UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver };
         self.usb_otg.run(&mut dma);
     }
-    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], gpio: self.pads.irq_lines(), axi_dma: esp_periph::Device::irq_sources(&self.axi_dma), dma2d: self.dma2d.irq_bits() as u8, ppa: self.ppa.irq(), wifi_mac: self.wifi_mac.irq(), ahb_dma: esp_periph::Device::irq_sources(&self.ahb_dma), i2s: [self.i2s[0].irq(), self.i2s[1].irq()] } }
+    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], gpio: self.pads.irq_lines(), axi_dma: esp_periph::Device::irq_sources(&self.axi_dma), aes: self.periph.aes.irq(), dma2d: self.dma2d.irq_bits() as u8, ppa: self.ppa.irq(), wifi_mac: self.wifi_mac.irq(), ahb_dma: esp_periph::Device::irq_sources(&self.ahb_dma), i2s: [self.i2s[0].irq(), self.i2s[1].irq()] } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
@@ -757,7 +782,8 @@ impl S31Bus {
             if self.crypto_clock_hz().is_none() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
             return match self.sha.read(off as u32) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
-        // AES shares the crypto clock with SHA; register mode only (no DMA on this chip yet).
+        // AES shares the crypto clock with SHA (block mode, and DMA mode through the AXI-GDMA).
+        // Its per-engine aes_clk_en / aes_rst_en (HP_SYS_CLKRST) are not modelled, as for SHA.
         if let Some(off) = offset(address, AES_BASE, bytes, 0x100) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             if self.crypto_clock_hz().is_none() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
@@ -905,6 +931,7 @@ impl S31Bus {
         if let Some(off) = offset(address, AXI_DMA, bytes, 0x1000) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             esp_periph::Device::write(&mut self.axi_dma, off as u32, value);
+            if self.periph.aes.dma_pending { self.aes_dma_step(); }
             return Ok(());
         }
         if let Some(off) = offset(address, DMA2D, bytes, 0x1000) {
@@ -1010,7 +1037,9 @@ impl S31Bus {
         if let Some(off) = offset(address, AES_BASE, bytes, 0x100) {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             if self.crypto_clock_hz().is_none() { return self.fault(address, bytes, true, false, Fault::Prohibited); }
-            self.periph.aes.write(off as u32, value); return Ok(());
+            self.periph.aes.write(off as u32, value);
+            if self.periph.aes.dma_pending { self.aes_dma_step(); }
+            return Ok(());
         }
         if address & !3 == crate::cache::CLOCK_CTRL {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
@@ -1301,6 +1330,66 @@ mod tests {
             for (i, w) in expect.iter().enumerate() { assert_eq!(b.read32(super::AES_BASE + 0x30 + 4 * i as u32), Ok(*w)); }
         }
         assert_eq!(b.periph.aes.blocks, 2);
+    }
+
+    #[test]
+    fn aes_dma_mode_through_the_axi_gdma() {
+        // NIST SP 800-38A F.2.1/F.2.2 AES-128-CBC, four blocks, in two OUT and two IN descriptors in SRAM;
+        // ten rounds of encrypt (320 bytes) with the chained IV keep the last result and the IV update honest.
+        use emu_core::Bus;
+        use super::{AES_BASE, AXI_DMA, SRAM_BASE};
+        let hex = |s: &str| -> Vec<u8> { (0..s.len()).step_by(2).map(|i| u8::from_str_radix(&s[i..i + 2], 16).unwrap()).collect() };
+        let key = hex("2b7e151628aed2a6abf7158809cf4f3c");
+        let iv = hex("000102030405060708090a0b0c0d0e0f");
+        let plain = hex("6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be66c3710");
+        let cipher = hex("7649abac8119b246cee98e9b12e9197d5086cb9b507219ee95db113a917678b273bed6b8e3c1743b7116e69e222295163ff1caa1681fac09120eca307586e1a7");
+        let mut b = super::S31Bus::new();
+        b.write32(crate::sha::CLOCK, 0x45).unwrap();
+        let word = |v: &[u8], i: usize| u32::from_le_bytes(v[4 * i..4 * i + 4].try_into().unwrap());
+        let (src, dst, desc) = (SRAM_BASE + 0x1000, SRAM_BASE + 0x2000, SRAM_BASE + 0x3000);
+        let run = |b: &mut super::S31Bus, decrypt: bool, input: &[u8], iv: &[u8]| -> Vec<u8> {
+            let n = input.len();
+            for (i, x) in input.iter().enumerate() { b.write8(src + i as u32, *x).unwrap(); }
+            for i in 0..n as u32 { b.write8(dst + i, 0).unwrap(); }
+            let half = (n / 2) as u32;
+            // OUT: owner + length + size, SUC_EOF on the last; IN: owner + size.
+            for (k, (buf, eof)) in [(src, false), (src + half, true)].into_iter().enumerate() {
+                let d = desc + 12 * k as u32;
+                b.write32(d, 1 << 31 | (eof as u32) << 30 | half << 12 | half).unwrap();
+                b.write32(d + 4, buf).unwrap(); b.write32(d + 8, if eof { 0 } else { d + 12 }).unwrap();
+            }
+            for (k, buf) in [dst, dst + half].into_iter().enumerate() {
+                let d = desc + 0x40 + 12 * k as u32;
+                b.write32(d, 1 << 31 | half).unwrap();
+                b.write32(d + 4, buf).unwrap(); b.write32(d + 8, if k == 0 { d + 12 } else { 0 }).unwrap();
+            }
+            for (i, w) in (0..4).map(|i| word(&key, i)).enumerate() { b.write32(AES_BASE + 4 * i as u32, w).unwrap(); }
+            for (i, w) in (0..4).map(|i| word(iv, i)).enumerate() { b.write32(AES_BASE + 0x50 + 4 * i as u32, w).unwrap(); }
+            b.write32(AES_BASE + 0x40, if decrypt { 4 } else { 0 }).unwrap();
+            b.write32(AES_BASE + 0x90, 1).unwrap(); b.write32(AES_BASE + 0x94, 1).unwrap();       // DMA, CBC
+            b.write32(AES_BASE + 0x98, (n / 16) as u32).unwrap(); b.write32(AES_BASE + 0xb0, 1).unwrap();
+            // As esp_crypto_shared_gdma_start_axi_ahb: OUT ch0 and IN ch0 on PERI_SEL 4, links started, then TRIGGER.
+            let (inb, outb) = (AXI_DMA, AXI_DMA + 0x138);
+            b.write32(outb + 0x44, 4).unwrap(); b.write32(inb + 0x44, 4).unwrap();
+            b.write32(outb + 0x24, desc).unwrap(); b.write32(outb + 0x20, 1 << 1).unwrap();
+            b.write32(inb + 0x24, desc + 0x40).unwrap(); b.write32(inb + 0x20, 1 << 2).unwrap();
+            b.write32(AES_BASE + 0x48, 1).unwrap();
+            assert_eq!(b.read32(AES_BASE + 0x4c), Ok(2), "STATE done");
+            assert!(b.peripheral_irqs().sources().contains(&(crate::interrupts::AES_SOURCE, true)));
+            assert_ne!(b.read32(inb).unwrap() & 2, 0, "IN_SUC_EOF");
+            b.write32(AES_BASE + 0xac, 1).unwrap(); b.write32(AES_BASE + 0xb8, 1).unwrap();     // INT_CLEAR, DMA_EXIT
+            assert_eq!(b.read32(AES_BASE + 0x4c), Ok(0), "idle after DMA_EXIT");
+            assert!(!b.peripheral_irqs().sources().contains(&(crate::interrupts::AES_SOURCE, true)));
+            (0..n as u32).map(|i| b.read8(dst + i).unwrap()).collect()
+        };
+        assert_eq!(run(&mut b, false, &plain, &iv), cipher);
+        assert_eq!(run(&mut b, true, &cipher, &iv), plain);
+        // > 128 bytes (the IDF DMA threshold): 20 blocks; blocks 0-3 are F.2.1's, the rest are checked by decrypting back.
+        let long: Vec<u8> = plain.iter().cycle().take(320).copied().collect();
+        let enc = run(&mut b, false, &long, &iv);
+        assert_eq!(enc[..64], cipher[..]);
+        assert_eq!(run(&mut b, true, &enc, &iv), long);
+        assert_eq!(b.periph.aes.blocks, 48);
     }
 
     #[test]
