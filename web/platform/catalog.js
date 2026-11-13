@@ -10,6 +10,8 @@ import {isShellFinish} from './appearance.js';
 import {validateFirmwareTargets} from './firmware-target.js';
 export const SCHEMA_VERSION = '1';
 export const MAX_SCENE_BYTES = 64 * 1024;
+// Release metadata grows independently of portable scenes and private imports.
+const catalogMaxBytes = {products: 1024 * 1024, accessories: 512 * 1024, firmwares: 2 * 1024 * 1024};
 const STORAGE_KEY = 'esp-online-tester:accessories:v1';
 const unsafeKeys = new Set(['__proto__', 'prototype', 'constructor']);
 const idPattern = /^[a-z0-9][a-z0-9:-]{0,79}$/;
@@ -72,7 +74,7 @@ export async function loadCatalog() {
   const entries = await Promise.all(['products', 'accessories', 'firmwares'].map(async name => {
     const response = await fetch(new URL(`./catalog/${name}.json`, import.meta.url), {cache: 'no-store'});
     if (!response.ok) fail('CATALOG_FETCH', `Cannot load ${name}: HTTP ${response.status}.`);
-    const document = parseJson(await response.text(), (name === 'products' ? 1024 : 512) * 1024);
+    const document = parseJson(await response.text(), catalogMaxBytes[name]);
     if (document.schemaVersion !== SCHEMA_VERSION || !Array.isArray(document.items)) fail('CATALOG_SCHEMA', `Invalid ${name} catalog.`);
     const ids = new Set();
     for (const item of document.items) {

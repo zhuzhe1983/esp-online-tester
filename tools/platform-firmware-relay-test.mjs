@@ -29,9 +29,12 @@ test('only fixed upstream BIN URLs with hashes are routed; ordinary CORS downloa
   const mesh='https://release.meshtastic.org/2.7.26.54e0d8d/firmware-t-deck-2.7.26.54e0d8d.factory.bin';assert.equal(firmwareRelayTarget(mesh),mesh);
 });
 
-test('catalog allowlist includes both reported artifacts and rejects unknown or changed versions before any upstream request',async()=>{
-  const actual=await loadFirmwareAllowlist();assert.ok(actual.get(url)?.has('16b57f1371756df6ee6bbc4500bc5ae4c288f6d78a8c25edb55062d7ad120664'));
-  assert.ok(actual.get('https://release.meshtastic.org/2.7.26.54e0d8d/firmware-t-deck-2.7.26.54e0d8d.factory.bin')?.has('f55469e588ea79ded5fa4fce58900bc0252021ab02e79329dc77bedfce40ab13'));
+test('catalog allowlist includes current pinned artifacts and rejects unknown or changed versions before any upstream request',async()=>{
+  const actual=await loadFirmwareAllowlist(),current=JSON.parse(await readFile(new URL('../web/platform/catalog/firmwares.json',import.meta.url),'utf8'));
+  for(const id of ['lilygo-t-deck-bruce','lilygo-t-deck-meshtastic-stable']){
+    const source=current.items.find(item=>item.id===id)?.source;assert.ok(source,`${id} retains an executable source`);
+    assert.match(source.sha256,/^[a-f0-9]{64}$/i);assert.ok(actual.get(source.url)?.has(source.sha256.toLowerCase()),`${id} uses the catalog's current URL and hash after release sync`);
+  }
   let calls=0;const relay=await startFirmwareRelay({port:0,allowlist,openUpstream:async()=>{calls++;return response();}});
   try{
     for(const value of [requestUrl(relay.url,url,'0'.repeat(64)),requestUrl(relay.url,url.replace('1.16.1','v999')),requestUrl(relay.url,'https://127.0.0.1/private'),requestUrl(relay.url)+'&url='+encodeURIComponent(url)])assert.equal((await fetch(value,{headers:{Origin:origin}})).status,403);
