@@ -12,6 +12,7 @@ import {normalizeShellAppearance, applyShellAppearance, DEFAULT_STOPWATCH_APPEAR
 import {createStickerController} from './sticker-view.js';
 import {normalizeOrientation} from './imu.js';
 import {frameAssembly} from './viewer-camera.js';
+import {createPinchGesture} from './viewer-gestures.js';
 
 // Uploaded WebGL textures have fixed storage dimensions. A resized canvas needs a fresh
 // texture, even though the canvas object itself is unchanged (e.g. StopWatch -> PaperMono).
@@ -391,8 +392,10 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     return point.lengthSq() < .001 ? null : {angle:Math.atan2(point.y,point.x)};
   }
   let stickerPointer=null;
+  const pinch=createPinchGesture({onStart(){stickerPointer=null;router.releaseAll();encoderMeshes.clear();clearHover();},onScale(factor){zoom=Math.max(.4,Math.min(3,zoom/factor));resize();}});
   function down(event) {
     if (event.button !== 0) return;
+    if(event.pointerType==='touch'&&mode==='3d'&&event.currentTarget!==display&&pinch.down(event.pointerId,event.clientX,event.clientY)){event.preventDefault();event.currentTarget.setPointerCapture(event.pointerId);return;}
     const flat = event.currentTarget === display, intersection = flat ? {object: screen} : hit(event), role = surface(intersection);
     if(stickers.placing&&!flat){stickerPointer={id:event.pointerId,x:event.clientX,y:event.clientY};event.preventDefault();event.currentTarget.setPointerCapture(event.pointerId);router.down({pointerId:event.pointerId,x:event.clientX,y:event.clientY,surface:{kind:'orbit'}});return;}
     const point = role.kind === 'touch' ? screenPoint(event, intersection) : ['encoder','potentiometer'].includes(role.kind) ? encoderPoint(event,intersection.object) : null;
@@ -403,19 +406,20 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
     if (!['ignored', 'unsupported'].includes(kind)) { event.currentTarget.setPointerCapture(event.pointerId); mount.style.cursor = kind === 'orbit' ? 'grabbing' : 'pointer'; }
   }
   function move(event) {
+    if(event.pointerType==='touch'&&pinch.move(event.pointerId,event.clientX,event.clientY)){event.preventDefault();return;}
     const kind = router.kind(event.pointerId);
     if (!kind) { hover(event); return; }
     const next = router.move({pointerId: event.pointerId, x: event.clientX, y: event.clientY, point: kind === 'touch' ? screenPoint(event) : ['encoder','potentiometer'].includes(kind) ? encoderPoint(event,encoderMeshes.get(event.pointerId)) : null});
     if (next === 'orbit') mount.style.cursor = 'grabbing';
   }
-  function up(event) { if(stickerPointer?.id===event.pointerId){const tap=event.type==='pointerup'&&Math.hypot(event.clientX-stickerPointer.x,event.clientY-stickerPointer.y)<6;stickerPointer=null;if(tap)stickers.placeAt(hit(event));} const orbit = router.kind(event.pointerId) === 'orbit'; router.up(event.pointerId, event.type !== 'pointerup'); encoderMeshes.delete(event.pointerId); if (orbit) { clearOrientationTimers(); publishOrientation(false); } if (!router.activeCount) clearHover(); }
-  function releaseInputs() { stickerPointer=null; const hadMotion = orientationTimer !== null || orientationIdle !== null; clearOrientationTimers(); router.releaseAll(); encoderMeshes.clear(); if (hadMotion) publishOrientation(false); clearHover(); }
+  function up(event) { if(event.pointerType==='touch'&&pinch.up(event.pointerId)){clearHover();return;} if(stickerPointer?.id===event.pointerId){const tap=event.type==='pointerup'&&Math.hypot(event.clientX-stickerPointer.x,event.clientY-stickerPointer.y)<6;stickerPointer=null;if(tap)stickers.placeAt(hit(event));} const orbit = router.kind(event.pointerId) === 'orbit'; router.up(event.pointerId, event.type !== 'pointerup'); encoderMeshes.delete(event.pointerId); if (orbit) { clearOrientationTimers(); publishOrientation(false); } if (!router.activeCount) clearHover(); }
+  function releaseInputs() { stickerPointer=null;pinch.reset(); const hadMotion = orientationTimer !== null || orientationIdle !== null; clearOrientationTimers(); router.releaseAll(); encoderMeshes.clear(); if (hadMotion) publishOrientation(false); clearHover(); }
   for (const canvas of [display, renderer?.domElement].filter(Boolean)) {
     canvas.addEventListener('pointerdown', down); canvas.addEventListener('pointermove', move); canvas.addEventListener('pointerleave', clearHover); canvas.addEventListener('blur', releaseInputs);
     canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up); canvas.addEventListener('lostpointercapture', up);
   }
   window.addEventListener('blur', releaseInputs);
-  function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.65, Math.min(1.8, zoom + event.deltaY * .001)); resize(); }
+  function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.4, Math.min(3,zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
   return {stickers,setProduct, setAccessories, setMode, resetView, resize, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateFlight, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setOrientationEnabled, setInspection, getInspection, get previewOnly() { return previewOnly; }, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
     dispose() { disposed = true; stickers.dispose(); releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup();flightGround.traverse(object=>{object.geometry?.dispose();for(const material of [].concat(object.material||[]))material.dispose();}); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
