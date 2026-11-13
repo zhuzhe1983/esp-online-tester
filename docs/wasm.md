@@ -309,3 +309,12 @@ length at `esp32sim_ble_ptr(emu)`, valid until the next take or emulator deletio
 lines wait; lines lost to the bound come first as `dropped=N`. A line's time is when the
 controller hands it over, so it can differ by microseconds from the CLI's, which slices
 differently; the lines and their order are the same ([EX264](evidence/ble-wasm-api/README.md)).
+
+`esp32sim_ble_nearby(emu, ptr, len)` sets the devices around the station, the CLI's
+`--ble-nearby`, replacing the ones there were: UTF-8 text with one of the option's specs per line
+(`name=`, `adv=` / `rsp=` hex, `addr=`, `type=`, `rssi=`; blank lines are skipped, no lines means
+none), at most 32. After `esp32sim_ble_virtual`, before or after boot: the guest's scans report
+them from then on, a running scan at once, as the option's devices ([EX246](evidence/ble-nearby/README.md)).
+0, or 1 without the virtual controller or for text the option would refuse (an unknown key, two
+devices on one address, more than 32), with the reason on `host_log` and the devices unchanged
+([EX266](evidence/ble-nearby-wasm/README.md)).

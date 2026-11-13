@@ -112,3 +112,29 @@ pub unsafe extern "C" fn esp32sim_ble_virtual_take(e: *mut Emu) -> usize {
     e.ble_out = e.m.bus().ble_log_take().unwrap_or_default();
     e.ble_out.len()
 }
+
+/// Set the Bluetooth LE devices around the station (the CLI's `--ble-nearby`), replacing the ones
+/// there were: one spec per line, as the option takes it (`name=`, `adv=` / `rsp=` hex, `addr=`,
+/// `type=`, `rssi=`), at most 32; no lines for none. The guest's scans report them, a running scan
+/// at once. Needs `esp32sim_ble_virtual`; before or after boot. Returns 0, or 1 for text that is
+/// not UTF-8, a spec or list the option refuses, or no virtual controller, with the reason on
+/// `host_log` and the devices unchanged.
+/// # Safety
+/// `e` must be live and exclusive; `ptr` must be readable for `len` bytes.
+#[no_mangle]
+pub unsafe extern "C" fn esp32sim_ble_nearby(e: *mut Emu, ptr: *const u8, len: usize) -> u32 {
+    let e = unsafe { &mut *e };
+    let Ok(specs) = std::str::from_utf8(unsafe { super::bytes(ptr, len) }) else {
+        log("[emu] ble nearby: the specs are not UTF-8");
+        return 1
+    };
+    let specs: Vec<String> = specs.lines().map(str::trim).filter(|s| !s.is_empty()).map(String::from).collect();
+    let list = match esp_soc::ble::peer::Nearby::parse_all(&specs) {
+        Ok(list) => list,
+        Err(reason) => { log(&format!("[emu] ble nearby: {reason}")); return 1 }
+    };
+    match e.m.bus().ble_nearby(list) {
+        Ok(()) => 0,
+        Err(reason) => { log(&format!("[emu] ble nearby: {reason}")); 1 }
+    }
+}
