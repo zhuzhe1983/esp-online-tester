@@ -1,6 +1,11 @@
 //! RV32IMC / RV32IMAC: the core in the ESP32-C3 and, with the A extension, the ESP32-C6. With F
 //! in `misa` (`Cpu::new_esp32p4`) it is RV32IMAFC, with `mstatus.FS` and the P4's EXT_ILL CSR,
-//! the Zicntr counters, CLIC mode and a hart ID.
+//! the Zicntr counters, CLIC mode and a hart ID. `Cpu::new_esp32s31` selects the
+//! same base ISA subset with the standard CLIC CSR placement used by S31 IDF v6.1.
+//! The S31 core also has Zba/Zbb/Zbs and Zcb/Zcmp (`decode::ISA_ZB`, `decode::ISA_ZC`, in
+//! `Cpu::isa_ext`) and a subset of Espressif's PIE v2.2 SIMD extension (`decode::ISA_PIE`,
+//! `pie`); the other cores decode those encodings as illegal. The S31 and P4 cores have
+//! Espressif's hardware loops (`decode::ISA_HWLP`, `hwlp`).
 //!
 //! Machine mode only, no MMU, no D extension. The C3 and C6 have no F, and decode its encodings
 //! as illegal.
@@ -15,6 +20,8 @@ pub mod decode;
 pub mod disasm;
 pub mod exec;
 mod fpu;
+pub mod pie;
+pub mod hwlp;
 pub mod softfloat;
 pub mod state;
 

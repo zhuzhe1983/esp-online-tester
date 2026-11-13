@@ -27,10 +27,26 @@ pub mod csr {
     pub const MTVT: u32 = 0x307; pub const MINTSTATUS_P4: u32 = 0x346;
     /// The specification's `mintstatus` and `mintthresh`, as on the ESP32-P4 rev >= 3
     /// (ESP-IDF v5.5.4 riscv/include/esp_private/interrupt_clic.h:60-66).
+    /// S31 uses the same placement (IDF v6.1 soc/esp32s31/include/soc/interrupt_reg.h,
+    /// INTTHRESH_STANDARD=1, and riscv/include/riscv/csr_clic.h).
     pub const MINTSTATUS: u32 = 0xFB1; pub const MINTTHRESH: u32 = 0x347;
     /// ESP32-P4 EXT_ILL: why the last illegal-instruction trap was taken
     /// (ESP-IDF v5.5.3 `components/riscv/vectors.S`, `EXT_ILL_CSR`).
     pub const EXT_ILL: u32 = 0x7F0;
+    /// mext_pie_status: the PIE extension's Off/Initial/Clean/Dirty state in bits 1:0, reset Off
+    /// (ESP32-P4 TRM, Register 2.65; ESP-IDF v5.5.4 riscv/include/riscv/csr_pie.h `CSR_PIE_STATE_REG`).
+    pub const MEXT_PIE_STATUS: u32 = 0x7F2;
+    /// mhwloop_state_reg: the hardware loops' Off/Initial/Clean/Dirty state in bits 1:0 and URW in
+    /// bit 2, reset 0 (ESP32-P4 TRM, Registers 2.64/2.86; ESP-IDF v5.5.4
+    /// riscv/include/riscv/csr_hwlp.h `CSR_HWLP_STATE_REG`).
+    pub const MHWLOOP_STATE: u32 = 0x7F1;
+    /// mhwloop0_start_addr: loop 0's start, end and count, then loop 1's at 0x7C9-0x7CB (ESP32-P4
+    /// TRM 2.7.1.6, Registers 2.79-2.84; csr_hwlp.h `CSR_LOOP0_START_ADDR` ...).
+    pub const MHWLOOP0_START: u32 = 0x7C6;
+    /// uhwloop0_start_addr: the user-mode view of the same six registers at 0x8C0-0x8C5, and
+    /// uhwloop_state_reg at 0x8C6, "physically the same as mhwloop_state_reg" (TRM Registers 2.87-2.93).
+    pub const UHWLOOP0_START: u32 = 0x8C0;
+    pub const UHWLOOP_STATE: u32 = 0x8C6;
 }
 
 /// EXT_ILL reason bits (ESP-IDF v5.5.3 `components/riscv/vectors.S`, `EXT_ILL_RSN_*`).
@@ -67,6 +83,10 @@ pub mod mstatus {
     pub const FS_CLEAN: u32 = 2 << 13;
     pub const FS_DIRTY: u32 = 3 << 13;
     pub const SD: u32 = 1 << 31;
+    /// The custom extensions' combined state, read-only (ESP32-P4 TRM, mstatus.XS): the larger of
+    /// `mext_pie_status` and `mhwloop_state_reg` (Off < Initial < Clean < Dirty), on a core that
+    /// has either.
+    pub const XS: u32 = 3 << 15;
 }
 
 /// Reset vector: the C3 and the C6 start executing in the mask ROM.
@@ -109,6 +129,9 @@ pub struct Cpu {
     /// which ISA `misa` reports: IMC on the C3, IMAC on the C6 (execution accepts A on both).
     /// F here is what enables the F extension, so a core without it decodes F encodings as illegal.
     pub misa: u32,
+    /// extensions `misa` cannot show (`decode::ISA_ZB`, `decode::ISA_ZC`), OR-ed into it for the
+    /// decoder (`isa`); none on the C3, C6 and P4, so they decode exactly as before
+    pub isa_ext: u32,
     /// the core has the ESP32-P4's EXT_ILL CSR (0x7F0); without it 0x7F0 is an unmodelled CSR
     pub has_ext_ill: bool,
     /// f0-f31 as binary32 bit patterns (FLEN = 32, so no NaN-boxing)
@@ -149,6 +172,20 @@ pub struct Cpu {
     pub boundary_bloom: u64,
     /// CSRs we do not model: read back what was written, like the SoC's unknown registers
     pub csr_other: HashMap<u32, u32>,
+    /// PIE (Xespv2p2, `decode::ISA_PIE`) state: the eight 128-bit Q registers, lane 0 in the low
+    /// bits; SAR (6 bits), SAR_BYTE (4 bits), CFG (ESP32-P4 TRM 4.4.1) and mext_pie_status.STATE.
+    pub q: [u128; 8],
+    pub pie_sar: u32,
+    pub pie_sar_byte: u32,
+    pub pie_cfg: u32,
+    pub pie_state: u32,
+    /// Hardware-loop (Xesploop, `decode::ISA_HWLP`) state, ESP32-P4 TRM 2.7.1: per loop (0, 1)
+    /// the start and end (the last instruction's address) and the 24-bit count; and
+    /// mhwloop_state_reg's STATE (bits 1:0) and URW (bit 2).
+    pub hwlp_start: [u32; 2],
+    pub hwlp_end: [u32; 2],
+    pub hwlp_count: [u32; 2],
+    pub hwlp_state: u32,
 }
 
 impl Default for Cpu {
@@ -161,20 +198,36 @@ impl Cpu {
             pc: RESET_VECTOR, x: [0; 32],
             mstatus: 0x1800,          // MPP = machine
             mtvec: 0, mepc: 0, mcause: 0, mtval: 0, mie: 0, mscratch: 0,
-            insn_count: 0, retired_count: 0, cycle_count: 0, cycle_base: 0, instret_base: 0, waiting: false, irq: None, misa: MISA_RV32IMC,
+            insn_count: 0, retired_count: 0, cycle_count: 0, cycle_base: 0, instret_base: 0, waiting: false, irq: None, misa: MISA_RV32IMC, isa_ext: 0,
             has_ext_ill: false, f: [0; 32], fcsr: 0, ext_ill: 0, ext_ill_all_fp: false, user_counters: false, clic: false, clic_std: false, mintthresh: 0, mtvt: 0, hartid: 0, mil: 0, clint_levels: Vec::new(), reservation: None, boundary_bloom: 0, csr_other: HashMap::new(),
+            q: [0; 8], pie_sar: 0, pie_sar_byte: 0, pie_cfg: 0, pie_state: 0,
+            hwlp_start: [0; 2], hwlp_end: [0; 2], hwlp_count: [0; 2], hwlp_state: 0,
         }
     }
     pub fn new_rv32imac() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAC; c }
     /// An ESP32-P4 HP core: RV32IMAFC with EXT_ILL and the Zicntr counters, which IDF reads the
     /// cycle count from (`rdcycle`, ESP-IDF v5.5.3 riscv/include/riscv/rv_utils.h:106-108). Its
-    /// custom extensions (Xesppie, hardware loops) are not modelled and decode as illegal. FS is
+    /// hardware loops (Xesploop, `decode::ISA_HWLP`; ESP32-P4 TRM v1.x 2.7.1, which IDF uses
+    /// with SOC_CPU_HAS_HWLOOP) are modelled; PIE (Xesppie) is not and decodes as illegal. FS is
     /// Off at reset, as on any core with F.
-    pub fn new_esp32p4() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.has_ext_ill = true; c.user_counters = true; c.clic = true; c }
+    pub fn new_esp32p4() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.isa_ext = crate::decode::ISA_HWLP; c.has_ext_ill = true; c.user_counters = true; c.clic = true; c }
     /// An ESP32-P4 rev >= 3 HP core: the same, with the specification's CLIC CSRs and EXT_ILL
     /// flagging every FP instruction ("The FPU_EXT_ILL bug was fixed on revision 3.0 and higher",
     /// ESP-IDF v5.5.4 riscv/vectors.S:279).
     pub fn new_esp32p4_rev3() -> Self { let mut c = Cpu::new_esp32p4(); c.clic_std = true; c.ext_ill_all_fp = true; c }
+    /// S31's RV32IMAFC subset and standard CLIC CSRs (IDF v6.1 soc_caps.h, interrupt_reg.h).
+    /// A subset of PIE (Xespv2p2, `decode::ISA_PIE`) and the hardware loops (Xesploop,
+    /// `decode::ISA_HWLP`) are modelled. The SoC
+    /// supplies its own reset PC.
+    pub fn new_esp32s31() -> Self {
+        // IDF v6.1 lazy-FPU applies the FLW/FSW opcode workaround only under
+        // SOC_CPU_HAS_FPU_EXT_ILL_BUG && CONFIG_ESP32P4_SELECTS_REV_LESS_V3
+        // (components/riscv/vectors.S). An S31 build never takes that branch, so
+        // EXT_ILL.FPU must be set for FP memory ops, as on P4 rev >= 3.
+        // Zba/Zbb/Zbs and Zcb/Zcmp: IDF master builds the S31 with
+        // -march=rv32imafcb_zicsr_zifencei_zcb_zcmp_zcmt_xesploop_xespv (Zcmt is not modelled).
+        let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.isa_ext = crate::decode::ISA_ZB | crate::decode::ISA_ZC | crate::decode::ISA_PIE | crate::decode::ISA_HWLP; c.has_ext_ill = true; c.ext_ill_all_fp = true; c.user_counters = true; c.clic = true; c.clic_std = true; c
+    }
 
     pub fn reset(&mut self) {
         // `insn_count` is the emulator's own monotonic counter — it drives the run statistics and
@@ -182,15 +235,38 @@ impl Cpu {
         // report a negative instruction rate). The architectural cycle counter is separately
         // monotonic and firmware reads its reset-relative value.
         let (insns, retired, cycles, misa, ext_ill, counters, clic, clic_std, hart, bloom) = (self.insn_count, self.retired_count, self.cycle_count, self.misa, self.has_ext_ill, self.user_counters, self.clic, self.clic_std, self.hartid, self.boundary_bloom);
-        let all_fp = self.ext_ill_all_fp;
+        let (all_fp, isa_ext) = (self.ext_ill_all_fp, self.isa_ext);
         *self = Cpu::new();
         self.insn_count = insns; self.retired_count = retired; self.cycle_count = cycles;
         self.cycle_base = cycles; self.instret_base = retired;
-        self.misa = misa; self.has_ext_ill = ext_ill; self.user_counters = counters; self.clic = clic; self.clic_std = clic_std; self.hartid = hart; self.boundary_bloom = bloom; self.ext_ill_all_fp = all_fp;
+        self.misa = misa; self.has_ext_ill = ext_ill; self.user_counters = counters; self.clic = clic; self.clic_std = clic_std; self.hartid = hart; self.boundary_bloom = bloom; self.ext_ill_all_fp = all_fp; self.isa_ext = isa_ext;
     }
 
+    /// The ISA word the decoder takes: `misa` and `isa_ext`.
+    #[inline(always)]
+    pub fn isa(&self) -> u32 { self.misa | self.isa_ext }
     #[inline(always)]
     pub fn has_f(&self) -> bool { self.misa & MISA_F != 0 }
+    #[inline(always)]
+    pub fn has_pie(&self) -> bool { self.isa_ext & crate::decode::ISA_PIE != 0 }
+    #[inline(always)]
+    pub fn has_hwlp(&self) -> bool { self.isa_ext & crate::decode::ISA_HWLP != 0 }
+    /// Set mext_pie_status.STATE and mirror it in mstatus.XS (ESP32-P4 TRM, Register 2.65).
+    pub fn set_pie_state(&mut self, state: u32) { self.pie_state = state & 3; self.update_xs(); }
+    /// Set mhwloop_state_reg.STATE, keeping URW (TRM Register 2.86), and mirror it in mstatus.XS.
+    pub fn set_hwlp_state(&mut self, state: u32) { self.hwlp_state = (self.hwlp_state & !3) | (state & 3); self.update_xs(); }
+    /// mstatus.XS = the larger of the PIE and HWLP states, SD following FS and XS (ESP32-P4 TRM,
+    /// mstatus.SD/XS).
+    fn update_xs(&mut self) {
+        let xs = self.pie_state.max(self.hwlp_state & 3) << 15;
+        let dirty = xs == mstatus::XS || self.mstatus & mstatus::FS == mstatus::FS_DIRTY;
+        self.mstatus = (self.mstatus & !(mstatus::XS | mstatus::SD)) | xs | if dirty { mstatus::SD } else { 0 };
+    }
+    /// CFG as written by esp.movx.w.cfg: vxsat_en (8), vxrm (7:4), mis_ld (1) and mis_st (0) are
+    /// writable; rm_exc (3) and vxsat (2) are read-only; 31:9 are reserved (ESP32-P4 TRM, Register 4.1).
+    pub fn write_pie_cfg(&mut self, v: u32) { self.pie_cfg = (v & 0x1f3) | (self.pie_cfg & 0xc); }
+    /// CFG as esp.movx.r.cfg reads it: reading clears vxsat (ESP32-P4 TRM 4.4.4).
+    pub fn read_pie_cfg(&mut self) -> u32 { let v = self.pie_cfg; self.pie_cfg &= !4; v }
     /// FS = Off: every F instruction and FP CSR access is illegal (privileged ISA v1.13,
     /// "Extension Context Status in mstatus Register").
     #[inline(always)]
@@ -240,6 +316,13 @@ impl Cpu {
             FRM if self.has_f() => (self.fcsr >> 5) & 7,
             FCSR if self.has_f() => self.fcsr,
             EXT_ILL if self.has_ext_ill => self.ext_ill,
+            MEXT_PIE_STATUS if self.has_pie() => self.pie_state,
+            MHWLOOP_STATE if self.has_hwlp() => self.hwlp_state,
+            UHWLOOP_STATE if self.has_hwlp() => self.hwlp_state & 3,
+            0x7C6..=0x7CB | 0x8C0..=0x8C5 if self.has_hwlp() => {
+                let k = (n - if n < UHWLOOP0_START { MHWLOOP0_START } else { UHWLOOP0_START }) as usize;
+                [self.hwlp_start, self.hwlp_end, self.hwlp_count][k % 3][k / 3]
+            }
             _ => self.csr_other.get(&n).copied().unwrap_or(0),
         }
     }
@@ -252,12 +335,23 @@ impl Cpu {
             MSTATUS if self.has_f() => {
                 let sd = if v & mstatus::FS == mstatus::FS_DIRTY { mstatus::SD } else { 0 };
                 self.mstatus = (v & !mstatus::SD) | sd;
+                // XS is read-only, the PIE and HWLP states' mirror
+                if self.has_pie() || self.has_hwlp() { self.update_xs(); }
             }
             MSTATUS => self.mstatus = v,
             FFLAGS if self.has_f() => { self.fcsr = (self.fcsr & !0x1f) | (v & 0x1f); self.set_fs_dirty(); }
             FRM if self.has_f() => { self.fcsr = (self.fcsr & 0x1f) | ((v & 7) << 5); self.set_fs_dirty(); }
             FCSR if self.has_f() => { self.fcsr = v & 0xff; self.set_fs_dirty(); }
             EXT_ILL if self.has_ext_ill => self.ext_ill = v,
+            MEXT_PIE_STATUS if self.has_pie() => self.set_pie_state(v),
+            MHWLOOP_STATE if self.has_hwlp() => { self.hwlp_state = v & 4; self.set_hwlp_state(v); }
+            UHWLOOP_STATE if self.has_hwlp() => self.set_hwlp_state(v),
+            // a write makes the state Dirty (TRM Register 2.64); the caller has trapped it when Off
+            0x7C6..=0x7CB | 0x8C0..=0x8C5 if self.has_hwlp() => {
+                let k = (n - if n < UHWLOOP0_START { MHWLOOP0_START } else { UHWLOOP0_START }) as usize;
+                match k % 3 { 0 => self.hwlp_start[k / 3] = v, 1 => self.hwlp_end[k / 3] = v, _ => self.hwlp_count[k / 3] = v & 0xff_ffff }
+                self.set_hwlp_state(3);
+            }
             MIE => self.mie = v,
             MTVEC => self.mtvec = v,
             MSCRATCH => self.mscratch = v,

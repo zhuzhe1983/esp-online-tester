@@ -18,7 +18,8 @@ esp32s3_rev0_rom.elf c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd
 esp32c3_rev3_rom.elf 19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c
 esp32c6_rev0_rom.elf 788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551
 esp32p4_rev0_rom.elf 948f2c7d108d04a9c3a982f9c1c498fb17f2c4a68abc51f87782592034d7ce44
-esp32p4_rev300_rom.elf 90e723f71fe4701adee7e40bfab6971d8ecf5e356f4d5a81e77743248abc3a97"
+esp32p4_rev300_rom.elf 90e723f71fe4701adee7e40bfab6971d8ecf5e356f4d5a81e77743248abc3a97
+esp32s31_rev0_rom.elf a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87"
 URL=https://github.com/espressif/esp-rom-elfs/releases/download/$RELEASE/esp-rom-elfs-$RELEASE.tar.gz
 
 sha256_ok() {  # FILE HASH; -c without GNU-only --status, so macOS shasum and sha256sum both work

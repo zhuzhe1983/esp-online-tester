@@ -61,10 +61,7 @@ pub mod src {
 /// data FIFOs from 0x50001000 are not modelled (buffer DMA does not use them).
 pub const USB_OTG_BLOCK: u32 = 0x50000;
 
-/// CLIC interrupt IDs: 0-15 are the core's own, IDF's CPU interrupt lines 0-31 are IDs 16-47
-/// (IDF v5.5.3 include/soc/clic_reg.h CLIC_EXT_INTR_NUM_OFFSET, hal/include/hal/interrupt_clic_ll.h).
-pub const CLIC_IDS: usize = 48;
-pub const CLIC_EXT_OFFSET: u32 = 16;
+pub use esp_periph::clic::{ClicCore, CLIC_IDS, CLIC_EXT_OFFSET};
 
 /// The two interrupt matrices (0x500D6000 core 0, +0x800 core 1): a map register per source
 /// holding the CLIC ID it raises, then INTR_STATUS_0..3 at 0x200 (read-only, filled from the
@@ -96,90 +93,6 @@ impl Device for IntMatrix {
             _ => self.ram.write(off, v),
         }
         WriteEffect::INTMAP
-    }
-}
-
-/// One core's CLIC register block. `CLIC_INT_CTRL(i)` packs four byte registers: IP (byte 0,
-/// bit 0), IE (byte 1, bit 8), the attributes (byte 2: SHV bit 16, TRIG bits 18:17, MODE bits
-/// 23:22, read-only machine mode) and CTL (byte 3; reset 0x1F); with NLBITS = 3 the level is
-/// CTL[7:5], the unimplemented low bits reading as ones. IDF v5.5.3 include/soc/clic_reg.h.
-/// A level-triggered ID's IP follows its matrix input. An edge-triggered ID's IP latches the
-/// rising edge, clears when the core takes it hardware-vectored (CLIC specification) and when
-/// software writes 1 to it without changing the rest of the word, which is how IDF acknowledges
-/// one (riscv/include/esp_private/interrupt_clic.h:321-324, `rv_utils_intr_edge_ack`, "clearing
-/// its pending flag" in esp_hw_support/include/hal/interrupt_controller_hal.h:226).
-#[derive(Clone)]
-pub struct ClicCore {
-    /// CLIC_INT_CONFIG.MNLBITS (bits 4:1); NVBITS reads 1
-    pub mnlbits: u32,
-    /// CLIC_INT_THRESH: on rev < 3 the machine-mode threshold is this byte, bits 31:24
-    /// (IDF v5.5.3 riscv/include/esp_private/interrupt_clic.h:50-58)
-    pub thresh: u32,
-    /// IE, the attributes and CTL of each ID; IP is kept apart
-    pub ctrl: [u32; CLIC_IDS],
-    /// edge-triggered IDs: IP latched by an edge
-    pub ip_latch: u64,
-    /// IDs whose interrupt-matrix input is asserted now
-    pub input: u64,
-}
-impl Default for ClicCore { fn default() -> Self { ClicCore { mnlbits: 0, thresh: 0, ctrl: [0x1f << 24 | 3 << 22; CLIC_IDS], ip_latch: 0, input: 0 } } }
-impl ClicCore {
-    fn edge(&self, id: usize) -> bool { self.ctrl[id] & (1 << 17) != 0 }
-    pub fn pending(&self, id: usize) -> bool { if self.edge(id) { self.ip_latch & (1 << id) != 0 } else { self.input & (1 << id) != 0 } }
-    pub fn enabled(&self, id: usize) -> bool { self.ctrl[id] & (1 << 8) != 0 }
-    /// The 8-bit level of an ID: CTL with the bits below NLBITS read as ones.
-    pub fn level(&self, id: usize) -> u32 { (self.ctrl[id] >> 24) | 0x1f }
-    pub fn vectored(&self, id: usize) -> bool { self.ctrl[id] & (1 << 16) != 0 }
-    /// The highest-level enabled, pending ID above the threshold, the higher ID on a tie (the
-    /// RISC-V CLIC specification's rule): what the core takes if MIE is set and its own level
-    /// is lower.
-    pub fn candidate(&self) -> Option<(usize, u32)> {
-        let thresh = self.thresh >> 24;
-        let mut best: Option<(usize, u32)> = None;
-        for id in 0..CLIC_IDS {
-            if !self.enabled(id) || !self.pending(id) { continue; }
-            let l = self.level(id);
-            if l > thresh && best.is_none_or(|(_, b)| l >= b) { best = Some((id, l)); }
-        }
-        best
-    }
-    /// A new matrix input: edge-triggered IDs latch the rising edges (TRIG bit 18 selects the
-    /// falling edge, not used by IDF).
-    pub fn set_input(&mut self, input: u64) {
-        let rising = input & !self.input;
-        for id in 0..CLIC_IDS { if rising & (1 << id) != 0 && self.edge(id) { self.ip_latch |= 1 << id; } }
-        self.input = input;
-    }
-    /// The core took `id`: a hardware-vectored edge interrupt is no longer pending.
-    pub fn taken(&mut self, id: usize) { if id < CLIC_IDS && self.edge(id) && self.vectored(id) { self.ip_latch &= !(1 << id); } }
-    fn read(&self, off: u32) -> u32 {
-        match off {
-            0x0 => 1 | (self.mnlbits & 0x1e),                                                     // INT_CONFIG: NVBITS = 1
-            0x4 => CLIC_IDS as u32 | 3 << 21,                                                     // INT_INFO: NUM_INT 48, CTLBITS 3
-            0x8 => self.thresh,
-            0x1000..=0x10bc => { let id = ((off - 0x1000) / 4) as usize; self.ctrl[id] | self.pending(id) as u32 }
-            _ => 0,
-        }
-    }
-    /// A write of the byte lanes in `lanes` (bit n = byte n): the ROM and IDF write the four byte
-    /// registers of a control word one at a time.
-    fn write(&mut self, off: u32, v: u32, lanes: u32) {
-        let mask = (0..4).filter(|b| lanes & (1 << b) != 0).fold(0u32, |m, b| m | 0xff << (8 * b));
-        match off {
-            0x0 => self.mnlbits = (self.mnlbits & !mask) | (v & mask & 0x1e),
-            0x8 => self.thresh = (self.thresh & !mask) | (v & mask & 0xff00_0000),
-            0x1000..=0x10bc => {
-                let id = ((off - 0x1000) / 4) as usize;
-                let before = self.ctrl[id];
-                self.ctrl[id] = (self.ctrl[id] & !mask) | (v & mask & 0xff07_0100) | 3 << 22;
-                // IDF acknowledges an edge with a 32-bit REG_SET_BIT of IP (interrupt_clic.h:321-324)
-                // and reconfigures SHV and TRIG with the same read-modify-write (interrupt_clic_ll.h:
-                // 99-102, esp_rom/patches/esp_rom_clic.c), which writes a pending IP back as 1: only a
-                // write that changes nothing else is the acknowledge.
-                if lanes & 1 != 0 && v & 1 != 0 && self.edge(id) && self.ctrl[id] == before { self.ip_latch &= !(1 << id); }
-            }
-            _ => {}
-        }
     }
 }
 
@@ -528,69 +441,8 @@ impl Device for GpioP4 {
     fn irq_sources(&self) -> u64 { self.g.irq() as u64 }
 }
 
-/// The AXI-GDMA (0x5008A000): three channel pairs, the IN channels' blocks at 0x68 * n, the OUT
-/// channels' at 0x138 + 0x68 * n, each register in the order conf/interrupts first
-/// (INT_RAW, INT_ST, INT_ENA, INT_CLR, CONF0, CONF1, FIFO status, POP/PUSH, LINK1, LINK2,
-/// STATE, EOF addresses, DSCR, DSCR_BF0/1, PRI, PERI_SEL), the CRC registers after them not
-/// modelled (IDF v5.5.4 register/hw_ver3/soc/axi_dma_reg.h). The transfers are the shared
-/// GDMA's: this maps the layout onto it. Two differences: a descriptor address is a whole word
-/// (LINK2), not 20 bits, and the start/stop bits are in LINK1 (IN: AUTO_RET 0, STOP 1, START 2,
-/// RESTART 3, PARK 4; OUT: STOP 0, START 1, RESTART 2, PARK 3). The interrupt bits are the
-/// shared model's (OUT_DONE 0, OUT_EOF 1, OUT_DSCR_ERR 2, OUT_TOTAL_EOF 3). GPSPI2, LCD0 and
-/// PARLIO are its peripherals (include/soc/gdma_channel.h: SPI2 is trigger 1).
-pub struct AxiDma { pub gdma: Gdma, link2: [[u32; 3]; 2], ram: RegRam }
-impl Default for AxiDma { fn default() -> Self { Self::new() } }
-impl AxiDma {
-    pub const CHANNELS: usize = 3;
-    pub fn new() -> Self { AxiDma { gdma: Gdma::new(), link2: [[0; 3]; 2], ram: RegRam::new() } }
-    /// (out, channel, register within its block) of an offset in the channel area
-    fn locate(off: u32) -> Option<(bool, usize, u32)> {
-        let (out, rel) = if off < 0x138 { (false, off) } else if off < 0x270 { (true, off - 0x138) } else { return None };
-        Some((out, (rel / 0x68) as usize, rel % 0x68))
-    }
-    /// The shared model's offset for an AXI register other than LINK1/LINK2.
-    fn shared(out: bool, ch: usize, k: u32) -> Option<u32> {
-        let t = match k {
-            0x00 => 0x08, 0x04 => 0x0c, 0x08 => 0x10, 0x0c => 0x14, 0x10 => 0x00, 0x14 => 0x04, 0x18 => 0x18, 0x1c => 0x1c,
-            0x28 => 0x24, 0x2c => 0x28, 0x30 => 0x2c, 0x34 => 0x30, 0x38 => 0x34, 0x3c => 0x38, 0x40 => 0x44, 0x44 => 0x48,
-            _ => return None,
-        };
-        Some(ch as u32 * 0xc0 + if out { 0x60 } else { 0 } + t)
-    }
-}
-impl Device for AxiDma {
-    fn read(&mut self, off: u32) -> u32 {
-        if let Some((out, ch, k)) = Self::locate(off) {
-            let running = if out { self.gdma.out[ch].running } else { self.gdma.inp[ch].running };
-            return match k {
-                0x20 => if running { 0 } else if out { 1 << 3 } else { 1 << 4 },     // PARK: the link is idle
-                0x24 => self.link2[out as usize][ch],
-                _ => match Self::shared(out, ch, k) { Some(o) => self.gdma.read(o), None => self.ram.read(off) },
-            };
-        }
-        match off { 0x28c..=0x2a0 => 1, _ => self.ram.read(off) }                   // IN/OUT_RESET_AVAIL: a reset is allowed
-    }
-    fn write(&mut self, off: u32, v: u32) -> WriteEffect {
-        let Some((out, ch, k)) = Self::locate(off) else { self.ram.write(off, v); return WriteEffect::NONE };
-        match k {
-            0x24 => self.link2[out as usize][ch] = v,
-            0x20 => {
-                let (stop, start, restart) = if out { (v & 1, v >> 1 & 1, v >> 2 & 1) } else { (v >> 1 & 1, v >> 2 & 1, v >> 3 & 1) };
-                let addr = self.link2[out as usize][ch];
-                self.gdma.addr_base = addr & 0xfff0_0000;
-                // the shared LINK: address 19:0, then OUT STOP 20 / START 21 / RESTART 22, IN STOP 21 / START 22 / RESTART 23
-                let s = if out { 20 } else { 21 };
-                let word = (addr & 0xf_ffff) | stop << s | start << (s + 1) | restart << (s + 2);
-                self.gdma.write(ch as u32 * 0xc0 + if out { 0x80 } else { 0x20 }, word);
-            }
-            _ => match Self::shared(out, ch, k) { Some(o) => self.gdma.write(o, v), None => self.ram.write(off, v) },
-        }
-        WriteEffect::NONE
-    }
-    /// bits 0..3 the OUT channels, 5..8 the IN channels, as the shared model numbers them
-    fn irq_sources(&self) -> u64 { Device::irq_sources(&self.gdma) }
-    fn debug(&mut self, on: bool) { self.gdma.dbg = on; }
-}
+/// The AXI-GDMA (0x5008A000): `esp_periph::gdma::AxiDma`, shared with the ESP32-S31.
+pub use esp_periph::gdma::AxiDma;
 
 /// The AHB-GDMA (0x50085000): the C6's GDMA layout (each channel's IN and OUT interrupt blocks
 /// at 0x10 * n and 0x30 + 0x10 * n, MISC_CONF 0x64, the channel blocks from 0x70 every 0xC0, OUT

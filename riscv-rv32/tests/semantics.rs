@@ -2,7 +2,8 @@
 //! `step` against `Core::run`, vectored interrupts through the C3's `mtvec` mode, `ecall`,
 //! `ebreak`, `mret`; RV32A on the C6 core and RV32F with its lazy-FPU traps on the P4 core.
 //! Programs assembled with `riscv32-esp-elf-as -march=rv32imc_zicsr` (`rv32imac_zicsr`,
-//! `rv32imafc_zicsr` for the A and F programs).
+//! `rv32imafc_zicsr` for the A and F programs, `rv32imafc_zicsr_zba_zbb_zbs_zcb_zcmp` for the S31
+//! bit-manipulation and Zc ones).
 use emu_core::Core;
 use riscv_rv32::state::{csr, mstatus, MISA_RV32IMAFC};
 use riscv_rv32::{decode, decode_for, disasm, step, Cpu, FlatRam, Trap};
@@ -383,7 +384,7 @@ fn clic_vectors_nests_by_level_and_mret_restores_it() {
 /// The ROM's `mtvec` mode 1 keeps taking exceptions at its base on the P4 core, and the C6 core
 /// has no CLIC: 0x307 and 0x346 are plain CSRs there and a presented line is taken as before.
 #[test]
-fn clic_mode_is_the_p4_cores_alone() {
+fn clic_mode_is_disabled_on_the_c6_core() {
     let (mut p4, mut ram) = machine_on(Cpu::new_esp32p4(), &asm("00000073"), "ecall");
     p4.write_csr(csr::MTVEC, BASE + 0x101);
     assert_eq!(step(&mut p4, &mut ram), Err(Trap::Exception(11)));
@@ -393,6 +394,22 @@ fn clic_mode_is_the_p4_cores_alone() {
     c6.write_csr(csr::MINTSTATUS_P4, 0x55);
     assert_eq!((c6.read_csr(csr::MTVT), c6.read_csr(csr::MINTSTATUS_P4)), (0x1234, 0x55));
     assert!(!c6.clic);
+}
+
+/// S31 v6.1 selects standard CLIC CSRs, while the existing P4 rev < 3 keeps 0x346.
+#[test]
+fn s31_standard_clic_status_and_threshold_are_separate_from_old_p4() {
+    let mut s31 = Cpu::new_esp32s31();
+    s31.mil = 0x7f;
+    assert_eq!(s31.read_csr(csr::MINTSTATUS), 0x7f00_0000);
+    assert_eq!(s31.read_csr(csr::MINTSTATUS_P4), 0);
+    s31.write_csr(csr::MINTSTATUS, 0); assert_eq!(s31.read_csr(csr::MINTSTATUS), 0x7f00_0000);
+    s31.write_csr(csr::MINTTHRESH, 0xffff_ff3f); assert_eq!(s31.read_csr(csr::MINTTHRESH), 0x3f);
+    s31.reset(); assert!(s31.clic && s31.clic_std);
+    assert_eq!((s31.mil, s31.read_csr(csr::MINTTHRESH)), (0, 0));
+    let mut p4 = Cpu::new_esp32p4(); p4.mil = 0x3f;
+    assert_eq!(p4.read_csr(csr::MINTSTATUS_P4), 0x3f00_0000);
+    assert_eq!(p4.read_csr(csr::MINTSTATUS), 0); assert!(!p4.clic_std);
 }
 
 /// mhartid reads the core's index, read-only, and a reset keeps it with the rest of the P4
@@ -565,4 +582,507 @@ fn clic_vector_table_fault_is_an_access_fault() {
     let entry = 0x2000_0000 + 4 * 21;
     assert_eq!((cpu.pc, cpu.mepc, cpu.mtval), (BASE + 0x200, entry, entry));
     assert_eq!(cpu.read_csr(csr::MCAUSE) & (1 << 30 | 0xfff), 1 << 30 | 1, "MINHV and the access-fault code");
+}
+
+/// One instruction (objdump hex) on a fresh S31 core with `regs` set; the trap, if any, and the core.
+fn s31_one(hex: &str, regs: &[(usize, u32)]) -> (Cpu, FlatRam, Result<(), Trap>) {
+    let mut cpu = Cpu::new_esp32s31();
+    let mut ram = FlatRam::new(BASE, 64 * 1024);
+    let p = asm(hex); ram.mem[..p.len()].copy_from_slice(&p);
+    cpu.pc = BASE; cpu.mtvec = BASE + 0x100;
+    for &(r, v) in regs { cpu.x[r] = v; }
+    let t = step(&mut cpu, &mut ram);
+    (cpu, ram, t)
+}
+
+/// `a0 = op(a1, a2)` for each Zba/Zbb/Zbs instruction (bit-manipulation v1.0.0), edge cases included.
+#[test]
+fn s31_zba_zbb_zbs_compute() {
+    const A0: usize = 10;
+    let cases: &[(&str, u32, u32, u32)] = &[
+        ("20c5a533", 3, 10, 16), ("20c5c533", 3, 10, 22), ("20c5e533", 3, 10, 34),            // sh1add sh2add sh3add
+        ("20c5e533", 0x8000_0001, 1, 9),                                                         // the shift drops bit 31
+        ("40c5f533", 0xff00_ff0f, 0x0f0f_0f0f, 0xf000_f000), ("40c5e533", 0, 0xffff_0000, 0x0000_ffff), ("40c5c533", 0xf0f0, 0xff00, 0xffff_f00f), // andn orn xnor
+        ("60059513", 0, 0, 32), ("60059513", 1, 0, 31), ("60059513", 0x8000_0000, 0, 0),        // clz
+        ("60159513", 0, 0, 32), ("60159513", 0x8000_0000, 0, 31), ("60159513", 6, 0, 1),        // ctz
+        ("60259513", 0, 0, 0), ("60259513", u32::MAX, 0, 32), ("60259513", 0x8000_0101, 0, 3), // cpop
+        ("0ac5e533", (-5i32) as u32, 3, 3), ("0ac5f533", (-5i32) as u32, 3, (-5i32) as u32),    // max maxu
+        ("0ac5c533", (-5i32) as u32, 3, (-5i32) as u32), ("0ac5d533", (-5i32) as u32, 3, 3),    // min minu
+        ("60459513", 0x1234_5680, 0, 0xffff_ff80), ("60459513", 0x7f, 0, 0x7f),                 // sext.b
+        ("60559513", 0x1234_8000, 0, 0xffff_8000), ("60559513", 0xffff_7fff, 0, 0x7fff),        // sext.h
+        ("0805c533", 0xffff_8001, 0, 0x8001),                                                    // zext.h
+        ("60c59533", 0x8000_0001, 33, 3), ("60c5d533", 0x8000_0001, 1, 0xc000_0000),            // rol ror (shift mod 32)
+        ("6005d513", 0x1234_5678, 0, 0x1234_5678), ("6045d513", 0x1234_5678, 0, 0x8123_4567),  // rori by 0 and 4
+        ("2875d513", 0x0010_8000, 0, 0x00ff_ff00), ("2875d513", 0, 0, 0),                       // orc.b
+        ("6985d513", 0x1234_5678, 0, 0x7856_3412),                                               // rev8
+        ("48c59533", u32::MAX, 31, 0x7fff_ffff), ("49f59513", u32::MAX, 0, 0x7fff_ffff),        // bclr bclri
+        ("48c5d533", 0x8000_0000, 63, 1), ("49f5d513", 0x8000_0000, 0, 1), ("49f5d513", 0x7fff_ffff, 0, 0), // bext bexti, bit 31
+        ("68c59533", 0, 4, 16), ("68059513", 1, 0, 0),                                           // binv binvi
+        ("28c59533", 0, 31, 0x8000_0000), ("29f59513", 1, 0, 0x8000_0001),                       // bset bseti
+    ];
+    for &(hex, a, b, want) in cases {
+        let (cpu, _, t) = s31_one(hex, &[(11, a), (12, b)]);
+        assert_eq!(t, Ok(()), "{hex}");
+        assert_eq!(cpu.x[A0], want, "{hex} a1={a:#x} a2={b:#x}");
+        assert_eq!(cpu.pc, BASE + 4);
+    }
+}
+
+/// Zcb: the byte and half-word loads and stores, the unary forms and c.mul.
+#[test]
+fn s31_zcb_compute_and_move_memory() {
+    let mut cpu = Cpu::new_esp32s31();
+    let mut ram = FlatRam::new(BASE, 64 * 1024);
+    let p = asm("81e8 85a8 85e8 89c8 8da8"); ram.mem[..p.len()].copy_from_slice(&p);
+    ram.mem[0x200..0x204].copy_from_slice(&[0x11, 0x22, 0x80, 0xf0]);
+    cpu.pc = BASE; cpu.x[11] = BASE + 0x200;
+    step(&mut cpu, &mut ram).unwrap(); assert_eq!(cpu.x[10], 0xf0);         // c.lbu a0,3(a1)
+    step(&mut cpu, &mut ram).unwrap(); assert_eq!(cpu.x[10], 0xf080);       // c.lhu a0,2(a1)
+    step(&mut cpu, &mut ram).unwrap(); assert_eq!(cpu.x[10], 0xffff_f080);  // c.lh a0,2(a1)
+    cpu.x[10] = 0x1234_56ab;
+    step(&mut cpu, &mut ram).unwrap(); assert_eq!(ram.mem[0x200..0x204], [0x11, 0xab, 0x80, 0xf0]); // c.sb a0,1(a1)
+    step(&mut cpu, &mut ram).unwrap(); assert_eq!(ram.mem[0x200..0x204], [0x11, 0xab, 0xab, 0x56]); // c.sh a0,2(a1)
+    assert_eq!(cpu.pc, BASE + 10);
+    for (hex, a, want) in [("9d61", 0x1234_5680u32, 0x80u32), ("9d65", 0x1234_5680, 0xffff_ff80), ("9d69", 0xffff_8001, 0x8001),
+                           ("9d6d", 0x1234_8000, 0xffff_8000), ("9d75", 0x0f0f_0000, 0xf0f0_ffff)] {
+        let (cpu, _, t) = s31_one(hex, &[(10, a)]);
+        assert_eq!((t, cpu.x[10], cpu.pc), (Ok(()), want, BASE + 2), "{hex}");
+    }
+    let (cpu, _, _) = s31_one("9d4d", &[(10, 0x1_0001), (11, 0x1_0003)]);   // c.mul a0,a1
+    assert_eq!(cpu.x[10], 0x1_0001u32.wrapping_mul(0x1_0003));
+}
+
+/// cm.push then cm.pop for every rlist and stack adjustment (Zc v1.0.0): ra at sp-4, s0.. below
+/// it, sp moved by the rounded size plus spimm*16, and every register restored.
+#[test]
+fn s31_zcmp_push_pop_round_trip_every_rlist() {
+    use riscv_rv32::decode::{rlist_reg, rlist_regs};
+    for rlist in 4u32..16 {
+        for spimm in 0u32..4 {
+            let push = 0xb802 | rlist << 4 | spimm << 2;
+            let pop = 0xba02 | rlist << 4 | spimm << 2;
+            let mut cpu = Cpu::new_esp32s31();
+            let mut ram = FlatRam::new(BASE, 64 * 1024);
+            ram.mem[..4].copy_from_slice(&[(push & 0xff) as u8, (push >> 8) as u8, (pop & 0xff) as u8, (pop >> 8) as u8]);
+            cpu.pc = BASE;
+            let sp = BASE + 0x8000;
+            cpu.x[2] = sp;
+            for (r, x) in cpu.x.iter_mut().enumerate().skip(1) { if r != 2 { *x = 0x1000 * r as u32 + 7; } }
+            let saved = cpu.x;
+            let n = rlist_regs(rlist);
+            let adj = ((n * 4 + 15) & !15) + spimm * 16;
+            step(&mut cpu, &mut ram).unwrap();
+            assert_eq!(cpu.x[2], sp - adj, "push rlist {rlist} spimm {spimm}");
+            for k in 0..n {
+                let off = (sp - 4 * (k + 1) - BASE) as usize;
+                let v = u32::from_le_bytes(ram.mem[off..off + 4].try_into().unwrap());
+                assert_eq!(v, saved[rlist_reg(k) as usize], "slot {k} of rlist {rlist}");
+            }
+            let below = (sp - 4 * (n + 1) - BASE) as usize;
+            assert_eq!(ram.mem[below..below + 4], [0; 4], "nothing stored past the list");
+            for k in 0..n { cpu.x[rlist_reg(k) as usize] = 0xdead; }
+            step(&mut cpu, &mut ram).unwrap();
+            assert_eq!(cpu.x, saved, "pop rlist {rlist} spimm {spimm}");
+            assert_eq!(cpu.pc, BASE + 4);
+        }
+    }
+    assert_eq!(rlist_regs(15), 13, "rlist 15 is ra, s0-s11: s10 never without s11");
+}
+
+/// cm.popret returns through the restored ra; cm.popretz also zeroes a0. mvsa01/mva01s move a0/a1.
+#[test]
+fn s31_zcmp_popret_popretz_and_moves() {
+    for (hex, a0) in [("be42", 0x55u32), ("bc42", 0)] {
+        let sp = BASE + 0x1000;
+        let mut cpu = Cpu::new_esp32s31();
+        let mut ram = FlatRam::new(BASE, 64 * 1024);
+        let p = asm(hex); ram.mem[..2].copy_from_slice(&p);
+        ram.mem[0x1000 + 16 - 4..0x1000 + 16].copy_from_slice(&(BASE + 0x301).to_le_bytes());   // ra at new sp - 4
+        cpu.pc = BASE; cpu.x[2] = sp; cpu.x[10] = 0x55;
+        step(&mut cpu, &mut ram).unwrap();
+        assert_eq!((cpu.pc, cpu.x[1], cpu.x[2], cpu.x[10]), (BASE + 0x300, BASE + 0x301, sp + 16, a0), "{hex}");
+    }
+    let (cpu, _, t) = s31_one("acaa", &[(10, 1), (11, 2)]);                // cm.mvsa01 s1,s2
+    assert_eq!((t, cpu.x[9], cpu.x[18]), (Ok(()), 1, 2));
+    let (cpu, _, t) = s31_one("ac62", &[(8, 9)]);                          // cm.mva01s s0,s0
+    assert_eq!((t, cpu.x[10], cpu.x[11]), (Ok(()), 9, 9));
+}
+
+/// A push or pop that faults leaves sp and the registers as they were, so it can be re-executed.
+#[test]
+fn s31_zcmp_faults_are_precise() {
+    // cm.push {ra,s0-s11},-64 with only 8 bytes of RAM below sp: the third store faults
+    let (cpu, _, t) = s31_one("b8f2", &[(2, BASE + 8), (1, 0x11)]);
+    assert_eq!(t, Err(Trap::Exception(7)));
+    assert_eq!((cpu.x[2], cpu.mepc, cpu.mtval, cpu.x[1]), (BASE + 8, BASE, BASE - 4, 0x11));
+    // cm.pop {ra,s0-s11},64 reaching past the end of RAM: nothing is written
+    let (cpu, _, t) = s31_one("baf2", &[(2, BASE + 0x1_0000 - 16), (1, 0x11), (8, 0x22)]);
+    assert_eq!(t, Err(Trap::Exception(5)));
+    assert_eq!((cpu.x[2], cpu.x[1], cpu.x[8], cpu.mepc), (BASE + 0x1_0000 - 16, 0x11, 0x22, BASE));
+}
+
+/// Reserved encodings are illegal on the S31; with the extensions off (C3/C6/P4) every new
+/// encoding, the C.FLD/C.FSD/C.FLDSP/C.FSDSP slots included, stays illegal.
+#[test]
+fn s31_reserved_and_flag_off_encodings_are_illegal() {
+    // rlist 0-3 for push/pop/popretz/popret, cm.mvsa01 s0,s0, c.lh/c.sh holes, c.zext.w (RV64)
+    for hex in ["b802", "ba12", "bc22", "be32", "ac22", "8c40", "8c60", "9c71"] {
+        let (cpu, _, t) = s31_one(hex, &[]);
+        assert_eq!(t, Err(Trap::Exception(2)), "{hex}");
+        assert_eq!(cpu.mtval, u32::from_str_radix(hex, 16).unwrap(), "{hex}");
+    }
+    let p4 = Cpu::new_esp32p4();
+    for hex in ["b876", "ba76", "be42", "bc42", "acaa", "ac62", "81e8", "85a8", "85e8", "89c8", "8da8", "9d61", "9d65", "9d69", "9d6d", "9d75", "9d4d",
+                "20c5a533", "40c5f533", "60059513", "0ac5e533", "0805c533", "60c59533", "6005d513", "2875d513", "6985d513", "48c5d533", "29f59513",
+                "2000", "a000", "3002", "b002"] {                         // c.fld, c.fsd, c.fldsp, c.fsdsp
+        for misa in [p4.misa, Cpu::new().misa, Cpu::new_rv32imac().misa] {
+            assert!(decode_for(misa, BASE, asm(hex).try_into().unwrap_or_else(|v: Vec<u8>| [v[0], v[1], 0, 0])).is_illegal(), "{hex} misa {misa:#x}");
+        }
+    }
+    // the C.FLD and C.FLDSP slots stay illegal on the S31 too (no D, and Zcmp uses only quadrant 2 funct3 101)
+    for hex in ["2000", "a000", "3002"] { assert_eq!(s31_one(hex, &[]).2, Err(Trap::Exception(2)), "{hex}"); }
+    assert!(decode(BASE, [0x6e, 0xb8, 0, 0]).is_illegal());
+}
+
+// ---- Xespv2p2 (PIE v2.2) on the S31 core. Encodings from riscv32-esp-elf-as-xespv2p2
+// (esp-14.2.0_20260121); expected values from the ESP32-P4 TRM chapter 4 operation listings.
+
+const DATA: u32 = BASE + 0x1000;
+
+fn q16(l: [u16; 8]) -> u128 { l.iter().enumerate().fold(0, |v, (k, &x)| v | (x as u128) << (16 * k)) }
+fn l16(v: u128) -> [u16; 8] { std::array::from_fn(|k| (v >> (16 * k)) as u16) }
+fn qb(f: impl Fn(usize) -> u8) -> u128 { u128::from_le_bytes(std::array::from_fn(f)) }
+
+/// One PIE instruction (objdump hex) on an S31 core with PIE enabled (mext_pie_status = Initial),
+/// after `setup`; 64 bytes 0, 1, 2, ... sit at DATA.
+fn pie_one(hex: &str, setup: impl FnOnce(&mut Cpu)) -> (Cpu, FlatRam, Result<(), Trap>) {
+    let mut cpu = Cpu::new_esp32s31();
+    cpu.write_csr(csr::MEXT_PIE_STATUS, 1);
+    let mut ram = FlatRam::new(BASE, 64 * 1024);
+    let p = asm(hex); ram.mem[..p.len()].copy_from_slice(&p);
+    for k in 0..64 { ram.mem[0x1000 + k] = k as u8; }
+    cpu.pc = BASE; cpu.mtvec = BASE + 0x100;
+    setup(&mut cpu);
+    let t = step(&mut cpu, &mut ram);
+    (cpu, ram, t)
+}
+
+const MX: [u16; 8] = [0xffff, 300, 8, 40, 1, 0, 0x1234, 3];
+const MY: [u16; 8] = [0xffff, 7, 3, 1, 1, 9, 0x10, 5];
+fn mul_setup(cpu: &mut Cpu) { cpu.q[0] = q16(MX); cpu.q[1] = q16(MY); cpu.pie_sar = 4; }
+
+/// esp.vmul.u16 (TRM 4.7.2.155, 4.4.5): products 0xfffe0001 2100 24 40 1 0 0x12340 15 shifted
+/// right by SAR = 4, rounded by rm, saturated with sat, truncated without.
+#[test]
+fn pie_vmul_u16_shifts_rounds_and_saturates() {
+    let cases = [
+        ("07c5991f", [0xffff, 131, 1, 2, 0, 0, 0x1234, 0]),   // sat,dyn with vxrm = 0: FLOOR
+        ("07c5911f", [0xffff, 131, 2, 2, 0, 0, 0x1234, 1]),   // sat,rne: 1.5 -> 2, 2.5 -> 2, 0.9375 -> 1
+        ("07c4011f", [0xe000, 131, 1, 2, 0, 0, 0x1234, 0]),   // trunc,rdn: the low 16 bits of 0x0fffe000
+        ("07c5091f", [0xffff, 132, 2, 3, 1, 0, 0x1234, 1]),   // sat,rup: CEILING
+    ];
+    for (hex, want) in cases {
+        let (cpu, _, t) = pie_one(hex, mul_setup);
+        assert_eq!(t, Ok(()), "{hex}");
+        assert_eq!(l16(cpu.q[2]), want, "{hex}");
+        assert_eq!(cpu.pc, BASE + 4);
+    }
+    // dyn with CFG.vxrm = HALF_EVEN (6) rounds as rne; vxrm = 7 is UNNECESSARY: FLOOR and rm_exc
+    let (cpu, _, _) = pie_one("07c5991f", |c| { mul_setup(c); c.pie_cfg = 6 << 4; });
+    assert_eq!(l16(cpu.q[2]), [0xffff, 131, 2, 2, 0, 0, 0x1234, 1]);
+    let (cpu, _, _) = pie_one("07c5991f", |c| { mul_setup(c); c.pie_cfg = 7 << 4; });
+    assert_eq!((l16(cpu.q[2])[2], cpu.pie_cfg & 8), (1, 8));
+    // a saturating lane sets vxsat only with vxsat_en, and reading CFG clears it
+    let (mut cpu, _, _) = pie_one("07c5991f", mul_setup);
+    assert_eq!(cpu.pie_cfg & 4, 0);
+    let (cpu2, _, _) = pie_one("07c5991f", |c| { mul_setup(c); c.pie_cfg = 1 << 8; });
+    assert_eq!(cpu2.pie_cfg & 4, 4);
+    cpu.pie_cfg = cpu2.pie_cfg;
+    assert_eq!(cpu.read_pie_cfg() & 4, 4);
+    assert_eq!(cpu.read_pie_cfg() & 4, 0);
+}
+
+/// esp.vmul.u16.ld.incp (TRM 4.7.2.156): the product, and qu loaded from rs1 force-aligned, rs1 += 16.
+#[test]
+fn pie_vmul_u16_ld_incp_loads_and_increments() {
+    let (cpu, _, t) = pie_one("0579b15f", |c| { mul_setup(c); c.x[11] = DATA + 4; });
+    assert_eq!(t, Ok(()));
+    assert_eq!(l16(cpu.q[2]), [0xffff, 131, 1, 2, 0, 0, 0x1234, 0]);
+    assert_eq!((cpu.q[4], cpu.x[11]), (qb(|k| k as u8), DATA + 20));
+    // trunc,rhaz: 2.5 rounds away from zero, lane 0 keeps its low bits
+    let (cpu, _, _) = pie_one("0521b15f", |c| { mul_setup(c); c.x[11] = DATA; });
+    assert_eq!(l16(cpu.q[2]), [0xe000, 131, 2, 3, 0, 0, 0x1234, 1]);
+    // a faulting load changes nothing
+    let (cpu, _, t) = pie_one("0579b15f", |c| { mul_setup(c); c.x[11] = 0x1000; c.q[2] = 7; });
+    assert_eq!(t, Err(Trap::Exception(5)));
+    assert_eq!((cpu.q[2], cpu.x[11], cpu.mtval), (7, 0x1000, 0x1000));
+}
+
+/// esp.vadd.u16 / esp.vsub.u16 / esp.vsub.u8 (TRM 4.7.2.101, 4.7.2.188, 4.7.2.194) with and
+/// without saturation, and esp.vadd.u16.ld.incp (4.7.2.102).
+#[test]
+fn pie_add_sub_saturate_or_wrap() {
+    let set = |c: &mut Cpu| { c.q[0] = q16([0xfff0, 1, 5, 0x8000, 0, 0xffff, 100, 7]); c.q[1] = q16([0x20, 2, 7, 1, 0, 0xffff, 100, 0]); };
+    assert_eq!(l16(pie_one("06a5231b", set).0.q[2]), [0xffff, 3, 12, 0x8001, 0, 0xffff, 200, 7]);
+    assert_eq!(l16(pie_one("06a4231b", set).0.q[2]), [0x0010, 3, 12, 0x8001, 0, 0xfffe, 200, 7]);
+    assert_eq!(l16(pie_one("06a5271b", set).0.q[2]), [0xffd0, 0, 0, 0x7fff, 0, 0, 0, 7]);
+    assert_eq!(l16(pie_one("06a4271b", set).0.q[2]), [0xffd0, 0xffff, 0xfffe, 0x7fff, 0, 0, 0, 7]);
+    let set8 = |c: &mut Cpu| { c.q[0] = qb(|k| (k * 10) as u8); c.q[1] = qb(|_| 50); };
+    assert_eq!(pie_one("06a1271b", set8).0.q[2], qb(|k| (k * 10).saturating_sub(50) as u8));
+    assert_eq!(pie_one("06a0271b", set8).0.q[2], qb(|k| (k as u8 * 10).wrapping_sub(50)));
+    let (cpu, _, _) = pie_one("0529d11f", |c| { set(c); c.x[11] = DATA + 0x10; });
+    assert_eq!(l16(cpu.q[2]), [0xffff, 3, 12, 0x8001, 0, 0xffff, 200, 7]);
+    assert_eq!((cpu.q[4], cpu.x[11]), (qb(|k| 16 + k as u8), DATA + 0x20));
+}
+
+/// esp.vmin.u16, esp.vcmp.eq.u16, esp.andq/orq/xorq, esp.zero.q (TRM 4.7.2.138, 4.7.2.209,
+/// 4.7.2.202/204/205, 4.7.2.262).
+#[test]
+fn pie_min_compare_logic_zero() {
+    let set = |c: &mut Cpu| { c.q[0] = q16([1, 9, 0xffff, 4, 0, 7, 8, 0x8000]); c.q[1] = q16([2, 9, 0, 4, 1, 6, 8, 0x7fff]); c.q[7] = !0; };
+    assert_eq!(l16(pie_one("0744991f", set).0.q[2]), [1, 9, 0, 4, 0, 6, 8, 0x7fff]);
+    assert_eq!(l16(pie_one("0741011f", set).0.q[2]), [0, 0xffff, 0, 0xffff, 0, 0, 0xffff, 0]);
+    let (a, b) = (q16([1, 9, 0xffff, 4, 0, 7, 8, 0x8000]), q16([2, 9, 0, 4, 1, 6, 8, 0x7fff]));
+    assert_eq!(pie_one("0580011f", set).0.q[2], a & b);
+    assert_eq!(pie_one("0500011f", set).0.q[2], a | b);
+    assert_eq!(pie_one("0504011f", set).0.q[2], a ^ b);
+    assert_eq!(pie_one("0000139b", set).0.q[7], 0);
+}
+
+/// esp.vext.u8 q4,q5,q6 (TRM 4.7.2.251): bytes 0-7 widened into q4, 8-15 into q5.
+#[test]
+fn pie_vext_u8_widens_both_halves() {
+    let (cpu, _, _) = pie_one("025c221b", |c| c.q[6] = qb(|k| 0xf0 + k as u8));
+    assert_eq!(l16(cpu.q[4]), [0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7]);
+    assert_eq!(l16(cpu.q[5]), [0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff]);
+}
+
+/// esp.vunzip.8 q0,q1 (TRM 4.7.2.254): the even bytes of q1:q0 to q0, the odd to q1.
+#[test]
+fn pie_vunzip_8_splits_even_and_odd_bytes() {
+    let (cpu, _, _) = pie_one("0684201b", |c| { c.q[0] = qb(|k| k as u8); c.q[1] = qb(|k| 16 + k as u8); });
+    assert_eq!((cpu.q[0], cpu.q[1]), (qb(|k| 2 * k as u8), qb(|k| 2 * k as u8 + 1)));
+}
+
+/// esp.vzipt.8 / esp.vunzipt.8 q0,q1,q2 (TRM 4.7.2.261, 4.7.2.256): a three-way byte interleave
+/// x0 y0 w0 x1 ... across q0, q1, q2, and its inverse.
+#[test]
+fn pie_vzipt_vunzipt_8_interleave_three_ways() {
+    let set = |c: &mut Cpu| { c.q[0] = qb(|k| k as u8); c.q[1] = qb(|k| 0x40 + k as u8); c.q[2] = qb(|k| 0x80 + k as u8); };
+    let (zipped, _, _) = pie_one("0640211b", set);
+    let stream: Vec<u8> = (0..16u8).flat_map(|k| [k, 0x40 + k, 0x80 + k]).collect();
+    for n in 0..3 { assert_eq!(zipped.q[n], u128::from_le_bytes(stream[16 * n..16 * n + 16].try_into().unwrap()), "q{n}"); }
+    assert_eq!(&zipped.q[0].to_le_bytes()[..6], &[0, 0x40, 0x80, 1, 0x41, 0x81]);
+    let (back, _, _) = pie_one("0640251b", |c| c.q[..3].copy_from_slice(&zipped.q[..3]));
+    assert_eq!((back.q[0], back.q[1], back.q[2]), (qb(|k| k as u8), qb(|k| 0x40 + k as u8), qb(|k| 0x80 + k as u8)));
+}
+
+/// esp.movi.32.a (TRM 4.7.2.230), esp.movx.w/r.sar (4.7.2.244/237), esp.movx.w/r.cfg
+/// (4.7.2.241/234, Register 4.1: only vxsat_en, vxrm, mis_ld and mis_st are writable).
+#[test]
+fn pie_moves_to_and_from_general_registers() {
+    let (cpu, _, _) = pie_one("0ce0211b", |c| c.q[3] = 0x4444_4444_3333_3333_2222_2222_1111_1111);
+    assert_eq!(cpu.x[10], 0x3333_3333);
+    let (cpu, _, _) = pie_one("90c2201b", |c| c.x[12] = 0xffff_ffc7);
+    assert_eq!(cpu.pie_sar, 7);
+    let (cpu, _, _) = pie_one("80c0229b", |c| c.pie_sar = 0x2a);
+    assert_eq!(cpu.x[13], 0x2a);
+    let (cpu, _, _) = pie_one("9082201b", |c| c.x[12] = 0xffff_ffff);
+    assert_eq!(cpu.pie_cfg, 0x1f3);
+    let (cpu, _, _) = pie_one("8080229b", |c| c.pie_cfg = 0x1ff);
+    assert_eq!((cpu.x[13], cpu.pie_cfg), (0x1ff, 0x1fb), "reading CFG clears vxsat");
+}
+
+/// The .ip loads and stores (TRM 4.7.2.312, 4.7.2.318, 4.7.2.285, 4.7.2.274): force-aligned
+/// addresses (TRM 4.4.3.1), rs1 post-incremented by the signed immediate.
+#[test]
+fn pie_ip_loads_and_stores_align_and_post_increment() {
+    let (cpu, _, _) = pie_one("0311851f", |c| c.x[11] = DATA + 0x24);
+    assert_eq!((cpu.q[1], cpu.x[11]), (qb(|k| 0x20 + k as u8), DATA + 0x44));
+    let (cpu, ram, _) = pie_one("ff11879f", |c| { c.x[11] = DATA + 0x18; c.q[1] = qb(|k| 0xa0 + k as u8); });
+    assert_eq!(cpu.x[11], DATA + 8);
+    assert_eq!(&ram.mem[0x1010..0x1020], &qb(|k| 0xa0 + k as u8).to_le_bytes());
+    assert_eq!((ram.mem[0x100f], ram.mem[0x1020]), (0x0f, 0x20));
+    let (cpu, _, _) = pie_one("ff910f1f", |c| c.x[10] = DATA + 3);
+    assert_eq!((l16(cpu.q[3]), cpu.x[10]), ([0x0302; 8], DATA + 1));
+    let (cpu, _, _) = pie_one("03a1811f", |c| c.x[11] = DATA + 0x13);
+    assert_eq!((cpu.q[0], cpu.pie_sar_byte, cpu.x[11]), (qb(|k| 0x10 + k as u8), 3, DATA + 0x23));
+    // CFG.mis_ld: the hardware misaligned mode reads the bytes where they are (TRM 4.4.3.2)
+    let (cpu, _, _) = pie_one("0311851f", |c| { c.x[11] = DATA + 0x24; c.pie_cfg = 2; });
+    assert_eq!(cpu.q[1], qb(|k| 0x24 + k as u8));
+}
+
+/// The TRM 4.4.3.1 misaligned-load sequence: ld.128.usar.ip, vld.128.ip, src.q (TRM 4.7.2.326)
+/// rebuild the 16 bytes at an address that is not 16-byte aligned.
+#[test]
+fn pie_usar_and_src_q_rebuild_a_misaligned_load() {
+    let (mut cpu, mut ram, t) = pie_one("03a1811f 0311849f 8400411b", |c| c.x[11] = DATA + 5);
+    assert_eq!(t, Ok(()));
+    for _ in 0..2 { step(&mut cpu, &mut ram).unwrap(); }
+    assert_eq!((cpu.q[2], cpu.x[11]), (qb(|k| 5 + k as u8), DATA + 0x25));
+    // SAR_BYTE = 0 leaves qw
+    let (cpu, _, _) = pie_one("8400411b", |c| { c.q[0] = 1; c.q[1] = 2; });
+    assert_eq!(cpu.q[2], 1);
+}
+
+/// PIE starts Off: the instruction is illegal and EXT_ILL.PIE says why (TRM 2.7.2.3); once
+/// enabled, an executed PIE instruction makes the state Dirty and mstatus.XS/SD follow. The P4
+/// core, without `ISA_PIE`, decodes the same word as an ordinary illegal instruction.
+#[test]
+fn pie_is_lazily_enabled_like_the_fpu() {
+    let mut cpu = Cpu::new_esp32s31();
+    let mut ram = FlatRam::new(BASE, 64 * 1024);
+    ram.mem[..4].copy_from_slice(&asm("0000139b"));
+    cpu.pc = BASE; cpu.mtvec = BASE + 0x100;
+    assert_eq!(step(&mut cpu, &mut ram), Err(Trap::Exception(2)));
+    assert_eq!((cpu.mcause, cpu.mtval, cpu.ext_ill & 4), (2, 0x0000_139b, 4));
+    assert_eq!(cpu.read_csr(csr::MSTATUS) & mstatus::XS, 0);
+    cpu.write_csr(csr::MEXT_PIE_STATUS, 1);
+    assert_eq!(cpu.read_csr(csr::MSTATUS) & (mstatus::XS | mstatus::SD), 1 << 15);
+    cpu.pc = BASE; cpu.q[7] = 5;
+    assert_eq!(step(&mut cpu, &mut ram), Ok(()));
+    assert_eq!((cpu.q[7], cpu.read_csr(csr::MEXT_PIE_STATUS)), (0, 3));
+    assert_eq!(cpu.read_csr(csr::MSTATUS) & (mstatus::XS | mstatus::SD), mstatus::XS | mstatus::SD);
+    // XS is read-only
+    let m = cpu.read_csr(csr::MSTATUS); cpu.write_csr(csr::MSTATUS, m & !mstatus::XS);
+    assert_eq!(cpu.read_csr(csr::MSTATUS) & mstatus::XS, mstatus::XS);
+    cpu.write_csr(csr::MEXT_PIE_STATUS, 2);
+    assert_eq!(cpu.read_csr(csr::MSTATUS) & (mstatus::XS | mstatus::SD), 2 << 15);
+    // a reset turns PIE off again and clears its registers
+    cpu.reset();
+    assert_eq!((cpu.pie_state, cpu.q, cpu.has_pie()), (0, [0; 8], true));
+
+    let mut p4 = Cpu::new_esp32p4_rev3();
+    p4.pc = BASE; p4.mtvec = BASE + 0x100;
+    assert_eq!(step(&mut p4, &mut ram), Err(Trap::Exception(2)));
+    assert_eq!(p4.ext_ill & 4, 0);
+    assert_eq!(disasm::format_for(p4.misa, &decode_for(p4.isa(), BASE, [0x9b, 0x13, 0, 0])), "unimp");
+    assert_eq!(disasm::format_for(cpu.misa, &decode_for(cpu.isa(), BASE, [0x9b, 0x13, 0, 0])), "esp.zero.q\tq7");
+}
+
+// ---- Xesploop (hardware loops) on the S31 and P4 cores. Encodings from riscv32-esp-elf-as
+// -march=rv32imafc_zicsr_zifencei_xesploop (esp-14.2.0_20260121); behaviour from the ESP32-P4 TRM
+// 2.7.1 (the start/end/count model, loop 0 before loop 1 on a shared end, Table 2.7-2).
+
+/// esp.lp.setup 0,a0 over `addi a1,a1,3; c.addi a1,1` with a0 = 5, the end a compressed
+/// instruction as in the factory firmware.
+const LP_SETUP: &str = "4515 4581 0035402b 058d 0585 a001";
+/// esp.lp.setupi 1,3 and 0,4 sharing the end `addi a2,a2,1`: loop 1's body re-arms loop 0.
+const LP_NESTED: &str = "00000593 00000613 003350ab 0042502b 00158593 00160613 0000006f";
+/// starti/endi/counti for loop 1 and count/starti/endi for loop 0, both over the same two
+/// instructions (a1 += 1; a1 += 16) with counts 2 and 3.
+const LP_PARTS: &str = "00000593 00e000ab 00e010ab 002030ab 00300693 0006a02b 0040002b 0040102b 00158593 01058593 0000006f";
+
+/// A core with the hardware loops on (mhwloop_state_reg = Initial, as IDF's port.c sets it).
+fn lp_machine(mut cpu: Cpu, prog: &str, first: &str) -> (Cpu, FlatRam) {
+    cpu.write_csr(csr::MHWLOOP_STATE, 1);
+    machine_on(cpu, &asm(prog), first)
+}
+
+fn run_to(cpu: &mut Cpu, ram: &mut FlatRam, pc: u32) {
+    for _ in 0..200 { if cpu.pc == pc { return; } step(cpu, ram).unwrap(); }
+    panic!("never reached {pc:#x}");
+}
+
+/// A count of 5 runs the body 5 times: 13 instructions, one count each, and the count ends at 0.
+#[test]
+fn hwlp_setup_runs_the_body_count_times() {
+    for cpu in [Cpu::new_esp32s31(), Cpu::new_esp32p4(), Cpu::new_esp32p4_rev3()] {
+        let (mut cpu, mut ram) = lp_machine(cpu, LP_SETUP, "li a0,5");
+        let n0 = cpu.insn_count;
+        run_to(&mut cpu, &mut ram, BASE + 0xc);
+        assert_eq!(cpu.x[11], 20);
+        assert_eq!((cpu.insn_count - n0, cpu.retired_count), (13, 13));
+        assert_eq!((cpu.hwlp_start[0], cpu.hwlp_end[0], cpu.hwlp_count[0]), (BASE + 8, BASE + 0xa, 0));
+        assert_eq!(cpu.read_csr(csr::MHWLOOP_STATE), 3, "executing the loop made the state Dirty");
+        assert_eq!(cpu.mstatus & mstatus::XS, mstatus::XS);
+    }
+    // a count of 0 or 1 runs the body once
+    for n in [0, 1] {
+        let (mut cpu, mut ram) = lp_machine(Cpu::new_esp32s31(), LP_SETUP, "li a0,5");
+        step(&mut cpu, &mut ram).unwrap(); cpu.x[10] = n;
+        run_to(&mut cpu, &mut ram, BASE + 0xc);
+        assert_eq!(cpu.x[11], 4, "count {n}");
+    }
+}
+
+/// Loop 0 (inner) takes the shared end first; when it falls through there, loop 1 (outer) jumps.
+#[test]
+fn hwlp_nested_loops_share_an_end_inner_first() {
+    let (mut cpu, mut ram) = lp_machine(Cpu::new_esp32s31(), LP_NESTED, "li a1,0");
+    run_to(&mut cpu, &mut ram, BASE + 0x18);
+    assert_eq!((cpu.x[11], cpu.x[12]), (12, 12));
+    assert_eq!(cpu.retired_count, 2 + 1 + 3 * (1 + 4 * 2));
+    assert_eq!(cpu.hwlp_count, [0, 0]);
+    assert_eq!((cpu.hwlp_start[1], cpu.hwlp_start[0], cpu.hwlp_end), (BASE + 0xc, BASE + 0x10, [BASE + 0x14; 2]));
+
+    let (mut cpu, mut ram) = lp_machine(Cpu::new_esp32s31(), LP_PARTS, "li a1,0");
+    run_to(&mut cpu, &mut ram, BASE + 0x28);
+    // loop 0 three passes, loop 1 two more (its second re-entry finds loop 0 spent)
+    assert_eq!(cpu.x[11], 4 * 17);
+    assert_eq!(cpu.retired_count, 8 + 4 * 2);
+}
+
+/// An interrupt taken inside the body saves the next pc (the start, after a back-edge) in mepc;
+/// IDF's handler turns the loops Off and back on (Clean), and the loop resumes where it was.
+#[test]
+fn hwlp_interrupt_inside_the_body_resumes() {
+    let mut cpu = Cpu::new();
+    cpu.isa_ext = riscv_rv32::decode::ISA_HWLP;
+    let (mut cpu, mut ram) = lp_machine(cpu, LP_SETUP, "li a0,5");
+    ram.mem[0x100..0x10c].copy_from_slice(&asm("7f105073 7f115073 30200073"));   // csrwi 0x7f1,0; csrwi 0x7f1,2; mret
+    cpu.mtvec = BASE + 0x100;
+    cpu.mstatus |= mstatus::MIE;
+    for _ in 0..7 { step(&mut cpu, &mut ram).unwrap(); }   // two passes: back at the start
+    assert_eq!((cpu.pc, cpu.hwlp_count[0], cpu.x[11]), (BASE + 8, 3, 8));
+    cpu.set_irq(Some(3));
+    assert_eq!(step(&mut cpu, &mut ram), Err(Trap::Interrupt(3)));
+    assert_eq!(cpu.mepc, BASE + 8);
+    cpu.set_irq(None);
+    for _ in 0..3 { step(&mut cpu, &mut ram).unwrap(); }
+    assert_eq!((cpu.pc, cpu.read_csr(csr::MHWLOOP_STATE)), (BASE + 8, 2));
+    run_to(&mut cpu, &mut ram, BASE + 0xc);
+    assert_eq!(cpu.x[11], 20);
+    assert_eq!(cpu.retired_count, 13 + 3);
+}
+
+/// With the state Off (reset) an HWLP instruction or loop CSR access is illegal, sets
+/// EXT_ILL.HWLP and leaves mtval = the instruction; the state CSR itself stays accessible. With
+/// it on, a loop CSR write makes the state Dirty, the count keeps 24 bits, and the user CSRs
+/// alias the machine ones. Cores without Xesploop decode the opcode as illegal.
+#[test]
+fn hwlp_off_traps_and_the_csrs_alias() {
+    let mut cpu = Cpu::new_esp32s31();
+    let mut ram = FlatRam::new(BASE, 64 * 1024);
+    ram.mem[..12].copy_from_slice(&asm("0035402b 7c802573 8c251073"));
+    cpu.pc = BASE; cpu.mtvec = BASE + 0x100;
+    assert_eq!(step(&mut cpu, &mut ram), Err(Trap::Exception(2)));
+    assert_eq!((cpu.mepc, cpu.mtval, cpu.ext_ill, cpu.hwlp_count[0]), (BASE, 0x0035_402b, 2, 0));
+    cpu.ext_ill = 0; cpu.pc = BASE + 4;
+    assert_eq!(step(&mut cpu, &mut ram), Err(Trap::Exception(2)));
+    assert_eq!((cpu.mtval, cpu.ext_ill), (0x7c80_2573, 2));
+    cpu.write_csr(csr::MHWLOOP_STATE, 0b110);   // URW, Clean
+    assert_eq!((cpu.read_csr(csr::MHWLOOP_STATE), cpu.read_csr(csr::UHWLOOP_STATE), cpu.mstatus & mstatus::XS), (6, 2, 2 << 15));
+    cpu.pc = BASE + 4; cpu.hwlp_count[0] = 7;
+    step(&mut cpu, &mut ram).unwrap();
+    assert_eq!(cpu.x[10], 7);
+    cpu.x[10] = 0x1234_5678;
+    step(&mut cpu, &mut ram).unwrap();
+    assert_eq!((cpu.hwlp_count[0], cpu.read_csr(0x7c8), cpu.read_csr(csr::MHWLOOP_STATE)), (0x34_5678, 0x34_5678, 7));
+    assert_eq!(cpu.mstatus & (mstatus::XS | mstatus::SD), mstatus::XS | mstatus::SD);
+    for (k, v) in [0x7c6, 0x7c7, 0x7c8, 0x7c9, 0x7ca, 0x7cb].into_iter().enumerate() { cpu.write_csr(v, 0x100 + k as u32); }
+    assert_eq!((cpu.hwlp_start, cpu.hwlp_end, cpu.hwlp_count), ([0x100, 0x103], [0x101, 0x104], [0x102, 0x105]));
+    assert_eq!((cpu.read_csr(0x8c0), cpu.read_csr(0x8c4)), (0x100, 0x104));
+    // the PIE state still shows through XS: the larger of the two
+    cpu.write_csr(csr::MHWLOOP_STATE, 1);
+    cpu.write_csr(csr::MEXT_PIE_STATUS, 2);
+    assert_eq!(cpu.mstatus & mstatus::XS, 2 << 15);
+    // a loop is not run while the state is Off (an ISR passing a task's loop end)
+    let (mut cpu, mut ram) = lp_machine(Cpu::new_esp32s31(), LP_SETUP, "li a0,5");
+    for _ in 0..3 { step(&mut cpu, &mut ram).unwrap(); }
+    cpu.write_csr(csr::MHWLOOP_STATE, 0);
+    run_to(&mut cpu, &mut ram, BASE + 0xc);
+    assert_eq!((cpu.x[11], cpu.hwlp_count[0]), (4, 5));
+    // the C6 core
+    assert!(decode(BASE, 0x0035_402bu32.to_le_bytes()).is_illegal());
 }

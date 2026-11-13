@@ -1,5 +1,5 @@
-//! esp32sim — the command line, one front end for every chip (`--chip esp32|s3|c3|c6|p4`; the `esp32sim-c3`,
-//! `esp32sim-c6` and `esp32sim-p4` binaries are `--chip c3` / `--chip c6` / `--chip p4`). Parsing and everything a run does are chip-agnostic over
+//! esp32sim — the command line, one front end for every chip (`--chip esp32|s3|c3|c6|p4|s31`; the `esp32sim-c3`,
+//! `esp32sim-c6`, `esp32sim-p4` and `esp32sim-s31` binaries are `--chip c3` / `--chip c6` / `--chip p4` / `--chip s31`). Parsing and everything a run does are chip-agnostic over
 //! `Machine<S>`; the few flags a chip owns (board, WiFi, camera, PSRAM, register presets) live in
 //! its setup function.
 use esp_soc::observers::{BlockProfile, Breakpoints, Coverage, IrqLatency, MmioHeat, PcHist, RegTrace, Trace, Vcd, Watch};
@@ -16,14 +16,15 @@ fn usage(chip: &str) -> ! { help(chip, 2) }
 
 /// `--help` prints this and exits 0; a usage error prints it and exits 2.
 fn help(chip: &str, code: i32) -> ! {
-    eprintln!("usage: esp32sim [--chip esp32|s3|c3|c6|p4] --boot rom|app --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf]... [options]");
+    eprintln!("usage: esp32sim [--chip esp32|s3|c3|c6|p4|s31] --boot rom|app --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf]... [options]");
     eprintln!("       esp32sim --flash-image flash.bin --boot rom [options]            (a whole flash dump instead of the three images)");
-    eprintln!("       default chip here: {}; esp32sim-c3, esp32sim-c6 and esp32sim-p4 are --chip c3 / --chip c6 / --chip p4", chip);
+    eprintln!("       default chip here: {}; esp32sim-c3/c6/p4/s31 are --chip c3 / c6 / p4 / s31", chip);
     eprintln!();
     eprintln!("  --rom F               the chip's mask ROM ELF; default: $ESP32SIM_ROM_DIR, then ~/.espressif/tools/esp-rom-elfs/*/");
     eprintln!("                        (Espressif's, not in the tarball: tools/fetch-rom-elfs.sh DIR downloads all five)");
     eprintln!("  --board NAME          board model (S3: atech14, waveshare-lcd4b, waveshare-amoled18-v2, waveshare-cam, none;");
-    eprintln!("                        C6: waveshare-c6-lcd147, none; P4: waveshare-p4-lcd35, none; classic: ttgo-tdisplay, cyd, ulanzi-tc001, esp32dev, none)");
+    eprintln!("                        C6: waveshare-c6-lcd147, none; P4: waveshare-p4-lcd35, none; S31: mosaico, none;");
+    eprintln!("                        classic: ttgo-tdisplay, cyd, ulanzi-tc001, esp32dev, none)");
     eprintln!("  --flash-mb N, --psram-mb N   memory sizes (S3 default 8 / 2, C3, C6 and classic 4 / 0, P4 16 / 0)");
     eprintln!("  --max-seconds S       stop after S emulated seconds (always give one: the run returns)");
     eprintln!("  --console usb|uart0|both|none   which consoles to print (uart0 shows the ROM and bootloader)");
@@ -32,6 +33,7 @@ fn help(chip: &str, code: i32) -> ! {
     eprintln!("  --hostfwd tcp:H:HP-G:GP  publish a guest TCP port on the host (repeatable; needs --wifi)");
     eprintln!("  --script F            host actions at emulated times (button presses, touches, serial input, stop)");
     eprintln!("  --tft-png F, --wav F  save the display / the audio at the end of the run");
+    eprintln!("  --mic-wav [PORT:]F    play a 16-bit PCM WAV once into I2S RX (default controller 0), resampled");
     eprintln!("  --web PORT            serve the board UI at http://127.0.0.1:PORT/ in real time");
     eprintln!("  --elf F               symbols for logs, traces and profiles (repeatable)");
     eprintln!("  --trace-fn PREFIX, --break PC, --watch ADDR, --peek ADDR,N, --profile, --vcd F, --debug AREAS, --no-jit");
@@ -121,6 +123,7 @@ pub struct Opts {
     pub max_insns: u64, pub max_seconds: Option<f64>, pub script: Option<String>, pub serial: Option<String>,
     pub console: Option<String>, pub console_prefix: bool, pub realtime: bool, pub web_port: Option<u16>, pub web_dir: Option<String>, pub no_reboot: bool,
     pub i2s_tone: Vec<String>,
+    pub mic_wav: Vec<String>,
     pub wav: Option<String>, pub tft_png: Option<String>, pub gram_png: Option<String>, pub dump: bool,
     pub trace: bool, pub trace_from: u64, pub breaks: Vec<u32>, pub watch: Option<u32>, pub peeks: Vec<(u32, usize)>, pub pwm_pins: Vec<u8>, pub adc_pins: Vec<u8>, pub adc_raw: Vec<(u8, u16)>, pub disasms: Vec<(u32, usize)>,
     pub profile: bool, pub profile_blocks: bool, pub coverage: Option<Option<String>>, pub irq_latency: bool, pub vcd: Option<String>,
@@ -196,6 +199,7 @@ pub fn parse(args: &[String], default_chip: &str) -> Opts {
             "--pcap" => o.pcap = Some(next()),
             "--no-reboot" => o.no_reboot = true,
             "--i2s-tone" => o.i2s_tone.push(next()),
+            "--mic-wav" => o.mic_wav.push(next()),
             "--wav" => o.wav = Some(next()),
             "--tft-png" => o.tft_png = Some(next()),
             "--gram-png" => o.gram_png = Some(next()),
@@ -288,7 +292,8 @@ pub fn run_cli(default_chip: &str) {
         "c6" | "esp32c6" => { let m = setup_c6(&o); run(m, &o) }
         "p4" | "esp32p4" if p4_rev3(&o) => { let m = setup_p4::<esp32p4::RevGe3>(&o); run(m, &o) }
         "p4" | "esp32p4" => { let m = setup_p4::<esp32p4::RevLt3>(&o); run(m, &o) }
-        c => { eprintln!("--chip {}: esp32, s3, c3, c6 or p4", c); std::process::exit(2) }
+        "s31" | "esp32s31" => { let m = setup_s31(&o); run(m, &o) }
+        c => { eprintln!("--chip {}: esp32, s3, c3, c6, p4 or s31", c); std::process::exit(2) }
     }
 }
 
@@ -657,6 +662,57 @@ fn setup_p4<R: esp32p4::Revision>(o: &Opts) -> esp_soc::Machine<esp32p4::Esp32p4
     m
 }
 
+
+/// ESP32-S31 bare module: 2 MiB NOR + W25Q16 JEDEC by default (IDF hello image header).
+fn setup_s31(o: &Opts) -> esp32s31::Machine {
+    let flash = o.flash_mb.unwrap_or(2) << 20;
+    let mut m = esp32s31::machine(o.mac.unwrap_or([0x10, 0x20, 0x30, 0x40, 0x50, 0x60]), flash);
+    m.bus.set_flash_size(flash);
+    // Prefer the hello image's JEDEC / SFDP when flash is the default 2 MiB; larger sizes keep
+    // BoardInputs unset so callers can supply their own NOR identity.
+    let inputs = match (o.board.as_str(), o.flash_mb.unwrap_or(2)) {
+        ("mosaico", _) => Some(esp32s31::soc::BoardInputs::mosaico_gd25q128()),
+        (_, 2) => Some(esp32s31::soc::BoardInputs::hello_w25q16()),
+        _ => None,
+    };
+    if let Some(inputs) = inputs {
+        m.bus.set_board_inputs(inputs).unwrap_or_else(|e| usage_error(&e));
+    }
+    if let Some(board) = esp32s31::board::make_board(&o.board) { m.bus.board = board; }
+    m.bus.attach_board_devices();
+    // SPI_FAST_FLASH_BOOT; prepare() may override with --strap.
+    if o.strap.is_none() {
+        m.bus.set_strap(0x10);
+    }
+    if !o.debug.is_empty() {
+        let mut f = esp_soc::DebugFlags::from_env();
+        for d in &o.debug { f.parse(d); }
+        m.set_debug(&f);
+    }
+    if !o.wifi.is_empty() {
+        let net_log = m.bus.debug.has("net");
+        attach_wifi(&mut m.bus, o, net_log);
+    }
+    for (flag, on) in [
+        ("--board", o.board != "atech14" && o.board != "none" && o.board != "mosaico"),
+        ("--cam-image", o.cam_image.is_some()),
+        ("--cam-stream", o.cam_stream.is_some()),
+        ("--cam-size", o.cam_size.is_some()),
+        ("--psram-mb", o.psram_mb.is_some()),
+        ("--flash-octal", o.flash_octal),
+        ("--efuse-regs", o.efuse_regs.is_some()),
+        ("--regs-init", o.regs_init.is_some()),
+        ("--regstat", o.regstat.is_some()),
+        ("--coproc", o.coproc.is_some()),
+    ] {
+        if on {
+            eprintln!("{flag} is not available on the S31");
+            std::process::exit(2);
+        }
+    }
+    m
+}
+
 /// Everything after the chip is set up: images, boot, observers, the run, the reports.
 fn run<S: Soc>(mut m: Machine<S>, o: &Opts) {
     let approximate = o.approximate_timing.then(|| {
@@ -903,6 +959,14 @@ fn prepare<S: Soc>(m: &mut Machine<S>, o: &Opts) -> String {
             m.bus.i2s_input(port).ok_or_else(|| "controller absent".to_string())?.tone(hz, amplitude).map_err(String::from)
         });
         if let Err(e) = result { eprintln!("--i2s-tone: {e}"); std::process::exit(2); }
+    }
+    for spec in &o.mic_wav {
+        // A leading "0:" or "1:" names the controller; anything else is the path.
+        let (port, path) = match spec.split_once(':') { Some((p @ ("0" | "1"), f)) => (p.parse().unwrap(), f), _ => (0usize, spec.as_str()) };
+        let result = std::fs::read(path).map_err(|e| e.to_string())
+            .and_then(|bytes| esp_periph::i2s::parse_wav(&bytes))
+            .and_then(|(rate, frames)| m.bus.i2s_input(port).ok_or_else(|| "controller absent".to_string())?.play(frames, rate).map_err(String::from));
+        if let Err(e) = result { eprintln!("--mic-wav {spec}: {e}"); std::process::exit(2); }
     }
 
     if let Some(sec) = o.max_seconds { m.max_cycles = (sec * S::CPU_HZ as f64) as u64; }

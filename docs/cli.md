@@ -1,12 +1,13 @@
 # Command line
 
 ```
-esp32sim [--chip esp32|s3|c3|c6|p4] --boot rom --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf ...] [options]
+esp32sim [--chip esp32|s3|c3|c6|p4|s31] --boot rom --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf ...] [options]
 esp32sim --flash-image flash.bin --boot rom ...
 ```
 
 One binary for every chip; `esp32sim-c3` is `esp32sim --chip c3`, `esp32sim-c6` is
-`esp32sim --chip c6` and `esp32sim-p4` is `esp32sim --chip p4`. The RISC-V chips' defaults differ
+`esp32sim --chip c6`, `esp32sim-p4` is `esp32sim --chip p4`, and `esp32sim-s31` is
+`esp32sim --chip s31`. The RISC-V chips' defaults differ
 where the chip does (`--boot rom`, `--console uart0`, `--flash-mb 4`) and they refuse the flags
 their chip has nothing behind: the C3 board, camera, PSRAM and register presets; the C6, which has
 a board and WiFi, only camera, PSRAM and register presets. The P4 boots from its ROM on UART0 by
@@ -18,7 +19,7 @@ default too, with 16 MB of flash ([esp32p4.md](esp32p4.md)).
 | `--boot rom\|app` | `rom`: start at the mask ROM reset vector (real boot chain). `app`: load the app image segments and jump to its entry |
 | `--bootloader F`, `--ptable F`, `--app F` | written to flash at 0x0 / 0x8000 / 0x10000 |
 | `--flash-image F` | whole flash dump written at 0 |
-| `--chip esp32\|s3\|c3\|c6\|p4` | which chip (default s3; `esp32` is the classic ESP32) |
+| `--chip esp32\|s3\|c3\|c6\|p4\|s31` | which chip (default s3; `esp32` is the classic ESP32) |
 | `--rom F` | mask ROM ELF (default: the chip's in `ESP32SIM_ROM_DIR`, then `~/.espressif/tools/esp-rom-elfs/*/`) |
 | `--mac xx:xx:xx:xx:xx:xx` | the station MAC the efuses report |
 | `--cam-stream PATH\|-`, `--cam-size WIDTHxHEIGHT` | live RGB24 camera source and its dimensions; requires `waveshare-cam` |
@@ -57,6 +58,7 @@ default too, with 16 MB of flash ([esp32p4.md](esp32p4.md)).
 | `--max-seconds S` | stop after this much emulated time, including all reboots; also applies to `--cooja` |
 | `--max-insns N` | cap scheduler work across all reboots (details below); unavailable with `--cooja`, which uses `--max-seconds` |
 | `--i2s-tone PORT:HZ:AMPLITUDE` | continuous RX sine on I2S controller 0 or 1; amplitude 0..1, for example `0:1000:0.5`; repeat for multiple controllers |
+| `--mic-wav [PORT:]FILE` | a host WAV file as the microphone on I2S controller PORT (default 0): 16-bit integer PCM, mono or stereo (mono goes to both slots), any rate from 1 to 192 kHz, resampled to the firmware's RX rate by zero-order hold (no filter); other formats are refused. Played once from the first frame the receiver takes, then silence; repeat for several controllers |
 | `--script F` | host actions at emulated times (below) |
 | `--console usb\|uart0\|both\|all\|none`, `--console-prefix` | which consoles to print |
 | `--realtime` | pace to wall time without the UI |
@@ -199,6 +201,7 @@ a block count at most 65536 and a file at most 1 GiB; a larger value is a usage 
 | `fat-write NAME BYTES CHUNK_KIB [GAP_MS] [FAT_EVERY]` | write an 8.3 file of test bytes into the root directory in a vfat-like order: the directory entry, the data in chunks, the FAT sectors (both copies) after every FAT_EVERY chunks (1), then the entry's size and cluster and FSInfo. Chunk i is due GAP_MS·i after the start, as a fixed-rate source produces them; the log gives the rate overall and over the second half, the worst lateness against that schedule and whether the host kept up (never a whole chunk behind) |
 | `fat-read NAME` | read a file back; one this file wrote is compared with what it wrote |
 | `uart0 TEXT` | a line into the firmware's UART0 (its console) |
+| `cdc MS [TEXT]` | open the CDC-ACM interface (SET_LINE_CODING, DTR+RTS), send TEXT plus CR LF on its bulk OUT endpoint when given, and copy what the device sends to stdout for MS milliseconds |
 
 `examples/usb_msc-p4/host.txt` writes a file, ejects the drive, polls it while the
 example's application owns the card (MEDIUM NOT PRESENT) and takes it again.
@@ -373,10 +376,13 @@ applies a touch at time zero. `adc` and `adcwave` also support classic ADC pads.
 
 ## I2S microphone input
 
-Standard I2S RX supports 16/24/32-bit mono or stereo on S3 controllers 0/1 and
-C3/C6 controller 0. S3 controller 0 also accepts PDM-to-PCM RX at 16 bits.
+Standard I2S RX supports 16/24/32-bit mono or stereo on S3 controllers 0/1,
+C3/C6 controller 0 and S31 controllers 0/1 (through the AHB-GDMA, also as the
+full-duplex slave RX that runs on the TX clock, as ESP-IDF sets it up when TX and
+RX share a port). S3 controller 0 also accepts PDM-to-PCM RX at 16 bits.
 `--i2s-tone 0:1000:0.5` supplies a continuous 1 kHz sine at half full scale;
-omit it for silence. The source survives software resets.
+`--mic-wav 0:speech.wav` plays a recording once; omit both for silence. The
+source survives software resets.
 
 Rust hosts use `SocBus::i2s_input(port)` to access `PcmInput`. `push(&[[left, right]])`
 queues signed 16-bit stereo frames at the firmware's programmed sample rate.

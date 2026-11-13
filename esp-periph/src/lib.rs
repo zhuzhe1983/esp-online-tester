@@ -26,12 +26,15 @@ pub mod sha;
 pub mod aes;
 pub mod rsa;
 pub mod gdma;
+pub mod dma2d;
+pub mod ppa;
 pub mod i2s;
 pub mod rmt;
 pub mod rmt_compact;
 pub mod gpspi;
 pub mod rng;
 pub mod intmtx;
+pub mod clic;
 pub mod sdmmc;
 pub mod usb_otg;
 
