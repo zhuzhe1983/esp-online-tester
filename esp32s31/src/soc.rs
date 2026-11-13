@@ -922,7 +922,7 @@ impl Bus for SocBus {
     fn tick(&mut self, cycles: u32) -> u32 {
         self.cycles += cycles as u64;
         // The lines the models advanced here can raise without flagging `irq_dirty` themselves.
-        let lines = |b: &S31Bus| (b.usb_otg.irq(), b.rtc_wdt.irq(), b.periph.timg[0].irq_wdt(), b.periph.timg[1].irq_wdt());
+        let lines = |b: &S31Bus| (b.usb_otg.irq(), b.rtc_wdt.irq(), b.periph.timg[0].irq_wdt(), b.periph.timg[1].irq_wdt(), b.periph.usb.irq());
         let lines_before = lines(&self.inner);
         let hz = TIME_HZ;
         let before = self.inner.periph.systimer.irqs();
@@ -965,6 +965,9 @@ impl Bus for SocBus {
             for e in edges { let _ = self.inner.pads.set_input(usize::from(e.pin), Some(e.level)); }
             self.irq_dirty = true;
         }
+        // USB Serial/JTAG: the attached host's SOF. IDF's connection monitor clears SOF_INT_RAW on
+        // every FreeRTOS tick and stops console output once it has seen none for 3 ms.
+        esp_periph::Device::tick(&mut self.inner.periph.usb, u64::from(cycles));
         esp_periph::Device::tick(&mut self.inner.usb_otg, u64::from(cycles));
         if self.inner.usb_otg.pending() { self.inner.run_usb_otg(); }
         // Machine time drives the RTC domains (timer + calibration) that were formerly opt-in:
