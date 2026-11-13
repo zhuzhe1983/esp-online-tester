@@ -89,9 +89,10 @@ impl NetCapture {
             }
         }
         if let Some(q) = self.live.as_mut() {
-            if q.len() >= LIVE_FRAMES_MAX || self.live_bytes + frame.len() > LIVE_BYTES_MAX { self.live_dropped += 1; return; }
-            self.live_bytes += frame.len() + 10;
-            q.push_back(ws_message(dir, ts_us, frame));
+            let msg = ws_message(dir, ts_us, frame);
+            if q.len() >= LIVE_FRAMES_MAX || self.live_bytes + msg.len() > LIVE_BYTES_MAX { self.live_dropped += 1; return; }
+            self.live_bytes += msg.len();
+            q.push_back(msg);
         }
     }
     /// The page messages queued since the last call.

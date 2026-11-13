@@ -606,8 +606,12 @@ impl StationLink {
 
     /// Record every Ethernet frame the station sends and receives into `tap`.
     pub fn set_tap(&mut self, tap: crate::netcap::NetTap) { self.tap = Some(tap); }
+    /// A frame the station sends still ends in the 4 bytes of the 802.11 FCS slot; the capture
+    /// leaves them out, so it holds the Ethernet frame as it went on the wire.
     fn capture(&self, dir: crate::netcap::Dir, now_us: u64, eth: &[u8]) {
-        if let Some(t) = &self.tap { t.lock().unwrap().record(dir, now_us, eth); }
+        let Some(t) = &self.tap else { return };
+        let eth = if dir == crate::netcap::Dir::FromStation && eth.len() >= 18 { &eth[..eth.len() - 4] } else { eth };
+        t.lock().unwrap().record(dir, now_us, eth);
     }
 
     /// The first access point, the one `--wifi` named first.

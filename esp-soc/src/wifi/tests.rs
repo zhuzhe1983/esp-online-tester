@@ -539,3 +539,73 @@ fn associating_with_another_access_point_leaves_the_first() {
     let l = l.surviving_reboot();
     assert_eq!(l.aps().len(), 2);
 }
+
+/// A capture tap that keeps frames for the page: each record as (direction byte, frame).
+fn live_tap() -> crate::netcap::NetTap {
+    let tap = crate::netcap::NetTap::default();
+    tap.lock().unwrap().enable_live();
+    tap
+}
+fn taken(tap: &crate::netcap::NetTap) -> Vec<(u8, Vec<u8>)> {
+    tap.lock().unwrap().take_live().into_iter().map(|m| (m[1], m[10..].to_vec())).collect()
+}
+/// `payload` in a data frame to `bssid`, ending in the 4-byte FCS slot as the MAC hands it over.
+fn data_with_fcs(bssid: [u8; 6], payload: &[u8]) -> Vec<u8> {
+    let mut f = frame_to(0x0108, bssid, payload);
+    f.extend_from_slice(&[0xde, 0xad, 0xbe, 0xef]);
+    f
+}
+
+#[test]
+fn the_tap_records_a_dhcp_exchange_both_ways_without_the_fcs() {
+    let mut l = two_ap_link();
+    let tap = live_tap();
+    l.set_tap(tap.clone());
+    let open = l.aps()[0].cfg.bssid;
+    join(&mut l, open, 0);
+    assert!(taken(&tap).is_empty(), "management frames are not Ethernet frames");
+    l.station_tx(&data_with_fcs(open, &dhcp_discover()), 60_000);
+    drain(&mut l, 60_000, 70_000);
+    let got = taken(&tap);
+    let up: Vec<_> = got.iter().filter(|(d, _)| *d == crate::netcap::Dir::FromStation as u8).collect();
+    let down: Vec<_> = got.iter().filter(|(d, _)| *d == crate::netcap::Dir::ToStation as u8).collect();
+    assert_eq!((up.len(), down.len()), (1, 1), "one discover, one offer: {got:x?}");
+    let discover = &up[0].1;
+    assert_eq!(discover[..6], open, "addr3 of the data frame");
+    assert_eq!(discover[6..12], STA);
+    assert_eq!(discover[12..14], [0x08, 0x00]);
+    assert_eq!(discover.len(), 14 + dhcp_discover().len() - 8, "the FCS slot is left out");
+    assert_eq!(down[0].1[..6], STA, "the offer is for the station");
+    // the tap survives a reboot and a new attach
+    let mut l = l.surviving_reboot();
+    l.attach(Some(VirtualAp::new(config(), false)), None);
+    assert!(l.tap.is_some());
+}
+
+#[test]
+fn in_relay_mode_the_tap_skips_dropped_frames_and_records_delivered_ones() {
+    let mut l = two_ap_link();
+    l.set_relay(true);
+    let tap = live_tap();
+    l.set_tap(tap.clone());
+    let open = l.aps()[0].cfg.bssid;
+    join(&mut l, open, 0);
+    taken(&tap);
+    // too long for the relay: dropped, so not captured
+    let mut big = dhcp_discover();
+    big.resize(RELAY_FRAME_MAX + 64, 0);
+    l.station_tx(&data_with_fcs(open, &big), 60_000);
+    assert!(l.take_relay_frames().is_empty());
+    assert!(taken(&tap).is_empty(), "a dropped frame is not captured");
+    l.station_tx(&data_with_fcs(open, &dhcp_discover()), 60_100);
+    assert_eq!(l.take_relay_frames().len(), 1);
+    assert_eq!(taken(&tap).len(), 1, "a relayed frame is");
+    // a frame from the host is captured when it is delivered, not when it is queued
+    let mut eth = vec![0u8; 60];
+    eth[..6].copy_from_slice(&STA); eth[6..12].copy_from_slice(&[2, 0, 0, 0, 0, 2]); eth[12..14].copy_from_slice(&[0x08, 0x00]);
+    l.receive_relay_frame(&eth).unwrap();
+    assert!(taken(&tap).is_empty(), "queued, not yet delivered");
+    let rx = drain(&mut l, 70_000, 80_000);
+    assert!(rx.iter().any(|f| f[0] == 0x08), "delivered to the station");
+    assert_eq!(taken(&tap), vec![(crate::netcap::Dir::ToStation as u8, eth)]);
+}
