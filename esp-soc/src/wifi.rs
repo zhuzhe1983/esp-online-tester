@@ -692,6 +692,8 @@ impl StationLink {
                     if other.log { eprintln!("[wifi] station left '{}' for '{}'", other.cfg.ssid, joined); }
                     other.state = StaState::Idle;
                     other.wpa.state = WpaState::Idle;
+                    // what it still had queued for the station (EAPOL message 1, say) goes too
+                    other.queue.retain(|a| is_beacon(&a.frame));
                 }
             }
         }

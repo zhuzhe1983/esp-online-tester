@@ -609,3 +609,19 @@ fn in_relay_mode_the_tap_skips_dropped_frames_and_records_delivered_ones() {
     assert!(rx.iter().any(|f| f[0] == 0x08), "delivered to the station");
     assert_eq!(taken(&tap), vec![(crate::netcap::Dir::ToStation as u8, eth)]);
 }
+
+#[test]
+fn leaving_an_access_point_drops_what_it_still_had_queued_for_the_station() {
+    let mut l = two_ap_link();
+    let (open, psk) = (l.aps()[0].cfg.bssid, l.aps()[1].cfg.bssid);
+    // the association with the PSK network queues EAPOL message 1 a little later
+    l.station_tx(&frame_to(11 << 4, psk, &[0, 0, 1, 0, 0, 0]), 0);
+    l.station_tx(&frame_to(0, psk, &[1, 0, 0, 0]), 1_000);
+    assert!(l.aps()[1].queue.iter().any(|a| !is_beacon(&a.frame)), "something queued for the station");
+    // the station associates with the open one before it is delivered
+    l.station_tx(&frame_to(11 << 4, open, &[0, 0, 1, 0, 0, 0]), 1_100);
+    l.station_tx(&frame_to(0, open, &[1, 0, 0, 0]), 1_200);
+    assert!(l.aps()[1].queue.iter().all(|a| is_beacon(&a.frame)), "only beacons left");
+    let got = drain(&mut l, 1_200, 100_000);
+    assert!(!got.iter().any(|f| !is_beacon(f) && f[10..16] == psk), "nothing more from the PSK network to the station");
+}
