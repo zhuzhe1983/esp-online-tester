@@ -5,7 +5,7 @@ rev-3 mask ROM through the second-stage bootloader into an unchanged application
 It reports silicon revision v3.0, the ECO3 that ROM belongs to: eFuse CHIP_VER_REV1 and REV2,
 and bit 31 of SYSCON_DATE, so an image built with `CONFIG_ESP32_REV_MIN_3` boots.
 The shared Xtensa core enables DFP context registers only for this target.
-Double-precision arithmetic and PSRAM are not modeled.
+Double-precision arithmetic is not modeled.
 
 ## Clock model
 
@@ -75,6 +75,16 @@ offset 20 of `esp_bt_controller_config_t` (IDF v4.3 to v6.0); init refuses a
 config that cannot be read or names another mode. The controller answers LE
 only, whatever the mode; a firmware that enables mode 2 (BR/EDR only) gets one
 `[ble] the virtual controller is LE-only` line on stderr.
+`esp_vhci_host_send_packet` takes a packet in internal DRAM or, with
+`--psram-mb 4`, in PSRAM at `0x3F80_0000..0x3FC0_0000`, where Bluedroid built
+with `CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST` allocates its HCI buffers
+(IDF v5.3.6 `components/bt/common/osi/include/osi/allocator.h`). Each page the
+packet touches must be mapped to the installed PSRAM and readable through the
+cache, as a load from it would be; otherwise the packet is refused with
+`[ble] rejected invalid VHCI packet pointer, length or controller state`. The
+controller BSS, which holds the receive buffer, stays in DRAM (IDF v5.3.6
+`components/bt/controller/linker_rw_bt_controller.lf`; IDF v5.5.4 moves it to
+`components/bt/linker_rw_bt_controller.lf`).
 
 Classic I2S0/1 RX accepts per-controller PCM (`i2s_input`) and pin-routed
 sources (`attach_pcm_sources`) through the shared host API from #201/#202; a

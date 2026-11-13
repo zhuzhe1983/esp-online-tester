@@ -261,11 +261,13 @@ else, and 1, 2 or 3 on the classic ESP32 ([esp32.md](esp32.md)). Arduino 3.3.8
 with IDF 5.5.4 is validated. IDF 4.4 Bluedroid is unsupported and fails with a missing-symbol error.
 Other IDF releases have not been validated.
 
-S3 VHCI transmit packets may also reside in mapped PSRAM, as used by
-StopWatch's ESP-IDF 6.1 build with external NimBLE allocation. Every page must
-map to installed PSRAM; flash, invalid mappings and out-of-range packets are
-rejected. The controller task trampoline and its receive buffer still require
-internal controller BSS.
+VHCI transmit packets may also reside in mapped PSRAM: on the S3, as used by
+StopWatch's ESP-IDF 6.1 build with external NimBLE allocation, and on the
+classic ESP32 with `--psram-mb 4`, as Bluedroid built with
+`CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST` sends them. Every page must map to
+installed PSRAM, and on the classic ESP32 the cache must be able to read it;
+flash, invalid mappings and out-of-range packets are rejected. The controller
+task trampoline and its receive buffer still require internal controller BSS.
 
 `[ble]` output reports advertising data and discovered GATT handles. Script commands
 use seconds like the other script actions. For example:
