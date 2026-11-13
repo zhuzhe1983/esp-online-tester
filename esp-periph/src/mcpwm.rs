@@ -68,11 +68,11 @@ impl Mcpwm {
             _ => {
                 let empty = action & 3;
                 let mut selected = None;
-                for cmp in 0..2 {
+                for (cmp, &tick) in self.compare[operator].iter().enumerate() {
                     let compare_action = (action >> (4 + cmp * 2)) & 3;
                     if compare_action == 0 { continue; }
                     if selected.is_some() { return None; }
-                    let tick = self.compare[operator][cmp] as u64;
+                    let tick = tick as u64;
                     if tick > period { return None; }
                     selected = Some(match (empty, compare_action) {
                         (2, 1) => tick,
