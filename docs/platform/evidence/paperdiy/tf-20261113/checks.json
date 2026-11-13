@@ -1,0 +1,104 @@
+{
+  "checkedAt": "2026-11-13T09:55:39.329710+00:00",
+  "sourceBase": "c73c0c70dc59c9ab478e45e351fcb2bdb3e9a762",
+  "lintCommit": "8b7c84d5",
+  "environment": {
+    "os": "Darwin",
+    "architecture": "arm64",
+    "rust": "1.100.0 stable (0ef1bc386 2026-11-09)",
+    "node": "26.13.0"
+  },
+  "firmwarePatched": false,
+  "goldensChanged": false,
+  "sourceFiles": {
+    "esp32s3/src/board/paperdiy.rs": "243dfaa9a8c80e509262c02e99ee47fc26bcfd430bd4406c6946b69a79d75a25",
+    "tools/probe-paperdiy-factory.mjs": "5ccbd372db36d1aa3a1d92f0bddbbd067c680bd23a56faba0ddb8f77ad3017bc",
+    "web/platform/board-compatibility.js": "b30c1234abf501731a15af7c075a780a8f8f205af4775094f3de740b706b8f0a"
+  },
+  "checks": [
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<verified-rom-dir> cargo test --release --workspace -- --include-ignored --skip external_",
+      "result": "pass",
+      "tests": 1970,
+      "groups": 172,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs tools/platform-sd-card-test.mjs tools/platform-firmware-download-access-test.mjs",
+      "result": "pass",
+      "tests": 24
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "pass",
+      "products": 218,
+      "accessories": 10,
+      "firmwares": 175,
+      "watchlist": 120
+    },
+    {
+      "command": "tools/wasm-build.sh && node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "result": "pass",
+      "wasmSha256": "d97615bef69468b2b08763b940bd33c40339b5b68ccaa51c5c864963e98f0133"
+    },
+    {
+      "command": "tools/wasm-jit-test.sh",
+      "result": "pass",
+      "cases": 111126,
+      "groups": 78,
+      "gpioWaveforms": 24
+    },
+    {
+      "command": "python docs/platform/evidence/paperdiy/tf-20261113/compare-cpu.py --base <clean-main-release-bin-dir> --candidate <candidate-release-bin-dir> --root <verified-public-inputs-root> --baseline-commit 0a11637395496587ee6ff539ccce0f1aca7c0be5 --candidate-revision 8b7c84d5 --pairs 3",
+      "result": "pass",
+      "receipt": "cpu.json",
+      "note": "Candidate also contains the PaperDIY changes identified in sourceFiles. All 24 runs match their workload console and exact instruction totals."
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs; explicit identity-pattern check and manual review of tf-20261113",
+      "result": "pass",
+      "note": "Repository privacy tool covers docs/evidence; all six new docs/platform evidence files additionally checked and manually reviewed."
+    }
+  ],
+  "observedFramebuffer": {
+    "rgbaSha256": "2040802bd0c432dae4e9a18ebc9e0ab90f54e43991df4e64467839d634372440",
+    "pngSha256": "bbc70df0e333e1b90cd3bf892edf9b4081d33caa72cc24739323dbbc034a3399",
+    "contents": [
+      "esp32_online_tester -40 dBm",
+      "SDHC/SDXC 0.1 GB",
+      "WRITE 2.23 MB/s",
+      "READ 3.15 MB/s"
+    ],
+    "limit": "The numerical guest read/write result confirms its verification branch passed. Simulated guest-time card speed is not physical performance. The firmware prints 16-Levels as its own label; the emulator only models black/white optical response."
+  },
+  "negativeResults": [
+    {
+      "check": "Initial complete release suite",
+      "result": "12 cosim tests passed and 10 failed before required P4 firmware inputs were fetched; absent p4-hosted-bootloader.bin. Original unredacted local log kept outside Git."
+    },
+    {
+      "check": "Initial Rust 1.100 Clippy",
+      "result": "Existing needless_range_loop warnings became errors. Thirteen files receive localized equivalent iteration/fill changes in the separate lint commit; no lint suppression."
+    },
+    {
+      "check": "Baseline official UserDemo TF screen",
+      "wasmSha256": "f0f3925e54876db21a77a1a62b1fa73c8ac29621bc81cace460a43670020b8fe",
+      "frame": {
+        "width": 540,
+        "height": 960,
+        "sha256": "5e32ce9968fed6c9dd20c1a20fad69dd07b883d17ea6248b1d8d517758ce3fe3"
+      },
+      "result": "The existing display/button probe passed, but direct inspection of the actual main frame showed NO TF CARD. The old probe did not claim TF support; this change adds card-specific assertions."
+    }
+  ],
+  "privacy": "Public firmware, source and emulator hashes plus curated output only. No local absolute paths, account/process metadata, third-party firmware or card images are committed; native benchmark timings retain only anonymous numeric samples."
+}

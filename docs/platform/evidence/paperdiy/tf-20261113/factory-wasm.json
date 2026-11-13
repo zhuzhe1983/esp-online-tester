@@ -1,0 +1,129 @@
+{
+  "checkedAt": "2026-11-13T09:47:33.949Z",
+  "command": "node tools/probe-paperdiy-factory.mjs --url <catalog-k159-b-factory-url> --sha256 <catalog-sha256>",
+  "source": {
+    "url": "https://m5burner-cdn.m5stack.com/community/1/2110309776206622722/2110309776210817025/bin/2110309776210817026.bin",
+    "resolvedUrl": "https://m5burner-cdn.m5stack.com/community/1/2110309776206622722/2110309776210817025/bin/2110309776210817026.bin",
+    "bytes": 1404800,
+    "sha256": "d7de13e62342c1ab7115897a4a731abb054efda8ecb01d711aeb66c8bc6baa37"
+  },
+  "backend": "actual-page-worker-wasm-jit",
+  "firmwarePatched": false,
+  "wasmSha256": "d97615bef69468b2b08763b940bd33c40339b5b68ccaa51c5c864963e98f0133",
+  "checks": [
+    "rom-boot-first-factory-shutdown-logo",
+    "factory-nvs-retained-after-host-restart",
+    "official-SPI-SDHC-FAT32-mount",
+    "button-a-physical-gpio-held-black-released-white-border",
+    "button-b-physical-gpio-held-black-released-white-border",
+    "official-B-click-one-MiB-benchmark-exact-pattern-and-unlink",
+    "official-opening-and-A-click-WiFi-scans-find-virtual-AP",
+    "reset-remount-retains-exact-SD-image",
+    "new-worker-restores-exact-SD-image-before-execution"
+  ],
+  "first": {
+    "width": 540,
+    "height": 960,
+    "sha256": "1c00ae793ca2445369469a824c7ef096baf2645345664a66ac275310dcf0fae3"
+  },
+  "changedPages": 1,
+  "main": {
+    "width": 540,
+    "height": 960,
+    "sha256": "1f6314a4e32a72dfe52a72f580d0c06708b099fa73a15512d3f88f4902102fe6"
+  },
+  "button-a": {
+    "width": 540,
+    "height": 960,
+    "sha256": "0d20b90cce695e010d5f9c1c976cd54a6c51c8b2901df93eba29d8e7b200cd80"
+  },
+  "button-b": {
+    "width": 540,
+    "height": 960,
+    "sha256": "d7bad3c3fb65f2234af4d446487effd2dfbfea951f6452ddbc4e7fc72ba33e9b"
+  },
+  "sd": {
+    "card": {
+      "supported": true,
+      "present": true,
+      "bytes": 67108864,
+      "format": "fat32",
+      "status": "memory-only",
+      "backend": "memory",
+      "restored": false,
+      "pristine": false,
+      "changedPages": 258,
+      "error": null
+    },
+    "sha256": "cf682db9f887af6f554be68bebf8389cbd86bf659a6b4446cd8e4cdd261f86b9",
+    "benchmark": {
+      "bytes": 1048576,
+      "sha256": "042d84d3772b8cc9080a8f388c428c11d88f8566e5a38fda322fc8ea33492cfc",
+      "deleted": true,
+      "verifiedContiguousSectors": 2048
+    }
+  },
+  "benchmark": {
+    "width": 540,
+    "height": 960,
+    "sha256": "2040802bd0c432dae4e9a18ebc9e0ab90f54e43991df4e64467839d634372440"
+  },
+  "guestSeconds": 8.88,
+  "serialEvidence": [
+    "I (200) app_init: Project name:     PaperDIY",
+    "I (202) PaperDIY: Firmware version: V1.0",
+    "I (206) M5GFX: [Autodetect] board_M5PaperDIY",
+    "I (230) HAL: Display ready: 540x960",
+    "I (1085) HalTfCard: TF mounted: SDHC/SDXC, SIMSD, 67108864 bytes",
+    "I (3426) AppWifiScan: Wi-Fi scan complete: 1 networks",
+    "I (7939) AppWifiScan: Wi-Fi scan complete: 1 networks"
+  ],
+  "wifiScan": {
+    "completed": 2,
+    "networkCounts": [
+      1,
+      1
+    ],
+    "internetVerified": false
+  },
+  "sdReset": {
+    "card": {
+      "supported": true,
+      "present": true,
+      "bytes": 67108864,
+      "format": "fat32",
+      "status": "memory-only",
+      "backend": "memory",
+      "restored": true,
+      "pristine": false,
+      "changedPages": 258,
+      "error": null
+    },
+    "sha256": "cf682db9f887af6f554be68bebf8389cbd86bf659a6b4446cd8e4cdd261f86b9",
+    "benchmark": {
+      "bytes": 1048576,
+      "sha256": "042d84d3772b8cc9080a8f388c428c11d88f8566e5a38fda322fc8ea33492cfc",
+      "deleted": true,
+      "verifiedContiguousSectors": 2048
+    }
+  },
+  "status": "pass",
+  "artifacts": [
+    {
+      "kind": "flash",
+      "sha256": "d7de13e62342c1ab7115897a4a731abb054efda8ecb01d711aeb66c8bc6baa37",
+      "bytes": 1404800
+    },
+    {
+      "kind": "rom",
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+      "bytes": 949552
+    }
+  ],
+  "limitations": [
+    "Black/white digital terminal response only, not 16-gray optical calibration.",
+    "SPI SD is an immediate digital model; the displayed benchmark speed is not physical-card performance. The benchmark removes its own file; the receipt independently checks the retained sectors and freed FAT entries.",
+    "FPC and true power cycling/sleep are unverified. Host restart retains flash but is not a physical PMIC power button. Wi-Fi scan observations do not verify Internet access.",
+    "No physical hardware used. Host input duration is not a cycle-exact timing guarantee."
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "checkedAt": "2026-11-13T09:50:21.104067+00:00",
+  "baselineCommit": "0a11637395496587ee6ff539ccce0f1aca7c0be5",
+  "candidateRevision": "8b7c84d5",
+  "method": "Alternating main/candidate native runs; median /usr/bin/time -p user seconds. Exact console and instruction totals must match every run.",
+  "pairs": 3,
+  "guestSeconds": 30,
+  "binaries": {
+    "main-esp32sim": "38c196d3b54540ed44b62461da0a72d7675dae8ddd058b658af89ad2ceaab829",
+    "candidate-esp32sim": "78f7425ef4d206d1b6cf7d3fa2c7411a4a85c0a630b139897dcd57521c920812",
+    "main-esp32sim-c3": "02ffa8748f6fcfb3138eb4b96562b80b8a99f20d92b9ed0aa70abed79b76e37e",
+    "candidate-esp32sim-c3": "0bb23819f9a29dbd53e64e31292994e40efc3599e8fe3676485b59092b523a4c",
+    "main-esp32sim-c6": "f74dc7bab7fc2a20cc6a6e2e740c5cc3614940197cadbb234cd3aa68da6e06bd",
+    "candidate-esp32sim-c6": "638daa17659f582ae7fa33c53460dc722969d04afe3fc036f785d3a89547fd60"
+  },
+  "workloads": {
+    "hello": {
+      "userSeconds": {
+        "main": [
+          0.24,
+          0.22,
+          0.22
+        ],
+        "candidate": [
+          0.22,
+          0.22,
+          0.22
+        ]
+      },
+      "medianUserSeconds": {
+        "main": 0.22,
+        "candidate": 0.22
+      },
+      "candidateDeltaPercent": 0.0,
+      "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3",
+      "instructions": "[emu] stop: Halted \u2014 core0 11990305 + core1 6798164 insns",
+      "inputs": {
+        "rom": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+        "bootloader": "7efecb4df4463ece11ab286068a505ecd174f66fd4aacc53d887fcb9c18f0579",
+        "ptable": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+        "app": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9"
+      }
+    },
+    "c3-hello": {
+      "userSeconds": {
+        "main": [
+          2.41,
+          2.58,
+          2.4
+        ],
+        "candidate": [
+          2.47,
+          2.47,
+          2.44
+        ]
+      },
+      "medianUserSeconds": {
+        "main": 2.41,
+        "candidate": 2.47
+      },
+      "candidateDeltaPercent": 2.4896265560165887,
+      "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+      "instructions": "[emu] stop: Halted \u2014 4800000000 insns",
+      "inputs": {
+        "rom": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c",
+        "bootloader": "3eaeaa5fb91d462a6ce6dbd8f8d488c8dc059216bc5841e50b784aea8348eb7b",
+        "ptable": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+        "app": "3fd8606fd2fb10d2387ed4d238e16e7f80cd4832f380da02f0128f7bf4e0e8be"
+      }
+    },
+    "c6-hello": {
+      "userSeconds": {
+        "main": [
+          1.58,
+          1.49,
+          1.52
+        ],
+        "candidate": [
+          1.53,
+          1.5,
+          1.53
+        ]
+      },
+      "medianUserSeconds": {
+        "main": 1.52,
+        "candidate": 1.53
+      },
+      "candidateDeltaPercent": 0.6578947368421018,
+      "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+      "instructions": "[emu] stop: Halted \u2014 4800000000 insns",
+      "inputs": {
+        "rom": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551",
+        "bootloader": "88fd358b406ebc874cda1f4d14c1fd50d37cd064a1826192ee275ce67741ff75",
+        "ptable": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+        "app": "e302a3769d3122759ea85ed6caff857da36f558f83f9bf0eb652276657de0131"
+      }
+    },
+    "pocket-tank": {
+      "userSeconds": {
+        "main": [
+          39.46,
+          39.61,
+          39.4
+        ],
+        "candidate": [
+          39.21,
+          39.14,
+          39.42
+        ]
+      },
+      "medianUserSeconds": {
+        "main": 39.46,
+        "candidate": 39.21
+      },
+      "candidateDeltaPercent": -0.6335529650278726,
+      "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+      "instructions": "[emu] stop: Halted \u2014 core0 4595734479 + core1 6171560740 insns",
+      "inputs": {
+        "rom": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+        "bootloader": "9556d59f3a10f6b04fa6d75f3142a66034339afafffbd4bbc3d9a127eaa73859",
+        "ptable": "7af5b28608c91167e00778b7f20622f3b47849efebeb3e64117162d73f3e0508",
+        "app": "443dd24aed14a509e6df597eb3a02635cc07e0fbee6f04db85a62f4d4dadb113",
+        "flash_at_0x290000": "b200bf87c78dc85c4d727f68941ac0b83cced9827037cc169cd2122d71002c2a"
+      }
+    }
+  },
+  "candidateAdditionalSources": "PaperDIY TF source file hashes in checks.json; the final commit also includes these measured sources.",
+  "conditions": "No concurrent task-owned build, guest or browser was run during measurement; other product lanes were complete. The coordinating lane limited itself to Git and short frontend unit checks. Host background activity was not controlled. Three pairs and 0.01-second user-time resolution do not establish statistically significant improvements."
+}

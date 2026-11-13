@@ -105,7 +105,7 @@ for(const window of ['read','checksum'])test(`another tab clearing SD during ${w
   assert.equal((await other.read(key)).row.media,null);
  }finally{release.resolve();crypto.subtle.digest=originalDigest;await runtime.dispose();other.close();}
 });
-for (const [device,board] of [['m5stack-c139','papers3'],['metalio-ink4','metalio-ink4']]) test(`${board} TF shares controls but isolates media from PaperMono and preserves Flash on explicit clear`,async()=>{
+for (const [device,board] of [['m5stack-c139','papers3'],['m5stack-k159-b','paperdiy'],['metalio-ink4','metalio-ink4']]) test(`${board} TF shares controls but isolates media from PaperMono and preserves Flash on explicit clear`,async()=>{
  const options={indexedDB:null,BroadcastChannel:null,dbName:board+'-tf-'+Date.now()},sd=createSdCardStorage(options),flash=createDeviceStorage(options);
  const {runtime,counts,load}=structuralRuntime(sd,flash);
  try {
