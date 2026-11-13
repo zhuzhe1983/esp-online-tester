@@ -145,7 +145,12 @@ pub fn step_outcome<B: Bus>(cpu: &mut Cpu, bus: &mut B) -> StepOutcome {
 }
 
 #[inline]
-pub fn exec_insn<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc: u32) -> Result<(), Trap> {
+pub fn exec_insn<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc: u32) -> Result<(), Trap> { exec_insn_inline(cpu, bus, i, pc) }
+
+/// `exec_insn`, inlined where it is called: the block loop (`block::run`), whose dispatch is the
+/// whole cost of an instruction. The interpreter's step keeps the inlining the compiler chooses.
+#[inline(always)]
+pub(crate) fn exec_insn_inline<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc: u32) -> Result<(), Trap> {
     use Op::*;
     let next = pc.wrapping_add(i.len as u32);
     let a = cpu.get(i.rs1);

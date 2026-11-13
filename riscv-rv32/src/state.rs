@@ -186,6 +186,8 @@ pub struct Cpu {
     pub hwlp_end: [u32; 2],
     pub hwlp_count: [u32; 2],
     pub hwlp_state: u32,
+    /// decoded blocks (`block`, EX265); kept across a reset, but emptied by it
+    pub blocks: crate::block::Blocks,
 }
 
 impl Default for Cpu {
@@ -201,7 +203,7 @@ impl Cpu {
             insn_count: 0, retired_count: 0, cycle_count: 0, cycle_base: 0, instret_base: 0, waiting: false, irq: None, misa: MISA_RV32IMC, isa_ext: 0,
             has_ext_ill: false, f: [0; 32], fcsr: 0, ext_ill: 0, ext_ill_all_fp: false, user_counters: false, clic: false, clic_std: false, mintthresh: 0, mtvt: 0, hartid: 0, mil: 0, clint_levels: Vec::new(), reservation: None, boundary_bloom: 0, csr_other: HashMap::new(),
             q: [0; 8], pie_sar: 0, pie_sar_byte: 0, pie_cfg: 0, pie_state: 0,
-            hwlp_start: [0; 2], hwlp_end: [0; 2], hwlp_count: [0; 2], hwlp_state: 0,
+            hwlp_start: [0; 2], hwlp_end: [0; 2], hwlp_count: [0; 2], hwlp_state: 0, blocks: crate::block::Blocks::default(),
         }
     }
     pub fn new_rv32imac() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAC; c }
@@ -236,7 +238,10 @@ impl Cpu {
         // monotonic and firmware reads its reset-relative value.
         let (insns, retired, cycles, misa, ext_ill, counters, clic, clic_std, hart, bloom) = (self.insn_count, self.retired_count, self.cycle_count, self.misa, self.has_ext_ill, self.user_counters, self.clic, self.clic_std, self.hartid, self.boundary_bloom);
         let (all_fp, isa_ext) = (self.ext_ill_all_fp, self.isa_ext);
+        let mut blocks = std::mem::take(&mut self.blocks);
+        blocks.flush();
         *self = Cpu::new();
+        self.blocks = blocks;
         self.insn_count = insns; self.retired_count = retired; self.cycle_count = cycles;
         self.cycle_base = cycles; self.instret_base = retired;
         self.misa = misa; self.has_ext_ill = ext_ill; self.user_counters = counters; self.clic = clic; self.clic_std = clic_std; self.hartid = hart; self.boundary_bloom = bloom; self.ext_ill_all_fp = all_fp; self.isa_ext = isa_ext;

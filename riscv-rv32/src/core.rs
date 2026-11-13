@@ -1,5 +1,6 @@
-//! `emu_core::Core` for the RV32 cores (C3, C6, P4): one instruction per `step`, no decode cache,
-//! block cache or JIT; `run` loops `step` and stops where a block would. The interrupt input is
+//! `emu_core::Core` for the RV32 cores (C3, C6, P4, S31): one instruction per `step`; `run` runs
+//! decoded blocks (`block`, EX265) on a bus that versions its code (`Bus::page_versions`), and
+//! otherwise loops `step`, stopping where a block would. The interrupt input is
 //! the one line the SoC's interrupt controller has already arbitrated; on a CLIC core (the P4) it
 //! also carries the level and the vectoring attribute (`exec::clic_take`).
 use crate::bus::Bus;
@@ -24,11 +25,16 @@ impl emu_core::Core for Cpu {
     fn advance_cycles(&mut self, cycles: u32) { self.cycle_count += cycles as u64; }
     fn idle_advance(&mut self, cycles: u32) { self.insn_count += cycles as u64; self.cycle_count += cycles as u64; }
     fn step<B: Bus>(&mut self, bus: &mut B) -> StepOutcome { crate::exec::step_outcome(self, bus) }
-    fn set_boundaries(&mut self, bloom: u64) { self.boundary_bloom = bloom; }
+    fn set_boundaries(&mut self, bloom: u64) { if bloom != self.boundary_bloom { self.blocks.flush(); } self.boundary_bloom = bloom; }
+    fn flush_caches(&mut self) { self.blocks.flush(); }
+    /// `--no-jit`: the interpreter alone, the oracle for the blocks.
+    fn set_jit(&mut self, on: bool) { self.blocks.on = on; self.blocks.flush(); }
+    fn code_cache_stats(&self) -> Option<(u64, u64, u64, usize)> { Some((self.blocks.builds, self.blocks.flushes, 0, 0)) }
     /// One instruction at a time, but like a block: stop when the bus reports that an interrupt
     /// line may have moved, so the machine re-derives the core's input before the next instruction,
     /// and at a pc the machine wants to see first (a stub or a probe), so it is exact there too.
     fn run<B: Bus>(&mut self, bus: &mut B, budget: u32) -> (u32, Option<Trap>) {
+        if self.blocks.on && !bus.page_versions().is_empty() { return crate::block::run(self, bus, budget); }
         for i in 0..budget {
             if let Err(t) = crate::exec::step(self, bus) { return (i + 1, Some(t)); }
             if bus.block_break() || (self.boundary_bloom != 0 && self.boundary_bloom & emu_core::core::pc_bit(self.pc) != 0) { return (i + 1, None); }

@@ -116,6 +116,13 @@ pub trait Bus {
     /// Fetch up to 4 instruction bytes at `pc` (any alignment). Bytes past the
     /// end of a mapped region may be zero.
     fn fetch(&mut self, pc: u32) -> Result<[u8; 4], Fault>;
+    /// The bytes `fetch(pc)` would return now, without any of its side effects (fault records,
+    /// error latches), so a decoder can read ahead of execution. `None` when that fetch would
+    /// fault, and also whenever the bus cannot tell: a reader must then fall back to `fetch` at
+    /// the moment the instruction executes. Never `Some` where `fetch` would fault or return
+    /// other bytes. The default never reads ahead.
+    #[inline(always)]
+    fn fetch_ahead(&mut self, pc: u32) -> Option<[u8; 4]> { let _ = pc; None }
     /// Write-version counters, one per page of guest memory: `page_versions()[code_page(pc)]`
     /// changes whenever a write could have altered an instruction at `pc`. A decode-cache entry
     /// remembers its page index and the version it saw, so the common path is one indexed load

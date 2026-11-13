@@ -15,6 +15,7 @@
 //! On the P4 the SoC hands over its CLIC's candidate instead, and the core applies its own
 //! interrupt level (`exec::CLIC_IRQ_*`).
 pub mod bus { pub use emu_core::bus::*; }
+pub mod block;
 pub mod core;
 pub mod decode;
 pub mod disasm;

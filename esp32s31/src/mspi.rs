@@ -18,10 +18,13 @@ const SPI1_CONFIG: &[(u32, u32, u32)] = &[
     (0x20, 0x70000000, 0xf000ffff), (0x24, 0, 0x3ff), (0x28, 0, 0x3ff), (0x34, 2, 0x603),
     (0x3c, 0, 0x1fa), (0x98, 0x00050001, 0xfffffe1f), (0x9c, 0x08002000, u32::MAX), (0xa0, 0x57575, u32::MAX), (0xa4, 0x7a7a0000, 0xffff80ff), (0xd4, 0x20, 0),
 ];
-pub struct Mspi { spi0: [u32; 64], spi1: SpiMem, clock: u32, descriptor: Option<([u8; 3], u16)>, read_status: u32, powered_down: bool, legacy_rom_lengths: Option<[u32; 2]>, sfdp: Option<(u32, Vec<u8>)>, bbpll_input: Option<u64>, bbpll_gate: bool, cpll_input: Option<u64>, unrecognised: bool, pub commands: u64, pub waiti_polls: u64, pub last_waiti_status: Option<u8>, pub last_command: Option<u32> }
+pub struct Mspi { spi0: [u32; 64], spi1: SpiMem, clock: u32, descriptor: Option<([u8; 3], u16)>, read_status: u32, powered_down: bool, legacy_rom_lengths: Option<[u32; 2]>, sfdp: Option<(u32, Vec<u8>)>, bbpll_input: Option<u64>, bbpll_gate: bool, cpll_input: Option<u64>, unrecognised: bool, pub commands: u64, pub waiti_polls: u64, pub last_waiti_status: Option<u8>, pub last_command: Option<u32>,
+    /// Moves whenever a command may have changed the NOR array (erase, program, a command left to
+    /// the shared engine): decoded flash-window code is stale then (`S31Bus::note_code_write`).
+    pub flash_generation: u64 }
 impl Default for Mspi {
     fn default() -> Self {
-        let mut m = Self { spi0: [0; 64], spi1: SpiMem::new(true), clock: 0x781, descriptor: None, read_status: 0, powered_down: false, legacy_rom_lengths: None, sfdp: None, bbpll_input: None, bbpll_gate: true, cpll_input: None, unrecognised: false, commands: 0, waiti_polls: 0, last_waiti_status: None, last_command: None };
+        let mut m = Self { spi0: [0; 64], spi1: SpiMem::new(true), clock: 0x781, descriptor: None, read_status: 0, powered_down: false, legacy_rom_lengths: None, sfdp: None, bbpll_input: None, bbpll_gate: true, cpll_input: None, unrecognised: false, commands: 0, waiti_polls: 0, last_waiti_status: None, last_command: None, flash_generation: 0 };
         m.reset_registers(); m
     }
 }
@@ -174,6 +177,7 @@ impl Mspi {
                 let modifies = value & (0xf << 22 | 1 << 17) != 0 || matches!(opcode, Some(0x02 | 0x32 | 0x38 | 0x20 | 0x52 | 0xd8 | 0xc7 | 0x60));
                 let writes_status = value & (1 << 26) != 0 || matches!(opcode, Some(0x01 | 0x31 | 0x11));
                 if (modifies || writes_status) && self.spi1.status & 2 == 0 { return Err(Fault::Prohibited); }
+                self.flash_generation = self.flash_generation.wrapping_add(1);
                 let mosi = self.spi1.regs.read(0x18) & (1 << 27) != 0; let w0 = self.spi1.w[0];
                 let bits = (self.spi1.regs.read(0x24) & 0x3ff) + 1;
                 self.spi1.write(0, value); self.spi1.execute(flash, &mut []);
@@ -210,7 +214,7 @@ impl Mspi {
             if self.spi1.status & 2 != 0 {
                 let start = (address & !0xfff) as usize;
                 let sector = flash.get_mut(start..start + 0x1000).ok_or(Fault::Unmapped)?;
-                sector.fill(0xff); self.spi1.status &= !2;
+                sector.fill(0xff); self.spi1.status &= !2; self.flash_generation = self.flash_generation.wrapping_add(1);
             }
             self.finish_program_erase(); return Ok(()); // synchronous functional completion,not erase latency
         }
@@ -226,6 +230,7 @@ impl Mspi {
                 let count = (bits / 8) as usize; let page = (address & !255) as usize; let first = (address & 255) as usize;
                 for i in 0..count { if flash.get(page + ((first + i) & 255)).is_none() { return Err(Fault::Unmapped); } }
                 for i in 0..count { flash[page + ((first + i) & 255)] &= (self.spi1.w[i / 4] >> ((i % 4) * 8)) as u8; }
+                self.flash_generation = self.flash_generation.wrapping_add(1);
                 self.spi1.status &= !2;
             }
             self.finish_program_erase(); return Ok(());
@@ -275,6 +280,8 @@ impl Mspi {
             if user1 >> 26 != 23 || !miso_bits.is_multiple_of(8) { return Err(Fault::Prohibited); }
             read_bytes = Some((miso_bits / 8) as usize);
         }
+        // Only reads, RDID, RDSR, WREN and WRDI get here (`allowed` and the USER whitelist above),
+        // none of which change the array.
         self.spi1.pending_cmd = value; self.spi1.execute(flash, &mut []);
         if value == 1 << 27 { self.read_status = (self.read_status & 0x0fff0000) | (self.spi1.status & 0xffff); }
         if let Some(n) = read_bytes {
