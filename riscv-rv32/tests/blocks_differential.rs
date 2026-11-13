@@ -36,7 +36,7 @@ impl TestBus {
         if let Some(o) = self.off(a, n) {
             self.ram[o..o + n].copy_from_slice(&v.to_le_bytes()[..n]);
             let first = o.saturating_sub(3) >> 8;
-            for p in first..=((o + n - 1) >> 8) { self.ver[p] = self.ver[p].wrapping_add(1); }
+            for v in &mut self.ver[first..=((o + n - 1) >> 8)] { *v = v.wrapping_add(1); }
             return Ok(());
         }
         if let Some(r) = Self::mmio(a, n) { self.regs[r] = v; self.brk = true; return Ok(()); }
