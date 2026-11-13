@@ -12,8 +12,9 @@ import {validIlluminance,illuminanceParameter} from './illuminance-input.js';
 import {validEnvironment,environmentParameters} from './environment-input.js';
 import {routedAccessories,accessoryPoweredPath} from './accessory-routing.js';
 import {MAX_FIRMWARE_FILE_BYTES as MAX_FILE, MAX_FIRMWARE_BUNDLE_BYTES as MAX_TOTAL} from './firmware-limits.js';
-import {createFat32Image,validateSdImage,MAX_SD_BYTES} from './sd-card-image.js';
+import {createFat32Image,createSdImage,validateSdImage,sdImageFormat,DEFAULT_SD_BYTES,MAX_SD_BYTES,SD_FORMATS,SD_CAPACITIES} from './sd-card-image.js';
 import {createSdCardStorage} from './sd-card-storage.js';
+import {hasTfSlot,preparedTfKey} from './tf-card-capability.js';
 // Browser-only adapter for the upstream ESP32 WASM worker. No server or mock device state.
 import { loadCatalog, validateScene } from './catalog.js';
 import { buildFirmwareIssueUrl } from './watchlist.js';
@@ -183,8 +184,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;
   let lastError = null, firmware = null, loaded = null, frame = null, frameNumber = 0, serial = '', serialByPort = {}, stats = {}, hostPace = {}, queue = Promise.resolve();
   const emptyStorage = () => ({status:'unloaded', scope:null, backend:null, restored:false, pristine:true, revision:0, epoch:0, lastSavedAt:null, changedPages:0, error:null});
-  const emptySd=()=>({supported:false,present:false,bytes:0,format:null,status:'unloaded',backend:null,restored:false,pristine:true,changedPages:0,error:null});
-  let sdCard=emptySd(),sdSession=null,leds=[],servos=[],servoSupply=null,motors=[],motorOutput=null,hardwareDiagnostics=null;
+  const emptySd=()=>({slot:false,supported:false,present:false,mounted:false,scope:null,bytes:0,format:null,status:'unloaded',backend:null,restored:false,pristine:true,changedPages:0,error:null});
+  let sdCard=emptySd(),sdSession=null,sdPrepared=null,leds=[],servos=[],servoSupply=null,motors=[],motorOutput=null,hardwareDiagnostics=null;
   let flight=null,flightEpoch=0;
   let bleNearby=[];
   const flightEnabled=()=>scene?.flight?.enabled===true;
@@ -403,6 +404,18 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     storageFailure(session,error('STORAGE_CONFLICT','Another tab saved or cleared this device storage. Reload the same firmware to restore its latest state.'));
   });
   const sdEvent=()=>emit({type:'sd-card',sdCard:clone(sdCard)});
+  const prepareSd=async()=>{
+    sdPrepared=null;
+    if(!hasTfSlot(product)){sdCard=emptySd();sdEvent();return;}
+    const key=preparedTfKey(product),pending={key,row:{epoch:-1,revision:-1},closed:false};sdPrepared=pending;
+    const current=()=>{alive();requireValue(sdPrepared===pending&&!pending.closed,'STORAGE_CONFLICT','The prepared TF card changed while it was loading. Select the device again.');};
+    const r=await sdStorage.read(key);current();pending.row=r.row;
+    requireValue(!!r.image===!!r.row.media,'STORAGE_CORRUPT','Saved prepared TF image is missing.');
+    requireValue(!r.row.pages.length,'STORAGE_CORRUPT','Prepared TF media must not contain guest-written overlays.');
+    if(r.image){const image=validateSdImage(r.image);requireValue(r.row.media.bytes===image.length&&r.row.media.sha256===await sha256(image),'STORAGE_CORRUPT','Saved prepared TF image failed its checksum.');current();}
+    sdPrepared={key,...r};
+    sdCard={...emptySd(),slot:true,supported:hasSdCard(product.runtime?.board),present:true,scope:'prepared-product',bytes:r.image?.byteLength||DEFAULT_SD_BYTES,format:r.row.media?.format||'fat32',status:r.persistent?'prepared':'memory-only',backend:r.backend,restored:!!r.image,pristine:!r.image};sdEvent();
+  };
   const sdAsk=async(op,fields={},transfer=[])=>{const requestId=++storageSequence;const result=await ask(`sd:${requestId}`,{op,requestId,...fields},transfer);requireValue(result.ok!==false,'STORAGE_WORKER_ERROR',result.error||'Cannot access virtual SD card.');return {...result,requestId};};
   const sdFailure=(e,session=sdSession)=>{if(!session||session.closed||session!==sdSession||disposing||status==='disposed')return;sdCard.status=e.code==='STORAGE_CONFLICT'?'conflict':'error';sdCard.error=failure(e);sdEvent();report(e);if(e.code==='STORAGE_CONFLICT'){if(sdSession)sdSession.closed=true;stopWorker();setStatus('error');}};
   const persistSd=session=>{
@@ -418,11 +431,11 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       const bytes=new Uint8Array(data);if(bytes.some((b,i)=>b!==session.baseline[offset+i]))session.pages.set(offset,data);else session.pages.delete(offset);}
     session.version++;sdCard.changedPages=session.pages.size;sdCard.pristine=session.isDefault&&!session.pages.size;void persistSd(session);
   };
-  const flushSd=async()=>{requireValue(sdSession&&!sdSession.closed,'SD_NOT_LOADED','Load a firmware for a device with SD support before using its SD card.');if(worker)await sdAsk('sd-flush');await persistSd(sdSession);return clone(sdCard);};
+  const flushSd=async()=>{if(!sdSession){requireValue(sdPrepared&&sdCard.status!=='conflict','SD_NOT_LOADED','Select a device with a TF slot before using its card.');return clone(sdCard);}requireValue(!sdSession.closed,'SD_NOT_LOADED','Reload the firmware before using its SD card.');if(worker)await sdAsk('sd-flush');await persistSd(sdSession);return clone(sdCard);};
   const initializeSd=async bundle=>{
     alive();
     if(sdSession)sdSession.closed=true;sdSession=null;sdCard=emptySd();leds=[];servos=[];servoSupply=null;
-    if(!hasSdCard(bundle.cfg.board)){sdEvent();return;}
+    if(!hasSdCard(bundle.cfg.board)){await prepareSd();return;}
     requireValue(storage.scope,'SD_STORAGE_SCOPE','SD requires a loaded firmware identity.');
     const key=`v1:${product.id}:${persistentBoard(product.id,bundle.cfg.board)}:${storage.scope.firmwareSha256}`;
     // Subscribe to this identity before reading or hashing its base image. A clear
@@ -430,25 +443,38 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     const session={key,baseline:null,pages:new Map(),epoch:-1,revision:-1,version:0,savedVersion:0,saving:null,closed:false,isDefault:true};sdSession=session;
     const current=worker,signal=aborter.signal;
     const active=()=>{alive();requireValue(!signal.aborted,'FETCH_ABORTED','Firmware load was cancelled.');requireValue(session===sdSession&&!session.closed&&worker===current,'STORAGE_CONFLICT','The SD card changed while it was being loaded. Reload the firmware.');};
-    sdCard={...emptySd(),supported:true,status:'loading'};sdEvent();
-    const r=await sdStorage.read(key);active();requireValue(!!r.image===!!r.row.media,'STORAGE_CORRUPT','Saved SD base image is missing.');
+    sdCard={...emptySd(),slot:true,supported:true,status:'loading'};sdEvent();
+    let r=await sdStorage.read(key);active();requireValue(!!r.image===!!r.row.media,'STORAGE_CORRUPT','Saved SD base image is missing.');
+    // A prepared card seeds only a never-used firmware namespace. Existing media,
+    // written pages and even an explicit previous clear always win.
+    if(r.row.epoch===0&&r.row.revision===0&&!r.row.media&&!r.row.pages.length){
+      const prepared=await sdStorage.read(preparedTfKey(product));active();
+      requireValue(!!prepared.image===!!prepared.row.media&&!prepared.row.pages.length,'STORAGE_CORRUPT','Prepared TF metadata does not match its image.');
+      if(prepared.image){const image=validateSdImage(prepared.image),media=prepared.row.media;requireValue(media&&media.bytes===image.length&&media.sha256===await sha256(image),'STORAGE_CORRUPT','Prepared TF image failed its checksum.');active();
+        const saved=await sdStorage.replace(key,{image:prepared.image,media,expected:{epoch:0,revision:0}});active();r={...saved,image:prepared.image};}
+    }
     session.epoch=r.row.epoch;session.revision=r.row.revision;session.isDefault=!r.row.media;
     const baseline=r.image?validateSdImage(r.image):createFat32Image(),pages=session.pages,bytes=baseline.slice();session.baseline=baseline;
     if(r.image){const hash=await sha256(baseline);active();requireValue(r.row.media.bytes===baseline.length&&r.row.media.sha256===hash,'STORAGE_CORRUPT','Saved SD base image failed its checksum.');}
     for(const {offset,data} of r.row.pages){requireValue(Number.isSafeInteger(offset)&&offset>=0&&offset%4096===0&&offset+4096<=bytes.length&&data instanceof ArrayBuffer&&data.byteLength===4096&&!pages.has(offset),'STORAGE_CORRUPT','Saved SD image has invalid page bounds.');pages.set(offset,data);bytes.set(new Uint8Array(data),offset);}
     await sdAsk('sd-attach',{data:bytes.buffer},[bytes.buffer]);active();
     const watching=await sdAsk('sd-watch');active();session.watchId=watching.requestId;
-    sdCard={supported:true,present:true,bytes:baseline.length,format:r.row.media?.format||'fat32',status:r.persistent?'clean':'memory-only',backend:r.backend,restored:pages.size>0||!!r.row.media,pristine:session.isDefault&&!pages.size,changedPages:pages.size,error:null};sdEvent();
+    sdCard={slot:true,supported:true,present:true,mounted:true,scope:'product-firmware',bytes:baseline.length,format:r.row.media?.format||'fat32',status:r.persistent?'clean':'memory-only',backend:r.backend,restored:pages.size>0||!!r.row.media,pristine:session.isDefault&&!pages.size,changedPages:pages.size,error:null};sdEvent();
   };
-  const unsubscribeSd=sdStorage.subscribe(change=>{const session=sdSession;if(!session||session.closed||change.key!==session.key||change.epoch<session.epoch||change.epoch===session.epoch&&change.revision<=session.revision)return;sdFailure(error('STORAGE_CONFLICT','Another tab replaced or saved this SD card. Reload the firmware.'));});
-  const replaceSd=async bytes=>{
-    requireValue(loaded&&sdSession&&!sdSession.closed,'SD_NOT_LOADED','Load a firmware for a device with SD support before replacing its SD card.');
+  const unsubscribeSd=sdStorage.subscribe(change=>{const session=sdSession;if(!session){if(sdPrepared&&change.key===sdPrepared.key&&(change.epoch>sdPrepared.row.epoch||change.epoch===sdPrepared.row.epoch&&change.revision>sdPrepared.row.revision)){sdPrepared.closed=true;sdCard.status='conflict';sdCard.error=failure(error('STORAGE_CONFLICT','Another tab changed this prepared TF card. Select the device again.'));sdEvent();}return;}if(session.closed||change.key!==session.key||change.epoch<session.epoch||change.epoch===session.epoch&&change.revision<=session.revision)return;sdFailure(error('STORAGE_CONFLICT','Another tab replaced or saved this SD card. Reload the firmware.'));});
+  const replaceSd=async(bytes,{format=bytes?sdImageFormat(bytes):'fat32',origin='imported'}={})=>{
+    requireValue(hasTfSlot(product),'SD_UNSUPPORTED','This product has no declared TF card slot.');
+    if(!sdSession){
+      const image=bytes?.slice().buffer||null,hash=image?await sha256(new Uint8Array(image)):null;alive();
+      await sdStorage.replace(preparedTfKey(product),{image,media:image?{format,origin,sha256:hash,bytes:image.byteLength}:null});alive();await prepareSd();return snapshot();
+    }
+    requireValue(loaded&&!sdSession.closed,'SD_NOT_LOADED','Reload the firmware before replacing its SD card.');
     const session=sdSession,bundle=loaded,signal=aborter.signal;
     const active=()=>{alive();requireValue(!signal.aborted,'FETCH_ABORTED','SD replacement was cancelled.');requireValue(session===sdSession&&!session.closed,'STORAGE_CONFLICT','The SD card changed while it was being replaced. Reload the firmware.');};
     if(worker&&status==='running'){await ask('stopped',{op:'stop'});active();setStatus('paused');}
     await preserveStorage();active();
     const image=bytes?.slice().buffer||null,hash=image?await sha256(new Uint8Array(image)):null;active();
-    await sdStorage.replace(session.key,{image,media:image?{format:'image',sha256:hash,bytes:image.byteLength}:null});active();session.closed=true;
+    await sdStorage.replace(session.key,{image,media:image?{format,origin,sha256:hash,bytes:image.byteLength}:null});active();session.closed=true;
     loadCancelled=false;aborter=new AbortController();serial='';serialByPort={};stats={};hostPace={};frame=null;frameNumber=0;lastError=null;setStatus('loading');
     try{await initialize(bundle,loadReporter(++progressGeneration,aborter.signal));alive();setStatus('ready');return snapshot();}catch(e){stopWorker();if(!disposing&&status!=='disposed')setStatus('error');throw e;}
   };
@@ -751,9 +777,9 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(result.ok,'LORA_PACKET_REJECTED','Radio power, receive state or channel configuration rejected this packet.');
       const receipt={accepted:true,delivery:'scheduled-digital-packet',guestTime:result.time,physicalRf:false};emit({type:'lora-input',packet:input,receipt});return receipt;
     });},
-    attachSdCard({bytes,format='fat32'}={}) {return exclusive(async()=>{requireValue(bytes!==undefined||format==='fat32','INVALID_SD_IMAGE','Only FAT32 formatting is available.');return replaceSd(bytes===undefined?null:validateSdImage(bytes));});},
+    attachSdCard({bytes,format='fat32',byteLength=DEFAULT_SD_BYTES}={}) {return exclusive(async()=>{if(bytes!==undefined)return replaceSd(validateSdImage(bytes));const image=createSdImage({format,byteLength});return replaceSd(format==='fat32'&&byteLength===DEFAULT_SD_BYTES?null:image,{format,origin:'formatted'});});},
     clearSdCard() {return exclusive(()=>replaceSd(null));},
-    exportSdCard() {return exclusive(async()=>{await flushSd();const result=await sdAsk('sd-export');return {bytes:new Uint8Array(result.data),filename:`${product.id}-sd.img`};});},
+    exportSdCard() {return exclusive(async()=>{await flushSd();const bytes=sdSession?new Uint8Array((await sdAsk('sd-export')).data):sdPrepared.image?new Uint8Array(sdPrepared.image.slice(0)):createFat32Image();return {bytes,filename:`${product.id}-sd.img`};});},
     flushSdCard() {return exclusive(flushSd);},
     inspectFirmwareConfiguration() {const requested=storageSession,generation=progressGeneration;return exclusive(async()=>{
       const unavailable=reason=>({available:false,type:'uiflow2',partition:clone(UIFLOW2_PARTITION),replacesPartition:true,sessionId:storageSession?.id||null,reason});
@@ -846,7 +872,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       const c5=isC5Board(product?.runtime?.board),c61=isC61Board(product?.runtime?.board);
       return { version: API_VERSION, backend: 'esp32sim-wasm', static: true, executable: !!product?.runtime?.board,
         execution: {mode: product?.runtime?.board === 'stopwatch'||c5||c61 ? 'wasm-interpreter' : 'wasm-jit', reason: c5?'C5 SRAM app-direct only; no ROM/IDF startup or JIT.':c61?'C61 uses the RV32 interpreter.':product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null,...(c5?{bootModes:['app-direct'],romBoot:false,resetMode:'reload-same-sram-image',counterSemantics:'interpreter-slots-including-wfi-idle',sramRanges:clone(C5_SRAM_RANGES)}:{})},
-        sdCard:{available:hasSdCard(product?.runtime?.board),defaultBytes:64*MIB,maxBytes:MAX_SD_BYTES,formats:['fat32','raw-image'],scope:'product-board-canonical-flash-sha256',autoSaveIntervalMs:1500,crashSafe:false},
+        sdCard:{available:hasSdCard(product?.runtime?.board),slot:hasTfSlot(product),configurable:hasTfSlot(product),defaultInserted:hasTfSlot(product),defaultBytes:DEFAULT_SD_BYTES,maxBytes:MAX_SD_BYTES,formats:[...SD_FORMATS,'raw-image'],blankCapacitiesMiB:[...SD_CAPACITIES],scope:'product-board-canonical-flash-sha256',preparedScope:'product',autoSaveIntervalMs:1500,crashSafe:false},
         ble:{available:c61,model:c61?'c61-legacy-digital-radio':null,physicalRf:false,connections:false,recording:false,shares:false,maxNearby:32,maxQueuedPackets:256,methods:c61?['configureBle','readBle']:[]},
         network:c5?{available:false,transport:null,modes:[],softAp:false,automaticProvisioning:[],methods:[]}:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',transport:'browser-softap+ethernet-websocket',helperRequired:false,externalConnectionRequired:true,modes:['public-relay','local-helper'],portMappingRequiresHelper:true,softAp:!!product?.runtime?.board&&(c61||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),automaticProvisioning:c61?[]:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
         audio:c5?{input:{available:false,ports:[]},output:{available:false},methods:[]}:{input:{available:!!product?.runtime?.board&&!isC61Board(product.runtime.board)&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:isC61Board(product?.runtime?.board)?[]:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&(product.runtime.board==='corematrix'||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
@@ -872,7 +898,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       if (worker && status==='running') await ask('stopped',{op:'stop'});
       await preserveStorage(); alive(); aborter?.abort(); stopWorker(); detachStorage(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; hostPace = {}; lastError = null;
       if(sdSession)sdSession.closed=true;sdSession=null;sdCard=emptySd();leds=[];servos=[];servoSupply=null;
-      scene = clone(nextScene); product = catalog.products.find(item => item.id === scene.productId);sdCard.supported=hasSdCard(product.runtime?.board);sdEvent();emit({type:'leds',leds:[]});emit({type:'servos',servos:[],supply:null});
+      scene = clone(nextScene); product = catalog.products.find(item => item.id === scene.productId);await prepareSd();emit({type:'leds',leds:[]});emit({type:'servos',servos:[],supply:null});
       resetAccessoryInputs(); imu = defaultImu(); imuPreviousAt = null;
       setStatus('configured'); return { ...snapshot(), warnings: validation.warnings };
     }); },
@@ -903,7 +929,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     loadFirmware(source) { const loadId = ++progressGeneration; return exclusive(async () => {
       requireValue(scene, 'NOT_CONFIGURED', 'Configure a product before loading firmware.');
       if (worker && status==='running') await ask('stopped',{op:'stop'});
-      await preserveStorage(); alive(); stopWorker(); detachStorage();if(sdSession)sdSession.closed=true;sdSession=null;sdCard={...emptySd(),supported:hasSdCard(product?.runtime?.board)};leds=[];servos=[];servoSupply=null; loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; hostPace = {}; lastError = null;
+      await preserveStorage(); alive(); stopWorker(); detachStorage();if(sdSession)sdSession.closed=true;sdSession=null;sdCard={...emptySd(),slot:hasTfSlot(product),supported:hasSdCard(product?.runtime?.board),status:'loading'};leds=[];servos=[];servoSupply=null; loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; hostPace = {}; lastError = null;
       loadCancelled = false; aborter = new AbortController(); setStatus('loading');
       const progress = loadReporter(loadId, aborter.signal);
       try {
@@ -914,7 +940,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
           : { url: bundle.receipt.artifacts[0].url, sha256: bundle.receipt.artifacts[0].sha256, ...(selected.archive?{archive:clone(selected.archive)}:{}), ...(bundle.receipt.appDirect?{bootMode:'app-direct'}:selected.bootMode?{bootMode:'rom'}:{}) };
         setStatus('ready'); return snapshot();
       }
-      catch (e) { stopWorker(); if (status !== 'disposed') setStatus(loadCancelled ? 'configured' : 'error'); if (loadCancelled) throw error('FETCH_ABORTED', 'Firmware load was cancelled.'); throw e; }
+      catch (e) { stopWorker(); if(!sdSession&&hasTfSlot(product)&&!disposing&&status!=='disposed')await prepareSd().catch(report);if (status !== 'disposed') setStatus(loadCancelled ? 'configured' : 'error'); if (loadCancelled) throw error('FETCH_ABORTED', 'Firmware load was cancelled.'); throw e; }
     }); },
     async cancelPendingLoad() {
       if (status !== 'loading') return snapshot();
@@ -1011,7 +1037,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         disposing=true; progressGeneration++; imuGeneration++; aborter?.abort();
         try { if (storageSession && status!=='loading') { if (worker && status==='running') await ask('stopped',{op:'stop'}); await preserveStorage(); } }
         catch(e) { report(e); }
-        finally { stopWorker(); if(storageSession)storageSession.closed=true; loaded=null; unsubscribeStorage(); deviceStorage.close();if(sdSession)sdSession.closed=true;unsubscribeSd();sdStorage.close(); globalThis.removeEventListener?.('pagehide',pageHide);globalThis.document?.removeEventListener('visibilitychange',visibilitySave); setStatus('disposed'); listeners.clear(); }
+        finally { stopWorker(); if(storageSession)storageSession.closed=true; loaded=null; unsubscribeStorage(); deviceStorage.close();if(sdSession)sdSession.closed=true;unsubscribeSd();sdStorage.close();sdPrepared=null; globalThis.removeEventListener?.('pagehide',pageHide);globalThis.document?.removeEventListener('visibilitychange',visibilitySave); setStatus('disposed'); listeners.clear(); }
       }
       return snapshot();
     },

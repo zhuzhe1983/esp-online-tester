@@ -95,7 +95,7 @@ for(const window of ['read','checksum'])test(`another tab clearing SD during ${w
  const key=`v1:${productId}:papermono:${digest(new Uint8Array(16*1024*1024))}`;
  await sd.replace(key,{image:image.buffer,media:{format:'image',bytes:image.length,sha256:digest(image)}});
  const entered=defer(),release=defer(),originalRead=sd.read,originalDigest=crypto.subtle.digest;
- if(window==='read')sd.read=async(...args)=>{const result=await originalRead(...args);entered.resolve();await release.promise;return result;};
+ if(window==='read')sd.read=async(...args)=>{const result=await originalRead(...args);if(args[0]===key){entered.resolve();await release.promise;}return result;};
  else crypto.subtle.digest=async function(...args){if(args[1].byteLength===image.length){entered.resolve();await release.promise;}return originalDigest.apply(this,args);};
  const {runtime,counts,load}=structuralRuntime(sd);
  try{
@@ -122,4 +122,51 @@ for (const [device,board] of [['m5stack-c139','papers3'],['metalio-ink4','metali
 });
 test('ordinary INK4 SD support does not enable the distinct Plus/S31 board',()=>{
  assert.equal(hasSdCard('metalio-ink4'),true);assert.equal(hasSdCard('metalio-ink4-plus'),false);assert.equal(hasSdCard('metalio-ink4-s31'),false);
+});
+
+test('all declared TF slots prepare a card before firmware load without claiming an unimplemented transport',async()=>{
+ const {hasTfSlot}=await import('../web/platform/tf-card-capability.js');
+ const sd=createSdCardStorage({indexedDB:null,BroadcastChannel:null,dbName:'all-tf-slots-'+Date.now()}),{runtime,counts,load}=structuralRuntime(sd);
+ try{
+  const devices=catalog.products.filter(hasTfSlot);assert.ok(devices.length>=33);
+  for(const product of devices){await runtime.configure(createDefaultScene(catalog,product.id));const state=await runtime.observe(),cap=(await runtime.capabilities()).sdCard;assert.equal(state.sdCard.slot,true);assert.equal(state.sdCard.present,true);assert.equal(state.sdCard.mounted,false);assert.equal(state.sdCard.bytes,64*1024*1024);assert.equal(state.sdCard.format,'fat32');assert.equal(state.sdCard.supported,hasSdCard(product.runtime?.board));assert.equal(cap.defaultInserted,true);assert.deepEqual(cap.formats,['fat32','exfat','raw-image']);}
+  assert.equal(counts.created,0,'Preparing local cards does not start any firmware');
+  await runtime.configure(createDefaultScene(catalog,'m5stack-k128'));await assert.rejects(load,{code:'UNSUPPORTED_PRODUCT'});assert.equal((await runtime.observe()).sdCard.present,true,'A failed firmware load does not hide the prepared card');assert.equal((await runtime.exportSdCard()).bytes.length,64*1024*1024);
+  await runtime.configure(createDefaultScene(catalog,'m5stack-stopwatch'));assert.equal((await runtime.observe()).sdCard.present,false);await assert.rejects(()=>runtime.attachSdCard(),{code:'SD_UNSUPPORTED'});
+ }finally{await runtime.dispose();}
+});
+test('prepared imported media is product-isolated, seeds only fresh firmware cards and never reverses an explicit clear',async()=>{
+ const {createExfatImage,sdImageFormat}=await import('../web/platform/sd-card-image.js');
+ const sd=createSdCardStorage({indexedDB:null,BroadcastChannel:null,dbName:'prepared-tf-'+Date.now()}),{runtime,load}=structuralRuntime(sd);
+ try{
+  await runtime.configure(createDefaultScene(catalog,productId));const image=createExfatImage();await runtime.attachSdCard({bytes:image});assert.equal((await runtime.observe()).sdCard.format,'exfat');assert.equal(digest((await runtime.exportSdCard()).bytes),digest(image));
+  await runtime.configure(createDefaultScene(catalog,'m5stack-k128'));let state=await runtime.observe();assert.equal(state.sdCard.supported,false);assert.equal(state.sdCard.slot,true);assert.equal(state.sdCard.format,'fat32');
+  await runtime.attachSdCard({format:'exfat',byteLength:128*1024*1024});state=await runtime.observe();assert.equal(state.sdCard.bytes,128*1024*1024);assert.equal(state.sdCard.mounted,false);assert.equal(sdImageFormat((await runtime.exportSdCard()).bytes),'exfat');
+  await runtime.configure(createDefaultScene(catalog,productId));assert.equal((await runtime.observe()).sdCard.bytes,image.length);await load();state=await runtime.observe();assert.equal(state.sdCard.mounted,true);assert.equal(state.sdCard.format,'exfat');
+  const key=`v1:${productId}:papermono:${state.storage.scope.firmwareSha256}`;assert.equal(digest(new Uint8Array((await sd.read(key)).image)),digest(image));
+  await runtime.clearSdCard();assert.equal((await runtime.observe()).sdCard.format,'fat32');await runtime.configure(createDefaultScene(catalog,productId));assert.equal((await runtime.observe()).sdCard.format,'exfat','Prepared image remains available to genuinely new firmware');await load();assert.equal((await runtime.observe()).sdCard.format,'fat32','Existing explicit empty-card choice wins over the prepared image');
+ }finally{await runtime.dispose();}
+});
+test('prepared card changes in another tab fence export until the device is selected again',async()=>{
+ const {preparedTfKey}=await import('../web/platform/tf-card-capability.js'),options={indexedDB:null,BroadcastChannel:null,dbName:'prepared-conflict-'+Date.now()},sd=createSdCardStorage(options),other=createSdCardStorage(options),{runtime}=structuralRuntime(sd);
+ try{
+  await runtime.configure(createDefaultScene(catalog,'m5stack-k128'));await other.replace(preparedTfKey(catalog.products.find(p=>p.id==='m5stack-k128')));assert.equal((await runtime.observe()).sdCard.status,'conflict');await assert.rejects(()=>runtime.exportSdCard(),{code:'SD_NOT_LOADED'});
+  await runtime.configure(createDefaultScene(catalog,'m5stack-k128'));assert.equal((await runtime.observe()).sdCard.present,true);assert.equal((await runtime.exportSdCard()).bytes.length,64*1024*1024);
+ }finally{await runtime.dispose();other.close();}
+});
+test('initial card seeding checks epoch/revision instead of overwriting another tab',async()=>{
+ const sd=createSdCardStorage({indexedDB:null,BroadcastChannel:null,dbName:'sd-seed-'+Date.now()}),key='v1:paper:board:'+'a'.repeat(64);
+ try{await sd.replace(key);await assert.rejects(()=>sd.replace(key,{expected:{epoch:0,revision:0},image:new ArrayBuffer(1024*1024),media:{format:'image'}}),{code:'STORAGE_CONFLICT'});assert.equal((await sd.read(key)).image,null);}finally{sd.close();}
+});
+
+test('prepared-card read races reject stale media instead of hiding another tab replacement',async()=>{
+ const {preparedTfKey}=await import('../web/platform/tf-card-capability.js'),options={indexedDB:null,BroadcastChannel:null,dbName:'prepared-read-race-'+Date.now()},sd=createSdCardStorage(options),other=createSdCardStorage(options),{runtime}=structuralRuntime(sd),entered=defer(),release=defer();
+ const key=preparedTfKey(catalog.products.find(p=>p.id==='m5stack-k128')),read=sd.read;
+ sd.read=async value=>{const result=await read(value);if(value===key){entered.resolve();await release.promise;}return result;};
+ try{const pending=runtime.configure(createDefaultScene(catalog,'m5stack-k128'));await entered.promise;await other.replace(key);release.resolve();await assert.rejects(pending,{code:'STORAGE_CONFLICT'});assert.equal((await runtime.observe()).sdCard.status,'conflict');}finally{release.resolve();await runtime.dispose();other.close();}
+});
+
+test('stored base-image corruption is rejected before copying or formatting it',async()=>{
+ const sd=createSdCardStorage({indexedDB:null,BroadcastChannel:null,dbName:'sd-corrupt-image-'+Date.now()}),key='v1:paper:board:'+'b'.repeat(64);
+ try{await sd.replace(key,{image:new ArrayBuffer(513),media:{format:'image',bytes:513,sha256:'b'.repeat(64)}});await assert.rejects(()=>sd.read(key),{code:'STORAGE_CORRUPT'});}finally{sd.close();}
 });

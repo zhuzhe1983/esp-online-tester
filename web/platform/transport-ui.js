@@ -41,7 +41,11 @@ export function createTransportUi({mount, flashMount, catalog, getScene, getSour
   const confirmNote = node('p', 'helper', '将删除此固件写入的配置和文件，并停止模拟器。再次启动会从原始固件状态开始。'), confirmClearStorage = button('确认清空', 'button tiny'), cancelClearStorage = button('取消');
   confirmClearStorage.dataset.action = 'confirm-clear-device-storage';
   confirmStorage.append(confirmNote, confirmClearStorage, cancelClearStorage);
-  storageSection.append(storageHeading, storageIdentity, storageStatus, storageNote, clearStorage, confirmStorage); details.prepend(storageSection);
+  storageSection.append(storageHeading, storageIdentity, storageStatus, storageNote, clearStorage, confirmStorage);
+  const storageDialog=node('dialog','device-storage-dialog');storageDialog.setAttribute('aria-labelledby','device-storage-dialog-title');
+  const storageDialogHeader=node('div','dialog-heading'),storageDialogTitle=node('h2','','设备存储'),storageDialogClose=button('关闭');storageDialogTitle.id='device-storage-dialog-title';storageDialogClose.setAttribute('aria-label','关闭设备存储');
+  storageDialogHeader.append(storageDialogTitle,storageDialogClose);storageDialog.append(storageDialogHeader,storageSection);(mount.closest('.workspace')||document.body).append(storageDialog);
+  storageDialogClose.addEventListener('click',()=>storageDialog.close());storageDialog.addEventListener('close',()=>storageButton.focus());storageButton.setAttribute('aria-haspopup','dialog');
   let deviceStorage = null, storageOperation = false, storageScope = null;
   let recording = null, recordingState = {status: 'idle', recording: null, progress: {index: 0, total: 0}}, localSelection = false, recordingBusy = false, replayRequested = false, takeoverPending = null, active = true, flashState = {status: 'idle'}, flashStation = null;
   const flashActive = () => Boolean(flashState.busy);
@@ -73,7 +77,7 @@ export function createTransportUi({mount, flashMount, catalog, getScene, getSour
     storageButton.disabled = !supportedStorage;
     if (storageScope !== scope?.key) { storageScope = scope?.key; confirmStorage.hidden = true; }
     const storageProduct = catalog.products.find(product => product.id === scope?.productId);
-    storageIdentity.textContent = scope ? `${storageProduct?.name || scope.productId} · 固件 ${scope.firmwareSha256.slice(0, 12)}` : '加载固件后显示对应的设备存储。';
+    storageIdentity.textContent = scope ? `${storageProduct?.name || scope.productId} · 固件 ${scope.firmwareSha256.slice(0, 12)}` : catalog.products.find(item=>item.id===getScene().productId)?.name || '加载固件后显示对应的设备存储。';
     const storageLabels = {unloaded:'尚未加载固件',loading:'正在恢复设备数据…',clean:deviceStorage?.restored?'已恢复此前的设备数据':'使用原始固件数据',saving:'正在保存设备数据…',saved:'设备数据已保存到此浏览器', 'memory-only':'浏览器持久化不可用，当前数据仅在本次页面中保留',conflict:'另一页面已修改此设备数据，模拟已停止，请重新加载固件',error:'设备数据保存失败，请勿关闭页面'};
     storageStatus.textContent = storageLabels[deviceStorage?.status] || (supportedStorage ? '正在读取存储状态…' : '此运行时尚未提供设备存储管理');
     storageStatus.classList.toggle('storage-warning', ['memory-only','conflict','error'].includes(deviceStorage?.status));
@@ -138,8 +142,7 @@ export function createTransportUi({mount, flashMount, catalog, getScene, getSour
   });
   options.addEventListener('click', () => { details.open = !details.open; });
   storageButton.addEventListener('click', async () => {
-    details.open = true;
-    try { deviceStorage = (await api().observe()).storage || null; render(); storageSection.scrollIntoView({block:'nearest'}); }
+    try { deviceStorage = (await api().observe()).storage || null; render(); if(!storageDialog.open)storageDialog.showModal(); }
     catch (error) { onError(error); }
   });
   clearStorage.addEventListener('click', () => { confirmStorage.hidden = false; });
@@ -181,7 +184,7 @@ export function createTransportUi({mount, flashMount, catalog, getScene, getSour
       if (replayRequested || ['preparing', 'playing'].includes(recordingState.status)) await takeControl();
       if (recordingState.status === 'recording') { await releaseInputs(); recording = await api().recordingStop(); onRecordingChange?.(recording); await syncRecording(); }
     },
-    dispose() { active = false; unsubscribe?.(); sdUi.dispose(); void flashStation?.dispose(); flash.remove();flashAvailability.remove();root.remove(); },
+    dispose() { active = false; unsubscribe?.(); sdUi.dispose(); storageDialog.remove(); void flashStation?.dispose(); flash.remove();flashAvailability.remove();root.remove(); },
   };
 }
 

@@ -21,8 +21,10 @@ export function createSdCardStorage({indexedDB=globalThis.indexedDB,BroadcastCha
   async function transaction(key,mode,update,imageUpdate){
     keyCheck(key);await open();if(!db||failed)return null;
     return new Promise((resolve,reject)=>{const tx=db.transaction(['cards','images'],mode),cards=tx.objectStore('cards'),images=tx.objectStore('images');let row,image,cause;
-      const r=cards.get(key);r.onsuccess=()=>{try{row=update(checked(r.result,key));if(mode==='readwrite')cards.put(row);if(imageUpdate!==undefined){if(imageUpdate===null)images.delete(key);else images.put(imageUpdate,key);image=imageUpdate;}else if(mode==='readonly'){const q=images.get(key);q.onsuccess=()=>{image=q.result||null;};}else image=mem(key).image;}catch(e){cause=e;tx.abort();}};
-      tx.oncomplete=()=>resolve({row,image});tx.onerror=tx.onabort=()=>reject(cause||error('STORAGE_WRITE_FAILED','SD storage transaction failed.'));
+      // Blob storage avoids Chromium's serialized IndexedDB value limit at the
+      // supported 128 MiB boundary. Reads still accept legacy ArrayBuffer rows.
+      const r=cards.get(key);r.onsuccess=()=>{try{row=update(checked(r.result,key));if(mode==='readwrite')cards.put(row);if(imageUpdate!==undefined){if(imageUpdate===null)images.delete(key);else images.put(new Blob([imageUpdate],{type:'application/octet-stream'}),key);image=imageUpdate;}else if(mode==='readonly'){const q=images.get(key);q.onsuccess=()=>{image=q.result||null;};}else image=mem(key).image;}catch(e){cause=e;tx.abort();}};
+      tx.oncomplete=()=>resolve({row,image});tx.onerror=tx.onabort=()=>reject(cause||error('STORAGE_WRITE_FAILED',`SD storage transaction failed${tx.error?.name?` (${tx.error.name})`:''}.`));
     });
   }
   async function update(key,fn,imageUpdate,strict=false){
@@ -34,9 +36,9 @@ export function createSdCardStorage({indexedDB=globalThis.indexedDB,BroadcastCha
   }
   return {
     subscribe(fn){own.add(fn);return()=>own.delete(fn);},
-    async read(key){let value;try{value=await transaction(key,'readonly',r=>r);}catch(e){if(e.code==='STORAGE_CORRUPT')throw e;failed=true;}value ||= mem(key);memory.set(dbName+':'+key,{row:copy(value.row),image:value.image});return result(value.row,value.image?.slice(0)||null);},
+    async read(key){let value;try{value=await transaction(key,'readonly',r=>r);}catch(e){if(e.code==='STORAGE_CORRUPT')throw e;failed=true;}value ||= mem(key);if(value.image){const size=value.image instanceof Blob?value.image.size:value.image instanceof ArrayBuffer?value.image.byteLength:0;if(size<1024*1024||size>128*1024*1024||size%(512*1024))throw error('STORAGE_CORRUPT','Saved TF image size is invalid.');}if(value.image instanceof Blob)value.image=await value.image.arrayBuffer();memory.set(dbName+':'+key,{row:copy(value.row),image:value.image});return result(value.row,value.image?.slice(0)||null);},
     save(key,{epoch,revision,pages}){return update(key,row=>{if(row.epoch!==epoch||row.revision!==revision)throw error('STORAGE_CONFLICT','Another tab changed this SD card. Reload the firmware before continuing.');return {...row,pages:copy(pages),revision:revision+1,savedAt:new Date().toISOString()};});},
-    replace(key,{image=null,media=null}={}){return update(key,row=>({...blank(key),epoch:row.epoch+1,revision:row.revision+1,media,savedAt:new Date().toISOString()}),image,true);},
+    replace(key,{image=null,media=null,expected}={}){return update(key,row=>{if(expected&&(row.epoch!==expected.epoch||row.revision!==expected.revision))throw error('STORAGE_CONFLICT','Another tab changed this SD card before its initial image was saved.');return {...blank(key),epoch:row.epoch+1,revision:row.revision+1,media,savedAt:new Date().toISOString()};},image,true);},
     close(){closed=true;db?.close();channel?.close();own.clear();listeners.delete(deliver);}
   };
 }

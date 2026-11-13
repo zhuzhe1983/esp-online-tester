@@ -1,0 +1,192 @@
+{
+  "checkedAt": "2026-11-13T09:47:45.895162+00:00",
+  "baseRevision": "c73c0c70dc59c9ab478e45e351fcb2bdb3e9a762",
+  "scope": "Local TF card preparation, filesystem formatting, import/export, persistence and settings UI; no new guest exFAT compatibility or physical hardware claims.",
+  "sources": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/fileio/exfat-specification",
+      "savedAt": "2026-11-13T09:23:42.869550+00:00",
+      "mediaType": "text/html",
+      "bytes": 293769,
+      "sha256": "5235d60f5ccc7aded9a8025221b1f62821bbad2ed363fc3881fbfffc1546040e",
+      "usedSections": [
+        "3 Main and Backup Boot Regions",
+        "4 FAT Region",
+        "5 Data Region",
+        "7.1 Allocation Bitmap",
+        "7.2 Up-case Table",
+        "7.3 Volume Label"
+      ],
+      "upcase": {
+        "source": "table 25",
+        "bytes": 5836,
+        "tableChecksum": "e619d30d",
+        "sha256": "8344f27a410a16df14ad98decde32b48c4db0b8e7fa8b9dc4394b58ced972f11"
+      }
+    }
+  ],
+  "policy": {
+    "declaredSlotProducts": 33,
+    "defaultBytes": 67108864,
+    "defaultFormat": "fat32",
+    "blankCapacitiesMiB": [
+      64,
+      128
+    ],
+    "formats": [
+      "fat32",
+      "exfat"
+    ],
+    "importMaxBytes": 134217728,
+    "existingFirmwareMediaWins": true,
+    "unimplementedTransports": "prepared only; supported:false,mounted:false"
+  },
+  "hostFilesystemChecks": {
+    "hostVersion": "27.2.1",
+    "checks": [
+      {
+        "format": "fat32",
+        "capacityMiB": 64,
+        "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6",
+        "exitCode": 0,
+        "output": "** <task-image-partition>\n** Phase 1 - Preparing FAT\n** Phase 2 - Checking Directories\n** Phase 3 - Checking for Orphan Clusters\nWarning: 0 files, 63502 KiB free (127005 clusters)"
+      },
+      {
+        "format": "fat32",
+        "capacityMiB": 128,
+        "sha256": "bfcd468098ef83b476b75381fb69c40bb0a7e510df5762dc8fefa8ff1de6b665",
+        "exitCode": 0,
+        "output": "** <task-image-partition>\n** Phase 1 - Preparing FAT\n** Phase 2 - Checking Directories\n** Phase 3 - Checking for Orphan Clusters\nWarning: 0 files, 128030 KiB free (256061 clusters)"
+      },
+      {
+        "format": "exfat",
+        "capacityMiB": 64,
+        "sha256": "14d01f521af600343d284b7bd47e864950373896bfef8d0577ac78d54869b308",
+        "exitCode": 0,
+        "output": "** Checking volume.\n** Checking main boot region.\n** Checking system files.\n** Volume name is ESP TESTER.\n** Checking upper case translation table.\n** Checking file system hierarchy.\n** Checking active bitmap.\n** Rechecking main boot region.\n** Rechecking alternate boot region.\n** The volume ESP TESTER appears to be OK."
+      },
+      {
+        "format": "exfat",
+        "capacityMiB": 128,
+        "sha256": "7af7fbd7bbe2569b9953b2f5d3c52a16cf1e05e28e7f7788143881ce7ab56489",
+        "exitCode": 0,
+        "output": "** Checking volume.\n** Checking main boot region.\n** Checking system files.\n** Volume name is ESP TESTER.\n** Checking upper case translation table.\n** Checking file system hierarchy.\n** Checking active bitmap.\n** Rechecking main boot region.\n** Rechecking alternate boot region.\n** The volume ESP TESTER appears to be OK."
+      }
+    ],
+    "hostWriteRead": {
+      "format": "exfat",
+      "unicodeFilename": true,
+      "caseInsensitiveLookup": true,
+      "passed": true
+    }
+  },
+  "browser": {
+    "engine": "Chrome via Playwright CLI, headless",
+    "desktopViewport": [
+      1365,
+      900
+    ],
+    "mobileViewport": [
+      390,
+      844
+    ],
+    "formatted": {
+      "slot": true,
+      "supported": true,
+      "present": true,
+      "mounted": false,
+      "scope": "prepared-product",
+      "bytes": 134217728,
+      "format": "exfat",
+      "status": "prepared",
+      "backend": "indexeddb",
+      "restored": true,
+      "pristine": false,
+      "changedPages": 0,
+      "error": null
+    },
+    "restored": {
+      "slot": true,
+      "supported": true,
+      "present": true,
+      "mounted": false,
+      "scope": "prepared-product",
+      "bytes": 134217728,
+      "format": "exfat",
+      "status": "prepared",
+      "backend": "indexeddb",
+      "restored": true,
+      "pristine": false,
+      "changedPages": 0,
+      "error": null
+    },
+    "exported": {
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    },
+    "legacy": {
+      "format": "image",
+      "sha256": "cdaffce61f0985fab151ad6eb8a2845c01d01e845f667dae8c86de6fc1826f2f"
+    },
+    "unavailable": {
+      "slot": true,
+      "supported": false,
+      "present": true,
+      "mounted": false,
+      "scope": "prepared-product",
+      "bytes": 67108864,
+      "format": "fat32",
+      "status": "prepared",
+      "backend": "indexeddb",
+      "restored": false,
+      "pristine": true,
+      "changedPages": 0,
+      "error": null
+    },
+    "checks": [
+      "default-card-before-firmware",
+      "format-exfat-128-via-ui",
+      "indexeddb-reload",
+      "import-fat32-img-via-ui",
+      "export-preserves-source-hash",
+      "product-isolation",
+      "unmodeled-slot-has-prepared-card-without-guest-claim",
+      "mobile-controls",
+      "legacy-arraybuffer-restored",
+      "escape-closes-dialog"
+    ]
+  },
+  "tests": {
+    "command": "node --test tools/platform-*-test.mjs",
+    "passed": 399,
+    "failed": 0,
+    "catalogSchema": "passed",
+    "privacyPatternCheck": "passed; manual platform receipt review also performed",
+    "nodeVersion": "v26.13.0",
+    "wasmSha256": "f0f3925e54876db21a77a1a62b1fa73c8ac29621bc81cace460a43670020b8fe"
+  },
+  "retainedNegativeResults": [
+    {
+      "case": "128 MiB base image stored as ArrayBuffer in IndexedDB",
+      "observed": "Write transaction failed in the real browser; previous default FAT32 card remained intact.",
+      "resolution": "Store new base images as Blob, retain reading of old ArrayBuffer rows. Real UI formatting and reload of 128 MiB exFAT then passed."
+    }
+  ],
+  "artifactSha256": {
+    "web/platform/sd-card-image.js": "6601f75aff66f4573017ade26ac1d08293a3480852b81c8d80f55a188a9a97e6",
+    "web/platform/exfat-upcase.js": "47d10e1c2fab68be4145dc292cd17739b505eeda5fedc543da83da961bce9604",
+    "web/platform/sd-card-storage.js": "361fb47d257879c0a9c86461a65128d6019e929e52a60dba76b958ba2070a158",
+    "web/platform/tf-card-capability.js": "a141a0bc1a89a3bfd2ba868316f6fe0c165063ea43da11b8d66f43197569461f",
+    "web/platform/runtime.js": "b219c461f549f98ef11cfbbd1398fae31befbdb73232f0c0f5dad3a1bb6549bd",
+    "web/platform/sd-card-ui.js": "2bf4f5a5c8ff4b940e700a9ef06fbb2447eec897fedd7c0d2e466a6ecbb409e4",
+    "web/platform/sd-card-ui.css": "ee82ff7818ee28fc5c1acf4e4d4443aa27fa3bd156febe28a67bddd6cb8a5a34",
+    "web/platform/transport-ui.js": "7274e190a461c78a2227f25ef56788cc6a576237981e703e0832d70fd25f1280",
+    "tools/platform-sd-image-test.mjs": "67c6a3c8b045ef5204d9d0065f873b8cb2df28c9e6736a564078c72f90280865",
+    "tools/platform-sd-card-test.mjs": "ad249c3b5cf0c81a5733b565c43be9711018f6e8511fe5c66d67772f2844abee"
+  },
+  "screenshots": {
+    "desktop.png": "098ba3559c78f43abbce317b4c4e83c0e8f81f05cf6634b34f05a768a15dbcde",
+    "mobile.png": "054d45ddeecd41f192001f4fd3b0fc1ca8604320568a98a5adcdbba1a2652235"
+  },
+  "privacy": "Only synthetic filesystem test data, public product IDs, source URLs, software versions and artifact hashes retained. Device paths, local paths, browser session details and raw captures were omitted. No user card images or firmware binaries committed."
+}

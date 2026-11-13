@@ -6,6 +6,7 @@
 - To configure or operate the system, read `skills/esp-online-tester/SKILL.md`. It documents the implemented API; `docs/platform/research/` contains historical drafts.
 - To add or refresh products, modules, 3D assets or remote firmware, read `skills/esp-product-onboarding/SKILL.md`. Prefer manufacturer CAD, retain source timestamps and verify dimensions plus photo overlays.
 - Humans, embedded parents and agents use the same runtime. Verify firmware output after inputs; a 3D preview or queued input is not evidence of execution.
+- Every product with a declared TF/microSD slot starts with a prepared 64 MiB FAT32 card. Preserve existing card data; allow local IMG import and explicit FAT32/exFAT empty-card creation. A prepared card is not proof of a modeled transport: expose guest mounting only on independently implemented boards. See `docs/platform/tf-cards.md`.
 - Keep product-specific support truthful. PaperMono/Lite and StopWatch are partial; other catalog entries need individual runtime verification; GPS injection bypasses physical routing and timing.
 - Public catalogs accept PRs; private DIY definitions stay local unless exported or shared. See `docs/platform/contributing.md`.
 - Preserve buildless static deployment under a GitHub Pages repository subpath. Runtime dependencies and assets must be local or explicitly declared user firmware sources.

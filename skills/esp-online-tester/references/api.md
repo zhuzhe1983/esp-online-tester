@@ -27,10 +27,10 @@ The platform page installs `window.espTester`. Await its presence before use. Ru
 | `inspectFirmwareConfiguration()` | Checks the current full Flash table for the supported UIFlow2 NVS layout. Returns `{available,type,partition,replacesPartition,sessionId,reason?,lastWrite?}`; no credential readback. |
 | `writeFirmwareConfiguration(profile,{sessionId}={})` | Explicitly rebuilds only the current 24 KiB UIFlow2 NVS partition. Preserves other Flash and SD data and the original-image storage scope. Stops/reloads to `ready`; caller starts separately. Pass the inspection token to reject a changed device. See [virtual configuration](../../../docs/platform/virtual-firmware-configuration.md) for replacement and cancellation semantics. No physical flashing. |
 | `clearFirmwareCache()` | Removes downloaded firmware cache. Independent of writable device data. |
-| `attachSdCard({bytes?,format:'fat32'}={})` | PaperMono/Lite, PaperS3 or ordinary INK4 with loaded firmware: replaces the current card with a complete raw disk image (`Uint8Array`/`ArrayBuffer`), or an empty 64 MiB FAT32 card if bytes are omitted. Saves current Flash/SD, rebuilds the machine, returns full state in `ready`; explicitly call `start()` afterward. |
-| `clearSdCard()` | Replaces only the active product/board/firmware card with the default empty FAT32 card and returns `ready`. Does not clear writable Flash, other SD scopes or firmware cache. Requires explicit intent to discard this card. |
+| `attachSdCard({bytes?,format:'fat32'|'exfat',byteLength?}={})` | Replaces the current card with a complete raw disk image (`Uint8Array`/`ArrayBuffer`), or creates an empty 64/128 MiB FAT32/exFAT card if bytes are omitted (default 64 MiB FAT32). Before firmware load, saves a prepared card for the product. For a mounted card, saves Flash/SD, rebuilds to `ready`; call `start()` afterward. |
+| `clearSdCard()` | Replaces only the active mounted card, or the selected product’s prepared card, with the default empty FAT32 card. A mounted machine returns `ready`. Does not clear writable Flash, other SD scopes or firmware cache. Requires explicit intent to discard this card. |
 | `exportSdCard()` | Flushes and reads the current full disk image; returns `{bytes:Uint8Array,filename}`. The API does not itself save a file to Downloads. |
-| `flushSdCard()` | Collects current changed pages and awaits saving them; returns the SD status object. Requires loaded SD media. |
+| `flushSdCard()` | Collects current changed pages and awaits saving them; returns the SD status object. A prepared card is already saved; no worker is needed. |
 | `input(event)` | Waits for a matching worker queue receipt and returns `guestTime` in simulated seconds; it does not certify firmware consumption. Shapes below. |
 | `press(id,{durationMs=100}={})` | Presses then releases a button using host wall time (0–10000 ms), not cycle-exact guest time. |
 | `injectGps(options)` | Constructs RMC/GGA sentences with checksums and queues them on logical UART1. Requires an attached `uart-nmea` accessory, logical UART1 wiring and StopWatch. |
@@ -104,24 +104,27 @@ All available host-fed IMUs accept `source:'scene'` using the same virtual axes.
 
 ## Virtual TF/SD cards and RGB output
 
-PaperMono/Lite, PaperS3, CoreMatrix and ordinary INK4 automatically receive a generated 64 MiB FAT32 card when firmware loads. Check `capabilities().sdCard.available` and `observe().sdCard` instead of assuming every board supports SD. Imports are complete raw disk images, 1–128 MiB in multiples of 512 KiB; an EPUB, directory or partition-only file is not a disk image. Import preserves its bytes and does not reformat or certify its filesystem. FAT32 is the tested default; firmware still determines whether an imported filesystem can mount.
+Every product declaring a physical TF/microSD slot starts with a prepared 64 MiB FAT32 card. `capabilities().sdCard.slot` and `configurable` indicate local card settings; `available` indicates an implemented board transport. A prepared card is present in local settings but is not mounted to the guest. Boards without SD transport retain uploaded images locally and report `supported:false,mounted:false`; do not claim firmware read/write support.
 
-The storage namespace is product ID + board + SHA-256 of the original full Flash contents. Different device types or firmware images cannot share a card implicitly. Imported base images and changed 4 KiB pages are stored separately in the user's IndexedDB; reset, same-firmware reload and normal page reload retain them. The workbench and mini player use the same controls and runtime API. On the same origin they use the same namespace; a newer save or clear in another page stops a stale session with `STORAGE_CONFLICT` instead of merging competing writes. No card bytes are stored on the server or included in a share URL.
+Settings → device storage supports local IMG import/export and explicit empty-card creation in FAT32 or exFAT, with 64/128 MiB capacity choices. Imports remain 1–128 MiB in multiples of 512 KiB. Bytes are preserved; format sniffing identifies boot-sector signatures only, not filesystem integrity or firmware compatibility. Firmware may support FAT32 but not exFAT. No image bytes are sent to a server or included in scene/share URLs.
 
-`observe().sdCard` returns `{supported,present,bytes,format,status,backend,restored,pristine,changedPages,error}`. `format` is `fat32` for the generated card or `image` for an imported base; it does not identify the imported filesystem. `backend` is `indexeddb` or `memory`; memory fallback does not survive closing/reloading the page. Status includes `unloaded`, `loading`, `clean`, `saved`, `memory-only`, `conflict`, `error`. `pristine:false` means an imported base or written pages are present and portable recording must reject that private state.
+Before loading firmware, uploads and formatting change a product's prepared image. That image seeds only a never-used firmware card scope. Existing imported media, dirty pages, and an explicit previous clear take precedence. Once mounted, changes affect only the current product/board/canonical-Flash-SHA256 namespace; Flash data and other cards remain untouched. PaperMono-Lite retains its historical `papermono` storage alias. The format UI confirms replacement; API callers must already have explicit user intent to replace data.
 
-`capabilities().sdCard` reports `defaultBytes`, `maxBytes`, `formats`, `scope`, `autoSaveIntervalMs:1500`, and `crashSafe:false`. Dirty pages are scanned about every 1.5 seconds while running; pause/reset and explicit flush collect them too. Visibility-hidden/pagehide saves are best effort: a killed browser, crash or power loss can lose the last uncommitted writes. A successful flush with `backend:'memory'` is not durable disk persistence.
+`observe().sdCard` returns `{slot,supported,present,mounted,scope,bytes,format,status,backend,restored,pristine,changedPages,error}`. `scope` is `prepared-product` or `product-firmware`; `format` is `fat32`, `exfat` or `image` (unrecognized raw disk). Generated nondefault cards and imports have `pristine:false`, so private media cannot silently enter a portable recording. Status adds `prepared` to the existing `unloaded`, `loading`, `clean`, `saved`, `memory-only`, `conflict`, and `error` states.
+
+`capabilities().sdCard` reports `defaultInserted`, `defaultBytes`, `maxBytes`, `formats`, `blankCapacitiesMiB`, `scope`, `preparedScope`, `autoSaveIntervalMs:1500`, and `crashSafe:false`. Mounted dirty pages are scanned about every 1.5 seconds; pause/reset and explicit flush also collect them. Visibility-hidden/pagehide saves are best effort, not crash/power-loss guarantees. Memory fallback does not survive closing/reloading the page. See [TF card policy and format verification](../../../docs/platform/tf-cards.md).
 
 ```js
 const api = window.espTester;
-// After configuring PaperMono/Lite, PaperS3 or ordinary INK4 and loading its firmware:
+// After selecting any product with a declared TF slot:
 const sd = (await api.observe()).sdCard;
 await api.flushSdCard();
 const backup = await api.exportSdCard(); // Preserve locally; never add private bytes to a URL.
 // Only when the user asks to replace the current card:
 await api.attachSdCard({bytes:new Uint8Array(await selectedFile.arrayBuffer())});
 await api.start(); // attach/clear leaves ready, not running.
-// await api.clearSdCard(); // Explicitly discards this scope's card and creates blank FAT32.
+// await api.attachSdCard({format:'exfat',byteLength:128*1024*1024}); // Explicit replacement.
+// await api.clearSdCard(); // Explicitly replaces this scope's card with default FAT32.
 ```
 
 RGB output is `observe().leds`, an array of `[red,green,blue]` byte triples, and the same `{type:'leds',leds}` subscription event. PaperMono's first LED uses PM1 LED_EN for red and M5IOE1 PWM2/PWM1 for green/blue; it is not a WS2812. The viewer consumes these actual guest-driven channels. There is no host API that changes their color as a substitute for firmware behavior. A changed LED tuple proves the modeled digital output, not real-world brightness or timing.
