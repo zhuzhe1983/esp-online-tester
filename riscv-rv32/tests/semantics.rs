@@ -667,7 +667,7 @@ fn s31_zcmp_push_pop_round_trip_every_rlist() {
             cpu.pc = BASE;
             let sp = BASE + 0x8000;
             cpu.x[2] = sp;
-            for r in 1..32 { if r != 2 { cpu.x[r] = 0x1000 * r as u32 + 7; } }
+            for (r, x) in cpu.x.iter_mut().enumerate().skip(1) { if r != 2 { *x = 0x1000 * r as u32 + 7; } }
             let saved = cpu.x;
             let n = rlist_regs(rlist);
             let adj = ((n * 4 + 15) & !15) + spimm * 16;
