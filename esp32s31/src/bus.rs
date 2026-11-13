@@ -13,6 +13,8 @@ use crate::mspi::Mspi;
 use crate::mspi_pads::MspiPads;
 use crate::psram_controller::PsramController;
 use crate::sha::ShaEngine;
+/// DR_REG_AES_BASE (IDF v6.1 soc/esp32s31/register/soc/reg_base.h)
+const AES_BASE: u32 = 0x2050_8000;
 use crate::analog::Analog;
 use crate::power::Power;
 use crate::pms::Permissions;
@@ -755,6 +757,12 @@ impl S31Bus {
             if self.crypto_clock_hz().is_none() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
             return match self.sha.read(off as u32) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
         }
+        // AES shares the crypto clock with SHA; register mode only (no DMA on this chip yet).
+        if let Some(off) = offset(address, AES_BASE, bytes, 0x100) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            if self.crypto_clock_hz().is_none() { return self.fault(address, bytes, false, false, Fault::Prohibited); }
+            return Ok(self.periph.aes.read(off as u32));
+        }
         if address & !3 == crate::cache::CLOCK_CTRL {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(self.cache.clock_read());
@@ -998,6 +1006,11 @@ impl S31Bus {
             if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             if self.crypto_clock_hz().is_none() { return self.fault(address, bytes, true, false, Fault::Prohibited); }
             return match self.sha.write(off as u32, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
+        if let Some(off) = offset(address, AES_BASE, bytes, 0x100) {
+            if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if self.crypto_clock_hz().is_none() { return self.fault(address, bytes, true, false, Fault::Prohibited); }
+            self.periph.aes.write(off as u32, value); return Ok(());
         }
         if address & !3 == crate::cache::CLOCK_CTRL {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
@@ -1269,6 +1282,27 @@ mod tests {
         let irq = b.peripheral_irqs();
         assert!(irq.sources().contains(&(crate::interrupts::AHB_DMA_IN_SOURCE + 2, true)));
     }
+    #[test]
+    fn aes_block_mode_on_the_crypto_clock() {
+        // FIPS-197 appendix C.1: AES-128 key 000102..0f, plaintext 00112233..ff.
+        use emu_core::Bus;
+        let mut b = super::S31Bus::new();
+        b.write32(crate::sha::CLOCK, 0x45).unwrap(); assert_eq!(b.crypto_clock_hz(), Some(40_000_000));
+        let words = |bytes: [u8; 16]| -> [u32; 4] { core::array::from_fn(|i| u32::from_le_bytes(bytes[4 * i..4 * i + 4].try_into().unwrap())) };
+        let key = words(core::array::from_fn(|i| i as u8));
+        let plain = words(core::array::from_fn(|i| (i as u8) * 0x11));
+        let cipher = words([0x69, 0xc4, 0xe0, 0xd8, 0x6a, 0x7b, 0x04, 0x30, 0xd8, 0xcd, 0xb7, 0x80, 0x70, 0xb4, 0xc5, 0x5a]);
+        for (i, w) in key.iter().enumerate() { b.write32(super::AES_BASE + 4 * i as u32, *w).unwrap(); }
+        for (mode, input, expect) in [(0, plain, cipher), (4, cipher, plain)] {
+            b.write32(super::AES_BASE + 0x40, mode).unwrap();
+            for (i, w) in input.iter().enumerate() { b.write32(super::AES_BASE + 0x20 + 4 * i as u32, *w).unwrap(); }
+            b.write32(super::AES_BASE + 0x48, 1).unwrap();
+            assert_eq!(b.read32(super::AES_BASE + 0x4c), Ok(0));
+            for (i, w) in expect.iter().enumerate() { assert_eq!(b.read32(super::AES_BASE + 0x30 + 4 * i as u32), Ok(*w)); }
+        }
+        assert_eq!(b.periph.aes.blocks, 2);
+    }
+
     #[test]
     fn crypto_roots_preserve_real_sha_data_and_obey_source_gates() {
         use emu_core::Bus;
