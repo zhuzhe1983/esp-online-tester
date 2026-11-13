@@ -31,39 +31,43 @@
     {
       "sourceComponent": 0,
       "name": "case-front",
-      "color": "#dadbd7",
+      "color": "#edeeea",
       "role": "shell"
     },
     {
       "sourceComponent": 1,
       "name": "button-user-b",
-      "color": "#e9e9e3",
+      "color": "#f0f1eb",
       "role": "button",
       "controlId": "button-b"
     },
     {
       "sourceComponent": 2,
       "name": "cad-connector-insert",
-      "color": "#747a7b",
-      "role": "connector"
+      "color": "#9ea5a2",
+      "role": "connector",
+      "material": {
+        "metalness": 0.75,
+        "roughness": 0.4
+      }
     },
     {
       "sourceComponent": 3,
       "name": "case-back",
-      "color": "#dadbd7",
+      "color": "#edeeea",
       "role": "shell"
     },
     {
       "sourceComponent": 9,
       "name": "button-user-a",
-      "color": "#e9e9e3",
+      "color": "#f0f1eb",
       "role": "button",
       "controlId": "button-a"
     },
     {
       "sourceComponent": 10,
       "name": "button-power",
-      "color": "#e9e9e3",
+      "color": "#f0f1eb",
       "role": "button"
     }
   ],
@@ -118,9 +122,19 @@
     {
       "name": "overall-long-axis-including-protruding-button",
       "axis": 1,
-      "valueMm": 120,
+      "valueMm": 121.27,
       "toleranceMm": 0.1,
-      "sourceId": "official-docs"
+      "sourceId": "dimension-drawing-a6d9b92285"
+    },
+    {
+      "name": "body-short-axis",
+      "axis": 0,
+      "valueMm": 67,
+      "toleranceMm": 0.05,
+      "sourceId": "dimension-drawing-a6d9b92285",
+      "parts": [
+        0
+      ]
     }
   ],
   "dimensions": {
@@ -132,7 +146,25 @@
     "orientation": "portrait after rigid Z rotation",
     "bodyLongAxisMm": 120,
     "overallLongAxisMm": 121.2699,
-    "discrepancy": "Right-side button protrudes beyond 120 mm shell; overall 121.27 mm does not match stated product length. No stretch applied."
+    "discrepancy": "The product table lists 120 mm body length. The independent dimension drawing explicitly gives 121.27 mm including the lower power key; native CAD agrees within 0.001 mm.",
+    "officialDrawingOverallMm": [
+      68.2,
+      121.27,
+      6.3
+    ],
+    "bodySizeMm": [
+      67,
+      120,
+      6.3
+    ],
+    "screenWindowMm": [
+      59.72,
+      105.02
+    ],
+    "screenWindowCenterMm": [
+      0,
+      4
+    ]
   },
   "presentation": {
     "bodySizeMm": [
@@ -142,23 +174,79 @@
     ],
     "screen": {
       "sizeMm": [
-        61,
-        104
+        58.7475,
+        104.44
       ],
       "positionMm": [
         0,
-        2.1,
-        3.05
+        4,
+        2.99
       ],
       "rotation": [
         0,
         0,
         0
       ]
-    }
+    },
+    "inspectionGroups": [
+      {
+        "id": "front-case",
+        "parts": [
+          "case-front"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          24
+        ],
+        "sourceIds": [
+          "manufacturer-cad-7f0eb880a6"
+        ],
+        "notes": "Native front case translated along Z for inspection; not a physical assembly sequence."
+      },
+      {
+        "id": "display",
+        "parts": [
+          "display-substrate",
+          "display-black-border",
+          "live-display"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          12
+        ],
+        "sourceIds": [
+          "product-photo-daf0a58e49",
+          "dimension-drawing-a6d9b92285"
+        ],
+        "notes": "Photo-constrained display stack; internal layer thickness estimated."
+      },
+      {
+        "id": "rear-case",
+        "parts": [
+          "case-back"
+        ],
+        "offsetMm": [
+          72,
+          0,
+          -18
+        ],
+        "sourceIds": [
+          "manufacturer-cad-7f0eb880a6",
+          "product-photo-4bcd22006c"
+        ],
+        "notes": "Native removable rear cover translated along Z. Reveals the explicitly unknown PCB placeholder and known visible inserts."
+      }
+    ]
   },
   "derivedParts": [
     {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "label": "UNKNOWN",
+      "color": "#42564a",
+      "basis": "estimated",
       "geometry": {
         "sizeMm": [
           60,
@@ -169,27 +257,1311 @@
           0,
           0,
           -0.6
+        ],
+        "labelSide": "back",
+        "labelOffsetMm": [
+          0,
+          23
+        ],
+        "labelSizeMm": [
+          38,
+          9.5
         ]
       },
-      "notes": "UNKNOWN enclosure-space estimate; not a layout.",
-      "kind": "pcb-placeholder",
-      "id": "pcb-main",
-      "label": "UNKNOWN",
-      "basis": "estimated"
+      "notes": "Original enclosure-space placeholder retained. Board outline, components, copper and hidden placement are unknown. Known external inserts are separately sourced visual parts."
     },
     {
-      "id": "blank-display",
-      "basis": "estimated",
-      "notes": "Blank 61 × 104 mm panel approximates visible opening from official front photo; exact active boundary not dimensioned and not included in precision certification."
+      "id": "display-substrate",
+      "kind": "box",
+      "color": "#333837",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-daf0a58e49",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          61.4,
+          107.2,
+          0.55
+        ],
+        "centerMm": [
+          0,
+          4,
+          2.555
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "display-black-border",
+      "kind": "box",
+      "color": "#171b1b",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-daf0a58e49",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          60.6,
+          106,
+          0.1
+        ],
+        "centerMm": [
+          0,
+          4,
+          2.9
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "esp32-shield",
+      "kind": "box",
+      "color": "#8b918d",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-4bcd22006c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          17.7,
+          15.9,
+          1.85
+        ],
+        "centerMm": [
+          15.3,
+          -21,
+          -2.125
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.65,
+        "roughness": 0.48
+      }
+    },
+    {
+      "id": "esp32-shield-marking",
+      "kind": "label",
+      "basis": "manufacturer-photo",
+      "sourceIds": [
+        "product-photo-4bcd22006c"
+      ],
+      "texture": "esp32-shield-marking.webp",
+      "geometry": {
+        "sizeMm": [
+          17.2,
+          15.3
+        ],
+        "centerMm": [
+          15.3,
+          -21,
+          -3.06
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "notes": "Original photo crop placed only on the physical exposed shield face. Does not cover shell or unknown PCB and is not a paper sticker."
+    },
+    {
+      "id": "m2-brass-insert",
+      "kind": "plate",
+      "color": "#b99c48",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-4bcd22006c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "outlineMm": [
+          [
+            2.0,
+            0.0
+          ],
+          [
+            1.990369,
+            0.196034
+          ],
+          [
+            1.961571,
+            0.390181
+          ],
+          [
+            1.913881,
+            0.580569
+          ],
+          [
+            1.847759,
+            0.765367
+          ],
+          [
+            1.763843,
+            0.942793
+          ],
+          [
+            1.662939,
+            1.11114
+          ],
+          [
+            1.546021,
+            1.268787
+          ],
+          [
+            1.414214,
+            1.414214
+          ],
+          [
+            1.268787,
+            1.546021
+          ],
+          [
+            1.11114,
+            1.662939
+          ],
+          [
+            0.942793,
+            1.763843
+          ],
+          [
+            0.765367,
+            1.847759
+          ],
+          [
+            0.580569,
+            1.913881
+          ],
+          [
+            0.390181,
+            1.961571
+          ],
+          [
+            0.196034,
+            1.990369
+          ],
+          [
+            0.0,
+            2.0
+          ],
+          [
+            -0.196034,
+            1.990369
+          ],
+          [
+            -0.390181,
+            1.961571
+          ],
+          [
+            -0.580569,
+            1.913881
+          ],
+          [
+            -0.765367,
+            1.847759
+          ],
+          [
+            -0.942793,
+            1.763843
+          ],
+          [
+            -1.11114,
+            1.662939
+          ],
+          [
+            -1.268787,
+            1.546021
+          ],
+          [
+            -1.414214,
+            1.414214
+          ],
+          [
+            -1.546021,
+            1.268787
+          ],
+          [
+            -1.662939,
+            1.11114
+          ],
+          [
+            -1.763843,
+            0.942793
+          ],
+          [
+            -1.847759,
+            0.765367
+          ],
+          [
+            -1.913881,
+            0.580569
+          ],
+          [
+            -1.961571,
+            0.390181
+          ],
+          [
+            -1.990369,
+            0.196034
+          ],
+          [
+            -2.0,
+            0.0
+          ],
+          [
+            -1.990369,
+            -0.196034
+          ],
+          [
+            -1.961571,
+            -0.390181
+          ],
+          [
+            -1.913881,
+            -0.580569
+          ],
+          [
+            -1.847759,
+            -0.765367
+          ],
+          [
+            -1.763843,
+            -0.942793
+          ],
+          [
+            -1.662939,
+            -1.11114
+          ],
+          [
+            -1.546021,
+            -1.268787
+          ],
+          [
+            -1.414214,
+            -1.414214
+          ],
+          [
+            -1.268787,
+            -1.546021
+          ],
+          [
+            -1.11114,
+            -1.662939
+          ],
+          [
+            -0.942793,
+            -1.763843
+          ],
+          [
+            -0.765367,
+            -1.847759
+          ],
+          [
+            -0.580569,
+            -1.913881
+          ],
+          [
+            -0.390181,
+            -1.961571
+          ],
+          [
+            -0.196034,
+            -1.990369
+          ],
+          [
+            -0.0,
+            -2.0
+          ],
+          [
+            0.196034,
+            -1.990369
+          ],
+          [
+            0.390181,
+            -1.961571
+          ],
+          [
+            0.580569,
+            -1.913881
+          ],
+          [
+            0.765367,
+            -1.847759
+          ],
+          [
+            0.942793,
+            -1.763843
+          ],
+          [
+            1.11114,
+            -1.662939
+          ],
+          [
+            1.268787,
+            -1.546021
+          ],
+          [
+            1.414214,
+            -1.414214
+          ],
+          [
+            1.546021,
+            -1.268787
+          ],
+          [
+            1.662939,
+            -1.11114
+          ],
+          [
+            1.763843,
+            -0.942793
+          ],
+          [
+            1.847759,
+            -0.765367
+          ],
+          [
+            1.913881,
+            -0.580569
+          ],
+          [
+            1.961571,
+            -0.390181
+          ],
+          [
+            1.990369,
+            -0.196034
+          ]
+        ],
+        "holesMm": [
+          [
+            [
+              1.0,
+              0.0
+            ],
+            [
+              0.995185,
+              0.098017
+            ],
+            [
+              0.980785,
+              0.19509
+            ],
+            [
+              0.95694,
+              0.290285
+            ],
+            [
+              0.92388,
+              0.382683
+            ],
+            [
+              0.881921,
+              0.471397
+            ],
+            [
+              0.83147,
+              0.55557
+            ],
+            [
+              0.77301,
+              0.634393
+            ],
+            [
+              0.707107,
+              0.707107
+            ],
+            [
+              0.634393,
+              0.77301
+            ],
+            [
+              0.55557,
+              0.83147
+            ],
+            [
+              0.471397,
+              0.881921
+            ],
+            [
+              0.382683,
+              0.92388
+            ],
+            [
+              0.290285,
+              0.95694
+            ],
+            [
+              0.19509,
+              0.980785
+            ],
+            [
+              0.098017,
+              0.995185
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              -0.098017,
+              0.995185
+            ],
+            [
+              -0.19509,
+              0.980785
+            ],
+            [
+              -0.290285,
+              0.95694
+            ],
+            [
+              -0.382683,
+              0.92388
+            ],
+            [
+              -0.471397,
+              0.881921
+            ],
+            [
+              -0.55557,
+              0.83147
+            ],
+            [
+              -0.634393,
+              0.77301
+            ],
+            [
+              -0.707107,
+              0.707107
+            ],
+            [
+              -0.77301,
+              0.634393
+            ],
+            [
+              -0.83147,
+              0.55557
+            ],
+            [
+              -0.881921,
+              0.471397
+            ],
+            [
+              -0.92388,
+              0.382683
+            ],
+            [
+              -0.95694,
+              0.290285
+            ],
+            [
+              -0.980785,
+              0.19509
+            ],
+            [
+              -0.995185,
+              0.098017
+            ],
+            [
+              -1.0,
+              0.0
+            ],
+            [
+              -0.995185,
+              -0.098017
+            ],
+            [
+              -0.980785,
+              -0.19509
+            ],
+            [
+              -0.95694,
+              -0.290285
+            ],
+            [
+              -0.92388,
+              -0.382683
+            ],
+            [
+              -0.881921,
+              -0.471397
+            ],
+            [
+              -0.83147,
+              -0.55557
+            ],
+            [
+              -0.77301,
+              -0.634393
+            ],
+            [
+              -0.707107,
+              -0.707107
+            ],
+            [
+              -0.634393,
+              -0.77301
+            ],
+            [
+              -0.55557,
+              -0.83147
+            ],
+            [
+              -0.471397,
+              -0.881921
+            ],
+            [
+              -0.382683,
+              -0.92388
+            ],
+            [
+              -0.290285,
+              -0.95694
+            ],
+            [
+              -0.19509,
+              -0.980785
+            ],
+            [
+              -0.098017,
+              -0.995185
+            ],
+            [
+              -0.0,
+              -1.0
+            ],
+            [
+              0.098017,
+              -0.995185
+            ],
+            [
+              0.19509,
+              -0.980785
+            ],
+            [
+              0.290285,
+              -0.95694
+            ],
+            [
+              0.382683,
+              -0.92388
+            ],
+            [
+              0.471397,
+              -0.881921
+            ],
+            [
+              0.55557,
+              -0.83147
+            ],
+            [
+              0.634393,
+              -0.77301
+            ],
+            [
+              0.707107,
+              -0.707107
+            ],
+            [
+              0.77301,
+              -0.634393
+            ],
+            [
+              0.83147,
+              -0.55557
+            ],
+            [
+              0.881921,
+              -0.471397
+            ],
+            [
+              0.92388,
+              -0.382683
+            ],
+            [
+              0.95694,
+              -0.290285
+            ],
+            [
+              0.980785,
+              -0.19509
+            ],
+            [
+              0.995185,
+              -0.098017
+            ]
+          ]
+        ],
+        "depthMm": 0.9,
+        "centerMm": [
+          0,
+          -20,
+          -2.65
+        ]
+      },
+      "material": {
+        "metalness": 0.7,
+        "roughness": 0.4
+      },
+      "notes": "Visible brass M2 insert follows the 4.2 mm native opening and M2 drawing callout. Internal thread and hidden insert length are not modeled."
+    },
+    {
+      "id": "m2-recess-interior",
+      "kind": "box",
+      "color": "#191d19",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-4bcd22006c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          2,
+          2,
+          0.15
+        ],
+        "centerMm": [
+          0,
+          -20,
+          -2.12
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "battery-connector-recess",
+      "kind": "box",
+      "color": "#1c2521",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-4bcd22006c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          5.1,
+          6.9,
+          0.3
+        ],
+        "centerMm": [
+          -9.85,
+          -12.25,
+          -1.6
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "battery-connector-body",
+      "kind": "box",
+      "color": "#dddeda",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-4bcd22006c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          4.5,
+          5.8,
+          1.05
+        ],
+        "centerMm": [
+          -9.85,
+          -12.3,
+          -2.2
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "battery-connector-mouth",
+      "kind": "box",
+      "color": "#383e38",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-4bcd22006c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          3.7,
+          2.4,
+          0.12
+        ],
+        "centerMm": [
+          -9.85,
+          -11.2,
+          -2.74
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "battery-connector-lip",
+      "kind": "box",
+      "color": "#e3e4df",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-4bcd22006c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          4.5,
+          0.7,
+          0.6
+        ],
+        "centerMm": [
+          -9.85,
+          -9.7,
+          -2.6
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "battery-connector-divider",
+      "kind": "box",
+      "color": "#dddeda",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-4bcd22006c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          0.5,
+          2.3,
+          0.22
+        ],
+        "centerMm": [
+          -9.85,
+          -11.2,
+          -2.9
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "usb-cavity-back",
+      "kind": "box",
+      "color": "#141a19",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-fdb6861a7c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          7.6,
+          0.2,
+          2.18
+        ],
+        "centerMm": [
+          -24,
+          -56.8,
+          -0.87
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "usb-tongue",
+      "kind": "box",
+      "color": "#333a38",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-fdb6861a7c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          6.15,
+          2.0,
+          0.52
+        ],
+        "centerMm": [
+          -24,
+          -58.0,
+          -0.87
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "microsd-top",
+      "kind": "box",
+      "color": "#9ca3a1",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          3.4,
+          12,
+          0.18
+        ],
+        "centerMm": [
+          31.5,
+          -39.15,
+          0.18
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.7,
+        "roughness": 0.45
+      }
+    },
+    {
+      "id": "microsd-bottom",
+      "kind": "box",
+      "color": "#9ca3a1",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          3.4,
+          12,
+          0.18
+        ],
+        "centerMm": [
+          31.5,
+          -39.15,
+          -1.9
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.7,
+        "roughness": 0.45
+      }
+    },
+    {
+      "id": "microsd-back",
+      "kind": "box",
+      "color": "#161b19",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          0.2,
+          11.5,
+          1.8
+        ],
+        "centerMm": [
+          30.25,
+          -39.15,
+          -0.85
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "microsd-end-upper",
+      "kind": "box",
+      "color": "#9ca3a1",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          3.4,
+          0.25,
+          2.1
+        ],
+        "centerMm": [
+          31.5,
+          -33.25,
+          -0.85
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.7,
+        "roughness": 0.45
+      }
+    },
+    {
+      "id": "microsd-end-lower",
+      "kind": "box",
+      "color": "#9ca3a1",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          3.4,
+          0.25,
+          2.1
+        ],
+        "centerMm": [
+          31.5,
+          -45.05,
+          -0.85
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.7,
+        "roughness": 0.45
+      }
+    },
+    {
+      "id": "top-release-recess",
+      "kind": "box",
+      "color": "#242b28",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-4bcd22006c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          18,
+          3,
+          0.3
+        ],
+        "centerMm": [
+          0,
+          57.2,
+          -1.8
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "battery-connector-contact-0",
+      "kind": "box",
+      "color": "#a49b72",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-4bcd22006c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          0.32,
+          0.85,
+          0.16
+        ],
+        "centerMm": [
+          -10.55,
+          -11.1,
+          -2.96
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.7,
+        "roughness": 0.4
+      }
+    },
+    {
+      "id": "battery-connector-contact-1",
+      "kind": "box",
+      "color": "#a49b72",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-4bcd22006c",
+        "dimension-drawing-a6d9b92285"
+      ],
+      "geometry": {
+        "sizeMm": [
+          0.32,
+          0.85,
+          0.16
+        ],
+        "centerMm": [
+          -9.15,
+          -11.1,
+          -2.96
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.7,
+        "roughness": 0.4
+      }
+    },
+    {
+      "id": "microsd-contact-0",
+      "kind": "box",
+      "color": "#c4a454",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff"
+      ],
+      "geometry": {
+        "sizeMm": [
+          1.4,
+          0.32,
+          0.12
+        ],
+        "centerMm": [
+          30.7,
+          -43.4,
+          -1.69
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.65,
+        "roughness": 0.45
+      }
+    },
+    {
+      "id": "microsd-contact-1",
+      "kind": "box",
+      "color": "#c4a454",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff"
+      ],
+      "geometry": {
+        "sizeMm": [
+          1.4,
+          0.32,
+          0.12
+        ],
+        "centerMm": [
+          30.7,
+          -42.199999999999996,
+          -1.69
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.65,
+        "roughness": 0.45
+      }
+    },
+    {
+      "id": "microsd-contact-2",
+      "kind": "box",
+      "color": "#c4a454",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff"
+      ],
+      "geometry": {
+        "sizeMm": [
+          1.4,
+          0.32,
+          0.12
+        ],
+        "centerMm": [
+          30.7,
+          -41.0,
+          -1.69
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.65,
+        "roughness": 0.45
+      }
+    },
+    {
+      "id": "microsd-contact-3",
+      "kind": "box",
+      "color": "#c4a454",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff"
+      ],
+      "geometry": {
+        "sizeMm": [
+          1.4,
+          0.32,
+          0.12
+        ],
+        "centerMm": [
+          30.7,
+          -39.8,
+          -1.69
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.65,
+        "roughness": 0.45
+      }
+    },
+    {
+      "id": "microsd-contact-4",
+      "kind": "box",
+      "color": "#c4a454",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff"
+      ],
+      "geometry": {
+        "sizeMm": [
+          1.4,
+          0.32,
+          0.12
+        ],
+        "centerMm": [
+          30.7,
+          -38.6,
+          -1.69
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.65,
+        "roughness": 0.45
+      }
+    },
+    {
+      "id": "microsd-contact-5",
+      "kind": "box",
+      "color": "#c4a454",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff"
+      ],
+      "geometry": {
+        "sizeMm": [
+          1.4,
+          0.32,
+          0.12
+        ],
+        "centerMm": [
+          30.7,
+          -37.4,
+          -1.69
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.65,
+        "roughness": 0.45
+      }
+    },
+    {
+      "id": "microsd-contact-6",
+      "kind": "box",
+      "color": "#c4a454",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff"
+      ],
+      "geometry": {
+        "sizeMm": [
+          1.4,
+          0.32,
+          0.12
+        ],
+        "centerMm": [
+          30.7,
+          -36.2,
+          -1.69
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.65,
+        "roughness": 0.45
+      }
+    },
+    {
+      "id": "microsd-contact-7",
+      "kind": "box",
+      "color": "#c4a454",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-c3df0b6aff"
+      ],
+      "geometry": {
+        "sizeMm": [
+          1.4,
+          0.32,
+          0.12
+        ],
+        "centerMm": [
+          30.7,
+          -35.0,
+          -1.69
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD.",
+      "material": {
+        "metalness": 0.65,
+        "roughness": 0.45
+      }
+    },
+    {
+      "id": "indicator-recess-0",
+      "kind": "box",
+      "color": "#222924",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-fdb6861a7c"
+      ],
+      "geometry": {
+        "sizeMm": [
+          1.3,
+          0.18,
+          1.8
+        ],
+        "centerMm": [
+          -1.5,
+          -58.35,
+          -0.5
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
+    },
+    {
+      "id": "indicator-recess-1",
+      "kind": "box",
+      "color": "#222924",
+      "basis": "photo-and-drawing",
+      "sourceIds": [
+        "product-photo-fdb6861a7c"
+      ],
+      "geometry": {
+        "sizeMm": [
+          1.3,
+          0.18,
+          1.8
+        ],
+        "centerMm": [
+          1.5,
+          -58.35,
+          -0.5
+        ]
+      },
+      "notes": "Photo-visible parts fitted to the manufacturer dimension drawing and existing shell openings; hidden dimensions are estimates, not populated PCB CAD."
     }
   ],
   "limitations": [
-    "Screen opening and PCB dimensions are explicitly estimated; no full 1:1 interior claim.",
-    "Overall button protrusion differs from official body length; dimensional failure is retained.",
-    "PaperDIY factory firmware is an upstream reference; M5PM1/e-paper/FPC behavior is not implemented.",
-    "No complete board/peripheral emulator exists for this SKU; preview and documentation only.",
-    "PCB placeholder has no components. Its dimensions/placement are an enclosure-space estimate, not a verified PCB layout.",
-    "Manufacturer photo rights are separate from CAD MIT license. Materials are visual approximations, not measured reflectance."
+    "Original enclosure and USB metal CAD retained with a rigid transform. The drawing confirms 121.27 mm overall including the lower power key; 120 mm describes the shell.",
+    "Visible ESP32 shield, brass M2 insert, SH1.0-2P battery connector and microSD opening are photo/drawing-constrained approximations. Hidden lengths, thread detail and internal PCB layout remain unknown.",
+    "Screen window follows the 59.72 × 105.02 mm drawing; a 58.7475 × 104.44 mm active plane preserves 540:960 pixels and fits the photo border. Exact optical active area and layer depths are not independently measured.",
+    "PCB UNKNOWN remains an enclosure-space estimate. Inspection offsets are illustrative viewing separations, not a verified disassembly sequence.",
+    "Display framebuffer and user-button input use the existing independent paperdiy runtime; model review does not extend firmware or hardware validation.",
+    "Manufacturer photos retain their own rights. Shell/metal optical materials are visual approximations, not measured reflectance."
   ],
   "sourceId": "manufacturer-cad-7f0eb880a6",
   "photos": [
@@ -210,11 +1582,104 @@
       "view": "side"
     }
   ],
-  "photoReview": "实际浏览器四视图与官方前/后/端口/侧面照片并列检查。修正了初次整体倒置；现用户键位于左侧、独立电源键位于下端，与前视照片方向一致。顶部内部卡扣/连接器尚未被真实电子组件覆盖，屏幕与内部尺寸为估计，未通过完整外观精度验收。",
+  "photoReview": "2026-11-13 model refresh: independent drawing resolves the historical overall-length false failure. Screen opening and black border align to the drawing; visible rear shield, brass insert, battery connector, microSD and USB interiors added from exact-SKU photographs. Final browser receipts record front/back/ports, three shell appearances and UNKNOWN inspection.",
   "display": {
     "width": 540,
     "height": 960,
     "type": "E Ink",
     "controller": "ET047TC1"
+  },
+  "textureSources": [
+    {
+      "sourceId": "product-photo-4bcd22006c",
+      "file": "esp32-shield-marking.webp",
+      "cropXYXY": [
+        575,
+        922,
+        731,
+        1058
+      ],
+      "notes": "Front-on manufacturer rear photograph, shield interior only. Existing exposure retained; no generative replacement or painted text. Physical shield margins remain separate metal."
+    }
+  ],
+  "supportingAssets": [
+    {
+      "sourceId": "dimension-drawing-a6d9b92285",
+      "file": "dimension-drawing.png"
+    }
+  ],
+  "reviewViews": {
+    "front": {
+      "span": 174.0,
+      "position": [
+        0,
+        0,
+        250
+      ],
+      "target": [
+        -0.55,
+        -0.65,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ]
+    },
+    "back": {
+      "span": 174,
+      "position": [
+        0,
+        0,
+        -250
+      ],
+      "target": [
+        -0.25,
+        -0.65,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ]
+    },
+    "ports": {
+      "span": 89.3,
+      "position": [
+        0,
+        -250,
+        0
+      ],
+      "target": [
+        -0.3,
+        0,
+        0
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ]
+    },
+    "side": {
+      "span": 150.4,
+      "position": [
+        250,
+        0,
+        0
+      ],
+      "target": [
+        0,
+        -0.65,
+        0
+      ],
+      "up": [
+        0,
+        0,
+        -1
+      ]
+    }
   }
 }
