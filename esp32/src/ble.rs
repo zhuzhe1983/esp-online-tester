@@ -39,8 +39,9 @@ impl VhciBus for SocBus {
     // Bluedroid built with CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST takes its HCI buffers from
     // PSRAM first (IDF v5.3.6 components/bt/common/osi/include/osi/allocator.h:38), so the
     // packets it sends lie in the external RAM window when there is PSRAM. The controller BSS,
-    // which holds the receive buffer, stays in DRAM
-    // (components/bt/controller/linker_rw_bt_controller.lf:31).
+    // which holds the receive buffer, stays in DRAM (IDF v5.3.6
+    // components/bt/controller/linker_rw_bt_controller.lf:31; in v5.5.4 the file is
+    // components/bt/linker_rw_bt_controller.lf).
     fn valid_packet_range(&self, address: u32, len: usize) -> bool {
         let Some(end) = address.checked_add(len as u32) else { return false };
         (address >= DRAM_LOW && end <= DRAM_HIGH) || self.psram_readable(address, len)
@@ -288,10 +289,16 @@ mod tests {
         let send = |bus: &mut SocBus, symbols: &HashMap<String, u32>| {
             bus.ble.status = 2;
             bus.ble.send_ready = false;
+            bus.ble.lines.keep();
+            while bus.ble.lines.take().is_some() {}
             let mut cpu = caller(symbols["esp_vhci_host_send_packet"], data);
             cpu.set_ar(11, 4);
             assert!(intercept(&mut cpu, bus));
             let sent = bus.ble.send_ready;
+            // a packet not taken was refused, not lost to a failed read
+            let rejected =
+                bus.ble.lines.take().is_some_and(|l| l.contains("rejected invalid VHCI"));
+            assert_eq!(rejected, !sent);
             assert_eq!(bus.ble.session.pop_packet().is_some(), sent);
             // the hook takes a packet exactly when the read of its last byte, in its second page,
             // succeeds

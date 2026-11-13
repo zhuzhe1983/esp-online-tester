@@ -82,8 +82,9 @@ with `CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST` allocates its HCI buffers
 packet touches must be mapped to the installed PSRAM and readable through the
 cache, as a load from it would be; otherwise the packet is refused with
 `[ble] rejected invalid VHCI packet pointer, length or controller state`. The
-controller BSS, which holds the receive buffer, stays in DRAM
-(`components/bt/controller/linker_rw_bt_controller.lf`).
+controller BSS, which holds the receive buffer, stays in DRAM (IDF v5.3.6
+`components/bt/controller/linker_rw_bt_controller.lf`; IDF v5.5.4 moves it to
+`components/bt/linker_rw_bt_controller.lf`).
 
 Classic I2S0/1 RX accepts per-controller PCM (`i2s_input`) and pin-routed
 sources (`attach_pcm_sources`) through the shared host API from #201/#202; a
