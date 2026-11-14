@@ -1,0 +1,149 @@
+{
+  "checkedAt": "2026-11-14T08:42:47Z",
+  "upstreamBase": "9f1ff87b",
+  "runtimeIntegration": "f9c77c2b",
+  "finalExecutableIntegration": "b94bae97",
+  "documentationRevision": "41335ce1",
+  "toolchain": {
+    "rust": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "node": "v26.13.0",
+    "architecture": "arm64"
+  },
+  "checks": [
+    {
+      "name": "native-clippy",
+      "exit": 0,
+      "seconds": 1.2
+    },
+    {
+      "name": "wasm-clippy",
+      "exit": 0,
+      "seconds": 0.64
+    },
+    {
+      "name": "release-build",
+      "exit": 0,
+      "seconds": 36.51
+    },
+    {
+      "name": "rust-tests",
+      "exit": 0,
+      "seconds": 106.72
+    },
+    {
+      "name": "wasm-build",
+      "exit": 0,
+      "seconds": 17.29
+    },
+    {
+      "name": "platform-tests",
+      "exit": 1,
+      "seconds": 5.79
+    },
+    {
+      "name": "platform-tests-final",
+      "exit": 0,
+      "seconds": 5.7
+    },
+    {
+      "name": "mosaico-probe",
+      "exit": 0,
+      "seconds": 31.32
+    },
+    {
+      "name": "wasm-scenarios",
+      "exit": 0,
+      "seconds": 47.48
+    },
+    {
+      "name": "wasm-sections",
+      "exit": 0,
+      "seconds": 0.08
+    },
+    {
+      "name": "recording",
+      "exit": 0,
+      "seconds": 4.34
+    },
+    {
+      "name": "timing-api",
+      "exit": 0,
+      "seconds": 0.1
+    },
+    {
+      "name": "ble-api",
+      "exit": 0,
+      "seconds": 0.66
+    },
+    {
+      "name": "ble-connection",
+      "exit": 0,
+      "seconds": 2.24
+    },
+    {
+      "name": "wasm-jit",
+      "exit": 0,
+      "seconds": 36.64
+    },
+    {
+      "name": "profile-build",
+      "exit": 0,
+      "seconds": 18.32
+    },
+    {
+      "name": "catalog-json-schema",
+      "exit": 0,
+      "command": "python3 tools/validate-platform-catalog.py (jsonschema environment)",
+      "products": 219,
+      "accessories": 10,
+      "firmwares": 177,
+      "watchlist": 122
+    }
+  ],
+  "results": {
+    "rust": {
+      "groups": 175,
+      "passed": 2221,
+      "failed": 0,
+      "ignored": 0,
+      "externalFiltered": 96
+    },
+    "platform": {
+      "passed": 419,
+      "failed": 0
+    },
+    "productionWasmScenarios": 15,
+    "wasmDifferentialCases": 111126,
+    "gpioWaveformCases": 24,
+    "realRecordingEvents": 18,
+    "cpu": {
+      "runs": 24,
+      "identicalWorkAndOutput": true,
+      "workloads": 4
+    }
+  },
+  "artifacts": {
+    "productionWasmSha256": "2705ba4f1dd5070db7dc78a07563d069bdde9b831df30b0e4b31e1cd99c8fd98",
+    "s31RomSha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+    "officialImageSha256": "7562ff67cad8280fe8fdd06f3be7d6c91f44e5a8cc63fe596721f48da428af9b"
+  },
+  "resolvedFailures": [
+    {
+      "check": "first platform sweep",
+      "reason": "Fetched timestamps used unsupported fractional precision; watchlist entries had unsupported GitHub metadata paths and compatibility labels.",
+      "resolution": "Normalize UTC receipts; use reference-only status, a dedicated fixed-endpoint Mosaico metadata adapter and the supported Xiaozhi latest-release endpoint. Do not weaken existing schemas or enable automatic firmware replacement."
+    },
+    {
+      "check": "initial CPU command",
+      "reason": "Pocket Tank model cache was absent in this clean worktree. Three hello comparisons completed successfully.",
+      "resolution": "Reuse the existing public model after checking its pinned SHA-256; run only the missing Pocket Tank comparison separately."
+    }
+  ],
+  "privacy": "Only source revisions, public artifact identities, commands, numeric samples and functional observations retained. No local account/path/hostname/process inventory or raw private captures. Platform browser evidence is manually reviewed in addition to the docs/evidence pattern scanner.",
+  "limits": [
+    "Shared-host CPU samples are regression observations, not hardware timing or isolated speed claims.",
+    "Official Mosaico publisher CORS blocks direct browser download; local image selection is required on a new client.",
+    "Photo-derived Mosaico case and UNKNOWN internals are not manufacturer CAD; cross-runtime language persistence is unaccepted."
+  ],
+  "schemaRevision": "179f8753"
+}
