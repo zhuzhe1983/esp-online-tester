@@ -1,5 +1,5 @@
 //! The SD/MMC host: the Synopsys DesignWare Mobile Storage Host core of the ESP32, ESP32-S3 and
-//! ESP32-P4 SDMMC block, its internal DMA controller (IDMAC), and the seam a card or an SDIO
+//! ESP32-P4 / ESP32-S31 SDMMC block, its internal DMA controller (IDMAC), and the seam a card or an SDIO
 //! function on one of its two slots implements (`SdDevice`).
 //!
 //! Registers: IDF v5.5.3 components/soc/esp32p4/register/hw_ver1/soc/sdmmc_struct.h and
@@ -91,6 +91,10 @@ pub enum SdmmcLayout {
     /// ESP32-P4: no PWREN or GPIO register; Espressif's wrapper from 0x800 (CLK_EDGE_SEL,
     /// RAW_INTS, DLL_CLK_CONF, DLL_CONF).
     Esp32p4,
+    /// ESP32-S31: the same core and 0x800 wrapper offsets, checked against IDF v6.1
+    /// fff9895c82d744c7237be8847347bdd1b07c6643 soc/esp32s31/register/soc/sdmmc_reg.h.
+    /// The chip supplies its own clocks and dedicated pads; no HS DLL lock is synthesized.
+    Esp32s31,
     /// ESP32 and ESP32-S3: PWREN at 0x04 and the CLOCK register at 0x800. Not wired to a chip
     /// yet; their reset values are unverified.
     Esp32,
@@ -243,7 +247,7 @@ impl Sdmmc {
         (self.tcbcnt, self.tbbcnt, self.resp_index) = (0, 0, 0);
         self.ram.write(reg::TMOUT, 0xffff_ff40);                  // data 0xFFFFFF, response 64
         self.ram.write(reg::RST_N, 1);
-        if self.layout == SdmmcLayout::Esp32p4 { self.ram.write(reg::CLK_EDGE_SEL, 1 << 9 | 1 << 17 | 1 << 23); }   // EDGE_H 1, EDGE_N 1, CCLK_EN
+        if matches!(self.layout, SdmmcLayout::Esp32p4 | SdmmcLayout::Esp32s31) { self.ram.write(reg::CLK_EDGE_SEL, 1 << 9 | 1 << 17 | 1 << 23); }   // EDGE_H 1, EDGE_N 1, CCLK_EN
         self.xfer = None;
         self.pending = Pending::None;
         self.bci_slot = None;
@@ -587,7 +591,7 @@ impl Device for Sdmmc {
             reg::BUFADDR => self.bufaddr,
             // the data FIFO: PIO transfers are not modelled
             0x200..=0x3ff => 0,
-            reg::RAW_INTS if self.layout == SdmmcLayout::Esp32p4 => self.rintsts,
+            reg::RAW_INTS if matches!(self.layout, SdmmcLayout::Esp32p4 | SdmmcLayout::Esp32s31) => self.rintsts,
             // DLL_CAL_END: calibration finishes at once
             reg::DLL_CONF if self.layout == SdmmcLayout::Esp32p4 => self.ram.read(off) | 1 << 1,
             _ => self.ram.read(off),
@@ -623,7 +627,7 @@ impl Device for Sdmmc {
             reg::DBADDR => { self.dbaddr = v; self.cursor = v; }
             reg::IDSTS => self.idsts &= !(v & idsts::W1C),
             reg::IDINTEN => self.idinten = v & idsts::W1C,
-            reg::RAW_INTS if self.layout == SdmmcLayout::Esp32p4 => {}
+            reg::RAW_INTS if matches!(self.layout, SdmmcLayout::Esp32p4 | SdmmcLayout::Esp32s31) => {}
             _ => self.ram.write(off, v),
         }
         WriteEffect::NONE

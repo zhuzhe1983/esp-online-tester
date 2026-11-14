@@ -9,6 +9,7 @@ pub mod board;
 pub mod bq27220;
 pub mod cst9220;
 pub mod spi_nand;
+pub mod sdmmc;
 pub mod bus;
 pub mod soc;
 pub mod interrupts;
