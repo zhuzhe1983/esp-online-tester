@@ -115,8 +115,10 @@ impl BoardModel for Ink4Plus {
     fn touch(&mut self,x:u16,y:u16,down:bool) {
         self.wiring.sync();{let mut t=self.wiring.touch.lock().expect("INK4 Plus touch poisoned");if t.powered {t.x=x.min(4095);t.y=y.min(4095);t.down=down;}}self.sync_irq();
     }
-    fn button_at(&mut self,cycle:VirtualCycle,id:&str,pressed:bool)->bool {
-        self.cycle=cycle;match id {
+    fn button_at(&mut self,_cycle:VirtualCycle,id:&str,pressed:bool)->bool {
+        // The generic host button call passes CPU ticks; this S31 board keeps
+        // nanoseconds from advance_to, like its GPIO and touch callbacks.
+        match id {
             "power"|"volume-up"|"volume-down"=>self.wiring.expander.lock().expect("INK4 Plus expander poisoned").set_input(match id {"power"=>15,"volume-up"=>8,_=>9},!pressed),
             "home"|"previous"|"next"=>{self.touch(match id {"home"=>100,"previous"=>200,_=>300},1600,pressed);},
             _=>return false,
