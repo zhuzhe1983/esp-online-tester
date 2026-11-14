@@ -31,7 +31,7 @@ test('simulation memory and trial firmware remain distinct from unverified physi
   const scene=createDefaultScene(catalog,board);assert.equal(validateScene(scene,catalog).valid,true);assert.deepEqual(decodeScene(encodeScene(scene)),scene);
   setLocale('en');try{
     assert.equal(t('16 MB Flash / 16 MB PSRAM（模拟配置）'),'16 MB Flash / 16 MB PSRAM (simulated configuration)');
-    for(const text of product.limitations.filter(s=>/已接入|运行配置|侧键通过|microSD 接入|ESP32-S31 使用/.test(s)))assert.equal(/[\u4e00-\u9fff]/.test(t(text)),false);
+    for(const text of [...product.limitations,...firmware.limitations])assert.equal(/[\u4e00-\u9fff]/.test(t(text)),false);
   }finally{setLocale('zh-CN');}
 });
 test('S31 loader, semantic inputs, SD and public capabilities use one product route',async()=>{

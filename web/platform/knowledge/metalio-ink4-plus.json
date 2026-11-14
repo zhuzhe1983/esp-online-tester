@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "readme"
   ],
-  "updatedAt": "2026-10-27T10:08:24Z",
+  "updatedAt": "2026-11-14T16:37:53Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "无名科技（Metalio）",
@@ -213,11 +213,12 @@
         "SPV": 35,
         "BORDER": 37,
         "CKV": 40,
-        "revisionNote": "XSTL/Mode depend on hardware rev1.3/1.4; see pinned config.h"
+        "revisionNote": "固定源码 2.0.68 与 2.0.79 均使用 XSTL GPIO4 / MODE GPIO19；其他实物硬件版次未逐一核实。"
       },
       "basis": "official",
       "sourceIds": [
-        "config"
+        "config",
+        "config-2-0-79"
       ]
     },
     {
@@ -228,11 +229,14 @@
         "BCLK": 42,
         "WS": 43,
         "DOUT": 44,
-        "DIN": 45
+        "DIN": 45,
+        "chip": "BH1098G",
+        "i2sRole": "ESP32 slave; external audio processor supplies BCLK/WS"
       },
       "basis": "official",
       "sourceIds": [
-        "config"
+        "config",
+        "audio-2-0-79"
       ]
     },
     {
@@ -242,11 +246,13 @@
         "TX": 39,
         "RX": 38,
         "baud": 115200,
-        "note": "External audio chip; not native Bluetooth Classic support."
+        "note": "External audio chip; not native Bluetooth Classic support.",
+        "uart": 1
       },
       "basis": "official",
       "sourceIds": [
-        "readme"
+        "readme",
+        "audio-2-0-79"
       ]
     },
     {
@@ -292,12 +298,12 @@
         "firmwareId": "32b9b8d0790fe483d8b24a9909c5bdac",
         "sourceType": "official",
         "chipName": "esp32s31",
-        "stableVersion": "2.0.68",
+        "stableVersion": "2.0.79",
         "testVersion": null
       },
       "basis": "official",
       "sourceIds": [
-        "burner"
+        "burner-20261114"
       ]
     },
     {
@@ -469,6 +475,76 @@
       "license": "CC-BY-NC-4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
       "notes": "无名科技Nologo；通过已登录浏览器下载。公开模型页是下载入口，临时下载URL及账户信息不留存。原始文件名、文件hash和获取方法见模型计划。"
+    },
+    {
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4-Plus/14aa1d06d15a46435f234aa14f3cffa478ed2802/README_zn.md",
+      "fetchedAt": "2026-11-14T15:58:50Z",
+      "bytes": 56213,
+      "sha256": "6104e8c8abacd9a1295c5770c9d1d683e21250ab204c57a80779a758711f6f19",
+      "mediaType": "text/plain; charset=utf-8",
+      "id": "readme-2-0-79",
+      "title": "INK4 Plus 2.0.79 官方说明",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4-Plus/14aa1d06d15a46435f234aa14f3cffa478ed2802/README_zn.md",
+      "kind": "source-code",
+      "status": "fetched",
+      "checkedAt": "2026-11-14",
+      "archiveName": "ink4-plus-2.0.79-README_zn.md"
+    },
+    {
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4-Plus/14aa1d06d15a46435f234aa14f3cffa478ed2802/main/boards/metalio-e-ink4-plus/config.h",
+      "fetchedAt": "2026-11-14T15:58:50Z",
+      "bytes": 6805,
+      "sha256": "b2d39fb67a618488338102d2567fd2d1e3c05e5c18d79872d9b4a092f2a9c15c",
+      "mediaType": "text/plain; charset=utf-8",
+      "id": "config-2-0-79",
+      "title": "INK4 Plus 2.0.79 板级接线",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4-Plus/14aa1d06d15a46435f234aa14f3cffa478ed2802/main/boards/metalio-e-ink4-plus/config.h",
+      "kind": "source-code",
+      "status": "fetched",
+      "checkedAt": "2026-11-14",
+      "archiveName": "ink4-plus-2.0.79-config.h"
+    },
+    {
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4-Plus/14aa1d06d15a46435f234aa14f3cffa478ed2802/main/boards/metalio-e-ink4-plus/periph/metalio_audio.cc",
+      "fetchedAt": "2026-11-14T15:58:50Z",
+      "bytes": 10712,
+      "sha256": "6202914787681a22f50f9810f7235053fecccd252c9b2765c4734cdaf046463b",
+      "mediaType": "text/plain; charset=utf-8",
+      "id": "audio-2-0-79",
+      "title": "INK4 Plus 外置音频 UART",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4-Plus/14aa1d06d15a46435f234aa14f3cffa478ed2802/main/boards/metalio-e-ink4-plus/periph/metalio_audio.cc",
+      "kind": "source-code",
+      "status": "fetched",
+      "checkedAt": "2026-11-14",
+      "archiveName": "ink4-plus-2.0.79-metalio_audio.cc"
+    },
+    {
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4-Plus/14aa1d06d15a46435f234aa14f3cffa478ed2802/main/boards/metalio-e-ink4-plus/display/output_lcd/lcd_driver.c",
+      "fetchedAt": "2026-11-14T15:58:50Z",
+      "bytes": 52907,
+      "sha256": "4484741c0a01530d6d2d37a2c28b988830c5130b0d88822e0ac2df9aed93227e",
+      "mediaType": "text/plain; charset=utf-8",
+      "id": "lcd-2-0-79",
+      "title": "INK4 Plus LCD 波形传输",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-E-INK4-Plus/14aa1d06d15a46435f234aa14f3cffa478ed2802/main/boards/metalio-e-ink4-plus/display/output_lcd/lcd_driver.c",
+      "kind": "source-code",
+      "status": "fetched",
+      "checkedAt": "2026-11-14",
+      "archiveName": "ink4-plus-2.0.79-lcd_driver.c"
+    },
+    {
+      "id": "burner-20261114",
+      "title": "CloudZao INK4 Plus 官方版本元数据",
+      "url": "https://admin.metalio.world/xiaozhi/api/firmwares?page=1&limit=10&hardwareModelId=44&sourceType=official",
+      "resolvedUrl": "https://admin.metalio.world/xiaozhi/api/firmwares?page=1&limit=10&hardwareModelId=44&sourceType=official",
+      "kind": "firmware-registry",
+      "status": "fetched",
+      "fetchedAt": "2026-11-14T15:48:10Z",
+      "bytes": 24544,
+      "sha256": "2c54a37ac0e8dd85d06c1158d6c943c535632f877473e3e09aed5b334af64d49",
+      "mediaType": "application/json",
+      "archiveName": "ink4-plus-official-versions-20261114.json",
+      "notes": "原响应不入库；已删除作者、账户、头像及无关字段，筛选结果与原始 hash 见运行证据。"
     }
   ],
   "assets": [
@@ -555,15 +631,17 @@
       "value": null,
       "basis": "unknown",
       "sourceIds": [
-        "readme"
+        "readme",
+        "config-2-0-79"
       ],
-      "notes": "先保留两个产品系列；不虚构独立 SKU、4G 引脚或等效关系。"
+      "notes": "最新公开源码含 NT26 UART2（TX58/RX59），但未核实每个 Wi-Fi/4G SKU、实物装配与硬件版次；不据代码宏合并为已确认配置。"
     }
   ],
   "revisions": [],
   "collectionNotes": [
     "仅收集公开型号与固件信息；无私有账户字段。",
     "官方发布渠道已确认，尚未证明实机出厂使用的具体版本；默认官方稳定版。",
-    "MakerWorld外观CAD与派生几何遵循CC BY-NC 4.0；代码仓库MIT许可证不覆盖这些CAD。"
+    "MakerWorld外观CAD与派生几何遵循CC BY-NC 4.0；代码仓库MIT许可证不覆盖这些CAD。",
+    "独立 metalio-ink4-plus 运行器按固定官方源码接线；16 MiB PSRAM 为模拟配置，实物容量未知。已执行官方 2.0.68 和 2.0.79，显示/触控/盖板与侧键、SDMMC 的验收和未模拟外设见 docs/platform/ink4-plus-runtime.md。"
   ]
 }

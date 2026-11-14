@@ -1,0 +1,96 @@
+{
+  "checkedAt": "2026-11-14T16:35:17Z",
+  "baselineRevision": "65fa567109b5c2358152a745e33804778f15d7da",
+  "coreRevision": "56afb19644253279eb91c7aa7942395a76e8df49",
+  "environment": {
+    "arch": "arm64",
+    "osVersion": "27.2.1",
+    "cpu": "Apple M5 Max",
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "node": "v26.13.0"
+  },
+  "wasmSha256": "5e2bdd39b38b98761c229bc4d2a2f082fdc5134e039242d7eb6b34ff4917ba6b",
+  "rust": {
+    "workspaceTestsPassed": 2242,
+    "groups": 175,
+    "failed": 0,
+    "externalFiltered": 96,
+    "includesIgnored": true,
+    "goldensRegenerated": false,
+    "scope": "Full release workspace at 180dc66f plus button timestamp fix (later 90145501). Final MODE gate fix 56afb196 additionally passes all four INK4 board tests, both Clippy steps and unchanged official 2.0.68 ROM boot/settings/SD smoke."
+  },
+  "productionWasmScenarios": 15,
+  "differentialCases": 111126,
+  "gpioWaveformCases": 24,
+  "profilingFeaturesCompile": true,
+  "nativeVirtualQuantumTests": true,
+  "bothClippyDenyWarnings": true,
+  "negativeResults": [
+    {
+      "check": "initial full Rust test setup",
+      "cause": "C61 ROM was absent in the fresh worktree ROM directory",
+      "resolution": "Copied pinned ROM, ran fetch-rom-elfs.sh to verify all hashes, then reran full workspace successfully."
+    },
+    {
+      "check": "knowledge schema after source refresh",
+      "cause": "Four fetched-source archive names and index timestamp were missing",
+      "resolution": "Added source filenames and matching knowledge index timestamp; schema unchanged."
+    },
+    {
+      "check": "new support text i18n",
+      "cause": "New support descriptions lacked English strings",
+      "resolution": "Added translations for both products and firmware limitations; extended the INK4 locale check to all limitations. All 427 platform tests pass."
+    }
+  ],
+  "otherChecks": [
+    {
+      "check": "wasm-sections",
+      "exitCode": 0
+    },
+    {
+      "check": "timing-abi",
+      "exitCode": 0
+    },
+    {
+      "check": "ble-abi",
+      "exitCode": 0
+    },
+    {
+      "check": "ble-connection",
+      "exitCode": 0
+    },
+    {
+      "check": "network-helper",
+      "exitCode": 0
+    },
+    {
+      "check": "network-relay",
+      "exitCode": 0
+    },
+    {
+      "check": "worker-pacing",
+      "exitCode": 0
+    },
+    {
+      "check": "worker-channel",
+      "exitCode": 0
+    },
+    {
+      "check": "touch-ui",
+      "exitCode": 0
+    },
+    {
+      "check": "recording-real",
+      "exitCode": 0
+    },
+    {
+      "check": "hardware-diagnostics",
+      "exitCode": 0
+    },
+    {
+      "check": "mosaico-regression",
+      "exitCode": 0
+    }
+  ],
+  "platformTestsPassed": 427
+}

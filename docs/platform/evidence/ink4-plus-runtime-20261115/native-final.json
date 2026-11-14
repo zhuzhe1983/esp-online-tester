@@ -1,0 +1,28 @@
+{
+  "sourceRevision": "56afb19644253279eb91c7aa7942395a76e8df49",
+  "firmwareVersion": "2.0.68",
+  "firmwareSha256": "265c51b07252dc2864e71439fefc8e9448d182fcd14a6bccfa6952fe58859b80",
+  "romSha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87",
+  "executableSha256": "11f9e7083837e69ec17a11b95b1f8c26c918384b993ad2d3e3ceed5907945520",
+  "inputScript": "6 touch 545 1015 1\n6.3 touch 545 1015 0\n",
+  "guestSeconds": 9,
+  "framebuffer": {
+    "width": 684,
+    "height": 1216,
+    "pngSha256": "859a5ac804bca4af5166ed164d37ebfdede67a6bc4c6dc6ea3968f5dc239bedb",
+    "observed": "Settings tabs and Wi-Fi configuration page, black/white portrait"
+  },
+  "serialEvidence": [
+    "I (3453) SdCardManager: SD ok at /sdcard",
+    "I (6773) HomeScreen: launch 设置",
+    "I (6813) SettingsScreen: settings ready tabs=12 open=0 haptic=1",
+    "W (8973) MetalioAudio: Audio initialization failed stage=mode_ack attempt=1/4",
+    "esp32s31: LCD 206 frames, 0 faults; RMT 0 transfers"
+  ],
+  "command": "target/release/esp32sim-s31 --board metalio-ink4-plus --boot rom --flash-image \"$OFFICIAL_BIN\" --rom \"$ROM\" --sd \"$PRISTINE_FAT32_IMG\" --max-seconds 9 --no-reboot --console usb --no-dump --script \"$INPUT_SCRIPT\" --tft-png \"$OUTPUT_PNG\"",
+  "limits": [
+    "No full color/gray calibration",
+    "External BH1098G audio processor has no peer, expected mode_ack failure retained",
+    "No hardware or cloud qualification"
+  ]
+}

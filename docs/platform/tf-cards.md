@@ -31,3 +31,6 @@ exFAT 依据 [Microsoft exFAT 文件系统规范](https://learn.microsoft.com/en
 ```sh
 node --test tools/platform-sd-image-test.mjs tools/platform-sd-card-test.mjs tools/platform-device-storage-test.mjs
 ```
+
+
+INK4 Plus 使用独立 S31 SDMMC slot0，CLK24/CMD25/D0–D3 为 GPIO20–23；64 MiB FAT32 默认卡经客体原生 SD 命令和 IDMAC 访问。官方 2.0.68 已挂载 `/sdcard` 并读写设置，后续持久化验收见 [运行报告](ink4-plus-runtime.md)。不复用普通 INK4 的 SPI 接线。

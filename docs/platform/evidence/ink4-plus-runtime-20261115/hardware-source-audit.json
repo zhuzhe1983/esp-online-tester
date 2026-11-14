@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-14T15:59:59.035805+00:00",
+  "scope": "Manufacturer source and unmodified image audit. Runtime acceptance is documented separately.",
+  "officialSource": {
+    "repository": "https://github.com/CloudZao/Metalio-E-INK4-Plus",
+    "revision": "14aa1d06d15a46435f234aa14f3cffa478ed2802",
+    "version": "2.0.79",
+    "previousRevision": "ad8edf4150a688737c0d7c00cae4413079b262ef",
+    "previousVersion": "2.0.68"
+  },
+  "idfBaseline": {
+    "repository": "https://github.com/espressif/esp-idf",
+    "revision": "fff9895c82d744c7237be8847347bdd1b07c6643",
+    "tag": "v6.1",
+    "firmwareEmbeddedVersion": "v6.1-dirty",
+    "limitation": "Dirty build modifications not fully identified by public tag; firmware includes patches/esp-idf/sdmmc-preserve-write-error.patch."
+  },
+  "artifacts": {
+    "firmware": "firmware-2.0.79.bin",
+    "binaryAudit": "firmware-2.0.79-audit.json",
+    "boardSources": "board-source-receipts.json",
+    "idfSources": "idf-source-receipts.json",
+    "releaseMetadata": "official-firmware-selected-public-fields.json",
+    "metadataProvenance": "official-firmware-metadata-receipt.json"
+  },
+  "memory": {
+    "flashMiB": 16,
+    "flashMode": "DIO",
+    "flashClockMHz": 80,
+    "psramMode": "Octal",
+    "psramClockMHz": 200,
+    "physicalPsramCapacityMiB": null,
+    "actualSiliconRevision": null,
+    "actualEfuseContents": null,
+    "allowedImageRevisionFull": [
+      0,
+      99
+    ],
+    "source": "sdkconfig:1199-1227,2585-2599,2911-2935; README_zn.md:44,164,653; binary image header",
+    "notes": "Allowed image revision is not physical silicon evidence. No public source establishes PSRAM capacity. UART0 115200; CPU 320 MHz."
+  },
+  "boot": {
+    "bootloaderOffset": "0x2000",
+    "partitionTableOffset": "0x8000",
+    "applicationOffset": "0x80000",
+    "requiredBoardInit": [
+      "TCA9555 accessible and correctly configured",
+      "TPS65185 probe, REVID access, sequencing writes, PWRGOOD on TCA P0.7, PG register mask0xFA",
+      "LCD/AXI DMA/RMT allocation and functional interrupts"
+    ],
+    "degradedIfAbsent": [
+      "FT6336U upgrade",
+      "PCF8563",
+      "SC7A20H",
+      "BQ27220",
+      "CX25601N",
+      "microSD"
+    ],
+    "source": "main/boards/metalio-e-ink4-plus/metalio_e_ink4_plus_board.cc:59-97; display/metalio_epd.c:31-70; display/epd_board_metalio_eink4_plus.c:812-955"
+  },
+  "lcd": {
+    "interface": "LCD_CAM RGB 8-bit + AXI GDMA + RMT CKV",
+    "lcdBase": "0x20396000",
+    "lcdIrq": 13,
+    "axiDmaBase": "0x20348000",
+    "axiDmaOutIrqs": [
+      51,
+      52,
+      53
+    ],
+    "lcdTrigger": 0,
+    "rmtBase": "0x20355000",
+    "rmtMemoryBase": "0x20355800",
+    "rmtIrq": 22,
+    "rmtWordsPerChannel": 48,
+    "clockResetBase": "0x20587000",
+    "clockOffsets": {
+      "rmt": "0xbc",
+      "lcdcamBus": "0x14c",
+      "lcdClock": "0x150",
+      "lcdcamShared": "0x154"
+    },
+    "panelCode": "E0470A14-AF",
+    "panelReadmeClaim": "ED047TC2",
+    "nativePixels": [
+      1216,
+      684
+    ],
+    "uiPixels": [
+      684,
+      1216
+    ],
+    "driveCodes": {
+      "0": "undriven",
+      "1": "darken",
+      "2": "whiten",
+      "3": "not established as final grayscale"
+    },
+    "pixelOrder": "First pixel bits7:6, then5:4,3:2,1:0. One LCD frame is a waveform drive phase, not RGB or final 4-bit grayscale.",
+    "pins": {
+      "data": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "xclPclk": 16,
+      "xleHsync": 17,
+      "xoe": 18,
+      "xstlDe": 4,
+      "mode": 19,
+      "ckvRmtChannel1": 40,
+      "spv": 35,
+      "border": 37
+    },
+    "latestBounceBytes": 2432,
+    "latestLines": 684,
+    "latestDummyBytesPerLine": 0,
+    "previousBounceBytes": 2440,
+    "previousLines": 688,
+    "previousDummyBytesPerLine": 1,
+    "completion": "VSYNC_END after final scan; EOF only DMA ingress/refill. Two ring descriptors; guest returns owner to DMA after refill. LINE_BATCH1000 so this panel has software START per phase and auto-next-frame=false.",
+    "source": "main/boards/metalio-e-ink4-plus/display/output_lcd/lcd_driver.c:111-132,474-546,609-632,663-714,790-804,915-975,1218-1343; display/output_common/lut.c:150-165; display/output_common/white_border.h:4-5"
+  },
+  "i2c": {
+    "port": 1,
+    "sda": 0,
+    "scl": 1,
+    "irq": 24,
+    "sharedInterruptGpio": 2,
+    "devices": [
+      {
+        "device": "TCA9555",
+        "address": "0x20",
+        "alternateProbeAddresses": [
+          "0x24",
+          "0x21",
+          "0x22",
+          "0x23",
+          "0x25",
+          "0x26",
+          "0x27"
+        ],
+        "configPorts": [
+          "0xc0",
+          "0xe3"
+        ],
+        "initialOutputPorts": [
+          "0x20",
+          "0x14"
+        ],
+        "pins": {
+          "P0.0": "VCOM",
+          "P0.1": "PWRUP",
+          "P0.2": "WAKEUP",
+          "P0.3": "motor",
+          "P0.4": "PA enable",
+          "P0.5": "camera/screen power",
+          "P0.7": "TPS PWRGOOD input",
+          "P1.0": "volume up",
+          "P1.1": "volume down",
+          "P1.2": "touch/4G/camera shared reset",
+          "P1.3": "shutdown pulse",
+          "P1.4": "BT/4G/PA power",
+          "P1.6": "RTC INT input",
+          "P1.7": "power key input"
+        }
+      },
+      {
+        "device": "TPS65185",
+        "address": "0x68",
+        "startup": "read REVID0x10 (no fixed ID comparison), UPSEQ0=0xE4/UPSEQ1=0x55; PWRGOOD via TCA must succeed before ENABLE=0x3F; PG@0x0F &0xFA must equal0xFA. TMST1 start0x80 then readybit0x20; signed temperature@0x00."
+      },
+      {
+        "device": "FT6336U",
+        "address": "0x38",
+        "identity": {
+          "0xa3": "0x64",
+          "0x9f": "0x26",
+          "0xa6": "0x04 latest /0x03 previous"
+        },
+        "interruptGpio": 5,
+        "reset": "TCA P1.2",
+        "coverKeys": "raw y1600; x100 Home,x200 Prev,x300 Next; tolerance30; long500ms"
+      },
+      {
+        "device": "BQ27220",
+        "address": "0x55",
+        "startup": "probe then little-endian voltage@0x08 between2500..5000mV; current@0x0c. Existing BQ model compatible with these commands."
+      },
+      {
+        "device": "CX25601N",
+        "address": "0x6b",
+        "startup": "PART_INFO@0x38 read succeeds; no required fixed value comparison. Driver then writes charge defaults."
+      },
+      {
+        "device": "PCF8563",
+        "address": "0x51",
+        "startup": "Read control, clear STOP bit, BCD time; IRQ via TCA P1.6."
+      },
+      {
+        "device": "SC7A20H",
+        "address": "0x19",
+        "alternateAddress": "0x18",
+        "startup": "WHO@0x0f recognized {0x11,0x33,0x32,0x44}; write0x20..0x25={0x57,0x01,0x40,0x88,0x08,0x03}; AOI0x30=0x2a,0x32=0x10,0x33=0; read0x31 clears AOI. Shared open-drain GPIO2."
+      }
+    ],
+    "source": "main/boards/metalio-e-ink4-plus/config.h:64-118; display/epd_board_metalio_eink4_plus.c:38-66,652-740,812-955; display/ft6336u_upgrade_protocol.h:9-60; bus/tps65185.c:15-92; main/boards/common/power/bq27220_gauge.cc:42-83; main/boards/common/power/cx25601n.cc:344-379; main/boards/common/sensor/sc7a20h.cc:8-36,53-89"
+  },
+  "audio": {
+    "chip": "BH1098G Bluetooth audio external processor",
+    "i2sRole": "ESP is slave; BH provides BCLK/WS",
+    "sampleRateHz": 16000,
+    "bclk": 42,
+    "ws": 43,
+    "dout": 44,
+    "din": 45,
+    "uart": 1,
+    "uartTx": 39,
+    "uartRx": 38,
+    "uartBaud": 115200,
+    "paEnable": "TCA P0.4",
+    "power": "TCA P1.4",
+    "source": "main/boards/metalio-e-ink4-plus/config.h:144-156; periph/metalio_audio.cc:94,110,206; main/boards/common/audio/bt_audio_codec.cc:68",
+    "limitation": "Do not reuse Mosaico ES8311 I2C identity as this device. Protocol and external clock fidelity need independent implementation."
+  },
+  "sd": {
+    "slot": 0,
+    "width": 4,
+    "dataPins": [
+      20,
+      21,
+      22,
+      23
+    ],
+    "clock": 24,
+    "command": 25,
+    "base": "0x20342000",
+    "irq": 3,
+    "source": "main/boards/metalio-e-ink4-plus/config.h:128-141; periph/metalio_sd.cc; IDF esp_hal_sd/esp32s31/include/hal/sdmmc_ll.h",
+    "notes": "Dedicated CNNT pads; shared SD card engine is reusable but S31 clocks/reset/pad/IRQ glue required."
+  },
+  "reusableModels": {
+    "TCA9555": "esp-periph/src/i2c/tca9555.rs",
+    "touchReportOnly": "esp-periph/src/i2c/ft6336.rs; FT6336G identity insufficient for FT6336U upgrade path",
+    "BQ27220": "esp32s31/src/bq27220.rs",
+    "RTCcandidate": "esp-soc/src/devices/bm8563.rs; compare PCF8563 semantics before claiming compatibility",
+    "otherShared": "AXI DMA, RMT, I2S, SD memory/card engine can be reused with S31-specific gates/routes/IRQs."
+  },
+  "versionDifferences": [
+    "LCD latest684lines/no dummy vs previous688lines/one dummy; source pins unchanged.",
+    "FT firmware03 ->04; old skips >=03 while new only==04; new boot entry retries and forced full retry.",
+    "Latest power outputs merged under lock, failed writes invalidate confirmed latch; BT off at least1000ms, motor discharge500ms, rail settle80ms.",
+    "Latest waveform/LUT and SD storage access policies changed; preserve decoded drive phases and native transports rather than bypassing them."
+  ],
+  "privacy": "All receipt archive paths are relative. Raw release metadata may contain account fields and is retained only in scratch; use selected public fields and original hash."
+}
