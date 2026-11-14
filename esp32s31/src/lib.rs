@@ -17,6 +17,8 @@ pub mod trng;
 pub mod rtc_wdt;
 pub mod cache;
 pub mod pads;
+pub mod lcd;
+pub mod rmt;
 pub mod efuse;
 pub mod clocks;
 pub mod bus_monitor;

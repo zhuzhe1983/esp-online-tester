@@ -130,7 +130,7 @@ pub struct SocBus {
     /// Board-level inputs replayed after every chip reset (they model the PCB, not the SoC).
     pub board_inputs: Option<BoardInputs>,
     /// The pad levels last given to the board (`Pads::board_levels`).
-    pin_levels: u64,
+    pin_levels: u64, pin_enabled: u64,
     /// Device state may differ from what the last interrupt refresh saw: set at every dispatch
     /// (`select_core`) and by every access that is not plain memory or that faults; cleared by a
     /// refresh. See `memory_written`.
@@ -256,7 +256,7 @@ impl SocBus {
             mac,
             rom_image: None,
             board_inputs: None,
-            pin_levels: !0,
+            pin_levels: !0, pin_enabled: 0,
         }
     }
 
@@ -332,6 +332,20 @@ impl SocBus {
         if address >> 24 != 0x20 { return; }
         if address & !3 == TSF_LATCH { self.latch_tsf(); }
         if crate::pads::Pads::is_mmio(address) { self.deliver_pin_levels(); self.irq_dirty = true; }
+        if self.inner.lcd.start_pending {
+            let pll160 = self.inner.mspi.bbpll_root_hz().map(|hz| hz / 3);
+            if let Some((w, h, bpp)) = self.inner.lcd.begin(pll160) {
+                let pins = self.inner.pads.lcd_rgb_pins((bpp * 8) as u8);
+                self.board.lcd_rgb_pins(pins);
+                let rmt = &self.inner.rmt; let pads = &self.inner.pads;
+                let pll80 = self.inner.mspi.bbpll_root_hz().map(|hz| hz / 6); let rc_fast = self.inner.clocks.rc_fast_hz();
+                self.board.lcd_rgb_start(self.board_ns, w, h, bpp, &|pin| {
+                    (0..4).find_map(|ch| pads.matrix_output(usize::from(pin), crate::rmt::SIGNAL0 + ch as u32)
+                        .then(|| rmt.finite_clock(ch, pll80, rc_fast)).flatten())
+                });
+            }
+            self.irq_dirty = true;
+        }
         self.deliver_spi();
     }
 
@@ -388,11 +402,12 @@ impl SocBus {
     fn deliver_pin_levels(&mut self) {
         let levels = self.inner.pads.board_levels();
         let diff = levels ^ self.pin_levels;
-        if diff == 0 { return; }
-        self.pin_levels = levels;
+        let (enabled, output) = self.inner.pads.gpio_outputs();
+        if diff == 0 && enabled == self.pin_enabled { return; }
+        self.pin_levels = levels; self.pin_enabled = enabled;
         let changes: Vec<(u8, bool)> = (0..64u8).filter(|&p| diff >> p & 1 != 0).map(|p| (p, levels >> p & 1 != 0)).collect();
         if let Some(ev) = &mut self.gpio_events { for &(pin, level) in &changes { ev.push((self.cycles, pin, level)); } }
-        self.board.gpio_changes(&changes);
+        self.board.gpio_output_at(self.board_ns, &changes, enabled, output);
     }
 
     /// Emulated microseconds, on the run's time base (`cycles` at `periph::CPU_HZ`).
@@ -498,6 +513,8 @@ impl esp_soc::SocBus for SocBus {
             let dt = u128::from(ns.saturating_sub(self.board_ns)) * u128::from(hz);
             (dt.div_ceil(1_000_000_000).min(u128::from(u64::MAX)) as u64).max(1)
         });
+        // Active streaming must yield to its EOF ISR/refill even while both harts idle.
+        let board = if self.inner.lcd.running() || self.inner.rmt.running() { Some(board.unwrap_or(64).min(64)) } else { board };
         let Some(ticks) = self.inner.periph.systimer.ticks_until_irq(stalled) else { return board };
         if ticks == 0 { return Some(1); }
         let source = if self.inner.periph.systimer.source_rc_fast() {
@@ -795,7 +812,7 @@ impl esp_soc::SocBus for SocBus {
             list.join(" "),
             self.inner.refused.len(),
             self.inner.refused.iter().take(48).map(|(a, (n, v))| format!("{a:#010x}x{n}(last write {v:#x})")).collect::<Vec<_>>().join(" ")
-        ) + &format!("\nesp32s31: GP-SPI2 {} transfers", self.inner.spi2.transfers) + &self.inner.i2s.iter().enumerate().filter(|(_, i)| i.frames_out != 0 || i.bytes_in != 0 || i.rx_running())
+        ) + &format!("\nesp32s31: LCD {} frames, {} faults; RMT {} transfers", self.inner.lcd.frames, self.inner.lcd.faults, self.inner.rmt.inner.tx_count) + &format!("\nesp32s31: GP-SPI2 {} transfers", self.inner.spi2.transfers) + &self.inner.i2s.iter().enumerate().filter(|(_, i)| i.frames_out != 0 || i.bytes_in != 0 || i.rx_running())
             .map(|(n, i)| format!("\nesp32s31: I2S{n} TX {} frames at {} Hz, RX {} bytes to DMA (RX rate {:?}, RX_CONF {:#x}, RX_CONF1 {:#x})", i.frames_out, i.sample_rate, i.bytes_in, i.rx_rate(), i.read(0x20), i.read(0x28))).collect::<String>() + if board.is_empty() { "" } else { "\n" } + &board
     }
 }
@@ -966,6 +983,20 @@ impl Bus for SocBus {
         let t = u128::from(cycles) * 1_000_000_000 + u128::from(self.board_ns_frac);
         self.board_ns += (t / u128::from(hz)) as u64; self.board_ns_frac = (t % u128::from(hz)) as u64;
         self.board.advance_to(self.board_ns);
+        if self.inner.rmt.running() {
+            let before = self.inner.rmt.irq();
+            self.inner.rmt.tick(u64::from(cycles), self.inner.mspi.bbpll_root_hz().map(|hz| hz / 6), self.inner.clocks.rc_fast_hz());
+            // Finite gate clocks are observed through lcd_rgb_start, not as WS2812 frames.
+            self.inner.rmt.inner.done.clear();
+            if before != self.inner.rmt.irq() { self.irq_dirty = true; }
+        }
+        if self.inner.lcd.running() {
+            if self.inner.lcd_dma_step(u64::from(cycles)) { self.irq_dirty = true; }
+            if let Some((w, h, data)) = self.inner.lcd.finish() {
+                self.board.lcd_rgb_pins(self.inner.pads.lcd_rgb_pins((self.inner.lcd.geometry.2 * 8) as u8));
+                self.board.lcd_frame(w, h, &data); self.irq_dirty = true;
+            }
+        }
         let edges = self.board.take_edges();
         if !edges.is_empty() {
             for e in edges { let _ = self.inner.pads.set_input(usize::from(e.pin), Some(e.level)); }
@@ -999,6 +1030,40 @@ impl Bus for SocBus {
 mod tests {
     use super::*;
     use esp_soc::SocBus as _;
+
+    #[test]
+    fn gpio_and_rgb_board_events_share_nanosecond_time_and_live_routes() {
+        use std::sync::{Arc, Mutex};
+        use crate::{pads::{GPIO_BASE, IO_MUX_BASE}, lcd, rmt};
+        type Start = (u64, u32, u32, Option<(u64, u32)>);
+        #[derive(Default)]
+        struct Seen { gpio: Vec<(u64, u64, u64)>, start: Option<Start>, pins: Option<esp_soc::board::LcdRgbPins> }
+        struct Board(Arc<Mutex<Seen>>);
+        impl esp_soc::board::BoardModel for Board {
+            fn name(&self) -> &'static str { "s31-scan-test" }
+            fn gpio_output_at(&mut self, t: u64, _: &[(u8, bool)], en: u64, out: u64) { self.0.lock().unwrap().gpio.push((t, en, out)); }
+            fn lcd_rgb_pins(&mut self, pins: esp_soc::board::LcdRgbPins) { self.0.lock().unwrap().pins = Some(pins); }
+            fn lcd_rgb_start(&mut self, t: u64, w: u32, h: u32, _: u32, clock: &dyn Fn(u8) -> Option<(u64, u32)>) { self.0.lock().unwrap().start = Some((t, w, h, clock(40))); }
+        }
+        let seen = Arc::new(Mutex::new(Seen::default())); let mut b = SocBus::new(1 << 20, [0; 6]); b.board = Box::new(Board(seen.clone()));
+        b.tick(320); // one microsecond, not 320 nanoseconds
+        b.write32(IO_MUX_BASE + 35 * 4, 1 << 12).unwrap(); b.write32(GPIO_BASE + 0x44, 1 << 3).unwrap();
+        b.write32(GPIO_BASE + 0x14, 1 << 3).unwrap(); b.write32(GPIO_BASE + 0x48, 1 << 3).unwrap();
+        assert_eq!(seen.lock().unwrap().gpio, [(1000, 1 << 35, 0), (1000, 1 << 35, 1 << 35), (1000, 0, 0)]);
+        for pin in 8..16 { b.write32(IO_MUX_BASE + pin * 4, 3 << 12).unwrap(); }
+        for (pin, signal) in [(16, 149), (17, 152), (4, 151), (40, 247)] {
+            b.write32(IO_MUX_BASE + pin * 4, 1 << 12).unwrap(); b.write32(GPIO_BASE + 0xaf4 + pin * 4, signal).unwrap();
+        }
+        b.write32(rmt::CLOCK, 0x21).unwrap(); // XTAL, per-channel /4 -> 10 MHz
+        b.write32(rmt::BASE + 0x800 + 48 * 4, 0x8000 | 159 | (11 << 16)).unwrap();
+        b.write32(rmt::BASE + 0xa4, (10 << 9) | (1 << 19) | (1 << 21)).unwrap();
+        b.write32(rmt::BASE + 0x24, (4 << 8) | (2 << 16) | (1 << 3) | 1).unwrap();
+        for (a, v) in [(lcd::BUS_CLOCK, 5), (lcd::PIXEL_CLOCK, 4), (lcd::SHARED_CLOCK, 4), (lcd::BASE + 0x18, 8),
+            (lcd::BASE + 0x20, 3 | (3 << 16)), (lcd::BASE + 0x1c, 1 | (1 << 16)), (lcd::USER, (1 << 27) | (1 << 24))] { b.write32(a, v).unwrap(); }
+        let state = seen.lock().unwrap();
+        assert_eq!(state.start, Some((1000, 4, 2, Some((17_000, 10)))));
+        assert_eq!(state.pins.unwrap().clock, 1 << 16);
+    }
 
     /// EX265: a store to plain memory no longer ends the dispatch when the interrupt refresh it
     /// would have caused cannot change anything; after a device access it refreshes on the spot.

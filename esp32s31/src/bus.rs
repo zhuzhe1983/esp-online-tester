@@ -180,6 +180,7 @@ pub struct S31Bus {
     pub i2c: [esp_periph::i2c::I2c; 2],
     /// AXI-GDMA: GP-SPI2's DMA (IRQ sources 48-50 IN, 51-53 OUT).
     pub axi_dma: esp_periph::gdma::AxiDma,
+    pub lcd: crate::lcd::Lcd, pub rmt: crate::rmt::Rmt,
     /// 2D-DMA (IRQ sources 105-107 IN, 108-111 OUT) and the PPA (source 102) it feeds.
     pub dma2d: esp_periph::dma2d::Dma2d,
     pub ppa: esp_periph::ppa::Ppa,
@@ -260,7 +261,7 @@ impl S31Bus {
             // Same HS UTMI DWC2 instance as the P4 (esp_hal_usb/esp32s31/usb_dwc_periph.c); its
             // GHWCFG words are assumed equal to the P4's until read from an S31.
             usb_otg: esp_periph::usb_otg::Dwc2::new(esp_periph::usb_otg::Dwc2Config::esp32p4_hs(crate::periph::CPU_HZ)),
-            spi2: esp_periph::GpSpi::new().diverting_dma_rx(), spi3: esp_periph::GpSpi::with_host(3).diverting_dma_rx(), i2c: [esp_periph::i2c::I2c::new(), esp_periph::i2c::I2c::new()], i2c_frac: 0, axi_dma: esp_periph::gdma::AxiDma::new(), dma2d: esp_periph::dma2d::Dma2d::new(), ppa: esp_periph::ppa::Ppa::new(),
+            spi2: esp_periph::GpSpi::new().diverting_dma_rx(), spi3: esp_periph::GpSpi::with_host(3).diverting_dma_rx(), i2c: [esp_periph::i2c::I2c::new(), esp_periph::i2c::I2c::new()], i2c_frac: 0, axi_dma: esp_periph::gdma::AxiDma::new(), lcd: Default::default(), rmt: Default::default(), dma2d: esp_periph::dma2d::Dma2d::new(), ppa: esp_periph::ppa::Ppa::new(),
             ahb_dma: esp_periph::gdma::AhbDmaV2::new(), i2s: [esp_periph::I2s::new_v2(crate::periph::CPU_HZ), esp_periph::I2s::new_v2(crate::periph::CPU_HZ)] }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
@@ -375,6 +376,40 @@ impl S31Bus {
         self.periph.aes.int_raw |= 1;
     }
 
+    /// One LCD descriptor (or its currently due prefix) per scheduler turn. Even a circular
+    /// bounce chain yields at EOF, and a pending enabled EOF waits for the guest ISR. This
+    /// provides refill backpressure; it does not claim a cycle-exact LCD FIFO underrun model.
+    /// v6.1 axi_dma_reg.h: CHECK_OWNER bit12, AUTO_WRBACK bit2; OUT IRQ bits0..3.
+    pub(crate) fn lcd_dma_step(&mut self, cycles: u64) -> bool {
+        use esp_periph::gdma::OutMemory;
+        self.lcd.advance(cycles);
+        let due = self.lcd.due();
+        if due == 0 { return false; }
+        let Some(ch) = self.axi_dma.gdma.out_channel_for(crate::lcd::DMA_TRIGGER) else { return false };
+        let c = self.axi_dma.gdma.out[ch];
+        if c.int_raw & c.int_ena & 2 != 0 { return false; }
+        let mut memory = AxiOut { mem: Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver }, cache: &mut self.cache }, channel: &mut self.axi_dma.gdma.out[ch] };
+        let result = (|| -> Result<(), Fault> {
+            if c.desc == 0 || c.desc & 3 != 0 { return Err(Fault::Misaligned); }
+            let (control, d) = esp_periph::gdma::DescriptorWalk::new(1).read_with(c.desc, |a| memory.word(a)).map_err(|_| Fault::Prohibited)?;
+            if d.length == 0 || d.length > d.size || c.buf_pos > d.length || c.conf1 & (1 << 12) != 0 && !d.owner_dma { return Err(Fault::Prohibited); }
+            let take = due.min((d.length - c.buf_pos) as usize);
+            let address = d.buf.checked_add(c.buf_pos).ok_or(Fault::Unmapped)?;
+            memory.append(address, take, &mut self.lcd.data).map_err(|(_, fault)| fault)?;
+            memory.channel.buf_pos += take as u32;
+            if memory.channel.buf_pos == d.length {
+                if c.conf0 & (1 << 2) != 0 { memory.writeback(c.desc, control & !(1 << 31))?; }
+                let c = &mut memory.channel;
+                c.int_raw |= 1;
+                if d.eof { c.int_raw |= 2; c.eof_desc = c.desc; }
+                c.desc = d.next; c.buf_pos = 0;
+                if d.next == 0 { c.running = false; if d.eof { c.int_raw |= 8; } }
+            }
+            Ok(())
+        })();
+        if result.is_err() { memory.channel.running = false; memory.channel.int_raw |= 4; self.lcd.fail(); }
+        memory.channel.int_raw != c.int_raw || result.is_err()
+    }
     /// I2Sn's transmit DMA through the AHB-GDMA, paced by the frame rate, as the P4 runs its
     /// I2S1 (esp32p4 bus.rs `i2s1_tx`): the frames due since the last call are taken from the OUT
     /// channel bound to one of the controller's four triggers (I2S0 1-4, I2S1 5-8; IDF's driver
@@ -525,7 +560,7 @@ impl S31Bus {
         let mut dma = UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver };
         self.usb_otg.run(&mut dma);
     }
-    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], gpio: self.pads.irq_lines(), axi_dma: esp_periph::Device::irq_sources(&self.axi_dma), aes: self.periph.aes.irq(), dma2d: self.dma2d.irq_bits() as u8, ppa: self.ppa.irq(), wifi_mac: self.wifi_mac.irq(), ahb_dma: esp_periph::Device::irq_sources(&self.ahb_dma), i2s: [self.i2s[0].irq(), self.i2s[1].irq()] } }
+    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], gpio: self.pads.irq_lines(), axi_dma: esp_periph::Device::irq_sources(&self.axi_dma), aes: self.periph.aes.irq(), dma2d: self.dma2d.irq_bits() as u8, ppa: self.ppa.irq(), wifi_mac: self.wifi_mac.irq(), ahb_dma: esp_periph::Device::irq_sources(&self.ahb_dma), i2s: [self.i2s[0].irq(), self.i2s[1].irq()], lcd: self.lcd.irq(), rmt: self.rmt.irq() } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
@@ -671,6 +706,10 @@ impl S31Bus {
     fn read_modelled(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
         if let Err(e) = self.apm.check(address, bytes, 2) { return self.fault(address, bytes, false, false, e); }
         if let Err(e) = self.permissions.check(address, false) { return self.fault(address, bytes, false, false, e); }
+        if crate::lcd::Lcd::is_mmio(address) || crate::rmt::Rmt::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return Ok(if crate::lcd::Lcd::is_mmio(address) { self.lcd.read(address) } else { self.rmt.read(address) });
+        }
         if (USB_OTG..USB_OTG + 0x4_0000).contains(&address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(esp_periph::Device::read(&mut self.usb_otg, address - USB_OTG));
@@ -912,6 +951,11 @@ impl S31Bus {
     fn write_modelled(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         if let Err(e) = self.apm.check(address, bytes, 1) { return self.fault(address, bytes, true, false, e); }
         if let Err(e) = self.permissions.check(address, true) { return self.fault(address, bytes, true, false, e); }
+        if crate::lcd::Lcd::is_mmio(address) || crate::rmt::Rmt::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            if crate::lcd::Lcd::is_mmio(address) { self.lcd.write(address, value); } else { self.rmt.write(address, value); }
+            return Ok(());
+        }
         if (USB_OTG..USB_OTG + 0x4_0000).contains(&address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             esp_periph::Device::write(&mut self.usb_otg, address - USB_OTG, value);
@@ -1247,6 +1291,32 @@ impl Bus for S31Bus {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn lcd_circular_bounces_yield_at_eof_and_require_refill_before_reuse() {
+        use crate::lcd::{BASE, BUS_CLOCK, PIXEL_CLOCK, SHARED_CLOCK, USER};
+        let mut b = S31Bus::new();
+        let (d0, d1, buf0, buf1) = (SRAM_BASE + 0x1000, SRAM_BASE + 0x1010, SRAM_BASE + 0x2000, SRAM_BASE + 0x2010);
+        let control = (1 << 31) | (1 << 30) | (4 << 12) | 4;
+        for (desc, buf, next, value) in [(d0, buf0, d1, 0x04030201), (d1, buf1, d0, 0x08070605)] {
+            b.write32(desc, control).unwrap(); b.write32(desc + 4, buf).unwrap(); b.write32(desc + 8, next).unwrap(); b.write32(buf, value).unwrap();
+        }
+        let out = AXI_DMA + 0x138;
+        for (address, value) in [(out + 8, 2), (out + 0x10, 4), (out + 0x14, 1 << 12), (out + 0x44, 0), (out + 0x24, d0), (out + 0x20, 2),
+            (BUS_CLOCK, 5), (PIXEL_CLOCK, 4), (SHARED_CLOCK, 4), (BASE + 0x18, 8), (BASE + 0x20, 11 | (11 << 16)), (BASE + 0x1c, 0), (BASE + 0x64, 3), (USER, (1 << 27) | (1 << 24))] { b.write32(address, value).unwrap(); }
+        assert_eq!(b.lcd.begin(None), Some((12, 1, 1)));
+        assert!(b.lcd_dma_step(96)); assert_eq!(b.lcd.data, [1, 2, 3, 4]); assert_eq!(b.read32(d0).unwrap() >> 31, 0);
+        assert!(!b.lcd_dma_step(96)); assert_eq!(b.lcd.data.len(), 4); assert!(!b.lcd.irq());
+        assert!(b.peripheral_irqs().sources().contains(&(51, true)));
+        b.write32(out + 12, 2).unwrap(); assert!(b.lcd_dma_step(0)); assert_eq!(b.lcd.data, [1, 2, 3, 4, 5, 6, 7, 8]);
+        // The guest refills buffer0 before returning its owner bit to DMA.
+        b.write32(buf0, 0x0c0b0a09).unwrap(); b.write32(d0, control).unwrap(); b.write32(out + 12, 2).unwrap();
+        assert!(b.lcd_dma_step(0)); let (_, _, frame) = b.lcd.finish().unwrap(); assert_eq!(frame, (1u8..=12).collect::<Vec<_>>());
+        assert!(b.peripheral_irqs().sources().contains(&(13, true))); assert_eq!(b.lcd.frames, 1);
+        assert!(b.unmodelled.is_empty() && b.refused.is_empty());
+        // A new scan of a descriptor still owned by the CPU faults, never republishes old data.
+        b.write32(USER, (1 << 27) | (1 << 24)).unwrap(); assert!(b.lcd.begin(None).is_some()); b.write32(out + 12, 2).unwrap();
+        assert!(b.lcd_dma_step(96)); assert_eq!(b.lcd.faults, 1); assert!(b.lcd.data.is_empty()); assert!(b.lcd.finish().is_none());
+    }
     /// I2S0 TX through the AHB-GDMA (OUT ch1 on trigger 1) from a descriptor in SRAM: the frames
     /// due go to the audio sink, the channel ends with OUT_EOF/OUT_TOTAL_EOF on source 42, and the
     /// rate comes from the HP_SYS_CLKRST divider words.
