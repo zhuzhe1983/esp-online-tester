@@ -131,6 +131,10 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     let c3_board=if matches!(board.as_str(),"esp32c3"|"c3") {esp32c3::board::make_board("none")}else if matches!(board.as_str(),"none"|"bare") {None}else{esp32c3::board::make_board(&board)};
     let c5_board = if matches!(board.as_str(), "stamp-c5" | "stamp-c5-dip") { esp32c5::board::make_board(&board) } else { None };
     let c61_board = if board == "esp32c61" { esp32c61::board::make_board("none") } else if board == "corematrix" { esp32c61::board::make_board(&board) } else { None };
+    let s31_board = if board == "esp32s31" { esp32s31::board::make_board("none") } else if matches!(board.as_str(), "mosaico" | "esp-mosaico") { esp32s31::board::make_board(&board) } else { None };
+    if s31_board.as_ref().is_some_and(|b| b.name() == "mosaico") && (flash_mb != 16 || psram_mb != 16) {
+        log("[emu] ESP-Mosaico V1.2 requires 16 MiB Flash and 16 MiB PSRAM"); return std::ptr::null_mut();
+    }
     if c5_board.is_some() && (flash_mb != 4 || psram_mb != 0) {
         log("[emu] Stamp-C5 supports exactly 4 MiB Flash and no PSRAM"); return std::ptr::null_mut();
     }
@@ -151,7 +155,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     let p4 = p4_board.is_some() || p4_rev3 || matches!(p4_name, "esp32p4" | "p4");
     let classic_board = if board == "esp32" {
         esp32::board::make_board("esp32dev")
-    } else if p4 || c6_board.is_some() || c61_board.is_some() || matches!(board.as_str(), "none" | "bare") {
+    } else if p4 || c6_board.is_some() || c61_board.is_some() || s31_board.is_some() || matches!(board.as_str(), "none" | "bare") {
         None
     } else {
         esp32::board::make_board(&board)
@@ -200,6 +204,19 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         m.console.mask = 2;
         prepare(&mut m);
         MachineKind::C61(Box::new(m))
+    } else if let Some(b) = s31_board {
+        let mut m = esp32s31::machine([0x30, 0xed, 0xa0, 0x00, 0x11, 0x31], flash_bytes);
+        let mut inputs = if b.name() == "mosaico" { esp32s31::soc::BoardInputs::mosaico_gd25q128() } else if flash_mb == 2 { esp32s31::soc::BoardInputs::hello_w25q16() } else { esp32s31::soc::BoardInputs::devkit_w25q128() };
+        inputs.psram_bytes = psram_bytes;
+        if let Err(reason) = m.bus.set_board_inputs(inputs) {
+            log(&format!("[emu] {}", reason)); return std::ptr::null_mut();
+        }
+        m.bus.board = b;
+        m.bus.attach_board_devices();
+        m.bus.set_strap(0x10);
+        m.console.mask = 2;
+        prepare(&mut m);
+        MachineKind::S31(Box::new(m))
     } else if p4 {
         fn p4_machine<R: esp32p4::Revision>(flash_bytes: usize, psram_bytes: usize, board: Option<esp_soc::Board>) -> Machine<esp32p4::Esp32p4<R>> {
             let mut m = esp32p4::machine_rev::<R>([0x30, 0xed, 0xa0, 0x00, 0x11, 0x22], flash_bytes);
@@ -579,3 +596,6 @@ pub extern "C" fn esp32sim_test_gpio_waveform() -> u32 {
     gpio_waveform_tests::run();
     24
 }
+
+#[cfg(test)]
+mod s31_tests;

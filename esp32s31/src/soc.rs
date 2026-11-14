@@ -526,6 +526,10 @@ impl esp_soc::SocBus for SocBus {
         self.inner.wifi_mac.link.attach_new(cfg, nat, &self.debug);
         Ok(())
     }
+    // Cold browser transports reuse the same digital Wi-Fi link as the native virtual AP.
+    fn set_ethernet_relay(&mut self, enabled: bool) -> Result<(), String> { self.inner.wifi_mac.link.set_relay(enabled); Ok(()) }
+    fn take_ethernet_frames(&mut self) -> Vec<Vec<u8>> { self.inner.wifi_mac.link.take_relay_frames() }
+    fn receive_ethernet_frame(&mut self, frame: &[u8]) -> Result<(), String> { self.inner.wifi_mac.link.receive_relay_frame(frame) }
     /// The host on the other end of the high-speed USB-OTG port (DR_REG_USB_OTGHS_BASE).
     fn attach_usb_host(&mut self, timing: esp_periph::usb_otg::UsbTiming) -> Result<(), String> {
         let now = self.cycles;
@@ -744,6 +748,8 @@ impl esp_soc::SocBus for SocBus {
         let a = if i[1].frames_out > i[0].frames_out { &i[1] } else { &i[0] };
         (&a.pcm, a.sample_rate)
     }
+
+    fn clear_audio_capture(&mut self) { for i in &mut self.inner.i2s { i.pcm.clear(); } }
 
     fn irq_sources_of(&self, core: usize, line: u32) -> Vec<usize> {
         let id = line + CLIC_EXT_OFFSET;

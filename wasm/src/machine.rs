@@ -152,6 +152,7 @@ pub(super) enum MachineKind {
     C5(Box<esp32c5::Machine>),
     C6(Box<esp32c6::Machine>),
     C61(Box<esp32c61::Machine>),
+    S31(Box<esp32s31::Machine>),
     Esp32(Box<esp32::Machine>),
     P4(Box<esp32p4::Machine>),
     P4Rev3(Box<esp_soc::Machine<esp32p4::P4Rev3>>),
@@ -164,7 +165,7 @@ impl MachineKind {
     /// included. No guest instruction, tick or cache state changes.
     pub fn flash(&self) -> &[u8] {
         match self { Self::S3(m) => &m.bus.flash, Self::C3(m) => &m.bus.flash, Self::C5(m) => &m.bus.flash, Self::C6(m) => &m.bus.flash, Self::Esp32(m) => &m.bus.flash, Self::P4(m) => &m.bus.flash,
-            Self::C61(m) => &m.bus.flash, Self::P4Rev3(m) => &m.bus.flash, Self::P4C6(m) => &m.p4.bus.flash, Self::P4Rev3C6(m) => &m.p4.bus.flash }
+            Self::C61(m) => &m.bus.flash, Self::S31(m) => &m.bus.flash, Self::P4Rev3(m) => &m.bus.flash, Self::P4C6(m) => &m.p4.bus.flash, Self::P4Rev3C6(m) => &m.p4.bus.flash }
     }
     pub fn s3_mut(&mut self) -> Option<&mut esp32s3::Machine> {
         match self { Self::S3(m) => Some(m), _ => None }
@@ -175,14 +176,14 @@ impl std::ops::Deref for MachineKind {
     type Target = dyn MachineApi;
     fn deref(&self) -> &Self::Target {
         match self { Self::S3(m) => m.as_ref(), Self::C3(m) => m.as_ref(), Self::C5(m) => m.as_ref(), Self::C6(m) => m.as_ref(), Self::Esp32(m) => m.as_ref(), Self::P4(m) => m.as_ref(),
-            Self::C61(m) => m.as_ref(), Self::P4Rev3(m) => m.as_ref(), Self::P4C6(m) => m.as_ref(), Self::P4Rev3C6(m) => m.as_ref() }
+            Self::C61(m) => m.as_ref(), Self::S31(m) => m.as_ref(), Self::P4Rev3(m) => m.as_ref(), Self::P4C6(m) => m.as_ref(), Self::P4Rev3C6(m) => m.as_ref() }
     }
 }
 
 impl std::ops::DerefMut for MachineKind {
     fn deref_mut(&mut self) -> &mut Self::Target {
         match self { Self::S3(m) => m.as_mut(), Self::C3(m) => m.as_mut(), Self::C5(m) => m.as_mut(), Self::C6(m) => m.as_mut(), Self::Esp32(m) => m.as_mut(), Self::P4(m) => m.as_mut(),
-            Self::C61(m) => m.as_mut(), Self::P4Rev3(m) => m.as_mut(), Self::P4C6(m) => m.as_mut(), Self::P4Rev3C6(m) => m.as_mut() }
+            Self::C61(m) => m.as_mut(), Self::S31(m) => m.as_mut(), Self::P4Rev3(m) => m.as_mut(), Self::P4C6(m) => m.as_mut(), Self::P4Rev3C6(m) => m.as_mut() }
     }
 }
 
