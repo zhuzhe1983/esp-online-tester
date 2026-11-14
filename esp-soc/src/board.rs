@@ -28,6 +28,10 @@ pub struct SpiPins {
 #[derive(Clone, Copy, Debug, Default)]
 pub struct LcdI80Pins { pub data: [u64; 16], pub clock: u64, pub select: u64, pub width: u8, pub dc: u64, pub dc_high: bool }
 
+/// Physical RGB scan routes. A data lane may drive several pads; zero means unrouted.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct LcdRgbPins { pub clock: u64, pub hsync: u64, pub vsync: u64, pub enable: u64, pub data: [u64; 16], pub width: u8 }
+
 /// Cold optional board supply, e.g. a PMIC independently powering the MCU.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct BoardPowerState { pub controller_powered: bool }
@@ -237,7 +241,8 @@ pub trait BoardModel {
     /// is the file's) rather than `w`x`h` raw pixels. Queried only by capture adapters.
     fn camera_frame_is_jpeg(&self) -> bool { false }
     /// Cold LCD RGB START observation. The optional GPIO query describes an already-running
-    /// finite pulse clock: (CPU cycles per pulse, complete pulses remaining). No time advances.
+    /// finite pulse clock: (board time units per pulse, complete pulses remaining). No time advances.
+    /// These are CPU cycles on S3 and nanoseconds on S31, matching the callback timestamp.
     /// Appended to preserve hot vtable slots; boards without a gate clock do no work.
     fn lcd_rgb_start(&mut self, _cycle: VirtualCycle, _w: u32, _h: u32, _bytes_per_pixel: u32,
         _clock: &dyn Fn(u8) -> Option<(u64, u32)>) {}
@@ -245,6 +250,8 @@ pub trait BoardModel {
     /// when attaching the board. Host voltage/stream/raw overrides survive reset and reattachment.
     /// Cold attachment only; appended to preserve the existing hot vtable slots.
     fn default_analog_inputs(&self) -> Vec<(u8, esp_periph::AnalogSource)> { Vec::new() }
+    /// Cold route snapshot before RGB START and each completed frame.
+    fn lcd_rgb_pins(&mut self, _pins: LcdRgbPins) {}
 }
 
 pub type Board = Box<dyn BoardModel>;

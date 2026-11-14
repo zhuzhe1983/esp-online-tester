@@ -961,6 +961,7 @@ impl S31Bus {
         for (n, base) in [I2C0, I2C1].into_iter().enumerate() {
             if let Some(off) = offset(address, base, bytes, 0x100) {
                 if bytes != 4 || off & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+                if self.i2c[n].has_pinned_devices() { self.i2c[n].set_pins(self.pads.i2c_pins(n)); }
                 self.i2c[n].write(off as u32, value);
                 return Ok(());
             }

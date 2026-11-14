@@ -1,5 +1,5 @@
 //! S31 software GPIO pads, PMU global hold and the GPIO pin interrupts (four lines, IRQ sources
-//! 61-64); peripheral routing is not modeled.
+//! 61-64), with the LCD/RMT output and I2C bidirectional routes.
 //! ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643: soc/esp32s31
 //! register/soc/{gpio,io_mux,pmu,lp_system}_reg.h, include/soc/soc_caps.h, esp_hal_gpio gpio_ll.h;
 //! esp_driver_gpio/include/driver/gpio.h documents held configuration and live input.
@@ -26,7 +26,7 @@ pub enum Drive { HighZ, Low, High, Unsupported }
 #[derive(Clone, Copy)]
 struct Electrical { drive: Drive, input: bool, pull_up: bool, pull_down: bool }
 pub struct Pads {
-    out: u64, enable: u64, iomux: [u32; PINS], pin: [u32; PINS], out_sel: [u32; PINS],
+    out: u64, enable: u64, iomux: [u32; PINS], pin: [u32; PINS], out_sel: [u32; PINS], in_sel: [u32; 512],
     held: [Option<Electrical>; PINS], host: [Option<bool>; PINS], unresolved_sample: [Option<bool>; PINS], hold_lp: bool, hold_hp: bool, hold_pin: u64,
     /// Explicit sampled boot strap input; zero is the development model initial condition.
     pub strap: u16,
@@ -39,7 +39,7 @@ impl Default for Pads {
     fn default() -> Self {
         // IO_MUX initial zero is a deterministic unconfigured development state, not a
         // claim about package-specific reset pull-ups/functions. Firmware must configure it.
-        Self { out: 0, enable: 0, iomux: [0; PINS], pin: [0; PINS], out_sel: [256; PINS],
+        Self { out: 0, enable: 0, iomux: [0; PINS], pin: [0; PINS], out_sel: [256; PINS], in_sel: [128; 512],
             held: [None; PINS], host: [None; PINS], unresolved_sample: [None; PINS], hold_lp: false, hold_hp: false, hold_pin: 0, strap: 0,
             gpio_date: 38830416, iomux_date: 0x2502070, status: 0, last: 0 }
     }
@@ -103,6 +103,46 @@ impl Pads {
     pub fn board_levels(&self) -> u64 {
         (0..PINS).filter(|&p| Self::valid(p) && self.electrical(p).drive == Drive::Low).fold(!0u64, |m, p| m & !(1u64 << p))
     }
+    /// Enabled software GPIO drivers and their physical output levels (held pads included).
+    pub fn gpio_outputs(&self) -> (u64, u64) {
+        let mut enabled = 0; let mut output = 0;
+        for p in 0..PINS { if !Self::valid(p) { continue; } match self.electrical(p).drive {
+            Drive::High => { enabled |= 1 << p; output |= 1 << p; }, Drive::Low => enabled |= 1 << p, _ => {} } }
+        (enabled, output)
+    }
+    /// gpio_reg.h FUNC_OUT_SEL: peripheral OE unless OEN_SEL requests software ENABLE.
+    /// Inverted/held routes are outside the board's positive-clock digital contract.
+    pub fn matrix_output(&self, pin: usize, signal: u32) -> bool {
+        if !Self::valid(pin) || self.held[pin].is_some() { return false; }
+        let sel = self.out_sel[pin];
+        Self::gpio_function(pin, self.iomux[pin] >> 12 & 7) && sel & 0x1ff == signal
+            && sel & ((1 << 9) | (1 << 11)) == 0 && (sel & (1 << 10) == 0 || self.enable >> pin & 1 != 0)
+    }
+    fn dedicated_output(&self, pin: usize) -> bool { Self::valid(pin) && self.held[pin].is_none() && self.iomux[pin] >> 12 & 7 == 3 }
+    fn output_mask(&self, signal: u32, dedicated: usize) -> u64 {
+        let matrix = (0..PINS).filter(|&p| self.matrix_output(p, signal)).fold(0, |m, p| m | 1 << p);
+        matrix | if self.dedicated_output(dedicated) { 1 << dedicated } else { 0 }
+    }
+    /// IDF v6.1 gpio_sig_map.h and esp_hal_lcd/esp32s31/lcd_periph.c.
+    pub fn lcd_rgb_pins(&self, width: u8) -> esp_soc::board::LcdRgbPins {
+        let dedicated = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 33, 34, 35, 36];
+        esp_soc::board::LcdRgbPins { clock: self.output_mask(149, 40), enable: self.output_mask(151, 43),
+            hsync: self.output_mask(152, 44), vsync: self.output_mask(153, 45), width,
+            data: std::array::from_fn(|i| if i < usize::from(width) { self.output_mask(154 + i as u32, dedicated[i]) } else { 0 }) }
+    }
+    fn matrix_input(&self, signal: usize) -> Option<u8> {
+        let sel = *self.in_sel.get(signal)?; let pin = (sel & 255) as usize;
+        if !Self::valid(pin) || sel & 0x300 != 0x200 || self.held[pin].is_some() { return None; }
+        (Self::gpio_function(pin, self.iomux[pin] >> 12 & 7) && self.iomux[pin] & (1 << 9) != 0).then_some(pin as u8)
+    }
+    /// SDA/SCL must share the same input and output pads. Pins=None devices remain untied.
+    pub fn i2c_pins(&self, port: usize) -> Option<(u8, u8)> {
+        if port >= 2 { return None; }
+        let scl_signal = 68 + 2 * port; let sda_signal = scl_signal + 1;
+        let (sda, scl) = (self.matrix_input(sda_signal)?, self.matrix_input(scl_signal)?);
+        (sda != scl && self.matrix_output(usize::from(sda), sda_signal as u32)
+            && self.matrix_output(usize::from(scl), scl_signal as u32)).then_some((sda, scl))
+    }
     pub fn drive(&self, pin: usize) -> Result<Drive, Fault> {
         if !Self::valid(pin) { return Err(Fault::Unmapped); }
         Ok(self.electrical(pin).drive)
@@ -161,6 +201,7 @@ impl Pads {
         if let Some(pin) = Self::pin_at(address, IO_MUX_BASE) { return Ok(self.iomux[pin]); }
         if let Some(pin) = Self::pin_at(address, GPIO_BASE + 0xf4) { return Ok(self.pin[pin]); }
         if let Some(pin) = Self::pin_at(address, GPIO_BASE + 0xaf4) { return Ok(self.out_sel[pin]); }
+        if (GPIO_BASE + 0x2f4..GPIO_BASE + 0xaf4).contains(&address) { return Ok(self.in_sel[((address - GPIO_BASE - 0x2f4) / 4) as usize]); }
         match address.checked_sub(GPIO_BASE) {
             Some(0) => Ok(self.strap as u32), Some(4) => Ok(self.out as u32), Some(0x10) => Ok((self.out >> 32) as u32),
             Some(0x34) => Ok(self.enable as u32), Some(0x40) => Ok((self.enable >> 32) as u32),
@@ -199,6 +240,7 @@ impl Pads {
             self.pin[pin] = value & 0x3fb9f; self.evaluate_interrupts(); return Ok(());
         }
         if let Some(pin) = Self::pin_at(address, GPIO_BASE + 0xaf4) { self.out_sel[pin] = value & 0xfff; return Ok(()); }
+        if (GPIO_BASE + 0x2f4..GPIO_BASE + 0xaf4).contains(&address) { self.in_sel[((address - GPIO_BASE - 0x2f4) / 4) as usize] = value & 0x3ff; return Ok(()); }
         let off = address.checked_sub(GPIO_BASE).ok_or(Fault::Unmapped)?;
         let (data, base) = match off {
             4..=0x18 => (&mut self.out, 4), 0x34..=0x48 => (&mut self.enable, 0x34),
@@ -224,6 +266,36 @@ mod tests {
     fn configure(p: &mut Pads, pin: usize, output: bool) {
         p.write(IO_MUX_BASE + pin as u32 * 4, 0x1200).unwrap();
         if output { p.write(GPIO_BASE + if pin < 32 { 0x38 } else { 0x44 }, 1 << (pin % 32)).unwrap(); }
+    }
+    #[test]
+    fn i2c_requires_matching_input_output_and_live_pads() {
+        let mut p = Pads::default();
+        for (pin, signal) in [(0, 69), (1, 68)] {
+            p.write(IO_MUX_BASE + pin * 4, 0x1200).unwrap();
+            p.write(GPIO_BASE + 0xaf4 + pin * 4, signal).unwrap();
+            p.write(GPIO_BASE + 0x2f4 + signal * 4, 0x200 | pin).unwrap();
+        }
+        assert_eq!(p.i2c_pins(0), Some((0, 1))); assert_eq!(p.i2c_pins(1), None);
+        p.write(GPIO_BASE + 0x2f4 + 69 * 4, 0x201).unwrap(); assert_eq!(p.i2c_pins(0), None);
+        p.write(GPIO_BASE + 0x2f4 + 69 * 4, 0x200).unwrap();
+        p.write(PMU_PAD_HOLD, 1 << 28).unwrap(); assert_eq!(p.i2c_pins(0), None);
+        p.write(PMU_PAD_HOLD, 1 << 29).unwrap(); assert_eq!(p.i2c_pins(0), Some((0, 1)));
+        p.write(IO_MUX_BASE, 0x1000).unwrap(); assert_eq!(p.i2c_pins(0), None);
+    }
+    #[test]
+    fn rgb_dedicated_data_and_matrix_control_are_independent() {
+        let mut p = Pads::default();
+        for pin in 8..16 { p.write(IO_MUX_BASE + pin * 4, 3 << 12).unwrap(); }
+        for (pin, signal) in [(16, 149), (17, 152), (4, 151)] {
+            p.write(IO_MUX_BASE + pin * 4, 1 << 12).unwrap(); p.write(GPIO_BASE + 0xaf4 + pin * 4, signal).unwrap();
+        }
+        let pins = p.lcd_rgb_pins(8);
+        assert_eq!((pins.clock, pins.hsync, pins.enable, pins.vsync), (1 << 16, 1 << 17, 1 << 4, 0));
+        assert_eq!(&pins.data[..8], &(8..16).map(|pin| 1 << pin).collect::<Vec<_>>());
+        assert_eq!(&pins.data[8..], &[0; 8]);
+        p.write(GPIO_BASE + 0xaf4 + 16 * 4, 149 | (1 << 9)).unwrap(); assert_eq!(p.lcd_rgb_pins(8).clock, 0);
+        p.write(GPIO_BASE + 0xaf4 + 16 * 4, 149 | (1 << 10)).unwrap(); assert_eq!(p.lcd_rgb_pins(8).clock, 0);
+        p.write(GPIO_BASE + 0x38, 1 << 16).unwrap(); assert_eq!(p.lcd_rgb_pins(8).clock, 1 << 16);
     }
     #[test]
     fn function_zero_gpio_aliases_route_output_but_spi_and_uart_remain_unknown() {
