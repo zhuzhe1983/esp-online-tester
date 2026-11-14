@@ -89,7 +89,8 @@ impl Ink4Plus {
     pub fn new()->Self {
         let b=Self{wiring:Arc::new(Wiring{expander:Default::default(),touch:Default::default()}),frame:vec![0xffff;WIDTH*HEIGHT],version:0,frames:0,cycle:0,gpio_events:0,output:0,enabled:0,irq:[true;2],edges:Vec::new(),rgb_routes:false,scan_pending:false,scan:false};b.wiring.sync();b
     }
-    fn powered(&self)->bool {self.wiring.rails()&0x27==0x27 && self.output&self.enabled&(1<<18)!=0}
+    // CloudZao 14aa1d06 display/epd_board.c epd_set_mode drives XOE18 and MODE19 together.
+    fn powered(&self)->bool {let gates=(1<<18)|(1<<19);self.wiring.rails()&0x27==0x27 && self.output&self.enabled&gates==gates}
     fn sync_irq(&mut self) {
         self.wiring.sync();let levels=[self.wiring.expander.lock().expect("INK4 Plus expander poisoned").irq_high(),!self.wiring.touch.lock().expect("INK4 Plus touch poisoned").down];
         for (i,&level) in levels.iter().enumerate() {if level!=self.irq[i] {self.irq[i]=level;self.edges.push(BoardEdge{cycle:self.cycle,pin:if i==0 {2}else{5},level});}}
@@ -154,7 +155,7 @@ impl BoardModel for Ink4Plus {
     fn display_version(&self)->u64 {self.version}
     fn display_frames(&self)->u64 {self.frames}
     fn display_quiet_push(&self)->bool {true}
-    fn report(&self)->String {format!("[metalio-ink4-plus] ED047TC2 frames={} rails={:#06x}; FT6336U v04 report protocol; TPS nominal25C; BQ27220 nominal battery; SDMMC slot0; audio/modem/IMU/RTC/charger=unmodeled",self.frames,self.wiring.rails())}
+    fn report(&self)->String {format!("[metalio-ink4-plus] parallel EPD frames={} rails={:#06x}; FT6336U v04 report protocol; TPS nominal25C; BQ27220 nominal battery; SDMMC slot0; audio/modem/IMU/RTC/charger=unmodeled",self.frames,self.wiring.rails())}
 }
 
 #[cfg(test)]
@@ -196,7 +197,7 @@ mod tests {
         let mut b=Ink4Plus::new();let mut devices=b.i2c_devices();write(devices[0].2.as_mut(),2,&[0x27,0x14]);write(devices[0].2.as_mut(),6,&[0xc0,0xe3]);
         let mut data=[0;16];for (i,pin) in data[..8].iter_mut().enumerate() {*pin=1<<(8+i);}
         b.lcd_rgb_pins(LcdRgbPins{clock:1<<16,hsync:1<<17,vsync:0,enable:1<<4,data,width:8});
-        b.gpio_output_at(0,&[],(1<<18)|(1<<35),(1<<18)|(1<<35));b.gpio_output_at(1,&[(35,false)],(1<<18)|(1<<35),1<<18);b
+        let gates=(1<<18)|(1<<19);b.gpio_output_at(0,&[],gates|(1<<35),gates|(1<<35));b.gpio_output_at(1,&[(35,false)],gates|(1<<35),gates);b
     }
     #[test]
     fn native_and_legacy_waveforms_preserve_pixels_skip_dummy_and_padding() {
@@ -214,10 +215,11 @@ mod tests {
     }
     #[test]
     fn scan_requires_routes_power_start_pulse_complete_frame_and_gate_clock() {
-        for bad in 0..7 {
-            let mut b=panel();match bad {0=>b.rgb_routes=false,1=>b.output=0,2=>b.scan_pending=false,_=>{}}
+        for bad in 0..11 {
+            let mut b=panel();match bad {0=>b.rgb_routes=false,1=>b.output=0,2=>b.scan_pending=false,7=>b.output&=!(1<<19),8=>b.enabled&=!(1<<19),9=>b.enabled&=!(1<<18),_=>{}}
             b.lcd_rgb_start(2,304,684,1,&|_|match bad {3=>None,4=>Some((17_000,683)),_=>Some((17_000,689))});
             if bad==5 {b.rgb_routes=false;}
+            if bad==10 {b.gpio_output_at(3,&[(19,false)],b.enabled,b.output&!(1<<19));}
             b.lcd_frame(304,684,&vec![0x55;if bad==6 {304*684-1}else{304*684}]);assert_eq!(b.frames,0,"invalid scan {bad}");assert!(b.frame.iter().all(|&p|p==0xffff));
         }
     }
