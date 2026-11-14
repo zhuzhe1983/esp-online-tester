@@ -19,9 +19,9 @@ The local manifest SHA-256 is `8333a72bd984224f704622f2604b4f00491afd37bc25a8821
 
 On a fresh local preview with the same `/esp-online-tester/` subpath and final manifest, choosing Espressif/Mosaico selected Vibe automatically. Human trial confirmation downloaded the four remote segments and booted ROM → bootloader → Vibe through the production WASM worker, with no stubs or app-direct boot. [vibe-browser.json](vibe-browser.json) records the actual artifacts, serial markers and acknowledged input positions. Real 3D screen pointer input selected Chinese at `(348,308)`, then skipped Wi-Fi at `(422,49)`; the guest changed its framebuffer through language selection → Wi-Fi page → launcher.
 
-![Vibe language selection](vibe-final-language.png)
-![Chinese Wi-Fi page](vibe-final-wifi.png)
-![Vibe launcher after skip](vibe-final-launcher.png)
+Vibe language selection: `vibe-final-language.png` (local capture; see [screenshot manifest](screenshots.json)).
+Chinese Wi-Fi page: `vibe-final-wifi.png` (local capture; see [screenshot manifest](screenshots.json)).
+Vibe launcher after skip: `vibe-final-launcher.png` (local capture; see [screenshot manifest](screenshots.json)).
 
 This establishes download, boot and those touch transitions. NAND LittleFS reported an uninitialized/corrupted directory pair and the guest reported an IDEA operation failure plus battery-read failure; those negative outputs are retained. Installing IDEA applications, cloud connectivity, complete audio and physical hardware operation are unverified. The screenshots retain the photo-derived model in use at capture time; they do not validate the later official-CAD geometry. No claim of portable recording replay or a fresh receiver's mini-player boot is made here.
 
@@ -51,8 +51,8 @@ The recovery UI previously dropped the archive identity and cached an imported B
 
 In the real browser, explicitly choosing Xiaozhi survived the new default logic. One Release fetch failed, the recovery dialog appeared, and selecting the publisher's extracted BIN then pressing **校验并继续** booted app `xiaozhi` version `2.6.0`, 480×480, through ROM/WASM. [xiaozhi-recovery.json](xiaozhi-recovery.json) records one failed ZIP resource, the populated archive-entry cache, frame 1224 and guest transition into `wifi_configuring`. It was paused for capture. The screen has clipped text and missing emoji; the guest disables camera after an expansion EEPROM failure. SoftAP/provisioning, network/cloud and voice are **not** accepted. This is a successful manual recovery, not direct download.
 
-![ZIP recovery instructions](xiaozhi-zip-recovery.png)
-![Xiaozhi after verified BIN recovery](xiaozhi-recovered.png)
+ZIP recovery instructions: `xiaozhi-zip-recovery.png` (local capture; see [screenshot manifest](screenshots.json)).
+Xiaozhi after verified BIN recovery: `xiaozhi-recovered.png` (local capture; see [screenshot manifest](screenshots.json)).
 
 The on-screen AP address is the guest's fixed virtual configuration address, not a reachable physical device. Screenshots contain no user credentials. Local preview origins in JSON are normalized to `https://platform.example`; no local paths or session identifiers are retained. [screenshots.json](screenshots.json) supplies final image hashes.
 
@@ -67,3 +67,7 @@ git diff --check
 ```
 
 The first command passed 35 tests; knowledge and existing Mosaico model tests passed. Schema validation passed 219 products, 10 accessories, 178 firmwares and 122 watchlist entries. The recovery regression covers both raw BIN and ZIP-entry retry and proves invalid images still fail before worker creation. Default-selection tests retain factory menu order/fallback, explicit defaults and unrelated products. Browser sessions were headless and task-owned; no physical hardware flashing occurred.
+
+## Screenshot retention
+
+Full browser screenshots are retained unchanged under ignored `output/evidence/mosaico-download-20261115/`, following [the evidence policy](../../../evidence/README.md). [screenshots.json](screenshots.json) records each original name, byte size, SHA-256, source revision and local path, plus the time its local copy was verified. The same manifest accompanies the local originals. No screenshot was re-encoded or cropped during this cleanup, and no capture was uploaded to a release or external evidence repository. This committed report preserves the observations and reproduction steps; viewing the original screenshots requires the retained local output directory.
