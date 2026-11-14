@@ -5,6 +5,7 @@ import {createFirmwareCache,firmwareCache,MAX_CACHED_FIRMWARE_BYTES} from '../we
 import {firmwareRecoverySource,importFirmwareDownload} from '../web/platform/firmware-download-recovery.js';
 import {createPlatformRuntime,sha256} from '../web/platform/runtime.js';
 import {createDefaultScene} from '../web/platform/catalog.js';
+import {firmwareArchiveCacheKey} from '../web/platform/firmware-archive.js';
 
 const baseUrl='https://platform.example/platform/';
 const data=new Uint8Array([0xe9,1,2,3]),source={url:'https://publisher.example/release.bin',sha256:await sha256(data)};
@@ -46,18 +47,20 @@ test('cancellation while reading prevents cache writes; discarded cache is repor
   await assert.rejects(()=>importFirmwareDownload(file(),source,{cache:{async putVerified(){return false;},async get(){return null;}}}),{code:'CACHE_UNAVAILABLE'});
 });
 
-test('runtime retry reads the recovered bytes and still rejects invalid image layout before creating a worker',async()=>{
+for(const archive of [undefined,{format:'zip',entry:'merged-binary.bin'}])test(`runtime retry reads recovered ${archive?'ZIP entry':'raw BIN'} bytes and checks image layout before creating a worker`,async()=>{
   const catalog={};
   for(const name of ['products','accessories','firmwares'])catalog[name]=JSON.parse(await readFile(new URL(`../web/platform/catalog/${name}.json`,import.meta.url),'utf8')).items;
   let downloads=0,workers=0;
   const runtime=createPlatformRuntime({catalog,baseUrl,fetchImpl:async()=>{downloads++;throw new TypeError('Failed to fetch');},workerFactory(){workers++;throw Error('Must not execute invalid firmware');}});
-  const scene=createDefaultScene(catalog,'lilygo-t-deck');scene.firmware={...source,bootMode:'rom'};
+  const recovery={...source,...(archive?{archive}:{})};
+  assert.deepEqual(firmwareRecoverySource(failure,recovery,baseUrl),recovery);
+  const scene=createDefaultScene(catalog,'lilygo-t-deck');scene.firmware={...recovery,bootMode:'rom'};
   try {
     await runtime.configure(scene);
     await assert.rejects(()=>runtime.loadFirmware(),{code:'FETCH_FAILED'});
-    await importFirmwareDownload(file(),source);
+    await importFirmwareDownload(file(),recovery);
     await assert.rejects(()=>runtime.loadFirmware(),{code:'INCOMPLETE_IMAGE'});
     assert.equal(downloads,1);assert.equal(workers,0);
     assert.deepEqual((await runtime.observe()).scene.firmware,scene.firmware);
-  } finally {await runtime.dispose();await firmwareCache.remove(source.url,source.sha256);}
+  } finally {await runtime.dispose();await firmwareCache.remove(firmwareArchiveCacheKey(recovery),source.sha256);}
 });

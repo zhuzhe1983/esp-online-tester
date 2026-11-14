@@ -20,9 +20,11 @@ test('firmware groups preserve separate vendor distribution and upstream version
   const entries=[{id:'upstream',productIds:['m2'],publisherGroup:'CrossPoint',revision:'1.6.5'},{id:'vendor',productIds:['m2'],publisherGroup:'官方',revision:'1.5.0'},{id:'other',productIds:['a'],publisher:'Other'}];
   assert.deepEqual(firmwareGroups(entries,'m2').map(([name,items])=>[name,items[0].id]),[['官方','vendor'],['CrossPoint','upstream']]);
 });
-test('factory firmware leads the menu and is selected even before compatibility verification',()=>{
+test('explicit product defaults win while factory firmware still leads the menu and fallback',()=>{
   const entries=[{id:'community',productIds:['m2'],publisher:'CrossPoint',source:{url:'https://example.org/community.bin'}},{id:'official-alternative',productIds:['m2'],publisher:'M5Stack',role:'alternative'},{id:'factory',productIds:['m2'],publisher:'M5Stack',role:'factory',status:'trial',simulationVerified:false,source:{url:'https://example.org/factory.bin'}}];
-  assert.equal(firstFirmware(entries,{id:'m2',defaultFirmwareId:'community'}).id,'factory');
+  assert.equal(firstFirmware(entries,{id:'m2',defaultFirmwareId:'community'}).id,'community');
+  assert.equal(firstFirmware(entries,{id:'m2',defaultFirmwareId:'factory'}).id,'factory');
+  assert.equal(firstFirmware(entries,{id:'m2',defaultFirmwareId:'missing'}).id,'factory');
   assert.equal(firmwareGroups(entries,'m2')[0][1][0].id,'factory');
   assert.equal(entries[0].id,'community');
   assert.equal(firstFirmware(entries,{id:'absent'}),null);

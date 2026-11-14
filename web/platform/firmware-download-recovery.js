@@ -1,17 +1,19 @@
 import {firmwareCache,MAX_CACHED_FIRMWARE_BYTES} from './firmware-cache.js';
 import {sha256} from './runtime.js';
+import {firmwareArchiveCacheKey,validFirmwareArchive} from './firmware-archive.js';
 
 const problem=(code,message)=>Object.assign(new Error(message),{code});
 function pinnedSource(source,baseUrl) {
   if(!source?.url||source.manifestUrl||source.file||source.files||!/^[a-f0-9]{64}$/i.test(source.sha256||''))return null;
+  if(source.archive!==undefined&&!validFirmwareArchive(source))return null;
   try {
     const url=new URL(source.url,baseUrl);
     if(!['https:','http:'].includes(url.protocol)||url.username||url.password)return null;
-    return {url:url.href,sha256:source.sha256.toLowerCase()};
+    return {url:url.href,sha256:source.sha256.toLowerCase(),...(source.archive?{archive:{...source.archive}}:{})};
   } catch {return null;}
 }
 
-// Only replace the exact failed, pinned remote BIN. Never recover a missing ROM,
+// Only replace the exact failed, pinned remote BIN or ZIP entry. Never recover a missing ROM,
 // manifest, hash mismatch or HTTP 404 by putting a different file in its cache.
 export function firmwareRecoverySource(error,source,baseUrl=globalThis.location?.href) {
   const pinned=pinnedSource(source,baseUrl);
@@ -32,9 +34,10 @@ export async function importFirmwareDownload(file,source,{cache=firmwareCache,si
   if(data.length!==file.size)throw problem('INVALID_FILE','文件读取不完整，请重新选择。');
   const actual=await sha256(data);active();
   if(actual!==pinned.sha256)throw problem('HASH_MISMATCH','文件与当前固件版本的 SHA-256 不一致。请下载下方链接对应的 BIN，不要选择 ZIP、网页或其他版本。');
-  const persistent=await cache.putVerified(pinned.url,pinned.sha256,data);active();
+  const cacheUrl=firmwareArchiveCacheKey(pinned);
+  const persistent=await cache.putVerified(cacheUrl,pinned.sha256,data);active();
   // Storage may be blocked or the cache cleared while the file was being read.
-  const saved=await cache.get(pinned.url,pinned.sha256);active();
+  const saved=await cache.get(cacheUrl,pinned.sha256);active();
   if(!saved||await sha256(saved.data)!==pinned.sha256)throw problem('CACHE_UNAVAILABLE','无法保存已校验的固件，请重新选择文件。');
   active();return {bytes:data.length,persistent};
 }
@@ -47,7 +50,7 @@ export function recoverFirmwareDownload({error,source,firmware,issueUrl,baseUrl=
   const node=(tag,text,className)=>{const el=document.createElement(tag);if(text)el.textContent=text;if(className)el.className=className;return el;};
   const dialog=node('dialog',null,'firmware-run-confirm firmware-download-recovery');dialog.setAttribute('aria-labelledby','firmware-download-recovery-title');
   const title=node('h2','无法直接下载固件');title.id='firmware-download-recovery-title';
-  const description=node('p','网络连接或上游跨域限制阻止了下载。可先从原地址下载文件，再选回此处；校验通过后继续加载当前版本。');
+  const description=node('p',pinned.archive?'下载受网络或上游跨域限制。请从原地址下载 ZIP，解压后选择其中的 BIN 文件；校验通过后继续加载当前版本。':'网络连接或上游跨域限制阻止了下载。可先从原地址下载文件，再选回此处；校验通过后继续加载当前版本。');
   const identity=node('p',firmware?.name||new URL(pinned.url).pathname.split('/').pop(),'helper');
   const link=node('a','1. 打开原始下载地址 ↗','button');link.href=pinned.url;link.target='_blank';link.rel='noopener noreferrer';
   const label=node('label','2. 选择下载好的 BIN 文件','firmware-recovery-file');

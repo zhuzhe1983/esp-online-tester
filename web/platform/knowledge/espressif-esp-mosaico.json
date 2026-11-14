@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "guide-v12"
   ],
-  "updatedAt": "2026-11-14T08:23:45Z",
+  "updatedAt": "2026-11-14T16:21:11Z",
   "hardwareRevision": "CoreBoard V1.2 / BaseBoard V1.2",
   "identity": {
     "manufacturer": "Espressif",
@@ -300,6 +300,55 @@
       "sourceIds": [
         "esptool-s31"
       ]
+    },
+    {
+      "id": "official-enclosure-file",
+      "label": "官方外壳文件",
+      "value": "3MF：主壳、双键联动件与独立侧键，共3个网格；不是完整整机CAD。",
+      "basis": "official",
+      "sourceIds": [
+        "official-hardware-hub",
+        "official-enclosure-3mf"
+      ]
+    },
+    {
+      "id": "official-shell-bounds",
+      "label": "官方主壳网格外包尺寸",
+      "value": [
+        44.8980027,
+        44.8980027,
+        11.10000038
+      ],
+      "unit": "mm",
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "official-enclosure-3mf"
+      ],
+      "method": "Read 3D/3dmodel.model in the pinned 3MF, identify the main shell mesh, and calculate min/max vertex bounds in millimeters. These are shell mesh bounds, not assembled-device dimensions or tolerances."
+    },
+    {
+      "id": "official-enclosure-license-tag",
+      "label": "官方3MF许可标签",
+      "value": "MakerWorld Exclusive License",
+      "basis": "official",
+      "sourceIds": [
+        "official-enclosure-3mf"
+      ],
+      "notes": "官网条目license为null；FAQ泛称开源。当前没有确认适用的完整许可与再发布授权，不据此认定许可开放或一概禁止使用。"
+    },
+    {
+      "id": "vibe-recovery",
+      "label": "官方 Vibe 恢复包",
+      "basis": "official",
+      "value": {
+        "version": "0.3.0",
+        "profile": "recovery",
+        "initialPartition": "vibe_mode"
+      },
+      "sourceIds": [
+        "official-vibe-recovery"
+      ],
+      "notes": "与完整 Hello + Vibe 恢复镜像分开；本站默认选此可直连恢复包，不改变 Hello 的原始身份。"
     }
   ],
   "revisions": [
@@ -592,6 +641,58 @@
         "commit": "54b1d2424174cb032a6726cc007e5df4e479456e"
       },
       "notes": "6,830 paths, not truncated; no path contains mosaico. Scope is this public official UIFlow repository only. Source inventory response not mirrored."
+    },
+    {
+      "id": "official-hardware-hub",
+      "title": "Official ESP-Mosaico Core Unit · Hardware Hub",
+      "url": "https://mosaico.ai/en/hardware/bzWKymkXPu95",
+      "kind": "manufacturer-document",
+      "status": "linked",
+      "notes": "Public entry marks ESPRESSIF/is_official=true. Entry license field is null; its created/updated metadata does not state a timezone."
+    },
+    {
+      "id": "official-enclosure-3mf",
+      "title": "Official ESP-MOSAICO.3mf · shell and two button parts",
+      "url": "https://mosaico.ai/api/v1/files/attachments/1/9734120a8783.3mf",
+      "resolvedUrl": "https://mosaico.ai/api/v1/files/attachments/1/9734120a8783.3mf",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "fetchedAt": "2026-11-14T16:03:31Z",
+      "sha256": "aa84074593344c37684cc2f36c58b5698ed5b695246e701ff05e49d325c176b3",
+      "bytes": 17727347,
+      "mediaType": "application/octet-stream",
+      "archiveName": "ESP-MOSAICO.3mf",
+      "notes": "Ordinary public HTTPS 200 from the official Hardware Hub. Three printable meshes, not complete device CAD. Embedded License: MakerWorld Exclusive License; no open-source license grant is inferred."
+    },
+    {
+      "id": "official-assembly-guide",
+      "title": "Official ESP-Mosaico Core Unit assembly guide",
+      "kind": "manufacturer-document",
+      "status": "fetched",
+      "url": "https://mosaico.ai/api/v1/files/attachments/1/255888ae365a.pdf",
+      "resolvedUrl": "https://mosaico.ai/api/v1/files/attachments/1/255888ae365a.pdf",
+      "fetchedAt": "2026-11-14T16:03:30Z",
+      "sha256": "0798e39de4583f2b01d78bd0cd2318fb715ab5c2dd5180c4ff917c3b199957bf",
+      "bytes": 4786199,
+      "archiveName": "mosaico-core-unit-assembly.pdf",
+      "mediaType": "application/pdf"
+    },
+    {
+      "id": "official-vibe-recovery",
+      "title": "Official Vibe Mode 0.3.0 recovery manifest",
+      "kind": "firmware-manifest",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/esp-mosaico/esp-mosaico-utils/c5688aec14fa943ecd3813338cf9b7030dc03734/firmware/recovery/manifest.json",
+      "resolvedUrl": "https://raw.githubusercontent.com/esp-mosaico/esp-mosaico-utils/c5688aec14fa943ecd3813338cf9b7030dc03734/firmware/recovery/manifest.json",
+      "fetchedAt": "2026-11-14T16:21:11Z",
+      "sha256": "7d75664979a2b9f5da859303a223bacfe3c3a737115f8952c55cad6601b50692",
+      "bytes": 1741,
+      "archiveName": "vibe-recovery-manifest.json",
+      "mediaType": "text/plain",
+      "revision": {
+        "commit": "c5688aec14fa943ecd3813338cf9b7030dc03734"
+      },
+      "notes": "Actual Pages-origin fetch returned 200; original manifest identifies recovery and initial vibe_mode partition. Four remote segments, no Hello application."
     }
   ],
   "assets": [
@@ -618,19 +719,32 @@
       "sourceId": "manufacturer-cad",
       "role": "manufacturer-cad",
       "url": "https://makerworld.com/zh/@ESP_MOSAICO"
+    },
+    {
+      "id": "official-hardware-hub",
+      "sourceId": "official-hardware-hub",
+      "role": "manufacturer-document",
+      "url": "https://mosaico.ai/en/hardware/bzWKymkXPu95"
+    },
+    {
+      "id": "official-enclosure-3mf",
+      "sourceId": "official-enclosure-3mf",
+      "role": "manufacturer-cad",
+      "url": "https://mosaico.ai/api/v1/files/attachments/1/9734120a8783.3mf"
     }
   ],
   "unknowns": [
     {
-      "id": "enclosure-cad",
-      "label": "原厂外壳CAD",
+      "id": "enclosure-redistribution",
+      "label": "官方外壳再发布授权",
       "value": null,
       "basis": "unknown",
       "sourceIds": [
-        "manufacturer-cad",
+        "official-hardware-hub",
+        "official-enclosure-3mf",
         "faq"
       ],
-      "notes": "原厂公开入口受HTTP403限制，本轮未能下载。外形模型是照片估算，不能称为厂家CAD或1:1。"
+      "notes": "官方 Hardware Hub 直链已取得 3MF；内嵌 MakerWorld Exclusive License，网页 license 为 null，FAQ 概括为 open source。保留这些来源差异，不宣称开放授权。"
     },
     {
       "id": "pcb-layout",
@@ -679,7 +793,8 @@
   "collectionNotes": [
     "来源身份保留实际UTC/最终URL/字节数/SHA256；只存元数据，不镜像第三方固件。",
     "官方照片仅用于技术比对，不重新授权；网页没有授予照片再发布许可，本轮保留远程链接与hash。",
-    "当前官方恢复固件是Hello+Vibe Mode；Mosaico-Claw在FAQ作为出厂应用另列，未冒充同一构建。",
-    "UIFlow调查：未找到ESP-Mosaico官方专用目标；小智v2.6.0有精确型号的完整ZIP，固定内部镜像hash并以trial收录，未验证执行。"
+    "官方完整恢复镜像含 Hello 0.1.3 + Vibe Mode 0.3.0；默认改用可由浏览器直连的官方 Vibe Mode 0.3.0 分段恢复包，后者不含 Hello 应用。Mosaico-Claw 在 FAQ 作为出厂应用另列。",
+    "UIFlow调查：未找到ESP-Mosaico官方专用目标；小智v2.6.0有精确型号的完整ZIP，固定内部镜像hash并以trial收录。恢复导入后已启动至Wi-Fi配置模式；显示文字有裁切，SoftAP、联网和完整语音未验证。",
+    "官方 3MF 已通过公开直链取得；范围为主壳和两组按键，不是完整设备 CAD。保留 MakerWorld Exclusive License 标注，内部 PCB 等缺件仍单独标识来源和未知范围。"
   ]
 }

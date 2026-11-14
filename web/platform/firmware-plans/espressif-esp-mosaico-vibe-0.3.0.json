@@ -1,0 +1,33 @@
+{
+  "name": "ESP-Mosaico official Vibe Mode recovery",
+  "version": "0.3.0",
+  "board": "mosaico",
+  "flash_mb": 16,
+  "psram_mb": 16,
+  "files": {
+    "rom": {
+      "url": "../../wasm/fw/esp32s31_rev0_rom.elf",
+      "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87"
+    }
+  },
+  "flash_at": {
+    "0x2000": {
+      "url": "https://raw.githubusercontent.com/esp-mosaico/esp-mosaico-utils/c5688aec14fa943ecd3813338cf9b7030dc03734/firmware/recovery/bootloader.bin",
+      "sha256": "02337c209b001e68552d7673b9bb6b2961d856dfad225d7a4ea53e395d22754b"
+    },
+    "0x9000": {
+      "url": "https://raw.githubusercontent.com/esp-mosaico/esp-mosaico-utils/c5688aec14fa943ecd3813338cf9b7030dc03734/firmware/recovery/ota_data_initial.bin",
+      "sha256": "5a5d79a1c029da23a3b9cc03c111c5b72f9cbfa386877b0a5d20dc93ab42c7e1"
+    },
+    "0x8000": {
+      "url": "https://raw.githubusercontent.com/esp-mosaico/esp-mosaico-utils/c5688aec14fa943ecd3813338cf9b7030dc03734/firmware/recovery/partition-table.bin",
+      "sha256": "ff7ac35a4f2e51424150a6ba56172174299baa737230a09792dd46e8f5d0bb99"
+    },
+    "0x20000": {
+      "url": "https://raw.githubusercontent.com/esp-mosaico/esp-mosaico-utils/c5688aec14fa943ecd3813338cf9b7030dc03734/firmware/recovery/vibe-mode.bin",
+      "sha256": "603f192496eb488c26a6140183cd208557e2fae6bdc152d74d11375e8d74c58a"
+    }
+  },
+  "_source": "https://raw.githubusercontent.com/esp-mosaico/esp-mosaico-utils/c5688aec14fa943ecd3813338cf9b7030dc03734/firmware/recovery/manifest.json",
+  "_note": "Unchanged official recovery segments. Boots Vibe Mode; does not include the Hello application or its complete recovery image."
+}

@@ -26,7 +26,7 @@ TriviaPOD TP-01-A 作为 M5Stack「其他主控」中的独立产品列出，提
 
 CoreMatrix C158 已增加独立 ESP32-C61 运行器、16×16 白色 LED 矩阵与原厂 CAD 模型；官方 UIFlow 原始镜像的外设验收、启动缺失模块及未实现能力见 [CoreMatrix 运行报告](corematrix-runtime.md)。
 
-ESP-Mosaico V1.2 已接入独立 ESP32-S31 WASM 运行器、480×480 AMOLED、CST9220 触控和 AI/BOOT 按键。官方 Hello 0.1.3 已验证语言选择与 AI 键待机/唤醒；官方源有跨域限制，可从官方下载后本地导入。模型为有来源的照片估算，保留 UNKNOWN 内板；完整边界见 [Mosaico 运行报告](mosaico-runtime.md)。
+ESP-Mosaico V1.2 已接入独立 ESP32-S31 WASM 运行器、480×480 AMOLED、CST9220 触控和 AI/BOOT 按键。默认官方 Vibe Mode 0.3.0 恢复包已验证浏览器直连、中文选择和主界面；完整 Hello 0.1.3 另已验证语言选择与 AI 键待机/唤醒，其完整镜像及小智仍需从原始来源下载后导入。官方外壳 3MF 来源与许可已记录，内部板级 CAD 仍未知；完整边界见 [Mosaico 运行报告](mosaico-runtime.md)。
 
 ## Current scope
 

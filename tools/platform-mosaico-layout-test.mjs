@@ -3,6 +3,25 @@ import {test} from 'node:test';
 import {chipIdForBoard,validateBoardRevision} from '../web/platform/app-image.js';
 import {validateMergedImage} from '../web/platform/runtime.js';
 import {assembleLocalFirmware} from '../web/platform/local-firmware.js';
+import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {firstFirmware} from '../web/platform/catalog-selection.js';
+
+test('Mosaico defaults to the pinned official Vibe recovery without replacing the complete Hello source',async()=>{
+  const root=new URL('../web/platform/',import.meta.url),read=async name=>JSON.parse(await readFile(new URL(name,root)));
+  const product=(await read('catalog/products.json')).items.find(p=>p.id==='espressif-esp-mosaico');
+  const firmwares=(await read('catalog/firmwares.json')).items,selected=firstFirmware(firmwares,product);
+  assert.equal(selected.id,'espressif-esp-mosaico-vibe-recovery');
+  assert.equal(firmwares.find(f=>f.id==='espressif-esp-mosaico-factory').role,'factory');
+  const bytes=await readFile(new URL(selected.source.manifestUrl,root)),plan=JSON.parse(bytes);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),selected.source.sha256);
+  assert.equal(plan.board,'mosaico');assert.equal(plan.app_direct,undefined);
+  assert.deepEqual(Object.keys(plan.flash_at).map(Number).sort((a,b)=>a-b),[0x2000,0x8000,0x9000,0x20000]);
+  for(const entry of Object.values(plan.flash_at)) {
+    assert.match(entry.url,/^https:\/\/raw\.githubusercontent\.com\/esp-mosaico\/esp-mosaico-utils\/[0-9a-f]{40}\/firmware\/recovery\//);
+    assert.match(entry.sha256,/^[0-9a-f]{64}$/);
+  }
+});
 
 // Layout fixture only; not firmware execution evidence. S31 ID and boot offset
 // are from IDF v6.1 esp_app_format.h and esptool targets/esp32s31.py.

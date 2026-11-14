@@ -1125,6 +1125,7 @@ export default {
  "固件下载中继暂时不可用，可稍后重试，或下载原文件后校验导入。": "The firmware relay is unavailable. Retry later, or download the original file and import it for verification.",
  "无法直接下载固件": "Cannot download firmware directly",
  "网络连接或上游跨域限制阻止了下载。可先从原地址下载文件，再选回此处；校验通过后继续加载当前版本。": "A network or upstream CORS restriction blocked the download. Download from the original address and select the file here to verify and load this version.",
+ "下载受网络或上游跨域限制。请从原地址下载 ZIP，解压后选择其中的 BIN 文件；校验通过后继续加载当前版本。": "A network or upstream CORS restriction blocked the download. Download the ZIP from the original address, extract it, and select its BIN file to verify and load this version.",
  "1. 打开原始下载地址 ↗": "1. Open original download address ↗",
  "2. 选择下载好的 BIN 文件": "2. Select the downloaded BIN file",
  "校验后的文件只缓存于当前浏览器。原地址、版本和校验值保持不变，后续仍会检查芯片、容量和镜像布局。": "Verified files are cached only in this browser. The original address, version and hash remain unchanged. Chip, capacity and image layout checks still apply.",
