@@ -24,12 +24,16 @@ def main():
     for name in ['baseline', 'candidate', 'firmware', 'roms', 'output']:
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--rounds', type=int, default=3)
+    parser.add_argument('--seconds', type=int, default=30,
+                        help='guest seconds per run; use a pre-reset window when reset semantics intentionally differ')
     parser.add_argument('--workload', action='append', choices=['hello', 'c3-hello', 'c6-hello', 'pocket-tank'])
     args = parser.parse_args()
     if args.rounds < 3:
         parser.error('at least three alternating rounds are required')
+    if args.seconds < 1:
+        parser.error('guest seconds must be positive')
     receipt = {'method': 'RUSAGE_CHILDREN user CPU delta around one subprocess; alternating AB/BA rounds',
-               'guestSeconds': 30, 'rounds': args.rounds, 'workloads': {}}
+               'guestSeconds': args.seconds, 'rounds': args.rounds, 'workloads': {}}
     for name, binary in [('hello', 'esp32sim'), ('c3-hello', 'esp32sim-c3'),
                          ('c6-hello', 'esp32sim-c6'), ('pocket-tank', 'esp32sim')]:
         if args.workload and name not in args.workload:
@@ -47,7 +51,7 @@ def main():
         for offset, file in manifest.get('flash_at', {}).items():
             files[offset] = args.firmware / file
             argv += ['--flash-at', offset + '=' + str(files[offset])]
-        argv += ['--max-seconds', '30', '--no-dump']
+        argv += ['--max-seconds', str(args.seconds), '--no-dump']
         row = {'inputs': {key: sha(path) for key, path in files.items()},
                'binarySha256': {label: sha(getattr(args, label) / binary) for label in ['baseline', 'candidate']},
                'samples': []}
@@ -61,7 +65,7 @@ def main():
                 after = resource.getrusage(resource.RUSAGE_CHILDREN)
                 stderr = result.stderr.decode(errors='replace')
                 match = re.search(r'\[emu\] stop: (.*?) — (.*?) insns .*?emulated ([\d.]+)s \((\d+) cycles\); (\d+) exceptions, (\d+) interrupts', stderr)
-                if result.returncode or not match or match[1] != 'Halted' or match[3] != '30.000':
+                if result.returncode or not match or match[1] != 'Halted' or match[3] != f'{args.seconds:.3f}':
                     raise RuntimeError(f'{name}/{label}: unexpected stop; exit={result.returncode}')
                 counters = {'stop': match[1], 'instructions': match[2], 'guestSeconds': match[3],
                             'cycles': int(match[4]), 'exceptions': int(match[5]), 'interrupts': int(match[6]),

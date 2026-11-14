@@ -1,0 +1,111 @@
+{
+  "method": "RUSAGE_CHILDREN user CPU delta around one subprocess; alternating AB/BA rounds",
+  "guestSeconds": 30,
+  "rounds": 3,
+  "workloads": {
+    "hello": {
+      "inputs": {
+        "rom": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+        "bootloader": "7efecb4df4463ece11ab286068a505ecd174f66fd4aacc53d887fcb9c18f0579",
+        "ptable": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+        "app": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9"
+      },
+      "binarySha256": {
+        "baseline": "5c89976ce7f6b8b2156577391260b9b6adab965a52821ccbfbaaf95907ff612c",
+        "candidate": "57cf5f51ef6d212be8c5b56e0f972d8d6c75d4c2b88b08a2ea6ec7858cc6461f"
+      },
+      "samples": [
+        {
+          "round": 1,
+          "label": "baseline",
+          "userSeconds": 0.24149299999999999,
+          "systemSeconds": 0.011755999999999999,
+          "wallSeconds": 0.5716697919997387,
+          "stop": "Halted",
+          "instructions": "core0 11990305 + core1 6798164",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6031,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3"
+        },
+        {
+          "round": 1,
+          "label": "candidate",
+          "userSeconds": 0.232897,
+          "systemSeconds": 0.007674,
+          "wallSeconds": 0.24239670898532495,
+          "stop": "Halted",
+          "instructions": "core0 11934783 + core1 6775776",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032,
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef"
+        },
+        {
+          "round": 2,
+          "label": "candidate",
+          "userSeconds": 0.234356,
+          "systemSeconds": 0.006866999999999998,
+          "wallSeconds": 0.2441062919970136,
+          "stop": "Halted",
+          "instructions": "core0 11934783 + core1 6775776",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032,
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef"
+        },
+        {
+          "round": 2,
+          "label": "baseline",
+          "userSeconds": 0.22214499999999993,
+          "systemSeconds": 0.006256000000000001,
+          "wallSeconds": 0.23116299998946488,
+          "stop": "Halted",
+          "instructions": "core0 11990305 + core1 6798164",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6031,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3"
+        },
+        {
+          "round": 3,
+          "label": "baseline",
+          "userSeconds": 0.22593700000000005,
+          "systemSeconds": 0.006213999999999997,
+          "wallSeconds": 0.23483162498450838,
+          "stop": "Halted",
+          "instructions": "core0 11990305 + core1 6798164",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6031,
+          "stdoutSha256": "04d4912461cbf19e2d2af0a61885991156d7ebdde8641f2d64d9b219b5ff47d3"
+        },
+        {
+          "round": 3,
+          "label": "candidate",
+          "userSeconds": 0.2313179999999999,
+          "systemSeconds": 0.005896000000000005,
+          "wallSeconds": 0.24005341698648408,
+          "stop": "Halted",
+          "instructions": "core0 11934783 + core1 6775776",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032,
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef"
+        }
+      ],
+      "identicalWorkAndOutput": false,
+      "medianUserSeconds": {
+        "baseline": 0.22593700000000005,
+        "candidate": 0.232897
+      },
+      "candidateToBaselineRatio": 1.0308050474247243
+    }
+  }
+}
