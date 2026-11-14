@@ -1,5 +1,9 @@
 // Device storage, appearance and hardware UI. Source strings remain in zh-CN.
 export default {
+ '内部I2C0': 'Internal I2C0',
+ '左 H2 2×10P / 2.54mm 扩展': 'Left H2 expansion · 2×10P / 2.54mm',
+ '右 H1 2×10P / 2.54mm 扩展': 'Right H1 expansion · 2×10P / 2.54mm',
+ '背面调试/供电触点': 'Rear debug / power contacts',
  'ESP Workbench 已准备好。固件在当前浏览器中执行。': 'ESP Workbench is ready. Firmware runs in this browser.',
  '2.54 mm I/O 焊盘 · 需自行装配': '2.54 mm I/O pads · assembly required',
  '2.54 mm 排针 · 9P + 6P': '2.54 mm headers · 9P + 6P',
