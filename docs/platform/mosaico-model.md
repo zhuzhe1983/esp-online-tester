@@ -37,6 +37,8 @@ BOOT 位于底部 USB 左侧，AI 位于顶部右侧；分别关联真实 GPIO61
 
 [恢复审计](evidence/mosaico-sources/factory-audit.json)保留调查与 CORS 限制。官方端点针对 GitHub Pages Origin 没有返回 Access-Control-Allow-Origin；若“下载并运行”提示跨域失败，请打开[官方恢复页](https://mosaico.ai/en/firmware)下载完整 BIN，再点“本地文件”选择该 BIN 并运行。本站不提供镜像或绕过跨域的代理。
 
+关注列表通过专用 `espressif-mosaico` 适配器读取官方 `/api/v1/firmware` 元数据，校验 S31 目标、镜像名称和对应下载 ID；不把 utils 源码仓库的 Release 当作恢复固件版本。请求不携带 GitHub 凭据，不下载 BIN，不留存发布说明或下载计数。官方元数据没有 SHA-256，故只监测版本，自动替换继续禁用，目录仍使用本轮核验的固定镜像摘要。元数据出错时保留上次结果；小智条目同样锁定已调查 ZIP，自动更新未启用。
+
 小智主项目 v2.6.0 有精确 `espressif-esp-mosaico` ZIP，内含单个 `merged-binary.bin`；镜像 SHA-256 `440797fe7dbf952dc79126002e32e9a2d9ec4f2ad7752989ad74e7ed0dac9eb2`，11,374,509 字节，bootloader 位于 0x2000，chip ID=32，作为独立 `trial` 提供，未验证执行/云服务/实机。ZIP 与内部镜像摘要分别记录在[小智回执](evidence/mosaico-sources/xiaozhi-firmware-receipt.json)，不会把 ZIP hash 当内部 BIN hash。UIFlow 官方仓库 6,830 个路径中未找到 mosaico 目标；这只界定本轮公开来源搜索，不推断未来适配不存在。
 
 ## 复现

@@ -32,6 +32,8 @@ export function validateWatchlist(document) {
       if(entry.versionNamePattern!==undefined){const pattern=entry.versionNamePattern;if(typeof pattern!=='string'||pattern.length>160||!pattern.startsWith('^')||!pattern.endsWith('$'))throw new Error('Invalid version edition selector.');new RegExp(pattern);}
     } else if(entry.metadataProvider==='m5burner') {
       if(entry.metadataUrl!=='https://m5burner-api.m5stack.com/api/firmware'||!/^\w{16,64}$/.test(entry.firmwareId))throw new Error('Invalid official M5Burner source.');
+    } else if(entry.metadataProvider==='espressif-mosaico') {
+      if(entry.metadataUrl!=='https://mosaico.ai/api/v1/firmware'||entry.releaseUrl!=='https://mosaico.ai/en/firmware'||entry.compatibility?.productIds?.length!==1||entry.compatibility.productIds[0]!=='espressif-esp-mosaico'||entry.catalogTargets?.length)throw new Error('Invalid official Mosaico source or unverified automatic target.');
     } else if(entry.metadataProvider==='cloudzao') {
       if(!/^[1-9][0-9]{0,8}$/.test(entry.hardwareModelId||'')||!/^\w{28,64}$/.test(entry.firmwareId||'')||!['esp32s3','esp32s31'].includes(entry.targetChip)||entry.metadataUrl!==`https://admin.metalio.world/xiaozhi/api/firmwares?page=1&limit=1&hardwareModelId=${entry.hardwareModelId}&sourceType=official`)throw new Error('Invalid official CloudZao source.');
     } else if(entry.metadataProvider && entry.metadataProvider!=='github' || entry.metadataUrl!==`https://api.github.com/repos/${entry.upstreamRepo}/releases/latest`)throw new Error('Invalid GitHub metadata source.');

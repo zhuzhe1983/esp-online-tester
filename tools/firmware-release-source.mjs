@@ -1,6 +1,7 @@
 // Build-time metadata adapters. Never request firmware payloads or retain authors.
 import {cloudzaoMetadataUrl, cloudzaoReleases} from './firmware-source-cloudzao.mjs';
 import {m5burnerV1Request,m5burnerV1Releases} from './firmware-source-m5burner-v1.mjs';
+import {mosaicoRequest,mosaicoReleases} from './firmware-source-mosaico.mjs';
 const safe=value=>{const url=new URL(value);if(url.protocol!=='https:'||url.username||url.password)throw Error('Unexpected release URL');return url.href;};
 const digest=value=>/^sha256:[a-f0-9]{64}$/i.test(value||'')?value.toLowerCase():null;
 export const releaseIsPrerelease=release=>release.prerelease===true||/(?:^|[.\d-])(?:rc|pre|alpha|beta|nightly)(?:[.\d-]|$)/i.test(release.tag_name||'');
@@ -10,6 +11,7 @@ export function releaseMatchesChannel(release,channel='stable') {
   return channel==='prerelease'?releaseIsPrerelease(release):!releaseIsPrerelease(release);
 }
 export function releaseRequest(entry,token) {
+  if(entry.metadataProvider==='espressif-mosaico') return mosaicoRequest(entry);
   if(entry.metadataProvider==='m5burner-v1') return m5burnerV1Request(entry);
   if(entry.metadataProvider==='cloudzao') return {url:cloudzaoMetadataUrl(entry),headers:{Accept:'application/json'},maxBytes:2*1024*1024};
   if(entry.metadataProvider==='m5burner') {
@@ -22,6 +24,7 @@ export function releaseRequest(entry,token) {
   return {url:limit?`https://api.github.com/repos/${entry.upstreamRepo}/releases?per_page=${limit}`:entry.metadataUrl,headers:{Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(token?{Authorization:`Bearer ${token}`}:{})},maxBytes:32*1024*1024};
 }
 export function publicReleases(entry,data) {
+  if(entry.metadataProvider==='espressif-mosaico') return mosaicoReleases(entry,data);
   if(entry.metadataProvider==='m5burner-v1') return m5burnerV1Releases(entry,data).map(release=>({...release,prerelease:releaseIsPrerelease(release)}));
   if(entry.metadataProvider==='cloudzao') return cloudzaoReleases(entry,data);
   if(entry.metadataProvider==='m5burner') {
