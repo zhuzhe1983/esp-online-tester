@@ -1,6 +1,8 @@
 // Rendered UI templates. Captures are opaque unless their slot is listed in the
 // third item; those slots contain UI fragments, never user data or guest output.
 export default [
+ ['Metalio 官方固件 · {0}', 'Metalio official firmware · {0}'],
+ ['{0} MB Flash / {1} MB PSRAM（模拟配置）', '{0} MB Flash / {1} MB PSRAM (simulated configuration)'],
  ['将用 {0} MiB {1} 空卡替换{2}，原卡文件会被清空。', 'Replace {2} with an empty {0} MiB {1} card. All files on the old card will be erased.', [2]],
  ['每款设备最多保存 {0} 张贴纸。', 'Each device can store up to {0} stickers.'],
  ['最多 {0} 张，仅保存在本机；分享链接不会包含图片。', 'Up to {0} stickers, stored only on this device. Shared links do not include the images.'],

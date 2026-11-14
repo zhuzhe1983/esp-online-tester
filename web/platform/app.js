@@ -16,7 +16,7 @@ import {isPressControl,controlInput,shouldCaptureMappedKey} from './control-inpu
 import {loadCatalog, createDefaultScene, validateScene, encodeScene, decodeScene, createLocalAccessory, importLocalAccessory, exportLocalAccessory, saveLocalAccessory, listLocalAccessories, removeLocalAccessory, firmwareSourceMatches} from './catalog.js';
 import {createPlatformRuntime, validateMergedImage} from './runtime.js';
 import {inspectLocalBuild} from './local-firmware.js';
-import {isC5Board,validateAppImage} from './app-image.js';
+import {isC5Board,isS31Board,validateAppImage} from './app-image.js';
 import {installAutomation} from './automation.js';
 import {createSceneView, createHumanButtonController} from './scene-view.js';
 import {mountViewerLayout} from './viewer-layout.js';
@@ -412,7 +412,7 @@ function renderProduct() {
   const selected = product(); if (!selected) return;
   const kind=$('firmware-kind');
   if(kind){const option=kind.querySelector('[value="c5-sram"]');if(c5Product()){if(!option)kind.append(new Option('C5 SRAM 应用直启','c5-sram'));}else{if(kind.value==='c5-sram')kind.value='merged';option?.remove();}}
-  if($('serial-port')){for(const option of $('serial-port').options)option.disabled=c5Product()&&option.value!=='uart0';if(c5Product())$('serial-port').value='uart0';}
+  if($('serial-port')){for(const option of $('serial-port').options)option.disabled=c5Product()&&option.value!=='uart0'||isS31Board(product()?.runtime?.board)&&option.value==='uart1';if($('serial-port').selectedOptions[0]?.disabled)$('serial-port').value='uart0';}
   if($('firmware-file')){$('firmware-file').multiple=!c5Product();$('firmware-file').accept=c5Product()?'.bin,application/octet-stream':'.bin,.json,application/octet-stream';}
   if($('firmware-folder'))$('firmware-folder').closest('label').hidden=c5Product();
   const localTitle=document.querySelector('#firmware-local .upload-area strong');if(localTitle)localTitle.textContent=c5Product()?'选择 SRAM 应用镜像':'选择镜像或构建文件';
@@ -436,7 +436,7 @@ function renderProduct() {
   const specs = $('product-specs');
   if (specs) {
     specs.replaceChildren();
-    for (const [label, value] of [['芯片', selected.module || selected.chip.toUpperCase()], ['存储', `${selected.runtime.flashMb == null ? 'Flash 待核对' : `${selected.runtime.flashMb} MB Flash`} / ${selected.runtime.psramMb == null ? 'PSRAM 待核对' : `${selected.runtime.psramMb} MB PSRAM`}`], ['屏幕', selected.displayStatus === 'unknown' ? '屏幕资料待核对' : selected.display ? `${selected.display.width} × ${selected.display.height} ${selected.display.type || selected.display.technology || selected.display.controller || ''}`.trim() : '串口输出 / 无屏幕'], ['接口', selected.interfaces.filter(item => item.external).map(item => item.name || item.type).join(' · ') || '详见产品元信息']]) {
+    for (const [label, value] of [['芯片', selected.module || selected.chip.toUpperCase()], ['存储', `${selected.runtime.flashMb == null ? 'Flash 待核对' : `${selected.runtime.flashMb} MB Flash`} / ${selected.runtime.psramMb == null ? 'PSRAM 待核对' : `${selected.runtime.psramMb} MB PSRAM${selected.runtime.psramMbBasis==='simulation'?'（模拟配置）':''}`}`], ['屏幕', selected.displayStatus === 'unknown' ? '屏幕资料待核对' : selected.display ? `${selected.display.width} × ${selected.display.height} ${selected.display.type || selected.display.technology || selected.display.controller || ''}`.trim() : '串口输出 / 无屏幕'], ['接口', selected.interfaces.filter(item => item.external).map(item => item.name || item.type).join(' · ') || '详见产品元信息']]) {
       specs.append(element('dt', '', label), element('dd', '', value));
     }
   }

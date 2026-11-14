@@ -132,3 +132,29 @@ test('public bootstrap rejects a different origin or a helper impersonating the 
   await n.configure({relayUrl:'https://relay.example.test'});await n.attach({available:true});assert.equal(n.snapshot().lastError.code,'NETWORK_PROTOCOL');
   endpoint='wss://relay.example.test/network';await assert.rejects(n.connect(),{code:'NETWORK_PROTOCOL'});n.detach();
 });
+
+test('STA-only boards retain relay transport without exposing SoftAP or provisioning',async()=>{
+  const commands=[],frames=[],n=createNetworkSession({emit(){},command:async(op,options)=>{commands.push({op,...options});return {softApSupported:true};},sendFrame:(...v)=>frames.push(v),WebSocketImpl:Socket,guestFactory(){throw Error('STA-only boards must not start a SoftAP client');},supportsSoftAp:()=>false});
+  try {
+    assert.equal(n.snapshot().browserSoftAp,false);
+    await n.configure({endpoint:'ws://localhost/network'});await n.attach({available:true,softApAvailable:false});
+    const ws=Socket.instances.at(-1),frame=new Uint8Array(14);
+    assert.equal(n.snapshot().connection,'connected');assert.equal(n.snapshot().supported,true);
+    assert.equal(commands.find(c=>c.op==='setup').softAp.enabled,false);
+    n.receive({networkFrame:{interface:0,data:frame.buffer}});assert.equal(ws.sent.at(-1)[0],0);
+    ws.deliver(new Uint8Array([0,...frame]).buffer);assert.equal(frames.length,1);assert.equal(frames[0][0],0);
+    n.receive({softAp:{state:'connected',clientMac:'02:53:49:4d:00:03'}});
+    ws.deliver({type:'network-status',interface:1,leaseReady:true,guestAddress:'192.168.4.1'});
+    ws.deliver(new Uint8Array([1,...frame]).buffer);n.receive({networkFrame:{interface:1,data:frame.buffer}});
+    assert.equal(frames.length,1);assert.equal(n.snapshot().softAp,null);assert.equal(n.snapshot().interfaces[1],undefined);
+    assert.equal(n.snapshot().provisioning,'idle');assert.deepEqual(n.snapshot().services,[]);
+    await assert.rejects(n.mapPort({interface:1,protocol:'http',guestPort:80}),{code:'SOFTAP_UNSUPPORTED'});
+    await assert.rejects(n.provision(),{code:'SOFTAP_UNSUPPORTED'});
+    assert.throws(()=>n.addService({interface:1,guestPort:80}),{code:'SOFTAP_UNSUPPORTED'});
+    await n.configure({mode:'public-relay'});assert.equal(n.snapshot().browserSoftAp,false);
+  }finally{n.detach();}
+});
+test('an explicit unsupported SoftAP setup receipt overrides the requested capability',async()=>{
+  const n=createNetworkSession({emit(){},command:async()=>({softApSupported:false}),sendFrame(){}});
+  try{await n.attach({available:true});assert.equal(n.snapshot().softApSupported,false);assert.equal(n.snapshot().browserSoftAp,false);assert.equal(n.snapshot().supported,true);}finally{n.detach();}
+});

@@ -131,9 +131,12 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     let c3_board=if matches!(board.as_str(),"esp32c3"|"c3") {esp32c3::board::make_board("none")}else if matches!(board.as_str(),"none"|"bare") {None}else{esp32c3::board::make_board(&board)};
     let c5_board = if matches!(board.as_str(), "stamp-c5" | "stamp-c5-dip") { esp32c5::board::make_board(&board) } else { None };
     let c61_board = if board == "esp32c61" { esp32c61::board::make_board("none") } else if board == "corematrix" { esp32c61::board::make_board(&board) } else { None };
-    let s31_board = if board == "esp32s31" { esp32s31::board::make_board("none") } else if matches!(board.as_str(), "mosaico" | "esp-mosaico") { esp32s31::board::make_board(&board) } else { None };
+    let s31_board = if board == "esp32s31" { esp32s31::board::make_board("none") } else if matches!(board.as_str(), "mosaico" | "esp-mosaico" | "metalio-ink4-plus") { esp32s31::board::make_board(&board) } else { None };
     if s31_board.as_ref().is_some_and(|b| b.name() == "mosaico") && (flash_mb != 16 || psram_mb != 16) {
         log("[emu] ESP-Mosaico V1.2 requires 16 MiB Flash and 16 MiB PSRAM"); return std::ptr::null_mut();
+    }
+    if s31_board.as_ref().is_some_and(|b| b.name() == "metalio-ink4-plus") && flash_mb != 16 {
+        log("[emu] Metalio INK4 Plus requires 16 MiB Flash; PSRAM capacity is a simulation setting"); return std::ptr::null_mut();
     }
     if c5_board.is_some() && (flash_mb != 4 || psram_mb != 0) {
         log("[emu] Stamp-C5 supports exactly 4 MiB Flash and no PSRAM"); return std::ptr::null_mut();
@@ -206,7 +209,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         MachineKind::C61(Box::new(m))
     } else if let Some(b) = s31_board {
         let mut m = esp32s31::machine([0x30, 0xed, 0xa0, 0x00, 0x11, 0x31], flash_bytes);
-        let mut inputs = if b.name() == "mosaico" { esp32s31::soc::BoardInputs::mosaico_gd25q128() } else if flash_mb == 2 { esp32s31::soc::BoardInputs::hello_w25q16() } else { esp32s31::soc::BoardInputs::devkit_w25q128() };
+        let mut inputs = if b.name() == "metalio-ink4-plus" { esp32s31::board::ink4_plus_inputs(psram_bytes) } else if b.name() == "mosaico" { esp32s31::soc::BoardInputs::mosaico_gd25q128() } else if flash_mb == 2 { esp32s31::soc::BoardInputs::hello_w25q16() } else { esp32s31::soc::BoardInputs::devkit_w25q128() };
         inputs.psram_bytes = psram_bytes;
         if let Err(reason) = m.bus.set_board_inputs(inputs) {
             log(&format!("[emu] {}", reason)); return std::ptr::null_mut();

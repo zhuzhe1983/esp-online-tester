@@ -243,7 +243,7 @@ onmessage = async (ev) => {
         if(m.op==='network-setup') {
           if(booted)throw new Error('Configure virtual Wi-Fi before boot');
           if(withBytes(enc.encode(m.spec),(p,n)=>wasm.esp32sim_wifi(emu,p,n))!==0)throw new Error('Virtual router configuration rejected');
-          softApEnabled=!!wasm.esp32sim_softap_configure&&withBytes(enc.encode(JSON.stringify(m.softAp)),(p,n)=>wasm.esp32sim_softap_configure(emu,p,n))===0;
+          softApEnabled=m.softAp?.enabled!==false&&!!wasm.esp32sim_softap_configure&&withBytes(enc.encode(JSON.stringify(m.softAp)),(p,n)=>wasm.esp32sim_softap_configure(emu,p,n))===0;
         } else if(m.op==='network-relay') {
           if(wasm.esp32sim_ethernet_relay(emu,m.enabled?1:0)!==0)throw new Error('Ethernet relay rejected');ethernetRelay=!!m.enabled;
         } else if(m.op==='network-receive') {

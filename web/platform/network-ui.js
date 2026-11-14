@@ -36,14 +36,18 @@ export function mountNetworkControls({container,runtime,onError=console.error}={
   };
   const render=state=>{
     if(!alive)return;current=state;
-    $('[data-auto]').checked=state.autoProvision;
-    const labels={'relay-unconfigured':'填写自建助手地址 · 配网页可用','waiting-helper':'等待连接本地助手',connecting:'网络助手连接中',connected:state.mode==='public-relay'?'云端助手已连接':'本地助手已连接',disconnected:'外网已断开',offline:'外网已关闭',unsupported:'当前板型不支持'};
+    const softApAvailable=state.softApSupported!==false;
+    $('[data-auto]').checked=softApAvailable&&state.autoProvision;
+    $('[data-auto]').disabled=!softApAvailable;$('[data-interface] option[value="1"]').disabled=!softApAvailable;
+    if(!softApAvailable)$('[data-interface]').value='0';
+    $('.network-description').textContent=softApAvailable?'固件 SoftAP 配网页可直接在浏览器内访问；关闭自动配网即可手动操作。外网默认经云端中继访问，也可改成你自建的网络助手地址。':'当前板型提供 STA 网络中继，不支持固件 SoftAP 配网页或自动配网。可通过固件支持的方式设置网络，再连接云端中继或本地助手。';
+    const labels={'relay-unconfigured':softApAvailable?'填写自建助手地址 · 配网页可用':'填写自建助手地址','waiting-helper':'等待连接本地助手',connecting:'网络助手连接中',connected:state.mode==='public-relay'?'云端助手已连接':'本地助手已连接',disconnected:'外网已断开',offline:'外网已关闭',unsupported:'当前板型不支持'};
     const local=state.mode==='local-helper';$('[data-mode]').value=state.mode||'public-relay';$('[data-helper-label]').hidden=!local;$('[data-relay-label]').hidden=local;$('[data-local-help]').hidden=!local;$('[data-cloud-help]').hidden=local;
     $('[data-status]').textContent=labels[state.connection]||state.connection;
     $('.network-dot').classList.toggle('connected',state.connection==='connected');
     const a=state.interfaces?.[0],b=state.interfaces?.[1];
     const addresses=$('[data-addresses]');addresses.setAttribute('data-i18n-skip','');
-    addresses.textContent=`${t('虚拟路由器：')}${state.router.ssid} · STA: ${a?.leaseReady?a.guestAddress:t('未取得地址')} · SoftAP: ${state.softAp?.ssid||t('未发现')}${b?.leaseReady?` / ${b.guestAddress}`:''}`;
+    addresses.textContent=`${t('虚拟路由器：')}${state.router.ssid} · STA: ${a?.leaseReady?a.guestAddress:t('未取得地址')} · SoftAP: ${!softApAvailable?t('不支持'):state.softAp?.ssid||t('未发现')}${b?.leaseReady?` / ${b.guestAddress}`:''}`;
     $('[data-error]').textContent=state.lastError?.message||uiError||({checking:'正在识别固件配网页…',submitting:'正在提交虚拟路由器配置…',submitted:'固件已接受配置，等待 STA 联网。',connected:'固件已取得 STA 地址。'}[state.provisioning]||'');
     if(displayedMapping&&!state.services.some(s=>s.mapping?.mappingId===displayedMapping)){displayedMapping=null;manualClosed=true;guestPage?.dispose();guestPage=null;$('.network-page').hidden=true;$('iframe').removeAttribute('src');}
     const key=JSON.stringify(state.services);
@@ -67,7 +71,7 @@ export function mountNetworkControls({container,runtime,onError=console.error}={
   $('[data-offline]').addEventListener('click',()=>run(()=>runtime.configureNetwork({enabled:false})));
   $('.network-add').addEventListener('submit',event=>{event.preventDefault();run(()=>runtime.addNetworkService({interface:Number($('[data-interface]').value),protocol:$('[data-protocol]').value,guestPort:Number($('[data-port]').value)}));});
   $('[data-close-page]').addEventListener('click',()=>{manualClosed=true;guestPage?.dispose();guestPage=null;$('.network-page').hidden=true;$('iframe').removeAttribute('src');});
-  const unsubscribe=runtime.subscribe(event=>{if(event.type==='network')render(event.network);});
+  const unsubscribe=runtime.subscribe(event=>{if(event.type==='network')render(event.network);else if(event.type==='state'&&event.state?.network)render(event.state.network);});
   void runtime.readNetwork().then(render).catch(onError);
   return {dispose(){if(!alive)return;alive=false;unsubscribe();guestPage?.dispose();$('iframe').removeAttribute('src');container.replaceChildren();style.remove();}};
 }

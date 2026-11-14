@@ -24,13 +24,15 @@ export function networkService({interface:iface=0,protocol='tcp',guestPort,label
   return {id:`${iface}:${protocol}:${guestPort}`,interface:iface,protocol,guestPort,label:label||`${protocol.toUpperCase()} ${guestPort}`,source:'manual',verified:false};
 }
 
-export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globalThis.WebSocket,fetchImpl=globalThis.fetch,guestFactory=createGuestNetwork,requestTimeout=120000}={}) {
+export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globalThis.WebSocket,fetchImpl=globalThis.fetch,guestFactory=createGuestNetwork,supportsSoftAp=()=>true,requestTimeout=120000}={}) {
   let config={enabled:true,autoProvision:true,...DEFAULT_VIRTUAL_ROUTER,endpoint:'',mode:'public-relay',relayUrl:'',softApSsid:'',softApPassword:''};
   let socket=null,epoch=0,sequence=0,attached=false,supported=false,softapStarted=false,autoAttempted=false;
-  let guest=null,bootstrapController=null,heartbeat=null;
+  let guest=null,bootstrapController=null,heartbeat=null,softApSupported=true;
+  const hasSoftAp=()=>softApSupported&&supportsSoftAp();
+  const requireSoftAp=iface=>{if(iface===1&&!hasSoftAp())throw fail('SOFTAP_UNSUPPORTED','This board does not support firmware SoftAP access.');};
   let connection='relay-unconfigured',lastError=null,interfaces={},softAp=null,services=[],txFrames=0,rxFrames=0,droppedFrames=0,provisioning='idle';
   const pending=new Map(),mappingRequests=new Map();let finishConnecting=null,autoGeneration=0;
-  const snapshot=()=>({enabled:config.enabled,mode:config.mode,relayConfigured:!!config.relayUrl,browserSoftAp:config.mode==='public-relay',autoProvision:config.autoProvision,router:{ssid:config.ssid,security:config.password?'wpa2-psk':'open'},helperConfigured:!!config.endpoint,connection,supported,interfaces:copy(interfaces),softAp:copy(softAp),services:copy(services),provisioning,txFrames,rxFrames,droppedFrames,lastError:copy(lastError)});
+  const snapshot=()=>({enabled:config.enabled,mode:config.mode,relayConfigured:!!config.relayUrl,softApSupported:hasSoftAp(),browserSoftAp:hasSoftAp()&&config.mode==='public-relay',autoProvision:config.autoProvision,router:{ssid:config.ssid,security:config.password?'wpa2-psk':'open'},helperConfigured:!!config.endpoint,connection,supported,interfaces:copy(interfaces),softAp:copy(softAp),services:copy(services),provisioning,txFrames,rxFrames,droppedFrames,lastError:copy(lastError)});
   const changed=()=>emit({type:'network',network:snapshot()});
   const report=error=>{lastError={code:error.code||'NETWORK_ERROR',message:error.message||String(error)};changed();};
   const rejectPending=()=>{for(const p of pending.values()){clearTimeout(p.timer);p.reject(fail('NETWORK_DISCONNECTED','Network helper disconnected.'));}pending.clear();};
@@ -45,7 +47,7 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
     connection=config.enabled?(config.mode==='public-relay'?(config.relayUrl?'disconnected':'relay-unconfigured'):(config.endpoint?'disconnected':'waiting-helper')):'offline';changed();
   };
   const mapPort=async(options)=>{
-    const item=networkService(options),hostPort=options.hostPort??0;
+    const item=networkService(options),hostPort=options.hostPort??0;requireSoftAp(item.interface);
     if(!Number.isInteger(hostPort)||hostPort<0||hostPort>65535)throw fail('INVALID_NETWORK_SERVICE','Invalid local port.');
     if(config.mode==='public-relay'){
       if(item.interface!==1||item.protocol!=='http')throw fail('LOCAL_HELPER_REQUIRED','This port needs the advanced local helper. Browser-only access currently supports SoftAP HTTP.');
@@ -64,10 +66,12 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
     try{return await work;}finally{if(mappingRequests.get(item.id)?.work===work)mappingRequests.delete(item.id);}
   };
   const http=(options={})=>{
+    requireSoftAp(options.interface??(config.mode==='public-relay'?1:0));
     if(config.mode==='public-relay'){if((options.interface??1)!==1||!guest)throw fail('SOFTAP_NOT_READY','Browser HTTP requires a connected firmware SoftAP.');const client=guest;return guest.requestHttp(options).then(result=>{if(guest===client){const id=`1:http:${options.guestPort??80}`;services=services.map(s=>s.id===id?{...s,verified:true}:s);changed();}return result;});}
     return request('http',options);
   };
   const provision=async({automatic=false}={})=>{
+    requireSoftAp(1);
     if(!interfaces[1]?.leaseReady)throw fail('SOFTAP_NOT_READY','Wait for the virtual client to obtain an address from the firmware.');
     const generation=epoch,autoRun=autoGeneration;
     const check=()=>{if(generation!==epoch)throw fail('SESSION_REPLACED','Network session replaced.');if(automatic&&(autoRun!==autoGeneration||!config.autoProvision))throw fail('PROVISIONING_CANCELLED','Automatic provisioning was disabled.');};
@@ -104,7 +108,7 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
     } catch(error){if(generation===epoch){if(error.code==='PROVISIONING_CANCELLED'){provisioning='idle';changed();}else{provisioning='error';report(error);}}throw error;}
   };
   const updateInterface=value=>{
-    if(![0,1].includes(value.interface))return;
+    if(![0,1].includes(value.interface)||value.interface===1&&!hasSoftAp())return;
     interfaces[value.interface]=copy(value);
     if(value.interface===0&&value.leaseReady&&provisioning==='submitted')provisioning='connected';
     if(value.interface===1&&value.leaseReady) {
@@ -113,9 +117,10 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
     }
     changed();
   };
-  const tryAutoProvision=()=>{if(config.autoProvision&&connection==='connected'&&interfaces[1]?.leaseReady&&!autoAttempted){autoAttempted=true;void provision({automatic:true}).catch(()=>{});}};
+  const tryAutoProvision=()=>{if(hasSoftAp()&&config.autoProvision&&connection==='connected'&&interfaces[1]?.leaseReady&&!autoAttempted){autoAttempted=true;void provision({automatic:true}).catch(()=>{});}};
   const stopGuest=()=>{const old=guest;guest=null;old?.close();softapStarted=false;delete interfaces[1];services=services.filter(s=>s.interface!==1);};
   const startSoftAp=()=>{
+    if(!hasSoftAp())return;
     if(config.mode==='public-relay'){
       if(!guest&&softAp?.state==='connected'){
         const client=guestFactory({sendFrame:data=>{if(guest===client){const bytes=new Uint8Array(data);sendFrame(1,bytes.slice().buffer);rxFrames++;}},emit:value=>{if(guest===client&&value.type==='network-status')updateInterface(value);}});
@@ -148,7 +153,7 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
         if(generation!==epoch||socket!==ws)return;
         if(event.data instanceof ArrayBuffer) {
           const bytes=new Uint8Array(event.data);
-          if(bytes.length<15||bytes.length>1519||![0,1].includes(bytes[0])||config.mode==='public-relay'&&bytes[0]!==0){droppedFrames++;changed();return;}
+          if(bytes.length<15||bytes.length>1519||![0,1].includes(bytes[0])||config.mode==='public-relay'&&bytes[0]!==0||bytes[0]===1&&!hasSoftAp()){droppedFrames++;changed();return;}
           rxFrames++;sendFrame(bytes[0],bytes.slice(1).buffer);return;
         }
         let value;try{if(typeof event.data!=='string'||event.data.length>20*1024*1024)throw Error();value=JSON.parse(event.data);}catch{finish(fail('NETWORK_PROTOCOL','Malformed network helper response.'));ws.close();return;}
@@ -177,26 +182,28 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
     }
     tryAutoProvision();changed();return snapshot();
   };
-  const attach=async({available,manifestWifi}={})=>{
-    supported=!!available;attached=true;autoAttempted=false;provisioning='idle';softAp=null;
+  const attach=async({available,softApAvailable=true,manifestWifi}={})=>{
+    supported=!!available;softApSupported=!!softApAvailable;attached=true;autoAttempted=false;provisioning='idle';softAp=null;
     if(!supported){connection='unsupported';changed();return;}
     // A manifest's explicit router has priority over the default test network.
     if(manifestWifi){config.password='';for(const pair of manifestWifi.split(',')){const at=pair.indexOf('=');const k=pair.slice(0,at),v=pair.slice(at+1);if(k==='ssid')config.ssid=v;if(['psk','password','pass'].includes(k))config.password=v;}}
-    await command('setup',{spec:manifestWifi||`ssid=${config.ssid}${config.password?`,psk=${config.password}`:''}`,softAp:{enabled:true,...(config.softApSsid?{ssid:config.softApSsid}:{}),...(config.softApPassword?{password:config.softApPassword}:{})}});
+    const result=await command('setup',{spec:manifestWifi||`ssid=${config.ssid}${config.password?`,psk=${config.password}`:''}`,softAp:{enabled:hasSoftAp(),...(config.softApSsid?{ssid:config.softApSsid}:{}),...(config.softApPassword?{password:config.softApPassword}:{})}});
+    if(result?.softApSupported===false)softApSupported=false;
     if(config.enabled&&(config.mode==='public-relay'?config.relayUrl:config.endpoint)){const connecting=connect(),generation=epoch;await connecting.catch(error=>{if(generation===epoch)report(error);});}else changed();
   };
-  const detach=()=>{stopGuest();attached=false;supported=false;softAp=null;autoAttempted=false;provisioning='idle';close();};
+  const detach=()=>{stopGuest();attached=false;supported=false;softApSupported=true;softAp=null;autoAttempted=false;provisioning='idle';close();};
   const receive=message=>{
     if(message.networkFrame) {
       const {interface:iface,data}=message.networkFrame,bytes=new Uint8Array(data);
+      if(iface===1&&!hasSoftAp()){droppedFrames++;changed();return;}
       if(iface===1&&config.mode==='public-relay'){guest?.receive(bytes);txFrames++;return;}
       if(socket?.readyState===1&&socket.bufferedAmount<1024*1024){const wire=new Uint8Array(bytes.length+1);wire[0]=iface;wire.set(bytes,1);socket.send(wire);txFrames++;}
       else {droppedFrames++;changed();}
     }
-    if(message.softAp) {const old=softAp?.state;softAp=message.softAp;if(old==='connected'&&softAp.state!=='connected'){stopGuest();if(config.mode==='local-helper'&&socket?.readyState===1)void request('interface',{interface:1,enabled:false}).catch(report);}startSoftAp();changed();}
+    if(message.softAp&&hasSoftAp()) {const old=softAp?.state;softAp=message.softAp;if(old==='connected'&&softAp.state!=='connected'){stopGuest();if(config.mode==='local-helper'&&socket?.readyState===1)void request('interface',{interface:1,enabled:false}).catch(report);}startSoftAp();changed();}
     if(message.networkError)report(fail('NETWORK_FRAME_REJECTED',message.networkError));
   };
-  const addService=options=>{const item=networkService(options),previous=services.find(s=>s.id===item.id);services=services.filter(s=>s.id!==item.id);const saved={...item,...(previous?{mapping:previous.mapping,verified:previous.verified}:{})};services.push(saved);changed();return copy(saved);};
+  const addService=options=>{const item=networkService(options);requireSoftAp(item.interface);const previous=services.find(s=>s.id===item.id);services=services.filter(s=>s.id!==item.id);const saved={...item,...(previous?{mapping:previous.mapping,verified:previous.verified}:{})};services.push(saved);changed();return copy(saved);};
   const unmap=async({mappingId}={})=>{if(String(mappingId).startsWith('browser:')){services=services.map(s=>s.mapping?.mappingId===mappingId?{...s,mapping:undefined}:s);changed();return {removed:true};}const generation=epoch,result=await request('unmap',{mappingId});if(generation!==epoch)throw fail('SESSION_REPLACED','Network session replaced.');services=services.map(s=>s.mapping?.mappingId===mappingId?{...s,mapping:undefined}:s);changed();return result;};
   return {snapshot,configure,attach,detach,receive,connect,mapPort,unmap,http,provision,addService};
 }

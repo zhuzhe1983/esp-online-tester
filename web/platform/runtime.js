@@ -243,7 +243,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     const requestId=++inputSequence,reply=await ask(`audio:${requestId}`,{op:`audio-${action}`,requestId,...options},transfer);
     requireValue(reply.ok,'AUDIO_COMMAND_FAILED',reply.error||'The emulator rejected this audio operation.');return reply;
   }});
-  const network=createNetworkSession({emit,command:async(action,options)=>{
+  const network=createNetworkSession({emit,supportsSoftAp:()=>!isS31Board(product?.runtime?.board),command:async(action,options)=>{
     const requestId=++inputSequence,reply=await ask(`network:${requestId}`,{op:`network-${action}`,requestId,...options});
     requireValue(reply.ok,'NETWORK_COMMAND_FAILED',reply.error||'The emulator rejected this network operation.');return reply;
   },sendFrame:(interfaceId,data)=>worker?.postMessage({op:'network-receive',interface:interfaceId,data},[data])});
@@ -646,7 +646,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     }
     for (const spec of bundle.cfg.stubs || []) worker.postMessage({ op: 'stub', spec });
     if(isC5Board(bundle.cfg.board))await network.attach({available:false});
-    else if(result.networkAvailable&&romFor(bundle.cfg.board)!=='esp32p4_rev0_rom.elf')await network.attach({available:true,manifestWifi:bundle.cfg.wifi});
+    else if(result.networkAvailable&&romFor(bundle.cfg.board)!=='esp32p4_rev0_rom.elf')await network.attach({available:true,softApAvailable:!isS31Board(bundle.cfg.board),manifestWifi:bundle.cfg.wifi});
     else if(bundle.cfg.wifi)worker.postMessage({op:'wifi',spec:bundle.cfg.wifi});
     if (imuModel()&&!flightEnabled()) await applyImu();
     if (isC61Board(bundle.cfg.board)&&bleNearby.length) await applyBleNearby(bleNearby);
@@ -675,7 +675,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     booted = true; setStatus('running'); return snapshot();
   };
   const controls = () => Array.isArray(product?.controls) ? product.controls : product?.controls?.buttons || [];
-  const boardButton = control => control?.transport==='board' && ({'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB'],'lilygo-t-beam-v1-2':['power'],'stamps3bat':['power'],'stamplc':['button-a','button-b','button-c'],'corematrix':['button-a','button-b','button-c','power'],'stackchan':['touch-pad-front','touch-pad-middle','touch-pad-back']}[product?.runtime?.board] || []).includes(control.id);
+  const boardButton = control => control?.transport==='board' && ({'metalio-ink4-plus':['power','volume-up','volume-down','home','previous','next'],'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB'],'lilygo-t-beam-v1-2':['power'],'stamps3bat':['power'],'stamplc':['button-a','button-b','button-c'],'corematrix':['button-a','button-b','button-c','power'],'stackchan':['touch-pad-front','touch-pad-middle','touch-pad-back']}[product?.runtime?.board] || []).includes(control.id);
   const input = async event => {
     const releaseWhilePaused = status === 'paused' && ((['button','matrix-key','accessory-button'].includes(event?.type) && event.pressed === false) || (event?.type==='accessory-connection' && event.connected===false) || (event?.type === 'touch' && event.down === false));
     requireValue(status === 'running' || releaseWhilePaused, 'NOT_RUNNING', 'Start the emulator before sending input.');
@@ -737,6 +737,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       message = { t: 'touch', x: event.x, y: event.y, down: event.down ? 1 : 0 };
     } else if (event.type === 'serial') {
       requireValue(!isC5Board(product?.runtime?.board)||event.port==='uart0','UNSUPPORTED_PORT','C5 SRAM runtime currently exposes UART0 input only.');
+      requireValue(!isS31Board(product?.runtime?.board)||['usb','uart0'].includes(event.port),'UNSUPPORTED_PORT','S31 runtime currently exposes USB and UART0 input only.');
       requireValue(['usb', 'uart0', 'uart1'].includes(event.port), 'UNSUPPORTED_PORT', 'Supported input ports are usb, uart0 and uart1; UART2 input is not exposed by upstream.');
       const maxBytes = event.port === 'usb' ? 4096 : 128;
       requireValue(typeof event.data === 'string' && new TextEncoder().encode(event.data).length <= maxBytes, 'INVALID_INPUT', `Serial input must be a string of at most ${maxBytes} UTF-8 bytes; UART RX has a 128-byte FIFO.`);

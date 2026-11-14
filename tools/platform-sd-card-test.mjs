@@ -120,8 +120,8 @@ for (const [device,board] of [['m5stack-c139','papers3'],['m5stack-k159-b','pape
   await runtime.configure(createDefaultScene(catalog,'m5stack-stopwatch'));assert.equal((await runtime.capabilities()).sdCard.available,false);
  } finally {await runtime.dispose();}
 });
-test('ordinary INK4 SD support does not enable the distinct Plus/S31 board',()=>{
- assert.equal(hasSdCard('metalio-ink4'),true);assert.equal(hasSdCard('metalio-ink4-plus'),false);assert.equal(hasSdCard('metalio-ink4-s31'),false);
+test('INK4 and INK4 Plus enable only their individually implemented SD board routes',()=>{
+ assert.equal(hasSdCard('metalio-ink4'),true);assert.equal(hasSdCard('metalio-ink4-plus'),true);assert.equal(hasSdCard('metalio-ink4-s31'),false);
 });
 
 test('all declared TF slots prepare a card before firmware load without claiming an unimplemented transport',async()=>{

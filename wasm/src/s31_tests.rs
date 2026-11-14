@@ -54,3 +54,23 @@ fn s31_live_audio_drains_capture_without_changing_guest_time() {
         esp32sim_delete(e);
     }
 }
+
+#[test]
+fn ink4_plus_factory_uses_its_own_s31_profile_and_flash_capacity() {
+    // SAFETY: this test exclusively owns the returned handle until deletion.
+    unsafe {
+        let name = "metalio-ink4-plus";
+        for flash in [8, 32] { assert!(esp32sim_new(name.as_ptr(), name.len(), flash, 16).is_null()); }
+        let e = esp32sim_new(name.as_ptr(), name.len(), 16, 16);
+        assert!(!e.is_null());
+        let MachineKind::S31(m) = &mut (*e).m else { panic!("must use production S31 machine"); };
+        assert_eq!(m.bus.board.name(), name);
+        assert_eq!(m.bus.flash.len(), 16 << 20);
+        let inputs = m.bus.board_inputs.as_ref().unwrap();
+        assert_eq!(inputs.psram_bytes, 16 << 20); // Simulation choice, not physical capacity evidence.
+        assert!(!inputs.efuse.contains(&(0x88, 0x0102)), "must not inherit Mosaico V1.2 identity");
+        let (width, height, pixels, _) = m.bus.board.display().unwrap();
+        assert_eq!((width, height, pixels.len()), (684, 1216, 684 * 1216));
+        esp32sim_delete(e);
+    }
+}

@@ -1,5 +1,15 @@
 // Device storage, appearance and hardware UI. Source strings remain in zh-CN.
 export default {
+ "已接入独立 ESP32-S31 板级模型，官方固件仍按试运行提供；显示、输入、存储与网络须按固件版本逐项验证。": "The dedicated ESP32-S31 board model is connected. Official firmware remains a trial; display, input, storage and networking require verification for each firmware version.",
+ "ESP32-S31 使用独立的双核 RISC-V 解释器，不能选择 ESP32-S3 代替。Plus 背面缺少对应照片，不复用 INK4 背面镜头或标记。": "ESP32-S31 uses its own dual-hart RISC-V interpreter; ESP32-S3 is not a substitute. No matching Plus rear photo is available, so INK4 rear lenses and markings are not reused.",
+ "运行配置采用 16 MiB Flash 与模拟的 16 MiB PSRAM；厂家未公开实物 PSRAM 容量，此配置不代表硬件实测。": "The runtime uses 16 MiB Flash and a simulated 16 MiB PSRAM configuration. The manufacturer has not published the physical PSRAM capacity; this configuration is not a hardware measurement.",
+ "侧键通过 TCA9555、盖板键通过 FT6336U 语义事件输入；触摸坐标为 684 × 1216，不将这些按键映射成普通 GPIO。": "Side buttons use TCA9555 events and cover buttons use FT6336U events. Touch coordinates are 684 × 1216; these buttons are not mapped to ordinary GPIO.",
+ "microSD 接入 S31 SDMMC 数字模型，默认准备 64 MiB FAT32 卡；客户机挂载仍待固件验证，不模拟总线边沿或实际传输时序。": "microSD uses the S31 SDMMC digital model with a prepared 64 MiB FAT32 card. Guest mounting still needs firmware verification; bus edges and physical transfer timing are not simulated.",
+ "已接入独立 S31 板级模型，尚未完成此版本的运行验证；浏览器缓存允许，本站服务器与 Git 不保存第三方固件。": "The dedicated S31 board model is connected, but execution of this version has not been verified. Browser caching is allowed; this site server and Git do not store third-party firmware.",
+ "当前板型提供 STA 网络中继，不支持固件 SoftAP 配网页或自动配网。可通过固件支持的方式设置网络，再连接云端中继或本地助手。": "This board provides STA network relay without firmware SoftAP pages or automatic provisioning. Configure networking through a method supported by the firmware, then connect a cloud relay or local helper.",
+ "填写自建助手地址": "Enter your self-hosted helper address",
+ "不支持": "Unsupported",
+
  '内部I2C0': 'Internal I2C0',
  '左 H2 2×10P / 2.54mm 扩展': 'Left H2 expansion · 2×10P / 2.54mm',
  '右 H1 2×10P / 2.54mm 扩展': 'Right H1 expansion · 2×10P / 2.54mm',

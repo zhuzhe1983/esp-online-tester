@@ -13788,10 +13788,12 @@
       "module": "ESP32-S31",
       "summary": "ESP32-S31 驱动的 4.7 英寸并行电子纸阅读/语音设备，带电容触摸、冷暖前光与 microSD。",
       "runtime": {
-        "board": null,
+        "board": "metalio-ink4-plus",
         "flashMb": 16,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 16,
+        "status": "partial",
+        "psramMbBasis": "simulation",
+        "touch": true
       },
       "display": {
         "width": 684,
@@ -13803,22 +13805,49 @@
         {
           "id": "power",
           "name": "Power · TCA9555 P1.7",
-          "type": "button"
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
         },
         {
           "id": "volume-up",
           "name": "Volume + · TCA9555 P1.0",
-          "type": "button"
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "ArrowUp"
         },
         {
           "id": "volume-down",
           "name": "Volume − · TCA9555 P1.1",
-          "type": "button"
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "ArrowDown"
         },
         {
           "id": "touch",
-          "name": "FT6336U touch + cover virtual keys",
+          "name": "FT6336U 触摸屏",
           "type": "touch"
+        },
+        {
+          "id": "home",
+          "name": "主页",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "Home"
+        },
+        {
+          "id": "previous",
+          "name": "上一页",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "next",
+          "name": "下一页",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "ArrowRight"
         }
       ],
       "interfaces": [
@@ -13917,13 +13946,16 @@
         }
       ],
       "limitations": [
-        "本型号板级模拟器尚未完成适配；当前提供外观预览与产品/固件资料。",
+        "已接入独立 ESP32-S31 板级模型，官方固件仍按试运行提供；显示、输入、存储与网络须按固件版本逐项验证。",
+        "运行配置采用 16 MiB Flash 与模拟的 16 MiB PSRAM；厂家未公开实物 PSRAM 容量，此配置不代表硬件实测。",
+        "侧键通过 TCA9555、盖板键通过 FT6336U 语义事件输入；触摸坐标为 684 × 1216，不将这些按键映射成普通 GPIO。",
+        "microSD 接入 S31 SDMMC 数字模型，默认准备 64 MiB FAT32 卡；客户机挂载仍待固件验证，不模拟总线边沿或实际传输时序。",
         "厂家 STEP 的原尺寸与全部组件装配保留；原生读取器以毫米输出。",
         "显示有效区及盖板印刷标记依据官方照片/屏幕标称对角线推算，不代表内部器件或触摸坐标已校准。",
         "厂家外观模型不含可核验的完整PCB布局；内部为UNKNOWN空白占位，不将不明CAD细节冒称具体电子器件。",
         "尚未与实物/独立尺寸图完成完整1:1验收；侧键物理顺序未绑定电气控制。",
         "照片含 4G 标识，源码主要描述 Wi-Fi 板型；未核实 4G SKU、模组与所有硬件版次，不合并为已确认配置。",
-        "ESP32-S31 是独立的 RISC-V 平台，当前执行内核尚未支持；不能选择 ESP32-S3 代替。Plus 背面缺少对应照片，本轮不复用 INK4 背面镜头或标记。"
+        "ESP32-S31 使用独立的双核 RISC-V 解释器，不能选择 ESP32-S3 代替。Plus 背面缺少对应照片，不复用 INK4 背面镜头或标记。"
       ]
     },
     {
