@@ -18,13 +18,15 @@ The BOOT/GPIO61 key is connected through the S31 pad model, including the high G
 
 The official download endpoint returned no `Access-Control-Allow-Origin` for this site's origin; an actual local-browser fetch also failed with CORS. Therefore the catalog remains **trial**. If “下载并运行” fails, open the official recovery page, download the complete BIN, select **本地文件**, and choose **加载并运行**. Files stay in the browser. A shared configuration retains the product and pinned remote source, but cannot carry locally selected firmware bytes or make the publisher allow CORS. Receivers may need to download and choose the same BIN. Remote autostart and portable recording replay of this source are not accepted as working. No third-party firmware is mirrored into this site or committed to Git.
 
+The [browser acceptance receipt](evidence/mosaico-runtime-20261114/README.md) records actual workbench 2D/3D pointer and keyboard inputs, the mini player’s download-recovery UI and onscreen key results, final model/WASM hashes, screenshots and negative observations.
+
 ## Boundaries
 
 | Area | Scope |
 | --- | --- |
 | Display and touch | Real CO5300 QSPI/TE path and CST9220 HYN212 report path; official language selection changes guest output. Dynamic 2D/3D surfaces display the same framebuffer. |
 | Buttons | AI standby/wake accepted against official guest output. BOOT routes to GPIO61; short-press application effect unobserved. |
-| Flash | Existing scoped browser Flash persistence applies. The official firmware's own stored language/settings are preserved; do not clear them to recreate onboarding. |
+| Flash | Existing scoped browser Flash persistence applies; do not clear stored data to recreate onboarding. The new mini runtime returned to language selection without a user clear. Cross-runtime language/settings retention is not accepted. |
 | NAND | Upstream GP-SPI3 NAND model is present. It is not TF/microSD, and is not persisted across a newly created browser runtime. No SD slot is declared or fabricated. |
 | Motion | Native BMI270/BMM150 register subsets initialize. Host `setImu` and model-orientation input are unavailable for this board; no physical sensor calibration or module behavior is claimed. |
 | Audio | I²S0/1 logical host PCM and bounded mono output are connected; a cold ABI test checks drain/no-duplicate capture. This is not acceptance of full voice, cloud speech, gain, microphone wiring or acoustic output in the recovery image. |
@@ -43,4 +45,4 @@ cargo test -p esp32sim-wasm s31_ --lib
 node tools/probe-mosaico-factory.mjs /path/to/hello-mosaico-complete_0.1.3.bin output/mosaico
 ```
 
-The probe insists on the exact image hash, executes the real platform worker, records acknowledged inputs and guest output, saves four real framebuffer PNGs, and closes the worker in `finally`. Its initial state uses isolated in-memory Flash. A user's persisted device must retain existing data and can therefore start directly in its saved language.
+The probe insists on the exact image hash, executes the real platform worker, records acknowledged inputs and guest output, saves four real framebuffer PNGs, and closes the worker in `finally`. Its initial state uses isolated in-memory Flash. Preserve a user's existing Flash and any saved settings; the test must not clear storage to force its initial page. The separate mini test returned to language selection, so language retention across new runtimes is not claimed.
