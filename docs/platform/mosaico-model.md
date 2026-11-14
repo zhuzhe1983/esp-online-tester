@@ -1,58 +1,54 @@
-# ESP-Mosaico V1.2 产品资料与模型
+# ESP-Mosaico 官方外壳模型
 
-条目 `espressif-esp-mosaico` 对应乐鑫 **CoreBoard V1.2 / BaseBoard V1.2**。外观为照片与显示屏图纸推算，**不是厂家 CAD，没有通过整机 1:1 或制造尺寸验收**。产品运行和固件输出由[独立运行报告](mosaico-runtime.md)记录；本页的黑色屏幕截图仅用于结构检查。
+`espressif-esp-mosaico` 已采用官方 **ESP-MOSAICO.3mf** 的主壳和两件按键。显示盖板、PCB 占位层和背面外观分别保留来源标记；没有把三件外壳 CAD 称作完整整机 CAD。产品运行记录见[运行报告](mosaico-runtime.md)，本页黑屏截图只用于结构检查。
 
-## 官方来源与版本
+## 来源与许可
 
-- [硬件指南固定提交](https://github.com/espressif/esp-dev-kits/blob/1b4c83bcd8662b8339d5b975a088407ed6a09e7c/docs/en/esp-mosaico/user_guide.rst)区分 V1.0/V1.2：V1.2 内部 I2C 为 SDA56/SCL3，扩展 I2C 为 SDA0/SCL1；LCD RST44、SCL42。不能混用两个版次。
-- V1.2 使用 ESP32-S31NRV16，16 MiB NOR、16 MiB 封装内 PSRAM、128 MiB SPI NAND；480×480 CO5300 QSPI AMOLED 与 CST9220 触控；ES8311/NS4150B 音频、BMI270、双 BMM150、BQ27220、65 mAh 电池。没有把 NAND 声明成 TF 卡槽。
-- [官方 FAQ](https://mosaico.ai/en/faq)将外壳文件指向 [ESP_MOSAICO 的 MakerWorld 账户](https://makerworld.com/zh/@ESP_MOSAICO)。2026-11-14 正常直接请求、浏览工具和独立无头浏览器均遇 HTTP 403 / 安全验证，未取得原文件。没有尝试绕过验证。官方 esp-dev-kits、BSP、utils、vibe、claw 仓库树也未找到适用外壳 STEP/STL 或板级 CAD。
-- `H0216F002AMT004-1 V1` 显示屏图纸给出有效区 **38.39×38.39 mm**，TP 盖板 **43.3×43.3×0.7 mm**。整机制造尺寸没有找到；外壳 45×45×12.5 mm 是照片约束下的估计，XY 约 ±1 mm、厚度约 ±2 mm，不是公差。
+[官方 Core Unit 硬件页](https://mosaico.ai/en/hardware/bzWKymkXPu95)直接提供 [3MF](https://mosaico.ai/api/v1/files/attachments/1/9734120a8783.3mf)和[装配说明](https://mosaico.ai/api/v1/files/attachments/1/255888ae365a.pdf)。3MF 于 2026-11-14 16:03:31 UTC 获取，17,727,347 字节，SHA-256 为 `aa84074593344c37684cc2f36c58b5698ed5b695246e701ff05e49d325c176b3`。它绕开了此前无法直接取得文件的 MakerWorld 页面，但没有改变原文件的许可。
 
-所有实际取得资料的原始 URL、最终 URL、UTC、字节数、SHA-256，以及仅发现但未取得的 CAD 入口，见 [sources.json](evidence/mosaico-sources/sources.json)和[产品知识记录](../../web/platform/knowledge/espressif-esp-mosaico.json)。原始资料与照片保留厂商权利；本站没有复制参考照片作产品纹理。生成几何和自行排版的两张文字 SVG 使用本仓库许可，商标仍属于乐鑫。
+3MF 内的许可原文为 **MakerWorld Exclusive License**，作者为 ESP-Mosaico。转换结果保留该名称和[许可入口](https://makerworld.com/en/exclusive-model-policy)，不将厂家几何改标为 MIT，也不声明取得开放再分发授权。自行生成的显示/UNKNOWN 占位和文字 SVG 单独使用仓库许可；商标与参考照片仍保留原权利。原始 3MF 和第三方固件没有进入仓库。固定 URL、获取时间、字节数及摘要保存在 [source-manifest.json](../../web/platform/assets/espressif-esp-mosaico/source-manifest.json)和 [LICENSE-Model.txt](../../web/platform/assets/espressif-esp-mosaico/LICENSE-Model.txt)。
 
-## 外观和未知结构
+## 保留的几何与装配
 
-模型以毫米工作；+X 为屏幕右方，+Y 为上方，+Z 为屏幕朝外。没有导入后拉伸或用照片覆盖固件显示。`front-cover` 上表面 Z=6.55，`live-display` Z=6.56，显示面位于盖板之上 0.01 mm，直接使用调用者的 framebuffer 纹理。
+原件共 **23,732 个三角形**：主壳 19,916，白色双键联体 2,976，橙色 AI 键 840。全部保留，没有简化、裁切、非均匀缩放或补猜背盖。主壳前后贯通；另一个磁吸背盖附件不在本模型中。
 
-BOOT 位于底部 USB 左侧，AI 位于顶部右侧；分别关联真实 GPIO61 和 GPIO7。底部右侧 POWER 只呈现外观，因为它连接 SAM8108 电源控制器，不能当普通 GPIO。按键长宽、位置、凸起高度、顶面孔洞和外壳圆角均为照片估算，未认证其精确轮廓。背板文本朝外可读；QR 码没有伪造。四颗背部螺丝只保留可见头部近似，不补猜隐藏螺纹、磁铁或安装方向。
+单位保持毫米。先应用各 component 变换，再应用 `Metadata/model_settings.config` 的 `assemble_item`；`3D/build` 的打印盘排版不参与装配。平台统一变换为绕 Z 轴旋转 180°、Z 平移 −5.550025463104248 mm：+X 向屏幕右，+Y 向上，+Z 向显示面外。全部原变换、原件边界、三角形数量和语义分组见模型的 `sourceGeometry`。原坐标 +Z 朝向显示面，是依据官方装配图、螺钉柱和按键内部肩台核对的方向推断；官方图没有标注坐标轴。BOOT/POWER 左右关系另据官方 FAQ 与 V1.2 照片确认。
 
-左右 2×10 孔采用官方 **2.54 mm 节距**；绝对位置、孔宽和深度只是视觉估计。USB 具有独立口沿和暗色插入区域，但通用可视口不代表实物连接器型号或插合深度。所有连接均保持 `allowConnections: false`，没有未经核实的线缆。左右口的**逐针编号**单独在产品 interfaces 中按官方表记录，不以背面照片的镜像顺序作线序。
+白色联体按完整三角形分成 `button-boot`、`button-power`、`button-link` 三个渲染组，仍属于同一装配件；没有剪掉或复制中间连杆。BOOT 保持 USB 左侧 GPIO61，AI 保持顶部右侧 GPIO7。POWER 接硬件电源控制器，没有 GPIO 热点。射线检查覆盖两颗可操作键的最近可见面、POWER 无输入，以及屏幕中心和偏角触点的 UV 方向。真实运行时屏幕直接使用客体 framebuffer；静态参考图不会覆盖它。
 
-`pcb-main`、`pcb-base` 为两个稳定的 **UNKNOWN** 占位层。未推测内部元件、走线、板厚、板形、 speaker/battery 装配尺寸。分开查看时显示/两层板按厚度方向分层，外壳另移到侧下方；偏移只是查看器安排，不宣称真实拆装距离。侧孔与顶孔的浅表外观标记随外壳移动。反复展开/复位 20 次测试无累积位移。截图 [`mosaico-expanded.png`](evidence/mosaico-model/mosaico-expanded.png)及[紫色透明视图](evidence/mosaico-model/mosaico-expanded-purple.png)均使用完整装配，无隐藏遮挡件，两层 UNKNOWN 可见。
+默认颜色来自 3MF 打印配置：主壳和白色双键为 `#CBC6B8`，AI 为 `#FF671F`。这是厂家文件的打印耗材配色，不是生产塑料的实测色值。金色、半透明紫色只改变外壳材质，按键、屏幕、USB、PCB 与背字保持自身材质。
 
-## 尺寸和照片检查
+## 明确保留的未知项
 
-[核验回执](evidence/mosaico-model/receipt.json)绑定最终模型和二进制 hash。Three.js 完整装配包围盒为约 **45.22×46.10×13.185 mm**，包括按键、端口外观和显示辅助面；它与 45×45×12.5 mm 的壳体约束范围不同。没有独立整机图纸，不能把这个数值作为“尺寸通过”。盖板导出顶点为 43.3×43.3 mm，显示面为 38.39×38.39 mm，与独立图纸值的数值差小于 0.001 mm。
+3MF 没有显示屏、PCB、连接器、螺丝、电池或扬声器 CAD，也没有明确的 V1.2 机械版号。与 CoreBoard/BaseBoard V1.2 的对应关系来自官方装配说明及可见布局，不能据此认证全部机械差异。
 
-以两张官方 V1.2 照片的盖板直边外推角点标定透视相机，未改变模型几何。手工角点不确定度约 ±5 px；参考角点、相机矩阵、投影与误差保存在 [alignment.json](evidence/mosaico-model/alignment.json)。正斜视盖板拟合 RMS 为 6.77 px，壳体四角平均偏差 9.64 px；另一斜视分别为 3.39 px 和 6.84 px。见[正斜视轮廓叠图](evidence/mosaico-model/front-outline-overlay.svg)、[另一斜视叠图](evidence/mosaico-model/isometric-outline-overlay.svg)和对应 `mosaico-fit-*.png`。灰线是标定用盖板，青线是独立外壳照片角点，橙线为模型投影。
+显示盖板 **43.3×43.3×0.7 mm**、显示有效区 **38.39×38.39 mm** 来自 H0216F002AMT004-1 图纸；盖板圆角和装配高度仍为估算。盖板前面 Z=6.25，显示面 Z=6.26 mm。
 
-这些只是外轮廓地标检查，**没有通过完整照片验收**：参考图带透视/标注，机壳厚度、按钮细节、侧面印字、孔形、颜色、材料和内部结构仍有差异；背面与底部做了人工方向/数量核对，没有取得独立正交照片用于定量对齐。不把同一模型投影充作参考照片。可从固定来源下载原图并核对 hash，在相同像素坐标叠加自己的渲染。
+`pcb-main`、`pcb-base` 保持稳定 ID 和可读的 **UNKNOWN**。背面深色表面是估算的 base PCB，不是官方背盖；背字、七个焊盘和四个可见螺丝头仍是照片派生外观，QR、走线、元件和隐藏螺纹没有补造。USB 是置于官方开口内的通用视觉口，插合深度未核实，`allowConnections` 仍为 false。厂家 CAD 已有侧孔、通风孔和键帽纹路，旧的估算孔洞标记已移除。
 
-无头浏览器检查了原色、金色、半透明紫色、前后/底部/斜视、展开复位和无模型载入错误；只有外壳随材质变化，盖板、按键、USB、PCB 与背字保留自身材质。入口 [`mosaico-model-review.html`](../../web/platform/mosaico-model-review.html)为可复查的独立查看器。运行场景的 2D/3D、分享和 mini 验收属于运行适配任务，不从此页静态检查推断。
+## 核验结果
 
-## 固件调查
+[几何核验](evidence/mosaico-model-official/geometry-verification.json)绑定本次最终模型摘要。逐一比较 71,196 个原件顶点实例，Float32 导出最大误差 **0.000000479 mm**；23,732 个原三角形全部对应。主壳为 **44.8980027×44.8980027×11.10000038 mm**。完整查看器约 44.898×44.900×12.015 mm，包含派生显示/背板外观；它不是独立制造尺寸证据。
 
-官方恢复页当前发布 **Hello 0.1.3 + Vibe Mode 0.3.0**，`firmware/4`，2026-11-12，16,777,216 字节，SHA-256 `7562ff67cad8280fe8fdd06f3be7d6c91f44e5a8cc63fe596721f48da428af9b`。官网 FAQ 同时称预装应用为 Mosaico-Claw；当前恢复镜像与那个应用不是同一构建。目录把官方恢复项作为默认，仍标 `trial`，不将来源可信或能够启动等同完整兼容。
+[照片对照参数](evidence/mosaico-model-official/alignment.json)继续采用官方 V1.2 原图中的独立盖板角点标定相机，模型没有拉伸。正斜视/另一斜视的盖板拟合 RMS 分别为 6.77/3.39 px，外壳边界角点平均偏差为 **10.09/8.03 px**。角点为直边外推，约 ±5 px；外壳圆角、照片透视、版次和估算的显示座高均影响结果。这是有限地标对照，**没有通过整机 1:1、完整照片或制造公差验收**。
 
-[恢复审计](evidence/mosaico-sources/factory-audit.json)保留调查与 CORS 限制。官方端点针对 GitHub Pages Origin 没有返回 Access-Control-Allow-Origin；若“下载并运行”提示跨域失败，请打开[官方恢复页](https://mosaico.ai/en/firmware)下载完整 BIN，再点“本地文件”选择该 BIN 并运行。本站不提供镜像或绕过跨域的代理。
+无头浏览器检查了[原色](evidence/mosaico-model-official/mosaico-official-isometric.png)、[背面](evidence/mosaico-model-official/mosaico-official-back.png)、[USB/双键边](evidence/mosaico-model-official/mosaico-official-bottom.png)、[金色](evidence/mosaico-model-official/mosaico-official-gold.png)、[透明紫色](evidence/mosaico-model-official/mosaico-official-purple.png)及[完整展开](evidence/mosaico-model-official/mosaico-official-expanded-purple.png)。两层 UNKNOWN 清楚可读，反复展开/复位 20 次无位置漂移。完整检查和截图摘要见[本次回执](evidence/mosaico-model-official/receipt.json)。旧的[照片估算模型回执](evidence/mosaico-model/receipt.json)保留为历史，不作为本次官方几何的验收依据。
 
-关注列表通过专用 `espressif-mosaico` 适配器读取官方 `/api/v1/firmware` 元数据，校验 S31 目标、镜像名称和对应下载 ID；不把 utils 源码仓库的 Release 当作恢复固件版本。请求不携带 GitHub 凭据，不下载 BIN，不留存发布说明或下载计数。官方元数据没有 SHA-256，故只监测版本，自动替换继续禁用，目录仍使用本轮核验的固定镜像摘要。元数据出错时保留上次结果；小智条目同样锁定已调查 ZIP，自动更新未启用。
+## 重建
 
-小智主项目 v2.6.0 有精确 `espressif-esp-mosaico` ZIP，内含单个 `merged-binary.bin`；镜像 SHA-256 `440797fe7dbf952dc79126002e32e9a2d9ec4f2ad7752989ad74e7ed0dac9eb2`，11,374,509 字节，bootloader 位于 0x2000，chip ID=32，作为独立 `trial` 提供，未验证执行/云服务/实机。ZIP 与内部镜像摘要分别记录在[小智回执](evidence/mosaico-sources/xiaozhi-firmware-receipt.json)，不会把 ZIP hash 当内部 BIN hash。UIFlow 官方仓库 6,830 个路径中未找到 mosaico 目标；这只界定本轮公开来源搜索，不推断未来适配不存在。
-
-## 复现
+导入器仅用 Python 标准库；必须提供固定摘要的本地来源，或显式允许网络获取。
 
 ```sh
-python tools/build-mosaico-model.py --output output/mosaico-rebuild
-cmp web/platform/assets/espressif-esp-mosaico/model.json output/mosaico-rebuild/model.json
-cmp web/platform/assets/espressif-esp-mosaico/geometry.bin output/mosaico-rebuild/geometry.bin
-# 独立环境安装 numpy / scipy 后：
-python tools/verify-mosaico-model.py
-node --test tools/platform-mosaico-model-test.mjs tools/platform-knowledge-test.mjs
-python tools/validate-platform-catalog.py
-# buildless 预览：
-python -m http.server 8179 --directory web
+python3 tools/build-mosaico-model.py --source /path/to/ESP-MOSAICO.3mf --output /tmp/mosaico-rebuilt
+# 或直接从固定官方 URL 获取并核对摘要，不保存原始大包：
+python3 tools/build-mosaico-model.py --allow-network --output /tmp/mosaico-rebuilt
+cmp web/platform/assets/espressif-esp-mosaico/model.json /tmp/mosaico-rebuilt/model.json
+cmp web/platform/assets/espressif-esp-mosaico/geometry.bin /tmp/mosaico-rebuilt/geometry.bin
+python3 tools/verify-mosaico-model.py --source /path/to/ESP-MOSAICO.3mf
+# 可选照片相机复算另需 numpy/scipy：
+python3 tools/verify-mosaico-model.py --source /path/to/ESP-MOSAICO.3mf --photo-alignment
+node --test tools/platform-mosaico-model-test.mjs tools/platform-model-inspection-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs
+python3 -m http.server 8187 --directory web
 ```
 
-访问 `/platform/mosaico-model-review.html`，选择“分开查看”和“分层斜视”可复查 UNKNOWN。浏览器使用 Playwright skill wrapper 的独立无头会话并在完成后关闭。模型自检覆盖真实纹理引用、按键最近射线命中、电源键边界、未知层稳定 ID、复位和禁止未经核实连接，不写模拟成功的假回执。
+访问 `/platform/mosaico-model-review.html` 可复查三种配色和展开结构。此页不启动固件。产品的新默认固件为官方 **Vibe 0.3.0 raw 恢复镜像**，不含 Hello；完整 Hello 恢复项仍保留为 factory。下载链路和 CORS 检查见[下载回执](evidence/mosaico-download-20261115/README.md)，真实触控/按键后的固件结果仍由运行报告单独记录。
