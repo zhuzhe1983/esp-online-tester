@@ -37,6 +37,9 @@ pub fn machine(mac: [u8; 6], flash_size: usize) -> Machine {
 const TIME_HZ: u64 = crate::periph::CPU_HZ;
 /// Modem TSF timer latch request (bits 0-3); the latched value follows at +0xC/+0x10.
 const TSF_LATCH: u32 = 0x2010_d814;
+const POLL_SDMMC: u8 = 1;
+const POLL_RMT: u8 = 2;
+const POLL_LCD: u8 = 4;
 
 impl Soc for S31 {
     type Core = Cpu;
@@ -131,6 +134,9 @@ pub struct SocBus {
     pub board_inputs: Option<BoardInputs>,
     /// The pad levels last given to the board (`Pads::board_levels`).
     pin_levels: u64, pin_enabled: u64,
+    /// SD/LCD/RMT need scheduler time only after a command/start. Updated at their MMIO,
+    /// host card changes, reboot and completion; avoids probing three idle blocks per tick.
+    peripheral_poll: u8,
     /// Device state may differ from what the last interrupt refresh saw: set at every dispatch
     /// (`select_core`) and by every access that is not plain memory or that faults; cleared by a
     /// refresh. See `memory_written`.
@@ -256,7 +262,7 @@ impl SocBus {
             mac,
             rom_image: None,
             board_inputs: None,
-            pin_levels: !0, pin_enabled: 0,
+            pin_levels: !0, pin_enabled: 0, peripheral_poll: 0,
         }
     }
 
@@ -328,7 +334,7 @@ impl SocBus {
 
     /// Cold physical removal; return the device so callers can retain its modified storage.
     pub fn eject_sd_card(&mut self) -> Option<Box<dyn esp_periph::sdmmc::SdDevice>> {
-        let card = self.inner.sdmmc.eject(); self.board.set_sd_card_present(false); self.irq_dirty = true; card
+        let card = self.inner.sdmmc.eject(); self.board.set_sd_card_present(false); self.refresh_peripheral_poll(); self.irq_dirty = true; card
     }
 
     /// After a store: pad level changes, then a finished GP-SPI2 transaction, to the board. Only
@@ -337,10 +343,12 @@ impl SocBus {
         if address >> 24 != 0x20 { return; }
         if address & !3 == TSF_LATCH { self.latch_tsf(); }
         if crate::pads::Pads::is_mmio(address) { self.deliver_pin_levels(); self.irq_dirty = true; }
-        if self.inner.sdmmc.pending() && crate::sdmmc::SdmmcS31::is_mmio(address) {
+        let sdmmc_mmio = crate::sdmmc::SdmmcS31::is_mmio(address);
+        if sdmmc_mmio && self.inner.sdmmc.pending() {
             self.inner.run_sdmmc(self.board_ns, self.board.sd_card_slot()); self.irq_dirty = true;
         }
-        if self.inner.lcd.start_pending {
+        let lcd_start = self.inner.lcd.start_pending;
+        if lcd_start {
             let pll160 = self.inner.mspi.bbpll_root_hz().map(|hz| hz / 3);
             if let Some((w, h, bpp)) = self.inner.lcd.begin(pll160) {
                 let pins = self.inner.pads.lcd_rgb_pins((bpp * 8) as u8);
@@ -354,7 +362,35 @@ impl SocBus {
             }
             self.irq_dirty = true;
         }
+        if sdmmc_mmio || lcd_start || crate::lcd::Lcd::is_mmio(address) || crate::rmt::Rmt::is_mmio(address) { self.refresh_peripheral_poll(); }
         self.deliver_spi();
+    }
+
+    fn refresh_peripheral_poll(&mut self) {
+        self.peripheral_poll = (u8::from(self.inner.sdmmc.pending()) * POLL_SDMMC)
+            | (u8::from(self.inner.rmt.running()) * POLL_RMT) | (u8::from(self.inner.lcd.running()) * POLL_LCD);
+    }
+
+    /// EX260/EX265 follow-up: keep newly added, opt-in peripheral work out of the idle
+    /// tick body. The order, time and completion/IRQ actions match the uncached path.
+    #[inline(never)]
+    fn tick_optional_peripherals(&mut self, cycles: u32) {
+        if self.peripheral_poll & POLL_SDMMC != 0 { self.inner.run_sdmmc(self.board_ns, self.board.sd_card_slot()); self.irq_dirty = true; }
+        if self.peripheral_poll & POLL_RMT != 0 {
+            let before = self.inner.rmt.irq();
+            self.inner.rmt.tick(u64::from(cycles), self.inner.mspi.bbpll_root_hz().map(|hz| hz / 6), self.inner.clocks.rc_fast_hz());
+            // Finite gate clocks are observed through lcd_rgb_start, not as WS2812 frames.
+            self.inner.rmt.inner.done.clear();
+            if before != self.inner.rmt.irq() { self.irq_dirty = true; }
+        }
+        if self.peripheral_poll & POLL_LCD != 0 {
+            if self.inner.lcd_dma_step(u64::from(cycles)) { self.irq_dirty = true; }
+            if let Some((w, h, data)) = self.inner.lcd.finish() {
+                self.board.lcd_rgb_pins(self.inner.pads.lcd_rgb_pins((self.inner.lcd.geometry.2 * 8) as u8));
+                self.board.lcd_frame(w, h, &data); self.irq_dirty = true;
+            }
+        }
+        self.refresh_peripheral_poll();
     }
 
     /// GP-SPI2 and GP-SPI3 transactions: the DMA data phase first (when the channel runs), then the board.
@@ -522,7 +558,7 @@ impl esp_soc::SocBus for SocBus {
             (dt.div_ceil(1_000_000_000).min(u128::from(u64::MAX)) as u64).max(1)
         });
         // Active streaming must yield to its EOF ISR/refill even while both harts idle.
-        let board = if self.inner.lcd.running() || self.inner.rmt.running() { Some(board.unwrap_or(64).min(64)) } else { board };
+        let board = if self.peripheral_poll & (POLL_LCD | POLL_RMT) != 0 { Some(board.unwrap_or(64).min(64)) } else { board };
         let Some(ticks) = self.inner.periph.systimer.ticks_until_irq(stalled) else { return board };
         if ticks == 0 { return Some(1); }
         let source = if self.inner.periph.systimer.source_rc_fast() {
@@ -663,7 +699,7 @@ impl esp_soc::SocBus for SocBus {
         // The virtual AP is outside the chip: it survives the reset, as on the C6 (surviving_reboot).
         inner.wifi_mac.link = std::mem::take(&mut self.inner.wifi_mac.link).surviving_reboot();
         inner.sdmmc = std::mem::take(&mut self.inner.sdmmc); inner.sdmmc.reset();
-        self.inner = inner;
+        self.inner = inner; self.peripheral_poll = 0;
         self.attach_board_devices();                     // the board's I2C devices, on the new controllers
         self.deliver_pin_levels();                       // the pads are back to their reset state
         self.mac = mac;
@@ -788,7 +824,7 @@ impl esp_soc::SocBus for SocBus {
             return Err("this S31 board has no modeled SDMMC slot on its dedicated pads".into());
         }
         let info = self.inner.sdmmc.attach(image, config)?;
-        self.board.set_sd_card_present(true); self.irq_dirty = true; Ok(info)
+        self.board.set_sd_card_present(true); self.refresh_peripheral_poll(); self.irq_dirty = true; Ok(info)
     }
 
     fn set_debug(&mut self, f: &esp_soc::DebugFlags) {
@@ -1006,21 +1042,7 @@ impl Bus for SocBus {
         let t = u128::from(cycles) * 1_000_000_000 + u128::from(self.board_ns_frac);
         self.board_ns += (t / u128::from(hz)) as u64; self.board_ns_frac = (t % u128::from(hz)) as u64;
         self.board.advance_to(self.board_ns);
-        if self.inner.sdmmc.pending() { self.inner.run_sdmmc(self.board_ns, self.board.sd_card_slot()); self.irq_dirty = true; }
-        if self.inner.rmt.running() {
-            let before = self.inner.rmt.irq();
-            self.inner.rmt.tick(u64::from(cycles), self.inner.mspi.bbpll_root_hz().map(|hz| hz / 6), self.inner.clocks.rc_fast_hz());
-            // Finite gate clocks are observed through lcd_rgb_start, not as WS2812 frames.
-            self.inner.rmt.inner.done.clear();
-            if before != self.inner.rmt.irq() { self.irq_dirty = true; }
-        }
-        if self.inner.lcd.running() {
-            if self.inner.lcd_dma_step(u64::from(cycles)) { self.irq_dirty = true; }
-            if let Some((w, h, data)) = self.inner.lcd.finish() {
-                self.board.lcd_rgb_pins(self.inner.pads.lcd_rgb_pins((self.inner.lcd.geometry.2 * 8) as u8));
-                self.board.lcd_frame(w, h, &data); self.irq_dirty = true;
-            }
-        }
+        if self.peripheral_poll != 0 { self.tick_optional_peripherals(cycles); }
         let edges = self.board.take_edges();
         if !edges.is_empty() {
             for e in edges { let _ = self.inner.pads.set_input(usize::from(e.pin), Some(e.level)); }
@@ -1056,6 +1078,62 @@ mod tests {
     use esp_soc::SocBus as _;
 
     #[test]
+    fn optional_rmt_poll_follows_start_clock_gates_completion_and_reset() {
+        use crate::rmt::{BASE, CLOCK};
+        let mut b = SocBus::new(1 << 20, [0; 6]);
+        assert_eq!(b.peripheral_poll, 0); assert_eq!(b.next_deadline(), None);
+        b.write32(BASE + 0x800, 0x8000 | 10 | (20 << 16)).unwrap();
+        b.write32(BASE + 0xa0, (2 << 9) | (1 << 19) | (1 << 21)).unwrap();
+        b.write32(BASE + 0x78, 1 << 12).unwrap();
+        b.write32(BASE + 0x20, (4 << 8) | (1 << 16) | (1 << 3) | 1).unwrap();
+        b.tick(10_000); assert_eq!(b.inner.rmt.inner.ch[0].rd, 0, "a start with its group clock stopped must wait");
+        b.write32(CLOCK, 0x21).unwrap(); assert_eq!(b.next_deadline(), Some(64));
+        b.tick(961); assert!(b.inner.rmt.running());
+        b.write32(CLOCK, 0).unwrap(); assert_eq!(b.next_deadline(), None);
+        let phase = b.inner.rmt.inner.ch[0].acc_cycles; b.tick(10_000); assert_eq!(b.inner.rmt.inner.ch[0].acc_cycles, phase);
+        b.write32(CLOCK, 0x21).unwrap(); b.tick(10_000);
+        assert!(b.inner.rmt.irq()); assert!(!b.inner.rmt.running()); assert_eq!(b.peripheral_poll, 0); assert_eq!(b.next_deadline(), None);
+        b.write32(BASE + 0x20, (4 << 8) | (1 << 16) | (1 << 3) | 1).unwrap(); assert_eq!(b.next_deadline(), Some(64));
+        b.write32(CLOCK, 0x23).unwrap(); assert_eq!(b.peripheral_poll, 0); assert_eq!(b.next_deadline(), None);
+    }
+
+    #[test]
+    fn optional_lcd_poll_preserves_dma_progress_across_clock_pause_and_frame_end() {
+        use crate::lcd::{BASE, BUS_CLOCK, PIXEL_CLOCK, SHARED_CLOCK, USER};
+        let mut b = SocBus::new(1 << 20, [0; 6]); let desc = bus::SRAM_BASE + 0x100; let buf = bus::SRAM_BASE + 0x200;
+        for (a, v) in [(desc, (1 << 31) | (1 << 30) | (2 << 12) | 2), (desc + 4, buf), (desc + 8, 0), (buf, 0x2211),
+            (bus::AXI_DMA + 0x138 + 0x44, 0), (bus::AXI_DMA + 0x138 + 0x24, desc), (bus::AXI_DMA + 0x138 + 0x20, 2),
+            (BUS_CLOCK, 5), (PIXEL_CLOCK, 4), (SHARED_CLOCK, 4), (BASE + 0x18, 8), (BASE + 0x20, 1 | (1 << 16)), (BASE + 0x1c, 0),
+            (BASE + 0x64, 3), (USER, (1 << 27) | (1 << 24))] { b.write32(a, v).unwrap(); }
+        assert_eq!(b.next_deadline(), Some(64)); b.tick(8); assert_eq!(b.inner.lcd.data, [0x11]);
+        b.write32(PIXEL_CLOCK, 0).unwrap(); assert_eq!(b.next_deadline(), None); b.tick(10_000); assert_eq!(b.inner.lcd.data, [0x11]);
+        b.write32(PIXEL_CLOCK, 4).unwrap(); b.tick(8); assert_eq!(b.inner.lcd.frames, 1); assert!(b.inner.lcd.irq());
+        assert_eq!(b.peripheral_poll, 0); assert_eq!(b.next_deadline(), None);
+        b.write32(USER, (1 << 27) | (1 << 24)).unwrap(); assert_eq!(b.next_deadline(), Some(64));
+        b.write32(USER, 0).unwrap(); assert_eq!(b.next_deadline(), None);
+        b.write32(USER, (1 << 27) | (1 << 24)).unwrap(); b.write32(USER, 1 << 28).unwrap(); assert_eq!(b.peripheral_poll, 0);
+        b.write32(USER, (1 << 27) | (1 << 24)).unwrap(); b.reboot([0; 6]); assert_eq!(b.peripheral_poll, 0); assert_eq!(b.next_deadline(), None);
+    }
+
+    #[test]
+    fn optional_sdmmc_poll_keeps_stalled_commands_until_clock_or_reset_changes() {
+        use crate::sdmmc::{BASE, CLOCK, PHASE, PAD_CTRL, RESET};
+        use esp_periph::sdmmc::{reg, CMD_START, CMD_RESP, CTRL_INT_ENABLE};
+        let mut b = SocBus::new(1 << 20, [0; 6]);
+        for (a, v) in [(PHASE, 7 << 22), (PAD_CTRL, 1), (BASE + reg::CLKENA, 1),
+            (BASE + reg::CTRL, CTRL_INT_ENABLE), (BASE + reg::INTMASK, u32::MAX),
+            (BASE + reg::CMDARG, 0x1aa), (BASE + reg::CMD, CMD_START | CMD_RESP | 8)] { b.write32(a, v).unwrap(); }
+        b.tick(64); assert!(b.inner.sdmmc.pending()); assert_eq!(b.peripheral_poll, POLL_SDMMC);
+        // Opening the peripheral gate is still not a fabricated MPLL input.
+        b.write32(CLOCK, 9).unwrap(); b.tick(64); assert!(b.inner.sdmmc.pending());
+        b.inner.clocks.mpll.set_power(true); b.inner.clocks.mpll.advance(16, true);
+        b.tick(64); assert!(!b.inner.sdmmc.pending()); assert!(b.inner.sdmmc.irq()); assert_eq!(b.peripheral_poll, 0);
+        assert_ne!(b.read32(BASE + reg::RINTSTS).unwrap() & esp_periph::sdmmc::int::RTO, 0, "absent board/card must timeout");
+        b.write32(CLOCK, 0).unwrap(); b.write32(BASE + reg::CMD, CMD_START | CMD_RESP | 8).unwrap(); assert!(b.inner.sdmmc.pending());
+        b.write32(RESET, 1 << 30).unwrap(); assert!(!b.inner.sdmmc.pending()); assert_eq!(b.peripheral_poll, 0);
+    }
+
+    #[test]
     fn sdmmc_soc_attachment_mmio_interrupt_and_reboot_keep_the_card() {
         use crate::sdmmc::{BASE, CLOCK, PHASE, PAD_CTRL, SLOT0_PINS};
         use esp_periph::sdmmc::{reg, SdStore, SdCardConfig, CMD_START, CMD_RESP, CTRL_INT_ENABLE};
@@ -1086,7 +1164,10 @@ mod tests {
         b.reboot([0; 6]); assert!(b.inner.sdmmc.present()); assert!(*present.lock().unwrap());
         assert_eq!(b.inner.sdmmc.host.stats.commands, 1); assert_eq!(b.read32(CLOCK), Ok(0));
         b.write32(BASE + reg::CMD, CMD_START | CMD_RESP | 8).unwrap(); assert!(b.inner.sdmmc.pending());
-        assert!(b.eject_sd_card().is_some()); assert!(!*present.lock().unwrap()); assert!(!b.inner.sdmmc.present());
+        assert_eq!(b.peripheral_poll, POLL_SDMMC);
+        b.attach_sd_card(Box::new(Store), SdCardConfig::default()).unwrap(); assert_eq!(b.peripheral_poll, 0);
+        b.write32(BASE + reg::CMD, CMD_START | CMD_RESP | 8).unwrap();
+        assert!(b.eject_sd_card().is_some()); assert_eq!(b.peripheral_poll, POLL_SDMMC); assert!(!*present.lock().unwrap()); assert!(!b.inner.sdmmc.present());
     }
 
     #[test]
