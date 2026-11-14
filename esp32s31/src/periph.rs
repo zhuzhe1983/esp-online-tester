@@ -1,6 +1,6 @@
 //! ESP32-S31 `device_set!` table (BASE 0), same shape as P4/C3.
 //!
-//! Shared esp-periph IP mounted here: UART0, Systimer (P4-style /2.5 wrap), USB-Serial/JTAG,
+//! Shared esp-periph IP mounted here: HP UART0..3, Systimer (P4-style /2.5 wrap), USB-Serial/JTAG,
 //! TimerGroup (with local MWDT stages for the WDT half), and S31 Efuse (ReadImage protocol —
 //! shared `Efuse` is RegRam-only and cannot replace it).
 //!
@@ -34,6 +34,7 @@ pub const TIMG1_CLOCK: u32 = 0x2058_711c;
 pub mod src {
     pub const USB_SERIAL_JTAG: usize = 2;
     pub const UART0: usize = 9;
+    pub const UART1: usize = 10; pub const UART2: usize = 11; pub const UART3: usize = 12;
     pub const TG0_WDT: usize = 27;
     pub const TG1_WDT: usize = 30;
     pub const SYSTIMER_TARGET0: usize = 33;
@@ -330,7 +331,7 @@ impl Device for Efuse {
     }
 }
 
-fn new_uart() -> Uart {
+pub(crate) fn new_uart() -> Uart {
     let mut uart = Uart::new(UartLayout {
         thrhd_mask: 0xff,
         rxfifo_rst: 1 << 22,
@@ -340,7 +341,7 @@ fn new_uart() -> Uart {
         autobaud_regs: 0,
         autobaud_clock_hz: 0,
     });
-    // S31 v6.1 uart_reg.h defaults.
+    // S31 v6.1 fff9895c uart_reg.h defaults, shared by all four HP instances.
     for (off, value) in [
         (0x14, 694),
         (0x20, 0x1c),
@@ -356,6 +357,8 @@ fn new_uart() -> Uart {
 
 pub struct Peripherals {
     pub uart0: Uart,
+    /// HP UART1..3: v6.1 uart_reg.h uses UART0's register/FIFO layout. LP UART is separate.
+    pub uart_aux: [Uart; 3], pub uart_aux_update: [bool; 3],
     pub usb: UsbS31,
     pub systimer: SystimerS31,
     pub timg: [TimgS31; 2],
@@ -377,7 +380,7 @@ impl Default for Peripherals {
 impl Peripherals {
     pub fn new() -> Self {
         Peripherals {
-            uart0: new_uart(),
+            uart0: new_uart(), uart_aux: std::array::from_fn(|_| new_uart()), uart_aux_update: [false; 3],
             usb: UsbS31::default(),
             systimer: SystimerS31::default(),
             timg: [TimgS31::default(), TimgS31::default()],
@@ -390,7 +393,7 @@ impl Peripherals {
 
     pub fn block_name(block: u32) -> &'static str {
         match block {
-            0x2038a => "UART0",
+            0x2038a => "UART0", 0x2038b => "UART1", 0x2038c => "UART2", 0x2038d => "UART3",
             0x20391 => "USB_SERIAL_JTAG",
             0x20399 => "SYSTIMER",
             0x20580 => "TIMG0",
@@ -404,7 +407,7 @@ impl Peripherals {
     pub fn owns(addr: u32) -> bool {
         matches!(
             addr >> 12,
-            0x2038a | 0x20391 | 0x20399 | 0x20580 | 0x20581 | 0x20715
+            0x2038a | 0x2038b | 0x2038c | 0x2038d | 0x20391 | 0x20399 | 0x20580 | 0x20581 | 0x20715
         )
     }
 
@@ -419,6 +422,9 @@ impl Peripherals {
 
 device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::Xtal, 8), (ClockDomain::Apb, 8), (ClockDomain::Systimer, 8), (ClockDomain::Cpu, 1)];
     0x2038a "UART0" (uart0) => [src::UART0];
+    0x2038b "UART1" (uart_aux[0]) => [src::UART1];
+    0x2038c "UART2" (uart_aux[1]) => [src::UART2];
+    0x2038d "UART3" (uart_aux[2]) => [src::UART3];
     0x20391 "USB_SERIAL_JTAG" (usb) => [src::USB_SERIAL_JTAG];
     0x20399 "SYSTIMER" (systimer) => [src::SYSTIMER_TARGET0, src::SYSTIMER_TARGET1, src::SYSTIMER_TARGET2];
     0x20580 "TIMG0" (timg[0]) => [src::TG0_WDT];

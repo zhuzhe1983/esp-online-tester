@@ -720,12 +720,11 @@ impl esp_soc::SocBus for SocBus {
     }
 
     fn uart_input(&mut self, n: usize, data: &[u8]) {
-        if n != 0 {
-            return;
-        }
-        let before = self.inner.periph.uart0.irq();
-        let _ = self.inner.uart_input(data);
-        self.irq_dirty |= before != self.inner.periph.uart0.irq();
+        if n == 0 {
+            let before = self.inner.periph.uart0.irq();
+            let _ = self.inner.uart_input(data);
+            self.irq_dirty |= before != self.inner.periph.uart0.irq();
+        } else if n < 4 && self.inner.uart_port_input(n as u8, data).is_ok() { self.irq_dirty = true; }
     }
 
     fn gpio_set_input(&mut self, pin: u8, level: bool) {
@@ -1217,6 +1216,20 @@ mod tests {
         assert_eq!(bus.reset_cause, esp_periph::RST_SW_CPU);
         let raw = bus.read32(crate::interrupts::RESET_CAUSE0).unwrap();
         assert_eq!((raw >> 1) & 0x3f, esp_periph::RST_SW_CPU);
+    }
+
+    #[test]
+    fn auxiliary_uart_host_input_and_tx_capture_do_not_enter_the_console() {
+        let mut b = SocBus::new(1 << 20, [0; 6]);
+        for (i, base) in bus::AUX_UART_BASE.into_iter().enumerate() {
+            b.write32(base, b'A' as u32 + i as u32).unwrap();
+            b.write32(base + 0x24, 1).unwrap(); b.write32(base + 0xc, 1).unwrap();
+            b.irq_dirty = false; esp_soc::SocBus::uart_input(&mut b, i + 1, &[1 + i as u8]); assert!(b.irq_dirty);
+            assert_eq!(b.read32(base), Ok(1 + i as u32));
+        }
+        assert_eq!(b.console_take(), [Vec::<u8>::new(), Vec::new(), Vec::new(), Vec::new()]);
+        for (i, uart) in b.inner.periph.uart_aux.iter().enumerate() { assert_eq!(uart.tx_out, [b'A' + i as u8]); }
+        esp_soc::SocBus::uart_input(&mut b, usize::MAX, b"bad");
     }
 
     #[test]

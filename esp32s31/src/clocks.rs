@@ -1,17 +1,19 @@
 //! S31 XTAL/CPLL dividers, functional calibration, peripheral gates and limited RTC selectors.
 //! ESP-IDF v6.1 fff9895c82d744c7237be8847347bdd1b07c6643:
-//! soc/esp32s31/register/soc/{hp_sys_clkrst,hp_alive_sys}_reg.h, esp_hal_clock/esp32s31/include/hal/clk_tree_ll.h,
+//! soc/esp32s31/register/soc/{hp_sys_clkrst,hp_alive_sys,hp_system}_reg.h, esp_hal_clock/esp32s31/include/hal/clk_tree_ll.h,
 //! and esp_hw_support/port/esp32s31/rtc_clk.c (40/20/40÷3/40÷6 MHz reset configuration).
 use emu_core::Fault;
 pub const LP_BASE: u32 = 0x2070_1000;
 pub const BASE: u32 = 0x2058_7000;
 pub const UART0_CTRL: u32 = BASE + 0x88;
 pub const UART0_MEM: u32 = 0x2058_628c;
+/// HP_SYSTEM UART1/2/3 memory words (UART3 precedes UART0 in this register map).
+pub const AUX_UART_MEM: [u32; 3] = [0x2058_6290, 0x2058_6294, 0x2058_61f0];
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Rates { pub cpu_hz: u64, pub mem_hz: u64, pub sys_hz: u64, pub apb_hz: u64 }
-pub struct Clocks { pub mpll: crate::mpll::Mpll, pending: [u32; 5], active: [u32; 5], uart0: u32, ref_240m: u32, uart_pad_sleep: u8, aux_uart: [u32; 3], uart_mem: u32, modem: u32, psram: u32, lp_root: u32, fosc: bool, cpll_div: u32, cpll_powered: bool, cal_stop: bool, cal_done: bool, cal_left: Option<u8>, locked: bool }
+pub struct Clocks { pub mpll: crate::mpll::Mpll, pending: [u32; 5], active: [u32; 5], uart0: u32, ref_240m: u32, uart_pad_sleep: u8, aux_uart: [u32; 3], aux_uart_mem: [u32; 3], uart_mem: u32, modem: u32, psram: u32, lp_root: u32, fosc: bool, cpll_div: u32, cpll_powered: bool, cal_stop: bool, cal_done: bool, cal_left: Option<u8>, locked: bool }
 impl Default for Clocks {
-    fn default() -> Self { Self { mpll: crate::mpll::Mpll::default(), pending: [0, 0, 1, 2, 1], active: [0, 0, 1, 2, 1], uart0: 0x83, ref_240m: 0x101, uart_pad_sleep: 15, aux_uart: [0x83; 3], uart_mem: 0, modem: 1, psram: 0x181, lp_root: 1 << 26, fosc: true, cpll_div: 0xf2, cpll_powered: false, cal_stop: false, cal_done: false, cal_left: None, locked: false } }
+    fn default() -> Self { Self { mpll: crate::mpll::Mpll::default(), pending: [0, 0, 1, 2, 1], active: [0, 0, 1, 2, 1], uart0: 0x83, ref_240m: 0x101, uart_pad_sleep: 15, aux_uart: [0x83; 3], aux_uart_mem: [6; 3], uart_mem: 0, modem: 1, psram: 0x181, lp_root: 1 << 26, fosc: true, cpll_div: 0xf2, cpll_powered: false, cal_stop: false, cal_done: false, cal_left: None, locked: false } }
 }
 impl Clocks {
     // lp_clkrst_reg.h: reset source selectors and RO XTAL40MHz field. Selecting
@@ -42,13 +44,21 @@ impl Clocks {
         if num != 0 && (den == 0 || num >= den) { return Err(Fault::Prohibited); }
         Ok(())
     }
-    pub fn aux_uart_clock(&self, index: usize) -> Result<(bool, bool, u64), Fault> {
+    /// HP UART1..3 use the same source mux/dividers; only the cold UART caller supplies
+    /// the board's powered BBPLL/6 input. The no-input query never invents an 80 MHz PLL.
+    pub fn aux_uart_clock(&self, index: usize) -> Result<(bool, bool, u64), Fault> { self.aux_uart_clock_with_pll(index, None) }
+    pub fn aux_uart_clock_with_pll(&self, index: usize, pll80: Option<u64>) -> Result<(bool, bool, u64), Fault> {
         let v = *self.aux_uart.get(index).ok_or(Fault::Unmapped)?;
         let bus = v & 0xb == 3; let core = v & 0x85 == 0x81;
         let num = u64::from((v >> 16) & 255); let den = if num == 0 { 1 } else { u64::from(v >> 24) };
-        let hz = 40_000_000 * den / (u64::from(((v >> 8) & 255) + 1) * den + num);
+        let source = match v >> 5 & 3 { 0 => 40_000_000, 1 => self.rc_fast_hz(), 2 => pll80.unwrap_or(0), _ => 0 };
+        let hz = source * den / (u64::from(((v >> 8) & 255) + 1) * den + num);
         Ok((bus, core, if core { hz } else { 0 }))
     }
+    pub fn aux_uart_mem_index(address: u32) -> Option<usize> { AUX_UART_MEM.iter().position(|&a| a == address) }
+    pub fn aux_uart_mem_read(&self, index: usize) -> u32 { self.aux_uart_mem[index] }
+    pub fn aux_uart_mem_write(&mut self, index: usize, value: u32) { self.aux_uart_mem[index] = value & 15; }
+    pub fn aux_uart_mem_on(&self, index: usize) -> bool { self.aux_uart_mem[index] & 12 != 12 || self.aux_uart_mem[index] & 3 == 3 }
     pub fn uart_write(&mut self, address: u32, value: u32) -> Result<(), Fault> {
         if address == UART0_CTRL {
             // v6.1 uart_ll.h: 0=XTAL, 1=RC_FAST, 2=PLL80M. Only the XTAL root
@@ -176,10 +186,12 @@ impl Clocks {
                 if self.cal_stop { self.cal_left = None; }
                 else { self.cal_done = false; self.cal_left = Some(16); }
             }
-            // Fixed UART1/2/3 clock words share documented0x83 defaults and
-            // XTAL/divider/gate fields. Their data FIFOs/IRQ/GPIO are still absent;
-            // accepting clock configuration does not supply fake UART traffic.
-            0x8c | 0x90 | 0x94 => { Self::validate_uart(value)?; self.aux_uart[((off - 0x8c) / 4) as usize] = value; }
+            // v6.1 uart_ll.h: XTAL=0, RC_FAST=1, BBPLL/6=2. FORCE_NORST and
+            // selector3 remain unsupported; divisors use the same legal fractions as UART0.
+            0x8c | 0x90 | 0x94 => {
+                if value & 0x10 != 0 || value >> 5 & 3 == 3 { return Err(Fault::Prohibited); }
+                Self::validate_uart(value & !0x60)?; self.aux_uart[((off - 0x8c) / 4) as usize] = value;
+            }
             // HP_ALIVE_SYS_HP_PAD_UART0..3_CTRL: only bit31 RW,reset1.
             // Configuration retained; deep-sleep/pad-clock wakeup is not modeled.
             0x2010 | 0x2014 | 0x2018 | 0x201c => {
