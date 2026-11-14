@@ -4,7 +4,7 @@
 //! Digital power, touch and e-paper subset; no analog voltage/ramp/gray calibration.
 use std::sync::{Arc,Mutex};
 use esp_periph::i2c::{I2cDevice,tca9555::{Tca9555,Tca9555State}};
-use esp_soc::board::{BoardModel,BoardEdge,VirtualCycle};
+use esp_soc::board::{BoardModel,BoardEdge,VirtualCycle,LcdRgbPins};
 
 const WIDTH:usize=1216;
 const HEIGHT:usize=684;
@@ -83,11 +83,13 @@ impl I2cDevice for WiredDevice {
 pub struct Ink4Plus {
     wiring:Arc<Wiring>,frame:Vec<u16>,version:u64,frames:u64,cycle:u64,
     gpio_events:u64,output:u64,enabled:u64,irq:[bool;2],edges:Vec<BoardEdge>,
+    rgb_routes:bool,scan_pending:bool,scan:bool,
 }
 impl Ink4Plus {
     pub fn new()->Self {
-        let b=Self{wiring:Arc::new(Wiring{expander:Default::default(),touch:Default::default()}),frame:vec![0xffff;WIDTH*HEIGHT],version:0,frames:0,cycle:0,gpio_events:0,output:0,enabled:0,irq:[true;2],edges:Vec::new()};b.wiring.sync();b
+        let b=Self{wiring:Arc::new(Wiring{expander:Default::default(),touch:Default::default()}),frame:vec![0xffff;WIDTH*HEIGHT],version:0,frames:0,cycle:0,gpio_events:0,output:0,enabled:0,irq:[true;2],edges:Vec::new(),rgb_routes:false,scan_pending:false,scan:false};b.wiring.sync();b
     }
+    fn powered(&self)->bool {self.wiring.rails()&0x27==0x27 && self.output&self.enabled&(1<<18)!=0}
     fn sync_irq(&mut self) {
         self.wiring.sync();let levels=[self.wiring.expander.lock().expect("INK4 Plus expander poisoned").irq_high(),!self.wiring.touch.lock().expect("INK4 Plus touch poisoned").down];
         for (i,&level) in levels.iter().enumerate() {if level!=self.irq[i] {self.irq[i]=level;self.edges.push(BoardEdge{cycle:self.cycle,pin:if i==0 {2}else{5},level});}}
@@ -96,7 +98,11 @@ impl Ink4Plus {
 impl BoardModel for Ink4Plus {
     fn name(&self)->&'static str {"metalio-ink4-plus"}
     fn gpio_changes(&mut self,changes:&[(u8,bool)]) {self.gpio_events+=changes.len() as u64;for &(pin,high) in changes {if high {self.output|=1u64<<pin;}else{self.output&=!(1u64<<pin);}}}
-    fn gpio_output_at(&mut self,cycle:VirtualCycle,changes:&[(u8,bool)],enabled:u64,output:u64) {self.cycle=cycle;self.gpio_changes(changes);self.output=output;self.enabled=enabled;}
+    fn gpio_output_at(&mut self,cycle:VirtualCycle,changes:&[(u8,bool)],enabled:u64,output:u64) {
+        let old=self.output;self.cycle=cycle;self.gpio_changes(changes);self.output=output;self.enabled=enabled;
+        if old&(1<<35)!=0 && output&(1<<35)==0 && enabled&(1<<35)!=0 {self.scan_pending=true;}
+        if !self.powered() {self.scan=false;}
+    }
     fn gpio_events(&self)->u64 {self.gpio_events}
     fn input_levels(&self)->Vec<(u8,bool)> {vec![(2,self.irq[0]),(5,self.irq[1]),(61,true)]}
     fn advance_to(&mut self,cycle:VirtualCycle) {self.cycle=cycle;self.sync_irq();}
@@ -118,6 +124,28 @@ impl BoardModel for Ink4Plus {
     }
     fn named_pin(&self,id:&str)->Option<u8> {if id=="boot" {Some(61)}else{None}}
     fn sd_card_slot(&self)->Option<([u8;6],bool)> {Some(([24,25,20,21,22,23],true))}
+    fn lcd_rgb_pins(&mut self,pins:LcdRgbPins) {
+        self.rgb_routes=pins.width==8 && pins.clock&(1<<16)!=0 && pins.hsync&(1<<17)!=0 && pins.enable&(1<<4)!=0
+            && pins.data[..8].iter().enumerate().all(|(bit,mask)|mask&(1<<(bit+8))!=0);
+    }
+    fn lcd_rgb_start(&mut self,_cycle:VirtualCycle,w:u32,h:u32,bpp:u32,clock:&dyn Fn(u8)->Option<(u64,u32)>) {
+        let pending=std::mem::take(&mut self.scan_pending);
+        self.scan=pending && self.rgb_routes && self.powered() && bpp==1 && matches!((w,h),(304,684)|(305,688))
+            && clock(40).is_some_and(|(period,pulses)|period!=0&&pulses>=h);
+    }
+    fn lcd_frame(&mut self,w:u32,h:u32,bytes:&[u8]) {
+        let scan=std::mem::take(&mut self.scan);
+        if !scan || !self.rgb_routes || !self.powered() || !matches!((w,h),(304,684)|(305,688)) || bytes.len()!=w as usize*h as usize {return;}
+        // CloudZao ad8edf4 uses a leading dummy byte and four padded rows;
+        // 14aa1d06 uses native rows with no dummy. Each frame is ONE waveform
+        // phase: 00/11 retain, 01 black, 10 white. This optical endpoint subset
+        // does not claim calibrated pulse-dose grayscale or real ghosting.
+        let stride=w as usize;let dummy=stride-304;let mut changed=false;
+        for y in 0..HEIGHT {let line=&bytes[y*stride+dummy..(y+1)*stride];for x in 0..WIDTH {
+            let pixel=&mut self.frame[y*WIDTH+x];let next=match (line[x/4]>>(6-2*(x%4)))&3 {1=>0,2=>0xffff,_=>*pixel};changed|=*pixel!=next;*pixel=next;
+        }}
+        self.frames+=1;if changed {self.version+=1;}
+    }
     fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {
         let mut out=vec![0xffff;WIDTH*HEIGHT];for y in 0..HEIGHT {for x in 0..WIDTH {out[x*HEIGHT+HEIGHT-1-y]=self.frame[y*WIDTH+x];}}Some((HEIGHT as u32,WIDTH as u32,out,self.version))
     }
@@ -161,5 +189,34 @@ mod tests {
         for (id,x) in [("home",100),("previous",200),("next",300)] {assert!(b.button_at(3,id,true));let t=b.wiring.touch.lock().unwrap();assert_eq!((t.x,t.y,t.down),(x,1600,true));drop(t);assert!(b.button_at(4,id,false));}
         assert!(!b.button_at(5,"invented",true));assert_eq!(b.named_pin("boot"),Some(61));
         let inputs=inputs(16<<20);assert!(inputs.efuse.is_empty());assert!(inputs.inputs.is_empty());assert_eq!(inputs.psram_bytes,16<<20);
+    }
+    fn panel()->Ink4Plus {
+        let mut b=Ink4Plus::new();let mut devices=b.i2c_devices();write(devices[0].2.as_mut(),2,&[0x27,0x14]);write(devices[0].2.as_mut(),6,&[0xc0,0xe3]);
+        let mut data=[0;16];for (i,pin) in data[..8].iter_mut().enumerate() {*pin=1<<(8+i);}
+        b.lcd_rgb_pins(LcdRgbPins{clock:1<<16,hsync:1<<17,vsync:0,enable:1<<4,data,width:8});
+        b.gpio_output_at(0,&[],(1<<18)|(1<<35),(1<<18)|(1<<35));b.gpio_output_at(1,&[(35,false)],(1<<18)|(1<<35),1<<18);b
+    }
+    #[test]
+    fn native_and_legacy_waveforms_preserve_pixels_skip_dummy_and_padding() {
+        for (w,h) in [(304,684),(305,688)] {
+            let mut b=panel();let mut bytes=vec![0;w*h];let dummy=w-304;
+            if dummy!=0 {bytes[0]=0x55;bytes[684*w..].fill(0x55);}
+            bytes[dummy]=0x6c; // 01,10,11,00: black, white, retain, retain.
+            bytes[683*w+dummy+303]=1; // final electrode of the final gate row.
+            b.lcd_rgb_start(2,w as u32,h as u32,1,&|pin|if pin==40 {Some((17_000,h as u32+5))}else{None});b.lcd_frame(w as u32,h as u32,&bytes);
+            assert_eq!(b.frames,1);assert_eq!(&b.frame[..4],&[0,0xffff,0xffff,0xffff]);assert_eq!(*b.frame.last().unwrap(),0);assert_eq!(b.frame.iter().filter(|&&p|p==0).count(),2);
+            let output=b.display().unwrap();assert_eq!((output.0,output.1),(684,1216));assert_eq!(output.2[683],0);assert_eq!(output.2[(1216-1)*684],0);
+            let pixels=b.frame.clone();b.lcd_frame(w as u32,h as u32,&vec![0x55;w*h]);assert_eq!(b.frames,1,"one SPV scan cannot consume two phases");
+            b.gpio_output_at(3,&[],0,0);assert_eq!(b.frame,pixels,"e-paper retains optical state without power");
+        }
+    }
+    #[test]
+    fn scan_requires_routes_power_start_pulse_complete_frame_and_gate_clock() {
+        for bad in 0..7 {
+            let mut b=panel();match bad {0=>b.rgb_routes=false,1=>b.output=0,2=>b.scan_pending=false,_=>{}}
+            b.lcd_rgb_start(2,304,684,1,&|_|match bad {3=>None,4=>Some((17_000,683)),_=>Some((17_000,689))});
+            if bad==5 {b.rgb_routes=false;}
+            b.lcd_frame(304,684,&vec![0x55;if bad==6 {304*684-1}else{304*684}]);assert_eq!(b.frames,0,"invalid scan {bad}");assert!(b.frame.iter().all(|&p|p==0xffff));
+        }
     }
 }
