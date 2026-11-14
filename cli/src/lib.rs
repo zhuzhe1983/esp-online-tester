@@ -713,16 +713,19 @@ fn setup_p4<R: esp32p4::Revision>(o: &Opts) -> esp_soc::Machine<esp32p4::Esp32p4
 
 /// ESP32-S31 bare module: 2 MiB NOR + W25Q16 JEDEC by default (IDF hello image header).
 fn setup_s31(o: &Opts) -> esp32s31::Machine {
-    let flash = o.flash_mb.unwrap_or(2) << 20;
+    let flash_mb = o.flash_mb.unwrap_or(if matches!(o.board.as_str(), "mosaico" | "esp-mosaico" | "metalio-ink4-plus") { 16 } else { 2 });
+    let flash = flash_mb << 20;
     let mut m = esp32s31::machine(o.mac.unwrap_or([0x10, 0x20, 0x30, 0x40, 0x50, 0x60]), flash);
     m.bus.set_flash_size(flash);
     // Prefer the hello image's JEDEC / SFDP when flash is the default 2 MiB; larger sizes keep
     // BoardInputs unset so callers can supply their own NOR identity.
-    let inputs = match (o.board.as_str(), o.flash_mb.unwrap_or(2)) {
-        ("mosaico", _) => Some(esp32s31::soc::BoardInputs::mosaico_gd25q128()),
+    let mut inputs = match (o.board.as_str(), flash_mb) {
+        ("mosaico" | "esp-mosaico", _) => Some(esp32s31::soc::BoardInputs::mosaico_gd25q128()),
+        ("metalio-ink4-plus", _) => Some(esp32s31::board::ink4_plus_inputs(o.psram_mb.unwrap_or(16) << 20)),
         (_, 2) => Some(esp32s31::soc::BoardInputs::hello_w25q16()),
         _ => None,
     };
+    if let Some(mb) = o.psram_mb { inputs.get_or_insert_with(esp32s31::soc::BoardInputs::devkit_w25q128).psram_bytes = mb << 20; }
     if let Some(inputs) = inputs {
         m.bus.set_board_inputs(inputs).unwrap_or_else(|e| usage_error(&e));
     }
@@ -743,11 +746,10 @@ fn setup_s31(o: &Opts) -> esp32s31::Machine {
         attach_wifi(&mut m.bus, o, net_log);
     }
     for (flag, on) in [
-        ("--board", o.board != "atech14" && o.board != "none" && o.board != "mosaico"),
+        ("--board", !matches!(o.board.as_str(), "atech14" | "none" | "bare" | "mosaico" | "esp-mosaico" | "metalio-ink4-plus")),
         ("--cam-image", o.cam_image.is_some()),
         ("--cam-stream", o.cam_stream.is_some()),
         ("--cam-size", o.cam_size.is_some()),
-        ("--psram-mb", o.psram_mb.is_some()),
         ("--flash-octal", o.flash_octal),
         ("--efuse-regs", o.efuse_regs.is_some()),
         ("--regs-init", o.regs_init.is_some()),

@@ -9,11 +9,15 @@
 //! speaker amplifier enabled by GPIO 45; what I2S0 transmits is the run's audio (`--wav`).
 use esp_soc::devices::co5300::Co5300;
 use esp_soc::{Board, BoardModel, NoBoard};
+#[path = "board/ink4_plus.rs"]
+mod ink4_plus;
+pub use ink4_plus::inputs as ink4_plus_inputs;
 
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
         "none" | "bare" => Some(Box::new(NoBoard)),
         "mosaico" | "esp-mosaico" => Some(Box::new(Mosaico::new())),
+        "metalio-ink4-plus" => Some(Box::new(ink4_plus::Ink4Plus::new())),
         _ => None,
     }
 }
