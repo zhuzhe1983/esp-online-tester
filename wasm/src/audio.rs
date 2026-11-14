@@ -99,6 +99,7 @@ pub unsafe extern "C" fn esp32sim_audio_output_streaming(e: *mut Emu, enabled: u
     match &mut (unsafe { &mut *e }).m {
         crate::machine::MachineKind::S3(machine) => { machine.bus.flush_ticks(); machine.set_audio_streaming(enabled != 0); }
         crate::machine::MachineKind::C61(machine) => { machine.bus.flush_ticks(); machine.set_audio_streaming(enabled != 0); }
+        crate::machine::MachineKind::S31(machine) => { machine.bus.flush_ticks(); machine.set_audio_streaming(enabled != 0); }
         _ => return 1,
     }
     0
@@ -113,6 +114,7 @@ pub unsafe extern "C" fn esp32sim_audio_output_flush(e: *mut Emu) -> u32 {
     match &mut (unsafe { &mut *e }).m {
         crate::machine::MachineKind::S3(machine) => { machine.bus.flush_ticks(); machine.flush_audio_output(); }
         crate::machine::MachineKind::C61(machine) => { machine.bus.flush_ticks(); machine.flush_audio_output(); }
+        crate::machine::MachineKind::S31(machine) => { machine.bus.flush_ticks(); machine.flush_audio_output(); }
         _ => return 1,
     }
     0

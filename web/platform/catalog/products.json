@@ -20538,6 +20538,402 @@
           "catalogRevision": "0fd728e800d9ebaa5a15515b49aa6244f3453340"
         }
       }
+    },
+    {
+      "id": "espressif-esp-mosaico",
+      "name": "Espressif ESP-Mosaico · V1.2",
+      "manufacturer": "Espressif",
+      "sku": "ESP-Mosaico",
+      "hardwareRevision": "CoreBoard V1.2 / BaseBoard V1.2",
+      "chip": "esp32s31",
+      "module": "ESP32-S31NRV16",
+      "summary": "乐鑫 ESP32-S31 模块化交互主机，配480×480 AMOLED触摸屏、音频、运动/磁场传感器和左右扩展接口。此条目限定CoreBoard V1.2。",
+      "knowledgeUrl": "./knowledge/espressif-esp-mosaico.json",
+      "runtime": {
+        "board": "mosaico",
+        "flashMb": 16,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": true
+      },
+      "display": {
+        "width": 480,
+        "height": 480,
+        "type": "AMOLED",
+        "controller": "CO5300",
+        "bus": "QSPI",
+        "touchController": "CST9220"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT / GPIO61",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "ai",
+          "name": "AI / GPIO7",
+          "type": "button",
+          "pin": 7,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "touch",
+          "name": "CST9220 触摸屏",
+          "type": "touch"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C 供电 / USB 2.0 HS OTG",
+          "type": "USB-C",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "internal-i2c",
+          "name": "内部I2C0",
+          "type": "I2C",
+          "external": false,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 56
+            },
+            {
+              "name": "SCL",
+              "gpio": 3
+            }
+          ]
+        },
+        {
+          "id": "lcd",
+          "name": "CO5300 QSPI",
+          "type": "SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "CS",
+              "gpio": 50
+            },
+            {
+              "name": "CLK",
+              "gpio": 42
+            },
+            {
+              "name": "D0",
+              "gpio": 36
+            },
+            {
+              "name": "D1",
+              "gpio": 51
+            },
+            {
+              "name": "D2",
+              "gpio": 35
+            },
+            {
+              "name": "D3",
+              "gpio": 9
+            },
+            {
+              "name": "RST",
+              "gpio": 44
+            },
+            {
+              "name": "TE",
+              "gpio": 43
+            }
+          ]
+        },
+        {
+          "id": "module-left",
+          "name": "左 H2 2×10P / 2.54mm 扩展",
+          "type": "GPIO",
+          "external": true,
+          "pins": [
+            {
+              "name": "GPIO55",
+              "gpio": 55,
+              "position": 1
+            },
+            {
+              "name": "GPIO53",
+              "gpio": 53,
+              "position": 2
+            },
+            {
+              "name": "GPIO19",
+              "gpio": 19,
+              "position": 3
+            },
+            {
+              "name": "GPIO48",
+              "gpio": 48,
+              "position": 4
+            },
+            {
+              "name": "GPIO18",
+              "gpio": 18,
+              "position": 5
+            },
+            {
+              "name": "GPIO13",
+              "gpio": 13,
+              "position": 6
+            },
+            {
+              "name": "GPIO17",
+              "gpio": 17,
+              "position": 7
+            },
+            {
+              "name": "GPIO12",
+              "gpio": 12,
+              "position": 8
+            },
+            {
+              "name": "GPIO16",
+              "gpio": 16,
+              "position": 9
+            },
+            {
+              "name": "GPIO14",
+              "gpio": 14,
+              "position": 10
+            },
+            {
+              "name": "GPIO15",
+              "gpio": 15,
+              "position": 11
+            },
+            {
+              "name": "GPIO4",
+              "gpio": 4,
+              "position": 12
+            },
+            {
+              "name": "GPIO33",
+              "gpio": 33,
+              "position": 13
+            },
+            {
+              "name": "GPIO1",
+              "gpio": 1,
+              "position": 14
+            },
+            {
+              "name": "GPIO34",
+              "gpio": 34,
+              "position": 15
+            },
+            {
+              "name": "GPIO0",
+              "gpio": 0,
+              "position": 16
+            },
+            {
+              "name": "5V_IN",
+              "position": 17
+            },
+            {
+              "name": "5V_OUT",
+              "position": 18
+            },
+            {
+              "name": "3V3_OUT",
+              "position": 19
+            },
+            {
+              "name": "GND",
+              "position": 20
+            }
+          ],
+          "notes": "逐针编号按官方表，不是照片屏幕顺序；未验证三维插合，禁止自动连线。右侧五个I2S引脚与音频复用。"
+        },
+        {
+          "id": "module-right",
+          "name": "右 H1 2×10P / 2.54mm 扩展",
+          "type": "GPIO",
+          "external": true,
+          "pins": [
+            {
+              "name": "GPIO49",
+              "gpio": 49,
+              "position": 1
+            },
+            {
+              "name": "GPIO46",
+              "gpio": 46,
+              "position": 2
+            },
+            {
+              "name": "GPIO52",
+              "gpio": 52,
+              "position": 3
+            },
+            {
+              "name": "GPIO47",
+              "gpio": 47,
+              "position": 4
+            },
+            {
+              "name": "GPIO54",
+              "gpio": 54,
+              "position": 5
+            },
+            {
+              "name": "GPIO11",
+              "gpio": 11,
+              "position": 6
+            },
+            {
+              "name": "GPIO37",
+              "gpio": 37,
+              "position": 7
+            },
+            {
+              "name": "GPIO10",
+              "gpio": 10,
+              "position": 8
+            },
+            {
+              "name": "GPIO40",
+              "gpio": 40,
+              "position": 9
+            },
+            {
+              "name": "GPIO39",
+              "gpio": 39,
+              "position": 10
+            },
+            {
+              "name": "GPIO38",
+              "gpio": 38,
+              "position": 11
+            },
+            {
+              "name": "GPIO5",
+              "gpio": 5,
+              "position": 12
+            },
+            {
+              "name": "GPIO59",
+              "gpio": 59,
+              "position": 13
+            },
+            {
+              "name": "GPIO1",
+              "gpio": 1,
+              "position": 14
+            },
+            {
+              "name": "GPIO58",
+              "gpio": 58,
+              "position": 15
+            },
+            {
+              "name": "GPIO0",
+              "gpio": 0,
+              "position": 16
+            },
+            {
+              "name": "5V_IN",
+              "position": 17
+            },
+            {
+              "name": "5V_OUT",
+              "position": 18
+            },
+            {
+              "name": "3V3_OUT",
+              "position": 19
+            },
+            {
+              "name": "GND",
+              "position": 20
+            }
+          ],
+          "notes": "逐针编号按官方表，不是照片屏幕顺序；未验证三维插合，禁止自动连线。右侧五个I2S引脚与音频复用。"
+        },
+        {
+          "id": "back-pads",
+          "name": "背面调试/供电触点",
+          "type": "GPIO",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "BOOT",
+              "gpio": 61
+            },
+            {
+              "name": "RST"
+            },
+            {
+              "name": "RX",
+              "gpio": 59
+            },
+            {
+              "name": "TX",
+              "gpio": 58
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "GND"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "title": "Espressif ESP-Mosaico CoreBoard V1.2 hardware guide",
+          "url": "https://raw.githubusercontent.com/espressif/esp-dev-kits/1b4c83bcd8662b8339d5b975a088407ed6a09e7c/docs/en/esp-mosaico/user_guide.rst",
+          "checkedAt": "2026-11-14"
+        },
+        {
+          "title": "H0216F002AMT004-1 V1 display specification",
+          "url": "https://dl.espressif.com/AE/H0216F002AMT004-1%20V1%E8%A7%84%E6%A0%BC%E4%B9%A62.16%E5%AF%B8%20480X480%20QSPI%20MIPI%20%20AMOLED.pdf",
+          "checkedAt": "2026-11-14"
+        },
+        {
+          "title": "Official recovery firmware update page",
+          "url": "https://mosaico.espressif.com/firmware-update/",
+          "checkedAt": "2026-11-14"
+        },
+        {
+          "title": "Official ESP-Mosaico FAQ",
+          "url": "https://mosaico.ai/en/faq",
+          "checkedAt": "2026-11-14"
+        }
+      ],
+      "limitations": [
+        "限定V1.2；V1.0的I2C、LCD和电源引脚不同，不共用运行配置。",
+        "电源键由SAM8108控制，未映射为普通GPIO；无线、外部扩展、USB实机、充电及完整音频能力不作整机兼容承诺。",
+        "原厂CAD入口受限；外壳为照片估算，内板UNKNOWN占位，未通过制造尺寸或完整1:1验收。",
+        "官方固件端点不允许本站跨域读取时，请从官方下载并使用本地文件；不镜像到本站。"
+      ],
+      "defaultFirmwareId": "espressif-esp-mosaico-factory",
+      "model": {
+        "type": "source-derived",
+        "url": "./assets/espressif-esp-mosaico/model.json",
+        "status": "partial",
+        "basis": "image-measurement",
+        "sourceKind": "photo-derived"
+      },
+      "family": {
+        "id": "mosaico",
+        "name": "ESP-Mosaico"
+      }
     }
   ]
 }
