@@ -26,19 +26,31 @@ def main():
     parser.add_argument('--rounds', type=int, default=3)
     parser.add_argument('--seconds', type=int, default=30,
                         help='guest seconds per run; use a pre-reset window when reset semantics intentionally differ')
-    parser.add_argument('--workload', action='append', choices=['hello', 'c3-hello', 'c6-hello', 'pocket-tank'])
+    parser.add_argument('--workload', action='append', choices=['hello', 'c3-hello', 'c6-hello', 'pocket-tank', 's31-hello'])
+    parser.add_argument('--s31-firmware', type=Path, help='directory containing the pinned S31 hello images')
     args = parser.parse_args()
     if args.rounds < 3:
         parser.error('at least three alternating rounds are required')
     if args.seconds < 1:
         parser.error('guest seconds must be positive')
+    if args.workload and 's31-hello' in args.workload and not args.s31_firmware:
+        parser.error('--workload s31-hello requires --s31-firmware')
     receipt = {'method': 'RUSAGE_CHILDREN user CPU delta around one subprocess; alternating AB/BA rounds',
                'guestSeconds': args.seconds, 'rounds': args.rounds, 'workloads': {}}
     for name, binary in [('hello', 'esp32sim'), ('c3-hello', 'esp32sim-c3'),
-                         ('c6-hello', 'esp32sim-c6'), ('pocket-tank', 'esp32sim')]:
+                         ('c6-hello', 'esp32sim-c6'), ('pocket-tank', 'esp32sim'), ('s31-hello', 'esp32sim-s31')]:
         if args.workload and name not in args.workload:
             continue
-        manifest = json.loads((args.firmware / (name + '.json')).read_text())
+        if name == 's31-hello':
+            if not args.s31_firmware:
+                continue
+            manifest = {'flash_mb': 2, 'psram_mb': 0, 'files': {
+                'rom': str((args.roms / 'esp32s31_rev0_rom.elf').resolve()),
+                **{key: str((args.s31_firmware / file).resolve()) for key, file in [
+                    ('bootloader', 's31-hello-bootloader.bin'), ('ptable', 's31-hello-ptable.bin'),
+                    ('app', 's31-hello_world.bin')]}}}
+        else:
+            manifest = json.loads((args.firmware / (name + '.json')).read_text())
         files = {key: (args.roms if key == 'rom' else args.firmware) / value
                  for key, value in manifest['files'].items()}
         argv = ['--boot', 'rom', '--flash-mb', str(manifest['flash_mb'])]
