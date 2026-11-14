@@ -1,5 +1,6 @@
 // Device storage, appearance and hardware UI. Source strings remain in zh-CN.
 export default {
+ "厂家 CAD 与派生部件 · 内部结构有未知项": "Manufacturer CAD and derived parts · internal structure partly unknown",
  "官方完整镜像已核对芯片、分区与校验；已执行未改动的 2.0.68 和 2.0.79 镜像，未进行实机刷写。": "The official complete images passed chip, partition and checksum checks. Unmodified 2.0.68 and 2.0.79 images ran in the emulator; no physical flashing was performed.",
  "2.0.79 已验证主页、设置触控和 SD 挂载；2.0.68 另验盖板导航、音量设置及 SD 保存恢复。灰度、音频、4G、SoftAP、云服务和电源键应用行为仍未验收，保持 trial。": "Version 2.0.79 is verified through home/settings touch and SD mounting. Version 2.0.68 also verifies cover navigation, volume settings and SD save/restore. Grayscale, audio, 4G, SoftAP, cloud services and power-button application behavior remain unverified; this is still a trial.",
  "独立 ESP32-S31 板型已运行官方固件：主页、设置触控、盖板导航和音量设置均有客体输出；仍为部分支持，不代表全部应用兼容。": "The dedicated ESP32-S31 board runs official firmware with guest output from the home screen, settings touch, cover navigation and volume settings. Support remains partial.",
