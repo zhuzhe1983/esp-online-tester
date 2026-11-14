@@ -1,0 +1,427 @@
+{
+ "binaries": "esp32sim-c3 from `cargo +1.99.0 build --release --bins` on main ddf753a5 and on the branch, aarch64-apple-darwin, 18 cores",
+ "text_section_diff": {
+  "summary": "esp32sim-c3: text 2373120 bytes, 3171 differ, symbols same address 2812/2813",
+  "bytes_by_function": [
+   [
+    "1541",
+    "__RNvMs_NtCs4kJXs6KrLV7_5esp323rmtNtB4_10ClassicRmt7advance"
+   ],
+   [
+    "954",
+    "__RNvXs_NtCs4kJXs6KrLV7_5esp326timersNtB4_12ClassicTimerNtNtCsewoq7l1tWy2_10esp_periph6device6Device4tick"
+   ],
+   [
+    "667",
+    "__RNvXs1_NtCsewoq7l1tWy2_10esp_periph4timgNtB5_10TimerGroupNtNtB7_6device6Device4tick"
+   ],
+   [
+    "8",
+    "__RNvXs0_NtCs4kJXs6KrLV7_5esp323rmtNtB5_10ClassicRmtNtNtCsewoq7l1tWy2_10esp_periph6device6Device4tick"
+   ],
+   [
+    "1",
+    "__RINvNtCsewoq7l1tWy2_10esp_periph4mmio7write32NtNtCs4kJXs6KrLV7_5esp326periph11PeripheralsEBL_"
+   ]
+  ]
+ },
+ "timergroup_tick_path_on_c3_hello": "both timers disabled (census: 0 enabled steps); executed instructions in both builds: ldr w8,[x0,#0x40]; tbz w8,#31 -> ldr w8,[x0,#0x70]; tbnz w8,#31; ret. Entry address identical; the shared exit is at +0xc4 on main and +0xb8 on the branch.",
+ "sample_profile": {
+  "method": "/usr/bin/sample 6 s at 1 ms, 0.5 s into a 120 emulated s c3-hello run, order main, head, main, head",
+  "runs": {
+   "main": {
+    "load1": 5.37,
+    "samples": 4765,
+    "top_of_stack": [
+     [
+      "SocBus::refresh_irq",
+      2722
+     ],
+     [
+      "SocBus::next_deadline",
+      620
+     ],
+     [
+      "Bus::tick",
+      525
+     ],
+     [
+      "Machine::run_unmodeled",
+      275
+     ],
+     [
+      "Systimer::tick",
+      166
+     ],
+     [
+      "Machine::after_round",
+      120
+     ],
+     [
+      "Machine::present_irqs",
+      117
+     ],
+     [
+      "TimerGroup::tick",
+      96
+     ],
+     [
+      "riscv exec::step_outcome",
+      61
+     ]
+    ]
+   },
+   "head": {
+    "load1": 5.24,
+    "samples": 4746,
+    "top_of_stack": [
+     [
+      "SocBus::refresh_irq",
+      2689
+     ],
+     [
+      "SocBus::next_deadline",
+      627
+     ],
+     [
+      "Bus::tick",
+      514
+     ],
+     [
+      "Machine::run_unmodeled",
+      312
+     ],
+     [
+      "Systimer::tick",
+      185
+     ],
+     [
+      "Machine::present_irqs",
+      116
+     ],
+     [
+      "Machine::after_round",
+      107
+     ],
+     [
+      "TimerGroup::tick",
+      66
+     ],
+     [
+      "riscv exec::step_outcome",
+      58
+     ]
+    ]
+   },
+   "main-2": {
+    "load1": 4.98,
+    "samples": 5040,
+    "top_of_stack": [
+     [
+      "SocBus::refresh_irq",
+      2893
+     ],
+     [
+      "SocBus::next_deadline",
+      673
+     ],
+     [
+      "Bus::tick",
+      559
+     ],
+     [
+      "Machine::run_unmodeled",
+      303
+     ],
+     [
+      "Systimer::tick",
+      166
+     ],
+     [
+      "Machine::present_irqs",
+      116
+     ],
+     [
+      "Machine::after_round",
+      107
+     ],
+     [
+      "TimerGroup::tick",
+      106
+     ],
+     [
+      "riscv exec::step_outcome",
+      55
+     ]
+    ]
+   },
+   "head-2": {
+    "load1": 4.74,
+    "samples": 5017,
+    "top_of_stack": [
+     [
+      "SocBus::refresh_irq",
+      2814
+     ],
+     [
+      "SocBus::next_deadline",
+      660
+     ],
+     [
+      "Bus::tick",
+      534
+     ],
+     [
+      "Machine::run_unmodeled",
+      339
+     ],
+     [
+      "Systimer::tick",
+      162
+     ],
+     [
+      "Machine::after_round",
+      151
+     ],
+     [
+      "Machine::present_irqs",
+      112
+     ],
+     [
+      "TimerGroup::tick",
+      108
+     ],
+     [
+      "riscv exec::step_outcome",
+      51
+     ]
+    ]
+   }
+  }
+ },
+ "daytime_smoke": {
+  "method": "user CPU (wait4), c3-hello 30 emulated s, 1 warmup + 3 alternating pairs; daytime, loaded machine; diagnostic only, not the CPU comparison",
+  "runs": [
+   {
+    "run": "A/B 1",
+    "started": "2026-10-26T10:16:45+0100",
+    "main_median": 3.374,
+    "head_median": 4.281,
+    "change_pct": 26.89,
+    "head_slower": "3/3",
+    "load1": [
+     13.1,
+     16.03
+    ],
+    "user_s": [
+     [
+      "warmup",
+      "main",
+      3.394
+     ],
+     [
+      "warmup",
+      "head",
+      3.425
+     ],
+     [
+      "pair1",
+      "main",
+      3.315
+     ],
+     [
+      "pair1",
+      "head",
+      4.281
+     ],
+     [
+      "pair2",
+      "head",
+      3.772
+     ],
+     [
+      "pair2",
+      "main",
+      3.374
+     ],
+     [
+      "pair3",
+      "main",
+      4.261
+     ],
+     [
+      "pair3",
+      "head",
+      4.448
+     ]
+    ],
+    "identical_insns_console": true
+   },
+   {
+    "run": "A/A control (main vs main)",
+    "started": "2026-10-26T10:17:34+0100",
+    "main_median": 2.537,
+    "head_median": 2.745,
+    "change_pct": 8.19,
+    "head_slower": "2/3",
+    "load1": [
+     9.0,
+     10.58
+    ],
+    "user_s": [
+     [
+      "warmup",
+      "main",
+      3.617
+     ],
+     [
+      "warmup",
+      "head",
+      3.541
+     ],
+     [
+      "pair1",
+      "main",
+      3.661
+     ],
+     [
+      "pair1",
+      "head",
+      3.473
+     ],
+     [
+      "pair2",
+      "head",
+      2.745
+     ],
+     [
+      "pair2",
+      "main",
+      2.537
+     ],
+     [
+      "pair3",
+      "main",
+      2.474
+     ],
+     [
+      "pair3",
+      "head",
+      2.512
+     ]
+    ],
+    "identical_insns_console": true
+   },
+   {
+    "run": "A/B 2",
+    "started": "2026-10-26T10:17:56+0100",
+    "main_median": 2.786,
+    "head_median": 2.739,
+    "change_pct": -1.68,
+    "head_slower": "0/3",
+    "load1": [
+     7.42,
+     8.6
+    ],
+    "user_s": [
+     [
+      "warmup",
+      "main",
+      2.562
+     ],
+     [
+      "warmup",
+      "head",
+      2.524
+     ],
+     [
+      "pair1",
+      "main",
+      2.67
+     ],
+     [
+      "pair1",
+      "head",
+      2.572
+     ],
+     [
+      "pair2",
+      "head",
+      2.739
+     ],
+     [
+      "pair2",
+      "main",
+      2.786
+     ],
+     [
+      "pair3",
+      "main",
+      2.877
+     ],
+     [
+      "pair3",
+      "head",
+      2.757
+     ]
+    ],
+    "identical_insns_console": true
+   },
+   {
+    "run": "A/B 3",
+    "started": "2026-10-26T10:19:37+0100",
+    "main_median": 3.084,
+    "head_median": 2.883,
+    "change_pct": -6.52,
+    "head_slower": "0/3",
+    "load1": [
+     5.94,
+     7.2
+    ],
+    "user_s": [
+     [
+      "warmup",
+      "main",
+      2.625
+     ],
+     [
+      "warmup",
+      "head",
+      4.085
+     ],
+     [
+      "pair1",
+      "main",
+      3.701
+     ],
+     [
+      "pair1",
+      "head",
+      2.883
+     ],
+     [
+      "pair2",
+      "head",
+      2.996
+     ],
+     [
+      "pair2",
+      "main",
+      3.084
+     ],
+     [
+      "pair3",
+      "main",
+      2.913
+     ],
+     [
+      "pair3",
+      "head",
+      2.772
+     ]
+    ],
+    "identical_insns_console": true
+   }
+  ]
+ }
+}

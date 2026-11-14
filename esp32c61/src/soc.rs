@@ -46,6 +46,8 @@ impl Soc for C61 {
 impl esp_soc::SocBus for SocBus {
     fn enable_ble_full(&mut self,_observe:bool)->Result<(),String> {Ok(())}
     fn ble_nearby(&mut self,list:Vec<esp_soc::ble::peer::Nearby>)->Result<(),String> {self.periph.ble_mac.set_nearby(list)}
+    fn add_wifi_ap(&mut self, cfg: esp_soc::wifi::ApConfig) -> Result<(), String> { self.periph.wifi_mac.link.add_ap(cfg, &self.debug) }
+    fn set_net_tap(&mut self, tap: esp_soc::netcap::NetTap) -> Result<(), String> { self.periph.wifi_mac.link.set_tap(tap); Ok(()) }
     fn attach_wifi(&mut self, cfg: esp_soc::wifi::ApConfig, nat: Option<esp_soc::nat::Nat>) -> Result<(), String> { self.periph.wifi_mac.link.attach_new(cfg, nat, &self.debug); Ok(()) }
     fn configure_softap_client(&mut self,cfg:Option<esp_soc::wifi::softap::ClientConfig>)->Result<(),String> {self.periph.wifi_mac.link.configure_softap(cfg)}
     fn poll_softap_client(&mut self) {self.periph.wifi_mac.link.poll_softap(self.cycles/(periph::CPU_HZ/1_000_000));}

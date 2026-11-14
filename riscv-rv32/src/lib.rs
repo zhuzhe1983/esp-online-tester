@@ -2,6 +2,10 @@
 //! in `misa` (`Cpu::new_esp32p4`) it is RV32IMAFC, with `mstatus.FS` and the P4's EXT_ILL CSR,
 //! the Zicntr counters, CLIC mode and a hart ID. `Cpu::new_esp32s31` selects the
 //! same base ISA subset with the standard CLIC CSR placement used by S31 IDF v6.1.
+//! The S31 core also has Zba/Zbb/Zbs and Zcb/Zcmp (`decode::ISA_ZB`, `decode::ISA_ZC`, in
+//! `Cpu::isa_ext`) and a subset of Espressif's PIE v2.2 SIMD extension (`decode::ISA_PIE`,
+//! `pie`); the other cores decode those encodings as illegal. The S31 and P4 cores have
+//! Espressif's hardware loops (`decode::ISA_HWLP`, `hwlp`).
 //!
 //! Machine mode only, no MMU, no D extension. The C3 and C6 have no F, and decode its encodings
 //! as illegal.
@@ -11,11 +15,14 @@
 //! On the P4 the SoC hands over its CLIC's candidate instead, and the core applies its own
 //! interrupt level (`exec::CLIC_IRQ_*`).
 pub mod bus { pub use emu_core::bus::*; }
+pub mod block;
 pub mod core;
 pub mod decode;
 pub mod disasm;
 pub mod exec;
 mod fpu;
+pub mod pie;
+pub mod hwlp;
 pub mod softfloat;
 pub mod state;
 

@@ -18,6 +18,9 @@ impl VhciBus for SocBus {
             code: CODE,
             ram: DRAM_LOW..DRAM_HIGH,
             hz: crate::periph::CPU_HZ,
+            // `esp_bt_controller_config_t.mode`, at 20 from IDF v4.3 to v6.0
+            // (components/bt/include/esp32/include/esp_bt.h)
+            config_mode: Some(20),
         }
     }
     fn ble(&mut self) -> &mut Ble {
@@ -32,6 +35,16 @@ impl VhciBus for SocBus {
     }
     fn ble_debug(&self) -> bool {
         self.debug.has("ble")
+    }
+    // Bluedroid built with CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST takes its HCI buffers from
+    // PSRAM first (IDF v5.3.6 components/bt/common/osi/include/osi/allocator.h:38), so the
+    // packets it sends lie in the external RAM window when there is PSRAM. The controller BSS,
+    // which holds the receive buffer, stays in DRAM (IDF v5.3.6
+    // components/bt/controller/linker_rw_bt_controller.lf:31; in v5.5.4 the file is
+    // components/bt/linker_rw_bt_controller.lf).
+    fn valid_packet_range(&self, address: u32, len: usize) -> bool {
+        let Some(end) = address.checked_add(len as u32) else { return false };
+        (address >= DRAM_LOW && end <= DRAM_HIGH) || self.psram_readable(address, len)
     }
 }
 
@@ -51,7 +64,10 @@ mod tests {
     const RECV_CB: u32 = BASE + 0x710;
 
     fn fixture() -> (SocBus, HashMap<String, u32>) {
-        let mut bus = SocBus::new(0x400000, [0; 6]);
+        fixture_on(SocBus::new(0x400000, [0; 6]))
+    }
+
+    fn fixture_on(mut bus: SocBus) -> (SocBus, HashMap<String, u32>) {
         let symbols: HashMap<String, u32> = [
             ("esp_bt_controller_init", BASE),
             ("xTaskCreatePinnedToCore", BASE + 0x400),
@@ -93,6 +109,8 @@ mod tests {
     #[test]
     fn trampoline_creates_guest_task_with_windowed_abi_and_returns_esp_ok() {
         let (mut bus, _) = fixture();
+        // a config at DRAM_LOW whose `mode` is BLE
+        bus.load_bytes(DRAM_LOW + 20, &[1]).unwrap();
         let mut cpu = caller(BASE, DRAM_LOW);
         let before = cpu.ccount;
         assert!(intercept(&mut cpu, &mut bus));
@@ -128,6 +146,64 @@ mod tests {
         assert_eq!(bus.ble.status, 0);
         assert!(!bus.ble.task_created);
         assert_eq!(bus.ble.hooks, hooks);
+    }
+
+    /// Init's config names the mode, and enable takes that one only, as IDF's bt.c does (v5.3.6
+    /// components/bt/controller/esp32/bt.c:1918); the classic ESP32's config may name 1, 2 or 3.
+    #[test]
+    fn enable_takes_the_mode_of_the_config_init_took() {
+        const INVALID_STATE: u32 = 0x103;
+        let call = |bus: &mut SocBus, pc: u32, arg: u32| {
+            let mut cpu = caller(pc, arg);
+            assert!(intercept(&mut cpu, bus));
+            cpu.get_ar(10)
+        };
+        for mode in 1..=3u32 {
+            let (mut bus, symbols) = fixture();
+            // the task exists already: init returns at once, as after a deinit
+            bus.ble.task_created = true;
+            bus.load_bytes(DRAM_LOW + 20, &[mode as u8]).unwrap();
+            assert_eq!(call(&mut bus, BASE, DRAM_LOW), 0);
+            assert_eq!((bus.ble.status, bus.ble.mode), (1, mode));
+            for other in (1..=3).filter(|&m| m != mode) {
+                assert_eq!(
+                    call(&mut bus, symbols["esp_bt_controller_enable"], other),
+                    INVALID_ARG,
+                    "mode {mode}, enable {other}"
+                );
+                assert_eq!(bus.ble.status, 1);
+            }
+            assert_eq!(call(&mut bus, symbols["esp_bt_controller_enable"], mode), 0);
+            assert_eq!(bus.ble.status, 2);
+        }
+        for mode in [0u8, 4, 0xff] {
+            let (mut bus, _) = fixture();
+            bus.ble.task_created = true;
+            bus.load_bytes(DRAM_LOW + 20, &[mode]).unwrap();
+            assert_eq!(call(&mut bus, BASE, DRAM_LOW), INVALID_ARG, "config mode {mode}");
+            assert_eq!(bus.ble.status, 0);
+        }
+        // an init refused for its state leaves the mode of the one that was taken
+        let (mut bus, symbols) = fixture();
+        bus.ble.task_created = true;
+        bus.load_bytes(DRAM_LOW + 20, &[2]).unwrap();
+        assert_eq!(call(&mut bus, BASE, DRAM_LOW), 0);
+        bus.load_bytes(DRAM_LOW + 20, &[1]).unwrap();
+        assert_eq!(call(&mut bus, BASE, DRAM_LOW), INVALID_STATE);
+        assert_eq!(call(&mut bus, symbols["esp_bt_controller_enable"], 2), 0);
+        // a config that cannot be read, and one whose mode would wrap the address space
+        let (mut bus, _) = fixture();
+        bus.ble.task_created = true;
+        assert_eq!(call(&mut bus, BASE, 0x1000), INVALID_ARG);
+        assert_eq!(bus.last_fault, Some((0x1014, false)), "the mode's read missed");
+        let (mut bus, _) = fixture();
+        bus.ble.task_created = true;
+        assert_eq!(call(&mut bus, BASE, 0xffff_fff0), INVALID_ARG);
+        assert_eq!(bus.last_fault, None);
+        // init(NULL) is refused without reading the guest's memory
+        let (mut bus, _) = fixture();
+        assert_eq!(call(&mut bus, BASE, 0), INVALID_ARG);
+        assert_eq!(bus.last_fault, None);
     }
 
     #[test]
@@ -199,6 +275,60 @@ mod tests {
             .enable(&symbols, 0x400, &SocBus::abi())
             .unwrap_err()
             .contains("vTaskDelay"));
+    }
+
+    /// Bluedroid built with CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST sends from PSRAM. A packet
+    /// there reaches the controller when PSRAM is installed and every page the packet touches is
+    /// mapped and readable, as a load would find it; otherwise it is refused.
+    #[test]
+    fn vhci_accepts_packets_in_mapped_psram_and_refuses_them_without_psram() {
+        use crate::psram::tests::{configured, map};
+        use crate::psram::{HIGH, LOW};
+        // HCI_Reset, across the boundary of the window's first two 32 KiB pages
+        let data = LOW + 0x7ffe;
+        let send = |bus: &mut SocBus, symbols: &HashMap<String, u32>| {
+            bus.ble.status = 2;
+            bus.ble.send_ready = false;
+            bus.ble.lines.keep();
+            while bus.ble.lines.take().is_some() {}
+            let mut cpu = caller(symbols["esp_vhci_host_send_packet"], data);
+            cpu.set_ar(11, 4);
+            assert!(intercept(&mut cpu, bus));
+            let sent = bus.ble.send_ready;
+            // a packet not taken was refused, not lost to a failed read
+            let rejected =
+                bus.ble.lines.take().is_some_and(|l| l.contains("rejected invalid VHCI"));
+            assert_eq!(rejected, !sent);
+            assert_eq!(bus.ble.session.pop_packet().is_some(), sent);
+            // the hook takes a packet exactly when the read of its last byte, in its second page,
+            // succeeds
+            assert_eq!(bus.read8_unpriced(data + 3).is_ok(), sent);
+            sent
+        };
+        let (mut bus, symbols) = fixture_on(configured());
+        map(&mut bus, 0, 5);
+        map(&mut bus, 1, 9);
+        bus.load_bytes(data, &[1, 3, 12, 0]).unwrap();
+        assert!(send(&mut bus, &symbols), "mapped PSRAM");
+        // the packet's second page unmapped, then mapped past the 4 MiB installed
+        map(&mut bus, 1, 0x100);
+        assert!(!send(&mut bus, &symbols), "invalid entry");
+        map(&mut bus, 1, 128);
+        assert!(!send(&mut bus, &symbols), "past the installed PSRAM");
+        map(&mut bus, 1, 9);
+        // the PRO cache, which IDF enables before PSRAM is used, off
+        bus.write32(0x3ff0_0040, 0).unwrap();
+        assert!(!send(&mut bus, &symbols), "cache disabled");
+        // no PSRAM installed, with the same pages mapped
+        let (mut bus, symbols) = fixture();
+        map(&mut bus, 0, 5);
+        map(&mut bus, 1, 9);
+        assert!(!send(&mut bus, &symbols), "no PSRAM");
+        let bus = configured();
+        assert!(!bus.valid_packet_range(HIGH - 2, 4), "crosses the window's end");
+        assert!(!bus.valid_packet_range(LOW - 2, 4), "crosses the window's start");
+        assert!(!bus.valid_packet_range(u32::MAX - 1, 4));
+        assert!(bus.valid_packet_range(DRAM_LOW, 4) && !bus.valid_packet_range(DRAM_HIGH - 2, 4));
     }
 
     #[test]

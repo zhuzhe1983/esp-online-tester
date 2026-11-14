@@ -54,8 +54,14 @@ CameraWebServer path is unsupported. See the [camera scope and example](docs/esp
 | ESP32-S3 | 2 x Xtensa LX7 | mature | Atech 14-port kit, Waveshare Touch-LCD-4B, Touch-AMOLED-1.8, ESP32-S3-CAM |
 | ESP32-C3 | RISC-V RV32IMC | draft | console only |
 | ESP32-C6 | RISC-V RV32IMAC | draft | Waveshare ESP32-C6-LCD-1.47 (with the 802.15.4 radio), Seeed XIAO ESP32-C6 |
-| ESP32 (classic) | 2 x Xtensa LX6 | early | LilyGO TTGO T-Display, AI-Thinker ESP32-CAM (raw capture), Ulanzi TC001 |
+| ESP32 (classic) | 2 x Xtensa LX6 | early | LilyGO TTGO T-Display, ESP32-2432S028 "Cheap Yellow Display", AI-Thinker ESP32-CAM (raw capture), Ulanzi TC001 |
 | ESP32-P4 (rev < 3; rev ≥ 3: hello_world, ESP-Hosted) | 2 x RISC-V RV32IMAFC | draft | console only; the C6 co-processor over SDIO |
+| ESP32-S31 | 2 x RISC-V RV32IMAFC | draft | native Machine CLI (`--chip s31`); IDF hello_world and ESP-Mosaico |
+
+S31 support here is in the native CLI, including its `--web` board view; it is not yet
+available in the product platform or the WebAssembly factory. The earlier strict
+`Bringup` diagnostic runner and its guest fixtures remain available separately under
+`esp32s31::bringup`. See [the board models](docs/boards.md).
 
 ## Features
 
@@ -99,7 +105,7 @@ FW=web/wasm/fw/public                       # demo firmware included in the repo
 ```
 
 This boots the Atech synth firmware, plays a short script, and saves the audio to `out.wav` and
-the display to `tft.png`. Use `esp32sim-c3`, `esp32sim-c6`, `esp32sim-p4` or `--chip esp32` for the other chips.
+the display to `tft.png`. Use `esp32sim-c3`, `esp32sim-c6`, `esp32sim-p4`, `esp32sim-s31` or `--chip esp32` for the other chips.
 
 [Getting started](docs/getting-started.md) covers the rest: your own ESP-IDF builds, each chip,
 WiFi, scripts, the browser build and debugging.

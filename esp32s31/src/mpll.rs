@@ -12,11 +12,18 @@ impl Mpll {
     pub fn write_divider(&mut self, value: u32) -> Result<(), Fault> {
         // LL uses reference1 (divide2); charge-pump/filter tuning is unsupported.
         if value & 0x307 != 1 { return Err(Fault::Prohibited); }
+        // A new divider recalibrates while CAL_STOP is clear: IDF writes it after clearing
+        // CAL_STOP and only then polls MSPI_CAL_END (rtc_clk.c mpll configure).
         self.div = value & 0x3ff; self.done = false;
-        if self.left.is_some() { self.left = Some(16); }
+        if !self.stop { self.left = Some(16); }
         Ok(())
     }
-    pub fn set_power(&mut self, on: bool) { self.powered = on; if !on { self.done = false; self.left = None; } }
+    /// Power-up with CAL_STOP clear (its reset value) starts a calibration, so one requested
+    /// before the PLL was powered completes once it is.
+    pub fn set_power(&mut self, on: bool) {
+        if on && !self.powered && !self.stop && !self.done && self.left.is_none() { self.left = Some(16); }
+        self.powered = on; if !on { self.done = false; self.left = None; }
+    }
     pub fn control(&self) -> u32 { u32::from(self.done) << 8 | u32::from(self.stop) << 9 }
     pub fn write_control(&mut self, value: u32) {
         self.stop = value & (1 << 9) != 0;
@@ -39,10 +46,10 @@ impl Mpll {
 mod tests {
     use super::*;
     #[test]
-    fn mpll_needs_start_power_analog_clock_and_elapsed_quanta_not_a_written_done_bit() {
+    fn mpll_needs_power_analog_clock_and_elapsed_quanta_not_a_written_done_bit() {
         let mut m = Mpll::default(); assert_eq!(m.divider(), 0xc1);
-        m.set_power(true); m.advance(100, true); assert_eq!(m.output_hz(), None);
-        m.write_control(0x300); m.advance(100, true); assert_eq!(m.control(), 0x200);
+        m.write_control(0x300); m.advance(100, true); assert_eq!(m.control(), 0x200); // DONE is not data.
+        m.set_power(true); m.advance(100, true); assert_eq!(m.output_hz(), None); // CAL_STOP set: no calibration.
         m.write_control(0x100); m.advance(100, false); assert_eq!(m.control(), 0);
         m.advance(15, true); assert_eq!(m.output_hz(), None); m.advance(1, true); assert_eq!(m.output_hz(), Some(500_000_000));
         m.write_control(0x300); assert_eq!(m.control(), 0x300);
@@ -56,5 +63,18 @@ mod tests {
         m.advance(1, true); assert_eq!(m.output_hz(), None); m.advance(15, true); assert_eq!(m.output_hz(), Some(400_000_000));
         for bad in [0, 2, 0x1c1, 0x2c1] { assert_eq!(m.write_divider(bad), Err(Fault::Prohibited)); assert_eq!(m.output_hz(), Some(400_000_000)); }
         m.set_power(false); assert_eq!(m.output_hz(), None);
+    }
+    #[test]
+    fn calibration_requested_before_power_up_completes_after_power_up() {
+        let mut m = Mpll::default(); m.write_control(0); m.advance(100, true); assert_eq!(m.control(), 0); // unpowered: nothing yet
+        m.set_power(true); m.advance(15, true); assert_eq!(m.output_hz(), None);
+        m.advance(1, true); assert_eq!(m.control(), 0x100); assert_eq!(m.output_hz(), Some(500_000_000));
+    }
+    #[test]
+    fn divider_write_recalibrates_while_cal_stop_is_clear() {
+        let mut m = Mpll::default(); m.set_power(true); m.advance(16, true); assert_eq!(m.output_hz(), Some(500_000_000));
+        m.write_divider((19 << 3) | 1).unwrap(); assert_eq!(m.control(), 0); assert_eq!(m.output_hz(), None);
+        m.advance(16, true); assert_eq!(m.output_hz(), Some(400_000_000));
+        m.write_control(0x200); m.write_divider((24 << 3) | 1).unwrap(); m.advance(100, true); assert_eq!(m.output_hz(), None); // CAL_STOP: no recalibration
     }
 }

@@ -5,6 +5,9 @@ ESP32-C6 and ESP32-P4 (RISC-V). Most documents describe the S3; [esp32.md](esp32
 [esp32c3.md](esp32c3.md), [esp32c6.md](esp32c6.md) and [esp32p4.md](esp32p4.md) cover the other
 chips.
 
+[ESP32-S31](esp32s31.md) is a separate experimental bring-up crate and example;
+it is not a regular CLI/browser chip or a supported product board.
+
 New here? [quick-start.md](quick-start.md) runs your own firmware from a release tarball in three steps;
 [getting-started.md](getting-started.md) is the longer tour of each chip.
 
@@ -33,6 +36,7 @@ New here? [quick-start.md](quick-start.md) runs your own firmware from a release
 | [esp32c3.md](esp32c3.md) | The ESP32-C3 (RISC-V) model: what boots, how to run it, and the bring-up gotchas |
 | [esp32c6.md](esp32c6.md) | The ESP32-C6 (RISC-V, RV32IMAC) model: the Waveshare LCD-1.47 bring-up, what silicon found, what is left for the board |
 | [esp32p4.md](esp32p4.md) | The ESP32-P4 (dual RISC-V) model, draft: rev < 3, and rev ≥ 3 up to hello_world, on one and two cores, the CLIC and hart support in the core, the SD card, USB, the ESP32-C6 co-processor over SDIO (ESP-Hosted, lock-step) |
+| [esp32s31.md](esp32s31.md) | Experimental standalone S31 bring-up: explicit inputs, source-built fixtures, supported subset and remaining faults |
 | [wasm.md](wasm.md) | How to build and run the emulator in the browser (WebAssembly): `tools/wasm-build.sh`, `?wasm`, manifests, what works, limits |
 | [wasm-plan.md](wasm-plan.md) | The plan the browser build followed, with the original measurements; status at the top |
 | [testing-plan.md](testing-plan.md) | Plan: test layers, CPU/SoC/board/firmware suites, CI tiers, milestones |

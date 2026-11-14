@@ -1,0 +1,111 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# CodeRabbit review settings for esp32sim. The rules it checks come from
+# CONTRIBUTING.md and AGENTS.md; those files stay the source of truth.
+# Docs: https://docs.coderabbit.ai/reference/configuration
+language: en-US
+tone_instructions: "Be concise and specific. Lead with the bug or risk, cite file:line, skip praise and restating the diff."
+early_access: false
+
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  review_status: true
+  collapse_walkthrough: true
+  sequence_diagrams: false
+  poem: false
+  changed_files_summary: true
+  suggested_labels: false
+  suggested_reviewers: false
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+    ignore_title_keywords:
+      - "WIP"
+      - "[skip review]"
+
+  path_filters:
+    - "!target/**"
+    - "!Cargo.lock"
+    - "!web/wasm/fw/public/**"
+    - "!**/*.bin"
+    - "!**/*.elf"
+    - "!**/*.wasm"
+    - "!**/*.webp"
+    - "!**/*.png"
+    - "!**/*.tar.gz"
+
+  path_instructions:
+    - path: "**/*.rs"
+      instructions: >-
+        Follow CONTRIBUTING.md. The tree is deliberately not rustfmt-formatted: never suggest
+        reformatting, splitting short one-line constructors/match arms, or style-only changes;
+        new lines should match their neighbours. Clippy with warnings denied is the only lint.
+        The guest must not be able to crash the emulator: flag unwrap, unchecked indexing,
+        arithmetic overflow or slicing on values that come from guest registers, descriptors or
+        DMA lengths; they should be clamped or turned into the error the hardware reports.
+        Every register, bit, interrupt source or clock value should cite the Espressif header and
+        its ESP-IDF version; flag new ones without a citation, and flag "verified on silicon"
+        claims copied from another chip's model. Register blocks are a `match off` on hex
+        offsets with unmodelled offsets falling through to RegRam; struct and field names follow
+        the IDF register fields.
+    - path: "{esp32,esp32s3,esp32c3,esp32c6,esp32p4,esp-soc,esp-periph,emu-core,xtensa-lx7,riscv-rv32}/src/**"
+      instructions: >-
+        Code that isn't in use must cost nothing. Flag new work on the bus, the device_set!
+        table, interrupt routing or anything that runs every tick or instruction, and ask for a
+        CPU comparison against main on the hello demos (and pocket-tank for the S3 core) if the
+        PR doesn't include one. A feature behind a flag must leave instruction counts and console
+        output unchanged when the flag is off.
+    - path: "cli/tests/**"
+      instructions: >-
+        Golden outputs are bit-identical. If goldens changed (UPDATE_GOLDENS=1), the PR
+        description must say which ones and why; flag unexplained golden changes. Tests that need
+        a developer machine must be #[ignore]d and named external_*; flag any other test whose
+        name contains "external", since CI's --skip would silently drop it.
+    - path: "docs/experiments.md"
+      instructions: >-
+        A new row goes directly below the previous row (a blank line ends the table). Flag
+        reordered or removed earlier rows; negative results are kept.
+    - path: "docs/evidence/**"
+      instructions: >-
+        Evidence is reproducible facts: commands, inputs, hashes, numbers, outcomes. Flag
+        agent-session narrative, personal information (usernames, hostnames, absolute home
+        paths, emails, device identifiers) and commits that don't exist in this repository.
+    - path: "wasm/**"
+      instructions: >-
+        The esp32sim_* exports are used by web/ and by downstream embedders; flag signature or
+        behaviour changes to existing exports, and panics reachable from host-supplied input.
+    - path: "web/**"
+      instructions: "Check that new demos are listed consistently in index.html and web/wasm/fw/demos.json."
+
+  tools:
+    clippy:
+      enabled: true
+    shellcheck:
+      enabled: true
+    actionlint:
+      enabled: true
+    gitleaks:
+      enabled: true
+    ruff:
+      enabled: true
+    markdownlint:
+      enabled: false
+    languagetool:
+      enabled: false
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  opt_out: false
+  learnings:
+    scope: local
+  issues:
+    scope: local
+  pull_requests:
+    scope: local

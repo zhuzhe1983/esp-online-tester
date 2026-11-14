@@ -183,7 +183,7 @@ mod tests {
     #[test]
     fn both_harts_receive_actual_alarm_levels_with_permissions_and_alignment() {
         use emu_core::Bus;
-        let mut b = crate::S31Bus::new(); b.write32(CLOCK, 0x11).unwrap();
+        let mut b = crate::bringup::S31Bus::new(); b.write32(CLOCK, 0x11).unwrap();
         b.write32(BASE + 0x20, 3).unwrap(); b.write32(BASE + 0x50, 1).unwrap(); b.write32(BASE + 0x64, 1).unwrap(); b.write32(BASE, 0x41000000).unwrap();
         for core in 0..2 { b.interrupts.matrix_write(core, 33 * 4, 0x211); b.interrupts.clic[core].write(0x1044, 1 << 29 | 1 << 8, 15); }
         b.cores.write(crate::core_control::CTRL1, 3).unwrap(); b.systimer.advance_ticks(3, [false; 2]);

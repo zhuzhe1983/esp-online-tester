@@ -24,6 +24,17 @@ In the browser (`?wasm`, board `xiao-esp32c6`) the page shows the LED as a dot a
 button as a button; the button drives GPIO 9 low, and the firmware's `gpio_get_level` sees it.
 In a script, `press boot 150` holds the button for 150 ms.
 
+The browser demo `c6-xiao` (`web/wasm/fw/c6-xiao.json`, `?wasm&fw=c6-xiao`) boots this very
+firmware: the images under `web/wasm/fw/public/c6-xiao-*.bin` are its bootloader, partition
+table and app, built with ESP-IDF 5.5.4 for the C6, and `public/c6-xiao-script.txt` presses the
+BOOT button at 2 s, so the console shows the button held down.
+
+    cd examples/xiao-esp32c6 && idf.py set-target esp32c6 build && cd ../..
+    cp examples/xiao-esp32c6/build/bootloader/bootloader.bin web/wasm/fw/public/c6-xiao-bootloader.bin
+    cp examples/xiao-esp32c6/build/partition_table/partition-table.bin web/wasm/fw/public/c6-xiao-ptable.bin
+    cp examples/xiao-esp32c6/build/xiao_blink.bin web/wasm/fw/public/c6-xiao.bin
+    node tools/wasm-test.mjs c6-xiao
+
 The RF switch is tracked and reported (`[emu] xiao-esp32c6: ... rf switch powered ... antenna
 onboard ceramic`) but nothing is behind it: the radio is the C6's own 802.15.4 and WiFi MAC,
 which the emulator models on the chip, not on the board.

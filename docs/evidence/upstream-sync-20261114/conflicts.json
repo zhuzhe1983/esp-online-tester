@@ -1,0 +1,97 @@
+{
+  "baseline": "b1c7a001",
+  "upstream": "3bdb9582",
+  "upstreamRepository": "https://github.com/mikroverk/esp32sim",
+  "historyOnlyCommits": 166,
+  "initialConflictCount": 56,
+  "initialConflicts": [
+    ".github/workflows/ci.yml",
+    "Cargo.toml",
+    "README.md",
+    "cli/Cargo.toml",
+    "cli/src/lib.rs",
+    "cli/tests/classic_i2c_routes.rs",
+    "docs/cli.md",
+    "docs/esp32.md",
+    "docs/esp32c6.md",
+    "docs/experiments.md",
+    "docs/roadmap.md",
+    "docs/wasm.md",
+    "esp-periph/src/gpspi.rs",
+    "esp-periph/src/i2s.rs",
+    "esp-periph/src/i2s/sources.rs",
+    "esp-periph/src/mcpwm.rs",
+    "esp-soc/src/ble.rs",
+    "esp-soc/src/board.rs",
+    "esp-soc/src/machine.rs",
+    "esp-soc/src/machine/web.rs",
+    "esp-soc/src/nat.rs",
+    "esp-soc/src/nat/tests.rs",
+    "esp-soc/src/net.rs",
+    "esp-soc/src/wifi.rs",
+    "esp32/src/periph.rs",
+    "esp32/src/sleep.rs",
+    "esp32/src/soc.rs",
+    "esp32c6/src/board/mod.rs",
+    "esp32s3/src/bus.rs",
+    "esp32s3/src/periph.rs",
+    "esp32s31/Cargo.toml",
+    "esp32s31/src/analog.rs",
+    "esp32s31/src/apm.rs",
+    "esp32s31/src/bus.rs",
+    "esp32s31/src/bus_monitor.rs",
+    "esp32s31/src/cache.rs",
+    "esp32s31/src/clocks.rs",
+    "esp32s31/src/core_control.rs",
+    "esp32s31/src/efuse.rs",
+    "esp32s31/src/interrupts.rs",
+    "esp32s31/src/lib.rs",
+    "esp32s31/src/mpll.rs",
+    "esp32s31/src/mspi.rs",
+    "esp32s31/src/pads.rs",
+    "esp32s31/src/pmu_policy.rs",
+    "esp32s31/src/power.rs",
+    "esp32s31/src/reset.rs",
+    "esp32s31/src/startup_clocks.rs",
+    "examples/xiao-esp32c6/README.md",
+    "riscv-rv32/src/lib.rs",
+    "riscv-rv32/src/state.rs",
+    "wasm/src/ble.rs",
+    "wasm/src/lib.rs",
+    "wasm/src/machine.rs",
+    "web/emu.js",
+    "web/run.html"
+  ],
+  "resolutions": [
+    {
+      "area": "S31 and RV32",
+      "choice": "Adopt upstream Machine, Mosaico and decoded blocks; preserve original strict Bringup and all guest fixtures under esp32s31::bringup. No platform/WASM S31 support is claimed by this sync."
+    },
+    {
+      "area": "Network and BLE",
+      "choice": "Combine multi-AP, PCAP and NatTransport with existing SoftAP, custom gateway, dynamic host forwarding and C61/HCI ABI. Preserve three-part StationLink RX metadata."
+    },
+    {
+      "area": "Shared peripherals",
+      "choice": "Keep streamed PCM with file playback, classic light sleep with upstream deep-sleep timer, S3 SDMMC read IRQ with UART download IRQ; keep C3 GP-SPI reserved-register guard."
+    },
+    {
+      "area": "CLI and chip registration",
+      "choice": "Keep C5/C61, network helper and all fork boards; add S31/CYD and new upstream flags. Adapt C5 rejection and C61 repeatable Wi-Fi; leave C5/strict S31 UART autobaud unmodelled."
+    },
+    {
+      "area": "Web and CI",
+      "choice": "Add CYD/Ulanzi choices and Network panel while keeping product platform and its CI steps; add c6-xiao WASM scenario."
+    },
+    {
+      "area": "Documentation",
+      "choice": "Retain both current fork support limits and upstream additions. Preserve existing EX248/EX249 upstream anchor disambiguation."
+    }
+  ],
+  "inheritedGoldens": [
+    "tests/golden/hello-s3-reboot.console.txt",
+    "tests/golden/hello-s3-reboot.insns"
+  ],
+  "goldenReason": "Upstream CCOUNT reset correctness fix; no local regeneration.",
+  "pendingUpstreamPRs": "Not included; synchronization is of merged upstream/main only."
+}

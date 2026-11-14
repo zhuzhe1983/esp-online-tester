@@ -50,6 +50,11 @@ pub struct SocBus {
     pub last_fault: Option<(u32, bool)>,
     /// a peripheral write may have moved an interrupt line: re-derive before the next instruction
     pub irq_dirty: bool,
+    /// A UART interrupt enable was written: its level is presented after the delivery latency (see `periph_write`).
+    ena_latency: esp_periph::uart::EnaLatency,
+    /// Host input is queued on a UART or an INT_ENA latency is pending: the only time the tick and the idle
+    /// deadline look at the UARTs, so an ordinary run pays one flag test for them.
+    pub(crate) uart_busy: bool,
     /// GPIO edges for observers, while one wants them: (cycle, pin, level)
     pub gpio_events: Option<Vec<(u64, u8, bool)>>,
     pub debug: esp_soc::DebugFlags,
@@ -66,7 +71,7 @@ impl SocBus {
             flash: vec![0xff; flash_size],
             mmu: [MMU_INVALID; MMU_ENTRIES],
             periph: Peripherals::new(mac), board: Box::new(esp_soc::NoBoard), uart_pins: false, board_edges: false, pins_active: false,
-            cycles: 0, last_fault: None, irq_dirty: true, gpio_events: None, debug: Default::default(),
+            cycles: 0, last_fault: None, irq_dirty: true, ena_latency: Default::default(), uart_busy: false, gpio_events: None, debug: Default::default(),
         }
     }
 
@@ -98,7 +103,13 @@ impl SocBus {
         if (MMU_TABLE..MMU_TABLE + (MMU_ENTRIES as u32) * 4).contains(&addr) {
             return self.mmu[((addr - MMU_TABLE) >> 2) as usize];
         }
-        let w = self.periph.read32(addr & !3);
+        let a = addr & !3;
+        // RXFIFO_FULL follows the FIFO level (as on the classic ESP32): the mask ROM's shared UART0/UART1 handler reads
+        // one FIFO and never clears the interrupt, so a stale level would re-enter it with nothing to read.
+        let uart = match a { 0x6000_0000 => Some(0), 0x6001_0000 => Some(1), _ => None };
+        let before = uart.map(|i| self.periph.uart[i].irq());
+        let w = self.periph.read32(a);
+        if let (Some(i), Some(before)) = (uart, before) { self.irq_dirty |= self.periph.uart[i].irq() != before; }
         match size { 1 => (w >> ((addr & 3) * 8)) & 0xff, 2 => (w >> ((addr & 2) * 8)) & 0xffff, _ => w }
     }
 
@@ -122,11 +133,17 @@ impl SocBus {
             return;
         }
         let a = addr & !3;
+        // A sub-word store merges into the register's current value, but reading a UART FIFO pops a received byte:
+        // TX FIFO stores merge into 0 instead.
+        let fifo = matches!(a, 0x6000_0000 | 0x6001_0000);
         let v = match size {
             4 => v,
+            _ if fifo => if size == 1 { (v & 0xff) << ((addr & 3) * 8) } else { (v & 0xffff) << ((addr & 2) * 8) },
             1 => { let old = self.periph.read32(a); let sh = (addr & 3) * 8; (old & !(0xff << sh)) | ((v & 0xff) << sh) }
             _ => { let old = self.periph.read32(a); let sh = (addr & 2) * 8; (old & !(0xffff << sh)) | ((v & 0xffff) << sh) }
         };
+        let ena_port = match a { 0x6000_000c => Some(0), 0x6001_000c => Some(1), _ => None };
+        let old_ena = ena_port.map_or(0, |i| self.periph.uart[i].int_ena);
         let drive = (self.periph.gpio.enable, self.periph.gpio.out);
         // Reuse the peripheral's pin-block classification; only those blocks start or stop I2C/RMT.
         if self.periph.write32(a, v) { self.pins_active = self.pins_active(); }
@@ -152,7 +169,14 @@ impl SocBus {
             if self.periph.spi2.dma_tx_pending.is_some() { self.spi2_dma_step(); }
             self.deliver_spi2_transfer();
         }
-        self.irq_dirty = true;
+        // Interrupt delivery has latency on silicon (the interrupt matrix and the CPU's interrupt controller). The mask ROM's
+        // uart_buff_switch enables UART0's interrupt and stores which UART its handler serves in the next instruction; taking
+        // the interrupt between the two runs the handler for the previous UART (USB) and faults. So an INT_ENA write lets the
+        // block run on and its level is presented after `EnaLatency::CYCLES`.
+        match ena_port {
+            Some(i) => { if self.ena_latency.on_write(old_ena, self.periph.uart[i].int_ena) { self.irq_dirty = true; } else { self.uart_busy = true; } }
+            None => self.irq_dirty = true,
+        }
     }
 
     /// Supply a GP-SPI2 MOSI data phase from the GDMA out channel bound to it, through the shared
@@ -335,16 +359,32 @@ impl SocBus {
         if let Some(frame) = self.periph.wifi.link.next_rx(now_us, busy) { self.wifi_rx_deliver(&frame, now_us); }
     }
 
+    /// The receive descriptor at `desc` (a masked pointer from `rx_next`) as the DMA would use it for a
+    /// `total`-byte frame, if software armed it: owned and not yet filled, with a buffer, and with room
+    /// for the frame. `None` means the receive DMA is stopped there. Stricter than the S3, which also
+    /// takes a descriptor whose `has_data` is still set. With the EX238 hand-over that difference also
+    /// decides the restart: a still-filled descriptor plus a base write since the last frame sends the
+    /// C3 to `rx_base`, where the S3 overwrites the descriptor in place. A driver that processes frames
+    /// in order never gets there.
+    fn wifi_rx_armed(&self, desc: u32, total: usize) -> Option<(u32, u32, u32, u32)> {
+        if desc == 0 { return None; }
+        let d = desc | esp_periph::DMA_ADDR_BASE;
+        let dw0 = self.sram32(d); let buf = self.sram32(d.wrapping_add(4)); let next = self.sram32(d.wrapping_add(8));
+        (dw0 & (3 << 30) == 1 << 31 && buf != 0 && (dw0 & 0xfff) as usize >= total).then_some((d, dw0, buf, next))
+    }
+
     /// Write one received frame into the next RX descriptor (rx_ctrl header + frame + FCS) and raise the RX event.
     fn wifi_rx_deliver(&mut self, frame: &[u8], now_us: u64) {
-        if self.periph.wifi.rx_next == 0 { self.periph.wifi.link.drop_rx_unarmed(); return; }
-        let desc = self.periph.wifi.rx_next | esp_periph::DMA_ADDR_BASE;
-        let dw0 = self.sram32(desc); let buf = self.sram32(desc.wrapping_add(4)); let next = self.sram32(desc.wrapping_add(8));
-        let size = (dw0 & 0xfff) as usize;
         let total = 48 + frame.len() + 4;
-        if dw0 & (3 << 30) != 1 << 31 || buf == 0 || size < total { self.periph.wifi.link.drop_rx(); return; }
+        // As on the S3 (EX238): a descriptor that is not usable means the receive DMA has stopped; a
+        // `BASE_RX_DSCR` write since the last frame is the hand-over of a fresh list, so try once more there.
+        let mut armed = self.wifi_rx_armed(self.periph.wifi.rx_next, total);
+        if armed.is_none() && self.periph.wifi.rx_restart_at_base() { armed = self.wifi_rx_armed(self.periph.wifi.rx_next, total); }
+        // Neither a head nor a pending base: no receive ring yet, counted apart from lost frames (#276).
+        if self.periph.wifi.rx_next == 0 { self.periph.wifi.link.drop_rx_unarmed(); return; }
+        let Some((desc, dw0, buf, next)) = armed else { self.periph.wifi.link.drop_rx(); return; };
         // A network around's frames carry its own channel and signal (`VirtualAp::rx_meta`)
-        let (chan, rssi, log) = { let ap = self.periph.wifi.link.ap().unwrap(); let (c, r) = ap.rx_meta(frame); (c as u32, r, ap.log) };
+        let (chan, rssi, log) = { let link = &self.periph.wifi.link; let (c, r, _) = link.rx_meta(frame); (c as u32, r, link.ap().unwrap().log) };
         let mut b = Vec::with_capacity(total);
         let bcast = frame.len() >= 5 && frame[4] & 1 == 1;
         // filter-match nibble: bit 28 is the "accepted by the address filter" bit the blob's RX path
@@ -359,8 +399,7 @@ impl SocBus {
         if !self.sram_store(buf, &b) { self.periph.wifi.link.drop_rx(); return; }
         let ndw0 = (dw0 & !(0xfff << 12)) | ((total as u32) << 12) | (1 << 30) | (1 << 31);   // length; owner AND has_data set (S3-derived, checked with C3 firmware only)
         self.sram_store(desc, &ndw0.to_le_bytes());
-        let w = &mut self.periph.wifi;
-        w.rx_last = (desc & 0xf_ffff) | (1 << 24); w.rx_next = next & 0xf_ffff; w.link.rx_delivered(desc); w.events |= (1 << 14) | (1 << 24);   // RX data (wDev_ProcessFiq tests 0x1004000)   // registers hold masked descriptor addrs; rx_last uses the S3-derived 0x01 prefix
+        self.periph.wifi.rx_filled(desc, next);   // rx_last's 0x01 prefix is S3-derived
         if log { let d = esp_soc::wifi::describe(frame); if d.contains("auth")||d.contains("assoc") { eprintln!("[wifi] RX AUTH/ASSOC -> desc {:#010x} buf {:#010x} {}", desc, buf, d); } else { eprintln!("[wifi] RX -> desc {:#010x} {}", desc, d); } }
         self.irq_dirty = true;
     }
@@ -407,6 +446,36 @@ impl SocBus {
     fn devices(&mut self, cycles: u32) {
         if self.periph.work_pending { self.pending_work(cycles); }
         self.periph.tick(cycles as u64);
+        if self.uart_busy { self.pace_uart_input(cycles); }
+    }
+
+    /// Each UART's configured baud rate, for pacing queued host input.
+    /// CLK_CONF (0x78) is not seeded with its reset value, so a ROM or stub that never writes it reads source 0 there, and
+    /// the route has no baud. Pacing then assumes what the autobaud model does (`Uart::autobaud_pulse`): APB, 80 MHz,
+    /// divider 1. So esptool's baud change, which writes only CLKDIV, speeds up the paced input as it does on silicon.
+    fn uart_bauds(&self) -> [Option<u32>; 2] {
+        std::array::from_fn(|port| {
+            let u = &self.periph.uart[port];
+            if (u.clock_config() >> 20) & 3 == 0 { u.baud(1 << 20, 17_500_000) } else { self.periph.uart_route(port).baud }
+        })
+    }
+    /// Release host bytes queued by `uart_input` at the configured baud rate.
+    #[cold]
+    #[inline(never)]
+    fn pace_uart_input(&mut self, cycles: u32) {
+        let bauds = self.uart_bauds();
+        self.irq_dirty |= esp_periph::uart::pace_input(self.periph.uart.iter_mut().zip(bauds), cycles as u64, crate::periph::CPU_HZ);
+        self.uart_busy = self.ena_latency.pending() || self.periph.uart.iter().any(|u| u.has_queued());
+    }
+    /// Cycles an idle core may skip before queued UART input or a pending INT_ENA level is due.
+    #[cold]
+    #[inline(never)]
+    pub(crate) fn uart_deadline(&self) -> Option<u64> {
+        if !self.uart_busy { return None; }
+        let input = if self.periph.uart.iter().any(|u| u.has_queued()) {
+            esp_periph::uart::input_deadline(self.periph.uart.iter().zip(self.uart_bauds()), crate::periph::CPU_HZ)
+        } else { None };
+        input.into_iter().chain(self.ena_latency.deadline()).min()
     }
 
     #[inline(never)]
@@ -508,6 +577,7 @@ impl Bus for SocBus {
     }
     fn tick(&mut self, cycles: u32) -> u32 {
         self.cycles += cycles as u64;
+        if self.uart_busy && self.ena_latency.tick(cycles as u64) { self.irq_dirty = true; }
         if self.pins_active { return self.tick_with_pins(cycles); }
         self.devices(cycles);
         1
@@ -522,6 +592,66 @@ impl Bus for SocBus {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The ROM's uart_buff_switch: INT_ENA is written and the next instructions store which UART the handler serves.
+    /// The level must not reach the CPU at the tick ending the writing block, however many cycles that tick carries.
+    #[test]
+    fn uart_int_ena_is_presented_after_a_latency_counted_from_the_next_tick() {
+        let mut bus = SocBus::new(4 << 20, [0; 6]);
+        bus.write32(0x6000_0024, 1).unwrap();
+        esp_soc::SocBus::uart_input(&mut bus, 0, b"x");
+        bus.irq_dirty = false;
+        bus.write32(0x6000_000c, 1).unwrap();
+        assert!(!bus.irq_dirty, "not on the next instruction");
+        bus.tick(4096);
+        assert!(!bus.irq_dirty, "not at the tick that ends the block holding the write");
+        assert_eq!(esp_soc::SocBus::next_deadline(&bus), Some(esp_periph::uart::EnaLatency::CYCLES), "an idle core stops for it");
+        bus.tick(1);
+        assert!(!bus.irq_dirty);
+        bus.tick(esp_periph::uart::EnaLatency::CYCLES as u32);
+        assert!(bus.irq_dirty);
+    }
+
+    /// With CLK_CONF never written, pacing follows CLKDIV at the APB clock the autobaud model assumes: esptool's change
+    /// to 921600 (CLKDIV = 80 MHz / 921600) paces at 921600, not at the 115200 fallback.
+    #[test]
+    fn uart_pacing_follows_clkdiv_when_clk_conf_was_never_written() {
+        let mut bus = SocBus::new(4 << 20, [0; 6]);
+        assert_eq!(bus.uart_bauds()[0], None, "no divider yet: the 115200 fallback");
+        let div = 80_000_000 * 16 / 921_600;
+        bus.write32(0x6000_0014, (div / 16) | (div % 16) << 20).unwrap();
+        let b = bus.uart_bauds()[0].unwrap();
+        assert!((920_000..=923_000).contains(&b), "{b}");
+    }
+
+    /// Masking a UART interrupt takes effect at once: only newly enabled sources wait for the latency.
+    #[test]
+    fn uart_int_ena_disable_is_presented_at_once() {
+        let mut bus = SocBus::new(4 << 20, [0; 6]);
+        bus.write32(0x6000_000c, 1).unwrap();
+        bus.tick(4096); bus.tick(esp_periph::uart::EnaLatency::CYCLES as u32 + 1);
+        bus.irq_dirty = false;
+        bus.write32(0x6000_000c, 0).unwrap();
+        assert!(bus.irq_dirty, "a mask is presented on the next instruction");
+        assert_eq!(esp_soc::SocBus::next_deadline(&bus), None, "and arms no latency");
+        bus.irq_dirty = false;
+        bus.write32(0x6000_000c, 1).unwrap();
+        assert!(!bus.irq_dirty, "a new enable still waits");
+    }
+
+    /// Queued host input bounds the idle deadline at the next byte time, and a byte store to the TX FIFO keeps RX bytes.
+    #[test]
+    fn queued_uart_input_bounds_the_idle_deadline_and_byte_stores_do_not_pop_rx() {
+        let mut bus = SocBus::new(4 << 20, [0; 6]);
+        esp_soc::SocBus::uart_input(&mut bus, 0, &[7; 200]);
+        assert_eq!(esp_soc::SocBus::next_deadline(&bus), None, "full FIFO: nothing can move until a read");
+        assert_eq!(bus.read8(0x6000_0000), Ok(7));
+        let per_byte = crate::periph::CPU_HZ * 10 / 115_200;
+        assert_eq!(esp_soc::SocBus::next_deadline(&bus), Some(per_byte));
+        bus.write8(0x6000_0000, b'Z').unwrap();
+        assert_eq!(bus.periph.uart[0].rx_pending(), 127, "the byte store transmitted without reading the FIFO");
+        assert_eq!(bus.periph.uart[0].tx_out.last(), Some(&b'Z'));
+    }
 
     #[test]
     fn pin_clock_participation_stops_when_rmt_finishes() {
@@ -577,5 +707,81 @@ mod tests {
             assert_eq!(bus.read32(BUF).unwrap() & 0xff, u32::from(rssi as u8), "RSSI of {from:02x?}");
             assert_eq!(bus.read32(BUF + 8).unwrap(), (chan << 16) | (chan << 20), "channel of {from:02x?}");
         }
+    }
+
+    /// A WiFi bus with one open virtual access point and `frames` of 24 bytes queued on the air, the
+    /// first byte of each a marker so the test can tell them apart in the receive buffer.
+    fn wifi_bus_with_air_frames(frames: &[u8]) -> SocBus {
+        use esp_soc::wifi::{AirFrame, ApConfig, VirtualAp};
+        let mut bus = SocBus::new(4 << 20, [0; 6]);
+        bus.periph.wifi.link.attach(Some(VirtualAp::new(ApConfig {
+            ssid: "test".into(), bssid: [2, 0, 0, 0, 0, 1], channel: 1, psk: None, epoch_s: None,
+        }, false)), None);
+        for &marker in frames {
+            bus.periph.wifi.link.ap_mut().unwrap().queue.push(AirFrame { at_us: 0, frame: vec![marker; 24] });
+        }
+        bus.periph.refresh_work();
+        bus
+    }
+
+    /// One RX descriptor: `512` bytes of buffer at `buf`, owned by the DMA, pointing at `next`.
+    fn arm_rx_desc(bus: &mut SocBus, at: u32, buf: u32, next: u32) {
+        bus.write32(at, 512 | (1 << 31)).unwrap();
+        bus.write32(at + 4, buf).unwrap();
+        bus.write32(at + 8, next).unwrap();
+    }
+
+    /// One scheduling round of one emulated millisecond: the air delivers at most one frame in a round.
+    fn wifi_air_round(bus: &mut SocBus) { assert_eq!(bus.tick((crate::periph::CPU_HZ / 1000) as u32), 1); }
+
+    const RX_DESC: u32 = 0x3fc9_0100;
+
+    /// EX238 on the C3 (the S3's `air_rx_restarts_at_the_base_when_the_list_runs_dry`): a driver
+    /// that arms one short list at a time restarts the stopped receive DMA with a `BASE_RX_DSCR` write.
+    #[test]
+    fn air_rx_restarts_at_the_base_when_the_list_runs_dry() {
+        let mut bus = wifi_bus_with_air_frames(&[0x11, 0x22, 0x33]);
+        let (first, dead, second) = (RX_DESC, RX_DESC + 0x40, RX_DESC + 0x80);
+        let dead_base = dead & 0xf_ffff;
+        arm_rx_desc(&mut bus, first, first + 0x200, dead);          // the armed list: one descriptor, then a null word
+        bus.write32(dead, 0).unwrap();
+        bus.write32(0x6003_3088, first & 0xf_ffff).unwrap();        // BASE_RX_DSCR
+        wifi_air_round(&mut bus);
+        assert_eq!((bus.periph.wifi.link.tx_frames(), bus.periph.wifi.link.rx_frames()), (0, 1));
+        assert_eq!(bus.read8(first + 0x200 + 48).unwrap(), 0x11, "frame after the 48-byte rx_ctrl header");
+        assert_eq!(bus.periph.wifi.rx_next, dead_base);
+
+        // Software recycled the frame and left the next descriptor alone: the DMA stops there.
+        arm_rx_desc(&mut bus, first, first + 0x200, dead);
+        wifi_air_round(&mut bus);
+        assert_eq!(bus.periph.wifi.link.rx_dropped(), 1, "a frame that finds the DMA stopped is lost");
+
+        // The driver hands over the next list, base first and the base write on its own.
+        arm_rx_desc(&mut bus, second, second + 0x200, 0);
+        bus.write32(0x6003_3088, second & 0xf_ffff).unwrap();
+        wifi_air_round(&mut bus);
+        assert_eq!(bus.periph.wifi.link.rx_frames(), 2, "the base write restarts the stopped DMA");
+        assert_eq!(bus.periph.wifi.rx_next, 0, "the new list ends after one descriptor");
+        assert_eq!(bus.read8(second + 0x200 + 48).unwrap(), 0x33);
+    }
+
+    /// The other half of the rule (the S3's `air_rx_base_write_does_not_rewind_a_running_list`):
+    /// software rewrites `BASE_RX_DSCR` on every recycle, and a running DMA keeps its pointer.
+    #[test]
+    fn air_rx_base_write_does_not_rewind_a_running_list() {
+        let mut bus = wifi_bus_with_air_frames(&[0x11, 0x22]);
+        let (first, second) = (RX_DESC, RX_DESC + 0x40);
+        arm_rx_desc(&mut bus, first, first + 0x200, second);
+        arm_rx_desc(&mut bus, second, second + 0x200, 0);
+        bus.write32(0x6003_3088, first & 0xf_ffff).unwrap();
+        wifi_air_round(&mut bus);
+        assert_eq!((bus.periph.wifi.link.rx_frames(), bus.periph.wifi.rx_next), (1, (second & 0xf_ffff)));
+
+        arm_rx_desc(&mut bus, first, first + 0x200, second);        // recycle descriptor 0
+        bus.write32(0x6003_3088, first & 0xf_ffff).unwrap();        // and rewrite the base, as software does
+        wifi_air_round(&mut bus);
+        assert_eq!(bus.periph.wifi.link.rx_frames(), 2);
+        assert_eq!(bus.read8(second + 0x200 + 48).unwrap(), 0x22, "landed in the next descriptor, not back at the base");
+        assert_eq!(bus.read32(first).unwrap() >> 30 & 1, 0, "descriptor 0 was not filled a second time");
     }
 }

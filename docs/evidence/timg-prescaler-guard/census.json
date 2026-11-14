@@ -1,0 +1,131 @@
+{
+ "method": "Untimed. The counting diff (census-main.patch on main ddf753a5, census-head.patch on the branch) is applied to esp-periph/src/timg.rs and both trees are built with `cargo +1.99.0 build --release -p esp32sim --bin esp32sim --bin esp32sim-c3`. Counters are process-wide over every Timer::step call: step_calls, enabled (TIMG_T0_EN set), below_divisor (accumulator below the divisor after the add), divisions (executions of the prescaler division line). Printed once per dropped TimerGroup; the largest (final) line is kept. Wall times are omitted from the stop lines.",
+ "commands": {
+  "tdisplay-prices-15s": [
+   "target/release/esp32sim",
+   "--chip",
+   "esp32",
+   "--rom",
+   "web/wasm/fw/esp32_rev300_rom.elf",
+   "--board",
+   "ttgo-tdisplay",
+   "--boot",
+   "rom",
+   "--console",
+   "uart0",
+   "--flash-mb",
+   "4",
+   "--flash-at",
+   "0x1000=web/wasm/fw/ESP32_GENERIC-20260824-v1.29.0.bin",
+   "--flash-at",
+   "0x200000=web/wasm/fw/public/tdisplay-vfs.bin",
+   "--max-seconds",
+   "15",
+   "--no-dump"
+  ],
+  "classic-hello-30s": [
+   "target/release/esp32sim",
+   "--chip",
+   "esp32",
+   "--boot",
+   "rom",
+   "--rom",
+   "web/wasm/fw/esp32_rev300_rom.elf",
+   "--flash-mb",
+   "4",
+   "--bootloader",
+   "web/wasm/fw/public/classic-hello-bootloader.bin",
+   "--ptable",
+   "web/wasm/fw/public/classic-hello-ptable.bin",
+   "--app",
+   "web/wasm/fw/public/classic-hello_world.bin",
+   "--max-seconds",
+   "30",
+   "--no-dump"
+  ],
+  "c3-hello-30s": [
+   "target/release/esp32sim-c3",
+   "--boot",
+   "rom",
+   "--rom",
+   "web/wasm/fw/esp32c3_rev3_rom.elf",
+   "--flash-mb",
+   "4",
+   "--bootloader",
+   "web/wasm/fw/public/c3-hello-bootloader.bin",
+   "--ptable",
+   "web/wasm/fw/public/c3-hello-ptable.bin",
+   "--app",
+   "web/wasm/fw/public/c3-hello_world.bin",
+   "--max-seconds",
+   "30",
+   "--no-dump"
+  ]
+ },
+ "results": {
+  "main": {
+   "tdisplay-prices-15s": {
+    "step_calls": 39067824,
+    "enabled": 6219219,
+    "below_divisor": 366835,
+    "divisions": 6219219,
+    "console_sha256": "a831e4615ebafc3a82d6e8056ae6f0b10fd4a3333a7a3403acef4e18087778b2",
+    "emu_stop": [
+     "[emu] stop: Halted \u2014 core0 39313704 + core1 109051650 insns; emulated 15.000s (3600000000 cycles); 226289 exceptions, 10768 interrupts"
+    ]
+   },
+   "classic-hello-30s": {
+    "step_calls": 57835410,
+    "enabled": 9523445,
+    "below_divisor": 40269,
+    "divisions": 9523445,
+    "console_sha256": "13aadb96ac2d9e7d827e9daea68ec3f5dd70de46bb0c2eb60ee2eaad4f7539ec",
+    "emu_stop": [
+     "[emu] stop: Halted \u2014 core0 16672061 + core1 4515255 insns; emulated 30.000s (7200000000 cycles); 27408 exceptions, 6016 interrupts"
+    ]
+   },
+   "c3-hello-30s": {
+    "step_calls": 300023984,
+    "enabled": 0,
+    "below_divisor": 0,
+    "divisions": 0,
+    "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+    "emu_stop": [
+     "[emu] stop: Halted \u2014 4800000000 insns; emulated 30.000s (4800000000 cycles); 0 exceptions, 3028 interrupts"
+    ]
+   }
+  },
+  "head": {
+   "tdisplay-prices-15s": {
+    "step_calls": 39067824,
+    "enabled": 6219219,
+    "below_divisor": 366835,
+    "divisions": 5852384,
+    "console_sha256": "a831e4615ebafc3a82d6e8056ae6f0b10fd4a3333a7a3403acef4e18087778b2",
+    "emu_stop": [
+     "[emu] stop: Halted \u2014 core0 39313704 + core1 109051650 insns; emulated 15.000s (3600000000 cycles); 226289 exceptions, 10768 interrupts"
+    ]
+   },
+   "classic-hello-30s": {
+    "step_calls": 57835410,
+    "enabled": 9523445,
+    "below_divisor": 40269,
+    "divisions": 9483176,
+    "console_sha256": "13aadb96ac2d9e7d827e9daea68ec3f5dd70de46bb0c2eb60ee2eaad4f7539ec",
+    "emu_stop": [
+     "[emu] stop: Halted \u2014 core0 16672061 + core1 4515255 insns; emulated 30.000s (7200000000 cycles); 27408 exceptions, 6016 interrupts"
+    ]
+   },
+   "c3-hello-30s": {
+    "step_calls": 300023984,
+    "enabled": 0,
+    "below_divisor": 0,
+    "divisions": 0,
+    "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+    "emu_stop": [
+     "[emu] stop: Halted \u2014 4800000000 insns; emulated 30.000s (4800000000 cycles); 0 exceptions, 3028 interrupts"
+    ]
+   }
+  }
+ }
+}

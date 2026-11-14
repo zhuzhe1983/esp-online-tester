@@ -13,7 +13,7 @@ pub fn intercept(cpu: &mut xtensa_lx7::Cpu, bus: &mut SocBus) -> bool {
 }
 
 impl VhciBus for SocBus {
-    fn abi() -> Abi { Abi { code: CODE, ram: DRAM_LOW..DRAM_HIGH, hz: crate::periph::CPU_HZ } }
+    fn abi() -> Abi { Abi { code: CODE, ram: DRAM_LOW..DRAM_HIGH, hz: crate::periph::CPU_HZ, config_mode: None } }
     fn ble(&mut self) -> &mut Ble { &mut self.ble }
     fn valid_callback(&mut self, pc: u32) -> bool { self.fetch(pc).is_ok_and(|bytes| decode(pc, bytes).op == Op::Entry) }
     fn flash_offset(&mut self, pc: u32) -> Option<usize> { self.flash_off(pc) }
@@ -109,6 +109,21 @@ mod tests {
         assert_eq!(bus.ble.status, 0);
         assert!(!bus.ble.task_created);
         assert_eq!(bus.ble.hooks, hooks);
+    }
+
+    /// A BLE-only chip's init takes BLE alone (IDF v5.3.6 components/bt/controller/esp32c3/bt.c:1823,
+    /// which the S3 builds too), so its enable takes 1 and nothing else (bt.c:2073).
+    #[test]
+    fn enable_takes_ble_only() {
+        let call = |bus: &mut SocBus, pc: u32, arg: u32| { let mut cpu = caller(pc, arg); assert!(intercept(&mut cpu, bus)); cpu.get_ar(10) };
+        let (mut bus, symbols) = fixture();
+        bus.ble.task_created = true;
+        assert_eq!(call(&mut bus, BASE, DRAM_LOW), 0);
+        assert_eq!(bus.ble.mode, 1);
+        for mode in [0, 2, 3] { assert_eq!(call(&mut bus, symbols["esp_bt_controller_enable"], mode), INVALID_ARG, "enable {mode}"); }
+        assert_eq!(bus.ble.status, 1);
+        assert_eq!(call(&mut bus, symbols["esp_bt_controller_enable"], 1), 0);
+        assert_eq!(bus.ble.status, 2);
     }
 
     #[test]
@@ -228,6 +243,24 @@ mod tests {
             assert_eq!(bus.ble.send_ready, len == 496);
             assert_eq!(bus.ble.session.pop_packet().is_some(), len == 496);
         }
+    }
+    /// The browser build keeps the `[ble]` lines; keeping survives a new `enable` and a reset.
+    #[test]
+    fn kept_lines_go_to_ble_log_take_instead_of_stderr() {
+        use esp_soc::SocBus as _;
+        let (mut bus, symbols) = fixture();
+        assert_eq!(bus.ble_log_take(), None);
+        bus.ble_keep_log();
+        bus.ble.enable(&symbols, 0x400, &SocBus::abi()).unwrap();
+        bus.ble.reset();
+        bus.ble.status = 2;
+        let data = DRAM_LOW + 0x2000;
+        bus.load_bytes(data, &[1, 3, 12, 0]).unwrap();
+        let mut cpu = caller(symbols["esp_vhci_host_send_packet"], data);
+        cpu.set_ar(11, 497);
+        assert!(intercept(&mut cpu, &mut bus));
+        assert_eq!(bus.ble_log_take().as_deref(), Some("rejected invalid VHCI packet pointer, length or controller state"));
+        assert_eq!(bus.ble_log_take(), None);
     }
     #[test]
     fn vhci_accepts_mapped_psram_packets_without_accepting_flash_or_unmapped_pages() {

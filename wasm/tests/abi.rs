@@ -139,3 +139,92 @@ fn sd_card_images_load_into_the_p4_socket_only() {
     let s3 = Emu::new("none", 4, 0);
     assert_eq!(load(&s3, &vec![0; 1 << 20]), 1, "no SD host on the S3 model");
 }
+
+/// An ELF32 with `symbols` (name, value, size) in its symbol table and nothing else.
+fn elf_with_symbols(symbols: &[(&str, u32, u32)]) -> Vec<u8> {
+    let put = |d: &mut Vec<u8>, off: usize, v: u32| d[off..off + 4].copy_from_slice(&v.to_le_bytes());
+    let mut strtab = vec![0u8];
+    let mut symtab = Vec::new();
+    for &(name, value, size) in symbols {
+        let mut sym = [0u8; 16];
+        sym[..4].copy_from_slice(&(strtab.len() as u32).to_le_bytes());
+        sym[4..8].copy_from_slice(&value.to_le_bytes());
+        sym[8..12].copy_from_slice(&size.to_le_bytes());
+        sym[12] = 2; // STT_FUNC
+        symtab.extend_from_slice(&sym);
+        strtab.extend_from_slice(name.as_bytes());
+        strtab.push(0);
+    }
+    let mut d = b"\x7fELF\x01\x01\x01\x00".to_vec();
+    d.resize(52 + 3 * 40, 0);
+    d[42] = 32; d[46] = 40; d[48] = 3;
+    put(&mut d, 32, 52);
+    let (sym_off, str_off) = (d.len() as u32, (d.len() + symtab.len()) as u32);
+    put(&mut d, 92 + 4, 2); put(&mut d, 92 + 16, sym_off); put(&mut d, 92 + 20, symtab.len() as u32);
+    put(&mut d, 92 + 24, 2); put(&mut d, 92 + 36, 16);
+    put(&mut d, 132 + 4, 3); put(&mut d, 132 + 16, str_off); put(&mut d, 132 + 20, strtab.len() as u32);
+    d.extend_from_slice(&symtab);
+    d.extend_from_slice(&strtab);
+    d
+}
+
+/// An application ELF with the symbols the virtual BLE controller needs, nothing else.
+fn virtual_controller_elf() -> Vec<u8> {
+    let base = 0x4038_8000;
+    elf_with_symbols(&[
+        ("esp_bt_controller_init", base, 0x400), ("xTaskCreatePinnedToCore", base + 0x400, 4), ("vTaskDelay", base + 0x500, 4),
+        ("esp_bt_controller_get_status", base + 0x600, 4), ("esp_bt_controller_enable", base + 0x610, 4),
+        ("esp_vhci_host_check_send_available", base + 0x620, 4), ("esp_vhci_host_send_packet", base + 0x630, 4),
+        ("esp_vhci_host_register_callback", base + 0x640, 4), ("_bt_controller_bss_start", 0x3fc9_0000, 0),
+        ("_bt_controller_bss_end", 0x3fc9_1000, 0)])
+}
+
+/// The virtual BLE controller from the page: enabled from the application ELF before boot on a
+/// chip that has it, refused otherwise with the reason on `host_log`; peer commands and the kept
+/// `[ble]` lines.
+#[test]
+fn virtual_ble_is_enabled_from_the_elf_and_takes_peer_commands() {
+    let base = 0x4038_8000;
+    let elf = virtual_controller_elf();
+    // SAFETY: each emulator is live and used by this thread alone; the buffers are readable for the call.
+    let enable = |e: &Emu, d: &[u8]| unsafe { esp32sim_ble_virtual(e.0, d.as_ptr(), d.len()) };
+    // SAFETY: as above.
+    let command = |e: &Emu, c: &str| unsafe { esp32sim_ble_virtual_command(e.0, c.as_ptr(), c.len()) };
+    // SAFETY: as above; the bytes are read before the next call.
+    let take = |e: &Emu| unsafe { let n = esp32sim_ble_virtual_take(e.0); String::from_utf8(std::slice::from_raw_parts(esp32sim_ble_ptr(e.0), n).to_vec()).unwrap() };
+    let p4 = Emu::new("esp32p4", 2, 0);
+    assert_eq!(enable(&p4, &elf), 1, "no virtual controller on the P4");
+    let s3 = Emu::new("none", 4, 0);
+    assert_eq!(command(&s3, "connect"), 1, "no controller yet");
+    assert_eq!(enable(&s3, b"not an ELF"), 1);
+    assert_eq!(enable(&s3, &elf_with_symbols(&[("esp_bt_controller_init", base, 0x400)])), 1, "a symbol missing");
+    assert_eq!(enable(&s3, &elf), 0);
+    assert_eq!(command(&s3, "fly away"), 1);
+    assert_eq!(command(&s3, "connect"), 0);
+    assert_eq!(command(&s3, "read 0x0003"), 0);
+    assert_eq!(take(&s3), "", "nothing logged before the guest runs");
+}
+
+/// The devices around the station from the page: the `--ble-nearby` specs, one per line, once the
+/// virtual controller is on; whatever the option refuses is refused here.
+#[test]
+fn ble_nearby_takes_the_options_specs_once_the_virtual_controller_is_on() {
+    let elf = virtual_controller_elf();
+    // SAFETY: each emulator is live and used by this thread alone; the buffers are readable for the call.
+    let nearby = |e: &Emu, specs: &[u8]| unsafe { esp32sim_ble_nearby(e.0, specs.as_ptr(), specs.len()) };
+    let p4 = Emu::new("esp32p4", 2, 0);
+    assert_eq!(nearby(&p4, b"name=Thermo"), 1, "no virtual controller on the P4");
+    let s3 = Emu::new("none", 4, 0);
+    assert_eq!(nearby(&s3, b"name=Thermo"), 1, "no controller yet");
+    // SAFETY: as above.
+    assert_eq!(unsafe { esp32sim_ble_virtual(s3.0, elf.as_ptr(), elf.len()) }, 0);
+    assert_eq!(nearby(&s3, b"name=Thermo,rssi=-70,addr=c4:aa:01:02:03:04,type=public,rsp=03030f18\nname=Scale,rssi=-82"), 0);
+    assert_eq!(nearby(&s3, b"\r\n  name=Thermo\r\n\r\nname=Scale\r\n"), 0, "blank lines and CRLF");
+    assert_eq!(nearby(&s3, b""), 0, "none");
+    assert_eq!(nearby(&s3, b"name=Thermo\nname=Thermo"), 1, "two devices on one address");
+    assert_eq!(nearby(&s3, b"colour=red"), 1, "an unknown key");
+    assert_eq!(nearby(&s3, b"name=Thermo\n\xff"), 1, "not UTF-8");
+    let many: String = (0..33).map(|i| format!("name=d{i}\n")).collect();
+    assert_eq!(nearby(&s3, many.as_bytes()), 1, "more than 32");
+    assert_eq!(nearby(&s3, many.lines().skip(1).collect::<Vec<_>>().join("\n").as_bytes()), 0, "32");
+}

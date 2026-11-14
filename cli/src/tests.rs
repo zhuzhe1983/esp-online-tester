@@ -1,6 +1,18 @@
 use super::*;
 
 #[test]
+fn c61_keeps_repeatable_wifi_and_capture_after_the_shared_cli_migration() {
+    let o = parse(&["esp32sim".into(), "--chip".into(), "c61".into(), "--wifi".into(),
+        "ssid=first".into(), "--wifi".into(), "ssid=second,channel=11".into()], "esp32s3");
+    let mut m = setup_c61(&o);
+    let aps = m.bus.periph.wifi_mac.link.aps();
+    assert_eq!(aps.iter().map(|ap| ap.cfg.ssid.as_str()).collect::<Vec<_>>(), ["first", "second"]);
+    assert_eq!(aps[1].cfg.channel, 11);
+    let tap = std::sync::Arc::new(std::sync::Mutex::new(esp_soc::netcap::NetCapture::default()));
+    m.bus.set_net_tap(tap).unwrap();
+}
+
+#[test]
 fn stopwatch_memory_defaults_preserve_other_boards_and_explicit_overrides() {
     for (board, flash, psram) in [("stopwatch", 16, 8), ("waveshare-amoled18-v2", 8, 2)] {
         let options = parse(&["esp32sim".into(), "--board".into(), board.into()], "esp32s3");
@@ -216,4 +228,17 @@ fn analog_scripts_reach_classic_adc_and_touch_registers() {
         assert_eq!(m.bus.read32(0x3ff4_8854).unwrap() & 0xffff, adc);
         assert_eq!(m.bus.read32(0x3ff4_8870).unwrap() >> 16, touch);
     }
+}
+
+#[test]
+fn imu_motion_reaches_the_s3_and_s31_imu_boards() {
+    let args = |board: &str| -> Vec<String> { ["esp32sim", "--board", board, "--imu-motion", "1"].map(String::from).to_vec() };
+    let o = parse(&args("waveshare-amoled18-v2"), "esp32s3");
+    assert_eq!(o.imu_motion, Some(1));
+    assert_eq!(setup_s3(&o).bus.board.imu_motion(), 1);
+    let o = parse(&args("mosaico"), "esp32s31");
+    assert_eq!(setup_s31(&o).bus.board.imu_motion(), 1);
+    // without the flag the IMU stays at rest
+    let o = parse(&["esp32sim", "--board", "mosaico"].map(String::from), "esp32s31");
+    assert_eq!(setup_s31(&o).bus.board.imu_motion(), 0);
 }

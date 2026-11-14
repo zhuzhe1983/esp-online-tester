@@ -39,6 +39,66 @@ fn csr_name(n: u32) -> String {
     s.to_string()
 }
 
+/// Xesploop as objdump prints it: the loop, then the operands, offsets in decimal and relative to
+/// the instruction (objdump's `# target` comment is not part of them).
+fn format_hwlp(i: &Insn) -> String {
+    use crate::decode::hwlp_count_imm;
+    use Op::*;
+    let (w, l) = (i.raw, i.rd);
+    let off12 = (w >> 20) << 1;
+    match i.op {
+        EspLpSetup => format!("esp.lp.setup\t{},{},{}", l, r(i.rs1), off12),
+        EspLpSetupi => format!("esp.lp.setupi\t{},{},{}", l, hwlp_count_imm(w), ((w >> 15) & 0x1f) << 1 | ((w >> 8) & 0xf) << 6),
+        EspLpStarti => format!("esp.lp.starti\t{},{}", l, off12),
+        EspLpEndi => format!("esp.lp.endi\t{},{}", l, off12),
+        EspLpCount => format!("esp.lp.count\t{},{}", l, r(i.rs1)),
+        EspLpCounti => format!("esp.lp.counti\t{},{}", l, i.imm),
+        _ => unreachable!(),
+    }
+}
+
+/// Xespv2p2 as objdump prints it: operands in the syntax's order, and the `sat`/`dyn` defaults of
+/// the saturating and rounding forms left out (`trunc` and a named rounding mode printed).
+fn format_pie(i: &Insn) -> String {
+    use crate::decode::{pie_q, pie_qw, pie_rm, pie_sat};
+    use Op::*;
+    let w = i.raw;
+    let q = |lo: u32| format!("q{}", pie_q(w, lo));
+    let qw = format!("q{}", pie_qw(w));
+    let sat = if pie_sat(i.op, w) { "" } else { ",trunc" };
+    let rm = || match pie_rm(i.op, w) { 0 => ",rdn", 1 => ",rup", 2 => ",raz", 3 => ",rtz", 4 => ",rhaz", 5 => ",rhtz", 6 => ",rne", _ => "" };
+    let (rs1, rd) = (r(i.rs1), r(i.rd));
+    match i.op {
+        EspVmulU16 => format!("esp.vmul.u16\t{},{},{}{}{}", q(7), q(29), q(26), sat, rm()),
+        EspVmulU16LdIncp => format!("esp.vmul.u16.ld.incp\t{},{},{},{},{}{}{}", q(10), rs1, q(7), q(29), q(26), sat, rm()),
+        EspVaddU16 | EspVsubU16 | EspVsubU8 => {
+            let n = match i.op { EspVaddU16 => "esp.vadd.u16", EspVsubU16 => "esp.vsub.u16", _ => "esp.vsub.u8" };
+            format!("{}\t{},{},{}{}", n, q(20), q(29), q(26), sat)
+        }
+        EspVaddU16LdIncp => format!("esp.vadd.u16.ld.incp\t{},{},{},{},{}{}", q(10), rs1, q(20), q(29), q(26), sat),
+        EspVminU16 | EspVcmpEqU16 | EspAndq | EspOrq | EspXorq => {
+            let n = match i.op { EspVminU16 => "esp.vmin.u16", EspVcmpEqU16 => "esp.vcmp.eq.u16", EspAndq => "esp.andq", EspOrq => "esp.orq", _ => "esp.xorq" };
+            format!("{}\t{},{},{}", n, q(7), q(29), q(26))
+        }
+        EspZeroQ => format!("esp.zero.q\t{}", q(7)),
+        EspVextU8 => format!("esp.vext.u8\t{},{},{}", q(7), q(20), qw),
+        EspVunzip8 => format!("esp.vunzip.8\t{},{}", q(29), q(26)),
+        EspVzipt8 => format!("esp.vzipt.8\t{},{},{}", q(29), q(26), qw),
+        EspVunzipt8 => format!("esp.vunzipt.8\t{},{},{}", q(29), q(26), qw),
+        EspSrcQ => format!("esp.src.q\t{},{},{}", q(7), qw, q(26)),
+        EspVld128Ip => format!("esp.vld.128.ip\t{},{},{}", q(10), rs1, i.imm),
+        EspVst128Ip => format!("esp.vst.128.ip\t{},{},{}", q(10), rs1, i.imm),
+        EspVldbc16Ip => format!("esp.vldbc.16.ip\t{},{},{}", q(10), rs1, i.imm),
+        EspLd128UsarIp => format!("esp.ld.128.usar.ip\t{},{},{}", q(10), rs1, i.imm),
+        EspMovxWSar => format!("esp.movx.w.sar\t{}", rs1),
+        EspMovxRSar => format!("esp.movx.r.sar\t{}", rd),
+        EspMovxWCfg => format!("esp.movx.w.cfg\t{}", rs1),
+        EspMovxRCfg => format!("esp.movx.r.cfg\t{}", rd),
+        EspMovi32A => format!("esp.movi.32.a\t{},{},{}", q(26), rd, i.imm),
+        _ => unreachable!(),
+    }
+}
+
 /// objdump (and GNU as) print a compressed instruction as the 32-bit instruction it expands to,
 /// so that is what `format` does; `format_compressed` gives the literal `c.*` form instead.
 /// This is the text for a core without F (the C3 and C6).
@@ -64,6 +124,11 @@ pub fn format_for(misa: u32, i: &Insn) -> String {
     let (rd, rs1, rs2) = (r(i.rd), r(i.rs1), r(i.rs2));
     let m = |s: &str| s.to_string();
     match i.op {
+        EspVmulU16 | EspVmulU16LdIncp | EspVaddU16 | EspVaddU16LdIncp | EspVsubU16 | EspVsubU8 | EspVminU16
+        | EspVcmpEqU16 | EspAndq | EspOrq | EspXorq | EspZeroQ | EspVextU8 | EspVunzip8 | EspVzipt8 | EspVunzipt8
+        | EspSrcQ | EspVld128Ip | EspVst128Ip | EspVldbc16Ip | EspLd128UsarIp
+        | EspMovxWSar | EspMovxRSar | EspMovxWCfg | EspMovxRCfg | EspMovi32A => format_pie(i),
+        EspLpSetup | EspLpSetupi | EspLpStarti | EspLpEndi | EspLpCount | EspLpCounti => format_hwlp(i),
         Illegal => m("unimp"),
         Lui => format!("lui\t{},{:#x}", rd, (i.imm as u32) >> 12),
         Auipc => format!("auipc\t{},{:#x}", rd, (i.imm as u32) >> 12),
@@ -166,6 +231,27 @@ pub fn format_for(misa: u32, i: &Insn) -> String {
                 _ => format!("csrrci\t{},{},{}", rd, n, imm5),
             }
         }
+        Sh1add | Sh2add | Sh3add | Andn | Orn | Xnor | Max | Maxu | Min | Minu | Rol | Ror | Bclr | Bext | Binv | Bset => {
+            let n = match i.op { Sh1add => "sh1add", Sh2add => "sh2add", Sh3add => "sh3add", Andn => "andn", Orn => "orn", Xnor => "xnor",
+                                 Max => "max", Maxu => "maxu", Min => "min", Minu => "minu", Rol => "rol", Ror => "ror",
+                                 Bclr => "bclr", Bext => "bext", Binv => "binv", _ => "bset" };
+            format!("{}\t{},{},{}", n, rd, rs1, rs2)
+        }
+        Clz | Ctz | Cpop | SextB | SextH | ZextH | OrcB | Rev8 => {
+            let n = match i.op { Clz => "clz", Ctz => "ctz", Cpop => "cpop", SextB => "sext.b", SextH => "sext.h", ZextH => "zext.h", OrcB => "orc.b", _ => "rev8" };
+            format!("{}\t{},{}", n, rd, rs1)
+        }
+        Rori | Bclri | Bexti | Binvi | Bseti => {
+            let n = match i.op { Rori => "rori", Bclri => "bclri", Bexti => "bexti", Binvi => "binvi", _ => "bseti" };
+            format!("{}\t{},{},{:#x}", n, rd, rs1, i.imm)
+        }
+        CmPush | CmPop | CmPopret | CmPopretz => {
+            let n = match i.op { CmPush => "cm.push", CmPop => "cm.pop", CmPopret => "cm.popret", _ => "cm.popretz" };
+            let list = match i.rs2 { 4 => "{ra}".to_string(), 5 => "{ra,s0}".to_string(), 15 => "{ra,s0-s11}".to_string(), l => format!("{{ra,s0-s{}}}", l - 5) };
+            format!("{}\t{},{}", n, list, if i.op == CmPush { -i.imm } else { i.imm })
+        }
+        CmMvsa01 => format!("cm.mvsa01\t{},{}", rs1, rs2),
+        CmMva01s => format!("cm.mva01s\t{},{}", rs1, rs2),
         Flw => format!("flw\t{},{}({})", fr(i.rd), i.imm, rs1),
         Fsw => format!("fsw\t{},{}({})", fr(i.rs2), i.imm, rs1),
         FmaddS | FmsubS | FnmsubS | FnmaddS => {
@@ -230,6 +316,17 @@ pub fn format_compressed(i: &Insn) -> String {
         Comp::Fsw => format!("c.fsw\t{},{}({})", fr(i.rs2), i.imm, rs1),
         Comp::Flwsp => format!("c.flwsp\t{},{}(sp)", fr(i.rd), i.imm),
         Comp::Fswsp => format!("c.fswsp\t{},{}(sp)", fr(i.rs2), i.imm),
+        Comp::Lbu => format!("c.lbu\t{},{}({})", rd, i.imm, rs1),
+        Comp::Lhu => format!("c.lhu\t{},{}({})", rd, i.imm, rs1),
+        Comp::Lh => format!("c.lh\t{},{}({})", rd, i.imm, rs1),
+        Comp::Sb => format!("c.sb\t{},{}({})", rs2, i.imm, rs1),
+        Comp::Sh => format!("c.sh\t{},{}({})", rs2, i.imm, rs1),
+        Comp::ZextB => format!("c.zext.b\t{}", rd),
+        Comp::SextB => format!("c.sext.b\t{}", rd),
+        Comp::ZextH => format!("c.zext.h\t{}", rd),
+        Comp::SextH => format!("c.sext.h\t{}", rd),
+        Comp::Not => format!("c.not\t{}", rd),
+        Comp::Mul => format!("c.mul\t{},{}", rd, rs2),
         Comp::None => format(i),
     }
 }

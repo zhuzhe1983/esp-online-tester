@@ -12,11 +12,15 @@ const SYS_CLK: u32 = 0x2010_9c04;
 pub struct Analog {
     pub lpcon: crate::modem_lpcon::ModemLpcon, source: u32, ctrl: [u32; 2], config: [u32; 2],
     select: [u32; 3], timing: [u32; 3], date: u32, bias: Option<[u8; 2]>, perif: Option<[u8; 2]>, perif_power: u32, dig: Option<[u8; 4]>, bod: Option<u8>, pub transactions: u64,
+    /// The RF blocks only the PHY library drives (0x62, 0x63, 0x67, 0x6B: the blocks its
+    /// `phy_chip_i2c_readReg`/`writeReg` reach besides the documented ones): no public field
+    /// map, so written bytes read back per (host, block, register), as on the C6.
+    phy: esp_periph::Regi2c,
 }
 
 impl Default for Analog {
     fn default() -> Self { Self { lpcon: crate::modem_lpcon::ModemLpcon::default(), source: (1 << 21) | 2, ctrl: [0; 2], config: [0; 2],
-        select: [0xe408, 0x2d, 4], timing: [0x42; 3], date: 0x2411290, bias: None, perif: None, perif_power: 1 << 30, dig: None, bod: None, transactions: 0 } }
+        select: [0xe408, 0x2d, 4], timing: [0x42; 3], date: 0x2411290, bias: None, perif: None, perif_power: 1 << 30, dig: None, bod: None, transactions: 0, phy: Default::default() } }
 }
 impl Analog {
     pub fn master_enabled(&self) -> bool { self.lpcon.i2c_master_enabled() }
@@ -45,7 +49,9 @@ impl Analog {
         let slave = value & 255; let reg = ((value >> 8) & 255) as usize;
         // Internal BIAS, DIG and PERIF are separate targets. Public headers specify fields,
         // not their analog reset bytes; all require explicit host inputs.
-        let slave_bit = match (slave, reg) { (0x61, 5) => 6, (0x6a, 0 | 1) => 4, (0x69, 10) => 9, (0x6d, 5 | 7 | 13 | 14) => 13, _ => return Err(Fault::Unmapped) };
+        let slave_bit = match (slave, reg) { (0x61, 5) => 6, (0x6a, 0 | 1) => 4, (0x69, 10) => 9, (0x6d, 5 | 7 | 13 | 14) => 13,
+            (0x62 | 0x63 | 0x67 | 0x6b, _) => return { self.phy_transaction(host, value); Ok(()) },
+            _ => return Err(Fault::Unmapped) };
         if self.select[1] & (1 << (slave_bit + 2)) != 0 || host != usize::from(self.select[2] & (1 << (slave_bit + 4)) == 0) { return Err(Fault::Prohibited); }
         let byte = if slave == 0x61 { self.bod.as_mut().ok_or(Fault::Prohibited)? }
             else if slave == 0x6a { &mut self.bias.as_mut().ok_or(Fault::Prohibited)?[reg] }
@@ -61,6 +67,24 @@ impl Analog {
         self.ctrl[host] = (value & 0x0100_ffff) | u32::from(*byte) << 16;
         // BUSY is low only after the requested read/write above really completes.
         self.transactions += 1; Ok(())
+    }
+    /// A transaction to one of the PHY's blocks. The ROM's `phy_wait_i2c_sdm_stable` (called from
+    /// `phy_bbpll_cal` in `phy_rf_init`) polls block 0x63 register 0 for 0x5b, the sigma-delta
+    /// modulator's settled status, with a timeout on the modem timer at 0x2010D800 that the
+    /// model does not run; it reads 0x5b, as on the C6 (`esp32c6::periph::AnaMst`). The block's
+    /// other registers read 0xff until written (the C6's status bits); every other block 0.
+    fn phy_transaction(&mut self, host: usize, value: u32) {
+        self.phy.write(host as u32, value);
+        self.ctrl[host] = self.phy.read(host as u32, value & 0x0100_ffff, |key| match key & 0xffff { 0x0063 => &0x5b, k if k & 0xff == 0x63 => &0xff, _ => &0 });
+        // The RF PLL's done flags in block 0x62, as `phy_i2c_readReg_Mask(block, host, reg, msb, lsb)`
+        // reads them: register 7 bit 1 (`phy_wait_rfpll_cal_end`, "pll_cal exceeds 2ms") and
+        // register 14 bit 7 (`phy_rfpll_chgp_cal`, "chgp_cal no done"). The ROM polls them on the
+        // calibration path that reuses stored data (a boot after the first); calibrations finish at
+        // once here, so a read shows them set.
+        if value & (1 << 24) == 0 {
+            match value & 0xffff { 0x0762 => self.ctrl[host] |= 0x02 << 16, 0x0e62 => self.ctrl[host] |= 0x80 << 16, _ => {} }
+        }
+        self.transactions += 1;
     }
     pub fn read(&self, address: u32, parent_clock: bool) -> Result<u32, Fault> {
         if address == PERIF_POWER { return Ok(self.perif_power); }
@@ -128,6 +152,22 @@ mod tests {
         a.write(super::BASE, 0x561, true).unwrap(); assert_eq!(a.read(super::BASE, true), Ok(0xfd0561));
         a.write(LP_CLK, 0, true).unwrap(); assert_eq!(a.write(super::BASE, 0x01000561, true), Err(emu_core::Fault::Prohibited));
         assert_eq!(a.bod_register(), Some(0xfd)); assert_eq!(a.transactions, 3);
+    }
+    #[test]
+    fn phy_blocks_read_back_and_the_rf_block_reports_its_modulator_settled() {
+        let mut a = super::Analog::default(); a.write(LP_CLK, 4, true).unwrap();
+        // phy_wait_i2c_sdm_stable: block 0x63, register 0, through host 0
+        a.write(super::BASE, 0x0000_0063, true).unwrap(); assert_eq!(a.read(super::BASE, true), Ok(0x5b_0063));
+        // phy_wait_rfpll_cal_end: block 0x62 register 7 bit 1; phy_rfpll_chgp_cal: register 14 bit 7
+        a.write(super::BASE, 0x0000_0762, true).unwrap(); assert_eq!(a.read(super::BASE, true).map(|v| v >> 16 & 0x02), Ok(0x02));
+        a.write(super::BASE, 0x0000_0e62, true).unwrap(); assert_eq!(a.read(super::BASE, true).map(|v| v >> 16 & 0x80), Ok(0x80));
+        a.write(super::BASE, 0x0000_0163, true).unwrap(); assert_eq!(a.read(super::BASE, true), Ok(0xff_0163));
+        a.write(super::BASE, 0x0000_026b, true).unwrap(); assert_eq!(a.read(super::BASE, true), Ok(0x026b));
+        a.write(super::BASE, 0x01a5_026b, true).unwrap(); a.write(super::BASE, 0x026b, true).unwrap();
+        assert_eq!(a.read(super::BASE, true), Ok(0xa5_026b));
+        // the strictly modelled targets and the BBPLL keep refusing what they do not cover
+        assert_eq!(a.write(super::BASE, 0x0361, true), Err(emu_core::Fault::Unmapped));
+        assert_eq!(a.write(super::BASE, 0x0066, true), Err(emu_core::Fault::Unmapped));
     }
     const LP_FORCE: u32 = 0x2010_f01c;
     use super::*;

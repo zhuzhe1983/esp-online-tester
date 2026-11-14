@@ -92,6 +92,9 @@ pub struct Machine<S: Soc> {
     /// live web UI
     pub web: Option<WebServer>,
     pub camera_input: Option<std::sync::Arc<std::sync::Mutex<Option<crate::picture::Picture>>>>,
+    /// the network monitor's capture (`--pcap`, `--wifi` with `--web`): its live frames go to the
+    /// board page's Network panel
+    pub net_tap: Option<crate::netcap::NetTap>,
     /// The page's Restart (`reset` on the WebSocket) is honoured: the front-end sets this when it
     /// can bring the machine back up after the reset. Otherwise the message is ignored, so a run
     /// that stops at a chip reset is not ended from the page.
@@ -155,7 +158,7 @@ impl<S: Soc> Machine<S> {
             exceptions: 0, interrupts: 0, irq_hist: vec![[0; 32]; S::CORES],
             script: Script { events: Vec::new(), pos: 0, log: true, knob_next: 0, uart0_seen: Vec::new(), wait_mark: None }, max_cycles: u64::MAX,
             console: Console { all: Vec::new(), usb: Vec::new(), uart0: Vec::new(), mask: 3, prefix: false, capture: false },
-            camera_input: None, web: None, ws: WebState { last_push_cycles: 0, push_interval: 0, audio_sent: 0, audio_streaming: false, ring_updates: 0, grid_updates: Vec::new(), px_pending: 0, px_sent: 0, px_deferred: false, cam_pushed: u64::MAX, cam_sent: false },
+            camera_input: None, net_tap: None, web: None, ws: WebState { last_push_cycles: 0, push_interval: 0, audio_sent: 0, audio_streaming: false, ring_updates: 0, grid_updates: Vec::new(), px_pending: 0, px_sent: 0, px_deferred: false, cam_pushed: u64::MAX, cam_sent: false },
             rt: Realtime { enabled: false, wall_start: None, last_check: 0, behind: 0.0, resyncs: 0, speed: None, speed_mark: None, log: false, log_last: None, log_insns: (0, 0) },
             debug_rom: false, cost: None, model_accesses: Vec::new(), approximate_jit_timing: None, approximate_jit_frontiers: false, model_ready_at: vec![0; S::CORES], model_stop: None, model_attach_error: None,
         }
@@ -358,7 +361,12 @@ impl<S: Soc> Machine<S> {
                 backlog.extend_from_slice(&d);
                 if backlog.len() > 65536 { let cut = backlog.len() - 49152; backlog.drain(..cut); }
             }
-            if let Some(w) = &self.web { if !d.is_empty() { w.send_text(&format!("{{\"t\":\"serial\",\"src\":\"{}\",\"data\":\"{}\"}}", src, crate::web::json_escape(&String::from_utf8_lossy(&d)))); } }
+            if let Some(w) = &self.web { if !d.is_empty() { {
+                // `data` is text; when the bytes are not valid UTF-8 (a binary protocol, or a character split across
+                // two drains) `hex` carries them exactly, so a client can tell and use the raw bytes.
+                let hex = if std::str::from_utf8(&d).is_err() { format!(",\"hex\":\"{}\"", crate::web::hex_encode(&d)) } else { String::new() };
+                w.send_text(&format!("{{\"t\":\"serial\",\"src\":\"{}\",\"data\":\"{}\"{}}}", src, crate::web::json_escape(&String::from_utf8_lossy(&d)), hex));
+            } } }
             let (bit, tag) = [(1, "[usb]  "), (2, "[uart0] "), (4, "[uart1] "), (4, "[uart2] ")][i];
             emit(bit, tag, d, &mut self.console.all);
         }

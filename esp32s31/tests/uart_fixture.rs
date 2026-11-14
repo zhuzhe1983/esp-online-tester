@@ -1,4 +1,5 @@
 //! Real source-built SRAM fixture; no generated ELF/BIN is published.
+use esp32s31::bringup as esp32s31;
 #[test]
 #[ignore = "set S31_ROM_ELF to Espressif 20260528 esp32s31_rev0_rom.elf"]
 fn external_s31_real_rom_unpacks_elf_initializers() {

@@ -19,6 +19,7 @@ pub struct PcmSource {
     pins: Option<PcmPins>,
     queue: ClockedQueue<[i16; 2]>,
     tone: Option<(f64, f64, f64)>,
+    clip: Option<Box<Clip>>,
     stream: Option<PcmStreamStats>,
 }
 /// Explicit live-stream counters. Consumed frames advance the source clock; they do not prove
@@ -29,8 +30,10 @@ pub struct PcmStreamStats {
     pub pushed_frames: u64, pub consumed_frames: u64, pub underrun_frames: u64,
     pub rejected_frames: u64, pub cleared_frames: u64,
 }
+/// A whole recording played once at its own rate (`play`), then silence.
+struct Clip { frames: Vec<[i16; 2]>, rate: u32, pos: f64 }
 impl Default for PcmSource {
-    fn default() -> Self { Self { pins: None, queue: ClockedQueue::new(32768, [0; 2], false).unwrap(), tone: None, stream: None } }
+    fn default() -> Self { Self { pins: None, queue: ClockedQueue::new(32768, [0; 2], false).unwrap(), tone: None, stream: None, clip: None } }
 }
 impl PcmSource {
     pub fn new(rate: u32, pins: PcmPins) -> Result<Self, &'static str> {
@@ -40,7 +43,7 @@ impl PcmSource {
             PcmPins::Pdm { clk, data } => clk < 49 && data < 49 && clk != data,
         };
         if !valid { return Err("PCM source needs distinct GPIOs in 0..49"); }
-        Ok(Self { pins: Some(pins), queue: ClockedQueue::new(rate, [0; 2], false)?, tone: None, stream: None })
+        Ok(Self { pins: Some(pins), queue: ClockedQueue::new(rate, [0; 2], false)?, tone: None, stream: None, clip: None })
     }
     /// A bounded PCM stream at its declared source rate. Controller routing bypasses pins;
     /// pin routing preserves the existing GPIO-matrix checks. Resampling preserves duration.
@@ -58,6 +61,7 @@ impl PcmSource {
     /// Routed sources retain the newest two seconds; per-port input accepts up to 65536 frames.
     pub fn push(&mut self, frames: &[[i16; 2]]) -> usize {
         self.tone = None;
+        self.clip = None;
         let n = if let Some(stats) = &mut self.stream {
             let n = frames.len().min(stats.capacity_frames.saturating_sub(self.queue.frames.len()));
             stats.pushed_frames = stats.pushed_frames.saturating_add(n as u64);
@@ -75,7 +79,20 @@ impl PcmSource {
             return Err("I2S tone needs frequency 0..192000 Hz and amplitude 0..1");
         }
         self.queue.frames.clear();
+        self.clip = None;
         self.tone = Some((hz, amplitude, 0.0));
+        Ok(())
+    }
+    /// Per-controller input only: play `frames` recorded at `rate` Hz once, from the first frame
+    /// the receiver takes, then silence. Resampled to the firmware's RX rate by zero-order hold
+    /// (nearest earlier sample, no filter). Not bounded by the push queue limit.
+    pub fn play(&mut self, frames: Vec<[i16; 2]>, rate: u32) -> Result<(), &'static str> {
+        if self.stream.is_some() { return Err("disable PCM streaming before selecting a recording"); }
+        if self.pins.is_some() { return Err("play is only available on per-controller input; push frames to a routed source"); }
+        if !(1000..=192000).contains(&rate) { return Err("recording rate must be 1000..192000 Hz"); }
+        self.queue.frames.clear();
+        self.tone = None;
+        self.clip = Some(Box::new(Clip { frames, rate, pos: 0.0 }));
         Ok(())
     }
     pub fn clear(&mut self) {
@@ -84,8 +101,14 @@ impl PcmSource {
             self.queue = ClockedQueue::new(stats.sample_rate, [0; 2], false).expect("validated stream rate");
         } else { self.queue.frames.clear(); }
         self.tone = None;
+        self.clip = None;
     }
     pub(super) fn next(&mut self, rate: u32) -> [i16; 2] {
+        if let Some(clip) = &mut self.clip {
+            let frame = clip.frames.get(clip.pos as usize).copied().unwrap_or([0; 2]);
+            clip.pos += f64::from(clip.rate) / f64::from(rate.max(1));
+            return frame;
+        }
         if let Some((hz, amplitude, phase)) = &mut self.tone {
             let sample = (phase.sin() * *amplitude * 32767.0).round() as i16;
             *phase = (*phase + std::f64::consts::TAU * *hz / rate as f64) % std::f64::consts::TAU;
@@ -103,6 +126,36 @@ impl PcmSource {
             stats.underrun_frames = stats.underrun_frames.saturating_add(due.saturating_sub(consumed as u64));
         }
     }
+}
+
+/// A RIFF/WAVE file's PCM16 frames (mono duplicated into both lanes) and its sample rate.
+/// Accepts WAVE_FORMAT_PCM or WAVE_FORMAT_EXTENSIBLE, 16-bit, one or two channels.
+pub fn parse_wav(bytes: &[u8]) -> Result<(u32, Vec<[i16; 2]>), String> {
+    if bytes.len() < 12 || &bytes[..4] != b"RIFF" || &bytes[8..12] != b"WAVE" { return Err("not a RIFF/WAVE file".into()); }
+    let (mut fmt, mut pos) = (None, 12);
+    while pos + 8 <= bytes.len() {
+        let id = &bytes[pos..pos + 4];
+        let len = u32::from_le_bytes(bytes[pos + 4..pos + 8].try_into().unwrap()) as usize;
+        let body = &bytes[pos + 8..(pos + 8).saturating_add(len).min(bytes.len())];
+        if id == b"fmt " {
+            if body.len() < 16 { return Err("short fmt chunk".into()); }
+            let word = |o: usize| u16::from_le_bytes([body[o], body[o + 1]]);
+            let (format, channels, rate, bits) = (word(0), word(2), u32::from_le_bytes(body[4..8].try_into().unwrap()), word(14));
+            if format != 1 && format != 0xfffe { return Err(format!("WAV format {format:#x} is not integer PCM")); }
+            if bits != 16 { return Err(format!("{bits}-bit WAV; only 16-bit PCM is supported")); }
+            if !(1..=2).contains(&channels) { return Err(format!("{channels}-channel WAV; only mono or stereo")); }
+            fmt = Some((channels as usize, rate));
+        } else if id == b"data" {
+            let (channels, rate) = fmt.ok_or("data chunk before fmt chunk")?;
+            let frames = body.chunks_exact(2 * channels).map(|f| {
+                let l = i16::from_le_bytes([f[0], f[1]]);
+                [l, if channels == 2 { i16::from_le_bytes([f[2], f[3]]) } else { l }]
+            }).collect();
+            return Ok((rate, frames));
+        }
+        pos = pos + 8 + len + (len & 1);
+    }
+    Err("no data chunk".into())
 }
 
 /// Shared by all RX ports. A receiver whose matrix route matches a slot reads that slot;
@@ -173,9 +226,46 @@ pub struct RxSignals {
 #[cfg(test)]
 mod tests {
     use super::*;
+    fn wav(fmt: u16, channels: u16, bits: u16, rate: u32, data: &[u8]) -> Vec<u8> {
+        let mut v = b"RIFF\0\0\0\0WAVE".to_vec();
+        v.extend(b"LIST"); v.extend(3u32.to_le_bytes()); v.extend([1, 2, 3, 0]);   // odd chunk, padded
+        v.extend(b"fmt "); v.extend(16u32.to_le_bytes());
+        for w in [fmt, channels] { v.extend(w.to_le_bytes()); }
+        v.extend(rate.to_le_bytes()); v.extend((rate * u32::from(channels) * 2).to_le_bytes());
+        for w in [channels * 2, bits] { v.extend(w.to_le_bytes()); }
+        v.extend(b"data"); v.extend((data.len() as u32).to_le_bytes()); v.extend(data);
+        v
+    }
+    #[test]
+    fn wav_parsing_accepts_pcm16_mono_and_stereo_only() {
+        let pcm = [1u8, 0, 2, 0, 0xff, 0xff, 4, 0];
+        assert_eq!(parse_wav(&wav(1, 1, 16, 16000, &pcm)), Ok((16000, vec![[1, 1], [2, 2], [-1, -1], [4, 4]])));
+        assert_eq!(parse_wav(&wav(0xfffe, 2, 16, 48000, &pcm)), Ok((48000, vec![[1, 2], [-1, 4]])));
+        assert!(parse_wav(&wav(3, 1, 16, 16000, &pcm)).unwrap_err().contains("not integer PCM"));
+        assert!(parse_wav(&wav(1, 1, 24, 16000, &pcm)).unwrap_err().contains("16-bit"));
+        assert!(parse_wav(&wav(1, 3, 16, 16000, &pcm)).unwrap_err().contains("mono or stereo"));
+        assert!(parse_wav(b"RIFX....WAVE").is_err());
+        assert_eq!(parse_wav(&wav(1, 1, 16, 16000, &pcm)[..48]).unwrap_err(), "no data chunk");
+    }
+    #[test]
+    fn played_recording_is_resampled_once_then_silent() {
+        let mut input = PcmSource::default();
+        input.play(vec![[1; 2], [2; 2], [3; 2], [4; 2]], 16000).unwrap();
+        // 8 kHz receiver: every other sample (zero-order hold), then silence.
+        assert_eq!((0..3).map(|_| input.next(8000)[0]).collect::<Vec<_>>(), [1, 3, 0]);
+        input.play(vec![[1; 2], [2; 2]], 8000).unwrap();
+        assert_eq!((0..5).map(|_| input.next(16000)[0]).collect::<Vec<_>>(), [1, 1, 2, 2, 0]);
+        assert!(input.play(Vec::new(), 10).is_err());
+        let mut routed = PcmSource::new(8000, PcmPins::Pdm { clk: 1, data: 2 }).unwrap();
+        assert!(routed.play(vec![[1; 2]], 8000).is_err());
+        input.play(vec![[9; 2]], 8000).unwrap();
+        input.clear();
+        assert_eq!(input.next(8000), [0; 2]);
+    }
     #[test]
     fn stream_backpressure_keeps_prefix_and_reports_cleared_and_underrun_frames() {
         let mut source = PcmSource::stream(8000, None).unwrap();
+        assert!(source.play(vec![[99; 2]], 8000).is_err(), "a recording must not replace an active live stream");
         assert_eq!(source.push(&vec![[11, -11]; 15999]), 15999);
         assert_eq!(source.push(&[[22, -22], [33, -33]]), 1);
         let stats = source.stream_stats().unwrap();

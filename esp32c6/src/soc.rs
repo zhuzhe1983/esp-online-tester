@@ -39,7 +39,16 @@ impl esp_soc::SocBus for SocBus {
     fn ble_enabled(&self) -> bool { !self.ble.hooks.is_empty() }
     fn ble_pending_commands(&self) -> usize { self.ble.session.pending_commands() }
     fn ble_command(&mut self, command: &str) -> Result<(), String> { self.ble.command(command, self.cycles) }
+    fn ble_keep_log(&mut self) { self.ble.lines.keep(); }
+    fn ble_log_take(&mut self) -> Option<String> { self.ble.lines.take() }
     fn ble_nearby(&mut self, list: Vec<esp_soc::ble::peer::Nearby>) -> Result<(), String> { self.ble.set_nearby(list, self.cycles) }
+    fn set_net_tap(&mut self, tap: esp_soc::netcap::NetTap) -> Result<(), String> {
+        self.periph.wifi_mac.link.set_tap(tap);
+        Ok(())
+    }
+    fn add_wifi_ap(&mut self, cfg: esp_soc::wifi::ApConfig) -> Result<(), String> {
+        self.periph.wifi_mac.link.add_ap(cfg, &self.debug)
+    }
     fn attach_wifi(&mut self, cfg: esp_soc::wifi::ApConfig, nat: Option<esp_soc::nat::Nat>) -> Result<(), String> {
         self.periph.wifi_mac.link.attach_new(cfg, nat, &self.debug);
         Ok(())
@@ -59,6 +68,8 @@ impl esp_soc::SocBus for SocBus {
         let timer = match self.periph.cycles_until_timer() { u32::MAX => None, cycles => Some(cycles.max(1) as u64) };
         let board = self.board.next_deadline().map(|at| at.saturating_sub(self.cycles).max(1));
         let deadline = timer.into_iter().chain(board).min();
+        // Only while UART input is queued or an INT_ENA latency is pending (one flag test otherwise).
+        let deadline = if self.uart_busy { deadline.into_iter().chain(self.uart_deadline()).min() } else { deadline };
         // work_pending is false on idle rounds; it covers both SPI and RX.
         if self.periph.work_pending && self.periph.optional.i2s0.rx_running() { Some(deadline.unwrap_or(u64::MAX).min(256)) } else { deadline }
     }
@@ -150,7 +161,8 @@ impl esp_soc::SocBus for SocBus {
     fn uart_input(&mut self, n: usize, data: &[u8]) {
         let Some(u) = self.periph.uart.get_mut(n) else { return };
         let before = u.irq();
-        u.host_input(data);
+        self.uart_busy = true;
+        u.host_input_queued(data);   // paced by the bus tick (`pace_uart_input`)
         self.irq_dirty |= before != u.irq();
     }
     fn analog_set(&mut self, pin: u8, src: esp_periph::AnalogSource) {

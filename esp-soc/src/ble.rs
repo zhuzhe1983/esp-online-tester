@@ -1,6 +1,7 @@
 //! A packet-level BLE controller and one virtual peer, independent of the guest CPU.
 mod opcodes;
 mod privacy;
+pub mod log;
 pub mod peer;
 pub mod vhci;
 use opcodes::*;

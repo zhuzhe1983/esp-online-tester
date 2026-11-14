@@ -1,11 +1,17 @@
 use super::*;
-use std::net::TcpListener;
+use super::std_transport::{ConnectPermit, StdTcp, MAX_CONNECTS};
+use std::collections::HashMap;
+use std::io::Read;
+use std::net::{TcpListener, TcpStream, UdpSocket};
+use std::sync::atomic::AtomicUsize;
+use std::sync::mpsc::channel;
+use std::sync::{Arc, Mutex, MutexGuard};
 
 mod counts;
 
 fn flow() -> Tcp {
     Tcp { guest_mac: [2; 6], guest_ip: [10, 0, 2, 15], guest_port: 1234,
-        dst_ip: [127, 0, 0, 1], dst_port: 80, inbound: false, host_port: 0, transport: Transport::Closed,
+        dst_ip: [127, 0, 0, 1], dst_port: 80, inbound: false, host_port: 0, state: FlowState::Closed,
         guest_write: GuestWrite::Open, host_closed: false,
         our_seq: 100, guest_seq: 200, guest_window: WINDOW,
         to_host: VecDeque::new(), unacked: VecDeque::new(), last_activity_us: 0 }
@@ -34,6 +40,13 @@ fn socket_pair() -> (TcpStream, TcpStream) {
     a.set_nonblocking(true).unwrap();
     b.set_read_timeout(Some(std::time::Duration::from_secs(1))).unwrap();
     (a, b)
+}
+
+/// A NAT over host sockets holding one TCP flow of the test's own.
+fn std_nat(tcp: StdTcp) -> (Nat, FlowId) {
+    let mut transport = StdTransport::new();
+    let id = transport.insert(tcp);
+    (Nat::with_transport(false, Box::new(transport)), id)
 }
 
 // The relay is nonblocking; wait for kernel loopback delivery without advancing emulated time.
@@ -132,8 +145,8 @@ fn short_write_and_would_block_preserve_exact_remaining_bytes() {
 #[test]
 fn fin_waits_for_host_write_drain_and_remains_until_acknowledged() {
     let (socket, mut host) = socket_pair();
-    let mut nat = Nat::new(false);
-    let mut c = flow(); c.transport = Transport::Connected(socket);
+    let (mut nat, id) = std_nat(StdTcp::Connected(socket));
+    let mut c = flow(); c.state = FlowState::Connected(id);
     nat.tcp.push(c);
     let reply = nat.tcp_in(&[2; 6], &[10, 0, 2, 15], &[127, 0, 0, 1], &segment(200, 100, ACK | FIN, b"hello"), 0);
     assert_eq!(reply.len(), 1);
@@ -148,7 +161,7 @@ fn fin_waits_for_host_write_drain_and_remains_until_acknowledged() {
     assert_eq!(nat.tcp.len(), 1);
     nat.tcp_in(&[2; 6], &[10, 0, 2, 15], &[127, 0, 0, 1], &segment(206, 101, ACK, &[]), RETRANSMIT_US + 3);
     nat.poll(RETRANSMIT_US + 4);
-    assert!(matches!(nat.tcp[0].transport, Transport::TimeWait));
+    assert!(nat.tcp[0].state == FlowState::TimeWait);
     let reply = nat.tcp_in(&[2; 6], &[10, 0, 2, 15], &[127, 0, 0, 1], &segment(205, 101, ACK | FIN, &[]), RETRANSMIT_US + 5);
     assert_eq!(reply.len(), 1);
     assert_eq!(u32::from_be_bytes(reply[0][42..46].try_into().unwrap()), 206);
@@ -160,8 +173,9 @@ fn fin_waits_for_host_write_drain_and_remains_until_acknowledged() {
 fn dropped_syn_ack_is_resent_on_timer_and_duplicate_syn() {
     let (socket, _host) = socket_pair();
     let (tx, rx) = channel(); tx.send(Ok(socket)).unwrap();
-    let mut c = flow(); c.transport = Transport::Connecting(rx);
-    let mut nat = Nat::new(false); nat.tcp.push(c);
+    let (mut nat, id) = std_nat(StdTcp::Connecting(rx));
+    let mut c = flow(); c.state = FlowState::Connecting(id);
+    nat.tcp.push(c);
     let syn_ack = nat.poll(0);
     assert_eq!(syn_ack.len(), 1);
     assert_eq!(nat.poll(RETRANSMIT_US), syn_ack);
@@ -174,8 +188,9 @@ fn dropped_syn_ack_is_resent_on_timer_and_duplicate_syn() {
 fn host_reads_stop_at_the_unacknowledged_window() {
     let (socket, mut host) = socket_pair();
     host.write_all(&vec![7; WINDOW as usize * 2]).unwrap();
-    let mut c = flow(); c.transport = Transport::Connected(socket);
-    let mut nat = Nat::new(false); nat.tcp.push(c);
+    let (mut nat, id) = std_nat(StdTcp::Connected(socket));
+    let mut c = flow(); c.state = FlowState::Connected(id);
+    nat.tcp.push(c);
     let frames = poll_ready(&mut nat, 0);
     assert_eq!(frames.iter().map(|frame| frame.len() - 54).sum::<usize>(), WINDOW as usize);
     assert_eq!(nat.tcp[0].in_flight(), WINDOW as usize);
@@ -187,8 +202,9 @@ fn host_reads_stop_at_the_unacknowledged_window() {
 fn zero_window_probe_recovers_a_lost_window_update() {
     let (socket, mut host) = socket_pair();
     host.write_all(b"hello").unwrap();
-    let mut c = flow(); c.transport = Transport::Connected(socket); c.guest_window = 0;
-    let mut nat = Nat::new(false); nat.tcp.push(c);
+    let (mut nat, id) = std_nat(StdTcp::Connected(socket));
+    let mut c = flow(); c.state = FlowState::Connected(id); c.guest_window = 0;
+    nat.tcp.push(c);
     let probe = poll_ready(&mut nat, 0);
     assert_eq!(probe.len(), 1);
     assert_eq!(&probe[0][54..], b"h");
@@ -212,19 +228,21 @@ fn connector_permits_are_bounded_until_the_worker_drops_them() {
 #[test]
 fn time_wait_is_evicted_only_after_a_connect_worker_is_admitted() {
     // Final-ACK retry records cannot monopolize live-flow slots during connection churn.
-    // Inject admission results so concurrent real workers cannot affect this test.
-    let mut nat = Nat::new(false);
+    // A scripted transport decides admission, so concurrent real workers cannot affect this test.
+    let mock = Mock::default();
+    let mut nat = mock.nat();
     for port in 0..MAX_FLOWS {
-        let mut c = flow(); c.guest_port = port as u16; c.transport = Transport::TimeWait;
+        let mut c = flow(); c.guest_port = port as u16; c.state = FlowState::TimeWait;
         nat.tcp.push(c);
     }
-    nat.tcp_in_with_connect(&[2; 6], &[10, 0, 2, 15], &[127, 0, 0, 1], &segment(199, 0, SYN, &[]), 0, |_| None);
+    mock.s().refuse_connect = true;
+    nat.tcp_in(&[2; 6], &[10, 0, 2, 15], &[127, 0, 0, 1], &segment(199, 0, SYN, &[]), 0);
     assert_eq!(nat.tcp.len(), MAX_FLOWS);
-    assert!(nat.tcp.iter().all(|c| matches!(c.transport, Transport::TimeWait)));
-    let (_tx, rx) = channel();
-    nat.tcp_in_with_connect(&[2; 6], &[10, 0, 2, 15], &[127, 0, 0, 1], &segment(199, 0, SYN, &[]), 0, |_| Some(rx));
+    assert!(nat.tcp.iter().all(|c| c.state == FlowState::TimeWait));
+    mock.s().refuse_connect = false;
+    nat.tcp_in(&[2; 6], &[10, 0, 2, 15], &[127, 0, 0, 1], &segment(199, 0, SYN, &[]), 0);
     assert_eq!(nat.tcp.len(), MAX_FLOWS);
-    assert!(matches!(nat.tcp.last().unwrap().transport, Transport::Connecting(_)));
+    assert!(matches!(nat.tcp.last().unwrap().state, FlowState::Connecting(_)));
 }
 
 #[test]
@@ -281,6 +299,410 @@ fn udp_ignores_other_senders_and_preserves_dns_reply_address() {
     assert_eq!(&frames[0][42..], b"answer");
 }
 
+// ---- A scripted transport: the NAT's side of the trait, without host sockets ----
+
+/// What the scripted transport does and what the NAT asked of it.
+#[derive(Default)]
+struct Script {
+    next: FlowId,
+    /// `tcp_connect` answers None (no slot)
+    refuse_connect: bool,
+    connects: Vec<SocketAddrV4>,
+    /// `tcp_state` per flow; Pending when unset
+    states: HashMap<FlowId, Connect>,
+    /// what `tcp_read` returns, in order; an empty chunk is EOF and stays
+    reads: HashMap<FlowId, VecDeque<Vec<u8>>>,
+    written: HashMap<FlowId, Vec<u8>>,
+    /// bytes `tcp_write` still takes before WouldBlock; None takes everything
+    write_room: Option<usize>,
+    shutdowns: Vec<FlowId>,
+    closes: Vec<(FlowId, bool)>,
+    udp_opens: Vec<SocketAddrV4>,
+    udp_closes: Vec<FlowId>,
+    /// `resolve` starts lookups (otherwise None: relay DNS)
+    resolves: bool,
+    lookups: Vec<(u32, String, u16)>,
+    answers: VecDeque<(u32, Resolve)>,
+    /// what `tcp_accept` hands over, in order: the flow, the guest address and port
+    incoming: VecDeque<(FlowId, [u8; 4], u16)>,
+}
+
+#[derive(Clone, Default)]
+struct Mock(Arc<Mutex<Script>>);
+
+impl Mock {
+    fn s(&self) -> MutexGuard<'_, Script> { self.0.lock().unwrap() }
+    fn nat(&self) -> Nat { Nat::with_transport(false, Box::new(self.clone())) }
+}
+
+impl NatTransport for Mock {
+    fn tcp_connect(&mut self, dst: SocketAddrV4) -> Option<FlowId> {
+        let mut s = self.s();
+        if s.refuse_connect { return None; }
+        s.connects.push(dst);
+        s.next += 1;
+        Some(s.next)
+    }
+    fn tcp_state(&mut self, id: FlowId) -> Connect { self.s().states.get(&id).copied().unwrap_or(Connect::Pending) }
+    fn tcp_read(&mut self, id: FlowId, buf: &mut [u8]) -> io::Result<usize> {
+        let mut s = self.s();
+        let Some(chunk) = s.reads.get_mut(&id).and_then(|q| q.front_mut()) else { return Err(ErrorKind::WouldBlock.into()) };
+        if chunk.is_empty() { return Ok(0); }
+        let n = chunk.len().min(buf.len());
+        buf[..n].copy_from_slice(&chunk[..n]);
+        chunk.drain(..n);
+        if chunk.is_empty() { s.reads.get_mut(&id).unwrap().pop_front(); }
+        Ok(n)
+    }
+    fn tcp_write(&mut self, id: FlowId, data: &[u8]) -> io::Result<usize> {
+        let mut s = self.s();
+        let n = s.write_room.map_or(data.len(), |room| room.min(data.len()));
+        if n == 0 { return Err(ErrorKind::WouldBlock.into()); }
+        if let Some(room) = &mut s.write_room { *room -= n; }
+        s.written.entry(id).or_default().extend_from_slice(&data[..n]);
+        Ok(n)
+    }
+    fn tcp_shutdown(&mut self, id: FlowId) { self.s().shutdowns.push(id); }
+    fn tcp_close(&mut self, id: FlowId, abort: bool) { self.s().closes.push((id, abort)); }
+    fn udp_open(&mut self, dst: SocketAddrV4) -> io::Result<FlowId> {
+        let mut s = self.s();
+        s.udp_opens.push(dst);
+        s.next += 1;
+        Ok(s.next)
+    }
+    fn udp_send(&mut self, _id: FlowId, data: &[u8]) -> io::Result<usize> { Ok(data.len()) }
+    fn udp_recv(&mut self, _id: FlowId, _buf: &mut [u8]) -> io::Result<usize> { Err(ErrorKind::WouldBlock.into()) }
+    fn udp_close(&mut self, id: FlowId) { self.s().udp_closes.push(id); }
+    fn resolver(&self) -> [u8; 4] { [9, 9, 9, 9] }
+    fn resolve(&mut self, name: &str, qtype: u16) -> Option<u32> {
+        let mut s = self.s();
+        if !s.resolves { return None; }
+        let qid = s.lookups.len() as u32 + 1;
+        s.lookups.push((qid, name.to_string(), qtype));
+        Some(qid)
+    }
+    fn resolved(&mut self) -> Option<(u32, Resolve)> { self.s().answers.pop_front() }
+    fn tcp_accept(&mut self) -> Option<(FlowId, [u8; 4], u16)> { self.s().incoming.pop_front() }
+}
+
+const GUEST: [u8; 4] = [10, 0, 2, 15];
+const REMOTE: [u8; 4] = [93, 184, 215, 14];
+
+fn guest_tcp(nat: &mut Nat, seg: Vec<u8>, now_us: u64) -> Vec<Vec<u8>> { nat.tcp_in(&[2; 6], &GUEST, &REMOTE, &seg, now_us) }
+fn flags(frame: &[u8]) -> u8 { frame[47] }
+fn seq_of(frame: &[u8]) -> u32 { u32::from_be_bytes(frame[38..42].try_into().unwrap()) }
+fn ack_of(frame: &[u8]) -> u32 { u32::from_be_bytes(frame[42..46].try_into().unwrap()) }
+fn window_of(frame: &[u8]) -> u16 { u16::from_be_bytes([frame[48], frame[49]]) }
+
+/// SYN, `Open`, SYN-ACK and the guest's ACK: an established flow, and our next sequence number.
+fn open_flow(mock: &Mock, nat: &mut Nat) -> (FlowId, u32) {
+    assert!(guest_tcp(nat, segment(199, 0, SYN, &[]), 0).is_empty());
+    let id = mock.s().next;
+    mock.s().states.insert(id, Connect::Open);
+    let syn_ack = nat.poll(1);
+    let next = seq_of(&syn_ack[0]).wrapping_add(1);
+    assert!(guest_tcp(nat, segment(200, next, ACK, &[]), 2).is_empty());
+    (id, next)
+}
+
+#[test]
+fn syn_opens_a_transport_flow_and_guest_data_is_written_to_it() {
+    let mock = Mock::default();
+    let mut nat = mock.nat();
+    assert!(guest_tcp(&mut nat, segment(199, 0, SYN, &[]), 0).is_empty());
+    assert_eq!(mock.s().connects, [SocketAddrV4::new(Ipv4Addr::from(REMOTE), 80)]);
+    assert!(nat.poll(1).is_empty(), "no SYN-ACK while the transport is still connecting");
+    let id = mock.s().next;
+    mock.s().states.insert(id, Connect::Open);
+    let syn_ack = nat.poll(2);
+    assert_eq!(syn_ack.len(), 1);
+    assert_eq!(flags(&syn_ack[0]), SYN | ACK);
+    assert_eq!(ack_of(&syn_ack[0]), 200);
+    assert_eq!(nat.tcp_opened, 1);
+    let next = seq_of(&syn_ack[0]).wrapping_add(1);
+    let reply = guest_tcp(&mut nat, segment(200, next, ACK | PSH, b"GET /"), 3);
+    assert_eq!(ack_of(&reply[0]), 205);
+    nat.poll(4);
+    assert_eq!(mock.s().written[&id], b"GET /");
+    assert_eq!(nat.bytes_to_host, 5);
+}
+
+#[test]
+fn would_block_closes_the_guest_window_without_losing_bytes() {
+    let mock = Mock::default();
+    let mut nat = mock.nat();
+    let (id, next) = open_flow(&mock, &mut nat);
+    mock.s().write_room = Some(0);
+    let first: Vec<u8> = (0..3000u32).map(|i| i as u8).collect();
+    let second: Vec<u8> = (0..WINDOW as u32 - 3000).map(|i| (i * 7) as u8).collect();
+    let reply = guest_tcp(&mut nat, segment(200, next, ACK | PSH, &first), 3);
+    assert_eq!(window_of(&reply[0]), WINDOW - 3000);
+    assert!(nat.poll(4).is_empty());
+    let reply = guest_tcp(&mut nat, segment(3200, next, ACK | PSH, &second), 5);
+    assert_eq!(window_of(&reply[0]), 0);
+    // A byte beyond the closed window is not acknowledged.
+    let reply = guest_tcp(&mut nat, segment(200 + WINDOW as u32, next, ACK | PSH, b"x"), 6);
+    assert_eq!(ack_of(&reply[0]), 200 + WINDOW as u32);
+    mock.s().write_room = Some(1000);
+    let update = nat.poll(7);
+    assert_eq!(update.len(), 1, "the drained bytes reopen the window");
+    assert_eq!(window_of(&update[0]), 1000);
+    mock.s().write_room = None;
+    nat.poll(8);
+    assert_eq!(mock.s().written[&id], [first, second].concat());
+    assert!(mock.s().closes.is_empty());
+}
+
+#[test]
+fn transport_eof_becomes_a_guest_fin_and_the_close_is_graceful() {
+    let mock = Mock::default();
+    let mut nat = mock.nat();
+    let (id, next) = open_flow(&mock, &mut nat);
+    mock.s().reads.insert(id, VecDeque::from([b"hi".to_vec(), Vec::new()]));
+    let frames = nat.poll(3);
+    assert_eq!(frames.len(), 2);
+    assert_eq!((flags(&frames[0]), &frames[0][54..]), (PSH | ACK, &b"hi"[..]));
+    assert_eq!(flags(&frames[1]), FIN | ACK);
+    let reply = guest_tcp(&mut nat, segment(200, next + 3, ACK | FIN, &[]), 4);
+    assert_eq!(ack_of(&reply[0]), 201);
+    nat.poll(5);
+    assert_eq!(mock.s().shutdowns, [id]);
+    assert!(mock.s().closes.is_empty());
+    nat.poll(6);
+    assert!(nat.tcp[0].state == FlowState::TimeWait);
+    assert_eq!(mock.s().closes, [(id, false)]);
+}
+
+#[test]
+fn refused_connect_resets_the_guest_and_forgets_the_flow() {
+    let mock = Mock::default();
+    let mut nat = mock.nat();
+    guest_tcp(&mut nat, segment(199, 0, SYN, &[]), 0);
+    let id = mock.s().next;
+    mock.s().states.insert(id, Connect::Failed(ErrorKind::ConnectionRefused));
+    let frames = nat.poll(1);
+    assert_eq!(frames.len(), 1);
+    assert_eq!(flags(&frames[0]), RST | ACK);
+    assert_eq!(ack_of(&frames[0]), 200);
+    assert_eq!(nat.tcp_refused, 1);
+    assert_eq!(mock.s().closes, [(id, true)]);
+    assert!(nat.tcp.is_empty());
+}
+
+#[test]
+fn a_full_transport_drops_the_syn_until_its_retransmission() {
+    let mock = Mock::default();
+    let mut nat = mock.nat();
+    mock.s().refuse_connect = true;
+    assert!(guest_tcp(&mut nat, segment(199, 0, SYN, &[]), 0).is_empty());
+    assert!(nat.tcp.is_empty());
+    assert!(nat.poll(1).is_empty());
+    mock.s().refuse_connect = false;
+    assert!(guest_tcp(&mut nat, segment(199, 0, SYN, &[]), 2).is_empty());
+    assert_eq!(nat.tcp.len(), 1);
+    assert_eq!(mock.s().connects.len(), 1);
+}
+
+#[test]
+fn guest_rst_aborts_the_transport_flow() {
+    let mock = Mock::default();
+    let mut nat = mock.nat();
+    let (id, next) = open_flow(&mock, &mut nat);
+    guest_tcp(&mut nat, segment(200, next, RST, &[]), 3);
+    assert_eq!(mock.s().closes, [(id, true)]);
+    nat.poll(4);
+    assert!(nat.tcp.is_empty());
+    assert_eq!(mock.s().closes.len(), 1, "a flow is closed once");
+}
+
+#[test]
+fn abort_all_resets_every_transport_flow() {
+    let mock = Mock::default();
+    let mut nat = mock.nat();
+    let (open, _) = open_flow(&mock, &mut nat);
+    nat.tcp_in(&[2; 6], &GUEST, &[1, 2, 3, 4], &segment(500, 0, SYN, &[]), 3);
+    let connecting = mock.s().next;
+    let mut done = flow(); done.state = FlowState::TimeWait;
+    nat.tcp.push(done);
+    nat.udp_out(&[2; 6], &GUEST, 4000, &REMOTE, &REMOTE, 7, b"ping", 4);
+    let udp = mock.s().next;
+    nat.abort_all();
+    assert_eq!(mock.s().closes, [(open, true), (connecting, true)]);
+    assert_eq!(mock.s().udp_closes, [udp]);
+    assert!(nat.tcp.is_empty() && nat.udp.is_empty());
+    assert!(nat.poll(RETRANSMIT_US * 2).is_empty());
+}
+
+#[test]
+fn a_guest_reboot_aborts_the_nat_flows() {
+    let mock = Mock::default();
+    let mut net = crate::net::VirtualNet::new(false);
+    net.nat = Some(mock.nat());
+    let mut link = crate::wifi::StationLink::default();
+    link.attach(None, Some(net));
+    let nat = link.net_mut().unwrap().nat.as_mut().unwrap();
+    nat.tcp_in(&[2; 6], &GUEST, &REMOTE, &segment(199, 0, SYN, &[]), 0);
+    let link = link.surviving_reboot();
+    assert_eq!(mock.s().closes, [(1, true)]);
+    assert!(link.net().unwrap().nat.is_some());
+}
+
+#[test]
+fn an_accepted_flow_waits_for_the_station_then_runs_like_an_outbound_one() {
+    let mock = Mock::default();
+    let mut nat = mock.nat();
+    mock.s().incoming.push_back((40, GUEST, 80));
+    assert!(nat.poll(0).is_empty(), "no SYN before the station MAC is known");
+    nat.set_station([2; 6]);
+    let syn = nat.poll(1);
+    assert_eq!(syn.len(), 1);
+    assert_eq!(flags(&syn[0]), SYN);
+    assert_eq!((&syn[0][26..30], &syn[0][30..34]), (&[10, 0, 2, 2][..], &GUEST[..]));
+    let eph = u16::from_be_bytes([syn[0][34], syn[0][35]]);
+    mock.s().reads.insert(40, VecDeque::from([b"GET /".to_vec()]));
+    assert!(nat.poll(2).iter().all(|f| flags(f) == SYN), "nothing is read before the guest's SYN-ACK");
+    let ack = nat.tcp_in(&[2; 6], &GUEST, &GATEWAY_IP, &segment_ports(80, eph, 1000, seq_of(&syn[0]) + 1, SYN | ACK, &[]), 3);
+    assert_eq!((ack.len(), flags(&ack[0])), (1, ACK));
+    assert_eq!((nat.tcp_accepted, nat.tcp_opened), (1, 1));
+    let data = nat.poll(4);
+    assert_eq!((flags(&data[0]), &data[0][54..]), (PSH | ACK, &b"GET /"[..]));
+    nat.tcp_in(&[2; 6], &GUEST, &GATEWAY_IP, &segment_ports(80, eph, 1001, 0, RST, &[]), 5);
+    nat.poll(6);
+    assert_eq!(mock.s().closes, [(40, true)], "an accepted flow is closed once");
+}
+
+#[test]
+fn accepted_flows_past_the_bound_and_on_abort_all_are_closed() {
+    let mock = Mock::default();
+    let mut nat = mock.nat();
+    mock.s().incoming.extend((1..=MAX_PENDING as u32 + 2).map(|id| (id, GUEST, 80)));
+    nat.poll(0);
+    assert_eq!(nat.pending.len(), MAX_PENDING);
+    assert_eq!(mock.s().closes, [(1, false), (2, false)], "the oldest give way");
+    nat.abort_all();
+    assert!(nat.pending.is_empty());
+    assert_eq!(mock.s().closes.len(), 2 + MAX_PENDING);
+    assert!(mock.s().closes[2..].iter().all(|&(_, abort)| abort));
+    nat.set_station([2; 6]);
+    assert!(nat.poll(1).is_empty(), "nothing left to forward");
+}
+
+fn dns_query_msg(txid: u16, name: &str, qtype: u16) -> Vec<u8> {
+    let mut q = txid.to_be_bytes().to_vec();
+    q.extend_from_slice(&[0x01, 0x00, 0, 1, 0, 0, 0, 0, 0, 0]);
+    for label in name.split('.') { q.push(label.len() as u8); q.extend_from_slice(label.as_bytes()); }
+    q.push(0);
+    q.extend_from_slice(&qtype.to_be_bytes());
+    q.extend_from_slice(&[0, 1]);
+    q
+}
+
+/// A UDP datagram from the guest (port 5353) to `dst`:`dport`, as an Ethernet frame.
+fn guest_udp(dst: [u8; 4], dport: u16, payload: &[u8]) -> Vec<u8> {
+    let udp = udp_packet(&GUEST, &dst, 5353, dport, payload);
+    ethernet(&GATEWAY_MAC, &[2; 6], 0x0800, &ip_packet(17, &GUEST, &dst, &udp))
+}
+
+fn mock_net(mock: &Mock) -> crate::net::VirtualNet {
+    let mut net = crate::net::VirtualNet::new(false);
+    net.nat = Some(mock.nat());
+    net
+}
+
+#[test]
+fn a_resolving_transport_answers_dns_from_the_guest_resolver_address() {
+    let mock = Mock::default();
+    mock.s().resolves = true;
+    let mut net = mock_net(&mock);
+    assert!(net.handle(&guest_udp(net.dns_ip, 53, &dns_query_msg(0xbeef, "example.com", 1)), 0).is_empty());
+    assert!(mock.s().udp_opens.is_empty(), "the query is not relayed");
+    assert_eq!(mock.s().lookups, [(1, "example.com".to_string(), 1)]);
+    assert!(net.poll(1).is_empty(), "the answer waits for the transport");
+    mock.s().answers.push_back((7, Resolve::Addrs(vec![[1, 1, 1, 1]], 5))); // nobody asked
+    mock.s().answers.push_back((1, Resolve::Addrs(vec![REMOTE], 300)));
+    let frames = net.poll(2);
+    assert_eq!(frames.len(), 1);
+    let f = &frames[0];
+    assert_eq!(&f[26..30], &[10, 0, 2, 3]);
+    assert_eq!(&f[30..34], &GUEST);
+    assert_eq!(&f[34..38], &[0, 53, 0x14, 0xe9]); // 53 -> 5353
+    assert_eq!(transport_checksum(&[10, 0, 2, 3], &GUEST, 17, &f[34..]), 0);
+    let dns = &f[42..];
+    assert_eq!(&dns[..8], &[0xbe, 0xef, 0x81, 0x80, 0, 1, 0, 1]);
+    assert_eq!(&dns[dns.len() - 10..], &[0, 0, 1, 44, 0, 4, 93, 184, 215, 14]); // TTL 300, the address
+    assert_eq!(net.nat.as_ref().unwrap().dns_answers, 1);
+}
+
+#[test]
+fn a_failed_lookup_is_nxdomain_and_an_empty_one_has_no_records() {
+    let mock = Mock::default();
+    mock.s().resolves = true;
+    let mut net = mock_net(&mock);
+    net.handle(&guest_udp(net.dns_ip, 53, &dns_query_msg(1, "nowhere.invalid", 1)), 0);
+    net.handle(&guest_udp(net.dns_ip, 53, &dns_query_msg(2, "example.com", 28)), 0);
+    mock.s().answers.push_back((1, Resolve::Failed(3)));
+    mock.s().answers.push_back((2, Resolve::Addrs(Vec::new(), 60)));
+    let frames = net.poll(1);
+    assert_eq!(frames.len(), 2);
+    assert_eq!(&frames[0][42..50], &[0, 1, 0x81, 0x83, 0, 1, 0, 0]);
+    assert_eq!(&frames[1][42..50], &[0, 2, 0x81, 0x80, 0, 1, 0, 0]);
+    assert_eq!(frames[1].len(), 42 + dns_query_msg(2, "example.com", 28).len());
+}
+
+#[test]
+fn dns_is_relayed_when_the_transport_does_not_resolve() {
+    let mock = Mock::default();
+    let mut net = mock_net(&mock);
+    net.handle(&guest_udp(net.dns_ip, 53, &dns_query_msg(1, "example.com", 1)), 0);
+    assert_eq!(mock.s().udp_opens, [SocketAddrV4::new(Ipv4Addr::new(9, 9, 9, 9), 53)]);
+    // A resolving transport is asked only for A and AAAA.
+    mock.s().resolves = true;
+    net.handle(&guest_udp(net.dns_ip, 53, &dns_query_msg(2, "example.com", 15)), 0);
+    assert!(mock.s().lookups.is_empty());
+    assert_eq!(mock.s().udp_opens.len(), 1, "the same guest flow carries it");
+}
+
+#[test]
+fn at_most_32_lookups_wait_and_the_oldest_gives_way() {
+    let mock = Mock::default();
+    mock.s().resolves = true;
+    let mut nat = mock.nat();
+    for txid in 1..=33u16 {
+        assert!(nat.dns_query(&[2; 6], &GUEST, 5353, &[10, 0, 2, 3], &dns_query_msg(txid, "example.com", 1), 0));
+    }
+    assert_eq!(nat.dns.len(), MAX_DNS_PENDING);
+    mock.s().answers.extend([1, 2, 33].map(|qid| (qid, Resolve::Addrs(vec![REMOTE], 60))));
+    let frames = nat.poll(1);
+    assert_eq!(frames.iter().map(|f| u16::from_be_bytes([f[42], f[43]])).collect::<Vec<_>>(), [2, 33]);
+    nat.poll(DNS_PENDING_US);
+    assert!(nat.dns.is_empty(), "unanswered lookups expire");
+}
+
+#[test]
+fn local_ntp_answers_sntp_here_even_with_a_nat() {
+    let mut request = [0u8; 48]; request[0] = 0x23;
+    let server = [162, 159, 200, 1];
+    let mock = Mock::default();
+    let mut net = mock_net(&mock);
+    assert!(net.handle(&guest_udp(server, 123, &request), 0).is_empty());
+    assert_eq!(mock.s().udp_opens, [SocketAddrV4::new(Ipv4Addr::from(server), 123)]);
+    let mock = Mock::default();
+    let mut net = mock_net(&mock);
+    net.local_ntp = true;
+    let reply = net.handle(&guest_udp(server, 123, &request), 0);
+    assert_eq!(reply.len(), 1);
+    assert_eq!(&reply[0][26..30], &server);
+    assert_eq!(net.ntp_answers, 1);
+    assert!(mock.s().udp_opens.is_empty());
+}
+
+/// A NAT over a `StdTransport` with one `--hostfwd` listener, and the address it bound.
+fn listening(spec: HostFwdSpec) -> (Nat, SocketAddr) {
+    let mut transport = StdTransport::new();
+    let bound = transport.listen(&spec).unwrap();
+    (Nat::with_transport(false, Box::new(transport)), bound)
+}
+
 #[test]
 fn hostfwd_spec_parses_the_documented_tcp_form() {
     let spec = HostFwdSpec::parse("tcp:127.0.0.1:8080-:80").unwrap();
@@ -301,8 +723,7 @@ fn hostfwd_spec_parses_the_documented_tcp_form() {
 
 #[test]
 fn hostfwd_holds_until_the_station_mac_is_known_then_relays_both_ways() {
-    let mut nat = Nat::new(false);
-    let bound = nat.listen(&HostFwdSpec { bind: SocketAddr::from((Ipv4Addr::LOCALHOST, 0)), guest_ip: [10, 0, 2, 15], guest_port: 80 }).unwrap();
+    let (mut nat, bound) = listening(HostFwdSpec { bind: SocketAddr::from((Ipv4Addr::LOCALHOST, 0)), guest_ip: [10, 0, 2, 15], guest_port: 80 });
     let connector = std::thread::spawn(move || {
         let sock = TcpStream::connect(bound).unwrap();
         sock.set_nonblocking(true).unwrap();
@@ -368,9 +789,39 @@ fn host_mapping_rejects_bad_syn_ack_and_unlisten_releases_connections() {
 }
 
 #[test]
-fn hostfwd_counts_a_guest_rst_to_the_forwarded_syn_as_refused() {
+fn removing_a_mapping_closes_its_pending_flows_and_preserves_other_mappings() {
     let mut nat = Nat::new(false);
-    let bound = nat.listen(&HostFwdSpec { bind: SocketAddr::from((Ipv4Addr::LOCALHOST, 0)), guest_ip: [10, 0, 2, 15], guest_port: 4444 }).unwrap();
+    let spec = |guest_port| HostFwdSpec { bind: (Ipv4Addr::LOCALHOST, 0).into(), guest_ip: STATION_IP, guest_port };
+    let first = nat.listen(&spec(80)).unwrap();
+    let second = nat.listen(&spec(81)).unwrap();
+    let _a = TcpStream::connect(first).unwrap();
+    let _b = TcpStream::connect(second).unwrap();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(1);
+    while nat.pending.len() < 2 {
+        assert!(nat.poll(0).is_empty(), "the station MAC is not known yet");
+        assert!(std::time::Instant::now() < deadline, "host accepts timed out");
+        std::thread::yield_now();
+    }
+    let first_id = nat.pending.iter().find(|p| p.host_port == first.port()).unwrap().id;
+    assert!(nat.unlisten(first.port()));
+    assert_eq!(nat.pending.len(), 1);
+    assert_eq!(nat.pending[0].host_port, second.port());
+    assert_eq!(nat.transport.tcp_state(first_id), Connect::Failed(ErrorKind::NotConnected));
+    assert!(TcpListener::bind(first).is_ok());
+    assert!(!nat.unlisten(0), "an absent mapping cannot close untagged flows");
+    nat.set_station([2; 6]);
+    let frames = nat.poll(1);
+    assert_eq!(frames.len(), 1);
+    assert_eq!(u16::from_be_bytes(frames[0][36..38].try_into().unwrap()), 81);
+    assert_eq!(nat.tcp.len(), 1);
+    assert!(nat.unlisten(second.port()));
+    assert!(nat.tcp.is_empty());
+    assert!(TcpListener::bind(second).is_ok());
+}
+
+#[test]
+fn hostfwd_counts_a_guest_rst_to_the_forwarded_syn_as_refused() {
+    let (mut nat, bound) = listening(HostFwdSpec { bind: SocketAddr::from((Ipv4Addr::LOCALHOST, 0)), guest_ip: [10, 0, 2, 15], guest_port: 4444 });
     let connector = std::thread::spawn(move || TcpStream::connect(bound).unwrap());
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(1);
     while !connector.is_finished() {

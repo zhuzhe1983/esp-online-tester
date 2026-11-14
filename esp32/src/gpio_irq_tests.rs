@@ -277,3 +277,31 @@ fn gpio_irq_restore_takeover_and_live_other_sources() {
     assert_eq!(lines, [1 << 8; 2]);
     check(&mut p);
 }
+
+#[test]
+fn a_gpio_pad_left_at_function_0_drives_its_pin() {
+    let mut g = ClassicGpio::new();
+    g.write(0x24, 1 << 23); // GPIO_ENABLE_W1TS_REG
+    g.write(0x08, 1 << 23); // GPIO_OUT_W1TS_REG
+    assert_eq!(g.driven(23), Some(true));
+    assert!(g.gpio.changes.contains(&(23, true)));
+}
+
+#[test]
+fn a_pad_whose_function_0_is_not_gpio_stays_undriven_until_function_2() {
+    let mut g = ClassicGpio::new();
+    g.write(0x24, 1 << 15);
+    g.write(0x08, 1 << 15);
+    assert_eq!(g.driven(15), None); // MTDO at function 0, io_mux_reg.h
+    g.write(IOMUX + IOMUX_OFFSETS[15], 2 << 12);
+    assert_eq!(g.driven(15), Some(true));
+}
+
+#[test]
+fn the_shared_router_sees_a_pad_left_at_function_0_as_gpio_before_any_io_mux_write() {
+    let mut g = ClassicGpio::new();
+    g.write(0x24, 1 << 23 | 1 << 15);
+    g.write(0x08, 1 << 23 | 1 << 15);
+    assert_eq!(g.routes().software_output(23), Some(true));
+    assert_eq!(g.routes().software_output(15), None); // MTDO at function 0, io_mux_reg.h
+}

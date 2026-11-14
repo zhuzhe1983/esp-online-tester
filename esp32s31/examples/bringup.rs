@@ -1,4 +1,5 @@
 //! Run a caller-supplied SRAM/ROM ELF and report the first unimplemented access.
+use esp32s31::bringup as esp32s31;
 use std::io::Write;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args().skip(1).peekable(); let mut rom = false; let mut usb_host = false; let mut strap = None; let mut flash = None; let mut spi0_shadow = false; let mut nor = None; let mut bias = None; let mut perif = None; let mut dig = None; let mut bod = None; let mut sfdp = None; let mut bbpll = None; let mut systimer_from_cpu = false; let mut rtc_timer_from_cpu = false; let mut rtc_calibration_from_cpu = false; let mut watch_pc = None; let mut watch_pc1 = None; let mut peripheral_pads = Vec::new(); let mut psram_mode = None; let mut psram_bytes = None; let mut guest_exceptions = 0u32; let mut upstream_fpu_memory_reason = false;

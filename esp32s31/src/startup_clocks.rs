@@ -14,7 +14,7 @@ const WORDS: [Word;20] = [
     Word { address:0x2058707c,reset:1,mask:7,writable:1 }, // AHB PDMA SYS
     Word { address:0x20587080,reset:1,mask:3,writable:1 }, // REGDMA SYS
     Word { address:0x205871b0,reset:1,mask:7,writable:1 }, // ASRC SYS
-    Word { address:0x2058706c,reset:0x800043,mask:0xffffff,writable:0x800043 }, // GPSPI2 clocks,not transfers
+    Word { address:0x2058706c,reset:0x800043,mask:0xffffff,writable:0xffffff }, // GPSPI2 clocks; RST_EN (bit 2) resets the bus's GpSpi
     Word { address:0x20587070,reset:0x800043,mask:0xffffff,writable:0x800043 }, // GPSPI3
     Word { address:0x205871d0,reset:1,mask:7,writable:1 }, // HP I2C master APB
     Word { address:0x20589004,reset:0xc0000000,mask:0xc0000000,writable:0xc0000000 }, // PARLIO TX/RX pad
@@ -40,6 +40,7 @@ pub struct StartupClocks { values:[u32;20] }
 impl Default for StartupClocks { fn default()->Self { Self { values:WORDS.map(|word|word.reset) } } }
 impl StartupClocks {
     pub fn is_mmio(address:u32)->bool { matches!(address & !3, 0x205870a8 | 0x20587024 | 0x20587078 | 0x2058707c | 0x20587080 | 0x205871b0 | 0x2058706c | 0x20587070 | 0x205871d0 | 0x20589004 | 0x20589008 | 0x2058900c | 0x205043f8 | 0x20706bf8 | 0x20359030 | 0x207133f8 | 0x20710018 | 0x2071002c | 0x20710050 | 0x20587154) }
+    pub const GPSPI2_CTRL0: u32 = 0x2058706c;
     pub fn read(&self,address:u32)->Result<u32,Fault> {
         let i=WORDS.iter().position(|w|w.address==address).ok_or(Fault::Unmapped)?; Ok(self.values[i])
     }

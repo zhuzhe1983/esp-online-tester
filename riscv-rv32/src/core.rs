@@ -1,5 +1,6 @@
-//! `emu_core::Core` for the RV32 cores (C3, C6, P4): one instruction per `step`, no decode cache,
-//! block cache or JIT; `run` loops `step` and stops where a block would. The interrupt input is
+//! `emu_core::Core` for the RV32 cores (C3, C6, P4, S31): one instruction per `step`; `run` runs
+//! decoded blocks (`block`, EX265) on a bus that versions its code (`Bus::page_versions`), and
+//! otherwise loops `step`, stopping where a block would. The interrupt input is
 //! the one line the SoC's interrupt controller has already arbitrated; on a CLIC core (the P4) it
 //! also carries the level and the vectoring attribute (`exec::clic_take`).
 use crate::bus::Bus;
@@ -19,16 +20,21 @@ impl emu_core::Core for Cpu {
     fn insn_count(&self) -> u64 { self.insn_count }
     fn set_irq(&mut self, line: Option<u32>) { self.irq = line; }
     /// A CLIC core in CLINT mode takes nothing the SoC presents (`exec::step_outcome`).
-    fn irq_pending(&self) -> bool { self.irq.is_some() && (!self.clic || self.clic_mode()) }
+    fn irq_pending(&self) -> bool { self.irq.is_some() }   // CLINT mode on a CLIC core delivers too (exec.rs)
     fn irq_bits(irq: &Option<u32>) -> u32 { irq.map_or(0, |l| 1 << (l & 31)) }
     fn advance_cycles(&mut self, cycles: u32) { self.cycle_count += cycles as u64; }
     fn idle_advance(&mut self, cycles: u32) { self.insn_count += cycles as u64; self.cycle_count += cycles as u64; }
     fn step<B: Bus>(&mut self, bus: &mut B) -> StepOutcome { crate::exec::step_outcome(self, bus) }
-    fn set_boundaries(&mut self, bloom: u64) { self.boundary_bloom = bloom; }
+    fn set_boundaries(&mut self, bloom: u64) { if bloom != self.boundary_bloom { self.blocks.flush(); } self.boundary_bloom = bloom; }
+    fn flush_caches(&mut self) { self.blocks.flush(); }
+    /// `--no-jit`: the interpreter alone, the oracle for the blocks.
+    fn set_jit(&mut self, on: bool) { self.blocks.on = on; self.blocks.flush(); }
+    fn code_cache_stats(&self) -> Option<(u64, u64, u64, usize)> { Some((self.blocks.builds, self.blocks.flushes, 0, 0)) }
     /// One instruction at a time, but like a block: stop when the bus reports that an interrupt
     /// line may have moved, so the machine re-derives the core's input before the next instruction,
     /// and at a pc the machine wants to see first (a stub or a probe), so it is exact there too.
     fn run<B: Bus>(&mut self, bus: &mut B, budget: u32) -> (u32, Option<Trap>) {
+        if self.blocks.on && !bus.page_versions().is_empty() { return crate::block::run(self, bus, budget); }
         for i in 0..budget {
             if let Err(t) = crate::exec::step(self, bus) { return (i + 1, Some(t)); }
             if bus.block_break() || (self.boundary_bloom != 0 && self.boundary_bloom & emu_core::core::pc_bit(self.pc) != 0) { return (i + 1, None); }
@@ -38,7 +44,7 @@ impl emu_core::Core for Cpu {
     fn regs(&self, out: &mut Vec<(&'static str, u32)>) { for (&name, &value) in X[1..].iter().zip(&self.x[1..]) { out.push((name, value)); } out.push(("mstatus", self.mstatus)); }
     fn arg<B: emu_core::Bus>(&self, _bus: &mut B, n: usize) -> u32 { self.x[10 + n] }
     fn return_from_stub<B: emu_core::Bus>(&mut self, _bus: &mut B, v: u32) { self.x[10] = v; self.pc = self.x[1]; self.insn_count += 1; self.retired_count += 1; self.cycle_count += 1; }
-    fn disasm(&self, pc: u32, bytes: [u8; 4]) -> String { crate::disasm::format_for(self.misa, &crate::decode::decode_for(self.misa, pc, bytes)).replace('\t', " ") }
+    fn disasm(&self, pc: u32, bytes: [u8; 4]) -> String { crate::disasm::format_for(self.misa, &crate::decode::decode_for(self.isa(), pc, bytes)).replace('\t', " ") }
     fn insn_len(bytes: [u8; 4]) -> u32 { crate::decode::decode(0, bytes).len as u32 }
     const TRACE_WIDTH: usize = 28;
     fn trace_regs(&self) -> String { format!("ra={:08x} sp={:08x} a0={:08x} a1={:08x}", self.x[1], self.x[2], self.x[10], self.x[11]) }

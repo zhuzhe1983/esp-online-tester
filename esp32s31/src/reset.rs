@@ -39,6 +39,8 @@ impl ResetControl {
         let core = match address.checked_sub(BASE) { Some(0) => 0, Some(4) => 1, _ => return Err(Fault::Unmapped) };
         // Stall/debug and alternate reset vectors are explicit gaps.
         // Retain reset-length programming but do not claim a physical pulse width.
+        // Guest RMW (esp_cpu_reset → hpcoreN_sw_reset=1) keeps STAT_VECTOR_SEL=1 and
+        // may also set LOCKUP_RESET_EN; only the low/OCD-halt bits in 0x2000_ffff are rejected.
         if value & 0x6000_ffff != 1 << 30 { return Err(Fault::Prohibited); }
         self.controls[core] = value & 0xc00f_0000;
         if value & SW_RESET != 0 { self.request(core, Cause::Software); }

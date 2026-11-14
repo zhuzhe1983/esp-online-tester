@@ -1,0 +1,1154 @@
+{
+ "started": "2026-11-12T17:58:02+0100",
+ "pairs": 7,
+ "workloads": {
+  "s31-mosaico": {
+   "command": [
+    "esp32sim-s31",
+    "--flash-image",
+    "$S31_FLASH_IMAGE",
+    "--boot",
+    "rom",
+    "--rom",
+    "$ESP32SIM_ROM_DIR/esp32s31_rev0_rom.elf",
+    "--board",
+    "mosaico",
+    "--flash-mb",
+    "16",
+    "--max-seconds",
+    "10",
+    "--usb-host",
+    "$S31_USB_HOST",
+    "--no-dump"
+   ],
+   "load_before": [
+    8.24365234375,
+    8.92236328125,
+    6.8720703125
+   ],
+   "runs": [
+    {
+     "user_s": 13.75,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "new",
+     "pair": "warmup",
+     "order": "N->B"
+    },
+    {
+     "user_s": 40.92,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "base",
+     "pair": "warmup",
+     "order": "N->B"
+    },
+    {
+     "user_s": 41.0,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "base",
+     "pair": "pair1",
+     "order": "B->N"
+    },
+    {
+     "user_s": 13.94,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "new",
+     "pair": "pair1",
+     "order": "B->N"
+    },
+    {
+     "user_s": 14.12,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "new",
+     "pair": "pair2",
+     "order": "N->B"
+    },
+    {
+     "user_s": 41.48,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "base",
+     "pair": "pair2",
+     "order": "N->B"
+    },
+    {
+     "user_s": 42.09,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "base",
+     "pair": "pair3",
+     "order": "B->N"
+    },
+    {
+     "user_s": 14.14,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "new",
+     "pair": "pair3",
+     "order": "B->N"
+    },
+    {
+     "user_s": 14.07,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "new",
+     "pair": "pair4",
+     "order": "N->B"
+    },
+    {
+     "user_s": 41.67,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "base",
+     "pair": "pair4",
+     "order": "N->B"
+    },
+    {
+     "user_s": 41.66,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "base",
+     "pair": "pair5",
+     "order": "B->N"
+    },
+    {
+     "user_s": 14.04,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "new",
+     "pair": "pair5",
+     "order": "B->N"
+    },
+    {
+     "user_s": 14.16,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "new",
+     "pair": "pair6",
+     "order": "N->B"
+    },
+    {
+     "user_s": 41.8,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "base",
+     "pair": "pair6",
+     "order": "N->B"
+    },
+    {
+     "user_s": 41.93,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "base",
+     "pair": "pair7",
+     "order": "B->N"
+    },
+    {
+     "user_s": 14.01,
+     "insns": [
+      3200000000,
+      3125158720
+     ],
+     "exit": 0,
+     "side": "new",
+     "pair": "pair7",
+     "order": "B->N"
+    }
+   ],
+   "load_after": [
+    3.6357421875,
+    4.677734375,
+    5.42333984375
+   ],
+   "summary": {
+    "base_median_s": 41.67,
+    "new_median_s": 14.07,
+    "change_pct": -66.23,
+    "base_range_s": [
+     41.0,
+     42.09
+    ],
+    "new_range_s": [
+     13.94,
+     14.16
+    ],
+    "new_slower_pairs": 0,
+    "identical_work_and_console": true,
+    "insns": [
+     3200000000,
+     3125158720
+    ]
+   },
+   "note": "private flash image: console hashes omitted; identical_work_and_console was computed over them before omission"
+  },
+  "c3-hello": {
+   "command": [
+    "esp32sim-c3",
+    "--boot",
+    "rom",
+    "--rom",
+    "$ESP32SIM_ROM_DIR/esp32c3_rev3_rom.elf",
+    "--flash-mb",
+    "4",
+    "--bootloader",
+    "web/wasm/fw/public/c3-hello-bootloader.bin",
+    "--ptable",
+    "web/wasm/fw/public/c3-hello-ptable.bin",
+    "--app",
+    "web/wasm/fw/public/c3-hello_world.bin",
+    "--max-seconds",
+    "30",
+    "--no-dump"
+   ],
+   "load_before": [
+    3.6357421875,
+    4.677734375,
+    5.42333984375
+   ],
+   "runs": [
+    {
+     "user_s": 2.63,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "new",
+     "pair": "warmup",
+     "order": "N->B"
+    },
+    {
+     "user_s": 2.49,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "base",
+     "pair": "warmup",
+     "order": "N->B"
+    },
+    {
+     "user_s": 2.71,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair1",
+     "order": "B->N"
+    },
+    {
+     "user_s": 2.48,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair1",
+     "order": "B->N"
+    },
+    {
+     "user_s": 2.5,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair2",
+     "order": "N->B"
+    },
+    {
+     "user_s": 2.48,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair2",
+     "order": "N->B"
+    },
+    {
+     "user_s": 2.48,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair3",
+     "order": "B->N"
+    },
+    {
+     "user_s": 2.57,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair3",
+     "order": "B->N"
+    },
+    {
+     "user_s": 2.66,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair4",
+     "order": "N->B"
+    },
+    {
+     "user_s": 2.47,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair4",
+     "order": "N->B"
+    },
+    {
+     "user_s": 2.53,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair5",
+     "order": "B->N"
+    },
+    {
+     "user_s": 2.68,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair5",
+     "order": "B->N"
+    },
+    {
+     "user_s": 2.69,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair6",
+     "order": "N->B"
+    },
+    {
+     "user_s": 2.5,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair6",
+     "order": "N->B"
+    },
+    {
+     "user_s": 2.53,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair7",
+     "order": "B->N"
+    },
+    {
+     "user_s": 2.66,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair7",
+     "order": "B->N"
+    }
+   ],
+   "load_after": [
+    4.05419921875,
+    4.666015625,
+    5.38427734375
+   ],
+   "summary": {
+    "base_median_s": 2.5,
+    "new_median_s": 2.66,
+    "change_pct": 6.4,
+    "base_range_s": [
+     2.47,
+     2.71
+    ],
+    "new_range_s": [
+     2.48,
+     2.69
+    ],
+    "new_slower_pairs": 6,
+    "identical_work_and_console": true,
+    "insns": [
+     4800000000
+    ],
+    "console_sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd"
+   }
+  },
+  "c6-hello": {
+   "command": [
+    "esp32sim-c6",
+    "--boot",
+    "rom",
+    "--rom",
+    "$ESP32SIM_ROM_DIR/esp32c6_rev0_rom.elf",
+    "--flash-mb",
+    "4",
+    "--bootloader",
+    "web/wasm/fw/public/c6-hello-bootloader.bin",
+    "--ptable",
+    "web/wasm/fw/public/c6-hello-ptable.bin",
+    "--app",
+    "web/wasm/fw/public/c6-hello_world.bin",
+    "--max-seconds",
+    "30",
+    "--no-dump"
+   ],
+   "load_before": [
+    4.05419921875,
+    4.666015625,
+    5.38427734375
+   ],
+   "runs": [
+    {
+     "user_s": 1.55,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "new",
+     "pair": "warmup",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.57,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "base",
+     "pair": "warmup",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.58,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair1",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.55,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair1",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.54,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair2",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.61,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair2",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.57,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair3",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.58,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair3",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.56,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair4",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.61,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair4",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.61,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair5",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.56,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair5",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.57,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair6",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.59,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair6",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.62,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair7",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.57,
+     "insns": [
+      4800000000
+     ],
+     "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair7",
+     "order": "B->N"
+    }
+   ],
+   "load_after": [
+    4.52978515625,
+    4.72509765625,
+    5.3837890625
+   ],
+   "summary": {
+    "base_median_s": 1.61,
+    "new_median_s": 1.56,
+    "change_pct": -3.11,
+    "base_range_s": [
+     1.57,
+     1.62
+    ],
+    "new_range_s": [
+     1.54,
+     1.58
+    ],
+    "new_slower_pairs": 1,
+    "identical_work_and_console": true,
+    "insns": [
+     4800000000
+    ],
+    "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad"
+   }
+  },
+  "c3-wifi-station": {
+   "command": [
+    "esp32sim-c3",
+    "--rom",
+    "$ESP32SIM_ROM_DIR/esp32c3_rev3_rom.elf",
+    "--boot",
+    "rom",
+    "--flash-mb",
+    "4",
+    "--no-dump",
+    "--bootloader",
+    "web/wasm/fw/public/c3-wifi-bootloader.bin",
+    "--ptable",
+    "web/wasm/fw/public/c3-wifi-ptable.bin",
+    "--app",
+    "web/wasm/fw/public/c3-wifi_station.bin",
+    "--wifi",
+    "ssid=esp32sim,psk=esp32sim-pass",
+    "--net",
+    "none",
+    "--max-seconds",
+    "14"
+   ],
+   "load_before": [
+    4.52978515625,
+    4.72509765625,
+    5.3837890625
+   ],
+   "runs": [
+    {
+     "user_s": 1.56,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "new",
+     "pair": "warmup",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.56,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "base",
+     "pair": "warmup",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.57,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair1",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.6,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair1",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.56,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair2",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.57,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair2",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.53,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair3",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.64,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair3",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.65,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair4",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.62,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair4",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.53,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair5",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.59,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair5",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.54,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair6",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.52,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair6",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.53,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair7",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.56,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair7",
+     "order": "B->N"
+    }
+   ],
+   "load_after": [
+    3.9189453125,
+    4.568359375,
+    5.3076171875
+   ],
+   "summary": {
+    "base_median_s": 1.53,
+    "new_median_s": 1.59,
+    "change_pct": 3.92,
+    "base_range_s": [
+     1.52,
+     1.62
+    ],
+    "new_range_s": [
+     1.54,
+     1.65
+    ],
+    "new_slower_pairs": 6,
+    "identical_work_and_console": true,
+    "insns": [
+     2240000000
+    ],
+    "console_sha256": "fa906d7b5de76822d443d8209d98d6f2fbb99c55528b0776f201d084b240cf50"
+   }
+  },
+  "c6-wifi-station": {
+   "command": [
+    "esp32sim-c6",
+    "--rom",
+    "$ESP32SIM_ROM_DIR/esp32c6_rev0_rom.elf",
+    "--boot",
+    "rom",
+    "--flash-mb",
+    "4",
+    "--console",
+    "usb",
+    "--no-dump",
+    "--bootloader",
+    "web/wasm/fw/public/c6-wifi-bootloader.bin",
+    "--ptable",
+    "web/wasm/fw/public/c6-wifi-ptable.bin",
+    "--app",
+    "web/wasm/fw/public/c6-wifi_station.bin",
+    "--wifi",
+    "ssid=esp32sim,psk=esp32sim-pass",
+    "--net",
+    "none",
+    "--max-seconds",
+    "14"
+   ],
+   "load_before": [
+    3.9189453125,
+    4.568359375,
+    5.3076171875
+   ],
+   "runs": [
+    {
+     "user_s": 1.07,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "new",
+     "pair": "warmup",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.06,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "base",
+     "pair": "warmup",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.08,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair1",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.08,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair1",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.07,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair2",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.1,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair2",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.07,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair3",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.06,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair3",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.07,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair4",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.07,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair4",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.06,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair5",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.07,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair5",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.06,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair6",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.07,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair6",
+     "order": "N->B"
+    },
+    {
+     "user_s": 1.07,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "base",
+     "pair": "pair7",
+     "order": "B->N"
+    },
+    {
+     "user_s": 1.08,
+     "insns": [
+      2240000000
+     ],
+     "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601",
+     "exit": 0,
+     "side": "new",
+     "pair": "pair7",
+     "order": "B->N"
+    }
+   ],
+   "load_after": [
+    4.3984375,
+    4.62939453125,
+    5.31103515625
+   ],
+   "summary": {
+    "base_median_s": 1.07,
+    "new_median_s": 1.07,
+    "change_pct": 0.0,
+    "base_range_s": [
+     1.06,
+     1.1
+    ],
+    "new_range_s": [
+     1.06,
+     1.08
+    ],
+    "new_slower_pairs": 2,
+    "identical_work_and_console": true,
+    "insns": [
+     2240000000
+    ],
+    "console_sha256": "75b99af7d413ac5dcfd7d610c3f7360b004460e9d14493416b6c5f4533690601"
+   }
+  }
+ },
+ "finished": "2026-11-12T18:07:19+0100",
+ "label": "round 1: base 732f8a2a vs df53d825"
+}

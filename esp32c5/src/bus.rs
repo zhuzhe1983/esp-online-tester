@@ -28,7 +28,7 @@ impl Default for C5Bus { fn default() -> Self { Self::new() } }
 impl C5Bus {
     pub fn new() -> Self {
         // C5 uart_reg.h: RX full/count 8 bits, CONF0_SYNC RXFIFO_RST bit22.
-        let layout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff };
+        let layout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff, autobaud_en: 0, autobaud_regs: 0, autobaud_clock_hz: 0 };
         let mut gpio = Gpio::with_pins(29); gpio.input_select = 0x100; gpio.func_in_sel.fill(96); gpio.strap = 0;
         Self { rom: vec![0; ROM_SIZE], sram: vec![0; SRAM_SIZE], lp_sram: vec![0; LP_SIZE],
             uart: [Uart::new(layout), Uart::new(layout)], gpio, io_mux: RegRam::new(), rmt: RmtCompact::new(CPU_HZ),

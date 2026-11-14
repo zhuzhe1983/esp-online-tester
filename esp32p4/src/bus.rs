@@ -53,6 +53,9 @@ enum Mmu { Flash, Psram }
 /// their cached or uncached addresses. Caches are not modelled, so a DMA access sees what the
 /// cores wrote.
 struct DmaView<'a> { l2mem: &'a mut [u8], psram: &'a mut [u8], mmu: &'a [u32; MMU_ENTRIES] }
+/// HP UART0/1 FIFO registers (IDF v5.5.4 components/soc/esp32p4/register/soc/reg_base.h).
+const UART_FIFOS: [u32; 2] = [0x500c_a000, 0x500c_b000];
+
 impl DmaView<'_> {
     /// The memory at `addr` and how many bytes of it are contiguous there.
     fn span(&mut self, addr: u32) -> Result<&mut [u8], Fault> {
@@ -132,6 +135,11 @@ pub struct SocBus {
     pub last_fault: Option<(u32, bool)>,
     /// a peripheral write may have moved an interrupt line: re-derive before the next instruction
     pub irq_dirty: bool,
+    /// A UART interrupt enable was written: its level is presented after the delivery latency (see `periph_write`).
+    ena_latency: esp_periph::uart::EnaLatency,
+    /// Host input is queued on a UART or an INT_ENA latency is pending: the only time the tick and the idle
+    /// deadline look at the UARTs, so an ordinary run pays one flag test for them.
+    pub(crate) uart_busy: bool,
     pub gpio_events: Option<Vec<(u64, u8, bool)>>,
     pub debug: esp_soc::DebugFlags,
     /// the core the machine is running, for the core-local CLIC window (`Soc::select_core`)
@@ -152,7 +160,7 @@ impl SocBus {
             flash: vec![0xff; flash_size], psram: Vec::new(),
             mmu_flash: Box::new([0; MMU_ENTRIES]), mmu_psram: Box::new([0; MMU_ENTRIES]), mmu_flash_index: 0, mmu_psram_index: 0,
             periph: Peripherals::new(mac, wafer), wafer, board: Box::new(esp_soc::NoBoard),
-            cycles: 0, last_fault: None, irq_dirty: true, gpio_events: None, debug: Default::default(), cur_core: 0, reservation: [None; 2], reset_request: None, core_pcs: [0; 2],
+            cycles: 0, last_fault: None, irq_dirty: true, ena_latency: Default::default(), uart_busy: false, gpio_events: None, debug: Default::default(), cur_core: 0, reservation: [None; 2], reset_request: None, core_pcs: [0; 2],
         }
     }
 
@@ -224,7 +232,12 @@ impl SocBus {
 
     fn periph_read(&mut self, addr: u32, size: u32) -> u32 {
         let a = self.clic_view(addr & !3);
+        let uart = UART_FIFOS.iter().position(|&f| f == a);
+        let before = uart.map(|i| self.periph.uart[i].irq());
         let w = match Self::mmu_reg(a) { Some((m, o)) => self.mmu_read(m, o), None => self.periph.read32(a) };
+        // RXFIFO_FULL follows the FIFO level (`Uart::read`): the mask ROM's shared UART handler reads one FIFO and never
+        // clears the interrupt, so a falling level must reach the CPU.
+        if let (Some(i), Some(before)) = (uart, before) { self.irq_dirty |= self.periph.uart[i].irq() != before; }
         // A STATUS read can raise the SDMMC's busy-clear interrupt.
         if a >> 12 == 0x50083 && self.periph.sdmmc.take_read_irq() { self.irq_dirty = true; }
         match size { 1 => (w >> ((addr & 3) * 8)) & 0xff, 2 => (w >> ((addr & 2) * 8)) & 0xffff, _ => w }
@@ -245,7 +258,10 @@ impl SocBus {
             self.irq_dirty = true;
             return;
         }
-        let v = if size == 4 { v } else { merge(self.periph.read32(a)) };
+        // A sub-word store to a UART FIFO must not read (pop) a received byte to merge into.
+        let v = if size == 4 { v } else if UART_FIFOS.contains(&a) { merge(0) } else { merge(self.periph.read32(a)) };
+        let ena_port = UART_FIFOS.iter().position(|&f| f + 0xc == a);
+        let old_ena = ena_port.map_or(0, |i| self.periph.uart[i].int_ena);
         let resetting = self.periph.lp.sw_reset;
         self.periph.write32(a, v);
         // the store that asks for a software reset is where ASSIST_DEBUG finds this core
@@ -257,7 +273,13 @@ impl SocBus {
         // line is a GPIO the driver sets right before each transaction).
         if self.periph.spi2.dma_tx_pending.is_some() { self.spi2_dma_tx(); }
         if self.periph.spi2.has_pending_transfer() || !self.periph.gpio.g.changes.is_empty() { self.deliver_board_events(); }
-        self.irq_dirty = true;
+        // Interrupt delivery has latency on silicon. The mask ROM's uart_buff_switch enables a UART's interrupt just before
+        // it stores which UART its handler serves; an immediate interrupt runs the handler for the previous one.
+        // Only newly enabled sources wait (`EnaLatency::on_write`); a mask takes effect at once.
+        match ena_port {
+            Some(i) => { if self.ena_latency.on_write(old_ena, self.periph.uart[i].int_ena) { self.irq_dirty = true; } else { self.uart_busy = true; } }
+            None => self.irq_dirty = true,
+        }
     }
 
     /// The board's I2C devices on I2C1 (bus 0 of `BoardModel::i2c_devices`).
@@ -431,12 +453,34 @@ impl SocBus {
     }
 
 
+    /// Release host bytes queued by `uart_input` at the line rate. The P4's UART clock select lives in HP_SYS_CLKRST,
+    /// which this model does not decode; the rate comes from CLKDIV with the 40 MHz XTAL source the ROM and the esptool
+    /// stub run the UART on (`baud`'s source select 3), so it follows esptool's baud change.
+    #[cold]
+    #[inline(never)]
+    fn pace_uart_input(&mut self, cycles: u32) {
+        let bauds = self.periph.uart.each_ref().map(|u| u.baud(3 << 20, 0));
+        self.irq_dirty |= esp_periph::uart::pace_input(self.periph.uart.iter_mut().zip(bauds), cycles as u64, crate::periph::CPU_HZ);
+        self.uart_busy = self.ena_latency.pending() || self.periph.uart.iter().any(|u| u.has_queued());
+    }
+    /// Cycles an idle core may skip before queued UART input or a pending INT_ENA level is due.
+    #[cold]
+    #[inline(never)]
+    pub(crate) fn uart_deadline(&self) -> Option<u64> {
+        if !self.uart_busy { return None; }
+        let input = if self.periph.uart.iter().any(|u| u.has_queued()) {
+            esp_periph::uart::input_deadline(self.periph.uart.iter().map(|u| (u, u.baud(3 << 20, 0))), crate::periph::CPU_HZ)
+        } else { None };
+        input.into_iter().chain(self.ena_latency.deadline()).min()
+    }
+
     fn devices(&mut self, cycles: u32) {
         if self.periph.spi_exec { self.run_spi(); }
         // board time first, its input edges after the peripherals (as the S3 bus does)
         let edges = self.board.uses_gpio_edges();
         if edges { self.board.advance_to(self.cycles); }
         self.periph.tick(cycles as u64);
+        if self.uart_busy { self.pace_uart_input(cycles); }
         if edges { self.irq_dirty |= esp_soc::gpio::drain_board_inputs(&mut *self.board, &mut self.periph.gpio.g, &mut self.gpio_events, self.cycles); }
         if self.periph.spi2.dma_tx_pending.is_some() { self.spi2_dma_tx(); }
         if self.periph.spi2.has_pending_transfer() || !self.periph.gpio.g.changes.is_empty() { self.deliver_board_events(); }
@@ -525,6 +569,7 @@ impl Bus for SocBus {
     }
     fn tick(&mut self, cycles: u32) -> u32 {
         self.cycles += cycles as u64;
+        if self.uart_busy && self.ena_latency.tick(cycles as u64) { self.irq_dirty = true; }
         self.devices(cycles);
         1
     }

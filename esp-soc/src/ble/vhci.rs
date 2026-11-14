@@ -34,6 +34,10 @@ pub struct Abi {
     pub code: &'static [u8],
     pub ram: std::ops::Range<u32>,
     pub hz: u64,
+    /// Where `mode` is in the `esp_bt_controller_config_t` given to init, on a chip whose controller
+    /// takes more than BLE; `None` on a BLE-only chip, whose init takes BLE alone (IDF v5.3.6
+    /// `components/bt/controller/esp32c3/bt.c:1823`, which the S3 builds too).
+    pub config_mode: Option<u32>,
 }
 
 pub trait VhciBus: crate::SocBus {
@@ -76,11 +80,15 @@ pub struct Ble {
     pub delay: u32,
     pub buffer: u32,
     pub status: u32,
+    /// The mode of the config init took, the only one enable takes.
+    pub mode: u32,
     pub callbacks: [u32; 2],
     pub send_ready: bool,
     yield_to_host: bool,
     pub task_created: bool,
     pub original_flash: Option<(usize, Vec<u8>)>,
+    /// `[ble]` lines: stderr, or kept for the browser build (`BleLog::keep`)
+    pub lines: crate::ble::log::BleLog,
 }
 
 impl Ble {
@@ -130,6 +138,7 @@ impl Ble {
         next.kinds.insert(init + POLL, Hook::Poll);
         next.kinds.insert(init + CREATED, Hook::Created);
         next.hooks = next.kinds.keys().copied().collect();
+        next.lines = std::mem::take(&mut self.lines);
         *self = next;
         Ok(())
     }
@@ -161,7 +170,7 @@ impl Ble {
     }
 
     fn log(&mut self, cycles: u64, hz: u64) {
-        for line in self.session.drain_log() { eprintln!("[ble] t={:.6}s {line}", cycles as f64 / hz as f64); }
+        for line in self.session.drain_log() { self.lines.note(format!("t={:.6}s {line}", cycles as f64 / hz as f64)); }
     }
 }
 
@@ -190,6 +199,25 @@ pub fn install<B: VhciBus>(bus: &mut B) -> Result<(), String> {
     Ok(())
 }
 
+/// Keeps the mode of the config at `config` for enable: the config's own where the chip's `Abi`
+/// says where it is, BLE on a BLE-only chip. `false` for a config that cannot be read or whose mode
+/// is not 1, 2 or 3: IDF's init hands the mode to the controller library unchecked, and no
+/// controller has another.
+fn take_mode<B: VhciBus>(bus: &mut B, config: u32, abi: &Abi) -> bool {
+    let mode = match abi.config_mode {
+        None => Some(1),
+        Some(offset) => config
+            .checked_add(offset)
+            .and_then(|at| bus.read8_unpriced(at).ok())
+            .filter(|mode| (1..=3).contains(mode))
+            .map(u32::from),
+    };
+    if let Some(mode) = mode {
+        bus.ble().mode = mode;
+    }
+    mode.is_some()
+}
+
 pub fn intercept<C: Core, B: VhciBus>(cpu: &mut C, bus: &mut B, redirect: impl FnOnce(&mut C, u32)) -> bool {
     let abi = B::abi();
     let Some(&hook) = bus.ble().kinds.get(&cpu.pc()) else {
@@ -203,7 +231,7 @@ pub fn intercept<C: Core, B: VhciBus>(cpu: &mut C, bus: &mut B, redirect: impl F
         Hook::Init => {
             if bus.ble().status != 0 {
                 result = INVALID_STATE;
-            } else if arg == 0 {
+            } else if arg == 0 || !take_mode(bus, arg, &abi) {
                 result = INVALID_ARG;
             } else if bus.ble().task_created {
                 bus.ble().status = 1;
@@ -215,7 +243,7 @@ pub fn intercept<C: Core, B: VhciBus>(cpu: &mut C, bus: &mut B, redirect: impl F
                         return true;
                     }
                     Err(error) => {
-                        eprintln!("[ble] {error}");
+                        bus.ble().lines.note(error);
                         result = u32::MAX;
                     }
                 }
@@ -226,16 +254,24 @@ pub fn intercept<C: Core, B: VhciBus>(cpu: &mut C, bus: &mut B, redirect: impl F
                 bus.ble().task_created = true;
                 bus.ble().status = 1;
             } else {
-                eprintln!("[ble] controller task creation failed: {arg:#x}");
+                bus.ble().lines.note(format!("controller task creation failed: {arg:#x}"));
                 result = u32::MAX;
             }
         }
         Hook::Enable => {
             if bus.ble().status != 1 {
                 result = INVALID_STATE;
-            } else if arg != 1 && arg != 3 {
+            } else if arg != bus.ble().mode {
+                // "mode should be equal to the mode which set in esp_bt_controller_init()"
+                // (IDF v5.3.6 components/bt/controller/esp32/bt.c:1918; esp32c3/bt.c:2073 likewise)
                 result = INVALID_ARG;
-            } else { bus.ble().status = 2; }
+            } else {
+                // BR/EDR only, so nothing the firmware does reaches this controller: say why
+                if arg == 2 {
+                    bus.ble().lines.note("the virtual controller is LE-only: enabled in mode 2 (BR/EDR), its commands get Unknown HCI Command".into());
+                }
+                bus.ble().status = 2;
+            }
         }
         Hook::Disable => {
             if bus.ble().status != 2 {
@@ -277,7 +313,7 @@ pub fn intercept<C: Core, B: VhciBus>(cpu: &mut C, bus: &mut B, redirect: impl F
                 || len > (BUFFER_SIZE - 16) as usize
                 || !bus.valid_packet_range(arg, len)
             {
-                eprintln!("[ble] rejected invalid VHCI packet pointer, length or controller state");
+                bus.ble().lines.note("rejected invalid VHCI packet pointer, length or controller state".into());
             } else {
                 let packet: Result<Vec<u8>, _> = (0..len).map(|i| bus.read8_unpriced(arg + i as u32)).collect();
                 if let Ok(packet) = packet {
@@ -306,7 +342,7 @@ pub fn intercept<C: Core, B: VhciBus>(cpu: &mut C, bus: &mut B, redirect: impl F
                         if bus.ble_debug() { eprintln!("[ble] rx {:02x?}", packet); }
                         bus.ble().yield_to_host = true;
                         result = bus.ble().callbacks[1];
-                    } else { eprintln!("[ble] rejected oversized or unmapped controller packet"); }
+                    } else { bus.ble().lines.note("rejected oversized or unmapped controller packet".into()); }
                 } else if bus.ble().send_ready {
                     bus.ble().send_ready = false;
                     result = bus.ble().callbacks[0];

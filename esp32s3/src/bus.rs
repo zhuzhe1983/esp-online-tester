@@ -69,6 +69,8 @@ pub struct SocBus {
     spi3_pins: Option<esp_soc::board::SpiPins>,
     /// set by any peripheral write: interrupt lines must be re-evaluated before the next instruction
     pub irq_dirty: bool,
+    /// A UART interrupt enable was written: its level is presented after the delivery latency (see `periph_write_inner`).
+    ena_latency: esp_periph::uart::EnaLatency,
     /// GPIO edges for observers, while one wants them: (cycle, pin, level)
     pub gpio_events: Option<Vec<(u64, u8, bool)>>,
     pub debug: esp_soc::DebugFlags,
@@ -145,6 +147,9 @@ fn tlb_idx(addr: u32) -> usize { xtensa_lx7::bus::tlb_index(addr) }
 /// another bus's epoch; 2^32 flash-version changes per bus before bases could meet.
 static BUS_EPOCHS: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
 
+/// UART0/1/2 FIFO registers (IDF v5.5.4 components/soc/esp32s3/register/soc/reg_base.h).
+const UART_FIFOS: [u32; 3] = [0x6000_0000, 0x6001_0000, 0x6002_e000];
+
 impl SocBus {
     pub(crate) fn cancel_spi2_timing(&mut self) { self.spi2_scheduled = None; self.spi2_pins = None; self.spi3_pins = None; }
 
@@ -154,7 +159,7 @@ impl SocBus {
             ble: Default::default(),
             sram: vec![0; SRAM_SIZE], irom: vec![0; (IROM_MASK_HIGH - IROM_MASK_LOW) as usize], drom: vec![0; (DROM_MASK_HIGH - DROM_MASK_LOW) as usize],
             light_sleep: false, rtc_fast: vec![0; 8192], rtc_slow: vec![0; 8192], flash: vec![0xff; flash_size], psram: vec![0; psram_size],
-            mmu: [MMU_INVALID; MMU_ENTRIES], periph: Peripherals::new(mac), board: Box::new(crate::board::Atech14::new()), uart_pins: false, cycles: 0, last_fault: None, spi2_dma_fault: None, irq_dirty: false, gpio_events: None, debug: Default::default(), board_edges: true,
+            mmu: [MMU_INVALID; MMU_ENTRIES], periph: Peripherals::new(mac), board: Box::new(crate::board::Atech14::new()), uart_pins: false, cycles: 0, last_fault: None, spi2_dma_fault: None, irq_dirty: false, ena_latency: Default::default(), gpio_events: None, debug: Default::default(), board_edges: true,
             spi2_timing: false, spi2_scheduled: None, spi2_pins: None, spi3_dma_fault: None, spi3_pins: None,
             tlb: vec![TlbEntry::EMPTY; TLB_SIZE], page_ver: Vec::new(), ver_base: [0; 7], flash_epoch: BUS_EPOCHS.fetch_add(1, std::sync::atomic::Ordering::Relaxed) << 32, code_blk: Vec::new(), tick_pending: 0, tick_budget: 0, defer_mmio: false, mmio_deferred: false, vq_violations: 0,
             approximate_cache: None, approximate_cache_pending: 0, approximate_cache_fast_internal: false, approximate_cache_inline: false,
@@ -322,7 +327,11 @@ impl SocBus {
 
     /// Time until deferred device work must run. The bounded fallback covers devices without
     /// an explicit timer deadline.
-    pub fn next_deadline(&self) -> u64 { self.tick_budget.saturating_sub(self.tick_pending).max(1) as u64 }
+    /// A pending UART INT_ENA level also bounds it: it is counted in `tick`, not in the deferred work.
+    pub fn next_deadline(&self) -> u64 {
+        let work = self.tick_budget.saturating_sub(self.tick_pending).max(1) as u64;
+        self.ena_latency.deadline().map_or(work, |d| work.min(d))
+    }
 
     /// Size the per-page version table to the buffers. Call after replacing `flash` or `psram`.
     pub fn rebuild_page_table(&mut self) {
@@ -473,8 +482,11 @@ impl SocBus {
             self.irq_dirty |= esp_soc::gpio::deliver_board_inputs(&mut *self.board, &mut self.periph.gpio, &mut self.gpio_events, self.cycles);
             self.refresh_tick_budget();
         }
-        let value=self.periph.read32(addr);
-        if addr>>12==0x60028 && self.periph.sdmmc.take_read_irq() {self.irq_dirty=true;esp_periph::Dispatch::refresh_optional(&mut self.periph,0x28);}
+        let port = UART_FIFOS.iter().position(|&f| f == addr & !3);
+        let before = port.map(|p| self.periph.uart[p].irq());
+        let value = self.periph.read32(addr);
+        if let Some(p) = port { self.irq_dirty |= Some(self.periph.uart[p].irq()) != before; }
+        if addr >> 12 == 0x60028 && self.periph.sdmmc.take_read_irq() { self.irq_dirty = true; esp_periph::Dispatch::refresh_optional(&mut self.periph, 0x28); }
         value
     }
     /// EX133: every device-register access must have been deferred out of a multi-quantum run.
@@ -535,6 +547,8 @@ impl SocBus {
         let old_input = self.periph.gpio.input;
         let old_gpio_out = self.periph.gpio.out;
         let old_gpio_enable = self.periph.gpio.enable;
+        let ena_port = UART_FIFOS.iter().position(|&f| f + 0xc == a);
+        let old_ena = ena_port.map_or(0, |i| self.periph.uart[i].int_ena);
         if a == PERIPH_BASE + 0x24_000 && v & (1 << 24) != 0 && !self.periph.spi2.has_pending_transfer() {
             self.spi2_pins = self.board.uses_spi_pins().then(|| self.periph.spi2_pins());
         }
@@ -566,6 +580,11 @@ impl SocBus {
         // Resolved output changes can raise edge or level input interrupts.
         if spi {
             self.irq_dirty |= before != sources(&self.periph);
+        } else if let Some(i) = ena_port {
+            // Interrupt delivery has latency on silicon. The mask ROM's uart_buff_switch enables a UART's interrupt just
+            // before it stores which UART its handler serves; an immediate interrupt runs the handler for the old one.
+            // Only newly enabled sources wait (`EnaLatency::on_write`); a mask takes effect at once.
+            if self.ena_latency.on_write(old_ena, self.periph.uart[i].int_ena) { self.irq_dirty = true; }
         } else if !(0x6000_4004..=0x6000_4018).contains(&a) {
             self.irq_dirty = true;
         } else {
@@ -628,11 +647,7 @@ impl SocBus {
         // the pending base as the new head and try once more. Frames that still find nothing are lost, as
         // they are when a radio's RX FIFO is full.
         let mut armed = self.wifi_rx_armed(self.periph.wifi.rx_next, total);
-        if armed.is_none() && self.periph.wifi.rx_handover {
-            self.periph.wifi.rx_next = self.periph.wifi.rx_base;
-            self.periph.wifi.rx_handover = false;
-            armed = self.wifi_rx_armed(self.periph.wifi.rx_next, total);
-        }
+        if armed.is_none() && self.periph.wifi.rx_restart_at_base() { armed = self.wifi_rx_armed(self.periph.wifi.rx_next, total); }
         // Neither a head nor a pending base: the driver has not handed the radio a receive ring yet, which
         // is not a lost frame. Counted apart, and only after the hand-over above has had its chance (#276).
         if self.periph.wifi.rx_next == 0 { self.periph.wifi.link.drop_rx_unarmed(); return; }
@@ -662,8 +677,7 @@ impl SocBus {
         while i < b.len() { let _ = self.write8_unpriced(buf + i as u32, b[i]); i += 1; }
         let ndw0 = (dw0 & !(0xfff << 12)) | ((total as u32) << 12) | (1 << 30) | (1 << 31);   // length; owner AND has_data set (verified on silicon 2026-08-25: dw0=0xc0..)
         let _ = self.write32_unpriced(desc, ndw0);
-        let w = &mut self.periph.wifi;
-        w.rx_last = (desc & 0xf_ffff) | (1 << 24); w.rx_next = next & 0xf_ffff; w.rx_handover = false; w.link.rx_delivered(desc); w.events |= (1 << 14) | (1 << 24);   // RX data (wDev_ProcessFiq tests 0x1004000)   // registers hold masked descriptor addrs; rx_last has a 0x01 prefix (silicon)
+        self.periph.wifi.rx_filled(desc, next);
         if log { let d = crate::wifi::describe(frame); if d.contains("auth")||d.contains("assoc") { eprintln!("[wifi] RX AUTH/ASSOC -> desc {:#010x} buf {:#010x} {}", desc, buf, d); } else { eprintln!("[wifi] RX -> desc {:#010x} {}", desc, d); } }
         self.irq_dirty = true;
     }
@@ -872,7 +886,9 @@ impl Bus for SocBus {
     fn tick(&mut self, cycles: u32) -> u32 {
         self.cycles += cycles as u64;
         self.tick_pending += cycles;
-        if self.tick_pending < self.tick_budget { return 0; }
+        let due = self.ena_latency.tick(cycles as u64);
+        if due { self.irq_dirty = true; }
+        if self.tick_pending < self.tick_budget { return u32::from(due); }
         self.flush_ticks();
         u32::from(self.irq_dirty)
     }
@@ -920,7 +936,24 @@ impl SocBus {
                 .clamp(1, u64::from(cap));
             budget = budget.min(until_deadline as u32);
         }
+        // Queued host UART bytes are released at the line rate: flush by the next byte time (counted, like the UART's
+        // credit, from the last flush).
+        if self.periph.uart.iter().any(|u| u.has_queued()) {
+            if let Some(due) = esp_periph::uart::input_deadline(self.periph.uart.iter().zip(self.uart_bauds()), crate::periph::CPU_HZ) {
+                budget = budget.min(due.clamp(1, u64::from(cap)) as u32);
+            }
+        }
         self.tick_budget = budget;
+    }
+
+    /// Each UART's configured baud rate, for pacing queued host input.
+    fn uart_bauds(&self) -> [Option<u32>; 3] { std::array::from_fn(|port| self.periph.uart_route(port).baud) }
+    /// Release host bytes queued by `uart_input` at the configured baud rate.
+    #[cold]
+    #[inline(never)]
+    fn pace_uart_input(&mut self, cycles: u32) {
+        let bauds = self.uart_bauds();
+        self.irq_dirty |= esp_periph::uart::pace_input(self.periph.uart.iter_mut().zip(bauds), cycles as u64, crate::periph::CPU_HZ);
     }
 
     /// Bus cycles at which the current peripheral clock started (deferred ticks excluded).
@@ -956,6 +989,7 @@ impl SocBus {
         // Reads may flush before the periodic backstop. Refresh for either edge
         // of a clocked source, without breaking every block that polls MMIO.
         self.irq_dirty |= self.periph.tick(cycles as u64);
+        if self.periph.uart.iter().any(|u| u.has_queued()) { self.pace_uart_input(cycles); }
         if self.uart_pins {
             for input in self.board.uart_rx(self.cycles) {
                 self.periph.uart_pin_input(&input);

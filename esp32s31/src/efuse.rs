@@ -13,6 +13,7 @@ impl ReadImage {
     /// Synthetic development input only; it is never selected automatically for a product.
     pub fn blank_development() -> Self { Self { words: [0; SHADOW_WORDS], errors: [0; 10], block0_valid_bits: 0 } }
 }
+#[derive(Clone)]
 pub struct Efuse {
     image: Option<ReadImage>, shadow: [u32; SHADOW_WORDS], errors: [u32; 10], pgm: [u32; 11],
     clk: u32, conf: u32, status: u32, cmd: u32, int_raw: u32, int_ena: u32, date: u32,
@@ -29,7 +30,17 @@ impl Default for Efuse {
 impl Efuse {
     pub fn set_read_image(&mut self, image: ReadImage) -> Result<(), String> {
         if image.block0_valid_bits > 1023 { return Err("S31 eFuse block0 valid-bit count exceeds 10-bit field".into()); }
-        if image.words[1] & 0x7f != 0 { return Err("S31 eFuse read-protected block images are not supported".into()); }
+        // RD_DIS bit n protects block 4 + n (KEY0..KEY4 at 0xa8 + 0x20 * n, SYS_PART2 at 0x148): its
+        // shadow reads zero on silicon, so a protected block's words must be zero in the image.
+        for n in 0..6 {
+            let first = (0xa8 + 0x20 * n - 0x2c) / 4;
+            if image.words[1] >> n & 1 != 0 && image.words[first..first + 8].iter().any(|&w| w != 0) {
+                return Err(format!("S31 eFuse block {} is read-protected but its image words are not zero", 4 + n));
+            }
+        }
+        // The controller loads the shadows itself at power-up, before the ROM runs; a later READ
+        // command reloads them from the same image.
+        self.shadow = image.words; self.errors = image.errors; self.status = 1 | (image.block0_valid_bits as u32) << 10;
         self.image = Some(image); Ok(())
     }
     pub fn has_read_image(&self) -> bool { self.image.is_some() }
@@ -84,13 +95,15 @@ impl Efuse {
 mod tests {
     use super::*;
     #[test]
-    fn read_needs_explicit_image_and_real_command_then_shadows_are_read_only() {
+    fn image_loads_at_power_on_read_command_reloads_and_shadows_are_read_only() {
         let mut e = Efuse::default(); assert!(!e.has_read_image());
         e.write(0x1d8, 1).unwrap(); assert_eq!(e.read(0x1dc), Ok(0)); // Wrong opcode has no effect.
         e.write(0x1cc, 0x5aa5).unwrap(); assert_eq!(e.write(0x1d8, 1), Err(Fault::Unmapped));
         let mut image = ReadImage::blank_development(); image.words[2] = 0x12345678;
         image.errors[3] = 0x01020304; image.block0_valid_bits = 177; e.set_read_image(image).unwrap();
-        assert_eq!(e.read(0x34), Ok(0)); e.write(0x1e4, 1).unwrap(); e.write(0x1d8, 1).unwrap();
+        // Power-on auto-read: the shadows show the image without any READ command.
+        assert_eq!(e.read(0x34), Ok(0x12345678)); assert_eq!(e.read(0x1d4), Ok(1 | 177 << 10)); assert!(!e.irq());
+        e.write(0x1e4, 1).unwrap(); e.write(0x1d8, 1).unwrap();
         assert_eq!(e.read(0x34), Ok(0x12345678)); assert_eq!(e.read(0x174), Ok(0x01020304));
         assert_eq!(e.read(0x1d4), Ok(1 | 177 << 10)); assert_eq!(e.read(0x1d8), Ok(0)); assert!(e.irq());
         e.write(0x34, 0).unwrap(); assert_eq!(e.read(0x34), Ok(0x12345678));

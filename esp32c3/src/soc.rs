@@ -46,7 +46,18 @@ impl esp_soc::SocBus for SocBus {
         if self.periph.ble_lc.enabled() { self.periph.ble_lc.command(command) }
         else { self.ble.command(command, self.cycles, periph::CPU_HZ) }
     }
+    fn ble_keep_log(&mut self) { self.ble.lines.keep(); }
+    fn ble_log_take(&mut self) -> Option<String> { self.ble.lines.take() }
     fn ble_nearby(&mut self, list: Vec<esp_soc::ble::peer::Nearby>) -> Result<(), String> { self.ble.set_nearby(list, self.cycles, periph::CPU_HZ) }
+    fn set_net_tap(&mut self, tap: esp_soc::netcap::NetTap) -> Result<(), String> {
+        self.periph.wifi.link.set_tap(tap);
+        Ok(())
+    }
+    fn add_wifi_ap(&mut self, cfg: esp_soc::wifi::ApConfig) -> Result<(), String> {
+        self.periph.wifi.link.add_ap(cfg, &self.debug)?;
+        self.periph.refresh_work();
+        Ok(())
+    }
     fn attach_wifi(&mut self, cfg: esp_soc::wifi::ApConfig, nat: Option<esp_soc::nat::Nat>) -> Result<(), String> {
         self.periph.wifi.link.attach_new(cfg, nat, &self.debug);
         self.periph.refresh_work();
@@ -71,6 +82,8 @@ impl esp_soc::SocBus for SocBus {
         let timer = if self.pins_active { self.pin_deadline() } else {
             match self.periph.cycles_until_timer() { u32::MAX => None, cycles => Some(cycles.max(1) as u64) }
         };
+        // Only while UART input is queued or an INT_ENA latency is pending (one flag test otherwise).
+        let timer = if self.uart_busy { timer.into_iter().chain(self.uart_deadline()).min() } else { timer };
         if self.periph.i2s_rx { Some(timer.unwrap_or(u64::MAX).min(256)) } else { timer }
     }
     fn irq_dirty(&mut self) -> &mut bool { &mut self.irq_dirty }
@@ -167,7 +180,8 @@ impl esp_soc::SocBus for SocBus {
     fn uart_input(&mut self, n: usize, data: &[u8]) {
         let Some(u) = self.periph.uart.get_mut(n) else { return };
         let before = u.irq();
-        u.host_input(data);
+        self.uart_busy = true;
+        u.host_input_queued(data);
         self.irq_dirty |= before != u.irq();
     }
     fn analog_set(&mut self, pin: u8, src: esp_periph::AnalogSource) {

@@ -73,6 +73,7 @@ const CONFIG: &[(u32, u32, u32, u32)] = &[
     (0x13c, 0xff0000ff, 0, 0xff000000), // HP memory force controls
     (0x1e8, 0x80000000, 0, 0), // PSRAM_XPD MPLL PHY power,ldo_ll_enable unit0
     (0x218, 0x000003ff, 0, 0), // EXT_LDO_CTRL requested dref/mul/rail/ripple/current controls
+    (0x158, 0xffffffff, 0, 0), // SLP_WAKEUP_CNTL2 WAKEUP_ENA source mask; storage only, sleep entry is not modeled
     (0x15c, 0x0003ffff, 0, 0), // SLP_WAKEUP_CNTL3 parameters,not a sleep trigger
 ];
 pub struct PmuPolicy {

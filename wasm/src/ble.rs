@@ -92,24 +92,6 @@ pub unsafe extern "C" fn esp32sim_ble_ptr(e: *const Emu) -> *const u8 {
     unsafe { &*e }.ble_out.as_ptr()
 }
 
-/// Replace C61's virtual nearby legacy advertisers, one `Nearby::parse` spec
-/// per line; an empty buffer removes all peers. At most 32 peers / 16 KiB.
-/// Inputs enter real controller RX DMA; this does not inject HCI/guest callbacks.
-/// # Safety
-/// `e` must be live and exclusive; `ptr` must be readable for `len` bytes.
-#[no_mangle]
-pub unsafe extern "C" fn esp32sim_ble_nearby(e: *mut Emu, ptr: *const u8, len: usize) -> u32 {
-    let e = unsafe { &mut *e };
-    let MachineKind::C61(m) = &mut e.m else { return 1 };
-    if len > 16 * 1024 { return 1 }
-    // SAFETY: the caller supplies a readable buffer, bounded above before access.
-    let Ok(spec) = std::str::from_utf8(unsafe { super::bytes(ptr,len) }) else { return 1 };
-    let specs: Vec<String> = spec.lines().map(str::to_owned).collect();
-    let result = esp_soc::ble::peer::Nearby::parse_all(&specs).and_then(|peers|m.bus.ble_nearby(peers));
-    match result { Ok(()) => 0, Err(reason) => { log(&format!("[emu] C61 nearby: {reason}")); 1 } }
-}
-
-
 /// Toggle the virtual active scanner. Returns 1 unless C3 full mode is enabled.
 /// # Safety
 /// `e` must be a live emulator with exclusive access for this call.
@@ -134,6 +116,83 @@ pub unsafe extern "C" fn esp32sim_ble_command(e: *mut Emu, ptr: *const u8, len: 
     let command = unsafe { super::text(ptr, len) };
     let MachineKind::C3(m) = &mut e.m else { return 1 };
     u32::from(m.bus.periph.ble_lc.command(command).is_err())
+}
+
+/// Enable the virtual BLE controller (the CLI's `--ble`) on the S3, C3, C6 or classic ESP32
+/// before boot. `elf` is the application ELF, whose symbols locate the guest's controller
+/// functions. The controller's `[ble]` lines are kept for `esp32sim_ble_virtual_take`. Returns 0,
+/// or 1 after boot, for a bad ELF, another chip or an ELF the controller cannot use; the reason
+/// goes to `host_log`.
+/// # Safety
+/// `e` must be live and exclusive; `ptr` must be readable for `len` bytes.
+#[no_mangle]
+pub unsafe extern "C" fn esp32sim_ble_virtual(e: *mut Emu, ptr: *const u8, len: usize) -> u32 {
+    let e = unsafe { &mut *e };
+    if e.booted { log("[emu] the virtual BLE controller must be enabled before boot"); return 1 }
+    let elf = match esp_soc::elf::parse(unsafe { super::bytes(ptr, len) }) {
+        Ok(elf) => elf,
+        Err(reason) => { log(&format!("[emu] ble: {reason}")); return 1 }
+    };
+    let bus = e.m.bus();
+    if let Err(reason) = bus.enable_ble(&elf) { log(&format!("[emu] ble: {reason}")); return 1 }
+    bus.ble_keep_log();
+    0
+}
+
+/// Give the virtual peer a command, as the CLI script's `ble` commands take it: `connect`,
+/// `discover`, `read HANDLE`, `write HANDLE HEX` or `subscribe CCC_HANDLE` (the others are full
+/// BLE's). It runs from the current emulated time; the results come as `[ble]` lines. Returns 0,
+/// or 1 for a bad command or no virtual controller (the reason goes to `host_log`).
+/// # Safety
+/// `e` must be live and exclusive; `ptr` must be readable for `len` bytes.
+#[no_mangle]
+pub unsafe extern "C" fn esp32sim_ble_virtual_command(e: *mut Emu, ptr: *const u8, len: usize) -> u32 {
+    let e = unsafe { &mut *e };
+    let command = unsafe { super::text(ptr, len) };
+    match e.m.bus().ble_command(command) {
+        Ok(()) => 0,
+        Err(reason) => { log(&format!("[emu] ble: {reason}")); 1 }
+    }
+}
+
+/// Take the oldest kept `[ble]` line of the virtual controller (without the prefix), returning
+/// its UTF-8 byte length (zero when none). The bytes are at `esp32sim_ble_ptr`, valid until the
+/// next take or emulator deletion. Lines lost to the 1024-line bound come first as `dropped=N`.
+/// # Safety
+/// `e` must be a live emulator with exclusive access for this call.
+#[no_mangle]
+pub unsafe extern "C" fn esp32sim_ble_virtual_take(e: *mut Emu) -> usize {
+    let e = unsafe { &mut *e };
+    e.ble_out = e.m.bus().ble_log_take().unwrap_or_default();
+    e.ble_out.len()
+}
+
+/// Set the Bluetooth LE devices around the station (the CLI's `--ble-nearby`), replacing the ones
+/// there were: one spec per line, as the option takes it (`name=`, `adv=` / `rsp=` hex, `addr=`,
+/// `type=`, `rssi=`), at most 32; no lines for none. The guest's scans report them, a running scan
+/// at once. Uses the enabled virtual controller, or C61's digital radio RX; before or after boot.
+/// At most 16 KiB of specs. Returns 0, or 1 for text that is
+/// not UTF-8, a spec or list the option refuses, or no virtual controller, with the reason on
+/// `host_log` and the devices unchanged.
+/// # Safety
+/// `e` must be live and exclusive; `ptr` must be readable for `len` bytes.
+#[no_mangle]
+pub unsafe extern "C" fn esp32sim_ble_nearby(e: *mut Emu, ptr: *const u8, len: usize) -> u32 {
+    if len > 16 * 1024 { log("[emu] ble nearby: specs exceed 16 KiB"); return 1 }
+    let e = unsafe { &mut *e };
+    let Ok(specs) = std::str::from_utf8(unsafe { super::bytes(ptr, len) }) else {
+        log("[emu] ble nearby: the specs are not UTF-8");
+        return 1
+    };
+    let specs: Vec<String> = specs.lines().map(str::trim).filter(|s| !s.is_empty()).map(String::from).collect();
+    let list = match esp_soc::ble::peer::Nearby::parse_all(&specs) {
+        Ok(list) => list,
+        Err(reason) => { log(&format!("[emu] ble nearby: {reason}")); return 1 }
+    };
+    match e.m.bus().ble_nearby(list) {
+        Ok(()) => 0,
+        Err(reason) => { log(&format!("[emu] ble nearby: {reason}")); 1 }
+    }
 }
 
 #[cfg(test)]

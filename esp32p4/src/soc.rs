@@ -156,8 +156,10 @@ impl esp_soc::SocBus for SocBus {
     fn cycles(&self) -> u64 { self.cycles }
     fn next_deadline(&self) -> Option<u64> {
         let c = self.periph.cycles_until_timer();
-        if self.periph.sdmmc.timed { return self.timed_sd_deadline(c); }
-        match c { u32::MAX => None, c => Some(c.max(1) as u64) }
+        // Only while UART input is queued or an INT_ENA latency is pending (one flag test otherwise).
+        let uart = if self.uart_busy { self.uart_deadline() } else { None };
+        if self.periph.sdmmc.timed { return self.timed_sd_deadline(c).into_iter().chain(uart).min(); }
+        match c { u32::MAX => uart, c => Some((c.max(1) as u64).min(uart.unwrap_or(u64::MAX))) }
     }
     fn irq_dirty(&mut self) -> &mut bool { &mut self.irq_dirty }
     fn refresh_irq(&mut self) -> bool { self.periph.refresh_lines(); true }
@@ -257,7 +259,8 @@ impl esp_soc::SocBus for SocBus {
     fn uart_input(&mut self, n: usize, data: &[u8]) {
         let Some(u) = self.periph.uart.get_mut(n) else { return };
         let before = u.irq();
-        u.host_input(data);
+        u.host_input_queued(data);   // paced by the bus tick (`pace_uart_input`)
+        self.uart_busy = true;
         self.irq_dirty |= before != u.irq();
     }
     fn gpio_set_input(&mut self, pin: u8, level: bool) {

@@ -81,6 +81,14 @@ impl I2s {
     /// Standard I2S frame rate, or S3 PDM-to-PCM output rate. No external slave clock.
     pub fn rx_rate(&self) -> Option<u32> {
         let conf1 = self.ram.read(0x28);
+        if self.v2 {
+            // A full-duplex slave RX (IDF i2s_std.c: the later channel of a duplex pair) runs on
+            // the TX clock shared through SIG_LOOPBACK (TX_CONF bit 30, i2s_ll_share_bck_ws).
+            if self.rx_conf & (1 << 3) != 0 {
+                return if self.tx_conf & (1 << 30) != 0 { self.derive_rate() } else { None };
+            }
+            return Self::v2_rate(self.v2_rx_clock, self.rx_conf, conf1);
+        }
         let frame_bits = if self.rx_conf & (1 << 20) != 0 {
             if self.rx_conf & (1 << 22) != 0 {
                 128
@@ -117,6 +125,12 @@ impl I2s {
             }
         }
         // No bank, or no slot wired to this controller: per-controller input (`--i2s-tone`, pushes).
+        self.receive_input(cycles, pdm2pcm)
+    }
+    /// The frames due after `cycles` from this controller's own input (`rx_input`), for chips
+    /// without a pin-routed source bank.
+    pub fn receive_input(&mut self, cycles: u64, pdm2pcm: bool) -> Vec<u8> {
+        if let Some(rx) = &mut self.rx { rx.selected_source = 0; }
         let mut input = self.rx.as_mut().map(|rx| std::mem::take(&mut rx.input)).unwrap_or_default();
         let rate = self.rx_rate().unwrap_or(1);
         let bytes = self.rx_data(cycles, pdm2pcm, |_| input.next(rate));
@@ -127,16 +141,21 @@ impl I2s {
     }
 
     pub fn rx_data(&mut self, cycles: u64, pdm2pcm: bool, mut next_frame: impl FnMut(u64) -> [i16; 2]) -> Vec<u8> {
-        let bits = ((self.ram.read(0x28) >> 13) & 31) + 1;
+        // v2 (P4/S31 i2s_reg.h): BITS_MOD 18:14, MONO bit 6; slave mode only as a duplex
+        // slave on the shared TX clock (see `rx_rate`); no PDM-to-PCM path is modelled.
+        let bits = ((self.ram.read(0x28) >> if self.v2 { 14 } else { 13 }) & 31) + 1;
+        let mono = 1 << if self.v2 { 6 } else { 5 };
         let tdm = self.ram.read(0x50);
         let mask = tdm & 0xffff;
         let pdm = self.rx_conf & (1 << 20) != 0;
+        let refused = if self.v2 { (1 << 7) | (3 << 10) | (1 << 18) } else { (1 << 3) | (1 << 7) | (3 << 10) | (1 << 18) };
         let supported = self.rx_running()
             && [16, 24, 32].contains(&bits)
             && mask != 0
             && mask & !3 == 0
-            && self.rx_conf & ((1 << 3) | (1 << 7) | (3 << 10) | (1 << 18)) == 0
+            && self.rx_conf & refused == 0
             && if pdm {
+                !self.v2 &&
                 pdm2pcm && bits == 16 && self.rx_conf & (1 << 21) != 0
             } else {
                 (tdm >> 16) & 15 == 1
@@ -171,7 +190,7 @@ impl I2s {
                 } else {
                     bytes.extend_from_slice(&(i32::from(sample) << 16).to_le_bytes());
                 }
-                if self.rx_conf & (1 << 5) != 0 {
+                if self.rx_conf & mono != 0 {
                     break;
                 }
             }

@@ -15,8 +15,8 @@ pub const BOD_BASE: u32 = 0x2070_2000;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResetCause { Brownout } // reset_reasons.h: RESET_REASON_SYS_BROWN_OUT=15.
 const CPLL_LOW: u32 = 0x111;
+#[cfg(test)]
 const CPLL_HIGH: u32 = (1 << 19) | (1 << 23) | (1 << 27);
-const MPLL_HIGH: u32 = (1 << 22) | (1 << 26) | (1 << 30);
 const MPLL_LOW: u32 = (1 << 3) | (1 << 7) | (1 << 11);
 pub struct Power { pub policy: PmuPolicy, pub mode0: crate::brownout::Brownout, cpll: u32, sleep_lp: u32, active: u32, alive: u32, mpll_high: u32, mpll_low: u32, fib: u32, bod1: u32, glitch: u32, pub reset_request: Option<ResetCause> }
 impl Default for Power {
@@ -71,7 +71,9 @@ impl Power {
                 // Group field definitions and the driver use tie-high/low commands.
                 // Some generated per-CPLL aliases say RW instead of WT; model the group
                 // WT protocol, not latched command bits or an analog PLL waveform.
-                if value & !(MPLL_LOW | MPLL_HIGH | CPLL_LOW | CPLL_HIGH) != 0 { return Err(Fault::Prohibited); }
+                // pmu_reg.h IMM_HP_CK_POWER_1: tie-low [11:0], tie-high [30:19], one bit per PLL
+                // (CPLL, BBPLL, APLL, MPLL) in each group. Only CPLL and MPLL are modelled.
+                if value & !(0xfff | 0x7ff8_0000) != 0 { return Err(Fault::Prohibited); }
                 let high = ((value >> 23) & 0xf) | ((value >> 23) & 0xf0) | ((value >> 11) & 0xf00);
                 let low = value & (CPLL_LOW | MPLL_LOW);
                 if high & low != 0 { return Err(Fault::Prohibited); }
@@ -80,9 +82,8 @@ impl Power {
                 self.mpll_low = (self.mpll_low | (low & MPLL_LOW)) & !high;
             }
             ALIVE_CK => {
-                // Preserve other domain enables. Turning off CPU/root clocks cannot be
-                // represented by continuing execution, so such writes fail explicitly.
-                if (value ^ self.alive) & !((1 << 31) | (1 << 30) | (1 << 29)) != 0 { return Err(Fault::Prohibited); }
+                // Every field is stored. Only bits 29-31 (CPLL, BBPLL output, root) feed the
+                // modelled clock tree; IDF's own sequence never gates the clock it runs from.
                 self.alive = value;
             }
             ACTIVE_CK => {
@@ -153,15 +154,15 @@ mod tests {
         assert_eq!(p.mode0.read(BOD_BASE + 0x20), Ok(0));
     }
     #[test]
-    fn mpll_shutdown_requires_the_actual_sequence_and_does_not_enable_unknown_plls() {
+    fn mpll_shutdown_requires_the_actual_sequence_and_other_pll_ties_leave_it_alone() {
         let mut p = Power::default(); assert!(!p.mpll_disabled());
         p.write(IMMEDIATE_CK, 1 << 11).unwrap(); assert_eq!(p.read(IMMEDIATE_CK), Ok(0));
         p.write(ALIVE_CK, 0x7ffe_0000).unwrap(); assert!(!p.mpll_disabled());
         p.write(IMMEDIATE_CK, 0x88).unwrap(); assert!(p.mpll_disabled());
         p.write(ACTIVE_CK, 0x4400_0000).unwrap(); assert!(!p.mpll_disabled());
         p.write(ACTIVE_CK, 0).unwrap(); assert!(p.mpll_disabled());
-        assert_eq!(p.write(IMMEDIATE_CK, 1 << 29), Err(Fault::Prohibited)); // APLL remains absent.
-        assert_eq!(p.write(ALIVE_CK, 0), Err(Fault::Prohibited));
+        p.write(IMMEDIATE_CK, 1 << 29).unwrap(); assert!(p.mpll_disabled()); assert!(!p.cpll_enabled()); // APLL tie: accepted, no modelled APLL.
+        p.write(ALIVE_CK, 0).unwrap(); assert_eq!(p.read(ALIVE_CK), Ok(0)); p.write(ALIVE_CK, 0x7ffe_0000).unwrap(); // every field stored
         p.write(ACTIVE_CK, 1 << 27).unwrap(); assert_eq!(p.read(ACTIVE_CK), Ok(1 << 27));
         assert!(p.mpll_disabled()); assert_eq!(p.read(ALIVE_CK), Ok(0x7ffe_0000));
         assert_eq!(p.read(IMMEDIATE_CK + 4), Ok(0)); // PMU update commands are WT.
