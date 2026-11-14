@@ -1,4 +1,4 @@
-import {currentLocale} from './i18n.js';
+import {currentLocale,t} from './i18n.js';
 import {validFirmwareArchive} from './firmware-archive.js';
 // Browser-only metadata. Firmware bytes stay in the separate firmware cache.
 import {parseBurnerDownload} from './m5burner.js';
@@ -67,23 +67,24 @@ export function mountFirmwareHistory({input, kindInput, shaInput, productId, onS
   const label = document.createElement('label'); label.htmlFor = 'firmware-history-select'; label.textContent = '最近使用 · 当前设备';
   const clear = document.createElement('button'); clear.type = 'button'; clear.className = 'text-link'; clear.textContent = '清空记录';
   const select = document.createElement('select'); select.id = label.htmlFor;
-  const detail = document.createElement('p'); detail.className = 'helper firmware-history-detail';
+  const detail = document.createElement('p'); detail.className = 'helper firmware-history-detail';detail.setAttribute('data-i18n-skip','');
   heading.append(label, clear); region.append(heading, select, detail); if(mount)mount.append(region);else input.after(region);
   let entries = [];
+  const displayName=entry=>entry.name||(new URL(entry.url).pathname.split('/').some(Boolean)?firmwareHistoryName(entry.url):t('远程固件'));
   function render() {
     entries = store.list(productId()); region.hidden = !entries.length;
     select.replaceChildren(new Option('选择历史地址…', ''));
     entries.forEach((entry,index) => {
-      const option = new Option(`${entry.name || firmwareHistoryName(entry.url)} · ${entry.version || '版本未知'}${entry.bootMode==='app-direct'?' · 应用直启':''} · ${firmwareHistoryAge(entry.lastUsedAt)}`, String(index));
+      const option = new Option(`${displayName(entry)} · ${entry.version || t('版本未知')}${entry.bootMode==='app-direct'?t(' · 应用直启'):''} · ${t(firmwareHistoryAge(entry.lastUsedAt))}`, String(index));option.setAttribute('data-i18n-skip','');
       option.title = `${entry.url}\n${new Date(entry.lastUsedAt).toLocaleString(currentLocale())}`; select.append(option);
     });
-    detail.textContent = store.persistent ? '地址记录仅保存在此浏览器；清空记录不影响固件缓存。' : '浏览器不允许保存记录，本次历史仅在当前页面有效。';
+    detail.textContent = t(store.persistent ? '地址记录仅保存在此浏览器；清空记录不影响固件缓存。' : '浏览器不允许保存记录，本次历史仅在当前页面有效。');
   }
   select.addEventListener('change', () => {
     if (select.value === '') return;
     const entry = entries[Number(select.value)]; if (!entry) return;
     input.value = entry.url; kindInput.value = entry.kind; shaInput.value = entry.sha256;
-    detail.textContent = `${entry.name || firmwareHistoryName(entry.url)} · ${entry.version || '版本未知'} · ${entry.kind === 'manifest' ? '固件清单' : entry.bootMode==='app-direct'?'应用直启':'Flash 镜像'} · ${new Date(entry.lastUsedAt).toLocaleString(currentLocale())}`;
+    detail.textContent = `${displayName(entry)} · ${entry.version || t('版本未知')} · ${t(entry.kind === 'manifest' ? '固件清单' : entry.bootMode==='app-direct'?'应用直启':'Flash 镜像')} · ${new Date(entry.lastUsedAt).toLocaleString(currentLocale())}`;
     input.title = entry.url; onSelect?.(entry);
   });
   clear.addEventListener('click', () => { store.clear(productId()); render(); });

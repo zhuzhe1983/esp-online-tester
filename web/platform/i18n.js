@@ -96,9 +96,12 @@ function translateText(node) {
   if (next !== node.nodeValue) { translatedText.set(node, next); node.nodeValue = next; }
 }
 
-function skipped(node) {
+function skipped(node, attributes = false) {
   for (let el = node.nodeType === 1 ? node : node.parentElement; el; el = el.parentElement) {
-    if (SKIP.has(el.tagName) || el.hasAttribute?.('data-i18n-skip')) return true;
+    if (el.hasAttribute?.('data-i18n-skip')) return true;
+    // Raw logs and editor values remain opaque; their own accessible labels
+    // still belong to the UI. Descendants inside raw content stay untouched.
+    if (SKIP.has(el.tagName) && !(attributes && el === node && ['PRE', 'TEXTAREA'].includes(el.tagName))) return true;
   }
   return false;
 }
@@ -107,10 +110,10 @@ export function translateTree(root) {
   if (!root || locale === SOURCE_LOCALE) return;
   if (root.nodeType === 3) { translateText(root); return; }
   if (root.nodeType !== 1 && root.nodeType !== 9 && root.nodeType !== 11) return;
-  if (root.nodeType === 1) { if (skipped(root)) return; translateElement(root); }
+  if (root.nodeType === 1) { if (skipped(root, true)) return; translateElement(root); if (skipped(root)) return; }
   const walker = root.ownerDocument ? root.ownerDocument.createTreeWalker(root, 5) : root.createTreeWalker(root, 5);
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-    if (node.nodeType === 1) { if (skipped(node)) continue; translateElement(node); }
+    if (node.nodeType === 1) { if (skipped(node, true)) continue; translateElement(node); }
     else if (HAN.test(node.nodeValue)) translateText(node);
   }
 }
@@ -147,7 +150,7 @@ export function startI18n(doc = document) {
     new MutationObserver(records => {
       for (const record of records) {
         if (record.type === 'characterData') translateTree(record.target);
-        else if (record.type === 'attributes') { if (!skipped(record.target)) translateElement(record.target); }
+        else if (record.type === 'attributes') { if (!skipped(record.target, true)) translateElement(record.target); }
         else for (const node of record.addedNodes) translateTree(node);
       }
     }).observe(doc.body, {subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRIBUTES});

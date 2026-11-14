@@ -1,0 +1,121 @@
+// Real workbench/iframe UI plus explicit synthetic component states. No firmware
+// execution, microphone capture, network connection or destructive storage action.
+async page => {
+ const root=new URL('./',page.url()),errors=[],assert=(ok,message)=>{if(!ok)throw Error(message);};
+ const onError=error=>errors.push(error.message);page.on('pageerror',onError);
+ const settled=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const ready=async(target=page,language='en')=>{
+  await target.waitForFunction(lang=>document.documentElement.lang===lang&&!!window.espTester,language);
+  for(let i=0;i<100;i++){if(await target.evaluate(async()=>!!(await espTester.observe()).scene))return;await page.waitForTimeout(100);}
+  throw Error('Scene did not initialize');
+ };
+ const untranslated=async selector=>page.locator(selector).evaluate(root=>{
+  const strings=[],walker=document.createTreeWalker(root,5);
+  const skip=(node,attribute=false)=>{for(let el=node.nodeType===1?node:node.parentElement;el;el=el.parentElement){if(el.hasAttribute('data-i18n-skip'))return true;if(el.matches('script,style,pre,textarea')&&!(attribute&&el===node&&el.matches('pre,textarea')))return true;}return false;};
+  for(let node=walker.nextNode();node;node=walker.nextNode()){
+   if(node.nodeType===3&&!skip(node))strings.push(node.nodeValue);
+   if(node.nodeType===1&&!skip(node,true))for(const name of ['title','aria-label','placeholder','alt','label'])strings.push(node.getAttribute(name)||'');
+  }return [...new Set(strings.filter(s=>/[\u4e00-\u9fff]/.test(s)))];
+ });
+ let phase='setup';try {
+ await page.evaluate(()=>localStorage.setItem('esp-online-tester.locale','en'));
+ await page.setViewportSize({width:1440,height:1100});await page.goto(new URL('?lang=en',root).href);await ready();
+ phase='protected data and component states';
+ const componentResults=await page.evaluate(async()=>{
+  const {translateTree}=await import('./i18n.js'),box=document.createElement('section');box.id='i18n-component-fixture';document.body.append(box);
+  const assert=(ok,message)=>{if(!ok)throw Error(message);},settled=()=>new Promise(resolve=>setTimeout(resolve,30));
+  const mount=id=>{const el=document.createElement('section');el.id=id;box.append(el);return el;};
+  const raw=mount('raw');raw.innerHTML='<pre aria-label="串口日志"><span title="启动">暂停</span></pre><textarea aria-label="参数 JSON" placeholder="发送到设备…"></textarea><pre data-i18n-skip aria-label="启动">暂停</pre>';
+  raw.querySelector('textarea').value='启动';translateTree(raw);await settled();
+  assert(raw.querySelector('pre').getAttribute('aria-label')==='Serial log','Log accessible label');
+  assert(raw.querySelector('pre span').title==='启动'&&raw.querySelector('pre span').textContent==='暂停','Log descendants remain original');
+  assert(raw.querySelector('textarea').value==='启动'&&raw.querySelector('textarea').getAttribute('aria-label')==='Parameters JSON','Editor data and accessible label');
+  assert(raw.querySelector('[data-i18n-skip]').getAttribute('aria-label')==='启动','Explicit skip includes attributes');
+  raw.querySelector('pre').setAttribute('aria-label','错误详情');await settled();assert(raw.querySelector('pre').getAttribute('aria-label')==='Error details','Dynamic log label');
+  const {createFlashProfiles}=await import('./flash-profiles.js'),{SIMULATOR_UIFLOW2_PROFILE}=await import('./simulation-network.js');
+  const profiles=createFlashProfiles({builtins:[SIMULATOR_UIFLOW2_PROFILE]});profiles.put({name:'启动',type:'uiflow2',server:'uiflow2.m5stack.com',ssid:'暂停',password:'',bootOption:2});
+  const {createFlashConfigurationUI}=await import('./flash-configuration-ui.js');
+  const flash=createFlashConfigurationUI({profiles,apply(){},onChange(){},onError:error=>{throw error;}});box.append(flash.root);flash.update({receipt:{configurationFormats:{uiflow1:true,uiflow2:true}},counts:{active:0},status:'ready'});
+  await settled();const options=[...flash.root.querySelector('select').options].map(o=>o.textContent);
+  assert(options.some(s=>s==='启动 · UIFlow2 · This page only'),'Custom profile name is preserved');
+  assert(options.some(s=>s==='ESP Online Tester · UIFlow2 network startup · UIFlow2 · Built-in'),'Built-in profile follows locale');
+  const {mountVirtualConfiguration}=await import('./virtual-configuration-ui.js'),virtualMount=mount('virtual-fixture');
+  const virtual=mountVirtualConfiguration({container:virtualMount,profiles,runtime:{subscribe:()=>()=>{},observe:async()=>({status:'ready',firmware:{}}),inspectFirmwareConfiguration:async()=>({available:false,reason:{message:'请先加载完整固件。'}})}});
+  virtualMount.querySelector('details').open=true;await settled();
+  assert(virtualMount.querySelector('[data-profile]').textContent.includes('UIFlow2 network startup · Wi-Fi:'),'Built-in virtual profile summary');
+  const custom=[...virtualMount.querySelector('select').options].find(o=>o.textContent==='启动');assert(custom,'Custom virtual profile name is preserved');
+  virtualMount.querySelector('select').value=custom.value;virtualMount.querySelector('select').dispatchEvent(new Event('change'));await settled();
+  assert(virtualMount.querySelector('[data-profile]').textContent==='启动 · Wi-Fi: 暂停 · Network only','Profile name and SSID remain opaque');
+  const {mountFirmwareHistory}=await import('./firmware-history.js');
+  const historyMount=mount('history-fixture'),input=document.createElement('input'),kindInput=document.createElement('input'),shaInput=document.createElement('input');historyMount.append(input,kindInput,shaInput);
+  const history=mountFirmwareHistory({mount:historyMount,input,kindInput,shaInput,productId:()=> 'i18n-fixture'});
+  history.remember({name:'启动',version:'暂停',url:'https://example.test/启动.bin',kind:'merged',bootMode:'app-direct',productId:'i18n-fixture',lastUsedAt:Date.now()});await settled();
+  const historySelect=historyMount.querySelector('select');assert(historySelect.options[1].textContent==='启动 · 暂停 · Direct app boot · just now','Firmware name/version remain opaque');
+  historySelect.value='0';historySelect.dispatchEvent(new Event('change'));await settled();assert(historyMount.querySelector('.firmware-history-detail').textContent.startsWith('启动 · 暂停 · Direct app boot · '),'History detail preserves identity');
+  history.remember({url:'https://example.test/',kind:'merged',productId:'i18n-fixture',lastUsedAt:Date.now()});await settled();assert(historySelect.options[1].textContent.startsWith('Remote firmware · Unknown version'),'Unnamed URL fallback follows locale');
+  const {mountNetworkControls}=await import('./network-ui.js'),networkMount=mount('network-fixture');
+  const network=mountNetworkControls({container:networkMount,runtime:{subscribe:()=>()=>{},readNetwork:async()=>({mode:'public-relay',autoProvision:true,connection:'offline',router:{ssid:'启动'},softAp:{ssid:'暂停'},services:[],interfaces:[]})}});networkMount.querySelector('details').open=true;await settled();
+  assert(networkMount.querySelector('[data-addresses]').textContent==='Virtual router: 启动 · STA: no address · SoftAP: 暂停','Network names remain opaque');
+  const {mountAudioControls}=await import('./audio-controls.js'),audioMount=mount('audio-fixture');
+  let emitAudio;const audio=mountAudioControls({container:audioMount,runtime:{subscribe:()=>()=>{},observe:async()=>({status:'running'}),capabilities:async()=>({audio:{input:{available:true},output:{available:true}}})},createAudio:({onState})=>{emitAudio=onState;return {observe:()=>({microphone:'off',speaker:'on'}),dispose:async()=>{}};}});await settled();
+  assert(audioMount.querySelector('[data-audio=speaker]').getAttribute('aria-label')==='Disable speaker','Audio toggle uses natural English');
+  emitAudio({microphone:'error',speaker:'off',microphoneError:{code:'NotAllowedError',message:'denied'}});await settled();
+  assert(audioMount.querySelector('[role=status]').textContent==='The browser denied microphone access; check permissions.','Audio permission explanation');
+  const {mountHardwareDiagnostics}=await import('./hardware-diagnostics.js'),hardwareMount=mount('hardware-fixture');
+  const hardware=mountHardwareDiagnostics({container:hardwareMount,runtime:{subscribe:()=>()=>{},observe:async()=>({product:{runtime:{board:'corematrix'}},hardwareDiagnostics:{board:'corematrix',state:{controllerPowered:true,matrix:{powered:true,enabled:false,pwmSteps:8,frames:12},buzzer:{supplyEnabled:true,frequencyHz:1000,duty4095:0},grove5vEnabled:true,sdPresent:true}}})}});await settled();hardwareMount.querySelector('details').open=true;
+  assert(hardwareMount.textContent.includes('Controller power is on')&&hardwareMount.textContent.includes('LED matrix displayAsleep')&&hardwareMount.textContent.includes('microSDInserted'),'Hardware states translated');
+  const {createSdCardUi}=await import('./sd-card-ui.js'),sdMount=mount('sd-fixture');let emitSd;
+  const sdState={slot:true,present:true,supported:false,status:'prepared',format:'fat32',bytes:64*1024*1024};
+  const sd=createSdCardUi({mount:sdMount,getApi:()=>({observe:async()=>({sdCard:sdState}),subscribe:fn=>(emitSd=fn,()=>{})}),blocked:()=>false,releaseInputs:async()=>{},onError:error=>{throw error;}});await settled();
+  sdMount.querySelector('[data-action=clear-sd-card]').click();await settled();assert(sdMount.querySelector('.sd-card-confirm').textContent.includes('Replace the card prepared for this device with an empty 64 MiB FAT32 card.'),'Prepared card confirmation scope');
+  emitSd({type:'sd-card',sdCard:{...sdState,mounted:true,supported:true,status:'conflict'}});await settled();assert(sdMount.textContent.includes('Another page changed the TF card.'),'Card conflict explanation');
+  assert(sdMount.querySelector('[data-action=clear-sd-card]').disabled,'Conflict still disables replacing the card');
+  const {showErrorDialog}=await import('./error-ui.js');showErrorDialog({error:{code:'UI_FIXTURE',message:'启动'},message:'当前虚拟 Flash 分区表损坏。',context:{product:{name:'启动'}}});await settled();
+  const error=document.querySelector('#workbench-error');assert(error.querySelector('.helper').textContent==='启动'&&error.querySelector('pre').textContent==='UI_FIXTURE\n启动','Error context and raw detail remain original');assert(error.querySelector('#workbench-error-message').textContent==='The virtual Flash partition table is damaged.','Friendly error is translated');error.close();
+  window.i18nFixtureCleanup=async()=>{flash.dispose();virtual.dispose();network.dispose();await audio.dispose();hardware.dispose();sd.dispose();box.remove();};
+  return {rawLabels:true,customProfiles:true,builtInProfiles:true,historyIdentity:true,networkIdentity:true,audioStates:true,hardwareStates:true,sdStates:true,errorDetails:true};
+ });
+ const missing=await untranslated('#hardware-fixture');assert(!missing.length,'Hardware translations: '+missing.join(' | '));
+ await page.evaluate(()=>i18nFixtureCleanup());
+ phase='workbench storage and shell';
+ await page.evaluate(async()=>{const {loadCatalog,createDefaultScene}=await import('./catalog.js'),catalog=await loadCatalog();await espTester.configure(createDefaultScene(catalog,'m5stack-c158'));});await settled();
+ await page.locator('[data-action=device-storage]').click();await page.locator('.device-storage-dialog').waitFor();await settled();
+ assert(!(await untranslated('.device-storage-dialog')).length,'Storage controls fully translated');
+ await page.locator('[data-action=clear-sd-card]').click();await settled();
+ assert((await page.locator('.sd-card-confirm').innerText()).includes('All files on the old card will be erased.'),'Destructive consequence translated');
+ await page.screenshot({path:'output/playwright/i18n-storage-en.png'});
+ await page.setViewportSize({width:390,height:844});await settled();
+ assert(await page.locator('.device-storage-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth&&el.getBoundingClientRect().right<=innerWidth),'Storage dialog fits narrow viewport');
+ await page.locator('[data-action=confirm-clear-sd-card]').scrollIntoViewIfNeeded();await settled();
+ await page.screenshot({path:'output/playwright/i18n-storage-en-mobile.png'});await page.locator('.device-storage-dialog').getByRole('button',{name:'Close device storage'}).click();
+ await page.setViewportSize({width:1440,height:1100});await page.locator('#shell-settings summary').click();await page.locator('#shell-editor').waitFor();await settled();
+ assert(!(await untranslated('#shell-editor')).length,'Shell and sticker controls fully translated');
+ const png=await page.evaluate(()=>{const canvas=document.createElement('canvas');canvas.width=canvas.height=8;canvas.getContext('2d').fillRect(0,0,8,8);return canvas.toDataURL().split(',')[1];});
+ await page.locator('.sticker-upload input').setInputFiles({name:'启动.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});
+ await page.waitForFunction(()=>document.querySelector('.sticker-selected-name')?.textContent==='启动.png');await settled();
+ assert(await page.locator('.sticker-thumb[aria-pressed=true]').getAttribute('aria-label')==='启动.png','Sticker filename stays original in accessibility text');
+ assert((await page.locator('.sticker-status').innerText()).includes('Stickers added: 1'),'Sticker completion translated');
+ await page.screenshot({path:'output/playwright/i18n-shell-en.png'});await page.setViewportSize({width:390,height:844});await settled();
+ assert(await page.locator('#shell-editor').evaluate(el=>el.scrollWidth<=el.clientWidth&&el.getBoundingClientRect().right<=innerWidth),'Shell editor fits narrow viewport');
+ await page.locator('[data-sticker=remove]').scrollIntoViewIfNeeded();await page.locator('#toast').waitFor({state:'hidden'});await settled();await page.screenshot({path:'output/playwright/i18n-shell-en-mobile.png'});
+ await page.locator('[data-sticker=remove]').click();
+ await page.locator('#shell-editor').getByRole('button',{name:'Close shell editor'}).click();
+ phase='fullscreen';await page.locator('#fullscreen').click();await settled();assert(await page.locator('#fullscreen').getAttribute('aria-label')==='Exit fullscreen','Fullscreen label');
+ await page.locator('.viewer-chrome-toggle').click();await settled();assert(await page.locator('.viewer-chrome-toggle').innerText()==='Show tools','Hidden-tools label');await page.locator('.viewer-chrome-toggle').click();await page.locator('#fullscreen').click();
+ phase='embedded round trip';
+ const mini=await page.evaluate(()=>espTester.share({mode:'embed',autostart:false,autoplay:false}));await page.goto(mini);await ready();await settled();const sceneHash=new URL(page.url()).hash;
+ await page.locator('[data-action=device-storage]').click();await settled();assert(!(await untranslated('.device-storage-dialog')).length,'Mini storage translates');await page.locator('.device-storage-dialog').getByRole('button',{name:'Close device storage'}).click();
+ await Promise.all([page.waitForURL(url=>url.searchParams.get('lang')==='zh-CN'),page.locator('#language-select').selectOption('zh-CN')]);await ready(page,'zh-CN');await settled();assert(new URL(page.url()).hash===sceneHash,'Scene preserved in Chinese');
+ await page.locator('[data-action=device-storage]').click();await settled();assert((await page.locator('.device-storage-dialog').innerText()).includes('上传 IMG 镜像'),'Storage returns to Chinese');await page.locator('.device-storage-dialog').getByRole('button',{name:'关闭设备存储'}).click();
+ await Promise.all([page.waitForURL(url=>url.searchParams.get('lang')==='en'),page.locator('#language-select').selectOption('en')]);await ready();await settled();assert(new URL(page.url()).hash===sceneHash,'Scene preserved after round trip');
+ phase='iframe';await page.goto(new URL('agents.html',root).href);await page.setViewportSize({width:1000,height:900});
+ await page.evaluate(url=>{document.body.replaceChildren();const frame=document.createElement('iframe');frame.id='i18n-player-frame';frame.src=url;frame.style='width:390px;height:844px;border:0';document.body.append(frame);},mini);
+ await page.waitForFunction(()=>document.querySelector('iframe')?.contentWindow?.espTester);const frame=page.frames().find(f=>f.url().includes('embed.html'));assert(frame,'Embedded player frame');await ready(frame);
+ await frame.locator('[data-action=device-storage]').click();await settled();
+ assert((await frame.locator('.device-storage-dialog').innerText()).includes('Import IMG image'),'Iframe storage translated');
+ assert(await frame.locator('.device-storage-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth&&el.getBoundingClientRect().right<=innerWidth),'Iframe dialog fits');
+ await page.screenshot({path:'output/playwright/i18n-iframe-en.png'});
+ assert(!errors.length,errors.join('\n'));
+ return {...componentResults,desktop:true,narrow:true,iframe:true,localeRoundTrip:true,scenePreserved:true,stickerFilename:true,fullscreen:true,cardReplacements:0,virtualFlashWrites:0,hardwareWrites:0,microphoneRequests:0,pageErrors:errors};
+ } catch(error){throw Error(phase+': '+error.message);}finally{page.off('pageerror',onError);}
+}

@@ -1,4 +1,5 @@
 import {mountGuestPage} from './guest-page.js';
+import {t} from './i18n.js';
 // One network surface for human provisioning and agent-visible runtime state.
 export function mountNetworkControls({container,runtime,onError=console.error}={}) {
   if(!container)return {dispose(){}};
@@ -41,7 +42,8 @@ export function mountNetworkControls({container,runtime,onError=console.error}={
     $('[data-status]').textContent=labels[state.connection]||state.connection;
     $('.network-dot').classList.toggle('connected',state.connection==='connected');
     const a=state.interfaces?.[0],b=state.interfaces?.[1];
-    $('[data-addresses]').textContent=`虚拟路由器：${state.router.ssid} · STA：${a?.leaseReady?a.guestAddress:'未取得地址'} · SoftAP：${state.softAp?.ssid||'未发现'}${b?.leaseReady?` / ${b.guestAddress}`:''}`;
+    const addresses=$('[data-addresses]');addresses.setAttribute('data-i18n-skip','');
+    addresses.textContent=`${t('虚拟路由器：')}${state.router.ssid} · STA: ${a?.leaseReady?a.guestAddress:t('未取得地址')} · SoftAP: ${state.softAp?.ssid||t('未发现')}${b?.leaseReady?` / ${b.guestAddress}`:''}`;
     $('[data-error]').textContent=state.lastError?.message||uiError||({checking:'正在识别固件配网页…',submitting:'正在提交虚拟路由器配置…',submitted:'固件已接受配置，等待 STA 联网。',connected:'固件已取得 STA 地址。'}[state.provisioning]||'');
     if(displayedMapping&&!state.services.some(s=>s.mapping?.mappingId===displayedMapping)){displayedMapping=null;manualClosed=true;guestPage?.dispose();guestPage=null;$('.network-page').hidden=true;$('iframe').removeAttribute('src');}
     const key=JSON.stringify(state.services);

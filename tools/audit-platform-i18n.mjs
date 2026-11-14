@@ -23,7 +23,10 @@ for(const file of files) {
   }
   if(node.type==='TemplateLiteral') {
    const sample=node.quasis.map((part,index)=>(part.value.cooked??part.value.raw)+(index<node.expressions.length?`{${index}}`:'')).join('');
-   if(han.test(sample)&&han.test(t(sample)))templates.push({sample,source:`${file}:${node.loc.start.line}`});
+   // innerHTML is translated after parsing into text nodes and attributes, not
+   // as one giant string. Check its fragments, including initially hidden UI.
+   const samples=/<[a-z][^>]*>/i.test(sample)?[...sample.matchAll(/>([^<>]+)</g),...sample.matchAll(/(?:title|aria-label|placeholder|alt|label)="([^"]+)"/g)].map(match=>match[1]):[sample];
+   for(const value of samples)if(han.test(value)&&han.test(t(value)))templates.push({sample:value,source:`${file}:${node.loc.start.line}`});
   }
   for(const value of Object.values(node))if(Array.isArray(value))value.forEach(walk);else if(value&&typeof value==='object')walk(value);
  }

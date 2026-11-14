@@ -1,5 +1,6 @@
 import {browserFlashProfiles} from './flash-profiles.js';
 import {SIMULATOR_UIFLOW2_PROFILE} from './simulation-network.js';
+import {t} from './i18n.js';
 
 // An explicit virtual Flash operation. Merely selecting a profile never writes it.
 export function mountVirtualConfiguration({container,runtime,run=fn=>fn(),onError=console.error,profiles=browserFlashProfiles()}={}) {
@@ -13,9 +14,9 @@ export function mountVirtualConfiguration({container,runtime,run=fn=>fn(),onErro
   const usable=()=>state&&['ready','running','paused'].includes(state.status)&&!!state.firmware;
   const render=()=>{
     if(!alive)return;write.disabled=pending||!usable()||!inspection?.available||!selected();select.disabled=pending;
-    const p=selected();$('[data-profile]').textContent=p?`${p.name} · Wi-Fi：${p.ssid} · ${p.bootOption===2?'仅连接网络':'UIFlow 菜单'}`:'';
+    const p=selected();$('[data-profile]').textContent=p?`${p.builtin?t(p.name):p.name} · Wi-Fi：${p.ssid} · ${p.bootOption===2?'仅连接网络':'UIFlow 菜单'}`:'';
   };
-  const choices=()=>{const previous=select.value;values=profiles.list().filter(p=>p.type==='uiflow2');select.replaceChildren(...values.map(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name;return o;}));select.value=values.some(p=>p.id===previous)?previous:SIMULATOR_UIFLOW2_PROFILE.id;render();};
+  const choices=()=>{const previous=select.value;values=profiles.list().filter(p=>p.type==='uiflow2');select.replaceChildren(...values.map(p=>{const o=document.createElement('option');o.value=p.id;o.setAttribute('data-i18n-skip','');o.textContent=p.builtin?t(p.name):p.name;return o;}));select.value=values.some(p=>p.id===previous)?previous:SIMULATOR_UIFLOW2_PROFILE.id;render();};
   const inspect=async({keepMessage=false}={})=>{
     const token=++epoch;inspection=null;render();
     if(!usable()){$('[data-result]').textContent='加载 UIFlow2 固件后，可选择配置并写入。';return;}

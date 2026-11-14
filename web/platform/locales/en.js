@@ -2,6 +2,7 @@
 // Keep keys identical to the source text; edit values freely.
 import flash from './en-flash.js';
 import agents from './en-agents.js';
+import deviceTools from './en-device-tools.js';
 
 export default {
   "IMU 联动": "IMU link",
@@ -16,6 +17,7 @@ export default {
 
  ...flash,
  ...agents,
+ ...deviceTools,
  "可由智能体配置、由人操作的 ESP32 产品实验台：在浏览器中运行固件、验证输入输出、分享和嵌入场景。由 Zhu Zhe（zhuzhe1983）维护。": "An ESP32 product workbench that agents can configure and people can operate: run firmware in the browser, verify inputs and outputs, and share or embed scenes. Maintained by Zhu Zhe (zhuzhe1983).",
  "请按顺序点完全部文字，再单击“验证并继续”。": "Select all requested characters in order, then click “Verify & continue” once.",
  "正在处理验证，请稍候。": "Verification is being processed. Please wait.",

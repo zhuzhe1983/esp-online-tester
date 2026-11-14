@@ -1,5 +1,5 @@
 import {createSceneImuLink, imuModelForBoard} from './imu.js';
-import {currentLocale} from './i18n.js';
+import {currentLocale,t} from './i18n.js';
 import {firmwaresForProduct,firmwareTargetProduct} from './firmware-target.js';
 import {mountHardwareDiagnostics} from './hardware-diagnostics.js';
 import {mountAudioControls} from './audio-controls.js';
@@ -1092,6 +1092,7 @@ function setupEvents() {
 }
 
 async function init() {
+  if(!embedded)text('serial-output',t('ESP Workbench 已准备好。固件在当前浏览器中执行。\n'));
   catalog = await loadCatalog();
   try { localDefinitions = listLocalAccessories(); } catch (error) { report(error); }
   let restored, invalidRecording = false;

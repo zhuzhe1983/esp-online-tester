@@ -15,7 +15,7 @@ export function showErrorDialog({error,message,context={},kind='operation'}={}) 
   const dialog=node('dialog',null,'firmware-run-confirm workbench-error');dialog.id='workbench-error';dialog.setAttribute('aria-labelledby','workbench-error-title');dialog.setAttribute('aria-describedby','workbench-error-message');
   const title=node('h2',error?.code==='FIRMWARE_AUTH_REQUIRED'?'固件下载需要验证':kind==='startup'?'设备启动失败':kind==='page'?'页面发生错误':'操作未完成');title.id='workbench-error-title';
   const detail=node('p',message||'发生未知错误，请查看错误详情。');detail.id='workbench-error-message';
-  const contextLabel=node('p',context.product?.name,'helper');
+  const contextLabel=node('p',context.product?.name,'helper');contextLabel.setAttribute('data-i18n-skip','');
   const diagnostics=node('details',null,'error-diagnostics'),summary=node('summary','错误详情');
   const code=node('pre',redactIssueText(`${error?.code||'UI_ERROR'}\n${error?.message||message||''}`).slice(0,3000));code.setAttribute('data-i18n-skip','');diagnostics.append(summary,code);
   const note=node('p','报告会打开 GitHub 草稿，附带设备、固件和经脱敏的日志；请检查后自行提交。','helper');
