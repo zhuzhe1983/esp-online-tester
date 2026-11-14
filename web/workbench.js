@@ -265,6 +265,9 @@
       const head = make('div', 'wb-config-head');
       const heading = make('div');
       heading.append(make('span', 'wb-kicker', 'Local machine setup'), make('h2', '', 'Configure firmware'), make('p', '', 'Choose the emulated board and provide firmware from this computer. Nothing is uploaded.'));
+      const products = make('div', 'wb-links');
+      products.append(link('Product workbench · 3D models and firmware library', './platform/'));
+      heading.append(products);
       const close = make('button', 'wb-config-close', '×');
       close.type = 'button';
       close.setAttribute('aria-label', 'Close configuration');
