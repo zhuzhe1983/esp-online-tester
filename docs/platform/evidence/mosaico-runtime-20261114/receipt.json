@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-11-14T08:34:51Z",
+  "implementation": "e44a6bb8",
+  "modelImplementation": "c28bcf09",
+  "firmwareSha256": "7562ff67cad8280fe8fdd06f3be7d6c91f44e5a8cc63fe596721f48da428af9b",
+  "firmwarePatched": false,
+  "execution": "Production WASM in actual Node worker and headless Chromium; dual-hart RV32 interpreter.",
+  "passed": [
+    "official ROM/bootloader/main_app startup",
+    "480x480 framebuffer language selection via CST9220",
+    "workbench 2D pointer input opens Chinese multifunction page",
+    "workbench 3D screen pointer at guest (40,40) returns to main page",
+    "workbench KeyA standby/wake with guest serial output",
+    "share configuration restores exact product, KeyA/KeyB mapping and pinned firmware URL/hash",
+    "mini actual CORS failure opens existing original-download/local-file/SHA256 recovery UI",
+    "mini local-file recovery boots exact image without changing shared source identity",
+    "mini 3D touch chooses Chinese; onscreen AI button causes standby/wake guest output",
+    "final model JSON/geometry hashes match final dynamic 2D/3D mini display"
+  ],
+  "notAccepted": [
+    "Direct remote download/autostart for a new recipient: publisher lacks CORS.",
+    "Boot short-press application action; delivered but no observed effect.",
+    "Cross-runtime language retention: new mini returned to onboarding without clearing storage.",
+    "AI standby during language onboarding: acknowledged inputs had no application action.",
+    "Physical RF/SoftAP/cloud/voice/module/camera/optical brightness/power/timing behavior.",
+    "Full 1:1 model accuracy: source-derived exterior, UNKNOWN internal structure."
+  ],
+  "checks": [
+    "cargo test -p esp32sim-wasm s31_ --lib: 2 pass",
+    "node --test tools/platform-mosaico-layout-test.mjs: 2 pass",
+    "node --test tools/platform-config-test.mjs tools/platform-mosaico-layout-test.mjs: pass",
+    "node --test tools/platform-input-test.mjs tools/platform-view-test.mjs: pass",
+    "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings: pass",
+    "tools/wasm-build.sh: pass",
+    "node tools/probe-mosaico-factory.mjs OFFICIAL_BIN OUTPUT_DIRECTORY: pass"
+  ],
+  "privacy": "Only public firmware/source identities, emulator output, cropped product views and task-scoped functional results retained. No local source path, login, hostname or process inventory retained. No performance conclusion is drawn from runtime counters.",
+  "artifacts": {
+    "final-model-browser.json": "68addc89d17330ac014d9722ac44861d1dde160c918f19f6897896069de9c7a1",
+    "guest-awake.png": "a56de50b8a8e1c646efc6d982fe5650cb28f8e82d7726ab3e4ec9db960989059",
+    "guest-chinese-home.png": "f39f19576617f03dcb50b64c08cba61efc0769b4e93e19cae22cd9b417a902a4",
+    "guest-language.png": "1afd05f1ab338a9edd3aab83e0fc70b12d7fbc80800412b437b35560eb89c20d",
+    "guest-standby.png": "0a765a24cd1eeb6fbb4f4a0a79aa04527819a7aff6dd6b329ba4a15a37e03be7",
+    "mini-download-recovery.png": "ec4fe362e0adfa747b60b168db22e7a9454e0ca7d6fd4b63de25b9b3a513b00f",
+    "mini-home-2d.png": "19fba823e996e36185ace350f89b9822ec92f4fa680e7c2fe4e201ded99278ce",
+    "mini-home-3d.png": "d5b14704f067abd0901c66a0d15e10f9ea7b0b84013716f92038b4a03feccafb",
+    "mini-receipt.json": "31a16fd6d78a624c9e8555d3cc8d15f62a37d5ee13ca92d134988af57024b390",
+    "mini-standby.png": "50d320dafc6a666264ff820909dd66329fc931213b69542fc35febb7f1451e6f",
+    "workbench-home-3d.png": "b8b85fade111cb93a20c77fbdb5b61fa7cae9dd8a28579453bccd1eb9b1cf5e8",
+    "workbench-keyboard-standby.png": "3bbf7ae8d2c950f3a9cff242c572a1f07d1805f332c6dd146bb5681d3d9de0d4",
+    "workbench-receipt.json": "0d20a3f6d6ea2c05b08325c2516d25d05b986b9bbca21d59dd9d8db969248a61",
+    "worker-receipt.json": "6935da3bd1c623aae8fd5d07182d75488b56a6c10b94d5fc40cd34667dba028f"
+  }
+}
