@@ -56,10 +56,14 @@ CameraWebServer path is unsupported. See the [camera scope and example](docs/esp
 | ESP32-C6 | RISC-V RV32IMAC | draft | Waveshare ESP32-C6-LCD-1.47 (with the 802.15.4 radio), Seeed XIAO ESP32-C6 |
 | ESP32 (classic) | 2 x Xtensa LX6 | early | LilyGO TTGO T-Display, ESP32-2432S028 "Cheap Yellow Display", AI-Thinker ESP32-CAM (raw capture), Ulanzi TC001 |
 | ESP32-P4 (rev < 3; rev ≥ 3: hello_world, ESP-Hosted) | 2 x RISC-V RV32IMAFC | draft | console only; the C6 co-processor over SDIO |
-| ESP32-S31 | 2 x RISC-V RV32IMAFC | draft | native Machine CLI (`--chip s31`); IDF hello_world and ESP-Mosaico |
+| ESP32-S31 | 2 x RISC-V RV32IMAFC | draft | native Machine CLI (`--chip s31`); IDF hello_world and ESP-Mosaico; Mosaico V1.2 in the WASM product platform |
 
-S31 support here is in the native CLI, including its `--web` board view; it is not yet
-available in the product platform or the WebAssembly factory. The earlier strict
+S31 supports the native CLI and its `--web` board view, plus ESP-Mosaico V1.2 in
+the WebAssembly product platform. The unchanged official Hello 0.1.3 recovery image
+boots and responds to touch and AI standby/wake inputs. The publisher currently
+blocks browser CORS, so download the complete BIN and import it locally. The model
+is photo-derived with UNKNOWN internals; see the [verified scope and limitations](docs/platform/mosaico-runtime.md).
+The earlier strict
 `Bringup` diagnostic runner and its guest fixtures remain available separately under
 `esp32s31::bringup`. See [the board models](docs/boards.md).
 
