@@ -180,7 +180,7 @@ pub struct S31Bus {
     pub i2c: [esp_periph::i2c::I2c; 2],
     /// AXI-GDMA: GP-SPI2's DMA (IRQ sources 48-50 IN, 51-53 OUT).
     pub axi_dma: esp_periph::gdma::AxiDma,
-    pub lcd: crate::lcd::Lcd, pub rmt: crate::rmt::Rmt,
+    pub lcd: crate::lcd::Lcd, pub rmt: crate::rmt::Rmt, pub sdmmc: crate::sdmmc::SdmmcS31,
     /// 2D-DMA (IRQ sources 105-107 IN, 108-111 OUT) and the PPA (source 102) it feeds.
     pub dma2d: esp_periph::dma2d::Dma2d,
     pub ppa: esp_periph::ppa::Ppa,
@@ -261,7 +261,7 @@ impl S31Bus {
             // Same HS UTMI DWC2 instance as the P4 (esp_hal_usb/esp32s31/usb_dwc_periph.c); its
             // GHWCFG words are assumed equal to the P4's until read from an S31.
             usb_otg: esp_periph::usb_otg::Dwc2::new(esp_periph::usb_otg::Dwc2Config::esp32p4_hs(crate::periph::CPU_HZ)),
-            spi2: esp_periph::GpSpi::new().diverting_dma_rx(), spi3: esp_periph::GpSpi::with_host(3).diverting_dma_rx(), i2c: [esp_periph::i2c::I2c::new(), esp_periph::i2c::I2c::new()], i2c_frac: 0, axi_dma: esp_periph::gdma::AxiDma::new(), lcd: Default::default(), rmt: Default::default(), dma2d: esp_periph::dma2d::Dma2d::new(), ppa: esp_periph::ppa::Ppa::new(),
+            spi2: esp_periph::GpSpi::new().diverting_dma_rx(), spi3: esp_periph::GpSpi::with_host(3).diverting_dma_rx(), i2c: [esp_periph::i2c::I2c::new(), esp_periph::i2c::I2c::new()], i2c_frac: 0, axi_dma: esp_periph::gdma::AxiDma::new(), lcd: Default::default(), rmt: Default::default(), sdmmc: Default::default(), dma2d: esp_periph::dma2d::Dma2d::new(), ppa: esp_periph::ppa::Ppa::new(),
             ahb_dma: esp_periph::gdma::AhbDmaV2::new(), i2s: [esp_periph::I2s::new_v2(crate::periph::CPU_HZ), esp_periph::I2s::new_v2(crate::periph::CPU_HZ)] }
     }
     fn memory(&self, address: u32, bytes: usize) -> Option<&[u8]> {
@@ -492,6 +492,12 @@ impl S31Bus {
     }
     /// What the WiFi MAC's DMA sees: internal SRAM and LP RAM, PSRAM and flash through the MMU.
     fn wifi_mem(&mut self) -> Dma2dMem<'_> { Dma2dMem { mem: UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver }, cache: &mut self.cache } }
+    /// SDMMC uses the same AXI SRAM/PSRAM DMA view as Wi-Fi and LCD, including code-page
+    /// invalidation on IDMAC writes. Called only for a pending command or resumed transfer.
+    pub(crate) fn run_sdmmc(&mut self, now_ns: u64, slot: Option<([u8; 6], bool)>) {
+        let mut host = std::mem::take(&mut self.sdmmc); let mpll = self.clocks.mpll.output_hz();
+        host.run(&mut self.wifi_mem(), now_ns, slot, mpll); self.sdmmc = host;
+    }
     fn wifi_word(&mut self, addr: u32) -> u32 {
         let mut b = [0u8; 4];
         let _ = esp_periph::sdmmc::SdmmcMemory::read(&mut self.wifi_mem(), addr, &mut b);
@@ -560,7 +566,7 @@ impl S31Bus {
         let mut dma = UsbDma { sram: &mut self.sram, lp: &mut self.lp, ver: &mut self.code_ver };
         self.usb_otg.run(&mut dma);
     }
-    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], gpio: self.pads.irq_lines(), axi_dma: esp_periph::Device::irq_sources(&self.axi_dma), aes: self.periph.aes.irq(), dma2d: self.dma2d.irq_bits() as u8, ppa: self.ppa.irq(), wifi_mac: self.wifi_mac.irq(), ahb_dma: esp_periph::Device::irq_sources(&self.ahb_dma), i2s: [self.i2s[0].irq(), self.i2s[1].irq()], lcd: self.lcd.irq(), rmt: self.rmt.irq() } }
+    pub(crate) fn peripheral_irqs(&self) -> crate::interrupts::Irqs { crate::interrupts::Irqs { uart: self.uart_irq(), wdt: self.rtc_wdt.irq(), efuse: self.periph.efuse.irq(), usb: self.periph.usb.irq(), monitor: self.bus_monitor.irq(), cache: self.cache.irq(), mwdt: [self.periph.timg[0].irq_wdt(), self.periph.timg[1].irq_wdt()], systimer: self.periph.systimer.irqs(), psram: self.psram_controller.irq(), brownout: self.power.mode0.irq(), from_cpu: self.cores.from_cpu_irqs(), usb_otg: self.usb_otg.irq(), spi2: self.spi2.irq(), spi3: self.spi3.irq(), i2c: [self.i2c[0].irq(), self.i2c[1].irq()], gpio: self.pads.irq_lines(), axi_dma: esp_periph::Device::irq_sources(&self.axi_dma), aes: self.periph.aes.irq(), dma2d: self.dma2d.irq_bits() as u8, ppa: self.ppa.irq(), wifi_mac: self.wifi_mac.irq(), ahb_dma: esp_periph::Device::irq_sources(&self.ahb_dma), i2s: [self.i2s[0].irq(), self.i2s[1].irq()], lcd: self.lcd.irq(), rmt: self.rmt.irq(), sdmmc: self.sdmmc.irq() } }
     pub(crate) fn set_hart(&mut self, hart: usize) { self.hart = hart; }
     pub(crate) fn reset_hart(&mut self, hart: usize) { self.reservations[hart] = None; self.interrupts.clic[hart] = Default::default(); }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
@@ -706,6 +712,10 @@ impl S31Bus {
     fn read_modelled(&mut self, address: u32, bytes: usize) -> Result<u32, Fault> {
         if let Err(e) = self.apm.check(address, bytes, 2) { return self.fault(address, bytes, false, false, e); }
         if let Err(e) = self.permissions.check(address, false) { return self.fault(address, bytes, false, false, e); }
+        if crate::sdmmc::SdmmcS31::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
+            return match self.sdmmc.read(address) { Ok(v) => Ok(v), Err(e) => self.fault(address, bytes, false, false, e) };
+        }
         if crate::lcd::Lcd::is_mmio(address) || crate::rmt::Rmt::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, false, false, Fault::Misaligned); }
             return Ok(if crate::lcd::Lcd::is_mmio(address) { self.lcd.read(address) } else { self.rmt.read(address) });
@@ -951,6 +961,10 @@ impl S31Bus {
     fn write_modelled(&mut self, address: u32, value: u32, bytes: usize) -> Result<(), Fault> {
         if let Err(e) = self.apm.check(address, bytes, 1) { return self.fault(address, bytes, true, false, e); }
         if let Err(e) = self.permissions.check(address, true) { return self.fault(address, bytes, true, false, e); }
+        if crate::sdmmc::SdmmcS31::is_mmio(address) {
+            if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
+            return match self.sdmmc.write(address, value) { Ok(()) => Ok(()), Err(e) => self.fault(address, bytes, true, false, e) };
+        }
         if crate::lcd::Lcd::is_mmio(address) || crate::rmt::Rmt::is_mmio(address) {
             if bytes != 4 || address & 3 != 0 { return self.fault(address, bytes, true, false, Fault::Misaligned); }
             if crate::lcd::Lcd::is_mmio(address) { self.lcd.write(address, value); } else { self.rmt.write(address, value); }

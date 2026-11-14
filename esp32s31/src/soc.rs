@@ -326,12 +326,20 @@ impl SocBus {
         }
     }
 
+    /// Cold physical removal; return the device so callers can retain its modified storage.
+    pub fn eject_sd_card(&mut self) -> Option<Box<dyn esp_periph::sdmmc::SdDevice>> {
+        let card = self.inner.sdmmc.eject(); self.board.set_sd_card_present(false); self.irq_dirty = true; card
+    }
+
     /// After a store: pad level changes, then a finished GP-SPI2 transaction, to the board. Only
     /// GPIO stores and a started transfer do any work here.
     fn deliver_board_events(&mut self, address: u32) {
         if address >> 24 != 0x20 { return; }
         if address & !3 == TSF_LATCH { self.latch_tsf(); }
         if crate::pads::Pads::is_mmio(address) { self.deliver_pin_levels(); self.irq_dirty = true; }
+        if self.inner.sdmmc.pending() && crate::sdmmc::SdmmcS31::is_mmio(address) {
+            self.inner.run_sdmmc(self.board_ns, self.board.sd_card_slot()); self.irq_dirty = true;
+        }
         if self.inner.lcd.start_pending {
             let pll160 = self.inner.mspi.bbpll_root_hz().map(|hz| hz / 3);
             if let Some((w, h, bpp)) = self.inner.lcd.begin(pll160) {
@@ -654,6 +662,7 @@ impl esp_soc::SocBus for SocBus {
         if let Some(b) = &self.board_inputs { let _ = b.apply(&mut inner, mac); }
         // The virtual AP is outside the chip: it survives the reset, as on the C6 (surviving_reboot).
         inner.wifi_mac.link = std::mem::take(&mut self.inner.wifi_mac.link).surviving_reboot();
+        inner.sdmmc = std::mem::take(&mut self.inner.sdmmc); inner.sdmmc.reset();
         self.inner = inner;
         self.attach_board_devices();                     // the board's I2C devices, on the new controllers
         self.deliver_pin_levels();                       // the pads are back to their reset state
@@ -775,11 +784,20 @@ impl esp_soc::SocBus for SocBus {
             .collect()
     }
 
+    fn attach_sd_card(&mut self, image: Box<dyn esp_periph::sdmmc::SdStore>, config: esp_periph::sdmmc::SdCardConfig) -> Result<String, String> {
+        if self.board.sd_card_slot().map(|(pins, _)| pins) != Some(crate::sdmmc::SLOT0_PINS) {
+            return Err("this S31 board has no modeled SDMMC slot on its dedicated pads".into());
+        }
+        let info = self.inner.sdmmc.attach(image, config)?;
+        self.board.set_sd_card_present(true); self.irq_dirty = true; Ok(info)
+    }
+
     fn set_debug(&mut self, f: &esp_soc::DebugFlags) {
         self.debug = f.clone();
         self.misc.log_all = f.has("mmio");
         self.misc.log_unknown = f.has("mmio");
         self.inner.spi2.log = f.has("spi"); self.inner.spi3.log = f.has("spi");
+        esp_periph::Device::debug(&mut self.inner.sdmmc.host, f.has("sdmmc"));
         esp_periph::Device::debug(&mut self.inner.axi_dma, f.has("dma"));
         esp_periph::Device::debug(&mut self.inner.dma2d, f.has("dma2d")); esp_periph::Device::debug(&mut self.inner.ppa, f.has("ppa"));
         for i in &mut self.inner.i2c { i.log = f.has("i2c"); }
@@ -800,7 +818,11 @@ impl esp_soc::SocBus for SocBus {
     }
 
     fn report(&self) -> String {
-        let board = self.board.report();
+        let mut board = self.board.report();
+        if self.inner.sdmmc.present() || self.inner.sdmmc.host.stats.commands != 0 {
+            let s = &self.inner.sdmmc.host.stats;
+            board += &format!("\n[sdmmc] commands={} timeouts={} read={} written={}", s.commands, s.timeouts, s.bytes_read, s.bytes_written);
+        }
         let u = &self.inner.unmodelled;
         let list: Vec<String> = u.iter().take(48).map(|(a, v)| format!("{a:#010x}={v:#x}")).collect();
         format!(
@@ -812,7 +834,9 @@ impl esp_soc::SocBus for SocBus {
             list.join(" "),
             self.inner.refused.len(),
             self.inner.refused.iter().take(48).map(|(a, (n, v))| format!("{a:#010x}x{n}(last write {v:#x})")).collect::<Vec<_>>().join(" ")
-        ) + &format!("\nesp32s31: LCD {} frames, {} faults; RMT {} transfers", self.inner.lcd.frames, self.inner.lcd.faults, self.inner.rmt.inner.tx_count) + &format!("\nesp32s31: GP-SPI2 {} transfers", self.inner.spi2.transfers) + &self.inner.i2s.iter().enumerate().filter(|(_, i)| i.frames_out != 0 || i.bytes_in != 0 || i.rx_running())
+        ) + &if self.inner.lcd.frames != 0 || self.inner.lcd.faults != 0 || self.inner.rmt.inner.tx_count != 0 {
+            format!("\nesp32s31: LCD {} frames, {} faults; RMT {} transfers", self.inner.lcd.frames, self.inner.lcd.faults, self.inner.rmt.inner.tx_count)
+        } else { String::new() } + &format!("\nesp32s31: GP-SPI2 {} transfers", self.inner.spi2.transfers) + &self.inner.i2s.iter().enumerate().filter(|(_, i)| i.frames_out != 0 || i.bytes_in != 0 || i.rx_running())
             .map(|(n, i)| format!("\nesp32s31: I2S{n} TX {} frames at {} Hz, RX {} bytes to DMA (RX rate {:?}, RX_CONF {:#x}, RX_CONF1 {:#x})", i.frames_out, i.sample_rate, i.bytes_in, i.rx_rate(), i.read(0x20), i.read(0x28))).collect::<String>() + if board.is_empty() { "" } else { "\n" } + &board
     }
 }
@@ -983,6 +1007,7 @@ impl Bus for SocBus {
         let t = u128::from(cycles) * 1_000_000_000 + u128::from(self.board_ns_frac);
         self.board_ns += (t / u128::from(hz)) as u64; self.board_ns_frac = (t % u128::from(hz)) as u64;
         self.board.advance_to(self.board_ns);
+        if self.inner.sdmmc.pending() { self.inner.run_sdmmc(self.board_ns, self.board.sd_card_slot()); self.irq_dirty = true; }
         if self.inner.rmt.running() {
             let before = self.inner.rmt.irq();
             self.inner.rmt.tick(u64::from(cycles), self.inner.mspi.bbpll_root_hz().map(|hz| hz / 6), self.inner.clocks.rc_fast_hz());
@@ -1030,6 +1055,40 @@ impl Bus for SocBus {
 mod tests {
     use super::*;
     use esp_soc::SocBus as _;
+
+    #[test]
+    fn sdmmc_soc_attachment_mmio_interrupt_and_reboot_keep_the_card() {
+        use crate::sdmmc::{BASE, CLOCK, PHASE, PAD_CTRL, SLOT0_PINS};
+        use esp_periph::sdmmc::{reg, SdStore, SdCardConfig, CMD_START, CMD_RESP, CTRL_INT_ENABLE};
+        use std::sync::{Arc, Mutex};
+        struct Store;
+        impl SdStore for Store {
+            fn len(&self) -> u64 { 1 << 20 }
+            fn read(&mut self, _: u64, b: &mut [u8; 512]) -> std::io::Result<()> { b.fill(0); Ok(()) }
+            fn write(&mut self, _: u64, _: &[u8; 512]) -> std::io::Result<()> { Ok(()) }
+        }
+        struct Board(Arc<Mutex<bool>>);
+        impl esp_soc::board::BoardModel for Board {
+            fn name(&self) -> &'static str { "s31-card-test" }
+            fn sd_card_slot(&self) -> Option<([u8; 6], bool)> { Some((SLOT0_PINS, true)) }
+            fn set_sd_card_present(&mut self, present: bool) { *self.0.lock().unwrap() = present; }
+        }
+        let mut b = SocBus::new(1 << 20, [0; 6]);
+        assert!(b.attach_sd_card(Box::new(Store), SdCardConfig::default()).is_err());
+        let present = Arc::new(Mutex::new(false)); b.board = Box::new(Board(present.clone()));
+        b.attach_sd_card(Box::new(Store), SdCardConfig::default()).unwrap(); assert!(*present.lock().unwrap());
+        b.inner.clocks.mpll.set_power(true); b.inner.clocks.mpll.advance(16, true);
+        for (a, v) in [(CLOCK, 9), (PHASE, 7 << 22), (PAD_CTRL, 1), (BASE + reg::CLKENA, 1),
+            (BASE + reg::CTRL, CTRL_INT_ENABLE), (BASE + reg::INTMASK, u32::MAX),
+            (BASE + reg::CMDARG, 0x1aa), (BASE + reg::CMD, CMD_START | CMD_RESP | 8)] { b.write32(a, v).unwrap(); }
+        assert_eq!(b.read32(BASE + reg::RESP0), Ok(0x1aa)); assert!(b.inner.peripheral_irqs().sources().contains(&(3, true)));
+        assert!(!b.inner.sdmmc.pending()); assert_eq!(b.inner.sdmmc.host.stats.commands, 1);
+        assert!(b.inner.unmodelled.is_empty() && b.inner.refused.is_empty());
+        b.reboot([0; 6]); assert!(b.inner.sdmmc.present()); assert!(*present.lock().unwrap());
+        assert_eq!(b.inner.sdmmc.host.stats.commands, 1); assert_eq!(b.read32(CLOCK), Ok(0));
+        b.write32(BASE + reg::CMD, CMD_START | CMD_RESP | 8).unwrap(); assert!(b.inner.sdmmc.pending());
+        assert!(b.eject_sd_card().is_some()); assert!(!*present.lock().unwrap()); assert!(!b.inner.sdmmc.present());
+    }
 
     #[test]
     fn gpio_and_rgb_board_events_share_nanosecond_time_and_live_routes() {
