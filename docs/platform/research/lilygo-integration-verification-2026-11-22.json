@@ -220,6 +220,17 @@
       "pairs": 4,
       "identicalWorkAndOutput": true,
       "disposition": "Rejected; moving I2C0 into a separate allocation did not recover the measured idle-path cost. Revert this candidate; keep the full measurements."
+    },
+    {
+      "gate": "P4 interrupt-source inlining candidate",
+      "candidateCommit": "a03f2e5e8713156918bfa8f3031d5f8769782a91",
+      "receipt": "docs/platform/research/lilygo-p4-inline-exploratory-2026-11-22.json",
+      "medianPercentChange": 9.39136550251909,
+      "pairedMedianPercentChange": 6.976818093286918,
+      "slowerPairs": 4,
+      "pairs": 4,
+      "identicalWorkAndOutput": true,
+      "disposition": "Rejected; removal of the source-status call and stack return buffer was confirmed in machine code, but this candidate did not eliminate the measured CPU increase. Revert both inlining attributes. No wider IRQ/timing rewrite is adopted."
     }
   ],
   "resetSemantics": {

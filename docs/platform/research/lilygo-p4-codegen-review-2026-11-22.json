@@ -204,5 +204,145 @@
     "Only the listed functions and relevant source paths were examined; this is not a complete native, WASM, firmware, or hardware correctness review.",
     "Do not skip optional IRQ cache aggregation solely because active_optional is empty: a completed I2C controller can be idle while its completion interrupt remains asserted.",
     "The proposed two-line candidate had not been built or measured when these findings were recorded."
+  ],
+  "candidates": [
+    {
+      "id": "inherent-source-status-inline-only",
+      "observedAt": "2026-11-22T11:20:18Z",
+      "sourceCommit": "75005c275d6f86004e5157f7d8aa61f1f8a3dd8e",
+      "artifact": {
+        "sha256": "f288c97de439c55b96ee8012c00450400fbfcf7a616c8e31f8fdc4bd4a02f489",
+        "bytes": 36224000
+      },
+      "change": "Add only #[inline(always)] to the P4 inherent Peripherals::source_status wrapper; the I2C0 Box experiment had been reverted.",
+      "goalAchieved": false,
+      "sourceStatusSymbols": {
+        "inherentPresent": false,
+        "dispatchPresent": true,
+        "dispatchBytes": 1359,
+        "dispatchInstructions": 331
+      },
+      "refreshIrq": {
+        "bytes": 766,
+        "instructions": 209,
+        "sourceStatusCallTarget": "<esp32p4::periph::Peripherals as esp_periph::mmio::Dispatch>::source_status",
+        "returnSlotBytes": 16,
+        "returnSlotReads": 5,
+        "finding": "Inlining the wrapper moved the remaining external call to the Dispatch method; the intended call boundary and stack return slot remained."
+      },
+      "preAccess": {
+        "bytes": 1119,
+        "instructions": 286,
+        "sourceStatusCallRemains": true
+      },
+      "otherFunctions": [
+        {
+          "symbol": "Peripherals::tick",
+          "bytes": 1308,
+          "instructions": 287
+        },
+        {
+          "symbol": "Bus::tick",
+          "bytes": 4544,
+          "instructions": 985
+        },
+        {
+          "symbol": "SocBus::next_deadline",
+          "bytes": 1170,
+          "instructions": 295
+        },
+        {
+          "symbol": "SocBus::periph_read",
+          "bytes": 462,
+          "instructions": 120
+        }
+      ],
+      "sourceSemantics": "The reviewed commit contains one attribute insertion only, without changes to IRQ aggregation, time advancement, or scheduling.",
+      "recommendationAtReview": "Do not start a timing campaign under the premise that this candidate eliminated the call: it did not.",
+      "limits": [
+        "No executable or firmware was run during this codegen review.",
+        "The newly external Dispatch body changes code shape; static function sizes do not predict performance."
+      ]
+    },
+    {
+      "id": "p4-dispatch-and-inherent-source-status-inline",
+      "observedAt": "2026-11-22T11:20:18Z",
+      "sourceCommit": "a03f2e5e8713156918bfa8f3031d5f8769782a91",
+      "boxRevertedAt": "ac02d1b18b9bc37a787ca2b40e0fdc4d2224d87d",
+      "artifact": {
+        "sha256": "e739dd748d62451d5ccf0e9f6b1836611ecd17c160e52bae893e837a35c9f659",
+        "bytes": 36226496
+      },
+      "changes": [
+        "Retain #[inline(always)] on the P4 inherent Peripherals::source_status wrapper.",
+        "Use the existing inline always option in the P4 device_set invocation.",
+        "Keep the original unboxed I2C0 field; do not alter shared macro implementation, IRQ conditions, clocks, deadlines, or scheduling."
+      ],
+      "goalAchieved": true,
+      "sourceStatusSymbols": {
+        "inherentPresent": false,
+        "dispatchPresent": false
+      },
+      "refreshIrq": {
+        "bytes": 1799,
+        "instructions": 453,
+        "sourceStatusCallRemains": false,
+        "sourceStatusReturnSlotPresent": false,
+        "rspAddressedDataOperands": 0,
+        "remainingCalls": [
+          "core::panicking::panic_bounds_check"
+        ],
+        "finding": "The complete source aggregation is inside refresh_irq. There is no external inherent or Dispatch source_status call and no stack data operand through %rsp; callee-saved register pushes/pops remain.",
+        "originalCandidateSeparatedFunctions": {
+          "refreshIrqBytes": 766,
+          "sourceStatusBytes": 1219,
+          "combinedBytes": 1985,
+          "refreshIrqInstructions": 209,
+          "sourceStatusInstructions": 304,
+          "combinedStaticInstructions": 513
+        },
+        "comparisonLimit": "Adding static sizes of separate functions is descriptive only; it is not a dynamic instruction count or a speed measurement."
+      },
+      "preAccess": {
+        "bytes": 2311,
+        "instructions": 563,
+        "sourceStatusCallRemains": false,
+        "finding": "The second production source-status call is also inlined. This MMIO function grows from the original candidate 1119 bytes / 286 instructions."
+      },
+      "otherFunctions": [
+        {
+          "symbol": "Peripherals::tick",
+          "bytes": 1308,
+          "instructions": 287,
+          "finding": "Same static size/count as the original candidate; its tick_optional call remains."
+        },
+        {
+          "symbol": "Bus::tick",
+          "bytes": 4544,
+          "instructions": 985,
+          "finding": "Same static size/count as the original candidate; the existing calls to the inherent Peripherals::tick wrapper remain."
+        },
+        {
+          "symbol": "SocBus::next_deadline",
+          "bytes": 1170,
+          "instructions": 295,
+          "finding": "Same static size/count as the original candidate."
+        },
+        {
+          "symbol": "SocBus::periph_read",
+          "bytes": 462,
+          "instructions": 120,
+          "finding": "Same static size/count as the original candidate."
+        }
+      ],
+      "sourceSemantics": "The cumulative candidate changes only the existing P4 inlining policies. This review found no source-level IRQ, timing, routing or scheduling behavior change; it did not execute a correctness test.",
+      "recommendationAtReview": "The intended code-generation change is now present, so a separately recorded exact-work performance comparison can test this candidate.",
+      "limits": [
+        "No build, executable run, firmware test, or benchmark was performed by this review.",
+        "No performance improvement is claimed before measurement.",
+        "Matching static sizes/counts for tick and deadline functions do not establish byte identity or full behavioral equivalence.",
+        "Inlining can change register pressure and instruction layout, and expands the MMIO pre_access body."
+      ]
+    }
   ]
 }
