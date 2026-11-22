@@ -33,6 +33,13 @@ for f in ASSETS.glob('lilygo-*/model-plan.json'):
  existing={s['id']for s in plan['provenance']['sources']};plan['provenance']['sources'].extend(sources[s].copy()for s in profile['sourceIds']if s in sources and s not in existing)
  patch=patchby[id];patch['sourceIds']=list(dict.fromkeys(patch['sourceIds']+profile['sourceIds']))
  display=profile.get('display');bw,bh,depth=[plan['dimensions'][k]for k in ['width','height','depth']]
+ if profile.get('physicalDisplay') is False:
+  # An explicit, source-backed no-screen correction overrides a mistaken
+  # storefront/wiki hint. A missing runtime display alone does not mean no LCD.
+  plan['presentation'].pop('screen',None);plan.pop('displayNativeOrientation',None);patch.pop('displayHint',None)
+  plan['parts']=[p for p in plan['parts']if p['name']!='debug-screen-frame'];plan['derivedParts']=[p for p in plan.get('derivedParts',[])if p['id']!='debug-panel-label']
+  plan['debugPreview']['physicalDisplay']=False;plan['debugPreview']['liveFramebuffer']=False
+  display=None
  if display:
   ratio=display['width']/display['height'];old=plan.get('presentation',{}).get('screen');wrong=not old or abs(old['sizeMm'][0]/old['sizeMm'][1]-ratio)>1e-7
   if wrong:
@@ -40,8 +47,15 @@ for f in ASSETS.glob('lilygo-*/model-plan.json'):
    plan['parts']=[p for p in plan['parts']if p['name']!='debug-screen-frame'];plan['derivedParts']=[p for p in plan.get('derivedParts',[])if p['id']!='debug-panel-label']
    plan['parts'].append({'name':'debug-screen-frame','role':'component','kind':'ring','sizeMm':[sw+3,sh+8,1.4],'openingMm':[sw,sh],'radiusMm':2,'innerRadiusMm':.2,'centerMm':[sx,0,0],'color':'#20343d','basis':'debug-layout'})
    plan['presentation']['screen']={'sizeMm':[sw,sh],'positionMm':[sx,1,.72],'rotation':[0,0,0],'notes':'Separate native-orientation debug panel, not an uncalibrated physical window.'};plan['derivedParts'].append({'id':'debug-panel-label','kind':'printed-marking','basis':'debug-layout','sourceIds':profile['sourceIds'],'lines':['LIVE DEBUG'],'color':'#bde5d8','geometry':{'sizeMm':[sw,3.2],'centerMm':[sx,-sh/2-2,.72]}});plan['presentation']['bodySizeMm']=[bw+sw+12,max(bh,sh+8),max(depth,1.4)]
-  patch['displayHint']={'width':display['width'],'height':display['height'],'sourceIds':profile['sourceIds'],'basis':'exact selected BSP/controller native orientation','physicalSizeMm':None}
-  plan['displayNativeOrientation']={'width':display['width'],'height':display['height'],'sourceIds':profile['sourceIds']}
+  implemented=display.get('implemented') is not False
+  patch['displayHint']={'width':display['width'],'height':display['height'],'sourceIds':profile['sourceIds'],'basis':'exact selected BSP/controller native orientation'if implemented else'verified physical panel; runtime frame output not implemented','physicalSizeMm':None,'implemented':implemented}
+  plan['displayNativeOrientation']={'width':display['width'],'height':display['height'],'sourceIds':profile['sourceIds'],'implemented':implemented}
+  plan['debugPreview']['liveFramebuffer']=implemented
+  for part in plan.get('derivedParts',[]):
+   if part['id']=='debug-panel-label':part['lines']=['LIVE DEBUG'if implemented else'DISPLAY PREVIEW']
+  if not implemented:
+   plan['presentation']['screen']['notes']='Physical display preview only; the selected runtime has no implemented framebuffer transport.'
+   if not any('DISPLAY PREVIEW' in n for n in plan['limitations']):plan['limitations'].append('DISPLAY PREVIEW 仅表示已核实的实体屏幕尺寸比例；此板运行时尚未实现显示总线和帧输出。')
  # Explicit debugging controls provide semantic click surfaces without claiming
  # unverified physical button placement. Physical CAD/photographic matches win.
  plan['parts']=[p for p in plan['parts']if not p['name'].startswith('debug-control:')];plan['derivedParts']=[p for p in plan.get('derivedParts',[])if not p['id'].startswith('debug-control-label:')]
