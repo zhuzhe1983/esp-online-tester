@@ -12,8 +12,9 @@ Only 20 entries have an applicable day-level hardware date in the inspected offi
 
 - 125 exact storefront product handles found in the official public JSON inventory; both remaining individual product JSON endpoints returned HTTP 404.
 - 79 product documentation mappings inspected at a single pinned official documentation commit. Its object type and actual tree SHA were independently checked through the Git commit API; the normalized tree-list snapshot alone is not used to infer either identity.
+- The two retired storefront identities now have exact front/back photo composites recovered from the pinned manufacturer Spark repository. The supplemental audit resolves a named T5 V2.3.1 DEPG0213BN display and the T3-S3 Meshtastic OLED through explicit manufacturer descriptions and bundled drivers. It enables no board runtime and assigns no sibling launch dates.
 - The JSON preserves public source URLs, redirect targets, UTC retrieval times, byte counts and SHA-256; Markdown content additionally checks the Git blob identity.
-- Model and photo links are marked `linked` until retrieved and validated by the model workflow. Discovery of a model directory does not establish an exact licensed assembly.
+- Model and photo links are marked `linked` until retrieved and validated by the model workflow. The two supplemental photos and the T5 reference STEP have byte receipts; the STEP has no exact revision label or CAD-specific license. Discovery of a model directory does not establish an exact licensed assembly.
 - Every item includes a factory-firmware investigation status. A link to an official firmware directory is not a verified complete image, hash, factory identity, or successful boot. No third-party firmware binary is downloaded or committed by this audit.
 
 ## Important identity and source conflicts
@@ -24,7 +25,10 @@ Only 20 entries have an applicable day-level hardware date in the inspected offi
 | T-Display S3 Pro / External | Original Pro wiki mentions 2.2-inch ST7789V2; storefront says 2.33-inch ST7796, both 222×480. | Resolve controller and geometry against the exact source header and revision; retain the External listing’s separate identity. |
 | T-Beam 1W | Storefront MCU text contains `ESP32-53FN8` and an unrelated malformed Mini-Epaper link. | Prefer the correct LoRa-Series hardware files; do not silently copy obvious page-template mistakes into a runtime. |
 | T-Display P4 | V1.0 version-history date is 2025-06-13; storefront was published later. | Keep V1.0 date; a newer V2 preview is a separate revision, not a replacement date. |
-| T5 V2.3.1 / T3-S3 Meshtastic | Exact storefront handles are absent from the current inventory and their individual JSON endpoints return 404. | Keep original catalog identities with unknown dates; do not use sibling publication dates. |
+| T5 V2.3.1 / T3-S3 Meshtastic | Exact storefront handles are absent from the current inventory. Exact retained Spark photos show both faces; T5's old page redirects to V2.4. | Keep original identities and unknown dates. Use exact retained photos; do not replace V2.3.1 with current V2.4 pictures or inherit sibling dates. |
+| T5 V2.3.1 DEPG0213BN | Spark says SSD1680 212×104; its explicitly named manufacturer-bundled driver declares visible 122×250 and RAM width 128. | Scope the debug panel to DEPG0213BN at 122×250. Preserve the conflict and alternative-panel uncertainty. |
+
+The detailed evidence, exact URLs and retrieval hashes for these two recovered products are in [lilygo-model-gap-sources-2026-11-22.json](lilygo-model-gap-sources-2026-11-22.json). The audit generator merges this curated supplement without changing chronology or runtime status.
 
 ## Newest-first inventory
 

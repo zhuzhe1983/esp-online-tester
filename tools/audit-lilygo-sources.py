@@ -304,6 +304,23 @@ def build(cache, output):
         entry['unknowns'].append('Pins, alternative screen/SoC revisions, physical dimensions and ports require exact variant review; table extraction is source evidence, not runtime configuration.')
         entry['normalizedSpecifications'] = normalized_specifications(entry['specifications'])
         rows.append(entry)
+    # Retired storefront handles can retain exact assets in the manufacturer's
+    # pinned Spark repository. Curated evidence is explicit and reproducible;
+    # it must not manufacture a launch date or activate a runtime profile.
+    supplemental_path = ROOT / 'docs/platform/research/lilygo-model-gap-sources-2026-11-22.json'
+    if supplemental_path.exists():
+        supplemental = read(supplemental_path)
+        for source in supplemental['sources']:
+            assert source['id'] not in sources, f'Duplicate supplemental source: {source["id"]}'
+            sources[source['id']] = source
+        by_id = {row['id']: row for row in rows}
+        for extra in supplemental['items']:
+            assert extra['id'] in by_id, f'Unknown supplemental product: {extra["id"]}'
+            row = by_id[extra['id']]
+            assert not row['storefront'], f'Supplemental retired handle now has a storefront: {extra["id"]}; re-review its revision'
+            row.update(extra)
+            row['supplementalAudit'] = str(supplemental_path.relative_to(ROOT))
+            row['normalizedSpecifications'] = normalized_specifications(row['specifications'])
     rows.sort(key=lambda x: (x['chronology']['date'] is not None, x['chronology']['date'] or '', x['id']), reverse=True)
     for rank, row in enumerate(rows, 1):
         row['priorityRank'] = rank
@@ -311,7 +328,7 @@ def build(cache, output):
     report = {'schemaVersion': '1', 'generatedAt': stamp(), 'catalogRevision': catalog['revision'],
               'scope': 'All 127 LILYGO entries already present in the public product catalog; newer external products not silently added.',
               'orderingPolicy': 'Newest to oldest by exact documented hardware release when present; otherwise explicitly labeled storefront publication proxy. Unknown dates follow dated entries. Never use current repository commit time as launch date.',
-              'sourcePolicy': 'Original public metadata is cached locally; only facts, links, retrieval receipts and limited discovery notes are retained. Linked images/CAD/firmware have not been fetched by this audit.',
+              'sourcePolicy': 'Original public metadata is cached locally; facts, links, retrieval receipts and limited discovery notes are retained. Exact retired-product photos and a reference STEP were fetched in the linked supplemental audit, with byte receipts. Other linked images/CAD remain discovery evidence; no third-party firmware binaries are fetched or mirrored.',
               'sourceCount': len(used), 'sources': [sources[sid] for sid in sorted(used)], 'items': rows,
               'newestFirst': [r['id'] for r in rows],
               'unadaptedNewestFirst': [r['id'] for r in rows if r['wasRuntimeUnavailable']],
