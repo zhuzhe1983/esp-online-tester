@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "evidenceDate": "2026-11-22",
-  "updatedAt": "2026-11-22T11:01:06+00:00",
-  "status": "performance-regression-investigation",
+  "updatedAt": "2026-11-22T11:34:20+00:00",
+  "status": "local-functional-validation-complete-with-performance-limit",
   "scope": {
     "catalogProducts": 127,
     "newDiagnosticProfiles": 121,
@@ -124,7 +124,7 @@
       "name": "证据隐私与来源审阅",
       "status": "passed",
       "command": "node tools/check-evidence-privacy.mjs",
-      "detail": "2378 tracked evidence files (22 gzip) passed; manual review found no local host paths or credentials in 406 JSON records and verified 376 photo hashes before final S2 integration"
+      "detail": "Existing docs/evidence pattern gate: 2378 tracked files, 22 gzip, passed. Additional final review: 287 LilyGO JSON records / 170521 strings, plus 706 changed text files with 119 compressed files expanded, no private host paths, credentials or signed URLs found. Binary source provenance and model hashes were reviewed separately."
     },
     {
       "id": "native-release",
@@ -166,9 +166,9 @@
     {
       "id": "performance",
       "name": "最终性能对照",
-      "status": "regression-investigation",
+      "status": "completed-with-known-increase",
       "command": "python3 -B tools/bench-lilygo-cpu.py --baseline ../lilygo-perf-base --candidate . --assets web/wasm/fw --rounds 8 --workloads all --output docs/platform/research/lilygo-performance-final-2026-11-22.json --raw-dir target/lilygo-perf/final-recheck-raw --conditions <recorded-in-receipt>",
-      "detail": "All 80 measured runs plus 10 warmups have identical guest work/output within their workload. S3 +5.348%, C3 -1.326%, C6 -2.452%, classic -8.453%, P4 +7.225% CPU median. P4 is slower in 8/8 pairs with disjoint ranges; unresolved regression signal, not a passed performance gate.",
+      "detail": "80 measured runs plus 10 warmups match exact guest work/output. CPU median changes: S3 +5.348%, C3 -1.326%, C6 -2.452%, classic -8.453%, P4 +7.225%. P4 is slower in 8/8 pairs with disjoint ranges. Two scoped candidates failed to eliminate the increase and were reverted. Known native hello cost remains; no no-regression or browser-speed claim.",
       "receipt": "docs/platform/research/lilygo-performance-final-2026-11-22.json"
     },
     {
@@ -238,7 +238,7 @@
     "publicRuntimeReset": "runtime.reset() reconstructs Worker and Machine and reloads the same verified firmware; host button state is not retained."
   },
   "publication": {
-    "status": "pending-authentication-and-final-gates",
+    "status": "pending-authentication-and-remote-browser-gate",
     "repository": "https://github.com/zhuzhe1983/esp-online-tester",
     "requestedBranch": "main",
     "requestedHosting": "GitHub Pages",
@@ -445,5 +445,80 @@
     },
     "concurrentNativeCompilation": true,
     "performanceMeasurement": false
+  },
+  "finalSourceVerification": {
+    "restoredSource": {
+      "head": "9d4239fc514865838e9cca9a2f06917addebc7d0",
+      "rustSourceManifestSha256": "5ac573ea50f2f00324edf84b3ddb8a03863069cdd33b11540a8cf818066f3935",
+      "rustSourceFiles": 646,
+      "rustSourceScope": "All tracked/unignored Rust files, Cargo.toml and Cargo.lock; paths and content SHA-256 sorted as compact JSON",
+      "uncommittedRustFiles": {}
+    },
+    "sameRustSourceAsValidatedCommit": "91d79752519b329c76912370d900d14a3bba0ad4",
+    "sameRustSourceAsFinalIntegrationPerformanceReceipt": true,
+    "sampledExecutablesRestoredAndHashMatched": {
+      "esp32sim": {
+        "bytes": 36223416,
+        "sha256": "8f70de7646b74c2e9205542f8469d7d956fed922d69763b72df5d3068542e13f"
+      },
+      "esp32sim-c3": {
+        "bytes": 36223488,
+        "sha256": "47dcece239fb1bcbcc98c7cf240658e3c3fff4418b4e5a02480dc945e360c199"
+      },
+      "esp32sim-c6": {
+        "bytes": 36223552,
+        "sha256": "23ea707b42a3bf47bd9eacbba894aeb12b929e7d48f454f25363b693f4e1bfcf"
+      },
+      "esp32sim-p4": {
+        "bytes": 36223496,
+        "sha256": "93fa35675f31b430c436a57f43ea1e044fdb6b8e64f2fe1de30e297c369c2bf9"
+      }
+    },
+    "productionWasmUnchanged": true,
+    "verificationReuseBasis": "All 646 Rust/Cargo content hashes equal the fully tested source; all sampled executable SHA-256 values equal the retained integration run. The production WASM and all web runtime/catalog/model files are unchanged. Rejected local performance candidates are not in the final Rust source."
+  },
+  "performanceDisposition": {
+    "reviewComplete": true,
+    "localOptimizationAttemptsComplete": true,
+    "knownP4NativeHelloMedianIncreasePercent": 7.2248887006168605,
+    "p4SlowerPairs": 8,
+    "p4Pairs": 8,
+    "noRegressionClaim": false,
+    "browserSpeedMeasured": false,
+    "retainedSource": "91d79752519b329c76912370d900d14a3bba0ad4",
+    "reviewReceipt": "docs/platform/research/lilygo-p4-idle-review-2026-11-22.md",
+    "decision": "Keep the functionally verified adaptation and disclose the measured native P4 cost. No broader IRQ/timing rewrite or unproven local optimization is included."
+  },
+  "remoteCiVerification": {
+    "status": "not-started-no-push",
+    "requiredBeforeClaimingDeployment": [
+      "Pages workflow browser/model/input gate",
+      "Pages deployment result"
+    ],
+    "additionalCiPending": [
+      "Real TCP/TLS/UDP network-helper integration in GitHub runner",
+      "Native AArch64 core/JIT/golden job"
+    ],
+    "localBrowserOutcome": "Blocked by socket restriction and rejected automatic escalation; no local browser render pass is claimed."
+  },
+  "privacyReview": {
+    "existingEvidencePatternGate": {
+      "scope": "docs/evidence",
+      "trackedFiles": 2378,
+      "gzipFiles": 22,
+      "passed": true
+    },
+    "finalLilygoJsonReview": {
+      "jsonFilesReviewed": 287,
+      "stringsReviewed": 170521,
+      "issues": []
+    },
+    "finalChangedFileReview": {
+      "changedTextFilesReviewed": 706,
+      "compressedFilesExpanded": 119,
+      "binaryFilesRequiringSeparateSourceReview": 530,
+      "strongPrivatePathCredentialOrSignedUrlFindings": []
+    },
+    "binaryReviewBasis": "Official-source provenance, retained hashes, 376 source-photo hash checks and the byte-identical 122-model reproduction; text-pattern checks do not establish binary or image privacy."
   }
 }
