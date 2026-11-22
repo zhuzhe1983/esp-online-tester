@@ -9483,15 +9483,51 @@
       "display": {
         "width": 320,
         "height": 240,
-        "type": "LCD",
-        "controller": "ILI9342C"
+        "type": "IPS LCD",
+        "controller": "ILI9342C",
+        "touch": true
       },
       "controls": [
         {
           "id": "touch",
           "type": "touch",
           "name": "Capacitive touch",
+          "controller": "CHSC6540",
+          "address": 46,
+          "interruptPin": 39
+        },
+        {
+          "id": "btn-a",
+          "type": "button",
+          "name": "Front key A (printed circle below the panel)",
+          "transport": "board",
           "controller": "CHSC6540"
+        },
+        {
+          "id": "btn-b",
+          "type": "button",
+          "name": "Front key B (printed circle below the panel)",
+          "transport": "board",
+          "controller": "CHSC6540"
+        },
+        {
+          "id": "btn-c",
+          "type": "button",
+          "name": "Front key C (printed circle below the panel)",
+          "transport": "board",
+          "controller": "CHSC6540"
+        },
+        {
+          "id": "power",
+          "type": "button",
+          "name": "AXP192 power button (PWRKEY)",
+          "simulationSupported": false
+        },
+        {
+          "id": "reset",
+          "type": "button",
+          "name": "Reset button (ESP32 EN)",
+          "simulationSupported": false
         }
       ],
       "interfaces": [
@@ -9505,15 +9541,31 @@
         {
           "id": "rs485-power",
           "type": "M12",
-          "name": "RS485 and power cable interface",
+          "name": "RS485 and 6-24 V power cable",
           "external": true,
-          "pins": []
+          "pins": [
+            {
+              "name": "RX",
+              "gpio": 27
+            },
+            {
+              "name": "TX",
+              "gpio": 19
+            },
+            {
+              "name": "6-24V"
+            },
+            {
+              "name": "GND"
+            }
+          ]
         },
         {
           "id": "grove-a",
           "type": "HY2.0-4P",
-          "name": "Internal Port A",
+          "name": "Port A (I2C)",
           "external": false,
+          "function": "I2C",
           "pins": [
             {
               "name": "GND"
@@ -9534,8 +9586,9 @@
         {
           "id": "grove-b",
           "type": "HY2.0-4P",
-          "name": "Internal Port B",
+          "name": "Port B (GPIO)",
           "external": false,
+          "function": "GPIO",
           "pins": [
             {
               "name": "GND"
@@ -9556,8 +9609,9 @@
         {
           "id": "grove-c",
           "type": "HY2.0-4P",
-          "name": "Internal Port C",
+          "name": "Port C (UART)",
           "external": false,
+          "function": "UART",
           "pins": [
             {
               "name": "GND"
@@ -9566,12 +9620,123 @@
               "name": "5V"
             },
             {
-              "name": "G14",
+              "name": "TX",
               "gpio": 14
             },
             {
-              "name": "G13",
+              "name": "RX",
               "gpio": 13
+            }
+          ]
+        },
+        {
+          "id": "grove-reset",
+          "type": "HY2.0-4P",
+          "name": "RESET port (EN / G25)",
+          "external": false,
+          "function": "GPIO",
+          "pins": [
+            {
+              "name": "EN"
+            },
+            {
+              "name": "G25",
+              "gpio": 25
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "GND"
+            }
+          ]
+        },
+        {
+          "id": "m5-bus",
+          "type": "2x15-2.54mm",
+          "name": "M5-Bus (30 pins, HPWR positions NC)",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "lcd-spi",
+          "type": "SPI",
+          "name": "ILI9342C SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "MISO",
+              "gpio": 38
+            },
+            {
+              "name": "MOSI",
+              "gpio": 23
+            },
+            {
+              "name": "SCK",
+              "gpio": 18
+            },
+            {
+              "name": "CS",
+              "gpio": 5
+            },
+            {
+              "name": "DC",
+              "gpio": 15
+            }
+          ]
+        },
+        {
+          "id": "internal-i2c",
+          "type": "I2C",
+          "name": "Internal I2C",
+          "external": false,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21
+            },
+            {
+              "name": "SCL",
+              "gpio": 22
+            }
+          ],
+          "devices": [
+            {
+              "name": "CHSC6540",
+              "address": 46
+            },
+            {
+              "name": "AXP192",
+              "address": 52
+            },
+            {
+              "name": "BM8563",
+              "address": 81
+            }
+          ]
+        },
+        {
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD (CS G4)",
+          "external": true,
+          "pins": [
+            {
+              "name": "MISO",
+              "gpio": 38
+            },
+            {
+              "name": "MOSI",
+              "gpio": 23
+            },
+            {
+              "name": "SCK",
+              "gpio": 18
+            },
+            {
+              "name": "CS",
+              "gpio": 4
             }
           ]
         }
@@ -9581,11 +9746,37 @@
           "title": "Tough",
           "url": "https://docs.m5stack.com/en/core/Tough",
           "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Tough",
+          "url": "https://docs.m5stack.com/en/core/Tough",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "Tough Schematics PDF",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/647/Tough-Schematics-PDF.pdf",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "Tough Ext Board Schematics PDF",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/647/Tough-Ext-Board-Schematics-PDF.pdf",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "M5GFX board_spec m5tough.json",
+          "url": "https://github.com/m5stack/M5GFX/blob/28d47949bdc84f30881623476f555398e2194313/extras/board_spec/boards/m5tough.json",
+          "checkedAt": "2026-11-22"
         }
       ],
       "limitations": [
         "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。",
+        "内置电池、振动马达与电源指示灯只有旧库 README 提到，当前官方规格未列出，未证实。",
+        "屏下三个圆形按键是 CHSC6540 触摸区（官方页无引脚表）；官方 M5GFX 报 320x240 坐标区，旧 M5Tough 库报 320x280 且把按键放在屏幕下方 40 行，两者的原始范围尚未实机确认。",
+        "面板复位/背光经 AXP192（AXP_IO4、AXP_LDO3），扬声器使能经 AXP_IO2；AXP192 驱动由 Core2 lane 提供，未集成前 Tough 无法驱动这些线路。",
+        "USB 串口桥芯片存在版本冲突：当前官方页写 CH9102，2021 原理图 U3 为 CP2104-F03-GMR。",
+        "NS4168 扬声器、PDM 麦克风、BM8563 RTC、RS485 收发与 6-24V DC-DC、microSD 卡槽尚未在模拟器中实现。",
+        "未连接实物，未做实机验证。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k034.json",
       "model": {
