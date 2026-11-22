@@ -1,0 +1,1183 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-22T07:02:48Z",
+  "implementation": "esp32s3/src/board/lilygo_epaper.rs",
+  "status": "partial native digital protocol implementation; not factory compatibility verification",
+  "notes": [
+    "Scope is exact-source digital behavior. Dates retain the chronology audit basis; hardware-version dates and storefront publication are not independently confirmed retail launches.",
+    "Body files named by archiveName are untracked source cache files. Exact pinned URLs, Git object IDs, byte counts and SHA-256 make the observations reproducible; upstream firmware binaries are not fetched or stored.",
+    "UC8253 manufacturer datasheet linked by the bundled header was attempted at https://v4.cecdn.yun300.cn/100001_1909185148/UC8253.pdf and returned HTTP 403. Protocol evidence here is the exact manufacturer-bundled panel driver, not an unseen datasheet.",
+    "Two controllers share only the independently observed common command subset. Their window byte formats, resolutions, panel settings, GPIO wiring and source receipts remain separate."
+  ],
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/readme.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/readme.md",
+      "fetchedAt": "2026-11-22T06:59:48Z",
+      "bytes": 14484,
+      "sha256": "c44f5bf56231858d8be52d07c9d1d250fa639c14d115273165497ab62679a1a4",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "readme.md",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-readme",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/readme.md",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "2350c8a8f2f5794ce3cf090cbc985829174b5e03",
+      "archiveName": "T-Deck-Pro__readme.md",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/utilities.h",
+      "fetchedAt": "2026-11-22T06:59:41Z",
+      "bytes": 3023,
+      "sha256": "d8773ba9b65310f1d0c7618739a9334b9c911a1973f554c658052cfc29558fd4",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "examples/factory/utilities.h",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-v1-pins",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/examples/factory/utilities.h",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "61aad691ef9e79dc3d43ee3670a0891762a8e272",
+      "archiveName": "T-Deck-Pro__examples__factory__utilities.h",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/peri_keypad.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/peri_keypad.cpp",
+      "fetchedAt": "2026-11-22T06:59:41Z",
+      "bytes": 2389,
+      "sha256": "43cb77dbf4eb3b01e8030a60afdf1ee4f574de9633c8e357177e7e1d4423e3c5",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "examples/factory/peri_keypad.cpp",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-keyboard",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/examples/factory/peri_keypad.cpp",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "c526eaaba6643cff559ff42512532e50621a3bc6",
+      "archiveName": "T-Deck-Pro__examples__factory__peri_keypad.cpp",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/hyn_cst3xx.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/hyn_cst3xx.c",
+      "fetchedAt": "2026-11-22T06:59:41Z",
+      "bytes": 7133,
+      "sha256": "6aaba7656b931e16ca539b42ea29668b4d1853eecbb1e538b8f0a595210a70b1",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "examples/factory/hyn_cst3xx.c",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-cst328",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/examples/factory/hyn_cst3xx.c",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "51dfcb7bfdfa66fa675f1c95383b0c132fa227ed",
+      "archiveName": "T-Deck-Pro__examples__factory__hyn_cst3xx.c",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/hyn_touch.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/hyn_touch.cpp",
+      "fetchedAt": "2026-11-22T06:59:41Z",
+      "bytes": 7290,
+      "sha256": "3dbc96ba0cda276c7e866f9118e43da5dbd0642e6c5e7fff0d5db2c2bb223b96",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "examples/factory/hyn_touch.cpp",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-touch-init",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/examples/factory/hyn_touch.cpp",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "3691bc45ede27edd696bf8384de729ba83e72c07",
+      "archiveName": "T-Deck-Pro__examples__factory__hyn_touch.cpp",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.cpp",
+      "fetchedAt": "2026-11-22T06:59:41Z",
+      "bytes": 13085,
+      "sha256": "a5332026a4bd5318a58a4d5dcfe45ba24df7a3a6d7e4ec0ec1877841fc64d090",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.cpp",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-uc8253-driver",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.cpp",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "3cb1e9f797bd2c92fde834abb19764226d07ef09",
+      "archiveName": "T-Deck-Pro__lib__GxEPD2__src__gdeq__GxEPD2_310_GDEQ031T10.cpp",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.h",
+      "fetchedAt": "2026-11-22T06:59:41Z",
+      "bytes": 6367,
+      "sha256": "9b488bc6b8ce483b6faa8d79b68fdeeed14652f939fc6be9cb0ef77c48f3b7b4",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.h",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-uc8253-panel",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.h",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "9a4458b1e41899719625e79f73ffa74a45b5b1c4",
+      "archiveName": "T-Deck-Pro__lib__GxEPD2__src__gdeq__GxEPD2_310_GDEQ031T10.h",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/README.md",
+      "fetchedAt": "2026-11-22T06:59:48Z",
+      "bytes": 2621,
+      "sha256": "88a85a8e6aa44112640a0743b1677628df6d2a27cbfde3038812928b3f8a9588",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "firmware/README.md",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-factory-readme",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/firmware/README.md",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "d03f491f5a8d0c478c35cf46c9985410e29c4835",
+      "archiveName": "T-Deck-Pro__firmware__README.md",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/README.md",
+      "fetchedAt": "2026-11-22T06:59:48Z",
+      "bytes": 5798,
+      "sha256": "0bf3afa707c1a3f048ec3f2960759766b744c10c9427c5ce4c516a902c6b3788",
+      "mediaType": "text/plain",
+      "commit": "a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf",
+      "path": "README.md",
+      "repository": "Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3",
+      "id": "mini-epaper-s3-readme",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/README.md",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf",
+      "gitBlobSha": "d9c4bbb1b411d04a3186c3c7cf8de10c6291ab58",
+      "archiveName": "LilyGO-Mini-Epaper-S3__README.md",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/lib/GxEPD/src/boards.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/lib/GxEPD/src/boards.h",
+      "fetchedAt": "2026-11-22T06:59:48Z",
+      "bytes": 8193,
+      "sha256": "f9d4720146eb498ab0d2162a73eb55b0264772e8d53246c6668319b45c4fb2c6",
+      "mediaType": "text/plain",
+      "commit": "a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf",
+      "path": "lib/GxEPD/src/boards.h",
+      "repository": "Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3",
+      "id": "mini-epaper-s3-pins",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/lib/GxEPD/src/boards.h",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf",
+      "gitBlobSha": "f4a554b10688d07991bca3facd8d24f302d53167",
+      "archiveName": "LilyGO-Mini-Epaper-S3__lib__GxEPD__src__boards.h",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/examples/GxEPD_Hello_world/GxEPD_Hello_world.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/examples/GxEPD_Hello_world/GxEPD_Hello_world.ino",
+      "fetchedAt": "2026-11-22T06:59:48Z",
+      "bytes": 1748,
+      "sha256": "d667d3443c2b10f40f854a2cd47e86ec88157838179cfaac6bf2b327f3f177f2",
+      "mediaType": "text/plain",
+      "commit": "a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf",
+      "path": "examples/GxEPD_Hello_world/GxEPD_Hello_world.ino",
+      "repository": "Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3",
+      "id": "mini-epaper-s3-example",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/examples/GxEPD_Hello_world/GxEPD_Hello_world.ino",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf",
+      "gitBlobSha": "1beef73dfae3fc3088fba1d4355b018700695923",
+      "archiveName": "LilyGO-Mini-Epaper-S3__examples__GxEPD_Hello_world__GxEPD_Hello_world.ino",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.cpp",
+      "fetchedAt": "2026-11-22T06:59:48Z",
+      "bytes": 17844,
+      "sha256": "6be2af909403a9cf0f4a07454cfe833890952131c557a1616e2bd39c3e83cdf2",
+      "mediaType": "text/plain",
+      "commit": "a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf",
+      "path": "lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.cpp",
+      "repository": "Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3",
+      "id": "mini-epaper-s3-uc8175-driver",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.cpp",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf",
+      "gitBlobSha": "205545dfccb6de5a43e7697ba6e0bf73d41d28b1",
+      "archiveName": "LilyGO-Mini-Epaper-S3__lib__GxEPD__src__GxGDGDEW0102T4__GxGDGDEW0102T4.cpp",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.h",
+      "fetchedAt": "2026-11-22T06:59:54Z",
+      "bytes": 5292,
+      "sha256": "69024ec5511fea07c5086e5365483a25467d863ad09913f920bdcff5fc87a4e4",
+      "mediaType": "text/plain",
+      "commit": "a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf",
+      "path": "lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.h",
+      "repository": "Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3",
+      "id": "mini-epaper-s3-uc8175-panel",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.h",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf",
+      "gitBlobSha": "2a3b96c5d47e097b246f77477db7449ea8938628",
+      "archiveName": "LilyGO-Mini-Epaper-S3__lib__GxEPD__src__GxGDGDEW0102T4__GxGDGDEW0102T4.h",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/firmware/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/firmware/README.MD",
+      "fetchedAt": "2026-11-22T07:00:42Z",
+      "bytes": 180,
+      "sha256": "09375aa6e98124dfe90aa16305aacb229c0d677fbbc43432fab0187743989def",
+      "mediaType": "text/plain",
+      "commit": "a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf",
+      "path": "firmware/README.MD",
+      "repository": "Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3",
+      "id": "mini-epaper-s3-firmware-readme",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/firmware/README.MD",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf",
+      "gitBlobSha": "fb50eb602c4c44744057ead23aa73e11e373a41c",
+      "archiveName": "LilyGO-Mini-Epaper-S3__firmware__README.MD",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile."
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation"
+    },
+    {
+      "id": "official-wiki-t-mini-e-paper-s3",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-mini-e-paper-s3/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-mini-e-paper-s3/index.md",
+      "fetchedAt": "2026-11-22T06:42:34Z",
+      "mediaType": "text/plain",
+      "bytes": 7240,
+      "sha256": "465a855a38aa45af94432da7e5cbe6c5c8f63335dc0f53a75dc7f5fa708629b8",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitBlobSha": "aa513c458bc301eaaf76951222754a5093b8db2e",
+      "path": "en/products/other/t-mini-e-paper-s3/index.md",
+      "title": "official-wiki-t-mini-e-paper-s3",
+      "kind": "official-documentation"
+    },
+    {
+      "id": "official-wiki-t5-e-paper-s3-pro",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t5-series/t5-e-paper-s3-pro/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t5-series/t5-e-paper-s3-pro/index.md",
+      "fetchedAt": "2026-11-22T06:44:03Z",
+      "mediaType": "text/plain",
+      "bytes": 7405,
+      "sha256": "dd1c93eb05e15c7f9ecdce9de499921648e44b791d8541dcd9def97de72f0ac8",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitBlobSha": "4d9460e916884396c1e8bdcdbcb57281712fbb7c",
+      "path": "en/products/t5-series/t5-e-paper-s3-pro/index.md",
+      "title": "official-wiki-t5-e-paper-s3-pro",
+      "kind": "official-documentation"
+    }
+  ],
+  "items": [
+    {
+      "productId": "lilygo-t-deck-pro",
+      "boardId": "lilygo-t-deck-pro",
+      "name": "LILYGO T-Deck Pro V1.0",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-Deck Pro V1.0 / HD-V1-250326 only",
+      "display": {
+        "width": 240,
+        "height": 320,
+        "controller": "UC8253",
+        "panel": "GDEQ031T10",
+        "interface": "spi",
+        "pixelFormat": "RGB565",
+        "diagonalInch": 3.1,
+        "physicalTouch": true,
+        "touchImplemented": true,
+        "touchScope": "CST328 single-contact report/ACK only; initialization identity registers are unmodeled",
+        "orientation": "Native portrait controller RAM; storefront width/height are landscape presentation",
+        "controllerRamFormat": "1bpp black/white; 1=white, 0=black; RGB565 publication",
+        "type": "E-paper"
+      },
+      "pins": {
+        "display": {
+          "sclk": 36,
+          "mosi": 33,
+          "miso": null,
+          "cs": 34,
+          "dc": 35,
+          "busy": 37,
+          "busyActiveLow": true,
+          "reset": null,
+          "enable": null,
+          "enableActiveHigh": null,
+          "backlight": null
+        },
+        "touch": {
+          "address": 26,
+          "sda": 13,
+          "scl": 14,
+          "irq": 12,
+          "reset": 45,
+          "controller": "CST328",
+          "registerAddressBytes": 2
+        },
+        "keyboard": {
+          "address": 52,
+          "sda": 13,
+          "scl": 14,
+          "irq": 15,
+          "controller": "TCA8418",
+          "matrix": [
+            4,
+            10
+          ],
+          "physicalKeyCount": 35
+        }
+      },
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "pins": {
+          "sclk": 36,
+          "mosi": 33,
+          "miso": 47,
+          "cs": 48
+        },
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform existing TF-card storage service; board only attaches supplied image",
+        "supply": "Fixed digital powered socket; PMIC supply sequencing is unmodeled",
+        "sourceIds": [
+          "deck-pro-v1-pins"
+        ],
+        "verification": "both_spi_sockets_route_real_card_storage_and_reject_wrong_read_pins"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "key-r0-c0",
+          "name": "Q",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyQ"
+        },
+        {
+          "id": "key-r0-c1",
+          "name": "W",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 1,
+          "activeLow": true,
+          "defaultKeyCode": "KeyW"
+        },
+        {
+          "id": "key-r0-c2",
+          "name": "E",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 2,
+          "activeLow": true,
+          "defaultKeyCode": "KeyE"
+        },
+        {
+          "id": "key-r0-c3",
+          "name": "R",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 3,
+          "activeLow": true,
+          "defaultKeyCode": "KeyR"
+        },
+        {
+          "id": "key-r0-c4",
+          "name": "T",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyT"
+        },
+        {
+          "id": "key-r0-c5",
+          "name": "Y",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyY"
+        },
+        {
+          "id": "key-r0-c6",
+          "name": "U",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 6,
+          "activeLow": true,
+          "defaultKeyCode": "KeyU"
+        },
+        {
+          "id": "key-r0-c7",
+          "name": "I",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 7,
+          "activeLow": true,
+          "defaultKeyCode": "KeyI"
+        },
+        {
+          "id": "key-r0-c8",
+          "name": "O",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 8,
+          "activeLow": true,
+          "defaultKeyCode": "KeyO"
+        },
+        {
+          "id": "key-r0-c9",
+          "name": "P",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 9,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        },
+        {
+          "id": "key-r1-c0",
+          "name": "A",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "key-r1-c1",
+          "name": "S",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 1,
+          "activeLow": true,
+          "defaultKeyCode": "KeyS"
+        },
+        {
+          "id": "key-r1-c2",
+          "name": "D",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 2,
+          "activeLow": true,
+          "defaultKeyCode": "KeyD"
+        },
+        {
+          "id": "key-r1-c3",
+          "name": "F",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 3,
+          "activeLow": true,
+          "defaultKeyCode": "KeyF"
+        },
+        {
+          "id": "key-r1-c4",
+          "name": "G",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyG"
+        },
+        {
+          "id": "key-r1-c5",
+          "name": "H",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyH"
+        },
+        {
+          "id": "key-r1-c6",
+          "name": "J",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 6,
+          "activeLow": true,
+          "defaultKeyCode": "KeyJ"
+        },
+        {
+          "id": "key-r1-c7",
+          "name": "K",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 7,
+          "activeLow": true,
+          "defaultKeyCode": "KeyK"
+        },
+        {
+          "id": "key-r1-c8",
+          "name": "L",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 8,
+          "activeLow": true,
+          "defaultKeyCode": "KeyL"
+        },
+        {
+          "id": "key-r1-c9",
+          "name": "Key R2 C10",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 9,
+          "activeLow": true
+        },
+        {
+          "id": "key-r2-c0",
+          "name": "Key R3 C1",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 0,
+          "activeLow": true
+        },
+        {
+          "id": "key-r2-c1",
+          "name": "Z",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 1,
+          "activeLow": true,
+          "defaultKeyCode": "KeyZ"
+        },
+        {
+          "id": "key-r2-c2",
+          "name": "X",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 2,
+          "activeLow": true,
+          "defaultKeyCode": "KeyX"
+        },
+        {
+          "id": "key-r2-c3",
+          "name": "C",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 3,
+          "activeLow": true,
+          "defaultKeyCode": "KeyC"
+        },
+        {
+          "id": "key-r2-c4",
+          "name": "V",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyV"
+        },
+        {
+          "id": "key-r2-c5",
+          "name": "B",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "key-r2-c6",
+          "name": "N",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 6,
+          "activeLow": true,
+          "defaultKeyCode": "KeyN"
+        },
+        {
+          "id": "key-r2-c7",
+          "name": "M",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 7,
+          "activeLow": true,
+          "defaultKeyCode": "KeyM"
+        },
+        {
+          "id": "key-r2-c8",
+          "name": "Key R3 C9",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 8,
+          "activeLow": true
+        },
+        {
+          "id": "key-r2-c9",
+          "name": "Key R3 C10",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 9,
+          "activeLow": true
+        },
+        {
+          "id": "key-r3-c5",
+          "name": "Key R4 C6",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 5,
+          "activeLow": true
+        },
+        {
+          "id": "key-r3-c6",
+          "name": "Key R4 C7",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 6,
+          "activeLow": true
+        },
+        {
+          "id": "key-r3-c7",
+          "name": "Key R4 C8",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 7,
+          "activeLow": true
+        },
+        {
+          "id": "key-r3-c8",
+          "name": "Key R4 C9",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 8,
+          "activeLow": true
+        },
+        {
+          "id": "key-r3-c9",
+          "name": "Key R4 C10",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 9,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "trialAvailable": false,
+        "hardwareValidated": false
+      },
+      "chronology": {
+        "date": "2025-03-26",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-deck-pro",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 19,
+      "scope": "精确版本的 SPI 墨水屏黑白 RAM/刷新/BUSY、真实 SPI TF 卡和按键已建模；出厂固件启动未验证。含 TCA8418 实体矩阵键盘与 CST328 单点报告，不含触摸固件身份初始化。",
+      "scopeEn": "Exact V1.0 SPI display, TCA8418 matrix, CST328 report-only touch and SPI SD; no V1.1/MAX/Meshtastic-edition hardware substitution.",
+      "sourceIds": [
+        "deck-pro-readme",
+        "deck-pro-v1-pins",
+        "deck-pro-keyboard",
+        "deck-pro-cst328",
+        "deck-pro-touch-init",
+        "deck-pro-uc8253-driver",
+        "deck-pro-uc8253-panel",
+        "deck-pro-factory-readme",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "Monochrome digital RAM and command-triggered refresh only. E-paper LUTs, analog waveform drive, grayscale, temperature dependence and ghosting are unmodeled.",
+        "SPI-only transport is implemented; bit-banged software SPI and nine-bit SPI are not implemented.",
+        "Unknown display commands are ignored and counted. Unsupported panel-setting values cannot publish a frame.",
+        "No official factory image has been executed. Native protocol tests are not proof of a working complete factory firmware or physical device.",
+        "PMIC, battery state, charger, RF/LoRa, GNSS, IMU, RTC, ambient sensors, audio and vibration are unmodeled; their I2C addresses remain absent.",
+        "CST328 unknown firmware information/configuration reads NACK. The manufacturer factory probe requests 0xD1F4; that initialization path is deliberately not claimed as implemented.",
+        "Only 35 physical keys are accepted: rows 0-2 columns 0-9, row 3 columns 5-9. Uppercase factory legend codes for non-letter keys do not establish the printed physical key legend.",
+        "T-Deck Pro V1.1/MAX and preloaded Meshtastic SKU revisions are not independently mapped to this V1.0 profile.",
+        "CST328 IRQ follows a digital pending-report latch inferred from the official read/ACK sequence; scan timing and multiple simultaneous contacts are unmodeled."
+      ],
+      "protocol": {
+        "ramCurrent": 19,
+        "ramPrevious": 16,
+        "refresh": 18,
+        "powerOn": 4,
+        "powerOff": 2,
+        "deepSleep": 7,
+        "deepSleepCheckByte": 165,
+        "partialIn": 145,
+        "partialOut": 146,
+        "partialWindow": 144,
+        "partialWindowBytes": 7,
+        "supportedPanelSettings": [
+          [
+            31,
+            13
+          ]
+        ],
+        "ramVisibleOnlyAfterRefreshBusyCompletion": true,
+        "malformedWindows": "reject without drawing or wrapping writes",
+        "opticalImageRetainedAcrossResetAndPowerLoss": true,
+        "timing": {
+          "powerMs": 50,
+          "fullRefreshMs": 1100,
+          "partialRefreshMs": 700,
+          "basis": "UC8253 timings use official bundled GxEPD2 nominal constants; not measured hardware"
+        }
+      },
+      "keyboardMapping": {
+        "physicalToTca8418": "(row, 9-column)",
+        "factoryKeyCodes": [
+          [
+            "q",
+            "w",
+            "e",
+            "r",
+            "t",
+            "y",
+            "u",
+            "i",
+            "o",
+            "p"
+          ],
+          [
+            "a",
+            "s",
+            "d",
+            "f",
+            "g",
+            "h",
+            "j",
+            "k",
+            "l",
+            "0"
+          ],
+          [
+            "2",
+            "z",
+            "x",
+            "c",
+            "v",
+            "b",
+            "n",
+            "m",
+            "$",
+            "E"
+          ],
+          [
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            "-",
+            "*",
+            "S",
+            "0",
+            "U"
+          ]
+        ],
+        "unpopulated": [
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "scanDebounceMs": 50,
+        "sourceId": "deck-pro-keyboard",
+        "note": "Non-letter physical legends remain unverified; controls use row/column names instead of inventing arrows or function labels."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "deck-pro-factory-readme",
+          "deck-pro-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/H693_factory_v1.2_20250412_fix.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.2_20250412_fix.bin",
+            "status": "linked",
+            "gitBlobSha": "59a8eeb79b96a0a24a35fc2bb3a86e8b9f3a6b24",
+            "bytesFromTree": 16711680,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          },
+          {
+            "path": "firmware/H693_factory_v1.3_20251015.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.3_20251015.bin",
+            "status": "linked",
+            "gitBlobSha": "0f71515d071858dfa2b26b9eb0948e6bedcde73f",
+            "bytesFromTree": 1755152,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          },
+          {
+            "path": "firmware/H693_factory_v1.4_20251209.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.4_20251209.bin",
+            "status": "linked",
+            "gitBlobSha": "9eadd10ed4f76529064b2050a702d0febcf4253c",
+            "bytesFromTree": 1755136,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          },
+          {
+            "path": "firmware/H693_factory_v1.5_20251230.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.5_20251230.bin",
+            "status": "linked",
+            "gitBlobSha": "738c6ddd919df369fcd32780f34a9e6fcc470757",
+            "bytesFromTree": 1817600,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          },
+          {
+            "path": "firmware/H693_factory_v1.6_20260401.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.6_20260401.bin",
+            "status": "linked",
+            "gitBlobSha": "8bbc94760f8d8c918e471a7fe8414d7aedbab2f8",
+            "bytesFromTree": 1820160,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Official firmware README identifies H693 factory and SPIFFS recovery. Current v1.6 file is linked; no binary inspected, app/merged layout unverified. Do not infer offset or complete-image identity from file size."
+      }
+    },
+    {
+      "productId": "lilygo-t-mini-epaper-s3",
+      "boardId": "lilygo-mini-epaper-s3",
+      "name": "LILYGO T-Mini E-Paper S3",
+      "chip": "esp32s3",
+      "flashMB": 4,
+      "psramMB": 2,
+      "hardwareRevision": "T-Mini-E-paper-S3 V1.0 / LILYGO_MINI_EPAPER_ESP32S3",
+      "display": {
+        "width": 80,
+        "height": 128,
+        "controller": "UC8175",
+        "panel": "GDEW0102T4",
+        "interface": "spi",
+        "pixelFormat": "RGB565",
+        "diagonalInch": 1.02,
+        "physicalTouch": false,
+        "touchImplemented": false,
+        "touchScope": "No touch controller declared for this base board",
+        "orientation": "Native portrait controller RAM; storefront width/height are landscape presentation",
+        "controllerRamFormat": "1bpp black/white; 1=white, 0=black; RGB565 publication",
+        "type": "E-paper"
+      },
+      "pins": {
+        "display": {
+          "sclk": 14,
+          "mosi": 15,
+          "miso": null,
+          "cs": 13,
+          "dc": 12,
+          "busy": 10,
+          "busyActiveLow": true,
+          "reset": 11,
+          "enable": 42,
+          "enableActiveHigh": true,
+          "backlight": null
+        },
+        "touch": null,
+        "keyboard": null
+      },
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "pins": {
+          "sclk": 41,
+          "mosi": 39,
+          "miso": 38,
+          "cs": 40
+        },
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform existing TF-card storage service; board only attaches supplied image",
+        "supply": "Fixed digital powered socket; PMIC supply sequencing is unmodeled",
+        "sourceIds": [
+          "mini-epaper-s3-pins"
+        ],
+        "verification": "both_spi_sockets_route_real_card_storage_and_reject_wrong_read_pins"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "right",
+          "name": "Right",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true
+        },
+        {
+          "id": "left",
+          "name": "Left",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "trialAvailable": false,
+        "hardwareValidated": false
+      },
+      "chronology": {
+        "date": "2023-11-10",
+        "basis": "hardware-release",
+        "sourceUrl": "https://wiki.lilygo.cc/products/other/t-mini-e-paper-s3/",
+        "sourceId": "official-wiki-t-mini-e-paper-s3",
+        "confidence": "medium",
+        "hardwareRevision": "T-Mini-E-paper-S3 V1.0",
+        "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+      },
+      "priorityRank": 57,
+      "scope": "精确版本的 SPI 墨水屏黑白 RAM/刷新/BUSY、真实 SPI TF 卡和按键已建模；出厂固件启动未验证。包含 GPIO0/3/4 按键和 GPIO42 屏幕供电门控。",
+      "scopeEn": "Exact ESP32-S3 FN4R2 base board. UC8175 80x128, GPIO buttons and separate SPI SD; not the classic ESP32 Mini E-Paper Core or LoRa shield.",
+      "sourceIds": [
+        "mini-epaper-s3-readme",
+        "mini-epaper-s3-pins",
+        "mini-epaper-s3-example",
+        "mini-epaper-s3-uc8175-driver",
+        "mini-epaper-s3-uc8175-panel",
+        "mini-epaper-s3-firmware-readme",
+        "official-wiki-t-mini-e-paper-s3"
+      ],
+      "unsupported": [
+        "Monochrome digital RAM and command-triggered refresh only. E-paper LUTs, analog waveform drive, grayscale, temperature dependence and ghosting are unmodeled.",
+        "SPI-only transport is implemented; bit-banged software SPI and nine-bit SPI are not implemented.",
+        "Unknown display commands are ignored and counted. Unsupported panel-setting values cannot publish a frame.",
+        "No official factory image has been executed. Native protocol tests are not proof of a working complete factory firmware or physical device.",
+        "PMIC, battery state, charger, RF/LoRa, GNSS, IMU, RTC, ambient sensors, audio and vibration are unmodeled; their I2C addresses remain absent.",
+        "The classic ESP32 Mini E-Paper Core and detachable LoRa accessory have separate identities and are not covered."
+      ],
+      "protocol": {
+        "ramCurrent": 19,
+        "ramPrevious": 16,
+        "refresh": 18,
+        "powerOn": 4,
+        "powerOff": 2,
+        "deepSleep": 7,
+        "deepSleepCheckByte": 165,
+        "partialIn": 145,
+        "partialOut": 146,
+        "partialWindow": 144,
+        "partialWindowBytes": 5,
+        "supportedPanelSettings": [
+          [
+            95
+          ],
+          [
+            111
+          ]
+        ],
+        "ramVisibleOnlyAfterRefreshBusyCompletion": true,
+        "malformedWindows": "reject without drawing or wrapping writes",
+        "opticalImageRetainedAcrossResetAndPowerLoss": true,
+        "timing": {
+          "powerMs": 50,
+          "fullRefreshMs": 2000,
+          "partialRefreshMs": 700,
+          "basis": "Deterministic approximate digital timing; upstream polls active-low BUSY with a 10s timeout and does not state calibrated refresh durations"
+        }
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "not-located-for-base-board",
+        "sourceIds": [
+          "mini-epaper-s3-firmware-readme",
+          "mini-epaper-s3-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/ELRS-Lora868Test250627-V1.0-TXRX.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/firmware/ELRS-Lora868Test250627-V1.0-TXRX.bin",
+            "status": "linked",
+            "gitBlobSha": "47414d0855407e05d01f00ab0e6eb148628aa9e9",
+            "bytesFromTree": 396528,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          },
+          {
+            "path": "firmware/ELRS-Lora915Test250627-V1.0-TXRX.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/firmware/ELRS-Lora915Test250627-V1.0-TXRX.bin",
+            "status": "linked",
+            "gitBlobSha": "8ff993658f9fbccc72e049ef749e1ce0b3be468d",
+            "bytesFromTree": 396528,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          },
+          {
+            "path": "firmware/MINI-E-Paper-S3-Lora-Shield_0708-v1.2.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper-S3/a2a3d1ed4a89e07fef0da4b6454289c0775fd4bf/firmware/MINI-E-Paper-S3-Lora-Shield_0708-v1.2.bin",
+            "status": "linked",
+            "gitBlobSha": "66d1cd4cc331eba8172872e736e51a77c9fbad66",
+            "bytesFromTree": 2243824,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "The inspected firmware folder contains LoRa-shield and radio-test images. README supplies a generic flashing illustration, not evidence these are the base-board factory image. Preserve as unmatched accessory candidates, not factory defaults."
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "productId": "lilygo-t5-e-paper-s3-pro",
+      "name": "T5 4.7 E-Paper S3 Pro",
+      "chronology": {
+        "date": "2024-11-14",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t5-e-paper-s3-pro",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "status": "source-reviewed; runtime not implemented in this module",
+      "reason": "ED047TC1 960x540 is a parallel panel with TPS65185 power and PCA9535 expansion. A UC8253/UC8175 SPI profile would be wrong. Requires independently verified parallel signal and power routing.",
+      "sourceIds": [
+        "official-wiki-t5-e-paper-s3-pro"
+      ],
+      "officialRepository": "https://github.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO"
+    }
+  ],
+  "verification": {
+    "nativeDebug": {
+      "command": "cargo test -p esp32s3 --test lilygo_epaper_profiles",
+      "passed": 8,
+      "failed": 0
+    },
+    "clippy": {
+      "command": "cargo clippy -p esp32s3 --test lilygo_epaper_profiles -- -D warnings",
+      "passed": true
+    },
+    "tests": [
+      "deck_requires_exact_spi_routes_exclusive_selection_and_routed_dc",
+      "ram_is_not_a_frame_and_busy_completion_publishes_one_frozen_image",
+      "uc8253_partial_window_uses_sixteen_bit_rows_and_rejects_malformed_areas",
+      "mini_uses_its_own_window_format_supply_reset_and_retained_optical_image",
+      "keyboard_is_the_official_thirty_five_switch_matrix_with_scan_and_irq",
+      "cst328_has_a_sixteen_bit_report_ack_and_reset_with_no_fabricated_identity",
+      "mini_gpio_buttons_do_not_invent_touch_keyboard_or_sensor_devices",
+      "both_spi_sockets_route_real_card_storage_and_reject_wrong_read_pins"
+    ],
+    "factoryFirmwareExecution": false,
+    "physicalHardware": false,
+    "nativeRelease": {
+      "command": "cargo test --release -p esp32s3 --test lilygo_epaper_profiles",
+      "passed": 8,
+      "failed": 0
+    }
+  }
+}
