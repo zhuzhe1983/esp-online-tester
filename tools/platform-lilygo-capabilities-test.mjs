@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
+import {basename,join} from 'node:path';
 import {createPlatformRuntime} from '../web/platform/runtime.js';
 import {createDefaultScene} from '../web/platform/catalog.js';
 import {chipIdForBoard,chipForBoard,isC6Board} from '../web/platform/app-image.js';
@@ -49,7 +50,12 @@ test('STM32 keys, KEY5 and powered trackball directions use board events rather 
   const runtime=createPlatformRuntime({catalog,workerFactory,baseUrl:origin+'/platform/',assetBaseUrl:origin+'/',fetchImpl:async value=>{
     const url=new URL(value);assert.equal(url.origin,origin);
     if(url.pathname.endsWith('esp32sim.wasm'))return new Response(new Uint8Array([0]));
-    return new Response(await readFile(new URL('../web'+url.pathname,import.meta.url)));
+    try{return new Response(await readFile(new URL('../web'+url.pathname,import.meta.url)));}
+    catch(error){
+      // CI keeps mask ROMs outside the served web tree.
+      if(error.code!=='ENOENT'||!process.env.ESP32SIM_ROM_DIR||!url.pathname.endsWith('_rom.elf'))throw error;
+      return new Response(await readFile(join(process.env.ESP32SIM_ROM_DIR,basename(url.pathname))));
+    }
   }});
   try{
     for(const [id,keys] of [

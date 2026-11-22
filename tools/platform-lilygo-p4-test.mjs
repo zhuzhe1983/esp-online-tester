@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {Worker} from 'node:worker_threads';
-import {basename} from 'node:path';
+import {basename,join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {createPlatformRuntime} from '../web/platform/runtime.js';
 import {createDefaultScene} from '../web/platform/catalog.js';
@@ -31,7 +31,14 @@ test('T-Display-P4 guest verifies I2C0 XL9535, GPIO35 input, pause/reset and abs
     const path=new URL(url,origin).pathname;requests.push(path);
     if(path==='/p4-probe.bin')return new Response(image);
     if(path.endsWith('/esp32sim.wasm'))return new Response(await readFile(new URL('web/wasm/esp32sim.wasm',root)));
-    if(path.endsWith('/esp32p4_rev0_rom.elf'))return new Response(await readFile(new URL('web/wasm/fw/'+basename(path),root)));
+    if(path.endsWith('/esp32p4_rev0_rom.elf')){
+      try{return new Response(await readFile(new URL('web/wasm/fw/'+basename(path),root)));}
+      catch(error){
+        // CI keeps mask ROMs outside the served web tree.
+        if(error.code!=='ENOENT'||!process.env.ESP32SIM_ROM_DIR)throw error;
+        return new Response(await readFile(join(process.env.ESP32SIM_ROM_DIR,basename(path))));
+      }
+    }
     throw Error('Unexpected real P4 runtime dependency: '+path);
   }});
   try{
