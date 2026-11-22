@@ -28,7 +28,8 @@ jobs:
       deploy: false
   build:
     needs: firmware-catalog
-    runs-on: ubuntu-latest
+    # Playwright 1.57.0 supports Ubuntu 24.04, not the newer ubuntu-latest image.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -63,6 +64,28 @@ jobs:
           node --test tools/platform-*-test.mjs
           node tools/platform-recording-test.mjs --real
           node tools/wasm-test.mjs demo-stopwatch
+      - name: Verify LilyGO models and actual guest input in Chromium
+        run: |
+          npm install --prefix "${{ runner.temp }}/lilygo-browser" --ignore-scripts --no-audit --no-fund playwright@1.57.0
+          "${{ runner.temp }}/lilygo-browser/node_modules/.bin/playwright" install --with-deps chromium
+          export NODE_PATH="${{ runner.temp }}/lilygo-browser/node_modules"
+          export CHROMIUM_PATH="$(node -e 'process.stdout.write(require("playwright").chromium.executablePath())')"
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory web > "${{ runner.temp }}/lilygo-preview.log" 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid"' EXIT
+          for attempt in {1..40}; do
+            if curl --silent --fail http://127.0.0.1:8765/platform/ > /dev/null; then break; fi
+            sleep 0.25
+          done
+          curl --silent --fail http://127.0.0.1:8765/platform/ > /dev/null
+          node tools/check-lilygo-expansion-browser.mjs --url http://127.0.0.1:8765/platform/ --output "${{ runner.temp }}/lilygo-browser-results"
+      - name: Retain LilyGO browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lilygo-browser-review
+          path: ${{ runner.temp }}/lilygo-browser-results
+          if-no-files-found: ignore
       - name: Publish the coding-agent skills
         run: |
           cp -R skills/esp-online-tester web/platform/skill

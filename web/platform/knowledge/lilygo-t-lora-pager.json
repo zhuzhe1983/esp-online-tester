@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-lora-pager",
   "title": "LILYGO T-Lora Pager",
-  "summary": "Spark 将此商品归入T-Lora 系列，标注 MCU 为 ESP32-S3；具体硬件版次及配置待核对。",
+  "summary": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "source-defined board; see selected scope",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Lora Pager",
@@ -52,6 +52,120 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-08-05",
+        "basis": "hardware-release",
+        "sourceUrl": "https://wiki.lilygo.cc/products/t-lora-series/t-lora-pager/",
+        "sourceId": "official-wiki-t-lora-pager",
+        "confidence": "medium",
+        "hardwareRevision": "V1.0",
+        "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki-t-lora-pager"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 222,
+          "height": 480,
+          "controller": "ST7796",
+          "interface": "spi",
+          "pixelFormat": "RGB565",
+          "crop": [
+            49,
+            0,
+            222,
+            480
+          ],
+          "commandCoordinateCanvas": [
+            320,
+            480
+          ],
+          "physicalTouch": false,
+          "touchImplemented": false
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "pin": 0,
+            "activeLow": true,
+            "type": "button",
+            "name": "BOOT"
+          },
+          {
+            "id": "encoder-press",
+            "pin": 7,
+            "activeLow": true,
+            "type": "button",
+            "name": "Encoder press"
+          },
+          {
+            "id": "encoder",
+            "name": "Encoder",
+            "type": "encoder",
+            "pins": {
+              "a": 40,
+              "b": 41
+            },
+            "detents": null
+          }
+        ],
+        "pins": {
+          "display": {
+            "sclk": 35,
+            "mosi": 34,
+            "cs": 38,
+            "dc": 37,
+            "reset": null,
+            "enable": null,
+            "backlight": {
+              "pin": 42,
+              "activeHigh": true
+            },
+            "ledcGate": false
+          },
+          "touch": null,
+          "encoder": [
+            40,
+            41
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "lib-src-lilygowatchultra-h",
+        "lib-src-lilygowatchultra-cpp",
+        "lib-src-lilygowatchs3-h",
+        "lib-src-lilygowatchs3-cpp",
+        "lib-src-lilygo_lora_pager-h",
+        "lib-src-lilygo_lora_pager-cpp",
+        "lib-src-display-lilygodispinterface-cpp",
+        "lib-docs-hardware-lilygo-t-watch-ultra-md",
+        "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+        "lib-docs-hardware-lilygo-t-watch-s3-md",
+        "lib-docs-hardware-lilygo-t-lora-pager-md",
+        "lib-docs-hardware-lilygo-t-embed-plus-md",
+        "lib-docs-hardware-lilygo-t-embed-md",
+        "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+        "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+        "official-store-shopify-1",
+        "official-wiki-t-lora-pager"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -88,9 +202,587 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-lora-pager-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-LORA-PAGER_7.jpg?v=1747201841",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-LORA-PAGER_7.jpg?v=1747201841",
+      "fetchedAt": "2026-11-22T06:57:19Z",
+      "bytes": 39683,
+      "sha256": "96e16e2e0bd15bf8ca9a3bc0fc635baaec100c21386035898489502b020b37c1",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t lora pager official photo 0",
+      "archiveName": "lilygo-t-lora-pager-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-lora-pager-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-LORA-PAGER_4.jpg?v=1747201841",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-LORA-PAGER_4.jpg?v=1747201841",
+      "fetchedAt": "2026-11-22T06:57:25Z",
+      "bytes": 51631,
+      "sha256": "f8e2e03da301aa7d1972858e26157c3cc2b6e8bb3e456c2e629870f990c5af40",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t lora pager official photo 1",
+      "archiveName": "lilygo-t-lora-pager-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-lora-pager-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-LORA-PAGER_3.jpg?v=1747201841",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-LORA-PAGER_3.jpg?v=1747201841",
+      "fetchedAt": "2026-11-22T06:57:25Z",
+      "bytes": 40878,
+      "sha256": "77a92dbe65e454fd1181884c0d2ac1e901cd58bde2b7f0382a25e6a94c68582d",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t lora pager official photo 2",
+      "archiveName": "lilygo-t-lora-pager-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-lora-pager-reviewed-cad-1",
+      "productId": "lilygo-t-lora-pager",
+      "title": "Xinyuan-LilyGO/LilyGoLib case/t-lora-pager/01.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/01.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/01.stl",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "repositoryPath": "case/t-lora-pager/01.stl",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "fd1cbb3a43e97c1b2ab56989078c24ee2b4425c5",
+      "fetchedAt": "2026-11-22T08:31:57Z",
+      "bytes": 238184,
+      "sha256": "66e90199bff9bc2b8eb7896e1cac10ddde29c1018fd2fb700908eac3bc441664",
+      "rawSha256": "66e90199bff9bc2b8eb7896e1cac10ddde29c1018fd2fb700908eac3bc441664",
+      "file": "manufacturer-01.stl.gz",
+      "archiveName": "manufacturer-01.stl.gz",
+      "storedSha256": "5398a869575c11c8452f79b86e72f7f5fff042dbc1b06c15b3e2799df09e26d5",
+      "archiveSha256": "5398a869575c11c8452f79b86e72f7f5fff042dbc1b06c15b3e2799df09e26d5",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official T-LoRa-Pager printable enclosure parts 01–07, in their supplied relative coordinates. Antennas, PCB, LCD and keycaps are not reconstructed from these enclosure files. The Meshtastic listing uses the same reviewed Pager hardware; preloaded software does not change this CAD scope.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-lora-pager-reviewed-cad-2",
+      "productId": "lilygo-t-lora-pager",
+      "title": "Xinyuan-LilyGO/LilyGoLib case/t-lora-pager/02.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/02.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/02.stl",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "repositoryPath": "case/t-lora-pager/02.stl",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "13e182c134e1e013b248c0d8436456dc0b81b81f",
+      "fetchedAt": "2026-11-22T08:32:03Z",
+      "bytes": 616384,
+      "sha256": "6d1b4d6d3aab0eb51581b142882f7bf49444f0cc9c2274d82909c0d00c9cafcf",
+      "rawSha256": "6d1b4d6d3aab0eb51581b142882f7bf49444f0cc9c2274d82909c0d00c9cafcf",
+      "file": "manufacturer-02.stl.gz",
+      "archiveName": "manufacturer-02.stl.gz",
+      "storedSha256": "8244bf3b04753516e7d27ff66629ec73c3d925f092ff10a4f5033bf38813eb97",
+      "archiveSha256": "8244bf3b04753516e7d27ff66629ec73c3d925f092ff10a4f5033bf38813eb97",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official T-LoRa-Pager printable enclosure parts 01–07, in their supplied relative coordinates. Antennas, PCB, LCD and keycaps are not reconstructed from these enclosure files. The Meshtastic listing uses the same reviewed Pager hardware; preloaded software does not change this CAD scope.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-lora-pager-reviewed-cad-3",
+      "productId": "lilygo-t-lora-pager",
+      "title": "Xinyuan-LilyGO/LilyGoLib case/t-lora-pager/03.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/03.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/03.stl",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "repositoryPath": "case/t-lora-pager/03.stl",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "0842e6a27bb624ed2abd45253cb199a1932ac99f",
+      "fetchedAt": "2026-11-22T08:32:04Z",
+      "bytes": 67184,
+      "sha256": "06c950464aff95d56051c4f377728b5189c694b82b7161b0ab37f2c022aae85e",
+      "rawSha256": "06c950464aff95d56051c4f377728b5189c694b82b7161b0ab37f2c022aae85e",
+      "file": "manufacturer-03.stl.gz",
+      "archiveName": "manufacturer-03.stl.gz",
+      "storedSha256": "d68248b0b1a82a73c8c04bc4fa8a6c54ff2c79ef0a55cffc091b0dc1493e7a3b",
+      "archiveSha256": "d68248b0b1a82a73c8c04bc4fa8a6c54ff2c79ef0a55cffc091b0dc1493e7a3b",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official T-LoRa-Pager printable enclosure parts 01–07, in their supplied relative coordinates. Antennas, PCB, LCD and keycaps are not reconstructed from these enclosure files. The Meshtastic listing uses the same reviewed Pager hardware; preloaded software does not change this CAD scope.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-lora-pager-reviewed-cad-4",
+      "productId": "lilygo-t-lora-pager",
+      "title": "Xinyuan-LilyGO/LilyGoLib case/t-lora-pager/04.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/04.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/04.stl",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "repositoryPath": "case/t-lora-pager/04.stl",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "d602fc7500a5e4b654c4f05b60b56230ebe40a34",
+      "fetchedAt": "2026-11-22T08:32:03Z",
+      "bytes": 15084,
+      "sha256": "dfd754773b21232e73263d1f8003453e2bd5764cdb6c1cca148ce83f6ea5a06c",
+      "rawSha256": "dfd754773b21232e73263d1f8003453e2bd5764cdb6c1cca148ce83f6ea5a06c",
+      "file": "manufacturer-04.stl.gz",
+      "archiveName": "manufacturer-04.stl.gz",
+      "storedSha256": "7d214d07042c37545f80c8cf76288223904f1736e91fed1ee4b185fb946617ce",
+      "archiveSha256": "7d214d07042c37545f80c8cf76288223904f1736e91fed1ee4b185fb946617ce",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official T-LoRa-Pager printable enclosure parts 01–07, in their supplied relative coordinates. Antennas, PCB, LCD and keycaps are not reconstructed from these enclosure files. The Meshtastic listing uses the same reviewed Pager hardware; preloaded software does not change this CAD scope.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-lora-pager-reviewed-cad-5",
+      "productId": "lilygo-t-lora-pager",
+      "title": "Xinyuan-LilyGO/LilyGoLib case/t-lora-pager/05.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/05.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/05.stl",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "repositoryPath": "case/t-lora-pager/05.stl",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "6f1765dc1748a00ef4f434d312c7ba6489fc09c0",
+      "fetchedAt": "2026-11-22T08:32:03Z",
+      "bytes": 56684,
+      "sha256": "d6dce777675e060b96beb468397c3859f85549bf1d10eda38c725942a10afb9e",
+      "rawSha256": "d6dce777675e060b96beb468397c3859f85549bf1d10eda38c725942a10afb9e",
+      "file": "manufacturer-05.stl.gz",
+      "archiveName": "manufacturer-05.stl.gz",
+      "storedSha256": "b890e95b962b324b08cab52414e6ab13e99651ce715d5236339be230b4184b43",
+      "archiveSha256": "b890e95b962b324b08cab52414e6ab13e99651ce715d5236339be230b4184b43",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official T-LoRa-Pager printable enclosure parts 01–07, in their supplied relative coordinates. Antennas, PCB, LCD and keycaps are not reconstructed from these enclosure files. The Meshtastic listing uses the same reviewed Pager hardware; preloaded software does not change this CAD scope.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-lora-pager-reviewed-cad-6",
+      "productId": "lilygo-t-lora-pager",
+      "title": "Xinyuan-LilyGO/LilyGoLib case/t-lora-pager/06.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/06.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/06.stl",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "repositoryPath": "case/t-lora-pager/06.stl",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "2bb08f87f66e70d017d6ce6de57b23e51711cb17",
+      "fetchedAt": "2026-11-22T08:32:10Z",
+      "bytes": 30684,
+      "sha256": "54fc3755afb7fdb7432677b93dae3b1afe8ab927cd64ab9415a0449020e75fab",
+      "rawSha256": "54fc3755afb7fdb7432677b93dae3b1afe8ab927cd64ab9415a0449020e75fab",
+      "file": "manufacturer-06.stl.gz",
+      "archiveName": "manufacturer-06.stl.gz",
+      "storedSha256": "a5043f9f9cd99ee43e89ad990e1d010f57e66b942830017f6d275360dca19004",
+      "archiveSha256": "a5043f9f9cd99ee43e89ad990e1d010f57e66b942830017f6d275360dca19004",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official T-LoRa-Pager printable enclosure parts 01–07, in their supplied relative coordinates. Antennas, PCB, LCD and keycaps are not reconstructed from these enclosure files. The Meshtastic listing uses the same reviewed Pager hardware; preloaded software does not change this CAD scope.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-lora-pager-reviewed-cad-7",
+      "productId": "lilygo-t-lora-pager",
+      "title": "Xinyuan-LilyGO/LilyGoLib case/t-lora-pager/07.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/07.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/case/t-lora-pager/07.stl",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "repositoryPath": "case/t-lora-pager/07.stl",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "b895f698fc472d91de268111c43757f2cbdbe99c",
+      "fetchedAt": "2026-11-22T08:32:10Z",
+      "bytes": 34484,
+      "sha256": "8ea0048f99ed8f75ff957f6f715d239397d86422f1b96c6b40fc23d051d50ac9",
+      "rawSha256": "8ea0048f99ed8f75ff957f6f715d239397d86422f1b96c6b40fc23d051d50ac9",
+      "file": "manufacturer-07.stl.gz",
+      "archiveName": "manufacturer-07.stl.gz",
+      "storedSha256": "d49a5bf342b954268654bc303d641afdaeb3fbd88341a651fae0a0715120ce87",
+      "archiveSha256": "d49a5bf342b954268654bc303d641afdaeb3fbd88341a651fae0a0715120ce87",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official T-LoRa-Pager printable enclosure parts 01–07, in their supplied relative coordinates. Antennas, PCB, LCD and keycaps are not reconstructed from these enclosure files. The Meshtastic listing uses the same reviewed Pager hardware; preloaded software does not change this CAD scope.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-lora-pager-reviewed-cad-license",
+      "title": "Manufacturer repository LICENSE",
+      "kind": "license",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/LICENSE",
+      "fetchedAt": "2026-11-22T08:37:51Z",
+      "sha256": "85b4e1ce0c20182dd2c2d62b9d033f81520dbc1949773150ca6bcbc506f9e146",
+      "bytes": 1076,
+      "file": "manufacturer-LICENSE.txt",
+      "archiveName": "manufacturer-LICENSE.txt",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-lora-pager",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-lora-series/t-lora-pager/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-lora-series/t-lora-pager/index.md",
+      "fetchedAt": "2026-11-22T06:43:33Z",
+      "mediaType": "text/plain",
+      "bytes": 15711,
+      "sha256": "e7af2f3099468fbba6b37b2b4e82b4a8bb4179f18a8d6a77328be0d733e2f8f5",
+      "gitBlobSha": "8c2f14d088bb316843146550bf647a3fb69f86d0",
+      "path": "en/products/t-lora-series/t-lora-pager/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t lora pager",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-lora-series__t-lora-pager__index.md"
+    },
+    {
+      "id": "lib-src-lilygowatchultra-h",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGoWatchUltra.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "57506b4014c6d9d4db8794bb61ac2a6e820ff240",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGoWatchUltra.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGoWatchUltra.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-lilygowatchultra-h-LilyGoWatchUltra.h",
+      "sha256": "ec9ffa7f7ab4cca06a0c345714b2dac74734f6c93bca9331d0f8f2c3f51b21ea",
+      "bytes": 25959,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-src-lilygowatchultra-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGoWatchUltra.cpp",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "db0f58d38a5791c69251a1c1502390389346bc31",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGoWatchUltra.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGoWatchUltra.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-lilygowatchultra-cpp-LilyGoWatchUltra.cpp",
+      "sha256": "9b4ff17213068b00578b307905427c168036cca26b2403d32ae10f8e42087969",
+      "bytes": 40541,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-src-lilygowatchs3-h",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGoWatchS3.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "79a64efd62f2b38e1c665174313de20ea53c8225",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGoWatchS3.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGoWatchS3.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-lilygowatchs3-h-LilyGoWatchS3.h",
+      "sha256": "97808f490285e187b0b50d543c3dcc56be12f71ecb11718af372ffa571642c9c",
+      "bytes": 16012,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-src-lilygowatchs3-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGoWatchS3.cpp",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "4409145e78abc0a3f4f930a6129b7d4bb70d85a8",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGoWatchS3.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGoWatchS3.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-lilygowatchs3-cpp-LilyGoWatchS3.cpp",
+      "sha256": "b86e3e1551f54dbf413c6f8275ee406789a65f91d77d3ee126854575ecdce518",
+      "bytes": 37748,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-src-lilygo_lora_pager-h",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGo_LoRa_Pager.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "23b8342fb2a0a55e82ad29bf2328cfd3c199c2ba",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGo_LoRa_Pager.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGo_LoRa_Pager.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-lilygo_lora_pager-h-LilyGo_LoRa_Pager.h",
+      "sha256": "b3824999336a8cb0a12d826fa162a927740773499fcff63301b55c8825df48dd",
+      "bytes": 26981,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-src-lilygo_lora_pager-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGo_LoRa_Pager.cpp",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "fc7f0991dab94ce43ec39b254d3faf0b3fc866f5",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGo_LoRa_Pager.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGo_LoRa_Pager.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-lilygo_lora_pager-cpp-LilyGo_LoRa_Pager.cpp",
+      "sha256": "4a3c329177f249049e6f5217e569aba7a568736708f81b766f77d9a59a3127a2",
+      "bytes": 51484,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-src-display-lilygodispinterface-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/display/LilyGoDispInterface.cpp",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "53a7e06ddf1cdc268d463e52ad1c8aaa438c144b",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/display/LilyGoDispInterface.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/display/LilyGoDispInterface.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-display-lilygodispinterface-cpp-LilyGoDispInterface.cpp",
+      "sha256": "4d9f685cb62de946c1813bf282e63e29af2a9528bb0559b988be95e791afa494",
+      "bytes": 29785,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-docs-hardware-lilygo-t-watch-ultra-md",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-watch-ultra.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "8dcb609beb3438ae5944868aaf85724657b8455c",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-watch-ultra.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-watch-ultra.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-docs-hardware-lilygo-t-watch-ultra-md-lilygo-t-watch-ultra.md",
+      "sha256": "8e96e3b86248eb3aa6a5241088c4bce74f6e64fd762a4bff3a0bcb305b1d1424",
+      "bytes": 11506,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-watch-s3-plus.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "c70827b2556a8920d01cc24f789bf6e6f3583d4f",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-watch-s3-plus.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-watch-s3-plus.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-docs-hardware-lilygo-t-watch-s3-plus-md-lilygo-t-watch-s3-plus.md",
+      "sha256": "2997530dd61930be7e2c9a550be8baddf04d4393dde4a7fda9aaf35d6df875ec",
+      "bytes": 10648,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-docs-hardware-lilygo-t-watch-s3-md",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-watch-s3.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "c508fa8cd3c2b579a474f9babc17f309701a7998",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-watch-s3.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-watch-s3.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-docs-hardware-lilygo-t-watch-s3-md-lilygo-t-watch-s3.md",
+      "sha256": "2c33d432f2f7e7ee53379e951dbb7561738ec4c5230585e09853f47ac03920b8",
+      "bytes": 9476,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-docs-hardware-lilygo-t-lora-pager-md",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-lora-pager.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "3cfc6c677ed76d76053a47c716c06b3ff793a2d8",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-lora-pager.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-lora-pager.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-docs-hardware-lilygo-t-lora-pager-md-lilygo-t-lora-pager.md",
+      "sha256": "b9df8bd908b32855e17a5837a29bdd0e64759061076e4dc5a39d39bb70518067",
+      "bytes": 16321,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-docs-hardware-lilygo-t-embed-plus-md",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-embed-plus.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "078e20d746af213ec9d94c24e7bfa1d5c9084da2",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-embed-plus.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-embed-plus.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-docs-hardware-lilygo-t-embed-plus-md-lilygo-t-embed-plus.md",
+      "sha256": "3f8fabbe3b6863c8efb6a24b36a8bd6e71c4b6bc17a0d5b5b46d96eb6dcb24d0",
+      "bytes": 12947,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-docs-hardware-lilygo-t-embed-md",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-embed.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "c54e31c64849523eedf1c81a47603ff8f6432f35",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-embed.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-embed.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-docs-hardware-lilygo-t-embed-md-lilygo-t-embed.md",
+      "sha256": "1ac9941be9c1b10097e9635471172e6b94c071a720465bc650374c531f42e739",
+      "bytes": 10130,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "arduino/temporary_t_embed/variants/lilygo_tembed/pins_arduino.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "965f523b52f9dbf6cd6ec8152a2a703440239492",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/arduino/temporary_t_embed/variants/lilygo_tembed/pins_arduino.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/arduino/temporary_t_embed/variants/lilygo_tembed/pins_arduino.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h-pins_arduino.h",
+      "sha256": "6548350e4c771421bf1bf1f4719f8a9058d47458eb6c3a0a9f369ed9a82eb636",
+      "bytes": 1382,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "arduino/temporary_t_embed_plus/variants/lilygo_tembed_plus/pins_arduino.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "dbe50b9af101f322aca2b2097bd71195bc7cbf38",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/arduino/temporary_t_embed_plus/variants/lilygo_tembed_plus/pins_arduino.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/arduino/temporary_t_embed_plus/variants/lilygo_tembed_plus/pins_arduino.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h-pins_arduino.h",
+      "sha256": "7d41623eaab302720c7de58ea39c7e667b13f012587a572d2c391bdf0d30a291",
+      "bytes": 2332,
+      "mediaType": "text/plain; charset=utf-8"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-lora-pager-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-LORA-PAGER_7.jpg?v=1747201841",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-lora-pager/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-lora-pager-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-LORA-PAGER_4.jpg?v=1747201841",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-lora-pager/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-lora-pager-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-LORA-PAGER_3.jpg?v=1747201841",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-lora-pager/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -103,26 +795,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -130,7 +802,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -140,7 +812,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -150,7 +822,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -160,12 +832,267 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-entry-linked",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-lora-pager"
+    ],
+    "links": [
+      {
+        "url": "https://github.com/espressif/arduino-esp32/releases/tag/3.3.0-alpha1",
+        "sourceId": "official-wiki-t-lora-pager",
+        "status": "linked"
+      },
+      {
+        "url": "https://wiki.lilygo.cc/products/t-lora-series/t-lora-pager/factory.md",
+        "sourceId": "official-wiki-t-lora-pager",
+        "status": "linked"
+      }
+    ],
+    "evidenceNotes": [
+      "The development board is feature-rich, integrating QWERT keyboard, AI-enabled IMU (BHI260AP), 2.33-inch strip screen (480×222 resolution), U-blox GPS module (MIA-M10Q), RFID/NFC, RTC circuit, TI power management chip, ES8311 audio codec (supporting microphone, speaker, headphone), rotary encoder, GPIO expansion interface, etc. The back design includes 1/4 fixed screw interface and M2 screw pillars, with a lanyard included for easy carrying and fixing. The factory firmware includes UI Demo designed by LILYGO, enabling smooth interaction through the encoder, suitable for smart wearables, IoT positioning, data collection and other scenario development.",
+      "* Factory Firmware User Guide"
+    ],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-lora-pager/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "采用已审查的官方 CAD 部件；具体版次、遗漏部分及未标定项见模型资料。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-lora-pager",
+      "lilygo-t-lora-pager-official-photo-0",
+      "lilygo-t-lora-pager-official-photo-1",
+      "lilygo-t-lora-pager-official-photo-2",
+      "lib-src-lilygowatchultra-h",
+      "lib-src-lilygowatchultra-cpp",
+      "lib-src-lilygowatchs3-h",
+      "lib-src-lilygowatchs3-cpp",
+      "lib-src-lilygo_lora_pager-h",
+      "lib-src-lilygo_lora_pager-cpp",
+      "lib-src-display-lilygodispinterface-cpp",
+      "lib-docs-hardware-lilygo-t-watch-ultra-md",
+      "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+      "lib-docs-hardware-lilygo-t-watch-s3-md",
+      "lib-docs-hardware-lilygo-t-lora-pager-md",
+      "lib-docs-hardware-lilygo-t-embed-plus-md",
+      "lib-docs-hardware-lilygo-t-embed-md",
+      "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+      "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+      "lilygo-t-lora-pager-reviewed-cad-1",
+      "lilygo-t-lora-pager-reviewed-cad-2",
+      "lilygo-t-lora-pager-reviewed-cad-3",
+      "lilygo-t-lora-pager-reviewed-cad-4",
+      "lilygo-t-lora-pager-reviewed-cad-5",
+      "lilygo-t-lora-pager-reviewed-cad-6",
+      "lilygo-t-lora-pager-reviewed-cad-7",
+      "lilygo-t-lora-pager-reviewed-cad-license"
+    ],
+    "displayHint": {
+      "width": 222,
+      "height": 480,
+      "sourceIds": [
+        "lib-src-lilygowatchultra-h",
+        "lib-src-lilygowatchultra-cpp",
+        "lib-src-lilygowatchs3-h",
+        "lib-src-lilygowatchs3-cpp",
+        "lib-src-lilygo_lora_pager-h",
+        "lib-src-lilygo_lora_pager-cpp",
+        "lib-src-display-lilygodispinterface-cpp",
+        "lib-docs-hardware-lilygo-t-watch-ultra-md",
+        "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+        "lib-docs-hardware-lilygo-t-watch-s3-md",
+        "lib-docs-hardware-lilygo-t-lora-pager-md",
+        "lib-docs-hardware-lilygo-t-embed-plus-md",
+        "lib-docs-hardware-lilygo-t-embed-md",
+        "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+        "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+        "official-store-shopify-1",
+        "official-wiki-t-lora-pager"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-lora-pager",
+    "status": "diagnostic",
+    "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+    "unsupported": [
+      "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
+      "No factory firmware boot was verified; source pin verification and native board tests are separate from a working factory image.",
+      "No SD, radio, PMIC/battery/charger, audio, IMU, camera, haptics, sensor, NFC, GPS or RGB LED peripheral support is added by this profile."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-lora-pager",
+    "boardId": "lilygo-t-lora-pager",
+    "name": "LILYGO T-Lora Pager",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "display": {
+      "width": 222,
+      "height": 480,
+      "controller": "ST7796",
+      "interface": "spi",
+      "pixelFormat": "RGB565",
+      "crop": [
+        49,
+        0,
+        222,
+        480
+      ],
+      "commandCoordinateCanvas": [
+        320,
+        480
+      ],
+      "physicalTouch": false,
+      "touchImplemented": false
+    },
+    "pins": {
+      "display": {
+        "sclk": 35,
+        "mosi": 34,
+        "cs": 38,
+        "dc": 37,
+        "reset": null,
+        "enable": null,
+        "backlight": {
+          "pin": 42,
+          "activeHigh": true
+        },
+        "ledcGate": false
+      },
+      "touch": null,
+      "encoder": [
+        40,
+        41
+      ]
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "pin": 0,
+        "activeLow": true,
+        "type": "button",
+        "name": "BOOT"
+      },
+      {
+        "id": "encoder-press",
+        "pin": 7,
+        "activeLow": true,
+        "type": "button",
+        "name": "Encoder press"
+      },
+      {
+        "id": "encoder",
+        "name": "Encoder",
+        "type": "encoder",
+        "pins": {
+          "a": 40,
+          "b": 41
+        },
+        "detents": null
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "nativeGuestProbeVerified": false,
+      "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
+    },
+    "unsupported": [
+      "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
+      "No factory firmware boot was verified; source pin verification and native board tests are separate from a working factory image.",
+      "No SD, radio, PMIC/battery/charger, audio, IMU, camera, haptics, sensor, NFC, GPS or RGB LED peripheral support is added by this profile."
+    ],
+    "sourceIds": [
+      "lib-src-lilygowatchultra-h",
+      "lib-src-lilygowatchultra-cpp",
+      "lib-src-lilygowatchs3-h",
+      "lib-src-lilygowatchs3-cpp",
+      "lib-src-lilygo_lora_pager-h",
+      "lib-src-lilygo_lora_pager-cpp",
+      "lib-src-display-lilygodispinterface-cpp",
+      "lib-docs-hardware-lilygo-t-watch-ultra-md",
+      "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+      "lib-docs-hardware-lilygo-t-watch-s3-md",
+      "lib-docs-hardware-lilygo-t-lora-pager-md",
+      "lib-docs-hardware-lilygo-t-embed-plus-md",
+      "lib-docs-hardware-lilygo-t-embed-md",
+      "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+      "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+      "official-store-shopify-1",
+      "official-wiki-t-lora-pager"
+    ],
+    "chronology": {
+      "date": "2024-08-05",
+      "basis": "hardware-release",
+      "sourceUrl": "https://wiki.lilygo.cc/products/t-lora-series/t-lora-pager/",
+      "sourceId": "official-wiki-t-lora-pager",
+      "confidence": "medium",
+      "hardwareRevision": "V1.0",
+      "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+    },
+    "priorityRank": 30,
+    "hardwareRevision": "source-defined board; see selected scope",
+    "scopeEn": "Physical device is landscape 480x222; emulator frame is native 222x480. TCA8418 keyboard, XL9555 reset/power domains, radio and RTC absent. GPIO42 AW9364 supports steady on/off only; pulse dimming is unmodeled.",
+    "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+    "sdCard": {
+      "slot": true,
+      "transportSupported": false,
+      "pins": {
+        "interface": "spi",
+        "sclk": 35,
+        "mosi": 34,
+        "miso": 33,
+        "cs": 21
+      },
+      "sourceIds": [
+        "lib-src-lilygowatchultra-h",
+        "lib-src-lilygowatchultra-cpp",
+        "lib-src-lilygowatchs3-h",
+        "lib-src-lilygowatchs3-cpp",
+        "lib-src-lilygo_lora_pager-h",
+        "lib-src-lilygo_lora_pager-cpp",
+        "lib-src-display-lilygodispinterface-cpp",
+        "lib-docs-hardware-lilygo-t-watch-ultra-md",
+        "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+        "lib-docs-hardware-lilygo-t-watch-s3-md",
+        "lib-docs-hardware-lilygo-t-lora-pager-md",
+        "lib-docs-hardware-lilygo-t-embed-plus-md",
+        "lib-docs-hardware-lilygo-t-embed-md",
+        "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+        "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+        "official-store-shopify-1",
+        "official-wiki-t-lora-pager"
+      ],
+      "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+    }
+  }
 }

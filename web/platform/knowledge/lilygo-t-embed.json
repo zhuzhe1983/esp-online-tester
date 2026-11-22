@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-embed",
   "title": "LILYGO T-Embed",
-  "summary": "Spark 将此商品归入T-Embed 系列，标注 MCU 为 ESP32-S3；具体硬件版次及配置待核对。",
+  "summary": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "source-defined board; see selected scope",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Embed",
@@ -52,6 +52,118 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-09-27",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-embed",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 170,
+          "height": 320,
+          "controller": "ST7789",
+          "interface": "spi",
+          "pixelFormat": "RGB565",
+          "crop": [
+            35,
+            0,
+            170,
+            320
+          ],
+          "commandCoordinateCanvas": [
+            240,
+            320
+          ],
+          "physicalTouch": false,
+          "touchImplemented": false
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "encoder-press",
+            "pin": 0,
+            "activeLow": true,
+            "type": "button",
+            "name": "Encoder press"
+          },
+          {
+            "id": "encoder",
+            "name": "Encoder",
+            "type": "encoder",
+            "pins": {
+              "a": 2,
+              "b": 1
+            },
+            "detents": 24
+          }
+        ],
+        "pins": {
+          "display": {
+            "sclk": 12,
+            "mosi": 11,
+            "cs": 10,
+            "dc": 13,
+            "reset": 9,
+            "enable": 46,
+            "backlight": {
+              "pin": 15,
+              "activeHigh": true
+            },
+            "ledcGate": false
+          },
+          "touch": null,
+          "encoder": [
+            2,
+            1
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "lib-src-lilygowatchultra-h",
+        "lib-src-lilygowatchultra-cpp",
+        "lib-src-lilygowatchs3-h",
+        "lib-src-lilygowatchs3-cpp",
+        "lib-src-lilygo_lora_pager-h",
+        "lib-src-lilygo_lora_pager-cpp",
+        "lib-src-display-lilygodispinterface-cpp",
+        "lib-docs-hardware-lilygo-t-watch-ultra-md",
+        "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+        "lib-docs-hardware-lilygo-t-watch-s3-md",
+        "lib-docs-hardware-lilygo-t-lora-pager-md",
+        "lib-docs-hardware-lilygo-t-embed-plus-md",
+        "lib-docs-hardware-lilygo-t-embed-md",
+        "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+        "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+        "pro-readme-md",
+        "pro-examples-factory-utilities-h",
+        "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+        "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+        "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+        "official-store-shopify-1",
+        "official-wiki-t-embed"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +192,517 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-embed-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Embed-K167-LILYGO_11.jpg?v=1665647325",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Embed-K167-LILYGO_11.jpg?v=1665647325",
+      "fetchedAt": "2026-11-22T07:00:12Z",
+      "bytes": 72849,
+      "sha256": "a1bc7f780237c76b70ae5a9b1be33d4b69526c0800aec7b63bfc0bb736e981eb",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t embed official photo 0",
+      "archiveName": "lilygo-t-embed-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-embed-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Embed-K167-LILYGO_6.jpg?v=1665647325",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Embed-K167-LILYGO_6.jpg?v=1665647325",
+      "fetchedAt": "2026-11-22T07:00:12Z",
+      "bytes": 65891,
+      "sha256": "38a06ce45316f8b6c7b0bc8f753c48d80da527e6823516d6c8612436dca517cc",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t embed official photo 1",
+      "archiveName": "lilygo-t-embed-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-embed-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Embed-K167-LILYGO_5.jpg?v=1669801244",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Embed-K167-LILYGO_5.jpg?v=1669801244",
+      "fetchedAt": "2026-11-22T07:00:12Z",
+      "bytes": 30567,
+      "sha256": "ff9c5b1a2756899e11c73dcf85a524b4e02b7912ad863cfdc5d248a217da550e",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t embed official photo 2",
+      "archiveName": "lilygo-t-embed-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-embed-manufacturer-cad",
+      "productId": "lilygo-t-embed",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Embed/17867865b2d157a3a40ebe88e6ad3f0ba113aafd/Shell_file/t-embed_normal-full-shell.stp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Embed/17867865b2d157a3a40ebe88e6ad3f0ba113aafd/Shell_file/t-embed_normal-full-shell.stp",
+      "repository": "Xinyuan-LilyGO/T-Embed",
+      "repositoryPath": "Shell_file/t-embed_normal-full-shell.stp",
+      "scope": "Original T-Embed normal shell; not CC1101 variants",
+      "fetchedAt": "2026-11-22T07:04:13Z",
+      "bytes": 2637745,
+      "sha256": "ccc4fefdfe165ddeeb76e6814637a637fc6099223bb4817924254e8cf9fe3f62",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "manufacturer-source.step.gz",
+      "rawSha256": "ccc4fefdfe165ddeeb76e6814637a637fc6099223bb4817924254e8cf9fe3f62",
+      "archiveSha256": "d29d8014b5b61c9895cd7ab51eea694a3ea6a28e3da380e7e66ac132a0c766b9",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "compression": "gzip",
+      "kind": "manufacturer-cad",
+      "storedSha256": "d29d8014b5b61c9895cd7ab51eea694a3ea6a28e3da380e7e66ac132a0c766b9",
+      "hashScope": "sha256/bytes describe original fetched STEP; storedSha256 describes gzip artifact.",
+      "blobSha": "8c6c82206fb24348202fd035dddd841f715c745e",
+      "revisionType": "pinned-git-revision",
+      "revision": "17867865b2d157a3a40ebe88e6ad3f0ba113aafd",
+      "title": "lilygo t embed manufacturer cad",
+      "archiveName": "lilygo-t-embed-manufacturer-cad.gz"
+    },
+    {
+      "id": "lilygo-t-embed-repository-license",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Embed/17867865b2d157a3a40ebe88e6ad3f0ba113aafd/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Embed/17867865b2d157a3a40ebe88e6ad3f0ba113aafd/LICENSE",
+      "fetchedAt": "2026-11-22T07:10:24Z",
+      "bytes": 1071,
+      "sha256": "50ccab4158478096cd982dbdf5b117c32f52f755122d6dcb659cf5c713568405",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "SOURCE-LICENSE.txt",
+      "scope": "Upstream repository license; no claim that unrelated photographs or CAD from another repository share it.",
+      "title": "lilygo t embed repository license",
+      "kind": "official-product-document",
+      "archiveName": "lilygo-t-embed-repository-license.txt"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-embed",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-embed-series/t-embed/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-embed-series/t-embed/index.md",
+      "fetchedAt": "2026-11-22T06:43:14Z",
+      "mediaType": "text/plain",
+      "bytes": 5063,
+      "sha256": "844e2e2cc101653cd95f0643d4fd798cf9c94f80af93dee5272470a68b3f6eef",
+      "gitBlobSha": "d123ec897fe46444b2f93e1790ddc3421220f5c4",
+      "path": "en/products/t-embed-series/t-embed/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t embed",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-embed-series__t-embed__index.md"
+    },
+    {
+      "id": "lib-src-lilygowatchultra-h",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGoWatchUltra.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "57506b4014c6d9d4db8794bb61ac2a6e820ff240",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGoWatchUltra.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGoWatchUltra.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-lilygowatchultra-h-LilyGoWatchUltra.h",
+      "sha256": "ec9ffa7f7ab4cca06a0c345714b2dac74734f6c93bca9331d0f8f2c3f51b21ea",
+      "bytes": 25959,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-src-lilygowatchultra-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGoWatchUltra.cpp",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "db0f58d38a5791c69251a1c1502390389346bc31",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGoWatchUltra.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGoWatchUltra.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-lilygowatchultra-cpp-LilyGoWatchUltra.cpp",
+      "sha256": "9b4ff17213068b00578b307905427c168036cca26b2403d32ae10f8e42087969",
+      "bytes": 40541,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-src-lilygowatchs3-h",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGoWatchS3.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "79a64efd62f2b38e1c665174313de20ea53c8225",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGoWatchS3.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGoWatchS3.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-lilygowatchs3-h-LilyGoWatchS3.h",
+      "sha256": "97808f490285e187b0b50d543c3dcc56be12f71ecb11718af372ffa571642c9c",
+      "bytes": 16012,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-src-lilygowatchs3-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGoWatchS3.cpp",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "4409145e78abc0a3f4f930a6129b7d4bb70d85a8",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGoWatchS3.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGoWatchS3.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-lilygowatchs3-cpp-LilyGoWatchS3.cpp",
+      "sha256": "b86e3e1551f54dbf413c6f8275ee406789a65f91d77d3ee126854575ecdce518",
+      "bytes": 37748,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-src-lilygo_lora_pager-h",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGo_LoRa_Pager.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "23b8342fb2a0a55e82ad29bf2328cfd3c199c2ba",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGo_LoRa_Pager.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGo_LoRa_Pager.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-lilygo_lora_pager-h-LilyGo_LoRa_Pager.h",
+      "sha256": "b3824999336a8cb0a12d826fa162a927740773499fcff63301b55c8825df48dd",
+      "bytes": 26981,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-src-lilygo_lora_pager-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGo_LoRa_Pager.cpp",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "fc7f0991dab94ce43ec39b254d3faf0b3fc866f5",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGo_LoRa_Pager.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGo_LoRa_Pager.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-lilygo_lora_pager-cpp-LilyGo_LoRa_Pager.cpp",
+      "sha256": "4a3c329177f249049e6f5217e569aba7a568736708f81b766f77d9a59a3127a2",
+      "bytes": 51484,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-src-display-lilygodispinterface-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/display/LilyGoDispInterface.cpp",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "53a7e06ddf1cdc268d463e52ad1c8aaa438c144b",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/display/LilyGoDispInterface.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/display/LilyGoDispInterface.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-src-display-lilygodispinterface-cpp-LilyGoDispInterface.cpp",
+      "sha256": "4d9f685cb62de946c1813bf282e63e29af2a9528bb0559b988be95e791afa494",
+      "bytes": 29785,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-docs-hardware-lilygo-t-watch-ultra-md",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-watch-ultra.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "8dcb609beb3438ae5944868aaf85724657b8455c",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-watch-ultra.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-watch-ultra.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-docs-hardware-lilygo-t-watch-ultra-md-lilygo-t-watch-ultra.md",
+      "sha256": "8e96e3b86248eb3aa6a5241088c4bce74f6e64fd762a4bff3a0bcb305b1d1424",
+      "bytes": 11506,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-watch-s3-plus.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "c70827b2556a8920d01cc24f789bf6e6f3583d4f",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-watch-s3-plus.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-watch-s3-plus.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-docs-hardware-lilygo-t-watch-s3-plus-md-lilygo-t-watch-s3-plus.md",
+      "sha256": "2997530dd61930be7e2c9a550be8baddf04d4393dde4a7fda9aaf35d6df875ec",
+      "bytes": 10648,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-docs-hardware-lilygo-t-watch-s3-md",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-watch-s3.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "c508fa8cd3c2b579a474f9babc17f309701a7998",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-watch-s3.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-watch-s3.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-docs-hardware-lilygo-t-watch-s3-md-lilygo-t-watch-s3.md",
+      "sha256": "2c33d432f2f7e7ee53379e951dbb7561738ec4c5230585e09853f47ac03920b8",
+      "bytes": 9476,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-docs-hardware-lilygo-t-lora-pager-md",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-lora-pager.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "3cfc6c677ed76d76053a47c716c06b3ff793a2d8",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-lora-pager.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-lora-pager.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-docs-hardware-lilygo-t-lora-pager-md-lilygo-t-lora-pager.md",
+      "sha256": "b9df8bd908b32855e17a5837a29bdd0e64759061076e4dc5a39d39bb70518067",
+      "bytes": 16321,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-docs-hardware-lilygo-t-embed-plus-md",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-embed-plus.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "078e20d746af213ec9d94c24e7bfa1d5c9084da2",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-embed-plus.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-embed-plus.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-docs-hardware-lilygo-t-embed-plus-md-lilygo-t-embed-plus.md",
+      "sha256": "3f8fabbe3b6863c8efb6a24b36a8bd6e71c4b6bc17a0d5b5b46d96eb6dcb24d0",
+      "bytes": 12947,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-docs-hardware-lilygo-t-embed-md",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-embed.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "c54e31c64849523eedf1c81a47603ff8f6432f35",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-embed.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-embed.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-docs-hardware-lilygo-t-embed-md-lilygo-t-embed.md",
+      "sha256": "1ac9941be9c1b10097e9635471172e6b94c071a720465bc650374c531f42e739",
+      "bytes": 10130,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "arduino/temporary_t_embed/variants/lilygo_tembed/pins_arduino.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "965f523b52f9dbf6cd6ec8152a2a703440239492",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/arduino/temporary_t_embed/variants/lilygo_tembed/pins_arduino.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/arduino/temporary_t_embed/variants/lilygo_tembed/pins_arduino.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h-pins_arduino.h",
+      "sha256": "6548350e4c771421bf1bf1f4719f8a9058d47458eb6c3a0a9f369ed9a82eb636",
+      "bytes": 1382,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "arduino/temporary_t_embed_plus/variants/lilygo_tembed_plus/pins_arduino.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "dbe50b9af101f322aca2b2097bd71195bc7cbf38",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/9116bf41ca551d75a42d16cab391fe254f21ab2c/arduino/temporary_t_embed_plus/variants/lilygo_tembed_plus/pins_arduino.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/arduino/temporary_t_embed_plus/variants/lilygo_tembed_plus/pins_arduino.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h-pins_arduino.h",
+      "sha256": "7d41623eaab302720c7de58ea39c7e667b13f012587a572d2c391bdf0d30a291",
+      "bytes": 2332,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "pro-readme-md",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-Pro",
+      "path": "README.md",
+      "revision": "bef8db74e847f1e89a10cb3877f3b3a8544857d6",
+      "gitBlobSha": "ef9d0935a9b2d5e5fda7b6df9012bd6f87a3ca39",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-Pro/blob/bef8db74e847f1e89a10cb3877f3b3a8544857d6/README.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-Pro/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "pro-readme-md-README.md",
+      "sha256": "3ed3dac6cdc71b87fa05e714ff26f307a75cc7c540df56b00711912f5006283b",
+      "bytes": 17536,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "pro-examples-factory-utilities-h",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-Pro",
+      "path": "examples/factory/utilities.h",
+      "revision": "bef8db74e847f1e89a10cb3877f3b3a8544857d6",
+      "gitBlobSha": "f6e1be94e5068ef36028be9b68a0eb8aa5c4eec0",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-Pro/blob/bef8db74e847f1e89a10cb3877f3b3a8544857d6/examples/factory/utilities.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-Pro/examples/factory/utilities.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "pro-examples-factory-utilities-h-utilities.h",
+      "sha256": "9bfc1a25238e1954145180c0469c20a5f71fdcc26f4481d3cf06af63275aaa1a",
+      "bytes": 2048,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-Pro",
+      "path": "lib/TFT_eSPI/User_Setups/Setup214_LilyGo_T_Display_S3_Pro.h",
+      "revision": "bef8db74e847f1e89a10cb3877f3b3a8544857d6",
+      "gitBlobSha": "edc8f3a6142e31f49dd21d707ead6fa6b5d122c4",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-Pro/blob/bef8db74e847f1e89a10cb3877f3b3a8544857d6/lib/TFT_eSPI/User_Setups/Setup214_LilyGo_T_Display_S3_Pro.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-Pro/lib/TFT_eSPI/User_Setups/Setup214_LilyGo_T_Display_S3_Pro.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h-Setup214_LilyGo_T_Display_S3_Pro.h",
+      "sha256": "43cb52c5fe67f1ea96d053ba02cfecea18384cb6f7799203fecd38aa26e1a545",
+      "bytes": 1473,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-Pro",
+      "path": "lib/TFT_eSPI/TFT_Drivers/ST7796_Rotation.h",
+      "revision": "bef8db74e847f1e89a10cb3877f3b3a8544857d6",
+      "gitBlobSha": "c5f6ad69eff4c3db34e37d537feb51dc62355769",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-Pro/blob/bef8db74e847f1e89a10cb3877f3b3a8544857d6/lib/TFT_eSPI/TFT_Drivers/ST7796_Rotation.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-Pro/lib/TFT_eSPI/TFT_Drivers/ST7796_Rotation.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "pro-lib-tft_espi-tft_drivers-st7796_rotation-h-ST7796_Rotation.h",
+      "sha256": "8e582c55de898b7f2f37b1111b01c7d8003944e38961c4569c6aa832ffaedb1f",
+      "bytes": 1854,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-Pro",
+      "path": "lib/SensorLib/src/touch/TouchClassCST226.cpp",
+      "revision": "bef8db74e847f1e89a10cb3877f3b3a8544857d6",
+      "gitBlobSha": "8d292cb72ba4dd29dec91d45b64f48faa83b1088",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-Pro/blob/bef8db74e847f1e89a10cb3877f3b3a8544857d6/lib/SensorLib/src/touch/TouchClassCST226.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-Pro/lib/SensorLib/src/touch/TouchClassCST226.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "pro-lib-sensorlib-src-touch-touchclasscst226-cpp-TouchClassCST226.cpp",
+      "sha256": "6ae8e81bda9f99908a4b3f60d96ef2a0483b1d28b9514c225e995cf4fe0c3136",
+      "bytes": 8044,
+      "mediaType": "text/plain; charset=utf-8"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-embed-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Embed-K167-LILYGO_11.jpg?v=1665647325",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-embed/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-embed-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Embed-K167-LILYGO_6.jpg?v=1665647325",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-embed/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-embed-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Embed-K167-LILYGO_5.jpg?v=1669801244",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-embed/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +715,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +722,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +732,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +742,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +752,259 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-embed"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "manufacturer-cad",
+      "url": "./assets/lilygo-t-embed/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "官方 CAD 局部预览：Original T-Embed normal shell; not CC1101 variants；缺失部分和调试面板位置见模型来源。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-embed",
+      "lilygo-t-embed-official-photo-0",
+      "lilygo-t-embed-official-photo-1",
+      "lilygo-t-embed-official-photo-2",
+      "lilygo-t-embed-manufacturer-cad",
+      "lib-src-lilygowatchultra-h",
+      "lib-src-lilygowatchultra-cpp",
+      "lib-src-lilygowatchs3-h",
+      "lib-src-lilygowatchs3-cpp",
+      "lib-src-lilygo_lora_pager-h",
+      "lib-src-lilygo_lora_pager-cpp",
+      "lib-src-display-lilygodispinterface-cpp",
+      "lib-docs-hardware-lilygo-t-watch-ultra-md",
+      "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+      "lib-docs-hardware-lilygo-t-watch-s3-md",
+      "lib-docs-hardware-lilygo-t-lora-pager-md",
+      "lib-docs-hardware-lilygo-t-embed-plus-md",
+      "lib-docs-hardware-lilygo-t-embed-md",
+      "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+      "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+      "pro-readme-md",
+      "pro-examples-factory-utilities-h",
+      "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+      "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+      "pro-lib-sensorlib-src-touch-touchclasscst226-cpp"
+    ],
+    "displayHint": {
+      "width": 170,
+      "height": 320,
+      "sourceIds": [
+        "lib-src-lilygowatchultra-h",
+        "lib-src-lilygowatchultra-cpp",
+        "lib-src-lilygowatchs3-h",
+        "lib-src-lilygowatchs3-cpp",
+        "lib-src-lilygo_lora_pager-h",
+        "lib-src-lilygo_lora_pager-cpp",
+        "lib-src-display-lilygodispinterface-cpp",
+        "lib-docs-hardware-lilygo-t-watch-ultra-md",
+        "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+        "lib-docs-hardware-lilygo-t-watch-s3-md",
+        "lib-docs-hardware-lilygo-t-lora-pager-md",
+        "lib-docs-hardware-lilygo-t-embed-plus-md",
+        "lib-docs-hardware-lilygo-t-embed-md",
+        "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+        "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+        "pro-readme-md",
+        "pro-examples-factory-utilities-h",
+        "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+        "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+        "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+        "official-store-shopify-1",
+        "official-wiki-t-embed"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-embed",
+    "status": "diagnostic",
+    "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+    "unsupported": [
+      "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
+      "No factory firmware boot was verified; source pin verification and native board tests are separate from a working factory image.",
+      "No SD, radio, PMIC/battery/charger, audio, IMU, camera, haptics, sensor, NFC, GPS or RGB LED peripheral support is added by this profile."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-embed",
+    "boardId": "lilygo-t-embed",
+    "name": "LILYGO T-Embed",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "display": {
+      "width": 170,
+      "height": 320,
+      "controller": "ST7789",
+      "interface": "spi",
+      "pixelFormat": "RGB565",
+      "crop": [
+        35,
+        0,
+        170,
+        320
+      ],
+      "commandCoordinateCanvas": [
+        240,
+        320
+      ],
+      "physicalTouch": false,
+      "touchImplemented": false
+    },
+    "pins": {
+      "display": {
+        "sclk": 12,
+        "mosi": 11,
+        "cs": 10,
+        "dc": 13,
+        "reset": 9,
+        "enable": 46,
+        "backlight": {
+          "pin": 15,
+          "activeHigh": true
+        },
+        "ledcGate": false
+      },
+      "touch": null,
+      "encoder": [
+        2,
+        1
+      ]
+    },
+    "controls": [
+      {
+        "id": "encoder-press",
+        "pin": 0,
+        "activeLow": true,
+        "type": "button",
+        "name": "Encoder press"
+      },
+      {
+        "id": "encoder",
+        "name": "Encoder",
+        "type": "encoder",
+        "pins": {
+          "a": 2,
+          "b": 1
+        },
+        "detents": 24
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "nativeGuestProbeVerified": false,
+      "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
+    },
+    "unsupported": [
+      "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
+      "No factory firmware boot was verified; source pin verification and native board tests are separate from a working factory image.",
+      "No SD, radio, PMIC/battery/charger, audio, IMU, camera, haptics, sensor, NFC, GPS or RGB LED peripheral support is added by this profile."
+    ],
+    "sourceIds": [
+      "lib-src-lilygowatchultra-h",
+      "lib-src-lilygowatchultra-cpp",
+      "lib-src-lilygowatchs3-h",
+      "lib-src-lilygowatchs3-cpp",
+      "lib-src-lilygo_lora_pager-h",
+      "lib-src-lilygo_lora_pager-cpp",
+      "lib-src-display-lilygodispinterface-cpp",
+      "lib-docs-hardware-lilygo-t-watch-ultra-md",
+      "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+      "lib-docs-hardware-lilygo-t-watch-s3-md",
+      "lib-docs-hardware-lilygo-t-lora-pager-md",
+      "lib-docs-hardware-lilygo-t-embed-plus-md",
+      "lib-docs-hardware-lilygo-t-embed-md",
+      "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+      "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+      "pro-readme-md",
+      "pro-examples-factory-utilities-h",
+      "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+      "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+      "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+      "official-store-shopify-1",
+      "official-wiki-t-embed"
+    ],
+    "chronology": {
+      "date": "2022-09-27",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-embed",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 107,
+    "hardwareRevision": "source-defined board; see selected scope",
+    "scopeEn": "Original T-Embed display and encoder wiring; GPIO46 board enable required. GPIO15 AW9364 steady on/off only; APA102, SD, microphone and audio absent. Native frame is portrait170x320.",
+    "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+    "sdCard": {
+      "slot": true,
+      "transportSupported": false,
+      "pins": {
+        "interface": "spi",
+        "sclk": 40,
+        "mosi": 41,
+        "miso": 38,
+        "cs": 39
+      },
+      "sourceIds": [
+        "lib-src-lilygowatchultra-h",
+        "lib-src-lilygowatchultra-cpp",
+        "lib-src-lilygowatchs3-h",
+        "lib-src-lilygowatchs3-cpp",
+        "lib-src-lilygo_lora_pager-h",
+        "lib-src-lilygo_lora_pager-cpp",
+        "lib-src-display-lilygodispinterface-cpp",
+        "lib-docs-hardware-lilygo-t-watch-ultra-md",
+        "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+        "lib-docs-hardware-lilygo-t-watch-s3-md",
+        "lib-docs-hardware-lilygo-t-lora-pager-md",
+        "lib-docs-hardware-lilygo-t-embed-plus-md",
+        "lib-docs-hardware-lilygo-t-embed-md",
+        "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+        "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+        "pro-readme-md",
+        "pro-examples-factory-utilities-h",
+        "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+        "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+        "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+        "official-store-shopify-1",
+        "official-wiki-t-embed"
+      ],
+      "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+    }
+  }
 }

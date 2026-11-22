@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-lora3",
   "title": "LILYGO T3 LoRa32 V1.6.1",
-  "summary": "Spark 将此商品归入T3 (LoRa) 系列，标注 MCU 为 ESP32-PICO-D4；具体硬件版次及配置待核对。",
+  "summary": "已接入 SSD1306 128×64、GPIO25 指示输出；无线与 TF 卡传输尚未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T3 V1.6.1 SX1276 / ESP32-PICO-D4",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T3 LoRa32 V1.6.1",
@@ -52,6 +52,68 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-07-18",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/lora3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 128,
+          "height": 64,
+          "controller": "SSD1306",
+          "interface": "i2c",
+          "type": "OLED",
+          "pixelFormat": "RGB565",
+          "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+          "implemented": true,
+          "physicalTouch": false,
+          "touchImplemented": false
+        },
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 0,
+        "controls": [],
+        "pins": {
+          "display": {
+            "sda": 21,
+            "scl": 22,
+            "address": 60,
+            "reset": null
+          },
+          "indicator": {
+            "pin": 25,
+            "activeHigh": true,
+            "colorBasis": "debug visualization; exact emitted color is unverified"
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "classic-lilygo-lora-series-1a6868bb9cb8",
+        "classic-lilygo-lora-series-bb68cd55803b",
+        "classic-esp32-pico-d4-datasheet",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -88,9 +150,136 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-lora3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/P-DISPLAY.jpg?v=1677131900",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/P-DISPLAY.jpg?v=1677131900",
+      "fetchedAt": "2026-11-22T07:00:44Z",
+      "bytes": 49884,
+      "sha256": "c6a3861e642e628898de57a89a2c0ea45ee16437561d679460575192d32150dc",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo lora3 official photo 0",
+      "archiveName": "lilygo-lora3-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-lora3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/LILYGO-Paxcounter-LoRa-V2-1-1-6-1-ESP32-433-868-915MHZ-0-96-Inch-OLED_jpg_Q90_jpg.webp?v=1677131900",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/LILYGO-Paxcounter-LoRa-V2-1-1-6-1-ESP32-433-868-915MHZ-0-96-Inch-OLED_jpg_Q90_jpg.webp?v=1677131900",
+      "fetchedAt": "2026-11-22T07:00:44Z",
+      "bytes": 70277,
+      "sha256": "74d54922465c79c2e89dba7281cacce934e25cb148c3f31d844ed2f48cb3d138",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo lora3 official photo 1",
+      "archiveName": "lilygo-lora3-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-lora3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/P-DIAPLAY.jpg?v=1677131900",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/P-DIAPLAY.jpg?v=1677131900",
+      "fetchedAt": "2026-11-22T07:00:45Z",
+      "bytes": 91544,
+      "sha256": "45780ae2c598f530cb2150fe94ddfa8ad4fdc5152bff03947b551cfe20719483",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo lora3 official photo 2",
+      "archiveName": "lilygo-lora3-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "classic-lilygo-lora-series-1a6868bb9cb8",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "docs/en/t3_v161_sx1276/t3_v161_sx1276_hw.md",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "d17da88580e42bfad60f4fe5d6376a62094151a3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t3_v161_sx1276/t3_v161_sx1276_hw.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t3_v161_sx1276/t3_v161_sx1276_hw.md",
+      "fetchedAt": "2026-11-22T08:09:42Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 7842,
+      "sha256": "cb8c650c8630846310e1ef80a778550fdca9e811fb688b83529c519616da47d7",
+      "archiveName": "classic-lilygo-lora-series-1a6868bb9cb8.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-lora-series-1a6868bb9cb8.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-LoRa-Series/docs/en/t3_v161_sx1276/t3_v161_sx1276_hw.md"
+    },
+    {
+      "id": "classic-lilygo-lora-series-bb68cd55803b",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "examples/Factory/utilities.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "bf37221526ccc6143995d1e495d65cdec0dc407c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/Factory/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/Factory/utilities.h",
+      "fetchedAt": "2026-11-22T08:06:05Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 28783,
+      "sha256": "1f234017d45099f90e3a5cb7fb6ed16b78dfe11fa57f2b82a58f9d1b9411f733",
+      "archiveName": "classic-lilygo-lora-series-bb68cd55803b.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-lora-series-bb68cd55803b.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-LoRa-Series/examples/Factory/utilities.h"
+    },
+    {
+      "id": "classic-esp32-pico-d4-datasheet",
+      "url": "https://www.espressif.com/sites/default/files/documentation/esp32-pico-d4_datasheet_en.pdf",
+      "resolvedUrl": "https://documentation.espressif.com/esp32-pico_series_datasheet_en.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:11:46Z",
+      "bytes": 4549458,
+      "sha256": "177eb1517274eea5056ce725951091ebe8e2bce1d8635f064081fdad1cec0918",
+      "mediaType": "application/pdf",
+      "archiveName": "esp32-pico-d4-datasheet.pdf",
+      "sourceCachePath": "target/lilygo-classic-sources/esp32-pico-d4-datasheet.pdf",
+      "kind": "chip-manufacturer-datasheet",
+      "title": "classic esp32 pico d4 datasheet"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-lora3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/P-DISPLAY.jpg?v=1677131900",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-lora3/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-lora3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/LILYGO-Paxcounter-LoRa-V2-1-1-6-1-ESP32-433-868-915MHZ-0-96-Inch-OLED_jpg_Q90_jpg.webp?v=1677131900",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-lora3/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-lora3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/P-DIAPLAY.jpg?v=1677131900",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-lora3/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -103,26 +292,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -130,7 +299,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -140,7 +309,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -150,7 +319,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -160,12 +329,176 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-lora3/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-lora3-official-photo-0",
+      "lilygo-lora3-official-photo-1",
+      "lilygo-lora3-official-photo-2",
+      "classic-lilygo-lora-series-1a6868bb9cb8",
+      "classic-lilygo-lora-series-bb68cd55803b",
+      "classic-esp32-pico-d4-datasheet"
+    ],
+    "displayHint": {
+      "width": 128,
+      "height": 64,
+      "sourceIds": [
+        "classic-lilygo-lora-series-1a6868bb9cb8",
+        "classic-lilygo-lora-series-bb68cd55803b",
+        "classic-esp32-pico-d4-datasheet",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-lora3",
+    "status": "diagnostic",
+    "scope": "已接入 SSD1306 128×64、GPIO25 指示输出；无线与 TF 卡传输尚未实现。",
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "SX1276 radio, TCXO timing, RF analog behavior and SPI SD are unmodeled.",
+      "GPIO25 state is shown with a blue diagnostic marker; physical LED color/brightness is not verified.",
+      "Only an EN/RST button is documented; no GPIO BOOT button is invented.",
+      "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-lora3",
+    "boardId": "lilygo-lora3",
+    "name": "LILYGO T3 LoRa32 V1.6.1",
+    "chip": "esp32",
+    "flashMB": 4,
+    "physicalPsramMB": 0,
+    "psramMB": 0,
+    "psramMbBasis": "physical-capacity",
+    "hardwareRevision": "T3 V1.6.1 SX1276 / ESP32-PICO-D4",
+    "display": {
+      "width": 128,
+      "height": 64,
+      "controller": "SSD1306",
+      "interface": "i2c",
+      "type": "OLED",
+      "pixelFormat": "RGB565",
+      "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+      "implemented": true,
+      "physicalTouch": false,
+      "touchImplemented": false
+    },
+    "physicalDisplay": true,
+    "pins": {
+      "display": {
+        "sda": 21,
+        "scl": 22,
+        "address": 60,
+        "reset": null
+      },
+      "indicator": {
+        "pin": 25,
+        "activeHigh": true,
+        "colorBasis": "debug visualization; exact emitted color is unverified"
+      }
+    },
+    "controls": [],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": false,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "oled_i2c_windows_go_through_both_classic_controllers_and_real_routes",
+        "relay_coils_and_indicators_follow_mux_and_enable_not_only_latches"
+      ]
+    },
+    "scope": "已接入 SSD1306 128×64、GPIO25 指示输出；无线与 TF 卡传输尚未实现。",
+    "scopeEn": "Exact routed SSD1306 I2C and GPIO25 indicator subset; radio and SD unmodeled.",
+    "sourceIds": [
+      "classic-lilygo-lora-series-1a6868bb9cb8",
+      "classic-lilygo-lora-series-bb68cd55803b",
+      "classic-esp32-pico-d4-datasheet",
+      "official-store-shopify-1"
+    ],
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "SX1276 radio, TCXO timing, RF analog behavior and SPI SD are unmodeled.",
+      "GPIO25 state is shown with a blue diagnostic marker; physical LED color/brightness is not verified.",
+      "Only an EN/RST button is documented; no GPIO BOOT button is invented.",
+      "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled."
+    ],
+    "chronology": {
+      "date": "2022-07-18",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/lora3",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 123,
+    "factoryFirmwareInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    },
+    "module": "ESP32-PICO-D4",
+    "sdCard": {
+      "slot": true,
+      "transport": "spi",
+      "implemented": false,
+      "transportSupported": false,
+      "pins": {
+        "sclk": 14,
+        "mosi": 15,
+        "miso": 2,
+        "cs": 13
+      },
+      "sourceIds": [
+        "classic-lilygo-lora-series-1a6868bb9cb8"
+      ],
+      "notes": "Prepared 64 MiB FAT32 image is not attached to guest until board transport is implemented."
+    }
+  }
 }

@@ -234,8 +234,8 @@ onmessage = async (ev) => {
         runCycles=(...args)=>{try{return flight.run(...args);}catch(e){postMessage({flightError:e.message});return 1;}};
         flight.publish(true);
       }
-      const c5 = ['stamp-c5','stamp-c5-dip'].includes(m.board);
-      postMessage({ created: emu !== 0, clockHz:CPU_HZ, audioAvailable, networkAvailable:!c5&&!!wasm.esp32sim_softap_configure&&!!wasm.esp32sim_ethernet_relay, flashStorage: !c5&&!!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
+      const sramOnly = ['stamp-c5','stamp-c5-dip','lilygo-t7-c5','lilygo-t-dongle-c5','esp32s2','lilygo-esp32-s2-woor','lilygo-esp32-s2','lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board'].includes(m.board);
+      postMessage({ created: emu !== 0, clockHz:CPU_HZ, audioAvailable, networkAvailable:!sramOnly&&!!wasm.esp32sim_softap_configure&&!!wasm.esp32sim_ethernet_relay, flashStorage: !sramOnly&&!!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
     }
     else if(m.op.startsWith('network-')) {
       try {

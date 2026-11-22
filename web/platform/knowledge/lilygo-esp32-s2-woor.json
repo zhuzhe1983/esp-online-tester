@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-esp32-s2-woor",
   "title": "LILYGO ESP32 S2 WOOR",
-  "summary": "Spark 将此商品归入其他产品，标注 MCU 为 ESP32-S2；具体硬件版次及配置待核对。",
+  "summary": "独立 ESP32-S2 SRAM 诊断后端：UART0/1、GPIO/IO_MUX 与实体 BOOT0。自编客体已验证串口、按下/释放和保持按下后的重启；此板无内置屏幕。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "V1.1 exterior, official 2021-01-16 schematic reference",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "ESP32 S2 WOOR",
@@ -52,6 +52,109 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2023-11-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/esp32-s2-woor",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": null,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "simulation",
+        "physicalPsramMb": null,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true,
+            "physical": true
+          }
+        ],
+        "pins": {
+          "buttons": {
+            "boot": 0
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "s2-LilyGo-esp32s2-base-README.md",
+        "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_2021-1-16_.pdf",
+        "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_WOOR_2021-1-16_.pdf",
+        "s2-LilyGo-esp32s2-base-main_app_main.c",
+        "s2-LilyGo-esp32s2-base-sdkconfig",
+        "lilygo-esp32-s2-woor-official-photo-0",
+        "idf554-s2-core-isa.h",
+        "idf554-s2-core.h",
+        "idf554-s2-esp_app_format.h",
+        "idf554-s2-gpio_reg.h",
+        "idf554-s2-gpio_sig_map.h",
+        "idf554-s2-io_mux_reg.h",
+        "idf554-s2-memory.ld.in",
+        "idf554-s2-memory_layout.c",
+        "idf554-s2-reg_base.h",
+        "idf554-s2-soc.h",
+        "idf554-s2-soc_caps.h",
+        "idf554-s2-uart_reg.h",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [
+          {
+            "issue": "Old sdkconfig selects 2 MB flash with runtime size detection; SKU listing data is not the same firmware target.",
+            "resolution": "No runtime memory profile or compatible factory default is fabricated."
+          }
+        ],
+        "memoryEvidence": null
+      },
+      "basis": "official",
+      "sourceIds": [
+        "s2-LilyGo-esp32s2-base-README.md",
+        "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_2021-1-16_.pdf",
+        "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_WOOR_2021-1-16_.pdf",
+        "s2-LilyGo-esp32s2-base-main_app_main.c",
+        "s2-LilyGo-esp32s2-base-sdkconfig",
+        "lilygo-esp32-s2-woor-official-photo-0",
+        "idf554-s2-core-isa.h",
+        "idf554-s2-core.h",
+        "idf554-s2-esp_app_format.h",
+        "idf554-s2-gpio_reg.h",
+        "idf554-s2-gpio_sig_map.h",
+        "idf554-s2-io_mux_reg.h",
+        "idf554-s2-memory.ld.in",
+        "idf554-s2-memory_layout.c",
+        "idf554-s2-reg_base.h",
+        "idf554-s2-soc.h",
+        "idf554-s2-soc_caps.h",
+        "idf554-s2-uart_reg.h",
+        "official-store-shopify-1"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +183,363 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-esp32-s2-woor-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-ESP32-SWOOR_1.jpg?v=1700882111",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-ESP32-SWOOR_1.jpg?v=1700882111",
+      "fetchedAt": "2026-11-22T06:58:04Z",
+      "bytes": 40795,
+      "sha256": "f20c1fdae741481a16063b0aa5505fda16098b47eddfac71b21d93876efa085f",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo esp32 s2 woor official photo 1",
+      "archiveName": "lilygo-esp32-s2-woor-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-esp32-s2-woor-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-ESP32-SWOOR_2.jpg?v=1700882111",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-ESP32-SWOOR_2.jpg?v=1700882111",
+      "fetchedAt": "2026-11-22T06:58:09Z",
+      "bytes": 67012,
+      "sha256": "861c752e07f76b6aeb4cf8b9723ebd9b7d24b25ddd9473b22f009e73af48b38d",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo esp32 s2 woor official photo 2",
+      "archiveName": "lilygo-esp32-s2-woor-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lilygo-esp32-s2-woor-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-ESP32-SWOOR_3.jpg?v=1700882111",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-ESP32-SWOOR_3.jpg?v=1700882111",
+      "fetchedAt": "2026-11-22T06:58:04Z",
+      "bytes": 83122,
+      "sha256": "84784673fe55ce340b286b6a7292b0491463610b6624d573d6100e576deb870f",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo esp32 s2 woor official photo 0",
+      "archiveName": "lilygo-esp32-s2-woor-official-photo-0.jpg"
+    },
+    {
+      "id": "s2-LilyGo-esp32s2-base-README.md",
+      "title": "Xinyuan-LilyGO/LilyGo-esp32s2-base README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-esp32s2-base/68ba12e8a70c3f30e996e2ed39b0af13ea176b89/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-esp32s2-base/68ba12e8a70c3f30e996e2ed39b0af13ea176b89/README.md",
+      "fetchedAt": "2026-11-22T08:15:23Z",
+      "sha256": "46e64fb22c662a02a1709917b4e2fd2eda68b026e0d502dfac326fd89daa4ca3",
+      "bytes": 722,
+      "archiveName": "LilyGo-esp32s2-base-README.md",
+      "revision": "68ba12e8a70c3f30e996e2ed39b0af13ea176b89",
+      "path": "README.md",
+      "repository": "Xinyuan-LilyGO/LilyGo-esp32s2-base"
+    },
+    {
+      "id": "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_2021-1-16_.pdf",
+      "title": "Xinyuan-LilyGO/LilyGo-esp32s2-base schematic/ESP32_S2(2021-1-16).pdf",
+      "kind": "schematic",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-esp32s2-base/68ba12e8a70c3f30e996e2ed39b0af13ea176b89/schematic/ESP32_S2%282021-1-16%29.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-esp32s2-base/68ba12e8a70c3f30e996e2ed39b0af13ea176b89/schematic/ESP32_S2%282021-1-16%29.pdf",
+      "fetchedAt": "2026-11-22T08:15:28Z",
+      "sha256": "d1d9fe9b3da3e262897da21c6f8378d1bbdc2c646bb654b4b26e95afc613d831",
+      "bytes": 245162,
+      "archiveName": "LilyGo-esp32s2-base-schematic_ESP32_S2_2021-1-16_.pdf",
+      "revision": "68ba12e8a70c3f30e996e2ed39b0af13ea176b89",
+      "path": "schematic/ESP32_S2(2021-1-16).pdf",
+      "repository": "Xinyuan-LilyGO/LilyGo-esp32s2-base"
+    },
+    {
+      "id": "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_WOOR_2021-1-16_.pdf",
+      "title": "Xinyuan-LilyGO/LilyGo-esp32s2-base schematic/ESP32_S2_WOOR(2021-1-16).pdf",
+      "kind": "schematic",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-esp32s2-base/68ba12e8a70c3f30e996e2ed39b0af13ea176b89/schematic/ESP32_S2_WOOR%282021-1-16%29.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-esp32s2-base/68ba12e8a70c3f30e996e2ed39b0af13ea176b89/schematic/ESP32_S2_WOOR%282021-1-16%29.pdf",
+      "fetchedAt": "2026-11-22T08:15:34Z",
+      "sha256": "02e868e7177d099512ad5255895778083e7da1ee95a9879c5e409ef009ccf658",
+      "bytes": 157555,
+      "archiveName": "LilyGo-esp32s2-base-schematic_ESP32_S2_WOOR_2021-1-16_.pdf",
+      "revision": "68ba12e8a70c3f30e996e2ed39b0af13ea176b89",
+      "path": "schematic/ESP32_S2_WOOR(2021-1-16).pdf",
+      "repository": "Xinyuan-LilyGO/LilyGo-esp32s2-base"
+    },
+    {
+      "id": "s2-LilyGo-esp32s2-base-main_app_main.c",
+      "title": "Xinyuan-LilyGO/LilyGo-esp32s2-base main/app_main.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-esp32s2-base/68ba12e8a70c3f30e996e2ed39b0af13ea176b89/main/app_main.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-esp32s2-base/68ba12e8a70c3f30e996e2ed39b0af13ea176b89/main/app_main.c",
+      "fetchedAt": "2026-11-22T08:17:06Z",
+      "sha256": "1727401a7b9280f7ee65387d2a0ce3a80a2bce8818ad3a58174b24ba25bd60d9",
+      "bytes": 9303,
+      "archiveName": "LilyGo-esp32s2-base-main_app_main.c",
+      "revision": "68ba12e8a70c3f30e996e2ed39b0af13ea176b89",
+      "path": "main/app_main.c",
+      "repository": "Xinyuan-LilyGO/LilyGo-esp32s2-base"
+    },
+    {
+      "id": "s2-LilyGo-esp32s2-base-sdkconfig",
+      "title": "Xinyuan-LilyGO/LilyGo-esp32s2-base sdkconfig",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-esp32s2-base/68ba12e8a70c3f30e996e2ed39b0af13ea176b89/sdkconfig",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-esp32s2-base/68ba12e8a70c3f30e996e2ed39b0af13ea176b89/sdkconfig",
+      "fetchedAt": "2026-11-22T08:17:12Z",
+      "sha256": "0b86aafa454a706af4c0f15010659bcde0a1dd826d7e733b0f3706535cdec829",
+      "bytes": 31083,
+      "archiveName": "LilyGo-esp32s2-base-sdkconfig",
+      "revision": "68ba12e8a70c3f30e996e2ed39b0af13ea176b89",
+      "path": "sdkconfig",
+      "repository": "Xinyuan-LilyGO/LilyGo-esp32s2-base"
+    },
+    {
+      "id": "idf554-s2-core-isa.h",
+      "title": "ESP-IDF v5.5.4 ESP32-S2 components/xtensa/esp32s2/include/xtensa/config/core-isa.h",
+      "repository": "espressif/esp-idf",
+      "revision": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "revisionType": "git-commit",
+      "path": "components/xtensa/esp32s2/include/xtensa/config/core-isa.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/xtensa/esp32s2/include/xtensa/config/core-isa.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/xtensa/esp32s2/include/xtensa/config/core-isa.h",
+      "fetchedAt": "2026-11-22T09:09:42Z",
+      "status": "fetched",
+      "bytes": 32733,
+      "sha256": "4668ebfb2f51b21b3fc3dae0d93fbe3392028b52fe4c630eced8a47bdafff201",
+      "archiveName": "idf554-s2-core-isa.h.raw",
+      "sourceCachePath": "target/lilygo-s2-runtime-sources/idf554-s2-core-isa.h.raw",
+      "kind": "vendor-sdk-source"
+    },
+    {
+      "id": "idf554-s2-core.h",
+      "title": "ESP-IDF v5.5.4 ESP32-S2 components/xtensa/esp32s2/include/xtensa/config/core.h",
+      "repository": "espressif/esp-idf",
+      "revision": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "revisionType": "git-commit",
+      "path": "components/xtensa/esp32s2/include/xtensa/config/core.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/xtensa/esp32s2/include/xtensa/config/core.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/xtensa/esp32s2/include/xtensa/config/core.h",
+      "fetchedAt": "2026-11-22T09:09:42Z",
+      "status": "fetched",
+      "bytes": 55263,
+      "sha256": "8a695fd7b4e24cdc0a2a655845ce184bb9607e96becfdf537fb057fa7c4b8839",
+      "archiveName": "idf554-s2-core.h.raw",
+      "sourceCachePath": "target/lilygo-s2-runtime-sources/idf554-s2-core.h.raw",
+      "kind": "vendor-sdk-source"
+    },
+    {
+      "id": "idf554-s2-esp_app_format.h",
+      "title": "ESP-IDF v5.5.4 ESP image header and chip ID definitions",
+      "repository": "espressif/esp-idf",
+      "revision": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "revisionType": "git-commit",
+      "path": "components/bootloader_support/include/esp_app_format.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/bootloader_support/include/esp_app_format.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/bootloader_support/include/esp_app_format.h",
+      "fetchedAt": "2026-11-22T09:27:49Z",
+      "status": "fetched",
+      "bytes": 5861,
+      "sha256": "34657b34c7408443186c2d4007edc0c6dc0ca1afc8f7b31e730266c56e249661",
+      "archiveName": "idf554-s2-esp_app_format.h.raw",
+      "sourceCachePath": "target/lilygo-s2-runtime-sources/idf554-s2-esp_app_format.h.raw",
+      "kind": "vendor-sdk-source"
+    },
+    {
+      "id": "idf554-s2-gpio_reg.h",
+      "title": "ESP-IDF v5.5.4 ESP32-S2 components/soc/esp32s2/register/soc/gpio_reg.h",
+      "repository": "espressif/esp-idf",
+      "revision": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "revisionType": "git-commit",
+      "path": "components/soc/esp32s2/register/soc/gpio_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/register/soc/gpio_reg.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/register/soc/gpio_reg.h",
+      "fetchedAt": "2026-11-22T09:09:37Z",
+      "status": "fetched",
+      "bytes": 380025,
+      "sha256": "bf88c8f785d07d01b0b4aab865a6c28c8c8aa31fe89b79cbdeaff1fae483a91a",
+      "archiveName": "idf554-s2-gpio_reg.h.raw",
+      "sourceCachePath": "target/lilygo-s2-runtime-sources/idf554-s2-gpio_reg.h.raw",
+      "kind": "vendor-sdk-source"
+    },
+    {
+      "id": "idf554-s2-gpio_sig_map.h",
+      "title": "ESP-IDF v5.5.4 ESP32-S2 components/soc/esp32s2/include/soc/gpio_sig_map.h",
+      "repository": "espressif/esp-idf",
+      "revision": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "revisionType": "git-commit",
+      "path": "components/soc/esp32s2/include/soc/gpio_sig_map.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/include/soc/gpio_sig_map.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/include/soc/gpio_sig_map.h",
+      "fetchedAt": "2026-11-22T09:09:42Z",
+      "status": "fetched",
+      "bytes": 12792,
+      "sha256": "6f2e8eef0ce0e61390887ce4b02b32061d11ace1f4c83c6926af34c566b39edf",
+      "archiveName": "idf554-s2-gpio_sig_map.h.raw",
+      "sourceCachePath": "target/lilygo-s2-runtime-sources/idf554-s2-gpio_sig_map.h.raw",
+      "kind": "vendor-sdk-source"
+    },
+    {
+      "id": "idf554-s2-io_mux_reg.h",
+      "title": "ESP-IDF v5.5.4 ESP32-S2 components/soc/esp32s2/register/soc/io_mux_reg.h",
+      "repository": "espressif/esp-idf",
+      "revision": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "revisionType": "git-commit",
+      "path": "components/soc/esp32s2/register/soc/io_mux_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/register/soc/io_mux_reg.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/register/soc/io_mux_reg.h",
+      "fetchedAt": "2026-11-22T09:09:37Z",
+      "status": "fetched",
+      "bytes": 18115,
+      "sha256": "02fce74b1ecf1aff8ea00df565d9794d85b6b8a76b7b1141a99652e269f18cfe",
+      "archiveName": "idf554-s2-io_mux_reg.h.raw",
+      "sourceCachePath": "target/lilygo-s2-runtime-sources/idf554-s2-io_mux_reg.h.raw",
+      "kind": "vendor-sdk-source"
+    },
+    {
+      "id": "idf554-s2-memory.ld.in",
+      "title": "ESP-IDF v5.5.4 ESP32-S2 components/esp_system/ld/esp32s2/memory.ld.in",
+      "repository": "espressif/esp-idf",
+      "revision": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "revisionType": "git-commit",
+      "path": "components/esp_system/ld/esp32s2/memory.ld.in",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/esp_system/ld/esp32s2/memory.ld.in",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/esp_system/ld/esp32s2/memory.ld.in",
+      "fetchedAt": "2026-11-22T09:09:42Z",
+      "status": "fetched",
+      "bytes": 5738,
+      "sha256": "2cf83e72814597bd1ab6f733425380bd1f9f6bc62cc154b943850ec49d8aedd9",
+      "archiveName": "idf554-s2-memory.ld.in.raw",
+      "sourceCachePath": "target/lilygo-s2-runtime-sources/idf554-s2-memory.ld.in.raw",
+      "kind": "vendor-sdk-source"
+    },
+    {
+      "id": "idf554-s2-memory_layout.c",
+      "title": "ESP-IDF v5.5.4 ESP32-S2 components/heap/port/esp32s2/memory_layout.c",
+      "repository": "espressif/esp-idf",
+      "revision": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "revisionType": "git-commit",
+      "path": "components/heap/port/esp32s2/memory_layout.c",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/heap/port/esp32s2/memory_layout.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/heap/port/esp32s2/memory_layout.c",
+      "fetchedAt": "2026-11-22T09:09:42Z",
+      "status": "fetched",
+      "bytes": 8991,
+      "sha256": "eb564705b3c055fb02922f9395cd672dcacf22eeea42ece6405e09fc1e63383d",
+      "archiveName": "idf554-s2-memory_layout.c.raw",
+      "sourceCachePath": "target/lilygo-s2-runtime-sources/idf554-s2-memory_layout.c.raw",
+      "kind": "vendor-sdk-source"
+    },
+    {
+      "id": "idf554-s2-reg_base.h",
+      "title": "ESP-IDF v5.5.4 ESP32-S2 components/soc/esp32s2/register/soc/reg_base.h",
+      "repository": "espressif/esp-idf",
+      "revision": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "revisionType": "git-commit",
+      "path": "components/soc/esp32s2/register/soc/reg_base.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/register/soc/reg_base.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/register/soc/reg_base.h",
+      "fetchedAt": "2026-11-22T09:09:37Z",
+      "status": "fetched",
+      "bytes": 3470,
+      "sha256": "f57ed24632dec8e90546479da75741ccfab90d7df5b8843bf6cd0569d91fd2bf",
+      "archiveName": "idf554-s2-reg_base.h.raw",
+      "sourceCachePath": "target/lilygo-s2-runtime-sources/idf554-s2-reg_base.h.raw",
+      "kind": "vendor-sdk-source"
+    },
+    {
+      "id": "idf554-s2-soc.h",
+      "title": "ESP-IDF v5.5.4 ESP32-S2 components/soc/esp32s2/include/soc/soc.h",
+      "repository": "espressif/esp-idf",
+      "revision": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "revisionType": "git-commit",
+      "path": "components/soc/esp32s2/include/soc/soc.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/include/soc/soc.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/include/soc/soc.h",
+      "fetchedAt": "2026-11-22T09:09:37Z",
+      "status": "fetched",
+      "bytes": 11014,
+      "sha256": "dff63dd83cf597d7c54c94cce43ffcfb568129b7e479aa27389365a417b698af",
+      "archiveName": "idf554-s2-soc.h.raw",
+      "sourceCachePath": "target/lilygo-s2-runtime-sources/idf554-s2-soc.h.raw",
+      "kind": "vendor-sdk-source"
+    },
+    {
+      "id": "idf554-s2-soc_caps.h",
+      "title": "ESP-IDF v5.5.4 ESP32-S2 components/soc/esp32s2/include/soc/soc_caps.h",
+      "repository": "espressif/esp-idf",
+      "revision": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "revisionType": "git-commit",
+      "path": "components/soc/esp32s2/include/soc/soc_caps.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/include/soc/soc_caps.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/include/soc/soc_caps.h",
+      "fetchedAt": "2026-11-22T09:09:37Z",
+      "status": "fetched",
+      "bytes": 25826,
+      "sha256": "b1cf73110c1a7b46e798743ceeb5837dd1bc49e2b2b5a3c1558f6f01dc30582f",
+      "archiveName": "idf554-s2-soc_caps.h.raw",
+      "sourceCachePath": "target/lilygo-s2-runtime-sources/idf554-s2-soc_caps.h.raw",
+      "kind": "vendor-sdk-source"
+    },
+    {
+      "id": "idf554-s2-uart_reg.h",
+      "title": "ESP-IDF v5.5.4 ESP32-S2 components/soc/esp32s2/register/soc/uart_reg.h",
+      "repository": "espressif/esp-idf",
+      "revision": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "revisionType": "git-commit",
+      "path": "components/soc/esp32s2/register/soc/uart_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/register/soc/uart_reg.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32s2/register/soc/uart_reg.h",
+      "fetchedAt": "2026-11-22T09:09:37Z",
+      "status": "fetched",
+      "bytes": 42290,
+      "sha256": "9b08074cc69fddaa68dad0c2365ac93155002fa5c5c94df426fc700050a21332",
+      "archiveName": "idf554-s2-uart_reg.h.raw",
+      "sourceCachePath": "target/lilygo-s2-runtime-sources/idf554-s2-uart_reg.h.raw",
+      "kind": "vendor-sdk-source"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-esp32-s2-woor-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-ESP32-SWOOR_3.jpg?v=1700882111",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-esp32-s2-woor/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-esp32-s2-woor-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-ESP32-SWOOR_1.jpg?v=1700882111",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-esp32-s2-woor/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-esp32-s2-woor-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-ESP32-SWOOR_2.jpg?v=1700882111",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-esp32-s2-woor/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +552,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +559,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +569,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +579,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +589,293 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
+    },
+    {
+      "id": "memory",
+      "label": "实体存储容量仍需核对",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "s2-LilyGo-esp32s2-base-README.md",
+        "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_2021-1-16_.pdf",
+        "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_WOOR_2021-1-16_.pdf",
+        "s2-LilyGo-esp32s2-base-main_app_main.c",
+        "s2-LilyGo-esp32s2-base-sdkconfig",
+        "lilygo-esp32-s2-woor-official-photo-0",
+        "idf554-s2-core-isa.h",
+        "idf554-s2-core.h",
+        "idf554-s2-esp_app_format.h",
+        "idf554-s2-gpio_reg.h",
+        "idf554-s2-gpio_sig_map.h",
+        "idf554-s2-io_mux_reg.h",
+        "idf554-s2-memory.ld.in",
+        "idf554-s2-memory_layout.c",
+        "idf554-s2-reg_base.h",
+        "idf554-s2-soc.h",
+        "idf554-s2-soc_caps.h",
+        "idf554-s2-uart_reg.h",
+        "official-store-shopify-1"
+      ],
+      "notes": "部分实体 Flash / PSRAM 容量未确认；运行时字段是所选调试或编译配置，PSRAM 为 0 不表示实板没有该器件。冲突、已知候选值和容量依据见本型号适配来源记录。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "source-examples-inspected",
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "physicalVerified": false,
+    "sourceIds": [
+      "s2-LilyGo-esp32s2-base-main_app_main.c"
+    ],
+    "notes": "Official source example and exact schematic inspected. No complete factory image is enabled."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-esp32-s2-woor/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-esp32-s2-woor-official-photo-0",
+      "lilygo-esp32-s2-woor-official-photo-1",
+      "lilygo-esp32-s2-woor-official-photo-2",
+      "s2-LilyGo-esp32s2-base-README.md",
+      "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_2021-1-16_.pdf",
+      "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_WOOR_2021-1-16_.pdf",
+      "s2-LilyGo-esp32s2-base-main_app_main.c",
+      "s2-LilyGo-esp32s2-base-sdkconfig",
+      "idf554-s2-core-isa.h",
+      "idf554-s2-core.h",
+      "idf554-s2-esp_app_format.h",
+      "idf554-s2-gpio_reg.h",
+      "idf554-s2-gpio_sig_map.h",
+      "idf554-s2-io_mux_reg.h",
+      "idf554-s2-memory.ld.in",
+      "idf554-s2-memory_layout.c",
+      "idf554-s2-reg_base.h",
+      "idf554-s2-soc.h",
+      "idf554-s2-soc_caps.h",
+      "idf554-s2-uart_reg.h"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-esp32-s2-woor",
+    "status": "diagnostic",
+    "scope": "独立 ESP32-S2 SRAM 诊断后端：UART0/1、GPIO/IO_MUX 与实体 BOOT0。自编客体已验证串口、按下/释放和保持按下后的重启；此板无内置屏幕。",
+    "unsupported": [
+      "仅限自编或符合明确 SRAM 段合同的 app-direct 镜像；未执行厂商完整工厂固件、ESP-IDF 启动、ROM、Flash/cache/MMU 或 SDK。",
+      "无 RTC SRAM、PSRAM、USB OTG/HID、Wi-Fi、I2C、硬件 SPI、SD、LEDC、DMA、外部中断矩阵或核心定时器模型；未知地址立即报错。",
+      "Xtensa 仅开放已核实的整数/寄存器窗口指令子集；拒绝 S3 PIE/SIMD、FPU、MAC16、BOOL、LOOP、S32C1I 及未实现寄存器；JIT 禁用。",
+      "UART 是轮询 FIFO，发送立即完成；未模拟物理串行波形、波特率时序、握手、错误恢复或中断投递。GPIO 模型为数字输入、寄存器、IO_MUX 与输出路由；未模拟电气和模拟边界。",
+      "320 KiB SRAM 的 IRAM/DRAM 视图共用同一字节数组；该诊断环境不预留或启用 cache 所占 SRAM，也不模拟存储器保护或动态分区。",
+      "启动使用诊断 revision 0 与确定性堆栈，不代表实物芯片修订或 ROM 初始化。复位为主机清空 SRAM、重置外设并重新复制已校验 app 的诊断重启；不声称硅片保持/启动时序。",
+      "4 MiB Flash 仅为主机镜像暂存容量，客体没有可寻址 Flash。模拟 PSRAM=0；实物容量和选项没有被猜测。",
+      "所有验证均为模拟器原生测试；没有实物电气/性能测量。网页 WASM 验证由集成阶段另行记录。"
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "sourceCorrections": {
+    "productId": "lilygo-esp32-s2-woor",
+    "correctedChip": "ESP32-S2",
+    "hardwareRevision": "V1.1 exterior, official 2021-01-16 schematic reference",
+    "status": "missing-soc-backend",
+    "runtimeBoard": null,
+    "physicalDisplay": false,
+    "scope": "已完成官方照片重建设备模型与无屏板外观核对；固件执行需要新增 ESP32-S2 芯片内核，当前不能启动 S2 固件。",
+    "blockers": [
+      "当前工程没有 ESP32-S2 的 ROM、内存图和外设总线实现；不能用 ESP32-S3 板名替代。",
+      "实物无内置屏幕；SD、USB、无线与电池电源控制均未在此型号执行验证。",
+      "官方旧 sdkconfig 为 2 MB flash 构建，现有商品为不同 V1.1 选项；没有据此推断所有实物容量或预装镜像兼容性。"
+    ],
+    "sourceIds": [
+      "s2-LilyGo-esp32s2-base-README.md",
+      "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_2021-1-16_.pdf",
+      "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_WOOR_2021-1-16_.pdf",
+      "s2-LilyGo-esp32s2-base-main_app_main.c",
+      "s2-LilyGo-esp32s2-base-sdkconfig",
+      "lilygo-esp32-s2-woor-official-photo-0"
+    ],
+    "pinEvidence": {
+      "sdCard": {
+        "clk": 12,
+        "mosi": 11,
+        "miso": 13,
+        "cs": 10,
+        "sourceId": "s2-LilyGo-esp32s2-base-main_app_main.c"
+      },
+      "powerEnable": {
+        "pin": 14,
+        "sourceId": "s2-LilyGo-esp32s2-base-README.md"
+      }
+    },
+    "sourceConflicts": [
+      {
+        "issue": "Old sdkconfig selects 2 MB flash with runtime size detection; SKU listing data is not the same firmware target.",
+        "resolution": "No runtime memory profile or compatible factory default is fabricated."
+      }
+    ],
+    "verification": {
+      "manufacturerFrontBackPhotoInspected": true,
+      "nativeRuntime": false,
+      "physicalDevice": false
+    },
+    "resolvedByBoard": "lilygo-esp32-s2-woor"
+  },
+  "adapterProfile": {
+    "productId": "lilygo-esp32-s2-woor",
+    "boardId": "lilygo-esp32-s2-woor",
+    "name": "LILYGO ESP32 S2 WOOR",
+    "chip": "esp32s2",
+    "correctedChip": "ESP32-S2",
+    "flashMB": 4,
+    "physicalFlashMB": null,
+    "flashMbBasis": "simulation",
+    "psramMB": 0,
+    "physicalPsramMB": null,
+    "psramMbBasis": "simulation",
+    "hardwareRevision": "V1.1 exterior, official 2021-01-16 schematic reference",
+    "runtimeLevel": "partial",
+    "runtimeKind": "sram-diagnostic",
+    "bootMode": "app-direct",
+    "jitSupported": false,
+    "diagnosticRevision": 0,
+    "physicalDisplay": false,
+    "display": null,
+    "pins": {
+      "buttons": {
+        "boot": 0
+      }
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true,
+        "physical": true
+      }
+    ],
+    "sourceIds": [
+      "s2-LilyGo-esp32s2-base-README.md",
+      "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_2021-1-16_.pdf",
+      "s2-LilyGo-esp32s2-base-schematic_ESP32_S2_WOOR_2021-1-16_.pdf",
+      "s2-LilyGo-esp32s2-base-main_app_main.c",
+      "s2-LilyGo-esp32s2-base-sdkconfig",
+      "lilygo-esp32-s2-woor-official-photo-0",
+      "idf554-s2-core-isa.h",
+      "idf554-s2-core.h",
+      "idf554-s2-esp_app_format.h",
+      "idf554-s2-gpio_reg.h",
+      "idf554-s2-gpio_sig_map.h",
+      "idf554-s2-io_mux_reg.h",
+      "idf554-s2-memory.ld.in",
+      "idf554-s2-memory_layout.c",
+      "idf554-s2-reg_base.h",
+      "idf554-s2-soc.h",
+      "idf554-s2-soc_caps.h",
+      "idf554-s2-uart_reg.h",
+      "official-store-shopify-1"
+    ],
+    "chronology": {
+      "date": "2023-11-25",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/esp32-s2-woor",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 51,
+    "scope": "独立 ESP32-S2 SRAM 诊断后端：UART0/1、GPIO/IO_MUX 与实体 BOOT0。自编客体已验证串口、按下/释放和保持按下后的重启；此板无内置屏幕。",
+    "scopeEn": "Independent ESP32-S2 SRAM app-direct diagnostic subset, with explicit S2 memory aliases, ISA option gate, polled UART and GPIO. Distinct screenless board identity and active-low BOOT0; no manufactured S3 alias.",
+    "unsupported": [
+      "仅限自编或符合明确 SRAM 段合同的 app-direct 镜像；未执行厂商完整工厂固件、ESP-IDF 启动、ROM、Flash/cache/MMU 或 SDK。",
+      "无 RTC SRAM、PSRAM、USB OTG/HID、Wi-Fi、I2C、硬件 SPI、SD、LEDC、DMA、外部中断矩阵或核心定时器模型；未知地址立即报错。",
+      "Xtensa 仅开放已核实的整数/寄存器窗口指令子集；拒绝 S3 PIE/SIMD、FPU、MAC16、BOOL、LOOP、S32C1I 及未实现寄存器；JIT 禁用。",
+      "UART 是轮询 FIFO，发送立即完成；未模拟物理串行波形、波特率时序、握手、错误恢复或中断投递。GPIO 模型为数字输入、寄存器、IO_MUX 与输出路由；未模拟电气和模拟边界。",
+      "320 KiB SRAM 的 IRAM/DRAM 视图共用同一字节数组；该诊断环境不预留或启用 cache 所占 SRAM，也不模拟存储器保护或动态分区。",
+      "启动使用诊断 revision 0 与确定性堆栈，不代表实物芯片修订或 ROM 初始化。复位为主机清空 SRAM、重置外设并重新复制已校验 app 的诊断重启；不声称硅片保持/启动时序。",
+      "4 MiB Flash 仅为主机镜像暂存容量，客体没有可寻址 Flash。模拟 PSRAM=0；实物容量和选项没有被猜测。",
+      "所有验证均为模拟器原生测试；没有实物电气/性能测量。网页 WASM 验证由集成阶段另行记录。"
+    ],
+    "sourceConflicts": [
+      {
+        "issue": "Old sdkconfig selects 2 MB flash with runtime size detection; SKU listing data is not the same firmware target.",
+        "resolution": "No runtime memory profile or compatible factory default is fabricated."
+      }
+    ],
+    "physicalPinEvidence": {
+      "sdCard": {
+        "clk": 12,
+        "mosi": 11,
+        "miso": 13,
+        "cs": 10,
+        "sourceId": "s2-LilyGo-esp32s2-base-main_app_main.c"
+      },
+      "powerEnable": {
+        "pin": 14,
+        "sourceId": "s2-LilyGo-esp32s2-base-README.md"
+      }
+    },
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "s2_uart_and_gpio_have_s2_addresses_real_inputs_and_output_gates",
+        "original_s2_guest_runs_on_each_distinct_board_and_restarts_without_rom"
+      ]
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "source-examples-inspected",
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "physicalVerified": false,
+      "sourceIds": [
+        "s2-LilyGo-esp32s2-base-main_app_main.c"
+      ],
+      "notes": "Official source example and exact schematic inspected. No complete factory image is enabled."
+    },
+    "diagnosticFixture": {
+      "kind": "original-authored-Xtensa-S2-SRAM-diagnostic",
+      "thirdPartyFirmware": false,
+      "generator": "tools/build-s2-sram-diagnostic.py",
+      "chipId": 2,
+      "diagnosticRevision": 0,
+      "entry": 1073878016,
+      "marker": 1073737728,
+      "codeAddress": 1073876992,
+      "codeBytes": 1324,
+      "screen": null,
+      "bootPin": 0,
+      "uart0": 1061158912,
+      "uartMarkers": [
+        "S2 SRAM READY\n",
+        "BUTTON UP\n",
+        "BUTTON DOWN\n"
+      ],
+      "uartEcho": "At the idle input-poll loop, each received UART0 byte is transmitted unchanged.",
+      "limits": "SRAM app-direct only; GPIO software SPI, not hardware SPI. No ROM/SDK/full factory boot, USB, radio, timers or physical timing certification.",
+      "sha256": "e299a0cf5f5173c24943f58289f6e1b2f29286100ccf4f742b341f538162c4e5",
+      "bytes": 1664,
+      "file": "esp32s2/tests/fixtures/s2-sram-console.bin"
+    },
+    "flashStagingNotes": "Host image staging only; no guest-addressable Flash; physical variant capacity unresolved."
+  }
 }

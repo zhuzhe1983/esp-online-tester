@@ -24,6 +24,7 @@ pub mod src {
     pub const USB_SERIAL_JTAG: usize = 22;
     /// ETS_SPI2_INTR_SOURCE: GPSPI2
     pub const GPSPI2: usize = 25;
+    pub const I2C0: usize = 44;
     pub const I2C1: usize = 45;
     pub const LEDC: usize = 52;
     pub const I2S1: usize = 28;
@@ -48,7 +49,7 @@ pub mod src {
     /// The name IDF gives a source, for diagnostics.
     pub fn name(s: usize) -> &'static str {
         match s {
-            USB_SERIAL_JTAG => "USB_SERIAL_JTAG", SDIO_HOST => "SDIO_HOST", GPSPI2 => "SPI2", I2C1 => "I2C1", LEDC => "LEDC",
+            USB_SERIAL_JTAG => "USB_SERIAL_JTAG", SDIO_HOST => "SDIO_HOST", GPSPI2 => "SPI2", I2C0 => "I2C0", I2C1 => "I2C1", LEDC => "LEDC",
             I2S1 => "I2S1", 56..=58 => "AHB_PDMA_IN", 59..=61 => "AHB_PDMA_OUT", 62..=64 => "AXI_PDMA_IN", 65..=67 => "AXI_PDMA_OUT", UART0 => "UART0", UART1 => "UART1", TG0_T0 => "TG0_T0", TG0_T1 => "TG0_T1",
             TG1_T0 => "TG1_T0", TG1_T1 => "TG1_T1", 53 => "SYSTIMER_TARGET0", 54 => "SYSTIMER_TARGET1", 55 => "SYSTIMER_TARGET2",
             GPIO_INTR0 => "GPIO_INTR0", 79 => "FROM_CPU_INTR0", 80 => "FROM_CPU_INTR1", 81 => "FROM_CPU_INTR2", 82 => "FROM_CPU_INTR3",
@@ -577,6 +578,9 @@ pub struct Peripherals {
     /// chip reset, and the SD bus's time (its card's busy period, a co-processor's clock) does not
     pub cycle_base: u64,
     last_status: [u32; 4],
+    /// I2C0 at 0x500C4000. Optional dispatch keeps idle boards out of its deadline work.
+    /// T-Display-P4's XL9535 uses this controller, not Waveshare's I2C1.
+    pub i2c0: esp_periph::i2c::I2c,
 }
 
 // Every peripheral, its 4 KB block (address >> 12) and its interrupt sources.
@@ -624,6 +628,7 @@ device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::Xtal, 9), (Cloc
     0x50112 "LP_TIMER" alias (lp) delta 0x2000 => [];
     0x50124 "I2C_ANA_MST" (ana_mst) => [];
     0x5012d "EFUSE" (efuse) => [];
+    0x500c4 "I2C0" optional (i2c0) => [src::I2C0];
 }
 
 impl DeviceSet for Peripherals {
@@ -638,10 +643,22 @@ impl DeviceSet for Peripherals {
         // I2C1's clock: HP_SYS_CLKRST PERI_CLK_CTRL10 I2C1_CLK_SRC_SEL bit 26 (1 = RC_FAST),
         // PERI_CLK_CTRL11 I2C1_CLK_DIV_NUM 7:0, NUMERATOR 15:8, DENOMINATOR 23:16
         // (register/hw_ver3/soc/hp_sys_clkrst_reg.h:1443-1470; hal/i2c_ll.h:186-226 writes div_a to
-        // the numerator), repacked into the shared S3 CLK_CONF layout.
+        // the numerator). Preserve both full 8-bit fractional fields.
         if block == 0x500c5 {
             let (c10, c11) = (self.hp_clkrst.read(0x40), self.hp_clkrst.read(0x44));
-            self.i2c1.set_external_clock_config(Some((c11 & 255) | (c11 >> 8 & 63) << 8 | (c11 >> 16 & 63) << 14 | (c10 >> 26 & 1) << 20));
+            self.i2c1.set_external_clock_parameters(c11 as u8, (c11 >> 8) as u8, (c11 >> 16) as u8, c10 & (1 << 26) != 0);
+        }
+        if block == 0x500c4 {
+            // IDF v5.5.3 hw_ver1: CTRL10 packs I2C0's source/divisor/fraction.
+            let c10=self.hp_clkrst.read(0x40);
+            self.i2c0.set_external_clock_parameters((c10 >> 2) as u8, (c10 >> 10) as u8, (c10 >> 18) as u8, c10 & 1 != 0);
+            if write && off==4 && self.i2c0.has_pinned_devices() {
+                // GPIO matrix indices 68/69, physical pad mux and input/output enables.
+                // Only an I2C register access decodes these routes; no CPU/tick polling.
+                const PINS:esp_soc::pins::ChipPins=esp_soc::pins::ChipPins{valid:(1u64<<57)-1,input_select:0x80,output_mask:0x3ff};
+                let routes=PINS.routes(&self.gpio.g,&self.io_mux);
+                self.i2c0.set_pins(routes.i2c_pin(69).zip(routes.i2c_pin(68)));
+            }
         }
         if block == 0x50083 { self.sdmmc.now_ns = self.now_ns(); if self.sdmmc.timed { self.sdmmc.ciu_hz = self.hp_clkrst.sdio_ls_hz(); } }
         // CDETECT and WRTPRT read the card-detect and write-protect signals of the GPIO matrix.
@@ -667,7 +684,7 @@ impl Peripherals {
             sha: Sha::new(), intmtx: IntMatrix::new(), clic: Clic::default(), cache: Cache::new(), hp_sys: HpSys::default(), hp_clkrst: HpClkRst::new(),
             lp: LpAon::new(), ana_mst: AnaMst::default(), assist_debug: AssistDebug::default(), rng: Rng::new(),
             spi2: GpSpi::new(), i2c1: esp_periph::i2c::I2c::new(), axi_dma: AxiDma::new(), ahb_dma: AhbDma::new(), i2s1: esp_periph::I2s::new(CPU_HZ), ledc: Ledc::new(LedcLayout::P4),
-            misc: Misc::new(), spi_exec: false, psram_exec: false, clock: Self::new_clock(), cycle_base: 0, last_status: [0; 4],
+            misc: Misc::new(), spi_exec: false, psram_exec: false, clock: Self::new_clock(), cycle_base: 0, last_status: [0; 4], i2c0: esp_periph::i2c::I2c::new(),
         }
     }
 

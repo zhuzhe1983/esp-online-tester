@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-watch-2021",
   "title": "LILYGO T-Watch 2021",
-  "summary": "Spark 将此商品归入T-Watch 系列，标注 MCU 为 ESP32；具体硬件版次及配置待核对。",
+  "summary": "已接入 T-Watch 2021 V1.2 的 GC9A01 240×240 圆屏、数字电源/背光/复位及 GPIO0/35/34 三键。触摸、RTC、IMU、振动和整机程序尚未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "TWatch2021_V1_2 selected by TWatch_config.h; excludes V1 and V2 pin maps",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Watch 2021",
@@ -52,6 +52,109 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-11-16",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-watch-2021",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 240,
+          "height": 240,
+          "controller": "GC9A01",
+          "interface": "spi",
+          "type": "LCD",
+          "diagonalInch": 1.3,
+          "pixelFormat": "RGB565",
+          "implemented": true,
+          "physicalTouch": true,
+          "touchImplemented": false,
+          "shape": "round",
+          "crop": {
+            "x": 0,
+            "y": 0,
+            "width": 240,
+            "height": 240
+          }
+        },
+        "flashMb": null,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "simulation",
+        "physicalPsramMb": 2,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          },
+          {
+            "id": "button-2",
+            "name": "按键2",
+            "type": "button",
+            "pin": 35,
+            "activeLow": true
+          },
+          {
+            "id": "button-3",
+            "name": "按键3",
+            "type": "button",
+            "pin": 34,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "display": {
+            "sclk": 14,
+            "mosi": 13,
+            "miso": null,
+            "cs": 15,
+            "dc": 19,
+            "reset": 27,
+            "backlight": 21,
+            "enable": 5,
+            "enableActiveHigh": true
+          },
+          "touch": {
+            "controller": "CST816S",
+            "sda": 26,
+            "scl": 25,
+            "reset": 33,
+            "irq": 32,
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "classic-t-watch-2021-b33563055168",
+        "classic-t-watch-2021-1709ed5a4c21",
+        "classic-t-watch-2021-7b6be0b6023a",
+        "classic-t-watch-2021-b44ed4e141af",
+        "classic-t-watch-2021-b90611df5d2e",
+        "classic-t-watch-2021-4142fe43028d",
+        "classic-t-watch-2021-0685987a4b56",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +183,290 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-watch-2021-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/Lilygo-T-Watch-2021_19.jpg?v=1662349102",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/Lilygo-T-Watch-2021_19.jpg?v=1662349102",
+      "fetchedAt": "2026-11-22T06:59:44Z",
+      "bytes": 31136,
+      "sha256": "649931e2b0cf5bc6110dac5134ef9620b6e46cfd0a489ce373bdbeec8d026a17",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t watch 2021 official photo 0",
+      "archiveName": "lilygo-t-watch-2021-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-watch-2021-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/Lilygo-T-Watch-2021_20.jpg?v=1662349102",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/Lilygo-T-Watch-2021_20.jpg?v=1662349102",
+      "fetchedAt": "2026-11-22T06:59:44Z",
+      "bytes": 56282,
+      "sha256": "7014c295bb0ef0c91e813cd778debd589e1096cae31054580b9b8ffa4c70457d",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t watch 2021 official photo 1",
+      "archiveName": "lilygo-t-watch-2021-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-watch-2021-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/Lilygo-T-Watch-2021_24.jpg?v=1662349102",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/Lilygo-T-Watch-2021_24.jpg?v=1662349102",
+      "fetchedAt": "2026-11-22T06:59:49Z",
+      "bytes": 47903,
+      "sha256": "2607243db909db68b043f90d35d752535eedeba45ab4d9f3cfa47cd110ae358c",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t watch 2021 official photo 2",
+      "archiveName": "lilygo-t-watch-2021-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-watch-2021-manufacturer-cad",
+      "productId": "lilygo-t-watch-2021",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/3D_file/T-WATCH-2021.stp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/3D_file/T-WATCH-2021.stp",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "repositoryPath": "3D_file/T-WATCH-2021.stp",
+      "scope": "T-WATCH-2021 assembly; not S3/Ultra",
+      "fetchedAt": "2026-11-22T07:04:08Z",
+      "bytes": 1636902,
+      "sha256": "da4f14462f66165dbd2a1a3a0a0cba1cfc71867730668fb4fea277092c025764",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "manufacturer-source.step.gz",
+      "rawSha256": "da4f14462f66165dbd2a1a3a0a0cba1cfc71867730668fb4fea277092c025764",
+      "archiveSha256": "267232d21b2284fe224e62b0e96ce39536d07a2b8c00ae43ae867f5ef398ce91",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "compression": "gzip",
+      "kind": "manufacturer-cad",
+      "storedSha256": "267232d21b2284fe224e62b0e96ce39536d07a2b8c00ae43ae867f5ef398ce91",
+      "hashScope": "sha256/bytes describe original fetched STEP; storedSha256 describes gzip artifact.",
+      "blobSha": "445da0f56d0cded818cb4b7fe1afea929d5890ac",
+      "revisionType": "pinned-git-revision",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "title": "lilygo t watch 2021 manufacturer cad",
+      "archiveName": "lilygo-t-watch-2021-manufacturer-cad.gz"
+    },
+    {
+      "id": "lilygo-t-watch-2021-repository-license",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/LICENSE",
+      "fetchedAt": "2026-11-22T07:10:24Z",
+      "bytes": 1071,
+      "sha256": "2a9352675d2914c96ab6444efca745ba7e91ebe2f75bef9e9f28d7ee6c066b8c",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "SOURCE-LICENSE.txt",
+      "scope": "Upstream repository license; no claim that unrelated photographs or CAD from another repository share it.",
+      "title": "lilygo t watch 2021 repository license",
+      "kind": "official-product-document",
+      "archiveName": "lilygo-t-watch-2021-repository-license.txt"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-watch-2021",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-watch-series/t-watch-2021/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-watch-series/t-watch-2021/index.md",
+      "fetchedAt": "2026-11-22T06:43:43Z",
+      "mediaType": "text/plain",
+      "bytes": 5508,
+      "sha256": "fa499cacf348d84ecf7333cea1ff64e3fd9bf70be9c67637ac41948b3fd82830",
+      "gitBlobSha": "b8c4160c9df81ea82f15cc38bfcab4aa579944e4",
+      "path": "en/products/t-watch-series/t-watch-2021/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t watch 2021",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-watch-series__t-watch-2021__index.md"
+    },
+    {
+      "id": "classic-t-watch-2021-b33563055168",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "README.md",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "f4315b2379618025afe2267e10b48c11d068535f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/README.md",
+      "fetchedAt": "2026-11-22T08:06:13Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 4180,
+      "sha256": "738d9f5a7304ffd1eff0795a1de068caaa041b69126d4f75c71c9c3fe03d512c",
+      "archiveName": "classic-t-watch-2021-b33563055168.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-b33563055168.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Watch-2021/README.md"
+    },
+    {
+      "id": "classic-t-watch-2021-1709ed5a4c21",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "TWatch_2021_Library/src/TWatch_config.h",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "993000c44f4f8763259b53f782d2c834a3dc7fa1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/TWatch_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/TWatch_config.h",
+      "fetchedAt": "2026-11-22T08:15:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 2378,
+      "sha256": "921e5a4ac7cd4d4fdff124ebf67602368d3fe12d58cc6ea7d2b74ee2b10d3bd5",
+      "archiveName": "classic-t-watch-2021-1709ed5a4c21.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-1709ed5a4c21.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Watch-2021/TWatch_2021_Library/src/TWatch_config.h"
+    },
+    {
+      "id": "classic-t-watch-2021-7b6be0b6023a",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "TWatch_2021_Library/src/board/TWatch2021_V1_2.h",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "2f717a719c4a1a689ade678aa111e323bb556ed2",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/board/TWatch2021_V1_2.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/board/TWatch2021_V1_2.h",
+      "fetchedAt": "2026-11-22T08:09:42Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 833,
+      "sha256": "85f1d4df0660ffa3f74e509bc91d5016ed15859d9930962889739bc3b27f3580",
+      "archiveName": "classic-t-watch-2021-7b6be0b6023a.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-7b6be0b6023a.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Watch-2021/TWatch_2021_Library/src/board/TWatch2021_V1_2.h"
+    },
+    {
+      "id": "classic-t-watch-2021-b44ed4e141af",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setups/Setup200_GC9A01.h",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "20b97da115fdeff74c6045412f80c010c6a6ebf2",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setups/Setup200_GC9A01.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setups/Setup200_GC9A01.h",
+      "fetchedAt": "2026-11-22T08:32:55Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 1705,
+      "sha256": "8b3b1d011a88c60e004e2c32a80665eb1c83694a05e45d8f08a881f95678c73d",
+      "archiveName": "classic-t-watch-2021-b44ed4e141af.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-b44ed4e141af.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/T-Watch-2021/TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setups/Setup200_GC9A01.h"
+    },
+    {
+      "id": "classic-t-watch-2021-b90611df5d2e",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setup_Select.h",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "e358181157cab468a9cce74c53f12945bdbc156d",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setup_Select.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setup_Select.h",
+      "fetchedAt": "2026-11-22T08:31:26Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 12449,
+      "sha256": "c340b70f2ce67897187cb2135ea6b37b8dfddd4b744a744d1a73332fdf51a441",
+      "archiveName": "classic-t-watch-2021-b90611df5d2e.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-b90611df5d2e.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/T-Watch-2021/TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setup_Select.h"
+    },
+    {
+      "id": "classic-t-watch-2021-4142fe43028d",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "TWatch_2021_Library/src/libraries/TFT_eSPI/TFT_Drivers/GC9A01_Defines.h",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "b6c564833f947eadfa1a67264ef2b809b5fa704f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/libraries/TFT_eSPI/TFT_Drivers/GC9A01_Defines.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/libraries/TFT_eSPI/TFT_Drivers/GC9A01_Defines.h",
+      "fetchedAt": "2026-11-22T08:35:22Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 819,
+      "sha256": "39cf4ec977546b44ee524d627e7d67235ffc8a9eb4e20505e3d551f82279b6b1",
+      "archiveName": "classic-t-watch-2021-4142fe43028d.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-4142fe43028d.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/T-Watch-2021/TWatch_2021_Library/src/libraries/TFT_eSPI/TFT_Drivers/GC9A01_Defines.h"
+    },
+    {
+      "id": "classic-t-watch-2021-0685987a4b56",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "TWatch_2021_Library/src/drive/Backlight.cpp",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "5ade85416af18ac398c53f2cd25202f298f35aeb",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/drive/Backlight.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/drive/Backlight.cpp",
+      "fetchedAt": "2026-11-22T08:15:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 1293,
+      "sha256": "66493faac12f6f1bf440500345bd4798bb545145152d066c83e8f25c33077361",
+      "archiveName": "classic-t-watch-2021-0685987a4b56.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-0685987a4b56.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Watch-2021/TWatch_2021_Library/src/drive/Backlight.cpp"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-watch-2021-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/Lilygo-T-Watch-2021_19.jpg?v=1662349102",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-watch-2021/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-watch-2021-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/Lilygo-T-Watch-2021_20.jpg?v=1662349102",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-watch-2021/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-watch-2021-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/Lilygo-T-Watch-2021_24.jpg?v=1662349102",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-watch-2021/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +479,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +486,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +496,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +506,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +516,237 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
+    },
+    {
+      "id": "memory",
+      "label": "实体存储容量仍需核对",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "classic-t-watch-2021-b33563055168",
+        "classic-t-watch-2021-1709ed5a4c21",
+        "classic-t-watch-2021-7b6be0b6023a",
+        "classic-t-watch-2021-b44ed4e141af",
+        "classic-t-watch-2021-b90611df5d2e",
+        "classic-t-watch-2021-4142fe43028d",
+        "classic-t-watch-2021-0685987a4b56",
+        "official-store-shopify-1"
+      ],
+      "notes": "部分实体 Flash / PSRAM 容量未确认；运行时字段是所选调试或编译配置，PSRAM 为 0 不表示实板没有该器件。冲突、已知候选值和容量依据见本型号适配来源记录。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-watch-2021"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "manufacturer-cad",
+      "url": "./assets/lilygo-t-watch-2021/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "官方 CAD 局部预览：T-WATCH-2021 assembly; not S3/Ultra；缺失部分和调试面板位置见模型来源。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-watch-2021",
+      "lilygo-t-watch-2021-official-photo-0",
+      "lilygo-t-watch-2021-official-photo-1",
+      "lilygo-t-watch-2021-official-photo-2",
+      "lilygo-t-watch-2021-manufacturer-cad",
+      "classic-t-watch-2021-b33563055168",
+      "classic-t-watch-2021-1709ed5a4c21",
+      "classic-t-watch-2021-7b6be0b6023a",
+      "classic-t-watch-2021-b44ed4e141af",
+      "classic-t-watch-2021-b90611df5d2e",
+      "classic-t-watch-2021-4142fe43028d",
+      "classic-t-watch-2021-0685987a4b56"
+    ],
+    "displayHint": {
+      "width": 240,
+      "height": 240,
+      "sourceIds": [
+        "classic-t-watch-2021-b33563055168",
+        "classic-t-watch-2021-1709ed5a4c21",
+        "classic-t-watch-2021-7b6be0b6023a",
+        "classic-t-watch-2021-b44ed4e141af",
+        "classic-t-watch-2021-b90611df5d2e",
+        "classic-t-watch-2021-4142fe43028d",
+        "classic-t-watch-2021-0685987a4b56",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-watch-2021",
+    "status": "diagnostic",
+    "scope": "已接入 T-Watch 2021 V1.2 的 GC9A01 240×240 圆屏、数字电源/背光/复位及 GPIO0/35/34 三键。触摸、RTC、IMU、振动和整机程序尚未实现。",
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "Pinned repository selects Setup200_GC9A01. The bundled ST7789 files and old TTV setup are unrelated and are not applied.",
+      "Storefront declares 4 MiB Flash while repository quick-start requests 8 MiB. The runtime conservatively allocates 4 MiB, records the conflict and does not claim the physical flash capacity is resolved.",
+      "CST816S touch, PCF8563 RTC, BMA423, compass, vibration motor, charging and shared IRQ32 aggregation are unmodeled.",
+      "Only the documented DCS RAM/window/pixel/reset/sleep/display path is modeled; GC9A01 analog gamma/drive and physical pixel calibration are not.",
+      "The physical board declares 2 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 0 MiB. Firmware requiring the full physical capacity is outside this subset."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-watch-2021",
+    "boardId": "lilygo-t-watch-2021",
+    "name": "LILYGO T-Watch 2021",
+    "chip": "esp32",
+    "flashMB": 4,
+    "physicalPsramMB": 2,
+    "psramMB": 0,
+    "psramMbBasis": "simulation-capacity-limit",
+    "hardwareRevision": "TWatch2021_V1_2 selected by TWatch_config.h; excludes V1 and V2 pin maps",
+    "display": {
+      "width": 240,
+      "height": 240,
+      "controller": "GC9A01",
+      "interface": "spi",
+      "type": "LCD",
+      "diagonalInch": 1.3,
+      "pixelFormat": "RGB565",
+      "implemented": true,
+      "physicalTouch": true,
+      "touchImplemented": false,
+      "shape": "round",
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 240,
+        "height": 240
+      }
+    },
+    "physicalDisplay": true,
+    "pins": {
+      "display": {
+        "sclk": 14,
+        "mosi": 13,
+        "miso": null,
+        "cs": 15,
+        "dc": 19,
+        "reset": 27,
+        "backlight": 21,
+        "enable": 5,
+        "enableActiveHigh": true
+      },
+      "touch": {
+        "controller": "CST816S",
+        "sda": 26,
+        "scl": 25,
+        "reset": 33,
+        "irq": 32,
+        "implemented": false
+      }
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      },
+      {
+        "id": "button-2",
+        "name": "按键2",
+        "type": "button",
+        "pin": 35,
+        "activeLow": true
+      },
+      {
+        "id": "button-3",
+        "name": "按键3",
+        "type": "button",
+        "pin": 34,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": false,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "watch2021_v12_uses_its_gc9a01_rail_and_three_real_inputs",
+        "independent_classic_revisions_keep_their_button_and_led_polarities"
+      ]
+    },
+    "scope": "已接入 T-Watch 2021 V1.2 的 GC9A01 240×240 圆屏、数字电源/背光/复位及 GPIO0/35/34 三键。触摸、RTC、IMU、振动和整机程序尚未实现。",
+    "scopeEn": "Exact TWatch2021_V1_2: GC9A01 240x240 circular glass, routed SPI and GPIO5 rail/reset/backlight, three active-low buttons. Touch/RTC/IMU/haptics unmodeled.",
+    "sourceIds": [
+      "classic-t-watch-2021-b33563055168",
+      "classic-t-watch-2021-1709ed5a4c21",
+      "classic-t-watch-2021-7b6be0b6023a",
+      "classic-t-watch-2021-b44ed4e141af",
+      "classic-t-watch-2021-b90611df5d2e",
+      "classic-t-watch-2021-4142fe43028d",
+      "classic-t-watch-2021-0685987a4b56",
+      "official-store-shopify-1"
+    ],
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "Pinned repository selects Setup200_GC9A01. The bundled ST7789 files and old TTV setup are unrelated and are not applied.",
+      "Storefront declares 4 MiB Flash while repository quick-start requests 8 MiB. The runtime conservatively allocates 4 MiB, records the conflict and does not claim the physical flash capacity is resolved.",
+      "CST816S touch, PCF8563 RTC, BMA423, compass, vibration motor, charging and shared IRQ32 aggregation are unmodeled.",
+      "Only the documented DCS RAM/window/pixel/reset/sleep/display path is modeled; GC9A01 analog gamma/drive and physical pixel calibration are not.",
+      "The physical board declares 2 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 0 MiB. Firmware requiring the full physical capacity is outside this subset."
+    ],
+    "chronology": {
+      "date": "2022-11-16",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-watch-2021",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 93,
+    "factoryFirmwareInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-watch-2021"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    },
+    "physicalFlashMB": null,
+    "flashMbBasis": "simulation",
+    "physicalFlashCandidatesMB": [
+      4,
+      8
+    ]
+  }
 }

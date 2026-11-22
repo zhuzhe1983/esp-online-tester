@@ -207,6 +207,18 @@ impl esp_soc::SocBus for SocBus {
     }
     fn pwm_output(&self, pin: u8) -> Option<(f64, u32)> { self.periph.ledc.output(&self.periph.gpio, pin).or_else(|| self.periph.mcpwm.output(&self.periph.gpio, pin)) }
 
+    fn refresh_board_outputs(&mut self) {
+        if !self.board.uses_gpio_pwm() {return;}
+        let p=&self.periph;
+        // IDF v5.5.4 C6 gpio_reg.h: OEN_INV_SEL bit10; io_mux_reg.h: MCU_SEL1
+        // selects GPIO matrix. Reuse LEDC's clock gate/latched duty/inversion.
+        // Cold opt-in host publication only: no new tick or peripheral time.
+        self.board.gpio_pwm_at(self.cycles,&|pin| {
+            if !esp_soc::pins::ChipPins::C6.routes(&p.gpio,&p.io_mux).function(pin as usize,1)
+                || p.gpio.func_out_sel.get(pin as usize)?&(1<<10)!=0 {return None;}
+            p.ledc.output(&p.gpio,pin)
+        });
+    }
     fn board(&mut self) -> &mut dyn BoardModel { &mut *self.board }
     fn board_ref(&self) -> &dyn BoardModel { &*self.board }
     fn i2s_input(&mut self, port: usize) -> Option<&mut esp_periph::i2s::PcmInput> { if port == 0 { Some(self.periph.optional.i2s0.rx_input()) } else { None } }

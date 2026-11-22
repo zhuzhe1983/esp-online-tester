@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-encoder-pro",
   "title": "LILYGO T-Encoder Pro",
-  "summary": "Spark 将此商品归入T-Encoder 系列，标注 MCU 为 ESP32-S3R8；具体硬件版次及配置待核对。",
+  "summary": "选择官方当前 TFD12MASBCTB4_V0_07 屏幕组件，接入 CO5300 390×390 QSPI 显示、CST816D 单点触摸、编码器 A/B 和按压键。BOOT 与编码器按压同为 GPIO0，仅提供一个实体按键入口。旧 SH8601/CHSC5816 组件、蜂鸣器和振动未适配。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-Encoder-Pro V1.0 with latest TFD12MASBCTB4_V0_07 CO5300/CST816D display assembly",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Encoder Pro",
@@ -52,6 +52,119 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-02-02",
+        "basis": "hardware-release",
+        "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/README.md",
+        "sourceId": "s3add-encoder-pro-readme",
+        "confidence": "high",
+        "hardwareRevision": "T-Encoder-Pro V1.0 with latest TFD12MASBCTB4_V0_07 CO5300/CST816D display assembly",
+        "notes": "First product hardware version date in the manufacturer Version iteration table. Later selected panel/microphone revisions remain explicitly scoped."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "s3add-encoder-pro-readme"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 390,
+          "height": 390,
+          "controller": "CO5300",
+          "type": "AMOLED",
+          "interface": "qspi",
+          "pixelFormat": "RGB565",
+          "crop": [
+            0,
+            0,
+            390,
+            390
+          ],
+          "commandCoordinateCanvas": [
+            390,
+            390
+          ],
+          "physicalTouch": true,
+          "touchImplemented": true
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "encoder-press",
+            "name": "Encoder press / BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          },
+          {
+            "id": "encoder",
+            "name": "Rotary encoder",
+            "type": "encoder",
+            "pins": {
+              "a": 1,
+              "b": 2
+            },
+            "detents": 24,
+            "detentsBasis": "simulation",
+            "physicalDetents": null,
+            "notes": "24 debug steps are a simulation setting, not a claim about physical detents."
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "display": {
+            "sclk": 12,
+            "mosi": 11,
+            "data": [
+              11,
+              13,
+              7,
+              14
+            ],
+            "cs": 10,
+            "dc": null,
+            "reset": 4,
+            "enable": 3,
+            "backlight": null,
+            "ledcGate": false
+          },
+          "touch": {
+            "controller": "CST816D",
+            "address": 21,
+            "sda": 5,
+            "scl": 6,
+            "irq": 9,
+            "reset": 8
+          },
+          "encoder": {
+            "a": 1,
+            "b": 2
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "s3add-encoder-pro-readme",
+        "s3add-encoder-pro-pins",
+        "s3add-encoder-pro-factory",
+        "s3add-encoder-pro-display",
+        "s3add-encoder-pro-display-h",
+        "s3add-circle-touch",
+        "s3add-circle-touch-h",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +193,481 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-encoder-pro-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Encoder-Plus-LILYGO_8.jpg?v=1717485617",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Encoder-Plus-LILYGO_8.jpg?v=1717485617",
+      "fetchedAt": "2026-11-22T06:57:47Z",
+      "bytes": 38182,
+      "sha256": "f2891468c23647cf70bc439fa296f3f6bf2b3054a607739543acd32a1cb10491",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t encoder pro official photo 0",
+      "archiveName": "lilygo-t-encoder-pro-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-encoder-pro-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Encoder-Plus-LILYGO_5.jpg?v=1717485617",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Encoder-Plus-LILYGO_5.jpg?v=1717485617",
+      "fetchedAt": "2026-11-22T06:57:47Z",
+      "bytes": 39255,
+      "sha256": "874f9b34997d36aee02afb0b54dc5e86dd8be0b7dbed900afdc3056f4fa81afa",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t encoder pro official photo 1",
+      "archiveName": "lilygo-t-encoder-pro-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-encoder-pro-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Encoder-Plus-LILYGO_6.jpg?v=1717485617",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Encoder-Plus-LILYGO_6.jpg?v=1717485617",
+      "fetchedAt": "2026-11-22T06:57:47Z",
+      "bytes": 28801,
+      "sha256": "5a56c37732e93a90c15a2655d9d96c1d64858624fb60d349a38b196544bc305a",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t encoder pro official photo 2",
+      "archiveName": "lilygo-t-encoder-pro-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-encoder-pro-reviewed-cad-1",
+      "productId": "lilygo-t-encoder-pro",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_38_1.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_38_1.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_38_1.stl",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "repositoryPath": "structure/H670-STL/0-00_38_1.stl",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "39b9dc8874a7ecc3ee0762a33ceceb189ebedeb0",
+      "fetchedAt": "2026-11-22T08:32:20Z",
+      "bytes": 262184,
+      "sha256": "7d9ec034f98a95de218aa1cd9b2bf7d53c60cb9650b96a7770e3438283c2d94f",
+      "rawSha256": "7d9ec034f98a95de218aa1cd9b2bf7d53c60cb9650b96a7770e3438283c2d94f",
+      "file": "manufacturer-0-00_38_1.stl.gz",
+      "archiveName": "manufacturer-0-00_38_1.stl.gz",
+      "storedSha256": "77fdded874c3d0b26e51a3db6cd668958d7ebd58ca4967564f184007cc9308eb",
+      "archiveSha256": "77fdded874c3d0b26e51a3db6cd668958d7ebd58ca4967564f184007cc9308eb",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-encoder-pro-reviewed-cad-2",
+      "productId": "lilygo-t-encoder-pro",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-001_10.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-001_10.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-001_10.stl",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "repositoryPath": "structure/H670-STL/0-001_10.stl",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "565598267d95b03231308bd56ad71c42d59f629a",
+      "fetchedAt": "2026-11-22T08:37:57Z",
+      "bytes": 117784,
+      "sha256": "054fdad3c4f85e5b8ed4c7fbf02187a149db9bf159382fd0d351f96a2205c515",
+      "rawSha256": "054fdad3c4f85e5b8ed4c7fbf02187a149db9bf159382fd0d351f96a2205c515",
+      "file": "manufacturer-0-001_10.stl.gz",
+      "archiveName": "manufacturer-0-001_10.stl.gz",
+      "storedSha256": "02ac2195cf93c7ff2d0d35d8bee9477978083c1b3bf27ee0e158a90d7a38a3e0",
+      "archiveSha256": "02ac2195cf93c7ff2d0d35d8bee9477978083c1b3bf27ee0e158a90d7a38a3e0",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-encoder-pro-reviewed-cad-3",
+      "productId": "lilygo-t-encoder-pro",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_10_5_12.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_10_5_12.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_10_5_12.stl",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "repositoryPath": "structure/H670-STL/0-00_10_5_12.stl",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "3db1ab67de200d7396440c0e74c04c93a331432f",
+      "fetchedAt": "2026-11-22T08:38:02Z",
+      "bytes": 98084,
+      "sha256": "005a57523f9034f688dc93019cc8d927c3954716b2cab3601f0a750d17648b30",
+      "rawSha256": "005a57523f9034f688dc93019cc8d927c3954716b2cab3601f0a750d17648b30",
+      "file": "manufacturer-0-00_10_5_12.stl.gz",
+      "archiveName": "manufacturer-0-00_10_5_12.stl.gz",
+      "storedSha256": "fb802a84154fd3566a0efc55fb66e709173dc1ebf77a17345ab431215cda2973",
+      "archiveSha256": "fb802a84154fd3566a0efc55fb66e709173dc1ebf77a17345ab431215cda2973",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-encoder-pro-reviewed-cad-4",
+      "productId": "lilygo-t-encoder-pro",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_15.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_15.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_15.stl",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "repositoryPath": "structure/H670-STL/0-00_15.stl",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "66a6cebc66423f899b6b7d18bf5427c25abb4d80",
+      "fetchedAt": "2026-11-22T08:38:02Z",
+      "bytes": 24884,
+      "sha256": "bc797b654bb92dd82e8816ac630c3de861fb2c71fa89c78b3292b8770386d609",
+      "rawSha256": "bc797b654bb92dd82e8816ac630c3de861fb2c71fa89c78b3292b8770386d609",
+      "file": "manufacturer-0-00_15.stl.gz",
+      "archiveName": "manufacturer-0-00_15.stl.gz",
+      "storedSha256": "22381ace0a859864ce1bcbb9c58219a6f0dfc789bcc5efce6fb53d5b41190412",
+      "archiveSha256": "22381ace0a859864ce1bcbb9c58219a6f0dfc789bcc5efce6fb53d5b41190412",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-encoder-pro-reviewed-cad-5",
+      "productId": "lilygo-t-encoder-pro",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_22_30_1.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_22_30_1.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_22_30_1.stl",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "repositoryPath": "structure/H670-STL/0-00_22_30_1.stl",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "c7bb122161f3d31dcb1755c8e1d95f996e673094",
+      "fetchedAt": "2026-11-22T08:38:02Z",
+      "bytes": 112284,
+      "sha256": "b9d5f8785d4501bd39e8a2721dd92fea8c1d352ba3a4c2d7fa9348125509d97c",
+      "rawSha256": "b9d5f8785d4501bd39e8a2721dd92fea8c1d352ba3a4c2d7fa9348125509d97c",
+      "file": "manufacturer-0-00_22_30_1.stl.gz",
+      "archiveName": "manufacturer-0-00_22_30_1.stl.gz",
+      "storedSha256": "d179bff31644447f5becb0d45f6183d792ee50a419c740fb7055f6581ab32c69",
+      "archiveSha256": "d179bff31644447f5becb0d45f6183d792ee50a419c740fb7055f6581ab32c69",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-encoder-pro-reviewed-cad-6",
+      "productId": "lilygo-t-encoder-pro",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_26_4_23_7_30.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_26_4_23_7_30.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_26_4_23_7_30.stl",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "repositoryPath": "structure/H670-STL/0-00_26_4_23_7_30.stl",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "faed4c87e6ad7c0c819c5c3db1be8d454edc24ed",
+      "fetchedAt": "2026-11-22T08:38:02Z",
+      "bytes": 53284,
+      "sha256": "6f71008aa9aa19af030bb3cbac8b7fe0e196607f1415b57d09405bcc8f832a9c",
+      "rawSha256": "6f71008aa9aa19af030bb3cbac8b7fe0e196607f1415b57d09405bcc8f832a9c",
+      "file": "manufacturer-0-00_26_4_23_7_30.stl.gz",
+      "archiveName": "manufacturer-0-00_26_4_23_7_30.stl.gz",
+      "storedSha256": "fb74a5037c4be6f7ad73d03ec6dc844131f43e1d68acd792036c1d7a7d4bf9d8",
+      "archiveSha256": "fb74a5037c4be6f7ad73d03ec6dc844131f43e1d68acd792036c1d7a7d4bf9d8",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-encoder-pro-reviewed-cad-7",
+      "productId": "lilygo-t-encoder-pro",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_27_3_20_15_33.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_27_3_20_15_33.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_27_3_20_15_33.stl",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "repositoryPath": "structure/H670-STL/0-00_27_3_20_15_33.stl",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "7bcb98d59c57ca5131a01db8ad3694abe676e21a",
+      "fetchedAt": "2026-11-22T08:38:08Z",
+      "bytes": 66884,
+      "sha256": "0b803b3eb7f2dc8c4e17ebb249ccd7fff817470c37a02d8aeb2c2fac4bc76ef7",
+      "rawSha256": "0b803b3eb7f2dc8c4e17ebb249ccd7fff817470c37a02d8aeb2c2fac4bc76ef7",
+      "file": "manufacturer-0-00_27_3_20_15_33.stl.gz",
+      "archiveName": "manufacturer-0-00_27_3_20_15_33.stl.gz",
+      "storedSha256": "6aa4e9dc840f55b4d6460f87511bc6ecdf1194b3c570891de566c5671afc3f20",
+      "archiveSha256": "6aa4e9dc840f55b4d6460f87511bc6ecdf1194b3c570891de566c5671afc3f20",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-encoder-pro-reviewed-cad-8",
+      "productId": "lilygo-t-encoder-pro",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_44_4_15_33_10.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_44_4_15_33_10.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_44_4_15_33_10.stl",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "repositoryPath": "structure/H670-STL/0-00_44_4_15_33_10.stl",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "a4ed5c419138d1fc6f49df614ff46a0db3d2612b",
+      "fetchedAt": "2026-11-22T08:38:08Z",
+      "bytes": 70884,
+      "sha256": "184d7751a3dd1470dc022a90efe47f1f198515341c2babf031ee85d00add7302",
+      "rawSha256": "184d7751a3dd1470dc022a90efe47f1f198515341c2babf031ee85d00add7302",
+      "file": "manufacturer-0-00_44_4_15_33_10.stl.gz",
+      "archiveName": "manufacturer-0-00_44_4_15_33_10.stl.gz",
+      "storedSha256": "a9d96e830792161bee5945812720611f362e40fd0ffd99a6d5f00e953ec72366",
+      "archiveSha256": "a9d96e830792161bee5945812720611f362e40fd0ffd99a6d5f00e953ec72366",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-encoder-pro-reviewed-cad-license",
+      "title": "Manufacturer repository LICENSE",
+      "kind": "license",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/LICENSE",
+      "fetchedAt": "2026-11-22T08:38:08Z",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "bytes": 35149,
+      "file": "manufacturer-LICENSE.txt",
+      "archiveName": "manufacturer-LICENSE.txt",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-encoder-pro",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-encoder-series/t-encoder-pro/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-encoder-series/t-encoder-pro/index.md",
+      "fetchedAt": "2026-11-22T06:43:14Z",
+      "mediaType": "text/plain",
+      "bytes": 6027,
+      "sha256": "2424ae02c0d4fd96433b4ed09edd71d390dbdeb2c5e0c1caea3f331823216c04",
+      "gitBlobSha": "f9bb2c66200a17cf06ed78270c7cce789db91b6d",
+      "path": "en/products/t-encoder-series/t-encoder-pro/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t encoder pro",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-encoder-series__t-encoder-pro__index.md"
+    },
+    {
+      "id": "s3add-encoder-pro-readme",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "path": "README.md",
+      "gitBlobSha": "a302e8e05b3cc5a7f984c412bcbe2d4ad016f2e6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/README.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:30:58Z",
+      "sha256": "463349a7d413c28cb4a34461be4f1492dbbd3212c107e2bb39b3c7ed48dcddb9",
+      "bytes": 11846,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-encoder-pro-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-encoder-pro-pins",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "path": "libraries/Mylibrary/pin_config.h",
+      "gitBlobSha": "6d7a1826ad44629fb99142a7383a6b6f60184cd8",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/libraries/Mylibrary/pin_config.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro/libraries/Mylibrary/pin_config.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:30:57Z",
+      "sha256": "dd80948e7d5babce382ce21fca311677c3d65aad0771175cd46c5208ddef9cad",
+      "bytes": 908,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-encoder-pro-pins.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-encoder-pro-factory",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "path": "examples/Lvgl_CIT/Lvgl_CIT.ino",
+      "gitBlobSha": "7dc514d10d92123c37f4651e30ef03c68bbcaa37",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/examples/Lvgl_CIT/Lvgl_CIT.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro/examples/Lvgl_CIT/Lvgl_CIT.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:21Z",
+      "sha256": "585cf4bc96add41f36f7401460d84eecc80f0401ce454c755ee883528ad76588",
+      "bytes": 10970,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-encoder-pro-factory.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-encoder-pro-display",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "path": "libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.cpp",
+      "gitBlobSha": "8a3aab185d6346aa2da301d9ae42958fd05aed3c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro/libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:21Z",
+      "sha256": "936b1dd6f87e25e4cc7dfdd58aab66cef3f09d540ab08a0294911d2d946ec3cf",
+      "bytes": 4449,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-encoder-pro-display.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-encoder-pro-display-h",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "path": "libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.h",
+      "gitBlobSha": "899ce419913959e411b087d846c1e2e7b0df3bfe",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro/libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:26Z",
+      "sha256": "26462d61cf254f3b7d3614841f4783f9775e8736afbe7a961b5b3dd05e1b7430",
+      "bytes": 7214,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-encoder-pro-display-h.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-circle-touch",
+      "repository": "Xinyuan-LilyGO/T-Circle-S3",
+      "revision": "86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a",
+      "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "gitBlobSha": "e55e7b1c02509a18a76b1f389686279e419e5084",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Circle-S3/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:13Z",
+      "sha256": "2c10a6f68c2669a69cef48a308f3a9e89389b068c9dbe603883517aa2190825a",
+      "bytes": 6889,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-circle-touch.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-circle-touch-h",
+      "repository": "Xinyuan-LilyGO/T-Circle-S3",
+      "revision": "86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a",
+      "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "gitBlobSha": "30a75c9d4edb4871d7f63775d0ea8f012137d87a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Circle-S3/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:13Z",
+      "sha256": "c2d76aac84aa1650e85b60ab518b6f8cd82ec6477df029eefda784fbf72dd58c",
+      "bytes": 3752,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-circle-touch-h.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+      "repository": "Xinyuan-LilyGO/T-Display-Bar",
+      "path": "lib/SensorLib/src/touch/TouchClassCST816.cpp",
+      "revision": "d3f4b8974be1dfb8bc35262d105e0453a697b459",
+      "gitBlobSha": "855c7b1051b1ed2a26f9dd0e040f26ef3989635e",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-Bar/blob/d3f4b8974be1dfb8bc35262d105e0453a697b459/lib/SensorLib/src/touch/TouchClassCST816.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-Bar/lib/SensorLib/src/touch/TouchClassCST816.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "bar-lib-sensorlib-src-touch-touchclasscst816-cpp-TouchClassCST816.cpp",
+      "sha256": "86f48a816759842c15c2816a5e7a69fb24d7522aafb6aa074a4db7e30cd235f4",
+      "bytes": 8355,
+      "mediaType": "text/plain; charset=utf-8"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-encoder-pro-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Encoder-Plus-LILYGO_8.jpg?v=1717485617",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-encoder-pro/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-encoder-pro-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Encoder-Plus-LILYGO_5.jpg?v=1717485617",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-encoder-pro/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-encoder-pro-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Encoder-Plus-LILYGO_6.jpg?v=1717485617",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-encoder-pro/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +680,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +687,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +697,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +707,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +717,264 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "reference-only",
+    "sourceIds": [
+      "s3add-encoder-pro-readme"
+    ],
+    "candidates": [
+      {
+        "path": "firmware/(添加开机蜂鸣器)[T-Encoder-Pro_V1.0][Lvgl_CIT][Screen_TFD12MASBCTB4_V0_07]_firmware_202512061209.bin",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/firmware/%28%E6%B7%BB%E5%8A%A0%E5%BC%80%E6%9C%BA%E8%9C%82%E9%B8%A3%E5%99%A8%29%5BT-Encoder-Pro_V1.0%5D%5BLvgl_CIT%5D%5BScreen_TFD12MASBCTB4_V0_07%5D_firmware_202512061209.bin",
+        "status": "linked",
+        "gitBlobSha": "fcdbf6d841656c52b7321318d5bd923d0fba2bdd",
+        "bytesFromTree": 2465120,
+        "binaryFetched": false,
+        "layoutVerified": false,
+        "sha256": null
+      }
+    ],
+    "simulationVerified": false,
+    "notes": "Manufacturer lists this exact variant candidate. No binary payload was downloaded or claimed to boot; source fixtures are the execution evidence."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-encoder-pro/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "采用已审查的官方 CAD 部件；具体版次、遗漏部分及未标定项见模型资料。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-encoder-pro",
+      "lilygo-t-encoder-pro-official-photo-0",
+      "lilygo-t-encoder-pro-official-photo-1",
+      "lilygo-t-encoder-pro-official-photo-2",
+      "lilygo-t-encoder-pro-reviewed-cad-1",
+      "lilygo-t-encoder-pro-reviewed-cad-2",
+      "lilygo-t-encoder-pro-reviewed-cad-3",
+      "lilygo-t-encoder-pro-reviewed-cad-4",
+      "lilygo-t-encoder-pro-reviewed-cad-5",
+      "lilygo-t-encoder-pro-reviewed-cad-6",
+      "lilygo-t-encoder-pro-reviewed-cad-7",
+      "lilygo-t-encoder-pro-reviewed-cad-8",
+      "lilygo-t-encoder-pro-reviewed-cad-license",
+      "s3add-encoder-pro-readme",
+      "s3add-encoder-pro-pins",
+      "s3add-encoder-pro-factory",
+      "s3add-encoder-pro-display",
+      "s3add-encoder-pro-display-h",
+      "s3add-circle-touch",
+      "s3add-circle-touch-h",
+      "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+    ],
+    "displayHint": {
+      "width": 390,
+      "height": 390,
+      "sourceIds": [
+        "s3add-encoder-pro-readme",
+        "s3add-encoder-pro-pins",
+        "s3add-encoder-pro-factory",
+        "s3add-encoder-pro-display",
+        "s3add-encoder-pro-display-h",
+        "s3add-circle-touch",
+        "s3add-circle-touch-h",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-encoder-pro",
+    "status": "diagnostic",
+    "scope": "选择官方当前 TFD12MASBCTB4_V0_07 屏幕组件，接入 CO5300 390×390 QSPI 显示、CST816D 单点触摸、编码器 A/B 和按压键。BOOT 与编码器按压同为 GPIO0，仅提供一个实体按键入口。旧 SH8601/CHSC5816 组件、蜂鸣器和振动未适配。",
+    "unsupported": [
+      "No official binary boot or physical hardware validation is claimed. Authored Xtensa SRAM probes execute IO_MUX, GPIO matrix, GP-SPI and I2C MMIO.",
+      "DCS RGB565 command/pixel subset only; analog/gamma/TE timing/color calibration are not simulated.",
+      "Touch IRQ uses a held low level while pressed; periodic interrupt pulses, auto-sleep timing, gestures, pressure and factory firmware/calibration IDs are unmodeled.",
+      "The original DXQ120MYB2416A SH8601/CHSC5816 assembly is excluded.",
+      "QSPI validates clock, SDIO0, chip select and framing; SDIO1..3 routing/timing remains unverified.",
+      "Buzzer and vibration motor are not implemented. Encoder 24-step UI setting is a simulation choice, not a measured detent count."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-encoder-pro",
+    "boardId": "lilygo-t-encoder-pro",
+    "name": "LILYGO T-Encoder Pro",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "T-Encoder-Pro V1.0 with latest TFD12MASBCTB4_V0_07 CO5300/CST816D display assembly",
+    "display": {
+      "width": 390,
+      "height": 390,
+      "controller": "CO5300",
+      "type": "AMOLED",
+      "interface": "qspi",
+      "pixelFormat": "RGB565",
+      "crop": [
+        0,
+        0,
+        390,
+        390
+      ],
+      "commandCoordinateCanvas": [
+        390,
+        390
+      ],
+      "physicalTouch": true,
+      "touchImplemented": true
+    },
+    "pins": {
+      "boot": 0,
+      "display": {
+        "sclk": 12,
+        "mosi": 11,
+        "data": [
+          11,
+          13,
+          7,
+          14
+        ],
+        "cs": 10,
+        "dc": null,
+        "reset": 4,
+        "enable": 3,
+        "backlight": null,
+        "ledcGate": false
+      },
+      "touch": {
+        "controller": "CST816D",
+        "address": 21,
+        "sda": 5,
+        "scl": 6,
+        "irq": 9,
+        "reset": 8
+      },
+      "encoder": {
+        "a": 1,
+        "b": 2
+      }
+    },
+    "controls": [
+      {
+        "id": "encoder-press",
+        "name": "Encoder press / BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      },
+      {
+        "id": "encoder",
+        "name": "Rotary encoder",
+        "type": "encoder",
+        "pins": {
+          "a": 1,
+          "b": 2
+        },
+        "detents": 24,
+        "detentsBasis": "simulation",
+        "physicalDetents": null,
+        "notes": "24 debug steps are a simulation setting, not a claim about physical detents."
+      }
+    ],
+    "sdCard": {
+      "slot": false,
+      "transportSupported": false,
+      "notes": "No SD socket is declared on the exact selected hardware variant."
+    },
+    "runtimeLevel": "partial",
+    "scope": "选择官方当前 TFD12MASBCTB4_V0_07 屏幕组件，接入 CO5300 390×390 QSPI 显示、CST816D 单点触摸、编码器 A/B 和按压键。BOOT 与编码器按压同为 GPIO0，仅提供一个实体按键入口。旧 SH8601/CHSC5816 组件、蜂鸣器和振动未适配。",
+    "scopeEn": "T-Encoder-Pro V1.0 with latest TFD12MASBCTB4_V0_07 CO5300/CST816D display assembly: source-backed display, GPIO and single-point touch subset only.",
+    "sourceIds": [
+      "s3add-encoder-pro-readme",
+      "s3add-encoder-pro-pins",
+      "s3add-encoder-pro-factory",
+      "s3add-encoder-pro-display",
+      "s3add-encoder-pro-display-h",
+      "s3add-circle-touch",
+      "s3add-circle-touch-h",
+      "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+    ],
+    "chronology": {
+      "date": "2024-02-02",
+      "basis": "hardware-release",
+      "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/README.md",
+      "sourceId": "s3add-encoder-pro-readme",
+      "confidence": "high",
+      "hardwareRevision": "T-Encoder-Pro V1.0 with latest TFD12MASBCTB4_V0_07 CO5300/CST816D display assembly",
+      "notes": "First product hardware version date in the manufacturer Version iteration table. Later selected panel/microphone revisions remain explicitly scoped."
+    },
+    "priorityRank": 43,
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "three_exact_screen_variants_execute_xtensa_spi_with_power_and_route_gates",
+        "cst226se_and_cst816d_keep_distinct_registers_ids_sleep_reset_and_coordinates"
+      ]
+    },
+    "unsupported": [
+      "No official binary boot or physical hardware validation is claimed. Authored Xtensa SRAM probes execute IO_MUX, GPIO matrix, GP-SPI and I2C MMIO.",
+      "DCS RGB565 command/pixel subset only; analog/gamma/TE timing/color calibration are not simulated.",
+      "Touch IRQ uses a held low level while pressed; periodic interrupt pulses, auto-sleep timing, gestures, pressure and factory firmware/calibration IDs are unmodeled.",
+      "The original DXQ120MYB2416A SH8601/CHSC5816 assembly is excluded.",
+      "QSPI validates clock, SDIO0, chip select and framing; SDIO1..3 routing/timing remains unverified.",
+      "Buzzer and vibration motor are not implemented. Encoder 24-step UI setting is a simulation choice, not a measured detent count."
+    ],
+    "variantEvidence": {
+      "selectedHardware": "T-Encoder-Pro V1.0 with latest TFD12MASBCTB4_V0_07 CO5300/CST816D display assembly",
+      "automaticRevisionDetection": false,
+      "sourceIds": [
+        "s3add-encoder-pro-readme",
+        "s3add-encoder-pro-pins",
+        "s3add-encoder-pro-factory",
+        "s3add-encoder-pro-display",
+        "s3add-encoder-pro-display-h",
+        "s3add-circle-touch",
+        "s3add-circle-touch-h",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+      ],
+      "basis": "Exact manufacturer pin header and selected factory/example panel constructor; no sibling mapping by name."
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "s3add-encoder-pro-readme"
+      ],
+      "candidates": [
+        {
+          "path": "firmware/(添加开机蜂鸣器)[T-Encoder-Pro_V1.0][Lvgl_CIT][Screen_TFD12MASBCTB4_V0_07]_firmware_202512061209.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/firmware/%28%E6%B7%BB%E5%8A%A0%E5%BC%80%E6%9C%BA%E8%9C%82%E9%B8%A3%E5%99%A8%29%5BT-Encoder-Pro_V1.0%5D%5BLvgl_CIT%5D%5BScreen_TFD12MASBCTB4_V0_07%5D_firmware_202512061209.bin",
+          "status": "linked",
+          "gitBlobSha": "fcdbf6d841656c52b7321318d5bd923d0fba2bdd",
+          "bytesFromTree": 2465120,
+          "binaryFetched": false,
+          "layoutVerified": false,
+          "sha256": null
+        }
+      ],
+      "simulationVerified": false,
+      "notes": "Manufacturer lists this exact variant candidate. No binary payload was downloaded or claimed to boot; source fixtures are the execution evidence."
+    }
+  }
 }

@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-pico",
   "title": "LILYGO T-Pico",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 RP2350 + ESP32-C6；具体硬件版次及配置待核对。",
+  "summary": "仅模拟 ESP32-C6 协处理器及 SW6/GPIO9 BOOT。RP2350 主控、屏幕、触摸、SD、HDMI 和 AT 桥接尚未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-Pico2350 V1.2, RP2350 + ESP32-C6-MINI-1U-N4",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Pico",
@@ -52,6 +52,112 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-01-01",
+        "basis": "hardware-release",
+        "sourceUrl": "https://wiki.lilygo.cc/products/other/t-pico-2350/",
+        "sourceId": "official-wiki-t-pico-2350",
+        "confidence": "low",
+        "hardwareRevision": "T-PICO-2350 V1.2",
+        "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki-t-pico-2350"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "type": "IPS LCD",
+          "controller": "ST7796S",
+          "width": 222,
+          "height": 480,
+          "diagonalInch": 2.33,
+          "interface": "SPI",
+          "owner": "RP2350",
+          "implemented": false,
+          "sourceIds": [
+            "Lilygo-T-Pico2-README.md",
+            "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+            "Lilygo-T-Pico2-examples-Factory-utilities.h"
+          ]
+        },
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 0,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 9,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 9,
+          "physicalSwitch": "SW6",
+          "strapPullup": 8,
+          "coprocessorUart": {
+            "rx": 15,
+            "tx": 18,
+            "rts": 6,
+            "cts": 14,
+            "reserve": 7,
+            "implemented": false,
+            "sourceId": "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf"
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "Lilygo-T-Pico2-README.md",
+        "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+        "Lilygo-T-Pico2-examples-Factory-utilities.h",
+        "Lilygo-T-Pico2-examples-AT_ESP_Gpio-AT_ESP_Gpio.ino",
+        "Lilygo-T-Pico2-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-pico-2350",
+        "espressif-c6-psram"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flash": "C6 MINI-1U-N4 and README4MB. Separate RP2350 flash16MB is not added to C6 memory.",
+          "psram": "C6 external PSRAM unsupported",
+          "sourceIds": [
+            "Lilygo-T-Pico2-README.md",
+            "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+            "espressif-c6-psram"
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "Lilygo-T-Pico2-README.md",
+        "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+        "Lilygo-T-Pico2-examples-Factory-utilities.h",
+        "Lilygo-T-Pico2-examples-AT_ESP_Gpio-AT_ESP_Gpio.ino",
+        "Lilygo-T-Pico2-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-pico-2350",
+        "espressif-c6-psram"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +186,220 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-pico-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-PICO-2350_1.jpg?v=1742539223",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-PICO-2350_1.jpg?v=1742539223",
+      "fetchedAt": "2026-11-22T06:57:55Z",
+      "bytes": 94180,
+      "sha256": "0eb3eb5974ceb581f8ebbf0e554cbc092180e2dd3d70b23bcf9e03e2e2738648",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t pico official photo 0",
+      "archiveName": "lilygo-t-pico-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-pico-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-PICO-2350_6.jpg?v=1742539223",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-PICO-2350_6.jpg?v=1742539223",
+      "fetchedAt": "2026-11-22T06:57:55Z",
+      "bytes": 87000,
+      "sha256": "818b93256241fe48d24e7fc07e43e770bbc40e2e47e31148745a40281c5a3034",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t pico official photo 1",
+      "archiveName": "lilygo-t-pico-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-pico-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/K243_3.jpg?v=1742539223",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/K243_3.jpg?v=1742539223",
+      "fetchedAt": "2026-11-22T06:57:55Z",
+      "bytes": 51245,
+      "sha256": "62d800e6e334a2add538a02deb3d1f2cbe600e0566e0db7a91d8306f02ca59fb",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t pico official photo 2",
+      "archiveName": "lilygo-t-pico-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-pico-2350",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-pico-2350/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-pico-2350/index.md",
+      "fetchedAt": "2026-11-22T06:42:34Z",
+      "mediaType": "text/plain",
+      "bytes": 5651,
+      "sha256": "58ebe2c97e31a85588629bc936c9e4677f9eb38250baba12cde167fd54d82e1c",
+      "gitBlobSha": "4b05b2b58f16956fe9239709e84e5245c259abe6",
+      "path": "en/products/other/t-pico-2350/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t pico 2350",
+      "kind": "official-product-document",
+      "archiveName": "en__products__other__t-pico-2350__index.md"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/Lilygo-T-Pico2",
+      "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+      "path": "README.md",
+      "id": "Lilygo-T-Pico2-README.md",
+      "gitBlobSha": "3ffaff31d1b66413abdb6e6be519b6e18c7ff845",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:06Z",
+      "sha256": "2f5748fa73993704197f469528b15eb2c9591a22cab80baa175143d520e67b8f",
+      "bytes": 11791,
+      "archiveName": "Lilygo-T-Pico2-README.md.raw",
+      "title": "Xinyuan-LilyGO/Lilygo-T-Pico2 / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/Lilygo-T-Pico2-README.md.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/Lilygo-T-Pico2",
+      "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+      "path": "hardware/T_Pico2350_V1.2.pdf",
+      "id": "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+      "gitBlobSha": "90eb563316a8089ecfdff8b4c80836fec174a695",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/hardware/T_Pico2350_V1.2.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/hardware/T_Pico2350_V1.2.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:06Z",
+      "sha256": "f39300493deeeb354be6dccb0a6e08766b578087fcd5141f7e5e45c22e6cd633",
+      "bytes": 1134626,
+      "archiveName": "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf.raw",
+      "title": "Xinyuan-LilyGO/Lilygo-T-Pico2 / hardware/T_Pico2350_V1.2.pdf",
+      "kind": "manufacturer-schematic",
+      "mediaType": "application/pdf",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/Lilygo-T-Pico2",
+      "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+      "path": "examples/Factory/utilities.h",
+      "id": "Lilygo-T-Pico2-examples-Factory-utilities.h",
+      "gitBlobSha": "35c53bd1c323503b547648f9dcab3583e8c2aca1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/examples/Factory/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/examples/Factory/utilities.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:06Z",
+      "sha256": "9704072fd90deacbd5d576c38515c8268ae3916eae8c63d40d565bde95bf3652",
+      "bytes": 1734,
+      "archiveName": "Lilygo-T-Pico2-examples-Factory-utilities.h.raw",
+      "title": "Xinyuan-LilyGO/Lilygo-T-Pico2 / examples/Factory/utilities.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/Lilygo-T-Pico2-examples-Factory-utilities.h.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/Lilygo-T-Pico2",
+      "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+      "path": "examples/AT_ESP_Gpio/AT_ESP_Gpio.ino",
+      "id": "Lilygo-T-Pico2-examples-AT_ESP_Gpio-AT_ESP_Gpio.ino",
+      "gitBlobSha": "65151d8cfec085ef3451b34950b01ee8329cc910",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/examples/AT_ESP_Gpio/AT_ESP_Gpio.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/examples/AT_ESP_Gpio/AT_ESP_Gpio.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:12Z",
+      "sha256": "b07b1210f89257112bda5196d96c60c988394581399e16e2171c41221a209bea",
+      "bytes": 4120,
+      "archiveName": "Lilygo-T-Pico2-examples-AT_ESP_Gpio-AT_ESP_Gpio.ino.raw",
+      "title": "Xinyuan-LilyGO/Lilygo-T-Pico2 / examples/AT_ESP_Gpio/AT_ESP_Gpio.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/Lilygo-T-Pico2-examples-AT_ESP_Gpio-AT_ESP_Gpio.ino.raw"
+    },
+    {
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/Lilygo-T-Pico2/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:47:49Z",
+      "mediaType": "application/json",
+      "transport": "GitHub connector; exact UTF-8 content snapshot",
+      "id": "Lilygo-T-Pico2-tree",
+      "title": "Official Lilygo-T-Pico2 complete tree snapshot",
+      "kind": "manufacturer-repository-tree",
+      "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/Lilygo-T-Pico2/git/trees/HEAD?recursive=1",
+      "sha256": "561db0dbead7612fd3832cc2e7aac717eaf968cf6230a5196830b1c2b0790f5b",
+      "bytes": 1323921,
+      "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+      "truncated": false,
+      "entryCount": 4846,
+      "archiveName": "Xinyuan-LilyGO__Lilygo-T-Pico2.tree.json",
+      "archiveOwner": "model source audit cache",
+      "notes": "GitHub connector normalized snapshot. The top-level sha is a pinned revision; its object type is not inferred from the trees endpoint.",
+      "sourceCachePath": "target/lilygo-model-audit/Xinyuan-LilyGO__Lilygo-T-Pico2.tree.json"
+    },
+    {
+      "url": "https://docs.espressif.com/projects/esp-faq/en/latest/software-framework/storage/psram.html",
+      "resolvedUrl": "https://docs.espressif.com/projects/esp-faq/en/latest/software-framework/storage/psram.html",
+      "fetchedAt": "2026-11-22T07:07:06Z",
+      "bytes": 38300,
+      "sha256": "9f01971adeba15437d287ef9ad696fcd6d6dbcfd11b29d51734eb6803d474fd8",
+      "mediaType": "text/html",
+      "id": "espressif-c6-psram",
+      "status": "fetched",
+      "title": "Espressif FAQ: ESP32-C6 does not support external PSRAM",
+      "kind": "manufacturer-documentation",
+      "archiveName": "espressif-psram-faq.html",
+      "sourceCachePath": "target/lilygo-c6-sources/espressif-psram-faq.html"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-pico-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-PICO-2350_1.jpg?v=1742539223",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-pico/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-pico-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-PICO-2350_6.jpg?v=1742539223",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-pico/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-pico-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/K243_3.jpg?v=1742539223",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-pico/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +412,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +419,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +429,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +439,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +449,265 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "exact-official-c6-factory-image-linked",
+    "sourceIds": [
+      "Lilygo-T-Pico2-README.md",
+      "Lilygo-T-Pico2-tree"
+    ],
+    "candidates": [
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/firmware/T-Lilygo-rp2350_ESP32C6_V1.2.uf2",
+        "path": "firmware/T-Lilygo-rp2350_ESP32C6_V1.2.uf2",
+        "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+        "gitBlobSha": "c73bf9c98499caef35f93c0370f65305e18b9bb5",
+        "bytes": 1468416,
+        "status": "linked",
+        "sourceId": "Lilygo-T-Pico2-tree"
+      },
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/firmware/factory_ESP32C6-4MB.bin",
+        "path": "firmware/factory_ESP32C6-4MB.bin",
+        "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+        "gitBlobSha": "de238841d88500cde6dd20a7a90d69382a113333",
+        "bytes": 4194304,
+        "status": "linked",
+        "sourceId": "Lilygo-T-Pico2-tree"
+      }
+    ],
+    "simulationVerified": false,
+    "binaryFetched": false,
+    "notes": "C6 .bin is explicitly named factory and fits the N4 module. UF2 is for the separate RP2350 and is not accepted as C6 firmware."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-pico/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-pico-2350",
+      "lilygo-t-pico-official-photo-0",
+      "lilygo-t-pico-official-photo-1",
+      "lilygo-t-pico-official-photo-2",
+      "Lilygo-T-Pico2-README.md",
+      "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+      "Lilygo-T-Pico2-examples-Factory-utilities.h",
+      "Lilygo-T-Pico2-examples-AT_ESP_Gpio-AT_ESP_Gpio.ino",
+      "Lilygo-T-Pico2-tree",
+      "espressif-c6-psram"
+    ],
+    "displayHint": {
+      "width": 222,
+      "height": 480,
+      "sourceIds": [
+        "Lilygo-T-Pico2-README.md",
+        "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+        "Lilygo-T-Pico2-examples-Factory-utilities.h",
+        "Lilygo-T-Pico2-examples-AT_ESP_Gpio-AT_ESP_Gpio.ino",
+        "Lilygo-T-Pico2-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-pico-2350",
+        "espressif-c6-psram"
+      ],
+      "basis": "verified physical panel; runtime frame output not implemented",
+      "physicalSizeMm": null,
+      "implemented": false
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-pico-c6",
+    "status": "diagnostic",
+    "scope": "仅模拟 ESP32-C6 协处理器及 SW6/GPIO9 BOOT。RP2350 主控、屏幕、触摸、SD、HDMI 和 AT 桥接尚未实现。",
+    "unsupported": [
+      "RP2350 instruction execution, main framebuffer, CST226SE touch, physical TF bus, HDMI and RP2350 user key.",
+      "XL9535 expander, SY6970 PMU, charging/USB power and battery behavior.",
+      "AT UART bridge and Wi-Fi/BLE/802.15.4 networking; no canned AT responses."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-pico",
+    "boardId": "lilygo-t-pico-c6",
+    "name": "LILYGO T-Pico",
+    "chip": "esp32c6",
+    "flashMB": 4,
+    "psramMB": 0,
+    "hardwareRevision": "T-Pico2350 V1.2, RP2350 + ESP32-C6-MINI-1U-N4",
+    "display": null,
+    "sdCard": {
+      "slot": true,
+      "implemented": false,
+      "owner": "RP2350",
+      "transport": "spi",
+      "notes": "Prepare local media for the physical slot, but no guest SD mounting through this C6 profile."
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 9,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "仅模拟 ESP32-C6 协处理器及 SW6/GPIO9 BOOT。RP2350 主控、屏幕、触摸、SD、HDMI 和 AT 桥接尚未实现。",
+    "scopeEn": "ESP32-C6 coprocessor only; physical device remains RP2350 + ESP32-C6. Main display, touch, microSD and HDMI belong to RP2350 and are not remapped to C6.",
+    "chronology": {
+      "date": null,
+      "basis": "unknown",
+      "sourceUrl": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/hardware/T_Pico2350_V1.2.pdf",
+      "sourceId": "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+      "confidence": "unknown",
+      "hardwareRevision": "T-Pico2350 V1.2, RP2350 + ESP32-C6-MINI-1U-N4",
+      "notes": "Exact V1.2 launch unresolved. Wiki Version History gives2024-01-01 but all five schematic sheets are dated2025-01-16. The shared storefront first published2022-07-22 and includes older Pico Pro/C3 options; neither old listing date nor schematic engineering date is asserted as release."
+    },
+    "sourceIds": [
+      "Lilygo-T-Pico2-README.md",
+      "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+      "Lilygo-T-Pico2-examples-Factory-utilities.h",
+      "Lilygo-T-Pico2-examples-AT_ESP_Gpio-AT_ESP_Gpio.ino",
+      "Lilygo-T-Pico2-tree",
+      "official-store-shopify-1",
+      "official-wiki-t-pico-2350",
+      "espressif-c6-psram"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "trialAvailable": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "RP2350 instruction execution, main framebuffer, CST226SE touch, physical TF bus, HDMI and RP2350 user key.",
+      "XL9535 expander, SY6970 PMU, charging/USB power and battery behavior.",
+      "AT UART bridge and Wi-Fi/BLE/802.15.4 networking; no canned AT responses."
+    ],
+    "conflicts": [
+      {
+        "fact": "hardware release date",
+        "sources": [
+          "official-wiki-t-pico-2350",
+          "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+          "official-store-shopify-1"
+        ],
+        "resolution": "Exact V1.2 launch unresolved. Wiki Version History gives2024-01-01 but all five schematic sheets are dated2025-01-16. The shared storefront first published2022-07-22 and includes older Pico Pro/C3 options; neither old listing date nor schematic engineering date is asserted as release."
+      },
+      {
+        "fact": "C6 UART pin table",
+        "sources": [
+          "Lilygo-T-Pico2-README.md",
+          "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf"
+        ],
+        "resolution": "Use schematic C6 RX15/TX18/RTS6/CTS14 rather than inconsistent README labels. Bridge is not implemented."
+      },
+      {
+        "fact": "repository description MCU",
+        "sources": [
+          "Lilygo-T-Pico2-README.md",
+          "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf"
+        ],
+        "resolution": "Description mentions C3; exact README and V1.2 schematic show ESP32-C6. Older T-PicoC3 and Pico Pro are separate revisions."
+      }
+    ],
+    "physicalChip": "RP2350 + ESP32-C6",
+    "physicalDisplay": {
+      "type": "IPS LCD",
+      "controller": "ST7796S",
+      "width": 222,
+      "height": 480,
+      "diagonalInch": 2.33,
+      "interface": "SPI",
+      "owner": "RP2350",
+      "implemented": false,
+      "sourceIds": [
+        "Lilygo-T-Pico2-README.md",
+        "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+        "Lilygo-T-Pico2-examples-Factory-utilities.h"
+      ]
+    },
+    "pins": {
+      "boot": 9,
+      "physicalSwitch": "SW6",
+      "strapPullup": 8,
+      "coprocessorUart": {
+        "rx": 15,
+        "tx": 18,
+        "rts": 6,
+        "cts": 14,
+        "reserve": 7,
+        "implemented": false,
+        "sourceId": "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf"
+      }
+    },
+    "physicalMemory": {
+      "rp2350": {
+        "sramKB": 520,
+        "flashMB": 16
+      },
+      "esp32c6": {
+        "flashMB": 4,
+        "psramMB": 0
+      },
+      "sourceIds": [
+        "Lilygo-T-Pico2-README.md",
+        "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf"
+      ]
+    },
+    "memoryEvidence": {
+      "flash": "C6 MINI-1U-N4 and README4MB. Separate RP2350 flash16MB is not added to C6 memory.",
+      "psram": "C6 external PSRAM unsupported",
+      "sourceIds": [
+        "Lilygo-T-Pico2-README.md",
+        "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+        "espressif-c6-psram"
+      ]
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "exact-official-c6-factory-image-linked",
+      "sourceIds": [
+        "Lilygo-T-Pico2-README.md",
+        "Lilygo-T-Pico2-tree"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/firmware/T-Lilygo-rp2350_ESP32C6_V1.2.uf2",
+          "path": "firmware/T-Lilygo-rp2350_ESP32C6_V1.2.uf2",
+          "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+          "gitBlobSha": "c73bf9c98499caef35f93c0370f65305e18b9bb5",
+          "bytes": 1468416,
+          "status": "linked",
+          "sourceId": "Lilygo-T-Pico2-tree"
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/firmware/factory_ESP32C6-4MB.bin",
+          "path": "firmware/factory_ESP32C6-4MB.bin",
+          "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+          "gitBlobSha": "de238841d88500cde6dd20a7a90d69382a113333",
+          "bytes": 4194304,
+          "status": "linked",
+          "sourceId": "Lilygo-T-Pico2-tree"
+        }
+      ],
+      "simulationVerified": false,
+      "binaryFetched": false,
+      "notes": "C6 .bin is explicitly named factory and fits the N4 module. UF2 is for the separate RP2350 and is not accepted as C6 firmware."
+    }
+  }
 }

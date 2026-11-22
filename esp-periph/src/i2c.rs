@@ -78,8 +78,16 @@ pub struct I2c<const N: usize = 8> {
 
 struct Program<const N: usize> {
     cmd: [u32; N],
-    /// C6 supplies its PCR divider in the S3/C3 CLK_CONF layout.
-    external_clock_config: Option<u32>,
+    external_clock: Option<ClockParameters>,
+}
+
+#[derive(Clone, Copy)]
+struct ClockParameters { num: u8, a: u8, b: u8, rc_fast: bool }
+impl ClockParameters {
+    /// S3/C3 CLK_CONF and the existing C6 PCR adapter use six-bit A/B fields.
+    fn from_config(config: u32) -> Self {
+        Self { num: config as u8, a: ((config >> 8) & 63) as u8, b: ((config >> 14) & 63) as u8, rc_fast: config & (1 << 20) != 0 }
+    }
 }
 
 impl I2c { pub fn new() -> Self { Self::with_slots() } }
@@ -89,12 +97,22 @@ impl I2c<16> { pub fn new_classic() -> Self { Self::with_slots() } }
 macro_rules! i2c_impl { ($n:literal) => {
 impl I2c<$n> {
     fn with_slots() -> Self {
-        I2c { regs: RegRam::new(), tx: VecDeque::new(), rx: VecDeque::new(), int_raw: 0, int_ena: 0, program: Box::new(Program { cmd: [0; $n], external_clock_config: None }),
+        I2c { regs: RegRam::new(), tx: VecDeque::new(), rx: VecDeque::new(), int_raw: 0, int_ena: 0, program: Box::new(Program { cmd: [0; $n], external_clock: None }),
               devices: Vec::new(), cur: Vec::new(), remaining: None, pins: None, expect_addr: false, nack: false, log: false, transactions: 0,
               command_index: 0, byte_index: 0 }
     }
     /// C6 supplies its PCR divider in the S3/C3 CLK_CONF layout.
-    pub fn set_external_clock_config(&mut self, config: Option<u32>) { self.program.external_clock_config = config; }
+    /// None restores this controller's local CLK_CONF register, including after a
+    /// full-width override. Reserved bits retain the original ignored behavior.
+    pub fn set_external_clock_config(&mut self, config: Option<u32>) { self.program.external_clock = config.map(ClockParameters::from_config); }
+    /// Full-width divider = num + 1 + b/a; a=0 disables the fractional part.
+    /// P4 IDF v5.5.3 register/hw_ver1/soc/hp_sys_clkrst_reg.h gives eight-bit
+    /// NUMERATOR/DENOMINATOR fields (CTRL10 bits 17:10/25:18 for I2C0;
+    /// CTRL11 bits 15:8/23:16 for I2C1). Its i2c_ll.h writes div_a to NUMERATOR.
+    /// rc_fast chooses nominal 17.5 MHz; false chooses the 40 MHz crystal.
+    pub fn set_external_clock_parameters(&mut self, num: u8, a: u8, b: u8, rc_fast: bool) {
+        self.program.external_clock = Some(ClockParameters { num, a, b, rc_fast });
+    }
     /// A device attached at an occupied address and pin pair replaces the one there: a board swapped before
     /// boot (`esp32sim_set_measured_te`) must not leave the old board's devices answering.
     pub fn attach(&mut self, addr: u8, dev: Box<dyn I2cDevice>) {
@@ -187,12 +205,11 @@ impl I2c<$n> {
     // RC_FAST; XTAL is modeled at 40 MHz and APB at 80 MHz. IDF 4.4 uses a
     // nominal 20 MHz RC clock; this model does not reproduce oscillator calibration.
     fn clock_ticks(&self, cycles: u64) -> u64 {
-        let c = self.program.external_clock_config.unwrap_or_else(|| self.regs.read(0x54));
-        let a = u64::from((c >> 8) & 63);
-        let b = u64::from((c >> 14) & 63);
+        let c = self.program.external_clock.unwrap_or_else(|| ClockParameters::from_config(self.regs.read(0x54)));
+        let (a, b) = (u64::from(c.a), u64::from(c.b));
         let denominator = a.max(1);
-        let divisor = (u64::from(c & 255) + 1) * denominator + if a > 0 { b } else { 0 };
-        let hz = if c & (1 << 20) != 0 { 17_500_000 } else { 40_000_000 };
+        let divisor = (u64::from(c.num) + 1) * denominator + if a > 0 { b } else { 0 };
+        let hz = if c.rc_fast { 17_500_000 } else { 40_000_000 };
         (cycles * divisor * 80_000_000).div_ceil(hz * denominator).max(1)
     }
 
@@ -385,6 +402,36 @@ mod clock_observation_tests {
         i2c.write(0x24,u32::MAX);i2c.write(0x18,3<<12);i2c.write(0x1c,u32::from(address<<1));
         i2c.write(0x58,6<<11);i2c.write(0x5c,(1<<11)|(1<<8)|1);i2c.write(0x60,2<<11);
         i2c.write(4,1<<5);i2c.advance(u64::MAX);
+    }
+    #[test]
+    fn full_width_external_fraction_reaches_device_and_byte_deadlines() {
+        let seen=Arc::new(Mutex::new(Vec::new()));let mut i2c=I2c::new();
+        i2c.attach(0x6e,Box::new(Probe(seen.clone())));i2c.set_pins(Some((47,48)));
+        i2c.write(0,49);i2c.write(0x38,50); // 100 source periods per SCL cycle.
+        i2c.set_external_clock_parameters(0,128,64,false); // 40 MHz / (1 + 64/128).
+        i2c.write(0x1c,0xdc);i2c.write(0x58,6<<11);
+        i2c.write(0x5c,(1<<11)|(1<<8)|1);i2c.write(0x60,2<<11);i2c.write(4,1<<5);
+        assert_eq!(i2c.next_deadline(),Some(6),"two source periods for START at 80 MHz APB");
+        i2c.advance(5);assert_eq!(i2c.read(0x58)&(1<<31),0);
+        i2c.advance(1);assert_ne!(i2c.read(0x58)&(1<<31),0);
+        assert_eq!(i2c.next_deadline(),Some(2700),"9 SCL cycles for the address plus ACK");
+        i2c.advance(2699);assert!(seen.lock().unwrap().is_empty());
+        i2c.advance(1);assert_eq!(*seen.lock().unwrap(),[Some(266_666)]);
+        assert_eq!(i2c.int_raw&(INT_NACK|INT_TRANS_COMPLETE),0);
+        assert_eq!(i2c.next_deadline(),Some(6));i2c.advance(5);
+        assert_eq!(i2c.int_raw&INT_TRANS_COMPLETE,0);i2c.advance(1);
+        assert_ne!(i2c.int_raw&INT_TRANS_COMPLETE,0);assert_eq!(i2c.next_deadline(),None);
+
+        // The upper bits remain meaningful at the maximum register values too.
+        i2c.set_external_clock_parameters(255,255,254,false);send(&mut i2c,0x6e);
+        assert_eq!(seen.lock().unwrap().last(),Some(&Some(1556)));
+        // Both APIs replace, rather than stack on top of, a previous override.
+        i2c.set_external_clock_config(Some(1));send(&mut i2c,0x6e);
+        assert_eq!(seen.lock().unwrap().last(),Some(&Some(200_000)));
+        i2c.set_external_clock_parameters(0,128,64,true);send(&mut i2c,0x6e);
+        assert_eq!(seen.lock().unwrap().last(),Some(&Some(116_618)));
+        i2c.write(0x54,3);i2c.set_external_clock_config(None);send(&mut i2c,0x6e);
+        assert_eq!(seen.lock().unwrap().last(),Some(&Some(100_000)));
     }
     #[test]
     fn controller_samples_nominal_scl_only_on_the_matching_route_and_address() {

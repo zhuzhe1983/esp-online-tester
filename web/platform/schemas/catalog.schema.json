@@ -196,6 +196,10 @@
                   "const": "simulation",
                   "description": "When present, psramMb is a simulator configuration, not a verified physical capacity. Physical memory facts remain in product knowledge."
                 },
+                "flashMbBasis": {
+                  "enum": ["simulation", "manufacturer-build-configuration"],
+                  "description": "When present, flashMb is a selected runtime or manufacturer build configuration; it is not a verified physical capacity."
+                },
                 "status": {
                   "enum": [
                     "partial",
@@ -253,8 +257,25 @@
                 "height": {
                   "type": "integer",
                   "minimum": 1
+                },
+                "debugLayout": {
+                  "const": "horizontal-composite"
+                },
+                "physicalPanels": {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 8,
+                  "items": {
+                    "type": "object",
+                    "required": ["width", "height"],
+                    "properties": {
+                      "width": {"type": "integer", "minimum": 1},
+                      "height": {"type": "integer", "minimum": 1}
+                    }
+                  }
                 }
-              }
+              },
+              "dependentRequired": {"debugLayout": ["physicalPanels"]}
             },
             "controls": {
               "type": "array",
@@ -450,6 +471,20 @@
                   "description": "Exact product_id and group.id from the pinned official Spark catalog. A hardware-variant is narrower than the upstream product listing. Neither scope proves firmware compatibility."
                 }
               }
+            },
+            "chronology": {
+              "type": "object",
+              "required": ["date", "basis", "sourceId", "sourceUrl", "confidence", "notes"],
+              "properties": {
+                "date": {"type": ["string", "null"], "format": "date"},
+                "basis": {"enum": ["hardware-release", "official-announcement", "storefront-publication", "repository-first-seen", "unknown"]},
+                "sourceId": {"type": ["string", "null"]},
+                "sourceUrl": {"type": ["string", "null"], "format": "uri"},
+                "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+                "notes": {"type": "string"},
+                "hardwareRevision": {"type": ["string", "null"]}
+              },
+              "description": "Newest-first ordering evidence. Storefront publication and repository-first-seen are explicit proxies, not confirmed launch dates. Unknown dates sort last."
             },
             "displayStatus": {
               "enum": [

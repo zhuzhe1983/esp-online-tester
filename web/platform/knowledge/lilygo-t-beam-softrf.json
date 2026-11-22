@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-beam-softrf",
   "title": "LILYGO T-Beam SoftRF",
-  "summary": "T-Beam SoftRF 是 Spark 单独列出的 SoftRF 预装商品版；具体硬件与固件版本待核对。",
+  "summary": "已接入 OLED 装配版 T-Beam 的 SSD1306 128×64 显示与 GPIO38 用户按键。仅验证真实 I²C 和 GPIO 通路；SoftRF 整机固件、AXP 电源、GNSS 和无线功能尚未验证。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "Manufacturer T-Beam ESP32-D0WDQ6-V3 / AXP2101 documentation explicitly links both software-edition listings; OLED-fitted option only",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Beam SoftRF",
@@ -63,6 +63,70 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2023-10-13",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-beam-softrf",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 128,
+          "height": 64,
+          "controller": "SSD1306",
+          "interface": "i2c",
+          "type": "OLED",
+          "pixelFormat": "RGB565",
+          "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+          "implemented": true,
+          "physicalTouch": false,
+          "touchImplemented": false
+        },
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "user",
+            "name": "用户键",
+            "type": "button",
+            "pin": 38,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "display": {
+            "sda": 21,
+            "scl": 22,
+            "address": 60,
+            "reset": null
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "classic-lilygo-lora-series-bb68cd55803b",
+        "classic-lilygo-lora-series-c8931800e47f",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -91,9 +155,122 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-beam-softrf-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-Q219_2.jpg?v=1697095452",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-Q219_2.jpg?v=1697095452",
+      "fetchedAt": "2026-11-22T06:58:25Z",
+      "bytes": 90230,
+      "sha256": "ae9eaa50dec377d4f9dff05b0d75004c4bd28370b7211908881b3af6103f5b29",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t beam softrf official photo 0",
+      "archiveName": "lilygo-t-beam-softrf-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-beam-softrf-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-Q340_2.jpg?v=1697095452",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-Q340_2.jpg?v=1697095452",
+      "fetchedAt": "2026-11-22T06:58:26Z",
+      "bytes": 92820,
+      "sha256": "2992493bbe7223b37422ba14fdfcceb36d0a762a8f2f53e53caec19eaf446d6c",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t beam softrf official photo 1",
+      "archiveName": "lilygo-t-beam-softrf-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-beam-softrf-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-Q341_2.jpg?v=1697095452",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-Q341_2.jpg?v=1697095452",
+      "fetchedAt": "2026-11-22T06:58:26Z",
+      "bytes": 89020,
+      "sha256": "c2fe7567609a380b15431b053e3c8db873de07c9e58795a9dac80344a8221e3f",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t beam softrf official photo 2",
+      "archiveName": "lilygo-t-beam-softrf-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "classic-lilygo-lora-series-bb68cd55803b",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "examples/Factory/utilities.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "bf37221526ccc6143995d1e495d65cdec0dc407c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/Factory/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/Factory/utilities.h",
+      "fetchedAt": "2026-11-22T08:06:05Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 28783,
+      "sha256": "1f234017d45099f90e3a5cb7fb6ed16b78dfe11fa57f2b82a58f9d1b9411f733",
+      "archiveName": "classic-lilygo-lora-series-bb68cd55803b.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-lora-series-bb68cd55803b.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-LoRa-Series/examples/Factory/utilities.h"
+    },
+    {
+      "id": "classic-lilygo-lora-series-c8931800e47f",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "docs/en/t_beam/t_beam_hw.md",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "63198ef6efa77b66c127a22b3dd4d7388be20e63",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t_beam/t_beam_hw.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t_beam/t_beam_hw.md",
+      "fetchedAt": "2026-11-22T08:09:42Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 10208,
+      "sha256": "e2c4d236a3a65aa5b80620b900409d7103e7d6939c2548351e48c4d20d208411",
+      "archiveName": "classic-lilygo-lora-series-c8931800e47f.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-lora-series-c8931800e47f.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-LoRa-Series/docs/en/t_beam/t_beam_hw.md"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-beam-softrf-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-Q219_2.jpg?v=1697095452",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-beam-softrf/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-beam-softrf-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-Q340_2.jpg?v=1697095452",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-beam-softrf/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-beam-softrf-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-Q341_2.jpg?v=1697095452",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-beam-softrf/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -106,26 +283,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -133,7 +290,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -143,7 +300,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -153,7 +310,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -163,12 +320,166 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-beam-softrf/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-t-beam-softrf-official-photo-0",
+      "lilygo-t-beam-softrf-official-photo-1",
+      "lilygo-t-beam-softrf-official-photo-2",
+      "classic-lilygo-lora-series-bb68cd55803b",
+      "classic-lilygo-lora-series-c8931800e47f"
+    ],
+    "displayHint": {
+      "width": 128,
+      "height": 64,
+      "sourceIds": [
+        "classic-lilygo-lora-series-bb68cd55803b",
+        "classic-lilygo-lora-series-c8931800e47f",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-beam-softrf",
+    "status": "diagnostic",
+    "scope": "已接入 OLED 装配版 T-Beam 的 SSD1306 128×64 显示与 GPIO38 用户按键。仅验证真实 I²C 和 GPIO 通路；SoftRF 整机固件、AXP 电源、GNSS 和无线功能尚未验证。",
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "AXP2101 I2C, GNSS, LoRa/SX127x/SX126x, battery and charging are unmodeled. A permanently available virtual OLED supply is assumed; no PMIC rail sequencing is claimed.",
+      "The documented no-display T-Beam option is not represented by this display profile.",
+      "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+      "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-beam-softrf",
+    "boardId": "lilygo-t-beam-softrf",
+    "name": "LILYGO T-Beam SoftRF",
+    "chip": "esp32",
+    "flashMB": 4,
+    "physicalPsramMB": 8,
+    "psramMB": 4,
+    "psramMbBasis": "simulation-capacity-limit",
+    "hardwareRevision": "Manufacturer T-Beam ESP32-D0WDQ6-V3 / AXP2101 documentation explicitly links both software-edition listings; OLED-fitted option only",
+    "display": {
+      "width": 128,
+      "height": 64,
+      "controller": "SSD1306",
+      "interface": "i2c",
+      "type": "OLED",
+      "pixelFormat": "RGB565",
+      "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+      "implemented": true,
+      "physicalTouch": false,
+      "touchImplemented": false
+    },
+    "physicalDisplay": true,
+    "pins": {
+      "display": {
+        "sda": 21,
+        "scl": 22,
+        "address": 60,
+        "reset": null
+      }
+    },
+    "controls": [
+      {
+        "id": "user",
+        "name": "用户键",
+        "type": "button",
+        "pin": 38,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": false,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "oled_i2c_windows_go_through_both_classic_controllers_and_real_routes",
+        "named_inputs_are_actual_classic_gpio_levels_and_encoder_channels"
+      ]
+    },
+    "scope": "已接入 OLED 装配版 T-Beam 的 SSD1306 128×64 显示与 GPIO38 用户按键。仅验证真实 I²C 和 GPIO 通路；SoftRF 整机固件、AXP 电源、GNSS 和无线功能尚未验证。",
+    "scopeEn": "OLED-fitted T-Beam variant: routed SSD1306 128x64 and active-low GPIO38 user input. This does not establish SoftRF firmware boot or radio/GNSS/PMIC compatibility.",
+    "sourceIds": [
+      "classic-lilygo-lora-series-bb68cd55803b",
+      "classic-lilygo-lora-series-c8931800e47f",
+      "official-store-shopify-1"
+    ],
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "AXP2101 I2C, GNSS, LoRa/SX127x/SX126x, battery and charging are unmodeled. A permanently available virtual OLED supply is assumed; no PMIC rail sequencing is claimed.",
+      "The documented no-display T-Beam option is not represented by this display profile.",
+      "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+      "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+    ],
+    "chronology": {
+      "date": "2023-10-13",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-beam-softrf",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 61,
+    "factoryFirmwareInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    },
+    "variantEvidence": {
+      "sourceIds": [
+        "classic-lilygo-lora-series-bb68cd55803b",
+        "classic-lilygo-lora-series-c8931800e47f"
+      ],
+      "basis": "The official T-Beam hardware page explicitly links both Meshtastic and SoftRF products and documents the same GPIO38 / OLED21,22 wiring. This is an independently stated hardware mapping, not inferred firmware interchangeability."
+    }
+  }
 }

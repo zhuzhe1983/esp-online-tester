@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-camera-plus-s3",
   "title": "LILYGO T-Camera Plus S3",
-  "summary": "Spark 将此商品归入T-Camera 系列，标注 MCU 为 ESP32-S3R8；具体硬件版次及配置待核对。",
+  "summary": "实现 V1.2 的 240×240 ST7789 可见窗口、GPIO46 背光、CST816D 轮询坐标、BOOT0／USER17 与共用 SPI 总线的 SD；摄像头、音频、振动、充电器和触摸中断未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-CameraPlus-S3 V1.2; selected default pin_config branch",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Camera Plus S3",
@@ -52,6 +52,163 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2023-10-23",
+        "basis": "hardware-release",
+        "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/README.md",
+        "sourceId": "T-CameraPlus-S3-README.md",
+        "confidence": "medium",
+        "hardwareRevision": "Initial T-CameraPlus-S3 V1.0-V1.1; runtime explicitly selects V1.2",
+        "notes": "Earliest explicit manufacturer Version History date for this product, not independently verified retail launch. The runtime represented revision is specified separately; a later BOM/source revision does not move the original product date."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-CameraPlus-S3-README.md"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "type": "LCD",
+          "controller": "ST7789",
+          "width": 240,
+          "height": 240,
+          "interface": "SPI",
+          "touchImplemented": true,
+          "touchScope": "CST816D polled single contact registers01h..06h; no identity/interrupt/sleep/gesture emulation"
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "activeLow": true,
+            "pin": 0
+          },
+          {
+            "id": "user",
+            "name": "USER",
+            "type": "button",
+            "activeLow": true,
+            "pin": 17
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "user": 17,
+          "display": {
+            "clock": 35,
+            "mosi": 34,
+            "cs": 36,
+            "dc": 45,
+            "reset": null,
+            "backlight": 46,
+            "backlightActiveHigh": true
+          },
+          "touch": {
+            "controller": "CST816D",
+            "sda": 33,
+            "scl": 37,
+            "address": 21,
+            "irq": 47,
+            "reset": null,
+            "implemented": "polled01h..06h only"
+          },
+          "haptic": {
+            "control": 16,
+            "chip": "AP1511B",
+            "implemented": false
+          },
+          "micEnable": 18
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "CameraPlus-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+        "CameraPlus-libraries-Arduino_GFX-1.3.7-src-display-Arduino_ST7789.cpp",
+        "T-CameraPlus-S3-README.md",
+        "T-CameraPlus-S3-boards-lilygo_t_cameraplus_esp32s3.json",
+        "T-CameraPlus-S3-components-private_library-pin_config.h",
+        "T-CameraPlus-S3-examples-CST816D-CST816D.ino",
+        "T-CameraPlus-S3-examples-GFX_Test-GFX_Test.ino",
+        "T-CameraPlus-S3-examples-SY6970-SY6970.ino",
+        "T-CameraPlus-S3-examples-TFT-TFT.ino",
+        "T-CameraPlus-S3-information-AN-CST816T-v1.pdf",
+        "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.cpp",
+        "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.h",
+        "T-CameraPlus-S3-libraries-TFT_eSPI-User_Setups-Setup304_FP-133H01D.h",
+        "T-CameraPlus-S3-libraries-private_library-pin_config.h",
+        "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.0-V1.1_20241109.pdf",
+        "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.2_20240417.pdf",
+        "T-CameraPlus-S3-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flashMB": 16,
+          "psramMB": 8,
+          "sourceIds": [
+            "CameraPlus-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+            "CameraPlus-libraries-Arduino_GFX-1.3.7-src-display-Arduino_ST7789.cpp",
+            "T-CameraPlus-S3-README.md",
+            "T-CameraPlus-S3-boards-lilygo_t_cameraplus_esp32s3.json",
+            "T-CameraPlus-S3-components-private_library-pin_config.h",
+            "T-CameraPlus-S3-examples-CST816D-CST816D.ino",
+            "T-CameraPlus-S3-examples-GFX_Test-GFX_Test.ino",
+            "T-CameraPlus-S3-examples-SY6970-SY6970.ino",
+            "T-CameraPlus-S3-examples-TFT-TFT.ino",
+            "T-CameraPlus-S3-information-AN-CST816T-v1.pdf",
+            "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.cpp",
+            "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.h",
+            "T-CameraPlus-S3-libraries-TFT_eSPI-User_Setups-Setup304_FP-133H01D.h",
+            "T-CameraPlus-S3-libraries-private_library-pin_config.h",
+            "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.0-V1.1_20241109.pdf",
+            "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.2_20240417.pdf",
+            "T-CameraPlus-S3-tree",
+            "official-store-shopify-1"
+          ],
+          "notes": "Exact selected source/BOM or build target; capacity is not inherited from a sibling."
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "CameraPlus-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+        "CameraPlus-libraries-Arduino_GFX-1.3.7-src-display-Arduino_ST7789.cpp",
+        "T-CameraPlus-S3-README.md",
+        "T-CameraPlus-S3-boards-lilygo_t_cameraplus_esp32s3.json",
+        "T-CameraPlus-S3-components-private_library-pin_config.h",
+        "T-CameraPlus-S3-examples-CST816D-CST816D.ino",
+        "T-CameraPlus-S3-examples-GFX_Test-GFX_Test.ino",
+        "T-CameraPlus-S3-examples-SY6970-SY6970.ino",
+        "T-CameraPlus-S3-examples-TFT-TFT.ino",
+        "T-CameraPlus-S3-information-AN-CST816T-v1.pdf",
+        "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.cpp",
+        "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.h",
+        "T-CameraPlus-S3-libraries-TFT_eSPI-User_Setups-Setup304_FP-133H01D.h",
+        "T-CameraPlus-S3-libraries-private_library-pin_config.h",
+        "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.0-V1.1_20241109.pdf",
+        "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.2_20240417.pdf",
+        "T-CameraPlus-S3-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +237,479 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-camera-plus-s3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-CAMERA-S3-PLUS_2.jpg?v=1752476520",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-CAMERA-S3-PLUS_2.jpg?v=1752476520",
+      "fetchedAt": "2026-11-22T06:58:21Z",
+      "bytes": 80670,
+      "sha256": "09d2f660c054467c145846b0da092410cec115953085f4578cd6d6c05b0cebfe",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t camera plus s3 official photo 0",
+      "archiveName": "lilygo-t-camera-plus-s3-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-camera-plus-s3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-CAMERA-S3-PLUS_10.jpg?v=1752476520",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-CAMERA-S3-PLUS_10.jpg?v=1752476520",
+      "fetchedAt": "2026-11-22T06:58:21Z",
+      "bytes": 75014,
+      "sha256": "0b71f0df637a781230f330099e3dd994d8312353430b83b7e801729231f59384",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t camera plus s3 official photo 1",
+      "archiveName": "lilygo-t-camera-plus-s3-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-camera-plus-s3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-CAMERA-S3-PLUS_3.jpg?v=1752476502",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-CAMERA-S3-PLUS_3.jpg?v=1752476502",
+      "fetchedAt": "2026-11-22T06:58:25Z",
+      "bytes": 75014,
+      "sha256": "0b71f0df637a781230f330099e3dd994d8312353430b83b7e801729231f59384",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t camera plus s3 official photo 2",
+      "archiveName": "lilygo-t-camera-plus-s3-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-camera-plus-s3-manufacturer-cad",
+      "productId": "lilygo-t-camera-plus-s3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/structure/3D_PCB_T-CameraPlus-S3_V1.2_202505091545.step",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/structure/3D_PCB_T-CameraPlus-S3_V1.2_202505091545.step",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "repositoryPath": "structure/3D_PCB_T-CameraPlus-S3_V1.2_202505091545.step",
+      "scope": "V1.2 PCB assembly; earlier V1.0/V1.1 differ",
+      "fetchedAt": "2026-11-22T07:04:10Z",
+      "bytes": 68603684,
+      "sha256": "b5ac26860e33f3bd993dd62b1d48909a6dc07cad7c528cfb54852ad20fbb9487",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "manufacturer-source.step.gz",
+      "rawSha256": "b5ac26860e33f3bd993dd62b1d48909a6dc07cad7c528cfb54852ad20fbb9487",
+      "archiveSha256": "5e692c6fa18a42d8072d5f7287befb49d5f7706f3158e999540f9c15ad4f78c4",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "compression": "gzip",
+      "kind": "manufacturer-cad",
+      "representationScope": "Named PCB product only; component, copper and silkscreen representations omitted; original assembly retained in compressed source.",
+      "storedSha256": "5e692c6fa18a42d8072d5f7287befb49d5f7706f3158e999540f9c15ad4f78c4",
+      "hashScope": "sha256/bytes describe original fetched STEP; storedSha256 describes gzip artifact.",
+      "blobSha": "f465213fdc3baafa03e1e5159cfeef8853ce9c5c",
+      "revisionType": "pinned-git-revision",
+      "revision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "title": "lilygo t camera plus s3 manufacturer cad",
+      "archiveName": "lilygo-t-camera-plus-s3-manufacturer-cad.gz"
+    },
+    {
+      "id": "lilygo-t-camera-plus-s3-repository-license",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/LICENSE",
+      "fetchedAt": "2026-11-22T07:10:19Z",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "SOURCE-LICENSE.txt",
+      "scope": "Upstream repository license; no claim that unrelated photographs or CAD from another repository share it.",
+      "title": "lilygo t camera plus s3 repository license",
+      "kind": "official-product-document",
+      "archiveName": "lilygo-t-camera-plus-s3-repository-license.txt"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-camera-plus-s3",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-camera-series/t-camera-plus-s3/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-camera-series/t-camera-plus-s3/index.md",
+      "fetchedAt": "2026-11-22T06:42:40Z",
+      "mediaType": "text/plain",
+      "bytes": 8606,
+      "sha256": "fd2d5c2574dd5052842d57423cc487247a45c8ad274cfc312f122350f08c7a70",
+      "gitBlobSha": "17d5985010b0273fef7449dd47b6aeb77b39e5fc",
+      "path": "en/products/t-camera-series/t-camera-plus-s3/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t camera plus s3",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-camera-series__t-camera-plus-s3__index.md"
+    },
+    {
+      "id": "CameraPlus-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "libraries/Arduino_GFX-1.3.7/src/Arduino_TFT.cpp",
+      "gitBlobSha": "5c558cc370787924a87259b213fb5e620daa5e45",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/libraries/Arduino_GFX-1.3.7/src/Arduino_TFT.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/libraries/Arduino_GFX-1.3.7/src/Arduino_TFT.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:56:01Z",
+      "sha256": "4143ece31872376caa273f56266277f0a3571b8e4d4db8e89c672b9bc1900618",
+      "bytes": 23715,
+      "archiveName": "CameraPlus-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / libraries/Arduino_GFX-1.3.7/src/Arduino_TFT.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/CameraPlus-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp.raw"
+    },
+    {
+      "id": "CameraPlus-libraries-Arduino_GFX-1.3.7-src-display-Arduino_ST7789.cpp",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "libraries/Arduino_GFX-1.3.7/src/display/Arduino_ST7789.cpp",
+      "gitBlobSha": "2a0c5ff99c55274d3f5e998eae39e4f482fb8345",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/libraries/Arduino_GFX-1.3.7/src/display/Arduino_ST7789.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/libraries/Arduino_GFX-1.3.7/src/display/Arduino_ST7789.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:56:01Z",
+      "sha256": "fe568b26efc3f43590ed23786dfb1dbb5a24a7c5419f7b15d77157f015fe00c9",
+      "bytes": 3042,
+      "archiveName": "CameraPlus-libraries-Arduino_GFX-1.3.7-src-display-Arduino_ST7789.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / libraries/Arduino_GFX-1.3.7/src/display/Arduino_ST7789.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/CameraPlus-libraries-Arduino_GFX-1.3.7-src-display-Arduino_ST7789.cpp.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-README.md",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "README.md",
+      "gitBlobSha": "b3016c484ffd9cc42bc2e33da16976ad3788ae36",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:38Z",
+      "sha256": "754f0abf9dbf5fa72d428efff9d0ade901ec200b0ccbc23ff5a1c308f9d28bcb",
+      "bytes": 23463,
+      "archiveName": "T-CameraPlus-S3-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-README.md.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-boards-lilygo_t_cameraplus_esp32s3.json",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "boards/lilygo_t_cameraplus_esp32s3.json",
+      "gitBlobSha": "f8a2838738092adcc7de2754f6d1f1f603ea6704",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/boards/lilygo_t_cameraplus_esp32s3.json",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/boards/lilygo_t_cameraplus_esp32s3.json",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:40:16Z",
+      "sha256": "9860525df182a2856b32970389679b6d47f466947b7116fe02e230f34bba4a95",
+      "bytes": 1106,
+      "archiveName": "T-CameraPlus-S3-boards-lilygo_t_cameraplus_esp32s3.json.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / boards/lilygo_t_cameraplus_esp32s3.json",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-boards-lilygo_t_cameraplus_esp32s3.json.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-components-private_library-pin_config.h",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "components/private_library/pin_config.h",
+      "gitBlobSha": "b6d10c827745032f87befba4a628aebd327604e4",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/components/private_library/pin_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/components/private_library/pin_config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:38Z",
+      "sha256": "3c7790dced57df5cf732b16106dce1367b2276ebb89b564c1d6ad13fdf592838",
+      "bytes": 2512,
+      "archiveName": "T-CameraPlus-S3-components-private_library-pin_config.h.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / components/private_library/pin_config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-components-private_library-pin_config.h.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-examples-CST816D-CST816D.ino",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "examples/CST816D/CST816D.ino",
+      "gitBlobSha": "a15011400a1a5702cec7d9126be89fd7752d2b25",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/examples/CST816D/CST816D.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/examples/CST816D/CST816D.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:38Z",
+      "sha256": "bb9bebee7cac5ca9ab2979f180a01845c4eacde98d8a0d6de7926c0dac05db2c",
+      "bytes": 2479,
+      "archiveName": "T-CameraPlus-S3-examples-CST816D-CST816D.ino.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / examples/CST816D/CST816D.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-examples-CST816D-CST816D.ino.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-examples-GFX_Test-GFX_Test.ino",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "examples/GFX_Test/GFX_Test.ino",
+      "gitBlobSha": "5e6fcbd8f1365ecc9f54c97d93b0bcbce34c671c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/examples/GFX_Test/GFX_Test.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/examples/GFX_Test/GFX_Test.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:38Z",
+      "sha256": "236f365aa0695d3c8e3a92c2c7d0c3f17b8be4d35252d7aff7c2314d801cbf73",
+      "bytes": 15387,
+      "archiveName": "T-CameraPlus-S3-examples-GFX_Test-GFX_Test.ino.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / examples/GFX_Test/GFX_Test.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-examples-GFX_Test-GFX_Test.ino.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-examples-SY6970-SY6970.ino",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "examples/SY6970/SY6970.ino",
+      "gitBlobSha": "1f64fbe6b0e292e556c33e0e0452d668e7362f02",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/examples/SY6970/SY6970.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/examples/SY6970/SY6970.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:40:16Z",
+      "sha256": "3cf44e42923a7cdab88a635fc9798547330ab0365321ea2ca3cc65ffb3148a21",
+      "bytes": 6108,
+      "archiveName": "T-CameraPlus-S3-examples-SY6970-SY6970.ino.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / examples/SY6970/SY6970.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-examples-SY6970-SY6970.ino.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-examples-TFT-TFT.ino",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "examples/TFT/TFT.ino",
+      "gitBlobSha": "1df7e0c26243a4665ebbfda302f59d4adf789f80",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/examples/TFT/TFT.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/examples/TFT/TFT.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:38Z",
+      "sha256": "2baf69647e97489fb46619a2ac03b297382b51be3b8c95ced60e304dd7caa7a2",
+      "bytes": 702,
+      "archiveName": "T-CameraPlus-S3-examples-TFT-TFT.ino.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / examples/TFT/TFT.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-examples-TFT-TFT.ino.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-information-AN-CST816T-v1.pdf",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "information/AN-CST816T-v1.pdf",
+      "gitBlobSha": "d0fcfb73628c11e9bfeee8226d561549144234af",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/information/AN-CST816T-v1.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/information/AN-CST816T-v1.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:46:40Z",
+      "sha256": "20244b00569b40765f4e5fedb691ea4ffe3a262e8646a52a541b343797f87414",
+      "bytes": 1396672,
+      "archiveName": "T-CameraPlus-S3-information-AN-CST816T-v1.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / information/AN-CST816T-v1.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-information-AN-CST816T-v1.pdf.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.cpp",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "gitBlobSha": "e55e7b1c02509a18a76b1f389686279e419e5084",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:46:36Z",
+      "sha256": "2c10a6f68c2669a69cef48a308f3a9e89389b068c9dbe603883517aa2190825a",
+      "bytes": 6889,
+      "archiveName": "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.cpp.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.h",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "gitBlobSha": "30a75c9d4edb4871d7f63775d0ea8f012137d87a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:46:36Z",
+      "sha256": "c2d76aac84aa1650e85b60ab518b6f8cd82ec6477df029eefda784fbf72dd58c",
+      "bytes": 3752,
+      "archiveName": "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.h.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.h.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-libraries-TFT_eSPI-User_Setups-Setup304_FP-133H01D.h",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "libraries/TFT_eSPI/User_Setups/Setup304_FP-133H01D.h",
+      "gitBlobSha": "bd5bfd40b5d56c7e5ee29f9720facbb5c2694e02",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/libraries/TFT_eSPI/User_Setups/Setup304_FP-133H01D.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/libraries/TFT_eSPI/User_Setups/Setup304_FP-133H01D.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:46:36Z",
+      "sha256": "10247f6c7e8fd62f756f1f766947dfdead6a63add1a75c48a662bdc37c8f76d3",
+      "bytes": 1599,
+      "archiveName": "T-CameraPlus-S3-libraries-TFT_eSPI-User_Setups-Setup304_FP-133H01D.h.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / libraries/TFT_eSPI/User_Setups/Setup304_FP-133H01D.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-libraries-TFT_eSPI-User_Setups-Setup304_FP-133H01D.h.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-libraries-private_library-pin_config.h",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "libraries/private_library/pin_config.h",
+      "gitBlobSha": "2c322310000b7f943dbefae40da6aba321970fe8",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/libraries/private_library/pin_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/libraries/private_library/pin_config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:40:10Z",
+      "sha256": "a73f088b9fdb5b1c98b6414e031bed9f5256921624723710d1d29e4a75d02085",
+      "bytes": 2512,
+      "archiveName": "T-CameraPlus-S3-libraries-private_library-pin_config.h.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / libraries/private_library/pin_config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-libraries-private_library-pin_config.h.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.0-V1.1_20241109.pdf",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "project/T-CameraPlus-S3_V1.0-V1.1_20241109.pdf",
+      "gitBlobSha": "536c64c53fe981626575c2878c0f3ae5d8d5f741",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/project/T-CameraPlus-S3_V1.0-V1.1_20241109.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/project/T-CameraPlus-S3_V1.0-V1.1_20241109.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:43Z",
+      "sha256": "3bfe80980182ce7b923ce835bfeb890dc2818fc8a010461007c79a549c3d0cd4",
+      "bytes": 1537238,
+      "archiveName": "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.0-V1.1_20241109.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / project/T-CameraPlus-S3_V1.0-V1.1_20241109.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-project-T-CameraPlus-S3_V1.0-V1.1_20241109.pdf.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.2_20240417.pdf",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "path": "project/T-CameraPlus-S3_V1.2_20240417.pdf",
+      "gitBlobSha": "d62718f2266c898d6cafa91010966edf054b6e58",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/project/T-CameraPlus-S3_V1.2_20240417.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/project/T-CameraPlus-S3_V1.2_20240417.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:42Z",
+      "sha256": "5363097ad586a5bf21cdd528fa8c0213b08e6af951835b1f8533531a64a202e2",
+      "bytes": 1696834,
+      "archiveName": "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.2_20240417.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-CameraPlus-S3 / project/T-CameraPlus-S3_V1.2_20240417.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-project-T-CameraPlus-S3_V1.2_20240417.pdf.raw"
+    },
+    {
+      "id": "T-CameraPlus-S3-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-CameraPlus-S3/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:46:00Z",
+      "title": "Official repository snapshot: Xinyuan-LilyGO/T-CameraPlus-S3",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/T-CameraPlus-S3",
+      "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+      "gitObjectType": "not-independently-checked",
+      "mediaType": "application/json",
+      "sha256": "004c4af058f1dfbee6884eaf7ac1dfe9088bfda20697edb7fa9b4e11d11e410b",
+      "bytes": 992901,
+      "archiveName": "T-CameraPlus-S3-tree.raw",
+      "notes": "Exact original GitHub connector UTF-8 snapshot copied from the model lane; original fetch timestamp retained. A normalized sha field is a pinned revision, not proof of Git commit/tree object type. Firmware metadata is discovery evidence only, not a fetched firmware checksum.",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-tree.raw"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-camera-plus-s3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-CAMERA-S3-PLUS_2.jpg?v=1752476520",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-camera-plus-s3/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-camera-plus-s3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-CAMERA-S3-PLUS_10.jpg?v=1752476520",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-camera-plus-s3/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-camera-plus-s3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-CAMERA-S3-PLUS_3.jpg?v=1752476502",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-camera-plus-s3/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +722,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +729,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +739,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +749,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +759,336 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-entries-linked",
+    "sourceIds": [
+      "T-CameraPlus-S3-tree",
+      "T-CameraPlus-S3-README.md"
+    ],
+    "candidates": [
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/T-CameraPlus-S3/blob/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5BLvgl_UI%5D/%5BT-CameraPlus-S3_V1.2%5D%5BLvgl_UI%5D_firmware_202504081446.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5BLvgl_UI%5D/%5BT-CameraPlus-S3_V1.2%5D%5BLvgl_UI%5D_firmware_202504081446.bin",
+        "path": "firmware/[T-CameraPlus-S3][Lvgl_UI]/[T-CameraPlus-S3_V1.2][Lvgl_UI]_firmware_202504081446.bin",
+        "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+        "gitBlobSha": "a853148b5a536185cc5d218dd699d0964f4f46e0",
+        "bytes": 4988224,
+        "status": "linked",
+        "sourceId": "T-CameraPlus-S3-tree",
+        "role": "factory",
+        "chip": "esp32s3",
+        "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
+        "binaryFetched": false,
+        "simulationVerified": false
+      },
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/T-CameraPlus-S3/blob/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5Bxiaozhi%5D/%5BT-CameraPlus-S3_V1.2%5D%5Bxiaozhi_V2.1.0%5D_firmware_202606261623.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5Bxiaozhi%5D/%5BT-CameraPlus-S3_V1.2%5D%5Bxiaozhi_V2.1.0%5D_firmware_202606261623.bin",
+        "path": "firmware/[T-CameraPlus-S3][xiaozhi]/[T-CameraPlus-S3_V1.2][xiaozhi_V2.1.0]_firmware_202606261623.bin",
+        "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+        "gitBlobSha": "726091d2a3dacb6c3d9608c83da73416e5415a1e",
+        "bytes": 9981139,
+        "status": "linked",
+        "sourceId": "T-CameraPlus-S3-tree",
+        "role": "alternative",
+        "chip": "esp32s3",
+        "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
+        "binaryFetched": false,
+        "simulationVerified": false
+      }
+    ],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "README explicitly identifies V1.2 Lvgl_UI as factory firmware. The V1.0/V1.1 and V1.2 binaries are distinct; only the latter is mapped. Binary bytes, flash layout and full factory application are not verified.",
+    "watchlist": {
+      "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
+      "xiaozhi": "Exact official V1.2 Xiaozhi V2.1.0 image dated202606261623 is present and linked as alternative, not factory or simulation-verified."
+    }
+  },
+  "modelReview": {
+    "model": {
+      "type": "manufacturer-cad",
+      "url": "./assets/lilygo-t-camera-plus-s3/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "官方 CAD 局部预览：V1.2 PCB assembly; earlier V1.0/V1.1 differ；缺失部分和调试面板位置见模型来源。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-camera-plus-s3",
+      "lilygo-t-camera-plus-s3-official-photo-0",
+      "lilygo-t-camera-plus-s3-official-photo-1",
+      "lilygo-t-camera-plus-s3-official-photo-2",
+      "lilygo-t-camera-plus-s3-manufacturer-cad",
+      "CameraPlus-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+      "CameraPlus-libraries-Arduino_GFX-1.3.7-src-display-Arduino_ST7789.cpp",
+      "T-CameraPlus-S3-README.md",
+      "T-CameraPlus-S3-boards-lilygo_t_cameraplus_esp32s3.json",
+      "T-CameraPlus-S3-components-private_library-pin_config.h",
+      "T-CameraPlus-S3-examples-CST816D-CST816D.ino",
+      "T-CameraPlus-S3-examples-GFX_Test-GFX_Test.ino",
+      "T-CameraPlus-S3-examples-SY6970-SY6970.ino",
+      "T-CameraPlus-S3-examples-TFT-TFT.ino",
+      "T-CameraPlus-S3-information-AN-CST816T-v1.pdf",
+      "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.cpp",
+      "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.h",
+      "T-CameraPlus-S3-libraries-TFT_eSPI-User_Setups-Setup304_FP-133H01D.h",
+      "T-CameraPlus-S3-libraries-private_library-pin_config.h",
+      "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.0-V1.1_20241109.pdf",
+      "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.2_20240417.pdf",
+      "T-CameraPlus-S3-tree"
+    ],
+    "displayHint": {
+      "width": 240,
+      "height": 240,
+      "sourceIds": [
+        "CameraPlus-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+        "CameraPlus-libraries-Arduino_GFX-1.3.7-src-display-Arduino_ST7789.cpp",
+        "T-CameraPlus-S3-README.md",
+        "T-CameraPlus-S3-boards-lilygo_t_cameraplus_esp32s3.json",
+        "T-CameraPlus-S3-components-private_library-pin_config.h",
+        "T-CameraPlus-S3-examples-CST816D-CST816D.ino",
+        "T-CameraPlus-S3-examples-GFX_Test-GFX_Test.ino",
+        "T-CameraPlus-S3-examples-SY6970-SY6970.ino",
+        "T-CameraPlus-S3-examples-TFT-TFT.ino",
+        "T-CameraPlus-S3-information-AN-CST816T-v1.pdf",
+        "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.cpp",
+        "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.h",
+        "T-CameraPlus-S3-libraries-TFT_eSPI-User_Setups-Setup304_FP-133H01D.h",
+        "T-CameraPlus-S3-libraries-private_library-pin_config.h",
+        "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.0-V1.1_20241109.pdf",
+        "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.2_20240417.pdf",
+        "T-CameraPlus-S3-tree",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-camera-plus-s3",
+    "status": "diagnostic",
+    "scope": "实现 V1.2 的 240×240 ST7789 可见窗口、GPIO46 背光、CST816D 轮询坐标、BOOT0／USER17 与共用 SPI 总线的 SD；摄像头、音频、振动、充电器和触摸中断未实现。",
+    "unsupported": [
+      "Factory firmware boot and full application behavior remain unverified; no physical hardware validation.",
+      "Only the zero-offset native glass window is modeled, not the undocumented outside-glass controller RAM or display readback. Normal factory MADCTL0/IPS inversion is sourced from the exact Arduino_GFX example/driver.",
+      "Touch register01 returns no gesture;02 reports contact and03..06 coordinates clamped to239. Identity/sleep/IRQ registers are unimplemented, so the full factory initialization may require more behavior before boot succeeds. IRQ47 remains its sourced idle high, without fake interrupts.",
+      "GPIO16 is AP1511B haptic drive in the schematic, not a guessed LCD power rail. Camera OV2640/OV5640 capture, microphone/speaker, haptic physics and SY6970 power control remain unmodeled."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-camera-plus-s3",
+    "boardId": "lilygo-t-camera-plus-s3",
+    "name": "LILYGO T-Camera Plus S3",
+    "constructor": "t_camera_plus_s3",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "T-CameraPlus-S3 V1.2; selected default pin_config branch",
+    "display": {
+      "type": "LCD",
+      "controller": "ST7789",
+      "width": 240,
+      "height": 240,
+      "interface": "SPI",
+      "touchImplemented": true,
+      "touchScope": "CST816D polled single contact registers01h..06h; no identity/interrupt/sleep/gesture emulation"
+    },
+    "physicalDisplay": true,
+    "sdCard": {
+      "slot": true,
+      "implemented": true,
+      "transport": "spi",
+      "pins": {
+        "sclk": 35,
+        "mosi": 34,
+        "miso": 48,
+        "cs": 21
+      }
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "activeLow": true,
+        "pin": 0
+      },
+      {
+        "id": "user",
+        "name": "USER",
+        "type": "button",
+        "activeLow": true,
+        "pin": 17
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "实现 V1.2 的 240×240 ST7789 可见窗口、GPIO46 背光、CST816D 轮询坐标、BOOT0／USER17 与共用 SPI 总线的 SD；摄像头、音频、振动、充电器和触摸中断未实现。",
+    "scopeEn": "T-CameraPlus-S3 V1.2 ST7789 240x240 visible RGB565 window, GPIO46 backlight/PWM, CST816D polled contacts, BOOT0/USER17 and shared-bus SPI SD. Camera capture, audio, haptic, charger and touch IRQ are absent.",
+    "chronology": {
+      "date": "2023-10-23",
+      "basis": "hardware-release",
+      "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/README.md",
+      "sourceId": "T-CameraPlus-S3-README.md",
+      "confidence": "medium",
+      "hardwareRevision": "Initial T-CameraPlus-S3 V1.0-V1.1; runtime explicitly selects V1.2",
+      "notes": "Earliest explicit manufacturer Version History date for this product, not independently verified retail launch. The runtime represented revision is specified separately; a later BOM/source revision does not move the original product date."
+    },
+    "sourceIds": [
+      "CameraPlus-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+      "CameraPlus-libraries-Arduino_GFX-1.3.7-src-display-Arduino_ST7789.cpp",
+      "T-CameraPlus-S3-README.md",
+      "T-CameraPlus-S3-boards-lilygo_t_cameraplus_esp32s3.json",
+      "T-CameraPlus-S3-components-private_library-pin_config.h",
+      "T-CameraPlus-S3-examples-CST816D-CST816D.ino",
+      "T-CameraPlus-S3-examples-GFX_Test-GFX_Test.ino",
+      "T-CameraPlus-S3-examples-SY6970-SY6970.ino",
+      "T-CameraPlus-S3-examples-TFT-TFT.ino",
+      "T-CameraPlus-S3-information-AN-CST816T-v1.pdf",
+      "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.cpp",
+      "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.h",
+      "T-CameraPlus-S3-libraries-TFT_eSPI-User_Setups-Setup304_FP-133H01D.h",
+      "T-CameraPlus-S3-libraries-private_library-pin_config.h",
+      "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.0-V1.1_20241109.pdf",
+      "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.2_20240417.pdf",
+      "T-CameraPlus-S3-tree",
+      "official-store-shopify-1"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "Factory firmware boot and full application behavior remain unverified; no physical hardware validation.",
+      "Only the zero-offset native glass window is modeled, not the undocumented outside-glass controller RAM or display readback. Normal factory MADCTL0/IPS inversion is sourced from the exact Arduino_GFX example/driver.",
+      "Touch register01 returns no gesture;02 reports contact and03..06 coordinates clamped to239. Identity/sleep/IRQ registers are unimplemented, so the full factory initialization may require more behavior before boot succeeds. IRQ47 remains its sourced idle high, without fake interrupts.",
+      "GPIO16 is AP1511B haptic drive in the schematic, not a guessed LCD power rail. Camera OV2640/OV5640 capture, microphone/speaker, haptic physics and SY6970 power control remain unmodeled."
+    ],
+    "pins": {
+      "boot": 0,
+      "user": 17,
+      "display": {
+        "clock": 35,
+        "mosi": 34,
+        "cs": 36,
+        "dc": 45,
+        "reset": null,
+        "backlight": 46,
+        "backlightActiveHigh": true
+      },
+      "touch": {
+        "controller": "CST816D",
+        "sda": 33,
+        "scl": 37,
+        "address": 21,
+        "irq": 47,
+        "reset": null,
+        "implemented": "polled01h..06h only"
+      },
+      "haptic": {
+        "control": 16,
+        "chip": "AP1511B",
+        "implemented": false
+      },
+      "micEnable": 18
+    },
+    "memoryEvidence": {
+      "flashMB": 16,
+      "psramMB": 8,
+      "sourceIds": [
+        "CameraPlus-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+        "CameraPlus-libraries-Arduino_GFX-1.3.7-src-display-Arduino_ST7789.cpp",
+        "T-CameraPlus-S3-README.md",
+        "T-CameraPlus-S3-boards-lilygo_t_cameraplus_esp32s3.json",
+        "T-CameraPlus-S3-components-private_library-pin_config.h",
+        "T-CameraPlus-S3-examples-CST816D-CST816D.ino",
+        "T-CameraPlus-S3-examples-GFX_Test-GFX_Test.ino",
+        "T-CameraPlus-S3-examples-SY6970-SY6970.ino",
+        "T-CameraPlus-S3-examples-TFT-TFT.ino",
+        "T-CameraPlus-S3-information-AN-CST816T-v1.pdf",
+        "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.cpp",
+        "T-CameraPlus-S3-libraries-Arduino_DriveBus-src-touch_chip-Arduino_CST816x.h",
+        "T-CameraPlus-S3-libraries-TFT_eSPI-User_Setups-Setup304_FP-133H01D.h",
+        "T-CameraPlus-S3-libraries-private_library-pin_config.h",
+        "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.0-V1.1_20241109.pdf",
+        "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.2_20240417.pdf",
+        "T-CameraPlus-S3-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "Exact selected source/BOM or build target; capacity is not inherited from a sibling."
+    },
+    "conflicts": [
+      {
+        "fact": "V1.0/V1.1 vs V1.2 display pins",
+        "resolution": "Selected both current pin_config.h copies and exact V1.2 schematic: CLK35/MOSI34/CS36/DC45/BL46 and no MCU reset pin. The old TFT_eSPI Setup304 uses different pins and BL3; it is retained as conflicting historical evidence and is not accepted by this board.",
+        "sourceIds": [
+          "T-CameraPlus-S3-components-private_library-pin_config.h",
+          "T-CameraPlus-S3-libraries-private_library-pin_config.h",
+          "T-CameraPlus-S3-libraries-TFT_eSPI-User_Setups-Setup304_FP-133H01D.h",
+          "T-CameraPlus-S3-project-T-CameraPlus-S3_V1.2_20240417.pdf"
+        ]
+      }
+    ],
+    "factoryFirmwareInvestigation": {
+      "status": "official-entries-linked",
+      "sourceIds": [
+        "T-CameraPlus-S3-tree",
+        "T-CameraPlus-S3-README.md"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-CameraPlus-S3/blob/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5BLvgl_UI%5D/%5BT-CameraPlus-S3_V1.2%5D%5BLvgl_UI%5D_firmware_202504081446.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5BLvgl_UI%5D/%5BT-CameraPlus-S3_V1.2%5D%5BLvgl_UI%5D_firmware_202504081446.bin",
+          "path": "firmware/[T-CameraPlus-S3][Lvgl_UI]/[T-CameraPlus-S3_V1.2][Lvgl_UI]_firmware_202504081446.bin",
+          "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+          "gitBlobSha": "a853148b5a536185cc5d218dd699d0964f4f46e0",
+          "bytes": 4988224,
+          "status": "linked",
+          "sourceId": "T-CameraPlus-S3-tree",
+          "role": "factory",
+          "chip": "esp32s3",
+          "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-CameraPlus-S3/blob/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5Bxiaozhi%5D/%5BT-CameraPlus-S3_V1.2%5D%5Bxiaozhi_V2.1.0%5D_firmware_202606261623.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5Bxiaozhi%5D/%5BT-CameraPlus-S3_V1.2%5D%5Bxiaozhi_V2.1.0%5D_firmware_202606261623.bin",
+          "path": "firmware/[T-CameraPlus-S3][xiaozhi]/[T-CameraPlus-S3_V1.2][xiaozhi_V2.1.0]_firmware_202606261623.bin",
+          "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+          "gitBlobSha": "726091d2a3dacb6c3d9608c83da73416e5415a1e",
+          "bytes": 9981139,
+          "status": "linked",
+          "sourceId": "T-CameraPlus-S3-tree",
+          "role": "alternative",
+          "chip": "esp32s3",
+          "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "README explicitly identifies V1.2 Lvgl_UI as factory firmware. The V1.0/V1.1 and V1.2 binaries are distinct; only the latter is mapped. Binary bytes, flash layout and full factory application are not verified.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
+        "xiaozhi": "Exact official V1.2 Xiaozhi V2.1.0 image dated202606261623 is present and linked as alternative, not factory or simulation-verified."
+      }
+    }
+  }
 }

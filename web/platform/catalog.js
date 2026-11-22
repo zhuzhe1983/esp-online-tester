@@ -11,7 +11,8 @@ import {validateFirmwareTargets} from './firmware-target.js';
 export const SCHEMA_VERSION = '1';
 export const MAX_SCENE_BYTES = 64 * 1024;
 // Release metadata grows independently of portable scenes and private imports.
-const catalogMaxBytes = {products: 1024 * 1024, accessories: 512 * 1024, firmwares: 2 * 1024 * 1024};
+// Source-backed variants now exceed 1 MiB; retain a bounded catalog envelope.
+const catalogMaxBytes = {products: 2 * 1024 * 1024, accessories: 512 * 1024, firmwares: 2 * 1024 * 1024};
 const STORAGE_KEY = 'esp-online-tester:accessories:v1';
 const unsafeKeys = new Set(['__proto__', 'prototype', 'constructor']);
 const idPattern = /^[a-z0-9][a-z0-9:-]{0,79}$/;

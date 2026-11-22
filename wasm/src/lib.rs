@@ -129,7 +129,8 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     let Some(flash_bytes) = mib_bytes(flash_mb.max(1)) else { log("[emu] flash size exceeds the supported memory range"); return std::ptr::null_mut() };
     let Some(psram_bytes) = mib_bytes(psram_mb) else { log("[emu] PSRAM size exceeds the supported memory range"); return std::ptr::null_mut() };
     let c3_board=if matches!(board.as_str(),"esp32c3"|"c3") {esp32c3::board::make_board("none")}else if matches!(board.as_str(),"none"|"bare") {None}else{esp32c3::board::make_board(&board)};
-    let c5_board = if matches!(board.as_str(), "stamp-c5" | "stamp-c5-dip") { esp32c5::board::make_board(&board) } else { None };
+    let c5_board = if matches!(board.as_str(), "stamp-c5" | "stamp-c5-dip" | "lilygo-t7-c5" | "lilygo-t-dongle-c5") { esp32c5::board::make_board(&board) } else { None };
+    let s2_board = if board == "esp32s2" { esp32s2::board::make_board("none") } else if matches!(board.as_str(), "lilygo-esp32-s2-woor" | "lilygo-esp32-s2" | "lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board") { esp32s2::board::make_board(&board) } else { None };
     let c61_board = if board == "esp32c61" { esp32c61::board::make_board("none") } else if board == "corematrix" { esp32c61::board::make_board(&board) } else { None };
     let s31_board = if board == "esp32s31" { esp32s31::board::make_board("none") } else if matches!(board.as_str(), "mosaico" | "esp-mosaico" | "metalio-ink4-plus") { esp32s31::board::make_board(&board) } else { None };
     if s31_board.as_ref().is_some_and(|b| b.name() == "mosaico") && (flash_mb != 16 || psram_mb != 16) {
@@ -138,8 +139,11 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     if s31_board.as_ref().is_some_and(|b| b.name() == "metalio-ink4-plus") && flash_mb != 16 {
         log("[emu] Metalio INK4 Plus requires 16 MiB Flash; PSRAM capacity is a simulation setting"); return std::ptr::null_mut();
     }
-    if c5_board.is_some() && (flash_mb != 4 || psram_mb != 0) {
-        log("[emu] Stamp-C5 supports exactly 4 MiB Flash and no PSRAM"); return std::ptr::null_mut();
+    if c5_board.is_some() && (flash_mb != if board == "lilygo-t-dongle-c5" { 16 } else { 4 } || psram_mb != 0) {
+        log("[emu] C5 SRAM profile requires its declared Flash staging capacity and no simulated PSRAM"); return std::ptr::null_mut();
+    }
+    if s2_board.is_some() && (flash_mb != 4 || psram_mb != 0) {
+        log("[emu] S2 SRAM profile requires 4 MiB host staging capacity and no simulated PSRAM"); return std::ptr::null_mut();
     }
     let c6_board = if matches!(board.as_str(), "esp32c6" | "c6") {
         esp32c6::board::make_board("none")
@@ -158,7 +162,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     let p4 = p4_board.is_some() || p4_rev3 || matches!(p4_name, "esp32p4" | "p4");
     let classic_board = if board == "esp32" {
         esp32::board::make_board("esp32dev")
-    } else if p4 || c6_board.is_some() || c61_board.is_some() || s31_board.is_some() || matches!(board.as_str(), "none" | "bare") {
+    } else if p4 || s2_board.is_some() || c6_board.is_some() || c61_board.is_some() || s31_board.is_some() || matches!(board.as_str(), "none" | "bare") {
         None
     } else {
         esp32::board::make_board(&board)
@@ -189,6 +193,13 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         m.console.mask = 2;                                  // the ROM mirrors its console to UART0 and USB-Serial/JTAG
         prepare(&mut m);
         MachineKind::C3(Box::new(m))
+    } else if let Some(b) = s2_board {
+        let mut m = esp32s2::machine([0x30, 0xed, 0xa0, 0x00, 0x11, 0x02], flash_bytes);
+        m.bus.board = b;
+        m.bus.attach_board_devices();
+        m.console.mask = 2;
+        prepare(&mut m);
+        MachineKind::S2(Box::new(m))
     } else if let Some(b) = c5_board {
         let mut m = esp32c5::machine([0x30, 0xed, 0xa0, 0x00, 0x11, 0x25], flash_bytes);
         m.bus.board = b;

@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-encoder-esp32",
   "title": "LILYGO T-Encoder",
-  "summary": "Spark 将此商品归入T-Encoder 系列，标注 MCU 为 ESP32-PICO-V3-02；具体硬件版次及配置待核对。",
+  "summary": "已接入 ESP32-PICO-V3-02 两颗 WS2812 版 T-Encoder 的双相信号、按压与 RGB。该版没有 LCD；蜂鸣器尚未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "Current storefront ESP32-PICO-V3-02 / base_WS2812C two-pixel revision",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Encoder",
@@ -52,6 +52,79 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-09-13",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-encoder-esp32",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": 8,
+        "simulatedFlashMb": 8,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 2,
+        "controls": [
+          {
+            "id": "encoder",
+            "name": "旋转编码器",
+            "type": "encoder",
+            "pins": {
+              "a": 36,
+              "b": 37
+            },
+            "detents": null
+          },
+          {
+            "id": "encoder-press",
+            "name": "编码器按压",
+            "type": "button",
+            "pin": 38,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "encoder": {
+            "a": 36,
+            "b": 37,
+            "press": 38
+          },
+          "rgb": {
+            "data": 25,
+            "count": 2,
+            "order": "GRB",
+            "protocol": "WS2812 800 kHz"
+          },
+          "buzzer": {
+            "pin": 19,
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "classic-t-encoder-1a4be5de3ee1",
+        "classic-t-encoder-b33563055168",
+        "classic-esp32-pico-v3-02-datasheet",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +153,261 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-encoder-esp32-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Encoder-ESP32-lilygo_4.jpg?v=1663050200",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Encoder-ESP32-lilygo_4.jpg?v=1663050200",
+      "fetchedAt": "2026-11-22T07:00:22Z",
+      "bytes": 18590,
+      "sha256": "b54130cc5b6a9d762fe5adc67ec12437595ac60f248f0861d26f51479ff0e5c8",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t encoder esp32 official photo 0",
+      "archiveName": "lilygo-t-encoder-esp32-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-encoder-esp32-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Encoder-ESP32-lilygo_5.jpg?v=1663050198",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Encoder-ESP32-lilygo_5.jpg?v=1663050198",
+      "fetchedAt": "2026-11-22T07:00:22Z",
+      "bytes": 28354,
+      "sha256": "545f561398bb1a72cfa31b368c212a1368b29e22d0a8cf987c3ce251036e248e",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t encoder esp32 official photo 1",
+      "archiveName": "lilygo-t-encoder-esp32-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-encoder-esp32-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Encoder-ESP32-lilygo_6.jpg?v=1663050199",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Encoder-ESP32-lilygo_6.jpg?v=1663050199",
+      "fetchedAt": "2026-11-22T07:00:22Z",
+      "bytes": 32464,
+      "sha256": "e232fd70f83da4f03d225b2f1356ac1a22318b70731c6d26fd7fc19bac40a134",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t encoder esp32 official photo 2",
+      "archiveName": "lilygo-t-encoder-esp32-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-encoder-esp32-reviewed-cad-1",
+      "productId": "lilygo-t-encoder-esp32",
+      "title": "Xinyuan-LilyGO/T-Encoder 3D_file/c.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder/05fe9fc8402d571215da870d74b911836897fb54/3D_file/c.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder/05fe9fc8402d571215da870d74b911836897fb54/3D_file/c.stl",
+      "repository": "Xinyuan-LilyGO/T-Encoder",
+      "repositoryPath": "3D_file/c.stl",
+      "revision": "05fe9fc8402d571215da870d74b911836897fb54",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "1659b57eada929b4ee864168a1174d3626e3d085",
+      "fetchedAt": "2026-11-22T08:32:19Z",
+      "bytes": 309584,
+      "sha256": "829dff0b05dc168d59c8328be2eedfcfc8d6fc8b9e388f7e7bebd584464b53ae",
+      "rawSha256": "829dff0b05dc168d59c8328be2eedfcfc8d6fc8b9e388f7e7bebd584464b53ae",
+      "file": "manufacturer-c.stl.gz",
+      "archiveName": "manufacturer-c.stl.gz",
+      "storedSha256": "085561c675269275c2640654fbfc69d556f6a715f730f545859d54e6dd719947",
+      "archiveSha256": "085561c675269275c2640654fbfc69d556f6a715f730f545859d54e6dd719947",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official classic T-Encoder printable circular housing components. There is no built-in display on the reviewed PICO-V3-02 device. PCB, encoder internals, threaded mounting and enclosure-fit tolerances are not invented.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-encoder-esp32-reviewed-cad-2",
+      "productId": "lilygo-t-encoder-esp32",
+      "title": "Xinyuan-LilyGO/T-Encoder 3D_file/d.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder/05fe9fc8402d571215da870d74b911836897fb54/3D_file/d.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder/05fe9fc8402d571215da870d74b911836897fb54/3D_file/d.stl",
+      "repository": "Xinyuan-LilyGO/T-Encoder",
+      "repositoryPath": "3D_file/d.stl",
+      "revision": "05fe9fc8402d571215da870d74b911836897fb54",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "b4fce8e30b48bb1e46799156590cee9af5863c93",
+      "fetchedAt": "2026-11-22T08:32:20Z",
+      "bytes": 167884,
+      "sha256": "ff6d55a9abcc5dc17b35bccfd143077938966b4aa834ff5057041a9e44ad19f2",
+      "rawSha256": "ff6d55a9abcc5dc17b35bccfd143077938966b4aa834ff5057041a9e44ad19f2",
+      "file": "manufacturer-d.stl.gz",
+      "archiveName": "manufacturer-d.stl.gz",
+      "storedSha256": "390d62b2f9c288c5306212260ff6311e611c980ab74c34cce79ba10b6ca0f1b4",
+      "archiveSha256": "390d62b2f9c288c5306212260ff6311e611c980ab74c34cce79ba10b6ca0f1b4",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official classic T-Encoder printable circular housing components. There is no built-in display on the reviewed PICO-V3-02 device. PCB, encoder internals, threaded mounting and enclosure-fit tolerances are not invented.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-encoder-esp32-reviewed-cad-3",
+      "productId": "lilygo-t-encoder-esp32",
+      "title": "Xinyuan-LilyGO/T-Encoder 3D_file/e.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder/05fe9fc8402d571215da870d74b911836897fb54/3D_file/e.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder/05fe9fc8402d571215da870d74b911836897fb54/3D_file/e.stl",
+      "repository": "Xinyuan-LilyGO/T-Encoder",
+      "repositoryPath": "3D_file/e.stl",
+      "revision": "05fe9fc8402d571215da870d74b911836897fb54",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "2dcb9f1460e126a2c073c1e0ca9d64a4a50b7def",
+      "fetchedAt": "2026-11-22T08:32:19Z",
+      "bytes": 107284,
+      "sha256": "27bbba320af38dd4c7bfcf738b8224cbbc742dd42722911f1805a8380300becf",
+      "rawSha256": "27bbba320af38dd4c7bfcf738b8224cbbc742dd42722911f1805a8380300becf",
+      "file": "manufacturer-e.stl.gz",
+      "archiveName": "manufacturer-e.stl.gz",
+      "storedSha256": "e34b7cc588fd80e664b3f7573b7cc1d98ac1f021cd98fc58c8434960b11b9807",
+      "archiveSha256": "e34b7cc588fd80e664b3f7573b7cc1d98ac1f021cd98fc58c8434960b11b9807",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official classic T-Encoder printable circular housing components. There is no built-in display on the reviewed PICO-V3-02 device. PCB, encoder internals, threaded mounting and enclosure-fit tolerances are not invented.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-encoder-esp32-reviewed-cad-license",
+      "title": "Manufacturer repository LICENSE",
+      "kind": "license",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder/05fe9fc8402d571215da870d74b911836897fb54/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder/05fe9fc8402d571215da870d74b911836897fb54/LICENSE",
+      "fetchedAt": "2026-11-22T08:37:56Z",
+      "sha256": "2a9352675d2914c96ab6444efca745ba7e91ebe2f75bef9e9f28d7ee6c066b8c",
+      "bytes": 1071,
+      "file": "manufacturer-LICENSE.txt",
+      "archiveName": "manufacturer-LICENSE.txt",
+      "revision": "05fe9fc8402d571215da870d74b911836897fb54"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-encoder",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-encoder-series/t-encoder/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-encoder-series/t-encoder/index.md",
+      "fetchedAt": "2026-11-22T06:43:14Z",
+      "mediaType": "text/plain",
+      "bytes": 4876,
+      "sha256": "738244aa8ebde6803c52805f2eae733d64a67ecd2bc6f04a41012950003b1298",
+      "gitBlobSha": "a822d522204a06250aaf3aadf90bf0c42f309e5d",
+      "path": "en/products/t-encoder-series/t-encoder/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t encoder",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-encoder-series__t-encoder__index.md"
+    },
+    {
+      "id": "classic-t-encoder-1a4be5de3ee1",
+      "repository": "Xinyuan-LilyGO/T-Encoder",
+      "path": "example/base_WS2812C/base_WS2812C.ino",
+      "revision": "05fe9fc8402d571215da870d74b911836897fb54",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "f7bcdd4a7083f34e2a8ab0a97f1247487810f756",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder/05fe9fc8402d571215da870d74b911836897fb54/example/base_WS2812C/base_WS2812C.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder/05fe9fc8402d571215da870d74b911836897fb54/example/base_WS2812C/base_WS2812C.ino",
+      "fetchedAt": "2026-11-22T08:06:17Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 7180,
+      "sha256": "a6b010eb253da7520ccd3093758ac21026cd1b87668c370c79e2d7df6ed2ac62",
+      "archiveName": "classic-t-encoder-1a4be5de3ee1.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-encoder-1a4be5de3ee1.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Encoder/example/base_WS2812C/base_WS2812C.ino"
+    },
+    {
+      "id": "classic-t-encoder-b33563055168",
+      "repository": "Xinyuan-LilyGO/T-Encoder",
+      "path": "README.md",
+      "revision": "05fe9fc8402d571215da870d74b911836897fb54",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "eae85180cb7af0206fcb7d69c35dae5bf3bac4ce",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder/05fe9fc8402d571215da870d74b911836897fb54/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder/05fe9fc8402d571215da870d74b911836897fb54/README.md",
+      "fetchedAt": "2026-11-22T08:06:13Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 1164,
+      "sha256": "4f9e0bba0ff83c0325b33c87b534544afa0e0b52385e8a7c87dd9cd2b4ff3eba",
+      "archiveName": "classic-t-encoder-b33563055168.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-encoder-b33563055168.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Encoder/README.md"
+    },
+    {
+      "id": "classic-esp32-pico-v3-02-datasheet",
+      "url": "https://www.espressif.com/sites/default/files/documentation/esp32-pico-v3-02_datasheet_en.pdf",
+      "resolvedUrl": "https://documentation.espressif.com/esp32-pico_series_datasheet_en.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:11:47Z",
+      "bytes": 4549458,
+      "sha256": "177eb1517274eea5056ce725951091ebe8e2bce1d8635f064081fdad1cec0918",
+      "mediaType": "application/pdf",
+      "archiveName": "esp32-pico-v3-02-datasheet.pdf",
+      "sourceCachePath": "target/lilygo-classic-sources/esp32-pico-v3-02-datasheet.pdf",
+      "kind": "chip-manufacturer-datasheet",
+      "title": "classic esp32 pico v3 02 datasheet"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-encoder-esp32-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Encoder-ESP32-lilygo_4.jpg?v=1663050200",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-encoder-esp32/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-encoder-esp32-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Encoder-ESP32-lilygo_5.jpg?v=1663050198",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-encoder-esp32/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-encoder-esp32-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Encoder-ESP32-lilygo_6.jpg?v=1663050199",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-encoder-esp32/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +420,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +427,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +437,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +447,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +457,167 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-encoder"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-encoder-esp32/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "采用已审查的官方 CAD 部件；具体版次、遗漏部分及未标定项见模型资料。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-encoder",
+      "lilygo-t-encoder-esp32-official-photo-0",
+      "lilygo-t-encoder-esp32-official-photo-1",
+      "lilygo-t-encoder-esp32-official-photo-2",
+      "classic-t-encoder-1a4be5de3ee1",
+      "classic-t-encoder-b33563055168",
+      "classic-esp32-pico-v3-02-datasheet",
+      "lilygo-t-encoder-esp32-reviewed-cad-1",
+      "lilygo-t-encoder-esp32-reviewed-cad-2",
+      "lilygo-t-encoder-esp32-reviewed-cad-3",
+      "lilygo-t-encoder-esp32-reviewed-cad-license"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-encoder-esp32",
+    "status": "diagnostic",
+    "scope": "已接入 ESP32-PICO-V3-02 两颗 WS2812 版 T-Encoder 的双相信号、按压与 RGB。该版没有 LCD；蜂鸣器尚未实现。",
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "The wiki GC9A01 240x240/4 MiB entry conflicts with the exact storefront and repository, and is not used. This physical SKU has no screen.",
+      "The older discrete-RGB GPIO25/26/27 example is a separate hardware revision; only the two-WS2812 base_WS2812C revision is selected.",
+      "Quadrature edges are emitted through GPIO36/37; physical detent count, mechanical bounce and direction calibration are unknown. The UI may use a labeled 24-step simulation convention.",
+      "Buzzer GPIO19 is unmodeled.",
+      "The physical board declares 2 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 0 MiB. Firmware requiring the full physical capacity is outside this subset."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-encoder-esp32",
+    "boardId": "lilygo-t-encoder-esp32",
+    "name": "LILYGO T-Encoder",
+    "chip": "esp32",
+    "flashMB": 8,
+    "physicalPsramMB": 2,
+    "psramMB": 0,
+    "psramMbBasis": "simulation-capacity-limit",
+    "hardwareRevision": "Current storefront ESP32-PICO-V3-02 / base_WS2812C two-pixel revision",
+    "display": null,
+    "physicalDisplay": false,
+    "pins": {
+      "encoder": {
+        "a": 36,
+        "b": 37,
+        "press": 38
+      },
+      "rgb": {
+        "data": 25,
+        "count": 2,
+        "order": "GRB",
+        "protocol": "WS2812 800 kHz"
+      },
+      "buzzer": {
+        "pin": 19,
+        "implemented": false
+      }
+    },
+    "controls": [
+      {
+        "id": "encoder",
+        "name": "旋转编码器",
+        "type": "encoder",
+        "pins": {
+          "a": 36,
+          "b": 37
+        },
+        "detents": null
+      },
+      {
+        "id": "encoder-press",
+        "name": "编码器按压",
+        "type": "button",
+        "pin": 38,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": false,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "real_rmt_symbols_reach_only_each_selected_rgb_pin",
+        "named_inputs_are_actual_classic_gpio_levels_and_encoder_channels"
+      ]
+    },
+    "scope": "已接入 ESP32-PICO-V3-02 两颗 WS2812 版 T-Encoder 的双相信号、按压与 RGB。该版没有 LCD；蜂鸣器尚未实现。",
+    "scopeEn": "Selected PICO-V3-02 two-WS2812 T-Encoder: GPIO36/37 quadrature channels, GPIO38 press, GPIO25 two-pixel GRB output. No physical LCD exists on this selected SKU.",
+    "sourceIds": [
+      "classic-t-encoder-1a4be5de3ee1",
+      "classic-t-encoder-b33563055168",
+      "classic-esp32-pico-v3-02-datasheet",
+      "official-store-shopify-1"
+    ],
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "The wiki GC9A01 240x240/4 MiB entry conflicts with the exact storefront and repository, and is not used. This physical SKU has no screen.",
+      "The older discrete-RGB GPIO25/26/27 example is a separate hardware revision; only the two-WS2812 base_WS2812C revision is selected.",
+      "Quadrature edges are emitted through GPIO36/37; physical detent count, mechanical bounce and direction calibration are unknown. The UI may use a labeled 24-step simulation convention.",
+      "Buzzer GPIO19 is unmodeled.",
+      "The physical board declares 2 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 0 MiB. Firmware requiring the full physical capacity is outside this subset."
+    ],
+    "chronology": {
+      "date": "2022-09-13",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-encoder-esp32",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 111,
+    "factoryFirmwareInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-encoder"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    },
+    "module": "ESP32-PICO-V3-02"
+  }
 }

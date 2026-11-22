@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-lion",
   "title": "LILYGO T-Lion",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-S3；具体硬件版次及配置待核对。",
+  "summary": "已纠正 T-Lion 为经典 ESP32-WROVER，接入 SSD1306 显示与五向独立低有效按键。GPIO35 是电池 ADC，不作为按键梯形网络。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "TTGO-T-Controller V2.2 / T18_V2.2 adc.ino; renamed official TTGO-T-Lion-T18V2.2 repository",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Lion",
@@ -52,6 +52,98 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-10-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-lion",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 128,
+          "height": 64,
+          "controller": "SSD1306",
+          "interface": "i2c",
+          "type": "OLED",
+          "pixelFormat": "RGB565",
+          "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+          "implemented": true,
+          "physicalTouch": false,
+          "touchImplemented": false
+        },
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "up",
+            "name": "上",
+            "type": "button",
+            "pin": 32,
+            "activeLow": true
+          },
+          {
+            "id": "down",
+            "name": "下",
+            "type": "button",
+            "pin": 33,
+            "activeLow": true
+          },
+          {
+            "id": "center",
+            "name": "中",
+            "type": "button",
+            "pin": 34,
+            "activeLow": true
+          },
+          {
+            "id": "left",
+            "name": "左",
+            "type": "button",
+            "pin": 36,
+            "activeLow": true
+          },
+          {
+            "id": "right",
+            "name": "右",
+            "type": "button",
+            "pin": 39,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "display": {
+            "sda": 21,
+            "scl": 22,
+            "address": 60,
+            "reset": null
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "classic-ttgo-t-controllerv2-2-96a37d86a716",
+        "classic-ttgo-t-controllerv2-2-b33563055168",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +172,122 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-lion-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Lion-LILYGO_4.jpg?v=1711961554",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Lion-LILYGO_4.jpg?v=1711961554",
+      "fetchedAt": "2026-11-22T07:00:01Z",
+      "bytes": 91336,
+      "sha256": "b9d9977a90434bda63c511e2accb0af9df98bde362a1a38abbaab83dfe52dc01",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t lion official photo 0",
+      "archiveName": "lilygo-t-lion-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-lion-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Lion-LILYGO_1.jpg?v=1711961554",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Lion-LILYGO_1.jpg?v=1711961554",
+      "fetchedAt": "2026-11-22T07:00:01Z",
+      "bytes": 42253,
+      "sha256": "f13e684142c8dc2fe262a8d17b27bad566d08d66c5af29094075ca9fe3af8b14",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t lion official photo 1",
+      "archiveName": "lilygo-t-lion-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-lion-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Lion-LILYGO_2.jpg?v=1711961554",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Lion-LILYGO_2.jpg?v=1711961554",
+      "fetchedAt": "2026-11-22T07:00:01Z",
+      "bytes": 67719,
+      "sha256": "f8cbb213600b3f0fa952f04ff22a0aec1c9590d0793aad9e9d972cb2e99e283a",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t lion official photo 2",
+      "archiveName": "lilygo-t-lion-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "classic-ttgo-t-controllerv2-2-96a37d86a716",
+      "repository": "LilyGO/TTGO-T-ControllerV2.2",
+      "path": "T18_V2.2/adc.ino",
+      "revision": "8eea6e894f41a67affff78faa3b3cd1071bbcd96",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "96fb86b7a20c74601741c1263955db25cf69b5f9",
+      "url": "https://raw.githubusercontent.com/LilyGO/TTGO-T-ControllerV2.2/8eea6e894f41a67affff78faa3b3cd1071bbcd96/T18_V2.2/adc.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/LilyGO/TTGO-T-ControllerV2.2/8eea6e894f41a67affff78faa3b3cd1071bbcd96/T18_V2.2/adc.ino",
+      "fetchedAt": "2026-11-22T08:40:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 4463,
+      "sha256": "50f90bd16951f4c3a3d13c1e4e660d6feb32e843e8b85c91c42a5c0fdc89d383",
+      "archiveName": "classic-ttgo-t-controllerv2-2-96a37d86a716.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-ttgo-t-controllerv2-2-96a37d86a716.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO/TTGO-T-ControllerV2.2/T18_V2.2/adc.ino"
+    },
+    {
+      "id": "classic-ttgo-t-controllerv2-2-b33563055168",
+      "repository": "LilyGO/TTGO-T-ControllerV2.2",
+      "path": "README.md",
+      "revision": "8eea6e894f41a67affff78faa3b3cd1071bbcd96",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "6218e9b1b3fa0279aeec487f0b860b9602519d81",
+      "url": "https://raw.githubusercontent.com/LilyGO/TTGO-T-ControllerV2.2/8eea6e894f41a67affff78faa3b3cd1071bbcd96/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/LilyGO/TTGO-T-ControllerV2.2/8eea6e894f41a67affff78faa3b3cd1071bbcd96/README.md",
+      "fetchedAt": "2026-11-22T08:40:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 2218,
+      "sha256": "085be7031bddf5c244994b5b0571cc4f53d4d1b20aae72ab16c8111492e44cc3",
+      "archiveName": "classic-ttgo-t-controllerv2-2-b33563055168.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-ttgo-t-controllerv2-2-b33563055168.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO/TTGO-T-ControllerV2.2/README.md"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-lion-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Lion-LILYGO_4.jpg?v=1711961554",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-lion/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-lion-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Lion-LILYGO_1.jpg?v=1711961554",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-lion/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-lion-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Lion-LILYGO_2.jpg?v=1711961554",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-lion/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +300,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +307,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +317,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +327,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +337,196 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-lion/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-t-lion-official-photo-0",
+      "lilygo-t-lion-official-photo-1",
+      "lilygo-t-lion-official-photo-2",
+      "classic-ttgo-t-controllerv2-2-96a37d86a716",
+      "classic-ttgo-t-controllerv2-2-b33563055168"
+    ],
+    "displayHint": {
+      "width": 128,
+      "height": 64,
+      "sourceIds": [
+        "classic-ttgo-t-controllerv2-2-96a37d86a716",
+        "classic-ttgo-t-controllerv2-2-b33563055168",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-lion",
+    "status": "diagnostic",
+    "scope": "已纠正 T-Lion 为经典 ESP32-WROVER，接入 SSD1306 显示与五向独立低有效按键。GPIO35 是电池 ADC，不作为按键梯形网络。",
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "The official repository uses SSD1306Wire default geometry and the 0.96-inch storefront glass is represented with the selected 128x64 SSD1306 canvas. This is driver-default evidence rather than a separate panel-resolution label.",
+      "18650 battery, ADC35 voltage, charging and optional modules are unmodeled.",
+      "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+      "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-lion",
+    "boardId": "lilygo-t-lion",
+    "name": "LILYGO T-Lion",
+    "chip": "esp32",
+    "flashMB": 4,
+    "physicalPsramMB": 8,
+    "psramMB": 4,
+    "psramMbBasis": "simulation-capacity-limit",
+    "hardwareRevision": "TTGO-T-Controller V2.2 / T18_V2.2 adc.ino; renamed official TTGO-T-Lion-T18V2.2 repository",
+    "display": {
+      "width": 128,
+      "height": 64,
+      "controller": "SSD1306",
+      "interface": "i2c",
+      "type": "OLED",
+      "pixelFormat": "RGB565",
+      "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+      "implemented": true,
+      "physicalTouch": false,
+      "touchImplemented": false
+    },
+    "physicalDisplay": true,
+    "pins": {
+      "display": {
+        "sda": 21,
+        "scl": 22,
+        "address": 60,
+        "reset": null
+      }
+    },
+    "controls": [
+      {
+        "id": "up",
+        "name": "上",
+        "type": "button",
+        "pin": 32,
+        "activeLow": true
+      },
+      {
+        "id": "down",
+        "name": "下",
+        "type": "button",
+        "pin": 33,
+        "activeLow": true
+      },
+      {
+        "id": "center",
+        "name": "中",
+        "type": "button",
+        "pin": 34,
+        "activeLow": true
+      },
+      {
+        "id": "left",
+        "name": "左",
+        "type": "button",
+        "pin": 36,
+        "activeLow": true
+      },
+      {
+        "id": "right",
+        "name": "右",
+        "type": "button",
+        "pin": 39,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": false,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "oled_i2c_windows_go_through_both_classic_controllers_and_real_routes",
+        "independent_classic_revisions_keep_their_button_and_led_polarities"
+      ]
+    },
+    "scope": "已纠正 T-Lion 为经典 ESP32-WROVER，接入 SSD1306 显示与五向独立低有效按键。GPIO35 是电池 ADC，不作为按键梯形网络。",
+    "scopeEn": "Corrected classic ESP32-WROVER T-Lion/T-Controller: SSD1306 display and five independent active-low switches. ADC35 is battery sensing, not a key ladder.",
+    "sourceIds": [
+      "classic-ttgo-t-controllerv2-2-96a37d86a716",
+      "classic-ttgo-t-controllerv2-2-b33563055168",
+      "official-store-shopify-1"
+    ],
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "The official repository uses SSD1306Wire default geometry and the 0.96-inch storefront glass is represented with the selected 128x64 SSD1306 canvas. This is driver-default evidence rather than a separate panel-resolution label.",
+      "18650 battery, ADC35 voltage, charging and optional modules are unmodeled.",
+      "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+      "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+    ],
+    "chronology": {
+      "date": "2022-10-25",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-lion",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 100,
+    "factoryFirmwareInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    },
+    "module": "ESP32-WROVER",
+    "correctedChip": {
+      "from": "ESP32-S3",
+      "to": "ESP32-WROVER",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "classic-ttgo-t-controllerv2-2-96a37d86a716"
+      ]
+    }
+  }
 }
