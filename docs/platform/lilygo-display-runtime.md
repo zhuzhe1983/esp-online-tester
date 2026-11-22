@@ -50,10 +50,15 @@ Pro 官方 wiki 的 ST7789V2 描述与官方 `Setup214`、ST7796 驱动及商城
 cargo test -p esp32s3 lilygo_display --lib
 cargo test -p esp32s3 --test lilygo_display
 cargo clippy -p esp32s3 --lib --tests -- -D warnings
+node --test tools/platform-lilygo-s3-test.mjs
 ```
 
 板级测试检查裁剪窗口、错误路由拒绝、复位和休眠、低电平有效背光、PWM 解绑、QSPI 拆分头部与连续像素、XL9555 门控、触摸报告、坐标边界、释放和触摸复位。它们还检查每个独立产品配置没有自动获得 SD、无线、音频、IMU 等外围能力。
 
 额外的 Xtensa 指令探针使用真实 `s32i` 指令写 IO_MUX、GPIO 矩阵及 GP-SPI 寄存器。External Pro、Bar 和 AMOLED 1.64 的红色像素通过完整路径进入真实 framebuffer，错误 MOSI 路由不会改写画面，硬件复位后必须重新初始化。另一个探针通过网页输入队列按下 Pro 三个按钮，再用真实 `l32i` 指令读取 GPIO；暂停期间释放同样生效。
+
+`tools/fixtures/lilygo-s3-probe.mjs` 还生成三个可移植的原创 Xtensa SRAM 应用镜像，包含完整 256 字节应用描述符、芯片 ID 9、分段校验与 SHA-256，无需交叉编译器。WASM 测试读取实际产品目录，经公开 runtime API、真实 Worker 和编译好的 WASM 执行程序。三个屏幕的全部像素均须从红色变为绿色，再随按键释放变回红色；Bar 的 GPIO38 输入同时覆盖高位 GPIO 寄存器。测试还验证暂停时钟、复位重载同一镜像，以及全部 19 个板型在真实 WASM 中注册成功。本次实际执行两组测试均通过，约 6.4 秒；其中 3 个产品经过完整显示与按钮路径，另外 16 个仅核验构造，不扩大为固件运行覆盖。
+
+这项测试需要预先构建 `web/wasm/esp32sim.wasm` 并准备 `esp32s3_rev0_rom.elf`。可以通过 `ESP32SIM_ROM_DIR` 指定已有 ROM 目录，通过 `ESP32SIM_TEST_ROOT` 指定另一份已集成的仓库；测试始终读取该仓库的真实目录和运行时代码，不使用伪造产品。S3 的公开 app-direct 接口目前接受带哈希的 URL，故测试的本地 fetch 适配器只提供生成的原始字节及真实 WASM、ROM 资源。它不访问或替换厂商出厂固件。
 
 这些探针是本项目编写的最小指令诊断，不是厂商完整固件。尚未证明任何新增配置能完整运行出厂镜像，未提供对应完整固件兼容承诺。SD / SDMMC、LoRa / CC1101 / nRF24 / SI4732、充电及电池、音频、NFC、传感器、摄像头、GNSS 和 haptics 仍需独立适配。原始第三方固件未加入仓库。
