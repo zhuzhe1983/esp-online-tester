@@ -1,0 +1,3189 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-22T08:33:13Z",
+  "implementation": "esp32s3/src/board/lilygo_io.rs",
+  "status": "partial-digital-board-subsets-10-products",
+  "notes": [
+    "Queue uses manufacturer storefront publication proxies newest-to-oldest where no exact day of hardware release is supported. Proxy dates are not retail launch dates; selected later hardware drawing revisions do not rewrite original product dates.",
+    "All device behavior is driven by physical board mappings and existing MMIO GPIO/SPI/I2C/RMT/SDMMC transports. No CPU, shared bus, hot scheduling, factory stubs or host-framebuffer writes are added by this batch.",
+    "Shared SSD1306 controller is from 6a56901b77a0324f1506ff580de3135fdb4d93d8; these board tests exercise actual S3 I2C routing. Generic product names never silently attach optional shields or sibling chips.",
+    "Firmware binaries were only discovered in exact official trees, not downloaded or mirrored. Blob SHA-1/size are repository metadata, not fetched SHA-256; factory identity and documented flash offset are explicit per candidate. Full startup/layout remains unverified.",
+    "Raw public source bodies are reproducible from pinned URLs and hashes; archiveName identifies the local audit cache, not a promise that upstream source bodies are vendored. No private captures, user data, credentials or device serials are retained."
+  ],
+  "sources": [
+    {
+      "id": "T-Connect-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Connect/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:46:06Z",
+      "mediaType": "application/json",
+      "sha256": "53a16ee1379a2dbb76cf60e42296cd000656beff4234d9ee1f214fa9e3fa4e35",
+      "bytes": 79501,
+      "archiveName": "target/lilygo-s3-io-sources/T-Connect-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/T-Connect",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash."
+    },
+    {
+      "id": "LilyGO-T-ETH-Series-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGO-T-ETH-Series/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:46:39Z",
+      "mediaType": "application/json",
+      "sha256": "f833c04488ef3c259b1cb28c8c08f9f8a2e9b318e0a4e42292ce0f2b1906a03e",
+      "bytes": 656882,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGO-T-ETH-Series-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "pinnedGitRevision": "060292e3afad51e8707c60f9f6c932696990568a",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash."
+    },
+    {
+      "id": "T-RSC3-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-RSC3/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:48:00Z",
+      "mediaType": "application/json",
+      "sha256": "5beef037debe07e6c7019889da2c6d64fb76ec0a5e02c9e2891c0b148da82d3e",
+      "bytes": 93134,
+      "archiveName": "target/lilygo-s3-io-sources/T-RSC3-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/T-RSC3",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash."
+    },
+    {
+      "id": "LilyGo-T-Relay-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-T-Relay/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:46:28Z",
+      "mediaType": "application/json",
+      "sha256": "d1e22e5e7b95f707dbf9f1fb79816f95969eee2d2183d4f3b07d9bcba0fb02b1",
+      "bytes": 907858,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-Relay-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/LilyGo-T-Relay",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash."
+    },
+    {
+      "id": "LilyGo-T-SIM7080G-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-T-SIM7080G/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:46:23Z",
+      "mediaType": "application/json",
+      "sha256": "5e26a1d661295fd1a92990cd69a1425f4dd40a70095805d843b496b1fd707da8",
+      "bytes": 332213,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-SIM7080G-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/LilyGo-T-SIM7080G",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-SIM7080G",
+      "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash."
+    },
+    {
+      "id": "LilyGo-Modem-Series-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-Modem-Series/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:46:20Z",
+      "mediaType": "application/json",
+      "sha256": "acb956138c1178d5982cb82a3c8bddb27d60669692c053e048d7a147f4ebd3d5",
+      "bytes": 729992,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Modem-Series-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "pinnedGitRevision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash."
+    },
+    {
+      "id": "LilyGo-Cam-ESP32S3-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:46:02Z",
+      "mediaType": "application/json",
+      "sha256": "47898b2a04fe6249e6f519adf4328791f4852d141b91a77d9b0edb9e24c1745c",
+      "bytes": 154909,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash."
+    },
+    {
+      "id": "LilyGo-Camera-Series-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-Camera-Series/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:46:25Z",
+      "mediaType": "application/json",
+      "sha256": "f22802f6f6676ac3c94bfdcaf011e4f9781f419ff6508c5479b5b0e0485545aa",
+      "bytes": 400400,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash."
+    },
+    {
+      "id": "T-Energy-S3-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Energy-S3/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:44Z",
+      "mediaType": "application/json",
+      "sha256": "345242fef732bc83769fd899eb7a286ce654b3bdbc1820a4328a864de7e6faf1",
+      "bytes": 14092,
+      "archiveName": "target/lilygo-s3-io-sources/T-Energy-S3-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/T-Energy-S3",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/T-Energy-S3",
+      "pinnedGitRevision": "68a74854ce0443377d186786bf3478484a0813e0",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash."
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "pinnedGitRevision": "060292e3afad51e8707c60f9f6c932696990568a",
+      "path": "platformio.ini",
+      "id": "LilyGO-T-ETH-Series-platformio.ini",
+      "gitBlobSha": "8241ee1ad65323a959751953bbbe72a194ca8b7a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:02Z",
+      "sha256": "ba87a0a85fc50a34ae70bd9ef689079dbc9bd44fea898855dacc36933fa1ecad",
+      "bytes": 5922,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGO-T-ETH-Series-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/LilyGO-T-ETH-Series / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "T-Connect-libraries-FastLED-3.6.0-src-chipsets.h",
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "libraries/FastLED-3.6.0/src/chipsets.h",
+      "gitBlobSha": "40bd988cd318e6a4ac3ff3c31d63c25beac435cf",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/libraries/FastLED-3.6.0/src/chipsets.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/libraries/FastLED-3.6.0/src/chipsets.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:21:20Z",
+      "sha256": "996f475d1b4421f20c1b28972cafbd3b47572c8faec383fdbc9c15912042d263",
+      "bytes": 26844,
+      "archiveName": "target/lilygo-s3-io-sources/T-Connect-libraries-FastLED-3.6.0-src-chipsets.h.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / libraries/FastLED-3.6.0/src/chipsets.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "Schematic/T-Relay6-ESP32S3-Rev1.1.pdf",
+      "id": "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf",
+      "gitBlobSha": "29f7093219ed71641bfcb3b7dc4844ce34ca24a2",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/Schematic/T-Relay6-ESP32S3-Rev1.1.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/Schematic/T-Relay6-ESP32S3-Rev1.1.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:13Z",
+      "sha256": "f3ba1e2d568e0db53d7e79be22a4547bf0f5c915b0acfa7f38060aff9f56b592",
+      "bytes": 996260,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / Schematic/T-Relay6-ESP32S3-Rev1.1.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "examples/T-Relay-ESP32S3/HT74HC595/HT74HC595.ino",
+      "id": "LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino",
+      "gitBlobSha": "9539079e9f6458a6bad1b390656fa03f11c2073a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/examples/T-Relay-ESP32S3/HT74HC595/HT74HC595.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/examples/T-Relay-ESP32S3/HT74HC595/HT74HC595.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:34Z",
+      "sha256": "6f21b9bad2bdd857b7f2a146fc1616c36e9146e513ca0155fe65b542c638b346",
+      "bytes": 2536,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / examples/T-Relay-ESP32S3/HT74HC595/HT74HC595.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "pinnedGitRevision": "060292e3afad51e8707c60f9f6c932696990568a",
+      "path": "README.md",
+      "id": "LilyGO-T-ETH-Series-README.md",
+      "gitBlobSha": "f59abfb95a585c20b6d5e1b362c446c0b01357a6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:02Z",
+      "sha256": "8a7054df2ab12e41565fd1ab8640255b6c7fe5543ef5f00e7489d202ebc0bce6",
+      "bytes": 21113,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGO-T-ETH-Series-README.md.raw",
+      "title": "Xinyuan-LilyGO/LilyGO-T-ETH-Series / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "examples/APA102_Blink/APA102_Blink.ino",
+      "id": "T-Connect-examples-APA102_Blink-APA102_Blink.ino",
+      "gitBlobSha": "8eb6c64ef2ab0ec7ef10ef00a1d27d915f768d67",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/examples/APA102_Blink/APA102_Blink.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/examples/APA102_Blink/APA102_Blink.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:34Z",
+      "sha256": "e688f80a0a2891e0441f7724de11e5e1a96bdcd4c36132e57bf01259656271a9",
+      "bytes": 917,
+      "archiveName": "target/lilygo-s3-io-sources/T-Connect-examples-APA102_Blink-APA102_Blink.ino.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / examples/APA102_Blink/APA102_Blink.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "docs/T_SIMCAM.md",
+      "gitBlobSha": "0ff4b2a9b4ada010e3d21f23bd1cf4938a0b0bf0",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/docs/T_SIMCAM.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/docs/T_SIMCAM.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:28:43Z",
+      "sha256": "0a9d56c6f2ee37225f790c5b4edc3a6153511ae40b42939c16470d333485eab1",
+      "bytes": 1038,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-docs-T_SIMCAM.md.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / docs/T_SIMCAM.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "examples/T-Relay-ESP32S3/T-Relay6-S3-W5500_Original_Test/T-Relay6-S3-W5500_Original_Test.ino",
+      "id": "LilyGo-T-Relay-examples-T-Relay-ESP32S3-T-Relay6-S3-W5500_Original_Test-T-Relay6-S3-W5500_Original_Test.ino",
+      "gitBlobSha": "ba8779f484519036161a51c3d1774f97bbe3088e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/examples/T-Relay-ESP32S3/T-Relay6-S3-W5500_Original_Test/T-Relay6-S3-W5500_Original_Test.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/examples/T-Relay-ESP32S3/T-Relay6-S3-W5500_Original_Test/T-Relay6-S3-W5500_Original_Test.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:34Z",
+      "sha256": "9ae7b13d53d209987dd724cd56e853bbb0ca6031142e2b8d172d099721cca5fa",
+      "bytes": 13293,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-Relay-examples-T-Relay-ESP32S3-T-Relay6-S3-W5500_Original_Test-T-Relay6-S3-W5500_Original_Test.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / examples/T-Relay-ESP32S3/T-Relay6-S3-W5500_Original_Test/T-Relay6-S3-W5500_Original_Test.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "path": "example/Integration/Integration.ino",
+      "id": "T-RSC3-example-Integration-Integration.ino",
+      "gitBlobSha": "f015c15b86a48edd999d5f59fb06612810d3845e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/example/Integration/Integration.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/example/Integration/Integration.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:16:42Z",
+      "sha256": "ad95d91a00816bef2db7ccce3d723efc31ee98cfb40d56f2b5508708c571a7d0",
+      "bytes": 6162,
+      "archiveName": "target/lilygo-s3-io-sources/T-RSC3-example-Integration-Integration.ino.raw",
+      "title": "Xinyuan-LilyGO/T-RSC3 / example/Integration/Integration.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "path": "README.md",
+      "id": "T-RSC3-README.md",
+      "gitBlobSha": "e6d22561397cb440035b653ff21c1355b70ba7ae",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:08Z",
+      "sha256": "162064745c35a7d8e01ce8e4fee6223fee87e364859f80e44b9ea7b8fdde9dc1",
+      "bytes": 2361,
+      "archiveName": "target/lilygo-s3-io-sources/T-RSC3-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-RSC3 / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Energy-S3",
+      "pinnedGitRevision": "68a74854ce0443377d186786bf3478484a0813e0",
+      "path": "project/T-Energy-S3_V1.0.pdf",
+      "id": "T-Energy-S3-project-T-Energy-S3_V1.0.pdf",
+      "gitBlobSha": "b4d3e19eefa2be21e2a81378ff82c1589c8e754a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/project/T-Energy-S3_V1.0.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/project/T-Energy-S3_V1.0.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:51Z",
+      "sha256": "62b452bcfa75066309544637e8c77fc125bf2586bd171aeae2e95c5e96d42dc8",
+      "bytes": 453549,
+      "archiveName": "target/lilygo-s3-io-sources/T-Energy-S3-project-T-Energy-S3_V1.0.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Energy-S3 / project/T-Energy-S3_V1.0.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Energy-S3",
+      "pinnedGitRevision": "68a74854ce0443377d186786bf3478484a0813e0",
+      "path": "README.md",
+      "id": "T-Energy-S3-README.md",
+      "gitBlobSha": "8664624514acecb625f3120866f5ac465b418046",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:51Z",
+      "sha256": "bd3a9110285d056a08603609e1277378021c2171e7977c1752be7d0384b652bc",
+      "bytes": 9434,
+      "archiveName": "target/lilygo-s3-io-sources/T-Energy-S3-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-Energy-S3 / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "schematic/T-Camera-S3-V1.6.pdf",
+      "id": "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf",
+      "gitBlobSha": "8274ca5e8d107fc8b7574da27a233032c6e8168a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/schematic/T-Camera-S3-V1.6.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/schematic/T-Camera-S3-V1.6.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:25Z",
+      "sha256": "01c95e5daf3eda905091ffb1440d953b77200e57c95c67fcdfe3548a6b31363f",
+      "bytes": 725299,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / schematic/T-Camera-S3-V1.6.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "id": "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-SIM7080G",
+      "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+      "path": "lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "gitBlobSha": "6595969938dfaf4ca834dbd693497b49182a7821",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:21:20Z",
+      "sha256": "ee5ae2828fdf6583600e228f4be927ddd20e0299e6c71dc292469d16f27b366e",
+      "bytes": 10604,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-SIM7080G / lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "LilyGO-T-ETH-Series-firmware-README.md",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "pinnedGitRevision": "060292e3afad51e8707c60f9f6c932696990568a",
+      "path": "firmware/README.md",
+      "gitBlobSha": "f263ef14f401b4d4453d5801b32049d49c07581b",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/firmware/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/firmware/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:28:38Z",
+      "sha256": "68e458050507e99da254a335ba84927f9b220f31b61c5750c9c14c7431647305",
+      "bytes": 1819,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGO-T-ETH-Series-firmware-README.md.raw",
+      "title": "Xinyuan-LilyGO/LilyGO-T-ETH-Series / firmware/README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "pinnedGitRevision": "060292e3afad51e8707c60f9f6c932696990568a",
+      "path": "schematic/T-ETH-ELite.pdf",
+      "id": "LilyGO-T-ETH-Series-schematic-T-ETH-ELite.pdf",
+      "gitBlobSha": "f085fecf220dea298e87052faa5ab0880f239e5e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/schematic/T-ETH-ELite.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/schematic/T-ETH-ELite.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:08Z",
+      "sha256": "3341534877ddb841d0a09ffa74c3573c8ea1dd6fa28ca95715a91fcc7892a662",
+      "bytes": 316333,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGO-T-ETH-Series-schematic-T-ETH-ELite.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGO-T-ETH-Series / schematic/T-ETH-ELite.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "examples/Original_Test/Original_Test.ino",
+      "id": "T-Connect-examples-Original_Test-Original_Test.ino",
+      "gitBlobSha": "a0bcdbbf8a713c3f7170d221c2f99bf5bfb8563c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/examples/Original_Test/Original_Test.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/examples/Original_Test/Original_Test.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:34Z",
+      "sha256": "8f370b34a0ab8da2724f73fe56c3fc2391649533327e2d9ad8cfff98245d3b62",
+      "bytes": 34388,
+      "archiveName": "target/lilygo-s3-io-sources/T-Connect-examples-Original_Test-Original_Test.ino.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / examples/Original_Test/Original_Test.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "schematic/T_SIMCAM-V1.3_Schematic.pdf",
+      "id": "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf",
+      "gitBlobSha": "9e8a4f22ded7c8a8d37d652344ca6461fb37f96a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/schematic/T_SIMCAM-V1.3_Schematic.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/schematic/T_SIMCAM-V1.3_Schematic.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:30Z",
+      "sha256": "d114bed9134b76a036a4bf67916a6d920035657d6c777056a849838f5919bb0f",
+      "bytes": 988161,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / schematic/T_SIMCAM-V1.3_Schematic.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "README.md",
+      "id": "LilyGo-T-Relay-README.md",
+      "gitBlobSha": "2336930c8651bfba8f34e20674f133fa3b513c02",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:13Z",
+      "sha256": "0391b4e72eebd27d8837bd73bf24f8d63fdf2ed7f12c19fec504171641ae2cbc",
+      "bytes": 1523,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-Relay-README.md.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "README.md",
+      "id": "T-Connect-README.md",
+      "gitBlobSha": "73fd9f741a990b78b9b7d2f228416027c7a66727",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:02Z",
+      "sha256": "26c98ad6bf464ac5704ac9a84f51c554e964ecaec535c2fc3a1c4dd1470daea7",
+      "bytes": 10410,
+      "archiveName": "target/lilygo-s3-io-sources/T-Connect-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "pinnedGitRevision": "060292e3afad51e8707c60f9f6c932696990568a",
+      "path": "schematic/T-ETH-Lite-ESP32S3.pdf",
+      "id": "LilyGO-T-ETH-Series-schematic-T-ETH-Lite-ESP32S3.pdf",
+      "gitBlobSha": "780f29c8a103c5babaf6db31d359a3bd201cda69",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/schematic/T-ETH-Lite-ESP32S3.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/schematic/T-ETH-Lite-ESP32S3.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:08Z",
+      "sha256": "019f6470a6af341ebe248953e0852bceea8c33b4ab7f6285cc7bad3a0bcb2996",
+      "bytes": 520399,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGO-T-ETH-Series-schematic-T-ETH-Lite-ESP32S3.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGO-T-ETH-Series / schematic/T-ETH-Lite-ESP32S3.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "examples/MinimalScreenExample/MinimalScreenExample.ino",
+      "id": "LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino",
+      "gitBlobSha": "f4cf839d3848b52df0472b70c7dd2e75d5960158",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/examples/MinimalScreenExample/MinimalScreenExample.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/examples/MinimalScreenExample/MinimalScreenExample.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:25Z",
+      "sha256": "c5e6b9ad6d58d8a36d9f52547d51572054f0aa211f62b010f01993bd5c3d92fb",
+      "bytes": 7809,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / examples/MinimalScreenExample/MinimalScreenExample.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "LilyGO-T-ETH-Series-firmware-T-ETH-Elite-README.md",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "pinnedGitRevision": "060292e3afad51e8707c60f9f6c932696990568a",
+      "path": "firmware/T-ETH-Elite/README.md",
+      "gitBlobSha": "cc5c68be95ea6365eadcb60ba2ebfbbf6699a319",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/firmware/T-ETH-Elite/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/firmware/T-ETH-Elite/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:28:38Z",
+      "sha256": "24d4f2669ad16a4b4e9cd7d4d2780539e1710e0d0de86b108e7ea394ffd8f8d2",
+      "bytes": 702,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGO-T-ETH-Series-firmware-T-ETH-Elite-README.md.raw",
+      "title": "Xinyuan-LilyGO/LilyGO-T-ETH-Series / firmware/T-ETH-Elite/README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "libraries/Mylibrary/pin_config.h",
+      "id": "T-Connect-libraries-Mylibrary-pin_config.h",
+      "gitBlobSha": "958ddd84eb64b361f2ca25d2cc64bd748a177247",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/libraries/Mylibrary/pin_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/libraries/Mylibrary/pin_config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:02Z",
+      "sha256": "62a3c9071058eca222295a6256505bd579a1e8c68c31f0bd9b85c03e1e619273",
+      "bytes": 598,
+      "archiveName": "target/lilygo-s3-io-sources/T-Connect-libraries-Mylibrary-pin_config.h.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / libraries/Mylibrary/pin_config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "examples/T-Relay-ESP32S3/T-Relay6-S3-W5500_Original_Test/pin_config.h",
+      "id": "LilyGo-T-Relay-examples-T-Relay-ESP32S3-T-Relay6-S3-W5500_Original_Test-pin_config.h",
+      "gitBlobSha": "7db0b19912d4acfde396131ce0b44d2f302fdb7b",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/examples/T-Relay-ESP32S3/T-Relay6-S3-W5500_Original_Test/pin_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/examples/T-Relay-ESP32S3/T-Relay6-S3-W5500_Original_Test/pin_config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:13Z",
+      "sha256": "9ab1a4f736381fdb333dfa79185db9bbd9c8cbf66070644a01447d6dbb420f71",
+      "bytes": 441,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-Relay-examples-T-Relay-ESP32S3-T-Relay6-S3-W5500_Original_Test-pin_config.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / examples/T-Relay-ESP32S3/T-Relay6-S3-W5500_Original_Test/pin_config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "examples/T-Relay-ESP32S3/UnitTestExample/UnitTestExample.ino",
+      "id": "LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino",
+      "gitBlobSha": "5b3474c115228020e1ea779171c1d762746f2c47",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/examples/T-Relay-ESP32S3/UnitTestExample/UnitTestExample.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/examples/T-Relay-ESP32S3/UnitTestExample/UnitTestExample.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:34Z",
+      "sha256": "bb5eae7d05567b16de4ff911ea90e606d9e209336bc620449254a6703eb5f7b7",
+      "bytes": 7157,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / examples/T-Relay-ESP32S3/UnitTestExample/UnitTestExample.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "pinnedGitRevision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "path": "README.md",
+      "id": "LilyGo-Modem-Series-README.md",
+      "gitBlobSha": "79819d61a0fb807f3a9086a99c5c5f544e1e9337",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:19Z",
+      "sha256": "e000b3ed0357b0ee0a0c7e1cad0138019da89bb23a4644cd8c7c51e6d18ef773",
+      "bytes": 14317,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Modem-Series-README.md.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Modem-Series / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "pinnedGitRevision": "060292e3afad51e8707c60f9f6c932696990568a",
+      "path": "examples/SDWebServer/utilities.h",
+      "id": "LilyGO-T-ETH-Series-examples-SDWebServer-utilities.h",
+      "gitBlobSha": "685253b7eeac15f6b3798a64ff5942b0b14d5f82",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/examples/SDWebServer/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/examples/SDWebServer/utilities.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:02Z",
+      "sha256": "76cbd17fcf086862ba8c14b45f0288ae9aaafc58c2a8911ee3e51df224de0be1",
+      "bytes": 5140,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGO-T-ETH-Series-examples-SDWebServer-utilities.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGO-T-ETH-Series / examples/SDWebServer/utilities.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "pinnedGitRevision": "060292e3afad51e8707c60f9f6c932696990568a",
+      "path": "examples/UnitTestExample/UnitTestExample.ino",
+      "id": "LilyGO-T-ETH-Series-examples-UnitTestExample-UnitTestExample.ino",
+      "gitBlobSha": "d9c53235e734987cb07718488b4938233a14a3a1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/examples/UnitTestExample/UnitTestExample.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/examples/UnitTestExample/UnitTestExample.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:16:42Z",
+      "sha256": "4ee171b6ca7cf6d45eff6a295470c7df137e136eac2c172066e242a099631e6d",
+      "bytes": 10539,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGO-T-ETH-Series-examples-UnitTestExample-UnitTestExample.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGO-T-ETH-Series / examples/UnitTestExample/UnitTestExample.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "examples/t_sim_cam_factory/config.h",
+      "id": "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h",
+      "gitBlobSha": "8ab1e9a981d6799431d5934d2116a7755e34aef6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/examples/t_sim_cam_factory/config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/examples/t_sim_cam_factory/config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:41Z",
+      "sha256": "745e307701b219f657107a2d2c676d7b11261ee1cd60b71ad7b2744400270068",
+      "bytes": 1430,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / examples/t_sim_cam_factory/config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-SIM7080G",
+      "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+      "path": "lib/XPowersLib/src/XPowersAXP2101.tpp",
+      "gitBlobSha": "b3ed78ceb8bc535cf17aa08aab53621b837a6740",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/lib/XPowersLib/src/XPowersAXP2101.tpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/lib/XPowersLib/src/XPowersAXP2101.tpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:21:20Z",
+      "sha256": "c011507358b160f35c75de5b022cc54143ca70f84ad00b004d8859b5548ad9ff",
+      "bytes": 95347,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-SIM7080G / lib/XPowersLib/src/XPowersAXP2101.tpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "LilyGo-T-SIM7080G-firmware-README.MD",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-SIM7080G",
+      "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+      "path": "firmware/README.MD",
+      "gitBlobSha": "274ef5d10df8a86c5c5818ab7e19ba57eafe6536",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/firmware/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/firmware/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:28:38Z",
+      "sha256": "7ea69ed2b6b3c996a9b99e6a455f7d36aaced0fdcbd8baba3b17f5e109929e3a",
+      "bytes": 1417,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-SIM7080G-firmware-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-SIM7080G / firmware/README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.cpp",
+      "id": "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp",
+      "gitBlobSha": "1d43f8c4b3c9533d72cf4fd40bbc08b6729f8338",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:16:42Z",
+      "sha256": "09e3786f31cde848324349ef95949499af9164d057bc8241687aef77c488ed95",
+      "bytes": 4156,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "LilyGo-Modem-Series-firmware-README.MD",
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "pinnedGitRevision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "path": "firmware/README.MD",
+      "gitBlobSha": "4f9b9c37b90a2e30a06f570224a6ea51f0d94277",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/firmware/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/firmware/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:28:38Z",
+      "sha256": "4c33bd5c0545451e840fc3d3c349149c7167a2cc60aba90fc187aa60458cb28e",
+      "bytes": 5013,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Modem-Series-firmware-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Modem-Series / firmware/README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "path": "platformio.ini",
+      "id": "T-RSC3-platformio.ini",
+      "gitBlobSha": "0c610aad849be6ad2b87ff4e7d40974a6921513c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:08Z",
+      "sha256": "9f2d1fd56d57b89d658e5e78f1763b67cb7af7d2ac5c1d54db985c129d03a256",
+      "bytes": 1026,
+      "archiveName": "target/lilygo-s3-io-sources/T-RSC3-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/T-RSC3 / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-SIM7080G",
+      "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+      "path": "examples/MinimalSDCardExample/MinimalSDCardExample.ino",
+      "id": "LilyGo-T-SIM7080G-examples-MinimalSDCardExample-MinimalSDCardExample.ino",
+      "gitBlobSha": "b4667a00823014e7d694eb5805d9bfbd4646bb7d",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/examples/MinimalSDCardExample/MinimalSDCardExample.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/examples/MinimalSDCardExample/MinimalSDCardExample.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:20Z",
+      "sha256": "6eb140e7ba0098c5529b3069b343cc2a7d71621eb22cbff37368e8c5398fe160",
+      "bytes": 7512,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-SIM7080G-examples-MinimalSDCardExample-MinimalSDCardExample.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-SIM7080G / examples/MinimalSDCardExample/MinimalSDCardExample.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "README.MD",
+      "id": "LilyGo-Camera-Series-README.MD",
+      "gitBlobSha": "447e886ce100e909547fc334b93713bb8a8b713a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:30Z",
+      "sha256": "201b938cea10db7d40e7aee330f63e903501ea77c40c1d6d10f4deb73ea7dcb6",
+      "bytes": 4169,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "LilyGo-Cam-ESP32S3-firmware-README.MD",
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "firmware/README.MD",
+      "gitBlobSha": "125799d7f2786679713d520c2add8184c4f49345",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:28:38Z",
+      "sha256": "2641a829eb0284e92ea638e90bb35ea019f779bfe53dd6f2311fcd735277bae4",
+      "bytes": 178,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-firmware-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / firmware/README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "platformio.ini",
+      "id": "LilyGo-T-Relay-platformio.ini",
+      "gitBlobSha": "852c2b6149ca71c4e83b213363a89fdde613901d",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:13Z",
+      "sha256": "4ef38112ad9a67388675bf50b8f370df3d245e5eaf7102e95f7996740bdd638e",
+      "bytes": 3373,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-Relay-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "README.MD",
+      "id": "LilyGo-Cam-ESP32S3-README.MD",
+      "gitBlobSha": "3b838d4f12cc98562feed1d5d7f854d4441740c9",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:25Z",
+      "sha256": "ef0a7f9b74f373defb5d4de66d49ccfec275af2f982a73b25ac8f2e6814f71ef",
+      "bytes": 7723,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-SIM7080G",
+      "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+      "path": "examples/AllFunction/utilities.h",
+      "id": "LilyGo-T-SIM7080G-examples-AllFunction-utilities.h",
+      "gitBlobSha": "5067e0bce383b654dd67f15dedeaa551faef8ec1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/examples/AllFunction/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/examples/AllFunction/utilities.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:13Z",
+      "sha256": "17835805314c3ae93698daef1f82b1eea1008cc68bf05ae7c1ed831d36b9901f",
+      "bytes": 3824,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-SIM7080G-examples-AllFunction-utilities.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-SIM7080G / examples/AllFunction/utilities.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Energy-S3",
+      "pinnedGitRevision": "68a74854ce0443377d186786bf3478484a0813e0",
+      "path": "platformio.ini",
+      "id": "T-Energy-S3-platformio.ini",
+      "gitBlobSha": "7ec1d067acb21683b2bb579b5cfb3a3b434cdad6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:50Z",
+      "sha256": "706401c3fad69769d05a4e3475391b449cf313a3a51cda0cdfecc6039011a477",
+      "bytes": 1716,
+      "archiveName": "target/lilygo-s3-io-sources/T-Energy-S3-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/T-Energy-S3 / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "schematic/T-Camera-S3-V1.7.pdf",
+      "id": "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf",
+      "gitBlobSha": "306618f671f212cdf53e9023422e0ed44e06046a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/schematic/T-Camera-S3-V1.7.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/schematic/T-Camera-S3-V1.7.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:25Z",
+      "sha256": "456a112f706d26afe752f40e978caa4f82192be1a372ee25f470f2fee244f351",
+      "bytes": 469702,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / schematic/T-Camera-S3-V1.7.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "id": "LilyGo-T-Relay-firmware-README.MD",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "firmware/README.MD",
+      "gitBlobSha": "c56f8e4674e95b3f79bb0cd98a039d9e851b30f4",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:28:38Z",
+      "sha256": "b6b0d9028812919c225b9fe165e664cc29441b88ce7375257343b1831d15de4d",
+      "bytes": 3203,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-Relay-firmware-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / firmware/README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "AXP2101-Datasheet-V1.0",
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "lib/XPowersLib/datasheet/AXP2101_Datasheet_V1.0_en.pdf",
+      "gitBlobSha": "202df83fc5d96e319e5775b7f3701c8860209005",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/lib/XPowersLib/datasheet/AXP2101_Datasheet_V1.0_en.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/lib/XPowersLib/datasheet/AXP2101_Datasheet_V1.0_en.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:22:49Z",
+      "sha256": "421011983c56034e1074d28e22826e8414d55f8dc5344cd67967942e3bc8b8d9",
+      "bytes": 1586117,
+      "archiveName": "target/lilygo-s3-io-sources/AXP2101-Datasheet-V1.0.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / lib/XPowersLib/datasheet/AXP2101_Datasheet_V1.0_en.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "pinnedGitRevision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "path": "examples/ATdebug/utilities.h",
+      "id": "LilyGo-Modem-Series-examples-ATdebug-utilities.h",
+      "gitBlobSha": "41acbc48084f7be5061bb68ef2dcb970eaa23a27",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/examples/ATdebug/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/examples/ATdebug/utilities.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:19Z",
+      "sha256": "0db9c1d7f507cfa9e04e34b3bb9e103426215fedf748de1efcc807ad46b52cd2",
+      "bytes": 41736,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Modem-Series-examples-ATdebug-utilities.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Modem-Series / examples/ATdebug/utilities.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "schematic/T_SIMCAM-V1.0_Schematic.pdf",
+      "id": "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf",
+      "gitBlobSha": "a7d0f9d5175db271b698fae487c5a9a77cb58774",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/schematic/T_SIMCAM-V1.0_Schematic.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/schematic/T_SIMCAM-V1.0_Schematic.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:30Z",
+      "sha256": "af26bc739832dda9282d619e65d3b415d142a1c032cfb2585381db0179ead515",
+      "bytes": 770401,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / schematic/T_SIMCAM-V1.0_Schematic.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "examples/t_sim_cam_factory/t_sim_cam_factory.ino",
+      "id": "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino",
+      "gitBlobSha": "deef26d723f72ad0b1d2894534c2ce303e2ecc12",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/examples/t_sim_cam_factory/t_sim_cam_factory.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/examples/t_sim_cam_factory/t_sim_cam_factory.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:41Z",
+      "sha256": "eede5f1ca7605974d8c662bc0ee920a403746bb50e1a1df5fc84d6a2b78d8844",
+      "bytes": 10167,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / examples/t_sim_cam_factory/t_sim_cam_factory.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-SIM7080G",
+      "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+      "path": "README.MD",
+      "id": "LilyGo-T-SIM7080G-README.MD",
+      "gitBlobSha": "ff51f550af692f2c6c37d69c6ab95bc1d8fbe971",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:13Z",
+      "sha256": "fa4a261a9890f0f5a02d611b24f0ff6f18c53b86654d48fad27405eb27c79ac8",
+      "bytes": 13576,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-SIM7080G-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-SIM7080G / README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "pinnedGitRevision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "path": "schematic/esp32s3/T-SIM7670G-S3-V1.0.pdf",
+      "id": "LilyGo-Modem-Series-schematic-esp32s3-T-SIM7670G-S3-V1.0.pdf",
+      "gitBlobSha": "9101fb50eb1e49df582d9d6e18ef114360355b20",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/schematic/esp32s3/T-SIM7670G-S3-V1.0.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/schematic/esp32s3/T-SIM7670G-S3-V1.0.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:20Z",
+      "sha256": "6f198d6051ef1938a128b871cb08ae630656e4f2c11a2e9b269240b7b0fcd38f",
+      "bytes": 874108,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Modem-Series-schematic-esp32s3-T-SIM7670G-S3-V1.0.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Modem-Series / schematic/esp32s3/T-SIM7670G-S3-V1.0.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "pinnedGitRevision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "path": "schematic/esp32s3/T-SIM7670G-S3-V1.1.pdf",
+      "id": "LilyGo-Modem-Series-schematic-esp32s3-T-SIM7670G-S3-V1.1.pdf",
+      "gitBlobSha": "7559e86c9eccbb227639cc3ea6f5a989cfe9983a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/schematic/esp32s3/T-SIM7670G-S3-V1.1.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/schematic/esp32s3/T-SIM7670G-S3-V1.1.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:25Z",
+      "sha256": "d75a3ceaf6ac637215f74b349de0c56b06ff43a6783fb58f9c5031e165f0849d",
+      "bytes": 829000,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Modem-Series-schematic-esp32s3-T-SIM7670G-S3-V1.1.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Modem-Series / schematic/esp32s3/T-SIM7670G-S3-V1.1.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "path": "example/Integration/utilities.h",
+      "id": "T-RSC3-example-Integration-utilities.h",
+      "gitBlobSha": "d59305ccd2c473529e60615d5558d40257afde7f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/example/Integration/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/example/Integration/utilities.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:08Z",
+      "sha256": "9986bed51586a4a83879308562868acb10573cd878809f270eeb6d4599640727",
+      "bytes": 1131,
+      "archiveName": "target/lilygo-s3-io-sources/T-RSC3-example-Integration-utilities.h.raw",
+      "title": "Xinyuan-LilyGO/T-RSC3 / example/Integration/utilities.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "pinnedGitRevision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "path": "examples/SDCard/SDCard.ino",
+      "id": "LilyGo-Modem-Series-examples-SDCard-SDCard.ino",
+      "gitBlobSha": "7f8b70cc56ded9c412c78b07b6626d3042a3d257",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/examples/SDCard/SDCard.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/examples/SDCard/SDCard.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:19Z",
+      "sha256": "12c581ad9f66f6bc80263071c793c40444b16073e77971965e655084dea57e5a",
+      "bytes": 6490,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Modem-Series-examples-SDCard-SDCard.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Modem-Series / examples/SDCard/SDCard.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "platformio.ini",
+      "id": "T-Connect-platformio.ini",
+      "gitBlobSha": "8fad7d1491e3bfef45def16bff6d0c1298699049",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:02Z",
+      "sha256": "9bab91e5c7d1237009196a087917a5ac4e2123e6d85068c10bc341374e8f7d3c",
+      "bytes": 1782,
+      "archiveName": "target/lilygo-s3-io-sources/T-Connect-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-SIM7080G",
+      "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+      "path": "schematic/T-SIM7080G_Schematic.pdf",
+      "id": "LilyGo-T-SIM7080G-schematic-T-SIM7080G_Schematic.pdf",
+      "gitBlobSha": "1ea573408baa74d83c81649ce321b03a7252740c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/schematic/T-SIM7080G_Schematic.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/schematic/T-SIM7080G_Schematic.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:20Z",
+      "sha256": "adc267baa80a33cb642f5c4473552bb1426cd4bd0de2b253dca380b2b0773ac3",
+      "bytes": 673623,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-SIM7080G-schematic-T-SIM7080G_Schematic.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-SIM7080G / schematic/T-SIM7080G_Schematic.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Energy-S3",
+      "pinnedGitRevision": "68a74854ce0443377d186786bf3478484a0813e0",
+      "path": "libraries/Mylibrary/pin_config.h",
+      "id": "T-Energy-S3-libraries-Mylibrary-pin_config.h",
+      "gitBlobSha": "0d529ef7bb4d898cb79fb6fba6a08cf890c54d1a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/libraries/Mylibrary/pin_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/libraries/Mylibrary/pin_config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:50Z",
+      "sha256": "81b6a8258b874a1fb860632fd5d86132df9d114b51e5d279fbb67f8390147f6a",
+      "bytes": 204,
+      "archiveName": "target/lilygo-s3-io-sources/T-Energy-S3-libraries-Mylibrary-pin_config.h.raw",
+      "title": "Xinyuan-LilyGO/T-Energy-S3 / libraries/Mylibrary/pin_config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "project/T-Connect_V1.0.pdf",
+      "id": "T-Connect-project-T-Connect_V1.0.pdf",
+      "gitBlobSha": "751d0a49104a4e518c0cbaf2c77af76e7744fcf3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/project/T-Connect_V1.0.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/project/T-Connect_V1.0.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:35Z",
+      "sha256": "31aeb81fccb7895f51268c35d598b207f663bf7edbc6a46dfd44c2dbc9063e37",
+      "bytes": 753306,
+      "archiveName": "target/lilygo-s3-io-sources/T-Connect-project-T-Connect_V1.0.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / project/T-Connect_V1.0.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "platformio.ini",
+      "id": "LilyGo-Camera-Series-platformio.ini",
+      "gitBlobSha": "0356fb1e23ff5185dadfe9c803aef998f6ae5015",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:30Z",
+      "sha256": "417e8ffc88950cf7833b78e8aacd55e5b3a2e8be86122dc9c6e5a13ff299dd8f",
+      "bytes": 3776,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "examples/factory/utilities.h",
+      "id": "LilyGo-Cam-ESP32S3-examples-factory-utilities.h",
+      "gitBlobSha": "0fbf94e45f1627acdd4c7e003bfaa762abc8f693",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/examples/factory/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/examples/factory/utilities.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:25Z",
+      "sha256": "87ae95563ccbef249f11aec3e91a7aa762c1944c1dbbbfca8eda10fc21295c3c",
+      "bytes": 2807,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-examples-factory-utilities.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / examples/factory/utilities.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "path": "boards/esp32s3_nopsram.json",
+      "id": "T-RSC3-boards-esp32s3_nopsram.json",
+      "gitBlobSha": "ca3c9ba4c1be74326f5b18de69a8e0cc07c3589b",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/boards/esp32s3_nopsram.json",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/boards/esp32s3_nopsram.json",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:16:42Z",
+      "sha256": "521765f5156825f57a6490d6bac22b8c882709e0fa6567ee3daed4a264c59dbc",
+      "bytes": 950,
+      "archiveName": "target/lilygo-s3-io-sources/T-RSC3-boards-esp32s3_nopsram.json.raw",
+      "title": "Xinyuan-LilyGO/T-RSC3 / boards/esp32s3_nopsram.json",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-SIM7080G",
+      "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+      "path": "lib/XPowersLib/src/XPowersLibInterface.hpp",
+      "id": "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersLibInterface.hpp",
+      "gitBlobSha": "e3188c676a6fc60ead596692aec2cab7a9b90a33",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/lib/XPowersLib/src/XPowersLibInterface.hpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/lib/XPowersLib/src/XPowersLibInterface.hpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:16:42Z",
+      "sha256": "c6479a1037ebcb47b341b351ba6035320412dbd89a6a44b6949b6505c65feca4",
+      "bytes": 19941,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersLibInterface.hpp.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-SIM7080G / lib/XPowersLib/src/XPowersLibInterface.hpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Energy-S3",
+      "pinnedGitRevision": "68a74854ce0443377d186786bf3478484a0813e0",
+      "path": "examples/Original_Test/Original_Test.ino",
+      "id": "T-Energy-S3-examples-Original_Test-Original_Test.ino",
+      "gitBlobSha": "f698048dc3445f148c15cb09875895ce243d30a7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/examples/Original_Test/Original_Test.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/examples/Original_Test/Original_Test.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:51Z",
+      "sha256": "75cf91b89a56daac9c1d859e59ed83409a1114ed5bb1cf740d68dac3da247f95",
+      "bytes": 8548,
+      "archiveName": "target/lilygo-s3-io-sources/T-Energy-S3-examples-Original_Test-Original_Test.ino.raw",
+      "title": "Xinyuan-LilyGO/T-Energy-S3 / examples/Original_Test/Original_Test.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "path": "schematic/T-RSS3.pdf",
+      "id": "T-RSC3-schematic-T-RSS3.pdf",
+      "gitBlobSha": "eaee4bc446d012ce55736dfd6897a883df9af19c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/schematic/T-RSS3.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/schematic/T-RSS3.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:08Z",
+      "sha256": "f22973aa8246d7d7975c8002b4999c7b2efd826ba0de8999ffbee1f87337f23d",
+      "bytes": 298850,
+      "archiveName": "target/lilygo-s3-io-sources/T-RSC3-schematic-T-RSS3.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-RSC3 / schematic/T-RSS3.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf"
+    },
+    {
+      "id": "LilyGo-Camera-Series-firmware-README.MD",
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "firmware/README.MD",
+      "gitBlobSha": "e33ba8ce5ed377c9b7ed91f2c83720ff0c6c05ad",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:28:43Z",
+      "sha256": "27096746a8f7d3b7db4bdf2ffc532e427ac91069b7ac01ffe0af8e90ac012d90",
+      "bytes": 1696,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-firmware-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / firmware/README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.h",
+      "id": "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h",
+      "gitBlobSha": "277b233d541fe075e4abcf008708a5715898ebe6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:16:42Z",
+      "sha256": "4b270fb24c1278778ae8440e7e71d071767aac7c294fa17232310dc3177f5f92",
+      "bytes": 1384,
+      "archiveName": "target/lilygo-s3-io-sources/LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1"
+    },
+    {
+      "id": "official-wiki-t-connect",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-connect-series/t-connect/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-connect-series/t-connect/index.md",
+      "fetchedAt": "2026-11-22T06:42:45Z",
+      "mediaType": "text/plain",
+      "bytes": 5470,
+      "sha256": "096ce67652d5c84b1081bd0b072e35367681cf0aa3163df8b428981ddc202e4c",
+      "gitBlobSha": "2ea00ebd3313f8e3e5d6d634cfc9b716ca9ba749",
+      "path": "en/products/t-connect-series/t-connect/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "id": "official-wiki-t-eth-elite",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-eth-series/t-eth-elite/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-eth-series/t-eth-elite/index.md",
+      "fetchedAt": "2026-11-22T06:43:20Z",
+      "mediaType": "text/plain",
+      "bytes": 5312,
+      "sha256": "92a7ca5b5bf4d0fc30154de93cdcab35db649c83cde44bb8ce3cdb81926cdc00",
+      "gitBlobSha": "25c8d33e170a99b6394d32d817894626d6768ca3",
+      "path": "en/products/t-eth-series/t-eth-elite/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "id": "official-wiki-t-sim7670g-s3",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-sim-series/t-sim7670g-s3/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-sim-series/t-sim7670g-s3/index.md",
+      "fetchedAt": "2026-11-22T06:43:38Z",
+      "mediaType": "text/plain",
+      "bytes": 6845,
+      "sha256": "e895b948149b9bb8870895281f5dacedc2b6d5c416164b4954d38dd45e8b28d1",
+      "gitBlobSha": "e7653e8746089309a59c8adf93d1383fa1175bcb",
+      "path": "en/products/t-sim-series/t-sim7670g-s3/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "id": "official-wiki-t-eth-lite-s3",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-eth-series/t-eth-lite-s3/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-eth-series/t-eth-lite-s3/index.md",
+      "fetchedAt": "2026-11-22T06:43:20Z",
+      "mediaType": "text/plain",
+      "bytes": 5209,
+      "sha256": "10b860c2decf4f793a0d2356e93bd3563bc244938b9b5b300ccd297ce86ea0ca",
+      "gitBlobSha": "4c1c0a20fcb7a643dd4d4707980dfadddf14c475",
+      "path": "en/products/t-eth-series/t-eth-lite-s3/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "id": "official-wiki-t-relay-s3",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-relay-series/t-relay-s3/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-relay-series/t-relay-s3/index.md",
+      "fetchedAt": "2026-11-22T06:43:33Z",
+      "mediaType": "text/plain",
+      "bytes": 3575,
+      "sha256": "ce387563c00e53c35b17b0f8c6d014167cfd7fb4b436755b54571e48ecf48938",
+      "gitBlobSha": "2c98008f4c475284675316c41120157e6371b64a",
+      "path": "en/products/t-relay-series/t-relay-s3/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "id": "official-wiki-t-sim7080x-s3",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-sim-series/t-sim7080x-s3/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-sim-series/t-sim7080x-s3/index.md",
+      "fetchedAt": "2026-11-22T06:43:38Z",
+      "mediaType": "text/plain",
+      "bytes": 5362,
+      "sha256": "bbab7809c9817f46e3e2218834e461e57951d8fc702260d6e1edcb2b6c5eaf8e",
+      "gitBlobSha": "979b0942fb2d845fe4e13af0c8c1ea6c0e8eb417",
+      "path": "en/products/t-sim-series/t-sim7080x-s3/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "id": "official-wiki-t-camera-s3",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-camera-series/t-camera-s3/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-camera-series/t-camera-s3/index.md",
+      "fetchedAt": "2026-11-22T06:42:45Z",
+      "mediaType": "text/plain",
+      "bytes": 4975,
+      "sha256": "2486b625ba394eb565c38312024ff91152c84e01a8c28620a961397afde96605",
+      "gitBlobSha": "a220154ce7aee5e822d6f247ac3cb9947ebddabc",
+      "path": "en/products/t-camera-series/t-camera-s3/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "id": "official-wiki-t-simcam",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-sim-series/t-simcam/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-sim-series/t-simcam/index.md",
+      "fetchedAt": "2026-11-22T06:43:43Z",
+      "mediaType": "text/plain",
+      "bytes": 5520,
+      "sha256": "40dc1be435156badde3fb09ba0642711f189584ef4cc5f12655e3a955450fd5f",
+      "gitBlobSha": "807a1d9bb442491e0a1f58779c3aa1ca725a47e3",
+      "path": "en/products/t-sim-series/t-simcam/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "id": "lora-ssd1306-wire",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "lib/ESP8266_SSD1306/src/SSD1306Wire.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "3a0ab10ca5a9f2e0bee06ac09c7b4df9f1410756",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/ESP8266_SSD1306/src/SSD1306Wire.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/lib/ESP8266_SSD1306/src/SSD1306Wire.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "f771b1844dcb5432a3647cfa91c7b83efc69aea90bd9e670448bbf98ec3b7ea5",
+      "bytes": 5363,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-ssd1306-wire.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    },
+    {
+      "id": "lora-sh1106-wire",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "lib/ESP8266_SSD1306/src/SH1106Wire.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "b088807656de56befa7f921b2a0d331be3ad1413",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/ESP8266_SSD1306/src/SH1106Wire.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/lib/ESP8266_SSD1306/src/SH1106Wire.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "f8873d338eac0948c6faaf34215516cbe514ddaa3277a19d679fb09e176b7374",
+      "bytes": 4901,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-sh1106-wire.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    },
+    {
+      "id": "ssd1306-datasheet",
+      "status": "linked",
+      "kind": "manufacturer-datasheet",
+      "title": "Solomon Systech SSD1306 rev 1.1, April 2008",
+      "url": "https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf",
+      "inspection": "Manufacturer PDF text and tables inspected through public web retrieval; raw binary not retained or hashed. §§8.1.5, 8.5, 9, 10.1.3-15."
+    },
+    {
+      "id": "sh1106-datasheet",
+      "status": "linked",
+      "kind": "manufacturer-datasheet",
+      "title": "Sino Wealth SH1106 v2.3, June 2013",
+      "url": "https://resource.heltec.cn/download/oled/SH1106_V2.3.pdf",
+      "inspection": "Manufacturer PDF text inspected through public web retrieval; raw binary not retained or hashed. I2C Interface, Display RAM, Reset Circuit and Command Descriptions."
+    }
+  ],
+  "items": [
+    {
+      "productId": "lilygo-t-connect",
+      "boardId": "lilygo-t-connect",
+      "name": "LILYGO T-Connect",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-Connect_V1.0",
+      "display": null,
+      "physicalDisplay": false,
+      "sdCard": {
+        "slot": false,
+        "implemented": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "已实现 BOOT0 与四颗 APA102 的 GPIO 位流／SPI 数据、BGR 链序和全局亮度；CAN/RS485 隔离收发器与真实网络未实现。",
+      "scopeEn": "BOOT0 and four APA102 LEDs from physical GPIO rising edges or routed hardware SPI, with start/header/BGR/brightness/end clocks; CAN/RS485 transceivers remain unmodeled.",
+      "chronology": {
+        "date": "2024-08-12",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-connect",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "T-Connect-README.md",
+        "T-Connect-libraries-Mylibrary-pin_config.h",
+        "T-Connect-project-T-Connect_V1.0.pdf",
+        "T-Connect-examples-APA102_Blink-APA102_Blink.ino",
+        "T-Connect-examples-Original_Test-Original_Test.ino",
+        "T-Connect-libraries-FastLED-3.6.0-src-chipsets.h",
+        "T-Connect-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-connect"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "APA102 digital frames only; per-LED clock propagation, PWM oscillator, current and optical brightness are not calibrated. Publication occurs after four frames plus two end clocks; no independent validation of the physical PCB LED spatial order.",
+        "Four selectable CAN/RS485 ports, protection/isolation, supply, external connectors and network/RF traffic are unmodeled. No relay controller is present in the inspected T-Connect schematic; do not inherit the wiki relay claim.",
+        "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+      ],
+      "pins": {
+        "boot": 0,
+        "leds": {
+          "controller": "APA102",
+          "count": 4,
+          "clock": 3,
+          "data": 8,
+          "wireOrder": "BGR",
+          "schematicChain": [
+            "LED3",
+            "LED4",
+            "LED5",
+            "LED2"
+          ],
+          "spatialMappingVerified": false,
+          "implemented": true
+        },
+        "serialPorts": [
+          {
+            "number": 1,
+            "tx": 4,
+            "rx": 5,
+            "modes": [
+              "CAN",
+              "RS485"
+            ],
+            "implemented": false
+          },
+          {
+            "number": 2,
+            "tx": 6,
+            "rx": 7,
+            "modes": [
+              "CAN",
+              "RS485"
+            ],
+            "implemented": false
+          },
+          {
+            "number": 3,
+            "tx": 17,
+            "rx": 18,
+            "modes": [
+              "CAN",
+              "RS485"
+            ],
+            "implemented": false
+          },
+          {
+            "number": 4,
+            "tx": 9,
+            "rx": 10,
+            "modes": [
+              "CAN",
+              "RS485"
+            ],
+            "implemented": false
+          }
+        ]
+      },
+      "memoryEvidence": {
+        "flashMB": 16,
+        "psramMB": 8,
+        "sourceIds": [
+          "T-Connect-README.md",
+          "T-Connect-libraries-Mylibrary-pin_config.h",
+          "T-Connect-project-T-Connect_V1.0.pdf",
+          "T-Connect-examples-APA102_Blink-APA102_Blink.ino",
+          "T-Connect-examples-Original_Test-Original_Test.ino",
+          "T-Connect-libraries-FastLED-3.6.0-src-chipsets.h",
+          "T-Connect-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-connect"
+        ],
+        "notes": "Explicit selected product/build configuration; no memory inferred from a sibling."
+      },
+      "conflicts": [
+        {
+          "fact": "onboard relay",
+          "resolution": "Official wiki advertises relay capability, but exact V1.0 schematic and product pin_config contain APA102 and four CAN/RS485 ports, not relay GPIO/driver. No relay function is enabled.",
+          "sourceIds": [
+            "T-Connect-project-T-Connect_V1.0.pdf",
+            "official-wiki-t-connect"
+          ]
+        }
+      ],
+      "factoryFirmwareInvestigation": {
+        "status": "official-entries-linked",
+        "sourceIds": [
+          "T-Connect-tree",
+          "T-Connect-README.md"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/T-Connect/blob/b0e7c4803a19fadaabf93890704a65193afcd181/firmware/%5BT-Connect_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.3.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/firmware/%5BT-Connect_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.3.bin",
+            "path": "firmware/[T-Connect_V1.0][Original_Test]_firmware_V1.0.3.bin",
+            "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+            "gitBlobSha": "ad99c3d3a0c5df7f48cf46d51e2ab18cdbc7e06f",
+            "bytes": 913296,
+            "status": "linked",
+            "sourceId": "T-Connect-tree",
+            "role": "factory",
+            "identityEvidence": "README explicitly calls this exact link Product factory original testing.",
+            "binaryFetched": false,
+            "simulationVerified": false
+          }
+        ],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Factory identity is explicit. The binary and screenshot-only flash layout were not downloaded/validated; factory execution remains unverified.",
+        "watchlist": {
+          "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+          "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+        }
+      }
+    },
+    {
+      "productId": "lilygo-t-eth-elite-1",
+      "boardId": "lilygo-t-eth-elite",
+      "name": "LILYGO T-ETH ELite",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-ETH-ELite ESP32-S3 with W5500, N16R8 schematic; optional shields excluded",
+      "display": null,
+      "physicalDisplay": false,
+      "sdCard": {
+        "slot": true,
+        "implemented": true,
+        "transport": "spi",
+        "pins": {
+          "sclk": 10,
+          "mosi": 11,
+          "miso": 9,
+          "cs": 12
+        },
+        "power": "fixed 3.3V board supply",
+        "defaultPreparedCardMiB": 64,
+        "sourceIds": [
+          "LilyGO-T-ETH-Series-README.md",
+          "LilyGO-T-ETH-Series-examples-SDWebServer-utilities.h",
+          "LilyGO-T-ETH-Series-examples-UnitTestExample-UnitTestExample.ino",
+          "LilyGO-T-ETH-Series-schematic-T-ETH-ELite.pdf",
+          "LilyGO-T-ETH-Series-platformio.ini",
+          "LilyGO-T-ETH-Series-firmware-README.md",
+          "LilyGO-T-ETH-Series-firmware-T-ETH-Elite-README.md",
+          "LilyGO-T-ETH-Series-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-eth-elite"
+        ],
+        "scope": "Existing digital SPI SD card protocol, startup clocks, GPIO/peripheral CS, block storage and card insertion. No calibrated wire/analog timing."
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "已实现 S3 版本 BOOT0、GPIO38 高有效绿灯与 SPI SD 卡读写；W5500 以太网及可选 LoRa/蜂窝/GNSS 扩展未实现。",
+      "scopeEn": "Exact ESP32-S3/W5500 Elite board: BOOT0, high-active green GPIO38 LED and physical SPI SD storage; Ethernet and optional shields are absent.",
+      "chronology": {
+        "date": "2024-07-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-eth-elite-1",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "LilyGO-T-ETH-Series-README.md",
+        "LilyGO-T-ETH-Series-examples-SDWebServer-utilities.h",
+        "LilyGO-T-ETH-Series-examples-UnitTestExample-UnitTestExample.ino",
+        "LilyGO-T-ETH-Series-schematic-T-ETH-ELite.pdf",
+        "LilyGO-T-ETH-Series-platformio.ini",
+        "LilyGO-T-ETH-Series-firmware-README.md",
+        "LilyGO-T-ETH-Series-firmware-T-ETH-Elite-README.md",
+        "LilyGO-T-ETH-Series-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-eth-elite"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "W5500 register/socket/packet and physical Ethernet link behavior are unmodeled; no synthetic network replies.",
+        "LoRa, LTE, GNSS and Gateway shields are optional separate hardware and are not implicitly attached. GPIO38 is a green LED, not an additional button; power/OTG switching and analog state are unmodeled.",
+        "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+      ],
+      "pins": {
+        "boot": 0,
+        "leds": [
+          {
+            "pin": 38,
+            "activeLow": false,
+            "color": "green",
+            "sourceId": "LilyGO-T-ETH-Series-schematic-T-ETH-ELite.pdf"
+          }
+        ],
+        "ethernet": {
+          "controller": "W5500",
+          "sclk": 48,
+          "mosi": 21,
+          "miso": 47,
+          "cs": 45,
+          "interrupt": 14,
+          "implemented": false
+        }
+      },
+      "memoryEvidence": {
+        "flashMB": 16,
+        "psramMB": 8,
+        "sourceIds": [
+          "LilyGO-T-ETH-Series-README.md",
+          "LilyGO-T-ETH-Series-examples-SDWebServer-utilities.h",
+          "LilyGO-T-ETH-Series-examples-UnitTestExample-UnitTestExample.ino",
+          "LilyGO-T-ETH-Series-schematic-T-ETH-ELite.pdf",
+          "LilyGO-T-ETH-Series-platformio.ini",
+          "LilyGO-T-ETH-Series-firmware-README.md",
+          "LilyGO-T-ETH-Series-firmware-T-ETH-Elite-README.md",
+          "LilyGO-T-ETH-Series-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-eth-elite"
+        ],
+        "notes": "Explicit selected product/build configuration; no memory inferred from a sibling."
+      },
+      "conflicts": [
+        {
+          "fact": "GPIO38 button vs LED",
+          "resolution": "Manufacturer wiki button table names IO38. Exact schematic page 2 wires GPIO38 through R21 to GREEN_LED1 and GND; implement a high-active LED.",
+          "sourceIds": [
+            "official-wiki-t-eth-elite",
+            "LilyGO-T-ETH-Series-schematic-T-ETH-ELite.pdf"
+          ]
+        }
+      ],
+      "factoryFirmwareInvestigation": {
+        "status": "official-example-linked-factory-identity-unconfirmed",
+        "sourceIds": [
+          "LilyGO-T-ETH-Series-tree",
+          "LilyGO-T-ETH-Series-firmware-README.md"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/blob/060292e3afad51e8707c60f9f6c932696990568a/firmware/T-ETH-ELite-ESP32S3_UnitTestExample_250604.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/firmware/T-ETH-ELite-ESP32S3_UnitTestExample_250604.bin",
+            "path": "firmware/T-ETH-ELite-ESP32S3_UnitTestExample_250604.bin",
+            "pinnedGitRevision": "060292e3afad51e8707c60f9f6c932696990568a",
+            "gitBlobSha": "aae5748177001fff050a44bfbd892f5451aa5519",
+            "bytes": 1014160,
+            "status": "linked",
+            "sourceId": "LilyGO-T-ETH-Series-tree",
+            "role": "official-example",
+            "identityEvidence": "Exact product-named UnitTest example binary; no independent claim it is the retail-shipped image.",
+            "binaryFetched": false,
+            "simulationVerified": false,
+            "documentedFlashOffset": 0
+          }
+        ],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Manufacturer flashing guide uses offset 0. No binary header/layout download, factory identity or boot verification; shield images are deliberately separate.",
+        "watchlist": {
+          "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+          "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+        }
+      }
+    },
+    {
+      "productId": "lilygo-t-energy-s3",
+      "boardId": "lilygo-t-energy-s3",
+      "name": "LILYGO T-Energy S3",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-Energy-S3_V1.0, ESP32-S3-WROOM-1-N16R8",
+      "display": null,
+      "physicalDisplay": false,
+      "sdCard": {
+        "slot": false,
+        "implemented": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "已实现 T-Energy S3 V1.0 的 GPIO0 BOOT 输入与独立 S3 运行配置；电池 ADC、IP3005A/HX6610S 充电器及其指示灯未实现。",
+      "scopeEn": "Exact V1.0 BOOT0 and separate ESP32-S3 board profile. No generic LED is invented: visible charge/power LEDs are not MCU user LEDs.",
+      "chronology": {
+        "date": "2024-06-13",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-energy-s3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "T-Energy-S3-README.md",
+        "T-Energy-S3-libraries-Mylibrary-pin_config.h",
+        "T-Energy-S3-project-T-Energy-S3_V1.0.pdf",
+        "T-Energy-S3-examples-Original_Test-Original_Test.ino",
+        "T-Energy-S3-platformio.ini",
+        "T-Energy-S3-tree",
+        "official-store-shopify-1"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "Battery voltage divider on GPIO3, IP3005A, HX6610S charger, charge/power indicators and analog power/storage behavior are unmodeled.",
+        "No onboard screen, SD socket, generic RGB LED or user button beyond BOOT is invented; Wi-Fi/BLE/network are unmodeled.",
+        "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+      ],
+      "pins": {
+        "boot": 0,
+        "batteryAdc": {
+          "pin": 3,
+          "implemented": false
+        }
+      },
+      "memoryEvidence": {
+        "flashMB": 16,
+        "psramMB": 8,
+        "sourceIds": [
+          "T-Energy-S3-README.md",
+          "T-Energy-S3-libraries-Mylibrary-pin_config.h",
+          "T-Energy-S3-project-T-Energy-S3_V1.0.pdf",
+          "T-Energy-S3-examples-Original_Test-Original_Test.ino",
+          "T-Energy-S3-platformio.ini",
+          "T-Energy-S3-tree",
+          "official-store-shopify-1"
+        ],
+        "notes": "README exact product table and N16R8 schematic agree on 16MB flash and 8MB OPI PSRAM."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "official-entries-linked",
+        "sourceIds": [
+          "T-Energy-S3-tree",
+          "T-Energy-S3-README.md"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/T-Energy-S3/blob/68a74854ce0443377d186786bf3478484a0813e0/firmware/deprecated/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.0.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/firmware/deprecated/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.0.bin",
+            "path": "firmware/deprecated/[T-Energy-S3_V1.0][Original_Test]_firmware_V1.0.0.bin",
+            "pinnedGitRevision": "68a74854ce0443377d186786bf3478484a0813e0",
+            "gitBlobSha": "2d6b819cb4a4c8eaa11056cdc28ea0d71fd14bda",
+            "bytes": 776800,
+            "status": "linked",
+            "sourceId": "T-Energy-S3-tree",
+            "role": "factory",
+            "identityEvidence": "README labels Original_Test as Product factory original testing and links this version.",
+            "binaryFetched": false,
+            "simulationVerified": false
+          },
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/T-Energy-S3/blob/68a74854ce0443377d186786bf3478484a0813e0/firmware/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%28wifi%20LilyGo-AABB%29%5D_firmware_202604231130.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/firmware/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%28wifi%20LilyGo-AABB%29%5D_firmware_202604231130.bin",
+            "path": "firmware/[T-Energy-S3_V1.0][Original_Test(wifi LilyGo-AABB)]_firmware_202604231130.bin",
+            "pinnedGitRevision": "68a74854ce0443377d186786bf3478484a0813e0",
+            "gitBlobSha": "041b6c247e2275ed053680475b2e5acb5c711183",
+            "bytes": 773968,
+            "status": "linked",
+            "sourceId": "T-Energy-S3-tree",
+            "role": "factory-candidate",
+            "identityEvidence": "Newer exact board Original_Test name exists in the pinned tree; revision-specific factory link is not independently restated in README.",
+            "binaryFetched": false,
+            "simulationVerified": false
+          }
+        ],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "README factory entry is retained before the newer source-tree candidate. Neither binary/layout nor its network-dependent application has been run.",
+        "watchlist": {
+          "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+          "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+        }
+      }
+    },
+    {
+      "productId": "lilygo-t-sim-7670g-s3",
+      "boardId": "lilygo-t-sim7670g-s3",
+      "name": "LILYGO T-SIM7670G S3",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "Original T-SIM7670G-S3 V1.0/V1.1 pin branch; V1.1 schematic file selected",
+      "display": null,
+      "physicalDisplay": false,
+      "sdCard": {
+        "slot": true,
+        "implemented": true,
+        "transport": "spi",
+        "pins": {
+          "sclk": 21,
+          "mosi": 14,
+          "miso": 47,
+          "cs": 13
+        },
+        "power": "fixed 3.3V board supply",
+        "defaultPreparedCardMiB": 64,
+        "sourceIds": [
+          "LilyGo-Modem-Series-README.md",
+          "LilyGo-Modem-Series-examples-ATdebug-utilities.h",
+          "LilyGo-Modem-Series-examples-SDCard-SDCard.ino",
+          "LilyGo-Modem-Series-schematic-esp32s3-T-SIM7670G-S3-V1.0.pdf",
+          "LilyGo-Modem-Series-schematic-esp32s3-T-SIM7670G-S3-V1.1.pdf",
+          "LilyGo-Modem-Series-firmware-README.MD",
+          "LilyGo-Modem-Series-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-sim7670g-s3"
+        ],
+        "scope": "Existing digital SPI SD card protocol, startup clocks, GPIO/peripheral CS, block storage and card insertion. No calibrated wire/analog timing."
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "已实现原版 T-SIM7670G S3 的 BOOT0、GPIO12 低有效蓝灯和 SPI SD；蜂窝调制解调器、GNSS 与电池/太阳能 ADC 未实现。",
+      "scopeEn": "Original LILYGO_T_SIM7670G_S3 branch, not Standard-series board: BOOT0, low-active blue GPIO12 LED and exact SPI SD storage.",
+      "chronology": {
+        "date": "2024-04-12",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-sim-7670g-s3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "LilyGo-Modem-Series-README.md",
+        "LilyGo-Modem-Series-examples-ATdebug-utilities.h",
+        "LilyGo-Modem-Series-examples-SDCard-SDCard.ino",
+        "LilyGo-Modem-Series-schematic-esp32s3-T-SIM7670G-S3-V1.0.pdf",
+        "LilyGo-Modem-Series-schematic-esp32s3-T-SIM7670G-S3-V1.1.pdf",
+        "LilyGo-Modem-Series-firmware-README.MD",
+        "LilyGo-Modem-Series-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-sim7670g-s3"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "SIM7670G AT/UART, cellular/GNSS, microphone, SIM and analog battery/solar behavior are unmodeled; no successful synthetic modem commands.",
+        "LILYGO_SIM7670G_S3_STAN is a different Standard-series board; its display, modem reset and SD pins are not inherited. Schematic title block reuses an old T-SIM7000G label/date; no launch date is derived from it.",
+        "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+      ],
+      "pins": {
+        "boot": 0,
+        "leds": [
+          {
+            "pin": 12,
+            "activeLow": true,
+            "color": "blue",
+            "sourceId": "LilyGo-Modem-Series-schematic-esp32s3-T-SIM7670G-S3-V1.1.pdf"
+          }
+        ],
+        "modem": {
+          "model": "SIM7670G",
+          "tx": 11,
+          "rx": 10,
+          "dtr": 9,
+          "ring": 3,
+          "powerKey": 18,
+          "reset": 17,
+          "resetActiveLow": true,
+          "implemented": false
+        },
+        "batteryAdc": {
+          "pin": 4,
+          "implemented": false
+        },
+        "solarAdc": {
+          "pin": 5,
+          "implemented": false
+        }
+      },
+      "memoryEvidence": {
+        "flashMB": 16,
+        "psramMB": 8,
+        "sourceIds": [
+          "LilyGo-Modem-Series-README.md",
+          "LilyGo-Modem-Series-examples-ATdebug-utilities.h",
+          "LilyGo-Modem-Series-examples-SDCard-SDCard.ino",
+          "LilyGo-Modem-Series-schematic-esp32s3-T-SIM7670G-S3-V1.0.pdf",
+          "LilyGo-Modem-Series-schematic-esp32s3-T-SIM7670G-S3-V1.1.pdf",
+          "LilyGo-Modem-Series-firmware-README.MD",
+          "LilyGo-Modem-Series-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-sim7670g-s3"
+        ],
+        "notes": "Official store/wiki 16/8MB agrees with ESP32-S3-WROOM-1-N16R8 in exact schematic."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "official-example-linked-factory-identity-unconfirmed",
+        "sourceIds": [
+          "LilyGo-Modem-Series-tree",
+          "LilyGo-Modem-Series-firmware-README.MD"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Modem-Series/blob/fc7cd2a1759eae88c77c5a4b81e24406377e1900/firmware/esp32s3-t-sim7670g-atdebug-251201_0x0.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/firmware/esp32s3-t-sim7670g-atdebug-251201_0x0.bin",
+            "path": "firmware/esp32s3-t-sim7670g-atdebug-251201_0x0.bin",
+            "pinnedGitRevision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+            "gitBlobSha": "9749fca02a4cc94a7a626a19e1027458c10810d9",
+            "bytes": 336560,
+            "status": "linked",
+            "sourceId": "LilyGo-Modem-Series-tree",
+            "role": "official-example",
+            "identityEvidence": "firmware/README.MD explicitly maps T-SIM7670G-S3 product URL to this AT debug image.",
+            "binaryFetched": false,
+            "simulationVerified": false,
+            "documentedFlashOffset": 0
+          }
+        ],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Exact manufacturer AT debug entry and offset 0 are documented. It is not relabeled as shipped factory firmware; Standard-series images are excluded.",
+        "watchlist": {
+          "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+          "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+        }
+      }
+    },
+    {
+      "productId": "lilygo-t-rs-s3",
+      "boardId": "lilygo-t-rs-s3",
+      "name": "LILYGO T-RSS3",
+      "chip": "esp32s3",
+      "flashMB": 8,
+      "psramMB": 0,
+      "hardwareRevision": "T-RSS3 S3 branch, 8MB/no-PSRAM official build target; schematic module marking N4 conflicts",
+      "display": null,
+      "physicalDisplay": false,
+      "sdCard": {
+        "slot": false,
+        "implemented": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "user",
+          "name": "USER",
+          "type": "button",
+          "pin": 5,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "已实现 S3 分支 BOOT0、GPIO5 用户键与 GPIO1 的真实 RMT/WS2812；采用官方 8MB/无 PSRAM 构建配置，保留 N4 原理图冲突，RS232/RS485 未实现。",
+      "scopeEn": "S3 branch BOOT0, user button GPIO5 and RMT-routed WS2812 on GPIO1; official 8MB/no-PSRAM build target selected with schematic N4 conflict retained.",
+      "chronology": {
+        "date": "2023-11-14",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-rs-s3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "T-RSC3-README.md",
+        "T-RSC3-example-Integration-utilities.h",
+        "T-RSC3-example-Integration-Integration.ino",
+        "T-RSC3-schematic-T-RSS3.pdf",
+        "T-RSC3-boards-esp32s3_nopsram.json",
+        "T-RSC3-platformio.ini",
+        "T-RSC3-tree",
+        "official-store-shopify-1"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "RS232 and RS485 isolated transceivers, line drivers, direction timing, external peers and analog isolation/power behavior are unmodeled.",
+        "WS2812 uses the shared digital RMT ratio decoder, not timing-calibrated GPIO pulses. This profile does not claim every production revision has the same flash capacity.",
+        "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+      ],
+      "pins": {
+        "boot": 0,
+        "userButton": 5,
+        "leds": {
+          "controller": "WS2812C/W",
+          "pin": 1,
+          "wireOrder": "GRB",
+          "count": 1,
+          "transport": "RMT"
+        },
+        "rs485": {
+          "rx": 2,
+          "tx": 3,
+          "direction": 4,
+          "implemented": false
+        },
+        "rs232": {
+          "rx": 42,
+          "tx": 41,
+          "implemented": false
+        }
+      },
+      "memoryEvidence": {
+        "flashMB": 8,
+        "psramMB": 0,
+        "sourceIds": [
+          "T-RSC3-README.md",
+          "T-RSC3-example-Integration-utilities.h",
+          "T-RSC3-example-Integration-Integration.ino",
+          "T-RSC3-schematic-T-RSS3.pdf",
+          "T-RSC3-boards-esp32s3_nopsram.json",
+          "T-RSC3-platformio.ini",
+          "T-RSC3-tree",
+          "official-store-shopify-1"
+        ],
+        "notes": "Manufacturer store and boards/esp32s3_nopsram.json specify 8MB flash/no PSRAM. schematic/T-RSS3.pdf instead labels ESP32-S3-MINI-1U-N4 (4MB). Selected runtime matches official 8MB build, without claiming the N4 drawing is a verified 8MB BOM."
+      },
+      "conflicts": [
+        {
+          "fact": "flash",
+          "resolution": "Manufacturer store and boards/esp32s3_nopsram.json specify 8MB flash/no PSRAM. schematic/T-RSS3.pdf instead labels ESP32-S3-MINI-1U-N4 (4MB). Selected runtime matches official 8MB build, without claiming the N4 drawing is a verified 8MB BOM.",
+          "sourceIds": [
+            "official-store-shopify-1",
+            "T-RSC3-boards-esp32s3_nopsram.json",
+            "T-RSC3-schematic-T-RSS3.pdf"
+          ]
+        },
+        {
+          "fact": "user button",
+          "resolution": "Store says IO2. Exact S3 preprocessor branch and schematic show KEY GPIO5; IO2 is RS485 RX. GPIO2 is a user button only on the different C3 branch.",
+          "sourceIds": [
+            "official-store-shopify-1",
+            "T-RSC3-example-Integration-utilities.h",
+            "T-RSC3-schematic-T-RSS3.pdf"
+          ]
+        }
+      ],
+      "factoryFirmwareInvestigation": {
+        "status": "official-factory-candidate-linked",
+        "sourceIds": [
+          "T-RSC3-tree"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/T-RSC3/blob/a931260b4f8804e528604bde43d6d7a7657617fa/frimware/T_RSS3_Factory.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/frimware/T_RSS3_Factory.bin",
+            "path": "frimware/T_RSS3_Factory.bin",
+            "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+            "gitBlobSha": "5bc4f40ecef71da09def5f828f9fe6bf896e727a",
+            "bytes": 346336,
+            "status": "linked",
+            "sourceId": "T-RSC3-tree",
+            "role": "factory-candidate",
+            "identityEvidence": "Exact S3 product factory filename in official repository; binary revision/layout not separately documented.",
+            "binaryFetched": false,
+            "simulationVerified": false
+          }
+        ],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Official factory-named S3 file is present; C3 binary is excluded. Filename establishes a candidate, not verified memory revision/layout or successful boot.",
+        "watchlist": {
+          "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+          "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+        }
+      }
+    },
+    {
+      "productId": "lilygo-t-eth-lite",
+      "boardId": "lilygo-t-eth-lite",
+      "name": "LILYGO T-ETH-Lite",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-ETH-Lite-ESP32S3, ESP32-S3-WROOM-1 N16R8, W5500 variant",
+      "display": null,
+      "physicalDisplay": false,
+      "sdCard": {
+        "slot": true,
+        "implemented": true,
+        "transport": "spi",
+        "pins": {
+          "sclk": 7,
+          "mosi": 6,
+          "miso": 5,
+          "cs": 42
+        },
+        "power": "fixed 3.3V board supply",
+        "defaultPreparedCardMiB": 64,
+        "sourceIds": [
+          "LilyGO-T-ETH-Series-README.md",
+          "LilyGO-T-ETH-Series-examples-SDWebServer-utilities.h",
+          "LilyGO-T-ETH-Series-examples-UnitTestExample-UnitTestExample.ino",
+          "LilyGO-T-ETH-Series-schematic-T-ETH-Lite-ESP32S3.pdf",
+          "LilyGO-T-ETH-Series-platformio.ini",
+          "LilyGO-T-ETH-Series-firmware-README.md",
+          "LilyGO-T-ETH-Series-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-eth-lite-s3"
+        ],
+        "scope": "Existing digital SPI SD card protocol, startup clocks, GPIO/peripheral CS, block storage and card insertion. No calibrated wire/analog timing."
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "已实现 T-ETH Lite 的 ESP32-S3/W5500 版本 BOOT0 与独立 SPI SD 接线；以太网、可选摄像头/屏幕扩展和真实网络未实现。",
+      "scopeEn": "Selected ESP32-S3/W5500 T-ETH Lite variant: BOOT0 and exact SPI SD storage, distinct from classic ESP32/RTL8201 wiring.",
+      "chronology": {
+        "date": "2023-09-09",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-eth-lite",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "LilyGO-T-ETH-Series-README.md",
+        "LilyGO-T-ETH-Series-examples-SDWebServer-utilities.h",
+        "LilyGO-T-ETH-Series-examples-UnitTestExample-UnitTestExample.ino",
+        "LilyGO-T-ETH-Series-schematic-T-ETH-Lite-ESP32S3.pdf",
+        "LilyGO-T-ETH-Series-platformio.ini",
+        "LilyGO-T-ETH-Series-firmware-README.md",
+        "LilyGO-T-ETH-Series-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-eth-lite-s3"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "The shared storefront also lists classic ESP32-WROVER-E/RTL8201. This board profile is specifically the ESP32-S3/W5500 variant; no classic pin alias.",
+        "W5500 Ethernet/socket/network, PHY indicators, optional camera/display shields and analog power behavior are unmodeled; no onboard display or user LED is fabricated.",
+        "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+      ],
+      "pins": {
+        "boot": 0,
+        "ethernet": {
+          "controller": "W5500",
+          "sclk": 10,
+          "mosi": 12,
+          "miso": 11,
+          "cs": 9,
+          "interrupt": 13,
+          "reset": 14,
+          "implemented": false
+        }
+      },
+      "memoryEvidence": {
+        "flashMB": 16,
+        "psramMB": 8,
+        "sourceIds": [
+          "LilyGO-T-ETH-Series-README.md",
+          "LilyGO-T-ETH-Series-examples-SDWebServer-utilities.h",
+          "LilyGO-T-ETH-Series-examples-UnitTestExample-UnitTestExample.ino",
+          "LilyGO-T-ETH-Series-schematic-T-ETH-Lite-ESP32S3.pdf",
+          "LilyGO-T-ETH-Series-platformio.ini",
+          "LilyGO-T-ETH-Series-firmware-README.md",
+          "LilyGO-T-ETH-Series-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-eth-lite-s3"
+        ],
+        "notes": "Exact S3 schematic page 3 N16R8 module and S3 documentation agree on 16/8MB. Classic storefront options are not inherited."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "official-example-linked-factory-identity-unconfirmed",
+        "sourceIds": [
+          "LilyGO-T-ETH-Series-tree",
+          "LilyGO-T-ETH-Series-firmware-README.md"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/blob/060292e3afad51e8707c60f9f6c932696990568a/firmware/T-ETH-Lite-ESP32S3_UnitTestExample_250604.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/firmware/T-ETH-Lite-ESP32S3_UnitTestExample_250604.bin",
+            "path": "firmware/T-ETH-Lite-ESP32S3_UnitTestExample_250604.bin",
+            "pinnedGitRevision": "060292e3afad51e8707c60f9f6c932696990568a",
+            "gitBlobSha": "b65e0314b1c12883bd059346e1044be16b5a2291",
+            "bytes": 1028352,
+            "status": "linked",
+            "sourceId": "LilyGO-T-ETH-Series-tree",
+            "role": "official-example",
+            "identityEvidence": "Exact S3 product-named UnitTest example; classic ESP32 binary deliberately excluded.",
+            "binaryFetched": false,
+            "simulationVerified": false,
+            "documentedFlashOffset": 0
+          }
+        ],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Manufacturer flashing guide uses offset 0. Exact test image is present, but shipped factory identity/binary layout and boot remain unverified.",
+        "watchlist": {
+          "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+          "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+        }
+      }
+    },
+    {
+      "productId": "lilygo-t-relay-s3",
+      "boardId": "lilygo-t-relay-s3",
+      "name": "LILYGO T-Relay S3",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "Six-channel T-Relay S3; schematic filename Rev1.1, internal sheets V1.0",
+      "display": null,
+      "physicalDisplay": false,
+      "sdCard": {
+        "slot": false,
+        "implemented": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "已实现 BOOT0、74HC595 GPIO 串行移位/锁存/低有效使能、六路继电器数字驱动及绿红状态灯；触点负载、RTC 和扩展通信未实现。",
+      "scopeEn": "BOOT0 and source-wired 74HC595 GPIO shift/latch/output-enable; QA..QF digital coil-drive mask, QG green and QH red LEDs. No contacts/load simulation.",
+      "chronology": {
+        "date": "2023-05-13",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-relay-s3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "LilyGo-T-Relay-README.md",
+        "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf",
+        "LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino",
+        "LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino",
+        "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp",
+        "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h",
+        "LilyGo-T-Relay-platformio.ini",
+        "LilyGo-T-Relay-firmware-README.MD",
+        "LilyGo-T-Relay-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-relay-s3"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "74HC595 uses physical GPIO clock/data/strobe (official shiftOut path); no hardware-SPI shift-register transport. Initial unknown hardware shift/latch state is deterministic zero for this diagnostic model.",
+        "Relay coil drive is observable in board report, not a claim about contact closure, electrical load, bounce, isolation/current or calibrated switching delay. Per-coil physical indicator positions are not mapped to 3D.",
+        "PCF8563 RTC, external OLED/TFT/DS18B20, cascaded boards, W5500/Sim shields and analog power are unmodeled; no onboard screen or SD is invented.",
+        "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+      ],
+      "pins": {
+        "boot": 0,
+        "relay": {
+          "controller": "HT74HC595ARZ",
+          "data": 7,
+          "shiftClock": 5,
+          "latchClock": 6,
+          "outputEnable": 4,
+          "outputEnableActiveLow": true,
+          "reset": "tied high",
+          "coilDriveBits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "coilDriveActiveHigh": true,
+          "contactModel": false,
+          "implemented": true
+        },
+        "leds": [
+          {
+            "shiftBit": 6,
+            "color": "green",
+            "activeLow": false
+          },
+          {
+            "shiftBit": 7,
+            "color": "red",
+            "activeLow": false
+          }
+        ]
+      },
+      "memoryEvidence": {
+        "flashMB": 16,
+        "psramMB": 8,
+        "sourceIds": [
+          "LilyGo-T-Relay-README.md",
+          "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf",
+          "LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino",
+          "LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino",
+          "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp",
+          "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h",
+          "LilyGo-T-Relay-platformio.ini",
+          "LilyGo-T-Relay-firmware-README.MD",
+          "LilyGo-T-Relay-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-relay-s3"
+        ],
+        "notes": "Explicit selected product/build configuration; no memory inferred from a sibling."
+      },
+      "conflicts": [
+        {
+          "fact": "schematic revision label",
+          "resolution": "Exact S3 six-relay source filename says Rev1.1 but sheet title blocks say V1.0. Both labels are preserved; no board release date is derived from its engineering date.",
+          "sourceIds": [
+            "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf"
+          ]
+        }
+      ],
+      "factoryFirmwareInvestigation": {
+        "status": "official-factory-candidate-and-test-image-linked",
+        "sourceIds": [
+          "LilyGo-T-Relay-tree",
+          "LilyGo-T-Relay-firmware-README.MD"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T-Relay/blob/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+            "path": "firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+            "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+            "gitBlobSha": "c7241453110f572dadb67458b389009fadcbe824",
+            "bytes": 737088,
+            "status": "linked",
+            "sourceId": "LilyGo-T-Relay-tree",
+            "role": "factory-candidate",
+            "identityEvidence": "ChuChang (factory) image under exact LilyGo-T-Relay-S3 directory; binary revision not independently documented.",
+            "binaryFetched": false,
+            "simulationVerified": false,
+            "documentedFlashOffset": 0
+          },
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T-Relay/blob/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
+            "path": "firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
+            "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+            "gitBlobSha": "575628954d9fdce533b3ab4d660e09d28a669d52",
+            "bytes": 607680,
+            "status": "linked",
+            "sourceId": "LilyGo-T-Relay-tree",
+            "role": "official-example",
+            "identityEvidence": "Existing pinned-tree S3 UnitTest file; README links an older 20230830 filename that is absent from this tree.",
+            "binaryFetched": false,
+            "simulationVerified": false,
+            "documentedFlashOffset": 0
+          }
+        ],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Manufacturer quick-test README links T-Relay-S3 but its exact 20230830 binary is stale/absent. Existing S3 candidates are retained without asserting all relay/W5500 variants share a factory image.",
+        "watchlist": {
+          "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+          "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+        }
+      }
+    },
+    {
+      "productId": "lilygo-t-sim7080-s3",
+      "boardId": "lilygo-t-sim7080-s3",
+      "name": "LILYGO T-SIM7080G S3",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "Original T-SIM7080G ESP32-S3 board, AXP2101 and native 1-bit SD; not Standard Series",
+      "display": null,
+      "physicalDisplay": false,
+      "sdCard": {
+        "slot": true,
+        "implemented": true,
+        "transport": "sdmmc",
+        "busWidth": 1,
+        "pins": {
+          "clk": 38,
+          "cmd": 39,
+          "d0": 40
+        },
+        "power": "AXP2101 ALDO3: address0x34 SDA15/SCL7; explicit register0x90 bit2 and register0x94=28 (3.3V)",
+        "defaultPreparedCardMiB": 64,
+        "sourceIds": [
+          "LilyGo-T-SIM7080G-README.MD",
+          "LilyGo-T-SIM7080G-examples-AllFunction-utilities.h",
+          "LilyGo-T-SIM7080G-examples-MinimalSDCardExample-MinimalSDCardExample.ino",
+          "LilyGo-T-SIM7080G-schematic-T-SIM7080G_Schematic.pdf",
+          "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+          "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp",
+          "LilyGo-T-SIM7080G-firmware-README.MD",
+          "LilyGo-T-SIM7080G-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-sim7080x-s3",
+          "AXP2101-Datasheet-V1.0"
+        ],
+        "scope": "Native S3 SDMMC host and SRAM IDMAC DMA; explicit supply/route gating. Instant digital transfer timing; PMIC brownout reset not modeled."
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "已实现 BOOT0、AXP2101 有界寄存器子集和 ALDO3 门控的 1-bit 原生 SDMMC/DMA 卡读写；蜂窝、摄像头和模拟电源功能未实现。",
+      "scopeEn": "Original SIM7080G S3 board: BOOT0, physical I2C AXP2101 ID/ADC-control/ALDO3 register subset and native one-bit SDMMC storage/DMA gated by guest-programmed 3.3V ALDO3.",
+      "chronology": {
+        "date": "2023-02-09",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-sim7080-s3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "LilyGo-T-SIM7080G-README.MD",
+        "LilyGo-T-SIM7080G-examples-AllFunction-utilities.h",
+        "LilyGo-T-SIM7080G-examples-MinimalSDCardExample-MinimalSDCardExample.ino",
+        "LilyGo-T-SIM7080G-schematic-T-SIM7080G_Schematic.pdf",
+        "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+        "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp",
+        "LilyGo-T-SIM7080G-firmware-README.MD",
+        "LilyGo-T-SIM7080G-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-sim7080x-s3",
+        "AXP2101-Datasheet-V1.0"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "AXP2101 subset is registers 0x03 ID, 0x30 ADC enables, 0x90 LDO enables and 0x94 ALDO3 voltage; other registers NACK/return 0xFF. No fabricated USB/battery/status/IRQ/ADC readings.",
+        "AXP2101 datasheet rail defaults are EFUSE-programmed, and exact board EFUSE values are unknown. Diagnostic policy starts SD rail unavailable until guest explicitly programs ALDO3 enable plus 3.3V; this is not a physical reset-default claim. Other voltage values are unsupported.",
+        "SDMMC has immediate digital command/data timing and rejects disabled supply/wrong routes. ALDO3 power loss does not yet model the card internal brownout/reset state; do not infer calibrated power-cycle behavior.",
+        "SIM7080G AT/cellular/GNSS, camera capture, PMIC power key/whole-board shutdown, charging and analog power behavior are unmodeled.",
+        "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+      ],
+      "pins": {
+        "boot": 0,
+        "pmic": {
+          "controller": "AXP2101",
+          "address": 52,
+          "sda": 15,
+          "scl": 7,
+          "interrupt": 6,
+          "interruptImplemented": false,
+          "implementedRegisters": [
+            "0x03",
+            "0x30",
+            "0x90",
+            "0x94"
+          ]
+        },
+        "modem": {
+          "powerKey": 41,
+          "dtr": 42,
+          "ring": 3,
+          "rx": 4,
+          "tx": 5,
+          "implemented": false
+        }
+      },
+      "memoryEvidence": {
+        "flashMB": 16,
+        "psramMB": 8,
+        "sourceIds": [
+          "LilyGo-T-SIM7080G-README.MD",
+          "LilyGo-T-SIM7080G-examples-AllFunction-utilities.h",
+          "LilyGo-T-SIM7080G-examples-MinimalSDCardExample-MinimalSDCardExample.ino",
+          "LilyGo-T-SIM7080G-schematic-T-SIM7080G_Schematic.pdf",
+          "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+          "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp",
+          "LilyGo-T-SIM7080G-firmware-README.MD",
+          "LilyGo-T-SIM7080G-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-sim7080x-s3",
+          "AXP2101-Datasheet-V1.0"
+        ],
+        "notes": "Explicit selected product/build configuration; no memory inferred from a sibling."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "official-images-linked-factory-identity-unconfirmed",
+        "sourceIds": [
+          "LilyGo-T-SIM7080G-tree",
+          "LilyGo-T-SIM7080G-firmware-README.MD"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/blob/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/firmware/firmware.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/firmware/firmware.bin",
+            "path": "firmware/firmware.bin",
+            "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+            "gitBlobSha": "749a04a56a2ec38369dbe754cfd817d02e9c077f",
+            "bytes": 2839088,
+            "status": "linked",
+            "sourceId": "LilyGo-T-SIM7080G-tree",
+            "role": "official-example",
+            "identityEvidence": "Official board-specific firmware directory and 0x0 flashing guide; shipped factory identity is not stated.",
+            "binaryFetched": false,
+            "simulationVerified": false,
+            "documentedFlashOffset": 0
+          },
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/blob/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/firmware/ATDebug_241009.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/firmware/ATDebug_241009.bin",
+            "path": "firmware/ATDebug_241009.bin",
+            "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+            "gitBlobSha": "16c23182977fe895cb7e333fd06339c04050da6e",
+            "bytes": 368480,
+            "status": "linked",
+            "sourceId": "LilyGo-T-SIM7080G-tree",
+            "role": "official-example",
+            "identityEvidence": "Explicit AT debug filename, not relabeled factory.",
+            "binaryFetched": false,
+            "simulationVerified": false,
+            "documentedFlashOffset": 0
+          }
+        ],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Factory-source investigation found board-specific firmware and flashing documentation. Exact factory purpose/version and binary layout remain unverified.",
+        "watchlist": {
+          "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+          "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+        }
+      }
+    },
+    {
+      "productId": "lilygo-t-camera-s3",
+      "boardId": "lilygo-t-camera-s3",
+      "name": "LILYGO T-Camera S3",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-Camera-S3 V1.6/I2S and V1.7/PDM share the implemented OLED/BOOT routes; audio is unimplemented",
+      "display": {
+        "controller": "SSD1306",
+        "width": 128,
+        "height": 64,
+        "type": "OLED",
+        "interface": "I2C",
+        "address": 60,
+        "sda": 7,
+        "scl": 6,
+        "implemented": true
+      },
+      "physicalDisplay": true,
+      "sdCard": {
+        "slot": false,
+        "implemented": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "已实现 BOOT0、SDA7/SCL6 上的 128×64 SSD1306 OLED RAM/方向/开关和 AXP2101 标识/配置子集；摄像头、PIR、麦克风及整机电源控制未实现。",
+      "scopeEn": "BOOT0, onboard SSD1306 128x64 I2C OLED and bounded AXP2101 ID/configuration registers on SDA7/SCL6. Firmware writes drive actual display RAM; no camera frame is fabricated.",
+      "chronology": {
+        "date": "2022-12-28",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-camera-s3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "LilyGo-Cam-ESP32S3-README.MD",
+        "LilyGo-Cam-ESP32S3-examples-factory-utilities.h",
+        "LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino",
+        "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf",
+        "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf",
+        "LilyGo-Cam-ESP32S3-firmware-README.MD",
+        "LilyGo-Cam-ESP32S3-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-camera-s3",
+        "AXP2101-Datasheet-V1.0",
+        "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+        "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "SDA5/SCL4 are camera SCCB, not OLED. Camera OV2640/OV5640 SKU capture, optics and DVP are unmodeled rather than silently selecting one sensor.",
+        "PIR, I2S/PDM microphones and AXP2101 power key/whole-board shutdown, PMIC IRQ, battery/USB readings, charging and analog rails are unmodeled. OLED/DCDC1 is powered with the running SoC as documented; external power removal is outside this profile.",
+        "OLED uses shared SSD1306 digital RAM/controller subset; scrolling oscillator/analog contrast, charge pump and reads are unmodeled. I2C is the hardware-controller transport, not software bit-banging.",
+        "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+      ],
+      "pins": {
+        "boot": 0,
+        "pmic": {
+          "controller": "AXP2101",
+          "address": 52,
+          "sda": 7,
+          "scl": 6,
+          "interrupt": 2,
+          "interruptImplemented": false,
+          "implementedRegisters": [
+            "0x03",
+            "0x30",
+            "0x90",
+            "0x94"
+          ]
+        },
+        "cameraSccb": {
+          "sda": 5,
+          "scl": 4,
+          "implemented": false
+        }
+      },
+      "memoryEvidence": {
+        "flashMB": 16,
+        "psramMB": 8,
+        "sourceIds": [
+          "LilyGo-Cam-ESP32S3-README.MD",
+          "LilyGo-Cam-ESP32S3-examples-factory-utilities.h",
+          "LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino",
+          "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf",
+          "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf",
+          "LilyGo-Cam-ESP32S3-firmware-README.MD",
+          "LilyGo-Cam-ESP32S3-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-camera-s3",
+          "AXP2101-Datasheet-V1.0",
+          "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+          "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp"
+        ],
+        "notes": "Explicit selected product/build configuration; no memory inferred from a sibling."
+      },
+      "conflicts": [
+        {
+          "fact": "OLED I2C pins",
+          "resolution": "Official wiki OLED table says SDA5/SCL4; pinned README, factory utilities, MinimalScreenExample and schematics distinguish camera SCCB5/4 from OLED/PMU7/6. Implement 7/6.",
+          "sourceIds": [
+            "official-wiki-t-camera-s3",
+            "LilyGo-Cam-ESP32S3-README.MD",
+            "LilyGo-Cam-ESP32S3-examples-factory-utilities.h"
+          ]
+        }
+      ],
+      "factoryFirmwareInvestigation": {
+        "status": "official-entries-linked",
+        "sourceIds": [
+          "LilyGo-Cam-ESP32S3-tree",
+          "LilyGo-Cam-ESP32S3-README.MD",
+          "LilyGo-Cam-ESP32S3-firmware-README.MD"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/blob/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/i2s.cams3.firmware.factory.v1.6.20260930_0x0.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/i2s.cams3.firmware.factory.v1.6.20260930_0x0.bin",
+            "path": "firmware/i2s.cams3.firmware.factory.v1.6.20260930_0x0.bin",
+            "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+            "gitBlobSha": "3ad27b6ca659eb9aa98248bde910a6f1d71c6b58",
+            "bytes": 1264432,
+            "status": "linked",
+            "sourceId": "LilyGo-Cam-ESP32S3-tree",
+            "role": "factory",
+            "identityEvidence": "README maps factory example to v1.6/I2S; exact binary filename declares factory v1.6 and 0x0.",
+            "binaryFetched": false,
+            "simulationVerified": false,
+            "documentedFlashOffset": 0
+          },
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/blob/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/pdm.cams3.firmware.factory.v1.7.20260930_0x0.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/pdm.cams3.firmware.factory.v1.7.20260930_0x0.bin",
+            "path": "firmware/pdm.cams3.firmware.factory.v1.7.20260930_0x0.bin",
+            "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+            "gitBlobSha": "b6e2a19ac66f71caefa4044985608f8e69068304",
+            "bytes": 1264400,
+            "status": "linked",
+            "sourceId": "LilyGo-Cam-ESP32S3-tree",
+            "role": "factory",
+            "identityEvidence": "Separate factory v1.7/PDM filename; do not substitute its audio wiring for v1.6.",
+            "binaryFetched": false,
+            "simulationVerified": false,
+            "documentedFlashOffset": 0
+          }
+        ],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Both hardware revisions have separately named factory images. Retained as exact remote entries; no binary header download/full-factory boot claim.",
+        "watchlist": {
+          "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+          "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+        }
+      },
+      "controllerEvidenceReport": "docs/platform/research/lilygo-oled-controller-2026-11-22.json"
+    },
+    {
+      "productId": "lilygo-t-simcam",
+      "boardId": "lilygo-t-simcam",
+      "name": "LILYGO T-SIMCAM",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-SIMCAM V1.3 selected by exact factory config; original V1.0/V1.2 camera reset variants not mixed",
+      "display": null,
+      "physicalDisplay": false,
+      "sdCard": {
+        "slot": true,
+        "implemented": true,
+        "transport": "spi",
+        "pins": {
+          "sclk": 39,
+          "mosi": 38,
+          "miso": 40,
+          "cs": 47
+        },
+        "power": "Switched V3V controlled by GPIO1 high, not SoC VDD3V3. GPIO/mux/output disable power-cycles the SPI card while preserving backing data.",
+        "defaultPreparedCardMiB": 64,
+        "sourceIds": [
+          "LilyGo-Camera-Series-README.MD",
+          "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h",
+          "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino",
+          "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf",
+          "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf",
+          "LilyGo-Camera-Series-platformio.ini",
+          "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+          "LilyGo-Camera-Series-firmware-README.MD",
+          "LilyGo-Camera-Series-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-simcam"
+        ],
+        "scope": "Existing digital SPI SD card protocol, startup clocks, GPIO/peripheral CS, block storage and card insertion. No calibrated wire/analog timing."
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "已实现 T-SIMCAM V1.3 的 BOOT0 与 GPIO1 供电门控的 SPI SD 卡；按官方 16MB/8MB 配置运行，保留原理图 Flash 符号冲突，摄像头/蜂窝/音频未实现。",
+      "scopeEn": "Selected V1.3 BOOT0 and GPIO1-gated peripheral-supply SPI SD path. 16MB/8MB official product/build configuration, with the schematic W25Q32 conflict explicit.",
+      "chronology": {
+        "date": "2022-10-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-simcam",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "LilyGo-Camera-Series-README.MD",
+        "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h",
+        "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino",
+        "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf",
+        "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf",
+        "LilyGo-Camera-Series-platformio.ini",
+        "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+        "LilyGo-Camera-Series-firmware-README.MD",
+        "LilyGo-Camera-Series-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-simcam"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "PCIe modem, AT/cellular network, camera OV2640/OV5640 variants, IR-cut driver, microphone and analog power/charging are unmodeled; no fabricated image or modem handshake.",
+        "GPIO1 controls the switched V3V peripheral supply through Q3/Q5 in V1.3 schematic; the SoC VDD3V3 stays distinct. V1.3 uses GPIO18 IR-cut, whereas older V1.2 uses camera reset; neither is falsely attached here.",
+        "Flash capacity follows official 16MB store/wiki/partition target. V1.3 drawing still labels the flash W25Q32 (4MB); this mismatch is unresolved and not claimed as an exact verified production BOM.",
+        "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+      ],
+      "pins": {
+        "boot": 0,
+        "peripheralPower": {
+          "pin": 1,
+          "activeHigh": true,
+          "implementedFor": "SPI SD supply only"
+        },
+        "pcieModem": {
+          "powerOrReset": 48,
+          "tx": 45,
+          "rx": 46,
+          "ledInput": 21,
+          "implemented": false
+        },
+        "camera": {
+          "xclk": 14,
+          "sda": 4,
+          "scl": 5,
+          "irCutV13": 18,
+          "implemented": false
+        }
+      },
+      "memoryEvidence": {
+        "flashMB": 16,
+        "psramMB": 8,
+        "sourceIds": [
+          "LilyGo-Camera-Series-README.MD",
+          "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h",
+          "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino",
+          "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf",
+          "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf",
+          "LilyGo-Camera-Series-platformio.ini",
+          "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+          "LilyGo-Camera-Series-firmware-README.MD",
+          "LilyGo-Camera-Series-tree",
+          "official-store-shopify-1",
+          "official-wiki-t-simcam"
+        ],
+        "notes": "Store/wiki say 16MB flash/8MB PSRAM, ESP32-S3R8 identifies PSRAM, and env:t-camera-sim selects default_16MB.csv. V1.3 schematic Flash symbol W25Q32 contradicts the 16MB target; selection is explicit and not BOM validation."
+      },
+      "conflicts": [
+        {
+          "fact": "flash",
+          "resolution": "Store/wiki say 16MB flash/8MB PSRAM, ESP32-S3R8 identifies PSRAM, and env:t-camera-sim selects default_16MB.csv. V1.3 schematic Flash symbol W25Q32 contradicts the 16MB target; selection is explicit and not BOM validation.",
+          "sourceIds": [
+            "official-store-shopify-1",
+            "official-wiki-t-simcam",
+            "LilyGo-Camera-Series-platformio.ini",
+            "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf"
+          ]
+        },
+        {
+          "fact": "GPIO18 camera function",
+          "resolution": "docs/T_SIMCAM.md describes older reset18 and mislabels its table T-Camera Plus. Actual t_sim_cam_factory/config.h selects USE_SIM_CAM_V1_3 and CAM_IR_PIN18, RESET=-1. The runtime only implements common BOOT/SD/power routes.",
+          "sourceIds": [
+            "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+            "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h"
+          ]
+        }
+      ],
+      "factoryFirmwareInvestigation": {
+        "status": "official-diagnostic-and-factory-candidate-linked",
+        "sourceIds": [
+          "LilyGo-Camera-Series-tree",
+          "LilyGo-Camera-Series-firmware-README.MD"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Camera-Series/blob/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/SIM-CAM-V1.3-FW.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/SIM-CAM-V1.3-FW.bin",
+            "path": "firmware/SIM-CAM-V1.3-FW.bin",
+            "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+            "gitBlobSha": "9f248d2f4f4838612e3da7c9005810b0ac106a7a",
+            "bytes": 3238928,
+            "status": "linked",
+            "sourceId": "LilyGo-Camera-Series-tree",
+            "role": "official-example",
+            "identityEvidence": "Manufacturer firmware README explicitly maps T-SIMCAM product page to this V1.3 diagnostic image.",
+            "binaryFetched": false,
+            "simulationVerified": false
+          },
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Camera-Series/blob/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/t_sim_cam_factory_240921.bin",
+            "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/t_sim_cam_factory_240921.bin",
+            "path": "firmware/t_sim_cam_factory_240921.bin",
+            "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+            "gitBlobSha": "7e3ada48a39eb67f5cc3b54b89ba010d4860868a",
+            "bytes": 3001856,
+            "status": "linked",
+            "sourceId": "LilyGo-Camera-Series-tree",
+            "role": "factory-candidate",
+            "identityEvidence": "Exact product factory filename plus factory source directory; binary hardware revision not independently documented.",
+            "binaryFetched": false,
+            "simulationVerified": false
+          }
+        ],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Exact V1.3 diagnostic image and a newer factory-named candidate are retained separately. Older SIM-CAM-V1.0 and sibling camera firmware are excluded; no binary layout/boot verified.",
+        "watchlist": {
+          "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+          "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+        }
+      }
+    }
+  ],
+  "deferred": [],
+  "verification": {
+    "commands": [
+      "CARGO_BUILD_JOBS=1 cargo test -p esp32s3 --test lilygo_io_profiles",
+      "CARGO_BUILD_JOBS=1 cargo test --release -p esp32s3 --test lilygo_io_profiles",
+      "CARGO_BUILD_JOBS=1 cargo clippy -p esp32s3 --test lilygo_io_profiles -- -D warnings"
+    ],
+    "nativeTests": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0
+    },
+    "clippy": "passed with -D warnings",
+    "boardSourceSha256": "add65753f95726de35da984356475299ed5b0d752e4f58668c292a81dfd33918",
+    "testSourceSha256": "618dc8e50e0c53e012fb61dabb80e8aafde79d986e5dff58bdedb6caf9c3a731",
+    "testMappings": {
+      "all_ten_boards_have_exact_controls_and_no_invented_devices": "Each distinct constructor, BOOT press/repeat/release, RSS3 user5, absent reset/power aliases and unavailable camera/radio devices.",
+      "connect_apa102_gpio_and_spi_preserve_wire_order_brightness_and_frame_boundaries": "Actual GPIO and SPI MMIO, BGR order/5-bit brightness, full frame boundary, wrong mux/disconnected data/invalid header.",
+      "relay_595_shift_latch_and_output_enable_are_independent_physical_signals": "Actual GPIO shift vs latch vs /OE, relay-drive mask/green-red LEDs, wrong clock mux, /OE inversion and output disable.",
+      "simple_led_polarities_and_rs_rmt_use_actual_output_routes": "GPIO high/low polarity, enable/mux/inversion; real RMT RAM/symbol execution/route output for GPIO1 WS2812.",
+      "all_four_spi_sd_pinouts_roundtrip_real_blocks_and_reject_other_board_routes": "All exact SPI pin sets execute CMD0/8/55/41/24/17, persistent backing blocks, incorrect MOSI/MISO, CS abort and insertion startup clocks.",
+      "simcam_sd_supply_requires_gpio1_and_power_loss_resets_card_without_erasing_media": "GPIO1 high enables SD peripheral supply; absent/disabled output blocks responses, restoration requires startup clocks.",
+      "camera_oled_and_axp_id_use_real_i2c_and_reject_sccb_pins_unknown_registers": "Physical SDA7/SCL6 I2C, OLED command/data RAM/flip/display-off, PMIC ID/ADC-control; wrong SCCB pins/disabled input/unknown registers reject.",
+      "sim7080_native_sd_dma_requires_exact_routes_and_explicit_axp_aldo3_supply": "AXP I2C programming then native1-bit SDMMC command/IDMAC DMA block roundtrip; missing supply/wrong voltage/wrong rail/wrong route timeouts."
+    },
+    "factoryBootVerified": false,
+    "wasmGuestVerified": false,
+    "hardwareValidated": false,
+    "releaseTests": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0
+    },
+    "privacyCheck": "PASS: configured evidence-pattern check and manual review of new public-source receipts"
+  }
+}
