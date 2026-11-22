@@ -9,13 +9,13 @@ use esp_soc::devices::{DcsPanel,i2c_bitbang::I2cBitBang};
 use esp_soc::pins::PinRoutes;
 
 #[derive(Clone,Copy,PartialEq)]
-enum TouchKind {Cst816S,Cst816T,Cst226,Ft6336}
+pub(super) enum TouchKind {Cst816S,Cst816T,Cst816D,Cst226,Cst226Se,Ft6336}
 #[derive(Clone,Copy)]
-struct TouchWiring {kind:TouchKind,address:u8,sda:u8,scl:u8,irq:u8,reset:Option<u8>}
-struct Profile {
-    name:&'static str,controller:&'static str,gram:[usize;2],glass:[usize;4],
-    spi:[u8;3],dc:Option<u8>,reset:Option<u8>,light:Option<(u8,bool)>,light_pwm:bool,enable:Option<u8>,quad:bool,
-    buttons:&'static [(&'static str,u8)],encoder:Option<(u8,u8)>,touch:Option<TouchWiring>,expander:bool,
+pub(super) struct TouchWiring {pub(super) kind:TouchKind,pub(super) address:u8,pub(super) sda:u8,pub(super) scl:u8,pub(super) irq:u8,pub(super) reset:Option<u8>}
+pub(super) struct Profile {
+    pub(super) name:&'static str,pub(super) controller:&'static str,pub(super) gram:[usize;2],pub(super) glass:[usize;4],
+    pub(super) spi:[u8;3],pub(super) dc:Option<u8>,pub(super) reset:Option<u8>,pub(super) light:Option<(u8,bool)>,pub(super) light_pwm:bool,pub(super) enable:Option<u8>,pub(super) quad:bool,
+    pub(super) buttons:&'static [(&'static str,u8)],pub(super) encoder:Option<(u8,u8)>,pub(super) touch:Option<TouchWiring>,pub(super) expander:bool,
 }
 const BOOT:&[(&str,u8)]=&[("boot",0)];
 const PRO:Profile=Profile{name:"lilygo-t-display-s3-pro",controller:"ST7796",gram:[320,480],glass:[49,0,222,480],spi:[18,17,39],dc:Some(9),reset:Some(47),light:Some((48,true)),light_pwm:true,enable:None,quad:false,buttons:&[("boot",0),("button-2",12),("button-3",16)],encoder:None,touch:Some(TouchWiring{kind:TouchKind::Cst226,address:0x5a,sda:5,scl:6,irq:21,reset:Some(13)}),expander:false};
@@ -61,6 +61,10 @@ impl I2cDevice for TouchDevice {
         if self.address_byte {self.address_byte=false;self.prefix=if self.kind==TouchKind::Cst226 && matches!(b,0xd1|0xd2) {Some(b)} else {None};self.word=u16::from(b);self.ptr=b;self.read_at=0;return true;}
         if let Some(prefix)=self.prefix.take() {self.word=(u16::from(prefix)<<8)|u16::from(b);self.read_at=0;if self.word==0xd105 {self.state.lock().expect("LILYGO touch state mutex poisoned").asleep=true;}return true;}
         let reg=self.ptr;
+        // CST226SE uses an 8-bit register pointer, unlike the SensorLib CST226
+        // command-word interface. Its vendor driver uses D1/05 for sleep and
+        // D1/02 for software reset; physical reset is the reliable wake path.
+        if self.kind==TouchKind::Cst226Se && reg==0xd1 {let mut s=self.state.lock().expect("LILYGO touch state mutex poisoned");if b==5 {s.down=false;s.asleep=true;}else if b==2 {s.clear();}self.ptr=self.ptr.wrapping_add(1);return true;}
         if matches!(reg,0xa5|0xe5) && b==3 {let mut s=self.state.lock().expect("LILYGO touch state mutex poisoned");s.down=false;s.asleep=true;}
         if !matches!(reg,0x01..=0x08|0xa3|0xa6..=0xa9) {self.registers[usize::from(reg)]=b;}
         self.ptr=self.ptr.wrapping_add(1);true
@@ -72,6 +76,12 @@ impl I2cDevice for TouchDevice {
             let value=match self.word {0xd1fc=>[0,0,0xca,0xca].get(self.read_at).copied(),0xd1f8=>[s.width as u8,(s.width>>8) as u8,s.height as u8,(s.height>>8) as u8].get(self.read_at).copied(),0xd204|0xd208=>Some(0),0=>report.get(self.read_at).copied(),_=>None}.unwrap_or(0);
             self.read_at=self.read_at.saturating_add(1);return value;
         }
+        if self.kind==TouchKind::Cst226Se {
+            // Manufacturer Arduino_CST2xxSE.h: single-point report bytes 0..6.
+            // Additional fingers, pressure and project calibration are absent.
+            let report=[u8::from(s.down)*6,(s.x>>4) as u8,(s.y>>4) as u8,((s.x&15)<<4) as u8|(s.y&15) as u8,0,u8::from(s.down),0xab];
+            let value=report.get(usize::from(self.ptr)).copied().unwrap_or(0);self.ptr=self.ptr.wrapping_add(1);return value;
+        }
         self.registers[2]=u8::from(s.down);
         self.registers[3]=((s.x>>8) as u8&15)|if self.kind==TouchKind::Ft6336 {0x80}else{0};self.registers[4]=s.x as u8;
         self.registers[5]=(s.y>>8) as u8&15;self.registers[6]=s.y as u8;
@@ -80,19 +90,20 @@ impl I2cDevice for TouchDevice {
         // report subset until its exact fitted revision can be established.
         if self.kind==TouchKind::Cst816S {self.registers[0xa7]=0xb4;}
         if self.kind==TouchKind::Cst816T {self.registers[0xa7]=0xb5;}
+        if self.kind==TouchKind::Cst816D {self.registers[0xa7]=0xb6;}
         if self.kind==TouchKind::Ft6336 {self.registers[0xa8]=0x11;}
         let value=self.registers[usize::from(self.ptr)];self.ptr=self.ptr.wrapping_add(1);value
     }
 }
 
-struct LilygoDisplay {
+pub(super) struct LilygoDisplay {
     profile:&'static Profile,panel:DcsPanel,dc:Option<bool>,reset:bool,enabled:bool,light:u32,gpio_light:u32,pwm:Option<u32>,
     cs:Option<bool>,header:[u8;4],header_len:usize,command:u8,brightness:u8,
     version:u64,transactions:u64,i2c:I2cBitBang,levels:[bool;2],edges:Vec<BoardEdge>,cycle:VirtualCycle,
     touch:Arc<Mutex<TouchState>>,expander:Arc<Mutex<Tca9555State>>,
 }
 impl LilygoDisplay {
-    fn new(profile:&'static Profile)->Self {
+    pub(super) fn new(profile:&'static Profile)->Self {
         let panel=if profile.controller=="ST7789" {DcsPanel::st7789()} else {DcsPanel::new(profile.gram[0],profile.gram[1])};
         Self{profile,panel,dc:None,reset:profile.reset.is_none(),enabled:profile.enable.is_none(),light:if profile.light.is_none(){65535}else{0},gpio_light:0,pwm:None,cs:None,header:[0;4],header_len:0,command:0,brightness:255,version:0,transactions:0,i2c:I2cBitBang::new(),levels:[true;2],edges:Vec::new(),cycle:0,
             touch:Arc::new(Mutex::new(TouchState{powered:profile.touch.is_some_and(|w|w.reset.is_none()),asleep:false,down:false,x:0,y:0,width:profile.glass[2] as u16,height:profile.glass[3] as u16})),expander:Default::default()}

@@ -9,6 +9,7 @@
 use esp_periph::{i2c::I2cDevice,sdmmc::{SdStore,SdCardConfig,card::spi::SpiSdCard}};
 use esp_soc::{board::{Board,BoardModel,BoardEdge,VirtualCycle,SpiPins},pins::PinRoutes};
 use super::{tdeck::TDeck,lilygo_epaper::LilygoEpaper};
+use super::lilygo_display::{LilygoDisplay,Profile,TouchKind,TouchWiring};
 use std::sync::{Arc,Mutex};
 use esp_soc::devices::{i2c_bitbang::I2cBitBang,oled_mono::{OledMono,OledI2c,OledKind}};
 
@@ -18,7 +19,8 @@ pub fn make_board(name:&str)->Option<Board> {
         "lilygo-t-deck-meshtastic"=>("lilygo-t-deck-meshtastic",true),
         "lilygo-t-deck-plus-meshtastic"=>("lilygo-t-deck-plus-meshtastic",true),
         "lilygo-t-deck-plus-1"=>("lilygo-t-deck-plus-1",true),
-        _=>return WIRED.iter().find(|p|p.name==name).map(|p|Box::new(WiredBoard::new(p)) as Board),
+        _=>return WIRED.iter().find(|p|p.name==name).map(|p|Box::new(WiredBoard::new(p)) as Board)
+            .or_else(||SCREENS.iter().find(|p|p.display.name==name).map(|p|Box::new(ScreenBoard{profile:p,inner:LilygoDisplay::new(&p.display)}) as Board)),
     };
     let inner:Board=if tft {Box::new(TDeck::new())}else{Box::new(LilygoEpaper::t_deck_pro())};
     Some(Box::new(AdditionalDeck{name,inner,tft,card:None,card_present:true,powered:false,dc:None,gpio_events:0}))
@@ -32,6 +34,36 @@ struct CardWiring {pins:[u8;4],other_selects:u64}
 struct PowerWiring {pins:(u8,u8),oled_ldo:Option<u8>,card_ldo:u8}
 struct WiredProfile {name:&'static str,oled:Option<OledWiring>,buttons:&'static [(&'static str,u8)],led:Option<(u8,bool)>,card:Option<CardWiring>,power:Option<PowerWiring>,scope:&'static str}
 const BOOT:&[(&str,u8)]=&[("boot",0)];
+struct ScreenProfile {display:Profile,other_selects:u64,scope:&'static str}
+const SCREENS:&[ScreenProfile]=&[
+    ScreenProfile{display:Profile{name:"lilygo-t-connect-pro",controller:"ST7796",gram:[320,480],glass:[49,0,222,480],spi:[12,11,21],dc:Some(41),reset:None,light:Some((46,true)),light_pwm:true,enable:None,quad:false,buttons:BOOT,encoder:None,touch:Some(TouchWiring{kind:TouchKind::Cst226Se,address:0x5a,sda:39,scl:40,irq:3,reset:Some(47)}),expander:false},other_selects:(1<<10)|(1<<14),scope:"V1.0 with screen and SX1262; ST7796/CST226SE single-point touch/BOOT only; W5500/LoRa/relay/CAN/RS485/RS232 absent; no SD on this selected variant"},
+    ScreenProfile{display:Profile{name:"lilygo-t-circle-s3",controller:"GC9D01N",gram:[160,160],glass:[0,0,160,160],spi:[15,17,13],dc:Some(16),reset:None,light:Some((18,false)),light_pwm:true,enable:None,quad:false,buttons:BOOT,encoder:None,touch:Some(TouchWiring{kind:TouchKind::Cst816D,address:0x15,sda:11,scl:14,irq:12,reset:None}),expander:false},other_selects:0,scope:"V1.1 base board; GC9D01N/CST816D single-point touch/BOOT; APA102/audio/microphone absent; infrared expansion excluded"},
+    ScreenProfile{display:Profile{name:"lilygo-t-encoder-pro",controller:"CO5300",gram:[390,390],glass:[0,0,390,390],spi:[12,11,10],dc:None,reset:Some(4),light:None,light_pwm:false,enable:Some(3),quad:true,buttons:&[("encoder-press",0)],encoder:Some((1,2)),touch:Some(TouchWiring{kind:TouchKind::Cst816D,address:0x15,sda:5,scl:6,irq:9,reset:Some(8)}),expander:false},other_selects:0,scope:"TFD12MASBCTB4_V0_07 CO5300/CST816D panel; QSPI display and encoder; original DXQ120MYB2416A SH8601/CHSC5816 panel excluded; buzzer absent"},
+];
+/// Only the protocol implementation is shared. Each constructor above declares
+/// its own exact pin map, selected panel, touch type and shared-bus exclusions.
+struct ScreenBoard {profile:&'static ScreenProfile,inner:LilygoDisplay}
+impl BoardModel for ScreenBoard {
+    fn name(&self)->&'static str {self.profile.display.name}
+    fn uses_gpio_routes(&self)->bool {true}
+    fn gpio_waveform_at(&mut self,cycle:VirtualCycle,routes:PinRoutes<'_>) {self.inner.gpio_waveform_at(cycle,routes);}
+    fn uses_gpio_pwm(&self)->bool {self.inner.uses_gpio_pwm()}
+    fn gpio_pwm_at(&mut self,cycle:VirtualCycle,pwm:&dyn Fn(u8)->Option<(f64,u32)>) {self.inner.gpio_pwm_at(cycle,pwm);}
+    fn uses_spi_pins(&self)->bool {true}
+    fn spi_transfer_pins(&mut self,host:u8,pins:SpiPins,tx:&[u8],rx:usize)->Vec<u8> {if pins.cs&self.profile.other_selects!=0 {return vec![255;rx];}self.inner.spi_transfer_pins(host,pins,tx,rx)}
+    fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)> {self.inner.i2c_devices()}
+    fn input_levels(&self)->Vec<(u8,bool)> {self.inner.input_levels()}
+    fn named_pin(&self,name:&str)->Option<u8> {self.inner.named_pin(name).or_else(||(name=="boot").then_some(0))}
+    fn encoder(&self)->Option<(u8,u8)> {self.inner.encoder()}
+    fn touch(&mut self,x:u16,y:u16,down:bool) {self.inner.touch(x,y,down);}
+    fn touch_irq(&self)->Option<(u8,bool)> {self.inner.touch_irq()}
+    fn take_edges(&mut self)->Vec<BoardEdge> {self.inner.take_edges()}
+    fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {self.inner.display()}
+    fn display_version(&self)->u64 {self.inner.display_version()}
+    fn display_frames(&self)->u64 {self.inner.display_frames()}
+    fn gram(&self)->Option<(Vec<u16>,usize,usize)> {self.inner.gram()}
+    fn report(&self)->String {format!("[{}] {}; factory-boot=unverified; touch IRQ is held level, no periodic pulses/calibration/gestures; {}",self.name(),self.profile.scope,self.inner.report())}
+}
 const T3_OLED:OledWiring=OledWiring{kind:OledKind::Ssd1306,sda:18,scl:17,address:0x3c};
 const T3_CARD:CardWiring=CardWiring{pins:[14,11,2,13],other_selects:0};
 const SUPREME_OLED:OledWiring=OledWiring{kind:OledKind::Sh1106,sda:17,scl:18,address:0x3c};

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-22T08:25:35Z",
+  "checkedAt": "2026-11-22T08:42:49Z",
   "implementation": "esp32s3/src/board/lilygo_additional.rs",
   "status": "partial board contracts; no factory boot claims",
   "notes": [
@@ -9,7 +9,8 @@
     "Shared SSD1306/SH1106 controllers are allocated only for opted-in boards. No CPU, bus, tick or global peripheral route changes were made.",
     "Every documented physical TF slot uses the platform prepared 64 MiB FAT32 policy. Smaller deterministic test images verify real SPI block read/write and supply-cycle persistence.",
     "The SX1262 packet subset on three TFT Deck variants is tested through correct board pins, power, reset, matching configuration, RX buffer, TX capture and IRQ. Other profiles do not expose radio capability merely because a chip is physically present.",
-    "Unknown dates remain unknown. Storefront dates are low-confidence ordering proxies; T-2Can uses its explicit V1.0 manufacturer version date."
+    "Unknown dates remain unknown. Storefront dates are low-confidence ordering proxies; T-2Can uses its explicit V1.0 manufacturer version date.",
+    "Three more exact screen targets share the private DCS transport with explicit source profiles. CST226SE 8-bit reports and CST816D family ID/report behavior are separate; all three have real Xtensa display/GPIO probes and I2C pin rejection tests."
   ],
   "sources": [
     {
@@ -1139,6 +1140,313 @@
       "gitTreeSha": "401019aa7d58ba87de7a0fb201892654bd6bc7dd",
       "gitRevisionEvidenceSourceId": "lilygo-gap-lora-revision-object",
       "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-connect-pro-readme",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "path": "README.md",
+      "gitBlobSha": "887cf89b9dd04e421e750c436c26d6f67f2b1b63",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/README.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:30:36Z",
+      "sha256": "471585b16296a6f3ae536b272eae1a7341994d57460259d04a7182bd864aaf6d",
+      "bytes": 13343,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-connect-pro-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-connect-pro-pins",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "path": "libraries/private_library/pin_config.h",
+      "gitBlobSha": "7ce2913f9094897d1ead33707fb604b78cb990c0",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/libraries/private_library/pin_config.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro/libraries/private_library/pin_config.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:30:36Z",
+      "sha256": "e0afda283f30331c81ec85aff2cbab8ed7e844b165df725e8b4e9a2a3b5b0d80",
+      "bytes": 2934,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-connect-pro-pins.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-connect-pro-gfx",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "path": "examples/GFX/GFX.ino",
+      "gitBlobSha": "1655b38f563edd67a420e3107c1096fa4febd129",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/examples/GFX/GFX.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro/examples/GFX/GFX.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:30:36Z",
+      "sha256": "0f2147d9f16707f67069f599a871aa3a12c34b0bf5b41902d3316fa680cdf38b",
+      "bytes": 859,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-connect-pro-gfx.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-connect-pro-touch",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST2xxSE.cpp",
+      "gitBlobSha": "db805cbc67c4bb532fa173ad4fab76b7c202f0fb",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST2xxSE.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST2xxSE.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:13Z",
+      "sha256": "71d13bb57978689a79384e4674a32fa1be146d3f801086472930c6528e48f0dc",
+      "bytes": 9768,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-connect-pro-touch.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-connect-pro-touch-h",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST2xxSE.h",
+      "gitBlobSha": "98a908c8e7347b1980efa0d6aec143094bfcd584",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST2xxSE.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST2xxSE.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:13Z",
+      "sha256": "504a6b96f80f1206476d70e2a85d6016b6a6618064641bb910faa1a6a30f11ae",
+      "bytes": 4681,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-connect-pro-touch-h.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-circle-readme",
+      "repository": "Xinyuan-LilyGO/T-Circle-S3",
+      "revision": "86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a",
+      "path": "README.md",
+      "gitBlobSha": "397e43f29c3c42707f4b8d5fb16707d725a7084e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/README.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Circle-S3/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:31:03Z",
+      "sha256": "61d2f2afaeec1c472c02f228e6fa07e3f093df822ce11367dbfef5b70f91c6e6",
+      "bytes": 15184,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-circle-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-circle-pins",
+      "repository": "Xinyuan-LilyGO/T-Circle-S3",
+      "revision": "86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a",
+      "path": "libraries/Mylibrary/pin_config.h",
+      "gitBlobSha": "97faf66322546c35434f3ee6d8093e2d74bde834",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/libraries/Mylibrary/pin_config.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Circle-S3/libraries/Mylibrary/pin_config.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:31:03Z",
+      "sha256": "8130c23564a673ca47550364b3ea3add55450b499b46d544017f6e6b96d1a547",
+      "bytes": 1408,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-circle-pins.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-circle-gfx",
+      "repository": "Xinyuan-LilyGO/T-Circle-S3",
+      "revision": "86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a",
+      "path": "examples/GFX/GFX.ino",
+      "gitBlobSha": "6b3fde68ca9a83a8cff663abb86fc79d3d30c643",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/examples/GFX/GFX.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Circle-S3/examples/GFX/GFX.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:31:03Z",
+      "sha256": "3bd868113824fb4035dd74a5514d774e0294624a3a5130a24cd88f6e1c59a1ff",
+      "bytes": 1553,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-circle-gfx.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-circle-display",
+      "repository": "Xinyuan-LilyGO/T-Circle-S3",
+      "revision": "86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a",
+      "path": "libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9D01N.cpp",
+      "gitBlobSha": "ed41a5da4bda40ebe608e56f6e6274e5a80fe299",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9D01N.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Circle-S3/libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9D01N.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:21Z",
+      "sha256": "95df36e686d25c6b923292ad0e3f3e2d6ecc9b36a58111d0b48ea3d37557fbb2",
+      "bytes": 2649,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-circle-display.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-circle-display-h",
+      "repository": "Xinyuan-LilyGO/T-Circle-S3",
+      "revision": "86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a",
+      "path": "libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9D01N.h",
+      "gitBlobSha": "11e9ac62dc249542f027584d5f0c27eafb3fc7b5",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9D01N.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Circle-S3/libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9D01N.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:21Z",
+      "sha256": "68af121f56394a04a81fd472f64b242a60c4fa8d566412d4e273714c3e3e0a69",
+      "bytes": 4783,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-circle-display-h.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-circle-touch",
+      "repository": "Xinyuan-LilyGO/T-Circle-S3",
+      "revision": "86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a",
+      "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "gitBlobSha": "e55e7b1c02509a18a76b1f389686279e419e5084",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Circle-S3/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:13Z",
+      "sha256": "2c10a6f68c2669a69cef48a308f3a9e89389b068c9dbe603883517aa2190825a",
+      "bytes": 6889,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-circle-touch.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-circle-touch-h",
+      "repository": "Xinyuan-LilyGO/T-Circle-S3",
+      "revision": "86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a",
+      "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "gitBlobSha": "30a75c9d4edb4871d7f63775d0ea8f012137d87a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Circle-S3/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:13Z",
+      "sha256": "c2d76aac84aa1650e85b60ab518b6f8cd82ec6477df029eefda784fbf72dd58c",
+      "bytes": 3752,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-circle-touch-h.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+      "repository": "Xinyuan-LilyGO/T-Display-Bar",
+      "path": "lib/SensorLib/src/touch/TouchClassCST816.cpp",
+      "revision": "d3f4b8974be1dfb8bc35262d105e0453a697b459",
+      "gitBlobSha": "855c7b1051b1ed2a26f9dd0e040f26ef3989635e",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-Bar/blob/d3f4b8974be1dfb8bc35262d105e0453a697b459/lib/SensorLib/src/touch/TouchClassCST816.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-Bar/lib/SensorLib/src/touch/TouchClassCST816.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "bar-lib-sensorlib-src-touch-touchclasscst816-cpp-TouchClassCST816.cpp",
+      "sha256": "86f48a816759842c15c2816a5e7a69fb24d7522aafb6aa074a4db7e30cd235f4",
+      "bytes": 8355,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "s3add-encoder-pro-readme",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "path": "README.md",
+      "gitBlobSha": "a302e8e05b3cc5a7f984c412bcbe2d4ad016f2e6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/README.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:30:58Z",
+      "sha256": "463349a7d413c28cb4a34461be4f1492dbbd3212c107e2bb39b3c7ed48dcddb9",
+      "bytes": 11846,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-encoder-pro-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-encoder-pro-pins",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "path": "libraries/Mylibrary/pin_config.h",
+      "gitBlobSha": "6d7a1826ad44629fb99142a7383a6b6f60184cd8",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/libraries/Mylibrary/pin_config.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro/libraries/Mylibrary/pin_config.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:30:57Z",
+      "sha256": "dd80948e7d5babce382ce21fca311677c3d65aad0771175cd46c5208ddef9cad",
+      "bytes": 908,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-encoder-pro-pins.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-encoder-pro-factory",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "path": "examples/Lvgl_CIT/Lvgl_CIT.ino",
+      "gitBlobSha": "7dc514d10d92123c37f4651e30ef03c68bbcaa37",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/examples/Lvgl_CIT/Lvgl_CIT.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro/examples/Lvgl_CIT/Lvgl_CIT.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:21Z",
+      "sha256": "585cf4bc96add41f36f7401460d84eecc80f0401ce454c755ee883528ad76588",
+      "bytes": 10970,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-encoder-pro-factory.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-encoder-pro-display",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "path": "libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.cpp",
+      "gitBlobSha": "8a3aab185d6346aa2da301d9ae42958fd05aed3c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro/libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:21Z",
+      "sha256": "936b1dd6f87e25e4cc7dfdd58aab66cef3f09d540ab08a0294911d2d946ec3cf",
+      "bytes": 4449,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-encoder-pro-display.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-encoder-pro-display-h",
+      "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+      "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+      "path": "libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.h",
+      "gitBlobSha": "899ce419913959e411b087d846c1e2e7b0df3bfe",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Encoder-Pro/libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:26Z",
+      "sha256": "26462d61cf254f3b7d3614841f4783f9775e8736afbe7a961b5b3dd05e1b7430",
+      "bytes": 7214,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-encoder-pro-display-h.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
     }
   ],
   "items": [
@@ -2756,184 +3064,6 @@
       }
     },
     {
-      "productId": "lilygo-t-beam-supreme-meshtastic",
-      "boardId": "lilygo-t-beam-supreme-meshtastic",
-      "name": "LILYGO T-Beam Supreme Meshtastic",
-      "chip": "esp32s3",
-      "flashMB": 8,
-      "psramMB": 8,
-      "hardwareRevision": "T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware selected independently of preloaded firmware",
-      "display": {
-        "width": 128,
-        "height": 64,
-        "controller": "SH1106",
-        "type": "OLED",
-        "interface": "i2c",
-        "pixelFormat": "RGB565",
-        "controllerRamFormat": "1bpp eight pages, one byte is eight vertical pixels",
-        "controllerRamWidth": 132,
-        "physicalColumnOffset": 2,
-        "physicalTouch": false,
-        "touchImplemented": false
-      },
-      "pins": {
-        "boot": 0,
-        "display": {
-          "sda": 17,
-          "scl": 18,
-          "address": 60,
-          "reset": null,
-          "resetScope": "No host-controlled reset pin claimed by selected profile"
-        },
-        "pmu": {
-          "controller": "AXP2101",
-          "address": 52,
-          "sda": 42,
-          "scl": 41,
-          "displaySupply": "ALDO1",
-          "sdSupply": "BLDO1",
-          "implemented": "rail-register subset only"
-        }
-      },
-      "controls": [
-        {
-          "id": "boot",
-          "name": "BOOT",
-          "type": "button",
-          "pin": 0,
-          "activeLow": true
-        }
-      ],
-      "sdCard": {
-        "slot": true,
-        "transport": "spi",
-        "implemented": true,
-        "transportSupported": true,
-        "pins": {
-          "sclk": 36,
-          "mosi": 35,
-          "miso": 37,
-          "cs": 47
-        },
-        "conflictingChipSelectPins": [
-          34
-        ],
-        "defaultImageMiB": 64,
-        "defaultFilesystem": "FAT32",
-        "defaultImagePreparedBy": "platform TF-card service; board attaches supplied image",
-        "supply": "BLDO1 digital rail register gate; power cycle resets protocol and preserves supplied image",
-        "sourceIds": [
-          "lora-supreme-hardware",
-          "lora-utilities",
-          "lora-boards"
-        ],
-        "verification": "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
-      },
-      "radio": {
-        "controller": "SX1262",
-        "implemented": false,
-        "physicalRf": false
-      },
-      "runtimeLevel": "partial",
-      "scope": "Meshtastic 商品页选定 Supreme V3.0、QMC6310U 对应的 SH1106 0x3C 硬件：OLED、BOOT、SPI TF 与 AXP2101 ALDO1/BLDO1 数字电源路径已接入。未将 0x3D 磁力计版本自动混用；SX1262、定位、传感器、PMU 完整功能和 Meshtastic 固件启动未验证。",
-      "scopeEn": "Exact selected T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware selected independently of preloaded firmware: OLED display RAM, physical buttons, documented LED and SPI card paths only; no factory or Meshtastic boot claim.",
-      "sourceIds": [
-        "official-store-shopify-1",
-        "lora-supreme-hardware",
-        "lora-utilities",
-        "lora-boards",
-        "lora-sh1106-wire",
-        "sh1106-datasheet",
-        "lora-factory-readme",
-        "lora-axp-registers",
-        "lora-axp-driver"
-      ],
-      "chronology": {
-        "date": "2025-04-22",
-        "basis": "storefront-publication",
-        "sourceUrl": "https://lilygo.cc/products/t-beam-supreme-meshtastic",
-        "sourceId": "official-store-shopify-1",
-        "confidence": "low",
-        "hardwareRevision": "unknown; Spark product listing",
-        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
-      },
-      "priorityRank": 18,
-      "verification": {
-        "sourcePinsVerified": true,
-        "nativeProtocolTests": true,
-        "nativeGuestProbeVerified": true,
-        "factoryBootVerified": false,
-        "wasmFirmwareVerified": false,
-        "factoryTrialAvailable": false,
-        "hardwareValidated": false,
-        "tests": [
-          "oled_boards_execute_real_xtensa_i2c_and_gpio_with_wrong_route_and_power_rejection",
-          "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
-        ]
-      },
-      "unsupported": [
-        "No official binary has been executed for this profile. Native SRAM Xtensa probes verify the stated display/GPIO contracts only.",
-        "OLED scrolling, analog brightness/charge pump/oscillator timing and controller readback are not implemented. Display content comes only from accepted RAM writes.",
-        "Radio/controller variants, RF propagation, GNSS, sensors/RTC, ADC, battery/charging and USB are unmodeled.",
-        "SPI SD accepts the exact documented pins and exclusive shared chip selection; bit-banged SD and SDMMC host mode are not implemented.",
-        "AXP2101 key/IRQ/charger/ADC/analog voltages and full PMU state are absent; MCU shutdown/reset is not modeled. Only explicit digital peripheral rail gates are applied.",
-        "SH1106 0x3d QMC6310N hardware and V3.1 resistor straps are not automatically selected. QMC/BME/IMU/RTC devices do not ACK merely to satisfy firmware initialization."
-      ],
-      "variantEvidence": {
-        "selectedHardware": "T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware selected independently of preloaded firmware",
-        "automaticRevisionDetection": false,
-        "sourceIds": [
-          "lora-supreme-hardware",
-          "lora-utilities",
-          "lora-boards"
-        ],
-        "basis": "Exact manufacturer product-linked hardware document and current board-target header; unsupported siblings are not substituted."
-      },
-      "powerManagement": {
-        "controller": "AXP2101",
-        "implemented": "digital display and card rail register subset",
-        "registers": [
-          "0x00,0x01 virtual supply status",
-          "0x03 immutable chip ID 0x4a",
-          "0x10 shutdown bit gates modeled peripheral supply only",
-          "0x80..0x86 DC enable/voltage register storage",
-          "0x90..0x9a LDO enable/voltage register storage"
-        ],
-        "displaySupply": "ALDO1",
-        "displayEnableBit": 0,
-        "sdSupply": "BLDO1",
-        "sdEnableBit": 4,
-        "resetPolicy": "Deterministic virtual USB supply, no battery; DC1 initially on and modeled LDO gates initially off. This is a simulation fixture, not a silicon OTP power-on default claim.",
-        "sourceIds": [
-          "lora-supreme-hardware",
-          "lora-utilities",
-          "lora-boards",
-          "lora-axp-registers",
-          "lora-axp-driver"
-        ]
-      },
-      "factoryFirmwareInvestigation": {
-        "status": "reference-only",
-        "sourceIds": [
-          "lora-factory-readme"
-        ],
-        "candidates": [
-          {
-            "path": "firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
-            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
-            "status": "linked",
-            "gitBlobSha": "6e313ad14d1a4a05d8ec18cfe80a6399e5e06859",
-            "bytesFromTree": 987696,
-            "binaryFetched": false,
-            "layoutVerified": false,
-            "sha256": null
-          }
-        ],
-        "simulationVerified": false,
-        "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
-      }
-    },
-    {
       "productId": "lilygo-t-deck-plus-meshtastic",
       "boardId": "lilygo-t-deck-plus-meshtastic",
       "name": "LILYGO T-Deck Plus Meshtastic",
@@ -3516,6 +3646,335 @@
         "physicalRf": false,
         "scope": "Digital register, airtime, IRQ and explicit matching packet input; no RF propagation",
         "verification": "tft_deck_sx1262_packets_require_routed_power_reset_spi_and_matching_peer"
+      }
+    },
+    {
+      "productId": "lilygo-t-beam-supreme-meshtastic",
+      "boardId": "lilygo-t-beam-supreme-meshtastic",
+      "name": "LILYGO T-Beam Supreme Meshtastic",
+      "chip": "esp32s3",
+      "flashMB": 8,
+      "psramMB": 8,
+      "hardwareRevision": "T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware selected independently of preloaded firmware",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SH1106",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages, one byte is eight vertical pixels",
+        "controllerRamWidth": 132,
+        "physicalColumnOffset": 2,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 17,
+          "scl": 18,
+          "address": 60,
+          "reset": null,
+          "resetScope": "No host-controlled reset pin claimed by selected profile"
+        },
+        "pmu": {
+          "controller": "AXP2101",
+          "address": 52,
+          "sda": 42,
+          "scl": 41,
+          "displaySupply": "ALDO1",
+          "sdSupply": "BLDO1",
+          "implemented": "rail-register subset only"
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "transportSupported": true,
+        "pins": {
+          "sclk": 36,
+          "mosi": 35,
+          "miso": 37,
+          "cs": 47
+        },
+        "conflictingChipSelectPins": [
+          34
+        ],
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform TF-card service; board attaches supplied image",
+        "supply": "BLDO1 digital rail register gate; power cycle resets protocol and preserves supplied image",
+        "sourceIds": [
+          "lora-supreme-hardware",
+          "lora-utilities",
+          "lora-boards"
+        ],
+        "verification": "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+      },
+      "radio": {
+        "controller": "SX1262",
+        "implemented": false,
+        "physicalRf": false
+      },
+      "runtimeLevel": "partial",
+      "scope": "Meshtastic 商品页选定 Supreme V3.0、QMC6310U 对应的 SH1106 0x3C 硬件：OLED、BOOT、SPI TF 与 AXP2101 ALDO1/BLDO1 数字电源路径已接入。未将 0x3D 磁力计版本自动混用；SX1262、定位、传感器、PMU 完整功能和 Meshtastic 固件启动未验证。",
+      "scopeEn": "Exact selected T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware selected independently of preloaded firmware: OLED display RAM, physical buttons, documented LED and SPI card paths only; no factory or Meshtastic boot claim.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "lora-supreme-hardware",
+        "lora-utilities",
+        "lora-boards",
+        "lora-sh1106-wire",
+        "sh1106-datasheet",
+        "lora-factory-readme",
+        "lora-axp-registers",
+        "lora-axp-driver"
+      ],
+      "chronology": {
+        "date": "2025-04-22",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-beam-supreme-meshtastic",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 18,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_boards_execute_real_xtensa_i2c_and_gpio_with_wrong_route_and_power_rejection",
+          "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+        ]
+      },
+      "unsupported": [
+        "No official binary has been executed for this profile. Native SRAM Xtensa probes verify the stated display/GPIO contracts only.",
+        "OLED scrolling, analog brightness/charge pump/oscillator timing and controller readback are not implemented. Display content comes only from accepted RAM writes.",
+        "Radio/controller variants, RF propagation, GNSS, sensors/RTC, ADC, battery/charging and USB are unmodeled.",
+        "SPI SD accepts the exact documented pins and exclusive shared chip selection; bit-banged SD and SDMMC host mode are not implemented.",
+        "AXP2101 key/IRQ/charger/ADC/analog voltages and full PMU state are absent; MCU shutdown/reset is not modeled. Only explicit digital peripheral rail gates are applied.",
+        "SH1106 0x3d QMC6310N hardware and V3.1 resistor straps are not automatically selected. QMC/BME/IMU/RTC devices do not ACK merely to satisfy firmware initialization."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware selected independently of preloaded firmware",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "lora-supreme-hardware",
+          "lora-utilities",
+          "lora-boards"
+        ],
+        "basis": "Exact manufacturer product-linked hardware document and current board-target header; unsupported siblings are not substituted."
+      },
+      "powerManagement": {
+        "controller": "AXP2101",
+        "implemented": "digital display and card rail register subset",
+        "registers": [
+          "0x00,0x01 virtual supply status",
+          "0x03 immutable chip ID 0x4a",
+          "0x10 shutdown bit gates modeled peripheral supply only",
+          "0x80..0x86 DC enable/voltage register storage",
+          "0x90..0x9a LDO enable/voltage register storage"
+        ],
+        "displaySupply": "ALDO1",
+        "displayEnableBit": 0,
+        "sdSupply": "BLDO1",
+        "sdEnableBit": 4,
+        "resetPolicy": "Deterministic virtual USB supply, no battery; DC1 initially on and modeled LDO gates initially off. This is a simulation fixture, not a silicon OTP power-on default claim.",
+        "sourceIds": [
+          "lora-supreme-hardware",
+          "lora-utilities",
+          "lora-boards",
+          "lora-axp-registers",
+          "lora-axp-driver"
+        ]
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "lora-factory-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
+            "status": "linked",
+            "gitBlobSha": "6e313ad14d1a4a05d8ec18cfe80a6399e5e06859",
+            "bytesFromTree": 987696,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+      }
+    },
+    {
+      "productId": "lilygo-t-connect-pro",
+      "boardId": "lilygo-t-connect-pro",
+      "name": "LILYGO T-Connect Pro",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-Connect-Pro V1.0 with screen and SX1262; header T_Connect_Pro_V1_0 / T_Connect_Pro_V1_0_SX1262",
+      "display": {
+        "width": 222,
+        "height": 480,
+        "controller": "ST7796",
+        "type": "TFT",
+        "interface": "spi",
+        "pixelFormat": "RGB565",
+        "crop": [
+          49,
+          0,
+          222,
+          480
+        ],
+        "commandCoordinateCanvas": [
+          320,
+          480
+        ],
+        "physicalTouch": true,
+        "touchImplemented": true
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sclk": 12,
+          "mosi": 11,
+          "miso": 13,
+          "cs": 21,
+          "dc": 41,
+          "reset": null,
+          "enable": null,
+          "backlight": {
+            "pin": 46,
+            "activeHigh": true
+          },
+          "ledcGate": true,
+          "conflictingChipSelectPins": [
+            10,
+            14
+          ]
+        },
+        "touch": {
+          "controller": "CST226SE",
+          "address": 90,
+          "sda": 39,
+          "scl": 40,
+          "irq": 3,
+          "reset": 47
+        },
+        "encoder": null
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": false,
+        "transportSupported": false,
+        "notes": "No SD socket is declared on the exact selected hardware variant."
+      },
+      "runtimeLevel": "partial",
+      "scope": "精确选择带 ST7796 屏幕和 SX1262 的 V1.0，已接入 222×480 显示、CST226SE 单点触摸与 BOOT。共享 SPI 的 W5500/LoRa 同时片选会拒绝显示写入；网口、无线、继电器、CAN 和串口收发器尚未模拟。无 LoRa 加 SD/RTC 的另一版本不在本配置内。",
+      "scopeEn": "T-Connect-Pro V1.0 with screen and SX1262; header T_Connect_Pro_V1_0 / T_Connect_Pro_V1_0_SX1262: source-backed display, GPIO and single-point touch subset only.",
+      "sourceIds": [
+        "s3add-connect-pro-readme",
+        "s3add-connect-pro-pins",
+        "s3add-connect-pro-gfx",
+        "s3add-connect-pro-touch",
+        "s3add-connect-pro-touch-h"
+      ],
+      "chronology": {
+        "date": "2025-02-05",
+        "basis": "hardware-release",
+        "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/README.md",
+        "sourceId": "s3add-connect-pro-readme",
+        "confidence": "high",
+        "hardwareRevision": "T-Connect-Pro V1.0 with screen and SX1262; header T_Connect_Pro_V1_0 / T_Connect_Pro_V1_0_SX1262",
+        "notes": "First product hardware version date in the manufacturer Version iteration table. Later selected panel/microphone revisions remain explicitly scoped."
+      },
+      "priorityRank": 21,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "three_exact_screen_variants_execute_xtensa_spi_with_power_and_route_gates",
+          "cst226se_and_cst816d_keep_distinct_registers_ids_sleep_reset_and_coordinates"
+        ]
+      },
+      "unsupported": [
+        "No official binary boot or physical hardware validation is claimed. Authored Xtensa SRAM probes execute IO_MUX, GPIO matrix, GP-SPI and I2C MMIO.",
+        "DCS RGB565 command/pixel subset only; analog/gamma/TE timing/color calibration are not simulated.",
+        "Touch IRQ uses a held low level while pressed; periodic interrupt pulses, auto-sleep timing, gestures, pressure and factory firmware/calibration IDs are unmodeled.",
+        "W5500 Ethernet, SX1262 LoRa, relay GPIO8, CAN, RS485 and RS232 peripherals are not implemented.",
+        "The no-screen and no-LoRa/SD/RTC hardware variants are excluded; no SD socket is invented on the selected SX1262 target.",
+        "CST226SE uses its vendor 8-bit report pointer and D1/05 sleep command. Pressure and additional finger reports are absent."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T-Connect-Pro V1.0 with screen and SX1262; header T_Connect_Pro_V1_0 / T_Connect_Pro_V1_0_SX1262",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "s3add-connect-pro-readme",
+          "s3add-connect-pro-pins",
+          "s3add-connect-pro-gfx",
+          "s3add-connect-pro-touch",
+          "s3add-connect-pro-touch-h"
+        ],
+        "basis": "Exact manufacturer pin header and selected factory/example panel constructor; no sibling mapping by name."
+      },
+      "radio": {
+        "controller": "SX1262",
+        "implemented": false,
+        "physicalRf": false
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "s3add-connect-pro-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/deprecated/(屏幕色彩测试项增加黑色背景测试)[T-Connect-Pro_V1.0][Original_Test]_firmware_202502191117.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/firmware/deprecated/%28%E5%B1%8F%E5%B9%95%E8%89%B2%E5%BD%A9%E6%B5%8B%E8%AF%95%E9%A1%B9%E5%A2%9E%E5%8A%A0%E9%BB%91%E8%89%B2%E8%83%8C%E6%99%AF%E6%B5%8B%E8%AF%95%29%5BT-Connect-Pro_V1.0%5D%5BOriginal_Test%5D_firmware_202502191117.bin",
+            "status": "linked",
+            "gitBlobSha": "4f074b5e91a63b01b7eb6d4383d0e7d212b21a60",
+            "bytesFromTree": 2136672,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer lists this exact variant candidate. No binary payload was downloaded or claimed to boot; source fixtures are the execution evidence."
       }
     },
     {
@@ -4104,6 +4563,153 @@
       }
     },
     {
+      "productId": "lilygo-t-circle-s3",
+      "boardId": "lilygo-t-circle-s3",
+      "name": "LILYGO T-Circle S3",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-Circle-S3 V1.1 base board (microphone revision); no infrared expansion",
+      "display": {
+        "width": 160,
+        "height": 160,
+        "controller": "GC9D01N",
+        "type": "TFT",
+        "interface": "spi",
+        "pixelFormat": "RGB565",
+        "crop": [
+          0,
+          0,
+          160,
+          160
+        ],
+        "commandCoordinateCanvas": [
+          160,
+          160
+        ],
+        "physicalTouch": true,
+        "touchImplemented": true
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sclk": 15,
+          "mosi": 17,
+          "cs": 13,
+          "dc": 16,
+          "reset": null,
+          "enable": null,
+          "backlight": {
+            "pin": 18,
+            "activeHigh": false
+          },
+          "ledcGate": true
+        },
+        "touch": {
+          "controller": "CST816D",
+          "address": 21,
+          "sda": 11,
+          "scl": 14,
+          "irq": 12,
+          "reset": null
+        },
+        "encoder": null
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": false,
+        "transportSupported": false,
+        "notes": "No SD socket is declared on the exact selected hardware variant."
+      },
+      "runtimeLevel": "partial",
+      "scope": "接入 V1.1 基板的 GC9D01N 160×160 显示、低电平有效背光、CST816D 单点触摸和 BOOT。发布日期按官方初版 V1.0 的 2024-08-15；V1.1 更换麦克风。APA102、音频和红外扩展板未模拟。",
+      "scopeEn": "T-Circle-S3 V1.1 base board (microphone revision); no infrared expansion: source-backed display, GPIO and single-point touch subset only.",
+      "sourceIds": [
+        "s3add-circle-readme",
+        "s3add-circle-pins",
+        "s3add-circle-gfx",
+        "s3add-circle-display",
+        "s3add-circle-display-h",
+        "s3add-circle-touch",
+        "s3add-circle-touch-h",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+      ],
+      "chronology": {
+        "date": "2024-08-15",
+        "basis": "hardware-release",
+        "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/README.md",
+        "sourceId": "s3add-circle-readme",
+        "confidence": "high",
+        "hardwareRevision": "T-Circle-S3 V1.1 base board (microphone revision); no infrared expansion",
+        "notes": "First product hardware version date in the manufacturer Version iteration table. Later selected panel/microphone revisions remain explicitly scoped."
+      },
+      "priorityRank": 48,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "three_exact_screen_variants_execute_xtensa_spi_with_power_and_route_gates",
+          "cst226se_and_cst816d_keep_distinct_registers_ids_sleep_reset_and_coordinates"
+        ]
+      },
+      "unsupported": [
+        "No official binary boot or physical hardware validation is claimed. Authored Xtensa SRAM probes execute IO_MUX, GPIO matrix, GP-SPI and I2C MMIO.",
+        "DCS RGB565 command/pixel subset only; analog/gamma/TE timing/color calibration are not simulated.",
+        "Touch IRQ uses a held low level while pressed; periodic interrupt pulses, auto-sleep timing, gestures, pressure and factory firmware/calibration IDs are unmodeled.",
+        "APA102 LEDs, speaker/amplifier and microphone are not implemented.",
+        "The infrared expansion board and its sensors/battery/IR transport are excluded.",
+        "No touch reset pin is wired on the selected base board. A full board reset is needed to leave modeled touch sleep."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T-Circle-S3 V1.1 base board (microphone revision); no infrared expansion",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "s3add-circle-readme",
+          "s3add-circle-pins",
+          "s3add-circle-gfx",
+          "s3add-circle-display",
+          "s3add-circle-display-h",
+          "s3add-circle-touch",
+          "s3add-circle-touch-h",
+          "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+        ],
+        "basis": "Exact manufacturer pin header and selected factory/example panel constructor; no sibling mapping by name."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "s3add-circle-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/（V1.1版本修改麦克风型号）[T-Circle-S3_V1.1][Original_Test]_firmware_202502141426.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/firmware/%EF%BC%88V1.1%E7%89%88%E6%9C%AC%E4%BF%AE%E6%94%B9%E9%BA%A6%E5%85%8B%E9%A3%8E%E5%9E%8B%E5%8F%B7%EF%BC%89%5BT-Circle-S3_V1.1%5D%5BOriginal_Test%5D_firmware_202502141426.bin",
+            "status": "linked",
+            "gitBlobSha": "05363855639c73e67c8e439980f9c9fc2af0da16",
+            "bytesFromTree": 1681424,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer lists this exact variant candidate. No binary payload was downloaded or claimed to boot; source fixtures are the execution evidence."
+      }
+    },
+    {
       "productId": "lilygo-t-beam-1w",
       "boardId": "lilygo-t-beam-1w",
       "name": "LILYGO T-Beam 1W",
@@ -4429,6 +5035,172 @@
         ],
         "simulationVerified": false,
         "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+      }
+    },
+    {
+      "productId": "lilygo-t-encoder-pro",
+      "boardId": "lilygo-t-encoder-pro",
+      "name": "LILYGO T-Encoder Pro",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-Encoder-Pro V1.0 with latest TFD12MASBCTB4_V0_07 CO5300/CST816D display assembly",
+      "display": {
+        "width": 390,
+        "height": 390,
+        "controller": "CO5300",
+        "type": "AMOLED",
+        "interface": "qspi",
+        "pixelFormat": "RGB565",
+        "crop": [
+          0,
+          0,
+          390,
+          390
+        ],
+        "commandCoordinateCanvas": [
+          390,
+          390
+        ],
+        "physicalTouch": true,
+        "touchImplemented": true
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sclk": 12,
+          "mosi": 11,
+          "data": [
+            11,
+            13,
+            7,
+            14
+          ],
+          "cs": 10,
+          "dc": null,
+          "reset": 4,
+          "enable": 3,
+          "backlight": null,
+          "ledcGate": false
+        },
+        "touch": {
+          "controller": "CST816D",
+          "address": 21,
+          "sda": 5,
+          "scl": 6,
+          "irq": 9,
+          "reset": 8
+        },
+        "encoder": {
+          "a": 1,
+          "b": 2
+        }
+      },
+      "controls": [
+        {
+          "id": "encoder-press",
+          "name": "Encoder press / BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "encoder",
+          "name": "Rotary encoder",
+          "type": "encoder",
+          "pins": {
+            "a": 1,
+            "b": 2
+          },
+          "detents": 24,
+          "detentsBasis": "simulation",
+          "physicalDetents": null,
+          "notes": "24 debug steps are a simulation setting, not a claim about physical detents."
+        }
+      ],
+      "sdCard": {
+        "slot": false,
+        "transportSupported": false,
+        "notes": "No SD socket is declared on the exact selected hardware variant."
+      },
+      "runtimeLevel": "partial",
+      "scope": "选择官方当前 TFD12MASBCTB4_V0_07 屏幕组件，接入 CO5300 390×390 QSPI 显示、CST816D 单点触摸、编码器 A/B 和按压键。BOOT 与编码器按压同为 GPIO0，仅提供一个实体按键入口。旧 SH8601/CHSC5816 组件、蜂鸣器和振动未适配。",
+      "scopeEn": "T-Encoder-Pro V1.0 with latest TFD12MASBCTB4_V0_07 CO5300/CST816D display assembly: source-backed display, GPIO and single-point touch subset only.",
+      "sourceIds": [
+        "s3add-encoder-pro-readme",
+        "s3add-encoder-pro-pins",
+        "s3add-encoder-pro-factory",
+        "s3add-encoder-pro-display",
+        "s3add-encoder-pro-display-h",
+        "s3add-circle-touch",
+        "s3add-circle-touch-h",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+      ],
+      "chronology": {
+        "date": "2024-02-02",
+        "basis": "hardware-release",
+        "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/README.md",
+        "sourceId": "s3add-encoder-pro-readme",
+        "confidence": "high",
+        "hardwareRevision": "T-Encoder-Pro V1.0 with latest TFD12MASBCTB4_V0_07 CO5300/CST816D display assembly",
+        "notes": "First product hardware version date in the manufacturer Version iteration table. Later selected panel/microphone revisions remain explicitly scoped."
+      },
+      "priorityRank": 43,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "three_exact_screen_variants_execute_xtensa_spi_with_power_and_route_gates",
+          "cst226se_and_cst816d_keep_distinct_registers_ids_sleep_reset_and_coordinates"
+        ]
+      },
+      "unsupported": [
+        "No official binary boot or physical hardware validation is claimed. Authored Xtensa SRAM probes execute IO_MUX, GPIO matrix, GP-SPI and I2C MMIO.",
+        "DCS RGB565 command/pixel subset only; analog/gamma/TE timing/color calibration are not simulated.",
+        "Touch IRQ uses a held low level while pressed; periodic interrupt pulses, auto-sleep timing, gestures, pressure and factory firmware/calibration IDs are unmodeled.",
+        "The original DXQ120MYB2416A SH8601/CHSC5816 assembly is excluded.",
+        "QSPI validates clock, SDIO0, chip select and framing; SDIO1..3 routing/timing remains unverified.",
+        "Buzzer and vibration motor are not implemented. Encoder 24-step UI setting is a simulation choice, not a measured detent count."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T-Encoder-Pro V1.0 with latest TFD12MASBCTB4_V0_07 CO5300/CST816D display assembly",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "s3add-encoder-pro-readme",
+          "s3add-encoder-pro-pins",
+          "s3add-encoder-pro-factory",
+          "s3add-encoder-pro-display",
+          "s3add-encoder-pro-display-h",
+          "s3add-circle-touch",
+          "s3add-circle-touch-h",
+          "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+        ],
+        "basis": "Exact manufacturer pin header and selected factory/example panel constructor; no sibling mapping by name."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "s3add-encoder-pro-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/(添加开机蜂鸣器)[T-Encoder-Pro_V1.0][Lvgl_CIT][Screen_TFD12MASBCTB4_V0_07]_firmware_202512061209.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/firmware/%28%E6%B7%BB%E5%8A%A0%E5%BC%80%E6%9C%BA%E8%9C%82%E9%B8%A3%E5%99%A8%29%5BT-Encoder-Pro_V1.0%5D%5BLvgl_CIT%5D%5BScreen_TFD12MASBCTB4_V0_07%5D_firmware_202512061209.bin",
+            "status": "linked",
+            "gitBlobSha": "fcdbf6d841656c52b7321318d5bd923d0fba2bdd",
+            "bytesFromTree": 2465120,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer lists this exact variant candidate. No binary payload was downloaded or claimed to boot; source fixtures are the execution evidence."
       }
     },
     {
@@ -4913,11 +5685,16 @@
     }
   ],
   "verification": {
+    "native": "cargo test -p esp32s3 --test lilygo_additional: 18 passed (11 additional-target tests plus 7 reused transport tests)",
+    "clippy": "cargo clippy -p esp32s3 --test lilygo_additional -- -D warnings: passed",
+    "factoryBootVerified": false,
+    "wasmFirmwareVerified": false,
+    "cpuBusChanges": false,
     "commands": [
       "CARGO_BUILD_JOBS=1 cargo test -p esp32s3 --test lilygo_additional",
-      "CARGO_BUILD_JOBS=1 cargo clippy -p esp32s3 --lib --test lilygo_additional -- -D warnings"
+      "CARGO_BUILD_JOBS=1 cargo clippy -p esp32s3 --test lilygo_additional -- -D warnings"
     ],
-    "testCount": 9,
+    "testCount": 18,
     "status": "passed",
     "factoryFirmwareExecuted": false,
     "hardwareTested": false

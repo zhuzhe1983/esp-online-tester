@@ -4,6 +4,9 @@ use esp32s3::{periph,board::tdeck};
 #[allow(dead_code)] // The reused Mini constructor is outside this T-Deck test.
 #[path="../src/board/lilygo_epaper.rs"]
 mod lilygo_epaper;
+#[allow(dead_code)] // Exact additional profiles reuse the private display transport.
+#[path="../src/board/lilygo_display.rs"]
+mod lilygo_display;
 #[path="../src/board/lilygo_additional.rs"]
 mod lilygo_additional;
 use emu_core::Core;
@@ -156,5 +159,44 @@ fn oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage
         if supreme||bpf {power_register(&mut b,0x90,0);power_register(&mut b,0x90,0x13);assert_eq!(sd_command(&mut b,pins,17,7),[255,255],"power cycle requires startup clocks even if no SPI access happened while off");b.spi_transfer_pins(2,SpiPins{cs:0,..pins},&[255;10],0);assert_eq!(sd_command(&mut b,pins,0,0),[255,1]);sd_command(&mut b,pins,8,0x1aa);b.spi_transfer_pins(2,pins,&[],4);for _ in 0..2 {sd_command(&mut b,pins,55,0);sd_command(&mut b,pins,41,1<<30);}}
         assert_eq!(sd_command(&mut b,pins,17,7),[255,0]);assert_eq!(b.spi_transfer_pins(2,pins,&[],2),[255,0xfe]);assert_eq!(b.spi_transfer_pins(2,pins,&[],512),vec![0x69;512]);b.spi_transfer_pins(2,pins,&[],2);
         assert_eq!(sd_command(&mut b,SpiPins{miso:Some(0),..pins},58,0),[255,255]);if supreme||bpf||one {let other=if supreme {34}else if bpf{1}else{15};assert_eq!(sd_command(&mut b,SpiPins{cs:pins.cs|1<<other,..pins},0,0),[255,255]);}b.set_sd_card_present(false);assert_eq!(sd_command(&mut b,pins,0,0),[255,255]);
+    }
+}
+
+// id, clock, MOSI, CS, D/C, reset, enable, light pin/polarity, x offset, width, height
+type ScreenProbe=(&'static str,u8,u8,u8,Option<u8>,Option<u8>,Option<u8>,Option<(u8,bool)>,u16,u16,u16);
+const NEW_SCREENS:&[ScreenProbe]=&[
+    ("lilygo-t-connect-pro",12,11,21,Some(41),None,None,Some((46,true)),49,222,480),
+    ("lilygo-t-circle-s3",15,17,13,Some(16),None,None,Some((18,false)),0,160,160),
+    ("lilygo-t-encoder-pro",12,11,10,None,Some(4),Some(3),None,0,390,390),
+];
+fn screen_command(m:&mut esp32s3::Machine,dc:Option<u8>,c:u8,data:&[u8]) {if let Some(pin)=dc {output(m,pin,false);transfer(m,&[c]);output(m,pin,true);transfer(m,data);}else{let mut bytes=vec![2,0,c,0];bytes.extend(data);transfer(m,&bytes);}}
+#[test]
+fn three_exact_screen_variants_execute_xtensa_spi_with_power_and_route_gates() {
+    for &(id,clock,mosi,cs,dc,reset,enable,light,x,w,h) in NEW_SCREENS {
+        let mut m=machine(id);assert_eq!(m.bus.board.name(),id);for (pin,signal) in [(clock,101),(mosi,103),(cs,110)] {mode(&mut m,pin,signal);}write(&mut m,SPI+0x20,0x3e);
+        for pin in dc.into_iter().chain(reset).chain(enable) {mode(&mut m,pin,256);output(&mut m,pin,true);}if let Some((p,on))=light {mode(&mut m,p,256);output(&mut m,p,on);}
+        for (c,data) in [(0x11,vec![]),(0x29,vec![]),(0x3a,vec![0x55]),(0x2a,[x.to_be_bytes(),x.to_be_bytes()].concat()),(0x2b,vec![0;4]),(0x2c,vec![0xf8,0])] {screen_command(&mut m,dc,c,&data);}
+        let last_x=(x+w-1).to_be_bytes();let last_y=(h-1).to_be_bytes();screen_command(&mut m,dc,0x2a,&[last_x[0],last_x[1],last_x[0],last_x[1]]);screen_command(&mut m,dc,0x2b,&[last_y[0],last_y[1],last_y[0],last_y[1]]);screen_command(&mut m,dc,0x2c,&[7,0xe0]);
+        let frame=m.bus.board.display().unwrap();assert_eq!((frame.0,frame.1),(u32::from(w),u32::from(h)));assert_eq!(frame.2[0],0xf800,"{id}: {}",m.bus.board.report());assert_eq!(frame.2[frame.2.len()-1],0x07e0);
+        mode(&mut m,clock,102);screen_command(&mut m,dc,0x2c,&[255,255]);assert_eq!(m.bus.board.display().unwrap().2,frame.2);mode(&mut m,clock,101);
+        if id=="lilygo-t-connect-pro" {mode(&mut m,14,111);write(&mut m,SPI+0x20,0x3c);screen_command(&mut m,dc,0x2c,&[255,255]);assert_eq!(m.bus.board.display().unwrap().2,frame.2,"shared LoRa CS collision must not write display");write(&mut m,SPI+0x20,0x3e);}
+        screen_command(&mut m,dc,0x28,&[]);assert!(m.bus.board.display().unwrap().2.iter().all(|&p|p==0));screen_command(&mut m,dc,0x29,&[]);assert_eq!(m.bus.board.display().unwrap().2,frame.2);
+        if let Some((pin,_))=light {write(&mut m,0x6000_9004+4*u32::from(pin),0);assert!(m.bus.board.display().unwrap().2.iter().all(|&p|p==0),"GPIO latch without routed backlight cannot light {id}");}else if let Some(pin)=enable {output(&mut m,pin,false);assert!(m.bus.board.display().unwrap().2.iter().all(|&p|p==0));}
+        boot_probe(&mut m,&[0]);assert!(m.bus.board.lora_snapshot().is_none());assert!(m.bus.board.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),Default::default()).is_err());
+        if id=="lilygo-t-encoder-pro" {assert_eq!(m.bus.board.encoder(),Some((1,2)));assert_eq!(m.bus.board.named_pin("encoder-press"),Some(0));assert_eq!(m.bus.board.named_pin("boot"),Some(0));}
+    }
+}
+fn read8(d:&mut dyn I2cDevice,address:u8,n:usize)->Vec<u8> {assert!(d.start(false));assert!(d.write(address));assert!(d.start(true));(0..n).map(|_|d.read()).collect()}
+#[test]
+fn cst226se_and_cst816d_keep_distinct_registers_ids_sleep_reset_and_coordinates() {
+    for (id,sda,scl,addr,irq,reset,x,y) in [("lilygo-t-connect-pro",39,40,0x5a,3,Some(47),221,479),("lilygo-t-circle-s3",11,14,0x15,12,None,159,159),("lilygo-t-encoder-pro",5,6,0x15,9,Some(8),389,389)] {
+        let mut r=Rig::new(id);let mut devices=r.board.i2c_devices();assert!(devices.iter().all(|(_,_,d)|d.pins()==Some((sda,scl))));assert_eq!(devices.len(),2);assert!(devices.iter().all(|(_,a,_)|*a==addr));
+        if let Some(pin)=reset {assert!(devices.iter_mut().all(|(_,_,d)|!d.start(false)));r.drive(pin,true);}
+        r.board.touch(x,y,true);assert_eq!(r.board.touch_irq(),Some((irq,false)));let d=&mut devices.iter_mut().find(|(bus,_,_)|*bus==0).unwrap().2;
+        if id=="lilygo-t-connect-pro" {assert_eq!(read8(d.as_mut(),0,7),[6,13,29,0xdf,0,1,0xab]);assert_eq!(read8(d.as_mut(),6,1),[0xab]);assert!(d.start(false));assert!(d.write(0xd1));assert!(d.write(5));}
+        else {assert_eq!(read8(d.as_mut(),2,5),[1,(x>>8) as u8,x as u8,(y>>8) as u8,y as u8]);assert_eq!(read8(d.as_mut(),0xa7,1),[0xb6]);assert!(d.start(false));assert!(d.write(0xe5));assert!(d.write(3));}
+        assert!(!d.start(false));assert_eq!(r.board.touch_irq(),Some((irq,true)));r.board.touch(x,y,true);assert_eq!(r.board.touch_irq(),Some((irq,true)));
+        if let Some(pin)=reset {r.drive(pin,false);r.drive(pin,true);assert!(d.start(false));r.board.touch(u16::MAX,u16::MAX,true);let count=if id=="lilygo-t-connect-pro" {5}else{2};assert_eq!(read8(d.as_mut(),count,1),[1]);r.board.touch(0,0,false);assert_eq!(read8(d.as_mut(),count,1),[0]);}
+        let mut m=machine(id);if let Some(pin)=reset {mode(&mut m,pin,256);output(&mut m,pin,true);}i2c_route(&mut m,sda,scl,0);assert!(i2c_write(&mut m,0,addr,&[0]));i2c_route(&mut m,sda,48,0);assert!(!i2c_write(&mut m,0,addr,&[0]));
     }
 }
