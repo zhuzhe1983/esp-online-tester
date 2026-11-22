@@ -130,7 +130,7 @@ impl LilygoDisplay {
         // interpret page-1 2Ch or page-7 10h as pixels/sleep commands.
         if self.profile.controller=="JD9613" {if self.command==0xfe {if let Some(&page)=data.first(){self.page=page;}return;}
             if self.page!=0{return;}}
-        if self.profile.name=="lilygo-t-glass" && self.command==0x36 && data.first().is_some_and(|b|b&0x20!=0) {return;}
+        if self.profile.controller=="JD9613" && self.command==0x36 && data.first().is_some_and(|b|b&0x20!=0) {return;}
         if self.command==0x2c && self.panel.colmod&7!=5 {return;}self.panel.dc=true;for &b in data {if self.command==0x51 {if self.brightness!=b {self.version=self.version.wrapping_add(1);}self.brightness=b;}self.panel.byte(b);}}
     fn valid_header(data:&[u8])->bool {matches!(data[0],0x02|0x32) && data[1]==0 && data[3]==0}
     fn quad(&mut self,mut data:&[u8]) {
@@ -140,13 +140,7 @@ impl LilygoDisplay {
             if Self::valid_header(&self.header) {self.data(data);}
         } else if data.len()>=4 && Self::valid_header(&data[..4]) {self.command(data[2]);self.data(&data[4..]);}
     }
-    fn i2c_pins(&self)->Option<(u8,u8)> {self.profile.touch.map(|w|(w.sda,w.scl)).or(if self.profile.expander {Some((3,2))}else{None})}
-    fn touch_level(&self)->bool {let s=self.touch.lock().expect("LILYGO touch state mutex poisoned");!s.powered || s.asleep || !s.down}
-}
-impl BoardModel for LilygoDisplay {
-    fn name(&self)->&'static str {self.profile.name}
-    fn uses_gpio_routes(&self)->bool {true}
-    fn gpio_waveform_at(&mut self,cycle:VirtualCycle,routes:PinRoutes<'_>) {
+    pub(super) fn observe_routes(&mut self,cycle:VirtualCycle,routes:&PinRoutes<'_>) {
         self.cycle=cycle;let before=(self.reset,self.enabled,self.light);
         self.reset=self.profile.reset.is_none_or(|p|routes.software_output(p)==Some(true));
         self.enabled=self.profile.enable.is_none_or(|p|routes.software_output(p)==Some(true));
@@ -159,6 +153,13 @@ impl BoardModel for LilygoDisplay {
         if let Some(w)=self.profile.touch {let old=self.touch_level();let mut s=self.touch.lock().expect("LILYGO touch state mutex poisoned");let power=w.reset.is_none_or(|p|routes.software_output(p)==Some(true));if !power {s.clear();}s.powered=power;drop(s);let level=self.touch_level();if old!=level {self.edges.push(BoardEdge{cycle,pin:w.irq,level});}}
         if let Some((sda,scl))=self.i2c_pins() {let high_scl=routes.software_output(scl)!=Some(false);let high_sda=self.i2c.drive(high_scl,routes.software_output(sda)!=Some(false));for (i,(pin,level)) in [(sda,high_sda),(scl,high_scl)].into_iter().enumerate() {if self.levels[i]!=level {self.levels[i]=level;self.edges.push(BoardEdge{cycle,pin,level});}}}
     }
+    fn i2c_pins(&self)->Option<(u8,u8)> {self.profile.touch.map(|w|(w.sda,w.scl)).or(if self.profile.expander {Some((3,2))}else{None})}
+    fn touch_level(&self)->bool {let s=self.touch.lock().expect("LILYGO touch state mutex poisoned");!s.powered || s.asleep || !s.down}
+}
+impl BoardModel for LilygoDisplay {
+    fn name(&self)->&'static str {self.profile.name}
+    fn uses_gpio_routes(&self)->bool {true}
+    fn gpio_waveform_at(&mut self,cycle:VirtualCycle,routes:PinRoutes<'_>) {self.observe_routes(cycle,&routes);}
     fn uses_gpio_pwm(&self)->bool {self.profile.light_pwm}
     fn gpio_pwm_at(&mut self,_cycle:VirtualCycle,pwm:&dyn Fn(u8)->Option<(f64,u32)>) {if let Some((pin,active))=self.profile.light {let duty=pwm(pin).map(|(_,d)|if active {d.min(65535)}else{65535-d.min(65535)});if duty!=self.pwm {self.pwm=duty;self.light=duty.unwrap_or(self.gpio_light);self.version=self.version.wrapping_add(1);}}}
     fn uses_spi_pins(&self)->bool {true}

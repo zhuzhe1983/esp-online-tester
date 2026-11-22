@@ -7,14 +7,16 @@
 //! BPF schematic page 2 establishes DC1 OLED and ALDO2 card supply routing.
 //! See lilygo-additional-profiles-2026-11-22.json for receipts and limitations.
 use esp_periph::{i2c::I2cDevice,sdmmc::{SdStore,SdCardConfig,card::spi::SpiSdCard}};
-use esp_soc::{board::{Board,BoardModel,BoardEdge,VirtualCycle,SpiPins},pins::PinRoutes};
+use esp_soc::{board::{Board,BoardModel,BoardEdge,VirtualCycle,SpiPins,LcdI80Pins},pins::PinRoutes};
 use super::{tdeck::TDeck,lilygo_epaper::LilygoEpaper};
-use super::lilygo_display::{LilygoDisplay,Profile,TouchKind,TouchWiring};
+use super::lilygo_display::{LilygoDisplay,Profile,TouchKind,TouchWiring,TouchState,TouchDevice};
 use std::sync::{Arc,Mutex};
 use esp_soc::devices::{i2c_bitbang::I2cBitBang,oled_mono::{OledMono,OledI2c,OledKind}};
 
 pub fn make_board(name:&str)->Option<Board> {
     if name=="lilygo-ts-s3-epaper" {return Some(Box::new(TsEpaper::new()));}
+    if name=="lilygo-t-touch-bar" {return Some(Box::new(TouchBar::new()));}
+    if name=="lilygo-t-hmi" {return Some(Box::new(Hmi::new()));}
     let (name,tft):(&'static str,bool)=match name {
         "lilygo-t-deck-pro-meshtastic"=>("lilygo-t-deck-pro-meshtastic",false),
         "lilygo-t-deck-meshtastic"=>("lilygo-t-deck-meshtastic",true),
@@ -259,4 +261,64 @@ impl BoardModel for TsEpaper {
     fn display_version(&self)->u64 {self.panel.version}
     fn display_frames(&self)->u64 {self.panel.frames}
     fn report(&self)->String {format!("[{}] DEPG0213BN/SSD1680 visible122x250 RAM176x296; origin0 exact GxDEPG0213BN; 4000/800ms modeled full/partial driver deadlines; bytes={} frames={} factory-boot=unverified analog/LUT/temperature/RF unmodeled",self.name(),self.panel.ram_bytes_written,self.panel.frames)}
+}
+
+// Two real JD9613 controllers share MOSI/SCLK/DC/reset; both CS low is the
+// manufacturer's broadcast initialization, not an erroneous bus-contention case.
+const TOUCHBAR_LEFT:Profile=Profile{name:"touchbar-left-jd9613",controller:"JD9613",gram:[126,294],glass:[0,0,126,294],spi:[17,18,13],dc:Some(16),reset:Some(15),light:None,light_pwm:false,enable:None,quad:false,buttons:&[],encoder:None,touch:None,expander:false};
+const TOUCHBAR_RIGHT:Profile=Profile{name:"touchbar-right-jd9613",spi:[17,18,14],..TOUCHBAR_LEFT};
+struct TouchBar {panels:[LilygoDisplay;2],touch:Arc<Mutex<TouchState>>,wire:I2cBitBang,levels:[bool;2],edges:Vec<BoardEdge>,cycle:VirtualCycle}
+impl TouchBar {
+    fn new()->Self {Self{panels:[LilygoDisplay::new(&TOUCHBAR_LEFT),LilygoDisplay::new(&TOUCHBAR_RIGHT)],touch:Arc::new(Mutex::new(TouchState{powered:false,asleep:false,down:false,x:0,y:0,width:127,height:621})),wire:I2cBitBang::new(),levels:[true;2],edges:Vec::new(),cycle:0}}
+    fn irq(&self)->bool {let t=self.touch.lock().expect("Touch Bar CST820");!t.powered||t.asleep||!t.down}
+}
+impl BoardModel for TouchBar {
+    fn name(&self)->&'static str {"lilygo-t-touch-bar"}
+    fn uses_gpio_routes(&self)->bool {true}
+    fn gpio_waveform_at(&mut self,cycle:VirtualCycle,routes:PinRoutes<'_>) {
+        self.cycle=cycle;for p in &mut self.panels {p.observe_routes(cycle,&routes);}
+        let old=self.irq();{let mut t=self.touch.lock().expect("Touch Bar CST820");t.powered=routes.software_output(9)==Some(true);if !t.powered{t.clear();}}
+        let irq=self.irq();if irq!=old{self.edges.push(BoardEdge{cycle,pin:12,level:irq});}
+        let scl=routes.software_output(11)!=Some(false);let sda=self.wire.drive(scl,routes.software_output(10)!=Some(false));for(i,(pin,level))in[(10,sda),(11,scl)].into_iter().enumerate(){if self.levels[i]!=level{self.levels[i]=level;self.edges.push(BoardEdge{cycle,pin,level});}}
+    }
+    fn uses_spi_pins(&self)->bool {true}
+    fn spi_transfer_pins(&mut self,host:u8,pins:SpiPins,tx:&[u8],rx:usize)->Vec<u8> {for p in &mut self.panels {p.spi_transfer_pins(host,pins,tx,0);}vec![255;rx]}
+    fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)> {self.wire.clear();self.wire.attach(0x15,Box::new(TouchDevice::new(TouchKind::Cst820,self.touch.clone())));(0..2).flat_map(|bus|self.wire.controller_devices(Some((10,11))).into_iter().map(move |(a,d)|(bus,a,d))).collect()}
+    fn input_levels(&self)->Vec<(u8,bool)> {vec![(10,self.levels[0]),(11,self.levels[1]),(12,self.irq())]}
+    fn touch(&mut self,x:u16,y:u16,down:bool) {let old=self.irq();{let mut t=self.touch.lock().expect("Touch Bar CST820");if !t.powered||t.asleep{return;}let x=x.min(587);t.x=126-y.min(125);t.y=x+if x>=294{32}else{0};t.down=down;}
+        let irq=self.irq();if irq!=old{self.edges.push(BoardEdge{cycle:self.cycle,pin:12,level:irq});}}
+    fn touch_irq(&self)->Option<(u8,bool)> {Some((12,self.irq()))}
+    fn take_edges(&mut self)->Vec<BoardEdge> {std::mem::take(&mut self.edges)}
+    fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {let mut composite=vec![0;588*126];for(i,p)in self.panels.iter().enumerate(){let (_,_,native,_)=p.display()?;
+        // Invert the vendor software placement x_native=126-(y+h), y_native=x.
+        for y in 0..126{for x in 0..294{composite[y*588+i*294+x]=native[x*126+125-y];}}}
+        Some((588,126,composite,self.display_version()))}
+    fn display_version(&self)->u64 {self.panels.iter().map(BoardModel::display_version).fold(0,u64::wrapping_add)}
+    fn display_frames(&self)->u64 {self.panels.iter().map(BoardModel::display_frames).sum()}
+    fn report(&self)->String {format!("[{}] AMOLED H621 variant; two JD9613 native126x294 panels, vendor software90deg rotation horizontally composed588x126; CST820 held-level single-point; 32-coordinate physical touch gap omitted from preview; LED/LCD H612 variant excluded; no factory-boot or calibration claim",self.name())}
+}
+
+const HMI_DATA:[u8;8]=[48,47,39,40,41,42,45,46];
+struct Hmi {panel:esp_soc::devices::DcsPanel,power:bool,light:bool,wr:Option<bool>,version:u64,present:bool,bytes:u64}
+impl Hmi {fn new()->Self {Self{panel:esp_soc::devices::DcsPanel::st7789(),power:false,light:false,wr:None,version:0,present:true,bytes:0}}}
+impl BoardModel for Hmi {
+    fn name(&self)->&'static str {"lilygo-t-hmi"}
+    fn uses_gpio_routes(&self)->bool {true}
+    fn gpio_waveform_at(&mut self,_cycle:VirtualCycle,routes:PinRoutes<'_>) {
+        let power=routes.software_output(10)==Some(true);let light=routes.software_output(38)==Some(true);if self.power&&!power{self.panel.reset();}
+        if(self.power,self.light)!=(power,light){self.version=self.version.wrapping_add(1);}self.power=power;self.light=light;
+        let wr=routes.software_output(8);if self.wr==Some(false)&&wr==Some(true)&&power&&routes.software_output(6)==Some(false) {if let Some(dc)=routes.software_output(7) {let mut word=0u8;let mut valid=true;for(i,p)in HMI_DATA.into_iter().enumerate(){if let Some(high)=routes.software_output(p){word|=u8::from(high)<<i;}else{valid=false;}}if valid{self.panel.dc=dc;self.panel.byte(word);self.bytes+=1;if !dc{self.version=self.version.wrapping_add(1);}}}}
+        self.wr=wr;
+    }
+    fn lcd_i80(&mut self,pins:LcdI80Pins,_data_phase:bool,words:&[u16]) {if !self.power||pins.width!=8||pins.clock&(1<<8)==0||pins.select&(1<<6)==0||pins.dc&(1<<7)==0||!HMI_DATA.iter().enumerate().all(|(i,p)|pins.data[i]&(1<<p)!=0){return;}
+        self.panel.dc=pins.dc_high;for &word in words{self.panel.byte(word as u8);self.bytes+=1;}if !pins.dc_high{self.version=self.version.wrapping_add(1);}}
+    fn input_levels(&self)->Vec<(u8,bool)> {vec![(0,true),(21,true)]}
+    fn named_pin(&self,name:&str)->Option<u8> {match name{"boot"=>Some(0),"user"=>Some(21),_=>None}}
+    fn sd_card_slot(&self)->Option<([u8;6],bool)> {Some(([12,11,13,255,255,255],self.power&&self.present))}
+    fn set_sd_card_present(&mut self,present:bool) {self.present=present;}
+    fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {Some((240,320,if self.power&&self.light&&self.panel.on&&!self.panel.sleeping{self.panel.gram.clone()}else{vec![0;240*320]},self.display_version()))}
+    fn display_version(&self)->u64 {self.panel.pixels_written.wrapping_add(self.panel.resets).wrapping_add(self.version)}
+    fn display_frames(&self)->u64 {self.panel.frames}
+    fn gram(&self)->Option<(Vec<u16>,usize,usize)> {Some((self.panel.gram.clone(),240,320))}
+    fn report(&self)->String {format!("[{}] ST7789 240x320 exact i80 data48/47/39/40/41/42/45/46 WR8 CS6 DC7 power10 BL38; bytes={} BOOT0/user21 and native1-bit SDMMC12/11/13; XPT2046 physical touch unmodeled; USB-present digital subset, battery latch14/ADC/backlight dimming/factory-boot unverified",self.name(),self.bytes)}
 }
