@@ -4,6 +4,11 @@
 Build both trees with the same stable toolchain and `cargo build --release --bins`
 first. Outputs retain all warmups and measurements; raw console logs stay in the
 caller-selected ignored directory. No timing sample is discarded after recording.
+
+The default remains the original S3/C3/C6 hello sequence. Use `--workloads all`
+to append classic ESP32 and P4, or name an ordered subset explicitly. Classic
+uses the existing CLI golden's ECO3 ROM and public hello images; it needs no
+new firmware build or synthetic manifest in the assets directory.
 """
 import argparse
 from datetime import datetime, timezone
@@ -43,6 +48,11 @@ def source_receipt(root):
 
 STOP = re.compile(r'\[emu\] stop: (.*?) — (.*?) insns .*?emulated ([\d.]+)s \((\d+) cycles\); (\d+) exceptions, (\d+) interrupts')
 WORK = ('stop', 'instructions', 'guestSeconds', 'cycles', 'exceptions', 'interrupts', 'stdoutSha256')
+DEFAULT_WORKLOADS = ('hello', 'c3-hello', 'c6-hello')
+WORKLOAD_BINARIES = {
+    'hello': 'esp32sim', 'c3-hello': 'esp32sim-c3', 'c6-hello': 'esp32sim-c6',
+    'classic-hello': 'esp32sim', 'p4-hello': 'esp32sim-p4',
+}
 
 
 def main():
@@ -53,10 +63,18 @@ def main():
     parser.add_argument('--output', type=Path, required=True, help='Compact JSON receipt')
     parser.add_argument('--raw-dir', type=Path, required=True, help='Ignored output directory for stdout/stderr')
     parser.add_argument('--rounds', type=int, default=5)
+    parser.add_argument('--workloads', nargs='+', choices=[*WORKLOAD_BINARIES, 'all'],
+                        default=list(DEFAULT_WORKLOADS),
+                        help='Ordered workloads; default: hello c3-hello c6-hello; all also runs classic-hello p4-hello')
     parser.add_argument('--conditions', default='Shared host; no dedicated isolation asserted', help='Known concurrent work or measurement isolation, retained verbatim')
     args = parser.parse_args()
     if args.rounds < 3:
         parser.error('At least three rounds are required for a median comparison')
+    if 'all' in args.workloads and len(args.workloads) != 1:
+        parser.error('--workloads all cannot be combined with individual workload names')
+    workloads = list(WORKLOAD_BINARIES) if args.workloads == ['all'] else args.workloads
+    if len(set(workloads)) != len(workloads):
+        parser.error('--workloads must not repeat a workload')
     args.raw_dir.mkdir(parents=True, exist_ok=True)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     roots = {'baseline': args.baseline.resolve(), 'candidate': args.candidate.resolve()}
@@ -65,6 +83,7 @@ def main():
         'startedAt': datetime.now(timezone.utc).isoformat(timespec='seconds'),
         'method': 'Sequential RUSAGE_CHILDREN user/system CPU deltas; 30 emulated seconds; one excluded warmup per arm; alternating AB/BA measurement pairs',
         'rounds': args.rounds,
+        'selectedWorkloads': workloads,
         'environment': {'os': platform.system(), 'architecture': platform.machine(), 'logicalCpus': os.cpu_count(),
                         'rustc': subprocess.check_output(['rustc', '--version']).decode().strip(),
                         'python': platform.python_version(), 'measurementConditions': args.conditions},
@@ -77,12 +96,27 @@ def main():
     def save():
         args.output.write_text(json.dumps(report, indent=2) + '\n')
 
-    for workload, binary in [('hello', 'esp32sim'), ('c3-hello', 'esp32sim-c3'), ('c6-hello', 'esp32sim-c6')]:
-        manifest = json.loads((args.assets / (workload + '.json')).read_text())
+    for workload in workloads:
+        binary = WORKLOAD_BINARIES[workload]
+        if workload == 'classic-hello':
+            # cli/tests/goldens.rs::hello_world_classic at baseline 573f5a6:
+            # ECO3, esp32dev, UART0, default 4/0 MiB. Retain the same real
+            # ROM/bootloader/partition/app, extending only the run to 30 s.
+            manifest = {'board': 'esp32dev', 'flash_mb': 4, 'psram_mb': 0, 'files': {
+                'rom': 'esp32_rev300_rom.elf',
+                'bootloader': 'public/classic-hello-bootloader.bin',
+                'ptable': 'public/classic-hello-ptable.bin',
+                'app': 'public/classic-hello_world.bin',
+            }}
+        else:
+            manifest = json.loads((args.assets / (workload + '.json')).read_text())
         files = {role: (args.assets / path).resolve() for role, path in manifest['files'].items()}
         command = ['--boot', 'rom', '--flash-mb', str(manifest['flash_mb']), '--max-seconds', '30', '--no-dump']
         if workload == 'hello':
             command += ['--board', manifest['board'], '--psram-mb', str(manifest['psram_mb'])]
+        elif workload == 'classic-hello':
+            command += ['--chip', 'esp32', '--board', manifest['board'],
+                        '--psram-mb', str(manifest['psram_mb']), '--console', 'uart0']
         for role in ('rom', 'bootloader', 'ptable', 'app'):
             command += ['--' + role, str(files[role])]
         normalized = [value.replace(str(args.assets.resolve()), '{assets}') for value in command]
