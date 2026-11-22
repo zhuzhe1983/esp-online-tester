@@ -69,6 +69,8 @@ impl Sx1262 {
     fn ticks_cycles(&self,ticks:u32)->u64 {(u128::from(ticks)*u128::from(self.hz)).div_ceil(64000).min(u128::from(u64::MAX)) as u64}
     pub fn busy(&self)->bool {self.powered && (!self.reset_high || self.mode==0 || self.busy_until.is_some_and(|d|d>self.now))}
     pub fn irq(&self)->bool {self.powered && self.reset_high && self.irq & self.irq_mask & self.dio1_mask!=0}
+    /// Board RF switches select the receive path only in RX; SPI remains independent.
+    pub fn is_receiving(&self)->bool {self.mode==0x50}
     pub fn next_deadline(&self)->Option<u64> {self.busy_until.into_iter().chain(self.event.as_ref().map(|e|e.0)).min()}
     fn raise(&mut self,bits:u16) {self.irq|=bits & self.irq_mask;}
     pub fn advance_to(&mut self,now:u64) {

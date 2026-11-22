@@ -26,7 +26,7 @@ ALIAS = {
     't-dongle-esp32-s2-1-14-inch-lcd-board': 't-dongle',
     't-eth-elite-1': 't-eth-elite', 't-encoder-esp32': 't-encoder',
     't-mini-epaper-s3': 't-mini-e-paper-s3', 't-pico': 't-pico-2350',
-    't7-v1-3-mini-32-esp32': 't7', 't8-c3': 't8',
+    't7-v1-3-mini-32-esp32': 't7',
     't5-4-7-inch-e-paper-v2-3': 't5-e-paper',
     't5-2-13inch-e-paper': 't5-epaper-2.13inch', 't5s-2-7inch-e-paper': 't5-epaper-2.7inch',
     't-sim-7670g-s3': 't-sim7670g-s3', 't-sim7080-s3': 't-sim7080x-s3',
@@ -295,6 +295,10 @@ def build(cache, output):
         if handle == 't-eth-lite':
             entry['conflicts'].append({'kind': 'multiple-hardware-options', 'sourceIds': list(entry['sourceIds']),
                                        'notes': 'Storefront includes both ESP32 + RTL8201 and ESP32-S3 + W5500. The catalog MCU is ESP32-S3, so documentation is explicitly mapped to t-eth-lite-s3. Do not combine columns or inherit classic ESP32 pins.'})
+        if handle == 't8-c3':
+            entry['conflicts'].append({'kind': 'rejected-sibling-documentation', 'sourceIds': list(entry['sourceIds']),
+                                       'rejectedUrl': 'https://wiki.lilygo.cc/products/t8-series/t8/',
+                                       'notes': 'The T8 wiki describes ESP32-WROVER, 8 MB PSRAM and Micro USB; it is not the exact T8-C3. The former t8-c3 to t8 alias is removed. Current storefront also offers S3 hardware; exact T8-C3 V1.1 sources and runtime scope are retained in lilygo-riscv-additional-profiles-2026-11-22.json.'})
         if handle in ('t-display-s3-pro', 't-display-s3-pro-external'):
             entry['conflicts'].append({'kind': 'screen-controller-review', 'sourceIds': list(entry['sourceIds']),
                                        'notes': 'The original Pro official wiki describes a 2.2-inch ST7789V2 panel; the storefront describes 2.33-inch ST7796 at 222x480. External is a separate listing. Resolve against the exact official source header/hardware revision before selecting a controller; do not apply a sibling Pro panel by name.'})
@@ -321,6 +325,21 @@ def build(cache, output):
             row.update(extra)
             row['supplementalAudit'] = str(supplemental_path.relative_to(ROOT))
             row['normalizedSpecifications'] = normalized_specifications(row['specifications'])
+    corrections_path = ROOT / 'docs/platform/research/lilygo-riscv-additional-profiles-2026-11-22.json'
+    if corrections_path.exists():
+        corrections = read(corrections_path)
+        by_id = {row['id']: row for row in rows}
+        extra_sources = {source['id']: source for source in corrections['sources']}
+        for correction in corrections.get('auditCorrections', []):
+            row = by_id[correction['id']]
+            for sid in correction['sourceIds']:
+                if sid not in sources:
+                    sources[sid] = extra_sources[sid]
+                if sid not in row['sourceIds']:
+                    row['sourceIds'].append(sid)
+            row['chronology'] = correction['chronology']
+            row['conflicts'].extend(correction.get('conflicts', []))
+            row['chronologyCorrectionAudit'] = str(corrections_path.relative_to(ROOT))
     rows.sort(key=lambda x: (x['chronology']['date'] is not None, x['chronology']['date'] or '', x['id']), reverse=True)
     for rank, row in enumerate(rows, 1):
         row['priorityRank'] = rank

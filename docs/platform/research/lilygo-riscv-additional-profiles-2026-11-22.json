@@ -1,0 +1,1611 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-22T08:10:50Z",
+  "implementation": [
+    "esp32c6/src/board/lilygo_additional.rs",
+    "esp32c3/src/board/lilygo_additional.rs"
+  ],
+  "status": "five exact partial runtime profiles, one explicit C3 source blocker and one corrected classic ESP32 handoff",
+  "notes": [
+    "Five profiles use distinct board identities and actual guest GPIO/SPI routing; no display/framebuffer is fabricated.",
+    "Source receipts preserve exact byte hashes. Pinned revisions are neutral unless a separate Git commit object has been verified.",
+    "Two C3 cold MMIO/attach gates use uses_gpio_routes(); trait default preserves legacy waveform opt-in. Instruction scheduling and hot bus/tick paths are unchanged.",
+    "Only shared SX1262 addition is read-only is_receiving(), used to choose exact RX/TX antenna path; SPI remains independent.",
+    "No third-party firmware bytes fetched or committed."
+  ],
+  "sources": [
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "path": "docs/en/t3_c6_sx1262/t3_c6_sx1262_hw.md",
+      "id": "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+      "gitBlobSha": "a0d28a339daebe1c7094993628156d69a25463b1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t3_c6_sx1262/t3_c6_sx1262_hw.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t3_c6_sx1262/t3_c6_sx1262_hw.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:06Z",
+      "sha256": "d1ffe5fd809734e422a23f154eb8823e55a4d97e1d8b1903fcdcfd3a1d8b04ea",
+      "bytes": 6235,
+      "archiveName": "target/lilygo-riscv-additional-sources/LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series / docs/en/t3_c6_sx1262/t3_c6_sx1262_hw.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "path": "examples/LoRa/T3C6/SX1262_PingPong/SX1262_PingPong.ino",
+      "id": "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino",
+      "gitBlobSha": "2237fa8efc3444b91b769a3f194a4f2192a074a7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/LoRa/T3C6/SX1262_PingPong/SX1262_PingPong.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/LoRa/T3C6/SX1262_PingPong/SX1262_PingPong.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:06Z",
+      "sha256": "27896858ea964ea0a82cb587479e0280e942e211b354d2072310570ed08dd8a6",
+      "bytes": 4923,
+      "archiveName": "target/lilygo-riscv-additional-sources/LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series / examples/LoRa/T3C6/SX1262_PingPong/SX1262_PingPong.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "path": "lib/RadioLib/src/Module.cpp",
+      "id": "LilyGo-LoRa-Series-lib-RadioLib-src-Module.cpp",
+      "gitBlobSha": "5adb48c6a416a185405a8f1ca137ee908876d10f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/RadioLib/src/Module.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/RadioLib/src/Module.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:57:54Z",
+      "sha256": "6899ee39319d95fe48289b3756ed00455501456d504425ab5ca7b561272ddc05",
+      "bytes": 19351,
+      "archiveName": "target/lilygo-riscv-additional-sources/LilyGo-LoRa-Series-lib-RadioLib-src-Module.cpp.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series / lib/RadioLib/src/Module.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "path": "schematic/T3-C6_V1.0.pdf",
+      "id": "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+      "gitBlobSha": "fde161872163f0a282e9a1bbfbc44b01fff43fa6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/schematic/T3-C6_V1.0.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/schematic/T3-C6_V1.0.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:06Z",
+      "sha256": "feca2692a010696b75c4347f48fff44f28a03d43f1d257ebf6b0da13230c6aa6",
+      "bytes": 360606,
+      "archiveName": "target/lilygo-riscv-additional-sources/LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series / schematic/T3-C6_V1.0.pdf",
+      "kind": "manufacturer-schematic",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-W5500-Lite",
+      "pinnedGitRevision": "fb33928c687ba198d512d9cb89a58615583b7412",
+      "path": "README.MD",
+      "id": "LilyGo-W5500-Lite-README.MD",
+      "gitBlobSha": "27d3d89a620d0d5b942e3091ab9a8624f40d846d",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-W5500-Lite/fb33928c687ba198d512d9cb89a58615583b7412/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-W5500-Lite/fb33928c687ba198d512d9cb89a58615583b7412/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:02:17Z",
+      "sha256": "eeaf598dc6079aa8d995d3006418ee2b0cbeb18f91ee1c3fcd7441cc8af52b76",
+      "bytes": 488,
+      "archiveName": "target/lilygo-riscv-additional-sources/LilyGo-W5500-Lite-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-W5500-Lite / README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-W5500-Lite",
+      "pinnedGitRevision": "fb33928c687ba198d512d9cb89a58615583b7412",
+      "path": "examples/WebClient/WebClient.ino",
+      "id": "LilyGo-W5500-Lite-examples-WebClient-WebClient.ino",
+      "gitBlobSha": "6d7a3a6b7281ac3244b6b1f1ccc11925ced448de",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-W5500-Lite/fb33928c687ba198d512d9cb89a58615583b7412/examples/WebClient/WebClient.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-W5500-Lite/fb33928c687ba198d512d9cb89a58615583b7412/examples/WebClient/WebClient.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:02:17Z",
+      "sha256": "ee91b2397eba206e67744ba36d674f9dbe0d06c3aab8da56a1cbb2e85ff9c7d2",
+      "bytes": 4949,
+      "archiveName": "target/lilygo-riscv-additional-sources/LilyGo-W5500-Lite-examples-WebClient-WebClient.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-W5500-Lite / examples/WebClient/WebClient.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-W5500-Lite",
+      "pinnedGitRevision": "fb33928c687ba198d512d9cb89a58615583b7412",
+      "path": "libdeps/esp8266-oled-ssd1306/src/OLEDDisplay.h",
+      "id": "LilyGo-W5500-Lite-libdeps-esp8266-oled-ssd1306-src-OLEDDisplay.h",
+      "gitBlobSha": "2e338316e3d77ef1bd26ff695cb1cc0524cb05e7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-W5500-Lite/fb33928c687ba198d512d9cb89a58615583b7412/libdeps/esp8266-oled-ssd1306/src/OLEDDisplay.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-W5500-Lite/fb33928c687ba198d512d9cb89a58615583b7412/libdeps/esp8266-oled-ssd1306/src/OLEDDisplay.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:03:35Z",
+      "sha256": "afd35097d23a9f55ad00420523f1d05b1e4cc75d7d7ca556ef7ea19060326062",
+      "bytes": 10252,
+      "archiveName": "target/lilygo-riscv-additional-sources/LilyGo-W5500-Lite-libdeps-esp8266-oled-ssd1306-src-OLEDDisplay.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-W5500-Lite / libdeps/esp8266-oled-ssd1306/src/OLEDDisplay.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-W5500-Lite",
+      "pinnedGitRevision": "fb33928c687ba198d512d9cb89a58615583b7412",
+      "path": "libdeps/esp8266-oled-ssd1306/src/SSD1306Wire.h",
+      "id": "LilyGo-W5500-Lite-libdeps-esp8266-oled-ssd1306-src-SSD1306Wire.h",
+      "gitBlobSha": "a3d0a055a7744673fbaef4e64e4c1b9b1543b7c9",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-W5500-Lite/fb33928c687ba198d512d9cb89a58615583b7412/libdeps/esp8266-oled-ssd1306/src/SSD1306Wire.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-W5500-Lite/fb33928c687ba198d512d9cb89a58615583b7412/libdeps/esp8266-oled-ssd1306/src/SSD1306Wire.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:03:35Z",
+      "sha256": "3e390b6816b4570713c97cdddeb2f68dbe8f8682ca231c4fe2f05b4a24bb5b31",
+      "bytes": 5184,
+      "archiveName": "target/lilygo-riscv-additional-sources/LilyGo-W5500-Lite-libdeps-esp8266-oled-ssd1306-src-SSD1306Wire.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-W5500-Lite / libdeps/esp8266-oled-ssd1306/src/SSD1306Wire.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-W5500-Lite",
+      "pinnedGitRevision": "fb33928c687ba198d512d9cb89a58615583b7412",
+      "path": "schematic/w5500.pdf",
+      "id": "LilyGo-W5500-Lite-schematic-w5500.pdf",
+      "gitBlobSha": "18dfbf7b2b4400618c03e1452d39c6ff68551f8f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-W5500-Lite/fb33928c687ba198d512d9cb89a58615583b7412/schematic/w5500.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-W5500-Lite/fb33928c687ba198d512d9cb89a58615583b7412/schematic/w5500.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:02:17Z",
+      "sha256": "1d5fca3111a02ea6d5ea93b267bb39e1b53a0ea238e648a6a74de42de7a8dcdf",
+      "bytes": 89965,
+      "archiveName": "target/lilygo-riscv-additional-sources/LilyGo-W5500-Lite-schematic-w5500.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-W5500-Lite / schematic/w5500.pdf",
+      "kind": "manufacturer-schematic",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/Lilygo-T-Pico2",
+      "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+      "path": "README.md",
+      "id": "Lilygo-T-Pico2-README.md",
+      "gitBlobSha": "3ffaff31d1b66413abdb6e6be519b6e18c7ff845",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:06Z",
+      "sha256": "2f5748fa73993704197f469528b15eb2c9591a22cab80baa175143d520e67b8f",
+      "bytes": 11791,
+      "archiveName": "target/lilygo-riscv-additional-sources/Lilygo-T-Pico2-README.md.raw",
+      "title": "Xinyuan-LilyGO/Lilygo-T-Pico2 / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/Lilygo-T-Pico2",
+      "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+      "path": "examples/AT_ESP_Gpio/AT_ESP_Gpio.ino",
+      "id": "Lilygo-T-Pico2-examples-AT_ESP_Gpio-AT_ESP_Gpio.ino",
+      "gitBlobSha": "65151d8cfec085ef3451b34950b01ee8329cc910",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/examples/AT_ESP_Gpio/AT_ESP_Gpio.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/examples/AT_ESP_Gpio/AT_ESP_Gpio.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:12Z",
+      "sha256": "b07b1210f89257112bda5196d96c60c988394581399e16e2171c41221a209bea",
+      "bytes": 4120,
+      "archiveName": "target/lilygo-riscv-additional-sources/Lilygo-T-Pico2-examples-AT_ESP_Gpio-AT_ESP_Gpio.ino.raw",
+      "title": "Xinyuan-LilyGO/Lilygo-T-Pico2 / examples/AT_ESP_Gpio/AT_ESP_Gpio.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/Lilygo-T-Pico2",
+      "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+      "path": "examples/Factory/utilities.h",
+      "id": "Lilygo-T-Pico2-examples-Factory-utilities.h",
+      "gitBlobSha": "35c53bd1c323503b547648f9dcab3583e8c2aca1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/examples/Factory/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/examples/Factory/utilities.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:06Z",
+      "sha256": "9704072fd90deacbd5d576c38515c8268ae3916eae8c63d40d565bde95bf3652",
+      "bytes": 1734,
+      "archiveName": "target/lilygo-riscv-additional-sources/Lilygo-T-Pico2-examples-Factory-utilities.h.raw",
+      "title": "Xinyuan-LilyGO/Lilygo-T-Pico2 / examples/Factory/utilities.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/Lilygo-T-Pico2",
+      "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+      "path": "hardware/T_Pico2350_V1.2.pdf",
+      "id": "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+      "gitBlobSha": "90eb563316a8089ecfdff8b4c80836fec174a695",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/hardware/T_Pico2350_V1.2.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/hardware/T_Pico2350_V1.2.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:06Z",
+      "sha256": "f39300493deeeb354be6dccb0a6e08766b578087fcd5141f7e5e45c22e6cd633",
+      "bytes": 1134626,
+      "archiveName": "target/lilygo-riscv-additional-sources/Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf.raw",
+      "title": "Xinyuan-LilyGO/Lilygo-T-Pico2 / hardware/T_Pico2350_V1.2.pdf",
+      "kind": "manufacturer-schematic",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-01C3",
+      "pinnedGitRevision": "e4e6dda5ef07e33936ded354b3abea463857b67d",
+      "path": "ESP32-C3-Schematic.pdf",
+      "id": "T-01C3-ESP32-C3-Schematic.pdf",
+      "gitBlobSha": "a25bae1626b80c1f1b5e40186aceb2244047d66c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/ESP32-C3-Schematic.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/ESP32-C3-Schematic.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:18Z",
+      "sha256": "2d1477fec286b5b795299799782f0dd15dd93cf09f5422c9b88a1771b4176ef0",
+      "bytes": 33090,
+      "archiveName": "target/lilygo-riscv-additional-sources/T-01C3-ESP32-C3-Schematic.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-01C3 / ESP32-C3-Schematic.pdf",
+      "kind": "manufacturer-schematic",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-01C3",
+      "pinnedGitRevision": "e4e6dda5ef07e33936ded354b3abea463857b67d",
+      "path": "README.md",
+      "id": "T-01C3-README.md",
+      "gitBlobSha": "9ec9f4bff01aab94f3bf7342e4b079f92229887e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:12Z",
+      "sha256": "bc61fa7b6fb4fbbbcefef8450b453ee33c102941990a97fb0669969d5ed27cb0",
+      "bytes": 1011,
+      "archiveName": "target/lilygo-riscv-additional-sources/T-01C3-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-01C3 / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-01C3",
+      "pinnedGitRevision": "e4e6dda5ef07e33936ded354b3abea463857b67d",
+      "path": "example/deepsleep/deepsleep.ino",
+      "id": "T-01C3-example-deepsleep-deepsleep.ino",
+      "gitBlobSha": "bfe2112883ca94d7bb6dc505b36e3451e16854af",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/example/deepsleep/deepsleep.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/example/deepsleep/deepsleep.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:57:54Z",
+      "sha256": "10ade81db4638a7b409452cbff546e227482e95cffe8ada964b6f4d5ea3bb540",
+      "bytes": 1754,
+      "archiveName": "target/lilygo-riscv-additional-sources/T-01C3-example-deepsleep-deepsleep.ino.raw",
+      "title": "Xinyuan-LilyGO/T-01C3 / example/deepsleep/deepsleep.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-01C3",
+      "pinnedGitRevision": "e4e6dda5ef07e33936ded354b3abea463857b67d",
+      "path": "image/T-01C3pin.jpg",
+      "id": "T-01C3-image-T-01C3pin.jpg",
+      "gitBlobSha": "7c15ed375eeef6be2ac734c106cc84b02a4ac40d",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/image/T-01C3pin.jpg",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/image/T-01C3pin.jpg",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:18Z",
+      "sha256": "d17d8ff78f8813501e384c6209b05288bbc14d9397869945c50d6ca0a54e9dee",
+      "bytes": 1135560,
+      "archiveName": "target/lilygo-riscv-additional-sources/T-01C3-image-T-01C3pin.jpg.raw",
+      "title": "Xinyuan-LilyGO/T-01C3 / image/T-01C3pin.jpg",
+      "kind": "manufacturer-photo",
+      "mediaType": "image/jpeg"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-ZigBee",
+      "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+      "path": "README.md",
+      "id": "T-ZigBee-README.md",
+      "gitBlobSha": "89e916a9dc16e1f55ba7060b8fdbe107ab133acc",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:18Z",
+      "sha256": "65c33bd72e28b24252f358336a25660bfbe8a97a350c21e1f08106337e65464f",
+      "bytes": 1468,
+      "archiveName": "target/lilygo-riscv-additional-sources/T-ZigBee-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-ZigBee / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-ZigBee",
+      "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+      "path": "Schematic/T-Zigbee.pdf",
+      "id": "T-ZigBee-Schematic-T-Zigbee.pdf",
+      "gitBlobSha": "c92e0737cf341a9c46d8f47fa2160c4e9319ca02",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/Schematic/T-Zigbee.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/Schematic/T-Zigbee.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:18Z",
+      "sha256": "d22322f5d32ed210ddd63dc2358bd8e0296ae90e9cd45d79d03151ee32270eb4",
+      "bytes": 127098,
+      "archiveName": "target/lilygo-riscv-additional-sources/T-ZigBee-Schematic-T-Zigbee.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-ZigBee / Schematic/T-Zigbee.pdf",
+      "kind": "manufacturer-schematic",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-ZigBee",
+      "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+      "path": "examples/factory_test/factory_test.ino",
+      "id": "T-ZigBee-examples-factory_test-factory_test.ino",
+      "gitBlobSha": "9ed8316d0f9232d59dfe28ec978332e1ff29e33b",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/examples/factory_test/factory_test.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/examples/factory_test/factory_test.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:57:54Z",
+      "sha256": "ce2bb100293710270de899289bc29dd36a1414a73451427b39f66eec83342fc2",
+      "bytes": 8756,
+      "archiveName": "target/lilygo-riscv-additional-sources/T-ZigBee-examples-factory_test-factory_test.ino.raw",
+      "title": "Xinyuan-LilyGO/T-ZigBee / examples/factory_test/factory_test.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-ZigBee",
+      "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+      "path": "firmware/README.md",
+      "id": "T-ZigBee-firmware-README.md",
+      "gitBlobSha": "bfbadea8aefef7b98234325b795337303fe292d0",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:18Z",
+      "sha256": "ad973b3eb6fe41daee26c376f71c82cd60307f9933b64140719db8ba5a95de8d",
+      "bytes": 110,
+      "archiveName": "target/lilygo-riscv-additional-sources/T-ZigBee-firmware-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-ZigBee / firmware/README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-ZigBee",
+      "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+      "path": "platformio.ini",
+      "id": "T-ZigBee-platformio.ini",
+      "gitBlobSha": "a92068466814a4af3cc35c4c404d08aff26286c5",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:18Z",
+      "sha256": "90a07b010abf92dd4abe8e9ee20b01a8ef1f96c20c2d449bb7e33b541d48aabc",
+      "bytes": 1442,
+      "archiveName": "target/lilygo-riscv-additional-sources/T-ZigBee-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/T-ZigBee / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T8-C3",
+      "pinnedGitRevision": "9673426fc2862fc330c71421077035d0d496a124",
+      "path": "README.md",
+      "id": "T8-C3-README.md",
+      "gitBlobSha": "aacbc7ece119e207b64d95db66048b7ac21af9d7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T8-C3/9673426fc2862fc330c71421077035d0d496a124/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T8-C3/9673426fc2862fc330c71421077035d0d496a124/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:12Z",
+      "sha256": "694bb70aab7708e212c25ebe03b89bab500000937e39979a7abcef681f66c698",
+      "bytes": 1552,
+      "archiveName": "target/lilygo-riscv-additional-sources/T8-C3-README.md.raw",
+      "title": "Xinyuan-LilyGO/T8-C3 / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T8-C3",
+      "pinnedGitRevision": "9673426fc2862fc330c71421077035d0d496a124",
+      "path": "Schematic/T8-C3_V1.1.pdf",
+      "id": "T8-C3-Schematic-T8-C3_V1.1.pdf",
+      "gitBlobSha": "f82bd57fac80ffac8f6157967d6daf54fa0a655e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T8-C3/9673426fc2862fc330c71421077035d0d496a124/Schematic/T8-C3_V1.1.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T8-C3/9673426fc2862fc330c71421077035d0d496a124/Schematic/T8-C3_V1.1.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:12Z",
+      "sha256": "d7ef41a8e2b7e8e5b75063ab98d266a25d46d53cc72bd401e86fe27ca743ba20",
+      "bytes": 116221,
+      "archiveName": "target/lilygo-riscv-additional-sources/T8-C3-Schematic-T8-C3_V1.1.pdf.raw",
+      "title": "Xinyuan-LilyGO/T8-C3 / Schematic/T8-C3_V1.1.pdf",
+      "kind": "manufacturer-schematic",
+      "mediaType": "application/pdf"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T8-C3",
+      "pinnedGitRevision": "9673426fc2862fc330c71421077035d0d496a124",
+      "path": "example/deepsleep/deepsleep.ino",
+      "id": "T8-C3-example-deepsleep-deepsleep.ino",
+      "gitBlobSha": "67f4efc297e9c40c077e15eb2215b7eede3c8c88",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T8-C3/9673426fc2862fc330c71421077035d0d496a124/example/deepsleep/deepsleep.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T8-C3/9673426fc2862fc330c71421077035d0d496a124/example/deepsleep/deepsleep.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:57:54Z",
+      "sha256": "7b00f2fbf2ae77a1a578e0174c34165d1b794454b7ae06c634071d0a9da27349",
+      "bytes": 3509,
+      "archiveName": "target/lilygo-riscv-additional-sources/T8-C3-example-deepsleep-deepsleep.ino.raw",
+      "title": "Xinyuan-LilyGO/T8-C3 / example/deepsleep/deepsleep.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T8-C3",
+      "pinnedGitRevision": "9673426fc2862fc330c71421077035d0d496a124",
+      "path": "example/test/test.ino",
+      "id": "T8-C3-example-test-test.ino",
+      "gitBlobSha": "7c7669e3ebb9adce8ab9ff82348b623c784ea08c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T8-C3/9673426fc2862fc330c71421077035d0d496a124/example/test/test.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T8-C3/9673426fc2862fc330c71421077035d0d496a124/example/test/test.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:57:54Z",
+      "sha256": "67b51935d60720157aef777d1225361b9ad16a85bf65194d3710c640e17b0e25",
+      "bytes": 4878,
+      "archiveName": "target/lilygo-riscv-additional-sources/T8-C3-example-test-test.ino.raw",
+      "title": "Xinyuan-LilyGO/T8-C3 / example/test/test.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T8-C3",
+      "pinnedGitRevision": "9673426fc2862fc330c71421077035d0d496a124",
+      "path": "image/T8-C3.jpg",
+      "id": "T8-C3-image-T8-C3.jpg",
+      "gitBlobSha": "571eb88166f131d306cf47accdf82663ec110a8a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T8-C3/9673426fc2862fc330c71421077035d0d496a124/image/T8-C3.jpg",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T8-C3/9673426fc2862fc330c71421077035d0d496a124/image/T8-C3.jpg",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:12Z",
+      "sha256": "f4b35576d02f641386f5472390f00dd04ec305770c950bc2935b1d5eff787eb7",
+      "bytes": 89347,
+      "archiveName": "target/lilygo-riscv-additional-sources/T8-C3-image-T8-C3.jpg.raw",
+      "title": "Xinyuan-LilyGO/T8-C3 / image/T8-C3.jpg",
+      "kind": "manufacturer-photo",
+      "mediaType": "image/jpeg"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T8-C3",
+      "pinnedGitRevision": "9673426fc2862fc330c71421077035d0d496a124",
+      "path": "platformio.ini",
+      "id": "T8-C3-platformio.ini",
+      "gitBlobSha": "56df8339b10cbbbecceae4c863b2e266353ce648",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T8-C3/9673426fc2862fc330c71421077035d0d496a124/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T8-C3/9673426fc2862fc330c71421077035d0d496a124/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:12Z",
+      "sha256": "7bd89b773d8d903b85ddc030d934fe9b341ade730872672fb379c44bba17fb27",
+      "bytes": 634,
+      "archiveName": "target/lilygo-riscv-additional-sources/T8-C3-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/T8-C3 / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-WATCH-Keyboard",
+      "pinnedGitRevision": "1c4db7c8ad453e40577500ad6f9fb131b20e409f",
+      "path": "BBQKeyboard/BBQKeyboard.ino",
+      "id": "watch-BBQKeyboard-BBQKeyboard.ino",
+      "gitBlobSha": "52d90d8d307e8179d4551eda646dd2ac5e93a390",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-WATCH-Keyboard/1c4db7c8ad453e40577500ad6f9fb131b20e409f/BBQKeyboard/BBQKeyboard.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-WATCH-Keyboard/1c4db7c8ad453e40577500ad6f9fb131b20e409f/BBQKeyboard/BBQKeyboard.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:28Z",
+      "sha256": "c118e83fe5ea85ca3587d61a8cde7fa9c7e9219901264b3aa0842e0e94765bb5",
+      "bytes": 7140,
+      "archiveName": "target/lilygo-riscv-additional-sources/watch-BBQKeyboard-BBQKeyboard.ino.raw",
+      "title": "Xinyuan-LilyGO/T-WATCH-Keyboard / BBQKeyboard/BBQKeyboard.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-WATCH-Keyboard",
+      "pinnedGitRevision": "1c4db7c8ad453e40577500ad6f9fb131b20e409f",
+      "path": "BBQKeyboard/config.h",
+      "id": "watch-BBQKeyboard-config.h",
+      "gitBlobSha": "544bc2447e1ef0801e1ef95210e8d911e572d402",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-WATCH-Keyboard/1c4db7c8ad453e40577500ad6f9fb131b20e409f/BBQKeyboard/config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-WATCH-Keyboard/1c4db7c8ad453e40577500ad6f9fb131b20e409f/BBQKeyboard/config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:28Z",
+      "sha256": "31d0a14f14a16d540156a88361cb77a99de6fe81093921f8ad5a6e1ec394e607",
+      "bytes": 350,
+      "archiveName": "target/lilygo-riscv-additional-sources/watch-BBQKeyboard-config.h.raw",
+      "title": "Xinyuan-LilyGO/T-WATCH-Keyboard / BBQKeyboard/config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-WATCH-Keyboard",
+      "pinnedGitRevision": "1c4db7c8ad453e40577500ad6f9fb131b20e409f",
+      "path": "README.md",
+      "id": "watch-README.md",
+      "gitBlobSha": "a6a9b68e97f0e52b70a5b21450f0b44f65a84ab1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-WATCH-Keyboard/1c4db7c8ad453e40577500ad6f9fb131b20e409f/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-WATCH-Keyboard/1c4db7c8ad453e40577500ad6f9fb131b20e409f/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:28Z",
+      "sha256": "f3f641ecbca8091f0371c10af2ee4b9eb987822091f5dcac675e5c6cf4bad1e1",
+      "bytes": 716,
+      "archiveName": "target/lilygo-riscv-additional-sources/watch-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-WATCH-Keyboard / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1"
+    },
+    {
+      "id": "official-wiki-t-lora-c6",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-lora-series/t-lora-c6/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-lora-series/t-lora-c6/index.md",
+      "fetchedAt": "2026-11-22T06:43:28Z",
+      "mediaType": "text/plain",
+      "bytes": 6150,
+      "sha256": "04c4cd95a175a1cf1c743b9724311eaeeba2cd417e7385995ac011fdf5abe95c",
+      "gitBlobSha": "1a8678b27b6013427e0606bcdd2c2ae27c0cbdc3",
+      "path": "en/products/t-lora-series/t-lora-c6/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "id": "official-wiki-t-pico-2350",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-pico-2350/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-pico-2350/index.md",
+      "fetchedAt": "2026-11-22T06:42:34Z",
+      "mediaType": "text/plain",
+      "bytes": 5651,
+      "sha256": "58ebe2c97e31a85588629bc936c9e4677f9eb38250baba12cde167fd54d82e1c",
+      "gitBlobSha": "4b05b2b58f16956fe9239709e84e5245c259abe6",
+      "path": "en/products/other/t-pico-2350/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "url": "https://docs.espressif.com/projects/esp-faq/en/latest/software-framework/storage/psram.html",
+      "resolvedUrl": "https://docs.espressif.com/projects/esp-faq/en/latest/software-framework/storage/psram.html",
+      "fetchedAt": "2026-11-22T07:07:06Z",
+      "bytes": 38300,
+      "sha256": "9f01971adeba15437d287ef9ad696fcd6d6dbcfd11b29d51734eb6803d474fd8",
+      "mediaType": "text/html",
+      "id": "espressif-c6-psram",
+      "status": "fetched",
+      "title": "Espressif FAQ: ESP32-C6 does not support external PSRAM",
+      "kind": "manufacturer-documentation",
+      "archiveName": "target/lilygo-c6-sources/espressif-psram-faq.html"
+    },
+    {
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-LoRa-Series/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:45:14Z",
+      "mediaType": "application/json",
+      "transport": "GitHub connector; exact UTF-8 content snapshot",
+      "id": "LilyGo-LoRa-Series-tree",
+      "title": "Official LilyGo-LoRa-Series complete tree snapshot",
+      "kind": "manufacturer-repository-tree",
+      "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-LoRa-Series/git/trees/HEAD?recursive=1",
+      "sha256": "0656e4ddddf254b8d992f74bc8e5eb78161f2a1e29f043e756d4c5578fbd9134",
+      "bytes": 1491001,
+      "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "truncated": false,
+      "entryCount": 5348,
+      "archiveName": "target/lilygo-model-audit/Xinyuan-LilyGO__LilyGo-LoRa-Series.tree.json",
+      "archiveOwner": "model source audit cache",
+      "notes": "GitHub connector normalized snapshot. The top-level sha is a pinned revision; its object type is not inferred from the trees endpoint."
+    },
+    {
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/Lilygo-T-Pico2/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:47:49Z",
+      "mediaType": "application/json",
+      "transport": "GitHub connector; exact UTF-8 content snapshot",
+      "id": "Lilygo-T-Pico2-tree",
+      "title": "Official Lilygo-T-Pico2 complete tree snapshot",
+      "kind": "manufacturer-repository-tree",
+      "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/Lilygo-T-Pico2/git/trees/HEAD?recursive=1",
+      "sha256": "561db0dbead7612fd3832cc2e7aac717eaf968cf6230a5196830b1c2b0790f5b",
+      "bytes": 1323921,
+      "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+      "truncated": false,
+      "entryCount": 4846,
+      "archiveName": "target/lilygo-model-audit/Xinyuan-LilyGO__Lilygo-T-Pico2.tree.json",
+      "archiveOwner": "model source audit cache",
+      "notes": "GitHub connector normalized snapshot. The top-level sha is a pinned revision; its object type is not inferred from the trees endpoint."
+    },
+    {
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T8-C3/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:47:02Z",
+      "mediaType": "application/json",
+      "transport": "GitHub connector; exact UTF-8 content snapshot",
+      "id": "T8-C3-tree",
+      "title": "Official T8-C3 complete tree snapshot",
+      "kind": "manufacturer-repository-tree",
+      "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T8-C3/git/trees/HEAD?recursive=1",
+      "sha256": "72f87cce0ffb5668f6694d9c1ede8cd88e5a72c2205f31a11c51070b0ec72f34",
+      "bytes": 6199,
+      "pinnedGitRevision": "9673426fc2862fc330c71421077035d0d496a124",
+      "truncated": false,
+      "entryCount": 27,
+      "archiveName": "target/lilygo-model-audit/Xinyuan-LilyGO__T8-C3.tree.json",
+      "archiveOwner": "model source audit cache",
+      "notes": "GitHub connector normalized snapshot. The top-level sha is a pinned revision; its object type is not inferred from the trees endpoint."
+    },
+    {
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-01C3/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:47:04Z",
+      "mediaType": "application/json",
+      "transport": "GitHub connector; exact UTF-8 content snapshot",
+      "id": "T-01C3-tree",
+      "title": "Official T-01C3 complete tree snapshot",
+      "kind": "manufacturer-repository-tree",
+      "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-01C3/git/trees/HEAD?recursive=1",
+      "sha256": "31190418cd1e63c69588ea97c24eb230bf043db09f205f94b4cbfbe290f9977c",
+      "bytes": 6206,
+      "pinnedGitRevision": "e4e6dda5ef07e33936ded354b3abea463857b67d",
+      "truncated": false,
+      "entryCount": 26,
+      "archiveName": "target/lilygo-model-audit/Xinyuan-LilyGO__T-01C3.tree.json",
+      "archiveOwner": "model source audit cache",
+      "notes": "GitHub connector normalized snapshot. The top-level sha is a pinned revision; its object type is not inferred from the trees endpoint."
+    },
+    {
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-ZigBee/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:48:15Z",
+      "mediaType": "application/json",
+      "transport": "GitHub connector; exact UTF-8 content snapshot",
+      "id": "T-ZigBee-tree",
+      "title": "Official T-ZigBee complete tree snapshot",
+      "kind": "manufacturer-repository-tree",
+      "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-ZigBee/git/trees/HEAD?recursive=1",
+      "sha256": "c68f5ac5f1d3fce1967d45f39fb0f32d622f5ab0473d4021d4910c776af59466",
+      "bytes": 36101,
+      "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+      "truncated": false,
+      "entryCount": 147,
+      "archiveName": "target/lilygo-model-audit/Xinyuan-LilyGO__T-ZigBee.tree.json",
+      "archiveOwner": "model source audit cache",
+      "notes": "GitHub connector normalized snapshot. The top-level sha is a pinned revision; its object type is not inferred from the trees endpoint."
+    },
+    {
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-W5500-Lite/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:47:39Z",
+      "mediaType": "application/json",
+      "transport": "GitHub connector; exact UTF-8 content snapshot",
+      "id": "LilyGo-W5500-Lite-tree",
+      "title": "Official LilyGo-W5500-Lite complete tree snapshot",
+      "kind": "manufacturer-repository-tree",
+      "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-W5500-Lite/git/trees/HEAD?recursive=1",
+      "sha256": "505082555f8475f0c3d318e8928cca84ff3e8592091f6f0b1ff0960cf5f2d366",
+      "bytes": 28218,
+      "pinnedGitRevision": "fb33928c687ba198d512d9cb89a58615583b7412",
+      "truncated": false,
+      "entryCount": 106,
+      "archiveName": "target/lilygo-model-audit/Xinyuan-LilyGO__LilyGo-W5500-Lite.tree.json",
+      "archiveOwner": "model source audit cache",
+      "notes": "GitHub connector normalized snapshot. The top-level sha is a pinned revision; its object type is not inferred from the trees endpoint."
+    },
+    {
+      "id": "watch-c3-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/lilygo-new-product-Watch-Keyboard-C3_4.jpg?v=1663838075",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/lilygo-new-product-Watch-Keyboard-C3_4.jpg?v=1663838075",
+      "fetchedAt": "2026-11-22T06:59:28Z",
+      "bytes": 47502,
+      "sha256": "2263f882acbf09b921bcb5d34e73fa08be6482b8385fd8544899d132d8708761",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "0.image",
+      "title": "Official Watch-Keyboard-C3 photo 0",
+      "kind": "manufacturer-photo",
+      "archiveName": "target/lilygo-model-audit/photo-bank/lilygo-watch-keyboard-c3-v1-0/0.image",
+      "archiveOwner": "model source audit cache"
+    },
+    {
+      "id": "watch-c3-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/lilygo-new-product-Watch-Keyboard-C3_9.jpg?v=1663838073",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/lilygo-new-product-Watch-Keyboard-C3_9.jpg?v=1663838073",
+      "fetchedAt": "2026-11-22T06:59:28Z",
+      "bytes": 59824,
+      "sha256": "b47ab92d8acc6bb393c4be102cf32a61d092a2e6a7bf83be1d49621e13ddc0f0",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "1.image",
+      "title": "Official Watch-Keyboard-C3 photo 1",
+      "kind": "manufacturer-photo",
+      "archiveName": "target/lilygo-model-audit/photo-bank/lilygo-watch-keyboard-c3-v1-0/1.image",
+      "archiveOwner": "model source audit cache"
+    },
+    {
+      "id": "watch-c3-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/lilygo-new-product-Watch-Keyboard-C3_1.jpg?v=1663838074",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/lilygo-new-product-Watch-Keyboard-C3_1.jpg?v=1663838074",
+      "fetchedAt": "2026-11-22T06:59:33Z",
+      "bytes": 157896,
+      "sha256": "61813554cb669f807af774d570866cf63c53c153201729ea766d971031aa8d40",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "2.image",
+      "title": "Official Watch-Keyboard-C3 photo 2",
+      "kind": "manufacturer-photo",
+      "archiveName": "target/lilygo-model-audit/photo-bank/lilygo-watch-keyboard-c3-v1-0/2.image",
+      "archiveOwner": "model source audit cache"
+    }
+  ],
+  "items": [
+    {
+      "productId": "lilygo-t-lora-c6",
+      "boardId": "lilygo-t-lora-c6",
+      "name": "LILYGO T-Lora C6",
+      "chip": "esp32c6",
+      "flashMB": 4,
+      "psramMB": 0,
+      "hardwareRevision": "T3-C6 / T-LoRa-C6 V1.0, SX1262/S62F module",
+      "display": null,
+      "sdCard": {
+        "slot": false,
+        "implemented": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "已实现 GPIO9 BOOT、GPIO7 低有效绿灯和真实 SPI 路由的 SX1262 数字命令／数据包；RX15/TX14、复位、BUSY 与 DIO1 独立验证，未模拟真实射频传播。",
+      "scopeEn": "Exact T3-C6 V1.0 GPIO and existing SX1262 digital command/packet subset through SPI2, GPIO NSS, reset, BUSY, DIO1 and mode-specific RX/TX switch gating. No physical RF propagation.",
+      "chronology": {
+        "date": "2024-03-15",
+        "basis": "hardware-release",
+        "sourceUrl": "https://wiki.lilygo.cc/products/t-lora-series/t-lora-c6/",
+        "sourceId": "official-wiki-t-lora-c6",
+        "confidence": "medium",
+        "hardwareRevision": "T-LoRa-C6 V1.0",
+        "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+      },
+      "sourceIds": [
+        "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+        "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+        "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino",
+        "LilyGo-LoRa-Series-lib-RadioLib-src-Module.cpp",
+        "LilyGo-LoRa-Series-tree",
+        "official-wiki-t-lora-c6",
+        "official-store-shopify-1",
+        "espressif-c6-psram"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "trialAvailable": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "No RF propagation, link budget, antenna gain, modulation waveform, FSK, CAD or regulatory model; host packet input is explicit digital stimulus.",
+        "No Wi-Fi/BLE/802.15.4 network or analog power/battery behavior.",
+        "External I2C devices are not fabricated. Firmware must explicitly drive NRST high in this profile; high-impedance module reset bias is not characterized.",
+        "LED uses routed software GPIO, not a PWM brightness model. Factory firmware startup remains unverified."
+      ],
+      "conflicts": [
+        {
+          "fact": "LED polarity",
+          "sources": [
+            "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+            "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino"
+          ],
+          "resolution": "Example defines LED_ON HIGH but only toggles in operation. Schematic VDD3V3→R47→LED1→GPIO7 proves active-low; electrical schematic is used."
+        },
+        {
+          "fact": "SX1262 interrupt signal name",
+          "sources": [
+            "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+            "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+            "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino"
+          ],
+          "resolution": "Hardware Markdown table calls GPIO23 DIO0; exact example and S62F schematic label it DIO1. DIO1 is implemented."
+        }
+      ],
+      "pins": {
+        "boot": 9,
+        "leds": [
+          {
+            "id": "LED1",
+            "pin": 7,
+            "activeLow": true,
+            "color": "green"
+          }
+        ],
+        "radio": {
+          "controller": "SX1262",
+          "module": "S62F",
+          "interface": "SPI",
+          "sclk": 6,
+          "miso": 1,
+          "mosi": 0,
+          "cs": 18,
+          "reset": 21,
+          "busy": 22,
+          "dio1": 23,
+          "dio2": 20,
+          "txEnable": 14,
+          "rxEnable": 15,
+          "implemented": true,
+          "scope": "LoRa digital subset only; DIO2 output and RF analog circuit are not modeled"
+        }
+      },
+      "radio": {
+        "controller": "SX1262",
+        "implemented": true,
+        "physicalRf": false,
+        "transport": "spi",
+        "txRxGated": true,
+        "sourceIds": [
+          "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+          "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+          "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino",
+          "LilyGo-LoRa-Series-lib-RadioLib-src-Module.cpp"
+        ]
+      },
+      "memoryEvidence": {
+        "flash": "Official T3-C6 hardware table: ESP32-C6-MINI-1U,4MB Quad-SPI",
+        "psram": "C6 external PSRAM unsupported",
+        "sourceIds": [
+          "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+          "espressif-c6-psram"
+        ]
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "official-example-binaries-linked-factory-identity-unconfirmed",
+        "sourceIds": [
+          "LilyGo-LoRa-Series-tree",
+          "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/blob/5f537f1783933eae79723478c80b69d8c1530b99/examples/LoRa/T3C6/SX1262_PingPong/firmware/T3C6_SX126x_Ping.bin",
+            "path": "examples/LoRa/T3C6/SX1262_PingPong/firmware/T3C6_SX126x_Ping.bin",
+            "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+            "gitBlobSha": "c09e590fb90b7511b082c673e56719c12a2596b7",
+            "bytes": 4194304,
+            "status": "linked",
+            "sourceId": "LilyGo-LoRa-Series-tree"
+          },
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/blob/5f537f1783933eae79723478c80b69d8c1530b99/examples/LoRa/T3C6/SX1262_PingPong/firmware/T3C6_SX126x_Pong.bin",
+            "path": "examples/LoRa/T3C6/SX1262_PingPong/firmware/T3C6_SX126x_Pong.bin",
+            "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+            "gitBlobSha": "dd1dc58e804ae8354640f70500e67d4ed1bc359c",
+            "bytes": 4194304,
+            "status": "linked",
+            "sourceId": "LilyGo-LoRa-Series-tree"
+          },
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/blob/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3c6-v1.0-850mhz-reciver-20260715_0x0.bin",
+            "path": "firmware/t3c6-v1.0-850mhz-reciver-20260715_0x0.bin",
+            "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+            "gitBlobSha": "b773a0b0ca33edb36708406e4d459972b16ee73a",
+            "bytes": 956336,
+            "status": "linked",
+            "sourceId": "LilyGo-LoRa-Series-tree"
+          },
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/blob/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3c6-v1.0-850mhz-sender-20260715_0x0.bin",
+            "path": "firmware/t3c6-v1.0-850mhz-sender-20260715_0x0.bin",
+            "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+            "gitBlobSha": "d8c36bbabb797c27098d4fa5548d458058cb746f",
+            "bytes": 956144,
+            "status": "linked",
+            "sourceId": "LilyGo-LoRa-Series-tree"
+          }
+        ],
+        "simulationVerified": false,
+        "binaryFetched": false,
+        "notes": "Official sender/receiver and Ping/Pong binaries are discovered. Their presence does not prove factory identity or successful boot; no binaries mirrored."
+      }
+    },
+    {
+      "productId": "lilygo-t-01c3",
+      "boardId": "lilygo-t-01c3",
+      "name": "LILYGO T-01 C3",
+      "chip": "esp32c3",
+      "flashMB": 4,
+      "psramMB": 0,
+      "hardwareRevision": "T-01C3 manufacturer schematic / H534 bare module",
+      "display": null,
+      "sdCard": {
+        "slot": false,
+        "implemented": false
+      },
+      "controls": [],
+      "runtimeLevel": "partial",
+      "scope": "已实现 GPIO3 高有效绿灯。GPIO9 是下载排针，并非板载按钮；不虚构 BOOT 按键、屏幕或继电器。",
+      "scopeEn": "Exact bare T-01C3 GPIO3 high-active green LED. GPIO9 is only a header download pad, so no onboard button control is invented.",
+      "chronology": {
+        "date": "2022-09-06",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-01c3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "T-01C3-README.md",
+        "T-01C3-ESP32-C3-Schematic.pdf",
+        "T-01C3-example-deepsleep-deepsleep.ino",
+        "T-01C3-image-T-01C3pin.jpg",
+        "T-01C3-tree",
+        "official-store-shopify-1"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "trialAvailable": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "Optional externally wired relay boards are not attached implicitly.",
+        "Wireless networking, analog supply and sleep current are unmodeled; no PWM LED brightness."
+      ],
+      "conflicts": [],
+      "pins": {
+        "leds": [
+          {
+            "id": "GREEN_LED",
+            "pin": 3,
+            "activeLow": false,
+            "color": "green"
+          }
+        ],
+        "downloadPad": 9
+      },
+      "memoryEvidence": {
+        "flash": "Official pin photo4M Byte/32Mbit and schematic W25Q32FVSS",
+        "psram": "No PSRAM on exact C3 schematic",
+        "sourceIds": [
+          "T-01C3-ESP32-C3-Schematic.pdf",
+          "T-01C3-image-T-01C3pin.jpg"
+        ]
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "official-example-source-only",
+        "sourceIds": [
+          "T-01C3-README.md",
+          "T-01C3-tree"
+        ],
+        "candidates": [],
+        "simulationVerified": false,
+        "binaryFetched": false,
+        "notes": "Complete26-entry official tree contains relay/deepsleep examples and no.bin or.uf2; no exact factory image located."
+      }
+    },
+    {
+      "productId": "lilygo-t8-c3",
+      "boardId": "lilygo-t8-c3",
+      "name": "LILYGO T8",
+      "chip": "esp32c3",
+      "flashMB": 4,
+      "psramMB": 0,
+      "hardwareRevision": "T8-C3 V1.1",
+      "display": null,
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "pins": {
+          "sclk": 4,
+          "miso": 5,
+          "mosi": 7,
+          "cs": 6
+        },
+        "sourceIds": [
+          "T8-C3-Schematic-T8-C3_V1.1.pdf",
+          "T8-C3-example-test-test.ino"
+        ],
+        "verificationTest": "t8_spi_sd_uses_guest_registers_persists_blocks_and_rejects_wrong_routes"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "已实现 GPIO9 BOOT、GPIO3 绿灯和 SCK4/MISO5/MOSI7/CS6 的 SPI TF 卡读写、卡拔插及数据保留；按 C3 板型配置 4MB Flash，无 PSRAM。",
+      "scopeEn": "Exact T8-C3 V1.1 GPIO plus SPI SD transport using real guest register routing and persistent card backing storage.",
+      "chronology": {
+        "date": "2022-08-17",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t8-c3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "T8-C3-README.md",
+        "T8-C3-Schematic-T8-C3_V1.1.pdf",
+        "T8-C3-example-test-test.ino",
+        "T8-C3-example-deepsleep-deepsleep.ino",
+        "T8-C3-platformio.ini",
+        "T8-C3-tree",
+        "official-store-shopify-1"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "trialAvailable": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "Analog battery ADC/TP4054 charging, reset/USB bridge and Wi-Fi/BLE networking.",
+        "Software-GPIO LED only; no PWM brightness model.",
+        "SD transport is the existing immediate SDHC digital SPI subset; no analog timing, SDSC or card-insertion sensor fabricated."
+      ],
+      "conflicts": [
+        {
+          "fact": "same-name T8 documentation alias",
+          "sources": [
+            "T8-C3-README.md",
+            "T8-C3-Schematic-T8-C3_V1.1.pdf",
+            "official-store-shopify-1"
+          ],
+          "rejectedUrl": "https://wiki.lilygo.cc/products/t8-series/t8/",
+          "resolution": "T8 wiki describes ESP32-WROVER8MB PSRAM, Micro USB and a different board. Removed t8-c3→t8 audit alias. Current storefront also offers S3; only pinned T8-C3 V1.1 is represented."
+        }
+      ],
+      "pins": {
+        "boot": 9,
+        "leds": [
+          {
+            "id": "LED_G1",
+            "pin": 3,
+            "activeLow": false,
+            "color": "green"
+          }
+        ]
+      },
+      "memoryEvidence": {
+        "flash": "Schematic W25Q32 flash and official store4MB",
+        "psram": "No PSRAM on exact C3 schematic; WROVER8MB wiki belongs to a different board",
+        "sourceIds": [
+          "T8-C3-Schematic-T8-C3_V1.1.pdf",
+          "official-store-shopify-1"
+        ]
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "official-test-source-only",
+        "sourceIds": [
+          "T8-C3-example-test-test.ino",
+          "T8-C3-tree"
+        ],
+        "candidates": [],
+        "simulationVerified": false,
+        "binaryFetched": false,
+        "notes": "Complete27-entry tree has test/deepsleep/battery source and no.bin or.uf2. Test source runs SD/Wi-Fi/BLE but is not declared a complete factory restore image."
+      }
+    },
+    {
+      "productId": "lilygo-t-zigbee-esp32-c3-tlsr8258",
+      "boardId": "lilygo-t-zigbee",
+      "name": "LILYGO T-Zigbee",
+      "chip": "esp32c3",
+      "flashMB": 4,
+      "psramMB": 0,
+      "hardwareRevision": "T-ZIGBEE V1.0, ESP32-C3 + TLSR8258",
+      "display": null,
+      "sdCard": {
+        "slot": false,
+        "implemented": false
+      },
+      "controls": [
+        {
+          "id": "user",
+          "name": "USER",
+          "type": "button",
+          "pin": 2,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "仅模拟 ESP32-C3 子系统的 GPIO2 用户键和 GPIO3 蓝灯；TLSR8258 协处理器、其红绿灯、HCI 与 Zigbee 射频尚未实现。",
+      "scopeEn": "ESP32-C3 subsystem only with GPIO2 user button and GPIO3 blue LED. TLSR8258 execution, HCI, its red/green LEDs and RF remain unmodeled.",
+      "chronology": {
+        "date": "2022-08-15",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-zigbee-esp32-c3-tlsr8258",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "T-ZigBee-README.md",
+        "T-ZigBee-Schematic-T-Zigbee.pdf",
+        "T-ZigBee-examples-factory_test-factory_test.ino",
+        "T-ZigBee-platformio.ini",
+        "T-ZigBee-firmware-README.md",
+        "T-ZigBee-tree",
+        "official-store-shopify-1"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "trialAvailable": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "TLSR8258 execution, Zigbee HCI UART and all RF/network behavior.",
+        "TLSR red/green LEDs and optional external sensors are not mapped to C3 GPIO.",
+        "GPIO2 release is modeled as high for normal input-pullup firmware; schematic external pullup R10 is NC. No analog floating-input simulation.",
+        "Software-GPIO LED only; no PWM brightness."
+      ],
+      "conflicts": [],
+      "physicalChip": "ESP32-C3 + TLSR8258",
+      "pins": {
+        "button": 2,
+        "leds": [
+          {
+            "id": "C3_LED_B",
+            "pin": 3,
+            "activeLow": false,
+            "color": "blue"
+          }
+        ],
+        "unmodeledCoprocessorLeds": [
+          {
+            "owner": "TLSR8258",
+            "pin": "PD4",
+            "color": "red"
+          },
+          {
+            "owner": "TLSR8258",
+            "pin": "PA0",
+            "color": "green"
+          }
+        ]
+      },
+      "memoryEvidence": {
+        "flash": "Schematic U8 W25Q32FVSS=4MB on C3 side",
+        "psram": "No PSRAM on exact C3 schematic; TLSR memory separate",
+        "sourceIds": [
+          "T-ZigBee-Schematic-T-Zigbee.pdf"
+        ]
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "exact-c3-factory-test-source-coprocessor-binaries-only",
+        "sourceIds": [
+          "T-ZigBee-examples-factory_test-factory_test.ino",
+          "T-ZigBee-firmware-README.md",
+          "T-ZigBee-tree"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/T-ZigBee/blob/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/hciDevice_ZE_8258_SDK_eb644f1_MD5_a27ce68a94bc19284c5c87a4e0aa416b.bin",
+            "path": "firmware/hciDevice_ZE_8258_SDK_eb644f1_MD5_a27ce68a94bc19284c5c87a4e0aa416b.bin",
+            "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+            "gitBlobSha": "1de97e2fc89af688a6cb3a3518a6c1142f6615f9",
+            "bytes": 160772,
+            "status": "linked",
+            "sourceId": "T-ZigBee-tree"
+          },
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/T-ZigBee/blob/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/hciDevice_ZR_8258_SDK_eb644f1_MD5_3e7c395bacca28475952808a79ff2ec1.bin",
+            "path": "firmware/hciDevice_ZR_8258_SDK_eb644f1_MD5_3e7c395bacca28475952808a79ff2ec1.bin",
+            "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+            "gitBlobSha": "384b1188cb9d1899b2aca293ff791998981e17f3",
+            "bytes": 208772,
+            "status": "linked",
+            "sourceId": "T-ZigBee-tree"
+          },
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/T-ZigBee/blob/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/sampleGW_8258_20220302.bin",
+            "path": "firmware/sampleGW_8258_20220302.bin",
+            "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+            "gitBlobSha": "608843d7da96704da7e4a54736166d8deb997831",
+            "bytes": 191924,
+            "status": "linked",
+            "sourceId": "T-ZigBee-tree"
+          }
+        ],
+        "simulationVerified": false,
+        "binaryFetched": false,
+        "notes": "factory_test.ino is ESP32 C3 application source. All three published.bin files target TLSR8258, not C3, and must not enter an ESP32 firmware trial."
+      }
+    },
+    {
+      "productId": "lilygo-t-pico",
+      "boardId": "lilygo-t-pico-c6",
+      "name": "LILYGO T-Pico",
+      "chip": "esp32c6",
+      "flashMB": 4,
+      "psramMB": 0,
+      "hardwareRevision": "T-Pico2350 V1.2, RP2350 + ESP32-C6-MINI-1U-N4",
+      "display": null,
+      "sdCard": {
+        "slot": true,
+        "implemented": false,
+        "owner": "RP2350",
+        "transport": "spi",
+        "notes": "Prepare local media for the physical slot, but no guest SD mounting through this C6 profile."
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "scope": "仅模拟 ESP32-C6 协处理器及 SW6/GPIO9 BOOT。RP2350 主控、屏幕、触摸、SD、HDMI 和 AT 桥接尚未实现。",
+      "scopeEn": "ESP32-C6 coprocessor only; physical device remains RP2350 + ESP32-C6. Main display, touch, microSD and HDMI belong to RP2350 and are not remapped to C6.",
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceUrl": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/hardware/T_Pico2350_V1.2.pdf",
+        "sourceId": "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+        "confidence": "unknown",
+        "hardwareRevision": "T-Pico2350 V1.2, RP2350 + ESP32-C6-MINI-1U-N4",
+        "notes": "Exact V1.2 launch unresolved. Wiki Version History gives2024-01-01 but all five schematic sheets are dated2025-01-16. The shared storefront first published2022-07-22 and includes older Pico Pro/C3 options; neither old listing date nor schematic engineering date is asserted as release."
+      },
+      "sourceIds": [
+        "Lilygo-T-Pico2-README.md",
+        "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+        "Lilygo-T-Pico2-examples-Factory-utilities.h",
+        "Lilygo-T-Pico2-examples-AT_ESP_Gpio-AT_ESP_Gpio.ino",
+        "Lilygo-T-Pico2-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-pico-2350",
+        "espressif-c6-psram"
+      ],
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "trialAvailable": false,
+        "hardwareValidated": false
+      },
+      "unsupported": [
+        "RP2350 instruction execution, main framebuffer, CST226SE touch, physical TF bus, HDMI and RP2350 user key.",
+        "XL9535 expander, SY6970 PMU, charging/USB power and battery behavior.",
+        "AT UART bridge and Wi-Fi/BLE/802.15.4 networking; no canned AT responses."
+      ],
+      "conflicts": [
+        {
+          "fact": "hardware release date",
+          "sources": [
+            "official-wiki-t-pico-2350",
+            "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+            "official-store-shopify-1"
+          ],
+          "resolution": "Exact V1.2 launch unresolved. Wiki Version History gives2024-01-01 but all five schematic sheets are dated2025-01-16. The shared storefront first published2022-07-22 and includes older Pico Pro/C3 options; neither old listing date nor schematic engineering date is asserted as release."
+        },
+        {
+          "fact": "C6 UART pin table",
+          "sources": [
+            "Lilygo-T-Pico2-README.md",
+            "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf"
+          ],
+          "resolution": "Use schematic C6 RX15/TX18/RTS6/CTS14 rather than inconsistent README labels. Bridge is not implemented."
+        },
+        {
+          "fact": "repository description MCU",
+          "sources": [
+            "Lilygo-T-Pico2-README.md",
+            "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf"
+          ],
+          "resolution": "Description mentions C3; exact README and V1.2 schematic show ESP32-C6. Older T-PicoC3 and Pico Pro are separate revisions."
+        }
+      ],
+      "physicalChip": "RP2350 + ESP32-C6",
+      "physicalDisplay": {
+        "type": "IPS LCD",
+        "controller": "ST7796S",
+        "width": 222,
+        "height": 480,
+        "diagonalInch": 2.33,
+        "interface": "SPI",
+        "owner": "RP2350",
+        "implemented": false,
+        "sourceIds": [
+          "Lilygo-T-Pico2-README.md",
+          "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+          "Lilygo-T-Pico2-examples-Factory-utilities.h"
+        ]
+      },
+      "pins": {
+        "boot": 9,
+        "physicalSwitch": "SW6",
+        "strapPullup": 8,
+        "coprocessorUart": {
+          "rx": 15,
+          "tx": 18,
+          "rts": 6,
+          "cts": 14,
+          "reserve": 7,
+          "implemented": false,
+          "sourceId": "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf"
+        }
+      },
+      "physicalMemory": {
+        "rp2350": {
+          "sramKB": 520,
+          "flashMB": 16
+        },
+        "esp32c6": {
+          "flashMB": 4,
+          "psramMB": 0
+        },
+        "sourceIds": [
+          "Lilygo-T-Pico2-README.md",
+          "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf"
+        ]
+      },
+      "memoryEvidence": {
+        "flash": "C6 MINI-1U-N4 and README4MB. Separate RP2350 flash16MB is not added to C6 memory.",
+        "psram": "C6 external PSRAM unsupported",
+        "sourceIds": [
+          "Lilygo-T-Pico2-README.md",
+          "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+          "espressif-c6-psram"
+        ]
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "exact-official-c6-factory-image-linked",
+        "sourceIds": [
+          "Lilygo-T-Pico2-README.md",
+          "Lilygo-T-Pico2-tree"
+        ],
+        "candidates": [
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/firmware/T-Lilygo-rp2350_ESP32C6_V1.2.uf2",
+            "path": "firmware/T-Lilygo-rp2350_ESP32C6_V1.2.uf2",
+            "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+            "gitBlobSha": "c73bf9c98499caef35f93c0370f65305e18b9bb5",
+            "bytes": 1468416,
+            "status": "linked",
+            "sourceId": "Lilygo-T-Pico2-tree"
+          },
+          {
+            "url": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/firmware/factory_ESP32C6-4MB.bin",
+            "path": "firmware/factory_ESP32C6-4MB.bin",
+            "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+            "gitBlobSha": "de238841d88500cde6dd20a7a90d69382a113333",
+            "bytes": 4194304,
+            "status": "linked",
+            "sourceId": "Lilygo-T-Pico2-tree"
+          }
+        ],
+        "simulationVerified": false,
+        "binaryFetched": false,
+        "notes": "C6 .bin is explicitly named factory and fits the N4 module. UF2 is for the separate RP2350 and is not accepted as C6 firmware."
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "productId": "lilygo-watch-keyboard-c3-v1-0",
+      "name": "LILYGO Watch-Keyboard-C3 V1.0",
+      "hardwareRevision": "Watch-Keyboard-C3 V1.0 PCB printed20220411",
+      "physicalChip": "ESP32-C3",
+      "runtimeLevel": "unavailable",
+      "chronology": {
+        "date": "2022-11-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/watch-keyboard-c3-v1-0",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "official-store-shopify-1",
+        "watch-c3-photo-0",
+        "watch-c3-photo-1",
+        "watch-c3-photo-2",
+        "watch-BBQKeyboard-BBQKeyboard.ino",
+        "watch-BBQKeyboard-config.h",
+        "watch-README.md"
+      ],
+      "confirmed": [
+        "Official product describes ESP32-C3 and QWERTY keyboard accessory.",
+        "Exact pin photograph identifies connector Q10 row/column contacts and GPIO9 download header."
+      ],
+      "blockers": [
+        "No exact C3 firmware or schematic mapping connector ROW1..7/COL1..5 to MCU GPIO was located. Connector pin numbering is not a GPIO matrix.",
+        "External flash part marking is not legible and official listing does not specify its capacity; no4MB assumption.",
+        "Official T-WATCH-Keyboard repository uses LILYGO_WATCH_2019_WITH_TOUCH, not this C3 accessory. Its source and case STL are not substituted."
+      ],
+      "investigation": {
+        "checked": [
+          "Exact Shopify description and full resolution official photos",
+          "Official Xinyuan-LilyGO/T-WATCH-Keyboard tree/readme/config/example",
+          "Official organization code/repository searches for exact Watch-Keyboard-C3 spelling and C3 keyboard sources"
+        ],
+        "factoryImage": "not-found",
+        "noSiblingAlias": true,
+        "binaryFetched": false,
+        "notes": "Printed PCB20220411 is engineering evidence, not a retail launch date; listing proxy remains2022-11-25."
+      }
+    }
+  ],
+  "handoffs": [
+    {
+      "productId": "lilygo-t-lite-w5500",
+      "physicalChip": "ESP32",
+      "correctedChip": "esp32",
+      "previousCatalogChipRejected": "ESP32-C3",
+      "runtimeOwner": "classic ESP32 lane",
+      "chronology": {
+        "date": "2022-10-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-lite-w5500",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "LilyGo-W5500-Lite-README.MD",
+        "LilyGo-W5500-Lite-examples-WebClient-WebClient.ino",
+        "LilyGo-W5500-Lite-schematic-w5500.pdf",
+        "LilyGo-W5500-Lite-libdeps-esp8266-oled-ssd1306-src-SSD1306Wire.h",
+        "LilyGo-W5500-Lite-libdeps-esp8266-oled-ssd1306-src-OLEDDisplay.h",
+        "LilyGo-W5500-Lite-tree",
+        "official-store-shopify-1"
+      ],
+      "evidence": [
+        "Manufacturer README explicitly selects ESP32 Dev Module.",
+        "Schematic main module is classic38-pin Micro32/ESP32; GPIO21/22/23 are used.",
+        "Official store specifies520KB SRAM and Bluetooth4.2; neither describes ESP32-C3."
+      ],
+      "flashMB": 4,
+      "psramMB": null,
+      "memoryNotes": "4MB specified in official store; PSRAM not independently resolved in these sources.",
+      "display": {
+        "type": "OLED",
+        "controller": "SSD1306",
+        "width": 128,
+        "height": 64,
+        "diagonalInch": 0.96,
+        "interface": "I2C",
+        "address": 60,
+        "pins": {
+          "sda": 21,
+          "scl": 22
+        },
+        "evidence": "WebClient calls SSD1306Wire(0x3c,21,22) without geometry argument. Bundled SSD1306Wire.h defaults GEOMETRY_128_64."
+      },
+      "ethernet": {
+        "controller": "W5500",
+        "interface": "SPI",
+        "reset": 4,
+        "cs": 5,
+        "sclk": 18,
+        "miso": 23,
+        "mosi": 19
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "example-source-only",
+        "sourceIds": [
+          "LilyGo-W5500-Lite-tree",
+          "LilyGo-W5500-Lite-README.MD"
+        ],
+        "candidates": [],
+        "binaryFetched": false,
+        "simulationVerified": false
+      }
+    }
+  ],
+  "verification": {
+    "commands": [
+      "CARGO_BUILD_JOBS=1 cargo test -p esp32c6 --test lilygo_additional_profiles -p esp32c3 --test lilygo_additional_profiles",
+      "CARGO_BUILD_JOBS=1 cargo clippy -p esp32c6 --test lilygo_additional_profiles -p esp32c3 --test lilygo_additional_profiles -- -D warnings"
+    ],
+    "nativeTests": "7 passed,0 failed; targeted Clippy denied warnings passed",
+    "factoryFirmwareExecuted": false,
+    "wasmFirmwareExecuted": false,
+    "hardwareValidated": false,
+    "tests": [
+      "c3_led_routes_observe_enable_mux_inversion_without_instruction_scheduling",
+      "cold_route_hook_keeps_legacy_waveform_opt_in",
+      "exact_buttons_do_not_invent_download_pad_or_tlsr_controls",
+      "t8_spi_sd_uses_guest_registers_persists_blocks_and_rejects_wrong_routes",
+      "lora_spi_discovery_survives_disabled_antenna_but_obeys_mux_nss_reset_and_miso",
+      "lora_packets_require_correct_direction_switches_and_cancel_interrupted_rx",
+      "lora_led_and_boot_are_electrical_and_pico_does_not_claim_rp2350_peripherals"
+    ],
+    "performance": "No hot-loop modification. Integrated benchmark belongs to the parent performance audit; this record does not assert an unmeasured performance result."
+  },
+  "auditCorrections": [
+    {
+      "id": "lilygo-t-pico",
+      "sourceIds": [
+        "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceUrl": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/hardware/T_Pico2350_V1.2.pdf",
+        "sourceId": "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+        "confidence": "unknown",
+        "hardwareRevision": "T-Pico2350 V1.2, RP2350 + ESP32-C6-MINI-1U-N4",
+        "notes": "Exact V1.2 launch unresolved. Wiki Version History gives2024-01-01 but all five schematic sheets are dated2025-01-16. The shared storefront first published2022-07-22 and includes older Pico Pro/C3 options; neither old listing date nor schematic engineering date is asserted as release."
+      },
+      "conflicts": [
+        {
+          "fact": "hardware release date",
+          "sources": [
+            "official-wiki-t-pico-2350",
+            "Lilygo-T-Pico2-hardware-T_Pico2350_V1.2.pdf",
+            "official-store-shopify-1"
+          ],
+          "resolution": "Exact V1.2 launch unresolved. Wiki Version History gives2024-01-01 but all five schematic sheets are dated2025-01-16. The shared storefront first published2022-07-22 and includes older Pico Pro/C3 options; neither old listing date nor schematic engineering date is asserted as release."
+        }
+      ]
+    }
+  ]
+}
