@@ -4,6 +4,7 @@
 //! preserves the corresponding IDF4.4 registers; no S3 addresses are used.
 use emu_core::Bus;
 use esp32::bus::SocBus;
+use esp32::periph;
 use esp_soc::board::BoardModel;
 use esp_periph::i2c::INT_NACK;
 #[path="../src/board/lilygo_additional.rs"] mod additional;
@@ -171,4 +172,87 @@ fn journal_has_a_128_by_32_glass_and_its_own_sda_scl_pins(){
     let mut b=board("lilygo-t-journal");i2c_route(&mut b,0,21,22);assert_ne!(i2c(&mut b,0,0x3c,&[0,0xaf])&INT_NACK,0);
     i2c_route(&mut b,0,14,13);assert_eq!(i2c(&mut b,0,0x3c,&[0,0xaf,0xa8,31,0x20,0,0x21,1,1,0x22,3,4])&INT_NACK,0);assert_eq!(i2c(&mut b,0,0x3c,&[0x40,128,255])&INT_NACK,0);
     let(w,h,p,_)=b.board.display().unwrap();assert_eq!((w,h,p.len()),(128,32,4096));assert_eq!(p[31*128+1],0xffff);assert_eq!(p.iter().filter(|v|**v!=0).count(),1,"RAM beyond the 32-row glass is not visible");
+}
+
+fn epd_route(b:&mut SocBus,clk:u8,mosi:u8,cs:u8,dc:u8,reset:u8,busy:u8){
+    // IDF classic RTC clock source PLL + CPUPERIOD_SEL=2: 240 MHz. The
+    // reset XTAL is 40 MHz, which otherwise advances six reference ticks.
+    put(b,0x3ff4_8070,1<<27);put(b,0x3ff0_003c,2);
+    for(pin,on)in[(cs,true),(dc,false),(reset,true)]{output(b,pin,on);}mux(b,busy,2);
+    for(pin,signal)in[(clk,63),(mosi,65)]{mux(b,pin,2);put(b,GPIO+0x530+4*pin as u32,signal);}
+}
+fn epd_cmd(b:&mut SocBus,dc:u8,cs:u8,c:u8,d:&[u8]){spi_at(b,dc,cs,false,&[c]);for chunk in d.chunks(64){spi_at(b,dc,cs,true,chunk);}}
+fn finish_epd(b:&mut SocBus){let at=b.board.next_deadline().expect("scheduled e-paper operation");let delta=at-b.cycles;assert!(delta<=u64::from(u32::MAX));b.tick(delta as u32);assert_eq!(b.cycles,at);assert_eq!(b.board.next_deadline(),None);}
+fn pin_high(b:&mut SocBus,pin:u8)->bool {b.read32(GPIO+if pin<32{0x3c}else{0x40}).unwrap()&(1<<(pin%32))!=0}
+
+#[test]
+fn classic_mini_uc8175_has_its_own_spi_supply_busy_and_retained_frame(){
+    let mut b=board("lilygo-mini-e-paper-core");epd_route(&mut b,22,21,5,19,4,34);output(&mut b,27,false);
+    epd_cmd(&mut b,19,5,0,&[0x5f]);epd_cmd(&mut b,19,5,4,&[]);assert_eq!(b.board.next_deadline(),None,"rail27 is required");
+    output(&mut b,27,true);epd_cmd(&mut b,19,5,0,&[0x5f]);epd_cmd(&mut b,19,5,4,&[]);assert!(!pin_high(&mut b,34));finish_epd(&mut b);assert!(pin_high(&mut b,34));
+    epd_cmd(&mut b,19,5,0x91,&[]);epd_cmd(&mut b,19,5,0x90,&[72,79,127,127,1]);
+    mux(&mut b,21,3);epd_cmd(&mut b,19,5,0x13,&[0]);mux(&mut b,21,2);epd_cmd(&mut b,19,5,0x12,&[]);finish_epd(&mut b);assert!(b.board.display().unwrap().2.iter().all(|&p|p==0xffff));
+    epd_cmd(&mut b,19,5,0x13,&[0xfe]);assert!(b.board.display().unwrap().2.iter().all(|&p|p==0xffff));epd_cmd(&mut b,19,5,0x12,&[]);let at=b.board.next_deadline().unwrap();assert_eq!(at-b.cycles,periph::CPU_HZ*700/1000);
+    epd_cmd(&mut b,19,5,0x13,&[255]);b.tick((at-b.cycles-1)as u32);assert_eq!(b.board.display_frames(),1);b.tick(1);let(w,h,p,_)=b.board.display().unwrap();assert_eq!((w,h),(80,128));assert_eq!(*p.last().unwrap(),0);
+    epd_cmd(&mut b,19,5,0x13,&[0]);epd_cmd(&mut b,19,5,0x12,&[]);level(&mut b,27,false);assert_eq!(b.board.next_deadline(),None);assert_eq!(b.board.display().unwrap().2,p);assert!(pin_high(&mut b,34));
+    for(name,pin)in[("boot",0),("button-1",36),("button-2",39)]{assert_eq!(b.board.named_pin(name),Some(pin));}
+}
+
+#[test]
+fn wrist_ssd1681_uses_high_busy_power5_and_exact_200_square_glass(){
+    let mut b=board("lilygo-t-wrist-e-paper-1-54-inch-display");epd_route(&mut b,14,13,15,2,17,16);output(&mut b,5,true);
+    for(c,d)in[(0x44,vec![0,24]),(0x45,vec![0,0,199,0]),(0x4e,vec![0]),(0x4f,vec![0,0]),(0x24,vec![0x7f]),(0x22,vec![0xf7])]{epd_cmd(&mut b,2,15,c,&d);}
+    assert!(b.board.display().unwrap().2.iter().all(|&p|p==0xffff));epd_cmd(&mut b,2,15,0x20,&[]);assert!(pin_high(&mut b,16));assert_eq!(b.board.next_deadline().unwrap()-b.cycles,periph::CPU_HZ*20/1000,"existing SSD1681 digital debug delay, not a physical refresh measurement");finish_epd(&mut b);
+    let(w,h,p,_)=b.board.display().unwrap();assert_eq!((w,h),(200,200));assert_eq!(p[0],0);assert_eq!(p[1],0xffff);assert!(!pin_high(&mut b,16));
+    level(&mut b,5,false);epd_cmd(&mut b,2,15,0x24,&[0]);assert_eq!(b.board.display().unwrap().2,p);assert_eq!(b.board.named_pin("user"),Some(35));assert_eq!(b.board.named_pin("boot"),None);
+}
+
+#[test]
+fn t5_v231_ssd1680_preserves_padding_sleep_and_revision_specific_power(){
+    let mut b=board("lilygo-t5-v2-3-1");epd_route(&mut b,18,23,5,17,16,4);output(&mut b,12,false);
+    for(c,d)in[(0x44,vec![15,15]),(0x45,vec![249,0,249,0]),(0x4e,vec![15]),(0x4f,vec![249,0]),(0x24,vec![0x3f]),(0x22,vec![0xf4])]{epd_cmd(&mut b,17,5,c,&d);}
+    assert_eq!(b.board.display_frames(),0);epd_cmd(&mut b,17,5,0x20,&[]);assert!(pin_high(&mut b,4));assert_eq!(b.board.next_deadline().unwrap()-b.cycles,periph::CPU_HZ*4100/1000);finish_epd(&mut b);
+    let(w,h,p,_)=b.board.display().unwrap();assert_eq!((w,h),(122,250));assert_eq!(&p[p.len()-2..],&[0,0]);assert_eq!(p.iter().filter(|&&v|v==0).count(),2,"six padding bits do not alias the next row");
+    epd_cmd(&mut b,17,5,0x10,&[1]);assert!(pin_high(&mut b,4));epd_cmd(&mut b,17,5,0x12,&[]);assert_eq!(b.board.next_deadline(),None);level(&mut b,16,false);level(&mut b,16,true);assert!(!pin_high(&mut b,4));assert_eq!(b.board.display().unwrap().2,p);
+    assert_eq!(b.board.named_pin("user"),Some(39));assert_eq!(b.board.named_pin("boot"),None);
+}
+
+fn sd_spi(b:&mut SocBus,selected:bool,tx:&[u8],rx:usize)->Vec<u8>{
+    const SPI:u32=0x3ff6_5000;level(b,13,!selected);
+    for(i,chunk)in tx.chunks(4).enumerate(){let mut bytes=[0;4];bytes[..chunk.len()].copy_from_slice(chunk);put(b,SPI+0x80+4*i as u32,u32::from_le_bytes(bytes));}
+    put(b,SPI+0x1c,if tx.is_empty(){1<<28}else{1<<27});if !tx.is_empty(){put(b,SPI+0x28,tx.len()as u32*8-1);}
+    if rx!=0{put(b,SPI+0x2c,rx as u32*8-1);}put(b,SPI,1<<18);
+    (0..rx.div_ceil(4)).flat_map(|i|b.read32(SPI+0x80+4*i as u32).unwrap().to_le_bytes()).take(rx).collect()
+}
+fn sd_cmd(b:&mut SocBus,command:u8,arg:u32)->Vec<u8>{let mut packet=vec![0x40|command];packet.extend(arg.to_be_bytes());let mut crc=0u8;for &value in &packet{let mut byte=value;for _ in 0..8{crc<<=1;if(byte^crc)&0x80!=0{crc^=9;}byte<<=1;}}packet.push((crc&0x7f)<<1|1);sd_spi(b,true,&packet,0);sd_spi(b,true,&[],2)}
+#[test]
+fn classic_epaper_tf_cards_exchange_real_spi_register_packets(){
+    for id in["lilygo-mini-e-paper-core","lilygo-t5-v2-3-1","lilygo-t5-2-13inch-e-paper","lilygo-t5s-2-7inch-e-paper"]{
+        let mut b=board(id);b.board.attach_spi_sd_card(Box::new(esp_periph::sdmmc::MemStore(vec![0x5a;1<<20])),Default::default()).unwrap();output(&mut b,13,true);output(&mut b,5,true);
+        for(pin,signal)in[(14,63),(15,65)]{mux(&mut b,pin,2);put(&mut b,GPIO+0x530+4*pin as u32,signal);}mux(&mut b,2,2);put(&mut b,GPIO+0x130+4*64,(1<<7)|2);
+        sd_spi(&mut b,false,&[255;10],0);assert_eq!(sd_cmd(&mut b,0,0),[255,1]);assert_eq!(sd_cmd(&mut b,8,0x1aa),[255,1]);assert_eq!(sd_spi(&mut b,true,&[],4),[0,0,1,0xaa]);
+        for _ in 0..2{sd_cmd(&mut b,55,0);sd_cmd(&mut b,41,1<<30);}assert_eq!(sd_cmd(&mut b,17,3),[255,0]);assert_eq!(sd_spi(&mut b,true,&[],2),[255,0xfe]);for _ in 0..8{assert_eq!(sd_spi(&mut b,true,&[],64),vec![0x5a;64]);}sd_spi(&mut b,true,&[],2);
+        put(&mut b,GPIO+0x130+4*64,(1<<7)|1);assert_eq!(sd_cmd(&mut b,58,0),[255,255],"wrong MISO returns released line");b.board.set_sd_card_present(false);assert_eq!(sd_cmd(&mut b,0,0),[255,255]);
+    }
+}
+
+#[test]
+fn gray_t5_decodes_two_sourced_planes_only_after_an_explicit_refresh(){
+    let mut b=board("lilygo-t5-2-13inch-e-paper");epd_route(&mut b,18,23,5,17,16,4);
+    epd_cmd(&mut b,17,5,0,&[0xaf]);epd_cmd(&mut b,17,5,0x61,&[104,0,212]);epd_cmd(&mut b,17,5,4,&[]);finish_epd(&mut b);epd_cmd(&mut b,17,5,0x12,&[]);assert_eq!(b.board.next_deadline(),None,"a T5S panel-setting byte cannot configure the 4-gray T5");
+    epd_cmd(&mut b,17,5,0,&[0x3f]);epd_cmd(&mut b,17,5,0x10,&[0x33]);epd_cmd(&mut b,17,5,0x13,&[0x55]);assert_eq!(b.board.display_frames(),0);
+    epd_cmd(&mut b,17,5,0x12,&[]);assert!(!pin_high(&mut b,4));assert_eq!(b.board.next_deadline().unwrap()-b.cycles,periph::CPU_HZ*3,"explicit three-second debug convention, not physical waveform timing");epd_cmd(&mut b,17,5,0x13,&[255]);finish_epd(&mut b);
+    let(w,h,p,_)=b.board.display().unwrap();assert_eq!((w,h),(104,212));assert_eq!(&p[..4],&[0,0x52aa,0xad55,0xffff]);assert!(pin_high(&mut b,4));
+    epd_cmd(&mut b,17,5,7,&[0xa5]);epd_cmd(&mut b,17,5,4,&[]);assert_eq!(b.board.next_deadline(),None);level(&mut b,16,false);level(&mut b,16,true);assert_eq!(b.board.display().unwrap().2,p);assert_eq!(b.board.named_pin("user"),Some(39));
+}
+
+#[test]
+fn t5s_il91874_uses_sixteen_bit_partial_rows_without_aliasing_invalid_areas(){
+    let mut b=board("lilygo-t5s-2-7inch-e-paper");epd_route(&mut b,18,23,5,17,16,4);
+    epd_cmd(&mut b,17,5,4,&[]);finish_epd(&mut b);epd_cmd(&mut b,17,5,0,&[0xbf]);epd_cmd(&mut b,17,5,0x61,&[0,176,1,8]);
+    epd_cmd(&mut b,17,5,0x10,&[0]);epd_cmd(&mut b,17,5,0x12,&[]);finish_epd(&mut b);assert!(b.board.display().unwrap().2.iter().all(|&p|p==0xffff),"old plane is not the current monochrome image");
+    let area=[0,168,1,7,0,8,0,1];let mut packet=area.to_vec();packet.push(0xfe);epd_cmd(&mut b,17,5,0x15,&packet);assert_eq!(b.board.display_frames(),1);epd_cmd(&mut b,17,5,0x16,&area);assert!(!pin_high(&mut b,4));finish_epd(&mut b);
+    let(w,h,p,_)=b.board.display().unwrap();assert_eq!((w,h),(176,264));assert_eq!(*p.last().unwrap(),0);assert_eq!(p.iter().filter(|&&v|v==0).count(),1);
+    for area in [[0,176,0,0,0,8,0,1],[0,0,1,8,0,8,0,1],[0,0,0,0,0,0,0,1],[0,168,1,7,0,16,0,1]]{let mut packet=area.to_vec();packet.extend([0;64]);epd_cmd(&mut b,17,5,0x15,&packet);epd_cmd(&mut b,17,5,0x16,&area);assert_eq!(b.board.next_deadline(),None);}
+    assert_eq!(b.board.display().unwrap().2,p);assert_eq!(b.board.display_frames(),2);for(name,pin)in[("button-1",37),("button-2",38),("button-3",39)]{assert_eq!(b.board.named_pin(name),Some(pin));}
 }

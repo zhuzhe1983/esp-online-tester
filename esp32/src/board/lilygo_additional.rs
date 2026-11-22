@@ -7,6 +7,7 @@ use esp_periph::i2c::I2cDevice;
 use esp_soc::board::{Board,BoardModel,BoardEdge,SpiPins,VirtualCycle};
 use esp_soc::devices::{DcsPanel,Ws2812Chain,i2c_bitbang::I2cBitBang,oled_mono::{OledMono,OledI2c,OledKind}};
 use esp_soc::pins::PinRoutes;
+#[path="lilygo_classic_epaper.rs"] mod epaper;
 
 #[derive(Clone,Copy)]
 struct Oled {pins:(u8,u8),reset:Option<u8>,spi:Option<OledSpi>,height:u16}
@@ -72,7 +73,7 @@ const INTERNET:Profile=Profile{name:"lilygo-t-internet-com",rgb:Some((12,1)),..E
 const LORA10:Profile=Profile{name:"lilygo-lora-v1-0-kit",oled:Some(OLED),..EMPTY};
 const PROFILES:&[&Profile]=&[&BEAM,&DUAL,&TCXO,&BAO,&LORA13,&TTV,&POE,&SOFTRF,&HELIUM,&KEYBOARD,&A7608,&A7670,&CAN485,&SIM7000E,&T7,&WEIGH,&WATCH2021,&PCIE,&RELAY8,&W5500,&LION,&JOURNAL,&T96,&SIM7600EL1,&SIM7600,&HIGROW,&ENCODER,&INTERNET,&LORA10,&SIM7070,&RELAY4,&SIM7000,&TCALL,&LORA3];
 
-pub fn make_board(name:&str)->Option<Board> {PROFILES.iter().find(|p|p.name==name).map(|&p|Box::new(LilygoClassic::new(p)) as Board)}
+pub fn make_board(name:&str)->Option<Board> {PROFILES.iter().find(|p|p.name==name).map(|&p|Box::new(LilygoClassic::new(p)) as Board).or_else(||epaper::make_board(name))}
 struct LilygoClassic {
     profile:&'static Profile,oled:Option<Arc<Mutex<OledMono>>>,oled_shift:OledShift,i2c:I2cBitBang,
     levels:[bool;2],edges:Vec<BoardEdge>,panel:Option<DcsPanel>,dc:Option<bool>,
