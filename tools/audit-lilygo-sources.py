@@ -332,7 +332,13 @@ def refresh(cache):
         fetch(f'https://lilygo.cc/products.json?limit=250&page={page}', cache / f'shopify-{page}.raw')
     meta, _ = fetch(f'https://api.github.com/repos/{REPO}', cache / 'wiki-repo.raw')
     branch = json.loads(meta)['default_branch']
-    raw, _ = fetch(f'https://api.github.com/repos/{REPO}/git/trees/{branch}?recursive=1', cache / 'wiki-tree.raw')
+    # Pin the commit explicitly. A Git Trees response identifies a tree, while
+    # connector-normalized snapshots can instead expose their input revision.
+    # Neither alone establishes the object's type; the commit endpoint does.
+    raw, commit_source = fetch(f'https://api.github.com/repos/{REPO}/commits/{quote(branch, safe="")}', cache / 'wiki-commit.raw')
+    commit = json.loads(raw)
+    revision, tree_sha = commit['sha'], commit['commit']['tree']['sha']
+    raw, _ = fetch(f'https://api.github.com/repos/{REPO}/git/trees/{tree_sha}?recursive=1', cache / 'wiki-tree.raw')
     tree = json.loads(raw)
     if tree.get('truncated'):
         raise ValueError('Incomplete official documentation tree')
@@ -342,9 +348,10 @@ def refresh(cache):
     def get(entry):
         path = entry['path']
         destination = cache / 'wiki' / path.replace('/', '__')
-        url = f'https://raw.githubusercontent.com/{REPO}/{tree["sha"]}/' + quote(path)
+        url = f'https://raw.githubusercontent.com/{REPO}/{revision}/' + quote(path)
         _, source = fetch(url, destination)
-        source.update(commit=tree['sha'], gitBlobSha=entry['sha'], path=path)
+        source.update(commit=revision, revision=revision, revisionKind='git-commit', gitTreeSha=tree_sha,
+                      gitBlobSha=entry['sha'], path=path, gitRevisionEvidence=commit_source)
         write(destination.with_suffix('.source.json'), source)
         return source
 

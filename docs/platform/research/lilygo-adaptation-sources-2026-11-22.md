@@ -11,7 +11,7 @@ Only 20 entries have an applicable day-level hardware date in the inspected offi
 ## Source coverage
 
 - 125 exact storefront product handles found in the official public JSON inventory; both remaining individual product JSON endpoints returned HTTP 404.
-- 79 product documentation mappings inspected at a single pinned official documentation commit.
+- 79 product documentation mappings inspected at a single pinned official documentation commit. Its object type and actual tree SHA were independently checked through the Git commit API; the normalized tree-list snapshot alone is not used to infer either identity.
 - The JSON preserves public source URLs, redirect targets, UTC retrieval times, byte counts and SHA-256; Markdown content additionally checks the Git blob identity.
 - Model and photo links are marked `linked` until retrieved and validated by the model workflow. Discovery of a model directory does not establish an exact licensed assembly.
 - Every item includes a factory-firmware investigation status. A link to an official firmware directory is not a verified complete image, hash, factory identity, or successful boot. No third-party firmware binary is downloaded or committed by this audit.
