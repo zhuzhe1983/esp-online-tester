@@ -17,6 +17,8 @@ pub fn make_board(name:&str)->Option<Board> {
     if name=="lilygo-ts-s3-epaper" {return Some(Box::new(TsEpaper::new()));}
     if name=="lilygo-t-touch-bar" {return Some(Box::new(TouchBar::new()));}
     if name=="lilygo-t-hmi" {return Some(Box::new(Hmi::new()));}
+    if name=="lilygo-t5-e-paper-s3-pro" {return Some(Box::new(RawEpaper::new(true)));}
+    if name=="lilygo-t5-4-7-inch-e-paper-v2-3" {return Some(Box::new(RawEpaper::new(false)));}
     let (name,tft):(&'static str,bool)=match name {
         "lilygo-t-deck-pro-meshtastic"=>("lilygo-t-deck-pro-meshtastic",false),
         "lilygo-t-deck-meshtastic"=>("lilygo-t-deck-meshtastic",true),
@@ -321,4 +323,63 @@ impl BoardModel for Hmi {
     fn display_frames(&self)->u64 {self.panel.frames}
     fn gram(&self)->Option<(Vec<u16>,usize,usize)> {Some((self.panel.gram.clone(),240,320))}
     fn report(&self)->String {format!("[{}] ST7789 240x320 exact i80 data48/47/39/40/41/42/45/46 WR8 CS6 DC7 power10 BL38; bytes={} BOOT0/user21 and native1-bit SDMMC12/11/13; XPT2046 physical touch unmodeled; USB-present digital subset, battery latch14/ADC/backlight dimming/factory-boot unverified",self.name(),self.bytes)}
+}
+
+// ED047TC1 and ET047TC1 are not renamed as each other. The existing two-bit
+// optical endpoint is reused because both pinned ED047TC1 drivers explicitly
+// send 0x55 for black and 0xaa for white. Analog integration/gray levels remain
+// absent; no RGB framebuffer bypasses the actual source/gate drive symbols.
+const T5PRO_IO:WiredProfile=WiredProfile{name:"lilygo-t5-e-paper-s3-pro",oled:None,buttons:BOOT,encoder:None,emission_enable:None,led:None,card:Some(CardWiring{pins:[14,13,21,12],other_selects:1<<46}),power:None,scope:"T5S3-4.7-PRO H752-01 BOOT/SPI-SD"};
+const EPD47_IO:WiredProfile=WiredProfile{name:"lilygo-t5-4-7-inch-e-paper-v2-3",oled:None,buttons:&[("boot",0),("user",21)],encoder:None,emission_enable:None,led:None,card:Some(CardWiring{pins:[11,15,16,42],other_selects:0}),power:None,scope:"Manufacturer current T5-ePaper-S3 linked by exact storefront slug; shift-register rails/SPI-SD"};
+struct RawEpaper {pro:bool,inner:WiredBoard,panel:esp_soc::devices::et047tc1::Et047tc1,expander:Arc<Mutex<esp_periph::i2c::tca9555::Tca9555State>>,wire:I2cBitBang,levels:[bool;2],irq:bool,edges:Vec<BoardEdge>,cycle:VirtualCycle,stv:Option<bool>,clk:Option<bool>,strobe:Option<bool>,shift:u8,bits:u8,config:u8,rgb_routes:bool,rgb_scan:bool}
+impl RawEpaper {
+    fn new(pro:bool)->Self {let expander=Arc::new(Mutex::new(esp_periph::i2c::tca9555::Tca9555State::default()));
+        // TPS power-good is deliberately low while the TPS analog supply is
+        // unmodeled. We do not fake a factory power-on success or its ID/PG.
+        expander.lock().expect("T5 PCA9535").set_input(14,false);
+        Self{pro,inner:WiredBoard::new(if pro{&T5PRO_IO}else{&EPD47_IO}),panel:Default::default(),expander,wire:I2cBitBang::new(),levels:[true;2],irq:true,edges:Vec::new(),cycle:0,stv:None,clk:None,strobe:None,shift:0,bits:0,config:2,rgb_routes:false,rgb_scan:false}}
+    fn powered(&self)->bool {if self.pro {let mask=(1<<8)|(1<<11)|(1<<12)|(1<<13);self.expander.lock().expect("T5 PCA9535").driven_high()&mask==mask}else{self.config&0x2e==0x2c}}
+    fn sync_irq(&mut self) {if self.pro {let level=self.expander.lock().expect("T5 PCA9535").irq_high();if level!=self.irq{self.irq=level;self.edges.push(BoardEdge{cycle:self.cycle,pin:38,level});}}}
+    fn apply_config(&mut self,value:u8) {let previous=self.config;self.config=value;if !self.powered(){self.panel.stop_scan();return;}
+        if previous&16!=0&&value&16==0{self.panel.begin_scan();}
+        if previous&1==0&&value&1!=0&&value&0xc0==0xc0{self.panel.latch();}}
+    fn unshuffle(v:u8)->u16 {u16::from((v>>6)|((v>>2)&12)|((v<<2)&48)|(v<<6))}
+}
+impl BoardModel for RawEpaper {
+    fn name(&self)->&'static str {self.inner.name()}
+    fn uses_gpio_routes(&self)->bool {true}
+    fn gpio_waveform_at(&mut self,cycle:VirtualCycle,routes:PinRoutes<'_>) {
+        self.cycle=cycle;
+        if self.pro {
+            let scl=routes.software_output(40)!=Some(false);let sda=self.wire.drive(scl,routes.software_output(39)!=Some(false));for(i,(pin,level))in[(39,sda),(40,scl)].into_iter().enumerate(){if self.levels[i]!=level{self.levels[i]=level;self.edges.push(BoardEdge{cycle,pin,level});}}
+            self.rgb_routes=routes.matrix_output(4,154)&&routes.matrix_output(42,151)&&routes.matrix_output(41,150)&&[18,8,16,17,7,15,5,6].iter().enumerate().all(|(i,&p)|routes.matrix_output(p,141+i as u32));
+            let stv=routes.software_output(45);if self.stv==Some(true)&&stv==Some(false)&&self.powered(){self.panel.begin_scan();self.rgb_scan=false;}self.stv=stv;
+            if !self.powered(){self.panel.stop_scan();self.rgb_scan=false;}self.sync_irq();
+        }else {
+            let clk=routes.software_output(12);let strobe=routes.software_output(0);if self.strobe==Some(true)&&strobe==Some(false){self.shift=0;self.bits=0;}
+            if self.clk==Some(false)&&clk==Some(true){if let Some(bit)=routes.software_output(13){self.shift=(self.shift<<1)|u8::from(bit);self.bits=self.bits.saturating_add(1);}else{self.bits=9;}}
+            if self.strobe==Some(false)&&strobe==Some(true)&&self.bits==8{self.apply_config(self.shift);self.bits=0;}self.clk=clk;self.strobe=strobe;
+        }
+    }
+    fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)> {if !self.pro{return Vec::new();}self.wire.clear();self.wire.attach(0x20,Box::new(esp_periph::i2c::tca9555::Tca9555::new(self.expander.clone())));(0..2).flat_map(|bus|self.wire.controller_devices(Some((39,40))).into_iter().map(move|(a,d)|(bus,a,d))).collect()}
+    fn button_at(&mut self,cycle:VirtualCycle,id:&str,pressed:bool)->bool {if !self.pro||id!="function"{return false;}self.cycle=cycle;self.expander.lock().expect("T5 PCA9535").set_input(10,!pressed);self.sync_irq();true}
+    fn input_levels(&self)->Vec<(u8,bool)> {let mut levels=self.inner.input_levels();if self.pro{levels.extend([(39,self.levels[0]),(40,self.levels[1]),(38,self.expander.lock().expect("T5 PCA9535").irq_high())]);}levels}
+    fn named_pin(&self,name:&str)->Option<u8> {self.inner.named_pin(name)}
+    fn take_edges(&mut self)->Vec<BoardEdge> {self.sync_irq();std::mem::take(&mut self.edges)}
+    fn uses_spi_pins(&self)->bool {true}
+    fn spi_transfer_pins(&mut self,host:u8,pins:SpiPins,tx:&[u8],rx:usize)->Vec<u8> {self.inner.spi_transfer_pins(host,pins,tx,rx)}
+    fn attach_spi_sd_card(&mut self,image:Box<dyn SdStore>,config:SdCardConfig)->Result<String,String> {self.inner.attach_spi_sd_card(image,config)}
+    fn set_sd_card_present(&mut self,present:bool) {self.inner.set_sd_card_present(present);}
+    fn lcd_i80(&mut self,pins:LcdI80Pins,data:bool,words:&[u16]) {
+        if self.pro||!self.powered()||self.config&0xc1!=0xc0||!self.panel.scanning||!data||pins.width!=8||pins.clock&(1<<41)==0||pins.select!=0||pins.dc&(1<<40)==0||pins.dc_high||words.len()<240||![6,7,4,5,2,3,8,1].iter().enumerate().all(|(i,p)|pins.data[i]&(1<<p)!=0){return;}
+        let line:Vec<_>=words.iter().take(240).map(|&v|Self::unshuffle(v as u8)).collect();self.panel.line(&line);
+    }
+    fn lcd_rgb_start(&mut self,_cycle:VirtualCycle,w:u32,h:u32,bpp:u32,clock:&dyn Fn(u8)->Option<(u64,u32)>) {self.rgb_scan=self.pro&&self.rgb_routes&&self.powered()&&self.panel.scanning&&self.panel.row==0&&w==241&&h==544&&bpp==1&&clock(48).is_some_and(|(period,pulses)|period!=0&&pulses>=h);}
+    fn lcd_frame(&mut self,w:u32,h:u32,bytes:&[u8]) {let scan=std::mem::take(&mut self.rgb_scan);if !scan||!self.rgb_routes||!self.powered()||!self.panel.scanning||w!=241||h!=544||bytes.len()!=241*544{return;}
+        let mut line=[0u16;240];for row in bytes.as_chunks::<241>().0.iter().take(540){for(word,&v)in line.iter_mut().zip(&row[1..]){*word=Self::unshuffle(v);}self.panel.line(&line);self.panel.latch();}self.panel.stop_scan();}
+    fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {Some((960,540,self.panel.frame.clone(),self.panel.version))}
+    fn display_version(&self)->u64 {self.panel.version}
+    fn display_frames(&self)->u64 {self.panel.frames}
+    fn display_quiet_push(&self)->bool {true}
+    fn report(&self)->String {format!("[{}] ED047TC1 960x540 two-bit black/white drive endpoint; {} ; pixels retained on rail-off; frames={} powered={} factory-boot=unverified gray/analog/temperature/touch/GNSS/RF absent",self.name(),if self.pro{"H752-01 PCA9535 digital rails; TPS651851 PG/charger/RTC absent; RGB241x544 plus finite CKV48"}else{"exact T5-ePaper-S3 8-bit shift rails/8-bit i80; latch advances row; CKV pulse integration unmodeled"},self.panel.frames,self.powered())}
 }
