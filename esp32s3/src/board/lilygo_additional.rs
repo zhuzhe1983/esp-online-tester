@@ -17,6 +17,7 @@ pub fn make_board(name:&str)->Option<Board> {
     if name=="lilygo-ts-s3-epaper" {return Some(Box::new(TsEpaper::new()));}
     if name=="lilygo-t-touch-bar" {return Some(Box::new(TouchBar::new()));}
     if name=="lilygo-t-hmi" {return Some(Box::new(Hmi::new()));}
+    if name=="lilygo-t-rgb" {return Some(Box::new(RgbBoard::new()));}
     if name=="lilygo-t5-e-paper-s3-pro" {return Some(Box::new(RawEpaper::new(true)));}
     if name=="lilygo-t5-4-7-inch-e-paper-v2-3" {return Some(Box::new(RawEpaper::new(false)));}
     let (name,tft):(&'static str,bool)=match name {
@@ -382,4 +383,66 @@ impl BoardModel for RawEpaper {
     fn display_frames(&self)->u64 {self.panel.frames}
     fn display_quiet_push(&self)->bool {true}
     fn report(&self)->String {format!("[{}] ED047TC1 960x540 two-bit black/white drive endpoint; {} ; pixels retained on rail-off; frames={} powered={} factory-boot=unverified gray/analog/temperature/touch/GNSS/RF absent",self.name(),if self.pro{"H752-01 PCA9535 digital rails; TPS651851 PG/charger/RTC absent; RGB241x544 plus finite CKV48"}else{"exact T5-ePaper-S3 8-bit shift rails/8-bit i80; latch advances row; CKV pulse integration unmodeled"},self.panel.frames,self.powered())}
+}
+
+const RGB_DATA:[u8;16]=[7,6,5,3,2,14,13,12,11,10,9,21,18,17,16,15];
+// Schematic U5 is XL9535 (SensorLib's compatible driver is named XL9555):
+// A0=V3V, A1=A2=GND => 0x21. Its INT is unconnected. P07 is SD DAT3/CS,
+// not a supply switch; P02 is battery self-hold, not a USB-present panel gate.
+struct RgbState {port:Arc<Mutex<esp_periph::i2c::tca9555::Tca9555State>>,touch:Arc<Mutex<TouchState>>,config:u16,previous:u16,reset:bool,shift:u16,bits:u8,command:u8,args:[u8;5],count:usize,page:u8,on:bool,sleep:bool,colmod:u8,madctl:u8,frame:Vec<u16>,version:u64,frames:u64,serial_words:u64}
+impl RgbState {
+    fn new(port:Arc<Mutex<esp_periph::i2c::tca9555::Tca9555State>>,touch:Arc<Mutex<TouchState>>)->Self {Self{port,touch,config:0xffff,previous:0,reset:false,shift:0,bits:0,command:0,args:[0;5],count:0,page:0,on:false,sleep:true,colmod:0x66,madctl:0,frame:vec![0;480*480],version:0,frames:0,serial_words:0}}
+    fn reset_registers(&mut self) {self.on=false;self.sleep=true;self.colmod=0x66;self.madctl=0;self.page=0;self.command=0;self.count=0;self.bits=0;self.version=self.version.wrapping_add(1);}
+    fn sample(&mut self) {let high=self.port.lock().expect("T-RGB XL9535").driven_high();let reset=high&(1<<6)!=0;if self.reset&&!reset{self.reset_registers();}
+        if self.reset!=reset{self.version=self.version.wrapping_add(1);}self.reset=reset;
+        {let mut t=self.touch.lock().expect("T-RGB CST820");t.powered=high&(1<<1)!=0;if !t.powered{t.clear();}}
+        let connected=self.config&0x38==0;let selected=connected&&high&(1<<3)==0;
+        if !selected||!reset {self.bits=0;}else if self.previous&(1<<5)==0&&high&(1<<5)!=0 {self.shift=(self.shift<<1)|u16::from(high&(1<<4)!=0);self.bits+=1;if self.bits==9{self.serial(self.shift&0x1ff);self.bits=0;}}
+        self.previous=high;
+    }
+    fn serial(&mut self,word:u16) {self.serial_words+=1;let byte=word as u8;if word&0x100==0{self.command=byte;self.count=0;if self.page==0{match byte{0x01=>self.reset_registers(),0x10=>self.sleep=true,0x11=>self.sleep=false,0x28=>self.on=false,0x29=>self.on=true,_=>{}}self.version=self.version.wrapping_add(1);}return;}
+        if self.count<5{self.args[self.count]=byte;}self.count=self.count.saturating_add(1);
+        if self.command==0xff {if self.count==5&&self.args[..4]==[0x77,1,0,0]{self.page=self.args[4];}return;}
+        if self.page==0&&self.count==1{match self.command{0x3a=>self.colmod=byte,0x36=>self.madctl=byte,_=>{}}self.version=self.version.wrapping_add(1);}
+    }
+}
+struct RgbExpander {device:esp_periph::i2c::tca9555::Tca9555,state:Arc<Mutex<RgbState>>,ptr:u8,first:bool}
+impl I2cDevice for RgbExpander {
+    fn start(&mut self,read:bool)->bool {if !read{self.first=true;}self.device.start(read)}
+    fn write(&mut self,byte:u8)->bool {let ok=self.device.write(byte);if !ok{return false;}
+        if self.first{self.first=false;self.ptr=byte;return true;}
+        let mut s=self.state.lock().expect("T-RGB serial state");if self.ptr&6==6{let shift=(self.ptr&1)*8;s.config=(s.config&!(255u16<<shift))|(u16::from(byte)<<shift);}self.ptr^=1;s.sample();true}
+    fn read(&mut self)->u8 {self.ptr^=1;self.device.read()}
+    fn stop(&mut self) {self.device.stop();}
+}
+struct RgbBoard {state:Arc<Mutex<RgbState>>,touch:Arc<Mutex<TouchState>>,wire:I2cBitBang,levels:[bool;2],irq:bool,edges:Vec<BoardEdge>,cycle:VirtualCycle,light:bool,routes:bool,started:bool,present:bool,version:u64}
+impl RgbBoard {
+    fn new()->Self {let port=Arc::new(Mutex::new(esp_periph::i2c::tca9555::Tca9555State::default()));let touch=Arc::new(Mutex::new(TouchState{powered:false,asleep:false,down:false,x:0,y:0,width:480,height:480}));let state=Arc::new(Mutex::new(RgbState::new(port,touch.clone())));Self{state,touch,wire:I2cBitBang::new(),levels:[true;2],irq:true,edges:Vec::new(),cycle:0,light:false,routes:false,started:false,present:true,version:0}}
+    fn irq(&self)->bool {let t=self.touch.lock().expect("T-RGB CST820");!t.powered||t.asleep||!t.down}
+    fn sync_irq(&mut self) {let high=self.irq();if high!=self.irq{self.irq=high;self.edges.push(BoardEdge{cycle:self.cycle,pin:1,level:high});}}
+}
+impl BoardModel for RgbBoard {
+    fn name(&self)->&'static str {"lilygo-t-rgb"}
+    fn uses_gpio_routes(&self)->bool {true}
+    fn gpio_waveform_at(&mut self,cycle:VirtualCycle,routes:PinRoutes<'_>) {self.cycle=cycle;let light=routes.software_output(46)==Some(true);if light!=self.light{self.light=light;self.version=self.version.wrapping_add(1);}
+        self.routes=routes.matrix_output(42,154)&&routes.matrix_output(47,151)&&routes.matrix_output(41,152)&&routes.matrix_output(45,150)&&RGB_DATA.iter().enumerate().all(|(i,&p)|routes.matrix_output(p as usize,133+i as u32));if !self.routes{self.started=false;}
+        let scl=routes.software_output(48)!=Some(false);let sda=self.wire.drive(scl,routes.software_output(8)!=Some(false));for(i,(pin,level))in[(8,sda),(48,scl)].into_iter().enumerate(){if self.levels[i]!=level{self.levels[i]=level;self.edges.push(BoardEdge{cycle,pin,level});}}self.sync_irq();}
+    fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)> {self.wire.clear();let port=self.state.lock().expect("T-RGB state").port.clone();self.wire.attach(0x21,Box::new(RgbExpander{device:esp_periph::i2c::tca9555::Tca9555::new(port),state:self.state.clone(),ptr:0,first:true}));self.wire.attach(0x15,Box::new(TouchDevice::new(TouchKind::Cst820,self.touch.clone())));(0..2).flat_map(|bus|self.wire.controller_devices(Some((8,48))).into_iter().map(move|(a,d)|(bus,a,d))).collect()}
+    fn input_levels(&self)->Vec<(u8,bool)> {vec![(0,true),(8,self.levels[0]),(48,self.levels[1]),(1,self.irq())]}
+    fn named_pin(&self,name:&str)->Option<u8> {(name=="boot").then_some(0)}
+    fn touch(&mut self,x:u16,y:u16,down:bool) {{let mut t=self.touch.lock().expect("T-RGB CST820");if !t.powered||t.asleep{return;}t.x=x.min(479);t.y=y.min(479);t.down=down;}self.sync_irq();}
+    fn touch_irq(&self)->Option<(u8,bool)> {Some((1,self.irq()))}
+    fn take_edges(&mut self)->Vec<BoardEdge> {self.sync_irq();std::mem::take(&mut self.edges)}
+    fn lcd_rgb_start(&mut self,_cycle:VirtualCycle,w:u32,h:u32,bpp:u32,_clock:&dyn Fn(u8)->Option<(u64,u32)>) {self.started=self.routes&&w==480&&h==480&&bpp==2;}
+    fn lcd_frame(&mut self,w:u32,h:u32,bytes:&[u8]) {if !self.started||!self.routes||w!=480||h!=480||bytes.len()!=480*480*2{return;}let mut s=self.state.lock().expect("T-RGB state");if !s.reset||s.sleep||!s.on||s.colmod&7!=6||s.madctl&!8!=0{return;}
+        // Physical RGB666 drops R/B LSB wires, while IDF emits RGB565. The
+        // selected native wiring swaps R/B; source MADCTL.BGR=1 swaps it back.
+        let bgr=s.madctl&8!=0;for(p,b)in s.frame.iter_mut().zip(bytes.as_chunks::<2>().0){let v=u16::from_le_bytes(*b);*p=if bgr{v}else{(v&0x07e0)|((v&31)<<11)|((v>>11)&31)};}s.frames=s.frames.wrapping_add(1);s.version=s.version.wrapping_add(1);
+    }
+    fn sd_card_slot(&self)->Option<([u8;6],bool)> {let state=self.state.lock().expect("T-RGB state");let native_select=state.port.lock().expect("T-RGB XL9535").driven_high()&(1<<7)!=0;Some(([39,40,38,255,255,255],native_select&&self.present))}
+    fn set_sd_card_present(&mut self,present:bool) {self.present=present;}
+    fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {let s=self.state.lock().expect("T-RGB state");Some((480,480,if self.light&&s.reset&&s.on&&!s.sleep{s.frame.clone()}else{vec![0;480*480]},s.version.wrapping_add(self.version)))}
+    fn display_version(&self)->u64 {self.state.lock().expect("T-RGB state").version.wrapping_add(self.version)}
+    fn display_frames(&self)->u64 {self.state.lock().expect("T-RGB state").frames}
+    fn report(&self)->String {let s=self.state.lock().expect("T-RGB state");format!("[{}] original2.1 full-circle ST7701S480x480/CST820; XL9535 at0x21 nine-bit serial words={} native RGB frames={}; exact RGB565-to-RGB666 wires with BGR; native1-bit SDMMC39/40/38 via DAT3high; AW9364 on/off only, pulse dimming/battery/factory-boot/optical calibration unverified; half-circle/2.8/V2 variants excluded",self.name(),s.serial_words,s.frames)}
 }
