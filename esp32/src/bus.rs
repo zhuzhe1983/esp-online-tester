@@ -310,7 +310,7 @@ impl SocBus {
         if a == 0x3ff4_8100 && v & (1 << 8) != 0 {
             self.periph.rtc.memory_crc(&self.rtc_fast);
         }
-        if matches!(a & !0xfff, 0x3ff4_4000 | 0x3ff4_9000) && self.board.uses_gpio_waveform() {
+        if matches!(a & !0xfff, 0x3ff4_4000 | 0x3ff4_9000) && self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, self.periph.gpio.routes());
         }
         // IDF v5.5.4 rtc_cntl_reg.h:247-252,1281-1287: SLEEP_EN and
@@ -431,7 +431,7 @@ impl SocBus {
             self.periph.efuse.ram.write(0x0c, (value & !(7 << 9)) | (5 << 9));
         }
         self.irq_dirty = true;
-        if self.board.uses_gpio_waveform() {
+        if self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, self.periph.gpio.routes());
         }
         self.pins_active = self.board.uses_gpio_edges() || self.board.uses_uart_pins();
