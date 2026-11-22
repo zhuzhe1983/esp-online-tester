@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-22T08:42:49Z",
+  "checkedAt": "2026-11-22T08:50:36Z",
   "implementation": "esp32s3/src/board/lilygo_additional.rs",
   "status": "partial board contracts; no factory boot claims",
   "notes": [
@@ -10,7 +10,8 @@
     "Every documented physical TF slot uses the platform prepared 64 MiB FAT32 policy. Smaller deterministic test images verify real SPI block read/write and supply-cycle persistence.",
     "The SX1262 packet subset on three TFT Deck variants is tested through correct board pins, power, reset, matching configuration, RX buffer, TX capture and IRQ. Other profiles do not expose radio capability merely because a chip is physically present.",
     "Unknown dates remain unknown. Storefront dates are low-confidence ordering proxies; T-2Can uses its explicit V1.0 manufacturer version date.",
-    "Three more exact screen targets share the private DCS transport with explicit source profiles. CST226SE 8-bit reports and CST816D family ID/report behavior are separate; all three have real Xtensa display/GPIO probes and I2C pin rejection tests."
+    "Three more exact screen targets share the private DCS transport with explicit source profiles. CST226SE 8-bit reports and CST816D family ID/report behavior are separate; all three have real Xtensa display/GPIO probes and I2C pin rejection tests.",
+    "Original TWR Rev1.x and the two Plus revisions keep separate OLED/encoder/PMU maps. Original schematic VBAT gating leaves VDD/I2C/RAM live. MVSR selects the exact complete storefront kit; the separately sold backplate has no CPU."
   ],
   "sources": [
     {
@@ -1446,6 +1447,227 @@
       "bytes": 7214,
       "mediaType": "text/plain; charset=utf-8",
       "archiveName": "s3add-encoder-pro-display-h.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-mvsr-readme",
+      "repository": "Xinyuan-LilyGO/T3-S3-MVSRBoard",
+      "revision": "840a2e788b3192c4e9bddf0640c1ecaf703c2598",
+      "path": "README.md",
+      "gitBlobSha": "3620f053e6b5fde6b0ca3ff56208f6fa33c28b67",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T3-S3-MVSRBoard/840a2e788b3192c4e9bddf0640c1ecaf703c2598/README.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T3-S3-MVSRBoard/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:30:41Z",
+      "sha256": "a3207b75842a25f4b2ffe93f9fa2c2b781ea9a5f3b94b62020f29d42af7f4bdc",
+      "bytes": 14159,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-mvsr-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-mvsr-pins",
+      "repository": "Xinyuan-LilyGO/T3-S3-MVSRBoard",
+      "revision": "840a2e788b3192c4e9bddf0640c1ecaf703c2598",
+      "path": "libraries/private_library/pin_config.h",
+      "gitBlobSha": "44c1727dc2f7c0645c88dddee51f2b382f071dd7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T3-S3-MVSRBoard/840a2e788b3192c4e9bddf0640c1ecaf703c2598/libraries/private_library/pin_config.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T3-S3-MVSRBoard/libraries/private_library/pin_config.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:30:41Z",
+      "sha256": "70eb16e66c8cc5f3bd78c8595796dac5f6266936650cdd8bab9669a76fbd7a78",
+      "bytes": 2373,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-mvsr-pins.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-mvsr-factory",
+      "repository": "Xinyuan-LilyGO/T3-S3-MVSRBoard",
+      "revision": "840a2e788b3192c4e9bddf0640c1ecaf703c2598",
+      "path": "examples/Original_Test/Original_Test.ino",
+      "gitBlobSha": "46b0f96d48670147a241c82006bd8020d45a9978",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T3-S3-MVSRBoard/840a2e788b3192c4e9bddf0640c1ecaf703c2598/examples/Original_Test/Original_Test.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T3-S3-MVSRBoard/examples/Original_Test/Original_Test.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:30:46Z",
+      "sha256": "c10ee918cf53dfa1da900a55373c96d0d8ec5b878a2d6a45c9280a722a9e49d0",
+      "bytes": 67109,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-mvsr-factory.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-readme",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "080bf10217f70690d78ed982ae344a5e059f13fc",
+      "path": "README.md",
+      "gitBlobSha": "b94477baa1204fada127224271460c5df0d34e62",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/080bf10217f70690d78ed982ae344a5e059f13fc/README.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:30:46Z",
+      "sha256": "b540522707f257df919467be3b4205ae24df3cb5188e9cb58388a654c1ec3acb",
+      "bytes": 14695,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-pins",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "080bf10217f70690d78ed982ae344a5e059f13fc",
+      "path": "lib/LilyGo_TWR_Library/src/utilities.h",
+      "gitBlobSha": "4b5e829e3409bc5982ded0b56bfdd859d13eefce",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/080bf10217f70690d78ed982ae344a5e059f13fc/lib/LilyGo_TWR_Library/src/utilities.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/lib/LilyGo_TWR_Library/src/utilities.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:30:46Z",
+      "sha256": "afed79e2b226b35db37bf2ad7bad335fcc6605f0c8aa390ccc5a9f3ed86dbbf4",
+      "bytes": 1218,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-pins.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-class",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "080bf10217f70690d78ed982ae344a5e059f13fc",
+      "path": "lib/LilyGo_TWR_Library/src/TWRClass.cpp",
+      "gitBlobSha": "3c05222483a10eec7dc4cd056eba8241cdb78ec5",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/080bf10217f70690d78ed982ae344a5e059f13fc/lib/LilyGo_TWR_Library/src/TWRClass.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/lib/LilyGo_TWR_Library/src/TWRClass.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:30:53Z",
+      "sha256": "2d73727a2685dbbd91cbf0fdc77aa1846fd3d118aae34ded375d465be55fbf8d",
+      "bytes": 18168,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-class.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-plus-h",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "080bf10217f70690d78ed982ae344a5e059f13fc",
+      "path": "lib/LilyGo_TWR_Library/src/TWRClass.h",
+      "gitBlobSha": "f52a211e50f2ce6259acb41e6bc228f3cef8b3d1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/080bf10217f70690d78ed982ae344a5e059f13fc/lib/LilyGo_TWR_Library/src/TWRClass.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/lib/LilyGo_TWR_Library/src/TWRClass.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:46:59Z",
+      "sha256": "9cf613efef1417470d022abdf8d6b0c3ce8b6f31d5869d57af3feede7a8c2f9a",
+      "bytes": 4622,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-plus-h.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-display",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "080bf10217f70690d78ed982ae344a5e059f13fc",
+      "path": "examples/U8g2_GraphicsTest_Example/U8g2_GraphicsTest_Example.ino",
+      "gitBlobSha": "957358f27e7a2065601f36856b978e2ffde31040",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/080bf10217f70690d78ed982ae344a5e059f13fc/examples/U8g2_GraphicsTest_Example/U8g2_GraphicsTest_Example.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/examples/U8g2_GraphicsTest_Example/U8g2_GraphicsTest_Example.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:26Z",
+      "sha256": "5a2635a6cf1e3961d264ad83c52b0dfd955affdc0a628f2a87970a98ab84f7e8",
+      "bytes": 9304,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-display.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-original-readme",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "0795b5c939e780a2e13c5e778293a25f78fcd0d6",
+      "path": "README.md",
+      "gitBlobSha": "bc8b8435a0331b11868f63616762497a04080bd9",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/0795b5c939e780a2e13c5e778293a25f78fcd0d6/README.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:45:52Z",
+      "sha256": "f17ce5c09dd634bb9be89b3b865e8873c45a4f5ee15787972f7437dc493a24d3",
+      "bytes": 238,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-original-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-original-config",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "0795b5c939e780a2e13c5e778293a25f78fcd0d6",
+      "path": "examples/Rev1.x/walkie_talkie/config.h",
+      "gitBlobSha": "87460c5e4869b6c07166357b5a7357a8f816e442",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/0795b5c939e780a2e13c5e778293a25f78fcd0d6/examples/Rev1.x/walkie_talkie/config.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/examples/Rev1.x/walkie_talkie/config.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:45:52Z",
+      "sha256": "51d95adbf860e581e50fe3881c52807e0117ef4f73e023a7f41e169c8a2a948f",
+      "bytes": 1177,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-original-config.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-original-pins",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "0795b5c939e780a2e13c5e778293a25f78fcd0d6",
+      "path": "examples/Rev1.x/at_debug/pin.h",
+      "gitBlobSha": "ac2d0b50bbe46dd505937b4a57de259cdaa0b798",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/0795b5c939e780a2e13c5e778293a25f78fcd0d6/examples/Rev1.x/at_debug/pin.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/examples/Rev1.x/at_debug/pin.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:46:08Z",
+      "sha256": "eb953c068e160e179b784814a2856eb8e020d31f185ea7678f8d98ee7989b413",
+      "bytes": 158,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-original-pins.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-original-factory",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "0795b5c939e780a2e13c5e778293a25f78fcd0d6",
+      "path": "examples/Rev1.x/walkie_talkie/walkie_talkie.ino",
+      "gitBlobSha": "e38db4fd4f4bcceb16519efeacf198299232e69c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/0795b5c939e780a2e13c5e778293a25f78fcd0d6/examples/Rev1.x/walkie_talkie/walkie_talkie.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/examples/Rev1.x/walkie_talkie/walkie_talkie.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:46:09Z",
+      "sha256": "b10aec987ebaca368ffb6e33d369df46f8ba108ff2dc48dc3e52bd71ebde86e9",
+      "bytes": 25724,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-original-factory.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-original-schematic",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "0795b5c939e780a2e13c5e778293a25f78fcd0d6",
+      "path": "sch/T-TWR_1.x.pdf",
+      "gitBlobSha": "3e61be2e20b76292b8045477cefb4955d924c5b7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/0795b5c939e780a2e13c5e778293a25f78fcd0d6/sch/T-TWR_1.x.pdf",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/sch/T-TWR_1.x.pdf",
+      "kind": "official-schematic",
+      "fetchedAt": "2026-11-22T08:46:59Z",
+      "sha256": "a9769c5970eca381e09f25707ea51407423bacfd3e324dda001d0b0f32fe1c74",
+      "bytes": 93471,
+      "mediaType": "application/pdf",
+      "archiveName": "s3add-twr-original-schematic.pdf",
       "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
     }
   ],
@@ -4563,6 +4785,144 @@
       }
     },
     {
+      "productId": "lilygo-t3-s3-mvsr",
+      "boardId": "lilygo-t3-s3-mvsr",
+      "name": "LILYGO T3-S3 MVSR",
+      "chip": "esp32s3",
+      "flashMB": 4,
+      "psramMB": 2,
+      "hardwareRevision": "Complete T3-S3 V1.2 host + MVSR V1.0 speaker/microphone/RTC backplate kit; SX1262 variant selected",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SSD1306",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages; eight vertical pixels per RAM byte",
+        "controllerRamWidth": 128,
+        "physicalColumnOffset": 0,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 18,
+          "scl": 17,
+          "address": 60,
+          "reset": null
+        },
+        "encoder": null,
+        "leds": [
+          {
+            "pin": 37,
+            "activeLow": false,
+            "implemented": true,
+            "color": null,
+            "simulationColor": "white logical on/off; physical LED color is not established"
+          }
+        ]
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "implemented": true,
+        "transportSupported": true,
+        "transport": "spi",
+        "pins": {
+          "sclk": 14,
+          "mosi": 11,
+          "miso": 2,
+          "cs": 13
+        },
+        "conflictingChipSelectPins": [],
+        "supply": "On-board supply; no inferred GPIO enable",
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "sourceIds": [
+          "s3add-mvsr-pins"
+        ],
+        "verification": "mvsr_and_twr_plus_card_writes_obey_their_separate_spi_and_aldo2_supply"
+      },
+      "runtimeLevel": "partial",
+      "scope": "适配官方商品中带 ESP32-S3 主板的完整 MVSR 套件：T3-S3 V1.2 主板、MVSR V1.0 背板。已接入 SSD1306 OLED、BOOT、GPIO37 指示灯和 SPI TF；背板单独没有 CPU。音频、麦克风、振动、RTC 和无线未模拟。",
+      "scopeEn": "Complete T3-S3 V1.2 host + MVSR V1.0 speaker/microphone/RTC backplate kit; SX1262 variant selected: exact OLED, controls and documented card subset.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "s3add-mvsr-readme",
+        "s3add-mvsr-pins",
+        "s3add-mvsr-factory",
+        "lora-t3-hardware",
+        "ssd1306-datasheet"
+      ],
+      "chronology": {
+        "date": "2024-11-06",
+        "basis": "hardware-release",
+        "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T3-S3-MVSRBoard/840a2e788b3192c4e9bddf0640c1ecaf703c2598/README.md",
+        "sourceId": "s3add-mvsr-readme",
+        "confidence": "medium",
+        "hardwareRevision": "T3-S3-MVSRBoard_V1.0",
+        "notes": "Manufacturer dates the MVSR V1.0 backplate to 2024-11-06. This dates the selected expansion design, not an independently confirmed first retail shipment of the complete host+backplate kit."
+      },
+      "priorityRank": 27,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "mvsr_kit_and_three_twr_revisions_execute_their_own_oled_encoder_and_gpio_maps",
+          "mvsr_and_twr_plus_card_writes_obey_their_separate_spi_and_aldo2_supply"
+        ]
+      },
+      "unsupported": [
+        "No official factory binary boot has been verified; native authored Xtensa MMIO probes establish the stated display/GPIO/I2C contracts.",
+        "OLED analog brightness, oscillator timing and scrolling are unmodeled.",
+        "Radio/RF propagation, GNSS, RTC, audio, microphone, vibration, battery/charger/ADC and PMU key/IRQ behavior are unmodeled.",
+        "Physical encoder detents are unverified; the public control uses a documented simulation setting.",
+        "SDMMC and bit-banged SPI cards are unmodeled; SPI card reads require exact clock/MOSI/MISO and exclusive chip select."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "Complete T3-S3 V1.2 host + MVSR V1.0 speaker/microphone/RTC backplate kit; SX1262 variant selected",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "official-store-shopify-1",
+          "s3add-mvsr-readme",
+          "s3add-mvsr-pins",
+          "s3add-mvsr-factory",
+          "lora-t3-hardware",
+          "ssd1306-datasheet"
+        ],
+        "basis": "Independently established exact product mapping and board revision pin table/factory implementation; no family-name alias."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "source-reference-only",
+        "sourceIds": [
+          "s3add-mvsr-factory"
+        ],
+        "candidates": [],
+        "simulationVerified": false,
+        "notes": "Official source code was inspected. No binary was downloaded, relabeled or asserted to boot."
+      },
+      "radio": {
+        "controller": "SX1262 selected host option",
+        "implemented": false,
+        "physicalRf": false
+      }
+    },
+    {
       "productId": "lilygo-t-circle-s3",
       "boardId": "lilygo-t-circle-s3",
       "name": "LILYGO T-Circle S3",
@@ -4708,6 +5068,199 @@
         "simulationVerified": false,
         "notes": "Manufacturer lists this exact variant candidate. No binary payload was downloaded or claimed to boot; source fixtures are the execution evidence."
       }
+    },
+    {
+      "productId": "lilygo-t-twr-rev2-1",
+      "boardId": "lilygo-t-twr-rev2-1",
+      "name": "LILYGO T-TWR Rev2.1",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-TWR Rev2.1 VHF with SH1106 address 0x3c; UHF 0x3d variant excluded",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SH1106",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages; eight vertical pixels per RAM byte",
+        "controllerRamWidth": 132,
+        "physicalColumnOffset": 2,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 8,
+          "scl": 9,
+          "address": 60,
+          "reset": null
+        },
+        "encoder": {
+          "a": 47,
+          "b": 46
+        },
+        "pmu": {
+          "controller": "AXP2101 driver contract",
+          "address": 52,
+          "sda": 8,
+          "scl": 9,
+          "displaySupply": "DC1",
+          "sdSupply": "ALDO2",
+          "implemented": "rail-register subset only",
+          "sourceIds": [
+            "s3add-twr-class",
+            "s3add-twr-plus-h",
+            "lora-axp-registers",
+            "lora-axp-driver"
+          ]
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "ptt",
+          "name": "PTT",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true
+        },
+        {
+          "id": "encoder-press",
+          "name": "Encoder press",
+          "type": "button",
+          "pin": 21,
+          "activeLow": true
+        },
+        {
+          "id": "encoder",
+          "name": "Rotary encoder",
+          "type": "encoder",
+          "pins": {
+            "a": 47,
+            "b": 46
+          },
+          "detents": 24,
+          "detentsBasis": "simulation",
+          "physicalDetents": null,
+          "notes": "Debug stepping count only; physical encoder detents were not measured."
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "implemented": true,
+        "transportSupported": true,
+        "transport": "spi",
+        "pins": {
+          "sclk": 12,
+          "mosi": 11,
+          "miso": 13,
+          "cs": 10
+        },
+        "conflictingChipSelectPins": [
+          14
+        ],
+        "supply": "ALDO2 on the sourced AXP driver",
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "sourceIds": [
+          "s3add-twr-pins",
+          "s3add-twr-class"
+        ],
+        "verification": "mvsr_and_twr_plus_card_writes_obey_their_separate_spi_and_aldo2_supply"
+      },
+      "runtimeLevel": "partial",
+      "scope": "按 Rev2.1 VHF 的精确接线适配 SH1106 OLED、BOOT、PTT、编码器及 SPI TF。显示使用 DC1、卡使用 ALDO2 数字供电门控。UHF 的 OLED 0x3d 地址、SA868 无线、自动硬件探测、PMU 电源键、GNSS、WS2812 和音频未模拟。",
+      "scopeEn": "T-TWR Rev2.1 VHF with SH1106 address 0x3c; UHF 0x3d variant excluded: exact OLED, controls and documented card subset.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "s3add-twr-readme",
+        "s3add-twr-pins",
+        "s3add-twr-class",
+        "s3add-twr-plus-h",
+        "s3add-twr-display",
+        "sh1106-datasheet",
+        "lora-axp-registers",
+        "lora-axp-driver"
+      ],
+      "chronology": {
+        "date": "2024-07-29",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-twr-rev2-1",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 31,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "mvsr_kit_and_three_twr_revisions_execute_their_own_oled_encoder_and_gpio_maps",
+          "mvsr_and_twr_plus_card_writes_obey_their_separate_spi_and_aldo2_supply"
+        ]
+      },
+      "unsupported": [
+        "No official factory binary boot has been verified; native authored Xtensa MMIO probes establish the stated display/GPIO/I2C contracts.",
+        "OLED analog brightness, oscillator timing and scrolling are unmodeled.",
+        "Radio/RF propagation, GNSS, RTC, audio, microphone, vibration, battery/charger/ADC and PMU key/IRQ behavior are unmodeled.",
+        "Physical encoder detents are unverified; the public control uses a documented simulation setting.",
+        "SDMMC and bit-banged SPI cards are unmodeled; SPI card reads require exact clock/MOSI/MISO and exclusive chip select."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T-TWR Rev2.1 VHF with SH1106 address 0x3c; UHF 0x3d variant excluded",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "official-store-shopify-1",
+          "s3add-twr-readme",
+          "s3add-twr-pins",
+          "s3add-twr-class",
+          "s3add-twr-plus-h",
+          "s3add-twr-display",
+          "sh1106-datasheet",
+          "lora-axp-registers",
+          "lora-axp-driver"
+        ],
+        "basis": "Independently established exact product mapping and board revision pin table/factory implementation; no family-name alias."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "source-reference-only",
+        "sourceIds": [
+          "s3add-twr-class",
+          "s3add-twr-display"
+        ],
+        "candidates": [],
+        "simulationVerified": false,
+        "notes": "Official source code was inspected. No binary was downloaded, relabeled or asserted to boot."
+      },
+      "sourceConflicts": [
+        {
+          "field": "pmu name",
+          "values": [
+            "Storefront prose says AXP2102",
+            "Pinned TWRClass explicitly inherits XPowersAXP2101"
+          ],
+          "resolution": "Expose only the sourced XPowersAXP2101 digital rail register contract; do not claim verification of analog silicon identity or charger behavior.",
+          "sourceIds": [
+            "official-store-shopify-1",
+            "s3add-twr-plus-h"
+          ]
+        }
+      ]
     },
     {
       "productId": "lilygo-t-beam-1w",
@@ -5383,6 +5936,199 @@
       }
     },
     {
+      "productId": "lilygo-t-twr-plus",
+      "boardId": "lilygo-t-twr-plus",
+      "name": "LILYGO T-TWR Plus",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-TWR Rev2.0 as explicitly linked to t-twr-plus in official README; SH1106 0x3c target",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SH1106",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages; eight vertical pixels per RAM byte",
+        "controllerRamWidth": 132,
+        "physicalColumnOffset": 2,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 8,
+          "scl": 9,
+          "address": 60,
+          "reset": null
+        },
+        "encoder": {
+          "a": 47,
+          "b": 46
+        },
+        "pmu": {
+          "controller": "AXP2101 driver contract",
+          "address": 52,
+          "sda": 8,
+          "scl": 9,
+          "displaySupply": "DC1",
+          "sdSupply": "ALDO2",
+          "implemented": "rail-register subset only",
+          "sourceIds": [
+            "s3add-twr-class",
+            "s3add-twr-plus-h",
+            "lora-axp-registers",
+            "lora-axp-driver"
+          ]
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "ptt",
+          "name": "PTT",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true
+        },
+        {
+          "id": "encoder-press",
+          "name": "Encoder press",
+          "type": "button",
+          "pin": 21,
+          "activeLow": true
+        },
+        {
+          "id": "encoder",
+          "name": "Rotary encoder",
+          "type": "encoder",
+          "pins": {
+            "a": 47,
+            "b": 46
+          },
+          "detents": 24,
+          "detentsBasis": "simulation",
+          "physicalDetents": null,
+          "notes": "Debug stepping count only; physical encoder detents were not measured."
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "implemented": true,
+        "transportSupported": true,
+        "transport": "spi",
+        "pins": {
+          "sclk": 12,
+          "mosi": 11,
+          "miso": 13,
+          "cs": 10
+        },
+        "conflictingChipSelectPins": [
+          14
+        ],
+        "supply": "ALDO2 on the sourced AXP driver",
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "sourceIds": [
+          "s3add-twr-pins",
+          "s3add-twr-class"
+        ],
+        "verification": "mvsr_and_twr_plus_card_writes_obey_their_separate_spi_and_aldo2_supply"
+      },
+      "runtimeLevel": "partial",
+      "scope": "依据官方 README 对 t-twr-plus 与 Rev2.0 的明确对应，接入 SH1106 OLED、BOOT、PTT、编码器和 SPI TF。只实现 DC1/ALDO2 供电子集；不同 SA868 固件、射频、GNSS、WS2812、音频和 PMU 电源键未模拟。",
+      "scopeEn": "T-TWR Rev2.0 as explicitly linked to t-twr-plus in official README; SH1106 0x3c target: exact OLED, controls and documented card subset.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "s3add-twr-readme",
+        "s3add-twr-pins",
+        "s3add-twr-class",
+        "s3add-twr-plus-h",
+        "s3add-twr-display",
+        "sh1106-datasheet",
+        "lora-axp-registers",
+        "lora-axp-driver"
+      ],
+      "chronology": {
+        "date": "2023-06-16",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-twr-plus",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 68,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "mvsr_kit_and_three_twr_revisions_execute_their_own_oled_encoder_and_gpio_maps",
+          "mvsr_and_twr_plus_card_writes_obey_their_separate_spi_and_aldo2_supply"
+        ]
+      },
+      "unsupported": [
+        "No official factory binary boot has been verified; native authored Xtensa MMIO probes establish the stated display/GPIO/I2C contracts.",
+        "OLED analog brightness, oscillator timing and scrolling are unmodeled.",
+        "Radio/RF propagation, GNSS, RTC, audio, microphone, vibration, battery/charger/ADC and PMU key/IRQ behavior are unmodeled.",
+        "Physical encoder detents are unverified; the public control uses a documented simulation setting.",
+        "SDMMC and bit-banged SPI cards are unmodeled; SPI card reads require exact clock/MOSI/MISO and exclusive chip select."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T-TWR Rev2.0 as explicitly linked to t-twr-plus in official README; SH1106 0x3c target",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "official-store-shopify-1",
+          "s3add-twr-readme",
+          "s3add-twr-pins",
+          "s3add-twr-class",
+          "s3add-twr-plus-h",
+          "s3add-twr-display",
+          "sh1106-datasheet",
+          "lora-axp-registers",
+          "lora-axp-driver"
+        ],
+        "basis": "Independently established exact product mapping and board revision pin table/factory implementation; no family-name alias."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "source-reference-only",
+        "sourceIds": [
+          "s3add-twr-class",
+          "s3add-twr-display"
+        ],
+        "candidates": [],
+        "simulationVerified": false,
+        "notes": "Official source code was inspected. No binary was downloaded, relabeled or asserted to boot."
+      },
+      "sourceConflicts": [
+        {
+          "field": "pmu name",
+          "values": [
+            "Storefront prose says AXP2102",
+            "Pinned TWRClass explicitly inherits XPowersAXP2101"
+          ],
+          "resolution": "Expose only the sourced XPowersAXP2101 digital rail register contract; do not claim verification of analog silicon identity or charger behavior.",
+          "sourceIds": [
+            "official-store-shopify-1",
+            "s3add-twr-plus-h"
+          ]
+        }
+      ]
+    },
+    {
       "productId": "lilygo-t3s3-v1-0",
       "boardId": "lilygo-t3s3-v1-0",
       "name": "LILYGO T3 S3",
@@ -5527,6 +6273,157 @@
         ],
         "simulationVerified": false,
         "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+      }
+    },
+    {
+      "productId": "lilygo-t-twr",
+      "boardId": "lilygo-t-twr",
+      "name": "LILYGO T-TWR",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "Original T-TWR Rev1.x; archived official Rev1.x factory source and T-TWR_1.x schematic, not Plus/Rev2.x",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SSD1306",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages; eight vertical pixels per RAM byte",
+        "controllerRamWidth": 128,
+        "physicalColumnOffset": 0,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 13,
+          "scl": 14,
+          "address": 60,
+          "reset": null,
+          "emissionEnable": 21,
+          "activeHigh": true,
+          "supplyEvidence": "Official schematic page 3: EN1/GPIO21 drives Q3 S8050 and Q2 SI2307 to gate OLED pin6 VBAT; pin9 VDD is directly 3V3. I2C logic and RAM remain powered.",
+          "sourceId": "s3add-twr-original-schematic"
+        },
+        "encoder": {
+          "a": 9,
+          "b": 5
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "user",
+          "name": "User",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true
+        },
+        {
+          "id": "ptt",
+          "name": "PTT",
+          "type": "button",
+          "pin": 38,
+          "activeLow": true
+        },
+        {
+          "id": "encoder-press",
+          "name": "Encoder press",
+          "type": "button",
+          "pin": 7,
+          "activeLow": true
+        },
+        {
+          "id": "encoder",
+          "name": "Rotary encoder",
+          "type": "encoder",
+          "pins": {
+            "a": 9,
+            "b": 5
+          },
+          "detents": 24,
+          "detentsBasis": "simulation",
+          "physicalDetents": null,
+          "notes": "Debug stepping count only; physical encoder detents were not measured."
+        }
+      ],
+      "sdCard": {
+        "slot": false,
+        "implemented": false,
+        "transportSupported": false
+      },
+      "runtimeLevel": "partial",
+      "scope": "适配原始 Rev1.x 的 SSD1306、SDA13/SCL14、四个实际按键及 GPIO9/5 编码器。原理图确认 GPIO21 只控制 OLED 的 VBAT 发光电源，数字 VDD 始终为 3.3V，因此关闭显示仍允许 I2C 写入并保留显存。未混入 Plus 的 PMU、SH1106 或 TF 卡。",
+      "scopeEn": "Original T-TWR Rev1.x; archived official Rev1.x factory source and T-TWR_1.x schematic, not Plus/Rev2.x: exact OLED, controls and documented card subset.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "s3add-twr-original-readme",
+        "s3add-twr-original-config",
+        "s3add-twr-original-pins",
+        "s3add-twr-original-factory",
+        "s3add-twr-original-schematic",
+        "ssd1306-datasheet"
+      ],
+      "chronology": {
+        "date": "2023-01-12",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-twr",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 82,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "mvsr_kit_and_three_twr_revisions_execute_their_own_oled_encoder_and_gpio_maps"
+        ]
+      },
+      "unsupported": [
+        "No official factory binary boot has been verified; native authored Xtensa MMIO probes establish the stated display/GPIO/I2C contracts.",
+        "OLED analog brightness, oscillator timing and scrolling are unmodeled.",
+        "Radio/RF propagation, GNSS, RTC, audio, microphone, vibration, battery/charger/ADC and PMU key/IRQ behavior are unmodeled.",
+        "Physical encoder detents are unverified; the public control uses a documented simulation setting.",
+        "Original TWR has no documented TF slot in this selected revision; no SD or PMU adapter is created."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "Original T-TWR Rev1.x; archived official Rev1.x factory source and T-TWR_1.x schematic, not Plus/Rev2.x",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "official-store-shopify-1",
+          "s3add-twr-original-readme",
+          "s3add-twr-original-config",
+          "s3add-twr-original-pins",
+          "s3add-twr-original-factory",
+          "s3add-twr-original-schematic",
+          "ssd1306-datasheet"
+        ],
+        "basis": "Independently established exact product mapping and board revision pin table/factory implementation; no family-name alias."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "source-reference-only",
+        "sourceIds": [
+          "s3add-twr-original-factory"
+        ],
+        "candidates": [],
+        "simulationVerified": false,
+        "notes": "Official source code was inspected. No binary was downloaded, relabeled or asserted to boot."
       }
     },
     {
@@ -5685,7 +6582,7 @@
     }
   ],
   "verification": {
-    "native": "cargo test -p esp32s3 --test lilygo_additional: 18 passed (11 additional-target tests plus 7 reused transport tests)",
+    "native": "cargo test -p esp32s3 --test lilygo_additional: 20 passed (13 target tests plus 7 shared display tests)",
     "clippy": "cargo clippy -p esp32s3 --test lilygo_additional -- -D warnings: passed",
     "factoryBootVerified": false,
     "wasmFirmwareVerified": false,
@@ -5694,7 +6591,7 @@
       "CARGO_BUILD_JOBS=1 cargo test -p esp32s3 --test lilygo_additional",
       "CARGO_BUILD_JOBS=1 cargo clippy -p esp32s3 --test lilygo_additional -- -D warnings"
     ],
-    "testCount": 18,
+    "testCount": 20,
     "status": "passed",
     "factoryFirmwareExecuted": false,
     "hardwareTested": false

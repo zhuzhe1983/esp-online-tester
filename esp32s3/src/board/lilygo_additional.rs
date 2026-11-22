@@ -32,7 +32,7 @@ struct OledWiring {kind:OledKind,sda:u8,scl:u8,address:u8}
 struct CardWiring {pins:[u8;4],other_selects:u64}
 #[derive(Clone,Copy)]
 struct PowerWiring {pins:(u8,u8),oled_ldo:Option<u8>,card_ldo:u8}
-struct WiredProfile {name:&'static str,oled:Option<OledWiring>,buttons:&'static [(&'static str,u8)],led:Option<(u8,bool)>,card:Option<CardWiring>,power:Option<PowerWiring>,scope:&'static str}
+struct WiredProfile {name:&'static str,oled:Option<OledWiring>,buttons:&'static [(&'static str,u8)],encoder:Option<(u8,u8)>,emission_enable:Option<u8>,led:Option<(u8,bool)>,card:Option<CardWiring>,power:Option<PowerWiring>,scope:&'static str}
 const BOOT:&[(&str,u8)]=&[("boot",0)];
 struct ScreenProfile {display:Profile,other_selects:u64,scope:&'static str}
 const SCREENS:&[ScreenProfile]=&[
@@ -72,15 +72,19 @@ const SUPREME_POWER:PowerWiring=PowerWiring{pins:(42,41),oled_ldo:Some(0),card_l
 // Exact separate catalog identities; current sources explicitly establish these
 // selected hardware targets, including V1.2/V1.3 main-board pin equality.
 const WIRED:&[WiredProfile]=&[
-    WiredProfile{name:"lilygo-t-beam-bpf",oled:Some(OledWiring{kind:OledKind::Sh1106,sda:8,scl:9,address:0x3c}),buttons:&[("boot",0),("user",3)],led:None,card:Some(CardWiring{pins:[12,11,13,10],other_selects:1<<1}),power:Some(PowerWiring{pins:(8,9),oled_ldo:None,card_ldo:1}),scope:"BPF Q438 SX1278 hardware; SH1106/DC1 and SD/ALDO2 digital rails; RF/GNSS/PMU-key absent"},
-    WiredProfile{name:"lilygo-t3-s3-v1-3",oled:Some(T3_OLED),buttons:BOOT,led:Some((37,true)),card:Some(T3_CARD),power:None,scope:"T3-S3 V1.3 main-board OLED/LED/BOOT/SD; optional radio types absent"},
-    WiredProfile{name:"lilygo-t-2can",oled:None,buttons:BOOT,led:None,card:None,power:None,scope:"T-2Can V1.0 ESP_BOOT0 input diagnostic only; MCP2515/TWAI/CAN PHY absent; not T-2Can-FD"},
-    WiredProfile{name:"lilygo-t-beam-supreme-meshtastic",oled:Some(SUPREME_OLED),buttons:BOOT,led:None,card:Some(SUPREME_CARD),power:Some(SUPREME_POWER),scope:"Supreme V3.0 QMC6310U/SH1106 0x3c target; ALDO1 OLED/BLDO1 SD; Meshtastic boot unverified"},
-    WiredProfile{name:"lilygo-t-beam-1w",oled:Some(OledWiring{kind:OledKind::Sh1106,sda:8,scl:9,address:0x3c}),buttons:&[("boot",0),("user",17)],led:Some((18,true)),card:Some(CardWiring{pins:[13,11,12,10],other_selects:1<<15}),power:None,scope:"T-Beam 1W V1.0 SX1262 target; OLED/LED/buttons/SD only; RF PA/GNSS/fan/ADC absent; no inferred PMU"},
-    WiredProfile{name:"lilygo-t3-s3-lr1121",oled:Some(T3_OLED),buttons:BOOT,led:Some((37,true)),card:Some(T3_CARD),power:None,scope:"T3-S3 LR1121 V1.3 SSD1306 target; radio/RTC absent; no SH1106 sibling substitution"},
-    WiredProfile{name:"lilygo-t-beam-supreme",oled:Some(SUPREME_OLED),buttons:BOOT,led:None,card:Some(SUPREME_CARD),power:Some(SUPREME_POWER),scope:"Supreme V3.0 QMC6310U/SH1106 0x3c target; ALDO1 OLED/BLDO1 SD; RF/GNSS/sensors absent"},
-    WiredProfile{name:"lilygo-t3s3-v1-0",oled:Some(T3_OLED),buttons:BOOT,led:Some((37,true)),card:Some(T3_CARD),power:None,scope:"Current T3 S3 storefront selects V1.2 main-board wiring; legacy v1-0 slug is not proof of V1.0 hardware"},
-    WiredProfile{name:"lilygo-t3-s3-meshtastic",oled:Some(T3_OLED),buttons:BOOT,led:Some((37,true)),card:Some(T3_CARD),power:None,scope:"Explicit manufacturer-linked T3 S3 SX1262 Meshtastic target; OLED/LED/BOOT/SD only, Meshtastic boot unverified"},
+    WiredProfile{name:"lilygo-t-beam-bpf",oled:Some(OledWiring{kind:OledKind::Sh1106,sda:8,scl:9,address:0x3c}),buttons:&[("boot",0),("user",3)],encoder:None,emission_enable:None,led:None,card:Some(CardWiring{pins:[12,11,13,10],other_selects:1<<1}),power:Some(PowerWiring{pins:(8,9),oled_ldo:None,card_ldo:1}),scope:"BPF Q438 SX1278 hardware; SH1106/DC1 and SD/ALDO2 digital rails; RF/GNSS/PMU-key absent"},
+    WiredProfile{name:"lilygo-t3-s3-v1-3",oled:Some(T3_OLED),buttons:BOOT,encoder:None,emission_enable:None,led:Some((37,true)),card:Some(T3_CARD),power:None,scope:"T3-S3 V1.3 main-board OLED/LED/BOOT/SD; optional radio types absent"},
+    WiredProfile{name:"lilygo-t-2can",oled:None,buttons:BOOT,encoder:None,emission_enable:None,led:None,card:None,power:None,scope:"T-2Can V1.0 ESP_BOOT0 input diagnostic only; MCP2515/TWAI/CAN PHY absent; not T-2Can-FD"},
+    WiredProfile{name:"lilygo-t3-s3-mvsr",oled:Some(T3_OLED),buttons:BOOT,encoder:None,emission_enable:None,led:Some((37,true)),card:Some(T3_CARD),power:None,scope:"Complete T3-S3 V1.2 + MVSR V1.0 kit from exact storefront, not CPU-less backplate alone; SSD1306/BOOT/LED/SD; audio/vibration/RTC/radio absent"},
+    WiredProfile{name:"lilygo-t-twr-rev2-1",oled:Some(OledWiring{kind:OledKind::Sh1106,sda:8,scl:9,address:0x3c}),buttons:&[("boot",0),("ptt",3),("encoder-press",21)],encoder:Some((47,46)),emission_enable:None,led:None,card:Some(CardWiring{pins:[12,11,13,10],other_selects:1<<14}),power:Some(PowerWiring{pins:(8,9),oled_ldo:None,card_ldo:1}),scope:"TWR Rev2.1 VHF OLED 0x3c/DC1, encoder/PTT/BOOT and SD/ALDO2; SA868/WS2812/GNSS/microphone/PMU-key/version-detect absent; UHF OLED 0x3d excluded"},
+    WiredProfile{name:"lilygo-t-beam-supreme-meshtastic",oled:Some(SUPREME_OLED),buttons:BOOT,encoder:None,emission_enable:None,led:None,card:Some(SUPREME_CARD),power:Some(SUPREME_POWER),scope:"Supreme V3.0 QMC6310U/SH1106 0x3c target; ALDO1 OLED/BLDO1 SD; Meshtastic boot unverified"},
+    WiredProfile{name:"lilygo-t-beam-1w",oled:Some(OledWiring{kind:OledKind::Sh1106,sda:8,scl:9,address:0x3c}),buttons:&[("boot",0),("user",17)],encoder:None,emission_enable:None,led:Some((18,true)),card:Some(CardWiring{pins:[13,11,12,10],other_selects:1<<15}),power:None,scope:"T-Beam 1W V1.0 SX1262 target; OLED/LED/buttons/SD only; RF PA/GNSS/fan/ADC absent; no inferred PMU"},
+    WiredProfile{name:"lilygo-t3-s3-lr1121",oled:Some(T3_OLED),buttons:BOOT,encoder:None,emission_enable:None,led:Some((37,true)),card:Some(T3_CARD),power:None,scope:"T3-S3 LR1121 V1.3 SSD1306 target; radio/RTC absent; no SH1106 sibling substitution"},
+    WiredProfile{name:"lilygo-t-beam-supreme",oled:Some(SUPREME_OLED),buttons:BOOT,encoder:None,emission_enable:None,led:None,card:Some(SUPREME_CARD),power:Some(SUPREME_POWER),scope:"Supreme V3.0 QMC6310U/SH1106 0x3c target; ALDO1 OLED/BLDO1 SD; RF/GNSS/sensors absent"},
+    WiredProfile{name:"lilygo-t-twr-plus",oled:Some(OledWiring{kind:OledKind::Sh1106,sda:8,scl:9,address:0x3c}),buttons:&[("boot",0),("ptt",3),("encoder-press",21)],encoder:Some((47,46)),emission_enable:None,led:None,card:Some(CardWiring{pins:[12,11,13,10],other_selects:1<<14}),power:Some(PowerWiring{pins:(8,9),oled_ldo:None,card_ldo:1}),scope:"Exact README links TWR Rev2.0 to t-twr-plus; SH1106 0x3c/DC1, encoder/PTT/BOOT, SD/ALDO2; SA868/audio/GNSS/WS2812/PMU-key absent"},
+    WiredProfile{name:"lilygo-t-twr",oled:Some(OledWiring{kind:OledKind::Ssd1306,sda:13,scl:14,address:0x3c}),buttons:&[("boot",0),("user",3),("ptt",38),("encoder-press",7)],encoder:Some((9,5)),emission_enable:Some(21),led:None,card:None,power:None,scope:"Original TWR Rev1.x SSD1306; G21 gates OLED VBAT emission, VDD/I2C/RAM remain powered; exact original buttons/encoder; no Plus/Rev2 or SD/PMU/radio/ADC substitution"},
+    WiredProfile{name:"lilygo-t3s3-v1-0",oled:Some(T3_OLED),buttons:BOOT,encoder:None,emission_enable:None,led:Some((37,true)),card:Some(T3_CARD),power:None,scope:"Current T3 S3 storefront selects V1.2 main-board wiring; legacy v1-0 slug is not proof of V1.0 hardware"},
+    WiredProfile{name:"lilygo-t3-s3-meshtastic",oled:Some(T3_OLED),buttons:BOOT,encoder:None,emission_enable:None,led:Some((37,true)),card:Some(T3_CARD),power:None,scope:"Explicit manufacturer-linked T3 S3 SX1262 Meshtastic target; OLED/LED/BOOT/SD only, Meshtastic boot unverified"},
 ];
 
 /// AXP2101 rail-only subset, sourced from the pinned vendor XPowersLib. This
@@ -104,18 +108,21 @@ impl I2cDevice for RailDevice {
     fn read(&mut self)->u8 {let value=if Rails::register(self.pointer) {self.state.lock().expect("AXP rails mutex poisoned").regs[usize::from(self.pointer)]}else{0xff};self.pointer=self.pointer.wrapping_add(1);value}
 }
 struct WireBus {pins:(u8,u8),bus:I2cBitBang,levels:[bool;2]}
-struct WiredBoard {profile:&'static WiredProfile,panel:Option<Arc<Mutex<OledMono>>>,rails:Option<Arc<Mutex<Rails>>>,wires:Vec<WireBus>,edges:Vec<BoardEdge>,card:Option<Box<SpiSdCard>>,card_present:bool,card_epoch:u64,leds:[[u8;3];1],led_version:u64}
+struct WiredBoard {profile:&'static WiredProfile,panel:Option<Arc<Mutex<OledMono>>>,rails:Option<Arc<Mutex<Rails>>>,wires:Vec<WireBus>,edges:Vec<BoardEdge>,card:Option<Box<SpiSdCard>>,card_present:bool,card_epoch:u64,leds:[[u8;3];1],led_version:u64,emission:bool,emission_version:u64}
 impl WiredBoard {
     fn new(profile:&'static WiredProfile)->Self {
         let panel=profile.oled.map(|w|Arc::new(Mutex::new(OledMono::new(w.kind,128,64,if w.kind==OledKind::Sh1106{2}else{0}))));
         let rails=profile.power.zip(panel.as_ref()).map(|(w,p)|Arc::new(Mutex::new(Rails::new(w,p.clone()))));
-        Self{profile,panel,rails,wires:Vec::new(),edges:Vec::new(),card:None,card_present:true,card_epoch:0,leds:[[0;3]],led_version:0}
+        Self{profile,panel,rails,wires:Vec::new(),edges:Vec::new(),card:None,card_present:true,card_epoch:0,leds:[[0;3]],led_version:0,emission:profile.emission_enable.is_none(),emission_version:0}
     }
 }
 impl BoardModel for WiredBoard {
     fn name(&self)->&'static str {self.profile.name}
     fn uses_gpio_routes(&self)->bool {true}
     fn gpio_waveform_at(&mut self,cycle:VirtualCycle,routes:PinRoutes<'_>) {
+        // Original TWR schematic: GPIO21 gates OLED VBAT through Q3/Q2;
+        // VDD remains on 3V3. RAM/I2C stay live while emission is disabled.
+        if let Some(pin)=self.profile.emission_enable {let on=routes.software_output(pin)==Some(true);if on!=self.emission {self.emission=on;self.emission_version=self.emission_version.wrapping_add(1);}}
         if let Some((pin,on))=self.profile.led {let value=if routes.software_output(pin)==Some(on){[255;3]}else{[0;3]};if self.leds[0]!=value {self.leds[0]=value;self.led_version=self.led_version.wrapping_add(1);}}
         for w in &mut self.wires {let (sda,scl)=w.pins;let high_scl=routes.software_output(scl)!=Some(false);let high_sda=w.bus.drive(high_scl,routes.software_output(sda)!=Some(false));for (i,(pin,level)) in [(sda,high_sda),(scl,high_scl)].into_iter().enumerate() {if w.levels[i]!=level {w.levels[i]=level;self.edges.push(BoardEdge{cycle,pin,level});}}}
     }
@@ -125,8 +132,9 @@ impl BoardModel for WiredBoard {
         if let (Some(p),Some(w))=(&self.rails,self.profile.power) {let index=if let Some(i)=self.wires.iter().position(|bus|bus.pins==w.pins) {i}else{self.wires.push(WireBus{pins:w.pins,bus:I2cBitBang::new(),levels:[true;2]});self.wires.len()-1};self.wires[index].bus.attach(0x34,Box::new(RailDevice{state:p.clone(),pointer:0,first:true,pins:w.pins}));}
         self.wires.iter().flat_map(|w|(0..2).flat_map(move |controller|w.bus.controller_devices(Some(w.pins)).into_iter().map(move |(a,d)|(controller,a,d)))).collect()
     }
-    fn input_levels(&self)->Vec<(u8,bool)> {self.profile.buttons.iter().map(|(_,pin)|(*pin,true)).chain(self.wires.iter().flat_map(|w|[(w.pins.0,w.levels[0]),(w.pins.1,w.levels[1])])).collect()}
-    fn named_pin(&self,name:&str)->Option<u8> {self.profile.buttons.iter().find_map(|(id,pin)|(*id==name).then_some(*pin))}
+    fn input_levels(&self)->Vec<(u8,bool)> {self.profile.buttons.iter().map(|(_,pin)|(*pin,true)).chain(self.profile.encoder.into_iter().flat_map(|(a,b)|[(a,true),(b,true)])).chain(self.wires.iter().flat_map(|w|[(w.pins.0,w.levels[0]),(w.pins.1,w.levels[1])])).collect()}
+    fn named_pin(&self,name:&str)->Option<u8> {self.profile.buttons.iter().find_map(|(id,pin)|(*id==name).then_some(*pin)).or(match (name,self.profile.encoder) {("clk",Some((a,_)))=>Some(a),("dt",Some((_,b)))=>Some(b),_=>None})}
+    fn encoder(&self)->Option<(u8,u8)> {self.profile.encoder}
     fn take_edges(&mut self)->Vec<BoardEdge> {std::mem::take(&mut self.edges)}
     fn uses_spi_pins(&self)->bool {self.profile.card.is_some()}
     fn spi_transfer_pins(&mut self,_host:u8,pins:SpiPins,tx:&[u8],rx_len:usize)->Vec<u8> {
@@ -138,8 +146,8 @@ impl BoardModel for WiredBoard {
     }
     fn attach_spi_sd_card(&mut self,image:Box<dyn SdStore>,config:SdCardConfig)->Result<String,String> {if self.profile.card.is_none() {return Err("No documented SD socket on selected board".into());}let card=SpiSdCard::new(image,config)?;let description=card.describe();self.card=Some(Box::new(card));Ok(description)}
     fn set_sd_card_present(&mut self,present:bool) {if self.card_present!=present {if let Some(card)=&mut self.card {card.power_cycle();}}self.card_present=present;}
-    fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {self.panel.as_ref().map(|p|{let p=p.lock().expect("OLED mutex poisoned");let (w,h)=p.dimensions();(w,h,p.frame(),p.version())})}
-    fn display_version(&self)->u64 {self.panel.as_ref().map_or(0,|p|p.lock().expect("OLED mutex poisoned").version())}
+    fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {self.panel.as_ref().map(|p|{let p=p.lock().expect("OLED mutex poisoned");let (w,h)=p.dimensions();let frame=if self.emission {p.frame()}else{vec![0;w as usize*h as usize]};(w,h,frame,p.version().wrapping_add(self.emission_version))})}
+    fn display_version(&self)->u64 {self.panel.as_ref().map_or(0,|p|p.lock().expect("OLED mutex poisoned").version()).wrapping_add(self.emission_version)}
     fn display_frames(&self)->u64 {self.panel.as_ref().map_or(0,|p|p.lock().expect("OLED mutex poisoned").frames())}
     fn leds(&self)->Option<(&[[u8;3]],u64)> {self.profile.led.map(|_|(&self.leds[..],self.led_version))}
     fn report(&self)->String {format!("[{}] {}; SD-SPI={} rail-only-PMU={} radio/GNSS/ADC/IRQ/charger/analog=unmodeled factory-boot=unverified {}",self.profile.name,self.profile.scope,self.card.is_some()&&self.card_present,self.rails.is_some(),self.panel.as_ref().map_or(String::new(),|p|p.lock().expect("OLED mutex poisoned").report()))}

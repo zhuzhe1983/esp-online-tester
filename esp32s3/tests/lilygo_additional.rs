@@ -127,7 +127,7 @@ fn i2c_write(m:&mut esp32s3::Machine,controller:u32,address:u8,payload:&[u8])->b
     assert!(matches!(m.run(100_000),Stop::MaxInsns));guest_read(m,base+0x20)&(1<<10)==0
 }
 fn boot_probe(m:&mut esp32s3::Machine,pins:&[u8]) {
-    let web=WebServer::queued();m.web=Some(web.clone());for &pin in pins {write(m,0x6000_9004+4*u32::from(pin),1<<12|1<<9);web.push_incoming(format!(r#"{{"t":"btn","pin":{pin},"v":1}}"#));assert_eq!(guest_read(m,GPIO+0x3c)&(1<<pin),0);web.push_incoming(format!(r#"{{"t":"btn","pin":{pin},"v":0}}"#));assert_ne!(guest_read(m,GPIO+0x3c)&(1<<pin),0);}
+    let web=WebServer::queued();m.web=Some(web.clone());for &pin in pins {let input=GPIO+if pin<32{0x3c}else{0x40};let mask=1<<(pin%32);write(m,0x6000_9004+4*u32::from(pin),1<<12|1<<9);web.push_incoming(format!(r#"{{"t":"btn","pin":{pin},"v":1}}"#));assert_eq!(guest_read(m,input)&mask,0);web.push_incoming(format!(r#"{{"t":"btn","pin":{pin},"v":0}}"#));assert_ne!(guest_read(m,input)&mask,0);}
 }
 #[test]
 fn oled_boards_execute_real_xtensa_i2c_and_gpio_with_wrong_route_and_power_rejection() {
@@ -198,5 +198,30 @@ fn cst226se_and_cst816d_keep_distinct_registers_ids_sleep_reset_and_coordinates(
         assert!(!d.start(false));assert_eq!(r.board.touch_irq(),Some((irq,true)));r.board.touch(x,y,true);assert_eq!(r.board.touch_irq(),Some((irq,true)));
         if let Some(pin)=reset {r.drive(pin,false);r.drive(pin,true);assert!(d.start(false));r.board.touch(u16::MAX,u16::MAX,true);let count=if id=="lilygo-t-connect-pro" {5}else{2};assert_eq!(read8(d.as_mut(),count,1),[1]);r.board.touch(0,0,false);assert_eq!(read8(d.as_mut(),count,1),[0]);}
         let mut m=machine(id);if let Some(pin)=reset {mode(&mut m,pin,256);output(&mut m,pin,true);}i2c_route(&mut m,sda,scl,0);assert!(i2c_write(&mut m,0,addr,&[0]));i2c_route(&mut m,sda,48,0);assert!(!i2c_write(&mut m,0,addr,&[0]));
+    }
+}
+
+#[test]
+fn mvsr_kit_and_three_twr_revisions_execute_their_own_oled_encoder_and_gpio_maps() {
+    for (id,sda,scl,offset) in [("lilygo-t3-s3-mvsr",18,17,0),("lilygo-t-twr-rev2-1",8,9,2),("lilygo-t-twr-plus",8,9,2),("lilygo-t-twr",13,14,0)] {
+        let mut m=machine(id);i2c_route(&mut m,sda,scl,0);assert!(i2c_write(&mut m,0,0x3c,&[0,0xaf,0xb0,offset,0x10]));assert!(i2c_write(&mut m,0,0x3c,&[0x40,1]));
+        if id=="lilygo-t-twr" {assert!(m.bus.board.display().unwrap().2.iter().all(|&p|p==0),"OLED VBAT off still accepts I2C/RAM");mode(&mut m,21,256);output(&mut m,21,true);}
+        assert_eq!(m.bus.board.display().unwrap().2[0],65535,"{id}");
+        if id=="lilygo-t3-s3-mvsr" {assert_eq!(m.bus.board.encoder(),None);boot_probe(&mut m,&[0]);mode(&mut m,37,256);output(&mut m,37,true);assert_eq!(m.bus.board.leds().unwrap().0[0],[255;3]);}
+        else if id=="lilygo-t-twr" {assert_eq!(m.bus.board.encoder(),Some((9,5)));boot_probe(&mut m,&[0,3,38,7]);output(&mut m,21,false);assert!(m.bus.board.display().unwrap().2.iter().all(|&p|p==0));output(&mut m,21,true);assert_eq!(m.bus.board.display().unwrap().2[0],65535,"emission gate preserves digital RAM");assert!(m.bus.board.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),Default::default()).is_err());}
+        else {assert_eq!(m.bus.board.encoder(),Some((47,46)));boot_probe(&mut m,&[0,3,21]);assert!(!i2c_write(&mut m,0,0x3d,&[0,0xaf]),"UHF address is not silently enabled");assert!(i2c_write(&mut m,0,0x34,&[0x80,0]));assert!(!i2c_write(&mut m,0,0x3c,&[0,0xaf]));assert!(m.bus.board.display().unwrap().2.iter().all(|&p|p==0));}
+        if let Some((a,b))=m.bus.board.encoder() {assert_eq!(m.bus.board.named_pin("clk"),Some(a));assert_eq!(m.bus.board.named_pin("dt"),Some(b));assert!(m.bus.board.input_levels().contains(&(a,true)));assert!(m.bus.board.input_levels().contains(&(b,true)));}
+        assert!(m.bus.board.lora_snapshot().is_none());assert!(!m.bus.board.uses_uart_pins());
+    }
+}
+#[test]
+fn mvsr_and_twr_plus_card_writes_obey_their_separate_spi_and_aldo2_supply() {
+    for id in ["lilygo-t3-s3-mvsr","lilygo-t-twr-plus","lilygo-t-twr-rev2-1"] {
+        let mut b=lilygo_additional::make_board(id).unwrap();let twr=id!="lilygo-t3-s3-mvsr";let pins=if twr{SpiPins{sclk:1<<12,mosi:1<<11,miso:Some(13),cs:1<<10}}else{SpiPins{sclk:1<<14,mosi:1<<11,miso:Some(2),cs:1<<13}};
+        b.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),Default::default()).unwrap();if twr {assert_eq!(sd_command(&mut b,pins,0,0),[255,255]);power_register(&mut b,0x90,2);}
+        b.spi_transfer_pins(2,SpiPins{cs:0,..pins},&[255;10],0);assert_eq!(sd_command(&mut b,pins,0,0),[255,1]);sd_command(&mut b,pins,8,0x1aa);b.spi_transfer_pins(2,pins,&[],4);for _ in 0..2 {sd_command(&mut b,pins,55,0);sd_command(&mut b,pins,41,1<<30);}
+        assert_eq!(sd_command(&mut b,pins,24,8),[255,0]);let mut bytes=vec![0xfe];bytes.extend([0x36;512]);bytes.extend([255,255]);b.spi_transfer_pins(2,pins,&bytes,0);assert_eq!(b.spi_transfer_pins(2,pins,&[],1),[5]);assert_eq!(sd_command(&mut b,pins,17,8),[255,0]);assert_eq!(b.spi_transfer_pins(2,pins,&[],2),[255,0xfe]);assert_eq!(b.spi_transfer_pins(2,pins,&[],512),vec![0x36;512]);b.spi_transfer_pins(2,pins,&[],2);
+        if twr {assert_eq!(sd_command(&mut b,SpiPins{cs:pins.cs|1<<14,..pins},0,0),[255,255]);power_register(&mut b,0x90,0);assert_eq!(sd_command(&mut b,pins,0,0),[255,255]);}
+        b.set_sd_card_present(false);assert_eq!(sd_command(&mut b,pins,0,0),[255,255]);
     }
 }
