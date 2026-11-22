@@ -785,7 +785,6 @@ impl Peripherals {
     pub fn tick(&mut self, cycles: u64) { Dispatch::tick(self, cycles); }
     /// CPU cycles until the earliest device deadline, `u32::MAX` when nothing is armed.
     pub fn cycles_until_timer(&self) -> u32 { Dispatch::cycles_until_deadline(self) }
-    #[inline(always)]
     pub fn source_status(&self) -> [u32; 4] { Dispatch::source_status(self) }
 
     /// Present the asserted sources to each core's CLIC through its matrix. Returns true if any
