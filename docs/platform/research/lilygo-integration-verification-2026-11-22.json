@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "evidenceDate": "2026-11-22",
-  "updatedAt": "2026-11-22T11:34:20+00:00",
+  "updatedAt": "2026-11-22T12:02:44.310281Z",
   "status": "local-functional-validation-complete-with-performance-limit",
   "scope": {
     "catalogProducts": 127,
@@ -238,12 +238,13 @@
     "publicRuntimeReset": "runtime.reset() reconstructs Worker and Machine and reloads the same verified firmware; host button state is not retained."
   },
   "publication": {
-    "status": "pending-authentication-and-remote-browser-gate",
+    "status": "blocked-by-authentication-network-policy",
     "repository": "https://github.com/zhuzhe1983/esp-online-tester",
     "requestedBranch": "main",
     "requestedHosting": "GitHub Pages",
-    "remoteBaseConfirmed": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce",
-    "observedBlocker": "CLI has no GitHub HTTPS credentials; authorized GitHub integration create-blob returned HTTP403 Resource not accessible by integration. No remote write or deployment has succeeded."
+    "remoteBaseConfirmed": "43de45a1244fd1a0a023beba778adaee169f86bc",
+    "observedBlocker": "The GitHub CLI device-login process was blocked by the execution environment network policy when accessing api.github.com; the formal network escalation request was rejected by the configured approval policy and CLI credentials were not saved. The existing GitHub integration create-blob attempt returned HTTP403 Resource not accessible by integration. No remote write or deployment of this change has succeeded.",
+    "previousRemoteBaseConfirmed": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce"
   },
   "source": {
     "head": "91d79752519b329c76912370d900d14a3bba0ad4",
@@ -520,5 +521,47 @@
       "strongPrivatePathCredentialOrSignedUrlFindings": []
     },
     "binaryReviewBasis": "Official-source provenance, retained hashes, 376 source-photo hash checks and the byte-identical 122-model reproduction; text-pattern checks do not establish binary or image privacy."
+  },
+  "postValidationMetadataIntegration": {
+    "remoteCommit": "43de45a1244fd1a0a023beba778adaee169f86bc",
+    "localParentBeforeMerge": "40b6f5c6b86cf25a6ba52094715867b4e1958f14",
+    "scope": "Only 266 timestamp leaf values changed across three firmware catalog JSON files; firmware identity, versions, URLs, SHA-256 values, product mappings, support and verification declarations are unchanged.",
+    "files": {
+      "web/platform/catalog/firmware-catalog-sync-report.json": {
+        "sha256": "51d48d87ce56387ba71af7431f0a89478a37ff2f0460ed99e28553f9e9ec1a8a",
+        "matchesRemoteExactly": true
+      },
+      "web/platform/catalog/firmware-release-snapshot.json": {
+        "sha256": "3b4763f69b4b24071bbef6c3c595c07a1e542ba360c494fbd0d11a50a2dcca0e",
+        "matchesRemoteExactly": true
+      },
+      "web/platform/catalog/firmwares.json": {
+        "sha256": "cc6aac87b8765defe7619798020965f2eb1feacc275363ce2ee7e038f22f4158",
+        "matchesRemoteExactly": true
+      }
+    },
+    "sameRustCargoSourceAsValidatedCommit": "91d79752519b329c76912370d900d14a3bba0ad4",
+    "rustCargoDiffEmpty": true,
+    "catalogValidation": {
+      "status": "pass",
+      "products": 219,
+      "accessories": 10,
+      "firmwares": 178,
+      "watchlist": 122
+    },
+    "lilygoCatalogTest": {
+      "status": "pass",
+      "command": "node --test tools/platform-lilygo-catalog-test.mjs",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    "verificationReuseBasis": "Only upstream timestamp metadata changed after the original final-source verification. Native code, production WASM, web runtime, product definitions and model files are unchanged; the earlier functional and CPU receipts continue to apply to those artifacts.",
+    "webFilesChangedSinceValidatedCommit": [
+      "web/platform/catalog/firmware-catalog-sync-report.json",
+      "web/platform/catalog/firmware-release-snapshot.json",
+      "web/platform/catalog/firmwares.json"
+    ],
+    "productionWasmSha256": "2abff05748fdc09e2da58afe75ed11a17251b1197e1b72886ff5523279adb224"
   }
 }
