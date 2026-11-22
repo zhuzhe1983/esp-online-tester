@@ -25,3 +25,4 @@ pub use ws2812::Ws2812Chain;
 
 pub mod et047tc1;
 pub mod bm8563;
+pub mod oled_mono;
