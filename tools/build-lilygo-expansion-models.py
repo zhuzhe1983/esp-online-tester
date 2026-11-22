@@ -119,17 +119,25 @@ def build(product_id, output):
         f=values.astype('<f4');error=float(np.abs(f[:,:3]-values[:,:3]).max());errors.append(error)
         binary=f.tobytes();buffers.append(binary);record.update(byteOffset=offset,vertexCount=len(f),boundsMm=[f[:,:3].min(0).tolist(),f[:,:3].max(0).tolist()]);records.append(record);offset+=len(binary)
     if offset>64*1024*1024:raise ValueError('Model exceeds browser geometry budget')
-    binary=b''.join(buffers);(out/'geometry.bin').write_bytes(binary)
-    artifacts={'geometry.bin':digest(binary)}
+    binary=b''.join(buffers)
+    compressed=plan.get('binaryCompression')=='gzip'
+    binary_name='geometry.bin.gz' if compressed else 'geometry.bin'
+    stored=gzip.compress(binary,mtime=0) if compressed else binary
+    (out/binary_name).write_bytes(stored)
+    stale=out/('geometry.bin' if compressed else 'geometry.bin.gz')
+    if stale.exists():stale.unlink()
+    artifacts={binary_name:digest(stored)}
     for filename in plan.get('retainedFiles',[]):
         data=(folder/filename).read_bytes();artifacts[filename]=digest(data)
         if out.resolve()!=folder.resolve():shutil.copyfile(folder/filename,out/filename)
-    model={k:plan[k]for k in ['id','dimensions','presentation','derivedParts','referencePhotos','provenance','limitations','reviewViews','debugPreview','photoDerivation','dimensionChecks','representationScope']if k in plan}
+    model={k:plan[k]for k in ['id','dimensions','presentation','derivedParts','referencePhotos','provenance','limitations','reviewViews','debugPreview','photoDerivation','dimensionChecks','representationScope','manualPhotoCalibration','omittedComponents']if k in plan}
     if plan.get('cad'):
-        model['sourceTransform']={'matrixRows':plan['cad']['matrixRows'],'scale':1,'sourceUnit':plan['cad'].get('sourceUnit','mm'),'note':'Rigid transform only; supplied assembly placements and native millimetres retained.'}
-    model.update(schemaVersion='1',unit='mm',strideFloats=6,binary='geometry.bin',parts=records,artifacts=artifacts)
+        model['sourceTransform']={'matrixRows':plan['cad']['matrixRows'],'scale':1,'sourceUnit':plan['cad'].get('sourceUnit','mm'),'note':'Selected product local coordinates; no assembly placement inferred; rigid viewing transform only.'if plan['cad'].get('extraction')else'Rigid transform only; supplied assembly placements and native millimetres retained.'}
+        if plan['cad'].get('extraction'):model['cadExtraction']=plan['cad']['extraction']
+    model.update(schemaVersion='1',unit='mm',strideFloats=6,binary=binary_name,parts=records,artifacts=artifacts)
+    if compressed:model['binaryCompression']='gzip'
     write(out/'model.json',model)
-    bounds=np.array([r['boundsMm']for r in records]);receipt={'productId':product_id,'modelSha256':digest((out/'model.json').read_bytes()),'geometrySha256':digest(binary),'mode':plan['mode'],'partCount':len(records),'triangleCount':sum(r['vertexCount']//3 for r in records),'maxFloat32ExportErrorMm':max(errors,default=0),'geometryBoundsMm':[bounds[:,0].min(0).tolist(),bounds[:,1].max(0).tolist()]if len(bounds)else None,'exportPassed':max(errors,default=0)<=.05,'physicalValidation':'Not implied by export; see per-plan evidence and limitations.','runtimeValidation':False}
+    bounds=np.array([r['boundsMm']for r in records]);receipt={'productId':product_id,'modelSha256':digest((out/'model.json').read_bytes()),'geometrySha256':digest(binary),'storedGeometrySha256':digest(stored),'storedGeometryBytes':len(stored),'expandedGeometryBytes':len(binary),'binaryCompression':'gzip'if compressed else'none','mode':plan['mode'],'partCount':len(records),'triangleCount':sum(r['vertexCount']//3 for r in records),'maxFloat32ExportErrorMm':max(errors,default=0),'geometryBoundsMm':[bounds[:,0].min(0).tolist(),bounds[:,1].max(0).tolist()]if len(bounds)else None,'exportPassed':max(errors,default=0)<=.05,'physicalValidation':'Not implied by export; see per-plan evidence and limitations.','runtimeValidation':False}
     write(out/'build-check.json',receipt)
     return receipt
 

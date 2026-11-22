@@ -105,7 +105,7 @@ def main():
         plan['provenance']['kind']='photo-derived';plan['provenance']['sources']=[s for s in plan['provenance']['sources']if not s['id'].startswith(('model-photo-',id+'-official-photo-'))]+source_records
         if profile:
             known={s['id']for s in plan['provenance']['sources']}
-            plan['provenance']['sources'].extend(s|{'status':'linked'}for sid,s in runtime_sources.items()if sid in profile['sourceIds']and sid not in known)
+            plan['provenance']['sources'].extend(s.copy()for sid,s in runtime_sources.items()if sid in profile['sourceIds']and sid not in known)
         plan['limitations']=['依据官方多角度图片建立外轮廓粗模；这是照片投影的凸包，不是摄影测量或制造用 CAD。','侧壁厚度和绝对尺度尚未标定；画面以最长边 60 mm 归一化，不能当作实物尺寸。','未猜测内部元件、丝印、插针线序或连接器精确结构；背面 UNKNOWN 占位可替换。','有屏幕时，真实固件画面放在独立 LIVE DEBUG 面板；实体屏幕窗口尚未逐款校准。','原始照片仅作为来源，不将照片里的演示画面贴到实时屏幕。']
         plan['debugPreview']={'mode':'photo-derived','isPhysicalReplica':False,'physicalDimensionsVerified':False,'displayPlacement':'separate-debug-panel'if resolution else'no-verified-display','reason':'Multi-view exterior source references exist; projection recovered, physical depth/scale/window placement uncalibrated.'};span=max(presentation['bodySizeMm'][:2])*1.2;plan['reviewViews']={'front':{'position':[0,0,200],'span':span},'back':{'position':[0,0,-200],'span':span},'side':{'position':[200,0,0],'span':span}}
         planfile.write_text(json.dumps(plan,ensure_ascii=False,indent=2)+'\n');patch_by_id[id].update(mode='photo-derived',sourceIds=row['sourceIds']+source_ids);patch_by_id[id]['model'].update(basis='photo-derived',mode='photo-derived',notes='官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。')

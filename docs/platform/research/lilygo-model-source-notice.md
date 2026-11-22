@@ -10,7 +10,7 @@ plan. They retain the manufacturer's copyright. They are not AI-generated and
 are not painted over the live framebuffer. Repository source-code licensing is
 not silently applied to these photographs.
 
-Manufacturer CAD sources retain their repository path, pinned commit, raw source
+Manufacturer CAD sources retain their repository path, pinned Git tree/blob, raw source
 hash, native units and rigid viewing transform. Gzip archives are lossless and
 their hashes are recorded separately from raw source hashes. Where available,
 the same upstream repository's license is retained as `SOURCE-LICENSE.txt`.
