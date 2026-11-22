@@ -1,180 +1,17 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-22T08:03:24Z",
+  "checkedAt": "2026-11-22T08:25:35Z",
   "implementation": "esp32s3/src/board/lilygo_additional.rs",
   "status": "partial board contracts; no factory boot claims",
   "notes": [
-    "Each catalog ID has a distinct BoardModel name and an explicitly selected hardware target. Sharing protocol mechanics follows independent manufacturer mapping, not name similarity.",
-    "Only native authored Xtensa SRAM probes are verified for the three TFT variants. Pro has native protocol tests; no new variant has a complete factory or Meshtastic boot claim.",
-    "No CPU, bus, per-tick or shared peripheral changes; exact board pin routing and SPI card wiring are local.",
-    "All four physical TF slots use the platform prepared 64 MiB FAT32 card policy. Board tests use smaller deterministic images solely to verify real SPI block read/write.",
-    "Storefront publication dates are retained only as low-confidence ordering proxies, not advertised as hardware release dates."
+    "Each catalog ID has a distinct BoardModel name and an explicitly selected hardware target. Shared protocol mechanics follow exact manufacturer evidence, not name similarity.",
+    "All eight new OLED targets and T-2CAN have authored native Xtensa MMIO probes. The three TFT Deck variants also have native guest display/GPIO probes; Pro has protocol tests. None has an official binary boot or physical-hardware validation claim.",
+    "Shared SSD1306/SH1106 controllers are allocated only for opted-in boards. No CPU, bus, tick or global peripheral route changes were made.",
+    "Every documented physical TF slot uses the platform prepared 64 MiB FAT32 policy. Smaller deterministic test images verify real SPI block read/write and supply-cycle persistence.",
+    "The SX1262 packet subset on three TFT Deck variants is tested through correct board pins, power, reset, matching configuration, RX buffer, TX capture and IRQ. Other profiles do not expose radio capability merely because a chip is physically present.",
+    "Unknown dates remain unknown. Storefront dates are low-confidence ordering proxies; T-2Can uses its explicit V1.0 manufacturer version date."
   ],
   "sources": [
-    {
-      "id": "deck-readme",
-      "repository": "Xinyuan-LilyGO/T-Deck",
-      "path": "README.MD",
-      "revision": "9aac147a313975ad063594b3fe11e28a96d94936",
-      "gitBlobSha": "9cf029e9855f2282d4f6422c8af8626aa39ed6ed",
-      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/README.MD",
-      "status": "fetched",
-      "title": "Xinyuan-LilyGO/T-Deck/README.MD",
-      "kind": "official-documentation",
-      "fetchedAt": "2026-11-22T07:49:27Z",
-      "sha256": "f8dc7598ddbdfd6d673a55af3bb1032b49b715c3dd9033634bfec76f56fdabe2",
-      "bytes": 5421,
-      "mediaType": "text/plain; charset=utf-8",
-      "archiveName": "deck-readme.source",
-      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch.",
-      "revisionKind": "git-commit",
-      "gitTreeSha": "89692c34b9ba935d6ad162c34fc5b47cb7214da5",
-      "gitRevisionEvidence": {
-        "status": "fetched",
-        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/git/commits/9aac147a313975ad063594b3fe11e28a96d94936",
-        "result": "Git commit endpoint confirms this revision and its tree; no public author identifiers retained."
-      }
-    },
-    {
-      "id": "deck-pins",
-      "repository": "Xinyuan-LilyGO/T-Deck",
-      "path": "examples/UnitTest/utilities.h",
-      "revision": "9aac147a313975ad063594b3fe11e28a96d94936",
-      "gitBlobSha": "c2e7ff5baae629939763271c15b94c98218e1111",
-      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/examples/UnitTest/utilities.h",
-      "status": "fetched",
-      "title": "Xinyuan-LilyGO/T-Deck/examples/UnitTest/utilities.h",
-      "kind": "official-source",
-      "fetchedAt": "2026-11-22T07:49:27Z",
-      "sha256": "b6b7f887136ec4962d8d9dbfb0b0d919c1f927d3eeb9fdb2c90956d02e8cd44e",
-      "bytes": 1811,
-      "mediaType": "text/plain; charset=utf-8",
-      "archiveName": "deck-pins.source",
-      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch.",
-      "revisionKind": "git-commit",
-      "gitTreeSha": "89692c34b9ba935d6ad162c34fc5b47cb7214da5",
-      "gitRevisionEvidence": {
-        "status": "fetched",
-        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/git/commits/9aac147a313975ad063594b3fe11e28a96d94936",
-        "result": "Git commit endpoint confirms this revision and its tree; no public author identifiers retained."
-      }
-    },
-    {
-      "id": "deck-firmware",
-      "repository": "Xinyuan-LilyGO/T-Deck",
-      "path": "firmware/README.MD",
-      "revision": "9aac147a313975ad063594b3fe11e28a96d94936",
-      "gitBlobSha": "f6550e9a8e384e26172d232fe355c1b260fc5f27",
-      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/README.MD",
-      "status": "fetched",
-      "title": "Xinyuan-LilyGO/T-Deck/firmware/README.MD",
-      "kind": "official-documentation",
-      "fetchedAt": "2026-11-22T07:49:27Z",
-      "sha256": "f26b7b1c4ee4d6089c6d17ebd64ce1b371bea5660fdf6da5a3ae36a21d641337",
-      "bytes": 8390,
-      "mediaType": "text/plain; charset=utf-8",
-      "archiveName": "deck-firmware.source",
-      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch.",
-      "revisionKind": "git-commit",
-      "gitTreeSha": "89692c34b9ba935d6ad162c34fc5b47cb7214da5",
-      "gitRevisionEvidence": {
-        "status": "fetched",
-        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/git/commits/9aac147a313975ad063594b3fe11e28a96d94936",
-        "result": "Git commit endpoint confirms this revision and its tree; no public author identifiers retained."
-      }
-    },
-    {
-      "id": "lib-deck-hardware",
-      "repository": "Xinyuan-LilyGO/LilyGoLib",
-      "path": "docs/hardware/lilygo-t-deck.md",
-      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
-      "gitBlobSha": "c443472ecba495e638eab5760e262b751ebc19ea",
-      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-deck.md",
-      "status": "fetched",
-      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-deck.md",
-      "kind": "official-documentation",
-      "fetchedAt": "2026-11-22T07:49:27Z",
-      "sha256": "d5abc55458cb7d0e7b4f86ceadbbc1534c79648fc5c892096d0db4cababd9bb0",
-      "bytes": 10210,
-      "mediaType": "text/plain; charset=utf-8",
-      "archiveName": "lib-deck-hardware.source",
-      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
-    },
-    {
-      "id": "lib-deck-cpp",
-      "repository": "Xinyuan-LilyGO/LilyGoLib",
-      "path": "src/LilyGo_T_Deck.cpp",
-      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
-      "gitBlobSha": "4bdb356dd3584558bcbbaac32d4b616c2d433129",
-      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGo_T_Deck.cpp",
-      "status": "fetched",
-      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGo_T_Deck.cpp",
-      "kind": "official-source",
-      "fetchedAt": "2026-11-22T07:49:27Z",
-      "sha256": "d9eb866c90ea84f4ffccd0c0de325a1f790d62b906be873972f1090e55b02eff",
-      "bytes": 24993,
-      "mediaType": "text/plain; charset=utf-8",
-      "archiveName": "lib-deck-cpp.source",
-      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
-    },
-    {
-      "id": "lib-deck-display",
-      "repository": "Xinyuan-LilyGO/LilyGoLib",
-      "path": "src/display/TDeckDisplayConfig.h",
-      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
-      "gitBlobSha": "9438818026ea22e828a13343db40b66ad151c745",
-      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/display/TDeckDisplayConfig.h",
-      "status": "fetched",
-      "title": "Xinyuan-LilyGO/LilyGoLib/src/display/TDeckDisplayConfig.h",
-      "kind": "official-source",
-      "fetchedAt": "2026-11-22T07:49:27Z",
-      "sha256": "da2754954dab222260e7a1c76a08ea87ef124c0b12ac74fd8f6efb4ef420df21",
-      "bytes": 1782,
-      "mediaType": "text/plain; charset=utf-8",
-      "archiveName": "lib-deck-display.source",
-      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
-    },
-    {
-      "id": "lib-deck-pins",
-      "repository": "Xinyuan-LilyGO/LilyGoLib",
-      "path": "variants/lilygo_tdeck/pins_arduino.h",
-      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
-      "gitBlobSha": "5c449f99a1150de41a6a7b8ffc525716749ffe5e",
-      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/variants/lilygo_tdeck/pins_arduino.h",
-      "status": "fetched",
-      "title": "Xinyuan-LilyGO/LilyGoLib/variants/lilygo_tdeck/pins_arduino.h",
-      "kind": "official-source",
-      "fetchedAt": "2026-11-22T07:49:27Z",
-      "sha256": "26c6a46d5418933bda7c32f232143d6a91b3e377c50f4322521c180c6e140962",
-      "bytes": 1638,
-      "mediaType": "text/plain; charset=utf-8",
-      "archiveName": "lib-deck-pins.source",
-      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
-    },
-    {
-      "id": "deck-keyboard",
-      "repository": "Xinyuan-LilyGO/T-Deck",
-      "path": "examples/Keyboard_ESP32C3/Keyboard_ESP32C3.ino",
-      "revision": "9aac147a313975ad063594b3fe11e28a96d94936",
-      "gitBlobSha": "9b9113a803f65ebddee1ac3ef255c4c7656799f1",
-      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/examples/Keyboard_ESP32C3/Keyboard_ESP32C3.ino",
-      "status": "fetched",
-      "title": "Xinyuan-LilyGO/T-Deck/examples/Keyboard_ESP32C3/Keyboard_ESP32C3.ino",
-      "kind": "official-source",
-      "fetchedAt": "2026-11-22T07:59:17Z",
-      "sha256": "81133f226e69b4d32cec8190e71737f5cfd7d158a555f7906e3f5a798357236d",
-      "bytes": 11588,
-      "mediaType": "text/plain; charset=utf-8",
-      "archiveName": "deck-keyboard.source",
-      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch.",
-      "revisionKind": "git-commit",
-      "gitTreeSha": "89692c34b9ba935d6ad162c34fc5b47cb7214da5",
-      "gitRevisionEvidence": {
-        "status": "fetched",
-        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/git/commits/9aac147a313975ad063594b3fe11e28a96d94936",
-        "result": "Git commit endpoint confirms this revision and its tree; no public author identifiers retained."
-      }
-    },
     {
       "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/readme.md",
       "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/readme.md",
@@ -449,7 +286,859 @@
       "bytes": 2507924,
       "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
       "title": "official-store-shopify-1",
-      "kind": "official-documentation"
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-beam-bpf",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-beam-series/t-beam-bpf/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-beam-series/t-beam-bpf/index.md",
+      "fetchedAt": "2026-11-22T06:42:40.795542Z",
+      "mediaType": "text/plain",
+      "bytes": 9691,
+      "sha256": "9c9647ae14d48006b2f124b28e3f3b843256289520bdadef1c67d3d295bc677d",
+      "gitBlobSha": "972dbdeb1776d54408fa9031a749b4e3db9c07b6",
+      "path": "en/products/t-beam-series/t-beam-bpf/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "en/products/t-beam-series/t-beam-bpf/index.md",
+      "kind": "official-documentation",
+      "archiveName": "en__products__t-beam-series__t-beam-bpf__index.md",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lora-bpf-hardware",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "docs/en/t_beam_bpf/t_beam_bpf_hw.md",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "10f48478f277b3e19969c8c453866f8e0d0dcd7f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t_beam_bpf/t_beam_bpf_hw.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/docs/en/t_beam_bpf/t_beam_bpf_hw.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "e5bc338796de0d674385e426132ccf1b5c0309e2d2db391de13e5ddfdd858f46",
+      "bytes": 10751,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-bpf-hardware.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    },
+    {
+      "id": "lora-bpf-schematic",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "path": "schematic/LilyGo_TBeam_BPF.pdf",
+      "gitBlobSha": "d1fe6145cecc4776b2f002078409fdc6d94f7fb6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/schematic/LilyGo_TBeam_BPF.pdf",
+      "title": "LilyGo T-Beam BPF schematic; power domain page 2",
+      "kind": "official-schematic",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:22:42Z",
+      "sha256": "7484fc2e9de2424352fa9216675231a158e1d3e85c233188a149d2f72cef85eb",
+      "bytes": 336060,
+      "mediaType": "application/pdf",
+      "archiveName": "bpf-schematic.pdf",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch.",
+      "inspectedPages": [
+        2
+      ],
+      "findings": "Page 2 explicitly connects PMU_DCDC1 to OLED_VCC and VLDO_A2 to SD_VCC. Visual inspection agrees with text and board rail model."
+    },
+    {
+      "id": "lora-boards",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "examples/Factory/LoRaBoards.cpp",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "5cdae340f582fcfb2fe1379f4082fa13c73d9367",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/Factory/LoRaBoards.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/examples/Factory/LoRaBoards.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:21:21Z",
+      "sha256": "b5ab071a1b3946f435f8d324f317cc550e7ba48a398b047ddf099a341aac5174",
+      "bytes": 42023,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-boards.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lora-utilities",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "examples/Factory/utilities.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "bf37221526ccc6143995d1e495d65cdec0dc407c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/Factory/utilities.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/examples/Factory/utilities.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "1f234017d45099f90e3a5cb7fb6ed16b78dfe11fa57f2b82a58f9d1b9411f733",
+      "bytes": 28783,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-utilities.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    },
+    {
+      "id": "lora-sh1106-wire",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "lib/ESP8266_SSD1306/src/SH1106Wire.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "b088807656de56befa7f921b2a0d331be3ad1413",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/ESP8266_SSD1306/src/SH1106Wire.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/lib/ESP8266_SSD1306/src/SH1106Wire.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "f8873d338eac0948c6faaf34215516cbe514ddaa3277a19d679fb09e176b7374",
+      "bytes": 4901,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-sh1106-wire.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    },
+    {
+      "id": "sh1106-datasheet",
+      "status": "linked",
+      "kind": "manufacturer-datasheet",
+      "title": "Sino Wealth SH1106 v2.3, June 2013",
+      "url": "https://resource.heltec.cn/download/oled/SH1106_V2.3.pdf",
+      "inspection": "Manufacturer PDF text inspected through public web retrieval; raw binary not retained or hashed. I2C Interface, Display RAM, Reset Circuit and Command Descriptions.",
+      "archiveName": "sh1106-datasheet.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lora-factory-readme",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "firmware/README.MD",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "bfe94510e41e3fc265ba56a38725f0e8a1de547e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/README.MD",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/firmware/README.MD",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:21:15Z",
+      "sha256": "adee8f3fc2b93a2bd02b353d966ce6aeeb839784f109364d81bab922c649aad7",
+      "bytes": 8197,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-factory-readme.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lora-axp-registers",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "6595969938dfaf4ca834dbd693497b49182a7821",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:21:19Z",
+      "sha256": "ee5ae2828fdf6583600e228f4be927ddd20e0299e6c71dc292469d16f27b366e",
+      "bytes": 10604,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-axp-registers.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lora-axp-driver",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "lib/XPowersLib/src/XPowersAXP2101.tpp",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "dddb14153af0db1d432d8c718326e8bbcd1623d1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/XPowersLib/src/XPowersAXP2101.tpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/lib/XPowersLib/src/XPowersAXP2101.tpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:21:20Z",
+      "sha256": "feb7742095ff3b9cd4560949b0814995435d6d8195eb475975a9b5493b05b787",
+      "bytes": 94954,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-axp-driver.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t3-s3-v1.3",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t3-series/t3-s3-v1.3/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t3-series/t3-s3-v1.3/index.md",
+      "fetchedAt": "2026-11-22T06:43:53.364308Z",
+      "mediaType": "text/plain",
+      "bytes": 8919,
+      "sha256": "8392cb91ee737d9456ae251c1b58f47357af9515901b3cd12786934951a0e9cd",
+      "gitBlobSha": "0ef9fc2e8bdb1e41966594b805a90b8e23acf7b2",
+      "path": "en/products/t3-series/t3-s3-v1.3/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "en/products/t3-series/t3-s3-v1.3/index.md",
+      "kind": "official-documentation",
+      "archiveName": "en__products__t3-series__t3-s3-v1.3__index.md",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lora-t3-hardware",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "docs/en/t3_s3_sx1262/t3_s3_sx1262_hw.md",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "c77580fb75f46063893a977766910c5ff1304ca6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t3_s3_sx1262/t3_s3_sx1262_hw.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/docs/en/t3_s3_sx1262/t3_s3_sx1262_hw.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:21:14Z",
+      "sha256": "21ef09d115e01e481e1c1c14df480a71e65005ffbe38a28c7bc599b7cfd7e1a9",
+      "bytes": 11000,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-t3-hardware.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lora-platformio",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "platformio.ini",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "3a41090ed25f2e9c717f8052334972742729a704",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/platformio.ini",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/platformio.ini",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:21:16Z",
+      "sha256": "90aa20175b925262c828e9f7f7d2846746e0faebb51fce942fffbef3562fb31a",
+      "bytes": 11739,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-platformio.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lora-ssd1306-wire",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "lib/ESP8266_SSD1306/src/SSD1306Wire.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "3a0ab10ca5a9f2e0bee06ac09c7b4df9f1410756",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/ESP8266_SSD1306/src/SSD1306Wire.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/lib/ESP8266_SSD1306/src/SSD1306Wire.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "f771b1844dcb5432a3647cfa91c7b83efc69aea90bd9e670448bbf98ec3b7ea5",
+      "bytes": 5363,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-ssd1306-wire.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    },
+    {
+      "id": "ssd1306-datasheet",
+      "status": "linked",
+      "kind": "manufacturer-datasheet",
+      "title": "Solomon Systech SSD1306 rev 1.1, April 2008",
+      "url": "https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf",
+      "inspection": "Manufacturer PDF text and tables inspected through public web retrieval; raw binary not retained or hashed. §§8.1.5, 8.5, 9, 10.1.3-15.",
+      "archiveName": "ssd1306-datasheet.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-2can",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/industrial-series/t-2can/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/industrial-series/t-2can/index.md",
+      "fetchedAt": "2026-11-22T06:42:28.833529Z",
+      "mediaType": "text/plain",
+      "bytes": 5036,
+      "sha256": "85a995d042aa1215cf4e78128f3d77651658716e16f91473b5b53aa85c3acb8a",
+      "gitBlobSha": "24ff7cad175776b9345f3709c11c871c5365a39c",
+      "path": "en/products/industrial-series/t-2can/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "en/products/industrial-series/t-2can/index.md",
+      "kind": "official-documentation",
+      "archiveName": "en__products__industrial-series__t-2can__index.md",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "2can-pins",
+      "repository": "Xinyuan-LilyGO/T-2Can",
+      "path": "libraries/private_library/pin_config.h",
+      "revision": "4e9eddd5f39f27d43360de9fb8904734cce9f0cb",
+      "gitBlobSha": "30d4f829254ce67bbc5c547235e74328042e33d8",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-2Can/4e9eddd5f39f27d43360de9fb8904734cce9f0cb/libraries/private_library/pin_config.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-2Can/libraries/private_library/pin_config.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "c6587a42bced9ccedb161667e92eb421a299a3f54261fd635e469b5df505a31f",
+      "bytes": 752,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "2can-pins.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    },
+    {
+      "id": "2can-readme",
+      "repository": "Xinyuan-LilyGO/T-2Can",
+      "path": "README.md",
+      "revision": "4e9eddd5f39f27d43360de9fb8904734cce9f0cb",
+      "gitBlobSha": "c314d735d3036d222044259c2ee597a5cc7fc3c3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-2Can/4e9eddd5f39f27d43360de9fb8904734cce9f0cb/README.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-2Can/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "0b46eea9ab7ff81a72f1404d230242be762949a1a01b76c4f165e6c1c1ad1388",
+      "bytes": 9607,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "2can-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    },
+    {
+      "id": "2can-factory",
+      "repository": "Xinyuan-LilyGO/T-2Can",
+      "path": "examples/original_test/original_test.ino",
+      "revision": "4e9eddd5f39f27d43360de9fb8904734cce9f0cb",
+      "gitBlobSha": "c3d146971358415311aa81a190a95365a7a62494",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-2Can/4e9eddd5f39f27d43360de9fb8904734cce9f0cb/examples/original_test/original_test.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-2Can/examples/original_test/original_test.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:21:16Z",
+      "sha256": "e5925689c88c476f67dbaf246886d6046c6170aa5c11d2fa0864929c766c0a59",
+      "bytes": 26440,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "2can-factory.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "deck-readme",
+      "repository": "Xinyuan-LilyGO/T-Deck",
+      "path": "README.MD",
+      "revision": "9aac147a313975ad063594b3fe11e28a96d94936",
+      "gitBlobSha": "9cf029e9855f2282d4f6422c8af8626aa39ed6ed",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/README.MD",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck/README.MD",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "f8dc7598ddbdfd6d673a55af3bb1032b49b715c3dd9033634bfec76f56fdabe2",
+      "bytes": 5421,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "deck-readme.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "89692c34b9ba935d6ad162c34fc5b47cb7214da5",
+      "gitRevisionEvidence": {
+        "status": "fetched",
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/git/commits/9aac147a313975ad063594b3fe11e28a96d94936",
+        "result": "Git commit endpoint confirms this revision and its tree; no public author identifiers retained."
+      }
+    },
+    {
+      "id": "deck-pins",
+      "repository": "Xinyuan-LilyGO/T-Deck",
+      "path": "examples/UnitTest/utilities.h",
+      "revision": "9aac147a313975ad063594b3fe11e28a96d94936",
+      "gitBlobSha": "c2e7ff5baae629939763271c15b94c98218e1111",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/examples/UnitTest/utilities.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck/examples/UnitTest/utilities.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "b6b7f887136ec4962d8d9dbfb0b0d919c1f927d3eeb9fdb2c90956d02e8cd44e",
+      "bytes": 1811,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "deck-pins.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "89692c34b9ba935d6ad162c34fc5b47cb7214da5",
+      "gitRevisionEvidence": {
+        "status": "fetched",
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/git/commits/9aac147a313975ad063594b3fe11e28a96d94936",
+        "result": "Git commit endpoint confirms this revision and its tree; no public author identifiers retained."
+      }
+    },
+    {
+      "id": "deck-firmware",
+      "repository": "Xinyuan-LilyGO/T-Deck",
+      "path": "firmware/README.MD",
+      "revision": "9aac147a313975ad063594b3fe11e28a96d94936",
+      "gitBlobSha": "f6550e9a8e384e26172d232fe355c1b260fc5f27",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/README.MD",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck/firmware/README.MD",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "f26b7b1c4ee4d6089c6d17ebd64ce1b371bea5660fdf6da5a3ae36a21d641337",
+      "bytes": 8390,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "deck-firmware.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "89692c34b9ba935d6ad162c34fc5b47cb7214da5",
+      "gitRevisionEvidence": {
+        "status": "fetched",
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/git/commits/9aac147a313975ad063594b3fe11e28a96d94936",
+        "result": "Git commit endpoint confirms this revision and its tree; no public author identifiers retained."
+      }
+    },
+    {
+      "id": "deck-keyboard",
+      "repository": "Xinyuan-LilyGO/T-Deck",
+      "path": "examples/Keyboard_ESP32C3/Keyboard_ESP32C3.ino",
+      "revision": "9aac147a313975ad063594b3fe11e28a96d94936",
+      "gitBlobSha": "9b9113a803f65ebddee1ac3ef255c4c7656799f1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/examples/Keyboard_ESP32C3/Keyboard_ESP32C3.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck/examples/Keyboard_ESP32C3/Keyboard_ESP32C3.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T07:59:17Z",
+      "sha256": "81133f226e69b4d32cec8190e71737f5cfd7d158a555f7906e3f5a798357236d",
+      "bytes": 11588,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "deck-keyboard.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "89692c34b9ba935d6ad162c34fc5b47cb7214da5",
+      "gitRevisionEvidence": {
+        "status": "fetched",
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/git/commits/9aac147a313975ad063594b3fe11e28a96d94936",
+        "result": "Git commit endpoint confirms this revision and its tree; no public author identifiers retained."
+      }
+    },
+    {
+      "id": "lib-deck-hardware",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-deck.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "c443472ecba495e638eab5760e262b751ebc19ea",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-deck.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-deck.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "d5abc55458cb7d0e7b4f86ceadbbc1534c79648fc5c892096d0db4cababd9bb0",
+      "bytes": 10210,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lib-deck-hardware.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lib-deck-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGo_T_Deck.cpp",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "4bdb356dd3584558bcbbaac32d4b616c2d433129",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGo_T_Deck.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGo_T_Deck.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "d9eb866c90ea84f4ffccd0c0de325a1f790d62b906be873972f1090e55b02eff",
+      "bytes": 24993,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lib-deck-cpp.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lib-deck-display",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/display/TDeckDisplayConfig.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "9438818026ea22e828a13343db40b66ad151c745",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/display/TDeckDisplayConfig.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/display/TDeckDisplayConfig.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "da2754954dab222260e7a1c76a08ea87ef124c0b12ac74fd8f6efb4ef420df21",
+      "bytes": 1782,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lib-deck-display.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lib-deck-pins",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "variants/lilygo_tdeck/pins_arduino.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "5c449f99a1150de41a6a7b8ffc525716749ffe5e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/variants/lilygo_tdeck/pins_arduino.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/variants/lilygo_tdeck/pins_arduino.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "26c6a46d5418933bda7c32f232143d6a91b3e377c50f4322521c180c6e140962",
+      "bytes": 1638,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lib-deck-pins.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lora-supreme-hardware",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "docs/en/t_beam_supreme/t_beam_supreme_hw.md",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "fd8add8f72e12e5bbc42df8afa08a42f246cefe5",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t_beam_supreme/t_beam_supreme_hw.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/docs/en/t_beam_supreme/t_beam_supreme_hw.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:21:17Z",
+      "sha256": "5e6dd0ab2390cedc1db3360f7e42beef7f7ebdcbd7a4c274bf3f4820e8199967",
+      "bytes": 17088,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-supreme-hardware.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-beam-1w",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-beam-series/t-beam-1w/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-beam-series/t-beam-1w/index.md",
+      "fetchedAt": "2026-11-22T06:42:40.907667Z",
+      "mediaType": "text/plain",
+      "bytes": 8148,
+      "sha256": "6bec3d007364b5625bd19a264af3cc79ec062ad7056bf3c99644518ed4d24984",
+      "gitBlobSha": "8d655cf349791d11c079eedfa39bf8b21d5b629e",
+      "path": "en/products/t-beam-series/t-beam-1w/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "en/products/t-beam-series/t-beam-1w/index.md",
+      "kind": "official-documentation",
+      "archiveName": "en__products__t-beam-series__t-beam-1w__index.md",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lora-1w-hardware",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "docs/en/t_beam_1w_sx1262/t_beam_1w_sx1262.md",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "147c89f19a22f42061a1ff83676c23f56729b5d8",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t_beam_1w_sx1262/t_beam_1w_sx1262.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/docs/en/t_beam_1w_sx1262/t_beam_1w_sx1262.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:21:18Z",
+      "sha256": "e185408cb1eca347ace70080270d786c261f8e13b4cdfb3d59ffa38a6fe4abd8",
+      "bytes": 11659,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-1w-hardware.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t3-s3-lr1121",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t3-series/t3-s3-lr1121/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t3-series/t3-s3-lr1121/index.md",
+      "fetchedAt": "2026-11-22T06:43:53.363322Z",
+      "mediaType": "text/plain",
+      "bytes": 7984,
+      "sha256": "8a205655ad11add3083e3d848fdb15c63826271944615cfd56933233c7fca2b6",
+      "gitBlobSha": "3371f583d3451f1b32069a6a26a25ee7980ceabe",
+      "path": "en/products/t3-series/t3-s3-lr1121/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "en/products/t3-series/t3-s3-lr1121/index.md",
+      "kind": "official-documentation",
+      "archiveName": "en__products__t3-series__t3-s3-lr1121__index.md",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lora-lr1121-hardware",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "docs/en/t3_s3_lr1121/t3_s3_lr1121_hw.md",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "cdefb8d566c663cc9dd73793dd77682701e2f102",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t3_s3_lr1121/t3_s3_lr1121_hw.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/docs/en/t3_s3_lr1121/t3_s3_lr1121_hw.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:21:18Z",
+      "sha256": "b1f7a255e0d1487213c5fc12f0e7de72c36cdf6443755c501445e070d75cbba4",
+      "bytes": 11597,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-lr1121-hardware.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-beam-supreme",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-beam-series/t-beam-supreme/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-beam-series/t-beam-supreme/index.md",
+      "fetchedAt": "2026-11-22T06:42:40.819361Z",
+      "mediaType": "text/plain",
+      "bytes": 9185,
+      "sha256": "a4bb24c8fc1d2636e5e8fbc3008c1ed68aeb77651b30adf10401abada8f981d7",
+      "gitBlobSha": "68ae60217bb097ced05265ada6db77353d3ca13e",
+      "path": "en/products/t-beam-series/t-beam-supreme/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "en/products/t-beam-series/t-beam-supreme/index.md",
+      "kind": "official-documentation",
+      "archiveName": "en__products__t-beam-series__t-beam-supreme__index.md",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t3-s3",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t3-series/t3-s3/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t3-series/t3-s3/index.md",
+      "fetchedAt": "2026-11-22T06:43:58.563156Z",
+      "mediaType": "text/plain",
+      "bytes": 8183,
+      "sha256": "67b3336000c7742789a0d7bd8127d031b879f705f0b3b1510a9a5d1cfafdc34d",
+      "gitBlobSha": "dd2d743419bdedee54470d7add5145c169866563",
+      "path": "en/products/t3-series/t3-s3/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "en/products/t3-series/t3-s3/index.md",
+      "kind": "official-documentation",
+      "archiveName": "en__products__t3-series__t3-s3__index.md",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lilygo-gap-spark-manifest",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LILYGO-Spark/0fd728e800d9ebaa5a15515b49aa6244f3453340/firmware_manifest_v2.json",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LILYGO-Spark/0fd728e800d9ebaa5a15515b49aa6244f3453340/firmware_manifest_v2.json",
+      "status": "fetched",
+      "httpStatus": 200,
+      "fetchedAt": "2026-11-22T07:43:35Z",
+      "bytes": 436499,
+      "sha256": "e2a6b0ee0c1531db400120b927b2b4f70b3e70fdb922814245fa173eaba8deb9",
+      "archiveName": "spark-manifest.raw",
+      "title": "spark manifest",
+      "kind": "manufacturer-documentation",
+      "archiveDirectory": "target/lilygo-final-gaps",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lilygo-gap-spark-revision-object",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LILYGO-Spark/git/commits/0fd728e800d9ebaa5a15515b49aa6244f3453340",
+      "status": "fetched",
+      "kind": "repository-metadata",
+      "fetchedAt": "2026-11-22T07:47:17Z",
+      "bytes": 2358,
+      "sha256": "c1b48f43163489d21186aa5f9809bd3ca4a649966fe26cc868354d034b216de9",
+      "archiveName": "spark-revision-object.raw",
+      "transport": "GitHub connector; exact returned UTF-8 content snapshot",
+      "title": "spark revision object",
+      "archiveDirectory": "target/lilygo-final-gaps",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lilygo-gap-spark-repository-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LILYGO-Spark/git/trees/0fd728e800d9ebaa5a15515b49aa6244f3453340?recursive=1",
+      "status": "fetched",
+      "kind": "repository-metadata",
+      "fetchedAt": "2026-11-22T07:47:17Z",
+      "bytes": 110925,
+      "sha256": "96bff57d061865da73db6c2b382e293b499bac09e767d99bebdca01a5e2632ca",
+      "archiveName": "spark-repository-tree.raw",
+      "transport": "GitHub connector; exact returned UTF-8 content snapshot",
+      "title": "spark repository tree",
+      "archiveDirectory": "target/lilygo-final-gaps",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lilygo-gap-t3-s3-meshtastic",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LILYGO-Spark/0fd728e800d9ebaa5a15515b49aa6244f3453340/public/devices/t3-s3-meshtastic.jpg",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LILYGO-Spark/0fd728e800d9ebaa5a15515b49aa6244f3453340/public/devices/t3-s3-meshtastic.jpg",
+      "status": "fetched",
+      "httpStatus": 200,
+      "fetchedAt": "2026-11-22T07:44:35Z",
+      "bytes": 20302,
+      "sha256": "687f000b1ad7fec0df0e118918289ab985c5f739edccc853b525e2901ec9d448",
+      "archiveName": "t3-s3-meshtastic.jpg",
+      "repository": "Xinyuan-LilyGO/LILYGO-Spark",
+      "title": "t3 s3 meshtastic",
+      "kind": "manufacturer-photo",
+      "archiveDirectory": "target/lilygo-final-gaps",
+      "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "853bf2bbc7d64bcb9c9272876a3805318b8db213",
+      "gitRevisionEvidenceSourceId": "lilygo-gap-spark-revision-object",
+      "gitBlobSha": "008bb3d70a2e98b4deadfabfad9c561323aa3cf4",
+      "path": "public/devices/t3-s3-meshtastic.jpg",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lilygo-gap-lora-docs-en-t3_s3_sx1262-t3_s3_sx1262_hw.md",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t3_s3_sx1262/t3_s3_sx1262_hw.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t3_s3_sx1262/t3_s3_sx1262_hw.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:47:38Z",
+      "bytes": 11000,
+      "sha256": "21ef09d115e01e481e1c1c14df480a71e65005ffbe38a28c7bc599b7cfd7e1a9",
+      "archiveName": "lora-docs-en-t3_s3_sx1262-t3_s3_sx1262_hw.md.raw",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "commit": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "title": "lora docs en t3_s3_sx1262 t3_s3_sx1262_hw.md",
+      "kind": "manufacturer-documentation",
+      "archiveDirectory": "target/lilygo-final-gaps",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "401019aa7d58ba87de7a0fb201892654bd6bc7dd",
+      "gitRevisionEvidenceSourceId": "lilygo-gap-lora-revision-object",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lilygo-gap-lora-examples-T3S3Factory-T3S3Factory.ino",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/T3S3Factory/T3S3Factory.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/T3S3Factory/T3S3Factory.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:46:21Z",
+      "bytes": 25593,
+      "sha256": "9c26889efbbd2e32d1bc9e4a913abdbaae3feabbb49972b0853ab756a1890d64",
+      "archiveName": "lora-examples-T3S3Factory-T3S3Factory.ino.raw",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "commit": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "title": "lora examples T3S3Factory T3S3Factory.ino",
+      "kind": "manufacturer-documentation",
+      "archiveDirectory": "target/lilygo-final-gaps",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "401019aa7d58ba87de7a0fb201892654bd6bc7dd",
+      "gitRevisionEvidenceSourceId": "lilygo-gap-lora-revision-object",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lilygo-gap-lora-lib-ESP8266_SSD1306-src-SSD1306Wire.h",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/ESP8266_SSD1306/src/SSD1306Wire.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/ESP8266_SSD1306/src/SSD1306Wire.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:47:38Z",
+      "bytes": 5363,
+      "sha256": "f771b1844dcb5432a3647cfa91c7b83efc69aea90bd9e670448bbf98ec3b7ea5",
+      "archiveName": "lora-lib-ESP8266_SSD1306-src-SSD1306Wire.h.raw",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "commit": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "title": "lora lib ESP8266_SSD1306 src SSD1306Wire.h",
+      "kind": "manufacturer-documentation",
+      "archiveDirectory": "target/lilygo-final-gaps",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "401019aa7d58ba87de7a0fb201892654bd6bc7dd",
+      "gitRevisionEvidenceSourceId": "lilygo-gap-lora-revision-object",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lilygo-gap-lora-revision-object",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-LoRa-Series/git/commits/5f537f1783933eae79723478c80b69d8c1530b99",
+      "status": "fetched",
+      "kind": "repository-metadata",
+      "fetchedAt": "2026-11-22T07:47:17Z",
+      "bytes": 1177,
+      "sha256": "d3710285b4b2f1a1813d3e9f16d4a6db74dc6914dd0fe7363c612b6b2f43899e",
+      "archiveName": "lora-revision-object.raw",
+      "transport": "GitHub connector; exact returned UTF-8 content snapshot",
+      "title": "lora revision object",
+      "archiveDirectory": "target/lilygo-final-gaps",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-LoRa-Series/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:45:14.266Z",
+      "mediaType": "application/json",
+      "transport": "GitHub connector; exact UTF-8 content snapshot",
+      "id": "lilygo-gap-lora-repository-tree",
+      "title": "Official LoRa-Series complete repository tree",
+      "kind": "repository-metadata",
+      "bytes": 1491001,
+      "sha256": "0656e4ddddf254b8d992f74bc8e5eb78161f2a1e29f043e756d4c5578fbd9134",
+      "archiveName": "Xinyuan-LilyGO__LilyGo-LoRa-Series.tree.json",
+      "archiveDirectory": "target/lilygo-model-audit",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "revisionKind": "git-commit",
+      "commit": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitTreeSha": "401019aa7d58ba87de7a0fb201892654bd6bc7dd",
+      "gitRevisionEvidenceSourceId": "lilygo-gap-lora-revision-object",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
     }
   ],
   "items": [
@@ -1040,6 +1729,448 @@
           "V1.1",
           "MAX"
         ]
+      },
+      "keyboard": {
+        "rows": 4,
+        "columns": 10,
+        "model": "TCA8418",
+        "layout": "lilygo-t-deck-pro-meshtastic"
+      }
+    },
+    {
+      "productId": "lilygo-t-beam-bpf",
+      "boardId": "lilygo-t-beam-bpf",
+      "name": "LILYGO T-Beam BPF",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-Beam BPF Q438 / T_BEAM_S3_BPF SX1278 target",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SH1106",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages, one byte is eight vertical pixels",
+        "controllerRamWidth": 132,
+        "physicalColumnOffset": 2,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 8,
+          "scl": 9,
+          "address": 60,
+          "reset": null,
+          "resetScope": "No host-controlled reset pin claimed by selected profile"
+        },
+        "pmu": {
+          "controller": "AXP2101",
+          "address": 52,
+          "sda": 8,
+          "scl": 9,
+          "displaySupply": "DC1",
+          "sdSupply": "ALDO2",
+          "implemented": "rail-register subset only"
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "user",
+          "name": "用户按键",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "transportSupported": true,
+        "pins": {
+          "sclk": 12,
+          "mosi": 11,
+          "miso": 13,
+          "cs": 10
+        },
+        "conflictingChipSelectPins": [
+          1
+        ],
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform TF-card service; board attaches supplied image",
+        "supply": "ALDO2 digital rail register gate; power cycle resets protocol and preserves supplied image",
+        "sourceIds": [
+          "lora-bpf-hardware",
+          "lora-bpf-schematic",
+          "lora-boards",
+          "lora-utilities"
+        ],
+        "verification": "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+      },
+      "radio": {
+        "controller": "SX1278",
+        "implemented": false,
+        "physicalRf": false
+      },
+      "runtimeLevel": "partial",
+      "scope": "选定 Q438 SX1278 硬件：SH1106 128×64 OLED、BOOT/用户键及 SPI TF 卡可调试；AXP2101 仅实现 DC1 屏幕和 ALDO2 卡供电的数字寄存器子集。SX1278、GNSS、PMU 按键/中断、充电和完整出厂固件未实现。",
+      "scopeEn": "Exact selected T-Beam BPF Q438 / T_BEAM_S3_BPF SX1278 target: OLED display RAM, physical buttons, documented LED and SPI card paths only; no factory or Meshtastic boot claim.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-beam-bpf",
+        "lora-bpf-hardware",
+        "lora-bpf-schematic",
+        "lora-boards",
+        "lora-utilities",
+        "lora-sh1106-wire",
+        "sh1106-datasheet",
+        "lora-factory-readme",
+        "lora-axp-registers",
+        "lora-axp-driver"
+      ],
+      "chronology": {
+        "date": "2025-07-22",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-beam-bpf",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 7,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_boards_execute_real_xtensa_i2c_and_gpio_with_wrong_route_and_power_rejection",
+          "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+        ]
+      },
+      "unsupported": [
+        "No official binary has been executed for this profile. Native SRAM Xtensa probes verify the stated display/GPIO contracts only.",
+        "OLED scrolling, analog brightness/charge pump/oscillator timing and controller readback are not implemented. Display content comes only from accepted RAM writes.",
+        "Radio/controller variants, RF propagation, GNSS, sensors/RTC, ADC, battery/charging and USB are unmodeled.",
+        "SPI SD accepts the exact documented pins and exclusive shared chip selection; bit-banged SD and SDMMC host mode are not implemented.",
+        "AXP2101 key/IRQ/charger/ADC/analog voltages and full PMU state are absent; MCU shutdown/reset is not modeled. Only explicit digital peripheral rail gates are applied."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T-Beam BPF Q438 / T_BEAM_S3_BPF SX1278 target",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "lora-bpf-hardware",
+          "lora-bpf-schematic",
+          "lora-boards",
+          "lora-utilities"
+        ],
+        "basis": "Exact manufacturer product-linked hardware document and current board-target header; unsupported siblings are not substituted."
+      },
+      "powerManagement": {
+        "controller": "AXP2101",
+        "implemented": "digital display and card rail register subset",
+        "registers": [
+          "0x00,0x01 virtual supply status",
+          "0x03 immutable chip ID 0x4a",
+          "0x10 shutdown bit gates modeled peripheral supply only",
+          "0x80..0x86 DC enable/voltage register storage",
+          "0x90..0x9a LDO enable/voltage register storage"
+        ],
+        "displaySupply": "DC1",
+        "displayEnableBit": null,
+        "sdSupply": "ALDO2",
+        "sdEnableBit": 1,
+        "resetPolicy": "Deterministic virtual USB supply, no battery; DC1 initially on and modeled LDO gates initially off. This is a simulation fixture, not a silicon OTP power-on default claim.",
+        "sourceIds": [
+          "lora-bpf-hardware",
+          "lora-bpf-schematic",
+          "lora-boards",
+          "lora-utilities",
+          "lora-axp-registers",
+          "lora-axp-driver"
+        ]
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "lora-factory-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/tbeambpf-v1.x-144mhz-factory-20260715_0x0.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeambpf-v1.x-144mhz-factory-20260715_0x0.bin",
+            "status": "linked",
+            "gitBlobSha": "86323fd28e635b40632dc480e5db81ec229632f1",
+            "bytesFromTree": 961504,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+      }
+    },
+    {
+      "productId": "lilygo-t3-s3-v1-3",
+      "boardId": "lilygo-t3-s3-v1-3",
+      "name": "LILYGO T3-S3 V1.3",
+      "chip": "esp32s3",
+      "flashMB": 4,
+      "psramMB": 2,
+      "hardwareRevision": "T3-S3 V1.3; shared main-board pins explicitly documented with V1.2",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SSD1306",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages, one byte is eight vertical pixels",
+        "controllerRamWidth": 128,
+        "physicalColumnOffset": 0,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 18,
+          "scl": 17,
+          "address": 60,
+          "reset": null,
+          "resetScope": "No host-controlled reset pin claimed by selected profile"
+        },
+        "leds": [
+          {
+            "pin": 37,
+            "activeLow": false,
+            "implemented": true,
+            "color": null,
+            "simulationColor": "white logical on/off indicator; physical LED color not established"
+          }
+        ]
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "transportSupported": true,
+        "pins": {
+          "sclk": 14,
+          "mosi": 11,
+          "miso": 2,
+          "cs": 13
+        },
+        "conflictingChipSelectPins": [],
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform TF-card service; board attaches supplied image",
+        "supply": "On-board supply; no invented GPIO enable",
+        "sourceIds": [
+          "lora-t3-hardware",
+          "lora-utilities",
+          "lora-platformio"
+        ],
+        "verification": "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+      },
+      "radio": {
+        "controller": "variant-dependent (not instantiated)",
+        "implemented": false,
+        "physicalRf": false
+      },
+      "runtimeLevel": "partial",
+      "scope": "选定 T3-S3 V1.3 主板：SSD1306 128×64 OLED、GPIO37 指示灯、BOOT 和 SPI TF 卡已接入。实际 SRAM 固件验证 I²C 显存和按键；不同射频模块、太阳能/充电、电池 ADC 和完整出厂固件未实现。",
+      "scopeEn": "Exact selected T3-S3 V1.3; shared main-board pins explicitly documented with V1.2: OLED display RAM, physical buttons, documented LED and SPI card paths only; no factory or Meshtastic boot claim.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t3-s3-v1.3",
+        "lora-t3-hardware",
+        "lora-utilities",
+        "lora-platformio",
+        "lora-ssd1306-wire",
+        "ssd1306-datasheet",
+        "lora-factory-readme"
+      ],
+      "chronology": {
+        "date": "2025-07-18",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t3-s3-v1-3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 8,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_boards_execute_real_xtensa_i2c_and_gpio_with_wrong_route_and_power_rejection",
+          "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+        ]
+      },
+      "unsupported": [
+        "No official binary has been executed for this profile. Native SRAM Xtensa probes verify the stated display/GPIO contracts only.",
+        "OLED scrolling, analog brightness/charge pump/oscillator timing and controller readback are not implemented. Display content comes only from accepted RAM writes.",
+        "Radio/controller variants, RF propagation, GNSS, sensors/RTC, ADC, battery/charging and USB are unmodeled.",
+        "SPI SD accepts the exact documented pins and exclusive shared chip selection; bit-banged SD and SDMMC host mode are not implemented."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T3-S3 V1.3; shared main-board pins explicitly documented with V1.2",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "lora-t3-hardware",
+          "lora-utilities",
+          "lora-platformio"
+        ],
+        "basis": "Exact manufacturer product-linked hardware document and current board-target header; unsupported siblings are not substituted."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "lora-factory-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/t3s3-v1.x-all-band-sx1262-factory_20250425_0x0.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3s3-v1.x-all-band-sx1262-factory_20250425_0x0.bin",
+            "status": "linked",
+            "gitBlobSha": "3c6766afd083093d89b1a8a78bd5f0611cddfdde",
+            "bytesFromTree": 1115248,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+      }
+    },
+    {
+      "productId": "lilygo-t-2can",
+      "boardId": "lilygo-t-2can",
+      "name": "LILYGO T-2CAN",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-2Can V1.0 (2025-07-07), MCP2515 version; excludes T-2Can-FD",
+      "display": null,
+      "pins": {
+        "boot": 0
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": false,
+        "implemented": false
+      },
+      "radio": {
+        "controller": null,
+        "implemented": false,
+        "physicalRf": false
+      },
+      "runtimeLevel": "partial",
+      "scope": "选定 T-2Can V1.0，仅开放官方 ESP_BOOT=GPIO0 的板级输入调试，已由原生 Xtensa 指令验证按下/释放。该板没有虚构屏幕或 TF 卡；MCP2515、ESP32 TWAI、CAN 收发器及工厂通信测试未模拟，不覆盖 T-2Can-FD。",
+      "scopeEn": "Exact T-2Can V1.0 BOOT input diagnostic only; no screen, SD card, CAN controller, PHY or factory boot claim.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-2can",
+        "2can-pins",
+        "2can-readme",
+        "2can-factory"
+      ],
+      "chronology": {
+        "date": "2025-07-07",
+        "basis": "hardware-release",
+        "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-2Can/4e9eddd5f39f27d43360de9fb8904734cce9f0cb/README.md",
+        "sourceId": "2can-readme",
+        "confidence": "medium",
+        "hardwareRevision": "T-2Can V1.0",
+        "notes": "Manufacturer README version table explicitly dates V1.0 2025-07-07; this is a documented hardware version date, not independently verified retail availability. Excludes FD version."
+      },
+      "priorityRank": 11,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "exact_can_board_exposes_only_documented_boot_input_and_no_fake_can_display_or_sd"
+        ]
+      },
+      "unsupported": [
+        "MCP2515 register/interrupt protocol, TWAI, CAN physical bus and CAN-FD are not modeled.",
+        "No physical display or card slot is claimed. No board-sibling firmware substitution."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T-2Can V1.0 (2025-07-07), MCP2515 version; excludes T-2Can-FD",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "2can-pins",
+          "2can-readme",
+          "2can-factory"
+        ],
+        "basis": "Exact manufacturer product-linked hardware document and current board-target header; unsupported siblings are not substituted."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "2can-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/[T-2Can_V1.0][original_test]_firmware/[T-2Can_V1.0][original_test]_firmware_202607170959.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-2Can/4e9eddd5f39f27d43360de9fb8904734cce9f0cb/firmware/[T-2Can_V1.0][original_test]_firmware/[T-2Can_V1.0][original_test]_firmware_202607170959.bin",
+            "status": "linked",
+            "gitBlobSha": "9a8bc60a4a4b176463616b6582879a4a19e036fd",
+            "bytesFromTree": 837136,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
       }
     },
     {
@@ -1472,7 +2603,8 @@
         "tests": [
           "real_guest_spi_and_gpio_use_exact_tft_routes_power_and_controls",
           "tft_keyboard_scans_and_gt911_touch_keep_their_real_i2c_protocols",
-          "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection"
+          "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection",
+          "tft_deck_sx1262_packets_require_routed_power_reset_spi_and_matching_peer"
         ]
       },
       "scope": "选定原版 T-Deck 的 SX1262 版本；ST7789 显示、GT911 单点触摸、35 键 I²C 键盘、轨迹球、SX1262 数字寄存器子集及真实 SPI TF 卡已接入。原生 Xtensa 指令已验证显示写入和按键按下/释放；定位、音频、电池和完整 Meshtastic/出厂固件启动未验证。",
@@ -1608,7 +2740,198 @@
         "hardwareRevision": "unknown; Spark product listing",
         "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
       },
-      "priorityRank": 15
+      "priorityRank": 15,
+      "keyboard": {
+        "rows": 4,
+        "columns": 10,
+        "model": "ESP32-C3 I2C keyboard protocol",
+        "layout": "lilygo-t-deck-meshtastic"
+      },
+      "radio": {
+        "controller": "SX1262",
+        "implemented": true,
+        "physicalRf": false,
+        "scope": "Digital register, airtime, IRQ and explicit matching packet input; no RF propagation",
+        "verification": "tft_deck_sx1262_packets_require_routed_power_reset_spi_and_matching_peer"
+      }
+    },
+    {
+      "productId": "lilygo-t-beam-supreme-meshtastic",
+      "boardId": "lilygo-t-beam-supreme-meshtastic",
+      "name": "LILYGO T-Beam Supreme Meshtastic",
+      "chip": "esp32s3",
+      "flashMB": 8,
+      "psramMB": 8,
+      "hardwareRevision": "T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware selected independently of preloaded firmware",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SH1106",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages, one byte is eight vertical pixels",
+        "controllerRamWidth": 132,
+        "physicalColumnOffset": 2,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 17,
+          "scl": 18,
+          "address": 60,
+          "reset": null,
+          "resetScope": "No host-controlled reset pin claimed by selected profile"
+        },
+        "pmu": {
+          "controller": "AXP2101",
+          "address": 52,
+          "sda": 42,
+          "scl": 41,
+          "displaySupply": "ALDO1",
+          "sdSupply": "BLDO1",
+          "implemented": "rail-register subset only"
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "transportSupported": true,
+        "pins": {
+          "sclk": 36,
+          "mosi": 35,
+          "miso": 37,
+          "cs": 47
+        },
+        "conflictingChipSelectPins": [
+          34
+        ],
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform TF-card service; board attaches supplied image",
+        "supply": "BLDO1 digital rail register gate; power cycle resets protocol and preserves supplied image",
+        "sourceIds": [
+          "lora-supreme-hardware",
+          "lora-utilities",
+          "lora-boards"
+        ],
+        "verification": "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+      },
+      "radio": {
+        "controller": "SX1262",
+        "implemented": false,
+        "physicalRf": false
+      },
+      "runtimeLevel": "partial",
+      "scope": "Meshtastic 商品页选定 Supreme V3.0、QMC6310U 对应的 SH1106 0x3C 硬件：OLED、BOOT、SPI TF 与 AXP2101 ALDO1/BLDO1 数字电源路径已接入。未将 0x3D 磁力计版本自动混用；SX1262、定位、传感器、PMU 完整功能和 Meshtastic 固件启动未验证。",
+      "scopeEn": "Exact selected T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware selected independently of preloaded firmware: OLED display RAM, physical buttons, documented LED and SPI card paths only; no factory or Meshtastic boot claim.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "lora-supreme-hardware",
+        "lora-utilities",
+        "lora-boards",
+        "lora-sh1106-wire",
+        "sh1106-datasheet",
+        "lora-factory-readme",
+        "lora-axp-registers",
+        "lora-axp-driver"
+      ],
+      "chronology": {
+        "date": "2025-04-22",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-beam-supreme-meshtastic",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 18,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_boards_execute_real_xtensa_i2c_and_gpio_with_wrong_route_and_power_rejection",
+          "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+        ]
+      },
+      "unsupported": [
+        "No official binary has been executed for this profile. Native SRAM Xtensa probes verify the stated display/GPIO contracts only.",
+        "OLED scrolling, analog brightness/charge pump/oscillator timing and controller readback are not implemented. Display content comes only from accepted RAM writes.",
+        "Radio/controller variants, RF propagation, GNSS, sensors/RTC, ADC, battery/charging and USB are unmodeled.",
+        "SPI SD accepts the exact documented pins and exclusive shared chip selection; bit-banged SD and SDMMC host mode are not implemented.",
+        "AXP2101 key/IRQ/charger/ADC/analog voltages and full PMU state are absent; MCU shutdown/reset is not modeled. Only explicit digital peripheral rail gates are applied.",
+        "SH1106 0x3d QMC6310N hardware and V3.1 resistor straps are not automatically selected. QMC/BME/IMU/RTC devices do not ACK merely to satisfy firmware initialization."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware selected independently of preloaded firmware",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "lora-supreme-hardware",
+          "lora-utilities",
+          "lora-boards"
+        ],
+        "basis": "Exact manufacturer product-linked hardware document and current board-target header; unsupported siblings are not substituted."
+      },
+      "powerManagement": {
+        "controller": "AXP2101",
+        "implemented": "digital display and card rail register subset",
+        "registers": [
+          "0x00,0x01 virtual supply status",
+          "0x03 immutable chip ID 0x4a",
+          "0x10 shutdown bit gates modeled peripheral supply only",
+          "0x80..0x86 DC enable/voltage register storage",
+          "0x90..0x9a LDO enable/voltage register storage"
+        ],
+        "displaySupply": "ALDO1",
+        "displayEnableBit": 0,
+        "sdSupply": "BLDO1",
+        "sdEnableBit": 4,
+        "resetPolicy": "Deterministic virtual USB supply, no battery; DC1 initially on and modeled LDO gates initially off. This is a simulation fixture, not a silicon OTP power-on default claim.",
+        "sourceIds": [
+          "lora-supreme-hardware",
+          "lora-utilities",
+          "lora-boards",
+          "lora-axp-registers",
+          "lora-axp-driver"
+        ]
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "lora-factory-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
+            "status": "linked",
+            "gitBlobSha": "6e313ad14d1a4a05d8ec18cfe80a6399e5e06859",
+            "bytesFromTree": 987696,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+      }
     },
     {
       "productId": "lilygo-t-deck-plus-meshtastic",
@@ -2040,7 +3363,8 @@
         "tests": [
           "real_guest_spi_and_gpio_use_exact_tft_routes_power_and_controls",
           "tft_keyboard_scans_and_gt911_touch_keep_their_real_i2c_protocols",
-          "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection"
+          "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection",
+          "tft_deck_sx1262_packets_require_routed_power_reset_spi_and_matching_peer"
         ]
       },
       "scope": "选定 Plus 的 SX1262 版本；ST7789 显示、GT911 单点触摸、35 键 I²C 键盘、轨迹球、SX1262 数字寄存器子集及真实 SPI TF 卡已接入。原生 Xtensa 指令已验证显示写入和按键按下/释放；定位、音频、电池和完整 Meshtastic/出厂固件启动未验证。Plus 的 GPIO43/44 被 GNSS 占用，Grove 接口不可用。",
@@ -2179,7 +3503,20 @@
         "hardwareRevision": "unknown; Spark product listing",
         "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
       },
-      "priorityRank": 17
+      "priorityRank": 17,
+      "keyboard": {
+        "rows": 4,
+        "columns": 10,
+        "model": "ESP32-C3 I2C keyboard protocol",
+        "layout": "lilygo-t-deck-plus-meshtastic"
+      },
+      "radio": {
+        "controller": "SX1262",
+        "implemented": true,
+        "physicalRf": false,
+        "scope": "Digital register, airtime, IRQ and explicit matching packet input; no RF propagation",
+        "verification": "tft_deck_sx1262_packets_require_routed_power_reset_spi_and_matching_peer"
+      }
     },
     {
       "productId": "lilygo-t-deck-plus-1",
@@ -2611,7 +3948,8 @@
         "tests": [
           "real_guest_spi_and_gpio_use_exact_tft_routes_power_and_controls",
           "tft_keyboard_scans_and_gt911_touch_keep_their_real_i2c_protocols",
-          "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection"
+          "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection",
+          "tft_deck_sx1262_packets_require_routed_power_reset_spi_and_matching_peer"
         ]
       },
       "scope": "选定 Plus 的 SX1262 版本；ST7789 显示、GT911 单点触摸、35 键 I²C 键盘、轨迹球、SX1262 数字寄存器子集及真实 SPI TF 卡已接入。原生 Xtensa 指令已验证显示写入和按键按下/释放；定位、音频、电池和完整 Meshtastic/出厂固件启动未验证。Plus 的 GPIO43/44 被 GNSS 占用，Grove 接口不可用。",
@@ -2750,7 +4088,828 @@
         "hardwareRevision": "unknown; Spark product listing",
         "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
       },
-      "priorityRank": 23
+      "priorityRank": 23,
+      "keyboard": {
+        "rows": 4,
+        "columns": 10,
+        "model": "ESP32-C3 I2C keyboard protocol",
+        "layout": "lilygo-t-deck-plus-1"
+      },
+      "radio": {
+        "controller": "SX1262",
+        "implemented": true,
+        "physicalRf": false,
+        "scope": "Digital register, airtime, IRQ and explicit matching packet input; no RF propagation",
+        "verification": "tft_deck_sx1262_packets_require_routed_power_reset_spi_and_matching_peer"
+      }
+    },
+    {
+      "productId": "lilygo-t-beam-1w",
+      "boardId": "lilygo-t-beam-1w",
+      "name": "LILYGO T-Beam 1W",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-Beam 1W V1.0, T_BEAM_1W_SX1262 manufacturer target",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SH1106",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages, one byte is eight vertical pixels",
+        "controllerRamWidth": 132,
+        "physicalColumnOffset": 2,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 8,
+          "scl": 9,
+          "address": 60,
+          "reset": null,
+          "resetScope": "No host-controlled reset pin claimed by selected profile"
+        },
+        "leds": [
+          {
+            "pin": 18,
+            "activeLow": false,
+            "implemented": true,
+            "color": null,
+            "simulationColor": "white logical on/off indicator; physical LED color not established"
+          }
+        ]
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "user",
+          "name": "用户按键",
+          "type": "button",
+          "pin": 17,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "transportSupported": true,
+        "pins": {
+          "sclk": 13,
+          "mosi": 11,
+          "miso": 12,
+          "cs": 10
+        },
+        "conflictingChipSelectPins": [
+          15
+        ],
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform TF-card service; board attaches supplied image",
+        "supply": "On-board supply; no invented GPIO enable",
+        "sourceIds": [
+          "lora-1w-hardware",
+          "lora-utilities",
+          "lora-boards"
+        ],
+        "verification": "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+      },
+      "radio": {
+        "controller": "SX1262",
+        "implemented": false,
+        "physicalRf": false
+      },
+      "runtimeLevel": "partial",
+      "scope": "选定 T-Beam 1W V1.0 SX1262：SH1106 OLED、BOOT/GPIO17 用户键、GPIO18 指示灯及 SPI TF 卡已接入。卡时钟 GPIO13 与 MISO GPIO12 按本板映射；不套用 BPF 引脚。官方当前驱动没有 HAS_PMU，未凭 wiki 概述虚构 AXP2101；射频功放、GNSS、风扇和模拟电路未实现。",
+      "scopeEn": "Exact selected T-Beam 1W V1.0, T_BEAM_1W_SX1262 manufacturer target: OLED display RAM, physical buttons, documented LED and SPI card paths only; no factory or Meshtastic boot claim.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-beam-1w",
+        "lora-1w-hardware",
+        "lora-utilities",
+        "lora-boards",
+        "lora-sh1106-wire",
+        "sh1106-datasheet",
+        "lora-factory-readme"
+      ],
+      "chronology": {
+        "date": "2024-06-15",
+        "basis": "hardware-release",
+        "sourceUrl": "https://wiki.lilygo.cc/products/t-beam-series/t-beam-1w/",
+        "sourceId": "official-wiki-t-beam-1w",
+        "confidence": "medium",
+        "hardwareRevision": "T-Beam-1W V1.0",
+        "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+      },
+      "priorityRank": 35,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_boards_execute_real_xtensa_i2c_and_gpio_with_wrong_route_and_power_rejection",
+          "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+        ]
+      },
+      "unsupported": [
+        "No official binary has been executed for this profile. Native SRAM Xtensa probes verify the stated display/GPIO contracts only.",
+        "OLED scrolling, analog brightness/charge pump/oscillator timing and controller readback are not implemented. Display content comes only from accepted RAM writes.",
+        "Radio/controller variants, RF propagation, GNSS, sensors/RTC, ADC, battery/charging and USB are unmodeled.",
+        "SPI SD accepts the exact documented pins and exclusive shared chip selection; bit-banged SD and SDMMC host mode are not implemented."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T-Beam 1W V1.0, T_BEAM_1W_SX1262 manufacturer target",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "lora-1w-hardware",
+          "lora-utilities",
+          "lora-boards"
+        ],
+        "basis": "Exact manufacturer product-linked hardware document and current board-target header; unsupported siblings are not substituted."
+      },
+      "sourceConflicts": [
+        {
+          "sourceIds": [
+            "official-wiki-t-beam-1w",
+            "lora-1w-hardware",
+            "lora-utilities"
+          ],
+          "issue": "Wiki overview claims AXP2101 and PMU key; current exact T_BEAM_1W_SX1262 header lacks HAS_PMU and hardware document lists GPIO17 user button.",
+          "resolution": "Use exact V1.0 manufacturer target and do not instantiate AXP2101 from the wiki overview."
+        }
+      ],
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "lora-factory-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/tbeam1w-v1.x-all-band-sx1262-factory-20260715_0x0.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam1w-v1.x-all-band-sx1262-factory-20260715_0x0.bin",
+            "status": "linked",
+            "gitBlobSha": "25fd919265b2de5e3f25f17e2c7dd912c5942be5",
+            "bytesFromTree": 958928,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+      }
+    },
+    {
+      "productId": "lilygo-t3-s3-lr1121",
+      "boardId": "lilygo-t3-s3-lr1121",
+      "name": "LILYGO T3-S3 LR1121",
+      "chip": "esp32s3",
+      "flashMB": 4,
+      "psramMB": 2,
+      "hardwareRevision": "T3-S3-LR1121 V1.3 / manufacturer SSD1306 main-board target",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SSD1306",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages, one byte is eight vertical pixels",
+        "controllerRamWidth": 128,
+        "physicalColumnOffset": 0,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 18,
+          "scl": 17,
+          "address": 60,
+          "reset": null,
+          "resetScope": "No host-controlled reset pin claimed by selected profile"
+        },
+        "leds": [
+          {
+            "pin": 37,
+            "activeLow": false,
+            "implemented": true,
+            "color": null,
+            "simulationColor": "white logical on/off indicator; physical LED color not established"
+          }
+        ]
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "transportSupported": true,
+        "pins": {
+          "sclk": 14,
+          "mosi": 11,
+          "miso": 2,
+          "cs": 13
+        },
+        "conflictingChipSelectPins": [],
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform TF-card service; board attaches supplied image",
+        "supply": "On-board supply; no invented GPIO enable",
+        "sourceIds": [
+          "lora-lr1121-hardware",
+          "lora-utilities"
+        ],
+        "verification": "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+      },
+      "radio": {
+        "controller": "LR1121",
+        "implemented": false,
+        "physicalRf": false
+      },
+      "runtimeLevel": "partial",
+      "scope": "选定官方 LR1121 主板文档的 SSD1306 0x3C 屏幕：128×64 OLED、GPIO37 指示灯、BOOT 和 SPI TF 卡已接入。未把 wiki 的通用 1.3 英寸 OLED 描述替换成 SH1106；LR1121、RTC、电池/充电和完整固件未实现。",
+      "scopeEn": "Exact selected T3-S3-LR1121 V1.3 / manufacturer SSD1306 main-board target: OLED display RAM, physical buttons, documented LED and SPI card paths only; no factory or Meshtastic boot claim.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t3-s3-lr1121",
+        "lora-lr1121-hardware",
+        "lora-utilities",
+        "lora-ssd1306-wire",
+        "ssd1306-datasheet",
+        "lora-factory-readme"
+      ],
+      "chronology": {
+        "date": "2024-03-25",
+        "basis": "hardware-release",
+        "sourceUrl": "https://wiki.lilygo.cc/products/t3-series/t3-s3-lr1121/",
+        "sourceId": "official-wiki-t3-s3-lr1121",
+        "confidence": "medium",
+        "hardwareRevision": "T3-S3-LR1121_V1.3",
+        "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+      },
+      "priorityRank": 40,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_boards_execute_real_xtensa_i2c_and_gpio_with_wrong_route_and_power_rejection",
+          "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+        ]
+      },
+      "unsupported": [
+        "No official binary has been executed for this profile. Native SRAM Xtensa probes verify the stated display/GPIO contracts only.",
+        "OLED scrolling, analog brightness/charge pump/oscillator timing and controller readback are not implemented. Display content comes only from accepted RAM writes.",
+        "Radio/controller variants, RF propagation, GNSS, sensors/RTC, ADC, battery/charging and USB are unmodeled.",
+        "SPI SD accepts the exact documented pins and exclusive shared chip selection; bit-banged SD and SDMMC host mode are not implemented."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T3-S3-LR1121 V1.3 / manufacturer SSD1306 main-board target",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "lora-lr1121-hardware",
+          "lora-utilities"
+        ],
+        "basis": "Exact manufacturer product-linked hardware document and current board-target header; unsupported siblings are not substituted."
+      },
+      "sourceConflicts": [
+        {
+          "sourceIds": [
+            "official-wiki-t3-s3-lr1121",
+            "lora-lr1121-hardware",
+            "lora-utilities"
+          ],
+          "issue": "Wiki prose says 1.3-inch OLED/RTC; exact manufacturer LR1121 hardware document and header specify SSD1306 at 0x3c.",
+          "resolution": "Use exact SSD1306 driver target; no SH1106 or RTC is inferred from marketing text."
+        }
+      ],
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "lora-factory-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/t3s3-v1.x-all-band-lr1121-factory_20250425_0x0.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3s3-v1.x-all-band-lr1121-factory_20250425_0x0.bin",
+            "status": "linked",
+            "gitBlobSha": "4c2ca96c765151ecf4c79000d51accc0115cc7b9",
+            "bytesFromTree": 1114928,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+      }
+    },
+    {
+      "productId": "lilygo-t-beam-supreme",
+      "boardId": "lilygo-t-beam-supreme",
+      "name": "LILYGO T-Beam Supreme",
+      "chip": "esp32s3",
+      "flashMB": 8,
+      "psramMB": 8,
+      "hardwareRevision": "T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SH1106",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages, one byte is eight vertical pixels",
+        "controllerRamWidth": 132,
+        "physicalColumnOffset": 2,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 17,
+          "scl": 18,
+          "address": 60,
+          "reset": null,
+          "resetScope": "No host-controlled reset pin claimed by selected profile"
+        },
+        "pmu": {
+          "controller": "AXP2101",
+          "address": 52,
+          "sda": 42,
+          "scl": 41,
+          "displaySupply": "ALDO1",
+          "sdSupply": "BLDO1",
+          "implemented": "rail-register subset only"
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "transportSupported": true,
+        "pins": {
+          "sclk": 36,
+          "mosi": 35,
+          "miso": 37,
+          "cs": 47
+        },
+        "conflictingChipSelectPins": [
+          34
+        ],
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform TF-card service; board attaches supplied image",
+        "supply": "BLDO1 digital rail register gate; power cycle resets protocol and preserves supplied image",
+        "sourceIds": [
+          "lora-supreme-hardware",
+          "lora-utilities",
+          "lora-boards"
+        ],
+        "verification": "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+      },
+      "radio": {
+        "controller": "SX1262",
+        "implemented": false,
+        "physicalRf": false
+      },
+      "runtimeLevel": "partial",
+      "scope": "选定 Supreme V3.0 QMC6310U 的 SH1106 0x3C 版本：OLED、BOOT、SPI TF 与 AXP2101 ALDO1/BLDO1 电源寄存器子集可调试。0x3D 版本和 V3.1 不自动识别；SX1262、GNSS、传感器、RTC、电池/充电和完整固件未实现。",
+      "scopeEn": "Exact selected T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware: OLED display RAM, physical buttons, documented LED and SPI card paths only; no factory or Meshtastic boot claim.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-beam-supreme",
+        "lora-supreme-hardware",
+        "lora-utilities",
+        "lora-boards",
+        "lora-sh1106-wire",
+        "sh1106-datasheet",
+        "lora-factory-readme",
+        "lora-axp-registers",
+        "lora-axp-driver"
+      ],
+      "chronology": {
+        "date": "2023-08-01",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-beam-supreme",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 65,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_boards_execute_real_xtensa_i2c_and_gpio_with_wrong_route_and_power_rejection",
+          "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+        ]
+      },
+      "unsupported": [
+        "No official binary has been executed for this profile. Native SRAM Xtensa probes verify the stated display/GPIO contracts only.",
+        "OLED scrolling, analog brightness/charge pump/oscillator timing and controller readback are not implemented. Display content comes only from accepted RAM writes.",
+        "Radio/controller variants, RF propagation, GNSS, sensors/RTC, ADC, battery/charging and USB are unmodeled.",
+        "SPI SD accepts the exact documented pins and exclusive shared chip selection; bit-banged SD and SDMMC host mode are not implemented.",
+        "AXP2101 key/IRQ/charger/ADC/analog voltages and full PMU state are absent; MCU shutdown/reset is not modeled. Only explicit digital peripheral rail gates are applied.",
+        "SH1106 0x3d QMC6310N hardware and V3.1 resistor straps are not automatically selected. QMC/BME/IMU/RTC devices do not ACK merely to satisfy firmware initialization."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "lora-supreme-hardware",
+          "lora-utilities",
+          "lora-boards"
+        ],
+        "basis": "Exact manufacturer product-linked hardware document and current board-target header; unsupported siblings are not substituted."
+      },
+      "powerManagement": {
+        "controller": "AXP2101",
+        "implemented": "digital display and card rail register subset",
+        "registers": [
+          "0x00,0x01 virtual supply status",
+          "0x03 immutable chip ID 0x4a",
+          "0x10 shutdown bit gates modeled peripheral supply only",
+          "0x80..0x86 DC enable/voltage register storage",
+          "0x90..0x9a LDO enable/voltage register storage"
+        ],
+        "displaySupply": "ALDO1",
+        "displayEnableBit": 0,
+        "sdSupply": "BLDO1",
+        "sdEnableBit": 4,
+        "resetPolicy": "Deterministic virtual USB supply, no battery; DC1 initially on and modeled LDO gates initially off. This is a simulation fixture, not a silicon OTP power-on default claim.",
+        "sourceIds": [
+          "lora-supreme-hardware",
+          "lora-utilities",
+          "lora-boards",
+          "lora-axp-registers",
+          "lora-axp-driver"
+        ]
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "lora-factory-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
+            "status": "linked",
+            "gitBlobSha": "6e313ad14d1a4a05d8ec18cfe80a6399e5e06859",
+            "bytesFromTree": 987696,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+      }
+    },
+    {
+      "productId": "lilygo-t3s3-v1-0",
+      "boardId": "lilygo-t3s3-v1-0",
+      "name": "LILYGO T3 S3",
+      "chip": "esp32s3",
+      "flashMB": 4,
+      "psramMB": 2,
+      "hardwareRevision": "Current T3 S3 product target V1.2; legacy v1-0 catalog slug does not establish V1.0 hardware",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SSD1306",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages, one byte is eight vertical pixels",
+        "controllerRamWidth": 128,
+        "physicalColumnOffset": 0,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 18,
+          "scl": 17,
+          "address": 60,
+          "reset": null,
+          "resetScope": "No host-controlled reset pin claimed by selected profile"
+        },
+        "leds": [
+          {
+            "pin": 37,
+            "activeLow": false,
+            "implemented": true,
+            "color": null,
+            "simulationColor": "white logical on/off indicator; physical LED color not established"
+          }
+        ]
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "transportSupported": true,
+        "pins": {
+          "sclk": 14,
+          "mosi": 11,
+          "miso": 2,
+          "cs": 13
+        },
+        "conflictingChipSelectPins": [],
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform TF-card service; board attaches supplied image",
+        "supply": "On-board supply; no invented GPIO enable",
+        "sourceIds": [
+          "lora-t3-hardware",
+          "lora-utilities"
+        ],
+        "verification": "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+      },
+      "radio": {
+        "controller": "variant-dependent (not instantiated)",
+        "implemented": false,
+        "physicalRf": false
+      },
+      "runtimeLevel": "partial",
+      "scope": "旧商品 ID t3s3-v1-0 当前官方商品名称为 T3 S3；本适配明确选定有源码证据的 V1.2 主板，提供 SSD1306 OLED、GPIO37 指示灯、BOOT 和 SPI TF 调试。旧网址不作为 V1.0 电路证据；无线、电池/充电和完整出厂固件未实现。",
+      "scopeEn": "Exact selected Current T3 S3 product target V1.2; legacy v1-0 catalog slug does not establish V1.0 hardware: OLED display RAM, physical buttons, documented LED and SPI card paths only; no factory or Meshtastic boot claim.",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t3-s3",
+        "lora-t3-hardware",
+        "lora-utilities",
+        "lora-ssd1306-wire",
+        "ssd1306-datasheet",
+        "lora-factory-readme"
+      ],
+      "chronology": {
+        "date": "2023-04-18",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t3s3-v1-0",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 75,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_boards_execute_real_xtensa_i2c_and_gpio_with_wrong_route_and_power_rejection",
+          "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+        ]
+      },
+      "unsupported": [
+        "No official binary has been executed for this profile. Native SRAM Xtensa probes verify the stated display/GPIO contracts only.",
+        "OLED scrolling, analog brightness/charge pump/oscillator timing and controller readback are not implemented. Display content comes only from accepted RAM writes.",
+        "Radio/controller variants, RF propagation, GNSS, sensors/RTC, ADC, battery/charging and USB are unmodeled.",
+        "SPI SD accepts the exact documented pins and exclusive shared chip selection; bit-banged SD and SDMMC host mode are not implemented."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "Current T3 S3 product target V1.2; legacy v1-0 catalog slug does not establish V1.0 hardware",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "lora-t3-hardware",
+          "lora-utilities"
+        ],
+        "basis": "Exact manufacturer product-linked hardware document and current board-target header; unsupported siblings are not substituted."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "lora-factory-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/t3s3-v1.x-all-band-sx1262-factory_20250425_0x0.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3s3-v1.x-all-band-sx1262-factory_20250425_0x0.bin",
+            "status": "linked",
+            "gitBlobSha": "3c6766afd083093d89b1a8a78bd5f0611cddfdde",
+            "bytesFromTree": 1115248,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+      }
+    },
+    {
+      "productId": "lilygo-t3-s3-meshtastic",
+      "boardId": "lilygo-t3-s3-meshtastic",
+      "name": "LILYGO T3-S3 Meshtastic",
+      "chip": "esp32s3",
+      "flashMB": 4,
+      "psramMB": 2,
+      "hardwareRevision": "Exact manufacturer-linked T3 S3 SX1262 Meshtastic product / documented V1.2 main-board pins",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SSD1306",
+        "type": "OLED",
+        "interface": "i2c",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp eight pages, one byte is eight vertical pixels",
+        "controllerRamWidth": 128,
+        "physicalColumnOffset": 0,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "pins": {
+        "boot": 0,
+        "display": {
+          "sda": 18,
+          "scl": 17,
+          "address": 60,
+          "reset": null,
+          "resetScope": "No host-controlled reset pin claimed by selected profile"
+        },
+        "leds": [
+          {
+            "pin": 37,
+            "activeLow": false,
+            "implemented": true,
+            "color": null,
+            "simulationColor": "white logical on/off indicator; physical LED color not established"
+          }
+        ]
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "transportSupported": true,
+        "pins": {
+          "sclk": 14,
+          "mosi": 11,
+          "miso": 2,
+          "cs": 13
+        },
+        "conflictingChipSelectPins": [],
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform TF-card service; board attaches supplied image",
+        "supply": "On-board supply; no invented GPIO enable",
+        "sourceIds": [
+          "lora-t3-hardware",
+          "lora-utilities"
+        ],
+        "verification": "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+      },
+      "radio": {
+        "controller": "SX1262",
+        "implemented": false,
+        "physicalRf": false
+      },
+      "runtimeLevel": "partial",
+      "scope": "依据该精确商品的官方链接与 T3S3Factory 驱动链，接入 SSD1306 OLED、GPIO37 指示灯、BOOT 和 SPI TF 卡。未知发布日期仍保持未知；SX1262 无线、Meshtastic 启动及出厂固件未验证。",
+      "scopeEn": "Exact selected Exact manufacturer-linked T3 S3 SX1262 Meshtastic product / documented V1.2 main-board pins: OLED display RAM, physical buttons, documented LED and SPI card paths only; no factory or Meshtastic boot claim.",
+      "sourceIds": [
+        "lilygo-gap-spark-manifest",
+        "lilygo-gap-spark-revision-object",
+        "lilygo-gap-spark-repository-tree",
+        "lilygo-gap-t3-s3-meshtastic",
+        "lilygo-gap-lora-docs-en-t3_s3_sx1262-t3_s3_sx1262_hw.md",
+        "lilygo-gap-lora-examples-T3S3Factory-T3S3Factory.ino",
+        "lilygo-gap-lora-lib-ESP8266_SSD1306-src-SSD1306Wire.h",
+        "lilygo-gap-lora-revision-object",
+        "lilygo-gap-lora-repository-tree",
+        "lora-t3-hardware",
+        "lora-utilities",
+        "lora-ssd1306-wire",
+        "ssd1306-datasheet",
+        "lora-factory-readme"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceUrl": "https://lilygo.cc/products/t3-s3-meshtastic",
+        "sourceId": null,
+        "confidence": "unknown",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "No exact dated release evidence found in the inspected sources; no date inferred from a similar device."
+      },
+      "priorityRank": 126,
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_boards_execute_real_xtensa_i2c_and_gpio_with_wrong_route_and_power_rejection",
+          "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+        ]
+      },
+      "unsupported": [
+        "No official binary has been executed for this profile. Native SRAM Xtensa probes verify the stated display/GPIO contracts only.",
+        "OLED scrolling, analog brightness/charge pump/oscillator timing and controller readback are not implemented. Display content comes only from accepted RAM writes.",
+        "Radio/controller variants, RF propagation, GNSS, sensors/RTC, ADC, battery/charging and USB are unmodeled.",
+        "SPI SD accepts the exact documented pins and exclusive shared chip selection; bit-banged SD and SDMMC host mode are not implemented."
+      ],
+      "variantEvidence": {
+        "selectedHardware": "Exact manufacturer-linked T3 S3 SX1262 Meshtastic product / documented V1.2 main-board pins",
+        "automaticRevisionDetection": false,
+        "sourceIds": [
+          "lora-t3-hardware",
+          "lora-utilities"
+        ],
+        "basis": "Exact manufacturer product-linked hardware document and current board-target header; unsupported siblings are not substituted."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "lora-factory-readme"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/t3s3-v1.x-all-band-sx1262-factory_20250425_0x0.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3s3-v1.x-all-band-sx1262-factory_20250425_0x0.bin",
+            "status": "linked",
+            "gitBlobSha": "3c6766afd083093d89b1a8a78bd5f0611cddfdde",
+            "bytesFromTree": 1115248,
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+      }
     }
   ],
   "verification": {
@@ -2758,7 +4917,7 @@
       "CARGO_BUILD_JOBS=1 cargo test -p esp32s3 --test lilygo_additional",
       "CARGO_BUILD_JOBS=1 cargo clippy -p esp32s3 --lib --test lilygo_additional -- -D warnings"
     ],
-    "testCount": 5,
+    "testCount": 9,
     "status": "passed",
     "factoryFirmwareExecuted": false,
     "hardwareTested": false
