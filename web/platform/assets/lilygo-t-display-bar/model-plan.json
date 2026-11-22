@@ -2,60 +2,138 @@
   "schemaVersion": "1",
   "generator": "build-lilygo-expansion-models.py",
   "id": "lilygo-t-display-bar",
-  "mode": "screen-only",
+  "mode": "photo-derived",
   "priorityRank": 10,
   "dimensions": {
-    "width": 24.056338028169016,
-    "height": 74.0,
-    "depth": 2.7,
-    "basis": "debug-layout; not physical product dimensions"
+    "width": 18.535871156661788,
+    "height": 60.0,
+    "depth": 2.2243045387994145,
+    "basis": "photo projection normalized to 60 mm for debugging; absolute scale and depth uncalibrated"
   },
   "presentation": {
     "bodySizeMm": [
-      24.056338028169016,
-      74.0,
-      2.7
+      42.57812467778855,
+      60.0,
+      2.7243045387994145
     ],
     "screen": {
       "sizeMm": [
-        16.056338028169016,
-        60.0
+        12.04225352112676,
+        45.0
       ],
       "positionMm": [
-        0,
+        23.289062338894272,
         1,
-        1.15
+        0.72
       ],
       "rotation": [
         0,
         0,
         0
       ],
-      "notes": "Debug canvas at the documented pixel aspect ratio. Its millimetre size and placement are presentation choices, not product measurements."
+      "notes": "Separate live debug panel; physical display location has not been calibrated."
     }
   },
   "parts": [
     {
-      "name": "debug-bezel",
-      "role": "shell",
-      "kind": "ring",
+      "name": "photo-envelope",
+      "role": "envelope",
+      "kind": "polygon",
       "sizeMm": [
-        24.056338028169016,
-        74.0,
-        2.2
+        18.535871156661788,
+        60.0,
+        2.2243045387994145
       ],
-      "openingMm": [
-        16.056338028169016,
-        60.0
+      "outlineMm": [
+        [
+          -2.0644216691068813,
+          29.560761346998536
+        ],
+        [
+          -3.5578330893118597,
+          28.50658857979502
+        ],
+        [
+          -6.632503660322109,
+          24.99267935578331
+        ],
+        [
+          -8.916544655929721,
+          20.161054172767205
+        ],
+        [
+          -9.267935578330894,
+          -23.41142020497804
+        ],
+        [
+          -6.4568081991215225,
+          -27.80380673499268
+        ],
+        [
+          -1.9765739385065886,
+          -29.824304538799414
+        ],
+        [
+          2.855051244509517,
+          -29.91215226939971
+        ],
+        [
+          6.544655929721816,
+          -27.364568081991216
+        ],
+        [
+          8.389458272327966,
+          -23.674963396778917
+        ],
+        [
+          9.1800878477306,
+          19.194729136163982
+        ],
+        [
+          7.686676427525622,
+          22.79648609077599
+        ],
+        [
+          2.855051244509517,
+          29.03367496339678
+        ],
+        [
+          1.0980966325036603,
+          30.0
+        ]
       ],
-      "radiusMm": 3,
-      "innerRadiusMm": 0.4,
       "centerMm": [
         0,
         0,
         0
       ],
-      "color": "#253b45",
+      "color": "#404044",
+      "basis": "photo-projection",
+      "sourceIds": [
+        "lilygo-t-display-bar-official-photo-0"
+      ]
+    },
+    {
+      "name": "debug-screen-frame",
+      "role": "component",
+      "kind": "ring",
+      "sizeMm": [
+        15.04225352112676,
+        53.0,
+        1.4
+      ],
+      "openingMm": [
+        12.04225352112676,
+        45.0
+      ],
+      "radiusMm": 2,
+      "innerRadiusMm": 0.2,
+      "centerMm": [
+        23.289062338894272,
+        0,
+        0
+      ],
+      "color": "#20343d",
       "basis": "debug-layout"
     }
   ],
@@ -63,56 +141,85 @@
     {
       "id": "pcb-main",
       "kind": "pcb-placeholder",
-      "basis": "debug-layout",
+      "basis": "unknown; display spacing only",
       "sourceIds": [
-        "official-store-shopify-1",
-        "official-wiki-t-display-bar"
+        "lilygo-t-display-bar-official-photo-0",
+        "lilygo-t-display-bar-official-photo-1",
+        "lilygo-t-display-bar-official-photo-2"
       ],
-      "color": "#59656a",
+      "color": "#536066",
       "geometry": {
         "sizeMm": [
-          23.056338028169016,
-          73.0,
-          0.25
+          12.604392386530016,
+          40.800000000000004,
+          0.3
         ],
         "centerMm": [
           0,
           0,
-          -1.3
+          -1.3121522693997072
         ],
-        "labelSide": "back"
+        "labelSide": "back",
+        "labelSizeMm": [
+          10.194729136163984,
+          2.548682284040996
+        ]
       },
-      "notes": "Explicit UNKNOWN debug support plane, not a reconstructed PCB."
+      "notes": "Replaceable UNKNOWN internal board, not a derived PCB outline or guessed components."
     },
     {
-      "id": "debug-mode-label",
+      "id": "debug-panel-label",
       "kind": "printed-marking",
       "basis": "debug-layout",
       "sourceIds": [
-        "official-store-shopify-1",
-        "official-wiki-t-display-bar"
+        "lilygo-t-display-bar-official-photo-0",
+        "lilygo-t-display-bar-official-photo-1",
+        "lilygo-t-display-bar-official-photo-2"
       ],
       "lines": [
-        "SCREEN DEBUG"
+        "LIVE DEBUG"
       ],
-      "color": "#b3dacb",
+      "color": "#bde5d8",
       "geometry": {
         "sizeMm": [
-          20.056338028169016,
-          4
+          12.04225352112676,
+          3.2
         ],
         "centerMm": [
-          0,
-          -34.0,
-          1.13
+          23.289062338894272,
+          -24.5,
+          0.72
         ]
       }
     }
   ],
-  "referencePhotos": [],
-  "retainedFiles": [],
+  "referencePhotos": [
+    {
+      "sourceId": "lilygo-t-display-bar-official-photo-0",
+      "file": "reference-0.jpg",
+      "view": "official gallery view 0",
+      "notes": "Original manufacturer image; no generated imagery."
+    },
+    {
+      "sourceId": "lilygo-t-display-bar-official-photo-1",
+      "file": "reference-1.jpg",
+      "view": "official gallery view 1",
+      "notes": "Original manufacturer image; no generated imagery."
+    },
+    {
+      "sourceId": "lilygo-t-display-bar-official-photo-2",
+      "file": "reference-2.jpg",
+      "view": "official gallery view 2",
+      "notes": "Original manufacturer image; no generated imagery."
+    }
+  ],
+  "retainedFiles": [
+    "reference-0.jpg",
+    "reference-1.jpg",
+    "reference-2.jpg"
+  ],
   "provenance": {
-    "kind": "screen-only",
+    "kind": "photo-derived",
     "sources": [
       {
         "id": "official-store-shopify-1",
@@ -136,23 +243,186 @@
         "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
         "gitBlobSha": "52eeba21c1143df8910539a4009c2537f757c768",
         "path": "en/products/t-display-series/t-display-bar/index.md"
+      },
+      {
+        "id": "bar-readme-md",
+        "repository": "Xinyuan-LilyGO/T-Display-Bar",
+        "path": "README.md",
+        "revision": "d3f4b8974be1dfb8bc35262d105e0453a697b459",
+        "gitBlobSha": "6293c29617d9fc1a61ec9d1eb9769e8c2d5e2c9b",
+        "url": "https://github.com/Xinyuan-LilyGO/T-Display-Bar/blob/d3f4b8974be1dfb8bc35262d105e0453a697b459/README.md",
+        "checkedAt": "2026-11-22",
+        "type": "manufacturer-source",
+        "status": "linked",
+        "title": "Xinyuan-LilyGO/T-Display-Bar/README.md",
+        "kind": "official-documentation",
+        "fetchedAt": "2026-11-22T06:56:00Z",
+        "archiveName": "bar-readme-md-README.md",
+        "sha256": "2eebc1437644f9c5ba3257618110d6cab2358cae7bdd72cb24a0cc9a6b276e67",
+        "bytes": 11369,
+        "mediaType": "text/plain; charset=utf-8"
+      },
+      {
+        "id": "bar-examples-factory-board-h",
+        "repository": "Xinyuan-LilyGO/T-Display-Bar",
+        "path": "examples/Factory/board.h",
+        "revision": "d3f4b8974be1dfb8bc35262d105e0453a697b459",
+        "gitBlobSha": "7c44b323339b80c37e9a1ab146647d561b358ff2",
+        "url": "https://github.com/Xinyuan-LilyGO/T-Display-Bar/blob/d3f4b8974be1dfb8bc35262d105e0453a697b459/examples/Factory/board.h",
+        "checkedAt": "2026-11-22",
+        "type": "manufacturer-source",
+        "status": "linked",
+        "title": "Xinyuan-LilyGO/T-Display-Bar/examples/Factory/board.h",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T06:56:00Z",
+        "archiveName": "bar-examples-factory-board-h-board.h",
+        "sha256": "936d20ac93261992feed777af6336869872ea0fe681759e79632088361c54713",
+        "bytes": 370,
+        "mediaType": "text/plain; charset=utf-8"
+      },
+      {
+        "id": "bar-lib-tft_espi-user_setups-setup215_lilygo_t_display_bar-h",
+        "repository": "Xinyuan-LilyGO/T-Display-Bar",
+        "path": "lib/TFT_eSPI/User_Setups/Setup215_LilyGo_T_Display_Bar.h",
+        "revision": "d3f4b8974be1dfb8bc35262d105e0453a697b459",
+        "gitBlobSha": "1b00da5da04639eae28e803724361a6deac70218",
+        "url": "https://github.com/Xinyuan-LilyGO/T-Display-Bar/blob/d3f4b8974be1dfb8bc35262d105e0453a697b459/lib/TFT_eSPI/User_Setups/Setup215_LilyGo_T_Display_Bar.h",
+        "checkedAt": "2026-11-22",
+        "type": "manufacturer-source",
+        "status": "linked",
+        "title": "Xinyuan-LilyGO/T-Display-Bar/lib/TFT_eSPI/User_Setups/Setup215_LilyGo_T_Display_Bar.h",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T06:56:00Z",
+        "archiveName": "bar-lib-tft_espi-user_setups-setup215_lilygo_t_display_bar-h-Setup215_LilyGo_T_Display_Bar.h",
+        "sha256": "42e6519e31cf828d58fcda46c4dfa6e4411e63ae778477857db8d7308bfc6e08",
+        "bytes": 1605,
+        "mediaType": "text/plain; charset=utf-8"
+      },
+      {
+        "id": "bar-lib-tft_espi-tft_drivers-st7789_rotation-h",
+        "repository": "Xinyuan-LilyGO/T-Display-Bar",
+        "path": "lib/TFT_eSPI/TFT_Drivers/ST7789_Rotation.h",
+        "revision": "d3f4b8974be1dfb8bc35262d105e0453a697b459",
+        "gitBlobSha": "1d775235c041a8044bcfeaf7f80edff8bc58abb3",
+        "url": "https://github.com/Xinyuan-LilyGO/T-Display-Bar/blob/d3f4b8974be1dfb8bc35262d105e0453a697b459/lib/TFT_eSPI/TFT_Drivers/ST7789_Rotation.h",
+        "checkedAt": "2026-11-22",
+        "type": "manufacturer-source",
+        "status": "linked",
+        "title": "Xinyuan-LilyGO/T-Display-Bar/lib/TFT_eSPI/TFT_Drivers/ST7789_Rotation.h",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T06:56:00Z",
+        "archiveName": "bar-lib-tft_espi-tft_drivers-st7789_rotation-h-ST7789_Rotation.h",
+        "sha256": "1e4845a44a2fe358efae7eb41a27028b031a9ba4f9933ee433a60809089e2d09",
+        "bytes": 3196,
+        "mediaType": "text/plain; charset=utf-8"
+      },
+      {
+        "id": "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+        "repository": "Xinyuan-LilyGO/T-Display-Bar",
+        "path": "lib/SensorLib/src/touch/TouchClassCST816.cpp",
+        "revision": "d3f4b8974be1dfb8bc35262d105e0453a697b459",
+        "gitBlobSha": "855c7b1051b1ed2a26f9dd0e040f26ef3989635e",
+        "url": "https://github.com/Xinyuan-LilyGO/T-Display-Bar/blob/d3f4b8974be1dfb8bc35262d105e0453a697b459/lib/SensorLib/src/touch/TouchClassCST816.cpp",
+        "checkedAt": "2026-11-22",
+        "type": "manufacturer-source",
+        "status": "linked",
+        "title": "Xinyuan-LilyGO/T-Display-Bar/lib/SensorLib/src/touch/TouchClassCST816.cpp",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T06:56:00Z",
+        "archiveName": "bar-lib-sensorlib-src-touch-touchclasscst816-cpp-TouchClassCST816.cpp",
+        "sha256": "86f48a816759842c15c2816a5e7a69fb24d7522aafb6aa074a4db7e30cd235f4",
+        "bytes": 8355,
+        "mediaType": "text/plain; charset=utf-8"
+      },
+      {
+        "id": "bar-lib-sensorlib-src-reg-cstxxxconstants-h",
+        "repository": "Xinyuan-LilyGO/T-Display-Bar",
+        "path": "lib/SensorLib/src/REG/CSTxxxConstants.h",
+        "revision": "d3f4b8974be1dfb8bc35262d105e0453a697b459",
+        "gitBlobSha": "18ccd9b6611c17548da556cc0c964d8d4534fe78",
+        "url": "https://github.com/Xinyuan-LilyGO/T-Display-Bar/blob/d3f4b8974be1dfb8bc35262d105e0453a697b459/lib/SensorLib/src/REG/CSTxxxConstants.h",
+        "checkedAt": "2026-11-22",
+        "type": "manufacturer-source",
+        "status": "linked",
+        "title": "Xinyuan-LilyGO/T-Display-Bar/lib/SensorLib/src/REG/CSTxxxConstants.h",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T06:56:00Z",
+        "archiveName": "bar-lib-sensorlib-src-reg-cstxxxconstants-h-CSTxxxConstants.h",
+        "sha256": "787f3fac68f72b4b77f49172a4e4952f30b764b895fe4988558f3437ff5c4127",
+        "bytes": 1617,
+        "mediaType": "text/plain; charset=utf-8"
+      },
+      {
+        "id": "bar-factory-ino",
+        "repository": "Xinyuan-LilyGO/T-Display-Bar",
+        "path": "examples/Factory/Factory.ino",
+        "revision": "d3f4b8974be1dfb8bc35262d105e0453a697b459",
+        "url": "https://github.com/Xinyuan-LilyGO/T-Display-Bar/blob/d3f4b8974be1dfb8bc35262d105e0453a697b459/examples/Factory/Factory.ino",
+        "title": "Xinyuan-LilyGO/T-Display-Bar/examples/Factory/Factory.ino",
+        "kind": "official-source",
+        "status": "linked",
+        "fetchedAt": "2026-11-22T07:04:55Z",
+        "archiveName": "bar-factory-ino-Factory.ino",
+        "bytes": 26679,
+        "sha256": "813357b1faef2f442f7cc5944bafeb85acfbb8e86696c0576ac74fdc76e33990",
+        "gitBlobSha": "ddd9bab52a5a83b848e4c974ff8b029220de7cf3",
+        "mediaType": "text/plain; charset=utf-8",
+        "type": "manufacturer-source",
+        "checkedAt": "2026-11-22"
+      },
+      {
+        "id": "lilygo-t-display-bar-official-photo-0",
+        "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Display-Bar_5.jpg?v=1752817801",
+        "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Display-Bar_5.jpg?v=1752817801",
+        "fetchedAt": "2026-11-22T06:56:33.525672+00:00",
+        "bytes": 91136,
+        "sha256": "bc5d3e17b8596d85ccb1f695031364646f7b2be219894a26fa97ab26a9f7799a",
+        "mediaType": "image/jpeg",
+        "status": "fetched",
+        "file": "reference-0.jpg",
+        "kind": "manufacturer-photo"
+      },
+      {
+        "id": "lilygo-t-display-bar-official-photo-1",
+        "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Display-Bar_3.jpg?v=1752817801",
+        "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Display-Bar_3.jpg?v=1752817801",
+        "fetchedAt": "2026-11-22T06:56:33.723815+00:00",
+        "bytes": 82790,
+        "sha256": "70456fdfd85bc9203d039b367ca1f5f642feaeb1a99f31fed2e53f2b6edf17da",
+        "mediaType": "image/jpeg",
+        "status": "fetched",
+        "file": "reference-1.jpg",
+        "kind": "manufacturer-photo"
+      },
+      {
+        "id": "lilygo-t-display-bar-official-photo-2",
+        "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Display-Bar_4.jpg?v=1752817801",
+        "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Display-Bar_4.jpg?v=1752817801",
+        "fetchedAt": "2026-11-22T06:56:33.703853+00:00",
+        "bytes": 36144,
+        "sha256": "772ec6949509f2bf658f7e30cbdddbfdd50bf2ad9c51e43cf0c5ca9d94c758be",
+        "mediaType": "image/jpeg",
+        "status": "fetched",
+        "file": "reference-2.jpg",
+        "kind": "manufacturer-photo"
       }
     ],
     "license": "Generated debug geometry follows repository code license. Source documents and manufacturer photographs retain their original rights.",
     "sourcePolicy": "Official CAD candidates are recorded independently in the model source audit; an uncalibrated model is not silently substituted for another SKU."
   },
   "limitations": [
-    "此模型为调试用画布/支撑框；毫米尺寸、厚度和摆放是界面布局，不是实物测量。",
-    "未经核准的壳体、PCB 元件、插孔及按键位置未补画；UNKNOWN 表明实体结构仍未知。",
-    "模型加载与可视化不证明固件兼容；运行能力由独立板级适配决定。",
-    "屏幕仅使用一手表格中唯一的像素尺寸；屏幕控制器、旋转与输入路由须由对应板级实现单独核验。"
+    "依据官方多角度图片建立外轮廓粗模；这是照片投影的凸包，不是摄影测量或制造用 CAD。",
+    "侧壁厚度和绝对尺度尚未标定；画面以最长边 60 mm 归一化，不能当作实物尺寸。",
+    "未猜测内部元件、丝印、插针线序或连接器精确结构；背面 UNKNOWN 占位可替换。",
+    "有屏幕时，真实固件画面放在独立 LIVE DEBUG 面板；实体屏幕窗口尚未逐款校准。",
+    "原始照片仅作为来源，不将照片里的演示画面贴到实时屏幕。"
   ],
   "debugPreview": {
-    "mode": "screen-only",
+    "mode": "photo-derived",
     "isPhysicalReplica": false,
     "physicalDimensionsVerified": false,
-    "displayParametersVerified": false,
-    "reason": "Exact assembly/window geometry has not been independently established for this listing."
+    "displayPlacement": "separate-debug-panel",
+    "reason": "Multi-view exterior source references exist; projection recovered, physical depth/scale/window placement uncalibrated."
   },
   "reviewViews": {
     "front": {
@@ -161,7 +431,7 @@
         0,
         200
       ],
-      "span": 88.8
+      "span": 72.0
     },
     "back": {
       "position": [
@@ -169,7 +439,7 @@
         0,
         -200
       ],
-      "span": 88.8
+      "span": 72.0
     },
     "side": {
       "position": [
@@ -177,7 +447,131 @@
         0,
         0
       ],
-      "span": 88.8
+      "span": 72.0
     }
+  },
+  "photoDerivation": {
+    "method": "largest connected studio-photo foreground, convex projected envelope; not photogrammetry",
+    "chosenSourceId": "lilygo-t-display-bar-official-photo-0",
+    "chosenView": 0,
+    "analysis": {
+      "imageSize": [
+        1000,
+        1000
+      ],
+      "analysisScale": 0.8,
+      "cropXYXY": null,
+      "background": "white",
+      "hull": [
+        [
+          557.0,
+          51.0
+        ],
+        [
+          577.0,
+          62.0
+        ],
+        [
+          632.0,
+          133.0
+        ],
+        [
+          649.0,
+          174.0
+        ],
+        [
+          640.0,
+          662.0
+        ],
+        [
+          619.0,
+          704.0
+        ],
+        [
+          577.0,
+          733.0
+        ],
+        [
+          522.0,
+          732.0
+        ],
+        [
+          471.0,
+          709.0
+        ],
+        [
+          439.0,
+          659.0
+        ],
+        [
+          443.0,
+          163.0
+        ],
+        [
+          469.0,
+          108.0
+        ],
+        [
+          504.0,
+          68.0
+        ],
+        [
+          521.0,
+          56.0
+        ]
+      ],
+      "bounds": [
+        439,
+        51,
+        211,
+        683
+      ],
+      "occupancy": 0.8540624371153193,
+      "color": [
+        64,
+        64,
+        68
+      ],
+      "screen": null,
+      "score": 0.8540624371153193
+    },
+    "manualViewSelection": null,
+    "modelMillimetresPerAnalysisPixel": 0.08784773060029283,
+    "scaleBasis": "debug layout only",
+    "thicknessBasis": "debug spacing only; not recovered from side views",
+    "algorithm": "tools/derive-lilygo-photo-envelopes.py",
+    "independentViews": [
+      {
+        "view": 0,
+        "bounds": [
+          439,
+          51,
+          211,
+          683
+        ],
+        "occupancy": 0.8540624371153193
+      },
+      {
+        "view": 1,
+        "bounds": [
+          145,
+          56,
+          263,
+          592
+        ],
+        "occupancy": 0.5905257681636009
+      },
+      {
+        "view": 2,
+        "bounds": [
+          160,
+          212,
+          432,
+          377
+        ],
+        "occupancy": 0.4593894292170154
+      }
+    ],
+    "multiViewStatus": "Additional manufacturer views retained for comparison; perspective, depth and hidden topology remain uncalibrated."
   }
 }

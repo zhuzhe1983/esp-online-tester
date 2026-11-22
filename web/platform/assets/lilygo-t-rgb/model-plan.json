@@ -2,60 +2,178 @@
   "schemaVersion": "1",
   "generator": "build-lilygo-expansion-models.py",
   "id": "lilygo-t-rgb",
-  "mode": "screen-only",
+  "mode": "photo-derived",
   "priorityRank": 77,
   "dimensions": {
-    "width": 68.0,
-    "height": 74.0,
-    "depth": 2.7,
-    "basis": "debug-layout; not physical product dimensions"
+    "width": 59.64071856287425,
+    "height": 60.0,
+    "depth": 7.156886227544909,
+    "basis": "photo projection normalized to 60 mm for debugging; absolute scale and depth uncalibrated"
   },
   "presentation": {
     "bodySizeMm": [
-      68.0,
-      74.0,
-      2.7
+      116.64071856287424,
+      60.0,
+      7.656886227544909
     ],
     "screen": {
       "sizeMm": [
-        60.0,
-        60.0
+        45.0,
+        45.0
       ],
       "positionMm": [
-        0,
+        60.32035928143712,
         1,
-        1.15
+        0.72
       ],
       "rotation": [
         0,
         0,
         0
       ],
-      "notes": "Debug canvas at the documented pixel aspect ratio. Its millimetre size and placement are presentation choices, not product measurements."
+      "notes": "Separate live debug panel; physical display location has not been calibrated."
     }
   },
   "parts": [
     {
-      "name": "debug-bezel",
-      "role": "shell",
-      "kind": "ring",
+      "name": "photo-envelope",
+      "role": "envelope",
+      "kind": "polygon",
       "sizeMm": [
-        68.0,
-        74.0,
-        2.2
-      ],
-      "openingMm": [
+        59.64071856287425,
         60.0,
-        60.0
+        7.156886227544909
       ],
-      "radiusMm": 3,
-      "innerRadiusMm": 0.4,
+      "outlineMm": [
+        [
+          -4.311377245508982,
+          29.820359281437124
+        ],
+        [
+          -10.778443113772456,
+          28.023952095808383
+        ],
+        [
+          -19.760479041916167,
+          22.634730538922156
+        ],
+        [
+          -24.97005988023952,
+          16.706586826347305
+        ],
+        [
+          -27.48502994011976,
+          12.035928143712574
+        ],
+        [
+          -29.820359281437124,
+          2.3353293413173652
+        ],
+        [
+          -29.461077844311376,
+          -4.6706586826347305
+        ],
+        [
+          -27.84431137724551,
+          -10.598802395209582
+        ],
+        [
+          -22.275449101796408,
+          -19.580838323353294
+        ],
+        [
+          -17.065868263473053,
+          -24.251497005988025
+        ],
+        [
+          -11.8562874251497,
+          -27.12574850299401
+        ],
+        [
+          -1.7964071856287425,
+          -29.820359281437124
+        ],
+        [
+          8.982035928143713,
+          -28.20359281437126
+        ],
+        [
+          18.862275449101798,
+          -22.81437125748503
+        ],
+        [
+          23.353293413173652,
+          -18.323353293413174
+        ],
+        [
+          26.227544910179642,
+          -13.832335329341317
+        ],
+        [
+          29.64071856287425,
+          -2.5149700598802394
+        ],
+        [
+          29.64071856287425,
+          3.053892215568862
+        ],
+        [
+          28.20359281437126,
+          9.70059880239521
+        ],
+        [
+          25.688622754491018,
+          15.269461077844312
+        ],
+        [
+          22.275449101796408,
+          19.940119760479043
+        ],
+        [
+          17.604790419161677,
+          24.251497005988025
+        ],
+        [
+          12.035928143712574,
+          27.48502994011976
+        ],
+        [
+          0.8982035928143712,
+          30.0
+        ]
+      ],
       "centerMm": [
         0,
         0,
         0
       ],
-      "color": "#253b45",
+      "color": "#3d3e40",
+      "basis": "photo-projection",
+      "sourceIds": [
+        "lilygo-t-rgb-official-photo-1"
+      ]
+    },
+    {
+      "name": "debug-screen-frame",
+      "role": "component",
+      "kind": "ring",
+      "sizeMm": [
+        48.0,
+        53.0,
+        1.4
+      ],
+      "openingMm": [
+        45.0,
+        45.0
+      ],
+      "radiusMm": 2,
+      "innerRadiusMm": 0.2,
+      "centerMm": [
+        60.32035928143712,
+        0,
+        0
+      ],
+      "color": "#20343d",
       "basis": "debug-layout"
     }
   ],
@@ -63,54 +181,85 @@
     {
       "id": "pcb-main",
       "kind": "pcb-placeholder",
-      "basis": "debug-layout",
+      "basis": "unknown; display spacing only",
       "sourceIds": [
-        "official-store-shopify-1"
+        "lilygo-t-rgb-official-photo-0",
+        "lilygo-t-rgb-official-photo-1",
+        "lilygo-t-rgb-official-photo-2"
       ],
-      "color": "#59656a",
+      "color": "#536066",
       "geometry": {
         "sizeMm": [
-          67.0,
-          73.0,
-          0.25
+          40.555688622754495,
+          40.800000000000004,
+          0.3
         ],
         "centerMm": [
           0,
           0,
-          -1.3
+          -3.778443113772455
         ],
-        "labelSide": "back"
+        "labelSide": "back",
+        "labelSizeMm": [
+          32.80239520958084,
+          8.20059880239521
+        ]
       },
-      "notes": "Explicit UNKNOWN debug support plane, not a reconstructed PCB."
+      "notes": "Replaceable UNKNOWN internal board, not a derived PCB outline or guessed components."
     },
     {
-      "id": "debug-mode-label",
+      "id": "debug-panel-label",
       "kind": "printed-marking",
       "basis": "debug-layout",
       "sourceIds": [
-        "official-store-shopify-1"
+        "lilygo-t-rgb-official-photo-0",
+        "lilygo-t-rgb-official-photo-1",
+        "lilygo-t-rgb-official-photo-2"
       ],
       "lines": [
-        "SCREEN DEBUG"
+        "LIVE DEBUG"
       ],
-      "color": "#b3dacb",
+      "color": "#bde5d8",
       "geometry": {
         "sizeMm": [
-          64.0,
-          4
+          45.0,
+          3.2
         ],
         "centerMm": [
-          0,
-          -34.0,
-          1.13
+          60.32035928143712,
+          -24.5,
+          0.72
         ]
       }
     }
   ],
-  "referencePhotos": [],
-  "retainedFiles": [],
+  "referencePhotos": [
+    {
+      "sourceId": "lilygo-t-rgb-official-photo-0",
+      "file": "reference-0.jpg",
+      "view": "official gallery view 0",
+      "notes": "Original manufacturer image; no generated imagery."
+    },
+    {
+      "sourceId": "lilygo-t-rgb-official-photo-1",
+      "file": "reference-1.jpg",
+      "view": "official gallery view 1",
+      "notes": "Original manufacturer image; no generated imagery."
+    },
+    {
+      "sourceId": "lilygo-t-rgb-official-photo-2",
+      "file": "reference-2.jpg",
+      "view": "official gallery view 2",
+      "notes": "Original manufacturer image; no generated imagery."
+    }
+  ],
+  "retainedFiles": [
+    "reference-0.jpg",
+    "reference-1.jpg",
+    "reference-2.jpg"
+  ],
   "provenance": {
-    "kind": "screen-only",
+    "kind": "photo-derived",
     "sources": [
       {
         "id": "official-store-shopify-1",
@@ -121,23 +270,60 @@
         "mediaType": "application/json",
         "bytes": 2507924,
         "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1"
+      },
+      {
+        "id": "lilygo-t-rgb-official-photo-0",
+        "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-RGB-Lilygo_6.jpg?v=1664335919",
+        "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-RGB-Lilygo_6.jpg?v=1664335919",
+        "fetchedAt": "2026-11-22T06:59:11.875853+00:00",
+        "bytes": 74809,
+        "sha256": "d7a588e58036ef727927f8b4498ceb2a092914ab414869e494287df96c66441e",
+        "mediaType": "image/jpeg",
+        "status": "fetched",
+        "file": "reference-0.jpg",
+        "kind": "manufacturer-photo"
+      },
+      {
+        "id": "lilygo-t-rgb-official-photo-1",
+        "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-RGB.jpg?v=1683619896",
+        "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-RGB.jpg?v=1683619896",
+        "fetchedAt": "2026-11-22T06:59:11.903732+00:00",
+        "bytes": 81026,
+        "sha256": "09d57750f93659a85be224ccd97fa0c1832e4aa93e0699eb64226f69a89b8a33",
+        "mediaType": "image/jpeg",
+        "status": "fetched",
+        "file": "reference-1.jpg",
+        "kind": "manufacturer-photo"
+      },
+      {
+        "id": "lilygo-t-rgb-official-photo-2",
+        "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-RGB-Lilygo_5.jpg?v=1683619896",
+        "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-RGB-Lilygo_5.jpg?v=1683619896",
+        "fetchedAt": "2026-11-22T06:59:11.959964+00:00",
+        "bytes": 50750,
+        "sha256": "15ba85547cc2905628e12855a21c06062b6832a00edb8fcb49f3614a9d9c6dac",
+        "mediaType": "image/jpeg",
+        "status": "fetched",
+        "file": "reference-2.jpg",
+        "kind": "manufacturer-photo"
       }
     ],
     "license": "Generated debug geometry follows repository code license. Source documents and manufacturer photographs retain their original rights.",
     "sourcePolicy": "Official CAD candidates are recorded independently in the model source audit; an uncalibrated model is not silently substituted for another SKU."
   },
   "limitations": [
-    "此模型为调试用画布/支撑框；毫米尺寸、厚度和摆放是界面布局，不是实物测量。",
-    "未经核准的壳体、PCB 元件、插孔及按键位置未补画；UNKNOWN 表明实体结构仍未知。",
-    "模型加载与可视化不证明固件兼容；运行能力由独立板级适配决定。",
-    "屏幕仅使用一手表格中唯一的像素尺寸；屏幕控制器、旋转与输入路由须由对应板级实现单独核验。"
+    "依据官方多角度图片建立外轮廓粗模；这是照片投影的凸包，不是摄影测量或制造用 CAD。",
+    "侧壁厚度和绝对尺度尚未标定；画面以最长边 60 mm 归一化，不能当作实物尺寸。",
+    "未猜测内部元件、丝印、插针线序或连接器精确结构；背面 UNKNOWN 占位可替换。",
+    "有屏幕时，真实固件画面放在独立 LIVE DEBUG 面板；实体屏幕窗口尚未逐款校准。",
+    "原始照片仅作为来源，不将照片里的演示画面贴到实时屏幕。"
   ],
   "debugPreview": {
-    "mode": "screen-only",
+    "mode": "photo-derived",
     "isPhysicalReplica": false,
     "physicalDimensionsVerified": false,
-    "displayParametersVerified": false,
-    "reason": "Exact assembly/window geometry has not been independently established for this listing."
+    "displayPlacement": "separate-debug-panel",
+    "reason": "Multi-view exterior source references exist; projection recovered, physical depth/scale/window placement uncalibrated."
   },
   "reviewViews": {
     "front": {
@@ -146,7 +332,7 @@
         0,
         200
       ],
-      "span": 88.8
+      "span": 139.96886227544908
     },
     "back": {
       "position": [
@@ -154,7 +340,7 @@
         0,
         -200
       ],
-      "span": 88.8
+      "span": 139.96886227544908
     },
     "side": {
       "position": [
@@ -162,7 +348,171 @@
         0,
         0
       ],
-      "span": 88.8
+      "span": 139.96886227544908
     }
+  },
+  "photoDerivation": {
+    "method": "largest connected studio-photo foreground, convex projected envelope; not photogrammetry",
+    "chosenSourceId": "lilygo-t-rgb-official-photo-1",
+    "chosenView": 1,
+    "analysis": {
+      "imageSize": [
+        1000,
+        1000
+      ],
+      "analysisScale": 0.8,
+      "cropXYXY": null,
+      "background": "white",
+      "hull": [
+        [
+          314.0,
+          51.0
+        ],
+        [
+          376.0,
+          65.0
+        ],
+        [
+          407.0,
+          83.0
+        ],
+        [
+          433.0,
+          107.0
+        ],
+        [
+          452.0,
+          133.0
+        ],
+        [
+          466.0,
+          164.0
+        ],
+        [
+          474.0,
+          201.0
+        ],
+        [
+          474.0,
+          232.0
+        ],
+        [
+          455.0,
+          295.0
+        ],
+        [
+          439.0,
+          320.0
+        ],
+        [
+          414.0,
+          345.0
+        ],
+        [
+          359.0,
+          375.0
+        ],
+        [
+          299.0,
+          384.0
+        ],
+        [
+          243.0,
+          369.0
+        ],
+        [
+          214.0,
+          353.0
+        ],
+        [
+          185.0,
+          327.0
+        ],
+        [
+          154.0,
+          277.0
+        ],
+        [
+          145.0,
+          244.0
+        ],
+        [
+          143.0,
+          205.0
+        ],
+        [
+          156.0,
+          151.0
+        ],
+        [
+          170.0,
+          125.0
+        ],
+        [
+          199.0,
+          92.0
+        ],
+        [
+          249.0,
+          62.0
+        ],
+        [
+          285.0,
+          52.0
+        ]
+      ],
+      "bounds": [
+        143,
+        51,
+        332,
+        334
+      ],
+      "occupancy": 0.7768423995382728,
+      "color": [
+        61,
+        62,
+        64
+      ],
+      "screen": null,
+      "score": 0.7768423995382728
+    },
+    "manualViewSelection": null,
+    "modelMillimetresPerAnalysisPixel": 0.17964071856287425,
+    "scaleBasis": "debug layout only",
+    "thicknessBasis": "debug spacing only; not recovered from side views",
+    "algorithm": "tools/derive-lilygo-photo-envelopes.py",
+    "independentViews": [
+      {
+        "view": 0,
+        "bounds": [
+          17,
+          50,
+          770,
+          703
+        ],
+        "occupancy": 0.550157026472816
+      },
+      {
+        "view": 1,
+        "bounds": [
+          143,
+          51,
+          332,
+          334
+        ],
+        "occupancy": 0.7768423995382728
+      },
+      {
+        "view": 2,
+        "bounds": [
+          142,
+          204,
+          517,
+          393
+        ],
+        "occupancy": 0.739013490434637
+      }
+    ],
+    "multiViewStatus": "Additional manufacturer views retained for comparison; perspective, depth and hidden topology remain uncalibrated."
   }
 }

@@ -63,7 +63,9 @@ def primitive(spec):
     width,height,depth=spec['sizeMm']; kind=spec.get('kind','box')
     if min(width,height,depth)<=0: raise ValueError('Non-positive geometry size')
     radius=spec.get('radiusMm',min(width,height)*.08 if kind=='rounded-box' else 0)
-    if kind=='cylinder':
+    if kind=='polygon':
+        outline=np.array(spec['outlineMm'],dtype=float)
+    elif kind=='cylinder':
         outline=np.array([[width/2*math.cos(a),height/2*math.sin(a)] for a in np.linspace(0,math.tau,64,endpoint=False)])
     elif radius: outline=rounded_outline(width,height,radius)
     else: outline=np.array([[width/2,height/2],[-width/2,height/2],[-width/2,-height/2],[width/2,-height/2]])
@@ -72,6 +74,10 @@ def primitive(spec):
         inner=spec['openingMm'];outline=rounded_outline(width,height,radius,10)
         hole=rounded_outline(inner[0],inner[1],spec.get('innerRadiusMm',max(.01,radius-(width-inner[0])/2)),10)
     values=extrusion(outline,depth,hole)
+    if spec.get('rotation'):
+        x,y,z=spec['rotation'];cx,sx,cy,sy,cz,sz=math.cos(x),math.sin(x),math.cos(y),math.sin(y),math.cos(z),math.sin(z)
+        r=np.array([[cz,-sz,0],[sz,cz,0],[0,0,1]])@np.array([[cy,0,sy],[0,1,0],[-sy,0,cy]])@np.array([[1,0,0],[0,cx,-sx],[0,sx,cx]])
+        values[:,:3]=values[:,:3]@r.T;values[:,3:]=values[:,3:]@r.T
     values[:,:3]+=np.array(spec.get('centerMm',[0,0,0]))
     return values
 
@@ -80,6 +86,11 @@ def cad_values(folder, specification):
     if digest(archived)!=specification['archiveSha256']: raise ValueError('CAD archive hash mismatch: '+source.name)
     raw=gzip.decompress(archived) if source.suffix=='.gz' else archived
     if digest(raw)!=specification['sha256']: raise ValueError('CAD source hash mismatch: '+source.name)
+    if specification.get('extractProductSuffix'):
+        extraction_spec=importlib.util.spec_from_file_location('retained_step_product_extractor',ROOT/'tools/extract-step-product.py')
+        extractor=importlib.util.module_from_spec(extraction_spec);extraction_spec.loader.exec_module(extractor)
+        raw,extraction=extractor.extract(raw,specification['extractProductSuffix'])
+        if extraction['sha256']!=specification['extraction']['sha256']:raise ValueError('CAD product extraction hash mismatch')
     module_spec=importlib.util.spec_from_file_location('retained_lilygo_cad_exporter',ROOT/'tools/build-lilygo-models.py')
     module=importlib.util.module_from_spec(module_spec);module_spec.loader.exec_module(module)
     with tempfile.TemporaryDirectory(prefix='lilygo-cad-') as temp:
@@ -101,7 +112,7 @@ def build(product_id, output):
     if plan['id']!=product_id:raise ValueError('Plan identity mismatch')
     records=[];buffers=[];offset=0;errors=[]
     items=list(cad_values(folder,plan['cad'])) if plan.get('cad') else []
-    items.extend(({k:v for k,v in part.items() if k not in ['geometry','kind','sizeMm','radiusMm','openingMm','innerRadiusMm','centerMm']},primitive(part))for part in plan.get('parts',[]))
+    items.extend(({k:v for k,v in part.items() if k not in ['geometry','kind','sizeMm','radiusMm','openingMm','innerRadiusMm','centerMm','rotation','outlineMm']},primitive(part))for part in plan.get('parts',[]))
     if len(items)>512:raise ValueError('Too many parts for the browser contract')
     for record,values in items:
         if not np.isfinite(values).all():raise ValueError('Non-finite geometry')
@@ -113,7 +124,9 @@ def build(product_id, output):
     for filename in plan.get('retainedFiles',[]):
         data=(folder/filename).read_bytes();artifacts[filename]=digest(data)
         if out.resolve()!=folder.resolve():shutil.copyfile(folder/filename,out/filename)
-    model={k:plan[k]for k in ['id','dimensions','presentation','derivedParts','referencePhotos','provenance','limitations','reviewViews','debugPreview']if k in plan}
+    model={k:plan[k]for k in ['id','dimensions','presentation','derivedParts','referencePhotos','provenance','limitations','reviewViews','debugPreview','photoDerivation','dimensionChecks','representationScope']if k in plan}
+    if plan.get('cad'):
+        model['sourceTransform']={'matrixRows':plan['cad']['matrixRows'],'scale':1,'sourceUnit':plan['cad'].get('sourceUnit','mm'),'note':'Rigid transform only; supplied assembly placements and native millimetres retained.'}
     model.update(schemaVersion='1',unit='mm',strideFloats=6,binary='geometry.bin',parts=records,artifacts=artifacts)
     write(out/'model.json',model)
     bounds=np.array([r['boundsMm']for r in records]);receipt={'productId':product_id,'modelSha256':digest((out/'model.json').read_bytes()),'geometrySha256':digest(binary),'mode':plan['mode'],'partCount':len(records),'triangleCount':sum(r['vertexCount']//3 for r in records),'maxFloat32ExportErrorMm':max(errors,default=0),'geometryBoundsMm':[bounds[:,0].min(0).tolist(),bounds[:,1].max(0).tolist()]if len(bounds)else None,'exportPassed':max(errors,default=0)<=.05,'physicalValidation':'Not implied by export; see per-plan evidence and limitations.','runtimeValidation':False}
