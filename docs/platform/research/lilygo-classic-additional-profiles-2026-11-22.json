@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-22T08:41:30Z",
+  "checkedAt": "2026-11-22T08:57:57Z",
   "implementation": "esp32/src/board/lilygo_additional.rs",
   "status": "partial board contracts; no factory boot claims",
   "notes": [
@@ -8,19 +8,47 @@
     "Each product ID has a distinct board name and explicit hardware target. Neither software-edition naming nor a similar enclosure establishes firmware interchangeability.",
     "The classic backend accepts only 0 or 4 MiB simulated PSRAM. physicalPsramMB and psramMB intentionally differ where the source declares 2/8 MiB or capacity is unknown.",
     "Two existing cold GPIO/IO_MUX and attach gates now consult uses_gpio_routes; legacy waveform callbacks still work. CPU scheduling and hot instruction paths are unchanged.",
-    "Native tests exercise actual ESP32 bus/register transactions and routes. T-BAO alone additionally executes an authored LX6 SRAM/UART probe. Official full firmware boot, browser firmware execution and physical hardware validation remain unverified."
+    "Native tests exercise actual ESP32 bus/register transactions and routes. T-BAO and the exact SIM7000E listing additionally execute an authored LX6 SRAM/UART probe. Official full firmware boot, browser firmware execution and physical hardware validation remain unverified."
   ],
   "verification": {
     "commands": [
       "cargo test --release -p esp32 --test lilygo_additional",
       "cargo clippy -p esp32 --test lilygo_additional -- -D warnings"
     ],
-    "testCount": 10,
+    "testCount": 11,
     "status": "passed",
     "factoryFirmwareExecuted": false,
     "hardwareTested": false
   },
   "sources": [
+    {
+      "id": "LilyGo-Camera-Series-docs-T_Joranl.md",
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "docs/T_Joranl.md",
+      "gitBlobSha": "571f21d934ef42890f843a7931775cbf8bc07a28",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/docs/T_Joranl.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/docs/T_Joranl.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:53Z",
+      "sha256": "f36d44edc28206e93fb688240716b416ff95cdd471fe6643a180569db33d69a0",
+      "bytes": 1065,
+      "archiveName": "LilyGo-Camera-Series-docs-T_Joranl.md.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "platformio.ini",
+      "id": "LilyGo-Camera-Series-platformio.ini",
+      "gitBlobSha": "0356fb1e23ff5185dadfe9c803aef998f6ae5015",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:30Z",
+      "sha256": "417e8ffc88950cf7833b78e8aacd55e5b3a2e8be86122dc9c6e5a13ff299dd8f",
+      "bytes": 3776,
+      "archiveName": "LilyGo-Camera-Series-platformio.ini.raw"
+    },
     {
       "repository": "Xinyuan-LilyGO/LilyGo-W5500-Lite",
       "pinnedGitRevision": "fb33928c687ba198d512d9cb89a58615583b7412",
@@ -289,6 +317,25 @@
       "title": "Xinyuan-LilyGO/LilyGo-K210-Script/script/face_tracking/main.py"
     },
     {
+      "id": "classic-lilygo-lora-series-0a8c4c16eaf6",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "assets/image/lora32_v1.0_pinmap.jpg",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "e8cf0a2df2a117834af5ceb8512edfdf933498d6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/assets/image/lora32_v1.0_pinmap.jpg",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/assets/image/lora32_v1.0_pinmap.jpg",
+      "fetchedAt": "2026-11-22T08:39:10Z",
+      "status": "fetched",
+      "mediaType": "image/jpeg",
+      "bytes": 432569,
+      "sha256": "55359023f274cbef241de0a72dee8e98931ff11f0b0e9dca39959e8c8fd4f770",
+      "archiveName": "classic-lilygo-lora-series-0a8c4c16eaf6.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-lora-series-0a8c4c16eaf6.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/assets/image/lora32_v1.0_pinmap.jpg"
+    },
+    {
       "id": "classic-lilygo-lora-series-1a6868bb9cb8",
       "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
       "path": "docs/en/t3_v161_sx1276/t3_v161_sx1276_hw.md",
@@ -382,6 +429,25 @@
       "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-modem-series-10e19a63cd92.raw",
       "kind": "manufacturer-source",
       "title": "LilyGo-Modem-Series/docs/en/esp32/a7670-esp32/README.MD"
+    },
+    {
+      "id": "classic-lilygo-modem-series-293b17f205af",
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "path": "docs/en/esp32/t-internet-com-esp32/README.MD",
+      "revision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "9a4a5d9d94f47974d7d3a1ac49052dfc99df33c3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/t-internet-com-esp32/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/t-internet-com-esp32/README.MD",
+      "fetchedAt": "2026-11-22T08:06:27Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 11512,
+      "sha256": "2c82e8e40ad08d41a7acf33ea2672dd44b47ab7ed400a8b06712bce8f91038e9",
+      "archiveName": "classic-lilygo-modem-series-293b17f205af.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-modem-series-293b17f205af.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-Modem-Series/docs/en/esp32/t-internet-com-esp32/README.MD"
     },
     {
       "id": "classic-lilygo-modem-series-8144cb1ccb1f",
@@ -707,6 +773,25 @@
       "title": "LilyGo-T-Relay/examples/T-Relay-8-ESP32/simple/Simple.ino"
     },
     {
+      "id": "classic-lilygo-t-sim7000g-01e6d9ffed05",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-SIM7000G",
+      "path": "README.MD",
+      "revision": "3e506bd5cfc1871877fa42f6534a6dcd5e376b8e",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "41558d7fd3c841bb17ec2ada379d73eb47da1d0b",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-SIM7000G/3e506bd5cfc1871877fa42f6534a6dcd5e376b8e/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-SIM7000G/3e506bd5cfc1871877fa42f6534a6dcd5e376b8e/README.MD",
+      "fetchedAt": "2026-11-22T08:39:09Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 9571,
+      "sha256": "02696778aee0276b779894430114753dbb00406de23a6a23c10b0847d2868743",
+      "archiveName": "classic-lilygo-t-sim7000g-01e6d9ffed05.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t-sim7000g-01e6d9ffed05.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/LilyGO-T-SIM7000G/README.MD"
+    },
+    {
       "id": "classic-lilygo-ttv-01e6d9ffed05",
       "repository": "Xinyuan-LilyGO/LilyGo-TTV",
       "path": "README.MD",
@@ -876,6 +961,44 @@
       "sourceCachePath": "target/lilygo-classic-sources/classic-t-encoder-b33563055168.raw",
       "kind": "manufacturer-source",
       "title": "T-Encoder/README.md"
+    },
+    {
+      "id": "classic-t-internet-com-11027940886c",
+      "repository": "Xinyuan-LilyGO/T-Internet-COM",
+      "path": "example/Arduino/ATdebug/utilities.h",
+      "revision": "f53f1c54aac202e83bf326d8a497495d75889412",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "2631c2acc614344d2f1478db6dee0d4bd97e3dbd",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Internet-COM/f53f1c54aac202e83bf326d8a497495d75889412/example/Arduino/ATdebug/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Internet-COM/f53f1c54aac202e83bf326d8a497495d75889412/example/Arduino/ATdebug/utilities.h",
+      "fetchedAt": "2026-11-22T08:06:27Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 466,
+      "sha256": "076ab68adf815c042066976f1e6f12ecedcb67a12f706b97601e1d84c17d31d9",
+      "archiveName": "classic-t-internet-com-11027940886c.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-internet-com-11027940886c.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Internet-COM/example/Arduino/ATdebug/utilities.h"
+    },
+    {
+      "id": "classic-t-internet-com-163fdc5e4ce2",
+      "repository": "Xinyuan-LilyGO/T-Internet-COM",
+      "path": "example/PlatformIO/FactoryTest/src/main.cpp",
+      "revision": "f53f1c54aac202e83bf326d8a497495d75889412",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "ac0ff854fc9ae6ba204e364061a7778f27ab950d",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Internet-COM/f53f1c54aac202e83bf326d8a497495d75889412/example/PlatformIO/FactoryTest/src/main.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Internet-COM/f53f1c54aac202e83bf326d8a497495d75889412/example/PlatformIO/FactoryTest/src/main.cpp",
+      "fetchedAt": "2026-11-22T08:39:09Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 8472,
+      "sha256": "913a9e4854241cbae873ccf256af2a02fe3f61ac7dd1f7378a1bcce8fad8d4bb",
+      "archiveName": "classic-t-internet-com-163fdc5e4ce2.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-internet-com-163fdc5e4ce2.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/T-Internet-COM/example/PlatformIO/FactoryTest/src/main.cpp"
     },
     {
       "id": "classic-t-lora-dual-5a831ea67cf5",
@@ -1106,6 +1229,63 @@
       "title": "T-Weigh/example/Lora-Weights/platformio.ini"
     },
     {
+      "id": "classic-t96-oled-ssd1306-b33563055168",
+      "repository": "Xinyuan-LilyGO/T96-OLED-SSD1306",
+      "path": "README.md",
+      "revision": "5796acc566dbc4b9e9df6c62add1efc58dcb04f0",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "b341113192fffd2ec972c94afbd25e53de264760",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T96-OLED-SSD1306/5796acc566dbc4b9e9df6c62add1efc58dcb04f0/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T96-OLED-SSD1306/5796acc566dbc4b9e9df6c62add1efc58dcb04f0/README.md",
+      "fetchedAt": "2026-11-22T08:06:27Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 35,
+      "sha256": "7fc987891591cab845def5855b40219e4014aea1ec366f133fc93512b56ad04a",
+      "archiveName": "classic-t96-oled-ssd1306-b33563055168.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t96-oled-ssd1306-b33563055168.raw",
+      "kind": "manufacturer-source",
+      "title": "T96-OLED-SSD1306/README.md"
+    },
+    {
+      "id": "classic-t96-oled-ssd1306-bbbcb41aa536",
+      "repository": "Xinyuan-LilyGO/T96-OLED-SSD1306",
+      "path": "schematic.pdf",
+      "revision": "5796acc566dbc4b9e9df6c62add1efc58dcb04f0",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "1cd65012db2aec18a341142d52ccf46baa2f77a7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T96-OLED-SSD1306/5796acc566dbc4b9e9df6c62add1efc58dcb04f0/schematic.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T96-OLED-SSD1306/5796acc566dbc4b9e9df6c62add1efc58dcb04f0/schematic.pdf",
+      "fetchedAt": "2026-11-22T08:09:47Z",
+      "status": "fetched",
+      "mediaType": "application/octet-stream",
+      "bytes": 117774,
+      "sha256": "e82e0bab144d8c358443f9e4356d4c7dd270c7d1c8c6f0d8c268247ce9632072",
+      "archiveName": "classic-t96-oled-ssd1306-bbbcb41aa536.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t96-oled-ssd1306-bbbcb41aa536.raw",
+      "kind": "manufacturer-source",
+      "title": "T96-OLED-SSD1306/schematic.pdf"
+    },
+    {
+      "id": "classic-t96-oled-ssd1306-ff32d9e1708f",
+      "repository": "Xinyuan-LilyGO/T96-OLED-SSD1306",
+      "path": "T96.jpg",
+      "revision": "5796acc566dbc4b9e9df6c62add1efc58dcb04f0",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "305d0a9f0feefdb1d3a522aeba37e6b63fa85be1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T96-OLED-SSD1306/5796acc566dbc4b9e9df6c62add1efc58dcb04f0/T96.jpg",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T96-OLED-SSD1306/5796acc566dbc4b9e9df6c62add1efc58dcb04f0/T96.jpg",
+      "fetchedAt": "2026-11-22T08:35:23Z",
+      "status": "fetched",
+      "mediaType": "image/jpeg",
+      "bytes": 6396516,
+      "sha256": "35c3ec5374a571f96a6ef5855bd8c9208cce7d1779ee98870a86218717c13269",
+      "archiveName": "classic-t96-oled-ssd1306-ff32d9e1708f.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t96-oled-ssd1306-ff32d9e1708f.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/T96-OLED-SSD1306/T96.jpg"
+    },
+    {
       "id": "classic-tbeam-helium-mapper-18b7c19417a4",
       "repository": "Xinyuan-LilyGO/tbeam-helium-mapper",
       "path": "main/main.cpp",
@@ -1180,6 +1360,44 @@
       "sourceCachePath": "target/lilygo-classic-sources/classic-tbeam-helium-mapper-b33563055168.raw",
       "kind": "manufacturer-source",
       "title": "tbeam-helium-mapper/README.md"
+    },
+    {
+      "id": "classic-ttgo-t-controllerv2-2-96a37d86a716",
+      "repository": "LilyGO/TTGO-T-ControllerV2.2",
+      "path": "T18_V2.2/adc.ino",
+      "revision": "8eea6e894f41a67affff78faa3b3cd1071bbcd96",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "96fb86b7a20c74601741c1263955db25cf69b5f9",
+      "url": "https://raw.githubusercontent.com/LilyGO/TTGO-T-ControllerV2.2/8eea6e894f41a67affff78faa3b3cd1071bbcd96/T18_V2.2/adc.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/LilyGO/TTGO-T-ControllerV2.2/8eea6e894f41a67affff78faa3b3cd1071bbcd96/T18_V2.2/adc.ino",
+      "fetchedAt": "2026-11-22T08:40:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 4463,
+      "sha256": "50f90bd16951f4c3a3d13c1e4e660d6feb32e843e8b85c91c42a5c0fdc89d383",
+      "archiveName": "classic-ttgo-t-controllerv2-2-96a37d86a716.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-ttgo-t-controllerv2-2-96a37d86a716.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO/TTGO-T-ControllerV2.2/T18_V2.2/adc.ino"
+    },
+    {
+      "id": "classic-ttgo-t-controllerv2-2-b33563055168",
+      "repository": "LilyGO/TTGO-T-ControllerV2.2",
+      "path": "README.md",
+      "revision": "8eea6e894f41a67affff78faa3b3cd1071bbcd96",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "6218e9b1b3fa0279aeec487f0b860b9602519d81",
+      "url": "https://raw.githubusercontent.com/LilyGO/TTGO-T-ControllerV2.2/8eea6e894f41a67affff78faa3b3cd1071bbcd96/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/LilyGO/TTGO-T-ControllerV2.2/8eea6e894f41a67affff78faa3b3cd1071bbcd96/README.md",
+      "fetchedAt": "2026-11-22T08:40:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 2218,
+      "sha256": "085be7031bddf5c244994b5b0571cc4f53d4d1b20aae72ab16c8111492e44cc3",
+      "archiveName": "classic-ttgo-t-controllerv2-2-b33563055168.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-ttgo-t-controllerv2-2-b33563055168.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO/TTGO-T-ControllerV2.2/README.md"
     },
     {
       "id": "classic-ttgo-t-display-01e6d9ffed05",
@@ -2558,6 +2776,87 @@
       }
     },
     {
+      "productId": "lilygo-t-sim7600e",
+      "boardId": "lilygo-t-sim7600e",
+      "name": "LILYGO T-SIM7000E",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "Exact t-sim7600e storefront body/package identifies SIM7000E, not SIM7600E",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {},
+      "controls": [],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": false,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "bao_coprocessor_executes_lx6_sram_and_uart_without_claiming_the_k210_display"
+        ],
+        "sourceChipVerified": true,
+        "nativeGuestProbeScope": "Authored LX6 SRAM store/load and UART0 output only; no K210 or inter-CPU protocol."
+      },
+      "scope": "根据该商品正文纠正为 SIM7000E 搭配经典 ESP32，已验证独立 LX6 SRAM 与 UART0 诊断程序。准确板载 GPIO 与蜂窝功能尚未确认，不沿用 SIM7600 的接线。",
+      "scopeEn": "The misleading storefront handle actually describes SIM7000E with classic ESP32. An authored LX6 SRAM/UART0 guest probe runs; exact board GPIO and modem functions remain unresolved.",
+      "sourceIds": [
+        "classic-lilygo-t-sim7000g-01e6d9ffed05",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "The storefront explicitly calls its T-SIM7000G repository reference only. GPIO/LED/button and modem pin identity is not inferred from the sibling G variant.",
+        "SIM7000E AT/LTE/GSM/GNSS, solar charging, TF SPI pins and factory boot are unmodeled.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2022-11-22",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-sim7600e",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 88,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "official-wiki-sim7600e"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "correctedIdentity": {
+        "handle": "t-sim7600e",
+        "actualModem": "SIM7000E",
+        "basis": "Exact official storefront specification, package contents and photographs"
+      },
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": false,
+        "transportSupported": false,
+        "pins": {},
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "notes": "Physical TF socket is explicit; exact board SPI wiring remains unresolved."
+      }
+    },
+    {
       "productId": "lilygo-t7-v1-3-mini-32-esp32",
       "boardId": "lilygo-t7-v1-3-mini-32-esp32",
       "name": "LILYGO T7 V1.3 MINI 32 ESP32",
@@ -3112,6 +3411,324 @@
       }
     },
     {
+      "productId": "lilygo-t-lion",
+      "boardId": "lilygo-t-lion",
+      "name": "LILYGO T-Lion",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "TTGO-T-Controller V2.2 / T18_V2.2 adc.ino; renamed official TTGO-T-Lion-T18V2.2 repository",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SSD1306",
+        "interface": "i2c",
+        "type": "OLED",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+        "implemented": true,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "physicalDisplay": true,
+      "pins": {
+        "display": {
+          "sda": 21,
+          "scl": 22,
+          "address": 60,
+          "reset": null
+        }
+      },
+      "controls": [
+        {
+          "id": "up",
+          "name": "上",
+          "type": "button",
+          "pin": 32,
+          "activeLow": true
+        },
+        {
+          "id": "down",
+          "name": "下",
+          "type": "button",
+          "pin": 33,
+          "activeLow": true
+        },
+        {
+          "id": "center",
+          "name": "中",
+          "type": "button",
+          "pin": 34,
+          "activeLow": true
+        },
+        {
+          "id": "left",
+          "name": "左",
+          "type": "button",
+          "pin": 36,
+          "activeLow": true
+        },
+        {
+          "id": "right",
+          "name": "右",
+          "type": "button",
+          "pin": 39,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_i2c_windows_go_through_both_classic_controllers_and_real_routes",
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已纠正 T-Lion 为经典 ESP32-WROVER，接入 SSD1306 显示与五向独立低有效按键。GPIO35 是电池 ADC，不作为按键梯形网络。",
+      "scopeEn": "Corrected classic ESP32-WROVER T-Lion/T-Controller: SSD1306 display and five independent active-low switches. ADC35 is battery sensing, not a key ladder.",
+      "sourceIds": [
+        "classic-ttgo-t-controllerv2-2-96a37d86a716",
+        "classic-ttgo-t-controllerv2-2-b33563055168",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "The official repository uses SSD1306Wire default geometry and the 0.96-inch storefront glass is represented with the selected 128x64 SSD1306 canvas. This is driver-default evidence rather than a separate panel-resolution label.",
+        "18650 battery, ADC35 voltage, charging and optional modules are unmodeled.",
+        "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2022-10-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-lion",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 100,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "module": "ESP32-WROVER",
+      "correctedChip": {
+        "from": "ESP32-S3",
+        "to": "ESP32-WROVER",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "classic-ttgo-t-controllerv2-2-96a37d86a716"
+        ]
+      }
+    },
+    {
+      "productId": "lilygo-t-journal",
+      "boardId": "lilygo-t-journal",
+      "name": "LILYGO T-Journal",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": null,
+      "psramMB": 0,
+      "psramMbBasis": "unknown-physical-capacity",
+      "hardwareRevision": "Camera-Series t-camera-journal esp32dev target / docs/T_Joranl.md exact pin table",
+      "display": {
+        "width": 128,
+        "height": 32,
+        "controller": "SSD1306",
+        "interface": "i2c",
+        "type": "OLED",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+        "implemented": true,
+        "physicalTouch": false,
+        "touchImplemented": false,
+        "diagonalInch": 0.91
+      },
+      "physicalDisplay": true,
+      "pins": {
+        "display": {
+          "sda": 14,
+          "scl": 13,
+          "address": 60,
+          "reset": null
+        }
+      },
+      "controls": [
+        {
+          "id": "user",
+          "name": "用户键",
+          "type": "button",
+          "pin": 32,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "journal_has_a_128_by_32_glass_and_its_own_sda_scl_pins",
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已纠正 T-Journal 为经典 ESP32-PICO-D4，接入 128×32 SSD1306 的 SDA14/SCL13 与 GPIO32 用户键。OV2640 摄像头和舵机尚未模拟。",
+      "scopeEn": "Corrected classic ESP32-PICO-D4 Journal: native 128x32 SSD1306 on SDA14/SCL13 and GPIO32 input. Camera and servo unmodeled.",
+      "sourceIds": [
+        "LilyGo-Camera-Series-docs-T_Joranl.md",
+        "LilyGo-Camera-Series-platformio.ini",
+        "classic-esp32-pico-d4-datasheet",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "The camera SCCB and pixel buses, OV2640 registers, image data, servo PWM/load and battery supply are unmodeled.",
+        "Store generic QSPI capacity wording is not used as memory capacity evidence. PICO-D4 internal Flash4MiB is independently sourced; external PSRAM fitting remains unknown.",
+        "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+        "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+      ],
+      "chronology": {
+        "date": "2022-10-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-journal",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 101,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "module": "ESP32-PICO-D4",
+      "correctedChip": {
+        "from": "ESP32-S3",
+        "to": "ESP32-PICO-D4",
+        "sourceIds": [
+          "LilyGo-Camera-Series-docs-T_Joranl.md",
+          "LilyGo-Camera-Series-platformio.ini",
+          "official-store-shopify-1"
+        ]
+      }
+    },
+    {
+      "productId": "lilygo-esp32-oled-v3-0",
+      "boardId": "lilygo-esp32-oled-v3-0",
+      "name": "LILYGO ESP32 OLED V3.0",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 0,
+      "psramMB": 0,
+      "psramMbBasis": "physical-capacity",
+      "hardwareRevision": "T96_V1.1 official pinmap and ESP32-D0WDQ6 schematic associated with the exact ESP32 OLED V3.0 listing",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SSD1306",
+        "interface": "i2c",
+        "type": "OLED",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+        "implemented": true,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "physicalDisplay": true,
+      "pins": {
+        "display": {
+          "sda": 21,
+          "scl": 22,
+          "address": 60,
+          "reset": null
+        }
+      },
+      "controls": [],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_i2c_windows_go_through_both_classic_controllers_and_real_routes"
+        ]
+      },
+      "scope": "已接入 T96/ESP32 OLED V3.0 的 SSD1306 SDA21/SCL22。128×64 是所选驱动画布，照片与 0.96 英寸外观相符，但没有把未印出的面板分辨率当成独立实物测量。",
+      "scopeEn": "T96/ESP32 OLED V3.0 source-backed SSD1306 SDA21/SCL22. 128x64 is the selected controller canvas, consistent with the photographed 0.96-inch 2:1 glass; no separate physical pixel measurement is claimed.",
+      "sourceIds": [
+        "classic-t96-oled-ssd1306-bbbcb41aa536",
+        "classic-t96-oled-ssd1306-ff32d9e1708f",
+        "classic-t96-oled-ssd1306-b33563055168",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "The schematic identifies W25Q32 4MiB Flash and no fitted PSRAM. The OLED reset is an RC net rather than a sourced GPIO reset.",
+        "Controller identity and wire pins are explicit; selected 128x64 canvas is medium-confidence photo/controller inference. No physical pixel-count measurement or factory boot is claimed.",
+        "No GPIO BOOT button is asserted from an unlabeled reset button. Battery/charging and expansion-header devices are unmodeled.",
+        "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled."
+      ],
+      "chronology": {
+        "date": "2022-10-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/esp32-oled-v3-0",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 103,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "displayEvidence": {
+        "confidence": "medium",
+        "basis": "SSD1306 explicit in manufacturer schematic/pinmap; 128x64 default canvas and photographed 2:1 glass; no independent printed resolution"
+      }
+    },
+    {
       "productId": "lilygo-t-sim7600e-l1",
       "boardId": "lilygo-t-sim7600e-l1",
       "name": "LILYGO T-SIM7600E-L1",
@@ -3473,6 +4090,174 @@
         "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
       },
       "module": "ESP32-PICO-V3-02"
+    },
+    {
+      "productId": "lilygo-t-internet-com",
+      "boardId": "lilygo-t-internet-com",
+      "name": "LILYGO T-Internet-COM",
+      "chip": "esp32",
+      "flashMB": 16,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "T-Internet-COM PlatformIO FactoryTest main.cpp / manufacturer16MiB product table",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {
+        "rgb": {
+          "data": 12,
+          "count": 1,
+          "order": "GRB",
+          "protocol": "WS2812 800 kHz"
+        }
+      },
+      "controls": [],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "real_rmt_symbols_reach_only_each_selected_rgb_pin"
+        ]
+      },
+      "scope": "已接入 T-Internet-COM 的 GPIO12 单颗 WS2812，采用官方产品表的 16 MiB Flash / 8 MiB 实物 PSRAM。以太网、蜂窝和 TF 传输尚未实现。",
+      "scopeEn": "T-Internet-COM exact factory GPIO12 one-pixel GRB WS2812. Manufacturer product table16MiB Flash/8MiB physical PSRAM; Ethernet/modem/SD unmodeled.",
+      "sourceIds": [
+        "classic-t-internet-com-163fdc5e4ce2",
+        "classic-t-internet-com-11027940886c",
+        "classic-lilygo-modem-series-293b17f205af",
+        "classic-lilygo-t-eth-series-b33563055168",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "Generic Arduino quick-start Flash4MiB conflicts with the exact product table16MiB; the explicit product table is selected.",
+        "LAN8720 RMII/MDIO, LTE modem, supply/charging and TF-card SPI transport are unmodeled. RST+BOOT labels are present but no uncertain pin is invented as a button.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2022-08-24",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-internet-com",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 113,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": false,
+        "transportSupported": false,
+        "pins": {
+          "sclk": 14,
+          "mosi": 15,
+          "miso": 2,
+          "cs": 13
+        },
+        "sourceIds": [
+          "classic-t-internet-com-11027940886c"
+        ]
+      }
+    },
+    {
+      "productId": "lilygo-lora-v1-0-kit",
+      "boardId": "lilygo-lora-v1-0-kit",
+      "name": "LILYGO LoRa32 V1.0 Kit/ Sold Out",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": null,
+      "psramMB": 0,
+      "psramMbBasis": "unknown-physical-capacity",
+      "hardwareRevision": "Manufacturer LoRa32 V1.0 pinmap linked to exact LoRa V1.0 Kit listing",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SSD1306",
+        "interface": "i2c",
+        "type": "OLED",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+        "implemented": true,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "physicalDisplay": true,
+      "pins": {
+        "display": {
+          "sda": 21,
+          "scl": 22,
+          "address": 60,
+          "reset": null
+        }
+      },
+      "controls": [],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_i2c_windows_go_through_both_classic_controllers_and_real_routes"
+        ]
+      },
+      "scope": "已接入 LoRa V1.0 Kit 官方引脚图中的 SSD1306 128×64（SDA21/SCL22）。未沿用其他旧 LoRa 板的 SDA4/SCL15 接线。",
+      "scopeEn": "Exact LoRa V1.0 Kit official pinmap: SSD1306 128x64 SDA21/SCL22, distinct from other old LoRa boards with SDA4/SCL15.",
+      "sourceIds": [
+        "classic-lilygo-lora-series-0a8c4c16eaf6",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "SX1276 radio and full kit firmware are unmodeled. Physical PSRAM capacity remains unknown.",
+        "Store names programmable blue LED25 but polarity is not independently verified; no LED endpoint is guessed. Only a reset button is visible, so no BOOT GPIO is invented.",
+        "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+        "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+      ],
+      "chronology": {
+        "date": "2022-08-24",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/lora-v1-0-kit",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 114,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      }
     },
     {
       "productId": "lilygo-t-sim7070g",

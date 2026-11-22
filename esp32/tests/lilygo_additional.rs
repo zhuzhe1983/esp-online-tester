@@ -44,7 +44,7 @@ fn relay_coils_and_indicators_follow_mux_and_enable_not_only_latches(){
 
 #[test]
 fn real_rmt_symbols_reach_only_each_selected_rgb_pin(){
-    for(id,pin,count)in[("lilygo-t-lora-dual",5,1),("lilygo-t-can485",4,1),("lilygo-t-encoder-esp32",25,2)]{
+    for(id,pin,count)in[("lilygo-t-lora-dual",5,1),("lilygo-t-can485",4,1),("lilygo-t-encoder-esp32",25,2),("lilygo-t-internet-com",12,1)]{
         let mut b=board(id);let grb=[0x22,0x44,0x66].repeat(count);rmt(&mut b,22,&grb);assert_eq!(b.board.leds().unwrap().1,0);
         // Disconnect the old matrix output before routing the same channel again.
         put(&mut b,GPIO+0x530+4*22,256);rmt(&mut b,pin,&grb);assert_eq!(b.board.leds().unwrap().0,vec![[0x44,0x22,0x66];count]);
@@ -54,7 +54,7 @@ fn real_rmt_symbols_reach_only_each_selected_rgb_pin(){
 
 #[test]
 fn oled_i2c_windows_go_through_both_classic_controllers_and_real_routes(){
-    for id in["lilygo-t-beam-meshtastic","lilygo-t-beam-softrf","lilygo-helium-t-beam","lilygo-lora-v1-3","lilygo-lora3","lilygo-t-lite-w5500","lilygo-t3-tcxo"]{
+    for id in["lilygo-t-beam-meshtastic","lilygo-t-beam-softrf","lilygo-helium-t-beam","lilygo-lora-v1-3","lilygo-lora3","lilygo-t-lite-w5500","lilygo-t3-tcxo","lilygo-t-lion","lilygo-esp32-oled-v3-0","lilygo-lora-v1-0-kit"]{
         let mut b=board(id);if id=="lilygo-t3-tcxo"{output(&mut b,4,true);}
         i2c_route(&mut b,0,21,22);assert_eq!(i2c(&mut b,0,0x3c,&[0,0xaf,0xa0,0xc0,0x20,0,0x21,1,1,0x22,0,0])&INT_NACK,0);
         assert_eq!(i2c(&mut b,0,0x3c,&[0x40,4])&INT_NACK,0);let(w,h,pixels,version)=b.board.display().unwrap();assert_eq!((w,h),(128,64));assert_eq!(pixels[2*128+1],0xffff);assert_eq!(pixels.iter().filter(|p|**p!=0).count(),1);
@@ -112,7 +112,7 @@ fn independent_classic_revisions_keep_their_button_and_led_polarities(){
         let mut b=board(id);assert_eq!(b.board.leds().unwrap().0,[[0;3]]);output(&mut b,pin,active);assert_eq!(b.board.leds().unwrap().0,[color]);
         mux(&mut b,pin,3);assert_eq!(b.board.leds().unwrap().0,[[0;3]]);output(&mut b,pin,!active);assert_eq!(b.board.leds().unwrap().0,[[0;3]]);
     }
-    for(id,name,pin)in[("lilygo-t-poe-pro","boot",0),("lilygo-t-a7608e-h","boot",0),("lilygo-t-sim-a7670e","boot",0),("lilygo-t-weigh","boot",0),("lilygo-t7-v1-3-mini-32-esp32","boot",0),("lilygo-t-watch-2021","button-2",35),("lilygo-t-watch-2021","button-3",34),("lilygo-t-higrow","user",35)]{
+    for(id,name,pin)in[("lilygo-t-poe-pro","boot",0),("lilygo-t-a7608e-h","boot",0),("lilygo-t-sim-a7670e","boot",0),("lilygo-t-weigh","boot",0),("lilygo-t7-v1-3-mini-32-esp32","boot",0),("lilygo-t-watch-2021","button-2",35),("lilygo-t-watch-2021","button-3",34),("lilygo-t-higrow","user",35),("lilygo-t-lion","up",32),("lilygo-t-lion","down",33),("lilygo-t-lion","center",34),("lilygo-t-lion","left",36),("lilygo-t-lion","right",39),("lilygo-t-journal","user",32)]{
         let mut b=board(id);assert_eq!(b.board.named_pin(name),Some(pin));mux(&mut b,pin,2);let reg=GPIO+if pin<32{0x3c}else{0x40};let mask=1<<(pin%32);assert_ne!(b.read32(reg).unwrap()&mask,0);
         esp_soc::SocBus::gpio_set_input(&mut b,pin,false);assert_eq!(b.read32(reg).unwrap()&mask,0);esp_soc::SocBus::gpio_set_input(&mut b,pin,true);assert_ne!(b.read32(reg).unwrap()&mask,0);
     }
@@ -157,10 +157,18 @@ fn transparent_tv_ssd1309_receives_software_and_hardware_spi_with_real_power_gat
 fn bao_coprocessor_executes_lx6_sram_and_uart_without_claiming_the_k210_display(){
     use emu_core::Core;
     const IRAM:u32=0x4008_0000;
-    let mut m=esp32::machine([0;6],16<<20);m.bus.board=additional::make_board("lilygo-t-bao").unwrap();m.bus.attach_board_devices();m.console.capture=true;
+    for id in["lilygo-t-bao","lilygo-t-sim7600e"] {
+    let mut m=esp32::machine([0;6],16<<20);m.bus.board=additional::make_board(id).unwrap();m.bus.attach_board_devices();m.console.capture=true;
     // Independent authored S32I / L32I instructions followed by a local loop.
     m.bus.load_bytes(IRAM,&[0x22,0x63,0,0x06,0xff,0xff,0,0,0x22,0x23,0,0x06,0xff,0xff]).unwrap();m.cores[0].ps=0;m.cores[0].set_jit(false);
     for(address,value)in[(0x3ffb_1000,0x5372_614d),(0x3ff4_0000,u32::from(b'K'))]{m.cores[0].pc=IRAM;m.cores[0].set_ar(2,value);m.cores[0].set_ar(3,address);assert!(matches!(m.run(64),esp32::Stop::MaxInsns));}
     m.cores[0].pc=IRAM+8;m.cores[0].set_ar(3,0x3ffb_1000);assert!(matches!(m.run(64),esp32::Stop::MaxInsns));assert_eq!(m.cores[0].get_ar(2),0x5372_614d);m.drain_console();assert_eq!(m.console.all,b"K");
-    assert!(m.bus.board.display().is_none());assert!(m.bus.board.i2c_devices().is_empty());assert!(m.bus.board.leds().is_none());
+    assert!(m.bus.board.display().is_none());assert!(m.bus.board.i2c_devices().is_empty());assert!(m.bus.board.leds().is_none());}
+}
+
+#[test]
+fn journal_has_a_128_by_32_glass_and_its_own_sda_scl_pins(){
+    let mut b=board("lilygo-t-journal");i2c_route(&mut b,0,21,22);assert_ne!(i2c(&mut b,0,0x3c,&[0,0xaf])&INT_NACK,0);
+    i2c_route(&mut b,0,14,13);assert_eq!(i2c(&mut b,0,0x3c,&[0,0xaf,0xa8,31,0x20,0,0x21,1,1,0x22,3,4])&INT_NACK,0);assert_eq!(i2c(&mut b,0,0x3c,&[0x40,128,255])&INT_NACK,0);
+    let(w,h,p,_)=b.board.display().unwrap();assert_eq!((w,h,p.len()),(128,32,4096));assert_eq!(p[31*128+1],0xffff);assert_eq!(p.iter().filter(|v|**v!=0).count(),1,"RAM beyond the 32-row glass is not visible");
 }

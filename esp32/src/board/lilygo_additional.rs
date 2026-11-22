@@ -9,7 +9,7 @@ use esp_soc::devices::{DcsPanel,Ws2812Chain,i2c_bitbang::I2cBitBang,oled_mono::{
 use esp_soc::pins::PinRoutes;
 
 #[derive(Clone,Copy)]
-struct Oled {pins:(u8,u8),reset:Option<u8>,spi:Option<OledSpi>}
+struct Oled {pins:(u8,u8),reset:Option<u8>,spi:Option<OledSpi>,height:u16}
 #[derive(Clone,Copy)]
 struct OledSpi {wires:[u8;3],dc:u8,enable:[u8;2]}
 #[derive(Default)]
@@ -32,7 +32,7 @@ struct Profile {
     indicators:&'static [(u8,bool,[u8;3])],relays:&'static [u8],
 }
 const EMPTY:Profile=Profile{name:"",buttons:&[],encoder:None,oled:None,lcd:None,rgb:None,indicators:&[],relays:&[]};
-const OLED:Oled=Oled{pins:(21,22),reset:None,spi:None};
+const OLED:Oled=Oled{pins:(21,22),reset:None,spi:None,height:64};
 const BOOT:&[(&str,u8)]=&[("boot",0)];
 const BEAM:Profile=Profile{name:"lilygo-t-beam-meshtastic",buttons:&[("user",38)],oled:Some(OLED),..EMPTY};
 const DUAL:Profile=Profile{name:"lilygo-t-lora-dual",buttons:BOOT,rgb:Some((5,1)),..EMPTY};
@@ -64,7 +64,13 @@ const HIGROW:Profile=Profile{name:"lilygo-t-higrow",buttons:&[("boot",0),("user"
 const SIM7070:Profile=Profile{name:"lilygo-t-sim7070g",indicators:&[(12,false,[0,0,255])],..EMPTY};
 const SIM7000:Profile=Profile{name:"lilygo-t-sim7000g",..SIM7070};
 const TCALL:Profile=Profile{name:"lilygo-t-call-v1-4",indicators:&[(13,true,[0,0,255])],..EMPTY};
-const PROFILES:&[&Profile]=&[&BEAM,&DUAL,&TCXO,&BAO,&LORA13,&TTV,&POE,&SOFTRF,&HELIUM,&KEYBOARD,&A7608,&A7670,&CAN485,&T7,&WEIGH,&WATCH2021,&PCIE,&RELAY8,&W5500,&SIM7600EL1,&SIM7600,&HIGROW,&ENCODER,&SIM7070,&RELAY4,&SIM7000,&TCALL,&LORA3];
+const SIM7000E:Profile=Profile{name:"lilygo-t-sim7600e",..EMPTY};
+const LION:Profile=Profile{name:"lilygo-t-lion",oled:Some(OLED),buttons:&[("up",32),("down",33),("center",34),("left",36),("right",39)],..EMPTY};
+const JOURNAL:Profile=Profile{name:"lilygo-t-journal",oled:Some(Oled{pins:(14,13),height:32,..OLED}),buttons:&[("user",32)],..EMPTY};
+const T96:Profile=Profile{name:"lilygo-esp32-oled-v3-0",oled:Some(OLED),..EMPTY};
+const INTERNET:Profile=Profile{name:"lilygo-t-internet-com",rgb:Some((12,1)),..EMPTY};
+const LORA10:Profile=Profile{name:"lilygo-lora-v1-0-kit",oled:Some(OLED),..EMPTY};
+const PROFILES:&[&Profile]=&[&BEAM,&DUAL,&TCXO,&BAO,&LORA13,&TTV,&POE,&SOFTRF,&HELIUM,&KEYBOARD,&A7608,&A7670,&CAN485,&SIM7000E,&T7,&WEIGH,&WATCH2021,&PCIE,&RELAY8,&W5500,&LION,&JOURNAL,&T96,&SIM7600EL1,&SIM7600,&HIGROW,&ENCODER,&INTERNET,&LORA10,&SIM7070,&RELAY4,&SIM7000,&TCALL,&LORA3];
 
 pub fn make_board(name:&str)->Option<Board> {PROFILES.iter().find(|p|p.name==name).map(|&p|Box::new(LilygoClassic::new(p)) as Board)}
 struct LilygoClassic {
@@ -75,7 +81,7 @@ struct LilygoClassic {
 }
 impl LilygoClassic {
     fn new(profile:&'static Profile)->Self {
-        Self{profile,oled:profile.oled.map(|w|Arc::new(Mutex::new(OledMono::new(if w.spi.is_some(){OledKind::Ssd1309}else{OledKind::Ssd1306},128,64,0)))),oled_shift:OledShift::default(),i2c:I2cBitBang::new(),levels:[true;2],edges:Vec::new(),panel:profile.lcd.map(|w|if w.round{DcsPanel::new(240,240)}else{DcsPanel::st7789()}),dc:None,reset:false,supplied:false,light:0,gpio_light:0,pwm:None,rgb:profile.rgb.map(|(_,count)|Ws2812Chain::new(count)),leds:vec![[0;3];profile.relays.len()+profile.indicators.len()],relays:vec![false;profile.relays.len()],version:0,updates:0,transactions:0}
+        Self{profile,oled:profile.oled.map(|w|Arc::new(Mutex::new(OledMono::new(if w.spi.is_some(){OledKind::Ssd1309}else{OledKind::Ssd1306},128,w.height,0)))),oled_shift:OledShift::default(),i2c:I2cBitBang::new(),levels:[true;2],edges:Vec::new(),panel:profile.lcd.map(|w|if w.round{DcsPanel::new(240,240)}else{DcsPanel::st7789()}),dc:None,reset:false,supplied:false,light:0,gpio_light:0,pwm:None,rgb:profile.rgb.map(|(_,count)|Ws2812Chain::new(count)),leds:vec![[0;3];profile.relays.len()+profile.indicators.len()],relays:vec![false;profile.relays.len()],version:0,updates:0,transactions:0}
     }
     fn pixels(&self)->Option<Vec<u16>> {
         if let Some(oled)=&self.oled {return Some(oled.lock().expect("LILYGO OLED state").frame());}
@@ -142,7 +148,7 @@ impl BoardModel for LilygoClassic {
     fn named_pin(&self,name:&str)->Option<u8> {self.profile.buttons.iter().find(|(id,_)|*id==name).map(|(_,pin)|*pin)}
     fn encoder(&self)->Option<(u8,u8)> {self.profile.encoder}
     fn leds(&self)->Option<(&[[u8;3]],u64)> {if let Some(rgb)=&self.rgb {Some((&rgb.leds,rgb.updates))}else if self.leds.is_empty(){None}else{Some((&self.leds,self.updates))}}
-    fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {let (w,h)=if self.oled.is_some(){(128,64)}else{let lcd=self.profile.lcd?;(lcd.glass[2]as u32,lcd.glass[3]as u32)};Some((w,h,self.pixels()?,self.display_version()))}
+    fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {let (w,h)=if let Some(state)=&self.oled {state.lock().expect("LILYGO OLED state").dimensions()}else{let lcd=self.profile.lcd?;(lcd.glass[2]as u32,lcd.glass[3]as u32)};Some((w,h,self.pixels()?,self.display_version()))}
     fn display_version(&self)->u64 {self.oled.as_ref().map_or(self.version,|s|s.lock().expect("LILYGO OLED state").version())}
     fn display_frames(&self)->u64 {self.oled.as_ref().map_or_else(||self.panel.as_ref().map_or(0,|p|p.frames),|s|s.lock().expect("LILYGO OLED state").frames())}
     fn hardware_diagnostics(&self)->Option<String> {(!self.relays.is_empty()).then(||format!("{{\"relayEnergized\":{:?},\"relayPins\":{:?},\"physicalContactDynamics\":false}}",self.relays,self.profile.relays))}
