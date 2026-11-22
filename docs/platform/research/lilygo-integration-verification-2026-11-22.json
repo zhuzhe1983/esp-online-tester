@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "evidenceDate": "2026-11-22",
-  "updatedAt": "2026-11-22T09:48:40+00:00",
-  "status": "validation-in-progress",
+  "updatedAt": "2026-11-22T11:01:06+00:00",
+  "status": "performance-regression-investigation",
   "scope": {
     "catalogProducts": 127,
     "newDiagnosticProfiles": 121,
@@ -71,6 +71,27 @@
       "detail": "446 tests passed, 0 failed, 0 skipped; 66.79 seconds"
     },
     {
+      "id": "legacy-wasm-ci",
+      "name": "既有 WASM / Worker 场景",
+      "status": "passed",
+      "command": "ESP32SIM_ROM_DIR=web/wasm/fw node tools/wasm-test.mjs hello c3-hello c6-hello c6-xiao p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik; node tools/wasm-test.mjs demo-stopwatch; node tools/worker-pacing-test.mjs; node tools/worker-channel-test.mjs",
+      "detail": "14 CI manifest scenarios plus StopWatch passed; real worker pacing/channel/ACK/replacement/storage tests passed. These runs were concurrent with native compilation and are not performance measurements."
+    },
+    {
+      "id": "supplementary-ci",
+      "name": "补充 CI 契约与真实 ABI",
+      "status": "passed",
+      "command": "See supplementaryCi.runs for all 16 exact command arrays; {ignored-output} is a caller-selected output directory.",
+      "detail": "126 unit tests, retained x5 receipt verification, timing/BLE ABIs, actual 18-event recording replay and StopWatch guest diagnostics passed; recording is not bit-exact."
+    },
+    {
+      "id": "pages-staging",
+      "name": "公开 Pages 目录打包",
+      "status": "passed",
+      "command": "node tools/stage-platform-pages.mjs web target/lilygo-pages-final",
+      "detail": "2835 files / 773643448 bytes staged; seven internal StopWatch diagnostic artifacts excluded. Temporary staging copy removed after the check to reclaim build space."
+    },
+    {
       "id": "p4-native",
       "name": "P4 数字外设与复位",
       "status": "passed",
@@ -108,16 +129,47 @@
     {
       "id": "native-release",
       "name": "原生 release 全工作区",
-      "status": "running",
-      "command": "CARGO_BUILD_JOBS=1 ESP32SIM_ROM_DIR=web/wasm/fw cargo test --release --workspace -- --include-ignored --skip external_",
-      "detail": "Serial fat-LTO build; result pending"
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 ESP32SIM_ROM_DIR=$PWD/web/wasm/fw cargo test --release --workspace -- --include-ignored --skip external_",
+      "detail": "188 suites; 2358 passed, 0 failed, 0 ignored, 98 external-input cases filtered; release build 33m 18s after cache-space recovery",
+      "result": {
+        "commandExitCode": 0,
+        "completedSuites": 188,
+        "passed": 2358,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 98
+      }
+    },
+    {
+      "id": "native-virtual-quantum",
+      "name": "原生可选调度器",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 ESP32SIM_ROM_DIR=$PWD/web/wasm/fw ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "detail": "44 tests passed, 0 failed; explicit virtual-quantum mode rerun, not added to the full-workspace unique-test total."
+    },
+    {
+      "id": "wasm-jit-differential",
+      "name": "WASM JIT 差分与波形",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 ESP32SIM_ROM_DIR=$PWD/web/wasm/fw tools/wasm-jit-test.sh",
+      "detail": "111126 differential cases across 78 isolated groups and 24 separate GPIO waveform cases passed. The checked production web/wasm/esp32sim.wasm is unchanged."
+    },
+    {
+      "id": "wasm-profile-build",
+      "name": "WASM 分析配置编译",
+      "status": "passed",
+      "command": ". ./tools/wasm-rustflags.sh\nCARGO_BUILD_JOBS=1 cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "detail": "Release build with production flags and jit-profile,cpu-profile passed; production web/wasm/esp32sim.wasm unchanged."
     },
     {
       "id": "performance",
       "name": "最终性能对照",
-      "status": "pending",
-      "command": "python3 tools/bench-lilygo-cpu.py --baseline <baseline-tree> --candidate <final-tree> --assets web/wasm/fw --rounds 8 --workloads all --output <receipt> --raw-dir <ignored-output>",
-      "detail": "Wait for all builds/tests/model conversions to finish; retain previous measured negative results"
+      "status": "regression-investigation",
+      "command": "python3 -B tools/bench-lilygo-cpu.py --baseline ../lilygo-perf-base --candidate . --assets web/wasm/fw --rounds 8 --workloads all --output docs/platform/research/lilygo-performance-final-2026-11-22.json --raw-dir target/lilygo-perf/final-recheck-raw --conditions <recorded-in-receipt>",
+      "detail": "All 80 measured runs plus 10 warmups have identical guest work/output within their workload. S3 +5.348%, C3 -1.326%, C6 -2.452%, classic -8.453%, P4 +7.225% CPU median. P4 is slower in 8/8 pairs with disjoint ranges; unresolved regression signal, not a passed performance gate.",
+      "receipt": "docs/platform/research/lilygo-performance-final-2026-11-22.json"
     },
     {
       "id": "browser",
@@ -134,13 +186,29 @@
       "failed": 1,
       "total": 446,
       "failure": "14 new control labels lacked English translations",
-      "resolutionCommit": "2639516",
+      "resolutionCommit": "e9e13de",
       "recheck": "all 446 tests passed after integration"
     },
     {
       "gate": "first performance checkpoint",
       "receipt": "docs/platform/research/lilygo-performance-2026-11-22.json",
       "limits": "C3 median +5.272%; C6 paired median +3.244%; concurrent build interference unresolved until final controlled recheck"
+    },
+    {
+      "gate": "final native release build, first attempt",
+      "status": "environment-failure",
+      "reason": "ENOSPC while creating a compiler temporary directory; no failed test assertion was observed.",
+      "resolution": "Removed reproducible task build caches and the generated public staging copy; retained sources, model inputs and evidence. Resumed the same release command with cached compilation."
+    },
+    {
+      "gate": "final integration candidate performance",
+      "sourceCommit": "91d79752519b329c76912370d900d14a3bba0ad4",
+      "receipt": "docs/platform/research/lilygo-performance-final-2026-11-22.json",
+      "p4MedianPercentChange": 7.2248887006168605,
+      "p4SlowerPairs": 8,
+      "p4TotalPairs": 8,
+      "p4RangesOverlap": false,
+      "limits": "Shared VM conditions do not establish cause. All workload instruction/cycle/exception/interrupt/output comparisons match. P4 regression remains under investigation."
     }
   ],
   "resetSemantics": {
@@ -154,5 +222,206 @@
     "requestedHosting": "GitHub Pages",
     "remoteBaseConfirmed": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce",
     "observedBlocker": "CLI has no GitHub HTTPS credentials; authorized GitHub integration create-blob returned HTTP403 Resource not accessible by integration. No remote write or deployment has succeeded."
+  },
+  "source": {
+    "head": "91d79752519b329c76912370d900d14a3bba0ad4",
+    "rustSourceManifestSha256": "5ac573ea50f2f00324edf84b3ddb8a03863069cdd33b11540a8cf818066f3935",
+    "rustSourceFiles": 646,
+    "rustSourceScope": "All tracked/unignored Rust files, Cargo.toml and Cargo.lock; paths and content SHA-256 sorted as compact JSON",
+    "uncommittedRustFiles": {}
+  },
+  "supplementaryCi": {
+    "commands": 16,
+    "passed": 16,
+    "failed": 0,
+    "unitTestsPassed": 126,
+    "runs": [
+      {
+        "name": "x5-results-tests",
+        "command": [
+          "node",
+          "--test",
+          "docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "x5-results",
+        "command": [
+          "node",
+          "docs/evidence/perf-x5-2026-09-22/verify-results.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "x5-m1-tests",
+        "command": [
+          "node",
+          "--test",
+          "docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "x5-m1",
+        "command": [
+          "node",
+          "docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "x5-historical-tests",
+        "command": [
+          "node",
+          "--test",
+          "docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "x5-historical",
+        "command": [
+          "node",
+          "docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "timing-api",
+        "command": [
+          "node",
+          "wasm/tests/timing-api.mjs",
+          "web/wasm/esp32sim.wasm"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "ble-api",
+        "command": [
+          "node",
+          "wasm/tests/ble-api.mjs",
+          "web/wasm/esp32sim.wasm",
+          "web/wasm/fw/public",
+          "web/wasm/fw/esp32c3_rev3_rom.elf"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "ble-connection",
+        "command": [
+          "node",
+          "wasm/tests/ble-connection.mjs",
+          "web/wasm/esp32sim.wasm",
+          "web/wasm/fw/public",
+          "web/wasm/fw/esp32c3_rev3_rom.elf"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "touch-input",
+        "command": [
+          "node",
+          "--test",
+          "tools/touch-input-test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "stopwatch-ui",
+        "command": [
+          "node",
+          "--test",
+          "tools/stopwatch-ui-test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "wasm-build-policy",
+        "command": [
+          "node",
+          "--test",
+          "tools/wasm-build-policy.test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "browser-benchmark-js",
+        "command": [
+          "node",
+          "--test",
+          "tools/browser-benchmark/battery-failure.test.mjs",
+          "tools/browser-benchmark/battery-workload.test.mjs",
+          "tools/browser-benchmark/experiments.test.mjs",
+          "tools/browser-benchmark/verdict.test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "browser-benchmark-python",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/browser-benchmark",
+          "-p",
+          "test_*.py"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "recording-real",
+        "command": [
+          "node",
+          "tools/platform-recording-test.mjs",
+          "--real",
+          "--receipt",
+          "{ignored-output}/esp-lilygo-final-extra-ci-recording-receipt.json"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "hardware-diagnostics",
+        "command": [
+          "node",
+          "tools/probe-hardware-diagnostics.mjs",
+          "tools/fixtures/stopwatch-hardware-checks.json",
+          "{ignored-output}/esp-lilygo-final-extra-ci-hardware-diagnostics-receipt.json"
+        ],
+        "exitCode": 0
+      }
+    ],
+    "actualWasmAbi": {
+      "timing": "passed",
+      "bleObservation": {
+        "packets": 57,
+        "events": 19
+      },
+      "bleConnection": {
+        "connections": 2,
+        "reads": 2,
+        "guestErrors": []
+      }
+    },
+    "recording": {
+      "events": 18,
+      "inputDeliveryVerified": true,
+      "nonzeroIntervalsRetained": true,
+      "bitExact": false,
+      "finalFramesDiffer": true,
+      "scope": "Input delivery and interval preservation; application navigation and frame equivalence are not asserted."
+    },
+    "hardwareDiagnostic": {
+      "guestSeconds": 8,
+      "instructions": 46846393,
+      "diagnosticEvents": 3,
+      "findings": [],
+      "panicSeen": false,
+      "applicationReady": true
+    },
+    "concurrentNativeCompilation": true,
+    "performanceMeasurement": false
   }
 }

@@ -187,13 +187,19 @@
 | 生产 WASM | passed · 6572710 bytes; no DWARF; name section retained |
 | 真实 Worker / WASM 诊断 | passed · 8 tests passed; all 126 advertised boards plus bare S2 construct; actual CPU frames, input, UART, P4 XL9535 and S2 unsupported-instruction error propagation |
 | 平台完整回归 | passed · 446 tests passed, 0 failed, 0 skipped; 66.79 seconds |
+| 既有 WASM / Worker 场景 | passed · 14 CI manifest scenarios plus StopWatch passed; real worker pacing/channel/ACK/replacement/storage tests passed. These runs were concurrent with native compilation and are not performance measurements. |
+| 补充 CI 契约与真实 ABI | passed · 126 unit tests, retained x5 receipt verification, timing/BLE ABIs, actual 18-event recording replay and StopWatch guest diagnostics passed; recording is not bit-exact. |
+| 公开 Pages 目录打包 | passed · 2835 files / 773643448 bytes staged; seven internal StopWatch diagnostic artifacts excluded. Temporary staging copy removed after the check to reclaim build space. |
 | P4 数字外设与复位 | passed · 5 tests passed; two full 8-bit I2C fractional clocks, BOOT state, XL9535 routes and SDMMC block DMA |
 | 独立 S2 原生后端 | passed · 7 tests passed; ISA gate, aliased memory, image validation, polled UART, GPIO, software SPI, full frames and reset |
 | 生产模型加载器 | passed · 122 new models; 44 CAD and 78 photograph outlines; no loader/source-hash failures |
 | 模型独立重现 | passed · 122 models; 837/837 compared files byte-identical; 597 frozen input hashes unchanged; see lilygo-model-reproduction-2026-11-22.json |
 | 证据隐私与来源审阅 | passed · 2378 tracked evidence files (22 gzip) passed; manual review found no local host paths or credentials in 406 JSON records and verified 376 photo hashes before final S2 integration |
-| 原生 release 全工作区 | running · Serial fat-LTO build; result pending |
-| 最终性能对照 | pending · Wait for all builds/tests/model conversions to finish; retain previous measured negative results |
+| 原生 release 全工作区 | passed · 188 suites; 2358 passed, 0 failed, 0 ignored, 98 external-input cases filtered; release build 33m 18s after cache-space recovery |
+| 原生可选调度器 | passed · 44 tests passed, 0 failed; explicit virtual-quantum mode rerun, not added to the full-workspace unique-test total. |
+| WASM JIT 差分与波形 | passed · 111126 differential cases across 78 isolated groups and 24 separate GPIO waveform cases passed. The checked production web/wasm/esp32sim.wasm is unchanged. |
+| WASM 分析配置编译 | passed · Release build with production flags and jit-profile,cpu-profile passed; production web/wasm/esp32sim.wasm unchanged. |
+| 最终性能对照 | regression-investigation · All 80 measured runs plus 10 warmups have identical guest work/output within their workload. S3 +5.348%, C3 -1.326%, C6 -2.452%, classic -8.453%, P4 +7.225% CPU median. P4 is slower in 8/8 pairs with disjoint ranges; unresolved regression signal, not a passed performance gate. |
 | 真实 Chromium 渲染 | pending-ci · Pages CI must render all 127 models and execute actual C5/S2 input/frame probes before deployment. Local Chromium socket creation was denied and the escalation was rejected by automatic approval review; this is not recorded as a passed browser test. |
 
 实际命令、产物哈希、性能条件和发布状态见 [集成验证回执](research/lilygo-integration-verification-2026-11-22.json)。
