@@ -63,6 +63,8 @@ def main():
     parser.add_argument('--output', type=Path, required=True, help='Compact JSON receipt')
     parser.add_argument('--raw-dir', type=Path, required=True, help='Ignored output directory for stdout/stderr')
     parser.add_argument('--rounds', type=int, default=5)
+    parser.add_argument('--build-command', default='CARGO_BUILD_JOBS=1 cargo build --release --bins',
+                        help='Exact build command used for both arms; recorded only, not executed')
     parser.add_argument('--workloads', nargs='+', choices=[*WORKLOAD_BINARIES, 'all'],
                         default=list(DEFAULT_WORKLOADS),
                         help='Ordered workloads; default: hello c3-hello c6-hello; all also runs classic-hello p4-hello')
@@ -87,7 +89,7 @@ def main():
         'environment': {'os': platform.system(), 'architecture': platform.machine(), 'logicalCpus': os.cpu_count(),
                         'rustc': subprocess.check_output(['rustc', '--version']).decode().strip(),
                         'python': platform.python_version(), 'measurementConditions': args.conditions},
-        'buildCommand': 'CARGO_BUILD_JOBS=1 cargo build --release --bins',
+        'buildCommand': args.build_command,
         'source': {label: source_receipt(root) for label, root in roots.items()},
         'harnessSha256': sha256(Path(__file__).read_bytes()),
         'workloads': {},
