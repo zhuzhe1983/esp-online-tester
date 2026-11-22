@@ -586,7 +586,7 @@ pub struct Peripherals {
 // Every peripheral, its 4 KB block (address >> 12) and its interrupt sources.
 // Clocks: XTAL 40 MHz for the systimer and the timer groups (TIMG clock source XTAL,
 // include/soc/clk_tree_defs.h), RC_SLOW 136 kHz (SOC_CLK_RC_SLOW_FREQ_APPROX) for the LP timer.
-device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::Xtal, 9), (ClockDomain::Apb, 9), (ClockDomain::RtcSlow, 2647), (ClockDomain::Cpu, 1)];
+device_set! { Peripherals; inline always; clock: (clock) CPU_HZ, [(ClockDomain::Xtal, 9), (ClockDomain::Apb, 9), (ClockDomain::RtcSlow, 2647), (ClockDomain::Cpu, 1)];
     0x20800 "CLIC" (clic) => [];
     0x50000 "USB_OTG" optional (usb_otg) => [src::USB_OTG];
     0x20801 "CLIC_CTRL" alias (clic) delta 0x1000 => [];
