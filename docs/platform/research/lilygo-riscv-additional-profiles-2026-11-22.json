@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1",
-  "checkedAt": "2026-11-22T08:10:50Z",
+  "checkedAt": "2026-11-22T09:16:17Z",
   "implementation": [
     "esp32c6/src/board/lilygo_additional.rs",
     "esp32c3/src/board/lilygo_additional.rs"
@@ -11,7 +11,8 @@
     "Source receipts preserve exact byte hashes. Pinned revisions are neutral unless a separate Git commit object has been verified.",
     "Two C3 cold MMIO/attach gates use uses_gpio_routes(); trait default preserves legacy waveform opt-in. Instruction scheduling and hot bus/tick paths are unchanged.",
     "Only shared SX1262 addition is read-only is_receiving(), used to choose exact RX/TX antenna path; SPI remains independent.",
-    "No third-party firmware bytes fetched or committed."
+    "No third-party firmware bytes fetched or committed.",
+    "Watch-Keyboard-C3 now has a distinct minimum MCU-only diagnostic profile. The earlier pin/memory research gaps remain explicit; physical Flash is null and4MB is only a simulation allocation, not an inferred BOM."
   ],
   "sources": [
     {
@@ -955,6 +956,132 @@
       }
     },
     {
+      "productId": "lilygo-watch-keyboard-c3-v1-0",
+      "boardId": "lilygo-watch-keyboard-c3-v1-0",
+      "name": "LILYGO Watch-Keyboard-C3 V1.0",
+      "constructor": "watch_keyboard_c3",
+      "chip": "esp32c3",
+      "physicalChip": "ESP32-C3",
+      "flashMB": 4,
+      "physicalFlashMB": null,
+      "flashMbBasis": "simulation",
+      "psramMB": 0,
+      "physicalPsramMB": null,
+      "psramMbBasis": "simulation",
+      "hardwareRevision": "Watch-Keyboard-C3 V1.0 keyboard accessory (H562); no bundled T-Watch MCU/display is simulated",
+      "display": null,
+      "physicalDisplay": false,
+      "sdCard": {
+        "slot": false,
+        "implemented": false
+      },
+      "controls": [],
+      "runtimeLevel": "partial",
+      "scope": "仅提供官方确认的 ESP32-C3 MCU／SRAM／UART0 虚拟控制台调试；4MB Flash 是模拟配置，实板容量未知。键盘矩阵、按键、灯、附带音频／马达模块及 T-Watch 主机均未模拟。",
+      "scopeEn": "Verified ESP32-C3 MCU/SRAM/UART0 virtual-console diagnostics only. The 4MB Flash allocation is a simulation setting; physical capacity is unknown. No keyboard matrix, button/LED mapping, included motor/audio accessory or paired T-Watch device is invented.",
+      "chronology": {
+        "date": "2022-11-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/watch-keyboard-c3-v1-0",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "sourceIds": [
+        "official-store-shopify-1",
+        "watch-c3-photo-0",
+        "watch-c3-photo-1",
+        "watch-c3-photo-2",
+        "watch-BBQKeyboard-BBQKeyboard.ino",
+        "watch-BBQKeyboard-config.h",
+        "watch-README.md"
+      ],
+      "verification": {
+        "sourceChipVerified": true,
+        "sourcePinsVerified": false,
+        "nativeProtocolTests": true,
+        "originalSramGuestVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "hardwareValidated": false
+      },
+      "pins": {
+        "keyboardMatrix": null,
+        "keyboardConnector": "Q10 ROW1..7/COL1..5 labels do not establish ESP32 GPIO mappings",
+        "downloadHeader": {
+          "pin": 9,
+          "buttonImplemented": false
+        },
+        "uart0": {
+          "virtualConsole": true,
+          "physicalConnectorPinsVerified": false
+        }
+      },
+      "memoryEvidence": {
+        "physicalFlashMB": null,
+        "simulatedFlashMB": 4,
+        "physicalPsramMB": null,
+        "simulatedPsramMB": 0,
+        "sourceIds": [
+          "official-store-shopify-1",
+          "watch-c3-photo-0",
+          "watch-c3-photo-1",
+          "watch-c3-photo-2",
+          "watch-BBQKeyboard-BBQKeyboard.ino",
+          "watch-BBQKeyboard-config.h",
+          "watch-README.md"
+        ],
+        "notes": "Official listing establishes ESP32-C3 identity, not external memory capacity. Four MB is an explicit diagnostic allocation with no claim about the Flash chip on the PCB. PSRAM allocation is zero in the C3 model; physical external-memory BOM remains unresolved."
+      },
+      "researchGaps": [
+        "No exact C3 firmware or schematic mapping connector ROW1..7/COL1..5 to MCU GPIO was located. Connector pin numbering is not a GPIO matrix.",
+        "External flash part marking is not legible and official listing does not specify its capacity; no4MB assumption.",
+        "Official T-WATCH-Keyboard repository uses LILYGO_WATCH_2019_WITH_TOUCH, not this C3 accessory. Its source and case STL are not substituted."
+      ],
+      "unsupported": [
+        "Keyboard matrix connector labels are not GPIO numbers. No matrix key, BOOT-button or LED pin is exposed until exact wiring is found.",
+        "UART0 output is the existing virtual console of the C3 peripheral model, not proof of physical connector/USB converter routing.",
+        "Motor/MIC/speaker accessory, matrix scanner/keyboard protocol, paired T-Watch display/touch and RF/network are unmodeled.",
+        "No exact factory firmware, full ESP-IDF application boot or real hardware behavior was verified. The native test executes an original RV32I SRAM program without ROM stubs."
+      ],
+      "conflicts": [
+        {
+          "fact": "linked older T-WATCH-Keyboard repository",
+          "sourceIds": [
+            "watch-BBQKeyboard-config.h",
+            "watch-README.md"
+          ],
+          "resolution": "The older repository selects LILYGO_WATCH_2019_WITH_TOUCH and is not a source of C3 accessory GPIO/memory. Its keyboard firmware and STL are not substituted."
+        }
+      ],
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "watch-c3-photo-0",
+          "watch-c3-photo-1",
+          "watch-c3-photo-2",
+          "watch-BBQKeyboard-BBQKeyboard.ino",
+          "watch-BBQKeyboard-config.h",
+          "watch-README.md"
+        ],
+        "candidates": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "checked": [
+          "Exact Shopify description and full resolution official photos",
+          "Official Xinyuan-LilyGO/T-WATCH-Keyboard tree/readme/config/example",
+          "Official organization code/repository searches for exact Watch-Keyboard-C3 spelling and C3 keyboard sources"
+        ],
+        "notes": "Exact product/photos and official organization repositories/code were searched. No exact C3 accessory factory recovery image was located; older T-WATCH-Keyboard examples are rejected as a different hardware target.",
+        "watchlist": {
+          "uiFlow": "No exact official image identified.",
+          "xiaozhi": "No exact official image identified."
+        }
+      }
+    },
+    {
       "productId": "lilygo-t-01c3",
       "boardId": "lilygo-t-01c3",
       "name": "LILYGO T-01 C3",
@@ -1445,53 +1572,7 @@
       }
     }
   ],
-  "deferred": [
-    {
-      "productId": "lilygo-watch-keyboard-c3-v1-0",
-      "name": "LILYGO Watch-Keyboard-C3 V1.0",
-      "hardwareRevision": "Watch-Keyboard-C3 V1.0 PCB printed20220411",
-      "physicalChip": "ESP32-C3",
-      "runtimeLevel": "unavailable",
-      "chronology": {
-        "date": "2022-11-25",
-        "basis": "storefront-publication",
-        "sourceUrl": "https://lilygo.cc/products/watch-keyboard-c3-v1-0",
-        "sourceId": "official-store-shopify-1",
-        "confidence": "low",
-        "hardwareRevision": "unknown; Spark product listing",
-        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
-      },
-      "sourceIds": [
-        "official-store-shopify-1",
-        "watch-c3-photo-0",
-        "watch-c3-photo-1",
-        "watch-c3-photo-2",
-        "watch-BBQKeyboard-BBQKeyboard.ino",
-        "watch-BBQKeyboard-config.h",
-        "watch-README.md"
-      ],
-      "confirmed": [
-        "Official product describes ESP32-C3 and QWERTY keyboard accessory.",
-        "Exact pin photograph identifies connector Q10 row/column contacts and GPIO9 download header."
-      ],
-      "blockers": [
-        "No exact C3 firmware or schematic mapping connector ROW1..7/COL1..5 to MCU GPIO was located. Connector pin numbering is not a GPIO matrix.",
-        "External flash part marking is not legible and official listing does not specify its capacity; no4MB assumption.",
-        "Official T-WATCH-Keyboard repository uses LILYGO_WATCH_2019_WITH_TOUCH, not this C3 accessory. Its source and case STL are not substituted."
-      ],
-      "investigation": {
-        "checked": [
-          "Exact Shopify description and full resolution official photos",
-          "Official Xinyuan-LilyGO/T-WATCH-Keyboard tree/readme/config/example",
-          "Official organization code/repository searches for exact Watch-Keyboard-C3 spelling and C3 keyboard sources"
-        ],
-        "factoryImage": "not-found",
-        "noSiblingAlias": true,
-        "binaryFetched": false,
-        "notes": "Printed PCB20220411 is engineering evidence, not a retail launch date; listing proxy remains2022-11-25."
-      }
-    }
-  ],
+  "deferred": [],
   "handoffs": [
     {
       "productId": "lilygo-t-lite-w5500",
@@ -1563,9 +1644,10 @@
   "verification": {
     "commands": [
       "CARGO_BUILD_JOBS=1 cargo test -p esp32c6 --test lilygo_additional_profiles -p esp32c3 --test lilygo_additional_profiles",
-      "CARGO_BUILD_JOBS=1 cargo clippy -p esp32c6 --test lilygo_additional_profiles -p esp32c3 --test lilygo_additional_profiles -- -D warnings"
+      "CARGO_BUILD_JOBS=1 cargo clippy -p esp32c6 --test lilygo_additional_profiles -p esp32c3 --test lilygo_additional_profiles -- -D warnings",
+      "CARGO_BUILD_JOBS=1 cargo test --release -p esp32c3 --test lilygo_additional_profiles"
     ],
-    "nativeTests": "7 passed,0 failed; targeted Clippy denied warnings passed",
+    "nativeTests": "8 passed,0 failed across C3/C6 additional profiles (new Watch SRAM guest plus7 previously verified tests); targeted Clippy denied warnings passed.",
     "factoryFirmwareExecuted": false,
     "wasmFirmwareExecuted": false,
     "hardwareValidated": false,
@@ -1576,9 +1658,21 @@
       "t8_spi_sd_uses_guest_registers_persists_blocks_and_rejects_wrong_routes",
       "lora_spi_discovery_survives_disabled_antenna_but_obeys_mux_nss_reset_and_miso",
       "lora_packets_require_correct_direction_switches_and_cancel_interrupted_rx",
-      "lora_led_and_boot_are_electrical_and_pico_does_not_claim_rp2350_peripherals"
+      "lora_led_and_boot_are_electrical_and_pico_does_not_claim_rp2350_peripherals",
+      "watch_keyboard_mcu_runs_original_rv32i_sram_uart_without_invented_keyboard_wiring"
     ],
-    "performance": "No hot-loop modification. Integrated benchmark belongs to the parent performance audit; this record does not assert an unmeasured performance result."
+    "performance": "No hot-loop modification. Integrated benchmark belongs to the parent performance audit; this record does not assert an unmeasured performance result.",
+    "watchKeyboard": {
+      "test": "watch_keyboard_mcu_runs_original_rv32i_sram_uart_without_invented_keyboard_wiring",
+      "scope": "Original RV32I instruction execution from guest SRAM writes UART0 MMIO and computes/stores42 to guest SRAM; asserts exact virtual console, one core, no exceptions, no stubs and no invented controls/LED/display/SD.",
+      "native": true,
+      "release": "passed; all5 C3 additional tests",
+      "factoryFirmwareExecuted": false,
+      "romExecution": false,
+      "wasmExecuted": false,
+      "boardSourceSha256": "1c619bd2e3db4cc6804ec6c9ed51dc816e67d95b4ce0038f105b0db2437effb8",
+      "testSourceSha256": "c0e7d79e7daf9ba288d479300a4fa4389c4a2a9a550b7011f96457e9641e25ea"
+    }
   },
   "auditCorrections": [
     {

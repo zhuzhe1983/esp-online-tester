@@ -86,3 +86,20 @@ fn t8_spi_sd_uses_guest_registers_persists_blocks_and_rejects_wrong_routes() {
     b.board.set_sd_card_present(false);assert_eq!(command(b,0,0),[255;2]);b.board.set_sd_card_present(true);assert_eq!(command(b,0,0),[255;2],"reinsertion requires startup clocks");
     init_card(b);assert_eq!(read_block(b),vec![0x5a;512]);assert!(b.board.report().contains("read-blocks="));
 }
+
+#[test]
+fn watch_keyboard_mcu_runs_original_rv32i_sram_uart_without_invented_keyboard_wiring() {
+    let mut m=machine(LilygoAdditionalC3::watch_keyboard_c3());assert_eq!(m.cores.len(),1);assert_eq!(m.bus.flash.len(),4<<20);assert_eq!(m.bus.board.name(),"lilygo-watch-keyboard-c3-v1-0");
+    assert!(!m.bus.board.uses_gpio_routes());assert!(!m.bus.board.uses_gpio_waveform());assert!(!m.bus.board.uses_spi_pins());assert!(m.bus.board.i2c_devices().is_empty());assert!(m.bus.board.input_levels().is_empty());
+    for id in ["boot","button","user","a","key1","reset"] {assert_eq!(m.bus.board.named_pin(id),None);assert!(!m.bus.board.button_at(10,id,true));}assert!(m.bus.board.take_edges().is_empty());
+    for pin in [3,8,9] {drive(&mut m.bus,pin,true);assert!(m.bus.board.leds().is_none());assert!(m.bus.board.display().is_none());}
+    assert!(m.bus.board.attach_spi_sd_card(Box::new(MemStore(vec![0;1024])),Default::default()).is_err());assert!(m.bus.board.report().contains("physical Flash capacity unknown"));
+    // Original RV32I guest, not a ROM replacement or vendor firmware. UART0
+    // FIFO=60000000h follows ESP-IDF v5.5.4 esp32c3/register/soc/uart_reg.h.
+    // The virtual console is not a claim that an unknown physical connector is routed.
+    let message=b"WATCH-C3:MCU-DIAG\n";let mut words=vec![0x6000_02b7u32]; // lui t0,60000h
+    for &byte in message {words.extend([(u32::from(byte)<<20)|(6<<7)|0x13,(6<<20)|(5<<15)|(2<<12)|0x23]);}
+    words.extend([(37<<20)|(7<<7)|0x13,(5<<20)|(7<<15)|(7<<7)|0x13,0x3fc8_1437,(7<<20)|(8<<15)|(2<<12)|0x23,0x0000_006f]);
+    let bytes:Vec<u8>=words.into_iter().flat_map(u32::to_le_bytes).collect();m.bus.load_bytes(esp32c3::bus::IRAM_LOW,&bytes).unwrap();m.cores[0].pc=esp32c3::bus::IRAM_LOW;m.console.capture=true;m.run(128);
+    assert_eq!(m.console.uart0,message);assert_eq!(m.bus.read32(0x3fc8_1000).unwrap(),42);assert_eq!(m.exceptions,0);assert_eq!(m.stub_hits,0);assert!(m.stubs.is_empty());
+}
