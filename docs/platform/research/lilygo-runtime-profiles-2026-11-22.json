@@ -7,7 +7,8 @@
     "Profiles enable real guest-written pixel/control debugging. They are not verified complete product or factory firmware emulation.",
     "Items follow all-127 source audit newest-first priority. Storefront dates are provisional where no official hardware date exists.",
     "SourceIds starting official- reference lilygo-adaptation-sources-2026-11-22.json; other source IDs reference the receipts below.",
-    "Physical memory capacities describe the selected SKU; emulator memory configuration must be set explicitly by integration."
+    "Physical memory capacities describe the selected SKU; emulator memory configuration must be set explicitly by integration.",
+    "Documented SD slots are retained separately as sdCard.slot:true with transportSupported:false; no generic SD implementation is inferred from a connector."
   ],
   "sources": [
     {
@@ -749,22 +750,40 @@
       "mediaType": "text/plain; charset=utf-8"
     },
     {
+      "id": "bar-factory-ino",
+      "repository": "Xinyuan-LilyGO/T-Display-Bar",
+      "path": "examples/Factory/Factory.ino",
+      "revision": "d3f4b8974be1dfb8bc35262d105e0453a697b459",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-Bar/blob/d3f4b8974be1dfb8bc35262d105e0453a697b459/examples/Factory/Factory.ino",
+      "title": "Xinyuan-LilyGO/T-Display-Bar/examples/Factory/Factory.ino",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:04:55Z",
+      "archiveName": "bar-factory-ino-Factory.ino",
+      "bytes": 26679,
+      "sha256": "813357b1faef2f442f7cc5944bafeb85acfbb8e86696c0576ac74fdc76e33990",
+      "gitBlobSha": "ddd9bab52a5a83b848e4c974ff8b029220de7cf3",
+      "mediaType": "text/plain; charset=utf-8",
+      "type": "manufacturer-source",
+      "checkedAt": "2026-11-22"
+    },
+    {
       "id": "amoled164-ft3168-address",
       "repository": "Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64",
       "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_FT3x68.h",
       "revision": "e236a4dfb3295c473d8ac7c240cbea93313707c0",
       "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/blob/e236a4dfb3295c473d8ac7c240cbea93313707c0/libraries/Arduino_DriveBus/src/touch_chip/Arduino_FT3x68.h",
-      "gitBlobSha": "e618f571c2ba50c8da79a3512793064a162d9ad5",
-      "checkedAt": "2026-11-22",
-      "type": "manufacturer-source",
-      "status": "fetched",
-      "title": "Manufacturer FT3x68 touch header",
+      "title": "Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/libraries/Arduino_DriveBus/src/touch_chip/Arduino_FT3x68.h",
       "kind": "official-source",
-      "fetchedAt": "2026-11-22T07:00:00Z",
-      "archiveName": "amoled164-Arduino_FT3x68.h",
-      "sha256": "2b3ec414037921d53e9598c8bce6b7f9797c97224df4aec9055ff5f844cdc1c8",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:04:55Z",
+      "archiveName": "amoled164-ft3168-address-Arduino_FT3x68.h",
       "bytes": 4655,
-      "mediaType": "text/plain; charset=utf-8"
+      "sha256": "2b3ec414037921d53e9598c8bce6b7f9797c97224df4aec9055ff5f844cdc1c8",
+      "gitBlobSha": "e618f571c2ba50c8da79a3512793064a162d9ad5",
+      "mediaType": "text/plain; charset=utf-8",
+      "type": "manufacturer-source",
+      "checkedAt": "2026-11-22"
     }
   ],
   "items": [
@@ -847,7 +866,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": true,
+        "nativeVerificationScope": "Authored Xtensa stores to IO_MUX/GPIO matrix and GP-SPI produce source-window pixels; wrong MOSI and reset checked."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -874,7 +895,27 @@
       "priorityRank": 3,
       "hardwareRevision": "source-defined board; see selected scope",
       "scopeEn": "Exact Pro README lists External under the same display/control pin table; no LTR553 sensor is added. V1.1 pulse dimming levels are unmodeled.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "spi",
+          "sclk": 18,
+          "mosi": 17,
+          "miso": 8,
+          "cs": 14
+        },
+        "sourceIds": [
+          "pro-readme-md",
+          "pro-examples-factory-utilities-h",
+          "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+          "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+          "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+          "official-store-shopify-1"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t-lora-pager-meshtastic",
@@ -954,7 +995,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -991,7 +1034,37 @@
       "priorityRank": 4,
       "hardwareRevision": "source-defined board; see selected scope",
       "scopeEn": "Official page identifies a preloaded Meshtastic Pager edition. This shares only the documented Pager display and physical controls; it does not assert Meshtastic firmware, keyboard or RF compatibility.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "spi",
+          "sclk": 35,
+          "mosi": 34,
+          "miso": 33,
+          "cs": 21
+        },
+        "sourceIds": [
+          "lib-src-lilygowatchultra-h",
+          "lib-src-lilygowatchultra-cpp",
+          "lib-src-lilygowatchs3-h",
+          "lib-src-lilygowatchs3-cpp",
+          "lib-src-lilygo_lora_pager-h",
+          "lib-src-lilygo_lora_pager-cpp",
+          "lib-src-display-lilygodispinterface-cpp",
+          "lib-docs-hardware-lilygo-t-watch-ultra-md",
+          "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+          "lib-docs-hardware-lilygo-t-watch-s3-md",
+          "lib-docs-hardware-lilygo-t-lora-pager-md",
+          "lib-docs-hardware-lilygo-t-embed-plus-md",
+          "lib-docs-hardware-lilygo-t-embed-md",
+          "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+          "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+          "official-store-shopify-1"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t-embed-cc1101-plus",
@@ -1041,13 +1114,6 @@
       },
       "controls": [
         {
-          "id": "boot",
-          "pin": 0,
-          "activeLow": true,
-          "type": "button",
-          "name": "BOOT"
-        },
-        {
           "id": "encoder-press",
           "pin": 0,
           "activeLow": true,
@@ -1078,7 +1144,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -1115,7 +1183,37 @@
       "priorityRank": 6,
       "hardwareRevision": "V1.0 CC1101 Plus display/encoder subset",
       "scopeEn": "Exact LilyGoLib T-Embed-Plus pin header documents CC1101 and nRF24 expansion. Adds display/encoder/buttons only. GPIO21 AW9364 steady on/off; pulse dimming unmodeled. GPIO15 gates peripheral rail, not LCD.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "spi",
+          "sclk": 11,
+          "mosi": 9,
+          "miso": 10,
+          "cs": 13
+        },
+        "sourceIds": [
+          "lib-src-lilygowatchultra-h",
+          "lib-src-lilygowatchultra-cpp",
+          "lib-src-lilygowatchs3-h",
+          "lib-src-lilygowatchs3-cpp",
+          "lib-src-lilygo_lora_pager-h",
+          "lib-src-lilygo_lora_pager-cpp",
+          "lib-src-display-lilygodispinterface-cpp",
+          "lib-docs-hardware-lilygo-t-watch-ultra-md",
+          "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+          "lib-docs-hardware-lilygo-t-watch-s3-md",
+          "lib-docs-hardware-lilygo-t-lora-pager-md",
+          "lib-docs-hardware-lilygo-t-embed-plus-md",
+          "lib-docs-hardware-lilygo-t-embed-md",
+          "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+          "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+          "official-store-shopify-1"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t-watch-ultra",
@@ -1195,14 +1293,17 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
         "No factory firmware boot was verified; source pin verification and native board tests are separate from a working factory image.",
         "No SD, radio, PMIC/battery/charger, audio, IMU, camera, haptics, sensor, NFC, GPS or RGB LED peripheral support is added by this profile.",
         "QSPI checks SCLK, D0 and CS; the shared SpiPins API has no D1/D2/D3 route masks, so those lane routes and quad electrical timing are not validated.",
-        "AMOLED brightness is an on/off gate; luminance, per-level dimming and OLED power behavior are not calibrated."
+        "AMOLED brightness is an on/off gate; luminance, per-level dimming and OLED power behavior are not calibrated.",
+        "Native portrait command window is modeled. Controller-specific landscape remapping and every vendor MADCTL combination are not independently calibrated."
       ],
       "sourceIds": [
         "lib-src-lilygowatchultra-h",
@@ -1235,7 +1336,38 @@
       "priorityRank": 9,
       "hardwareRevision": "source-defined board; see selected scope",
       "scopeEn": "XL9555 output/configuration/polarity register subset at 0x20 on GPIO3/2 gates display enable bit7. CST9217 touch, AXP2101 and other domains absent. Command-coordinate canvas includes documented x22 margin, not a physical GRAM capacity claim.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "spi",
+          "sclk": 35,
+          "mosi": 34,
+          "miso": 33,
+          "cs": 21
+        },
+        "sourceIds": [
+          "lib-src-lilygowatchultra-h",
+          "lib-src-lilygowatchultra-cpp",
+          "lib-src-lilygowatchs3-h",
+          "lib-src-lilygowatchs3-cpp",
+          "lib-src-lilygo_lora_pager-h",
+          "lib-src-lilygo_lora_pager-cpp",
+          "lib-src-display-lilygodispinterface-cpp",
+          "lib-docs-hardware-lilygo-t-watch-ultra-md",
+          "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+          "lib-docs-hardware-lilygo-t-watch-s3-md",
+          "lib-docs-hardware-lilygo-t-lora-pager-md",
+          "lib-docs-hardware-lilygo-t-embed-plus-md",
+          "lib-docs-hardware-lilygo-t-embed-md",
+          "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+          "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+          "official-store-shopify-1",
+          "official-wiki-t-watch-ultra"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t-display-bar",
@@ -1279,8 +1411,8 @@
         },
         "touch": {
           "address": 21,
-          "sda": 2,
-          "scl": 3,
+          "sda": 3,
+          "scl": 2,
           "irq": 21,
           "controller": "CST816S-compatible report subset",
           "reset": 1
@@ -1309,7 +1441,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": true,
+        "nativeVerificationScope": "Authored Xtensa stores to IO_MUX/GPIO matrix and GP-SPI produce source-window pixels; wrong MOSI and reset checked."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -1324,7 +1458,8 @@
         "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
         "bar-lib-sensorlib-src-reg-cstxxxconstants-h",
         "official-store-shopify-1",
-        "official-wiki-t-display-bar"
+        "official-wiki-t-display-bar",
+        "bar-factory-ino"
       ],
       "chronology": {
         "date": "2025-07-18",
@@ -1337,8 +1472,31 @@
       },
       "priorityRank": 10,
       "hardwareRevision": "source-defined board; see selected scope",
-      "scopeEn": "CST816S-compatible single-contact report interface only. The exact fitted CST816 die/firmware revision is not established. GPIO15 backlight is active low, unlike sibling display boards.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scopeEn": "CST816S-compatible single-contact report interface only. The exact fitted CST816 die/firmware revision is not established. GPIO15 backlight is active low, unlike sibling display boards. The README table duplicates I2C_SDA labels; exact Factory/board.h and Factory.ino select SDA3/SCL2.",
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "spi",
+          "sclk": 14,
+          "mosi": 12,
+          "miso": 13,
+          "cs": 11
+        },
+        "sourceIds": [
+          "bar-readme-md",
+          "bar-examples-factory-board-h",
+          "bar-lib-tft_espi-user_setups-setup215_lilygo_t_display_bar-h",
+          "bar-lib-tft_espi-tft_drivers-st7789_rotation-h",
+          "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+          "bar-lib-sensorlib-src-reg-cstxxxconstants-h",
+          "official-store-shopify-1",
+          "official-wiki-t-display-bar",
+          "bar-factory-ino"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t-embed-si4732",
@@ -1388,13 +1546,6 @@
       },
       "controls": [
         {
-          "id": "boot",
-          "pin": 0,
-          "activeLow": true,
-          "type": "button",
-          "name": "BOOT"
-        },
-        {
           "id": "encoder-press",
           "pin": 0,
           "activeLow": true,
@@ -1418,7 +1569,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -1461,7 +1614,43 @@
       "priorityRank": 14,
       "hardwareRevision": "source-defined board; see selected scope",
       "scopeEn": "Official SI4732 product and LilyGoLib original Embed pin header identify the receiver as an optional original-Embed extension. Display/encoder subset only; SI4732 receiver/firmware behavior is absent.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "spi",
+          "sclk": 40,
+          "mosi": 41,
+          "miso": 38,
+          "cs": 39
+        },
+        "sourceIds": [
+          "lib-src-lilygowatchultra-h",
+          "lib-src-lilygowatchultra-cpp",
+          "lib-src-lilygowatchs3-h",
+          "lib-src-lilygowatchs3-cpp",
+          "lib-src-lilygo_lora_pager-h",
+          "lib-src-lilygo_lora_pager-cpp",
+          "lib-src-display-lilygodispinterface-cpp",
+          "lib-docs-hardware-lilygo-t-watch-ultra-md",
+          "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+          "lib-docs-hardware-lilygo-t-watch-s3-md",
+          "lib-docs-hardware-lilygo-t-lora-pager-md",
+          "lib-docs-hardware-lilygo-t-embed-plus-md",
+          "lib-docs-hardware-lilygo-t-embed-md",
+          "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+          "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+          "pro-readme-md",
+          "pro-examples-factory-utilities-h",
+          "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+          "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+          "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+          "official-store-shopify-1",
+          "official-wiki-t-embed-si4732"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t-display-s3-pro-lr1121",
@@ -1542,7 +1731,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -1561,24 +1752,47 @@
       ],
       "chronology": {
         "date": "2024-12-14",
-        "basis": "official-backplate-revision",
+        "basis": "hardware-release",
         "revision": "V1.0",
         "sourceId": "lr1121-readme",
         "sourceUrl": "https://github.com/Xinyuan-LilyGO/T-Display-S3-Pro-MVSRLora/blob/3457ffc0f9569858891d3692ce52f800947bd0c4/README.md",
         "confidence": "high",
-        "hardwareRevision": "MVSRLora backplate V1.0"
+        "hardwareRevision": "MVSRLora backplate V1.0",
+        "notes": "Explicit official hardware version date; MVSRLora date describes the optional LR1121 backplate, not a new Pro motherboard."
       },
       "priorityRank": 47,
       "additionalChronologyEvidence": {
         "date": "2024-12-14",
-        "basis": "official-backplate-revision",
+        "basis": "hardware-release",
         "revision": "V1.0",
         "sourceId": "lr1121-readme",
         "note": "Date is the backplate release, distinct from original Pro motherboard."
       },
       "hardwareRevision": "source-defined board; see selected scope",
       "scopeEn": "Official MVSRLora README identifies this as a backplate for the Pro motherboard. Only that motherboards display/touch/control subset is shared; LR1121 and the entire audio/RTC/vibration expansion remain absent.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "spi",
+          "sclk": 18,
+          "mosi": 17,
+          "miso": 8,
+          "cs": 14
+        },
+        "sourceIds": [
+          "pro-readme-md",
+          "pro-examples-factory-utilities-h",
+          "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+          "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+          "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+          "lr1121-readme",
+          "official-store-shopify-1",
+          "official-wiki-t-display-s3-pro-lr1121"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t-lora-pager",
@@ -1658,7 +1872,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -1696,7 +1912,38 @@
       "priorityRank": 30,
       "hardwareRevision": "source-defined board; see selected scope",
       "scopeEn": "Physical device is landscape 480x222; emulator frame is native 222x480. TCA8418 keyboard, XL9555 reset/power domains, radio and RTC absent. GPIO42 AW9364 supports steady on/off only; pulse dimming is unmodeled.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "spi",
+          "sclk": 35,
+          "mosi": 34,
+          "miso": 33,
+          "cs": 21
+        },
+        "sourceIds": [
+          "lib-src-lilygowatchultra-h",
+          "lib-src-lilygowatchultra-cpp",
+          "lib-src-lilygowatchs3-h",
+          "lib-src-lilygowatchs3-cpp",
+          "lib-src-lilygo_lora_pager-h",
+          "lib-src-lilygo_lora_pager-cpp",
+          "lib-src-display-lilygodispinterface-cpp",
+          "lib-docs-hardware-lilygo-t-watch-ultra-md",
+          "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+          "lib-docs-hardware-lilygo-t-watch-s3-md",
+          "lib-docs-hardware-lilygo-t-lora-pager-md",
+          "lib-docs-hardware-lilygo-t-embed-plus-md",
+          "lib-docs-hardware-lilygo-t-embed-md",
+          "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+          "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+          "official-store-shopify-1",
+          "official-wiki-t-lora-pager"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t-display-s3-amoled-1-64",
@@ -1766,7 +2013,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": true,
+        "nativeVerificationScope": "Authored Xtensa stores to IO_MUX/GPIO matrix and GP-SPI produce source-window pixels; wrong MOSI and reset checked."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -1785,17 +2034,18 @@
       ],
       "chronology": {
         "date": "2024-04-08",
-        "basis": "official-hardware-revision",
+        "basis": "hardware-release",
         "revision": "V1.0",
         "sourceId": "amoled164-readme-md",
         "sourceUrl": "https://github.com/Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/blob/e236a4dfb3295c473d8ac7c240cbea93313707c0/README.md",
         "confidence": "high",
-        "hardwareRevision": "V1.0"
+        "hardwareRevision": "V1.0",
+        "notes": "Explicit V1.0 update date in the exact manufacturer repository README."
       },
       "priorityRank": 38,
       "additionalChronologyEvidence": {
         "date": "2024-04-08",
-        "basis": "official-hardware-revision",
+        "basis": "hardware-release",
         "revision": "V1.0",
         "sourceId": "amoled164-readme-md",
         "note": "Audit date2024-05-20 differs; source review must resolve before replacing catalog chronology."
@@ -1869,7 +2119,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -1951,7 +2203,7 @@
           "sda": 3,
           "scl": 2,
           "irq": 21,
-          "controller": "CST816S-compatible report subset",
+          "controller": "CST816T",
           "reset": null
         },
         "encoder": null
@@ -1971,7 +2223,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -1983,7 +2237,8 @@
         "amoled-src-lilygo_amoled-h",
         "amoled-src-initsequence-cpp",
         "official-store-shopify-1",
-        "official-wiki-t-display-s3-amoled-plus"
+        "official-wiki-t-display-s3-amoled-plus",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
       ],
       "chronology": {
         "date": "2024-01-01",
@@ -1996,8 +2251,28 @@
       },
       "priorityRank": 48,
       "hardwareRevision": "source-defined board; see selected scope",
-      "scopeEn": "Official AMOLED library defines the Plus as SPI with DC GPIO7 and display enable GPIO38; it is not the QSPI original. CST816S-compatible report subset only.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scopeEn": "Official AMOLED library defines the Plus as SPI with DC GPIO7 and display enable GPIO38; it is not the QSPI original. CST816T report subset only.",
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "spi",
+          "sclk": 14,
+          "mosi": 12,
+          "miso": 13,
+          "cs": 11
+        },
+        "sourceIds": [
+          "amoled-src-lilygo_amoled-cpp",
+          "amoled-src-lilygo_amoled-h",
+          "amoled-src-initsequence-cpp",
+          "official-store-shopify-1",
+          "official-wiki-t-display-s3-amoled-plus",
+          "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t4-s3",
@@ -2067,14 +2342,17 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
         "No factory firmware boot was verified; source pin verification and native board tests are separate from a working factory image.",
         "No SD, radio, PMIC/battery/charger, audio, IMU, camera, haptics, sensor, NFC, GPS or RGB LED peripheral support is added by this profile.",
         "QSPI checks SCLK, D0 and CS; the shared SpiPins API has no D1/D2/D3 route masks, so those lane routes and quad electrical timing are not validated.",
-        "AMOLED brightness is an on/off gate; luminance, per-level dimming and OLED power behavior are not calibrated."
+        "AMOLED brightness is an on/off gate; luminance, per-level dimming and OLED power behavior are not calibrated.",
+        "Native portrait command window is modeled. Controller-specific landscape remapping and every vendor MADCTL combination are not independently calibrated."
       ],
       "sourceIds": [
         "amoled-src-lilygo_amoled-cpp",
@@ -2095,7 +2373,26 @@
       "priorityRank": 58,
       "hardwareRevision": "source-defined board; see selected scope",
       "scopeEn": "450x600 portrait is derived from official RM690B0 rotation0 and x16 offset. 482x600 model canvas describes the source command-coordinate window, not measured physical GRAM. CST226 report subset only.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "spi",
+          "sclk": 3,
+          "mosi": 2,
+          "miso": 4,
+          "cs": 1
+        },
+        "sourceIds": [
+          "amoled-src-lilygo_amoled-cpp",
+          "amoled-src-lilygo_amoled-h",
+          "amoled-src-initsequence-cpp",
+          "official-store-shopify-1",
+          "official-wiki-t4-s3"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t-display-s3-pro",
@@ -2176,7 +2473,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -2204,7 +2503,28 @@
       "priorityRank": 65,
       "hardwareRevision": "source-defined board; see selected scope",
       "scopeEn": "ST7796 profile selected from official Setup214 and rotation driver. The wiki says ST7789V2, conflicting with this exact driver and storefront; alternate controllers remain unverified. GPIO48 steady level/PWM gates supported; V1.1 pulse dimming levels are unmodeled.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "spi",
+          "sclk": 18,
+          "mosi": 17,
+          "miso": 8,
+          "cs": 14
+        },
+        "sourceIds": [
+          "pro-readme-md",
+          "pro-examples-factory-utilities-h",
+          "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+          "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+          "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+          "official-store-shopify-1",
+          "official-wiki-t-display-s3-pro"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t-watch-s3",
@@ -2263,7 +2583,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -2336,7 +2658,7 @@
           "cs": 6,
           "dc": null,
           "reset": 17,
-          "enable": null,
+          "enable": 38,
           "backlight": null,
           "ledcGate": false,
           "quadData": [
@@ -2351,7 +2673,7 @@
           "sda": 3,
           "scl": 2,
           "irq": 21,
-          "controller": "CST816S-compatible report subset",
+          "controller": "CST816T",
           "reset": null
         },
         "encoder": null
@@ -2371,7 +2693,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -2385,7 +2709,8 @@
         "amoled-src-lilygo_amoled-h",
         "amoled-src-initsequence-cpp",
         "official-store-shopify-1",
-        "official-wiki-t-display-s3-amoled"
+        "official-wiki-t-display-s3-amoled",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
       ],
       "chronology": {
         "date": "2023-04-14",
@@ -2397,8 +2722,8 @@
         "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
       },
       "priorityRank": 79,
-      "hardwareRevision": "V1.0 RM67162 QSPI touch variant",
-      "scopeEn": "Selects the original RM67162 QSPI touch board, V1.0 electrical scope. V2 GPIO38 display-enable differences and non-touch SKUs are not automatically selected.",
+      "hardwareRevision": "RM67162 QSPI touch configuration with GPIO38 display-enable; earlier LED-only GPIO38 revision excluded",
+      "scopeEn": "Selects manufacturer current RM67162 QSPI touch configuration with display-enable GPIO38 and CST816T. Earlier GPIO38 LED-only revision and non-touch SKUs are not selected automatically.",
       "scope": "仅适配该型号已核实接线的显示、GPIO 按键和单点触摸报告；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
     },
     {
@@ -2475,7 +2800,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -2563,7 +2890,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -2594,7 +2923,35 @@
       "priorityRank": 105,
       "hardwareRevision": "original S3 16MB Flash / no PSRAM; not Dual/Plus",
       "scopeEn": "Original 16MB Flash / no-PSRAM Dongle S3, not newer Dual or Plus. ST7735 green-tab 80x160 with x26/y1 offset; GPIO38 backlight active low. APA102, SDMMC and USB function behavior absent.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "sdmmc",
+          "clk": 12,
+          "cmd": 16,
+          "data": [
+            14,
+            17,
+            21,
+            18
+          ]
+        },
+        "sourceIds": [
+          "dongle-docs-en-t-dongle-s3-reamde-md",
+          "dongle-lib-tft_espi-user_setups-setup209_lilygo_t_dongle_s3-h",
+          "dongle-examples-tft_espi-tft_espi-ino",
+          "pro-readme-md",
+          "pro-examples-factory-utilities-h",
+          "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+          "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+          "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+          "official-store-shopify-1",
+          "official-wiki-t-dongle-s3"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t-embed",
@@ -2644,13 +3001,6 @@
       },
       "controls": [
         {
-          "id": "boot",
-          "pin": 0,
-          "activeLow": true,
-          "type": "button",
-          "name": "BOOT"
-        },
-        {
           "id": "encoder-press",
           "pin": 0,
           "activeLow": true,
@@ -2674,7 +3024,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
@@ -2717,7 +3069,43 @@
       "priorityRank": 107,
       "hardwareRevision": "source-defined board; see selected scope",
       "scopeEn": "Original T-Embed display and encoder wiring; GPIO46 board enable required. GPIO15 AW9364 steady on/off only; APA102, SD, microphone and audio absent. Native frame is portrait170x320.",
-      "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+      "scope": "仅适配该型号已核实接线的显示、GPIO 按键、旋钮；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+      "sdCard": {
+        "slot": true,
+        "transportSupported": false,
+        "pins": {
+          "interface": "spi",
+          "sclk": 40,
+          "mosi": 41,
+          "miso": 38,
+          "cs": 39
+        },
+        "sourceIds": [
+          "lib-src-lilygowatchultra-h",
+          "lib-src-lilygowatchultra-cpp",
+          "lib-src-lilygowatchs3-h",
+          "lib-src-lilygowatchs3-cpp",
+          "lib-src-lilygo_lora_pager-h",
+          "lib-src-lilygo_lora_pager-cpp",
+          "lib-src-display-lilygodispinterface-cpp",
+          "lib-docs-hardware-lilygo-t-watch-ultra-md",
+          "lib-docs-hardware-lilygo-t-watch-s3-plus-md",
+          "lib-docs-hardware-lilygo-t-watch-s3-md",
+          "lib-docs-hardware-lilygo-t-lora-pager-md",
+          "lib-docs-hardware-lilygo-t-embed-plus-md",
+          "lib-docs-hardware-lilygo-t-embed-md",
+          "lib-arduino-temporary_t_embed-variants-lilygo_tembed-pins_arduino-h",
+          "lib-arduino-temporary_t_embed_plus-variants-lilygo_tembed_plus-pins_arduino-h",
+          "pro-readme-md",
+          "pro-examples-factory-utilities-h",
+          "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+          "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+          "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+          "official-store-shopify-1",
+          "official-wiki-t-embed"
+        ],
+        "notes": "Physical slot confirmed from exact manufacturer pin header/table. No virtual SD transport is implemented by this runtime profile; capacity is a frontend preparation choice."
+      }
     },
     {
       "productId": "lilygo-t-qt-pro",
@@ -2784,7 +3172,9 @@
         "nativeProtocolTests": true,
         "factoryBootVerified": false,
         "wasmFirmwareVerified": false,
-        "trialAvailable": false
+        "factoryTrialAvailable": false,
+        "nativeGuestProbeVerified": false,
+        "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
       },
       "unsupported": [
         "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",

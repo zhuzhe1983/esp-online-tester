@@ -9,7 +9,7 @@ use esp_soc::devices::{DcsPanel,i2c_bitbang::I2cBitBang};
 use esp_soc::pins::PinRoutes;
 
 #[derive(Clone,Copy,PartialEq)]
-enum TouchKind {Cst816,Cst226,Ft6336}
+enum TouchKind {Cst816S,Cst816T,Cst226,Ft6336}
 #[derive(Clone,Copy)]
 struct TouchWiring {kind:TouchKind,address:u8,sda:u8,scl:u8,irq:u8,reset:Option<u8>}
 struct Profile {
@@ -21,13 +21,13 @@ const BOOT:&[(&str,u8)]=&[("boot",0)];
 const PRO:Profile=Profile{name:"lilygo-t-display-s3-pro",controller:"ST7796",gram:[320,480],glass:[49,0,222,480],spi:[18,17,39],dc:Some(9),reset:Some(47),light:Some((48,true)),light_pwm:true,enable:None,quad:false,buttons:&[("boot",0),("button-2",12),("button-3",16)],encoder:None,touch:Some(TouchWiring{kind:TouchKind::Cst226,address:0x5a,sda:5,scl:6,irq:21,reset:Some(13)}),expander:false};
 const PRO_EXTERNAL:Profile=Profile{name:"lilygo-t-display-s3-pro-external",..PRO};
 const PRO_LR1121:Profile=Profile{name:"lilygo-t-display-s3-pro-lr1121",..PRO};
-const BAR:Profile=Profile{name:"lilygo-t-display-bar",controller:"ST7789",gram:[240,320],glass:[82,18,76,284],spi:[7,6,8],dc:Some(5),reset:Some(40),light:Some((15,false)),light_pwm:true,enable:None,quad:false,buttons:&[("boot",0),("button-1",38)],encoder:None,touch:Some(TouchWiring{kind:TouchKind::Cst816,address:0x15,sda:2,scl:3,irq:21,reset:Some(1)}),expander:false};
+const BAR:Profile=Profile{name:"lilygo-t-display-bar",controller:"ST7789",gram:[240,320],glass:[82,18,76,284],spi:[7,6,8],dc:Some(5),reset:Some(40),light:Some((15,false)),light_pwm:true,enable:None,quad:false,buttons:&[("boot",0),("button-1",38)],encoder:None,touch:Some(TouchWiring{kind:TouchKind::Cst816S,address:0x15,sda:3,scl:2,irq:21,reset:Some(1)}),expander:false};
 const ULTRA:Profile=Profile{name:"lilygo-t-watch-ultra",controller:"CO5300",gram:[454,502],glass:[22,0,410,502],spi:[40,38,41],dc:None,reset:Some(37),light:None,light_pwm:false,enable:None,quad:true,buttons:BOOT,encoder:None,touch:None,expander:true};
 const PAGER:Profile=Profile{name:"lilygo-t-lora-pager",controller:"ST7796",gram:[320,480],glass:[49,0,222,480],spi:[35,34,38],dc:Some(37),reset:None,light:Some((42,true)),light_pwm:false,enable:None,quad:false,buttons:&[("boot",0),("encoder-press",7)],encoder:Some((40,41)),touch:None,expander:false};
 const PAGER_MESHTASTIC:Profile=Profile{name:"lilygo-t-lora-pager-meshtastic",..PAGER};
 const WATCH:Profile=Profile{name:"lilygo-t-watch-s3",controller:"ST7789",gram:[240,320],glass:[0,0,240,240],spi:[18,13,12],dc:Some(38),reset:None,light:Some((45,true)),light_pwm:true,enable:None,quad:false,buttons:&[],encoder:None,touch:Some(TouchWiring{kind:TouchKind::Ft6336,address:0x38,sda:39,scl:40,irq:16,reset:None}),expander:false};
 const WATCH_PLUS:Profile=Profile{name:"lilygo-t-watch-s3-plus",buttons:BOOT,..WATCH};
-const AMOLED:Profile=Profile{name:"lilygo-t-display-s3-amoled",controller:"RM67162",gram:[240,536],glass:[0,0,240,536],spi:[47,18,6],dc:None,reset:Some(17),light:None,light_pwm:false,enable:None,quad:true,buttons:BOOT,encoder:None,touch:Some(TouchWiring{kind:TouchKind::Cst816,address:0x15,sda:3,scl:2,irq:21,reset:None}),expander:false};
+const AMOLED:Profile=Profile{name:"lilygo-t-display-s3-amoled",controller:"RM67162",gram:[240,536],glass:[0,0,240,536],spi:[47,18,6],dc:None,reset:Some(17),light:None,light_pwm:false,enable:Some(38),quad:true,buttons:BOOT,encoder:None,touch:Some(TouchWiring{kind:TouchKind::Cst816T,address:0x15,sda:3,scl:2,irq:21,reset:None}),expander:false};
 const AMOLED_PLUS:Profile=Profile{name:"lilygo-t-display-s3-amoled-plus",dc:Some(7),enable:Some(38),quad:false,..AMOLED};
 const AMOLED_LITE:Profile=Profile{name:"lilygo-t-display-amoled-lite",controller:"SH8501",gram:[368,194],glass:[0,0,368,194],spi:[5,7,4],dc:None,reset:Some(40),light:None,light_pwm:false,enable:None,quad:true,buttons:&[("boot",0),("user",21)],encoder:None,touch:None,expander:false};
 // RM690B0 library adds 16 address columns on both portrait orientations. The
@@ -75,9 +75,11 @@ impl I2cDevice for TouchDevice {
         self.registers[2]=u8::from(s.down);
         self.registers[3]=((s.x>>8) as u8&15)|if self.kind==TouchKind::Ft6336 {0x80}else{0};self.registers[4]=s.x as u8;
         self.registers[5]=(s.y>>8) as u8&15;self.registers[6]=s.y as u8;
-        // The family's documented CST816S model identifier, not a measured die
-        // revision. Firmware version stays zero; other CST816 variants are unverified.
-        if self.kind==TouchKind::Cst816 {self.registers[0xa7]=0xb4;}
+        // Documented chip family IDs, not measured firmware/calibration revisions.
+        // AMOLED selects the manufacturer-declared T variant; Bar uses the S
+        // report subset until its exact fitted revision can be established.
+        if self.kind==TouchKind::Cst816S {self.registers[0xa7]=0xb4;}
+        if self.kind==TouchKind::Cst816T {self.registers[0xa7]=0xb5;}
         if self.kind==TouchKind::Ft6336 {self.registers[0xa8]=0x11;}
         let value=self.registers[usize::from(self.ptr)];self.ptr=self.ptr.wrapping_add(1);value
     }
@@ -192,9 +194,36 @@ mod tests {
         let mut ultra=LilygoDisplay::new(&ULTRA);setup(&mut ultra);assert_eq!(ultra.transactions,0,"XL9555 supply must be explicitly enabled");let mut ds=ultra.i2c_devices();let d=ds[0].2.as_mut();assert!(d.start(false));d.write(6);d.write(0x7f);d.write(0xff);setup(&mut ultra);pixel(&mut ultra,22,0,0x07e0);assert_eq!(ultra.display().unwrap().2[0],0x07e0);
     }
     #[test]
+    fn software_quad_cs_keeps_split_header_pixels_and_ramwrc_separate() {
+        let mut b=LilygoDisplay::new(&AMOLED);setup(&mut b);
+        cmd(&mut b,0x2a,&[0,0,0,3]);cmd(&mut b,0x2b,&[0,0,0,0]);
+        let p=pins(&b);let cs=1<<6;
+        drive(&mut b,cs,cs);
+        b.spi_transfer_pins(2,p,&[0x32,0],0);
+        b.spi_transfer_pins(2,p,&[0x2c,0,0xf8],0);
+        b.spi_transfer_pins(2,p,&[0,2,0,0x2c,0],0);
+        assert_eq!(&b.display().unwrap().2[..3],&[0xf800,0x0200,0x2c00],"a pixel sequence resembling a header stays pixel data under the same CS");
+        drive(&mut b,cs,0);let written=b.panel.pixels_written;
+        b.spi_transfer_pins(2,p,&[2,0,0x2c,0,0,0],0);
+        assert_eq!(b.panel.pixels_written,written,"deasserted software CS rejects a spoofed selected-route mask");
+        drive(&mut b,cs,cs);b.spi_transfer_pins(2,p,&[0x32,0,0x3c,0,0x07,0xe0],0);
+        assert_eq!(&b.display().unwrap().2[..4],&[0xf800,0x0200,0x2c00,0x07e0],"RAMWRC resumes the existing address counter");
+    }
+    #[test]
+    fn pwm_detach_restores_gpio_gate_and_non_rgb565_is_not_fabricated() {
+        let mut b=LilygoDisplay::new(&BAR);setup(&mut b);pixel(&mut b,82,18,0xffff);
+        b.gpio_pwm_at(0,&|pin|(pin==15).then_some((1000.0,65535)));
+        assert_eq!(b.display().unwrap().2[0],0,"active-low backlight is off at full high duty");
+        b.gpio_pwm_at(0,&|_|None);assert_eq!(b.display().unwrap().2[0],0xffff,"detaching PWM restores the actual low GPIO gate");
+        cmd(&mut b,0x3a,&[0x66]);let written=b.panel.pixels_written;
+        cmd(&mut b,0x2c,&[0xff;6]);assert_eq!(b.panel.pixels_written,written,"18-bit pixels are outside the declared RGB565 subset");
+        assert!(!LilygoDisplay::new(&PAGER).uses_gpio_pwm(),"AW9364 pulse dimming is not PWM");
+    }
+    #[test]
     fn source_touch_protocols_pins_clamping_release_and_reset() {
         let mut b=LilygoDisplay::new(&PRO);setup(&mut b);let mut ds=b.i2c_devices();assert!(ds.iter().all(|(_,a,d)|*a==0x5a&&d.pins()==Some((5,6))));b.touch(221,479,true);assert_eq!(b.touch_irq(),Some((21,false)));let d=ds[0].2.as_mut();assert_eq!(read(d,&[0],7),[6,13,29,0xdf,0,1,0xab]);assert_eq!(read(d,&[0xd1,0xf8],4),[222,0,224,1]);b.touch(999,999,false);assert_eq!(read(d,&[0],7)[5],0);drive(&mut b,0,1<<13);assert!(!d.start(false));
-        let mut bar=LilygoDisplay::new(&BAR);setup(&mut bar);let mut ds=bar.i2c_devices();bar.touch(999,999,true);assert_eq!(read(ds[0].2.as_mut(),&[2],5),[1,0,75,1,27]);bar.touch(0,0,false);assert_eq!(read(ds[0].2.as_mut(),&[2],1),[0]);
+        let mut bar=LilygoDisplay::new(&BAR);setup(&mut bar);let mut ds=bar.i2c_devices();assert!(ds.iter().all(|(_,_,d)|d.pins()==Some((3,2))));bar.touch(999,999,true);assert_eq!(read(ds[0].2.as_mut(),&[2],5),[1,0,75,1,27]);bar.touch(0,0,false);assert_eq!(read(ds[0].2.as_mut(),&[2],1),[0]);
+        let mut amoled=LilygoDisplay::new(&AMOLED);setup(&mut amoled);let mut ds=amoled.i2c_devices();assert_eq!(read(ds[0].2.as_mut(),&[0xa7],1),[0xb5]);
         let mut watch=LilygoDisplay::new(&WATCH_PLUS);let mut ds=watch.i2c_devices();watch.touch(123,234,true);assert_eq!(read(ds[0].2.as_mut(),&[2],5),[1,0x80,123,0,234]);assert!(ds.iter().all(|(_,a,d)|*a==0x38&&d.pins()==Some((39,40))));
     }
     #[test]
