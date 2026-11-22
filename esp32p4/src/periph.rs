@@ -580,7 +580,7 @@ pub struct Peripherals {
     last_status: [u32; 4],
     /// I2C0 at 0x500C4000. Optional dispatch keeps idle boards out of its deadline work.
     /// T-Display-P4's XL9535 uses this controller, not Waveshare's I2C1.
-    pub i2c0: Box<esp_periph::i2c::I2c>,
+    pub i2c0: esp_periph::i2c::I2c,
 }
 
 // Every peripheral, its 4 KB block (address >> 12) and its interrupt sources.
@@ -684,7 +684,7 @@ impl Peripherals {
             sha: Sha::new(), intmtx: IntMatrix::new(), clic: Clic::default(), cache: Cache::new(), hp_sys: HpSys::default(), hp_clkrst: HpClkRst::new(),
             lp: LpAon::new(), ana_mst: AnaMst::default(), assist_debug: AssistDebug::default(), rng: Rng::new(),
             spi2: GpSpi::new(), i2c1: esp_periph::i2c::I2c::new(), axi_dma: AxiDma::new(), ahb_dma: AhbDma::new(), i2s1: esp_periph::I2s::new(CPU_HZ), ledc: Ledc::new(LedcLayout::P4),
-            misc: Misc::new(), spi_exec: false, psram_exec: false, clock: Self::new_clock(), cycle_base: 0, last_status: [0; 4], i2c0: Box::new(esp_periph::i2c::I2c::new()),
+            misc: Misc::new(), spi_exec: false, psram_exec: false, clock: Self::new_clock(), cycle_base: 0, last_status: [0; 4], i2c0: esp_periph::i2c::I2c::new(),
         }
     }
 
