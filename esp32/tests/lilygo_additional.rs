@@ -54,7 +54,7 @@ fn real_rmt_symbols_reach_only_each_selected_rgb_pin(){
 
 #[test]
 fn oled_i2c_windows_go_through_both_classic_controllers_and_real_routes(){
-    for id in["lilygo-t-beam-meshtastic","lilygo-t-beam-softrf","lilygo-lora-v1-3","lilygo-lora3","lilygo-t-lite-w5500","lilygo-t3-tcxo"]{
+    for id in["lilygo-t-beam-meshtastic","lilygo-t-beam-softrf","lilygo-helium-t-beam","lilygo-lora-v1-3","lilygo-lora3","lilygo-t-lite-w5500","lilygo-t3-tcxo"]{
         let mut b=board(id);if id=="lilygo-t3-tcxo"{output(&mut b,4,true);}
         i2c_route(&mut b,0,21,22);assert_eq!(i2c(&mut b,0,0x3c,&[0,0xaf,0xa0,0xc0,0x20,0,0x21,1,1,0x22,0,0])&INT_NACK,0);
         assert_eq!(i2c(&mut b,0,0x3c,&[0x40,4])&INT_NACK,0);let(w,h,pixels,version)=b.board.display().unwrap();assert_eq!((w,h),(128,64));assert_eq!(pixels[2*128+1],0xffff);assert_eq!(pixels.iter().filter(|p|**p!=0).count(),1);
@@ -67,9 +67,12 @@ fn oled_i2c_windows_go_through_both_classic_controllers_and_real_routes(){
 }
 
 fn spi(b:&mut SocBus,dc:bool,data:&[u8]){
-    const SPI:u32=0x3ff6_5000;level(b,16,dc);level(b,5,false);
+    spi_at(b,16,5,dc,data);
+}
+fn spi_at(b:&mut SocBus,dc_pin:u8,cs_pin:u8,dc:bool,data:&[u8]){
+    const SPI:u32=0x3ff6_5000;level(b,dc_pin,dc);level(b,cs_pin,false);
     for(i,chunk)in data.chunks(4).enumerate(){let mut bytes=[0;4];bytes[..chunk.len()].copy_from_slice(chunk);put(b,SPI+0x80+4*i as u32,u32::from_le_bytes(bytes));}
-    put(b,SPI+0x1c,1<<27);put(b,SPI+0x28,data.len()as u32*8-1);put(b,SPI,1<<18);level(b,5,true);
+    put(b,SPI+0x1c,1<<27);put(b,SPI+0x28,data.len()as u32*8-1);put(b,SPI,1<<18);level(b,cs_pin,true);
 }
 fn cmd(b:&mut SocBus,c:u8,data:&[u8]){spi(b,false,&[c]);if!data.is_empty(){spi(b,true,data);}}
 #[test]
@@ -101,4 +104,63 @@ fn cold_route_opt_in_preserves_legacy_waveform_callbacks(){
     let a=Arc::new(Mutex::new(0));let c=Arc::new(Mutex::new(0));let models:Vec<Box<dyn BoardModel>>=vec![Box::new(Legacy(a.clone())),Box::new(Cold(c.clone()))];
     for model in models{let mut b=SocBus::new(4<<20,[0;6]);b.board=model;b.attach_board_devices();put(&mut b,MUX+0x44,2<<12);put(&mut b,GPIO+8,1);b.tick(100);}
     assert_eq!(*a.lock().unwrap(),3);assert_eq!(*c.lock().unwrap(),3);
+}
+
+#[test]
+fn independent_classic_revisions_keep_their_button_and_led_polarities(){
+    for(id,pin,active,color)in[("lilygo-helium-t-beam",4,false,[255,0,0]),("lilygo-a-t-pcie",12,false,[0,0,255]),("lilygo-t-sim7000g",12,false,[0,0,255]),("lilygo-t-sim7070g",12,false,[0,0,255]),("lilygo-t-sim7600",12,true,[0,0,255]),("lilygo-t-sim7600e-l1",12,true,[0,0,255]),("lilygo-t-call-v1-4",13,true,[0,0,255]),("lilygo-t7-v1-3-mini-32-esp32",22,false,[0,255,0])]{
+        let mut b=board(id);assert_eq!(b.board.leds().unwrap().0,[[0;3]]);output(&mut b,pin,active);assert_eq!(b.board.leds().unwrap().0,[color]);
+        mux(&mut b,pin,3);assert_eq!(b.board.leds().unwrap().0,[[0;3]]);output(&mut b,pin,!active);assert_eq!(b.board.leds().unwrap().0,[[0;3]]);
+    }
+    for(id,name,pin)in[("lilygo-t-poe-pro","boot",0),("lilygo-t-a7608e-h","boot",0),("lilygo-t-sim-a7670e","boot",0),("lilygo-t-weigh","boot",0),("lilygo-t7-v1-3-mini-32-esp32","boot",0),("lilygo-t-watch-2021","button-2",35),("lilygo-t-watch-2021","button-3",34),("lilygo-t-higrow","user",35)]{
+        let mut b=board(id);assert_eq!(b.board.named_pin(name),Some(pin));mux(&mut b,pin,2);let reg=GPIO+if pin<32{0x3c}else{0x40};let mask=1<<(pin%32);assert_ne!(b.read32(reg).unwrap()&mask,0);
+        esp_soc::SocBus::gpio_set_input(&mut b,pin,false);assert_eq!(b.read32(reg).unwrap()&mask,0);esp_soc::SocBus::gpio_set_input(&mut b,pin,true);assert_ne!(b.read32(reg).unwrap()&mask,0);
+    }
+    // These are PMIC/modem power keys, not sourced ESP GPIO switches.
+    for id in["lilygo-a-t-pcie","lilygo-t-sim7000g","lilygo-t-sim7070g","lilygo-t-sim7600","lilygo-t-call-v1-4"]{assert!(board(id).board.named_pin("boot").is_none());}
+    assert!(board("lilygo-t-bao").board.display().is_none(),"K210 LCD is not an ESP32 display");
+}
+
+#[test]
+fn watch2021_v12_uses_its_gc9a01_rail_and_three_real_inputs(){
+    let mut b=board("lilygo-t-watch-2021");for(pin,on)in[(15,true),(19,false),(27,true),(21,true),(5,false)]{output(&mut b,pin,on);}
+    for(pin,signal)in[(14,63),(13,65)]{mux(&mut b,pin,2);put(&mut b,GPIO+0x530+4*pin as u32,signal);}
+    let command=|b:&mut SocBus,c:u8,d:&[u8]|{spi_at(b,19,15,false,&[c]);if !d.is_empty(){spi_at(b,19,15,true,d);}};
+    command(&mut b,0x11,&[]);command(&mut b,0x29,&[]);assert!(b.board.display().unwrap().2.iter().all(|v|*v==0),"rail is off");
+    level(&mut b,5,true);command(&mut b,0x11,&[]);command(&mut b,0x29,&[]);command(&mut b,0x3a,&[0x55]);command(&mut b,0x36,&[8]);command(&mut b,0x2a,&[0,120,0,120]);command(&mut b,0x2b,&[0,120,0,120]);command(&mut b,0x2c,&[0xf8,0]);
+    let(w,h,p,v)=b.board.display().unwrap();assert_eq!((w,h),(240,240));assert_eq!(p[120*240+120],0xf800);
+    level(&mut b,21,false);assert!(b.board.display().unwrap().2.iter().all(|v|*v==0));assert!(b.board.display_version()>v);level(&mut b,21,true);assert_eq!(b.board.display().unwrap().2[120*240+120],0xf800);
+    level(&mut b,5,false);command(&mut b,0x2c,&[0,0x1f]);level(&mut b,5,true);assert_eq!(b.board.display().unwrap().2[120*240+120],0xf800,"unpowered write is ignored");
+    level(&mut b,27,false);assert!(b.board.display().unwrap().2.iter().all(|v|*v==0));
+}
+
+fn ttv_soft_spi(b:&mut SocBus,dc:bool,bytes:&[u8]) {
+    level(b,18,false);level(b,19,dc);level(b,5,false);
+    for &byte in bytes {for bit in(0..8).rev(){level(b,23,byte&(1<<bit)!=0);level(b,18,true);level(b,18,false);}}
+    level(b,5,true);
+}
+#[test]
+fn transparent_tv_ssd1309_receives_software_and_hardware_spi_with_real_power_gates(){
+    let mut b=board("lilygo-t-tv");for(pin,on)in[(18,false),(23,false),(5,true),(19,false),(4,true),(2,true),(33,false)]{output(&mut b,pin,on);}
+    ttv_soft_spi(&mut b,false,&[0xfd,0x12,0xaf,0x20,0,0x21,2,2,0x22,0,0]);ttv_soft_spi(&mut b,true,&[4]);assert!(b.board.display().unwrap().2.iter().all(|v|*v==0));
+    level(&mut b,33,true);ttv_soft_spi(&mut b,false,&[0xfd,0x12,0xaf,0xa0,0xc0,0x20,0,0x21,2,2,0x22,0,0]);ttv_soft_spi(&mut b,true,&[4]);assert_eq!(b.board.display().unwrap().2[258],0xffff);assert_eq!(b.board.display_frames(),1);
+    // MOSI on a non-GPIO mux must not clock the software endpoint.
+    mux(&mut b,23,3);ttv_soft_spi(&mut b,false,&[0xae]);assert_eq!(b.board.display().unwrap().2[258],0xffff);mux(&mut b,23,2);
+    // The same electrical endpoint accepts properly routed peripheral SPI too.
+    for(pin,signal)in[(18,63),(23,65)]{put(&mut b,GPIO+0x530+4*pin as u32,signal);}
+    spi_at(&mut b,19,5,false,&[0xae]);assert!(b.board.display().unwrap().2.iter().all(|v|*v==0));spi_at(&mut b,19,5,false,&[0xaf]);assert_eq!(b.board.display().unwrap().2[258],0xffff);
+    level(&mut b,2,false);spi_at(&mut b,19,5,false,&[0xae]);assert!(b.board.display().unwrap().2.iter().all(|v|*v==0));level(&mut b,2,true);assert!(b.board.display().unwrap().2.iter().all(|v|*v==0),"restored power must not invent the old SRAM image");spi_at(&mut b,19,5,false,&[0xaf,0x20,0,0x21,2,2,0x22,0,0]);spi_at(&mut b,19,5,true,&[4]);assert_eq!(b.board.display().unwrap().2[258],0xffff);
+    level(&mut b,4,false);assert!(b.board.display().unwrap().2.iter().all(|v|*v==0));
+}
+
+#[test]
+fn bao_coprocessor_executes_lx6_sram_and_uart_without_claiming_the_k210_display(){
+    use emu_core::Core;
+    const IRAM:u32=0x4008_0000;
+    let mut m=esp32::machine([0;6],16<<20);m.bus.board=additional::make_board("lilygo-t-bao").unwrap();m.bus.attach_board_devices();m.console.capture=true;
+    // Independent authored S32I / L32I instructions followed by a local loop.
+    m.bus.load_bytes(IRAM,&[0x22,0x63,0,0x06,0xff,0xff,0,0,0x22,0x23,0,0x06,0xff,0xff]).unwrap();m.cores[0].ps=0;m.cores[0].set_jit(false);
+    for(address,value)in[(0x3ffb_1000,0x5372_614d),(0x3ff4_0000,u32::from(b'K'))]{m.cores[0].pc=IRAM;m.cores[0].set_ar(2,value);m.cores[0].set_ar(3,address);assert!(matches!(m.run(64),esp32::Stop::MaxInsns));}
+    m.cores[0].pc=IRAM+8;m.cores[0].set_ar(3,0x3ffb_1000);assert!(matches!(m.run(64),esp32::Stop::MaxInsns));assert_eq!(m.cores[0].get_ar(2),0x5372_614d);m.drain_console();assert_eq!(m.console.all,b"K");
+    assert!(m.bus.board.display().is_none());assert!(m.bus.board.i2c_devices().is_empty());assert!(m.bus.board.leds().is_none());
 }

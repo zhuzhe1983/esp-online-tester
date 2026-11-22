@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-22T08:27:32Z",
+  "checkedAt": "2026-11-22T08:41:30Z",
   "implementation": "esp32/src/board/lilygo_additional.rs",
   "status": "partial board contracts; no factory boot claims",
   "notes": [
@@ -8,14 +8,14 @@
     "Each product ID has a distinct board name and explicit hardware target. Neither software-edition naming nor a similar enclosure establishes firmware interchangeability.",
     "The classic backend accepts only 0 or 4 MiB simulated PSRAM. physicalPsramMB and psramMB intentionally differ where the source declares 2/8 MiB or capacity is unknown.",
     "Two existing cold GPIO/IO_MUX and attach gates now consult uses_gpio_routes; legacy waveform callbacks still work. CPU scheduling and hot instruction paths are unchanged.",
-    "Native tests exercise actual ESP32 bus/register transactions and routes. No authored CPU guest instruction probe, official full firmware boot, browser firmware execution or physical hardware validation is claimed."
+    "Native tests exercise actual ESP32 bus/register transactions and routes. T-BAO alone additionally executes an authored LX6 SRAM/UART probe. Official full firmware boot, browser firmware execution and physical hardware validation remain unverified."
   ],
   "verification": {
     "commands": [
       "cargo test --release -p esp32 --test lilygo_additional",
       "cargo clippy -p esp32 --test lilygo_additional -- -D warnings"
     ],
-    "testCount": 6,
+    "testCount": 10,
     "status": "passed",
     "factoryFirmwareExecuted": false,
     "hardwareTested": false
@@ -92,6 +92,63 @@
       "archiveName": "LilyGo-W5500-Lite-schematic-w5500.pdf.raw"
     },
     {
+      "id": "classic-esp32-mini-32-v1-3-4ea9773a2d7b",
+      "repository": "LilyGO/ESP32-MINI-32-V1.3",
+      "path": "Module_test/Blink/Blink.ino",
+      "revision": "5165c30c1c8ba81d2432575839348f63c253d9df",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "e0b5ddf9fa5a52c611de826f31f65481fee7d0a9",
+      "url": "https://raw.githubusercontent.com/LilyGO/ESP32-MINI-32-V1.3/5165c30c1c8ba81d2432575839348f63c253d9df/Module_test/Blink/Blink.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/LilyGO/ESP32-MINI-32-V1.3/5165c30c1c8ba81d2432575839348f63c253d9df/Module_test/Blink/Blink.ino",
+      "fetchedAt": "2026-11-22T08:31:26Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 689,
+      "sha256": "a6749d13d23d54452056f55c0fa919a70b1cd06721b7ac11f2d0217a0f5bebe9",
+      "archiveName": "classic-esp32-mini-32-v1-3-4ea9773a2d7b.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-esp32-mini-32-v1-3-4ea9773a2d7b.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO/ESP32-MINI-32-V1.3/Module_test/Blink/Blink.ino"
+    },
+    {
+      "id": "classic-esp32-mini-32-v1-3-ac30dd7520fe",
+      "repository": "LilyGO/ESP32-MINI-32-V1.3",
+      "path": "Schematic.pdf",
+      "revision": "5165c30c1c8ba81d2432575839348f63c253d9df",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "f74ba7d6d602e793310dffa3e557f6e1e9887ce8",
+      "url": "https://raw.githubusercontent.com/LilyGO/ESP32-MINI-32-V1.3/5165c30c1c8ba81d2432575839348f63c253d9df/Schematic.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/LilyGO/ESP32-MINI-32-V1.3/5165c30c1c8ba81d2432575839348f63c253d9df/Schematic.pdf",
+      "fetchedAt": "2026-11-22T08:31:27Z",
+      "status": "fetched",
+      "mediaType": "application/octet-stream",
+      "bytes": 226694,
+      "sha256": "e367ff89bdcb874d833f63db63d176380e570346a50a0fbd207a96765c8a036d",
+      "archiveName": "classic-esp32-mini-32-v1-3-ac30dd7520fe.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-esp32-mini-32-v1-3-ac30dd7520fe.raw",
+      "kind": "manufacturer-schematic",
+      "title": "LilyGO/ESP32-MINI-32-V1.3/Schematic.pdf"
+    },
+    {
+      "id": "classic-esp32-mini-32-v1-3-b33563055168",
+      "repository": "LilyGO/ESP32-MINI-32-V1.3",
+      "path": "README.md",
+      "revision": "5165c30c1c8ba81d2432575839348f63c253d9df",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "d80aea8211b7205218299189c5b36e46252e7c08",
+      "url": "https://raw.githubusercontent.com/LilyGO/ESP32-MINI-32-V1.3/5165c30c1c8ba81d2432575839348f63c253d9df/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/LilyGO/ESP32-MINI-32-V1.3/5165c30c1c8ba81d2432575839348f63c253d9df/README.md",
+      "fetchedAt": "2026-11-22T08:31:26Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 2049,
+      "sha256": "cdc51ddf62c1793c7d8d0ecc586ac39b92fffaa5b190708dc2134ee114daaecb",
+      "archiveName": "classic-esp32-mini-32-v1-3-b33563055168.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-esp32-mini-32-v1-3-b33563055168.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO/ESP32-MINI-32-V1.3/README.md"
+    },
+    {
       "id": "classic-esp32-pico-d4-datasheet",
       "url": "https://www.espressif.com/sites/default/files/documentation/esp32-pico-d4_datasheet_en.pdf",
       "resolvedUrl": "https://documentation.espressif.com/esp32-pico_series_datasheet_en.pdf",
@@ -116,6 +173,120 @@
       "archiveName": "esp32-pico-v3-02-datasheet.pdf",
       "sourceCachePath": "target/lilygo-classic-sources/esp32-pico-v3-02-datasheet.pdf",
       "kind": "chip-manufacturer-datasheet"
+    },
+    {
+      "id": "classic-lilygo-higrow-01e6d9ffed05",
+      "repository": "Xinyuan-LilyGO/LilyGo-HiGrow",
+      "path": "README.MD",
+      "revision": "f5732ce6012e6ece349c9d1788bad4cf392c9aca",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "8079826aa80a8bb844fe0556efeddb402d88f7bd",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-HiGrow/f5732ce6012e6ece349c9d1788bad4cf392c9aca/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-HiGrow/f5732ce6012e6ece349c9d1788bad4cf392c9aca/README.MD",
+      "fetchedAt": "2026-11-22T08:15:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 1891,
+      "sha256": "30088d085aee249e7468a90a8e66c8d5cdbea1a4e4637e73eed5444ca18c0264",
+      "archiveName": "classic-lilygo-higrow-01e6d9ffed05.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-higrow-01e6d9ffed05.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-HiGrow/README.MD"
+    },
+    {
+      "id": "classic-lilygo-higrow-1e3f6cf83615",
+      "repository": "Xinyuan-LilyGO/LilyGo-HiGrow",
+      "path": "src/configuration.h",
+      "revision": "f5732ce6012e6ece349c9d1788bad4cf392c9aca",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "6fd00bab97096b09bf674190ecfe9ce901f58dfa",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-HiGrow/f5732ce6012e6ece349c9d1788bad4cf392c9aca/src/configuration.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-HiGrow/f5732ce6012e6ece349c9d1788bad4cf392c9aca/src/configuration.h",
+      "fetchedAt": "2026-11-22T08:15:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 3341,
+      "sha256": "c477d6b8cd4d37edbd49c86a5e5d86d273e3612e329d568bfba4aabf82f67855",
+      "archiveName": "classic-lilygo-higrow-1e3f6cf83615.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-higrow-1e3f6cf83615.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-HiGrow/src/configuration.h"
+    },
+    {
+      "id": "classic-lilygo-higrow-4446afd728a4",
+      "repository": "Xinyuan-LilyGO/LilyGo-HiGrow",
+      "path": "platformio.ini",
+      "revision": "f5732ce6012e6ece349c9d1788bad4cf392c9aca",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "9f50541ff136e84b54e4710cece2b5d9ad8916ff",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-HiGrow/f5732ce6012e6ece349c9d1788bad4cf392c9aca/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-HiGrow/f5732ce6012e6ece349c9d1788bad4cf392c9aca/platformio.ini",
+      "fetchedAt": "2026-11-22T08:15:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 550,
+      "sha256": "2cefa98330df1c5fbbf4148e36bc4acb7e855f3733d372f04e9109c5c2f90164",
+      "archiveName": "classic-lilygo-higrow-4446afd728a4.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-higrow-4446afd728a4.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-HiGrow/platformio.ini"
+    },
+    {
+      "id": "classic-lilygo-k210-script-01e6d9ffed05",
+      "repository": "Xinyuan-LilyGO/LilyGo-K210-Script",
+      "path": "README.MD",
+      "revision": "2a088bffa1d502093605f860cb6231c1eaa1153a",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "7d9d38c627d70346e5c3c6e933697f8e29734a83",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-K210-Script/2a088bffa1d502093605f860cb6231c1eaa1153a/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-K210-Script/2a088bffa1d502093605f860cb6231c1eaa1153a/README.MD",
+      "fetchedAt": "2026-11-22T08:06:05Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 1762,
+      "sha256": "d2cfca682376e92d18b5acab7d4ffea13008f0bc74c56b22d30c9548dce8f1e5",
+      "archiveName": "classic-lilygo-k210-script-01e6d9ffed05.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-k210-script-01e6d9ffed05.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-K210-Script/README.MD"
+    },
+    {
+      "id": "classic-lilygo-k210-script-18c6d175f17b",
+      "repository": "Xinyuan-LilyGO/LilyGo-K210-Script",
+      "path": "script/demo_lcd.py",
+      "revision": "2a088bffa1d502093605f860cb6231c1eaa1153a",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "a39324ca1b603c33070967ba09d77507e96e1ad5",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-K210-Script/2a088bffa1d502093605f860cb6231c1eaa1153a/script/demo_lcd.py",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-K210-Script/2a088bffa1d502093605f860cb6231c1eaa1153a/script/demo_lcd.py",
+      "fetchedAt": "2026-11-22T08:35:22Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 455,
+      "sha256": "26104a211f57d744331053534fb455ff4ede0e683f43003542ddec0d12665874",
+      "archiveName": "classic-lilygo-k210-script-18c6d175f17b.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-k210-script-18c6d175f17b.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/LilyGo-K210-Script/script/demo_lcd.py"
+    },
+    {
+      "id": "classic-lilygo-k210-script-dcf1bc7b881f",
+      "repository": "Xinyuan-LilyGO/LilyGo-K210-Script",
+      "path": "script/face_tracking/main.py",
+      "revision": "2a088bffa1d502093605f860cb6231c1eaa1153a",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "836e963991a88f1ccddd7e411b7fcade700b45df",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-K210-Script/2a088bffa1d502093605f860cb6231c1eaa1153a/script/face_tracking/main.py",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-K210-Script/2a088bffa1d502093605f860cb6231c1eaa1153a/script/face_tracking/main.py",
+      "fetchedAt": "2026-11-22T08:35:22Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 5787,
+      "sha256": "bc9b4e91aa08f6bfb6c091a1143af490423ce6e9a2e2f8bbdb9bf766bb7bb7db",
+      "archiveName": "classic-lilygo-k210-script-dcf1bc7b881f.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-k210-script-dcf1bc7b881f.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/LilyGo-K210-Script/script/face_tracking/main.py"
     },
     {
       "id": "classic-lilygo-lora-series-1a6868bb9cb8",
@@ -194,6 +365,272 @@
       "title": "LilyGo-LoRa-Series/docs/en/t3_v13_sx1276/t3_v13_sx1276.md"
     },
     {
+      "id": "classic-lilygo-modem-series-10e19a63cd92",
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "path": "docs/en/esp32/a7670-esp32/README.MD",
+      "revision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "2c477f7b113136d3a49ceac4f7004166c961282f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/a7670-esp32/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/a7670-esp32/README.MD",
+      "fetchedAt": "2026-11-22T08:06:22Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 21052,
+      "sha256": "02a25cd1c1b8726c42fb221bd7697dde75de05ae2ef0d54bf3c98904a6237b50",
+      "archiveName": "classic-lilygo-modem-series-10e19a63cd92.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-modem-series-10e19a63cd92.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-Modem-Series/docs/en/esp32/a7670-esp32/README.MD"
+    },
+    {
+      "id": "classic-lilygo-modem-series-8144cb1ccb1f",
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "path": "docs/en/esp32/a7608-esp32/README.MD",
+      "revision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "8088570c1249df4c6eb27a0f73b084f3f53aefde",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/a7608-esp32/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/a7608-esp32/README.MD",
+      "fetchedAt": "2026-11-22T08:06:22Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 17213,
+      "sha256": "f45eee5c5f2a7106f33e28bebfde841522ecef3d3e88f23c4adc83ac92174c8b",
+      "archiveName": "classic-lilygo-modem-series-8144cb1ccb1f.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-modem-series-8144cb1ccb1f.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-Modem-Series/docs/en/esp32/a7608-esp32/README.MD"
+    },
+    {
+      "id": "classic-lilygo-modem-series-8d44b02ee0bd",
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "path": "docs/en/esp32/sim7000-esp32/README.MD",
+      "revision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "11fdac6619281821a4ca0afa998e4a667147e2bb",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/sim7000-esp32/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/sim7000-esp32/README.MD",
+      "fetchedAt": "2026-11-22T08:06:22Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 16706,
+      "sha256": "5d44434dde14fa09e83edbd63dc229cdbd348a21b761185bf756b2b1911fb793",
+      "archiveName": "classic-lilygo-modem-series-8d44b02ee0bd.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-modem-series-8d44b02ee0bd.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-Modem-Series/docs/en/esp32/sim7000-esp32/README.MD"
+    },
+    {
+      "id": "classic-lilygo-modem-series-a7e94e5e95d8",
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "path": "examples/ATdebug/utilities.h",
+      "revision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "41acbc48084f7be5061bb68ef2dcb970eaa23a27",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/examples/ATdebug/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/examples/ATdebug/utilities.h",
+      "fetchedAt": "2026-11-22T08:09:47Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 41736,
+      "sha256": "0db9c1d7f507cfa9e04e34b3bb9e103426215fedf748de1efcc807ad46b52cd2",
+      "archiveName": "classic-lilygo-modem-series-a7e94e5e95d8.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-modem-series-a7e94e5e95d8.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-Modem-Series/examples/ATdebug/utilities.h"
+    },
+    {
+      "id": "classic-lilygo-modem-series-b305b1714af8",
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "path": "docs/en/esp32/sim7070-esp32/README.MD",
+      "revision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "7dcd25eb7457c1dfa2c38afb6fe076f0e7ff0855",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/sim7070-esp32/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/sim7070-esp32/README.MD",
+      "fetchedAt": "2026-11-22T08:06:27Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 16596,
+      "sha256": "1c168b44920f7481a6fda507697099b6dc208ea68ed4ac245c0999d8766264b5",
+      "archiveName": "classic-lilygo-modem-series-b305b1714af8.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-modem-series-b305b1714af8.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-Modem-Series/docs/en/esp32/sim7070-esp32/README.MD"
+    },
+    {
+      "id": "classic-lilygo-modem-series-e1d924c1ab40",
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "path": "docs/en/esp32/sim7600-esp32/README.MD",
+      "revision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "3df9bb535aea2a313805321c347b6269ca610c34",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/sim7600-esp32/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/sim7600-esp32/README.MD",
+      "fetchedAt": "2026-11-22T08:06:27Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 18966,
+      "sha256": "ced13c2b668a2e15b1d13509583c9ee98496fe2eb64852f0d7f362d21015545e",
+      "archiveName": "classic-lilygo-modem-series-e1d924c1ab40.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-modem-series-e1d924c1ab40.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-Modem-Series/docs/en/esp32/sim7600-esp32/README.MD"
+    },
+    {
+      "id": "classic-lilygo-modem-series-f50035b59daf",
+      "repository": "Xinyuan-LilyGO/LilyGo-Modem-Series",
+      "path": "docs/en/esp32/pcie-series-esp32/README.MD",
+      "revision": "fc7cd2a1759eae88c77c5a4b81e24406377e1900",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "2689deedd201f1031598ffb3654069ee41965794",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/pcie-series-esp32/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Modem-Series/fc7cd2a1759eae88c77c5a4b81e24406377e1900/docs/en/esp32/pcie-series-esp32/README.MD",
+      "fetchedAt": "2026-11-22T08:06:22Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 12913,
+      "sha256": "f89132b1a44f5d92e87ee33df32e7ca1ef9d16ef253c7c518767a7e54bb30b77",
+      "archiveName": "classic-lilygo-modem-series-f50035b59daf.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-modem-series-f50035b59daf.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-Modem-Series/docs/en/esp32/pcie-series-esp32/README.MD"
+    },
+    {
+      "id": "classic-lilygo-t-call-sim800-01e6d9ffed05",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Call-SIM800",
+      "path": "README.MD",
+      "revision": "11db8bf5bc38f52a6122fdfdb6b6a821f26808b8",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "704a1ebbf57aeb5b0f50845736e918b0fbd1fae0",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Call-SIM800/11db8bf5bc38f52a6122fdfdb6b6a821f26808b8/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Call-SIM800/11db8bf5bc38f52a6122fdfdb6b6a821f26808b8/README.MD",
+      "fetchedAt": "2026-11-22T08:06:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 6473,
+      "sha256": "8d4e3ee33d1d8abb8adc1792a6c5e96e5b01b1449a721908547e3719814e4d91",
+      "archiveName": "classic-lilygo-t-call-sim800-01e6d9ffed05.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t-call-sim800-01e6d9ffed05.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-T-Call-SIM800/README.MD"
+    },
+    {
+      "id": "classic-lilygo-t-call-sim800-75e7f87b0db4",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Call-SIM800",
+      "path": "examples/Arduino_AT_Debug/utilities.h",
+      "revision": "11db8bf5bc38f52a6122fdfdb6b6a821f26808b8",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "2390f09edade7283e22d4fcb2e075ee437e3c4aa",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Call-SIM800/11db8bf5bc38f52a6122fdfdb6b6a821f26808b8/examples/Arduino_AT_Debug/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Call-SIM800/11db8bf5bc38f52a6122fdfdb6b6a821f26808b8/examples/Arduino_AT_Debug/utilities.h",
+      "fetchedAt": "2026-11-22T08:06:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 4417,
+      "sha256": "37c8a91966d062a2c2c13ae9837400cfb309f98e856c02dcc4660311950cc887",
+      "archiveName": "classic-lilygo-t-call-sim800-75e7f87b0db4.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t-call-sim800-75e7f87b0db4.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-T-Call-SIM800/examples/Arduino_AT_Debug/utilities.h"
+    },
+    {
+      "id": "classic-lilygo-t-call-sim800-a11ea0900009",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Call-SIM800",
+      "path": "examples/Arduino_AT_Debug/Arduino_AT_Debug.ino",
+      "revision": "11db8bf5bc38f52a6122fdfdb6b6a821f26808b8",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "9db1b8913981cb90aee995af0a68d76063721008",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Call-SIM800/11db8bf5bc38f52a6122fdfdb6b6a821f26808b8/examples/Arduino_AT_Debug/Arduino_AT_Debug.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Call-SIM800/11db8bf5bc38f52a6122fdfdb6b6a821f26808b8/examples/Arduino_AT_Debug/Arduino_AT_Debug.ino",
+      "fetchedAt": "2026-11-22T08:06:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 3124,
+      "sha256": "4bcbffbb823f015639ac0d7485bc038c510436e355cc39da995f272523d452b3",
+      "archiveName": "classic-lilygo-t-call-sim800-a11ea0900009.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t-call-sim800-a11ea0900009.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-T-Call-SIM800/examples/Arduino_AT_Debug/Arduino_AT_Debug.ino"
+    },
+    {
+      "id": "classic-lilygo-t-eth-series-2f70a16373ba",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "path": "examples/HelloServer/utilities.h",
+      "revision": "060292e3afad51e8707c60f9f6c932696990568a",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "685253b7eeac15f6b3798a64ff5942b0b14d5f82",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/examples/HelloServer/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/examples/HelloServer/utilities.h",
+      "fetchedAt": "2026-11-22T08:06:37Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 5140,
+      "sha256": "76cbd17fcf086862ba8c14b45f0288ae9aaafc58c2a8911ee3e51df224de0be1",
+      "archiveName": "classic-lilygo-t-eth-series-2f70a16373ba.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t-eth-series-2f70a16373ba.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO-T-ETH-Series/examples/HelloServer/utilities.h"
+    },
+    {
+      "id": "classic-lilygo-t-eth-series-b33563055168",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "path": "README.md",
+      "revision": "060292e3afad51e8707c60f9f6c932696990568a",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "f59abfb95a585c20b6d5e1b362c446c0b01357a6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/README.md",
+      "fetchedAt": "2026-11-22T08:06:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 21113,
+      "sha256": "8a7054df2ab12e41565fd1ab8640255b6c7fe5543ef5f00e7489d202ebc0bce6",
+      "archiveName": "classic-lilygo-t-eth-series-b33563055168.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t-eth-series-b33563055168.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO-T-ETH-Series/README.md"
+    },
+    {
+      "id": "classic-lilygo-t-eth-series-ec621839977b",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-ETH-Series",
+      "path": "schematic/T_POE_Pro(Final).pdf",
+      "revision": "060292e3afad51e8707c60f9f6c932696990568a",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "10807c6f2d738e29dfd421529e179da74e42e9e7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/schematic/T_POE_Pro%28Final%29.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-ETH-Series/060292e3afad51e8707c60f9f6c932696990568a/schematic/T_POE_Pro%28Final%29.pdf",
+      "fetchedAt": "2026-11-22T08:31:27Z",
+      "status": "fetched",
+      "mediaType": "application/octet-stream",
+      "bytes": 286476,
+      "sha256": "2d15bafdb535580e036f0d82a8f1e6e70a6c9f3756cbf52ff858403489e41abb",
+      "archiveName": "classic-lilygo-t-eth-series-ec621839977b.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t-eth-series-ec621839977b.raw",
+      "kind": "manufacturer-schematic",
+      "title": "Xinyuan-LilyGO/LilyGO-T-ETH-Series/schematic/T_POE_Pro(Final).pdf"
+    },
+    {
+      "id": "classic-lilygo-t-pcie-644bf7188cb5",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-PCIE",
+      "path": "examples/ATDebug/ATDebug.ino",
+      "revision": "498938f262d39151047cb6e88c36ae76e8d28316",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "86347ee7a61c0ce6b414db7d04f11592836313f0",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-PCIE/498938f262d39151047cb6e88c36ae76e8d28316/examples/ATDebug/ATDebug.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-PCIE/498938f262d39151047cb6e88c36ae76e8d28316/examples/ATDebug/ATDebug.ino",
+      "fetchedAt": "2026-11-22T08:06:22Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 3999,
+      "sha256": "6a607cc9d21c925583f6eedb7901062c29b793b2fb3b6f2c9f0a4805b921a224",
+      "archiveName": "classic-lilygo-t-pcie-644bf7188cb5.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t-pcie-644bf7188cb5.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-T-PCIE/examples/ATDebug/ATDebug.ino"
+    },
+    {
       "id": "classic-lilygo-t-relay-99e62b310723",
       "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
       "path": "examples/T-Relay-4-ESP32/simple/Simple.ino",
@@ -268,6 +705,82 @@
       "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t-relay-fb297f1ecaf3.raw",
       "kind": "manufacturer-source",
       "title": "LilyGo-T-Relay/examples/T-Relay-8-ESP32/simple/Simple.ino"
+    },
+    {
+      "id": "classic-lilygo-ttv-01e6d9ffed05",
+      "repository": "Xinyuan-LilyGO/LilyGo-TTV",
+      "path": "README.MD",
+      "revision": "2ef4e2edf908dcc586ce3c83c04286bb30740f57",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "79404fae965e7054335b43c882d5646e167c4005",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/README.MD",
+      "fetchedAt": "2026-11-22T08:15:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 1084,
+      "sha256": "8b968f2e0e81efb3880a0c7efadf3f123a876bf4e716f458cec02518e64d9677",
+      "archiveName": "classic-lilygo-ttv-01e6d9ffed05.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-ttv-01e6d9ffed05.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-TTV/README.MD"
+    },
+    {
+      "id": "classic-lilygo-ttv-1e49a5cc0b65",
+      "repository": "Xinyuan-LilyGO/LilyGo-TTV",
+      "path": "examples/DISPALY/DesktopClock/DesktopClock.ino",
+      "revision": "2ef4e2edf908dcc586ce3c83c04286bb30740f57",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "e10c8bb766e221a1cacd884083138e4ed6b0f79c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/examples/DISPALY/DesktopClock/DesktopClock.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/examples/DISPALY/DesktopClock/DesktopClock.ino",
+      "fetchedAt": "2026-11-22T08:15:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 8152,
+      "sha256": "528f50f9317fd91d0509394dbdc25c98371e63e8d34a4dda49f7039b9e673236",
+      "archiveName": "classic-lilygo-ttv-1e49a5cc0b65.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-ttv-1e49a5cc0b65.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-TTV/examples/DISPALY/DesktopClock/DesktopClock.ino"
+    },
+    {
+      "id": "classic-lilygo-ttv-684d2e6c9c24",
+      "repository": "Xinyuan-LilyGO/LilyGo-TTV",
+      "path": "schematic/LilyGo_TTV(11-28).pdf",
+      "revision": "2ef4e2edf908dcc586ce3c83c04286bb30740f57",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "54b3cd0784789f8478427197e592d599b8de8ff9",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/schematic/LilyGo_TTV%2811-28%29.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/schematic/LilyGo_TTV%2811-28%29.pdf",
+      "fetchedAt": "2026-11-22T08:35:23Z",
+      "status": "fetched",
+      "mediaType": "application/octet-stream",
+      "bytes": 222681,
+      "sha256": "8af43d7e062f284b1d351fa8dc1ca37a5f3328278c6ea1271d8ff7e2246f9feb",
+      "archiveName": "classic-lilygo-ttv-684d2e6c9c24.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-ttv-684d2e6c9c24.raw",
+      "kind": "manufacturer-schematic",
+      "title": "Xinyuan-LilyGO/LilyGo-TTV/schematic/LilyGo_TTV(11-28).pdf"
+    },
+    {
+      "id": "classic-lilygo-ttv-c3c4be694f7d",
+      "repository": "Xinyuan-LilyGO/LilyGo-TTV",
+      "path": "examples/DISPALY/DesktopClock/utilities.h",
+      "revision": "2ef4e2edf908dcc586ce3c83c04286bb30740f57",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "f33baa705c92feafd4c91edc6e9d0519f7e1a215",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/examples/DISPALY/DesktopClock/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/examples/DISPALY/DesktopClock/utilities.h",
+      "fetchedAt": "2026-11-22T08:15:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 430,
+      "sha256": "d36b8a3a3427bf6f4441f7bf043120b8cf51a8ca27dbc45f336d7d7872922ad3",
+      "archiveName": "classic-lilygo-ttv-c3c4be694f7d.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-ttv-c3c4be694f7d.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-TTV/examples/DISPALY/DesktopClock/utilities.h"
     },
     {
       "id": "classic-t-can485-56e29b85c739",
@@ -403,6 +916,272 @@
       "title": "T-Lora-Dual/T-Lora-Dual/examples/Factory/Factory.ino"
     },
     {
+      "id": "classic-t-watch-2021-0685987a4b56",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "TWatch_2021_Library/src/drive/Backlight.cpp",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "5ade85416af18ac398c53f2cd25202f298f35aeb",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/drive/Backlight.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/drive/Backlight.cpp",
+      "fetchedAt": "2026-11-22T08:15:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 1293,
+      "sha256": "66493faac12f6f1bf440500345bd4798bb545145152d066c83e8f25c33077361",
+      "archiveName": "classic-t-watch-2021-0685987a4b56.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-0685987a4b56.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Watch-2021/TWatch_2021_Library/src/drive/Backlight.cpp"
+    },
+    {
+      "id": "classic-t-watch-2021-1709ed5a4c21",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "TWatch_2021_Library/src/TWatch_config.h",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "993000c44f4f8763259b53f782d2c834a3dc7fa1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/TWatch_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/TWatch_config.h",
+      "fetchedAt": "2026-11-22T08:15:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 2378,
+      "sha256": "921e5a4ac7cd4d4fdff124ebf67602368d3fe12d58cc6ea7d2b74ee2b10d3bd5",
+      "archiveName": "classic-t-watch-2021-1709ed5a4c21.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-1709ed5a4c21.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Watch-2021/TWatch_2021_Library/src/TWatch_config.h"
+    },
+    {
+      "id": "classic-t-watch-2021-4142fe43028d",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "TWatch_2021_Library/src/libraries/TFT_eSPI/TFT_Drivers/GC9A01_Defines.h",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "b6c564833f947eadfa1a67264ef2b809b5fa704f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/libraries/TFT_eSPI/TFT_Drivers/GC9A01_Defines.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/libraries/TFT_eSPI/TFT_Drivers/GC9A01_Defines.h",
+      "fetchedAt": "2026-11-22T08:35:22Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 819,
+      "sha256": "39cf4ec977546b44ee524d627e7d67235ffc8a9eb4e20505e3d551f82279b6b1",
+      "archiveName": "classic-t-watch-2021-4142fe43028d.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-4142fe43028d.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/T-Watch-2021/TWatch_2021_Library/src/libraries/TFT_eSPI/TFT_Drivers/GC9A01_Defines.h"
+    },
+    {
+      "id": "classic-t-watch-2021-7b6be0b6023a",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "TWatch_2021_Library/src/board/TWatch2021_V1_2.h",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "2f717a719c4a1a689ade678aa111e323bb556ed2",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/board/TWatch2021_V1_2.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/board/TWatch2021_V1_2.h",
+      "fetchedAt": "2026-11-22T08:09:42Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 833,
+      "sha256": "85f1d4df0660ffa3f74e509bc91d5016ed15859d9930962889739bc3b27f3580",
+      "archiveName": "classic-t-watch-2021-7b6be0b6023a.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-7b6be0b6023a.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Watch-2021/TWatch_2021_Library/src/board/TWatch2021_V1_2.h"
+    },
+    {
+      "id": "classic-t-watch-2021-b33563055168",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "README.md",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "f4315b2379618025afe2267e10b48c11d068535f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/README.md",
+      "fetchedAt": "2026-11-22T08:06:13Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 4180,
+      "sha256": "738d9f5a7304ffd1eff0795a1de068caaa041b69126d4f75c71c9c3fe03d512c",
+      "archiveName": "classic-t-watch-2021-b33563055168.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-b33563055168.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Watch-2021/README.md"
+    },
+    {
+      "id": "classic-t-watch-2021-b44ed4e141af",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setups/Setup200_GC9A01.h",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "20b97da115fdeff74c6045412f80c010c6a6ebf2",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setups/Setup200_GC9A01.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setups/Setup200_GC9A01.h",
+      "fetchedAt": "2026-11-22T08:32:55Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 1705,
+      "sha256": "8b3b1d011a88c60e004e2c32a80665eb1c83694a05e45d8f08a881f95678c73d",
+      "archiveName": "classic-t-watch-2021-b44ed4e141af.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-b44ed4e141af.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/T-Watch-2021/TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setups/Setup200_GC9A01.h"
+    },
+    {
+      "id": "classic-t-watch-2021-b90611df5d2e",
+      "repository": "Xinyuan-LilyGO/T-Watch-2021",
+      "path": "TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setup_Select.h",
+      "revision": "d18ff632c817f4f95f42eb7f2f631a8c28b75294",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "e358181157cab468a9cce74c53f12945bdbc156d",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setup_Select.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Watch-2021/d18ff632c817f4f95f42eb7f2f631a8c28b75294/TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setup_Select.h",
+      "fetchedAt": "2026-11-22T08:31:26Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 12449,
+      "sha256": "c340b70f2ce67897187cb2135ea6b37b8dfddd4b744a744d1a73332fdf51a441",
+      "archiveName": "classic-t-watch-2021-b90611df5d2e.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-watch-2021-b90611df5d2e.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/T-Watch-2021/TWatch_2021_Library/src/libraries/TFT_eSPI/User_Setup_Select.h"
+    },
+    {
+      "id": "classic-t-weigh-465abf667727",
+      "repository": "Xinyuan-LilyGO/T-Weigh",
+      "path": "example/Lora-Weights/src/pin.h",
+      "revision": "8a1ab405a79c1031d4dddb4bc6db7e8eacda8849",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "82de3e80d63d6255b4c5af2e833b41f277aca1f3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Weigh/8a1ab405a79c1031d4dddb4bc6db7e8eacda8849/example/Lora-Weights/src/pin.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Weigh/8a1ab405a79c1031d4dddb4bc6db7e8eacda8849/example/Lora-Weights/src/pin.h",
+      "fetchedAt": "2026-11-22T08:09:46Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 518,
+      "sha256": "16badf27076bd31fbd3f9fb995a99580bb08a0477afb7ca49fe87e1196f3a8ac",
+      "archiveName": "classic-t-weigh-465abf667727.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-weigh-465abf667727.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Weigh/example/Lora-Weights/src/pin.h"
+    },
+    {
+      "id": "classic-t-weigh-b33563055168",
+      "repository": "Xinyuan-LilyGO/T-Weigh",
+      "path": "README.md",
+      "revision": "8a1ab405a79c1031d4dddb4bc6db7e8eacda8849",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "5827041695fe9d69ad6db8f9e5da0d1fd7fc8624",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Weigh/8a1ab405a79c1031d4dddb4bc6db7e8eacda8849/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Weigh/8a1ab405a79c1031d4dddb4bc6db7e8eacda8849/README.md",
+      "fetchedAt": "2026-11-22T08:06:17Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 253,
+      "sha256": "47f2734cbd777af97a8d0114acdd0da3687d0991ab35a91aa6698c5596614c34",
+      "archiveName": "classic-t-weigh-b33563055168.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-weigh-b33563055168.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Weigh/README.md"
+    },
+    {
+      "id": "classic-t-weigh-e78584ce2b8d",
+      "repository": "Xinyuan-LilyGO/T-Weigh",
+      "path": "example/Lora-Weights/platformio.ini",
+      "revision": "8a1ab405a79c1031d4dddb4bc6db7e8eacda8849",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "1d4674edde08dc71ce35af028f27acdc31ff8e43",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Weigh/8a1ab405a79c1031d4dddb4bc6db7e8eacda8849/example/Lora-Weights/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Weigh/8a1ab405a79c1031d4dddb4bc6db7e8eacda8849/example/Lora-Weights/platformio.ini",
+      "fetchedAt": "2026-11-22T08:06:17Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 582,
+      "sha256": "3acdaad855849544c2899a9d8e3331564bf8aefa4c79e2e459aeec41aafb9d80",
+      "archiveName": "classic-t-weigh-e78584ce2b8d.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-t-weigh-e78584ce2b8d.raw",
+      "kind": "manufacturer-source",
+      "title": "T-Weigh/example/Lora-Weights/platformio.ini"
+    },
+    {
+      "id": "classic-tbeam-helium-mapper-18b7c19417a4",
+      "repository": "Xinyuan-LilyGO/tbeam-helium-mapper",
+      "path": "main/main.cpp",
+      "revision": "00cec9c130d4452839dcf933905f5624d9711e41",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "12f507b39a1eb9d1b54953334d255e6586884396",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/main/main.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/main/main.cpp",
+      "fetchedAt": "2026-11-22T08:09:53Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 41206,
+      "sha256": "fd01e4983607d551017c2cbcd8fb97197f309046fae4e64899182bfd078878bd",
+      "archiveName": "classic-tbeam-helium-mapper-18b7c19417a4.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-tbeam-helium-mapper-18b7c19417a4.raw",
+      "kind": "manufacturer-source",
+      "title": "tbeam-helium-mapper/main/main.cpp"
+    },
+    {
+      "id": "classic-tbeam-helium-mapper-1e3433718112",
+      "repository": "Xinyuan-LilyGO/tbeam-helium-mapper",
+      "path": "main/screen.cpp",
+      "revision": "00cec9c130d4452839dcf933905f5624d9711e41",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "e7726c3f47a2d21ab4aa5774dff71fbaefa9143d",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/main/screen.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/main/screen.cpp",
+      "fetchedAt": "2026-11-22T08:09:53Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 8838,
+      "sha256": "420f0c70d783e5be93cce38c71c891cc33527aba26cd84e038fd0668658fe6d5",
+      "archiveName": "classic-tbeam-helium-mapper-1e3433718112.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-tbeam-helium-mapper-1e3433718112.raw",
+      "kind": "manufacturer-source",
+      "title": "tbeam-helium-mapper/main/screen.cpp"
+    },
+    {
+      "id": "classic-tbeam-helium-mapper-6872e01ccc06",
+      "repository": "Xinyuan-LilyGO/tbeam-helium-mapper",
+      "path": "main/configuration.h",
+      "revision": "00cec9c130d4452839dcf933905f5624d9711e41",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "12a57d531a102560ac25899e482b886ac44d45d3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/main/configuration.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/main/configuration.h",
+      "fetchedAt": "2026-11-22T08:09:53Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 10548,
+      "sha256": "3917d4fd0e23ec7a6166090255773d10f43508bf0093b1694b088134ffab6921",
+      "archiveName": "classic-tbeam-helium-mapper-6872e01ccc06.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-tbeam-helium-mapper-6872e01ccc06.raw",
+      "kind": "manufacturer-source",
+      "title": "tbeam-helium-mapper/main/configuration.h"
+    },
+    {
+      "id": "classic-tbeam-helium-mapper-b33563055168",
+      "repository": "Xinyuan-LilyGO/tbeam-helium-mapper",
+      "path": "README.md",
+      "revision": "00cec9c130d4452839dcf933905f5624d9711e41",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "d5c16e138edd5f84e56c416624120bcf3fa4299f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/README.md",
+      "fetchedAt": "2026-11-22T08:06:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 34895,
+      "sha256": "f016f750f13118338a7928ec0017e7923a37489ab4091da1cc566c0434a5bb06",
+      "archiveName": "classic-tbeam-helium-mapper-b33563055168.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-tbeam-helium-mapper-b33563055168.raw",
+      "kind": "manufacturer-source",
+      "title": "tbeam-helium-mapper/README.md"
+    },
+    {
       "id": "classic-ttgo-t-display-01e6d9ffed05",
       "repository": "Xinyuan-LilyGO/TTGO-T-Display",
       "path": "README.MD",
@@ -451,6 +1230,33 @@
       "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1"
     },
     {
+      "id": "official-wiki-t-bao",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-bao/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-bao/index.md",
+      "fetchedAt": "2026-11-22T06:42:28.823764Z",
+      "mediaType": "text/plain",
+      "bytes": 6670,
+      "sha256": "2905bd6b3f41a7c286a87a54f641877af8423697ae8b697ec497933275921f6d",
+      "gitBlobSha": "4bda80272c371c3c47ef3062083a0b694106eed4",
+      "path": "en/products/other/t-bao/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
       "id": "official-wiki-t-display-keyboard",
       "status": "fetched",
       "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-display-series/t-display-keyboard/index.md",
@@ -461,6 +1267,33 @@
       "sha256": "25166d527f176c7eb989ded1add4e76a54ffb47727def34fd31d44adf04b14db",
       "gitBlobSha": "dac30f5ae132befad02f958d8a1f091189106942",
       "path": "en/products/t-display-series/t-display-keyboard/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "id": "official-wiki-t7",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t7-series/t7/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t7-series/t7/index.md",
+      "fetchedAt": "2026-11-22T06:44:08.394688Z",
+      "mediaType": "text/plain",
+      "bytes": 2374,
+      "sha256": "3f30126fb7134d8b6f45906f45c5236656b9baf1d79ef0e1440b0676af5da9c8",
+      "gitBlobSha": "7b10ec401442325d8b93f79f68db59bd5d02ce0b",
+      "path": "en/products/t7-series/t7/index.md",
       "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
       "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
       "revisionKind": "git-commit",
@@ -788,6 +1621,89 @@
       }
     },
     {
+      "productId": "lilygo-t-bao",
+      "boardId": "lilygo-t-bao",
+      "name": "LILYGO T-Bao",
+      "chip": "esp32",
+      "flashMB": 16,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "T-BAO ESP32-D0WDQ6-V3 + K210 product; ESP32 side only",
+      "display": null,
+      "physicalDisplay": {
+        "width": 240,
+        "height": 240,
+        "controller": "ST7789",
+        "interface": "spi",
+        "type": "LCD",
+        "physicalTouch": true,
+        "touchImplemented": false,
+        "implemented": false,
+        "drivenBy": "K210",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "classic-lilygo-k210-script-18c6d175f17b"
+        ]
+      },
+      "pins": {},
+      "controls": [],
+      "runtimeLevel": "cpu-subset",
+      "verification": {
+        "sourcePinsVerified": false,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "bao_coprocessor_executes_lx6_sram_and_uart_without_claiming_the_k210_display"
+        ],
+        "sourceChipVerified": true,
+        "nativeGuestProbeScope": "Authored LX6 SRAM store/load and UART0 output only; no K210 or inter-CPU protocol."
+      },
+      "scope": "已建立 T-BAO 的 ESP32 辅处理器运行入口；240×240 屏幕由 K210 运行，当前仅供外观预览。双处理器通信、摄像头、运动与整机程序尚未实现。",
+      "scopeEn": "ESP32-D0WDQ6-V3 coprocessor target only. The source executes LCD/camera/motion code on K210; no LCD is attached to the ESP32 bus.",
+      "sourceIds": [
+        "classic-lilygo-k210-script-01e6d9ffed05",
+        "classic-lilygo-k210-script-18c6d175f17b",
+        "classic-lilygo-k210-script-dcf1bc7b881f",
+        "official-wiki-t-bao",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "K210 CPU, camera, ST7789 LCD, touch, motor driver, IMU, AXP202, audio and inter-processor network firmware are unmodeled.",
+        "No board-specific ESP32 GPIO input or output is asserted because the exact source only proves the coprocessor role. Generic ESP32 CPU/UART peripherals remain available.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2024-11-13",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-bao",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 26,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "official-wiki-t-bao"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "physicalChip": "ESP32-D0WDQ6-V3 + K210"
+    },
+    {
       "productId": "lilygo-lora-v1-3",
       "boardId": "lilygo-lora-v1-3",
       "name": "LILYGO LoRa V1.3",
@@ -867,6 +1783,186 @@
         "simulationVerified": false,
         "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
       }
+    },
+    {
+      "productId": "lilygo-t-tv",
+      "boardId": "lilygo-t-tv",
+      "name": "LILYGO T-TV",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": null,
+      "psramMB": 0,
+      "psramMbBasis": "unknown-physical-capacity",
+      "hardwareRevision": "LilyGo-Tv-lite renamed manufacturer repository LilyGo-TTV; transparent blue SSD1309 option",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SSD1309",
+        "interface": "spi",
+        "type": "OLED",
+        "diagonalInch": 1.54,
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp page RAM",
+        "implemented": true,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "physicalDisplay": true,
+      "pins": {
+        "display": {
+          "sclk": 18,
+          "mosi": 23,
+          "miso": null,
+          "cs": 5,
+          "dc": 19,
+          "reset": 4,
+          "enable": [
+            2,
+            33
+          ],
+          "enableActiveHigh": true
+        },
+        "touchKey": {
+          "signal": 15,
+          "power": 32,
+          "implemented": false
+        },
+        "rtc": {
+          "sda": 26,
+          "scl": 25,
+          "implemented": false
+        }
+      },
+      "controls": [],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "transparent_tv_ssd1309_receives_software_and_hardware_spi_with_real_power_gates"
+        ]
+      },
+      "scope": "已接入透明 OLED 版 T-TV：SSD1309 128×64、真实 GPIO 软件 SPI、硬件 SPI，以及两路供电与复位门控。触摸键、红外遥控和 RTC 尚未实现。",
+      "scopeEn": "Transparent OLED T-TV: distinct SSD1309 128x64 endpoint driven by GPIO software SPI or routed hardware SPI, with both supply enables and reset. Touch key/IR/RTC unmodeled.",
+      "sourceIds": [
+        "classic-lilygo-ttv-01e6d9ffed05",
+        "classic-lilygo-ttv-c3c4be694f7d",
+        "classic-lilygo-ttv-1e49a5cc0b65",
+        "classic-lilygo-ttv-684d2e6c9c24",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "The bundled ST7789 Setup136 file describes a different LCD variant and is not applied.",
+        "TTP223 touch key, HS0038 IR receiver/remote, RTC, charging and analog transparency/brightness are unmodeled.",
+        "Power loss clears undefined OLED SRAM deterministically and resets display configuration. Power restoration alone does not restore an image.",
+        "Flash capacity is not confirmed from this exact SKU source; 4 MiB is an explicit runtime allocation, not a measured physical value.",
+        "No complete T-TV factory firmware was run. SSD1309 scrolling, analog current/contrast and readback remain unmodeled.",
+        "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+      ],
+      "chronology": {
+        "date": "2023-11-13",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-tv",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 55,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "physicalFlashMB": null,
+      "flashMbBasis": "simulation"
+    },
+    {
+      "productId": "lilygo-t-poe-pro",
+      "boardId": "lilygo-t-poe-pro",
+      "name": "LILYGO T-POE Pro",
+      "chip": "esp32",
+      "flashMB": 16,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "T_POE_Pro(Final) schematic / LILYGO_T_ETH_POE_PRO",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {},
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入 T-PoE Pro 的经典 ESP32 与原理图确认的 GPIO0 BOOT。LAN8720 以太网、PoE 电源和扩展屏幕尚未实现。",
+      "scopeEn": "T-PoE Pro ESP32-WROVER-E and schematic-proven GPIO0 BOOT. LAN8720/PoE and optional external TFT are not implemented.",
+      "sourceIds": [
+        "classic-lilygo-t-eth-series-b33563055168",
+        "classic-lilygo-t-eth-series-2f70a16373ba",
+        "classic-lilygo-t-eth-series-ec621839977b",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "The manufacturer product table marks no onboard SD slot. SD/TFT definitions in the optional expansion pin header do not establish a fitted display or card.",
+        "LAN8720 RMII PHY, MDIO/MDC, Ethernet packets, PoE converter, RS485 and optional LCD are unmodeled.",
+        "External ADC-button example is not an onboard digital button and is not exposed as one.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2023-10-19",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-poe-pro",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 60,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "module": "ESP32-WROVER-E"
     },
     {
       "productId": "lilygo-t-beam-softrf",
@@ -964,6 +2060,105 @@
           "classic-lilygo-lora-series-c8931800e47f"
         ],
         "basis": "The official T-Beam hardware page explicitly links both Meshtastic and SoftRF products and documents the same GPIO38 / OLED21,22 wiring. This is an independently stated hardware mapping, not inferred firmware interchangeability."
+      }
+    },
+    {
+      "productId": "lilygo-helium-t-beam",
+      "boardId": "lilygo-helium-t-beam",
+      "name": "LILYGO T-Beam Helium",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "T_BEAM_V10 / physical T-Beam V1.1 in pinned Helium mapper source; OLED SSD1306 option",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "controller": "SSD1306",
+        "interface": "i2c",
+        "type": "OLED",
+        "pixelFormat": "RGB565",
+        "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+        "implemented": true,
+        "physicalTouch": false,
+        "touchImplemented": false
+      },
+      "physicalDisplay": true,
+      "pins": {
+        "indicator": {
+          "pin": 4,
+          "activeHigh": false,
+          "color": "red"
+        },
+        "display": {
+          "sda": 21,
+          "scl": 22,
+          "address": 60,
+          "reset": null
+        }
+      },
+      "controls": [
+        {
+          "id": "user",
+          "name": "用户键",
+          "type": "button",
+          "pin": 38,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "oled_i2c_windows_go_through_both_classic_controllers_and_real_routes",
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入官方 Helium 示例选定的 T-Beam V1.1：SSD1306 显示、GPIO38 用户键与低有效红灯 GPIO4。新版 AXP2101、Helium 网络及整机固件尚未验证。",
+      "scopeEn": "Selected manufacturer Helium source T_BEAM_V10 (physical V1.1): SSD1306-fitted option, user38 and active-low red GPIO4. Helium network/factory boot unverified.",
+      "sourceIds": [
+        "classic-tbeam-helium-mapper-b33563055168",
+        "classic-tbeam-helium-mapper-6872e01ccc06",
+        "classic-tbeam-helium-mapper-1e3433718112",
+        "classic-tbeam-helium-mapper-18b7c19417a4",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "Pinned Helium code targets AXP192 V1.1 while the current storefront states AXP2101. This profile deliberately represents the source-backed older V1.1, not every board sold under this handle.",
+        "SH1106 optional OLED autodetection/readback and no-OLED variants are not represented. A virtual always-powered OLED rail is assumed.",
+        "AXP192/AXP2101, GNSS, SX1276, LoRaWAN/Helium backend, provisioning credentials and complete factory boot are unmodeled.",
+        "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2023-07-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/helium-t-beam",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 66,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
       }
     },
     {
@@ -1080,6 +2275,195 @@
       }
     },
     {
+      "productId": "lilygo-t-a7608e-h",
+      "boardId": "lilygo-t-a7608e-h",
+      "name": "LILYGO T-A7608",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "T-A7608E/SA classic ESP32 manufacturer selected target; excludes S3 and T-Call A7670 variants",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {
+        "modem": {
+          "tx": 26,
+          "rx": 27,
+          "pwrkey": 4,
+          "implemented": false
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入 T-A7608E/SA classic ESP32 的 CPU 与官方 IO0 用户/下载按键；蜂窝模块、GNSS、供电及 TF 卡传输尚未模拟。",
+      "scopeEn": "T-A7608E/SA classic ESP32: source-mapped IO0 user/download button and classic ESP32 target. Modem/GNSS/supply/SD are unmodeled.",
+      "sourceIds": [
+        "classic-lilygo-modem-series-8144cb1ccb1f",
+        "classic-lilygo-modem-series-a7e94e5e95d8",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "The BOT button beside the modem enters modem upgrade mode; it is not a second ESP32 GPIO0 button.",
+        "SIMCom modem AT behavior, LTE/GPRS/GNSS, modem reset/power sequencing, SIM, charging and analog battery/solar inputs are unmodeled.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2023-05-24",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-a7608e-h",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 72,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "module": "ESP32-WROVER-E",
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": false,
+        "transportSupported": false,
+        "pins": {
+          "sclk": 14,
+          "mosi": 15,
+          "miso": 2,
+          "cs": 13
+        },
+        "sourceIds": [
+          "classic-lilygo-modem-series-8144cb1ccb1f"
+        ]
+      }
+    },
+    {
+      "productId": "lilygo-t-sim-a7670e",
+      "boardId": "lilygo-t-sim-a7670e",
+      "name": "LILYGO T-A7670E/G/SA R2",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "T-A7670E classic ESP32 manufacturer selected target; excludes S3 and T-Call A7670 variants",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {
+        "modem": {
+          "tx": 26,
+          "rx": 27,
+          "pwrkey": 4,
+          "implemented": false
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入 T-A7670E classic ESP32 的 CPU 与官方 IO0 用户/下载按键；蜂窝模块、GNSS、供电及 TF 卡传输尚未模拟。",
+      "scopeEn": "T-A7670E classic ESP32: source-mapped IO0 user/download button and classic ESP32 target. Modem/GNSS/supply/SD are unmodeled.",
+      "sourceIds": [
+        "classic-lilygo-modem-series-10e19a63cd92",
+        "classic-lilygo-modem-series-a7e94e5e95d8",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "The BOT button beside the modem enters modem upgrade mode; it is not a second ESP32 GPIO0 button.",
+        "SIMCom modem AT behavior, LTE/GPRS/GNSS, modem reset/power sequencing, SIM, charging and analog battery/solar inputs are unmodeled.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2022-12-02",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-sim-a7670e",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 84,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "official-wiki-t-a7670"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "module": "ESP32-WROVER-E",
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": false,
+        "transportSupported": false,
+        "pins": {
+          "sclk": 14,
+          "mosi": 15,
+          "miso": 2,
+          "cs": 13
+        },
+        "sourceIds": [
+          "classic-lilygo-modem-series-10e19a63cd92"
+        ]
+      }
+    },
+    {
       "productId": "lilygo-t-can485",
       "boardId": "lilygo-t-can485",
       "name": "LILYGO T-CAN485",
@@ -1172,6 +2556,382 @@
         ],
         "notes": "Prepared 64 MiB FAT32 image policy is preserved, but this board has no guest card transport yet."
       }
+    },
+    {
+      "productId": "lilygo-t7-v1-3-mini-32-esp32",
+      "boardId": "lilygo-t7-v1-3-mini-32-esp32",
+      "name": "LILYGO T7 V1.3 MINI 32 ESP32",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 0,
+      "psramMB": 0,
+      "psramMbBasis": "physical-capacity",
+      "hardwareRevision": "ESP32-MINI-32-V1.3 manufacturer schematic with W25Q32; not V1.5 WROVER",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {
+        "indicator": {
+          "pin": 22,
+          "activeHigh": false,
+          "color": "green"
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入原版 T7 V1.3 的 BOOT 与低有效绿色 GPIO22 指示灯；采用 25Q32 的 4 MiB Flash，未混用后来加入 PSRAM 的 V1.5。",
+      "scopeEn": "Exact T7 V1.3 schematic: BOOT0 and active-low green GPIO22 LED; 25Q32 4 MiB Flash, distinct from later PSRAM-equipped versions.",
+      "sourceIds": [
+        "classic-esp32-mini-32-v1-3-ac30dd7520fe",
+        "classic-esp32-mini-32-v1-3-4ea9773a2d7b",
+        "classic-esp32-mini-32-v1-3-b33563055168",
+        "official-wiki-t7",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "The Blink example identifies GPIO22 but its generic HIGH-is-on comment conflicts with the schematic LED cathode wiring. The schematic proves active-low and takes precedence.",
+        "Later T7 V1.5 PSRAM and 16 MiB variants are excluded; V1.3 schematic contains no PSRAM.",
+        "Charging status/power LED, battery circuit and Wi-Fi/Bluetooth application behavior are unmodeled."
+      ],
+      "chronology": {
+        "date": "2022-11-16",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t7-v1-3-mini-32-esp32",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 89,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "official-wiki-t7"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      }
+    },
+    {
+      "productId": "lilygo-t-weigh",
+      "boardId": "lilygo-t-weigh",
+      "name": "LILYGO T-Weigh",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": null,
+      "psramMB": 0,
+      "psramMbBasis": "unknown-physical-capacity",
+      "hardwareRevision": "T-Weigh Lora-Weights source target",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {
+        "hx711": {
+          "data": 21,
+          "clock": 22,
+          "implemented": false
+        },
+        "rtc": {
+          "sda": 33,
+          "scl": 32,
+          "implemented": false
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入 T-Weigh 的经典 ESP32 与 GPIO0 BOOT。HX711 称重、LoRa 与 RTC 尚未实现，不能把按键测试当成称重功能验收。",
+      "scopeEn": "T-Weigh source BTN0 and classic ESP32 build target. HX711 weighing, LoRa and RTC are unmodeled.",
+      "sourceIds": [
+        "classic-t-weigh-b33563055168",
+        "classic-t-weigh-465abf667727",
+        "classic-t-weigh-e78584ce2b8d",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "HX711 ADC, load-cell calibration and physical weight are unmodeled; no synthetic weight is substituted for the serial ADC protocol.",
+        "SX1262 and RTC are unmodeled. The exact PSRAM capacity is not declared. Flash4MB is the selected manufacturer ESP32 build configuration; storefront writes ambiguous 4Mb.",
+        "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+      ],
+      "chronology": {
+        "date": "2022-11-16",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-weigh",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 92,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "physicalFlashMB": null,
+      "flashMbBasis": "manufacturer-build-configuration"
+    },
+    {
+      "productId": "lilygo-t-watch-2021",
+      "boardId": "lilygo-t-watch-2021",
+      "name": "LILYGO T-Watch 2021",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 2,
+      "psramMB": 0,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "TWatch2021_V1_2 selected by TWatch_config.h; excludes V1 and V2 pin maps",
+      "display": {
+        "width": 240,
+        "height": 240,
+        "controller": "GC9A01",
+        "interface": "spi",
+        "type": "LCD",
+        "diagonalInch": 1.3,
+        "pixelFormat": "RGB565",
+        "implemented": true,
+        "physicalTouch": true,
+        "touchImplemented": false,
+        "shape": "round",
+        "crop": {
+          "x": 0,
+          "y": 0,
+          "width": 240,
+          "height": 240
+        }
+      },
+      "physicalDisplay": true,
+      "pins": {
+        "display": {
+          "sclk": 14,
+          "mosi": 13,
+          "miso": null,
+          "cs": 15,
+          "dc": 19,
+          "reset": 27,
+          "backlight": 21,
+          "enable": 5,
+          "enableActiveHigh": true
+        },
+        "touch": {
+          "controller": "CST816S",
+          "sda": 26,
+          "scl": 25,
+          "reset": 33,
+          "irq": 32,
+          "implemented": false
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "button-2",
+          "name": "按键2",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true
+        },
+        {
+          "id": "button-3",
+          "name": "按键3",
+          "type": "button",
+          "pin": 34,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "watch2021_v12_uses_its_gc9a01_rail_and_three_real_inputs",
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入 T-Watch 2021 V1.2 的 GC9A01 240×240 圆屏、数字电源/背光/复位及 GPIO0/35/34 三键。触摸、RTC、IMU、振动和整机程序尚未实现。",
+      "scopeEn": "Exact TWatch2021_V1_2: GC9A01 240x240 circular glass, routed SPI and GPIO5 rail/reset/backlight, three active-low buttons. Touch/RTC/IMU/haptics unmodeled.",
+      "sourceIds": [
+        "classic-t-watch-2021-b33563055168",
+        "classic-t-watch-2021-1709ed5a4c21",
+        "classic-t-watch-2021-7b6be0b6023a",
+        "classic-t-watch-2021-b44ed4e141af",
+        "classic-t-watch-2021-b90611df5d2e",
+        "classic-t-watch-2021-4142fe43028d",
+        "classic-t-watch-2021-0685987a4b56",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "Pinned repository selects Setup200_GC9A01. The bundled ST7789 files and old TTV setup are unrelated and are not applied.",
+        "Storefront declares 4 MiB Flash while repository quick-start requests 8 MiB. The runtime conservatively allocates 4 MiB, records the conflict and does not claim the physical flash capacity is resolved.",
+        "CST816S touch, PCF8563 RTC, BMA423, compass, vibration motor, charging and shared IRQ32 aggregation are unmodeled.",
+        "Only the documented DCS RAM/window/pixel/reset/sleep/display path is modeled; GC9A01 analog gamma/drive and physical pixel calibration are not.",
+        "The physical board declares 2 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 0 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2022-11-16",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-watch-2021",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 93,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "official-wiki-t-watch-2021"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "physicalFlashMB": null,
+      "flashMbBasis": "simulation",
+      "physicalFlashCandidatesMB": [
+        4,
+        8
+      ]
+    },
+    {
+      "productId": "lilygo-a-t-pcie",
+      "boardId": "lilygo-a-t-pcie",
+      "name": "LILYGO T-PCIE",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "T-PCIE 4 MiB classic ESP32 mainboard option, modem module unspecified",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {
+        "indicator": {
+          "pin": 12,
+          "activeHigh": false,
+          "colorBasis": "blue debug marker; emitted color unverified"
+        }
+      },
+      "controls": [],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入 T-PCIE 4 MiB 主板的 GPIO12 低有效指示输出；mPCIe 蜂窝卡、电源键和通信尚未模拟。",
+      "scopeEn": "Selected T-PCIE 4 MiB mainboard: active-low GPIO12 indicator. No mPCIe cellular modem, power-key controller or network behavior is implemented.",
+      "sourceIds": [
+        "classic-lilygo-t-pcie-644bf7188cb5",
+        "classic-lilygo-modem-series-f50035b59daf",
+        "classic-lilygo-modem-series-a7e94e5e95d8",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "Official product has 4/16 MiB Flash options; this profile explicitly chooses 4 MiB. No modem variant is silently selected.",
+        "EN is chip reset and PWR is the power-controller button; neither is invented as a runtime GPIO BOOT control.",
+        "mPCIe is the physical module socket; PCIe packet protocol, cellular module AT/UART behavior, PMIC, antennas and GNSS are unmodeled.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2022-11-16",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/a-t-pcie",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 94,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "official-wiki-t-pcie"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "module": "ESP32-WROVER-E"
     },
     {
       "productId": "lilygo-t-relay-5v-8-channel-relay",
@@ -1352,6 +3112,266 @@
       }
     },
     {
+      "productId": "lilygo-t-sim7600e-l1",
+      "boardId": "lilygo-t-sim7600e-l1",
+      "name": "LILYGO T-SIM7600E-L1",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "SIM7600E / SIM7600E-L1C classic ESP32 hardware; regional modem remains unmodeled",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {
+        "indicator": {
+          "pin": 12,
+          "activeHigh": true,
+          "colorBasis": "blue debug marker; emitted color unverified"
+        }
+      },
+      "controls": [],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入 SIM7600E / SIM7600E-L1C 经典 ESP32 版本的 GPIO12 高有效指示输出；蜂窝、GNSS、PWR 电源键与 TF 传输尚未实现。",
+      "scopeEn": "Selected SIM7600E / SIM7600E-L1C classic ESP32 board: active-high GPIO12 indicator; modem/GNSS/power key/SD unmodeled.",
+      "sourceIds": [
+        "classic-lilygo-modem-series-e1d924c1ab40",
+        "classic-lilygo-modem-series-a7e94e5e95d8",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "GPIO12 polarity follows LILYGO_SIM7600X, not the active-low SIM7000/7070 board.",
+        "RST and battery-activation PWR controls are not ordinary ESP32 GPIO switches and are not exposed as BOOT.",
+        "LTE, AT/UART modem behavior, GNSS, modem PWRKEY/reset, charging and analog battery/solar are unmodeled.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2022-09-19",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-sim7600e-l1",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 108,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": false,
+        "transportSupported": false,
+        "pins": {
+          "sclk": 14,
+          "mosi": 15,
+          "miso": 2,
+          "cs": 13
+        },
+        "sourceIds": [
+          "classic-lilygo-modem-series-e1d924c1ab40"
+        ]
+      }
+    },
+    {
+      "productId": "lilygo-t-sim7600",
+      "boardId": "lilygo-t-sim7600",
+      "name": "LILYGO T-SIM7600E/G/SA-H",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "SIM7600X classic ESP32 hardware; regional modem remains unmodeled",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {
+        "indicator": {
+          "pin": 12,
+          "activeHigh": true,
+          "colorBasis": "blue debug marker; emitted color unverified"
+        }
+      },
+      "controls": [],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入 SIM7600X 经典 ESP32 版本的 GPIO12 高有效指示输出；蜂窝、GNSS、PWR 电源键与 TF 传输尚未实现。",
+      "scopeEn": "Selected SIM7600X classic ESP32 board: active-high GPIO12 indicator; modem/GNSS/power key/SD unmodeled.",
+      "sourceIds": [
+        "classic-lilygo-modem-series-e1d924c1ab40",
+        "classic-lilygo-modem-series-a7e94e5e95d8",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "GPIO12 polarity follows LILYGO_SIM7600X, not the active-low SIM7000/7070 board.",
+        "RST and battery-activation PWR controls are not ordinary ESP32 GPIO switches and are not exposed as BOOT.",
+        "LTE, AT/UART modem behavior, GNSS, modem PWRKEY/reset, charging and analog battery/solar are unmodeled.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2022-09-19",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-sim7600",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 109,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "official-wiki-t-sim7600x"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": false,
+        "transportSupported": false,
+        "pins": {
+          "sclk": 14,
+          "mosi": 15,
+          "miso": 2,
+          "cs": 13
+        },
+        "sourceIds": [
+          "classic-lilygo-modem-series-e1d924c1ab40"
+        ]
+      }
+    },
+    {
+      "productId": "lilygo-t-higrow",
+      "boardId": "lilygo-t-higrow",
+      "name": "LILYGO T-Higrow",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": null,
+      "psramMB": 0,
+      "psramMbBasis": "unknown-physical-capacity",
+      "hardwareRevision": "LilyGo-HiGrow manufacturer src/configuration.h target",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {
+        "sensorI2c": {
+          "sda": 25,
+          "scl": 26,
+          "implemented": false
+        },
+        "sensorPower": {
+          "pin": 4,
+          "implemented": false
+        }
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "user",
+          "name": "用户键",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入 HiGrow 的 GPIO0 BOOT 与 GPIO35 用户按键；土壤、光照、温湿度等传感器和浇水附件尚未模拟。",
+      "scopeEn": "HiGrow exact configuration BOOT0/user35; environmental sensors, analog soil/salt/battery and optional watering/LoRa modules unmodeled.",
+      "sourceIds": [
+        "classic-lilygo-higrow-01e6d9ffed05",
+        "classic-lilygo-higrow-1e3f6cf83615",
+        "classic-lilygo-higrow-4446afd728a4",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "DHT11, BH1750, BME280/SHT3X variants, soil/salt/battery ADC and power domain are unmodeled. No fabricated environmental data is returned.",
+        "RGB18 and motor19 references may belong to optional watering hardware; no onboard RGB or pump is asserted from those header constants alone.",
+        "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+      ],
+      "chronology": {
+        "date": "2022-09-19",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-higrow",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 110,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      }
+    },
+    {
       "productId": "lilygo-t-encoder-esp32",
       "boardId": "lilygo-t-encoder-esp32",
       "name": "LILYGO T-Encoder",
@@ -1455,6 +3475,90 @@
       "module": "ESP32-PICO-V3-02"
     },
     {
+      "productId": "lilygo-t-sim7070g",
+      "boardId": "lilygo-t-sim7070g",
+      "name": "LILYGO T-SIM7070G",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "t-sim7070g classic ESP32 official hardware target",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {
+        "indicator": {
+          "pin": 12,
+          "activeHigh": false,
+          "colorBasis": "blue debug marker; emitted color unverified"
+        }
+      },
+      "controls": [],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入经典 ESP32 的 GPIO12 低有效指示输出；蜂窝、GNSS、供电按键与 TF 卡传输尚未实现。",
+      "scopeEn": "Source-selected classic SIM7000/7070 board GPIO12 active-low indicator only; modem/GNSS/power controller/SD unmodeled.",
+      "sourceIds": [
+        "classic-lilygo-modem-series-b305b1714af8",
+        "classic-lilygo-modem-series-a7e94e5e95d8",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "RST and battery-activation PWR controls are not ordinary ESP32 GPIO buttons; no BOOT control is invented.",
+        "SIMCom AT protocol, cellular/GNSS, PWRKEY/reset, charging, battery/solar measurements and SIM are unmodeled.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2022-08-17",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-sim7070g",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 116,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": false,
+        "transportSupported": false,
+        "pins": {
+          "sclk": 14,
+          "mosi": 15,
+          "miso": 2,
+          "cs": 13
+        },
+        "sourceIds": [
+          "classic-lilygo-modem-series-b305b1714af8"
+        ]
+      }
+    },
+    {
       "productId": "lilygo-t-relay",
       "boardId": "lilygo-t-relay",
       "name": "LILYGO T-Relay",
@@ -1527,6 +3631,162 @@
         "sourceIds": [
           "official-store-shopify-1",
           "official-wiki-t-relay"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      }
+    },
+    {
+      "productId": "lilygo-t-sim7000g",
+      "boardId": "lilygo-t-sim7000g",
+      "name": "LILYGO T-SIM7000G",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "t-sim7000g classic ESP32 official hardware target",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {
+        "indicator": {
+          "pin": 12,
+          "activeHigh": false,
+          "colorBasis": "blue debug marker; emitted color unverified"
+        }
+      },
+      "controls": [],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入经典 ESP32 的 GPIO12 低有效指示输出；蜂窝、GNSS、供电按键与 TF 卡传输尚未实现。",
+      "scopeEn": "Source-selected classic SIM7000/7070 board GPIO12 active-low indicator only; modem/GNSS/power controller/SD unmodeled.",
+      "sourceIds": [
+        "classic-lilygo-modem-series-8d44b02ee0bd",
+        "classic-lilygo-modem-series-a7e94e5e95d8",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "RST and battery-activation PWR controls are not ordinary ESP32 GPIO buttons; no BOOT control is invented.",
+        "SIMCom AT protocol, cellular/GNSS, PWRKEY/reset, charging, battery/solar measurements and SIM are unmodeled.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2022-07-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-sim7000g",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 119,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "official-wiki-t-sim7000"
+        ],
+        "links": [],
+        "evidenceNotes": [],
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+      },
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": false,
+        "transportSupported": false,
+        "pins": {
+          "sclk": 14,
+          "mosi": 15,
+          "miso": 2,
+          "cs": 13
+        },
+        "sourceIds": [
+          "classic-lilygo-modem-series-8d44b02ee0bd"
+        ]
+      }
+    },
+    {
+      "productId": "lilygo-t-call-v1-4",
+      "boardId": "lilygo-t-call-v1-4",
+      "name": "LILYGO T-Call",
+      "chip": "esp32",
+      "flashMB": 4,
+      "physicalPsramMB": 8,
+      "psramMB": 4,
+      "psramMbBasis": "simulation-capacity-limit",
+      "hardwareRevision": "SIM800L_IP5306_VERSION_20200811 / 4 MiB Flash option",
+      "display": null,
+      "physicalDisplay": false,
+      "pins": {
+        "indicator": {
+          "pin": 13,
+          "activeHigh": true,
+          "colorBasis": "blue debug marker; emitted color unverified"
+        }
+      },
+      "controls": [],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": false,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "independent_classic_revisions_keep_their_button_and_led_polarities"
+        ]
+      },
+      "scope": "已接入 SIM800L/IP5306 版 T-Call 的 GPIO13 高有效指示灯，选定 4 MiB Flash；A7670、AXP192 和 SIM800C 版本没有混用。",
+      "scopeEn": "Selected T-Call SIM800L/IP5306 20200811 source target, 4 MiB Flash option, active-high GPIO13 LED. Other modem/PMIC variants excluded.",
+      "sourceIds": [
+        "classic-lilygo-t-call-sim800-01e6d9ffed05",
+        "classic-lilygo-t-call-sim800-75e7f87b0db4",
+        "classic-lilygo-t-call-sim800-a11ea0900009",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+        "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+        "Storefront also lists 8 MiB Flash and T-Call A7670. This profile selects only SIM800L/IP5306 with 4 MiB Flash.",
+        "SIM800C/AXP192 has different LED12 active-low wiring and is deliberately excluded.",
+        "SIM800 GSM/GPRS/AT/UART, IP5306 power/charging, microphone/speaker and EN physical reset interaction are unmodeled.",
+        "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+      ],
+      "chronology": {
+        "date": "2022-07-22",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-call-v1-4",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 120,
+      "factoryFirmwareInvestigation": {
+        "status": "not-found-in-inspected-pages",
+        "sourceIds": [
+          "official-store-shopify-1"
         ],
         "links": [],
         "evidenceNotes": [],
